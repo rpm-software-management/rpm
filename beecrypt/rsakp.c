@@ -27,6 +27,7 @@
 
 #include "rsakp.h"
 #include "mpprime.h"
+#include "mp.h"
 
 #include "debug.h"
 

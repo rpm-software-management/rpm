@@ -6,7 +6,7 @@
 #ifndef _PKCS12_H
 #define _PKCS12_H
 
-#include "beecrypt/beecrypt.h"
+#include "beecrypt.h"
 
 #ifdef __cplusplus
 extern "C" {

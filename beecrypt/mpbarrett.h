@@ -26,8 +26,8 @@
 #ifndef _MPBARRETT_H
 #define _MPBARRETT_H
 
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/mpnumber.h"
+#include "beecrypt.h"
+#include "mpnumber.h"
 
 #ifdef __cplusplus
 # include <iostream>

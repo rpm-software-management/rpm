@@ -26,7 +26,7 @@
 #ifndef _TIMESTAMP_H
 #define _TIMESTAMP_H
 
-#include "beecrypt/beecrypt.h"
+#include "beecrypt.h"
 
 #if HAVE_LONG_LONG
 # define ONE_SECOND	1000LL

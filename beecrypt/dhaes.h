@@ -32,10 +32,10 @@
 
 #ifndef _DHAES_H
 #define _DHAES_H
- 
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/dldp.h"
 
+#include "beecrypt.h"
+#include "dldp.h"
+ 
 typedef struct
 {
 	const dldp_p*				param;

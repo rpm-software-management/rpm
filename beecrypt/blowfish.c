@@ -25,6 +25,8 @@
 
 #include "system.h"
 
+#include "beecrypt.h"
+#include "blowfishopt.h"
 #include "blowfish.h"
 #include "endianness.h"
 

@@ -26,8 +26,8 @@
 #ifndef _BLOWFISHOPT_H
 #define _BLOWFISHOPT_H
 
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/blowfish.h"
+#include "beecrypt.h"
+#include "blowfish.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -30,10 +30,11 @@
 #ifndef _BEECRYPT_H
 #define _BEECRYPT_H
 
-#include "beecrypt/api.h"
-
-#include "beecrypt/memchunk.h"
-#include "beecrypt/mpnumber.h"
+#include "api.h"
+                                                                                
+#include "memchunk.h"
+#include "mpnumber.h"
+#include "mp.h"
 
 /*
  * Entropy Sources

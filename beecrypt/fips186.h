@@ -26,7 +26,8 @@
 #ifndef _FIPS186_H
 #define _FIPS186_H
 
-#include "beecrypt/beecrypt.h"
+#include "beecrypt.h"
+#include "sha1.h"
 
 #ifdef _REENTRANT
 # if WIN32
@@ -34,9 +35,6 @@
 #  include <winbase.h>
 # endif
 #endif
-
-#include "beecrypt.h"
-#include "sha1.h"
 
 #if (MP_WBITS == 64)
 # define FIPS186_STATE_SIZE	8

@@ -26,6 +26,8 @@
 #include "system.h"
 
 #include "mpprime.h"
+#include "mp.h"
+#include "mpbarrett.h"
 
 #include "debug.h"
 

@@ -26,6 +26,7 @@
 
 #include "elgamal.h"
 #include "dldp.h"
+#include "mp.h"
 
 #include "debug.h"
 

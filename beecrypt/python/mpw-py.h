@@ -4,7 +4,7 @@
 /** \ingroup py_c  
  * \file python/mpw-py.h
  */
-#include "beecrypt/mp.h"
+#include "mp.h"
 
 /**
  */

@@ -26,7 +26,7 @@
 #ifndef _RSA_H
 #define _RSA_H
 
-#include "beecrypt/rsakp.h"
+#include "rsakp.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -26,8 +26,8 @@
 #ifndef _DLSVDP_DH_H
 #define _DLSVDP_DH_H
 
-#include "beecrypt/dldp.h"
-#include "beecrypt/dlkp.h"
+#include "dldp.h"
+#include "dlkp.h"
 
 #ifdef __cplusplus
 extern "C" {

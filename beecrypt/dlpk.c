@@ -26,6 +26,7 @@
 #include "system.h"
 
 #include "dlpk.h"
+#include "mp.h"
 
 #include "debug.h"
 

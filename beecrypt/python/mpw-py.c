@@ -3,17 +3,10 @@
  */
 
 #define	_REENTRANT	1	/* XXX config.h collides with pyconfig.h */
-#define	_GNU_SOURCE		/* XXX pick up stpcpy et al */
 
 #include "system.h"
 
-#include "Python.h"
 #include "longintrepr.h"
-
-#ifdef __LCLINT__
-#undef  PyObject_HEAD
-#define PyObject_HEAD   int _PyObjectHead;
-#endif
 
 #include "mpw-py.h"
 #include "rng-py.h"
@@ -2341,7 +2334,7 @@ PyTypeObject mpw_Type = {
 	0,				/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) mpw_new,		/* tp_new */
-	(destructor) mpw_free,		/* tp_free */
+	mpw_free,			/* tp_free */
 	0,				/* tp_is_gc */
 };
 /*@=fullinitblock@*/

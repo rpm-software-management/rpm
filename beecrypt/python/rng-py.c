@@ -6,12 +6,6 @@
 
 #include "system.h"
 
-#include "Python.h"
-#ifdef __LCLINT__
-#undef  PyObject_HEAD
-#define PyObject_HEAD   int _PyObjectHead;
-#endif
-
 #include "rng-py.h"
 
 #include "debug-py.c"
@@ -322,7 +316,7 @@ PyTypeObject rng_Type = {
 	(initproc) rng_init,		/* tp_init */
 	(allocfunc) rng_alloc,		/* tp_alloc */
 	(newfunc) rng_new,		/* tp_new */
-	(destructor) rng_free,		/* tp_free */
+	rng_free,			/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };

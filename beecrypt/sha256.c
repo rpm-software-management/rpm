@@ -26,6 +26,7 @@
 #include "system.h"
 
 #include "sha256.h"
+#include "mp.h"
 #include "endianness.h"
 
 #include "debug.h"

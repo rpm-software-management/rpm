@@ -26,7 +26,7 @@
 #ifndef _MPNUMBER_H
 #define _MPNUMBER_H
 
-#include "beecrypt/mp.h"
+#include "mp.h"
 
 #ifdef __cplusplus
 # include <iostream>

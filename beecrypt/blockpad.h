@@ -26,7 +26,7 @@
 #ifndef _BLOCKPAD_H
 #define _BLOCKPAD_H
 
-#include "beecrypt/beecrypt.h"
+#include "beecrypt.h"
 
 #ifdef __cplusplus
 extern "C" {

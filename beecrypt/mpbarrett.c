@@ -30,6 +30,7 @@
 #include "system.h"
 
 #include "beecrypt.h"
+#include "mp.h"
 #include "mpprime.h"
 #include "mpnumber.h"
 #include "mpbarrett.h"

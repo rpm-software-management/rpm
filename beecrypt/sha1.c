@@ -25,7 +25,10 @@
  
 #include "system.h"
 
+#include "beecrypt.h"
+#include "sha1opt.h"
 #include "sha1.h"
+#include "mp.h"
 #include "endianness.h"
 
 #include "debug.h"

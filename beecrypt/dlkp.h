@@ -26,7 +26,7 @@
 #ifndef _DLKP_H
 #define _DLKP_H
 
-#include "beecrypt/dlpk.h"
+#include "dlpk.h"
 
 /*!\ingroup DL_m
  */

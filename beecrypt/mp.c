@@ -25,8 +25,9 @@
 
 #include "system.h"
 
-#include "mp.h"
+#include "beecrypt.h"
 #include "mpopt.h"
+#include "mp.h"
 
 #include "debug.h"
 

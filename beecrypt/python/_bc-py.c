@@ -5,21 +5,10 @@
 #define	_REENTRANT	1	/* XXX config.h collides with pyconfig.h */
 #include "system.h"
 
-#include "Python.h"
-#ifdef __LCLINT__
-#undef  PyObject_HEAD
-#define PyObject_HEAD   int _PyObjectHead;
-#endif
-
 #include "mpw-py.h"
 #include "rng-py.h"
 
 #include "debug.h"
-
-#ifdef __LCLINT__
-#undef	PyObject_HEAD
-#define	PyObject_HEAD	int _PyObjectHead
-#endif
 
 /**
  */

@@ -26,7 +26,7 @@
 #ifndef _RSAKP_H
 #define _RSAKP_H
 
-#include "beecrypt/rsapk.h"
+#include "rsapk.h"
 
 /*!\brief RSA keypair.
  * \ingroup IF_rsa_m

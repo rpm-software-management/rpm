@@ -27,17 +27,15 @@
 #include "beecrypt.h"
 
 #include "entropy.h"
-
 #include "fips186.h"
-#include "mtprng.h"
-
-#include "md5.h"
-#include "sha1.h"
-#include "sha256.h"
-
 #include "hmacmd5.h"
 #include "hmacsha1.h"
 #include "hmacsha256.h"
+#include "md5.h"
+#include "mp.h"
+#include "mtprng.h"
+#include "sha1.h"
+#include "sha256.h"
 
 #include "aes.h"
 #include "blowfish.h"

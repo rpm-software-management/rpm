@@ -26,8 +26,8 @@
 #ifndef _HMACMD5_H
 #define _HMACMD5_H
 
-#include "beecrypt/hmac.h"
-#include "beecrypt/md5.h"
+#include "hmac.h"
+#include "md5.h"
 
 /*!\ingroup HMAC_md5_m
  */

@@ -26,7 +26,7 @@
 #ifndef _ENDIANNESS_H
 #define _ENDIANNESS_H
 
-#include "beecrypt/beecrypt.h"
+#include "beecrypt.h"
 
 #ifdef __cplusplus
 inline int16_t swap16(int16_t n)

@@ -32,7 +32,7 @@
 #ifndef _DSA_H
 #define _DSA_H
 
-#include "beecrypt/dlkp.h"
+#include "dlkp.h"
 
 typedef dldp_p dsaparam;
 typedef dlpk_p dsapub;

@@ -30,6 +30,7 @@
 #include "system.h"
 
 #include "hmac.h"
+#include "mp.h"
 #include "endianness.h"
 
 #include "debug.h"

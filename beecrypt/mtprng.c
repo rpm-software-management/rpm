@@ -34,7 +34,10 @@
 
 #include "system.h"
 
+#include "beecrypt.h"
 #include "mtprng.h"
+#include "mpopt.h"
+#include "mp.h"
 
 #include "debug.h"
 

@@ -25,7 +25,10 @@
 
 #include "system.h"
 
+#include "beecrypt.h"
 #include "fips186.h"
+#include "mpopt.h"
+#include "mp.h"
 
 #include "debug.h"
 

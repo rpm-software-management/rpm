@@ -26,8 +26,8 @@
 #ifndef _SHA1_H
 #define _SHA1_H
 
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/sha1opt.h"
+#include "beecrypt.h"
+#include "sha1opt.h"
 
 /*!\brief Holds all the parameters necessary for the SHA-1 algorithm.
  * \ingroup HASH_sha1_m

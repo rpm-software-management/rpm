@@ -34,8 +34,8 @@
 #ifndef _BLOWFISH_H
 #define _BLOWFISH_H
 
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/blowfishopt.h"
+#include "beecrypt.h"
+#include "blowfishopt.h"
 
 #define BLOWFISHROUNDS	16
 #define BLOWFISHPSIZE	(BLOWFISHROUNDS+2)

@@ -26,7 +26,7 @@
 #ifndef _MTPRNG_H
 #define _MTPRNG_H
 
-#include "beecrypt/beecrypt.h"
+#include "beecrypt.h"
 
 #ifdef _REENTRANT
 # if WIN32

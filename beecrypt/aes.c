@@ -29,7 +29,10 @@
 
 #include "system.h"
 
+#include "beecrypt.h"
+#include "aesopt.h"
 #include "aes.h"
+#include "mp.h"
 
 #if defined(BYTE_ORDER) && defined(BIG_ENDIAN) && defined(LITTLE_ENDIAN)
 # if (BYTE_ORDER != BIG_ENDIAN) && (BYTE_ORDER != LITTLE_ENDIAN)

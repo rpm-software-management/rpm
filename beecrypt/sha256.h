@@ -26,7 +26,7 @@
 #ifndef _SHA256_H
 #define _SHA256_H
 
-#include "beecrypt/beecrypt.h"
+#include "beecrypt.h"
 
 /*!\brief Holds all the parameters necessary for the SHA-256 algorithm.
  * \ingroup HASH_sha256_m

@@ -26,6 +26,7 @@
 #include "system.h"
 
 #include "md5.h"
+#include "mp.h"
 #include "endianness.h"
 
 #include "debug.h"

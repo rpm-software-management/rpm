@@ -26,7 +26,7 @@
 #ifndef _DLDP_H
 #define _DLDP_H
 
-#include "beecrypt/mpbarrett.h"
+#include "mpbarrett.h"
 
 /*
  * Discrete Logarithm Domain Parameters - Prime

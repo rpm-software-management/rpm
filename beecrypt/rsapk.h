@@ -26,7 +26,7 @@
 #ifndef _RSAPK_H
 #define _RSAPK_H
 
-#include "beecrypt/mpbarrett.h"
+#include "mpbarrett.h"
 
 #ifdef __cplusplus
 struct BEECRYPTAPI rsapk

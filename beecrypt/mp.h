@@ -41,8 +41,8 @@
 #ifndef _MP_H
 #define _MP_H
 
-#include "beecrypt/api.h"
-#include "beecrypt/mpopt.h"
+#include "api.h"
+#include "mpopt.h"
 
 #define MP_HWBITS	(MP_WBITS >> 1)
 #define MP_WBYTES	(MP_WBITS >> 3)
