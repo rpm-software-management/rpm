@@ -328,7 +328,16 @@ int ftpGetFile(int sock, char * remotename, int dest) {
 	return FTPERR_BAD_SERVER_RESPONSE;
     }
 
-    return ftpReadData(dataSocket, dest);
+    rc = ftpReadData(dataSocket, dest);
+    close(dataSocket);
+    
+    if (rc) return rc;
+
+    if (ftpCheckResponse(sock, NULL)) {
+	return FTPERR_BAD_SERVER_RESPONSE;
+    }
+
+    return 0;
 }
 
 void ftpClose(int sock) {
