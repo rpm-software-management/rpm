@@ -33,6 +33,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     int type, count, rc;
     struct stat sb;
     unsigned char md5sum[40];
+    int_32 * uidList, * gidList;
     char linkto[1024];
     int size;
     char ** unameList, ** gnameList;
@@ -146,17 +147,35 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     }
 
     if (flags & RPMVERIFY_USER) {
-	headerGetEntry(h, RPMTAG_FILEUSERNAME, NULL, (void **) &unameList, 
-			NULL);
-	if (strcmp(unameList[filenum], uidToUname(sb.st_uid)))
-	    *result |= RPMVERIFY_USER;
+	if (headerGetEntry(h, RPMTAG_FILEUSERNAME, NULL, (void **) &unameList, 
+			   NULL)) {
+	    if (strcmp(unameList[filenum], uidToUname(sb.st_uid)))
+		*result |= RPMVERIFY_USER;
+	} else if (headerGetEntry(h, RPMTAG_FILEUIDS, NULL, (void **) &uidList, 
+				  &count)) {
+	    if (uidList[filenum] != sb.st_uid)
+		*result |= RPMVERIFY_GROUP;
+	} else {
+	    rpmError(RPMERR_INTERNAL, "package lacks both user name and id "
+		  "lists (this should never happen)");
+	    *result |= RPMVERIFY_GROUP;
+	}
     }
 
     if (flags & RPMVERIFY_GROUP) {
-	headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &gnameList, 
-			NULL);
-	if (strcmp(gnameList[filenum], gidToGname(sb.st_gid)))
+	if (headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &gnameList, 
+			NULL)) {
+	    if (strcmp(gnameList[filenum], gidToGname(sb.st_gid)))
+		*result |= RPMVERIFY_GROUP;
+	} else if (headerGetEntry(h, RPMTAG_FILEGIDS, NULL, (void **) &gidList, 
+				  &count)) {
+	    if (gidList[filenum] != sb.st_gid)
+		*result |= RPMVERIFY_GROUP;
+	} else {
+	    rpmError(RPMERR_INTERNAL, "package lacks both group name and id "
+		     "lists (this should never happen)");
 	    *result |= RPMVERIFY_GROUP;
+	}
     }
 
     return 0;
