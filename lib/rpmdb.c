@@ -72,7 +72,7 @@ static int openDbFile(char * prefix, char * dbpath, char * shortName,
     strcat(filename, dbpath);
     strcat(filename, shortName);
 
-    if (!justCheck || !exists(filename)) {
+    if (!justCheck || !rpmfileexists(filename)) {
 	*db = dbiOpenIndex(filename, perms, 0644);
 	if (!*db) {
 	    return 1;
@@ -115,7 +115,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 
     memset(&db, 0, sizeof(db));
 
-    if (!justcheck || !exists(filename)) {
+    if (!justcheck || !rpmfileexists(filename)) {
 	db.pkgs = faOpen(filename, mode, 0644);
 	if (db.pkgs == NULL) {
 	    rpmError(RPMERR_DBOPEN, _("failed to open %s\n"), filename);

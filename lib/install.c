@@ -692,7 +692,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 		files[i].action = CREATE;
 		if ((files[i].flags & RPMFILE_CONFIG) &&
 		    !S_ISDIR(files[i].mode)) {
-		    if (exists(files[i].relativePath)) {
+		    if (rpmfileexists(files[i].relativePath)) {
 			if (files[i].flags & RPMFILE_NOREPLACE) {
 			    rpmMessage(RPMMESS_DEBUG, 
 				_("%s exists - creating with alternate name\n"), 

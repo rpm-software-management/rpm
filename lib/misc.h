@@ -8,7 +8,7 @@ char ** splitString(char * str, int length, char sep);
 void freeSplitString(char ** list);
 void stripTrailingSlashes(char * str);
 
-int exists(char * filespec);
+int rpmfileexists(char * filespec);
 
 int rpmvercmp(char * one, char * two);
 

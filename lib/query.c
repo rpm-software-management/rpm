@@ -79,9 +79,8 @@ static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
       case 'f': data->source |= QUERY_PATH; data->sourceCount++; break;
       case 'g': data->source |= QUERY_GROUP; data->sourceCount++; break;
       case 'p': data->source |= QUERY_RPM; data->sourceCount++; break;
-
+      case 'v': rpmIncreaseVerbosity();	 break;
       case POPT_SPECFILE: data->source |= QUERY_SPECFILE; data->sourceCount++; break;
-
       case POPT_WHATPROVIDES: data->source |= QUERY_WHATPROVIDES; 
 			      data->sourceCount++; break;
       case POPT_WHATREQUIRES: data->source |= QUERY_WHATREQUIRES; 

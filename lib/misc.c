@@ -45,7 +45,7 @@ void freeSplitString(char ** list) {
     free(list);
 }
 
-int exists(char * filespec) {
+int rpmfileexists(char * filespec) {
     struct stat buf;
 
     if (stat(filespec, &buf)) {
