@@ -76,7 +76,7 @@ install-data-local:
 	esac
 	@case "@build_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/m68kmint ;;\
-	*) @$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
+	*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
 	esac
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
