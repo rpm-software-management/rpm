@@ -9,13 +9,13 @@
 
 posix %attr
 
-Add Shell: rpmrc entry
-
 some /foo/*/*.foo entries don't get matches
 
 detect multiple summary/description entries
 
 verify langs
+
+remove prefix stuff from files.c (not used anymore)
 
 =====================================================================
 i18n strings

@@ -366,15 +366,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	}
 	spec->gotBuildRoot = 1;
 	break;
-      case RPMTAG_DEFAULTPREFIX:
-	SINGLE_TOKEN_ONLY;
-	if (field[0] != '/') {
-	    rpmError(RPMERR_BADSPEC,
-		     "line %d: Prefix must begin with '/': %s",
-		     spec->lineNum, spec->line);
-	    return RPMERR_BADSPEC;
-	}
-	headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+      case RPMTAG_PREFIXES:
+	addOrAppendListEntry(pkg->header, tag, field);
 	break;
       case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
@@ -505,7 +498,8 @@ static struct PreambleRec {
     {RPMTAG_PREREQ,        0, 0, "prereq"},
     {RPMTAG_CONFLICTFLAGS, 0, 0, "conflicts"},
     {RPMTAG_OBSOLETES,     0, 0, "obsoletes"},
-    {RPMTAG_DEFAULTPREFIX, 0, 0, "prefix"},
+    {RPMTAG_PREFIXES,      0, 0, "prefix"},
+    {RPMTAG_PREFIXES,      0, 0, "prefixes"},
     {RPMTAG_BUILDROOT,     0, 0, "buildroot"},
     {RPMTAG_BUILDARCHS,    0, 0, "buildarchitectures"},
     {RPMTAG_AUTOREQPROV,   0, 0, "autoreqprov"},
