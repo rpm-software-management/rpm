@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-07-11 17:18-0400\n"
+"POT-Creation-Date: 2000-07-11 23:58-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: EUC-JP\n"
 
-#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:435
+#: build.c:25 lib/rpminstall.c:451
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "%s/packages.rpm をオープンできません\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.90 2000/07/11 22:23:17 jbj Exp $
+# $Id: ja.po,v 1.91 2000/07/12 04:02:37 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -3221,7 +3221,7 @@ msgstr "パッケージレコード番号 %d\n"
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:698 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:464
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3547,59 +3547,64 @@ msgstr "%s をスキップします - 転送失敗 - %s\n"
 msgid "retrieved %d packages\n"
 msgstr "%d 個のパッケージを取得しました\n"
 
-#: lib/rpminstall.c:220 lib/rpminstall.c:373
+#: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:238 lib/rpminstall.c:513
+#: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
+
+#: lib/rpminstall.c:253
+#, fuzzy, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "%s/packages.rpm をオープンできません\n"
 
 #: lib/rpminstall.c:273
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:318
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s からの読み込みエラー "
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:340
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:351
 msgid "failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:369
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:451
+#: lib/rpminstall.c:467
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:490
 msgid "removing these packages would break dependencies:\n"
 msgstr "これらのパッケージを削除すると依存性を破壊します:\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:518
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:508
+#: lib/rpminstall.c:524
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"

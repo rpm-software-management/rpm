@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-07-11 17:18-0400\n"
+"POT-Creation-Date: 2000-07-11 23:58-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:435
+#: build.c:25 lib/rpminstall.c:451
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
@@ -3343,7 +3343,7 @@ msgstr "ungültige Paket-Nummer: %s\n"
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:698 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:464
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
@@ -3675,61 +3675,66 @@ msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:220 lib/rpminstall.c:373
+#: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/rpminstall.c:238 lib/rpminstall.c:513
+#: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
+
+#: lib/rpminstall.c:253
+#, fuzzy, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
 #: lib/rpminstall.c:273
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:318
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:340
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:351
 msgid "failed dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:369
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "Paket installieren"
 
-#: lib/rpminstall.c:451
+#: lib/rpminstall.c:467
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:490
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:518
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpminstall.c:508
+#: lib/rpminstall.c:524
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"

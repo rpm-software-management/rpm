@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-11 17:18-0400\n"
+"POT-Creation-Date: 2000-07-11 23:58-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -20,7 +20,7 @@ msgstr ""
 "/home/ewt/redhat/rpm/lib/package.c /home/ewt/redhat/rpm/lib/rpmlead.c "
 "/home/ewt/redhat/rpm/lib/rpmrc.c\n"
 
-#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:435
+#: build.c:25 lib/rpminstall.c:451
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
@@ -3267,7 +3267,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %d could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:698 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:464
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -3593,60 +3593,65 @@ msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:220 lib/rpminstall.c:373
+#: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpminstall.c:238 lib/rpminstall.c:513
+#: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
+
+#: lib/rpminstall.c:253
+#, fuzzy, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
 #: lib/rpminstall.c:273
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:318
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:340
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:351
 msgid "failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:369
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "asenna paketti"
 
-#: lib/rpminstall.c:451
+#: lib/rpminstall.c:467
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:490
 msgid "removing these packages would break dependencies:\n"
 msgstr "n‰iden pakettien poisto rikkoisi riippuvuuksia:\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:518
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpminstall.c:508
+#: lib/rpminstall.c:524
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"

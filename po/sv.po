@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-11 17:18-0400\n"
+"POT-Creation-Date: 2000-07-11 23:58-0400\n"
 "PO-Revision-Date: 2000-06-22 23:35+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:435
+#: build.c:25 lib/rpminstall.c:451
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kan inte öppna %s/packages.rpm\n"
@@ -3092,7 +3092,7 @@ msgstr "paketpost nummer: %u\n"
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:698 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:464
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -3446,59 +3446,64 @@ msgstr "hoppar över %s - överföring misslyckades - %s\n"
 msgid "retrieved %d packages\n"
 msgstr "hämtade %d paket\n"
 
-#: lib/rpminstall.c:220 lib/rpminstall.c:373
+#: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:238 lib/rpminstall.c:513
+#: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
+
+#: lib/rpminstall.c:253
+#, fuzzy, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "kan inte öppna paket: %s\n"
 
 #: lib/rpminstall.c:273
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:318
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fel vid läsning från fil %s\n"
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "fil %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:340
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:351
 msgid "failed dependencies:\n"
 msgstr "ouppfyllda beroenden:\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:369
 msgid "installing binary packages\n"
 msgstr "installerar binärpaket\n"
 
-#: lib/rpminstall.c:451
+#: lib/rpminstall.c:467
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:490
 msgid "removing these packages would break dependencies:\n"
 msgstr "att ta bort dessa paket skulle göra sönder beroenden:\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:518
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:508
+#: lib/rpminstall.c:524
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"

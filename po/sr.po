@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-11 17:18-0400\n"
+"POT-Creation-Date: 2000-07-11 23:58-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "/home/ewt/redhat/rpm/lib/package.c /home/ewt/redhat/rpm/lib/rpmlead.c "
 "/home/ewt/redhat/rpm/lib/rpmrc.c\n"
 
-#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:435
+#: build.c:25 lib/rpminstall.c:451
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
@@ -3223,7 +3223,7 @@ msgstr "pogre¹an broj paketa: %s\n"
 msgid "record %d could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:698 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:464
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -3549,60 +3549,65 @@ msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:220 lib/rpminstall.c:373
+#: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpminstall.c:238 lib/rpminstall.c:513
+#: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
+
+#: lib/rpminstall.c:253
+#, fuzzy, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
 #: lib/rpminstall.c:273
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:318
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:340
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:351
 msgid "failed dependencies:\n"
 msgstr "lo¹e meðuzavisnosti:\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:369
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:451
+#: lib/rpminstall.c:467
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:490
 msgid "removing these packages would break dependencies:\n"
 msgstr "uklanjanje oviha paketa æe naru¹iti zavisnosti:\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:518
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpminstall.c:508
+#: lib/rpminstall.c:524
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"

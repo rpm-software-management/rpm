@@ -250,7 +250,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 			dn = rpmGetPath( (rootdir ? rootdir : ""), 
 					"%{_dbpath}", NULL);
 			rpmMessage(RPMMESS_ERROR, 
-				_("cannot open %s/packages.rpm\n"), dn);
+				_("cannot open Packages database in %s\n"), dn);
 			xfree(dn);
 			exit(EXIT_FAILURE);
 		    }
@@ -277,14 +277,30 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 		    }
 		}
 
-		/* If this is a freshen operation, verify a package is installed */
+		/* On --freshen, verify package is installed and newer */
 		if (interfaceFlags & INSTALL_FRESHEN) {
+		    rpmdbMatchIterator mi;
 		    const char * name;
+		    Header oldH;
+		    int count;
 
 		    headerNVR(h, &name, NULL, NULL);
-		    if (rpmdbCountPackages(db, name) == 0)
+		    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
+		    count = rpmdbGetIteratorCount(mi);
+		    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
+			if (rpmVersionCompare(oldH, h) < 0)
+			    continue;
+			/* same or newer package already installed */
+			count = 0;
 			break;
-		    /* Package exists, OK to freshen */
+		    }
+		    rpmdbFreeIterator(mi);
+		    if (count == 0) {
+			headerFree(h);
+			Fclose(fd);
+			break;	/* XXX out of switch */
+		    }
+		    /* Package is newer than those currently installed. */
 		}
 
 		rc = rpmtransAddPackage(rpmdep, h, NULL, fileName,

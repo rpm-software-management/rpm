@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.50
+Release: 0.51
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -260,6 +260,7 @@ fi
 * Tue Jul 11 2000 Jeff Johnson <jbj@redhat.com>
 - fix: legacy requires './' payload prefix to be omitted for rpm itself.
 - fix: remove verbose database +++/--- messages to conform to doco.
+- compare versions if doing --freshen.
 
 * Mon Jul 10 2000 Jeff Johnson <jbj@redhat.com>
 - identify package when install scriptlet fails (#12448).

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-07-11 17:18-0400\n"
+"POT-Creation-Date: 2000-07-11 23:58-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:435
+#: build.c:25 lib/rpminstall.c:451
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
@@ -3194,7 +3194,7 @@ msgstr "numer rekordu pakietu: %d\n"
 msgid "record %d could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:698 lib/rpminstall.c:448
+#: lib/query.c:698 lib/rpminstall.c:464
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -3520,59 +3520,64 @@ msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 msgid "retrieved %d packages\n"
 msgstr "¶ci±gniêto %d pakietów\n"
 
-#: lib/rpminstall.c:220 lib/rpminstall.c:373
+#: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/rpminstall.c:238 lib/rpminstall.c:513
+#: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
+
+#: lib/rpminstall.c:253
+#, fuzzy, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
 #: lib/rpminstall.c:273
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:318
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "b³±d czytania z pliku %s\n"
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM\n"
 
-#: lib/rpminstall.c:324
+#: lib/rpminstall.c:340
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:335
+#: lib/rpminstall.c:351
 msgid "failed dependencies:\n"
 msgstr "niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:369
 msgid "installing binary packages\n"
 msgstr "instalacja pakietów binarnych\n"
 
-#: lib/rpminstall.c:451
+#: lib/rpminstall.c:467
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:490
 msgid "removing these packages would break dependencies:\n"
 msgstr "usuniêcie tych pakietów zerwie zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:502
+#: lib/rpminstall.c:518
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpminstall.c:508
+#: lib/rpminstall.c:524
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
