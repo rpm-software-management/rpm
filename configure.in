@@ -775,10 +775,15 @@ fi
 AC_SUBST(LIBOBJS)
 AC_SUBST(LIBMISC)
 
-LOCALEDIR="`echo ${prefix}/share/locale`"
+if test X"$prefix" = XNONE ; then
+    usrprefix="$ac_default_prefix"
+else
+    usrprefix=$prefix
+fi
+LOCALEDIR="`echo ${usrprefix}/share/locale`"
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR")
 AC_SUBST(LOCALEDIR)
-RPMCONFIGDIR="`echo ${prefix}/lib/rpm`"
+RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR")
 AC_SUBST(RPMCONFIGDIR)
 SYSCONFIGDIR="`echo /etc/rpm`"
