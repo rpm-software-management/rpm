@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-10-01 10:51-0400\n"
+"POT-Creation-Date: 1999-10-04 16:05-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1473,164 +1473,169 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: build/files.c:224
+#: build/files.c:226
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:267 build/files.c:349 build/files.c:512
+#: build/files.c:269 build/files.c:351 build/files.c:514
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s"
 msgstr "fehlende { nach %{"
 
-#: build/files.c:278 build/files.c:466 build/files.c:523
+#: build/files.c:280 build/files.c:468 build/files.c:525
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "fehlender ':' bei %s:%d"
 
-#: build/files.c:316 build/files.c:491
+#: build/files.c:318 build/files.c:493
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: build/files.c:365
+#: build/files.c:367
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
 # , c-format
-#: build/files.c:403
+#: build/files.c:405
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build/files.c:413
+#: build/files.c:415
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:425
+#: build/files.c:427
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:549
+#: build/files.c:551
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:559
+#: build/files.c:561
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:651
+#: build/files.c:653
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: build/files.c:657
+#: build/files.c:659
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 # , c-format
 #. We already got a file -- error
-#: build/files.c:682
+#: build/files.c:684
 #, fuzzy, c-format
 msgid "Two files on one line: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:695
+#: build/files.c:697
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/files.c:707
+#: build/files.c:709
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
 # , c-format
-#: build/files.c:793
+#: build/files.c:795
 #, fuzzy, c-format
 msgid "File listed twice: %s"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build/files.c:953
+#: build/files.c:951
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:963 build/files.c:1100
+#: build/files.c:961
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1006
+#: build/files.c:1004
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1020
+#: build/files.c:1018
 #, fuzzy, c-format
-msgid "File %4d: 0%o %s.%s\t %s\n"
+msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1084
+#: build/files.c:1088
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1141
+#: build/files.c:1132
+#, fuzzy, c-format
+msgid "File not found by glob: %s"
+msgstr "Datei auf dem Server nicht gefunden"
+
+#: build/files.c:1174
 #, fuzzy
 msgid "Could not open %%files file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/files.c:1148 build/pack.c:484
+#: build/files.c:1181 build/pack.c:485
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1470 build/parsePrep.c:29
+#: build/files.c:1508 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: build/files.c:1522
+#: build/files.c:1562
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:1527
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:1609
+#: build/files.c:1649
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:1613
+#: build/files.c:1653
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:1699
+#: build/files.c:1742
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1727 build/files.c:1736
+#: build/files.c:1770 build/files.c:1779
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:1842
+#: build/files.c:1885
 #, fuzzy, c-format
-msgid "Processing files: %s\n"
+msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 #: build/names.c:32 build/names.c:64
@@ -1716,42 +1721,42 @@ msgstr ""
 msgid "create archive failed on file %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/pack.c:454
+#: build/pack.c:455
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:461
+#: build/pack.c:462
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "lesen fehlgeschlagen: %s (%d)"
 
-#: build/pack.c:540
+#: build/pack.c:541
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:547
+#: build/pack.c:548
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:554
+#: build/pack.c:555
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:561
+#: build/pack.c:562
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:569
+#: build/pack.c:570
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:585
+#: build/pack.c:586
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -1865,69 +1870,69 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unknown icon type: %s"
 msgstr "(unbekannter Typ)"
 
-#: build/parsePreamble.c:323
+#: build/parsePreamble.c:324
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:331
+#: build/parsePreamble.c:332
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
 # , c-format
-#: build/parsePreamble.c:354 build/parsePreamble.c:361
+#: build/parsePreamble.c:355 build/parsePreamble.c:362
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/parsePreamble.c:399
+#: build/parsePreamble.c:400
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:412
+#: build/parsePreamble.c:413
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:424
+#: build/parsePreamble.c:425
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:437
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/parsePreamble.c:499
+#: build/parsePreamble.c:500
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "fehlende Architektur für %s bei %s:%d"
 
-#: build/parsePreamble.c:509
+#: build/parsePreamble.c:510
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:656
+#: build/parsePreamble.c:657
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Optionen der Paketauswahl:"
 
-#: build/parsePreamble.c:662
+#: build/parsePreamble.c:663
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:689
+#: build/parsePreamble.c:690
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:714
+#: build/parsePreamble.c:715
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2896,74 +2901,74 @@ msgstr "Fehler beim Suchen nach Paket %s\n"
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: lib/query.c:692
+#: lib/query.c:693
 #, fuzzy
 msgid "query package owning file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:694
+#: lib/query.c:695
 #, fuzzy
 msgid "query packages in group"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:696
+#: lib/query.c:697
 #, fuzzy
 msgid "query a package file"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/query.c:700
+#: lib/query.c:701
 #, fuzzy
 msgid "query a spec file"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:702
+#: lib/query.c:703
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:704
+#: lib/query.c:705
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
-#: lib/query.c:706
+#: lib/query.c:707
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
-#: lib/query.c:745
+#: lib/query.c:746
 #, fuzzy
 msgid "list all configuration files"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: lib/query.c:747
+#: lib/query.c:748
 #, fuzzy
 msgid "list all documentation files"
 msgstr "Dokumentation installieren"
 
-#: lib/query.c:749
+#: lib/query.c:750
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paketinformationen anzeigen"
 
-#: lib/query.c:751
+#: lib/query.c:752
 #, fuzzy
 msgid "list files in package"
 msgstr "Paket installieren"
 
-#: lib/query.c:755
+#: lib/query.c:756
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:757
+#: lib/query.c:758
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:760
+#: lib/query.c:761
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:762
+#: lib/query.c:763
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"

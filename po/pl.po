@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 1999-10-01 10:51-0400\n"
+"POT-Creation-Date: 1999-10-04 16:05-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1360,154 +1360,159 @@ msgstr "&& i || nie jest wspierane dla ³añcuchów znakowych"
 msgid "syntax error in expression"
 msgstr "b³±d sk³adni w wyra¿eniu"
 
-#: build/files.c:224
+#: build/files.c:226
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK nie powiod³o siê: %s\n"
 
-#: build/files.c:267 build/files.c:349 build/files.c:512
+#: build/files.c:269 build/files.c:351 build/files.c:514
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr "Brak '(' w %s %s"
 
-#: build/files.c:278 build/files.c:466 build/files.c:523
+#: build/files.c:280 build/files.c:468 build/files.c:525
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "Brak ')' w %s(%s"
 
-#: build/files.c:316 build/files.c:491
+#: build/files.c:318 build/files.c:493
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "B³êdny znak %s: %s"
 
-#: build/files.c:365
+#: build/files.c:367
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr "Brak bia³ego znaku po %s(): %s"
 
-#: build/files.c:403
+#: build/files.c:405
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "B³êdna sk³adnia: %s(%s)"
 
-#: build/files.c:413
+#: build/files.c:415
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "B³êdne okre¶lenie trybu: %s(%s)"
 
-#: build/files.c:425
+#: build/files.c:427
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "B³êdne okre¶lenie dirmode: %s(%s)"
 
-#: build/files.c:549
+#: build/files.c:551
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "Niespotykana d³ugo¶æ okre¶lenia lokalizacji \"%.*s\" w %%lang(%s)"
 
-#: build/files.c:559
+#: build/files.c:561
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr "Powtórzone okre¶lenie lokalizacji %.*s w %%lang(%s)"
 
-#: build/files.c:651
+#: build/files.c:653
 msgid "Hit limit for %%docdir"
 msgstr "Limit trafieñ dla %%docdir"
 
-#: build/files.c:657
+#: build/files.c:659
 msgid "Only one arg for %%docdir"
 msgstr "Tylko jeden argument dla %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:682
+#: build/files.c:684
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "Dwa pliki w jedenj linii: %s"
 
-#: build/files.c:695
+#: build/files.c:697
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s"
 
-#: build/files.c:707
+#: build/files.c:709
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Nie mo¿na mieszaæ specjalnej %%doc z innymi formami: %s"
 
-#: build/files.c:793
+#: build/files.c:795
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Plik podany dwukrotnie: %s"
 
-#: build/files.c:953
+#: build/files.c:951
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s"
 
-#: build/files.c:963 build/files.c:1100
+#: build/files.c:961
 #, c-format
 msgid "File not found: %s"
 msgstr "Nie znaleziono pliku: %s"
 
-#: build/files.c:1006
+#: build/files.c:1004
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:1020
-#, c-format
-msgid "File %4d: 0%o %s.%s\t %s\n"
+#: build/files.c:1018
+#, fuzzy, c-format
+msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Plik %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1084
+#: build/files.c:1088
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s"
 
-#: build/files.c:1141
+#: build/files.c:1132
+#, fuzzy, c-format
+msgid "File not found by glob: %s"
+msgstr "Nie znaleziono pliku: %s"
+
+#: build/files.c:1174
 msgid "Could not open %%files file: %s"
 msgstr "Nie mo¿na otworzyæ %%files pliku: %s"
 
-#: build/files.c:1148 build/pack.c:484
+#: build/files.c:1181 build/pack.c:485
 #, c-format
 msgid "line: %s"
 msgstr "linia: %s"
 
-#: build/files.c:1470 build/parsePrep.c:29
+#: build/files.c:1508 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "B³êdny u¿ytkownik/grupa: %s"
 
-#: build/files.c:1522
+#: build/files.c:1562
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie mo¿na uruchomiæ %s"
 
-#: build/files.c:1527
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie mo¿na wykonaæ fork na %s"
 
-#: build/files.c:1609
+#: build/files.c:1649
 #, c-format
 msgid "%s failed"
 msgstr "%s nie powiod³o siê"
 
-#: build/files.c:1613
+#: build/files.c:1653
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "zapisanie wszystkich danych do %s nie powiod³o siê"
 
-#: build/files.c:1699
+#: build/files.c:1742
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Wyszukiwanie wymaganych zasobów...\n"
 
-#: build/files.c:1727 build/files.c:1736
+#: build/files.c:1770 build/files.c:1779
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Wyszukiwanie nie powiod³o siê"
 
-#: build/files.c:1842
-#, c-format
-msgid "Processing files: %s\n"
+#: build/files.c:1885
+#, fuzzy, c-format
+msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s\n"
 
 #: build/names.c:32 build/names.c:64
@@ -1587,42 +1592,42 @@ msgstr "Zapisano: %s\n"
 msgid "create archive failed on file %s: %s"
 msgstr "utworzenie archiwum pliku %s nie powiod³o siê: %s"
 
-#: build/pack.c:454
+#: build/pack.c:455
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "zapis w trybie cpio_copy nie powiód³ siê: %s"
 
-#: build/pack.c:461
+#: build/pack.c:462
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "odczyt w trybie cpio_copy nie powiód³ siê: %s"
 
-#: build/pack.c:540
+#: build/pack.c:541
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Nie mo¿na otworzyæ pliku PreIn: %s"
 
-#: build/pack.c:547
+#: build/pack.c:548
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Nie mo¿na otworzyæ pliku PreUn: %s"
 
-#: build/pack.c:554
+#: build/pack.c:555
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Nie mo¿na otworzyæ pliku PostIn: %s"
 
-#: build/pack.c:561
+#: build/pack.c:562
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Nie mo¿na otworzyæ pliku PostUn: %s"
 
-#: build/pack.c:569
+#: build/pack.c:570
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Nie mo¿na otworzyæ pliku VerifyScript: %s"
 
-#: build/pack.c:585
+#: build/pack.c:586
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Nie mo¿na otworzyæ skryptu Trigger: %s"
@@ -1733,68 +1738,68 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Unknown icon type: %s"
 msgstr "Nieznany typ ikony: %s"
 
-#: build/parsePreamble.c:323
+#: build/parsePreamble.c:324
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "linia %d: Niepoprawna forma etykiety: %s"
 
 #. Empty field
-#: build/parsePreamble.c:331
+#: build/parsePreamble.c:332
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "linia %d: Pusta etykieta: %s"
 
-#: build/parsePreamble.c:354 build/parsePreamble.c:361
+#: build/parsePreamble.c:355 build/parsePreamble.c:362
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s"
 
-#: build/parsePreamble.c:399
+#: build/parsePreamble.c:400
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr "linia %d: wpis BuildRoot nie mo¿e byæ \"/\": %s"
 
-#: build/parsePreamble.c:412
+#: build/parsePreamble.c:413
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "linia %d: Prefiksy nie mog± siê koñczyæ na \"/\": %s"
 
-#: build/parsePreamble.c:424
+#: build/parsePreamble.c:425
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "linia %d: wpis Docdir musi siê zaczynaæ od '/': %s"
 
-#: build/parsePreamble.c:436
+#: build/parsePreamble.c:437
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "linia %d: pole Epoch/Serial musi byæ liczb±: %s"
 
-#: build/parsePreamble.c:499
+#: build/parsePreamble.c:500
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "linia %d: B³êdny format wpisu BuildArchitecture: %s"
 
-#: build/parsePreamble.c:509
+#: build/parsePreamble.c:510
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "B³±d wewnêtrzny: Fa³szywa etykieta %d"
 
-#: build/parsePreamble.c:656
+#: build/parsePreamble.c:657
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "B³êdna specyfikacja pakietu: $s"
 
-#: build/parsePreamble.c:662
+#: build/parsePreamble.c:663
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Pakiet ju¿ istnieje: %s"
 
-#: build/parsePreamble.c:689
+#: build/parsePreamble.c:690
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "linia %d: Nieznana etykieta: %s"
 
-#: build/parsePreamble.c:714
+#: build/parsePreamble.c:715
 msgid "Spec file can't use BuildRoot"
 msgstr "W pliku spec nie mo¿na u¿ywaæ wpisów BuildRoot"
 
@@ -2727,63 +2732,63 @@ msgstr "b³±d szukania pakietu %s\n"
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() nie powiod³o siê\n"
 
-#: lib/query.c:692
+#: lib/query.c:693
 msgid "query package owning file"
 msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
-#: lib/query.c:694
+#: lib/query.c:695
 msgid "query packages in group"
 msgstr "odpytywanie pakietów w grupie"
 
-#: lib/query.c:696
+#: lib/query.c:697
 msgid "query a package file"
 msgstr "odpytywanie pakietu"
 
-#: lib/query.c:700
+#: lib/query.c:701
 msgid "query a spec file"
 msgstr "odpytywanie pliku spec"
 
-#: lib/query.c:702
+#: lib/query.c:703
 msgid "query the pacakges triggered by the package"
 msgstr "odpytywanie pakietów zahaczanych przez pakiet"
 
-#: lib/query.c:704
+#: lib/query.c:705
 msgid "query the packages which require a capability"
 msgstr "odpytywanie pakietów wymagaj±cych zasobu"
 
-#: lib/query.c:706
+#: lib/query.c:707
 msgid "query the packages which provide a capability"
 msgstr "odpytywanie pakietów udostêpniaj±cych zasób"
 
-#: lib/query.c:745
+#: lib/query.c:746
 msgid "list all configuration files"
 msgstr "wy¶wietl wszystkie pliki konfiguracyjne"
 
-#: lib/query.c:747
+#: lib/query.c:748
 msgid "list all documentation files"
 msgstr "wy¶wietl wszystkie pliki dokumentacji"
 
-#: lib/query.c:749
+#: lib/query.c:750
 msgid "dump basic file information"
 msgstr "podaj postawowe informacje o pliku"
 
-#: lib/query.c:751
+#: lib/query.c:752
 msgid "list files in package"
 msgstr "wy¶wietl pliki zawarte w pakiecie"
 
-#: lib/query.c:755
+#: lib/query.c:756
 msgid "use the following query format"
 msgstr "u¿yj nastêpuj±cego formatu zapytania"
 
-#: lib/query.c:757
+#: lib/query.c:758
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:760
+#: lib/query.c:761
 msgid "display the states of the listed files"
 msgstr "wy¶wietl status pokazywanych plików"
 
-#: lib/query.c:762
+#: lib/query.c:763
 msgid "display a verbose file listing"
 msgstr "wy¶wietl wiêcej informacji o plikach z listy"
 
