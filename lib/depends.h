@@ -9,14 +9,9 @@
 #include <header.h>
 #include <rpmhash.h>
 
-#include "rpmal.h"
-
-typedef enum rpmTransactionType_e {
-    TR_ADDED,		/*!< Package will be installed. */
-    TR_REMOVED		/*!< Package will be removed. */
-} rpmTransactionType;
-
 #include "rpmds.h"
+#include "rpmfi.h"
+#include "rpmal.h"
 
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 
@@ -67,6 +62,13 @@ struct tsortInfo_s {
     int		tsi_qcnt;
 };
 /*@=fielduse@*/
+
+/** \ingroup rpmdep
+ */
+typedef enum rpmTransactionType_e {
+    TR_ADDED,			/*!< Package will be installed. */
+    TR_REMOVED			/*!< Package will be removed. */
+} rpmTransactionType;
 
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.

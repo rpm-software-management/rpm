@@ -286,7 +286,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 		fileSystem, internalState @*/
 {
     PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
-    int rc;
+    int rc = 0;
 
     psm->ts = rpmtsLink(ts, "rpmVerifyScript");
 

@@ -1840,7 +1840,8 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-	fi = p->fi;
+	fi = tfiInit(p->fi, 0);
+
 	if (fi == NULL)
 	    continue;
 	if (fi->bnl == NULL)
@@ -1851,7 +1852,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    continue;	/* XXX can't happen */
 
 	rc = 0;
-	for (fi->i = 0; fi->i < fi->fc; fi->i++) {
+	while (tfiNext(fi) >= 0) {
 	    int len;
 
 	    len = strlen(fi->bnl[fi->i]) + 1 +
@@ -1868,7 +1869,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    rc = 1;
 	    /*@innerbreak@*/ break;
 	}
-
 	if (rc)
 	    goto exit;
     }

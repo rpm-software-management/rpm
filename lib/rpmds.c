@@ -3,275 +3,18 @@
  */
 #include "system.h"
 
-#ifdef	DYING
 #include <rpmlib.h>
 #include "rpmds.h"
-#else
-#include "psm.h"		/* XXX rpmTransactionType */
-#endif
 
 #include "debug.h"
 
-/*@access alKey@*/
-
-/*@access TFI_t @*/
-/*@access transactionElement @*/
-
-/*@unchecked@*/
-static int _fi_debug = 0;
+/*@access rpmDepSet @*/
 
 /**
  * Enable noisy range comparison debugging message?
  */
 /*@unchecked@*/
 static int _noisy_range_comparison_debug_message = 0;
-
-TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
-{
-    if (fi == NULL) return NULL;
-/*@-modfilesystem@*/
-if (_fi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
-    fi->nrefs--;
-    return NULL;
-}
-
-TFI_t XrpmfiLink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
-{
-    if (fi == NULL) return NULL;
-    fi->nrefs++;
-/*@-modfilesystem@*/
-if (_fi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
-    /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
-}
-
-fnpyKey rpmfiGetKey(TFI_t fi)
-{
-    return fi->te->key;
-}
-
-TFI_t fiFree(TFI_t fi, int freefimem)
-{
-    HFD_t hfd = headerFreeData;
-
-    if (fi == NULL) return NULL;
-
-    if (fi->nrefs > 1)
-	return rpmfiUnlink(fi, fi->Type);
-
-/*@-modfilesystem@*/
-if (_fi_debug < 0)
-fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
-/*@=modfilesystem@*/
-
-    /*@-branchstate@*/
-    if (fi->fc > 0) {
-	fi->bnl = hfd(fi->bnl, -1);
-	fi->dnl = hfd(fi->dnl, -1);
-
-	fi->flinks = hfd(fi->flinks, -1);
-	fi->flangs = hfd(fi->flangs, -1);
-	fi->fmd5s = hfd(fi->fmd5s, -1);
-
-	fi->fuser = hfd(fi->fuser, -1);
-	fi->fuids = _free(fi->fuids);
-	fi->fgroup = hfd(fi->fgroup, -1);
-	fi->fgids = _free(fi->fgids);
-
-	fi->fstates = _free(fi->fstates);
-
-	/*@-evalorder@*/
-	if (!fi->keep_header && fi->h == NULL) {
-	    fi->fmtimes = _free(fi->fmtimes);
-	    fi->fmodes = _free(fi->fmodes);
-	    fi->fflags = _free(fi->fflags);
-	    fi->fsizes = _free(fi->fsizes);
-	    fi->frdevs = _free(fi->frdevs);
-	    fi->dil = _free(fi->dil);
-	}
-	/*@=evalorder@*/
-    }
-    /*@=branchstate@*/
-
-    fi->fsm = freeFSM(fi->fsm);
-
-    fi->apath = _free(fi->apath);
-    fi->fmapflags = _free(fi->fmapflags);
-
-    fi->obnl = hfd(fi->obnl, -1);
-    fi->odnl = hfd(fi->odnl, -1);
-
-    fi->actions = _free(fi->actions);
-    fi->replacedSizes = _free(fi->replacedSizes);
-    fi->replaced = _free(fi->replaced);
-
-    fi->h = headerFree(fi->h, fi->Type);
-
-    /*@-nullstate -refcounttrans -usereleased@*/
-    (void) rpmfiUnlink(fi, fi->Type);
-    /*@-branchstate@*/
-    if (freefimem) {
-	memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
-	fi = _free(fi);
-    }
-    /*@=branchstate@*/
-    /*@=nullstate =refcounttrans =usereleased@*/
-
-    return NULL;
-}
-
-#define	_fdupe(_fi, _data)	\
-    if ((_fi)->_data != NULL)	\
-	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
-			(_fi)->_data, (_fi)->fc * sizeof(*(_fi)->_data))
-
-TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
-		Header h, rpmTag tagN, int scareMem)
-{
-    HGE_t hge =
-	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
-    const char * Type;
-    uint_32 * uip;
-    int malloced = 0;
-    int len;
-    int xx;
-    int i;
-
-    if (tagN == RPMTAG_BASENAMES) {
-	Type = "Files";
-    } else {
-	Type = "?Type?";
-	goto exit;
-    }
-
-    /*@-branchstate@*/
-    if (fi == NULL) {
-	fi = xcalloc(1, sizeof(*fi));
-	malloced = 0;	/* XXX always return with memory alloced. */
-    }
-    /*@=branchstate@*/
-
-    fi->magic = TFIMAGIC;
-    fi->Type = Type;
-    fi->i = -1;
-    fi->tagN = tagN;
-
-    fi->hge = hge;
-    fi->hae = (HAE_t) headerAddEntry;
-    fi->hme = (HME_t) headerModifyEntry;
-    fi->hre = (HRE_t) headerRemoveEntry;
-    fi->hfd = headerFreeData;
-
-    fi->h = (scareMem ? headerLink(h, fi->Type) : NULL);
-
-    if (fi->fsm == NULL)
-	fi->fsm = newFSM();
-
-    /* 0 means unknown */
-    xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
-    fi->archiveSize = (xx ? *uip : 0);
-
-    if (!hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
-	/*@-branchstate@*/
-	if (malloced) {
-	    if (scareMem && fi->h)
-		fi->h = headerFree(fi->h, fi->Type);
-	    fi->fsm = freeFSM(fi->fsm);
-	    /*@-refcounttrans@*/
-	    fi = _free(fi);
-	    /*@=refcounttrans@*/
-	} else {
-	    fi->fc = 0;
-	    fi->dc = 0;
-	}
-	/*@=branchstate@*/
-	goto exit;
-    }
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
-    xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
-    xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
-    if (xx == 0 || fi->fstates == NULL)
-	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
-    else if (!scareMem)
-	_fdupe(fi, fstates);
-
-    fi->action = FA_UNKNOWN;
-    fi->flags = 0;
-    if (fi->actions == NULL)
-	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-    fi->keep_header = (scareMem ? 1 : 0);
-
-    /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
-    fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-
-    xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-    xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
-
-    xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-
-    /* XXX TR_REMOVED doesn;t need fmtimes or frdevs */
-    xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
-    xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
-    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
-
-    xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
-    fi->fuids = NULL;
-    xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fi->fgroup, NULL);
-    fi->fgids = NULL;
-
-    if (ts != NULL)
-    if (fi != NULL)
-    if (fi->te != NULL && fi->te->type == TR_ADDED) {
-	Header foo;
-	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	foo = relocateFileList(ts, fi, h, fi->actions);
-	fi->h = headerFree(fi->h, "fiNew fi->h");
-	fi->h = headerLink(foo, "fiNew fi->h = foo");
-	foo = headerFree(foo, "fiNew foo");
-    }
-
-    if (!scareMem) {
-	_fdupe(fi, fmtimes);
-	_fdupe(fi, frdevs);
-	_fdupe(fi, fsizes);
-	_fdupe(fi, fflags);
-	_fdupe(fi, fmodes);
-	_fdupe(fi, dil);
-	fi->h = headerFree(fi->h, fi->Type);
-    }
-
-    fi->dnlmax = -1;
-    for (i = 0; i < fi->dc; i++) {
-	if ((len = strlen(fi->dnl[i])) > fi->dnlmax)
-	    fi->dnlmax = len;
-    }
-    fi->bnlmax = -1;
-    for (i = 0; i < fi->fc; i++) {
-	if ((len = strlen(fi->bnl[i])) > fi->bnlmax)
-	    fi->bnlmax = len;
-    }
-    fi->dperms = 0755;
-    fi->fperms = 0644;
-
-exit:
-/*@-modfilesystem@*/
-if (_fi_debug < 0)
-fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
-/*@=modfilesystem@*/
-
-    /*@-nullstate@*/ /* FIX: TFI null annotations */
-    return rpmfiLink(fi, (fi ? fi->Type : NULL));
-    /*@=nullstate@*/
-}
-
-/*@access rpmDepSet @*/
 
 /*@unchecked@*/
 static int _ds_debug = 0;
@@ -291,10 +34,12 @@ rpmDepSet XrpmdsLink(rpmDepSet ds, const char * msg, const char * fn, unsigned l
 {
     if (ds == NULL) return NULL;
     ds->nrefs++;
+
 /*@-modfilesystem@*/
 if (_ds_debug && msg != NULL)
 fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
+
     /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
 }
 

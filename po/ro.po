@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-12 15:50-0500\n"
+"POT-Creation-Date: 2001-11-13 13:56-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -811,7 +811,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:1876
+#: build/pack.c:603 lib/psm.c:1423
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -841,7 +841,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:683 lib/psm.c:2141
+#: build/pack.c:683 lib/psm.c:1688
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1444,11 +1444,11 @@ msgstr ""
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:795 lib/rpmds.c:656 lib/rpmds.c:814
+#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:795 lib/rpmds.c:656 lib/rpmds.c:814
+#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr ""
 
@@ -1579,7 +1579,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:699
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:246
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2164,108 +2164,74 @@ msgstr ""
 msgid "is needed by"
 msgstr ""
 
-#: lib/psm.c:249
-msgid "========== relocations\n"
-msgstr ""
-
-#: lib/psm.c:253
-#, c-format
-msgid "%5d exclude  %s\n"
-msgstr ""
-
-#: lib/psm.c:256
-#, c-format
-msgid "%5d relocate %s -> %s\n"
-msgstr ""
-
-#: lib/psm.c:326
-#, c-format
-msgid "excluding multilib path %s%s\n"
-msgstr ""
-
-#: lib/psm.c:392
-#, c-format
-msgid "excluding %s %s\n"
-msgstr ""
-
-#: lib/psm.c:402
-#, c-format
-msgid "relocating %s to %s\n"
-msgstr ""
-
-#: lib/psm.c:481
-#, c-format
-msgid "relocating directory %s to %s\n"
-msgstr ""
-
-#: lib/psm.c:896
+#: lib/psm.c:443
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:902
+#: lib/psm.c:449
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:943
+#: lib/psm.c:490
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1057
+#: lib/psm.c:604
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:1167
+#: lib/psm.c:714
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1335
+#: lib/psm.c:882
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1342
+#: lib/psm.c:889
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1684
+#: lib/psm.c:1231
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1801
+#: lib/psm.c:1348
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1912
+#: lib/psm.c:1459
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1921
+#: lib/psm.c:1468
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1962
+#: lib/psm.c:1509
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1963
+#: lib/psm.c:1510
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2149
+#: lib/psm.c:1696
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2152
+#: lib/psm.c:1699
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2313,90 +2279,90 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:600 lib/query.c:638 lib/rpminstall.c:328 lib/rpminstall.c:470
+#: lib/query.c:599 lib/query.c:637 lib/rpminstall.c:328 lib/rpminstall.c:470
 #: lib/rpminstall.c:840
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:616
+#: lib/query.c:615
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:622
+#: lib/query.c:621
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:648 lib/rpminstall.c:483
+#: lib/query.c:647 lib/rpminstall.c:483
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
 
-#: lib/query.c:692
+#: lib/query.c:691
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:716
+#: lib/query.c:712
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:736
+#: lib/query.c:732
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:746
+#: lib/query.c:742
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:756
+#: lib/query.c:752
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:767
+#: lib/query.c:763
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:804
+#: lib/query.c:798
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:808
+#: lib/query.c:802
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:835
+#: lib/query.c:829
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:838
+#: lib/query.c:832
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:843
+#: lib/query.c:837
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:854 lib/rpminstall.c:628
+#: lib/query.c:848 lib/rpminstall.c:628
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:643
+#: lib/rpmal.c:647
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:739
+#: lib/rpmal.c:744
 msgid "(added provide)"
 msgstr ""
 
@@ -2464,20 +2430,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:784
+#: lib/rpmds.c:535
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:813
+#: lib/rpmds.c:565
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:837
+#: lib/rpmds.c:589
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2806,18 +2772,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:187
+#: lib/transaction.c:185
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:858
+#: lib/transaction.c:850
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:929
+#: lib/transaction.c:918
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2829,17 +2795,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:418
+#: lib/verify.c:408
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:515
+#: lib/verify.c:505
 #, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr ""
 
-#: lib/verify.c:553
+#: lib/verify.c:543
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

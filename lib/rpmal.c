@@ -389,30 +389,38 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
     alp->provides = rpmdsLink(provides, "Provides (alAddPackage)");
     alp->fi = rpmfiLink(fi, "Files (alAddPackage)");
 
-    if (alp->fi && alp->fi->fc > 0) {
+    fi = rpmfiLink(alp->fi, "Files index (alAddPackage)");
+    if ((fi = tfiInit(fi, 0)) != NULL)
+    if (fi->bnl != NULL)	/* XXX can't happen */
+    if (fi->dil != NULL)	/* XXX can't happen */
+    if (fi->dnl != NULL)	/* XXX can't happen */
+    if (fi->fflags != NULL)	/* XXX can't happen */
+    if (fi->fc > 0) {
 	int * dirMapping;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
 	dirInfo die;
-	int first, last, dirNum;
+	int first, dirNum;
 	int origNumDirs;
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-	dirMapping = alloca(sizeof(*dirMapping) * alp->fi->dc);
+	dirMapping = alloca(sizeof(*dirMapping) * fi->dc);
 
-	/* allocated enough space for all the directories we could possible
-	   need to add */
+	/*
+	 * Allocated enough space for all the directories we could possible
+	 * need to add
+	 */
 	al->dirs = xrealloc(al->dirs,
-			(al->numDirs + alp->fi->dc) * sizeof(*al->dirs));
+			(al->numDirs + fi->dc) * sizeof(*al->dirs));
 	origNumDirs = al->numDirs;
 
-	if (alp->fi->dnl != NULL)
-	for (dirNum = 0; dirNum < alp->fi->dc; dirNum++) {
+	if (fi->dnl != NULL)
+	for (dirNum = 0; dirNum < fi->dc; dirNum++) {
 	    /*@-assignexpose@*/
-	    dieNeedle->dirName = (char *) alp->fi->dnl[dirNum];
+	    dieNeedle->dirName = (char *) fi->dnl[dirNum];
 	    /*@=assignexpose@*/
-	    dieNeedle->dirNameLen = strlen(alp->fi->dnl[dirNum]);
+	    dieNeedle->dirNameLen = strlen(fi->dnl[dirNum]);
 	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
 			       sizeof(*dieNeedle), dieCompare);
 	    if (die) {
@@ -420,7 +428,7 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 	    } else {
 		dirMapping[dirNum] = al->numDirs;
 		die = al->dirs + al->numDirs;
-		die->dirName = xstrdup(alp->fi->dnl[dirNum]);
+		die->dirName = xstrdup(fi->dnl[dirNum]);
 		die->dirNameLen = strlen(die->dirName);
 		die->files = NULL;
 		die->numFiles = 0;
@@ -428,48 +436,44 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 	    }
 	}
 
-	last = 0;
-	for (first = 0; first < alp->fi->fc; first = last + 1) {
+	for (first = tfiNext(fi); first >= 0;) {
 	    fileIndexEntry fie;
+	    int next;
 
-	    if (alp->fi->dil == NULL)	/* XXX can't happen */
-		continue;
-
-	    for (last = first; (last + 1) < alp->fi->fc; last++) {
-		if (alp->fi->dil[first] != alp->fi->dil[last + 1])
+	    /* Find the first file of the next directory. */
+	    while ((next = tfiNext(fi)) >= 0) {
+		if (fi->dil[first] != fi->dil[next])
 		    /*@innerbreak@*/ break;
 	    }
+	    if (next < 0) next = fi->fc;	/* XXX reset end-of-list */
 
-	    die = al->dirs + dirMapping[alp->fi->dil[first]];
+	    die = al->dirs + dirMapping[fi->dil[first]];
 	    die->files = xrealloc(die->files,
-		    (die->numFiles + last - first + 1) *
-			sizeof(*die->files));
-
+			(die->numFiles + next - first) * sizeof(*die->files));
 	    fie = die->files + die->numFiles;
-	    for (alp->fi->i = first; alp->fi->i <= last; alp->fi->i++) {
-		if (alp->fi->bnl == NULL)	/* XXX can't happen */
-		    /*@innercontinue@*/ continue;
-		if (alp->fi->fflags == NULL)	/* XXX can't happen */
-		    /*@innercontinue@*/ continue;
+
+	    /* Rewind to first file, generate file index entry for each file. */
+	    fi = tfiInit(fi, first);
+	    if (fi != NULL)
+	    while ((first = tfiNext(fi)) >= 0 && first < next) {
 		/*@-assignexpose@*/
-		fie->baseName = alp->fi->bnl[alp->fi->i];
-		fie->baseNameLen = strlen(alp->fi->bnl[alp->fi->i]);
+		fie->baseName = fi->bnl[fi->i];
+		fie->baseNameLen = strlen(fi->bnl[fi->i]);
 		/*@=assignexpose@*/
 		fie->pkgNum = pkgNum;
-		fie->fileFlags = alp->fi->fflags[alp->fi->i];
+		fie->fileFlags = fi->fflags[fi->i];
 		die->numFiles++;
 		fie++;
 	    }
 	    qsort(die->files, die->numFiles, sizeof(*die->files), fieCompare);
 	}
 
-	/* XXX should we realloc al->dirs to actual size? */
-
-	/* If any directories were added, resort the directory list. */
+	/* Resize the directory list. If any directories were added, resort. */
+	al->dirs = xrealloc(al->dirs, al->numDirs * sizeof(*al->dirs));
 	if (origNumDirs != al->numDirs)
 	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dieCompare);
-
     }
+    fi = rpmfiUnlink(fi, "Files index (alAddPackage)");
 
     alFreeIndex(al);
 
@@ -688,9 +692,10 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 		memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
     availableIndexEntry match;
     fnpyKey * ret = NULL;
+    int found = 0;
     const char * KName;
     availablePackage alp;
-    int rc, found;
+    int rc;
 
     if (keyp) *keyp = RPMAL_NOMATCH;
     if ((KName = dsiGetN(ds)) == NULL)

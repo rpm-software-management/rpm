@@ -8,7 +8,6 @@
 
 #include "fsm.h"
 #include "depends.h"
-#include "rpmds.h"
 
 /**
  */
@@ -101,27 +100,6 @@ extern "C" {
 #endif
 
 /**
- * Return file type from mode_t.
- * @param mode		file mode bits (from header)
- * @return		file type
- */
-fileTypes whatis(uint_16 mode)
-	/*@*/;
-
-/**
- * Relocate files in header.
- * @todo multilib file dispositions need to be checked.
- * @param ts		transaction set
- * @param fi		transaction element file info
- * @param origH		package header
- * @param actions	file dispositions
- * @return		header with relocated files
- */
-Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
-		Header origH, fileAction * actions)
-	/*@modifies ts, fi, origH, actions @*/;
-
-/**
  * Return formatted string representation of package disposition.
  * @param a		package dispostion
  * @return		formatted string
@@ -138,7 +116,8 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 int psmStage(PSM_t psm, pkgStage stage)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

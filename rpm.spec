@@ -576,3 +576,5 @@ fi
 - eliminate header reference in rpmtransAddPackage, use TFI_t data.
 - commit to using rpmDepSet and TFI_t, not header.
 - lclint rpmio fiddles.
+- split file info tag sets into rpmfi.c.
+- create toy TFI_t iterators.

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-12 17:47-0500\n"
+"POT-Creation-Date: 2001-11-13 13:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:1876
+#: build/pack.c:603 lib/psm.c:1423
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -846,7 +846,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:683 lib/psm.c:2141
+#: build/pack.c:683 lib/psm.c:1688
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1449,11 +1449,11 @@ msgstr ""
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:795 lib/rpmds.c:662 lib/rpmds.c:821
+#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:795 lib/rpmds.c:662 lib/rpmds.c:821
+#: lib/depends.c:795 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr ""
 
@@ -1584,7 +1584,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:699
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:246
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2169,108 +2169,74 @@ msgstr ""
 msgid "is needed by"
 msgstr ""
 
-#: lib/psm.c:249
-msgid "========== relocations\n"
-msgstr ""
-
-#: lib/psm.c:253
-#, c-format
-msgid "%5d exclude  %s\n"
-msgstr ""
-
-#: lib/psm.c:256
-#, c-format
-msgid "%5d relocate %s -> %s\n"
-msgstr ""
-
-#: lib/psm.c:326
-#, c-format
-msgid "excluding multilib path %s%s\n"
-msgstr ""
-
-#: lib/psm.c:392
-#, c-format
-msgid "excluding %s %s\n"
-msgstr ""
-
-#: lib/psm.c:402
-#, c-format
-msgid "relocating %s to %s\n"
-msgstr ""
-
-#: lib/psm.c:481
-#, c-format
-msgid "relocating directory %s to %s\n"
-msgstr ""
-
-#: lib/psm.c:896
+#: lib/psm.c:443
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:902
+#: lib/psm.c:449
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:943
+#: lib/psm.c:490
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1057
+#: lib/psm.c:604
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:1167
+#: lib/psm.c:714
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1335
+#: lib/psm.c:882
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1342
+#: lib/psm.c:889
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1684
+#: lib/psm.c:1231
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1801
+#: lib/psm.c:1348
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1912
+#: lib/psm.c:1459
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1921
+#: lib/psm.c:1468
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1962
+#: lib/psm.c:1509
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1963
+#: lib/psm.c:1510
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2149
+#: lib/psm.c:1696
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2152
+#: lib/psm.c:1699
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2397,11 +2363,11 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:643
+#: lib/rpmal.c:647
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:739
+#: lib/rpmal.c:744
 msgid "(added provide)"
 msgstr ""
 
@@ -2469,20 +2435,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:790
+#: lib/rpmds.c:535
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:820
+#: lib/rpmds.c:565
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:844
+#: lib/rpmds.c:589
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
