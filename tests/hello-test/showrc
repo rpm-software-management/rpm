@@ -6,6 +6,6 @@ rpm=${rpm:=rpm}
 destdir="`pwd`"
 destdir="`dirname $destdir`"
 
-${DBGX} $rpm --showrc 2>&1 | sed -e "s,$destdir,," > showrc.out
+${DBGX} $rpm --showrc 2>&1 | sed -e "s,$destdir,," > $0.out
 
-diff showrc.out showrc.exp || exit 0
+diff $0.out $0.exp || exit 0

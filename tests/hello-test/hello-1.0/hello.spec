@@ -4,6 +4,7 @@ Version: 1.0
 Release: 1
 Group: Utilities
 License: GPL
+URL: http://www.redhat.com
 Source0: hello-1.0.tar.gz
 BuildRoot: /var/tmp/hello-root
 
@@ -24,6 +25,21 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%pre
+
+%post
+
+%preun
+
+%postun
+
 %files
 %defattr(-,root,root)
-/usr/local/bin/hello
+%doc	FAQ
+#%readme README
+#%license COPYING
+%attr(0751,root,root)	/usr/local/bin/hello
+
+%changelog
+* Tue Oct 20 1998 Jeff Johnson <jbj@redhat.com>
+- create.
