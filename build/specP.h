@@ -33,6 +33,8 @@ struct SpecRec {
     int_32 *noSource;
     int_32 *noPatch;
 
+    int autoReqProv;
+
     StringBuf prep;
     StringBuf build;
     StringBuf install;

@@ -655,6 +655,7 @@ struct preamble_line {
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, "buildroot"},
+    {RPMTAG_AUTOREQPROV,   0, "autoreqprov"},
     {0, 0, 0}
 };
 
@@ -830,6 +831,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     spec->numNoSource = 0;
     spec->numNoPatch = 0;
     spec->buildroot = NULL;
+    spec->autoReqProv = 1;
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
@@ -1118,6 +1120,20 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 			  return NULL;
 		      }
 		      break;
+		  case RPMTAG_AUTOREQPROV:
+		    s1 = strtok(s, " \t\n");
+		    if (!s1) {
+			spec->autoReqProv = 0;
+		    } else if (s1[0] == 'n' || s1[0] == 'N') {
+			spec->autoReqProv = 0;
+		    } else if (!strcasecmp(s1, "false")) {
+			spec->autoReqProv = 0;
+		    } else if (!strcasecmp(s1, "off")) {
+			spec->autoReqProv = 0;
+		    } else if (!strcmp(s1, "0")) {
+			spec->autoReqProv = 0;
+		    }
+		    break;
 		  default:
 		      /* message(MESS_DEBUG, "Skipping: %s\n", line); */
 		      /* This shouldn't happen? */

@@ -556,7 +556,9 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	
 	/* Generate any automatic require/provide entries */
 	/* Then add the whole thing to the header         */
-	generateAutoReqProv(outHeader, pr);
+	if (s->autoReqProv) {
+	    generateAutoReqProv(outHeader, pr);
+	}
 	processReqProv(outHeader, pr);
 	
 	/* And add the final Header entry */
