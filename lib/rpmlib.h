@@ -9,6 +9,10 @@
 #include "dbindex.h"
 #include "header.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr);
 int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
 			 int * minor);
@@ -489,4 +493,9 @@ int rpmGetFilesystemList(char *** listptr, int * num);
 int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags);
 
+#ifdef __cplusplus
+}
+#endif
+
+    
 #endif
