@@ -1,3 +1,7 @@
+/** \ingroup rpmtrans
+ * \file lib/transaction.c
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>
@@ -194,20 +198,25 @@ static void psAppendFile(rpmProblemSet probs, rpmProblemType type,
 
 static int archOkay(Header h)
 {
-    int_8 * pkgArchNum;
     void * pkgArch;
-    int type, count, archNum;
+    int type, count;
 
     /* make sure we're trying to install this on the proper architecture */
     headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
+#ifndef	DYING
     if (type == RPM_INT8_TYPE) {
+	int_8 * pkgArchNum;
+	int archNum;
+
 	/* old arch handling */
 	rpmGetArchInfo(NULL, &archNum);
 	pkgArchNum = pkgArch;
 	if (archNum != *pkgArchNum) {
 	    return 0;
 	}
-    } else {
+    } else
+#endif
+    {
 	/* new arch handling */
 	if (!rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch)) {
 	    return 0;
@@ -224,11 +233,14 @@ static int osOkay(Header h)
 
     /* make sure we're trying to install this on the proper os */
     headerGetEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
+#ifndef	DYING
     if (type == RPM_INT8_TYPE) {
 	/* v1 packages and v2 packages both used improper OS numbers, so just
 	   deal with it hope things work */
 	return 1;
-    } else {
+    } else
+#endif
+    {
 	/* new os handling */
 	if (!rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs)) {
 	    return 0;

@@ -1,4 +1,5 @@
-/** \file lib/hash.c
+/**
+ * \file lib/hash.c
  * Hash table implemenation
  */
 
