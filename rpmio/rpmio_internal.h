@@ -102,15 +102,6 @@ typedef struct _FDSTACK_s {
 } FDSTACK_t;
 
 /** \ingroup rpmio
- * Cumulative statistics for an I/O operation.
- */
-typedef struct {
-    int			count;	/*!< Number of operations. */
-    off_t		bytes;	/*!< Number of bytes transferred. */
-    time_t		usecs;	/*!< Number of ticks. */
-} OPSTAT_t;
-
-/** \ingroup rpmio
  * Identify per-desciptor I/O operation statistics.
  */
 enum FDSTAT_e {
@@ -126,7 +117,7 @@ enum FDSTAT_e {
 typedef	/*@abstract@*/ struct {
     struct rpmsw_s	create;	/*!< Structure creation time. */
     struct rpmsw_s	begin;	/*!< Operation start time. */
-    OPSTAT_t		ops[4];	/*!< Cumulative statistics. */
+    struct rpmop_s	ops[4];	/*!< Cumulative statistics. */
 } * FDSTAT_t;
 
 /** \ingroup rpmio
@@ -365,8 +356,10 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdstat_enter(/*@null@*/ FD_t fd, int opx)
-	/*@modifies fd @*/
+/*@unused@*/ static inline
+void fdstat_enter(/*@null@*/ FD_t fd, int opx)
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
 {
     if (fd == NULL || fd->stats == NULL) return;
 /*@-boundswrite@*/
@@ -379,7 +372,8 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
  */
 /*@unused@*/ static inline
 void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
-	/*@modifies fd @*/
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
 {
     struct rpmsw_s end;
     if (fd == NULL) return;
@@ -416,7 +410,7 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 
     if (fd == NULL || fd->stats == NULL) return;
     for (opx = 0; opx < 4; opx++) {
-	OPSTAT_t *ops = &fd->stats->ops[opx];
+	rpmop ops = &fd->stats->ops[opx];
 	if (ops->count <= 0) continue;
 	switch (opx) {
 	case FDSTAT_READ:
