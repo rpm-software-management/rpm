@@ -524,6 +524,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Mar 16 2002 Jeff Johnson <jbj@redhat.com>
+- *really* dump signature header immutable region.
+
 * Sun Mar 10 2002 Jeff Johnson <jbj@redhat.com>
 - make --addsign and --resign behave exactly the same.
 - splint annotationsm, signature cleanup.

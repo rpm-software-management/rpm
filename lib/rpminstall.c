@@ -214,7 +214,6 @@ int rpmInstall(rpmTransactionSet ts,
 		const char ** fileArgv)
 {
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
-    rpmInstallInterfaceFlags interfaceFlags;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
@@ -228,19 +227,18 @@ int rpmInstall(rpmTransactionSet ts,
     if (fileArgv == NULL) goto exit;
     /*@-branchstate@*/
 
-    ts->transFlags = ia->transFlags;
-    interfaceFlags = ia->installInterfaceFlags;
+    (void) rpmtsSetFlags(ts, ia->transFlags);
     probFilter = ia->probFilter;
     relocations = ia->relocations;
 
     ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
     ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
 
-    ts->dbmode = (ts->transFlags & RPMTRANS_FLAG_TEST)
+    ts->dbmode = (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_CREAT);
 
     {	int notifyFlags;
-	notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
 			rpmShowProgress, (void *) ((long)notifyFlags));
     }
@@ -417,7 +415,7 @@ restart:
 	    }
 
 	    /* On --freshen, verify package is installed and newer */
-	    if (interfaceFlags & INSTALL_FRESHEN) {
+	    if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
 		rpmdbMatchIterator mi;
 		const char * name;
 		Header oldH;
@@ -446,8 +444,8 @@ restart:
 	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	    /*@-abstract@*/
 	    rc = rpmtransAddPackage(ts, eiu->h, (fnpyKey)fileName,
-			       (interfaceFlags & INSTALL_UPGRADE) != 0,
-			       relocations);
+			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
+			relocations);
 	    /*@=abstract@*/
 	    /*@=nullstate@*/
 
@@ -522,7 +520,7 @@ restart:
 
     if (eiu->numFailed) goto exit;
 
-    if (eiu->numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
+    if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NODEPS)) {
 	rpmProblem conflicts;
 	int numConflicts;
 
@@ -544,7 +542,7 @@ restart:
 	/*@=branchstate@*/
     }
 
-    if (eiu->numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
+    if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	if (rpmdepOrder(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
@@ -561,7 +559,7 @@ restart:
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	rc = rpmRunTransactions(ts, NULL, &probs, ts->transFlags, probFilter);
+	rc = rpmRunTransactions(ts, NULL, &probs, probFilter);
 	/*@=nullstate@*/
 
 	if (rc < 0) {
@@ -588,7 +586,7 @@ restart:
 		continue;
 	    }
 
-	    if (!(ts->transFlags & RPMTRANS_FLAG_TEST)) {
+	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)) {
 #if !defined(__LCLINT__) /* LCL: segfault */
 		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL, NULL);
 #endif
@@ -627,16 +625,14 @@ int rpmErase(rpmTransactionSet ts,
     int stopUninstall = 0;
     int numPackages = 0;
     rpmProblemSet probs;
-    rpmEraseInterfaceFlags interfaceFlags;
 
     if (argv == NULL) return 0;
 
-    ts->transFlags = ia->transFlags;
-    interfaceFlags = ia->eraseInterfaceFlags;
+    (void) rpmtsSetFlags(ts, ia->transFlags);
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
     {	int notifyFlags;
-	notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
 			rpmShowProgress, (void *) ((long)notifyFlags)
     }
@@ -646,7 +642,7 @@ int rpmErase(rpmTransactionSet ts,
     ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
 
     /* XXX W2DO? O_EXCL??? */
-    ts->dbmode = (ts->transFlags & RPMTRANS_FLAG_TEST)
+    ts->dbmode = (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_EXCL);
 
     (void) rpmtsOpenDB(ts, ts->dbmode);
@@ -660,7 +656,7 @@ int rpmErase(rpmTransactionSet ts,
 	if (count <= 0) {
 	    rpmMessage(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
 	    numFailed++;
-	} else if (!(count == 1 || (interfaceFlags & UNINSTALL_ALLMATCHES))) {
+	} else if (!(count == 1 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
 	    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 	    numFailed++;
@@ -677,7 +673,7 @@ int rpmErase(rpmTransactionSet ts,
 	mi = rpmdbFreeIterator(mi);
     }
 
-    if (!(interfaceFlags & UNINSTALL_NODEPS)) {
+    if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
 	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    numFailed = numPackages;
 	    stopUninstall = 1;
@@ -696,8 +692,8 @@ int rpmErase(rpmTransactionSet ts,
     }
 
     if (!stopUninstall) {
-	ts->transFlags |= RPMTRANS_FLAG_REVERSE;
-	numFailed += rpmRunTransactions(ts, NULL, &probs, ts->transFlags, 0);
+	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | RPMTRANS_FLAG_REVERSE));
+	numFailed += rpmRunTransactions(ts, NULL, &probs, 0);
     }
 
     return numFailed;
@@ -974,6 +970,14 @@ int rpmRollback(rpmTransactionSet ts,
     }
 
 #ifdef	NOTYET
+    {	int notifyFlags;
+	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	xx = rpmtsSetNotifyCallback(ts,
+			rpmShowProgress, (void *) ((long)notifyFlags));
+    }
+
+    (void) rpmtsSetFlags(ts, ia->transFlags);
+
     /* Run transactions until rollback goal is achieved. */
     do {
 	prevtid = thistid;
@@ -1063,9 +1067,7 @@ int rpmRollback(rpmTransactionSet ts,
 	    goto exit;
 
 	probs = NULL;
-	rc = rpmRunTransactions(ts,  rpmShowProgress,
-		(void *) ((long)ia->installInterfaceFlags),
-		NULL, &probs, ia->transFlags,
+	rc = rpmRunTransactions(ts, NULL, &probs,
 		(ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
 	if (rc > 0) {
 	    rpmProblemSetPrint(stderr, probs);

@@ -197,10 +197,29 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 
 	/* Dump the immutable region (if present). */
 	if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
-	    Header nh = headerCopyLoad(uh);
-	    uh = headerFreeData(uh, uht);
-	    if (nh == NULL)
-		    goto exit;
+	    HeaderIterator hi;
+	    int_32 tag, type, count;
+	    hPTR_t ptr;
+	    Header oh;
+	    Header nh;
+
+	    nh = headerNew();
+	    if (nh == NULL) {
+		uh = headerFreeData(uh, uht);
+		goto exit;
+	    }
+
+	    oh = headerCopyLoad(uh);
+	    for (hi = headerInitIterator(oh);
+		headerNextIterator(hi, &tag, &type, &ptr, &count);
+		ptr = headerFreeData(ptr, type))
+	    {
+		if (ptr)
+		    xx = headerAddEntry(nh, tag, type, ptr, count);
+	    }
+	    hi = headerFreeIterator(hi);
+	    oh = headerFree(oh, NULL);
+
 	    sig = headerFree(sig, NULL);
 	    sig = headerLink(nh, NULL);
 	    nh = headerFree(nh, NULL);

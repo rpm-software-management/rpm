@@ -1026,7 +1026,7 @@ TFI_t teiGetFi(const teIterator tei)
 
 int rpmRunTransactions(	rpmTransactionSet ts,
 			rpmProblemSet okProbs, rpmProblemSet * newProbs,
-			rpmtransFlags transFlags, rpmprobFilterFlags ignoreSet)
+			rpmprobFilterFlags ignoreSet)
 {
     int i, j;
     int ourrc = 0;
@@ -1045,7 +1045,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     /* FIXME: what if the same package is included in ts twice? */
 
-    ts->transFlags = transFlags;
     if (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS)
 	ts->transFlags |= (_noTransScripts | _noTransTriggers);
     if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)
@@ -1572,6 +1571,8 @@ fi->actions = actions;
 		}
 		if (teGetMultiLib(p))
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
+		else
+		    ts->transFlags &= ~RPMTRANS_FLAG_MULTILIB;
 
 		if (psmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;

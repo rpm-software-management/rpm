@@ -222,6 +222,25 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     return rpmtsLink(ts, "tsCreate");
 }
 
+rpmtransFlags rpmtsGetFlags(rpmTransactionSet ts)
+{
+    rpmtransFlags otransFlags = 0;
+    if (ts != NULL) {
+	otransFlags = ts->transFlags;
+    }
+    return otransFlags;
+}
+
+rpmtransFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtransFlags ntransFlags)
+{
+    rpmtransFlags otransFlags = 0;
+    if (ts != NULL) {
+	otransFlags = ts->transFlags;
+	ts->transFlags = ntransFlags;
+    }
+    return otransFlags;
+}
+
 int rpmtsSetNotifyCallback(rpmTransactionSet ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {

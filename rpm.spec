@@ -2,7 +2,7 @@
 %define	with_python_version	2.2%{nil}
 %define with_perl_subpackage	0
 %define	with_bzip2		1%{nil}
-%define	with_apidocs		0%{nil}
+%define	with_apidocs		1%{nil}
 %define with_internal_db	1%{nil}
 %define strip_binaries		1
 
@@ -479,7 +479,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc 
+%doc apidocs
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
@@ -524,11 +524,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Mar 16 2002 Jeff Johnson <jbj@redhat.com>
+- *really* dump signature header immutable region.
+
 * Sun Mar 10 2002 Jeff Johnson <jbj@redhat.com>
 - make --addsign and --resign behave exactly the same.
 - splint annotationsm, signature cleanup.
 - drill ts/fi through verify mode, add methods to keep fi abstract.
 - use mmap when calculating file digests on verify, ~20% faster.
+- permit --dbpath and --root with signature (i.e. --import) modes.
 
 * Mon Sep 24 2001 Jeff Johnson <jbj@redhat.com>
 - Start rpm-4.1.

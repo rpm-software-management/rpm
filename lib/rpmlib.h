@@ -1629,9 +1629,28 @@ typedef enum rpmprobFilterFlags_e {
 } rpmprobFilterFlags;
 
 /** \ingroup rpmtrans
+ * Get transaction flags, i.e. bits to control rpmRunTransactions().
+ * @param ts		transaction set
+ * @return		transaction flags
+ */
+rpmtransFlags rpmtsGetFlags(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmtrans
+ * Set transaction flags, i.e. bits to control rpmRunTransactions().
+ * @param ts		transaction set
+ * @param ntransFlags	new transaction flags
+ * @return		previous transaction flags
+ */
+rpmtransFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtransFlags ntransFlags)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmtrans
  * Set transaction notify callback function and argument.
+ *
  * @warning This call must be made before rpmRunTransactions() for
  *	install/upgrade/freshen to "work".
+ *
  * @param ts		transaction set
  * @param notify	progress callback
  * @param notifyData	progress callback private data
@@ -1643,7 +1662,7 @@ int rpmtsSetNotifyCallback(rpmTransactionSet ts,
 	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans
- * Process all packages in transaction set.
+ * Process all packages in a transaction set.
  *
  * @warning The value returned in *newProbs is now refcounted, and should
  * be free'd using rpmProblemSetFree().
@@ -1658,7 +1677,6 @@ int rpmtsSetNotifyCallback(rpmTransactionSet ts,
 int rpmRunTransactions(rpmTransactionSet ts,
 			rpmProblemSet okProbs,
 			/*@out@*/ rpmProblemSet * newProbs,
-			rpmtransFlags transFlags,
 			rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/

@@ -25,10 +25,10 @@ typedef /*@abstract@*/ struct pgpDig_s * pgpDig;
  * The libio interface changed after glibc-2.1.3 to pass the seek offset
  * argument as a pointer rather than as an off_t. The snarl below defines
  * typedefs to isolate the lossage.
- * API unchanged.
  */
 /*@{*/
-#if !defined(__LCLINT__) && defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 2
+#if !defined(__LCLINT__) && defined(__GLIBC__) && \
+	(__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2))
 #define USE_COOKIE_SEEK_POINTER 1
 typedef _IO_off64_t 	_libio_off_t;
 typedef _libio_off_t *	_libio_pos_t;

@@ -98,6 +98,7 @@
 	- drill ts/fi through verify mode, add methods to keep fi abstract.
 	- use mmap when calculating file digests on verify, ~20% faster.
 	- permit --dbpath and --root with signature (i.e. --import) modes.
+	- *really* dump signature header immutable region.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
