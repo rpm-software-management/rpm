@@ -19,7 +19,6 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
-#include <ansidecl.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -35,7 +34,9 @@ Cambridge, MA 02139, USA.  */
 static int
 myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
-	   __ftw_func_t func)
+	   int (*func) (const char *file,
+			struct stat *status,
+			int flag))
 {
   int got;
   struct dirent *entry;
@@ -72,7 +73,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	}
 
       dir[len] = '/';
-      memcpy ((PTR) (dir + len + 1), (PTR) entry->d_name, d_namlen);
+      memcpy ((void *) (dir + len + 1), (void *) entry->d_name, d_namlen);
 
       if (lstat (dir, &s) < 0)
 	{
@@ -151,7 +152,11 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 /* Call a function on every element in a directory tree.  */
 
 
-int myftw (const char *dir, __ftw_func_t func, int descriptors)
+int myftw (const char *dir,
+	   int (*func) (const char *file,
+			struct stat *status,
+			int flag),
+	   int descriptors)
 {
   DIR **dirs;
   size_t len;
@@ -194,7 +199,7 @@ int myftw (const char *dir, __ftw_func_t func, int descriptors)
     flag = FTW_F;
 
   len = strlen (dir);
-  memcpy ((PTR) buf, (PTR) dir, len + 1);
+  memcpy ((void *) buf, (void *) dir, len + 1);
 
   retval = (*func) (buf, &s, flag);
 
