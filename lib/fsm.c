@@ -1499,7 +1499,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 #ifdef	NOTYET
 	rc = fsmStat(fsm);
 #else
-	if (fsm->path != NULL) {
+	if (fsm->path != NULL &&
+	    !(fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode)))
+	{
 	    rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
 	    if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
@@ -1717,7 +1719,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_COMMIT:
 	/* Rename pre-existing modified or unmanaged file. */
-	if (fsm->diskchecked && fsm->exists && fsm->osuffix) {
+	if (fsm->osuffix && fsm->diskchecked &&
+	  (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
+	{
 	    const char * opath = fsm->opath;
 	    const char * path = fsm->path;
 	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);

@@ -409,6 +409,7 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/header_internal.h \
 	@top_srcdir@/rpmdb/legacy.c \
 	@top_srcdir@/rpmdb/legacy.h \
+	@top_srcdir@/rpmdb/merge.c \
 	@top_srcdir@/rpmdb/poptDB.c \
 	@top_srcdir@/rpmdb/rpmhash.c \
 	@top_srcdir@/rpmdb/rpmhash.h \

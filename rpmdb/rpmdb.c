@@ -730,11 +730,6 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
     if (set == NULL || recs == NULL || nrecs <= 0 || recsize == 0)
 	return 1;
 
-#ifdef	DYING
-    if (set->count == 0)
-	set->recs = xmalloc(nrecs * sizeof(*(set->recs)));
-    else
-#endif
     set->recs = xrealloc(set->recs,
 			(set->count + nrecs) * sizeof(*(set->recs)));
 
@@ -1709,7 +1704,8 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
 
 /**
  * Return pattern match.
- * @param mi		rpm database iterator
+ * @param mire		match iterator regex
+ * @param val		value to match
  * @return		0 if pattern matches
  */
 static int miregexec(miRE mire, const char * val)
@@ -2236,8 +2232,17 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi @*/
 {
     if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0) {
-	qsort(mi->mi_set->recs, mi->mi_set->count, sizeof(*mi->mi_set->recs),
-		hdrNumCmp);
+    /*
+     * mergesort is much (~10x with lots of identical basenames) faster
+     * than pure quicksort, but glibc uses msort_with_tmp() on stack.
+     */
+#if defined(__GLIBC__)
+	qsort(mi->mi_set->recs, mi->mi_set->count,
+		sizeof(*mi->mi_set->recs), hdrNumCmp);
+#else
+	mergesort(mi->mi_set->recs, mi->mi_set->count,
+		sizeof(*mi->mi_set->recs), hdrNumCmp);
+#endif
 	mi->mi_sorted = 1;
     }
 }

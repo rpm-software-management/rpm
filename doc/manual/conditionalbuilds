@@ -45,7 +45,7 @@ So the spec file should be written
 \verbatim
     ...
     ./configure \
-	%{?_with_ldap:      %{_with_ldap}}   \
+	%{?_with_ldap}   \
     ...
 \endverbatim
 so that, if "--with ldap" was used as a build option, then confgure
@@ -67,22 +67,38 @@ for pine:
     %{!?_with_ssl: %{!?_without_ssl: %define _with_ssl --with-ssl}}
     ...
 
+    # You might want to make sure that one and only one of required and
+    # mutually exclusive options exists.
+    #
+    # Read: It's an error if both or neither required options exist.
+    %{?_with_ssl: %{?_without_ssl: %{error: both _with_ssl and _without_ssl}}}
+    %{!?_with_ssl: %{!?_without_ssl: %{error: neither _with_ssl nor _without_ssl}}}
+
     # Add build dependencies for ssl and ldap features if enabled.
+    # Note: Tag tokens must start at beginning-of-line.
     #
     # Read: If feature is enabled, then add the build dependency.
-    %{?_with_ssl:   BuildRequires: openssl-devel}}
-    %{?_with_ldap:  BuildRequires: openldap-devel}}
+    %{?_with_ssl:BuildRequires: openssl-devel}
+    %{?_with_ldap:BuildRequires: openldap-devel}
     ...
 
     # Configure with desired features.
     #
     # Read: Add any defined feature values to the configure invocation.
     %configure \
-	%{?_with_ssl:       %{_with_ssl}}    \  
-	%{?_without_ssl:    %{_without_ssl}} \  
-	%{?_with_ldap:      %{_with_ldap}}   \
-	%{?_without_ldap:   %{_without_ldap}}\
+	%{?_with_ssl}		\
+	%{?_without_ssl}	\
+	%{?_with_ldap}		\
+	%{?_without_ldap}
     ...
+
+    # Conditional tests for desired features.
+    #
+    # Read: true if _with_ssl is defined, false if not defined.
+    %if %{?_with_ssl:1}%{!?_with_ssl:0}
+    ...
+    %endif
+
 \endverbatim
 
 */

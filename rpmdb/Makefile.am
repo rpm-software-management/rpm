@@ -36,7 +36,7 @@ DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
 lib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
-	hdrNVR.c header.c header_internal.c legacy.c \
+	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@

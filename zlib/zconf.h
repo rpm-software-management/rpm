@@ -1,9 +1,10 @@
+/*@-constuse -typeuse@*/
 /* zconf.h -- configuration of the zlib compression library
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: zconf.h,v 1.6 2002/03/17 15:46:23 jbj Exp $ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H
@@ -277,3 +278,4 @@ typedef uLong FAR uLongf;
 #endif
 
 #endif /* _ZCONF_H */
+/*@=constuse =typeuse@*/

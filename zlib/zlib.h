@@ -1,3 +1,4 @@
+/*@-declundef -fcnuse -typeuse @*/
 /* zlib.h -- interface of the 'zlib' general purpose compression library
   version 1.1.4, March 11th, 2002
 
@@ -891,3 +892,4 @@ ZEXTERN const uLongf * ZEXPORT get_crc_table    OF((void));
 #endif
 
 #endif /* _ZLIB_H */
+/*@=declundef =fcnuse =typeuse @*/

@@ -398,7 +398,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    int count, sigtype;
+    int_32 count, sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
     const char * sha1 = NULL;
@@ -524,14 +524,14 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
 
     (void) Fflush(fd);
-    if (Fseek(fd, sizeof(header_magic), SEEK_SET) == -1) {
+    if (Fseek(fd, 0, SEEK_SET) == -1) {
 	rc = RPMERR_FSEEK;
 	rpmError(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
 			sigtarget, Fstrerror(fd));
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    if (headerWrite(fd, h, HEADER_MAGIC_NO)) {
+    if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
 	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }
@@ -552,9 +552,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
-    if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
-	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
-	(void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+    if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtag);
+	(void) rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
     }
     
     if (sha1) {

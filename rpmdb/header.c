@@ -2526,19 +2526,22 @@ static int getExtension(Header h, headerTagTagFunction fn,
 
 /**
  */
+/*@observer@*/
 static char * formatValue(sprintfTag tag, Header h, 
 		const headerSprintfExtension extensions,
-		extensionCache extCache, int element)
-	/*@modifies extCache @*/
+		extensionCache extCache, int element,
+		char ** valp, int * vallenp, int * allocedp)
+	/*@modifies extCache, *valp, *vallenp, *allocedp @*/
 {
-    int len;
+    char * val = NULL;
+    int need = 0;
+    char * t, * te;
     char buf[20];
     int_32 count, type;
     hPTR_t data;
     unsigned int intVal;
-    char * val = NULL;
     const char ** strarray;
-    int mayfree = 0;
+    int datafree = 0;
     int countBuf;
     headerTagFormatFunction tagtype = NULL;
     headerSprintfExtension ext;
@@ -2551,16 +2554,16 @@ static char * formatValue(sprintfTag tag, Header h,
 	{
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
-	    data = "(none)";		/* XXX i18n? NO!, sez; gafton */
+	    data = "(none)";
 	}
     } else {
 	if (!headerGetEntry(h, tag->tag, &type, (void **)&data, &count)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
-	    data = "(none)";		/* XXX i18n? NO!, sez; gafton */
+	    data = "(none)";
 	}
 
-	mayfree = 1;
+	datafree = 1;
     }
     /*@=branchstate@*/
 
@@ -2602,18 +2605,19 @@ static char * formatValue(sprintfTag tag, Header h,
 	if (tagtype)
 	    val = tagtype(RPM_STRING_TYPE, strarray[element], buf, tag->pad, 0);
 
-	if (!val) {
+	if (val) {
+	    need = strlen(val);
+	} else {
+	    need = strlen(strarray[element]) + tag->pad + 20;
+	    val = xmalloc(need+1);
 	    strcat(buf, "s");
-
-	    len = strlen(strarray[element]) + tag->pad + 20;
-	    val = xmalloc(len);
 	    /*@-formatconst@*/
 	    sprintf(val, buf, strarray[element]);
 	    /*@=formatconst@*/
 	}
 
 	/*@-observertrans -modobserver@*/
-	if (mayfree) data = _free(data);
+	if (datafree) data = _free(data);
 	/*@=observertrans =modobserver@*/
 
 	break;
@@ -2622,11 +2626,12 @@ static char * formatValue(sprintfTag tag, Header h,
 	if (tagtype)
 	    val = tagtype(RPM_STRING_ARRAY_TYPE, data, buf, tag->pad,  0);
 
-	if (!val) {
+	if (val) {
+	    need = strlen(val);
+	} else {
+	    need = strlen(data) + tag->pad + 20;
+	    val = xmalloc(need+1);
 	    strcat(buf, "s");
-
-	    len = strlen(data) + tag->pad + 20;
-	    val = xmalloc(len);
 	    /*@-formatconst@*/
 	    sprintf(val, buf, data);
 	    /*@=formatconst@*/
@@ -2654,10 +2659,12 @@ static char * formatValue(sprintfTag tag, Header h,
 	if (tagtype)
 	    val = tagtype(RPM_INT32_TYPE, &intVal, buf, tag->pad,  element);
 
-	if (!val) {
+	if (val) {
+	    need = strlen(val);
+	} else {
+	    need = 10 + tag->pad + 20;
+	    val = xmalloc(need+1);
 	    strcat(buf, "d");
-	    len = 10 + tag->pad + 20;
-	    val = xmalloc(len);
 	    /*@-formatconst@*/
 	    sprintf(val, buf, intVal);
 	    /*@=formatconst@*/
@@ -2668,18 +2675,18 @@ static char * formatValue(sprintfTag tag, Header h,
 	if (tagtype)
 	    val = tagtype(RPM_BIN_TYPE, data, buf, tag->pad, count);
 
-	if (!val) {
+	if (val) {
+	    need = count;	/* XXX broken iff RPM_BIN_TYPE extension */
+	} else {
 #ifdef	NOTYET
 	    val = memcpy(xmalloc(count), data, count);
 #else
 	    /* XXX format string not used */
 	    static char hex[] = "0123456789abcdef";
 	    const char * s = data;
-	    char * t;
 
-	    strcat(buf, "s");
-	    len = 2*count + tag->pad + 1;
-	    val = t = xmalloc(len);
+	    need = 2*count + tag->pad;
+	    val = t = xmalloc(need+1);
 	    while (count-- > 0) {
 		unsigned int i;
 		i = *s++;
@@ -2692,30 +2699,48 @@ static char * formatValue(sprintfTag tag, Header h,
 	break;
 
     default:
-	val = xstrdup(_("(unknown type)"));
+	need = sizeof("(unknown type)") - 1;
+	val = xstrdup("(unknown type)");
 	break;
     }
     /*@=branchstate@*/
 
-    return val;
+    /*@-branchstate@*/
+    if (val && need > 0) {
+	if (((*vallenp) + need) >= (*allocedp)) {
+	    if ((*allocedp) <= need)
+		(*allocedp) += need;
+	    (*allocedp) <<= 1;
+/*@-unqualifiedtrans@*/ /* FIX: double indirection */
+	    (*valp) = xrealloc((*valp), (*allocedp)+1);	
+/*@=unqualifiedtrans@*/
+	}
+	t = (*valp) + (*vallenp);
+	te = stpcpy(t, val);
+	(*vallenp) += (te - t);
+	val = _free(val);
+    }
+    /*@=branchstate@*/
+
+    return ((*valp) + (*vallenp));
 }
 
 /**
  */
-static const char * singleSprintf(Header h, sprintfToken token,
+/*@observer@*/
+static char * singleSprintf(Header h, sprintfToken token,
 		const headerSprintfExtension extensions,
-		extensionCache extCache, int element)
-	/*@modifies h, extCache @*/
+		extensionCache extCache, int element,
+		char ** valp, int * vallenp, int * allocedp)
+	/*@modifies h, extCache, *valp, *vallenp, *allocedp @*/
 {
-    char * val;
-    const char * thisItem;
-    int thisItemLen;
-    int len, alloced;
+    char * t, * te;
     int i, j;
     int numElements;
     int type;
     sprintfToken condFormat;
     int condNumFormats;
+    int need;
 
     /* we assume the token and header have been validated already! */
 
@@ -2724,13 +2749,26 @@ static const char * singleSprintf(Header h, sprintfToken token,
 	break;
 
     case PTOK_STRING:
-	val = xmalloc(token->u.string.len + 1);
-	strcpy(val, token->u.string.string);
+	need = token->u.string.len;
+	if (need <= 0) break;
+	if (((*vallenp) + need) >= (*allocedp)) {
+	    if ((*allocedp) <= need)
+		(*allocedp) += need;
+	    (*allocedp) <<= 1;
+/*@-unqualifiedtrans@*/ /* FIX: double indirection */
+	    (*valp) = xrealloc((*valp), (*allocedp)+1);	
+/*@=unqualifiedtrans@*/
+	}
+	t = (*valp) + (*vallenp);
+	te = stpcpy(t, token->u.string.string);
+	(*vallenp) += (te - t);
 	break;
 
     case PTOK_TAG:
-	val = formatValue(&token->u.tag, h, extensions, extCache,
-			  token->u.tag.justOne ? 0 : element);
+	t = (*valp) + (*vallenp);
+	te = formatValue(&token->u.tag, h, extensions, extCache,
+			(token->u.tag.justOne ? 0 : element),
+			valp, vallenp, allocedp);
 	break;
 
     case PTOK_COND:
@@ -2743,25 +2781,21 @@ static const char * singleSprintf(Header h, sprintfToken token,
 	    condNumFormats = token->u.cond.numElseTokens;
 	}
 
-	alloced = condNumFormats * 20;
-	val = xmalloc(alloced ? alloced : 1);
-	*val = '\0';
-	len = 0;
-
-	if (condFormat)
-	for (i = 0; i < condNumFormats; i++) {
-	    thisItem = singleSprintf(h, condFormat + i, 
-				     extensions, extCache, element);
-	    thisItemLen = strlen(thisItem);
-	    if ((thisItemLen + len) >= alloced) {
-		alloced = (thisItemLen + len) + 200;
-		val = xrealloc(val, alloced);	
-	    }
-	    strcat(val, thisItem);
-	    len += thisItemLen;
-	    thisItem = _free(thisItem);
+	need = condNumFormats * 20;
+	if (condFormat == NULL || need <= 0) break;
+	if (((*vallenp) + need) >= (*allocedp)) {
+	    if ((*allocedp) <= need)
+		(*allocedp) += need;
+	    (*allocedp) <<= 1;
+/*@-unqualifiedtrans@*/ /* FIX: double indirection */
+	    (*valp) = xrealloc((*valp), (*allocedp)+1);	
+/*@=unqualifiedtrans@*/
 	}
 
+	t = (*valp) + (*vallenp);
+	for (i = 0; i < condNumFormats; i++)
+	    te = singleSprintf(h, condFormat + i, extensions, extCache,
+				element, valp, vallenp, allocedp);
 	break;
 
     case PTOK_ARRAY:
@@ -2780,41 +2814,49 @@ static const char * singleSprintf(Header h, sprintfToken token,
 		     continue;
 	    } else {
 		if (!headerGetEntry(h, token->u.array.format[i].u.tag.tag, 
-				    &type, (void **) &val, &numElements))
+				    &type, NULL, &numElements))
 		    continue;
-		val = headerFreeData(val, type);
 	    } 
 	    /*@loopbreak@*/ break;
 	}
 
 	if (numElements == -1) {
-	    val = xstrdup("(none)");	/* XXX i18n? NO!, sez; gafton */
+	    need = sizeof("(none)") - 1;
+	    if (((*vallenp) + need) >= (*allocedp)) {
+		if ((*allocedp) <= need)
+		    (*allocedp) += need;
+		(*allocedp) <<= 1;
+/*@-unqualifiedtrans@*/ /* FIX: double indirection */
+		(*valp) = xrealloc((*valp), (*allocedp)+1);	
+/*@=unqualifiedtrans@*/
+	    }
+	    t = (*valp) + (*vallenp);
+	    te = stpcpy(t, "(none)");
+	    (*vallenp) += (te - t);
 	} else {
-	    alloced = numElements * token->u.array.numTokens * 20;
-	    val = xmalloc(alloced);
-	    *val = '\0';
-	    len = 0;
+	    need = numElements * token->u.array.numTokens * 10;
+	    if (need <= 0) break;
+	    if (((*vallenp) + need) >= (*allocedp)) {
+		if ((*allocedp) <= need)
+		    (*allocedp) += need;
+		(*allocedp) <<= 1;
+/*@-unqualifiedtrans@*/ /* FIX: double indirection */
+		(*valp) = xrealloc((*valp), (*allocedp)+1);	
+/*@=unqualifiedtrans@*/
+	    }
 
+	    t = (*valp) + (*vallenp);
 	    for (j = 0; j < numElements; j++) {
-		for (i = 0; i < token->u.array.numTokens; i++) {
-		    thisItem = singleSprintf(h, token->u.array.format + i, 
-					     extensions, extCache, j);
-		    thisItemLen = strlen(thisItem);
-		    if ((thisItemLen + len) >= alloced) {
-			alloced = (thisItemLen + len) + 200;
-			val = xrealloc(val, alloced);	
-		    }
-		    strcat(val, thisItem);
-		    len += thisItemLen;
-		    thisItem = _free(thisItem);
-		}
+		for (i = 0; i < token->u.array.numTokens; i++)
+		    te = singleSprintf(h, token->u.array.format + i, 
+					extensions, extCache, j,
+					valp, vallenp, allocedp);
 	    }
 	}
-	   
 	break;
     }
 
-    return val;
+    return ((*valp) + (*vallenp));
 }
 
 /**
@@ -2886,12 +2928,13 @@ char * headerSprintf(Header h, const char * fmt,
     headerSprintfExtension exts = (headerSprintfExtension) extensions;
     headerTagTableEntry tags = (headerTagTableEntry) tbltags;
     /*@=castexpose@*/
+    char * t;
     char * fmtString;
     sprintfToken format;
     int numTokens;
-    char * answer;
-    int answerLength;
-    int answerAlloced;
+    char * val = NULL;
+    int vallen = 0;
+    int alloced = 0;
     int i;
     extensionCache extCache;
  
@@ -2906,37 +2949,21 @@ char * headerSprintf(Header h, const char * fmt,
 
     extCache = allocateExtensionCache(exts);
 
-    answerAlloced = 1024;
-    answerLength = 0;
-    answer = xmalloc(answerAlloced);
-    *answer = '\0';
-
     for (i = 0; i < numTokens; i++) {
-	const char * piece;
-	int pieceLength;
-
 	/*@-mods@*/
-	piece = singleSprintf(h, format + i, exts, extCache, 0);
+	t = singleSprintf(h, format + i, exts, extCache, 0,
+		&val, &vallen, &alloced);
 	/*@=mods@*/
-	if (piece) {
-	    pieceLength = strlen(piece);
-	    if ((answerLength + pieceLength) >= answerAlloced) {
-		while ((answerLength + pieceLength) >= answerAlloced) 
-		    answerAlloced += 1024;
-		answer = xrealloc(answer, answerAlloced);
-	    }
-
-	    strcat(answer, piece);
-	    answerLength += pieceLength;
-	    piece = _free(piece);
-	}
     }
+
+    if (val != NULL && vallen < alloced)
+	val = xrealloc(val, vallen+1);	
 
     fmtString = _free(fmtString);
     extCache = freeExtensionCache(exts, extCache);
     format = _free(format);
 
-    return answer;
+    return val;
 }
 
 /**

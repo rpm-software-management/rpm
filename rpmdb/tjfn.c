@@ -86,6 +86,7 @@ static int
 db_put(DB * db, const char * kstr, int klen, const char * dstr, int dlen)
 {
     DBT key, data;
+    int ret;
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
@@ -99,7 +100,11 @@ db_put(DB * db, const char * kstr, int klen, const char * dstr, int dlen)
     data.data = (void *)dstr;
     data.size = dlen;
 
-    return db->put(db, NULL, &key, &data, 0);
+    ret = db->put(db, NULL, &key, &data, 0);
+    if (ret == DB_KEYEXIST)
+	ret = 0;
+
+    return ret;
 }
 
 static int

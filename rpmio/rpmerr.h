@@ -131,7 +131,7 @@ typedef enum rpmerrCode_e {
     RPMDEBUG_UNLINK	= _dm(512u+16),	/*!< unlink(2) failed */
     RPMDEBUG_RMDIR	= _dm(512u+17),	/*!< rmdir(2) failed */
 /*@-enummemuse@*/
-    RPMWARN_FLOCK	= _wm(512u+27)	/*!< locking the database failed */
+    RPMWARN_FLOCK	= _wm(512u+27),	/*!< locking the database failed */
 /*@=enummemuse@*/
 } rpmerrCode;
 /*@=typeuse @*/

@@ -59,6 +59,7 @@ rpmdb/hdrNVR.c
 rpmdb/header.c
 rpmdb/header_internal.c
 rpmdb/legacy.c
+rpmdb/merge.c
 rpmdb/poptDB.c
 rpmdb/rpmhash.c
 rpmdb/rpmdb.c

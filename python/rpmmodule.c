@@ -1612,10 +1612,10 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
     list = PyList_New(0);
     for (i = 0; i < probs->numProblems; i++) {
 	rpmProblem myprob = probs->probs + i;
-	prob = Py_BuildValue("s(isi)", rpmProblemString(myprob),
+	prob = Py_BuildValue("s(isN)", rpmProblemString(myprob),
 			     myprob->type,
 			     myprob->str1,
-			     myprob->ulong1);
+			     PyLong_FromLongLong(myprob->ulong1));
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }

@@ -9,7 +9,7 @@ rm -f config.cache
 #ln -sf ../dist $db_dist
 
 # XXX edit CFLAGS= ... out of invocation args ???
-ARGS="`echo $* | sed -e 's% [^ ]*CFLAGS=[^ ]*%%' -e 's% -march=[^ ]*%%' -e 's% -mcpu=[^ ]*%%' -e 's%--cache-file=.*$%%'`"
+ARGS="`echo $* | sed -e 's% [^ ]*CFLAGS=[^ ]*%%' -e 's% -[^-][^ ]*%%g' -e 's%--cache-file=.*$%%'`"
 
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
 	--enable-shared --enable-static --enable-debug --enable-rpc \

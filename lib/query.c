@@ -778,7 +778,7 @@ restart:
         for (i = 0, t = md5, s = arg; i < 16; i++, t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 	
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, 16);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, sizeof(md5));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"pkgid", arg);
@@ -807,6 +807,9 @@ restart:
 	break;
 
     case RPMQV_FILEID:
+    {	unsigned char md5[16];
+	unsigned char * t;
+
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};
 	if (i != 32) {
@@ -814,7 +817,11 @@ restart:
 	    return 1;
 	}
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, arg, 0);
+	md5[0] = '\0';
+        for (i = 0, t = md5, s = arg; i < 16; i++, t++, s += 2)
+            *t = (nibble(s[0]) << 4) | nibble(s[1]);
+
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, md5, sizeof(md5));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"fileid", arg);
@@ -822,7 +829,7 @@ restart:
 	} else {
 	    res = showMatches(qva, ts);
 	}
-	break;
+    }	break;
 
     case RPMQV_TID:
     {	int mybase = 10;
