@@ -18,7 +18,9 @@ static void doRmSource(Spec spec)
     p = spec->sources;
     while (p) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
-	    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+	    strcpy(buf, "%{_sourcedir}/");
+	    expandMacros(spec, spec->macros, buf, sizeof(buf));
+	    strcat(buf, p->source);
 	    unlink(buf);
 	}
 	p = p->next;
@@ -29,7 +31,9 @@ static void doRmSource(Spec spec)
 	p = pkg->icon;
 	while (p) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
-		sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+		strcpy(buf, "%{_sourcedir}/");
+		expandMacros(spec, spec->macros, buf, sizeof(buf));
+		strcat(buf, p->source);
 		unlink(buf);
 	    }
 	    p = p->next;
@@ -38,21 +42,34 @@ static void doRmSource(Spec spec)
     }
 }
 
+/*
+ * The _preScript string is expanded to export values to a script environment.
+ */
+
+static char *_preScriptEnvironment = 
+	"RPM_SOURCE_DIR=\"%{_sourcedir}\"\n"
+	"RPM_BUILD_DIR=\"%{_builddir}\"\n"
+	"RPM_OPT_FLAGS=\"%{_optflags}\"\n"
+	"export  RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS\n"
+;
+
 static int writeVars(Spec spec, FILE *f)
 {
     char *arch, *os, *s;
+    char buf[BUFSIZ];
+
+    strcpy(buf, _preScriptEnvironment);
+    expandMacros(spec, spec->macros, buf, sizeof(buf));
+    fprintf(f, "%s\n", buf);
     
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
 
-    fprintf(f, "RPM_SOURCE_DIR=\"%s\"\n", rpmGetVar(RPMVAR_SOURCEDIR));
-    fprintf(f, "RPM_BUILD_DIR=\"%s\"\n", rpmGetVar(RPMVAR_BUILDDIR));
     fprintf(f, "RPM_DOC_DIR=\"%s\"\n", spec->docDir);
-    fprintf(f, "RPM_OPT_FLAGS=\"%s\"\n", rpmGetVar(RPMVAR_OPTFLAGS));
     fprintf(f, "RPM_ARCH=\"%s\"\n", arch);
     fprintf(f, "RPM_OS=\"%s\"\n", os);
-    fprintf(f, "export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_DOC_DIR "
-	    "RPM_OPT_FLAGS RPM_ARCH RPM_OS\n");
+
+    fprintf(f, "export RPM_DOC_DIR RPM_ARCH RPM_OS\n");
 
     if (spec->buildRoot) {
 	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
@@ -78,6 +95,11 @@ static int writeVars(Spec spec, FILE *f)
     
     return 0;
 }
+
+static char *_preScriptChdir = 
+	"umask 022\n"
+	"cd %{_builddir}\n"
+;
 
 int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 {
@@ -129,8 +151,14 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     }
     
     fprintf(f, rpmIsVerbose() ? "set -x\n\n" : "exec > /dev/null\n\n");
-    fprintf(f, "umask 022\n");
-    fprintf(f, "cd %s\n", rpmGetVar(RPMVAR_BUILDDIR));
+
+/* XXX umask 022; cd %{_builddir} */
+  { char buf[BUFSIZ];
+    strcpy(buf, _preScriptChdir);
+    expandMacros(spec, spec->macros, buf, sizeof(buf));
+    fputs(buf, f);
+  }
+
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir) {
 	    fprintf(f, "cd %s\n", spec->buildSubdir);

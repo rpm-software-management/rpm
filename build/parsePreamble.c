@@ -278,7 +278,10 @@ static int readIcon(Header h, char *file)
     struct stat statbuf;
     int fd;
 
-    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), file);
+    strcpy(buf, "%{_sourcedir}/");
+    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+    strcat(buf, file);
+
     if (stat(buf, &statbuf)) {
 	rpmError(RPMERR_BADSPEC, "Unable to read icon: %s", file);
 	return RPMERR_BADSPEC;

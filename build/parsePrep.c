@@ -50,25 +50,22 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
     static char buf[BUFSIZ];
     char file[BUFSIZ];
     char args[BUFSIZ];
-    char *s;
     struct Source *sp;
     int compressed;
 
-    s = NULL;
-    sp = spec->sources;
-    while (sp) {
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
-	    s = sp->source;
 	    break;
 	}
-	sp = sp->next;
     }
-    if (! s) {
+    if (sp == NULL) {
 	rpmError(RPMERR_BADSPEC, "No patch number %d", c);
 	return NULL;
     }
 
-    sprintf(file, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), s);
+    strcpy(file, "%{_sourcedir}/");
+    expandMacros(spec, spec->macros, file, sizeof(file));
+    strcat(file, sp->source);
 
     args[0] = '\0';
     if (db) {
@@ -120,21 +117,20 @@ static char *doUntar(Spec spec, int c, int quietly)
     struct Source *sp;
     int compressed;
 
-    s = NULL;
-    sp = spec->sources;
-    while (sp) {
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
-	    s = sp->source;
 	    break;
 	}
-	sp = sp->next;
     }
-    if (! s) {
+    if (sp == NULL) {
 	rpmError(RPMERR_BADSPEC, "No source number %d", c);
 	return NULL;
     }
 
-    sprintf(file, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), s);
+    strcpy(file, "%{_sourcedir}/");
+    expandMacros(spec, spec->macros, file, sizeof(file));
+    strcat(file, sp->source);
+
     taropts = (rpmIsVerbose() && !quietly ? "-xvvf" : "-xf");
 
     if (isCompressed(file, &compressed)) {
@@ -242,7 +238,8 @@ static int doSetupMacro(Spec spec, char *line)
     poptFreeContext(optCon);
 
     /* cd to the build dir */
-    sprintf(buf, "cd %s", rpmGetVar(RPMVAR_BUILDDIR));
+    strcpy(buf, "cd %{_builddir}");
+    expandMacros(spec, spec->macros, buf, sizeof(buf));
     appendLineStringBuf(spec->prep, buf);
     
     /* delete any old sources */
@@ -259,7 +256,7 @@ static int doSetupMacro(Spec spec, char *line)
     }
 
     /* do the default action */
-    if (!createDir && !skipDefaultAction) {
+   if (!createDir && !skipDefaultAction) {
 	chptr = doUntar(spec, 0, quietly);
 	if (!chptr) {
 	    return RPMERR_BADSPEC;

@@ -308,7 +308,10 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
     spec->numSources++;
 
     if (tag != RPMTAG_ICON) {
-	sprintf(body, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+	strcpy(body, "%{_sourcedir}/");
+	expandMacros(spec, spec->macros, body, sizeof(body));	/* W2DO? */
+	strcat(body, p->source);
+
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, body, RMIL_SPEC);

@@ -1065,12 +1065,14 @@ static int processPackageFiles(Spec spec, Package pkg,
     pkg->cpioCount = 0;
 
     if (pkg->fileFile) {
+	strcpy(buf, "%{_builddir}/");
+	expandMacros(spec, spec->macros, buf, sizeof(buf));
 	if (spec->buildSubdir) {
-	    sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
-		    spec->buildSubdir, pkg->fileFile);
-	} else {
-	    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_BUILDDIR), pkg->fileFile);
+	    strcat(buf, spec->buildSubdir);
+	    strcat(buf, "/");
 	}
+	strcat(buf, pkg->fileFile);
+
 	if ((f = fopen(buf, "r")) == NULL) {
 	    rpmError(RPMERR_BADFILENAME,
 		     "Could not open %%files file: %s", pkg->fileFile);
@@ -1327,17 +1329,25 @@ int processSourceFiles(Spec spec)
 				       RPM_INT32_TYPE, &srcPtr->num, 1);
 	    }
 	}
-	sprintf(buf, "%s%s/%s",
-		srcPtr->flags & RPMBUILD_ISNO ? "!" : "",
-		rpmGetVar(RPMVAR_SOURCEDIR), srcPtr->source);
+
+      {	char *s = buf;
+	if (srcPtr->flags & RPMBUILD_ISNO)
+	    *s++ = '!';
+	strcpy(s, "%{_sourcedir}/");
+      }
+	expandMacros(spec, spec->macros, buf, sizeof(buf));
+	strcat(buf, srcPtr->source);
 	appendLineStringBuf(sourceFiles, buf);
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
-	    sprintf(buf, "%s%s/%s",
-		    srcPtr->flags & RPMBUILD_ISNO ? "!" : "",
-		    rpmGetVar(RPMVAR_SOURCEDIR), srcPtr->source);
+	    char *s = buf;
+	    if (srcPtr->flags & RPMBUILD_ISNO)
+		*s++ = '!';
+	    strcpy(s, "%{_sourcedir}/");
+	    expandMacros(spec, spec->macros, buf, sizeof(buf));
+	    strcat(buf, srcPtr->source);
 	    appendLineStringBuf(sourceFiles, buf);
 	}
     }

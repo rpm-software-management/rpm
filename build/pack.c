@@ -362,8 +362,12 @@ static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb)
     char buf[BUFSIZ];
     FILE *f;
 
-    sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
-	    spec->buildSubdir, file);
+    strcpy(buf, "%{_builddir}/");
+    expandMacros(spec, spec->macros, buf, sizeof(buf));
+    strcat(buf, spec->buildSubdir);
+    strcat(buf, "/");
+    strcat(buf, file);
+
     if ((f = fopen(buf, "r")) == NULL) {
 	freeStringBuf(sb);
 	return NULL;

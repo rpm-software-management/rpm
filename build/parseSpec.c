@@ -2,39 +2,6 @@
 
 #include "rpmbuild.h"
 
-#ifdef	DEAD
-#ifdef	DYING
-static void setStandardMacros(Spec spec, char *arch, char *os);
-#endif
-
-static void setStandardMacros(Spec spec, char *arch, char *os)
-{
-    char buf[BUFSIZ];
-    int x;
-
-    addMacro(spec->macros, "sourcedir", NULL, rpmGetVar(RPMVAR_SOURCEDIR), RMIL_SPEC);
-    addMacro(spec->macros, "builddir", NULL, rpmGetVar(RPMVAR_BUILDDIR), RMIL_SPEC);
-    addMacro(spec->macros, "optflags", NULL, rpmGetVar(RPMVAR_OPTFLAGS), RMIL_SPEC);
-    addMacro(spec->macros, "buildarch", NULL, arch, RMIL_SPEC);
-    addMacro(spec->macros, "buildos", NULL, os, RMIL_SPEC);
-    
-    x = 0;
-    while (arch[x]) {
-	buf[x] = tolower(arch[x]);
-	x++;
-    }
-    buf[x] = '\0';
-    addMacro(spec->macros, "buildarch_lc", NULL, buf, RMIL_SPEC);
-    x = 0;
-    while (os[x]) {
-	buf[x] = tolower(os[x]);
-	x++;
-    }
-    buf[x] = '\0';
-    addMacro(spec->macros, "buildos_lc", NULL, buf, RMIL_SPEC);
-}
-#endif	/* DEAD */
-
 static struct PartRec {
     int part;
     int len;

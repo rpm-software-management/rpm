@@ -91,7 +91,7 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
 	while (*cmd != '/') cmd--;
 	*cmd = '\0';
 
-	rpmSetVar(RPMVAR_SOURCEDIR, buf);
+	addMacro(&globalMacroContext, "_sourcedir", NULL, buf, RMIL_TARBALL);
     } else if (arg[0] == '/') {
 	specfile = arg;
     } else {
