@@ -680,8 +680,11 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		xx = Fclose (out);
 	    if (sfdno > STDERR_FILENO)
 		xx = Fclose (scriptFd);
-	    else
+	    else {
+/*@-usereleased@*/
 		xx = Fclose(out);
+/*@=usereleased@*/
+	    }
 	}
 
 	{   const char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);

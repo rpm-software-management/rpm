@@ -70,8 +70,10 @@ static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
 	if (opt->arg == NULL) continue;		/* XXX program error. */
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    void * arg = opt->arg;
+/*@-branchstate@*/
 	    /* XXX sick hack to preserve pretense of ABI. */
 	    if (arg == poptHelpOptions) arg = poptHelpOptionsI18N;
+/*@=branchstate@*/
 	    /* Recurse on included sub-tables. */
 	    invokeCallbacksPRE(con, arg);
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK &&
@@ -96,8 +98,10 @@ static void invokeCallbacksPOST(poptContext con, const struct poptOption * opt)
 	if (opt->arg == NULL) continue;		/* XXX program error. */
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    void * arg = opt->arg;
+/*@-branchstate@*/
 	    /* XXX sick hack to preserve pretense of ABI. */
 	    if (arg == poptHelpOptions) arg = poptHelpOptionsI18N;
+/*@=branchstate@*/
 	    /* Recurse on included sub-tables. */
 	    invokeCallbacksPOST(con, arg);
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK &&
@@ -126,8 +130,10 @@ static void invokeCallbacksOPTION(poptContext con,
     for (; opt->longName || opt->shortName || opt->arg; opt++) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    void * arg = opt->arg;
+/*@-branchstate@*/
 	    /* XXX sick hack to preserve pretense of ABI. */
 	    if (arg == poptHelpOptions) arg = poptHelpOptionsI18N;
+/*@=branchstate@*/
 	    /* Recurse on included sub-tables. */
 	    if (opt->arg != NULL)	/* XXX program error */
 		invokeCallbacksOPTION(con, opt->arg, myOpt, myData, shorty);
@@ -482,8 +488,10 @@ findOption(const struct poptOption * opt, /*@null@*/ const char * longName,
 	    const struct poptOption * opt2;
 	    void * arg = opt->arg;
 
+/*@-branchstate@*/
 	    /* XXX sick hack to preserve pretense of ABI. */
 	    if (arg == poptHelpOptions) arg = poptHelpOptionsI18N;
+/*@=branchstate@*/
 	    /* Recurse on included sub-tables. */
 	    if (arg == NULL) continue;	/* XXX program error */
 	    opt2 = findOption(arg, longName, shortName, callback,
