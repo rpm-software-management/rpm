@@ -1,0 +1,6 @@
+*.lo
+.deps
+.depend
+.depend-done
+Makefile
+Makefile.in

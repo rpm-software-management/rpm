@@ -4,7 +4,7 @@ BUILT_SOURCES = listobjs
 EXTRA_DIST = test.c
 
 pkglibdir =  @prefix@/lib/rpm
-MAGIC    = $(pkglibdir)/magic
+#MAGIC    = $(pkglibdir)/magic
 
 AM_CPPFLAGS = -DMAGIC='"$(MAGIC)"'
 
@@ -32,7 +32,7 @@ listobjs:
 .PHONY: lint
 lint:
 	$(LINT)  $(DEFS) $(INCLUDES) $(file_SOURCES) $(libmagic_la_SOURCES) $(include_HEADERS) $(noinst_HEADERS)
-                                                                                 
+
 .PHONY: sources
 sources:
 	@echo $(libmagic_la_SOURCES:%=file/src/%)
