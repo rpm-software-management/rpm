@@ -487,6 +487,10 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	      case RPMTAG_POSTIN:
 	      case RPMTAG_PREUN:
 	      case RPMTAG_POSTUN:
+	      case RPMTAG_PREINPROG:
+	      case RPMTAG_POSTINPROG:
+	      case RPMTAG_PREUNPROG:
+	      case RPMTAG_POSTUNPROG:
 	      case RPMTAG_VERIFYSCRIPT:
 		  continue;
 		  break;  /* Shouldn't need this */

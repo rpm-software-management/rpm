@@ -987,6 +987,11 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
 {
     int t1 = 0;
 
+    stripTrailingBlanksStringBuf(sb);
+    if (*(getStringBuf(sb)) == '\0') {
+	return 0;
+    }
+
     switch (cur_part) {
       case PREIN_PART:
 	t1 = RPMTAG_PREIN;
@@ -1004,10 +1009,7 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
 	t1 = RPMTAG_VERIFYSCRIPT;
 	break;
       case DESCRIPTION_PART:
-	/* %description is a little special.  We need to */
-	/* strip off trailing blank lines.               */
 	t1 = RPMTAG_DESCRIPTION;
-	stripTrailingBlanksStringBuf(sb);
 	break;
       case CHANGELOG_PART:
 	/* %changelog is a little special.  It goes in the   */
@@ -1048,6 +1050,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     char buf[LINE_BUF_SIZE]; /* read buffer          */
     char buf2[LINE_BUF_SIZE];
     char fileFile[LINE_BUF_SIZE];
+    char scriptProg[LINE_BUF_SIZE];
     char triggerArgs[LINE_BUF_SIZE];
     char *line;              /* "parsed" read buffer */
     
@@ -1112,6 +1115,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	    }
 
 	    /* Rip through s for -f in %files */
+	    /* not only is this code disgusting, but it allows -f on any tag */
 	    fileFile[0] = '\0';
 	    s1 = NULL;
 	    if (s &&
@@ -1160,6 +1164,49 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    s = NULL;
 		}
 	    }
+
+	    scriptProg[0] = '\0';
+	    if ((tag == PREIN_PART) ||
+		(tag == POSTIN_PART) ||
+		(tag == PREUN_PART) ||
+		(tag == POSTUN_PART)) {
+		/* find possible -p <prog> */
+		s1 = NULL;
+		if (s &&
+		    ((s1 = strstr(s, " -p ")) ||
+		     (!strncmp(s, "-p ", 3)))) {
+		}
+
+		if (s1) {
+		    s1[0] = ' ';
+		    s1++;
+		} else {
+		    s1 = s;
+		}
+		s1[0] = ' '; s1[1] = ' '; s1[2] = ' ';
+		s1 += 3;
+		while (isspace(*s1)) {
+		    s1++;
+		}
+		
+		s2 = scriptProg;
+		while (*s1 && !isspace(*s1)) {
+		    *s2 = *s1;
+		    *s1 = ' ';
+		    s1++;
+		    s2++;
+		}
+		*s2 = '\0';
+		while (isspace(*s)) {
+		    s++;
+		}
+		if (! *s) {
+		    s = NULL;
+		}
+	    }
+	    
+	    /* At this point s is the remaining args, which can only */
+	    /* be -n <pkg>, or simply <pkg>.                         */
 	    
 	    /* Handle -n in part tags */
 	    lookupopts = 0;
@@ -1214,6 +1261,27 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		}
 	    }
 
+	    if (scriptProg[0]) {
+		switch (tag) {
+		  case PREIN_PART:
+		    headerAddEntry(cur_package->header, RPMTAG_PREINPROG,
+				   RPM_STRING_TYPE, scriptProg, 1);
+		    break;
+		  case POSTIN_PART:
+		    headerAddEntry(cur_package->header, RPMTAG_POSTINPROG,
+				   RPM_STRING_TYPE, scriptProg, 1);
+		    break;
+		  case PREUN_PART:
+		    headerAddEntry(cur_package->header, RPMTAG_PREUNPROG,
+				   RPM_STRING_TYPE, scriptProg, 1);
+		    break;
+		  case POSTUN_PART:
+		    headerAddEntry(cur_package->header, RPMTAG_POSTUNPROG,
+				   RPM_STRING_TYPE, scriptProg, 1);
+		    break;
+		}
+	    }
+	    
 	    /* This line has no content -- it was just a control line */
 	    continue;
         }
@@ -1231,8 +1299,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	    }
 	    rpmMessage(RPMMESS_DEBUG, "Switched to BASE package\n");
 	}
-	
-        switch (cur_part) {
+
+	switch (cur_part) {
 	  case PREAMBLE_PART:
 	    if ((tag = find_preamble_line(line, &s))) {
 	        switch (tag) {
