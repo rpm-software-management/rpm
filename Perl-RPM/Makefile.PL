@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.12 2000/10/12 05:08:08 rjray Exp $
+# $Id: Makefile.PL,v 1.13 2000/10/13 08:42:32 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -14,8 +14,8 @@ $cwd = cwd;
          RPM/Database.xs    RPM/Database.c
          RPM/Error.xs       RPM/Error.c
          RPM/Header.xs      RPM/Header.c
-         RPM/Package.xs     RPM/Package.c
         );
+#         RPM/Package.xs     RPM/Package.c
 
 @OBJECT = values %XS;
 for (@OBJECT)
@@ -227,8 +227,7 @@ Native Bindings to the RPM API for Perl 5.005 and later. Uses a combination
 of Perl and C/XS (compiled) code to provide access to the RPM database,
 headers of installed packages, and more.
 
-# Provide perl-specific find-{provides,requires}.
-%define __find_provides /usr/lib/rpm/find-provides.perl
+# Provide perl-specific find-requires.
 %define __find_requires /usr/lib/rpm/find-requires.perl
 
 %prep
