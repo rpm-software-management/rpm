@@ -1,0 +1,58 @@
+#==============================================================================
+# Macro naming conventions (preliminary):
+#
+#	Macros that begin with an underscore are "local" in the sense that
+#	they (if used) will not be exported in rpm headers.
+#
+
+#==============================================================================
+# ---- filesystem macros.
+#
+%_usr		@prefix@
+%_usrsrc	%{_usr}/src
+%_var		@varprefix@
+
+#==============================================================================
+# ---- path macros
+#
+%__bzip2                 %(which bzip2)
+%__cat                   %(which cat)
+%__chgrp                 %(which chgrp)
+%__chmod                 %(which chmod)
+%__chown                 %(which chown)
+%__gzip                  %(which gzip)
+%__install               %(which install)
+%__make                  %(which make)
+%__mkdir                 %(which mkdir)
+%__patch                 %(which patch)
+%__ranlib                %(which ranlib)
+%__rm                    %(which rm)
+%__strip                 %(which strip)
+%__tar                   %(which tar)
+
+
+#==============================================================================
+# ---- rpmrc macros.
+#	Macros that are initialized as a side effect of rpmrc parsing.
+#	These are the default values that will be overridden by any
+#	explicit values found in /usr/lib/rpm/rpmrc or /etc/rpmrc.
+#
+%_buildarch		Unknown
+%_buildarch_lc		unknown
+%_builddir		%{_topdir}/BUILD
+%_buildos		Linux
+%_buildos_lc		linux
+%_bzip2bin		@BZIP2BIN@
+%_dbpath		%{_var}/lib/rpm
+%_defaultdocdir		%{_prefix}/doc
+%_fixperms		@FIXPERMS@
+%_gzipbin		@GZIPBIN@
+%_rpmdir		%{_topdir}/RPMS
+%_rpmfilename		%{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
+%_sourcedir		%{_topdir}/SOURCES
+%_specdir		%{_topdir}/SPECS
+%_srcrpmdir		%{_topdir}/SRPMS
+%_tmppath		%{_var}/tmp
+%_topdir		%{_usrsrc}/redhat
+%optflags		-O2
+
