@@ -14,7 +14,7 @@ $(NLSPACKAGE).pot: $(POTFILES)
 	fi
 
 clean:
-	rm -f *mo
+	rm -f *mo $(NLSPACKAGE).pot
 
 depend:
 
