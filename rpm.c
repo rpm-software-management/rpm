@@ -32,12 +32,14 @@
 #define GETOPT_DBPATH		1010
 #define GETOPT_PREFIX		1011
 #define GETOPT_TIMECHECK        1012
+#define GETOPT_REBUILDDB        1013
 
 char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
-	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, MODE_UNKNOWN };
+	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, 
+	     MODE_REBUILDDB, MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -97,6 +99,7 @@ void printUsage(void) {
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--checksig -K} [--nopgp] [--rcfile <file>] package1 ... packageN"));
+    puts(_("       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"));
     puts(_("       rpm {--querytags}"));
 }
 
@@ -203,6 +206,8 @@ void printHelp(void) {
     puts(_("      --nopgp             - skip any PGP signatures (MD5 only)"));
     puts(_("    --querytags         - list the tags that can be used in a query format"));
     puts(_("    --initdb            - make sure a valid database exists"));
+    puts(_("    --rebuilddb         - rebuild database from existing database"));
+    puts(_("      --dbpath <dir>    - use <dir> as the directory for the database"));
 }
 
 int build(char *arg, int buildAmount, char *passPhrase,
@@ -335,6 +340,7 @@ int main(int argc, char ** argv) {
 	    { "rcfile", 1, 0, 0 },
 	    { "recompile", 0, 0, GETOPT_RECOMPILE },
 	    { "rebuild", 0, 0, GETOPT_REBUILD },
+	    { "rebuilddb", 0, 0, GETOPT_REBUILDDB },
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "resign", 0, 0, GETOPT_RESIGN },
@@ -687,6 +693,12 @@ int main(int argc, char ** argv) {
 	    }
 	    setVar(RPMVAR_TIMECHECK, optarg);
 	    break;
+
+	  case GETOPT_REBUILDDB:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILDDB)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_REBUILDDB;
+	    break;
 	    
 	  default:
 	    if (options[long_index].flag) {
@@ -799,9 +811,10 @@ int main(int argc, char ** argv) {
 		 "uninstallation, and building"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && rootdir[1])
+	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && 			bigMode != MODE_REBUILDDB && rootdir[1])
 	argerror(_("--root (-r) may only be specified during "
-		 "installation, uninstallation, and querying"));
+		 "installation, uninstallation, querying, and "
+		 "database rebuilds"));
 
     if (bigMode != MODE_BUILD && clean) 
 	argerror(_("--clean may only be used during package building"));
@@ -857,6 +870,10 @@ int main(int argc, char ** argv) {
     switch (bigMode) {
       case MODE_UNKNOWN:
 	if (!version && !help) printUsage();
+	break;
+
+      case MODE_REBUILDDB:
+	ec = rpmdbRebuild(rootdir);
 	break;
 
       case MODE_QUERYTAGS:
