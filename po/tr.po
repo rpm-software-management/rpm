@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-29 16:43-0500\n"
+"POT-Creation-Date: 2000-12-30 13:33-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1666,7 +1666,7 @@ msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
 #: rpmqv.c:932
 #, fuzzy
-msgid "Use \"--macros <file:...>\" instead..\n"
+msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Yerine  -e veya --erase komutunu kullanýn\n"
 
 #: rpmqv.c:1007

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-29 16:43-0500\n"
+"POT-Creation-Date: 2000-12-30 13:33-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1620,7 +1620,7 @@ msgstr "przebuduj istniej±c± bazê"
 
 #: rpmqv.c:932
 #, fuzzy
-msgid "Use \"--macros <file:...>\" instead..\n"
+msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "U¿yj -e lub --erase\n"
 
 #: rpmqv.c:1007

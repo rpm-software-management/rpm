@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-29 16:43-0500\n"
+"POT-Creation-Date: 2000-12-30 13:33-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1629,7 +1629,7 @@ msgstr "znovu vytvori» databázu z existujúcej"
 
 #: rpmqv.c:932
 #, fuzzy
-msgid "Use \"--macros <file:...>\" instead..\n"
+msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Namiesto nich pou¾ite -e alebo --erase.\n"
 
 #: rpmqv.c:1007

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-29 16:43-0500\n"
+"POT-Creation-Date: 2000-12-30 13:33-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1698,7 +1698,7 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 #: rpmqv.c:932
 #, fuzzy
-msgid "Use \"--macros <file:...>\" instead..\n"
+msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Benutzen Sie stattdessen -e oder --erase\n"
 
 #: rpmqv.c:1007

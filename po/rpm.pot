@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-12-29 16:43-0500\n"
+"POT-Creation-Date: 2000-12-30 13:33-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1471,7 +1471,7 @@ msgid "rebuild database indices from existing database headers"
 msgstr ""
 
 #: rpmqv.c:932
-msgid "Use \"--macros <file:...>\" instead..\n"
+msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr ""
 
 #: rpmqv.c:1007

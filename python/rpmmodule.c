@@ -60,6 +60,7 @@ void initrpm(void);
 /* global module functions */
 static PyObject * doAddMacro(PyObject * self, PyObject * args);
 static PyObject * doDelMacro(PyObject * self, PyObject * args);
+static PyObject * rpmInitDB(PyObject * self, PyObject * args);
 static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args);
 static PyObject * hdrLoad(PyObject * self, PyObject * args);
 static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args);
@@ -147,6 +148,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
     { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
+    { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS, NULL },
     { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
     { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
     { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
@@ -526,7 +528,27 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
     return result;
 }
 
+static PyObject * rpmInitDB(PyObject * self, PyObject * args) {
+    char *root;
+    int forWrite = 0;
 
+    if (!PyArg_ParseTuple(args, "i|s", &forWrite, &root)) return NULL;
+
+    if (rpmdbInit(root, forWrite ? O_RDWR | O_CREAT: O_RDONLY)) {
+	char * errmsg = "cannot initialize database in %s";
+	char * errstr = NULL;
+	int errsize;
+
+	errsize = strlen(errmsg) + strlen(root);
+	errstr = alloca(errsize);
+	snprintf(errstr, errsize, errmsg, root);
+	PyErr_SetString(pyrpmError, errstr);
+	return NULL;
+    }
+
+    Py_INCREF(Py_None);
+    return(Py_None);
+}
 
 static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
     rpmdbObject * o;

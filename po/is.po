@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-29 16:43-0500\n"
+"POT-Creation-Date: 2000-12-30 13:33-0500\n"
 "PO-Revision-Date: 2000-08-02 13:00+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -1500,8 +1500,9 @@ msgid "rebuild database indices from existing database headers"
 msgstr ""
 
 #: rpmqv.c:932
-msgid "Use \"--macros <file:...>\" instead..\n"
-msgstr ""
+#, fuzzy
+msgid "Use \"--macros <file:...>\" instead.\n"
+msgstr "    --rcfile <skrá>       "
 
 #: rpmqv.c:1007
 msgid "--dbpath given for operation that does not use a database"

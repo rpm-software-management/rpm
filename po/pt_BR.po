@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-12-29 16:43-0500\n"
+msgstr "POT-Creation-Date: 2000-12-30 13:33-0500\n"
 
 # , c-format
 #: build.c:26
@@ -1697,7 +1697,7 @@ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
 #: rpmqv.c:932
 #, fuzzy
-msgid "Use \"--macros <file:...>\" instead..\n"
+msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Use -e ou --erase no lugar.\n"
 
 #: rpmqv.c:1007

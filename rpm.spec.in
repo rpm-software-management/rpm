@@ -309,6 +309,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Dec 30 2000 Jeff Johnson <jbj@redhat.com>
+- (non-linux): move stubs.c to rpmio (#21132).
+- (python): bind initdb (#20988).
+
 * Fri Dec 29 2000 Jeff Johnson <jbj@redhat.com>
 - fix: hack around alpha mis-compilation signature problems.
 - rpmmodule.c(handleDbResult): return empty list when nothing matches.

@@ -13,7 +13,7 @@ noinst_HEADERS = base64.h rpmio_internal.h
 
 lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
-	base64.c digest.c \
+	base64.c digest.c stubs.c \
 	ugid.c rpmmalloc.c rpmlog.c
 
 # XXX Add internal libtool dependence

@@ -82,6 +82,8 @@
 	- fix: avoid FAT and other brain-dead file systems that have not inodes.
 	- fix: hack around alpha mis-compilation signature problems.
 	- rpmmodule.c(handleDbResult): return empty list when nothing matches.
+	- (non-linux): move stubs.c to rpmio (#21132).
+	- (python): bind initdb (#20988).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
