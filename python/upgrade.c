@@ -39,7 +39,7 @@ int pkgCompare(void * first, void * second) {
     if (!(*a)->name) return 1;
     if (!(*b)->name) return -1;
 
-    return strcasecmp((*a)->name, (*b)->name);
+    return xstrcasecmp((*a)->name, (*b)->name);
 }
 
 

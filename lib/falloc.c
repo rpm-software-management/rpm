@@ -13,6 +13,7 @@
 
 #include "system.h"
 #include <rpmio_internal.h>
+#include <rpmerr.h>
 #include "falloc.h"
 #include "debug.h"
 
@@ -137,7 +138,7 @@ unsigned int fadAlloc(FD_t fd, unsigned int size)
 
 /* XXX W2DO? exit(EXIT_FAILURE) forces the user to discover rpm --rebuilddb */
 	if (!header.isFree) {
-	    fprintf(stderr, _("free list corrupt (%u)- please run\n"
+	    rpmError(RPMERR_FREELIST, _("free list corrupt (%u)- please run\n"
 			"\t\"rpm --rebuilddb\"\n"
 			"More information is available from http://www.rpm.org "
 			"or the rpm-list@redhat.com mailing list\n"

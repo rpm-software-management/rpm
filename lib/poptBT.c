@@ -91,9 +91,8 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
     case POPT_BUILDROOT:
 	if (rba->buildRootOverride) {
-	    fprintf(stderr, _("buildroot already specified"));
-	    exit(EXIT_FAILURE);
-	    /*@notreached@*/
+	    rpmError(RPMERR_BUILDROOT, _("buildroot already specified, ignoring %s\n"), arg);
+	    break;
 	}
 	rba->buildRootOverride = xstrdup(arg);
 	break;

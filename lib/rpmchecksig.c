@@ -35,7 +35,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
     if (*fdp == NULL && fnp && *fnp) {
 	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
 	if (fd == NULL || Ferror(fd)) {
-	    fprintf(stderr, _("%s: open failed: %s\n"), *fnp,
+	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
 		Fstrerror(fd));
 	    return 1;
 	}
@@ -46,7 +46,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
     /* open a temp file */
     if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
 	if (makeTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
-	    fprintf(stderr, _("makeTempFile failed\n"));
+	    rpmError(RPMERR_MAKETEMP, _("makeTempFile failed\n"));
 	    return 1;
 	}
 	if (fnp)
@@ -78,13 +78,13 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
 	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) < 0) {
-	    fprintf(stderr, _("%s: Fwrite failed: %s\n"), *tfnp,
+	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;
 	}
     }
     if (count < 0) {
-	fprintf(stderr, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
+	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
 	goto exit;
     }
 
@@ -133,16 +133,16 @@ l = malloc(sizeof(*l));
 	    goto exit;
 
 	if (readLead(fd, l)) {
-	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
+	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), rpm);
 	    goto exit;
 	}
 	switch (l->major) {
 	case 1:
-	    fprintf(stderr, _("%s: Can't sign v1.0 RPM\n"), rpm);
+	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't sign v1.0 RPM\n"), rpm);
 	    goto exit;
 	    /*@notreached@*/ break;
 	case 2:
-	    fprintf(stderr, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
+	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
 	    goto exit;
 	    /*@notreached@*/ break;
 	default:
@@ -150,11 +150,11 @@ l = malloc(sizeof(*l));
 	}
 
 	if (rpmReadSignature(fd, &sig, l->signature_type)) {
-	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    goto exit;
 	}
 	if (sig == NULL) {
-	    fprintf(stderr, _("%s: No signature available\n"), rpm);
+	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
 	    goto exit;
 	}
 
@@ -187,13 +187,13 @@ l = malloc(sizeof(*l));
 
 	l->signature_type = RPMSIG_HEADERSIG;
 	if (writeLead(ofd, l)) {
-	    fprintf(stderr, _("%s: writeLead failed: %s\n"), trpm,
+	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
 	}
 
 	if (rpmWriteSignature(ofd, sig)) {
-	    fprintf(stderr, _("%s: rpmWriteSignature failed: %s\n"), trpm,
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
 	}
@@ -267,13 +267,13 @@ l = malloc(sizeof(*l));
 	}
 
 	if (readLead(fd, &lead)) {
-	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
+	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
 	switch (l->major) {
 	case 1:
-	    fprintf(stderr, _("%s: No signature available (v1.0 RPM)\n"), rpm);
+	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), rpm);
 	    res++;
 	    goto bottom;
 	    /*@notreached@*/ break;
@@ -281,12 +281,12 @@ l = malloc(sizeof(*l));
 	    break;
 	}
 	if (rpmReadSignature(fd, &sig, l->signature_type)) {
-	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
 	if (sig == NULL) {
-	    fprintf(stderr, _("%s: No signature available\n"), rpm);
+	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
 	    res++;
 	    goto bottom;
 	}
@@ -432,9 +432,9 @@ l = malloc(sizeof(*l));
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
-		fprintf(stderr, "%s", (char *)buffer);
+		rpmError(RPMERR_SIGVFY, "%s", (char *)buffer);
 	    } else {
-		fprintf(stderr, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
+		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
 			_("NOT OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			(char *)missingKeys,
@@ -446,9 +446,9 @@ l = malloc(sizeof(*l));
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		fprintf(stdout, "%s", (char *)buffer);
+		rpmError(RPMERR_SIGVFY, "%s", (char *)buffer);
 	    } else {
-		fprintf(stdout, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
+		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", (char *)buffer,
 			_("OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			(char *)missingKeys,

@@ -143,7 +143,7 @@ int Rename (const char *oldpath, const char * newpath) {
 if (_rpmio_debug)
 fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int)(ne - newpath), newpath);
 	if (!(oldut == newut && oe && ne && (oe - oldpath) == (ne - newpath) &&
-	    !strncasecmp(oldpath, newpath, (oe - oldpath))))
+	    !xstrncasecmp(oldpath, newpath, (oe - oldpath))))
 	    return -2;
 	return ftpRename(oldpath, newpath);
 	/*@notreached@*/ break;
@@ -188,7 +188,7 @@ int Link (const char *oldpath, const char * newpath) {
 if (_rpmio_debug)
 fprintf(stderr, "*** link old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int)(ne - newpath), newpath);
 	if (!(oldut == newut && oe && ne && (oe - oldpath) == (ne - newpath) &&
-	    !strncasecmp(oldpath, newpath, (oe - oldpath))))
+	    !xstrncasecmp(oldpath, newpath, (oe - oldpath))))
 	    return -2;
 	oldpath = oe;
 	newpath = ne;

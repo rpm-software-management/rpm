@@ -51,13 +51,13 @@ int rpmLookupSignatureType(int action)
       { const char *name = rpmExpand("%{_signature}", NULL);
 	if (!(name && *name != '%'))
 	    rc = 0;
-	else if (!strcasecmp(name, "none"))
+	else if (!xstrcasecmp(name, "none"))
 	    rc = 0;
-	else if (!strcasecmp(name, "pgp"))
+	else if (!xstrcasecmp(name, "pgp"))
 	    rc = RPMSIGTAG_PGP;
-	else if (!strcasecmp(name, "pgp5"))	/* XXX legacy */
+	else if (!xstrcasecmp(name, "pgp5"))	/* XXX legacy */
 	    rc = RPMSIGTAG_PGP;
-	else if (!strcasecmp(name, "gpg"))
+	else if (!xstrcasecmp(name, "gpg"))
 	    rc = RPMSIGTAG_GPG;
 	else
 	    rc = -1;	/* Invalid %_signature spec in macro file */
@@ -641,7 +641,7 @@ verifyGPGSignature(const char *datafile, const void * sig, int count, char *resu
     result[0] = '\0';
     while (fgets(buf, 1024, file)) {
 	strcat(result, buf);
-	if (!strncasecmp("gpg: Can't check signature: Public key not found", buf, 48)) {
+	if (!xstrncasecmp("gpg: Can't check signature: Public key not found", buf, 48)) {
 	    res = RPMSIG_NOKEY;
 	}
     }

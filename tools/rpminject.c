@@ -60,17 +60,17 @@ static int getTagVal(const char *tname)
     const struct headerTagTableEntry *t;
     int tval;
 
-    if (strncasecmp("RPMTAG_", tname, sizeof("RPMTAG_"))) {
+    if (xstrncasecmp("RPMTAG_", tname, sizeof("RPMTAG_"))) {
 	char *tagname = alloca(sizeof("RPMTAG_") + strlen(tname));
 	sprintf(tagname, "RPMTAG_%s", tname);
 	tname = tagname;
     }
 
     for (t = rpmTagTable; t->name != NULL; t++) {
-	if (!strncasecmp(tname, t->name, strlen(t->name)))
+	if (!xstrncasecmp(tname, t->name, strlen(t->name)))
 	    return t->val;
     }
-    if (!strcasecmp(tname, hdri18ntbl))
+    if (!xstrcasecmp(tname, hdri18ntbl))
 	return HEADER_I18NTABLE;
 
     tval = atoi(tname);

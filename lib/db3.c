@@ -264,7 +264,8 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 		break;
 	    }
 	    if (opt->longName == NULL) {
-		fprintf(stderr, _("dbiSetConfig: unrecognized db option: \"%s\" ignored\n"), o);
+		rpmError(RPMERR_DBCONFIG,
+			_("unrecognized db option: \"%s\" ignored\n"), o);
 		continue;
 	    }
 
@@ -287,12 +288,13 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    case POPT_ARG_LONG:
 		aLong = strtol(p, &pe, 0);
 		if (pe) {
-		    if (!strncasecmp(pe, "Mb", 2))
+		    if (!xstrncasecmp(pe, "Mb", 2))
 			aLong *= 1024 * 1024;
-		    else if (!strncasecmp(pe, "Kb", 2))
+		    else if (!xstrncasecmp(pe, "Kb", 2))
 			aLong *= 1024;
 		    else if (*pe != '\0') {
-			fprintf(stderr,_("%s has invalid numeric value, skipped\n"),
+			rpmError(RPMERR_DBCONFIG,
+				_("%s has invalid numeric value, skipped\n"),
 				opt->longName);
 			continue;
 		    }
@@ -300,7 +302,8 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
 		if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
 		    if (aLong == LONG_MIN || aLong == LONG_MAX) {
-			fprintf(stderr, _("%s has too large or too small long value, skipped\n"),
+			rpmError(RPMERR_DBCONFIG,
+				_("%s has too large or too small long value, skipped\n"),
 				opt->longName);
 			continue;
 		    }
@@ -308,7 +311,8 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 		    break;
 		} else {
 		    if (aLong > INT_MAX || aLong < INT_MIN) {
-			fprintf(stderr, _("%s has too large or too small integer value, skipped\n"),
+			rpmError(RPMERR_DBCONFIG,
+				_("%s has too large or too small integer value, skipped\n"),
 				opt->longName);
 			continue;
 		    }
@@ -448,10 +452,12 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
     rc = error;
 
     if (printit && rc) {
-	fprintf(stderr, _("db%d error(%d)"), dbi->dbi_api, rc);
 	if (msg)
-	    fprintf(stderr, _(" performing %s"), msg);
-	fprintf(stderr, ": %s\n", db_strerror(error));
+	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
+		dbi->dbi_api, rc, msg, db_strerror(error));
+	else
+	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
+		dbi->dbi_api, rc, db_strerror(error));
     }
 
     return rc;

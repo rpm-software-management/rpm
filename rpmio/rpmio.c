@@ -537,7 +537,7 @@ const char *const ftpStrerror(int errorNumber) {
 	return _("Bad server response");
 
     case FTPERR_SERVER_IO_ERROR:
-	return _("Server IO error");
+	return _("Server I/O error");
 
     case FTPERR_SERVER_TIMEOUT:
 	return _("Server timeout");
@@ -555,7 +555,7 @@ const char *const ftpStrerror(int errorNumber) {
 	return _("Failed to establish data connection to server");
 
     case FTPERR_FILE_IO_ERROR:
-	return _("IO error to local file");
+	return _("I/O error to local file");
 
     case FTPERR_PASSIVE_ERROR:
 	return _("Error setting remote server to passive mode");

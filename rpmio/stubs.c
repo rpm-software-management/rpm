@@ -38,14 +38,6 @@
 #include "misc/stpncpy.c"
 #endif
 
-#if !defined(HAVE_STRCASECMP)
-#include "misc/strcasecmp.c"
-#endif
-
-#if !defined(HAVE_STRNCASECMP)
-#include "misc/strncasecmp.c"
-#endif
-
 #if !defined(HAVE_STRCSPN)
 #include "misc/strcspn.c"
 #endif

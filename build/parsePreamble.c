@@ -80,16 +80,11 @@ static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
     return (strtok(NULL, " \t\n")) ? 1 : 0;
 }
 
-static int parseYesNo(char *s)
+static inline int parseYesNo(const char *s)
 {
-    if (!s || (s[0] == 'n' || s[0] == 'N') ||
-	!strcasecmp(s, "false") ||
-	!strcasecmp(s, "off") ||
-	!strcmp(s, "0")) {
-	return 0;
-    }
-
-    return 1;
+    return ((!s || (s[0] == 'n' || s[0] == 'N' || s[0] == '0') ||
+	!xstrcasecmp(s, "false") || !xstrcasecmp(s, "off"))
+	    ? 0 : 1);
 }
 
 struct tokenBits {
@@ -163,26 +158,17 @@ static inline char * findLastChar(char * s)
 
 static int isMemberInEntry(Header header, const char *name, int tag)
 {
-    char **names;
+    const char ** names;
     int count;
 
-    /*
-     * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
-     * XXX os-from-uname (e.g. "Linux") is compatible with the new
-     * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-     */
-    if (headerGetEntry(header, tag, NULL, (void **)&names, &count)) {
-	while (count--) {
-	    if (!strcasecmp(names[count], name)) {
-		FREE(names);
-		return 1;
-	    }
-	}
-	FREE(names);
-	return 0;
+    if (!headerGetEntry(header, tag, NULL, (void **)&names, &count))
+	return -1;
+    while (count--) {
+	if (!xstrcasecmp(names[count], name))
+	    break;
     }
-
-    return -1;
+    FREE(names);
+    return (count >= 0 ? 1 : 0);
 }
 
 static int checkForValidArchitectures(Spec spec)
@@ -694,7 +680,7 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
 	initPreambleList();
 
     for (p = preambleList; p->token; p++) {
-	if (!strncasecmp(spec->line, p->token, p->len))
+	if (!xstrncasecmp(spec->line, p->token, p->len))
 	    break;
     }
     if (p->token == NULL)

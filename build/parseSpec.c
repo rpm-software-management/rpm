@@ -53,7 +53,7 @@ rpmParseState isPart(const char *line)
     
     for (p = partList; p->token != NULL; p++) {
 	char c;
-	if (strncasecmp(line, p->token, p->len))
+	if (xstrncasecmp(line, p->token, p->len))
 	    continue;
 	c = *(line + p->len);
 	if (c == '\0' || isspace(c))
@@ -75,12 +75,7 @@ static int matchTok(const char *token, const char *line)
 	SKIPNONSPACE(be);
 	if (be == b)
 	    break;
-    /*
-     * XXX The strncasecmp below is necessary so the old (rpm < 2.90) style
-     * XXX os-from-uname (e.g. "Linux") is compatible with the new
-     * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-     */
-	if (toklen != (be-b) || strncasecmp(token, b, (be-b)))
+	if (toklen != (be-b) || xstrncasecmp(token, b, (be-b)))
 	    continue;
 	rc = 1;
 	break;

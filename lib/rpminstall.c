@@ -330,7 +330,9 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 			rpmMessage(RPMMESS_ERROR, 
 				_("cannot open Packages database in %s\n"), dn);
 			free((void *)dn);
-			exit(EXIT_FAILURE);
+			numFailed++;
+			pkgURL[i] = NULL;
+			break;
 		    }
 		    rpmdep = rpmtransCreateSet(db, rootdir);
 		    dbIsOpen = 1;
@@ -532,7 +534,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
 	free((void *)dn);
-	exit(EXIT_FAILURE);
+	return -1;
     }
 
     rpmdep = rpmtransCreateSet(db, rootdir);

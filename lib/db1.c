@@ -88,10 +88,12 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 	rc = -1;
 
     if (printit && rc) {
-	fprintf(stderr, _("db%d error(%d)"), dbi->dbi_api, rc);
 	if (msg)
-	    fprintf(stderr, _(" performing %s"), msg);
-	fprintf(stderr, ": %s\n", db_strerror(error));
+	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
+		dbi->dbi_api, rc, msg, db_strerror(error));
+	else
+	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
+		dbi->dbi_api, rc, db_strerror(error));
     }
 
     return rc;
@@ -381,9 +383,6 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	}
 	dbi->dbi_db = NULL;
     }
-
-    if (dbi->dbi_debug)
-	fprintf(stderr, "db1close: rc %d db %p\n", rc, dbi->dbi_db);
 
     rpmMessage(RPMMESS_DEBUG, _("closed  db file        %s\n"), urlfn);
     /* Remove temporary databases */

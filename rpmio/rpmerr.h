@@ -56,28 +56,39 @@ typedef enum rpmerrCode_e {
     RPMERR_BADRELOCATE	= _em(40),  /*!< bad relocation was specified */
     RPMERR_OLDDB	= _em(41),  /*!< old format database */
 
-/* spec.c build.c pack.c */
     RPMERR_UNMATCHEDIF	= _em(107), /*!< unclosed %ifarch or %ifos */
-    RPMERR_BADARG	= _em(109), /*!< @todo Document. */
+    RPMERR_BADARG	= _em(109), /*!< */
     RPMERR_SCRIPT	= _em(110), /*!< errors related to script exec */
-    RPMERR_READ		= _em(111), /*!< @todo Document. */
-    RPMERR_UNKNOWNOS	= _em(112), /*!< @todo Document. */
-    RPMERR_UNKNOWNARCH	= _em(113), /*!< @todo Document. */
-    RPMERR_EXEC		= _em(114), /*!< @todo Document. */
-    RPMERR_FORK		= _em(115), /*!< @todo Document. */
-    RPMERR_CPIO		= _em(116), /*!< @todo Document. */
-    RPMERR_GZIP		= _em(117), /*!< @todo Document. */
-    RPMERR_BADSPEC	= _em(118), /*!< @todo Document. */
+    RPMERR_READ		= _em(111), /*!< */
+    RPMERR_UNKNOWNOS	= _em(112), /*!< */
+    RPMERR_UNKNOWNARCH	= _em(113), /*!< */
+    RPMERR_EXEC		= _em(114), /*!< */
+    RPMERR_FORK		= _em(115), /*!< */
+    RPMERR_CPIO		= _em(116), /*!< */
+    RPMERR_GZIP		= _em(117), /*!< */
+    RPMERR_BADSPEC	= _em(118), /*!< */
     RPMERR_LDD		= _em(119), /*!< couldn't understand ldd output */
-    RPMERR_BADFILENAME	= _em(120), /*!< @todo Document. */
-    RPMERR_OPEN		= _em(121), /*!< @todo Document. */
-    RPMERR_POPEN	= _em(122), /*!< @todo Document. */
+    RPMERR_BADFILENAME	= _em(120), /*!< */
+    RPMERR_OPEN		= _em(121), /*!< */
+    RPMERR_POPEN	= _em(122), /*!< */
     RPMERR_NOTREG	= _em(123), /*!< File %s is not a regular file */
-    RPMERR_QUERY	= _em(124), /*!< @todo Document. */
-    RPMERR_QFMT		= _em(125), /*!< @todo Document. */
+    RPMERR_QUERY	= _em(124), /*!< */
+    RPMERR_QFMT		= _em(125), /*!< */
+    RPMERR_DBCONFIG	= _em(126), /*!< */
+    RPMERR_DBERR	= _em(127), /*!< */
+    RPMERR_BADPACKAGE	= _em(128), /*!< */
+    RPMERR_FREELIST	= _em(129), /*!< */
+    RPMERR_DATATYPE	= _em(130), /*!< */
+    RPMERR_BUILDROOT	= _em(131), /*!< */
+    RPMERR_MAKETEMP	= _em(132), /*!< */
+    RPMERR_FWRITE	= _em(133), /*!< */
+    RPMERR_FREAD	= _em(134), /*!< */
+    RPMERR_READLEAD	= _em(135), /*!< */
+    RPMERR_WRITELEAD	= _em(136), /*!< */
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
-    RPMERR_SIGGEN	= _em(201)  /*!< Error generating signature */
+    RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */
+    RPMERR_SIGVFY	= _em(202)  /*!< */
 } rpmerrCode;
 
 /**

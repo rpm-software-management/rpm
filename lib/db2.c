@@ -108,8 +108,12 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 	rc = -1;
 
     if (printit && rc) {
-	fprintf(stderr, "*** db%d %s rc %d %s\n", dbi->dbi_api, msg,
-		rc, db_strerror(error));
+	if (msg)
+	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
+		dbi->dbi_api, rc, msg, db_strerror(error));
+	else
+	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
+		dbi->dbi_api, rc, db_strerror(error));
     }
 
     return rc;

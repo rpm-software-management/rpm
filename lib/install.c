@@ -278,7 +278,7 @@ static void trimChangelog(Header h)
  * @param h		header from
  * @param newH		header to
  * @param actions	array of file dispositions
- * @return		0 always
+ * @return		0 on success, 1 on failure
  */
 static int mergeFiles(Header h, Header newH, enum fileActions * actions)
 {
@@ -362,9 +362,10 @@ static int mergeFiles(Header h, Header newH, enum fileActions * actions)
 	    free (data);
 	    break;
 	default:
-	    fprintf(stderr, _("Data type %d not supported\n"), (int) type);
-	    exit(EXIT_FAILURE);
-	    /*@notreached@*/
+	    rpmError(RPMERR_DATATYPE, _("Data type %d not supported\n"),
+			(int) type);
+	    return 1;
+	    /*@notreached@*/ break;
 	}
     }
     headerGetEntry(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes,
@@ -1178,7 +1179,10 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	    headerModifyEntry(oldH, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 			      &multiLib, 1);
 	}
-	mergeFiles(oldH, h, actions);
+	if (mergeFiles(oldH, h, actions)) {
+	    rc = 2;
+	    goto exit;
+	}
     }
 
     if (rpmdbAdd(ts->rpmdb, h)) {

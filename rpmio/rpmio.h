@@ -390,18 +390,18 @@ int	fdReadable(FD_t fd, int secs);
  * FTP and HTTP error codes.
  */
 typedef enum ftperrCode_e {
-    FTPERR_BAD_SERVER_RESPONSE	= -1,	/*!< */
-    FTPERR_SERVER_IO_ERROR	= -2,	/*!< */
-    FTPERR_SERVER_TIMEOUT	= -3,	/*!< */
-    FTPERR_BAD_HOST_ADDR	= -4,	/*!< */
-    FTPERR_BAD_HOSTNAME		= -5,	/*!< */
-    FTPERR_FAILED_CONNECT	= -6,	/*!< */
-    FTPERR_FILE_IO_ERROR	= -7,	/*!< */
-    FTPERR_PASSIVE_ERROR	= -8,	/*!< */
-    FTPERR_FAILED_DATA_CONNECT	= -9,	/*!< */
-    FTPERR_FILE_NOT_FOUND	= -10,	/*!< */
-    FTPERR_NIC_ABORT_IN_PROGRESS= -11,	/*!< */
-    FTPERR_UNKNOWN		= -100	/*!< */
+    FTPERR_BAD_SERVER_RESPONSE	= -1,	/*!< Bad server response */
+    FTPERR_SERVER_IO_ERROR	= -2,	/*!< Server I/O error */
+    FTPERR_SERVER_TIMEOUT	= -3,	/*!< Server timeout */
+    FTPERR_BAD_HOST_ADDR	= -4,	/*!< Unable to lookup server host address */
+    FTPERR_BAD_HOSTNAME		= -5,	/*!< Unable to lookup server host name */
+    FTPERR_FAILED_CONNECT	= -6,	/*!< Failed to connect to server */
+    FTPERR_FILE_IO_ERROR	= -7,	/*!< Failed to establish data connection to server */
+    FTPERR_PASSIVE_ERROR	= -8,	/*!< I/O error to local file */
+    FTPERR_FAILED_DATA_CONNECT	= -9,	/*!< Error setting remote server to passive mode */
+    FTPERR_FILE_NOT_FOUND	= -10,	/*!< File not found on server */
+    FTPERR_NIC_ABORT_IN_PROGRESS= -11,	/*!< Abort in progress */
+    FTPERR_UNKNOWN		= -100	/*!< Unknown or unexpected error */
 } ftperrCode;
 
 /** \ingroup rpmio
@@ -454,6 +454,16 @@ int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
  */
 /*@observer@*/ extern FDIO_t fadio;
 /*@}*/
+
+/** \ingroup rpmio
+ * Locale insensitive strcasecmp(3).
+ */
+int xstrcasecmp(const char *s1, const char * s2)		/*@*/;
+
+/** \ingroup rpmio
+ * Locale insensitive strncasecmp(3).
+ */
+int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
 
 #ifdef __cplusplus
 }

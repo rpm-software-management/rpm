@@ -440,7 +440,7 @@ static int pkgCompareVer(void * first, void * second) {
     if (!(*a)->name) return 1;
     if (!(*b)->name) return -1;
 
-    ret = strcasecmp((*a)->name, (*b)->name);
+    ret = xstrcasecmp((*a)->name, (*b)->name);
     if (ret) return ret;
     score1 = psGetArchScore((*a)->h);
     if (!score1) return 1;
@@ -1091,7 +1091,7 @@ static long tagNumFromPyObject (PyObject *item)
     } else if (PyString_Check(item)) {
 	str = PyString_AsString(item);
 	for (i = 0; i < rpmTagTableSize; i++)
-	    if (!strcasecmp(rpmTagTable[i].name + 7, str)) break;
+	    if (!xstrcasecmp(rpmTagTable[i].name + 7, str)) break;
 	if (i < rpmTagTableSize) return rpmTagTable[i].val;
     }
     return -1;
@@ -1118,7 +1118,7 @@ static PyObject * hdrSubscript(hdrObject * s, PyObject * item) {
 	str = PyString_AsString(item);
 	while (extensions->name) {
 	    if (extensions->type == HEADER_EXT_TAG
-		&& !strcasecmp(extensions->name + 7, str)) {
+		&& !xstrcasecmp(extensions->name + 7, str)) {
 		(const struct headerSprintfExtension *) ext = extensions;
 	    }
 	    extensions++;

@@ -276,9 +276,6 @@ test "$with_v5_packages" = yes && AC_DEFINE(ENABLE_V5_PACKAGES)
 
 dnl Checks for libraries.
 
-AC_CHECK_FUNC(strcasecmp, [], [
-    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="$LIBS -lc -lucb" USEUCB=y])
-])
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])
@@ -654,7 +651,7 @@ dnl XXX AC_FUNC_VFORK
 dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
 AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
-AC_CHECK_FUNCS(stpcpy stpncpy strcasecmp strncasecmp strcspn)
+AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strerror strtol strtoul strspn strstr)
 
 AC_CHECK_FUNCS(regcomp)

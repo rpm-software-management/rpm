@@ -335,6 +335,7 @@ INPUT                  = \
 	./rpmio/rpmmessages.h \
 	./rpmio/rpmrpc.c \
 	./rpmio/rpmurl.h \
+	./rpmio/strcasecmp.c \
 	./rpmio/stubs.c \
 	./rpmio/ugid.c \
 	./rpmio/ugid.h \

@@ -9,6 +9,7 @@
 
 #include "system.h"
 #include "cpio.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 /*@access FD_t@*/
@@ -441,13 +442,13 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 	strcpy(buf, hdr->path);
 	strcat(buf, "-RPMDELETE");
 	if (rename(hdr->path, buf)) {
-	    fprintf(stderr, _("can't rename %s to %s: %s\n"),
+	    rpmError(RPMERR_RENAME, _("can't rename %s to %s: %s\n"),
 		hdr->path, buf, strerror(errno));
             return CPIOERR_UNLINK_FAILED;
 	}
 
 	if (unlink(buf)) {
-	    fprintf(stderr, _("can't unlink %s: %s\n"),
+	    rpmError(RPMERR_UNLINK, _("can't unlink %s: %s\n"),
 		buf, strerror(errno));
 #if 0
 	    return CPIOERR_UNLINK_FAILED;
@@ -754,7 +755,8 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	}
 	if ((rc = getNextHeader(cfd, hdr))) {
 #if 0	/* XXX this is the failure point for an unreadable rpm */
-	    fprintf(stderr, _("getNextHeader: %s\n"), cpioStrerror(rc));
+	    rpmError(RPMERR_BADPACKAGE, _("getNextHeader: %s\n"),
+			cpioStrerror(rc));
 #endif
 	    return rc;
 	}

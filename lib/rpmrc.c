@@ -117,7 +117,7 @@ static void rpmSetVarArch(int var, const char * val, const char * arch);
 static void rebuildCompatTables(int type, const char *name);
 
 static int optionCompare(const void * a, const void * b) {
-    return strcasecmp(((struct rpmOption *) a)->name,
+    return xstrcasecmp(((struct rpmOption *) a)->name,
 		      ((struct rpmOption *) b)->name);
 }
 
@@ -207,16 +207,8 @@ static /*@observer@*/ struct machEquivInfo *
 {
     int i;
 
-/*
- * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
- * XXX os-from-uname (e.g. "Linux") is compatible with the new
- * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
- * XXX A copy of this string is embedded in headers and is
- * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->.
- * XXX to verify correct arch/os from headers.
- */
     for (i = 0; i < table->count; i++)
-	if (!strcasecmp(table->list[i].name, name))
+	if (!xstrcasecmp(table->list[i].name, name))
 	    return table->list + i;
 
     return NULL;
@@ -1238,7 +1230,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	    if ((co = strrchr(c, '-')) == NULL) {
 		co = c;
 	    } else {
-		if (!strcasecmp(co, "-gnu"))
+		if (!xstrcasecmp(co, "-gnu"))
 		    *co = '\0';
 		if ((co = strrchr(c, '-')) == NULL)
 		    co = c;
