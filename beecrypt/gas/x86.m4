@@ -20,6 +20,7 @@ dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 ifelse(substr(ASM_ARCH,0,6),athlon,`
 define(USE_BSWAP)
+define(USE_MMX)
 ')
 ifelse(substr(ASM_ARCH,0,7),pentium,`
 define(USE_BSWAP)
@@ -30,7 +31,20 @@ define(USE_BSWAP)
 ifelse(ASM_ARCH,i686,`
 define(USE_BSWAP)
 ')
+ifelse(ASM_ARCH,pentium-mmx,`
+define(USE_MMX)
+')
+ifelse(ASM_ARCH,pentium2,`
+define(USE_MMX)
+')
+ifelse(ASM_ARCH,pentium3,`
+define(USE_MMX)
+define(USE_SSE)
+')
 ifelse(ASM_ARCH,pentium4,`
-define(USE_BSWAP)
+undefine(`ALIGN')
+define(ALIGN,`.p2align 4')
+define(USE_MMX)
+define(USE_SSE)
 define(USE_SSE2)
 ')

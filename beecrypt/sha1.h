@@ -41,7 +41,7 @@ typedef struct
 	#else
 	# error
 	#endif
-	unsigned short offset;
+	uint32_t offset;
 } sha1Param;
 
 #ifdef __cplusplus

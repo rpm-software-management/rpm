@@ -388,8 +388,8 @@ int b64decode (const char * s, void ** datap, size_t *lenp)
     
     /* Validate input buffer */
     ns = 0;
-    for (t = s; *t != '\0'; t++) {
-	switch (b64dec[ (unsigned)*t ]) {
+    for (t = (unsigned char *) s; *t != '\0'; t++) {
+	switch (b64dec[(unsigned)*t]) {
 	case 0x80:	/* invalid chararcter */
 if (_debug)
 fprintf(stderr, "--- b64decode %c(%02x) %02x\n", *t, (unsigned)(*t & 0xff), (unsigned)b64dec[ (unsigned)*t ]);

@@ -30,6 +30,14 @@
 #include "endianness.h"
 #include "debug.h"
 
+#ifdef ASM_BLOWFISHENCRYPTECB
+extern int blowfishEncryptECB(blowfishparam*, uint32_t*, const uint32_t*, unsigned int);
+#endif
+
+#ifdef ASM_BLOWFISHDECRYPTECB
+extern int blowfishDecryptECB(blowfishparam*, uint32_t*, const uint32_t*, unsigned int);
+#endif
+
 /*!\addtogroup BC_blowfish_m
  * \{
  */
@@ -311,7 +319,40 @@ static uint32_t _bf_s[1024] = {
 #define DROUND(l,r) l ^= *(p--); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 
 /*@-sizeoftype@*/
-const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8U, 64U, 448U, 32U, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, (blockCipherFeedback) blowfishFeedback };
+const blockCipher blowfish = {
+	"Blowfish",
+	sizeof(blowfishParam),
+	8U,
+	64U,
+	448U,
+	32U,
+	(blockCipherSetup) blowfishSetup,
+	(blockCipherSetIV) blowfishSetIV,
+	/* raw */
+	{
+		(blockCipherRawcrypt) blowfishEncrypt,
+		(blockCipherRawcrypt) blowfishDecrypt
+	},
+	/* ecb */
+	{
+		#ifdef AES_BLOWFISHENCRYPTECB
+		(blockCipherModcrypt) blowfishEncryptECB,
+		#else
+		(blockCipherModcrypt) 0,
+		#endif
+		#ifdef AES_BLOWFISHENCRYPTECB
+		(blockCipherModcrypt) blowfishDecryptECB,
+		#else
+		(blockCipherModcrypt) 0
+		#endif
+	},
+	/* cbc */
+	{
+		(blockCipherModcrypt) 0,
+		(blockCipherModcrypt) 0
+	},
+	(blockCipherFeedback) blowfishFeedback
+};
 /*@=sizeoftype@*/
 
 int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOperation op)

@@ -39,7 +39,7 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 	while (nblocks > 0)
 	{
 /*@-noeffectuncon@*/
-		(void) bc->encrypt(bp, dst, src);
+		(void) bc->raw.encrypt(bp, dst, src);
 /*@=noeffectuncon@*/
 
 		dst += blockwords;
@@ -47,6 +47,7 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 		nblocks--;
 	}
+
 	return 0;
 }
 
@@ -57,7 +58,7 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 	while (nblocks > 0)
 	{
 /*@-noeffectuncon@*/
-		(void) bc->decrypt(bp, dst, src);
+		(void) bc->raw.decrypt(bp, dst, src);
 /*@=noeffectuncon@*/
 
 		dst += blockwords;
@@ -65,6 +66,7 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 		nblocks--;
 	}
+
 	return 0;
 }
 
@@ -81,7 +83,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			dst[i] = src[i] ^ fdback[i];
 
 /*@-noeffectuncon@*/
-		(void) bc->encrypt(bp, dst, dst);
+		(void) bc->raw.encrypt(bp, dst, dst);
 /*@=noeffectuncon@*/
 
 		src += blockwords;
@@ -96,7 +98,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			dst += blockwords;
 
 /*@-noeffectuncon@*/
-			(void) bc->encrypt(bp, dst, dst);
+			(void) bc->raw.encrypt(bp, dst, dst);
 /*@=noeffectuncon@*/
 
 			src += blockwords;
@@ -110,12 +112,12 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			fdback[i] = dst[i];
 /*@=usedef@*/
 	}
+
 	return 0;
 }
 
 int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
 {
-	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
 	register const unsigned int blockwords = bc->blocksize >> 2;
 	register uint32_t* fdback = bc->getfb(bp);
 	register uint32_t* buf = (uint32_t*) malloc(blockwords * sizeof(*buf));
@@ -128,7 +130,7 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			register unsigned int i;
 
 /*@-noeffectuncon@*/
-			(void) bc->decrypt(bp, buf, src);
+			(void) bc->raw.decrypt(bp, buf, src);
 /*@=noeffectuncon@*/
 
 			for (i = 0; i < blockwords; i++)
@@ -148,6 +150,7 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 		free(buf);
 		return 0;
 	}
+
 	return -1;
 }
 

@@ -431,11 +431,17 @@ AC_DEFUN(BEECRYPT_INTEL_CC,[
       i586 | pentium | pentium-mmx)
         CFLAGS="$CFLAGS -tpp5"
         ;;
-      i686 | pentiumpro | pentium[[23]])
-        CFLAGS="$CFLAGS -tpp6"
+      i686 | pentiumpro)
+        CFLAGS="$CFLAGS -tpp6 -march=pentiumpro"
+        ;;
+      pentium2)
+        CFLAGS="$CFLAGS -tpp6 -march=pentiumii"
+        ;;
+      pentium3)
+        CFLAGS="$CFLAGS -tpp6 -march=pentiumiii"
         ;;
       pentium4)
-        CFLAGS="$CFLAGS -tpp7"
+        CFLAGS="$CFLAGS -tpp7 -march=pentium4"
         ;;
       esac
     fi
@@ -599,6 +605,9 @@ AC_DEFUN(BEECRYPT_ASM_SOURCES,[
         ])
       ;;
     athlon* | i[[3456]]86 | pentium*)
+      AC_CONFIG_COMMANDS([aesopt.x86],[
+        m4 $srcdir/gas/aesopt.x86.m4 > aesopt.s
+        ])
       AC_CONFIG_COMMANDS([mpopt.x86],[
         m4 $srcdir/gas/mpopt.x86.m4 > mpopt.s
         ])
@@ -654,9 +663,6 @@ AC_DEFUN(BEECRYPT_ASM_SOURCES,[
       # Code is i586-specific!
       case $bc_target_arch in
       athlon* | i[[56]]86 | pentium*)
-        AC_CONFIG_COMMANDS([aesopt.i586],[
-          m4 $srcdir/gas/aesopt.i586.m4 > aesopt.s
-          ])
         AC_CONFIG_COMMANDS([blowfishopt.i586],[
           m4 $srcdir/gas/blowfishopt.i586.m4 > blowfishopt.s
           ])

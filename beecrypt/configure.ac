@@ -185,13 +185,6 @@ AC_ARG_WITH(python,[  --with-python         creates the python bindings code [de
 # Check for Unix variants
 AC_AIX
 
-dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
-MARK64=
-case "${target_cpu}" in
-x86_64*|powerpc64*|ppc64*|sparc64*|s390x*)        MARK64=64 ;;
-esac
-AC_SUBST(MARK64)
-
 # Checks for C compiler and preprocessor
 AC_PROG_CC
 AC_PROG_CPP
@@ -407,6 +400,13 @@ if test "$ac_enable_threads" = yes; then
       AC_DEFINE([ENABLE_THREADS],1)
       bc_include_pthread_h="#include <pthread.h>"
       bc_typedef_bc_lock_t="typedef pthread_mutex_t bc_lock_t;"
+      # On most systems this tests will say 'none required', but that doesn't
+      # mean that the linked code will work correctly!
+      case $target_os in
+      linux* | solaris* )
+        LIBS="-lpthread $LIBS"
+        ;;
+      esac
       ])
   else
     AC_MSG_WARN([Don't know which thread library to check for])
@@ -649,7 +649,7 @@ if test "$ac_enable_debug" != yes; then
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_ARM"
     ;;
   athlon*)
-    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I386"
+    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I386 -DOPTIMIZE_MMX"
     ;;
   i386)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I386"
@@ -672,8 +672,17 @@ if test "$ac_enable_debug" != yes; then
   pentium | pentium-mmx)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I586"
     ;;
-  pentiumpro | pentium[[234]])
+  pentiumpro)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686"
+    ;;
+  pentium2)
+    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686 -DOPTIMIZE_MMX"
+    ;;
+  pentium3)
+    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686 -DOPTIMIZE_MMX -DOPTIMIZE_SSE"
+    ;;
+  pentium4)
+    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686 -DOPTIMIZE_MMX -DOPTIMIZE_SSE -DOPTIMIZE_SSE2" 
     ;;
   powerpc)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_POWERPC"
@@ -734,6 +743,19 @@ if test "$ac_with_python" = yes; then
 fi
 
 AC_SUBST([MAYBE_OPT])
+       
+# Check where to install the libraries
+bc_libalt=
+case $target_os in
+linux*)
+  case $bc_target_arch in
+  alpha* | powerpc64 | s390x | x86_64)
+    bc_libalt="64"
+    ;; 
+  esac 
+  ;;
+esac
+AC_SUBST(LIBALT,$bc_libalt)
 
 # Generate output files.
 AC_CONFIG_FILES([Makefile

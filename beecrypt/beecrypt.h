@@ -717,7 +717,7 @@ typedef int (*blockCipherSetIV) (blockCipherParam* param, const byte* data)
 	/*@modifies param @*/;
 
 /** \ingroup BC_m
- * Encrypt one block of data (with bit size chosen by the blockcipher).
+ * Encrypt/decrypt a block of data.
  * @note This is raw encryption, without padding, etc.
  *
  * @param param		blockcipher parameters
@@ -725,22 +725,35 @@ typedef int (*blockCipherSetIV) (blockCipherParam* param, const byte* data)
  * @param src		plaintext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherEncrypt) (blockCipherParam* param, uint32_t* dst, const uint32_t* src)
+typedef int (*blockCipherRawcrypt) (blockCipherParam* param, uint32_t* dst, const uint32_t* src)
 	/*@modifies param, dst @*/;
 
 /** \ingroup BC_m
- * Decrypt one block of data (with bit size chosen by the blockcipher).
+ * Encrypt/decrypt multiple blocks of data.
  * @note This is raw decryption, without padding, etc.
  *
  * @param param		blockcipher parameters
  * @retval dst		plaintext block
  * @param src		ciphertext block
+ * @param nblocks	no. of blocks
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherDecrypt) (blockCipherParam* param, uint32_t* dst, const uint32_t* src)
+typedef int (*blockCipherModcrypt) (blockCipherParam* param, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
 	/*@modifies param, dst @*/;
 
 typedef uint32_t* (*blockCipherFeedback)(blockCipherParam*);
+
+typedef struct
+{
+	const blockCipherRawcrypt encrypt;
+	const blockCipherRawcrypt decrypt;
+} blockCipherRaw;
+
+typedef struct
+{
+	const blockCipherModcrypt encrypt;
+	const blockCipherModcrypt decrypt;
+} blockCipherMode;
 
 /** \ingroup BC_m
  * Methods and parameters for block ciphers.
@@ -757,8 +770,9 @@ typedef struct
     const size_t keybitsinc;		/*!< keysize increment in bits */
     const blockCipherSetup setup;
     const blockCipherSetIV setiv;
-    const blockCipherEncrypt encrypt;
-    const blockCipherDecrypt decrypt;
+    const blockCipherRaw raw;
+    const blockCipherMode ecb;
+    const blockCipherMode cbc;
     const blockCipherFeedback getfb;
 } blockCipher;
 

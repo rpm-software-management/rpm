@@ -36,7 +36,19 @@
  */
 
 /*@-sizeoftype@*/
-const keyedHashFunction hmacsha1 = { "HMAC-SHA-1", sizeof(hmacsha1Param), 64U, 5U * sizeof(uint32_t), 64U, 512U, 32U, (keyedHashFunctionSetup) hmacsha1Setup, (keyedHashFunctionReset) hmacsha1Reset, (keyedHashFunctionUpdate) hmacsha1Update, (keyedHashFunctionDigest) hmacsha1Digest };
+const keyedHashFunction hmacsha1 = {
+	"HMAC-SHA-1",
+	sizeof(hmacsha1Param),
+	64U,
+	5U * sizeof(uint32_t),
+	64U,
+	512U,
+	32U,
+	(keyedHashFunctionSetup) hmacsha1Setup,
+	(keyedHashFunctionReset) hmacsha1Reset,
+	(keyedHashFunctionUpdate) hmacsha1Update,
+	(keyedHashFunctionDigest) hmacsha1Digest
+};
 /*@=sizeoftype@*/
 
 /*@-type@*/	/* fix: cast to (hashFunctionParam*) */

@@ -40,7 +40,14 @@
 static uint32_t fips186hinit[5] = { 0xefcdab89U, 0x98badcfeU, 0x10325476U, 0xc3d2e1f0U, 0x67452301U };
 
 /*@-sizeoftype@*/
-const randomGenerator fips186prng = { "FIPS 186", sizeof(fips186Param), (const randomGeneratorSetup) fips186Setup, (const randomGeneratorSeed) fips186Seed, (const randomGeneratorNext) fips186Next, (const randomGeneratorCleanup) fips186Cleanup };
+const randomGenerator fips186prng = {
+	"FIPS 186",
+	sizeof(fips186Param),
+	(const randomGeneratorSetup) fips186Setup,
+	(const randomGeneratorSeed) fips186Seed,
+	(const randomGeneratorNext) fips186Next,
+	(const randomGeneratorCleanup) fips186Cleanup
+};
 /*@=sizeoftype@*/
 
 /**

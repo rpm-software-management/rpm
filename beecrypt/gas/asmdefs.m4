@@ -29,10 +29,10 @@ define(LOCAL,`LSYM_PREFIX`$1'')
 ifdef(`ALIGN',,`define(`ALIGN',`')')
 
 ifelse(USE_TYPE_DIRECTIVE,yes,`
-ifelse(SUBSTR(ASM_ARCH,0,3),arm,`
+ifelse(substr(ASM_ARCH,0,3),arm,`
 define(FUNCTION_TYPE,`function')
 ',`
-ifelse(SUBSTR(ASM_ARCH,0,5),sparc,`
+ifelse(substr(ASM_ARCH,0,5),sparc,`
 define(FUNCTION_TYPE,`#function')
 ',`
 define(FUNCTION_TYPE,`@function')

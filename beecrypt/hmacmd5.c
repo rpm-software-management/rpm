@@ -36,7 +36,19 @@
  */
 
 /*@-sizeoftype@*/
-const keyedHashFunction hmacmd5 = { "HMAC-MD5", sizeof(hmacmd5Param), 64U, 4U * sizeof(uint32_t), 64U, 512U, 32U, (const keyedHashFunctionSetup) hmacmd5Setup, (const keyedHashFunctionReset) hmacmd5Reset, (const keyedHashFunctionUpdate) hmacmd5Update, (const keyedHashFunctionDigest) hmacmd5Digest };
+const keyedHashFunction hmacmd5 = {
+	"HMAC-MD5",
+	sizeof(hmacmd5Param),
+	64U,
+	4U * sizeof(uint32_t),
+	64U,
+	512U,
+	32U,
+	(const keyedHashFunctionSetup) hmacmd5Setup,
+	(const keyedHashFunctionReset) hmacmd5Reset,
+	(const keyedHashFunctionUpdate) hmacmd5Update,
+	(const keyedHashFunctionDigest) hmacmd5Digest
+};
 /*@=sizeoftype@*/
 
 /*@-type@*/	/* fix: cast to (hashFunctionParam*) */

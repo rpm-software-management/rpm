@@ -881,10 +881,14 @@ int blockCipherContextECB(blockCipherContext* ctxt, uint32_t* dst, const uint32_
 		return 0;
 		/*@notreached@*/ break;
 	case ENCRYPT:
-		return blockEncryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
+		return (ctxt->algo->ecb.encrypt) ?
+			ctxt->algo->ecb.encrypt(ctxt->param, dst, src, nblocks) :
+			blockEncryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
 		/*@notreached@*/ break;
 	case DECRYPT:
-		return blockDecryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
+		return (ctxt->algo->ecb.decrypt) ?
+			ctxt->algo->ecb.decrypt(ctxt->param, dst, src, nblocks) :
+			blockDecryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
 		/*@notreached@*/ break;
 	}
 	/*@notreached@*/
@@ -902,10 +906,14 @@ int blockCipherContextCBC(blockCipherContext* ctxt, uint32_t* dst, const uint32_
 		return 0;
 		/*@notreached@*/ break;
 	case ENCRYPT:
-		return blockEncryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
+		return (ctxt->algo->cbc.encrypt) ?
+			ctxt->algo->cbc.encrypt(ctxt->param, dst, src, nblocks) :
+			blockEncryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
 		/*@notreached@*/ break;
 	case DECRYPT:
-		return blockDecryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
+		return (ctxt->algo->cbc.decrypt) ?
+			ctxt->algo->cbc.decrypt(ctxt->param, dst, src, nblocks) :
+			blockDecryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
 		/*@notreached@*/ break;
 	}
 	/*@notreached@*/

@@ -55,7 +55,15 @@ static const uint32_t hinit[8] = {
 };
 
 /*@-sizeoftype@*/
-const hashFunction sha256 = { "SHA-256", sizeof(sha256Param), 64U, 8U * sizeof(uint32_t), (hashFunctionReset) sha256Reset, (hashFunctionUpdate) sha256Update, (hashFunctionDigest) sha256Digest };
+const hashFunction sha256 = {
+	"SHA-256",
+	sizeof(sha256Param),
+	64U,
+	8U * sizeof(uint32_t),
+	(hashFunctionReset) sha256Reset,
+	(hashFunctionUpdate) sha256Update,
+	(hashFunctionDigest) sha256Digest
+};
 /*@=sizeoftype@*/
 
 int sha256Reset(sha256Param* sp)
@@ -191,7 +199,7 @@ void sha256Process(sha256Param* sp)
 
 int sha256Update(sha256Param* sp, const byte* data, size_t size)
 {
-	register unsigned short proclength;
+	register uint32_t proclength;
 
 	#if (MP_WBITS == 64)
 	mpw add[1];
