@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.78 2000/07/13 23:30:43 jbj Exp $
+# $Id: sl.po,v 1.79 2000/07/15 14:53:58 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-13 19:28-0400\n"
+"POT-Creation-Date: 2000-07-15 10:39-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2108,32 +2108,27 @@ msgstr "vrstica %d: polje Epoch/Serial mora biti ¹tevilo: %s"
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "vrstica %d: okvarjena oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:539
-#, fuzzy, c-format
-msgid "line %d: Invalid tag value: %s"
-msgstr "vrstica %d: Deformirana znaèka: %s"
-
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:536
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Interna napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:693
+#: build/parsePreamble.c:675
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Okvarjeno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:699
+#: build/parsePreamble.c:681
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:726
+#: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:751
+#: build/parsePreamble.c:733
 msgid "Spec file can't use BuildRoot"
 msgstr "Datoteka spec ne more uporabiti BuildRoot"
 
@@ -2302,56 +2297,56 @@ msgstr "vrstica %d: Okvarjeno ¹tevilo no%s: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "vrstica %d: Okvarjeno ¹tevilo %s: %s\n"
 
-#: lib/cpio.c:361
+#: lib/cpio.c:362
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "ni mo¾no preimenovati %s v %s: %s\n"
 
-#: lib/cpio.c:367
+#: lib/cpio.c:368
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "ni mo¾no zbrisati %s: %s\n"
 
-#: lib/cpio.c:611
+#: lib/cpio.c:612
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1073
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(napaka 0x%x)"
 
-#: lib/cpio.c:1075
+#: lib/cpio.c:1076
 msgid "Bad magic"
 msgstr "Okvarjeno magièno ¹tevilo"
 
-#: lib/cpio.c:1076
+#: lib/cpio.c:1077
 msgid "Bad/unreadable  header"
 msgstr "Okvarjena/neberljiva glava"
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1095
 msgid "Header size too big"
 msgstr "Glava predolga"
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1096
 msgid "Unknown file type"
 msgstr "Neznan tip datoteke"
 
-#: lib/cpio.c:1096
+#: lib/cpio.c:1097
 msgid "Missing hard link"
 msgstr "Trda povezava manjka"
 
-#: lib/cpio.c:1097
+#: lib/cpio.c:1098
 msgid "Internal error"
 msgstr "Interna napaka"
 
-#: lib/cpio.c:1106
+#: lib/cpio.c:1107
 msgid " failed - "
 msgstr " neuspe¹no - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:467
+#: lib/depends.c:456
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2360,84 +2355,69 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:496
+#: lib/depends.c:485
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:836
+#: lib/depends.c:825
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s zadovoljen ob dodatnem seznamu datotek.\n"
 
-#: lib/depends.c:885
-#, fuzzy, c-format
-msgid "%s: %-45s YES (added package)\n"
-msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
-
-#: lib/depends.c:889
-#, c-format
-msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
-msgstr ""
-
-#: lib/depends.c:908
+#: lib/depends.c:874
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s zadovoljen ob dodatni ponudbi.\n"
 
-#: lib/depends.c:952
+#: lib/depends.c:918
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:969
+#: lib/depends.c:935
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:985
+#: lib/depends.c:951
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:1005
+#: lib/depends.c:971
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:984
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s zadovoljen ob ponudbi db.\n"
 
-#: lib/depends.c:1032
-#, fuzzy, c-format
-msgid "%s: %-45s YES (db packages)\n"
-msgstr "%s: %s zadovoljen ob paketih db.\n"
-
-#: lib/depends.c:1047
+#: lib/depends.c:997
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1068
+#: lib/depends.c:1018
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1122
+#: lib/depends.c:1072
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s zahteva, a ni zadovoljeno: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1189
+#: lib/depends.c:1139
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s v sporu: %s\n"
 
-#: lib/depends.c:1315
+#: lib/depends.c:1265
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "zanka v predpogojevani verigi: %s"
@@ -2757,7 +2737,7 @@ msgstr "izvorni paket ne vsebuje datoteke .spec"
 msgid "renaming %s to %s\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/install.c:748 lib/install.c:1028 lib/uninstall.c:28
+#: lib/install.c:748 lib/install.c:1021 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s v %s neuspe¹no: %s"
@@ -2766,30 +2746,30 @@ msgstr "preimenovanje %s v %s neuspe¹no: %s"
 msgid "source package expected, binary found"
 msgstr "prièakovan izvorni paket, najden binarni"
 
-#: lib/install.c:897
+#: lib/install.c:890
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/install.c:957
+#: lib/install.c:950
 msgid "stopping install as we're running --test\n"
 msgstr "ustavljamo namestitev ker teèemo kot --test\n"
 
-#: lib/install.c:962
+#: lib/install.c:955
 msgid "running preinstall script (if any)\n"
 msgstr "poganjamo prednamestitvene skripte (èe obstajajo)\n"
 
-#: lib/install.c:987
+#: lib/install.c:980
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/install.c:1024
+#: lib/install.c:1017
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/install.c:1112
+#: lib/install.c:1105
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
 
@@ -2803,26 +2783,15 @@ msgstr "napaka pri ustvarjanju zaèasne datoteke %s"
 msgid "bad file state: %s"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/package.c:237
-msgid "package is a version one package!\n"
-msgstr "paket je paket razlièica ena!\n"
+#: lib/package.c:53
+#, fuzzy
+msgid "packaging version 1 is notsupported by this version of RPM"
+msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <= 3"
 
-#: lib/package.c:242
-msgid "old style source package -- I'll do my best\n"
-msgstr "izvorni paket v starem zapisu -- posku¹amo, kar se da\n"
-
-#: lib/package.c:245
-#, c-format
-msgid "archive offset is %d\n"
-msgstr "odmik arhiva je %d\n"
-
-#: lib/package.c:256
-msgid "old style binary package\n"
-msgstr "binarni paket v starem zapisu\n"
-
-#: lib/package.c:322
+#: lib/package.c:113
+#, fuzzy
 msgid ""
-"only packages with major numbers <= 3 are supported by this version of RPM"
+"only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <= 3"
 
 #: lib/poptBT.c:82
@@ -3835,11 +3804,6 @@ msgstr "prestavljamo imenik %s v %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
-#: lib/transaction.c:1383
-#, c-format
-msgid "executing pre-transaction syscall: \"%s\"\n"
-msgstr ""
-
 #: lib/uninstall.c:42
 #, c-format
 msgid "cannot remove %s - directory not empty"
@@ -4087,6 +4051,30 @@ msgstr "vrata URL morajo biti ¹tevilka\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#, fuzzy
+#~ msgid "line %d: Invalid tag value: %s"
+#~ msgstr "vrstica %d: Deformirana znaèka: %s"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (added package)\n"
+#~ msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db packages)\n"
+#~ msgstr "%s: %s zadovoljen ob paketih db.\n"
+
+#~ msgid "package is a version one package!\n"
+#~ msgstr "paket je paket razlièica ena!\n"
+
+#~ msgid "old style source package -- I'll do my best\n"
+#~ msgstr "izvorni paket v starem zapisu -- posku¹amo, kar se da\n"
+
+#~ msgid "archive offset is %d\n"
+#~ msgstr "odmik arhiva je %d\n"
+
+#~ msgid "old style binary package\n"
+#~ msgstr "binarni paket v starem zapisu\n"
 
 #, fuzzy
 #~ msgid ""

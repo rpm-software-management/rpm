@@ -9,7 +9,7 @@
 /*@access rpmProblem@*/
 
 /* XXX FIXME: merge into problems */
-/* XXX used in verify.c */
+/* XXX used in verify.c rpmlibprov.c */
 void printDepFlags(FILE * fp, const char * version, int flags)
 {
     if (flags)

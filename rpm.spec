@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.53
+Release: 0.54
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -257,6 +257,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jul 15 2000 Jeff Johnson <jbj@redhat.com>
+- rip out pre-transaction syscalls, more design is needed.
+- display rpmlib provides when invoked with --showrc.
+- remove (dead) dependency checks on implicitly provided package names.
+- remove (dead) rpmdb API code in python bindings.
+- remove (legacy) support for version 1 packaging.
+- remove (legacy) support for converting gdbm databases.
+
 * Thu Jul 13 2000 Jeff Johnson <jbj@redhat.com>
 - fix: initialize pretransaction argv (segfault).
 - fix: check rpmlib features w/o database (and check earlier as well).

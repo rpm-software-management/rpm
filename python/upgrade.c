@@ -104,27 +104,11 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
     char **installedDirs;
     int_32 * installedDirIndexes;
     int installedFileCount;
-
-  { Header h = NULL;
-
-#ifdef	DYING
-    int num;
-
-    for (num = rpmdbFirstRecNum(db);
-	 num > 0;
-	 num = rpmdbNextRecNum(db, num))
-    {
-	if (h) {
-	    headerFree(h);
-	    h = NULL;
-	}
-	h = rpmdbGetRecord(db, num);
-#else
+    Header h = NULL;
     rpmdbMatchIterator mi;
 
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-#endif
 
 	headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
 	if (name && !strcmp(name, "metroess")) {
@@ -152,18 +136,9 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
 		free(installedDirs);
 	    }
 	}
-#ifndef	DYING
     }
 
     rpmdbFreeIterator(mi);
-#else
-    }
-    if (h) {
-	headerFree(h);
-	h = NULL;
-    }
-#endif
-  }
 }
 
 static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
@@ -183,26 +158,10 @@ static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
 	if (headerGetEntryMinMemory((*pip)->h, RPMTAG_OBSOLETENAME, NULL,
 		       (void **) &obsoletes, &obsoletesCount)) {
 	    while (obsoletesCount--) {
-#ifdef	DYING
-		dbiIndexSet matches;
-		int rc;
-
-		rc = rpmdbFindPackage(db, obsoletes[obsoletesCount], &matches);
-		if (!rc) {
-		    if (dbiIndexSetCount(matches)) {
-			(*pip)->selected = 1;
-			dbiFreeIndexSet(matches);
-			break;
-		    }
-
-		    dbiFreeIndexSet(matches);
-		}
-#else
 		if (rpmdbCountPackages(db, obsoletes[obsoletesCount]) > 0) {
 		    (*pip)->selected = 1;
 		    break;
 		}
-#endif
 	    }
 
 	    free(obsoletes);
@@ -224,10 +183,6 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
     int skipThis;
     Header h, installedHeader;
     char *name;
-#ifdef	DYING
-    dbiIndexSet matches;
-    int rc, i;
-#endif
     int count;
     char **installedFiles, **availFiles;
     char **installedDirs, ** availDirs;
@@ -248,33 +203,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	}
 	
 	DEBUG (("Avail: %s\n", name));
-#ifdef	DYING
-	rc = rpmdbFindPackage(db, name, &matches);
 
-	if (rc == 0) {
-	    skipThis = 0;
-	    rpmErrorSetCallback(errorFunction);
-	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		installedHeader =
-		    rpmdbGetRecord(db, dbiIndexRecordOffset(matches, i));
-		if (rpmVersionCompare(installedHeader, h) >= 0) {
-		    /* already have a newer version installed */
-		    DEBUG (("Already have newer version\n"))
-		    skipThis = 1;
-		    headerFree(installedHeader);
-		    break;
-		}
-		headerFree(installedHeader);
-	    }
-	    rpmErrorSetCallback(NULL);
-	    if (! skipThis) {
-		DEBUG (("No newer version installed\n"))
-	    }
-	} else {
-	    skipThis = 1;
-	    DEBUG (("Not installed\n"))
-	}
-#else
     {	rpmdbMatchIterator mi;
 
 	mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
@@ -294,7 +223,6 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	    DEBUG (("No newer version installed\n"))
 	}
     }
-#endif
 	
 	if (skipThis) {
 	    DEBUG (("DO NOT INSTALL\n"))
@@ -313,31 +241,6 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 			    (void **) &availDirIndexes, NULL);
 	    }
 
-#ifdef	DYING
-	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		/* Compare the file lists */
-		installedHeader =
-		    rpmdbGetRecord(db, dbiIndexRecordOffset(matches, i));
-		if (headerGetEntryMinMemory(installedHeader, RPMTAG_BASENAMES, 
-			      NULL, (void **) &installedFiles,
-			      &installedFileCount)) {
-		    headerGetEntryMinMemory(installedHeader, RPMTAG_DIRNAMES, 
-				NULL, (void **) &installedDirs, NULL);
-		    headerGetEntryMinMemory(installedHeader, RPMTAG_DIRINDEXES, 
-				NULL, (void **) &installedDirIndexes, NULL);
-
-		    compareFileList(availFileCount, availFiles,
-				    availDirs, availDirIndexes,
-				    installedFileCount, installedFiles, 
-				    installedDirs, installedDirIndexes,
-				    ht);
-
-		    free(installedFiles);
-		    free(installedDirs);
-		}
-		headerFree(installedHeader);
-	    }
-#else
 	{   rpmdbMatchIterator mi;
 	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	    while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
@@ -361,19 +264,12 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	    }
 	    rpmdbFreeIterator(mi);
 	}
-#endif
 
 	    if (availFiles) {
 		free(availFiles);
 		free(availDirs);
 	    }
 	}
-
-#ifdef	DYING
-	if (rc == 0) {
-	    dbiFreeIndexSet(matches);
-	}
-#endif
 
 	DEBUG (("\n\n"))
 
@@ -524,32 +420,7 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 		/*logMessage("Failed with bad header");*/
 		return(-1);
 	    }
-#ifdef	DYING
-	{   dbiIndexSet matches;
-	    int rc;
-	    int i;
-
-	    rc = rpmdbFindPackage(db, name, &matches);
-	    if (rc == 0) {
-		rpmErrorSetCallback(errorFunction);
-		for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		    installedHeader =
-			rpmdbGetRecord(db, dbiIndexRecordOffset(matches, i));
-		    if (rpmVersionCompare(installedHeader, h) >= 0) {
-			/* already have a newer version installed */
-			DEBUG (("Already have newer version\n"))
-			(*pip)->selected = 0;
-			headerFree(installedHeader);
-			break;
-		    }
-		    headerFree(installedHeader);
-		}
-		rpmErrorSetCallback(NULL);
-		dbiFreeIndexSet(matches);
-	    }
-	}
-#else
-	{   rpmdbMatchIterator mi;
+	  { rpmdbMatchIterator mi;
 
 	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	    rpmErrorSetCallback(errorFunction);
@@ -563,8 +434,7 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 	    }
 	    rpmdbFreeIterator(mi);
 	    rpmErrorSetCallback(NULL);
-	}
-#endif
+	  }
 	}
 
 	pip++;

@@ -61,7 +61,7 @@ static /*@only@*/ char *printDepend(const char * depend, const char * key, const
     return tbuf;
 }
 
-#ifdef	DYING
+#ifdef	UNUSED
 static /*@only@*/ const char *buildEVR(int_32 *e, const char *v, const char *r)
 {
     const char *pEVR;
@@ -337,9 +337,6 @@ static void alMakeIndex(struct availableList * al)
 
     if (ai->size) return;
 
-#ifdef	DYING
-    ai->size = al->size;
-#endif
     for (i = 0; i < al->size; i++) 
 	ai->size += al->list[i].providesCount;
 
@@ -348,14 +345,6 @@ static void alMakeIndex(struct availableList * al)
 
 	k = 0;
 	for (i = 0; i < al->size; i++) {
-#ifdef	DYING
-	    ai->index[k].package = al->list + i;
-	    ai->index[k].entry = al->list[i].name;
-	    ai->index[k].entryLen = strlen(al->list[i].name);
-	    ai->index[k].type = IET_NAME;
-	    k++;
-#endif
-
 	    for (j = 0; j < al->list[i].providesCount; j++) {
 
 		/* If multilib install, skip non-multilib provides. */
@@ -866,29 +855,6 @@ alFileSatisfiesDepend(struct availableList * al,
     p = match->package;
     rc = 0;
     switch (match->type) {
-    case IET_NAME:
-#ifdef	DYING
-    {	const char *pEVR;
-	char *t;
-	int pFlags = RPMSENSE_EQUAL;
-
-	pEVR = t = alloca(21 + strlen(p->version) + 1 + strlen(p->release) + 1);
-	*t = '\0';
-	if (p->epoch) {
-	    sprintf(t, "%d:", *p->epoch);
-	    while (*t)
-		t++;
-	}
-	(void) stpcpy( stpcpy( stpcpy(t, p->version) , "-") , p->release);
-	rc = rpmRangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
-	if (keyType && keyDepend && rc)
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added package)\n"),
-			keyType, keyDepend+2);
-    }	break;
-#else
-	rpmError(RPMERR_INTERNAL, _("%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"), keyType, keyDepend+2);
-	break;
-#endif
     case IET_PROVIDES:
 	for (i = 0; i < p->providesCount; i++) {
 	    const char *proEVR;
@@ -1022,22 +988,6 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    }
 	}
 	rpmdbFreeIterator(mi);
-
-#ifdef	DYING
-	mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_NAME, keyName, 0);
-	rpmdbPruneIterator(mi,
-			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (headerMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db packages)\n"),
-			keyType, keyDepend+2);
-		rpmdbFreeIterator(mi);
-		goto exit;
-	    }
-	}
-	rpmdbFreeIterator(mi);
-#endif
-
     }
 
     if (suggestion)

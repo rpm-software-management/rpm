@@ -1356,56 +1356,61 @@ void rpmFreeRpmrc(void)
     return;
 }
 
-int rpmShowRC(FILE *f)
+int rpmShowRC(FILE *fp)
 {
     struct rpmOption *opt;
     int i;
     struct machEquivTable * equivTable;
 
     /* the caller may set the build arch which should be printed here */
-    fprintf(f, "ARCHITECTURE AND OS:\n");
-    fprintf(f, "build arch            : %s\n", current[ARCH]);
+    fprintf(fp, "ARCHITECTURE AND OS:\n");
+    fprintf(fp, "build arch            : %s\n", current[ARCH]);
 
-    fprintf(f, "compatible build archs:");
+    fprintf(fp, "compatible build archs:");
     equivTable = &tables[RPM_MACHTABLE_BUILDARCH].equiv;
     for (i = 0; i < equivTable->count; i++)
-	fprintf(f," %s", equivTable->list[i].name);
-    fprintf(f, "\n");
+	fprintf(fp," %s", equivTable->list[i].name);
+    fprintf(fp, "\n");
 
-    fprintf(f, "build os              : %s\n", current[OS]);
+    fprintf(fp, "build os              : %s\n", current[OS]);
 
-    fprintf(f, "compatible build os's :");
+    fprintf(fp, "compatible build os's :");
     equivTable = &tables[RPM_MACHTABLE_BUILDOS].equiv;
     for (i = 0; i < equivTable->count; i++)
-	fprintf(f," %s", equivTable->list[i].name);
-    fprintf(f, "\n");
+	fprintf(fp," %s", equivTable->list[i].name);
+    fprintf(fp, "\n");
 
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
-    fprintf(f, "install arch          : %s\n", current[ARCH]);
-    fprintf(f, "install os            : %s\n", current[OS]);
+    fprintf(fp, "install arch          : %s\n", current[ARCH]);
+    fprintf(fp, "install os            : %s\n", current[OS]);
 
-    fprintf(f, "compatible archs      :");
+    fprintf(fp, "compatible archs      :");
     equivTable = &tables[RPM_MACHTABLE_INSTARCH].equiv;
     for (i = 0; i < equivTable->count; i++)
-	fprintf(f," %s", equivTable->list[i].name);
-    fprintf(f, "\n");
+	fprintf(fp," %s", equivTable->list[i].name);
+    fprintf(fp, "\n");
 
-    fprintf(f, "compatible os's       :");
+    fprintf(fp, "compatible os's       :");
     equivTable = &tables[RPM_MACHTABLE_INSTOS].equiv;
     for (i = 0; i < equivTable->count; i++)
-	fprintf(f," %s", equivTable->list[i].name);
-    fprintf(f, "\n");
+	fprintf(fp," %s", equivTable->list[i].name);
+    fprintf(fp, "\n");
 
-    fprintf(f, "\nRPMRC VALUES:\n");
+    fprintf(fp, "\nRPMRC VALUES:\n");
     for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
 	const char *s = rpmGetVar(opt->var);
 	if (s != NULL || rpmGetVerbosity() < RPMMESS_NORMAL)
-	    fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
+	    fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
+    fprintf(fp, "\n");
 
-    rpmDumpMacroTable(NULL, f);
+    fprintf(fp, "Features supported by rpmlib:\n");
+    rpmShowRpmlibProvides(stdout);
+    fprintf(fp, "\n");
+
+    rpmDumpMacroTable(NULL, fp);
 
     return 0;
 }

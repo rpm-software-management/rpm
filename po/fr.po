@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-07-13 19:28-0400\n"
+msgstr "POT-Creation-Date: 2000-07-15 10:39-0400\n"
 
 #: build.c:25 lib/rpminstall.c:451
 #, c-format
@@ -2167,32 +2167,27 @@ msgstr ""
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: build/parsePreamble.c:539
-#, fuzzy, c-format
-msgid "line %d: Invalid tag value: %s"
-msgstr "impossible d'ouvrir: %s\n"
-
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:536
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:693
+#: build/parsePreamble.c:675
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Options de spécification de package:"
 
-#: build/parsePreamble.c:699
+#: build/parsePreamble.c:681
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:726
+#: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:751
+#: build/parsePreamble.c:733
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2361,141 +2356,126 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:361
+#: lib/cpio.c:362
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/cpio.c:367
+#: lib/cpio.c:368
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:611
+#: lib/cpio.c:612
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1073
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1075
+#: lib/cpio.c:1076
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1076
+#: lib/cpio.c:1077
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1095
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1096
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1096
+#: lib/cpio.c:1097
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1097
+#: lib/cpio.c:1098
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1106
+#: lib/cpio.c:1107
 #, fuzzy
 msgid " failed - "
 msgstr "La construction a échoué.\n"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:467
+#: lib/depends.c:456
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:496
+#: lib/depends.c:485
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:825
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:885
-#, c-format
-msgid "%s: %-45s YES (added package)\n"
-msgstr ""
-
-#: lib/depends.c:889
-#, c-format
-msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
-msgstr ""
-
-#: lib/depends.c:908
+#: lib/depends.c:874
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:952
+#: lib/depends.c:918
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:969
+#: lib/depends.c:935
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:985
+#: lib/depends.c:951
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1005
+#: lib/depends.c:971
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:984
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1032
-#, c-format
-msgid "%s: %-45s YES (db packages)\n"
-msgstr ""
-
-#: lib/depends.c:1047
+#: lib/depends.c:997
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1068
+#: lib/depends.c:1018
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1122
+#: lib/depends.c:1072
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
 #. conflicts exist.
-#: lib/depends.c:1189
+#: lib/depends.c:1139
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/depends.c:1315
+#: lib/depends.c:1265
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2815,7 +2795,7 @@ msgstr ""
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:748 lib/install.c:1028 lib/uninstall.c:28
+#: lib/install.c:748 lib/install.c:1021 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2824,30 +2804,30 @@ msgstr ""
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:897
+#: lib/install.c:890
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/install.c:957
+#: lib/install.c:950
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:962
+#: lib/install.c:955
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:987
+#: lib/install.c:980
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1024
+#: lib/install.c:1017
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1112
+#: lib/install.c:1105
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2861,26 +2841,13 @@ msgstr ""
 msgid "bad file state: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:237
-msgid "package is a version one package!\n"
+#: lib/package.c:53
+msgid "packaging version 1 is notsupported by this version of RPM"
 msgstr ""
 
-#: lib/package.c:242
-msgid "old style source package -- I'll do my best\n"
-msgstr ""
-
-#: lib/package.c:245
-#, c-format
-msgid "archive offset is %d\n"
-msgstr ""
-
-#: lib/package.c:256
-msgid "old style binary package\n"
-msgstr ""
-
-#: lib/package.c:322
+#: lib/package.c:113
 msgid ""
-"only packages with major numbers <= 3 are supported by this version of RPM"
+"only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr ""
 
 #: lib/poptBT.c:82
@@ -3917,11 +3884,6 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1383
-#, c-format
-msgid "executing pre-transaction syscall: \"%s\"\n"
-msgstr ""
-
 #: lib/uninstall.c:42
 #, c-format
 msgid "cannot remove %s - directory not empty"
@@ -4168,6 +4130,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "line %d: Invalid tag value: %s"
+#~ msgstr "impossible d'ouvrir: %s\n"
 
 #, fuzzy
 #~ msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"

@@ -260,15 +260,6 @@ dnl
 dnl Check for features
 dnl
 
-### use option --disable-v1-packages to turn off support for rpm-1.x packages
-AC_MSG_CHECKING(if you want support for rpm-1.0 packages)
-AC_ARG_ENABLE(v1-packages,
-        [  --disable-v1-packages[=no]   disable support for rpm-1.x packages],
-        [with_v1_packages=$enableval],
-        [with_v1_packages=yes])
-AC_MSG_RESULT($with_v1_packages)
-test "$with_v1_packages" = yes && AC_DEFINE(ENABLE_V1_PACKAGES)
-
 ### use option --enable-v5-packages to turn on support for rpm-5.x packages
 AC_MSG_CHECKING(if you want experimental rpm-5.0 packages)
 AC_ARG_ENABLE(v5-packages,
@@ -418,21 +409,6 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
-
-dnl whether or not we should try build rpmconvert, which is used to convert
-dnl rpm databases from rpm 1.x to rpm 2.x or later.  It requires the gdbm
-dnl library and header file.
-BUILD_RPMCONVERT=yes
-AC_CHECK_HEADERS(gdbm.h,BUILD_RPMCONVERT=yes,BUILD_RPMCONVERT=no)
-AC_MSG_CHECKING(if rpmconvert should be built)
-if test X"$BUILD_RPMCONVERT" = X"yes"; then
-    BUILD_RPMCONVERT=rpmconvert
-    AC_MSG_RESULT(yes)
-else
-    BUILD_RPMCONVERT=
-    AC_MSG_RESULT(no)
-fi
-AC_SUBST(BUILD_RPMCONVERT)
 
 dnl whether or not we should try to build rpmgettext/rpmputtext.
 if test X"$USE_NLS" = Xyes; then

@@ -223,6 +223,7 @@ int cpioFileMapCmp(const void * a, const void * b)
     const char * afn = ((const struct cpioFileMapping *)a)->archivePath;
     const char * bfn = ((const struct cpioFileMapping *)b)->archivePath;
 
+    /* Match payloads with ./ prefixes as well. */
     if (afn[0] == '.' && afn[1] == '/')	afn += 2;
     if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
 

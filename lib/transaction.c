@@ -1371,35 +1371,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 
-	    if (!(transFlags & RPMTRANS_FLAG_TEST) &&
-		headerGetEntry(alp->h, RPMTAG_PRETRANSACTION, NULL,
-			(void **) &preTrans, &preTransCount)) {
-
-		chdir("/");
-		/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
-
-		for (j = 0; j < preTransCount; j++) {
-		    rpmMessage(RPMMESS_DEBUG,
-			_("executing pre-transaction syscall: \"%s\"\n"),
-			preTrans[j]);
-		    rc = rpmSyscall(preTrans[j], 0);
-#if 1
-		    if (rc) 	/* HACK HACK HACK */
-			break;
-#else
-		    if (rc != 0)
-			psAppend(probs, RPMPROB_BADPRETRANS, alp->key, alp->h,
-			    preTrans[j], NULL, rc);
-#endif
-		}
-		xfree(preTrans);
-		preTrans = NULL;
-
-		chroot(".");
-		chdir(ts->currDir);
-
-	    }
-
 	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_BASENAMES, NULL,
 					 NULL, &fi->fc)) {
 		fi->h = headerLink(alp->h);

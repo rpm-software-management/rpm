@@ -29,10 +29,6 @@ typedef struct hdrObject_s hdrObject;
 /* rpmdb functions */
 static void rpmdbDealloc(rpmdbObject * s);
 static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name);
-#ifdef DYING
-static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args);
-static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args);
-#endif
 static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args);
@@ -236,10 +232,6 @@ static PyTypeObject rpmtransType = {
 };
 
 static struct PyMethodDef rpmdbMethods[] = {
-#ifdef DYING
-	{"firstkey",	    (PyCFunction) rpmdbFirst,	1 },
-	{"nextkey",	    (PyCFunction) rpmdbNext,	1 },
-#endif
 	{"findbyfile",	    (PyCFunction) rpmdbByFile, 1 },
 	{"findbyname",	    (PyCFunction) rpmdbByName, 1 },
 	{"findbyprovides",  (PyCFunction) rpmdbByProvides, 1 },
@@ -829,62 +821,6 @@ static void rpmdbDealloc(rpmdbObject * s) {
     }
 }
 
-#ifdef DYING
-static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
-    int first;
-
-    if (!PyArg_ParseTuple (args, "")) return NULL;
-
-    first = rpmdbFirstRecNum(s->db);
-
-    if (!first) {
-	PyErr_SetString(pyrpmError, "cannot find first entry in database\n");
-	return NULL;
-    }
-
-    return Py_BuildValue("i", first);
-}
-#endif
-
-#ifdef	DYING
-static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
-    int where;
-
-    if (!PyArg_ParseTuple (args, "i", &where)) return NULL;
-
-    where = rpmdbNextRecNum(s->db, where);
-
-    if (!where) {
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
-
-    return Py_BuildValue("i", where);
-}
-#endif
-
-#ifdef	DYING
-static PyObject * handleDbResult(int rc, dbiIndexSet matches) {
-    PyObject * list;
-    int i;
-
-    if (rc == -1) {
-	PyErr_SetString(pyrpmError, "error reading from database");
-	return NULL;
-    }
-
-    list = PyList_New(0);
-
-    if (!rc) {
-	for (i = 0; i < dbiIndexSetCount(matches); i++)
-	    PyList_Append(list, PyInt_FromLong(dbiIndexRecordOffset(matches, i)));
-
-	dbiFreeIndexSet(matches);
-    }
-
-    return list;
-}
-#else	/* DYING */
 static PyObject * handleDbResult(rpmdbMatchIterator mi) {
     PyObject * list;
 
@@ -903,22 +839,13 @@ static PyObject * handleDbResult(rpmdbMatchIterator mi) {
 
     return list;
 }
-#endif
 
 static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args) {
     char * str;
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
 
-#ifdef	DYING
-    {	dbiIndexSet matches;
-	int rc;
-	rc = rpmdbFindPackage(s->db, str, &matches);
-	return handleDbResult(rc, matches);
-    }
-#else
     return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_NAME, str, 0));
-#endif
 }
 
 static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
@@ -926,15 +853,7 @@ static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
 
-#ifdef	DYING
-    {	dbiIndexSet matches;
-	int rc;
-	rc = rpmdbFindByFile(s->db, str, &matches);
-	return handleDbResult(rc, matches);
-    }
-#else
     return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_BASENAMES, str, 0));
-#endif
 }
 
 static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
@@ -942,32 +861,13 @@ static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
 
-#ifdef	DYING
-    {	dbiIndexSet matches;
-	int rc;
-	rc = rpmdbFindByProvides(s->db, str, &matches);
-	return handleDbResult(rc, matches);
-    }
-#else
     return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_PROVIDENAME, str, 0));
-#endif
 }
 
 static int
 rpmdbLength(rpmdbObject * s) {
     int count = 0;
 
-#ifdef	DYING
-    int first;
-
-    first = rpmdbFirstRecNum(s->db);
-    if (!first) return 0;
-
-    count++;
-    while ((first = rpmdbNextRecNum(s->db, first))) {
-	count++;
-    }
-#else
     {	rpmdbMatchIterator mi;
 
 	/* RPMDBI_PACKAGES */
@@ -977,7 +877,6 @@ rpmdbLength(rpmdbObject * s) {
 	    count++;
 	rpmdbFreeIterator(mi);
     }
-#endif
 
     return count;
 }
@@ -996,16 +895,12 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 
     h = PyObject_NEW(hdrObject, &hdrType);
     h->h = NULL;
-#ifdef	DYING
-    h->h = rpmdbGetRecord(s->db, offset);
-#else
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, &offset, sizeof(offset));
 	if ((h->h = rpmdbNextIterator(mi)) != NULL)
 	    h->h = headerLink(h->h);
 	rpmdbFreeIterator(mi);
     }
-#endif
     h->fileList = h->linkList = h->md5list = NULL;
     h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
     h->modes = h->rdevs = NULL;

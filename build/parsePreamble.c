@@ -532,20 +532,6 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	    FREE(spec->buildArchitectures);
 	break;
 
-      case RPMTAG_PRETRANSACTION:
-      case RPMTAG_POSTTRANSACTION:
-	if ((rc = rpmSyscall(field, 1)) != 0) {
-	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Invalid %s tag value: %s"),
-		     spec->lineNum, tagName(tag), spec->line);
-	    return RPMERR_BADSPEC;
-	}
-	headerAddOrAppendEntry(pkg->header, tag, RPM_STRING_ARRAY_TYPE,
-			&field, 1);
-	rpmlibNeedsFeature(pkg->header, "PreTransactionSyscalls", "4.0-1");
-	macro = NULL;
-	break;
-
       default:
 	rpmError(RPMERR_INTERNAL, _("Internal error: Bogus tag %d"), tag);
 	return RPMERR_INTERNAL;
@@ -606,10 +592,6 @@ static struct PreambleRec {
     {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
     {RPMTAG_DOCDIR,		0, 0, "docdir"},
-    {RPMTAG_PRETRANSACTION,	0, 0, "pretransaction"},
-#ifdef	NOTYET
-    {RPMTAG_POSTTRANSACTION,	0, 0, "posttransaction"},
-#endif
     {0, 0, 0, 0}
 };
 

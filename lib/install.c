@@ -841,13 +841,6 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 	return 2;
     }
 
-#if defined(ENABLE_V1_PACKAGES)
-    if (major == 1) {
-	notify = NULL;
-	h = NULL;
-    }
-#endif	/* ENABLE_V1_PACKAGES */
-
     if (cookie) {
 	*cookie = NULL;
 	if (h != NULL &&

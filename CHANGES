@@ -86,6 +86,12 @@
 	- add S_ISLNK pre-transaction syscall test.
 	- fix: initialize pretransaction argv (segfault).
 	- fix: check rpmlib features w/o database (and check earlier as well).
+	- rip out pre-transaction syscalls, more design is needed.
+	- display rpmlib provides when invoked with --showrc.
+	- remove (dead) dependency checks on implicitly provided package names.
+	- remove (dead) rpmdb API code in python bindings.
+	- remove (legacy) support for version 1 packaging.
+	- remove (legacy) support for converting gdbm databases.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

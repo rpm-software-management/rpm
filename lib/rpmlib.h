@@ -190,10 +190,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_PAYLOADCOMPRESSOR	1125
 #define	RPMTAG_PAYLOADFLAGS		1126
 #define	RPMTAG_MULTILIBS		1127
-#define	RPMTAG_PRETRANSACTION		1128
-#define	RPMTAG_POSTTRANSACTION		1129 /*unused */
 
-#define	RPMTAG_FIRSTFREE_TAG		1130 /* internal */
+#define	RPMTAG_FIRSTFREE_TAG		1128 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 #define	RPMFILE_STATE_NORMAL 		0
@@ -529,10 +527,6 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
  */
 int rpmVerifyScript(const char * root, Header h, FD_t err);
 
-/**
- */
-int rpmSyscall(const char *cmd, int noexec);
-
 /* Transaction sets are inherently unordered! RPM may reorder transaction
    sets to reduce errors. In general, installs/upgrades are done before
    strict removals, and prerequisite ordering is done on installs/upgrades. */
@@ -627,6 +621,9 @@ int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
 int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
 	int keyFlags);
 
+/**
+ */
+void rpmShowRpmlibProvides(FILE * fp);
 
 typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
 				RPMPROB_BADOS,

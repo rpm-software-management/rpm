@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-07-13 19:28-0400\n"
+"POT-Creation-Date: 2000-07-15 10:39-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2226,32 +2226,27 @@ msgstr "ungültige Paket-Nummer: %s\n"
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "fehlende Architektur für %s bei %s:%d"
 
-#: build/parsePreamble.c:539
-#, fuzzy, c-format
-msgid "line %d: Invalid tag value: %s"
-msgstr "ungültige Paket-Nummer: %s\n"
-
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:536
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:693
+#: build/parsePreamble.c:675
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Optionen der Paketauswahl:"
 
-#: build/parsePreamble.c:699
+#: build/parsePreamble.c:681
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:726
+#: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:751
+#: build/parsePreamble.c:733
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2426,143 +2421,128 @@ msgid "line %d: Bad %s number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
 # , c-format
-#: lib/cpio.c:361
+#: lib/cpio.c:362
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: lib/cpio.c:367
+#: lib/cpio.c:368
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:611
+#: lib/cpio.c:612
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1073
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "Fehler: "
 
-#: lib/cpio.c:1075
+#: lib/cpio.c:1076
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1076
+#: lib/cpio.c:1077
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1095
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1096
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(unbekannter Typ)"
 
-#: lib/cpio.c:1096
+#: lib/cpio.c:1097
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1097
+#: lib/cpio.c:1098
 #, fuzzy
 msgid "Internal error"
 msgstr "Fataler Fehler: "
 
-#: lib/cpio.c:1106
+#: lib/cpio.c:1107
 #, fuzzy
 msgid " failed - "
 msgstr "pgp fehlgeschlagen"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:467
+#: lib/depends.c:456
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:496
+#: lib/depends.c:485
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:825
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:885
-#, fuzzy, c-format
-msgid "%s: %-45s YES (added package)\n"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
-
-#: lib/depends.c:889
-#, c-format
-msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
-msgstr ""
-
-#: lib/depends.c:908
+#: lib/depends.c:874
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:952
+#: lib/depends.c:918
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:969
+#: lib/depends.c:935
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:985
+#: lib/depends.c:951
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1005
+#: lib/depends.c:971
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:984
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1032
-#, fuzzy, c-format
-msgid "%s: %-45s YES (db packages)\n"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
-
-#: lib/depends.c:1047
+#: lib/depends.c:997
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1068
+#: lib/depends.c:1018
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1122
+#: lib/depends.c:1072
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1189
+#: lib/depends.c:1139
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/depends.c:1315
+#: lib/depends.c:1265
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2889,7 +2869,7 @@ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:748 lib/install.c:1028 lib/uninstall.c:28
+#: lib/install.c:748 lib/install.c:1021 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
@@ -2899,30 +2879,30 @@ msgid "source package expected, binary found"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/install.c:897
+#: lib/install.c:890
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/install.c:957
+#: lib/install.c:950
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:962
+#: lib/install.c:955
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:987
+#: lib/install.c:980
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1024
+#: lib/install.c:1017
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1112
+#: lib/install.c:1105
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2937,26 +2917,16 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 msgid "bad file state: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/package.c:237
-msgid "package is a version one package!\n"
+#: lib/package.c:53
+#, fuzzy
+msgid "packaging version 1 is notsupported by this version of RPM"
 msgstr ""
+"Nur Pakete mit Hauptnummern <= 3 werden von dieser RPM-Version unterstützt"
 
-#: lib/package.c:242
-msgid "old style source package -- I'll do my best\n"
-msgstr ""
-
-#: lib/package.c:245
-#, c-format
-msgid "archive offset is %d\n"
-msgstr ""
-
-#: lib/package.c:256
-msgid "old style binary package\n"
-msgstr ""
-
-#: lib/package.c:322
+#: lib/package.c:113
+#, fuzzy
 msgid ""
-"only packages with major numbers <= 3 are supported by this version of RPM"
+"only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr ""
 "Nur Pakete mit Hauptnummern <= 3 werden von dieser RPM-Version unterstützt"
 
@@ -4017,11 +3987,6 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1383
-#, c-format
-msgid "executing pre-transaction syscall: \"%s\"\n"
-msgstr ""
-
 #: lib/uninstall.c:42
 #, c-format
 msgid "cannot remove %s - directory not empty"
@@ -4280,6 +4245,18 @@ msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
+
+#, fuzzy
+#~ msgid "line %d: Invalid tag value: %s"
+#~ msgstr "ungültige Paket-Nummer: %s\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (added package)\n"
+#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db packages)\n"
+#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
 #, fuzzy
 #~ msgid ""
