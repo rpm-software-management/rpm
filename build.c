@@ -35,7 +35,7 @@ static int buildForTarget(const char *arg, int buildAmount, const char *passPhra
 
 	{   char tfn[64];
 	    strcpy(tfn, "rpm-spec.XXXXXX");
-	    tmpSpecFile = rpmGetPath("%{_specdir}", mktemp(tfn), NULL);
+	    tmpSpecFile = rpmGetPath("%{_specdir}/", mktemp(tfn), NULL);
 	}
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
