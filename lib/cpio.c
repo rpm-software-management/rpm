@@ -179,7 +179,7 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     if (*end)
 	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
-	*endptr = "";
+	*endptr = ((char *)str) + strlen(str);
 
     return strtoul(buf, endptr, base);
 }
@@ -482,7 +482,7 @@ static int expandDevice(/*@unused@*/CFD_t * cfd, struct cpioHeader * hdr)
 	    return CPIOERR_UNLINK_FAILED;
     }
 
-    if (mknod(hdr->path, hdr->mode & (~0777), hdr->rdev))
+    if (/*@-unrecog@*/ mknod(hdr->path, hdr->mode & (~0777), hdr->rdev) /*@=unrecog@*/)
 	return CPIOERR_MKNOD_FAILED;
     
     return 0;

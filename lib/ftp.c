@@ -703,4 +703,3 @@ const char *ftpStrerror(int errorNumber) {
 	return _("Unknown or unexpected error");
   }
 }
-

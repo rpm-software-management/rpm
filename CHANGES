@@ -51,6 +51,9 @@
 	- fix: versioned provides devolved to existence test with conflicts.
 	- fix: with unspecified epochs, skip dependency epoch compare.
 	- python: shared module needs -lrpm -lbz2.
+	- do versioned provides/conflicts resolution correctly.
+	- rpmpopt: display versioned provides/obsoletes.
+	- revert to shared libbz2.so now that bzip2 is in base install.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

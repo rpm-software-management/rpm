@@ -24,10 +24,10 @@ pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = rpmgettext rpmputtext
 
 rpmgettext_SOURCES =	rpmgettext.c
-rpmgettext_LDADD =	$(mylibs) @BZIP2LIB@ @LIBMISC@
+rpmgettext_LDADD =	$(mylibs) @LIBMISC@
 
 rpmputtext_SOURCES =	rpmgettext.c
-rpmputtext_LDADD =	$(mylibs) @BZIP2LIB@ @LIBMISC@
+rpmputtext_LDADD =	$(mylibs) @LIBMISC@
 
 ## Dumpdb requires fprint.o (in libmisc) and this requires realpath
 ## (from libmisc).

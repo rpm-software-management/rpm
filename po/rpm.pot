@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-17 19:17-0400\n"
+"POT-Creation-Date: 1999-09-18 20:22-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1972,31 +1972,33 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:381
+#: ../lib/depends.c:448
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:623
+#: ../lib/depends.c:715
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:768
+#. requirements are not satisfied.
+#: ../lib/depends.c:854
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:819
+#. conflicts exist.
+#: ../lib/depends.c:916
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:876 ../lib/depends.c:1222
+#: ../lib/depends.c:971 ../lib/depends.c:1278
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:971
+#: ../lib/depends.c:1066
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2174,7 +2176,7 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:141 ../lib/uninstall.c:178
+#: ../lib/install.c:141 ../lib/uninstall.c:179
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
@@ -3270,15 +3272,15 @@ msgstr ""
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: ../lib/uninstall.c:190
+#: ../lib/uninstall.c:191
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: ../lib/uninstall.c:203
+#: ../lib/uninstall.c:204
 msgid "removing database entry\n"
 msgstr ""
 
-#: ../lib/uninstall.c:362
+#: ../lib/uninstall.c:363
 msgid "execution of script failed"
 msgstr ""
 

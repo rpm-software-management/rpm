@@ -9,9 +9,9 @@
 
 # don't-bother-me-yet parameters
 -branchstate
--immediatetrans
+#-immediatetrans
 -mustfree
--observertrans
+#-observertrans
 -statictrans
 
 # not-yet normal parameters

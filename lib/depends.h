@@ -6,11 +6,13 @@
 struct availablePackage {
     Header h;
     const char ** provides;
-    const char ** providesEVR;	/* unused */
-    int * providesFlags;		/* unused */
+    const char ** providesEVR;
+    /*@dependent@*/ int * provideFlags;
     const char ** files;
-    const char * name, * version, * release;
-    int_32 *epoch;
+    /*@dependent@*/ const char * name;
+    /*@dependent@*/ const char * version;
+    /*@dependent@*/ const char * release;
+    /*@dependent@*/ int_32 *epoch;
     int providesCount, filesCount;
     /*@owned@*/ const void * key;
     rpmRelocation * relocs;
@@ -20,18 +22,18 @@ struct availablePackage {
 enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
 
 struct availableIndexEntry {
-    struct availablePackage * package;
-    const char * entry;
+    /*@dependent@*/ struct availablePackage * package;
+    /*@dependent@*/ const char * entry;
     enum indexEntryType type;
 } ;
 
 struct availableIndex {
-    struct availableIndexEntry * index ;
+    /*@null@*/ struct availableIndexEntry * index ;
     int size;
 } ;
 
 struct availableList {
-    struct availablePackage * list;
+    /*@owned@*/ /*@null@*/ struct availablePackage * list;
     struct availableIndex index;
     int size, alloced;
 };

@@ -143,6 +143,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	if (prefix && prefix[0] != '\0') {
 	    int fnbuffersize = 0;
 	    size_t fnlen;
+
 	    prefixlen = strlen(prefix);
 	    for (i = 0; i < fileCount; i++) {
 		if ((fnlen = strlen(fileList[i])) > fnbuffersize)
@@ -152,8 +153,8 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	    fnbuffer = alloca(fnbuffersize);
 	    strcpy(fnbuffer, prefix);
 	    if (fnbuffer[prefixlen-1] != '/') {
-		fnbuffer[prefixlen] = '/';
-		fnbuffer[prefixlen+1] = '\0';
+		fnbuffer[prefixlen++] = '/';
+		fnbuffer[prefixlen] = '\0';
 	    }
 	}
 
@@ -171,7 +172,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	    fn = fileList[i];
 	    if (prefixlen) {
 		if (*fn == '/') fn++;
-		strcpy(fnbuffer + prefixlen + 1, fn);
+		strcpy(fnbuffer + prefixlen, fn);
 		fn = fnbuffer;
 	    }
 

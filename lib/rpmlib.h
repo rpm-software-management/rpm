@@ -374,8 +374,8 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
 int rpmdepCheck(rpmTransactionSet rpmdep,
-	/*@out@*/struct rpmDependencyConflict ** conflicts,
-	/*@out@*/int * numConflicts);
+	/*@exposed@*/ /*@out@*/struct rpmDependencyConflict ** conflicts,
+	/*@exposed@*/ /*@out@*/int * numConflicts);
 
 /* Orders items, returns error on circle, finals keys[] is NULL. No dependency
    check is done, use rpmdepCheck() for that. If dependencies are not
