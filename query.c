@@ -16,6 +16,7 @@
 #endif
 
 #include "lib/messages.h"
+#include "miscfn.h"
 #include "rpmlib.h"
 #include "query.h"
 #include "url.h"
@@ -642,7 +643,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     int retcode = 0;
     char *end = NULL;
     struct urlContext context;
-    int isUrl;
+    int isUrl = 0;
 
     if (source != QUERY_SRPM && source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -662,7 +663,6 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	} else if (!strcmp(arg, "-")) {
 	    fd = 0;
 	} else {
-	    isUrl = 0;
 	    if ((fd = open(arg, O_RDONLY)) < 0) {
 		fprintf(stderr, "open of %s failed: %s\n", arg, 
 			strerror(errno));
