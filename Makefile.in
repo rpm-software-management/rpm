@@ -37,7 +37,7 @@ NLSPACKAGE=rpm
 
 SUBDIRS = lib build tools po
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o
-PROGS = rpm rpmconvert rpm2cpio
+PROGS = rpm rpm2cpio
 LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a 
 
 ifeq (.depend,$(wildcard .depend))
@@ -60,9 +60,6 @@ rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
 
 everything: make-subdirs $(PROGS)
 
-rpmconvert: lib/librpm.a convertdb.o
-	gcc $(DEBUG) $(LDFLAGS) -o rpmconvert convertdb.o lib/librpm.a -ldb -lgdbm 
-	
 make-subdirs:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE)) \
@@ -86,7 +83,6 @@ install: all
 	install -m 755 -o 0 -g 0 -d $(MANDIR)
 	install -m 755 -o 0 -g 0 -d $(ETCDIR)
 	install -s -m 755 -o 0 -g 0 rpm $(RPMBINDIR)
-	install -s -m 755 -o 0 -g 0 rpmconvert $(BINDIR)
 	install -m 755 -o 0 -g 0 gendiff $(BINDIR)
 	install -s -m 755 -o 0 -g 0 rpm2cpio $(BINDIR)
 	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
@@ -106,7 +102,7 @@ clean:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 	rm -f *.a *.o core *~ $(PROGS) rpm.shared
-	find . -name core | xargs rm
+	find . -name core -exec rm {} \;
 
 depend:
 	$(CPP) $(CFLAGS) -M *.c > .depend
@@ -116,7 +112,7 @@ depend:
 
 co:
 	co RCS/*,v
-	for d in $(SUBDIRS); do \
+	for d in $(SUBDIRS) docs; do \
 		(cd $$d; co RCS/*,v) ;\
 	done
 
