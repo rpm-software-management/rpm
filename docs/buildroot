@@ -1,7 +1,7 @@
 BUILD ROOT
 ==========
 
-The build root is very similar to Root: (which will be depricated
+The build root is very similar to Root: (which will be deprecated
 soon).  By using Buildroot: in your spec file you are indicating
 that your package can be built (installed into and packaged from)
 a user-definable directory.  This helps package building by normal
