@@ -1976,10 +1976,9 @@ fprintf(stderr, "-> \r\n");
 	    if (fd->persist && u->httpVersion &&
 		(fd == u->ctrl || fd == u->data) && fd->bytesRemain == 0) {
 		fd->contentLength = fd->bytesRemain = -1;
+		if (!strcmp(u->scheme, "http"))
+		    return 0;
 		/* HACK: flimsy wiring for davClose */
-		if (!strcmp(u->scheme, "https"))
-		    return davClose(fd);
-		return 0;
 	    } else {
 		fd->contentLength = fd->bytesRemain = -1;
 	    }

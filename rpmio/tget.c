@@ -75,7 +75,10 @@ _dav_debug = -1;
     readFile(dirpath);
     readFile(ftppath);
     readFile(httppath);
+    readFile(httppath);
+    readFile(httppath);
 #endif
+    readFile(httpspath);
     readFile(httpspath);
     readFile(httpspath);
 
