@@ -405,8 +405,12 @@ static int checkDependentPackages(rpmDependencies rpmdep,
 	    return 1;
 	}
 
-	if (checkPackageDeps(rpmdep, psp, h, requires))
+	if (checkPackageDeps(rpmdep, psp, h, requires)) {
+	    freeHeader(h);
 	    return 1;
+	}
+
+	freeHeader(h);
     }
 
     return 0;
