@@ -42,10 +42,6 @@ struct fileInfo {
     int install;
 } ;
 
-struct replacedFile {
-    int recOffset, fileNumber;
-} ;
-
 static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  void * notifydb, Header h,
@@ -53,13 +49,13 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 static int installSources(Header h, const char * rootdir, FD_t fd, 
 			  const char ** specFilePtr, rpmNotifyFunction notify,
 			  void * notifyData);
-static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
 			     int stripPrefixLength, enum fileActions * actions);
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount);
 static void freeFileMemory(struct fileMemory fileMem);
 static void trimChangelog(Header h);
+static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList);
 
 /* 0 success */
 /* 1 bad magic */
@@ -263,7 +259,8 @@ static void trimChangelog(Header h) {
 /* 2 error */
 int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		         int flags, rpmNotifyFunction notify, 
-			 void * notifyData, enum fileActions * actions) {
+			 void * notifyData, enum fileActions * actions,
+			 struct sharedFileInfo * sharedList) {
     int rc;
     char * name, * version, * release;
     int fileCount, type, count;
@@ -274,7 +271,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
-    struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
     int scriptArg;
@@ -343,7 +339,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		chroot(".");
 		chdir(currDir);
 	    }
-	    if (replacedList) free(replacedList);
 	    return 2;
 	}
 
@@ -359,7 +354,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	}
 
 	rpmMessage(RPMMESS_DEBUG, _("stopping install as we're running --test\n"));
-	if (replacedList) free(replacedList);
 	if (freeFileMem) freeFileMemory(fileMem);
 	return 0;
     }
@@ -367,7 +361,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rpmMessage(RPMMESS_DEBUG, _("running preinstall script (if any)\n"));
     if (runInstScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
 		      flags & RPMINSTALL_NOSCRIPTS, 0)) {
-	if (replacedList) free(replacedList);
 	if (freeFileMem) freeFileMemory(fileMem);
 
 	if (rootdir) {
@@ -431,7 +424,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		if (rename(files[i].relativePath, newpath)) {
 		    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
 			  files[i].relativePath, newpath, strerror(errno));
-		    if (replacedList) free(replacedList);
 		    if (freeFileMem) freeFileMemory(fileMem);
 
 		    if (rootdir) {
@@ -460,7 +452,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	if (installArchive(fd, files, fileCount, notify, notifyData, h,
 			   NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
 	    headerFree(h);
-	    if (replacedList) free(replacedList);
 	    if (freeFileMem) freeFileMemory(fileMem);
 
 	    if (rootdir) {
@@ -501,13 +492,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	chdir(currDir);
     }
 
-    if (replacedList) {
-	rc = markReplacedFiles(db, replacedList);
-	free(replacedList);
-
-	if (rc) return rc;
-    }
-
     trimChangelog(h);
 
     /* if this package has already been installed, remove it from the database
@@ -540,6 +524,9 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	    return 2;
 	}
     }
+
+    if (sharedList) 
+	markReplacedFiles(db, sharedList);
 
     headerFree(h);
 
@@ -649,10 +636,8 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     const char * realSourceDir = NULL;
     const char * realSpecDir = NULL;
     char * instSpecFile, * correctSpecFile;
-    char * name, * release, * version;
     int fileCount = 0;
     uint_32 * archiveSizePtr = NULL;
-    int type, count;
     struct fileMemory fileMem;
     struct fileInfo * files;
     int i;
@@ -793,16 +778,16 @@ exit:
     return rc;
 }
 
-static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
-    struct replacedFile * fileInfo;
+static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList) {
+    struct sharedFileInfo * fileInfo;
     Header secHeader = NULL, sh;
     char * secStates;
     int type, count;
     
     int secOffset = 0;
 
-    for (fileInfo = replList; fileInfo->recOffset; fileInfo++) {
-	if (secOffset != fileInfo->recOffset) {
+    for (fileInfo = replList; fileInfo->otherPkg; fileInfo++) {
+	if (secOffset != fileInfo->otherPkg) {
 	    if (secHeader != NULL) {
 		/* ignore errors here - just do the best we can */
 
@@ -810,7 +795,7 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 		headerFree(secHeader);
 	    }
 
-	    secOffset = fileInfo->recOffset;
+	    secOffset = fileInfo->otherPkg;
 	    sh = rpmdbGetRecord(db, secOffset);
 	    if (sh == NULL) {
 		secOffset = 0;
@@ -826,7 +811,7 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 	/* by now, secHeader is the right header to modify, secStates is
 	   the right states list to modify  */
 	
-	secStates[fileInfo->fileNumber] = RPMFILE_STATE_REPLACED;
+	secStates[fileInfo->otherFileNum] = RPMFILE_STATE_REPLACED;
     }
 
     if (secHeader != NULL) {
