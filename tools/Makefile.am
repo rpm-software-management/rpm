@@ -18,4 +18,4 @@ rpmgettext_LDADD =	-lrpmbuild -lpopt -lrpm @LIBMISC@
 rpmputtext_SOURCES =	rpmgettext.c
 rpmputtext_LDADD =	-lrpmbuild -lpopt -lrpm @LIBMISC@
 
-$(PROGRAMS): ../lib/librpm.a
+$(PROGRAMS): ../build/librpmbuild.a ../lib/librpm.a ../popt/libpopt.a
