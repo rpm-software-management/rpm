@@ -27,24 +27,25 @@ ok(defined $db);
 while(1) {
   my @h;
   push @h, [ RPM2->open_package_file($_) ]
-    foreach <~/rhn/RPMS/*.rpm>;
+    foreach <~/rhn/bs/6.2/RPMS/*.rpm>;
 
   print $_->[0]->as_nvre, "\n" foreach @h;
 }
 
-exit;
+#exit;
 
-my $i = $db->iterator();
-while (my $h = $i->next) {
-  my $epoch = $h->tag('epoch');
-  my $epoch_str = '';
-  $epoch_str = "$epoch:" if defined $epoch;
+while (1) {
+  my $i = $db->iterator();
+  while (my $h = $i->next) {
+    my $epoch = $h->tag('epoch');
+    my $epoch_str = '';
+    $epoch_str = "$epoch:" if defined $epoch;
 
-  print $epoch_str . join("-", map { $h->tag($_) } qw/name version release/);
-  my @files = $h->files;
-  my $n = scalar @files;
-  print " ($n files)";
-  print "\n";
+    print $epoch_str . join("-", map { $h->tag($_) } qw/name version release/);
+    my @files = $h->files;
+    my $n = scalar @files;
+    print " ($n files)";
+    print "\n";
+  }
 }
-
 $db->close_rpm_db();

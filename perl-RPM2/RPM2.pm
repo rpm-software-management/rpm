@@ -47,12 +47,6 @@ sub close_rpm_db {
   my $self = shift;
   die "db not open" unless $self->{db};
 
-  foreach my $iter (@{$self->{active_iterators}}) {
-    $iter->_cleanup();
-  }
-
-  $self->{active_iterators} = [];
-
   RPM2::_close_rpm_db($self->{db});
   $self->{db} = undef;
 }
@@ -63,16 +57,8 @@ sub iterator {
 
   die "db closed" unless $self->{db};
   my $iter = RPM2::PackageIterator->new_iterator($self->{db}, $str);
-  push @{$self->{active_iterators}}, $iter;
 
   return $iter;
-}
-
-sub _remove_iter {
-  my $self = shift;
-  my $iter = shift;
-
-  @{$self->{active_iterators}} = grep { $_ != $iter } @{$self->{active_iterators}};
 }
 
 sub DESTROY {
@@ -159,6 +145,7 @@ sub new_iterator {
 
   my $self = bless {}, $class;
   $self->{iter} = RPM2::_init_iterator($db, RPM2::PackageIterator::RPMDBI_PACKAGES, $key, defined $key ? length $key : 0);
+  $self->{db} = $db;
 
   return $self;
 }

@@ -60,8 +60,13 @@ _destroy_iterator(i)
 Header
 _iterator_next(i)
 	rpmdbMatchIterator i
+    PREINIT:
+	Header ret;
     CODE:
-	RETVAL = rpmdbNextIterator(i);
+	ret = rpmdbNextIterator(i);
+	if (ret)
+		headerLink(ret);
+	RETVAL = ret;
     OUTPUT:
 	RETVAL
 
