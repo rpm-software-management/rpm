@@ -881,7 +881,7 @@ static int setFileOwner(char * file, char * owner, char * group,
 	} else {
 	    gid = grent->gr_gid;
 	    if (lastGroup) free(lastGroup);
-	    lastGroup = strdup(owner);
+	    lastGroup = strdup(group);
 	    lastGID = gid;
 	}
     }
