@@ -451,7 +451,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
 
     rpmMessage(RPMMESS_DEBUG, "running preinstall script (if any)\n");
-    if (runScript(rootdir, h, RPMTAG_PREIN, scriptArg, 
+    if (runScript(rootdir, h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
 		  flags & RPMINSTALL_NOSCRIPTS)) {
 	if (replacedList) free(replacedList);
 	if (freeFileMem) freeFileMemory(fileMem);
@@ -589,7 +589,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     rpmMessage(RPMMESS_DEBUG, "running postinstall script (if any)\n");
 
-    if (runScript(rootdir, h, RPMTAG_POSTIN, scriptArg,
+    if (runScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
 		  flags & RPMINSTALL_NOSCRIPTS)) {
 	return 2;
     }
@@ -629,7 +629,7 @@ static int installArchive(int fd, struct fileInfo * files,
     gzFile stream;
     int rc, i;
     struct cpioFileMapping * map = NULL;
-    int mappedFiles;
+    int mappedFiles = 0;
     char * failedFile;
     struct callbackInfo info;
 
