@@ -23,6 +23,7 @@
 	- update to elfutils-0.56.
 	- have debug sub-subpackage use external, not internal, elfutils.
 	- apply patches 1-6 to db-4.1.24.
+	- resurrect availablePackages one more time.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

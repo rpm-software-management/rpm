@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.9
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -481,10 +481,11 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Nov 15 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.9
+* Fri Nov 15 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.10
 - update to elfutils-0.56.
 - have debug sub-subpackage use external, not internal, elfutils.
 - apply patches 1-6 to db-4.1.24.
+- resurrect availablePackages one more time.
 
 * Wed Nov 13 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.8
 - fix: bash must have functional libtermcap.so.2.

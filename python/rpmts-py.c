@@ -221,7 +221,7 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args)
     }
 
 if (_rpmts_debug < 0 || (_rpmts_debug > 0 && *how != 'a'))
-fprintf(stderr, "*** rpmts_AddInstall(%p) ts %p\n", s, s->ts);
+fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->ts);
 
     if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
 	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\", \"a\", or \"i\"");
@@ -307,10 +307,10 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 /** \ingroup python
  */
 static int
-rpmts_SolveCallback(rpmts ts, rpmds ds, void * data)
+rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
 	/*@*/
 {
-    struct rpmtsCallbackType_s * cbInfo = data;
+    struct rpmtsCallbackType_s * cbInfo = (struct rpmtsCallbackType_s *) data;
     PyObject * args, * result;
     int res = 1;
 
@@ -343,7 +343,7 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
 
 static long hdr_hash(hdrObject *h)
 {
-    return h;
+    return (long) h;
 }
 
 /** \ingroup python
@@ -379,12 +379,14 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
 
+    /* XXX resurrect availablePackages one more time ... */
+    rpmalMakeIndex(&s->ts->availablePackages);
+
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
 
-    if (cbInfo.cb) {
+    if (cbInfo.cb)
 	xx = rpmtsSetSolveCallback(s->ts, rpmtsSolve, NULL);
-    }
 
     PyEval_RestoreThread(cbInfo._save);
 
