@@ -13,16 +13,7 @@
 #include "rpmlib.h"
 
 int reindexDB(char * dbprefix) {
-    faFile pkgs;
-    GDBM_FILE nameIndex;
-
-    pkgs = faOpen("/var/lib/rpm/packages.rpm", O_RDONLY, 0644);
-    if (!pkgs) {
-	error(RPMERR_DBOPEN);
-	return 0;
-    }
-
-    
+    return 0;
 }
 
 int convertDB(char * dbprefix) {
@@ -188,7 +179,7 @@ int convertDB(char * dbprefix) {
     rpmdbClose(&olddb);
     faClose(pkgs);
 
-    reindexDB(prefix);
+    reindexDB(dbprefix);
     
     return 1;
 }
