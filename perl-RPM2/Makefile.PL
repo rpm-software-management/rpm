@@ -12,7 +12,6 @@ if (open FH, "</usr/lib/librpm.la") {
   if ($line and not @rest) {
     if ($line =~ /^dependency_libs='(.*)'$/) {
       $libs = "-lrpm $1";
-      print "libs: $libs\n"
     }
   }
 }

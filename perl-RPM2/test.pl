@@ -8,7 +8,7 @@
 
 use Test;
 use strict;
-BEGIN { plan tests => 6 };
+BEGIN { plan tests => 22 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -20,58 +20,79 @@ ok(1); # If we made it this far, we're ok.
 ok(RPM2::rpmvercmp("1.0", "1.1") == -1);
 ok(RPM2::rpmvercmp("1.1", "1.0") == 1);
 ok(RPM2::rpmvercmp("1.0", "1.0") == 0);
+
+# this is a bug case in rpmvervmp; good one for testing
 ok(RPM2::rpmvercmp("1.a", "1.0") == RPM2::rpmvercmp("1.0", "1.a"));
 
-my $db = RPM2->open_rpm_db;
+my $db = RPM2->open_rpm_db();
 ok(defined $db);
 
-if (1) {
-  my @h;
-  push @h, [ RPM2->open_package_file($_) ]
-    foreach <~/rhn/bs/6.2/RPMS/*.rpm>;
-
-  print $_->[0]->name, " ", $_->[0]->as_nvre, "\n" foreach @h;
-}
-
-#exit;
-
-if (1) {
-  my $i = $db->iterator();
-  while (my $h = $i->next) {
-    my $epoch = $h->tag('epoch');
-    my $epoch_str = '';
-    $epoch_str = "$epoch:" if defined $epoch;
-
-    print $epoch_str . join("-", map { $h->tag($_) } qw/name version release/);
-    my @files = $h->files;
-    my $n = scalar @files;
-    print " ($n files)";
-    print "\n";
-  }
-}
-
+my @pkg;
 my $i = $db->find_all_iter();
-print "The following packages are installed (aka, 'rpm -qa'):\n";
+
+ok($i);
 while (my $pkg = $i->next) {
-  print $pkg->as_nvre, "\n";
+  push @pkg, $pkg;
 }
+ok(@pkg);
+ok($pkg[0]->name);
+
+@pkg = ();
 
 $i = $db->find_by_name_iter("kernel");
-print "The following kernels are installed (aka, 'rpm -q kernel'):\n";
+ok($i);
 while (my $pkg = $i->next) {
-  print $pkg->as_nvre, " ", int($pkg->size()/1024), "k\n";
+  push @pkg, $pkg;
 }
+if (@pkg) {
+  ok($pkg[0]->name);
+}
+
+@pkg = ();
 
 $i = $db->find_by_provides_iter("kernel");
-print "The following packages provide 'kernel' (aka, 'rpm -q --whatprovides kernel'):\n";
+ok($i);
 while (my $pkg = $i->next) {
-  print $pkg->as_nvre, " ", int($pkg->size()/1024), "k\n";
+  push @pkg, $pkg;
+}
+if (@pkg) {
+  ok($pkg[0]->name);
 }
 
-print "The following packages are installed (aka, 'rpm -qa' once more):\n";
+@pkg = ();
 foreach my $pkg ($db->find_by_file("/bin/sh")) {
-  print $pkg->as_nvre, "\n";
+  push @pkg, $pkg;
+}
+if (@pkg) {
+  ok($pkg[0]->name);
 }
 
-my $pkg = RPM2->open_package_file("/home/cturner/XFree86-4.1.0-15.src.rpm");
-print "Package opened: ", $pkg->as_nvre(), ", is source: ", $pkg->is_source_package, "\n";
+@pkg = ();
+foreach my $pkg ($db->find_by_requires("/bin/bash")) {
+  push @pkg, $pkg;
+}
+if (@pkg) {
+  ok($pkg[0]->name);
+}
+
+my $pkg = RPM2->open_package("test-rpm-1.0-1.noarch.rpm");
+ok($pkg);
+ok($pkg->name eq 'test-rpm');
+ok(!$pkg->is_source_package);
+
+$pkg = RPM2->open_package("test-rpm-1.0-1.src.rpm");
+ok($pkg);
+ok($pkg->name eq 'test-rpm');
+ok($pkg->is_source_package);
+
+# another rpm, handily provided by the rpmdb-redhat package
+my $other_rpm_dir = "/usr/lib/rpmdb/i386-redhat-linux/redhat";
+if (-d $other_rpm_dir) {
+  my $db2 = RPM2->open_rpm_db(-path => $other_rpm_dir);
+  ok(defined $db2);
+}
+else {
+  print "Install the rpmdb-redhat package to test two simultaneous open databases\n";
+  ok(1);
+}
+

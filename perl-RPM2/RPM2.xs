@@ -20,6 +20,19 @@ _init_rpm()
 	rpmReadConfigFiles(NULL, NULL);
 
 void
+_add_macro(name, val)
+	char * name
+	char * val
+    CODE:
+	addMacro(NULL, name, NULL, val, RMIL_DEFAULT);
+
+void
+_delete_macro(name)
+	char * name
+    CODE:
+	delMacro(NULL, name);
+
+void
 _close_rpm_db(db)
 	rpmdb db
     CODE:
