@@ -1336,11 +1336,13 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
-  { TFI_t fi = xcalloc(sizeof(*fi), 1);
+  { TFI_t fi = xcalloc(1, sizeof(*fi));
     char * a, * d;
 
-    fi->type = TR_ADDED;
-    /* XXX add transaction set */
+    /* XXX FIXME drill rpmTransactionSet ts all the way down here */
+/*@i@*/ fi->te = xcalloc(1, sizeof(*fi->te));
+/*@i@*/ fi->te->type = TR_ADDED;
+
     loadFi(NULL, fi, h, 1);
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);

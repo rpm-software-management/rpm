@@ -73,26 +73,14 @@ struct rpmFNSet_s {
     int_32 fc;			/*!< No. of files. */
 
 /*=============================*/
-/*@owned@*/
-    const char * name;		/*!< Name: tag (malloc'd). */
-/*@owned@*/
-    const char * version;	/*!< Version: tag (malloc'd). */
-/*@owned@*/
-    const char * release;	/*!< Release: tag (malloc'd). */
-    uint_32 multiLib;		/* MULTILIB */
-/*@null@*/
-    fnpyKey key;		/*!< Package notify key. */
-/*@null@*/ /*@dependent@*/
-    rpmRelocation * relocs;	/*!< Package file relocations. */
-/*@null@*/
-    FD_t fd;			/*!< Package file handle */
-    rpmTransactionType type;
+/*@dependent@*/
+    transactionElement te;
+
     HGE_t hge;			/*!< Vector to headerGetEntry() */
     HAE_t hae;			/*!< Vector to headerAddEntry() */
     HME_t hme;			/*!< Vector to headerModifyEntry() */
     HRE_t hre;			/*!< Vector to headerRemoveEntry() */
     HFD_t hfd;			/*!< Vector to headerFreeData() */
-    int_32 epoch;
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
     gid_t gid;			/*!< File gid (default). */

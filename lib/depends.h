@@ -19,7 +19,6 @@ typedef enum rpmTransactionType_e {
 #include "rpmds.h"
 
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
-typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
 
 typedef /*@abstract@*/ struct teIterator_s *		teIterator;
 
@@ -73,14 +72,7 @@ struct tsortInfo_s {
  * A single package instance to be installed/removed atomically.
  */
 struct transactionElement_s {
-#ifdef	DYING
-    enum rpmTransactionType {
-	TR_ADDED,	/*!< Package will be installed. */
-	TR_REMOVED	/*!< Package will be removed. */
-    } type;		/*!< Package disposition (installed/removed). */
-#else
     rpmTransactionType type;	/*!< Package disposition (installed/removed). */
-#endif
 
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Package header. */
@@ -119,7 +111,7 @@ struct transactionElement_s {
 
     uint_32 multiLib;		/*!< (TR_ADDED) MULTILIB */
 
-/*@kept@*//*@null@*/
+/*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
 /*@owned@*/ /*@null@*/
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
@@ -214,18 +206,39 @@ extern "C" {
 
 #if defined(_NEED_TEITERATOR)
 /*@access teIterator @*/
+
+/*@access TFI_t @*/
+/*@access transactionElement @*/
 /*@access rpmTransactionSet @*/
 
 /**
  * Return transaction element index.
  * @param tei		transaction element iterator
- * @return		element index
+ * @return		transaction element index
  */
 /*@unused@*/ static inline
 int teGetOc(teIterator tei)
 	/*@*/
 {
     return tei->ocsave;
+}
+
+/**
+ * Return transaction element's file info.
+ * @param tei		transaction element iterator
+ * @return		transaction element file info
+ */
+/*@unused@*/ static inline
+TFI_t teGetFi(teIterator tei)
+	/*@*/
+{
+    TFI_t fi = NULL;
+
+    if (tei != NULL && tei->ocsave != -1)
+	fi = tei->ts->flList + tei->ocsave;
+    /*@-compdef -onlytrans -usereleased@*/ /* FIX: ts->flList may be released */
+    return fi;
+    /*@=compdef =onlytrans =usereleased@*/
 }
 
 /**
@@ -304,6 +317,25 @@ transactionElement teNext(teIterator tei, rpmTransactionType type)
     }
     return p;
 }
+
+/**
+ * Return next transaction element's file info.
+ * @param tei		transaction element iterator
+ * @return		next transaction element file info, NULL on termination
+ */
+/*@unused@*/ static inline
+TFI_t teNextFi(teIterator tei)
+	/*@modifies tei @*/
+{
+    TFI_t fi = NULL;
+
+    if (teNextIterator(tei) != NULL && tei->ocsave != -1)
+	fi = tei->ts->flList + tei->ocsave;
+    /*@-compdef -onlytrans -usereleased@*/ /* FIX: ts->flList may be released */
+    return fi;
+    /*@=compdef =onlytrans =usereleased@*/
+}
+
 #endif	/* defined(_NEED_TEITERATOR) */
 
 /**

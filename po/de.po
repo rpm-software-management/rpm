@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-11 07:35-0500\n"
+"POT-Creation-Date: 2001-11-11 10:55-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -681,94 +681,94 @@ msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1499
+#: build/files.c:1501
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:1523
+#: build/files.c:1525
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1566 build/files.c:2178 build/parsePrep.c:50
+#: build/files.c:1568 build/files.c:2180 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1578
+#: build/files.c:1580
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1682
+#: build/files.c:1684
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/files.c:1705
+#: build/files.c:1707
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: build/files.c:1720
+#: build/files.c:1722
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1782
+#: build/files.c:1784
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
 # , c-format
-#: build/files.c:1793 build/pack.c:146
+#: build/files.c:1795 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/files.c:2166
+#: build/files.c:2168
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2240
+#: build/files.c:2242
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:2245
+#: build/files.c:2247
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:2329
+#: build/files.c:2331
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:2333
+#: build/files.c:2335
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:2469
+#: build/files.c:2471
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:2495 build/files.c:2509
+#: build/files.c:2497 build/files.c:2511
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:2630
+#: build/files.c:2632
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -921,7 +921,7 @@ msgid "Could not open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/pack.c:603 lib/psm.c:2138
+#: build/pack.c:603 lib/psm.c:2101
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
@@ -956,7 +956,7 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:683 lib/psm.c:2403
+#: build/pack.c:683 lib/psm.c:2366
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1707,47 +1707,47 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:306
+#: lib/fsm.c:309
 msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
 # , c-format
-#: lib/fsm.c:308
+#: lib/fsm.c:311
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/fsm.c:1169
+#: lib/fsm.c:1172
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1450
+#: lib/fsm.c:1453
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1571 lib/fsm.c:1699
+#: lib/fsm.c:1574 lib/fsm.c:1702
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/fsm.c:1725
+#: lib/fsm.c:1728
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
 
-#: lib/fsm.c:1731
+#: lib/fsm.c:1734
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Entfernen von %s fehlgeschlagen: %s"
 
-#: lib/fsm.c:1741
+#: lib/fsm.c:1744
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:1760
+#: lib/fsm.c:1763
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "kann Datei %s nicht öffnen: "
@@ -1759,7 +1759,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:954
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:922
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2411,114 +2411,114 @@ msgstr " steht im Konflikt mit %s-%s-%s\n"
 msgid "is needed by"
 msgstr " wird von %s-%s-%s gebraucht\n"
 
-#: lib/psm.c:270
+#: lib/psm.c:253
 msgid "========== relocations\n"
 msgstr ""
 
 # , c-format
-#: lib/psm.c:274
+#: lib/psm.c:257
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/psm.c:277
+#: lib/psm.c:260
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
 # , c-format
-#: lib/psm.c:347
+#: lib/psm.c:330
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "Hole %s heraus\n"
 
 # , c-format
-#: lib/psm.c:413
+#: lib/psm.c:396
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/psm.c:423
+#: lib/psm.c:406
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:502
+#: lib/psm.c:485
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/psm.c:1151
+#: lib/psm.c:1119
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/psm.c:1157
+#: lib/psm.c:1125
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/psm.c:1197
+#: lib/psm.c:1165
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1316
+#: lib/psm.c:1280
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/psm.c:1426
+#: lib/psm.c:1392
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "Keine Stufen ausführen"
 
-#: lib/psm.c:1594
+#: lib/psm.c:1560
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
-#: lib/psm.c:1601
+#: lib/psm.c:1567
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/psm.c:1943
+#: lib/psm.c:1909
 #, fuzzy, c-format
-msgid "%s: %s-%s-%s has %d files, test = %d\n"
+msgid "%s: %s has %d files, test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/psm.c:2060
+#: lib/psm.c:2026
 #, c-format
-msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
+msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2174
+#: lib/psm.c:2137
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2183
+#: lib/psm.c:2146
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/psm.c:2224
+#: lib/psm.c:2187
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/psm.c:2225
+#: lib/psm.c:2188
 msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:2411
+#: lib/psm.c:2374
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/psm.c:2414
+#: lib/psm.c:2377
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
@@ -3090,13 +3090,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:204
+#: lib/transaction.c:209
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:874
+#: lib/transaction.c:880
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"

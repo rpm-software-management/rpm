@@ -15,102 +15,6 @@
 extern int _fi_debug;
 /*@=exportlocal@*/
 
-#ifdef	DYING
-/**
- */
-struct sharedFileInfo {
-    int pkgFileNum;
-    int otherFileNum;
-    int otherPkg;
-    int isRemoved;
-};
-
-/**
- */
-struct transactionFileInfo_s {
-/*@null@*/ Header h;		/*!< Package header */
-
-/*@owned@*/ const char * name;	/*!< Name: tag (malloc'd). */
-/*@owned@*/ const char * version; /*!< Version: tag (malloc'd). */
-/*@owned@*/ const char * release; /*!< Release: tag (malloc'd). */
-
-    uint_32 multiLib;		/* MULTILIB */
-/*@null@*/
-    fnpyKey key;		/*!< Package notify key. */
-/*@null@*/ /*@dependent@*/
-    rpmRelocation * relocs;	/*!< Package file relocations. */
-/*@null@*/
-    FD_t fd;			/*!< Package file handle */
-
-/*=============================*/
-
-  /* for all packages */
-    enum rpmTransactionType type;
-    fileAction action;		/*!< File disposition default. */
-/*@owned@*/ fileAction * actions;	/*!< File disposition(s) */
-/*@owned@*/ struct fingerPrint_s * fps;	/*!< File fingerprint(s) */
-    HGE_t hge;			/*!< Vector to headerGetEntry() */
-    HAE_t hae;			/*!< Vector to headerAddEntry() */
-    HME_t hme;			/*!< Vector to headerModifyEntry() */
-    HRE_t hre;			/*!< Vector to headerRemoveEntry() */
-    HFD_t hfd;			/*!< Vector to headerFreeData() */
-    int_32 epoch;
-    uint_32 flags;		/*!< File flag default. */
-
-/*@owned@*/ const char ** bnl;	/*!< Base name(s) (from header) */
-/*@owned@*/ const char ** dnl;	/*!< Directory name(s) (from header) */
-/*@owned@*/ const char ** fmd5s;/*!< File MD5 sum(s) (from header) */
-/*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
-/*@owned@*/ const char ** flangs;	/*!< File lang(s) */
-    int_32 * dil;		/*!< Directory indice(s) (from header) */
-    const uint_32 * fflags;	/*!< File flag(s) (from header) */
-    const uint_32 * fsizes;	/*!< File size(s) (from header) */
-    const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
-/* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
-    uint_16 * fmodes;		/*!< File mode(s) (from header) */
-    uint_16 * frdevs;		/*!< File rdev(s) (from header) */
-
-/*@owned@*/ const char ** fuser;	/*!< File owner(s) */
-/*@owned@*/ const char ** fgroup;	/*!< File group(s) */
-/*@owned@*/ /*@null@*/ uid_t * fuids;	/*!< File uid(s) */
-/*@owned@*/ /*@null@*/ gid_t * fgids;	/*!< File gid(s) */
-
-/*@only@*/ /*@null@*/ char * fstates;	/*!< File state(s) (from header) */
-
-    int fc;			/*!< No. of files. */
-    int dc;			/*!< No. of directories. */
-
-/*@owned@*/ const char ** obnl;	/*!< Original base name(s) (from header) */
-/*@owned@*/ const char ** odnl;	/*!< Original directory name(s) (from header) */
-/*@unused@*/ int_32 * odil;	/*!< Original directory indice(s) (from header) */
-    int bnlmax;			/*!< Length (in bytes) of longest base name. */
-    int dnlmax;			/*!< Length (in bytes) of longest dir name. */
-    int astriplen;
-    int striplen;
-    unsigned int archiveSize;
-    mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
-    mode_t fperms;		/*!< File perms (0644) if not mapped. */
-/*@only@*/ /*@null@*/ const char ** apath;
-    int mapflags;
-/*@owned@*/ /*@null@*/ int * fmapflags;
-    uid_t uid;
-    gid_t gid;
-    int magic;
-
-#define	TFIMAGIC	0x09697923
-/*@owned@*/ FSM_t fsm;		/*!< File state machine data. */
-
-    int keep_header;		/*!< Keep header? */
-
-/*@owned@*/ struct sharedFileInfo * replaced;	/*!< (TR_ADDED) */
-/*@owned@*/ uint_32 * replacedSizes;	/*!< (TR_ADDED) */
-
-    unsigned int record;	/*!< (TR_REMOVED) */
-
-/*@refs@*/ int nrefs;		/*!< Reference count. */
-};
-#endif	/* DYING */
-
 /**
  */
 #define	PSM_VERBOSE	0x8000
@@ -162,17 +66,25 @@ typedef enum pkgStage_e {
 struct psm_s {
 /*@refcounted@*/
     rpmTransactionSet ts;	/*!< transaction set */
+/*@dependent@*/
+    transactionElement te;	/*!< transaction element */
 /*@refcounted@*/
     TFI_t fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage/multilib header. */
-/*@null@*/ rpmdbMatchIterator mi;
-/*@observer@*/ const char * stepName;
-/*@only@*/ /*@null@*/ const char * rpmio_flags;
-/*@only@*/ /*@null@*/ const char * failedFile;
-/*@only@*/ /*@null@*/ const char * pkgURL;	/*!< Repackage URL. */
-/*@dependent@*/ const char * pkgfn;	/*!< Repackage file name. */
+/*@null@*/
+    rpmdbMatchIterator mi;
+/*@observer@*/
+    const char * stepName;
+/*@only@*/ /*@null@*/
+    const char * rpmio_flags;
+/*@only@*/ /*@null@*/
+    const char * failedFile;
+/*@only@*/ /*@null@*/
+    const char * pkgURL;	/*!< Repackage URL. */
+/*@dependent@*/
+    const char * pkgfn;		/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
@@ -185,13 +97,15 @@ struct psm_s {
     unsigned long total;	/*!< Callback total. */
     rpmRC rc;
     pkgStage goal;
-/*@unused@*/ pkgStage stage;
+/*@unused@*/
+    pkgStage stage;
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifdef	DYING
 /**
  * Return (malloc'd) transaction element name-version-release string.
  * @param fi		transaction element file info
@@ -200,6 +114,7 @@ extern "C" {
 /*@only@*/ /*@null@*/
 char * fiGetNEVR(/*@null@*/const TFI_t fi)
 	/*@*/;
+#endif
 
 /**
  * Return file type from mode_t.

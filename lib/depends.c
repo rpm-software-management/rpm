@@ -222,9 +222,9 @@ static void addTE(transactionElement p, Header h,
     p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
     p->obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
 
-    /*@-assignexpose -ownedtrans @*/
+    /*@-assignexpose -temptrans @*/
     p->key = key;
-    /*@=assignexpose =ownedtrans @*/
+    /*@=assignexpose =temptrans @*/
 
     /*@-type@*/ /* FIX: cast? */
     p->fd = (fd != NULL ? fdLink(fd, "addTE") : NULL);

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-11 07:35-0500\n"
+"POT-Creation-Date: 2001-11-11 10:55-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -591,88 +591,88 @@ msgstr "Skráin er tvítekin: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1499
+#: build/files.c:1501
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1523
+#: build/files.c:1525
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Skráin fannst ekki: %s\n"
 
-#: build/files.c:1566 build/files.c:2178 build/parsePrep.c:50
+#: build/files.c:1568 build/files.c:2180 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1578
+#: build/files.c:1580
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1682
+#: build/files.c:1684
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1705
+#: build/files.c:1707
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Gat ekki opnað PreUn skrá: %s\n"
 
-#: build/files.c:1720
+#: build/files.c:1722
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Skráin fannst ekki með 'glob': %s\n"
 
-#: build/files.c:1782
+#: build/files.c:1784
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Gat ekki opnað %%files skrána %s: %s\n"
 
-#: build/files.c:1793 build/pack.c:146
+#: build/files.c:1795 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "lína: %s\n"
 
-#: build/files.c:2166
+#: build/files.c:2168
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ógild skrá %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2240
+#: build/files.c:2242
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Gat ekki keyrt %s: %s\n"
 
-#: build/files.c:2245
+#: build/files.c:2247
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Gat ekki búið til undirferli (fork) %s: %s\n"
 
-#: build/files.c:2329
+#: build/files.c:2331
 #, c-format
 msgid "%s failed\n"
 msgstr "%s brást\n"
 
-#: build/files.c:2333
+#: build/files.c:2335
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "gat ekki ritað öll gögn í %s\n"
 
-#: build/files.c:2469
+#: build/files.c:2471
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2495 build/files.c:2509
+#: build/files.c:2497 build/files.c:2511
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "gat ekki fundið %s:\n"
 
-#: build/files.c:2630
+#: build/files.c:2632
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -815,7 +815,7 @@ msgstr "Get ekki lesið haus úr %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:2138
+#: build/pack.c:603 lib/psm.c:2101
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Get ekki ritað í pakka: %s\n"
@@ -845,7 +845,7 @@ msgstr "Get ekki lesið innihald %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Get ekki ritað innihald í %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2403
+#: build/pack.c:683 lib/psm.c:2366
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrifaði: %s\n"
@@ -1538,46 +1538,46 @@ msgstr "gat ekki opnað %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:306
+#: lib/fsm.c:309
 msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:308
+#: lib/fsm.c:311
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1169
+#: lib/fsm.c:1172
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1450
+#: lib/fsm.c:1453
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1571 lib/fsm.c:1699
+#: lib/fsm.c:1574 lib/fsm.c:1702
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s vistað sem %s\n"
 
-#: lib/fsm.c:1725
+#: lib/fsm.c:1728
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1731
+#: lib/fsm.c:1734
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s brást: %s\n"
 
-#: lib/fsm.c:1741
+#: lib/fsm.c:1744
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s gat ekki eytt %s: %s\n"
 
-#: lib/fsm.c:1760
+#: lib/fsm.c:1763
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s búið til sem %s\n"
@@ -1589,7 +1589,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:954
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:922
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2179,108 +2179,108 @@ msgstr ""
 msgid "is needed by"
 msgstr ""
 
-#: lib/psm.c:270
+#: lib/psm.c:253
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:274
+#: lib/psm.c:257
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/psm.c:277
+#: lib/psm.c:260
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/psm.c:347
+#: lib/psm.c:330
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/psm.c:413
+#: lib/psm.c:396
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/psm.c:423
+#: lib/psm.c:406
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:502
+#: lib/psm.c:485
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:1151
+#: lib/psm.c:1119
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "gat ekki búið til %%%s %s\n"
 
-#: lib/psm.c:1157
+#: lib/psm.c:1125
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "get ekki ritað í %%%s %s\n"
 
-#: lib/psm.c:1197
+#: lib/psm.c:1165
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1316
+#: lib/psm.c:1280
 msgid "source package contains no .spec file\n"
 msgstr "pakkinn inniheldur enga .spec skrá\n"
 
-#: lib/psm.c:1426
+#: lib/psm.c:1392
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1594
+#: lib/psm.c:1560
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1601
+#: lib/psm.c:1567
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1943
+#: lib/psm.c:1909
 #, c-format
-msgid "%s: %s-%s-%s has %d files, test = %d\n"
+msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:2060
+#: lib/psm.c:2026
 #, c-format
-msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
+msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2174
+#: lib/psm.c:2137
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2183
+#: lib/psm.c:2146
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2224
+#: lib/psm.c:2187
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2225
+#: lib/psm.c:2188
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2411
+#: lib/psm.c:2374
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "gat ekki opnað %s: %s\n"
 
-#: lib/psm.c:2414
+#: lib/psm.c:2377
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s brást\n"
@@ -2821,13 +2821,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:204
+#: lib/transaction.c:209
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:874
+#: lib/transaction.c:880
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

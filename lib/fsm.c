@@ -10,10 +10,13 @@
 #include "debug.h"
 
 /*@access FD_t @*/
-/*@access rpmTransactionSet @*/
-/*@access TFI_t @*/
 /*@access FSMI_t @*/
 /*@access FSM_t @*/
+
+/*@access TFI_t @*/
+/*@access rpmFNSet @*/
+/*@access transactionElement @*/
+/*@access rpmTransactionSet @*/
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
@@ -112,7 +115,7 @@ mapInitIterator(rpmTransactionSet ts, TFI_t fi)
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts, "mapIterator");
     iter->fi = rpmfiLink(fi, "mapIterator");
-    iter->reverse = (fi->type == TR_REMOVED && fi->action != FA_COPYOUT);
+    iter->reverse = (fi->te->type == TR_REMOVED && fi->action != FA_COPYOUT);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
     return iter;
@@ -581,22 +584,22 @@ int fsmMapPath(FSM_t fsm)
 	    break;
 	case FA_COPYIN:
 	case FA_CREATE:
-assert(fi->type == TR_ADDED);
+assert(fi->te->type == TR_ADDED);
 	    break;
 
 	case FA_SKIPNSTATE:
-	    if (fi->fstates && fi->type == TR_ADDED)
+	    if (fi->fstates && fi->te->type == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
 	    break;
 
 	case FA_SKIPNETSHARED:
-	    if (fi->fstates && fi->type == TR_ADDED)
+	    if (fi->fstates && fi->te->type == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
 	    break;
 
 	case FA_BACKUP:
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-	    switch (fi->type) {
+	    switch (fi->te->type) {
 	    case TR_ADDED:
 		fsm->osuffix = SUFFIX_RPMORIG;
 		/*@innerbreak@*/ break;
@@ -607,18 +610,18 @@ assert(fi->type == TR_ADDED);
 	    break;
 
 	case FA_ALTNAME:
-assert(fi->type == TR_ADDED);
+assert(fi->te->type == TR_ADDED);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
-assert(fi->type == TR_ADDED);
+assert(fi->te->type == TR_ADDED);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_ERASE:
-	    assert(fi->type == TR_REMOVED);
+	    assert(fi->te->type == TR_REMOVED);
 	    /*
 	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
 	     * legacy rpm behavior.

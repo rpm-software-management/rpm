@@ -24,13 +24,16 @@ int _fi_debug = 0;
 
 /*@access Header@*/		/* compared with NULL */
 /*@access rpmdbMatchIterator@*/ /* compared with NULL */
-/*@access FSM_t@*/		/* compared with NULL */
 /*@access FD_t@*/		/* compared with NULL */
 /*@access rpmdb@*/		/* compared with NULL */
 
-/*@access rpmTransactionSet@*/
-/*@access TFI_t@*/
+/*@access FSM_t@*/		/* compared with NULL */
 /*@access PSM_t@*/
+
+/*@access TFI_t@*/
+/*@access rpmFNSet @*/
+/*@access transactionElement @*/
+/*@access rpmTransactionSet@*/
 
 /*@access alKey@*/
 /*@access rpmDepSet@*/
@@ -76,27 +79,6 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-char * fiGetNEVR(const TFI_t fi)
-{
-    char * pkgNVR;
-    char * t;
-
-    if (fi == NULL)
-	return xstrdup("--");
-
-    t = xcalloc(1, (fi->name != NULL ? strlen(fi->name) : 0) +
-		   (fi->version != NULL ? strlen(fi->version) : 0) +
-		   (fi->release != NULL ? strlen(fi->release) : 0) +
-		   sizeof("--"));
-    pkgNVR = t;
-    if (fi->name != NULL)	t = stpcpy(t, fi->name);
-    t = stpcpy(t, "-");
-    if (fi->version != NULL)	t = stpcpy(t, fi->version);
-    t = stpcpy(t, "-");
-    if (fi->release != NULL)	t = stpcpy(t, fi->release);
-    return pkgNVR;
-}
-
 /**
  */
 static /*@observer@*/ const char *const ftstring (fileTypes ft)
@@ -131,6 +113,7 @@ fileTypes whatis(uint_16 mode)
 Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		Header origH, fileAction * actions)
 {
+    transactionElement p = fi->te;
     HGE_t hge = fi->hge;
     HAE_t hae = fi->hae;
     HME_t hme = fi->hme;
@@ -165,9 +148,9 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	numValid = 0;
 
     numRelocations = 0;
-    if (fi->relocs)
-	while (fi->relocs[numRelocations].newPath ||
-	       fi->relocs[numRelocations].oldPath)
+    if (p->relocs)
+	while (p->relocs[numRelocations].newPath ||
+	       p->relocs[numRelocations].oldPath)
 	    numRelocations++;
 
     /*
@@ -176,7 +159,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
      * should be added, but, since relocateFileList() can be called more
      * than once for the same header, don't bother if already present.
      */
-    if (fi->relocs == NULL || numRelocations == 0) {
+    if (p->relocs == NULL || numRelocations == 0) {
 	if (numValid) {
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
 		xx = hae(origH, RPMTAG_INSTPREFIXES,
@@ -199,11 +182,11 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	 * Default relocations (oldPath == NULL) are handled in the UI,
 	 * not rpmlib.
 	 */
-	if (fi->relocs[i].oldPath == NULL) continue; /* XXX can't happen */
+	if (p->relocs[i].oldPath == NULL) continue; /* XXX can't happen */
 
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
-	t = alloca_strdup(fi->relocs[i].oldPath);
+	t = alloca_strdup(p->relocs[i].oldPath);
 	/*@-branchstate@*/
 	relocations[i].oldPath = (t[0] == '/' && t[1] == '\0')
 	    ? t
@@ -211,10 +194,10 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	/*@=branchstate@*/
 
 	/* An old path w/o a new path is valid, and indicates exclusion */
-	if (fi->relocs[i].newPath) {
+	if (p->relocs[i].newPath) {
 	    int del;
 
-	    t = alloca_strdup(fi->relocs[i].newPath);
+	    t = alloca_strdup(p->relocs[i].newPath);
 	    /*@-branchstate@*/
 	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
 		? t
@@ -223,16 +206,16 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 	    /*@-nullpass@*/	/* FIX:  relocations[i].oldPath == NULL */
 	    /* Verify that the relocation's old path is in the header. */
-	    for (j = 0; j < numValid; j++)
+	    for (j = 0; j < numValid; j++) {
 		if (!strcmp(validRelocations[j], relocations[i].oldPath))
 		    /*@innerbreak@*/ break;
+	    }
+
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions) {
-		const char * pkgNEVR = fiGetNEVR(fi);
 		rpmProblemSetAppend(ts->probs, RPMPROB_BADRELOCATE,
-			pkgNEVR, fi->key,
+			p->NEVR, p->key,
 			relocations[i].oldPath, NULL, NULL, 0);
-		pkgNEVR = _free(pkgNEVR);
 	    }
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
@@ -341,7 +324,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	 * If only adding libraries of different arch into an already
 	 * installed package, skip all other files.
 	 */
-	if (fi->multiLib && !isFileMULTILIB((fFlags[i]))) {
+	if (p->multiLib && !isFileMULTILIB((fFlags[i]))) {
 	    if (actions) {
 		actions[i] = FA_SKIPMULTILIB;
 		rpmMessage(RPMMESS_DEBUG, _("excluding multilib path %s%s\n"), 
@@ -509,23 +492,23 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     /* Save original filenames in header and replace (relocated) filenames. */
     if (nrelocated) {
 	int c;
-	void * p;
+	void * d;
 	rpmTagType t;
 
-	p = NULL;
-	xx = hge(h, RPMTAG_BASENAMES, &t, &p, &c);
-	xx = hae(h, RPMTAG_ORIGBASENAMES, t, p, c);
-	p = hfd(p, t);
+	d = NULL;
+	xx = hge(h, RPMTAG_BASENAMES, &t, &d, &c);
+	xx = hae(h, RPMTAG_ORIGBASENAMES, t, d, c);
+	d = hfd(d, t);
 
-	p = NULL;
-	xx = hge(h, RPMTAG_DIRNAMES, &t, &p, &c);
-	xx = hae(h, RPMTAG_ORIGDIRNAMES, t, p, c);
-	p = hfd(p, t);
+	d = NULL;
+	xx = hge(h, RPMTAG_DIRNAMES, &t, &d, &c);
+	xx = hae(h, RPMTAG_ORIGDIRNAMES, t, d, c);
+	d = hfd(d, t);
 
-	p = NULL;
-	xx = hge(h, RPMTAG_DIRINDEXES, &t, &p, &c);
-	xx = hae(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
-	p = hfd(p, t);
+	d = NULL;
+	xx = hge(h, RPMTAG_DIRINDEXES, &t, &d, &c);
+	xx = hae(h, RPMTAG_ORIGDIRINDEXES, t, d, c);
+	d = hfd(d, t);
 
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
@@ -551,9 +534,9 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 fnpyKey rpmfiGetKey(TFI_t fi)
 {
-/*@-compdef -retexpose -usereleased@*/
-    return fi->key;
-/*@=compdef =retexpose =usereleased@*/
+/*@-compdef -kepttrans -retexpose -usereleased @*/
+    return fi->te->key;
+/*@=compdef =kepttrans =retexpose =usereleased @*/
 }
 
 TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
@@ -589,7 +572,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
 	fi->fsm = newFSM();
 
     /* XXX avoid gcc noise on pointer (4th arg) cast(s) */
-    hge = (keep_header && fi->type == TR_ADDED)
+    hge = (keep_header && fi->te->type == TR_ADDED)
 	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
     fi->hge = hge;
     fi->hae = (HAE_t) headerAddEntry;
@@ -600,18 +583,6 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
     /*@-branchstate@*/
     if (h && fi->h == NULL)	fi->h = headerLink(h, "loadFi");
     /*@=branchstate@*/
-
-    /* Duplicate name-version-release so that headers can be free'd. */
-    rc = hge(fi->h, RPMTAG_NAME, NULL, (void **) &fi->name, NULL);
-    fi->name = xstrdup(fi->name);
-    rc = hge(fi->h, RPMTAG_VERSION, NULL, (void **) &fi->version, NULL);
-    fi->version = xstrdup(fi->version);
-    rc = hge(fi->h, RPMTAG_RELEASE, NULL, (void **) &fi->release, NULL);
-    fi->release = xstrdup(fi->release);
-
-    /* -1 means not found */
-    rc = hge(fi->h, RPMTAG_EPOCH, NULL, (void **) &uip, NULL);
-    fi->epoch = (rc ? *uip : -1);
 
     /* 0 means unknown */
     rc = hge(fi->h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
@@ -641,7 +612,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
     fi->keep_header = keep_header;
-    switch (fi->type) {
+    switch (fi->te->type) {
     case TR_ADDED:
 	fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -731,7 +702,7 @@ void freeFi(TFI_t fi)
 {
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
 
-    switch (fi->type) {
+    switch (fi->te->type) {
     case TR_ADDED:
 	if (!fi->keep_header) {
 	    fi->fmtimes = hfd(fi->fmtimes, -1);
@@ -769,9 +740,6 @@ void freeFi(TFI_t fi)
     fi->fgroup = hfd(fi->fgroup, -1);
     fi->flangs = hfd(fi->flangs, -1);
 
-    fi->name = _free(fi->name);
-    fi->version = _free(fi->version);
-    fi->release = _free(fi->release);
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replaced = _free(fi->replaced);
@@ -785,7 +753,7 @@ void freeFi(TFI_t fi)
 
 /*@observer@*/ const char *const fiTypeString(TFI_t fi)
 {
-    switch(fi->type) {
+    switch(fi->te->type) {
     case TR_ADDED:	return " install";
     case TR_REMOVED:	return "   erase";
     default:		return "???";
@@ -1202,16 +1170,11 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     /* XXX don't bother with fd, linked directly into fi below. */
     (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
-    fi->type = TR_ADDED;
+    fi->te = ts->order;
 
     fi->h = headerLink(h, "InstallSourcePackage");
 
-    fi->multiLib = 0;	/* MULTILIB for src.rpm's? */
-
-    fi->key = NULL;	/* FIXME: this may be needed somewhen */
-    /* XXX don't bother with fd, linked directly into fi below. */
-/*@i@*/ fi->fd = fd;
-    fi->relocs = NULL;
+/*@i@*/ fi->te->fd = fd;
 
     /* XXX header arg unused. */
     loadFi(ts, fi, fi->h, 1);
@@ -1225,6 +1188,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     /*@-assignexpose@*/
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
     psm->fi = fi;
+    psm->te = fi->te;
     /*@=assignexpose@*/
 
     if (cookie) {
@@ -1346,6 +1310,8 @@ exit:
 	/*@=refcounttrans@*/
     }
 
+    psm->fi = NULL;
+    psm->te = NULL;
     psm->ts = rpmtsUnlink(ts, "InstallSourcePackage");
 
     return rc;
@@ -1798,7 +1764,7 @@ static int runTriggers(PSM_t psm)
     int numPackage;
     rpmRC rc = RPMRC_OK;
 
-    numPackage = rpmdbCountPackages(ts->rpmdb, fi->name) + psm->countCorrection;
+    numPackage = rpmdbCountPackages(ts->rpmdb, psm->te->name) + psm->countCorrection;
     if (numPackage < 0)
 	return 1;
 
@@ -1808,7 +1774,7 @@ static int runTriggers(PSM_t psm)
 	int countCorrection = psm->countCorrection;
 
 	psm->countCorrection = 0;
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, fi->name, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, psm->te->name, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
 	}
@@ -1940,8 +1906,8 @@ int psmStage(PSM_t psm, pkgStage stage)
     case PSM_UNKNOWN:
 	break;
     case PSM_INIT:
-	rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
-		psm->stepName, fi->name, fi->version, fi->release,
+	rpmMessage(RPMMESS_DEBUG, _("%s: %s has %d files, test = %d\n"),
+		psm->stepName, psm->te->NEVR,
 		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
 
 	/*
@@ -1949,7 +1915,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	 * versions of this package that will be installed when we are
 	 * finished.
 	 */
-	psm->npkgs_installed = rpmdbCountPackages(ts->rpmdb, fi->name);
+	psm->npkgs_installed = rpmdbCountPackages(ts->rpmdb, psm->te->name);
 	if (psm->npkgs_installed < 0) {
 	    rc = RPMRC_FAIL;
 	    break;
@@ -1959,11 +1925,11 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
 assert(psm->mi == NULL);
-	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, fi->name, 0);
+	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, psm->te->name, 0);
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION,
-			RPMMIRE_DEFAULT, fi->version);
+			RPMMIRE_DEFAULT, psm->te->version);
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE,
-			RPMMIRE_DEFAULT, fi->release);
+			RPMMIRE_DEFAULT, psm->te->release);
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
@@ -2057,9 +2023,9 @@ assert(psm->mi == NULL);
 		rc = psmStage(psm, PSM_SCRIPT);
 		if (rc) {
 		    rpmError(RPMERR_SCRIPT,
-			_("%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"),
+			_("%s: %s scriptlet failed (%d), skipping %s\n"),
 			psm->stepName, tag2sln(psm->scriptTag), rc,
-			fi->name, fi->version, fi->release);
+			psm->te->NEVR);
 		    break;
 		}
 	    }
@@ -2128,10 +2094,7 @@ assert(psm->mi == NULL);
 		lead.osnum = osnum;
 		lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
-		{   char buf[256];
-		    sprintf(buf, "%s-%s-%s", fi->name, fi->version, fi->release);
-		    strncpy(lead.name, buf, sizeof(lead.name));
-		}
+		strncpy(lead.name, psm->te->NEVR, sizeof(lead.name));
 
 		rc = writeLead(psm->fd, &lead);
 		if (rc) {
@@ -2193,12 +2156,12 @@ assert(psm->mi == NULL);
 	    /* Retrieve type of payload compression. */
 	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
 
-	    if (fi->fd == NULL) {	/* XXX can't happen */
+	    if (fi->te->fd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
 	    }
 	    /*@-nullpass@*/	/* LCL: fi->fd != NULL here. */
-	    psm->cfd = Fdopen(fdDup(Fileno(fi->fd)), psm->rpmio_flags);
+	    psm->cfd = Fdopen(fdDup(Fileno(fi->te->fd)), psm->rpmio_flags);
 	    /*@=nullpass@*/
 	    if (psm->cfd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -2452,7 +2415,7 @@ assert(psm->mi == NULL);
 	if (ts && ts->notify) {
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void) ts->notify(fi->h, psm->what, psm->amount, psm->total,
-				fi->key, ts->notifyData);
+				psm->te->key, ts->notifyData);
 	    /*@=noeffectuncon @*/
 	}
 	break;

@@ -89,7 +89,9 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmDepSet_s * rpmDepSet;
 /**
  * File info tag sets from a header, so that a header can be discarded early.
  */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmFNSet_s * TFI_t;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmFNSet_s * rpmFNSet;
+typedef /*@abstract@*/ struct transactionElement_s * transactionElement;
 
 /** \ingroup header
  * Return name, version, release strings from header.
@@ -1265,14 +1267,6 @@ typedef /*@abstract@*/ struct fsm_s * FSM_t;
  */
 typedef /*@abstract@*/ struct psm_s * PSM_t;
 
-/** \ingroup rpmtrans
- */
-#ifdef	DYING
-typedef /*@abstract@*/ /*@refcounted@*/ struct transactionFileInfo_s * TFI_t;
-#else
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmFNSet_s * TFI_t;
-#endif
-
 /**
  * Return package header from file handle.
  * @param ts		transaction set
@@ -1492,10 +1486,10 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
  * @return		0 always
  */
 /*@unused@*/
-int rpmtransGetKeys(const rpmTransactionSet ts,
+int rpmtransGetKeys(rpmTransactionSet ts,
 		/*@null@*/ /*@out@*/ fnpyKey ** ep,
 		/*@null@*/ /*@out@*/ int * nep)
-	/*@modifies ep, nep @*/;
+	/*@modifies ts, ep, nep @*/;
 
 /** \ingroup rpmtrans
  * Check that all dependencies can be resolved.
