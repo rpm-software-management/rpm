@@ -257,7 +257,9 @@ rpmds_iternext(rpmdsObject * s)
 	int tagN = rpmdsTagN(s->ds);
 	int Flags = rpmdsFlags(s->ds);
 
-       result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+	if (N != NULL) N = xstrdup(N);
+	if (EVR != NULL) EVR = xstrdup(EVR);
+	result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
