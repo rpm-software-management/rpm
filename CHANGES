@@ -62,6 +62,7 @@
 	- fix: handle elf64 note sections correctly.
 	- fix: grrr, skip notes on non-i386 entirely.
 	- endian neutral rpmdb join keys (finally).
+	- fix: dev package build on s390x hack around.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
