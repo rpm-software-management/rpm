@@ -49,6 +49,8 @@
 /*@access rpmdb @*/
 /*@access dbiIndex @*/
 
+static int noisy = 0;
+
 #if 0
   /* Turn off some of the COMMIT transactions */
   #define SQL_FAST_DB
@@ -727,7 +729,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 
     /* 
      * Inverted lists have join length of 2, primary data has join length of 1.
-     * MGH: No idea what this is for.. but w/o it things don't work...
      */
     /*@-sizeoftype@*/
     switch (dbi->dbi_rpmtag) {
@@ -929,6 +930,61 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
     return rc;
 }
 
+static int sql_step(sqlite3 *db, sqlite3_stmt *pStmt)
+{
+    int loop;
+    int nc, nr;
+    int rc;
+    int i;
+
+    nc = sqlite3_column_count(pStmt);
+fprintf(stderr, "*** nc %d\n", nc);
+    for (i = 0; i < nc; i++) {
+	fprintf(stderr, "\t%d %s\n", i, sqlite3_column_name(pStmt, i));
+    }
+
+    loop = 1;
+    while (loop) {
+	rc = sqlite3_step(pStmt);
+	switch (rc) {
+	case SQLITE_DONE:
+	    fprintf(stderr, "sqlite3_step: DONE %d %s\n", rc, sqlite3_errmsg(db));
+	    loop = 0;
+	    break;
+	case SQLITE_ROW:
+	    nr = sqlite3_data_count(pStmt);
+	    fprintf(stderr, "sqlite3_step: ROW %d nr %d\n", rc, nr);
+	    for (i = 0; i < nc; i++) {
+		fprintf(stderr, "\t%d %s %s %s\n", i,
+			sqlite3_column_name(pStmt, i),
+			sqlite3_column_decltype(pStmt, i),
+			sqlite3_column_text(pStmt, i));
+	    }
+	    break;
+	case SQLITE_BUSY:
+	    fprintf(stderr, "sqlite3_step: BUSY %d\n", rc);
+	    break;
+	case SQLITE_ERROR:
+	    fprintf(stderr, "sqlite3_step: ERROR %d\n", rc);
+	    loop = 0;
+	    break;
+	case SQLITE_MISUSE:
+	    fprintf(stderr, "sqlite3_step: MISUSE %d\n", rc);
+	    loop = 0;
+	    break;
+	default:
+	    fprintf(stderr, "sqlite3_step: %d %s\n", rc, sqlite3_errmsg(db));
+	    loop = 0;
+	    break;
+	}
+    }
+
+    if (rc == SQLITE_DONE)
+	rc = SQLITE_OK;
+
+    return rc;
+}
+
 /**
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
  * @param dbi           index database handle
@@ -1017,7 +1073,7 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
     }
 
     assert(sqlcursor != NULL);
-fprintf(stderr, "\tsqlcursor %p\n", sqlcursor);
+fprintf(stderr, "\tcget(%s) sqlcursor %p\n", dbi->dbi_subfile, sqlcursor);
 
     /*
      * First determine if we have a key, or if we're going to
@@ -1047,8 +1103,8 @@ if (key->data == NULL) key->data = &mykeydata;
 
     /* New retrieval */
     if ( rc == 0 &&  ( ( flags == DB_SET ) || ( sqlcursor->resultp == NULL )) ) {
-fprintf(stderr, "\tcget  rc %d, flags %d, sqlcursor->result 0%x\n",
-		rc, flags, sqlcursor->resultp);
+fprintf(stderr, "\tcget(%s) rc %d, flags %d, sqlcursor->result 0%x\n",
+		dbi->dbi_subfile, rc, flags, sqlcursor->resultp);
 
 	if ( sqlcursor->resultp ) {
 	    (void) sqlite3_free_table( sqlcursor->resultp );
@@ -1058,7 +1114,7 @@ fprintf(stderr, "\tcget  rc %d, flags %d, sqlcursor->result 0%x\n",
 	    sqlcursor->row_iterator=0;
 	}
 
-	switch(key->size) {
+	switch (key->size) {
 	case 0:
 	    cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
 			dbi->dbi_subfile);
@@ -1073,7 +1129,7 @@ fprintf(stderr, "\tcget  rc %d, flags %d, sqlcursor->result 0%x\n",
 	    int key_len;
 
     /* XXX FIXME: ptr alignment is fubar here. */
-fprintf(stderr, "\tcget on %s  find   key 0x%x (%d), flags %d\n",
+fprintf(stderr, "\tcget(%s) find   key 0x%x (%d), flags %d\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)key->data, key->size,
 		flags);
@@ -1107,8 +1163,8 @@ fprintf(stderr, "\tcget on %s  find   key 0x%x (%d), flags %d\n",
 
 	  } break;
 	}
-fprintf(stderr, "\tcget got %d rows, %d columns\n",
-	sqlcursor->nrow, sqlcursor->ncolumn);
+fprintf(stderr, "\tcget(%s) got %d rows, %d columns\n",
+	dbi->dbi_subfile, sqlcursor->nrow, sqlcursor->ncolumn);
     }
 
     if ( rc == 0 && ! sqlcursor->resultp )
@@ -1142,7 +1198,24 @@ repeat:
 	    }
 
 	/* Decode the data */
-	    {   unsigned char * data_dec_string;
+	    switch (dbi->dbi_rpmtag) {
+	    case RPMTAG_NAME:
+	      { int ix = (2 * sqlcursor->row_iterator) + 1;
+		const char * s = sqlcursor->resultp[ix];
+
+#ifdef	HACKOMATIC
+		data->size = strlen(s);
+#else
+		data->size = 8;
+#endif
+		if (data->flags & DB_DBT_MALLOC)
+		    data->data = xmalloc(data->size);
+		else
+		    data->data = allocTempBuffer(dbcursor, data->size);
+		(void) memcpy( data->data, s, data->size );
+	      }	break;
+	    default:
+	      {	unsigned char * data_dec_string;
 		size_t data_len=strlen(sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)]);
 
 		data_dec_string=alloca (2 + ((257 * data_len)/254));
@@ -1157,6 +1230,7 @@ repeat:
 		    data->data=allocTempBuffer(dbcursor, data->size);
 
 		(void) memcpy( data->data, data_dec_string, data->size );
+	      }	break;
 	    }
 
 	/* We need to skip this entry... (we've already returned it) */
@@ -1165,17 +1239,17 @@ repeat:
 		sqlcursor->all > 1 &&
 		key->size ==4 && *(long *)key->data == 0 )
 	    {
-fprintf(stderr, "\tcget on %s  skipping 0x0 record\n",
+fprintf(stderr, "\tcget(%s) skipping 0x0 record\n",
 		dbi->dbi_subfile);
 		goto repeat;
 	    }
 
     /* XXX FIXME: ptr alignment is fubar here. */
-fprintf(stderr, "\tcget on %s  found  key 0x%x (%d)\n",
+fprintf(stderr, "\tcget(%s) found  key 0x%x (%d)\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)key->data, key->size
 		);
-fprintf(stderr, "\tcget on %s  found data 0x%x (%d)\n",
+fprintf(stderr, "\tcget(%s) found data 0x%x (%d)\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)data->data, data->size
 		);
@@ -1183,7 +1257,7 @@ fprintf(stderr, "\tcget on %s  found data 0x%x (%d)\n",
     }
 
     if ( rc == DB_NOTFOUND )
-	    fprintf(stderr, "\tcget on %s  not found\n", dbi->dbi_subfile);
+	    fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
 
     /* If we retrieved the 0x0 record.. clear so next pass we'll get them all.. */
     if ( sqlcursor->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
@@ -1218,11 +1292,13 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 {
     DB * db = dbi->dbi_db;
     SQL_DB * sqldb;
-    int rc = 0;
+    sqlite3_stmt *pStmt;
     unsigned char * kenc, * denc;
     int key_len, data_len;
     char * pzErrmsg;
     char * cmd;
+    int rc = 0;
+    int xx;
 
     assert(db != NULL);
     sqldb = (SQL_DB *)db->app_private;
@@ -1242,8 +1318,30 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
 	cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES('%q', '%q');",
 		dbi->dbi_subfile, kenc, denc);
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+	if (rc)
+	    rpmMessage(RPMMESS_WARNING, "cput %s (%d)\n", pzErrmsg, rc);
+	sqlite3_free(cmd);
 	break;
     case RPMTAG_NAME:
+	cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES(?, ?);",
+		dbi->dbi_subfile);
+	rc = sqlite3_prepare(sqldb->db, cmd, strlen(cmd), &pStmt, &pzErrmsg);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput prepare %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+	rc = sqlite3_bind_text(pStmt, 1, key->data, key->size, SQLITE_TRANSIENT);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput bind #1 %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+	rc = sqlite3_bind_blob(pStmt, 2, data->data, data->size, SQLITE_TRANSIENT);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput bind #2 %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+
+	rc = sql_step(sqldb->db, pStmt);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput sql_step %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+
+	xx = sqlite3_reset(pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "cput reset %s (%d)\n", sqlite3_errmsg(sqldb->db), xx);
+	xx = sqlite3_finalize(pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "cput finalize %s (%d)\n", sqlite3_errmsg(sqldb->db), xx);
+	sqlite3_free(cmd);
+	break;
     case RPMTAG_GROUP:
     case RPMTAG_DIRNAMES:
     case RPMTAG_BASENAMES:
@@ -1256,16 +1354,39 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 	data_len=sqlite_encode_binary((char *)data->data, data->size, denc);
 	denc[data_len]='\0';
 
+#if	1
 	cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES('%q', '%q');",
 		dbi->dbi_subfile, key->data, denc);
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+	if (rc)
+	    rpmMessage(RPMMESS_WARNING, "cput %s (%d)\n", pzErrmsg, rc);
+	sqlite3_free(cmd);
+#else
+	cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES(?, ?);",
+		dbi->dbi_subfile);
+	rc = sqlite3_prepare(sqldb->db, cmd, strlen(cmd), &pStmt, &cmd);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput prepare %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+	rc = sqlite3_bind_text(pStmt, 1, key->data, key->size, SQLITE_STATIC);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput bind #2 %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+#ifdef	HACKHERE
+	rc = sqlite3_bind_blob(pStmt, 2, data->data, data->size, SQLITE_STATIC);
+#else
+	rc = sqlite3_bind_blob(pStmt, 2, denc, data_len, SQLITE_STATIC);
+#endif
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput bind #3 %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+
+	rc = sql_step(sqldb->db, pStmt);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput sql_step %s (%d)\n", sqlite3_errmsg(sqldb->db), rc);
+
+	xx = sqlite3_reset(pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "cput reset %s (%d)\n", sqlite3_errmsg(sqldb->db), xx);
+	xx = sqlite3_finalize(pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "cput finalize %s (%d)\n", sqlite3_errmsg(sqldb->db), xx);
+	sqlite3_free(cmd);
+#endif
 	break;
     }
-    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-    sqlite3_free(cmd);
 
-    if ( rc )
-      rpmMessage(RPMMESS_WARNING, "cput %s (%d)\n",
-		pzErrmsg, rc);
 
     return rc;
 }
