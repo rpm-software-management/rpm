@@ -1312,14 +1312,19 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (rc) break;
 
 	/* Perform lstat/stat for disk file. */
-	rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	if (fsm->path != NULL) {
+	    rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
-	if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
-	    errno = saveerrno;
-	    rc = 0;
+	    if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
+		errno = saveerrno;
+		rc = 0;
+		fsm->exists = 0;
+	    } else if (rc == 0) {
+		fsm->exists = 1;
+	    }
+	} else {
+	    /* Skip %ghost files on build. */
 	    fsm->exists = 0;
-	} else if (rc == 0) {
-	    fsm->exists = 1;
 	}
 	fsm->diskchecked = 1;
 	if (rc) break;
