@@ -3,16 +3,9 @@
 # This script reads filenames from STDIN and outputs any relevant provides
 # information that needs to be included in the package.
 
-filelist=`grep "\\.so" | grep -v "^/lib/ld.so" | sed -e 's/@//g' | xargs file | grep "ELF.*dynamic lib" | cut -d: -f1`
+filelist=`grep "lib.*\\.so" | xargs file -L 2>/dev/null | grep "ELF.*dynamic 
+lib" | cut -d: -f1 | sort -u`
+for I in $filelist; do
+        basename $I
+done
 
-for f in $filelist; do
-    soname=`objdump $f --section=.dynstr 2> /dev/null | tr '\0' '\n' | tail -1`
-
-    if [ "$soname" != "" ]; then
-        if [ "$soname" != "_end" ]; then
-            echo $soname
-        else
-            echo ${f##*/}
-        fi
-    fi
-done | sort -u
