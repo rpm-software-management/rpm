@@ -251,7 +251,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMVAR_GPG_PATH			51
 #define	RPMVAR_GPG_NAME			52
 
-#define	RPMVAR_NUM			52     /* number of RPMVAR entries */
+#define	RPMVAR_NUM			53     /* number of RPMVAR entries */
 
 #define	xfree(_p)	free((void *)_p)
 const char *rpmGetPath(const char *path, ...);

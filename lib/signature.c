@@ -192,7 +192,6 @@ static int makePGPSignature(const char *file, void **sig, int_32 *size,
     char name[1024];
     char sigfile[1024];
     int pid, status;
-    FD_t fd;
     int inpipe[2];
     FILE *fpipe;
     struct stat statbuf;
@@ -242,16 +241,18 @@ static int makePGPSignature(const char *file, void **sig, int_32 *size,
     rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *size);
     *sig = malloc(*size);
     
-    fd = fdOpen(sigfile, O_RDONLY, 0);
-    if (timedRead(fd, *sig, *size) != *size) {
+    {	FD_t fd;
+	int rc;
+	fd = fdOpen(sigfile, O_RDONLY, 0);
+	rc = timedRead(fd, *sig, *size);
 	unlink(sigfile);
 	fdClose(fd);
-	free(*sig);
-	rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
-	return 1;
+	if (rc != *size) {
+	    free(*sig);
+	    rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
+	    return 1;
+	}
     }
-    fdClose(fd);
-    unlink(sigfile);
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of PGP sig\n"), *size);
     
@@ -458,8 +459,8 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     pipe(outpipe);
 
     if (!(pid = fork())) {
-	close(STDOUT_FILENO);
 	close(outpipe[0]);
+	close(STDOUT_FILENO);	/* XXX unnecessary */
 	dup2(outpipe[1], STDOUT_FILENO);
 	if (rpmGetVar(RPMVAR_PGP_PATH)) {
 	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
@@ -502,7 +503,7 @@ static int verifyGPGSignature(const char *datafile, void *sig,
 			      int count, char *result)
 {
     int pid, status, outpipe[2];
-    int sfd;
+    FD_t sfd;
     char *sigfile;
     unsigned char buf[8192];
     FILE *file;
@@ -510,18 +511,18 @@ static int verifyGPGSignature(const char *datafile, void *sig,
   
     /* Write out the signature */
     sigfile = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsig");
-    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    write(sfd, sig, count);
-    close(sfd);
+    sfd = fdOpen(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    (void)fdWrite(sfd, sig, count);
+    fdClose(sfd);
 
     /* Now run GPG */
     pipe(outpipe);
 
     if (!(pid = fork())) {
-    /* gpg version 0.9 sends its output to stderr. */
-    close(2);
 	close(outpipe[0]);
-    dup2(outpipe[1], 2);
+	/* gpg version 0.9 sends its output to stderr. */
+	close(STDERR_FILENO);	/* XXX unnecessary */
+	dup2(outpipe[1], STDERR_FILENO);
 	if (rpmGetVar(RPMVAR_GPG_PATH)) {
 	    dosetenv("GNUPGHOME", rpmGetVar(RPMVAR_GPG_PATH), 1);
 	}
@@ -540,9 +541,9 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     result[0] = '\0';
     while (fgets(buf, 1024, file)) {
         strcat(result, buf);
-	    if (!strncmp("gpg: Can't check signature: Public key not found", buf, 48)) {
-	        res = RPMSIG_NOKEY;
-	    }
+	if (!strncmp("gpg: Can't check signature: Public key not found", buf, 48)) {
+	    res = RPMSIG_NOKEY;
+	}
     }
     fclose(file);
   
