@@ -131,3 +131,11 @@ Revision history for Perl extension RPM.
 	RPM::Header now has a source_name() accessor method that returns the
 	file name (or URI) that the header was read from. This is null if the
 	header came from the database.
+
+0.29	Wed Oct  4 22:29:56 PDT 2000
+	- seventh alpha
+
+	The only change of note in this release is compatibility with version
+	4.0 of RPM. Additionally, some flags to the C compiler to work with
+	the gcc that is distributed with Red Hat Linux 7. This version has
+	been tested on both 6.2 and 7 systems.

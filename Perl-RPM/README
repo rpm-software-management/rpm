@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.28 (sixth alpha)
+Version 0.29 (seventh alpha)
 
 
 WHAT IS IT
@@ -49,19 +49,10 @@ There is now a mailing list for Perl-RPM. For details, see:
 
 CHANGES
 
-This is the sixth release. Full details are itemized in the ChangeLog file,
-but the primary changes in this release are:
-
-* Much more documentation in RPM::Constants (including some corrections)
-
-* A fix to error-return values in RPM::Header and RPM::Database.
-
-* A new method in the RPM::Header class called source_name(). When a header
-  object is created from a file, ftp or http source, the name or URI is saved
-  for future reference.
-
-* Fixed a blocking problem when trying to read more than one header from a
-  ftp source.
+This is the seventh release. The only change of note in this release is
+compatibility with version 4.0 of RPM. Additionally, some flags to the
+C compiler to work with the gcc that is distributed with Red Hat Linux
+7. This version has been tested on both 6.2 and 7 systems.
 
 
 LICENSE
