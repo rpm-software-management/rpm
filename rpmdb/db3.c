@@ -237,6 +237,18 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	xx = dbenv->set_shm_key(dbenv, dbi->dbi_shmkey);
 	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
+    if (dbi->dbi_tmpdir) {
+	const char * root;
+	const char * tmpdir;
+
+	root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
+	if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
+	    root = NULL;
+	tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	xx = dbenv->set_tmp_dir(dbenv, tmpdir);
+	xx = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
+	tmpdir = _free(tmpdir);
+    }
   }
 
 #if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0
@@ -600,6 +612,8 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * urlfn = NULL;
+    const char * root;
+    const char * home;
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
@@ -608,10 +622,19 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
     flags = 0;	/* XXX unused */
 
-    urlfn = rpmGenPath(
-	(dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root),
-	(dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home),
-	NULL);
+    /*
+     * Get the prefix/root component and directory path.
+     */
+    root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
+    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
+	root = NULL;
+    home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
+
+    /*
+     * Either the root or directory components may be a URL. Concatenate,
+     * convert the URL to a path, and add the name of the file.
+     */
+    urlfn = rpmGenPath(root, home, NULL);
     (void) urlPath(urlfn, &dbhome);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
@@ -652,19 +675,25 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
 	rc = db_env_create(&dbenv, 0);
 	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
-	if (rc) goto exit;
+	if (rc || dbenv == NULL) goto exit;
 
-	if (dbenv)	/* XXX can't happen. */
+	if (dbi->dbi_tmpdir) {
+	    const char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	    rc = dbenv->set_tmp_dir(dbenv, tmpdir);
+	    rc = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
+	    tmpdir = _free(tmpdir);
+	    if (rc) goto exit;
+	}
+	    
 	rc = dbenv->open(dbenv, dbhome,
             DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0);
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
-	if (dbenv) {
-	    rc = db_create(&db, dbenv, 0);
-	    rc = cvtdberr(dbi, "db_create", rc, _debug);
+	rc = db_create(&db, dbenv, 0);
+	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
-	    if (db != NULL) {
+	if (db != NULL) {
 		const char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
 
 		rc = db->verify(db, dbf, NULL, NULL, flags);
@@ -680,11 +709,10 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 		if (rc == 0 && xx) rc = xx;
 
 		dbf = _free(dbf);
-	    }
-	    xx = dbenv->close(dbenv, 0);
-	    xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
-	    if (rc == 0 && xx) rc = xx;
 	}
+	xx = dbenv->close(dbenv, 0);
+	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
+	if (rc == 0 && xx) rc = xx;
     }
 
 exit:
@@ -704,6 +732,8 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     extern struct _dbiVec db3vec;
     /*@=nestedextern@*/
     const char * urlfn = NULL;
+    const char * root;
+    const char * home;
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
@@ -719,16 +749,29 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
     if (dbip)
 	*dbip = NULL;
+
+    /*
+     * Parse db configuration parameters.
+     */
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	/*@-nullstate@*/
 	return 1;
 	/*@=nullstate@*/
     dbi->dbi_api = DB_VERSION_MAJOR;
 
-    urlfn = rpmGenPath(
-	(dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root),
-	(dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home),
-	NULL);
+    /*
+     * Get the prefix/root component and directory path.
+     */
+    root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
+    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
+	root = NULL;
+    home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
+
+    /*
+     * Either the root or directory components may be a URL. Concatenate,
+     * convert the URL to a path, and add the name of the file.
+     */
+    urlfn = rpmGenPath(root, home, NULL);
     (void) urlPath(urlfn, &dbhome);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;

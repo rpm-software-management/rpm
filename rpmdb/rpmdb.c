@@ -742,14 +742,12 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 #define _DB_PERMS	0644
 
 #define _DB_MAJOR	-1
-#define	_DB_REMOVE_ENV	0
-#define	_DB_FILTER_DUPS	0
 #define	_DB_ERRPFX	"rpmdb"
 
 /*@-fullinitblock@*/
 /*@observer@*/ static struct rpmdb_s dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
-    _DB_MAJOR,	_DB_REMOVE_ENV, _DB_FILTER_DUPS, _DB_ERRPFX
+    _DB_MAJOR,	_DB_ERRPFX
 };
 /*@=fullinitblock@*/
 
@@ -2840,11 +2838,15 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 	    const char * base = tagName(dbiTags[i]);
 	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
 	    (void)rpmCleanPath(filename);
+	    if (!rpmfileexists(filename))
+		continue;
 	    xx = unlink(filename);
 	}
 	for (i = 0; i < 16; i++) {
 	    sprintf(filename, "%s/%s/__db.%03d", rootdir, dbpath, i);
 	    (void)rpmCleanPath(filename);
+	    if (!rpmfileexists(filename))
+		continue;
 	    xx = unlink(filename);
 	}
 	break;
@@ -2856,6 +2858,8 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 	    const char * base = db1basename(dbiTags[i]);
 	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
 	    (void)rpmCleanPath(filename);
+	    if (!rpmfileexists(filename))
+		continue;
 	    xx = unlink(filename);
 	    base = _free(base);
 	}
@@ -2934,10 +2938,15 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	    (void)rpmCleanPath(ofilename);
 	    if (!rpmfileexists(ofilename))
 		continue;
+	    xx = unlink(ofilename);
 	    sprintf(nfilename, "%s/%s/__db.%03d", rootdir, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
+#ifdef	DYING
 	    if ((xx = Rename(ofilename, nfilename)) != 0)
 		rc = 1;
+#else
+	    xx = unlink(nfilename);
+#endif
 	}
 	break;
     case 2:

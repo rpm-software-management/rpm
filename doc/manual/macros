@@ -146,7 +146,31 @@ or
 
 The %{...} form allows you to place the expansion adjacent to other text.
 The %<name> form, if a parameterized macro, will do argc/argv processing
-of the rest of the line as described above.
+of the rest of the line as described above.  Normally you will likely want
+to invoke a parameterized macro by using the %<name> form so that
+parameters are expanded properly.
+
+Example:
+\verbatim
+	%define mymacro() (echo -n "My arg is %1" ; sleep %1 ; echo done.)
+\endverbatim
+
+Usage:
+
+\verbatim
+	%mymacro 5
+\endverbatim
+
+This expands to:
+
+\verbatim
+	(echo -n "My arg is 5" ; sleep 5 ; echo done.)
+\endverbatim
+
+This will cause all occurances of %1 in the macro definition to be
+replaced by the first argument to the macro, but only if the macro
+is invoked as "%mymacro 5".  Invoking as "%{mymacro} 5" will not work
+as desired in this case.
 
 \subsection macros_commandline Command Line Options
 
@@ -227,7 +251,7 @@ packaging similar to the autoconf variables that are used in building packages:
     %_libdir		%{_exec_prefix}/lib
     %_includedir	%{_prefix}/include
     %_oldincludedir	/usr/include
-    %_infodir		%{_prefix}/include
+    %_infodir		%{_prefix}/info
     %_mandir		%{_prefix}/man
 \endverbatim
 

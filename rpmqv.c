@@ -16,6 +16,7 @@
 #define	POPT_NODEPS		1025
 #define	POPT_FORCE		1026
 #define	POPT_NOMD5		1027
+#define	POPT_NOSCRIPTS		1028
 
 #ifdef	IAM_RPMBT
 #include "build.h"
@@ -158,6 +159,7 @@ static struct poptOption optionsTable[] = {
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
  {  NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',			NULL, NULL},
  {  "nodeps", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NODEPS,	NULL, NULL},
+ {  "noscripts", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NOSCRIPTS,	NULL, NULL},
  {  "nomd5", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NOMD5,		NULL, NULL},
  {  "force", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_FORCE,		NULL, NULL},
 #endif
@@ -526,6 +528,23 @@ int main(int argc, const char ** argv)
 #endif
 		/*@-ifempty@*/ ;
 	    break;
+
+	case POPT_NOSCRIPTS:
+#ifdef	IAM_RPMQV
+	    if (bigMode == MODE_VERIFY || qva->qva_mode == 'V')
+		qva->qva_flags |= VERIFY_SCRIPT;
+	    else
+#endif
+#ifdef	IAM_RPMEIU
+	    if ((bigMode & MODES_IE) ||
+		(ia->installInterfaceFlags &
+	    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE)))
+		ia->transFlags |= (_noTransScripts | _noTransTriggers);
+	    else
+#endif
+		/*@-ifempty@*/ ;
+	    break;
+
 #endif	/* IAM_RPMQV || IAM_RPMEIU || IAM_RPMBT */
 
 	case GETOPT_DEFINEMACRO:

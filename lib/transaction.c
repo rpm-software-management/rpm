@@ -14,6 +14,8 @@
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 #include "rpmdb.h"
 
+extern const char * chroot_prefix;
+
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
@@ -1555,6 +1557,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     ts->currDir = _free(ts->currDir);
     ts->currDir = currentDirectory();
     ts->chrootDone = 0;
+    if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
     ts->id = time(NULL);
 
     memset(psm, 0, sizeof(*psm));
@@ -1757,13 +1760,17 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     }
     tsi = tsFreeIterator(tsi);
 
+#ifdef	DYING
     /* Open all database indices before installing. */
     (void) rpmdbOpenAll(ts->rpmdb);
+#endif
 
     if (!ts->chrootDone) {
 	(void) chdir("/");
 	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
 	ts->chrootDone = 1;
+	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
+	chroot_prefix = ts->rootDir;
     }
 
     ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
@@ -1926,6 +1933,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     if (ts->chrootDone) {
 	/*@-unrecog@*/ chroot("."); /*@-unrecog@*/
 	ts->chrootDone = 0;
+	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
+	chroot_prefix = NULL;
 	(void) chdir(ts->currDir);
     }
 

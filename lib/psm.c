@@ -13,6 +13,7 @@
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "misc.h"
+#include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 
 /*@access Header @*/		/* compared with NULL */
@@ -26,6 +27,8 @@
 /*@-redecl@*/
 extern int _fsm_debug;
 /*@=redecl@*/
+
+extern const char * chroot_prefix;
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -1854,6 +1857,8 @@ assert(psm->mi == NULL);
 	    rc = chroot(ts->rootDir);
 	    /*@=unrecog@*/
 	    psm->chrootDone = ts->chrootDone = 1;
+	    if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
+	    chroot_prefix = ts->rootDir;
 	}
 	break;
     case PSM_CHROOT_OUT:
@@ -1863,6 +1868,8 @@ assert(psm->mi == NULL);
 	    rc = chroot(".");
 	    /*@=unrecog@*/
 	    psm->chrootDone = ts->chrootDone = 0;
+	    if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
+	    chroot_prefix = NULL;
 	    (void) chdir(ts->currDir);
 	}
 	break;

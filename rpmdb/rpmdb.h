@@ -198,10 +198,11 @@ struct _dbiVec {
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
-/*@null@*/ const char *	dbi_root;
-/*@null@*/ const char *	dbi_home;
-/*@null@*/ const char *	dbi_file;
+/*@null@*/ const char *	dbi_root;	/*!< chroot(2) component of path */
+/*@null@*/ const char *	dbi_home;	/*!< directory component of path */
+/*@null@*/ const char *	dbi_file;	/*!< file component of path */
 /*@null@*/ const char *	dbi_subfile;
+/*@null@*/ const char *	dbi_tmpdir;	/*!< temporary directory */
 
     int			dbi_ecflags;	/*!< db_env_create flags */
     int			dbi_cflags;	/*!< db_create flags */
@@ -291,11 +292,11 @@ struct _dbiIndex {
 
     unsigned int dbi_lastoffset;	/*!< db1 with falloc.c needs this */
 
-/*@only@*//*@null@*/ void * dbi_db;	/*!< dbi handle */
-/*@only@*//*@null@*/ void * dbi_dbenv;	/*!< */
-/*@only@*//*@null@*/ void * dbi_dbinfo;	/*!< */
+/*@only@*//*@null@*/ void * dbi_db;	/*!< Berkeley DB handle */
+/*@only@*//*@null@*/ void * dbi_dbenv;	/*!< Berkeley DB_ENV handle */
+/*@only@*//*@null@*/ void * dbi_dbinfo;	/*!< (unused) */
 /*@only@*//*@null@*/ void * dbi_rmw;	/*!< db cursor (with DB_WRITECURSOR) */
-/*@only@*//*@null@*/ void * dbi_stats;	/*!< */
+/*@only@*//*@null@*/ void * dbi_stats;	/*!< Berkeley db statistics */
 
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*!< private methods */
 
@@ -305,27 +306,28 @@ struct _dbiIndex {
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
-/*@owned@*/ const char *db_root;	/*!< path prefix */
-/*@owned@*/ const char *db_home;	/*!< directory path */
-    int			db_flags;
-    int			db_mode;	/*!< open mode */
-    int			db_perms;	/*!< open permissions */
-    int			db_api;		/*!< Berkeley API type */
-    int			db_remove_env;
-    int			db_filter_dups;
-/*@owned@*/ const char *db_errpfx;
-    void		(*db_errcall) (const char *db_errpfx, char *buffer)
+/*@owned@*/ const char * db_root;/*!< path prefix */
+/*@owned@*/ const char * db_home;/*!< directory path */
+    int		db_flags;
+    int		db_mode;	/*!< open mode */
+    int		db_perms;	/*!< open permissions */
+    int		db_api;		/*!< Berkeley API type */
+/*@owned@*/ const char * db_errpfx;
+    int		db_remove_env;
+    int		db_filter_dups;
+    int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
+    void (*db_errcall) (const char *db_errpfx, char *buffer)
 	/*@*/;
 /*@shared@*/ FILE *	db_errfile;
-/*@only@*/ void * 	(*db_malloc) (size_t nbytes)
+/*@only@*/ void * (*db_malloc) (size_t nbytes)
 	/*@*/;
-/*@only@*/ void *	(*db_realloc) (/*@only@*//*@null@*/ void * ptr,
+/*@only@*/ void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr,
 						size_t nbytes)
 	/*@*/;
-    void 		(*db_free) (/*@only@*/ void * ptr)
+    void (*db_free) (/*@only@*/ void * ptr)
 	/*@modifies *ptr @*/;
-    int			db_ndbi;
-    dbiIndex		*_dbi;
+    int		db_ndbi;	/*!< No. of tag indices. */
+    dbiIndex *	_dbi;		/*!< Tag indices. */
 };
 
 /* for RPM's internal use only */

@@ -193,6 +193,10 @@
 	- ia64: revert -O0 compilation.
 	- upgrade to db-3.3.11 final.
 	- fix: don't segfault when presented with rpm-2.4.10 packaging (#49688).
+	- fix: --noscripts is another multimode option.
+	- add tmpdir to configure db3 tmpdir into chroot tree.
+	- permit lazy db opens within chroot.
+	- fix: diddle dbenv path to accomodate backing store reopen in chroot.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
