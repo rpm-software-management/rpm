@@ -16,6 +16,7 @@ prefix=@prefix@
 LIBS=$(prefix)/lib
 INCLUDE=$(prefix)/include
 CPP=@CPP@
+TESTCASES=test1
 
 VERSION=$(shell awk '/define version/ { print $$3 }' popt.spec)
 CVSTAG = r$(subst .,-,$(VERSION))
@@ -33,6 +34,12 @@ TARGET=allprogs
 else
 TARGET=@TARGET@
 endif
+
+allprogs: $(LIBPOPT) testcases
+
+testcases: $(TESTCASES)
+
+$(TESTCASES): $(LIBPOPT)
 
 $(LIBPOPT): $(LIBPOPT)($(LIBOBJECTS))
 	$(RANLIB) $@
