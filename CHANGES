@@ -45,7 +45,10 @@
 	- rpmrc and command line may be used to override the path
 	  used for the rpm database
 	- relocatable packages get installed properly
-	- added support for --prefix 
+	- added support for --prefix and RPM_INSTALL_PREFIX environemtn
+	  variable
+	- added dependency checking for version numbers
+	- added correct dependency checking for upgrades
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
