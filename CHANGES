@@ -1,12 +1,14 @@
-2.2.5 -> 2.2.6:
-	- new AutoReqProv: tag in spec file can disable automatic
-          require/provide generation
-
 2.2.4 -> 2.2.5:
 	- if rename() for moving .spec file from SOURCES to SPECS fails,
 	  try copying it instead
 	- -h and -v work for source package >= V2
 	- -h output is much smoother now
+	- new AutoReqProv: tag in spec file can disable automatic
+          require/provide generation
+	- fixed md5sum problem on big endian machines in a way that's
+	  mostly backwards compatible; this hack will be removed someday
+	- added :fflags tag
+	- fixed a couple of minor memory leaks in lib/install.c
 
 2.2.3 -> 2.2.4:
 	- only remove docdir if %doc occurs
