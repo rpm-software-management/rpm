@@ -1435,7 +1435,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 void rpmfiBuildFClasses(Header h,
 	/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     const char * FClass;
     const char ** av;
@@ -1490,7 +1490,7 @@ exit:
 void rpmfiBuildFContexts(Header h,
 	/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     const char * fcontext;
     const char ** av;
@@ -1545,7 +1545,7 @@ exit:
 void rpmfiBuildFSContexts(Header h,
 	/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     const char ** av;
     int ac;
@@ -1616,7 +1616,7 @@ exit:
 void rpmfiBuildREContexts(Header h,
 	/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     rpmsx sx = NULL;
     const char ** av;
@@ -1694,7 +1694,7 @@ exit:
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     rpmds ds = NULL;
     const char ** av;

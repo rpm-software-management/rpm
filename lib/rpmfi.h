@@ -498,6 +498,7 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 
 /**
  * Create and load a file info set.
+ * @deprecated Only scareMem = 0 will be permitted.
  * @param ts		transaction set (NULL skips path relocation)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
