@@ -7,6 +7,8 @@
 	  values
 	- print "(not installed)" as the install time for -p queries rather
 	  then "not a number"
+	- almost completely rewrote rcfile parsing; I'm sure this will
+	  break things eventually but it's much more flexible now
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites

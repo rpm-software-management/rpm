@@ -1406,19 +1406,20 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 static int archOkay(Header h) {
     int_8 * pkgArchNum;
     void * pkgArch;
-    int type, count;
+    int type, count, archNum;
 
     /* make sure we're trying to install this on the proper architecture */
     headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
     if (type == RPM_INT8_TYPE) {
 	/* old arch handling */
+	rpmGetArchInfo(NULL, &archNum);
 	pkgArchNum = pkgArch;
-	if (rpmGetArchNum() != *pkgArchNum) {
+	if (archNum != *pkgArchNum) {
 	    return 0;
 	}
     } else {
 	/* new arch handling */
-	if (!rpmArchScore(pkgArch)) {
+	if (!rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch)) {
 	    return 0;
 	}
     }
@@ -1438,7 +1439,7 @@ static int osOkay(Header h) {
 	return 1;
     } else {
 	/* new os handling */
-	if (!rpmOsScore(pkgOs)) {
+	if (!rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs)) {
 	    return 0;
 	}
     }

@@ -710,7 +710,7 @@ static int match_arch(char *s)
     char *tok, *arch;
     int sense, match;
 
-    arch = rpmGetArchName();
+    rpmGetArchInfo(&arch, NULL);
     match = 0;
     
     tok = strtok(s, " \n\t");
@@ -730,7 +730,7 @@ static int match_os(char *s)
     char *tok, *os;
     int sense, match;
 
-    os = rpmGetOsName();
+    rpmGetOsInfo(&os, NULL);
     match = 0;
     
     tok = strtok(s, " \n\t");

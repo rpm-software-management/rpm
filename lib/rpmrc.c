@@ -1,10 +1,19 @@
+#include "config.h"
 #include "miscfn.h"
 
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <ctype.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
 #include <sys/utsname.h>
+#include <unistd.h>
 
 #include "messages.h"
 #include "misc.h"
@@ -16,35 +25,40 @@
 #define __power_pc() 0
 #endif
 
-/* the rpmrc is read from /etc/rpmrc or $HOME/.rpmrc - it is not affected
-   by a --root option */
-
-struct rpmoption {
-    char * name;
-    int var;
-    int archSpecific, required;
-};
-
-struct archosCacheEntry {
+struct machCacheEntry {
     char * name;
     int count;
     char ** equivs;
     int visited;
 };
 
-struct archosCache {
-    struct archosCacheEntry * cache;
+struct machCache {
+    struct machCacheEntry * cache;
     int size;
 };
 
-struct archosEquivInfo {
+struct machEquivInfo {
     char * name;
     int score;
 };
 
-struct archosEquivTable {
+struct machEquivTable {
     int count;
-    struct archosEquivInfo * list;
+    struct machEquivInfo * list;
+};
+
+struct rpmvarValue {
+    char * value;
+    /* eventually, this arch will be replaced with a generic condition */
+    char * arch;		
+    struct rpmvarValue * next;
+};
+
+struct rpmOption {
+    char * name;
+    int var;
+    int archSpecific, required;
+    struct rpmOptionValue * value;
 };
 
 struct defaultEntry {
@@ -58,25 +72,29 @@ struct canonEntry {
     short num;
 };
 
-static int findArchOsScore(struct archosEquivTable * table, char * name);
-static struct archosCacheEntry * 
-  archosCacheFindEntry(struct archosCache * cache, char * key);
-static void archosFindEquivs(struct archosCache * cache, 
-			     struct archosEquivTable * table,
-			     char * key);
-static void archosAddEquiv(struct archosEquivTable * table, char * name,
-			   int distance);
-static void archosCacheEntryVisit(struct archosCache * cache, 
-				  struct archosEquivTable * table, 
-				  char * name,
-	  			  int distance);
-static int archosCompatCacheAdd(char * name, char * fn, int linenum,
-				struct archosCache * cache);
-static struct archosEquivInfo * archosEquivSearch(
-		struct archosEquivTable * table, char * name);
+/* tags are 'key'canon, 'key'translate, 'key'compat 
+
+   for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work */
+struct tableType {
+    char * key;
+    int hasCanon, hasTranslate;
+    struct machEquivTable equiv;
+    struct machCache cache;
+    struct defaultEntry * defaults;
+    struct canonEntry * canons;
+    int defaultsLength;
+    int canonsLength;
+};
+
+static struct tableType tables[RPM_MACHTABLE_COUNT] = {
+    { "arch", 1, 0 },
+    { "os", 1, 0 },
+    { "buildarch", 0, 1 },
+    { "buildos", 0, 1 }
+};
 
 /* this *must* be kept in alphabetical order */
-struct rpmoption optionTable[] = {
+static struct rpmOption optionTable[] = {
     { "builddir",		RPMVAR_BUILDDIR,		0, 0 },
     { "buildroot",              RPMVAR_BUILDROOT,               0, 0 },
     { "cpiobin",                RPMVAR_CPIOBIN,                 0, 1 },
@@ -109,79 +127,60 @@ struct rpmoption optionTable[] = {
     { "topdir",			RPMVAR_TOPDIR,			0, 0 },
     { "vendor",			RPMVAR_VENDOR,			0, 0 },
 };
+static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 
-static int optionTableSize = sizeof(optionTable) / sizeof(struct rpmoption);
+#define OS	0
+#define ARCH	1
 
-#define READ_TABLES       1
-#define READ_OTHER        2
+static char * current[2];
+static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
+static struct rpmvarValue values[RPMVAR_NUM];
 
-static int readRpmrc(FILE * fd, char * fn, int readWhat);
-static void setDefaults(void);
-static void setPathDefault(int var, char * s);
+/* prototypes */
+static void defaultMachine(char ** arch, char ** os);
+static int doReadRC(int fd, char * filename);
 static int optionCompare(const void * a, const void * b);
-
-static void setArchOs(char *arch, char *os, int building);
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 		   char *fn, int lineNum);
 static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 		      char *fn, int lineNum);
+static void freeRpmVar(struct rpmvarValue * orig);
+static void rpmSetVarArch(int var, char * val, char * arch);
 static struct canonEntry *lookupInCanonTable(char *name,
 					   struct canonEntry *table,
 					   int tableLen);
 static char *lookupInDefaultTable(char *name,
 				  struct defaultEntry *table,
 				  int tableLen);
+static void setDefaults(void);
+static void setPathDefault(int var, char * s);
+static void rebuildCompatTables(int type);
 
-static int archDefaultTableLen = 0;
-static int osDefaultTableLen = 0;
-static int archCanonTableLen = 0;
-static int osCanonTableLen = 0;
-static struct defaultEntry * archDefaultTable = NULL;
-static struct defaultEntry * osDefaultTable = NULL;
-static struct canonEntry * archCanonTable = NULL;
-static struct canonEntry * osCanonTable = NULL;
+/* compatiblity tables */
+static int machCompatCacheAdd(char * name, char * fn, int linenum,
+				struct machCache * cache);
+static struct machCacheEntry * machCacheFindEntry(struct machCache * cache, 
+						  char * key);
+static struct machEquivInfo * machEquivSearch(
+		struct machEquivTable * table, char * name);
+static void machAddEquiv(struct machEquivTable * table, char * name,
+			   int distance);
+static void machCacheEntryVisit(struct machCache * cache, 
+				  struct machEquivTable * table, 
+				  char * name,
+	  			  int distance);
+static void machFindEquivs(struct machCache * cache, 
+			     struct machEquivTable * table,
+			     char * key);
 
-static struct archosCache archCache;
-static struct archosCache osCache;
-static struct archosEquivTable archEquivTable;
-static struct archosEquivTable osEquivTable;
 
 static int optionCompare(const void * a, const void * b) {
-    return strcasecmp(((struct rpmoption *) a)->name,
-		      ((struct rpmoption *) b)->name);
+    return strcasecmp(((struct rpmOption *) a)->name,
+		      ((struct rpmOption *) b)->name);
 }
 
-static struct archosEquivInfo * archosEquivSearch(
-		struct archosEquivTable * table, char * name) {
-    int i;
-
-    for (i = 0; i < table->count; i++)
-	if (!strcmp(table->list[i].name, name)) 
-	    return table->list + i;
-
-    return NULL;
-}
-
-static int findArchOsScore(struct archosEquivTable * table, char * name) {
-    struct archosEquivInfo * info;
-
-    info = archosEquivSearch(table, name);
-    if (info) 
-	return info->score;
-    else
-	return 0;
-}
-
-int rpmArchScore(char * test) {
-    return findArchOsScore(&archEquivTable, test);
-}
-
-int rpmOsScore(char * test) {
-    return findArchOsScore(&osEquivTable, test);
-}
-
-static struct archosCacheEntry * 
-  archosCacheFindEntry(struct archosCache * cache, char * key) {
+static struct machCacheEntry * machCacheFindEntry(struct machCache * cache, 
+						  char * key) {
     int i;
 
     for (i = 0; i < cache->size; i++)
@@ -190,67 +189,14 @@ static struct archosCacheEntry *
     return NULL;
 }
 
-static void archosFindEquivs(struct archosCache * cache, 
-			     struct archosEquivTable * table,
-			     char * key) {
-    int i;
-
-    for (i = 0; i < cache->size; i++)
-	cache->cache[i].visited = 0;
-
-    table->count = 0;
-
-    /* We have a general graph built using strings instead of pointers.
-       Yuck. We have to start at a point at traverse it, remembering how
-       far away everything is. */
-    archosAddEquiv(table, key, 1);
-    archosCacheEntryVisit(cache, table, key, 2);
-}
-
-static void archosAddEquiv(struct archosEquivTable * table, char * name,
-			   int distance) {
-    struct archosEquivInfo * equiv;
-
-    equiv = archosEquivSearch(table, name);
-    if (!equiv) {
-	if (table->count)
-	    table->list = realloc(table->list, (table->count + 1)
-				    * sizeof(*table->list));
-	else
-	    table->list = malloc(sizeof(*table->list));
-    
-	table->list[table->count].name = strdup(name);
-	table->list[table->count++].score = distance;
-    }
-}
-
-static void archosCacheEntryVisit(struct archosCache * cache, 
-				  struct archosEquivTable * table, 
-				  char * name,
-	  			  int distance) {
-    struct archosCacheEntry * entry;
-    int i;
-
-    entry = archosCacheFindEntry(cache, name);
-    if (!entry || entry->visited) return;
-
-    entry->visited = 1;
-
-    for (i = 0; i < entry->count; i++) {
-	archosAddEquiv(table, entry->equivs[i], distance);
-    }
-
-    for (i = 0; i < entry->count; i++) {
-	archosCacheEntryVisit(cache, table, entry->equivs[i], distance + 1);
-    }
-};
-
-static int archosCompatCacheAdd(char * name, char * fn, int linenum,
-				struct archosCache * cache) {
+static int machCompatCacheAdd(char * name, char * fn, int linenum,
+				struct machCache * cache) {
     char * chptr, * equivs;
     int delEntry = 0;
     int i;
-    struct archosCacheEntry * entry = NULL;
+    struct machCacheEntry * entry = NULL;
+
+    while (*name && isspace(*name)) name++;
   
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
@@ -272,7 +218,7 @@ static int archosCompatCacheAdd(char * name, char * fn, int linenum,
     }
 
     if (cache->size) {
-	entry = archosCacheFindEntry(cache, name);
+	entry = machCacheFindEntry(cache, name);
 	if (entry) {
 	    for (i = 0; i < entry->count; i++)
 		free(entry->equivs[i]);
@@ -311,9 +257,74 @@ static int archosCompatCacheAdd(char * name, char * fn, int linenum,
     return 0;
 }
 
+static struct machEquivInfo * machEquivSearch(
+		struct machEquivTable * table, char * name) {
+    int i;
+
+    for (i = 0; i < table->count; i++)
+	if (!strcmp(table->list[i].name, name)) 
+	    return table->list + i;
+
+    return NULL;
+}
+
+static void machAddEquiv(struct machEquivTable * table, char * name,
+			   int distance) {
+    struct machEquivInfo * equiv;
+
+    equiv = machEquivSearch(table, name);
+    if (!equiv) {
+	if (table->count)
+	    table->list = realloc(table->list, (table->count + 1)
+				    * sizeof(*table->list));
+	else
+	    table->list = malloc(sizeof(*table->list));
+    
+	table->list[table->count].name = strdup(name);
+	table->list[table->count++].score = distance;
+    }
+}
+
+static void machCacheEntryVisit(struct machCache * cache, 
+				  struct machEquivTable * table, 
+				  char * name,
+	  			  int distance) {
+    struct machCacheEntry * entry;
+    int i;
+
+    entry = machCacheFindEntry(cache, name);
+    if (!entry || entry->visited) return;
+
+    entry->visited = 1;
+
+    for (i = 0; i < entry->count; i++) {
+	machAddEquiv(table, entry->equivs[i], distance);
+    }
+
+    for (i = 0; i < entry->count; i++) {
+	machCacheEntryVisit(cache, table, entry->equivs[i], distance + 1);
+    }
+};
+
+static void machFindEquivs(struct machCache * cache, 
+			     struct machEquivTable * table,
+			     char * key) {
+    int i;
+
+    for (i = 0; i < cache->size; i++)
+	cache->cache[i].visited = 0;
+
+    table->count = 0;
+
+    /* We have a general graph built using strings instead of pointers.
+       Yuck. We have to start at a point at traverse it, remembering how
+       far away everything is. */
+    machAddEquiv(table, key, 1);
+    machCacheEntryVisit(cache, table, key, 2);
+}
+
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
-		   char *fn, int lineNum)
-{
+		    char *fn, int lineNum) {
     struct canonEntry *t;
     char *s, *s1;
     
@@ -359,8 +370,7 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 }
 
 static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
-		      char *fn, int lineNum)
-{
+		      char *fn, int lineNum) {
     struct defaultEntry *t;
     
     if (! *tableLen) {
@@ -391,9 +401,8 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 }
 
 static struct canonEntry *lookupInCanonTable(char *name,
-					   struct canonEntry *table,
-					   int tableLen)
-{
+					     struct canonEntry *table,
+					     int tableLen) {
     while (tableLen) {
 	tableLen--;
 	if (!strcmp(name, table[tableLen].name)) {
@@ -404,10 +413,8 @@ static struct canonEntry *lookupInCanonTable(char *name,
     return NULL;
 }
 
-static char *lookupInDefaultTable(char *name,
-				  struct defaultEntry *table,
-				  int tableLen)
-{
+static char *lookupInDefaultTable(char *name, struct defaultEntry *table,
+				  int tableLen) {
     while (tableLen) {
 	tableLen--;
 	if (!strcmp(name, table[tableLen].name)) {
@@ -418,267 +425,15 @@ static char *lookupInDefaultTable(char *name,
     return name;
 }
 
-static int readRpmrc(FILE * f, char * fn, int readWhat) {
-    char buf[1024];
-    char * start;
-    char * chptr;
-    char * archName = NULL;
-    int linenum = 0;
-    struct rpmoption * option, searchOption;
+int rpmReadConfigFiles(char * file, char * arch, char * os, int building) {
+    if (rpmReadRC(file)) return -1;
 
-    while (fgets(buf, sizeof(buf), f)) {
-	linenum++;
+    if (building)
+	rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
-	/* strip off leading spaces */
-	start = buf;
-	while (*start && isspace(*start)) start++;
-
-	/* I guess #.* should be a comment, but I don't know that. I'll
-	   just assume that and hope I'm right. For kicks, I'll take
-	   \# to escape it */
-
-	chptr = start;
-	while (*chptr) {
-	    switch (*chptr) {
-	      case '#':
-		*chptr = '\0';
-		break;
-
-	      case '\n':
-		*chptr = '\0';
-		break;
-
-	      case '\\':
-		chptr++;
-		/* fallthrough */
-	      default:
-		chptr++;
-	    }
-	}
-
-	/* strip trailing spaces - chptr is at the end of the line already*/
-	for (chptr--; chptr >= start && isspace(*chptr); chptr--);
-	*(chptr + 1) = '\0';
-
-	if (!start[0]) continue;			/* blank line */
-	
-	/* look for a :, the id part ends there */
-	for (chptr = start; *chptr && *chptr != ':'; chptr++);
-
-	if (! *chptr) {
-	    rpmError(RPMERR_RPMRC, "missing ':' at %s:%d", fn, linenum);
-	    return 1;
-	}
-
-	*chptr = '\0';
-	chptr++;	 /* now points at beginning of argument */
-	while (*chptr && isspace(*chptr)) chptr++;
-
-	if (! *chptr) {
-	    rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
-		  start, fn, linenum);
-	    return 1;
-	}
-
-	rpmMessage(RPMMESS_DEBUG, "got var '%s' arg '%s'\n", start, chptr);
-
-	/* these are options that don't just get stuffed in a VAR somewhere */
-	if (!strcasecmp(start, "arch_compat")) {
-	    if (readWhat != READ_TABLES) continue;
-	    if (archosCompatCacheAdd(chptr, fn, linenum, &archCache))
-		return 1;
-	} else if (!strcasecmp(start, "os_compat")) {
-	    if (readWhat != READ_TABLES) continue;
-	    if (archosCompatCacheAdd(chptr, fn, linenum, &osCache))
-		return 1;
-	} else if (!strcasecmp(start, "arch_canon")) {
-	    if (readWhat != READ_TABLES) continue;
-	    if (addCanon(&archCanonTable, &archCanonTableLen,
-			chptr, fn, linenum))
-		return 1;
-	} else if (!strcasecmp(start, "os_canon")) {
-	    if (readWhat != READ_TABLES) continue;
-	    if (addCanon(&osCanonTable, &osCanonTableLen,
-			chptr, fn, linenum))
-		return 1;
-	} else if (!strcasecmp(start, "buildarchtranslate")) {
-	    if (readWhat != READ_TABLES) continue;
-	    if (addDefault(&archDefaultTable, &archDefaultTableLen,
-			   chptr, fn, linenum))
-		return 1;
-	} else if (!strcasecmp(start, "buildostranslate")) {
-	    if (readWhat != READ_TABLES) continue;
-	    if (addDefault(&osDefaultTable, &osDefaultTableLen,
-			   chptr, fn, linenum))
-		return 1;
-	}
-	if (readWhat == READ_TABLES) {
-	    continue;
-	}
-
-	/* Parse the argument a little further */
-	searchOption.name = start;
-	option = bsearch(&searchOption, optionTable, optionTableSize,
-			 sizeof(struct rpmoption), optionCompare);
-	if (!option) {
-	    rpmError(RPMERR_RPMRC, "bad option '%s' at %s:%d", 
-			start, fn, linenum);
-	    continue;			/* aborting here is rude */
-	}
-
-	if (readWhat == READ_OTHER) {
-	    if (option->archSpecific) {
-		start = chptr;
-
-		/* rpmGetArchName() should be safe by now */
-		if (!archName) archName = rpmGetArchName();
-
-		for (chptr = start; *chptr && !isspace(*chptr); chptr++);
-		if (! *chptr) {
-		    rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
-			  option->name, fn, linenum);
-		    return 1;
-		}
-		*chptr++ = '\0';
-		
-		while (*chptr && isspace(*chptr)) chptr++;
-		if (! *chptr) {
-		    rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
-			  option->name, fn, linenum);
-		    return 1;
-		}
-		
-		if (!strcmp(archName, start)) {
-		    rpmMessage(RPMMESS_DEBUG, "%s is arg for %s platform", chptr,
-			    archName);
-		    rpmSetVar(option->var, chptr);
-		}
-	    } else {
-		rpmSetVar(option->var, chptr);
-	    }
-	    continue;
-	}
-	rpmError(RPMERR_INTERNAL, "Bad readWhat: %d", readWhat);
-	exit(1);
-    }
+    rpmSetMachine(arch, os, 1);
 
     return 0;
-}
-
-static void setDefaults(void) {
-    rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
-    rpmSetVar(RPMVAR_SIGTYPE, "none");
-    rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
-    rpmSetVar(RPMVAR_TOPDIR, "/usr/src/redhat");
-}
-
-static int readConfigFilesAux(char *file, int readWhat)
-{
-    FILE * f;
-    char * fn;
-    char * home;
-    int rc = 0;
-
-    f = fopen(LIBRPMRC_FILENAME, "r");
-    if (f) {
-	rc = readRpmrc(f, LIBRPMRC_FILENAME, readWhat);
-	fclose(f);
-	if (rc) return rc;
-    } else {
-	rpmError(RPMERR_RPMRC, "Unable to read " LIBRPMRC_FILENAME);
-	return RPMERR_RPMRC;
-    }
-    
-    if (file) 
-	fn = file;
-    else
-	fn = "/etc/rpmrc";
-
-    f = fopen(fn, "r");
-    if (f) {
-	rc = readRpmrc(f, fn, readWhat);
-	fclose(f);
-	if (rc) return rc;
-    } else if (file) {
-	rpmError(RPMERR_RPMRC, "Unable to open %s for reading.", file);
-	return 1;
-    }
-
-    if (!file) {
-	home = getenv("HOME");
-	if (home) {
-	    fn = alloca(strlen(home) + 8);
-	    strcpy(fn, home);
-	    strcat(fn, "/.rpmrc");
-	    f = fopen(fn, "r");
-	    if (f) {
-		rc |= readRpmrc(f, fn, readWhat);
-		fclose(f);
-		if (rc) return rc;
-	    }
-	}
-    }
-
-    return 0;
-}
-
-int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
-{
-    int rc = 0;
-    int tc;
-    char *tcs, *tcse;
-    static int alreadyInit = 0;
-    int i;
-
-    if (alreadyInit)
-      return 1;
-    alreadyInit = 1;
-    
-    setDefaults();
-    
-    rc = readConfigFilesAux(file, READ_TABLES);
-    if (rc) return rc;
-
-    setArchOs(arch, os, building);
-
-    rc = readConfigFilesAux(file, READ_OTHER);
-    if (rc) return rc;
-
-    /* set default directories */
-
-    if (!rpmGetVar(RPMVAR_TMPPATH))
-	rpmSetVar(RPMVAR_TMPPATH, "/tmp");
-
-    setPathDefault(RPMVAR_BUILDDIR, "BUILD");    
-    setPathDefault(RPMVAR_RPMDIR, "RPMS");    
-    setPathDefault(RPMVAR_SRPMDIR, "SRPMS");    
-    setPathDefault(RPMVAR_SOURCEDIR, "SOURCES");    
-    setPathDefault(RPMVAR_SPECDIR, "SPECS");
-
-    /* setup arch equivalences */
-    
-    archosFindEquivs(&archCache, &archEquivTable, rpmGetArchName());
-    archosFindEquivs(&osCache, &osEquivTable, rpmGetOsName());
-
-    /* Do some checking */
-    if ((tcs = rpmGetVar(RPMVAR_TIMECHECK))) {
-	tcse = NULL;
-	tc = strtoul(tcs, &tcse, 10);
-	if ((*tcse) || (tcse == tcs) || (tc == ULONG_MAX)) {
-	    rpmError(RPMERR_RPMRC, "Bad arg to timecheck: %s", tcs);
-	    return 1;
-	}
-    }
-
-    for (i = 0; i < optionTableSize; i++) {
-	if (optionTable[i].required && !rpmGetVar(optionTable[i].var)) {
-	    rpmError(RPMERR_RPMRC, "Missing definition of %s in rc files.",
-			optionTable[i].name);
-	    rc = 1;
-	}
-    }
-    
-    return rc;
 }
 
 static void setPathDefault(int var, char * s) {
@@ -699,126 +454,445 @@ static void setPathDefault(int var, char * s) {
     rpmSetVar(var, fn);
 }
 
-static int osnum;
-static int archnum;
-static char *osname;
-static char *archname;
-static int archOsIsInit = 0;
+static void setDefaults(void) {
+    rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
+    rpmSetVar(RPMVAR_SIGTYPE, "none");
+    rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
+    rpmSetVar(RPMVAR_TOPDIR, "/usr/src/redhat");
+}
 
-static void setArchOs(char *arch, char *os, int build)
+int rpmReadRC(char * file) {
+    int fd;
+    char * fn;
+    char * home;
+    int rc = 0;
+    static int first = 1;
+
+    if (first) {
+	setDefaults();
+	first = 0;
+    }
+
+    fd = open(LIBRPMRC_FILENAME, O_RDONLY);
+    if (fd > 0) {
+	rc = doReadRC(fd, LIBRPMRC_FILENAME);
+	close(fd);
+	if (rc) return rc;
+    } else {
+	rpmError(RPMERR_RPMRC, "Unable to open %s for reading: %s.", 
+		 LIBRPMRC_FILENAME, strerror(errno));
+	return 1;
+    }
+    
+    if (file) 
+	fn = file;
+    else
+	fn = "/etc/rpmrc";
+
+    fd = open(fn, O_RDONLY);
+    if (fd > 0) {
+	rc = doReadRC(fd, fn);
+	close(fd);
+	if (rc) return rc;
+    } else if (file) {
+	rpmError(RPMERR_RPMRC, "Unable to open %s for reading: %s.", file,
+		 strerror(errno));
+	return 1;
+    }
+
+    if (!file) {
+	home = getenv("HOME");
+	if (home) {
+	    fn = alloca(strlen(home) + 8);
+	    strcpy(fn, home);
+	    strcat(fn, "/.rpmrc");
+	    fd = open(fn, O_RDONLY);
+	    if (fd > 0) {
+		rc |= doReadRC(fd, fn);
+		close(fd);
+		if (rc) return rc;
+	    }
+	}
+    }
+
+    rpmSetMachine(NULL, NULL, 1);
+
+    setPathDefault(RPMVAR_BUILDDIR, "BUILD");    
+    setPathDefault(RPMVAR_RPMDIR, "RPMS");    
+    setPathDefault(RPMVAR_SRPMDIR, "SRPMS");    
+    setPathDefault(RPMVAR_SOURCEDIR, "SOURCES");    
+    setPathDefault(RPMVAR_SPECDIR, "SPECS");
+
+    return 0;
+}
+
+static int doReadRC(int fd, char * filename) {
+    struct stat sb;
+    char * buf;
+    char * start, * chptr, * next, * rest;
+    int linenum = 0;
+    struct rpmOption searchOption, * option;
+    int i;
+    int gotit;
+
+    fstat(fd, &sb);
+    next = buf = alloca(sb.st_size + 2);
+    if (read(fd, buf, sb.st_size) != sb.st_size) {
+	rpmError(RPMERR_RPMRC, "Failed to read %s: %s.", filename,
+		 strerror(errno));
+	return 1;
+    }
+    buf[sb.st_size] = '\n';
+    buf[sb.st_size + 1] = '\0';
+
+    while (*next) {
+	linenum++;
+
+	chptr = start = next;
+	while (*chptr != '\n') chptr++;
+
+	*chptr = '\0';
+	next = chptr + 1;
+
+	while (isspace(*start)) start++;
+
+	/* we used to allow comments to begin anywhere, but not anymore */
+	if (*start == '#' || !*start) continue;
+
+	chptr = start;
+	while (!isspace(*chptr) && *chptr != ':' && *chptr) chptr++;
+
+	if (isspace(*chptr)) {
+	    *chptr++ = '\0';
+	    while (isspace(*chptr) && *chptr != ':' && *chptr) chptr++;
+	}
+
+	if (*chptr != ':') {
+	    rpmError(RPMERR_RPMRC, "missing ':' at %s:%d", filename, linenum);
+	    return 1;
+	}
+
+	*chptr++ = '\0';
+
+	searchOption.name = start;
+	option = bsearch(&searchOption, optionTable, optionTableSize,
+			 sizeof(struct rpmOption), optionCompare);
+
+	if (option) {
+	    start = chptr;
+	    while (isspace(*start) && *start) start++;
+
+	    if (! *start) {
+		rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
+		      option->name, filename, linenum);
+		return 1;
+	    }
+
+	    if (option->archSpecific) {
+		chptr = start;
+		while (!isspace(*chptr) && *chptr) chptr++;
+
+		if (!*chptr) {
+		    rpmError(RPMERR_RPMRC, 
+				"missing architecture for %s at %s:%d", 
+			  	option->name, filename, linenum);
+		    return 1;
+		}
+
+		*chptr++ = '\0';
+
+		while (isspace(*chptr) && *chptr) chptr++;
+		if (!*chptr) {
+		    rpmError(RPMERR_RPMRC, 
+				"missing argument for %s at %s:%d", 
+			  	option->name, filename, linenum);
+		    return 1;
+		}
+		
+		rpmSetVarArch(option->var, chptr, start);
+	    } else {
+		rpmSetVarArch(option->var, start, NULL);
+	    }
+	} else {
+	    gotit = 0;
+
+	    for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
+		if (!strncmp(tables[i].key, start, strlen(tables[i].key)))
+		    break;
+	    }
+
+	    if (i < RPM_MACHTABLE_COUNT) {
+		rest = start + strlen(tables[i].key);
+		if (*rest == '_') rest++;
+
+		if (!strcmp(rest, "compat")) {
+		    if (machCompatCacheAdd(chptr, filename, linenum, 
+						&tables[i].cache))
+			return 1;
+		    gotit = 1;
+		} else if (tables[i].hasTranslate &&
+			   !strcmp(rest, "translate")) {
+		    if (addDefault(&tables[i].defaults, 
+				   &tables[i].defaultsLength,
+				   chptr, filename, linenum))
+			return 1;
+		    gotit = 1;
+		} else if (tables[i].hasCanon &&
+			   !strcmp(rest, "canon")) {
+		    if (addCanon(&tables[i].canons, &tables[i].canonsLength,
+				 chptr, filename, linenum))
+			return 1;
+		    gotit = 1;
+		}
+	    }
+
+	    if (!gotit) {
+		rpmError(RPMERR_RPMRC, "bad option '%s' at %s:%d", 
+			    start, filename, linenum);
+	    }
+	}
+    }
+
+    return 0;
+}
+
+static void defaultMachine(char ** arch, char ** os) {
+    static struct utsname un;
+    static int gotDefaults = 0;
+
+    if (!gotDefaults) {
+	uname(&un);
+	if (!strcmp(un.sysname, "AIX")) {
+	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
+	} else if (!strncmp(un.sysname, "IP", 2)) {
+	    un.sysname[2] = '\0';
+	}
+    }
+
+    if (arch) *arch = un.machine;
+    if (os) *os = un.sysname;
+}
+
+static char * rpmGetVarArch(int var, char * arch) {
+    struct rpmvarValue * next;
+
+    if (!arch) arch = current[ARCH];
+
+    if (arch) {
+	next = &values[var];
+	while (next) {
+	    if (next->arch && !strcmp(next->arch, arch)) return next->value;
+	    next = next->next;
+	}
+    }
+
+    next = values + var;
+    while (next && next->arch) next = next->next;
+
+    return next ? next->value : NULL;
+}
+
+char *rpmGetVar(int var)
 {
-    struct utsname un;
-    struct canonEntry *archCanon, *osCanon;
+    return rpmGetVarArch(var, NULL);
+}
 
-    if (archOsIsInit) {
-	rpmError(RPMERR_INTERNAL, "Internal error: Arch/OS already initialized!");
-        rpmError(RPMERR_INTERNAL, "Arch: %d\nOS: %d", archnum, osnum);
-	exit(1);
+int rpmGetBooleanVar(int var) {
+    char * val;
+    int num;
+    char * chptr;
+
+    val = rpmGetVar(var);
+    if (!val) return 0;
+
+    if (val[0] == 'y' || val[0] == 'Y') return 1;
+
+    num = strtol(val, &chptr, 0);
+    if (chptr && *chptr == '\0') {
+	return num != 0;
     }
 
-    uname(&un);
-    if (!strcmp(un.sysname, "AIX")) {
-	strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
-    } else if (!strncmp(un.sysname, "IP", 2)) {
-	un.sysname[2] = '\0';
-    }
+    return 0;
+}
 
-    if (build) {
-	if (! arch) {
-	    arch = lookupInDefaultTable(un.machine, archDefaultTable,
-					archDefaultTableLen);
+void rpmSetVar(int var, char *val) {
+    freeRpmVar(&values[var]);
+   
+    values[var].arch = NULL;
+    values[var].next = NULL;
+
+    if (val) 
+	values[var].value = strdup(val);
+    else
+	values[var].value = NULL;
+}
+
+/* this doesn't free the passed pointer! */
+static void freeRpmVar(struct rpmvarValue * orig) {
+    struct rpmvarValue * next, * var = orig;
+
+    while (var) {
+	next = var->next;
+	if (var->arch) free(var->arch);
+	if (var->value) free(var->value);
+
+	if (var != orig) free(var);
+	var = next;
+    }
+}
+
+static void rpmSetVarArch(int var, char * val, char * arch) {
+    struct rpmvarValue * next = values + var;
+
+    if (next->value) {
+	if (arch) {
+	    while (next->next) {
+		if (next->arch && !strcmp(next->arch, arch)) break;
+		next = next->next;
+	    }
+	} else {
+	    while (next->next) {
+		if (!next->arch) break;
+		next = next->next;
+	    }
 	}
-	if (! os) {
-	    os = lookupInDefaultTable(un.sysname, osDefaultTable,
-				      osDefaultTableLen);
+
+	if (next->arch && arch && !strcmp(next->arch, arch)) {
+	    if (next->value) free(next->value);
+	    if (next->arch) free(next->arch);
+	} else if (next->arch || arch) {
+	    next->next = malloc(sizeof(*malloc));
+	    next = next->next;
+	    next->next = NULL;
 	}
-    } else {
-	arch = un.machine;
-	os = un.sysname;
     }
 
-    archCanon = lookupInCanonTable(arch, archCanonTable, archCanonTableLen);
-    osCanon = lookupInCanonTable(os, osCanonTable, osCanonTableLen);
-    if (archCanon) {
-	archnum = archCanon->num;
-	archname = strdup(archCanon->short_name);
+    next->value = strdup(val);
+    if (arch)
+	next->arch = strdup(arch);
+    else
+	next->arch = NULL;
+}
+
+void rpmSetTables(int archTable, int osTable) {
+    if (currTables[ARCH] != archTable) {
+	currTables[ARCH] = archTable;
+	rebuildCompatTables(ARCH);
+    }
+
+    if (currTables[OS] != archTable) {
+	currTables[OS] = archTable;
+	rebuildCompatTables(OS);
+    }
+}
+
+int rpmMachineScore(int type, char * name) {
+    struct machEquivInfo * info;
+
+    info = machEquivSearch(&tables[type].equiv, name);
+    if (info) 
+	return info->score;
+    else
+	return 0;
+}
+
+void rpmSetMachine(char * arch, char * os, int translate) {
+    if (!arch && !os)
+	defaultMachine(&arch, &os);
+    else if (!arch)
+	defaultMachine(&arch, NULL);
+    else if (!os)
+	defaultMachine(NULL, &os);
+
+    if (translate && tables[currTables[ARCH]].hasTranslate)
+	arch = lookupInDefaultTable(arch,
+			    tables[currTables[ARCH]].defaults,
+			    tables[currTables[ARCH]].defaultsLength);
+    if (translate && tables[currTables[OS]].hasTranslate)
+	os = lookupInDefaultTable(os,
+			    tables[currTables[OS]].defaults,
+			    tables[currTables[OS]].defaultsLength);
+
+    if (!current[ARCH] || strcmp(arch, current[ARCH])) {
+	if (current[ARCH]) free(current[ARCH]);
+	current[ARCH] = strdup(arch);
+	rebuildCompatTables(ARCH);
+    }
+
+    if (!current[OS] || strcmp(os, current[OS])) {
+	if (current[OS]) free(current[OS]);
+	current[OS] = strdup(os);
+	rebuildCompatTables(OS);
+    }
+}
+
+static void rebuildCompatTables(int type) {
+    machFindEquivs(&tables[currTables[type]].cache,
+		   &tables[currTables[type]].equiv,
+		    current[type]);
+}
+
+static void getMachineInfo(int type, char ** name, int * num) {
+    struct canonEntry * canon;
+
+    if (!tables[currTables[type]].hasCanon) {
+	if (num) *num = 255;
+	if (name) *name = current[type];
+	return;
+    }
+
+    canon = lookupInCanonTable(current[type], 
+			       tables[currTables[type]].canons,
+			       tables[currTables[type]].canonsLength);
+
+    if (canon) {
+	if (num) *num = canon->num;
+	if (name) *name = canon->short_name;
     } else {
-	archnum = 255;
-	archname = strdup(arch);
-	rpmMessage(RPMMESS_WARNING, "Unknown architecture: %s\n", arch);
+	if (num) *num = 255;
+	if (name) *name = current[type];
+	rpmMessage(RPMMESS_WARNING, "Unknown system: %s\n", current[type]);
 	rpmMessage(RPMMESS_WARNING, "Please contact rpm-list@redhat.com\n");
     }
-    if (osCanon) {
-	osnum = osCanon->num;
-	osname = strdup(osCanon->short_name);
-    } else {
-	osnum = 255;
-	osname = strdup(os);
-	rpmMessage(RPMMESS_WARNING, "Unknown OS: %s\n", os);
-	rpmMessage(RPMMESS_WARNING, "Please contact rpm-list@redhat.com\n");
-    }
-
-    archOsIsInit = 1;
 }
 
-#define FAIL_IF_NOT_INIT \
-{\
-    if (! archOsIsInit) {\
-	rpmError(RPMERR_INTERNAL, "Internal error: Arch/OS not initialized!");\
-        rpmError(RPMERR_INTERNAL, "Arch: %d\nOS: %d", archnum, osnum);\
-	exit(1);\
-    }\
+void rpmGetArchInfo(char ** name, int * num) {
+    getMachineInfo(ARCH, name, num);
 }
 
-int rpmGetOsNum(void)
-{
-    FAIL_IF_NOT_INIT;
-    return osnum;
-}
-
-int rpmGetArchNum(void)
-{
-    FAIL_IF_NOT_INIT;
-    return archnum;
-}
-
-char *rpmGetOsName(void)
-{
-    FAIL_IF_NOT_INIT;
-    return osname;
-}
-
-char *rpmGetArchName(void)
-{
-    FAIL_IF_NOT_INIT;
-    return archname;
+void rpmGetOsInfo(char ** name, int * num) {
+    getMachineInfo(OS, name, num);
 }
 
 int rpmShowRC(FILE *f)
 {
-    struct rpmoption *opt;
+    struct rpmOption *opt;
     int count = 0;
     char *s;
     int i;
+    struct machEquivTable * equivTable;
 
+    /* the caller may set the build arch which should be printed here */
     fprintf(f, "ARCHITECTURE AND OS:\n");
-    fprintf(f, "build arch           : %s\n", rpmGetArchName());
-    fprintf(f, "build os             : %s\n", rpmGetOsName());
+    fprintf(f, "build arch           : %s\n", current[ARCH]);
+    fprintf(f, "build os             : %s\n", current[OS]);
 
-    /* This is a major hack */
-    archOsIsInit = 0;
-    setArchOs(NULL, NULL, 0);
-    archosFindEquivs(&archCache, &archEquivTable, rpmGetArchName());
-    archosFindEquivs(&osCache, &osEquivTable, rpmGetOsName());
-    fprintf(f, "install arch         : %s\n", rpmGetArchName());
-    fprintf(f, "install os           : %s\n", rpmGetOsName());
+    rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+    rpmSetMachine(NULL, NULL, 0);
+
+    fprintf(f, "install arch         : %s\n", current[ARCH]);
+    fprintf(f, "install os           : %s\n", current[OS]);
+
     fprintf(f, "compatible arch list :");
-    for (i = 0; i < archEquivTable.count; i++)
-	fprintf(f," %s", archEquivTable.list[i].name);
+    equivTable = &tables[RPM_MACHTABLE_INSTARCH].equiv;
+    for (i = 0; i < equivTable->count; i++)
+	fprintf(f," %s", equivTable->list[i].name);
     fprintf(f, "\n");
+
     fprintf(f, "compatible os list   :");
-    for (i = 0; i < osEquivTable.count; i++)
-	fprintf(f," %s", osEquivTable.list[i].name);
+    equivTable = &tables[RPM_MACHTABLE_INSTOS].equiv;
+    for (i = 0; i < equivTable->count; i++)
+	fprintf(f," %s", equivTable->list[i].name);
     fprintf(f, "\n");
 
     fprintf(f, "RPMRC VALUES:\n");

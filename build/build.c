@@ -55,8 +55,11 @@ struct Script *openScript(Spec spec, int builddir, char *name)
 {
     struct Script *script = malloc(sizeof(struct Script));
     struct PackageRec *main_package = spec->packages;
-    char *s;
+    char *s, * arch, * os;
     int_32 foo;
+
+    rpmGetArchInfo(&arch, NULL);
+    rpmGetOsInfo(&os, NULL);
 
     if (! main_package) {
 	rpmError(RPMERR_INTERNAL, "Empty main package");
@@ -74,8 +77,8 @@ struct Script *openScript(Spec spec, int builddir, char *name)
     fprintf(script->file, "RPM_BUILD_DIR=\"%s\"\n", rpmGetVar(RPMVAR_BUILDDIR));
     fprintf(script->file, "RPM_DOC_DIR=\"%s\"\n", rpmGetVar(RPMVAR_DEFAULTDOCDIR));
     fprintf(script->file, "RPM_OPT_FLAGS=\"%s\"\n", rpmGetVar(RPMVAR_OPTFLAGS));
-    fprintf(script->file, "RPM_ARCH=\"%s\"\n", rpmGetArchName());
-    fprintf(script->file, "RPM_OS=\"%s\"\n", rpmGetOsName());
+    fprintf(script->file, "RPM_ARCH=\"%s\"\n", arch);
+    fprintf(script->file, "RPM_OS=\"%s\"\n", os);
     if (rpmGetVar(RPMVAR_ROOT)) {
 	fprintf(script->file, "RPM_ROOT_DIR=\"%s\"\n", rpmGetVar(RPMVAR_ROOT));
     } else {

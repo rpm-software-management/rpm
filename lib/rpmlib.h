@@ -200,22 +200,31 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVAR_FIXPERMS			35
 #define RPMVAR_GZIPBIN     		36
 #define RPMVAR_RPMFILENAME     		37
-#define RPMVAR_LASTVAR	                38 /* IMPORTANT to keep right! */
 
-char *rpmGetVar(int var);
+#define RPMVAR_NUM			38     /* number of RPMVAR entries */
+
+char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
 void rpmSetVar(int var, char *val);
 
 /** rpmrc.c **/
 
+#define RPM_MACHTABLE_INSTARCH		0
+#define RPM_MACHTABLE_INSTOS		1
+#define RPM_MACHTABLE_BUILDARCH		2
+#define RPM_MACHTABLE_BUILDOS  		3
+#define RPM_MACHTABLE_COUNT		4	/* number of arch/os tables */
+
+/* rpmReadConfigFiles() is for backwards compatibility only! It won't
+   work if building is true! */
 int rpmReadConfigFiles(char * file, char * arch, char * os, int building);
-int rpmGetOsNum(void);
-int rpmGetArchNum(void);
-char *rpmGetOsName(void);
-char *rpmGetArchName(void);
+int rpmReadRC(char * file);
+void rpmSetMachine(char * arch, char * os, int translate);
+void rpmGetArchInfo(char ** name, int * num);
+void rpmGetOsInfo(char ** name, int * num);
+int rpmMachineScore(int type, char * name);
 int rpmShowRC(FILE *f);
-int rpmArchScore(char * arch);
-int rpmOsScore(char * os);
+void rpmSetTables(int archTable, int osTable);  /* only used by build code */
 
 /** **/
 

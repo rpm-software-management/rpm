@@ -155,13 +155,17 @@ static int writeMagic(int fd, char *name,
 		      unsigned short type)
 {
     struct rpmlead lead;
+    int arch, os;
+
+    rpmGetArchInfo(NULL, &arch);
+    rpmGetOsInfo(NULL, &os);
 
     /* There are the Major and Minor numbers */
     lead.major = 3;
     lead.minor = 0;
     lead.type = type;
-    lead.archnum = rpmGetArchNum();
-    lead.osnum = rpmGetOsNum();
+    lead.archnum = arch;
+    lead.osnum = os;
     lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
     strncpy(lead.name, name, sizeof(lead.name));
 
@@ -399,6 +403,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     char *packager;
     char *packageVersion, *packageRelease;
     char *prefix, *prefixSave;
+    char * arch, * os;
     char * binformat, * errorString;
     int prefixLen;
     int size;
@@ -501,10 +506,13 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	    }
 	}
 	headerFreeIterator(headerIter);
+
+	rpmGetArchInfo(&arch, NULL);
+	rpmGetArchInfo(&os, NULL);
 	
 	/* Add some final entries to the header */
-	headerAddEntry(outHeader, RPMTAG_OS, RPM_STRING_TYPE, rpmGetOsName(), 1);
-	headerAddEntry(outHeader, RPMTAG_ARCH, RPM_STRING_TYPE, rpmGetArchName(), 1);
+	headerAddEntry(outHeader, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
+	headerAddEntry(outHeader, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
 	headerAddEntry(outHeader, RPMTAG_BUILDTIME, RPM_INT32_TYPE, getBuildTime(), 1);
 	headerAddEntry(outHeader, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildHost(), 1);
 	headerAddEntry(outHeader, RPMTAG_SOURCERPM, RPM_STRING_TYPE, sourcerpm, 1);
@@ -660,6 +668,7 @@ int packageSource(Spec s, char *passPhrase)
     int size;
     char **sources;
     char **patches;
+    char * arch, * os;
     int scount, pcount;
     int skipi;
     int_32 *skip;
@@ -742,9 +751,12 @@ int packageSource(Spec s, char *passPhrase)
 	return RPMERR_BADSPEC;
     }
 
+    rpmGetArchInfo(&arch, NULL);
+    rpmGetArchInfo(&os, NULL);
+
     outHeader = headerCopy(s->packages->header);
-    headerAddEntry(outHeader, RPMTAG_OS, RPM_STRING_TYPE, rpmGetOsName(), 1);
-    headerAddEntry(outHeader, RPMTAG_ARCH, RPM_STRING_TYPE, rpmGetArchName(), 1);
+    headerAddEntry(outHeader, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
+    headerAddEntry(outHeader, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
     headerAddEntry(outHeader, RPMTAG_BUILDTIME, RPM_INT32_TYPE, getBuildTime(), 1);
     headerAddEntry(outHeader, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildHost(), 1);
     headerAddEntry(outHeader, RPMTAG_RPMVERSION, RPM_STRING_TYPE, VERSION, 1);
