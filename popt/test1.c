@@ -24,6 +24,7 @@ int main(int argc, char ** argv) {
     int help = 0;
     int usage = 0;
     int shortopt = 0;
+    int singleDash = 0;
     struct poptOption moreCallbackArgs[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 		option_callback, 0, NULL },
@@ -53,6 +54,7 @@ int main(int argc, char ** argv) {
 		"This shouldn't show up", NULL },
 	{ "unused", '\0', POPT_ARG_STRING, NULL, 0, 
 	    "Unused option for help testing", "UNUSED" },
+	{ NULL, '-', POPT_ARG_NONE | POPT_ARGFLAG_DOC_HIDDEN, &singleDash, 0 },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0, NULL },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &callbackArgs, 0, "Callback arguments" },
 	POPT_AUTOHELP
@@ -85,6 +87,8 @@ int main(int argc, char ** argv) {
 	fprintf(stdout, " inc: %d", inc);
     if (shortopt)
 	fprintf(stdout, " short: %d", shortopt);
+    if (singleDash)
+	fprintf(stdout, " -", shortopt);
 
     rest = poptGetArgs(optCon);
     if (rest) {

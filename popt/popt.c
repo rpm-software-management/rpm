@@ -231,13 +231,17 @@ static void execCommand(poptContext con) {
 
 static const struct poptOption * findOption(const struct poptOption * table,
 					    const char * longName,
-					    const char shortName,
+					    char shortName,
 					    poptCallbackType * callback,
 					    void ** callbackData,
 					    int singleDash) {
     const struct poptOption * opt = table;
     const struct poptOption * opt2;
     const struct poptOption * cb = NULL;
+
+    /* This happens when a single - is given */
+    if (singleDash && !shortName)
+	shortName = '-';
 
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
