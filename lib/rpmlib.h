@@ -887,6 +887,7 @@ int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 #define INSTALL_NOORDER		(1 << 3)
 #define INSTALL_LABEL		(1 << 4)  /* set if we're being verbose */
 #define INSTALL_UPGRADE		(1 << 5)
+#define INSTALL_FRESHEN		(1 << 6)
 
 #define UNINSTALL_NODEPS	(1 << 0)
 #define UNINSTALL_ALLMATCHES	(1 << 1)

@@ -110,6 +110,7 @@ static struct poptOption optionsTable[] = {
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
+{ "freshen", 'F', 0, 0, 'F',			NULL, NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
  { "help", '\0', 0, &help, 0,			NULL, NULL},
@@ -555,6 +556,7 @@ int main(int argc, const char ** argv)
     int numRelocations = 0;
     int sigTag;
     int upgrade = 0;
+    int freshen = 0;
     int probFilter = 0;
 	
 #if HAVE_MCHECK_H && HAVE_MTRACE
@@ -711,6 +713,14 @@ int main(int argc, const char ** argv)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_INSTALL;
 	    upgrade = 1;
+	    break;
+
+	  case 'F':
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_INSTALL;
+	    upgrade = 1;  /* Freshen implies upgrade */
+	    freshen = 1;
 	    break;
 
 	  case GETOPT_RESIGN:
@@ -1108,6 +1118,7 @@ int main(int argc, const char ** argv)
 	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
 	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
 	if (upgrade) interfaceFlags |= INSTALL_UPGRADE;
+	if (freshen) interfaceFlags |= INSTALL_FRESHEN;
 
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for install"));

@@ -277,6 +277,16 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 		    }
 		}
 
+		/* If this is a freshen operation, verify a package is installed */
+		if (interfaceFlags & INSTALL_FRESHEN) {
+		    const char * name;
+
+		    headerNVR(h, &name, NULL, NULL);
+		    if (rpmdbCountPackages(db, name) == 0)
+			break;
+		    /* Package exists, OK to freshen */
+		}
+
 		rc = rpmtransAddPackage(rpmdep, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
