@@ -73,19 +73,19 @@ void printUsage(void) {
     puts(_("                          [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                          [--excludedocs] [--includedocs] [--noscripts]"));
     puts(_("                          [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
-    puts(_("                          [--prefix <dir>] [--ignoreos] file1.rpm ..."));
-    puts(_("                          fileN.rpm"));
+    puts(_("                          [--prefix <dir>] [--ignoreos] [--nodeps]"));
+    puts(_("                          file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                          [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
-    puts(_("                          [--ignoreos] file1.rpm ... fileN.rpm"));
+    puts(_("                          [--ignoreos] [--nodeps] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afFpP] [--root <dir>] [--rcfile <file>]"));
-    puts(_("                        [--dbpath <dir>] [targets]"));
+    puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] package1 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
@@ -139,26 +139,29 @@ void printHelp(void) {
     puts(_("    -y"));
     puts(_("    --verify            - verify a package installation"));
     puts(_("			  same package specification options as -q"));
-    puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
-    puts(_("      --root <dir>	- use <dir> as the top level directory"));
+    puts(_("      --dbpath <dir>    - use <dir> as the directory for the database"));
+    puts(_("      --root <dir>      - use <dir> as the top level directory"));
+    puts(_("      --nodeps          - do not verify package dependencies"));
+    puts(_("      --nofiles         - do not verify file attributes"));
     puts(_(""));
     puts(_("    --install <packagefile>"));
     puts(_("    -i <packagefile>	- install package"));
     puts(_("       -h"));
     puts(_("	  --prefix <dir>    - relocate the package to <dir>, if relocatable"));
     puts(_("      --dbpath <dir>    - use <dir> as the directory for the database"));
-    puts(_("      --hash            - print hash marks as package installs (good with -v)"));
-    puts(_("      --percent         - print percentages as package installs"));
-    puts(_("      --replacepkgs     - reinstall if the package is already present"));
-    puts(_("      --replacefiles    - install even if the package replaces installed files"));
-    puts(_("      --force           - short hand for --replacepkgs --replacefiles"));
-    puts(_("      --test            - don't install, but tell if it would work or not"));
-    puts(_("      --noscripts       - don't execute any installation scripts"));
     puts(_("      --excludedocs     - do not install documentation"));
-    puts(_("      --includedocs     - install documentation"));
+    puts(_("      --force           - short hand for --replacepkgs --replacefiles"));
+    puts(_("      --hash            - print hash marks as package installs (good with -v)"));
     puts(_("      --ignorearch      - don't verify package architecure"));
     puts(_("      --ignoreos        - don't verify package operating system"));
+    puts(_("      --includedocs     - install documentation"));
+    puts(_("      --nodeps          - do not verify package dependencies"));
+    puts(_("      --noscripts       - don't execute any installation scripts"));
+    puts(_("      --percent         - print percentages as package installs"));
+    puts(_("      --replacefiles    - install even if the package replaces installed files"));
+    puts(_("      --replacepkgs     - reinstall if the package is already present"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
+    puts(_("      --test            - don't install, but tell if it would work or not"));
     puts(_(""));
     puts(_("    --upgrade <packagefile>"));
     puts(_("    -U <packagefile>	- upgrade package (same options as --install, plus)"));
@@ -168,7 +171,8 @@ void printHelp(void) {
     puts(_("    --erase <package>"));
     puts(_("    -e <package>        - uninstall (erase) package"));
     puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
-    puts(_("      --noscripts       - don't execute any installation scripts"));
+    puts(_("      --nodeps          - do not verify package dependencies"));
+    puts(_("      --noscripts       - do not execute any installation scripts"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
     puts(_("    -b<stage> <spec>    - build package, where <stage> is one of:"));
@@ -262,7 +266,7 @@ int main(int argc, char ** argv) {
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
-    int gotDbpath = 0, building = 0, ignoreOs = 0;
+    int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
     int addSign = NEW_SIGNATURE;
     char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
     char buildChar = ' ';
@@ -303,6 +307,7 @@ int main(int argc, char ** argv) {
 	    { "install", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
 	    { "nodeps", 0, &noDeps, 0 },
+	    { "nofiles", 0, &noFiles, 0 },
 	    { "nopgp", 0, &noPgp, 0 },
 	    { "noscripts", 0, &noScripts, 0 },
 	    { "oldpackage", 0, &oldPackage, 0 },
@@ -758,9 +763,14 @@ int main(int argc, char ** argv) {
 	argerror(_("--noscripts may only be specified during package "
 		   "installation and uninstallation"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noDeps)
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
+	bigMode != MODE_VERIFY && noDeps)
 	argerror(_("--nodeps may only be specified during package "
 		   "installation, uninstallation, and verification"));
+
+    if (bigMode != MODE_VERIFY && noFiles)
+	argerror(_("--nofiles may only be specified during package "
+		   "verification"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && test)
 	argerror(_("--test may only be specified during package installation "
@@ -981,8 +991,12 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_VERIFY:
+	verifyFlags = 0;
+	if (!noFiles) verifyFlags |= VERIFY_FILES;
+	if (!noDeps) verifyFlags |= VERIFY_DEPS;
+
 	if (verifySource == VERIFY_EVERY) {
-	    doVerify(rootdir, VERIFY_EVERY, NULL);
+	    doVerify(rootdir, VERIFY_EVERY, NULL, verifyFlags);
 	} else if (verifySource == VERIFY_SPATH || 
                    verifySource == VERIFY_SPACKAGE ||
 		   verifySource == VERIFY_SRPM) {
@@ -994,12 +1008,12 @@ int main(int argc, char ** argv) {
 		i = strlen(buffer) - 1;
 		if (buffer[i] == '\n') buffer[i] = 0;
 		if (strlen(buffer))
-		    doVerify(rootdir, verifySource, smallArgv);
+		    doVerify(rootdir, verifySource, smallArgv, verifyFlags);
 	    }
 	} else {
 	    if (optind == argc) 
 		argerror(_("no arguments given for verify"));
-	    doVerify(rootdir, verifySource, argv + optind);
+	    doVerify(rootdir, verifySource, argv + optind, verifyFlags);
 	}
 	break;
     }
