@@ -126,47 +126,11 @@ DIR *	Opendir	(const char * name);
 struct dirent *	Readdir	(DIR * dir);
 int	Closedir(DIR * dir);
 
-/*@observer@*/ extern FDIO_t gzdio;
-
-#ifdef	DYING
-void	fdPush	(FD_t fd, FDIO_t io, void * fp, int fdno);
-void	fdPop	(FD_t fd);
-
-/*@dependent@*/ /*@null@*/ void *	fdGetFp	(FD_t fd);
-void	fdSetFdno(FD_t fd, int fdno);
-void	fdSetContentLength(FD_t fd, ssize_t contentLength);
-#endif
-
 off_t	fdSize	(FD_t fd);
-
-#ifdef	DYING
-void	fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie);
-
-/*@null@*/ const FDIO_t fdGetIo(FD_t fd);
-void	fdSetIo	(FD_t fd, FDIO_t io);
-
-int	fdGetRdTimeoutSecs(FD_t fd);
-
-long int fdGetCpioPos(FD_t fd);
-void	fdSetCpioPos(FD_t fd, long int cpioPos);
-#endif	/* DYING */
 
 /*@null@*/ FD_t fdDup(int fdno);
 #ifdef UNUSED
 /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
-#endif
-
-/* XXX legacy interface used in rpm2html */
-#define	fdClose		fdio->close
-#define	fdOpen		fdio->_open
-
-/* XXX legacy interface used in gnorpm */
-#define	fdRead		fdio->read
-#define	fdWrite		fdio->write
-#define	fdFileno	fdio->_fileno
-
-#if 0
-#define	fdSeek		fdio->seek
 #endif
 
 #define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
@@ -175,9 +139,6 @@ void	fdSetCpioPos(FD_t fd, long int cpioPos);
 
 int	fdWritable(FD_t fd, int secs);
 int	fdReadable(FD_t fd, int secs);
-
-/*@observer@*/ extern FDIO_t fdio;
-/*@observer@*/ extern FDIO_t fpio;
 
 /*
  * Support for FTP and HTTP I/O.
@@ -202,63 +163,15 @@ int	ufdCopy(FD_t sfd, FD_t tfd);
 int	ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 /*@observer@*/ const char *const ftpStrerror(int errorNumber);
 
-#if 0
-#define	ufdRead		ufdio->read
-#define	ufdWrite	ufdio->write
-#define	ufdSeek		ufdio->seek
-#define	ufdClose	ufdio->close
-#define	ufdLink		ufdio->_fdref
-#define	ufdFree		ufdio->_fdderef
-#define	ufdNew		ufdio->_fdnew
-#define	ufdFileno	ufdio->_fileno
-#define	ufdOpen		ufdio->_open
-#define	ufdFopen	ufdio->_fopen
-#define	ufdFfileno	ufdio->_ffileno
-#define	ufdFflush	ufdio->_fflush
-#define	ufdMkdir	ufdio->_mkdir
-#define	ufdChdir	ufdio->_chdir
-#define	ufdRmdir	ufdio->_rmdir
-#define	ufdRename	ufdio->_rename
-#define	ufdUnlink	ufdio->_unlink
-#endif
-
 int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 #define	timedRead	ufdio->read
 
+/*@observer@*/ extern FDIO_t fdio;
+/*@observer@*/ extern FDIO_t fpio;
 /*@observer@*/ extern FDIO_t ufdio;
-
-/*
- * Support for first fit File Allocation I/O.
- */
-
-long int fadGetFileSize(FD_t fd);
-void	fadSetFileSize(FD_t fd, long int fileSize);
-unsigned int fadGetFirstFree(FD_t fd);
-void	fadSetFirstFree(FD_t fd, unsigned int firstFree);
-
-/*@observer@*/ extern FDIO_t fadio;
-
-#ifdef	HAVE_ZLIB_H
-/*
- * Support for GZIP library.
- */
-
-#include <zlib.h>
-
 /*@observer@*/ extern FDIO_t gzdio;
-
-#endif	/* HAVE_ZLIB_H */
-
-#ifdef	HAVE_BZLIB_H
-/*
- * Support for BZIP2 library.
- */
-
-#include <bzlib.h>
-
 /*@observer@*/ extern FDIO_t bzdio;
-
-#endif	/* HAVE_BZLIB_H */
+/*@observer@*/ extern FDIO_t fadio;
 
 #ifdef __cplusplus
 }

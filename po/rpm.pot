@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-09 10:40-0400\n"
+"POT-Creation-Date: 2000-06-09 15:18-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2704,7 +2704,7 @@ msgstr ""
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:425 lib/misc.c:430 lib/misc.c:436
+#: lib/misc.c:273 lib/misc.c:278 lib/misc.c:284
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
@@ -3749,59 +3749,59 @@ msgstr ""
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: rpmio/rpmio.c:808
+#: rpmio/rpmio.c:537
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:811
+#: rpmio/rpmio.c:540
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:814
+#: rpmio/rpmio.c:543
 msgid "Server IO error"
 msgstr ""
 
-#: rpmio/rpmio.c:817
+#: rpmio/rpmio.c:546
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:820
+#: rpmio/rpmio.c:549
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:823
+#: rpmio/rpmio.c:552
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:826
+#: rpmio/rpmio.c:555
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:829
+#: rpmio/rpmio.c:558
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:832
+#: rpmio/rpmio.c:561
 msgid "IO error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:835
+#: rpmio/rpmio.c:564
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:838
+#: rpmio/rpmio.c:567
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:841
+#: rpmio/rpmio.c:570
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:845
+#: rpmio/rpmio.c:574
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1378
+#: rpmio/rpmio.c:1107
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

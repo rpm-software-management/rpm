@@ -221,4 +221,24 @@ static inline int fdFileno(void * cookie) {
     return fd->fps[0].fdno;
 }
 
+static inline long int fadGetFileSize(FD_t fd) {
+    FDSANE(fd);
+    return fd->fileSize;
+}
+
+static inline void fadSetFileSize(FD_t fd, long int fileSize) {
+    FDSANE(fd);
+    fd->fileSize = fileSize;
+}
+
+static inline unsigned int fadGetFirstFree(FD_t fd) {
+    FDSANE(fd);
+    return fd->firstFree;
+}
+
+static inline void fadSetFirstFree(FD_t fd, unsigned int firstFree) {
+    FDSANE(fd);
+    fd->firstFree = firstFree;
+}
+
 #endif	/* H_RPMIO_INTERNAL */

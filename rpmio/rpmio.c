@@ -64,64 +64,6 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #include <rpmio_internal.h>
 #include "misc.h"
 
-#include <assert.h>
-
-#ifdef	DYING
-typedef struct _FDSTACK_s {
-	FDIO_t		io;
-/*@dependent@*/ void *	fp;
-	int		fdno;
-} FDSTACK_t;
-
-typedef struct {
-	int		count;
-	off_t		bytes;
-	time_t		msecs;
-} OPSTAT_t;
-
-typedef	struct {
-	struct timeval	create;
-	struct timeval	begin;
-	OPSTAT_t	ops[4];
-#define	FDSTAT_READ	0
-#define	FDSTAT_WRITE	1
-#define	FDSTAT_SEEK	2
-#define	FDSTAT_CLOSE	3
-} FDSTAT_t;
-
-struct _FD_s {
-/*@refs@*/ int		nrefs;
-	int		flags;
-#define	RPMIO_DEBUG_IO		0x40000000
-#define	RPMIO_DEBUG_REFS	0x20000000
-	int		magic;
-#define	FDMAGIC		0xbeefdead
-
-	int		nfps;
-	FDSTACK_t	fps[8];
-	int		urlType;	/* ufdio: */
-
-/*@dependent@*/ void *	url;		/* ufdio: URL info */
-	int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
-	ssize_t		bytesRemain;	/* ufdio: */
-	ssize_t		contentLength;	/* ufdio: */
-	int		persist;	/* ufdio: */
-	int		wr_chunked;	/* ufdio: */
-
-	int		syserrno;	/* last system errno encountered */
-/*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
-
-	FDSTAT_t	*stats;		/* I/O statistics */
-
-	int		ftpFileDoneNeeded; /* ufdio: (FTP) */
-	unsigned int	firstFree;	/* fadio: */
-	long int	fileSize;	/* fadio: */
-	long int	fd_cpioPos;	/* cpio: */
-};
-
-#define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
-#endif	/* DYING */
-
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
@@ -155,62 +97,6 @@ int _rpmio_debug = 0;
 #define DBGREFS(_f, _x)	DBG((_f), RPMIO_DEBUG_REFS, _x)
 
 /* =============================================================== */
-#ifdef	DYING
-const FDIO_t fdGetIo(FD_t fd) {
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdGetIo(%p)\n", fd));
-#endif
-    FDSANE(fd);
-    return fd->fps[fd->nfps].io;
-}
-
-void fdSetIo(FD_t fd, FDIO_t io) {
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdSetIo(%p,%p) lvl %d \n", fd, io, (fd ? fd->nfps : -1)));
-#endif
-    FDSANE(fd);
-    fd->fps[fd->nfps].io = io;
-    return;
-}
-
-inline /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd) {
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdGetFp(%p) lvl %d\n", fd, (fd ? fd->nfps : -1)));
-#endif
-    FDSANE(fd);
-    return fd->fps[fd->nfps].fp;
-}
-
-static inline void fdSetFp(FD_t fd, /*@keep@*/ void * fp) {
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdSetFp(%p,%p) lvl %d\n", fd, fp, (fd ? fd->nfps : -1)));
-#endif
-    FDSANE(fd);
-    fd->fps[fd->nfps].fp = fp;
-}
-
-static inline int fdGetFdno(FD_t fd) {
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdGetFdno(%p) lvl %d\n", fd, (fd ? fd->nfps : -1)));
-#endif
-    FDSANE(fd);
-    return fd->fps[fd->nfps].fdno;
-}
-
-void fdSetFdno(FD_t fd, int fdno) {
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdSetFdno(%p,%d)\n", fd, fdno));
-#endif
-    FDSANE(fd);
-    fd->fps[fd->nfps].fdno = fdno;
-}
-
-void fdSetContentLength(FD_t fd, ssize_t contentLength)
-{
-    FDSANE(fd);
-    fd->contentLength = fd->bytesRemain = contentLength;
-}
-#endif	/* DYING */
 
 static /*@observer@*/ const char * fdbg(FD_t fd)
 {
@@ -266,96 +152,6 @@ static /*@observer@*/ const char * fdbg(FD_t fd)
     return buf;
 }
 
-#ifdef	DYING
-inline void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno) {
-    FDSANE(fd);
-    if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
-	return;
-    fd->nfps++;
-    fdSetIo(fd, io);
-    fdSetFp(fd, fp);
-    fdSetFdno(fd, fdno);
-DBGIO(0, (stderr, "==>\tfdPush(%p,%p,%p,%d) lvl %d %s\n", fd, io, fp, fdno, fd->nfps, fdbg(fd)));
-}
-
-inline void fdPop(FD_t fd) {
-    FDSANE(fd);
-    if (fd->nfps < 0) return;
-DBGIO(0, (stderr, "==>\tfdPop(%p) lvl %d io %p fp %p fdno %d %s\n", fd, fd->nfps, fdGetIo(fd), fdGetFp(fd), fdGetFdno(fd), fdbg(fd)));
-    fdSetIo(fd, NULL);
-    fdSetFp(fd, NULL);
-    fdSetFdno(fd, -1);
-    fd->nfps--;
-}
-
-static inline void fdstat_enter(FD_t fd, int opx)
-{
-    if (fd->stats == NULL) return;
-    fd->stats->ops[opx].count++;
-    gettimeofday(&fd->stats->begin, NULL);
-}
-
-static inline time_t tvsub(struct timeval *etv, struct timeval *btv) {
-    time_t secs, usecs;
-    if (!(etv && btv)) return 0;
-    secs = etv->tv_sec - btv->tv_sec;
-    usecs = etv->tv_usec - btv->tv_usec;
-    while (usecs < 0) {
-	secs++;
-	usecs += 1000000;
-    }
-    return ((secs * 1000) + (usecs/1000));
-}
-
-static inline void fdstat_exit(FD_t fd, int opx, ssize_t rc)
-{
-    struct timeval end;
-    if (rc == -1) fd->syserrno = errno;
-    if (fd->stats == NULL) return;
-    gettimeofday(&end, NULL);
-    if (rc >= 0) {
-	switch(opx) {
-	case FDSTAT_SEEK:
-	    fd->stats->ops[opx].bytes = rc;
-	    break;
-	default:
-	    fd->stats->ops[opx].bytes += rc;
-	    if (fd->bytesRemain > 0) fd->bytesRemain -= rc;
-	    break;
-	}
-    }
-    fd->stats->ops[opx].msecs += tvsub(&end, &fd->stats->begin);
-    fd->stats->begin = end;	/* structure assignment */
-}
-
-static void fdstat_print(FD_t fd, const char * msg, FILE * fp) {
-    int opx;
-    if (fd->stats == NULL) return;
-    for (opx = 0; opx < 4; opx++) {
-	OPSTAT_t *ops = &fd->stats->ops[opx];
-	if (ops->count <= 0) continue;
-	switch (opx) {
-	case FDSTAT_READ:
-	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%03d secs\n",
-		ops->count, (long)ops->bytes,
-		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
-	    break;
-	case FDSTAT_WRITE:
-	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%03d secs\n",
-		ops->count, (long)ops->bytes,
-		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
-	    break;
-	case FDSTAT_SEEK:
-	    break;
-	case FDSTAT_CLOSE:
-	    break;
-	}
-    }
-}
-#endif	/* DYING */
-
 /* =============================================================== */
 off_t fdSize(FD_t fd) {
     struct stat sb;
@@ -381,44 +177,6 @@ DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
     return rc;
 }
 
-#ifdef	DYING
-void fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie) {
-    FDSANE(fd);
-    fd->syserrno = syserrno;
-    fd->errcookie = errcookie;
-}
-
-int fdGetRdTimeoutSecs(FD_t fd) {
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdGetRdTimeoutSecs(%p) timeout %d\n", fd, FDTO(fd)));
-#endif
-    FDSANE(fd);
-    return fd->rd_timeoutsecs;
-}
-
-#ifdef	DYING
-int fdGetFtpFileDoneNeeded(FD_t fd) {
-    FDSANE(fd);
-    return fd->ftpFileDoneNeeded;
-}
-
-void fdSetFtpFileDoneNeeded(FD_t fd, int ftpFileDoneNeeded) {
-    FDSANE(fd);
-    fd->ftpFileDoneNeeded = ftpFileDoneNeeded;
-}
-#endif
-
-long int fdGetCpioPos(FD_t fd) {
-    FDSANE(fd);
-    return fd->fd_cpioPos;
-}
-
-void fdSetCpioPos(FD_t fd, long int cpioPos) {
-    FDSANE(fd);
-    fd->fd_cpioPos = cpioPos;
-}
-#endif	/* DYING */
-
 FD_t fdDup(int fdno) {
     FD_t fd;
     int nfdno;
@@ -430,14 +188,6 @@ FD_t fdDup(int fdno) {
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, fd, fdbg(fd)));
     return fd;
 }
-
-#ifdef	DYING
-static inline FD_t c2f(void * cookie) {
-	FD_t fd = (FD_t) cookie;
-	FDSANE(fd);
-	return fd;
-}
-#endif	/* DYING */
 
 #ifdef USE_COOKIE_SEEK_POINTER
 static inline int fdSeekNot(void * cookie,  /*@unused@*/ _IO_off64_t *pos,  /*@unused@*/ int whence) {
@@ -538,15 +288,6 @@ static inline /*@null@*/ FD_t XfdNew(const char *msg, const char *file, unsigned
     return XfdLink(fd, msg, file, line);
 }
 
-#ifdef	DYING
-static inline int fdFileno(void * cookie) {
-    FD_t fd;
-    if (cookie == NULL) return -2;
-    fd = c2f(cookie);
-    return fd->fps[0].fdno;	/* XXX WRONG but expedient */
-}
-#endif	/* DYING */
-
 static inline ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     FD_t fd = c2f(cookie);
     ssize_t rc;
@@ -571,10 +312,6 @@ static inline ssize_t fdWrite(void * cookie, const char * buf, size_t count) {
     if (fd->wr_chunked) {
 	char chunksize[20];
 	sprintf(chunksize, "%x\r\n", (unsigned)count);
-#ifdef	DYING
-if (_ftp_debug)
-fprintf(stderr, "-> %s", chunksize);
-#endif
 	rc = write(fdno, chunksize, strlen(chunksize));
 	if (rc == -1)	fd->syserrno = errno;
     }
@@ -586,10 +323,6 @@ fprintf(stderr, "-> %s", chunksize);
 
     if (fd->wr_chunked) {
 	int ec;
-#ifdef	DYING
-if (_ftp_debug)
-fprintf(stderr, "-> \r\n");
-#endif
 	ec = write(fdno, "\r\n", sizeof("\r\n")-1);
 	if (ec == -1)	fd->syserrno = errno;
     }
@@ -643,10 +376,6 @@ static inline /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode) {
     FD_t fd;
     int fdno;
 
-#ifdef	DYING
-if (_rpmio_debug)
-fprintf(stderr, "*** fdOpen(%s,0x%x,0%o)\n", path, flags, (unsigned)mode);
-#endif
     fdno = open(path, flags, mode);
     if (fdno < 0) return NULL;
     fd = fdNew("open (fdOpen)");
@@ -1481,10 +1210,6 @@ static int ftpCmd(const char * cmd, const char * url, const char * arg2) {
 
     rc = ftpCommand(u, NULL, cmd, path, arg2, NULL);
     u->ctrl = fdFree(u->ctrl, "grab ctrl (ftpCmd)");
-#ifdef	DYING
-if (_rpmio_debug)
-fprintf(stderr, "*** ftpCmd %s %s %s rc %d\n", cmd, path, arg2, rc);
-#endif
     return rc;
 }
 
@@ -1650,10 +1375,6 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 
 reopen:
     if (fdFileno(ctrl) >= 0 && (rc = fdWritable(ctrl, 0)) < 1) {
-#ifdef	DYING
-if (_ftp_debug)
-fprintf(stderr, "*** httpReq closing ctrl fdno %d rc %d\n", fdFileno(ctrl), rc);
-#endif
 	fdClose(ctrl);
     }
 
@@ -1712,10 +1433,6 @@ fprintf(stderr, "-> %s", req);
 
 	if (rc) {
 	    if (!retrying) {	/* not HTTP_OK */
-#ifdef DYING
-if (_ftp_debug)
-fprintf(stderr, "*** httpReq ctrl %p reopening ...\n", ctrl);
-#endif
 		retrying = 1;
 		fdClose(ctrl);
 		goto reopen;
@@ -2160,41 +1877,6 @@ static struct FDIO_s ufdio_s = {
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
 FDIO_t ufdio = /*@-compmempass@*/ &ufdio_s /*@=compmempass@*/ ;
-
-/* =============================================================== */
-/* Support for first fit File Allocation I/O.
- */
-long int fadGetFileSize(FD_t fd) {
-    FDSANE(fd);
-    return fd->fileSize;
-}
-
-void fadSetFileSize(FD_t fd, long int fileSize) {
-    FDSANE(fd);
-    fd->fileSize = fileSize;
-}
-
-unsigned int fadGetFirstFree(FD_t fd) {
-    FDSANE(fd);
-    return fd->firstFree;
-}
-
-void fadSetFirstFree(FD_t fd, unsigned int firstFree) {
-    FDSANE(fd);
-    fd->firstFree = firstFree;
-}
-
-/* =============================================================== */
-#ifdef	DYING
-extern fdio_open_function_t fadOpen;
-static struct FDIO_s fadio_s = {
-  fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
-  fadOpen, NULL, fdGetFp,	NULL, NULL, NULL, NULL, NULL
-};
-FDIO_t fadio = /*@-compmempass@*/ &fadio_s /*@=compmempass@*/ ;
-#else
-extern FDIO_t fadio;
-#endif
 
 /* =============================================================== */
 /* Support for GZIP library.
