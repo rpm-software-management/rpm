@@ -762,6 +762,7 @@ static int rpmfcELF(rpmfc fc)
     int isElf64;
     int isDSO;
     int gotSONAME = 0;
+    int gotDEBUG = 0;
     static int filter_GLIBC_PRIVATE = 0;
     static int oneshot = 0;
 
@@ -934,6 +935,9 @@ static int rpmfcELF(rpmfc fc)
 		    default:
 			/*@innercontinue@*/ continue;
 			/*@notreached@*/ /*@switchbreak@*/ break;
+                    case DT_DEBUG:    
+			gotDEBUG = 1;
+			/*@innercontinue@*/ continue;
 		    case DT_NEEDED:
 			/* Files with executable bit set only. */
 			if (fc->skipReq || !(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
@@ -988,7 +992,7 @@ assert(s != NULL);
     /*@=branchstate =uniondef @*/
 
     /* For DSO's, provide the basename of the file if DT_SONAME not found. */
-    if (!fc->skipProv && isDSO && !gotSONAME) {
+    if (!fc->skipProv && isDSO && !gotDEBUG && !gotSONAME) {
 	depsp = &fc->provides;
 	tagN = RPMTAG_PROVIDENAME;
 	dsContext = RPMSENSE_FIND_PROVIDES;
