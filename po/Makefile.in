@@ -1,8 +1,7 @@
-CC = @CC@
-CPP = @CPP@
-
 srcdir = @srcdir@
 VPATH = $(srcdir)
+
+include $(srcdir)/../Makefile.inc
 
 INSTALL= @INSTALL@
 INSTALL_PROGRAM= @INSTALL_PROGRAM@
@@ -10,7 +9,7 @@ INSTALL_DATA= @INSTALL_DATA@
 
 CATALOGS = se.mo fr.mo
 
-POTFILES  = ../rpm.c
+POTFILES  = $(srcdir)/../rpm.c
 
 all: $(NLSPACKAGE).pot $(CATALOGS)
 
@@ -26,15 +25,18 @@ $(NLSPACKAGE).pot: $(POTFILES)
 clean:
 	rm -f *mo $(NLSPACKAGE).pot
 
+distclean: clean
+	rm -f .depend Makefile
+
 depend:
 
 install:
-	install -m 755 -o 0 -g 0 -d $(NLSDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 -d $(NLSDIR)
 	for n in $(CATALOGS); do \
 	    l=`basename $$n .mo`; \
-	    install -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l; \
-	    install -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l/LC_MESSAGES; \
-	    install -m 644 -o 0 -g 0 $$n $(NLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
+	    $(INSTALL) -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l; \
+	    $(INSTALL) -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l/LC_MESSAGES; \
+	    $(INSTALL) -m 644 -o 0 -g 0 $$n $(NLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
 	done
 
 fr.mo:	fr.po
