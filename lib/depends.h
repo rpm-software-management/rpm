@@ -118,7 +118,7 @@ struct rpmTransactionSet_s {
     rpmCallbackFunction notify;	/*!< Callback function. */
 /*@observer@*/ /*@null@*/
     rpmCallbackData notifyData;	/*!< Callback private data. */
-/*@owned@*/
+/*@refcounted@*/ /*@null@*/
     rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
@@ -153,7 +153,8 @@ struct rpmTransactionSet_s {
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
 
-/*@only@*/ TFI_t flList;	/*!< Transaction element(s) file info. */
+/*@only@*/
+    TFI_t flList;		/*!< Transaction element(s) file info. */
 
     int flEntries;		/*!< No. of transaction elements. */
     int chrootDone;		/*!< Has chroot(2) been been done? */
@@ -281,7 +282,7 @@ transactionElement teNext(teIterator tei, enum rpmTransactionType type)
  * @retval np		name tag value
  * @return		name-version-release string
  */
-/*@only@*/ char * hGetNVR(Header h, /*@out@*/ const char ** np )
+/*@only@*/ char * hGetNEVR(Header h, /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
 
 #ifdef __cplusplus

@@ -51,8 +51,8 @@ extern "C" {
  * @param p		memory to free
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
+/*@unused@*/ static inline /*@null@*/
+void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 	/*@modifies p @*/
 {
     if (p != NULL)	free((void *)p);
@@ -947,7 +947,7 @@ typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
 /**
  * Transaction problems found by rpmRunTransactions().
  */
-typedef /*@abstract@*/ struct rpmProblemSet_s * rpmProblemSet;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmProblemSet_s * rpmProblemSet;
 
 /**
  * Enumerate transaction set problem types.
@@ -970,12 +970,12 @@ typedef enum rpmProblemType_e {
 /**
  */
 struct rpmProblem_s {
-/*@only@*/ /*@null@*/ const char * pkgNEVR;
-/*@only@*/ /*@null@*/ const char * altNEVR;
+/*@only@*/ /*@null@*/ char * pkgNEVR;
+/*@only@*/ /*@null@*/ char * altNEVR;
 /*@dependent@*/ /*@null@*/ fnpyKey key;
     rpmProblemType type;
     int ignoreProblem;
-/*@only@*/ /*@null@*/ const char * str1;
+/*@only@*/ /*@null@*/ char * str1;
     unsigned long ulong1;
 };
 
@@ -985,6 +985,7 @@ struct rpmProblemSet_s {
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */
+/*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
 /**
@@ -994,20 +995,19 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 	/*@modifies *fp, fileSystem @*/;
 
 /**
- * Print results of rpmdepCheck() dependency check.
+ * Print a problem array.
  * @param fp		output file
- * @param conflicts	dependency problems
- * @param numConflicts	no. of dependency problems
+ * @param probs		dependency problems
+ * @param numProblems	no. of dependency problems
  */
-void printDepProblems(FILE * fp, rpmProblem conflicts, int numConflicts)
+void printDepProblems(FILE * fp, rpmProblem probs, int numProblems)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
- * Return formatted string representation of problem.
- * @deprecated API: prob used to be passed by value, now passed by reference.
+ * Return formatted string representation of a problem.
  * @param prob		rpm problem
- * @return		formatted string
+ * @return		formatted string (malloc'd)
  */
 /*@-redecl@*/	/* LCL: is confused. */
 /*@only@*/ extern const char * rpmProblemString(const rpmProblem prob)
@@ -1015,20 +1015,54 @@ void printDepProblems(FILE * fp, rpmProblem conflicts, int numConflicts)
 /*@=redecl@*/
 
 /**
- * Create problem set.
+ * Unreference a problem set instance.
+ * @param ps		problem set
+ * @return		NULL always
  */
-/*@only@*/ rpmProblemSet rpmProblemSetCreate(void)
+/*@unused@*/ /*@null@*/
+rpmProblemSet rpmpsUnlink (/*@killref@*/ /*@only@*/ rpmProblemSet ps,
+		const char * msg)
+	/*@modifies ps @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@null@*/
+rpmProblemSet XrpmpsUnlink (/*@killref@*/ /*@only@*/ rpmProblemSet ps,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies ps @*/;
+#define	rpmpsUnlink(_ps, _msg)	XrpmpsUnlink(_ps, _msg, __FILE__, __LINE__)
+
+/**
+ * Reference a problem set instance.
+ * @param ps		transaction set
+ * @return		new transaction set reference
+ */
+/*@unused@*/
+rpmProblemSet rpmpsLink (rpmProblemSet ps, const char * msg)
+	/*@modifies ps @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+rpmProblemSet XrpmpsLink (rpmProblemSet ps,
+		const char * msg, const char * fn, unsigned ln)
+        /*@modifies ps @*/;
+#define	rpmpsLink(_ps, _msg)	XrpmpsLink(_ps, _msg, __FILE__, __LINE__)
+
+/**
+ * Create a problem set.
+ */
+rpmProblemSet rpmProblemSetCreate(void)
 	/*@*/;
 
 /**
- * Destroy problem set.
- * @param tsprobs	problem set
+ * Destroy a problem array.
+ * @param ps		problem set
+ * @return		NULL always
  */
-void rpmProblemSetFree( /*@only@*/ rpmProblemSet tsprobs)
-	/*@modifies tsprobs @*/;
+/*@null@*/
+rpmProblemSet rpmProblemSetFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmProblemSet ps)
+	/*@modifies ps @*/;
 
 /**
- * Output formatted string representation of problem to file handle.
+ * Output formatted string representation of a problem to file handle.
  * @deprecated API: prob used to be passed by value, now passed by reference.
  * @param fp		file handle
  * @param prob		rpm problem
@@ -1042,23 +1076,24 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
  * @param fp		file handle
  * @param probs		problem set
  */
-void rpmProblemSetPrint(FILE *fp, rpmProblemSet tsprobs)
+void rpmProblemSetPrint(FILE *fp, rpmProblemSet ps)
 	/*@globals fileSystem @*/
-	/*@modifies tsprobs, *fp, fileSystem @*/;
+	/*@modifies ps, *fp, fileSystem @*/;
 
 /**
- * Append problem to set.
+ * Append a problem to set.
  */
-void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
-		/*@only@*/ /*@null@*/ const char * pkgNEVR,
+void rpmProblemSetAppend(/*@null@*/ rpmProblemSet ps, rpmProblemType type,
+		/*@null@*/ const char * pkgNEVR,
 		/*@exposed@*/ /*@null@*/ fnpyKey key,
 		const char * dn, const char * bn,
-		/*@only@*/ /*@null@*/ const char * altNEVR,
+		/*@null@*/ const char * altNEVR,
 		unsigned long ulong1)
-	/*@modifies tsprobs @*/;
+	/*@modifies ps @*/;
 
 /**
  * Filter a problem set.
+ *
  * As the problem sets are generated in an order solely dependent
  * on the ordering of the packages in the transaction, and that
  * ordering can't be changed, the problem sets must be parallel to
@@ -1067,12 +1102,13 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
  * This is good, as it lets us perform this trim in linear time, rather
  * then logarithmic or quadratic.
  *
- * @param tsprobs	transaction problem set
+ * @param ps		problem set
  * @param filter	problem filter (or NULL)
  * @return		0 no problems, 1 if problems remain
  */
-int rpmProblemSetTrim(/*@null@*/ rpmProblemSet tsprobs, /*@null@*/ rpmProblemSet filter)
-	/*@modifies tsprobs @*/;
+int rpmProblemSetTrim(/*@null@*/ rpmProblemSet ps,
+		/*@null@*/ rpmProblemSet filter)
+	/*@modifies ps @*/;
 
 /*@}*/
 /* ==================================================================== */
@@ -1194,7 +1230,7 @@ typedef enum fileAction_e {
 
 /**
  * File types.
- * These are the types of files used internally by rpm. The file
+ * These are the file types used internally by rpm. The file
  * type is determined by applying stat(2) macros like S_ISDIR to
  * the file mode tag from a header. The values are arbitrary,
  * but are identical to the linux stat(2) file types.
@@ -1489,15 +1525,15 @@ int rpmdepOrder(rpmTransactionSet ts)
 	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
- * Destroy dependency conflicts storage.
- * @param conflicts	dependency problems
- * @param numConflicts	no. of dependency problems
+ * Destroy reported problems.
+ * @param probs		dependency problems
+ * @param numProblems	no. of dependency problems
  * @retrun		NULL always
  */
-/*@null@*/ rpmProblem rpmdepFreeConflicts(
-		/*@only@*/ /*@null@*/ rpmProblem conflicts,
-		int numConflicts)
-	/*@modifies conflicts @*/;
+/*@null@*/
+rpmProblem rpmdepFreeConflicts(/*@only@*/ /*@null@*/ rpmProblem probs,
+		int numProblems)
+	/*@modifies probs @*/;
 
 /** \ingroup rpmtrans
  * Bit(s) to control rpmRunTransactions() operation.

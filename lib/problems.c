@@ -14,31 +14,82 @@
 /*@access rpmProblem@*/
 /*@access rpmProblemSet@*/
 
-rpmProblemSet rpmProblemSetCreate(void)
+/*@unchecked@*/
+static int _ps_debug = 1;
+
+rpmProblemSet XrpmpsUnlink(rpmProblemSet ps, const char * msg,
+		const char * fn, unsigned ln)
 {
-    rpmProblemSet probs;
-
-    probs = xcalloc(1, sizeof(*probs));	/* XXX memory leak */
-    probs->numProblems = probs->numProblemsAlloced = 0;
-    probs->probs = NULL;
-
-    return probs;
+/*@-modfilesystem@*/
+if (_ps_debug)
+fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
+/*@=modfilesystem@*/
+    ps->nrefs--;
+    return NULL;
 }
 
-void rpmProblemSetFree(rpmProblemSet tsprobs)
+rpmProblemSet XrpmpsLink(rpmProblemSet ps, const char * msg,
+		const char * fn, unsigned ln)
+{
+    ps->nrefs++;
+/*@-modfilesystem@*/
+if (_ps_debug)
+fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
+/*@=modfilesystem@*/
+    /*@-refcounttrans@*/ return ps; /*@=refcounttrans@*/
+}
+
+rpmProblemSet rpmProblemSetCreate(void)
+{
+    rpmProblemSet ps;
+
+    ps = xcalloc(1, sizeof(*ps));
+    ps->numProblems = ps->numProblemsAlloced = 0;
+    ps->probs = NULL;
+    ps->nrefs = 0;
+
+    return rpmpsLink(ps, "create");
+}
+
+/* XXX FIXME: merge into problems */
+rpmProblem rpmdepFreeConflicts(rpmProblem probs, int numProblems)
 {
     int i;
 
-    for (i = 0; i < tsprobs->numProblems; i++) {
-	rpmProblem p = tsprobs->probs + i;
+    if (probs != NULL)
+    for (i = 0; i < numProblems; i++) {
+	rpmProblem p = probs + i;
 	p->pkgNEVR = _free(p->pkgNEVR);
 	p->altNEVR = _free(p->altNEVR);
 	p->str1 = _free(p->str1);
     }
-    tsprobs = _free(tsprobs);
+    probs = _free(probs);
+    return NULL;
 }
 
-void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
+rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
+{
+    if (ps == NULL) return NULL;
+    if (ps->nrefs-- > 1) return NULL;
+	
+    ps->nrefs++;
+    if (ps->probs) {
+	int i;
+	for (i = 0; i < ps->numProblems; i++) {
+	    rpmProblem p = ps->probs + i;
+	    p->pkgNEVR = _free(p->pkgNEVR);
+	    p->altNEVR = _free(p->altNEVR);
+	    p->str1 = _free(p->str1);
+	}
+    }
+    (void) rpmpsUnlink(ps, "destroy");
+    /*@-refcounttrans -usereleased@*/
+    ps = _free(ps);
+    /*@=refcounttrans =usereleased@*/
+    return NULL;
+}
+
+void rpmProblemSetAppend(rpmProblemSet ps, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
 		const char * altNEVR, unsigned long ulong1)
@@ -46,17 +97,19 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
     rpmProblem p;
     char *t;
 
-    if (tsprobs->numProblems == tsprobs->numProblemsAlloced) {
-	if (tsprobs->numProblemsAlloced)
-	    tsprobs->numProblemsAlloced *= 2;
+    if (ps == NULL) return;
+
+    if (ps->numProblems == ps->numProblemsAlloced) {
+	if (ps->numProblemsAlloced)
+	    ps->numProblemsAlloced *= 2;
 	else
-	    tsprobs->numProblemsAlloced = 2;
-	tsprobs->probs = xrealloc(tsprobs->probs,
-			tsprobs->numProblemsAlloced * sizeof(*tsprobs->probs));
+	    ps->numProblemsAlloced = 2;
+	ps->probs = xrealloc(ps->probs,
+			ps->numProblemsAlloced * sizeof(*ps->probs));
     }
 
-    p = tsprobs->probs + tsprobs->numProblems;
-    tsprobs->numProblems++;
+    p = ps->probs + ps->numProblems;
+    ps->numProblems++;
     memset(p, 0, sizeof(*p));
 
     p->type = type;
@@ -64,8 +117,8 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
     p->ulong1 = ulong1;
     p->ignoreProblem = 0;
 
-    p->pkgNEVR = pkgNEVR;	/* XXX FIXME: xstrdup */
-    p->altNEVR = altNEVR;	/* XXX FIXME: xstrdup */
+    p->pkgNEVR = (pkgNEVR ? xstrdup(pkgNEVR) : NULL);
+    p->altNEVR = (altNEVR ? xstrdup(altNEVR) : NULL);
 
     p->str1 = NULL;
     if (dn != NULL || bn != NULL) {
@@ -79,19 +132,19 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
-int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
+int rpmProblemSetTrim(rpmProblemSet ps, rpmProblemSet filter)
 {
     rpmProblem t;
     rpmProblem f;
     int gotProblems = 0;
 
-    if (tsprobs == NULL || tsprobs->numProblems == 0)
+    if (ps == NULL || ps->numProblems == 0)
 	return 0;
 
     if (filter == NULL)
-	return (tsprobs->numProblems == 0 ? 0 : 1);
+	return (ps->numProblems == 0 ? 0 : 1);
 
-    t = tsprobs->probs;
+    t = ps->probs;
     f = filter->probs;
 
     /*@-branchstate@*/
@@ -100,7 +153,7 @@ int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
 	    f++;
 	    continue;
 	}
-	while ((t - tsprobs->probs) < tsprobs->numProblems) {
+	while ((t - ps->probs) < ps->numProblems) {
 	    /*@-nullpass@*/	/* LCL: looks good to me */
 	    if (f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
@@ -111,7 +164,7 @@ int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
 	}
 
 	/* XXX This can't happen, but let's be sane in case it does. */
-	if ((t - tsprobs->probs) == tsprobs->numProblems)
+	if ((t - ps->probs) == ps->numProblems)
 	    break;
 
 	t->ignoreProblem = f->ignoreProblem;
@@ -119,7 +172,7 @@ int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
     }
     /*@=branchstate@*/
 
-    if ((t - tsprobs->probs) < tsprobs->numProblems)
+    if ((t - ps->probs) < ps->numProblems)
 	gotProblems = 1;
 
     return gotProblems;
@@ -141,66 +194,6 @@ void printDepFlags(FILE * fp, const char * version, int flags)
 
     if (flags)
 	fprintf(fp, " %s", version);
-}
-
-static int sameProblem(const rpmProblem ap, const rpmProblem bp)
-	/*@*/
-{
-    if (ap->pkgNEVR)
-	if (bp->pkgNEVR && strcmp(ap->pkgNEVR, bp->pkgNEVR))
-	    return 1;
-    if (ap->altNEVR)
-	if (bp->altNEVR && strcmp(ap->altNEVR, bp->altNEVR))
-	    return 1;
-
-    return 0;
-}
-
-/* XXX FIXME: merge into problems */
-rpmProblem rpmdepFreeConflicts(rpmProblem conflicts,
-		int numConflicts)
-{
-    int i;
-
-    if (conflicts != NULL)
-    for (i = 0; i < numConflicts; i++) {
-	rpmProblem p = conflicts + i;
-	p->pkgNEVR = _free(p->pkgNEVR);
-	p->altNEVR = _free(p->altNEVR);
-	p->str1 = _free(p->str1);
-    }
-    conflicts = _free(conflicts);
-    return NULL;
-}
-
-/* XXX FIXME: merge into problems */
-void printDepProblems(FILE * fp, rpmProblem conflicts, int numConflicts)
-{
-    const char * pkgNEVR, * altNEVR;
-    rpmProblem c;
-    int i;
-
-    for (i = 0; i < numConflicts; i++) {
-	int j;
-
-	c = conflicts + i;
-
-	/* Filter already displayed problems. */
-	for (j = 0; j < i; j++) {
-	    if (!sameProblem(c, conflicts + j))
-		/*@innerbreak@*/ break;
-	}
-	if (j < i)
-	    continue;
-
-	pkgNEVR = (c->pkgNEVR ? c->pkgNEVR : "?pkgNEVR?");
-	altNEVR = (c->altNEVR ? c->altNEVR : "? ?altNEVR?");
-
-	fprintf(fp, "\t%s %s %s\n", altNEVR+2,
-		((altNEVR[0] == 'C' && altNEVR[1] == ' ')
-			?  _("conflicts with") : _("is needed by")),
-		pkgNEVR);
-    }
 }
 
 #if !defined(HAVE_VSNPRINTF)
@@ -233,7 +226,7 @@ const char * rpmProblemString(const rpmProblem prob)
 /*@observer@*/
     const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "?altNEVR?");
 /*@observer@*/
-    const char * str1 = (prob->str1 ? prob->str1 : "");
+    const char * str1 = (prob->str1 ? prob->str1 : N_("different"));
     int nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
     char * buf = xmalloc(nb+1);
     int rc;
@@ -241,13 +234,13 @@ const char * rpmProblemString(const rpmProblem prob)
     switch (prob->type) {
     case RPMPROB_BADARCH:
 	rc = snprintf(buf, nb,
-		_("package %s is for a different architecture"),
-		pkgNEVR);
+		_("package %s is intended for a %s architecture"),
+		pkgNEVR, str1);
 	break;
     case RPMPROB_BADOS:
 	rc = snprintf(buf, nb,
-		_("package %s is for a different operating system"),
-		pkgNEVR);
+		_("package %s is intended for a %s operating system"),
+		pkgNEVR, str1);
 	break;
     case RPMPROB_PKG_INSTALLED:
 	rc = snprintf(buf, nb,
@@ -320,19 +313,71 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
     msg = _free(msg);
 }
 
-void rpmProblemSetPrint(FILE *fp, rpmProblemSet tsprobs)
+void rpmProblemSetPrint(FILE *fp, rpmProblemSet ps)
 {
     int i;
 
-    if (tsprobs == NULL)
+    if (ps == NULL)
 	return;
 
     if (fp == NULL)
 	fp = stderr;
 
-    for (i = 0; i < tsprobs->numProblems; i++) {
-	rpmProblem myprob = tsprobs->probs + i;
+    for (i = 0; i < ps->numProblems; i++) {
+	rpmProblem myprob = ps->probs + i;
 	if (!myprob->ignoreProblem)
 	    rpmProblemPrint(fp, myprob);
+    }
+}
+
+static int sameProblem(const rpmProblem ap, const rpmProblem bp)
+	/*@*/
+{
+    if (ap->type != bp->type)
+	return 1;
+    if (ap->pkgNEVR)
+	if (bp->pkgNEVR && strcmp(ap->pkgNEVR, bp->pkgNEVR))
+	    return 1;
+    if (ap->altNEVR)
+	if (bp->altNEVR && strcmp(ap->altNEVR, bp->altNEVR))
+	    return 1;
+    if (ap->str1)
+	if (bp->str1 && strcmp(ap->str1, bp->str1))
+	    return 1;
+
+    if (ap->ulong1 != bp->ulong1)
+	return 1;
+
+    return 0;
+}
+
+/* XXX FIXME: merge into rpmProblemSetPrint */
+void printDepProblems(FILE * fp, rpmProblem probs, int numProblems)
+{
+    const char * pkgNEVR, * altNEVR;
+    rpmProblem p;
+    int i;
+
+    if (probs != NULL)
+    for (i = 0; i < numProblems; i++) {
+	int j;
+
+	p = probs + i;
+
+	/* Filter already displayed problems. */
+	for (j = 0; j < i; j++) {
+	    if (!sameProblem(p, probs + j))
+		/*@innerbreak@*/ break;
+	}
+	if (j < i)
+	    continue;
+
+	pkgNEVR = (p->pkgNEVR ? p->pkgNEVR : "?pkgNEVR?");
+	altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
+
+	fprintf(fp, "\t%s %s %s\n", altNEVR+2,
+		((altNEVR[0] == 'C' && altNEVR[1] == ' ')
+			?  _("conflicts with") : _("is needed by")),
+		pkgNEVR);
     }
 }

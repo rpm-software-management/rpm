@@ -214,7 +214,7 @@ int dsCompare(const rpmDepSet A, const rpmDepSet B)
 /**
  * Report a Requires: or Conflicts: dependency problem.
  */
-void dsProblem(rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
+void dsProblem(/*@null@*/ rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
 		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys)
 	/*@modifies tsprobs, h @*/;
 

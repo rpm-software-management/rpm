@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-08 16:51-0500\n"
+"POT-Creation-Date: 2001-11-09 12:21-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -822,7 +822,7 @@ msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s (을)를 열 수 없음: %s\n"
 
-#: build/pack.c:603 lib/psm.c:2144
+#: build/pack.c:603 lib/psm.c:2146
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
@@ -852,7 +852,7 @@ msgstr "%s 의 payload를 읽을 수 없음: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s 에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2409
+#: build/pack.c:683 lib/psm.c:2411
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
@@ -1620,7 +1620,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE 카운트는 반드시 '1' 이어야 합니다.\n"
 
 #. @-modfilesys@
-#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:954
+#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:956
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d 데이터 유형은 사용하실 수 없습니다\n"
@@ -2144,195 +2144,200 @@ msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
 msgid "generate signature"
 msgstr "서명을 작성합니다"
 
-#: lib/problems.c:201
-#, fuzzy
-msgid "conflicts with"
-msgstr " %s-%s-%s (와)과 충돌합니다\n"
+#. @observer@
+#: lib/problems.c:229
+msgid "different"
+msgstr ""
 
-#: lib/problems.c:201
-#, fuzzy
-msgid "is needed by"
-msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
-
-#: lib/problems.c:244
-#, c-format
-msgid "package %s is for a different architecture"
+#: lib/problems.c:237
+#, fuzzy, c-format
+msgid "package %s is intended for a %s architecture"
 msgstr "%s (은)는 다른 아키텍쳐를 위한 패키지입니다"
 
-#: lib/problems.c:249
-#, c-format
-msgid "package %s is for a different operating system"
+#: lib/problems.c:242
+#, fuzzy, c-format
+msgid "package %s is intended for a %s operating system"
 msgstr "%s (은)는 다른 운영체제를 위한 패키지입니다"
 
-#: lib/problems.c:254
+#: lib/problems.c:247
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/problems.c:259
+#: lib/problems.c:252
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/problems.c:264
+#: lib/problems.c:257
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s (와)과 %3$s 의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/problems.c:269
+#: lib/problems.c:262
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s 에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/problems.c:274
+#: lib/problems.c:267
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/problems.c:279
+#: lib/problems.c:272
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb (이)가 필요합"
 "니다"
 
-#: lib/problems.c:289
+#: lib/problems.c:282
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld 의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/problems.c:294
+#: lib/problems.c:287
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "%s 패키지의 선(pre)-트랜잭션 시스템콜(syscall): %s (이)가 실패했습니다: %s"
 
-#: lib/problems.c:298
+#: lib/problems.c:291
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
-#: lib/problems.c:302
+#: lib/problems.c:295
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
-#: lib/problems.c:307
+#: lib/problems.c:300
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 "%2$s 패키지를 처리하는 과정에서 알 수 없는 오류 %1$d (이)가 발생했습니다"
 
-#: lib/psm.c:270
+#: lib/problems.c:380
+#, fuzzy
+msgid "conflicts with"
+msgstr " %s-%s-%s (와)과 충돌합니다\n"
+
+#: lib/problems.c:380
+#, fuzzy
+msgid "is needed by"
+msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
+
+#: lib/psm.c:272
 msgid "========== relocations\n"
 msgstr "========== 재배치\n"
 
-#: lib/psm.c:274
+#: lib/psm.c:276
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 제외(exclude)  %s\n"
 
-#: lib/psm.c:277
+#: lib/psm.c:279
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 재배치 %s -> %s\n"
 
-#: lib/psm.c:347
+#: lib/psm.c:349
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "%s%s multilib 경로를 제외시킵니다\n"
 
-#: lib/psm.c:413
+#: lib/psm.c:415
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s (을)를 제외시킵니다\n"
 
-#: lib/psm.c:423
+#: lib/psm.c:425
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s 에서 %s (으)로 재배치 합니다\n"
 
-#: lib/psm.c:502
+#: lib/psm.c:504
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s (으)로 재배치 합니다\n"
 
-#: lib/psm.c:1151
+#: lib/psm.c:1153
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "%%%s %s (을)를 생성할 수 없습니다\n"
 
-#: lib/psm.c:1157
+#: lib/psm.c:1159
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%%%s %s (을)를 작성할 수 없습니다\n"
 
-#: lib/psm.c:1198
+#: lib/psm.c:1200
 msgid "source package expected, binary found\n"
 msgstr "소스 패키지가 요구됩니다, 바이너리를 찾았습니다\n"
 
-#: lib/psm.c:1322
+#: lib/psm.c:1324
 msgid "source package contains no .spec file\n"
 msgstr "소스 패키지에 .spec 파일이 포함되어 있지 않습니다\n"
 
-#: lib/psm.c:1432
+#: lib/psm.c:1434
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: %s 스크립트를 실행합니다 (있을 경우)\n"
 
-#: lib/psm.c:1600
+#: lib/psm.c:1602
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 "%2$s-%3$s-%4$s 의 %1$s 스크립트릿(scriptlet) 실행에 실패했습니다, waitpid가 %"
 "5$s (을)를 반환하였습니다 \n"
 
-#: lib/psm.c:1607
+#: lib/psm.c:1609
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 "%2$s-%3$s-%4$s 의 %1$s 스크립트릿(scriptlet) 실행에 실패했습니다, 종료 상황 %"
 "5$d\n"
 
-#: lib/psm.c:1949
+#: lib/psm.c:1951
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s (이)가 %d 의 파일을 갖고 있습니다, 테스트 = %d\n"
 
-#: lib/psm.c:2066
+#: lib/psm.c:2068
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 "%s: %s 스크립트릿(scriptlet)가 실패했습니다 (%d), %s-%s-%s (을)를 생략합니"
 "다\n"
 
-#: lib/psm.c:2180
+#: lib/psm.c:2182
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "%s 사용자가 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/psm.c:2189
+#: lib/psm.c:2191
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "%s 그룹이 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/psm.c:2230
+#: lib/psm.c:2232
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: lib/psm.c:2231
+#: lib/psm.c:2233
 msgid " on file "
 msgstr " 다음 파일에 "
 
-#: lib/psm.c:2417
+#: lib/psm.c:2419
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%2$s 파일의 %1$s (이)가 실패함: %3$s\n"
 
-#: lib/psm.c:2420
+#: lib/psm.c:2422
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s (이)가 실패함: %s\n"
@@ -2381,7 +2386,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s (을)를 질의할 수 없음: %s\n"
 
 #: lib/query.c:600 lib/query.c:638 lib/rpminstall.c:328 lib/rpminstall.c:470
-#: lib/rpminstall.c:841
+#: lib/rpminstall.c:840
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s (을)를 여는데 실패함: %s\n"
@@ -2454,7 +2459,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u (은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:854 lib/rpminstall.c:629
+#: lib/query.c:854 lib/rpminstall.c:628
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지는 설치되어 있지 않습니다\n"
@@ -2548,7 +2553,7 @@ msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:552
+#: lib/rpmds.c:554
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
@@ -2593,7 +2598,7 @@ msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일이 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:462 lib/rpminstall.c:697
+#: lib/rpminstall.c:462 lib/rpminstall.c:696
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s (은)는 설치될 수 없습니다\n"
@@ -2611,26 +2616,26 @@ msgstr "의존성 문제로 인해 실패함:\n"
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:562
+#: lib/rpminstall.c:561
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:632
+#: lib/rpminstall.c:631
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:655
 msgid "removing these packages would break dependencies:\n"
 msgstr "이 패키지들을 제거하면 의존성이 깨질 수 있음:\n"
 
-#: lib/rpminstall.c:683
+#: lib/rpminstall.c:682
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s (을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:689
+#: lib/rpminstall.c:688
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s (을)를 설치합니다\n"
@@ -2880,13 +2885,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/transaction.c:244
+#: lib/transaction.c:249
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "missingok 플래그로 인해 %s (을)를 생략합니다\n"
 
 #. @innercontinue@
-#: lib/transaction.c:883
+#: lib/transaction.c:902
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"

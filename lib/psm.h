@@ -206,7 +206,7 @@ extern "C" {
  * @return		name-version-release string
  */
 /*@only@*/ /*@null@*/
-char * fiGetNVR(/*@null@*/const TFI_t fi)
+char * fiGetNEVR(/*@null@*/const TFI_t fi)
 	/*@*/;
 
 /**

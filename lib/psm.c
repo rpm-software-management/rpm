@@ -78,7 +78,7 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-char * fiGetNVR(const TFI_t fi)
+char * fiGetNEVR(const TFI_t fi)
 {
     char * pkgNVR;
     char * t;
@@ -230,9 +230,11 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		    /*@innerbreak@*/ break;
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions) {
+		const char * pkgNEVR = fiGetNEVR(fi);
 		rpmProblemSetAppend(ts->probs, RPMPROB_BADRELOCATE,
-			fiGetNVR(fi), fi->key,
+			pkgNEVR, fi->key,
 			relocations[i].oldPath, NULL, NULL, 0);
+		pkgNEVR = _free(pkgNEVR);
 	    }
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);

@@ -16,7 +16,7 @@
 static int _fns_debug = 0;
 
 /*@-shadow@*/	/* XXX copy from depends.c for now. */
-static char * hGetNVR(Header h, /*@out@*/ const char ** np)
+static char * hGetNEVR(Header h, /*@out@*/ const char ** np)
 	/*@modifies *np @*/
 {
     const char * n, * v, * r;
@@ -539,9 +539,11 @@ void dsProblem(rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
     const char * Name =  dsiGetN(ds);
     const char * DNEVR = dsiGetDNEVR(ds);
     const char * EVR = dsiGetEVR(ds);
-    char * byNEVR = hGetNVR(h, NULL);
+    char * pkgNEVR = hGetNEVR(h, NULL);
     rpmProblemType type;
     fnpyKey key;
+
+    if (tsprobs == NULL) return;
 
     /*@-branchstate@*/
     if (Name == NULL) Name = "?N?";
@@ -550,13 +552,14 @@ void dsProblem(rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
     /*@=branchstate@*/
 
     rpmMessage(RPMMESS_DEBUG, _("package %s has unsatisfied %s: %s\n"),
-	    byNEVR, ds->Type, DNEVR+2);
+	    pkgNEVR, ds->Type, DNEVR+2);
 
     type = (DNEVR[0] == 'C' && DNEVR[1] == ' ')
 		? RPMPROB_CONFLICT : RPMPROB_REQUIRES;
     key = (suggestedKeys ? suggestedKeys[0] : NULL);
-    rpmProblemSetAppend(tsprobs, type, byNEVR, key,
-			NULL, NULL, xstrdup(DNEVR), 0);
+    rpmProblemSetAppend(tsprobs, type, pkgNEVR, key,
+			NULL, NULL, DNEVR, 0);
+    pkgNEVR = _free(pkgNEVR);
 }
 
 int rangeMatchesDepFlags (Header h, const rpmDepSet req)

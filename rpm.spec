@@ -566,3 +566,4 @@ fi
 - linear search on added package provides is dumb.
 - discarding entire signature header when using --addsign is dumb.
 - rip out rpmDependencyConflict, replace with rpmProblem instead.
+- no-brainer refcounts for rpmProblemSet object.

@@ -140,15 +140,19 @@ int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 
 /**
  */
-static int archOkay(Header h)
-	/*@*/
+static int archOkay(Header h, /*@out@*/ const char ** pkgArchPtr)
+	/*@modifies *pkgArchPtr @*/
 {
-    void * pkgArch;
+    const char * pkgArch;
     int type, count;
+    int rc = 1;	/* assume AOK */
+
+    if (pkgArchPtr != NULL) *pkgArchPtr = pkgArch = NULL;
 
     /* make sure we're trying to install this on the proper architecture */
     (void) headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
-#ifndef	DYING
+
+#ifdef	DYING
     if (type == RPM_INT8_TYPE) {
 	int_8 * pkgArchNum;
 	int archNum;
@@ -156,46 +160,47 @@ static int archOkay(Header h)
 	/* old arch handling */
 	rpmGetArchInfo(NULL, &archNum);
 	pkgArchNum = pkgArch;
-	if (archNum != *pkgArchNum) {
-	    return 0;
-	}
+	if (archNum != *pkgArchNum)
+	    rc = 0;
     } else
 #endif
-    {
-	/* new arch handling */
-	if (!rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch)) {
-	    return 0;
-	}
+
+    if (!rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch)) {
+	rc = 0;
+	if (pkgArchPtr != NULL) *pkgArchPtr = pkgArch;
     }
 
-    return 1;
+    return rc;
 }
 
 /**
  */
-static int osOkay(Header h)
-	/*@*/
+static int osOkay(Header h, /*@out@*/ const char ** pkgOsPtr)
+	/*@modifies *pkgOsPtr @*/
 {
-    void * pkgOs;
+    const char * pkgOs;
     int type, count;
+    int rc = 1;	/* assume AOK */
+
+    if (pkgOsPtr != NULL) *pkgOsPtr = pkgOs = NULL;
 
     /* make sure we're trying to install this on the proper os */
     (void) headerGetEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
-#ifndef	DYING
+
+#ifdef	DYING
     if (type == RPM_INT8_TYPE) {
 	/* v1 packages and v2 packages both used improper OS numbers, so just
 	   deal with it hope things work */
 	return 1;
     } else
 #endif
-    {
-	/* new os handling */
-	if (!rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs)) {
-	    return 0;
-	}
+
+    if (!rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs)) {
+	rc = 0;
+	if (pkgOsPtr != NULL) *pkgOsPtr = pkgOs;
     }
 
-    return 1;
+    return rc;
 }
 
 /**
@@ -356,7 +361,8 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 
     rpmdbMatchIterator mi;
 
-    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
+    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
+			&shared->otherPkg, sizeof(shared->otherPkg));
     h = rpmdbNextIterator(mi);
     if (h == NULL) {
 	mi = rpmdbFreeIterator(mi);
@@ -391,12 +397,17 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
 	    /*@-compdef@*/ /* FIX: *fi->replaced undefined */
-	    if (reportConflicts)
+	    if (reportConflicts) {
+		const char * pkgNEVR = fiGetNEVR(fi);
+		const char * altNEVR = hGetNEVR(h, NULL);
 		rpmProblemSetAppend(ts->probs, RPMPROB_FILE_CONFLICT,
-			fiGetNVR(fi), fi->key,
+			pkgNEVR, fi->key,
 			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum],
-			hGetNVR(h, NULL),
+			altNEVR,
 			0);
+		pkgNEVR = _free(pkgNEVR);
+		altNEVR = _free(altNEVR);
+	    }
 	    /*@=compdef@*/
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
@@ -602,11 +613,15 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 			fi->fmd5s[i],
 			fi->flinks[i]))
 	    {
+		const char * pkgNEVR = fiGetNEVR(fi);
+		const char * altNEVR = fiGetNEVR(recs[otherPkgNum]);
 		rpmProblemSetAppend(ts->probs, RPMPROB_NEW_FILE_CONFLICT,
-			fiGetNVR(fi), fi->key,
+			pkgNEVR, fi->key,
 			filespec, NULL,
-			fiGetNVR(recs[otherPkgNum]),
+			altNEVR,
 			0);
+		pkgNEVR = _free(pkgNEVR);
+		altNEVR = _free(altNEVR);
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
@@ -702,14 +717,18 @@ static int ensureOlder(rpmTransactionSet ts,
     if (result <= 0)
 	rc = 0;
     else if (result > 0) {
-	rc = 1;
+	const char * pkgNEVR = hGetNEVR(h, NULL);
+	const char * altNEVR = hGetNEVR(old, NULL);
 	/*@-evalorder@*/ /* LCL: is confused */
 	rpmProblemSetAppend(ts->probs, RPMPROB_OLDPACKAGE,
-		hGetNVR(h, NULL), key,
+		pkgNEVR, key,
 		NULL, NULL,
-		hGetNVR(old, NULL),
+		altNEVR,
 		0);
 	/*@=evalorder@*/
+	pkgNEVR = _free(pkgNEVR);
+	altNEVR = _free(altNEVR);
+	rc = 1;
     }
 
     return rc;
@@ -953,6 +972,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     ts->notifyData = notifyData;
     /*@-assignexpose@*/
     ts->probs = *newProbs = rpmProblemSetCreate();
+    *newProbs = rpmpsLink(ts->probs, "RunTransactions");
     /*@=assignexpose@*/
     ts->ignoreSet = ignoreSet;
     ts->currDir = _free(ts->currDir);
@@ -1035,6 +1055,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	const char * n, * v, * r;
 	fnpyKey key;
 	rpmdbMatchIterator mi;
+	const char * str1;
 	Header h;
 
 	pkgKey = p->u.addedKey;
@@ -1046,15 +1067,25 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	(void) headerNVR(h, &n, &v, &r);
 	key = p->key;
 
-	if (!archOkay(h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
+	str1 = NULL;
+	if (!archOkay(h, &str1) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH)) {
+	    const char * pkgNEVR = hGetNEVR(h, NULL);
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
-			hGetNVR(h, NULL), key,
-			NULL, NULL, NULL, 0);
+			pkgNEVR, key,
+			str1, NULL,
+			NULL, 0);
+	    pkgNEVR = _free(pkgNEVR);
+	}
 
-	if (!osOkay(h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
+	str1 = NULL;
+	if (!osOkay(h, &str1) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS)) {
+	    const char * pkgNEVR = hGetNEVR(h, NULL);
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADOS,
-			hGetNVR(h, NULL), key,
-			NULL, NULL, NULL, 0);
+			pkgNEVR, key,
+			str1, NULL,
+			NULL, 0);
+	    pkgNEVR = _free(pkgNEVR);
+	}
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header oldH;
@@ -1075,9 +1106,12 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, r);
 
 	    while (rpmdbNextIterator(mi) != NULL) {
+		const char * pkgNEVR = hGetNEVR(h, NULL);
 		rpmProblemSetAppend(ts->probs, RPMPROB_PKG_INSTALLED,
-			hGetNVR(h, NULL), key,
-			NULL, NULL, NULL, 0);
+			pkgNEVR, key,
+			NULL, NULL,
+			NULL, 0);
+		pkgNEVR = _free(pkgNEVR);
 		/*@innerbreak@*/ break;
 	    }
 	    mi = rpmdbFreeIterator(mi);
@@ -1333,17 +1367,23 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		if (dip->iavail <= 0)
 		    /*@innercontinue@*/ continue;
 
-		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
+		if (adj_fs_blocks(dip->bneeded) > dip->bavail) {
+		    const char * pkgNEVR = fiGetNEVR(fi);
 		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKSPACE,
-				fiGetNVR(fi), fi->key,
+				pkgNEVR, fi->key,
 				ts->filesystems[i], NULL, NULL,
 	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
+		    pkgNEVR = _free(pkgNEVR);
+		}
 
-		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
+		if (adj_fs_blocks(dip->ineeded) > dip->iavail) {
+		    const char * pkgNEVR = fiGetNEVR(fi);
 		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKNODES,
-				fiGetNVR(fi), fi->key,
+				pkgNEVR, fi->key,
 				ts->filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
+		    pkgNEVR = _free(pkgNEVR);
+		}
 	    }
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1393,8 +1433,6 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		(okProbs != NULL || rpmProblemSetTrim(ts->probs, okProbs)))
        )
     {
-	*newProbs = ts->probs;
-
 	ts->flList = freeFl(ts, ts->flList);
 	ts->flEntries = 0;
 	if (psm->ts != NULL)

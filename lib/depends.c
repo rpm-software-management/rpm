@@ -253,7 +253,7 @@ static int removePackage(rpmTransactionSet ts, int dboffset,
     return 0;
 }
 
-char * hGetNVR(Header h, const char ** np)
+char * hGetNEVR(Header h, const char ** np)
 {
     const char * n, * v, * r;
     char * NVR, * t;
@@ -276,7 +276,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * name = NULL;
-    const char * addNVR = hGetNVR(h, &name);
+    const char * addNVR = hGetNEVR(h, &name);
     const char * pkgNVR = NULL;
     int duplicate = 0;
     transactionElement p;
@@ -316,7 +316,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 
 	pkgNVR = _free(pkgNVR);
 	pname = NULL;
-	pkgNVR = hGetNVR(ph, &pname);
+	pkgNVR = hGetNEVR(ph, &pname);
 
 	if (strcmp(pname, name)) {
             pkgNVR = _free(pkgNVR);
@@ -1761,7 +1761,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    break;
 
 	pkgNVR = _free(pkgNVR);
-	pkgNVR = hGetNVR(h, NULL);
+	pkgNVR = hGetNEVR(h, NULL);
 	multiLib = p->multiLib;
 
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , pkgNVR);
@@ -1911,7 +1911,6 @@ exit:
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
     /*@=branchstate@*/
-    rpmProblemSetFree(ts->probs);
-    ts->probs = NULL;
+    ts->probs = rpmProblemSetFree(ts->probs);
     return rc;
 }

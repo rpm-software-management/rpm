@@ -549,8 +549,7 @@ restart:
 	    eiu->numFailed += rc;
 	    rpmProblemSetPrint(stderr, probs);
 	}
-
-	if (probs != NULL) rpmProblemSetFree(probs);
+	probs = rpmProblemSetFree(probs);
     }
 
     if (eiu->numSRPMS && !stopInstall) {
