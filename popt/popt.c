@@ -451,7 +451,8 @@ int poptReadConfigFile(poptContext con, char * fn) {
 	    *dst++ = *chptr++;
 	    if (chptr < end) {
 		if (*chptr == '\n') 
-		    *(dst - 1) = *chptr++;
+		    dst--, chptr++;	
+		    /* \ at the end of a line does not insert a \n */
 		else
 		    *dst++ = *chptr++;
 	    }

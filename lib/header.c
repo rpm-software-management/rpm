@@ -89,7 +89,7 @@ struct extensionCache {
 };
 
 struct sprintfToken {
-    enum { PTOK_NONE = 0, PTOK_TAG, PTOK_ARRAY, PTOK_STRING, PTOK_NEST } type;
+    enum { PTOK_NONE = 0, PTOK_TAG, PTOK_ARRAY, PTOK_STRING, PTOK_COND } type;
     union {
 	struct {
 	    struct sprintfToken * format;
@@ -101,9 +101,12 @@ struct sprintfToken {
 	    int len;
 	} string;
 	struct {
-	    struct sprintfToken * format;
-	    int numTokens;
-	} nest;
+	    struct sprintfToken * ifFormat;
+	    int numIfTokens;
+	    struct sprintfToken * elseFormat;
+	    int numElseTokens;
+	    struct sprintfTag tag;
+	} cond;
     } u;
 };
 
@@ -1111,8 +1114,12 @@ static void freeFormat(struct sprintfToken * format, int num) {
     for (i = 0; i < num; i++) {
 	if (format[i].type == PTOK_ARRAY) 
 	    freeFormat(format[i].u.array.format, format[i].u.array.numTokens);
-	if (format[i].type == PTOK_NEST) 
-	    freeFormat(format[i].u.nest.format, format[i].u.nest.numTokens);
+	if (format[i].type == PTOK_COND) { 
+	    freeFormat(format[i].u.cond.ifFormat, 
+			format[i].u.cond.numIfTokens);
+	    freeFormat(format[i].u.cond.elseFormat, 
+			format[i].u.cond.numElseTokens);
+	}
     }
     free(format);
 }
@@ -1168,8 +1175,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 		           const struct headerSprintfExtension * extensions,
 		           char ** endPtr, char ** error) {
     char * chptr, * end;
-    struct sprintfToken ifpart, elsepart;
-    const struct headerTagTableEntry * entry;
+    const struct headerTagTableEntry * tag;
     const struct headerSprintfExtension * ext;
 
     chptr = str;
@@ -1189,64 +1195,74 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
     chptr++;
 
-    if (parseFormat(chptr, tags, extensions, &ifpart.u.nest.format, 
-		    &ifpart.u.nest.numTokens, &end, PARSER_IN_EXPR, error)) 
+    if (parseFormat(chptr, tags, extensions, &token->u.cond.ifFormat, 
+		    &token->u.cond.numIfTokens, &end, PARSER_IN_EXPR, error)) 
 	return 1;
     if (!*end) {
 	*error = "} expected in expression";
-	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
+	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
     }
 
     chptr = end;
-    if (*chptr != ':') {
+    if (*chptr != ':' && *chptr != '|') {
 	*error = ": expected following ? subexpression";
-	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
+	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
     }
 
-    chptr++;
+    if (*chptr == '|') {
+	parseFormat(strdup(""), tags, extensions, &token->u.cond.elseFormat, 
+			&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR, 
+			error);
+    } else {
+	chptr++;
 
-    if (*chptr != '{') {
-	*error = "{ exected after : in expression";
-	return 1;
-    }
+	if (*chptr != '{') {
+	    *error = "{ exected after : in expression";
+	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    return 1;
+	}
 
-    chptr++;
+	chptr++;
 
-    if (parseFormat(chptr, tags, extensions, &elsepart.u.nest.format, 
-		    &elsepart.u.nest.numTokens, &end, PARSER_IN_EXPR, error)) 
-	return 1;
-    if (!*end) {
-	*error = "} expected in expression";
-	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
-	freeFormat(elsepart.u.nest.format, elsepart.u.nest.numTokens);
-	return 1;
-    }
+	if (parseFormat(chptr, tags, extensions, &token->u.cond.elseFormat, 
+			&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR, 
+			error)) 
+	    return 1;
+	if (!*end) {
+	    *error = "} expected in expression";
+	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    return 1;
+	}
 
-    chptr = end;
-    if (*chptr != '|') {
-	*error = "| expected at end of expression";
-	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
-	freeFormat(elsepart.u.nest.format, elsepart.u.nest.numTokens);
-	return 1;
+	chptr = end;
+	if (*chptr != '|') {
+	    *error = "| expected at end of expression";
+	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    freeFormat(token->u.cond.elseFormat, token->u.cond.numElseTokens);
+	    return 1;
+	}
     }
 	
     chptr++;
 
     *endPtr = chptr;
-	
-    findTag(str, tags, extensions, &entry, &ext);
-		
-    if (entry || ext) {
-	freeFormat(elsepart.u.nest.format, elsepart.u.nest.numTokens);
-	*token = ifpart;
-    } else {
-	freeFormat(ifpart.u.nest.format, ifpart.u.nest.numTokens);
-	*token = elsepart;
-    }
 
-    token->type = PTOK_NEST;
+    findTag(str, tags, extensions, &tag, &ext);
+
+    if (tag) {
+	token->u.cond.tag.ext = NULL;
+	token->u.cond.tag.tag = tag->val;
+    } else if (ext) {
+	token->u.cond.tag.ext = ext->u.tagFunction;
+	token->u.cond.tag.extNum = ext - extensions;
+    } else {
+	token->u.cond.tag.ext = NULL;
+	token->u.cond.tag.tag = -1;
+    }
+	
+    token->type = PTOK_COND;
 
     return 0;
 }
@@ -1597,6 +1613,8 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
     int numElements;
     int type;
     void * data;
+    struct sprintfToken * condFormat;
+    int condNumFormats;
 
     /* we assume the token and header have been validated already! */
 
@@ -1614,14 +1632,23 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 			  token->u.tag.justOne ? 0 : element);
 	break;
 
-      case PTOK_NEST:
-	alloced = token->u.nest.numTokens * 20;
+      case PTOK_COND:
+	if (token->u.cond.tag.ext ||
+	    headerIsEntry(h, token->u.cond.tag.tag)) {
+	    condFormat = token->u.cond.ifFormat;
+	    condNumFormats = token->u.cond.numIfTokens;
+	} else {
+	    condFormat = token->u.cond.elseFormat;
+	    condNumFormats = token->u.cond.numElseTokens;
+	}
+
+	alloced = condNumFormats * 20;
 	val = malloc(alloced);
 	*val = '\0';
 	len = 0;
 
-	for (i = 0; i < token->u.nest.numTokens; i++) {
-	    thisItem = singleSprintf(h, token->u.nest.format + i, 
+	for (i = 0; i < condNumFormats; i++) {
+	    thisItem = singleSprintf(h, condFormat + i, 
 				     extensions, extCache, i);
 	    thisItemLen = strlen(thisItem);
 	    if ((thisItemLen + len) >= alloced) {
