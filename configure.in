@@ -476,12 +476,6 @@ if test "x$tmpdir" = "x"; then
     fi
 fi
 
-# Solaris 2.5.1 seems to confuse things
-if echo "$build" | grep "solaris2.5" > /dev/null ; then
-	echo "Hacking things up for Solaris 2.5.x"
-	build_os="solaris"
-fi
-
 RPM=rpm
 # Solaris needs -ldl to use -lnsl, and it can't build static
 # binaries if you use -ldl
@@ -513,23 +507,47 @@ elif echo "$build_os" | grep aix > /dev/null; then
 	echo "hacking things up for aix"
 fi
 
+#
+# get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
+#
+if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
+	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
+fi
+
+build_os_exact="${build_os}"
+build_os_major=`echo "${build_os}" | sed 's/\..*$//'`
+build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
+
 rm -f ./find-provides.sh
-if test -f ${srcdir}/autodeps/${target_os}.prov ; then
-	echo "using ${srcdir}/autodeps/$build_os.prov for automatic provides generation"
-	ln -s ${srcdir}/autodeps/${build_os}.prov ./find-provides.sh
+if test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
+	echo "using ${srcdir}/autodeps/${build_os_exact}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides.sh
+elif test -f ${srcdir}/autodeps/${build_os_major}.prov ; then
+	echo "using ${srcdir}/autodeps/${build_os_major}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${build_os_major}.prov ./find-provides.sh
+elif test -f ${srcdir}/autodeps/${build_os_noversion}.prov ; then
+	echo "using ${srcdir}/autodeps/${build_os_noversion}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${build_os_noversion}.prov ./find-provides.sh
 else
-	echo "*** no default provides information is available for $target_os"
-	ln -s ${srcdir}/autodeps/none ./find-provides.sh
+    echo "*** no default provides information is available for ${build_os_noversion}"
+    ln -s ${srcdir}/autodeps/none ./find-provides.sh
 fi
 
 rm -f ./find-requires.sh
-if test -f ${srcdir}/autodeps/${target_os}.req ; then
-	echo "using ${srcdir}/autodeps/$build_os.req for automatic requires generation"
-	ln -s ${srcdir}/autodeps/$build_os.req ./find-requires.sh
+if test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
+	echo "using ${srcdir}/autodeps/${build_os_exact}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-provides.sh
+elif test -f ${srcdir}/autodeps/${build_os_major}.req ; then
+	echo "using ${srcdir}/autodeps/${build_os_major}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-provides.sh
+elif test -f ${srcdir}/autodeps/${build_os_noversion}.req ; then
+	echo "using ${srcdir}/autodeps/${build_os_noversion}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-provides.sh
 else
-	echo "*** no default requires information is available for $target_os"
-	ln -s ${srcdir}/autodeps/none ./find-requires.sh
+    echo "*** no default requires information is available for ${build_os_noversion}"
+    ln -s ${srcdir}/autodeps/none ./find-requires.sh
 fi
+
 
 if test -n "$MISCOBJS" ; then
 	MISCDIR=misc

@@ -507,7 +507,7 @@ int main(int argc, char ** argv) {
     int buildAmount = 0;
     int showrc = 0;
     int gotDbpath = 0, building = 0, verifyFlags;
-    int noMd5 = 0, rmsource = 0;
+    int rmsource = 0;
     int checksigFlags = 0;
     int timeCheck = 0;
     int addSign = NEW_SIGNATURE;

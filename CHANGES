@@ -1,3 +1,7 @@
+2.4.106 -> 2.4.107:
+	- --nomd5 wasn't handled properly
+	- updated configure.in find-req and find-prov checks (Tim Mooney)
+
 2.4.105 -> 2.4.106:
 	- build: inly check for non-printables in first 128 chars
 	- added %triggerpostun
