@@ -243,6 +243,65 @@ exit:
 
 /**
  */
+static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
+{
+    int rc = 0;
+
+    if (argvSearch(*argvp, key, NULL) == NULL) {
+	rc = argvAdd(argvp, key);
+	rc = argvSort(*argvp, NULL);
+    }
+    return rc;
+}
+
+/**
+ */
+static int rpmfcHelper(ARGV_t *depsp, ARGV_t av, StringBuf sb_stdin)
+{
+    StringBuf sb_stdout = NULL;
+    char buf[BUFSIZ];
+    ARGV_t pav;
+    int pac;
+    int xx;
+    int i;
+    char * t;
+
+    sb_stdout = NULL;
+    xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0);
+    if (xx == 0 && sb_stdout != NULL) {
+	xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
+	pac = argvCount(pav);
+	if (pav)
+	for (i = 0; i < pac; i++) {
+	    t = buf;
+	    *t = '\0';
+	    t = stpcpy(t, pav[i]);
+	    if (pav[i+1] && strchr("!=<>", *pav[i+1])) {
+		i++;
+		*t++ = ' ';
+		t = stpcpy(t, pav[i]);
+		if (pav[i+1]) {
+		    i++;
+		    *t++ = ' ';
+		    t = stpcpy(t, pav[i]);
+		}
+	    }
+
+	    /* Add to package provides. */
+	    xx = rpmfcSaveArg(depsp, buf);
+
+	    /* XXX attach to per-file dependencies. */
+	}
+
+	pav = argvFree(pav);
+	sb_stdout = freeStringBuf(sb_stdout);
+    }
+
+    return 0;
+}
+
+/**
+ */
 /*@unchecked@*/ /*@observer@*/
 static struct rpmfcTokens_s rpmfcTokens[] = {
   { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
@@ -503,20 +562,16 @@ static int rpmfcSCRIPT(rpmfc fc)
 	}
 
 	/* Add to package requires. */
-	if (argvSearch(fc->requires, s, NULL) == NULL) {
-	    xx = argvAdd(&fc->requires, s);
-	    xx = argvSort(fc->requires, NULL);
-	}
+	xx = rpmfcSaveArg(&fc->requires, s);
 
-	/* Add to file dependencies. */
+	/* Add to file requires. */
 	if (ns < (sizeof(buf) - ns - 64)) {
 	    t = se + 1;
 	    *t = '\0';
 	    sprintf(t, "%08d%c %s", fc->ix, deptype, s);
-	    if (argvSearch(fc->ddict, t, NULL) == NULL) {
-		xx = argvAdd(&fc->ddict, t);
-		xx = argvSort(fc->ddict, NULL);
-	    }
+
+	    xx = rpmfcSaveArg(&fc->ddict, t);
+
 	}
 	break;
     }
@@ -623,17 +678,11 @@ static int rpmfcELF(rpmfc fc)
 			t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
 
 			/* Add to package provides. */
-			if (argvSearch(fc->provides, depval, NULL) == NULL) {
-			    xx = argvAdd(&fc->provides, depval);
-			    xx = argvSort(fc->provides, NULL);
-			}
+			xx = rpmfcSaveArg(&fc->provides, depval);
 
 			/* Add to file dependencies. */
 			if (ns < (sizeof(buf)-64)) {
-			    if (argvSearch(fc->ddict, buf, NULL) == NULL) {
-				xx = argvAdd(&fc->ddict, buf);
-				xx = argvSort(fc->ddict, NULL);
-			    }
+			    xx = rpmfcSaveArg(&fc->ddict, buf);
 			}
 
 			auxoffset += aux->vda_next;
@@ -681,17 +730,11 @@ static int rpmfcELF(rpmfc fc)
 			t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
 
 			/* Add to package requires. */
-			if (argvSearch(fc->requires, depval, NULL) == NULL) {
-			    xx = argvAdd(&fc->requires, depval);
-			    xx = argvSort(fc->requires, NULL);
-			}
+			xx = rpmfcSaveArg(&fc->requires, depval);
 
 			/* Add to file dependencies. */
 			if (ns < (sizeof(buf)-64)) {
-			    if (argvSearch(fc->ddict, buf, NULL) == NULL) {
-				xx = argvAdd(&fc->ddict, buf);
-				xx = argvSort(fc->ddict, NULL);
-			    }
+			    xx = rpmfcSaveArg(&fc->ddict, buf);
 			}
 
 			auxoffset += aux->vna_next;
@@ -716,19 +759,13 @@ static int rpmfcELF(rpmfc fc)
 			/* Add to package requires. */
 			deptype = 'R';
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
-			if (argvSearch(fc->requires, s, NULL) == NULL) {
-			    xx = argvAdd(&fc->requires, s);
-			    xx = argvSort(fc->requires, NULL);
-			}
+			xx = rpmfcSaveArg(&fc->requires, s);
 			/*@switchbreak@*/ break;
 		    case DT_SONAME:
 			/* Add to package provides. */
 			deptype = 'P';
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
-			if (argvSearch(fc->provides, s, NULL) == NULL) {
-			    xx = argvAdd(&fc->provides, s);
-			    xx = argvSort(fc->provides, NULL);
-			}
+			xx = rpmfcSaveArg(&fc->provides, s);
 			/*@switchbreak@*/ break;
 		    }
 		    if (s == NULL)
@@ -739,10 +776,7 @@ static int rpmfcELF(rpmfc fc)
 			sprintf(t, "%08d%c ", fc->ix, deptype);
 			t += strlen(t);
 			t = stpcpy(t, s);
-			if (argvSearch(fc->ddict, buf, NULL) == NULL) {
-			    xx = argvAdd(&fc->ddict, buf);
-			    xx = argvSort(fc->ddict, NULL);
-			}
+			xx = rpmfcSaveArg(&fc->ddict, buf);
 		    }
 		}
 	    }
@@ -785,15 +819,17 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
 
     av = argv;
     while ((s = *av++) != NULL) {
-	se = s;
-	while (*se && !(se[0] == ':' && se[1] == ' '))
-	    se++;
+	for (se = s; *se; se++) {
+	    if (se[0] == ':' && se[1] == ' ')
+		break;
+	}
 	if (*se == '\0')
 	    return -1;
 
-	se++;
-	while (*se && (*se == ' ' || *se == '\t'))
-	    se++;
+	for (se++; *se; se++) {
+	    if (!(*se == ' ' || *se == '\t'))
+		break;
+	}
 	if (*se == '\0')
 	    return -1;
 
@@ -801,11 +837,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
 	if (fcolor == RPMFC_WHITE || !(fcolor & RPMFC_INCLUDE))
 	    continue;
 
-	dav = argvSearch(fc->cdict, se, NULL);
-	if (dav == NULL) {
-	    xx = argvAdd(&fc->cdict, se);
-	    xx = argvSort(fc->cdict, NULL);
-	}
+	xx = rpmfcSaveArg(&fc->cdict, se);
     }
 
     /* Classify files. */
@@ -813,9 +845,10 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     fc->fknown = 0;
     av = argv;
     while ((s = *av++) != NULL) {
-	se = s;
-	while (*se && !(se[0] == ':' && se[1] == ' '))
-	    se++;
+	for (se = s; *se; se++) {
+	    if (se[0] == ':' && se[1] == ' ')
+		break;
+	}
 	if (*se == '\0')
 	    return -1;
 
@@ -824,9 +857,10 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
 
 	xx = argvAdd(&fc->fn, buf);
 
-	se++;
-	while (*se && (*se == ' ' || *se == '\t'))
-	    se++;
+	for (se++; *se; se++) {
+	    if (!(*se == ' ' || *se == '\t'))
+		break;
+	}
 	if (*se == '\0')
 	    return -1;
 
@@ -872,7 +906,6 @@ int rpmfcApply(rpmfc fc)
     int ix;
     int i;
     int xx;
-char buf[BUFSIZ];
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
@@ -883,77 +916,29 @@ char buf[BUFSIZ];
 	}
     }
 
-    /* Generate perl(foo) dependencies. */
+    /* Generate per-interpreter namespace dependencies. */
     if (fc->sb_perl) {
 	static const char * av_perl_provides[] = { "%{?__perl_provides}", NULL };
 	static const char * av_perl_requires[] = { "%{?__perl_requires}", NULL };
-	StringBuf sb_stdout;
-	ARGV_t pav;
-	int pac;
 
-	sb_stdout = NULL;
-	xx = rpmfcExec(av_perl_provides, fc->sb_perl, &sb_stdout, 0);
-	if (xx == 0 && sb_stdout != NULL) {
-	    xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
-	    pac = argvCount(pav);
-	    if (pav)
-	    for (i = 0; i < pac; i++) {
-		se = buf;
-		*se = '\0';
-		se = stpcpy(se, pav[i]);
-		if (pav[i+1] && strchr("!=<>", *pav[i+1])) {
-		    i++;
-		    *se++ = ' ';
-		    se = stpcpy(se, pav[i]);
-		    if (pav[i+1]) {
-			i++;
-			*se++ = ' ';
-			se = stpcpy(se, pav[i]);
-		    }
-		}
+	xx = rpmfcHelper(&fc->provides, av_perl_provides, fc->sb_perl);
+	xx = rpmfcHelper(&fc->requires, av_perl_requires, fc->sb_perl);
+    }
 
-		/* Add to package provides. */
-		if (argvSearch(fc->provides, buf, NULL) == NULL) {
-		    xx = argvAdd(&fc->provides, buf);
-		    xx = argvSort(fc->provides, NULL);
-		}
-		/* XXX attach to per-file dependencies. */
-	    }
-	    pav = argvFree(pav);
-	    sb_stdout = freeStringBuf(sb_stdout);
-	}
+    if (fc->sb_python) {
+	static const char * av_python_provides[] = { "%{?__python_provides}", NULL };
+	static const char * av_python_requires[] = { "%{?__python_requires}", NULL };
 
-	sb_stdout = NULL;
-	xx = rpmfcExec(av_perl_requires, fc->sb_perl, &sb_stdout, 0);
-	if (xx == 0 && sb_stdout != NULL) {
-	    xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
-	    pac = argvCount(pav);
-	    if (pav)
-	    for (i = 0; i < pac; i++) {
-		se = buf;
-		*se = '\0';
-		se = stpcpy(se, pav[i]);
-		if (pav[i+1] && strchr("!=<>", *pav[i+1])) {
-		    i++;
-		    *se++ = ' ';
-		    se = stpcpy(se, pav[i]);
-		    if (pav[i+1]) {
-			i++;
-			*se++ = ' ';
-			se = stpcpy(se, pav[i]);
-		    }
-		}
+	xx = rpmfcHelper(&fc->provides, av_python_provides, fc->sb_python);
+	xx = rpmfcHelper(&fc->requires, av_python_requires, fc->sb_python);
+    }
 
-		/* Add to package requires. */
-		if (argvSearch(fc->requires, buf, NULL) == NULL) {
-		    xx = argvAdd(&fc->requires, buf);
-		    xx = argvSort(fc->requires, NULL);
-		}
-		/* XXX attach to per-file dependencies. */
-	    }
-	    pav = argvFree(pav);
-	    sb_stdout = freeStringBuf(sb_stdout);
-	}
+    if (fc->sb_java) {
+	static const char * av_java_provides[] = { "%{?__java_provides}", NULL };
+	static const char * av_java_requires[] = { "%{?__java_requires}", NULL };
+
+	xx = rpmfcHelper(&fc->provides, av_java_provides, fc->sb_java);
+	xx = rpmfcHelper(&fc->requires, av_java_requires, fc->sb_java);
     }
 
     /* Generate per-file indices into package dependencies. */
