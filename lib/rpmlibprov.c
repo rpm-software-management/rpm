@@ -78,7 +78,7 @@ int rpmCheckRpmlibProvides(const rpmDepSet key)
 	    /*@=immediatetrans@*/
 	    pro->Count = 1;
 	    (void) dsiNext(dsiInit(pro));
-	    rc = dsCompare(key, pro);
+	    rc = dsCompare(pro, key);
 	    pro->DNEVR = _free(pro->DNEVR);
 	}
 	if (rc)

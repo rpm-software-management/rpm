@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-04 22:42-0500\n"
+"POT-Creation-Date: 2001-11-06 17:01-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -602,93 +602,93 @@ msgstr "Nelze míchat speciální %%doc s ostatnímí formami: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Soubor uveden dvakrát: %s\n"
 
-#: build/files.c:1277
+#: build/files.c:1289
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolická linka ukazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1483
+#: build/files.c:1495
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Soubor nesouhlasí s prefixem (%s): %s\n"
 
-#: build/files.c:1507
+#: build/files.c:1519
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Soubor nenalezen: %s\n"
 
-#: build/files.c:1550 build/files.c:2162 build/parsePrep.c:50
+#: build/files.c:1562 build/files.c:2174 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "©patný vlastník/skupina: %s\n"
 
-#: build/files.c:1562
+#: build/files.c:1574
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Soubor %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1666
+#: build/files.c:1678
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 
-#: build/files.c:1689
+#: build/files.c:1701
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:1704
+#: build/files.c:1716
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
 
-#: build/files.c:1766
+#: build/files.c:1778
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nemohu otevøít %%files soubor %s: %s\n"
 
-#: build/files.c:1777 build/pack.c:146
+#: build/files.c:1789 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "øádek: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2162
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "©patný soubor: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2224
+#: build/files.c:2236
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nemohu spustit %s: %s\n"
 
-#: build/files.c:2229
+#: build/files.c:2241
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nemohu provést fork %s: %s\n"
 
-#: build/files.c:2313
+#: build/files.c:2325
 #, c-format
 msgid "%s failed\n"
 msgstr "%s selhalo\n"
 
-#: build/files.c:2317
+#: build/files.c:2329
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "Nemohu zapsat v¹echna data do %s\n"
 
-#: build/files.c:2453
+#: build/files.c:2465
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: build/files.c:2479 build/files.c:2493
+#: build/files.c:2491 build/files.c:2505
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Selhalo vyhledání %s:\n"
 
-#: build/files.c:2614
+#: build/files.c:2626
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -946,123 +946,123 @@ msgstr "øádek %d: Chyba pøi parsování %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "øádek %d: Druhý seznam %%files\n"
 
-#: build/parsePreamble.c:233
+#: build/parsePreamble.c:234
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektura je vyøazena: %s\n"
 
-#: build/parsePreamble.c:238
+#: build/parsePreamble.c:239
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektura není zahrnuta: %s\n"
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:244
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS je vyøazen: %s\n"
 
-#: build/parsePreamble.c:248
+#: build/parsePreamble.c:249
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS není zahrnut: %s\n"
 
-#: build/parsePreamble.c:270
+#: build/parsePreamble.c:271
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
-#: build/parsePreamble.c:298
+#: build/parsePreamble.c:299
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Duplikovaná polo¾ka %s v balíèku: %s\n"
 
-#: build/parsePreamble.c:358
+#: build/parsePreamble.c:359
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Nemohu otevøít ikonu %s: %s\n"
 
-#: build/parsePreamble.c:376
+#: build/parsePreamble.c:377
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Nemohu pøeèíst ikonu %s: %s\n"
 
-#: build/parsePreamble.c:389
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Neznámý typ ikony: %s\n"
 
-#: build/parsePreamble.c:433
+#: build/parsePreamble.c:434
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "øádek %d: Znaèka má jen jeden token: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:474
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "øádek %d: Poèkozená znaèka: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:481
+#: build/parsePreamble.c:482
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "øádek %d: Prázdná znaèka: %s\n"
 
-#: build/parsePreamble.c:503 build/parsePreamble.c:510
+#: build/parsePreamble.c:505 build/parsePreamble.c:512
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "øádek %d: Nepøípustný znak '-' v %s: %s\n"
 
-#: build/parsePreamble.c:571 build/parseSpec.c:408
+#: build/parsePreamble.c:573 build/parseSpec.c:408
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot nemù¾e být \"/\": %s\n"
 
-#: build/parsePreamble.c:584
+#: build/parsePreamble.c:586
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "øádek %d: Prefixy nesmí konèit znakem \"/\": %s\n"
 
-#: build/parsePreamble.c:596
+#: build/parsePreamble.c:598
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "øádek %d: Docdir musí zaèínat na '/': %s\n"
 
-#: build/parsePreamble.c:608
+#: build/parsePreamble.c:610
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s\n"
 
-#: build/parsePreamble.c:648 build/parsePreamble.c:659
+#: build/parsePreamble.c:650 build/parsePreamble.c:661
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "øádek %d: ©patné urèení %s: %s\n"
 
-#: build/parsePreamble.c:685
+#: build/parsePreamble.c:687
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "øádek %d: ©patný formát BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:696
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interní chyba: ©patná znaèka: %d\n"
 
-#: build/parsePreamble.c:849
+#: build/parsePreamble.c:852
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "©patná specifikace balíèku: %s\n"
 
-#: build/parsePreamble.c:855
+#: build/parsePreamble.c:858
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balíèek ji¾ existuje: %s\n"
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:885
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "øádek %d: Neznámá znaèka: %s\n"
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:907
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec soubor nemù¾e pou¾ít BuildRoot\n"
 
@@ -1218,7 +1218,7 @@ msgstr "po¹kozený pøíkaz %%include\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Nenalezeny ¾ádné kompatibilní architektury pro sestavení\n"
 
-#: build/parseSpec.c:584
+#: build/parseSpec.c:585
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Balíèek nemá ¾ádné %%description: %s\n"
@@ -1486,45 +1486,45 @@ msgstr "¾ádné balíèky\n"
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) pøidáno do ke¹e závislostí.\n"
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 msgid "NO "
 msgstr "NE "
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 msgid "YES"
 msgstr "ANO"
 
-#: lib/depends.c:1114
+#: lib/depends.c:1103
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1366
+#: lib/depends.c:1345
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1440
+#: lib/depends.c:1419
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1515
+#: lib/depends.c:1494
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1576
+#: lib/depends.c:1555
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1611
+#: lib/depends.c:1590
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1616
+#: lib/depends.c:1595
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1723,7 +1723,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "tato verze RPM podporuje práci s balíèky s verzí <= 4\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:506
+#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:511
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead selhalo\n"
@@ -1733,12 +1733,12 @@ msgstr "%s: readLead selhalo\n"
 msgid "%s: bad magic\n"
 msgstr "©patné magické èíslo"
 
-#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:522
+#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:527
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature selhalo\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:527
+#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:532
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Není dostupný ¾ádný podpis\n"
@@ -1748,7 +1748,7 @@ msgstr "%s: Není dostupný ¾ádný podpis\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:450
+#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:455
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
@@ -2443,12 +2443,12 @@ msgstr "záznam %d nelze pøeèíst\n"
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: lib/rpmal.c:677
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added files)"
 msgstr "¹patný db soubor %s\n"
 
-#: lib/rpmal.c:780
+#: lib/rpmal.c:868
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
@@ -2477,47 +2477,47 @@ msgstr "%s: RPM v1.0 nelze podepsat\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Nemohu znovu podepsat RPM v2.0\n"
 
-#: lib/rpmchecksig.c:213
+#: lib/rpmchecksig.c:218
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead selhalo: %s\n"
 
-#: lib/rpmchecksig.c:219
+#: lib/rpmchecksig.c:224
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature selhalo: %s\n"
 
-#: lib/rpmchecksig.c:512
+#: lib/rpmchecksig.c:517
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Není dostupný ¾ádný podpis (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:707
+#: lib/rpmchecksig.c:712
 msgid "NOT OK"
 msgstr "NENÍ OK"
 
-#: lib/rpmchecksig.c:708 lib/rpmchecksig.c:722
+#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
 msgid " (MISSING KEYS:"
 msgstr " (CHYBÍ KLÍÈ:"
 
-#: lib/rpmchecksig.c:710 lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:715 lib/rpmchecksig.c:729
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEDÙVÌRYHODNÝ KLÍÈ:"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:718 lib/rpmchecksig.c:732
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:721
+#: lib/rpmchecksig.c:726
 msgid "OK"
 msgstr "OK"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:354
+#: lib/rpmds.c:451
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2526,13 +2526,13 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:383
+#: lib/rpmds.c:480
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:409
+#: lib/rpmds.c:506
 #, fuzzy, c-format
 msgid "package %s-%s-%s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"

@@ -10,20 +10,24 @@
 
 typedef /*@owned@*/ const void * voidptr;
 
-/** */
-struct hashBucket {
+typedef	struct hashBucket_s * hashBucket;
+
+/**
+ */
+struct hashBucket_s {
     voidptr key;			/*!< hash key */
 /*@owned@*/ voidptr * data;		/*!< pointer to hashed data */
     int dataCount;			/*!< length of data (0 if unknown) */
-/*@dependent@*/struct hashBucket * next;/*!< pointer to next item in bucket */
+/*@dependent@*/hashBucket next;		/*!< pointer to next item in bucket */
 };
 
-/** */
+/**
+ */
 struct hashTable_s {
     int numBuckets;			/*!< number of hash buckets */
     int keySize;			/*!< size of key (0 if unknown) */
     int freeData;	/*!< should data be freed when table is destroyed? */
-    struct hashBucket ** buckets;	/*!< hash bucket array */
+    hashBucket * buckets;		/*!< hash bucket array */
     hashFunctionType fn;		/*!< generate hash value for key */
     hashEqualityType eq;		/*!< compare hash keys for equality */
 };
@@ -35,11 +39,11 @@ struct hashTable_s {
  * @return pointer to hash bucket of key (or NULL)
  */
 static /*@shared@*/ /*@null@*/
-struct hashBucket *findEntry(hashTable ht, const void * key)
+hashBucket findEntry(hashTable ht, const void * key)
 	/*@*/
 {
     unsigned int hash;
-    struct hashBucket * b;
+    hashBucket b;
 
     /*@-modunconnomods@*/
     hash = ht->fn(key) % ht->numBuckets;
@@ -76,8 +80,8 @@ unsigned int hashFunctionString(const void * string)
     return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
 }
 
-hashTable htCreate(int numBuckets, int keySize, int freeData, hashFunctionType fn,
-		   hashEqualityType eq)
+hashTable htCreate(int numBuckets, int keySize, int freeData,
+		hashFunctionType fn, hashEqualityType eq)
 {
     hashTable ht;
 
@@ -86,8 +90,10 @@ hashTable htCreate(int numBuckets, int keySize, int freeData, hashFunctionType f
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->keySize = keySize;
     ht->freeData = freeData;
+    /*@-assignexpose@*/
     ht->fn = fn;
     ht->eq = eq;
+    /*@=assignexpose@*/
 
     return ht;
 }
@@ -95,7 +101,7 @@ hashTable htCreate(int numBuckets, int keySize, int freeData, hashFunctionType f
 void htAddEntry(hashTable ht, const void * key, const void * data)
 {
     unsigned int hash;
-    struct hashBucket * b;
+    hashBucket b;
 
     hash = ht->fn(key) % ht->numBuckets;
     b = ht->buckets[hash];
@@ -126,7 +132,7 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 
 void htFree(hashTable ht)
 {
-    struct hashBucket * b, * n;
+    hashBucket b, n;
     int i;
 
     for (i = 0; i < ht->numBuckets; i++) {
@@ -154,7 +160,7 @@ void htFree(hashTable ht)
 
 int htHasEntry(hashTable ht, const void * key)
 {
-    struct hashBucket * b;
+    hashBucket b;
 
     if (!(b = findEntry(ht, key))) return 0; else return 1;
 }
@@ -162,7 +168,7 @@ int htHasEntry(hashTable ht, const void * key)
 int htGetEntry(hashTable ht, const void * key, const void *** data,
 	       int * dataCount, const void ** tableKey)
 {
-    struct hashBucket * b;
+    hashBucket b;
 
     if ((b = findEntry(ht, key)) == NULL)
 	return 1;

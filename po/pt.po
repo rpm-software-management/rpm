@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-04 22:42-0500\n"
+"POT-Creation-Date: 2001-11-06 17:01-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -592,93 +592,93 @@ msgstr "Não é possível misturar o %%doc especial com outras formas: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Ficheiro listado duas vezes: %s\n"
 
-#: build/files.c:1277
+#: build/files.c:1289
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "A 'symlink' aponta para a BuildRoot: %s -> %s\n"
 
-#: build/files.c:1483
+#: build/files.c:1495
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "O ficheiro não corresponde ao prefixo (%s): %s\n"
 
-#: build/files.c:1507
+#: build/files.c:1519
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Ficheiro não encontrado: %s\n"
 
-#: build/files.c:1550 build/files.c:2162 build/parsePrep.c:50
+#: build/files.c:1562 build/files.c:2174 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Dono/grupo inválido: %s\n"
 
-#: build/files.c:1562
+#: build/files.c:1574
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Ficheiro: %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1666
+#: build/files.c:1678
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O ficheiro precisa de começar por \"/\": %s\n"
 
-#: build/files.c:1689
+#: build/files.c:1701
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linha %d: Nome do ficheiro não permitido: %s\n"
 
-#: build/files.c:1704
+#: build/files.c:1716
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Ficheiro não encontrado pelo glob: %s\n"
 
-#: build/files.c:1766
+#: build/files.c:1778
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Não consegui abrir o ficheiro do %%files %s: %s\n"
 
-#: build/files.c:1777 build/pack.c:146
+#: build/files.c:1789 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2162
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ficheiro inválido: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2224
+#: build/files.c:2236
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Não consegui executar o %s: %S\n"
 
-#: build/files.c:2229
+#: build/files.c:2241
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Não consegui executar à parte o %s: &s\n"
 
-#: build/files.c:2313
+#: build/files.c:2325
 #, c-format
 msgid "%s failed\n"
 msgstr "O %s falhou\n"
 
-#: build/files.c:2317
+#: build/files.c:2329
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "não consegui escrever todos os dados em %s\n"
 
-#: build/files.c:2453
+#: build/files.c:2465
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "A procurar o %s: (usando o %s)...\n"
 
-#: build/files.c:2479 build/files.c:2493
+#: build/files.c:2491 build/files.c:2505
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Não consegui encontrar o %s:\n"
 
-#: build/files.c:2614
+#: build/files.c:2626
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "A processar os ficheiros: %s-%s-%s\n"
@@ -938,123 +938,123 @@ msgstr "linha %d: Erro ao analisar o %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "linha %d: Segunda lista de %%files\n"
 
-#: build/parsePreamble.c:233
+#: build/parsePreamble.c:234
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "A arquitectura está excluída: %s\n"
 
-#: build/parsePreamble.c:238
+#: build/parsePreamble.c:239
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "A arquitectura não está incluída: %s\n"
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:244
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "O SO está excluído: %s\n"
 
-#: build/parsePreamble.c:248
+#: build/parsePreamble.c:249
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "O SO não está incluído: %s\n"
 
-#: build/parsePreamble.c:270
+#: build/parsePreamble.c:271
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "O campo %s tem de estar presente no pacote: %s\n"
 
-#: build/parsePreamble.c:298
+#: build/parsePreamble.c:299
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Entradas %s duplicadas no pacote: %s\n"
 
-#: build/parsePreamble.c:358
+#: build/parsePreamble.c:359
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Não consegui abrir o ícone %s: %s\n"
 
-#: build/parsePreamble.c:376
+#: build/parsePreamble.c:377
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Não consegui ler o ícone %s: %s\n"
 
-#: build/parsePreamble.c:389
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Tipo de ícone desconhecido: %s\n"
 
-#: build/parsePreamble.c:433
+#: build/parsePreamble.c:434
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linha %d: Opção inválida %s: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:474
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "Linha %d: Opção inválida: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:481
+#: build/parsePreamble.c:482
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linha %d: Opção em branco: %s\n"
 
-#: build/parsePreamble.c:503 build/parsePreamble.c:510
+#: build/parsePreamble.c:505 build/parsePreamble.c:512
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linha %d: Carácter '-' ilegal no %s: %s\n"
 
-#: build/parsePreamble.c:571 build/parseSpec.c:408
+#: build/parsePreamble.c:573 build/parseSpec.c:408
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "O BuildRoot não pode ser o \"/\": %s\n"
 
-#: build/parsePreamble.c:584
+#: build/parsePreamble.c:586
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linha %d: Os prefixos não podem acabar em \"/\": %s\n"
 
-#: build/parsePreamble.c:596
+#: build/parsePreamble.c:598
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linha %d: A docdir tem de começar por '/': %s\n"
 
-#: build/parsePreamble.c:608
+#: build/parsePreamble.c:610
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linha %d: O campo Epoch/Serial tem de ser um número: %s\n"
 
-#: build/parsePreamble.c:648 build/parsePreamble.c:659
+#: build/parsePreamble.c:650 build/parsePreamble.c:661
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linha %d: Qualificadores %s: inválidos: %s\n"
 
-#: build/parsePreamble.c:685
+#: build/parsePreamble.c:687
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linha %d: Formato da BuildArchitecture inválido: %s\n"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:696
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Erro interno: Opção esquisita %d\n"
 
-#: build/parsePreamble.c:849
+#: build/parsePreamble.c:852
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Descrição do pacote inválida: %s\n"
 
-#: build/parsePreamble.c:855
+#: build/parsePreamble.c:858
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "O pacote já existe: %s\n"
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:885
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linha %d: Opção desconhecida: %s\n"
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:907
 msgid "Spec file can't use BuildRoot\n"
 msgstr "O ficheiro spec não pode usar a BuildRoot\n"
 
@@ -1209,7 +1209,7 @@ msgstr "instrução %%include desorganizada\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Não foram indicadas arquitecturas para as quais criar\n"
 
-#: build/parseSpec.c:584
+#: build/parseSpec.c:585
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "O pacote não tem uma %%description: %s\n"
@@ -1474,45 +1474,45 @@ msgstr "nenhum pacote\n"
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 #, fuzzy
 msgid "NO "
 msgstr "NÃO-OK"
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1114
+#: lib/depends.c:1103
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1366
+#: lib/depends.c:1345
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1440
+#: lib/depends.c:1419
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1515
+#: lib/depends.c:1494
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1576
+#: lib/depends.c:1555
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1611
+#: lib/depends.c:1590
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1616
+#: lib/depends.c:1595
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1710,7 +1710,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:506
+#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:511
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ":%s: o readLead falhou\n"
@@ -1720,12 +1720,12 @@ msgstr ":%s: o readLead falhou\n"
 msgid "%s: bad magic\n"
 msgstr "Código de integridade inválido"
 
-#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:522
+#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:527
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:527
+#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:532
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
@@ -1735,7 +1735,7 @@ msgstr "%s: Nenhuma assinatura disponível\n"
 msgid "%s: headerRead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:450
+#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:455
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -2440,12 +2440,12 @@ msgstr "o registo %d não pôde ser lido\n"
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
 
-#: lib/rpmal.c:677
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/rpmal.c:780
+#: lib/rpmal.c:868
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
@@ -2474,47 +2474,47 @@ msgstr "%s: Não consigo assinar o RPM v1.0\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: não consigo assinar de novo o RPM v2.0\n"
 
-#: lib/rpmchecksig.c:213
+#: lib/rpmchecksig.c:218
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: o writeLead falhou: %s\n"
 
-#: lib/rpmchecksig.c:219
+#: lib/rpmchecksig.c:224
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: o rpmWriteSignature falhou: %s\n"
 
-#: lib/rpmchecksig.c:512
+#: lib/rpmchecksig.c:517
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Nenhuma assinatura disponível (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:707
+#: lib/rpmchecksig.c:712
 msgid "NOT OK"
 msgstr "NÃO-OK"
 
-#: lib/rpmchecksig.c:708 lib/rpmchecksig.c:722
+#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
 msgid " (MISSING KEYS:"
 msgstr " (FALTAM AS CHAVES:"
 
-#: lib/rpmchecksig.c:710 lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:715 lib/rpmchecksig.c:729
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:718 lib/rpmchecksig.c:732
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:721
+#: lib/rpmchecksig.c:726
 msgid "OK"
 msgstr "OK"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:354
+#: lib/rpmds.c:451
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2523,13 +2523,13 @@ msgstr ""
 "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
 "\t %s\tB %s\n"
 
-#: lib/rpmds.c:383
+#: lib/rpmds.c:480
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:409
+#: lib/rpmds.c:506
 #, fuzzy, c-format
 msgid "package %s-%s-%s has unsatisfied %s: %s\n"
 msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"

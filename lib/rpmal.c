@@ -54,15 +54,8 @@ struct availablePackage_s {
     rpmDepSet provides;		/*!< Provides: dependencies. */
 /*@owned@*/ /*@null@*/
     rpmDepSet requires;		/*!< Requires: dependencies. */
-
-#ifdef	DYING
-/*@dependent@*//*@null@*/
-    const char ** baseNames;	/*!< Header file basenames. */
-    int filesCount;		/*!< No. of files in header. */
-#else
 /*@owned@*//*@null@*/
     rpmFNSet fns;		/*!< File name set. */
-#endif
 
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
@@ -74,11 +67,12 @@ struct availablePackage_s {
  * A single available item (e.g. a Provides: dependency).
  */
 struct availableIndexEntry_s {
+/*@dependent@*/ /*@null@*/
+    alKey pkgKey;		/*!< Containing package. */
 /*@dependent@*/
-    availablePackage package;	/*!< Containing package. */
-/*@dependent@*/
-    const char * entry;		/*!< Available item name. */
-    size_t entryLen;		/*!< No. of bytes in name. */
+    const char * entry;		/*!< Dependency name. */
+    unsigned short entryLen;	/*!< No. of bytes in name. */
+    unsigned short entryIx;	/*!< Dependency index. */
     enum indexEntryType {
 	IET_PROVIDES=1			/*!< A Provides: dependency. */
     } type;			/*!< Type of available item. */
@@ -91,16 +85,18 @@ struct availableIndex_s {
 /*@null@*/
     availableIndexEntry index;	/*!< Array of available items. */
     int size;			/*!< No. of available items. */
+    int k;			/*!< Current index. */
 };
 
 /** \ingroup rpmdep
  * A file to be installed/removed.
  */
 struct fileIndexEntry_s {
+/*@dependent@*/
+    const char * baseName;	/*!< File basename. */
+    int baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
     int fileFlags;	/* MULTILIB */
-/*@dependent@*/ /*@null@*/
-    const char * baseName;	/*!< File basename. */
 };
 
 /** \ingroup rpmdep
@@ -140,9 +136,10 @@ static int _al_debug = 0;
 static void alFreeIndex(availableList al)
 	/*@modifies al @*/
 {
-    if (al->index.size) {
-	al->index.index = _free(al->index.index);
-	al->index.size = 0;
+    availableIndex ai = &al->index;
+    if (ai->size > 0) {
+	ai->index = _free(ai->index);
+	ai->size = 0;
     }
 }
 
@@ -259,14 +256,15 @@ char * alGetNVR(const availableList al, alKey pkgKey)
 availableList alCreate(int delta)
 {
     availableList al = xcalloc(1, sizeof(*al));
+    availableIndex ai = &al->index;
 
     al->delta = delta;
     al->size = 0;
     al->list = xcalloc(al->delta, sizeof(*al->list));
     al->alloced = al->delta;
 
-    al->index.index = NULL;
-    al->index.size = 0;
+    ai->index = NULL;
+    ai->size = 0;
 
     al->numDirs = 0;
     al->dirs = NULL;
@@ -275,10 +273,8 @@ availableList alCreate(int delta)
 
 availableList alFree(availableList al)
 {
-#ifdef	DYING
-    HFD_t hfd = headerFreeData;
-#endif
     availablePackage alp;
+    dirInfo die;
     int i;
 
     if (al == NULL)
@@ -290,23 +286,20 @@ availableList alFree(availableList al)
 	alp->provides = dsFree(alp->provides);
 	alp->requires = dsFree(alp->requires);
 
-#ifdef	DYING
-	alp->baseNames = hfd(alp->baseNames, -1);
-#else
 	alp->fns = fnsFree(alp->fns);
-#endif
+
 	alp->h = headerFree(alp->h, "alFree");
 
     }
 
-    if (al->dirs != NULL)
-    for (i = 0; i < al->numDirs; i++) {
-	al->dirs[i].dirName = _free(al->dirs[i].dirName);
-	al->dirs[i].files = _free(al->dirs[i].files);
+    if ((die = al->dirs) != NULL)
+    for (i = 0; i < al->numDirs; i++, die++) {
+	die->dirName = _free(die->dirName);
+	die->files = _free(die->files);
     }
-
     al->dirs = _free(al->dirs);
     al->numDirs = 0;
+
     al->list = _free(al->list);
     al->alloced = 0;
     alFreeIndex(al);
@@ -319,7 +312,8 @@ availableList alFree(availableList al)
  * @param two		2nd directory info
  * @return		result of comparison
  */
-static int dirInfoCompare(const void * one, const void * two)	/*@*/
+static int dieCompare(const void * one, const void * two)
+	/*@*/
 {
     /*@-castexpose@*/
     const dirInfo a = (const dirInfo) one;
@@ -334,11 +328,36 @@ static int dirInfoCompare(const void * one, const void * two)	/*@*/
     return strcmp(a->dirName, b->dirName);
 }
 
+/**
+ * Compare two file info entries by name (qsort/bsearch).
+ * @param one		1st directory info
+ * @param two		2nd directory info
+ * @return		result of comparison
+ */
+static int fieCompare(const void * one, const void * two)
+	/*@*/
+{
+    /*@-castexpose@*/
+    const fileIndexEntry a = (const fileIndexEntry) one;
+    const fileIndexEntry b = (const fileIndexEntry) two;
+    /*@=castexpose@*/
+    int lenchk = a->baseNameLen - b->baseNameLen;
+
+    if (lenchk)
+	return lenchk;
+
+    /* XXX FIXME: this might do "backward" strcmp for speed */
+    return strcmp(a->baseName, b->baseName);
+}
+
 void alDelPackage(availableList al, alKey pkgKey)
 {
+#ifdef	DYING
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
+#endif
     availablePackage alp;
+    rpmFNSet fns;
     alNum pkgNum = alKey2Num(al, pkgKey);
 
     /*@-nullptrarith@*/ /* FIX: al->list might be NULL */
@@ -350,53 +369,64 @@ if (_al_debug)
 fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->version, alp->release);
 /*@=modfilesys@*/
 
-    if (alp->fns != NULL)
-    if (alp->fns->BN != NULL && alp->fns->Count > 0) {
+    /* Delete directory/file info entries from added package list. */
+    if ((fns = alp->fns) != NULL)
+    if (fns->BN != NULL && fns->Count > 0) {
 	int origNumDirs = al->numDirs;
+#ifdef	DYING
 	const char ** dirNames;
 	int_32 numDirs;
 	rpmTagType dnt;
+#endif
 	int dirNum;
-	dirInfo dirNeedle =
-		memset(alloca(sizeof(*dirNeedle)), 0, sizeof(*dirNeedle));
-	dirInfo dirMatch;
+	dirInfo dieNeedle =
+		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
+	dirInfo die;
 	int last;
-	int i, xx;
+	int i;
 
+#ifdef	DYING
 	xx = hge(alp->h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
+#endif
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
 	if (al->dirs != NULL)
-	for (dirNum = al->numDirs - 1; dirNum >= 0; dirNum--) {
-	    dirNeedle->dirName = (char *) dirNames[dirNum];
-	    dirNeedle->dirNameLen = strlen(dirNames[dirNum]);
-	    dirMatch = bsearch(dirNeedle, al->dirs, al->numDirs,
-			       sizeof(*dirNeedle), dirInfoCompare);
-	    if (dirMatch == NULL)
+	if (fns->DN != NULL)
+	for (dirNum = fns->DCount - 1; dirNum >= 0; dirNum--) {
+	    fileIndexEntry fie;
+
+	    /*@-assignexpose@*/
+	    dieNeedle->dirName = (char *) fns->DN[dirNum];
+	    /*@=assignexpose@*/
+	    dieNeedle->dirNameLen = strlen(dieNeedle->dirName);
+	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
+			       sizeof(*dieNeedle), dieCompare);
+	    if (die == NULL)
 		continue;
-	    last = dirMatch->numFiles;
-	    for (i = dirMatch->numFiles - 1; i >= 0; i--) {
-		if (dirMatch->files[i].pkgNum != pkgNum)
+
+	    last = die->numFiles;
+	    fie = die->files + last - 1;
+	    for (i = last - 1; i >= 0; i--, fie--) {
+		if (fie->pkgNum != pkgNum)
 		    /*@innercontinue@*/ continue;
-		dirMatch->numFiles--;
-		if (i > dirMatch->numFiles)
+		die->numFiles--;
+		if (i > die->numFiles)
 		    /*@innercontinue@*/ continue;
-		memmove(dirMatch->files, dirMatch->files+1,
-			(dirMatch->numFiles - i));
+		memmove(fie, fie+1, (die->numFiles - i));
 	    }
-	    if (dirMatch->numFiles > 0) {
+	    if (die->numFiles > 0) {
 		if (last > i)
-		    dirMatch->files = xrealloc(dirMatch->files,
-			dirMatch->numFiles * sizeof(*dirMatch->files));
+		    die->files = xrealloc(die->files,
+					die->numFiles * sizeof(*die->files));
 		continue;
 	    }
-	    dirMatch->files = _free(dirMatch->files);
-	    dirMatch->dirName = _free(dirMatch->dirName);
+	    die->files = _free(die->files);
+	    die->dirName = _free(die->dirName);
 	    al->numDirs--;
-	    if (dirNum > al->numDirs)
+	    if ((die - al->dirs) > al->numDirs)
 		continue;
-	    memmove(dirMatch, dirMatch+1, (al->numDirs - dirNum));
+	    memmove(die, die+1, (al->numDirs - (die - al->dirs)));
 	}
 
 	if (origNumDirs > al->numDirs) {
@@ -406,9 +436,16 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 		al->dirs = _free(al->dirs);
 	}
 
+#ifdef	DYING
 	dirNames = hfd(dirNames, dnt);
+#endif
     }
+
+    alp->provides = dsFree(alp->provides);
+    alp->requires = dsFree(alp->requires);
+    alp->fns = fnsFree(alp->fns);
     alp->h = headerFree(alp->h, "alDelPackage");
+
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
     /*@-nullstate@*/ /* FIX: al->list->h may be NULL */
     return;
@@ -420,9 +457,8 @@ alKey alAddPackage(availableList al, alKey pkgKey, Header h)
 {
     int scareMem = 1;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
 #ifdef	DYING
-    rpmTagType dnt, bnt;
+    HFD_t hfd = headerFreeData;
 #endif
     availablePackage alp;
     alNum pkgNum = alKey2Num(al, pkgKey);
@@ -431,6 +467,7 @@ alKey alAddPackage(availableList al, alKey pkgKey, Header h)
     uint_32 multiLibMask = 0;
     uint_32 * pp = NULL;
 #endif
+    rpmFNSet fns;
 
     if (pkgNum >= 0 && pkgNum < al->size) {
 	alDelPackage(al, pkgKey);
@@ -486,102 +523,91 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
     alp->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
     alp->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
 
-#ifdef	DYING
-    if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **)&alp->baseNames, &alp->filesCount))
-    {
-	alp->filesCount = 0;
-	alp->baseNames = NULL;
-    } else {
-	int_32 * dirIndexes;
-	const char ** dirNames;
-	int_32 numDirs;
-	uint_32 * fileFlags = NULL;
+    alp->fns = fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
 
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-	xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
-    }
-
-    if (alp->filesCount > 0)
-#else
-    alp->fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
-
-    if (alp->fns && alp->fns->Count > 0)
-#endif
-    {
+    if (fns && fns->Count > 0) {
 	int * dirMapping;
-	dirInfo dirNeedle =
-		memset(alloca(sizeof(*dirNeedle)), 0, sizeof(*dirNeedle));
-	dirInfo dirMatch;
+	dirInfo dieNeedle =
+		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
+	dirInfo die;
 	int first, last, dirNum;
 	int origNumDirs;
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-	dirMapping = alloca(sizeof(*dirMapping) * alp->fns->DCount);
+	dirMapping = alloca(sizeof(*dirMapping) * fns->DCount);
 
 	/* allocated enough space for all the directories we could possible
 	   need to add */
 	al->dirs = xrealloc(al->dirs,
-			(al->numDirs + alp->fns->DCount) * sizeof(*al->dirs));
+			(al->numDirs + fns->DCount) * sizeof(*al->dirs));
 	origNumDirs = al->numDirs;
 
-	if (alp->fns->DN != NULL)
-	for (dirNum = 0; dirNum < alp->fns->DCount; dirNum++) {
+	if (fns->DN != NULL)
+	for (dirNum = 0; dirNum < fns->DCount; dirNum++) {
 	    /*@-assignexpose@*/
-	    dirNeedle->dirName = (char *) alp->fns->DN[dirNum];
+	    dieNeedle->dirName = (char *) fns->DN[dirNum];
 	    /*@=assignexpose@*/
-	    dirNeedle->dirNameLen = strlen(alp->fns->DN[dirNum]);
-	    dirMatch = bsearch(dirNeedle, al->dirs, origNumDirs,
-			       sizeof(*dirNeedle), dirInfoCompare);
-	    if (dirMatch) {
-		dirMapping[dirNum] = dirMatch - al->dirs;
+	    dieNeedle->dirNameLen = strlen(fns->DN[dirNum]);
+	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
+			       sizeof(*dieNeedle), dieCompare);
+	    if (die) {
+		dirMapping[dirNum] = die - al->dirs;
 	    } else {
 		dirMapping[dirNum] = al->numDirs;
-		dirMatch = al->dirs + al->numDirs;
-		dirMatch->dirName = xstrdup(alp->fns->DN[dirNum]);
-		dirMatch->dirNameLen = strlen(alp->fns->DN[dirNum]);
-		dirMatch->files = NULL;
-		dirMatch->numFiles = 0;
+		die = al->dirs + al->numDirs;
+		die->dirName = xstrdup(fns->DN[dirNum]);
+		die->dirNameLen = strlen(die->dirName);
+		die->files = NULL;
+		die->numFiles = 0;
 		al->numDirs++;
 	    }
 	}
 
-	alp->fns->DN = hfd(alp->fns->DN, alp->fns->DNt);
+#ifdef	DYING
+	fns->DN = hfd(fns->DN, fns->DNt);
+#endif
 
-	for (first = 0; first < alp->fns->Count; first = last + 1) {
-	    if (alp->fns->DI == NULL)	/* XXX can't happen */
+	last = 0;
+	for (first = 0; first < fns->Count; first = last + 1) {
+	    fileIndexEntry fie;
+
+	    if (fns->DI == NULL)	/* XXX can't happen */
 		continue;
 
-	    for (last = first; (last + 1) < alp->fns->Count; last++) {
-		if (alp->fns->DI[first] != alp->fns->DI[last + 1])
+	    for (last = first; (last + 1) < fns->Count; last++) {
+		if (fns->DI[first] != fns->DI[last + 1])
 		    /*@innerbreak@*/ break;
 	    }
 
-	    dirMatch = al->dirs + dirMapping[alp->fns->DI[first]];
-	    dirMatch->files = xrealloc(dirMatch->files,
-		    (dirMatch->numFiles + last - first + 1) *
-			sizeof(*dirMatch->files));
+	    die = al->dirs + dirMapping[fns->DI[first]];
+	    die->files = xrealloc(die->files,
+		    (die->numFiles + last - first + 1) *
+			sizeof(*die->files));
 
-	    for (alp->fns->i = first; alp->fns->i <= last; alp->fns->i++) {
-		if (alp->fns->BN == NULL)	/* XXX can't happen */
+	    fie = die->files + die->numFiles;
+	    for (fns->i = first; fns->i <= last; fns->i++) {
+		if (fns->BN == NULL)	/* XXX can't happen */
 		    /*@innercontinue@*/ continue;
-		if (alp->fns->Flags == NULL)	/* XXX can't happen */
+		if (fns->Flags == NULL)	/* XXX can't happen */
 		    /*@innercontinue@*/ continue;
 		/*@-assignexpose@*/
-		dirMatch->files[dirMatch->numFiles].baseName =
-		    alp->fns->BN[alp->fns->i];
+		fie->baseName = fns->BN[fns->i];
+		fie->baseNameLen = strlen(fns->BN[fns->i]);
 		/*@=assignexpose@*/
-		dirMatch->files[dirMatch->numFiles].pkgNum = pkgNum;
-		dirMatch->files[dirMatch->numFiles].fileFlags =
-				alp->fns->Flags[alp->fns->i];
-		dirMatch->numFiles++;
+		fie->pkgNum = pkgNum;
+		fie->fileFlags = fns->Flags[fns->i];
+		die->numFiles++;
+		fie++;
 	    }
+	    qsort(die->files, die->numFiles, sizeof(*die->files), fieCompare);
 	}
 
-	/* XXX should we realloc to smaller size? */
-	if (origNumDirs + al->numDirs)
-	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dirInfoCompare);
+	/* XXX should we realloc al->dirs to actual size? */
+
+	/* If any directories were added, resort the directory list. */
+	if (origNumDirs != al->numDirs)
+	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dieCompare);
 
     }
 
@@ -597,24 +623,67 @@ assert(((alNum)(alp - al->list)) == pkgNum);
  * @param two		2nd available index entry
  * @return		result of comparison
  */
-static int indexcmp(const void * one, const void * two)		/*@*/
+static int indexcmp(const void * one, const void * two)
+	/*@*/
 {
     /*@-castexpose@*/
     const availableIndexEntry a = (const availableIndexEntry) one;
     const availableIndexEntry b = (const availableIndexEntry) two;
     /*@=castexpose@*/
-    int lenchk = a->entryLen - b->entryLen;
+    int lenchk;
 
+    lenchk = a->entryLen - b->entryLen;
     if (lenchk)
 	return lenchk;
 
     return strcmp(a->entry, b->entry);
 }
 
+void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
+{
+    availableIndex ai = &al->index;
+    int i = alKey2Num(al, pkgKey);
+
+    if (provides == NULL || i < 0 || i >= al->size)
+	return;
+    if (ai->index == NULL || ai->k < 0 || ai->k >= ai->size)
+	return;
+
+    if (dsiInit(provides) != NULL)
+    while (dsiNext(provides) >= 0) {
+	const char * Name;
+
+#ifdef	DYING	/* XXX FIXME: multilib colored dependency search */
+	const int_32 Flags = dsiGetFlags(provides);
+
+	/* If multilib install, skip non-multilib provides. */
+	if (al->list[i].multiLib && !isDependsMULTILIB(Flags)) {
+	    ai->size--;
+	    /*@innercontinue@*/ continue;
+	}
+#endif
+
+	if ((Name = dsiGetN(provides)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	/*@-assignexpose@*/
+	/*@-temptrans@*/
+	ai->index[ai->k].pkgKey = pkgKey;
+	/*@=temptrans@*/
+	ai->index[ai->k].entry = Name;
+	/*@=assignexpose@*/
+	ai->index[ai->k].entryLen = strlen(Name);
+assert(provides->i < 0x10000);
+	ai->index[ai->k].entryIx = provides->i;
+	ai->index[ai->k].type = IET_PROVIDES;
+	ai->k++;
+    }
+}
+
 void alMakeIndex(availableList al)
 {
     availableIndex ai = &al->index;
-    int i, j, k;
+    int i;
 
     if (ai->size || al->list == NULL) return;
 
@@ -624,30 +693,10 @@ void alMakeIndex(availableList al)
 
     if (ai->size) {
 	ai->index = xcalloc(ai->size, sizeof(*ai->index));
+	ai->k = 0;
 
-	k = 0;
-	for (i = 0; i < al->size; i++) {
-	    if (al->list[i].provides != NULL)
-	    for (j = 0; j < al->list[i].provides->Count; j++) {
-
-#ifdef	NOTNOW	/* XXX FIXME: multilib colored dependency search */
-		/* If multilib install, skip non-multilib provides. */
-		if (al->list[i].multiLib &&
-		    !isDependsMULTILIB(al->list[i].provides->Flags[j])) {
-			ai->size--;
-			/*@innercontinue@*/ continue;
-		}
-#endif
-
-		ai->index[k].package = al->list + i;
-		/*@-assignexpose@*/
-		ai->index[k].entry = al->list[i].provides->N[j];
-		/*@=assignexpose@*/
-		ai->index[k].entryLen = strlen(al->list[i].provides->N[j]);
-		ai->index[k].type = IET_PROVIDES;
-		k++;
-	    }
-	}
+	for (i = 0; i < al->size; i++)
+	    alAddProvides(al, (alKey)i, al->list[i].provides);
 
 	qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
     }
@@ -655,12 +704,15 @@ void alMakeIndex(availableList al)
 
 alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
 {
-    int i, found = 0;
+    int found = 0;
     const char * dirName;
     const char * baseName;
-    dirInfo dirNeedle =
-		memset(alloca(sizeof(*dirNeedle)), 0, sizeof(*dirNeedle));
-    dirInfo dirMatch;
+    dirInfo dieNeedle =
+		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
+    dirInfo die;
+    fileIndexEntry fieNeedle =
+		memset(alloca(sizeof(*fieNeedle)), 0, sizeof(*fieNeedle));
+    fileIndexEntry fie;
     alKey * ret = NULL;
     const char * fileName;
 
@@ -679,50 +731,50 @@ alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	}
     }
 
-    dirNeedle->dirName = (char *) dirName;
-    dirNeedle->dirNameLen = strlen(dirName);
-    dirMatch = bsearch(dirNeedle, al->dirs, al->numDirs,
-		       sizeof(*dirNeedle), dirInfoCompare);
-    if (dirMatch == NULL)
+    dieNeedle->dirName = (char *) dirName;
+    dieNeedle->dirNameLen = strlen(dirName);
+    die = bsearch(dieNeedle, al->dirs, al->numDirs,
+		       sizeof(*dieNeedle), dieCompare);
+    if (die == NULL)
 	goto exit;
 
     /* rewind to the first match */
-    while (dirMatch > al->dirs && dirInfoCompare(dirMatch-1, dirNeedle) == 0)
-	dirMatch--;
+    while (die > al->dirs && dieCompare(die-1, dieNeedle) == 0)
+	die--;
 
     if ((baseName = strrchr(fileName, '/')) == NULL)
 	goto exit;
     baseName++;
 
+    /*@-branchstate@*/ /* FIX: ret is a problem */
     for (found = 0, ret = NULL;
-	 dirMatch <= al->dirs + al->numDirs &&
-		dirInfoCompare(dirMatch, dirNeedle) == 0;
-	 dirMatch++)
+	 die <= al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
+	 die++)
     {
-	/* XXX FIXME: these file lists should be sorted and bsearched */
-	for (i = 0; i < dirMatch->numFiles; i++) {
-	    if (dirMatch->files[i].baseName == NULL ||
-			strcmp(dirMatch->files[i].baseName, baseName))
-		/*@innercontinue@*/ continue;
 
-#ifdef	NOTNOW	/* XXX FIXME: multilib colored dependency search */
-	    /*
-	     * If a file dependency would be satisfied by a file
-	     * we are not going to install, skip it.
-	     */
-	    if (al->list[dirMatch->files[i].pkgNum].multiLib &&
-			!isFileMULTILIB(dirMatch->files[i].fileFlags))
-	        /*@innercontinue@*/ continue;
+	fieNeedle->baseName = baseName;
+	fieNeedle->baseNameLen = strlen(fieNeedle->baseName);
+	fie = bsearch(fieNeedle, die->files, die->numFiles,
+		       sizeof(*fieNeedle), fieCompare);
+	if (fie == NULL)
+	    continue;	/* XXX shouldn't happen */
+
+#ifdef	DYING	/* XXX FIXME: multilib colored dependency search */
+	/*
+	 * If a file dependency would be satisfied by a file
+	 * we are not going to install, skip it.
+	 */
+	if (al->list[fie->pkgNum].multiLib && !isFileMULTILIB(fie->fileFlags))
+	    continue;
 #endif
 
-	    dsiNotify(ds, _("(added files)"), 0);
+	dsiNotify(ds, _("(added files)"), 0);
 
-	    ret = xrealloc(ret, (found+2) * sizeof(*ret));
-	    if (ret)	/* can't happen */
-		ret[found++] = alNum2Key(al, dirMatch->files[i].pkgNum);
-	    /*@innerbreak@*/ break;
-	}
+	ret = xrealloc(ret, (found+2) * sizeof(*ret));
+	if (ret)	/* can't happen */
+	    ret[found++] = alNum2Key(al, fie->pkgNum);
     }
+    /*@=branchstate@*/
 
 exit:
     dirName = _free(dirName);
@@ -758,6 +810,7 @@ alFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
 alKey *
 alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
 {
+    availableIndex ai = &al->index;
     availableIndexEntry needle =
 		memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
     availableIndexEntry match;
@@ -776,49 +829,44 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	    return ret;
     }
 
-    if (!al->index.size || al->index.index == NULL) return NULL;
+    if (ai->index == NULL || ai->size <= 0)
+	return NULL;
 
-    /*@-assignexpose@*/
-    /*@-temptrans@*/
+    /*@-assignexpose -temptrans@*/
     needle->entry = KName;
-    /*@=temptrans@*/
-    needle->entryLen = strlen(KName);
-    match = bsearch(needle, al->index.index, al->index.size,
-		    sizeof(*al->index.index), indexcmp);
-    /*@=assignexpose@*/
+    /*@=assignexpose =temptrans@*/
+    needle->entryLen = strlen(needle->entry);
 
-    if (match == NULL) return NULL;
+    match = bsearch(needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
+    if (match == NULL)
+	return NULL;
 
     /* rewind to the first match */
-    while (match > al->index.index && indexcmp(match-1, needle) == 0)
+    while (match > ai->index && indexcmp(match-1, needle) == 0)
 	match--;
 
     for (ret = NULL, found = 0;
-	 match <= al->index.index + al->index.size &&
-		indexcmp(match, needle) == 0;
+	 match <= ai->index + ai->size && indexcmp(match, needle) == 0;
 	 match++)
     {
-	alp = match->package;
+	/*@-nullptrarith@*/
+	alp = al->list + alKey2Num(al, match->pkgKey);
+	/*@=nullptrarith@*/
+
 	rc = 0;
+	if (alp->provides != NULL)	/* XXX can't happen */
 	switch (match->type) {
 	case IET_PROVIDES:
-	    if (alp->provides != NULL)
-	    for (dsiInit(alp->provides) != NULL; dsiNext(alp->provides) >= 0;) {
-		const char * PName;
+	    alp->provides->i = match->entryIx;
 
-		if ((PName = dsiGetN(alp->provides)) == NULL)
-		    /*@innercontinue@*/ continue;
-
-		/* Filter out provides that came along for the ride. */
-		if (strcmp(PName, KName))
-		    /*@innercontinue@*/ continue;
-
+	    /* XXX single step on dsiNext to regenerate DNEVR string */
+	    alp->provides->i--;
+	    if (dsiNext(alp->provides) >= 0)
 		rc = dsCompare(alp->provides, ds);
-		if (rc)
-		    /*@innerbreak@*/ break;
-	    }
+
 	    if (rc)
 		dsiNotify(ds, _("(added provide)"), 0);
+
 	    /*@switchbreak@*/ break;
 	}
 

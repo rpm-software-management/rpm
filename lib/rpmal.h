@@ -133,6 +133,18 @@ alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey, Header h)
 	/*@modifies al, h @*/;
 
 /**
+ * Add package provides to available list index.
+ * @param al		available list
+ * @param pkgKey	package key
+ * @param provides	added package provides
+ */
+/*@-exportlocal@*/
+void alAddProvides(availableList al, /*@null@*/ alKey pkgKey,
+		/*@null@*/ rpmDepSet provides)
+	/*@modifies al, provides @*/;
+/*@=exportlocal@*/
+
+/**
  * Generate index for available list.
  * @param al		available list
  */
@@ -149,7 +161,7 @@ void alMakeIndex(availableList al)
 /*@only@*/ /*@null@*/
 alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@modifies al, fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
@@ -161,7 +173,7 @@ alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
 /*@only@*/ /*@null@*/
 alKey * alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@modifies al, fileSystem @*/;
 
 /**
  * Check added package file lists for first package that has a provide.
@@ -172,7 +184,7 @@ alKey * alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
  */
 alKey alSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@modifies al, fileSystem @*/;
 
 #ifdef __cplusplus
 }

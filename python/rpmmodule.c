@@ -457,6 +457,14 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
 
     h = headerLink(s->h, "rhnUnload h");
 
+    /* Retrofit a RHNPlatform: tag. */
+    if (!headerIsEntry(h, RPMTAG_RHNPLATFORM)) {
+	const char * arch;
+	int_32 at;
+	if (headerGetEntry(h, RPMTAG_ARCH, &at, (void **)&arch, NULL))
+	    headerAddEntry(h, RPMTAG_RHNPLATFORM, at, arch, 1);
+    }
+
     /* Legacy headers are forced into immutable region. */
     if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
@@ -1913,6 +1921,14 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
 	PyErr_SetString(pyrpmError, "bad header, digest check failed");
 	headerFree(hdr, "rhnLoad hdr #3");
 	return NULL;
+    }
+
+    /* Retrofit a RHNPlatform: tag. */
+    if (!headerIsEntry(hdr, RPMTAG_RHNPLATFORM)) {
+	const char * arch;
+	int_32 at;
+	if (headerGetEntry(hdr, RPMTAG_ARCH, &at, (void **)&arch, NULL))
+	    headerAddEntry(hdr, RPMTAG_RHNPLATFORM, at, arch, 1);
     }
 
     h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);

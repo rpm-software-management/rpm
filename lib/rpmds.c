@@ -112,7 +112,7 @@ rpmDepSet dsFree(rpmDepSet ds)
 
 /*@-modfilesystem@*/
 if (_ds_debug)
-fprintf(stderr, "*** ds %p -- %s[%d]\n", ds, ds->Type, ds->Count);
+fprintf(stderr, "*** ds %p --\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
 
@@ -163,6 +163,9 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
     rpmTag tagEVR, tagF;
     rpmDepSet ds = NULL;
     const char * Type;
+    const char ** N;
+    rpmTagType Nt;
+    int_32 Count;
 
     if (tagN == RPMTAG_PROVIDENAME) {
 	Type = "Provides";
@@ -191,31 +194,37 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
     } else
 	goto exit;
 
-    ds = xcalloc(1, sizeof(*ds));
-    ds->i = -1;
-
-    ds->Type = Type;
-    ds->DNEVR = NULL;
-
-    ds->tagN = tagN;
-    ds->h = (scareMem ? headerLink(h, "dsNew") : NULL);
-    if (hge(h, tagN, &ds->Nt, (void **) &ds->N, &ds->Count)) {
+    /*@-branchstate@*/
+    if (hge(h, tagN, &Nt, (void **) &N, &Count)
+     && N != NULL && Count > 0)
+    {
 	int xx;
+
+	ds = xcalloc(1, sizeof(*ds));
+	ds->h = (scareMem ? headerLink(h, "dsNew") : NULL);
+	ds->i = -1;
+	ds->Type = Type;
+	ds->DNEVR = NULL;
+	ds->tagN = tagN;
+	ds->N = N;
+	ds->Nt = Nt;
+	ds->Count = Count;
+
 	xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
 	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
-    } else
-	ds->h = headerFree(ds->h, "dsNew");
-
-exit:
 
 /*@-modfilesystem@*/
 if (_ds_debug)
-fprintf(stderr, "*** ds %p ++ %s[%d]\n", ds, ds->Type, ds->Count);
+fprintf(stderr, "*** ds %p ++\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
+    }
+    /*@=branchstate@*/
+
+exit:
     /*@-nullret@*/ /* FIX: ds->Flags may be NULL. */
     return ds;
     /*@=nullret@*/
@@ -340,7 +349,7 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
 
 /*@-modfilesystem -nullderef -nullpass @*/
 if (_ds_debug && i != -1)
-fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, (ds && ds->Type ? ds->Type : "?Type?"), (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
+fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds && ds->Type ? ds->Type : "?Type?"), i, (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
 /*@=modfilesystem =nullderef =nullpass @*/
 
     return i;

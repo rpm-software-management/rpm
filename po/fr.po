@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-04 22:42-0500\n"
+"POT-Creation-Date: 2001-11-06 17:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -641,93 +641,93 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1277
+#: build/files.c:1289
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1483
+#: build/files.c:1495
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1507
+#: build/files.c:1519
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1550 build/files.c:2162 build/parsePrep.c:50
+#: build/files.c:1562 build/files.c:2174 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1562
+#: build/files.c:1574
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1666
+#: build/files.c:1678
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/files.c:1689
+#: build/files.c:1701
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1704
+#: build/files.c:1716
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1766
+#: build/files.c:1778
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1777 build/pack.c:146
+#: build/files.c:1789 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2162
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2224
+#: build/files.c:2236
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2229
+#: build/files.c:2241
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2313
+#: build/files.c:2325
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "La construction a chou.\n"
 
-#: build/files.c:2317
+#: build/files.c:2329
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2453
+#: build/files.c:2465
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2479 build/files.c:2493
+#: build/files.c:2491 build/files.c:2505
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2614
+#: build/files.c:2626
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -985,123 +985,123 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:233
+#: build/parsePreamble.c:234
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:238
+#: build/parsePreamble.c:239
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:244
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:248
+#: build/parsePreamble.c:249
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:270
+#: build/parsePreamble.c:271
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:298
+#: build/parsePreamble.c:299
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:358
+#: build/parsePreamble.c:359
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:376
+#: build/parsePreamble.c:377
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:389
+#: build/parsePreamble.c:390
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:433
+#: build/parsePreamble.c:434
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:474
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:481
+#: build/parsePreamble.c:482
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:503 build/parsePreamble.c:510
+#: build/parsePreamble.c:505 build/parsePreamble.c:512
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:571 build/parseSpec.c:408
+#: build/parsePreamble.c:573 build/parseSpec.c:408
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:584
+#: build/parsePreamble.c:586
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/parsePreamble.c:596
+#: build/parsePreamble.c:598
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/parsePreamble.c:608
+#: build/parsePreamble.c:610
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:648 build/parsePreamble.c:659
+#: build/parsePreamble.c:650 build/parsePreamble.c:661
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:685
+#: build/parsePreamble.c:687
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:696
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:849
+#: build/parsePreamble.c:852
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Options de spcification de package:"
 
-#: build/parsePreamble.c:855
+#: build/parsePreamble.c:858
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:885
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:907
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -1256,7 +1256,7 @@ msgstr ""
 msgid "No compatible architectures found for build\n"
 msgstr "%s ne peut tre construit sur cette architecture\n"
 
-#: build/parseSpec.c:584
+#: build/parseSpec.c:585
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
@@ -1542,44 +1542,44 @@ msgstr "aucun package n'a t spcifi pour l'installation"
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1114
+#: lib/depends.c:1103
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. Record all relations.
-#: lib/depends.c:1366
+#: lib/depends.c:1345
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1440
+#: lib/depends.c:1419
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1515
+#: lib/depends.c:1494
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1576
+#: lib/depends.c:1555
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1611
+#: lib/depends.c:1590
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1616
+#: lib/depends.c:1595
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1777,7 +1777,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:506
+#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:511
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -1787,12 +1787,12 @@ msgstr ""
 msgid "%s: bad magic\n"
 msgstr ""
 
-#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:522
+#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:527
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:527
+#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:532
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
@@ -1802,7 +1802,7 @@ msgstr ""
 msgid "%s: headerRead failed\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:450
+#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:455
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -2551,12 +2551,12 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/rpmal.c:677
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added files)"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmal.c:780
+#: lib/rpmal.c:868
 msgid "(added provide)"
 msgstr ""
 
@@ -2585,60 +2585,60 @@ msgstr ""
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:213
+#: lib/rpmchecksig.c:218
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:219
+#: lib/rpmchecksig.c:224
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:512
+#: lib/rpmchecksig.c:517
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:707
+#: lib/rpmchecksig.c:712
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:708 lib/rpmchecksig.c:722
+#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:710 lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:715 lib/rpmchecksig.c:729
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:718 lib/rpmchecksig.c:732
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:721
+#: lib/rpmchecksig.c:726
 msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:354
+#: lib/rpmds.c:451
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:383
+#: lib/rpmds.c:480
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:409
+#: lib/rpmds.c:506
 #, fuzzy, c-format
 msgid "package %s-%s-%s has unsatisfied %s: %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"

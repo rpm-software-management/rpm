@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-04 22:42-0500\n"
+"POT-Creation-Date: 2001-11-06 17:01-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -607,93 +607,93 @@ msgstr "Özel %%doc ile diðer formlar karýþtýrýlamaz: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1277
+#: build/files.c:1289
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1483
+#: build/files.c:1495
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1507
+#: build/files.c:1519
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1550 build/files.c:2162 build/parsePrep.c:50
+#: build/files.c:1562 build/files.c:2174 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:1562
+#: build/files.c:1574
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Dosya %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1666
+#: build/files.c:1678
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:1689
+#: build/files.c:1701
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1704
+#: build/files.c:1716
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 
-#: build/files.c:1766
+#: build/files.c:1778
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1777 build/pack.c:146
+#: build/files.c:1789 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2162
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2224
+#: build/files.c:2236
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: build/files.c:2229
+#: build/files.c:2241
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s ayrýlamadý: %s\n"
 
-#: build/files.c:2313
+#: build/files.c:2325
 #, c-format
 msgid "%s failed\n"
 msgstr "%s baþarýsýz\n"
 
-#: build/files.c:2317
+#: build/files.c:2329
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "tüm veri %s içine yazýlamadý\n"
 
-#: build/files.c:2453
+#: build/files.c:2465
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s aranýyor: (%s kullanarak)...\n"
 
-#: build/files.c:2479 build/files.c:2493
+#: build/files.c:2491 build/files.c:2505
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadý:\n"
 
-#: build/files.c:2614
+#: build/files.c:2626
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"
@@ -951,123 +951,123 @@ msgstr "satýr %d: %%files ayrýþtýrýlýrken hata: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "satýr %d: Ýkinci %%files listesi\n"
 
-#: build/parsePreamble.c:233
+#: build/parsePreamble.c:234
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Mimari dýþlandý: %s\n"
 
-#: build/parsePreamble.c:238
+#: build/parsePreamble.c:239
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Mimari içerilmedi: %s\n"
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:244
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS dýþlandý: %s\n"
 
-#: build/parsePreamble.c:248
+#: build/parsePreamble.c:249
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS içerilmedi: %s\n"
 
-#: build/parsePreamble.c:270
+#: build/parsePreamble.c:271
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Pakette %s alan mevcut olmalý: %s\n"
 
-#: build/parsePreamble.c:298
+#: build/parsePreamble.c:299
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Pakette %s girdi tekrarlanmýþ: %s\n"
 
-#: build/parsePreamble.c:358
+#: build/parsePreamble.c:359
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s kýsayol simgesi açýlamadý: %s\n"
 
-#: build/parsePreamble.c:376
+#: build/parsePreamble.c:377
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s kýsayol simgesi okunamadý: %s\n"
 
-#: build/parsePreamble.c:389
+#: build/parsePreamble.c:390
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "bilinmeyen kýsayol simgesi türü: %s\n"
 
-#: build/parsePreamble.c:433
+#: build/parsePreamble.c:434
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "satýr %d: Etiket sadece tek dizgecik alýr: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:474
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "satýr %d: Etiket bozuk: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:481
+#: build/parsePreamble.c:482
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "satýr %d: Etiket boþ: %s\n"
 
-#: build/parsePreamble.c:503 build/parsePreamble.c:510
+#: build/parsePreamble.c:505 build/parsePreamble.c:512
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:571 build/parseSpec.c:408
+#: build/parsePreamble.c:573 build/parseSpec.c:408
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
 
-#: build/parsePreamble.c:584
+#: build/parsePreamble.c:586
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "satýr %d: Önekler \"/\" ile bitemez: %s\n"
 
-#: build/parsePreamble.c:596
+#: build/parsePreamble.c:598
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "satýr %d: Docdir '/' ile baþlamalý: %s\n"
 
-#: build/parsePreamble.c:608
+#: build/parsePreamble.c:610
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "satýr %d: Epoch/Serial alaný bir sayý olmalý: %s\n"
 
-#: build/parsePreamble.c:648 build/parsePreamble.c:659
+#: build/parsePreamble.c:650 build/parsePreamble.c:661
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "satýr %d: %s hatalý: niteleyiciler: %s\n"
 
-#: build/parsePreamble.c:685
+#: build/parsePreamble.c:687
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "satýr %d: BuildArchitecture biçimi hatalý: %s\n"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:696
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Ýçsel hata: %d etiketi sahte\n"
 
-#: build/parsePreamble.c:849
+#: build/parsePreamble.c:852
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Paket özellikleri hatalý: %s\n"
 
-#: build/parsePreamble.c:855
+#: build/parsePreamble.c:858
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket zaten var: %s\n"
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:885
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "satýr %d: Bilinmeyen etiket: %s\n"
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:907
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec dosyasý BuildRoot kullanamaz\n"
 
@@ -1223,7 +1223,7 @@ msgstr "%%include deyimi bozuk\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:584
+#: build/parseSpec.c:585
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1500,45 +1500,45 @@ msgstr "paket yok\n"
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/depends.c:762 lib/rpmds.c:229 lib/rpmds.c:384
+#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
 msgid "YES"
 msgstr "EVET"
 
-#: lib/depends.c:1114
+#: lib/depends.c:1103
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1366
+#: lib/depends.c:1345
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1440
+#: lib/depends.c:1419
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1515
+#: lib/depends.c:1494
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1576
+#: lib/depends.c:1555
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1611
+#: lib/depends.c:1590
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1616
+#: lib/depends.c:1595
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1739,7 +1739,7 @@ msgstr ""
 "RPM'nin bu sürümünde sadece ilk sürüm rakamý <= 4 olan paketler "
 "destekleniyor\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:506
+#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:511
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead baþarýsýz\n"
@@ -1749,12 +1749,12 @@ msgstr "%s: readLead baþarýsýz\n"
 msgid "%s: bad magic\n"
 msgstr "Magic hatalý"
 
-#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:522
+#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:527
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature baþarýsýz\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:527
+#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:532
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ýmza bulundurmuyor\n"
@@ -1764,7 +1764,7 @@ msgstr "%s: Ýmza bulundurmuyor\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead baþarýsýz\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:450
+#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:455
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread baþarýsýz: %s\n"
@@ -2463,12 +2463,12 @@ msgstr "%u. kayýt okunamadý\n"
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu deðil\n"
 
-#: lib/rpmal.c:677
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/rpmal.c:780
+#: lib/rpmal.c:868
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
@@ -2497,47 +2497,47 @@ msgstr "%s: v1.0 RPM (eski sürüm) imzalanamaz\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 RPM (eski sürüm) yeniden imzalanamaz\n"
 
-#: lib/rpmchecksig.c:213
+#: lib/rpmchecksig.c:218
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead baþarýsýz: %s\n"
 
-#: lib/rpmchecksig.c:219
+#: lib/rpmchecksig.c:224
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature baþarýsýz: %s\n"
 
-#: lib/rpmchecksig.c:512
+#: lib/rpmchecksig.c:517
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:707
+#: lib/rpmchecksig.c:712
 msgid "NOT OK"
 msgstr "TAMAM DEÐÝL"
 
-#: lib/rpmchecksig.c:708 lib/rpmchecksig.c:722
+#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
 msgid " (MISSING KEYS:"
 msgstr " (EKSÝK ANAHTARLAR:"
 
-#: lib/rpmchecksig.c:710 lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:715 lib/rpmchecksig.c:729
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
 msgid " (UNTRUSTED KEYS:"
 msgstr " (GÜVENCESÝZ ANAHTARLAR:"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:718 lib/rpmchecksig.c:732
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:721
+#: lib/rpmchecksig.c:726
 msgid "OK"
 msgstr "Tamam"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:354
+#: lib/rpmds.c:451
 #, fuzzy, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2546,13 +2546,13 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:383
+#: lib/rpmds.c:480
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:409
+#: lib/rpmds.c:506
 #, fuzzy, c-format
 msgid "package %s-%s-%s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"

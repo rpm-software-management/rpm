@@ -8,7 +8,7 @@
 
 /**
  */
-typedef struct hashTable_s * hashTable;
+typedef /*@abstract@*/ struct hashTable_s * hashTable;
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,8 +26,8 @@ typedef int (*hashEqualityType) (const void * key1, const void * key2)
 
 /**
  * Return hash value of a string
- * @param string  string on which to calculate hash value
- * @return hash value
+ * @param string	string on which to calculate hash value
+ * @return		hash value
  */
 unsigned int hashFunctionString(const void * string)
 	/*@*/;
@@ -36,7 +36,7 @@ unsigned int hashFunctionString(const void * string)
  * Compare two hash table entries for equality.
  * @param key1          entry 1
  * @param key2          entry 2
- * @return 0 if entries are equal
+ * @return		0 if entries are equal
  */
 int hashEqualityString(const void * key1, const void * key2)
 	/*@*/;
@@ -47,10 +47,10 @@ int hashEqualityString(const void * key1, const void * key2)
  * memory, but may be useful anyway.
  * @param numBuckets    number of hash buckets
  * @param keySize       size of key (0 if unknown)
- * @param freeData      should data be freed when table is destroyed?
+ * @param freeData      Should data be freed when table is destroyed?
  * @param fn            function to generate hash value for key
  * @param eq            function to compare hash keys for equality
- * @return pointer to initialized hash table
+ * @return		pointer to initialized hash table
  */
 hashTable htCreate(int numBuckets, int keySize, int freeData,
 		hashFunctionType fn, hashEqualityType eq)
@@ -80,7 +80,7 @@ void htAddEntry(hashTable ht, /*@owned@*/ const void * key,
  * @retval data         address to store data value from bucket
  * @retval dataCount    address to store data value size from bucket
  * @retval tableKey     address to store key value from bucket (may be NULL)
- * @return 0 on success, 1 if the item is not found.
+ * @return		0 on success, 1 if the item is not found.
  */
 int htGetEntry(hashTable ht, const void * key,
 		/*@null@*/ /*@out@*/ const void *** data,
@@ -92,7 +92,7 @@ int htGetEntry(hashTable ht, const void * key,
  * Check for key in hash table.
  * @param ht            pointer to hash table
  * @param key           pointer to key value
- * @return 1 if the key is present, 0 otherwise
+ * @return		1 if the key is present, 0 otherwise
  */
 /*@unused@*/
 int htHasEntry(hashTable ht, const void * key)

@@ -1217,8 +1217,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 			       &(flp->uname), 1);
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->gname), 1);
+      if (sizeof(flp->fl_mtime) != sizeof(uint_32)) {
+	uint_32 mtime = (uint_32)flp->fl_mtime;
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
+			       &(mtime), 1);
+      } else {
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(flp->fl_mtime), 1);
+      }
       if (sizeof(flp->fl_mode) != sizeof(uint_16)) {
 	uint_16 pmode = (uint_16)flp->fl_mode;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
@@ -1243,9 +1249,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(flp->fl_dev), 1);
       }
-/*@=sizeoftype@*/
+      if (sizeof(flp->fl_ino) != sizeof(uint_32)) {
+	uint_32 ino = (uint_32)flp->fl_ino;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-			       &(flp->fl_ino), 1);
+				&(ino), 1);
+      } else {
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
+				&(flp->fl_ino), 1);
+      }
+/*@=sizeoftype@*/
 
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
 			       &(flp->langs),  1);

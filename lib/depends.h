@@ -77,7 +77,9 @@ struct transactionElement_s {
 
     int npreds;				/*!< No. of predecessors. */
     int depth;				/*!< Max. depth in dependency tree. */
-    struct tsortInfo_s tsi;
+/*@owned@*/
+    tsortInfo tsi;			/*!< Ordering info. */
+
     enum rpmTransactionType {
 	TR_ADDED,	/*!< Package will be installed. */
 	TR_REMOVED	/*!< Package will be removed. */

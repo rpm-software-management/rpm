@@ -45,6 +45,8 @@
 	- depends.h: hack around teIterator() et al from include for now.
 	- rpmds: move trigger dependencies into a rpmDepSet as well.
 	- rpmal: availablePackage is totally opaque, alKey with index replaces.
+	- linear search on added package provides is dumb.
+	- discarding entire signature header when using --addsign is dumb.
 
 4.0.3 -> 4.0.4:
 
@@ -285,6 +287,10 @@
 	- popt: clarify X consortium license in popt.3 man page.
 	- close/discard Depends index after rpmdepCheck() use.
 	- lclint-3.0.0.15 fiddles.
+	- fix: harmless typo in db3 chroot hack.
+	- fix: big-endian's with sizeof(time_t) != sizeof(int_32) mtime broken.
+	- fix: add Korean message catalogs (#54473).
+	- add RPHNPLATFORM and PLATFORM tags.
 
 4.0 -> 4.0.[12]
 	- fix: avoid calling getpass twice as side effect of xstrdup macro

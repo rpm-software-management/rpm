@@ -1018,13 +1018,13 @@ static void markLoop(/*@special@*/ tsortInfo tsi, transactionElement q)
     /*@-branchstate@*/ /* FIX: q is kept */
     while (tsi != NULL && (p = tsi->tsi_suc) != NULL) {
 	tsi = tsi->tsi_next;
-	if (p->tsi.tsi_chain != NULL)
+	if (p->tsi->tsi_chain != NULL)
 	    continue;
 	/*@-assignexpose -temptrans@*/
-	p->tsi.tsi_chain = q;
+	p->tsi->tsi_chain = q;
 	/*@=assignexpose =temptrans@*/
-	if (p->tsi.tsi_next != NULL)
-	    markLoop(p->tsi.tsi_next, p);
+	if (p->tsi->tsi_next != NULL)
+	    markLoop(p->tsi->tsi_next, p);
     }
     /*@=branchstate@*/
 }
@@ -1072,7 +1072,7 @@ zapRelation(transactionElement q, transactionElement p,
     tsortInfo tsi;
     const char *dp = NULL;
 
-    for (tsi_prev = &q->tsi, tsi = q->tsi.tsi_next;
+    for (tsi_prev = q->tsi, tsi = q->tsi->tsi_next;
 	 tsi != NULL;
 	/* XXX Note: the loop traverses "not found", break on "found". */
 	/*@-nullderef@*/
@@ -1102,7 +1102,7 @@ zapRelation(transactionElement q, transactionElement p,
 	    rpmMessage(RPMMESS_DEBUG,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(p->NEVR ?  p->NEVR : "???"), dp);
-	    p->tsi.tsi_count--;
+	    p->tsi->tsi_count--;
 	    if (tsi_prev) tsi_prev->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
 	    tsi->tsi_suc = NULL;
@@ -1201,13 +1201,13 @@ fprintf(stderr, "addRelation: selected[%d] = 1\n", i);
 /*@=nullpass@*/
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-    p->tsi.tsi_count++;			/* bump p predecessor count */
+    p->tsi->tsi_count++;			/* bump p predecessor count */
     if (p->depth <= q->depth)		/* Save max. depth in dependency tree */
 	p->depth = q->depth + 1;
 /*@-nullpass@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: p %p(%s) depth %d", p, p->name, p->depth);
-prtTSI(NULL, &p->tsi);
+prtTSI(NULL, p->tsi);
 /*@=nullpass@*/
 
     tsi = xcalloc(1, sizeof(*tsi));
@@ -1219,21 +1219,21 @@ prtTSI(NULL, &p->tsi);
     tsi->tsi_reqx = requires->i;
     /*@=type@*/
 
-    tsi->tsi_next = q->tsi.tsi_next;
+    tsi->tsi_next = q->tsi->tsi_next;
 /*@-nullpass -compmempass@*/
 prtTSI("addRelation: new", tsi);
 if (_te_debug)
 fprintf(stderr, "addRelation: BEFORE q %p(%s)", q, q->name);
-prtTSI(NULL, &q->tsi);
+prtTSI(NULL, q->tsi);
 /*@=nullpass =compmempass@*/
 /*@-mods@*/
-    q->tsi.tsi_next = tsi;
-    q->tsi.tsi_qcnt++;			/* bump q successor count */
+    q->tsi->tsi_next = tsi;
+    q->tsi->tsi_qcnt++;			/* bump q successor count */
 /*@=mods@*/
 /*@-nullpass -compmempass@*/
 if (_te_debug)
 fprintf(stderr, "addRelation:  AFTER q %p(%s)", q, q->name);
-prtTSI(NULL, &q->tsi);
+prtTSI(NULL, q->tsi);
 /*@=nullpass =compmempass@*/
     return 0;
 }
@@ -1270,20 +1270,20 @@ static void addQ(transactionElement p,
 	(*rp) = (*qp) = p;
 	return;
     }
-    for (qprev = NULL, q = (*qp); q != NULL; qprev = q, q = q->tsi.tsi_suc) {
-	if (q->tsi.tsi_qcnt <= p->tsi.tsi_qcnt)
+    for (qprev = NULL, q = (*qp); q != NULL; qprev = q, q = q->tsi->tsi_suc) {
+	if (q->tsi->tsi_qcnt <= p->tsi->tsi_qcnt)
 	    break;
     }
     /*@-assignexpose@*/
     if (qprev == NULL) {	/* insert at beginning of list */
-	p->tsi.tsi_suc = q;
+	p->tsi->tsi_suc = q;
 	(*qp) = p;		/* new head */
     } else if (q == NULL) {	/* insert at end of list */
-	qprev->tsi.tsi_suc = p;
+	qprev->tsi->tsi_suc = p;
 	(*rp) = p;		/* new tail */
     } else {			/* insert between qprev and q */
-	p->tsi.tsi_suc = q;
-	qprev->tsi.tsi_suc = p;
+	p->tsi->tsi_suc = q;
+	qprev->tsi->tsi_suc = p;
     }
     /*@=assignexpose@*/
 }
@@ -1324,6 +1324,8 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
     /* XXX Only added packages are ordered (for now). */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
+	p->tsi = xcalloc(1, sizeof(*p->tsi));
+
 	/* Retrieve info from addedPackages. */
 	p->NEVR = alGetNVR(ts->addedPackages, p->u.addedKey);
 	p->name = alGetNVR(ts->addedPackages, p->u.addedKey);
@@ -1333,7 +1335,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 	if ((p->version = strrchr(p->name, '-')) != NULL)
 	    *p->version++ = '\0';
 /*@-modfilesystem@*/
-prtTSI(p->NEVR, &p->tsi);
+prtTSI(p->NEVR, p->tsi);
 /*@=modfilesystem@*/
 /*@=nullpass@*/
     }
@@ -1404,7 +1406,7 @@ prtTSI(p->NEVR, &p->tsi);
     /* XXX Only added packages are ordered (for now). */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
-	p->npreds = p->tsi.tsi_count;
+	p->npreds = p->tsi->tsi_count;
 /*@-modfilesystem -nullpass@*/
 if (_te_debug)
 fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, teGetOc(pi), p->NEVR, p->npreds);
@@ -1426,24 +1428,24 @@ rescan:
 
 	/* Prefer packages in chainsaw or presentation order. */
 	if (!chainsaw)
-	    p->tsi.tsi_qcnt = (ts->orderCount - teGetOc(pi));
+	    p->tsi->tsi_qcnt = (ts->orderCount - teGetOc(pi));
 
-	if (p->tsi.tsi_count != 0)
+	if (p->tsi->tsi_count != 0)
 	    continue;
-	p->tsi.tsi_suc = NULL;
+	p->tsi->tsi_suc = NULL;
 	addQ(p, &q, &r);
 	qlen++;
 /*@-modfilesystem -nullpass@*/
 if (_te_debug)
 fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, p->NEVR);
-prtTSI(" p", &p->tsi);
+prtTSI(" p", p->tsi);
 /*@=modfilesystem =nullpass@*/
     }
     pi = teFreeIterator(pi);
 
     /* T5. Output front of queue (T7. Remove from queue.) */
-    /*@-branchstate@*/ /* FIX: r->tsi.tsi_next released */
-    for (; q != NULL; q = q->tsi.tsi_suc) {
+    /*@-branchstate@*/ /* FIX: r->tsi->tsi_next released */
+    for (; q != NULL; q = q->tsi->tsi_suc) {
 
 	/* XXX Only added packages are ordered (for now). */
 	switch (q->type) {
@@ -1456,7 +1458,7 @@ prtTSI(" p", &p->tsi);
 	}
 
 	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%3d %*s %s\n",
-			orderingCount, q->npreds, q->tsi.tsi_qcnt, q->depth,
+			orderingCount, q->npreds, q->tsi->tsi_qcnt, q->depth,
 			(2 * q->depth), "",
 			(q->NEVR ? q->NEVR : "???"));
 	ordering[orderingCount] = q->u.addedKey;
@@ -1465,28 +1467,28 @@ prtTSI(" p", &p->tsi);
 	loopcheck--;
 
 	/* T6. Erase relations. */
-	tsi_next = q->tsi.tsi_next;
-	q->tsi.tsi_next = NULL;
+	tsi_next = q->tsi->tsi_next;
+	q->tsi->tsi_next = NULL;
 	while ((tsi = tsi_next) != NULL) {
 	    tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
 	    p = tsi->tsi_suc;
-	    if (p && (--p->tsi.tsi_count) <= 0) {
+	    if (p && (--p->tsi->tsi_count) <= 0) {
 		/* XXX TODO: add control bit. */
-		p->tsi.tsi_suc = NULL;
-		/*@-nullstate@*/	/* FIX: q->tsi.tsi_u.suc may be NULL */
-		addQ(p, &q->tsi.tsi_suc, &r);
+		p->tsi->tsi_suc = NULL;
+		/*@-nullstate@*/	/* FIX: q->tsi->tsi_u.suc may be NULL */
+		addQ(p, &q->tsi->tsi_suc, &r);
 		/*@=nullstate@*/
 		qlen++;
 /*@-modfilesystem -nullpass@*/
 if (_te_debug)
 fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, p->NEVR);
-prtTSI(" p", &p->tsi);
+prtTSI(" p", p->tsi);
 /*@=modfilesystem =nullpass@*/
 	    }
 	    tsi = _free(tsi);
 	}
-	if (!_printed && loopcheck == qlen && q->tsi.tsi_suc != NULL) {
+	if (!_printed && loopcheck == qlen && q->tsi->tsi_suc != NULL) {
 	    _printed++;
 	    rpmMessage(RPMMESS_DEBUG,
 		_("========== successors only (presentation order)\n"));
@@ -1503,11 +1505,11 @@ prtTSI(" p", &p->tsi);
 	qi = teInitIterator(ts);
 	/* XXX Only added packages are ordered (for now). */
 	while ((q = teNext(qi, TR_ADDED)) != NULL) {
-	    q->tsi.tsi_chain = NULL;
-	    q->tsi.tsi_reqx = 0;
+	    q->tsi->tsi_chain = NULL;
+	    q->tsi->tsi_reqx = 0;
 	    /* Mark packages already sorted. */
-	    if (q->tsi.tsi_count == 0)
-		q->tsi.tsi_count = -1;
+	    if (q->tsi->tsi_count == 0)
+		q->tsi->tsi_count = -1;
 	}
 	qi = teFreeIterator(qi);
 
@@ -1515,11 +1517,11 @@ prtTSI(" p", &p->tsi);
 	qi = teInitIterator(ts);
 	/* XXX Only added packages are ordered (for now). */
 	while ((q = teNext(qi, TR_ADDED)) != NULL) {
-	    if ((tsi = q->tsi.tsi_next) == NULL)
+	    if ((tsi = q->tsi->tsi_next) == NULL)
 		continue;
-	    q->tsi.tsi_next = NULL;
+	    q->tsi->tsi_next = NULL;
 	    markLoop(tsi, q);
-	    q->tsi.tsi_next = tsi;
+	    q->tsi->tsi_next = tsi;
 	}
 	qi = teFreeIterator(qi);
 
@@ -1534,20 +1536,20 @@ prtTSI(" p", &p->tsi);
 	    printed = 0;
 
 	    /* T12. Mark predecessor chain, looking for start of loop. */
-	    for (q = r->tsi.tsi_chain; q != NULL; q = q->tsi.tsi_chain) {
-		if (q->tsi.tsi_reqx)
+	    for (q = r->tsi->tsi_chain; q != NULL; q = q->tsi->tsi_chain) {
+		if (q->tsi->tsi_reqx)
 		    /*@innerbreak@*/ break;
-		q->tsi.tsi_reqx = 1;
+		q->tsi->tsi_reqx = 1;
 	    }
 
 	    /* T13. Print predecessor chain from start of loop. */
-	    while ((p = q) != NULL && (q = p->tsi.tsi_chain) != NULL) {
+	    while ((p = q) != NULL && (q = p->tsi->tsi_chain) != NULL) {
 		rpmDepSet requires;
 		const char * dp;
 		char buf[4096];
 
 		/* Unchain predecessor loop. */
-		p->tsi.tsi_chain = NULL;
+		p->tsi->tsi_chain = NULL;
 
 		if (!printed) {
 		    rpmMessage(RPMMESS_DEBUG, _("LOOP:\n"));
@@ -1570,13 +1572,13 @@ prtTSI(" p", &p->tsi);
 	    }
 
 	    /* Walk (and erase) linear part of predecessor chain as well. */
-	    for (p = r, q = r->tsi.tsi_chain;
+	    for (p = r, q = r->tsi->tsi_chain;
 		 q != NULL;
-		 p = q, q = q->tsi.tsi_chain)
+		 p = q, q = q->tsi->tsi_chain)
 	    {
 		/* Unchain linear part of predecessor loop. */
-		p->tsi.tsi_chain = NULL;
-		p->tsi.tsi_reqx = 0;
+		p->tsi->tsi_chain = NULL;
+		p->tsi->tsi_reqx = 0;
 	    }
 	}
 	/*@=branchstate@*/
@@ -1608,11 +1610,12 @@ prtTSI(" p", &p->tsi);
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
 	/* Clean up tsort remnants (if any). */
-	while ((tsi = p->tsi.tsi_next) != NULL) {
-	    p->tsi.tsi_next = tsi->tsi_next;
+	while ((tsi = p->tsi->tsi_next) != NULL) {
+	    p->tsi->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
 	    tsi = _free(tsi);
 	}
+	p->tsi = _free(p->tsi);
 	p->NEVR = _free(p->NEVR);
 	p->name = _free(p->name);
 

@@ -190,8 +190,13 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 
 	/* Toss the current signatures and recompute if not --addsign. */
 	if (qva->qva_mode != RPMSIGN_ADD_SIGNATURE) {
-	    sig = rpmFreeSignature(sig);
-	    sig = rpmNewSignature();
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP5);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP);
+	    (void) headerRemoveEntry(sig, RPMSIGTAG_GPG);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
 	}
