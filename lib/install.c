@@ -6,7 +6,6 @@
 
 #include "cpio.h"
 #include "install.h"
-#include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
 #include "rpmmacro.h"
@@ -21,8 +20,6 @@ struct callbackInfo {
 };
 
 struct fileMemory {
-    char ** md5s;
-    char ** links;
     char ** names;
     char ** cpioNames;
     struct fileInfo * files;
@@ -31,8 +28,6 @@ struct fileMemory {
 struct fileInfo {
     char * cpioPath;
     char * relativePath;		/* relative to root */
-    char * md5;
-    char * link;
     uid_t uid;
     gid_t gid;
     uint_32 flags;
@@ -124,8 +119,6 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 
 static void freeFileMemory(struct fileMemory fileMem) {
     free(fileMem.files);
-    free(fileMem.md5s);
-    free(fileMem.links);
     free(fileMem.names);
     free(fileMem.cpioNames);
 }
@@ -157,11 +150,9 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 
     files = *filesPtr = mem->files = malloc(sizeof(*mem->files) * fileCount);
     
-    headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &mem->md5s, NULL);
     headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
-    headerGetEntry(h, RPMTAG_FILELINKTOS, NULL, (void **) &mem->links, NULL);
 
     for (i = 0, file = files; i < fileCount; i++, file++) {
 	file->state = RPMFILE_STATE_NORMAL;
@@ -174,8 +165,6 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	file->relativePath = mem->names[i];
 	file->cpioPath = mem->cpioNames[i] + stripPrefixLength;
 	file->mode = fileModes[i];
-	file->md5 = mem->md5s[i];
-	file->link = mem->links[i];
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
 
@@ -487,10 +476,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	free(fileStates);
 	if (freeFileMem) freeFileMemory(fileMem);
     } else if (flags & RPMTRANS_FLAG_JUSTDB) {
-	char ** fileNames;
-
-	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &fileNames,
-		           &fileCount)) {
+	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, NULL, &fileCount)) {
 	    fileStates = malloc(sizeof(*fileStates) * fileCount);
 	    memset(fileStates, RPMFILE_STATE_NORMAL, fileCount);
 	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates, 
