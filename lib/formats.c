@@ -5,9 +5,14 @@
 #include "system.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
+#include "rpmpgp.h"
 #include "manifest.h"
 #include "misc.h"
 #include "debug.h"
+
+/*@-exportheadervar@*/
+extern const char * RPMVERSION;
+/*@=exportheadervar@*/
 
 /**
  * @param type		tag type
@@ -24,14 +29,12 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
     const int_32 * item = data;
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
+    if (type != RPM_INT32_TYPE)
 	val = xstrdup(_("(not a number)"));
-    } else if (*item & RPMSENSE_TRIGGERIN) {
+    else if (*item & RPMSENSE_TRIGGERIN)
 	val = xstrdup("in");
-    } else {
+    else
 	val = xstrdup("un");
-    }
-
     return val;
 }
 
@@ -108,7 +111,68 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
     return val;
 }
 
-#ifdef	NOTYET
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * armorFormat(int_32 type, const void * data, 
+		/*@unused@*/ char * formatPrefix, int padding, int element)
+	/*@*/
+{
+    char * val;
+
+    if (type != RPM_BIN_TYPE) {
+	val = xstrdup(_("(not a blob)"));
+    } else {
+	const char * enc;
+	char * t;
+	int lc;
+	int nt = ((element + 2) / 3) * 4;
+
+	/*@-globs@*/
+	/* Add additional bytes necessary for eol string(s). */
+	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+        if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+            ++lc;
+	    nt += lc * strlen(b64encode_eolstr);
+	}
+	/*@=globs@*/
+
+	nt += 512;	/* XXX slop for armor and crc */
+
+	val = t = xmalloc(nt + padding + 1);
+
+	*t = '\0';
+	t = stpcpy(t, "-----BEGIN PGP ");
+	t = stpcpy(t, pgpValStr(pgpArmorTbl, PGPARMOR_SIGNATURE));
+	/*@-globs@*/
+	t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), RPMVERSION);
+	/*@=globs@*/
+	t = stpcpy(t, " (beecrypt-2.2.0)\n\n");
+
+	if ((enc = b64encode(data, element)) != NULL) {
+	    t = stpcpy(t, enc);
+	    enc = _free(enc);
+	    if ((enc = b64crc(data, element)) != NULL) {
+		*t++ = '=';
+		t = stpcpy(t, enc);
+		enc = _free(enc);
+	    }
+	}
+	
+	t = stpcpy(t, "-----END PGP ");
+	t = stpcpy(t, pgpValStr(pgpArmorTbl, PGPARMOR_SIGNATURE));
+	t = stpcpy(t, "-----\n");
+    }
+
+    return val;
+}
+
 /**
  * @param type		tag type
  * @param data		tag value
@@ -118,22 +182,59 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
  * @return		formatted string
  */
 static /*@only@*/ char * base64Format(int_32 type, const void * data, 
-	char * formatPrefix, int padding, /*@unused@*/ int element)
-		/*@modifies formatPrefix @*/
+		/*@unused@*/ char * formatPrefix, int padding, int element)
+	/*@*/
 {
     char * val;
-    char buf[10];
 
     if (type != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	buf[0] = '\0';
+	const char * enc;
+	char * t;
+	int lc;
+	int nt = ((element + 2) / 3) * 4;
 
-	val = xmalloc(5 + padding);
-	strcat(formatPrefix, "s");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
+	/*@-globs@*/
+	/* Add additional bytes necessary for eol string(s). */
+	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+        if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
+            ++lc;
+	    nt += lc * strlen(b64encode_eolstr);
+	}
+	/*@=globs@*/
+
+	val = t = xmalloc(nt + padding + 1);
+
+	*t = '\0';
+	if ((enc = b64encode(data, element)) != NULL) {
+	    t = stpcpy(t, enc);
+	    enc = _free(enc);
+	}
+    }
+
+    return val;
+}
+
+#ifdef	NOTYET
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * pgppktFormat(int_32 type, const void * data, 
+	char * formatPrefix, int padding, int element)
+		/*@modifies formatPrefix @*/
+{
+    char * val;
+
+    if (type != RPM_BIN_TYPE) {
+	val = xstrdup(_("(not a blob)"));
+    } else {
     }
 
     return val;
@@ -603,8 +704,10 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS", { triggercondsTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
-#ifdef	NOTYET
+    { HEADER_EXT_FORMAT, "armor", { armorFormat } },
     { HEADER_EXT_FORMAT, "base64", { base64Format } },
+#ifdef	NOTYET
+    { HEADER_EXT_FORMAT, "pgppkt", { pgppktFormat } },
 #endif
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },

@@ -15,6 +15,7 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
+/*@access rpmDigest@*/
 
 int rpmLookupSignatureType(int action)
 {
@@ -594,6 +595,185 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     return pass;
 }
 
+static int rpmSlurp(const char * fn,
+		/*@out@*/ const byte ** bp, /*@out@*/ ssize_t * blenp)
+	/*@globals fileSystem @*/
+	/*@modifies *bp, *blenp, fileSystem @*/
+{
+    static ssize_t blenmax = (8 * BUFSIZ);
+    ssize_t blen = 0;
+    byte * b = NULL;
+    ssize_t size;
+    FD_t fd;
+    int rc = 0;
+
+    fd = Fopen(fn, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rc = 2;
+	goto exit;
+    }
+
+    size = fdSize(fd);
+    blen = (size >= 0 ? size : blenmax);
+    /*@-branchstate@*/
+    if (blen) {
+	int nb;
+	b = xmalloc(blen+1);
+	b[0] = '\0';
+	nb = Fread(b, sizeof(*b), blen, fd);
+	if (Ferror(fd) || (size > 0 && nb != blen)) {
+	    rc = 1;
+	    goto exit;
+	}
+	if (blen == blenmax && nb < blen) {
+	    blen = nb;
+	    b = xrealloc(b, blen+1);
+	}
+	b[blen] = '\0';
+    }
+    /*@=branchstate@*/
+
+exit:
+    if (fd) (void) Fclose(fd);
+	
+    if (rc) {
+	if (b) free(b);
+	b = NULL;
+	blen = 0;
+    }
+
+    if (bp) *bp = b;
+    else if (b) free(b);
+
+    if (blenp) *blenp = blen;
+
+    return rc;
+}
+
+static int rpmReadPgpPkt(const char * fn,
+		/*@out@*/ const byte ** pkt, /*@out@*/ size_t * pktlen)
+	/*@globals fileSystem @*/
+	/*@modifies *pkt, *pktlen, fileSystem @*/
+{
+    const byte * b = NULL;
+    ssize_t blen;
+    const char * enc = NULL;
+    const char * crcenc = NULL;
+    byte * dec;
+    byte * crcdec;
+    size_t declen;
+    size_t crclen;
+    uint32 crcpkt, crc;
+    const char * armortype = NULL;
+    char * t, * te;
+    int pstate = 0;
+    int ec = 1;	/* XXX assume failure */
+    int rc;
+
+    rc = rpmSlurp(fn, &b, &blen);
+    if (rc || b == NULL || blen <= 0)
+	goto exit;
+
+    if (pgpIsPkt(b)) {
+#ifdef NOTYET	/* XXX ASCII Pubkeys only, please. */
+	ec = 0;
+#endif
+	goto exit;
+    }
+
+#define	TOKEQ(_s, _tok)	(!strncmp((_s), (_tok), sizeof(_tok)-1))
+
+    for (t = (char *)b; t && *t; t = te) {
+	if ((te = strchr(t, '\n')) == NULL)
+		te = t + strlen(t);
+	else
+		te++;
+
+	switch (pstate) {
+	case 0:
+	    armortype = NULL;
+	    if (!TOKEQ(t, "-----BEGIN PGP "))
+		continue;
+	    t += sizeof("-----BEGIN PGP ")-1;
+
+	    rc = pgpValTok(pgpArmorTbl, t, te);
+	    if (rc < 0)
+		goto exit;
+	    if (rc != PGPARMOR_PUBKEY)	/* XXX ASCII Pubkeys only, please. */
+		continue;
+	    armortype = t;
+
+	    t = te - (sizeof("-----\n")-1);
+	    if (!TOKEQ(t, "-----\n"))
+		continue;
+	    *t = '\0';
+	    pstate++;
+	    /*@switchbreak@*/ break;
+	case 1:
+	    enc = NULL;
+	    rc = pgpValTok(pgpArmorKeyTbl, t, te);
+	    if (rc >= 0)
+		continue;
+	    if (*t != '\n') {
+		pstate = 0;
+		continue;
+	    }
+	    enc = te;		/* Start of encoded packets */
+	    pstate++;
+	    /*@switchbreak@*/ break;
+	case 2:
+	    crcenc = NULL;
+	    if (*t != '=')
+		continue;
+	    *t++ = '\0';	/* Terminate encoded packets */
+	    crcenc = t;		/* Start of encoded crc */
+	    pstate++;
+	    /*@switchbreak@*/ break;
+	case 3:
+	    pstate = 0;
+	    if (!TOKEQ(t, "-----END PGP "))
+		goto exit;
+	    *t = '\0';		/* Terminate encoded crc */
+	    t += sizeof("-----END PGP ")-1;
+
+	    if (armortype == NULL) /* XXX can't happen */
+		continue;
+	    rc = strncmp(t, armortype, strlen(armortype));
+	    if (rc)
+		continue;
+
+	    t = te - (sizeof("-----\n")-1);
+	    if (!TOKEQ(t, "-----\n"))
+		goto exit;
+
+	    if (b64decode(crcenc, (void **)&crcdec, &crclen) != 0)
+		continue;
+	    crcpkt = pgpGrab(crcdec, crclen);
+	    free(crcdec);
+	    if (b64decode(enc, (void **)&dec, &declen) != 0)
+		goto exit;
+	    crc = pgpCRC(dec, declen);
+	    if (crcpkt != crc)
+		goto exit;
+	    free((void *)b);
+	    b = dec;
+	    blen = declen;
+	    ec = 0;
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	}
+    }
+
+exit:
+    if (ec == 0 && pkt)
+	*pkt = b;
+    else if (b != NULL)
+	free((void *)b);
+    if (pktlen)
+	*pktlen = blen;
+    return rc;
+}
+
 static rpmVerifySignatureReturn
 verifySizeSignature(/*@unused@*/ const char * fn,
 		const byte * sig,
@@ -665,11 +845,32 @@ verifyPGPSignature(/*@unused@*/ const char * fn,
 		const rpmDigest dig, /*@out@*/ char * result)
 	/*@modifies *result */
 {
+    /*@unchecked@*/ static const byte * pgppk = NULL;
+    /*@unchecked@*/ static size_t pgppklen = 0;
     char * t = result;
-    int res;
+    int res, xx;
 
     *t = '\0';
     t = stpcpy(t, "V3 RSA/MD5 signature: ");
+
+    /*@-globs -internalglobs -modfilesys@*/
+    /* XXX retrieve by keyid from signature. */
+    if (pgppk == NULL) {
+#ifdef	DYING
+	xx = b64decode(redhatPubKeyRSA, (void **)&pgppk, &pgppklen);
+#else
+	xx = rpmReadPgpPkt("/usr/lib/rpm/RPM-PGP-KEY", &pgppk, &pgppklen);
+#endif
+if (rpmIsDebug())
+fprintf(stderr, "========================= Red Hat RSA Public Key\n");
+	xx = pgpPrtPkts(pgppk, pgppklen, NULL, rpmIsDebug());
+    }
+    /* XXX sanity check on pubkey and signature agreement. */
+
+    /*@-nullpass@*/
+    xx = pgpPrtPkts(pgppk, pgppklen, dig, 0);
+    /*@=nullpass@*/
+    /*@=globs =internalglobs =modfilesys@*/
 
     /*@-type@*/
     if (!rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c)) {
@@ -691,11 +892,32 @@ verifyGPGSignature(/*@unused@*/ const char * fn,
 		const rpmDigest dig, /*@out@*/ char * result)
 	/*@modifies *result @*/
 {
+    /*@unchecked@*/ static const byte * gpgpk = NULL;
+    /*@unchecked@*/ static size_t gpgpklen = 0;
     char * t = result;
-    int res;
+    int res, xx;
 
     *t = '\0';
     t = stpcpy(t, "V3 DSA signature: ");
+
+    /*@-globs -internalglobs -modfilesys@*/
+    /* XXX retrieve by keyid from signature. */
+    if (gpgpk == NULL) {
+#ifdef	DYING
+	xx = b64decode(redhatPubKeyDSA, (void **)&gpgpk, &gpgpklen);
+#else
+	xx = rpmReadPgpPkt("/usr/lib/rpm/RPM-GPG-KEY", &gpgpk, &gpgpklen);
+#endif
+if (rpmIsDebug())
+fprintf(stderr, "========================= Red Hat DSA Public Key\n");
+	xx = pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsDebug());
+    }
+    /* XXX sanity check on pubkey and signature agreement. */
+
+    /*@-nullpass@*/
+    xx = pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
+    /*@=nullpass@*/
+    /*@=globs =internalglobs =modfilesys@*/
 
     /*@-type@*/
     if (!dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm, &dig->y, &dig->r, &dig->s)) {

@@ -2642,6 +2642,33 @@ static char * formatValue(sprintfTag tag, Header h,
 	}
 	break;
 
+    case RPM_BIN_TYPE:
+	if (tagtype)
+	    val = tagtype(RPM_BIN_TYPE, data, buf, tag->pad, count);
+
+	if (!val) {
+#ifdef	NOTYET
+	    val = memcpy(xmalloc(count), data, count);
+#else
+	    /* XXX format string not used */
+	    static char hex[] = "0123456789abcdef";
+	    const char * s = data;
+	    char * t;
+
+	    strcat(buf, "s");
+	    len = 2*count + tag->pad + 1;
+	    val = t = xmalloc(len);
+	    while (count-- > 0) {
+		unsigned int i;
+		i = *s++;
+		*t++ = hex[ (i >> 4) & 0xf ];
+		*t++ = hex[ (i     ) & 0xf ];
+	    }
+	    *t = '\0';
+#endif
+	}
+	break;
+
     default:
 	val = xstrdup(_("(unknown type)"));
 	break;

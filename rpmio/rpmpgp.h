@@ -846,6 +846,38 @@ typedef struct pgpPktUid_s {
 
 /**
  */
+typedef enum pgpArmor_e {
+    PGPARMOR_MESSAGE		= 1, /*!< MESSAGE */
+    PGPARMOR_PUBKEY		= 2, /*!< PUBLIC KEY BLOCK */
+    PGPARMOR_SIGNATURE		= 3, /*!< SIGNATURE */
+    PGPARMOR_SIGNED_MESSAGE	= 4, /*!< SIGNED MESSAGE */
+    PGPARMOR_FILE		= 5, /*!< ARMORED FILE */
+    PGPARMOR_PRIVKEY		= 6, /*!< PRIVATE KEY BLOCK */
+    PGPARMOR_SECKEY		= 7, /*!< SECRET KEY BLOCK */
+} pgpArmor;
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
+extern struct pgpValTbl_s pgpArmorTbl[];
+
+/**
+ */
+typedef enum pgpArmorKey_e {
+    PGPARMORKEY_VERSION		= 1, /*!< Version: */
+    PGPARMORKEY_COMMENT		= 2, /*!< Comment: */
+    PGPARMORKEY_MESSAGEID	= 3, /*!< MessageID: */
+    PGPARMORKEY_HASH		= 4, /*!< Hash: */
+    PGPARMORKEY_CHARSET		= 5, /*!< Charset: */
+} pgpArmorKey;
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/ /*@unused@*/
+extern struct pgpValTbl_s pgpArmorKeyTbl[];
+
+/**
+ */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern const char * redhatPubKeyDSA;
 
@@ -858,9 +890,14 @@ extern const char * redhatPubKeyRSA;
  */
 typedef struct pgpSig_s {
     union {
-	struct pgpPktSigV3_s v3;
-	struct pgpPktSigV4_s v4;
-    } sig;
+	struct pgpPktSigV3_s * v3;
+	struct pgpPktSigV4_s * v4;
+    } signature;
+
+    union {
+	struct pgpPktKeyV3_s * v3;
+	struct pgpPktKeyV4_s * v4;
+    } pubkey;
 
     size_t nbytes;			/*!< No. bytes of plain text. */
 
@@ -1015,6 +1052,20 @@ const char * pgpValStr(pgpValTbl vs, byte val)
     return vs->str;
 }
 
+/**
+ */
+/*@unused@*/ static inline
+int pgpValTok(pgpValTbl vs, const char * s, const char * se)
+	/*@*/
+{
+    do {
+	int vlen = strlen(vs->str);
+	if (vlen <= (se-s) && !strncmp(s, vs->str, vlen))
+	    break;
+    } while ((++vs)->val != -1);
+    return vs->val;
+}
+
 /*@-exportlocal@*/
 /**
  */
@@ -1088,6 +1139,82 @@ int pgpPrtPkt(const byte *p)
 int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s *dig, int printing)
 	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
+
+/**
+ */
+/*@unused@*/ static inline
+int pgpIsPkt(const byte * p)
+	/*@*/
+{
+    unsigned int val = *p++;
+    pgpPkt pkt;
+    int rc;
+
+    /* XXX can't deal with these. */
+    if (!(val & 0x80))
+	return 0;
+
+    if (val & 0x40)
+	pkt = (val & 0x3f);
+    else
+	pkt = (val >> 2) & 0xf;
+
+    switch (pkt) {
+    case PGPPKT_MARKER:
+    case PGPPKT_SYMMETRIC_SESSION_KEY:
+    case PGPPKT_ONEPASS_SIGNATURE:
+    case PGPPKT_PUBLIC_KEY:
+    case PGPPKT_SECRET_KEY:
+    case PGPPKT_PUBLIC_SESSION_KEY:
+    case PGPPKT_SIGNATURE:
+    case PGPPKT_COMMENT:
+    case PGPPKT_COMMENT_OLD:
+    case PGPPKT_LITERAL_DATA:
+    case PGPPKT_COMPRESSED_DATA:
+    case PGPPKT_SYMMETRIC_DATA:
+	rc = 1;
+	break;
+    case PGPPKT_PUBLIC_SUBKEY:
+    case PGPPKT_SECRET_SUBKEY:
+    case PGPPKT_USER_ID:
+    case PGPPKT_RESERVED:
+    case PGPPKT_TRUST:
+    case PGPPKT_PHOTOID:
+    case PGPPKT_ENCRYPTED_MDC:
+    case PGPPKT_MDC:
+    case PGPPKT_PRIVATE_60:
+    case PGPPKT_PRIVATE_62:
+    case PGPPKT_CONTROL:
+    default:
+	rc = 0;
+	break;
+    }
+
+    return rc;
+}
+
+#define CRC24_INIT	0xb704ce
+#define CRC24_POLY	0x1864cfb
+
+/**
+ */
+/*@unused@*/ static inline
+uint32 pgpCRC(const byte *octets, size_t len)
+	/*@*/
+{
+    uint32 crc = CRC24_INIT;
+    int i;
+
+    while (len--) {
+	crc ^= (*octets++) << 16;
+	for (i = 0; i < 8; i++) {
+	    crc <<= 1;
+	    if (crc & 0x1000000)
+		crc ^= CRC24_POLY;
+	}
+    }
+    return crc & 0xffffff;
+}
 
 #ifdef __cplusplus
 }

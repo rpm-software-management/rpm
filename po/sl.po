@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.166 2001/10/19 19:51:24 jbj Exp $
+# $Id: sl.po,v 1.167 2001/10/20 20:29:05 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-19 15:08-0400\n"
+"POT-Creation-Date: 2001-10-20 16:18-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2274,12 +2274,12 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:160
-#: lib/header.c:2902 lib/header.c:2923 lib/header.c:2945
+#: lib/formats.c:33 lib/formats.c:57 lib/formats.c:88 lib/formats.c:261
+#: lib/header.c:2929 lib/header.c:2950 lib/header.c:2972
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
-#: lib/formats.c:128
+#: lib/formats.c:129 lib/formats.c:191 lib/formats.c:236
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ni ¹tevilo)"
@@ -2441,7 +2441,7 @@ msgstr "v izrazu je za : prièakovan {"
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
-#: lib/header.c:2646
+#: lib/header.c:2673
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
@@ -3185,86 +3185,86 @@ msgstr "zapisa %d ni mo¾no prebrati\n"
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
 
-#: lib/rpmchecksig.c:46
+#: lib/rpmchecksig.c:47
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: odpiranje je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:58
+#: lib/rpmchecksig.c:59
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile je bil neuspe¹en\n"
 
-#: lib/rpmchecksig.c:100
+#: lib/rpmchecksig.c:101
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: pisanje Fwrite je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:106 lib/rpmchecksig.c:313
+#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:326
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:143 lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:401
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/rpmchecksig.c:148
+#: lib/rpmchecksig.c:149
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Podpis RPM v1.0 ni mo¾en\n"
 
-#: lib/rpmchecksig.c:152
+#: lib/rpmchecksig.c:153
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Sprememba podpisa RPM v2.0 ni mo¾na\n"
 
-#: lib/rpmchecksig.c:161 lib/rpmchecksig.c:384
+#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:417
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature je bil neuspe¹en\n"
 
-#: lib/rpmchecksig.c:165 lib/rpmchecksig.c:389
+#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:422
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis ni na voljo\n"
 
-#: lib/rpmchecksig.c:198
+#: lib/rpmchecksig.c:199
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead je bil neuspe¹en: %s\n"
 
-#: lib/rpmchecksig.c:204
+#: lib/rpmchecksig.c:205
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:374
+#: lib/rpmchecksig.c:407
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Podpis ni na voljo (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:604
+#: lib/rpmchecksig.c:649
 msgid "NOT OK"
 msgstr "NI DOBRO"
 
-#: lib/rpmchecksig.c:605 lib/rpmchecksig.c:619
+#: lib/rpmchecksig.c:650 lib/rpmchecksig.c:664
 msgid " (MISSING KEYS:"
 msgstr " (MANJKAJOÈI KLJUÈI:"
 
-#: lib/rpmchecksig.c:607 lib/rpmchecksig.c:621
+#: lib/rpmchecksig.c:652 lib/rpmchecksig.c:666
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:608 lib/rpmchecksig.c:622
+#: lib/rpmchecksig.c:653 lib/rpmchecksig.c:667
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEPREVERJENI KLJUÈI:"
 
-#: lib/rpmchecksig.c:610 lib/rpmchecksig.c:624
+#: lib/rpmchecksig.c:655 lib/rpmchecksig.c:669
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:618
+#: lib/rpmchecksig.c:663
 msgid "OK"
 msgstr "V REDU"
 
@@ -3461,123 +3461,123 @@ msgstr "Ni mo¾no prebrati %s, HOME je prevelik."
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s ni mo¾no odpreti za branje: %s."
 
-#: lib/signature.c:111
+#: lib/signature.c:112
 msgid "file is not regular -- skipping size check\n"
 msgstr "datoteka ni navadna datoteka -- preskakujemo preverjanje velikosti\n"
 
-#: lib/signature.c:120
+#: lib/signature.c:121
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:125
+#: lib/signature.c:126
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:145
+#: lib/signature.c:146
 msgid "No signature\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:149
+#: lib/signature.c:150
 msgid "Old PGP signature\n"
 msgstr "Stari podpis PGP\n"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Podpis v (interni) stari obliki! Kje ste ga dobili?"
 
-#: lib/signature.c:218
+#: lib/signature.c:219
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:281
+#: lib/signature.c:282
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Ni mo¾no pognati pgp (%s)"
 
-#: lib/signature.c:294
+#: lib/signature.c:295
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp je bil neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:301
+#: lib/signature.c:302
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp je bil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:306
+#: lib/signature.c:307
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:321 lib/signature.c:408
+#: lib/signature.c:322 lib/signature.c:409
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "branje podpisa je bilo neuspe¹no"
 
-#: lib/signature.c:326
+#: lib/signature.c:327
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:368 lib/signature.c:498
+#: lib/signature.c:369 lib/signature.c:499
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Ni mo¾no pognati gpg"
 
-#: lib/signature.c:381
+#: lib/signature.c:382
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg je bil neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:388
+#: lib/signature.c:389
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg je boil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:393
+#: lib/signature.c:394
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:414
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:442
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjanje podpisa s PGP.\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:448
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjanje podpisa z GnuPG.\n"
 
-#: lib/signature.c:527
+#: lib/signature.c:528
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Ni mo¾no pognati pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:531 lib/signature.c:584
+#: lib/signature.c:532 lib/signature.c:585
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Neveljaven %%_signature v makro-datoteki.\n"
 
-#: lib/signature.c:564
+#: lib/signature.c:565
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:576
+#: lib/signature.c:577
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
@@ -4017,61 +4017,61 @@ msgstr "Datoteka %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:656
 msgid "Success"
 msgstr "Uspeh"
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:659
 msgid "Bad server response"
 msgstr "Nepravilen odziv stre¾nika"
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:662
 #, fuzzy
 msgid "Server I/O error"
 msgstr "V/I napaka na stre¾niku"
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:665
 msgid "Server timeout"
 msgstr "Èas odziva stre¾nika je potekel"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:668
 msgid "Unable to lookup server host address"
 msgstr "Naslov stre¾nika ni ugotovljiv"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:671
 msgid "Unable to lookup server host name"
 msgstr "Ime stre¾nika ni bilo ugotovljivo"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:674
 msgid "Failed to connect to server"
 msgstr "Neuspe¹en poskus prikljuèitve na stre¾nik"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:677
 msgid "Failed to establish data connection to server"
 msgstr "Neuspe¹na vzpostavitev podatkovne povezave s stre¾nikom"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:680
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "V/I napaka na lokalni datoteki"
 
-#: rpmio/rpmio.c:671
+#: rpmio/rpmio.c:683
 msgid "Error setting remote server to passive mode"
 msgstr "Napaka pri nastavitvi oddaljenega stre¾nika v pasivni naèin"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:686
 msgid "File not found on server"
 msgstr "Datoteke ni mo¾no najti na stre¾niku"
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:689
 msgid "Abort in progress"
 msgstr "Prekinitev v teku"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:693
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: rpmio/rpmio.c:1353
+#: rpmio/rpmio.c:1365
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"

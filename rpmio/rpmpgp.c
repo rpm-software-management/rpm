@@ -205,7 +205,7 @@ struct pgpValTbl_s pgpPktTbl[] = {
     { PGPPKT_USER_ID,		"User ID" },
     { PGPPKT_PUBLIC_SUBKEY,	"Public Subkey" },
     { PGPPKT_COMMENT_OLD,	"Comment (from OpenPGP draft)" },
-    { PGPPKT_PHOTOID,		"PGP's pgoto ID" },
+    { PGPPKT_PHOTOID,		"PGP's photo ID" },
     { PGPPKT_ENCRYPTED_MDC,	"Integrity protected encrypted data" },
     { PGPPKT_MDC,		"Manipulaion detection code packet" },
     { PGPPKT_PRIVATE_60,	"Private #60" },
@@ -213,6 +213,26 @@ struct pgpValTbl_s pgpPktTbl[] = {
     { PGPPKT_PRIVATE_62,	"Private #62" },
     { PGPPKT_CONTROL,		"Control (GPG)" },
     { -1,			"Unknown packet tag" },
+};
+
+struct pgpValTbl_s pgpArmorTbl[] = {
+    { PGPARMOR_MESSAGE,		"MESSAGE" },
+    { PGPARMOR_PUBKEY,		"PUBLIC KEY BLOCK" },
+    { PGPARMOR_SIGNATURE,	"SIGNATURE" },
+    { PGPARMOR_SIGNED_MESSAGE,	"SIGNED MESSAGE" },
+    { PGPARMOR_FILE,		"ARMORED FILE" },
+    { PGPARMOR_PRIVKEY,		"PRIVATE KEY BLOCK" },
+    { PGPARMOR_SECKEY,		"SECRET KEY BLOCK" },
+    { -1,			"Unknown armor block" }
+};
+
+struct pgpValTbl_s pgpArmorKeyTbl[] = {
+    { PGPARMORKEY_VERSION,	"Version: " },
+    { PGPARMORKEY_COMMENT,	"Comment: " },
+    { PGPARMORKEY_MESSAGEID,	"MessageID: " },
+    { PGPARMORKEY_HASH,		"Hash: " },
+    { PGPARMORKEY_CHARSET,	"Charset: " },
+    { -1,			"Unknown armor key" }
 };
 
 static void pgpPrtNL(void)
@@ -319,7 +339,9 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     }
 
     /*@-mods@*/
-    if (_dig) memcpy(&_dig->sig.v3, v, sizeof(_dig->sig.v3));
+    if (_dig && pkt == PGPPKT_SIGNATURE &&
+	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
+	_dig->signature.v3 = memcpy(xmalloc(hlen), h, hlen);
     /*@=mods@*/
 
     pgpPrtVal("V3 ", pgpPktTbl, pkt);
@@ -483,7 +505,9 @@ int pgpPrtPktSigV4(pgpPkt pkt, const byte *h, unsigned int hlen)
     }
 
     /*@-mods@*/
-    if (_dig) memcpy(&_dig->sig.v4, v, sizeof(_dig->sig.v4));
+    if (_dig && pkt == PGPPKT_SIGNATURE &&
+	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
+	_dig->signature.v4 = memcpy(xmalloc(hlen), h, hlen);
     /*@=mods@*/
 
     pgpPrtVal("V4 ", pgpPktTbl, pkt);
@@ -640,11 +664,17 @@ int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     time_t t;
     int i;
 
-    pgpPrtVal("", pgpPktTbl, pkt);
     if (v->version != 3) {
 	fprintf(stderr, " version(%u) != 3\n", (unsigned)v->version);
 	return 1;
     }
+
+    /*@-mods@*/
+    if (_dig && pkt == PGPPKT_PUBLIC_KEY)
+	_dig->pubkey.v3 = memcpy(xmalloc(hlen), h, hlen);
+    /*@=mods@*/
+
+    pgpPrtVal("V3 ", pgpPktTbl, pkt);
     pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
     t = pgpGrab(v->time, sizeof(v->time));
     if (_print)
@@ -732,11 +762,17 @@ int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
     time_t t;
     int i;
 
-    pgpPrtVal("", pgpPktTbl, pkt);
     if (v->version != 4) {
 	fprintf(stderr, " version(%u) != 4\n", (unsigned)v->version);
 	return 1;
     }
+
+    /*@-mods@*/
+    if (_dig && pkt == PGPPKT_PUBLIC_KEY)
+	_dig->pubkey.v4 = memcpy(xmalloc(hlen), h, hlen);
+    /*@=mods@*/
+
+    pgpPrtVal("V4 ", pgpPktTbl, pkt);
     pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
     t = pgpGrab(v->time, sizeof(v->time));
     if (_print)

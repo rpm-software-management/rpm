@@ -252,6 +252,8 @@ rpmDigest freeDig(/*@only@*/ /*@null@*/ rpmDigest dig)
 	/*@modifies dig @*/
 {
     if (dig != NULL) {
+	dig->signature.v3 = _free(dig->signature.v3);
+	dig->pubkey.v3 = _free(dig->pubkey.v3);
 	/*@-branchstate@*/
 	if (dig->md5ctx != NULL)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
@@ -375,12 +377,12 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     const void * ptr;
     int res = 0;
     int xx;
-
+#ifdef DYING
     const char * gpgpk = NULL;
     unsigned int gpgpklen = 0;
     const char * pgppk = NULL;
     unsigned int pgppklen = 0;
-
+#endif
     rpmDigest dig = NULL;
     rpmRC rc;
 
@@ -454,14 +456,17 @@ fprintf(stderr, "========================= Package RSA Signature\n");
     /*@-type@*/ /* FIX: cast? */
 	    /*@-nullpass@*/ /* FIX: dig->md5ctx may be null */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
+		pgpPktSigV3 dsig = dig->signature.v3;
 
-		xx = rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		xx = rpmDigestUpdate(ctx, &dsig->sigtype, dsig->hashlen);
 		xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
 
 		/* XXX compare leading 16 bits of digest for quick check. */
 	    }
 	    /*@=nullpass@*/
     /*@=type@*/
+		/* XXX sanity check on tag and signature agreement. */
+#ifdef	DYING
 		/* XXX retrieve by keyid from signature. */
 		if (pgppk == NULL) {
 		    xx = b64decode(redhatPubKeyRSA, (void **)&pgppk, &pgppklen);
@@ -471,6 +476,7 @@ fprintf(stderr, "========================= Red Hat RSA Public Key\n");
 		}
 
 		xx = pgpPrtPkts(pgppk, pgppklen, dig, 0);
+#endif
 
 	    {	const char * prefix = "3020300c06082a864886f70d020505000410";
 		unsigned int nbits = 1024;
@@ -501,12 +507,15 @@ fprintf(stderr, "========================= Package DSA Signature\n");
     /*@-type@*/ /* FIX: cast? */
 	    /*@-nullpass@*/ /* FIX: dig->sha1ctx may be null */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->sha1ctx);
-		xx = rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		pgpPktSigV3 dsig = dig->signature.v3;
+		xx = rpmDigestUpdate(ctx, &dsig->sigtype, dsig->hashlen);
 		xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 		mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
 	    }
 	    /*@=nullpass@*/
     /*@=type@*/
+		/* XXX sanity check on tag and signature agreement. */
+#ifdef	DYING
 		/* XXX retrieve by keyid from signature. */
 		if (gpgpk == NULL) {
 		    xx = b64decode(redhatPubKeyDSA, (void **)&gpgpk, &gpgpklen);
@@ -515,6 +524,7 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 		    xx = pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsDebug());
 		}
 		xx = pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
+#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:

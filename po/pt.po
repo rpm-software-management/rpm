@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-19 15:08-0400\n"
+"POT-Creation-Date: 2001-10-20 16:18-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2209,12 +2209,12 @@ msgstr "CICLO:\n"
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
-#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:160
-#: lib/header.c:2902 lib/header.c:2923 lib/header.c:2945
+#: lib/formats.c:33 lib/formats.c:57 lib/formats.c:88 lib/formats.c:261
+#: lib/header.c:2929 lib/header.c:2950 lib/header.c:2972
 msgid "(not a number)"
 msgstr "(não é um número)"
 
-#: lib/formats.c:128
+#: lib/formats.c:129 lib/formats.c:191 lib/formats.c:236
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(não é um número)"
@@ -2375,7 +2375,7 @@ msgstr "esperado um { a seguir ao : na expressão"
 msgid "| expected at end of expression"
 msgstr "esperado um | no fim da expressão"
 
-#: lib/header.c:2646
+#: lib/header.c:2673
 msgid "(unknown type)"
 msgstr "(tipo desconhecido)"
 
@@ -3083,86 +3083,86 @@ msgstr "o registo %d não pôde ser lido\n"
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
 
-#: lib/rpmchecksig.c:46
+#: lib/rpmchecksig.c:47
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: o acesso falhou: %s\n"
 
-#: lib/rpmchecksig.c:58
+#: lib/rpmchecksig.c:59
 msgid "makeTempFile failed\n"
 msgstr "o makeTempFile falhou\n"
 
-#: lib/rpmchecksig.c:100
+#: lib/rpmchecksig.c:101
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: O fwrite falhou: %s\n"
 
-#: lib/rpmchecksig.c:106 lib/rpmchecksig.c:313
+#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:326
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
-#: lib/rpmchecksig.c:143 lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:401
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/rpmchecksig.c:148
+#: lib/rpmchecksig.c:149
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Não consigo assinar o RPM v1.0\n"
 
-#: lib/rpmchecksig.c:152
+#: lib/rpmchecksig.c:153
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: não consigo assinar de novo o RPM v2.0\n"
 
-#: lib/rpmchecksig.c:161 lib/rpmchecksig.c:384
+#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:417
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/rpmchecksig.c:165 lib/rpmchecksig.c:389
+#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:422
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
 
-#: lib/rpmchecksig.c:198
+#: lib/rpmchecksig.c:199
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: o writeLead falhou: %s\n"
 
-#: lib/rpmchecksig.c:204
+#: lib/rpmchecksig.c:205
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: o rpmWriteSignature falhou: %s\n"
 
-#: lib/rpmchecksig.c:374
+#: lib/rpmchecksig.c:407
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Nenhuma assinatura disponível (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:604
+#: lib/rpmchecksig.c:649
 msgid "NOT OK"
 msgstr "NÃO-OK"
 
-#: lib/rpmchecksig.c:605 lib/rpmchecksig.c:619
+#: lib/rpmchecksig.c:650 lib/rpmchecksig.c:664
 msgid " (MISSING KEYS:"
 msgstr " (FALTAM AS CHAVES:"
 
-#: lib/rpmchecksig.c:607 lib/rpmchecksig.c:621
+#: lib/rpmchecksig.c:652 lib/rpmchecksig.c:666
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:608 lib/rpmchecksig.c:622
+#: lib/rpmchecksig.c:653 lib/rpmchecksig.c:667
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:610 lib/rpmchecksig.c:624
+#: lib/rpmchecksig.c:655 lib/rpmchecksig.c:669
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:618
+#: lib/rpmchecksig.c:663
 msgid "OK"
 msgstr "OK"
 
@@ -3358,115 +3358,115 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/signature.c:111
+#: lib/signature.c:112
 msgid "file is not regular -- skipping size check\n"
 msgstr "o ficheiro não é normal -- a ignorar a verificação do tamanho\n"
 
-#: lib/signature.c:120
+#: lib/signature.c:121
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "Esperado um tamanho: %12d = início(%d)+assin.(%d)+'pad'(%d)+dados(%d)\n"
 
-#: lib/signature.c:125
+#: lib/signature.c:126
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Tamanho real: %12d\n"
 
-#: lib/signature.c:145
+#: lib/signature.c:146
 msgid "No signature\n"
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:149
+#: lib/signature.c:150
 msgid "Old PGP signature\n"
 msgstr "Assinatura PGP antiga\n"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 
-#: lib/signature.c:218
+#: lib/signature.c:219
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Tamanho da assinatura: %d\n"
 
-#: lib/signature.c:281
+#: lib/signature.c:282
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Não consigo executar o pgp (%s)\n"
 
-#: lib/signature.c:294
+#: lib/signature.c:295
 msgid "pgp failed\n"
 msgstr "o pgp falhou\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:301
+#: lib/signature.c:302
 msgid "pgp failed to write signature\n"
 msgstr "o pgp não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:306
+#: lib/signature.c:307
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "tamanho da assinatura do PGP: %d\n"
 
-#: lib/signature.c:321 lib/signature.c:408
+#: lib/signature.c:322 lib/signature.c:409
 msgid "unable to read the signature\n"
 msgstr "incapaz de ler a assinatura\n"
 
-#: lib/signature.c:326
+#: lib/signature.c:327
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:368 lib/signature.c:498
+#: lib/signature.c:369 lib/signature.c:499
 msgid "Couldn't exec gpg\n"
 msgstr "Não consegui executar o gpg\n"
 
-#: lib/signature.c:381
+#: lib/signature.c:382
 msgid "gpg failed\n"
 msgstr "o gpg falhou\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:388
+#: lib/signature.c:389
 msgid "gpg failed to write signature\n"
 msgstr "o gpg não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:393
+#: lib/signature.c:394
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Tamanho da assinatura do GPG: %d\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:414
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Obtive %d bytes da assinatura do GPG\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:442
 msgid "Generating signature using PGP.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:448
 msgid "Generating signature using GPG.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:527
+#: lib/signature.c:528
 msgid "Couldn't exec pgp\n"
 msgstr "Não consegui executar o pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:531 lib/signature.c:584
+#: lib/signature.c:532 lib/signature.c:585
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:564
+#: lib/signature.c:565
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:576
+#: lib/signature.c:577
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
@@ -3893,59 +3893,59 @@ msgstr "Ficheiro %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:656
 msgid "Success"
 msgstr "Sucesso"
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:659
 msgid "Bad server response"
 msgstr "Resposta errada do servidor"
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:662
 msgid "Server I/O error"
 msgstr "Erro de E/S do servidor"
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:665
 msgid "Server timeout"
 msgstr "Tempo de espera pelo servidor expirado"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:668
 msgid "Unable to lookup server host address"
 msgstr "Incapaz de descobrir o endereço da máquina do servidor"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:671
 msgid "Unable to lookup server host name"
 msgstr "Incapaz de descobrir o nome da máquina do servidor"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:674
 msgid "Failed to connect to server"
 msgstr "Não consegui ligar ao servidor"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:677
 msgid "Failed to establish data connection to server"
 msgstr "Não consigo estabelecer uma ligação de dados ao servidor"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:680
 msgid "I/O error to local file"
 msgstr "Erro de E/S no ficheiro local"
 
-#: rpmio/rpmio.c:671
+#: rpmio/rpmio.c:683
 msgid "Error setting remote server to passive mode"
 msgstr "Erro ao configurar o servidor remoto para o modo passivo"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:686
 msgid "File not found on server"
 msgstr "Ficheiro não encontrado no servidor"
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:689
 msgid "Abort in progress"
 msgstr "Interrupção em progresso"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:693
 msgid "Unknown or unexpected error"
 msgstr "Erro desconhecido ou inesperado"
 
-#: rpmio/rpmio.c:1353
+#: rpmio/rpmio.c:1365
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "a ligar ao %s como %s com senha %s\n"

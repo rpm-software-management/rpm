@@ -524,4 +524,6 @@ fi
 - ratchet up to lclint "strict" level.
 - upgrade to db-4.0.7.
 - use only header methods, routines are now static.
-- beecrypt is at least as good as pgp/gpg on verify, pull the plug.
+- beecrypt is at least as good as pgp/gpg on verify, pulling the plug.
+- add :base64 and :armor format extensions, dump binary tags in hex.
+- proof-of-concept pubkey retrieval from RPM-{PGP,GPG}-KEY.

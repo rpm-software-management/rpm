@@ -72,6 +72,16 @@ char * b64encode (const void * data, int ns)
 	/*@*/;
 
 /**
+ * Encode crc of binary input data into 5 bytes of base64 output.
+ * @param data		binary data
+ * @param ns		crc of data
+ * @return		(malloc'd) base64 string
+ */
+BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
+char * b64crc (const void * data, int ns)
+	/*@*/;
+
+/**
  * Decode chunks of 4 bytes of base64 input into 3 bytes of binary output.
  * @param s		base64 string
  * @retval datap	address of (malloc'd) binary data

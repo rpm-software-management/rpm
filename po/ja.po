@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-19 15:08-0400\n"
+"POT-Creation-Date: 2001-10-20 16:18-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.181 2001/10/19 19:51:21 jbj Exp $
+# $Id: ja.po,v 1.182 2001/10/20 20:29:02 jbj Exp $
 #: rpm.c:227
 #, c-format
 msgid "rpm: %s\n"
@@ -2304,12 +2304,12 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:160
-#: lib/header.c:2902 lib/header.c:2923 lib/header.c:2945
+#: lib/formats.c:33 lib/formats.c:57 lib/formats.c:88 lib/formats.c:261
+#: lib/header.c:2929 lib/header.c:2950 lib/header.c:2972
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
-#: lib/formats.c:128
+#: lib/formats.c:129 lib/formats.c:191 lib/formats.c:236
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(数字ではありません)"
@@ -2471,7 +2471,7 @@ msgstr "式中で : の後に { が期待されます"
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
-#: lib/header.c:2646
+#: lib/header.c:2673
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
@@ -3237,88 +3237,88 @@ msgstr "レコード %d を読むことができませんでした\n"
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
 
-#: lib/rpmchecksig.c:46
+#: lib/rpmchecksig.c:47
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: fdOpen に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:58
+#: lib/rpmchecksig.c:59
 #, fuzzy
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile に失敗しました\n"
 
-#: lib/rpmchecksig.c:100
+#: lib/rpmchecksig.c:101
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:106 lib/rpmchecksig.c:313
+#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:326
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:143 lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:401
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:148
+#: lib/rpmchecksig.c:149
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: v1.0 の RPM には署名できません\n"
 
-#: lib/rpmchecksig.c:152
+#: lib/rpmchecksig.c:153
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 の RPM には再署名できません\n"
 
-#: lib/rpmchecksig.c:161 lib/rpmchecksig.c:384
+#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:417
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:165 lib/rpmchecksig.c:389
+#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:422
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/rpmchecksig.c:198
+#: lib/rpmchecksig.c:199
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writedLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:204
+#: lib/rpmchecksig.c:205
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:374
+#: lib/rpmchecksig.c:407
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 有効な署名はありません(v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:604
+#: lib/rpmchecksig.c:649
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:605 lib/rpmchecksig.c:619
+#: lib/rpmchecksig.c:650 lib/rpmchecksig.c:664
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (キーの紛失) "
 
-#: lib/rpmchecksig.c:607 lib/rpmchecksig.c:621
+#: lib/rpmchecksig.c:652 lib/rpmchecksig.c:666
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:608 lib/rpmchecksig.c:622
+#: lib/rpmchecksig.c:653 lib/rpmchecksig.c:667
 msgid " (UNTRUSTED KEYS:"
 msgstr " (信頼できない鍵:"
 
-#: lib/rpmchecksig.c:610 lib/rpmchecksig.c:624
+#: lib/rpmchecksig.c:655 lib/rpmchecksig.c:669
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:618
+#: lib/rpmchecksig.c:663
 msgid "OK"
 msgstr ""
 
@@ -3515,126 +3515,126 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
 
-#: lib/signature.c:111
+#: lib/signature.c:112
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 "ファイルは一般のファイルではありません -- サイズチェックをスキップします\n"
 
-#: lib/signature.c:120
+#: lib/signature.c:121
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:125
+#: lib/signature.c:126
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:145
+#: lib/signature.c:146
 msgid "No signature\n"
 msgstr "署名はありません\n"
 
-#: lib/signature.c:149
+#: lib/signature.c:150
 msgid "Old PGP signature\n"
 msgstr "古い PGP 署名\n"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
-#: lib/signature.c:218
+#: lib/signature.c:219
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:281
+#: lib/signature.c:282
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "pgp を実行できません(%s)"
 
-#: lib/signature.c:294
+#: lib/signature.c:295
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:301
+#: lib/signature.c:302
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:306
+#: lib/signature.c:307
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:321 lib/signature.c:408
+#: lib/signature.c:322 lib/signature.c:409
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:326
+#: lib/signature.c:327
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:368 lib/signature.c:498
+#: lib/signature.c:369 lib/signature.c:499
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "gpg を実行できません"
 
-#: lib/signature.c:381
+#: lib/signature.c:382
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:388
+#: lib/signature.c:389
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:393
+#: lib/signature.c:394
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:414
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:442
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP を使用して署名の生成中\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:448
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
-#: lib/signature.c:527
+#: lib/signature.c:528
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "pgp を実行できません"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:531 lib/signature.c:584
+#: lib/signature.c:532 lib/signature.c:585
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: lib/signature.c:564
+#: lib/signature.c:565
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:576
+#: lib/signature.c:577
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
@@ -4072,68 +4072,68 @@ msgstr "ファイル %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s: は %d バイトより小さいです"
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:656
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:659
 #, fuzzy
 msgid "Bad server response"
 msgstr "サーバから正常な応答がありません"
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:662
 #, fuzzy
 msgid "Server I/O error"
 msgstr "サーバ IO エラー"
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:665
 #, fuzzy
 msgid "Server timeout"
 msgstr "サーバタイムアウト"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:668
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:671
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:674
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "サーバへの接続に失敗しました"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:677
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータコネクションの確立に失敗しました"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:680
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "ローカルファイルの IO エラー"
 
-#: rpmio/rpmio.c:671
+#: rpmio/rpmio.c:683
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバのパッシブモード設定エラー"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:686
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません"
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:689
 msgid "Abort in progress"
 msgstr "処理中のアボート"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:693
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "不明もしくは予期せぬエラー"
 
-#: rpmio/rpmio.c:1353
+#: rpmio/rpmio.c:1365
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s へ %s pw %s としてログイン中\n"

@@ -339,6 +339,35 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 }
 /*@=internalglobs =modfilesys @*/
 
+/*@-internalglobs -modfilesys @*/
+#define CRC24_INIT 0xb704ceL
+#define CRC24_POLY 0x1864cfbL
+
+char * b64crc (const void * data, int ns)
+{
+    const unsigned char *s = data;
+    uint32 crc = CRC24_INIT;
+
+    while (ns-- > 0) {
+	int i;
+	crc ^= (*s++) << 16;
+	for (i = 0; i < 8; i++) {
+	    crc <<= 1;
+	    if (crc & 0x1000000)
+		crc ^= CRC24_POLY;
+	}
+    }
+    crc &= 0xffffff;
+    #if !WORDS_BIGENDIAN
+    crc = swapu32(crc);
+    #endif
+    data = (byte *)&crc;
+    data++;
+    ns = 3;
+    return b64encode(data, ns);
+}
+/*@=internalglobs =modfilesys @*/
+
 /*@observer@*/ /*@unchecked@*/
 const char * b64decode_whitespace = B64DECODE_WHITESPACE;
 
