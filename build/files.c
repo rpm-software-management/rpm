@@ -100,7 +100,7 @@ typedef struct AttrRec_s {
 /**
  */
 /*@unchecked@*/
-static int multiLib = 0;	/* MULTILIB */
+static int multiLibNo = 0;	/* MULTILIB */
 
 /**
  */
@@ -673,8 +673,7 @@ static int parseForAttr(char * buf, FileList fl)
  */
 /*@-boundswrite@*/
 static int parseForConfig(char * buf, FileList fl)
-	/*@modifies buf, fl->processingFailed,
-		fl->currentFlags @*/
+	/*@modifies buf, fl->processingFailed, fl->currentFlags @*/
 {
     char *p, *pe, *q;
     const char *name;
@@ -682,7 +681,7 @@ static int parseForConfig(char * buf, FileList fl)
     if ((p = strstr(buf, (name = "%config"))) == NULL)
 	return 0;
 
-    fl->currentFlags = RPMFILE_CONFIG;
+    fl->currentFlags |= RPMFILE_CONFIG;
 
     for (pe = p; (pe-p) < strlen(name); pe++)
 	*pe = ' ';
@@ -852,9 +851,9 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
     const char *s;
 
     if (! initialized) {
-	const char *patt = rpmExpand("%{_langpatt}", NULL);
+	const char *patt = rpmExpand("%{?_langpatt}", NULL);
 	int rc = 0;
-	if (!(patt && *patt != '%'))
+	if (!(patt && *patt != '\0'))
 	    rc = 1;
 	else if (regcomp(&compiledPatt, patt, REG_EXTENDED))
 	    rc = -1;
@@ -889,17 +888,17 @@ static int parseForRegexMultiLib(const char *fileName)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
-    static int initialized = 0;
+    static int oneshot = 0;
     static int hasRegex = 0;
     static regex_t compiledPatt;
 
-    if (! initialized) {
+    if (! oneshot) {
 	const char *patt;
 	int rc = 0;
 
-	initialized = 1;
-	patt = rpmExpand("%{_multilibpatt}", NULL);
-	if (!(patt && *patt != '%'))
+	oneshot = 1;
+	patt = rpmExpand("%{?_multilibpatt}", NULL);
+	if (!(patt && *patt != '\0'))
 	    rc = 1;
 	else if (regcomp(&compiledPatt, patt, REG_EXTENDED | REG_NOSUB))
 	    rc = -1;
@@ -999,7 +998,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		if (!strcmp(s, "%dir"))
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
 		else if (!strcmp(s, "%multilib"))
-		    fl->currentFlags |= multiLib;
+		    fl->currentFlags |= RPMFILE_MULTILIB(multiLibNo);
 	    } else {
 		if (vfa->not)
 		    fl->currentFlags &= ~vfa->flag;
@@ -1500,6 +1499,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	if (isSrc)
 	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
+	/*
+	 * Mark multilib colored files as not-yet-processed.
+	 */
 	if (flp->flags & RPMFILE_MULTILIB_MASK)
 	    fi->fmapflags[i] |= CPIO_MULTILIB;
 
@@ -1718,13 +1720,12 @@ static int addFile(FileList fl, const char * diskURL,
 	flp->specdFlags = fl->currentSpecdFlags;
 	flp->verifyFlags = fl->currentVerifyFlags;
 
-	if (multiLib
+	/* If coloring and still white, apply regex to path. */
+	if (multiLibNo
 	    && !(flp->flags & RPMFILE_MULTILIB_MASK)
 	    && !parseForRegexMultiLib(fileURL)) {
-fprintf(stderr, "*** flp->flags |= 0x%x\n", multiLib);
-	    flp->flags |= multiLib;
+	    flp->flags |= RPMFILE_MULTILIB(multiLibNo);
 	}
-
 
 	/* Hard links need be counted only once. */
 	if (S_ISREG(flp->fl_mode) && flp->fl_nlink > 1) {
@@ -2568,7 +2569,7 @@ DepMsg_t depMsgs[] = {
 /**
  */
 /*@-bounds@*/
-static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
+static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibPass)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies cpioList, rpmGlobalMacroContext,
@@ -2603,9 +2604,10 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	/*
 	 * On 2nd dependency pass for multilib, skip files already processed.
 	 */
-	if (fi->fmapflags && multiLib == 2) {
+	if (fi->fmapflags && multiLibPass == 2) {
 	    if (!(fi->fmapflags[i] & CPIO_MULTILIB))
 		continue;
+	    /* Mark multilib colored file as processed. */
 	    fi->fmapflags[i] &= ~CPIO_MULTILIB;
 	}
 
@@ -2704,7 +2706,7 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 
 	/* Parse dependencies into header */
 	tagflags &= ~RPMSENSE_MULTILIB;
-	if (multiLib > 1)
+	if (multiLibPass > 1)
 	    tagflags |=  RPMSENSE_MULTILIB;
 	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0, tagflags);
 	readBuf = freeStringBuf(readBuf);
@@ -2890,9 +2892,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     
     if (!multiLib_oneshot) {
 	multiLib_oneshot = 1;
-	multiLib = rpmExpandNumeric("%{?_multilibno}");
-	if (multiLib)
-	    multiLib = RPMFILE_MULTILIB(multiLib);
+	multiLibNo = rpmExpandNumeric("%{?_multilibno}");
     }
     
     check_fileList = newStringBuf();
