@@ -9,8 +9,8 @@
 #include "misc.h"
 
 struct fileFate {
-    enum fileFate_e { KEEP, REMOVE } action;
-    Header winner;			/* only set for KEEP actions */
+    enum fileFate_e { CREATE, REMOVE } action;
+    Header winner;			/* only set for CREATE actions */
 };
 
 struct fileInfo {
@@ -55,6 +55,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     int numFates;
     struct fileInfo ** recs;
     int numRecs;
+    char ** othermd5s;
+    Header h;
+    int32_t * otherstates;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -94,6 +97,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
     ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
     fi = flList;
+
+    /* FIXME: we'd be better off assembling one very large file list and
+       calling fpLookupList only once. I'm not sure that the speedup is
+       worth the trouble though. */
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++, fi++) {
 	if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) &fi->fl, &fi->fc))
@@ -104,13 +111,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	fi->h = alp->h;
 	fi->action = ADDED;
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
-
-	for (i = 0; i < fi->fc; i++) {
-	    fi->fps[i] = fpLookup(fi->fl[i], 1);
-	    htAddEntry(ht, fi->fps + i, fi);
-	}
+	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
+	for (i = 0; i < fi->fc; i++)
+	     htAddEntry(ht, fi->fps + i, fi);
     }
-	
+
 /* FIXME 
     for (i = 0; i < ts->numRemovedPackages; i++) {
 	flList[numPackages]->h = alp->h;
@@ -169,16 +174,48 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 		}
 	    }
 
-	    fateList[numFates].action = KEEP;
+	    fateList[numFates].action = CREATE;
 	    fateList[numFates].winner = alp->h;
 	    htAddEntry(fates, fi->fps + i, fateList + numFates);
 	    numFates++;
+
+	    /* this is horrible inefficient :-( */
+	    if (ts->db && !rpmdbFindByFile(ts->db, fi->fl[i], &dbi)) {
+		for (j = 0; j < dbi.count; j++) {
+		    h = rpmdbGetRecord(ts->db, dbi.recs[j].recOffset);
+		    /* this shouldn't happen */
+		    if (!h) continue;
+
+		    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL,
+					    (void **) &othermd5s, NULL);
+		    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
+					    (void **) &otherstates, NULL);
+
+		    if ((otherstates[dbi.recs[j].fileNumber] == 
+				RPMFILE_STATE_NORMAL) &&
+			strcmp(winner->fmd5s[winnerFileNum], 
+			       othermd5s[dbi.recs[j].fileNumber])) {	
+			/* FIXME: we need to pass the conflicting header */
+			psAppend(probs, RPMPROB_FILE_CONFLICT, alp->key, 
+				 alp->h, fi->fl[i]);
+		    }
+
+		    free(othermd5s);
+		}
+	    }
 	}
 
 	numPackages++;
     }
 
     htFree(ht);
+
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	if (alp->h != flList[numPackages].h) continue;
+	fi = flList + numPackages;
+	free(fi->fl);
+	free(fi->fmd5s);
+    }
 
     if (probs->numProblems && (!okProbs || psTrim(okProbs, probs))) {
 	htFree(fates);
