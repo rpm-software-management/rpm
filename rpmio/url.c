@@ -21,6 +21,9 @@
 #ifndef	IPPORT_HTTP
 #define	IPPORT_HTTP	80
 #endif
+#ifndef	IPPORT_HTTPS
+#define	IPPORT_HTTPS	443
+#endif
 
 /**
  */
@@ -299,7 +302,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     }
 
     /* Perform one-time HTTP initialization */
-    if (u->urltype == URL_IS_HTTP) {
+    if (u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS) {
 
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
@@ -341,6 +344,7 @@ static struct urlstring {
     { "file://",	URL_IS_PATH },
     { "ftp://",		URL_IS_FTP },
     { "http://",	URL_IS_HTTP },
+    { "https://",	URL_IS_HTTPS },
     { "-",		URL_IS_DASH },
     { NULL,		URL_IS_UNKNOWN }
 };
@@ -378,9 +382,18 @@ urltype urlPath(const char * url, const char ** pathp)
 	path = strchr(url, '/');
 	if (path == NULL) path = url + strlen(url);
 	break;
-    case URL_IS_HTTP:
     case URL_IS_PATH:
 	url += sizeof("file://") - 1;
+	path = strchr(url, '/');
+	if (path == NULL) path = url + strlen(url);
+	break;
+    case URL_IS_HTTP:
+	url += sizeof("http://") - 1;
+	path = strchr(url, '/');
+	if (path == NULL) path = url + strlen(url);
+	break;
+    case URL_IS_HTTPS:
+	url += sizeof("https://") - 1;
 	path = strchr(url, '/');
 	if (path == NULL) path = url + strlen(url);
 	break;
@@ -489,6 +502,8 @@ int urlSplit(const char * url, urlinfo *uret)
 	    u->port = IPPORT_FTP;
 	else if (u->urltype == URL_IS_HTTP)
 	    u->port = IPPORT_HTTP;
+	else if (u->urltype == URL_IS_HTTPS)
+	    u->port = IPPORT_HTTPS;
     }
 
     myurl = _free(myurl);
@@ -542,8 +557,9 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : N
     }
 
     switch (urlType) {
-    case URL_IS_FTP:
+    case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_FTP:
     case URL_IS_PATH:
     case URL_IS_DASH:
     case URL_IS_UNKNOWN:

@@ -16,6 +16,19 @@
 /*@access FD_t @*/
 /*@access urlinfo @*/
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param p		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void *
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
+	/*@modifies p@*/
+{
+    if (p != NULL)	free((void *)p);
+    return NULL;
+}
+
 /* =============================================================== */
 static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -75,6 +88,7 @@ int Mkdir (const char * path, mode_t mode)
     case URL_IS_FTP:
 	return ftpMkdir(path, mode);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -98,6 +112,7 @@ int Chdir (const char * path)
     case URL_IS_FTP:
 	return ftpChdir(path);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -121,6 +136,7 @@ int Rmdir (const char * path)
     case URL_IS_FTP:
 	return ftpRmdir(path);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -148,8 +164,9 @@ int Rename (const char * oldpath, const char * newpath)
 
     oldut = urlPath(oldpath, &oe);
     switch (oldut) {
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	break;
@@ -169,6 +186,7 @@ fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (i
 	    return -2;
 	return ftpRename(oldpath, newpath);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	oldpath = oe;
@@ -192,8 +210,9 @@ int Link (const char * oldpath, const char * newpath)
 
     oldut = urlPath(oldpath, &oe);
     switch (oldut) {
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	break;
@@ -205,6 +224,7 @@ int Link (const char * oldpath, const char * newpath)
 
     newut = urlPath(newpath, &ne);
     switch (newut) {
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
@@ -236,6 +256,7 @@ int Unlink(const char * path) {
     case URL_IS_FTP:
 	return ftpUnlink(path);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -1097,14 +1118,149 @@ struct __dirstream {
 # define DT_LNK		10
 # define DT_SOCK	12
 # define DT_WHT		14
-typedef struct __dirstream *	FTPDIR;
+typedef struct __dirstream *	AVDIR;
 #else
-typedef DIR *			FTPDIR;
+typedef DIR *			AVDIR;
 #endif
 
 /*@unchecked@*/
-static int ftpmagicdir = 0x8440291;
-#define	ISFTPMAGIC(_dir) (!memcmp((_dir), &ftpmagicdir, sizeof(ftpmagicdir)))
+static int avmagicdir = 0x3607113;
+#define	ISAVMAGIC(_dir) (!memcmp((_dir), &avmagicdir, sizeof(avmagicdir)))
+
+/**
+ * Close an argv directory.
+ * @param dir		argv DIR
+ * @return 		0 always
+ */
+static int avClosedir(/*@only@*/ DIR * dir)
+	/*@globals fileSystem @*/
+	/*@modifies dir, fileSystem @*/
+{
+    AVDIR avdir = (AVDIR)dir;
+
+if (_av_debug)
+fprintf(stderr, "*** avClosedir(%p)\n", avdir);
+
+#if defined(HAVE_PTHREAD_H)
+    (void) pthread_mutex_destroy(&avdir->lock);
+#endif
+
+    avdir = _free(avdir);
+    return 0;
+}
+
+/**
+ * Return next entry from an argv directory.
+ * @param dir		argv DIR
+ * @return 		next entry
+ */
+/*@dependent@*/ /*@null@*/
+static struct dirent * avReaddir(DIR * dir)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    AVDIR avdir = (AVDIR)dir;
+    struct dirent * dp;
+    const char ** av;
+    unsigned char * dt;
+    int ac;
+    int i;
+
+    if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL) {
+	/* XXX TODO: EBADF errno. */
+	return NULL;
+    }
+
+    dp = (struct dirent *) avdir->data;
+    av = (const char **) (dp + 1);
+    ac = avdir->size;
+    dt = (char *) (av + (ac + 1));
+    i = avdir->offset + 1;
+
+/*@-boundsread@*/
+    if (i < 0 || i >= ac || av[i] == NULL)
+	return NULL;
+/*@=boundsread@*/
+
+    avdir->offset = i;
+
+    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
+/*@-type@*/
+    dp->d_ino = i + 1;		/* W2DO? */
+    dp->d_reclen = 0;		/* W2DO? */
+
+#if !defined(hpux) && !defined(sun)
+    dp->d_off = 0;		/* W2DO? */
+/*@-boundsread@*/
+    dp->d_type = dt[i];
+/*@=boundsread@*/
+#endif
+/*@=type@*/
+
+    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
+if (_av_debug)
+fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
+    
+    return dp;
+}
+
+/**
+ * Create an argv directory from URL collection.
+ * @param path		URL for collection path
+ * @return 		argv DIR
+ */
+/*@null@*/
+static DIR * avOpendir(const char * path)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    AVDIR avdir;
+    struct dirent * dp;
+    size_t nb = 0;
+    const char ** av;
+    unsigned char * dt;
+    char * t;
+    int ac;
+
+if (_av_debug)
+fprintf(stderr, "*** avOpendir(%s)\n", path);
+    nb = sizeof(".") + sizeof("..");
+    ac = 2;
+
+    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
+    avdir = xcalloc(1, nb);
+/*@-abstract@*/
+    dp = (struct dirent *) (avdir + 1);
+    av = (const char **) (dp + 1);
+    dt = (char *) (av + (ac + 1));
+    t = (char *) (dt + ac + 1);
+/*@=abstract@*/
+
+    avdir->fd = avmagicdir;
+/*@-usereleased@*/
+    avdir->data = (char *) dp;
+/*@=usereleased@*/
+    avdir->allocation = nb;
+    avdir->size = ac;
+    avdir->offset = -1;
+    avdir->filepos = 0;
+
+#if defined(HAVE_PTHREAD_H)
+    (void) pthread_mutex_init(&avdir->lock, NULL);
+#endif
+
+    ac = 0;
+    /*@-dependenttrans -unrecog@*/
+    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
+    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
+    /*@=dependenttrans =unrecog@*/
+
+    av[ac] = NULL;
+
+/*@-kepttrans@*/
+    return (DIR *) avdir;
+/*@=kepttrans@*/
+}
 
 /*@-boundswrite@*/
 /*@null@*/
@@ -1112,7 +1268,7 @@ static DIR * ftpOpendir(const char * path)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    FTPDIR mydir;
+    AVDIR avdir;
     struct dirent * dp;
     size_t nb;
     const char * s, * sb, * se;
@@ -1160,23 +1316,27 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	}
     }
 
-    nb += sizeof(*mydir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    mydir = xcalloc(1, nb);
+    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
+    avdir = xcalloc(1, nb);
     /*@-abstract@*/
-    dp = (struct dirent *) (mydir + 1);
+    dp = (struct dirent *) (avdir + 1);
     av = (const char **) (dp + 1);
     dt = (char *) (av + (ac + 1));
     t = (char *) (dt + ac + 1);
     /*@=abstract@*/
 
-    mydir->fd = ftpmagicdir;
+    avdir->fd = avmagicdir;
 /*@-usereleased@*/
-    mydir->data = (char *) dp;
+    avdir->data = (char *) dp;
 /*@=usereleased@*/
-    mydir->allocation = nb;
-    mydir->size = ac;
-    mydir->offset = -1;
-    mydir->filepos = 0;
+    avdir->allocation = nb;
+    avdir->size = ac;
+    avdir->offset = -1;
+    avdir->filepos = 0;
+
+#if defined(HAVE_PTHREAD_H)
+    (void) pthread_mutex_init(&avdir->lock, NULL);
+#endif
 
     ac = 0;
     /*@-dependenttrans -unrecog@*/
@@ -1241,77 +1401,70 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     av[ac] = NULL;
 
 /*@-kepttrans@*/
-    return (DIR *) mydir;
+    return (DIR *) avdir;
 /*@=kepttrans@*/
 }
 /*@=boundswrite@*/
 
-/*@dependent@*/ /*@null@*/
-static struct dirent * ftpReaddir(DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+/*@-boundswrite@*/
+/*@null@*/
+static DIR * davOpendir(const char * path)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
-    FTPDIR mydir = (FTPDIR)dir;
+    AVDIR avdir;
     struct dirent * dp;
+    size_t nb;
     const char ** av;
     unsigned char * dt;
+    char * t;
     int ac;
-    int i;
 
-    if (mydir == NULL || !ISFTPMAGIC(mydir) || mydir->data == NULL) {
-	/* XXX TODO: EBADF errno. */
-	return NULL;
-    }
+if (_dav_debug)
+fprintf(stderr, "*** davOpendir(%s)\n", path);
 
-    dp = (struct dirent *) mydir->data;
+/* XXX read dav collection. */
+
+    nb = sizeof(".") + sizeof("..");
+    ac = 2;
+
+    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
+    avdir = xcalloc(1, nb);
+    /*@-abstract@*/
+    dp = (struct dirent *) (avdir + 1);
     av = (const char **) (dp + 1);
-    ac = mydir->size;
     dt = (char *) (av + (ac + 1));
-    i = mydir->offset + 1;
+    t = (char *) (dt + ac + 1);
+    /*@=abstract@*/
 
-/*@-boundsread@*/
-    if (i < 0 || i >= ac || av[i] == NULL)
-	return NULL;
-/*@=boundsread@*/
+    avdir->fd = avmagicdir;
+/*@-usereleased@*/
+    avdir->data = (char *) dp;
+/*@=usereleased@*/
+    avdir->allocation = nb;
+    avdir->size = ac;
+    avdir->offset = -1;
+    avdir->filepos = 0;
 
-    mydir->offset = i;
-
-    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
-/*@-type@*/
-    dp->d_ino = i + 1;		/* W2DO? */
-    dp->d_reclen = 0;		/* W2DO? */
-
-#if !defined(hpux) && !defined(sun)
-    dp->d_off = 0;		/* W2DO? */
-/*@-boundsread@*/
-    dp->d_type = dt[i];
-/*@=boundsread@*/
+#if defined(HAVE_PTHREAD_H)
+    (void) pthread_mutex_init(&avdir->lock, NULL);
 #endif
-/*@=type@*/
 
-    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
-if (_ftp_debug)
-fprintf(stderr, "*** ftpReaddir(%p) %p \"%s\"\n", (void *)mydir, dp, dp->d_name);
-    
-    return dp;
+    ac = 0;
+    /*@-dependenttrans -unrecog@*/
+    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
+    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
+    /*@=dependenttrans =unrecog@*/
+
+/* XXX load dav collection. */
+
+    av[ac] = NULL;
+
+/*@-kepttrans@*/
+    return (DIR *) avdir;
+/*@=kepttrans@*/
 }
-
-static int ftpClosedir(/*@only@*/ DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies dir, fileSystem @*/
-{
-    FTPDIR mydir = (FTPDIR)dir;
-
-if (_ftp_debug)
-fprintf(stderr, "*** ftpClosedir(%p)\n", (void *)mydir);
-    if (mydir == NULL || !ISFTPMAGIC(mydir)) {
-	/* XXX TODO: EBADF errno. */
-	return -1;
-    }
-    free((void *)mydir);
-    mydir = NULL;
-    return 0;
-}
+/*@=boundswrite@*/
 
 int Stat(const char * path, struct stat * st)
 {
@@ -1324,6 +1477,7 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     case URL_IS_FTP:
 	return ftpStat(path, st);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -1349,6 +1503,7 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     case URL_IS_FTP:
 	return ftpLstat(path, st);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -1372,6 +1527,7 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     case URL_IS_FTP:
 	return ftpReadlink(path, buf, bufsiz);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -1396,8 +1552,9 @@ int Access(const char * path, int amode)
 if (_rpmio_debug)
 fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
     switch (ut) {
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1468,6 +1625,7 @@ if (_rpmio_debug)
 fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)errfunc, pglob);
 /*@=castfcnptr@*/
     switch (ut) {
+    case URL_IS_HTTPS:
     case URL_IS_FTP:
 /*@-type@*/
 	pglob->gl_closedir = Closedir;
@@ -1513,6 +1671,9 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
     case URL_IS_FTP:
 	return ftpOpendir(path);
 	/*@notreached@*/ break;
+    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
+	return davOpendir(path);
+	/*@notreached@*/ break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -1533,8 +1694,10 @@ struct dirent * Readdir(DIR * dir)
 {
 if (_rpmio_debug)
 fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
-    if (dir == NULL || ISFTPMAGIC(dir))
-	return ftpReaddir(dir);
+    if (dir == NULL)
+	return NULL;
+    if (ISAVMAGIC(dir))
+	return avReaddir(dir);
     return readdir(dir);
 }
 
@@ -1542,7 +1705,9 @@ int Closedir(DIR * dir)
 {
 if (_rpmio_debug)
 fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
-    if (dir == NULL || ISFTPMAGIC(dir))
-	return ftpClosedir(dir);
+    if (dir == NULL)
+	return 0;
+    if (ISAVMAGIC(dir))
+	return avClosedir(dir);
     return closedir(dir);
 }

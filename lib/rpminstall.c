@@ -416,8 +416,9 @@ if (fileURL[0] == '=') {
 #endif
 
 	switch (urlIsURL(fileURL)) {
-	case URL_IS_FTP:
+	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
+	case URL_IS_FTP:
 	{   const char *tfn;
 
 	    if (rpmIsVerbose())

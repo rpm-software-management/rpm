@@ -200,6 +200,8 @@ fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
 /*@=boundsread@*/
     if (u != NULL) {
 	switch (u->urltype) {
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
 	case URL_IS_FTP:
 if (_build_debug)
 fprintf(stderr, "*** addMacros\n");
@@ -208,7 +210,6 @@ fprintf(stderr, "*** addMacros\n");
 	    if (strcmp(rootDir, "/"))
 		addMacro(spec->macros, "_remroot", NULL, rootDir, RMIL_SPEC);
 	    break;
-	case URL_IS_HTTP:
 	default:
 	    break;
 	}
@@ -250,8 +251,9 @@ exit:
     }
     if (u != NULL) {
 	switch (u->urltype) {
-	case URL_IS_FTP:
+	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
+	case URL_IS_FTP:
 if (_build_debug)
 fprintf(stderr, "*** delMacros\n");
 	    delMacro(spec->macros, "_remsh");

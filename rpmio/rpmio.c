@@ -108,12 +108,22 @@ static int httpTimeoutSecs = TIMEOUT_SECS;
 /**
  */
 /*@unchecked@*/
+int _rpmio_debug = 0;
+
+/**
+ */
+/*@unchecked@*/
+int _av_debug = 0;
+
+/**
+ */
+/*@unchecked@*/
 int _ftp_debug = 0;
 
 /**
  */
 /*@unchecked@*/
-int _rpmio_debug = 0;
+int _dav_debug = 0;
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
@@ -209,8 +219,9 @@ DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
 	if (fstat(Fileno(fd), &sb) == 0)
 	    rc = sb.st_size;
 	/*@fallthrough@*/
-    case URL_IS_FTP:
+    case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_FTP:
     case URL_IS_DASH:
 	break;
     }
@@ -695,8 +706,9 @@ const char *urlStrerror(const char *url)
     const char *retstr;
     /*@-branchstate@*/
     switch (urlIsURL(url)) {
-    case URL_IS_FTP:
+    case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_FTP:
     {	urlinfo u;
 /* XXX This only works for httpReq/ftpLogin/ftpReq failures */
 	if (urlSplit(url, &u) == 0) {
@@ -1390,6 +1402,10 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 	    }
 	}
     }
+#ifdef	NOTYET
+    if (u->urltype == URL_IS_HTTPS) {
+    }
+#endif
 
 /*@-boundswrite@*/
     if (uret != NULL)
@@ -1816,9 +1832,10 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     case URL_IS_UNKNOWN:
     case URL_IS_PATH:
 	break;
-    case URL_IS_DASH:
-    case URL_IS_FTP:
+    case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_FTP:
+    case URL_IS_DASH:
     default:
         return -2;
 	/*@notreached@*/ break;
@@ -1896,6 +1913,7 @@ int ufdClose( /*@only@*/ void * cookie)
 	}
 
 	/* XXX Why not (u->urltype == URL_IS_HTTP) ??? */
+	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
 	if (u->service != NULL && !strcmp(u->service, "http")) {
 	    if (fd->wr_chunked) {
 		int rc;
@@ -2025,6 +2043,7 @@ static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 	fd->url = urlLink(u, "url (httpOpen)");
 	fd = fdLink(fd, "grab data (httpOpen)");
 	fd->urlType = URL_IS_HTTP;
+	/* XXX URL_IS_HTTPS */
     }
 
 exit:
@@ -2073,6 +2092,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd->wr_chunked = 0;
 	}
 	break;
+    case URL_IS_HTTPS:
     case URL_IS_HTTP:
 	fd = httpOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
@@ -2978,6 +2998,7 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	/* XXX gzdio and bzdio here too */
 
 	switch (urlIsURL(path)) {
+	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	    isHTTP = 1;
 	    /*@fallthrough@*/

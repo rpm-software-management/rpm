@@ -3467,8 +3467,9 @@ static int rpmioFileExists(const char * urlfn)
     if (*fn == '\0') fn = "/";
     /*@=branchstate@*/
     switch (urltype) {
-    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	if (Stat(fn, &buf)) {

@@ -972,6 +972,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    xx = execv(argv[0], (char *const *)argv);
 /*@=nullstate@*/
 	    break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
 	default:
 	    break;
 	}

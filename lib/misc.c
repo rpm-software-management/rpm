@@ -28,8 +28,9 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    if (errno != ENOENT)
 		break;
 	    /*@fallthrough@*/
-	case URL_IS_FTP:
+	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
+	case URL_IS_FTP:
 	    rc = Mkdir(dpath, 0755);
 	    break;
 	case URL_IS_DASH:
@@ -163,10 +164,12 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	if (*tfn == '\0') goto errxit;
 
 	switch (temput) {
-	case URL_IS_HTTP:
 	case URL_IS_DASH:
 	    goto errxit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
 	default:
 	    /*@switchbreak@*/ break;
 	}

@@ -183,7 +183,17 @@ extern int _rpmio_debug;
 
 /*@-redecl@*/
 /*@unchecked@*/
+extern int _av_debug;
+/*@=redecl@*/
+
+/*@-redecl@*/
+/*@unchecked@*/
 extern int _ftp_debug;
+/*@=redecl@*/
+
+/*@-redecl@*/
+/*@unchecked@*/
+extern int _dav_debug;
 /*@=redecl@*/
 
 #define DBG(_f, _m, _x) \

@@ -1741,6 +1741,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	globURL = globRoot = xmalloc(maxb);
 
 	switch (ut) {
+	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_PATH:
 	case URL_IS_DASH:

@@ -9,10 +9,12 @@
 
 static int _debug = 0;
 
-#define	FTPPATH		"ftp://porkchop/mnt/redhat/beehive/comps/dist/7.2-rpm"
-#define	DIRPATH		"/mnt/redhat/beehive/comps/dist/7.2-rpm"
-static char * dirpath = DIRPATH;
+#define	HTTPPATH	"https://wellfleet.jbj.org/rawhide/test/"
+#define	FTPPATH		"ftp://wellfleet.jbj.org/pub/rawhide/packages/test/"
+#define	DIRPATH		"/var/ftp/pub/rawhide/packages/test"
+static char * httppath = HTTPPATH;
 static char * ftppath = FTPPATH;
+static char * dirpath = DIRPATH;
 
 static void printDir(const char * path)
 {
@@ -69,8 +71,12 @@ main(int argc, const char *argv[])
 	rpmIncreaseVerbosity();
     }
 
+_av_debug = -1;
+_ftp_debug = -1;
+_dav_debug = -1;
     printDir(dirpath);
     printDir(ftppath);
+    printDir(httppath);
 
     return 0;
 }

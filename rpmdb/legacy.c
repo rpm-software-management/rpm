@@ -194,8 +194,9 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 	break;
       }	/*@fallthrough@*/
 #endif
-    case URL_IS_FTP:
+    case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_FTP:
     case URL_IS_DASH:
     default:
 	/* Either use the pipe to prelink -y or open the URL. */

@@ -113,6 +113,7 @@ static int checkOwners(const char * urlfn)
     fn = NULL;
     urltype = urlPath(urlfn, &fn);
     switch (urltype) {
+    case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
@@ -217,6 +218,7 @@ static int checkOwners(const char * urlfn)
     fn = NULL;
     urltype = urlPath(urlfn, &fn);
     switch (urltype) {
+    case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:

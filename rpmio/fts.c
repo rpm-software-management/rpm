@@ -193,6 +193,7 @@ Fts_open(char * const * argv, int options,
 /*@=boundswrite@*/
 			goto mem3;
 			/*@notreached@*/ /*@switchbreak@*/ break;
+		case URL_IS_HTTPS:
 		case URL_IS_HTTP:
 		case URL_IS_FTP:
 			SET(FTS_NOCHDIR);
