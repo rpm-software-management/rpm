@@ -119,6 +119,7 @@ signextend(struct magic *m, uint32_t v)
 /*
  * eatsize(): Eat the size spec from a number [eg. 10UL]
  */
+/*@-bounds@*/
 static void
 eatsize(/*@out@*/ char **p)
 	/*@modifies *p @*/
@@ -142,6 +143,7 @@ eatsize(/*@out@*/ char **p)
 
 	*p = l;
 }
+/*@=bounds@*/
 
 /* Single hex char to int; -1 if not a hex char. */
 static int
@@ -165,6 +167,8 @@ hextoint(int c)
  * Copy the converted version to "p", returning its length in *slen.
  * Return updated scan pointer as function result.
  */
+/*@-shiftimplementation@*/
+/*@-bounds@*/
 static char *
 getstr(/*@returned@*/ char *s, char *p, int plen, /*@out@*/ int *slen)
 	/*@globals fileSystem @*/
@@ -264,12 +268,15 @@ out:
 	*slen = p - origp;
 	return s;
 }
+/*@=bounds@*/
+/*@=shiftimplementation@*/
 
 /* 
  * Read a numeric value from a pointer, into the value union of a magic 
  * pointer, according to the magic type.  Update the string pointer to point 
  * just after the number read.  Return 0 for success, non-zero for failure.
  */
+/*@-bounds@*/
 static int
 getvalue(struct magic *m, /*@out@*/ char **p)
 	/*@globals fileSystem @*/
@@ -287,10 +294,12 @@ getvalue(struct magic *m, /*@out@*/ char **p)
 		}
 	return 0;
 }
+/*@=bounds@*/
 
 /*
  * parse one line from magic file, put into magic[index++] if valid
  */
+/*@-bounds@*/
 static int
 parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		char *l, int action)
@@ -648,6 +657,7 @@ GetDesc:
 	++(*nmagicp);		/* make room for next */
 	return 0;
 }
+/*@=bounds@*/
 
 /*
  * Print a string containing C character escapes.
@@ -708,6 +718,7 @@ showstr(FILE *fp, const char *s, int len)
 /*
  * swap a short
  */
+/*@-bounds@*/
 static uint16_t
 swap2(uint16_t sv)
 	/*@*/
@@ -719,10 +730,12 @@ swap2(uint16_t sv)
 	d[1] = s[0];
 	return rv;
 }
+/*@=bounds@*/
 
 /*
  * swap an int
  */
+/*@-bounds@*/
 static uint32_t
 swap4(uint32_t sv)
 	/*@*/
@@ -736,6 +749,7 @@ swap4(uint32_t sv)
 	d[3] = s[0];
 	return rv;
 }
+/*@=bounds@*/
 
 /*
  * byteswap a single magic entry
@@ -755,6 +769,7 @@ void bs1(struct magic *m)
 /*
  * Byteswap an mmap'ed file if needed
  */
+/*@-bounds@*/
 static void
 byteswap(/*@null@*/ struct magic *m, uint32_t nmagic)
 	/*@modifies m @*/
@@ -764,6 +779,7 @@ byteswap(/*@null@*/ struct magic *m, uint32_t nmagic)
 	for (i = 0; i < nmagic; i++)
 		bs1(&m[i]);
 }
+/*@=bounds@*/
 
 /*
  * make a dbname
@@ -786,6 +802,7 @@ mkdbname(const char *fn)
  * parse from a file
  * const char *fn: name of magic file
  */
+/*@-bounds@*/
 static int
 apprentice_file(fmagic fm, /*@out@*/ struct magic **magicp,
 		/*@out@*/ uint32_t *nmagicp, const char *fn, int action)
@@ -833,10 +850,12 @@ apprentice_file(fmagic fm, /*@out@*/ struct magic **magicp,
 	}
 	return errs;
 }
+/*@=bounds@*/
 
 /*
  * handle an mmaped file.
  */
+/*@-bounds@*/
 static int
 apprentice_compile(/*@unused@*/ const fmagic fm,
 		/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
@@ -882,10 +901,12 @@ apprentice_compile(/*@unused@*/ const fmagic fm,
 	(void)close(fd);
 	return 0;
 }
+/*@=bounds@*/
 
 /*
  * handle a compiled file.
  */
+/*@-bounds@*/
 static int
 apprentice_map(/*@unused@*/ const fmagic fm,
 		/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
@@ -932,6 +953,8 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	(void)close(fd);
 	fd = -1;
 	ptr = (uint32_t *) *magicp;
+	if (ptr == NULL)	/* XXX can't happen */
+		goto errxit;
 	if (*ptr != MAGICNO) {
 		if (swap4(*ptr) != MAGICNO) {
 			(void)fprintf(stderr, "%s: Bad magic in `%s'\n",
@@ -974,6 +997,7 @@ errxit:
 /*@=branchstate@*/
 	return -1;
 }
+/*@=bounds@*/
 
 /*
  * Handle one file.

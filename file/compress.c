@@ -159,6 +159,7 @@ pipe2file(int fd, void *startbuf, size_t nbytes)
 #define FNAME		(1 << 3)
 #define FCOMMENT	(1 << 4)
 
+/*@-bounds@*/
 static int
 uncompressgzipped(const unsigned char *old,
 		/*@out@*/ unsigned char **newch, int n)
@@ -195,9 +196,11 @@ uncompressgzipped(const unsigned char *old,
 	z.zfree = NULL;
 	z.opaque = NULL;
 
+/*@-sizeoftype@*/
 /*@-type@*/
 	rc = inflateInit2(&z, -15);
 /*@=type@*/
+/*@=sizeoftype@*/
 	if (rc != Z_OK) {
 		(void) fprintf(stderr,"%s: zlib: %s\n", __progname, z.msg);
 		return 0;
@@ -221,8 +224,10 @@ uncompressgzipped(const unsigned char *old,
 
 	return n;
 }
+/*@=bounds@*/
 #endif
 
+/*@-bounds@*/
 static int
 uncompressbuf(int method, const unsigned char *old,
 		/*@out@*/ unsigned char **newch, int n)
@@ -293,6 +298,7 @@ errxit:
 	/*@notreached@*/
 	return 0;
 }
+/*@=bounds@*/
 
 /*
  * compress routines:
@@ -309,8 +315,10 @@ fmagicZ(fmagic fm)
 	int i;
 
 	for (i = 0; i < ncompr; i++) {
+/*@-boundsread@*/
 		if (nb < compr[i].maglen)
 			continue;
+/*@=boundsread@*/
 		if (memcmp(buf, compr[i].magic, compr[i].maglen) == 0 &&
 		    (newsize = uncompressbuf(i, buf, &newbuf, nb)) != 0) {
 			fm->buf = newbuf;

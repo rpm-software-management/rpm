@@ -1,5 +1,6 @@
 #ifndef	H_SYSTEM
 #define	H_SYSTEM
+/*@-redef@*/
 
 #ifndef __linux__
 #define _LARGEFILE_SOURCE
@@ -243,6 +244,7 @@ char * xstrdup (const char *str)
 
 /**
  */
+/*@-shadow@*/
 /*@unused@*/ /*@exits@*/ /*@only@*/
 static inline void * vmefail(/*@unused@*/ size_t nb)
 	/*@globals fileSystem @*/
@@ -254,6 +256,7 @@ static inline void * vmefail(/*@unused@*/ size_t nb)
 	return NULL;
 /*@=nullret@*/
 }
+/*@=shadow@*/
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>
@@ -317,5 +320,7 @@ static inline const char *rcsid(const char *p) { \
 	return rcsid(p = id); \
 }
 #endif
+
+/*@=redef@*/
 
 #endif	/* H_SYSTEM */

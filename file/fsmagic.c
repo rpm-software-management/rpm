@@ -33,6 +33,7 @@ FILE_RCSID("@(#)Id: fsmagic.c,v 1.36 2002/07/03 19:00:41 christos Exp ")
 
 /*@access fmagic @*/
 
+/*@-bounds@*/
 int
 fmagicD(fmagic fm)
 {
@@ -97,8 +98,10 @@ fmagicD(fmagic fm)
 			dv_unit(st->st_rdev),
 			dv_subunit(st->st_rdev));
 # else
+/*@-shiftimplementation@*/
 		fmagicPrintf(fm, "character special (%ld/%ld)",
 			(long) major(st->st_rdev), (long) minor(st->st_rdev));
+/*@=shiftimplementation@*/
 # endif
 #else
 		fmagicPrintf(fm, "character special");
@@ -121,8 +124,10 @@ fmagicD(fmagic fm)
 			dv_unit(st->st_rdev),
 			dv_subunit(st->st_rdev));
 # else
+/*@-shiftimplementation@*/
 		fmagicPrintf(fm, "block special (%ld/%ld)",
 			(long) major(st->st_rdev), (long) minor(st->st_rdev));
+/*@=shiftimplementation@*/
 # endif
 #else
 		fmagicPrintf(fm, "block special");
@@ -226,6 +231,7 @@ fmagicD(fmagic fm)
 	}
 	return 0;
 }
+/*@=bounds@*/
 
 int
 fmagicF(fmagic fm, int zfl)
@@ -264,6 +270,7 @@ fmagicF(fmagic fm, int zfl)
 /*
  * fmagicProcess - process input file
  */
+/*@-bounds@*/
 int
 fmagicProcess(fmagic fm, const char *fn, int wid)
 {
@@ -375,3 +382,4 @@ exit:
 	fm->nb = 0;
 	return ret;
 }
+/*@=bounds@*/

@@ -56,6 +56,7 @@ static	int	nobuffer = 0;   /* Do not buffer stdout */
 /*
  * unwrap -- read a file of filenames, do each one.
  */
+/*@-bounds@*/
 static void
 unwrap(fmagic fm, char *fn)
 	/*@globals fileSystem, internalState @*/
@@ -84,7 +85,10 @@ unwrap(fmagic fm, char *fn)
 		rewind(f);
 	}
 
-	while (fgets(buf, sizeof(buf), f) != NULL) {
+/*@-nullpass@*/	/* LCL: buf is null??? */
+	while (fgets(buf, sizeof(buf), f) != NULL)
+/*@=nullpass@*/
+	{
 		buf[strlen(buf)-1] = '\0';
 		fm->obp = fm->obuf;
 		*fm->obp = '\0';
@@ -97,6 +101,7 @@ unwrap(fmagic fm, char *fn)
 
 	(void) fclose(f);
 }
+/*@=bounds@*/
 
 /*@exits@*/
 static void
@@ -147,6 +152,7 @@ help(void)
 /*
  * main - parse arguments and handle options
  */
+/*@-bounds@*/
 int
 main(int argc, char **argv)
 	/*@globals global_fmagic, nobuffer,
@@ -306,7 +312,9 @@ main(int argc, char **argv)
 		usage();
 
 	if (!app) {
+/*@-nullpass@*/ /* FIX: fm->magicfile may be null */
 		ret = fmagicSetup(fm, fm->magicfile, action);
+/*@=nullpass@*/
 		if (action)
 			exit(ret);
 		app = 1;
@@ -341,3 +349,4 @@ main(int argc, char **argv)
 
 	return 0;
 }
+/*@=bounds@*/

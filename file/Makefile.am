@@ -238,3 +238,7 @@ listobjs:
 lint:
 	$(LINT)  $(DEFS) $(INCLUDES) $(file_SOURCES) $(libfmagic_la_SOURCES) $(pkginc_HEADERS) $(noinst_HEADERS)
 
+.PHONY: sources
+sources:
+	@echo $(libfmagic_la_SOURCES:%=file/%)
+

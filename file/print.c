@@ -55,8 +55,10 @@ mdump(struct magic *m)
 	static const char optyp[] = { '@', '&', '|', '^', '+', '-', 
 				      '*', '/', '%' };
 	(void) fputc('[', stderr);
+/*@-formatconst@*/
 	(void) fprintf(stderr, ">>>>>>>> %d" + 8 - (m->cont_level & 7),
 		       m->offset);
+/*@=formatconst@*/
 
 	if (m->flag & INDIR) {
 		(void) fprintf(stderr, "(%s,",
@@ -171,6 +173,9 @@ magwarn(const char *f, ...)
 	(void) vfprintf(stderr, f, va);
 	va_end(va);
 	(void) fputc('\n', stderr);
+/*@-globstate@*/ /* FIX: __progname might be null */
+	return;
+/*@=globstate@*/
 }
 
 void
@@ -181,7 +186,9 @@ fmagicPrintf(const fmagic fm, const char *f, ...)
 	int rc;
 
 	va_start(va, f);
+/*@-boundswrite@*/
 	rc = vsnprintf(fm->obp, fm->nob, f, va);
+/*@=boundswrite@*/
 	va_end(va);
 
 	fm->obuf[sizeof(fm->obuf)-1] = '\0';
@@ -195,7 +202,8 @@ fmagicPrintf(const fmagic fm, const char *f, ...)
 char *
 fmttime(long v, int local)
 {
-	char *pp, *rt;
+	char *pp = "???";
+	char *rt;
 	time_t t = (time_t)v;
 	struct tm *tm;
 
@@ -218,7 +226,8 @@ fmttime(long v, int local)
 		if (daylight)
 			t += 3600;
 		tm = gmtime(&t);
-		pp = asctime(tm);
+		if (tm != NULL)
+			pp = asctime(tm);
 	}
 
 /*@-modobserver@*/

@@ -50,7 +50,7 @@ union record {
 #define	CHKBLANKS	"        "	/* 8 blanks, no null */
 
 /* The magic field is filled with this if uname and gname are valid. */
-#define	TMAGIC		"ustar  "	/* 7 chars and a null */
+#define	TARMAGIC		"ustar  "	/* 7 chars and a null */
 
 #if 0
 /* The linkflag defines the type of file */

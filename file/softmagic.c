@@ -33,6 +33,7 @@ FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 
 /*@access fmagic @*/
 
+/*@-bounds@*/
 static int32_t
 fmagicSPrint(const fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
@@ -46,7 +47,9 @@ fmagicSPrint(const fmagic fm, struct magic *m)
   	case BYTE:
 		v = signextend(m, p->b);
 		fmagicPrintf(fm, m->desc, (unsigned char) v);
+/*@-sizeoftype@*/
 		t = m->offset + sizeof(char);
+/*@=sizeoftype@*/
 		break;
 
   	case SHORT:
@@ -54,7 +57,9 @@ fmagicSPrint(const fmagic fm, struct magic *m)
   	case LESHORT:
 		v = signextend(m, p->h);
 		fmagicPrintf(fm, m->desc, (unsigned short) v);
+/*@-sizeoftype@*/
 		t = m->offset + sizeof(short);
+/*@=sizeoftype@*/
 		break;
 
   	case LONG:
@@ -62,7 +67,9 @@ fmagicSPrint(const fmagic fm, struct magic *m)
   	case LELONG:
 		v = signextend(m, p->l);
 		fmagicPrintf(fm, m->desc, (uint32_t) v);
+/*@-sizeoftype@*/
 		t = m->offset + sizeof(int32_t);
+/*@=sizeoftype@*/
   		break;
 
   	case STRING:
@@ -86,14 +93,18 @@ fmagicSPrint(const fmagic fm, struct magic *m)
 	case BEDATE:
 	case LEDATE:
 		fmagicPrintf(fm, m->desc, fmttime(p->l, 1));
+/*@-sizeoftype@*/
 		t = m->offset + sizeof(time_t);
+/*@=sizeoftype@*/
 		break;
 
 	case LDATE:
 	case BELDATE:
 	case LELDATE:
 		fmagicPrintf(fm, m->desc, fmttime(p->l, 0));
+/*@-sizeoftype@*/
 		t = m->offset + sizeof(time_t);
+/*@=sizeoftype@*/
 		break;
 	case REGEX:
 	  	fmagicPrintf(fm, m->desc, p->s);
@@ -106,12 +117,14 @@ fmagicSPrint(const fmagic fm, struct magic *m)
 	}
 	return(t);
 }
+/*@=bounds@*/
 
 /*
  * Convert the byte order of the data we are looking at
  * While we're here, let's apply the mask operation
  * (unless you have a better idea)
  */
+/*@-bounds@*/
 static int
 fmagicSConvert(fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
@@ -382,6 +395,7 @@ fmagicSConvert(fmagic fm, struct magic *m)
 		return 0;
 	}
 }
+/*@=bounds@*/
 
 
 static void
@@ -395,6 +409,7 @@ fmagicSDebug(int32_t offset, char *str, int len)
 	(void) fputc('\n', stderr);
 }
 
+/*@-bounds@*/
 static int
 fmagicSGet(fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
@@ -762,8 +777,10 @@ fmagicSGet(fmagic fm, struct magic *m)
 			break;
 		}
 
-		if (offset + sizeof(*p) > nb)
+/*@-compmempass@*/
+		if (buf == NULL || offset + sizeof(*p) > nb)
 			return 0;
+/*@=compmempass@*/
 
 		memcpy(p, buf + offset, sizeof(*p));
 
@@ -772,11 +789,15 @@ fmagicSGet(fmagic fm, struct magic *m)
 			mdump(m);
 		}
 	}
+/*@-compmempass@*/
 	if (!fmagicSConvert(fm, m))
 	  return 0;
 	return 1;
+/*@=compmempass@*/
 }
+/*@=bounds@*/
 
+/*@-bounds@*/
 static int
 fmagicSCheck(const fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
@@ -874,7 +895,7 @@ fmagicSCheck(const fmagic fm, struct magic *m)
 			error(EXIT_FAILURE, 0, "regex error %d, (%s)\n", rc, errmsg);
 			/*@notreached@*/
 		} else {
-			rc = regexec(&rx, p->buf, 0, 0, 0);
+			rc = regexec(&rx, p->buf, 0, NULL, 0);
 			return !rc;
 		}
 	}
@@ -961,6 +982,7 @@ fmagicSCheck(const fmagic fm, struct magic *m)
 
 	return matched;
 }
+/*@=bounds@*/
 
 /*
  * Go through the whole list, stopping if you find a match.  Process all
@@ -989,6 +1011,7 @@ fmagicSCheck(const fmagic fm, struct magic *m)
  *	If a continuation matches, we bump the current continuation level
  *	so that higher-level continuations are processed.
  */
+/*@-bounds@*/
 static int
 fmagicSMatch(const fmagic fm)
 	/*@globals fileSystem @*/
@@ -1093,6 +1116,7 @@ fmagicSMatch(const fmagic fm)
 	}
 	return ret;	/* This is hit if -k is set or there is no match */
 }
+/*@=bounds@*/
 
 /*
  * fmagicS - lookup one file in database 
@@ -1105,10 +1129,14 @@ fmagicS(fmagic fm)
 /*@-branchstate@*/
 	if (fm->mlist != NULL)
 	for (fm->ml = fm->mlist->next; fm->ml != fm->mlist; fm->ml = fm->ml->next) {
+/*@-compmempass@*/
 		if (fmagicSMatch(fm))
 			return 1;
+/*@=compmempass@*/
 	}
 /*@=branchstate@*/
 
+/*@-compmempass@*/
 	return 0;
+/*@=compmempass@*/
 }

@@ -29,6 +29,8 @@
 #ifndef __file_h__
 #define __file_h__
 
+/*@-redef@*/
+
 #ifndef HOWMANY
 # define HOWMANY 65536		/* how much of the file to look at */
 #endif
@@ -218,4 +220,5 @@ extern int pipe2file(int fd, void *startbuf, size_t nbytes)
 }
 #endif
 
+/*@=redef@*/
 #endif /* __file_h__ */

@@ -1,6 +1,9 @@
+/*	$NetBSD: readelf.h,v 1.9 2002/05/18 07:00:47 pooka Exp $	*/
+/*@-redef@*/
+
 /*
  * readelf.h 
- * @(#)Id: readelf.h,v 1.7 1999/02/14 17:16:11 christos Exp 
+ * @(#)Id: readelf.h,v 1.9 2002/05/16 18:45:56 christos Exp 
  *
  * Provide elf data structures for non-elf machines, allowing file
  * non-elf hosts to determine if an elf binary is stripped.
@@ -8,6 +11,10 @@
  */
 #ifndef __fake_elf_h__
 #define __fake_elf_h__
+
+#if HAVE_STDINT_H
+#include <stdint.h>
+#endif
 
 typedef uint32_t	Elf32_Addr;
 typedef uint32_t	Elf32_Off;
@@ -31,6 +38,7 @@ typedef uint8_t		Elf64_Char;
 
 #define EI_NIDENT	16
 
+/*@-matchfields@*/
 typedef struct {
     Elf32_Char	e_ident[EI_NIDENT];
     Elf32_Half	e_type;
@@ -64,6 +72,7 @@ typedef struct {
     Elf64_Half	e_shnum;
     Elf64_Half	e_shstrndx;
 } Elf64_Ehdr;
+/*@=matchfields@*/
 
 /* e_type */
 #define ET_EXEC		2
@@ -147,6 +156,7 @@ typedef struct {
     Elf32_Word	sh_entsize;
 } Elf32_Shdr;
 
+/*@-matchfields@*/
 typedef struct {
     Elf64_Word	sh_name;
     Elf64_Word	sh_type;
@@ -159,12 +169,15 @@ typedef struct {
     Elf64_Off	sh_addralign;
     Elf64_Off	sh_entsize;
 } Elf64_Shdr;
+/*@=matchfields@*/
 
 /* Notes used in ET_CORE */
 #define NT_PRSTATUS	1
 #define NT_PRFPREG	2
 #define NT_PRPSINFO	3
 #define NT_TASKSTRUCT	4
+
+#define	NT_NETBSD_CORE_PROCINFO		1
 
 /* Note header in a PT_NOTE section */
 typedef struct elf_note {
@@ -185,5 +198,20 @@ typedef struct {
 #define	NT_PRXREG	4
 #define	NT_PLATFORM	5
 #define	NT_AUXV		6
+
+/* Note types used in executables */
+/* NetBSD executables (name = "NetBSD") */
+#define NT_NETBSD_VERSION	1
+#define NT_NETBSD_EMULATION	2
+#define NT_FREEBSD_VERSION	1
+#define NT_OPENBSD_VERSION	1
+/* GNU executables (name = "GNU") */
+#define NT_GNU_VERSION		1
+
+/* GNU OS tags */
+#define GNU_OS_LINUX	0
+#define GNU_OS_HURD	1
+#define GNU_OS_SOLARIS	2
+/*@=redef@*/
 
 #endif

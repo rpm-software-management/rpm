@@ -55,6 +55,7 @@ FILE_RCSID("@(#)Id: ascmagic.c,v 1.32 2002/07/03 18:26:37 christos Exp ")
  *
  * Result is -1 if the field is invalid (all blank, or nonoctal).
  */
+/*@-bounds@*/
 static int
 from_oct(int digs, char *where)
 	/*@*/
@@ -67,16 +68,19 @@ from_oct(int digs, char *where)
 			return -1;		/* All blank field */
 	}
 	value = 0;
+/*@-shiftimplementation@*/
 	while (digs > 0 && isodigit(*where)) {	/* Scan til nonoctal */
 		value = (value << 3) | (*where++ - '0');
 		--digs;
 	}
+/*@=shiftimplementation@*/
 
 	if (digs > 0 && *where && !isspace((unsigned char)*where))
 		return -1;			/* Ended on non-space/nul */
 
 	return value;
 }
+/*@=bounds@*/
 
 /*
  * Return 
@@ -101,7 +105,10 @@ is_tar(const fmagic fm)
 
 	sum = 0;
 	p = header->charptr;
-	for (i = sizeof(union record); --i >= 0;) {
+/*@-sizeoftype@*/
+	for (i = sizeof(union record); --i >= 0;)
+/*@=sizeoftype@*/
+	{
 		/*
 		 * We can't use unsigned char here because of old compilers,
 		 * e.g. V7.
@@ -117,7 +124,7 @@ is_tar(const fmagic fm)
 	if (sum != recsum)
 		return 0;	/* Not a tar archive */
 	
-	if (!strcmp(header->header.magic, TMAGIC)) 
+	if (!strcmp(header->header.magic, TARMAGIC)) 
 		return 2;		/* Unix Standard tar archive */
 
 	return 1;			/* Old fashioned tar archive */
@@ -208,6 +215,7 @@ static char text_chars[256] = {
 	I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I   /* 0xfX */
 };
 
+/*@-bounds@*/
 static int
 looks_ascii(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
@@ -228,7 +236,9 @@ looks_ascii(const unsigned char *buf, int nb,
 
 	return 1;
 }
+/*@=bounds@*/
 
+/*@-bounds@*/
 static int
 looks_latin1(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
@@ -249,7 +259,9 @@ looks_latin1(const unsigned char *buf, int nb,
 
 	return 1;
 }
+/*@=bounds@*/
 
+/*@-bounds@*/
 static int
 looks_extended(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
@@ -270,7 +282,9 @@ looks_extended(const unsigned char *buf, int nb,
 
 	return 1;
 }
+/*@=bounds@*/
 
+/*@-bounds@*/
 static int
 looks_utf8(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
@@ -334,7 +348,9 @@ looks_utf8(const unsigned char *buf, int nb,
 done:
 	return gotone;   /* don't claim it's UTF-8 if it's all 7-bit */
 }
+/*@=bounds@*/
 
+/*@-bounds@*/
 static int
 looks_unicode(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
@@ -371,6 +387,7 @@ looks_unicode(const unsigned char *buf, int nb,
 
 	return 1;
 }
+/*@=bounds@*/
 
 #undef F
 #undef T
@@ -456,6 +473,7 @@ static unsigned char ebcdic_1047_to_8859[] = {
 /*
  * Copy buf[0 ... nb-1] into out[], translating EBCDIC to ASCII.
  */
+/*@-bounds@*/
 static void
 from_ebcdic(const unsigned char *buf, int nb, /*@out@*/ unsigned char *otp)
 	/*@modifies *otp @*/
@@ -466,7 +484,9 @@ from_ebcdic(const unsigned char *buf, int nb, /*@out@*/ unsigned char *otp)
 		otp[i] = ebcdic_to_ascii[buf[i]];
 	}
 }
+/*@=bounds@*/
 
+/*@-bounds@*/
 static int
 fmagicAMatch(const unsigned char *s, const unichar *us, int ulen)
 	/*@*/
@@ -483,8 +503,10 @@ fmagicAMatch(const unsigned char *s, const unichar *us, int ulen)
 	else
 		return 1;
 }
+/*@=bounds@*/
 
 /* int nb: size actually read */
+/*@-bounds@*/
 int
 fmagicA(fmagic fm)
 {
@@ -636,7 +658,10 @@ fmagicA(fmagic fm)
 		/*
 		 * compare the word thus isolated against the token list
 		 */
-		for (p = names; p < names + NNAMES; p++) {
+/*@-sizeoftype@*/
+		for (p = names; p < names + NNAMES; p++)
+/*@=sizeoftype@*/
+		{
 			if (p->name == NULL)
 				/*@innerbreak@*/ break;
 			if (fmagicAMatch(p->name, ubuf + i, end - i)) {
@@ -745,3 +770,4 @@ subtype_identified:
 
 	return 1;
 }
+/*@=bounds@*/

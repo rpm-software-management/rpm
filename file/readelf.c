@@ -9,6 +9,7 @@ FILE_RCSID("@(#)Id: readelf.c,v 1.22 2002/07/03 18:26:38 christos Exp ")
 
 /*@access fmagic @*/
 
+/*@-bounds@*/
 static uint16_t
 getu16(const fmagic fm, uint16_t value)
 	/*@*/
@@ -76,6 +77,7 @@ getu64(const fmagic fm, uint64_t value)
 	} else
 		return value;
 }
+/*@=bounds@*/
 
 #define sh_addr		(fm->cls == ELFCLASS32		\
 			 ? (void *) &sh32		\
@@ -111,6 +113,7 @@ getu64(const fmagic fm, uint64_t value)
 			 ? prpsoffsets32[i]		\
 			 : prpsoffsets64[i])
 
+/*@-bounds@*/
 static void
 doshn(fmagic fm, off_t off, int num, size_t size)
 	/*@globals fileSystem @*/
@@ -136,12 +139,14 @@ doshn(fmagic fm, off_t off, int num, size_t size)
 	}
 	fmagicPrintf(fm, ", stripped");
 }
+/*@=bounds@*/
 
 /*
  * Look through the program headers of an executable image, searching
  * for a PT_INTERP section; if one is found, it's dynamically linked,
  * otherwise it's statically linked.
  */
+/*@-bounds@*/
 static void
 dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	/*@globals fileSystem @*/
@@ -215,7 +220,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					/*
 					 * We're out of note headers.
 					 */
-					break;
+					/*@innerbreak@*/ break;
 				}
 
 				if (offset + nh_descsz >= bufsize)
@@ -301,6 +306,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	}
 	fmagicPrintf(fm, ", %s linked%s", linking_style, shared_libraries);
 }
+/*@=bounds@*/
 
 #ifdef ELFCORE
 /*@unchecked@*/ /*@observer@*/
@@ -353,6 +359,7 @@ static const char *os_style_names[] = {
 	"NetBSD",
 };
 
+/*@-bounds@*/
 static void
 dophn_core(fmagic fm, off_t off, int num, size_t size)
 	/*@globals fileSystem @*/
@@ -556,15 +563,19 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 		}
 	}
 }
+/*@=bounds@*/
 #endif
 
+/*@-bounds@*/
 void
 fmagicE(fmagic fm)
 {
+/*@-sizeoftype@*/
 	union {
 		int32_t l;
 		char c[sizeof (int32_t)];
 	} u;
+/*@=sizeoftype@*/
 
 	/*
 	 * If we can't seek, it must be a pipe, socket or fifo.
@@ -588,13 +599,15 @@ fmagicE(fmagic fm)
 
 	if (fm->cls == ELFCLASS32) {
 		Elf32_Ehdr elfhdr;
-		if (fm->nb <= sizeof (Elf32_Ehdr))
+		if (fm->nb <= sizeof (elfhdr))
 			return;
 
 
 		u.l = 1;
 		(void) memcpy(&elfhdr, fm->buf, sizeof elfhdr);
+/*@-sizeoftype@*/
 		fm->swap = (u.c[sizeof(int32_t) - 1] + 1) != elfhdr.e_ident[EI_DATA];
+/*@=sizeoftype@*/
 
 		if (getu16(fm, elfhdr.e_type) == ET_CORE) 
 #ifdef ELFCORE
@@ -622,13 +635,14 @@ fmagicE(fmagic fm)
 
         if (fm->cls == ELFCLASS64) {
 		Elf64_Ehdr elfhdr;
-		if (fm->nb <= sizeof (Elf64_Ehdr))
+		if (fm->nb <= sizeof (elfhdr))
 			return;
-
 
 		u.l = 1;
 		(void) memcpy(&elfhdr, fm->buf, sizeof elfhdr);
+/*@-sizeoftype@*/
 		fm->swap = (u.c[sizeof(int32_t) - 1] + 1) != elfhdr.e_ident[EI_DATA];
+/*@=sizeoftype@*/
 
 		if (getu16(fm, elfhdr.e_type) == ET_CORE) 
 #ifdef ELFCORE
@@ -667,4 +681,5 @@ fmagicE(fmagic fm)
 		return;
 	}
 }
+/*@=bounds@*/
 #endif	/* BUILTIN_ELF */
