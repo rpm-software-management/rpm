@@ -1,3 +1,7 @@
+2.4.10 -> 2.4.11:
+	- HAVE_SYS_SOCKET_H was mistakingly MACHINE_SYS_SOCKET_H in
+	  config.h.in
+
 2.4.9 -> 2.4.10:
 	- obsolete entries could cause segv's during upgrades
 	- sources now installed with uid/gid of process rather then
