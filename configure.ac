@@ -147,10 +147,10 @@ dnl
 dnl XXX Test for libpthread.a that is NPTL aware (static link only).
 dnl
 LDFLAGS_NPTL=
-#if test -f /usr/lib/nptl/libpthread.a ; then
-#    LDFLAGS_NPTL="-L/usr/lib/nptl"
+if test -f /usr/lib/nptl/libpthread.a ; then
+    LDFLAGS_NPTL="-L/usr/lib/nptl"
 #    INCPATH="$INCPATH -I/usr/include/nptl"
-#fi
+fi
 AC_SUBST(LDFLAGS_NPTL)
 
 dnl

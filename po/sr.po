@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-10 15:36-0500\n"
+"POT-Creation-Date: 2003-01-13 15:26-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2344,33 +2344,33 @@ msgstr "paket nema imena"
 msgid "package has neither file owner or id lists\n"
 msgstr "paket nema imena"
 
-#: lib/query.c:443 lib/query.c:490 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/query.c:444 lib/query.c:491 lib/rpminstall.c:127 lib/rpminstall.c:464
 #: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/query.c:458
+#: lib/query.c:459
 #, c-format
 msgid "query of %s failed\n"
 msgstr "upit nad %s neuspeo\n"
 
-#: lib/query.c:468
+#: lib/query.c:469
 msgid "old format source packages cannot be queried\n"
 msgstr "Upit se ne mo¾e izvesti nad izvorni paketima u starom formatu\n"
 
-#: lib/query.c:501 lib/rpminstall.c:608
+#: lib/query.c:502 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:530
+#: lib/query.c:531
 #, fuzzy
 msgid "no packages\n"
 msgstr "upit nad svim paketima"
 
-#: lib/query.c:550
+#: lib/query.c:551
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
@@ -2380,52 +2380,52 @@ msgstr "grupa %s ne sadr¾i nijedan paket\n"
 msgid "no package triggers %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:574 lib/query.c:596 lib/query.c:617 lib/query.c:652
+#: lib/query.c:573 lib/query.c:594 lib/query.c:614 lib/query.c:648
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/query.c:584 lib/query.c:602 lib/query.c:627 lib/query.c:657
+#: lib/query.c:583 lib/query.c:600 lib/query.c:624 lib/query.c:653
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:663
 #, c-format
 msgid "no package requires %s\n"
 msgstr "nijedan paket ne zahteva %s\n"
 
-#: lib/query.c:679
+#: lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "nijedan paket ne obezbeðuje %s\n"
 
-#: lib/query.c:713
+#: lib/query.c:709
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/query.c:717
+#: lib/query.c:713
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/query.c:744
+#: lib/query.c:738
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:747
+#: lib/query.c:741
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:752
+#: lib/query.c:746
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:763 lib/rpminstall.c:779
+#: lib/query.c:756 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-10 15:36-0500\n"
+"POT-Creation-Date: 2003-01-13 15:26-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -2274,32 +2274,32 @@ msgstr "pakken har verken fileier eller id-lister\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "pakken har verken fileier eller id-lister\n"
 
-#: lib/query.c:443 lib/query.c:490 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/query.c:444 lib/query.c:491 lib/rpminstall.c:127 lib/rpminstall.c:464
 #: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "feil under åpning av %s: %s\n"
 
-#: lib/query.c:458
+#: lib/query.c:459
 #, c-format
 msgid "query of %s failed\n"
 msgstr "spørring på %s feilet\n"
 
-#: lib/query.c:468
+#: lib/query.c:469
 msgid "old format source packages cannot be queried\n"
 msgstr "kildepakker i gammelt format kan ikke spørres\n"
 
-#: lib/query.c:501 lib/rpminstall.c:608
+#: lib/query.c:502 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "ingen pakke utløser %s\n"
 
-#: lib/query.c:530
+#: lib/query.c:531
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:550
+#: lib/query.c:551
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s inneholder ingen pakker\n"
@@ -2309,52 +2309,52 @@ msgstr "gruppe %s inneholder ingen pakker\n"
 msgid "no package triggers %s\n"
 msgstr "ingen pakke utløser %s\n"
 
-#: lib/query.c:574 lib/query.c:596 lib/query.c:617 lib/query.c:652
+#: lib/query.c:573 lib/query.c:594 lib/query.c:614 lib/query.c:648
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: lib/query.c:584 lib/query.c:602 lib/query.c:627 lib/query.c:657
+#: lib/query.c:583 lib/query.c:600 lib/query.c:624 lib/query.c:653
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ingen pakke utløser %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:663
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakke krever %s\n"
 
-#: lib/query.c:679
+#: lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakke gir %s\n"
 
-#: lib/query.c:713
+#: lib/query.c:709
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:717
+#: lib/query.c:713
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s eies ikke av noen pakke\n"
 
-#: lib/query.c:744
+#: lib/query.c:738
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: lib/query.c:747
+#: lib/query.c:741
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:752
+#: lib/query.c:746
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:763 lib/rpminstall.c:779
+#: lib/query.c:756 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakke %s er ikke installert\n"

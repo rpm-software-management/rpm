@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-10 15:36-0500\n"
+"POT-Creation-Date: 2003-01-13 15:26-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2353,33 +2353,33 @@ msgstr "paketilla ei ole nime‰"
 msgid "package has neither file owner or id lists\n"
 msgstr "paketilla ei ole nime‰"
 
-#: lib/query.c:443 lib/query.c:490 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/query.c:444 lib/query.c:491 lib/rpminstall.c:127 lib/rpminstall.c:464
 #: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/query.c:458
+#: lib/query.c:459
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:468
+#: lib/query.c:469
 msgid "old format source packages cannot be queried\n"
 msgstr "vanhan formaatin l‰hdekoodipaketteja ei voi kysell‰\n"
 
-#: lib/query.c:501 lib/rpminstall.c:608
+#: lib/query.c:502 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:530
+#: lib/query.c:531
 #, fuzzy
 msgid "no packages\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/query.c:550
+#: lib/query.c:551
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
@@ -2389,52 +2389,52 @@ msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 msgid "no package triggers %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:574 lib/query.c:596 lib/query.c:617 lib/query.c:652
+#: lib/query.c:573 lib/query.c:594 lib/query.c:614 lib/query.c:648
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: lib/query.c:584 lib/query.c:602 lib/query.c:627 lib/query.c:657
+#: lib/query.c:583 lib/query.c:600 lib/query.c:624 lib/query.c:653
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:668
+#: lib/query.c:663
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mik‰‰n pakettie ei tarvitse %s:a\n"
 
-#: lib/query.c:679
+#: lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mik‰‰n paketti ei tarjoa %s:a\n"
 
-#: lib/query.c:713
+#: lib/query.c:709
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/query.c:717
+#: lib/query.c:713
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/query.c:744
+#: lib/query.c:738
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:747
+#: lib/query.c:741
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:752
+#: lib/query.c:746
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:763 lib/rpminstall.c:779
+#: lib/query.c:756 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"

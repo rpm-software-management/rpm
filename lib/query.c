@@ -413,6 +413,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     int rc;
     const char * s;
     int i;
+    int provides_checked = 0;
 
     (void) rpmdbCheckSignals();
 
@@ -549,9 +550,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO,
 		_("group %s does not contain any packages\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_TRIGGEREDBY:
@@ -559,9 +559,8 @@ restart:
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package triggers %s\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_PKGID:
@@ -584,9 +583,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"pkgid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_HDRID:
@@ -602,9 +600,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"hdrid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_FILEID:
@@ -627,9 +624,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"fileid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_TID:
@@ -657,9 +653,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"tid", arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_WHATREQUIRES:
@@ -667,25 +662,25 @@ restart:
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package requires %s\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
 
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
+	    provides_checked = 1;
 	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, arg, 0);
 	    if (qva->qva_mi == NULL) {
 		rpmError(RPMERR_QUERYINFO, _("no package provides %s\n"), arg);
 		res = 1;
-	    } else {
+	    } else
 		res = rpmcliShowMatches(qva, ts);
-	    }
 	    break;
 	}
 	/*@fallthrough@*/
     case RPMQV_PATH:
     {   char * fn;
+	int myerrno = 0;
 
 	for (s = arg; *s != '\0'; s++)
 	    if (!(*s == '.' || *s == '/'))
@@ -704,23 +699,22 @@ restart:
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
 	if (qva->qva_mi == NULL) {
-	    int myerrno = 0;
 	    if (access(fn, F_OK) != 0)
 		myerrno = errno;
-	    switch (myerrno) {
-	    default:
-		rpmError(RPMERR_QUERY,
-			_("file %s: %s\n"), fn, strerror(myerrno));
-		/*@innerbreak@*/ break;
-	    case 0:
-		rpmError(RPMERR_QUERYINFO,
-			_("file %s is not owned by any package\n"), fn);
-		/*@innerbreak@*/ break;
-	    }
-	    res = 1;
-	} else {
-	    res = rpmcliShowMatches(qva, ts);
+	    else if (!provides_checked)
+		qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
 	}
+
+	if (myerrno != 0) {
+	    rpmError(RPMERR_QUERY, _("file %s: %s\n"), fn, strerror(myerrno));
+	    res = 1;
+	} else if (qva->qva_mi == NULL) {
+	    rpmError(RPMERR_QUERYINFO,
+		_("file %s is not owned by any package\n"), fn);
+	    res = 1;
+	} else
+	    res = rpmcliShowMatches(qva, ts);
+
 	fn = _free(fn);
     }	break;
 
@@ -751,9 +745,8 @@ restart:
 	    rpmError(RPMERR_QUERYINFO,
 		_("record %u could not be read\n"), recOffset);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
     }	break;
 
     case RPMQV_PACKAGE:
@@ -762,9 +755,8 @@ restart:
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    res = 1;
-	} else {
+	} else
 	    res = rpmcliShowMatches(qva, ts);
-	}
 	break;
     }
     /*@=branchstate@*/

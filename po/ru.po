@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-10 15:36-0500\n"
+"POT-Creation-Date: 2003-01-13 15:26-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2267,32 +2267,32 @@ msgstr "пакет не содержит списков владельцев/групп-владельцев файлов\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 
-#: lib/query.c:443 lib/query.c:490 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/query.c:444 lib/query.c:491 lib/rpminstall.c:127 lib/rpminstall.c:464
 #: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/query.c:458
+#: lib/query.c:459
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:468
+#: lib/query.c:469
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:501 lib/rpminstall.c:608
+#: lib/query.c:502 lib/rpminstall.c:608
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не пакет (или манифест пакета) rpm : %s\n"
 
-#: lib/query.c:530
+#: lib/query.c:531
 msgid "no packages\n"
 msgstr "нет пакетов\n"
 
-#: lib/query.c:550
+#: lib/query.c:551
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
@@ -2302,52 +2302,52 @@ msgstr "группа %s не содержит никаких пакетов\n"
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:574 lib/query.c:596 lib/query.c:617 lib/query.c:652
+#: lib/query.c:573 lib/query.c:594 lib/query.c:614 lib/query.c:648
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "ошибка формата %s: %s.\n"
 
-#: lib/query.c:584 lib/query.c:602 lib/query.c:627 lib/query.c:657
+#: lib/query.c:583 lib/query.c:600 lib/query.c:624 lib/query.c:653
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ни один пакет не подходит к %s: %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:663
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:679
+#: lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:713
+#: lib/query.c:709
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:717
+#: lib/query.c:713
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:744
+#: lib/query.c:738
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:747
+#: lib/query.c:741
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
-#: lib/query.c:752
+#: lib/query.c:746
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:763 lib/rpminstall.c:779
+#: lib/query.c:756 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"

@@ -108,6 +108,7 @@
 	- fix: obscure corner case(s) with rpmvercmp (#50977).
 	- file: *really* read elf64 notes correctly.
 	- python: restore thread context on errorCB (#80744).
+	- teach rpmquery to return "owning" package(s) in spite of alternatives.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

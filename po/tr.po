@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-10 15:36-0500\n"
+"POT-Creation-Date: 2003-01-13 15:26-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2314,32 +2314,32 @@ msgstr "paket ne dosya sahibi ne de kimlik listesi içeriyor\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "paket ne dosya sahibi ne de kimlik listesi içeriyor\n"
 
-#: lib/query.c:443 lib/query.c:490 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/query.c:444 lib/query.c:491 lib/rpminstall.c:127 lib/rpminstall.c:464
 #: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/query.c:458
+#: lib/query.c:459
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:468
+#: lib/query.c:469
 msgid "old format source packages cannot be queried\n"
 msgstr "eski biçem kaynak paketleri sorgulanamaz\n"
 
-#: lib/query.c:501 lib/rpminstall.c:608
+#: lib/query.c:502 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s tetikleyen paket yok\n"
 
-#: lib/query.c:530
+#: lib/query.c:531
 msgid "no packages\n"
 msgstr "paket yok\n"
 
-#: lib/query.c:550
+#: lib/query.c:551
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s grubu hiç paket içermiyor\n"
@@ -2349,52 +2349,52 @@ msgstr "%s grubu hiç paket içermiyor\n"
 msgid "no package triggers %s\n"
 msgstr "%s tetikleyen paket yok\n"
 
-#: lib/query.c:574 lib/query.c:596 lib/query.c:617 lib/query.c:652
+#: lib/query.c:573 lib/query.c:594 lib/query.c:614 lib/query.c:648
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s okunamadý: %s.\n"
 
-#: lib/query.c:584 lib/query.c:602 lib/query.c:627 lib/query.c:657
+#: lib/query.c:583 lib/query.c:600 lib/query.c:624 lib/query.c:653
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s tetikleyen paket yok\n"
 
-#: lib/query.c:668
+#: lib/query.c:663
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s gerektiren paket yok\n"
 
-#: lib/query.c:679
+#: lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s saðlayan paket yok\n"
 
-#: lib/query.c:713
+#: lib/query.c:709
 #, c-format
 msgid "file %s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: lib/query.c:717
+#: lib/query.c:713
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/query.c:744
+#: lib/query.c:738
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarasý: %s\n"
 
-#: lib/query.c:747
+#: lib/query.c:741
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paket kayýt numarasý: %u\n"
 
-#: lib/query.c:752
+#: lib/query.c:746
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "%u. kayýt okunamadý\n"
 
-#: lib/query.c:763 lib/rpminstall.c:779
+#: lib/query.c:756 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu deðil\n"
