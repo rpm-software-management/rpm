@@ -68,10 +68,11 @@
 #define RPMFILE_CONFIG			1
 #define RPMFILE_DOC			2
 
-#define INSTALL_REPLACEPKG	1
-#define INSTALL_REPLACEFILES	2
-#define INSTALL_TEST		4
-#define INSTALL_PRINTLABEL	8
+#define INSTALL_REPLACEPKG	(1 << 0)
+#define INSTALL_REPLACEFILES	(1 << 1)
+#define INSTALL_TEST		(1 << 2)
+#define INSTALL_PRINTLABEL	(1 << 3)
+#define INSTALL_UPGRADE		(1 << 4)
 
 #define VERIFY_NONE             0
 #define VERIFY_MD5              (1 << 0)
