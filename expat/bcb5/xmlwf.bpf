@@ -1,0 +1,6 @@
+USEUNIT("..\xmlwf\xmlfile.c");
+USEUNIT("..\xmlwf\win32filemap.c");
+USEUNIT("..\xmlwf\codepage.c");
+USEUNIT("..\xmlwf\xmlwf.c");
+//---------------------------------------------------------------------------
+#define WinMain
