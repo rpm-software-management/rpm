@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# note this works for both a.out and ELF executables
+
+ulimit -c 0
+
+filelist=`xargs -r file | fgrep executable | cut -d: -f1 `
+
+for f in $filelist; do
+    ldd $f | awk '/=>/ { print $1 }'
+done | sort -u | xargs -r -n 1 basename | sort -u
+
