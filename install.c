@@ -230,8 +230,8 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
     if (numBinaryPackages) {
 	rpmMessage(RPMMESS_DEBUG, "opening database mode: 0%o\n", mode);
 	if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	    fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
-			rootdir);
+	    fprintf(stderr, "error: cannot open %s%s/packages.rpm\n", 
+			rpmGetVar(RPMVAR_DBPATH), rootdir);
 	    exit(1);
 	}
 
@@ -309,8 +309,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	mode = O_RDWR | O_EXCL;
 	
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	fprintf(stderr, _("cannot open %s/var/lib/rpm/packages.rpm\n"), 
-		rootdir);
+	fprintf(stderr, _("cannot open %s%s/packages.rpm\n"), 
+		rpmGetVar(RPMVAR_DBPATH), rootdir);
 	exit(1);
     }
 
