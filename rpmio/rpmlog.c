@@ -7,6 +7,18 @@
 #include "rpmlog.h"
 #include "debug.h"
 
+#ifndef va_copy
+# ifdef __va_copy
+#  define va_copy(DEST,SRC) __va_copy((DEST),(SRC))
+# else
+#  ifdef HAVE_VA_LIST_AS_ARRAY
+#   define va_copy(DEST,SRC) (*(DEST) = *(SRC))
+#  else
+#   define va_copy(DEST,SRC) ((DEST) = (SRC))
+#  endif
+# endif
+#endif
+
 /*@access rpmlogRec @*/
 
 static int nrecs = 0;
@@ -136,13 +148,9 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 
     /* Allocate a sufficently large buffer for output. */
     while (1) {
-#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 0
-	/*@-unrecog@*/ nb = vsnprintf(msgbuf, msgnb, fmt, ap); /*@=unrecog@*/
-#else
 	va_list apc;
-	/*@-sysunrecog -usedef@*/ __va_copy(apc, ap); /*@=sysunrecog =usedef@*/
+	/*@-sysunrecog -usedef@*/ va_copy(apc, ap); /*@=sysunrecog =usedef@*/
 	/*@-unrecog@*/ nb = vsnprintf(msgbuf, msgnb, fmt, apc); /*@=unrecog@*/
-#endif
 	if (nb > -1 && nb < msgnb)
 	    break;
 	if (nb > -1)		/* glibc 2.1 */

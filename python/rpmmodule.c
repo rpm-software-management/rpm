@@ -110,13 +110,13 @@ static PyObject * pyrpmError;
 struct hdrObject_s {
     PyObject_HEAD;
     Header h;
-    Header sigs;
+    Header sigs;		/* XXX signature tags are in header */
     char ** md5list;
     char ** fileList;
     char ** linkList;
     int_32 * fileSizes;
     int_32 * mtimes;
-    int_32 * uids, * gids;
+    int_32 * uids, * gids;	/* XXX these tags are not used anymore */
     unsigned short * rdevs;
     unsigned short * modes;
 } ;
@@ -165,30 +165,30 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) 
     if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
 	return NULL; 
 
+    /* XXX this legacy switch is a hack, needs to be removed. */
     if (legacy) {
 	Header h;
 
 	h = headerCopy(s->h);
 	len = headerSizeof(h, 0);
 	buf = headerUnload(h);
+/* XXX there's a missing headerFree(h); here */
     } else {
 	len = headerSizeof(s->h, 0);
 	buf = headerUnload(s->h);
     }
 
+/* XXX there's a missing check on buf == NULL here. */
     rc = PyString_FromStringAndSize(buf, len);
     free(buf);
 
     return rc;
 }
 
-/* Returns a list of these tuple for each part which failed:
-
-	(attr_name, correctValue, currentValue)
-
-	It should be passwd the file number to verify.
-*/
 /** \ingroup python
+ * Returns a list of these tuples for each item that failed:
+ *	(attr_name, correctValue, currentValue)
+ * It should be passed the file number to verify.
  */
 static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
     int fileNumber;
@@ -208,6 +208,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 
     fileNumber = (int) PyInt_AsLong(args);
 
+    /* XXX this routine might use callbacks intelligently. */
     if (rpmVerifyFile("", s->h, fileNumber, &verifyResult, RPMVERIFY_NONE)) {
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -217,6 +218,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 
     if (!verifyResult) return list;
 
+    /* XXX Legacy tag needs to go away. */
     if (!s->fileList) {
 	headerGetEntry(s->h, RPMTAG_OLDFILENAMES, &type, (void **) &s->fileList,
 		 &count);
@@ -326,8 +328,14 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 	Py_DECREF(tuple);
     }
 
-    /* RPMVERIFY_USER and RPM_VERIFY_GROUP are handled wrong here, but rpmlib.a
-       doesn't do these correctly either. At least this is consistent. */
+    /*
+     * RPMVERIFY_USER and RPM_VERIFY_GROUP are handled wrong here, but rpmlib.a
+     * doesn't do these correctly either. At least this is consistent.
+     *
+     * XXX Consistent? rpmlib.a verifies user/group quite well, thank you.
+     * XXX The code below does nothing useful. FILEUSERNAME needs to be
+     * XXX retrieved and looked up.
+     */
     if (verifyResult & RPMVERIFY_USER) {
 	if (!s->uids) {
 	    headerGetEntry(s->h, RPMTAG_FILEUIDS, &type, (void **) &s->uids,
@@ -345,6 +353,10 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 	Py_DECREF(tuple);
     }
 
+    /*
+     * XXX The code below does nothing useful. FILEGROUPNAME needs to be
+     * XXX retrieved and looked up.
+     */
     if (verifyResult & RPMVERIFY_GROUP) {
 	if (!s->gids) {
 	    headerGetEntry(s->h, RPMTAG_FILEGIDS, &type, (void **) &s->gids,
@@ -418,6 +430,7 @@ static void mungeFilelist(Header h)
     if (fileNames == NULL || count <= 0)
 	return;
 
+    /* XXX Legacy tag needs to go away. */
     headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
 
@@ -518,6 +531,7 @@ static PyObject * hdrSubscript(hdrObject * s, PyObject * item) {
             return NULL;
         }
         
+	/* XXX signature tags are appended to header, this API is gonna die */
         if (!rpmPackageGetEntry(NULL, s->sigs, s->h, tag, &type, &data, &count))
 	{
             Py_INCREF(Py_None);
@@ -1004,7 +1018,7 @@ static void rpmdbDealloc(rpmdbObject * s) {
     PyMem_DEL(s);
 }
 
-#ifndef DYINGSOON
+#ifndef DYINGSOON	/* XXX OK, when? */
 /**
  */
 static int
@@ -1015,7 +1029,6 @@ rpmdbLength(rpmdbObject * s) {
 
 	/* RPMDBI_PACKAGES */
 	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
-	/* XXX FIXME: unnecessary header mallocs are side effect here */
 	while (rpmdbNextIterator(mi) != NULL)
 	    count++;
 	rpmdbFreeIterator(mi);
@@ -1356,6 +1369,7 @@ struct tsCallbackType {
 };
 
 /** \ingroup python
+ * @todo Remove, there's no headerLink refcount on the pointer.
  */
 static Header transactionSetHeader = NULL;
 

@@ -214,6 +214,9 @@
 	- fix: don't verify hash page nelem.
 	- better error messages for verification failures.
 	- include directory /usr/lib/rpm in rpm package.
+	- always use dl size in regionSwab() return.
+	- ppc: revert ppcmac to ppc.
+	- ppc: autoconf test for va_copy.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

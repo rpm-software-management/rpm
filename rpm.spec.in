@@ -275,7 +275,7 @@ exit 0
 %ifos linux
 %postun
 /sbin/ldconfig
-if [ $1 == 0 ]; then
+if [ $1 = 0 ]; then
     /usr/sbin/userdel rpm
     /usr/sbin/groupdel rpm
 fi

@@ -80,6 +80,9 @@
 /* Define as 1 if your zlib has gzseek() */
 #undef HAVE_GZSEEK
 
+/* Define as 1 if your va_list type is an array */
+#undef HAVE_VA_LIST_AS_ARRAY
+
 /* Define to the full path name of the bzip2 library (libbz2.a) */
 #undef BZIP2LIB
 

@@ -409,8 +409,10 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
      */
     if (tl+REGION_TAG_COUNT == dl)
 	tl += REGION_TAG_COUNT;
+#if 0
     if (tl > dl)
 	dl = tl;
+#endif
 
     return dl;
 }
@@ -587,7 +589,8 @@ t = te;
 		rdlen += entry->info.count;
 
 		count = regionSwab(NULL, ril, 0, pe, t, 0);
-		if (count != rdlen) goto errxit;
+		if (count != rdlen)
+		    goto errxit;
 
 	    } else {
 
@@ -603,7 +606,8 @@ t = te;
 		te += entry->info.count + drlen;
 
 		count = regionSwab(NULL, ril, 0, pe, t, 0);
-		if (count != (rdlen + entry->info.count + drlen)) goto errxit;
+		if (count != (rdlen + entry->info.count + drlen))
+		    goto errxit;
 	    }
 
 	    /* Skip rest of entries in region. */
@@ -666,8 +670,10 @@ t = te;
     }
    
     /* Insure that there are no memcpy underruns/overruns. */
-    if (((char *)pe) != dataStart) goto errxit;
-    if ((((char *)ei)+len) != te) goto errxit;
+    if (((char *)pe) != dataStart)
+	goto errxit;
+    if ((((char *)ei)+len) != te)
+	goto errxit;
 
     if (lengthPtr)
 	*lengthPtr = len;

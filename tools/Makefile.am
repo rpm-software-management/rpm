@@ -43,3 +43,10 @@ rpmsort_LDFLAGS =
 javadeps_SOURCES =	javadeps.c
 
 $(PROGRAMS): $(myLDADD)
+
+gnash.o: gnash.c
+	$(COMPILE) -o $@ -c gnash.c
+
+gnash: gnash.o
+	$(LINK) -all-static -o $@ gnash.o $(LDADD)
+

@@ -20,6 +20,7 @@ static struct poptOption optionsTable[] = {
  { "fipsb",'\0', POPT_BIT_SET, &fips, 2,	NULL, NULL },
  { "fipsc",'\0', POPT_BIT_SET, &fips, 3,	NULL, NULL },
  { "debug",'d', POPT_ARG_VAL, &_rpmio_debug, -1,	NULL, NULL },
+  POPT_AUTOHELP
   POPT_TABLEEND
 };
 
@@ -49,6 +50,7 @@ main(int argc, const char *argv[])
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 
+    if (flags & RPMDIGEST_SHA1) flags &= ~RPMDIGEST_MD5;
     reverse = (flags & RPMDIGEST_REVERSE);
     if (fips) {
 	flags &= ~RPMDIGEST_MD5;

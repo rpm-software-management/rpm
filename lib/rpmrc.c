@@ -1212,7 +1212,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    else if ( (pvr == 0x36) || (pvr == 0x37) )
 		strcpy(un.machine, "ppciseries");
 	    else
-		strcpy(un.machine, "ppcmac");
+		strcpy(un.machine, "ppc");
 	}
 #	endif
 

@@ -24,7 +24,8 @@ RPM="./rpm --rcfile $TEMPRC"
 arch="`$RPM --eval '%{_arch}'`"
 VENDOR="`$RPM --eval '%{_vendor}'`"
 OS="`$RPM --eval '%{_os}'`"
-target_platform="`$RPM --eval '%{_target_platform}'`"
+RPMRC_GNU="`$RPM --eval '%{_gnu}'`"
+target_platform="`$RPM --eval '%{?_gnu:%undefine _gnu}%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
 rm -f ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
@@ -33,10 +34,10 @@ rm -f ${DESTDIR}/${pkglibdir}/noarch-${OS}
 ln -s ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${OS}
 
 case "$arch" in
-  i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_' ;;
+  i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_ s_i386_athlon_' ;;
   alpha*) SUBSTS='s_alpha_alpha_ s_alpha_alphaev5_ s_alpha_alphaev56_ s_alpha_alphapca56_ s_alpha_alphaev6_ s_alpha_alphaev67_' ;;
   sparc*) SUBSTS='s_sparc\(64\|v9\)_sparc_ s_sparc64_sparcv9_;s_sparc\([^v]\|$\)_sparcv9\1_ s_sparcv9_sparc64_;s_sparc\([^6]\|$\)_sparc64\1_' ;;
-  powerpc*|ppc*) 's_\(powerpc\|ppc\)_ppc_' ;;
+  powerpc*|ppc*) SUBSTS='s_\(powerpc\|ppc\)_ppc_' ;;
   *) SUBSTS=y___ ;;
 esac
 base_arch=`echo $arch | sed -e 's_i?86_i386_;s_sparc.*_sparc_;s_alpha.*_alpha_;s_\(powerpc\|ppc\).*_ppc_'`
@@ -91,6 +92,7 @@ for SUBST in $SUBSTS ; do
   cat $PLATFORM \
   | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
 	-e "s,@RPMRC_ARCH@,$base_arch," \
+	-e "s,@RPMRC_GNU@,$RPMRC_GNU," \
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
