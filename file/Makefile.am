@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime \
+EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime magic.mime \
 	Localstuff Header $(magic_FRAGMENTS) file.man magic.man
 
 BUILT_SOURCES = $(man_MANS) magic magic.mgc magic.mime.mgc
