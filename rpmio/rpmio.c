@@ -1,4 +1,3 @@
-/*@-branchstate@*/
 /** \ingroup rpmio
  * \file rpmio/rpmio.c
  */
@@ -673,6 +672,7 @@ const char *const ftpStrerror(int errorNumber) {
 const char *urlStrerror(const char *url)
 {
     const char *retstr;
+    /*@-branchstate@*/
     switch (urlIsURL(url)) {
     case URL_IS_FTP:
     case URL_IS_HTTP:
@@ -687,6 +687,7 @@ const char *urlStrerror(const char *url)
 	retstr = strerror(errno);
 	break;
     }
+    /*@=branchstate@*/
     return retstr;
 }
 
@@ -1032,9 +1033,12 @@ static int ftpLogin(urlinfo u)
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = IPPORT_FTP;
 
+    /*@-branchstate@*/
     if ((user = (u->proxyu ? u->proxyu : u->user)) == NULL)
 	user = "anonymous";
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if ((password = u->password) == NULL) {
  	uid_t uid = getuid();
 	struct passwd * pw;
@@ -1047,9 +1051,12 @@ static int ftpLogin(urlinfo u)
 	    password = "root@";
 	}
     }
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (fdFileno(u->ctrl) >= 0 && fdWritable(u->ctrl, 0) < 1)
 	/*@-refcounttrans@*/ (void) fdClose(u->ctrl); /*@=refcounttrans@*/
+    /*@=branchstate@*/
 
 /*@-usereleased@*/
     if (fdFileno(u->ctrl) < 0) {
@@ -1079,8 +1086,10 @@ errxit:
     fdSetSyserrno(u->ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
 errxit2:
+    /*@-branchstate@*/
     if (fdFileno(u->ctrl) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(u->ctrl); /*@=refcounttrans@*/
+    /*@=branchstate@*/
     /*@-compdef@*/
     return rc;
     /*@=compdef@*/
@@ -1220,8 +1229,10 @@ errxit:
     /*@-observertrans@*/
     fdSetSyserrno(u->ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
+    /*@-branchstate@*/
     if (fdFileno(data) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(data); /*@=refcounttrans@*/
+    /*@=branchstate@*/
     return rc;
 }
 
@@ -1505,12 +1516,16 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
+    /*@-branchstate@*/
     if (path == NULL) path = "";
+    /*@=branchstate@*/
 
 reopen:
+    /*@-branchstate@*/
     if (fdFileno(ctrl) >= 0 && (rc = fdWritable(ctrl, 0)) < 1) {
 	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
     }
+    /*@=branchstate@*/
 
 /*@-usereleased@*/
     if (fdFileno(ctrl) < 0) {
@@ -1560,6 +1575,7 @@ fprintf(stderr, "-> %s", req);
 	goto errxit;
     }
 
+    /*@-branchstate@*/
     if (!strcmp(httpCmd, "PUT")) {
 	ctrl->wr_chunked = 1;
     } else {
@@ -1575,6 +1591,7 @@ fprintf(stderr, "-> %s", req);
 	    goto errxit;
 	}
     }
+    /*@=branchstate@*/
 
     ctrl = fdLink(ctrl, "open data (httpReq)");
     return 0;
@@ -1584,8 +1601,10 @@ errxit:
     fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
 errxit2:
+    /*@-branchstate@*/
     if (fdFileno(ctrl) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
+    /*@=branchstate@*/
     return rc;
 /*@=usereleased@*/
 }
@@ -1749,6 +1768,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     return fdSeek(cookie, pos, whence);
 }
 
+/*@-branchstate@*/
 /*@-usereleased@*/	/* LCL: fd handling is tricky here. */
 int ufdClose( /*@only@*/ void * cookie)
 {
@@ -1756,6 +1776,7 @@ int ufdClose( /*@only@*/ void * cookie)
 
     UFDONLY(fd);
 
+    /*@-branchstate@*/
     if (fd->url) {
 	urlinfo u = fd->url;
 
@@ -1863,6 +1884,7 @@ fprintf(stderr, "-> \r\n");
     return fdClose(fd);
 }
 /*@=usereleased@*/
+/*@=branchstate@*/
 
 /*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
@@ -2601,6 +2623,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 /*@=modfilesys@*/
 
     fd = fdLink(fd, "Fclose");
+    /*@-branchstate@*/
     while (fd->nfps >= 0) {
 	FDSTACK_t * fps = &fd->fps[fd->nfps];
 	
@@ -2654,6 +2677,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    ec = rc;
 	fdPop(fd);
     }
+    /*@=branchstate@*/
     fd = fdFree(fd, "Fclose");
     return ec;
 /*@=usereleased@*/
@@ -2764,6 +2788,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (end == NULL && other[0] == '\0')
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 
+    /*@-branchstate@*/
     if (end && *end) {
 	if (!strcmp(end, "fdio")) {
 	    iof = fdio;
@@ -2812,6 +2837,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	    /*@=internalglobs@*/
 	}
     }
+    /*@=branchstate@*/
     if (iof == NULL)
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 
@@ -2863,6 +2889,7 @@ FD_t Fopen(const char *path, const char *fmode)
     if (stdio[0] == '\0')
 	return NULL;
 
+    /*@-branchstate@*/
     if (end == NULL || !strcmp(end, "fdio")) {
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
@@ -2915,9 +2942,12 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	    return fd;
 	}
     }
+    /*@=branchstate@*/
 
+    /*@-branchstate@*/
     if (fd)
 	fd = Fdopen(fd, fmode);
+    /*@=branchstate@*/
     return fd;
 }
 
@@ -3019,4 +3049,3 @@ static struct FDIO_s fpio_s = {
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
 FDIO_t fpio = /*@-compmempass@*/ &fpio_s /*@=compmempass@*/ ;
-/*@=branchstate@*/

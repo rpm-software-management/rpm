@@ -1,4 +1,3 @@
-/*@-branchstate@*/
 #include "system.h"
 
 #include <stdarg.h>
@@ -653,6 +652,7 @@ int rpmReadRC(const char * rcfiles)
     rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
     {	const char *mfpath;
+	/*@-branchstate@*/
 	if ((mfpath = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
 	    mfpath = xstrdup(mfpath);
 /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
@@ -660,6 +660,7 @@ int rpmReadRC(const char * rcfiles)
 /*@=globs@*/
 	    mfpath = _free(mfpath);
 	}
+	/*@=branchstate@*/
     }
 
     return rc;
@@ -699,6 +700,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
     next[nb + 1] = '\0';
   }
 
+    /*@-branchstate@*/
     while (*next != '\0') {
 	linenum++;
 
@@ -880,6 +882,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	    }
 	}
     }
+    /*@=branchstate@*/
 
     return 0;
 }
@@ -1105,6 +1108,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    char * prelid = NULL;
 	    FD_t fd = Fopen("/etc/.relid", "r.fdio");
 	    int gotit = 0;
+	    /*@-branchstate@*/
 	    if (fd != NULL && !Ferror(fd)) {
 		chptr = xcalloc(1, 256);
 		{   int irelid = Fread(chptr, sizeof(*chptr), 256, fd);
@@ -1120,6 +1124,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 		}
 		chptr = _free (chptr);
 	    }
+	    /*@=branchstate@*/
 	    if (!gotit)	/* parsing /etc/.relid file failed? */
 		strcpy(un.sysname,"ncr-sysv4");
 	    /* wrong, just for now, find out how to look for i586 later*/
@@ -1314,7 +1319,9 @@ static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig)
 	var->arch = _free(var->arch);
 	var->value = _free(var->value);
 
+	/*@-branchstate@*/
 	if (var != orig) var = _free(var);
+	/*@=branchstate@*/
 	var = next;
     }
 }
@@ -1502,6 +1509,7 @@ void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
+    /*@-branchstate@*/
     if (target && *target) {
 	char *c;
 	/* Set arch and os from specified build target */
@@ -1530,6 +1538,7 @@ void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
 	rpmGetOsInfo(&o, NULL);
 	co = (o) ? xstrdup(o) : NULL;
     }
+    /*@=branchstate@*/
 
     /* If still not set, Set target arch/os from default uname(2) values */
     if (ca == NULL) {
@@ -1574,10 +1583,12 @@ void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
     }
   }
 
+    /*@-branchstate@*/
     if (canontarget)
 	*canontarget = ct;
     else
 	ct = _free(ct);
+    /*@=branchstate@*/
     ca = _free(ca);
     /*@-usereleased@*/
     co = _free(co);
@@ -1710,4 +1721,3 @@ int rpmShowRC(FILE * fp)
 
     return 0;
 }
-/*@=branchstate@*/

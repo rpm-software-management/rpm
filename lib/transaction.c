@@ -1,4 +1,3 @@
-/*@-branchstate@*/
 /** \ingroup rpmtrans
  * \file lib/transaction.c
  */
@@ -414,18 +413,22 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
 	t = alloca_strdup(rawRelocations[i].oldPath);
+	/*@-branchstate@*/
 	relocations[i].oldPath = (t[0] == '/' && t[1] == '\0')
 	    ? t
 	    : stripTrailingChar(t, '/');
+	/*@=branchstate@*/
 
 	/* An old path w/o a new path is valid, and indicates exclusion */
 	if (rawRelocations[i].newPath) {
 	    int del;
 
 	    t = alloca_strdup(rawRelocations[i].newPath);
+	    /*@-branchstate@*/
 	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
 		? t
 		: stripTrailingChar(t, '/');
+	    /*@=branchstate@*/
 
 	    /*@-nullpass@*/	/* FIX:  relocations[i].oldPath == NULL */
 	    /* Verify that the relocation's old path is in the header. */
@@ -554,10 +557,12 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 	len = reldel +
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
+	/*@-branchstate@*/
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
 	    fn = xrealloc(fn, fileAlloced);
 	}
+	/*@=branchstate@*/
 	*fn = '\0';
 	fnlen = stpcpy( stpcpy(fn, dirNames[dirIndexes[i]]), baseNames[i]) - fn;
 
@@ -770,6 +775,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
     rpmProblem t = target->probs;
     int gotProblems = 0;
 
+    /*@-branchstate@*/
     while ((f - filter->probs) < filter->numProblems) {
 	if (!f->ignoreProblem) {
 	    f++;
@@ -793,6 +799,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 	t->ignoreProblem = f->ignoreProblem;
 	t++, f++;
     }
+    /*@=branchstate@*/
 
     if ((t - target->probs) < target->numProblems)
 	gotProblems = 1;
@@ -1095,10 +1102,12 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	    continue;
 
 	j = strlen(fi->dnl[fi->dil[i]]) + strlen(fi->bnl[i]) + 1;
+	/*@-branchstate@*/
 	if (j > fileSpecAlloced) {
 	    fileSpecAlloced = j * 2;
 	    filespec = xrealloc(filespec, fileSpecAlloced);
 	}
+	/*@=branchstate@*/
 
 	(void) stpcpy( stpcpy( filespec, fi->dnl[fi->dil[i]]), fi->bnl[i]);
 
@@ -1316,12 +1325,15 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
 
     {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
+	/*@-branchstate@*/
 	if (tmpPath && *tmpPath != '%')
 	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
+	/*@=branchstate@*/
 	tmpPath = _free(tmpPath);
     }
 
     s = rpmExpand("%{_install_langs}", NULL);
+    /*@-branchstate@*/
     if (!(s && *s != '%'))
 	s = _free(s);
     if (s) {
@@ -1329,6 +1341,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	s = _free(s);
     } else
 	languages = NULL;
+    /*@=branchstate@*/
 
     /* Compute directory refcount, skip directory if now empty. */
     drc = alloca(fi->dc * sizeof(*drc));
@@ -1505,12 +1518,14 @@ static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a)
     struct availablePackage * alp = NULL;
     int oc = iter->ocsave;
 
+    /*@-branchstate@*/
     if (oc != -1) {
 	rpmTransactionSet ts = iter->ts;
 	TFI_t fi = ts->flList + oc;
 	if (ts->addedPackages.list && fi->type == TR_ADDED)
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
     }
+    /*@=branchstate@*/
     return alp;
 }
 
@@ -1760,6 +1775,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	/* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
 	fi->type = ts->order[oc].type;
+	/*@-branchstate@*/
 	switch (fi->type) {
 	case TR_ADDED:
 	    i = ts->order[oc].u.addedIndex;
@@ -1798,6 +1814,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    loadFi(fi->h, fi);
 	    /*@switchbreak@*/ break;
 	}
+	/*@=branchstate@*/
 
 	if (fi->fc)
 	    fi->fps = xmalloc(fi->fc * sizeof(*fi->fps));
@@ -2053,6 +2070,7 @@ assert(alp == fi->ap);
 	    i = alp - ts->addedPackages.list;
 
 	    h = headerLink(fi->h);
+	    /*@-branchstate@*/
 	    if (alp->fd == NULL) {
 		alp->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
 			    alp->key, ts->notifyData);
@@ -2078,6 +2096,7 @@ assert(alp == fi->ap);
 		    if (alp->fd) gotfd = 1;
 		}
 	    }
+	    /*@=branchstate@*/
 
 	    if (alp->fd) {
 		Header hsave = NULL;
@@ -2142,4 +2161,3 @@ assert(alp == fi->ap);
 	return 0;
     /*@=nullstate@*/
 }
-/*@=branchstate@*/
