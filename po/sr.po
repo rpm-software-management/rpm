@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-10 10:36-0500\n"
+"POT-Creation-Date: 1999-12-10 16:04-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2968,7 +2968,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:157 lib/url.c:451
+#: lib/rpmdb.c:157 lib/url.c:449
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -3054,16 +3054,16 @@ msgstr ""
 msgid "package has no files\n"
 msgstr "paket nema imena"
 
-#: lib/rpmdb.c:688
+#: lib/rpmdb.c:692
 msgid "cannot allocate space for database"
 msgstr "ne mogu da zauzmem prostor za bazu podataka"
 
-#: lib/rpmdb.c:747
+#: lib/rpmdb.c:751
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "ne mogu da proèitam zaglavlje na %d za a¾uriranje"
 
-#: lib/rpmdb.c:759
+#: lib/rpmdb.c:764
 msgid "header changed size!"
 msgstr ""
 
@@ -3167,67 +3167,67 @@ msgstr "gre¹ka: ne mogu da otvorim %s\n"
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
 
-#: lib/rpmio.c:763
+#: lib/rpmio.c:769
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:766
+#: lib/rpmio.c:772
 #, fuzzy
 msgid "Bad server response"
 msgstr "Lo¹ odgovor FTP servera"
 
-#: lib/rpmio.c:769
+#: lib/rpmio.c:775
 #, fuzzy
 msgid "Server IO error"
 msgstr "Ulazno/izlazna FTP gre¹ka"
 
-#: lib/rpmio.c:772
+#: lib/rpmio.c:778
 #, fuzzy
 msgid "Server timeout"
 msgstr "Tajm-aut FTP servera"
 
-#: lib/rpmio.c:775
+#: lib/rpmio.c:781
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Ne mogu da odredim host adresu FTP servera"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:784
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Ne mogu da odredim ime FTP hosta"
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:787
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Ne mogu da se pove¾em sa FTP serverom"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:790
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Ne mogu da uspostavim vezu podataka sa FTP serverom"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:793
 msgid "IO error to local file"
 msgstr "Ulazno/izlazna gre¹ka kod lokalne datoteke"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:796
 msgid "Error setting remote server to passive mode"
 msgstr "Gre¹ka kod stavljanja udaljenog servera u pasivni re¾im"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:799
 msgid "File not found on server"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:802
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:800
+#: lib/rpmio.c:806
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
-#: lib/rpmio.c:1323
+#: lib/rpmio.c:1329
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3553,23 +3553,23 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:227
+#: lib/url.c:225
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Lozinka za %s@%s: "
 
-#: lib/url.c:252 lib/url.c:278
+#: lib/url.c:250 lib/url.c:276
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "gre¹ka: FTP port mora biti broj\n"
 
-#: lib/url.c:415
+#: lib/url.c:413
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "gre¹ka: FTP port mora biti broj\n"
 
 #. XXX Fstrerror
-#: lib/url.c:474
+#: lib/url.c:472
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspelo kreiranje %s\n"

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-10 10:36-0500\n"
+msgstr "POT-Creation-Date: 1999-12-10 16:04-0500\n"
 
 #: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
 #, c-format
@@ -3020,7 +3020,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:157 lib/url.c:451
+#: lib/rpmdb.c:157 lib/url.c:449
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kan inte öppna: %s\n"
@@ -3106,16 +3106,16 @@ msgstr ""
 msgid "package has no files\n"
 msgstr "inga paket angivna för installation"
 
-#: lib/rpmdb.c:688
+#: lib/rpmdb.c:692
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:747
+#: lib/rpmdb.c:751
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:759
+#: lib/rpmdb.c:764
 msgid "header changed size!"
 msgstr ""
 
@@ -3218,59 +3218,59 @@ msgstr "kan inte öppna: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:763
+#: lib/rpmio.c:769
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:766
+#: lib/rpmio.c:772
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:769
+#: lib/rpmio.c:775
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:772
+#: lib/rpmio.c:778
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:775
+#: lib/rpmio.c:781
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:784
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:787
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:790
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:793
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:796
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:799
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:802
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:800
+#: lib/rpmio.c:806
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1323
+#: lib/rpmio.c:1329
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3590,22 +3590,22 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:227
+#: lib/url.c:225
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:252 lib/url.c:278
+#: lib/url.c:250 lib/url.c:276
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:415
+#: lib/url.c:413
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:474
+#: lib/url.c:472
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kan inte öppna: %s\n"
