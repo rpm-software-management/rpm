@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-01 15:01-0500\n"
+"POT-Creation-Date: 1999-12-02 13:26-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1455,83 +1455,88 @@ msgstr "Нельзя смешивать спец. %%doc с другими формами: %s"
 msgid "File listed twice: %s"
 msgstr "Файл указан дважды: %s"
 
-#: build/files.c:965
+#: build/files.c:897
+#, c-format
+msgid "Symlink points to BuildRoot: %s -> %s"
+msgstr ""
+
+#: build/files.c:977
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Файл не отвечает префиксу (%s): %s"
 
-#: build/files.c:975
+#: build/files.c:987
 #, c-format
 msgid "File not found: %s"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1018
+#: build/files.c:1030
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара хозяин/группа: %s\n"
 
-#: build/files.c:1032
+#: build/files.c:1044
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1111
+#: build/files.c:1123
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:1140
+#: build/files.c:1152
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1219
+#: build/files.c:1231
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Не могу открыть файл %%files: %s"
 
-#: build/files.c:1226 build/pack.c:482
+#: build/files.c:1238 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr "строка: %s"
 
-#: build/files.c:1569 build/parsePrep.c:30
+#: build/files.c:1581 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Неверная пара хозяин/группа: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1624
+#: build/files.c:1636
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Не могу исполнить %s"
 
-#: build/files.c:1629
+#: build/files.c:1641
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Не могу форкнуть %s"
 
-#: build/files.c:1711
+#: build/files.c:1723
 #, c-format
 msgid "%s failed"
 msgstr "%s не удалось"
 
-#: build/files.c:1715
+#: build/files.c:1727
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1804
+#: build/files.c:1816
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Определяю требования пакета...\n"
 
-#: build/files.c:1832 build/files.c:1841
+#: build/files.c:1844 build/files.c:1853
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Ошибка определения сервисов, предоставляемых пакетом"
 
-#: build/files.c:1947
+#: build/files.c:1959
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываю файлы: %s\n"
@@ -1633,32 +1638,32 @@ msgstr "неудача записи cpio_copy: %s"
 msgid "cpio_copy read failed: %s"
 msgstr "неудача чтения cpio_copy: %s"
 
-#: build/pack.c:538
+#: build/pack.c:537
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Не могу открыть файл PreIn: %s"
 
-#: build/pack.c:545
+#: build/pack.c:544
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Не могу открыть файл PreUn: %s"
 
-#: build/pack.c:552
+#: build/pack.c:551
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Не могу открыть файл PostIn: %s"
 
-#: build/pack.c:559
+#: build/pack.c:558
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Не могу открыть файл PostUn: %s"
 
-#: build/pack.c:567
+#: build/pack.c:566
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Не могу открыть файл VerifyScript: %s"
 
-#: build/pack.c:583
+#: build/pack.c:581
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Не могу открыть файл Trigger script: %s"
@@ -2648,115 +2653,115 @@ msgstr "группа %s не содержит никаких пакетов\n"
 
 #: lib/query.c:573
 #, c-format
-msgid "no package provides %s\n"
-msgstr "ни один из пакетов не предоставляет %s\n"
-
-#: lib/query.c:583
-#, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:593
+#: lib/query.c:583
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:608
+#: lib/query.c:594
+#, c-format
+msgid "no package provides %s\n"
+msgstr "ни один из пакетов не предоставляет %s\n"
+
+#: lib/query.c:610
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:611
+#: lib/query.c:613
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:624
+#: lib/query.c:626
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:627
+#: lib/query.c:629
 #, c-format
 msgid "package record number: %d\n"
 msgstr "запись пакета номер %d\n"
 
-#: lib/query.c:630
+#: lib/query.c:632
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:642 lib/rpminstall.c:417
+#: lib/query.c:644 lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/query.c:645
+#: lib/query.c:647
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: lib/query.c:667
+#: lib/query.c:669
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: неудача rpmdbOpen()\n"
 
-#: lib/query.c:726
+#: lib/query.c:728
 msgid "query package owning file"
 msgstr "найти пакет, которому принадлежит файл"
 
-#: lib/query.c:728
+#: lib/query.c:730
 msgid "query packages in group"
 msgstr "запрос пакетов в группе"
 
-#: lib/query.c:730
+#: lib/query.c:732
 msgid "query a package file"
 msgstr "запросить файл пакета"
 
-#: lib/query.c:734
+#: lib/query.c:736
 msgid "query a spec file"
 msgstr "запросить spec-файл"
 
-#: lib/query.c:736
+#: lib/query.c:738
 msgid "query the pacakges triggered by the package"
 msgstr "запросить пакеты с триггер-скриптами на пакет"
 
-#: lib/query.c:738
+#: lib/query.c:740
 msgid "query the packages which require a capability"
 msgstr "найти пакеты, требующие сервиса"
 
-#: lib/query.c:740
+#: lib/query.c:742
 msgid "query the packages which provide a capability"
 msgstr "найти пакеты, предоставляющие сервис"
 
-#: lib/query.c:779
+#: lib/query.c:781
 msgid "list all configuration files"
 msgstr "показать все конфигурационные файлы"
 
-#: lib/query.c:781
+#: lib/query.c:783
 msgid "list all documentation files"
 msgstr "показать все файлы документации"
 
-#: lib/query.c:783
+#: lib/query.c:785
 msgid "dump basic file information"
 msgstr "вывести базовую информацию о файле"
 
-#: lib/query.c:785
+#: lib/query.c:787
 msgid "list files in package"
 msgstr "показать файлы пакета"
 
-#: lib/query.c:789
+#: lib/query.c:791
 msgid "use the following query format"
 msgstr "исп. следующий формат запроса"
 
-#: lib/query.c:791
+#: lib/query.c:793
 msgid "substitute i18n sections from the following catalogue"
 msgstr "подставить секции i18n из следующего каталога"
 
-#: lib/query.c:794
+#: lib/query.c:796
 msgid "display the states of the listed files"
 msgstr "показать состояние показанных файлов"
 
-#: lib/query.c:796
+#: lib/query.c:798
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-01 15:01-0500\n"
+"POT-Creation-Date: 1999-12-02 13:26-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1486,83 +1486,88 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr "Nelze èíst %s: %s."
 
-#: build/files.c:965
+#: build/files.c:897
+#, c-format
+msgid "Symlink points to BuildRoot: %s -> %s"
+msgstr ""
+
+#: build/files.c:977
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Nelze èíst %s: %s."
 
-#: build/files.c:975
+#: build/files.c:987
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: build/files.c:1018
+#: build/files.c:1030
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1032
+#: build/files.c:1044
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "soubor %s: %s\n"
 
-#: build/files.c:1111
+#: build/files.c:1123
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1140
+#: build/files.c:1152
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: build/files.c:1219
+#: build/files.c:1231
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/files.c:1226 build/pack.c:482
+#: build/files.c:1238 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1569 build/parsePrep.c:30
+#: build/files.c:1581 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1624
+#: build/files.c:1636
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nelze spustit pgp"
 
-#: build/files.c:1629
+#: build/files.c:1641
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nelze naèíst cílpodpisu"
 
-#: build/files.c:1711
+#: build/files.c:1723
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "chyba pgp"
 
-#: build/files.c:1715
+#: build/files.c:1727
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1804
+#: build/files.c:1816
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1832 build/files.c:1841
+#: build/files.c:1844 build/files.c:1853
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1947
+#: build/files.c:1959
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "soubor %s: %s\n"
@@ -1664,32 +1669,32 @@ msgstr "nelze otevøít %s: %s"
 msgid "cpio_copy read failed: %s"
 msgstr "nelze èíst: %s (%d)"
 
-#: build/pack.c:538
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/pack.c:545
+#: build/pack.c:544
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/pack.c:552
+#: build/pack.c:551
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/pack.c:559
+#: build/pack.c:558
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:566
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:583
+#: build/pack.c:581
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2690,127 +2695,127 @@ msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
 #: lib/query.c:573
 #, c-format
-msgid "no package provides %s\n"
-msgstr "¾ádný balíèek neposkytuje %s\n"
-
-#: lib/query.c:583
-#, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:593
+#: lib/query.c:583
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: lib/query.c:608
+#: lib/query.c:594
+#, c-format
+msgid "no package provides %s\n"
+msgstr "¾ádný balíèek neposkytuje %s\n"
+
+#: lib/query.c:610
 #, c-format
 msgid "file %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/query.c:611
+#: lib/query.c:613
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
-#: lib/query.c:624
+#: lib/query.c:626
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/query.c:627
+#: lib/query.c:629
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "probíhá dotaz na záznam èíslo %d\n"
 
-#: lib/query.c:630
+#: lib/query.c:632
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze naèíst\n"
 
-#: lib/query.c:642 lib/rpminstall.c:417
+#: lib/query.c:644 lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: lib/query.c:645
+#: lib/query.c:647
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: lib/query.c:667
+#: lib/query.c:669
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Chybné otevøení\n"
 
-#: lib/query.c:726
+#: lib/query.c:728
 #, fuzzy
 msgid "query package owning file"
 msgstr "dotazy na balíèek vlastnící <soubor>"
 
-#: lib/query.c:728
+#: lib/query.c:730
 #, fuzzy
 msgid "query packages in group"
 msgstr "balíèek nemá skupinu\n"
 
-#: lib/query.c:730
+#: lib/query.c:732
 #, fuzzy
 msgid "query a package file"
 msgstr "dotazovat v¹echny balíèky"
 
-#: lib/query.c:734
+#: lib/query.c:736
 #, fuzzy
 msgid "query a spec file"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:736
+#: lib/query.c:738
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "dotazy na balíèky aktivované <balíkem>"
 
-#: lib/query.c:738
+#: lib/query.c:740
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "dotazovat balíèky vy¾adující schopnost <sch>"
 
-#: lib/query.c:740
+#: lib/query.c:742
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "dotazovat balíèky poskytující schopnost <sch>"
 
-#: lib/query.c:779
+#: lib/query.c:781
 #, fuzzy
 msgid "list all configuration files"
 msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
 
-#: lib/query.c:781
+#: lib/query.c:783
 #, fuzzy
 msgid "list all documentation files"
 msgstr "nainstalovat dokumentaci"
 
-#: lib/query.c:783
+#: lib/query.c:785
 #, fuzzy
 msgid "dump basic file information"
 msgstr "zobrazit informace o balíèku"
 
-#: lib/query.c:785
+#: lib/query.c:787
 #, fuzzy
 msgid "list files in package"
 msgstr "binární balíèek starého typu\n"
 
-#: lib/query.c:789
+#: lib/query.c:791
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:791
+#: lib/query.c:793
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:794
+#: lib/query.c:796
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:796
+#: lib/query.c:798
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "zobrazit seznam souborù balíèkù"

@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-01 15:01-0500\n"
+msgstr "POT-Creation-Date: 1999-12-02 13:26-0500\n"
 
 #: build.c:25 lib/rpminstall.c:246 lib/rpminstall.c:406
 #, c-format
@@ -1561,89 +1561,94 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
+#: build/files.c:897
+#, c-format
+msgid "Symlink points to BuildRoot: %s -> %s"
+msgstr ""
+
 # , c-format
-#: build/files.c:965
+#: build/files.c:977
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:975
+#: build/files.c:987
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "não foi passado pacote para desinstalação"
 
-#: build/files.c:1018
+#: build/files.c:1030
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1032
+#: build/files.c:1044
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1111
+#: build/files.c:1123
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1140
+#: build/files.c:1152
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "não foi passado pacote para desinstalação"
 
 # , c-format
-#: build/files.c:1219
+#: build/files.c:1231
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Não consegui abrir: %s\n"
 
-#: build/files.c:1226 build/pack.c:482
+#: build/files.c:1238 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1569 build/parsePrep.c:30
+#: build/files.c:1581 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 # , c-format
 #. XXX this error message is probably not seen.
-#: build/files.c:1624
+#: build/files.c:1636
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:1629
+#: build/files.c:1641
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Não consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:1711
+#: build/files.c:1723
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "Construção falhou.\n"
 
 # , c-format
-#: build/files.c:1715
+#: build/files.c:1727
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "Não consegui abrir o pipe tar: %s\n"
 
-#: build/files.c:1804
+#: build/files.c:1816
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1832 build/files.c:1841
+#: build/files.c:1844 build/files.c:1853
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Não consegui abrir o pipe tar: %s\n"
 
-#: build/files.c:1947
+#: build/files.c:1959
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1754,32 +1759,32 @@ msgstr ""
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:538
+#: build/pack.c:537
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:545
+#: build/pack.c:544
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:552
+#: build/pack.c:551
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:559
+#: build/pack.c:558
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:567
+#: build/pack.c:566
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:583
+#: build/pack.c:581
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2795,127 +2800,127 @@ msgid "group %s does not contain any packages\n"
 msgstr ""
 
 #: lib/query.c:573
-#, c-format
-msgid "no package provides %s\n"
-msgstr ""
-
-#: lib/query.c:583
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "não foram passados pacotes para assinatura"
 
-#: lib/query.c:593
+#: lib/query.c:583
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:608
+#: lib/query.c:594
+#, c-format
+msgid "no package provides %s\n"
+msgstr ""
+
+#: lib/query.c:610
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:611
+#: lib/query.c:613
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:624
+#: lib/query.c:626
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:627
+#: lib/query.c:629
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:630
+#: lib/query.c:632
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:642 lib/rpminstall.c:417
+#: lib/query.c:644 lib/rpminstall.c:417
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/query.c:645
+#: lib/query.c:647
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:667
+#: lib/query.c:669
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:726
+#: lib/query.c:728
 #, fuzzy
 msgid "query package owning file"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: lib/query.c:728
+#: lib/query.c:730
 #, fuzzy
 msgid "query packages in group"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/query.c:730
+#: lib/query.c:732
 #, fuzzy
 msgid "query a package file"
 msgstr "pesquise todos os pacotes"
 
-#: lib/query.c:734
+#: lib/query.c:736
 #, fuzzy
 msgid "query a spec file"
 msgstr "pesquise todos os pacotes"
 
-#: lib/query.c:736
+#: lib/query.c:738
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: lib/query.c:738
+#: lib/query.c:740
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "pesquise pacotes que requerem capacidade <i>"
 
-#: lib/query.c:740
+#: lib/query.c:742
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "pesquise pacotes que fornecem a capacidade <i>"
 
-#: lib/query.c:779
+#: lib/query.c:781
 #, fuzzy
 msgid "list all configuration files"
 msgstr "liste somente os arquivos de configuração (implica -l)"
 
-#: lib/query.c:781
+#: lib/query.c:783
 #, fuzzy
 msgid "list all documentation files"
 msgstr "instale documentação"
 
-#: lib/query.c:783
+#: lib/query.c:785
 #, fuzzy
 msgid "dump basic file information"
 msgstr "mostre informação do pacote"
 
-#: lib/query.c:785
+#: lib/query.c:787
 #, fuzzy
 msgid "list files in package"
 msgstr "instale pacote"
 
-#: lib/query.c:789
+#: lib/query.c:791
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:791
+#: lib/query.c:793
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:794
+#: lib/query.c:796
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:796
+#: lib/query.c:798
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "mostre a lista de arquivos do pacote"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-01 15:01-0500\n"
+"POT-Creation-Date: 1999-12-02 13:26-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1485,83 +1485,88 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:965
+#: build/files.c:897
+#, c-format
+msgid "Symlink points to BuildRoot: %s -> %s"
+msgstr ""
+
+#: build/files.c:977
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:975
+#: build/files.c:987
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1018
+#: build/files.c:1030
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1032
+#: build/files.c:1044
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:1111
+#: build/files.c:1123
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1140
+#: build/files.c:1152
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1219
+#: build/files.c:1231
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/files.c:1226 build/pack.c:482
+#: build/files.c:1238 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1569 build/parsePrep.c:30
+#: build/files.c:1581 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1624
+#: build/files.c:1636
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: build/files.c:1629
+#: build/files.c:1641
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Ne mogu da proèitam 'sigtarget'"
 
-#: build/files.c:1711
+#: build/files.c:1723
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "PGP omanuo"
 
-#: build/files.c:1715
+#: build/files.c:1727
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1804
+#: build/files.c:1816
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1832 build/files.c:1841
+#: build/files.c:1844 build/files.c:1853
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1947
+#: build/files.c:1959
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -1663,32 +1668,32 @@ msgstr ""
 msgid "cpio_copy read failed: %s"
 msgstr "neuspelo èitanje: %s (%d)"
 
-#: build/pack.c:538
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:545
+#: build/pack.c:544
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:552
+#: build/pack.c:551
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:559
+#: build/pack.c:558
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:566
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:583
+#: build/pack.c:581
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2688,127 +2693,127 @@ msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
 #: lib/query.c:573
 #, c-format
-msgid "no package provides %s\n"
-msgstr "nijedan paket ne obezbeðuje %s\n"
-
-#: lib/query.c:583
-#, c-format
 msgid "no package triggers %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:593
+#: lib/query.c:583
 #, c-format
 msgid "no package requires %s\n"
 msgstr "nijedan paket ne zahteva %s\n"
 
-#: lib/query.c:608
+#: lib/query.c:594
+#, c-format
+msgid "no package provides %s\n"
+msgstr "nijedan paket ne obezbeðuje %s\n"
+
+#: lib/query.c:610
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/query.c:611
+#: lib/query.c:613
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/query.c:624
+#: lib/query.c:626
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:627
+#: lib/query.c:629
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:630
+#: lib/query.c:632
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:642 lib/rpminstall.c:417
+#: lib/query.c:644 lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/query.c:645
+#: lib/query.c:647
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: lib/query.c:667
+#: lib/query.c:669
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
-#: lib/query.c:726
+#: lib/query.c:728
 #, fuzzy
 msgid "query package owning file"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/query.c:728
+#: lib/query.c:730
 #, fuzzy
 msgid "query packages in group"
 msgstr "paket nema imena"
 
-#: lib/query.c:730
+#: lib/query.c:732
 #, fuzzy
 msgid "query a package file"
 msgstr "upit nad svim paketima"
 
-#: lib/query.c:734
+#: lib/query.c:736
 #, fuzzy
 msgid "query a spec file"
 msgstr "upit nad %s neuspeo\n"
 
-#: lib/query.c:736
+#: lib/query.c:738
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/query.c:738
+#: lib/query.c:740
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "upit za pakete koji zahtevaju <i> svojstvo"
 
-#: lib/query.c:740
+#: lib/query.c:742
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
 
-#: lib/query.c:779
+#: lib/query.c:781
 #, fuzzy
 msgid "list all configuration files"
 msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
 
-#: lib/query.c:781
+#: lib/query.c:783
 #, fuzzy
 msgid "list all documentation files"
 msgstr "instaliraj dokumentaciju"
 
-#: lib/query.c:783
+#: lib/query.c:785
 #, fuzzy
 msgid "dump basic file information"
 msgstr "prika¾i informacije o paketu"
 
-#: lib/query.c:785
+#: lib/query.c:787
 #, fuzzy
 msgid "list files in package"
 msgstr "instaliraj paket"
 
-#: lib/query.c:789
+#: lib/query.c:791
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:791
+#: lib/query.c:793
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:794
+#: lib/query.c:796
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:796
+#: lib/query.c:798
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "prika¾i listu datoteka u paketu"
