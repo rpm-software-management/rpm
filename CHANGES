@@ -1,4 +1,5 @@
-2.5.5 -> 2.90
+2.5.6 -> 2.90
+	- update and rename Czech (Pavel Makovec <pavelm@terminal.cz>)
 	- augment --showrc with -v, only display set variables without -v.
 	- add macrofiles variable, permit second entry to initMacros().
 	- add config.h defines for paths to find-requires et. al.
@@ -26,7 +27,7 @@
 	- generalize cpio I/O to eliminate pipe to exec'd gzip on install.
 	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
 	- add new fully recursive macro.c
-	- their must be a { between two % in a query format (unless %% is used)
+	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
 	- add new Epoch: keyword just like Serial:.
