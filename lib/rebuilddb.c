@@ -4,7 +4,7 @@
 #include <sys/stat.h>	/* for mkdir(2) !?! */
 #include <unistd.h>
 
-#ifndef HAVE_ALLOCA_H
+#ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
 
