@@ -834,6 +834,8 @@ static void reset_spec()
     struct preamble_line *p = preamble_spec;
     struct part_rec *p1 = part_list;
 
+    setVar(RPMVAR_ROOT, NULL);
+
     while (read_level) {
 	rl = read_level;
         read_level = read_level->next;
