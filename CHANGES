@@ -1,3 +1,6 @@
+2.4.109 -> 2.4.110:
+	- fixed return code bug in build code
+
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource
         - do dependecy generation on -bl

@@ -282,7 +282,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc)
 	pkg = pkg->next;
     }
 
-    return rc;
+    return res;
 }
 
 static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
