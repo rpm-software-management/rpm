@@ -8,24 +8,30 @@
 
 /* Note the CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
    be positive numbers or this setting the high bit stuff is a bad idea. */
-#define CPIO_CHECK_ERRNO	0x80000000
-#define CPIO_READ_FAILED	(1)
-#define CPIO_BAD_MAGIC		(2			)
-#define CPIO_BAD_HEADER		(3			)
-#define CPIO_OPEN_FAILED	(4    | CPIO_CHECK_ERRNO)
-#define CPIO_CHMOD_FAILED	(5    | CPIO_CHECK_ERRNO)
-#define CPIO_CHOWN_FAILED	(6    | CPIO_CHECK_ERRNO)
-#define CPIO_WRITE_FAILED	(7    | CPIO_CHECK_ERRNO)
-#define CPIO_UTIME_FAILED	(8    | CPIO_CHECK_ERRNO)
-#define CPIO_UNLINK_FAILED	(9    | CPIO_CHECK_ERRNO)
-#define CPIO_INTERNAL		(10			)
-#define CPIO_SYMLINK_FAILED	(11   | CPIO_CHECK_ERRNO)
-#define CPIO_STAT_FAILED	(12   | CPIO_CHECK_ERRNO)
-#define CPIO_MKDIR_FAILED	(13   | CPIO_CHECK_ERRNO)
-#define CPIO_MKNOD_FAILED	(14   | CPIO_CHECK_ERRNO)
-#define CPIO_MKFIFO_FAILED	(15   | CPIO_CHECK_ERRNO)
-#define CPIO_LINK_FAILED	(16   | CPIO_CHECK_ERRNO)
-#define CPIO_READLINK_FAILED	(17   | CPIO_CHECK_ERRNO)
+#define CPIOERR_CHECK_ERRNO	0x80000000
+
+#define CPIOERR_BAD_MAGIC	(2			)
+#define CPIOERR_BAD_HEADER	(3			)
+#define CPIOERR_OPEN_FAILED	(4    | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_CHMOD_FAILED	(5    | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_CHOWN_FAILED	(6    | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_WRITE_FAILED	(7    | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_UTIME_FAILED	(8    | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_UNLINK_FAILED	(9    | CPIOERR_CHECK_ERRNO)
+
+#define CPIOERR_SYMLINK_FAILED	(11   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_STAT_FAILED	(12   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_MKDIR_FAILED	(13   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_MKNOD_FAILED	(14   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_MKFIFO_FAILED	(15   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_LINK_FAILED	(16   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_READLINK_FAILED	(17   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_READ_FAILED	(18   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_COPY_FAILED	(19   | CPIOERR_CHECK_ERRNO)
+#define CPIOERR_INTERNAL	(20			)
+#define CPIOERR_HDR_SIZE	(21			)
+#define CPIOERR_UNKNOWN_FILETYPE (22			)
+
 
 /* Don't think this behaves just like standard cpio. It's pretty close, but
    it has some behaviors which are more to RPM's liking. I tried to document
@@ -94,6 +100,8 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 
 /* This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);
+
+const char *cpioStrerror(int rc);
 
 #ifdef __cplusplus
 }

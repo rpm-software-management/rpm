@@ -34,6 +34,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- translate cpio errors using cpioStrerror.
 	- display "..?....." rather than "..5....." for unreadable files.
 	- run time (rather than compile time) host endian check.
 	- caldera patches (ray@Caldera.DE)

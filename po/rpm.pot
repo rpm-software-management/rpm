@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-12-05 14:31-0500\n"
+"POT-Creation-Date: 1998-12-05 18:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1623,7 +1623,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1089 ../build/pack.c:451
+#: ../build/files.c:1089 ../build/pack.c:447
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1748,52 +1748,47 @@ msgstr ""
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:404
+#: ../build/pack.c:401
 #, c-format
-msgid "cpio failed on file %s: %s"
+msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:407
-#, c-format
-msgid "cpio failed on file %s: %d"
-msgstr ""
-
-#: ../build/pack.c:421
+#: ../build/pack.c:417
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:428
+#: ../build/pack.c:424
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:507
+#: ../build/pack.c:503
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:514
+#: ../build/pack.c:510
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:521
+#: ../build/pack.c:517
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:528
+#: ../build/pack.c:524
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:536
+#: ../build/pack.c:532
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:552
+#: ../build/pack.c:548
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2133,6 +2128,35 @@ msgstr ""
 msgid "error %d reading header: %s\n"
 msgstr ""
 
+#: ../lib/cpio.c:954
+#, c-format
+msgid "(error 0x%x)"
+msgstr ""
+
+#: ../lib/cpio.c:957
+msgid "Bad magic"
+msgstr ""
+
+#: ../lib/cpio.c:958
+msgid "Bad header"
+msgstr ""
+
+#: ../lib/cpio.c:976
+msgid "Internal error"
+msgstr ""
+
+#: ../lib/cpio.c:977
+msgid "Header size too big"
+msgstr ""
+
+#: ../lib/cpio.c:978
+msgid "Unknown file type"
+msgstr ""
+
+#: ../lib/cpio.c:987
+msgid " failed - "
+msgstr ""
+
 #: ../lib/dbindex.c:14
 #, c-format
 msgid "cannot open file %s: "
@@ -2406,7 +2430,7 @@ msgstr ""
 #. was used up - if so, we should return a different error
 #: ../lib/install.c:1024
 #, c-format
-msgid "unpacking of archive failed on file %s: %d: %s"
+msgid "unpacking of archive failed on file %s: %s"
 msgstr ""
 
 #: ../lib/install.c:1063

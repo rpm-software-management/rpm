@@ -157,7 +157,7 @@ static inline int padoutfd(CFD_t * cfd, size_t * where, int modulo) {
     *where += amount;
 
     if (safewrite(cfd, buf, amount) != amount) 
-	return CPIO_WRITE_FAILED;
+	return CPIOERR_WRITE_FAILED;
     return 0;
 }
 
@@ -171,7 +171,7 @@ static int strntoul(const char * str, char ** endptr, int base, int num) {
 
     ret = strtoul(buf, &end, base);
     if (*end)
-	*endptr = ((char *)str) + (end - buf);
+	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
 	*endptr = "";
 
@@ -180,7 +180,7 @@ static int strntoul(const char * str, char ** endptr, int base, int num) {
 
 #define GET_NUM_FIELD(phys, log) \
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
-	if (*end) return CPIO_BAD_HEADER;
+	if (*end) return CPIOERR_BAD_HEADER;
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	memcpy(phys, space, 8);
@@ -192,11 +192,11 @@ static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr) {
     int major, minor;
 
     if (ourread(cfd, &physHeader, PHYS_HDR_SIZE) != PHYS_HDR_SIZE) 
-	return CPIO_READ_FAILED;
+	return CPIOERR_READ_FAILED;
 
     if (strncmp(CPIO_CRC_MAGIC, physHeader.magic, strlen(CPIO_CRC_MAGIC)) &&
 	strncmp(CPIO_NEWC_MAGIC, physHeader.magic, strlen(CPIO_NEWC_MAGIC)))
-	return CPIO_BAD_MAGIC;
+	return CPIOERR_BAD_MAGIC;
 
     GET_NUM_FIELD(physHeader.inode, chPtr->inode);
     GET_NUM_FIELD(physHeader.mode, chPtr->mode);
@@ -223,7 +223,7 @@ static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr) {
     chPtr->path = malloc(nameSize + 1);
     if (ourread(cfd, chPtr->path, nameSize) != nameSize) {
 	free(chPtr->path);
-	return CPIO_BAD_HEADER;
+	return CPIOERR_BAD_HEADER;
     }
 
     /* this is unecessary chPtr->path[nameSize] = '\0'; */
@@ -251,7 +251,7 @@ static int createDirectory(char * path, mode_t perms) {
 	} else if (S_ISLNK(sb.st_mode)) {
 	    if (stat(path, &sb)) {
 		if (errno != ENOENT) 
-		    return CPIO_STAT_FAILED;
+		    return CPIOERR_STAT_FAILED;
 		dounlink = 1;
 	    } else {
 		if (S_ISDIR(sb.st_mode))
@@ -263,15 +263,15 @@ static int createDirectory(char * path, mode_t perms) {
 	}
 
 	if (dounlink && unlink(path)) {
-	    return CPIO_UNLINK_FAILED;
+	    return CPIOERR_UNLINK_FAILED;
 	}
     }
 
     if (mkdir(path, 000))
-	return CPIO_MKDIR_FAILED;
+	return CPIOERR_MKDIR_FAILED;
 
     if (chmod(path, perms))
-	return CPIO_CHMOD_FAILED;
+	return CPIOERR_CHMOD_FAILED;
 
     return 0;
 }
@@ -285,15 +285,15 @@ static int setInfo(struct cpioHeader * hdr) {
 
     if (!S_ISLNK(hdr->mode)) {
 	if (!getuid() && chown(hdr->path, hdr->uid, hdr->gid))
-	    rc = CPIO_CHOWN_FAILED;
+	    rc = CPIOERR_CHOWN_FAILED;
 	if (!rc && chmod(hdr->path, hdr->mode & 07777))
-	    rc = CPIO_CHMOD_FAILED;
+	    rc = CPIOERR_CHMOD_FAILED;
 	if (!rc && utime(hdr->path, &stamp))
-	    rc = CPIO_UTIME_FAILED;
+	    rc = CPIOERR_UTIME_FAILED;
     } else {
 #       if ! CHOWN_FOLLOWS_SYMLINK
 	    if (!getuid() && !rc && lchown(hdr->path, hdr->uid, hdr->gid))
-		rc = CPIO_CHOWN_FAILED;
+		rc = CPIOERR_CHOWN_FAILED;
 #       endif
     }
 
@@ -356,11 +356,11 @@ static int expandRegular(CFD_t * cfd, struct cpioHeader * hdr,
 
     if (!lstat(hdr->path, &sb))
 	if (unlink(hdr->path))
-	    return CPIO_UNLINK_FAILED;
+	    return CPIOERR_UNLINK_FAILED;
 
     out = fdOpen(hdr->path, O_CREAT | O_WRONLY, 0);
     if (fdFileno(out) < 0) 
-	return CPIO_OPEN_FAILED;
+	return CPIOERR_OPEN_FAILED;
 
     cbInfo.file = hdr->path;
     cbInfo.fileSize = hdr->size;
@@ -368,12 +368,12 @@ static int expandRegular(CFD_t * cfd, struct cpioHeader * hdr,
     while (left) {
 	bytesRead = ourread(cfd, buf, left < sizeof(buf) ? left : sizeof(buf));
 	if (bytesRead <= 0) {
-	    rc = CPIO_READ_FAILED;
+	    rc = CPIOERR_READ_FAILED;
 	    break;
 	}
 
 	if (fdWrite(out, buf, bytesRead) != bytesRead) {
-	    rc = CPIO_READ_FAILED;
+	    rc = CPIOERR_COPY_FAILED;
 	    break;
 	}
 
@@ -398,10 +398,10 @@ static int expandSymlink(CFD_t * cfd, struct cpioHeader * hdr) {
     int len;
 
     if ((hdr->size + 1)> sizeof(buf))
-	return CPIO_INTERNAL;
+	return CPIOERR_HDR_SIZE;
 
     if (ourread(cfd, buf, hdr->size) != hdr->size)
-	return CPIO_READ_FAILED;
+	return CPIOERR_READ_FAILED;
 
     buf[hdr->size] = '\0';
 
@@ -415,11 +415,11 @@ static int expandSymlink(CFD_t * cfd, struct cpioHeader * hdr) {
 	}
 
 	if (unlink(hdr->path))
-	    return CPIO_UNLINK_FAILED;
+	    return CPIOERR_UNLINK_FAILED;
     }
 
     if (symlink(buf, hdr->path) < 0)
-	return CPIO_SYMLINK_FAILED;
+	return CPIOERR_SYMLINK_FAILED;
 
     return 0;
 }
@@ -431,11 +431,11 @@ static int expandFifo(CFD_t * cfd, struct cpioHeader * hdr) {
 	if (S_ISFIFO(sb.st_mode)) return 0;
 
 	if (unlink(hdr->path))
-	    return CPIO_UNLINK_FAILED;
+	    return CPIOERR_UNLINK_FAILED;
     }
 
     if (mkfifo(hdr->path, 0))
-	return CPIO_MKFIFO_FAILED;
+	return CPIOERR_MKFIFO_FAILED;
 
     return 0; 
 }
@@ -448,11 +448,11 @@ static int expandDevice(CFD_t * cfd, struct cpioHeader * hdr) {
 		(sb.st_rdev == hdr->rdev))
 	    return 0;
 	if (unlink(hdr->path))
-	    return CPIO_UNLINK_FAILED;
+	    return CPIOERR_UNLINK_FAILED;
     }
 
     if (mknod(hdr->path, hdr->mode & (~0777), hdr->rdev))
-	return CPIO_MKNOD_FAILED;
+	return CPIOERR_MKNOD_FAILED;
     
     return 0;
 }
@@ -477,13 +477,13 @@ static int createLinks(struct hardLink * li, char ** failedFile) {
 	if (!lstat(li->files[i], &sb)) {
 	    if (unlink(li->files[i])) {
 		*failedFile = strdup(li->files[i]);
-		return CPIO_UNLINK_FAILED;
+		return CPIOERR_UNLINK_FAILED;
 	    }
 	}
 
 	if (link(li->files[li->createdPath], li->files[i])) {
 	    *failedFile = strdup(li->files[i]);
-	    return CPIO_LINK_FAILED;
+	    return CPIOERR_LINK_FAILED;
 	}
 
 	free(li->files[i]);
@@ -501,7 +501,7 @@ static int eatBytes(CFD_t * cfd, int amount) {
     while (amount) {
 	bite = (amount > sizeof(buf)) ? sizeof(buf) : amount;
 	if (ourread(cfd, buf, bite) != bite)
-	    return CPIO_READ_FAILED;
+	    return CPIOERR_READ_FAILED;
 	amount -= bite;
     }
 
@@ -530,7 +530,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	if ((rc = getNextHeader(cfd, &ch))) {
 	    fprintf(stderr, _("error %d reading header: %s\n"),
 		rc, strerror(errno));
-	    return CPIO_BAD_HEADER;
+	    return CPIOERR_BAD_HEADER;
 	}
 
 	if (!strcmp(ch.path, TRAILER)) {
@@ -620,7 +620,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 			/* this mimicks cpio but probably isnt' right */
 			rc = expandFifo(cfd, &ch);
 		    } else {
-			rc = CPIO_INTERNAL;
+			rc = CPIOERR_INTERNAL;
 		    }
 		}
 
@@ -661,7 +661,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     while (li && !rc) {
 	if (li->linksLeft) {
 	    if (li->createdPath == -1)
-		rc = CPIO_INTERNAL;
+		rc = CPIOERR_INTERNAL;
 	    else 
 		rc = createLinks(li, failedFile);
 	}
@@ -712,7 +712,7 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
 
 	amount = readlink(map->fsPath, symbuf, sizeof(symbuf));
 	if (amount <= 0) {
-	    return CPIO_READLINK_FAILED;
+	    return CPIOERR_READLINK_FAILED;
 	}
 
 	sb.st_size = amount;
@@ -746,7 +746,7 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
     if (writeData && S_ISREG(sb.st_mode)) {
 	/* FIXME: we should use mmap here if it's available */
 	if (fdFileno(datafd = fdOpen(map->fsPath, O_RDONLY, 0)) < 0)
-	    return CPIO_OPEN_FAILED;
+	    return CPIOERR_OPEN_FAILED;
 
 	size += sb.st_size;
 
@@ -757,7 +757,7 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
 		olderrno = errno;
 		fdClose(datafd);
 		errno = olderrno;
-		return CPIO_READ_FAILED;
+		return CPIOERR_READ_FAILED;
 	    }
 
 	    if ((rc = safewrite(cfd, buf, amount)) != amount) {
@@ -855,7 +855,7 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 
 	if (rc) {
 	    if (failedFile) *failedFile = mappings[i].fsPath;
-	    return CPIO_STAT_FAILED;
+	    return CPIOERR_STAT_FAILED;
 	}
 
 	if (!S_ISDIR(sb.st_mode) && sb.st_nlink > 1) {
@@ -939,4 +939,55 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     if (archiveSize) *archiveSize = totalsize;
 
     return 0;
+}
+
+const char * cpioStrerror(int rc)
+{
+    static char msg[256];
+    char *s;
+    int l, myerrno = errno;
+
+    strcpy(msg, "cpio: ");
+    switch (rc) {
+    default:
+	s = msg + strlen(msg);
+	sprintf(s, _("(error 0x%x)"), rc);
+	s = NULL;
+	break;
+    case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
+    case CPIOERR_BAD_HEADER:	s = _("Bad header");		break;
+
+    case CPIOERR_OPEN_FAILED:	s = "open";	break;
+    case CPIOERR_CHMOD_FAILED:	s = "chmod";	break;
+    case CPIOERR_CHOWN_FAILED:	s = "chown";	break;
+    case CPIOERR_WRITE_FAILED:	s = "write";	break;
+    case CPIOERR_UTIME_FAILED:	s = "utime";	break;
+    case CPIOERR_UNLINK_FAILED:	s = "unlink";	break;
+    case CPIOERR_SYMLINK_FAILED: s = "symlink";	break;
+    case CPIOERR_STAT_FAILED:	s = "stat";	break;
+    case CPIOERR_MKDIR_FAILED:	s = "mkdir";	break;
+    case CPIOERR_MKNOD_FAILED:	s = "mknod";	break;
+    case CPIOERR_MKFIFO_FAILED:	s = "mkfifo";	break;
+    case CPIOERR_LINK_FAILED:	s = "link";	break;
+    case CPIOERR_READLINK_FAILED: s = "readlink";	break;
+    case CPIOERR_READ_FAILED:	s = "read";	break;
+    case CPIOERR_COPY_FAILED:	s = "copy";	break;
+
+    case CPIOERR_INTERNAL:	s = _("Internal error");	break;
+    case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
+    case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
+    }
+
+    l = sizeof(msg) - strlen(msg) - 1;
+    if (s != NULL) {
+	if (l > 0) strncat(msg, s, l);
+	l -= strlen(s);
+    }
+    if (rc & CPIOERR_CHECK_ERRNO) {
+	s = _(" failed - ");
+	if (l > 0) strncat(msg, s, l);
+	l -= strlen(s);
+	if (l > 0) strncat(msg, strerror(myerrno), l);
+    }
+    return msg;
 }

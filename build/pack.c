@@ -397,19 +397,15 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa) {
     cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fdo)), "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
-    gzdClose(cfd->cpioGzFd);
-
     if (rc) {
-	if (rc & CPIO_CHECK_ERRNO)
-	    rpmError(RPMERR_CPIO, _("cpio failed on file %s: %s"),
-		     failedFile, strerror(errno));
-	else
-	    rpmError(RPMERR_CPIO, _("cpio failed on file %s: %d"),
-		     failedFile, rc);
-	return 1;
+	rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s"),
+		failedFile, cpioStrerror(rc));
+      rc = 1;
     }
 
-    return 0;
+    gzdClose(cfd->cpioGzFd);
+
+    return rc;
 }
 
 static int cpio_copy(FD_t fdo, CSA_t *csa) {
