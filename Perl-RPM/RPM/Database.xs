@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.12 2001/02/27 07:34:44 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.13 2001/03/08 06:11:20 rjray Exp $";
 
 /*
   rpmdb_TIEHASH
@@ -88,6 +88,8 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
     Header hdr;              /* For rpmdbGetRecord() calls           */
 #if RPM_MAJOR >= 4
     rpmdbMatchIterator mi;
+#else
+    int result;
 #endif
     SV** svp;
     SV* FETCH;
@@ -103,8 +105,6 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
        allow the request to be by name -or- by an offset number */
     if (SvPOK(key))
     {
-        int result;
-
         name = SvPV(key, namelen);
 
         /* Step 1: Check to see if this has already been requested and is
@@ -125,11 +125,9 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
         /* Run the search */
         result = rpmdbFindPackage(dbstruct->dbp, name, dbstruct->index_set);
         if (result)
-        {
             /* Some sort of error occured when reading the DB or the
                name was not found. */
             return &PL_sv_undef;
-        }
         else
         {
             /* There may have been more than one match, but for now
@@ -148,6 +146,7 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
         }
 #else
         /* This is the 4.0 way */
+        offset = -1;
         mi =  rpmdbInitIterator(dbstruct->dbp, RPMTAG_NAME, name, 0);
         while ((hdr = rpmdbNextIterator(mi)) != NULL)
         {
@@ -155,6 +154,10 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
             break;
         }
         rpmdbFreeIterator(mi);
+        if (offset == -1)
+            /* Some sort of error occured when reading the DB or the
+               name was not found. */
+            return &PL_sv_undef;
 #endif
     }
     else if (SvIOK(key))
@@ -328,10 +331,12 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
     const char* str = NULL; /* For the actual string out of (SV *)string    */
     RPM_Database* dbstruct; /* This is the struct used to hold C-level data */
     AV* return_val;
-    int result, loop;
+    int loop;
     SV* tmp_hdr;
 #if RPM_MAJOR >= 4
     rpmdbMatchIterator mi;
+#else
+    int result;
 #endif
 
     /* Any successful operation will store items on this */
