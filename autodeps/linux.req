@@ -34,7 +34,7 @@ for f in $liblist $exelist ; do
 	    sub(/:/, "", $3);
 	    LIBNAME=$3;
 	}
-	(START==1) && (LIBNAME!="") && ($4!="") { print LIBNAME "(" $4 ")"; }
+	(START==1) && (LIBNAME!="") && ($4~=/^GLIBC_*/) { print LIBNAME "(" $4 ")"; }
 	/^$/ { START=0; }
     '
 done | sort -u
