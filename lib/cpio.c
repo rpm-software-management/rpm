@@ -341,8 +341,8 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 	}
     }
 
-    ofd = Fopen(hdr->path, "r+.ufdio");
-    if (ofd == NULL || Ferror(ofd)) 
+    ofd = Fopen(hdr->path, "w.ufdio");
+    if (ofd == NULL || Ferror(ofd))
 	return CPIOERR_OPEN_FAILED;
 
     cbInfo.file = hdr->path;

@@ -932,26 +932,7 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
     const char *fileGname;
     char *lang;
     
-if (_debug)
-fprintf(stderr, "*** AF ENTRY buildRootURL %s fileURL %s diskURL %s\n", fl->buildRootURL, fileURL, diskURL);
     /* Path may have prepended buildRootURL, so locate the original filename. */
-#ifdef DYING
-    {	const char *s;
-	char c;
-
-	if ((s = fl->buildRootURL) != NULL) {
-	    c = '\0';
-	    while (*s) {
-		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
-		    while(*s && *s == '/') s++;
-		if (*s) {
-		    fileURL++;
-		    c = *s++;
-		}
-	    }
-	}
-    }
-#else
     /*
      * XXX There are 3 types of entry into addFile:
      *
@@ -967,9 +948,6 @@ fprintf(stderr, "*** AF ENTRY buildRootURL %s fileURL %s diskURL %s\n", fl->buil
 	if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
 	    fileURL += strlen(fl->buildRootURL);
     }
-#endif
-if (_debug)
-fprintf(stderr, "*** AF STRIP buildRootURL %s fileURL %s diskURL %s\n", fl->buildRootURL, fileURL, diskURL);
 
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
@@ -1137,46 +1115,14 @@ fprintf(stderr, "*** PBF fileURL %s\n", fileURL);
     }
     
     /* Copy file name or glob pattern removing multiple "/" chars. */
-#ifdef	DYING
-    {	const char *s;
-	char c, *t = alloca((fl->buildRootURL ? strlen(fl->buildRootURL) : 0) +
-			strlen(fileURL) + 1);
-
-	fn = t;
-	*t = c = '\0';
-
-	/* With a buildroot, prepend the buildRootURL now. */
-	if ((s = fl->buildRootURL) != NULL) {
-	    while (*s) {
-		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
-		    while(*s && *s == '/') s++;
-		if (*s)
-		    *t++ = c = *s++;
-	    }
-	    while (t > fn && t[-1] == '/') t--;
-	    *t = '\0';
-	}
-	if ((s = fileName) != NULL) {
-	    while (*s) {
-		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
-		    while(*s && *s == '/') s++;
-		if (*s)
-		    *t++ = c = *s++;
-	    }
-	    while (t > fn && t[-1] == '/') t--;
-	    *t = '\0';
-	}
-    }
-#else
     /*
      * Note: rpmGetPath should guarantee a "canonical" path. That means
      * that the following pathologies should be weeded out:
      *		//bin//sh
      *		//usr//bin/
-     *		/.././../usr/../bin//./sh (XXX FIXME: dots not handled yet)
+     *		/.././../usr/../bin//./sh
      */
     diskURL = rpmGenPath(fl->buildRootURL, NULL, fileURL);
-#endif
 
     if (doGlob) {
 	const char * diskRoot;

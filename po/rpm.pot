@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-23 18:43-0500\n"
+"POT-Creation-Date: 1999-11-24 11:06-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1382,82 +1382,82 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr ""
 
-#: build/files.c:987
+#: build/files.c:965
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: build/files.c:997
+#: build/files.c:975
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: build/files.c:1040
+#: build/files.c:1018
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1054
+#: build/files.c:1032
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1133
+#: build/files.c:1111
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1194
+#: build/files.c:1140
 #, c-format
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1273
+#: build/files.c:1219
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1280 build/pack.c:480
+#: build/files.c:1226 build/pack.c:480
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1623 build/parsePrep.c:30
+#: build/files.c:1569 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1678
+#: build/files.c:1624
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1683
+#: build/files.c:1629
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1765
+#: build/files.c:1711
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1769
+#: build/files.c:1715
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1858
+#: build/files.c:1804
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1886 build/files.c:1895
+#: build/files.c:1832 build/files.c:1841
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:2001
+#: build/files.c:1947
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1938,41 +1938,41 @@ msgstr ""
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:527
+#: lib/cpio.c:529
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:992
+#: lib/cpio.c:996
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:995
+#: lib/cpio.c:999
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:996
+#: lib/cpio.c:1000
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1014
+#: lib/cpio.c:1018
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1015
+#: lib/cpio.c:1019
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1016
+#: lib/cpio.c:1020
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1017
+#: lib/cpio.c:1021
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1026
+#: lib/cpio.c:1030
 msgid " failed - "
 msgstr ""
 
@@ -2857,76 +2857,76 @@ msgid ""
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:462
+#: lib/rpmdb.c:471
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: lib/rpmdb.c:473
+#: lib/rpmdb.c:482
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:497 lib/uninstall.c:86
+#: lib/rpmdb.c:506 lib/uninstall.c:86
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/rpmdb.c:505
+#: lib/rpmdb.c:514
 msgid "package has no name"
 msgstr ""
 
-#: lib/rpmdb.c:507
+#: lib/rpmdb.c:516
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:512
+#: lib/rpmdb.c:521
 msgid "package has no group\n"
 msgstr ""
 
-#: lib/rpmdb.c:514
+#: lib/rpmdb.c:523
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:521
+#: lib/rpmdb.c:530
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:536
+#: lib/rpmdb.c:545
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:548
+#: lib/rpmdb.c:557
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:559
+#: lib/rpmdb.c:568
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:570
+#: lib/rpmdb.c:579
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:579
+#: lib/rpmdb.c:588
 msgid "package has no files\n"
 msgstr ""
 
-#: lib/rpmdb.c:662
+#: lib/rpmdb.c:671
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:721
+#: lib/rpmdb.c:730
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:730
+#: lib/rpmdb.c:739
 msgid "header changed size!"
 msgstr ""
 
@@ -3027,59 +3027,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:686
+#: lib/rpmio.c:679
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:689
+#: lib/rpmio.c:682
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:692
+#: lib/rpmio.c:685
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:695
+#: lib/rpmio.c:688
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:698
+#: lib/rpmio.c:691
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:701
+#: lib/rpmio.c:694
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:704
+#: lib/rpmio.c:697
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:707
+#: lib/rpmio.c:700
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:710
+#: lib/rpmio.c:703
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:713
+#: lib/rpmio.c:706
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:716
+#: lib/rpmio.c:709
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:719
+#: lib/rpmio.c:712
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:723
+#: lib/rpmio.c:716
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1244
+#: lib/rpmio.c:1237
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

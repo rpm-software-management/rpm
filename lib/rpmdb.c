@@ -399,7 +399,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 	    strcat(otherFile, baseNames[num]);
 
 	    fp2 = fpLookup(fpc, otherFile, 1);
-	    if (FP_EQUAL(fp1, fp2)) 
+	    if (FP_EQUAL(fp1, fp2))
 		dbiAppendIndexRecord(matches, allMatches.recs[i]);
 
 	    free(otherFile);
