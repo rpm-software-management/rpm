@@ -9,6 +9,9 @@
 #include "rpmlib.h"
 #include "upgrade.h"
 
+/* from lib/misc.c */
+int rpmvercmp(const char * one, const char * two);
+
 /* Forward types */
 
 typedef struct rpmdbObject_s rpmdbObject;
@@ -44,6 +47,9 @@ static PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args);
 static PyObject * findUpgradeSet(PyObject * self, PyObject * args);
 static PyObject * errorSetCallback (PyObject * self, PyObject * args);
 static PyObject * errorString (PyObject * self, PyObject * args);
+static PyObject * versionCompare (PyObject * self, PyObject * args);
+static PyObject * labelCompare (PyObject * self, PyObject * args);
+static PyObject * rebuildDB (PyObject * self, PyObject * args);
 
 static PyObject * rpmtransCreate(PyObject * self, PyObject * args);
 static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args);
@@ -64,10 +70,13 @@ static PyMethodDef rpmModuleMethods[] = {
     { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
     { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
+    { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
     { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },    
     { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS, NULL },
     { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS, NULL },
     { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
+    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
+    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
     { NULL }
 } ;
 
@@ -424,6 +433,14 @@ static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
     return o;
 }
 
+static PyObject * rebuildDB (PyObject * self, PyObject * args) {
+    char * root = "";
+
+    if (!PyArg_ParseTuple(args, "s", &root)) return NULL;
+
+    return Py_BuildValue("i", rpmdbRebuild(root));
+}
+
 static PyObject * rpmReadHeaders (FD_t fd) {
     PyObject * list;
     Header header;
@@ -565,6 +582,43 @@ static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
 
 static PyObject * errorString (PyObject * self, PyObject * args) {
     return PyString_FromString(rpmErrorString ());
+}
+
+static PyObject * versionCompare (PyObject * self, PyObject * args) {
+    hdrObject * h1, * h2;
+    
+    if (!PyArg_ParseTuple(args, "O!O!", &hdrType, &h1, &hdrType, &h2)) return NULL;
+
+    return Py_BuildValue("i", rpmVersionCompare(h1->h, h2->h));
+}
+
+static PyObject * labelCompare (PyObject * self, PyObject * args) {
+    char *v1, *r1, *e1, *v2, *r2, *e2;
+    int rc;
+
+    if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
+			  &e1, &v1, &r1,
+			  &e2, &v2, &r2)) return NULL;
+
+    if (e1 && !e2)
+	return Py_BuildValue("i", 1);
+    else if (!e1 && e2) 
+	return Py_BuildValue("i", -1);
+    else if (e1 && e2) {
+	int ep1, ep2;
+	ep1 = atoi (e1);
+	ep2 = atoi (e2);
+	if (ep1 < ep2)
+	    return Py_BuildValue("i", -1);
+	else if (ep1 > ep2)
+	    return Py_BuildValue("i", 1);
+    }
+	
+    rc = rpmvercmp(v1, v2);
+    if (rc)
+	return Py_BuildValue("i", rc);
+
+    return Py_BuildValue("i", rpmvercmp(r1, r2));
 }
 
 static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {

@@ -3,27 +3,20 @@
 import rpm
 import os
 
-def cb(what, amount, total, key, data):
-    if (what == rpm.RPMCALLBACK_INST_OPEN_FILE):
-	d = os.open(key, os.O_RDONLY)
-	return d
+## fd = os.open('/mnt/redhat/comps/dist/6.0/i386/util-linux-2.9o-13.i386.rpm', 0)
+## (hdr1, foo) = rpm.headerFromPackage (fd)
+## os.close (fd)
+## fd = os.open ('/mnt/redhat/comps/dist/6.1/i386/util-linux-2.9v-20.i386.rpm', 0)
+## (hdr2, foo) = rpm.headerFromPackage (fd)
+## os.close (fd)
 
-fd = os.open('foo', os.O_RDONLY);
-(h, isSource) = rpm.headerFromPackage(fd)
-print "from foo:", h[rpm.RPMTAG_NAME]
-os.close(fd)
+## print rpm.versionCompare (hdr1, hdr1)
 
-#list = rpm.readHeaderList('hdlist')
-#print "got", len(list), "items"
+## print rpm.labelCompare ((None, "2.9j", "14"), (None, "2.9j", "15"))
 
-d = rpm.opendb(0)
+db = rpm.opendb ()
 
-ts = rpm.TransactionSet("/", d)
-
-ts.add(h, "foo")
-rc = ts.depcheck()
-print rc
-
-ts.order()
-print "run", ts.run(rpm.RPMTRANS_FLAG_TEST, 0, cb, "arg")
-
+rc = db.findpackage ("Xconfigurator")
+for rec in rc:
+    print db[rec]
+    print db[rec]['name']
