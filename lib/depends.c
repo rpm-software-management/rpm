@@ -475,12 +475,13 @@ static int checkDependentConflicts(rpmDependencies rpmdep,
     dbiIndexSet matches;
     int rc;
 
-    if (rpmdbFindByConflicts(rpmdep->db, package, &matches))  {
+    if (!rpmdep->db) return 0;
+
+    if (rpmdbFindByConflicts(rpmdep->db, package, &matches)) {
 	return 0;
     }
 
     rc = checkPackageSet(rpmdep, psp, package, &matches);
-    dbiFreeIndexRecord(matches);
 
     return rc;
 }
