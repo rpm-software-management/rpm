@@ -205,7 +205,21 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
     return newBlock + sizeof(block); 
 }
 
-void faFree(faFile fa, unsigned int offset);
+int faFree(faFile fa, unsigned int offset) {
+    struct faBlock block;
+
+    /* this is *really* bad ****/
+
+    offset -= sizeof(block);
+    if (lseek(fa->fd, offset, SEEK_SET) < 0) return 0;
+    if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) return 0;
+
+    block.isFree = 1;
+    if (lseek(fa->fd, offset, SEEK_SET) < 0) return 0;
+    if (write(fa->fd, &block, sizeof(block)) != sizeof(block)) return 0;
+
+    return 1;
+}
 
 void faClose(faFile fa) {
     close(fa->fd);
