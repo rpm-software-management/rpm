@@ -53,7 +53,8 @@ void printUsage(void) {
     puts("                          [--replacepkgs] [--replacefiles] [--search]");
     puts("                          [--root <dir>] file1.rpm ... filen.rpm");
     puts("       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]");
-    puts("                          [--search] [--root <dir>] file1.rpm ... fileN.rpm");
+    puts("                          [--search] [--oldpackage] [--root <dir>]");
+    puts("                          file1.rpm ... fileN.rpm");
     puts("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] ");
     puts("                        [--root <dir>] [targets]");
     puts("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]");
@@ -108,7 +109,9 @@ void printHelp(void) {
     puts("      --root <dir>	- use <dir> as the top level directory");
     puts("");
     puts("    --upgrade <packagefile>");
-    puts("    -U <packagefile>	- upgrade package (same options as --install)");
+    puts("    -U <packagefile>	- upgrade package (same options as --install, plus)");
+    puts("      --oldpackage      - upgrade to an old version of the package (--force");
+    puts("                          on upgrades does this automatically)");
     puts("");
     puts("    --uninstall <package>");
     puts("    -u <package>        - uninstall package");
@@ -199,6 +202,7 @@ int main(int argc, char ** argv) {
     int installFlags = 0;
     int interfaceFlags = 0;
     int buildAmount = 0;
+    int oldPackage = 0;
     int clean = 0;
     int signIt = 0;
     char * prefix = "/";
@@ -220,6 +224,7 @@ int main(int argc, char ** argv) {
 	    { "info", 0, 0, 'i' },
 	    { "install", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
+	    { "oldpackage", 0, &oldPackage, 0 },
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
 	    { "query", 0, 0, 'q' },
@@ -447,7 +452,7 @@ int main(int argc, char ** argv) {
 	argerror("unexpected query source");
 
     if (bigMode != MODE_INSTALL && force)
-	argerror("only installation may be forced");
+	argerror("only installation and upgrading may be forced");
 
     if (bigMode != MODE_INSTALL && showHash)
 	argerror("--hash (-h) may only be specified during package installation");
@@ -472,6 +477,12 @@ int main(int argc, char ** argv) {
 
     if (bigMode != MODE_BUILD && clean) 
 	argerror("--clean may only be used during package building");
+
+    if (oldPackage && !(installFlags & INSTALL_UPGRADE))
+	argerror("--oldpackage may only be used during upgrades");
+
+    if (oldPackage || (force && (installFlags & INSTALL_UPGRADE)))
+	installFlags |= INSTALL_UPGRADETOOLD;
 
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD) {
