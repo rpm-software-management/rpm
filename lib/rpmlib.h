@@ -319,7 +319,6 @@ int rpmInstallSourcePackage(char * root, FD_t fd, char ** specFile,
 			    rpmNotifyFunction notify, void * notifyData,
 			    char * labelFormat, char ** cookie);
 int rpmVersionCompare(Header first, Header second);
-int removeBinaryPackage(char * root, rpmdb db, unsigned int offset, int flags);
 int rpmdbRebuild(char * root);
 
 int rpmVerifyFile(char * root, Header h, int filenum, int * result,
