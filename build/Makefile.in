@@ -10,6 +10,10 @@ LIBOBJECTS = \
 
 LIBBUILD = librpmbuild.a
 LOADLIBES = -lrpm -lz ../popt/libpopt.a $(LIBEFENCE)
+PROGS =
+INSTALL= @INSTALL@
+INSTALL_PROGRAM= @INSTALL_PROGRAM@
+INSTALL_DATA= @INSTALL_DATA@
 
 # -----------------------------------------------------------------------
 
@@ -37,11 +41,17 @@ files.o: files.c
 spec.o: spec.c
 	$(CC) $(CFLAGS) -DMACROFILE=\"$(MACROFILE)\" -o $@ -c $<
 
-clean:
-	rm -f *.a *.o *~ $(PROGS)
+install:
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpmbuild.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpmmacro.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpmspec.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 librpmbuild.a $(LIBDIR)
 
 distclean: clean
 	rm -f Makefile
+
+clean:
+	rm -f *.a *.o *~ $(PROGS)
 
 depend:
 	topdir_path=`( cd $(top_srcdir) && pwd )` ; \

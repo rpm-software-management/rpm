@@ -4,8 +4,6 @@
 
 #include "rpmbuild.h"
 
-#include "files.h"
-
 #include "lib/cpio.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"

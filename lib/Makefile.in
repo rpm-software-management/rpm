@@ -58,6 +58,9 @@ install:
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpmlib.h $(INCDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/dbindex.h $(INCDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/header.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/messages.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/misc.h $(INCDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/stringbuf.h $(INCDIR)
 	$(INSTALL_DATA) -m 644 librpm.a $(LIBDIR)
 
 distclean: clean

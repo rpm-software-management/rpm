@@ -10,7 +10,7 @@
 #include "misc.h"
 
 /* but this will be needed */
-#include "spec.h"
+#include "rpmspec.h"
 
 /* from build/build.h */
 

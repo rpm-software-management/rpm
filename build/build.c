@@ -2,8 +2,6 @@
 
 #include "rpmbuild.h"
 
-#include "files.h"
-
 #ifdef	DYING
 static void doRmSource(Spec spec);
 static int writeVars(Spec spec, FILE *f);

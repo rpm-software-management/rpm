@@ -2,7 +2,7 @@
 #define _H_SPEC_
 
 typedef struct SpecStruct *Spec;
-#include "macro.h"
+#include "rpmmacro.h"
 
 #if 0
 struct ReqProvTrigger {

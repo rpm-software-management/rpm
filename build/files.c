@@ -8,7 +8,7 @@
 #include "myftw.h"
 #include "lib/cpio.h"
 #include "md5.h"
-#include "macro.h"
+#include "rpmmacro.h"
 
 #define MAXDOCDIR 1024
 

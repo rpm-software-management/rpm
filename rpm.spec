@@ -75,3 +75,4 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 /usr/include/rpm
 /usr/lib/librpm.a
+/usr/lib/librpmbuild.a

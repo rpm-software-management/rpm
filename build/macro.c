@@ -16,7 +16,7 @@ typedef	void *	Spec;
 
 #endif
 
-#include "macro.h"
+#include "rpmmacro.h"
 
 typedef struct MacroBuf {
 	const char *s;		/* text to expand */
