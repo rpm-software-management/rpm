@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.21 2000/11/14 06:19:10 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.22 2001/02/27 07:34:44 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -121,9 +121,7 @@ static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
                 {
                     urk[0] = *data;
                     urk[1] = '\0';
-                    new_item = newSVpv((char *)urk, 1);
-                    av_store(new_list, idx, sv_2mortal(new_item));
-                    SvREFCNT_inc(new_item);
+                    sv_setpvn(*av_fetch(new_list, idx, TRUE), (char *)urk, 1);
                 }
 
                 break;
@@ -135,9 +133,8 @@ static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
                 for (loop = (I8 *)data, idx = 0; idx < size; idx++, loop++)
                 {
                     /* Note that the rpm lib also uses masks for INT8 */
-                    new_item = newSViv((I32)(*((I8 *)loop) & 0xff));
-                    av_store(new_list, idx, sv_2mortal(new_item));
-                    SvREFCNT_inc(new_item);
+                    sv_setiv(*av_fetch(new_list, idx, TRUE),
+                             (I32)(*((I8 *)loop) & 0xff));
                 }
 
                 break;
@@ -149,9 +146,8 @@ static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
                 for (loop = (I16 *)data, idx = 0; idx < size; idx++, loop++)
                 {
                     /* Note that the rpm lib also uses masks for INT16 */
-                    new_item = newSViv((I32)(*((I16 *)loop) & 0xffff));
-                    av_store(new_list, idx, sv_2mortal(new_item));
-                    SvREFCNT_inc(new_item);
+                    sv_setiv(*av_fetch(new_list, idx, TRUE),
+                             (I32)(*((I16 *)loop) & 0xffff));
                 }
 
                 break;
@@ -162,9 +158,8 @@ static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
 
                 for (loop = (I32 *)data, idx = 0; idx < size; idx++, loop++)
                 {
-                    new_item = newSViv((I32)*((I32 *)loop));
-                    av_store(new_list, idx, sv_2mortal(new_item));
-                    SvREFCNT_inc(new_item);
+                    sv_setiv(*av_fetch(new_list, idx, TRUE),
+                             (I32)*((I32 *)loop));
                 }
 
                 break;
@@ -177,27 +172,21 @@ static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
 
                 /* Special case for exactly one RPM_STRING_TYPE */
                 if (type == RPM_STRING_TYPE && size == 1)
-                {
-                    new_item = newSVsv(&PL_sv_undef);
-                    sv_setpvn(new_item, (char *)data, strlen((char *)data));
-                    av_store(new_list, 0, sv_2mortal(new_item));
-                    SvREFCNT_inc(new_item);
-                }
+                    sv_setpv(*av_fetch(new_list, 0, TRUE), data);
                 else
                 {
                     for (loop = (char **)data, idx = 0;
                          idx < size;
                          idx++, loop++)
                     {
-                        new_item = newSVsv(&PL_sv_undef);
-                        sv_setpvn(new_item, *loop, strlen(*loop));
-                        av_store(new_list, idx, sv_2mortal(new_item));
-                        SvREFCNT_inc(new_item);
+                        sv_setpvn(*av_fetch(new_list, idx, TRUE),
+                                  *loop, strlen(*loop));
                     }
+
+                    /* Only for STRING_ARRAY_TYPE do we have to call free() */
+                    if (type == RPM_STRING_ARRAY_TYPE) Safefree(data);
                 }
 
-                /* Only for STRING_ARRAY_TYPE do we have to call free() */
-                if (type == RPM_STRING_ARRAY_TYPE) Safefree(data);
                 break;
             }
           default:
@@ -207,7 +196,7 @@ static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
     }
 
     if (scalar)
-        new_item = newSVsv(*(av_fetch(new_list, 0, FALSE)));
+        new_item = newSVsv(*av_fetch(new_list, 0, FALSE));
     else
         new_item = newRV((SV *)new_list);
 
@@ -528,6 +517,10 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, SV* value)
               to be filled in later
             */
             a_value = (AV *)SvRV(value);
+            /* A size of 0 means this is an attempt at autovivification... */
+            if (av_len(a_value) == -1)
+                /* ...which isn't allowed here. Nip it before it starts. */
+                return 0;
             data_type = -1;
             value = Nullsv;
         }
@@ -943,7 +936,6 @@ void rpmhdr_DESTROY(pTHX_ RPM__Header self)
     struct_from_object(RPM_Header, hdr, self);
     if (! hdr) return;
 
-    /*fprintf(stderr, "rpmhdr_DESTROY (%s)\n", hdr->name);*/
     if (hdr->iterator)
         headerFreeIterator(hdr->iterator);
     if (hdr->hdr)
