@@ -68,6 +68,10 @@ extern const int rpmTagTableSize;
 #define RPMTAG_SOURCERPM                1044
 #define RPMTAG_FILEVERIFYFLAGS          1045
 #define RPMTAG_ARCHIVESIZE              1046
+#define RPMTAG_PROVIDES                 1047
+#define RPMTAG_REQUIREFLAGS             1048
+#define RPMTAG_REQUIRENAME              1049
+#define RPMTAG_REQUIREVERSION           1050
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
@@ -94,6 +98,11 @@ extern const int rpmTagTableSize;
 #define VERIFY_MODE             (1 << 6)
 #define VERIFY_RDEV             (1 << 7)
 #define VERIFY_ALL              ~(VERIFY_NONE)
+
+#define REQUIRE_SERIAL          (1 << 0)
+#define REQUIRE_LESS            (1 << 1)
+#define REQUIRE_GREATER         (1 << 2)
+#define REQUIRE_EQUAL           (1 << 3)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
