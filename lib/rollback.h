@@ -55,6 +55,7 @@ struct transactionFileInfo_s {
     uid_t * fuids;
     gid_t * fgids;
     int * fmapflags;
+    unsigned int archiveSize;
     int magic;
 #define	TFIMAGIC	0x09697923
   /* these are for TR_ADDED packages */

@@ -692,7 +692,8 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * @param h		header
  * @return		0 on success
  */
-int rpmdbAdd(rpmdb rpmdb, int iid, Header h);	/*@modifies h @*/
+int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
+	/*@modifies h @*/;
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.

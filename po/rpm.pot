@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-24 22:29-0500\n"
+"POT-Creation-Date: 2001-01-25 15:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1472,7 +1472,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:114 build/pack.c:372
+#: build/build.c:114 build/pack.c:377
 msgid "Unable to open temp file.\n"
 msgstr ""
 
@@ -1662,7 +1662,7 @@ msgstr ""
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1461 build/pack.c:108
+#: build/files.c:1461 build/pack.c:113
 #, c-format
 msgid "line: %s\n"
 msgstr ""
@@ -1729,126 +1729,126 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:52
+#: build/pack.c:56
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:74
+#: build/pack.c:79
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr ""
 
-#: build/pack.c:81
+#: build/pack.c:86
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr ""
 
-#: build/pack.c:165
+#: build/pack.c:170
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:172
+#: build/pack.c:177
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:179
+#: build/pack.c:184
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:186
+#: build/pack.c:191
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:194
+#: build/pack.c:199
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr ""
 
-#: build/pack.c:209
+#: build/pack.c:214
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr ""
 
-#: build/pack.c:235
+#: build/pack.c:240
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:245
+#: build/pack.c:250
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:266
+#: build/pack.c:271
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:272
+#: build/pack.c:277
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:384
+#: build/pack.c:389
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:425
+#: build/pack.c:430
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:435
+#: build/pack.c:440
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:472
+#: build/pack.c:477
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:487
+#: build/pack.c:492
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:497
+#: build/pack.c:502
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:511
+#: build/pack.c:516
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:521
+#: build/pack.c:526
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:527
+#: build/pack.c:532
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:554
+#: build/pack.c:559
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:619
+#: build/pack.c:624
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:636
+#: build/pack.c:641
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2185,55 +2185,55 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:595
+#: lib/cpio.c:639
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:601
+#: lib/cpio.c:645
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:907
+#: lib/cpio.c:944
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1416
+#: lib/cpio.c:1440
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1419
+#: lib/cpio.c:1443
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1420
+#: lib/cpio.c:1444
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1438
+#: lib/cpio.c:1462
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1439
+#: lib/cpio.c:1463
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1440
+#: lib/cpio.c:1464
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1441
+#: lib/cpio.c:1465
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1442
+#: lib/cpio.c:1466
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1451
+#: lib/cpio.c:1475
 msgid " failed - "
 msgstr ""
 
@@ -2250,92 +2250,92 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:951
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1015
+#: lib/depends.c:1010
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1067
+#: lib/depends.c:1062
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1086
+#: lib/depends.c:1081
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1098
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1125
+#: lib/depends.c:1120
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1138
+#: lib/depends.c:1133
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1152
+#: lib/depends.c:1147
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1168
+#: lib/depends.c:1163
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1189
+#: lib/depends.c:1184
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1247
+#: lib/depends.c:1242
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1314
+#: lib/depends.c:1309
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1530
+#: lib/depends.c:1525
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1669
+#: lib/depends.c:1664
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1716
+#: lib/depends.c:1711
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1761
+#: lib/depends.c:1756
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1810
+#: lib/depends.c:1805
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1841
+#: lib/depends.c:1836
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2512,7 +2512,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1015 lib/install.c:239
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:227
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2597,12 +2597,12 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:90
+#: lib/install.c:78
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/install.c:98
+#: lib/install.c:86
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
@@ -2612,79 +2612,68 @@ msgstr ""
 #. * was used up - if so, we should return a different error.
 #.
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:496
+#: lib/install.c:451
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/install.c:497
+#: lib/install.c:452
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:537
+#: lib/install.c:486
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/install.c:543
+#: lib/install.c:492
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/install.c:566
+#: lib/install.c:513
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:601 lib/install.c:635
+#: lib/install.c:565
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:655
-#, c-format
-msgid "renaming %s to %s\n"
-msgstr ""
-
-#: lib/install.c:657
-#, c-format
-msgid "rename of %s to %s failed: %s\n"
-msgstr ""
-
-#: lib/install.c:759
+#: lib/install.c:663
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:837
+#: lib/install.c:741
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/install.c:866
+#: lib/install.c:770
 #, c-format
 msgid "%s%s created as %s\n"
 msgstr ""
 
-#: lib/install.c:887 lib/uninstall.c:71
+#: lib/install.c:791 lib/uninstall.c:71
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/install.c:892 lib/uninstall.c:74
+#: lib/install.c:796 lib/uninstall.c:74
 #, c-format
 msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/install.c:913 lib/uninstall.c:125
+#: lib/install.c:816 lib/uninstall.c:125
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/install.c:980 lib/install.c:1079 lib/uninstall.c:163
-#: lib/uninstall.c:184
+#: lib/install.c:883 lib/install.c:971 lib/uninstall.c:163 lib/uninstall.c:184
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/install.c:987
+#: lib/install.c:890
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 

@@ -67,10 +67,10 @@ typedef enum cpioMapFlags_e {
  * @note When building the cpio payload, only "file" is filled in.
  */
 struct cpioCallbackInfo {
-/*@dependent@*/ const char * file;	/*!< File name being installed. */
-    long fileSize;			/*!< Total file size. */
-    long fileComplete;			/*!< Amount of file unpacked. */
-    long bytesProcessed;		/*!< No. bytes in archive read. */
+/*@owned@*/ const char * file;	/*!< File name being installed. */
+    long fileSize;		/*!< Total file size. */
+    long fileComplete;		/*!< Amount of file unpacked. */
+    long bytesProcessed;	/*!< No. bytes in archive read. */
 };
 
 #ifdef __cplusplus
@@ -85,36 +85,33 @@ typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
  * The RPM internal equivalent of the command line "cpio -i".
  *
  * If no mappings are passed, this installs everything! If one is passed
- * it should be sorted according to cpioFileMapCmp() and only files included
- * in the map are installed. Files are installed relative to the current
- * directory unless a mapping is given which specifies an absolute
- * directory. The mode mapping is only used for the permission bits, not
- * for the file type. The owner/group mappings are ignored for the nonroot
- * user.
+ * it should be sorted, and only files included in the map are installed.
+ * Files are installed relative to the current directory unless a mapping
+ * is given which specifies an absolute directory. The mode mapping is only
+ * used for the permission bits, not for the file type. The owner/group
+ * mappings are ignored for the non-root user.
  *
- * @param cfd		file handle
+ * @param ts		transaction set
  * @param fi		transaction element file info
- * @param cb		progress callback
- * @param cbData	progress callback data
- * @retval failedFile	file name (malloc'ed) that caused failure (if any)
+ * @param cfd		file handle
+ * @retval failedFile	(malloc'd) file name that caused failure (if any)
  * @return		0 on success
  */
-int cpioInstallArchive(FD_t cfd, const TFI_t fi, cpioCallback cb, void * cbData,
+int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 		       /*@out@*/const char ** failedFile)
 	/*@modifies fileSystem, cfd, *failedFile @*/;
 
 /** \ingroup payload
  * The RPM internal equivalent of the command line "cpio -o".
  *
- * @param cfd		file handle
+ * @param ts		transaction set
  * @param fi		transaction element file info
- * @param cb		progress callback
- * @param cbData	progress callback data
- * @retval failedFile	file name (malloc'ed) that caused failure (if any)
+ * @param cfd		file handle
+ * @retval failedFile	(malloc'd) file name that caused failure (if any)
  * @return		0 on success
  */
-int cpioBuildArchive(FD_t cfd, const TFI_t fi, cpioCallback cb, void * cbData,
-		     unsigned int * archiveSize, /*@out@*/const char ** failedFile)
+int cpioBuildArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
+		unsigned int * archiveSize, /*@out@*/ const char ** failedFile)
 	/*@modifies fileSystem, cfd, *archiveSize, *failedFile @*/;
 
 /** \ingroup payload

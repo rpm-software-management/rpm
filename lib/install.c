@@ -15,20 +15,8 @@
 /*@access Header@*/		/* XXX compared with NULL */
 
 /**
- * Private data for cpio callback.
- */
-typedef struct callbackInfo_s {
-    unsigned long archiveSize;
-    rpmCallbackFunction notify;
-    const char ** specFilePtr;
-    Header h;
-    rpmCallbackData notifyData;
-    const void * pkgKey;
-} * cbInfo;
-
-/* XXX add more tags */
-/**
  * Macros to be defined from per-header tag values.
+ * @todo Should other macros be added from header when installing a package?
  */
 static struct tagMacro {
 	const char *	macroname;	/*!< Macro name to define. */
@@ -401,42 +389,19 @@ static int markReplacedFiles(const rpmTransactionSet ts, const TFI_t fi)
 }
 
 /**
- */
-static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
-{
-    cbInfo cbi = data;
-
-    if (cbi->notify)
-	(void)cbi->notify(cbi->h, RPMCALLBACK_INST_PROGRESS,
-			cpioInfo->bytesProcessed,
-			cbi->archiveSize, cbi->pkgKey, cbi->notifyData);
-
-    if (cbi->specFilePtr) {
-	const char * t = cpioInfo->file + strlen(cpioInfo->file) - 5;
-	if (!strcmp(t, ".spec"))
-	    *cbi->specFilePtr = xstrdup(cpioInfo->file);
-    }
-}
-
-/**
  * Setup payload map and install payload archive.
  *
  * @todo Add endian tag so that srpm MD5 sums can be verified when installed.
  *
  * @param ts		transaction set
  * @param fi		transaction element file info (NULL means all files)
- * @retval specFile	address of spec file name
- * @param archiveSize	@todo Document.
  * @param allFiles	install all files?
  * @return		0 on success
  */
-static int installArchive(const rpmTransactionSet ts, TFI_t fi,
-			/*@out@*/ const char ** specFile, int archiveSize,
-			int allFiles)
+static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 {
     struct availablePackage * alp = fi->ap;
     const char * failedFile = NULL;
-    cbInfo cbi = alloca(sizeof(*cbi));
     char * rpmio_flags;
     int saveerrno;
     int rc;
@@ -448,18 +413,11 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi,
 	return 0;
     }
 
-    cbi->archiveSize = archiveSize;	/* arg9 */
-    cbi->notify = ts->notify;		/* arg4 */
-    cbi->notifyData = ts->notifyData;	/* arg5 */
-    cbi->specFilePtr = specFile;	/* arg8 */
-    cbi->h = headerLink(fi->h);		/* arg7 */
-    cbi->pkgKey = alp->key;		/* arg6 */
-
-    if (specFile) *specFile = NULL;
-
-    if (ts->notify)
-	(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize,
-			alp->key, ts->notifyData);
+    {	uint_32 * asp;
+	rc = headerGetEntry(fi->h, RPMTAG_ARCHIVESIZE, NULL,
+				(void **) &asp, NULL);
+	fi->archiveSize = (rc ? *asp : 0);
+    }
 
     /* Retrieve type of payload compression. */
     {	const char * payload_compressor = NULL;
@@ -479,13 +437,10 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi,
     {	FD_t cfd;
 	(void) Fflush(alp->fd);
 	cfd = Fdopen(fdDup(Fileno(alp->fd)), rpmio_flags);
-	rc = cpioInstallArchive(cfd, fi,
-		    ((ts->notify && archiveSize) || specFile) ? callback : NULL,
-		    cbi, &failedFile);
+	rc = cpioInstallArchive(ts, fi, cfd, &failedFile);
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	Fclose(cfd);
     }
-    headerFree(cbi->h);
 
     if (rc) {
 	/*
@@ -498,12 +453,6 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi,
 		(failedFile != NULL ? failedFile : ""),
 		cpioStrerror(rc));
 	rc = 1;
-    } else if (ts->notify) {
-	if (archiveSize == 0)
-	    archiveSize = 100;
-	(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
-			archiveSize, archiveSize, alp->key, ts->notifyData);
-	rc = 0;
     }
 
     if (failedFile)
@@ -558,8 +507,6 @@ static int installSources(const rpmTransactionSet ts, TFI_t fi,
     const char * _sourcedir = rpmGenPath(ts->rootDir, "%{_sourcedir}", "");
     const char * _specdir = rpmGenPath(ts->rootDir, "%{_specdir}", "");
     const char * specFile = NULL;
-    int specFileIndex = -1;
-    uint_32 * archiveSizePtr = NULL;
     int rc = 0;
     int i;
 
@@ -591,90 +538,47 @@ static int installSources(const rpmTransactionSet ts, TFI_t fi,
 	}
     }
 
+    /* Build dnl/dil with {_sourcedir, _specdir} as values. */
     if (i < fi->fc) {
-	char *t = xmalloc(strlen(_specdir) + strlen(fi->apath[i]) + 5);
-	(void)stpcpy(stpcpy(t, _specdir), "/");
-	fi->dnl[fi->dil[i]] = t;
-	fi->bnl[i] = xstrdup(fi->apath[i]);
-	specFileIndex = i;
+	int speclen = strlen(_specdir) + 2;
+	int sourcelen = strlen(_sourcedir) + 2;
+	char * t;
+
+	if (fi->dnl) {
+	    free((void *)fi->dnl); fi->dnl = NULL;
+	}
+
+	fi->dc = 2;
+	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl) + fi->fc * sizeof(*fi->dil) +
+			speclen + sourcelen);
+	fi->dil = (int *)(fi->dnl + fi->dc);
+	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
+	fi->dil[i] = 1;
+	fi->dnl[0] = t = (char *)(fi->dil + fi->fc);
+	fi->dnl[1] = t = stpcpy( stpcpy(t, _sourcedir), "/") + 1;
+	(void) stpcpy( stpcpy(t, _specdir), "/");
+
+	t = xmalloc(speclen + strlen(fi->bnl[i]) + 1);
+	(void) stpcpy( stpcpy( stpcpy(t, _specdir), "/"), fi->bnl[i]);
+	specFile = t;
     } else {
 	rpmError(RPMERR_NOSPEC, _("source package contains no .spec file\n"));
 	rc = 2;
 	goto exit;
     }
 
-    if (ts->notify)
-	(void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, 0,
-			NULL, ts->notifyData);
+    rc = installArchive(ts, fi, 1);
 
-    if (!headerGetEntry(fi->h, RPMTAG_ARCHIVESIZE, NULL,
-			    (void **) &archiveSizePtr, NULL))
-	archiveSizePtr = NULL;
-
-    {	const char * currDir = currentDirectory();
-	Chdir(_sourcedir);
-	rc = installArchive(ts, fi,
-			specFileIndex >= 0 ? NULL : &specFile,
-			archiveSizePtr ? *archiveSizePtr : 0,
-			1);
-
-	Chdir(currDir);
-	free((void *)currDir);
-	if (rc) {
-	    rc = 2;
-	    goto exit;
-	}
+    if (rc) {
+	rc = 2;
+	goto exit;
     }
-
-    if (specFileIndex == -1) {
-	char * cSpecFile;
-	char * iSpecFile;
-
-	if (specFile == NULL) {
-	    rpmError(RPMERR_NOSPEC,
-		_("source package contains no .spec file\n"));
-	    rc = 1;
-	    goto exit;
-	}
-
-	/*
-	 * This logic doesn't work if _specdir and _sourcedir are on
-	 * different filesystems, but we only do this on v1 source packages
-	 * so I don't really care much.
-	 */
-	iSpecFile = alloca(strlen(_sourcedir) + strlen(specFile) + 2);
-	(void)stpcpy(stpcpy(stpcpy(iSpecFile, _sourcedir), "/"), specFile);
-
-	cSpecFile = alloca(strlen(_specdir) + strlen(specFile) + 2);
-	(void)stpcpy(stpcpy(stpcpy(cSpecFile, _specdir), "/"), specFile);
-
-	free((void *)specFile);
-
-	if (strcmp(iSpecFile, cSpecFile)) {
-	    rpmMessage(RPMMESS_DEBUG,
-		    _("renaming %s to %s\n"), iSpecFile, cSpecFile);
-	    if ((rc = Rename(iSpecFile, cSpecFile))) {
-		rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s\n"),
-			iSpecFile, cSpecFile, strerror(errno));
-		rc = 2;
-		goto exit;
-	    }
-	}
-
-	if (specFilePtr)
-	    *specFilePtr = xstrdup(cSpecFile);
-    } else {
-	if (specFilePtr) {
-	    const char * dn = fi->dnl[fi->dil[specFileIndex]];
-	    const char * bn = fi->bnl[specFileIndex];
-	    char * t = xmalloc(strlen(dn) + strlen(bn) + 1);
-	    (void)stpcpy( stpcpy(t, dn), bn);
-	    *specFilePtr = t;
-	}
-    }
-    rc = 0;
 
 exit:
+    if (rc == 0 && specFile && specFilePtr)
+	*specFilePtr = specFile;
+    else
+	free((void *)specFile);
     if (_specdir)	free((void *)_specdir);
     if (_sourcedir)	free((void *)_sourcedir);
     return rc;
@@ -904,7 +808,6 @@ static int installActions(const rpmTransactionSet ts, TFI_t fi)
 int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
     static char * stepName = "install";
-    struct availablePackage * alp = fi->ap;
     Header oldH = NULL;
     int otherOffset = 0;
     int ec = 2;		/* assume error return */
@@ -1007,9 +910,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	ts->chrootDone = 1;
     }
 
-	
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
-	uint_32 archiveSize, * asp;
 
 	setFileOwners(fi);
 
@@ -1017,17 +918,8 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	if (rc)
 	    goto exit;
 
-	rc = headerGetEntry(fi->h, RPMTAG_ARCHIVESIZE, NULL,
-				(void **) &asp, NULL);
-	archiveSize = (rc ? *asp : 0);
+	rc = installArchive(ts, fi, 0);
 
-	if (ts->notify)
-	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, 0,
-		    alp->key, ts->notifyData);
-
-	rc = installArchive(ts, fi, NULL, archiveSize, 0);
-
-	/* XXX WTFO? RPMCALLBACK_INST_STOP event? */
 	if (rc)
 	    goto exit;
     }

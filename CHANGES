@@ -1,6 +1,8 @@
 4.0.2 -> 4.0.3
 	- cpio mappings carry dirname/basename, not absolute path.
 	- fix: check waitpid return code.
+	- remove support for v1 src rpm's
+	- reposition callbacks with ts/fi in cpio payload layer.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

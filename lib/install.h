@@ -66,7 +66,7 @@ enum fileTypes {
     SOCK	= 12,	/*!< socket */
 };
 
-/*@abstract@*/ typedef struct transactionFileInfo_s * TFI_t;
+typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
 
 #ifdef __cplusplus
 extern "C" {
