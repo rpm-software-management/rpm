@@ -10,6 +10,8 @@
 #include "config.h"
 #include "miscfn.h"
 
+#include <zlib.h>
+
 #if HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
@@ -320,6 +322,76 @@ Header headerRead(int fd, int magicp)
 
     totalSize -= sizeof(int_32) + sizeof(int_32);
     if (timedRead(fd, p, totalSize) != totalSize)
+	return NULL;
+    
+    h = headerLoad(block);
+
+    free(block);
+
+    return h;
+}
+
+void headerGzWrite(gzFile fd, Header h, int magicp)
+{
+    void * p;
+    int length;
+    int_32 l;
+
+    p = doHeaderUnload(h, &length);
+
+    if (magicp) {
+	gzwrite(fd, header_magic, sizeof(header_magic));
+	l = htonl(0);
+	gzwrite(fd, &l, sizeof(l));
+    }
+    
+    gzwrite(fd, p, length);
+
+    free(p);
+}
+
+Header headerGzRead(gzFile fd, int magicp)
+{
+    int_32 reserved;
+    int_32 * p;
+    int_32 il, dl;
+    int_32 magic;
+    Header h;
+    void * block;
+    int totalSize;
+
+    if (magicp == HEADER_MAGIC_YES) {
+	if (gzread(fd, &magic, sizeof(magic)) != sizeof(magic))
+	    return NULL;
+	if (memcmp(&magic, header_magic, sizeof(magic))) {
+	    return NULL;
+	}
+
+	if (gzread(fd, &reserved, sizeof(reserved)) != sizeof(reserved))
+	    return NULL;
+    }
+    
+    /* First read the index length (count of index entries) */
+    if (gzread(fd, &il, sizeof(il)) != sizeof(il)) 
+	return NULL;
+
+    il = ntohl(il);
+
+    /* Then read the data length (number of bytes) */
+    if (gzread(fd, &dl, sizeof(dl)) != sizeof(dl)) 
+	return NULL;
+
+    dl = ntohl(dl);
+
+    totalSize = sizeof(int_32) + sizeof(int_32) + 
+		(il * sizeof(struct entryInfo)) + dl;
+
+    block = p = malloc(totalSize);
+    *p++ = htonl(il);
+    *p++ = htonl(dl);
+
+    totalSize -= sizeof(int_32) + sizeof(int_32);
+    if (gzread(fd, p, totalSize) != totalSize)
 	return NULL;
     
     h = headerLoad(block);

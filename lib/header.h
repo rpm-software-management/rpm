@@ -8,6 +8,7 @@
 #ifndef H_HEADER
 #define H_HEADER
 #include <stdio.h>
+#include <zlib.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +72,8 @@ extern const struct headerSprintfExtension headerDefaultFormats[];
 /* read and write a header from a file */
 Header headerRead(int fd, int magicp);
 void headerWrite(int fd, Header h, int magicp);
+Header headerGzRead(gzFile fd, int magicp);
+void headerGzWrite(gzFile fd, Header h, int magicp);
 unsigned int headerSizeof(Header h, int magicp);
 
 #define HEADER_MAGIC_NO   0

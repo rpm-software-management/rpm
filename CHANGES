@@ -4,6 +4,7 @@
 	- fixed (hopefully) temp file creation problems
 	- make %doc obey --test
 	- unlink before writing .rpms
+	- librpm.z: added headerGzRead()/headerGzWrite()
 
 2.4.109 -> 2.5:
 	- fixed return code bug in build code
