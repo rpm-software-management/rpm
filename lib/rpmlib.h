@@ -216,11 +216,13 @@ struct rpmDependencyConflict {
     char * byName, * byVersion, * byRelease;
     char * needsName, * needsVersion;
     int needsFlags;
+    void * suggestedPackage;
     enum { RPMDEP_SENSE_REQUIRES, RPMDEP_SENSE_CONFLICTS } sense;
 } ;
 
 rpmDependencies rpmdepDependencies(rpmdb db); 	       /* db may be NULL */
 void rpmdepAddPackage(rpmDependencies rpmdep, Header h);
+void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key);
 void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h);
 void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
 int rpmdepCheck(rpmDependencies rpmdep, 
