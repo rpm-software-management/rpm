@@ -302,44 +302,54 @@ const struct {
 };
 
 static size_t
-mp32sizeinbase(uint32 xsize, uint32 * xdata, int base)
+mp32sizeinbase(uint32 xsize, uint32 * xdata, uint32 base)
 {
-    size_t res = 1;
+    uint32 nbits;
+    size_t res;
 
-    if (xsize > 0) {
-	uint32 nbits = mp32bitcnt(xsize, xdata);
-	uint32 lbits;
+    if (xsize == 0)
+	return 1;
 
-	if ((base & (base-1)) == 0) {	/* exact power of 2 */
-	    lbits = mp_bases[base].big_base;
-	    res = (nbits + (lbits - 1)) / lbits;
-	} else {
-	    res = (nbits * mp_bases[base].chars_per_bit_exactly) + 1;
-	}
+    nbits = mp32bitcnt(xsize, xdata);
+    if ((base & (base-1)) == 0) {	/* exact power of 2 */
+	uint32 lbits = mp_bases[base].big_base;
+	res = (nbits + (lbits - 1)) / lbits;
+    } else {
+	res = (nbits * mp_bases[base].chars_per_bit_exactly) + 1;
     }
+if (_bc_debug)
+fprintf(stderr, "*** mp32sizeinbase(%p[%d], %d) res %u\n", xdata, xsize, base, (unsigned)res);
     return res;
 }
 
 static char *
 mp32str(char * t, uint32 nt, uint32 zsize, uint32 * zdata, uint32 zbase)
 {
-    uint32 asize = zsize + 1;
-    uint32 * wksp = alloca((2*asize+2) * sizeof(*wksp));
-    uint32 * adata = wksp + 2;
-    uint32 * bdata = adata + asize;
+    uint32 size = zsize + 1;
+    uint32 * wksp = alloca((size+1) * sizeof(*wksp));
+    uint32 * adata = alloca(size * sizeof(*adata));
+    uint32 * bdata = alloca(size * sizeof(*bdata));
     static char bchars[] = "0123456789abcdefghijklmnopqrstuvwxyz";
     uint32 result;
 
-    bdata[0] = 0;
-    mp32copy(asize-1, bdata+1, zdata);
+if (_bc_debug)
+fprintf(stderr, "*** mp32str(%p[%d], %p[%d], %d):\t", t, nt, zdata, zsize, zbase), mp32println(stderr, zsize, zdata);
+
+    mp32setx(size, bdata, zsize, zdata);
 
     t[nt] = '\0';
     while (nt--) {
-	mp32copy(asize, adata, bdata);
-	mp32nmod(bdata, asize, adata, 1, &zbase, wksp);
-	result = bdata[asize-1];
+	mp32setx(size, adata, size, bdata);
+if (_bc_debug)
+fprintf(stderr, "***       a: %p[%d]\t", adata, size), mp32println(stderr, size, adata);
+	mp32nmod(bdata, size, adata, 1, &zbase, wksp);
+if (_bc_debug)
+fprintf(stderr, "***    nmod: %p[%d]\t", bdata, size), mp32println(stderr, size, bdata);
+	result = bdata[size-1];
 	t[nt] = bchars[result];
-	mp32ndivmod(bdata, asize, adata, 1, &zbase, wksp);
+	mp32ndivmod(bdata, size, adata, 1, &zbase, wksp);
+if (_bc_debug)
+fprintf(stderr, "*** ndivmod: %p[%d]\t", bdata, size), mp32println(stderr, size, bdata);
     }
     return t;
 }
@@ -352,7 +362,7 @@ rpmbc_format(rpmbcObject * z, uint32 zbase, int withname)
     uint32 nt;
     uint32 zsize;
     uint32 * zdata;
-    char * te;
+    char * t, * te;
     char prefix[5];
     char * tcp = prefix;
     uint32 zsign;
@@ -425,9 +435,19 @@ fprintf(stderr, "*** rpmbc_format(%p,%d,%d):\t", z, zbase, withname), mp32printl
 
     /* copy the already prepared prefix; e.g. sign and base indicator */
     *tcp = '\0';
-    te = stpcpy(te, prefix);
+    t = te = stpcpy(te, prefix);
 
     (void) mp32str(te, nt, zsize, zdata, zbase);
+
+    /* Nuke (occaisionally, a single) leading zeroes. */
+    nt = 0;
+    while (t[nt] == '0')
+	nt++;
+    if (nt > 0 && t[nt] != '\0')
+    do {
+	*t = t[nt];
+    } while (*t++ != '\0');
+
     te += strlen(te);
 
     if (withname)
@@ -555,8 +575,6 @@ fprintf(stderr, "npowsld: p\t"), mp32println(stderr, psize, pdata);
     /* 2. A = 1, i = t. */
     mp32zero(n->size, n->data);
     n->data[n->size-1] = 1;
-if (_bc_debug)
-fprintf(stderr, "npowsld: n\t"), mp32println(stderr, n->size, n->data);
 
     /* Find first bit set in exponent. */
     temp = *pdata;

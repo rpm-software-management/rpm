@@ -1,7 +1,7 @@
 import rpm
 
 i = 1
-#rpm.bc().Debug(0);
+#rpm.bc().Debug(-1);
 #a = rpm.bc("0000000987654321")
 #b = rpm.bc("0000000000000010")
 #c = rpm.bc("0fedcba000000000")
