@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <errno.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,7 +37,7 @@ char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
-	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, 
+	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, MODE_TARBUILD,
 	     MODE_REBUILDDB, MODE_UNKNOWN };
 
 static void argerror(char * desc);
@@ -52,7 +53,7 @@ static void printBanner(void);
 static void printUsage(void);
 static void printHelpLine(char * prefix, char * help);
 static int build(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRootOverride);
+	         char *buildRootOverride, int fromTarball);
 
 static void printVersion(void) {
     printf(_("RPM version %s\n"), version);
@@ -97,7 +98,7 @@ static void printUsage(void) {
     puts(_("       rpm {--setugids} [-afpg] [target]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] package1 ... packageN"));
-    puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
+    puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--test] [--timecheck <s>] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
@@ -276,7 +277,8 @@ static void printHelp(void) {
     printHelpLine("      --root <dir>        ",
 		  _("use <dir> as the top level directory"));
     puts(_(""));
-    printHelpLine("    -b<stage> <spec>      ",
+    puts(_("    -b<stage> <spec>      "));
+    printHelpLine("    -t<stage> <tarball>      ",
 		  _("build package, where <stage> is one of:"));
     printHelpLine("          p               ",
 		  _("prep (unpack sources and apply patches)"));
@@ -330,15 +332,74 @@ static void printHelp(void) {
 		  _("use <dir> as the top level directory"));
 }
 
-int build(char *arg, int buildAmount, char *passPhrase,
-	  char *buildRootOverride) {
+static int build(char *arg, int buildAmount, char *passPhrase,
+	         char *buildRootOverride, int fromTarball) {
     FILE *f;
     Spec s;
     char * specfile;
     int res = 0;
     struct stat statbuf;
+    char * specDir;
+    char * tmpSpecFile;
+    char * cmd;
+    char buf[1024];
 
-    if (arg[0] == '/') {
+    if (fromTarball) {
+	specDir = rpmGetVar(RPMVAR_SPECDIR);
+	tmpSpecFile = alloca(1024);
+	sprintf(tmpSpecFile, "%s/rpm-spec-file-%d", specDir, getpid());
+
+	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
+	sprintf(cmd, "gunzip < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
+			tmpSpecFile);
+	if (!(f = popen(cmd, "r"))) {
+	    fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
+			strerror(errno));
+	    return 1;
+	}
+	if (!fgets(buf, sizeof(buf) - 1, f)) {
+	    fprintf(stderr, _("Failed to read spec file from %s\n"), arg);
+	    unlink(tmpSpecFile);
+	    return 1;
+	}
+	fclose(f);
+
+	cmd = specfile = buf;
+	while (*cmd) {
+	    if (*cmd == '/') specfile = cmd + 1;
+	    cmd++;
+	}
+
+	cmd = specfile;
+
+	/* remove trailing \n */
+	specfile = cmd + strlen(cmd) - 1;
+	*specfile = '\0';
+
+	specfile = alloca(strlen(specDir) + strlen(cmd) + 5);
+	sprintf(specfile, "%s/%s", specDir, cmd);
+	
+	if (rename(tmpSpecFile, specfile)) {
+	    fprintf(stderr, "Failed to rename %s to %s: %s\n", tmpSpecFile,
+			specfile, strerror(errno));
+	    unlink(tmpSpecFile);
+	    return 1;
+	}
+
+	/* Make the directory which contains the tarball the source 
+	   directory for this run */
+
+	/* XXX this is broken if PWD is near 1024 */
+	getcwd(buf, 1024);
+	strcat(buf, "/");
+	strcat(buf, arg);
+
+	cmd = buf + strlen(buf) - 1;
+	while (*cmd != '/') cmd--;
+	*cmd = '\0';
+
+	rpmSetVar(RPMVAR_SOURCEDIR, buf);
+    } else if (arg[0] == '/') {
 	specfile = arg;
     } else {
 	/* XXX this is broken if PWD is near 1024 */
@@ -383,6 +444,8 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	}
     }
 
+    if (fromTarball) unlink(specfile);
+
     return res;
 }
 
@@ -418,6 +481,7 @@ int main(int argc, char ** argv) {
     pid_t pipeChild = 0;
     char * pkg;
     char ** currarg;
+    char * errString;
     poptContext optCon;
     char * infoCommand[] = { "--info", NULL };
     char * installCommand[] = { "--install", NULL };
@@ -482,6 +546,7 @@ int main(int argc, char ** argv) {
 	    { "showrc", '\0', 0, 0, 0 },
 	    { "sign", '\0', 0, &signIt, 0 },
 	    { "state", 's', 0, 0, 's' },
+	    { "tarball", 't', POPT_ARG_STRING, 0, 't' },
 	    { "test", '\0', 0, &test, 0 },
 	    { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK },
 	    { "upgrade", 'U', 0, 0, 'U' },
@@ -516,6 +581,8 @@ int main(int argc, char ** argv) {
 	    showrc = 1;
 	    building = 1;
 	} else if (!strncmp(*currarg, "-b", 2) ||
+		   !strncmp(*currarg, "-t", 2) ||
+		   !strcmp(*currarg, "--tarbuild") ||
 		   !strcmp(*currarg, "--build") ||
 		   !strcmp(*currarg, "--rebuild") ||
 		   !strcmp(*currarg, "--recompile")) {
@@ -576,13 +643,22 @@ int main(int argc, char ** argv) {
 	    break;
 	
 	  case 'b':
+	  case 't':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD)
 		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_BUILD;
+
+	    if (arg == 'b') {
+		bigMode = MODE_BUILD;
+		errString = _("--build (-b) requires one of a,b,i,c,p,l as "
+				"its sole argument");
+	    } else {
+		bigMode = MODE_TARBUILD;
+		errString = _("--tarbuild (-t) requires one of a,b,i,c,p,l as "
+			      "its sole argument");
+	    }
 
 	    if (strlen(optArg) > 1) 
-		argerror(_("--build (-b) requires one of a,b,i,c,p,l as "
-			 "its sole argument"));
+		argerror(errString);
 
 	    buildChar = optArg[0];
 	    switch (buildChar) {
@@ -594,8 +670,7 @@ int main(int argc, char ** argv) {
 	      case 'l':
 		break;
 	      default:
-		argerror(_("--build (-b) requires one of a,b,i,c,p,l as "
-			 "its sole argument"));
+		argerror(errString);
 	    }
 
 	    break;
@@ -894,14 +969,15 @@ int main(int argc, char ** argv) {
     if (rootdir && rootdir[0] != '/')
 	argerror(_("arguments to --root (-r) must begin with a /"));
 
-    if (bigMode != MODE_BUILD && clean) 
+    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && clean) 
 	argerror(_("--clean may only be used during package building"));
 
-    if (bigMode != MODE_BUILD && shortCircuit) 
+    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && shortCircuit) 
 	argerror(_("--short-circuit may only be used during package building"));
 
     if (shortCircuit && (buildChar != 'c') && (buildChar != 'i')) {
-	argerror(_("--short-circuit may only be used with -bc or -bi"));
+	argerror(_("--short-circuit may only be used with -bc, -bi, -tc "
+			"or -ti"));
     }
 
     if (oldPackage && !(installFlags & RPMINSTALL_UPGRADE))
@@ -1027,13 +1103,15 @@ int main(int argc, char ** argv) {
 	    if (doSourceInstall("/", pkg, &specFile))
 		exit(1);
 
-	    if (build(specFile, buildAmount, passPhrase, buildRootOverride)) {
+	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
+			0)) {
 		exit(1);
 	    }
 	}
 	break;
 
       case MODE_BUILD:
+      case MODE_TARBUILD:
         if (rpmGetVerbosity() == RPMMESS_NORMAL)
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
        
@@ -1067,10 +1145,14 @@ int main(int argc, char ** argv) {
 	    buildAmount |= RPMBUILD_TEST;
 
 	if (!poptPeekArg(optCon))
-	    argerror(_("no spec files given for build"));
+	    if (bigMode == MODE_BUILD)
+		argerror(_("no spec files given for build"));
+	    else
+		argerror(_("no tar files given for build"));
 
 	while ((pkg = poptGetArg(optCon)))
-	    if (build(pkg, buildAmount, passPhrase, buildRootOverride)) {
+	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
+			bigMode == MODE_TARBUILD)) {
 		exit(1);
 	    }
 	break;
