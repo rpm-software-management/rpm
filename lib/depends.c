@@ -78,8 +78,8 @@ static int intcmp(const void * a, const void * b)
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmte p;
 

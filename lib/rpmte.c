@@ -85,8 +85,9 @@ static void delTE(rpmte p)
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies ts, p, h, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, p, h,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;

@@ -1038,8 +1038,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * @return		0 on success
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Retrieve keys from ordered transaction set.

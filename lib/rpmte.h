@@ -172,8 +172,8 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@null@*/ rpmRelocation * relocs,
 		int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Retrieve type of transaction element.

@@ -115,7 +115,8 @@ rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
  */
 /*@null@*/
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
-	/*@modifies h @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Return new formatted dependency string.
@@ -372,7 +373,8 @@ void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
  * @return		1 if any dependency overlaps, 0 otherwise
  */
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
-        /*@modifies h @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Compare package name-version-release from header with a single dependency.

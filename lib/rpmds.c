@@ -123,7 +123,8 @@ static const char * beehiveToken = "redhatbuilddependency";
  * @returns		0 == false, 1 == true
  */
 static int archFilter(const char * arch)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static int oneshot = 0;
     int negate = 0;	/* assume no negation. */
@@ -173,16 +174,18 @@ fprintf(stderr, "=== archScore(\"%s\") %d negate %d rc %d\n", arch, archScore, n
  * @param token		namespace string
  * @returns		filtered dependency set
  */
-static rpmds rpmdsFilter(/*@returned@*/ rpmds ds,
+/*@null@*/
+static rpmds rpmdsFilter(/*@null@*/ /*@returned@*/ rpmds ds,
 		/*@null@*/ const char * token)
-	/*@modifies ds @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ds, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     size_t toklen;
     rpmds fds;
     int i;
 
     if (ds == NULL || token == NULL || *token == '\0')
-	return ds;
+	goto exit;
 
     toklen = strlen(token);
     fds = rpmdsLink(ds, ds->Type);
@@ -227,6 +230,7 @@ fprintf(stderr, "*** f \"%s\"\n", f);
 		nb = sizeof(buf) - 1;
 	    (void) strncpy(buf, g, nb);
 	    buf[nb] = '\0';
+/*@-branchstate@*/
 	    switch (state) {
 	    case 0:		/* g is unwrapped N */
 		gN = xstrdup(buf);
@@ -237,6 +241,7 @@ fprintf(stderr, "*** f \"%s\"\n", f);
 		    ignore = 0;
 		/*@switchbreak@*/ break;
 	    }
+/*@=branchstate@*/
 	    state++;
 	}
 	if (ignore) {
@@ -246,15 +251,19 @@ if (_rpmds_debug < 0)
 fprintf(stderr, "***   deleting N[%d:%d] = \"%s\"\n", i, Count, N);
 /*@=modfilesys@*/
 	    if (i < (Count - 1)) {
-		memcpy((fds->N + i), (fds->N + i + 1), (Count - (i+1)) * sizeof(*fds->N));
-		memcpy((fds->EVR + i), (fds->EVR + i + 1), (Count - (i+1)) * sizeof(*fds->EVR));
-		memcpy((fds->Flags + i), (fds->Flags + i + 1), (Count - (i+1)) * sizeof(*fds->Flags));
+		memmove((fds->N + i), (fds->N + i + 1), (Count - (i+1)) * sizeof(*fds->N));
+		if (fds->EVR != NULL)
+		    memmove((fds->EVR + i), (fds->EVR + i + 1), (Count - (i+1)) * sizeof(*fds->EVR));
+		if (fds->Flags != NULL)
+		    memmove((fds->Flags + i), (fds->Flags + i + 1), (Count - (i+1)) * sizeof(*fds->Flags));
 	 	fds->i--;
 	    }
 	    fds->Count--;
 	} else if (gN != NULL) {
+/*@-modobserver -observertrans@*/
 	    char * t = (char *) N;
-	    strcpy(t, gN);
+	    (void) strcpy(t, gN);
+/*@=modobserver =observertrans@*/
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** unwrapping N[%d] = \"%s\"\n", i, N);
@@ -264,7 +273,10 @@ fprintf(stderr, "*** unwrapping N[%d] = \"%s\"\n", i, N);
     }
     fds = rpmdsFree(fds);
 
+exit:
+    /*@-refcounttrans@*/
     return ds;
+    /*@=refcounttrans@*/
 }
 
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
@@ -1063,11 +1075,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
     if (sense == 0) {
 	sense = rpmvercmp(aV, bV);
-	if (sense == 0 && aR && *aR && bR && *bR) {
+	if (sense == 0 && aR && *aR && bR && *bR)
 	    sense = rpmvercmp(aR, bR);
-	    if (sense == 0 && A->BT > 0 && B->BT > 0)
-		sense = (A->BT < B->BT ? -1 : (A->BT == B->BT ? 0 : -1));
-	}
     }
 /*@=boundsread@*/
     aEVR = _free(aEVR);

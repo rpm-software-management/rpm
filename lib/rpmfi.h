@@ -578,8 +578,9 @@ void rpmfiBuildREContexts(Header h,
  */
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fdepsp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, *fdepsp, *fcp,
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Return file type from mode_t.

@@ -493,12 +493,12 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERIN	= (1 << 16),	/*!< %triggerin dependency. */
     RPMSENSE_TRIGGERUN	= (1 << 17),	/*!< %triggerun dependency. */
     RPMSENSE_TRIGGERPOSTUN = (1 << 18),	/*!< %triggerpostun dependency. */
-	/* (1 << 19) unused. */
+    RPMSENSE_MISSINGOK	= (1 << 19),	/*!< suggests/enhances hint. */
     RPMSENSE_SCRIPT_PREP = (1 << 20),	/*!< %prep build dependency. */
     RPMSENSE_SCRIPT_BUILD = (1 << 21),	/*!< %build build dependency. */
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
     RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
-    RPMSENSE_RPMLIB	= ((1 << 24) | RPMSENSE_PREREQ), /*!< rpmlib(feature) dependency. */
+    RPMSENSE_RPMLIB = ((1 << 24) | RPMSENSE_PREREQ), /*!< rpmlib(feature) dependency. */
 /*@-enummemuse@*/
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< @todo Implement %triggerprein. */
 /*@=enummemuse@*/
