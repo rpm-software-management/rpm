@@ -48,21 +48,22 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 
 /**
- * Change record offset of header within element in index database set.
- * @param set	set of index database items
- * @param recno	index of item in set
- * @param recoff new record offset
  */
-void dbiIndexRecordOffsetSave(dbiIndexSet set, int recno, unsigned int recoff);
-
 int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
 	/*@out@*/ Header * hdr);
+
+/**
+ */
 int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
 	/*@out@*/ int * isSource, /*@out@*/ int * major, /*@out@*/ int * minor);
 
+/**
+ */
 int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
 	/*@out@*/ const char **rp);
 
+/**
+ */
 void	rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr);
 

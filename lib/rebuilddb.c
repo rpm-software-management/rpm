@@ -4,6 +4,7 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "rpmdb.h"
+#include "misc.h"
 
 extern int _useDbiMajor;	/* XXX shared with dbindex.c */
 extern int __do_dbenv_remove;   /* XXX in dbindex.c, shared with rebuilddb.c */

@@ -7,7 +7,6 @@
 #include "fprint.h"
 #include "hash.h"
 #include "install.h"
-#include "lookup.h"
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"

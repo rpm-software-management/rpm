@@ -6,7 +6,7 @@ static int _debug = 1;
 
 #include <rpmlib.h>
 
-#include "dbindex.h"
+#include "rpmdb.h"
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
@@ -277,7 +277,7 @@ static int db2SearchIndex(dbiIndex dbi, const void * str, size_t len,
 	DBIR_t dbir = data.data;
 	int i;
 
-	*set = dbiCreateIndexSet();
+	*set = xmalloc(sizeof(**set));
 	(*set)->count = data.size / sizeof(*dbir);
 	(*set)->recs = xmalloc((*set)->count * sizeof(*((*set)->recs)));
 

@@ -26,7 +26,6 @@ build/parseSpec.c
 build/reqprov.c
 build/spec.c
 lib/cpio.c
-lib/dbindex.c
 lib/depends.c
 lib/falloc.c
 lib/formats.c
@@ -35,7 +34,6 @@ lib/fs.c
 lib/hash.c
 lib/header.c
 lib/install.c
-lib/lookup.c
 lib/macro.c
 lib/md5.c
 lib/md5sum.c

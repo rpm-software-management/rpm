@@ -8,10 +8,10 @@ EXTRA_DIST = falloc.c db0.c db1.c db2.c db3.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h rpmurl.h stringbuf.h
+	header.h misc.h rpmio.h rpmlib.h rpmmacro.h rpmurl.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
-	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
+	md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
 	rpmdb.h rpmlead.h signature.h
 
 mylibpaths= -L$(top_builddir)/lib -L$(top_builddir)/popt
@@ -19,9 +19,9 @@ mylibs=	-lrpm -lpopt @INTLLIBS@ @LIBMISC@
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c $(DBLIBOBJS) dbindex.c depends.c \
+	cpio.c $(DBLIBOBJS) depends.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
-	lookup.c macro.c md5.c md5sum.c \
+	macro.c md5.c md5sum.c \
 	messages.c misc.c oldheader.c package.c problems.c query.c \
 	rebuilddb.c rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
 	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
@@ -32,7 +32,7 @@ librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 falloc.lo: falloc.c $(top_srcdir)/system.h rpmio.h falloc.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
-db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h dbindex.h
+db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
 	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb-3.0 ; \
@@ -43,7 +43,7 @@ db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h dbindex.h
 	    rm -f $${F}.o ; \
 	done
 
-db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h dbindex.h
+db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
 	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb ; \
@@ -54,7 +54,7 @@ db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h dbindex.h
 	    rm -f $${F}.o ; \
 	done
 
-db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h dbindex.h
+db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
 	    @__LD@ -r -o $${F}.o $${F} falloc.lo -L/usr/lib -ldb ; \
@@ -65,7 +65,7 @@ db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h dbindex.h
 	    rm -f $${F}.o ; \
 	done
 
-db0.lo: db0.c falloc.lo $(top_srcdir)/system.h rpmlib.h dbindex.h
+db0.lo: db0.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
 	    @__LD@ -r -o $${F}.o $${F} falloc.lo -L/usr/lib -ldb1 ; \

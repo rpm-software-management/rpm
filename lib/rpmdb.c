@@ -1,22 +1,22 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/signal.h>
-#include <assert.h>
 
 #include <rpmlib.h>
+#include <rpmurl.h>	/* XXX for assert.h */
 #include <rpmmacro.h>	/* XXX for rpmGetPath/rpmGenPath */
 
-#include "dbindex.h"
+#include "rpmdb.h"
 /*@access dbiIndexSet@*/
 /*@access dbiIndexRecord@*/
 /*@access rpmdbMatchIterator@*/
 
-#include "falloc.h"
 #include "fprint.h"
 #include "misc.h"
-#include "rpmdb.h"
 
 extern int _noDirTokens;
 extern int _useDbiMajor;
@@ -27,41 +27,35 @@ extern int _useDbiMajor;
 
 struct _dbiIndex rpmdbi[] = {
     { "packages.rpm", 0,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { "nameindex.rpm", RPMTAG_NAME,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { "fileindex.rpm", RPMTAG_BASENAMES,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { "groupindex.rpm", RPMTAG_GROUP,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { "requiredby.rpm", RPMTAG_REQUIRENAME,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { "providesindex.rpm", RPMTAG_PROVIDENAME,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { "conflictsindex.rpm", RPMTAG_CONFLICTNAME,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { "triggerindex.rpm", RPMTAG_TRIGGERNAME,
-	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { NULL }
 #define	RPMDBI_MIN		0
 #define	RPMDBI_MAX		8
 };
 
-/**
- * Destroy element of index database set.
- * @param rec	element of index database set.
- */
-static void inline dbiFreeIndexRecordInstance(dbiIndexRecord rec) {
-    if (rec) free(rec);
-}
+#define	dbiSyncIndex(_dbi)	(*(_dbi)->dbi_vec->sync) ((_dbi), 0);
 
 /**
  * Create and initialize element of index database set.
@@ -69,55 +63,11 @@ static void inline dbiFreeIndexRecordInstance(dbiIndexRecord rec) {
  * @param fileNumber	file array index
  * @return	new element
  */
-static dbiIndexRecord inline dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
+static inline dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
     dbiIndexRecord rec = xmalloc(sizeof(*rec));
     rec->recOffset = recOffset;
     rec->fileNumber = fileNumber;
     return rec;
-}
-
-/**
- * Flush pending operations to disk.
- * @param dbi	index database handle
- */
-static inline int dbiSyncIndex(dbiIndex dbi) {
-    int rc;
-
-    rc = (*dbi->dbi_vec->sync) (dbi, 0);
-    return rc;
-}
-
-/**
- * Return next index database key.
- * @param dbi	index database handle
- * @param keyp	address of first key
- * @param keylenp address of first key size
- * @return	0 success - fails if rec is not found
- */
-static inline int dbiGetNextKey(dbiIndex dbi, void ** keyp, size_t * keylenp) {
-    int rc;
-
-    if (dbi == NULL)
-	return 1;
-
-    rc = (*dbi->dbi_vec->cget) (dbi, keyp, keylenp, NULL, NULL);
-
-    return rc;
-}
-
-/**
- * Close cursor (if any);
- * @param dbi	index database handle
- * @return	0 success
- */
-static inline int dbiFreeCursor(dbiIndex dbi) {
-    int rc;
-
-    if (dbi == NULL)
-	return 1;
-
-    rc = (*dbi->dbi_vec->cclose) (dbi);
-    return rc;
 }
 
 /**
@@ -127,7 +77,7 @@ static inline int dbiFreeCursor(dbiIndex dbi) {
  * @param set	items retrieved from index database
  * @return	-1 error, 0 success, 1 not found
  */
-static inline int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len,
+static int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len,
 		dbiIndexSet * set)
 {
     int rc;
@@ -150,7 +100,7 @@ static inline int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len,
  * @param set	items to update in index database
  * @return	0 success, 1 not found
  */
-static inline int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
+static int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     int rc;
 
     rc = (*dbi->dbi_vec->UpdateIndex) (dbi, str, set);
@@ -198,7 +148,7 @@ static inline int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
  * @param rec	item to remove from set
  * @return	0 success, 1 failure
  */
-int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
+static inline int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
     int from;
     int to = 0;
     int num = set->count;
@@ -217,6 +167,182 @@ int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
     }
 
     return (numCopied == num);
+}
+
+#if USE_DB0
+extern struct _dbiVec db0vec;
+#define	DB0vec		&db0vec
+#else
+#define	DB0vec		NULL
+#endif
+
+#if USE_DB1
+extern struct _dbiVec db1vec;
+#define	DB1vec		&db1vec
+#else
+#define	DB1vec		NULL
+#endif
+
+#if USE_DB2
+extern struct _dbiVec db2vec;
+#define	DB2vec		&db2vec
+#else
+#define	DB2vec		NULL
+#endif
+
+#if USE_DB3
+extern struct _dbiVec db3vec;
+#define	DB3vec		&db3vec
+#else
+#define	DB3vec		NULL
+#endif
+
+int __do_dbenv_remove = -1;	/* XXX in dbindex.c, shared with rebuilddb.c */
+
+/* XXX rpminstall.c, transaction.c */
+unsigned int dbiIndexSetCount(dbiIndexSet set) {
+    return set->count;
+}
+
+/* XXX rpminstall.c, transaction.c */
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
+    return set->recs[recno].recOffset;
+}
+
+/* XXX transaction.c */
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
+    return set->recs[recno].fileNumber;
+}
+
+/**
+ * Change record offset of header within element in index database set.
+ * @param set	set of index database items
+ * @param recno	index of item in set
+ * @param recoff new record offset
+ */
+static inline void dbiIndexRecordOffsetSave(dbiIndexSet set, int recno, unsigned int recoff) {
+    set->recs[recno].recOffset = recoff;
+}
+
+static dbiIndex newDBI(const dbiIndex dbiTemplate) {
+    dbiIndex dbi = xcalloc(1, sizeof(*dbi));
+    
+    *dbi = *dbiTemplate;	/* structure assignment */
+    if (dbiTemplate->dbi_basename)
+	dbi->dbi_basename = xstrdup(dbiTemplate->dbi_basename);
+    return dbi;
+}
+
+static void freeDBI( /*@only@*/ /*@null@*/ dbiIndex dbi) {
+    if (dbi) {
+	if (dbi->dbi_dbenv)	free(dbi->dbi_dbenv);
+	if (dbi->dbi_dbinfo)	free(dbi->dbi_dbinfo);
+	if (dbi->dbi_file)	xfree(dbi->dbi_file);
+	if (dbi->dbi_basename)	xfree(dbi->dbi_basename);
+	xfree(dbi);
+    }
+}
+
+int _useDbiMajor = 3;		/* XXX shared with rebuilddb.c/rpmdb.c */
+
+static struct _dbiVec *mydbvecs[] = {
+    DB0vec, DB1vec, DB2vec, DB3vec, NULL
+};
+
+/**
+ * Return handle for an index database.
+ * @param filename	file name of database
+ * @param flags		type of open
+ * @param dbiTemplate	template to initialize new dbiIndex
+ * @return		index database handle
+ */
+static dbiIndex dbiOpenIndex(const char * urlfn, int flags, const dbiIndex dbiTemplate)
+{
+    dbiIndex dbi;
+    const char * filename;
+    int rc = 0;
+
+    (void) urlPath(urlfn, &filename);
+    if (*filename == '\0') {
+	rpmError(RPMERR_DBOPEN, _("bad db file %s"), urlfn);
+	return NULL;
+    }
+
+    dbi = newDBI(dbiTemplate);
+    dbi->dbi_file = xstrdup(filename);
+    dbi->dbi_flags = flags;
+    dbi->dbi_major = _useDbiMajor;
+
+    switch (dbi->dbi_major) {
+    case 3:
+    case 2:
+    case 1:
+    case 0:
+	if (mydbvecs[dbi->dbi_major] != NULL) {
+	    errno = 0;
+	    rc = (*mydbvecs[dbi->dbi_major]->open) (dbi);
+	    if (rc == 0) {
+		dbi->dbi_vec = mydbvecs[dbi->dbi_major];
+		break;
+	    }
+	}
+	/*@fallthrough@*/
+    case -1:
+	dbi->dbi_major = 4;
+	while (dbi->dbi_major-- > 0) {
+if (_debug)
+fprintf(stderr, "*** loop db%d mydbvecs %p\n", dbi->dbi_major, mydbvecs[dbi->dbi_major]);
+	    if (mydbvecs[dbi->dbi_major] == NULL)
+		continue;
+	    errno = 0;
+	    rc = (*mydbvecs[dbi->dbi_major]->open) (dbi);
+if (_debug)
+fprintf(stderr, "*** loop db%d rc %d errno %d %s\n", dbi->dbi_major, rc, errno, strerror(errno));
+	    if (rc == 0) {
+		dbi->dbi_vec = mydbvecs[dbi->dbi_major];
+		break;
+	    }
+	    if (rc == 1 && dbi->dbi_major == 2) {
+		fprintf(stderr, "*** FIXME: <message about how to convert db>\n");
+		fprintf(stderr, _("\n\
+--> Please run \"rpm --rebuilddb\" as root to convert your database from\n\
+    db1 to db2 on-disk format.\n\
+\n\
+"));
+		dbi->dbi_major--;	/* XXX don't bother with db_185 */
+	    }
+	}
+	_useDbiMajor = dbi->dbi_major;
+    	break;
+    }
+
+    if (rc) {
+        rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), urlfn, strerror(errno));
+	freeDBI(dbi);
+	dbi = NULL;
+     }
+
+    return dbi;
+}
+
+/**
+ * Close index database.
+ * @param dbi	index database handle
+ */
+static int dbiCloseIndex(dbiIndex dbi) {
+    int rc;
+
+    rc = (*dbi->dbi_vec->close) (dbi, 0);
+    freeDBI(dbi);
+    return rc;
+}
+
+/* XXX depends.c, install.c, query.c, rpminstall.c, transaction.c */
+void dbiFreeIndexSet(dbiIndexSet set) {
+    if (set) {
+	if (set->recs) free(set->recs);
+	free(set);
+    }
 }
 
 /* XXX the signal handling in here is not thread safe */
@@ -246,15 +372,6 @@ struct rpmdb_s {
     unsigned int	db_h_nelem;
     unsigned int	db_h_flags;
     dbiIndex		_dbi[RPMDBI_MAX];
-#ifdef	DYING
-#define	nameIndex		_dbi[RPMDBI_NAME]
-#define	fileIndex		_dbi[RPMDBI_FILE]
-#define	groupIndex		_dbi[RPMDBI_GROUP]
-#define	requiredbyIndex		_dbi[RPMDBI_REQUIREDBY]
-#define	providesIndex		_dbi[RPMDBI_PROVIDES]
-#define	conflictsIndex		_dbi[RPMDBI_CONFLICTS]
-#define	triggerIndex		_dbi[RPMDBI_TRIGGER]
-#endif
 };
 
 static sigset_t signalMask;
@@ -289,11 +406,12 @@ static void unblockSignals(void)
 
 static struct rpmdb_s dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FLAGS,
-    _DB_TYPE,	_DB_MODE, _DB_PERMS, _DB_MAJOR,
+    _DB_TYPE,	_DB_MODE, _DB_PERMS,
     _DB_MAJOR,	_DB_MP_MMAPSIZE, _DB_MP_SIZE, _DB_CACHESIZE, _DB_PAGESIZE,
 		_DB_H_FFACTOR, _DB_H_NELEM, _DB_H_FLAGS
 };
 
+/* XXX query.c, rebuilddb.c, rpminstall.c, verify.c */
 void rpmdbClose (rpmdb db)
 {
     int dbix;
@@ -324,7 +442,10 @@ static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
 
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
-    db->db_root = (root ? root : ""); 	/* accept NULL as a valid prefix */
+    if (root)
+	db->db_root = (*root ? root : _DB_ROOT);
+    if (home)
+	db->db_home = (*home ? home : _DB_HOME);
     if (mode >= 0)	db->db_mode = mode;
     if (perms >= 0)	db->db_perms = perms;
     if (flags >= 0)	db->db_flags = flags;
@@ -346,6 +467,7 @@ errxit:
     return db;
 }
 
+/* XXX rebuilddb.c */
 int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 		int mode, int perms, int flags)
 {
@@ -366,6 +488,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 	rc = 0;
 	for (dbix = RPMDBI_MIN; rc == 0 && dbix < RPMDBI_MAX; dbix++) {
 	    dbiIndex dbiTemplate;
+	    dbiIndex dbi;
 	    const char * filename;
 
 	    dbiTemplate = rpmdbi + dbix;
@@ -377,8 +500,9 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 		db->_dbi[dbix] = dbiOpenIndex(filename, db->db_mode, dbiTemplate);
 	    }
 
-	    if (db->_dbi[dbix] == NULL)
+	    if ((dbi = db->_dbi[dbix]) == NULL)
 		continue;
+	    dbi->dbi_rpmdb = db;
 
 	    switch (dbix) {
 	    case 1:
@@ -387,6 +511,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 		break;
 	    case 2:
 	    {	void * keyp = NULL;
+		int xx;
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
@@ -394,16 +519,18 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
      * XXX FIXME: db->fileindex can be NULL under pathological (e.g. mixed
      * XXX db1/db2 linkage) conditions.
      */
-		if (!justCheck && !dbiGetNextKey(db->_dbi[RPMDBI_FILE], &keyp, NULL)) {
-		    const char * akey;
-		    akey = keyp;
+		if (justCheck)
+		    break;
+		xx = (*dbi->dbi_vec->cget) (dbi, &keyp, NULL, NULL, NULL);
+		if (xx == 0) {
+		    const char * akey = keyp;
 		    if (strchr(akey, '/')) {
 			rpmError(RPMERR_OLDDB, _("old format database is present; "
 				"use --rebuilddb to generate a new format database"));
 			rc |= 1;
 		    }
-		    dbiFreeCursor(db->_dbi[RPMDBI_FILE]);
 		}
+		xx = (*dbi->dbi_vec->cclose) (dbi);
 	    }	break;
 	    default:
 		break;
@@ -420,59 +547,32 @@ exit:
     return rc;
 }
 
-#ifdef	DYING
-static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * dbp,
-			int mode, int perms, int flags)
-{
-    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
-    int rc;
-
-    if (!(dbpath && dbpath[0] != '%')) {
-	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	rc = 1;
-    } else
-    	rc = openDatabase(prefix, dbpath, dbp, mode, perms, flags);
-    xfree(dbpath);
-    return rc;
-}
-#endif
-
-/* XXX called from python/upgrade.c */
+/* XXX python/upgrade.c */
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * dbp)
 {
-#ifdef	DYING
-    return doRpmdbOpen(prefix, dbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
-#else
     return openDatabase(prefix, NULL, dbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
-#endif
 }
 
-/* XXX called from python/rpmmodule.c */
+/* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
-#ifdef	DYING
-    return doRpmdbOpen(prefix, dbp, mode, perms, 0);
-#else
     return openDatabase(prefix, NULL, dbp, mode, perms, 0);
-#endif
 }
 
 int rpmdbInit (const char * prefix, int perms)
 {
     rpmdb db;
-#ifdef	DYING
-    return doRpmdbOpen(prefix, &db, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
-#else
     int rc;
+
     rc = openDatabase(prefix, NULL, &db, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
     if (db) {
 	rpmdbClose(db);
 	db = NULL;
     }
     return rc;
-#endif
 }
 
+/* XXX depends.c, install.c, query.c, transaction.c, uninstall.c */
 Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 {
     dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
@@ -526,7 +626,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	return rc;
     }
 
-    *matches = dbiCreateIndexSet();
+    *matches = xcalloc(1, sizeof(**matches));
     rec = dbiReturnIndexRecordInstance(0, 0);
     i = 0;
     while (i < allMatches->count) {
@@ -571,7 +671,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     }
 
     if (rec) {
-	dbiFreeIndexRecordInstance(rec);
+	free(rec);
 	rec = NULL;
     }
     if (allMatches) {
@@ -590,10 +690,12 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     return 0;
 }
 
+/* XXX python/upgrade.c, python/rpmmodule.c */
 int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, 0, matches);
 }
 
+/* XXX python/upgrade.c, install.c, uninstall.c */
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
     dbiIndexSet matches = NULL;
@@ -631,7 +733,9 @@ struct _rpmdbMatchIterator {
     dbiIndexSet		mi_set;
     int			mi_setx;
     Header		mi_h;
+    unsigned int	mi_prevoffset;
     unsigned int	mi_offset;
+    unsigned int	mi_filenum;
     const char *	mi_version;
     const char *	mi_release;
 };
@@ -671,6 +775,12 @@ unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
     if (mi == NULL)
 	return 0;
     return mi->mi_offset;
+}
+
+unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi) {
+    if (mi == NULL)
+	return 0;
+    return mi->mi_filenum;
 }
 
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
@@ -721,15 +831,24 @@ top:
 	if (mi->mi_set) {
 	    if (!(mi->mi_setx < mi->mi_set->count))
 		return NULL;
-	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
-	    mi->mi_setx++;
+	    if (mi->mi_dbix != RPMDBI_PACKAGES) {
+		mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
+		mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
+	    }
 	} else {
 	    rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
-	    if (rc)
+	    if (keyp)
+		memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
+
+	    /* Terminate on error or end of keys */
+	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
 		return NULL;
-	    memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
 	}
+	mi->mi_setx++;
     } while (mi->mi_offset == 0);
+
+    if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
+	return mi->mi_h;
 
     /* Retrieve header */
     rc = (*dbi->dbi_vec->get) (dbi, keyp, keylen, &uh, &uhlen);
@@ -740,6 +859,7 @@ top:
 	headerFree(mi->mi_h);
 	mi->mi_h = NULL;
     }
+
     mi->mi_h = headerLoad(uh);
 
     if (mi->mi_release) {
@@ -756,7 +876,79 @@ top:
 	    goto top;
     }
 
+    mi->mi_prevoffset = mi->mi_offset;
     return mi->mi_h;
+}
+
+static int intMatchCmp(const void * one, const void * two)
+{
+    const struct _dbiIndexRecord * a = one;
+    const struct _dbiIndexRecord * b = two;
+
+#ifdef	DYING
+    if (a->recOffset < b->recOffset)
+	return -1;
+    else if (a->recOffset > b->recOffset)
+	return 1;
+
+    return 0;
+#else
+    return (a->recOffset - b->recOffset);
+#endif
+}
+
+static void rpmdbSortIterator(rpmdbMatchIterator mi)
+{
+    if (!(mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0))
+	return;
+
+    qsort(mi->mi_set->recs, mi->mi_set->count, sizeof(*mi->mi_set->recs),
+		intMatchCmp);
+}
+
+static int rpmdbGrowIterator(rpmdbMatchIterator mi,
+	const void * key, size_t keylen, int fpNum)
+{
+    dbiIndex dbi = NULL;
+    dbiIndexSet set = NULL;
+    int i;
+    int rc;
+
+    if (!(mi && key))
+	return 1;
+
+    dbi = mi->mi_db->_dbi[mi->mi_dbix];
+
+    if (keylen == 0)
+	keylen = strlen(key);
+
+    rc = dbiSearchIndex(dbi, key, keylen, &set);
+
+    switch (rc) {
+    default:
+    case -1:		/* error */
+    case 1:		/* not found */
+	break;
+    case 0:		/* success */
+	for (i = 0; i < set->count; i++)
+	    set->recs[i].fpNum = fpNum;
+
+	if (mi->mi_set == NULL) {
+	    mi->mi_set = set;
+	    set = NULL;
+	} else {
+	    mi->mi_set->recs = xrealloc(mi->mi_set->recs,
+		(mi->mi_set->count + set->count) * sizeof(*(mi->mi_set->recs)));
+	    memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
+		set->count * sizeof(*(mi->mi_set->recs)));
+	    mi->mi_set->count += set->count;
+	}
+	break;
+    }
+
+    if (set)
+	dbiFreeIndexSet(set);
+    return rc;
 }
 
 rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix, const void * key, size_t keylen)
@@ -805,49 +997,65 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix, const void * key, size_
     }
     mi->mi_db = db;
     mi->mi_dbi = dbi;
-    assert(dbi->dbi_dbcursor == NULL);
+
+    /* XXX falloc has dbi == NULL ) */
+    assert(!(dbi && dbi->dbi_dbcursor));
+
     mi->mi_dbix = dbix;
     mi->mi_set = set;
     mi->mi_setx = 0;
     mi->mi_h = NULL;
+    mi->mi_prevoffset = 0;
     mi->mi_offset = 0;
+    mi->mi_filenum = 0;
     mi->mi_version = NULL;
     mi->mi_release = NULL;
     return mi;
 }
 
-static void removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecord rec,
+static inline int removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecord rec,
 		             int tolerant, const char * idxName)
 {
-    dbiIndexSet matches = NULL;
+    dbiIndexSet set = NULL;
     int rc;
     
-    rc = dbiSearchIndex(dbi, key, 0, &matches);
+    rc = dbiSearchIndex(dbi, key, 0, &set);
+
     switch (rc) {
-      case 0:
-	if (dbiRemoveIndexRecord(matches, rec)) {
-	    if (!tolerant)
-		rpmError(RPMERR_DBCORRUPT, _("package not found with key \"%s\" in %s"),
-				key, idxName);
-	} else {
-	    dbiUpdateIndex(dbi, key, matches);
-	       /* errors from above will be reported from dbindex.c */
-	}
-	break;
-      case 1:
-	if (!tolerant) 
+    case -1:			/* error */
+	rc = 1;
+	break;   /* error message already generated from dbindex.c */
+    case 1:			/* not found */
+	rc = 0;
+	if (!tolerant) {
 	    rpmError(RPMERR_DBCORRUPT, _("key \"%s\" not found in %s"), 
 			key, idxName);
+	    rc = 1;
+	}
 	break;
-      case 2:
-	break;   /* error message already generated from dbindex.c */
+    case 0:			/* success */
+	if (dbiRemoveIndexRecord(set, rec)) {
+	    if (!tolerant) {
+		rpmError(RPMERR_DBCORRUPT, _("key \"%s\" not removed from %s"),
+				key, idxName);
+		rc = 1;
+	    }
+	    break;
+	}
+	if (dbiUpdateIndex(dbi, key, set))
+	    rc = 1;
+	break;
     }
-    if (matches) {
-	dbiFreeIndexSet(matches);
-	matches = NULL;
+
+    if (set) {
+	dbiFreeIndexSet(set);
+	set = NULL;
     }
+
+    return rc;
 }
 
+/* XXX uninstall.c */
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 {
     Header h;
@@ -857,6 +1065,11 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	rpmError(RPMERR_DBCORRUPT, _("rpmdbRemove: cannot read header at 0x%x"),
 	      offset);
 	return 1;
+    }
+
+    {	const char *n, *v, *r;
+	headerNVR(h, &n, &v, &r);
+	rpmMessage(RPMMESS_VERBOSE, "  --- %s-%s-%s\n", n, v, r);
     }
 
     blockSignals();
@@ -879,8 +1092,10 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	
 	    if (!headerGetEntry(h, dbi->dbi_rpmtag, &rpmtype,
 		(void **) &rpmvals, &rpmcnt)) {
+#if 0
 		rpmMessage(RPMMESS_DEBUG, _("removing 0 %s entries.\n"),
 			tagName(dbi->dbi_rpmtag));
+#endif
 		continue;
 	    }
 
@@ -888,7 +1103,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 		rpmMessage(RPMMESS_DEBUG, _("removing \"%s\" from %s index.\n"), 
 			(const char *)rpmvals, tagName(dbi->dbi_rpmtag));
 
-		removeIndexEntry(dbi, (const char *)rpmvals,
+		(void) removeIndexEntry(dbi, (const char *)rpmvals,
 			rec, tolerant, dbi->dbi_basename);
 	    } else {
 		int i, mytolerant;
@@ -918,7 +1133,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 			break;
 		    }
 
-		    removeIndexEntry(dbi, rpmvals[i],
+		    (void) removeIndexEntry(dbi, rpmvals[i],
 			rec, mytolerant, dbi->dbi_basename);
 		}
 	    }
@@ -935,7 +1150,11 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
-	dbiFreeIndexRecordInstance(rec);
+
+	if (rec) {
+	    free(rec);
+	    rec = NULL;
+	}
     }
 
     unblockSignals();
@@ -945,7 +1164,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
     return 0;
 }
 
-static int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord rec)
+static inline int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord rec)
 {
     dbiIndexSet set = NULL;
     int rc;
@@ -953,23 +1172,20 @@ static int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord rec)
     rc = dbiSearchIndex(dbi, index, 0, &set);
 
     switch (rc) {
-    case -1:			/* error */
-	if (set) {
-	    dbiFreeIndexSet(set);
-	    set = NULL;
-	}
-	return 1;
-	/*@notreached@*/ break;
-    case 1:			/* new item */
-	set = dbiCreateIndexSet();
-	break;
     default:
+    case -1:			/* error */
+	rc = 1;
+	break;
+    case 1:			/* not found */
+	rc = 0;
+	set = xcalloc(1, sizeof(*set));
+	/*@fallthrough@*/
+    case 0:			/* success */
+	dbiAppendIndexRecord(set, rec);
+	if (dbiUpdateIndex(dbi, index, set))
+	    rc = 1;
 	break;
     }
-
-    dbiAppendIndexRecord(set, rec);
-    if (dbiUpdateIndex(dbi, index, set))
-	exit(EXIT_FAILURE);	/* XXX W2DO? return 1; */
 
     if (set) {
 	dbiFreeIndexSet(set);
@@ -979,6 +1195,7 @@ static int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord rec)
     return 0;
 }
 
+/* XXX install.c, rebuilddb.c */
 int rpmdbAdd(rpmdb db, Header h)
 {
     const char ** baseNames;
@@ -1018,9 +1235,11 @@ int rpmdbAdd(rpmdb db, Header h)
 	/* Retrieve join key for next header instance. */
 
 	rc = (*dbi->dbi_vec->get) (dbi, keyp, keylen, (void *)&datap, &datalen);
+
 	offset = 0;
 	if (rc == 0 && datap)
 	    memcpy(&offset, datap, sizeof(offset));
+
 	++offset;
 	if (datap) {
 	    memcpy(datap, &offset, sizeof(offset));
@@ -1028,6 +1247,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	    datap = &offset;
 	    datalen = sizeof(offset);
 	}
+
 	rc = (*dbi->dbi_vec->put) (dbi, keyp, keylen, datap, datalen);
     }
 
@@ -1053,6 +1273,12 @@ int rpmdbAdd(rpmdb db, Header h)
 		void * uh = headerUnload(h);
 		(void) (*dbi->dbi_vec->put) (dbi, &offset, sizeof(offset), uh, uhlen);
 		free(uh);
+
+		{   const char *n, *v, *r;
+		    headerNVR(h, &n, &v, &r);
+		    rpmMessage(RPMMESS_VERBOSE, "  +++ %8d %s-%s-%s\n", offset, n, v, r);
+		}
+
 		continue;
 	    }
 	
@@ -1071,8 +1297,10 @@ int rpmdbAdd(rpmdb db, Header h)
 
 	    if (rpmcnt <= 0) {
 		if (dbi->dbi_rpmtag != RPMTAG_GROUP) {
+#if 0
 		    rpmMessage(RPMMESS_DEBUG, _("adding 0 %s entries.\n"),
 			tagName(dbi->dbi_rpmtag));
+#endif
 		    continue;
 		}
 
@@ -1094,7 +1322,7 @@ int rpmdbAdd(rpmdb db, Header h)
 			rpmcnt, tagName(dbi->dbi_rpmtag));
 
 		for (i = 0; i < rpmcnt; i++) {
-		    rpmMessage(RPMMESS_DEBUG, _("\t%6d %s\n"),
+		    rpmMessage(RPMMESS_DEBUG, _("%6d %s\n"),
 			i, rpmvals[i]);
 
 		    rec->fileNumber = 0;
@@ -1131,7 +1359,11 @@ int rpmdbAdd(rpmdb db, Header h)
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
-	dbiFreeIndexRecordInstance(rec);
+
+	if (rec) {
+	    free(rec);
+	    rec = NULL;
+	}
     }
 
 exit:
@@ -1140,6 +1372,7 @@ exit:
     return rc;
 }
 
+/* XXX install.c */
 int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 {
     int rc = 0;
@@ -1274,128 +1507,60 @@ int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char *
     return rc;
 }
 
-#ifdef	DYING
-typedef struct intMatch {
-    unsigned int recOffset;
-    unsigned int fileNumber;
-    int fpNum;
-} IM_t;
-#else
-typedef	struct _dbiIndexRecord IM_t;
-#endif
-
-static int intMatchCmp(const void * one, const void * two)
-{
-    const IM_t * a = one;
-    const IM_t * b = two;
-
-    if (a->recOffset < b->recOffset)
-	return -1;
-    else if (a->recOffset > b->recOffset)
-	return 1;
-
-    return 0;
-}
-
+/* XXX transaction.c */
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
 		    int numItems)
 {
-    int numIntMatches = 0;
-    int intMatchesAlloced = numItems;
-    IM_t * intMatches;
-    int i, j;
-    int start, end;
-    int num;
-    int_32 fc;
-    const char ** dirNames, ** baseNames;
-    const char ** fullBaseNames;
-    int_32 * dirIndexes, * fullDirIndexes;
+    rpmdbMatchIterator mi;
     fingerPrintCache fpc;
-    dbiIndexRecord rec = NULL;
+    Header h;
+    int i;
 
-    /* this may be worth batching by baseName, but probably not as
-       baseNames are quite unique as it is */
-
-    intMatches = xcalloc(intMatchesAlloced, sizeof(*intMatches));
+    mi = rpmdbInitIterator(db, RPMDBI_FILE, NULL, 0);
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
-	dbiIndexSet matches = NULL;
-	int rc;
-	rc = dbiSearchIndex(db->_dbi[RPMDBI_FILE], fpList[i].baseName, 0, &matches);
-	switch (rc) {
-	default:
-	    break;
-	case 2:
-	    if (matches) {
-		dbiFreeIndexSet(matches);
-		matches = NULL;
-	    }
-	    free(intMatches);
-	    return 1;
-	    /*@notreached@*/ break;
-	case 0:
-	    if ((numIntMatches + matches->count) >= intMatchesAlloced) {
-		intMatchesAlloced += matches->count;
-		intMatchesAlloced += intMatchesAlloced / 5;
-		intMatches = xrealloc(intMatches, 
-				     sizeof(*intMatches) * intMatchesAlloced);
-	    }
-
-	    for (j = 0; j < matches->count; j++) {
-		IM_t * im;
-		
-		im = intMatches + numIntMatches;
-		im->recOffset = dbiIndexRecordOffset(matches, j);
-		im->fileNumber = dbiIndexRecordFileNumber(matches, j);
-		im->fpNum = i;
-		numIntMatches++;
-	    }
-
-	    break;
-	}
-	if (matches) {
-	    dbiFreeIndexSet(matches);
-	    matches = NULL;
-	}
+	rpmdbGrowIterator(mi, fpList[i].baseName, 0, i);
+	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
     }
 
-    qsort(intMatches, numIntMatches, sizeof(*intMatches), intMatchCmp);
-    /* intMatches is now sorted by (recnum, filenum) */
+    if ((i = rpmdbGetIteratorCount(mi)) == 0) {
+	rpmdbFreeIterator(mi);
+	return 0;
+    }
+    fpc = fpCacheCreate(i);
 
-    for (i = 0; i < numItems; i++)
-	matchList[i] = dbiCreateIndexSet();
-
-    fpc = fpCacheCreate(numIntMatches);
-
-    rec = dbiReturnIndexRecordInstance(0, 0);
+    rpmdbSortIterator(mi);
+    /* iterator is now sorted by (recnum, filenum) */
 
     /* For each set of files matched in a package ... */
-    for (start = 0; start < numIntMatches; start = end) {
-	IM_t * im;
-	Header h;
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	const char ** dirNames;
+	const char ** baseNames;
+	const char ** fullBaseNames;
+	int_32 * dirIndexes;
+	int_32 * fullDirIndexes;
 	fingerPrint * fps;
+	dbiIndexRecord im;
+	int start;
+	int num;
+	int end;
 
-	im = intMatches + start;
+	start = mi->mi_setx - 1;
+	im = mi->mi_set->recs + start;
 
 	/* Find the end of the set of matched files in this package. */
-	for (end = start + 1; end < numIntMatches; end++) {
-	    if (im->recOffset != intMatches[end].recOffset)
+	for (end = start + 1; end < mi->mi_set->count; end++) {
+	    if (im->recOffset != mi->mi_set->recs[end].recOffset)
 		break;
 	}
 	num = end - start;
 
-	/* Compute fingerprints for each file match in this package. */
-	h = rpmdbGetRecord(db, im->recOffset);
-	if (h == NULL) {
-	    free(intMatches);
-	    return 1;
-	}
-
+	/* Compute fingerprints for this header's matches */
 	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
 			    (void **) &dirNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-			    (void **) &fullBaseNames, &fc);
+			    (void **) &fullBaseNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
 			    (void **) &fullDirIndexes, NULL);
 
@@ -1409,30 +1574,134 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	fps = xcalloc(num, sizeof(*fps));
 	fpLookupList(fpc, dirNames, baseNames, dirIndexes, num, fps);
 
+	/* Add db (recnum,filenum) to list for fingerprint matches. */
+	for (i = 0; i < num; i++, im++) {
+	    if (FP_EQUAL_DIFFERENT_CACHE(fps[i], fpList[im->fpNum]))
+		dbiAppendIndexRecord(matchList[im->fpNum], im);
+	}
+
+	free(fps);
 	free(dirNames);
 	free(fullBaseNames);
 	free(baseNames);
 	free(dirIndexes);
 
-	/* Add db (recnum,filenum) to list for fingerprint matches. */
-	
-	for (i = 0; i < num; i++) {
-	    j = im[i].fpNum;
-	    if (FP_EQUAL_DIFFERENT_CACHE(fps[i], fpList[j])) {
-		rec->recOffset = im[i].recOffset;
-		rec->fileNumber = im[i].fileNumber;
-		dbiAppendIndexRecord(matchList[j], rec);
-	    }
-	}
-
-	headerFree(h);
-
-	free(fps);
+	mi->mi_setx = end;
     }
 
-    dbiFreeIndexRecordInstance(rec);
+    rpmdbFreeIterator(mi);
+
     fpCacheFree(fpc);
-    free(intMatches);
 
     return 0;
+
+}
+
+/* XXX transaction.c */
+/* 0 found matches */
+/* 1 no matches */
+/* 2 error */
+int findMatches(rpmdb db, const char * name, const char * version,
+			const char * release, dbiIndexSet * matches)
+{
+    int gotMatches;
+    int rc;
+    int i;
+
+    if ((rc = rpmdbFindPackage(db, name, matches))) {
+	rc = ((rc == -1) ? 2 : 1);
+	goto exit;
+    }
+
+    if (!version && !release) {
+	rc = 0;
+	goto exit;
+    }
+
+    gotMatches = 0;
+
+    /* make sure the version and releases match */
+    for (i = 0; i < dbiIndexSetCount(*matches); i++) {
+	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
+	int goodRelease, goodVersion;
+	const char * pkgVersion;
+	const char * pkgRelease;
+	Header h;
+
+	if (recoff == 0)
+	    continue;
+
+	h = rpmdbGetRecord(db, recoff);
+	if (h == NULL) {
+	    rpmError(RPMERR_DBCORRUPT,_("cannot read header at %d for lookup"), 
+		recoff);
+	    rc = 2;
+	    goto exit;
+	}
+
+	headerNVR(h, NULL, &pkgVersion, &pkgRelease);
+	    
+	goodRelease = goodVersion = 1;
+
+	if (release && strcmp(release, pkgRelease)) goodRelease = 0;
+	if (version && strcmp(version, pkgVersion)) goodVersion = 0;
+
+	if (goodRelease && goodVersion) 
+	    gotMatches = 1;
+	else 
+	    dbiIndexRecordOffsetSave(*matches, i, 0);
+
+	headerFree(h);
+    }
+
+    if (!gotMatches) {
+	rc = 1;
+	goto exit;
+    }
+    rc = 0;
+
+exit:
+    if (rc && matches && *matches) {
+	dbiFreeIndexSet(*matches);
+	*matches = NULL;
+    }
+    return rc;
+}
+
+/* XXX query.c, rpminstall.c */
+/* 0 found matches */
+/* 1 no matches */
+/* 2 error */
+int rpmdbFindByLabel(rpmdb db, const char * arg, dbiIndexSet * matches)
+{
+    char * localarg, * chptr;
+    char * release;
+    int rc;
+ 
+    if (!strlen(arg)) return 1;
+
+    /* did they give us just a name? */
+    rc = findMatches(db, arg, NULL, NULL, matches);
+    if (rc != 1) return rc;
+
+    /* maybe a name and a release */
+    localarg = alloca(strlen(arg) + 1);
+    strcpy(localarg, arg);
+
+    chptr = (localarg + strlen(localarg)) - 1;
+    while (chptr > localarg && *chptr != '-') chptr--;
+    if (chptr == localarg) return 1;
+
+    *chptr = '\0';
+    rc = findMatches(db, localarg, chptr + 1, NULL, matches);
+    if (rc != 1) return rc;
+    
+    /* how about name-version-release? */
+
+    release = chptr + 1;
+    while (chptr > localarg && *chptr != '-') chptr--;
+    if (chptr == localarg) return 1;
+
+    *chptr = '\0';
+    return findMatches(db, localarg, chptr + 1, release, matches);
 }

@@ -16,7 +16,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include "falloc.h"
 #include "misc.h"
 
-#include "dbindex.h"
+#include "rpmdb.h"
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
@@ -157,7 +157,7 @@ static int db0SearchIndex(dbiIndex dbi, const void * str, size_t len,
 	    const char * sdbir = data.data;
 	    int i;
 
-	    *set = dbiCreateIndexSet();
+	    *set = xmalloc(sizeof(**set));
 	    (*set)->count = data.size / sizeof(struct _dbiIR);
 	    (*set)->recs = xmalloc((*set)->count * sizeof(*((*set)->recs)));
 
@@ -532,7 +532,7 @@ static int db0put(dbiIndex dbi, void * keyp, size_t keylen,
 
 static int db0close(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
-    int rc;
+    int rc = 0;
 
     if (dbi->dbi_rpmtag == 0) {
 	FD_t pkgs;
@@ -552,8 +552,10 @@ static int db0close(dbiIndex dbi, unsigned int flags) {
 	dbi->dbi_cursor = NULL;
     }
 
-    rc = db->close(db, 0);
-    dbi->dbi_db = NULL;
+    if (db) {
+	rc = db->close(db, 0);
+	dbi->dbi_db = NULL;
+    }
 
     if (dbinfo) {
 	free(dbinfo);
@@ -565,7 +567,10 @@ static int db0close(dbiIndex dbi, unsigned int flags) {
 	dbi->dbi_dbenv = NULL;
     }
 #else
-    rc = db->close(db);
+    if (db) {
+	rc = db->close(db);
+	dbi->dbi_db = NULL;
+    }
 #endif
 
     switch (rc) {
