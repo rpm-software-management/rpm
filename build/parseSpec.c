@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <rpmbuild.h>
 #include <rpmurl.h>
 
@@ -328,7 +330,7 @@ void closeSpec(Spec spec)
 int noLang = 0;		/* XXX FIXME: pass as arg */
 
 int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
-		const char *buildURL, int inBuildArch, const char *passPhrase,
+		const char *buildRootURL, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force)
 {
     int parsePart = PART_PREAMBLE;
@@ -342,16 +344,30 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
 
+    /*
+     * Note: rpmGetPath should guarantee a "canonical" path. That means
+     * that the following pathologies should be weeded out:
+     *          //bin//sh
+     *          //usr//bin/
+     *          /.././../usr/../bin//./sh (XXX FIXME: dots not handled yet)
+     */
+    spec->specFile = rpmGetPath(specFile, NULL);
     spec->fileStack = newOpenFileInfo();
-    spec->fileStack->fileName = xstrdup(specFile);
-
-    spec->specFile = xstrdup(specFile);
-    if (buildURL) {
+    spec->fileStack->fileName = xstrdup(spec->specFile);
+    if (buildRootURL) {
 	const char * buildRoot;
-	spec->gotBuildURL = 1;
-	spec->buildURL = xstrdup(buildURL);
-	(void) urlPath(buildURL, &buildRoot);
+	(void) urlPath(buildRootURL, &buildRoot);
+	if (*buildRoot == '\0') buildRoot = "/";
+	if (!strcmp(buildRoot, "/")) {
+            rpmError(RPMERR_BADSPEC,
+                     _("BuildRoot can not be \"/\": %s"), buildRootURL);
+            return RPMERR_BADSPEC;
+        }
+	spec->gotBuildRootURL = 1;
+	spec->buildRootURL = buildRootURL;
 	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
+if (_debug)
+fprintf(stderr, "*** PS buildRootURL %s macro set to %s\n", buildRootURL, buildRoot);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->inBuildArchitectures = inBuildArch;
@@ -365,20 +381,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
     if (cookie)
 	spec->cookie = xstrdup(cookie);
 
-    {	const char *timecheck = rpmExpand("%{_timecheck}", NULL);
-	if (timecheck && *timecheck != '%') {
-	    if (parseNum(timecheck, &(spec->timeCheck))) {
-		rpmError(RPMERR_BADSPEC,
-		    _("Timecheck value must be an integer: %s"), timecheck);
-		xfree(timecheck);
-		freeSpec(spec);
-		return RPMERR_BADSPEC;
-	    }
-	} else {
-	    spec->timeCheck = 0;
-	}
-	xfree(timecheck);
-    }
+    spec->timeCheck = rpmExpandNumeric("%{_timecheck}");
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
@@ -438,7 +441,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 		    saveArch = xstrdup(saveArch);
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
-				  specFile, spec->rootURL, buildURL, 1,
+				  specFile, spec->rootURL, buildRootURL, 1,
 				  passPhrase, cookie, anyarch, force)) {
 			spec->buildArchitectureCount = index;
 			freeSpec(spec);

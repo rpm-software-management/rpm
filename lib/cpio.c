@@ -341,8 +341,8 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 	}
     }
 
-    ofd = Fopen(hdr->path, "w.fdio");	/* XXX Fopen adds O_TRUNC */
-    if (Ferror(ofd)) 
+    ofd = Fopen(hdr->path, "r+.ufdio");
+    if (ofd == NULL || Ferror(ofd)) 
 	return CPIOERR_OPEN_FAILED;
 
     cbInfo.file = hdr->path;
@@ -706,7 +706,7 @@ static int writeFile(FD_t cfd, struct stat sb, struct cpioFileMapping * map,
 	/* While linux puts the size of a symlink in the st_size field,
 	   I don't think that's a specified standard */
 
-	amount = readlink(map->fsPath, symbuf, sizeof(symbuf));
+	amount = Readlink(map->fsPath, symbuf, sizeof(symbuf));
 	if (amount <= 0) {
 	    return CPIOERR_READLINK_FAILED;
 	}
@@ -747,8 +747,8 @@ static int writeFile(FD_t cfd, struct stat sb, struct cpioFileMapping * map,
 #endif
 
 	/* XXX unbuffered mmap generates *lots* of fdio debugging */
-	datafd = Fopen(map->fsPath, "r.fdio");
-	if (Ferror(datafd))
+	datafd = Fopen(map->fsPath, "r.ufdio");
+	if (datafd == NULL || Ferror(datafd))
 	    return CPIOERR_OPEN_FAILED;
 
 #if HAVE_MMAP
@@ -885,9 +885,9 @@ int cpioBuildArchive(FD_t cfd, struct cpioFileMapping * mappings,
 
     for (i = 0; i < numMappings; i++) {
 	if (mappings[i].mapFlags & CPIO_FOLLOW_SYMLINKS)
-	    rc = stat(mappings[i].fsPath, &sb);
+	    rc = Stat(mappings[i].fsPath, &sb);
 	else
-	    rc = lstat(mappings[i].fsPath, &sb);
+	    rc = Lstat(mappings[i].fsPath, &sb);
 
 	if (rc) {
 	    if (failedFile)

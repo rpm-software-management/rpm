@@ -18,16 +18,16 @@
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-static int checkOwners(const char *file)
+static int checkOwners(const char *urlfn)
 {
     struct stat sb;
 
-    if (Lstat(file, &sb)) {
-	rpmError(RPMERR_BADSPEC, _("Bad source: %s: %s"), file, strerror(errno));
+    if (Lstat(urlfn, &sb)) {
+	rpmError(RPMERR_BADSPEC, _("Bad source: %s: %s"), urlfn, strerror(errno));
 	return RPMERR_BADSPEC;
     }
     if (!getUname(sb.st_uid) || !getGname(sb.st_gid)) {
-	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), file);
+	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), urlfn);
 	return RPMERR_BADSPEC;
     }
 
@@ -274,13 +274,13 @@ static int doSetupMacro(Spec spec, char *line)
     poptFreeContext(optCon);
 
     /* cd to the build dir */
-    {	const char * buildURL = rpmGenPath(spec->rootURL, "%{_builddir}", "");
+    {	const char * buildDirURL = rpmGenPath(spec->rootURL, "%{_builddir}", "");
 	const char *buildDir;
 
-	(void) urlPath(buildURL, &buildDir);
+	(void) urlPath(buildDirURL, &buildDir);
 	sprintf(buf, "cd %s", buildDir);
 	appendLineStringBuf(spec->prep, buf);
-	xfree(buildURL);
+	xfree(buildDirURL);
     }
     
     /* delete any old sources */

@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.38 1999/11/19 18:19:41 jbj Exp $
+# $Id: macros.in,v 1.39 1999/11/24 00:03:54 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -58,6 +58,7 @@
 %__objcopy		@__OBJCOPY@
 %__objdump		@__OBJDUMP@
 %__ranlib		@RANLIB@
+%__remsh		%{__rsh}
 %__strip		@__STRIP@
 
 # XXX avoid failures if tools are not installed when rpm is built.
@@ -165,7 +166,7 @@ export RPM_BUILD_ROOT}
 
 %___build_shell		%{?_buildshell:%{_buildshell}}%{!?_buildshell:/bin/sh}
 %___build_args		-e
-%___build_cmd		%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_build_hostname}}%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} }%{___build_shell} %{___build_args}
+%___build_cmd		%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_remhost} }%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} %{_remroot} }%{___build_shell} %{___build_args}
 %___build_pre	\
 RPM_SOURCE_DIR=\"%{u2p:%{_sourcedir}}\"\
 RPM_BUILD_DIR=\"%{u2p:%{_builddir}}\"\

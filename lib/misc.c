@@ -397,6 +397,9 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	fd = Fopen(tempfn, "w+x.ufdio");
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
+    if (fd == NULL || Ferror(fd))
+	goto errxit;
+
     switch(temput) {
 	struct stat sb, sb2;
     case URL_IS_PATH:
@@ -432,6 +435,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 
 errxit:
     if (tempfn) xfree(tempfn);
+    if (fd) Fclose(fd);
     return 1;
 }
 

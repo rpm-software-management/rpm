@@ -81,12 +81,21 @@ int	Mkdir	(const char * path, mode_t mode);
 int	Chdir	(const char * path);
 int	Rmdir	(const char * path);
 int	Rename	(const char * oldpath, const char * newpath);
-int	Chroot	(const char * path);
+int	Link	(const char * oldpath, const char * newpath);
 int	Unlink	(const char * path);
+int	Readlink(const char * path, char * buf, size_t bufsiz);
 
 int	Stat	(const char * path, struct stat * st);
 int	Lstat	(const char * path, struct stat * st);
 int	Access	(const char * path, int amode);
+
+int	Glob	(const char * pattern, int flags,
+		int errfunc(const char * epath, int eerrno), glob_t * pglob);
+void	Globfree(glob_t * pglob);
+
+DIR *	Opendir	(const char * name);
+struct dirent *	Readdir	(DIR * dir);
+int	Closedir(DIR * dir);
 
 /*@observer@*/ extern FDIO_t gzdio;
 

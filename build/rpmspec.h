@@ -97,8 +97,8 @@ struct SpecStruct {
     int force;
     int anyarch;
 
-    int gotBuildURL;
-    /*@only@*/ const char *buildURL;
+    int gotBuildRootURL;
+    /*@only@*/ const char *buildRootURL;
     /*@only@*/ const char *buildSubdir;
 
     char *passPhrase;

@@ -46,6 +46,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     memset(u, 0, sizeof(*u));
     u->proxyp = -1;
     u->port = -1;
+    u->urltype = URL_IS_UNKNOWN;
     u->ctrl = NULL;
     u->data = NULL;
     u->bufAlloced = 0;
@@ -214,7 +215,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
     FREE(u->proxyh);
 
     /* Perform one-time FTP initialization */
-    if (u->service && !strcmp(u->service, "ftp")) {
+    if (u->urltype == URL_IS_FTP) {
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
 	    char * prompt;
@@ -255,7 +256,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
     }
 
     /* Perform one-time HTTP initialization */
-    if (u->service && !strcmp(u->service, "http")) {
+    if (u->urltype == URL_IS_HTTP) {
 
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
@@ -319,22 +320,23 @@ int urlPath(const char * url, const char ** pathp)
     urltype = urlIsURL(url);
     switch (urltype) {
     case URL_IS_FTP:
-	path += sizeof("ftp://") - 1;
-	path = strchr(path, '/');
+	url += sizeof("ftp://") - 1;
+	path = strchr(url, '/');
+	if (path == NULL) path = url + strlen(url);
 	break;
     case URL_IS_HTTP:
     case URL_IS_PATH:
-	path += sizeof("file://") - 1;
-	path = strchr(path, '/');
+	url += sizeof("file://") - 1;
+	path = strchr(url, '/');
+	if (path == NULL) path = url + strlen(url);
 	break;
     case URL_IS_UNKNOWN:
+	if (path == NULL) path = "";
 	break;
     case URL_IS_DASH:
 	path = "";
 	break;
     }
-    if (path == NULL)		/* XXX gotta return something */
-	path = "";
     if (pathp)
 	*pathp = path;
     return urltype;
@@ -361,6 +363,7 @@ int urlSplit(const char * url, urlinfo *uret)
     }
 
     u->url = xstrdup(url);
+    u->urltype = urlIsURL(url);
 
     while (1) {
 	/* Point to end of next item */
@@ -419,9 +422,9 @@ int urlSplit(const char * url, urlinfo *uret)
 	serv = /*@-unrecog@*/ getservbyname(u->service, "tcp") /*@=unrecog@*/;
 	if (serv != NULL)
 	    u->port = ntohs(serv->s_port);
-	else if (!strcasecmp(u->service, "ftp"))
+	else if (u->urltype == URL_IS_FTP)
 	    u->port = IPPORT_FTP;
-	else if (!strcasecmp(u->service, "http"))
+	else if (u->urltype == URL_IS_HTTP)
 	    u->port = IPPORT_HTTP;
     }
 

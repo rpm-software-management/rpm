@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <assert.h>
 #include <stdarg.h>
 
@@ -1464,43 +1466,92 @@ rpmExpandNumeric(const char *arg)
 const char *
 rpmGetPath(const char *path, ...)
 {
-    char buf[BUFSIZ], *p, *pe;
+    char buf[BUFSIZ], *t, *te, *se;
     const char *s;
     va_list ap;
 
     if (path == NULL)
 	return xstrdup("");
 
-    p = buf;
-    strcpy(p, path);
-    pe = p + strlen(p);
-    *pe = '\0';
+    t = buf;
+    te = stpcpy(t, path);
+    *te = '\0';
 
     va_start(ap, path);
     while ((s = va_arg(ap, const char *)) != NULL) {
-	/* XXX FIXME: this fixes only some of the "...//..." problems */
-	if (pe > p && pe[-1] == '/')
-	    while(*s && *s == '/')	s++;
-	if (*s != '\0') {
-	    strcpy(pe, s);
-	    pe += strlen(pe);
-	    *pe = '\0';
-	}
+	te = stpcpy(te, s);
+	*te = '\0';
     }
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
 
-    for (s = p = buf; *s; s++, p++) {
-	if (!(s > buf && s[-1] == ':'))
-	    while (s[0] == '/' && s[1] == '/') s++;
-	*p = *s;
+    s = t = te = buf;
+    while (*s) {
+/*fprintf(stderr, "*** got \"%.*s\"\trest \"%s\"\n", (t-buf), buf, s); */
+	switch(*s) {
+	case ':':			/* handle url's */
+	    if (s[1] == '/' && s[2] == '/') {
+		*t++ = *s++;
+		*t++ = *s++;
+	    }
+	    break;
+	case '/':
+	    /* Move parent dir forward */
+	    for (se = te + 1; se < t && *se != '/'; se++)
+		;
+	    if (se < t && *se == '/') {
+		te = se;
+/*fprintf(stderr, "*** next pdir \"%.*s\"\n", (te-buf), buf); */
+	    }
+	    while (s[1] == '/')
+		s++;
+	    while (t > buf && t[-1] == '/')
+		t--;
+	    break;
+	case '.':
+	    /* Leading .. is special */
+	    if (t == buf && s[1] == '.') {
+		*t++ = *s++;
+		break;
+	    }
+	    /* Single . is special */
+	    if (t == buf && s[1] == '\0') {
+		break;
+	    }
+	    /* Trim leading ./ , embedded ./ , trailing /. */
+	    if ((t == buf || t[-1] == '/') && (s[1] == '/' || s[1] == '\0')) {
+/*fprintf(stderr, "*** Trim leading ./ , embedded ./ , trailing /.\n"); */
+		s++;
+		continue;
+	    }
+	    /* Trim embedded /../ and trailing /.. */
+	    if (t > buf && t[-1] == '/' && s[1] == '.' && (s[2] == '/' || s[2] == '\0')) {
+		t = te;
+		/* Move parent dir forward */
+		if (te > buf)
+		    for (--te; te > buf && *te != '/'; te--)
+			;
+/*fprintf(stderr, "*** prev pdir \"%.*s\"\n", (te-buf), buf); */
+		s++;
+		s++;
+		continue;
+	    }
+	    break;
+	default:
+	    break;
+	}
+	*t++ = *s++;
     }
-    *p = '\0';
+    /* Trim trailing / (but leave single / alone) */
+    if (t > &buf[1] && t[-1] == '/')
+	t--;
+    *t = '\0';
 
     return xstrdup(buf);
 }
 
 /* Merge 3 args into path, any or all of which may be a url. */
+
 const char * rpmGenPath(const char * urlroot, const char * urlmdir,
 		const char *urlfile)
 {
@@ -1510,23 +1561,34 @@ const char * rpmGenPath(const char * urlroot, const char * urlmdir,
     const char * result;
     const char * url = NULL;
     int nurl = 0;
+    int ut;
 
-    (void) urlPath(xroot, &root);
-    if (url == NULL && *root != '\0') {
+if (_debug)
+fprintf(stderr, "*** RGP xroot %s xmdir %s xfile %s\n", xroot, xmdir, xfile);
+    ut = urlPath(xroot, &root);
+    if (url == NULL && ut > URL_IS_DASH) {
 	url = xroot;
 	nurl = root - xroot;
+if (_debug)
+fprintf(stderr, "*** RGP ut %d root %s nurl %d\n", ut, root, nurl);
     }
+    if (root == NULL || *root == '\0') root = "/";
 
-    (void) urlPath(xmdir, &mdir);
-    if (url == NULL && *mdir != '\0') {
+    ut = urlPath(xmdir, &mdir);
+    if (url == NULL && ut > URL_IS_DASH) {
 	url = xmdir;
 	nurl = mdir - xmdir;
+if (_debug)
+fprintf(stderr, "*** RGP ut %d mdir %s nurl %d\n", ut, mdir, nurl);
     }
+    if (mdir == NULL || *mdir == '\0') mdir = "/";
 
-    (void) urlPath(xfile, &file);
-    if (url == NULL && *file != '\0') {
+    ut = urlPath(xfile, &file);
+    if (url == NULL && ut > URL_IS_DASH) {
 	url = xfile;
 	nurl = file - xfile;
+if (_debug)
+fprintf(stderr, "*** RGP ut %d file %s nurl %d\n", ut, file, nurl);
     }
 
     if (url && nurl > 0) {
@@ -1536,11 +1598,13 @@ const char * rpmGenPath(const char * urlroot, const char * urlmdir,
     } else
 	url = "";
 
-    result = rpmGetPath(url, root, mdir, file, NULL);
+    result = rpmGetPath(url, root, "/", mdir, "/", file, NULL);
 
     xfree(xroot);
     xfree(xmdir);
     xfree(xfile);
+if (_debug)
+fprintf(stderr, "*** RGP result %s\n", result);
     return result;
 }
 

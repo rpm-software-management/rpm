@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-19 12:50-0500\n"
+"POT-Creation-Date: 1999-11-23 18:43-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,96 +28,96 @@ msgstr ""
 msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
-#: build.c:120 build.c:133
+#: build.c:125 build.c:138
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr ""
 
 #. Give up
-#: build.c:141
+#: build.c:146
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: build.c:169
+#: build.c:174
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr ""
 
-#: build.c:207
+#: build.c:212
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: build.c:213
+#: build.c:219
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:270
+#: build.c:279
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:285
+#: build.c:294
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
 
-#: build.c:335
+#: build.c:344
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:342
+#: build.c:351
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:346
+#: build.c:355
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:367
+#: build.c:376
 msgid "override build architecture"
 msgstr ""
 
-#: build.c:369
+#: build.c:378
 msgid "override build operating system"
 msgstr ""
 
-#: build.c:371
+#: build.c:380
 msgid "override build root"
 msgstr ""
 
-#: build.c:373 rpm.c:490
+#: build.c:382 rpm.c:490
 msgid "remove build tree when done"
 msgstr ""
 
-#: build.c:375
+#: build.c:384
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: build.c:377
+#: build.c:386
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:379
+#: build.c:388
 msgid "remove sources when done"
 msgstr ""
 
-#: build.c:381
+#: build.c:390
 msgid "remove specfile when done"
 msgstr ""
 
-#: build.c:383 rpm.c:488
+#: build.c:392 rpm.c:488
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build.c:385
+#: build.c:394
 msgid "override target platform"
 msgstr ""
 
-#: build.c:387
+#: build.c:396
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -1234,21 +1234,21 @@ msgstr ""
 msgid "cannot re-open payload: %s\n"
 msgstr ""
 
-#: build/build.c:116 build/pack.c:267
+#: build/build.c:105 build/pack.c:267
 msgid "Unable to open temp file"
 msgstr ""
 
-#: build/build.c:198
+#: build/build.c:184
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
-#: build/build.c:229
+#: build/build.c:190
 #, c-format
 msgid "Exec of %s failed (%s): %s"
 msgstr ""
 
-#: build/build.c:237
+#: build/build.c:198
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr ""
@@ -1306,158 +1306,158 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: build/files.c:228
+#: build/files.c:231
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:272 build/files.c:354 build/files.c:517
+#: build/files.c:275 build/files.c:357 build/files.c:520
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr ""
 
-#: build/files.c:283 build/files.c:471 build/files.c:528
+#: build/files.c:286 build/files.c:474 build/files.c:531
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr ""
 
-#: build/files.c:321 build/files.c:496
+#: build/files.c:324 build/files.c:499
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: build/files.c:370
+#: build/files.c:373
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-#: build/files.c:408
+#: build/files.c:411
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr ""
 
-#: build/files.c:418
+#: build/files.c:421
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:430
+#: build/files.c:433
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:554
+#: build/files.c:557
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:564
+#: build/files.c:567
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:659
+#: build/files.c:662
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: build/files.c:665
+#: build/files.c:668
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:690
+#: build/files.c:693
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: build/files.c:703
+#: build/files.c:706
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: build/files.c:715
+#: build/files.c:718
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: build/files.c:801
+#: build/files.c:804
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: build/files.c:959
+#: build/files.c:987
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: build/files.c:969
+#: build/files.c:997
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: build/files.c:1012
+#: build/files.c:1040
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1026
+#: build/files.c:1054
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1096
+#: build/files.c:1133
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1140
+#: build/files.c:1194
 #, c-format
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1184
+#: build/files.c:1273
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1191 build/pack.c:480
+#: build/files.c:1280 build/pack.c:480
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1532 build/parsePrep.c:30
+#: build/files.c:1623 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1587
+#: build/files.c:1678
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1592
+#: build/files.c:1683
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1674
+#: build/files.c:1765
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1678
+#: build/files.c:1769
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1767
+#: build/files.c:1858
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1795 build/files.c:1804
+#: build/files.c:1886 build/files.c:1895
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1910
+#: build/files.c:2001
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1650,113 +1650,113 @@ msgstr ""
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: build/parsePreamble.c:142
+#: build/parsePreamble.c:144
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:147
+#: build/parsePreamble.c:149
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:152
+#: build/parsePreamble.c:154
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:157
+#: build/parsePreamble.c:159
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:171
+#: build/parsePreamble.c:173
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:196
+#: build/parsePreamble.c:198
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:245
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr ""
 
-#: build/parsePreamble.c:261
+#: build/parsePreamble.c:263
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr ""
 
-#: build/parsePreamble.c:274
+#: build/parsePreamble.c:276
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: build/parsePreamble.c:337
+#: build/parsePreamble.c:339
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:345
+#: build/parsePreamble.c:347
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:368 build/parsePreamble.c:375
+#: build/parsePreamble.c:370 build/parsePreamble.c:377
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr ""
 
-#: build/parsePreamble.c:425
+#: build/parsePreamble.c:440 build/parseSpec.c:363
 #, c-format
-msgid "line %d: BuildRoot can not be \"/\": %s"
+msgid "BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:438
+#: build/parsePreamble.c:453
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:450
+#: build/parsePreamble.c:465
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr ""
 
-#: build/parsePreamble.c:462
+#: build/parsePreamble.c:477
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: build/parsePreamble.c:525
+#: build/parsePreamble.c:540
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: build/parsePreamble.c:535
+#: build/parsePreamble.c:550
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:681
+#: build/parsePreamble.c:696
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: build/parsePreamble.c:687
+#: build/parsePreamble.c:702
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:714
+#: build/parsePreamble.c:729
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:739
+#: build/parsePreamble.c:754
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -1866,50 +1866,45 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: build/parseSpec.c:127
+#: build/parseSpec.c:129
 #, c-format
 msgid "line %d: %s"
 msgstr ""
 
 #. XXX Fstrerror
-#: build/parseSpec.c:176
+#: build/parseSpec.c:178
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:188
+#: build/parseSpec.c:190
 msgid "Unclosed %%if"
 msgstr ""
 
-#: build/parseSpec.c:247
+#: build/parseSpec.c:249
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:255
+#: build/parseSpec.c:257
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: build/parseSpec.c:266
+#: build/parseSpec.c:268
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: build/parseSpec.c:280 build/parseSpec.c:289
+#: build/parseSpec.c:282 build/parseSpec.c:291
 msgid "malformed %%include statement"
 msgstr ""
 
-#: build/parseSpec.c:372
-#, c-format
-msgid "Timecheck value must be an integer: %s"
-msgstr ""
-
-#: build/parseSpec.c:455
+#: build/parseSpec.c:458
 msgid "No buildable architectures"
 msgstr ""
 
-#: build/parseSpec.c:502
+#: build/parseSpec.c:505
 msgid "Package has no %%description: %s"
 msgstr ""
 
@@ -2309,84 +2304,84 @@ msgstr ""
 msgid "cannot read header at %d for lookup"
 msgstr ""
 
-#: lib/macro.c:161
+#: lib/macro.c:163
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: lib/macro.c:255
+#: lib/macro.c:257
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: lib/macro.c:290
+#: lib/macro.c:292
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: lib/macro.c:469
+#: lib/macro.c:471
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: lib/macro.c:495
+#: lib/macro.c:497
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: lib/macro.c:501
+#: lib/macro.c:503
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: lib/macro.c:506
+#: lib/macro.c:508
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: lib/macro.c:511
+#: lib/macro.c:513
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: lib/macro.c:536
+#: lib/macro.c:538
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: lib/macro.c:613
+#: lib/macro.c:615
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: lib/macro.c:710
+#: lib/macro.c:712
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: lib/macro.c:890
+#: lib/macro.c:892
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: lib/macro.c:956 lib/macro.c:972
+#: lib/macro.c:958 lib/macro.c:974
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: lib/macro.c:1012
+#: lib/macro.c:1014
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: lib/macro.c:1138
+#: lib/macro.c:1140
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: lib/macro.c:1219
+#: lib/macro.c:1221
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/macro.c:1374 lib/macro.c:1379
+#: lib/macro.c:1376 lib/macro.c:1381
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: lib/macro.c:1382
+#: lib/macro.c:1384
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -2407,7 +2402,7 @@ msgstr ""
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: lib/misc.c:405 lib/misc.c:410 lib/misc.c:416
+#: lib/misc.c:408 lib/misc.c:413 lib/misc.c:419
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
@@ -2838,7 +2833,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:155 lib/url.c:444
+#: lib/rpmdb.c:155 lib/url.c:447
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
@@ -3032,59 +3027,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:675
+#: lib/rpmio.c:686
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:678
+#: lib/rpmio.c:689
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:681
+#: lib/rpmio.c:692
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:684
+#: lib/rpmio.c:695
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:687
+#: lib/rpmio.c:698
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:690
+#: lib/rpmio.c:701
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:693
+#: lib/rpmio.c:704
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:696
+#: lib/rpmio.c:707
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:699
+#: lib/rpmio.c:710
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:702
+#: lib/rpmio.c:713
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:705
+#: lib/rpmio.c:716
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:708
+#: lib/rpmio.c:719
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:712
+#: lib/rpmio.c:723
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1232
+#: lib/rpmio.c:1244
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3383,37 +3378,37 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: lib/url.c:80
+#: lib/url.c:81
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:97
+#: lib/url.c:98
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:125
+#: lib/url.c:126
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:222
+#: lib/url.c:223
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:247 lib/url.c:273
+#: lib/url.c:248 lib/url.c:274
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:408
+#: lib/url.c:411
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:467
+#: lib/url.c:470
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""

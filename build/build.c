@@ -3,6 +3,8 @@
 #include <rpmbuild.h>
 #include <rpmurl.h>
 
+static int _build_debug = 0;
+
 static void doRmSource(Spec spec)
 {
     struct Source *p;
@@ -34,23 +36,12 @@ static void doRmSource(Spec spec)
 /*
  * The _preScript string is expanded to export values to a script environment.
  */
-
 int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 {
     const char * rootURL = spec->rootURL;
     const char * rootDir;
     const char *scriptName = NULL;
-    const char * buildURL = rpmGenPath(rootURL, "%{_builddir}", "");
-#ifdef	DYING
-    const char * buildDir;
-    const char * buildSubdir;
-    const char * buildScript;
-    const char * remsh = rpmGetPath("%{?_remsh:%{_remsh}}", NULL);
-    const char * remchroot = rpmGetPath("%{?_remchroot:%{_remchroot}}", NULL);
-    const char * buildShell =
-	   rpmGetPath("%{?_buildshell:%{_buildshell}}%{!?_buildshell:/bin/sh}", NULL);
-    const char * buildEnv = rpmExpand("%{_preScriptEnvironment}", NULL);
-#else
+    const char * buildDirURL = rpmGenPath(rootURL, "%{_builddir}", "");
     const char * buildScript;
     const char * buildCmd = NULL;
     const char * buildTemplate = NULL;
@@ -59,7 +50,6 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     const char * mPost = NULL;
     int argc = 0;
     const char **argv = NULL;
-#endif
     FILE * fp = NULL;
     urlinfo u = NULL;
 
@@ -111,8 +101,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	goto exit;
     }
     
-    if (makeTempFile(rootURL, &scriptName, &fd)) {
-	Fclose(fd);
+    if (makeTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
 	rc = RPMERR_SCRIPT;
 	goto exit;
@@ -122,7 +111,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     switch (rootut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-	(void)fchmod(Fileno(fd), 0600);	/* XXX fubar on ufdio */
+	(void)fchmod(Fileno(fd), 0600);
 	break;
     default:
 	break;
@@ -140,28 +129,13 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     
     (void) urlPath(rootURL, &rootDir);
     if (*rootDir == '\0') rootDir = "/";
-#ifdef	DYING
-    (void) urlPath(buildURL, &buildDir);
-    (void) urlPath(spec->buildSubdir, &buildSubdir);
-#endif
 
     (void) urlPath(scriptName, &buildScript);
 
     buildTemplate = rpmExpand(mTemplate, NULL);
     buildPost = rpmExpand(mPost, NULL);
-#ifdef	DYING
-    fprintf(fp, "#!%s\n", buildShell);
-    fputs(buildEnv, fp);
-    fputs("\n", fp);
 
-    fprintf(fp, rpmIsVerbose()
-		? "set -x\n\n"
-		: "exec > /dev/null\n\n");
-
-    fprintf(fp, "umask 022\ncd %s\n", buildDir);
-#else
     fputs(buildTemplate, fp);
-#endif
 
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
 	fprintf(fp, "cd %s\n", spec->buildSubdir);
@@ -172,11 +146,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     } else
 	fprintf(fp, "%s", getStringBuf(sb));
 
-#ifdef	DYING
-    fprintf(fp, "\nexit 0\n");
-#else
     fputs(buildPost, fp);
-#endif
     
     Fclose(xfd);
 
@@ -185,12 +155,28 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	goto exit;
     }
     
-    if (buildURL && buildURL[0] != '/' && (urlSplit(buildURL, &u) != 0)) {
+if (_build_debug)
+fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
+    if (buildDirURL && buildDirURL[0] != '/' &&
+	(urlSplit(buildDirURL, &u) != 0)) {
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
-    if (u)
-	addMacro(spec->macros, "_build_hostname", NULL, u->path, RMIL_SPEC);
+    if (u) {
+	switch (u->urltype) {
+	case URL_IS_FTP:
+if (_build_debug)
+fprintf(stderr, "*** addMacros\n");
+	    addMacro(spec->macros, "_remsh", NULL, "%{__remsh}", RMIL_SPEC);
+	    addMacro(spec->macros, "_remhost", NULL, u->host, RMIL_SPEC);
+	    if (strcmp(rootDir, "/"))
+		addMacro(spec->macros, "_remroot", NULL, rootDir, RMIL_SPEC);
+	    break;
+	case URL_IS_HTTP:
+	default:
+	    break;
+	}
+    }
 
     buildCmd = rpmExpand("%{___build_cmd}", " ", buildScript, NULL);
     poptParseArgvString(buildCmd, &argc, &argv);
@@ -198,33 +184,8 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     rpmMessage(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
-#ifdef	DYING
-fprintf(stderr, "*** root %s buildDir %s script %s remsh %s \n", rootDir, buildDir, scriptName, remsh);
-
-	if (u == NULL || *remsh == '\0') {
-fprintf(stderr, "*** LOCAL %s %s -e %s %s\n", buildShell, buildShell, buildScript, buildScript);
-	    if (rootURL) {
-		if (!(rootDir[0] == '/' && rootDir[1] == '\0')) {
-		    chroot(rootDir);
-		    chdir("/");
-		}
-	    }
-	    errno = 0;
-	    execl(buildShell, buildShell, "-e", buildScript, buildScript, NULL);
-	} else {
-	    if (*remchroot == '\0') {
-fprintf(stderr, "*** REMSH %s %s %s -e %s %s\n", remsh, u->host, buildShell, buildScript, buildScript);
-		errno = 0;
-		execl(remsh, remsh, u->host, buildShell, "-e", buildScript, buildScript, NULL);
-	    } else {
-fprintf(stderr, "*** REMCHROOT %s %s %s %s -e %s %s\n", remsh, u->host, remchroot, buildShell, buildScript, buildScript);
-		errno = 0;
-		execl(remsh, remsh, u->host, remchroot, buildShell, "-e", buildScript, buildScript, NULL);
-	    }
-	}
-#else
+	errno = 0;
 	execvp(argv[0], (char *const *)argv);
-#endif
 
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s"), scriptName, name, strerror(errno));
 
@@ -246,19 +207,25 @@ exit:
 	    Unlink(scriptName);
 	xfree(scriptName);
     }
-#ifdef	DYING
-    FREE(buildShell);
-    FREE(buildEnv);
-    FREE(remsh);
-    FREE(remchroot);
-#else
-    if (u)
-	delMacro(spec->macros, "_build_hostname");
+    if (u) {
+	switch (u->urltype) {
+	case URL_IS_FTP:
+	case URL_IS_HTTP:
+if (_build_debug)
+fprintf(stderr, "*** delMacros\n");
+	    delMacro(spec->macros, "_remsh");
+	    delMacro(spec->macros, "_remhost");
+	    if (strcmp(rootDir, "/"))
+		delMacro(spec->macros, "_remroot");
+	    break;
+	default:
+	    break;
+	}
+    }
     FREE(argv);
     FREE(buildCmd);
     FREE(buildTemplate);
-#endif
-    FREE(buildURL);
+    FREE(buildDirURL);
 
     return rc;
 }

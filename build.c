@@ -90,17 +90,22 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	int force, int nodeps)
 {
     int buildAmount = ba->buildAmount;
-    const char *buildRoot = ba->buildRootOverride;
+    const char *buildRootURL = NULL;
     int test = ba->noBuild;
-    FILE *f;
-    const char * specfile;
-    struct stat statbuf;
+    const char * specFile;
+    const char * specURL;
+    int specut;
     char buf[BUFSIZ];
     Spec spec = NULL;
+    int rc;
 
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
+    if (ba->buildRootOverride)
+	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
+
     if (fromTarball) {
+	FILE *fp;
 	const char *specDir;
 	const char * tmpSpecFile;
 	char * cmd, *s;
@@ -116,27 +121,27 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
 	sprintf(cmd, "gunzip < %s | tar xOvf - Specfile 2>&1 > %s",
 			arg, tmpSpecFile);
-	if (!(f = popen(cmd, "r"))) {
+	if (!(fp = popen(cmd, "r"))) {
 	    fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
 	    xfree(specDir);
 	    xfree(tmpSpecFile);
 	    return 1;
 	}
-	if ((!fgets(buf, sizeof(buf) - 1, f)) || !strchr(buf, '/')) {
+	if ((!fgets(buf, sizeof(buf) - 1, fp)) || !strchr(buf, '/')) {
 	    /* Try again */
-	    pclose(f);
+	    pclose(fp);
 
 	    sprintf(cmd, "gunzip < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
 		    tmpSpecFile);
-	    if (!(f = popen(cmd, "r"))) {
+	    if (!(fp = popen(cmd, "r"))) {
 		fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
 		xfree(specDir);
 		xfree(tmpSpecFile);
 		return 1;
 	    }
-	    if (!fgets(buf, sizeof(buf) - 1, f)) {
+	    if (!fgets(buf, sizeof(buf) - 1, fp)) {
 		/* Give up */
 		fprintf(stderr, _("Failed to read spec file from %s\n"), arg);
 		unlink(tmpSpecFile);
@@ -145,7 +150,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	    	return 1;
 	    }
 	}
-	pclose(f);
+	pclose(fp);
 
 	cmd = s = buf;
 	while (*cmd) {
@@ -159,7 +164,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	s = cmd + strlen(cmd) - 1;
 	*s = '\0';
 
-	specfile = s = alloca(strlen(specDir) + strlen(cmd) + 5);
+	specURL = s = alloca(strlen(specDir) + strlen(cmd) + 5);
 	sprintf(s, "%s/%s", specDir, cmd);
 	res = rename(tmpSpecFile, s);
 	xfree(specDir);
@@ -188,43 +193,43 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
 	addMacro(NULL, "_sourcedir", NULL, buf, RMIL_TARBALL);
     } else {
-	specfile = arg;
+	specURL = arg;
     }
 
-    switch (urlIsURL(specfile)) {
-    case URL_IS_UNKNOWN:
-	if (arg[0] == '/') {
-	    specfile = arg;
-	} else {
-	    char *s = alloca(BUFSIZ);
-	    (void)getcwd(s, BUFSIZ);
-	    strcat(s, "/");
-	    strcat(s, arg);
-	    specfile = s;
-	}
-	stat(specfile, &statbuf);
-	if (! S_ISREG(statbuf.st_mode)) {
-	    fprintf(stderr, _("File is not a regular file: %s\n"), specfile);
-	    return 1;
+    specut = urlPath(specURL, &specFile);
+    if (*specFile != '/') {
+	char *s = alloca(BUFSIZ);
+	(void)getcwd(s, BUFSIZ);
+	strcat(s, "/");
+	strcat(s, arg);
+	specURL = s;
+    }
+
+    if (specut != URL_IS_DASH) {
+	struct stat st;
+	Stat(specURL, &st);
+	if (! S_ISREG(st.st_mode)) {
+	    fprintf(stderr, _("File is not a regular file: %s\n"), specURL);
+	    rc = 1;
+	    goto exit;
 	}
 
 	/* Try to verify that the file is actually a specfile */
-	if (!isSpecFile(specfile)) {
+	if (!isSpecFile(specURL)) {
 	    fprintf(stderr, _("File %s does not appear to be a specfile.\n"),
-		specfile);
-	    return 1;
+		specURL);
+	    rc = 1;
+	    goto exit;
 	}
-	break;
-    default:
-	break;
     }
     
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(&spec, specfile, ba->rootdir, buildRoot, 0, passPhrase,
-	cookie, _anyarch(buildAmount), force)) {
-	    return 1;
+    if (parseSpec(&spec, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
+		cookie, _anyarch(buildAmount), force)) {
+	rc = 1;
+	goto exit;
     }
 #undef	_anyarch
 
@@ -233,20 +238,24 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
     /* Check build prerequisites */
     if (!nodeps && checkSpec(spec->sourceHeader)) {
-	freeSpec(spec);
-	return 1;
+	rc = 1;
+	goto exit;
     }
 
     if (buildSpec(spec, buildAmount, test)) {
-	freeSpec(spec);
-	return 1;
+	rc = 1;
+	goto exit;
     }
     
-    if (fromTarball) unlink(specfile);
+    if (fromTarball) Unlink(specURL);
+    rc = 0;
 
-    freeSpec(spec);
-    
-    return 0;
+exit:
+    if (spec)
+	freeSpec(spec);
+    if (buildRootURL)
+	xfree(buildRootURL);
+    return rc;
 }
 
 int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,

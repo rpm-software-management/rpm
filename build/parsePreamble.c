@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <rpmbuild.h>
 #include <rpmurl.h>
 
@@ -397,36 +399,49 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
       {	const char * buildRoot = NULL;
-	const char * buildURL = spec->buildURL;
+	const char * buildRootURL = spec->buildRootURL;
 
-	if (buildURL == NULL) {
-
-	    buildURL = rpmGenPath(spec->rootURL, "%{?buildroot:%{buildroot}}", NULL);
-
-	    if (strcmp(spec->rootURL, buildURL)) {
-		spec->buildURL = buildURL;
+	/*
+	 * Note: rpmGenPath should guarantee a "canonical" path. That means
+	 * that the following pathologies should be weeded out:
+	 *          //bin//sh
+	 *          //usr//bin/
+	 *          /.././../usr/../bin//./sh
+	 */
+	if (buildRootURL == NULL) {
+	    buildRootURL = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
+	    if (strcmp(buildRootURL, "/")) {
+		spec->buildRootURL = buildRootURL;
+if (_debug)
+fprintf(stderr, "*** PPA BuildRoot %s set from macro\n", buildRootURL);
 		macro = NULL;
 	    } else {
 		const char * specURL = field;
 
+		xfree(buildRootURL);
 		(void) urlPath(specURL, (const char **)&field);
-
-		xfree(buildURL);
-		buildURL = rpmGenPath(NULL, specURL, NULL);
-		spec->buildURL = buildURL;
+		if (*field == '\0') field = "/";
+		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
+		field = spec->buildRootURL = buildRootURL;
+if (_debug)
+fprintf(stderr, "*** PPA BuildRoot %s set from field\n", buildRootURL);
 	    }
+	    spec->gotBuildRootURL = 1;
 	} else {
+if (_debug)
+fprintf(stderr, "*** PPA BuildRoot %s already set, skipping field %s\n", buildRootURL, field);
 	    macro = NULL;
 	}
-	(void) urlPath(buildURL, &buildRoot);
+	buildRootURL = rpmGenPath(NULL, spec->buildRootURL, NULL);
+	(void) urlPath(buildRootURL, &buildRoot);
 	if (*buildRoot == '\0') buildRoot = "/";
 	if (!strcmp(buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: BuildRoot can not be \"/\": %s"),
-		     spec->lineNum, spec->line);
+		     _("BuildRoot can not be \"/\": %s"), spec->buildRootURL);
+	    xfree(buildRootURL);
 	    return RPMERR_BADSPEC;
 	}
-	spec->gotBuildURL = 1;
+	xfree(buildRootURL);
       }	break;
       case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
@@ -735,7 +750,7 @@ int parsePreamble(Spec spec, int initialPackage)
 
     /* Do some final processing on the header */
     
-    if (!spec->gotBuildURL && spec->buildURL) {
+    if (!spec->gotBuildRootURL && spec->buildRootURL) {
 	rpmError(RPMERR_BADSPEC, _("Spec file can't use BuildRoot"));
 	return RPMERR_BADSPEC;
     }

@@ -27,6 +27,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
     const char * proxyh;	/* FTP/HTTP: proxy host */
     int proxyp;			/* FTP/HTTP: proxy port */
     int	port;
+    int urltype;
     FD_t ctrl;			/* control channel */
     FD_t data;			/* per-xfer data channel */
     int bufAlloced;		/* sizeof I/O buffer */

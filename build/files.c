@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #define	MYALLPERMS	07777
 
 #include <regex.h>
@@ -31,8 +33,8 @@ typedef struct {
 #define	fl_size	fl_st.st_size
 #define	fl_mtime fl_st.st_mtime
 
-    const char *diskName; /* get file from here       */
-    const char *fileName; /* filename in cpio archive */
+    const char *diskURL;	/* get file from here       */
+    const char *fileURL;	/* filename in cpio archive */
     /*@observer@*/ const char *uname;
     /*@observer@*/ const char *gname;
     int		flags;
@@ -50,7 +52,7 @@ typedef struct {
 } AttrRec;
 
 struct FileList {
-    const char *buildURL;
+    const char *buildRootURL;
     const char *prefix;
 
     int fileCount;
@@ -129,12 +131,13 @@ static void dumpAttrRec(const char *msg, AttrRec *ar) {
  *
  * Return nonzero if PATTERN has any special globbing chars in it.
  */
-static int myGlobPatternP (const char *pattern)
+static int myGlobPatternP (const char *patternURL)
 {
-    register const char *p = pattern;
-    register char c;
+    const char *p;
+    char c;
     int open = 0;
   
+    (void) urlPath(patternURL, &p);
     while ((c = *p++) != '\0')
 	switch (c) {
 	case '?':
@@ -753,8 +756,8 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 
 static int compareFileListRecs(const void *ap, const void *bp)
 {
-    const char *a = ((FileListRec *)ap)->fileName;
-    const char *b = ((FileListRec *)bp)->fileName;
+    const char *a = ((FileListRec *)ap)->fileURL;
+    const char *b = ((FileListRec *)bp)->fileURL;
     return strcmp(a, b);
 }
 
@@ -797,15 +800,15 @@ static void genCpioListAndHeader(struct FileList *fl,
     clp = *cpioList = xmalloc(sizeof(**cpioList) * fl->fileListRecsUsed);
 
     for (flp = fl->fileList, count = fl->fileListRecsUsed; count > 0; flp++, count--) {
-	if ((count > 1) && !strcmp(flp->fileName, flp[1].fileName)) {
-	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s"), flp->fileName);
+	if ((count > 1) && !strcmp(flp->fileURL, flp[1].fileURL)) {
+	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s"), flp->fileURL);
 	    fl->processingFailed = 1;
 	}
 	
 	/* Make the cpio list */
 	if (! (flp->flags & RPMFILE_GHOST)) {
-	    clp->fsPath = xstrdup(flp->diskName);
-	    clp->archivePath = xstrdup(flp->fileName + skipLen);
+	    clp->fsPath = xstrdup(flp->diskURL);
+	    clp->archivePath = xstrdup(flp->fileURL + skipLen);
 	    clp->finalMode = flp->fl_mode;
 	    clp->finalUid = flp->fl_uid;
 	    clp->finalGid = flp->fl_gid;
@@ -822,7 +825,7 @@ static void genCpioListAndHeader(struct FileList *fl,
 	   compressed file list write before we write the actual package to
 	   disk. */
 	headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			       &(flp->fileName), 1);
+			       &(flp->fileURL), 1);
 
       if (sizeof(flp->fl_size) != sizeof(uint_32)) {
 	uint_32 psize = (uint_32)flp->fl_size;
@@ -877,14 +880,14 @@ static void genCpioListAndHeader(struct FileList *fl,
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    mdfile(flp->diskName, buf);
+	    mdfile(flp->diskURL, buf);
 	s = buf;
 	headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode))
-	    buf[readlink(flp->diskName, buf, BUFSIZ)] = '\0';
+	    buf[readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
 	s = buf;
 	headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
@@ -896,7 +899,7 @@ static void genCpioListAndHeader(struct FileList *fl,
 	headerAddOrAppendEntry(h, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
 			       &(flp->verifyFlags), 1);
 	
-	if (!isSrc && isDoc(fl, flp->fileName))
+	if (!isSrc && isDoc(fl, flp->fileURL))
 	    flp->flags |= RPMFILE_DOC;
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
@@ -911,16 +914,16 @@ static void genCpioListAndHeader(struct FileList *fl,
 static void freeFileList(FileListRec *fileList, int count)
 {
     while (count--) {
-	FREE(fileList[count].diskName);
-	FREE(fileList[count].fileName);
+	FREE(fileList[count].diskURL);
+	FREE(fileList[count].fileURL);
 	FREE(fileList[count].langs);
     }
     FREE(fileList);
 }
 
-static int addFile(struct FileList *fl, const char *diskName, struct stat *statp)
+static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp)
 {
-    const char *fileName = diskName;
+    const char *fileURL = diskURL;
     struct stat statbuf;
     mode_t fileMode;
     uid_t fileUid;
@@ -929,35 +932,60 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
     const char *fileGname;
     char *lang;
     
-    /* Path may have prepended buildURL, so locate the original filename. */
+if (_debug)
+fprintf(stderr, "*** AF ENTRY buildRootURL %s fileURL %s diskURL %s\n", fl->buildRootURL, fileURL, diskURL);
+    /* Path may have prepended buildRootURL, so locate the original filename. */
+#ifdef DYING
     {	const char *s;
 	char c;
 
-	if ((s = fl->buildURL) != NULL) {
+	if ((s = fl->buildRootURL) != NULL) {
 	    c = '\0';
 	    while (*s) {
 		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
 		    while(*s && *s == '/') s++;
 		if (*s) {
-		    fileName++;
+		    fileURL++;
 		    c = *s++;
 		}
 	    }
 	}
     }
+#else
+    /*
+     * XXX There are 3 types of entry into addFile:
+     *
+     *	From			diskUrl			statp
+     *	=====================================================
+     *  processBinaryFile	path			NULL
+     *  processBinaryFile	glob result path	NULL
+     *  myftw			path			stat
+     *
+     */
+    {	const char *fileName;
+	int ut = urlPath(fileURL, &fileName);
+	if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
+	    fileURL += strlen(fl->buildRootURL);
+    }
+#endif
+if (_debug)
+fprintf(stderr, "*** AF STRIP buildRootURL %s fileURL %s diskURL %s\n", fl->buildRootURL, fileURL, diskURL);
 
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
-	const char *prefixTest = fileName;
+	const char *prefixTest;
 	const char *prefixPtr = fl->prefix;
 
+	(void) urlPath(fileURL, &prefixTest);
+if (_debug)
+fprintf(stderr, "*** AF prefixTest %s prefixPtr %s\n", prefixTest, prefixPtr);
 	while (*prefixPtr && *prefixTest && (*prefixTest == *prefixPtr)) {
 	    prefixPtr++;
 	    prefixTest++;
 	}
 	if (*prefixPtr || (*prefixTest && *prefixTest != '/')) {
 	    rpmError(RPMERR_BADSPEC, _("File doesn't match prefix (%s): %s"),
-		     fl->prefix, fileName);
+		     fl->prefix, fileURL);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -965,8 +993,8 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
 
     if (statp == NULL) {
 	statp = &statbuf;
-	if (lstat(diskName, statp)) {
-	    rpmError(RPMERR_BADSPEC, _("File not found: %s"), diskName);
+	if (Lstat(diskURL, statp)) {
+	    rpmError(RPMERR_BADSPEC, _("File not found: %s"), diskURL);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -977,9 +1005,9 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
 	/* instead of lstat(), which causes it to follow symlinks! */
 	/* It also has better callback support.                    */
 	
-	fl->inFtw = 1;  /* Flag to indicate file has buildURL prefixed */
+	fl->inFtw = 1;  /* Flag to indicate file has buildRootURL prefixed */
 	fl->isDir = 1;  /* Keep it from following myftw() again         */
-	myftw(diskName, 16, (myftwFunc) addFile, fl);
+	myftw(diskURL, 16, (myftwFunc) addFile, fl);
 	fl->isDir = 0;
 	fl->inFtw = 0;
 	return 0;
@@ -1024,7 +1052,7 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
 #endif
     
     rpmMessage(RPMMESS_DEBUG, _("File %4d: %07o %s.%s\t %s\n"), fl->fileCount,
-	fileMode, fileUname, fileGname, fileName);
+	fileMode, fileUname, fileGname, fileURL);
 
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
@@ -1040,8 +1068,10 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
 	flp->fl_uid = fileUid;
 	flp->fl_gid = fileGid;
 
-	flp->fileName = xstrdup(fileName);
-	flp->diskName = xstrdup(diskName);
+	flp->fileURL = xstrdup(fileURL);
+	flp->diskURL = xstrdup(diskURL);
+if (_debug)
+fprintf(stderr, "*** AF SAVE buildRootURL %s fileURL %s diskURL %s\n", fl->buildRootURL, fileURL, diskURL);
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
@@ -1061,7 +1091,7 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
 			*ncl++ = *ocl;
 		*ncl = '\0';
 	    }
-	} else if (! parseForRegexLang(fileName, &lang)) {
+	} else if (! parseForRegexLang(fileURL, &lang)) {
 	    flp->langs = xstrdup(lang);
 	} else {
 	    flp->langs = xstrdup("");
@@ -1085,29 +1115,38 @@ static int glob_error(/*@unused@*/const char *foo, /*@unused@*/int bar)
 }
 
 static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
-	const char *fileName)
+	const char *fileURL)
 {
-    int doGlob = myGlobPatternP(fileName);
-    const char *fn;
+    int doGlob;
+    const char *diskURL = NULL;
     int rc = 0;
     
+if (_debug)
+fprintf(stderr, "*** PBF fileURL %s\n", fileURL);
+
+    doGlob = myGlobPatternP(fileURL);
+
     /* Check that file starts with leading "/" */
-    if (*fileName != '/') {
-	rpmError(RPMERR_BADSPEC, _("File needs leading \"/\": %s"), fileName);
-	rc = 1;
-	goto exit;
+    {	const char * fileName;
+	(void) urlPath(fileURL, &fileName);
+	if (*fileName != '/') {
+	    rpmError(RPMERR_BADSPEC, _("File needs leading \"/\": %s"), fileName);
+	    rc = 1;
+	    goto exit;
+	}
     }
     
     /* Copy file name or glob pattern removing multiple "/" chars. */
+#ifdef	DYING
     {	const char *s;
-	char c, *t = alloca((fl->buildURL ? strlen(fl->buildURL) : 0) +
-			strlen(fileName) + 1);
+	char c, *t = alloca((fl->buildRootURL ? strlen(fl->buildRootURL) : 0) +
+			strlen(fileURL) + 1);
 
 	fn = t;
 	*t = c = '\0';
 
-	/* With a buildroot, prepend the buildURL now. */
-	if ((s = fl->buildURL) != NULL) {
+	/* With a buildroot, prepend the buildRootURL now. */
+	if ((s = fl->buildRootURL) != NULL) {
 	    while (*s) {
 		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
 		    while(*s && *s == '/') s++;
@@ -1128,27 +1167,77 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 	    *t = '\0';
 	}
     }
+#else
+    /*
+     * Note: rpmGetPath should guarantee a "canonical" path. That means
+     * that the following pathologies should be weeded out:
+     *		//bin//sh
+     *		//usr//bin/
+     *		/.././../usr/../bin//./sh (XXX FIXME: dots not handled yet)
+     */
+    diskURL = rpmGenPath(fl->buildRootURL, NULL, fileURL);
+#endif
 
     if (doGlob) {
+	const char * diskRoot;
+	const char * globURL;
+	char * globRoot = NULL;
 	glob_t glob_result;
+	size_t maxb, nb;
+	int ut;
 	int i;
 	
 	glob_result.gl_pathc = 0;
 	glob_result.gl_pathv = NULL;
-	if (glob(fn, 0, glob_error, &glob_result) ||
+	if (Glob(diskURL, 0, glob_error, &glob_result) ||
 	    (glob_result.gl_pathc < 1)) {
-	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s"), fn);
+	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s"), diskURL);
 	    rc = 1;
 	}
+
+	/* XXX Prepend the diskURL leader for globs that have stripped it off */
+	maxb = 0;
+	for (i = 0; i < glob_result.gl_pathc; i++) {
+	    if ((nb = strlen(&(glob_result.gl_pathv[i][0]))) > maxb)
+		maxb = nb;
+	}
 	
-	for (i = 0; rc == 0 && i < glob_result.gl_pathc; i++)
-	    rc = addFile(fl, &(glob_result.gl_pathv[i][0]), NULL);
-	globfree(&glob_result);
+	ut = urlPath(diskURL, &diskRoot);
+	nb = ((ut > URL_IS_DASH) ? (diskRoot - diskURL) : 0);
+	maxb += nb;
+	maxb += 1;
+	globURL = globRoot = alloca(maxb);
+
+	switch (ut) {
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
+	case URL_IS_PATH:
+	case URL_IS_DASH:
+	    strncpy(globRoot, diskURL, nb);
+	    break;
+	case URL_IS_UNKNOWN:
+	    break;
+	}
+	globRoot += nb;
+	*globRoot = '\0';
+if (_debug)
+fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb, diskURL, globURL, globURL);
+	
+	for (i = 0; rc == 0 && i < glob_result.gl_pathc; i++) {
+	    const char * globFile = &(glob_result.gl_pathv[i][0]);
+	    if (globRoot > globURL && globRoot[-1] == '/')
+		while (*globFile == '/') globFile++;
+	    strcpy(globRoot, globFile);
+	    rc = addFile(fl, globURL, NULL);
+	}
+	Globfree(&glob_result);
     } else {
-	rc = addFile(fl, fn, NULL);
+	rc = addFile(fl, diskURL, NULL);
     }
 
 exit:
+    if (diskURL)
+	xfree(diskURL);
     if (rc)
 	fl->processingFailed = 1;
     return rc;
@@ -1198,8 +1287,8 @@ static int processPackageFiles(Spec spec, Package pkg,
     
     /* Init the file list structure */
     
-    /* XXX spec->buildURL == NULL, then xstrdup("") is returned */
-    fl.buildURL = rpmGenPath(spec->rootURL, spec->buildURL, NULL);
+    /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
+    fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
 
     if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
 		       NULL, (void **)&fl.prefix, NULL)) {
@@ -1333,7 +1422,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     }
     
     /* Clean up */
-    FREE(fl.buildURL);
+    FREE(fl.buildRootURL);
     FREE(fl.prefix);
 
     freeAttrRec(&fl.cur_ar);
@@ -1510,14 +1599,16 @@ int processSourceFiles(Spec spec)
 	    continue;		/* XXX WRONG WRONG WRONG */
 	}
 
-	flp->diskName = xstrdup(s);
+	flp->diskURL = xstrdup(s);
 	fn = strrchr(s, '/');
 	if (fn)
 	    fn++;
 	else
 	    fn = s;
 
-	flp->fileName = xstrdup(fn);
+	flp->fileURL = xstrdup(fn);
+if (_debug)
+fprintf(stderr, "*** PSF fileName %s diskName %s\n", flp->fileURL, flp->diskURL);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
 	stat(s, &flp->fl_st);

@@ -429,8 +429,8 @@ Spec newSpec(void)
     spec->sourceCpioCount = 0;
     spec->sourceCpioList = NULL;
     
-    spec->gotBuildURL = 0;
-    spec->buildURL = NULL;
+    spec->gotBuildRootURL = 0;
+    spec->buildRootURL = NULL;
     spec->buildSubdir = NULL;
 
     spec->passPhrase = NULL;
@@ -464,7 +464,7 @@ void freeSpec(/*@only@*/ Spec spec)
     freeStringBuf(spec->install); spec->install = NULL;
     freeStringBuf(spec->clean);	spec->clean = NULL;
 
-    FREE(spec->buildURL);
+    FREE(spec->buildRootURL);
     FREE(spec->buildSubdir);
     FREE(spec->specFile);
     FREE(spec->sourceRpmName);

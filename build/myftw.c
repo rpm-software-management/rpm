@@ -57,7 +57,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 
   errno = 0;
 
-  while ((entry = readdir (dirs[level])) != NULL)
+  while ((entry = Readdir (dirs[level])) != NULL)
     {
       struct stat s;
       int flag, retval, newlev = 0;
@@ -89,7 +89,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
       if (Lstat (dir, &s) < 0)
 	{
 	  /* Following POSIX.1 2.4 ENOENT is returned if the file cannot
-	   * be stat'ed.  This can happen for a file returned by readdir
+	   * be stat'ed.  This can happen for a file returned by Readdir
 	   * if it's an unresolved symbolic link.  This should be regarded
 	   * as an forgivable error.  -- Uli.  */
 	  if (errno != EACCES && errno != ENOENT)
@@ -101,9 +101,9 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	  newlev = (level + 1) % descriptors;
 
 	  if (dirs[newlev] != NULL)
-	    closedir (dirs[newlev]);
+	    Closedir (dirs[newlev]);
 
-	  dirs[newlev] = opendir (dir);
+	  dirs[newlev] = Opendir (dir);
 	  if (dirs[newlev] != NULL)
 	    flag = MYFTW_D;
 	  else
@@ -128,7 +128,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	      int save;
 
 	      save = errno;
-	      closedir (dirs[newlev]);
+	      Closedir (dirs[newlev]);
 	      errno = save;
 	      dirs[newlev] = NULL;
 	    }
@@ -142,14 +142,14 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	  int skip;
 
 	  dir[len] = '\0';
-	  dirs[level] = opendir (dir);
+	  dirs[level] = Opendir (dir);
 	  if (dirs[level] == NULL)
 	    return -1;
 	  skip = got;
 	  while (skip-- != 0)
 	    {
 	      errno = 0;
-	      if (readdir (dirs[level]) == NULL)
+	      if (Readdir (dirs[level]) == NULL)
 		return errno == 0 ? 0 : -1;
 	    }
 	}
@@ -187,7 +187,7 @@ int myftw (const char *dir,
   if (Lstat (dir, &s) < 0)
     {
       /* Following POSIX.1 2.4 ENOENT is returned if the file cannot
-       * be stat'ed.  This can happen for a file returned by readdir
+       * be stat'ed.  This can happen for a file returned by Readdir
        * if it's an unresolved symbolic link.  This should be regarded
        * as an forgivable error.  -- Uli.  */
       if (errno != EACCES && errno != ENOENT)
@@ -196,7 +196,7 @@ int myftw (const char *dir,
     }
   else if (S_ISDIR (s.st_mode))
     {
-      dirs[0] = opendir (dir);
+      dirs[0] = Opendir (dir);
       if (dirs[0] != NULL)
 	flag = MYFTW_D;
       else
@@ -223,7 +223,7 @@ int myftw (const char *dir,
 	  int save;
 
 	  save = errno;
-	  closedir (dirs[0]);
+	  Closedir (dirs[0]);
 	  errno = save;
 	}
     }
