@@ -5,7 +5,7 @@ use RPM::Database;
 $SIG{__WARN__} = sub { $@ = shift; };
 $SIG{__DIE__} = sub { $@ = shift; };
 
-print "1..13\n";
+print "1..16\n";
 $count = 1;
 
 #
@@ -37,6 +37,16 @@ unless (tied %DB)
 # Start with the test package
 $rpm = $DB{$test_pack};
 print "not " unless (defined $rpm and ref $rpm);
+print "ok $count\n"; $count++;
+
+# Obviously, EXISTS should clear just fine
+print "not " unless (exists $DB{$test_pack});
+print "ok $count\n"; $count++;
+
+# Run over FIRSTKEY and NEXTKEY by iterating against a copy of %all_packs
+%tmp_packs = %all_packs;
+for (keys %DB) { delete $tmp_packs{$_} }
+print "not " if (keys %tmp_packs);
 print "ok $count\n"; $count++;
 
 # Verify that STORE, DELETE and CLEAR operations are blocked
@@ -74,6 +84,12 @@ print "ok $count\n"; $count++;
 
 # Ensure that the same test package is visible
 print "not " unless (exists $rpm->{$test_pack} and ref($rpm->{$test_pack}));
+print "ok $count\n"; $count++;
+
+# Run over FIRSTKEY and NEXTKEY for the direct ref interface
+%tmp_packs = %all_packs;
+for (keys %$rpm) { delete $tmp_packs{$_} }
+print "not " if (keys %tmp_packs);
 print "ok $count\n"; $count++;
 
 @matches = $rpm->find_by_file('/bin/rpm');
