@@ -21,7 +21,7 @@
 #include "rpmlead.h"
 #include "signature.h"
 
-typedef int (*md5func)(const char * fn, unsigned char * digest);
+typedef int (*md5func)(const char * fn, /*@out@*/unsigned char * digest);
 
 int rpmLookupSignatureType(int action)
 {
@@ -35,6 +35,7 @@ int rpmLookupSignatureType(int action)
     case RPMLOOKUPSIG_ENABLE:
 	disabled = 0;
 	/* fall through */
+	/*@fallthrough@*/
     case RPMLOOKUPSIG_QUERY:
 	if (disabled)
 	    break;	/* Disabled */
@@ -147,7 +148,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 	rpmError(RPMERR_BADSIGTYPE,
 	      _("Old (internal-only) signature!  How did you get that!?"));
 	return 1;
-	break;
+	/*@notreached@*/ break;
       case RPMSIG_HEADERSIG:
 	rpmMessage(RPMMESS_DEBUG, _("New Header signature\n"));
 	/* This is a new style signature */
@@ -217,7 +218,7 @@ void rpmFreeSignature(Header h)
     headerFree(h);
 }
 
-static int makePGPSignature(const char *file, void **sig, int_32 *size,
+static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_32 *size,
 			    const char *passPhrase)
 {
     char sigfile[1024];
@@ -227,6 +228,7 @@ static int makePGPSignature(const char *file, void **sig, int_32 *size,
 
     sprintf(sigfile, "%s.sig", file);
 
+    inpipe[0] = inpipe[1] = 0;
     pipe(inpipe);
     
     if (!(pid = fork())) {
@@ -309,7 +311,7 @@ static int makePGPSignature(const char *file, void **sig, int_32 *size,
  * but this could be a good place to start looking if errors in GPG signature
  * creation crop up.
  */
-static int makeGPGSignature(const char *file, void **sig, int_32 *size,
+static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_32 *size,
 			    const char *passPhrase)
 {
     char sigfile[1024];
@@ -320,6 +322,7 @@ static int makeGPGSignature(const char *file, void **sig, int_32 *size,
 
     sprintf(sigfile, "%s.sig", file);
 
+    inpipe[0] = inpipe[1] = 0;
     pipe(inpipe);
     
     if (!(pid = fork())) {
@@ -434,6 +437,8 @@ static int verifySizeSignature(const char *datafile, int_32 size, char *result)
     return 0;
 }
 
+#define	X(_x)	(unsigned)((_x) & 0xff)
+
 static int verifyMD5Signature(const char *datafile, unsigned char *sig, 
 			      char *result, md5func fn)
 {
@@ -446,23 +451,23 @@ static int verifyMD5Signature(const char *datafile, unsigned char *sig,
 		"%02x%02x%02x%02x%02x\n"
 		"Saw     : %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
 		"%02x%02x%02x%02x%02x\n",
-		sig[0],  sig[1],  sig[2],  sig[3],
-		sig[4],  sig[5],  sig[6],  sig[7],
-		sig[8],  sig[9],  sig[10], sig[11],
-		sig[12], sig[13], sig[14], sig[15],
-		md5sum[0],  md5sum[1],  md5sum[2],  md5sum[3],
-		md5sum[4],  md5sum[5],  md5sum[6],  md5sum[7],
-		md5sum[8],  md5sum[9],  md5sum[10], md5sum[11],
-		md5sum[12], md5sum[13], md5sum[14], md5sum[15]);
+		X(sig[0]),  X(sig[1]),  X(sig[2]),  X(sig[3]),
+		X(sig[4]),  X(sig[5]),  X(sig[6]),  X(sig[7]),
+		X(sig[8]),  X(sig[9]),  X(sig[10]), X(sig[11]),
+		X(sig[12]), X(sig[13]), X(sig[14]), X(sig[15]),
+		X(md5sum[0]),  X(md5sum[1]),  X(md5sum[2]),  X(md5sum[3]),
+		X(md5sum[4]),  X(md5sum[5]),  X(md5sum[6]),  X(md5sum[7]),
+		X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
+		X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
 	return 1;
     }
 
     sprintf(result, "MD5 sum OK: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
                     "%02x%02x%02x%02x%02x\n",
-	    md5sum[0],  md5sum[1],  md5sum[2],  md5sum[3],
-	    md5sum[4],  md5sum[5],  md5sum[6],  md5sum[7],
-	    md5sum[8],  md5sum[9],  md5sum[10], md5sum[11],
-	    md5sum[12], md5sum[13], md5sum[14], md5sum[15]);
+	    X(md5sum[0]),  X(md5sum[1]),  X(md5sum[2]),  X(md5sum[3]),
+	    X(md5sum[4]),  X(md5sum[5]),  X(md5sum[6]),  X(md5sum[7]),
+	    X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
+	    X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
 
     return 0;
 }
@@ -504,6 +509,7 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     fdClose(sfd);
 
     /* Now run PGP */
+    outpipe[0] = outpipe[1] = 0;
     pipe(outpipe);
 
     if (!(pid = fork())) {
@@ -598,6 +604,7 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     fdClose(sfd);
 
     /* Now run GPG */
+    outpipe[0] = outpipe[1] = 0;
     pipe(outpipe);
 
     if (!(pid = fork())) {
@@ -646,6 +653,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
     int pid, status;
     int fd;
 
+    passPhrasePipe[0] = passPhrasePipe[1] = 0;
     pipe(passPhrasePipe);
     if (!(pid = fork())) {
 	close(STDIN_FILENO);
@@ -676,7 +684,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
 	           NULL);
 	    rpmError(RPMERR_EXEC, _("Couldn't exec gpg"));
 	    _exit(RPMERR_EXEC);
-	}   break;
+	}   /*@notreached@*/ break;
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
 	case RPMSIGTAG_PGP:
 	{   const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
@@ -705,11 +713,11 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
 	    }
 	    rpmError(RPMERR_EXEC, _("Couldn't exec pgp"));
 	    _exit(RPMERR_EXEC);
-	}   break;
+	}   /*@notreached@*/ break;
 	default: /* This case should have been screened out long ago. */
 	    rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
 	    _exit(RPMERR_SIGGEN);
-	    break;
+	    /*@notreached@*/ break;
 	}
     }
 
@@ -762,18 +770,13 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 	 */
 	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
 	return NULL;
-	break;
+	/*@notreached@*/ break;
     }
 
-    if (prompt) {
-	pass = getpass(prompt);
-    } else {
-	pass = getpass("");
-    }
+    pass = /*@-unrecog@*/ getpass( (prompt ? prompt : "") ) /*@=unrecog@*/ ;
 
-    if (checkPassPhrase(pass, sigTag)) {
+    if (checkPassPhrase(pass, sigTag))
 	return NULL;
-    }
 
     return pass;
 }
@@ -801,10 +804,10 @@ int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	return verifyPGPSignature(file, sig, count, result);
-	break;
+	/*@notreached@*/ break;
     case RPMSIGTAG_GPG:
 	return verifyGPGSignature(file, sig, count, result);
-	break;
+	/*@notreached@*/ break;
     default:
 	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
 	return RPMSIG_UNKNOWN;

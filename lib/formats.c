@@ -55,7 +55,8 @@ static char * permsString(int mode)
 }
 
 static char * triggertypeFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element)
+	/*@unused@*/char * formatPrefix, /*@unused@*/int padding,
+	/*@unused@*/int element)
 {
     const int_32 * item = data;
     char * val;
@@ -73,7 +74,7 @@ static char * triggertypeFormat(int_32 type, const void * data,
 }
 
 static char * permsFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element)
+		char * formatPrefix, int padding, /*@unused@*/int element)
 {
     char * val;
     char * buf;
@@ -93,7 +94,7 @@ static char * permsFormat(int_32 type, const void * data,
 }
 
 static char * fflagsFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element)
+		char * formatPrefix, int padding, /*@unused@*/int element)
 {
     char * val;
     char buf[15];
@@ -126,7 +127,7 @@ static char * fflagsFormat(int_32 type, const void * data,
 }
 
 static char * depflagsFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element)
+		char * formatPrefix, int padding, /*@unused@*/int element)
 {
     char * val;
     char buf[10];
@@ -153,8 +154,8 @@ static char * depflagsFormat(int_32 type, const void * data,
     return val;
 }
 
-static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData)
+static int fsnamesTag(/*@unused@*/Header h, int_32 * type, void ** data,
+	int_32 * count, int * freeData)
 {
     const char ** list;
 
@@ -198,11 +199,14 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     uint_32 * usages;
     int numFiles;
 
-    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL)) 
-	headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, 
-		       &numFiles);
-    else
+    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL)) 
 	filenames = NULL;
+
+    if (!headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, 
+		       &numFiles)) {
+	filesizes = NULL;
+	numFiles = 0;
+    }
 
     if (rpmGetFilesystemList(NULL, count)) {
 	return 1;
@@ -211,9 +215,10 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     *type = RPM_INT32_TYPE;
     *freeData = 1;
 
-    if (!filenames) {
-	*data = usages = malloc(sizeof(usages) * (*count));
+    if (filenames == NULL) {
+	usages = malloc(sizeof(usages) * (*count));
 	memset(usages, 0, sizeof(usages) * (*count));
+	*data = usages;
 
 	return 0;
     }
@@ -226,8 +231,8 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     return 0;
 }
 
-static int triggercondsTag(Header h, int_32 * type, void ** data, 
-			   int_32 * count, int * freeData)
+static int triggercondsTag(Header h, /*@out@*/int_32 * type, /*@out@*/void ** data, 
+			   /*@out@*/int_32 * count, /*@out@*/int * freeData)
 {
     int_32 * indices, * flags;
     char ** names, ** versions;
@@ -287,7 +292,7 @@ static int triggercondsTag(Header h, int_32 * type, void ** data,
     return 0;
 }
 
-static int triggertypeTag(Header h, int_32 * type, void ** data, 
+static int triggertypeTag(Header h, int_32 * type, /*@out@*/void ** data, 
 			   int_32 * count, int * freeData)
 {
     int_32 * indices, * flags;
