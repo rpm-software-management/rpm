@@ -370,12 +370,15 @@ INPUT                  = \
 	./lib/misc.h \
 	./lib/package.c \
 	./lib/poptBT.c \
+	./lib/poptI.c \
+	./lib/poptK.c \
 	./lib/poptQV.c \
 	./lib/problems.c \
 	./lib/psm.c \
 	./lib/psm.h \
 	./lib/query.c \
 	./lib/rpmchecksig.c \
+	./lib/rpmcli.h \
 	./lib/rpminstall.c \
 	./lib/rpmlead.c \
 	./lib/rpmlead.h \
@@ -397,6 +400,7 @@ INPUT                  = \
 	./rpmdb/falloc.h \
 	./rpmdb/fprint.c \
 	./rpmdb/fprint.h \
+	./rpmdb/poptDB.c \
 	./rpmdb/rpmhash.c \
 	./rpmdb/rpmhash.h \
 	./rpmdb/rpmdb.c \

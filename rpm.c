@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <rpmcli.h>
 #include <rpmbuild.h>
 #include <rpmurl.h>
 
@@ -24,7 +25,7 @@ enum modes {
     MODE_UNKNOWN	= 0,
     MODE_QUERY		= (1 <<  0),
     MODE_INSTALL	= (1 <<  1),
-    MODE_UNINSTALL	= (1 <<  2),
+    MODE_ERASE		= (1 <<  2),
     MODE_VERIFY		= (1 <<  3),
     MODE_BUILD		= (1 <<  4),
     MODE_REBUILD	= (1 <<  5),
@@ -40,7 +41,7 @@ enum modes {
 
 #define	MODES_QV (MODE_QUERY | MODE_VERIFY)
 #define	MODES_BT (MODE_BUILD | MODE_TARBUILD | MODE_REBUILD | MODE_RECOMPILE)
-#define	MODES_IE (MODE_INSTALL | MODE_UNINSTALL)
+#define	MODES_IE (MODE_INSTALL | MODE_ERASE)
 #define	MODES_DB (MODE_INITDB | MODE_REBUILDDB | MODE_VERIFYDB)
 #define	MODES_K	 (MODE_CHECKSIG | MODES_RESIGN)
 
@@ -730,18 +731,18 @@ int main(int argc, const char ** argv)
 	    break;
 	    
 	  case 'u':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_ERASE)
 		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_UNINSTALL;
+	    bigMode = MODE_ERASE;
 	    rpmMessage(RPMMESS_ERROR, _("-u and --uninstall are deprecated and no"
 		    " longer work.\n"));
 	    rpmMessage(RPMMESS_ERROR, _("Use -e or --erase instead.\n"));
 	    exit(EXIT_FAILURE);
 	
 	  case 'e':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_ERASE)
 		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_UNINSTALL;
+	    bigMode = MODE_ERASE;
 	    break;
 	
 	  case 'v':
@@ -959,7 +960,7 @@ int main(int argc, const char ** argv)
 	argerror(_("--ignoresize may only be specified during package "
 		   "installation"));
 
-    if (allMatches && bigMode != MODE_UNINSTALL)
+    if (allMatches && bigMode != MODE_ERASE)
 	argerror(_("--allmatches may only be specified during package "
 		   "erasure"));
 
@@ -967,11 +968,11 @@ int main(int argc, const char ** argv)
 	argerror(_("--allfiles may only be specified during package "
 		   "installation"));
 
-    if (justdb && bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL)
+    if (justdb && bigMode != MODE_INSTALL && bigMode != MODE_ERASE)
 	argerror(_("--justdb may only be specified during package "
 		   "installation and erasure"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
+    if (bigMode != MODE_INSTALL && bigMode != MODE_ERASE && 
 	bigMode != MODE_VERIFY &&
 	(noScripts | noPre | noPost | noPreun | noPostun |
 	 noTriggers | noTPrein | noTIn | noTUn | noTPostun))
@@ -982,7 +983,7 @@ int main(int argc, const char ** argv)
 	argerror(_("--apply may only be specified during package "
 		   "installation"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
+    if (bigMode != MODE_INSTALL && bigMode != MODE_ERASE &&
 	(noTriggers | noTPrein | noTIn | noTUn | noTPostun))
 	argerror(_("trigger disabling options may only be specified during package "
 		   "installation and erasure"));
@@ -1149,7 +1150,7 @@ int main(int argc, const char ** argv)
       case MODE_TARBUILD:
 	break;
 
-      case MODE_UNINSTALL:
+      case MODE_ERASE:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for uninstall"));
 

@@ -14,7 +14,7 @@ EXTRA_DIST = getdate.y
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	header.h misc.h rpmlib.h stringbuf.h
+	header.h misc.h rpmcli.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h fsm.h \
 	manifest.h md5.h psm.h \
@@ -33,9 +33,10 @@ lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	header.c manifest.c md5.c md5sum.c misc.c package.c \
-	problems.c poptBT.c poptQV.c psm.c query.c rpmchecksig.c \
-	rpminstall.c rpmlead.c rpmlibprov.c rpmrc.c signature.c \
-	stringbuf.c tagName.c tagtable.c transaction.c verify.c
+	problems.c poptBT.c poptI.c poptK.c poptQV.c psm.c query.c \
+	rpmchecksig.c rpminstall.c rpmlead.c rpmlibprov.c rpmrc.c \
+	signature.c stringbuf.c tagName.c tagtable.c transaction.c \
+	verify.c
 
 # XXX Add internal libtool dependence
 install-data-local:

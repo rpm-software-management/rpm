@@ -610,6 +610,7 @@ void rpmFreeRpmrc(void)
 /* ==================================================================== */
 /** \name RPMDB */
 /*@{*/
+
 /** \ingroup rpmdb
  */
 typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
@@ -1412,43 +1413,28 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 	/*@modifies *usagesPtr @*/;
 
 /* ==================================================================== */
-/** \name RPMBT */
-/*@{*/
-
-/** \ingroup rpmcli
- * Describe build command line request.
- */
-struct rpmBuildArguments_s {
-    int buildAmount;		/*!< Bit(s) to control operation. */
-/*@null@*/ const char * buildRootOverride; /*!< from --buildroot */
-/*@null@*/ char * targets;	/*!< Target platform(s), comma separated. */
-    int force;			/*!< from --force */
-    int noBuild;		/*!< from --nobuild */
-    int noDeps;			/*!< from --nodeps */
-    int noLang;			/*!< from --nolang */
-    int shortCircuit;		/*!< from --short-circuit */
-    int sign;			/*!< from --sign */
-    int useCatalog;		/*!< from --usecatalog */
-    char buildMode;		/*!< Build mode (one of "btBC") */
-    char buildChar;		/*!< Build stage (one of "abcilps ") */
-/*@observer@*/ /*@null@*/ const char * rootdir;
-};
-/** \ingroup rpmcli
- */
-typedef	struct rpmBuildArguments_s * BTA_t;
-
-/** \ingroup rpmcli
- */
-extern struct rpmBuildArguments_s         rpmBTArgs;
-
-/** \ingroup rpmcli
- */
-extern struct poptOption		rpmBuildPoptTable[];
-
-/*@}*/
-/* ==================================================================== */
 /** \name RPMQV */
 /*@{*/
+
+/** \ingroup rpmcli
+ */
+typedef struct rpmQVArguments_s * QVA_t;
+
+/** \ingroup rpmcli
+ * The command line argument will be used to retrieve header(s) ...
+ */
+typedef enum rpmQVSources_e {
+    RPMQV_PACKAGE = 0,	/*!< ... from package name db search. */
+    RPMQV_PATH,		/*!< ... from file path db search. */
+    RPMQV_ALL,		/*!< ... from each installed package. */
+    RPMQV_RPM, 		/*!< ... from reading binary rpm package. */
+    RPMQV_GROUP,	/*!< ... from group db search. */
+    RPMQV_WHATPROVIDES,	/*!< ... from provides db search. */
+    RPMQV_WHATREQUIRES,	/*!< ... from requires db search. */
+    RPMQV_TRIGGEREDBY,	/*!< ... from trigger db search. */
+    RPMQV_DBOFFSET,	/*!< ... from database header instance. */
+    RPMQV_SPECFILE	/*!< ... from spec file parse (query only). */
+} rpmQVSources;
 
 /** \ingroup rpmcli
  * Bit(s) for rpmVerifyFile() attributes and result.
@@ -1494,69 +1480,6 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd);
 
 /** \ingroup rpmcli
- * The command line argument will be used to retrieve header(s) ...
- */
-typedef enum rpmQVSources_e {
-    RPMQV_PACKAGE = 0,	/*!< ... from package name db search. */
-    RPMQV_PATH,		/*!< ... from file path db search. */
-    RPMQV_ALL,		/*!< ... from each installed package. */
-    RPMQV_RPM, 		/*!< ... from reading binary rpm package. */
-    RPMQV_GROUP,	/*!< ... from group db search. */
-    RPMQV_WHATPROVIDES,	/*!< ... from provides db search. */
-    RPMQV_WHATREQUIRES,	/*!< ... from requires db search. */
-    RPMQV_TRIGGEREDBY,	/*!< ... from trigger db search. */
-    RPMQV_DBOFFSET,	/*!< ... from database header instance. */
-    RPMQV_SPECFILE	/*!< ... from spec file parse (query only). */
-} rpmQVSources;
-
-/** \ingroup rpmcli
- * Bit(s) to control rpmQuery() operation, stored in qva_flags.
- */
-/*@-typeuse@*/
-typedef enum rpmQueryFlags_e {
-    QUERY_FOR_LIST	= (1 << 1),	/*!< from --list */
-    QUERY_FOR_STATE	= (1 << 2),	/*!< from --state */
-    QUERY_FOR_DOCS	= (1 << 3),	/*!< from --docfiles */
-    QUERY_FOR_CONFIG	= (1 << 4),	/*!< from --configfiles */
-    QUERY_FOR_DUMPFILES	= (1 << 8)	/*!< from --dump */
-} rpmQueryFlags;
-/*@=typeuse@*/
-
-/** \ingroup rpmcli
- * Bit(s) to control rpmVerify() operation, stored in qva_flags.
- */
-/*@-typeuse@*/
-typedef enum rpmVerifyFlags_e {
-    VERIFY_FILES	= (1 <<  9),	/*!< from --nofiles */
-    VERIFY_DEPS		= (1 << 10),	/*!< from --nodeps */
-    VERIFY_SCRIPT	= (1 << 11),	/*!< from --noscripts */
-    VERIFY_MD5		= (1 << 12)	/*!< from --nomd5 */
-} rpmVerifyFlags;
-/*@=typeuse@*/
-
-/** \ingroup rpmcli
- * Describe query/verify command line request.
- */
-typedef struct rpmQVArguments_s {
-    rpmQVSources qva_source;	/*!< Identify CLI arg type. */
-    int 	qva_sourceCount;/*!< Exclusive check (>1 is error). */
-    int		qva_flags;	/*!< Bit(s) to control operation. */
-/*@unused@*/ int qva_verbose;	/*!< (unused) */
-/*@only@*/ /*@null@*/ const char * qva_queryFormat; /*!< Format for headerSprintf(). */
-/*@observer@*/ /*@null@*/ const char * qva_prefix; /*!< Path to top of install tree. */
-    char	qva_mode;	/*!< 'q' is query, 'v' is verify mode. */
-    char	qva_char;	/*!< (unused) always ' ' */
-} * QVA_t;
-
-/** \ingroup rpmcli
- */
-extern struct rpmQVArguments_s rpmQVArgs;
-
-/** \ingroup rpmcli
- */
-extern struct poptOption rpmQVSourcePoptTable[];
-
-/** \ingroup rpmcli
  * @param qva		parsed query/verify options
  * @param db		rpm database
  * @param h		header to use for query/verify
@@ -1574,14 +1497,6 @@ typedef	int (*QVF_t) (QVA_t qva, rpmdb db, Header h)
 int showMatches(QVA_t qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
 		QVF_t showPackage)
 	/*@modifies mi @*/;
-
-/** \ingroup rpmcli
- */
-extern int specedit;
-
-/** \ingroup rpmcli
- */
-extern struct poptOption rpmQueryPoptTable[];
 
 /** \ingroup rpmcli
  * Display list of tags that can be used in --queryformat.
@@ -1625,10 +1540,6 @@ int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmcli
- */
-extern struct poptOption rpmVerifyPoptTable[];
-
-/** \ingroup rpmcli
  * Display results of package verify.
  * @param qva		parsed query/verify options
  * @param db		rpm database
@@ -1665,7 +1576,11 @@ typedef enum rpmInstallInterfaceFlags_e {
     INSTALL_NOORDER	= (1 << 3),	/*!< from --noorder */
     INSTALL_LABEL	= (1 << 4),	/*!< from --verbose (notify) */
     INSTALL_UPGRADE	= (1 << 5),	/*!< from --upgrade */
-    INSTALL_FRESHEN	= (1 << 6)	/*!< from --freshen */
+    INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
+    INSTALL_NOERASE	= (1 << 7),	/*!< from --install */
+/*@-enummemuse@*/
+    INSTALL_ERASE	= (1 << 8)	/*!< from --erase */
+/*@=enummemuse@*/
 } rpmInstallInterfaceFlags;
 
 /** \ingroup rpmcli
@@ -1801,11 +1716,14 @@ rpmVerifySignatureReturn rpmVerifySignature(const char *file,
  * Bit(s) to control rpmCheckSig() operation.
  */
 typedef enum rpmCheckSigFlags_e {
-    CHECKSIG_NONE	= 0,		/*!< Don't check any signatures. */
+/*@-enummemuse@*/
+    CHECKSIG_NONE	= 0,	/*!< Don't check any signatures. */
+/*@=enummemuse@*/
     CHECKSIG_PGP	= (1 << 0),	/*!< if not --nopgp */
     CHECKSIG_MD5	= (1 << 1),	/*!< if not --nomd5 */
     CHECKSIG_GPG	= (1 << 2)	/*!< if not --nogpg */
 } rpmCheckSigFlags;
+#define	CHECKSIG_ALL	(CHECKSIG_PGP|CHECKSIG_MD5|CHECKSIG_GPG)
 
 /** \ingroup rpmcli
  * Check elements in signature header.
@@ -1820,7 +1738,8 @@ int rpmCheckSig(rpmCheckSigFlags flags, /*@null@*/ const char ** argv)
  * Bit(s) to control rpmReSign() operation.
  */
 typedef enum rpmResignFlags_e {
-    RESIGN_NEW_SIGNATURE = 0,	/*!< from --resign */
+    RESIGN_CHK_SIGNATURE = 0,	/*!< from --checksig */
+    RESIGN_NEW_SIGNATURE,	/*!< from --resign */
     RESIGN_ADD_SIGNATURE	/*!< from --addsign */
 } rpmResignFlags;
 

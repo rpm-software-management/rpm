@@ -3,14 +3,15 @@
 export CFLAGS
 export LDFLAGS
 
-LTV="libtoolize (GNU libtool) 1.3.5"
+LTV="libtoolize (GNU libtool) 1.4"
 ACV="Autoconf version 2.13"
-AMV="automake (GNU automake) 1.4"
+AMV="automake (GNU automake) 1.4-p2"
 USAGE="
 You need to install:
-	libtool-1.3.5
+	libtool-1.4
 	autoconf-2.13
-	automake-1.4
+	automake-1.4-p2
+Or edit this script to change the libtool/autoconf/automake versions checked ...
 "
 
 [ "`libtoolize --version`" != "$LTV" ] && echo "$USAGE" && exit 1

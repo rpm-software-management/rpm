@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p2 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -80,6 +80,8 @@ DATADIRNAME = @DATADIRNAME@
 DBLIBOBJS = @DBLIBOBJS@
 DBLIBSRCS = @DBLIBSRCS@
 DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
 FINDPROVIDES = @FINDPROVIDES@
 FINDREQUIRES = @FINDREQUIRES@
 FIXPERMS = @FIXPERMS@
@@ -112,6 +114,7 @@ MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PGPBIN = @PGPBIN@
 POFILES = @POFILES@
@@ -127,6 +130,7 @@ RPMGID = @RPMGID@
 RPMGROUP = @RPMGROUP@
 RPMUID = @RPMUID@
 RPMUSER = @RPMUSER@
+STRIP = @STRIP@
 SYSCONFIGDIR = @SYSCONFIGDIR@
 U = @U@
 UNZIPBIN = @UNZIPBIN@

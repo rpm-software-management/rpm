@@ -81,6 +81,12 @@
 	- permit duplicates for btree indices.
 	- document build modes in rpmbuild.8, rpmbuild is born.
 	- default to dbenv with mpool, --rebuilddb with nofsync is much faster.
+	- fix: QUERY_FOR_LIST file count clobbered.
+	- create top level rpmcli API, factor top level modes into popt tables.
+	- popt: add POPT_BIT_SET/POPT_BIT_CLR to API.
+	- autogen.sh checks for latest libtool-1.4 and automake-1.4-p2.
+	- rpm --verify reports failure(s) if corresponding tag is not in header.
+	- rpm --verify honors %config(missingok), add -v for legacy behavior.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -6,12 +6,10 @@
 static rpmDigestFlags flags = RPMDIGEST_MD5;
 extern int _rpmio_debug;
 
-#define _POPT_SET_BIT   (POPT_ARG_VAL|POPT_ARGFLAG_OR)
-
 static struct poptOption optionsTable[] = {
- { "md5", '\0', _POPT_SET_BIT, 	&flags, RPMDIGEST_MD5,	NULL, NULL },
- { "sha1",'\0', _POPT_SET_BIT, 	&flags, RPMDIGEST_SHA1,	NULL, NULL },
- { "native",'\0', _POPT_SET_BIT, &flags, RPMDIGEST_NATIVE,	NULL, NULL },
+ { "md5", '\0', POPT_BIT_SET, 	&flags, RPMDIGEST_MD5,	NULL, NULL },
+ { "sha1",'\0', POPT_BIT_SET, 	&flags, RPMDIGEST_SHA1,	NULL, NULL },
+ { "native",'\0', POPT_BIT_SET, &flags, RPMDIGEST_NATIVE,	NULL, NULL },
  { "debug",'d', POPT_ARG_VAL, &_rpmio_debug, -1,	NULL, NULL },
  { NULL, '\0', 0, NULL, 0,	NULL, NULL }
 };

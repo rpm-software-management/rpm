@@ -9,6 +9,7 @@
 # define PATH_MAX 255
 #endif
 
+#include <rpmcli.h>
 #include <rpmbuild.h>
 #include <rpmurl.h>
 #include "manifest.h"
@@ -142,8 +143,8 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
     HFD_t hfd = headerFreeData;
     char * t, * te;
     
-    int queryFlags = qva->qva_flags;
-    const char *queryFormat = qva->qva_queryFormat;
+    rpmQueryFlags queryFlags = qva->qva_flags;
+    const char * queryFormat = qva->qva_queryFormat;
 
     int_32 count, type;
     char * prefix = NULL;
@@ -170,7 +171,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
     te = t = xmalloc(BUFSIZ);
     *te = '\0';
 
-    if (!queryFormat && !queryFlags) {
+    if (queryFormat == NULL && queryFlags == QUERY_FOR_DEFAULT) {
 	const char * name, * version, * release;
 	(void) headerNVR(h, &name, &version, &release);
 	te = stpcpy(te, name);
@@ -204,31 +205,31 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	te = stpcpy(te, _("(contains no files)"));
 	goto exit;
     }
-    if (!hge(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, &count))
+    if (!hge(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, NULL))
 	fileStatesList = NULL;
     if (!hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL))
 	dirNames = NULL;
     if (!hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL))
 	dirIndexes = NULL;
-    if (!hge(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, &count))
+    if (!hge(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, NULL))
 	fileFlagsList = NULL;
-    if (!hge(h, RPMTAG_FILESIZES, &type, (void **) &fileSizeList, &count))
+    if (!hge(h, RPMTAG_FILESIZES, &type, (void **) &fileSizeList, NULL))
 	fileSizeList = NULL;
-    if (!hge(h, RPMTAG_FILEMODES, &type, (void **) &fileModeList, &count))
+    if (!hge(h, RPMTAG_FILEMODES, &type, (void **) &fileModeList, NULL))
 	fileModeList = NULL;
-    if (!hge(h, RPMTAG_FILEMTIMES, &type, (void **) &fileMTimeList, &count))
+    if (!hge(h, RPMTAG_FILEMTIMES, &type, (void **) &fileMTimeList, NULL))
 	fileMTimeList = NULL;
-    if (!hge(h, RPMTAG_FILERDEVS, &type, (void **) &fileRdevList, &count))
+    if (!hge(h, RPMTAG_FILERDEVS, &type, (void **) &fileRdevList, NULL))
 	fileRdevList = NULL;
-    if (!hge(h, RPMTAG_FILEINODES, &type, (void **) &fileInodeList, &count))
+    if (!hge(h, RPMTAG_FILEINODES, &type, (void **) &fileInodeList, NULL))
 	fileInodeList = NULL;
     if (!hge(h, RPMTAG_FILELINKTOS, &ltt, (void **) &fileLinktoList, NULL))
 	fileLinktoList = NULL;
     if (!hge(h, RPMTAG_FILEMD5S, &m5t, (void **) &fileMD5List, NULL))
 	fileMD5List = NULL;
-    if (!hge(h, RPMTAG_FILEUIDS, &type, (void **) &fileUIDList, &count))
+    if (!hge(h, RPMTAG_FILEUIDS, &type, (void **) &fileUIDList, NULL))
 	fileUIDList = NULL;
-    if (!hge(h, RPMTAG_FILEGIDS, &type, (void **) &fileGIDList, &count))
+    if (!hge(h, RPMTAG_FILEGIDS, &type, (void **) &fileGIDList, NULL))
 	fileGIDList = NULL;
     if (!hge(h, RPMTAG_FILEUSERNAME, &fot, (void **) &fileOwnerList, NULL))
 	fileOwnerList = NULL;

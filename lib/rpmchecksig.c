@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpmcli.h>
 
 #include "rpmlead.h"
 #include "signature.h"

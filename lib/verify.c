@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpmcli.h>
 #include <rpmurl.h>
 
 #include "psm.h"
@@ -182,29 +182,30 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	const char ** md5List;
 	int mdt;
 
-	(void) hge(h, RPMTAG_FILEMD5S, &mdt, (void **) &md5List, NULL);
-	if (useBrokenMd5) {
-	    rc = mdfileBroken(filespec, md5sum);
-	} else {
-	    rc = mdfile(filespec, md5sum);
-	}
-
-	if (rc)
-	    *result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
-	else if (strcmp(md5sum, md5List[filenum]))
+	if (!hge(h, RPMTAG_FILEMD5S, &mdt, (void **) &md5List, NULL))
 	    *result |= RPMVERIFY_MD5;
+	else {
+	    if (useBrokenMd5)
+		rc = mdfileBroken(filespec, md5sum);
+	    else
+		rc = mdfile(filespec, md5sum);
+
+	    if (rc)
+		*result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
+	    else if (strcmp(md5sum, md5List[filenum]))
+		*result |= RPMVERIFY_MD5;
+	}
 	md5List = hfd(md5List, mdt);
     } 
 
     if (flags & RPMVERIFY_LINKTO) {
 	char linkto[1024];
-	int size;
+	int size = 0;
 	const char ** linktoList;
 	int ltt;
 
-	(void) hge(h, RPMTAG_FILELINKTOS, &ltt, (void **) &linktoList, NULL);
-	size = readlink(filespec, linkto, sizeof(linkto)-1);
-	if (size == -1)
+	if (!hge(h, RPMTAG_FILELINKTOS, &ltt, (void **) &linktoList, NULL)
+	|| (size = readlink(filespec, linkto, sizeof(linkto)-1) == -1))
 	    *result |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else  {
 	    linkto[size] = '\0';
@@ -217,8 +218,8 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     if (flags & RPMVERIFY_FILESIZE) {
 	int_32 * sizeList;
 
-	(void) hge(h, RPMTAG_FILESIZES, NULL, (void **) &sizeList, NULL);
-	if (sizeList[filenum] != sb.st_size)
+	if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) &sizeList, NULL)
+	|| sizeList[filenum] != sb.st_size)
 	    *result |= RPMVERIFY_FILESIZE;
     } 
 
@@ -233,12 +234,13 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 
     if (flags & RPMVERIFY_RDEV) {
 	if (S_ISCHR(modeList[filenum]) != S_ISCHR(sb.st_mode) ||
-	    S_ISBLK(modeList[filenum]) != S_ISBLK(sb.st_mode)) {
+	    S_ISBLK(modeList[filenum]) != S_ISBLK(sb.st_mode))
+	{
 	    *result |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(modeList[filenum]) && S_ISDEV(sb.st_mode)) {
 	    unsigned short * rdevList;
-	    (void) hge(h, RPMTAG_FILERDEVS, NULL, (void **) &rdevList, NULL);
-	    if (rdevList[filenum] != sb.st_rdev)
+	    if (!hge(h, RPMTAG_FILERDEVS, NULL, (void **) &rdevList, NULL)
+	    || rdevList[filenum] != sb.st_rdev)
 		*result |= RPMVERIFY_RDEV;
 	} 
     }
@@ -246,8 +248,8 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     if (flags & RPMVERIFY_MTIME) {
 	int_32 * mtimeList;
 
-	(void) hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtimeList, NULL);
-	if (mtimeList[filenum] != sb.st_mtime)
+	if (!hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtimeList, NULL)
+	||  mtimeList[filenum] != sb.st_mtime)
 	    *result |= RPMVERIFY_MTIME;
     }
 
@@ -344,7 +346,7 @@ static int verifyHeader(QVA_t qva, Header h)
     const char * prefix = (qva->qva_prefix ? qva->qva_prefix : "");
     const char ** fileNames = NULL;
     int count;
-    int_32 * fileFlagsList = NULL;
+    int_32 * fileFlags = NULL;
     rpmVerifyAttrs verifyResult = 0;
     rpmVerifyAttrs omitMask = !(qva->qva_flags & VERIFY_MD5)
 			? RPMVERIFY_MD5 : RPMVERIFY_NONE;
@@ -354,7 +356,7 @@ static int verifyHeader(QVA_t qva, Header h)
     te = t = buf;
     *te = '\0';
 
-    if (!hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL))
+    if (!hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL))
 	goto exit;
 
     if (!headerIsEntry(h, RPMTAG_BASENAMES))
@@ -367,9 +369,11 @@ static int verifyHeader(QVA_t qva, Header h)
 
 	rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask);
 	if (rc) {
-	    sprintf(te, _("missing    %s"), fileNames[i]);
-	    te += strlen(te);
-	    ec = rc;
+	    if (!(fileFlags[i] & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
+		sprintf(te, _("missing    %s"), fileNames[i]);
+		te += strlen(te);
+		ec = rc;
+	    }
 	} else if (verifyResult) {
 	    const char * size, * md5, * link, * mtime, * mode;
 	    const char * group, * user, * rdev;
@@ -402,7 +406,7 @@ static int verifyHeader(QVA_t qva, Header h)
 
 	    sprintf(te, "%s%s%s%s%s%s%s%s %c %s",
 		       size, mode, md5, rdev, link, user, group, mtime, 
-		       fileFlagsList[i] & RPMFILE_CONFIG ? 'c' : ' ', 
+		       fileFlags[i] & RPMFILE_CONFIG ? 'c' : ' ', 
 		       fileNames[i]);
 	    te += strlen(te);
 	}

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p2 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -80,6 +80,8 @@ DATADIRNAME = @DATADIRNAME@
 DBLIBOBJS = @DBLIBOBJS@
 DBLIBSRCS = @DBLIBSRCS@
 DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
 FINDPROVIDES = @FINDPROVIDES@
 FINDREQUIRES = @FINDREQUIRES@
 FIXPERMS = @FIXPERMS@
@@ -112,6 +114,7 @@ MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PGPBIN = @PGPBIN@
 POFILES = @POFILES@
@@ -127,6 +130,7 @@ RPMGID = @RPMGID@
 RPMGROUP = @RPMGROUP@
 RPMUID = @RPMUID@
 RPMUSER = @RPMUSER@
+STRIP = @STRIP@
 SYSCONFIGDIR = @SYSCONFIGDIR@
 U = @U@
 UNZIPBIN = @UNZIPBIN@
@@ -206,6 +210,7 @@ LDFLAGS = @LDFLAGS@
 librpmmodule_la_LDFLAGS = 
 librpmmodule_la_LIBADD = 
 librpmmodule_la_OBJECTS =  rpmmodule.lo hash.lo upgrade.lo
+python_PROGRAMS =  rpmmodule.so
 PROGRAMS =  $(python_PROGRAMS)
 
 rpmmodule_so_OBJECTS = 
@@ -229,7 +234,7 @@ OBJECTS = $(librpmmodule_la_OBJECTS) $(rpmmodule_so_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .lo .o .s
+.SUFFIXES: .S .c .lo .o .obj .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign python/Makefile
 
@@ -247,6 +252,11 @@ distclean-noinstLTLIBRARIES:
 
 maintainer-clean-noinstLTLIBRARIES:
 
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
 .s.o:
 	$(COMPILE) -c $<
 
@@ -255,6 +265,7 @@ maintainer-clean-noinstLTLIBRARIES:
 
 mostlyclean-compile:
 	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
 
 clean-compile:
 

@@ -221,6 +221,9 @@ fi
 %postun python -p /sbin/ldconfig
 %endif
 
+%define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
+%define	rpmdbattr	%rpmattr %verify(not md5 size mtime) %ghost
+
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
@@ -232,42 +235,42 @@ fi
 %dir				/etc/rpm
 %config(noreplace,missingok)	/etc/rpm/macros.db1
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Basenames
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Conflictname
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/__db.001
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Dirnames
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Group
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Installtid
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Name
-#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Packages
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Providename
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Provideversion
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Removetid
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requirename
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requireversion
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Triggername
+%rpmdbattr	/var/lib/rpm/Basenames
+%rpmdbattr	/var/lib/rpm/Conflictname
+#%rpmdbattr	/var/lib/rpm/__db.001
+%rpmdbattr	/var/lib/rpm/Dirnames
+%rpmdbattr	/var/lib/rpm/Group
+%rpmdbattr	/var/lib/rpm/Installtid
+%rpmdbattr	/var/lib/rpm/Name
+#%rpmdbattr	/var/lib/rpm/Packages
+%rpmdbattr	/var/lib/rpm/Providename
+%rpmdbattr	/var/lib/rpm/Provideversion
+%rpmdbattr	/var/lib/rpm/Removetid
+%rpmdbattr	/var/lib/rpm/Requirename
+%rpmdbattr	/var/lib/rpm/Requireversion
+%rpmdbattr	/var/lib/rpm/Triggername
 %endif
 
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpm2cpio
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/gendiff
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmdb
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpm[eiukqv]
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmsign
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmquery
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmverify
+%rpmattr	%{__prefix}/bin/rpm2cpio
+%rpmattr	%{__prefix}/bin/gendiff
+%rpmattr	%{__prefix}/bin/rpmdb
+%rpmattr	%{__prefix}/bin/rpm[eiukqv]
+%rpmattr	%{__prefix}/bin/rpmsign
+%rpmattr	%{__prefix}/bin/rpmquery
+%rpmattr	%{__prefix}/bin/rpmverify
 
 %{__prefix}/lib/librpm.so.*
 %{__prefix}/lib/librpmdb.so.*
 %{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
 
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/config.guess
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/config.sub
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/convertrpmrc.sh
+%rpmattr	%{__prefix}/lib/rpm/config.guess
+%rpmattr	%{__prefix}/lib/rpm/config.sub
+%rpmattr	%{__prefix}/lib/rpm/convertrpmrc.sh
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/mkinstalldirs
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm.*
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm[deiukqv]
+%rpmattr	%{__prefix}/lib/rpm/mkinstalldirs
+%rpmattr	%{__prefix}/lib/rpm/rpm.*
+%rpmattr	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
 
@@ -328,31 +331,31 @@ fi
 %dir %{__prefix}/src/redhat/SRPMS
 %dir %{__prefix}/src/redhat/RPMS
 %{__prefix}/src/redhat/RPMS/*
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmbuild
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/brp-*
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/check-prereqs
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/cpanflute
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-lang.sh
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-prov.pl
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-provides
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-provides.perl
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-req.pl
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-requires
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-requires.perl
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/get_magic.pl
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/getpo.sh
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/http.req
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/javadeps
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/magic.prov
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/magic.req
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/perl.prov
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/perl.req
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm[bt]
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmdiff
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmdiff.cgi
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/u_pkg.sh
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/vpkg-provides.sh
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/vpkg-provides2.sh
+%rpmattr	%{__prefix}/bin/rpmbuild
+%rpmattr	%{__prefix}/lib/rpm/brp-*
+%rpmattr	%{__prefix}/lib/rpm/check-prereqs
+%rpmattr	%{__prefix}/lib/rpm/cpanflute
+%rpmattr	%{__prefix}/lib/rpm/find-lang.sh
+%rpmattr	%{__prefix}/lib/rpm/find-prov.pl
+%rpmattr	%{__prefix}/lib/rpm/find-provides
+%rpmattr	%{__prefix}/lib/rpm/find-provides.perl
+%rpmattr	%{__prefix}/lib/rpm/find-req.pl
+%rpmattr	%{__prefix}/lib/rpm/find-requires
+%rpmattr	%{__prefix}/lib/rpm/find-requires.perl
+%rpmattr	%{__prefix}/lib/rpm/get_magic.pl
+%rpmattr	%{__prefix}/lib/rpm/getpo.sh
+%rpmattr	%{__prefix}/lib/rpm/http.req
+%rpmattr	%{__prefix}/lib/rpm/javadeps
+%rpmattr	%{__prefix}/lib/rpm/magic.prov
+%rpmattr	%{__prefix}/lib/rpm/magic.req
+%rpmattr	%{__prefix}/lib/rpm/perl.prov
+%rpmattr	%{__prefix}/lib/rpm/perl.req
+%rpmattr	%{__prefix}/lib/rpm/rpm[bt]
+%rpmattr	%{__prefix}/lib/rpm/rpmdiff
+%rpmattr	%{__prefix}/lib/rpm/rpmdiff.cgi
+%rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
+%rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
+%rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
 %{__prefix}%{__share}/man/man8/rpmbuild.8*
 

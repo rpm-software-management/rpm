@@ -163,7 +163,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
     if (dbfile)
-	rpmMessage(RPMMESS_DEBUG, _("opening db environment %s/%s %s\n"),
+	rpmMessage(RPMMESS_DEBUG, _("opening  db environment %s/%s %s\n"),
 		dbhome, dbfile, prDbiOpenFlags(eflags, 1));
 
     /* XXX Can't do RPC w/o host. */
@@ -833,6 +833,12 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	}
 	dbf = _free(dbf);
     }
+
+    /*
+     * Turn off verify-on-close if opening read-only.
+     */
+    if (oflags & DB_RDONLY)
+	dbi->dbi_verify_on_close = 0;
 
     dbi->dbi_dbinfo = NULL;
 

@@ -10,7 +10,12 @@
 
 #include "fprint.h"
 
+/**
+ */
 typedef /*@abstract@*/ struct _dbiIndexItem * dbiIndexItem;
+
+/**
+ */
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
 /* this will break if sizeof(int) != 4 */

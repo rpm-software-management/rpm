@@ -5,7 +5,8 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmcli.h>
+#include <rpmbuild.h>
 #include <rpmurl.h>
 #include "debug.h"
 
@@ -95,9 +96,11 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
 /* ========== Query specific popt args */
 
-static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptCallbackReason reason,
-			     const struct poptOption * opt, const char * arg, 
-			     /*@unused@*/ const void * data)
+static void queryArgCallback(/*@unused@*/poptContext con,
+		/*@unused@*/enum poptCallbackReason reason,
+		const struct poptOption * opt, const char * arg, 
+		/*@unused@*/ const void * data)
+	/*@modifies rpmQVArgs @*/
 {
     QVA_t qva = &rpmQVArgs;
 
@@ -107,21 +110,24 @@ static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptC
     case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
     case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST;
 	break;
-    case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
+    case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST;
+	break;
     case 'v': rpmIncreaseVerbosity();	 break;
 
     case POPT_QUERYFORMAT:
-      {	char *qf = (char *)qva->qva_queryFormat;
-	if (qf) {
-	    int len = strlen(qf) + strlen(arg) + 1;
-	    qf = xrealloc(qf, len);
-	    strcat(qf, arg);
-	} else {
-	    qf = xmalloc(strlen(arg) + 1);
-	    strcpy(qf, arg);
+	if (arg) {
+	    char * qf = (char *)qva->qva_queryFormat;
+	    if (qf) {
+		int len = strlen(qf) + strlen(arg) + 1;
+		qf = xrealloc(qf, len);
+		strcat(qf, arg);
+	    } else {
+		qf = xmalloc(strlen(arg) + 1);
+		strcpy(qf, arg);
+	    }
+	    qva->qva_queryFormat = qf;
 	}
-	qva->qva_queryFormat = qf;
-      }	break;
+	break;
     }
 }
 
