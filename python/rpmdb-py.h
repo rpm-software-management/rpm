@@ -1,8 +1,10 @@
-#ifndef RPMPYTHON_DB
-#define RPMPYTHON_DB
+#ifndef H_RPMDB_PY
+#define H_RPMDB_PY
+
+#include "rpmdb.h"
 
 /** \ingroup python
- * \file python/db-py.h
+ * \file python/rpmdb-py.h
  */
 
 /** \ingroup python
@@ -20,20 +22,6 @@ struct rpmdbObject_s {
 } ;
 
 extern PyTypeObject rpmdb_Type;
-
-/** \ingroup python
- */
-typedef struct rpmmiObject_s rpmmiObject;
-
-/** \ingroup python
- */
-struct rpmmiObject_s {
-    PyObject_HEAD;
-    rpmdbMatchIterator mi;
-    rpmdbObject *db;
-} ;
-
-extern PyTypeObject rpmmi_Type;
 
 rpmdb dbFromDb(rpmdbObject * db);
 

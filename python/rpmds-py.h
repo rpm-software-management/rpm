@@ -1,6 +1,8 @@
 #ifndef H_RPMDS_PY
 #define H_RPMDS_PY
 
+#include "rpmds.h"
+
 /** \ingroup python
  * \file python/rpmds-py.h
  */

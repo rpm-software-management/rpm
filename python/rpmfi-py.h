@@ -1,6 +1,8 @@
 #ifndef H_RPMFI_PY
 #define H_RPMFI_PY
 
+#include "rpmfi.h"
+
 /** \ingroup python
  * \file python/rpmfi-py.h
  */

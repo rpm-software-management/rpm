@@ -9,8 +9,6 @@
 #include <rpmlib.h>
 #include "rpmps.h"
 
-#include "rpmds.h"
-#include "rpmfi.h"
 #include "rpmte.h"
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */
@@ -23,7 +21,7 @@
 /** \ingroup python
  * \name Class: rpm.te
  * \class rpm.te
- * \brief An python rpm.te object represents an element of a RPM transaction set.
+ * \brief An python rpm.te object represents an element of a transaction set.
  */
 
 static PyObject *

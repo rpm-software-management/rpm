@@ -7,20 +7,17 @@
 #include "Python.h"
 
 #include <rpmlib.h>
-#include "rpmdb.h"
 #include "rpmps.h"
 
+#include "header-py.h"
 #include "rpmal.h"
-#include "rpmds.h"
-#include "rpmfi.h"
-#include "rpmte.h"
+#include "rpmdb-py.h"
+#include "rpmds-py.h"	/* XXX for rpmdsNew */
+#include "rpmfi-py.h"	/* XXX for rpmfiNew */
+#include "rpmmi-py.h"
+#include "rpmte-py.h"
 
 #define	_RPMTS_INTERNAL	/* XXX for ts->rdb, ts->availablePackage */
-#include "rpmts.h"
-
-#include "db-py.h"
-#include "header-py.h"
-#include "rpmte-py.h"
 #include "rpmts-py.h"
 
 #include "debug.h"
@@ -487,6 +484,36 @@ rpmts_Iter(rpmtsObject * s)
 }
 #endif
 
+/**
+ */
+static rpmmiObject *
+rpmts_Match (rpmtsObject * s, PyObject * args)
+{
+    PyObject *TagN = NULL;
+    char *key = NULL;
+    int len = 0;
+    int tag = RPMDBI_PACKAGES;
+    
+    if (!PyArg_ParseTuple(args, "|Ozi", &TagN, &key, &len))
+	return NULL;
+
+    if (TagN && (tag = tagNumFromPyObject (TagN)) == -1) {
+	PyErr_SetString(PyExc_TypeError, "unknown tag type");
+	return NULL;
+    }
+
+    /* XXX If not already opened, open the database O_RDONLY now. */
+    if (s->ts->rdb == NULL) {
+	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
+	if (rc || s->ts->rdb == NULL) {
+	    PyErr_SetString(PyExc_TypeError, "rpmdb open failed");
+	    return NULL;
+	}
+    }
+
+    return rpmmi_Wrap( rpmtsInitIterator(s->ts, tag, key, len) );
+}
+
 /** \ingroup python
  */
 static struct PyMethodDef rpmts_methods[] = {
@@ -502,6 +529,9 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
     {"run",		(PyCFunction) rpmts_Run,	METH_VARARGS,
 	NULL },
+    {"dbMatch",		(PyCFunction) rpmts_Match,	METH_VARARGS,
+"ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
+- Create a match iterator for the default rpmdb of the transaction.\n" },
 #if Py_TPFLAGS_HAVE_ITER
     {"next",		(PyCFunction)rpmts_Next,	METH_VARARGS,
 	NULL},

@@ -7,24 +7,20 @@
 #include "Python.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
-#include "rpmdb.h"
 #include "rpmps.h"
-
-#include "rpmte.h"
-#define	_RPMTS_INTERNAL	/* XXX for ts->rdb */
-#include "rpmts.h"
 
 #include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"
 #include "upgrade.h"
 
-#include "db-py.h"
 #include "header-py.h"
 #include "rpmal-py.h"
+#include "rpmdb-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
+#include "rpmmi-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
 

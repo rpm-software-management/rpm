@@ -8,7 +8,6 @@
 
 #include <rpmlib.h>
 #include "rpmps.h"
-#include "rpmal.h"
 
 #include "rpmal-py.h"
 #include "rpmds-py.h"

@@ -120,6 +120,7 @@
 	- fix: resurrect "()(64bit)" markings using objdump.
 	- add rpmal/rpmte/rpmfd methods to bindings.
 	- drop cpanflute and cpanflute2, will be in Chip's CPAN package now.
+	- eliminate legacy db methods, add ts.dbMatch method.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

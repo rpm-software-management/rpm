@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.18
+Release: 0.19
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -515,9 +515,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Tue May 28 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.18
+* Tue May 28 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.19
 - add rpmal/rpmte/rpmfd methods to bindings.
 - drop cpanflute and cpanflute2, will be in Chip's CPAN package now.
+- eliminate legacy db methods, add ts.dbMatch method.
 
 * Sun May 26 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.17
 - fix: un-resurrect "()(64bit)" markings using objdump on i386.

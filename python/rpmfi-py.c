@@ -7,7 +7,6 @@
 #include "Python.h"
 
 #include <rpmlib.h>
-#include "rpmfi.h"
 
 #include "header-py.h"
 #include "rpmfi-py.h"

@@ -1,6 +1,8 @@
 #ifndef H_RPMTE_PY
 #define H_RPMTE_PY
 
+#include "rpmte.h"
+
 /** \ingroup python
  * \file python/rpmte-py.h
  */
