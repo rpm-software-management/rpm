@@ -43,7 +43,15 @@ void handleXMLStartLevel1(t_structXMLParse* pParse)
 			addXMLMacro(pParse->m_pAttrs, &(pSpec->m_pMacros));
 			break;
 		case TAGVAL_SOURCE:
-			addXMLSource(pParse->m_pAttrs, &(pSpec->m_pSources));
+			if (pSpec->m_pSources)
+				addXMLSource(pParse->m_pAttrs, &(pSpec->m_pSources));
+			else {
+				if ((addXMLSource(pParse->m_pAttrs, &(pSpec->m_pSources))) &&
+				    (pSpec->m_pSources->m_szDirectory)) {
+					newStr(pSpec->m_pSources->m_szDirectory,
+					       (char**)&(pSpec->m_szBuildSubdir));
+				}
+			}
 			break;
 		case TAGVAL_PATCH:
 			addXMLSource(pParse->m_pAttrs, &(pSpec->m_pPatches));
@@ -178,6 +186,12 @@ void handleXMLStartLevel2(t_structXMLParse* pParse)
 					appendStringBuf(pSb, szTmp);
 					appendStringBuf(pSb, pSource->m_szName);
 				}
+				else if (!strcasecmp(szTmp, "tgz")) {
+					szTmp = NULL;
+					newStrEx("%{_gzipbin} -dc ", &szTmp);
+					appendStringBuf(pSb, szTmp);
+					appendStringBuf(pSb, pSource->m_szName);
+				}
 				else if (!strcasecmp(szTmp, "zip")) {
 					szTmp = NULL;
 					newStrEx("%{_unzipbin} ", &szTmp);
@@ -265,8 +279,8 @@ void handleXMLStartLevel2(t_structXMLParse* pParse)
 					appendStringBuf(pSb, pSource->m_szName);
 				}
 				freeStr(&szTmp);
-				szTmp = malloc(strlen(" > patch -p1234567890 -s ")+strlen(pSource->m_szName)+1);
-				sprintf(szTmp, " | patch -p%d -s", nLevel);
+				szTmp = malloc(strlen(" > patch -pN1234567890 -s ")+strlen(pSource->m_szName)+1);
+				sprintf(szTmp, " | patch -Np%d -s", nLevel);
 				appendStringBuf(pSb, szTmp);
 				appendLineStringBuf(pSb, "");
 				appendLineStringBuf(pSb, "STATUS=$?");
@@ -290,6 +304,9 @@ void handleXMLStartLevel2(t_structXMLParse* pParse)
 		case TAGVAL_SUMMARY:
 		case TAGVAL_DESCRIPTION:
 		case TAGVAL_REQUIRES:
+		case TAGVAL_PROVIDES:
+		case TAGVAL_OBSOLETES:
+		case TAGVAL_CONFLICTS:
 			// we don't need to do anything
 			break;
 		default:
@@ -314,6 +331,18 @@ void handleXMLStartLevel3(t_structXMLParse* pParse)
 		case TAGVAL_REQUIRE:
 			pPkg = getLastXMLPackage(pSpec->m_pPackages);
 			addXMLRequire(pParse->m_pAttrs, &(pPkg->m_pRequires));
+			break;
+		case TAGVAL_PROVIDE:
+			pPkg = getLastXMLPackage(pSpec->m_pPackages);
+			addXMLRequire(pParse->m_pAttrs, &(pPkg->m_pProvides));
+			break;
+		case TAGVAL_OBSOLETE:
+			pPkg = getLastXMLPackage(pSpec->m_pPackages);
+			addXMLRequire(pParse->m_pAttrs, &(pPkg->m_pObsoletes));
+			break;
+		case TAGVAL_CONFLICT:
+			pPkg = getLastXMLPackage(pSpec->m_pPackages);
+			addXMLRequire(pParse->m_pAttrs, &(pPkg->m_pConflicts));
 			break;
 		case TAGVAL_CHANGE:
 			pChanges = getLastXMLChanges(pSpec->m_pChangelog);
@@ -544,32 +573,26 @@ void dataXMLCB(void* pData,
 	       int nLen)
 {
 	t_structXMLParse* pParse = NULL;
+	char* szVal = NULL;
 	char* szTmp = NULL;
-	char* szTmpValue = NULL;
-	char* szPos = NULL;
 
 	if ((pParse = (t_structXMLParse*)pData)) {
-		szTmp = malloc(nLen+2);
-		szTmp[nLen] = '\0';
-		snprintf(szTmp, nLen+1, "%s", szValue);
-		szPos = szTmp;
-		while ((*szPos == ' ') ||
-		       (*szPos == '\t') ||
-		       (*szPos == '\r') ||
-		       (*szPos == '\n'))
-			szPos++;
-
-		if (strlen(szPos)) {
+		szVal = malloc(nLen+2);
+		szVal[nLen] = '\0';
+		snprintf(szVal, nLen+1, "%s", szValue);
+		if (strlen(szVal)) {
+			while ((szTmp = strchr(szVal, '\t')))
+				*szTmp = ' ';
 			if (pParse->m_szValue) {
-				szTmpValue = malloc(strlen(szPos)+strlen(pParse->m_szValue)+1);
-				sprintf(szTmpValue, "%s%s", pParse->m_szValue, szPos);
-				newStr(szTmpValue, &(pParse->m_szValue));
-				free(szTmpValue);
+				szTmp = malloc(strlen(szVal)+strlen(pParse->m_szValue)+1);
+				sprintf(szTmp, "%s%s", pParse->m_szValue, szVal);
+				newStr(szTmp, &(pParse->m_szValue));
+				free(szTmp);
 			}
 			else
-				newStr(szPos, &(pParse->m_szValue));
+				newStr(szVal, &(pParse->m_szValue));
 		}
-		free(szTmp);
+		free(szVal);
 	}
 }
 

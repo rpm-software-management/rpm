@@ -7,7 +7,9 @@ LDFLAGS       =
 CFLAGS        = -O2 -Wall -Wpointer-arith -Wno-char-subscripts
 INCDIR        = -I. -I.. -I../build -I../lib -I../misc -I../popt -I../rpmdb -I../rpmio
 RPMDIR        = ..
-DESTDIR       = /usr/local
+
+prefix        = /usr
+DESTDIR       = 
 
 XMLBUILD      = rpmxmlbuild
 XMLBUILD_SRC  = rpmxmlbuild.c
@@ -21,6 +23,7 @@ XMLLIB_OBJ    = $(XMLLIB_SRC:.c=.o)
 LIBS          = $(XMLLIB) $(RPMDIR)/build/.libs/librpmbuild.a \
 		$(RPMDIR)/lib/.libs/librpm.a $(RPMDIR)/rpmdb/.libs/librpmdb.a \
 		$(RPMDIR)/rpmio/.libs/librpmio.a $(RPMDIR)/popt/.libs/libpopt.a \
+		$(RPMDIR)/libelf/lib/.libs/libelf.a \
 		-lz -lexpat -lbz2
 LIBDIR        = -L. -L$(RPMDIR)/.libs -L/usr/lib
 
@@ -33,9 +36,9 @@ strip:
 	$(STRIP) $(XMLBUILD)
 
 install:
-	@(cp $(XMLBUILD) $(DESTDIR)/bin)
-	@(cp $(XMLLIB) $(DESTDIR)/lib)
-	@(cp $(XMLLIB_H) $(DESTDIR)/include)
+	@(install -m 755 $(XMLBUILD) $(DESTDIR)$(prefix)/bin)
+	@(install -m 644 $(XMLLIB) $(DESTDIR)$(prefix)/lib)
+	@(install -m 644 $(XMLLIB_H) $(DESTDIR)$(prefix)/include/rpm)
 
 $(XMLLIB): $(XMLLIB_OBJ)
 	$(AR) $(ARFLAGS) $(XMLLIB) $(XMLLIB_OBJ)

@@ -8,6 +8,10 @@
 #include "xml2rpm.h"
 #include "xmlstruct.h"
 
+#ifdef XML_DEBUG
+#include "header_internal.h"
+#endif
+
 // This is where our packaged scripts start (or the largest number
 // of the sources)
 int g_nMaxSourceNum = 511;
@@ -304,8 +308,14 @@ StringBuf scriptsToStringBuf(const t_structXMLScripts* pScripts,
 				createRPMSource(pScript->m_szScript, g_nMaxSourceNum+1,
 						pSpec, RPMBUILD_ISSOURCE);
 			}
-			if (pScript->m_szEntry)
-				appendLineStringBuf(pSb, pScript->m_szEntry);
+			if (pScript->m_szEntry) {
+				// we do a newStrEx to make sure we expand all
+				// macros, as is done in the case of the files
+				// (done as part of the fileToStr call)
+				newStrEx(pScript->m_szEntry, (char**)(&szTmp));
+				appendLineStringBuf(pSb, szTmp);
+				freeStr(&(szTmp));
+			}
 			pScript = pScript->m_pNext;
 		}
 	}
@@ -333,6 +343,32 @@ void convertXMLScripts(const t_structXMLScripts* pScripts,
 		headerAddEntry(pPkg->header,
 			       nInterpreter, RPM_STRING_TYPE,
 			       pScripts->m_szInterpreter, 1);
+}
+
+void handleProvObsConf(Header pHeader, t_structXMLRequire* pReqs, rpmsenseFlags fSense)
+{
+	t_structXMLRequire* pReq = NULL;
+	int nFlags = 0;
+	int i = 0;
+	int nIndex = 0;
+
+	pReq = pReqs;
+	while (pReq) {
+		if (pReq->m_szName) {
+			nFlags = 0;
+			if (pReq->m_szCompare && pReq->m_szVersion) {
+				for (i = 0; sReqComp[i].m_szCmp; i++) {
+					if (!strcasecmp(sReqComp[i].m_szCmp,
+					    pReq->m_szCompare)) {
+						nFlags = (sReqComp[i].m_rpmCmp | RPMSENSE_ANY) & ~RPMSENSE_SENSEMASK;
+					}
+				}
+			}
+			addReqProv(NULL, pHeader, fSense | nFlags,
+				   pReq->m_szName, pReq->m_szVersion, nIndex++);
+		}
+		pReq = pReq->m_pNext;
+	}
 }
 
 void convertXMLPackage(const t_structXMLPackage* pXMLPkg,
@@ -363,6 +399,11 @@ void convertXMLPackage(const t_structXMLPackage* pXMLPkg,
 	_free(szPlatform);
 	_free(szArch);
 	_free(szOs);
+
+	// do the provides, obsoletes, conflicts
+	handleProvObsConf(pPkg->header, pXMLPkg->m_pProvides, RPMSENSE_PROVIDES);
+	handleProvObsConf(pPkg->header, pXMLPkg->m_pObsoletes, RPMSENSE_OBSOLETES);
+	handleProvObsConf(pPkg->header, pXMLPkg->m_pConflicts, RPMSENSE_CONFLICTS);
 
 	if (pXMLPkg->m_szName)
 		headerAddOrAppendEntry(pPkg->header, RPMTAG_NAME,
@@ -514,7 +555,7 @@ Spec toRPMStruct(const t_structXMLSpec* pXMLSpec)
 	pSpec->build = scriptsToStringBuf(pXMLSpec->m_pBuild, pSpec);
 	pSpec->install = scriptsToStringBuf(pXMLSpec->m_pInstall, pSpec);
 	pSpec->clean = scriptsToStringBuf(pXMLSpec->m_pClean, pSpec);
-	
+
 	convertXMLPackage(pXMLSpec->m_pPackages, pXMLSpec, pSpec);
 
 	initSourceHeader(pSpec);

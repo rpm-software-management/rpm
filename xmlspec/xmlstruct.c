@@ -97,7 +97,7 @@ t_structXMLAttr* getXMLAttr(const char* szName,
 {
 	while (pAttr && (strcasecmp(szName, pAttr->m_szName) != 0))
 		pAttr = pAttr->m_pNext;
-		
+
 	return pAttr;
 }
 
@@ -236,7 +236,7 @@ t_structXMLSource* newXMLSource(const t_structXMLAttr* pAttrs)
 			attrSetInt(pAttr, "size", &(pSource->m_nSize));
 			attrSetStr(pAttr, "md5", &(pSource->m_szMD5));
 			attrSetStr(pAttr, "directory", &(pSource->m_szDirectory));
-			attrSetInt(pAttr, "number", &(pSource->m_nNum));
+			attrSetInt(pAttr, "id", &(pSource->m_nNum));
 		} while ((pAttr = pAttr->m_pNext));
 	}
 
@@ -365,6 +365,8 @@ t_structXMLScript* newXMLScript(const t_structXMLAttr* pAttrs)
 
 	if ((pScript = malloc(sizeof(t_structXMLScript)))) {
 		pScript->m_szInterpreter = NULL;
+		pScript->m_szArch = NULL;
+		pScript->m_szOS = NULL;
 		pScript->m_szScript = NULL;
 		pScript->m_szEntry = NULL;
 		pScript->m_pNext = NULL;
@@ -373,6 +375,10 @@ t_structXMLScript* newXMLScript(const t_structXMLAttr* pAttrs)
 			do {
 				attrSetStr(pAttr, "interpreter",
 					   &(pScript->m_szInterpreter));
+				attrSetStr(pAttr, "arch",
+					   &(pScript->m_szArch));
+				attrSetStr(pAttr, "os",
+					   &(pScript->m_szOS));
 				attrSetStr(pAttr, "script",
 					   &(pScript->m_szScript));
 			} while ((pAttr = pAttr->m_pNext));
@@ -386,6 +392,8 @@ int freeXMLScript(t_structXMLScript** ppScript)
 {
 	if (*ppScript) {
 		freeStr(&((*ppScript)->m_szInterpreter));
+		freeStr(&((*ppScript)->m_szArch));
+		freeStr(&((*ppScript)->m_szOS));
 		freeStr(&((*ppScript)->m_szScript));
 		freeStr(&((*ppScript)->m_szEntry));
 		freeXMLScript(&((*ppScript)->m_pNext));
@@ -485,6 +493,59 @@ int freeXMLFiles(t_structXMLFiles** ppFiles)
 	return 0;
 }
 
+t_structI18NStr* newI18NStr(const t_structXMLAttr* pAttrs)
+{
+	t_structI18NStr* pStr = NULL;
+	t_structXMLAttr* pAttr = NULL;
+
+	if ((pStr = malloc(sizeof(t_structI18NStr)))) {
+		pStr->m_szLang = NULL;
+		pStr->m_szText = NULL;
+		pStr->m_pNext = NULL;
+
+		pAttr = (t_structXMLAttr*)pAttrs;
+		do {
+			attrSetStr(pAttr, "lang", &(pStr->m_szLang));
+		} while ((pAttr = pAttr->m_pNext));
+	}
+
+	return pStr;
+}
+
+int freeI18NStr(t_structI18NStr** ppStr)
+{
+	if (*ppStr) {
+		freeStr(&((*ppStr)->m_szLang));
+		freeStr(&((*ppStr)->m_szText));
+		freeI18NStr(&((*ppStr)->m_pNext));
+		free(*ppStr);
+	}
+	*ppStr = NULL;
+
+	return 0;
+}
+
+t_structI18NStr* addI18NStr(const t_structXMLAttr* pAttrs,
+			    t_structI18NStr** ppStr)
+{
+	t_structI18NStr* pStr = NULL;
+
+	if ((pStr = getLastI18NStr(*ppStr)))
+		pStr = (pStr->m_pNext = newI18NStr(pAttrs));
+	else
+		pStr = (*ppStr = newI18NStr(pAttrs));
+
+	return pStr;
+}
+
+t_structI18NStr* getLastI18NStr(t_structI18NStr* pStr)
+{
+	while (pStr && (pStr->m_pNext))
+		pStr = pStr->m_pNext;
+
+	return pStr;
+}
+
 t_structXMLPackage* newXMLPackage(const t_structXMLAttr* pAttrs)
 {
 	t_structXMLPackage* pPackage = NULL;
@@ -492,6 +553,7 @@ t_structXMLPackage* newXMLPackage(const t_structXMLAttr* pAttrs)
 
 	if ((pPackage = malloc(sizeof(t_structXMLPackage)))) {
 		pPackage->m_szName = NULL;
+		pPackage->m_szVersion = NULL;
 		pPackage->m_szGroup = NULL;
 		pPackage->m_szSummary = NULL;
 		pPackage->m_szDescription = NULL;
@@ -507,15 +569,21 @@ t_structXMLPackage* newXMLPackage(const t_structXMLAttr* pAttrs)
 		pPackage->m_pRequires = NULL;
 		pPackage->m_pSuggests = NULL;
 		pPackage->m_pObsoletes = NULL;
+		pPackage->m_pConflicts = NULL;
 		pPackage->m_pProvides = NULL;
 		pPackage->m_pNext = NULL;
 
 		pAttr = (t_structXMLAttr*)pAttrs;
 		do {
 			attrSetStr(pAttr, "name", &(pPackage->m_szName));
+			attrSetStr(pAttr, "version", &(pPackage->m_szVersion));
 			attrSetStr(pAttr, "group", &(pPackage->m_szGroup));
 			attrSetBool(pAttr, "autorequire", &(pPackage->m_nAutoRequire));
+			attrSetBool(pAttr, "autoreq", &(pPackage->m_nAutoRequire));
 			attrSetBool(pAttr, "autoprovide", &(pPackage->m_nAutoProvide));
+			attrSetBool(pAttr, "autoprov", &(pPackage->m_nAutoProvide));
+			attrSetBool(pAttr, "autoreqprov", &(pPackage->m_nAutoProvide));
+			attrSetBool(pAttr, "autoreqprov", &(pPackage->m_nAutoRequire));
 			attrSetBool(pAttr, "autosuggest", &(pPackage->m_nAutoSuggest));
 		} while ((pAttr = pAttr->m_pNext));
 	}
@@ -527,6 +595,7 @@ int freeXMLPackage(t_structXMLPackage** ppPackage)
 {
 	if (*ppPackage) {
 		freeStr(&((*ppPackage)->m_szName));
+		freeStr(&((*ppPackage)->m_szVersion));
 		freeStr(&((*ppPackage)->m_szGroup));
 		freeStr(&((*ppPackage)->m_szSummary));
 		freeStr(&((*ppPackage)->m_szDescription));
@@ -539,6 +608,7 @@ int freeXMLPackage(t_structXMLPackage** ppPackage)
 		freeXMLRequire(&((*ppPackage)->m_pRequires));
 		freeXMLRequire(&((*ppPackage)->m_pSuggests));
 		freeXMLRequire(&((*ppPackage)->m_pObsoletes));
+		freeXMLRequire(&((*ppPackage)->m_pConflicts));
 		freeXMLRequire(&((*ppPackage)->m_pProvides));
 		freeXMLPackage(&((*ppPackage)->m_pNext));
 		free(*ppPackage);

@@ -58,7 +58,7 @@ t_structXMLTags g_pXMLTags[] =
 			{"size",           ATTRTYPE_NUMERIC, 0},
 			{"md5",            ATTRTYPE_MD5,     0},
 			{"path",           ATTRTYPE_ANY,     0},
-			{"number",         ATTRTYPE_NUMERIC, 0},
+			{"id",             ATTRTYPE_NUMERIC, 0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
 	},
@@ -89,7 +89,7 @@ t_structXMLTags g_pXMLTags[] =
 			{"size",           ATTRTYPE_NUMERIC, 0},
 			{"md5",            ATTRTYPE_MD5,     0},
 			{"path",           ATTRTYPE_ANY,     0},
-			{"number",         ATTRTYPE_NUMERIC, 0},
+			{"id",             ATTRTYPE_NUMERIC, 0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
 	},
@@ -165,6 +165,7 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"name",           ATTRTYPE_ANY,     0},
+			{"version",        ATTRTYPE_ANY,     0},
 			{"group",          ATTRTYPE_ANY,     1},
 			{"autoreqprov",    ATTRTYPE_BOOL,    0},
 			{"autoprov",       ATTRTYPE_BOOL,    0},
@@ -219,6 +220,7 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"name",           ATTRTYPE_ANY,     1},
+			{"version",        ATTRTYPE_ANY,     0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
 	},
@@ -243,6 +245,34 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"name",           ATTRTYPE_ANY,     1},
+			{"version",        ATTRTYPE_ANY,     0},
+			{"cmp",            ATTRTYPE_CMP,     0},
+			{NULL,             ATTRTYPE_ANY,     1}
+		}
+	},
+	{
+		"conflicts", TAGVAL_CONFLICTS, 2,
+		{
+			TAGVAL_SPEC,
+			TAGVAL_PACKAGE,
+			TAGVAL_LAST
+		},
+		{
+			{NULL,             ATTRTYPE_ANY,     1}
+		}
+	},
+	{
+		"conflict", TAGVAL_CONFLICT, 3,
+		{
+			TAGVAL_SPEC,
+			TAGVAL_PACKAGE,
+			TAGVAL_CONFLICTS,
+			TAGVAL_LAST
+		},
+		{
+			{"name",           ATTRTYPE_ANY,     1},
+			{"version",        ATTRTYPE_ANY,     0},
+			{"cmp",            ATTRTYPE_CMP,     0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
 	},
@@ -280,6 +310,7 @@ t_structXMLTags g_pXMLTags[] =
 			TAGVAL_LAST
 		},
 		{
+			{"lang",           ATTRTYPE_ANY,     0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
 	},
@@ -291,6 +322,7 @@ t_structXMLTags g_pXMLTags[] =
 			TAGVAL_LAST
 		},
 		{
+			{"lang",           ATTRTYPE_ANY,     0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
 	},
@@ -317,6 +349,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -344,6 +378,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -371,6 +407,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -398,11 +436,14 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
 	},
-	{"verify", TAGVAL_VERIFY, 2,
+	{
+		"verify", TAGVAL_VERIFY, 2,
 		{
 			TAGVAL_SPEC,
 			TAGVAL_PACKAGE,
@@ -424,6 +465,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -463,6 +506,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -476,6 +521,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"source",         ATTRTYPE_NUMERIC, 0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"path",           ATTRTYPE_ANY,     0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -489,6 +536,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"patch",          ATTRTYPE_NUMERIC, 0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"level",          ATTRTYPE_NUMERIC, 0},
 			{"path",           ATTRTYPE_ANY,     0},
 			{NULL,             ATTRTYPE_ANY,     1}
@@ -515,6 +564,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -540,6 +591,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}
@@ -565,6 +618,8 @@ t_structXMLTags g_pXMLTags[] =
 		},
 		{
 			{"interpreter",    ATTRTYPE_ANY,     0},
+			{"arch",           ATTRTYPE_ANY,     0},
+			{"os",             ATTRTYPE_ANY,     0},
 			{"script",         ATTRTYPE_SCRIPT,  0},
 			{NULL,             ATTRTYPE_ANY,     1}
 		}

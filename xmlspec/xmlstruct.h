@@ -52,6 +52,8 @@ typedef struct structXMLRequire
 typedef struct structXMLScript
 {
 	char*                   m_szInterpreter;
+	char*                   m_szArch;
+	char*                   m_szOS;
 	char*                   m_szScript;
 	char*                   m_szEntry;
 	struct structXMLScript* m_pNext;
@@ -71,9 +73,17 @@ typedef struct structXMLFiles
 	char* m_szGID;
 } t_structXMLFiles;
 
+typedef struct structI18NStr
+{
+	char*                 m_szLang;
+	char*                 m_szText;
+	struct structI18NStr* m_pNext;
+} t_structI18NStr;
+
 typedef struct structXMLPackage
 {
 	char*                    m_szName;
+	char*                    m_szVersion;
 	char*                    m_szGroup;
 	char*                    m_szSummary;
 	char*                    m_szDescription;
@@ -89,6 +99,7 @@ typedef struct structXMLPackage
 	struct structXMLRequire* m_pRequires;
 	struct structXMLRequire* m_pSuggests;
 	struct structXMLRequire* m_pObsoletes;
+	struct structXMLRequire* m_pConflicts;
 	struct structXMLRequire* m_pProvides;
 	struct structXMLPackage* m_pNext;
 } t_structXMLPackage;
@@ -200,6 +211,12 @@ int freeXMLScripts(t_structXMLScripts** ppScripts);
 
 t_structXMLFiles* newXMLFiles(const t_structXMLAttr* pAttrs);
 int freeXMLFiles(t_structXMLFiles** ppFiles);
+
+t_structI18NStr* newI18NStr(const t_structXMLAttr* pAttrs);
+int freeI18NStr(t_structI18NStr** ppStr);
+t_structI18NStr* addI18NStr(const t_structXMLAttr* pAttrs,
+			    t_structI18NStr** ppStr);
+t_structI18NStr* getLastI18NStr(t_structI18NStr* pStr);
 
 t_structXMLPackage* newXMLPackage(const t_structXMLAttr* pAttrs);
 int freeXMLPackage(t_structXMLPackage** ppPackage);
