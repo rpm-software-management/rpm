@@ -4,15 +4,9 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Error.xs,v 1.3 2001/05/12 11:40:27 rjray Exp $";
+static char * const rcsid = "$Id: Error.xs,v 1.4 2002/04/11 23:07:01 rjray Exp $";
 
 static CV* err_callback;
-
-#if (RPM_VERSION >= 0x040002)
-#  define ERR_STR_CONST const
-#else
-#  define ERR_STR_CONST
-#endif
 
 /*
   This was static, but it needs to be accessible from other modules, as well.
@@ -29,7 +23,7 @@ static void rpm_catch_errors(void)
        our thread context here */
     dTHX;
     int error_code;
-    ERR_STR_CONST char* error_string;
+    const char* error_string;
 
     error_code = rpmErrorCode();
     error_string = rpmErrorString();
