@@ -37,7 +37,6 @@ struct option optionTable[] = {
     { "pgp_name",               RPMVAR_PGP_NAME,                0 },
     { "pgp_path",               RPMVAR_PGP_PATH,                0 },
     { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0 },
-    { "require_group",		RPMVAR_REQUIREGROUP,		0 },
     { "require_icon",		RPMVAR_REQUIREICON,		0 },
     { "require_vendor",		RPMVAR_REQUIREVENDOR,		0 },
     { "root",			RPMVAR_ROOT,			0 },
