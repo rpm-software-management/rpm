@@ -19,6 +19,7 @@ MANDIR=$(prefix)/man/man8
 LIBDIR=$(prefix)/lib
 INCDIR=$(prefix)/include/rpm
 ETCDIR=$(ROOT)/etc
+PGPDIR=$(LIBDIR)/rpm
 
 .EXPORT_ALL_VARIABLES:
 
@@ -71,6 +72,10 @@ install: all
 		install -m 644 -o 0 -g 0 rpmrc $(ETCDIR)/rpmrc; \
 	fi
 	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
+	install -m 755 -o 0 -g 0 -d $(PGPDIR)
+	install -m 600 pubring.pgp $(PGPDIR)
+	install -m 444 RPM-PGP-KEY $(PGPDIR)
+	touch $(PGPDIR)/config.txt
 
 clean:
 	for d in $(SUBDIRS); do \
