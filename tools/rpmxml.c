@@ -179,12 +179,19 @@ printf("%d %d %s %d\n", xp->depth, xp->nodeType, xp->name, xp->isEmptyElement);
 		(void) headerAddOrAppendEntry(xp->h, tte->val, tte->type, &i, 1);
 	    }	break;
 	    case RPM_INT32_TYPE:
-	    {	int_32 i = strtol(xp->value, NULL, 0);
+	    {	int_32 i = strtoll(xp->value, NULL, 0);
 		(void) headerAddOrAppendEntry(xp->h, tte->val, tte->type, &i, 1);
 	    }	break;
 	    case RPM_STRING_TYPE:
 	    {	const char * s = xp->value;
 		(void) headerAddEntry(xp->h, tte->val, tte->type, s, 1);
+	    }	break;
+	    case RPM_BIN_TYPE:
+	    {	const char * s = xp->value;
+		void * b;
+		size_t nb;
+		b64decode(s, &b, &nb);
+		(void) headerAddEntry(xp->h, tte->val, tte->type, b, nb);
 	    }	break;
 	    case RPM_STRING_ARRAY_TYPE:
 	    {	const char * s = xp->value;

@@ -1,4 +1,5 @@
 #include "system.h"
+#include <header.h>
 #define	_RPMXP_INTERNAL
 #include "rpmxp.h"
 #include "debug.h"
