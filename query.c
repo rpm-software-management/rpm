@@ -19,7 +19,8 @@ static int findMatches(rpmdb db, char * name, char * version, char * release,
 		       dbIndexSet * matches);
 static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
-			  char * owner, char * group, int uid, int gid);
+			  char * owner, char * group, int uid, int gid,
+			  char * linkto);
 
 static char * getString(Header h, int tag, char * def) {
     char * str;
@@ -47,6 +48,7 @@ static void printHeader(Header h, int queryFlags) {
     char * fileStatesList;
     char * sourcePackage;
     char ** fileOwnerList, ** fileGroupList;
+    char ** fileLinktoList;
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
     int_32 * fileUIDList, * fileGIDList;
     int_16 * fileModeList;
@@ -131,6 +133,8 @@ static void printHeader(Header h, int queryFlags) {
 			 (void **) &fileOwnerList, &count);
 		getEntry(h, RPMTAG_FILEGROUPNAME, &type, 
 			 (void **) &fileGroupList, &count);
+		getEntry(h, RPMTAG_FILELINKTOS, &type, 
+			 (void **) &fileLinktoList, &count);
 
 		for (i = 0; i < count; i++) {
 		    if (!((queryFlags & QUERY_FOR_DOCS) || 
@@ -159,17 +163,18 @@ static void printHeader(Header h, int queryFlags) {
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], fileOwnerList[i], 
 					  fileGroupList[i], fileUIDList[i], 
-					  fileGIDList[i]);
+					  fileGIDList[i], fileLinktoList[i]);
 			else
 			    printFileInfo(fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], NULL, 
 					  NULL, fileUIDList[i], 
-					  fileGIDList[i]);
+					  fileGIDList[i], fileLinktoList[i]);
 		    }
 		}
 	    
 		free(fileList);
+		free(fileLinktoList);
 		if (fileOwnerList) free(fileOwnerList);
 		if (fileGroupList) free(fileGroupList);
 	    }
@@ -179,7 +184,8 @@ static void printHeader(Header h, int queryFlags) {
 
 static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
-			  char * owner, char * group, int uid, int gid) {
+			  char * owner, char * group, int uid, int gid,
+			  char * linkto) {
     char * perms = "----------";
     char sizefield[15];
     char ownerfield[9], groupfield[9];
@@ -189,6 +195,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     static int thisYear = 0;
     static int thisMonth = 0;
     struct tm * tstruct;
+    char * namefield = name;
    
     if (!thisYear) {
 	currenttime = time(NULL);
@@ -226,8 +233,11 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 
     if (S_ISDIR(mode)) 
 	perms[0] = 'd';
-    else if (S_ISLNK(mode)) 
+    else if (S_ISLNK(mode)) {
 	perms[0] = 'l';
+	namefield = alloca(strlen(name) + strlen(linkto) + 10);
+	sprintf(namefield, "%s -> %s", name, linkto);
+    }
     else if (S_ISFIFO(mode)) 
 	perms[0] = 'p';
     else if (S_ISSOCK(mode)) 
@@ -251,7 +261,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 	strftime(timefield, sizeof(timefield) - 1, "%b %d  %Y", tstruct);
 
     printf("%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
-		sizefield, timefield, name);
+		sizefield, timefield, namefield);
 }
 
 static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags) {
