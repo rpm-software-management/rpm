@@ -12,6 +12,7 @@
 	- don't use mktemp if mkstemp is available (#103850).
 	- use -fPIC -DPIC on all platforms, not just mandatory (#112713).
 	- python: return None for NEVRAO, [] for everything else.
+	- python: throw exception on bad arg to labelCompare (#113661).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

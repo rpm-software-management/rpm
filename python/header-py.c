@@ -998,6 +998,11 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 			  &e1, &v1, &r1,
 			  &e2, &v2, &r2)) return NULL;
 
+    if (!v1 || !v2 || !r1  || !r2) {
+	PyErr_SetString(pyrpmError, "Invalid version or release - possibly None");
+	return NULL;
+    }
+
     if (e1 && !e2)
 	return Py_BuildValue("i", 1);
     else if (!e1 && e2)
