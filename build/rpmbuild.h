@@ -124,7 +124,7 @@ void freePackage(Package p);
 /* from build/reqprov.h */
 
 int addReqProv(Spec spec, Package pkg,
-	       int flag, char *name, char *version, int index);
+		int flag, char *name, char *version, int index);
 
 /* from build/files.h */
 
@@ -134,7 +134,7 @@ int processSourceFiles(Spec spec);
 /* global entry points */
 
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
-	      int inBuildArch, char *passPhrase, char *cookie);
+		int inBuildArch, char *passPhrase, char *cookie);
 int buildSpec(Spec spec, int what, int test);
 
 int packageBinaries(Spec spec);

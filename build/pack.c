@@ -3,8 +3,8 @@
 #include <signal.h>
 
 #include "rpmbuild.h"
+#include "buildio.h"
 
-#include "lib/cpio.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 
@@ -14,18 +14,7 @@ static int processScriptFiles(Spec spec, Package pkg);
 static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb);
 static int addFileToTag(Spec spec, char *file, Header h, int tag);
 static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
-static int writeRPM(Header header, char *fileName, int type,
-		    struct cpioFileMapping *cpioList, int cpioCount,
-		    char *passPhrase, char **cookie);
 
-typedef struct cpioSourceArchive {
-    int		cpioFlags;
-    int		cpioArchiveSize;
-    int		cpioFdIn;
-    struct cpioFileMapping *cpioList;
-    int		cpioCount;
-} CSA_t;
-    
 static int cpio_gzip(int fdo, CSA_t *csa);
 static int cpio_copy(int fdo, CSA_t *csa);
 
@@ -53,6 +42,7 @@ static int genSourceRpmName(Spec spec)
 
 int packageSources(Spec spec)
 {
+    CSA_t csabuf, *csa = &csabuf;
     char fileName[BUFSIZ];
     HeaderIterator iter;
     int_32 tag, count;
@@ -85,13 +75,18 @@ int packageSources(Spec spec)
 
     FREE(spec->cookie);
     
+    csa->cpioArchiveSize = 0;
+    csa->cpioFdIn = -1;
+    csa->cpioList = spec->sourceCpioList;
+    csa->cpioCount = spec->sourceCpioCount;
+
     return writeRPM(spec->sourceHeader, fileName, RPMLEAD_SOURCE,
-		    spec->sourceCpioList, spec->sourceCpioCount,
-		    spec->passPhrase, &(spec->cookie));
+		    csa, spec->passPhrase, &(spec->cookie));
 }
 
 int packageBinaries(Spec spec)
 {
+    CSA_t csabuf, *csa = &csabuf;
     int rc;
     char *binFormat, *binRpm, *errorString;
     char *name, fileName[BUFSIZ];
@@ -137,9 +132,13 @@ int packageBinaries(Spec spec)
 	sprintf(fileName, "%s/%s", rpmGetVar(RPMVAR_RPMDIR), binRpm);
 	FREE(binRpm);
 
+	csa->cpioArchiveSize = 0;
+	csa->cpioFdIn = -1;
+	csa->cpioList = pkg->cpioList;
+	csa->cpioCount = pkg->cpioCount;
+
 	if ((rc = writeRPM(pkg->header, fileName, RPMLEAD_BINARY,
-			   pkg->cpioList, pkg->cpioCount,
-			   spec->passPhrase, NULL))) {
+			    csa, spec->passPhrase, NULL))) {
 	    return rc;
 	}
 	
@@ -149,23 +148,16 @@ int packageBinaries(Spec spec)
     return 0;
 }
 
-static int writeRPM(Header header, char *fileName, int type,
-		    struct cpioFileMapping *cpioList, int cpioCount,
-		    char *passPhrase, char **cookie)
+int writeRPM(Header header, char *fileName, int type,
+		    CSA_t *csa, char *passPhrase, char **cookie)
 {
-    CSA_t csabuf, *csa = &csabuf;
     int fd, ifd, rc, count, arch, os, sigtype;
     char *sigtarget, *name, *version, *release;
     char buf[BUFSIZ];
     Header sig;
     struct rpmlead lead;
 
-    csa->cpioFlags = 0;
     csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = -1;
-    csa->cpioList = cpioList;
-    csa->cpioCount = cpioCount;
-
     /* Add the a bogus archive size to the Header */
     headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
 		   &csa->cpioArchiveSize, 1);
@@ -185,7 +177,15 @@ static int writeRPM(Header header, char *fileName, int type,
     headerWrite(fd, header, HEADER_MAGIC_YES);
 	     
     /* Write the archive and get the size */
-    if ((rc = cpio_gzip(fd, csa)) != 0) {
+    if (csa->cpioList != NULL) {
+	rc = cpio_gzip(fd, csa);
+    } else if (csa->cpioFdIn >= 0) {
+	rc = cpio_copy(fd, csa);
+    } else {
+	rpmError(RPMERR_CREATE, "Bad CSA data");
+	rc = RPMERR_BADARG;
+    }
+    if (rc != 0) {
 	close(fd);
 	unlink(sigtarget);
 	free(sigtarget);
@@ -288,13 +288,13 @@ static int writeRPM(Header header, char *fileName, int type,
     return 0;
 }
 
-static int cpio_gzip(int fd, CSA_t *csa) {
-    CFD_t cfdbuf, *cfd = &cfdbuf;
+static int cpio_gzip(int fdo, CSA_t *csa) {
+    CFD_t *cfd = &csa->cpioCfd;
     int rc;
     char *failedFile;
 
     cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdopen(fd, "w9");
+    cfd->cpioGzFd = gzdopen(fdo, "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     gzclose(cfd->cpioGzFd);
@@ -322,6 +322,7 @@ static int cpio_copy(int fdo, CSA_t *csa) {
 		strerror(errno));
 	    return 1;
 	}
+	csa->cpioArchiveSize += nb;
     }
     if (nb < 0) {
 	rpmError(RPMERR_CPIO, "cpio_copy read failed: %s", strerror(errno));

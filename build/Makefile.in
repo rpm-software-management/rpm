@@ -38,6 +38,8 @@ pack.o: pack.c
 files.o: files.c
 	$(CC) $(CFLAGS) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
 
+rpminject: rpminject.o ../build/librpmbuild.a ../popt/libpopt.a ../lib/librpm.a
+
 install:
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpmbuild.h $(INCDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpmspec.h $(INCDIR)

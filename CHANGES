@@ -1,6 +1,7 @@
 2.5.3 -> 2.9
+	- writeRPM can now copy cpio archive from fd.
 	- add special case code for "/" in %files.
-	- preliminary macro invironment as side effect of rpmrc parse.
+	- preliminary macro environment as side effect of rpmrc parse.
 	- macro handling in rpmlib -- rework include: tag with macro expansion.
 	- first attempt at librpmbuild API.
         - fixed lib/rpmrc.c to accept include: tags (AdV)

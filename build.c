@@ -6,35 +6,9 @@
 int buildplatform(char *arg, int buildAmount, char *passPhrase,
 	         char *buildRoot, int fromTarball, int test, char *cookie);
 
-int build(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRoot, int fromTarball, int test, char *cookie,
-                 char * rcfile, char * arch, char * os, 
-                 char *buildplatforms) {
-
-  char * platform;
-
-  /* parse up the build operators */
-
-  printf("building these platforms: %s\n",buildplatforms);
-
-  if (buildplatforms) {
-    while(platform = strsep(&buildplatforms,",")) {
-       printf("building %s\n",platform);
-
-       rpmSetVar(RPMVAR_BUILDPLATFORM,platform);
-       rpmReadConfigFiles(rcfile, arch, os, 1,platform);
-       buildplatform(arg,buildAmount,passPhrase,buildRoot,
-           fromTarball,test,cookie);
-    }
-  } else {
-       buildplatform(arg,buildAmount,passPhrase,buildRoot,
-           fromTarball,test,cookie);
-  }
-}
-
-
 int buildplatform(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRoot, int fromTarball, int test, char *cookie) {
+	         char *buildRoot, int fromTarball, int test, char *cookie)
+{
 
     FILE *f;
     char * specfile;
@@ -163,4 +137,36 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
     freeSpec(spec);
     
     return res;
+}
+
+int build(char *arg, int buildAmount, char *passPhrase,
+	         char *buildRoot, int fromTarball, int test, char *cookie,
+                 char * rcfile, char * arch, char * os, 
+                 char *buildplatforms)
+{
+    char * platform;
+    int rc;
+
+    /* parse up the build operators */
+
+    printf("building these platforms: %s\n", buildplatforms);
+
+    if (buildplatforms == NULL) {
+	rc =  buildplatform(arg, buildAmount, passPhrase, buildRoot,
+		fromTarball, test, cookie);
+	return rc;
+    }
+
+    while((platform = strsep(&buildplatforms,",")) != NULL) {
+	printf("building %s\n", platform);
+
+	rpmSetVar(RPMVAR_BUILDPLATFORM,platform);
+	rpmReadConfigFiles(rcfile, arch, os, 1, platform);
+	rc = buildplatform(arg, buildAmount, passPhrase, buildRoot,
+	    fromTarball, test, cookie);
+	if (rc)
+	    return rc;
+    }
+
+    return 0;
 }

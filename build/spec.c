@@ -1,8 +1,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
-
-#include "lib/cpio.h"
+#include "buildio.h"
 
 #ifdef	DYING
 static void freeTriggerFiles(struct TriggerFileEntry *p);
@@ -60,22 +59,17 @@ int lookupPackage(Spec spec, char *name, int flag, Package *pkg)
 	fullName = name;
     }
 
-    p = spec->packages;
-    while (p) {
+    for (p = spec->packages; p != NULL; p = p->next) {
 	headerGetEntry(p->header, RPMTAG_NAME, NULL, (void *) &n, NULL);
 	if (n && (! strcmp(fullName, n))) {
-	    if (pkg) {
-		*pkg = p;
-	    }
-	    return 0;
+	    break;
 	}
-	p = p->next;
     }
 
     if (pkg) {
-	*pkg = NULL;
+	*pkg = p;
     }
-    return 1;
+    return ((p == NULL) ? 1 : 0);
 }
 
 Package newPackage(Spec spec)

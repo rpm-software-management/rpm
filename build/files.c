@@ -4,9 +4,9 @@
 #include <signal.h>	/* getOutputFrom() */
 
 #include "rpmbuild.h"
+#include "buildio.h"
 
 #include "myftw.h"
-#include "lib/cpio.h"
 #include "md5.h"
 #include "rpmmacro.h"
 
