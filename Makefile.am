@@ -29,7 +29,7 @@ mylibs=	$(top_builddir)/build/librpmbuild.la \
 
 LDFLAGS = @LDFLAGS_STATIC@
 
-rpmbindir = $(subst usr/bin,bin,$(bindir))
+rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio
