@@ -336,9 +336,9 @@ static int hdr_compare(hdrObject * a, hdrObject * b)
     return rpmVersionCompare(a->h, b->h);
 }
 
-static long hdr_hash(hdrObject *h)
+static long hdr_hash(PyObject * h)
 {
-    return h;
+    return (long) h;
 }
 
 /** \ingroup python

@@ -20,13 +20,15 @@ DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 AM_CFLAGS = -Wall -Werror
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
 
-lib_LIBRARIES = libdw.a
-noinst_LIBRARIES = libdw_pic.a
+LINT = splint
+
+#lib_LIBRARIES = libdw.a
+noinst_LIBRARIES = libdw.a libdw_pic.a
 noinst_PROGRAMS = $(noinst_LIBRARIES:_pic.a=.so)
 
-include_HEADERS = dwarf.h
-euincludedir = ${includedir}/elfutils
-euinclude_HEADERS = libdw.h
+#include_HEADERS = dwarf.h
+#euincludedir = ${includedir}/elfutils
+#euinclude_HEADERS = libdw.h
 
 libdw_a_SOURCES = dwarf_begin.c dwarf_begin_elf.c dwarf_end.c dwarf_get_elf.c \
 		  dwarf_error.c
@@ -52,19 +54,25 @@ libdw.so: libdw_pic.a libdw.map
 	fi
 
 install: install-am libdw.so
-	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	$(INSTALL_PROGRAM) libdw.so $(DESTDIR)$(libdir)/libdw-$(PACKAGE_VERSION).so
-	ln -fs libdw-$(PACKAGE_VERSION).so $(DESTDIR)$(libdir)/libdw.so.$(VERSION)
-	ln -fs libdw.so.$(VERSION) $(DESTDIR)$(libdir)/libdw.so
+#	$(mkinstalldirs) $(DESTDIR)$(libdir)
+#	$(INSTALL_PROGRAM) libdw.so $(DESTDIR)$(libdir)/libdw-$(PACKAGE_VERSION).so
+#	ln -fs libdw-$(PACKAGE_VERSION).so $(DESTDIR)$(libdir)/libdw.so.$(VERSION)
+#	ln -fs libdw.so.$(VERSION) $(DESTDIR)$(libdir)/libdw.so
 
 uninstall: uninstall-am
-	rm -f $(DESTDIR)$(libdir)/libdw-$(PACKAGE_VERSION).so
-	rm -f $(DESTDIR)$(libdir)/libdw.so.$(VERSION)
-	rm -f $(DESTDIR)$(libdir)/libdw.so
-	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(includedir)/elfutils
+#	rm -f $(DESTDIR)$(libdir)/libdw-$(PACKAGE_VERSION).so
+#	rm -f $(DESTDIR)$(libdir)/libdw.so.$(VERSION)
+#	rm -f $(DESTDIR)$(libdir)/libdw.so
+#	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(includedir)/elfutils
 
-noinst_HEADERS = libdwP.h memory-access.h
+noinst_HEADERS = libdwP.h memory-access.h \
+	dwarf.h libdw.h
 
 EXTRA_DIST = libdw.map
+
+.PSEUDO: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) \
+		$(addprefix $(srcdir)/,$(libdw_a_SOURCES))
 
 CLEANFILES = $(am_libdw_pic_a_OBJECTS)

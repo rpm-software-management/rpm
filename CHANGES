@@ -33,6 +33,7 @@
 	- upgrade to elfutils-0.59.
 	- add -g to all platforms optflags.
 	- build with external elfutils (preferred), if available.
+	- upgrade to elfutils-0.63.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
