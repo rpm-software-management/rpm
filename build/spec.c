@@ -967,7 +967,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    error(RPMERR_INTERNAL, "Package lookup failed: %s", s);
 		    return NULL;
 	        }
-	        message(MESS_DEBUG, "Switched to package: %s\n", s);
+	        message(MESS_DEBUG, "Switched to package: %s\n", 
+			s ? s : "(main)");
 	    }
 
 	    if (cur_part == FILES_PART) {
