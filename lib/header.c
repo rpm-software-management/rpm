@@ -159,9 +159,14 @@ Header copyHeader(Header h)
     /* The result here is that the data is also sorted */
     while (nextIterator(headerIter, &tag, &type, &ptr, &count)) {
 	addEntry(res, tag, type, ptr, count);
+
+	if (type == STRING_ARRAY_TYPE) free(ptr);
     }
 
     res->fully_sorted = 1;
+
+    freeIterator(headerIter);
+
     return res;
 }
 
@@ -223,7 +228,7 @@ void writeHeader(int fd, Header h, int magicp)
     write(fd, converted_data, h->data_used);
     free(converted_data);
 
-    free(h);
+    freeHeader(h);
 }
 
 static void *dataHostToNetwork(Header h)
