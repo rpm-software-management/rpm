@@ -108,15 +108,20 @@ struct timeb {
    unportable getdate.c's), but that seems to cause as many problems
    as it solves.  */
 
+#if 0
 extern struct tm	*gmtime();
 extern struct tm	*localtime();
+#endif
+
+extern time_t get_date(char * p, struct timeb * now);
 
 #define yyparse getdate_yyparse
 #define yylex getdate_yylex
 #define yyerror getdate_yyerror
 
-static int yylex ();
-static int yyerror ();
+static int yyparse (void);
+static int yylex (void);
+static int yyerror(const char * s);
 
 #define EPOCH		1970
 #define HOUR(x)		((time_t)(x) * 60)
@@ -422,7 +427,7 @@ static TABLE const MonthDayTable[] = {
     { "thurs",		tDAY, 4 },
     { "friday",		tDAY, 5 },
     { "saturday",	tDAY, 6 },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 /* Time units table. */
@@ -437,7 +442,7 @@ static TABLE const UnitsTable[] = {
     { "min",		tMINUTE_UNIT,	1 },
     { "second",		tSEC_UNIT,	1 },
     { "sec",		tSEC_UNIT,	1 },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 /* Assorted relative-time words. */
@@ -462,7 +467,7 @@ static TABLE const OtherTable[] = {
     { "eleventh",	tUNUMBER,	11 },
     { "twelfth",	tUNUMBER,	12 },
     { "ago",		tAGO,	1 },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 /* The timezone table. */
@@ -547,7 +552,7 @@ static TABLE const TimezoneTable[] = {
     { "nzst",	tZONE,     -HOUR(12) },	/* New Zealand Standard */
     { "nzdt",	tDAYZONE,  -HOUR(12) },	/* New Zealand Daylight */
     { "idle",	tZONE,     -HOUR(12) },	/* International Date Line East */
-    {  NULL  }
+    {  NULL, 0, 0  }
 };
 
 /* Military timezone table. */
@@ -577,7 +582,7 @@ static TABLE const MilitaryTable[] = {
     { "x",	tZONE,	HOUR(-11) },
     { "y",	tZONE,	HOUR(-12) },
     { "z",	tZONE,	HOUR(  0) },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 
@@ -585,19 +590,14 @@ static TABLE const MilitaryTable[] = {
 
 /* ARGSUSED */
 static int
-yyerror(s)
-    char	*s;
+yyerror(const char * s)
 {
   return 0;
 }
 
 
 static time_t
-ToSeconds(Hours, Minutes, Seconds, Meridian)
-    time_t	Hours;
-    time_t	Minutes;
-    time_t	Seconds;
-    MERIDIAN	Meridian;
+ToSeconds(time_t Hours, time_t Minutes, time_t Seconds, MERIDIAN Meridian)
 {
     if (Minutes < 0 || Minutes > 59 || Seconds < 0 || Seconds > 59)
 	return -1;
@@ -630,15 +630,9 @@ ToSeconds(Hours, Minutes, Seconds, Meridian)
    * A number from 0 to 99, which means a year from 1900 to 1999, or
    * The actual year (>=100).  */
 static time_t
-Convert(Month, Day, Year, Hours, Minutes, Seconds, Meridian, DSTmode)
-    time_t	Month;
-    time_t	Day;
-    time_t	Year;
-    time_t	Hours;
-    time_t	Minutes;
-    time_t	Seconds;
-    MERIDIAN	Meridian;
-    DSTMODE	DSTmode;
+Convert(time_t Month, time_t Day, time_t Year,
+	time_t Hours, time_t Minutes, time_t Seconds,
+	MERIDIAN Meridian, DSTMODE DSTmode)
 {
     static int DaysInMonth[12] = {
 	31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
@@ -680,9 +674,7 @@ Convert(Month, Day, Year, Hours, Minutes, Seconds, Meridian, DSTmode)
 
 
 static time_t
-DSTcorrect(Start, Future)
-    time_t	Start;
-    time_t	Future;
+DSTcorrect(time_t Start, time_t Future)
 {
     time_t	StartDay;
     time_t	FutureDay;
@@ -694,10 +686,7 @@ DSTcorrect(Start, Future)
 
 
 static time_t
-RelativeDate(Start, DayOrdinal, DayNumber)
-    time_t	Start;
-    time_t	DayOrdinal;
-    time_t	DayNumber;
+RelativeDate(time_t Start, time_t DayOrdinal, time_t DayNumber)
 {
     struct tm	*tm;
     time_t	now;
@@ -711,9 +700,7 @@ RelativeDate(Start, DayOrdinal, DayNumber)
 
 
 static time_t
-RelativeMonth(Start, RelMonth)
-    time_t	Start;
-    time_t	RelMonth;
+RelativeMonth(time_t Start, time_t RelMonth)
 {
     struct tm	*tm;
     time_t	Month;
@@ -733,8 +720,7 @@ RelativeMonth(Start, RelMonth)
 
 
 static int
-LookupWord(buff)
-    char		*buff;
+LookupWord(char * buff)
 {
     register char	*p;
     register char	*q;
@@ -840,7 +826,7 @@ LookupWord(buff)
 
 
 static int
-yylex()
+yylex(void)
 {
     register char	c;
     register char	*p;
@@ -889,17 +875,18 @@ yylex()
 		Count--;
 	} while (Count > 0);
     }
+    /*@notreached@*/
+    return 0;
 }
 
 #define TM_YEAR_ORIGIN 1900
 
 /* Yield A - B, measured in seconds.  */
 static long
-difftm (a, b)
-     struct tm *a, *b;
+difftm (const struct tm * a, const struct tm * b)
 {
-  int ay = a->tm_year + (TM_YEAR_ORIGIN - 1);
-  int by = b->tm_year + (TM_YEAR_ORIGIN - 1);
+  unsigned ay = a->tm_year + (TM_YEAR_ORIGIN - 1);
+  unsigned by = b->tm_year + (TM_YEAR_ORIGIN - 1);
   int days = (
 	      /* difference in day of year */
 	      a->tm_yday - b->tm_yday
@@ -916,9 +903,7 @@ difftm (a, b)
 }
 
 time_t
-get_date(p, now)
-    char		*p;
-    struct timeb	*now;
+get_date(char * p, struct timeb * now)
 {
     struct tm		*tm, gmt;
     struct timeb	ftz;
@@ -927,6 +912,7 @@ get_date(p, now)
     time_t nowtime;
 
     yyInput = p;
+    memset(&gmt, 0, sizeof(gmt));
     if (now == NULL) {
 	struct tm *gmt_ptr;
 
@@ -947,7 +933,9 @@ get_date(p, now)
 	    return -1;
 
 	if (gmt_ptr != NULL)
+	    /*@-observertrans -dependenttrans@*/
 	    ftz.timezone = difftm (&gmt, tm) / 60;
+	    /*@=observertrans =dependenttrans@*/
 	else
 	    /* We are on a system like VMS, where the system clock is
 	       in local time and the system has no concept of timezones.
@@ -982,9 +970,11 @@ get_date(p, now)
     yyHaveTime = 0;
     yyHaveZone = 0;
 
+    /*@-unrecog@*/
     if (yyparse()
      || yyHaveTime > 1 || yyHaveZone > 1 || yyHaveDate > 1 || yyHaveDay > 1)
 	return -1;
+    /*@=unrecog@*/
 
     if (yyHaveDate || yyHaveTime || yyHaveDay) {
 	Start = Convert(yyMonth, yyDay, yyYear, yyHour, yyMinutes, yySeconds,

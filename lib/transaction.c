@@ -62,14 +62,19 @@ struct diskspaceInfo {
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
-static void freeFl(rpmTransactionSet ts, TFI_t flList)
+static /*@null@*/ void * freeFl(rpmTransactionSet ts, /*@only@*/ /*@null@*/ TFI_t flList)
 {
-    TFI_t fi;
-    int oc;
+    if (flList) {
+	TFI_t fi;
+	int oc;
 
-    for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
-	freeFi(fi);
+	/*@-usereleased@*/
+	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++)
+	    freeFi(fi);
+	flList = _free(flList);
+	/*@=usereleased@*/
     }
+    return NULL;
 }
 
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
@@ -422,7 +427,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	const char ** actualRelocations;
 	int numActual;
 
-	actualRelocations = xmalloc(sizeof(*actualRelocations) * numValid);
+	actualRelocations = xmalloc(numValid * sizeof(*actualRelocations));
 	numActual = 0;
 	for (i = 0; i < numValid; i++) {
 	    for (j = 0; j < numRelocations; j++) {
@@ -588,7 +593,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	    const char ** newDirList;
 
 	    haveRelocatedFile = 1;
-	    newDirList = xmalloc(sizeof(*newDirList) * (dirCount + 1));
+	    newDirList = xmalloc((dirCount + 1) * sizeof(*newDirList));
 	    for (j = 0; j < dirCount; j++)
 		newDirList[j] = alloca_strdup(dirNames[j]);
 	    dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
@@ -870,7 +875,7 @@ static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
     h = rpmdbNextIterator(mi);
     if (h == NULL) {
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 	return 1;
     }
 
@@ -881,7 +886,7 @@ static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
     hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &otherFlags, NULL);
     hge(h, RPMTAG_FILESIZES, NULL, (void **) &otherSizes, NULL);
 
-    fi->replaced = xmalloc(sizeof(*fi->replaced) * sharedCount);
+    fi->replaced = xmalloc(sharedCount * sizeof(*fi->replaced));
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
@@ -931,7 +936,7 @@ static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
 
     otherMd5s = hfd(otherMd5s, omtype);
     otherLinks = hfd(otherLinks, oltype);
-    rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
 
     fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
 			   sizeof(*fi->replaced) * (numReplaced + 1));
@@ -955,7 +960,7 @@ static int handleRmvdInstalledFiles(TFI_t fi, rpmdb db,
 			&shared->otherPkg, sizeof(shared->otherPkg));
     h = rpmdbNextIterator(mi);
     if (h == NULL) {
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 	return 1;
     }
 
@@ -972,7 +977,7 @@ static int handleRmvdInstalledFiles(TFI_t fi, rpmdb db,
 	fi->actions[fileNum] = FA_SKIP;
     }
 
-    rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
 
     return 0;
 }
@@ -1375,7 +1380,7 @@ static int tsGetOc(void * this) {
 
 /**
  */
-static struct availablePackage * tsGetAlp(void * this) {
+static /*@dependent@*/ struct availablePackage * tsGetAlp(void * this) {
     struct tsIterator_s * iter = this;
     struct availablePackage * alp = NULL;
     int oc = iter->ocsave;
@@ -1422,7 +1427,7 @@ static void * tsInitIterator(/*@kept@*/ const void * this)
  * @param this		file info iterator
  * @return		next index, -1 on termination
  */
-static TFI_t tsNextIterator(void * this) {
+static /*@dependent@*/ TFI_t tsNextIterator(void * this) {
     struct tsIterator_s * iter = this;
     rpmTransactionSet ts = iter->ts;
     TFI_t fi = NULL;
@@ -1570,7 +1575,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
 		ensureOlder(alp, oldH, ts->probs);
-	    rpmdbFreeIterator(mi);
+	    mi = rpmdbFreeIterator(mi);
 	}
 
 	/* XXX multilib should not display "already installed" problems */
@@ -1584,7 +1589,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 			NULL, NULL, NULL, 0);
 		break;
 	    }
-	    rpmdbFreeIterator(mi);
+	    mi = rpmdbFreeIterator(mi);
 	}
 
 	totalFileCount += alp->filesCount;
@@ -1604,37 +1609,34 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
 		totalFileCount += fileCount;
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
     }
 
     /* ===============================================
      * Initialize file list:
      */
     ts->flEntries = ts->addedPackages.size + ts->numRemovedPackages;
-    ts->flList = alloca(sizeof(*ts->flList) * (ts->flEntries));
+    ts->flList = xcalloc(ts->flEntries, sizeof(*ts->flList));
 
     /*
      * FIXME?: we'd be better off assembling one very large file list and
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
-	const char **preTrans;
-	int preTransCount;
-
-	memset(fi, 0, sizeof(*fi));
+    tsi = tsInitIterator(ts);
+    while ((fi = tsNextIterator(tsi)) != NULL) {
+	oc = tsGetOc(tsi);
 	fi->magic = TFIMAGIC;
-	preTrans = NULL;
-	preTransCount = 0;
 
+	/* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
 	fi->type = ts->order[oc].type;
 	switch (fi->type) {
 	case TR_ADDED:
 	    i = ts->order[oc].u.addedIndex;
-	    alp = ts->addedPackages.list + i;
-	    fi->ap = alp;
+	    /* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
+	    fi->ap = tsGetAlp(tsi);
 	    fi->record = 0;
-	    loadFi(alp->h, fi);
+	    loadFi(fi->ap->h, fi);
 	    if (fi->fc == 0) {
 		hdrs[i] = headerLink(fi->h);
 		continue;
@@ -1642,13 +1644,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	    /* Allocate file actions (and initialize to FA_UNKNOWN) */
 	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	    hdrs[i] = relocateFileList(ts, fi, alp, fi->h, fi->actions);
+	    hdrs[i] = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    skipFiles(ts, fi);
 	    break;
 	case TR_REMOVED:
-	    fi->ap = alp = NULL;
+	    fi->ap = NULL;
 	    fi->record = ts->order[oc].u.removed.dboffset;
 	    {	rpmdbMatchIterator mi;
 
@@ -1656,7 +1658,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 				&fi->record, sizeof(fi->record));
 		if ((fi->h = rpmdbNextIterator(mi)) != NULL)
 		    fi->h = headerLink(fi->h);
-		rpmdbFreeIterator(mi);
+		mi = rpmdbFreeIterator(mi);
 	    }
 	    if (fi->h == NULL) {
 		/* ACK! */
@@ -1668,8 +1670,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
 
 	if (fi->fc)
-	    fi->fps = xmalloc(sizeof(*fi->fps) * fi->fc);
+	    fi->fps = xmalloc(fi->fc * sizeof(*fi->fps));
     }
+    tsi = tsFreeIterator(tsi);
 
     /* Open all database indices before installing. */
     rpmdbOpenAll(ts->rpmdb);
@@ -1686,14 +1689,18 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
-    for (fi = ts->flList; (fi - ts->flList) < ts->flEntries; fi++) {
+    tsi = tsInitIterator(ts);
+    while ((fi = tsNextIterator(tsi)) != NULL) {
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 	for (i = 0; i < fi->fc; i++) {
 	    if (XFA_SKIPPING(fi->actions[i]))
 		continue;
+	    /*@-dependenttrans@*/
 	    htAddEntry(ht, fi->fps + i, fi);
+	    /*@=dependenttrans@*/
 	}
     }
+    tsi = tsFreeIterator(tsi);
 
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
 	NULL, ts->notifyData));
@@ -1701,7 +1708,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-    for (fi = ts->flList; (fi - ts->flList) < ts->flEntries; fi++) {
+    tsi = tsInitIterator(ts);
+    while ((fi = tsNextIterator(tsi)) != NULL) {
 	dbiIndexSet * matches;
 	int knownBad;
 
@@ -1713,14 +1721,14 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(sizeof(*matches), fi->fc);
 	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc))
-	    return 1;
+	    return 1;	/* XXX WTFO? */
 
 	numShared = 0;
 	for (i = 0; i < fi->fc; i++)
 	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
-	shared = sharedList = xmalloc(sizeof(*sharedList) * (numShared + 1));
+	shared = sharedList = xmalloc((numShared + 1) * sizeof(*sharedList));
 	for (i = 0; i < fi->fc; i++) {
 	    /*
 	     * Take care not to mark files as replaced in packages that will
@@ -1829,15 +1837,16 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    break;
 	}
     }
-
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
-	NULL, ts->notifyData));
+    tsi = tsFreeIterator(tsi);
 
     if (ts->chrootDone) {
 	/*@-unrecog@*/ chroot("."); /*@-unrecog@*/
 	ts->chrootDone = 0;
 	chdir(ts->currDir);
     }
+
+    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
+	NULL, ts->notifyData));
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1868,7 +1877,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    headerFree(hdrs[alp - ts->addedPackages.list]);
 	}
 
-	freeFl(ts, ts->flList);
+	ts->flList = freeFl(ts, ts->flList);
+	ts->flEntries = 0;
 	return ts->orderCount;
     }
 
@@ -1982,7 +1992,8 @@ if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
     }
     tsi = tsFreeIterator(tsi);
 
-    freeFl(ts, ts->flList);
+    ts->flList = freeFl(ts, ts->flList);
+    ts->flEntries = 0;
 
     if (ourrc)
     	return -1;

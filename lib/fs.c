@@ -7,6 +7,8 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 #include "debug.h"
 
+/*@-usereleased -onlytrans@*/
+
 struct fsinfo {
 /*@only@*/ const char * mntPoint;	/*!< path to mount point. */
     dev_t dev;				/*!< devno for mount point. */
@@ -167,8 +169,10 @@ static int getFilesystemList(void)
 	    item = *itemptr;	/* structure assignment */
 	    mntdir = item.our_mntdir;
 #if defined(MNTOPT_RO)
+	    /*@-compdef@*/
 	    if (hasmntopt(itemptr, MNTOPT_RO) != NULL)
 		rdonly = 1;
+	    /*@=compdef@*/
 #endif
 #	elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
@@ -329,3 +333,4 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
     return 0;
 }
+/*@=usereleased =onlytrans@*/

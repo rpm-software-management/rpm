@@ -56,7 +56,9 @@ char ** splitString(const char * str, int length, char sep)
 
 void freeSplitString(char ** list)
 {
+    /*@-unqualifiedtrans@*/
     list[0] = _free(list[0]);
+    /*@=unqualifiedtrans@*/
     list = _free(list);
 }
 
@@ -355,7 +357,9 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 
 errxit:
     tempfn = _free(tempfn);
+    /*@-usereleased@*/
     if (fd) Fclose(fd);
+    /*@=usereleased@*/
     return 1;
 }
 
@@ -430,6 +434,7 @@ void compressFilelist(Header h)
 	char savechar;
 	int len = baseName - fileNames[i];
 
+	needle = dirNames;
 	savechar = *baseName;
 	*baseName = '\0';
 	if (dirIndex < 0 ||
@@ -656,7 +661,9 @@ if (_debug)
 fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 	    argv[argc++] = xstrdup(globURL);
 	}
+	/*@-immediatetrans@*/
 	Globfree(&gl);
+	/*@=immediatetrans@*/
 	globURL = _free(globURL);
     }
     if (argv != NULL && argc > 0) {

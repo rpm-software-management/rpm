@@ -8,13 +8,13 @@
 #define __power_pc() 0
 #endif
 
-/*@ access FD_t @*/		/* compared with NULL */
-
 #include <rpmlib.h>
 #include <rpmmacro.h>
 
 #include "misc.h"
 #include "debug.h"
+
+/*@access FD_t@*/		/* compared with NULL */
 
 static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 
@@ -294,7 +294,9 @@ static int addCanon(struct canonEntry ** table, int * tableLen, char * line,
 	*table = xmalloc(2 * sizeof(struct canonEntry));
     } else {
 	(*tableLen) += 2;
+	/*@-unqualifiedtrans@*/
 	*table = xrealloc(*table, sizeof(struct canonEntry) * (*tableLen));
+	/*@=unqualifiedtrans@*/
     }
     t = & ((*table)[*tableLen - 2]);
 
@@ -342,10 +344,13 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 	*table = xmalloc(sizeof(struct defaultEntry));
     } else {
 	(*tableLen)++;
+	/*@-unqualifiedtrans@*/
 	*table = xrealloc(*table, sizeof(struct defaultEntry) * (*tableLen));
+	/*@=unqualifiedtrans@*/
     }
     t = & ((*table)[*tableLen - 1]);
 
+    /*@-temptrans@*/
     t->name = strtok(line, ": \t");
     t->defName = strtok(NULL, " \t");
     if (! (t->name && t->defName)) {
@@ -361,6 +366,7 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 
     t->name = xstrdup(t->name);
     t->defName = xstrdup(t->defName);
+    /*@=temptrans@*/
 
     return 0;
 }
@@ -370,9 +376,11 @@ static /*@null@*/ const struct canonEntry *lookupInCanonTable(const char *name,
 {
     while (tableLen) {
 	tableLen--;
-	if (!strcmp(name, table[tableLen].name)) {
-	    return &(table[tableLen]);
-	}
+	if (strcmp(name, table[tableLen].name))
+	    continue;
+	/*@-immediatetrans@*/
+	return &(table[tableLen]);
+	/*@=immediatetrans@*/
     }
 
     return NULL;
@@ -1003,25 +1011,25 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 		!strncmp(un.release, "4.0", 3))
 	{
 	    /* we are on ncr-sysv4 */
-	    char *prelid = NULL;
-	    FD_t fd;
-	    fd = Fopen("/etc/.relid", "r.fdio");
+	    char * prelid = NULL;
+	    FD_t fd = Fopen("/etc/.relid", "r.fdio");
+	    int gotit = 0;
 	    if (!Ferror(fd)) {
-		chptr = (char *) xcalloc(1, 256);
-		if (chptr != NULL) {
-		    int irelid = Fread(chptr, sizeof(*chptr), 256, fd);
+		chptr = xcalloc(1, 256);
+		{   int irelid = Fread(chptr, sizeof(*chptr), 256, fd);
 		    Fclose(fd);
 		    /* example: "112393 RELEASE 020200 Version 01 OS" */
 		    if (irelid > 0) {
-			if ((prelid=strstr(chptr, "RELEASE "))){
+			if ((prelid = strstr(chptr, "RELEASE "))){
 			    prelid += strlen("RELEASE ")+1;
 			    sprintf(un.sysname,"ncr-sysv4.%.*s",1,prelid);
+			    gotit = 1;
 			}
 		    }
-		    free (chptr);
 		}
+		chptr = _free (chptr);
 	    }
-	    if (prelid == NULL)	/* parsing /etc/.relid file failed? */
+	    if (!gotit)	/* parsing /etc/.relid file failed? */
 		strcpy(un.sysname,"ncr-sysv4");
 	    /* wrong, just for now, find out how to look for i586 later*/
 	    strcpy(un.machine,"i486");
@@ -1186,7 +1194,7 @@ const char *rpmGetVar(int var)
 }
 
 /* this doesn't free the passed pointer! */
-static void freeRpmVar(struct rpmvarValue * orig) {
+static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig) {
     struct rpmvarValue * next, * var = orig;
 
     while (var) {
@@ -1200,7 +1208,9 @@ static void freeRpmVar(struct rpmvarValue * orig) {
 }
 
 void rpmSetVar(int var, const char *val) {
+    /*@-immediatetrans@*/
     freeRpmVar(&values[var]);
+    /*@=immediatetrans@*/
     values[var].value = (val ? xstrdup(val) : NULL);
 }
 
@@ -1442,7 +1452,9 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
     else
 	ct = _free(ct);
     ca = _free(ca);
+    /*@-usereleased@*/
     co = _free(co);
+    /*@=usereleased@*/
 }
 
 void rpmFreeRpmrc(void)

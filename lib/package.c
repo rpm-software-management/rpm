@@ -19,6 +19,7 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 
+/*@-mods@*/
 void headerMergeLegacySigs(Header h, const Header sig)
 {
     HeaderIterator hi;
@@ -76,6 +77,7 @@ Header headerRegenSigHeader(const Header h)
     headerFreeIterator(hi);
     return sig;
 }
+/*@=mods@*/
 
 /**
  * Retrieve package components from file handle.
@@ -216,8 +218,10 @@ rpmRC rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
     }
    
     if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
+    /*@-mods@*/
     if (major) *major = lead.major;
     if (minor) *minor = lead.minor;
+    /*@=mods@*/
    
 exit:
     return rc;

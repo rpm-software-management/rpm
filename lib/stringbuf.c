@@ -82,7 +82,9 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
 	sb->tail = sb->buf + (sb->allocated - sb->free);
     }
     
+    /*@-mayaliasunique@*/
     strcpy(sb->tail, s);
+    /*@=mayaliasunique@*/
     sb->tail += l;
     sb->free -= l;
     if (nl) {

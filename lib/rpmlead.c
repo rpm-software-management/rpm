@@ -44,6 +44,7 @@ int writeLead(FD_t fd, struct rpmlead *lead)
 
 int readLead(FD_t fd, struct rpmlead *lead)
 {
+    memset(lead, 0, sizeof(*lead));
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
 	rpmError(RPMERR_READ, _("read failed: %s (%d)\n"), Fstrerror(fd), 
 	      errno);

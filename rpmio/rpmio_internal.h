@@ -5,7 +5,9 @@
  * \file rpmio/rpmio_internal.h
  */
 
+/*@-shadow@*/
 static inline int fdFileno(void * cookie);
+/*@=shadow@*/
 
 #include <rpmio.h>
 #include <rpmurl.h>
@@ -361,7 +363,9 @@ int ufdClose( /*@only@*/ void * cookie);
 	if (lenp) *lenp = 0;
 	return;
     }
+    /*@-mayaliasunique@*/
     rpmDigestFinal(fd->digest, datap, lenp, asAscii);
+    /*@=mayaliasunique@*/
     fd->digest = NULL;
 }
 
@@ -373,7 +377,9 @@ int ufdClose( /*@only@*/ void * cookie);
 	if (lenp) *lenp = 0;
 	return;
     }
+    /*@-mayaliasunique@*/
     rpmDigestFinal(fd->digest, datap, lenp, asAscii);
+    /*@=mayaliasunique@*/
     fd->digest = NULL;
 }
 

@@ -129,16 +129,17 @@ void htFree(hashTable ht)
 	while (b) {
 	    n = b->next;
 	    if (b->data) {
-		if (ht->freeData && *b->data) free((void *)*b->data);
-		free((void *)b->data);
+		if (ht->freeData)
+		    *b->data = _free(*b->data);
+		b->data = _free(b->data);
 	    }
-	    free(b);
+	    b = _free(b);
 	    b = n;
 	}
     }
 
-    free(ht->buckets);
-    free(ht);
+    ht->buckets = _free(ht->buckets);
+    ht = _free(ht);
 }
 
 int htHasEntry(hashTable ht, const void * key)

@@ -225,8 +225,8 @@ static int dirInfoCompare(const void * one, const void * two)	/*@*/
  * @return		available package pointer
  */
 static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList * al,
-		Header h, /*@dependent@*/ const void * key,
-		FD_t fd, rpmRelocation * relocs)
+		Header h, /*@null@*/ /*@dependent@*/ const void * key,
+		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -811,7 +811,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		}
 	    }
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
     }
 
     if (hge(h, RPMTAG_OBSOLETENAME, &ont, (void **) &obsoletes, &count)) {
@@ -848,7 +848,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		    removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 		}
 	    }
-	    rpmdbFreeIterator(mi);
+	    mi = rpmdbFreeIterator(mi);
 	  }
 	}
 
@@ -1120,10 +1120,10 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db files)\n"),
 			keyType, keyDepend+2);
-		rpmdbFreeIterator(mi);
+		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
-	    rpmdbFreeIterator(mi);
+	    mi = rpmdbFreeIterator(mi);
 	}
 
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_PROVIDENAME, keyName, 0);
@@ -1133,11 +1133,11 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db provides)\n"),
 			keyType, keyDepend+2);
-		rpmdbFreeIterator(mi);
+		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 
 #ifndef DYING
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, keyName, 0);
@@ -1147,18 +1147,20 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db package)\n"),
 			keyType, keyDepend+2);
-		rpmdbFreeIterator(mi);
+		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 #endif
 
     }
 
     if (suggestion)
+	/*@-dependenttrans@*/
 	*suggestion = alSatisfiesDepend(&ts->availablePackages, NULL, NULL,
 				keyName, keyEVR, keyFlags);
+	/*@=dependenttrans@*/
 
 unsatisfied:
     rpmMessage(RPMMESS_DEBUG, _("%s: %-45s NO\n"), keyType, keyDepend+2);
@@ -1356,7 +1358,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
  * Erasing: check name/provides/filename key against each requiredby match.
  */
 static int checkPackageSet(rpmTransactionSet ts, struct problemsSet * psp,
-	const char * key, /*@only@*/ rpmdbMatchIterator mi)
+	const char * key, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
 {
     Header h;
     int rc = 0;
@@ -1368,7 +1370,7 @@ static int checkPackageSet(rpmTransactionSet ts, struct problemsSet * psp,
 	    break;
 	}
     }
-    rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
 
     return rc;
 }
@@ -1617,8 +1619,8 @@ static int orderListIndexCmp(const void * one, const void * two)
  * @retval rp		address of last element
  */
 static void addQ(/*@kept@*/ struct availablePackage * p,
-	struct availablePackage ** qp,
-	struct availablePackage ** rp)
+	/*@in@*/ /*@out@*/ struct availablePackage ** qp,
+	/*@in@*/ /*@out@*/ struct availablePackage ** rp)
 {
     struct availablePackage *q, *qprev;
 
@@ -1736,7 +1738,9 @@ rescan:
 	if (p->tsi.tsi_count != 0)
 	    continue;
 	p->tsi.tsi_suc = NULL;
+	/*@-ownedtrans@*/
 	addQ(p, &q, &r);
+	/*@=ownedtrans@*/
 	qlen++;
     }
 
@@ -2040,8 +2044,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	}
 
       }
-      rpmdbFreeIterator(mi);
-      mi = NULL;
+      mi = rpmdbFreeIterator(mi);
     }
 
     if (ps.num) {
@@ -2052,8 +2055,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     rc = 0;
 
 exit:
-    if (mi != NULL)
-	rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
     ps.problems = _free(ps.problems);
     return rc;
 }

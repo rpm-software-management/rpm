@@ -551,7 +551,9 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
     memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
 
     while (nrecs-- > 0) {
+	/*@-mayaliasunique@*/
 	memcpy(set->recs + set->count, rptr, rlen);
+	/*@=mayaliasunique@*/
 	rptr += recsize;
 	set->count++;
     }
@@ -682,8 +684,10 @@ int rpmdbClose (rpmdb rpmdb)
     for (dbix = rpmdb->db_ndbi; --dbix >= 0; ) {
 	if (rpmdb->_dbi[dbix] == NULL)
 	    continue;
+	/*@-unqualifiedtrans@*/
     	dbiClose(rpmdb->_dbi[dbix], 0);
     	rpmdb->_dbi[dbix] = NULL;
+	/*@=unqualifiedtrans@*/
     }
     rpmdb->db_errpfx = _free(rpmdb->db_errpfx);
     rpmdb->db_root = _free(rpmdb->db_root);
@@ -732,14 +736,14 @@ static /*@only@*/ rpmdb newRpmdb(/*@kept@*/ const char * root,
     if (!(rpmdb->db_home && rpmdb->db_home[0] != '%')) {
 	rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
 	rpmdbClose(rpmdb);
-	return NULL;
+	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
     rpmdb->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     rpmdb->db_remove_env = 0;
     rpmdb->db_filter_dups = _filterDbDups;
     rpmdb->db_ndbi = dbiTagsMax;
     rpmdb->_dbi = xcalloc(rpmdb->db_ndbi, sizeof(*rpmdb->_dbi));
-    return rpmdb;
+    /*@-globstate@*/ return rpmdb; /*@=globstate@*/
 }
 
 static int openDatabase(const char * prefix, const char * dbpath, int _dbapi,
@@ -934,7 +938,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	    h = rpmdbNextIterator(mi);
 	    if (h)
 		h = headerLink(h);
-	    rpmdbFreeIterator(mi);
+	    mi = rpmdbFreeIterator(mi);
 	}
 
 	if (h == NULL) {
@@ -944,7 +948,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 
 	hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, NULL);
 	hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-	hge(h, RPMTAG_DIRINDEXES, NULL, (const void **) &dirIndexes, NULL);
+	hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
 
 	do {
 	    fingerPrint fp2;
@@ -1057,7 +1061,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 	h = rpmdbNextIterator(mi);
 	if (h)
 	    h = headerLink(h);
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
     }
 
 	if (h == NULL) {
@@ -1092,7 +1096,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 
 exit:
     if (rc && matches && *matches) {
-	dbiFreeIndexSet(*matches);
+	/*@-unqualifiedtrans@*/dbiFreeIndexSet(*matches);/*@=unqualifiedtrans@*/
 	*matches = NULL;
     }
     return rc;
@@ -1118,7 +1122,7 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, const char * arg, dbiInd
     rc = dbiFindMatches(dbi, dbcursor, arg, NULL, NULL, matches);
     if (rc != 1) return rc;
     if (*matches) {
-	dbiFreeIndexSet(*matches);
+	/*@-unqualifiedtrans@*/dbiFreeIndexSet(*matches);/*@=unqualifiedtrans@*/
 	*matches = NULL;
     }
 
@@ -1133,7 +1137,10 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, const char * arg, dbiInd
     *chptr = '\0';
     rc = dbiFindMatches(dbi, dbcursor, localarg, chptr + 1, NULL, matches);
     if (rc != 1) return rc;
-    if (*matches) dbiFreeIndexSet(*matches);
+    if (*matches) {
+	/*@-unqualifiedtrans@*/dbiFreeIndexSet(*matches);/*@=unqualifiedtrans@*/
+	*matches = NULL;
+    }
     
     /* how about name-version-release? */
 
@@ -1197,13 +1204,13 @@ struct _rpmdbMatchIterator {
 /*@only@*/ const char *mi_release;
 };
 
-void rpmdbFreeIterator(rpmdbMatchIterator mi)
+rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi = NULL;
     int xx;
 
     if (mi == NULL)
-	return;
+	return mi;
 
     dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
     if (mi->mi_h) {
@@ -1234,6 +1241,7 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
     }
     mi->mi_keyp = _free(mi->mi_keyp);
     mi = _free(mi);
+    return mi;
 }
 
 rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi) {
@@ -1384,7 +1392,7 @@ exit:
 		mi->mi_offset, mi->mi_h);
     }
 #endif
-    return mi->mi_h;
+    /*@-compdef -usereleased@*/ return mi->mi_h; /*@=compdef =usereleased@*/
 }
 
 static void rpmdbSortIterator(rpmdbMatchIterator mi) {
@@ -1602,7 +1610,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	h = rpmdbNextIterator(mi);
 	if (h)
 	    h = headerLink(h);
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
     }
 
     if (h == NULL) {
@@ -1847,7 +1855,9 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    memcpy(&hdrNum, datap, sizeof(hdrNum));
 	++hdrNum;
 	if (rc == 0 && datap) {
+	    /*@-refcounttrans@*/
 	    memcpy(datap, &hdrNum, sizeof(hdrNum));
+	    /*@=refcounttrans@*/
 	} else {
 	    datap = &hdrNum;
 	    datalen = sizeof(hdrNum);
@@ -1940,7 +1950,9 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 			(const char *)rpmvals, tagName(dbi->dbi_rpmtag));
 
 		/* XXX force uniform headerGetEntry return */
+		/*@-observertrans@*/
 		av[0] = (const char *) rpmvals;
+		/*@=observertrans@*/
 		rpmvals = av;
 		rpmcnt = 1;
 	    } else {
@@ -2059,7 +2071,7 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
     }
 
     if ((i = rpmdbGetIteratorCount(mi)) == 0) {
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 	return 0;
     }
     fpc = fpCacheCreate(i);
@@ -2109,7 +2121,9 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	/* Add db (recnum,filenum) to list for fingerprint matches. */
 	for (i = 0; i < num; i++, im++) {
 	    if (FP_EQUAL(fps[i], fpList[im->fpNum]))
+		/*@-usedef@*/
 		dbiAppendSet(matchList[im->fpNum], im, 1, sizeof(*im), 0);
+		/*@=usedef@*/
 	}
 
 	fps = _free(fps);
@@ -2121,7 +2135,7 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	mi->mi_setx = end;
     }
 
-    rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
 
     fpCacheFree(fpc);
 
@@ -2439,7 +2453,7 @@ int rpmdbRebuild(const char * rootdir)
 			skip = 1;
 			break;
 		    }
-		    rpmdbFreeIterator(mi);
+		    mi = rpmdbFreeIterator(mi);
 		}
 		/*@=shadow@*/
 
@@ -2463,7 +2477,7 @@ int rpmdbRebuild(const char * rootdir)
 	    }
 	}
 
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 
     }
 

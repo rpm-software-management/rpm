@@ -305,6 +305,7 @@ static /*@observer@*/ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
  * @param fsm		file state machine data
  * @return		Is chain only partially filled?
  */
+/*@-compmempass@*/
 static int saveHardLink(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
@@ -337,15 +338,17 @@ static int saveHardLink(FSM_t fsm)
 	if (fsm->goal == FSM_PKGINSTALL)
 	    fsm->li->linksLeft = 0;
 
+	/*@-kepttrans@*/
 	fsm->li->next = fsm->links;
+	/*@=kepttrans@*/
 	fsm->links = fsm->li;
     }
 
     if (fsm->goal == FSM_PKGBUILD) --fsm->li->linksLeft;
     fsm->li->filex[fsm->li->linksLeft] = fsm->ix;
-    /*@-observertrans@*/
+    /*@-observertrans -dependenttrans@*/
     fsm->li->nsuffix[fsm->li->linksLeft] = fsm->nsuffix;
-    /*@=observertrans@*/
+    /*@=observertrans =dependenttrans@*/
     if (fsm->goal == FSM_PKGINSTALL) fsm->li->linksLeft++;
 
 #if 0
@@ -383,6 +386,7 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
     rc = fsmStage(fsm, FSM_MAP);
     return rc;
 }
+/*@=compmempass@*/
 
 /** \ingroup payload
  * Destroy set of hard links.
@@ -667,6 +671,7 @@ exit:
  * @param writeData	should data be written?
  * @return		0 on success
  */
+/*@-compmempass@*/
 static int writeFile(FSM_t fsm, int writeData)
 	/*@modifies fsm @*/
 {
@@ -786,10 +791,13 @@ static int writeFile(FSM_t fsm, int writeData)
 exit:
     if (fsm->rfd)
 	(void) fsmStage(fsm, FSM_RCLOSE);
+    /*@-dependenttrans@*/
     fsm->opath = opath;
     fsm->path = path;
+    /*@=dependenttrans@*/
     return rc;
 }
+/*@=compmempass@*/
 
 /** \ingroup payload
  * Write set of linked files to payload stream.
@@ -890,6 +898,7 @@ static int fsmMakeLinks(FSM_t fsm)
  * @param fsm		file state machine data
  * @return		0 on success
  */
+/*@-compmempass@*/
 static int fsmCommitLinks(FSM_t fsm)
 {
     const char * path = fsm->path;
@@ -922,6 +931,7 @@ static int fsmCommitLinks(FSM_t fsm)
     fsm->path = path;
     return rc;
 }
+/*@=compmempass@*/
 
 /**
  * Remove (if created) directories not explicitly included in package.
@@ -938,6 +948,7 @@ static int fsmRmdirs(FSM_t fsm)
 
     fsm->path = NULL;
     dn[0] = '\0';
+    /*@-observertrans -dependenttrans@*/
     while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
 	int dnlen = strlen(fsm->path);
 	char * te;
@@ -962,6 +973,8 @@ static int fsmRmdirs(FSM_t fsm)
 	} while ((te - dn) > fsm->dnlx[dc]);
     }
     dnli = dnlFreeIterator(dnli);
+    /*@=observertrans =dependenttrans@*/
+
     fsm->path = path;
     return rc;
 }
@@ -987,6 +1000,7 @@ static int fsmMkdirs(FSM_t fsm)
 
     dn[0] = '\0';
     fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
+    /*@-observertrans -dependenttrans@*/
     while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
 	int dnlen = strlen(fsm->path);
 	char * te;
@@ -1052,12 +1066,15 @@ static int fsmMkdirs(FSM_t fsm)
  	fsm->ldnlen = dnlen;
     }
     dnli = dnlFreeIterator(dnli);
+    /*@=observertrans =dependenttrans@*/
+
     fsm->path = path;
     st->st_mode = st_mode;		/* XXX restore st->st_mode */
     return rc;
 }
 
 
+/*@-compmempass@*/
 int fsmStage(FSM_t fsm, fileStage stage)
 {
 #ifdef	UNUSED
@@ -1344,7 +1361,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		fsm->opath = opath;
 	    }
 
+	    /*@-dependenttrans@*/
 	    fsm->path = path;
+	    /*@=dependenttrans@*/
 	    if (rc != CPIOERR_LSTAT_FAILED) return rc;
 	    rc = expandRegular(fsm);
 	} else if (S_ISDIR(st->st_mode)) {
@@ -1372,7 +1391,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	    fsm->wrbuf[st->st_size] = '\0';
 	    /* XXX symlink(fsm->opath, fsm->path) */
-	    fsm->opath = fsm->wrbuf;		/* XXX abuse fsm->path */
+	    /*@-dependenttrans@*/
+	    fsm->opath = fsm->wrbuf;
+	    /*@=dependenttrans@*/
 	    rc = fsmStage(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_LSTAT_FAILED)
 		rc = fsmStage(fsm, FSM_SYMLINK);
@@ -1496,7 +1517,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		    rc = fsmStage(fsm, FSM_UNLINK);
 		    if (!rc) break;
 		    if (!(errno == ENOENT && (fsm->fflags & RPMFILE_MISSINGOK)))
-			rpmError(RPMERR_UNLINK,
+			rpmError(
 			    (strict_erasures ? RPMERR_UNLINK : RPMWARN_UNLINK),
 				_("%s unlink of %s failed: %s\n"),
 				fiTypeString(fi), fsm->path, strerror(errno));
@@ -1908,6 +1929,7 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n",
     }
     return rc;
 }
+/*@=compmempass@*/
 
 /*@obserever@*/ const char *const fileActionString(fileAction a)
 {

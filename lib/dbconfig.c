@@ -323,7 +323,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     if (!(dbi->dbi_perms & 0600))
 	dbi->dbi_perms = 0644;
     dbi->dbi_mode = rpmdb->db_mode;
+    /*@-keeptrans@*/
     dbi->dbi_rpmdb = rpmdb;
+    /*@=keeptrans@*/
     dbi->dbi_rpmtag = rpmtag;
     
     switch (rpmtag) {

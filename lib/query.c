@@ -390,7 +390,9 @@ printNewSpecfile(Spec spec)
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
 	case RPMTAG_GROUP:
+	    /*@-unqualifiedtrans@*/
 	    sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
+	    /*@=unqualifiedtrans@*/
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
 		continue;
 	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
@@ -400,8 +402,10 @@ printNewSpecfile(Spec spec)
 	    break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
+		/*@-unqualifiedtrans@*/
 		sl->sl_lines[t->t_startx + j] =
 			_free(sl->sl_lines[t->t_startx + j]);
+		/*@=unqualifiedtrans@*/
 	    }
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
 		sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
@@ -458,7 +462,7 @@ int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
 	if ((rc = showPackage(qva, rpmdbGetIteratorRpmDB(mi), h)) != 0)
 	    ec = rc;
     }
-    rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
     return ec;
 }
 

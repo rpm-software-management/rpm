@@ -612,13 +612,15 @@ static int db2close(/*@only@*/ dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-static int db2open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+static int db2open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
+    /*@-nestedextern@*/
+    extern struct _dbiVec db2vec;
+    /*@=nestedextern@*/
     const char * urlfn = NULL;
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
-    extern struct _dbiVec db2vec;
     dbiIndex dbi = NULL;
     int rc = 0;
     int xx;

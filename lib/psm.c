@@ -523,7 +523,7 @@ static int markReplacedFiles(PSM_t psm)
 	    sfi++;
 	}
     }
-    rpmdbFreeIterator(mi);
+    mi = rpmdbFreeIterator(mi);
 
     return 0;
 }
@@ -564,6 +564,7 @@ static rpmRC chkdir (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
+/*@-compmempass@*/
 rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 			const char ** specFilePtr,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
@@ -585,7 +586,9 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     int i;
 
     ts->notify = notify;
+    /*@-temptrans@*/
     ts->notifyData = notifyData;
+    /*@=temptrans@*/
 
     rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
     if (rc)
@@ -686,8 +689,10 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 	fi->dil = (int *)(fi->dnl + fi->dc);
 	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
 	fi->dil[i] = 1;
+	/*@-dependenttrans@*/
 	fi->dnl[0] = t = (char *)(fi->dil + fi->fc);
 	fi->dnl[1] = t = stpcpy( stpcpy(t, _sourcedir), "/") + 1;
+	/*@=dependenttrans@*/
 	(void) stpcpy( stpcpy(t, _specdir), "/");
 
 	t = xmalloc(speclen + strlen(fi->bnl[i]) + 1);
@@ -721,13 +726,14 @@ exit:
 
     if (fi) {
 	freeFi(fi);
-	free(fi);
+	fi = _free(fi);
     }
     if (ts)
 	rpmtransFree(ts);
 
     return rc;
 }
+/*@=compmempass@*/
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
@@ -1142,7 +1148,7 @@ static int runTriggers(PSM_t psm)
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
 	}
 
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 	psm->countCorrection = countCorrection;
     }
 
@@ -1193,7 +1199,7 @@ static int runImmedTriggers(PSM_t psm)
 				triggersRun);
 	    }
 
-	    rpmdbFreeIterator(mi);
+	    mi = rpmdbFreeIterator(mi);
 	}
     }
     triggerIndices = hfd(triggerIndices, tit);
@@ -1280,12 +1286,13 @@ assert(psm->mi == NULL);
 	    rpmdbSetIteratorRelease(psm->mi, fi->release);
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
-		psm->oh = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
-			? headerCopy(psm->oh) : NULL;
+		if (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
+		    psm->oh = headerCopy(psm->oh);
+		else
+		    psm->oh = NULL;
 		break;
 	    }
-	    rpmdbFreeIterator(psm->mi);
-	    psm->mi = NULL;
+	    psm->mi = rpmdbFreeIterator(psm->mi);
 	    rc = RPMRC_OK;
 
 	    if (fi->fc > 0 && fi->fstates == NULL) {
@@ -1803,8 +1810,7 @@ assert(psm->mi == NULL);
 	fi->h = rpmdbNextIterator(psm->mi);
 	if (fi->h)
 	    fi->h = headerLink(fi->h);
-	rpmdbFreeIterator(psm->mi);
-	psm->mi = NULL;
+	psm->mi = rpmdbFreeIterator(psm->mi);
 	rc = (fi->h ? RPMRC_OK : RPMRC_FAIL);
 	break;
     case PSM_RPMDB_ADD:

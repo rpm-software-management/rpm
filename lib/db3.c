@@ -386,7 +386,7 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 	    dbi->dbi_rmw = NULL;
 	rc = db3c_close(dbi, dbcursor);
     }
-    return rc;
+    /*@-usereleased -compdef@*/ return rc; /*@=usereleased =compdef@*/
 }
 
 static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
@@ -409,7 +409,7 @@ static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
     }
 
     if (dbcp)
-	*dbcp = dbi->dbi_rmw;
+	/*@-onlytrans@*/ *dbcp = dbi->dbi_rmw; /*@=onlytrans@*/
 
     return rc;
 }
@@ -487,10 +487,12 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
+    /*@-unqualifiedtrans@*/
     if (keyp)		key.data = *keyp;
     if (keylen)		key.size = *keylen;
     if (datap)		data.data = *datap;
     if (datalen)	data.size = *datalen;
+    /*@=unqualifiedtrans@*/
 
     if (dbcursor == NULL) {
 	int _printit;
@@ -507,13 +509,17 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
     }
 
     if (rc == 0) {
+	/*@-onlytrans@*/
 	if (keyp)	*keyp = key.data;
 	if (keylen)	*keylen = key.size;
 	if (datap)	*datap = data.data;
 	if (datalen)	*datalen = data.size;
+	/*@=onlytrans@*/
     }
 
+    /*@-compmempass@*/
     return rc;
+    /*@=compmempass@*/
 }
 
 static int db3byteswapped(dbiIndex dbi)
@@ -595,11 +601,13 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
 static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
+    /*@-nestedextern@*/
+    extern struct _dbiVec db3vec;
+    /*@=nestedextern@*/
     const char * urlfn = NULL;
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
-    extern struct _dbiVec db3vec;
     dbiIndex dbi = NULL;
     int rc = 0;
     int xx;

@@ -625,8 +625,10 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 /** \ingroup rpmdb
  * Destroy rpm database iterator.
  * @param mi		rpm database iterator
+ * @return		NULL always
  */
-void rpmdbFreeIterator( /*@only@*/ rpmdbMatchIterator mi);
+rpmdbMatchIterator rpmdbFreeIterator(/*@only@*//*@null@*/rpmdbMatchIterator mi)
+	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Return rpm database used by iterator.
@@ -704,11 +706,12 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
  * @param mi		rpm database iterator
  * @return		NULL on end of iteration.
  */
-Header rpmdbNextIterator(rpmdbMatchIterator mi)
+/*@null@*/ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
 		/*@modifies mi @*/;
 #define	rpmdbNextIterator(_a) \
 	XrpmdbNextIterator(_a, __FILE__, __LINE__)
-Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
+/*@null@*/ Header XrpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi,
+				const char * f, unsigned int l)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -973,8 +976,9 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
  * @param rootdir	path to top of install tree
  * @return		transaction set
  */
-/*@only@*/ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb,
-	const char * rootdir);
+/*@only@*/ rpmTransactionSet rpmtransCreateSet(
+		/*@null@*/ /*@kept@*/ rpmdb rpmdb,
+		/*@null@*/ const char * rootdir);
 
 /** \ingroup rpmtrans
  * Add package to be installed to unordered transaction set.
@@ -992,9 +996,9 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
  * @param relocs	package file relocations
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
-int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
-		/*@owned@*/ const void * key, int update,
-		rpmRelocation * relocs);
+int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
+		/*@null@*/ /*@owned@*/ const void * key, int update,
+		/*@null@*/ rpmRelocation * relocs);
 
 /** \ingroup rpmtrans
  * Add package to universe of possible packages to install in transaction set.
@@ -1003,7 +1007,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
  * @param key		package private data
  */
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
-		/*@owned@*/ const void * key);
+		/*@null@*/ /*@owned@*/ const void * key);
 
 /** \ingroup rpmtrans
  * Add package to be removed to unordered transaction set.
@@ -1035,7 +1039,7 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
  * @return		0 always
  */
 int rpmtransGetKeys(const rpmTransactionSet ts,
-	/*@out@*/ const void *** ep, /*@out@*/ int * nep)
+	/*@null@*/ /*@out@*/ const void *** ep, /*@null@*/ /*@out@*/ int * nep)
 		/*@modifies ep, nep @*/;
 
 /** \ingroup rpmtrans

@@ -15,7 +15,8 @@
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
-static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
+static int manageFile(FD_t *fdp, const char **fnp, int flags,
+		/*@unused@*/ int rc)
 {
     const char *fn;
     FD_t fd;
@@ -45,13 +46,15 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 
     /* open a temp file */
     if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
+	fn = NULL;
 	if (makeTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
 	    rpmError(RPMERR_MAKETEMP, _("makeTempFile failed\n"));
 	    return 1;
 	}
 	if (fnp)
-		*fnp = fn;
-	*fdp = fd;
+	    *fnp = fn;
+	*fdp = fdLink(fd, "manageFile return");
+	fdFree(fd, "manageFile return");
 	return 0;
     }
 
@@ -117,6 +120,7 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 	if (manageFile(&fd, &rpm, O_RDONLY, 0))
 	    goto exit;
 
+	memset(l, 0, sizeof(*l));
 	if (readLead(fd, l)) {
 	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), rpm);
 	    goto exit;
@@ -248,7 +252,8 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 	    goto bottom;
 	}
 
-	if (readLead(fd, &lead)) {
+	memset(l, 0, sizeof(*l));
+	if (readLead(fd, l)) {
 	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), rpm);
 	    res++;
 	    goto bottom;
@@ -347,10 +352,14 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 			    if (tempKey) {
 			      if (res3 == RPMSIG_NOKEY) {
 				strcat(missingKeys, " PGP#");
+				/*@-compdef@*/
 				strncat(missingKeys, tempKey + offset, 8);
+				/*@=compdef@*/
 			      } else {
 			        strcat(untrustedKeys, " PGP#");
+				/*@-compdef@*/
 				strncat(untrustedKeys, tempKey + offset, 8);
+				/*@=compdef@*/
 			      }
 			    }
 			}   break;
@@ -368,7 +377,9 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 			    strcat(missingKeys, " GPG#");
 			    tempKey = strstr(result, "key ID");
 			    if (tempKey)
+				/*@-compdef@*/
 				strncat(missingKeys, tempKey+7, 8);
+				/*@=compdef@*/
 			    break;
 			default:
 			    strcat(buffer, "GPG ");

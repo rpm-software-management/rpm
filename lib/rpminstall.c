@@ -393,7 +393,7 @@ restart:
 		    count = 0;
 		    break;
 		}
-		rpmdbFreeIterator(mi);
+		mi = rpmdbFreeIterator(mi);
 		if (count == 0) {
 		    headerFree(h);
 		    continue;
@@ -602,7 +602,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 		}
 	    }
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
     }
 
     if (!(interfaceFlags & UNINSTALL_NODEPS)) {
@@ -655,10 +655,12 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     }
     if (rc != 0) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
+	/*@-unqualifiedtrans@*/
 	if (specFile && *specFile)
 	    *specFile = _free(*specFile);
 	if (cookie && *cookie)
 	    *cookie = _free(*cookie);
+	/*@=unqualifiedtrans@*/
     }
 
     Fclose(fd);

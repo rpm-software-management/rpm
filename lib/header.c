@@ -363,6 +363,7 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	char * t;
 	int i;
 
+	/*@-mods@*/
 	if (minMem) {
 	    *p = xmalloc(tableSize);
 	    ptrEntry = (const char **) *p;
@@ -374,6 +375,7 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	    t += tableSize;
 	    memcpy(t, entry->data, entry->length);
 	}
+	/*@=mods@*/
 	for (i = 0; i < count; i++) {
 	    *ptrEntry++ = t;
 	    t = strchr(t, 0);
@@ -897,9 +899,11 @@ Header headerReload(Header h, int tag)
 {
     Header nh;
     int length;
+    /*@-onlytrans@*/
     void * uh = doHeaderUnload(h, &length);
 
     headerFree(h);
+    /*@=onlytrans@*/
     nh = headerLoad(uh);
     if (nh == NULL) {
 	free(uh);
@@ -1499,7 +1503,9 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
 	break;
 
     default:
+	/*@-mayaliasunique@*/
 	memcpy(dstPtr, srcPtr, dataLength);
+	/*@=mayaliasunique@*/
 	break;
     }
 }
@@ -1629,7 +1635,9 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    table->info.offset = 0;
 	} else
 	    table->data = xrealloc(table->data, table->length + length);
+	/*@-mayaliasunique@*/
 	memcpy(((char *)table->data) + table->length, lang, length);
+	/*@=mayaliasunique@*/
 	table->length += length;
 	table->info.count++;
     }
@@ -1654,7 +1662,9 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    entry->data = xrealloc(entry->data, entry->length + length);
 
 	memset(((char *)entry->data) + entry->length, '\0', ghosts);
+	/*@-mayaliasunique@*/
 	strcpy(((char *)entry->data) + entry->length + ghosts, string);
+	/*@=mayaliasunique@*/
 
 	entry->length += length;
 	entry->info.count = langNum + 1;
@@ -1695,7 +1705,9 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    entry->info.offset = 0;
 	} else
 	    free(entry->data);
+	/*@-dependenttrans@*/
 	entry->data = buf;
+	/*@=dependenttrans@*/
     }
 
     return 0;
@@ -1940,7 +1952,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		if (currToken < 0 || format[currToken].type != PTOK_STRING) {
 		    currToken++;
 		    format[currToken].type = PTOK_STRING;
+		    /*@-temptrans@*/
 		    dst = format[currToken].u.string.string = start;
+		    /*@=temptrans@*/
 		}
 
 		start++;
@@ -2112,7 +2126,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if (currToken < 0 || format[currToken].type != PTOK_STRING) {
 		currToken++;
 		format[currToken].type = PTOK_STRING;
+		/*@-temptrans@*/
 		dst = format[currToken].u.string.string = start;
+		/*@=temptrans@*/
 	    }
 
 	    if (*start == '\\') {
@@ -2594,7 +2610,9 @@ char * headerSprintf(Header h, const char * origFmt,
 	const char * piece;
 	int pieceLength;
 
+	/*@-mods@*/
 	piece = singleSprintf(h, format + i, extensions, extCache, 0);
+	/*@=mods@*/
 	if (piece) {
 	    pieceLength = strlen(piece);
 	    if ((answerLength + pieceLength) >= answerAlloced) {

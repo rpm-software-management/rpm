@@ -59,7 +59,7 @@ void htFree( /*@only@*/ hashTable ht);
  * @param data          pointer to data value
  */
 void htAddEntry(hashTable ht, /*@owned@*/ const void * key,
-	/*@owned@*/ const void * data) /*@modifies ht */;
+		/*@owned@*/ const void * data) /*@modifies ht */;
 
 /**
  * Retrieve item from hash table.
@@ -70,9 +70,11 @@ void htAddEntry(hashTable ht, /*@owned@*/ const void * key,
  * @retval tableKey     address to store key value from bucket (may be NULL)
  * @return 0 on success, 1 if the item is not found.
  */
-int htGetEntry(hashTable ht, const void * key, /*@out@*/ const void *** data,
-		/*@out@*/ int * dataCount, /*@out@*/ const void ** tableKey)
-			/*@modifies *data, *dataCount, *tableKey @*/;
+int htGetEntry(hashTable ht, const void * key,
+		/*@null@*/ /*@out@*/ const void *** data,
+		/*@null@*/ /*@out@*/ int * dataCount,
+		/*@null@*/ /*@out@*/ const void ** tableKey)
+	/*@modifies *data, *dataCount, *tableKey @*/;
 
 /**
  * Check for key in hash table.

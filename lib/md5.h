@@ -51,7 +51,9 @@ void rpmMD5Update(struct MD5Context *context, unsigned char const *buf,
  * @retval		MD5 digest
  * @param context	MD5 private data
  */
+/*@-fixedformalarray@*/
 void rpmMD5Final(unsigned char digest[16], struct MD5Context *context);
+/*@=fixedformalarray@*/
 
 /**
  * The core of the MD5 algorithm.
@@ -60,7 +62,9 @@ void rpmMD5Final(unsigned char digest[16], struct MD5Context *context);
  * @param buf		current MD5 variables
  * @param in		next block of data to add
  */
+/*@-fixedformalarray@*/
 void rpmMD5Transform(uint32 buf[4], uint32 const in[16]);
+/*@=fixedformalarray@*/
 
 /**
  * Return MD5 sum of file as ASCII string.

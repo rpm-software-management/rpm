@@ -146,8 +146,8 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 exit:
     if (argvPtr == NULL || (rc != 0 && av)) {
 	for (i = 0; i < ac; i++)
-	    av[i] = _free(av[i]);
-	av = _free(av);
+	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
+	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
     }
     freeStringBuf(sb);
     return rc;

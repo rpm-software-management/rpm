@@ -62,8 +62,10 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
 	/* XXX Fstrerror */
 	return NULL;
 
+    /*@-modobserver -observertrans@*/
     memcpy(fadio, fdio, sizeof(*fadio));
     fadio->_open = fadOpen;
+    /*@=modobserver =observertrans@*/
 
     fdSetIo(fd, fadio);
     fadSetFirstFree(fd, 0);
@@ -80,6 +82,7 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
 	fadSetFirstFree(fd, 0);
 	fadSetFileSize(fd, sizeof(newHdr));
     } else {
+	memset(&newHdr, 0, sizeof(newHdr));
 	if (Pread(fd, &newHdr, sizeof(newHdr), 0) != sizeof(newHdr)) {
 	    Fclose(fd);
 	    return NULL;
@@ -310,6 +313,7 @@ void fadFree(FD_t fd, unsigned int offset)
 	nextFreeOffset = fadGetFirstFree(fd);
 	prevFreeOffset = 0;
     } else {
+	memset(&prevFreeHeader, 0, sizeof(prevFreeHeader));
 	if (Pread(fd, &prevFreeHeader, sizeof(prevFreeHeader),
 			prevFreeOffset) != sizeof(prevFreeHeader))
 	    return;
@@ -325,16 +329,19 @@ void fadFree(FD_t fd, unsigned int offset)
     }
 
     if (nextFreeOffset) {
+	memset(&nextFreeHeader, 0, sizeof(nextFreeHeader));
 	if (Pread(fd, &nextFreeHeader, sizeof(nextFreeHeader),
 			nextFreeOffset) != sizeof(nextFreeHeader))
 	    return;
     }
 
+    memset(&header, 0, sizeof(header));
     if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	return;
 
     footerOffset = offset + header.size - sizeof(footer);
 
+    memset(&footer, 0, sizeof(footer));
     if (Pread(fd, &footer, sizeof(footer), footerOffset) != sizeof(footer))
 	return;
 
@@ -389,6 +396,7 @@ int fadNextOffset(FD_t fd, unsigned int lastOffset)
     if (offset >= fadGetFileSize(fd))
 	return 0;
 
+    memset(&header, 0, sizeof(header));
     if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	return 0;
 

@@ -130,7 +130,9 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    newEntry->dirName = dn;
 	    fp.entry = newEntry;
 
+	    /*@-kepttrans@*/
 	    htAddEntry(cache->ht, dn, fp.entry);
+	    /*@@kepttrans@*/
 	}
 
         if (fp.entry) {
