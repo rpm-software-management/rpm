@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-06 19:42-0500\n"
+"POT-Creation-Date: 1999-01-07 21:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,112 +223,112 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:99
+#: ../install.c:105
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../install.c:104
+#: ../install.c:109
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../install.c:113
+#: ../install.c:118
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:126
+#: ../install.c:129
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:133
+#: ../install.c:137
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:137
+#: ../install.c:141
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:152
+#: ../install.c:158
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:160
+#: ../install.c:167 ../install.c:279
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:171 ../lib/query.c:478
+#: ../install.c:179 ../lib/query.c:478
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:176 ../install.c:197 ../install.c:406
+#: ../install.c:183 ../install.c:419
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:186
-#, c-format
-msgid "test install source rpm %s\n"
-msgstr ""
-
-#: ../install.c:191 ../install.c:401
-#, c-format
-msgid "Installing %s\n"
-msgstr ""
-
-#: ../install.c:204
+#: ../install.c:195
 #, c-format
 msgid "opening database mode: 0%o\n"
 msgstr ""
 
-#: ../install.c:208 ../install.c:319
+#: ../install.c:202 ../install.c:332
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: ../install.c:232
+#: ../install.c:220
+#, c-format
+msgid "found %d source and %d binary packages\n"
+msgstr ""
+
+#: ../install.c:230
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:248
+#: ../install.c:246
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:330 ../lib/query.c:614 ../verify.c:243
+#: ../install.c:343 ../lib/query.c:614 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:334
+#: ../install.c:347
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:343
+#: ../install.c:356
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:369
+#: ../install.c:382
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:396
+#: ../install.c:409
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:445
+#: ../install.c:414
+#, c-format
+msgid "Installing %s\n"
+msgstr ""
+
+#: ../install.c:458
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:448
+#: ../install.c:461
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -2173,31 +2173,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:365 ../lib/depends.c:524
+#: ../lib/depends.c:371 ../lib/depends.c:530
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:430
+#: ../lib/depends.c:436
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:617
+#: ../lib/depends.c:623
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:660
+#: ../lib/depends.c:666
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:760
+#: ../lib/depends.c:766
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:812
+#: ../lib/depends.c:818
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2314,102 +2314,102 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:78
+#: ../lib/install.c:74
 msgid "source package expected, binary found"
 msgstr ""
 
-#: ../lib/install.c:175
+#: ../lib/install.c:169
 #, c-format
 msgid "not installing %s -- linguas\n"
 msgstr ""
 
-#: ../lib/install.c:180 ../lib/uninstall.c:111
+#: ../lib/install.c:174 ../lib/uninstall.c:111
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:200
+#: ../lib/install.c:194
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:208
+#: ../lib/install.c:202
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:232
+#: ../lib/install.c:226
 msgid "instchangelog value in rpmrc should be a number, but isn't"
 msgstr ""
 
-#: ../lib/install.c:298
+#: ../lib/install.c:292
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:363
+#: ../lib/install.c:348
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:369
+#: ../lib/install.c:353
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:400
+#: ../lib/install.c:384
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:430
+#: ../lib/install.c:414
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:434 ../lib/install.c:785 ../lib/uninstall.c:342
+#: ../lib/install.c:418 ../lib/install.c:755 ../lib/uninstall.c:342
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:526
+#: ../lib/install.c:504
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:628
+#: ../lib/install.c:609
 #, c-format
 msgid "unpacking of archive failed on file %s: %s"
 msgstr ""
 
-#: ../lib/install.c:670
+#: ../lib/install.c:647
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:676 ../lib/install.c:682
+#: ../lib/install.c:653 ../lib/install.c:659
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:687
+#: ../lib/install.c:664
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:688
+#: ../lib/install.c:665
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:721 ../lib/install.c:762
+#: ../lib/install.c:698 ../lib/install.c:732
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:783
+#: ../lib/install.c:753
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/install.c:906
+#: ../lib/install.c:876
 #, c-format
 msgid "package %s-%s-%s (which is newer) is already installed"
 msgstr ""

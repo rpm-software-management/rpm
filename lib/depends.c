@@ -9,7 +9,7 @@ static void alMakeIndex(struct availableList * al);
 static void alCreate(struct availableList * al);
 static void alFreeIndex(struct availableList * al);
 static void alFree(struct availableList * al);
-static void alAddPackage(struct availableList * al, Header h, void * key,
+static void alAddPackage(struct availableList * al, Header h, const void * key,
 			 FD_t fd, rpmRelocation * relocs);
 
 static int intcmp(const void * a, const void *b);
@@ -68,7 +68,7 @@ static void alFree(struct availableList * al) {
     alFreeIndex(al);
 }
 
-static void alAddPackage(struct availableList * al, Header h, void * key,
+static void alAddPackage(struct availableList * al, Header h, const void * key,
 			 FD_t fd, rpmRelocation * relocs) {
     struct availablePackage * p;
 
@@ -194,7 +194,7 @@ int intcmp(const void * a, const void *b) {
     return 1;
 }
 
-rpmTransactionSet rpmtransCreateSet(rpmdb db, char * root) {
+rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root) {
     rpmTransactionSet rpmdep;
     int rootLength;
 
@@ -228,7 +228,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, char * root) {
 }
 
 int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
-			void * key, int upgrade, rpmRelocation * relocs) {
+			const void * key, int upgrade, rpmRelocation * relocs) {
     /* this is an install followed by uninstalls */
     dbiIndexSet matches;
     char * name;
@@ -246,7 +246,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
    
     alAddPackage(&rpmdep->addedPackages, h, key, fd, relocs);
 
-    if (!upgrade || rpmdep->db == NULL) return;
+    if (!upgrade || rpmdep->db == NULL) return 0;
 
     headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &name, &count);
 
@@ -272,6 +272,8 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
 	free(obsoletes);
     }
+
+	return 0;
 }
 
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key) {

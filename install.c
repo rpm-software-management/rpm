@@ -92,7 +92,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     int transFlags = 0;
     rpmProblemSet probs, finalProbs;
     int dbIsOpen = 0;
-    char ** sourcePackages;
+    const char ** sourcePackages;
 
     if (installFlags & RPMINSTALL_TEST) 
 	mode = O_RDONLY;
@@ -282,7 +282,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	    }
 
 	    numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
-			    showProgress, notifyFlags, NULL);
+			    showProgress, (void *) notifyFlags, NULL);
 
 	    fdClose(fd);
 	}
