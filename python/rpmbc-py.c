@@ -1109,15 +1109,19 @@ rpmbc_divide(rpmbcObject * a, rpmbcObject * b)
     if ((z = rpmbc_New()) != NULL) {
 	uint32 asize = a->n.size;
 	uint32 *adata = a->n.data;
-	uint32 anorm = mp32size(asize, adata);
+	uint32 anorm = asize - (mp32bitcnt(asize, adata) + 31)/32;
 	uint32 bsize = b->n.size;
 	uint32 *bdata = b->n.data;
-	uint32 bnorm = mp32size(bsize, bdata);
+	uint32 bnorm = bsize - (mp32bitcnt(bsize, bdata) + 31)/32;
 	uint32 zsize;
 	uint32 *zdata;
 	uint32 znorm;
 	uint32 *wksp;
 
+if (_bc_debug < 0)
+fprintf(stderr, "*** a %p[%d]\t", adata, asize), mp32println(stderr, asize, adata);
+if (_bc_debug < 0)
+fprintf(stderr, "*** b %p[%d]\t", adata, asize), mp32println(stderr, bsize, bdata);
 	if (anorm < asize) {
 	    asize -= anorm;
 	    adata += anorm;
@@ -1130,9 +1134,13 @@ rpmbc_divide(rpmbcObject * a, rpmbcObject * b)
 	}
 	wksp = alloca((bsize+1) * sizeof(*wksp));
 
+if (_bc_debug < 0)
+fprintf(stderr, "*** a %p[%d]\t", adata, asize), mp32println(stderr, asize, adata);
+if (_bc_debug < 0)
+fprintf(stderr, "*** b %p[%d]\t", adata, asize), mp32println(stderr, bsize, bdata);
 	mp32ndivmod(zdata, asize, adata, bsize, bdata, wksp);
 if (_bc_debug < 0)
-fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, zdata, zsize), mp32println(stderr, zsize, zdata);
+fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mp32println(stderr, zsize, zdata);
 	zsize -= bsize;
 	znorm = mp32size(zsize, zdata);
 	if (znorm < zsize) {
