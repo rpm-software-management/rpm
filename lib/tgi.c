@@ -1,7 +1,6 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
-#define	_RPMGI_INTERNAL
 #include <rpmgi.h>
 #include <rpmcli.h>
 
@@ -15,6 +14,25 @@ static int gitag = RPMGI_FTSWALK;
 static int ftsOpts = 0;
 
 static const char * queryFormat = NULL;
+
+/*@only@*/ /*@null@*/
+static const char * rpmgiPathOrQF(const rpmgi gi)
+	/*@*/
+{
+    const char * fmt = ((queryFormat != NULL)
+	? queryFormat : "%{name}-%{version}-%{release}.%{arch}");
+    const char * val = NULL;
+    Header h = rpmgiHeader(gi);
+
+    if (h != NULL)
+	val = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, NULL);
+    else {
+	const char * fn = rpmgiHdrPath(gi);
+	val = (fn != NULL ? xstrdup(fn) : NULL);
+    }
+
+    return val;
+}
 
 static struct poptOption optionsTable[] = {
  { "rpmgidebug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgi_debug, -1,
@@ -68,7 +86,6 @@ main(int argc, char *const argv[])
     rpmVSFlags vsflags;
     rpmgi gi = NULL;
     const char ** av;
-    const char * arg;
     int ac;
     int rc = 0;
 
@@ -95,10 +112,11 @@ main(int argc, char *const argv[])
 
     av = poptGetArgs(optCon);
     gi = rpmgiNew(ts, gitag, av, ftsOpts);
-    (void) rpmgiSetQueryFormat(gi, queryFormat);
 
     ac = 0;
-    while ((arg = rpmgiNext(gi)) != NULL) {
+    while (rpmgiNext(gi) == RPMRC_OK) {
+	const char * arg = rpmgiPathOrQF(gi);
+
 	fprintf(stderr, "%5d %s\n", ac, arg);
 	arg = _free(arg);
 	ac++;

@@ -147,7 +147,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
     Header h = NULL;
 
     do {
-	const char * fn;
+	const char * fn;	/* XXX gi->hdrPath? */
 
 	fn = gi->argv[gi->i];
 	h = rpmgiReadHeader(gi, fn);
@@ -379,40 +379,18 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     return gi;
 }
 
-/*@only@*/
-static const char * rpmgiPathOrQF(const rpmgi gi, const char * fn,
-		/*@null@*/ Header * hdrp)
-	/*@modifies *hdrp @*/
+rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 {
-    const char * fmt = ((gi->queryFormat != NULL)
-	? gi->queryFormat : "%{name}-%{version}-%{release}");
-    const char * val = NULL;
-    Header h = NULL;
-
-    if (hdrp != NULL && *hdrp != NULL)
-	h = headerLink(*hdrp);
-
-    if (h != NULL)
-	val = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, NULL);
-    else
-	val = xstrdup(fn);
-
-    h = headerFree(h);
-
-    return val;
-}
-
-const char * rpmgiNext(/*@null@*/ rpmgi gi)
-{
-    const char * val = NULL;
-    const char * fn = NULL;
-    rpmRC rpmrc;
+    char hnum[32];
+    rpmRC rpmrc = RPMRC_NOTFOUND;
 
     if (gi == NULL)
-	return NULL;
+	return rpmrc;
 
     /* Free header from previous iteration. */
     gi->h = headerFree(gi->h);
+    gi->hdrPath = _free(gi->hdrPath);
+    hnum[0] = '\0';
 
 /*@-branchstate@*/
     if (++gi->i >= 0)
@@ -427,34 +405,34 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	}
 	if (gi->mi != NULL) {	/* XXX unnecessary */
 	    Header h = rpmdbNextIterator(gi->mi);
-	    if (h != NULL)
+	    if (h != NULL) {
 		gi->h = headerLink(h);
-	    /* mi holds h reference */
+		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+	    }
 	}
 	if (gi->h == NULL) {
 	    gi->mi = rpmdbFreeIterator(gi->mi);
 	    goto enditer;
 	}
-	fn = "rpmdb";	/* HACK */
+	gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 	break;
     case RPMGI_HDLIST:
 	if (!gi->active) {
-	    const char * hdrPath = gi->hdrPath;
-
-	    if (hdrPath == NULL)
-		hdrPath = "/usr/share/comps/%{_arch}/hdlist";
-	    gi->fd = rpmgiOpen(hdrPath, "r.ufdio");
+	    const char * path = "/usr/share/comps/%{_arch}/hdlist";
+	    gi->fd = rpmgiOpen(path, "r.ufdio");
 	    gi->active = 1;
 	}
-	if (gi->fd != NULL)
+	if (gi->fd != NULL) {
 	    gi->h = headerRead(gi->fd, HEADER_MAGIC_YES);
+	    sprintf(hnum, "%u", (unsigned)gi->i);
+	}
 
 	if (gi->h == NULL) {
 	    if (gi->fd != NULL) (void) Fclose(gi->fd);
 	    gi->fd = NULL;
 	    goto enditer;
 	}
-	fn = "hdlist";	/* HACK */
+	gi->hdrPath = rpmExpand("hdlist h# ", hnum, NULL);
 	break;
     case RPMGI_ARGLIST:
 	if (gi->argv == NULL || gi->argv[gi->i] == NULL)
@@ -465,10 +443,10 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	/* Read next header, lazily expanding manifests as found. */
 	rpmrc = rpmgiLoadReadHeader(gi);
 
-#ifdef	 NOTYET
-	if (rpmrc != RPMRC_OK)
+	if (rpmrc != RPMRC_OK)	/* XXX check this */
 	    goto enditer;
-#endif
+
+	gi->hdrPath = xstrdup(gi->argv[gi->i]);
 	break;
     case RPMGI_FTSWALK:
 	if (gi->argv == NULL)		/* HACK */
@@ -483,58 +461,27 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	/* Read next header, lazily walking file tree. */
 	rpmrc = rpmgiWalkReadHeader(gi);
 
-#ifdef	 NOTYET
-	if (rpmrc != RPMRC_OK)
-	    goto enditer;
-#endif
-
-	if (gi->h != NULL) {
-	    if (gi->fts != NULL)
-		fn = gi->fts->fts_path;
-	}
-
-	if (gi->fts == NULL && gi->ftsp != NULL) {
+	if (gi->h == NULL || rpmrc != RPMRC_OK) {
 	    int xx;
 	    xx = Fts_close(gi->ftsp);
 	    gi->ftsp = NULL;
 	    goto enditer;
 	}
+
+	if (gi->fts != NULL)
+	    gi->hdrPath = xstrdup(gi->fts->fts_path);
 	break;
     }
 /*@=branchstate@*/
 
-    val = rpmgiPathOrQF(gi, fn, &gi->h);
-
-    return val;
+    return RPMRC_OK;
 
 enditer:
     gi->h = headerFree(gi->h);
+    gi->hdrPath = _free(gi->hdrPath);
     gi->i = -1;
     gi->active = 0;
-    return NULL;
-}
-
-Header rpmgiHeader(rpmgi gi)
-{
-/*@-compdef -refcounttrans -retexpose -usereleased@*/
-    return (gi != NULL ? gi->h : NULL);
-/*@=compdef =refcounttrans =retexpose =usereleased@*/
-}
-
-const char * rpmgiQueryFormat(rpmgi gi)
-{
-    return (gi != NULL ? gi->queryFormat : NULL);
-}
-
-int rpmgiSetQueryFormat(rpmgi gi, const char * queryFormat)
-{
-    int rc = 0;
-
-    if (gi != NULL) {
-	gi->queryFormat = _free(gi->queryFormat);
-        gi->queryFormat = (queryFormat != NULL ? xstrdup(queryFormat) : NULL);
-    }
-    return rc;
+    return rpmrc;
 }
 
 const char * rpmgiHdrPath(rpmgi gi)
@@ -542,15 +489,11 @@ const char * rpmgiHdrPath(rpmgi gi)
     return (gi != NULL ? gi->hdrPath : NULL);
 }
 
-int rpmgiSetHdrPath(rpmgi gi, const char * hdrPath)
+Header rpmgiHeader(rpmgi gi)
 {
-    int rc = 0;
-
-    if (gi != NULL) {
-	gi->hdrPath = _free(gi->hdrPath);
-        gi->hdrPath = (hdrPath != NULL ? xstrdup(hdrPath) : NULL);
-    }
-    return rc;
+/*@-compdef -refcounttrans -retexpose -usereleased@*/
+    return (gi != NULL ? gi->h : NULL);
+/*@=compdef =refcounttrans =retexpose =usereleased@*/
 }
 
 /*@=modfilesys@*/

@@ -36,12 +36,14 @@ struct rpmgi_s {
     int tag;			/*!< Iterator type. */
     int active;			/*!< Iterator is initialized? */
     int i;			/*!< Element index. */
+/*@null@*/
     const char * queryFormat;	/*!< Iterator query format. */
-    const char * hdrPath;	/*!< Path to header objects. */
+/*@null@*/
+    const char * hdrPath;	/*!< Path to current header object. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Current iterator header. */
 
-/*@relnull@*/
+/*@null@*/
     rpmdbMatchIterator mi;
 
 /*@refcounted@*/
@@ -122,14 +124,22 @@ rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
 	/*@modifies ts, internalState @*/;
 
 /**
- * Return next iteration element.
+ * Perform next iteration step.
  * @param gi		generalized iterator
- * @returns		next element
+ * @returns		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
  */
-/*@only@*/
-const char * rpmgiNext(/*@null@*/ rpmgi gi)
+rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
         /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
+
+/**
+ * Return current header path.
+ * @param gi		generalized iterator
+ * @returns		header path
+ */
+/*@observer@*/ /*@null@*/
+const char * rpmgiHdrPath(rpmgi gi)
+	/*@*/;
 
 /**
  * Return current iteration header.
@@ -139,42 +149,6 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 /*@null@*/
 Header rpmgiHeader(/*@null@*/ rpmgi gi)
         /*@*/;
-
-/**
- * Return iterator query format.
- * @param gi		generalized iterator
- * @returns		query format
- */
-/*@observer@*/
-const char * rpmgiQueryFormat(rpmgi gi)
-	/*@*/;
-
-/**
- * Set iterator query format.
- * @param gi		generalized iterator
- * @param queryFormat	query format
- * @returns		0
- */
-int rpmgiSetQueryFormat(rpmgi gi, const char * queryFormat)
-	/*@modifies gi @*/;
-
-/**
- * Return iterator header objects path.
- * @param gi		generalized iterator
- * @returns		header path
- */
-/*@observer@*/
-const char * rpmgiHdrPath(rpmgi gi)
-	/*@*/;
-
-/**
- * Set iterator header objects path.
- * @param gi		generalized iterator
- * @param hdrPath	header path
- * @returns		0
- */
-int rpmgiSetHdrPath(rpmgi gi, const char * hdrPath)
-	/*@modifies gi @*/;
 
 #ifdef __cplusplus
 }
