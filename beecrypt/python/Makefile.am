@@ -9,7 +9,7 @@ PYVER= 2.2
 pylibdir = $(shell python -c 'import sys; print sys.path[1]')
 pyincdir = $(prefix)/include/python${PYVER}
 
-EXTRA_DIST = bcdebug-py.c
+EXTRA_DIST = debug-py.c
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \

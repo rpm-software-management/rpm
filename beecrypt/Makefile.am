@@ -63,7 +63,7 @@ pkginclude_HEADERS = aes.h base64.h beecrypt.h beecrypt.api.h beecrypt.gnu.h blo
 noinst_HEADERS = aesopt.h beecrypt.win.h \
 	blowfishopt.h debug.h mpopt.h sha1opt.h system.h
 
-EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DARWIN README.DLL README.WIN32 autogen.sh beecrypt.def beecrypt.gnu.h.in beecrypt.rc beecrypt.spec javaglue.h
+EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DLL README.WIN32 autogen.sh beecrypt.mcp beecrypt.gnu.h.in beecrypt.rc beecrypt.spec javaglue.h
 
 .PHONY: beetest
 beetest: all
