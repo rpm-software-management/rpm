@@ -152,7 +152,9 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	ch = ' ';
 	while (*from && ch != '\n')
 	    ch = *to++ = *from++;
+/*@-mods@*/
 	spec->lbufPtr = to;
+/*@=mods@*/
 	*to++ = '\0';
 	ofi->readPtr = from;
 
@@ -161,33 +163,37 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	    switch (*p) {
 		case '\\':
 		    switch (*(p+1)) {
-			case '\n': p++, nc = 1; break;
-			case '\0': break;
-			default: p++; break;
+			case '\n': p++, nc = 1; /*@innerbreak@*/ break;
+			case '\0': /*@innerbreak@*/ break;
+			default: p++; /*@innerbreak@*/ break;
 		    }
-		    break;
-		case '\n': nc = 0; break;
+		    /*@switchbreak@*/ break;
+		case '\n': nc = 0; /*@switchbreak@*/ break;
 		case '%':
 		    switch (*(p+1)) {
-			case '{': p++, bc++; break;
-			case '(': p++, pc++; break;
-			case '%': p++; break;
+			case '{': p++, bc++; /*@innerbreak@*/ break;
+			case '(': p++, pc++; /*@innerbreak@*/ break;
+			case '%': p++; /*@innerbreak@*/ break;
 		    }
-		    break;
-		case '{': if (bc > 0) bc++; break;
-		case '}': if (bc > 0) bc--; break;
-		case '(': if (pc > 0) pc++; break;
-		case ')': if (pc > 0) pc--; break;
+		    /*@switchbreak@*/ break;
+		case '{': if (bc > 0) bc++; /*@switchbreak@*/ break;
+		case '}': if (bc > 0) bc--; /*@switchbreak@*/ break;
+		case '(': if (pc > 0) pc++; /*@switchbreak@*/ break;
+		case ')': if (pc > 0) pc--; /*@switchbreak@*/ break;
 	    }
 	}
 	
 	/* If it doesn't, ask for one more line. We need a better
 	 * error code for this. */
 	if (pc || bc || nc ) {
+/*@-observertrans -readonlytrans@*/
 	    spec->nextline = "";
+/*@=observertrans =readonlytrans@*/
 	    return RPMERR_UNMATCHEDIF;
 	}
+/*@-mods@*/
 	spec->lbufPtr = spec->lbuf;
+/*@=mods@*/
 
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
 	if (spec->readStack->reading &&

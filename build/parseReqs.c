@@ -32,15 +32,15 @@ static struct ReqComp {
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
-int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
+int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
-    char * req, * version;
+    char * N, * EVR;
+    rpmsenseFlags Flags;
     Header h;
-    rpmsenseFlags flags;
 
-    switch (tag) {
+    switch (tagN) {
     case RPMTAG_PROVIDEFLAGS:
 	tagflags |= RPMSENSE_PROVIDES;
 	h = pkg->header;
@@ -94,7 +94,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	if (*r == '\0')
 	    break;
 
-	flags = (tagflags & ~RPMSENSE_SENSEMASK);
+	Flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
 	/* Tokens must begin with alphanumeric, _, or / */
 	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
@@ -105,7 +105,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	}
 
 	/* Don't permit file names as args for certain tags */
-	switch (tag) {
+	switch (tagN) {
 	case RPMTAG_OBSOLETEFLAGS:
 	case RPMTAG_CONFLICTFLAGS:
 	case RPMTAG_BUILDCONFLICTS:
@@ -121,17 +121,17 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 
 	re = r;
 	SKIPNONWHITE(re);
-	req = xmalloc((re-r) + 1);
-	strncpy(req, r, (re-r));
-	req[re-r] = '\0';
+	N = xmalloc((re-r) + 1);
+	strncpy(N, r, (re-r));
+	N[re-r] = '\0';
 
-	/* Parse version */
+	/* Parse EVR */
 	v = re;
 	SKIPWHITE(v);
 	ve = v;
 	SKIPNONWHITE(ve);
 
-	re = v;	/* ==> next token (if no version found) starts here */
+	re = v;	/* ==> next token (if no EVR found) starts here */
 
 	/* Check for possible logical operator */
 	if (ve > v) {
@@ -147,7 +147,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 		return RPMERR_BADSPEC;
 	    }
 
-	    switch(tag) {
+	    switch(tagN) {
 	    case RPMTAG_BUILDPREREQ:
 	    case RPMTAG_PREREQ:
 	    case RPMTAG_PROVIDEFLAGS:
@@ -159,9 +159,9 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	    default:
 		/*@switchbreak@*/ break;
 	    }
-	    flags |= rc->sense;
+	    Flags |= rc->sense;
 
-	    /* now parse version */
+	    /* now parse EVR */
 	    v = ve;
 	    SKIPWHITE(v);
 	    ve = v;
@@ -171,24 +171,24 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	}
 
 	/*@-branchstate@*/
-	if (flags & RPMSENSE_SENSEMASK) {
+	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
 		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
-	    version = xmalloc((ve-v) + 1);
-	    strncpy(version, v, (ve-v));
-	    version[ve-v] = '\0';
-	    re = ve;	/* ==> next token after version string starts here */
+	    EVR = xmalloc((ve-v) + 1);
+	    strncpy(EVR, v, (ve-v));
+	    EVR[ve-v] = '\0';
+	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
-	    version = NULL;
+	    EVR = NULL;
 	/*@=branchstate@*/
 
-	(void) addReqProv(spec, h, flags, req, version, index);
+	(void) addReqProv(spec, h, tagN, N, EVR, Flags, index);
 
-	req = _free(req);
-	version = _free(version);
+	N = _free(N);
+	EVR = _free(EVR);
 
     }
 /*@=boundsread@*/

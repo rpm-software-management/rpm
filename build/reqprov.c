@@ -8,8 +8,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-int addReqProv(/*@unused@*/ Spec spec, Header h,
-	       rpmsenseFlags depFlags, const char *depName, const char *depEVR,
+int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
+		const char * N, const char * EVR, rpmsenseFlags Flags,
 		int index)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -24,42 +24,42 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     rpmsenseFlags extra = RPMSENSE_ANY;
     int xx;
     
-    if (depFlags & RPMSENSE_PROVIDES) {
+    if (Flags & RPMSENSE_PROVIDES) {
 	nametag = RPMTAG_PROVIDENAME;
 	versiontag = RPMTAG_PROVIDEVERSION;
 	flagtag = RPMTAG_PROVIDEFLAGS;
-	extra = depFlags & RPMSENSE_FIND_PROVIDES;
-    } else if (depFlags & RPMSENSE_OBSOLETES) {
+	extra = Flags & RPMSENSE_FIND_PROVIDES;
+    } else if (Flags & RPMSENSE_OBSOLETES) {
 	nametag = RPMTAG_OBSOLETENAME;
 	versiontag = RPMTAG_OBSOLETEVERSION;
 	flagtag = RPMTAG_OBSOLETEFLAGS;
-    } else if (depFlags & RPMSENSE_CONFLICTS) {
+    } else if (Flags & RPMSENSE_CONFLICTS) {
 	nametag = RPMTAG_CONFLICTNAME;
 	versiontag = RPMTAG_CONFLICTVERSION;
 	flagtag = RPMTAG_CONFLICTFLAGS;
-    } else if (depFlags & RPMSENSE_PREREQ) {
+    } else if (Flags & RPMSENSE_PREREQ) {
 	nametag = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = depFlags & _ALL_REQUIRES_MASK;
-    } else if (depFlags & RPMSENSE_TRIGGER) {
+	extra = Flags & _ALL_REQUIRES_MASK;
+    } else if (Flags & RPMSENSE_TRIGGER) {
 	nametag = RPMTAG_TRIGGERNAME;
 	versiontag = RPMTAG_TRIGGERVERSION;
 	flagtag = RPMTAG_TRIGGERFLAGS;
 	indextag = RPMTAG_TRIGGERINDEX;
-	extra = depFlags & RPMSENSE_TRIGGER;
+	extra = Flags & RPMSENSE_TRIGGER;
     } else {
 	nametag = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = depFlags & _ALL_REQUIRES_MASK;
+	extra = Flags & _ALL_REQUIRES_MASK;
     }
 
-    depFlags = (depFlags & RPMSENSE_SENSEMASK) | extra;
+    Flags = (Flags & RPMSENSE_SENSEMASK) | extra;
 
     /*@-branchstate@*/
-    if (depEVR == NULL)
-	depEVR = "";
+    if (EVR == NULL)
+	EVR = "";
     /*@=branchstate@*/
     
     /* Check for duplicate dependencies. */
@@ -80,10 +80,10 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 /*@-boundsread@*/
 	while (len > 0) {
 	    len--;
-	    if (strcmp(names[len], depName))
+	    if (strcmp(names[len], N))
 		continue;
 	    if (flagtag && versions != NULL &&
-		(strcmp(versions[len], depEVR) || flags[len] != depFlags))
+		(strcmp(versions[len], EVR) || flags[len] != Flags))
 		continue;
 	    if (indextag && indexes != NULL && indexes[len] != index)
 		continue;
@@ -101,12 +101,12 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     }
 
     /* Add this dependency. */
-    xx = headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &depName, 1);
+    xx = headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &N, 1);
     if (flagtag) {
 	xx = headerAddOrAppendEntry(h, versiontag,
-			       RPM_STRING_ARRAY_TYPE, &depEVR, 1);
+			       RPM_STRING_ARRAY_TYPE, &EVR, 1);
 	xx = headerAddOrAppendEntry(h, flagtag,
-			       RPM_INT32_TYPE, &depFlags, 1);
+			       RPM_INT32_TYPE, &Flags, 1);
     }
     if (indextag)
 	xx = headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
@@ -122,7 +122,7 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
     (void) stpcpy( stpcpy( stpcpy(reqname, "rpmlib("), feature), ")");
 
     /* XXX 1st arg is unused */
-   return addReqProv(NULL, h, RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL),
-	reqname, featureEVR, 0);
+   return addReqProv(NULL, h, RPMTAG_REQUIRENAME, reqname, featureEVR,
+	RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
 }
 /*@=boundswrite@*/

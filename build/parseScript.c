@@ -82,10 +82,10 @@ int parseScript(Spec spec, int parsePart)
     const char **progArgv = NULL;
     int progArgc;
     char *partname = NULL;
-    int reqtag = 0;
-    int tag = 0;
+    rpmTag reqtag = 0;
+    rpmTag tag = 0;
     int tagflags = 0;
-    int progtag = 0;
+    rpmTag progtag = 0;
     int flag = PART_SUBNAME;
     Package pkg;
     StringBuf sb = NULL;
@@ -298,7 +298,8 @@ int parseScript(Spec spec, int parsePart)
 	rc = RPMERR_BADSPEC;
 	goto exit;
     } else {
-        (void) addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), progArgv[0], NULL, 0);
+        (void) addReqProv(spec, pkg->header, RPMTAG_REQUIRENAME,
+		progArgv[0], NULL, (tagflags | RPMSENSE_INTERP), 0);
     }
 
     /* Trigger script insertion is always delayed in order to */

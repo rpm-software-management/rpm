@@ -308,8 +308,8 @@ int parsePrep(Spec spec)
  * @param tagflags	dependency flags already known from context
  * @return		0 on success, RPMERR_BADSPEC on failure
  */
-int parseRCPOT(Spec spec, Package pkg, const char * field, int tag, int index,
-	       rpmsenseFlags tagflags)
+int parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
+		int index, rpmsenseFlags tagflags)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
@@ -409,15 +409,16 @@ Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
  * Add dependency to header, filtering duplicates.
  * @param spec		spec file control structure
  * @param h		header
- * @param depFlags	(e.g. Requires: foo < 0:1.2-3, both "Requires:" and "<")
- * @param depName	(e.g. Requires: foo < 0:1.2-3, "foo")
- * @param depEVR	(e.g. Requires: foo < 0:1.2-3, "0:1.2-3")
+ * @param tagN		tag, identifies type of dependency
+ * @param N		(e.g. Requires: foo < 0:1.2-3, "foo")
+ * @param EVR		(e.g. Requires: foo < 0:1.2-3, "0:1.2-3")
+ * @param Flags		(e.g. Requires: foo < 0:1.2-3, both "Requires:" and "<")
  * @param index		(0 always)
  * @return		0 always
  */
-int addReqProv(/*@unused@*/Spec spec, Header h,
-		rpmsenseFlags depFlags, const char * depName,
-		const char * depEVR, int index)
+int addReqProv(/*@unused@*/Spec spec, Header h, rpmTag tagN,
+		const char * N, const char * EVR, rpmsenseFlags Flags,
+		int index)
 	/*@modifies h @*/;
 
 /** \ingroup rpmbuild
