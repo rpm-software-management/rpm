@@ -1274,9 +1274,9 @@ int rpmVersionCompare(Header first, Header second) {
 	two = NULL;
 
     if (one && !two) 
-	return -1;
-    else if (!one && two) 
 	return 1;
+    else if (!one && two) 
+	return -1;
     else if (one && two)
 	return rpmvercmp(one, two);
 
