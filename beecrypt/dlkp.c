@@ -27,9 +27,9 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "dlkp.h"
+#include "debug.h"
 
 int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
 {

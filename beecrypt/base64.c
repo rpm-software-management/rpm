@@ -25,27 +25,12 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "base64.h"
+#include "debug.h"
 
 /*@unchecked@*/
 static int _debug = 0;
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#if HAVE_CTYPE_H
-# include <ctype.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#include <stdio.h>
 
 /*@unchecked@*/ /*@observer@*/
 static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

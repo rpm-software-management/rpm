@@ -26,22 +26,9 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "beecrypt.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#if WIN32
-# include <windows.h>
-#endif
+#include "debug.h"
 
 #if defined(__LCLINT__)
 /* XXX from /usr/include/bits/sigest.h in glibc-2.2.4 */

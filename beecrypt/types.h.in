@@ -1,0 +1,71 @@
+/*
+ * types.h
+ *
+ * Types.h generic system types file
+ *
+ * Copyright (c) 2000 Virtual Unlimited B.V.
+ *
+ * Author: Bob Deblier <bob@virtualunlimited.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#ifndef _TYPES_H
+#define _TYPES_H
+
+#ifndef ROTL32
+# define ROTL32(x, s) (((x) << (s)) | ((x) >> (32 - (s))))
+#endif
+#ifndef ROTR32
+# define ROTR32(x, s) (((x) >> (s)) | ((x) << (32 - (s))))
+#endif
+
+#if WIN32 && !__CYGWIN32__
+# ifdef BEECRYPT_DLL_EXPORT
+#  define BEECRYPTAPI __declspec(dllexport)
+# else
+#  define BEECRYPTAPI __declspec(dllimport)
+# endif
+#else
+# define BEECRYPTAPI
+typedef @uint8_type@	byte;
+#endif
+
+/*@-typeuse@*/
+typedef @int8_type@	int8;
+/*@=typeuse@*/
+typedef @int16_type@	int16;
+typedef @int32_type@	int32;
+typedef @int64_type@	int64;
+
+typedef @uint8_type@	uint8;
+typedef @uint16_type@	uint16;
+typedef @uint32_type@	uint32;
+/*@-duplicatequals@*/
+typedef @uint64_type@	uint64;
+/*@=duplicatequals@*/
+
+typedef @int8_type@	javabyte;
+typedef @int16_type@	javashort;
+typedef @int32_type@	javaint;
+typedef @int64_type@	javalong;
+
+typedef @uint16_type@	javachar;
+
+typedef @float4_type@	javafloat;
+typedef @double8_type@	javadouble;
+
+#endif

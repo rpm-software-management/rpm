@@ -28,11 +28,11 @@
  *
  */
  
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "fips180.h"
 #include "mp32.h"
 #include "endianness.h"
+#include "debug.h"
 
 /** \ingroup HASH_sha1_m
  */

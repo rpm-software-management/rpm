@@ -54,18 +54,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "elgamal.h"
 #include "dldp.h"
 #include "mp32.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
+#include "debug.h"
 
 int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
 {

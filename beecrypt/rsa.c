@@ -25,17 +25,10 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "rsa.h"
 #include "mp32.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
+#include "debug.h"
 
 int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
 {

@@ -25,19 +25,9 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "blockpad.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
+#include "debug.h"
 
 memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 {

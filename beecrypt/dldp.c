@@ -27,18 +27,11 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "dldp.h"
 #include "mp32.h"
 #include "mp32prime.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC
-# include <malloc.h>
-#endif
+#include "debug.h"
 
 /**
  */

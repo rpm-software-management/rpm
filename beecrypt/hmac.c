@@ -25,10 +25,10 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "hmac.h"
 #include "endianness.h"
+#include "debug.h"
 
 #define HMAC_IPAD	0x36363636
 #define HMAC_OPAD	0x5c5c5c5c

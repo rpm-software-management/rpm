@@ -28,9 +28,7 @@
 #ifndef _MP32NUMBER_H
 #define _MP32NUMBER_H
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "types.h"
 
 /**
  */

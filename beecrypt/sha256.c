@@ -25,11 +25,11 @@
  *
  */
  
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "sha256.h"
 #include "mp32.h"
 #include "endianness.h"
+#include "debug.h"
 
 /**
  */

@@ -15,12 +15,12 @@
 %define	__prefix	/usr
 %{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
-Summary: The Red Hat package management system.
+Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.02
+Release: 0.04
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -57,18 +57,18 @@ BuildRoot: %{_tmppath}/%{name}-root
 %description
 The RPM Package Manager (RPM) is a powerful command line driven
 package management system capable of installing, uninstalling,
-verifying, querying, and updating software packages.  Each software
+verifying, querying, and updating software packages. Each software
 package consists of an archive of files along with information about
 the package like its version, a description, etc.
 
 %package devel
-Summary: Development files for applications which will manipulate RPM packages.
+Summary:  Development files for manipulating RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{rpm_version}, popt = 1.7
 
 %description devel
-This package contains the RPM C library and header files.  These
-development files will simplify the process of writing programs which
+This package contains the RPM C library and header files. These
+development files will simplify the process of writing programs that
 manipulate RPM packages and databases. These files are intended to
 simplify the process of creating graphical package managers or any
 other tools that need an intimate knowledge of RPM packages in order
@@ -83,8 +83,8 @@ Group: Development/Tools
 Requires: rpm = %{rpm_version}
 
 %description build
-This package contains scripts and executable programs that are used to
-build packages using RPM.
+The rpm-build package contains the scripts and executable programs
+that are used to build packages using the RPM Package Manager.
 
 %if %{with_python_subpackage}
 %package python
@@ -95,9 +95,9 @@ Requires: python >= %{with_python_version}
 Requires: popt = 1.7
 
 %description python
-The rpm-python package contains a module which permits applications
+The rpm-python package contains a module that permits applications
 written in the Python programming language to use the interface
-supplied by RPM (RPM Package Manager) libraries.
+supplied by RPM Package Manager libraries.
 
 This package should be installed if you want to develop Python
 programs that will manipulate RPM packages and databases.
@@ -129,7 +129,7 @@ implementations.
 
 At this time, the interface only provides access to the database of
 installed packages, and header data retrieval for RPM and SRPM files
-is not yet installed.  Error management and the export of most defined
+is not yet installed. Error management and the export of most defined
 constants, through RPM::Error and RPM::Constants, respectively, are
 also available.
 
@@ -141,17 +141,14 @@ Group: Development/Libraries
 Version: 1.7
 
 %description -n popt
-Popt is a C library for parsing command line parameters.  Popt was
+Popt is a C library for parsing command line parameters. Popt was
 heavily influenced by the getopt() and getopt_long() functions, but it
-improves on them by allowing more powerful argument expansion.  Popt
+improves on them by allowing more powerful argument expansion. Popt
 can parse arbitrary argv[] style arrays and automatically set
-variables based on command line arguments.  Popt allows command line
+variables based on command line arguments. Popt allows command line
 arguments to be aliased via configuration files and includes utility
 functions for parsing arbitrary strings into argv[] arrays using
 shell-like rules.
-
-Install popt if you're a C programmer and you'd like to use its
-capabilities.
 
 %prep
 %setup -q
@@ -159,7 +156,7 @@ capabilities.
 %build
 
 %ifos linux
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' --with-python=%{with_python_version} --without-javaglue
 %else
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 %endif
@@ -524,6 +521,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Apr 10 2002 Jeff Johnsion <jbj@redhat.com> 4.1-0.04
+- beecrypt: add types.h, eliminate need for config.gnu.h.
+
 * Sat Mar 16 2002 Jeff Johnson <jbj@redhat.com>
 - *really* dump signature header immutable region.
 
@@ -533,140 +533,3 @@ fi
 - drill ts/fi through verify mode, add methods to keep fi abstract.
 - use mmap when calculating file digests on verify, ~20% faster.
 - permit --dbpath and --root with signature (i.e. --import) modes.
-
-* Mon Sep 24 2001 Jeff Johnson <jbj@redhat.com>
-- Start rpm-4.1.
-- loosely wire beecrypt library into rpm.
-- drop rpmio/base64.[ch] in favor of beecrypt versions.
-- drop lib/md5*.[ch] files in favor of beecrypt.
-- legacy: drop brokenMD5 support (rpm-2.3.3 to rpm-2.3.8 on sparc).
-- eliminate DYING code.
-- bind beecrypt md5/sha1 underneath rpmio.
-- create RFC-2440 OpenPGP API in rpmio.
-- proof-of-concept GPG/DSA verification for legacy signatures.
-- upgrade to beecrypt-2.2.0pre.
-- proof-of-concept PGP/RSA verification for legacy signatures.
-- ratchet up to lclint "strict" level.
-- upgrade to db-4.0.7.
-- use only header methods, routines are now static.
-- beecrypt is at least as good as pgp/gpg on verify, pulling the plug.
-- add :base64 and :armor format extensions, dump binary tags in hex.
-- proof-of-concept pubkey retrieval from RPM-{PGP,GPG}-KEY.
-- stupid macros to configure public key file paths.
-- all symbols but hdrVec are now forward references in linkage.
-- generate an rpm header on the fly for imported pubkeys.
-- wire transactions through rpmcli signature modes.
-- wire transactions through rpmcli query/verify modes.
-- wire transactions through rpmcli install/erase modes.
-- legacy signatures always checked where possible on package read.
-- wire transactions through rpmcli build modes.
-- lazy rpmdb open/close through transaction methods (mostly anyways).
-- no-brainer refcounts for rpmdb object.
-- check added header against transaction set, replace if newer.
-- transaction sets created in cli main.
-- no-brainer refcounts for ts object.
-- memory indices for dependency check are typedef'd and abstract'd.
-- no-brainer refcounts for fi object, debug the mess.
-- dump the header early in transaction, recreate fi before installing.
-- start hiding availablePackage data/methods in rpmal.c/rpmal.h.
-- add some dinky availablePackage methods.
-- transaction.c: cleanly uncouple availablePackage from TFI_t.
-- add header refcount annotations throughout.
-- depends.c: availablePackage is (almost) opaque.
-- invent some toy transactionElement iterators.
-- create rpmDepSet constructors/destructors.
-- create toy rpmDepSet iterators.
-- rpmRangesOverlap renamed to dsCompare, add dsNotify method as well.
-- depends.c: rpmDepSet is (almost) opaque, move to rpmds.[ch].
-- rpmds: create dsProblem(), dsiGetDNEVR() retrieved DNEVR, not N.
-- depends.h: hack around teIterator() et al from include for now.
-- rpmds: move trigger dependencies into a rpmDepSet as well.
-- rpmal: availablePackage is totally opaque, alKey with index replaces.
-- fix: harmless typo in db3 chroot hack.
-- fix: big-endian's with sizeof(time_t) != sizeof(int_32) mtime broken.
-- fix: add Korean message catalogs (#54473).
-- add RPHNPLATFORM and PLATFORM tags.
-- linear search on added package provides is dumb.
-- discarding entire signature header when using --addsign is dumb.
-- rip out rpmDependencyConflict, replace with rpmProblem instead.
-- no-brainer refcounts for rpmProblemSet object.
-- header tag sets are per-transactionElement, not per-availablePackage.
-- no-brainer refcounts for rpmDepSet and rpmFNSet objects.
-- strip header tags for erased as well as installed transactionElements.
-- common structure elements for unification of TFI_t and rpmFNSet.
-- factor per-transactionElement data out of TFI_t through pointer ref.
-- unify rpmFNSet into TFI_t.
-- eliminate header reference in rpmtransAddPackage, use TFI_t data.
-- commit to using rpmDepSet and TFI_t, not header.
-- lclint rpmio fiddles.
-- split file info tag sets into rpmfi.c.
-- create toy TFI_t iterators.
-- tweak overlapped file fingerprint retrieval for speed.
-- transaction.c: use wrappers/iterators to access TFI_t.
-- annotations to make a transactionElement opaque.
-- use array of pointers rather than contiguous array for ts->order.
-- methods to complete making transactionElement opaque.
-- use TR_REMOVED relations as well as TR_ADDED for ordering.
-- drop requirement that removed packages immediately follow added.
-- hybrid chainsaw/presentation ordering algorithm.
-- convert file md5sum's to binary on the fly, reducing memory footprint.
-- header handling moved to librpmdb to avoid linkage loops.
-- fix a couple dinky memory leaks.
-- build with an internal zlib for now.
-- protect brp-compress against /bin/ls output ambiguity (#56656,#56336).
-- 3 madvise calls and a 16Mb mmapped buffer == ~5% install speedup. Wow.
-- use db-4.0.14 final internally.
-- 1st crack at making zlib rsync friendly.
-- lclint-3.0.0.19 fiddles.
-- solaris: translate i86pc to i386 (#57182).
-- fix: %%GNUconfigure breaks with single quotes (#57264).
-- simple automake wrapper for zlib.
-- add buildarch lines for hppa (#57728).
-- sparc: make dbenv per-rpmdb, not per-dbi.
-- handle lazy db open's in chroot with absolute path, not prefix strip.
-- Depends should use CDB if configured.
-- autodetect python 1.5/2.2.
-- make rpm-perl package self-hosting (#57748).
-- permit gpg/pgp/pgp5 execs to be reconfigured.
-- fix: signing multiple times dinna work, discard immutable region.
-- remove poptmodule.so for separate packaging.
-- permit subset installs for %%lang colored hardlink file sets.
-- missing key(s) on keyring when verifying a signature is now an error.
-- remove dependency whiteout.
-- splint fiddles.
-- ppc64 arch added (#58634,#58636).
-- turn on auto-generated perl requirements (#58519, #58536, #58537).
-- fix: %%exclude functional (again).
-- trap SIGILL for ppc64 inline asm voodoo fix from cross-dressed ppc32.
-- rpm-perl: force numeric comparison on rpm version (#58882).
-- fix: fancy hash fiddles if not a tty.
-- fix: handle /.../ correctly in rpmCleanPath().
-- legacy: configurable whiteout for known Red Hat dependency loops.
-- perl.req: don't mis-generate dependencies like perl(::path/to/foo.pl).
-- permit args to be hidden within %%__find_{requires,provides}.
-- a couple more perl.{prov,req} fiddles.
-- macro for %%files, always include %%defattr(), redhat config only.
-- fix: drop header region when writing repackaged legacy header.
-- bail on %%files macro.
-- transaction rollbacks are functional.
-- generate index for pkgid (aka Sigmd5) tag, query/verify by pkgid.
-- generate index for hdrid (aka Sha1header) tag, query/verify by hdrid.
-- generate index for fileid (aka Filemd5s) tag, query/verify by fileid.
-- query/verify by install transaction id.
-- rpm-4.0.4 release candidate.
-- add cpanflute2, another perl.req fiddle.
-- make peace with gcc-3.1, remove compiler cruft.
-- make peace with automake et al in 8.0, ugh.
-- add payload uncompressed size to signature to avoid rewriting header.
-- drill header sha1 into signature parallel to header+payload md5.
-- mandatory "most effective" signature check on query/verify/install.
-- don't bother adding empty filemd's to index.
-- add Pubkey index, using signer id as binary key.
-- display pubkeys in hex when debugging db access.
-- retrieve pubkey(s) from rpmdb, not from detached signature file.
-- reapply Berkeley DB patch #4491.
-- add header DSA signature.
-- add header RSA signature (untested, disabled for now).
-- don't bother with signing check if 16 bits of hash don't match.
-- only V3 signatures for now.
-- wire --nodigest/--nosignature options to checksig/query/verify modes.

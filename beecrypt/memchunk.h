@@ -25,9 +25,7 @@
 #ifndef _MEMCHUNK_H
 #define _MEMCHUNK_H
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "types.h"
 
 typedef struct
 {

@@ -1,7 +1,7 @@
 #ifndef _CONFIG_GAS_H
 #define _CONFIG_GAS_H
 
-#include "config.gnu.h"
+#include "config.h"
 
 #ifndef C_FUNCTION_NAME
 # if LEADING_UNDERSCORE
@@ -31,6 +31,17 @@
 # define ALIGNMENT	8
 #endif
 
+#define LABEL(name) C_FUNCTION_NAME(name):
+#if DARWIN
+# define LOCAL(name) L##name
+#else
+# if __STDC__
+#  define LOCAL(name) .L##name
+# else
+#  define LOCAL(name) .L/**/name
+# endif
+#endif
+
 #if CYGWIN
 # define C_FUNCTION_BEGIN(name)	\
 	.align	ALIGNMENT;	\
@@ -38,8 +49,7 @@
 	.def	C_FUNCTION_NAME(name);	\
 	.scl	2;	\
 	.type	32;	\
-	.endef;	\
-C_FUNCTION_NAME(name):
+	.endef
 # define C_FUNCTION_END(name, label)
 #else
 # if SOLARIS
@@ -51,23 +61,21 @@ C_FUNCTION_NAME(name):
 # endif
 # if DARWIN
 #  define C_FUNCTION_BEGIN(name) \
-	.type	C_FUNCTION_NAME(name),C_FUNCTION_TYPE; \
-C_FUNCTION_NAME(name):
+	.globl	C_FUNCTION_NAME(name)
+#  define C_FUNCTION_END(name, label)
 # elif defined(OPTIMIZE_IA64)
 #  define C_FUNCTION_BEGIN(name) \
 	.align	ALIGNMENT; \
 	.global	name#; \
-	.proc	name#; \
-name:
+	.proc	name#
 #  define C_FUNCTION_END(name) \
 	.endp	name#
 # else
 #  define C_FUNCTION_BEGIN(name) \
 	.align	ALIGNMENT; \
-	.global	C_FUNCTION_NAME(name); \
-C_FUNCTION_NAME(name):
-# define C_FUNCTION_END(name, label) \
-	label:	.size name,label-name;
+	.global	C_FUNCTION_NAME(name)
+#  define C_FUNCTION_END(name, label) \
+	label:	.size C_FUNCTION_NAME(name), label - C_FUNCTION_NAME(name);
 # endif
 #endif
 

@@ -35,18 +35,11 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "mtprng.h"
 #include "mp32.h"
 #include "mp32opt.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
+#include "debug.h"
 
 #define hiBit(a)		((a) & 0x80000000)
 #define loBit(a)		((a) & 0x1)

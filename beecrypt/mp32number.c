@@ -27,17 +27,10 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "mp32number.h"
 #include "mp32.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
+#include "debug.h"
 
 /*@-nullstate@*/	/* n->data may be NULL */
 void mp32nzero(mp32number* n)

@@ -31,20 +31,11 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "mp32.h"
 #include "mp32prime.h"
 #include "mp32barrett.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
-
-#include <stdio.h>
+#include "debug.h"
 
 /**
  * mp32bzero

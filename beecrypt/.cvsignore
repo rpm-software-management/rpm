@@ -6,11 +6,11 @@ Doxyfile
 Makefile
 Makefile.in
 apidocs
-becrypt.spec
+beecrypt.spec
 beecrypt-*.tar.gz
+config.h
 config.cache
 config.guess
-config.gnu.h
 config.log
 config.status
 config.sub
@@ -27,3 +27,4 @@ ltmain.sh
 stamp-h
 stamp-h1
 stamp-h.in
+types.h

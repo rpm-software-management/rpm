@@ -25,9 +25,9 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "dlsvdp-dh.h"
+#include "debug.h"
 
 int dlsvdp_pDHSecret(const dldp_p* dp, const mp32number* x, const mp32number* y, mp32number* s)
 {

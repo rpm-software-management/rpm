@@ -48,19 +48,12 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
- 
+#include "system.h"
 #include "dhaes.h"
 #include "dlsvdp-dh.h"
 #include "blockmode.h"
 #include "blockpad.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
+#include "debug.h"
 
 int dhaes_pUsable(const dhaes_pParameters* params)
 {

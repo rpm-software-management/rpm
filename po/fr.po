@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-08 13:10-0400\n"
+"POT-Creation-Date: 2002-04-10 15:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -211,146 +211,146 @@ msgstr "Peut tre redistribu librement selon les termes de la GNU GPL"
 msgid "Usage: %s {--help}\n"
 msgstr ""
 
-#: rpmqv.c:593
+#: rpmqv.c:597
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
-#: rpmqv.c:594
+#: rpmqv.c:598
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Utilisez de prfrence -e ou --erase.\n"
 
-#: rpmqv.c:600
+#: rpmqv.c:604
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpmqv.c:641 rpmqv.c:647 rpmqv.c:653 rpmqv.c:691
+#: rpmqv.c:645 rpmqv.c:651 rpmqv.c:657 rpmqv.c:695
 msgid "only one major mode may be specified"
 msgstr "un seul mode majeur peut tre spcifi"
 
-#: rpmqv.c:670
+#: rpmqv.c:674
 msgid "one type of query/verify may be performed at a time"
 msgstr "un seul type de requte/vrification peut tre effectu  la fois"
 
-#: rpmqv.c:674
+#: rpmqv.c:678
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "source de requte inattendue"
 
-#: rpmqv.c:677
+#: rpmqv.c:681
 #, fuzzy
 msgid "unexpected query format"
 msgstr "source de requte inattendue"
 
-#: rpmqv.c:680
+#: rpmqv.c:684
 msgid "unexpected query source"
 msgstr "source de requte inattendue"
 
-#: rpmqv.c:721
+#: rpmqv.c:725
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: rpmqv.c:727
+#: rpmqv.c:731
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "seules l'installation et la mise  jour peuvent tre forces"
 
-#: rpmqv.c:729
+#: rpmqv.c:733
 #, fuzzy
 msgid "files may only be relocated during package installation"
 msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:732
+#: rpmqv.c:736
 #, fuzzy
 msgid "only one of --prefix or --relocate may be used"
 msgstr "un seul mode majeur peut tre spcifi"
 
-#: rpmqv.c:735
+#: rpmqv.c:739
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--clean ne peut tre spcifi que lors de la construction d'un package"
 
-#: rpmqv.c:738
+#: rpmqv.c:742
 #, fuzzy
 msgid "--prefix may only be used when installing new packages"
 msgstr "--sign ne peut tre spcifi que lors de la construction d'un package"
 
-#: rpmqv.c:741
+#: rpmqv.c:745
 #, fuzzy
 msgid "arguments to --prefix must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpmqv.c:744
+#: rpmqv.c:748
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:748
+#: rpmqv.c:752
 msgid "--percent may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:753
+#: rpmqv.c:757
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:757
+#: rpmqv.c:761
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 "--replacepkgs ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:761
+#: rpmqv.c:765
 #, fuzzy
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:765
+#: rpmqv.c:769
 #, fuzzy
 msgid "--includedocs may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:769
+#: rpmqv.c:773
 #, fuzzy
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "un seul mode majeur peut tre spcifi"
 
-#: rpmqv.c:773
+#: rpmqv.c:777
 #, fuzzy
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:777
+#: rpmqv.c:781
 #, fuzzy
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:782
+#: rpmqv.c:786
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--percent ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:786
+#: rpmqv.c:790
 #, fuzzy
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "--replacepkgs ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:790
+#: rpmqv.c:794
 #, fuzzy
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 "--replacefiles ne peut tre spcifi que lors de l'installation d'un package"
 
-#: rpmqv.c:795
+#: rpmqv.c:799
 #, fuzzy
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpmqv.c:800
+#: rpmqv.c:804
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
@@ -359,7 +359,7 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpmqv.c:805
+#: rpmqv.c:809
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
@@ -368,7 +368,7 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpmqv.c:809
+#: rpmqv.c:813
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -377,7 +377,7 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpmqv.c:814
+#: rpmqv.c:818
 #, fuzzy
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -386,7 +386,7 @@ msgstr ""
 "--test ne peut tre spcifi que lors de l'installation ou dsinstallation d'un "
 "package"
 
-#: rpmqv.c:819
+#: rpmqv.c:823
 #, fuzzy
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
@@ -395,85 +395,85 @@ msgstr ""
 "--root (-r) ne peut tre spcifi que lors de l'installation, de la "
 "dsinstallation ou de l'interrogation d'un package"
 
-#: rpmqv.c:831
+#: rpmqv.c:835
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpmqv.c:855
+#: rpmqv.c:859
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:860
+#: rpmqv.c:864
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpmqv.c:879
+#: rpmqv.c:883
 #, fuzzy
 msgid "pgp not found: "
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpmqv.c:884
+#: rpmqv.c:888
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:886
+#: rpmqv.c:890
 msgid "Pass phrase check failed\n"
 msgstr "La vrification du mot de passe a chou\n"
 
-#: rpmqv.c:890
+#: rpmqv.c:894
 msgid "Pass phrase is good.\n"
 msgstr "Mot de passe correct.\n"
 
-#: rpmqv.c:895
+#: rpmqv.c:899
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpmqv.c:902
+#: rpmqv.c:906
 msgid "--sign may only be used during package building"
 msgstr "--sign ne peut tre spcifi que lors de la construction d'un package"
 
-#: rpmqv.c:919
+#: rpmqv.c:923
 #, fuzzy
 msgid "exec failed\n"
 msgstr "La construction a chou.\n"
 
-#: rpmqv.c:951
+#: rpmqv.c:955
 msgid "no packages files given for rebuild"
 msgstr "aucun package n'a t spcifi pour la reconstruction"
 
-#: rpmqv.c:1019
+#: rpmqv.c:1023
 msgid "no spec files given for build"
 msgstr "aucun package n'a t spcifi pour la construction"
 
-#: rpmqv.c:1021
+#: rpmqv.c:1025
 #, fuzzy
 msgid "no tar files given for build"
 msgstr "aucun package n'a t spcifi pour la construction"
 
-#: rpmqv.c:1043
+#: rpmqv.c:1047
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpmqv.c:1084
+#: rpmqv.c:1088
 msgid "no packages given for install"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: rpmqv.c:1100
+#: rpmqv.c:1104
 msgid "no arguments given for query"
 msgstr "aucun argument n'a t fourni pour la requte"
 
-#: rpmqv.c:1113
+#: rpmqv.c:1117
 msgid "no arguments given for verify"
 msgstr "aucun argument n'a t fourni pour la vrification"
 
-#: rpmqv.c:1121
+#: rpmqv.c:1125
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpmqv.c:1137
+#: rpmqv.c:1141
 #, fuzzy
 msgid "no arguments given"
 msgstr "aucun argument n'a t fourni pour la requte"
@@ -900,7 +900,7 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:699 lib/psm.c:1718
+#: build/pack.c:699 lib/psm.c:1725
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1626,37 +1626,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1191
+#: lib/fsm.c:1196
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1476
+#: lib/fsm.c:1487
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1599 lib/fsm.c:1731
+#: lib/fsm.c:1610 lib/fsm.c:1742
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1757
+#: lib/fsm.c:1768
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1763
+#: lib/fsm.c:1774
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1773
+#: lib/fsm.c:1784
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1795
+#: lib/fsm.c:1804
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -2327,12 +2327,12 @@ msgstr "La construction a chou.\n"
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1726
+#: lib/psm.c:1733
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/psm.c:1729
+#: lib/psm.c:1736
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "La construction a chou.\n"
@@ -2762,144 +2762,144 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:118
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: lib/signature.c:127
+#: lib/signature.c:131
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:132
+#: lib/signature.c:136
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:152
+#: lib/signature.c:156
 msgid "No signature\n"
 msgstr ""
 
-#: lib/signature.c:156
+#: lib/signature.c:160
 #, fuzzy
 msgid "Old PGP signature\n"
 msgstr "      --sign            - genre une signature PGP"
 
-#: lib/signature.c:167
+#: lib/signature.c:171
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 
-#: lib/signature.c:221
+#: lib/signature.c:225
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:300 lib/signature.c:397 lib/signature.c:664
-#: lib/signature.c:697
+#: lib/signature.c:304 lib/signature.c:401 lib/signature.c:668
+#: lib/signature.c:701
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:316
+#: lib/signature.c:320
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "La construction a chou.\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:323
+#: lib/signature.c:327
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:328
+#: lib/signature.c:332
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:342 lib/signature.c:440
+#: lib/signature.c:346 lib/signature.c:444
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:347
+#: lib/signature.c:351
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:414
+#: lib/signature.c:418
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "La construction a chou.\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:421
+#: lib/signature.c:425
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/signature.c:426
+#: lib/signature.c:430
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:445
+#: lib/signature.c:449
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:702 lib/signature.c:753
+#: lib/signature.c:706 lib/signature.c:757
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:732
+#: lib/signature.c:736
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:745
+#: lib/signature.c:749
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:789
+#: lib/signature.c:793
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:825
+#: lib/signature.c:829
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:874
+#: lib/signature.c:878
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1061
+#: lib/signature.c:1065
 msgid "V3 RSA/MD5 signature: "
 msgstr ""
 
-#: lib/signature.c:1171
+#: lib/signature.c:1175
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1172
+#: lib/signature.c:1176
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "      --sign            - genre une signature PGP"
 
-#: lib/signature.c:1247
+#: lib/signature.c:1251
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1274
+#: lib/signature.c:1278
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1278
+#: lib/signature.c:1282
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-08 13:10-0400\n"
+"POT-Creation-Date: 2002-04-10 15:55-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -216,62 +216,62 @@ msgstr "GNU一般公有使用許諾書の下で自由に配布できます"
 msgid "Usage: %s {--help}\n"
 msgstr "使用法: rpm {--help}"
 
-#: rpmqv.c:593
+#: rpmqv.c:597
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
-#: rpmqv.c:594
+#: rpmqv.c:598
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "-e か --erase を使ってください\n"
 
-#: rpmqv.c:600
+#: rpmqv.c:604
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "引数処理(%d)での内部エラー :-(\n"
 
-#: rpmqv.c:641 rpmqv.c:647 rpmqv.c:653 rpmqv.c:691
+#: rpmqv.c:645 rpmqv.c:651 rpmqv.c:657 rpmqv.c:695
 msgid "only one major mode may be specified"
 msgstr "一つのメジャーモードのみを指定してください"
 
-#: rpmqv.c:670
+#: rpmqv.c:674
 msgid "one type of query/verify may be performed at a time"
 msgstr "問い合わせ/検証は一度に一つしか実行できません"
 
-#: rpmqv.c:674
+#: rpmqv.c:678
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "予期せぬ問い合わせのフラグ"
 
-#: rpmqv.c:677
+#: rpmqv.c:681
 #, fuzzy
 msgid "unexpected query format"
 msgstr "予期せぬ問い合わせのフォーマット"
 
-#: rpmqv.c:680
+#: rpmqv.c:684
 msgid "unexpected query source"
 msgstr "予期せぬ問い合わせのソース"
 
-#: rpmqv.c:721
+#: rpmqv.c:725
 msgid "--dbpath given for operation that does not use a database"
 msgstr "データベースを使用しないのに --dbpath が与えられています"
 
-#: rpmqv.c:727
+#: rpmqv.c:731
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "インストール、アップグレード、ソース削除、スペックファイル削除時のみ強制でき"
 "ます"
 
-#: rpmqv.c:729
+#: rpmqv.c:733
 msgid "files may only be relocated during package installation"
 msgstr "ファイルはパッケージインストール時のみ再配置できます"
 
-#: rpmqv.c:732
+#: rpmqv.c:736
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix もしくは --relocate のいずれかのみ使用できます"
 
-#: rpmqv.c:735
+#: rpmqv.c:739
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
@@ -279,82 +279,82 @@ msgstr ""
 "--relocate と --excludepath は新しいパッケージをインストールするときのみ使用"
 "できます"
 
-#: rpmqv.c:738
+#: rpmqv.c:742
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix は新規にパッケージをインストールするときのみ使用できます"
 
-#: rpmqv.c:741
+#: rpmqv.c:745
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix への引数は / から始まらねばなりません"
 
-#: rpmqv.c:744
+#: rpmqv.c:748
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:748
+#: rpmqv.c:752
 msgid "--percent may only be specified during package installation"
 msgstr "--percent はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:753
+#: rpmqv.c:757
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:757
+#: rpmqv.c:761
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:761
+#: rpmqv.c:765
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:765
+#: rpmqv.c:769
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:769
+#: rpmqv.c:773
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs と --includedocs はどちらか一方のみ指定できます"
 
-#: rpmqv.c:773
+#: rpmqv.c:777
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:777
+#: rpmqv.c:781
 msgid "--ignoreos may only be specified during package installation"
 msgstr "-ignoreos はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:782
+#: rpmqv.c:786
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "-ignoresize はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:786
+#: rpmqv.c:790
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches はパッケージの削除時のみ指定できます"
 
-#: rpmqv.c:790
+#: rpmqv.c:794
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:795
+#: rpmqv.c:799
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:800
+#: rpmqv.c:804
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:805
+#: rpmqv.c:809
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:809
+#: rpmqv.c:813
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -362,13 +362,13 @@ msgid ""
 msgstr ""
 "--nodeps はパッケージの作成、インストール、削除、検証時のみ指定できます"
 
-#: rpmqv.c:814
+#: rpmqv.c:818
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test はパッケージのインストール、削除、作成時のみ指定できます"
 
-#: rpmqv.c:819
+#: rpmqv.c:823
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -376,83 +376,83 @@ msgstr ""
 "--root (-r) はインストール、削除、問い合わせ、データベース再構築時のみ指定で"
 "きます"
 
-#: rpmqv.c:831
+#: rpmqv.c:835
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらねばなりません"
 
-#: rpmqv.c:855
+#: rpmqv.c:859
 msgid "no files to sign\n"
 msgstr "署名するためのファイルがありません\n"
 
-#: rpmqv.c:860
+#: rpmqv.c:864
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません\n"
 
-#: rpmqv.c:879
+#: rpmqv.c:883
 #, fuzzy
 msgid "pgp not found: "
 msgstr "pgp が見つかりません: "
 
-#: rpmqv.c:884
+#: rpmqv.c:888
 msgid "Enter pass phrase: "
 msgstr "パスフレーズを入力してください: "
 
-#: rpmqv.c:886
+#: rpmqv.c:890
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズチェックに失敗しました\n"
 
-#: rpmqv.c:890
+#: rpmqv.c:894
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です．\n"
 
-#: rpmqv.c:895
+#: rpmqv.c:899
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: rpmqv.c:902
+#: rpmqv.c:906
 msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ使用できます"
 
-#: rpmqv.c:919
+#: rpmqv.c:923
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
-#: rpmqv.c:951
+#: rpmqv.c:955
 msgid "no packages files given for rebuild"
 msgstr "再作成するためのパッケージファイルがありません"
 
-#: rpmqv.c:1019
+#: rpmqv.c:1023
 msgid "no spec files given for build"
 msgstr "作成のための spec ファイルがありません"
 
-#: rpmqv.c:1021
+#: rpmqv.c:1025
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: rpmqv.c:1043
+#: rpmqv.c:1047
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "署名のためのパッケージがありません"
 
-#: rpmqv.c:1084
+#: rpmqv.c:1088
 msgid "no packages given for install"
 msgstr "インストールのためのパッケージがありません"
 
-#: rpmqv.c:1100
+#: rpmqv.c:1104
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数がありません"
 
-#: rpmqv.c:1113
+#: rpmqv.c:1117
 msgid "no arguments given for verify"
 msgstr "検証のための引数がありません"
 
-#: rpmqv.c:1121
+#: rpmqv.c:1125
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags の引数が間違っています"
 
-#: rpmqv.c:1137
+#: rpmqv.c:1141
 #, fuzzy
 msgid "no arguments given"
 msgstr "問い合わせのための引数がありません"
@@ -892,7 +892,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:699 lib/psm.c:1718
+#: build/pack.c:699 lib/psm.c:1725
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1623,37 +1623,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "%d 行目: %s"
 
-#: lib/fsm.c:1191
+#: lib/fsm.c:1196
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1476
+#: lib/fsm.c:1487
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1599 lib/fsm.c:1731
+#: lib/fsm.c:1610 lib/fsm.c:1742
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/fsm.c:1757
+#: lib/fsm.c:1768
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
-#: lib/fsm.c:1763
+#: lib/fsm.c:1774
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s の rmdir に失敗: %s"
 
-#: lib/fsm.c:1773
+#: lib/fsm.c:1784
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/fsm.c:1795
+#: lib/fsm.c:1804
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
@@ -2335,12 +2335,12 @@ msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1726
+#: lib/psm.c:1733
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:1729
+#: lib/psm.c:1736
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2773,147 +2773,147 @@ msgstr "読み込むために %s をオープンできません: %s。"
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/signature.c:118
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 "ファイルは一般のファイルではありません -- サイズチェックをスキップします\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:131
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:132
+#: lib/signature.c:136
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:152
+#: lib/signature.c:156
 msgid "No signature\n"
 msgstr "署名はありません\n"
 
-#: lib/signature.c:156
+#: lib/signature.c:160
 msgid "Old PGP signature\n"
 msgstr "古い PGP 署名\n"
 
-#: lib/signature.c:167
+#: lib/signature.c:171
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
-#: lib/signature.c:221
+#: lib/signature.c:225
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:300 lib/signature.c:397 lib/signature.c:664
-#: lib/signature.c:697
+#: lib/signature.c:304 lib/signature.c:401 lib/signature.c:668
+#: lib/signature.c:701
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: lib/signature.c:316
+#: lib/signature.c:320
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:323
+#: lib/signature.c:327
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:328
+#: lib/signature.c:332
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:342 lib/signature.c:440
+#: lib/signature.c:346 lib/signature.c:444
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:347
+#: lib/signature.c:351
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:414
+#: lib/signature.c:418
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:421
+#: lib/signature.c:425
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:426
+#: lib/signature.c:430
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:445
+#: lib/signature.c:449
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:702 lib/signature.c:753
+#: lib/signature.c:706 lib/signature.c:757
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: lib/signature.c:732
+#: lib/signature.c:736
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:745
+#: lib/signature.c:749
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:789
+#: lib/signature.c:793
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/signature.c:825
+#: lib/signature.c:829
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:874
+#: lib/signature.c:878
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1061
+#: lib/signature.c:1065
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "MD5 署名をスキップします"
 
-#: lib/signature.c:1171
+#: lib/signature.c:1175
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1172
+#: lib/signature.c:1176
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
-#: lib/signature.c:1247
+#: lib/signature.c:1251
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1274
+#: lib/signature.c:1278
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1278
+#: lib/signature.c:1282
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"

@@ -25,11 +25,9 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "mp32.h"
-
-#include <stdio.h>
+#include "debug.h"
 
 #ifndef ASM_MP32ZERO
 void mp32zero(register uint32 xsize, register uint32* xdata)

@@ -25,10 +25,10 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "dlpk.h"
 #include "mp32.h"
+#include "debug.h"
 
 int dlpk_pInit(dlpk_p* pk)
 {

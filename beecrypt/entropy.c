@@ -28,6 +28,7 @@
 
 #define BEECRYPT_DLL_EXPORT
 
+#include "system.h"
 #include "entropy.h"
 #include "endianness.h"
 
@@ -38,13 +39,6 @@
 #else 
 # if HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
-# endif
-# if HAVE_SYS_STAT_H
-#  include <sys/types.h>
-#  include <sys/stat.h>
-# endif
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
 # endif
 # if HAVE_SYS_AUDIOIO_H
 #  include <sys/audioio.h>
@@ -119,23 +113,7 @@ aio_fsync (int __operation, struct aiocb *__aiocbp)
 # endif
 #endif
 
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_FCNTL_H
-# include <fcntl.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#if HAVE_ERRNO_H
-# include <errno.h>
-#endif
-
-#include <stdio.h>
+#include "debug.h"
 
 #if WIN32
 static HINSTANCE	entropy_instance = (HINSTANCE) 0;

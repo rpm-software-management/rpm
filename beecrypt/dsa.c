@@ -41,18 +41,11 @@
  *
  */
  
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "dsa.h"
 #include "dldp.h"
 #include "mp32.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
+#include "debug.h"
 
 /*@unchecked@*/
 static int _debug = 0;

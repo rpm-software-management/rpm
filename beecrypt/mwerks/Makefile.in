@@ -108,14 +108,24 @@ ac_cv_have_java = @ac_cv_have_java@
 ac_cv_have_javac = @ac_cv_have_javac@
 am__include = @am__include@
 am__quote = @am__quote@
+double8_type = @double8_type@
+float4_type = @float4_type@
 install_sh = @install_sh@
+int16_type = @int16_type@
+int32_type = @int32_type@
+int64_type = @int64_type@
+int8_type = @int8_type@
+uint16_type = @uint16_type@
+uint32_type = @uint32_type@
+uint64_type = @uint64_type@
+uint8_type = @uint8_type@
 
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
 EXTRA_DIST = beecrypt.pch blowfishopt.i586.asm fips180opt.i586.asm mp32opt.i386.asm
 subdir = mwerks
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/config.gnu.h
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 depcomp =
 DIST_SOURCES =

@@ -25,10 +25,10 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "blockmode.h"
 #include "mp32.h"
+#include "debug.h"
 
 int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src)
 {

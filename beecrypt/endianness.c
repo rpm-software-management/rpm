@@ -23,15 +23,9 @@
  *
  */
  
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "endianness.h"
-
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-
-#include <stdio.h>
+#include "debug.h"
 
 /*@-shiftimplementation@*/
 int16 swap16(int16 n)

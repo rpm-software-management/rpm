@@ -25,11 +25,11 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "md5.h"
 #include "mp32.h"
 #include "endianness.h"
+#include "debug.h"
 
 /** \ingroup HASH_md5_m
  */

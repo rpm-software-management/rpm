@@ -32,12 +32,10 @@
  *
  */
 
-#define BEECRYPT_DLL_EXPORT
-
+#include "system.h"
 #include "blowfish.h"
 #include "endianness.h"
-
-#include <string.h>
+#include "debug.h"
 
 /**
  */

@@ -3,11 +3,11 @@
  */
 
 #include "system.h"
-#include "rpmio_internal.h"
 #include "beecrypt.h"
 #include "md5.h"
 #include "endianness.h"
 #include "fips180.h"
+#include "rpmio_internal.h"
 #include "debug.h"
 
 #ifdef	SHA_DEBUG

@@ -116,7 +116,17 @@ ac_cv_have_java = @ac_cv_have_java@
 ac_cv_have_javac = @ac_cv_have_javac@
 am__include = @am__include@
 am__quote = @am__quote@
+double8_type = @double8_type@
+float4_type = @float4_type@
 install_sh = @install_sh@
+int16_type = @int16_type@
+int32_type = @int32_type@
+int64_type = @int64_type@
+int8_type = @int8_type@
+uint16_type = @uint16_type@
+uint32_type = @uint32_type@
+uint64_type = @uint64_type@
+uint8_type = @uint8_type@
 
 LIBBEECRYPT_LT_CURRENT = 4
 LIBBEECRYPT_LT_AGE = 2
@@ -144,14 +154,17 @@ libbeecrypt_la_LDFLAGS = -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_L
 
 pkginclude_HEADERS = base64.h beecrypt.h blockmode.h blockpad.h blowfish.h blowfishopt.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h dsa.h elgamal.h endianness.h entropy.h fips180.h fips180opt.h fips186.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp32.h mp32barrett.h mp32number.h mp32opt.h mp32prime.h mtprng.h rsa.h rsakp.h rsapk.h sha256.h timestamp.h
 
-EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc beecrypt.spec config.h config.gas.h config.win.h javaglue.h
+EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc beecrypt.spec types.h config.gas.h config.win.h javaglue.h
+
+noinst_HEADERS = debug.h system.h
+BUILT_SOURCES = blowfishopt.S fips180opt.S mp32opt.S
 
 DOXYGEN = /usr/bin/doxygen
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = config.gnu.h
-CONFIG_CLEAN_FILES = Doxyfile beecrypt.spec
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES = Doxyfile beecrypt.spec types.h
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
 am_libbeecrypt_la_OBJECTS = base64.lo beecrypt.lo blockmode.lo \
@@ -178,22 +191,23 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
 DIST_SOURCES = $(libbeecrypt_la_SOURCES)
-HEADERS = $(pkginclude_HEADERS)
+HEADERS = $(noinst_HEADERS) $(pkginclude_HEADERS)
 
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
 	install-exec-recursive installdirs-recursive install-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
-DIST_COMMON = README $(pkginclude_HEADERS) ./stamp-h.in AUTHORS COPYING \
-	COPYING.LIB ChangeLog Doxyfile.in INSTALL Makefile.am \
-	Makefile.in NEWS acconfig.h aclocal.m4 beecrypt.spec.in \
-	config.gnu.h.in config.guess config.sub configure configure.in \
-	depcomp install-sh ltconfig ltmain.sh missing mkinstalldirs
+DIST_COMMON = README $(noinst_HEADERS) $(pkginclude_HEADERS) \
+	./stamp-h.in AUTHORS COPYING COPYING.LIB ChangeLog Doxyfile.in \
+	INSTALL Makefile.am Makefile.in NEWS acconfig.h aclocal.m4 \
+	beecrypt.spec.in config.guess config.h.in config.sub configure \
+	configure.in depcomp install-sh ltconfig ltmain.sh missing \
+	mkinstalldirs types.h.in
 DIST_SUBDIRS = $(SUBDIRS)
 SOURCES = $(libbeecrypt_la_SOURCES)
 
-all: config.gnu.h
+all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
@@ -222,19 +236,19 @@ $(srcdir)/configure:  $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENC
 
 $(ACLOCAL_M4):  configure.in 
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
-config.gnu.h: stamp-h
+config.h: stamp-h
 	@if test ! -f $@; then \
 		rm -f stamp-h; \
 		$(MAKE) stamp-h; \
 	else :; fi
-stamp-h: $(srcdir)/config.gnu.h.in $(top_builddir)/config.status
+stamp-h: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h stamp-hT
 	@echo timestamp > stamp-hT 2> /dev/null
 	cd $(top_builddir) \
-	  && CONFIG_FILES= CONFIG_HEADERS=config.gnu.h \
+	  && CONFIG_FILES= CONFIG_HEADERS=config.h \
 	     $(SHELL) ./config.status
 	@mv stamp-hT stamp-h
-$(srcdir)/config.gnu.h.in:  $(srcdir)/./stamp-h.in
+$(srcdir)/config.h.in:  $(srcdir)/./stamp-h.in
 	@if test ! -f $@; then \
 		rm -f $(srcdir)/./stamp-h.in; \
 		$(MAKE) $(srcdir)/./stamp-h.in; \
@@ -246,10 +260,12 @@ $(srcdir)/./stamp-h.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/a
 	@mv $(srcdir)/./stamp-h.inT $(srcdir)/./stamp-h.in
 
 distclean-hdr:
-	-rm -f config.gnu.h
+	-rm -f config.h
 Doxyfile: $(top_builddir)/config.status Doxyfile.in
 	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= CONFIG_LINKS= $(SHELL) ./config.status
 beecrypt.spec: $(top_builddir)/config.status beecrypt.spec.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= CONFIG_LINKS= $(SHELL) ./config.status
+types.h: $(top_builddir)/config.status types.h.in
 	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= CONFIG_LINKS= $(SHELL) ./config.status
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -372,7 +388,7 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	       END { for (i in files) print i; }'`; \
 	mkid -fID $$unique $(LISP)
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES) config.gnu.h.in $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
@@ -387,8 +403,8 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES) config.gnu.h.in $(TAGS_DEPENDENCIES) 
 	  done | \
 	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
-	test -z "$(ETAGS_ARGS)config.gnu.h.in$$unique$(LISP)$$tags" \
-	  || etags $(ETAGS_ARGS) $$tags config.gnu.h.in $$unique $(LISP)
+	test -z "$(ETAGS_ARGS)config.h.in$$unique$(LISP)$$tags" \
+	  || etags $(ETAGS_ARGS) $$tags config.h.in $$unique $(LISP)
 
 GTAGS:
 	here=`CDPATH=: && cd $(top_builddir) && pwd` \
@@ -485,7 +501,7 @@ distcheck: dist
 	  sed 'h;s/./=/g;p;x;p;x'
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(LTLIBRARIES) $(HEADERS) config.gnu.h
+all-am: Makefile $(LTLIBRARIES) $(HEADERS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
 	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(pkgincludedir)
@@ -513,6 +529,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \

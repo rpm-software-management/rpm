@@ -472,7 +472,7 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
  * Update digest(s) attached to fd.
  */
 /*@unused@*/ static inline
-void fdUpdateDigests(FD_t fd, const byte * buf, ssize_t buflen)
+void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
 	/*@modifies fd @*/
 {
     int i;
@@ -536,7 +536,7 @@ int fdFileno(/*@null@*/ void * cookie)
 /**
  */
 int rpmioSlurp(const char * fn,
-                /*@out@*/ const byte ** bp, /*@out@*/ ssize_t * blenp)
+                /*@out@*/ const unsigned char ** bp, /*@out@*/ ssize_t * blenp)
         /*@globals fileSystem @*/
         /*@modifies *bp, *blenp, fileSystem @*/;
 
