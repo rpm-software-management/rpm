@@ -103,6 +103,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
+    int_8 thisArch, pkgArch;
 
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
@@ -125,15 +126,19 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	return installSources(prefix, fd, NULL);
     }
 
-    /* we make a copy of the header here so we have one which we can add
-       entries to - though this shouldn't be necessary anymore XXX */
-    h2 = copyHeader(h);
-    freeHeader(h);
-    h = h2;
-
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
+
+    /* make sure we're trying to install this on the proper architecture */
+    thisArch = getArchNum();
+    getEntry(h, RPMTAG_ARCH, &type, &pkgArch, &fileCount);
+    if (thisArch != pkgArch) {
+	error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
+	      "architecture", name, version, release);
+	freeHeader(h);
+	return 1;
+    }
 
     if (labelFormat) {
 	printf(labelFormat, name, version, release);
