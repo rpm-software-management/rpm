@@ -67,7 +67,8 @@ static
 int generateRPM(char *name,       /* name-version-release         */
 		int type,         /* source or binary             */
 		Header header,    /* the header                   */
-		char *stempdir);  /* directory containing sources */
+		char *stempdir,   /* directory containing sources */
+		char *passPhrase);
 
 static void resetDocdir(void);
 static void addDocdir(char *dirname);
@@ -76,7 +77,8 @@ static int isDoc(char *filename);
 int generateRPM(char *name,       /* name-version-release         */
 		int type,         /* source or binary             */
 		Header header,    /* the header                   */
-		char *stempdir)   /* directory containing sources */
+		char *stempdir,   /* directory containing sources */
+		char *passPhrase)
 {
     unsigned short sigtype;
     char *archName;
@@ -132,7 +134,7 @@ int generateRPM(char *name,       /* name-version-release         */
     /* Generate the signature */
     message(MESS_VERBOSE, "Generating signature: %d\n", sigtype);
     fflush(stdout);
-    makeSignature(sigtarget, sigtype, fd);
+    makeSignature(sigtarget, sigtype, fd, passPhrase);
 
     /* Append the header and archive */
     ifd = open(sigtarget, O_RDONLY);
@@ -875,7 +877,7 @@ static char *buildHost(void)
     return(hostname);
 }
 
-int packageBinaries(Spec s)
+int packageBinaries(Spec s, char *passPhrase)
 {
     char name[1024];
     char filename[1024];
@@ -1010,7 +1012,7 @@ int packageBinaries(Spec s)
 
 	/**** Make the RPM ****/
 
-	generateRPM(name, RPMLEAD_BINARY, outHeader, NULL);
+	generateRPM(name, RPMLEAD_BINARY, outHeader, NULL, passPhrase);
 
 	freeHeader(outHeader);
 	pr = pr->next;
@@ -1021,7 +1023,7 @@ int packageBinaries(Spec s)
 
 /**************** SOURCE PACKAGING ************************/
 
-int packageSource(Spec s)
+int packageSource(Spec s, char *passPhrase)
 {
     struct sources *source;
     struct PackageRec *package;
@@ -1126,7 +1128,7 @@ int packageSource(Spec s)
     /**** Make the RPM ****/
 
     sprintf(fullname, "%s-%s-%s", s->name, version, release);
-    generateRPM(fullname, RPMLEAD_SOURCE, outHeader, tempdir);
+    generateRPM(fullname, RPMLEAD_SOURCE, outHeader, tempdir, passPhrase);
     
     /**** Now clean up ****/
 

@@ -587,7 +587,7 @@ int verifyList(Spec s)
     return 0;
 }
 
-int doBuild(Spec s, int flags)
+int doBuild(Spec s, int flags, char *passPhrase)
 {
 
     strcpy(build_subdir, ".");
@@ -618,7 +618,7 @@ int doBuild(Spec s, int flags)
     markBuildTime();
     
     if (flags & RPMBUILD_BINARY) {
-	if (packageBinaries(s)) {
+	if (packageBinaries(s, passPhrase)) {
 	    return 1;
 	}
 	if (execClean(s)) {
@@ -627,7 +627,7 @@ int doBuild(Spec s, int flags)
     }
 
     if (flags & RPMBUILD_SOURCE) {
-	if (packageSource(s)) {
+	if (packageSource(s, passPhrase)) {
 	    return 1;
 	}
     }
