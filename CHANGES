@@ -4,6 +4,7 @@
 	- made arch_sensitive on by default
 	- handle # comments in preamble
 	- don't barf if we can't canonicalize the hostname during builds
+	- fixed --verify with --root
 
 2.0.8 -> 2.0.9:
 	- %files -f <file>
