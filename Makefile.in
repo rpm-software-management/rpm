@@ -1,7 +1,11 @@
 # This stuff should be reasonably changeable
 
+ifndef RPM_OPT_FLAGS
+RPM_OPT_FLAGS = -O2
+endif
+
 #DEBUG = -g
-OPTS = -O2
+OPTS = ${RPM_OPT_FLAGS}
 prefix=$(ROOT)/usr
 #LIBEFENCE = -lefence
 
