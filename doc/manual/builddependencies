@@ -30,7 +30,7 @@ while building gnorpm using InDependence:
 	rpm -U /mnt/redhat/comps/powertools/6.2/i386/InDependence-1.0-3.i386.rpm
 	rpm -i /mnt/redhat/comps/dist/6.2/SRPMS/gnorpm-0.9-11.src.rpm
 	cd /usr/src/redhat/SPECS
-	dep -detail rpm -ba gnorpm.spec >& xxx
+	dep -detail rpmbuild -ba gnorpm.spec >& xxx
 	...
 	(the build will take longer since both dep and strace are pigs)
 	...
