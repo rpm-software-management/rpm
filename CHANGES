@@ -253,6 +253,7 @@
 	- squeaky clean memory leak checking.
 	- always malloc rpmfi structure, refcounts are correct in rpmtsRun().
 	- skip redundant /sbin/ldconfig scripts on upgrade (if possible).
+	- python: supid typo broke ts.check().
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -371,8 +371,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
 
-    if (cbInfo.cb)
-
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
 
