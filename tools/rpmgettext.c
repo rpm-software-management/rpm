@@ -11,12 +11,6 @@
 
 #include "intl.h"
 
-#if 0
-#ifndef	FREE
-#define FREE(_x) { if (_x) free(_x); (_x) = NULL; }
-#endif
-#endif
-
 static int escape = 1;	/* use octal escape sequence for !isprint(c)? */
 
 static const char *
@@ -176,7 +170,8 @@ gettextfile(int fd, const char *file, FILE *fp)
     char **langs;
     char buf[BUFSIZ];
     
-    fprintf(fp, "\n#============================================");
+    fprintf(fp, "\n#========================================================");
+
     readLead(fd, &lead);
     rpmReadSignature(fd, NULL, lead.signature_type);
     h = headerRead(fd, (lead.major >= 3) ?
@@ -192,10 +187,24 @@ gettextfile(int fd, const char *file, FILE *fp)
 	if (!headerGetRawEntry(h, *tp, &type, (void **)&s, &count))
 	    continue;
 
+	/* XXX skip untranslated RPMTAG_GROUP for now ... */
+	switch (*tp) {
+	case RPMTAG_GROUP:
+	    if (count <= 1)
+		continue;
+	    break;
+	default:
+	    break;
+	}
+
+	/* Print xref comment */
 	fprintf(fp, "\n#: %s:%s\n", file, getTagString(*tp));
+
+	/* Print msgid */
 	e = *s;
 	expandRpmPO(buf, e);
 	fprintf(fp, "msgid %s\n", buf);
+
 	if (count <= 1)
 	    fprintf(fp, "msgstr \"\"\n");
 	for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
