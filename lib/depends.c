@@ -22,7 +22,7 @@
 /*@access rpmdb @*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator @*/	/* XXX compared with NULL */
 
-/*@access rpmFNSet @*/
+/*@access TFI_t @*/
 /*@access tsortInfo @*/
 /*@access rpmTransactionSet @*/
 
@@ -158,7 +158,7 @@ static void delTE(transactionElement p)
     p->requires = dsFree(p->requires);
     p->conflicts = dsFree(p->conflicts);
     p->obsoletes = dsFree(p->obsoletes);
-    p->fns = fiFree(p->fns, 1);
+    p->fi = fiFree(p->fi, 1);
 
     /*@-type@*/ /* FIX: cast? Fclose? */
     if (p->fd != NULL)
@@ -219,7 +219,7 @@ static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
 
     p->this = dsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->fns = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    p->fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
     p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
     p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
     p->obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
@@ -447,14 +447,12 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 
     p->type = TR_ADDED;
     pkgKey = alAddPackage(ts->addedPackages, pkgKey, p->key,
-			p->provides, p->fns);
+			p->provides, p->fi);
     if (pkgKey == RPMAL_NOMATCH) {
 	ec = 1;
 	goto exit;
     }
     p->u.addedKey = pkgKey;
-    p->h = headerLink(h, "rpmtransAddPackage");
-
     p->multiLib = 0;
 
 #ifdef	NOYET
@@ -478,6 +476,10 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	}
     }
   }
+#endif
+
+#ifdef	WOOHOO
+    p->h = headerLink(h, "rpmtransAddPackage");
 #endif
 
     if (!duplicate) {
@@ -571,12 +573,12 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
 {
     int scareMem = _DS_SCAREMEM;
     rpmDepSet provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    rpmFNSet fns = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    TFI_t fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
 
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
     (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key,
-		provides, fns);
-    fns = fiFree(fns, 1);
+		provides, fi);
+    fi = fiFree(fi, 1);
     provides = dsFree(provides);
 }
 
@@ -1846,7 +1848,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     pi = teInitIterator(ts);
     while ((p = teNext(pi, TR_REMOVED)) != NULL) {
 	rpmDepSet provides;
-	rpmFNSet fns;
+	TFI_t fi;
 
 	rpmMessage(RPMMESS_DEBUG,  "========== --- %s\n" , p->NEVR);
 
@@ -1874,28 +1876,28 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-	fns = p->fns;
-	if (fns == NULL)
+	fi = p->fi;
+	if (fi == NULL)
 	    continue;
-	if (fns->bnl == NULL)
+	if (fi->bnl == NULL)
 	    continue;	/* XXX can't happen */
-	if (fns->dnl == NULL)
+	if (fi->dnl == NULL)
 	    continue;	/* XXX can't happen */
-	if (fns->dil == NULL)
+	if (fi->dil == NULL)
 	    continue;	/* XXX can't happen */
 
 	rc = 0;
-	for (fns->i = 0; fns->i < fns->fc; fns->i++) {
+	for (fi->i = 0; fi->i < fi->fc; fi->i++) {
 	    int len;
 
-	    len = strlen(fns->bnl[fns->i]) + 1 +
-				strlen(fns->dnl[fns->dil[fns->i]]);
+	    len = strlen(fi->bnl[fi->i]) + 1 +
+				strlen(fi->dnl[fi->dil[fi->i]]);
 	    if (len > fileAlloced) {
 		fileAlloced = len * 2;
 		fn = xrealloc(fn, fileAlloced);
 	    }
 	    *fn = '\0';
-	    (void) stpcpy( stpcpy(fn, fns->dnl[fns->dil[fns->i]]), fns->bnl[fns->i]);
+	    (void) stpcpy( stpcpy(fn, fi->dnl[fi->dil[fi->i]]), fi->bnl[fi->i]);
 	    /* Erasing: check filename against requiredby matches. */
 	    if (!checkDependentPackages(ts, fn))
 		/*@innercontinue@*/ continue;

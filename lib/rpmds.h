@@ -22,7 +22,7 @@ struct sharedFileInfo_s {
 /**
  * A package filename set.
  */
-struct rpmFNSet_s {
+struct TFI_s {
     int i;			/*!< File index. */
 
 /*@observer@*/
@@ -155,37 +155,46 @@ extern "C" {
 
 /**
  * Unreference a file info set instance.
- * @param fns		file info set
+ * @param fi		file info set
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
-rpmFNSet rpmfnsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns,
+TFI_t rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi,
 		/*@null@*/ const char * msg)
-	/*@modifies fns @*/;
+	/*@modifies fi @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@-exportlocal@*/
 /*@null@*/
-rpmFNSet XrpmfnsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns,
+TFI_t XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies fns @*/;
+	/*@modifies fi @*/;
 /*@=exportlocal@*/
-#define	rpmfnsUnlink(_fns, _msg) XrpmfnsUnlink(_fns, _msg, __FILE__, __LINE__)
+#define	rpmfiUnlink(_fi, _msg) XrpmfiUnlink(_fi, _msg, __FILE__, __LINE__)
 
 /**
  * Reference a file info set instance.
- * @param fns		file info set
+ * @param fi		file info set
  * @return		new file info set reference
  */
 /*@unused@*/
-rpmFNSet rpmfnsLink (/*@null@*/ rpmFNSet fns, /*@null@*/ const char * msg)
-	/*@modifies fns @*/;
+TFI_t rpmfiLink (/*@null@*/ TFI_t fi, /*@null@*/ const char * msg)
+	/*@modifies fi @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-rpmFNSet XrpmfnsLink (/*@null@*/ rpmFNSet fns, /*@null@*/ const char * msg,
+TFI_t XrpmfiLink (/*@null@*/ TFI_t fi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
-        /*@modifies fns @*/;
-#define	rpmfnsLink(_fns, _msg)	XrpmfnsLink(_fns, _msg, __FILE__, __LINE__)
+        /*@modifies fi @*/;
+#define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
+
+/**
+ * Retrieve key from transaction element file info
+ * @param fi		transaction element file info
+ * @return		transaction element file info key
+ */
+/*@null@*/
+fnpyKey rpmfiGetKey(TFI_t fi)
+	/*@*/;
 
 /**
  * Destroy a file set.
@@ -194,7 +203,7 @@ rpmFNSet XrpmfnsLink (/*@null@*/ rpmFNSet fns, /*@null@*/ const char * msg,
  * @return		NULL always
  */
 /*@null@*/
-rpmFNSet fiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fi, int freefimem)
+TFI_t fiFree(/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi, int freefimem)
 	/*@modifies fi@*/;
 
 /**
@@ -207,7 +216,7 @@ rpmFNSet fiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fi, int freefimem)
  * @return		new file set
  */
 /*@null@*/
-rpmFNSet fiNew(rpmTransactionSet ts, /*@null@*/ rpmFNSet fi,
+TFI_t fiNew(rpmTransactionSet ts, /*@null@*/ TFI_t fi,
 		Header h, rpmTag tagN, int scareMem)
 	/*@modifies ts, fi, h @*/;
 

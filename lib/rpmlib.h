@@ -89,8 +89,11 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmDepSet_s * rpmDepSet;
 /**
  * File info tag sets from a header, so that a header can be discarded early.
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmFNSet_s * TFI_t;
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmFNSet_s * rpmFNSet;
+typedef /*@abstract@*/ /*@refcounted@*/ struct TFI_s * TFI_t;
+
+/**
+ * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
+ */
 typedef /*@abstract@*/ struct transactionElement_s * transactionElement;
 
 /** \ingroup header
@@ -1299,37 +1302,6 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 		fileSystem, internalState @*/
 	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
-
-/** \ingroup rpmtrans
- * Unreference a transaction element file info instance.
- * @param fi		transaction element file info
- * @return		NULL always
- */
-/*@unused@*/ /*@null@*/
-TFI_t rpmfiUnlink (/*@killref@*/ /*@only@*/ TFI_t fi, const char * msg)
-	/*@modifies fi @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@null@*/
-TFI_t XrpmfiUnlink (/*@killref@*/ /*@only@*/ TFI_t fi, const char * msg,
-		const char * fn, unsigned ln)
-	/*@modifies fi @*/;
-#define	rpmfiUnlink(_fi, _msg)	XrpmfiUnlink(_fi, _msg, __FILE__, __LINE__)
-
-/** \ingroup rpmtrans
- * Reference a transaction element file info instance.
- * @param fi		transaction element file info
- * @return		new transaction element file info reference
- */
-/*@unused@*/
-TFI_t rpmfiLink (TFI_t fi, const char * msg)
-	/*@modifies fi @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-TFI_t XrpmfiLink (TFI_t fi, const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies fi @*/;
-#define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmtrans
  * Unreference a transaction instance.

@@ -121,6 +121,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		Header origH, fileAction * actions)
 	/*@modifies ts, fi, origH, actions @*/;
 
+#ifdef	DYING
 /**
  * Retrieve key from transaction element file info
  * @param fi		transaction element file info
@@ -128,6 +129,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
  */
 /*@null@*/ const void * rpmfiGetKey(TFI_t fi)
 	/*@*/;
+#endif
 
 /**
  * Return formatted string representation of package disposition.

@@ -19,8 +19,10 @@
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 
+#ifdef	DYING
 /*@unchecked@*/
-static int _fi_debug = 0;
+static int _fi_debug = 1;
+#endif
 
 /*@access Header@*/		/* compared with NULL */
 /*@access rpmdbMatchIterator@*/ /* compared with NULL */
@@ -31,7 +33,6 @@ static int _fi_debug = 0;
 /*@access PSM_t@*/
 
 /*@access TFI_t@*/
-/*@access rpmFNSet @*/
 /*@access transactionElement @*/
 /*@access rpmTransactionSet@*/
 
@@ -532,6 +533,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     return h;
 }
 
+#ifdef	DYING
 fnpyKey rpmfiGetKey(TFI_t fi)
 {
 /*@-compdef -kepttrans -retexpose -usereleased @*/
@@ -558,6 +560,7 @@ fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
+#endif
 
 /*@observer@*/ const char *const fiTypeString(TFI_t fi)
 {

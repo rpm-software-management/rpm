@@ -107,7 +107,7 @@ struct transactionElement_s {
 /*@refcounted@*/ /*@null@*/
     rpmDepSet obsoletes;	/*!< Obsoletes: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    rpmFNSet fns;		/*!< File information. */
+    TFI_t fi;			/*!< File information. */
 
     uint_32 multiLib;		/*!< (TR_ADDED) MULTILIB */
 
@@ -226,20 +226,29 @@ int teGetOc(teIterator tei)
 
 /**
  * Return transaction element's file info.
+ * @todo Add a refcount here.
  * @param tei		transaction element iterator
  * @return		transaction element file info
  */
-/*@unused@*/ static inline
+/*@unused@*/ static inline /*@null@*/
 TFI_t teGetFi(teIterator tei)
-	/*@*/
+	/*@modifies tei @*/
 {
     TFI_t fi = NULL;
 
-    if (tei != NULL && tei->ocsave != -1)
+    if (tei != NULL && tei->ocsave != -1) {
+#ifdef	WOOHOO
 	fi = tei->ts->flList + tei->ocsave;
-    /*@-compdef -onlytrans -usereleased@*/ /* FIX: ts->flList may be released */
+#else
+	transactionElement te = tei->ts->order + tei->ocsave;
+	if ((fi = te->fi) != NULL)
+	    fi->te = te;
+#endif
+	
+    }
+    /*@-compdef -refcounttrans -usereleased @*/
     return fi;
-    /*@=compdef =onlytrans =usereleased@*/
+    /*@=compdef =refcounttrans =usereleased @*/
 }
 
 /**

@@ -34,7 +34,7 @@
 #define PARSER_IN_EXPR  2
 
 /*@unchecked@*/
-static int _h_debug = 1;
+static int _h_debug = 0;
 
 /** \ingroup header
  */

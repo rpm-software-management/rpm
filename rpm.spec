@@ -572,3 +572,5 @@ fi
 - strip header tags for erased as well as installed transactionElements.
 - common structure elements for unification of TFI_t and rpmFNSet.
 - factor per-transactionElement data out of TFI_t through pointer ref.
+- unify rpmFNSet into TFI_t.
+- eliminate header reference in rpmtransAddPackage, use TFI_t data.

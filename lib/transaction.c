@@ -60,7 +60,6 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access alKey @*/
 /*@access fnpyKey @*/
 
-/*@access rpmFNSet @*/
 /*@access TFI_t @*/
 
 /*@access teIterator @*/
@@ -87,6 +86,7 @@ struct diskspaceInfo {
    probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
+#ifdef	DYING
 /**
  */
 static /*@null@*/ void * freeFl(rpmTransactionSet ts,
@@ -107,6 +107,7 @@ static /*@null@*/ void * freeFl(rpmTransactionSet ts,
     }
     return NULL;
 }
+#endif
 
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 {
@@ -914,7 +915,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     teIterator qi;	transactionElement q;
     int xx;
 
+#ifdef	DYING
 int keep_header = 0;
+#endif
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -1055,8 +1058,8 @@ int keep_header = 0;
 	}
 
 	/* Count no. of files (if any). */
-	if (p->fns != NULL)
-	    totalFileCount += p->fns->fc;
+	if (p->fi != NULL)
+	    totalFileCount += p->fi->fc;
 
     }
     pi = teFreeIterator(pi);
@@ -1064,26 +1067,26 @@ int keep_header = 0;
     /* The ordering doesn't matter here */
     pi = teInitIterator(ts);
     while ((p = teNext(pi, TR_REMOVED)) != NULL) {
-	rpmFNSet fns;
-
-	fns = p->fns;
-	if (fns == NULL)
+	fi = p->fi;
+	if (fi == NULL)
 	    continue;
-	if (fns->bnl == NULL)
+	if (fi->bnl == NULL)
 	    continue;	/* XXX can't happen */
-	if (fns->dnl == NULL)
+	if (fi->dnl == NULL)
 	    continue;	/* XXX can't happen */
-	if (fns->dil == NULL)
+	if (fi->dil == NULL)
 	    continue;	/* XXX can't happen */
-	totalFileCount += fns->fc;
+	totalFileCount += fi->fc;
     }
     pi = teFreeIterator(pi);
 
     /* ===============================================
      * Initialize transaction element file info for package:
      */
+#ifdef	DYING
     ts->flEntries = ts->numAddedPackages + ts->numRemovedPackages;
     ts->flList = xcalloc(ts->flEntries, sizeof(*ts->flList));
+#endif
 
     /*
      * FIXME?: we'd be better off assembling one very large file list and
@@ -1094,74 +1097,29 @@ int keep_header = 0;
     while ((p = teNextIterator(pi)) != NULL) {
 
 	fi = teGetFi(pi);
+	if ((fi = teGetFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
+
+#ifdef	DYING
 	fi->magic = TFIMAGIC;
 	fi->te = p;
+#endif
 
 	/*@-branchstate@*/
 	switch (p->type) {
 	case TR_ADDED:
 	    fi->record = 0;
-
-#ifdef	DYING
-/*@i@*/	    fi->h = headerLink(p->h, "xfer to fi->h");
-	    p->h = headerFree(p->h, "xfer to fi->h");
-
-	    /* XXX header arg unused. */
-	    loadFi(ts, fi, fi->h, keep_header);
-#else
-	    /* XXX header arg unused. */
-	    /*@-nullpass@*/
-	    (void) fiNew(ts, fi, p->h, RPMTAG_BASENAMES, keep_header);
-	    /*@=nullpass@*/
-	    p->h = NULL;
-#endif
-
-	    if (fi->fc == 0)
-		continue;
-
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
-	    skipFiles(ts, fi);
+	    if (fi->fc > 0)
+		skipFiles(ts, fi);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    fi->record = p->u.removed.dboffset;
-	    /* Retrieve erased package header from the database. */
-#ifdef	DYING
-	    {	rpmdbMatchIterator mi;
-
-		mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
-				&fi->record, sizeof(fi->record));
-		if ((fi->h = rpmdbNextIterator(mi)) != NULL)
-		    fi->h = headerLink(fi->h,  "TR_REMOVED loadFi");
-		mi = rpmdbFreeIterator(mi);
-	    }
-	    if (fi->h == NULL) {
-		/* ACK! */
-		continue;
-	    }
-	    /* XXX header arg unused. */
-	    loadFi(ts, fi, fi->h, 0);
-#else
-	    {	rpmdbMatchIterator mi;
-
-		mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
-				&fi->record, sizeof(fi->record));
-		if ((p->h = rpmdbNextIterator(mi)) != NULL)
-		    p->h = headerLink(p->h,  "TR_REMOVED loadFi");
-		mi = rpmdbFreeIterator(mi);
-	    }
-	    if (p->h == NULL) {
-		/* ACK! */
-		continue;
-	    }
-	    (void) fiNew(ts, fi, p->h, RPMTAG_BASENAMES, 0);
-	    p->h = NULL;
-#endif
 	    /*@switchbreak@*/ break;
 	}
 	/*@=branchstate@*/
 
-	if (fi->fc)
-	    fi->fps = xmalloc(fi->fc * sizeof(*fi->fps));
+	fi->fps = (fi->fc > 0 ? xmalloc(fi->fc * sizeof(*fi->fps)) : NULL);
     }
     pi = teFreeIterator(pi);
 
@@ -1188,7 +1146,8 @@ int keep_header = 0;
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
 
-	fi = teGetFi(pi);
+	if ((fi = teGetFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
 
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 	/*@-branchstate@*/
@@ -1204,7 +1163,7 @@ int keep_header = 0;
     pi = teFreeIterator(pi);
 
     /*@-noeffectuncon @*/ /* FIX: check rc */
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
+    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount,
 	NULL, ts->notifyData));
     /*@=noeffectuncon@*/
 
@@ -1216,11 +1175,12 @@ int keep_header = 0;
 	dbiIndexSet * matches;
 	int knownBad;
 
-	fi = teGetFi(pi);
+	if ((fi = teGetFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
 
 	/*@-noeffectuncon @*/ /* FIX: check rc */
-	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - ts->flList),
-			ts->flEntries, NULL, ts->notifyData));
+	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, teGetOc(pi),
+			ts->orderCount, NULL, ts->notifyData));
 	/*@=noeffectuncon@*/
 
 	if (fi->fc == 0) continue;
@@ -1358,7 +1318,7 @@ int keep_header = 0;
     }
 
     /*@-noeffectuncon @*/ /* FIX: check rc */
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
+    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
 	NULL, ts->notifyData));
     /*@=noeffectuncon @*/
 
@@ -1368,7 +1328,8 @@ int keep_header = 0;
 
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
-	fi = teGetFi(pi);
+	if ((fi = teGetFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
 	if (fi->fc == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
@@ -1387,8 +1348,10 @@ int keep_header = 0;
 		(okProbs != NULL || rpmProblemSetTrim(ts->probs, okProbs)))
        )
     {
+#ifdef	DYING
 	ts->flList = freeFl(ts, ts->flList);
 	ts->flEntries = 0;
+#endif
 	if (psm->ts != NULL)
 	    psm->ts = rpmtsUnlink(psm->ts, "tsRun (problems)");
 	/*@-nullstate@*/ /* FIX: ts->flList may be NULL */
@@ -1434,7 +1397,8 @@ int keep_header = 0;
 	int gotfd;
 
 	gotfd = 0;
-	fi = teGetFi(pi);
+	if ((fi = teGetFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
 	
 	psm->te = p;
 	psm->fi = rpmfiLink(fi, "tsInstall");
@@ -1517,9 +1481,7 @@ fi->actions = actions;
 		    ourrc++;
 		    lastKey = pkgKey;
 		}
-#ifdef	DYING
 		fi->h = headerFree(fi->h, "TR_ADDED fi->h free");
-#endif
 	    } else {
 		ourrc++;
 		lastKey = pkgKey;
@@ -1555,8 +1517,10 @@ fi->actions = actions;
     /*@=branchstate@*/
     pi = teFreeIterator(pi);
 
+#ifdef	DYING
     ts->flList = freeFl(ts, ts->flList);
     ts->flEntries = 0;
+#endif
 
     psm->ts = rpmtsUnlink(psm->ts, "tsRun");
 

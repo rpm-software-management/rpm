@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-11 10:55-0500\n"
+"POT-Creation-Date: 2001-11-11 17:49-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -637,88 +637,88 @@ msgstr "ファイルが2回表記されています: %s"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1501
+#: build/files.c:1502
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1525
+#: build/files.c:1526
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1568 build/files.c:2180 build/parsePrep.c:50
+#: build/files.c:1569 build/files.c:2181 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1580
+#: build/files.c:1581
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1684
+#: build/files.c:1685
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1707
+#: build/files.c:1708
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "%d 行目: バージョンは許可されていません: %s"
 
-#: build/files.c:1722
+#: build/files.c:1723
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1784
+#: build/files.c:1785
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1795 build/pack.c:146
+#: build/files.c:1796 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "行目: %s"
 
-#: build/files.c:2168
+#: build/files.c:2169
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2242
+#: build/files.c:2243
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:2247
+#: build/files.c:2248
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:2331
+#: build/files.c:2332
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s 失敗"
 
-#: build/files.c:2335
+#: build/files.c:2336
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:2471
+#: build/files.c:2472
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:2497 build/files.c:2511
+#: build/files.c:2498 build/files.c:2512
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:2632
+#: build/files.c:2633
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -862,7 +862,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:603 lib/psm.c:2101
+#: build/pack.c:603 lib/psm.c:1923
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -892,7 +892,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:683 lib/psm.c:2366
+#: build/pack.c:683 lib/psm.c:2188
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1423,17 +1423,17 @@ msgstr "ターゲットプラットフォームを上書きします"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "スペックファイルカタログ中の I18N 文字列を探しています"
 
-#: build/spec.c:230
+#: build/spec.c:232
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "%d 行目: 不正な番号: %s"
 
-#: build/spec.c:236
+#: build/spec.c:238
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "%d 行目: 不正な no%s 番号: %d"
 
-#: build/spec.c:297
+#: build/spec.c:299
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 行目: 不正な %s 番号: %s\n"
@@ -1488,83 +1488,83 @@ msgstr "失敗 - "
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/depends.c:414
+#: lib/depends.c:421
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/depends.c:683
+#: lib/depends.c:692
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:708
+#: lib/depends.c:717
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:724
+#: lib/depends.c:733
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:745
+#: lib/depends.c:754
 #, fuzzy
 msgid "(db files)"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/depends.c:757
+#: lib/depends.c:766
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:770
+#: lib/depends.c:779
 #, fuzzy
 msgid "(db package)"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/depends.c:809
+#: lib/depends.c:818
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
-#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
+#: lib/depends.c:820 lib/rpmds.c:662 lib/rpmds.c:820
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
+#: lib/depends.c:820 lib/rpmds.c:662 lib/rpmds.c:820
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1153
+#: lib/depends.c:1162
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1386
+#: lib/depends.c:1395
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1457
+#: lib/depends.c:1466
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1532
+#: lib/depends.c:1541
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1592
+#: lib/depends.c:1601
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1627
+#: lib/depends.c:1636
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1632
+#: lib/depends.c:1641
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1617,46 +1617,46 @@ msgstr "%s のオープンに失敗: %s"
 msgid "file %s is on an unknown device\n"
 msgstr "ファイル %s は不明なデバイスです"
 
-#: lib/fsm.c:309
+#: lib/fsm.c:308
 msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:311
+#: lib/fsm.c:310
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "%d 行目: %s"
 
-#: lib/fsm.c:1172
+#: lib/fsm.c:1171
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1453
+#: lib/fsm.c:1452
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1574 lib/fsm.c:1702
+#: lib/fsm.c:1573 lib/fsm.c:1701
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/fsm.c:1728
+#: lib/fsm.c:1727
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1733
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s の rmdir に失敗: %s"
 
-#: lib/fsm.c:1744
+#: lib/fsm.c:1743
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/fsm.c:1763
+#: lib/fsm.c:1762
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
@@ -1669,7 +1669,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:922
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:733
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
@@ -2331,111 +2331,111 @@ msgstr " %s-%s-%s と競合します\n"
 msgid "is needed by"
 msgstr "は %s-%s-%s に必要とされています\n"
 
-#: lib/psm.c:253
+#: lib/psm.c:254
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:257
+#: lib/psm.c:258
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS は除外されています: %s"
 
-#: lib/psm.c:260
+#: lib/psm.c:261
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/psm.c:330
+#: lib/psm.c:331
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/psm.c:396
+#: lib/psm.c:397
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/psm.c:406
+#: lib/psm.c:407
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/psm.c:485
+#: lib/psm.c:486
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/psm.c:1119
+#: lib/psm.c:930
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "%s を作成できません: %s\n"
 
-#: lib/psm.c:1125
+#: lib/psm.c:936
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%s へ書き込めません"
 
-#: lib/psm.c:1165
+#: lib/psm.c:977
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/psm.c:1280
+#: lib/psm.c:1098
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/psm.c:1392
+#: lib/psm.c:1214
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/psm.c:1560
+#: lib/psm.c:1382
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1567
+#: lib/psm.c:1389
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1909
+#: lib/psm.c:1731
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:2026
+#: lib/psm.c:1848
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:2137
+#: lib/psm.c:1959
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:2146
+#: lib/psm.c:1968
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:2187
+#: lib/psm.c:2009
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:2188
+#: lib/psm.c:2010
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:2374
+#: lib/psm.c:2196
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:2377
+#: lib/psm.c:2199
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2640,7 +2640,7 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:697
+#: lib/rpmds.c:790
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2649,13 +2649,13 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:726
+#: lib/rpmds.c:819
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:750
+#: lib/rpmds.c:843
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
@@ -2999,13 +2999,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
 
-#: lib/transaction.c:209
+#: lib/transaction.c:212
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
 #. @innercontinue@
-#: lib/transaction.c:880
+#: lib/transaction.c:883
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
@@ -3024,17 +3024,17 @@ msgstr ""
 "パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:421
+#: lib/verify.c:435
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:518
+#: lib/verify.c:532
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:556
+#: lib/verify.c:570
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

@@ -42,12 +42,12 @@ void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
  * @param pkgKey	package key, RPMAL_NOMATCH to force an append
  * @param key		associated file name/python object
  * @param provides	provides dependency set
- * @param fns		file info set
+ * @param fi		file info set
  * @return		available package index
  */
 alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey, fnpyKey key,
-		/*@null@*/ rpmDepSet provides, /*@null@*/ rpmFNSet fns)
-	/*@modifies al, provides, fns @*/;
+		/*@null@*/ rpmDepSet provides, /*@null@*/ TFI_t fi)
+	/*@modifies al, provides, fi @*/;
 
 /**
  * Add package provides to available list index.

@@ -1857,9 +1857,13 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     rpmRC rc;
 
     if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
-    fd = fdDup(rawFd);
 
-    rc = rpmReadPackageHeader(fd, &header, NULL, NULL, NULL);
+    fd = fdDup(rawFd);
+    {	rpmTransactionSet ts;
+	ts = rpmtransCreateSet(NULL, NULL);
+	rc = rpmReadPackageFile(ts, fd, "rpmHeaderFromPackage", &header);
+	rpmtransFree(ts);
+    }
     Fclose(fd);
 
     switch (rc) {

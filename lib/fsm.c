@@ -14,7 +14,6 @@
 /*@access FSM_t @*/
 
 /*@access TFI_t @*/
-/*@access rpmFNSet @*/
 /*@access transactionElement @*/
 /*@access rpmTransactionSet @*/
 
