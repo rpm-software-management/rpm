@@ -203,7 +203,7 @@ struct poptOption rpmBuildPoptTable[] = {
  { "rebuild", '\0', 0, 0, POPT_REBUILD,
 	N_("build binary package from <source package>"),
 	N_("<source package>") },
- { "recompile", '\0', 0, 0, POPT_REBUILD,
+ { "recompile", '\0', 0, 0, POPT_RECOMPILE,
 	N_("build through %install (%prep, %build, then install) from <source package>"),
 	N_("<source package>") },
 

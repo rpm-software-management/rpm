@@ -439,6 +439,11 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmRC rc;
     int i;
 
+    memset(psm, 0, sizeof(*psm));
+    /*@-assignexpose -usereleased @*/
+    psm->ts = rpmtsLink(ts, "InstallSourcePackage");
+    /*@=assignexpose =usereleased @*/
+
     rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
     switch (rc) {
     case RPMRC_NOTTRUSTED:
@@ -484,9 +489,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
 /*@i@*/ (void) rpmInstallLoadMacros(fi, fi->h);
 
-    memset(psm, 0, sizeof(*psm));
     /*@-assignexpose -usereleased @*/
-    psm->ts = rpmtsLink(ts, "InstallSourcePackage");
     psm->fi = fi;
     psm->te = fi->te;
     /*@=assignexpose =usereleased @*/

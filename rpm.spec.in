@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.16
+Release: 0.17
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -178,14 +178,6 @@ done
 gzip -9n apidocs/man/man*/* || :
 %endif
 
-# XXX FIXME: hack to get libraries in the right place
-#if [ ! -d $RPM_BUILD_ROOT/%{__prefix}/%{_lib} ]; then
-#  mkdir -p $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-#  mv $RPM_BUILD_ROOT/usr/lib/*so*  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-#  mv $RPM_BUILD_ROOT/usr/lib/*.a  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-#  mv $RPM_BUILD_ROOT/usr/lib/*.la  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
-#fi
-
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
   rm -rf .%{__prefix}/include/beecrypt
@@ -194,18 +186,6 @@ gzip -9n apidocs/man/man*/* || :
   rm -f .%{__prefix}/%{_lib}/libelf.{a,la}
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__prefix}%{__share}/man/{fr,ko}
-
-# for f in elflint file ld nm readelf size strip; do
-#  rm -rf .%{__prefix}/bin/$f
-# done
-# for f in elfutils; do
-#  rm -rf .%{__prefix}/include/$f
-# done
-# for f in libebl elfutils; do
-#  rm -rf .%{__prefix}/lib/${f}*
-# done
-# rm -f .%{__prefix}/share/man/man1/file.1*
-# rm -f .%{__prefix}/share/magic*
 }
 
 %clean
@@ -479,7 +459,10 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Sun Dec  1 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.15
+* Mon Dec  1 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.17
+- late rpmts reference causes premature free (#78862).
+
+* Sun Dec  1 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.16
 - link rpm libraries together, use shared helpers with external -lelf.
 - move libfmagic to librpmio.
 - use libtool-1.4.3, autoconf-2.56.

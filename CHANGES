@@ -39,6 +39,7 @@
 	- use libtool-1.4.3, autoconf-2.56.
 	- add explicit -L/lib64 -L/usr/lib64 for libtool mode=relink on x86_64.
 	- use usrlib_LTLIBRARIES to install directly in /usr/lib64 instead.
+	- late rpmts reference causes premature free (#78862).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
