@@ -50,7 +50,7 @@ clean:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
-	rm -f *.a *.o *~ $(PROGS)
+	rm -f *.a *.o core *~ $(PROGS)
 
 depend:
 	$(CPP) $(CFLAGS) -M *.c > .depend
@@ -58,7 +58,7 @@ depend:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 
-archive: clean
+archive: 
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
 	@echo "maybe someday Erik will get around to making that automatic."
@@ -67,6 +67,7 @@ archive: clean
 	@mkdir /tmp/rpm-$(VERSION)
 	@tar cSpf - * | (cd /tmp/rpm-$(VERSION); tar xSpf -)
 	@cd /tmp/rpm-$(VERSION); \
+	    make clean; \
 	    find . -name "RCS" -exec rm {} \;  ; \
 	    find . -name ".depend" -exec rm {} \;  ; \
 	    rm -f *gz *rpm
