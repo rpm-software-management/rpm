@@ -213,10 +213,12 @@ int unameToUid(char * thisUname, uid_t * uid) {
 
 	pwent = getpwnam(thisUname);
 	if (!pwent) {
-	    return -1;
-	} else {
-	    lastUid = pwent->pw_uid;
+	    endpwent();
+	    pwent = getpwnam(thisUname);
+	    if (!pwent) return -1;
 	}
+
+	lastUid = pwent->pw_uid;
     }
 
     *uid = lastUid;
@@ -251,10 +253,11 @@ int gnameToGid(char * thisGname, gid_t * gid) {
 
 	grent = getgrnam(thisGname);
 	if (!grent) {
-	    return -1;
-	} else {
-	    lastGid = grent->gr_gid;
+	    endgrent();
+	    grent = getgrnam(thisGname);
+	    if (!grent) return -1;
 	}
+	lastGid = grent->gr_gid;
     }
 
     *gid = lastGid;
