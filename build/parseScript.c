@@ -1,14 +1,8 @@
 #include "system.h"
 
-#include "header.h"
-#include "read.h"
-#include "part.h"
-#include "misc.h"
-#include "rpmlib.h"
+#include "rpmbuild.h"
+
 #include "popt/popt.h"
-#include "reqprov.h"
-#include "package.h"
-#include "parse.h"
 
 static int addTriggerIndex(Package pkg, char *file, char *script, char *prog);
 

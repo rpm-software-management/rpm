@@ -1,11 +1,9 @@
 #include "system.h"
 
+#include "build/rpmbuild.h"
+
 #include "build.h"
 #include "intl.h"
-#include "lib/rpmlib.h"
-#include "build/build.h"
-#include "build/parse.h"
-#include "build/spec.h"
 
 int build(char *arg, int buildAmount, char *passPhrase,
 	         char *buildRoot, int fromTarball, int test, char *cookie) {

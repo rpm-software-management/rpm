@@ -4,13 +4,13 @@
 #include <signal.h>
 #include <sys/signal.h>
 
+#include "rpmlib.h"
+
 #include "dbindex.h"
 #include "falloc.h"
-#include "header.h"
 #include "intl.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "rpmlib.h"
 #include "messages.h"
 
 /* XXX the signal handling in here is not thread safe */

@@ -1,17 +1,13 @@
 #ifndef H_DBINDEX
 #define H_DBINDEX
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* this will break if sizeof(int) != 4 */
-
 #ifdef HAVE_DB_185_H
 #include <db_185.h>
 #else
 #include <db.h>
 #endif
+
+/* this will break if sizeof(int) != 4 */
 
 typedef struct {
     unsigned int recOffset;
@@ -27,6 +23,10 @@ typedef struct {
     DB * db;
     char * indexname;
 } dbiIndex;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 dbiIndex * dbiOpenIndex(char * filename, int flags, int perms);
 void dbiCloseIndex(dbiIndex * dbi);

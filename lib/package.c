@@ -1,14 +1,13 @@
 #include "system.h"
-#include "miscfn.h"
 
 #include <netinet/in.h>
 
-#include "header.h"
+#include "rpmlib.h"
+
 #include "intl.h"
 #include "misc.h"
 #include "oldheader.h"
 #include "rpmlead.h"
-#include "rpmlib.h"
 #include "signature.h"
 #include "messages.h"
 

@@ -1,10 +1,10 @@
 #include "system.h"
-#include "miscfn.h"
+
+#include "rpmlib.h"
 
 #include "depends.h"
 #include "intl.h"
 #include "misc.h"
-#include "rpmlib.h"
 #include "messages.h"
 
 struct availablePackage {

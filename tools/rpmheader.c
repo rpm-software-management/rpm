@@ -1,8 +1,6 @@
 /* rpmheader: spit out the header portion of a package */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "system.h"
 
 #include "rpmlead.h"
 #include "signature.h"

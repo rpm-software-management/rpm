@@ -1,22 +1,14 @@
 #include "system.h"
 
 #include <signal.h>
-#include <time.h>
 
-#include "spec.h"
-#include "header.h"
-#include "misc.h"
-#include "reqprov.h"
-#include "names.h"
-#include "macro.h"
+#include "rpmbuild.h"
 
-#include "rpmlib.h"
 #include "files.h"
+
 #include "lib/cpio.h"
-#include "lib/misc.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
-#include "lib/messages.h"
 
 #define RPM_MAJOR_NUMBER 3
 

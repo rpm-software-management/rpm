@@ -11,10 +11,9 @@ typedef	void *	Spec;
 #define RPMERR_BADSPEC stderr
 #define	FREE(_x)	{ if (_x) free(_x); ((void *)(_x)) = NULL; }
 #else
-#include "spec.h"
-#include "miscfn.h"
-#include "misc.h"
-#include "lib/rpmlib.h"
+
+#include "rpmbuild.h"
+
 #endif
 
 #include "macro.h"

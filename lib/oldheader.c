@@ -1,11 +1,11 @@
 #include "system.h"
-#include "miscfn.h"
 
 #include <netinet/in.h>
 
+#include "rpmlib.h"
+
 #include "misc.h"
 #include "oldheader.h"
-#include "rpmlib.h"
 #include "tread.h"
 
 /* This *can't* read 1.0 headers -- it needs 1.1 (w/ group and icon fields)

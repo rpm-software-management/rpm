@@ -2,13 +2,12 @@
 
 #include "system.h"
 
+#include "build/rpmbuild.h"
+
 #include "checksig.h"
 #include "intl.h"
-#include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"
-#include "messages.h"
-#include "lib/misc.h"
 
 int doReSign(int add, char *passPhrase, char **argv)
 {

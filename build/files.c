@@ -2,23 +2,13 @@
 
 #include <regex.h>
 #include <signal.h>	/* getOutputFrom() */
-#include <time.h>
 
-#include "spec.h"
-#include "package.h"
-#include "rpmlib.h"
-#include "misc.h"
-#include "lib/misc.h"
+#include "rpmbuild.h"
+
 #include "myftw.h"
 #include "lib/cpio.h"
-#include "header.h"
 #include "md5.h"
-#include "names.h"
-#include "messages.h"
 #include "macro.h"
-#include "build.h"
-#include "read.h"
-#include "reqprov.h"
 
 #define MAXDOCDIR 1024
 
@@ -1225,20 +1215,6 @@ static int processPackageFiles(Spec spec, Package pkg,
         FREE(fl.docDirs[fl.docDirCount]);
     }
     return fl.processingFailed;
-}
-
-void freeCpioList(struct cpioFileMapping *cpioList, int cpioCount)
-{
-    struct cpioFileMapping *p = cpioList;
-
-    while (cpioCount--) {
-	rpmMessage(RPMMESS_DEBUG, "archive = %s, fs = %s\n",
-		   p->archivePath, p->fsPath);
-	FREE(p->archivePath);
-	FREE(p->fsPath);
-	p++;
-    }
-    FREE(cpioList);
 }
 
 int processSourceFiles(Spec spec)

@@ -1,13 +1,9 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include <pwd.h>
+#include "build/rpmbuild.h"
 
 #include "ftp.h"
 #include "intl.h"
-#include "messages.h"
-#include "miscfn.h"
-#include "rpmlib.h"
 #include "url.h"
 
 struct pwcacheEntry {

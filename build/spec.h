@@ -1,9 +1,6 @@
 #ifndef _H_SPEC_
 #define _H_SPEC_
 
-#include "header.h"
-#include "stringbuf.h"
-
 typedef struct SpecStruct *Spec;
 #include "macro.h"
 

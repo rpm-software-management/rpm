@@ -3,13 +3,8 @@
 
 /* This is the *only* module users of rpmlib should need to include */
 
-#ifdef HAVE_DB_185_H
-#include <db_185.h>
-#else
-#include <db.h>
-#endif
+/* and it shouldn't need these :-( */
 
-/* it shouldn't need these :-( */
 #include "dbindex.h"
 #include "header.h"
 

@@ -32,10 +32,7 @@ Cambridge, MA 02139, USA.  */
  #pragma alloca
 #endif
 
-#include <errno.h>
-#include <sys/types.h>
-
-#include "config.h"
+#include "system.h"
 
 /* Comment out all this code if we are using the GNU C Library, and are not
    actually compiling the library itself.  This code is part of the GNU C
@@ -202,7 +199,6 @@ extern char *alloca ();
 #undef	GLOB_APPEND
 #undef	GLOB_NOESCAPE
 #undef	GLOB_PERIOD
-#include "miscfn.h"
 
 __ptr_t (*__glob_opendir_hook) __P ((const char *directory));
 const char *(*__glob_readdir_hook) __P ((__ptr_t stream));

@@ -2,12 +2,7 @@
 
 #include "system.h"
 
-#include "spec.h"
-#include "reqprov.h"
-#include "messages.h"
-#include "rpmlib.h"
-#include "misc.h"
-#include "lib/misc.h"
+#include "rpmbuild.h"
 
 int addReqProv(Spec spec, Package pkg,
 	       int flag, char *name, char *version, int index)

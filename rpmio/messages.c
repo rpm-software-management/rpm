@@ -2,9 +2,9 @@
 
 #include <stdarg.h>
 
-#include "intl.h"
-#include "messages.h"
 #include "rpmlib.h"
+
+#include "messages.h"
 #include "intl.h"
 
 static int minLevel = RPMMESS_NORMAL;

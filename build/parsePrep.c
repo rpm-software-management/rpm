@@ -1,14 +1,8 @@
 #include "system.h"
 
-#include "spec.h"
-#include "read.h"
-#include "part.h"
-#include "rpmlib.h"
-#include "lib/misc.h"
+#include "rpmbuild.h"
+
 #include "popt/popt.h"
-#include "names.h"
-#include "misc.h"
-#include "config.h"
 
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;

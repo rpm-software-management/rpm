@@ -1,10 +1,7 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include <sys/time.h>
-#include <sys/resource.h>
+#include "rpmlib.h"
 
-#include "dbindex.h"
 #include "depends.h"
 #include "install.h"
 #include "intl.h"
@@ -12,7 +9,6 @@
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "rpmlib.h"
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
 			                 "/usr/X11R6/bin";

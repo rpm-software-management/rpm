@@ -1,9 +1,8 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include "header.h"
-#include "intl.h"
 #include "rpmlib.h"
+
+#include "intl.h"
 
 static char * permsFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);

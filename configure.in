@@ -349,13 +349,15 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
 AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
 AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
-AC_CHECK_HEADERS(fcntl.h malloc.h memory.h sys/wait.h)
+AC_CHECK_HEADERS(fcntl.h grp.h malloc.h memory.h netdb.h pwd.h utime.h)
+AC_CHECK_HEADERS(sys/mman.h sys/param.h sys/resource.h sys/utsname.h sys/wait.h)
 AC_CHECK_HEADERS(db_185.h)
 
 if test "$PO" = po; then
     AC_CHECK_HEADERS(libintl.h)
 fi
 
+AC_HEADER_TIME
 AC_C_BIGENDIAN
 AC_C_INLINE
 

@@ -1,16 +1,12 @@
 #include "system.h"
 
-#include <time.h>
-#include <sys/param.h>
-
 #ifndef PATH_MAX
 # define PATH_MAX 255
 #endif
 
+#include "build/rpmbuild.h"
+
 #include "intl.h"
-#include "lib/messages.h"
-#include "miscfn.h"
-#include "rpmlib.h"
 #include "query.h"
 #include "url.h"
 

@@ -1,8 +1,6 @@
 /* rpmlead: spit out the lead portion of a package */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "system.h"
 
 #include "rpmlead.h"
 #include "intl.h"

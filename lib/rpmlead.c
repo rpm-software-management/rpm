@@ -1,5 +1,4 @@
 #include "system.h"
-#include "miscfn.h"
 
 #if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
@@ -8,6 +7,7 @@
 #include <netinet/in.h>
 
 #include "rpmlib.h"
+
 #include "rpmlead.h"
 #include "tread.h"
 #include "intl.h"

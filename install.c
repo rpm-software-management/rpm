@@ -1,10 +1,9 @@
 #include "system.h"
 
-#include "miscfn.h"
+#include "build/rpmbuild.h"
+
 #include "install.h"
 #include "intl.h"
-#include "lib/rpmlib.h"
-#include "messages.h"
 #include "query.h"
 #include "url.h"
 

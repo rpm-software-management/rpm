@@ -1,7 +1,4 @@
 #include "system.h"
-#include "miscfn.h"
-
-#include <sys/time.h>
 
 #include "tread.h"
 

@@ -1,8 +1,6 @@
 #include "system.h"
 
-#include "spec.h"
-#include "rpmlib.h"
-#include "reqprov.h"
+#include "rpmbuild.h"
 
 static struct ReqComp {
     char *token;

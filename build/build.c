@@ -1,12 +1,7 @@
 #include "system.h"
 
-#include "misc.h"
-#include "spec.h"
-#include "build.h"
-#include "lib/misc.h"
-#include "lib/messages.h"
-#include "rpmlib.h"
-#include "pack.h"
+#include "rpmbuild.h"
+
 #include "files.h"
 
 #ifdef	DYING

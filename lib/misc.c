@@ -1,13 +1,9 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include <grp.h>
-#include <pwd.h>
-#include <sys/time.h>
+#include "rpmlib.h"
 
 #include "intl.h"
 #include "misc.h"
-#include "rpmlib.h"
 #include "messages.h"
 
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */

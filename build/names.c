@@ -2,14 +2,7 @@
 
 #include "system.h"
 
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
-#include <netdb.h>
-
-#include "names.h"
-#include "rpmlib.h"
-#include "messages.h"
+#include "rpmbuild.h"
 
 static uid_t uids[1024];
 static char *unames[1024];

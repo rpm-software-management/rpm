@@ -1,22 +1,15 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include <pwd.h>
 #include <signal.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <time.h>
-#include <utime.h>
-#include <zlib.h>
+
+#include "rpmlib.h"
 
 #include "cpio.h"
-#include "header.h"
 #include "install.h"
 #include "md5.h"
 #include "messages.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "rpmlib.h"
 
 enum instActions { UNKNOWN, CREATE, BACKUP, KEEP, SAVE, SKIP, ALTNAME };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;

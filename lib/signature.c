@@ -8,19 +8,16 @@
  */
 
 #include "system.h"
-#include "miscfn.h"
 
 #if HAVE_ASM_BYTEORDER_H
 #include <asm/byteorder.h>
 #endif
 
-#include <sys/time.h>
-#include <sys/resource.h>
+#include "rpmlib.h"
 
 #include "intl.h"
 #include "md5.h"
 #include "misc.h"
-#include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"
 #include "tread.h"

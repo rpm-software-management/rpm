@@ -3,12 +3,10 @@ top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 
 LIBOBJECTS = \
-misc.o              parsePreamble.o     part.o \
-package.o           parseDescription.o  parsePrep.o         read.o \
-parseFiles.o        parseReqs.o         reqprov.o \
-parseChangelog.o    parseSpec.o         spec.o \
-parseScript.o       parseBuildInstallClean.o  build.o \
-files.o myftw.o names.o pack.o macro.o
+	build.o files.o macro.o misc.o myftw.o names.o pack.o \
+	parseBuildInstallClean.o parseChangelog.o parseDescription.o \
+	parseFiles.o parsePreamble.o parsePrep.o parseReqs.o \
+	parseScript.o parseSpec.o reqprov.o spec.o
 
 LIBBUILD = librpmbuild.a
 LOADLIBES = -lrpm -lz ../popt/libpopt.a $(LIBEFENCE)

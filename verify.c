@@ -1,10 +1,10 @@
 #include "system.h"
 
-#include "lib/messages.h"
+#include "build/rpmbuild.h"
+
 #include "install.h"
 #include "intl.h"
 #include "query.h"
-#include "rpmlib.h"
 #include "url.h"
 #include "verify.h"
 

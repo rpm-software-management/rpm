@@ -3,15 +3,14 @@
 #include <getopt.h>
 #include <locale.h>
 
+#include "build/rpmbuild.h"
+
 #include "install.h"
 #include <intl.h>
-#include "lib/messages.h"
 #include "lib/signature.h"
 #include "query.h"
 #include "verify.h"
 #include "checksig.h"
-#include "rpmlib.h"
-#include "build/build.h"
 
 #define GETOPT_QUERYFORMAT	1000
 #define GETOPT_WHATREQUIRES	1001

@@ -18,8 +18,6 @@ Cambridge, MA 02139, USA.  */
 #include <errno.h>
 #include <ctype.h>
 
-#include "miscfn.h"
-
 
 /* Comment out all this code if we are using the GNU C Library, and are not
    actually compiling the library itself.  This code is part of the GNU C

@@ -1,4 +1,5 @@
 2.5.3 -> 2.9
+	- consolidated includes for librpmbuild.
         - fixed lib/rpmrc.c to accept include: tags (AdV)
         - fixed the CHANGES file to reflect that this is 2.9, not 3.0 (AdV)
 	- aggregate system includes into system.h.

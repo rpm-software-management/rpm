@@ -26,11 +26,31 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+
 /* <unistd.h> should be included before any preprocessor test
    of _POSIX_VERSION.  */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
+#if NEED_TIMEZONE
+extern time_t timezone;
+#endif
+
 
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
 #if MAJOR_IN_MKDEV
@@ -51,6 +71,10 @@
 #define makedev(maj, min)  (((maj) << 8) | (min))
 #endif
 #undef HAVE_MAJOR
+
+#ifdef HAVE_UTIME_H
+#include <utime.h>
+#endif
 
 #ifndef __P
 #if defined (__GNUC__) || (defined (__STDC__) && __STDC__)
@@ -137,8 +161,25 @@ char *alloca ();
 
 #include <ctype.h>
 
+#if HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif
+
+/* XXX FIXME: popt on sunos4.1.3: <sys/resource.h> requires <sys/time.h> */
+#if HAVE_SYS_RESOURCE_H && HAVE_SYS_TIME_H
+#include <sys/resource.h>
+#endif
+
+#if HAVE_SYS_UTSNAME_H
+#include <sys/utsname.h>
+#endif
+
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
+
+#if HAVE_GRP_H
+#include <grp.h>
 #endif
 
 #if HAVE_LIMITS_H
@@ -147,6 +188,14 @@ char *alloca ();
 
 #if HAVE_MALLOC_H
 #include <malloc.h>
+#endif
+
+#if HAVE_NETDB_H
+#include <netdb.h>
+#endif
+
+#if HAVE_PWD_H
+#include <pwd.h>
 #endif
 
 /* ============== from misc/miscfn.h */

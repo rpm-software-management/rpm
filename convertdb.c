@@ -2,13 +2,11 @@
 
 #include "system.h"
 
-#include "dbindex.h"
+#include "build/rpmbuild.h"
+
 #include "falloc.h"
-#include "header.h"
-#include "misc.h"
 #include "oldrpmdb.h"
 #include "oldheader.h"
-#include "rpmlib.h"
 
 int convertDB(void);
 

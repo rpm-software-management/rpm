@@ -1,9 +1,10 @@
 #include "system.h"
 
+#include "rpmlib.h"
+
 #include "intl.h"
 #include "messages.h"
 #include "rpmdb.h"
-#include "rpmlib.h"
 
 int rpmdbRebuild(char * rootdir) {
     rpmdb olddb, newdb;

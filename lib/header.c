@@ -8,14 +8,11 @@
 /* network byte order and is converted on the fly to host order. */
 
 #include "system.h"
-#include "miscfn.h"
 
-#include <zlib.h>
-
-#include <sys/time.h>
 #include <netinet/in.h>
 
 #include "header.h"
+
 #include "intl.h"
 #include "tread.h"
 

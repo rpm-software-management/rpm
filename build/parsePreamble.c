@@ -1,13 +1,7 @@
 #include "system.h"
 
-#include "read.h"
-#include "part.h"
-#include "rpmlib.h"
-#include "spec.h"
-#include "package.h"
-#include "misc.h"
-#include "reqprov.h"
-#include "parse.h"
+#include "rpmbuild.h"
+
 #include "popt/popt.h"
 
 static int copyTags[] = {

@@ -2,8 +2,6 @@
 
 #include "system.h"
 
-#include <zlib.h>
-
 #include "rpmlib.h"
 
 char *zlib_err [] = {

@@ -1,11 +1,7 @@
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
+#include "system.h"
 
-#include "header.h"
 #include "rpmlib.h"
+
 #include "intl.h"
 
 int main(int argc, char ** argv)

@@ -1,8 +1,6 @@
 #include "system.h"
 
-#include "read.h"
-#include "part.h"
-#include "rpmlib.h"
+#include "rpmbuild.h"
 
 int parseBuildInstallClean(Spec spec, int parsePart)
 {

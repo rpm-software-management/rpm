@@ -1,13 +1,10 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include <sys/time.h>
-#include <sys/resource.h>
+#include "rpmlib.h"
 
 #include "md5.h"
 #include "misc.h"
 #include "messages.h"
-#include "rpmlib.h"
 #include "install.h"
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))

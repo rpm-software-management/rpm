@@ -1,5 +1,4 @@
 #include "system.h"
-#include "miscfn.h"
 
 #ifdef HAVE_NETINET_IN_SYSTM_H
 # include <netinet/in_systm.h>

@@ -1,8 +1,6 @@
 #include "system.h"
 
-#if HAVE_CONFIG_H
-# include "miscfn.h"
-#else
+#if !defined(HAVE_CONFIG_H)
 #define HAVE_MACHINE_TYPES_H 1
 #define HAVE_ALLOCA_H 1
 #define HAVE_NETINET_IN_SYSTM_H 1
@@ -22,11 +20,8 @@
 extern int h_errno;
 #endif
 
-#include <netdb.h>
-#include <pwd.h>
 #include <stdarg.h>
 
-#include <sys/time.h>
 
 #include <netinet/in.h>
 #include <netinet/ip.h>

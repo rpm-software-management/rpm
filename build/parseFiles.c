@@ -1,12 +1,7 @@
 #include "system.h"
 
-#include "header.h"
-#include "read.h"
-#include "part.h"
-#include "misc.h"
-#include "rpmlib.h"
-#include "package.h"
-#include "stringbuf.h"
+#include "rpmbuild.h"
+
 #include "popt/popt.h"
 
 /* These have to be global scope to make up for *stupid* compilers */

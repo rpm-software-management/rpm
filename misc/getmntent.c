@@ -1,9 +1,4 @@
-#include "miscfn.h"
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "system.h"
 
 #ifdef __aix__
 #define COMMENTCHAR '*'

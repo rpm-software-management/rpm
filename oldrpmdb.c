@@ -1,11 +1,8 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include "rpmlib.h"
+#include "build/rpmbuild.h"
+
 #include "rpm_malloc.h"
-#include "messages.h"
-#include "misc.h"
-#include "miscfn.h"
 #include "oldrpmdb.h"
 
 static int labelstrlistToLabelList(char * str, int length, 

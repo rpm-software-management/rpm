@@ -1,5 +1,4 @@
 #include "system.h"
-#include "miscfn.h"
 
 #include "stringbuf.h"
 

@@ -1,49 +1,87 @@
 #include "system.h"
 
-#include <time.h>
+#include "rpmbuild.h"
 
-#include "read.h"
-#include "part.h"
-#include "stringbuf.h"
-#include "misc.h"
-#include "header.h"
-#include "rpmlib.h"
-
+#ifdef	DYING
 static void addChangelogEntry(Header h, int time, char *name, char *text);
 static int addChangelog(Header h, StringBuf sb);
 static int dateToTimet(const char * datestr, time_t * secs);
-    
-int parseChangelog(Spec spec)
+#endif
+
+static void addChangelogEntry(Header h, int time, char *name, char *text)
 {
-    int nextPart, res, rc;
-    StringBuf sb;
+    if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
+	headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
+			  &time, 1);
+	headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
+			  &name, 1);
+	headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
+			 &text, 1);
+    } else {
+	headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
+		       &time, 1);
+	headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
+		       &name, 1);
+	headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
+		       &text, 1);
+    }
+}
 
-    sb = newStringBuf();
+/* datestr is of the form 'Wed Jan 1 1997' */
+static int dateToTimet(const char * datestr, time_t * secs)
+{
+    struct tm time;
+    char * chptr, * end, ** idx;
+    char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
+    static char * days[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", 
+				NULL };
+    static char * months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
+    static char lengths[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
-    /* There are no options to %changelog */
-    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	freeStringBuf(sb);
-	return PART_NONE;
-    }
-    if (rc) {
-	return rc;
-    }
-    
-    while (! (nextPart = isPart(spec->line))) {
-	appendStringBuf(sb, spec->line);
-	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	    nextPart = PART_NONE;
-	    break;
-	}
-	if (rc) {
-	    return rc;
-	}
-    }
+    memset(&time, 0, sizeof(time));
 
-    res = addChangelog(spec->packages->header, sb);
-    freeStringBuf(sb);
+    end = chptr = date;
 
-    return (res) ? res : nextPart;
+    /* day of week */
+    if ((chptr = strtok(date, " \t\n")) == NULL) return -1;
+    idx = days;
+    while (*idx && strcmp(*idx, chptr)) idx++;
+    if (!*idx) return -1;
+
+    /* month */
+    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
+    idx = months;
+    while (*idx && strcmp(*idx, chptr)) idx++;
+    if (!*idx) return -1;
+
+    time.tm_mon = idx - months;
+
+    /* day */
+    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
+
+    /* make this noon so the day is always right (as we make this UTC) */
+    time.tm_hour = 12;
+
+    time.tm_mday = strtol(chptr, &chptr, 10);
+    if (*chptr) return -1;
+    if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) return -1;
+
+    /* year */
+    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
+
+    time.tm_year = strtol(chptr, &chptr, 10);
+    if (*chptr) return -1;
+    if (time.tm_year < 1997 || time.tm_year >= 3000) return -1;
+    time.tm_year -= 1900;
+
+    *secs = mktime(&time);
+    if (*secs == -1) return -1;
+
+    /* adjust to GMT */
+    *secs += timezone;
+
+    return 0;
 }
 
 static int addChangelog(Header h, StringBuf sb)
@@ -138,78 +176,35 @@ static int addChangelog(Header h, StringBuf sb)
     return 0;
 }
 
-static void addChangelogEntry(Header h, int time, char *name, char *text)
+int parseChangelog(Spec spec)
 {
-    if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
-	headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-			  &time, 1);
-	headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
-			  &name, 1);
-	headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
-			 &text, 1);
-    } else {
-	headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-		       &time, 1);
-	headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
-		       &name, 1);
-	headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
-		       &text, 1);
-    }
-}
+    int nextPart, res, rc;
+    StringBuf sb;
 
-/* datestr is of the form 'Wed Jan 1 1997' */
-static int dateToTimet(const char * datestr, time_t * secs)
-{
-    struct tm time;
-    char * chptr, * end, ** idx;
-    char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
-    static char * days[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", 
-				NULL };
-    static char * months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
-    static char lengths[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    sb = newStringBuf();
     
-    memset(&time, 0, sizeof(time));
+    /* There are no options to %changelog */
+    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
+	freeStringBuf(sb);
+	return PART_NONE;
+    }
+    if (rc) {
+	return rc;
+    }
+    
+    while (! (nextPart = isPart(spec->line))) {
+	appendStringBuf(sb, spec->line);
+	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
+	    nextPart = PART_NONE;
+	    break;
+	}
+	if (rc) {
+	    return rc;
+	}
+    }
 
-    end = chptr = date;
+    res = addChangelog(spec->packages->header, sb);
+    freeStringBuf(sb);
 
-    /* day of week */
-    if ((chptr = strtok(date, " \t\n")) == NULL) return -1;
-    idx = days;
-    while (*idx && strcmp(*idx, chptr)) idx++;
-    if (!*idx) return -1;
-
-    /* month */
-    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
-    idx = months;
-    while (*idx && strcmp(*idx, chptr)) idx++;
-    if (!*idx) return -1;
-
-    time.tm_mon = idx - months;
-
-    /* day */
-    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
-
-    /* make this noon so the day is always right (as we make this UTC) */
-    time.tm_hour = 12;
-
-    time.tm_mday = strtol(chptr, &chptr, 10);
-    if (*chptr) return -1;
-    if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) return -1;
-
-    /* year */
-    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
-
-    time.tm_year = strtol(chptr, &chptr, 10);
-    if (*chptr) return -1;
-    if (time.tm_year < 1997 || time.tm_year >= 3000) return -1;
-    time.tm_year -= 1900;
-
-    *secs = mktime(&time);
-    if (*secs == -1) return -1;
-
-    /* adjust to GMT */
-    *secs += timezone;
-
-    return 0;
+    return (res) ? res : nextPart;
 }

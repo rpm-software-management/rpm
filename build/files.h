@@ -2,7 +2,6 @@
 #define	_H_FILES_
 
 #include "spec.h"
-#include "package.h"
 #include "lib/cpio.h"
 
 #ifdef __cplusplus

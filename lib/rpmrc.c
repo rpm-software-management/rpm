@@ -1,14 +1,10 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sys/utsname.h>
+#include "rpmlib.h"
 
 #include "intl.h"
 #include "messages.h"
 #include "misc.h"
-#include "rpmlib.h"
 #include "intl.h"
 
 #if HAVE_SYS_SYSTEMCFG_H

@@ -1,21 +1,16 @@
 #include "system.h"
-#include "miscfn.h"
 
 #include <locale.h>
-#include <sys/time.h>
-#include <sys/resource.h>
+
+#include "build/rpmbuild.h"
 
 #include "build.h"
-#include "build/build.h"
 #include "checksig.h"
 #include "install.h"
 #include "intl.h"
-#include "lib/messages.h"
 #include "lib/signature.h"
 #include "popt/popt.h"
-#include "miscfn.h"
 #include "query.h"
-#include "rpmlib.h"
 #include "verify.h"
 
 #define GETOPT_QUERYFORMAT	1000

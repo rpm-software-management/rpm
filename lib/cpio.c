@@ -1,7 +1,4 @@
 #include "system.h"
-#include "miscfn.h"
-
-#include <utime.h>
 
 #include "cpio.h"
 

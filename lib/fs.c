@@ -1,9 +1,8 @@
 #include "system.h"
-#include "miscfn.h"
 
-#include "header.h"
-#include "intl.h"
 #include "rpmlib.h"
+
+#include "intl.h"
 
 struct fsinfo {
     char * mntPoint;

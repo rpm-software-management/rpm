@@ -1,9 +1,7 @@
 #include "system.h"
 
-#include "misc.h"
-#include "spec.h"
-#include "rpmlib.h"
-#include "header.h"
+#include "rpmbuild.h"
+
 #include "popt/popt.h"
 
 int parseNum(char *line, int *res)

@@ -1,10 +1,9 @@
 /* rpmchecksig: verify the signature of an RPM */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "system.h"
 
 #include "rpmlib.h"
+
 #include "rpmlead.h"
 #include "signature.h"
 #include "intl.h"
