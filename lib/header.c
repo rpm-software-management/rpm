@@ -465,52 +465,13 @@ void dumpHeader(Header h, FILE * f, int flags)
 	    default:		    	type = "(unknown)";	break;
 	}
 
-	switch (p->tag) {
-	    case RPMTAG_NAME:		tag = "RPMTAG_NAME";		break;
-	    case RPMTAG_VERSION:	tag = "RPMTAG_VERSION";		break;
-	    case RPMTAG_RELEASE:	tag = "RPMTAG_RELEASE";		break;
-	    case RPMTAG_SERIAL:		tag = "RPMTAG_SERIAL";		break;
-	    case RPMTAG_SUMMARY:	tag = "RPMTAG_SUMMARY";		break;
-	    case RPMTAG_DESCRIPTION:	tag = "RPMTAG_DESCRIPTION";	break;
-	    case RPMTAG_BUILDTIME:	tag = "RPMTAG_BUILDTIME";	break;
-	    case RPMTAG_BUILDHOST:	tag = "RPMTAG_BUILDHOST";	break;
-	    case RPMTAG_INSTALLTIME:	tag = "RPMTAG_INSTALLTIME";	break;
-	    case RPMTAG_SIZE:		tag = "RPMTAG_SIZE";		break;
-	    case RPMTAG_DISTRIBUTION:	tag = "RPMTAG_DISTRIBUTION";	break;
-	    case RPMTAG_VENDOR:		tag = "RPMTAG_VENDOR";		break;
-	    case RPMTAG_GIF:		tag = "RPMTAG_GIF";		break;
-	    case RPMTAG_XPM:		tag = "RPMTAG_XPM";		break;
-	    case RPMTAG_COPYRIGHT:	tag = "RPMTAG_COPYRIGHT";	break;
-	    case RPMTAG_PACKAGER:	tag = "RPMTAG_PACKAGER";	break;
-	    case RPMTAG_GROUP:		tag = "RPMTAG_GROUP";		break;
-	    case RPMTAG_CHANGELOG:	tag = "RPMTAG_CHANGELOG";	break;
-	    case RPMTAG_SOURCE:		tag = "RPMTAG_SOURCE";		break;
-	    case RPMTAG_PATCH:		tag = "RPMTAG_PATCH";		break;
-	    case RPMTAG_URL:		tag = "RPMTAG_URL";		break;
-	    case RPMTAG_OS:		tag = "RPMTAG_OS";		break;
-	    case RPMTAG_ARCH:		tag = "RPMTAG_ARCH";		break;
-	    case RPMTAG_PREIN:		tag = "RPMTAG_PREIN";		break;
-	    case RPMTAG_POSTIN:		tag = "RPMTAG_POSTIN";		break;
-	    case RPMTAG_PREUN:		tag = "RPMTAG_PREUN";		break;
-	    case RPMTAG_POSTUN:		tag = "RPMTAG_POSTUN";		break;
-	    case RPMTAG_FILENAMES:	tag = "RPMTAG_FILES";		break;
-	    case RPMTAG_FILESIZES:	tag = "RPMTAG_SIZES";		break;
-	    case RPMTAG_FILESTATES:	tag = "RPMTAG_FILESTATES";	break;
-	    case RPMTAG_FILEMODES:	tag = "RPMTAG_FILEMODES";	break;
-	    case RPMTAG_FILEUIDS:	tag = "RPMTAG_FILEUIDS";	break;
-	    case RPMTAG_FILEGIDS:	tag = "RPMTAG_FILEGIDS";	break;
-	    case RPMTAG_FILERDEVS:	tag = "RPMTAG_FILERDEVS";	break;
-	    case RPMTAG_FILEMTIMES:	tag = "RPMTAG_FILEMTIMES";	break;
-	    case RPMTAG_FILEMD5S:	tag = "RPMTAG_FILEMD5S";	break;
-	    case RPMTAG_FILELINKTOS:	tag = "RPMTAG_FILELINKTOS";	break;
-	    case RPMTAG_FILEFLAGS:	tag = "RPMTAG_FILEFLAGS";	break;
-	    case RPMTAG_FILEUSERNAME:	tag = "RPMTAG_FILEUSERNAME";	break;
-	    case RPMTAG_FILEGROUPNAME:	tag = "RPMTAG_FILEGROUPNAME";	break;
-	    case RPMTAG_EXCLUDE:	tag = "RPMTAG_EXCLUDE";		break;
-	    case RPMTAG_EXCLUSIVE:	tag = "RPMTAG_EXCLUSIVE";	break;
-	    case RPMTAG_ICON:		tag = "RPMTAG_ICON";		break;
-	    case RPMTAG_SOURCERPM:	tag = "RPMTAG_SOURCERPM";	break;
-	    default:			tag = "(unknown)";		break;
+	tag = "(unknown)";
+	c = 0;
+	while (c < rpmTagTableSize) {
+	    if (rpmTagTable[c].val == p->tag) {
+		tag = rpmTagTable[c].name;
+	    }
+	    c++;
 	}
 
 	fprintf(f, "Entry      : %.3d %-20s %-18s 0x%.8x %.8d\n", i, tag, type,
