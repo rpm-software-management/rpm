@@ -53,10 +53,20 @@ extern int errno;
 
 #if defined (__GLIBC__) && defined(__LCLINT__)
 /*@-declundef@*/
+/*@-exportfcn@*/
+extern __const unsigned short int **__ctype_b_loc (void)
+     __attribute__ ((__const)) /*@*/;
+extern __const __int32_t **__ctype_tolower_loc (void)
+     __attribute__ ((__const)) /*@*/;
+extern __const __int32_t **__ctype_toupper_loc (void)
+     __attribute__ ((__const)) /*@*/;
+/*@=exportfcn@*/
+/*@-exportvar@*/
 /*@unchecked@*/
 extern __const __int32_t *__ctype_tolower;
 /*@unchecked@*/
 extern __const __int32_t *__ctype_toupper;
+/*@=exportvar@*/
 /*@=declundef@*/
 #endif
 
@@ -65,12 +75,17 @@ extern __const __int32_t *__ctype_toupper;
 #if defined (__GLIBC__) && defined(__LCLINT__)
 /*@-exportlocal@*/
 extern int isalnum(int) __THROW	/*@*/;
+extern int isalpha(int) __THROW	/*@*/;
+extern int isascii(int) __THROW	/*@*/;
 extern int iscntrl(int) __THROW	/*@*/;
+extern int isdigit(int) __THROW	/*@*/;
 extern int isgraph(int) __THROW	/*@*/;
 extern int islower(int) __THROW	/*@*/;
+extern int isprint(int) __THROW	/*@*/;
 extern int ispunct(int) __THROW	/*@*/;
+extern int isspace(int) __THROW	/*@*/;
+extern int isupper(int) __THROW	/*@*/;
 extern int isxdigit(int) __THROW	/*@*/;
-extern int isascii(int) __THROW	/*@*/;
 extern int toascii(int) __THROW	/*@*/;
 extern int _toupper(int) __THROW	/*@*/;
 extern int _tolower(int) __THROW	/*@*/;
@@ -136,7 +151,22 @@ extern int _tolower(int) __THROW	/*@*/;
 #undef HAVE_MAJOR
 
 #ifdef HAVE_GETOPT_H 
+#if defined(__LCLINT__)
+/*@-declundef -exportfcn @*/
+extern int getopt_long (int ___argc, char *const *___argv,
+		const char *__shortopts, const struct option *__longopts,
+		int * __longind)
+	/*@*/;
+/*@=declundef =exportfcn @*/
+#endif
 #include <getopt.h>     /* for long options (is this portable?)*/
+#endif
+
+#ifdef NEED_GETOPT
+/*@unchecked@*/
+extern int optind;		/* From getopt(3)			*/
+/*@unchecked@*/
+extern char *optarg;
 #endif
 
 #if HAVE_REGEX_H

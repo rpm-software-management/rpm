@@ -21,11 +21,12 @@ man_MANS = file.1 $(man_MAGIC)
 file_SOURCES = file.c apprentice.c fsmagic.c softmagic.c ascmagic.c \
 	compress.c is_tar.c readelf.c print.c \
 	file.h names.h patchlevel.h readelf.h tar.h
+file_LDFLAGS = -all-static
 
-EXTRA_DIST = LEGAL.NOTICE MAINT PORTING Makefile.std magic2mime \
+EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime \
 	Localstuff Header $(magic_FRAGMENTS) file.man magic.man
 
-CLEANFILES = $(man_MANS) magic magic.mgc magic.mime.mgc
+BUILT_SOURCES = $(man_MANS) magic magic.mgc magic.mime.mgc
 
 magic: Header Localstuff $(magic_FRAGMENTS)
 	cat $(srcdir)/Header $(srcdir)/Localstuff > $@

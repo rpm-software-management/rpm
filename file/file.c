@@ -52,21 +52,28 @@ int os2_apptype (const char *fn, char *buf, int nb);
 #define	MAXPATHLEN	512
 #endif
 
+			/* Global command-line options 		*/
 /*@unchecked@*/
-int 			/* Global command-line options 		*/
-	debug = 0, 	/* debugging 				*/
-	lflag = 0,	/* follow Symlinks (BSD only) 		*/
-	bflag = 0,	/* brief output format	 		*/
-	zflag = 0,	/* follow (uncompress) compressed files */
-	sflag = 0,	/* read block special files		*/
-	iflag = 0,
-	nobuffer = 0,   /* Do not buffer stdout */
-	kflag = 0;	/* Keep going after the first match	*/
+	int	debug = 0; 	/* debugging 				*/
+/*@unchecked@*/
+	int	lflag = 0;	/* follow Symlinks (BSD only) 		*/
+/*@unchecked@*/
+static	int	bflag = 0;	/* brief output format	 		*/
+/*@unchecked@*/
+	int	zflag = 0;	/* follow (uncompress) compressed files */
+/*@unchecked@*/
+	int	sflag = 0;	/* read block special files		*/
+/*@unchecked@*/
+	int	iflag = 0;
+/*@unchecked@*/
+static	int	nobuffer = 0;   /* Do not buffer stdout */
+/*@unchecked@*/
+	int	kflag = 0;	/* Keep going after the first match	*/
 
 /*@unchecked@*/ /*@null@*/
 const char *magicfile = 0;	/* where the magic is		*/
 /*@unchecked@*/ /*@observer@*/
-const char *default_magicfile = MAGIC;
+static const char *default_magicfile = MAGIC;
 
 /*@unchecked@*/
 char *progname;		/* used throughout 			*/
@@ -373,8 +380,10 @@ main(int argc, char **argv)
 #ifndef HAVE_GETOPT_H
 	while ((c = getopt(argc, argv, OPTSTRING)) != -1)
 #else
+/*@-compdef @*/
 	while ((c = getopt_long(argc, argv, OPTSTRING, long_options,
 	    &longindex)) != -1)
+/*@=compdef @*/
 #endif
 	{
 		switch (c) {

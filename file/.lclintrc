@@ -1,4 +1,4 @@
--I. -DHAVE_CONFIG_H -DSTDC
+-I. -DHAVE_CONFIG_H -DSTDC -D_GNU_SOURCE -D__GLIBC__ -D__STDC__=1 -DHAVE_STRUCT_STAT_ST_RDEV
 
 #+partial
 +forcehints
@@ -17,25 +17,19 @@
 -exportheader		# 19
 -formatconst		# 9
 -macroredef		# 1 tar.h
--moduncon		# 1 getopt_long
--modunconnomods		# 12 ctype.h
--mustmod		# 1 mman.h
--noparams		# 3 getopt_long
 -nullderef		# 4
 -nullpass		# 27
 -nullptrarith		# 1
 -redef			# 4
 -sizeoftype		# 29
 -uniondef		# 6
--usevarargs		# 1
 
 # --- +partial artifacts
--exportlocal		# 18
 
 # --- not-yet at strict level
 -bitwisesigned		# 47
 -elseifcomplete		# 3
--fielduse		# 21 tar.h
+#-fielduse		# 21 tar.h
 -forblock		# 6
 -ifblock		# 231
 -incondefs		# 36

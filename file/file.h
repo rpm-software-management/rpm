@@ -124,6 +124,7 @@ extern int lineno;		/* current line number in magic file	*/
 /*@unchecked@*/
 extern struct mlist mlist;	/* list of arrays of magic entries	*/
 
+/*@-exportlocal@*/
 /*@unchecked@*/
 extern int debug;		/* enable debugging?			*/
 /*@unchecked@*/
@@ -134,13 +135,9 @@ extern int lflag;		/* follow symbolic links?		*/
 extern int sflag;		/* read/analyze block special files?	*/
 /*@unchecked@*/
 extern int iflag;		/* Output types as mime-types		*/
-
-#ifdef NEED_GETOPT
 /*@unchecked@*/
-extern int optind;		/* From getopt(3)			*/
-/*@unchecked@*/
-extern char *optarg;
-#endif
+extern int kflag;		/* Keep going after the first match	*/
+/*@=exportlocal@*/
 
 /*@mayexit@*/
 extern int   apprentice(const char *fn, int action)
@@ -158,8 +155,8 @@ extern void  ckfputs(const char *str, FILE *fil)
 	/*@modifies fil, fileSystem @*/;
 struct stat;
 extern int   fsmagic(const char *fn, /*@out@*/ struct stat *sb)
-	/*@globals fileSystem @*/
-	/*@modifies *sb, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *sb, fileSystem, internalState @*/;
 /*@observer@*/
 extern char *fmttime(long v, int local)
 	/*@*/;

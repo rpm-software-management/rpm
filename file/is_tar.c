@@ -80,12 +80,12 @@ is_tar(unsigned char *buf, int nbytes)
 	/* Adjust checksum to count the "chksum" field as blanks. */
 	for (i = sizeof(header->header.chksum); --i >= 0;)
 		sum -= 0xFF & header->header.chksum[i];
-	sum += ' '* sizeof header->header.chksum;	
+	sum += ' ' * sizeof header->header.chksum;	
 
 	if (sum != recsum)
 		return 0;	/* Not a tar archive */
 	
-	if (0==strcmp(header->header.magic, TMAGIC)) 
+	if (!strcmp(header->header.magic, TMAGIC)) 
 		return 2;		/* Unix Standard tar archive */
 
 	return 1;			/* Old fashioned tar archive */

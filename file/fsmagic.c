@@ -40,7 +40,7 @@ fsmagic(const char *fn, struct stat *sb)
 	 * Fstat is cheaper but fails for files you don't have read perms on.
 	 * On 4.2BSD and similar systems, use lstat() to identify symlinks.
 	 */
-#ifdef	S_IFLNK
+#if defined(S_IFLNK) || defined(__LCLINT__)
 	if (!lflag)
 		ret = lstat(fn, sb);
 	else
@@ -62,13 +62,13 @@ fsmagic(const char *fn, struct stat *sb)
 		}
 	}
 	else {
-#ifdef S_ISUID
+#if defined(S_ISUID) || defined(__LCLINT__)
 		if (sb->st_mode & S_ISUID) ckfputs("setuid ", stdout);
 #endif
-#ifdef S_ISGID
+#if defined(S_ISGID) || defined(__LCLINT__)
 		if (sb->st_mode & S_ISGID) ckfputs("setgid ", stdout);
 #endif
-#ifdef S_ISVTX
+#if defined(S_ISVTX) || defined(__LCLINT__)
 		if (sb->st_mode & S_ISVTX) ckfputs("sticky ", stdout);
 #endif
 	}
@@ -77,7 +77,7 @@ fsmagic(const char *fn, struct stat *sb)
 	case S_IFDIR:
 		ckfputs("directory", stdout);
 		return 1;
-#ifdef S_IFCHR
+#if defined(S_IFCHR) || defined(__LCLINT__)
 	case S_IFCHR:
 		/* 
 		 * If -s has been specified, treat character special files
@@ -86,7 +86,7 @@ fsmagic(const char *fn, struct stat *sb)
 		 */
 		if (sflag)
 			break;
-#ifdef HAVE_ST_RDEV
+#ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
 		(void) printf("character special (%d/%d/%d)",
 			major(sb->st_rdev),
@@ -101,7 +101,7 @@ fsmagic(const char *fn, struct stat *sb)
 #endif
 		return 1;
 #endif
-#ifdef S_IFBLK
+#if defined(S_IFBLK) || defined(__LCLINT__)
 	case S_IFBLK:
 		/* 
 		 * If -s has been specified, treat block special files
@@ -110,7 +110,7 @@ fsmagic(const char *fn, struct stat *sb)
 		 */
 		if (sflag)
 			break;
-#ifdef HAVE_ST_RDEV
+#ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
 		(void) printf("block special (%d/%d/%d)",
 			major(sb->st_rdev),
@@ -126,23 +126,24 @@ fsmagic(const char *fn, struct stat *sb)
 		return 1;
 #endif
 	/* TODO add code to handle V7 MUX and Blit MUX files */
-#ifdef	S_IFIFO
+#if defined(S_IFIFO) || defined(__LCLINT__)
 	case S_IFIFO:
 		ckfputs("fifo (named pipe)", stdout);
 		return 1;
 #endif
-#ifdef	S_IFDOOR
+#if defined(S_IFDOOR)
 	case S_IFDOOR:
 		ckfputs("door", stdout);
 		return 1;
 #endif
-#ifdef	S_IFLNK
+#if defined(S_IFLNK) || defined(__LCLINT__)
 	case S_IFLNK:
 		{
 			char buf[BUFSIZ+4];
 			int nch;
 			struct stat tstatbuf;
 
+			buf[0] = '\0';
 			if ((nch = readlink(fn, buf, BUFSIZ-1)) <= 0) {
 				ckfprintf(stdout, "unreadable symlink (%s).", 
 				      strerror(errno));
@@ -151,6 +152,7 @@ fsmagic(const char *fn, struct stat *sb)
 			buf[nch] = '\0';	/* readlink(2) forgets this */
 
 			/* If broken symlink, say so and quit early. */
+/*@-branchstate@*/
 			if (*buf == '/') {
 			    if (stat(buf, &tstatbuf) < 0) {
 				ckfprintf(stdout,
@@ -177,6 +179,7 @@ fsmagic(const char *fn, struct stat *sb)
 				return 1;
 			    }
                         }
+/*@=branchstate@*/
 
 			/* Otherwise, handle it. */
 			if (lflag) {
@@ -189,7 +192,7 @@ fsmagic(const char *fn, struct stat *sb)
 		}
 		return 1;
 #endif
-#ifdef	S_IFSOCK
+#if defined(S_IFSOCK)
 #ifndef __COHERENT__
 	case S_IFSOCK:
 		ckfputs("socket", stdout);

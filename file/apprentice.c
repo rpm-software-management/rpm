@@ -55,9 +55,9 @@ FILE_RCSID("@(#)Id: apprentice.c,v 1.49 2002/07/03 19:00:41 christos Exp ")
 
 /*@unchecked@*/
 #ifdef __EMX__
-  char PATHSEP=';';
+  static char PATHSEP=';';
 #else
-  char PATHSEP=':';
+  static char PATHSEP=':';
 #endif
 
 /*@unchecked@*/

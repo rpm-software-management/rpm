@@ -204,8 +204,7 @@ AC_DEFUN([AC_SYS_LARGEFILE],
      [  --disable-largefile     omit support for large files])
    if test "$enable_largefile" != no; then
 
-     AC_CACHE_CHECK([for special C compiler options needed for large files=
-],
+     AC_CACHE_CHECK([for special C compiler options needed for large files],
        ac_cv_sys_largefile_CC,
        [ac_cv_sys_largefile_CC=no
         if test "$GCC" != yes; then

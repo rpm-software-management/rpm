@@ -31,11 +31,6 @@
 
 FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 
-/*@-redecl@*/
-/*@unchecked@*/
-extern int kflag;
-/*@=redecl@*/
-
 static int32_t
 mprint(union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
@@ -1109,9 +1104,10 @@ softmagic(unsigned char *buf, int nbytes)
 {
 	struct mlist *ml;
 
-	for (ml = mlist.next; ml != &mlist; ml = ml->next)
+	for (ml = mlist.next; ml != &mlist; ml = ml->next) {
 		if (match(ml->magic, ml->nmagic, buf, nbytes))
 			return 1;
+	}
 
 	return 0;
 }

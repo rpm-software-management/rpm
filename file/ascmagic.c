@@ -190,7 +190,7 @@ looks_extended(const unsigned char *buf, int nbytes,
 	return 1;
 }
 
-int
+static int
 looks_utf8(const unsigned char *buf, int nbytes,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
 	/*@modifies *ubuf, *ulen @*/
@@ -319,7 +319,7 @@ looks_unicode(const unsigned char *buf, int nbytes,
  */
 
 /*@unchecked@*/ /*@observer@*/
-unsigned char ebcdic_to_ascii[] = {
+static unsigned char ebcdic_to_ascii[] = {
   0,   1,   2,   3, 156,   9, 134, 127, 151, 141, 142,  11,  12,  13,  14,  15,
  16,  17,  18,  19, 157, 133,   8, 135,  24,  25, 146, 143,  28,  29,  30,  31,
 128, 129, 130, 131, 132,  10,  23,  27, 136, 137, 138, 139, 140,   5,   6,   7,
@@ -353,7 +353,7 @@ unsigned char ebcdic_to_ascii[] = {
  */
 
 /*@unchecked@*/ /*@unused@*/ /*@observer@*/
-unsigned char ebcdic_1047_to_8859[] = {
+static unsigned char ebcdic_1047_to_8859[] = {
 0x00,0x01,0x02,0x03,0x9C,0x09,0x86,0x7F,0x97,0x8D,0x8E,0x0B,0x0C,0x0D,0x0E,0x0F,
 0x10,0x11,0x12,0x13,0x9D,0x0A,0x08,0x87,0x18,0x19,0x92,0x8F,0x1C,0x1D,0x1E,0x1F,
 0x80,0x81,0x82,0x83,0x84,0x85,0x17,0x1B,0x88,0x89,0x8A,0x8B,0x8C,0x05,0x06,0x07,
