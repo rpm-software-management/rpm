@@ -3,7 +3,7 @@
 	- fixed rpmlibbuild.a typo in Makefile
 	- fixed handling of '\' in spec files (a specific case of a more
 	  general bug)
-	- change use of "export" to work with non-basb shells
+	- change use of "export" to work with non-bash shells
 	- compress the archives.  oops.
 	- fixed bug when there is no %setup
 
