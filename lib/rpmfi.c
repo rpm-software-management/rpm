@@ -725,21 +725,6 @@ assert(p != NULL);
 	fileTypes ft;
 	int fnlen;
 
-#ifdef	DYING
-	/*
-	 * If only adding libraries of different arch into an already
-	 * installed package, skip all other files.
-	 */
-	if (rpmteColor(p) && !isFileMULTILIB((fFlags[i]))) {
-	    if (actions) {
-		actions[i] = FA_SKIPMULTILIB;
-		rpmMessage(RPMMESS_DEBUG, _("excluding multilib path %s%s\n"), 
-			dirNames[dirIndexes[i]], baseNames[i]);
-	    }
-	    continue;
-	}
-#endif
-
 	len = reldel +
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
 	/*@-branchstate@*/

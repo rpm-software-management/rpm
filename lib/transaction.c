@@ -1003,7 +1003,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
 
     /* XXX MULTILIB is broken, as packages can and do execute /sbin/ldconfig. */
-    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
 
     ts->probs = rpmpsFree(ts->probs);
@@ -1509,13 +1509,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		    }
 		}
 		psm->fi = rpmfiLink(p->fi, NULL);
-
-#ifdef	DYING
-		if (rpmteColor(p))
-		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_MULTILIB));
-		else
-#endif
-		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) & ~RPMTRANS_FLAG_MULTILIB));
 
 /*@-nullstate@*/ /* FIX: psm->fi may be NULL */
 		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {

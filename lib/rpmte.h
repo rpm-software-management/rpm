@@ -444,12 +444,14 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
 	/*@*/;
 
 /**
- * Calculate transaction lemnt dependency colors/refs from file info.
+ * Calculate transaction element dependency colors/refs from file info.
  * @param te		transaction element
  * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
  */
+/*@-exportlocal@*/
 void rpmteColorDS(rpmte te, rpmTag tag)
         /*@modifies te @*/;
+/*@=exportlocal@*/
 
 /**
  * Return transaction element index.

@@ -41,7 +41,7 @@
  * - te.A()	Return package architecture.
  * - te.O()	Return package operating system.
  * - te.NEVR()	Return package name-version-release.
- * - te.Mutilib() Return package multilib attribute.
+ * - te.Color() Return package color bits.
  * - te.Depth()	Return the level in the dependency tree (after ordering).
  * - te.Npreds() Return the number of package prerequisites (after ordering).
  * - te.Degree() Return the parent's degree + 1.

@@ -1343,8 +1343,6 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	}
 
 	/* Parse dependencies into header */
-	tagflags &= ~RPMSENSE_MULTILIB;
-
 	rc = parseRCPOT(spec, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
 	sb_stdout = freeStringBuf(sb_stdout);
 

@@ -818,7 +818,8 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmts
  * Add package to be installed to transaction set.

@@ -365,7 +365,9 @@ typedef enum rpmTag_e {
     RPMTAG_PAYLOADFORMAT	= 1124,
     RPMTAG_PAYLOADCOMPRESSOR	= 1125,
     RPMTAG_PAYLOADFLAGS		= 1126,
-    RPMTAG_MULTILIBMASK		= 1127,
+/*@-enummemuse@*/
+    RPMTAG_MULTILIBMASK		= 1127, /*!< internal - obsolete */
+/*@=enummemuse@*/
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
 /*@-enummemuse@*/
@@ -426,14 +428,8 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
     RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
 } rpmfileAttrs;
-#define	RPMFILE_MULTILIB_SHIFT		12
-#define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
-#define	RPMFILE_MULTILIB_MASK		RPMFILE_MULTILIB(7)
 
 #define	RPMFILE_ALL	~(RPMFILE_NONE)
-
-/* XXX Check file flags for multilib marker. */
-#define	isFileMULTILIB(_fflags)		((_fflags) & RPMFILE_MULTILIB_MASK)
 
 /**
  * Dependency Attributes.
@@ -462,7 +458,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERIN	= (1 << 16),	/*!< %triggerin dependency. */
     RPMSENSE_TRIGGERUN	= (1 << 17),	/*!< %triggerun dependency. */
     RPMSENSE_TRIGGERPOSTUN = (1 << 18),	/*!< %triggerpostun dependency. */
-    RPMSENSE_MULTILIB	= (1 << 19),
+	/* (1 << 19) unused. */
     RPMSENSE_SCRIPT_PREP = (1 << 20),	/*!< %prep build dependency. */
     RPMSENSE_SCRIPT_BUILD = (1 << 21),	/*!< %build build dependency. */
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
@@ -481,8 +477,6 @@ typedef	enum rpmsenseFlags_e {
 
 #define	RPMSENSE_TRIGGER	\
 	(RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
-
-#define	isDependsMULTILIB(_dflags)	((_dflags) & RPMSENSE_MULTILIB)
 
 #define	_ALL_REQUIRES_MASK	(\
     RPMSENSE_INTERP | \
@@ -915,7 +909,7 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
 /*@=enummemuse@*/
-    RPMTRANS_FLAG_MULTILIB	= (1 <<  8),	/*!< @todo Document. */
+	/* (1 << 8) unused. */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
 

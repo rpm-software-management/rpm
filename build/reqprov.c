@@ -55,7 +55,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	extra = depFlags & _ALL_REQUIRES_MASK;
     }
 
-    depFlags = (depFlags & (RPMSENSE_SENSEMASK | RPMSENSE_MULTILIB)) | extra;
+    depFlags = (depFlags & RPMSENSE_SENSEMASK) | extra;
 
     /*@-branchstate@*/
     if (depEVR == NULL)
@@ -83,18 +83,13 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	    if (strcmp(names[len], depName))
 		continue;
 	    if (flagtag && versions != NULL &&
-		(strcmp(versions[len], depEVR) ||
-	((flags[len] | RPMSENSE_MULTILIB) != (depFlags | RPMSENSE_MULTILIB))))
+		(strcmp(versions[len], depEVR) || flags[len] != depFlags))
 		continue;
 	    if (indextag && indexes != NULL && indexes[len] != index)
 		continue;
 
 	    /* This is a duplicate dependency. */
 	    duplicate = 1;
-
-	    if (flagtag && isDependsMULTILIB(depFlags) &&
-		!isDependsMULTILIB(flags[len]))
-		    flags[len] |= RPMSENSE_MULTILIB;
 
 	    break;
 	}

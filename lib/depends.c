@@ -1574,8 +1574,10 @@ int rpmtsCheck(rpmts ts)
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmds provides;
 
+/*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+/*@=nullpass@*/
 	rc = checkPackageDeps(ts, rpmteNEVR(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
@@ -1622,8 +1624,10 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides;
 	rpmfi fi;
 
+/*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
 	rpmMessage(RPMMESS_DEBUG,  "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+/*@=nullpass@*/
 
 #if defined(DYING) || defined(__LCLINT__)
 	/* XXX all packages now have Provides: name = version-release */
