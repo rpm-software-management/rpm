@@ -520,11 +520,12 @@ fmagicA(fmagic fm)
 	 */
 	switch (is_tar(fm)) {
 	case 1:
-		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-tar" : "tar archive", stdout);
+		ckfputs(((fm->flags & FMAGIC_FLAGS_MIME)
+			? "application/x-tar" : "tar archive"), fm);
 		return 1;
 	case 2:
-		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-tar, POSIX"
-				: "POSIX tar archive", stdout);
+		ckfputs(((fm->flags & FMAGIC_FLAGS_MIME)
+			? "application/x-tar, POSIX" : "POSIX tar archive"), fm);
 		return 1;
 	}
 
@@ -680,27 +681,26 @@ subtype_identified:
 
 	if ((fm->flags & FMAGIC_FLAGS_MIME)) {
 		if (subtype_mime != NULL)
-			ckfputs(subtype_mime, stdout);
+			ckfputs(subtype_mime, fm);
 		else
-			ckfputs("text/plain", stdout);
+			ckfputs("text/plain", fm);
 
 		if (code_mime != NULL) {
-			ckfputs("; charset=", stdout);
-			ckfputs(code_mime, stdout);
+			ckfputs("; charset=", fm);
+			ckfputs(code_mime, fm);
 		}
 	} else {
-		ckfputs(code, stdout);
+		ckfputs(code, fm);
 
 		if (subtype != NULL) {
-			ckfputs(" ", stdout);
-			ckfputs(subtype, stdout);
+			ckfputs(" ", fm);
+			ckfputs(subtype, fm);
 		}
-
-		ckfputs(" ", stdout);
-		ckfputs(type, stdout);
+		ckfputs(" ", fm);
+		ckfputs(type, fm);
 
 		if (has_long_lines)
-			ckfputs(", with very long lines", stdout);
+			ckfputs(", with very long lines", fm);
 
 		/*
 		 * Only report line terminators if we find one other than LF,
@@ -708,37 +708,37 @@ subtype_identified:
 		 */
 		if ((n_crlf == 0 && n_cr == 0 && n_nel == 0 && n_lf == 0) ||
 		    (n_crlf != 0 || n_cr != 0 || n_nel != 0)) {
-			ckfputs(", with", stdout);
+			ckfputs(", with", fm);
 
 			if (n_crlf == 0 && n_cr == 0 && n_nel == 0 && n_lf == 0)
-				ckfputs(" no", stdout);
+				ckfputs(" no", fm);
 			else {
 				if (n_crlf) {
-					ckfputs(" CRLF", stdout);
+					ckfputs(" CRLF", fm);
 					if (n_cr || n_lf || n_nel)
-						ckfputs(",", stdout);
+						ckfputs(",", fm);
 				}
 				if (n_cr) {
-					ckfputs(" CR", stdout);
+					ckfputs(" CR", fm);
 					if (n_lf || n_nel)
-						ckfputs(",", stdout);
+						ckfputs(",", fm);
 				}
 				if (n_lf) {
-					ckfputs(" LF", stdout);
+					ckfputs(" LF", fm);
 					if (n_nel)
-						ckfputs(",", stdout);
+						ckfputs(",", fm);
 				}
 				if (n_nel)
-					ckfputs(" NEL", stdout);
+					ckfputs(" NEL", fm);
 			}
 
-			ckfputs(" line terminators", stdout);
+			ckfputs(" line terminators", fm);
 		}
 
 		if (has_escapes)
-			ckfputs(", with escape sequences", stdout);
+			ckfputs(", with escape sequences", fm);
 		if (has_backspace)
-			ckfputs(", with overstriking", stdout);
+			ckfputs(", with overstriking", fm);
 	}
 
 	return 1;

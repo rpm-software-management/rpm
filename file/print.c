@@ -134,44 +134,52 @@ mdump(struct magic *m)
  * ckfprintf - fprintf, but with error checking
  */
 void
-ckfputs(const char *str, FILE *fil)
+ckfputs(const char *str, fmagic fm)
 {
-	if (fputs(str,fil) == EOF)
-		error("write failed.\n");
+	FILE *f = (fm->f ? fm->f : stdout);
+	if (fputs(str, f) == EOF)
+		error(EXIT_FAILURE, 0, "ckfputs write failed.\n");
 }
 
 /*VARARGS*/
 void
-ckfprintf(FILE *f, const char *fmt, ...)
+ckfprintf(fmagic fm, const char *fmt, ...)
 {
+	FILE *f = (fm->f ? fm->f : stdout);
+
 	va_list va;
 
 	va_start(va, fmt);
 	(void) vfprintf(f, fmt, va);
 	if (ferror(f))
-		error("write failed.\n");
+		error(EXIT_FAILURE, 0, "ckfprintf write failed.\n");
 	va_end(va);
 }
 
+#if !defined(HAVE_ERROR)
 /*
  * error - print best error message possible and exit
  */
 /*VARARGS*/
 void
-error(const char *f, ...)
+error(int status, int errnum, const char *fmt, ...)
 {
 	va_list va;
 
-	va_start(va, f);
+	va_start(va, fmt);
 	/* cuz we use stdout for most, stderr here */
 	(void) fflush(stdout); 
 
 	if (progname != NULL) 
 		(void) fprintf(stderr, "%s: ", progname);
-	(void) vfprintf(stderr, f, va);
+	(void) vfprintf(stderr, fmt, va);
 	va_end(va);
-	exit(EXIT_FAILURE);
+#if NOTYET
+	if (status)
+#endif
+		exit(status);
 }
+#endif
 
 /*VARARGS*/
 void

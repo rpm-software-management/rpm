@@ -41,6 +41,15 @@ extern int errno;
 /*@=declundef @*/
 #endif
 
+#if HAVE_ERROR && HAVE_ERROR_H
+#include <error.h>
+#else
+/*@exits@*/
+extern void error(int status, int errnum, const char *f, ...)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+#endif
+
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #ifdef HAVE_STDINT_H
@@ -101,6 +110,10 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <fcntl.h>
 #else
 #include <sys/file.h>
+#endif
+
+#if HAVE_SYS_WAIT_H
+#include <sys/wait.h>
 #endif
 
 #if HAVE_SYS_MMAN_H && !defined(__LCLINT__)
@@ -222,6 +235,20 @@ char * xstrdup (const char *str)
 	/*@*/;
 /*@=fcnuse@*/
 /*@=declundef =exportfcn=incondefs @*/
+
+/**
+ */
+/*@unused@*/ /*@exits@*/ /*@only@*/
+static inline void * vmefail(/*@unused@*/ size_t nb)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+	error(EXIT_FAILURE, 0, "out of memory");
+	/*@notreached@*/
+/*@-nullret@*/
+	return NULL;
+/*@=nullret@*/
+}
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>

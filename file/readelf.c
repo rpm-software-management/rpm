@@ -114,12 +114,16 @@ doshn(int cls, int swap, int fd, off_t off, int num, size_t size)
 	Elf32_Shdr sh32;
 	Elf64_Shdr sh64;
 
-	if (lseek(fd, off, SEEK_SET) == -1)
-		error("lseek failed (%s).\n", strerror(errno));
+	if (lseek(fd, off, SEEK_SET) == -1) {
+		error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
+		/*@notreached@*/
+	}
 
 	for ( ; num; num--) {
-		if (read(fd, sh_addr, size) == -1)
-			error("read failed (%s).\n", strerror(errno));
+		if (read(fd, sh_addr, size) == -1) {
+			error(EXIT_FAILURE, 0, "read failed (%s).\n", strerror(errno));
+			/*@notreached@*/
+		}
 		if (shs_type == SHT_SYMTAB /* || shs_type == SHT_DYNSYM */) {
 			(void) printf (", not stripped");
 			return;
@@ -148,12 +152,16 @@ dophn_exec(int cls, int swap, int fd, off_t off, int num, size_t size)
 	int bufsize;
 	size_t offset, nameoffset;
 
-	if (lseek(fd, off, SEEK_SET) == -1)
-		error("lseek failed (%s).\n", strerror(errno));
+	if (lseek(fd, off, SEEK_SET) == -1) {
+		error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
+		/*@notreached@*/
+	}
 
   	for ( ; num; num--) {
-  		if (read(fd, ph_addr, size) == -1)
-  			error("read failed (%s).\n", strerror(errno));
+  		if (read(fd, ph_addr, size) == -1) {
+  			error(EXIT_FAILURE, 0, "read failed (%s).\n", strerror(errno));
+			/*@notreached@*/
+		}
 
 		switch (ph_type) {
 		case PT_DYNAMIC:
@@ -167,12 +175,16 @@ dophn_exec(int cls, int swap, int fd, off_t off, int num, size_t size)
 			 * This is a PT_NOTE section; loop through all the notes
 			 * in the section.
 			 */
-			if (lseek(fd, (off_t) ph_offset, SEEK_SET) == -1)
-				error("lseek failed (%s).\n", strerror(errno));
+			if (lseek(fd, (off_t) ph_offset, SEEK_SET) == -1) {
+				error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
+				/*@notreached@*/
+			}
 			bufsize = read(fd, nbuf, BUFSIZ);
-			if (bufsize == -1)
-				error(": " "read failed (%s).\n",
+			if (bufsize == -1) {
+				error(EXIT_FAILURE, 0, ": " "read failed (%s).\n",
 				    strerror(errno));
+				/*@notreached@*/
+			}
 			offset = 0;
 			for (;;) {
 				if (offset >= bufsize)
@@ -345,10 +357,14 @@ dophn_core(int cls, int swap, int fd, off_t off, int num, size_t size)
 	 * Loop through all the program headers.
 	 */
 	for ( ; num; num--) {
-		if (lseek(fd, off, SEEK_SET) == -1)
-			error("lseek failed (%s).\n", strerror(errno));
-		if (read(fd, ph_addr, size) == -1)
-			error("read failed (%s).\n", strerror(errno));
+		if (lseek(fd, off, SEEK_SET) == -1) {
+			error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
+			/*@notreached@*/
+		}
+		if (read(fd, ph_addr, size) == -1) {
+			error(EXIT_FAILURE, 0, "read failed (%s).\n", strerror(errno));
+			/*@notreached@*/
+		}
 		off += size;
 		if (ph_type != PT_NOTE)
 			continue;
@@ -357,11 +373,15 @@ dophn_core(int cls, int swap, int fd, off_t off, int num, size_t size)
 		 * This is a PT_NOTE section; loop through all the notes
 		 * in the section.
 		 */
-		if (lseek(fd, (off_t) ph_offset, SEEK_SET) == -1)
-			error("lseek failed (%s).\n", strerror(errno));
+		if (lseek(fd, (off_t) ph_offset, SEEK_SET) == -1) {
+			error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
+			/*@notreached@*/
+		}
 		bufsize = read(fd, nbuf, BUFSIZ);
-		if (bufsize == -1)
-			error(": " "read failed (%s).\n", strerror(errno));
+		if (bufsize == -1) {
+			error(EXIT_FAILURE, 0, ": " "read failed (%s).\n", strerror(errno));
+			/*@notreached@*/
+		}
 		offset = 0;
 		for (;;) {
 			if (offset >= bufsize)

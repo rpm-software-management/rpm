@@ -101,8 +101,8 @@ fmagicSPrint(const fmagic fm, struct magic *m)
 		break;
 
 	default:
-		error("invalid m->type (%d) in fmagicSPrint().\n", m->type);
-		/*@notreached@*/
+		error(EXIT_FAILURE, 0, "invalid m->type (%d) in fmagicSPrint().\n", m->type);
+		/*@notreached@*/ break;
 	}
 	return(t);
 }
@@ -377,7 +377,7 @@ fmagicSConvert(fmagic fm, struct magic *m)
 	case REGEX:
 		return 1;
 	default:
-		error("invalid type %d in fmagicSConvert().\n", m->type);
+		error(EXIT_FAILURE, 0, "invalid type %d in fmagicSConvert().\n", m->type);
 		/*@notreached@*/
 		return 0;
 	}
@@ -871,7 +871,8 @@ fmagicSCheck(const fmagic fm, struct magic *m)
 		rc = regcomp(&rx, m->value.s, REG_EXTENDED|REG_NOSUB);
 		if (rc) {
 			(void) regerror(rc, &rx, errmsg, sizeof(errmsg));
-			error("regex error %d, (%s)\n", rc, errmsg);
+			error(EXIT_FAILURE, 0, "regex error %d, (%s)\n", rc, errmsg);
+			/*@notreached@*/
 		} else {
 			rc = regexec(&rx, p->buf, 0, 0, 0);
 			return !rc;
@@ -879,7 +880,7 @@ fmagicSCheck(const fmagic fm, struct magic *m)
 	}
 		/*@notreached@*/ break;
 	default:
-		error("invalid type %d in fmagicSCheck().\n", m->type);
+		error(EXIT_FAILURE, 0, "invalid type %d in fmagicSCheck().\n", m->type);
 		/*@notreached@*/
 		return 0;
 	}
@@ -954,7 +955,7 @@ fmagicSCheck(const fmagic fm, struct magic *m)
 
 	default:
 		matched = 0;
-		error("fmagicSCheck: can't happen: invalid relation %d.\n", m->reln);
+		error(EXIT_FAILURE, 0, "fmagicSCheck: can't happen: invalid relation %d.\n", m->reln);
 		/*@notreached@*/ break;
 	}
 
@@ -1067,7 +1068,7 @@ fmagicSMatch(const fmagic fm)
 				   && (m->nospflag == 0)
 				   && (m->desc[0] != '\0')
 				   ) {
-					(void) putchar(' ');
+					ckfputs(" ", fm);
 					need_separator = 0;
 				}
 				if ((cont_level+1) >= tmplen)

@@ -902,7 +902,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	if (fstat(fd, &st) == -1) {
 		(void)fprintf(stderr, "%s: Cannot stat `%s' (%s)\n",
 		    progname, dbname, strerror(errno));
-		goto error;
+		goto errxit;
 	}
 
 #ifdef HAVE_MMAP
@@ -910,14 +910,14 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	    MAP_PRIVATE|MAP_FILE, fd, (off_t)0)) == MAP_FAILED) {
 		(void)fprintf(stderr, "%s: Cannot map `%s' (%s)\n",
 		    progname, dbname, strerror(errno));
-		goto error;
+		goto errxit;
 	}
 #else
 	mm = xmalloc((size_t)st.st_size);
 	if (read(fd, mm, (size_t)st.st_size) != (size_t)st.st_size) {
 		(void) fprintf(stderr, "%s: Read failed (%s).\n", progname,
 		    strerror(errno));
-		goto error;
+		goto errxit;
 	}
 #endif
 	*magicp = mm;
@@ -928,7 +928,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 		if (swap4(*ptr) != MAGICNO) {
 			(void)fprintf(stderr, "%s: Bad magic in `%s'\n",
 			    progname, dbname);
-			goto error;
+			goto errxit;
 		}
 		needsbyteswap = 1;
 	} else
@@ -941,7 +941,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 		(void)fprintf(stderr, 
 		    "%s: version mismatch (%d != %d) in `%s'\n",
 		    progname, version, VERSIONNO, dbname);
-		goto error;
+		goto errxit;
 	}
 	*nmagicp = (st.st_size / sizeof(struct magic)) - 1;
 	(*magicp)++;
@@ -949,7 +949,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 		byteswap(*magicp, *nmagicp);
 	return 0;
 
-error:
+errxit:
 	if (fd != -1)
 		(void)close(fd);
 /*@-branchstate@*/

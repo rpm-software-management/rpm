@@ -106,7 +106,7 @@ pipe2file(int fd, void *startbuf, size_t nbytes)
 	errno = r;
 #endif
 	if (tfd == -1) {
-		error("Can't create temporary file for pipe copy (%s)\n",
+		error(EXIT_FAILURE, 0, "Can't create temporary file for pipe copy (%s)\n",
 		    strerror(errno));
 		/*@notreached@*/
 	}
@@ -121,13 +121,13 @@ pipe2file(int fd, void *startbuf, size_t nbytes)
 
 	switch (r) {
 	case -1:
-		error("Error copying from pipe to temp file (%s)\n",
+		error(EXIT_FAILURE, 0, "Error copying from pipe to temp file (%s)\n",
 		    strerror(errno));
 		/*@notreached@*/break;
 	case 0:
 		break;
 	default:
-		error("Error while writing to temp file (%s)\n",
+		error(EXIT_FAILURE, 0, "Error while writing to temp file (%s)\n",
 		    strerror(errno));
 		/*@notreached@*/
 	}
@@ -138,13 +138,13 @@ pipe2file(int fd, void *startbuf, size_t nbytes)
 	 * can still access the phantom inode.
 	 */
 	if ((fd = dup2(tfd, fd)) == -1) {
-		error("Couldn't dup destcriptor for temp file(%s)\n",
+		error(EXIT_FAILURE, 0, "Couldn't dup destcriptor for temp file(%s)\n",
 		    strerror(errno));
 		/*@notreached@*/
 	}
 	(void)close(tfd);
 	if (lseek(fd, (off_t)0, SEEK_SET) == (off_t)-1) {
-		error("Couldn't seek on temp file (%s)\n", strerror(errno));
+		error(EXIT_FAILURE, 0, "Couldn't seek on temp file (%s)\n", strerror(errno));
 		/*@notreached@*/
 	}
 	return fd;
@@ -228,21 +228,19 @@ uncompressbuf(int method, const unsigned char *old,
 	/*@modifies *newch, fileSystem, internalState @*/
 {
 	int fdin[2], fdout[2];
+	pid_t pid;
 
-	/* The buffer is NUL terminated, and we don't need that. */
-	n--;
-	 
 #ifdef HAVE_LIBZ
 	if (method == 2)
 		return uncompressgzipped(old,newch,n);
 #endif
 
 	if (pipe(fdin) == -1 || pipe(fdout) == -1) {
-		error("cannot create pipe (%s).\n", strerror(errno));	
+		error(EXIT_FAILURE, 0, "cannot create pipe (%s).\n", strerror(errno));	
 		/*@notreached@*/
 	}
 
-	switch (fork()) {
+	switch ((pid = fork())) {
 	case 0:	/* child */
 		(void) close(0);
 		(void) dup(fdin[0]);
@@ -259,17 +257,19 @@ uncompressbuf(int method, const unsigned char *old,
 		(void) execvp(compr[method].argv[0],
 		       (char *const *)compr[method].argv);
 		exit(EXIT_FAILURE);
-		/*@notreached@*/break;
+		/*@notreached@*/ break;
 	case -1:
-		error("could not fork (%s).\n", strerror(errno));
+		error(EXIT_FAILURE, 0, "could not fork (%s).\n", strerror(errno));
 		/*@notreached@*/break;
 
 	default: /* parent */
 		(void) close(fdin[0]);
 		(void) close(fdout[1]);
+
+		n--; /* The buffer is NUL terminated, and we don't need that. */
 		if (swrite(fdin[1], old, n) != n) {
 			n = 0;
-			goto err;
+			goto errxit;
 		}
 		(void) close(fdin[1]);
 		fdin[1] = -1;
@@ -277,15 +277,15 @@ uncompressbuf(int method, const unsigned char *old,
 		if ((n = sread(fdout[0], *newch, HOWMANY)) <= 0) {
 			free(*newch);
 			n = 0;
-			goto err;
+			goto errxit;
 		}
  		/* NUL terminate, as every buffer is handled here. */
  		(*newch)[n++] = '\0';
-err:
+errxit:
 		if (fdin[1] != -1)
 			(void) close(fdin[1]);
 		(void) close(fdout[0]);
-		(void) wait(NULL);
+		pid = waitpid(pid, NULL, 0);
 		return n;
 	}
 	/*@notreached@*/

@@ -84,7 +84,7 @@ unwrap(fmagic fm, char *fn)
 		wid = 1;
 	} else {
 		if ((f = fopen(fn, "r")) == NULL) {
-			error("Cannot open `%s' (%s).\n", fn, strerror(errno));
+			error(EXIT_FAILURE, 0, "Cannot open `%s' (%s).\n", fn, strerror(errno));
 			/*@notreached@*/
 		}
 

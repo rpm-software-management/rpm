@@ -66,6 +66,7 @@ AC_HEADER_STDINT
 AC_HEADER_MAJOR
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(sys/mman.h sys/stat.h sys/types.h)
+AC_CHECK_HEADERS(error.h)
 AC_CHECK_HEADERS(fcntl.h)
 AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_HEADERS(locale.h)
@@ -99,7 +100,7 @@ AC_CHECK_SIZEOF_STDC_HEADERS(uint32_t, 0)
 AC_CHECK_SIZEOF_STDC_HEADERS(uint64_t, 0)
 
 dnl Checks for functions
-AC_CHECK_FUNCS(mtrace mkstemp mmap strdup strerror strtoul)
+AC_CHECK_FUNCS(error mtrace mkstemp mmap strdup strerror strtoul)
 
 dnl Checks for libraries
 AC_CHECK_LIB(z, gzopen)

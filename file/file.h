@@ -140,11 +140,13 @@ struct fmagic_s {
     struct mlist * mlist;	/*!< list of arrays of magic entries	*/
 /*@null@*/
     struct mlist * ml;		/*!< current magic array item		*/
-    union VALUETYPE val;	/*!< current magic expression value	*/
     const char * fn;		/*!< current file name			*/
+    int fd;			/*!< current file descriptor		*/
     struct stat sb;		/*!< current file stat(2) buffer	*/
     unsigned char * buf;	/*!< current file buffer		*/
     int nb;			/*!< current no. bytes in file buffer	*/
+    union VALUETYPE val;	/*!< current magic expression value	*/
+    FILE * f;			/*!< output file handle			*/
 };
 
 typedef /*@abstract@*/ struct fmagic_s * fmagic;
@@ -174,16 +176,17 @@ extern int fmagicZ(fmagic fm)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fm, fileSystem, internalState @*/;
 
-/*@exits@*/
-extern void error(const char *f, ...)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern void ckfputs(const char *str, FILE *fil)
-	/*@globals fileSystem @*/
-	/*@modifies fil, fileSystem @*/;
 /*@observer@*/
 extern char *fmttime(long v, int local)
 	/*@*/;
+
+extern void ckfputs(const char *str, fmagic fm)
+	/*@globals fileSystem @*/
+	/*@modifies fm, fileSystem @*/;
+extern void ckfprintf(fmagic fm, const char *fmt, ...)
+	/*@globals fileSystem @*/
+	/*@modifies fm, fileSystem @*/;
+
 extern void magwarn(const char *f, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
@@ -194,23 +197,6 @@ extern void showstr(FILE *fp, const char *s, int len)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/;
 
-/**
- */
-/*@unused@*/ /*@exits@*/ /*@only@*/
-static inline void * vmefail(/*@unused@*/ size_t nb)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-	error("out of memory");
-	/*@notreached@*/
-/*@-nullret@*/
-	return NULL;
-/*@=nullret@*/
-}
-
-extern void ckfprintf(FILE *f, const char *fmt, ...)
-	/*@globals fileSystem @*/
-	/*@modifies f, fileSystem @*/;
 extern uint32_t signextend(struct magic *m, uint32_t v)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
