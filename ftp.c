@@ -285,7 +285,7 @@ int ftpReadData(int sock, int out) {
     }
 }
 
-int ftpGetFile(int sock, char * remotename, int dest) {
+int ftpGetFileDesc(int sock, char * remotename) {
     int dataSocket;
     struct sockaddr_in dataAddress;
     int i, j;
@@ -357,16 +357,29 @@ int ftpGetFile(int sock, char * remotename, int dest) {
 	return FTPERR_BAD_SERVER_RESPONSE;
     }
 
-    rc = ftpReadData(dataSocket, dest);
-    close(dataSocket);
-    
-    if (rc) return rc;
+    return dataSocket;
+}
 
+int ftpGetFileDone(int sock) {
     if (ftpCheckResponse(sock, NULL)) {
 	return FTPERR_BAD_SERVER_RESPONSE;
     }
 
     return 0;
+}
+
+int ftpGetFile(int sock, char * remotename, int dest) {
+    int dataSocket, rc;
+
+    dataSocket = ftpGetFileDesc(sock, remotename);
+    if (dataSocket < 0) return dataSocket;
+
+    rc = ftpReadData(dataSocket, dest);
+    close(dataSocket);
+    
+    if (rc) return rc;
+
+    return ftpGetFileDone(sock);
 }
 
 void ftpClose(int sock) {
