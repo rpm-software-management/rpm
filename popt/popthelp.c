@@ -233,7 +233,7 @@ static int singleOptionUsage(FILE * f, int cursor,
     return cursor + len + 1;
 }
 
-int singleTableUsage(FILE * f, int cursor, const struct poptOption * table,
+static int singleTableUsage(FILE * f, int cursor, const struct poptOption * table,
 		     const char *translation_domain) {
     const struct poptOption * opt;
     
