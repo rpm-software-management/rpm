@@ -1291,15 +1291,11 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
  * @param ts		transaction set
  * @param fd		file handle
  * @retval specFilePtr	address of spec file name (or NULL)
- * @param notify	progress callback
- * @param notifyData	progress callback private data
- * @retval cooke	address of cookie pointer (or NULL)
+ * @retval cookie	address of cookie pointer (or NULL)
  * @return		rpmRC return code
  */
 rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
-			/*@null@*/ rpmCallbackFunction notify,
-			/*@null@*/ rpmCallbackData notifyData,
 			/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -1633,14 +1629,26 @@ typedef enum rpmprobFilterFlags_e {
 } rpmprobFilterFlags;
 
 /** \ingroup rpmtrans
+ * Set transaction notify callback function and argument.
+ * @warning This call must be made before rpmRunTransactions() for
+ *	install/upgrade/freshen to "work".
+ * @param ts		transaction set
+ * @param notify	progress callback
+ * @param notifyData	progress callback private data
+ * @return		0 on success
+ */
+int rpmtsSetNotifyCallback(rpmTransactionSet ts,
+		/*@observer@*/ rpmCallbackFunction notify,
+		/*@observer@*/ rpmCallbackData notifyData)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmtrans
  * Process all packages in transaction set.
  *
  * @warning The value returned in *newProbs is now refcounted, and should
  * be free'd using rpmProblemSetFree().
  *
  * @param ts		transaction set
- * @param notify	progress callback
- * @param notifyData	progress callback private data
  * @param okProbs	previously known problems (or NULL)
  * @retval newProbs	address to return unfiltered problems (or NULL)
  * @param transFlags	bits to control rpmRunTransactions()
@@ -1648,8 +1656,6 @@ typedef enum rpmprobFilterFlags_e {
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
 int rpmRunTransactions(rpmTransactionSet ts,
-	/*@observer@*/	rpmCallbackFunction notify,
-	/*@observer@*/	rpmCallbackData notifyData,
 			rpmProblemSet okProbs,
 			/*@out@*/ rpmProblemSet * newProbs,
 			rpmtransFlags transFlags,

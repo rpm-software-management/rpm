@@ -453,11 +453,8 @@ static rpmRC chkdir (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
-		FD_t fd,
-		const char ** specFilePtr,
-		rpmCallbackFunction notify, rpmCallbackData notifyData,
-		const char ** cookie)
+rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
+		const char ** specFilePtr, const char ** cookie)
 {
     int scareMem = 1;
     TFI_t fi = NULL;
@@ -472,11 +469,6 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     int isSource;
     rpmRC rc;
     int i;
-
-    /*@-mods -temptrans -assignexpose@*/
-    ts->notify = notify;
-    ts->notifyData = notifyData;
-    /*@=mods =temptrans =assignexpose@*/
 
     /*@-mustmod@*/	/* LCL: segfault */
     rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);

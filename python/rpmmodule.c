@@ -1590,8 +1590,9 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
 
     cbInfo.pythonError = 0;
 
-    rc = rpmRunTransactions(s->ts, tsCallback, &cbInfo, NULL, &probs, flags,
-			    ignoreSet);
+    (void) rpmtsSetNotifyCallback(s->ts, tsCallback, (void *) &cbInfo);
+
+    rc = rpmRunTransactions(s->ts, NULL, &probs, flags, ignoreSet);
 
     if (cbInfo.pythonError) {
 	if (rc > 0)

@@ -1025,7 +1025,6 @@ TFI_t teiGetFi(const teIterator tei)
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmRunTransactions(	rpmTransactionSet ts,
-			rpmCallbackFunction notify, rpmCallbackData notifyData,
 			rpmProblemSet okProbs, rpmProblemSet * newProbs,
 			rpmtransFlags transFlags, rpmprobFilterFlags ignoreSet)
 {
@@ -1056,8 +1055,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     if (ts->transFlags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
 	ts->transFlags |= (_noTransScripts | _noTransTriggers);
 
-    ts->notify = notify;
-    ts->notifyData = notifyData;
     ts->probs = rpmProblemSetFree(ts->probs);
     ts->probs = rpmProblemSetCreate();
     *newProbs = rpmpsLink(ts->probs, "RunTransactions");

@@ -217,7 +217,6 @@ int rpmInstall(rpmTransactionSet ts,
     rpmInstallInterfaceFlags interfaceFlags;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
-    int notifyFlags;
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
@@ -239,9 +238,12 @@ int rpmInstall(rpmTransactionSet ts,
 
     ts->dbmode = (ts->transFlags & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_CREAT);
-    ts->notify = rpmShowProgress;
-    notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-    ts->notifyData = (void *) ((long)notifyFlags);
+
+    {	int notifyFlags;
+	notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	xx = rpmtsSetNotifyCallback(ts,
+			rpmShowProgress, (void *) ((long)notifyFlags));
+    }
 
     if ((eiu->relocations = relocations) != NULL) {
 	while (eiu->relocations->oldPath)
@@ -559,8 +561,7 @@ restart:
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	rc = rpmRunTransactions(ts, ts->notify, ts->notifyData,
-		 	NULL, &probs, ts->transFlags, probFilter);
+	rc = rpmRunTransactions(ts, NULL, &probs, ts->transFlags, probFilter);
 	/*@=nullstate@*/
 
 	if (rc < 0) {
@@ -589,8 +590,7 @@ restart:
 
 	    if (!(ts->transFlags & RPMTRANS_FLAG_TEST)) {
 #if !defined(__LCLINT__) /* LCL: segfault */
-		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL,
-			ts->notify, ts->notifyData, NULL);
+		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL, NULL);
 #endif
 		if (eiu->rpmrc != RPMRC_OK) eiu->numFailed++;
 	    }
@@ -633,6 +633,14 @@ int rpmErase(rpmTransactionSet ts,
 
     ts->transFlags = ia->transFlags;
     interfaceFlags = ia->eraseInterfaceFlags;
+
+#ifdef	NOTYET	/* XXX no callbacks on erase yet */
+    {	int notifyFlags;
+	notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	xx = rpmtsSetNotifyCallback(ts,
+			rpmShowProgress, (void *) ((long)notifyFlags)
+    }
+#endif
 
     ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
     ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
@@ -689,8 +697,7 @@ int rpmErase(rpmTransactionSet ts,
 
     if (!stopUninstall) {
 	ts->transFlags |= RPMTRANS_FLAG_REVERSE;
-	numFailed += rpmRunTransactions(ts, NULL, NULL, NULL, &probs,
-					ts->transFlags, 0);
+	numFailed += rpmRunTransactions(ts, NULL, &probs, ts->transFlags, 0);
     }
 
     return numFailed;
@@ -713,8 +720,7 @@ int rpmInstallSource(rpmTransactionSet ts, const char * arg,
 	fprintf(stdout, _("Installing %s\n"), arg);
 
     {
-	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFile, NULL, NULL,
-				 cookie);
+	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFile, cookie);
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
     }
     if (rc != 0) {

@@ -221,3 +221,13 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
 
     return rpmtsLink(ts, "tsCreate");
 }
+
+int rpmtsSetNotifyCallback(rpmTransactionSet ts,
+		rpmCallbackFunction notify, rpmCallbackData notifyData)
+{
+    if (ts != NULL) {
+	ts->notify = notify;
+	ts->notifyData = notifyData;
+    }
+    return 0;
+}
