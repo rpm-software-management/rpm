@@ -382,10 +382,18 @@ static int rpmImportPubkey(const rpmts ts,
 	Header h = NULL;
 
 	/* Read pgp packet. */
-	if ((rc =  pgpReadPkts(fn, &pkt, &pktlen)) <= 0
-	 ||  rc != PGPARMOR_PUBKEY
-	 || (enc = b64encode(pkt, pktlen)) == NULL)
-	{
+	if ((rc =  pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
+	    rpmError(RPMERR_IMPORT, _("%s: import read failed.\n"), fn);
+	    res++;
+	    goto bottom;
+	}
+	if (rc != PGPARMOR_PUBKEY) {
+	    rpmError(RPMERR_IMPORT, _("%s: not an armored public key.\n"), fn);
+	    res++;
+	    goto bottom;
+	}
+	if ((enc = b64encode(pkt, pktlen)) == NULL) {
+	    rpmError(RPMERR_IMPORT, _("%s: base64 encode failed.\n"), fn);
 	    res++;
 	    goto bottom;
 	}

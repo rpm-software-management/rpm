@@ -127,6 +127,7 @@ typedef enum rpmerrCode_e {
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */
     RPMERR_SIGVFY	= _nm(202), /*!< */
+    RPMERR_IMPORT	= _em(203), /*!< */
 
     RPMDEBUG_UNLINK	= _dm(512u+16),	/*!< unlink(2) failed */
     RPMDEBUG_RMDIR	= _dm(512u+17),	/*!< rmdir(2) failed */
