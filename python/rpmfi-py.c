@@ -479,6 +479,80 @@ static PyMappingMethods rpmfi_as_mapping = {
         (objobjargproc)0,		/* mp_ass_subscript */
 };
 
+/** \ingroup py_c
+ */
+static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
+{
+    hdrObject * ho = NULL;
+    PyObject * to = NULL;
+    rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
+    int tagN = RPMTAG_BASENAMES;
+    int flags = 0;
+
+if (_rpmfi_debug < 0)
+fprintf(stderr, "*** rpmfi_init(%p,%p,%p)\n", s, args, kwds);
+
+    if (!PyArg_ParseTuple(args, "O!|Oi:rpmfi_init", &hdr_Type, &ho, &to, &flags))
+	return -1;
+    if (to != NULL) {
+	tagN = tagNumFromPyObject(to);
+	if (tagN == -1) {
+	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	    return -1;
+	}
+    }
+    s->fi = rpmfiNew(ts, hdrGetHeader(ho), tagN, flags);
+    s->active = 0;
+
+    return 0;
+}
+
+/** \ingroup py_c
+ */
+static void rpmfi_free(/*@only@*/ rpmfiObject * s)
+	/*@modifies s @*/
+{
+if (_rpmfi_debug)
+fprintf(stderr, "%p -- fi %p\n", s, s->fi);
+    s->fi = rpmfiFree(s->fi);
+
+    PyObject_Del((PyObject *)s);
+}
+
+/** \ingroup py_c
+ */
+static PyObject * rpmfi_alloc(PyTypeObject * subtype, int nitems)
+	/*@*/
+{
+    PyObject * s = PyType_GenericAlloc(subtype, nitems);
+
+if (_rpmfi_debug < 0)
+fprintf(stderr, "*** rpmfi_alloc(%p,%d) ret %p\n", subtype, nitems, s);
+    return s;
+}
+
+/** \ingroup py_c
+ */
+static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
+{
+    rpmfiObject * s = (void *) PyObject_New(rpmfiObject, subtype);
+
+    /* Perform additional initialization. */
+    if (rpmfi_init(s, args, kwds) < 0) {
+	rpmfi_free(s);
+	return NULL;
+    }
+
+if (_rpmfi_debug)
+fprintf(stderr, "%p ++ fi %p\n", s, s->fi);
+
+    return (PyObject *)s;
+}
+
 /**
  */
 /*@unchecked@*/ /*@observer@*/
@@ -525,10 +599,10 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
+	(initproc) rpmfi_init,		/* tp_init */
+	(allocfunc) rpmfi_alloc,	/* tp_alloc */
+	(newfunc) rpmfi_new,		/* tp_new */
+	rpmfi_free,			/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };
@@ -560,9 +634,9 @@ hdr_fiFromHeader(PyObject * s, PyObject * args)
     PyObject * to = NULL;
     rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
     rpmTag tagN = RPMTAG_BASENAMES;
-    int scareMem = 0;
+    int flags = 0;
 
-    if (!PyArg_ParseTuple(args, "|O:fiFromHeader", &to))
+    if (!PyArg_ParseTuple(args, "|Oi:fiFromHeader", &to, &flags))
 	return NULL;
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
@@ -571,5 +645,5 @@ hdr_fiFromHeader(PyObject * s, PyObject * args)
 	    return NULL;
 	}
     }
-    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), tagN, scareMem) );
+    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), tagN, flags) );
 }
