@@ -5,6 +5,9 @@
 
 #include "system.h"
 
+#include <signal.h>
+#include <sys/signal.h>
+
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 #include <rpmmacro.h>

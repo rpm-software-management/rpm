@@ -555,7 +555,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
     globstr = _free(globstr);
     Py_END_ALLOW_THREADS
 
-    if (idtx->nidt <= 0) {
+    if (idtx == NULL || idtx->nidt <= 0) {
 	Py_INCREF(Py_None);
 	result = Py_None;
     } else {
