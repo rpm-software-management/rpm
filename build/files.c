@@ -1387,7 +1387,7 @@ int processSourceFiles(Spec spec)
     StringBuf sourceFiles;
     int x, isSpec = 1;
     struct FileList fl;
-    char *s, **files, **fp, *fn;
+    char *s, **files, **fp;
     Package pkg;
 
     sourceFiles = newStringBuf();
@@ -1452,47 +1452,38 @@ int processSourceFiles(Spec spec)
     /* The first source file is the spec file */
     x = 0;
     for (fp = files; *fp != NULL; fp++) {
+	const char * diskURL, *diskPath;
 	FileListRec *flp;
-	s = *fp;
-	SKIPSPACE(s);
-	if (! *s)
+
+	diskURL = *fp;
+	SKIPSPACE(diskURL);
+	if (! *diskURL)
 	    continue;
 
 	flp = &fl.fileList[x];
 
 	flp->flags = isSpec ? RPMFILE_SPECFILE : 0;
 	/* files with leading ! are no source files */
-	if (*s == '!') {
+	if (*diskURL == '!') {
 	    flp->flags |= RPMFILE_GHOST;
-	    s++;
+	    diskURL++;
 	}
 
-	switch (urlIsURL(s)) {
-	case URL_IS_PATH:	/* file://... */
-	    s += sizeof("file://") - 1;
-	    s = strchr(s, '/');
-	    /*@fallthrough@*/
-	case URL_IS_UNKNOWN:	/* plain file path */
-	    break;
-	case URL_IS_DASH:	/* stdin */
-	case URL_IS_FTP:	/* ftp://... */
-	case URL_IS_HTTP:	/* http://... */
-	    continue;		/* XXX WRONG WRONG WRONG */
-	}
+	urlPath(diskURL, &diskPath);
 
-	flp->diskURL = xstrdup(s);
-	fn = strrchr(s, '/');
-	if (fn)
-	    fn++;
+	flp->diskURL = xstrdup(diskURL);
+	diskPath = strrchr(diskPath, '/');
+	if (diskPath)
+	    diskPath++;
 	else
-	    fn = s;
+	    diskPath = diskURL;
 
-	flp->fileURL = xstrdup(fn);
+	flp->fileURL = xstrdup(diskPath);
 if (_debug)
 fprintf(stderr, "*** PSF fileName %s diskName %s\n", flp->fileURL, flp->diskURL);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
-	stat(s, &flp->fl_st);
+	Stat(diskURL, &flp->fl_st);
 
 	flp->uname = getUname(flp->fl_uid);
 	flp->gname = getGname(flp->fl_gid);

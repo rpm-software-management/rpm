@@ -513,7 +513,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 			    (void **) &archiveSizePtr, NULL))
 	archiveSizePtr = NULL;
 
-    chdir(realSourceDir);
+    Chdir(realSourceDir);
     if (installArchive(fd, fileCount > 0 ? files : NULL,
 			  fileCount, notify, notifyData, NULL, h,
 			  specFileIndex >=0 ? NULL : &specFile,
@@ -521,7 +521,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	rc = 2;
 	goto exit;
     }
-    chdir(currDir);
+    Chdir(currDir);
 
     if (specFileIndex == -1) {
 	if (specFile == NULL) {

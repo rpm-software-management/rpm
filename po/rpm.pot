@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-19 14:28-0500\n"
+"POT-Creation-Date: 1999-12-21 12:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1421,43 +1421,43 @@ msgstr ""
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1504 build/parsePrep.c:30
+#: build/files.c:1495 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1559
+#: build/files.c:1550
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1564
+#: build/files.c:1555
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1646
+#: build/files.c:1637
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1650
+#: build/files.c:1641
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1739
+#: build/files.c:1730
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1767 build/files.c:1776
+#: build/files.c:1758 build/files.c:1767
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1882
+#: build/files.c:1873
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
