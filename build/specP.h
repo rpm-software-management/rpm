@@ -15,6 +15,7 @@ typedef struct sources {
 
 struct SpecRec {
     char *name;      /* package base name */
+    char *specfile;
     Sources sources;
     StringBuf prep;
     StringBuf build;
@@ -32,6 +33,7 @@ struct PackageRec {
     char *subname;   /* If both of these are NULL, then this is          */
     char *newname;   /* the main package.  subname concats with name     */
     Header header;
+    char *icon;
     int files;       /* If -1, package has no files, and won't be written */
     StringBuf filelist;
     struct PackageRec *next;
