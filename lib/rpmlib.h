@@ -163,6 +163,8 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset);
 int rpmdbFindByFile(rpmdb db, char * filespec, dbIndexSet * matches);
 int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches);
 int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches);
+int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches);
+int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
 
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile);
 int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
