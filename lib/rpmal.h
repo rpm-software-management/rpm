@@ -6,7 +6,12 @@
  * Structures used for managing added/available package lists.
  */
 
-typedef /*@abstract@*/ struct availableList_s *		availableList;
+/*@unchecked@*/
+extern int _rpmal_debug;
+
+/**
+ */
+typedef /*@abstract@*/ struct rpmal_s *		rpmal;
 
 #ifdef __cplusplus
 {
@@ -19,7 +24,7 @@ typedef /*@abstract@*/ struct availableList_s *		availableList;
  */
 /*@-exportlocal@*/
 /*@only@*/
-availableList alCreate(int delta)
+rpmal rpmalCreate(int delta)
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -29,7 +34,7 @@ availableList alCreate(int delta)
  * @return		NULL always
  */
 /*@null@*/
-availableList alFree(/*@only@*/ /*@null@*/ availableList al)
+rpmal rpmalFree(/*@only@*/ /*@null@*/ rpmal al)
 	/*@modifies al @*/;
 
 /**
@@ -38,7 +43,7 @@ availableList alFree(/*@only@*/ /*@null@*/ availableList al)
  * @param pkgKey	package key
  */
 /*@-exportlocal@*/
-void alDelPackage(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
+void rpmalDel(/*@null@*/ rpmal al, /*@null@*/ alKey pkgKey)
 	/*@modifies al @*/;
 /*@=exportlocal@*/
 
@@ -51,7 +56,7 @@ void alDelPackage(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
  * @param fi		file info set
  * @return		available package index
  */
-alKey alAddPackage(availableList * alistp,
+alKey rpmalAdd(rpmal * alistp,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmds provides, /*@null@*/ rpmfi fi)
@@ -64,7 +69,7 @@ alKey alAddPackage(availableList * alistp,
  * @param provides	added package provides
  */
 /*@-exportlocal@*/
-void alAddProvides(availableList al,
+void rpmalAddProvides(rpmal al,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@null@*/ rpmds provides)
 	/*@modifies al, provides @*/;
@@ -74,7 +79,7 @@ void alAddProvides(availableList al,
  * Generate index for available list.
  * @param al		available list
  */
-void alMakeIndex(/*@null@*/ availableList al)
+void rpmalMakeIndex(/*@null@*/ rpmal al)
 	/*@modifies al @*/;
 
 /**
@@ -86,7 +91,7 @@ void alMakeIndex(/*@null@*/ availableList al)
  */
 /*@-exportlocal@*/
 /*@only@*/ /*@null@*/
-fnpyKey * alAllFileSatisfiesDepend(/*@null@*/ const availableList al,
+fnpyKey * rpmalAllFileSatisfiesDepend(/*@null@*/ const rpmal al,
 		/*@null@*/ const rpmds ds, /*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
 	/*@modifies al, *keyp, fileSystem @*/;
@@ -100,7 +105,7 @@ fnpyKey * alAllFileSatisfiesDepend(/*@null@*/ const availableList al,
  * @return		associated package key(s), NULL if none
  */
 /*@only@*/ /*@null@*/
-fnpyKey * alAllSatisfiesDepend(const availableList al, const rpmds ds,
+fnpyKey * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds,
 		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
 	/*@modifies al, *keyp, fileSystem @*/;
@@ -113,7 +118,7 @@ fnpyKey * alAllSatisfiesDepend(const availableList al, const rpmds ds,
  * @retval keyp		added package key pointer (or NULL)
  * @return		associated package key, NULL if none
  */
-fnpyKey alSatisfiesDepend(const availableList al, const rpmds ds,
+fnpyKey rpmalSatisfiesDepend(const rpmal al, const rpmds ds,
 		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
 	/*@modifies al, *keyp, fileSystem @*/;

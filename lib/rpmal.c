@@ -17,11 +17,11 @@
 typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 
 /*@unchecked@*/
-static int _al_debug = 0;
+int _rpmal_debug = 0;
 
 /*@access alKey @*/
 /*@access alNum @*/
-/*@access availableList @*/
+/*@access rpmal @*/
 /*@access availablePackage @*/
 
 /*@access fnpyKey @*/	/* XXX suggestedKeys array */
@@ -107,7 +107,7 @@ struct dirInfo_s {
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.
  */
-struct availableList_s {
+struct rpmal_s {
 /*@owned@*/ /*@null@*/
     availablePackage list;	/*!< Set of packages. */
     struct availableIndex_s index;	/*!< Set of available items. */
@@ -123,7 +123,7 @@ struct availableList_s {
  * Destroy available item index.
  * @param al		available list
  */
-static void alFreeIndex(availableList al)
+static void rpmalFreeIndex(rpmal al)
 	/*@modifies al @*/
 {
     availableIndex ai = &al->index;
@@ -139,14 +139,14 @@ static void alFreeIndex(availableList al)
  * @param al		available list
  * @return		no. of packages in list
  */
-static int alGetSize(/*@null@*/ const availableList al)
+static int alGetSize(/*@null@*/ const rpmal al)
 	/*@*/
 {
     return (al != NULL ? al->size : 0);
 }
 #endif
 
-static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const availableList al,
+static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
 		/*@null@*/ alKey pkgKey)
 	/*@*/
 {
@@ -155,7 +155,7 @@ static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const availableList al,
     /*@=nullret =temptrans =retalias @*/
 }
 
-static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const availableList al,
+static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
 		/*@null@*/ alNum pkgNum)
 	/*@*/
 {
@@ -172,7 +172,7 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const availableList al,
  * @return		available package pointer
  */
 /*@dependent@*/ /*@null@*/
-static availablePackage alGetPkg(/*@null@*/ const availableList al,
+static availablePackage alGetPkg(/*@null@*/ const rpmal al,
 		/*@null@*/ alKey pkgKey)
 	/*@*/
 {
@@ -187,9 +187,9 @@ static availablePackage alGetPkg(/*@null@*/ const availableList al,
 }
 #endif
 
-availableList alCreate(int delta)
+rpmal rpmalCreate(int delta)
 {
-    availableList al = xcalloc(1, sizeof(*al));
+    rpmal al = xcalloc(1, sizeof(*al));
     availableIndex ai = &al->index;
 
     al->delta = delta;
@@ -205,7 +205,7 @@ availableList alCreate(int delta)
     return al;
 }
 
-availableList alFree(availableList al)
+rpmal rpmalFree(rpmal al)
 {
     availablePackage alp;
     dirInfo die;
@@ -230,7 +230,7 @@ availableList alFree(availableList al)
 
     al->list = _free(al->list);
     al->alloced = 0;
-    alFreeIndex(al);
+    rpmalFreeIndex(al);
     al = _free(al);
     return NULL;
 }
@@ -285,7 +285,7 @@ static int fieCompare(const void * one, const void * two)
     return strcmp(a->baseName, b->baseName);
 }
 
-void alDelPackage(availableList al, alKey pkgKey)
+void rpmalDel(rpmal al, alKey pkgKey)
 {
     alNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp;
@@ -297,7 +297,7 @@ void alDelPackage(availableList al, alKey pkgKey)
     alp = al->list + pkgNum;
 
 /*@-modfilesys@*/
-if (_al_debug)
+if (_rpmal_debug)
 fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 /*@=modfilesys@*/
 
@@ -370,21 +370,21 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
     return;
 }
 
-alKey alAddPackage(availableList * alistp, alKey pkgKey, fnpyKey key,
+alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 		rpmds provides, rpmfi fi)
 {
     alNum pkgNum;
-    availableList al;
+    rpmal al;
     availablePackage alp;
 
     /* If list doesn't exist yet, create. */
     if (*alistp == NULL)
-	*alistp = alCreate(5);
+	*alistp = rpmalCreate(5);
     al = *alistp;
     pkgNum = alKey2Num(al, pkgKey);
 
     if (pkgNum >= 0 && pkgNum < al->size) {
-	alDelPackage(al, pkgKey);
+	rpmalDel(al, pkgKey);
     } else {
 	if (al->size == al->alloced) {
 	    al->alloced += al->delta;
@@ -401,14 +401,14 @@ alKey alAddPackage(availableList * alistp, alKey pkgKey, fnpyKey key,
     alp->key = key;
 
 /*@-modfilesys@*/
-if (_al_debug)
+if (_rpmal_debug)
 fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 /*@=modfilesys@*/
 
-    alp->provides = rpmdsLink(provides, "Provides (alAddPackage)");
-    alp->fi = rpmfiLink(fi, "Files (alAddPackage)");
+    alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
+    alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
 
-    fi = rpmfiLink(alp->fi, "Files index (alAddPackage)");
+    fi = rpmfiLink(alp->fi, "Files index (rpmalAdd)");
     fi = rpmfiInit(fi, 0);
     if (rpmfiFC(fi) > 0) {
 	int * dirMapping;
@@ -455,7 +455,7 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 		die->files = NULL;
 		die->numFiles = 0;
 /*@-modfilesys@*/
-if (_al_debug)
+if (_rpmal_debug)
 fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, die->dirName);
 /*@=modfilesys@*/
 
@@ -500,9 +500,9 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 	if (origNumDirs != al->numDirs)
 	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dieCompare);
     }
-    fi = rpmfiUnlink(fi, "Files index (alAddPackage)");
+    fi = rpmfiUnlink(fi, "Files index (rpmalAdd)");
 
-    alFreeIndex(al);
+    rpmalFreeIndex(al);
 
 assert(((alNum)(alp - al->list)) == pkgNum);
     return ((alKey)(alp - al->list));
@@ -530,7 +530,7 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void alAddProvides(availableList al, alKey pkgKey, rpmds provides)
+void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides)
 {
     alNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
@@ -575,7 +575,7 @@ assert(ix < 0x10000);
     }
 }
 
-void alMakeIndex(availableList al)
+void rpmalMakeIndex(rpmal al)
 {
     availableIndex ai;
     availablePackage alp;
@@ -597,7 +597,7 @@ void alMakeIndex(availableList al)
 
 	for (i = 0; i < al->size; i++) {
 	    alp = al->list + i;
-	    alAddProvides(al, (alKey)i, alp->provides);
+	    rpmalAddProvides(al, (alKey)i, alp->provides);
 	}
 
 	qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
@@ -605,7 +605,7 @@ void alMakeIndex(availableList al)
 }
 
 fnpyKey *
-alAllFileSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
+rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 {
     int found = 0;
     const char * dirName;
@@ -658,7 +658,7 @@ alAllFileSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
     {
 
 /*@-modfilesys@*/
-if (_al_debug)
+if (_rpmal_debug)
 fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"));
 /*@=modfilesys@*/
 
@@ -672,7 +672,7 @@ fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"))
 	    continue;	/* XXX shouldn't happen */
 
 /*@-modfilesys@*/
-if (_al_debug)
+if (_rpmal_debug)
 fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"));
 /*@=modfilesys@*/
 
@@ -704,7 +704,7 @@ exit:
 }
 
 fnpyKey *
-alAllSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
+rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 {
     availableIndex ai;
     availableIndexEntry needle;
@@ -721,7 +721,7 @@ alAllSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
 	return ret;
 
     if (*KName == '/') {
-	ret = alAllFileSatisfiesDepend(al, ds, keyp);
+	ret = rpmalAllFileSatisfiesDepend(al, ds, keyp);
 	/* XXX Provides: /path was broken with added packages (#52183). */
 	if (ret != NULL && *ret != NULL)
 	    return ret;
@@ -785,9 +785,9 @@ alAllSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
 }
 
 fnpyKey
-alSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
+rpmalSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 {
-    fnpyKey * tmp = alAllSatisfiesDepend(al, ds, keyp);
+    fnpyKey * tmp = rpmalAllSatisfiesDepend(al, ds, keyp);
 
     if (tmp) {
 	fnpyKey ret = tmp[0];

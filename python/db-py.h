@@ -7,6 +7,10 @@
 
 /** \ingroup python
  */
+typedef struct rpmdbObject_s rpmdbObject;
+
+/** \ingroup python
+ */
 struct rpmdbObject_s {
     PyObject_HEAD;
     rpmdb db;
@@ -17,10 +21,18 @@ struct rpmdbObject_s {
 
 /** \ingroup python
  */
-typedef struct rpmdbObject_s rpmdbObject;
+typedef struct rpmmiObject_s rpmmiObject;
 
-extern PyTypeObject rpmdbType;
-PyTypeObject rpmdbMIType;
+/** \ingroup python
+ */
+struct rpmmiObject_s {
+    PyObject_HEAD;
+    rpmdbMatchIterator mi;
+    rpmdbObject *db;
+} ;
+
+extern PyTypeObject rpmdb_Type;
+extern PyTypeObject rpmmi_Type;
 
 rpmdb dbFromDb(rpmdbObject * db);
 rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args);

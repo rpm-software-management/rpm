@@ -33,6 +33,7 @@
 
 #include "db-py.h"
 #include "header-py.h"
+#include "rpmal-py.h"
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
 #include "rpmts-py.h"
@@ -46,9 +47,6 @@ extern int _rpmio_debug;
 #define	PyObject_HEAD	int _PyObjectHead
 #endif
 
-/* from lib/misc.c */
-int rpmvercmp(const char * one, const char * two);
-
 /** \ingroup python
  * \name Module: rpm
  */
@@ -56,7 +54,8 @@ int rpmvercmp(const char * one, const char * two);
 
 /**
  */
-static PyObject * doAddMacro(PyObject * self, PyObject * args) {
+static PyObject * doAddMacro(PyObject * self, PyObject * args)
+{
     char * name, * val;
 
     if (!PyArg_ParseTuple(args, "ss", &name, &val))
@@ -70,7 +69,8 @@ static PyObject * doAddMacro(PyObject * self, PyObject * args) {
 
 /**
  */
-static PyObject * doDelMacro(PyObject * self, PyObject * args) {
+static PyObject * doDelMacro(PyObject * self, PyObject * args)
+{
     char * name;
 
     if (!PyArg_ParseTuple(args, "s", &name))
@@ -84,7 +84,8 @@ static PyObject * doDelMacro(PyObject * self, PyObject * args) {
 
 /**
  */
-static PyObject * archScore(PyObject * self, PyObject * args) {
+static PyObject * archScore(PyObject * self, PyObject * args)
+{
     char * arch;
     int score;
 
@@ -98,7 +99,8 @@ static PyObject * archScore(PyObject * self, PyObject * args) {
 
 /**
  */
-static int psGetArchScore(Header h) {
+static int psGetArchScore(Header h)
+{
     void * pkgArch;
     int type, count;
 
@@ -111,7 +113,8 @@ static int psGetArchScore(Header h) {
 
 /**
  */
-static int pkgCompareVer(void * first, void * second) {
+static int pkgCompareVer(void * first, void * second)
+{
     struct packageInfo ** a = first;
     struct packageInfo ** b = second;
     int ret, score1, score2;
@@ -133,7 +136,8 @@ static int pkgCompareVer(void * first, void * second) {
 
 /**
  */
-static void pkgSort(struct pkgSet * psp) {
+static void pkgSort(struct pkgSet * psp)
+{
     int i;
     char *name;
 
@@ -166,7 +170,8 @@ static void pkgSort(struct pkgSet * psp) {
 
 /**
  */
-static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
+static PyObject * findUpgradeSet(PyObject * self, PyObject * args)
+{
     PyObject * hdrList, * result;
     char * root = "/";
     int i;
@@ -217,7 +222,8 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
 
 /**
  */
-static PyObject * rpmInitDB(PyObject * self, PyObject * args) {
+static PyObject * rpmInitDB(PyObject * self, PyObject * args)
+{
     char *root;
     int forWrite = 0;
 
@@ -241,7 +247,8 @@ static PyObject * rpmInitDB(PyObject * self, PyObject * args) {
 
 /**
  */
-static PyObject * errorCB = NULL, * errorData = NULL;
+static PyObject * errorCB = NULL;
+static PyObject * errorData = NULL;
 
 /**
  */
@@ -264,7 +271,8 @@ static void errorcb (void)
 
 /**
  */
-static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
+static PyObject * errorSetCallback (PyObject * self, PyObject * args)
+{
     PyObject *newCB = NULL, *newData = NULL;
 
     if (!PyArg_ParseTuple(args, "O|O", &newCB, &newData)) return NULL;
@@ -304,13 +312,15 @@ static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
 
 /**
  */
-static PyObject * errorString (PyObject * self, PyObject * args) {
+static PyObject * errorString (PyObject * self, PyObject * args)
+{
     return PyString_FromString(rpmErrorString ());
 }
 
 /**
  */
-static PyObject * checkSig (PyObject * self, PyObject * args) {
+static PyObject * checkSig (PyObject * self, PyObject * args)
+{
     char * filename;
     int flags;
     int rc = 255;
@@ -333,7 +343,10 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
     return Py_BuildValue("i", rc);
 }
 
-static PyObject * setVerbosity (PyObject * self, PyObject * args) {
+/**
+ */
+static PyObject * setVerbosity (PyObject * self, PyObject * args)
+{
     int level;
 
     if (!PyArg_ParseTuple(args, "i", &level))
@@ -368,7 +381,8 @@ static FDlist *fdtail = NULL;
 
 /**
  */
-static int closeCallback(FILE * f) {
+static int closeCallback(FILE * f)
+{
     FDlist *node, *last;
 
     printf ("close callback on %p\n", f);
@@ -399,7 +413,8 @@ static int closeCallback(FILE * f) {
 
 /**
  */
-static PyObject * doFopen(PyObject * self, PyObject * args) {
+static PyObject * doFopen(PyObject * self, PyObject * args)
+{
     char * path, * mode;
     FDlist *node;
     
@@ -450,50 +465,67 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
 /**
  */
 static PyMethodDef rpmModuleMethods[] = {
-    { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS, NULL },
-    { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
-    { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS, NULL },
-    { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
-    { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
-    { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
-    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
-    { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS, NULL },
-    { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS, NULL },
-    { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
-    { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
-    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS, NULL },
-    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
-    { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS, NULL },
-    { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS, NULL },
-    { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
-    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
-    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
-    { "checksig", (PyCFunction) checkSig, METH_VARARGS, NULL },
-    { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL },
-    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS, NULL },
-    { "rpmdsSingle", (PyCFunction) rpmds_Single, METH_VARARGS, NULL },
+    { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS,
+"rpm.TransactionSet([rootDir, [db]]) -> ts\n\
+- Create a transaction set.\n" },
+    { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS,
+	NULL },
+    { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS,
+	NULL },
+    { "archscore", (PyCFunction) archScore, METH_VARARGS,
+	NULL },
+    { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS,
+	NULL },
+    { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS,
+	NULL },
+    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS,
+	NULL },
+    { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS,
+	NULL },
+    { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS,
+	NULL },
+    { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS,
+	NULL },
+    { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS,
+	NULL },
+    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS,
+	NULL },
+    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS,
+	NULL },
+    { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS,
+	NULL },
+    { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS,
+	NULL },
+    { "errorString", (PyCFunction) errorString, METH_VARARGS,
+	NULL },
+    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS,
+	NULL },
+    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS,
+	NULL },
+    { "checksig", (PyCFunction) checkSig, METH_VARARGS,
+	NULL },
+    { "Fopen", (PyCFunction) doFopen, METH_VARARGS,
+	NULL },
+    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS,
+	NULL },
+    { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS,
+"rpm.dsSingle(TagN, N, [EVR, [Flags]] -> ds\n\
+- Create a single element dependency set.\n" },
     { NULL }
 } ;
 
 void initrpm(void);	/* XXX eliminate gcc warning */
 /**
  */
-void initrpm(void) {
+void initrpm(void)
+{
     PyObject * d, *o, * tag = NULL, * dict;
     int i;
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
     struct headerSprintfExtension_s * ext;
-    PyObject * m = Py_InitModule("rpm", rpmModuleMethods);
+    PyObject * m;
 
-    hdr_Type.ob_type = &PyType_Type;
-    rpmds_Type.ob_type = &PyType_Type;
-    rpmfi_Type.ob_type = &PyType_Type;
-
-    rpmdbMIType.ob_type = &PyType_Type;
-    rpmdbType.ob_type = &PyType_Type;
-
-    rpmts_Type.ob_type = &PyType_Type;
-
+    m = Py_InitModule("rpm", rpmModuleMethods);
     if (m == NULL)
 	return;
 
@@ -501,9 +533,43 @@ void initrpm(void) {
 
     d = PyModule_GetDict(m);
 
+#ifdef	HACK
     pyrpmError = PyString_FromString("rpm.error");
     PyDict_SetItemString(d, "error", pyrpmError);
     Py_DECREF(pyrpmError);
+#else
+    pyrpmError = PyErr_NewException("rpm.error", NULL, NULL);
+    if (pyrpmError != NULL)
+	PyDict_SetItemString(d, "error", pyrpmError);
+#endif
+
+    rpmal_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmal_Type);
+    PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
+
+    rpmdb_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmdb_Type);
+    PyModule_AddObject(m, "db", (PyObject *) &rpmdb_Type);
+
+    rpmds_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmds_Type);
+    PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
+
+    rpmfi_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmfi_Type);
+    PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
+
+    hdr_Type.ob_type = &PyType_Type;
+    Py_INCREF(&hdr_Type);
+    PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
+
+    rpmmi_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmmi_Type);
+    PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
+
+    rpmts_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmts_Type);
+    PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
 
     dict = PyDict_New();
 

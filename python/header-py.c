@@ -23,7 +23,7 @@
 #include "debug.h"
 
 /** \ingroup python
- * \class header
+ * \class rpm.hdr
  * \brief A python header object represents an RPM package header.
  * 
  * All RPM packages have headers that provide metadata for the package.
@@ -75,7 +75,7 @@
  */
 
 /** \ingroup python
- * \name Class: header
+ * \name Class: rpm.hdr
  */
 /*@{*/
 
@@ -532,27 +532,38 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static struct PyMethodDef hdrMethods[] = {
-	{"keys",	(PyCFunction) hdrKeyList,	1 },
-	{"unload",	(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS },
-	{"verifyFile",	(PyCFunction) hdrVerifyFile,	1 },
-	{"expandFilelist",	(PyCFunction) hdrExpandFilelist,	1 },
-	{"compressFilelist",	(PyCFunction) hdrCompressFilelist,	1 },
-	{"fullFilelist",	(PyCFunction) hdrFullFilelist,	1 },
-	{"rhnUnload",	(PyCFunction) rhnUnload, METH_VARARGS },
-	{"sprintf",     (PyCFunction) hdrSprintf, METH_VARARGS },
+static struct PyMethodDef hdr_methods[] = {
+    {"keys",		(PyCFunction) hdrKeyList,	METH_VARARGS,
+	NULL },
+    {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"verifyFile",	(PyCFunction) hdrVerifyFile,	METH_VARARGS,
+	NULL },
+    {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_VARARGS,
+	NULL },
+    {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_VARARGS,
+	NULL },
+    {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_VARARGS,
+	NULL },
+    {"rhnUnload",	(PyCFunction) rhnUnload,	METH_VARARGS,
+	NULL },
+    {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS,
+	NULL },
 
- {"dsOfHeader",		(PyCFunction)hdr_dsOfHeader,	METH_VARARGS,	NULL},
- {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS,	NULL},
- {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS,	NULL},
+    {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_VARARGS,
+	NULL},
+    {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS,
+	NULL},
+    {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS,
+	NULL},
 
-	{NULL,		NULL}		/* sentinel */
+    {NULL,		NULL}		/* sentinel */
 };
 
 /** \ingroup python
  */
 static PyObject * hdr_getattr(hdrObject * s, char * name) {
-    return Py_FindMethod(hdrMethods, (PyObject * ) s, name);
+    return Py_FindMethod(hdr_methods, (PyObject * ) s, name);
 }
 
 /** \ingroup python
@@ -748,12 +759,17 @@ static PyMappingMethods hdr_as_mapping = {
 	(objobjargproc)0,		/* mp_ass_subscript */
 };
 
+/**
+ */
+static char hdr_doc[] =
+"";
+
 /** \ingroup python
  */
 PyTypeObject hdr_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
-	"header",			/* tp_name */
+	"rpm.hdr",			/* tp_name */
 	sizeof(hdrObject),		/* tp_size */
 	0,				/* tp_itemsize */
 	(destructor) hdr_dealloc, 	/* tp_dealloc */
@@ -772,7 +788,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
-	NULL,				/* tp_doc */
+	hdr_doc,			/* tp_doc */
 #if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
@@ -780,7 +796,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_weaklistoffset */
 	0,				/* tp_iter */
 	0,				/* tp_iternext */
-	0,				/* tp_methods */
+	hdr_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */

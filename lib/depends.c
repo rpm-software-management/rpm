@@ -189,7 +189,7 @@ int rpmtsAddPackage(rpmts ts, Header h,
     if (!duplicate)
 	ts->orderCount++;
     
-    pkgKey = alAddPackage(&ts->addedPackages, pkgKey, rpmteKey(p),
+    pkgKey = rpmalAdd(&ts->addedPackages, pkgKey, rpmteKey(p),
 			rpmteDS(p, RPMTAG_PROVIDENAME),
 			rpmteFI(p, RPMTAG_BASENAMES));
     if (pkgKey == RPMAL_NOMATCH) {
@@ -313,7 +313,7 @@ void rpmtsAvailablePackage(rpmts ts, Header h, fnpyKey key)
     rpmfi fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
 
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) alAddPackage(&ts->availablePackages, RPMAL_NOMATCH, key,
+    (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
 		provides, fi);
     fi = rpmfiFree(fi, 1);
     provides = rpmdsFree(provides);
@@ -434,7 +434,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
     }
 
     /* Search added packages for the dependency. */
-    if (alSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL)
+    if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL)
 	goto exit;
 
     /* XXX only the installer does not have the database open here. */
@@ -581,7 +581,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 
 	    /*@-branchstate@*/
 	    if (ts->availablePackages != NULL) {
-		suggestedKeys = alAllSatisfiesDepend(ts->availablePackages,
+		suggestedKeys = rpmalAllSatisfiesDepend(ts->availablePackages,
 				requires, NULL);
 	    }
 	    /*@=branchstate@*/
@@ -995,7 +995,7 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     pkgKey = RPMAL_NOMATCH;
-    key = alSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
+    key = rpmalSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
 
 if (_tso_debug)
 fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
@@ -1176,7 +1176,7 @@ int rpmtsOrder(rpmts ts)
     int qlen;
     int i, j;
 
-    alMakeIndex(ts->addedPackages);
+    rpmalMakeIndex(ts->addedPackages);
 
 /*@-modfilesystem -nullpass -formattype@*/
 if (_tso_debug)
@@ -1608,7 +1608,7 @@ assert(newOrderCount == ts->orderCount);
     }
     pi = rpmteiFree(pi);
 
-    ts->addedPackages = alFree(ts->addedPackages);
+    ts->addedPackages = rpmalFree(ts->addedPackages);
     ts->numAddedPackages = 0;
 #else
     rpmtsClean(ts);
@@ -1670,8 +1670,8 @@ int rpmtsCheck(rpmts ts)
     ts->probs = rpmpsFree(ts->probs);
     ts->probs = rpmpsCreate();
 
-    alMakeIndex(ts->addedPackages);
-    alMakeIndex(ts->availablePackages);
+    rpmalMakeIndex(ts->addedPackages);
+    rpmalMakeIndex(ts->availablePackages);
 
     /*
      * Look at all of the added packages and make sure their dependencies

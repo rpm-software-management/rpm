@@ -4,22 +4,9 @@
 
 #include "system.h"
 
-#ifdef	DYING
-#include <sys/time.h>
-#include <fcntl.h>
-#include <unistd.h>
-#endif
-
 #include "Python.h"
 
-#include "rpmio_internal.h"
-#include "rpmcli.h"	/* XXX for rpmCheckSig */
-
 #include "rpmdb.h"
-
-#include "misc.h"
-#include "header_internal.h"
-#include "upgrade.h"
 
 #include "db-py.h"
 #include "header-py.h"
@@ -27,37 +14,25 @@
 #include "debug.h"
 
 /** \ingroup python
- */
-typedef struct rpmdbMIObject_s rpmdbMIObject;
-
-/** \ingroup python
- * \class rpmdbMatchIterator
- * \brief A python rpmdbMatchIterator object represents the result of an RPM
+ * \class rpm.mi
+ * \brief A python rpm.mi match iterator object represents the result of an RPM
  *	database query.
  */
 
 /** \ingroup python
- * \name Class: rpmdbMatchIterator
+ * \name Class: rpm.mi
  */
 /*@{*/
 
 /** \ingroup python
  */
-struct rpmdbMIObject_s {
-    PyObject_HEAD;
-    rpmdbObject *db;
-    rpmdbMatchIterator mi;
-} ;
-
-/** \ingroup python
- */
 static PyObject *
-rpmdbMINext(rpmdbMIObject * s, PyObject * args) {
+rpmmi_Next(rpmmiObject * s, PyObject * args) {
     /* XXX assume header? */
     Header h;
     hdrObject * ho;
     
-    if (!PyArg_ParseTuple (args, "")) return NULL;
+    if (!PyArg_ParseTuple (args, ":Next")) return NULL;
 
     h = rpmdbNextIterator(s->mi);
     if (!h) {
@@ -73,18 +48,18 @@ rpmdbMINext(rpmdbMIObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject *
-rpmdbMIpattern(rpmdbMIObject * s, PyObject * args) {
-    PyObject *index = NULL;
+rpmmi_Pattern(rpmmiObject * s, PyObject * args) {
+    PyObject *TagN = NULL;
     int type;
     char * pattern;
     int tag;
     
-    if (!PyArg_ParseTuple(args, "Ois", &index, &type, &pattern))
+    if (!PyArg_ParseTuple(args, "Ois:Pattern", &TagN, &type, &pattern))
 	return NULL;
 
-    if (index == NULL)
+    if (TagN == NULL)
 	tag = 0;
-    else if ((tag = tagNumFromPyObject (index)) == -1) {
+    else if ((tag = tagNumFromPyObject (TagN)) == -1) {
 	PyErr_SetString(PyExc_TypeError, "unknown tag type");
 	return NULL;
     }
@@ -98,21 +73,20 @@ rpmdbMIpattern(rpmdbMIObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static struct PyMethodDef rpmdbMIMethods[] = {
-	{"next",	    (PyCFunction) rpmdbMINext,	1 },
-	{"pattern",	    (PyCFunction) rpmdbMIpattern, 1 },
-	{NULL,		NULL}		/* sentinel */
+static struct PyMethodDef rpmmi_methods[] = {
+    {"next",	    (PyCFunction) rpmmi_Next,		METH_VARARGS,
+"mi.next() -> hdr\n\
+- Retrieve next header that matches.\n" },
+    {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS,
+"mi.pattern(TagN, mire_type, pattern)\n\
+- Set a secondary match pattern on retrieved header tags\n" },
+    {NULL,		NULL}		/* sentinel */
 };
 
 /** \ingroup python
  */
-static PyObject * rpmdbMIGetAttr (rpmdbObject *s, char *name) {
-    return Py_FindMethod (rpmdbMIMethods, (PyObject *) s, name);
-}
-
-/** \ingroup python
- */
-static void rpmdbMIDealloc(rpmdbMIObject * s) {
+static void rpmmi_dealloc(rpmmiObject * s)
+{
     if (s) {
 	s->mi = rpmdbFreeIterator(s->mi);
 	Py_DECREF (s->db);
@@ -122,15 +96,27 @@ static void rpmdbMIDealloc(rpmdbMIObject * s) {
 
 /** \ingroup python
  */
-PyTypeObject rpmdbMIType = {
+static PyObject * rpmmi_getattr (rpmdbObject *s, char *name)
+{
+    return Py_FindMethod (rpmmi_methods, (PyObject *) s, name);
+}
+
+/**
+ */
+static char rpmmi_doc[] =
+"";
+
+/** \ingroup python
+ */
+PyTypeObject rpmmi_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
-	"rpmdbMatchIterator",		/* tp_name */
-	sizeof(rpmdbMIObject),	/* tp_size */
+	"rpm.mi",			/* tp_name */
+	sizeof(rpmmiObject),		/* tp_size */
 	0,				/* tp_itemsize */
-	(destructor) rpmdbMIDealloc, 	/* tp_dealloc */
+	(destructor) rpmmi_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) rpmdbMIGetAttr, 	/* tp_getattr */
+	(getattrfunc) rpmmi_getattr, 	/* tp_getattr */
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
@@ -144,7 +130,7 @@ PyTypeObject rpmdbMIType = {
 	0,				/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
-	NULL,				/* tp_doc */
+	rpmmi_doc,			/* tp_doc */
 #if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
@@ -152,7 +138,7 @@ PyTypeObject rpmdbMIType = {
 	0,				/* tp_weaklistoffset */
 	0,				/* tp_iter */
 	0,				/* tp_iternext */
-	0,				/* tp_methods */
+	rpmmi_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
@@ -171,7 +157,7 @@ PyTypeObject rpmdbMIType = {
 /*@}*/
 
 /** \ingroup python
- * \class rpmdb
+ * \class rpm.db
  * \brief A python rpmdb object represents an RPM database.
  * 
  * Instances of the rpmdb object provide access to the records of a
@@ -182,26 +168,29 @@ PyTypeObject rpmdbMIType = {
  * The rpmdb class contains the following methods:
  * 
  * - firstkey()	Returns the index of the first record in the database.
- * @deprecated	Legacy, use rpmdbMatchIterator instead.
+ * @deprecated	Use mi = db.match() instead.
  * 
  * - nextkey(index) Returns the index of the next record after "index" in the
  * 		database.
  * @param index	current rpmdb location
- * @deprecated	Legacy, use rpmdbMatchIterator instead.
+ * @deprecated	Use hdr = mi.next() instead.
  * 
  * - findbyfile(file) Returns a list of the indexes to records that own file
  * 		"file".
  * @param file	absolute path to file
+ * @deprecated	Use mi = db.match('basename') instead.
  * 
  * - findbyname(name) Returns a list of the indexes to records for packages
  *		named "name".
  * @param name	package name
+ * @deprecated	Use mi = db.match('name') instead.
  * 
  * - findbyprovides(dep) Returns a list of the indexes to records for packages
  *		that provide "dep".
  * @param dep	provided dependency string
+ * @deprecated	Use mi = db.match('providename') instead.
  * 
- * To obtain a rpmdb object, the opendb function in the rpm module
+ * To obtain a db object, the opendb function in the rpm module
  * must be called.  The opendb function takes two optional arguments.
  * The first optional argument is a boolean flag that specifies if the
  * database is to be opened for read/write access or read-only access.
@@ -213,33 +202,38 @@ PyTypeObject rpmdbMIType = {
  * represents:
  * \code
  * 	import rpm
- * 	rpmdb = rpm.opendb()
- * 	index = rpmdb.firstkey()
- * 	header = rpmdb[index]
- * 	print header[rpm.RPMTAG_NAME]
+ * 	db = rpm.opendb()
+ * 	mi = db.match()
+ *	h = mi.next()
+ *	if h:
+ * 	    print h[rpm.RPMTAG_NAME]
  * \endcode
+ *
  * To print all of the packages in the database that match a package
  * name, the code will look like this:
  * \code
  * 	import rpm
- * 	rpmdb = rpm.opendb()
- * 	indexes = rpmdb.findbyname("foo")
- * 	for index in indexes:
- * 	    header = rpmdb[index]
- * 	    print "%s-%s-%s" % (header[rpm.RPMTAG_NAME],
- * 			        header[rpm.RPMTAG_VERSION],
- * 			        header[rpm.RPMTAG_RELEASE])
+ * 	db = rpm.opendb()
+ * 	mi = db.match(rpm.RPMTAG_NAME, "foo")
+ * 	while 1:
+ *	    h = mi.next()
+ *	    if not h:
+ *		break
+ * 	    print "%s-%s-%s" % (h[rpm.RPMTAG_NAME],
+ * 			        h[rpm.RPMTAG_VERSION],
+ * 			        h[rpm.RPMTAG_RELEASE])
  * \endcode
  */
 
 /** \ingroup python
- * \name Class: rpmdb
+ * \name Class: rpm.db
  */
 /*@{*/
 
 /**
  */
-static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
+static PyObject * rpmdb_First(rpmdbObject * s, PyObject * args)
+{
     int first;
 
     if (!PyArg_ParseTuple (args, "")) return NULL;
@@ -276,7 +270,8 @@ static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
 
 /**
  */
-static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
+static PyObject * rpmdb_Next(rpmdbObject * s, PyObject * args)
+{
     int where;
 
     if (!PyArg_ParseTuple (args, "i", &where)) return NULL;
@@ -298,7 +293,8 @@ static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
 
 /**
  */
-static PyObject * handleDbResult(rpmdbMatchIterator mi) {
+static PyObject * handleDbResult(rpmdbMatchIterator mi)
+{
     PyObject * list = PyList_New(0);
     PyObject * o;
 
@@ -315,7 +311,8 @@ static PyObject * handleDbResult(rpmdbMatchIterator mi) {
 
 /**
  */
-static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
+static PyObject * rpmdb_ByFile(rpmdbObject * s, PyObject * args)
+{
     char * str;
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
@@ -325,7 +322,8 @@ static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
 
 /**
  */
-static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args) {
+static PyObject * rpmdb_ByName(rpmdbObject * s, PyObject * args)
+{
     char * str;
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
@@ -335,7 +333,8 @@ static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args) {
 
 /**
  */
-static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
+static PyObject * rpmdb_ByProvides(rpmdbObject * s, PyObject * args)
+{
     char * str;
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
@@ -345,26 +344,27 @@ static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
 
 /**
  */
-static rpmdbMIObject *
-py_rpmdbInitIterator (rpmdbObject * s, PyObject * args) {
-    PyObject *index = NULL;
+static rpmmiObject *
+rpmdb_InitIterator (rpmdbObject * s, PyObject * args)
+{
+    PyObject *TagN = NULL;
     char *key = NULL;
     int len = 0, tag = -1;
-    rpmdbMIObject * mio;
+    rpmmiObject * mio;
     
-    if (!PyArg_ParseTuple(args, "|Ozi", &index, &key, &len))
+    if (!PyArg_ParseTuple(args, "|Ozi", &TagN, &key, &len))
 	return NULL;
 
-    if (index == NULL)
+    if (TagN == NULL)
 	tag = 0;
-    else if ((tag = tagNumFromPyObject (index)) == -1) {
+    else if ((tag = tagNumFromPyObject (TagN)) == -1) {
 	PyErr_SetString(PyExc_TypeError, "unknown tag type");
 	return NULL;
     }
     
-    mio = (rpmdbMIObject *) PyObject_NEW(rpmdbMIObject, &rpmdbMIType);
+    mio = (rpmmiObject *) PyObject_NEW(rpmmiObject, &rpmmi_Type);
     if (mio == NULL) {
-	PyErr_SetString(pyrpmError, "out of memory creating rpmdbMIObject");
+	PyErr_SetString(pyrpmError, "out of memory creating rpmmiObject");
 	return NULL;
     }
     
@@ -377,36 +377,28 @@ py_rpmdbInitIterator (rpmdbObject * s, PyObject * args) {
 
 /**
  */
-static struct PyMethodDef rpmdbMethods[] = {
-	{"firstkey",	    (PyCFunction) rpmdbFirst,	1 },
-	{"nextkey",	    (PyCFunction) rpmdbNext,	1 },
-	{"findbyfile",	    (PyCFunction) rpmdbByFile, 1 },
-	{"findbyname",	    (PyCFunction) rpmdbByName, 1 },
-	{"findbyprovides",  (PyCFunction) rpmdbByProvides, 1 },
-	{"match",	    (PyCFunction) py_rpmdbInitIterator, 1 },
-	{NULL,		NULL}		/* sentinel */
+static struct PyMethodDef rpmdb_methods[] = {
+    {"firstkey",	(PyCFunction) rpmdb_First,	METH_VARARGS,
+	NULL },
+    {"nextkey",		(PyCFunction) rpmdb_Next,	METH_VARARGS,
+	NULL },
+    {"findbyfile",	(PyCFunction) rpmdb_ByFile,	METH_VARARGS,
+	NULL },
+    {"findbyname",	(PyCFunction) rpmdb_ByName,	METH_VARARGS,
+	NULL },
+    {"findbyprovides",  (PyCFunction) rpmdb_ByProvides,	METH_VARARGS,
+	NULL },
+    {"match",	    (PyCFunction) rpmdb_InitIterator,	METH_VARARGS,
+"db.match([TagN, [key, [len]]]) -> mi\n\
+- Create an rpm db match iterator.\n" },
+    {NULL,		NULL}		/* sentinel */
 };
 
 /**
  */
-static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name) {
-    return Py_FindMethod(rpmdbMethods, (PyObject * ) s, name);
-}
-
-/**
- */
-static void rpmdbDealloc(rpmdbObject * s) {
-    s->offsets = _free(s->offsets);
-    if (s->db)
-	rpmdbClose(s->db);
-    PyMem_DEL(s);
-}
-
-#ifndef DYINGSOON	/* XXX OK, when? */
-/**
- */
 static int
-rpmdbLength(rpmdbObject * s) {
+rpmdb_length(rpmdbObject * s)
+{
     rpmdbMatchIterator mi;
     int count = 0;
 
@@ -421,7 +413,8 @@ rpmdbLength(rpmdbObject * s) {
 /**
  */
 static hdrObject *
-rpmdbSubscript(rpmdbObject * s, PyObject * key) {
+rpmdb_subscript(rpmdbObject * s, PyObject * key)
+{
     int offset;
     hdrObject * ho;
     Header h;
@@ -449,30 +442,49 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 
 /**
  */
-static PyMappingMethods rpmdbAsMapping = {
-	(inquiry) rpmdbLength,		/* mp_length */
-	(binaryfunc) rpmdbSubscript,	/* mp_subscript */
+static PyMappingMethods rpmdb_as_mapping = {
+	(inquiry) rpmdb_length,		/* mp_length */
+	(binaryfunc) rpmdb_subscript,	/* mp_subscript */
 	(objobjargproc)0,		/* mp_ass_subscript */
 };
-#endif
 
 /**
  */
-PyTypeObject rpmdbType = {
+static void rpmdb_dealloc(rpmdbObject * s) {
+    s->offsets = _free(s->offsets);
+    if (s->db)
+	rpmdbClose(s->db);
+    PyMem_DEL(s);
+}
+
+/**
+ */
+static PyObject * rpmdb_getattr(rpmdbObject * s, char * name) {
+    return Py_FindMethod(rpmdb_methods, (PyObject * ) s, name);
+}
+
+/**
+ */
+static char rpmdb_doc[] =
+"";
+
+/**
+ */
+PyTypeObject rpmdb_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
-	"rpmdb",			/* tp_name */
+	"rpm.db",			/* tp_name */
 	sizeof(rpmdbObject),		/* tp_size */
 	0,				/* tp_itemsize */
-	(destructor) rpmdbDealloc, 	/* tp_dealloc */
+	(destructor) rpmdb_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) rpmdbGetAttr, 	/* tp_getattr */
+	(getattrfunc) rpmdb_getattr, 	/* tp_getattr */
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
-	&rpmdbAsMapping,		/* tp_as_mapping */
+	&rpmdb_as_mapping,		/* tp_as_mapping */
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
@@ -480,14 +492,15 @@ PyTypeObject rpmdbType = {
 	0,				/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
-	0,				/* tp_doc */
+	rpmdb_doc,			/* tp_doc */
+#if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
 	0,				/* tp_iter */
 	0,				/* tp_iternext */
-	0,				/* tp_methods */
+	rpmdb_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
@@ -500,6 +513,7 @@ PyTypeObject rpmdbType = {
 	0,				/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
+#endif
 };
 
 rpmdb dbFromDb(rpmdbObject * db) {
@@ -515,7 +529,7 @@ rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "|is", &forWrite, &root)) return NULL;
 
-    o = PyObject_NEW(rpmdbObject, &rpmdbType);
+    o = PyObject_NEW(rpmdbObject, &rpmdb_Type);
     o->db = NULL;
     o->offx = 0;
     o->noffs = 0;

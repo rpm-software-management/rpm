@@ -19,19 +19,19 @@
 #include "debug.h"
 
 /** \ingroup python
- * \name Class: rpmtrans
- * \class rpmtrans
- * \brief A python rpmtrans object represents an RPM transaction set.
+ * \name Class: rpm.ts
+ * \class rpm.ts
+ * \brief A python rpm.ts object represents an RPM transaction set.
  * 
  * The transaction set is the workhorse of RPM.  It performs the
- * installation and upgrade of packages.  The rpmtrans object is
+ * installation and upgrade of packages.  The rpm.ts object is
  * instantiated by the TransactionSet function in the rpm module.
  *
  * The TransactionSet function takes two optional arguments.  The first
  * argument is the root path, the second is an open database to perform
  * the transaction set upon.
  *
- * A rpmtrans object has the following methods:
+ * A rpm.ts object has the following methods:
  *
  * - add(header,data,mode)	Add a binary package to a transaction set.
  * @param header the header to be added
@@ -125,15 +125,18 @@ rpmts_Add(rpmtsObject * s, PyObject * args)
     PyObject * key;
     char * how = NULL;
     int isUpgrade = 0;
-    PyObject * hObj;
 
-    if (!PyArg_ParseTuple(args, "OO|s", &h, &key, &how)) return NULL;
-
-    hObj = (PyObject *) h;
-    if (hObj->ob_type != &hdr_Type) {
-	PyErr_SetString(PyExc_TypeError, "bad type for header argument");
+    if (!PyArg_ParseTuple(args, "O!O|s:Add", &hdr_Type, &h, &key, &how))
 	return NULL;
+
+#ifdef	DYING
+    {	PyObject * hObj = (PyObject *) h;
+	if (hObj->ob_type != &hdr_Type) {
+	    PyErr_SetString(PyExc_TypeError, "bad type for header argument");
+	    return NULL;
+	}
     }
+#endif
 
     if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
 	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\", \"a\", or \"i\"");
@@ -164,7 +167,7 @@ rpmts_Remove(rpmtsObject * s, PyObject * args)
     int count;
     rpmdbMatchIterator mi;
     
-    if (!PyArg_ParseTuple(args, "s", &name))
+    if (!PyArg_ParseTuple(args, "s:Remove", &name))
         return NULL;
 
     /* XXX: Copied hack from ../lib/rpminstall.c, rpmErase() */
@@ -200,7 +203,7 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
     int allSuggestions = 0;
     int xx;
 
-    if (!PyArg_ParseTuple(args, "|i", &allSuggestions)) return NULL;
+    if (!PyArg_ParseTuple(args, "|i:Check", &allSuggestions)) return NULL;
 
     xx = rpmtsCheck(s->ts);
     ps = rpmtsGetProblems(s->ts);
@@ -280,7 +283,7 @@ rpmts_Order(rpmtsObject * s, PyObject * args)
 {
     int xx;
 
-    if (!PyArg_ParseTuple(args, "")) return NULL;
+    if (!PyArg_ParseTuple(args, ":Order")) return NULL;
 
     xx = rpmtsOrder(s->ts);
 
@@ -296,6 +299,8 @@ rpmts_GetKeys(rpmtsObject * s, PyObject * args)
     const void **data = NULL;
     int num, i;
     PyObject *tuple;
+
+    if (!PyArg_ParseTuple(args, ":GetKeys")) return NULL;
 
     rpmtsGetKeys(s->ts, &data, &num);
     if (data == NULL) {
@@ -380,7 +385,7 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
     rpmps ps;
     struct rpmtsCallbackType_s cbInfo;
 
-    if (!PyArg_ParseTuple(args, "iiOO", &flags, &ignoreSet, &cbInfo.cb,
+    if (!PyArg_ParseTuple(args, "iiOO:Run", &flags, &ignoreSet, &cbInfo.cb,
 			  &cbInfo.data))
 	return NULL;
 
@@ -423,25 +428,26 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 
 /** \ingroup python
  */
-static struct PyMethodDef rpmtsMethods[] = {
-	{"add",		(PyCFunction) rpmts_Add,	1 },
-	{"remove",	(PyCFunction) rpmts_Remove,	1 },
-	{"depcheck",	(PyCFunction) rpmts_Check,	1 },
-	{"order",	(PyCFunction) rpmts_Order,	1 },
-	{"getKeys",	(PyCFunction) rpmts_GetKeys,	1 },
-	{"run",		(PyCFunction) rpmts_Run,	1 },
+static struct PyMethodDef rpmts_methods[] = {
+    {"add",		(PyCFunction) rpmts_Add,	METH_VARARGS,
+	NULL },
+    {"remove",		(PyCFunction) rpmts_Remove,	METH_VARARGS,
+	NULL },
+    {"depcheck",	(PyCFunction) rpmts_Check,	METH_VARARGS,
+	NULL },
+    {"order",		(PyCFunction) rpmts_Order,	METH_VARARGS,
+	NULL },
+    {"getKeys",		(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
+	NULL },
+    {"run",		(PyCFunction) rpmts_Run,	METH_VARARGS,
+	NULL },
 	{NULL,		NULL}		/* sentinel */
 };
 
 /** \ingroup python
  */
-static PyObject * rpmts_getattr(rpmtsObject * o, char * name) {
-    return Py_FindMethod(rpmtsMethods, (PyObject *) o, name);
-}
-
-/** \ingroup python
- */
-static void rpmts_dealloc(PyObject * o) {
+static void rpmts_dealloc(PyObject * o)
+{
     rpmtsObject * trans = (void *) o;
 
     trans->ts->rdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
@@ -458,8 +464,15 @@ static void rpmts_dealloc(PyObject * o) {
 
 /** \ingroup python
  */
-static int rpmts_setattr(rpmtsObject * o, char * name,
-			   PyObject * val) {
+static PyObject * rpmts_getattr(rpmtsObject * o, char * name)
+{
+    return Py_FindMethod(rpmts_methods, (PyObject *) o, name);
+}
+
+/** \ingroup python
+ */
+static int rpmts_setattr(rpmtsObject * o, char * name, PyObject * val)
+{
     int i;
 
     if (!strcmp(name, "scriptFd")) {
@@ -478,6 +491,11 @@ static int rpmts_setattr(rpmtsObject * o, char * name,
 
     return 0;
 }
+
+/**
+ */
+static char rpmts_doc[] =
+"";
 
 /** \ingroup python
  */
@@ -503,14 +521,15 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
-	0,				/* tp_doc */
+	rpmts_doc,			/* tp_doc */
+#if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
 	0,				/* tp_iter */
 	0,				/* tp_iternext */
-	0,				/* tp_methods */
+	rpmts_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
@@ -523,6 +542,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
+#endif
 };
 
 /**
@@ -534,11 +554,14 @@ rpmts_Create(PyObject * self, PyObject * args)
     rpmdbObject * db = NULL;
     char * rootDir = "/";
 
-    if (!PyArg_ParseTuple(args, "|sO", &rootDir, &db)) return NULL;
-    if (db && ((PyObject *) db)->ob_type != &rpmdbType) {
+    if (!PyArg_ParseTuple(args, "|sO!:Create", &rootDir, &rpmdb_Type, &db))
+	return NULL;
+#ifdef	DYING
+    if (db && ((PyObject *) db)->ob_type != &rpmdb_Type) {
 	PyErr_SetString(PyExc_TypeError, "bad type for database argument");
 	return NULL;
     }
+#endif
 
     o = (void *) PyObject_NEW(rpmtsObject, &rpmts_Type);
 

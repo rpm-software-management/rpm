@@ -293,7 +293,7 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 
     if (ts->availablePackages == NULL)
 	return rc;
-    sugkey = alAllSatisfiesDepend(ts->availablePackages, ds, NULL);
+    sugkey = rpmalAllSatisfiesDepend(ts->availablePackages, ds, NULL);
     if (sugkey == NULL)
 	return rc;
     /* XXX no alternatives yet */
@@ -334,7 +334,7 @@ void rpmtsClean(rpmts ts)
 	    rpmteCleanDS(p);
 	pi = rpmteiFree(pi);
 
-	ts->addedPackages = alFree(ts->addedPackages);
+	ts->addedPackages = rpmalFree(ts->addedPackages);
 	ts->numAddedPackages = 0;
 
 	ts->suggests = _free(ts->suggests);
@@ -366,7 +366,7 @@ rpmts rpmtsFree(rpmts ts)
 
 	(void) rpmtsCloseSDB(ts);
 
-	ts->availablePackages = alFree(ts->availablePackages);
+	ts->availablePackages = rpmalFree(ts->availablePackages);
 	ts->numAvailablePackages = 0;
 
 	ts->dsi = _free(ts->dsi);

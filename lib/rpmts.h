@@ -101,12 +101,11 @@ struct rpmts_s {
     int allocedRemovedPackages;	/*!< Size of removed packages array. */
 
 /*@only@*/
-    availableList addedPackages;/*!< Set of packages being installed. */
+    rpmal addedPackages;	/*!< Set of packages being installed. */
     int numAddedPackages;	/*!< No. added package instances. */
 
 /*@only@*/
-    availableList availablePackages;
-				/*!< Universe of available packages. */
+    rpmal availablePackages;	/*!< Universe of available packages. */
     int numAvailablePackages;	/*!< No. available package instances. */
 
 /*@owned@*/
@@ -130,7 +129,8 @@ struct rpmts_s {
     const char * fn;		/*!< Current package fn. */
     int_32  sigtag;		/*!< Current package signature tag. */
     int_32  sigtype;		/*!< Current package signature data type. */
-/*@null@*/ const void * sig;	/*!< Current package signature. */
+/*@null@*/
+    const void * sig;		/*!< Current package signature. */
     int_32 siglen;		/*!< Current package signature length. */
 
 /*@only@*/ /*@null@*/
@@ -141,7 +141,8 @@ struct rpmts_s {
 /*@null@*/
     struct pgpDig_s * dig;	/*!< Current signature/pubkey parameters. */
 
-/*@refs@*/ int nrefs;		/*!< Reference count. */
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 
 };
 #endif	/* _RPMTS_INTERNAL */
