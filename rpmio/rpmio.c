@@ -753,6 +753,14 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 	/*@globals errno @*/
 	/*@modifies *address, errno @*/
 {
+#if 0	/* XXX workaround nss_foo module hand-off using valgrind. */
+    if (!strcmp(host, "localhost")) {
+	/*@-unrecog -moduncon @*/
+	if (!inet_aton("127.0.0.1", address))
+	    return FTPERR_BAD_HOST_ADDR;
+	/*@=unrecog =moduncon @*/
+    } else
+#endif
     if (xisdigit(host[0])) {
 	/*@-unrecog -moduncon @*/
 	if (!inet_aton(host, address))
