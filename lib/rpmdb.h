@@ -177,15 +177,15 @@ struct _dbiIndex {
     int			dbi_mp_mmapsize;	/*<! (10Mb) */
     int			dbi_mp_size;	/*<! (128Kb) */
 	/* lock sub-system parameters */
-    u_int32_t		dbi_lk_max;
-    u_int32_t		dbi_lk_detect;
+    unsigned int	dbi_lk_max;
+    unsigned int	dbi_lk_detect;
     int			dbi_lk_nmodes;
-    u_int8_t		*dbi_lk_conflicts;
+    unsigned char	*dbi_lk_conflicts;
 	/* log sub-system parameters */
-    u_int32_t		dbi_lg_max;
-    u_int32_t		dbi_lg_bsize;
+    unsigned int	dbi_lg_max;
+    unsigned int	dbi_lg_bsize;
 	/* transaction sub-system parameters */
-    u_int32_t		dbi_tx_max;
+    unsigned int	dbi_tx_max;
 #if 0
     int			(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec, DB_LSN *lsnp, int redo, void *info);
 #endif
@@ -195,7 +195,7 @@ struct _dbiIndex {
     void *		(*dbi_malloc) (size_t nbytes);
 	/* hash access parameters */
     unsigned int	dbi_h_ffactor;	/*<! */
-    unsigned int	(*dbi_h_hash_fcn) (const void *bytes, u_int32_t length);
+    unsigned int	(*dbi_h_hash_fcn) (const void *bytes, unsigned int length);
     unsigned int	dbi_h_nelem;	/*<! */
     unsigned int	dbi_h_flags;	/*<! DB_DUP, DB_DUPSORT */
     int			(*dbi_h_dup_compare_fcn) (const DBT *, const DBT *);
@@ -208,7 +208,7 @@ struct _dbiIndex {
 	/* recno access parameters */
     int			dbi_re_flags;
     int			dbi_re_delim;
-    u_int32_t		dbi_re_len;
+    unsigned int	dbi_re_len;
     int			dbi_re_pad;
     const char *	dbi_re_source;
 
