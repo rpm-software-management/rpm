@@ -36,7 +36,7 @@ OTHERSUBDIRS = docs autodeps
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o @GETTEXTSTUB@
 PROGS = @RPM@ rpm2cpio
 LIBS = @LIBS@ @LIBINTL@ @LIBDL@
-LOADLIBES = -lbuild popt/libpopt.a $(topdir)/lib/librpm.a -L $(topdir)/misc @LIBMISC@
+LOADLIBES = -lbuild popt/libpopt.a $(topdir)/lib/librpm.a -L$(topdir)/misc @LIBMISC@
 
 SOURCES = $(subst .o,.c,$(OBJS))
 
