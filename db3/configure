@@ -6,8 +6,12 @@ CFLAGS="$CFLAGS" $db_dist/configure \
 
 mv Makefile Makefile.orig
 cat Makefile.orig | sed -e '/^install:/c\
-distdir:\
+.PHONY: listobjs\
+listobjs:\
+	@echo $(OBJS)\
 \
-install:\
+distdir install:\
 \
 db3_install: all install_setip \\' > Makefile
+
+make -s listobjs > db3lobjs
