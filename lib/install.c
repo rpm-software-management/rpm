@@ -11,21 +11,21 @@
 struct callbackInfo {
     unsigned long archiveSize;
     rpmCallbackFunction notify;
-    char ** specFilePtr;
+    const char ** specFilePtr;
     Header h;
     void * notifyData;
     const void * pkgKey;
 };
 
 struct fileMemory {
-    char ** names;
-    char ** cpioNames;
-    struct fileInfo * files;
+    /*@owned@*/ const char ** names;
+    /*@owned@*/ const char ** cpioNames;
+    /*@owned@*/ struct fileInfo * files;
 };
 
 struct fileInfo {
-    char * cpioPath;
-    char * relativePath;		/* relative to root */
+    /*@dependent@*/ const char * cpioPath;
+    /*@dependent@*/ const char * relativePath;	/* relative to root */
     uid_t uid;
     gid_t gid;
     uint_32 flags;
@@ -64,7 +64,7 @@ static int rpmInstallLoadMacros(Header h)
 	case RPM_INT32_TYPE:
 	    sprintf(numbuf, "%d", ((int_32)body));
 	    body = numbuf;
-	    /* fall thru */
+	    /*@fallthrough@*/
 	case RPM_STRING_TYPE:
 	    addMacro(NULL, tagm->macroname, NULL, body, -1);
 	    break;
@@ -73,26 +73,38 @@ static int rpmInstallLoadMacros(Header h)
     return 0;
 }
 
-static void freeFileMemory(struct fileMemory fileMem)
+static /*@only@*/ struct fileMemory *newFileMemory(void)
 {
-    free(fileMem.files);
-    free(fileMem.names);
-    free(fileMem.cpioNames);
+    struct fileMemory *fileMem = malloc(sizeof(*fileMem));
+    fileMem->files = NULL;
+    fileMem->names = NULL;
+    fileMem->cpioNames = NULL;
+    return fileMem;
+}
+
+static void freeFileMemory(/*@only@*/struct fileMemory *fileMem)
+{
+    if (fileMem->files) free(fileMem->files);
+    if (fileMem->names) free(fileMem->names);
+    if (fileMem->cpioNames) free(fileMem->cpioNames);
+    free(fileMem);
 }
 
 /* files should not be preallocated */
-static int assembleFileList(Header h, struct fileMemory * mem, 
-			     int * fileCountPtr, struct fileInfo ** filesPtr, 
-			     int stripPrefixLength, 
-			     enum fileActions * actions)
+static int assembleFileList(Header h, /*@out@*/struct fileMemory ** memPtr, 
+	 /*@out@*/int * fileCountPtr, /*@out@*/struct fileInfo ** filesPtr, 
+	 int stripPrefixLength, enum fileActions * actions)
 {
     uint_32 * fileFlags;
     uint_32 * fileSizes;
     uint_16 * fileModes;
+    struct fileMemory *mem = newFileMemory();
     struct fileInfo * files;
     struct fileInfo * file;
     int fileCount;
     int i;
+
+    *memPtr = mem;
 
     if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
 		        fileCountPtr))
@@ -218,10 +230,9 @@ static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList)
 {
     struct sharedFileInfo * fileInfo;
     Header secHeader = NULL, sh;
-    char * secStates;
-    int type, count;
-    
+    char * secStates = NULL;
     int secOffset = 0;
+    int type, count;
 
     for (fileInfo = replList; fileInfo->otherPkg; fileInfo++) {
 	if (secOffset != fileInfo->otherPkg) {
@@ -264,10 +275,10 @@ static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList)
 static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 {
     struct callbackInfo * ourInfo = data;
-    char * chptr;
+    const char * chptr;
 
     if (ourInfo->notify)
-	ourInfo->notify(ourInfo->h, RPMCALLBACK_INST_PROGRESS,
+	(void)ourInfo->notify(ourInfo->h, RPMCALLBACK_INST_PROGRESS,
 			cpioInfo->bytesProcessed, 
 			ourInfo->archiveSize, ourInfo->pkgKey, 
 			ourInfo->notifyData);
@@ -283,12 +294,12 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmCallbackFunction notify, 
 			  void * notifyData, const void * pkgKey, Header h,
-			  char ** specFile, int archiveSize)
+			  /*@out@*/const char ** specFile, int archiveSize)
 {
     int rc, i;
     struct cpioFileMapping * map = NULL;
     int mappedFiles = 0;
-    char * failedFile;
+    const char * failedFile;
     struct callbackInfo info;
 
     if (!files) {
@@ -303,7 +314,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     info.notify = notify;
     info.notifyData = notifyData;
     info.specFilePtr = specFile;
-    info.h = h;
+    info.h = headerLink(h);
     info.pkgKey = pkgKey;
 
     if (specFile) *specFile = NULL;
@@ -327,18 +338,19 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     }
 
     if (notify)
-	notify(h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize, pkgKey, 
+	(void)notify(h, RPMCALLBACK_INST_PROGRESS, 0, archiveSize, pkgKey, 
 	       notifyData);
 
   { CFD_t cfdbuf, *cfd = &cfdbuf;
+    cfd->cpioPos = 0;
     cfd->cpioIoType = cpioIoTypeGzFd;
     cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fd)), "r");
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
-			    ((notify && archiveSize) || specFile) ? 
-				callback : NULL, 
-			    &info, &failedFile);
+		    ((notify && archiveSize) || specFile) ? callback : NULL, 
+		    &info, &failedFile);
     gzdClose(cfd->cpioGzFd);
   }
+    headerFree(info.h);
 
     if (rc) {
 	/* this would probably be a good place to check if disk space
@@ -350,11 +362,13 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	return 1;
     }
 
-    if (notify && archiveSize)
-	notify(h, RPMCALLBACK_INST_PROGRESS, archiveSize, archiveSize, 
+    if (notify) {
+	if (archiveSize)
+	    (void)notify(h, RPMCALLBACK_INST_PROGRESS, archiveSize, archiveSize,
 	       pkgKey, notifyData);
-    else if (notify) {
-	notify(h, RPMCALLBACK_INST_PROGRESS, 100, 100, pkgKey, notifyData);
+	else
+	    (void)notify(h, RPMCALLBACK_INST_PROGRESS, 100, 100,
+		pkgKey, notifyData);
     }
 
     return 0;
@@ -367,19 +381,17 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 			  const char ** specFilePtr, rpmCallbackFunction notify,
 			  void * notifyData)
 {
-    char * specFile;
+    const char * specFile = NULL;
     int specFileIndex = -1;
     const char * realSourceDir = NULL;
     const char * realSpecDir = NULL;
     char * instSpecFile, * correctSpecFile;
     int fileCount = 0;
     uint_32 * archiveSizePtr = NULL;
-    struct fileMemory fileMem;
-    struct fileInfo * files;
+    struct fileMemory *fileMem = NULL;
+    struct fileInfo * files = NULL;
     int i;
-    char * chptr;
-    char * currDir;
-    int currDirLen;
+    const char * currDir = NULL;
     uid_t currUid = getuid();
     gid_t currGid = getgid();
     struct stat st;
@@ -394,12 +406,12 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	    /* XXX this will only create last component of directory path */
 	    if (mkdir(realSourceDir, 0755) == 0)
 		break;
-	    /* fall thru */
+	    /*@fallthrough@*/
 	default:
 	    rpmError(RPMERR_CREATE, _("cannot create %s"), realSourceDir);
 	    rc = 2;
 	    goto exit;
-	    break;
+	    /*@notreached@*/ break;
 	}
     }
     if (access(realSourceDir, W_OK)) {
@@ -416,12 +428,12 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	    /* XXX this will only create last component of directory path */
 	    if (mkdir(realSpecDir, 0755) == 0)
 		break;
-	    /* fall thru */
+	    /*@fallthrough@*/
 	default:
 	    rpmError(RPMERR_CREATE, _("cannot create %s"), realSpecDir);
 	    rc = 2;
 	    goto exit;
-	    break;
+	    /*@notreached@*/ break;
 	}
     }
     if (access(realSpecDir, W_OK)) {
@@ -431,7 +443,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     }
     rpmMessage(RPMMESS_DEBUG, _("spec file in: %s\n"), realSpecDir);
 
-    if (h && headerIsEntry(h, RPMTAG_FILENAMES)) {
+    if (h != NULL && headerIsEntry(h, RPMTAG_FILENAMES)) {
 	/* we can't remap v1 packages */
 	assembleFileList(h, &fileMem, &fileCount, &files, 0, NULL);
 
@@ -448,37 +460,32 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	if (i == fileCount) {
 	    /* find the spec file by name */
 	    for (i = 0; i < fileCount; i++) {
+		const char *chptr;
 		chptr = files[i].cpioPath + strlen(files[i].cpioPath) - 5;
 		if (!strcmp(chptr, ".spec")) break;
 	    }
 	}
 
 	if (i < fileCount) {
+	    char *t = alloca(strlen(realSpecDir) + 
+			 strlen(files[i].cpioPath) + 5);
+	    strcpy(t, realSpecDir);
+	    strcat(t, "/");
+	    strcat(t, files[i].cpioPath);
+	    files[i].relativePath = t;
 	    specFileIndex = i;
-
-	    files[i].relativePath = alloca(strlen(realSpecDir) + 
-					 strlen(files[i].cpioPath) + 5);
-	    strcpy(files[i].relativePath, realSpecDir);
-	    strcat(files[i].relativePath, "/");
-	    strcat(files[i].relativePath, files[i].cpioPath);
 	} else {
 	    rpmError(RPMERR_NOSPEC, _("source package contains no .spec file"));
-	    if (fileCount > 0) freeFileMemory(fileMem);
 	    rc = 2;
 	    goto exit;
 	}
     }
 
     if (notify) {
-	notify(h, RPMCALLBACK_INST_START, 0, 0, NULL, notifyData);
+	(void)notify(h, RPMCALLBACK_INST_START, 0, 0, NULL, notifyData);
     }
 
-    currDirLen = 50;
-    currDir = malloc(currDirLen);
-    while (!getcwd(currDir, currDirLen)) {
-	currDirLen += 50;
-	currDir = realloc(currDir, currDirLen);
-    }
+    currDir = currentDirectory();
 
     if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL,
 			    (void **) &archiveSizePtr, NULL))
@@ -489,21 +496,19 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 			  fileCount, notify, notifyData, NULL, h,
 			  specFileIndex >=0 ? NULL : &specFile, 
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
-	if (fileCount > 0) freeFileMemory(fileMem);
 	rc = 2;
 	goto exit;
     }
-
     chdir(currDir);
 
     if (specFileIndex == -1) {
-	if (!specFile) {
+	if (specFile == NULL) {
 	    rpmError(RPMERR_NOSPEC, _("source package contains no .spec file"));
 	    rc = 1;
 	    goto exit;
 	}
 
-	/* This logic doesn't work is realSpecDir and realSourceDir are on
+	/* This logic doesn't work if realSpecDir and realSourceDir are on
 	   different filesystems, but we only do this on v1 source packages
 	   so I don't really care much. */
 	instSpecFile = alloca(strlen(realSourceDir) + strlen(specFile) + 2);
@@ -516,7 +521,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	strcat(correctSpecFile, "/");
 	strcat(correctSpecFile, specFile);
 
-	free(specFile);
+	xfree(specFile);
 
 	rpmMessage(RPMMESS_DEBUG, 
 		    _("renaming %s to %s\n"), instSpecFile, correctSpecFile);
@@ -532,12 +537,12 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     } else {
 	if (specFilePtr)
 	    *specFilePtr = strdup(files[specFileIndex].relativePath);
-
-	if (fileCount > 0) freeFileMemory(fileMem);
     }
     rc = 0;
 
 exit:
+    if (fileMem)	freeFileMemory(fileMem);
+    if (currDir)	xfree(currDir);
     if (realSpecDir)	xfree(realSpecDir);
     if (realSourceDir)	xfree(realSourceDir);
     return rc;
@@ -592,7 +597,7 @@ const char * fileActionString(enum fileActions a)
       case FA_SKIPNSTATE: return "skipnstate";
       case FA_SKIPNETSHARED: return "skipnetshared";
     }
-
+    /*@notreached@*/
     return "???";
 }
 
@@ -624,8 +629,8 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 
     if (cookie) {
 	*cookie = NULL;
-	if (h && headerGetEntry(h, RPMTAG_COOKIE, NULL, (void **) cookie,
-				NULL)) {
+	if (h != NULL &&
+	   headerGetEntry(h, RPMTAG_COOKIE, NULL, (void **) cookie, NULL)) {
 	    *cookie = strdup(*cookie);
 	}
     }
@@ -649,22 +654,17 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 {
     int rc;
     const char * name, * version, * release;
-    int fileCount, type, count;
+    int fileCount = 0;
+    int type, count;
     struct fileInfo * files;
-    int_32 installTime;
-    char * fileStates;
+    char * fileStates = NULL;
     int i;
-    int installFile = 0;
     int otherOffset = 0;
-    char * ext = NULL, * newpath;
-    char * defaultPrefix;
     dbiIndexSet matches;
     int scriptArg;
     int stripSize = 1;		/* strip at least first / for cpio */
-    uint_32 * archiveSizePtr;
-    struct fileMemory fileMem;
-    int freeFileMem = 0;
-    char * currDir = NULL, * tmpptr;
+    struct fileMemory *fileMem = NULL;
+    char * currDir = NULL;
 
     if (flags & RPMTRANS_FLAG_JUSTDB)
 	flags |= RPMTRANS_FLAG_NOSCRIPTS;
@@ -675,16 +675,22 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		name, version, release, flags & RPMTRANS_FLAG_TEST);
 
     rc = rpmdbFindPackage(db, name, &matches);
-    if (rc == -1) return 2;
-    if (rc) {
- 	scriptArg = 1;
-    } else {
+    switch (rc) {
+    case -1:
+	rc = 2;
+	goto exit;
+	/*@notreached@*/ break;
+    case 0:
 	scriptArg = dbiIndexSetCount(matches) + 1;
 	dbiFreeIndexRecord(matches);
+	break;
+    default:
+ 	scriptArg = 1;
+	break;
     }
 
     if (!rpmdbFindByHeader(db, h, &matches)) {
-	otherOffset = matches.recs[0].recOffset;
+	otherOffset = dbiIndexRecordOffset(matches, 0);
 	dbiFreeIndexRecord(matches);
     }
 
@@ -694,16 +700,18 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	(void)getpwnam("root");
 	endpwent();
 
-	tmpptr = currentDirectory();
-	currDir = alloca(strlen(tmpptr) + 1);
-	strcpy(currDir, tmpptr);
-	free(tmpptr);
+	{   const char *s = currentDirectory();
+	    currDir = alloca(strlen(s) + 1);
+	    strcpy(currDir, s);
+	    xfree(s);
+	}
 
 	chdir("/");
-	chroot(rootdir);
+	/*@-unrecog@*/ chroot(rootdir); /*@=unrecog@*/
     }
 
     if (!(flags & RPMTRANS_FLAG_JUSTDB) && headerIsEntry(h, RPMTAG_FILENAMES)) {
+	const char * defaultPrefix;
 	/* old format relocateable packages need the entire default
 	   prefix stripped to form the cpio list, while all other packages 
 	   need the leading / stripped */
@@ -716,94 +724,73 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
 	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize,
 			     actions)) {
-	    if (rootdir) {
-		chroot(".");
-		chdir(currDir);
-	    }
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
-
-	freeFileMem = 1;
     } else {
 	files = NULL;
     }
     
     if (flags & RPMTRANS_FLAG_TEST) {
-	if (rootdir) {
-	    chroot(".");
-	    chdir(currDir);
-	}
-
 	rpmMessage(RPMMESS_DEBUG, _("stopping install as we're running --test\n"));
-	if (freeFileMem) freeFileMemory(fileMem);
-	return 0;
+	rc = 0;
+	goto exit;
     }
 
     rpmMessage(RPMMESS_DEBUG, _("running preinstall script (if any)\n"));
     if (runInstScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
 		      flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
-	if (freeFileMem) freeFileMemory(fileMem);
-
-	if (rootdir) {
-	    chroot(".");
-	    chdir(currDir);
-	}
-
-	return 2;
+	rc = 2;
+	goto exit;
     }
 
     if (files) {
 	setFileOwners(h, files, fileCount);
 
 	for (i = 0; i < fileCount; i++) {
+	    char * ext;
+	    char * newpath;
+
+	    ext = NULL;
+
 	    switch (files[i].action) {
 	      case FA_BACKUP:
 		ext = ".rpmorig";
-		installFile = 1;
 		break;
 
 	      case FA_ALTNAME:
-		ext = NULL;
-		installFile = 1;
-
 		newpath = alloca(strlen(files[i].relativePath) + 20);
 		strcpy(newpath, files[i].relativePath);
 		strcat(newpath, ".rpmnew");
 		rpmError(RPMMESS_ALTNAME, _("warning: %s created as %s"),
 			files[i].relativePath, newpath);
 		files[i].relativePath = newpath;
-		
 		break;
 
 	      case FA_SAVE:
 		ext = ".rpmsave";
-		installFile = 1;
 		break;
 
 	      case FA_CREATE:
-		installFile = 1;
-		ext = NULL;
 		break;
 
 	      case FA_SKIP:
-		installFile = 0;
-		ext = NULL;
+		files[i].install = 0;
 		break;
 
 	      case FA_SKIPNSTATE:
-		installFile = 0;
-		ext = NULL;
 		files[i].state = RPMFILE_STATE_NOTINSTALLED;
+		files[i].install = 0;
 		break;
 
 	      case FA_SKIPNETSHARED:
-		installFile = 0;
-		ext = NULL;
 		files[i].state = RPMFILE_STATE_NETSHARED;
+		files[i].install = 0;
 		break;
 
 	      case FA_UNKNOWN:
 	      case FA_REMOVE:
+		files[i].install = 0;
 		break;
 	    }
 
@@ -817,42 +804,29 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		if (rename(files[i].relativePath, newpath)) {
 		    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
 			  files[i].relativePath, newpath, strerror(errno));
-		    if (freeFileMem) freeFileMemory(fileMem);
-
-		    if (rootdir) {
-			chroot(".");
-			chdir(currDir);
-		    }
-
-		    return 2;
+		    rc = 2;
+		    goto exit;
 		}
-	    }
-
-	    if (!installFile) {
-		files[i].install = 0;
 	    }
 	}
 
-	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, 
+	{   uint_32 * archiveSizePtr;
+
+	    if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, 
 				(void **) &archiveSizePtr, &count))
 	    archiveSizePtr = NULL;
 
-	if (notify) {
-	    notify(h, RPMCALLBACK_INST_START, 0, 0, pkgKey, notifyData);
-	}
-
-	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(fd, files, fileCount, notify, notifyData, pkgKey, h,
-			   NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
-	    headerFree(h);
-	    if (freeFileMem) freeFileMemory(fileMem);
-
-	    if (rootdir) {
-		chroot(".");
-		chdir(currDir);
+	    if (notify) {
+		(void)notify(h, RPMCALLBACK_INST_START, 0, 0,
+		    pkgKey, notifyData);
 	    }
 
-	    return 2;
+	    /* the file pointer for fd is pointing at the cpio archive */
+	    if (installArchive(fd, files, fileCount, notify, notifyData, pkgKey,
+			h, NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
+		rc = 2;
+		goto exit;
+	    }
 	}
 
 	fileStates = malloc(sizeof(*fileStates) * fileCount);
@@ -863,7 +837,8 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 			fileCount);
 
 	free(fileStates);
-	if (freeFileMem) freeFileMemory(fileMem);
+	if (fileMem) freeFileMemory(fileMem);
+	fileMem = NULL;
     } else if (flags & RPMTRANS_FLAG_JUSTDB) {
 	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, NULL, &fileCount)) {
 	    fileStates = malloc(sizeof(*fileStates) * fileCount);
@@ -874,12 +849,14 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	}
     }
 
-    installTime = time(NULL);
-    headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
+    {	int_32 installTime = time(NULL);
+	headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
+    }
 
     if (rootdir) {
-	chroot(".");
+	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
 	chdir(currDir);
+	currDir = NULL;
     }
 
     trimChangelog(h);
@@ -891,32 +868,45 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     }
 
     if (rpmdbAdd(db, h)) {
-	headerFree(h);
-	return 2;
+	rc = 2;
+	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("running postinstall script (if any)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("running postinstall scripts (if any)\n"));
 
     if (runInstScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
 		      flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
-	return 2;
+	rc = 2;
+	goto exit;
     }
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run triggers this package sets off */
 	if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0, scriptFd)) {
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
 
 	/* Run triggers in this package which are set off by other things in
 	   the database. */
 	if (runImmedTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0, scriptFd)) {
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
     }
 
     if (sharedList) 
 	markReplacedFiles(db, sharedList);
 
-    return 0;
+    rc = 0;
+
+exit:
+    if (rootdir && currDir) {
+	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
+	chdir(currDir);
+    }
+    if (fileMem) freeFileMemory(fileMem);
+    if (rc)
+	headerFree(h);
+    return rc;
 }
