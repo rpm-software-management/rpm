@@ -5,7 +5,7 @@
  * \file popt/popthelp.c
  */
 
-/* (C) 1998-2000 Red Hat, Inc. -- Licensing details are in the COPYING
+/* (C) 1998-2002 Red Hat, Inc. -- Licensing details are in the COPYING
    file accompanying popt source distributions, available from 
    ftp://ftp.rpm.org/pub/rpm/dist. */
 
@@ -87,7 +87,7 @@ getTableTranslationDomain(/*@null@*/ const struct poptOption *table)
  */
 /*@observer@*/ /*@null@*/ static const char *const
 getArgDescrip(const struct poptOption * opt,
-		/*@-paramuse@*/		/* FIX: wazzup? */
+		/*@-paramuse@*/ /* FIX: i18n macros disabled with lclint */
 		/*@null@*/ const char * translation_domain)
 		/*@=paramuse@*/
 	/*@*/
@@ -125,7 +125,7 @@ getArgDescrip(const struct poptOption * opt,
 static /*@only@*/ /*@null@*/ char *
 singleOptionDefaultValue(int lineLength,
 		const struct poptOption * opt,
-		/*@-paramuse@*/	/* FIX: i18n macros disable with lclint */
+		/*@-paramuse@*/ /* FIX: i18n macros disabled with lclint */
 		/*@null@*/ const char * translation_domain)
 		/*@=paramuse@*/
 	/*@*/
