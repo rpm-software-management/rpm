@@ -28,6 +28,7 @@
 	- fix: missing strdup when overriding buildroot from command line
 	  argument (#1026,#5006).
 	- diddle some names to keep my C++ brethern happy (i.e. kpackage port).
+	- fix: turn off stdio buffering if not opened O_RDONLY for now.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
