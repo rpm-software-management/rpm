@@ -74,7 +74,7 @@ static int readRpmrc(FILE * f, char * fn) {
 	while (*start && isspace(*start)) start++;
 
 	/* I guess #.* should be a comment, but I don't know that. I'll
-	   just assume that and hope I'm write. For kicks, I'll take
+	   just assume that and hope I'm right. For kicks, I'll take
 	   \# to escape it */
 
 	chptr = start;
@@ -164,7 +164,7 @@ static int readRpmrc(FILE * f, char * fn) {
 }
 
 static void setDefaults(void) {
-    setVar(RPMVAR_ARCHSENSITIVE, NULL);
+    setVar(RPMVAR_ARCHSENSITIVE, "1");
     setVar(RPMVAR_TOPDIR, "/usr/src");
     setVar(RPMVAR_DOCDIR, "/usr/doc");
     setVar(RPMVAR_OPTFLAGS, "-O2");
