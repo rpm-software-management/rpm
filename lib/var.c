@@ -21,5 +21,9 @@ void setVar(int var, char *val)
 	return ;		/* XXX should we go harey carey here? */
    
     if (values[var]) free(values[var]);
-    values[var] = strdup(val);
+
+    if (val)
+	values[var] = strdup(val);
+    else
+	values[var] = NULL;
 }
