@@ -1,5 +1,6 @@
 2.3.9 -> 2.3.10:
 	- --allmatches handling in -e broke some cases
+	- new predefined macros: %SOURCEn %PATCHn
 
 2.3.8 -> 2.3.9:
 	- reworked %setup to allow multiple -a and -b options, which
