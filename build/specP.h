@@ -23,14 +23,22 @@ struct ReqProv {
 struct SpecRec {
     char *name;      /* package base name */
     char *specfile;
+
     int numSources;
     int numPatches;
     Sources sources;
+
+    int numNoSource;
+    int numNoPatch;
+    int_32 *noSource;
+    int_32 *noPatch;
+
     StringBuf prep;
     StringBuf build;
     StringBuf install;
     StringBuf doc;
     StringBuf clean;
+
     struct PackageRec *packages;
     /* The first package record is the "main" package and contains
      * the bulk of the preamble information.  Subsequent package
