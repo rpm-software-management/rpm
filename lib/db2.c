@@ -581,8 +581,8 @@ static int db2open(dbiIndex dbi)
     else
 	dbfile = dbhome;
 
-    dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
-		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
+    dbflags = (	!(dbi->dbi_mode & O_RDWR) ? DB_RDONLY :
+		((dbi->dbi_mode & O_CREAT) ? DB_CREATE : 0));
 
     rc = db_init(dbi, dbhome, dbflags, &dbenv, &dbinfo);
 
@@ -612,7 +612,7 @@ static int db2open(dbiIndex dbi)
 
 #else
     void * dbopeninfo = NULL;
-    dbi->dbi_db = dbopen(dbfile, dbi->dbi_flags, dbi->dbi_perms,
+    dbi->dbi_db = dbopen(dbfile, dbi->dbi_mode, dbi->dbi_perms,
 		dbi_to_dbtype(dbi->dbi_type), dbopeninfo);
 #endif	/* __USE_DB2 || __USE_DB3 */
 

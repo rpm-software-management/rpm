@@ -99,7 +99,8 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
-	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
+	/* RPMDBI_PACKAGES */
+	mi = rpmdbInitIterator(olddb, 0, NULL, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	    /* let's sanity check this record a bit, otherwise just skip it */
@@ -122,7 +123,7 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 		headerNVR(h, &name, &version, &release);
 
 		{   rpmdbMatchIterator mi;
-		    mi = rpmdbInitIterator(newdb, RPMDBI_NAME, name, 0);
+		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);
 		    rpmdbSetIteratorVersion(mi, version);
 		    rpmdbSetIteratorRelease(mi, release);
 		    while (rpmdbNextIterator(mi)) {

@@ -1,7 +1,7 @@
 #include "system.h"
 
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
-static int _use_cursors = 0;
+static int __use_cursors = 0;
 static int __do_dbcursor_rmw = 0;
 
 #include <db3/db.h>
@@ -479,7 +479,7 @@ static int db3SearchIndex(dbiIndex dbi, const void * str, size_t len,
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
   { DB_TXN * txnid = NULL;
-    if (!_use_cursors) {
+    if (!__use_cursors) {
 	int _printit;
 	rc = db->get(db, txnid, &key, &data, 0);
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
@@ -616,7 +616,7 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 	}
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
-	if (!_use_cursors) {
+	if (!__use_cursors) {
 	    rc = db->put(db, txnid, &key, &data, 0);
 	    rc = cvtdberr(dbi, "db->put", rc, _debug);
 	} else {
@@ -638,7 +638,7 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
     } else {
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
-	if (!_use_cursors) {
+	if (!__use_cursors) {
 	    rc = db->del(db, txnid, &key, 0);
 	    rc = cvtdberr(dbi, "db->del", rc, _debug);
 	} else {
@@ -648,7 +648,7 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 	    if (rc)
 		return rc;
 
-	    rc = db3c_get(dbi, dbcursor, &key, &data, DB_RMW | DB_SET);
+	    rc = db3c_get(dbi, dbcursor, &key, &data, DB_SET);
 
 	    /* XXX TODO: loop over duplicates */
 	    rc = db3c_del(dbi, dbcursor, 0);
@@ -881,8 +881,8 @@ static int db3open(dbiIndex dbi)
     else
 	dbfile = dbhome;
 
-    dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
-		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
+    dbflags = (	!(dbi->dbi_mode & O_RDWR) ? DB_RDONLY :
+		((dbi->dbi_mode & O_CREAT) ? DB_CREATE : 0));
 
     rc = db_init(dbi, dbhome, dbflags, &dbenv);
     dbi->dbi_dbinfo = NULL;
@@ -925,10 +925,17 @@ static int db3open(dbiIndex dbi)
 		rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
 	    }
 	    dbi->dbi_dbinfo = NULL;
-	    rc = db->open(db, "packages.db3", dbfile, dbi_to_dbtype(dbi->dbi_type),
-			dbflags, dbi->dbi_perms);
+#ifndef	DYING	/* XXX FIXME */
+	    rc = db->open(db, "packages.db3", dbfile,
+		    dbi_to_dbtype(dbi->dbi_type), dbflags, dbi->dbi_perms);
+#else
+	    rc = db->open(db, "packages.db3",
+		    (dbi->dbi_rpmtag ? tagName(dbi->dbi_rpmtag) : "Packages"),
+		    dbi_to_dbtype(dbi->dbi_type), dbflags, dbi->dbi_perms);
+#endif
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
 
+	    __use_cursors = rpmExpandNumeric("%{_db3_use_cursors}");
 	    __do_dbcursor_rmw = rpmExpandNumeric("%{_db3_dbcursor_rmw}");
 	    if (__do_dbcursor_rmw) {
 		DBC * dbcursor = NULL;
@@ -965,7 +972,7 @@ static int db3open(dbiIndex dbi)
 
 #else	/* __USE_DB2 || __USE_DB3 */
     void * dbopeninfo = NULL;
-    dbi->dbi_db = dbopen(dbfile, dbi->dbi_flags, dbi->dbi_perms,
+    dbi->dbi_db = dbopen(dbfile, dbi->dbi_mode, dbi->dbi_perms,
 		dbi_to_dbtype(dbi->dbi_type), dbopeninfo);
 #endif	/* __USE_DB2 || __USE_DB3 */
 

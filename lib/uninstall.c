@@ -537,7 +537,7 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
     {	Header triggeredH;
 	rpmdbMatchIterator mi;
 
-	mi = rpmdbInitIterator(db, RPMDBI_TRIGGER, name, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_TRIGGERNAME, name, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
 			       NULL, scriptFd);
@@ -577,7 +577,7 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 
 	    if (triggersRun[triggerIndices[i]]) continue;
 	
-	    mi = rpmdbInitIterator(db, RPMDBI_NAME, name, 0);
+	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		rc |= handleOneTrigger(root, db, sense, sourceH, h, 

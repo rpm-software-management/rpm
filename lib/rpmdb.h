@@ -156,7 +156,7 @@ struct _dbiIndex {
     int		dbi_jlen;		/*<! size of join key */
 
     DBI_TYPE	dbi_type;		/*<! type of access */
-    int		dbi_flags;		/*<! flags to use on open */
+    int		dbi_mode;		/*<! mode to use on open */
     int		dbi_perms;		/*<! file permission to use on open */
     int		dbi_major;		/*<! Berkeley db version major */
 

@@ -647,7 +647,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     {	rpmdbMatchIterator mi;
 	Header h2;
 
-	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, name, 0);
+	mi = rpmdbInitIterator(rpmdep->db, RPMTAG_NAME, name, 0);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmVersionCompare(h, h2))
 		removePackage(rpmdep, rpmdbGetIteratorOffset(mi), alNum);
@@ -677,7 +677,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	  { rpmdbMatchIterator mi;
 	    Header h2;
 
-	    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, obsoletes[j], 0);
+	    mi = rpmdbInitIterator(rpmdep->db, RPMTAG_NAME, obsoletes[j], 0);
 	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (bsearch(&recOffset,
@@ -908,7 +908,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	if (*keyName == '/') {
 	    /* keyFlags better be 0! */
 
-	    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_FILE, keyName, 0);
+	    mi = rpmdbInitIterator(rpmdep->db, RPMTAG_BASENAMES, keyName, 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (bsearch(&recOffset,
@@ -925,7 +925,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    }
 	}
 
-	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PROVIDES, keyName, 0);
+	mi = rpmdbInitIterator(rpmdep->db, RPMTAG_PROVIDENAME, keyName, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 	    if (bsearch(&recOffset,
@@ -943,7 +943,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	}
 
 #ifdef	DYING
-	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, keyName, 0);
+	mi = rpmdbInitIterator(rpmdep->db, RPMTAG_NAME, keyName, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 	    if (bsearch(&recOffset,
@@ -1156,7 +1156,7 @@ static int checkDependentPackages(rpmTransactionSet rpmdep,
 			struct problemsSet * psp, const char * key)
 {
     rpmdbMatchIterator mi;
-    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_REQUIREDBY, key, 0);
+    mi = rpmdbInitIterator(rpmdep->db, RPMTAG_REQUIRENAME, key, 0);
     return checkPackageSet(rpmdep, psp, key, mi);
 }
 
@@ -1168,7 +1168,7 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
 
     if (rpmdep->db) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_CONFLICTS, key, 0);
+	mi = rpmdbInitIterator(rpmdep->db, RPMTAG_CONFLICTNAME, key, 0);
 	rc = checkPackageSet(rpmdep, psp, key, mi);
     }
 

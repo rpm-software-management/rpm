@@ -439,14 +439,6 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi);
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix,
 			const void * key, size_t keylen);
-#define	RPMDBI_PACKAGES		0
-#define	RPMDBI_NAME		1
-#define	RPMDBI_FILE		2
-#define	RPMDBI_GROUP		3
-#define	RPMDBI_REQUIREDBY	4
-#define	RPMDBI_PROVIDES		5
-#define	RPMDBI_CONFLICTS	6
-#define	RPMDBI_TRIGGER		7
 
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {

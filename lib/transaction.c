@@ -1278,7 +1278,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	if (!(ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rpmdbMatchIterator mi;
 	    Header oldH;
-	    mi = rpmdbInitIterator(ts->db, RPMDBI_NAME, alp->name, 0);
+	    mi = rpmdbInitIterator(ts->db, RPMTAG_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
 		ensureOlder(ts->db, alp->h, oldH, probs, alp->key);
 	    rpmdbFreeIterator(mi);

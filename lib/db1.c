@@ -439,8 +439,8 @@ static int db1open(dbiIndex dbi)
     DB_INFO * dbinfo = NULL;
     u_int32_t dbflags;
 
-    dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
-		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
+    dbflags = (	!(dbi->dbi_mode & O_RDWR) ? DB_RDONLY :
+		((dbi->dbi_mode & O_CREAT) ? DB_CREATE : 0));
 
     rc = db_init(dbhome, dbflags, &dbenv, &dbinfo);
     dbi->dbi_dbenv = dbenv;
@@ -454,7 +454,7 @@ static int db1open(dbiIndex dbi)
 	dbi->dbi_db = NULL;
 #else
     void * dbopeninfo = NULL;
-    dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_flags, dbi->dbi_perms,
+    dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_mode, dbi->dbi_perms,
 		dbi_to_dbtype(dbi->dbi_type), dbopeninfo);
 #endif
 

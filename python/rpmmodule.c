@@ -856,7 +856,7 @@ static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args) {
 	return handleDbResult(rc, matches);
     }
 #else
-    return handleDbResult(rpmdbInitIterator(s->db, RPMDBI_NAME, str, 0));
+    return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_NAME, str, 0));
 #endif
 }
 
@@ -872,7 +872,7 @@ static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
 	return handleDbResult(rc, matches);
     }
 #else
-    return handleDbResult(rpmdbInitIterator(s->db, RPMDBI_FILE, str, 0));
+    return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_BASENAMES, str, 0));
 #endif
 }
 
@@ -888,7 +888,7 @@ static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
 	return handleDbResult(rc, matches);
     }
 #else
-    return handleDbResult(rpmdbInitIterator(s->db, RPMDBI_PROVIDES, str, 0));
+    return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_PROVIDENAME, str, 0));
 #endif
 }
 
@@ -908,7 +908,8 @@ static int rpmdbLength(rpmdbObject * s) {
 #else
     {	rpmdbMatchIterator mi;
 
-	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
+	/* RPMDBI_PACKAGES */
+	mi = rpmdbInitIterator(s->db, 0, NULL, 0);
 	/* XXX FIXME: unnecessary header mallocs are side effect here */
 	while (rpmdbNextIterator(mi) != NULL)
 	    count++;

@@ -599,8 +599,8 @@ static int db0open(dbiIndex dbi)
     DB_INFO * dbinfo = NULL;
     u_int32_t dbflags;
 
-    dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
-		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
+    dbflags = (	!(dbi->dbi_mode & O_RDWR) ? DB_RDONLY :
+		((dbi->dbi_mode & O_CREAT) ? DB_CREATE : 0));
 
     rc = db_init(dbhome, dbflags, &dbenv, &dbinfo);
     dbi->dbi_dbenv = dbenv;
@@ -619,9 +619,9 @@ static int db0open(dbiIndex dbi)
 	FD_t pkgs;
 
 	rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
-		dbi->dbi_flags, dbi->dbi_file);
+		dbi->dbi_mode, dbi->dbi_file);
 
-	pkgs = fadOpen(dbi->dbi_file, dbi->dbi_flags, dbi->dbi_perms);
+	pkgs = fadOpen(dbi->dbi_file, dbi->dbi_mode, dbi->dbi_perms);
 	if (Ferror(pkgs)) {
 	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), dbi->dbi_file,
 		Fstrerror(pkgs));
@@ -631,11 +631,11 @@ static int db0open(dbiIndex dbi)
 	l.l_whence = 0;
 	l.l_start = 0;
 	l.l_len = 0;
-	l.l_type = (dbi->dbi_flags & O_RDWR) ? F_WRLCK : F_RDLCK;
+	l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
 
 	if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
 	    rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"),
-		((dbi->dbi_flags & O_RDWR) ? _("exclusive") : _("shared")));
+		((dbi->dbi_mode & O_RDWR) ? _("exclusive") : _("shared")));
 
 	    return 1;
 	}
@@ -644,7 +644,7 @@ static int db0open(dbiIndex dbi)
     } else {
 	void * dbopeninfo = NULL;
 
-	dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_flags, dbi->dbi_perms,
+	dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_mode, dbi->dbi_perms,
 		dbi_to_dbtype(dbi->dbi_type), dbopeninfo);
     }
 #endif

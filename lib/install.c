@@ -717,7 +717,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     scriptArg += 1;
 
     {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(db, RPMDBI_NAME, name, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	rpmdbSetIteratorVersion(mi, version);
 	rpmdbSetIteratorRelease(mi, release);
 	while (rpmdbNextIterator(mi)) {

@@ -122,7 +122,8 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
 #else
     rpmdbMatchIterator mi;
 
-    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
+    /* RPMDBI_PACKAGES */
+    mi = rpmdbInitIterator(db, 0, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 #endif
 
@@ -277,7 +278,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 #else
     {	rpmdbMatchIterator mi;
 
-	mi = rpmdbInitIterator(db, RPMDBI_NAME, name, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	skipThis = (mi ? 0 : 1);
 	rpmErrorSetCallback(errorFunction);
 	while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
@@ -339,7 +340,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	    }
 #else
 	{   rpmdbMatchIterator mi;
-	    mi = rpmdbInitIterator(db, RPMDBI_NAME, name, 0);
+	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	    while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
 		if (headerGetEntryMinMemory(installedHeader, RPMTAG_BASENAMES, 
 			      NULL, (void **) &installedFiles,
@@ -551,7 +552,7 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 #else
 	{   rpmdbMatchIterator mi;
 
-	    mi = rpmdbInitIterator(db, RPMDBI_NAME, name, 0);
+	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 	    rpmErrorSetCallback(errorFunction);
 	    while((installedHeader = rpmdbNextIterator(mi)) != NULL) {
 		if (rpmVersionCompare(installedHeader, h) >= 0) {

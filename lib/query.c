@@ -576,7 +576,8 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
       }	break;
 
     case RPMQV_ALL:
-	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
+	/* RPMDBI_PACKAGES */
+	mi = rpmdbInitIterator(db, 0, NULL, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("no packages\n"));
 	    retcode = 1;
@@ -586,7 +587,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	break;
 
     case RPMQV_GROUP:
-	mi = rpmdbInitIterator(db, RPMDBI_GROUP, arg, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_GROUP, arg, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
@@ -596,7 +597,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	break;
 
     case RPMQV_TRIGGEREDBY:
-	mi = rpmdbInitIterator(db, RPMDBI_TRIGGER, arg, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_TRIGGERNAME, arg, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("no package triggers %s\n"), arg);
 	    retcode = 1;
@@ -606,7 +607,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	break;
 
     case RPMQV_WHATREQUIRES:
-	mi = rpmdbInitIterator(db, RPMDBI_REQUIREDBY, arg, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_REQUIRENAME, arg, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("no package requires %s\n"), arg);
 	    retcode = 1;
@@ -617,7 +618,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
-	    mi = rpmdbInitIterator(db, RPMDBI_PROVIDES, arg, 0);
+	    mi = rpmdbInitIterator(db, RPMTAG_PROVIDENAME, arg, 0);
 	    if (mi == NULL) {
 		fprintf(stderr, _("no package provides %s\n"), arg);
 		retcode = 1;
@@ -628,7 +629,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	/*@fallthrough@*/
     case RPMQV_PATH:
-	mi = rpmdbInitIterator(db, RPMDBI_FILE, arg, 0);
+	mi = rpmdbInitIterator(db, RPMTAG_BASENAMES, arg, 0);
 	if (mi == NULL) {
 	    int myerrno = 0;
 	    if (access(arg, F_OK) != 0)
@@ -664,7 +665,8 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    return 1;
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %d\n"), recNumber);
-	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &recNumber, sizeof(recNumber));
+	/* RPMDBI_PACKAGES */
+	mi = rpmdbInitIterator(db, 0, &recNumber, sizeof(recNumber));
 	if (mi == NULL) {
 	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
 	    retcode = 1;
