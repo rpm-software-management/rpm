@@ -34,7 +34,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	const char * dirName, const char * baseName, int scareMemory)
 {
     char dir[PATH_MAX];
-    char * end;
+    char * end;		    /* points to the '\0' at the end of "buf" */
     fingerPrint fp;
     struct stat sb;
     char * buf;
@@ -67,8 +67,15 @@ static fingerPrint doLookup(fingerPrintCache cache,
     buf = alloca(strlen(dirName) + 1);
     strcpy(buf, dirName);
     end = buf + strlen(buf);
+
+    /* no need to pay attention to that extra little / at the end of dirName */
+    if (*(end - 1) == '/' && buf[1]) {
+	end--;
+	*end = '\0';
+    }
+
     fp.entry = NULL;
-    while (*buf) {
+    while (1) {
 
 	/* as we're stating paths here, we want to follow symlinks */
 
@@ -101,13 +108,18 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    return fp;
 	}
 
+        /* stat of '/' just failed! */
+	if (end == buf + 1)
+	    abort();
+
 	end--;
 	while ((end > buf) && *end != '/') end--;
+	if (end == buf)	    /* back to stat'ing just '/' */
+	    end++;
+
 	*end = '\0';
     }
 
-    /* This can't happen, or stat('/') just failed! */
-    abort();
     /*@notreached@*/
 
     return fp;
