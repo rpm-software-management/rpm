@@ -346,7 +346,6 @@ int packageBinaries(Spec s, char *passPhrase)
     char filename[1024];
     char sourcerpm[1024];
     char *icon;
-    char *archName;
     int iconFD;
     struct stat statbuf;
     struct PackageRec *pr;
@@ -360,7 +359,6 @@ int packageBinaries(Spec s, char *passPhrase)
     char *dist;
     char *packageVersion, *packageRelease;
     int size;
-    int_8 os, arch;
     StringBuf cpioFileList;
     char **farray, *file;
     int count;
@@ -387,7 +385,7 @@ int packageBinaries(Spec s, char *passPhrase)
     if (!isEntry(s->packages->header, RPMTAG_DISTRIBUTION)) {
 	dist = getVar(RPMVAR_DISTRIBUTION);
     }
-    
+
     /* Look through for each package */
     pr = s->packages;
     while (pr) {
@@ -441,10 +439,8 @@ int packageBinaries(Spec s, char *passPhrase)
 	freeIterator(headerIter);
 	
 	/* Add some final entries to the header */
-	os = getArchNum();
-	arch = getArchNum();
-	addEntry(outHeader, RPMTAG_OS, INT8_TYPE, &os, 1);
-	addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
+	addEntry(outHeader, RPMTAG_OS, STRING_TYPE, getOsName(), 1);
+	addEntry(outHeader, RPMTAG_ARCH, STRING_TYPE, getArchName(), 1);
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, getBuildTime(), 1);
 	addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
 	addEntry(outHeader, RPMTAG_SOURCERPM, STRING_TYPE, sourcerpm, 1);
@@ -507,10 +503,9 @@ int packageBinaries(Spec s, char *passPhrase)
 	/**** Make the RPM ****/
 
 	/* Make the output RPM filename */
-	archName = getArchName();
 	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
-		getBooleanVar(RPMVAR_ARCHSENSITIVE) ? archName : "",
-		name, archName);
+		getBooleanVar(RPMVAR_ARCHSENSITIVE) ? getArchName() : "",
+		name, getArchName());
 
 	if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
 			getStringBuf(cpioFileList), passPhrase)) {
@@ -543,7 +538,6 @@ int packageSource(Spec s, char *passPhrase)
     StringBuf filelist;
     StringBuf cpioFileList;
     int size;
-    int_8 os, arch;
     char **sources;
     char **patches;
     int scount, pcount;
@@ -628,10 +622,8 @@ int packageSource(Spec s, char *passPhrase)
     }
 
     outHeader = copyHeader(s->packages->header);
-    os = getArchNum();
-    arch = getArchNum();
-    addEntry(outHeader, RPMTAG_OS, INT8_TYPE, &os, 1);
-    addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
+    addEntry(outHeader, RPMTAG_OS, STRING_TYPE, getOsName(), 1);
+    addEntry(outHeader, RPMTAG_ARCH, STRING_TYPE, getArchName(), 1);
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, getBuildTime(), 1);
     addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
     if (scount) 
