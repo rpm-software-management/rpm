@@ -201,6 +201,7 @@ static int writeRPM(Header header, char *fileName, int type,
     close(fd);
 
     /* Open the output file */
+    unlink(fileName);
     if ((fd = open(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 	rpmError(RPMERR_CREATE, "Could not open %s\n", fileName);
 	unlink(sigtarget);
