@@ -869,12 +869,13 @@ exit:
 
 /**
  * Enter and leave a chroot.
- * @param ts		transaction set
- * @param fi		transaction element file info
+ * @param psm		package state machine data
  * @return		0 on sucess or not performed, chroot(2) rc otherwise
  */
-static int psmChroot(rpmTransactionSet ts, TFI_t fi, int enter)
+static int psmChroot(PSM_t psm, int enter)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
     int rc = 0;
 
     if (enter) {
@@ -1092,7 +1093,7 @@ int installBinaryPackage(PSM_t psm)
     }
 
     /* Change root directory if requested and not already done. */
-    (void) psmChroot(ts, fi, 1);
+    (void) psmChroot(psm, 1);
 
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 
@@ -1105,7 +1106,7 @@ int installBinaryPackage(PSM_t psm)
     }
 
     /* Restore root directory if changed. */
-    (void) psmChroot(ts, fi, 0);
+    (void) psmChroot(psm, 0);
 
     if (fi->fc > 0 && fi->fstates) {
 	headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
@@ -1157,14 +1158,14 @@ int installBinaryPackage(PSM_t psm)
 
     if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run triggers this package sets off */
-	if (runTriggers(ts, RPMSENSE_TRIGGERIN, fi->h, 0))
+	if (runTriggers(psm, RPMSENSE_TRIGGERIN, 0))
 	    goto exit;
 
 	/*
 	 * Run triggers in this package which are set off by other packages in
 	 * the database.
 	 */
-	if (runImmedTriggers(ts, RPMSENSE_TRIGGERIN, fi->h, 0))
+	if (runImmedTriggers(psm, RPMSENSE_TRIGGERIN, 0))
 	    goto exit;
     }
 
@@ -1174,7 +1175,7 @@ int installBinaryPackage(PSM_t psm)
 
 exit:
     /* Restore root directory if changed. */
-    (void) psmChroot(ts, fi, 0);
+    (void) psmChroot(psm, 0);
 
     if (oldH)
 	headerFree(oldH);
@@ -1186,7 +1187,6 @@ int removeBinaryPackage(PSM_t psm)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
 /*@observer@*/ static char * stepName = "   erase";
-    Header h;
     const char * failedFile = NULL;
     const void * pkgKey = NULL;
     int rc = 0;
@@ -1207,6 +1207,7 @@ assert(fi->type == TR_REMOVED);
     }
 
     {	rpmdbMatchIterator mi = NULL;
+	Header h;
 
 	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
@@ -1217,24 +1218,24 @@ assert(fi->type == TR_REMOVED);
 	    rc = 2;
 	    goto exit;
 	}
-	h = headerLink(h);
+	fi->h = headerLink(h);
 	rpmdbFreeIterator(mi);
     }
 
     /* Change root directory if requested and not already done. */
-    (void) psmChroot(ts, fi, 1);
+    (void) psmChroot(psm, 1);
 
     if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
-	rc = runImmedTriggers(ts, RPMSENSE_TRIGGERUN, h, -1);
+	rc = runImmedTriggers(psm, RPMSENSE_TRIGGERUN, -1);
 	if (rc) {
 	    rc = 2;
 	    goto exit;
 	}
 
 	/* run triggers which are set off by the removal of this package */
-	rc = runTriggers(ts, RPMSENSE_TRIGGERUN, h, -1);
+	rc = runTriggers(psm, RPMSENSE_TRIGGERUN, -1);
 	if (rc) {
 	    rc = 1;
 	    goto exit;
@@ -1244,7 +1245,7 @@ assert(fi->type == TR_REMOVED);
     rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
 		stepName, "pre-erase");
 
-    rc = runInstScript(ts, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, fi->scriptArg,
+    rc = runInstScript(ts, fi->h, RPMTAG_PREUN, RPMTAG_PREUNPROG, fi->scriptArg,
 		          (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
     if (rc) {
 	rc = 1;
@@ -1254,14 +1255,14 @@ assert(fi->type == TR_REMOVED);
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 
 	if (ts->notify)
-	    (void)ts->notify(h, RPMCALLBACK_UNINST_START, fi->fc, fi->fc,
+	    (void)ts->notify(fi->h, RPMCALLBACK_UNINST_START, fi->fc, fi->fc,
 		pkgKey, ts->notifyData);
 
 	rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi, NULL, NULL, &failedFile);
 	(void) fsmTeardown(fi->fsm);
 
 	if (ts->notify)
-	    (void)ts->notify(h, RPMCALLBACK_UNINST_STOP, 0, fi->fc,
+	    (void)ts->notify(fi->h, RPMCALLBACK_UNINST_STOP, 0, fi->fc,
 			pkgKey, ts->notifyData);
     }
     /* XXX WTFO? erase failures are not cause for stopping. */
@@ -1269,13 +1270,13 @@ assert(fi->type == TR_REMOVED);
     rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
 		stepName, "post-erase");
 
-    rc = runInstScript(ts, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
+    rc = runInstScript(ts, fi->h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
 		fi->scriptArg, (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
     /* XXX WTFO? postun failures are not cause for erasure failure. */
 
     if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal. */
-	rc = runTriggers(ts, RPMSENSE_TRIGGERPOSTUN, h, -1);
+	rc = runTriggers(psm, RPMSENSE_TRIGGERPOSTUN, -1);
 	if (rc) {
 	    rc = 2;
 	    goto exit;
@@ -1285,10 +1286,15 @@ assert(fi->type == TR_REMOVED);
 
 exit:
     /* Restore root directory if changed. */
-    (void) psmChroot(ts, fi, 0);
+    (void) psmChroot(psm, 0);
 
     if (!rc && !(ts->transFlags & RPMTRANS_FLAG_TEST))
 	rpmdbRemove(ts->rpmdb, ts->id, fi->record);
+
+    if (fi->h) {
+	headerFree(fi->h);
+	fi->h = NULL;
+    }
 
     return rc;
 }
@@ -1415,7 +1421,7 @@ assert(fi->type == TR_REMOVED);
     if (rc) goto exit;
 
     /* Change root directory if requested and not already done. */
-    (void) psmChroot(ts, fi, 1);
+    (void) psmChroot(psm, 1);
 
     /* Write the payload into the package. */
     {	FD_t cfd;
@@ -1441,7 +1447,7 @@ assert(fi->type == TR_REMOVED);
 
 exit:
     /* Restore root directory if changed. */
-    (void) psmChroot(ts, fi, 0);
+    (void) psmChroot(psm, 0);
 
     if (h)	headerFree(h);
     if (oh)	headerFree(oh);

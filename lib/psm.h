@@ -99,7 +99,7 @@ struct transactionFileInfo_s {
 /**
  */
 struct psm_s {
-    const rpmTransactionSet ts;
+    rpmTransactionSet ts;
     TFI_t fi;
     int rc;				/*!< External file stage return code. */
     fileStage stage;			/*!< External package stage. */

@@ -9,11 +9,13 @@
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "depends.h"	/* XXX for headerMatchesDepFlags */
+#include "psm.h"
 #include "scriptlet.h"
 #include "misc.h"	/* XXX for makeTempFile, doputenv */
 #include "debug.h"
 
-/*@access Header@*/		/* XXX compared with NULL */
+/*@access Header @*/		/* XXX compared with NULL */
+/*@access PSM_t @*/
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
@@ -383,25 +385,23 @@ static int handleOneTrigger(const rpmTransactionSet ts, int sense,
     return rc;
 }
 
-int runTriggers(const rpmTransactionSet ts, int sense, Header h,
-		int countCorrection)
+int runTriggers(PSM_t psm, int sense, int countCorrection)
 {
-    const char * name;
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
     int numPackage;
     int rc = 0;
 
-    headerNVR(h, &name, NULL, NULL);
-
-    numPackage = rpmdbCountPackages(ts->rpmdb, name) + countCorrection;
+    numPackage = rpmdbCountPackages(ts->rpmdb, fi->name) + countCorrection;
     if (numPackage < 0)
 	return 1;
 
     {	Header triggeredH;
 	rpmdbMatchIterator mi;
 
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_TRIGGERNAME, name, 0);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_TRIGGERNAME, fi->name, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    rc |= handleOneTrigger(ts, sense, h, triggeredH, 0, numPackage, 
+	    rc |= handleOneTrigger(ts, sense, fi->h, triggeredH, 0, numPackage, 
 			       NULL);
 	}
 
@@ -411,9 +411,10 @@ int runTriggers(const rpmTransactionSet ts, int sense, Header h,
     return rc;
 }
 
-int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
-		     int countCorrection)
+int runImmedTriggers(PSM_t psm, int sense, int countCorrection)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
     const char ** triggerNames;
     int numTriggers;
     int_32 * triggerIndices;
@@ -421,10 +422,10 @@ int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
     char * triggersRun;
     int rc = 0;
 
-    if (!headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, (void **) &triggerNames, 
-			&numTriggers))
+    if (!headerGetEntry(fi->h, RPMTAG_TRIGGERNAME, NULL,
+			(void **) &triggerNames, &numTriggers))
 	return 0;
-    headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &triggerIndices, 
+    headerGetEntry(fi->h, RPMTAG_TRIGGERINDEX, NULL, (void **) &triggerIndices, 
 		   &numTriggerIndices);
     triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
     memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
@@ -441,7 +442,7 @@ int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		rc |= handleOneTrigger(ts, sense, sourceH, h, 
+		rc |= handleOneTrigger(ts, sense, sourceH, fi->h, 
 				   countCorrection, rpmdbGetIteratorCount(mi),
 				   triggersRun);
 	    }

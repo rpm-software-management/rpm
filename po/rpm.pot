@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-27 17:00-0500\n"
+"POT-Creation-Date: 2001-02-27 17:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1399
+#: build/pack.c:484 lib/psm.c:1405
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1455
+#: build/pack.c:566 lib/psm.c:1461
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2925,18 +2925,18 @@ msgstr ""
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1018 lib/psm.c:1194
+#: lib/psm.c:1019 lib/psm.c:1194
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
 #. XXX WTFO? erase failures are not cause for stopping.
-#: lib/psm.c:1082 lib/psm.c:1150 lib/psm.c:1244 lib/psm.c:1269
+#: lib/psm.c:1083 lib/psm.c:1151 lib/psm.c:1245 lib/psm.c:1270
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/psm.c:1089
+#: lib/psm.c:1090
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
@@ -3508,12 +3508,12 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/scriptlet.c:229
+#: lib/scriptlet.c:231
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/scriptlet.c:236
+#: lib/scriptlet.c:238
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""

@@ -25,25 +25,21 @@ int runInstScript(const rpmTransactionSet ts, Header h,
 
 /**
  * Run trigger scripts in the database that are fired by this header.
- * @param ts		transaction set
+ * @param psm		package state machine data
  * @param sense		one of RPMSENSE_TRIGGER{IN,UN,POSTUN}
- * @param h		header
  * @param countCorrection 0 if installing, -1 if removing, package
  * @return		0 on success, 1 on error
  */
-int runTriggers(const rpmTransactionSet ts, int sense, Header h,
-		int countCorrection);
+int runTriggers(PSM_t psm, int sense, int countCorrection);
 
 /**
  * Run triggers from this header that are fired by headers in the database.
- * @param ts		transaction set
+ * @param psm		package state machine data
  * @param sense		one of RPMSENSE_TRIGGER{IN,UN,POSTUN}
- * @param h		header
  * @param countCorrection 0 if installing, -1 if removing, package
  * @return		0 on success, 1 on error
  */
-int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
-		int countCorrection);
+int runImmedTriggers(PSM_t psm, int sense, int countCorrection);
 
 #ifdef __cplusplus
 }
