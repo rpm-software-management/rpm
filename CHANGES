@@ -36,6 +36,7 @@
 	- bump soname into libfoo-4.4.so everywhere.
 	- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
 	- add BuildRequires: neon-devel.
+	- fix: chunked davRead returns 0 is EOF.
 
 4.3.2 -> 4.3.3:
 	- bump micro version.

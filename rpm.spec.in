@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.5
+Release: 0.6
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -495,6 +495,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Nov 24 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.6
+- fix: chunked davRead returns 0 is EOF.
+
 * Mon Nov 22 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.5
 - sparcv8: optflags changed to -mtune=ultrasparc (#140420).
 - add BuildRequires: neon-devel.
