@@ -1,0 +1,109 @@
+-I. -I.. -I../build -I../rpmdb -I../rpmio -I../beecrypt -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+
++partial
+#+forcehints
+
+-warnunixlib
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+-includenest 16		# getting deep, sigh
+
+# --- not yet
+-noparams
+-oldstyle
+-castfcnptr
+-sizeoftype
+-modunconnomods
+-retvalint
+-modnomods
+-globs
+-statictrans
+-retalias
+-globstate
+-redef
+-nullret
+-nullpass
+-unqualifiedtrans
+-internalglobs
+-modfilesys
+-compdef
+-abstract
+-dependenttrans
+-noeffectuncon
+-branchstate
+-compmempass
+-whileempty
+-infloopsuncon
+-formatconst
+-observertrans
+-readonlytrans
+-nullstate
+-kepttrans
+-shiftsigned
+-usereleased
+-staticinittrans
+-nullassign
+-evalorderuncon
+-immediatetrans
+-looploopcontinue
+-evalorder
+-type
+-loopswitchbreak
+-casebreak
+-switchswitchbreak
+-unsignedcompare
+-looploopbreak
+-nullderef
+-exportheader
+-modobserveruncon
+
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
+
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned		# pita
+-elseifcomplete		# 95 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
+-forblock		# tedious
+-ifblock		# tedious
+-incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
+-matchfields		# <bits/ipc.h> heartburn
+-namechecks		# tedious ANSI compliance checks
+-numenummembers 1024	# RPMTAG has 138 members
+-numstructfields 256	# Java jni.h has 229 fields
+-ptrarith		# tedious
+-strictops
+-strictusereleased
+-stringliterallen 4096	# redhat*PubKey's are big
+-whileblock		# tedious
+
+# --- not-yet at checks level
+-ansi-reserved
++enumint
+-mustfree
+-predboolptr
+-usedef
+
+# --- not-yet at standard level
+-boolops
+-predboolint
++boolint
++charint
++ignorequals
++matchanyintegral

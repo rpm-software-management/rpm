@@ -152,6 +152,11 @@ tags:
 depend:
 	makedepend -- $(CFLAGS) -- *.[ch]
 
+lclint_files = $(OBJS:%.o=%.c)
+.PHONY: lclint
+lclint:
+	lclint $(lclint_files)
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 adler32.o: zlib.h zconf.h
