@@ -3,4 +3,6 @@
 
 int doCheckSig(char **argv);
 
+int doReSign(char *passPhrase, char **argv);
+
 #endif
