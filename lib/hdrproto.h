@@ -277,8 +277,8 @@ int headerRemoveEntry(Header h, int_32 tag)
  * @return		formatted output string (malloc'ed)
  */
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry * tags,
-		     const struct headerSprintfExtension * extensions,
+		     const struct headerTagTableEntry_s * tags,
+		     const struct headerSprintfExtension_s * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;
 

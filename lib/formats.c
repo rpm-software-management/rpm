@@ -540,7 +540,7 @@ static int groupTag(Header h, /*@out@*/ rpmTagType * type,
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
 
-const struct headerSprintfExtension rpmHeaderFormats[] = {
+const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_GROUP", { groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION", { descriptionTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY", { summaryTag } },

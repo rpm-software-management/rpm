@@ -489,8 +489,8 @@ static PyObject * hdrSubscript(hdrObject * s, PyObject * item) {
     int forceArray = 0;
     int freeData = 0;
     char * str;
-    struct headerSprintfExtension * ext = NULL;
-    const struct headerSprintfExtension * extensions = rpmHeaderFormats;
+    struct headerSprintfExtension_s * ext = NULL;
+    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
 
     if (PyCObject_Check (item))
         ext = PyCObject_AsVoidPtr(item);
@@ -2314,8 +2314,8 @@ static PyMethodDef rpmModuleMethods[] = {
 void initrpm(void) {
     PyObject * m, * d, *o, * tag = NULL, * dict;
     int i;
-    const struct headerSprintfExtension * extensions = rpmHeaderFormats;
-    struct headerSprintfExtension * ext;
+    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
+    struct headerSprintfExtension_s * ext;
 
 /*      _rpmio_debug = -1; */
     rpmReadConfigFiles(NULL, NULL);

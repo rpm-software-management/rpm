@@ -141,6 +141,9 @@
 	  stabilizes.
 	- fix: permit partially enumerated hardlink file sets during build.
 	- fix: resurrect rpm signature modes.
+	- fix: sanity checks on #tags (<65K) and offset (<16Mb) in header.
+	- fix: add -r to useradd to prevent /etc/skel glop (#46215).
+	- fix: disambiguate typedef and struct name(s) for kpackage.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -52,7 +52,7 @@ const char *const tagName(int tag)
 
 int tagValue(const char * tagstr)
 {
-    const struct headerTagTableEntry *t;
+    const struct headerTagTableEntry_s *t;
 
     if (!strcmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;

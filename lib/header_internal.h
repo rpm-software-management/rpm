@@ -171,7 +171,7 @@ int headerGetRawEntry(Header h, int_32 tag,
  */
 /*@unused@*/
 void headerDump(Header h, FILE *f, int flags,
-		const struct headerTagTableEntry * tags)
+		const struct headerTagTableEntry_s * tags)
 	/*@modifies f, fileSystem @*/;
 #define HEADER_DUMP_INLINE   1
 

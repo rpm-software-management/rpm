@@ -160,7 +160,7 @@ int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
  * Automatically generated table of tag name/value pairs.
  */
 /*@-redecl@*/
-extern const struct headerTagTableEntry rpmTagTable[];
+extern const struct headerTagTableEntry_s rpmTagTable[];
 /*@=redecl@*/
 
 /**
@@ -175,7 +175,7 @@ extern const int rpmTagTableSize;
  * @note Chains to headerDefaultFormats[].
  */
 /*@-redecl@*/
-extern const struct headerSprintfExtension rpmHeaderFormats[];
+extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 /*@=redecl@*/
 
 /**
@@ -940,9 +940,8 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 
 /**
  * Dependency problems found by rpmdepCheck().
- * @todo Rename, but rpmfind prevents "struct rpmDependencyConflict_s".
  */
-typedef /*@abstract@*/ struct rpmDependencyConflict {
+typedef /*@abstract@*/ struct rpmDependencyConflict_s {
     const char * byName;	/*!< package name */
     const char * byVersion;	/*!< package version */
     const char * byRelease;	/*!< package release */

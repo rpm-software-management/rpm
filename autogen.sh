@@ -5,13 +5,15 @@ export LDFLAGS
 
 LTV="libtoolize (GNU libtool) 1.4"
 ACV="Autoconf version 2.13"
-AMV="automake (GNU automake) 1.4-p2"
+AMV="automake (GNU automake) 1.4-p4"
 USAGE="
-You need to install:
+This script documents the versions of the tools I'm using to build rpm:
 	libtool-1.4
 	autoconf-2.13
-	automake-1.4-p2
-Or edit this script to change the libtool/autoconf/automake versions checked ...
+	automake-1.4-p4
+Simply edit this script to change the libtool/autoconf/automake versions
+checked if you need to, as rpm should build (and has built) with all
+recent versions of libtool/autoconf/automake.
 "
 
 [ "`libtoolize --version`" != "$LTV" ] && echo "$USAGE" && exit 1

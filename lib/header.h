@@ -126,8 +126,8 @@ typedef /*@abstract@*/ struct headerIteratorS * HeaderIterator;
 /** \ingroup header
  * Associate tag names with numeric values.
  */
-typedef /*@abstract@*/ struct headerTagTableEntry * headerTagTableEntry;
-struct headerTagTableEntry {
+typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
+struct headerTagTableEntry_s {
 /*@observer@*/ /*@null@*/ const char * name;	/*!< Tag name. */
     int val;					/*!< Tag numeric value. */
 };
@@ -176,15 +176,15 @@ typedef int (*headerTagTagFunction) (Header h,
 /** \ingroup header
  * Define header tag output formats.
  */
-typedef /*@abstract@*/ struct headerSprintfExtension * headerSprintfExtension;
-struct headerSprintfExtension {
+typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
+struct headerSprintfExtension_s {
     enum headerSprintfExtenstionType type;	/*!< Type of extension. */
 /*@observer@*/ /*@null@*/ const char * name;	/*!< Name of extension. */
     union {
 /*@unused@*/ void * generic;			/*!< Private extension. */
 	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
 	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
-	struct headerSprintfExtension * more;	/*!< Chained table extension. */
+	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
     } u;
 };
 
@@ -192,7 +192,7 @@ struct headerSprintfExtension {
  * Supported default header tag output formats.
  */
 /*@-redecl@*/
-extern const struct headerSprintfExtension headerDefaultFormats[];
+extern const struct headerSprintfExtension_s headerDefaultFormats[];
 /*@=redecl@*/
 
 /** \ingroup header
@@ -580,8 +580,8 @@ int (*HDRremove) (Header h, int_32 tag)
  */
 typedef
 /*@only@*/ char * (*HDRhdrsprintf) (Header h, const char * fmt,
-		     const struct headerTagTableEntry * tags,
-		     const struct headerSprintfExtension * extensions,
+		     const struct headerTagTableEntry_s * tags,
+		     const struct headerSprintfExtension_s * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;
 

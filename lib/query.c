@@ -447,9 +447,9 @@ printNewSpecfile(Spec spec)
 
 void rpmDisplayQueryTags(FILE * fp)
 {
-    const struct headerTagTableEntry * t;
+    const struct headerTagTableEntry_s * t;
     int i;
-    const struct headerSprintfExtension * ext = rpmHeaderFormats;
+    const struct headerSprintfExtension_s * ext = rpmHeaderFormats;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++)
 	if (t->name) fprintf(fp, "%s\n", t->name + 7);

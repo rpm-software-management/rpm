@@ -758,7 +758,15 @@ Header headerLoad(void * uh)
 	    goto errxit;
 	entry->info.count = htonl(pe->count);
 
+	/* XXX imposes limit of 65K tags, more than enough. */
+	if (entry->info.count & 0xffff0000)
+	    goto errxit;
+
 	{  int off = ntohl(pe->offset);
+
+	    /* XXX imposes limit of 16Mb on metadata, more than enough. */
+	    if (off & 0xff000000)
+		goto errxit;
 	   if (off) {
 		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
@@ -2465,8 +2473,8 @@ freeExtensionCache(const headerSprintfExtension extensions,
 }
 
 char * headerSprintf(Header h, const char * fmt, 
-		const struct headerTagTableEntry * tabletags,
-		const struct headerSprintfExtension * extensions,
+		const struct headerTagTableEntry_s * tabletags,
+		const struct headerSprintfExtension_s * extensions,
 		errmsg_t * errmsg)
 {
     /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
@@ -2651,7 +2659,7 @@ static char * shescapeFormat(int_32 type, hPTR_t data,
     return result;
 }
 
-const struct headerSprintfExtension headerDefaultFormats[] = {
+const struct headerSprintfExtension_s headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal", { octalFormat } },
     { HEADER_EXT_FORMAT, "hex", { hexFormat } },
     { HEADER_EXT_FORMAT, "date", { dateFormat } },

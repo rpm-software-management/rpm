@@ -50,12 +50,12 @@ tagtable.c: rpmlib.h
 	@echo '#include "system.h"' > tagtable.c
 	@echo '#include "rpmlib.h"' >> tagtable.c
 	@echo '' >> tagtable.c
-	@echo 'const struct headerTagTableEntry rpmTagTable[] = {' >> tagtable.c
+	@echo 'const struct headerTagTableEntry_s rpmTagTable[] = {' >> tagtable.c
 	$(AWK) '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { if ($$2 == "=") { printf("\t{ \"%s\", %s },\n", $$1, $$3); } else { printf("\t{ \"%s\", %s },\n", $$2, $$3); } }' < $(srcdir)/rpmlib.h >> tagtable.c
 	@echo '	{ NULL, 0 }' >> tagtable.c
 	@echo '};' >> tagtable.c
 	@echo '' >> tagtable.c
-	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
+	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1;' >> tagtable.c
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts

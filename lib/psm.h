@@ -66,7 +66,7 @@ struct transactionFileInfo_s {
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
 /*@only@*/ /*@null@*/ const char ** apath;
     int mapflags;
-/*@owned@*/ int * fmapflags;
+/*@owned@*/ /*@null@*/ int * fmapflags;
     uid_t uid;
 /*@owned@*/ /*@null@*/ uid_t * fuids;	/*!< File uid(s) */
     gid_t gid;

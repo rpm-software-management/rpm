@@ -28,11 +28,11 @@ char ** headerGetLangs(Header h)
 }
 
 void headerDump(Header h, FILE *f, int flags,
-	const struct headerTagTableEntry * tags)
+	const struct headerTagTableEntry_s * tags)
 {
     int i;
     indexEntry p;
-    const struct headerTagTableEntry * tage;
+    const struct headerTagTableEntry_s * tage;
     const char * tag;
     char * type;
 

@@ -185,7 +185,7 @@ Please remove (or at least rename) one of those files, and re-install.
     exit 1
 fi
 /usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1
-/usr/sbin/useradd  -d /var/lib/rpm -u 37 -g 37 @RPMUSER@	> /dev/null 2>&1
+/usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@	> /dev/null 2>&1
 %endif
 exit 0
 
