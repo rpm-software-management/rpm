@@ -802,6 +802,7 @@ Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
     spec->numNoSource = 0;
     spec->numNoPatch = 0;
     spec->prefix = NULL;
+    spec->buildprefix = NULL;
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
