@@ -355,11 +355,12 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 #else
     const char * domains = NULL;
 #endif
+    int rc;
 
     *type = RPM_STRING_TYPE;
     *data = NULL;
     *count = 0;
-    *freeData = 1;
+    *freeData = 0;
 
     if (domains) {
 	char * dstring, *domain, *de;
@@ -387,12 +388,15 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	if (domain && msgid) {
 	    *data = xstrdup(/*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/);
 	    *count = 1;
+	    *freeData = 1;
 	}
 	xfree(dstring);
 	return (*data ? 0 : 1);
     }
 
-    return headerGetEntry(h, tag, type, data, count);
+    rc = headerGetEntry(h, tag, type, data, count);
+
+    return (rc ? 0 : 1);
 }
 
 static int summaryTag(Header h, /*@out@*/ int_32 * type,
