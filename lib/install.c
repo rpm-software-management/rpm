@@ -913,7 +913,7 @@ static int setFileOwner(char * file, char * owner, char * group,
     } 
 	
     if ((gid = gnameToGid(group)) == -1) {
-	rpmError(RPMERR_NOUSER, "user %s does not exist - using root", group);
+	rpmError(RPMERR_NOUSER, "group %s does not exist - using root", group);
 	gid = 0;
 	/* turn off the sgid bit */
 	mode &= ~S_ISGID;
