@@ -146,9 +146,21 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    } else if (!strcmp(s, "%dir")) {
 		isdir = 1;
 	    } else {
-		if (isdoc && (*s != '/')) {
-		    /* This is a special %doc macro */
-		    special_doc = 1;
+		if (filename) {
+		    /* We already got a file -- error */
+		    error(RPMERR_BADSPEC,
+			  "Two files on one line: %s", filename);
+		    return(RPMERR_BADSPEC);
+		}
+		if (*s != '/') {
+		    if (isdoc) {
+			special_doc = 1;
+		    } else {
+			/* not in %doc, does not begin with / -- error */
+			error(RPMERR_BADSPEC,
+			      "File must begin with \"/\": %s", s);
+			return(RPMERR_BADSPEC);
+		    }
 		} else {
 		    filename = s;
 		}
