@@ -384,6 +384,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
     fclose(file);
 
     waitpid(pid, &status, 0);
+    unlink(sigfile);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	return 1;
     }

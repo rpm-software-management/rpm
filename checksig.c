@@ -243,6 +243,7 @@ int doCheckSig(int pgp, char **argv)
 	}
 	freeIterator(sigIter);
 	res += res2;
+	unlink(sigtarget);
 
 	if (res2) {
 	    if (isVerbose()) {
