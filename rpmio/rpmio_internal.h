@@ -19,7 +19,7 @@
 #include <beecrypt/dsa.h>
 #include <beecrypt/endianness.h>
 #include <beecrypt/md5.h>
-#include <beecrypt/mp32.h>
+#include <beecrypt/mp.h>
 #include <beecrypt/rsa.h>
 #include <beecrypt/rsapk.h>
 #include <beecrypt/sha1.h>

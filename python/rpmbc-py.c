@@ -21,9 +21,11 @@ static int _bc_debug = 0;
 
 #define is_rpmbc(o)	((o)->ob_type == &rpmbc_Type)
 
+/*@unchecked@*/ /*@observer@*/
 static const char initialiser_name[] = "rpmbc";
 
-const struct {
+/*@unchecked@*/ /*@observer@*/
+static const struct {
   /* Number of digits in the conversion base that always fits in an mp_limb_t.
      For example, for base 10 on a machine where a mp_limb_t has 32 bits this
      is 9, since 10**9 is the largest number that fits into a mp_limb_t.  */
@@ -322,6 +324,74 @@ if (_bc_debug < 0)
 fprintf(stderr, "*** mp32sizeinbase(%p[%d], %d) res %u\n", xdata, xsize, base, (unsigned)res);
     return res;
 }
+
+/*@-boundswrite@*/
+static void my32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, register uint32* wksp)
+{
+	/* result must be xsize+1 in length */
+	/* wksp must be ysize+1 in length */
+	/* expect ydata to be normalized */
+	register uint64 temp;
+	register uint32 q;
+	uint32 msw = *ydata;
+	uint32 qsize = xsize-ysize;
+
+if (_bc_debug < 0) {
+fprintf(stderr, "*** my32ndivmod(%p[%d], x, y, %p[%d])\n", result, xsize+1, wksp, ysize+1);
+fprintf(stderr, "\t     x: %p[%d]\t", xdata, xsize), mp32println(stderr, xsize, xdata);
+fprintf(stderr, "\t     y: %p[%d]\t", ydata, ysize), mp32println(stderr, ysize, ydata);
+}
+
+	mp32copy(xsize, result+1, xdata);
+if (_bc_debug < 0)
+fprintf(stderr, "\tres(%d): %p[%d]\t", mp32ge(ysize, result+1, ydata), result+1, xsize), mp32println(stderr, xsize, result+1);
+	/*@-compdef@*/ /* LCL: result+1 undefined */
+	if (mp32ge(ysize, result+1, ydata))
+	{
+		/* fprintf(stderr, "subtracting\n"); */
+		(void) mp32sub(ysize, result+1, ydata);
+		*(result++) = 1;
+	}
+	else
+		*(result++) = 0;
+	/*@=compdef@*/
+
+if (_bc_debug < 0)
+fprintf(stderr, "\tresult: %p[%d]\t", result-1, xsize+1), mp32println(stderr, xsize+1, result-1);
+
+	/*@-usedef@*/	/* LCL: result[0] is set */
+	while (qsize--)
+	{
+		/* fprintf(stderr, "result = "); mp32println(stderr, xsize+1, result); */
+		/* get the two high words of r into temp */
+		temp = result[0];
+		temp <<= 32;
+		temp += result[1];
+		/* fprintf(stderr, "q = %016llx / %08lx\n", temp, msw); */
+		temp /= msw;
+		q = (uint32) temp;
+
+		/* fprintf(stderr, "q = %08x\n", q); */
+
+		/*@-evalorder@*/
+		*wksp = mp32setmul(ysize, wksp+1, ydata, q);
+		/*@=evalorder@*/
+
+		/* fprintf(stderr, "mp32lt "); mp32print(ysize+1, result); fprintf(stderr, " < "); mp32println(stderr, ysize+1, wksp); */
+		while (mp32lt(ysize+1, result, wksp))
+		{
+			/* fprintf(stderr, "mp32lt! "); mp32print(ysize+1, result); fprintf(stderr, " < "); mp32println(stderr, ysize+1, wksp); */
+			/* fprintf(stderr, "decreasing q\n"); */
+			(void) mp32subx(ysize+1, wksp, ysize, ydata);
+			q--;
+		}
+		/* fprintf(stderr, "subtracting\n"); */
+		(void) mp32sub(ysize+1, result, wksp);
+		*(result++) = q;
+	}
+	/*@=usedef@*/
+}
+/*@=boundswrite@*/
 
 static char *
 mp32str(char * t, uint32 nt, uint32 zsize, uint32 * zdata, uint32 zbase)
@@ -1138,7 +1208,7 @@ if (_bc_debug < 0)
 fprintf(stderr, "*** a %p[%d]\t", adata, asize), mp32println(stderr, asize, adata);
 if (_bc_debug < 0)
 fprintf(stderr, "*** b %p[%d]\t", adata, asize), mp32println(stderr, bsize, bdata);
-	mp32ndivmod(zdata, asize, adata, bsize, bdata, wksp);
+	my32ndivmod(zdata, asize, adata, bsize, bdata, wksp);
 if (_bc_debug < 0)
 fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mp32println(stderr, zsize, zdata);
 	zsize -= bsize;
@@ -1147,6 +1217,8 @@ fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mp32println(stderr, zsize, zdat
 	    zsize -= znorm;
 	    zdata += znorm;
 	}
+if (_bc_debug < 0)
+fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mp32println(stderr, zsize, zdata);
 	mp32nset(&z->n, zsize, zdata);
 
 if (_bc_debug)
