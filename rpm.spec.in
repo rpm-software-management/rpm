@@ -484,6 +484,7 @@ exit 0
 * Fri Nov 15 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.9
 - update to elfutils-0.56.
 - have debug sub-subpackage use external, not internal, elfutils.
+- apply patches 1-6 to db-4.1.24.
 
 * Wed Nov 13 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.8
 - fix: bash must have functional libtermcap.so.2.
