@@ -105,7 +105,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify package(s) owning file"), "FILE" },
  { "fileid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYFILEID,
 	N_("query/verify package(s) with file identifier"), "MD5" },
- { "ftswalk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_FTSWALK,
+ { "ftswalk", 'W', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_FTSWALK,
 	N_("query/verify package(s) from TOP file tree walk"), "TOP" },
  { "group", 'g', 0, 0, 'g',
 	N_("query/verify package(s) in group"), "GROUP" },

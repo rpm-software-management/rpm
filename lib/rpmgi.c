@@ -183,7 +183,57 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 }
 
 /**
- * Read next header from package, lazily walking file tree.
+ * Filter file tree walk path.
+ * @param gi		generalized iterator
+ * @return		RPMRC_OK on success
+ */
+/*@null@*/
+static rpmRC rpmgiWalkPathFilter(rpmgi gi)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
+{
+    FTSENT * fts = gi->fts;
+    rpmRC rpmrc = RPMRC_NOTFOUND;
+    const char * s;
+
+if (_rpmgi_debug < 0)
+rpmMessage(RPMMESS_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
+		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
+		fts->fts_name,
+	((fts->fts_info == FTS_D || fts->fts_info == FTS_DP) ? "/" : ""));
+
+    switch (fts->fts_info) {
+    case FTS_D:		/* preorder directory */
+	break;
+    case FTS_DP:	/* postorder directory */
+	break;
+    case FTS_F:		/* regular file */
+	/* Ignore all but *.rpm files. */
+	s = fts->fts_name + fts->fts_namelen + 1 - sizeof(".rpm");
+	if (strcmp(s, ".rpm"))
+	    break;
+	rpmrc = RPMRC_OK;
+	break;
+    case FTS_NS:	/* stat(2) failed */
+    case FTS_DNR:	/* unreadable directory */
+    case FTS_ERR:	/* error; errno is set */
+	break;
+    case FTS_DC:	/* directory that causes cycles */
+    case FTS_DEFAULT:	/* none of the above */
+    case FTS_DOT:	/* dot or dot-dot */
+    case FTS_INIT:	/* initialized only */
+    case FTS_NSOK:	/* no stat(2) requested */
+    case FTS_SL:	/* symbolic link */
+    case FTS_SLNONE:	/* symbolic link without target */
+    case FTS_W:		/* whiteout object */
+    default:
+	break;
+    }
+    return rpmrc;
+}
+
+/**
+ * Read header from next package, lazily walking file tree.
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
  */
@@ -193,41 +243,22 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
-    Header h = NULL;
-    int bingo = 0;
 
     if (gi->ftsp != NULL)
     while ((gi->fts = Fts_read(gi->ftsp)) != NULL) {
-	FTSENT * fts = gi->fts;
-
-if (_rpmgi_debug < 0)
-fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
-		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
-		fts->fts_name);
-
-/*@=branchstate@*/
-	switch (fts->fts_info) {
-	case FTS_F:
-	case FTS_SL:
-if (_rpmgi_debug  < 0)
-fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
-	    bingo = 1;
-	    /*@switchbreak@*/ break;
-	default:
-	    /*@switchbreak@*/ break;
-	}
-/*@=branchstate@*/
-	if (bingo) {
-	    if (!(gi->flags & RPMGI_NOHEADER))
-		h = rpmgiReadHeader(gi, fts->fts_path);
-	    rpmrc = RPMRC_OK;
+	rpmrc = rpmgiWalkPathFilter(gi);
+	if (rpmrc == RPMRC_OK)
 	    break;
-	}
     }
 
-    if (rpmrc == RPMRC_OK && h != NULL)
-	gi->h = headerLink(h);
-    h = headerFree(h);
+    if (rpmrc == RPMRC_OK) {
+	Header h = NULL;
+	if (!(gi->flags & RPMGI_NOHEADER))
+	    h = rpmgiReadHeader(gi, gi->fts->fts_path);
+	if (h != NULL)
+	    gi->h = headerLink(h);
+	h = headerFree(h);
+    }
 
     return rpmrc;
 }
