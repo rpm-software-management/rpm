@@ -1,6 +1,6 @@
 /* Dummy header for libintl.h */
 
-#include "misc-config.h"
+#include "config.h"
 
 #if HAVE_LIBINTL_H
 #include <libintl.h>
