@@ -115,9 +115,11 @@ int rpmfcColoring(const char * fmstr)
 /**
  * @param fc		file classifier
  */
+/*@-exportlocal@*/
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fc, fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Destroy a file classifier.

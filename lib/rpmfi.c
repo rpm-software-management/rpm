@@ -1227,7 +1227,8 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
     size_t nb;
     rpmTagType ddt, fxt, fnt;
     char * t;
-    int dx, ndx, i, ix, xx;
+    unsigned ix;
+    int dx, ndx, i, xx;
 
     if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) NULL, &ac) || ac == 0) {
 	if (fdepsp) *fdepsp = NULL;
@@ -1261,11 +1262,11 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		ix = ddict[dx++];
 		mydt = ((ix >> 24) & 0xff);
 		if (mydt != deptype)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		ix &= 0x00ffffff;
 		(void) rpmdsSetIx(ds, ix-1);
 		if (rpmdsNext(ds) < 0)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		DNEVR = rpmdsDNEVR(ds);
 		if (DNEVR != NULL)
 		    nb += strlen(DNEVR+2) + 1;
@@ -1287,11 +1288,11 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		ix = ddict[dx++];
 		mydt = ((ix >> 24) & 0xff);
 		if (mydt != deptype)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		ix &= 0x00ffffff;
 		(void) rpmdsSetIx(ds, ix-1);
 		if (rpmdsNext(ds) < 0)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		DNEVR = rpmdsDNEVR(ds);
 		if (DNEVR != NULL) {
 		    t = stpcpy(t, DNEVR+2);

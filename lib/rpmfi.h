@@ -454,7 +454,7 @@ void rpmfiBuildFClasses(Header h,
  */
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
-	/*@modifies *fdepsp, *fcp @*/;
+	/*@modifies h, *fdepsp, *fcp @*/;
 
 /**
  * Return file type from mode_t.
