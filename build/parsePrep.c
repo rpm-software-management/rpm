@@ -24,11 +24,11 @@ static int doSetupMacro(Spec spec, char *line);
 static int doPatchMacro(Spec spec, char *line);
 static char *doPatch(Spec spec, int c, int strip, char *db,
 		     int reverse, int removeEmpties);
-static int checkOwners(char *file);
+static int checkOwners(const char *file);
 static char *doUntar(Spec spec, int c, int quietly);
 #endif
 
-static int checkOwners(char *file)
+static int checkOwners(const char *file)
 {
     struct stat sb;
 
@@ -47,8 +47,8 @@ static int checkOwners(char *file)
 static char *doPatch(Spec spec, int c, int strip, char *db,
 		     int reverse, int removeEmpties)
 {
+    const char *fn = NULL;
     static char buf[BUFSIZ];
-    char file[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
     int compressed = 0;
@@ -63,9 +63,7 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
 	return NULL;
     }
 
-    strcpy(file, "%{_sourcedir}/");
-    expandMacros(spec, spec->macros, file, sizeof(file));
-    strcat(file, sp->source);
+    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     args[0] = '\0';
     if (db) {
@@ -83,8 +81,10 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
     }
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(file, &compressed) || checkOwners(file)))
+    if (!spec->force && (isCompressed(fn, &compressed) || checkOwners(fn))) {
+	xfree(fn);
 	return NULL;
+    }
 
     if (compressed) {
 	sprintf(buf,
@@ -97,20 +97,21 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
 		c,
 		(compressed == COMPRESSED_BZIP2) ?
 		rpmGetVar(RPMVAR_BZIP2BIN) : rpmGetVar(RPMVAR_GZIPBIN),
-		file, strip, args);
+		fn, strip, args);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
-		"patch -p%d %s -s < %s", c, strip, args, file);
+		"patch -p%d %s -s < %s", c, strip, args, fn);
     }
 
+    xfree(fn);
     return buf;
 }
 
 static char *doUntar(Spec spec, int c, int quietly)
 {
+    const char *fn;
     static char buf[BUFSIZ];
-    char file[BUFSIZ];
     char *taropts;
     struct Source *sp;
     int compressed = 0;
@@ -125,15 +126,15 @@ static char *doUntar(Spec spec, int c, int quietly)
 	return NULL;
     }
 
-    strcpy(file, "%{_sourcedir}/");
-    expandMacros(spec, spec->macros, file, sizeof(file));
-    strcat(file, sp->source);
+    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(file, &compressed) || checkOwners(file)))
+    if (!spec->force && (isCompressed(fn, &compressed) || checkOwners(fn))) {
+	xfree(fn);
 	return NULL;
+    }
 
     if (compressed) {
 	sprintf(buf,
@@ -144,11 +145,12 @@ static char *doUntar(Spec spec, int c, int quietly)
 		"fi",
 		(compressed == COMPRESSED_BZIP2) ?
 		rpmGetVar(RPMVAR_BZIP2BIN) : rpmGetVar(RPMVAR_GZIPBIN),
-		file, taropts);
+		fn, taropts);
     } else {
-	sprintf(buf, "tar %s %s", taropts, file);
+	sprintf(buf, "tar %s %s", taropts, fn);
     }
 
+    xfree(fn);
     return buf;
 }
 

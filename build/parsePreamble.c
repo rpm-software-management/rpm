@@ -259,29 +259,33 @@ static void fillOutMainPackage(Header h)
     }
 }
 
-static int readIcon(Header h, char *file)
+static int readIcon(Header h, const char *file)
 {
-    char buf[BUFSIZ], *icon;
+    const char *fn = NULL;
+    char *icon;
     struct stat statbuf;
     FD_t fd;
+    int rc;
+    int nb;
 
-    strcpy(buf, "%{_sourcedir}/");
-    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
-    strcat(buf, file);
+    fn = rpmGetPath("%{_sourcedir}/", file, NULL);
 
-    if (stat(buf, &statbuf)) {
-	rpmError(RPMERR_BADSPEC, _("Unable to read icon: %s"), file);
-	return RPMERR_BADSPEC;
+    if (stat(fn, &statbuf)) {
+	rpmError(RPMERR_BADSPEC, _("Unable to stat icon: %s"), fn);
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
+
     icon = malloc(statbuf.st_size);
     *icon = '\0';
-    fd = fdOpen(buf, O_RDONLY, 0);
-    if (fdRead(fd, icon, statbuf.st_size) != statbuf.st_size) {
-	fdClose(fd);
-	rpmError(RPMERR_BADSPEC, _("Unable to read icon: %s"), file);
-	return RPMERR_BADSPEC;
-    }
+    fd = fdOpen(fn, O_RDONLY, 0);
+    nb = fdRead(fd, icon, statbuf.st_size);
     fdClose(fd);
+    if (nb != statbuf.st_size) {
+	rpmError(RPMERR_BADSPEC, _("Unable to read icon: %s"), fn);
+	rc = RPMERR_BADSPEC;
+	goto exit;
+    }
 
     if (! strncmp(icon, "GIF", 3)) {
 	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, statbuf.st_size);
@@ -289,11 +293,15 @@ static int readIcon(Header h, char *file)
 	headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, statbuf.st_size);
     } else {
 	rpmError(RPMERR_BADSPEC, _("Unknown icon type: %s"), file);
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
     free(icon);
+    rc = 0;
     
-    return 0;
+exit:
+    FREE(fn);
+    return rc;
 }
 
 #define SINGLE_TOKEN_ONLY \

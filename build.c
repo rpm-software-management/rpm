@@ -19,9 +19,6 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
     char * specfile;
     int res = 0;
     struct stat statbuf;
-    char * specDir;
-    char * tmpSpecFile;
-    char * cmd;
     char * s;
     int count, fd;
     char buf[BUFSIZ];
@@ -30,13 +27,15 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
     if (fromTarball) {
-	specDir = alloca(BUFSIZ);
-	strcpy(specDir, "%{_specdir}");
-	/* XXX can't use spec->macros yet */
-	expandMacros(NULL, &globalMacroContext, specDir, BUFSIZ);
+	const char *specDir;
+	const char * tmpSpecFile;
+	char * cmd;
+	char tfn[64];
 
-	tmpSpecFile = alloca(BUFSIZ);
-	sprintf(tmpSpecFile, "%s/rpm-spec-file-%d", specDir, (int) getpid());
+	specDir = rpmGetPath("%{_specdir}", NULL);
+
+	sprintf(tfn, "rpm-spec-file-%d", (int) getpid());
+	tmpSpecFile = rpmGetPath("%{_specdir}", tfn, NULL);
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
 	sprintf(cmd, "gunzip < %s | tar xOvf - Specfile 2>&1 > %s", arg,
@@ -103,6 +102,8 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
 	*cmd = '\0';
 
 	addMacro(&globalMacroContext, "_sourcedir", NULL, buf, RMIL_TARBALL);
+	xfree(specDir);
+	xfree(tmpSpecFile);
     } else if (arg[0] == '/') {
 	specfile = arg;
     } else {

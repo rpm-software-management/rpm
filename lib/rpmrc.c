@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <stdarg.h>
+
 #if HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>
 #else
@@ -558,6 +560,32 @@ static void setDefaults(void) {
     setPathDefault(RPMVAR_SOURCEDIR, "_sourcedir", "SOURCES");
     setPathDefault(RPMVAR_SPECDIR, "_specdir", "SPECS");
 
+}
+
+const char * rpmGetPath(const char *path, ...) {
+    char buf[BUFSIZ], *p, *pe;
+    const char *s;
+    va_list ap;
+
+    p = buf;
+    strcpy(p, path);
+    pe = p + strlen(p);
+    *pe = '\0';
+
+    va_start(ap, path);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	/* XXX FIXME: this fixes onle some of the "...//..." problems */
+	if (pe > p && pe[-1] == '/')
+	    while(*s && *s == '/')	s++;
+	if (*s != '\0') {
+	    strcpy(pe, s);
+	    pe += strlen(pe);
+	    *pe = '\0';
+	}
+    }
+    va_end(ap);
+    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+    return strdup(buf);
 }
 
 int rpmReadRC(const char * rcfiles)

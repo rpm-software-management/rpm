@@ -10,26 +10,23 @@ static void doRmSource(Spec spec)
 {
     struct Source *p;
     Package pkg;
-    char buf[BUFSIZ];
     
     unlink(spec->specFile);
 
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
-	    strcpy(buf, "%{_sourcedir}/");
-	    expandMacros(spec, spec->macros, buf, sizeof(buf));
-	    strcat(buf, p->source);
-	    unlink(buf);
+	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
+	    unlink(fn);
+	    xfree(fn);
 	}
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
-		strcpy(buf, "%{_sourcedir}/");
-		expandMacros(spec, spec->macros, buf, sizeof(buf));
-		strcat(buf, p->source);
-		unlink(buf);
+		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
+		unlink(fn);
+		xfree(fn);
 	    }
 	}
     }

@@ -1195,7 +1195,7 @@ freeMacros(MacroContext *mc)
 
 /* =============================================================== */
 
-int isCompressed(char *file, int *compressed)
+int isCompressed(const char *file, int *compressed)
 {
     FD_t fd;
     ssize_t nb;

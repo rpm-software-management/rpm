@@ -18,10 +18,10 @@ typedef struct cpioSourceArchive {
 extern "C" {
 #endif
 
-int readRPM(char *fileName, Spec *specp, struct rpmlead *lead,
+int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 		Header *sigs, CSA_t *csa);
 
-int writeRPM(Header header, char *fileName, int type,
+int writeRPM(Header header, const char *fileName, int type,
 		CSA_t *csa, char *passPhrase, char **cookie);
 
 #ifdef __cplusplus

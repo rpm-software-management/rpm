@@ -12,6 +12,6 @@ void stripTrailingBlanksStringBuf(StringBuf sb);
 #define appendStringBuf(sb, s)     appendStringBufAux(sb, s, 0)
 #define appendLineStringBuf(sb, s) appendStringBufAux(sb, s, 1)
 
-void appendStringBufAux(StringBuf sb, char *s, int nl);
+void appendStringBufAux(StringBuf sb, const char *s, int nl);
 
 #endif	/* _STRINGBUF_H_ */

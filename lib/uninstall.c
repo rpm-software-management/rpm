@@ -366,6 +366,13 @@ static int removeFile(char * file, unsigned int flags, short mode,
 		rc = 1;
 	    }
 	}
+	break;
+      case UNKNOWN:
+      case CREATE:
+      case SAVE:
+      case SKIP:
+      case ALTNAME:
+	break;
     }
  
     return 0;

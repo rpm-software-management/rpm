@@ -54,7 +54,6 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 			  char ** specFilePtr, rpmNotifyFunction notify,
 			  void * notifyData, char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
-static int ensureOlder(rpmdb db, Header new, int dbOffset);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
 			     int stripPrefixLength, enum fileActions * actions);
@@ -280,7 +279,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
-    char * tmpPath;
     int scriptArg;
     int stripSize = 1;		/* strip at least first / for cpio */
     uint_32 * archiveSizePtr;
@@ -451,14 +449,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 		files[i].install = 0;
 	    }
 	}
-
-	if (rootdir) {
-	    tmpPath = alloca(strlen(rootdir) + 
-			     strlen(rpmGetVar(RPMVAR_TMPPATH)) + 20);
-	    strcpy(tmpPath, rootdir);
-	    strcat(tmpPath, rpmGetVar(RPMVAR_TMPPATH));
-	} else
-	    tmpPath = rpmGetVar(RPMVAR_TMPPATH);
 
 	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, 
 				(void *) &archiveSizePtr, &count))
@@ -656,10 +646,12 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 static int installSources(Header h, char * rootdir, FD_t fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
 			  void * notifyData,
-			  char * labelFormat) {
+			  char * labelFormat)
+{
     char * specFile;
     int specFileIndex = -1;
-    char * realSourceDir, * realSpecDir;
+    const char * realSourceDir = NULL;
+    const char * realSpecDir = NULL;
     char * instSpecFile, * correctSpecFile;
     char * name, * release, * version;
     int fileCount = 0;
@@ -673,33 +665,23 @@ static int installSources(Header h, char * rootdir, FD_t fd,
     int currDirLen;
     uid_t currUid = getuid();
     gid_t currGid = getgid();
+    int rc = 0;
 
     rpmMessage(RPMMESS_DEBUG, _("installing a source package\n"));
 
-    {	char buf[BUFSIZ];
-	strcpy(buf, rootdir);
-	strcat(buf, "/%{_sourcedir}");
-	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
-	realSourceDir = alloca(strlen(buf)+1);
-	strcpy(realSourceDir, buf);
-    }
-
-    {	char buf[BUFSIZ];
-	strcpy(buf, rootdir);
-	strcat(buf, "/%{_specdir}");
-	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
-	realSpecDir = alloca(strlen(buf)+1);
-	strcpy(realSpecDir, buf);
-    }
+    realSourceDir = rpmGetPath(rootdir, "/%{_sourcedir}", NULL);
+    realSourceDir = rpmGetPath(rootdir, "/%{_specdir}", NULL);
 
     if (access(realSourceDir, W_OK)) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSourceDir);
-	return 2;
+	rc = 2;
+	goto exit;
     }
 
     if (access(realSpecDir, W_OK)) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSpecDir);
-	return 2;
+	rc = 2;
+	goto exit;
     }
 
     rpmMessage(RPMMESS_DEBUG, _("sources in: %s\n"), realSourceDir);
@@ -738,7 +720,8 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 	} else {
 	    rpmError(RPMERR_NOSPEC, _("source package contains no .spec file"));
 	    if (fileCount > 0) freeFileMemory(fileMem);
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
     }
 
@@ -767,7 +750,8 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
 	if (fileCount > 0) freeFileMemory(fileMem);
 	free(currDir);
-	return 2;
+	rc = 2;
+	goto exit;
     }
 
     chdir(currDir);
@@ -776,7 +760,8 @@ static int installSources(Header h, char * rootdir, FD_t fd,
     if (specFileIndex == -1) {
 	if (!specFile) {
 	    rpmError(RPMERR_NOSPEC, _("source package contains no .spec file"));
-	    return 1;
+	    rc = 1;
+	    goto exit;
 	}
 
 	/* This logic doesn't work is realSpecDir and realSourceDir are on
@@ -799,7 +784,8 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 	if (rename(instSpecFile, correctSpecFile)) {
 	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
 		     instSpecFile, correctSpecFile, strerror(errno));
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
 
 	if (specFilePtr)
@@ -810,8 +796,12 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 
 	if (fileCount > 0) freeFileMemory(fileMem);
     }
+    rc = 0;
 
-    return 0;
+exit:
+    if (realSpecDir)	xfree(realSpecDir);
+    if (realSourceDir)	xfree(realSourceDir);
+    return rc;
 }
 
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
@@ -895,6 +885,8 @@ int rpmVersionCompare(Header first, Header second) {
     return rpmvercmp(one, two);
 }
 
+#ifdef	UNUSED
+static int ensureOlder(rpmdb db, Header new, int dbOffset);
 static int ensureOlder(rpmdb db, Header new, int dbOffset) {
     Header old;
     char * name, * version, * release;
@@ -919,6 +911,7 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset) {
 
     return rc;
 }
+#endif
 
 const char * fileActionString(enum fileActions a) {
     switch (a) {

@@ -58,7 +58,7 @@ char *getStringBuf(StringBuf sb)
     return sb->buf;
 }
 
-void appendStringBufAux(StringBuf sb, char *s, int nl)
+void appendStringBufAux(StringBuf sb, const char *s, int nl)
 {
     int l;
 

@@ -70,7 +70,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     FD_t fd;
     int i;
     int mode, rc, major;
-    char ** packages, ** tmpPackages;
+    const char ** packages, ** tmpPackages;
     char ** filename;
     int numPackages;
     int numTmpPackages = 0, numBinaryPackages = 0, numSourcePackages = 0;
@@ -83,8 +83,6 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     int numConflicts;
     int stopInstall = 0;
     size_t nb;
-    const char *tmppath = rpmGetVar(RPMVAR_TMPPATH);
-    const char *myroot;
     int notifyFlags = interfaceFlags | (rpmIsVerbose ? INSTALL_HASH : 0 );
     int transFlags = 0;
     rpmProblemSet probs, finalProbs;
@@ -110,10 +108,6 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     memset(tmpPackages, 0, nb);
     nb = (numPackages + 1) * sizeof(Header);
 
-    myroot = rootdir;
-    if (myroot[0] == '/' && myroot[1] == '\0' && tmppath[0] == '/')
-	myroot = "";
-
     rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
     for (filename = argv, i = 0; *filename; filename++) {
 
@@ -122,16 +116,16 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	case URL_IS_HTTP:
 	case URL_IS_PATH:
 	{   int myrc;
-	    char *tfn;
+	    const char *tfn;
+	    char tfnpid[64];
 	    if (rpmIsVerbose()) {
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
 	    }
 
-	    nb = strlen(myroot) + strlen(tmppath) +
-		sizeof("/rpm-12345-12345");
-	    tfn = malloc(nb);
-	    sprintf(tfn, "%s%s/rpm-%.5u-%.5u", myroot,
-		tmppath, (int) getpid(), tmpnum++);
+	    sprintf(tfnpid, "rpm-%.5u-%.5u", (int) getpid(), tmpnum++);
+	    /* XXX watchout for rootdir = NULL */
+	    tfn = rpmGetPath( (rootdir ? rootdir : ""),
+		"%{_tmppath}", tfnpid, NULL);
 
 	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
 	    myrc = urlGetFile(*filename, tfn);
@@ -141,7 +135,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 			*filename, ftpStrerror(myrc));
 		numFailed++;
 		packages[i] = NULL;
-		free(tfn);
+		xfree(tfn);
 	    } else {
 		tmpPackages[numTmpPackages++] = packages[i++] = tfn;
 	    }
@@ -252,7 +246,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 
     for (i = 0; i < numTmpPackages; i++) {
 	unlink(tmpPackages[i]);
-	free(tmpPackages[i]);
+	xfree(tmpPackages[i]);
     }
 
     /* FIXME how do we close our various fd's? */

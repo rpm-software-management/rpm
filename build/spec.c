@@ -250,7 +250,6 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
     char *name = NULL;
     char *nump, *fieldp = NULL;
     char buf[BUFSIZ];
-    char body[BUFSIZ];
     int num = 0;
 
     switch (tag) {
@@ -318,9 +317,7 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
     spec->numSources++;
 
     if (tag != RPMTAG_ICON) {
-	strcpy(body, "%{_sourcedir}/");
-	expandMacros(spec, spec->macros, body, sizeof(body));	/* W2DO? */
-	strcat(body, p->source);
+	const char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
@@ -328,6 +325,7 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
 	sprintf(buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+	xfree(body);
     }
     
     return 0;

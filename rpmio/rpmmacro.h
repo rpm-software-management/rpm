@@ -47,7 +47,7 @@ extern "C" {
 #define COMPRESSED_OTHER 1
 #define COMPRESSED_BZIP2 2
 
-int isCompressed(char *file, int *compressed);
+int isCompressed(const char *file, int *compressed);
 
 void	dumpMacroTable	__P((MacroContext *mc));
 

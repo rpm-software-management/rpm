@@ -686,6 +686,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	    res = 1;
 	} else {
 	/* XXX FIXME: this is easy to do as macro expansion */
+	/* XXX WATCHOUT: buf is an arg */
 	    strcpy(buf, "%{_docdir}/%{name}-%{version}");
 	    expandMacros(spec, spec->macros, buf, BUFSIZ);
 
@@ -1070,6 +1071,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     pkg->cpioCount = 0;
 
     if (pkg->fileFile) {
+	/* XXX FIXME: add %{_buildsubdir} and use rpmGetPath() */
 	strcpy(buf, "%{_builddir}/");
 	expandMacros(spec, spec->macros, buf, sizeof(buf));
 	if (spec->buildSubdir) {
@@ -1122,10 +1124,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.docDirs[fl.docDirCount++] = strdup("/usr/man");
     fl.docDirs[fl.docDirCount++] = strdup("/usr/info");
     fl.docDirs[fl.docDirCount++] = strdup("/usr/X11R6/man");
-    {	strcpy(buf, "%{_docdir}");
-	expandMacros(spec, spec->macros, buf, sizeof(buf));
-	fl.docDirs[fl.docDirCount++] = strdup(buf);
-    }
+    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_docdir}", NULL);
     
     fl.fileList = NULL;
     fl.fileListRecsAlloced = 0;
@@ -1221,7 +1220,6 @@ static int processPackageFiles(Spec spec, Package pkg,
 int processSourceFiles(Spec spec)
 {
     struct Source *srcPtr;
-    char buf[BUFSIZ];
     StringBuf sourceFiles;
     int x, isSpec = 1;
     struct FileList fl;
@@ -1288,25 +1286,21 @@ int processSourceFiles(Spec spec)
 	    }
 	}
 
-      {	char *s = buf;
-	if (srcPtr->flags & RPMBUILD_ISNO)
-	    *s++ = '!';
-	strcpy(s, "%{_sourcedir}/");
+      {	const char *s;
+	s = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+		"%{_sourcedir}/", srcPtr->source, NULL);
+	appendLineStringBuf(sourceFiles, s);
+	xfree(s);
       }
-	expandMacros(spec, spec->macros, buf, sizeof(buf));
-	strcat(buf, srcPtr->source);
-	appendLineStringBuf(sourceFiles, buf);
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
-	    char *s = buf;
-	    if (srcPtr->flags & RPMBUILD_ISNO)
-		*s++ = '!';
-	    strcpy(s, "%{_sourcedir}/");
-	    expandMacros(spec, spec->macros, buf, sizeof(buf));
-	    strcat(buf, srcPtr->source);
-	    appendLineStringBuf(sourceFiles, buf);
+	    const char *s;
+	    s = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+		"%{_sourcedir}/", srcPtr->source, NULL);
+	    appendLineStringBuf(sourceFiles, s);
+	    xfree(s);
 	}
     }
 
@@ -1390,7 +1384,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     int bytesWritten;
     StringBuf readBuff;
     int bytes;
-    unsigned char buf[8193];
+    unsigned char buf[BUFSIZ+1];
 
     oldhandler = signal(SIGPIPE, SIG_IGN);
 

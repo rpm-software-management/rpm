@@ -43,10 +43,10 @@ static int genSourceRpmName(Spec spec)
 int packageSources(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
-    char fileName[BUFSIZ];
     HeaderIterator iter;
     int_32 tag, count;
     char **ptr;
+    int rc;
 
     /* Add some cruft */
     headerAddEntry(spec->sourceHeader, RPMTAG_RPMVERSION,
@@ -62,11 +62,6 @@ int packageSources(Spec spec)
     }
 
     genSourceRpmName(spec);
-
-    /* XXX this should be %_srpmdir */
-    strcpy(fileName, "%{_srcrpmdir}/");
-    expandMacros(spec, spec->macros, fileName, sizeof(fileName));
-    strcat(fileName, spec->sourceRpmName);
 
     /* Add the build restrictions */
     iter = headerInitIterator(spec->buildRestrictions);
@@ -84,14 +79,20 @@ int packageSources(Spec spec)
 
     FREE(spec->cookie);
     
-    memset(csa, 0, sizeof(*csa));
-    csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = fdNew();
-    csa->cpioList = spec->sourceCpioList;
-    csa->cpioCount = spec->sourceCpioCount;
+    /* XXX this should be %_srpmdir */
+    {	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
 
-    return writeRPM(spec->sourceHeader, fileName, RPMLEAD_SOURCE,
-		    csa, spec->passPhrase, &(spec->cookie));
+	memset(csa, 0, sizeof(*csa));
+	csa->cpioArchiveSize = 0;
+	csa->cpioFdIn = fdNew();
+	csa->cpioList = spec->sourceCpioList;
+	csa->cpioCount = spec->sourceCpioCount;
+
+	rc = writeRPM(spec->sourceHeader, fn, RPMLEAD_SOURCE,
+		csa, spec->passPhrase, &(spec->cookie));
+	xfree(fn);
+    }
+    return rc;
 }
 
 static int copyTags[] = {
@@ -106,10 +107,11 @@ int packageBinaries(Spec spec)
     CSA_t csabuf, *csa = &csabuf;
     int rc;
     char *binFormat, *binRpm, *errorString;
-    char *name, fileName[BUFSIZ];
+    char *name;
     Package pkg;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	const char *fn;
 
 	if (pkg->fileList == NULL)
 	    continue;
@@ -151,10 +153,7 @@ int packageBinaries(Spec spec)
 		     "filename for package %s: %s\n"), name, errorString);
 	    return RPMERR_BADFILENAME;
 	}
-	strcpy(fileName, "%{_rpmdir}/");
-	expandMacros(spec, spec->macros, fileName, sizeof(fileName));
-	strcat(fileName, binRpm);
-
+	fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 	FREE(binRpm);
 
 	memset(csa, 0, sizeof(*csa));
@@ -163,16 +162,17 @@ int packageBinaries(Spec spec)
 	csa->cpioList = pkg->cpioList;
 	csa->cpioCount = pkg->cpioCount;
 
-	if ((rc = writeRPM(pkg->header, fileName, RPMLEAD_BINARY,
-			    csa, spec->passPhrase, NULL))) {
+	rc = writeRPM(pkg->header, fn, RPMLEAD_BINARY,
+		    csa, spec->passPhrase, NULL);
+	xfree(fn);
+	if (rc)
 	    return rc;
-	}
     }
     
     return 0;
 }
 
-int readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
+int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
 	    CSA_t *csa)
 {
     FD_t fdi;
@@ -232,7 +232,7 @@ int readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
     return 0;
 }
 
-int writeRPM(Header header, char *fileName, int type,
+int writeRPM(Header header, const char *fileName, int type,
 		    CSA_t *csa, char *passPhrase, char **cookie)
 {
     FD_t fd, ifd;
