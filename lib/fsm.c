@@ -1587,7 +1587,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->path != NULL &&
 	    !(fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode)))
 	{
-	    rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	    rc = fsmNext(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
 	    if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
 		errno = saveerrno;

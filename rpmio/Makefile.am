@@ -22,7 +22,7 @@ noinst_HEADERS = rpmio_internal.h
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
-LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
@@ -30,7 +30,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release @VERSION@ \
+librpmio_la_LDFLAGS = -release @VERSION@ $(LDFLAGS) \
 	$(top_builddir)/file/libfmagic.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread

@@ -21,7 +21,7 @@ echo "
 *                                                                          *
 *                   *** WARNING WARNING WARNING ***                        *
 *                                                                          *
-* This is source code from the development branch of rpm-@VERSION@.              *
+* This is source code from the development branch of rpm-4.3.              *
 *                                                                          *
 * If you want the "production" rpm-4.0.4 or rpm-4.1 code, then you should  *
 * either use an rpm-4.0.4 or rpm-4.1 src.rpm. Alternatively, if using a    *

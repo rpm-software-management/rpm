@@ -112,10 +112,12 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 	    if (sq->pipes[1])	close(sq->pipes[1]);
 	    if (sq->pipes[0])	close(sq->pipes[0]);
 	    sq->pipes[0] = sq->pipes[1] = -1;
+#ifdef	NOTYET	/* rpmpsmWait debugging message needs */
 	    sq->reaper = 1;
 	    sq->status = 0;
 	    sq->reaped = 0;
 	    sq->child = 0;
+#endif
 	    ret = sigrelse(SIGCHLD);
 	}
     }
