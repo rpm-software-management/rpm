@@ -3,7 +3,7 @@ top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 
 LIBOBJECTS = \
-	build.o files.o misc.o myftw.o names.o pack.o \
+	build.o expression.o files.o misc.o myftw.o names.o pack.o \
 	parseBuildInstallClean.o parseChangelog.o parseDescription.o \
 	parseFiles.o parsePreamble.o parsePrep.o parseReqs.o \
 	parseScript.o parseSpec.o reqprov.o spec.o

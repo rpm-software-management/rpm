@@ -113,6 +113,11 @@ int parseTrigger(Spec spec, Package pkg, char *field, int tag);
 int parseScript(Spec spec, int parsePart);
 int parseBuildInstallClean(Spec spec, int parsePart);
 
+/* from build/expression.h */
+
+int parseExpressionBoolean(Spec, char *);
+char *parseExpressionString(Spec, char *);
+
 /* from build/build.h */
 
 int doScript(Spec spec, int what, char *name, StringBuf sb, int test);

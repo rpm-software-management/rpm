@@ -333,9 +333,7 @@ Spec newSpec(void)
     spec->specFile = NULL;
     spec->sourceRpmName = NULL;
 
-    spec->file = NULL;
-    spec->readBuf[0] = '\0';
-    spec->readPtr = NULL;
+    spec->fileStack = NULL;
     spec->line[0] = '\0';
     spec->readStack = malloc(sizeof(struct ReadLevelEntry));
     spec->readStack->next = NULL;
@@ -396,8 +394,9 @@ static void freeSources(Spec spec)
 
 void freeSpec(Spec spec)
 {
+    struct OpenFileInfo *ofi;
     struct ReadLevelEntry *rl;
-    
+
     freeStringBuf(spec->prep);
     freeStringBuf(spec->build);
     freeStringBuf(spec->install);
@@ -407,6 +406,13 @@ void freeSpec(Spec spec)
     FREE(spec->buildSubdir);
     FREE(spec->specFile);
     FREE(spec->sourceRpmName);
+
+    while (spec->fileStack) {
+	ofi = spec->fileStack;
+	spec->fileStack = spec->fileStack->next;
+	FREE(ofi->fileName);
+	free(ofi);
+    }
 
     while (spec->readStack) {
 	rl = spec->readStack;
@@ -443,4 +449,19 @@ void freeSpec(Spec spec)
     closeSpec(spec);
     
     free(spec);
+}
+
+struct OpenFileInfo * newOpenFileInfo(void)
+{
+    struct OpenFileInfo *ofi;
+
+    ofi = malloc(sizeof(struct OpenFileInfo));
+    ofi->file = NULL;
+    ofi->fileName = NULL;
+    ofi->lineNum = 0;
+    ofi->readBuf[0] = '\0';
+    ofi->readPtr = NULL;
+    ofi->next = NULL;
+
+    return ofi;
 }

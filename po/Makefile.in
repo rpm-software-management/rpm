@@ -19,10 +19,11 @@ POTFILES  = \
 	../install.c	../query.c	../rpm.c \
 	../url.c	../verify.c		\
 	../rpm2cpio.c	../convertdb.c	../oldrpmdb.c \
-	../build/build.c ../build/files.c ../build/misc.c ../build/myftw.c \
-	../build/names.c ../build/pack.c ../build/parseBuildInstallClean.c \
-	../build/parseChangelog.c ../build/parseDescription.c \
-	../build/parseFiles.c ../build/parsePreamble.c ../build/parsePrep.c \
+	../build/build.c ../build/expression.c ../build/files.c \
+	../build/misc.c ../build/myftw.c ../build/names.c ../build/pack.c \
+	../build/parseBuildInstallClean.c ../build/parseChangelog.c \
+	../build/parseDescription.c ../build/parseFiles.c \
+	../build/parsePreamble.c ../build/parsePrep.c \
 	../build/parseReqs.c ../build/parseScript.c ../build/parseSpec.c \
 	../build/reqprov.c ../build/spec.c \
 	../lib/cpio.c ../lib/dbindex.c ../lib/depends.c ../lib/falloc.c \

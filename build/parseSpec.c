@@ -101,33 +101,50 @@ int readLine(Spec spec, int strip)
     int match;
     char ch;
     struct ReadLevelEntry *rl;
+    struct OpenFileInfo *ofi = spec->fileStack;
 
-    /* Make sure the spec file is open */
-    if (!spec->file) {
-	if (!(spec->file = fopen(spec->specFile, "r"))) {
-	    rpmError(RPMERR_BADSPEC, "Unable to open: %s\n", spec->specFile);
+    /* Make sure the current file is open */
+retry:
+    if (!ofi->file) {
+	if (!(ofi->file = fopen(ofi->fileName, "r"))) {
+	    rpmError(RPMERR_BADSPEC, _("Unable to open: %s\n"),
+		     ofi->fileName);
 	    return RPMERR_BADSPEC;
 	}
-	spec->lineNum = 0;
+	spec->lineNum = ofi->lineNum = 0;
     }
 
     /* Make sure we have something in the read buffer */
-    if (!spec->readPtr || ! *(spec->readPtr)) {
-	if (!fgets(spec->readBuf, BUFSIZ, spec->file)) {
+    if (!ofi->readPtr || ! *(ofi->readPtr)) {
+	if (!fgets(ofi->readBuf, BUFSIZ, ofi->file)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
-		rpmError(RPMERR_UNMATCHEDIF, "Unclosed %%if");
+		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if"));
 	        return RPMERR_UNMATCHEDIF;
 	    }
-	    return 1;
+
+	    /* remove this file from the stack */
+	    spec->fileStack = ofi->next;
+	    fclose(ofi->file);
+	    FREE(ofi->fileName);
+	    free(ofi);
+
+	    /* only on last file do we signal EOF to caller */
+	    ofi = spec->fileStack;
+	    if (ofi == NULL)
+		return 1;
+
+	    /* otherwise, go back and try the read again. */
+	    goto retry;
 	}
-	spec->readPtr = spec->readBuf;
-	spec->lineNum++;
+	ofi->readPtr = ofi->readBuf;
+	ofi->lineNum++;
+	spec->lineNum = ofi->lineNum;
 	/*rpmMessage(RPMMESS_DEBUG, "LINE: %s", spec->readBuf);*/
     }
     
     /* Copy a single line to the line buffer */
-    from = spec->readPtr;
+    from = ofi->readPtr;
     to = last = spec->line;
     ch = ' ';
     while (*from && ch != '\n') {
@@ -137,7 +154,7 @@ int readLine(Spec spec, int strip)
 	}
     }
     *to = '\0';
-    spec->readPtr = from;
+    ofi->readPtr = from;
     
     if (strip & STRIP_COMMENTS) {
 	handleComments(spec->line);
@@ -149,7 +166,7 @@ int readLine(Spec spec, int strip)
 
     if (spec->readStack->reading) {
 	if (expandMacros(spec, spec->macros, spec->line, sizeof(spec->line))) {
-	    rpmError(RPMERR_BADSPEC, "line %d: %s", spec->lineNum, spec->line);
+	    rpmError(RPMERR_BADSPEC, _("line %d: %s"), spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
     }
@@ -167,11 +184,14 @@ int readLine(Spec spec, int strip)
 	match = matchTok(os, s);
     } else if (! strncmp("%ifnos", s, 6)) {
 	match = !matchTok(os, s);
+    } else if (! strncmp("%if", s, 3)) {
+        match = parseExpressionBoolean(spec, s + 3);
+	if (match < 0) return RPMERR_BADSPEC;
     } else if (! strncmp("%else", s, 5)) {
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF, "line %d: Got a %%else with no if",
-		     spec->lineNum);
+	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: Got a %%else with no if"),
+		     ofi->fileName, ofi->lineNum);
 	    return RPMERR_UNMATCHEDIF;
 	}
 	spec->readStack->reading =
@@ -180,14 +200,36 @@ int readLine(Spec spec, int strip)
     } else if (! strncmp("%endif", s, 6)) {
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF, "line %d: Got a %%endif with no if",
-		     spec->lineNum);
+	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: Got a %%endif with no if"),
+		     ofi->fileName, ofi->lineNum);
 	    return RPMERR_UNMATCHEDIF;
 	}
 	rl = spec->readStack;
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
+    } else if (! strncmp("%include", s, 8)) {
+	char *fileName = s + 8, *endFileName, *p;
+
+	if (! isspace(*fileName)) {
+	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement"));
+	    return RPMERR_BADSPEC;
+	}
+	while (*fileName && isspace(*fileName)) fileName++;
+	endFileName = fileName;
+	while (*endFileName && !isspace(*endFileName)) endFileName++;
+	p = endFileName;
+	SKIPSPACE(p);
+	if (*p != '\0') {
+	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement"));
+	    return RPMERR_BADSPEC;
+	}
+
+	*endFileName = '\0';
+	forceIncludeFile(spec, fileName);
+
+	ofi = spec->fileStack;
+	goto retry;
     }
     if (match != -1) {
 	rl = malloc(sizeof(struct ReadLevelEntry));
@@ -206,10 +248,25 @@ int readLine(Spec spec, int strip)
 
 void closeSpec(Spec spec)
 {
-    if (spec->file) {
-	fclose(spec->file);
+    struct OpenFileInfo *ofi;
+
+    while (spec->fileStack) {
+	ofi = spec->fileStack;
+	spec->fileStack = spec->fileStack->next;
+	if (ofi->file) fclose(ofi->file);
+	FREE(ofi->fileName);
+	free(ofi);
     }
-    spec->file = NULL;
+}
+
+void forceIncludeFile(Spec spec, const char * fileName)
+{
+    struct OpenFileInfo * ofi;
+
+    ofi = newOpenFileInfo();
+    ofi->fileName = strdup(fileName);
+    ofi->next = spec->fileStack;
+    spec->fileStack = ofi;
 }
 
 int noLang = 0;		/* XXX FIXME: pass as arg */
