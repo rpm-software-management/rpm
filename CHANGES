@@ -5,6 +5,7 @@
 	  (Horacio Rodriguez Montero)
 	- fixed serial number handling in dependencies and install
 	  code
+	- make mips compatible with noarch
 
 2.4.7 -> 2.4.8:
 	- added noarch build compatibilities for ppc, m68k

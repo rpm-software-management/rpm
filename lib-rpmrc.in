@@ -116,7 +116,7 @@ arch_compat: usparc: sparc
 arch_compat: sparc: noarch
 
 arch_compat: ppc: noarch
-arch_compat: noarch: noarch
+arch_compat: mips: noarch
 
 os_compat:   IRIX64: IRIX
 
