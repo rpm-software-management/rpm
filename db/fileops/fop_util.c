@@ -40,7 +40,7 @@ static int __fop_set_pgsize __P((DB *, DB_FH *, const char *));
 	u_int32_t __lockval;						\
 									\
 	if (LOCKING_ON((ENV))) {					\
-		__lockval = 0;						\
+		__lockval = 1;						\
 		__dbt.data = &__lockval;				\
 		__dbt.size = sizeof(__lockval);				\
 		if ((ret = (ENV)->lock_get((ENV), (ID),			\
