@@ -7,7 +7,8 @@ INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt \
-	@INCPATH@
+	@INCPATH@ \
+	-I$(top_srcdir)/misc	# XXX for gettext includes
 
 EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c
 mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \

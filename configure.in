@@ -299,8 +299,8 @@ dnl will fail.
 AC_CHECK_LIB(port, writev)
 
 AC_CHECK_FUNC(dbopen, [],
-  AC_CHECK_LIB(db1, dbopen, [],
-    AC_CHECK_LIB(db, dbopen, [],
+  AC_CHECK_LIB(db1, dbopen, [LIBS="$LIBS -ldb1"],
+    AC_CHECK_LIB(db, dbopen, [LIBS="$LIBS -ldb"],
        AC_MSG_WARN([sorry this package needs libdb.a (from the db package)])))
            )
 
