@@ -154,8 +154,8 @@ void XMLSpec::toSpecFile(ostream& rOut)
 
 	for (unsigned int i = 0; i < numSources(); i++)
 		getSource(i).toSpecFile(rOut);
-	for (unsigned int i = 0; i < numNoSources(); i++)
-		getNoSource(i).toSpecFile(rOut);
+	//for (unsigned int i = 0; i < numNoSources(); i++)
+	//	getNoSource(i).toSpecFile(rOut);
 	for (unsigned int i = 0; i < numPatches(); i++)
 		getPatch(i).toSpecFile(rOut);
 	for (unsigned int i = 0; i < numPackages(); i++)

@@ -15,6 +15,7 @@
 #include "XMLFiles.h"
 #include "XMLRequires.h"
 #include "XMLScript.h"
+#include "XMLText.h"
 
 // rpm includes
 #include <rpmbuild.h>
@@ -40,7 +41,7 @@ public:
 	static bool parseCreate(XMLAttrs* pAttrs,
 							XMLSpec* pSpec);
 
-	/**
+ 	/**
 	 * Creates package objects from an RPM Spec structure
 	 * .
 	 * @param pPackage Pointer to the start package
@@ -53,23 +54,27 @@ public:
 							 XMLSpec* pXSpec);
 
 	/**
-	 * Sets the description for the last package
+	 * Adds a description for the last package
 	 * .
+	 * @param pAttrs The attributes
 	 * @param szDescription the description
 	 * @param pSpec The spec containing the package
 	 * @return true on success, false otherwise
 	 **/
-	static bool setDescription(const char* szDescription,
+	static bool addDescription(XMLAttrs* pAttrs,
+							   const char* szDescription,
 							   XMLSpec* pSpec);
 
 	/**
-	 * Sets the summary for the last added package
+	 * Adds the summary for the last added package
 	 * .
+	 * @param pAttrs The attributes
 	 * @param szSummary The summary to set
 	 * @param pSpec The spec contraining the package
 	 * @return trus on success, false otherwise
 	 **/
-	static bool setSummary(const char* szSummary,
+	static bool addSummary(XMLAttrs* pAttrs,
+						   const char* szSummary,
 						   XMLSpec* pSpec);
 
 //
@@ -179,6 +184,18 @@ public:
 	}
 
 	/**
+	 * Sets the package name
+	 * .
+	 * @param szName The name to set
+	 * @return none
+	 **/
+	void setName(const char* szName)
+	{
+		if (szName)
+			m_sName.assign(szName);
+	}
+
+	/**
 	 * Checks if we have a group
 	 * .
 	 * @param none
@@ -201,6 +218,18 @@ public:
 	}
 
 	/**
+	 * Sets the group
+	 * .
+	 * @param szGroup The group to set
+	 * @return none
+	 **/
+	void setGroup(const char* szGroup)
+	{
+		if (szGroup)
+			m_sGroup.assign(szGroup);
+	}
+
+	/**
 	 * Tests if we are a sub-package
 	 * .
 	 * @param none
@@ -209,6 +238,17 @@ public:
 	bool isSubPackage()
 	{
 		return m_bSub;
+	}
+
+	/**
+	 * Sets the sub-package status
+	 * .
+	 * @param bSub The sub-package status
+	 * @return none
+	 **/
+	void setSubPackage(bool bSub)
+	{
+		m_bSub = bSub;
 	}
 
 	/**
@@ -223,6 +263,17 @@ public:
 	}
 
 	/**
+	 * Sets the auto requires state
+	 * .
+	 * @param bAutoReq The auto requires state
+	 * @return none
+	 **/
+	void setAutoRequires(bool bAutoReq)
+	{
+		m_bAutoReq = bAutoReq;
+	}
+
+	/**
 	 * Tests for auto requires
 	 * .
 	 * @param none
@@ -234,71 +285,90 @@ public:
 	}
 
 	/**
-	 * Checks if we have a summary
+	 * Sets the auto provides status
 	 * .
-	 * @param none
-	 * @return true if available, false otherwise
-	 **/
-	bool hasSummary()
-	{
-		return m_sSummary.length() ? true : false;
-	}
-
-	/**
-	 * Gets the summary
-	 * .
-	 * @param none
-	 * @return the summary string
-	 **/
-	const char* getSummary()
-	{
-		return m_sSummary.c_str();
-	}
-
-	/**
-	 * Set the summary
-	 * .
-	 * @param szSummary the summary
+	 * @param bAutoProv The auto provides status
 	 * @return none
 	 **/
-	void setSummary(const char* szSummary)
+	void setAutoProvides(bool bAutoProv)
 	{
-		if (szSummary)
-			m_sSummary.assign(szSummary);
+		m_bAutoProv = bAutoProv;
 	}
 
 	/**
-	 * Checks if we have a description
+	 * Gets the number of summaries
 	 * .
 	 * @param none
-	 * @return true if available, false otherwise
+	 * @return the number of summaries
 	 **/
-	bool hasDescription()
+	unsigned int numSummaries()
 	{
-		return m_sDescription.length() ? true : false;
+		return m_vSummaries.size();
 	}
 
 	/**
-	 * Get the description
+	 * Gets a summary
+	 * .
+	 * @param nNum The number to get
+	 * @return the summary
+	 **/
+	XMLText& getSummary(unsigned int nNum)
+	{
+		return m_vSummaries[nNum];
+	}
+
+	/**
+	 * Adds a summary
+	 * .
+	 * @param szSummary the summary
+	 * @param szLang the language
+	 * @return none
+	 **/
+	void addSummary(const char* szSummary,
+					const char* szLang = NULL)
+	{
+		if (szSummary && strlen(szSummary)) {
+			XMLText summary(szSummary, szLang);
+			m_vSummaries.push_back(summary);
+		}
+	}
+
+	/**
+	 * Gets the number of descriptions
 	 * .
 	 * @param none
-	 * @return string containing the description
+	 * @return the number in our list
 	 **/
-	const char* getDescription()
+	unsigned int numDescriptions()
 	{
-		return m_sDescription.c_str();
+		return m_vDescriptions.size();
 	}
 
 	/**
-	 * Sets the description
+	 * Get a description
+	 * .
+	 * @param nNum The description to get
+	 * @return Reference to XMLText object
+	 **/
+	XMLText& getDescription(unsigned int nNum)
+	{
+		return m_vDescriptions[nNum];
+	}
+
+	/**
+	 * Adds a description
 	 * .
 	 * @param szDescription The description string
+	 * @param szLang The language
 	 * @return nonew
 	 **/
-	void setDescription(const char* szDescription)
+	void addDescription(const char* szDescription,
+						const char* szLang = NULL)
 	{
-		if (szDescription)
-			m_sDescription.assign(szDescription);
+		if (szDescription && strlen(szDescription)) {
+			XMLText description(szDescription, szLang);
+			m_vDescriptions.push_back(description);
+		}
 	}
 
 	/**
@@ -417,11 +487,11 @@ public:
 protected:
 	string              m_sName;
 	string              m_sGroup;
-	string              m_sSummary;
-	string              m_sDescription;
 	bool                m_bSub;
 	bool                m_bAutoReq;
 	bool                m_bAutoProv;
+	vector<XMLText>     m_vSummaries;
+	vector<XMLText>     m_vDescriptions;
 	XMLPackageContainer m_Requires;
 	XMLPackageContainer m_BuildRequires;
 	XMLPackageContainer m_Provides;

@@ -40,6 +40,16 @@ public:
 							const char* szEntry,
 							XMLSpec* pSpec);
 
+
+	/**
+	 * Creates changelog entries from the data provided to us by RPM
+	 * @param szEntries The netries we are to evaluate
+	 * @param pXSpec pointer to the XML spec we are working with
+	 * @return true on success,. false otherwise
+	 **/
+	static bool structCreate(const char* szEntries,
+							 XMLSpec* pXSpec);
+
 //
 // constructors/destructor
 //
@@ -125,6 +135,20 @@ public:
 	 **/
 	static bool parseCreate(XMLAttrs* pAttrs,
 							XMLSpec* pSpec);
+
+	/**
+	 * Creates an XMLChangelogDate object from the information provided to
+	 * us by RPM
+	 * .
+	 * @param szDate The date to generate this for
+	 * @param szEntries The entries to add to this date
+	 * @param pXSpec The XML spec we are working with
+	 * @return true on success, false otherwise
+	 **/
+	static bool structCreate(const char* szDate,
+							 const char* szName,
+							 const char* szEntries,
+							 XMLSpec* pXSpec);
 
 //
 // constructors/destructor

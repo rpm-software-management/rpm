@@ -13,7 +13,7 @@
 structValidAttrs g_paPackageAttrs[] =
 {
 	{0x0000,    false, false, "name",        XATTRTYPE_STRING, {"*", NULL}},
-	{0x0001,    false, false, "group",       XATTRTYPE_STRING, {"*", NULL}},
+	{0x0001,    true,  false, "group",       XATTRTYPE_STRING, {"*", NULL}},
 	{0x0002,    false, false, "autoreq",     XATTRTYPE_BOOL,   {NULL}},
 	{0x0003,    false, false, "autoprov",    XATTRTYPE_BOOL,   {NULL}},
 	{0x0004,    false, false, "autoreqprov", XATTRTYPE_BOOL,   {NULL}},
@@ -60,23 +60,32 @@ bool XMLPackage::structCreate(PackageStruct* pPackage,
 	if (!pXSpec || !pSpec || !pPackage || !pPackage->header)
 		return false;
 
-	string sSummary, sGroup, sName;
-	if (!getRPMHeader(pPackage->header, RPMTAG_GROUP, sGroup) ||
-		!getRPMHeader(pPackage->header, RPMTAG_GROUP, sSummary))
+	string sGroup, sName;
+	if (!getRPMHeader(pPackage->header, RPMTAG_GROUP, sGroup))
 		return false;
 	getRPMHeader(pPackage->header, RPMTAG_NAME, sName);
 	bool bSub = false;
 	if (sName.compare(pXSpec->getName()) == 0) {
 		bSub = true;
 	}
-	// TODO: Description to be added....
 
 	XMLPackage package(bSub ? NULL : sName.c_str(), sGroup.c_str(),
 					   pPackage->autoReq ? true : false,
 					   pPackage->autoProv ? true : false,
 					   bSub);
-	package.setSummary(sSummary.c_str());
+	t_StrVector svText;
+	t_StrVector svLang;
+	getRPMHeaderArray(pPackage->header, RPMTAG_HEADERI18NTABLE, svLang);
+	if (getRPMHeaderArray(pPackage->header, RPMTAG_SUMMARY, svText)) {
+		for (unsigned int i = 0; i < svText.size(); i++)
+			package.addSummary(svText[i].c_str(), svLang[i].c_str());
+	}
+	if (getRPMHeaderArray(pPackage->header, RPMTAG_DESCRIPTION, svText)) {
+		for (unsigned int i = 0; i < svText.size(); i++)
+			package.addDescription(svText[i].c_str(), svLang[i].c_str());
+	}
 	pXSpec->addPackage(package);
+
 	XMLPackageContainer::structCreate(pPackage, pSpec, pXSpec);
 	XMLFiles::structCreate(pPackage, pSpec, pXSpec);
 
@@ -85,22 +94,38 @@ bool XMLPackage::structCreate(PackageStruct* pPackage,
 	return true;
 }
 
-bool XMLPackage::setDescription(const char* szDescription,
+// attribute structure for summaries
+structValidAttrs g_paDescriptionAttrs[] =
+{
+	{0x0000,    false, false, "lang", XATTRTYPE_STRING, {"*", NULL}},
+	{XATTR_END, false, false, "end",  XATTRTYPE_NONE,   {NULL}}
+};
+
+bool XMLPackage::addDescription(XMLAttrs* pAttrs,
+								const char* szDescription,
 								XMLSpec* pSpec)
 {
-	if (pSpec) {
-		pSpec->lastPackage().setDescription(szDescription);
+	if (pSpec && pAttrs->validate(g_paDescriptionAttrs, (XMLBase*)pSpec)) {
+		pSpec->lastPackage().addDescription(szDescription, pAttrs->asString("lang"));
 		return true;
 	}
 	else
 		return false;
 }
 
-bool XMLPackage::setSummary(const char* szSummary,
+// attribute structure for summaries
+structValidAttrs g_paSummaryAttrs[] =
+{
+	{0x0000,    false, false, "lang", XATTRTYPE_STRING, {"*", NULL}},
+	{XATTR_END, false, false, "end",  XATTRTYPE_NONE,   {NULL}}
+};
+
+bool XMLPackage::addSummary(XMLAttrs* pAttrs,
+							const char* szSummary,
 							XMLSpec* pSpec)
 {
-	if (pSpec) {
-		pSpec->lastPackage().setSummary(szSummary);
+	if (pSpec && pAttrs->validate(g_paSummaryAttrs, (XMLBase*)pSpec)) {
+		pSpec->lastPackage().addSummary(szSummary, pAttrs->asString("lang"));
 		return true;
 	}
 	else
@@ -114,25 +139,23 @@ XMLPackage::XMLPackage(const char* szName,
 					   bool bSub)
 	: XMLBase()
 {
-	if (szName)
-		m_sName.assign(szName);
-	if (szGroup)
-		m_sGroup.assign(szGroup);
-	m_bSub = bSub;
-	m_bAutoReq = bAutoReq;
-	m_bAutoProv = bAutoProv;
+	setName(szName);
+	setGroup(szGroup);
+	setSubPackage(bSub);
+	setAutoRequires(bAutoReq);
+	setAutoProvides(bAutoProv);
 }
 
 XMLPackage::XMLPackage(const XMLPackage& rPackage)
 	: XMLBase()
 {
-	m_sName.assign(rPackage.m_sName);
-	m_sGroup.assign(rPackage.m_sGroup);
-	m_sSummary.assign(rPackage.m_sSummary);
-	m_sDescription.assign(rPackage.m_sDescription);
-	m_bSub = rPackage.m_bSub;
-	m_bAutoReq = rPackage.m_bAutoReq;
-	m_bAutoProv = rPackage.m_bAutoProv;
+	setName(rPackage.m_sName.c_str());
+	setGroup(rPackage.m_sGroup.c_str());
+	setSubPackage(rPackage.m_bSub);
+	setAutoRequires(rPackage.m_bAutoReq);
+	setAutoProvides(rPackage.m_bAutoProv);
+	m_vSummaries = rPackage.m_vSummaries;
+	m_vDescriptions = rPackage.m_vDescriptions;
 	m_Requires = rPackage.m_Requires;
 	m_BuildRequires = rPackage.m_BuildRequires;
 	m_Provides = rPackage.m_Provides;
@@ -159,9 +182,14 @@ void XMLPackage::toSpecFile(ostream& rOut)
 	else
 		rOut << endl << endl;
 
-	// add the "optional' stuff
-	if (hasSummary())
-		rOut << "summary:        " << getSummary() << endl;
+	for (unsigned int i = 0; i < numSummaries(); i++) {
+		rOut << "summary";
+		if (getSummary(i).hasLang())
+			rOut << "(" << getSummary(i).getLang() << "):";
+		else
+			rOut << ":    ";
+		rOut << "    " << getSummary(i).getText() << endl;
+	}
 	if (hasGroup())
 		rOut << "group:          " << getGroup() << endl;
 	if (!hasAutoRequires() && !hasAutoProvides())
@@ -179,13 +207,15 @@ void XMLPackage::toSpecFile(ostream& rOut)
 	getBuildRequires().toSpecFile(rOut, "buildrequires");
 
 	// add the description
-	if (hasDescription()) {
+	for (unsigned int i = 0; i < numDescriptions(); i++) {
 		rOut << "%description ";
+		if (getDescription(i).hasLang())
+			rOut << "-l " << getDescription(i).getLang() << " ";
 		if (hasName()) {
 			rOut << (!isSubPackage() ? "-n " : "");
 			rOut << getName();
 		}
-		rOut << endl << getDescription() << endl;
+		rOut << endl << getDescription(i).getText() << endl;
 	}
 }
 
@@ -256,10 +286,18 @@ void XMLPackage::toXMLFile(ostream& rOut)
 	}
 	rOut << ">";
 
-	if (hasSummary())
-		rOut << endl << "\t\t<summary>" << getSummary() << "\t\t</summary>";
-	if (hasDescription())
-		rOut << endl << "\t\t<description>" << getDescription() << "\t\t</description>";
+	for (unsigned int i = 0; i < numSummaries(); i++) {
+		rOut << endl << "\t\t<summary";
+		if (getSummary(i).hasLang())
+			rOut << " lang=\"" << getSummary(i).getLang() << "\"";
+		rOut << ">" << getSummary(i).getText() << "</summary>";
+	}
+	for (unsigned int i = 0; i < numDescriptions(); i++) {
+		rOut << endl << "\t\t<description";
+		if (getDescription(i).hasLang())
+			rOut << " lang=\"" << getDescription(i).getLang() << "\"";
+		rOut << ">" << getDescription(i).getText() << "</description>";
+	}
 
 	getProvides().toXMLFile(rOut, "provides");
 	getObsoletes().toXMLFile(rOut, "obsoletes");

@@ -50,15 +50,15 @@ public:
 	/**
 	 * Default contructor
 	 * .
-	 * @param szAttr The file's attribute (NULL if default)
+	 * @param szMode The file's mode (NULL if default)
 	 * @param szOwner The file's owner (NULL if default)
 	 * @param szGroup The file's group (NULL if default)
 	 * @param szConfig The configuration parameter
 	 * @param szPath The file path
 	 * @return none
 	 **/
-	XMLFile(const char* szAttr,
-			const char* szOwner,
+	XMLFile(const char* szMode,
+			const char* szUser,
 			const char* szGroup,
 			const char* szConfig,
 			const char* szPath);
@@ -127,25 +127,49 @@ public:
 	}
 
 	/**
-	 * Checks for a file attribute
+	 * Sets the file path
+	 * .
+	 * @param szPath The path to set
+	 * @return none
+	 **/
+	void setPath(const char* szPath)
+	{
+		if (szPath)
+			m_sPath.assign(szPath);
+	}
+
+	/**
+	 * Checks for a file mode
 	 * .
 	 * @param none
 	 * @return true if we have one, false otherwise
 	 **/
-	bool hasAttr()
+	bool hasMode()
 	{
-		return m_sAttr.length() ? true : false;
+		return m_sMode.length() ? true : false;
 	}
 
 	/**
-	 * Returns the file attribute
+	 * Returns the file mode
 	 * .
 	 * @param none
-	 * @return the sttribute string
+	 * @return the mode string
 	 **/
-	const char* getAttr()
+	const char* getMode()
 	{
-		return m_sAttr.c_str();
+		return m_sMode.c_str();
+	}
+
+	/**
+	 * Sets the file mode
+	 * .
+	 * @param szMode The mode to set
+	 * @return none
+	 **/
+	void setMode(const char* szMode)
+	{
+		if (szMode)
+			m_sMode.assign(szMode);
 	}
 
 	/**
@@ -162,12 +186,24 @@ public:
 	/**
 	 * Returns the file owner
 	 * .
-	 * @param no0ne
+	 * @param none
 	 * @return the owner as a string
 	 **/
 	const char* getOwner()
 	{
 		return m_sOwner.c_str();
+	}
+
+	/**
+	 * Sets the file owner
+	 * .
+	 * @param szOwner The file owner
+	 * @return none
+	 **/
+	void setOwner(const char* szOwner)
+	{
+		if (szOwner)
+			m_sOwner.assign(szOwner);
 	}
 
 	/**
@@ -193,6 +229,18 @@ public:
 	}
 
 	/**
+	 * Sets the file group
+	 * .
+	 * @param szGroup The group to set
+	 * @return none
+	 **/
+	void setGroup(const char* szGroup)
+	{
+		if (szGroup)
+			m_sGroup.assign(szGroup);
+	}
+
+	/**
 	 * Checks for config directives
 	 * .
 	 * @param none
@@ -214,12 +262,24 @@ public:
 		return m_sConfig.c_str();
 	}
 
+	/**
+	 * Sets the config attribute
+	 * .
+	 * @param szConfig The configuration
+	 * @return none
+	 **/
+	void setConfig(const char* szConfig)
+	{
+		if (szConfig)
+			m_sConfig.assign(szConfig);
+	}
+
 //
 // member variables
 //
 protected:
 	string m_sPath;
-	string m_sAttr;
+	string m_sMode;
 	string m_sOwner;
 	string m_sGroup;
 	string m_sConfig;
@@ -352,37 +412,37 @@ public:
 	}
 
 	/**
-	 * Checks for a default attribute
+	 * Checks for a default mode
 	 * .
 	 * @param none
-	 * @return true if we have a default attribute, false otherwise
+	 * @return true if we have a default mode, false otherwise
 	 **/
-	bool hasDefAttr()
+	bool hasDefMode()
 	{
-		return m_sAttr.length() ? true : false;
+		return m_sMode.length() ? true : false;
 	}
 
 	/**
-	 * Sets the default attribute
+	 * Sets the default mode
 	 * .
-	 * @param szAttr The attribute value
+	 * @param szMode The mode value
 	 * @return none
 	 **/
-	void setDefAttr(const char* szAttr)
+	void setDefMode(const char* szMode)
 	{
-		if (szAttr)
-			m_sAttr.assign(szAttr);
+		if (szMode)
+			m_sMode.assign(szMode);
 	}
 
 	/**
-	 * Returns the default attribute
+	 * Returns the default mode
 	 * .
 	 * @param none
-	 * @return string contating the attribute
+	 * @return string containing the mode
 	 **/
-	const char* getDefAttr()
+	const char* getDefMode()
 	{
-		return m_sAttr.c_str();
+		return m_sMode.c_str();
 	}
 
 	/**
@@ -457,7 +517,7 @@ public:
 // member variables
 //
 protected:
-	string          m_sAttr;
+	string          m_sMode;
 	string          m_sOwner;
 	string          m_sGroup;
 	vector<XMLFile> m_vFiles;

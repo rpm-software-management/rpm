@@ -715,13 +715,13 @@ void endDepth2(structCBData* pData)
 	// do the tag
 	switch (pData->m_pnTree[2]) {
 		case XTAG_SUMMARY:
-			if (!XMLPackage::setSummary(pData->m_sData.c_str(),
+			if (!XMLPackage::addSummary(pData->m_pAttrs, pData->m_sData.c_str(),
 										pData->m_pSpec))
 				createError(XMLERR_ERROR, pData,
 							"Failed to add 'summary'.");
 			break;
 		case XTAG_DESC:
-			if (!XMLPackage::setDescription(pData->m_sData.c_str(),
+			if (!XMLPackage::addDescription(pData->m_pAttrs, pData->m_sData.c_str(),
 											pData->m_pSpec))
 				createError(XMLERR_ERROR, pData,
 							"Failed to add 'description'.");

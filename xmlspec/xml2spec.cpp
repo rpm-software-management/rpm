@@ -1,5 +1,3 @@
-// TODO: Comment properly
-
 // standard C++ includes
 #include <fstream>
 
@@ -20,6 +18,7 @@ int usage()
 int main(int argc,
 		 char** argv)
 {
+	printf("\nxml2spec, version 0.01\n");
 	if (argc != 2 && argc != 3) {
 		usage();
 		return 1;
@@ -43,7 +42,6 @@ int main(int argc,
 		}
 		else if (argc == 2) {
 			pSpec->toSpecFile(cout);
-			pSpec->toXMLFile(cout);
 		}
 
 		delete pSpec;

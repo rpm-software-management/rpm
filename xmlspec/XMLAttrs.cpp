@@ -6,6 +6,7 @@
 
 // our includes
 #include "XMLAttrs.h"
+#include "XMLMisc.h"
 #include "XMLSpec.h"
 
 using namespace std;
@@ -56,90 +57,6 @@ XMLAttrs::~XMLAttrs()
 {
 }
 
-static char* szaDays[]   = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
-static char* szaMonths[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
-static int naLengths[]   = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-static char* szaBools[]  = { "no", "yes", "false", "true", "0", "1", NULL };
-
-char* splitStr(const char* szInput,
-			   char cTerm,
-			   int& nLen)
-{
-	nLen = 0;
-	while (szInput[nLen] != cTerm && szInput[nLen] != '\0') {
-		nLen++;
-	}
-	char* szTemp = ((char*)szInput)+nLen;
-	while (*szTemp == ' ' && *szTemp != '\0')
-		szTemp++;
-	return szTemp;
-}
-
-int findStr(char* szaMatches[],
-			const char* szValue,
-			int nLen = -1)
-{
-	for (unsigned int i = 0; szaMatches[i] != NULL; i++) {
-		if (strcmp(szaMatches[i], "*") == 0)
-			return i;
-		else if (nLen == -1) {
-			if (strcasecmp(szaMatches[i], szValue) == 0)
-				return i;
-		}
-		else if (strncasecmp(szaMatches[i], szValue, nLen) == 0)
-			return i;
-	}
-	return -1;
-}
-
-bool isInteger(const char* szValue,
-			   int nLen = -1)
-{
-	if (nLen == -1)
-		nLen = strlen(szValue);
-	for (unsigned int i = 0; i < strlen(szValue); i++) {
-		if (szValue[i] < '0' || szValue[i] > '9')
-			return false;
-	}
-	return true;
-}
-
-bool isDate(const char* szValue)
-{
-	int nLen, nPos;
-	char* szTemp = splitStr(szValue, ' ', nLen);
-	if ((nPos = findStr(szaDays, szValue, nLen)) != -1) {
-		if ((nPos = findStr(szaMonths, szTemp, nLen)) != -1) {
-			szTemp = splitStr(szTemp, ' ', nLen);
-			char* szBuffer = new char[nLen+1];
-			sprintf(szBuffer, "%s", szTemp);
-			szBuffer[nLen] = '\0';
-			if (atoi(szBuffer) <= naLengths[nPos]) {
-				delete[] szBuffer;
-				szTemp = splitStr(szTemp, ' ', nLen);
-				return isInteger(szTemp, nLen);
-			}
-			delete[] szBuffer;
-		}
-	}
-	return false;
-}
-
-bool isEmail(const char* szValue)
-{
-	bool bFound = false;
-	for (unsigned int j = 0; j < strlen(szValue); j++) {
-		if (szValue[j] == '@') {
-			if (bFound)
-				return false;
-			else
-				bFound = true;
-		}
-	}
-	return bFound;
-}
-
 bool validateAttr(structValidAttrs& rAttr,
 				  const char* szValue)
 {
@@ -151,7 +68,7 @@ bool validateAttr(structValidAttrs& rAttr,
 			return isInteger(szValue);
 			break;
 		case XATTRTYPE_BOOL:
-			return findStr(szaBools, szValue) != -1 ? true : false;
+			return isBool(szValue);
 			break;
 		case XATTRTYPE_DATE:
 			return isDate(szValue);

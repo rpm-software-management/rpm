@@ -7,7 +7,7 @@
 -->
 <spec name="example"
 	  version="1.0"
-	  release="03"
+	  release="06"
 	  copyright="GPL"
 	  url="http://www.rpm.org/"
 	  distribution="Any distribution"
@@ -66,7 +66,9 @@
 			<package name="old-example" />
 		</obsoletes>
 		<summary>This spec is just an example for some funny purpose.</summary>
+		<summary lang="af">Hierdie is net 'n toets vir i18n in die opsomming</summary>
 		<description>%{summary}</description>
+		<description lang="af">Nog 'n toets, hierdie keer in die beskrywing</description>
 		 <post>
 			<script interpreter="/bin/sh">/sbin/ldconfig</script>
 		</post>
@@ -74,7 +76,7 @@
 			<script>/sbin/ldconfig</script>
 		</postun>
 		<files>
-			<file uid="root" gid="root">/usr/lib/*.so*</file>
+			<file user="root" group="root">/usr/lib/*.so*</file>
 		</files>
 	</package>
 
@@ -91,17 +93,17 @@
 			<script>some pre stuff under devel</script>
 			<script dir="/here/while/we/are/at/it">That ^^^ changed directory</script>
 		</pre>
-		<files uid="root"
-				gid="root">
+		<files user="root"
+				group="root">
 			<file>/usr/include/*.h</file>
-			<file gid="rpm">/usr/lib/*.la</file>
-			<file uid="rpm">/usr/share/aclocal/*</file>
-			<file attr="777">/usr/share/m4/*</file>
-			<file uid="uid" gid="gid" attr="444">/usr/share/man/*</file>
+			<file group="rpm">/usr/lib/*.la</file>
+			<file user="rpm">/usr/share/aclocal/*</file>
+			<file mode="777">/usr/share/m4/*</file>
+			<file user="user" group="group" mode="444">/usr/share/man/*</file>
 		</files>
 	</package>
 
-	<package name="toys" sub="no">
+	<package name="toys" sub="no" group="Application/Toys">
 		<requires>
 			<package name="%{name}" />
 		</requires>
@@ -142,6 +144,19 @@
 	</clean>
 
 	<changelog>
+		<changes date="Wed Jun 05 2002"
+				 author="Jaco Greeff"
+				 author-email="jaco@puxedo.org"
+				 version="1.0-06">
+			<change>Changed spec to make sure the output spec file can be understood by RPM</change>
+			<change>Added languages (description/summary) and a test in Afrikaans</change>
+		</changes>
+		<changes date="Mon Jun 03 2002"
+				 author="Jaco Greeff"
+				 author-email="jaco@puxedo.org"
+				 version="1.0-05">
+			<change>Changed file attributes to mode, user and group</change>
+		</changes>
 		<changes date="Thu May 30 2002"
 				 author="Jaco Greeff"
 				 author-email="jaco@puxedo.org"

@@ -3,6 +3,7 @@
 
 // our includes
 #include "XMLChangelog.h"
+#include "XMLMisc.h"
 #include "XMLRPMWrap.h"
 #include "XMLSpec.h"
 
@@ -14,9 +15,38 @@ bool XMLChangelogEntry::parseCreate(XMLAttrs* pAttrs,
 {
 	if (!pSpec)
 		return false;
-
 	XMLChangelogEntry change(szChange);
 	pSpec->getChangelog().lastDate().addEntry(change);
+	return true;
+}
+
+bool XMLChangelogEntry::structCreate(const char* szEntries,
+									 XMLSpec* pXSpec)
+{
+	if (!pXSpec || !szEntries)
+		return false;
+	char* szIn = (char*)szEntries;
+	char* szOut = NULL;
+	int nLen = -1;
+	string sChange;
+	while (nLen != 0) {
+		szOut = splitStr(szIn, '\n', nLen);
+		if (strncmp(szIn, "- ", 2) == 0) {
+			szIn += 2;
+			nLen -= 2;
+			if (sChange.length()) {
+				XMLChangelogEntry change(sChange.c_str());
+				pXSpec->getChangelog().lastDate().addEntry(change);
+			}
+			sChange.assign("");
+		}
+		sChange.append(szIn, nLen);
+		szIn = szOut;
+	}
+	if (sChange.length()) {
+		XMLChangelogEntry change(sChange.c_str());
+		pXSpec->getChangelog().lastDate().addEntry(change);
+	}
 	return true;
 }
 
@@ -71,6 +101,26 @@ bool XMLChangelogDate::parseCreate(XMLAttrs* pAttrs,
 	return true;
 }
 
+bool XMLChangelogDate::structCreate(const char* szDate,
+									const char* szName,
+									const char* szEntries,
+									XMLSpec* pXSpec)
+{
+	if (!szDate || !szName || !szEntries || ! pXSpec)
+		return false;
+	time_t tTime = (time_t)(atol(szDate)) - timezone;
+	struct tm *sTime = gmtime(&tTime);
+	sTime->tm_year += 1900;
+	char szTmp[32];
+	sprintf(szTmp,"%s %s %d %d", g_szaDays[sTime->tm_wday],
+								  g_szaMonths[sTime->tm_mon],
+								  sTime->tm_mday, sTime->tm_year);
+	XMLChangelogDate date(szTmp, szName, NULL, NULL);
+	pXSpec->getChangelog().addDate(date);
+	XMLChangelogEntry::structCreate(szEntries, pXSpec);
+	return true;
+}
+
 XMLChangelogDate::XMLChangelogDate(const char* szDate,
 								   const char* szAuthor,
 								   const char* szEmail,
@@ -103,39 +153,47 @@ XMLChangelogDate::~XMLChangelogDate()
 
 void XMLChangelogDate::toSpecFile(ostream& rOut)
 {
-	if (numEntries()) {
-		rOut << endl << "* " << getDate() << " " << getAuthor();
-		if (hasEmail())
-			rOut << " <" << getEmail() << ">";
-		if (hasVersion())
-			rOut << " " << getVersion();
-		for (unsigned int i = 0; i < numEntries(); i++)
-			getEntry(i).toSpecFile(rOut);
-		rOut << endl;
-	}
+	rOut << endl << "* " << getDate() << " " << getAuthor();
+	if (hasEmail())
+		rOut << " <" << getEmail() << ">";
+	if (hasVersion())
+		rOut << " " << getVersion();
+	for (unsigned int i = 0; i < numEntries(); i++)
+		getEntry(i).toSpecFile(rOut);
+	rOut << endl;
 }
 
 void XMLChangelogDate::toXMLFile(ostream& rOut)
 {
-	if (numEntries()) {
-		rOut << endl << "\t\t<changes date=\"" << getDate() << "\"";
-		rOut << endl << "\t\t         author=\"" << getAuthor() << "\"";
-		if (hasEmail())
-			rOut << endl << "\t\t         author-email=\"" << getEmail() << "\"";
-		if (hasVersion())
-			rOut << endl << "\t\t         version=\"" << getVersion() << "\"";
-		rOut << ">";
-		for (unsigned int i = 0; i < numEntries(); i++)
-			getEntry(i).toXMLFile(rOut);
-		rOut << endl << "\t\t</changes>";
-	}
+	rOut << endl << "\t\t<changes date=\"" << getDate() << "\"";
+	rOut << endl << "\t\t         author=\"" << getAuthor() << "\"";
+	if (hasEmail())
+		rOut << endl << "\t\t         author-email=\"" << getEmail() << "\"";
+	if (hasVersion())
+		rOut << endl << "\t\t         version=\"" << getVersion() << "\"";
+	rOut << ">";
+	for (unsigned int i = 0; i < numEntries(); i++)
+		getEntry(i).toXMLFile(rOut);
+	rOut << endl << "\t\t</changes>";
 }
 
 bool XMLChangelog::structCreate(Spec pSpec,
 								XMLSpec* pXSpec)
 {
-	if (!pXSpec || !pSpec)
+	if (!pXSpec || !pSpec || !pSpec->packages || !pSpec->packages->header)
 		return false;
+	// FIXME: it looks like RPM only stores the tomost date in the
+	// spec file so we are only allowed to get that one instead of an
+	// array of time_t's
+	string sDates;
+	t_StrVector svChanges;
+	t_StrVector svNames;
+	getRPMHeader(pSpec->packages->header, RPMTAG_CHANGELOGTIME, sDates);
+	getRPMHeaderArray(pSpec->packages->header, RPMTAG_CHANGELOGNAME, svNames);
+	getRPMHeaderArray(pSpec->packages->header, RPMTAG_CHANGELOGTEXT, svChanges);
+	for (unsigned int i = 0; i < svNames.size(); i++)
+		XMLChangelogDate::structCreate(sDates.c_str(), svNames[i].c_str(),
+									   svChanges[i].c_str(), pXSpec);
 	return true;
 }
 
@@ -170,7 +228,7 @@ void XMLChangelog::toXMLFile(ostream& rOut)
 		rOut << endl << "\t<changelog>";
 		for (unsigned int i = 0; i < numDates(); i++)
 			getDate(i).toXMLFile(rOut);
-		rOut << endl << "\t<changelog>";
+		rOut << endl << "\t</changelog>";
 	}
 }
 
