@@ -2,6 +2,7 @@
 	- fixed script file md5 checking when files are in a root
 	- implemented proper strdup/free logic for dependency conflict
 	  lists
+	- strip leading directories from ldd output
 
 2.2.1 -> 2.2.2:
 	- added functionality to rpmlib to suggest resolutions for
