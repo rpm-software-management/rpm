@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
@@ -10,7 +11,9 @@ cd $RPM_BUILD_ROOT
 COMPRESS="gzip -9"
 COMPRESS_EXT=.gz
 
-for d in ./usr/man/man* ./usr/man/*/man* ./usr/X11R6/man/man* ./usr/lib/perl5/man/man*
+for d in ./usr/man/man* ./usr/man/*/man* \
+	./usr/share/man/man* ./usr/share/ma/*/man* \
+	./usr/X11R6/man/man* ./usr/lib/perl5/man/man*
 do
     [ -d $d ] || continue
     for f in `find $d -type f`
