@@ -12,12 +12,11 @@ INCLUDES = \
 	@INCPATH@
 
 EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c
+mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \
+	$(top_builddir)/lib/.libs/librpm.a \
+	$(top_builddir)/popt/.libs/libpopt.a
 
-mylibs=	$(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/popt/libpopt.la
-
-LDADD = $(top_builddir)/lib/librpm.la
+LDADD = $(top_builddir)/lib/.libs/librpm.a
 
 noinst_PROGRAMS = \
 	rpmlead rpmheader rpmarchive rpmsignature dump dumpdb javadeps
