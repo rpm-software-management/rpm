@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.31
+Release: 0.32
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -312,6 +312,7 @@ fi
 %changelog
 * Fri Jan 19 2001 Jeff Johnson <jbj@redhat.com>
 - ewt's cpio.c hack.
+- ewt's cpio.c hack reverted.
 
 * Thu Jan 18 2001 Matt Wilson <msw@redhat.com>
 - fix: exit 0 at the end of %pre

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-01-19 12:17-0500\n"
+"POT-Creation-Date: 2001-01-19 14:27-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2455,42 +2455,42 @@ msgstr ""
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1253
+#: lib/cpio.c:1245
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "virhe: "
 
-#: lib/cpio.c:1256
+#: lib/cpio.c:1248
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1257
+#: lib/cpio.c:1249
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1275
+#: lib/cpio.c:1267
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1276
+#: lib/cpio.c:1268
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(tuntematon tyyppi)"
 
-#: lib/cpio.c:1277
+#: lib/cpio.c:1269
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1278
+#: lib/cpio.c:1270
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1279
+#: lib/cpio.c:1271
 #, fuzzy
 msgid "Internal error"
 msgstr "vakava virhe: "
 
-#: lib/cpio.c:1288
+#: lib/cpio.c:1280
 #, fuzzy
 msgid " failed - "
 msgstr "pgp epäonnistui"

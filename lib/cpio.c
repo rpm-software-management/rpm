@@ -771,15 +771,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 			  cpioFileMapCmp);
 	}
 
-#ifdef	HACK_ALERT
-	if (mappings && !map)
-#else
-	if (mappings && !map && (st->st_nlink == 1 || !S_ISREG(st->st_mode)
-			|| !st->st_size)) {
-	} else if ((st->st_nlink > 1) && S_ISREG(st->st_mode) &&
-			(li->createdPath != -1))
-#endif
-	{
+	if (mappings && !map) {
 	    eatBytes(cfd, st->st_size);
 	} else {
 	    if (map) {

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-19 12:17-0500\n"
+"POT-Creation-Date: 2001-01-19 14:27-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2467,42 +2467,42 @@ msgstr ""
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1253
+#: lib/cpio.c:1245
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "hata: "
 
-#: lib/cpio.c:1256
+#: lib/cpio.c:1248
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1257
+#: lib/cpio.c:1249
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1275
+#: lib/cpio.c:1267
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1276
+#: lib/cpio.c:1268
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(bilinmeyen tip)"
 
-#: lib/cpio.c:1277
+#: lib/cpio.c:1269
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1278
+#: lib/cpio.c:1270
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1279
+#: lib/cpio.c:1271
 #, fuzzy
 msgid "Internal error"
 msgstr "ölümcül hata: "
 
-#: lib/cpio.c:1288
+#: lib/cpio.c:1280
 #, fuzzy
 msgid " failed - "
 msgstr "PGP hata verdi"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-19 12:17-0500\n"
+"POT-Creation-Date: 2001-01-19 14:27-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2458,40 +2458,40 @@ msgstr "zmazanie %s zlyhalo: %s\n"
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1253
+#: lib/cpio.c:1245
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(chyba 0x%x)"
 
-#: lib/cpio.c:1256
+#: lib/cpio.c:1248
 msgid "Bad magic"
 msgstr "Chybné magické èíslo"
 
-#: lib/cpio.c:1257
+#: lib/cpio.c:1249
 msgid "Bad/unreadable  header"
 msgstr "Chybná/neèitateµná hlavièka"
 
-#: lib/cpio.c:1275
+#: lib/cpio.c:1267
 msgid "Header size too big"
 msgstr "Priveµká hlavièka"
 
-#: lib/cpio.c:1276
+#: lib/cpio.c:1268
 msgid "Unknown file type"
 msgstr "Neznámy typ súboru"
 
-#: lib/cpio.c:1277
+#: lib/cpio.c:1269
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1278
+#: lib/cpio.c:1270
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1279
+#: lib/cpio.c:1271
 msgid "Internal error"
 msgstr "Interná chyba"
 
-#: lib/cpio.c:1288
+#: lib/cpio.c:1280
 msgid " failed - "
 msgstr " zlyhalo - "
 
