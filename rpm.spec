@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.23
+Release: 0.24
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -242,6 +242,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue May 30 2000 Matt Wilson <msw@redhat.com>
+- fix configure and makeinstall macros
+
 * Tue May 30 2000 Jeff Johnson <jbj@redhat.com>
 - mark packaging with version 4 to reflect filename/provide changes.
 - change next version from 3.1 to 4.0 to reflect package format change.
