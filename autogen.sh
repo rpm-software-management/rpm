@@ -1,11 +1,11 @@
 #!/bin/sh
 
-LTV="libtoolize (GNU libtool) 1.3.2"
+LTV="libtoolize (GNU libtool) 1.3.3"
 ACV="Autoconf version 2.13"
 AMV="automake (GNU automake) 1.4"
 USAGE="
 You need to install:
-	libtool-1.3.2
+	libtool-1.3.3
 	autoconf-2.13
 	automake-1.4
 "
