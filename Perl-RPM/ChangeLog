@@ -185,7 +185,7 @@ Revision history for Perl extension RPM.
 	The alternative is a nasty mix of "attempt to free unreferenced
 	scalar" errors and core dumps.
 
-0.30
+0.30	Wed Mar  7 22:13:40 PST 2001
 	- tenth alpha
 
 	Much of the leakage of RPM::Header objects is now gone, due mostly to

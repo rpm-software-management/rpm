@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.292 (ninth alpha)
+Version 0.30 (tenth alpha)
 
 
 WHAT IS IT
@@ -49,11 +49,9 @@ There is now a mailing list for Perl-RPM. For details, see:
 
 CHANGES
 
-This is the ninth release. For detailed changes, see the file ChangeLog.
-Among the bugs addressed in this version are some test cases not previously
-exercised, and most importantly a bug that was causing objects to not be
-completely freed until program end, which was significant for the RPM::Database
-class, which locks the system-wide RPM database.
+This is the tenth release. For detailed changes, see the file ChangeLog.
+Among the bugs addressed in this version are memory leaks and a core-dumping
+problem with newer rpm 4.0 versions.
 
 
 LICENSE
