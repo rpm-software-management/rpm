@@ -25,7 +25,7 @@
 	- port to internal file-4.10 libmagic rather than libfmagic.
 	- fix: handle non-unique dirnames in rpmalAdd().
 	- integrate rpmgi "generic iterator" with query/verify.
-	- bump popt to version to 1.10.
+	- bump popt version to 1.10.
 	- attempt dependency tree breadth, take 1.
 	- use external libneon for http/https transport.
 
