@@ -30,6 +30,11 @@ int doCheckSig(char **argv)
 	    res = -1;
 	    continue;
 	}
+	if (lead.major == 1) {
+	    fprintf(stderr, "%s: No signature available (v1.0 RPM)\n", rpm);
+	    res = -1;
+	    continue;
+	}
 	if (!readSignature(fd, lead.signature_type, (void **) &sig)) {
 	    fprintf(stderr, "%s: readSignature failed\n", rpm);
 	    res = -1;
