@@ -1,0 +1,9 @@
+#!/bin/sh
+# ----------------------------------------------------------
+#	find-provides for FreeBSD-2.2.x
+# ----------------------------------------------------------
+filelist=$(grep "\\.so" | grep -v "^/lib/ld.so" | xargs file -L 2>/dev/null | grep "FreeBSD.*shared" | cut -d: -f1)
+
+for f in $filelist; do
+        echo ${f##*/}
+done | sort -u

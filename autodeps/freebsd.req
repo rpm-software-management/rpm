@@ -1,0 +1,22 @@
+#!/bin/sh
+# ----------------------------------------------------------------
+#	find-requires for FreeBSD-2.2.x
+#	how do we know what is required by a.out shared libraries?
+# ----------------------------------------------------------------
+ulimit -c 0
+
+filelist=`sed "s/['\"]/\\\&/g"`
+exelist=`echo $filelist | xargs file | fgrep executable | cut -d: -f1 `
+scriptlist=`echo $filelist | xargs file | egrep ":.* (commands|script) " | cut -d: -f1 `
+
+for f in $exelist; do
+    if [ -x $f ]; then
+        ldd $f | /usr/bin/awk '/=>/&&!/not found/ { print $3 }'
+    fi
+done | sort -u | sed "s/['\"]/\\\&/g" | xargs -n 1 basename | sort -u
+
+for f in $scriptlist; do
+    if [ -x $f ]; then
+        head -1 $f | sed -e 's/^\#\![   ]*//' | cut -d" " -f1
+    fi
+done | sort -u
