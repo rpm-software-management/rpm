@@ -103,10 +103,12 @@ extern const int rpmTagTableSize;
 #define VERIFY_RDEV             (1 << 7)
 #define VERIFY_ALL              ~(VERIFY_NONE)
 
+
 #define REQUIRE_SERIAL          (1 << 0)
 #define REQUIRE_LESS            (1 << 1)
 #define REQUIRE_GREATER         (1 << 2)
 #define REQUIRE_EQUAL           (1 << 3)
+#define REQUIRE_PROVIDES        (1 << 4)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
