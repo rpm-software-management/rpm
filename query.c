@@ -44,10 +44,10 @@ static char * requiresQueryFormat =
 	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]";
 static char * providesQueryFormat = "[%{PROVIDES}\n]";
 static char * scriptQueryFormat = 
-	    "printinstall script:\n%{RPMTAG_PREIN}\n"
+	    "preinstall script:\n%{RPMTAG_PREIN}\n"
 	    "postinstall script:\n%{RPMTAG_POSTIN}\n"
 	    "preuninstall script:\n%{RPMTAG_PREUN}\n"
-	    "postuninstall script:\n%{RPMTAG_POSTIN}\n";
+	    "postuninstall script:\n%{RPMTAG_POSTUN}\n";
 
 static int queryHeader(Header h, char * chptr) {
     int count = 0;
