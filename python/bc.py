@@ -8,7 +8,7 @@ i = 1
 
 for i in range(30):
 	a = rpm.bc(i)
-	for j in range(48):
+	for j in range(100):
 		b = rpm.bc(j)
 		print i, '^', j, '=', rpm.bc.__pow__(a, b)
 

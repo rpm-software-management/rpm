@@ -691,11 +691,10 @@ static void mp32npow_w(mp32number* n, uint32 xsize, const uint32* xdata,
 {
     uint32 xbits = mp32bitcnt(xsize, xdata);
     uint32 pbits = mp32bitcnt(psize, pdata);
+    uint32 nbits;
     uint32 *slide;
     uint32 nsize;
     uint32 size;
-
-    assert(pbits < 16);
 
     /* Special case X**0 */
     if (pbits == 0) {
@@ -705,17 +704,19 @@ static void mp32npow_w(mp32number* n, uint32 xsize, const uint32* xdata,
 
     /* Other special cases, like X**1 */
 
-if (_bc_debug)
-fprintf(stderr, "*** before %p[%d]\n", pdata, psize);
     /* Normalize (to uint32 boundary) exponent. */
     pdata += psize - ((pbits+31)/32);
     psize -= (pbits/32);
-if (_bc_debug)
-fprintf(stderr, "*** after %p[%d]\n", pdata, psize);
 
     /* Calculate size of result. */
     if (xbits == 0) xbits = 1;
-    nsize = (((*pdata) * xbits) + 31)/32 + 1;	/* 1 word for sign bit */
+    nbits = (*pdata) * xbits;
+    nsize = (nbits + 31)/32;
+
+    /* XXX Add 1 word to carry sign bit */
+    if (!mp32msbset(xsize, xdata) && (nbits & (32 -1)) == 0)
+	nsize++;
+
     size = ((15 * xbits)+31)/32;
 
 if (_bc_debug)
@@ -831,6 +832,11 @@ static int rpmbc_init(rpmbcObject * z, PyObject *args, PyObject *kwds)
 	const unsigned char * hex = PyString_AsString(o);
 	/* XXX TODO: check for hex. */
 	mp32nsethex(&z->n, hex);
+    } else if (is_rpmbc(o)) {
+	rpmbcObject *a = (rpmbcObject *)o;
+	mp32nsize(z, a->n.size);
+	if (a->n.size > 0)
+	    mp32setx(z->n.size, z->n.data, a->n.size, a->n.data);
     } else {
 	PyErr_SetString(PyExc_TypeError, "non-numeric coercion failed (rpmbc_init)");
 	return -1;
