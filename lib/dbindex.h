@@ -101,19 +101,21 @@ struct _dbiVec {
  * @param dbi	index database handle
  * @param keyp	key data
  * @param keylen key data length
+ * @param use_cursor open cursor for access?
  */
-    int (*del) (dbiIndex dbi, void * keyp, size_t keylen);
+    int (*del) (dbiIndex dbi, void * keyp, size_t keylen, int use_cursor);
 
 /**
  * Retrieve item using db->get.
  * @param dbi	index database handle
- * @param keyp	key data
- * @param keylen key data length
+ * @param keyp	address of key data
+ * @param keylen address of key data length
  * @param datap	address of data pointer
  * @param datalen address of data length
+ * @param use_cursor open cursor for access?
  */
-    int (*get) (dbiIndex dbi, void * keyp, size_t keylen,
-			void ** datap, size_t * datalen);
+    int (*get) (dbiIndex dbi, void ** keyp, size_t * keylen,
+			void ** datap, size_t * datalen, int use_cursor);
 
 /**
  * Save item using db->put.
@@ -122,9 +124,10 @@ struct _dbiVec {
  * @param keylen key data length
  * @param datap	data pointer
  * @param datalen data length
+ * @param use_cursor open cursor for access?
  */
     int (*put) (dbiIndex dbi, void * keyp, size_t keylen,
-			void * datap, size_t datalen);
+			void * datap, size_t datalen, int use_cursor);
 
 };
 
@@ -145,8 +148,8 @@ struct _dbiIndex {
     void * dbi_dbenv;
     void * dbi_dbinfo;
     void * dbi_dbcursor;
-    const void * dbi_openinfo;		/*<! private data passed on open */
-    FD_t dbi_fd;			/*<! private data for fadio access */
+    const void * dbi_openinfo;
+    const void * dbi_stat;
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
 };
 

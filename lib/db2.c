@@ -433,7 +433,7 @@ static int db2UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 }
 /*@=compmempass@*/
 
-static int db2del(dbiIndex dbi, void * keyp, size_t keylen)
+static int db2del(dbiIndex dbi, void * keyp, size_t keylen, int use_cursor)
 {
     DB_TXN * txnid = NULL;
     DBT key;
@@ -452,7 +452,7 @@ static int db2del(dbiIndex dbi, void * keyp, size_t keylen)
 }
 
 static int db2get(dbiIndex dbi, void * keyp, size_t keylen,
-		void ** datap, size_t * datalen)
+		void ** datap, size_t * datalen, int use_cursor)
 {
     DB_TXN * txnid = NULL;
     DBT key, data;
@@ -481,7 +481,7 @@ static int db2get(dbiIndex dbi, void * keyp, size_t keylen,
 }
 
 static int db2put(dbiIndex dbi, void * keyp, size_t keylen,
-		void * datap, size_t datalen)
+		void * datap, size_t datalen, int use_cursor)
 {
     DB_TXN * txnid = NULL;
     DBT key, data;

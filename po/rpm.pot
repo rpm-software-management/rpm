@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-07 12:18-0400\n"
+"POT-Creation-Date: 2000-04-08 15:20-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2218,7 +2218,7 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:146 lib/uninstall.c:200
+#: lib/install.c:146 lib/uninstall.c:184
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
@@ -2286,7 +2286,7 @@ msgstr ""
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:562 lib/install.c:854 lib/uninstall.c:31
+#: lib/install.c:562 lib/install.c:834 lib/uninstall.c:29
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2300,25 +2300,25 @@ msgstr ""
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:784
+#: lib/install.c:764
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:789
+#: lib/install.c:769
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:814
+#: lib/install.c:794
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:850
+#: lib/install.c:830
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:924
+#: lib/install.c:904
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2713,7 +2713,7 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:295
+#: lib/rebuilddb.c:34 lib/rpmdb.c:298
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2868,101 +2868,101 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:192
+#: lib/rpmdb.c:193
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:204 lib/url.c:445
+#: lib/rpmdb.c:206 lib/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:218 lib/rpmdb.c:226
+#: lib/rpmdb.c:220 lib/rpmdb.c:228
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: lib/rpmdb.c:219
+#: lib/rpmdb.c:221
 msgid "exclusive"
 msgstr ""
 
-#: lib/rpmdb.c:227
+#: lib/rpmdb.c:229
 msgid "shared"
 msgstr ""
 
-#: lib/rpmdb.c:268
+#: lib/rpmdb.c:271
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:554
+#: lib/rpmdb.c:587
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:583
+#: lib/rpmdb.c:616
 #, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr ""
 
-#: lib/rpmdb.c:592
+#: lib/rpmdb.c:625
 #, c-format
 msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:610
+#: lib/rpmdb.c:643
 #, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:638
+#: lib/rpmdb.c:671
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:644
+#: lib/rpmdb.c:677
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:652
+#: lib/rpmdb.c:685
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:656 lib/rpmdb.c:841
+#: lib/rpmdb.c:689 lib/rpmdb.c:898
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:774
+#: lib/rpmdb.c:832
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:875
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:830
+#: lib/rpmdb.c:887
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:837
+#: lib/rpmdb.c:894
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:895
+#: lib/rpmdb.c:952
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:908
+#: lib/rpmdb.c:965
 msgid "header changed size!"
 msgstr ""
 
@@ -3382,45 +3382,40 @@ msgstr ""
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:42
+#: lib/uninstall.c:40
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr ""
 
-#: lib/uninstall.c:45
+#: lib/uninstall.c:43
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr ""
 
-#: lib/uninstall.c:53
+#: lib/uninstall.c:51
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr ""
 
-#: lib/uninstall.c:91
+#: lib/uninstall.c:89
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/uninstall.c:106
-#, c-format
-msgid "cannot read packages named %s for uninstall"
-msgstr ""
-
-#: lib/uninstall.c:146
+#: lib/uninstall.c:130
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:214
+#: lib/uninstall.c:198
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:228
+#: lib/uninstall.c:212
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:412
+#: lib/uninstall.c:396
 msgid "execution of script failed"
 msgstr ""
 

@@ -148,6 +148,7 @@ static /*@only@*/ rpmdb newRpmdb(void)
 int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 		int mode, int perms, int flags)
 {
+    int _use_falloc = rpmExpandNumeric("%{_db3_use_falloc}");
     char * filename;
     rpmdb db;
     int i, rc;
@@ -198,6 +199,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 
     db = newRpmdb();
 
+  if (_use_falloc || rpmfileexists(filename)) {
     if (!justcheck || !rpmfileexists(filename)) {
 	db->pkgs = fadOpen(filename, mode, perms);
 	if (Ferror(db->pkgs)) {
@@ -230,6 +232,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 	    } 
 	}
     }
+  }
 
     {	int dbix;
 
@@ -333,11 +336,41 @@ void rpmdbClose (rpmdb db)
 }
 
 int rpmdbFirstRecNum(rpmdb db) {
+    if (db->pkgs == NULL) {
+	dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
+	unsigned int offset = 0;
+	void * keyp = &offset;
+	size_t keylen = sizeof(offset);
+	int rc;
+
+	/* XXX skip over instance 0 */
+	do {
+	    rc = (*dbi->dbi_vec->get) (dbi, &keyp, &keylen, NULL, NULL, 1);
+	    if (rc)
+		return 0;
+	    memcpy(&offset, keyp, sizeof(offset));
+	} while (offset == 0);
+	return offset;
+    }
+
     return fadFirstOffset(db->pkgs);
 }
 
 int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     /* 0 at end */
+    if (db->pkgs == NULL) {
+	dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
+	void * keyp = &lastOffset;
+	size_t keylen = sizeof(lastOffset);
+	int rc;
+
+	rc = (*dbi->dbi_vec->get) (dbi, &keyp, &keylen, NULL, NULL, 1);
+	if (rc)
+	    return 0;
+	memcpy(&lastOffset, keyp, sizeof(lastOffset));
+	return lastOffset;
+    }
+
     return fadNextOffset(db->pkgs, lastOffset);
 }
 
@@ -399,15 +432,15 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine)
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 {
-    int _use_falloc = rpmExpandNumeric("%{_db3_use_falloc}");
-    dbiIndex dbi;
-
-    if (!_use_falloc && (dbi = db->_dbi[RPMDBI_PACKAGES]) != NULL) {
+    if (db->pkgs == NULL) {
+	dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
 	void * uh;
 	size_t uhlen;
+	void * keyp = &offset;
+	size_t keylen = sizeof(offset);
 	int rc;
 
-	rc = (*dbi->dbi_vec->get) (dbi, &offset, sizeof(offset), &uh, &uhlen);
+	rc = (*dbi->dbi_vec->get) (dbi, &keyp, &keylen, &uh, &uhlen, 0);
 	if (rc)
 	    return NULL;
 	return headerLoad(uh);
@@ -629,7 +662,7 @@ if (_debug)
 fprintf(stderr, "*** removing dbix %d tag %d offset 0x%x\n", dbix, dbi->dbi_rpmtag, offset);
 	    if (dbi->dbi_rpmtag == 0) {
 		/* XXX TODO: remove h to packages.rpm */
-		(void) (*dbi->dbi_vec->del) (dbi, &offset, sizeof(offset));
+		(void) (*dbi->dbi_vec->del) (dbi, &offset, sizeof(offset), 0);
 		continue;
 	    }
 	
@@ -742,6 +775,7 @@ int rpmdbAdd(rpmdb db, Header h)
     const char ** baseNames;
     int count = 0;
     int type;
+    dbiIndex dbi;
     unsigned int offset;
     int rc = 0;
 
@@ -758,7 +792,31 @@ int rpmdbAdd(rpmdb db, Header h)
 
     blockSignals();
 
-    {	int newSize;
+    if (db->pkgs == NULL) {
+	unsigned int firstkey = 0;
+	void * keyp = &firstkey;
+	size_t keylen = sizeof(firstkey);
+	void * datap = NULL;
+	size_t datalen = 0;
+	int rc;
+
+	dbi = db->_dbi[RPMDBI_PACKAGES];
+	/* Retrieve join key for next header instance. */
+
+	rc = (*dbi->dbi_vec->get) (dbi, &keyp, &keylen, (void *)&datap, &datalen, 0);
+	offset = 0;
+	if (rc == 0 && datap)
+	    memcpy(&offset, datap, sizeof(offset));
+	++offset;
+	if (datap) {
+	    memcpy(datap, &offset, sizeof(offset));
+	} else {
+	    datap = &offset;
+	    datalen = sizeof(offset);
+	}
+	rc = (*dbi->dbi_vec->put) (dbi, keyp, keylen, datap, datalen, 0);
+    } else {
+	int newSize;
 	newSize = headerSizeof(h, HEADER_MAGIC_NO);
 	offset = fadAlloc(db->pkgs, newSize);
 	if (offset == 0) {
@@ -782,7 +840,6 @@ int rpmdbAdd(rpmdb db, Header h)
 	dbiIndexRecord rec = dbiReturnIndexRecordInstance(offset, 0);
 
 	for (dbix = RPMDBI_MIN; dbix < RPMDBI_MAX; dbix++) {
-	    dbiIndex dbi;
 	    const char **rpmvals = NULL;
 	    int rpmtype = 0;
 	    int rpmcnt = 0;
@@ -795,7 +852,7 @@ fprintf(stderr, "*** adding dbix %d tag %d offset 0x%x\n", dbix, dbi->dbi_rpmtag
 		size_t uhlen = headerSizeof(h, HEADER_MAGIC_NO);
 		void * uh = headerUnload(h);
 		/* XXX TODO: add h to packages.rpm */
-		(void) (*dbi->dbi_vec->put) (dbi, &offset, sizeof(offset), uh, uhlen);
+		(void) (*dbi->dbi_vec->put) (dbi, &offset, sizeof(offset), uh, uhlen, 0);
 		free(uh);
 		continue;
 	    }

@@ -373,6 +373,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 
     if (dbi->dbi_dbcursor) {
 	DBC * dbcursor = (DBC *)dbi->dbi_dbcursor;
+fprintf(stderr, "*** explicit dbcursor->c_close\n");
 	xx = dbcursor->c_close(dbcursor);
 	xx = cvtdberr(dbi, "dbcursor->c_close", xx, _debug);
 	dbi->dbi_dbcursor = NULL;
@@ -623,7 +624,7 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 }
 /*@=compmempass@*/
 
-static int db3del(dbiIndex dbi, void * keyp, size_t keylen)
+static int db3del(dbiIndex dbi, void * keyp, size_t keylen, int use_cursor)
 {
     DB_TXN * txnid = NULL;
     DBT key;
@@ -643,41 +644,69 @@ fprintf(stderr, "*** db3del(%p, %p,%d) rc %d\n", dbi, keyp, keylen, rc);
     return rc;
 }
 
-static int db3get(dbiIndex dbi, void * keyp, size_t keylen,
-		void ** datap, size_t * datalen)
+static int db3get(dbiIndex dbi, void ** keyp, size_t * keylen,
+		void ** datap, size_t * datalen, int use_cursor)
 {
     DB_TXN * txnid = NULL;
     DBT key, data;
     DB * db = GetDB(dbi);
     int _printit;
     int rc;
+    int xx;
 
     if (datap) *datap = NULL;
     if (datalen) *datalen = 0;
     _mymemset(&key, 0, sizeof(key));
     _mymemset(&data, 0, sizeof(data));
 
-    key.data = keyp;
-    key.size = keylen;
-    data.data = NULL;
-    data.size = 0;
+    if (use_cursor) {
+	DBC * dbcursor;
 
-    rc = db->get(db, txnid, &key, &data, 0);
-    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
-    rc = cvtdberr(dbi, "db->get", rc, _printit);
+	if ((dbcursor = dbi->dbi_dbcursor) == NULL) {
+#if defined(__USE_DB3)
+	    rc = db->cursor(db, txnid, &dbcursor, 0);
+#else
+	    rc = db->cursor(db, txnid, &dbcursor);
+#endif
+	    rc = cvtdberr(dbi, "db->cursor", rc, _debug);
+	    if (rc)
+		return rc;
+	    dbi->dbi_dbcursor = dbcursor;
+	}
+
+	/* XXX db3 does DB_FIRST on uninitialized cursor */
+	rc = dbcursor->c_get(dbcursor, &key, &data, DB_NEXT);
+	if (rc == DB_NOTFOUND) {
+	    xx = dbcursor->c_close(dbcursor);
+	    xx = cvtdberr(dbi, "dbcursor->c_close", xx, _debug);
+	    dbi->dbi_dbcursor = NULL;
+	    return rc;
+	}
+	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _debug);
+	if (rc == 0) {
+	    *keyp = key.data;
+	    *keylen = key.size;
+	}
+    } else {
+	key.data = *keyp;
+	key.size = *keylen;
+	rc = db->get(db, txnid, &key, &data, 0);
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "db->get", rc, _printit);
+    }
 
     if (rc == 0) {
-	*datap = data.data;
-	*datalen = data.size;
+	if (datap)
+	    *datap = data.data;
+	if (datalen)
+	    *datalen = data.size;
     }
-if (_debug)
-fprintf(stderr, "*** db3get(%p, %p,%d, %p,%d) rc %d\n", dbi, keyp, keylen, *datap, *datalen, rc);
 
     return rc;
 }
 
 static int db3put(dbiIndex dbi, void * keyp, size_t keylen,
-		void * datap, size_t datalen)
+		void * datap, size_t datalen, int use_cursor)
 {
     DB_TXN * txnid = NULL;
     DBT key, data;

@@ -4,12 +4,10 @@
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
-#include "dbindex.h"	/* XXX prototypes */
-#include "depends.h"
+#include "depends.h"	/* XXX for headerMatchesDepFlags */
 #include "install.h"
-#include "md5.h"
-#include "misc.h"
-#include "rpmdb.h"
+#include "misc.h"	/* XXX for makeTempFile, doputenv */
+#include "rpmdb.h"	/* XXX for rpmdbRemove */
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
@@ -100,25 +98,11 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
      * When we run scripts, we pass an argument which is the number of 
      * versions of this package that will be installed when we are finished.
      */
-#ifdef	DYING
-    {	dbiIndexSet matches;
-	if (rpmdbFindPackage(db, name, &matches)) {
-	    rpmError(RPMERR_DBCORRUPT, _("cannot read packages named %s for uninstall"),
-		name);
-	    dbiFreeIndexSet(matches);
-	    rc = 1;
-	    goto exit;
-	}
-	scriptArg = dbiIndexSetCount(matches) - 1;
-	dbiFreeIndexSet(matches);
-    }
-#else
     if ((scriptArg = rpmdbCountPackages(db, name)) < 0) {
 	rc = 1;
 	goto exit;
     }
     scriptArg -= 1;
-#endif
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
@@ -505,27 +489,6 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	headerGetEntry(triggeredH, RPMTAG_NAME, NULL, 
 		       (void **) &triggerPackageName, NULL);
 
-#ifdef	DYING
-    {	dbiIndexSet matches = NULL;
-	int index;
-
-	rpmdbFindPackage(db, triggerPackageName, &matches);
-
-	index = triggerIndices[i];
-	if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
-	    rc = runScript(triggeredH, root, 1, triggerProgs + index,
-			    triggerScripts[index], 
-			    dbiIndexSetCount(matches) + arg1correction, arg2, 
-			    scriptFd);
-	    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
-	}
-
-	if (matches) {
-	    dbiFreeIndexSet(matches);
-	    matches = NULL;
-	}
-    }
-#else
 	{   int arg1;
 	    int index;
 
@@ -542,7 +505,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 		}
 	    }
 	}
-#endif
+
 	free(triggerScripts);
 	free(triggerProgs);
 
@@ -578,22 +541,11 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 	goto exit;
     }
 
-#ifdef	DYING
-    {	dbiIndexSet otherMatches = NULL;
-	rpmdbFindPackage(db, packageName, &otherMatches);
-	if (otherMatches) {
-	    numPackage = dbiIndexSetCount(otherMatches) + countCorrection;
-	    dbiFreeIndexSet(otherMatches);
-	} else
-	    numPackage = 0;
-    }
-#else
     numPackage = rpmdbCountPackages(db, packageName);
     if (numPackage < 0) {
 	rc = 1;
 	goto exit;
     }
-#endif
 
     rc = 0;
     for (i = 0; i < dbiIndexSetCount(matches); i++) {

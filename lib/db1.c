@@ -327,7 +327,7 @@ static int db1UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
 }
 /*@=compmempass@*/
 
-static int db1del(dbiIndex dbi, void * keyp, size_t keylen)
+static int db1del(dbiIndex dbi, void * keyp, size_t keylen, int use_cursor)
 {
     DBT key;
     DB * db = GetDB(dbi);
@@ -345,7 +345,7 @@ static int db1del(dbiIndex dbi, void * keyp, size_t keylen)
 }
 
 static int db1get(dbiIndex dbi, void * keyp, size_t keylen,
-		void ** datap, size_t * datalen)
+		void ** datap, size_t * datalen, int use_cursor)
 {
     DBT key, data;
     DB * db = GetDB(dbi);
@@ -373,7 +373,7 @@ static int db1get(dbiIndex dbi, void * keyp, size_t keylen,
 }
 
 static int db1put(dbiIndex dbi, void * keyp, size_t keylen,
-		void * datap, size_t datalen)
+		void * datap, size_t datalen, int use_cursor)
 {
     DBT key, data;
     DB * db = GetDB(dbi);
