@@ -375,7 +375,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
  * @param ts		transaction set
  * @param ds		dependency set
  * @param data		opaque data associated with callback
- * @return		0 if resolved, 1 not found
+ * @return		-1 retry, 0 ignore, 1 not found
  */
 /*@-exportlocal@*/
 int rpmtsSolve(rpmts ts, rpmds ds, const void * data)

@@ -311,11 +311,12 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 	return 1;
 
     addMacro(NULL, "_dbpath", NULL, "%{_solve_dbpath}", RMIL_DEFAULT);
+
     rc = rpmdbOpen(ts->rootDir, &ts->sdb, ts->sdbmode, 0644);
     if (rc) {
 	const char * dn;
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmMessage(RPMMESS_DEBUG,
+	rpmMessage(RPMMESS_WARNING,
 			_("cannot open Solve database in %s\n"), dn);
 	dn = _free(dn);
     }
@@ -349,6 +350,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     rpmdbMatchIterator mi;
     Header bh;
     Header h;
+    size_t bhnamelen;
     time_t bhtime;
     rpmTag rpmtag;
     const char * keyp;
@@ -376,25 +378,40 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
     keylen = 0;
     mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
+    bhnamelen = 0;
     bhtime = 0;
     bh = NULL;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
+	const char * hname;
+	size_t hnamelen;
 	time_t htime;
 	int_32 * ip;
 
 	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
 	    continue;
 
+	/* XXX Prefer the shortest name if given alternatives. */
+	hname = NULL;
+	hnamelen = 0;
+	if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&hname, NULL)) {
+	    if (hname)
+		hnamelen = strlen(hname);
+	}
+	if (bhnamelen > 0 && hnamelen > bhnamelen)
+	    continue;
+
+	/* XXX Prefer the newest build if given alternatives. */
 	htime = 0;
 	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, (void **)&ip, NULL))
 	    htime = (time_t)*ip;
 
-	/* XXX Prefer the newest build if given alternatives. */
 	if (htime <= bhtime)
 	    continue;
+
 	bh = headerFree(bh);
 	bh = headerLink(h);
 	bhtime = htime;
+	bhnamelen = hnamelen;
     }
     mi = rpmdbFreeIterator(mi);
 
@@ -414,6 +431,40 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	goto exit;
     }
 
+    if (ts->transFlags & RPMTRANS_FLAG_ADDINDEPS) {
+	Header h;
+	FD_t fd;
+	rpmRC rpmrc;
+
+	fd = Fopen(str, "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
+			Fstrerror(fd));
+            if (fd) {
+                xx = Fclose(fd);
+                fd = NULL;
+            }
+	    str = _free(str);
+	    goto exit;
+	}
+	rpmrc = rpmReadPackageFile(ts, fd, str, &h);
+	xx = Fclose(fd);
+	if (rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) {
+	    if (h != NULL &&
+	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
+	    {
+		rpmMessage(RPMMESS_DEBUG, _("Adding: %s\n"), str);
+		rc = -1;
+		/* XXX str memory leak */
+	    } else
+		str = _free(str);
+	} else
+	    str = _free(str);
+	h = headerFree(h);
+	goto exit;
+    }
+
+    rpmMessage(RPMMESS_DEBUG, _("Suggesting: %s\n"), str);
     /* If suggestion is already present, don't bother. */
     if (ts->suggests != NULL && ts->nsuggests > 0) {
 	if (bsearch(&str, ts->suggests, ts->nsuggests,

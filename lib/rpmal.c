@@ -587,11 +587,12 @@ void rpmalMakeIndex(rpmal al)
 {
     availableIndex ai;
     availablePackage alp;
+    int aisize;
     int i;
 
-    if (al == NULL) return;
+    if (al == NULL || al->list == NULL) return;
     ai = &al->index;
-    if (ai->size || al->list == NULL) return;
+    aisize = ai->size;
 
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
@@ -599,8 +600,8 @@ void rpmalMakeIndex(rpmal al)
 	    ai->size += rpmdsCount(alp->provides);
     }
 
-    if (ai->size) {
-	ai->index = xcalloc(ai->size, sizeof(*ai->index));
+    if (ai->size != aisize) {
+	ai->index = xrealloc(ai->index, ai->size * sizeof(*ai->index));
 	ai->k = 0;
 
 	for (i = 0; i < al->size; i++) {

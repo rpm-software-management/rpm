@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.77
+Release: 0.78
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -517,6 +517,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Aug 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.78
+- supply transitive closure for CLI packages from rpmdb-redhat database.
+
 * Fri Aug  9 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.77
 - python: add return codes for rollbacks and fooDB methods.
 - avoid generating fingerprints for locale/zoneinfo sub-directories.

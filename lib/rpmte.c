@@ -444,8 +444,7 @@ rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->ts = rpmtsLink(ts, "rpmtsi");
     tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
-    tsi->ocmax = rpmtsNElements(ts);
-    tsi->oc = (tsi->reverse ? (tsi->ocmax - 1) : 0);
+    tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;
 /*@-modfilesys@*/
 if (_rpmte_debug)
@@ -466,13 +465,13 @@ rpmte rpmtsiNextElement(rpmtsi tsi)
     rpmte te = NULL;
     int oc = -1;
 
-    if (tsi == NULL || tsi->ts == NULL || tsi->ocmax <= 0)
+    if (tsi == NULL || tsi->ts == NULL || rpmtsNElements(tsi->ts) <= 0)
 	return te;
 
     if (tsi->reverse) {
 	if (tsi->oc >= 0)		oc = tsi->oc--;
     } else {
-    	if (tsi->oc < tsi->ocmax)	oc = tsi->oc++;
+    	if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
     }
     tsi->ocsave = oc;
 /*@-branchstate@*/

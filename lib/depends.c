@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
@@ -192,8 +192,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 /*@-boundswrite@*/
     ts->order[oc] = p;
 /*@=boundswrite@*/
-    if (!duplicate)
+    if (!duplicate) {
 	ts->orderCount++;
+	rpmcliPackagesTotal++;
+    }
     
     pkgKey = rpmalAdd(&ts->addedPackages, pkgKey, rpmteKey(p),
 			rpmteDS(p, RPMTAG_PROVIDENAME),
@@ -342,6 +344,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     int _cacheThisRC = 1;
     int rc;
     int xx;
+    int retrying = 0;
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
@@ -394,6 +397,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 	}
     }
 
+retry:
     rc = 0;	/* assume dependency is satisfied */
 
 #if defined(DYING) || defined(__LCLINT__)
@@ -500,9 +504,17 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
      * Search for an unsatisfied dependency.
      */
 /*@-boundsread@*/
-    if (adding && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
-	if (ts->solve != NULL)
+    if (adding && !retrying && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
+	if (ts->solve != NULL) {
 	    xx = (*ts->solve) (ts, dep, ts->solveData);
+	    if (xx == 0)
+		goto exit;
+	    if (xx == -1) {
+		retrying = 1;
+		rpmalMakeIndex(ts->addedPackages);
+		goto retry;
+	    }
+	}
     }
 /*@=boundsread@*/
 
@@ -1169,7 +1181,9 @@ int rpmtsOrder(rpmts ts)
     int qlen;
     int i, j;
 
+#ifdef	DYING
     rpmalMakeIndex(ts->addedPackages);
+#endif
 
     /* T1. Initialize. */
     if (oType == 0)
@@ -1601,7 +1615,6 @@ int rpmtsCheck(rpmts ts)
     ts->probs = rpmpsCreate();
 
     rpmalMakeIndex(ts->addedPackages);
-    rpmalMakeIndex(ts->availablePackages);
 
     /*
      * Look at all of the added packages and make sure their dependencies

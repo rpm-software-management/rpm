@@ -147,6 +147,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	installArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
+ { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.transFlags, RPMTRANS_FLAG_ADDINDEPS,
+	N_("add suggested packages to transaction"), NULL },
+
  { "allfiles", '\0', POPT_BIT_SET,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ALLFILES,
   N_("install all files, even configurations which might otherwise be skipped"),

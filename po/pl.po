@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-10 13:48-0400\n"
+"POT-Creation-Date: 2002-08-13 12:17-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1294,19 +1294,19 @@ msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:210 lib/poptI.c:261 lib/poptI.c:268
+#: build/poptBT.c:229 lib/poptALL.c:210 lib/poptI.c:265 lib/poptI.c:272
 #: lib/poptQV.c:329 lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: build/poptBT.c:231 lib/poptALL.c:212 lib/poptI.c:263 lib/poptI.c:270
+#: build/poptBT.c:231 lib/poptALL.c:212 lib/poptI.c:267 lib/poptI.c:274
 #: lib/poptQV.c:332 lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "nie sprawdzaj architektury systemu"
 
-#: build/poptBT.c:233 lib/poptALL.c:218 lib/poptI.c:265 lib/poptI.c:272
+#: build/poptBT.c:233 lib/poptALL.c:218 lib/poptI.c:269 lib/poptI.c:276
 #: lib/poptQV.c:335 lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1404,70 +1404,70 @@ msgstr " nie powiod³o siê -"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/depends.c:391
+#: lib/depends.c:394
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:417
+#: lib/depends.c:421
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:434
+#: lib/depends.c:438
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:463
+#: lib/depends.c:467
 #, fuzzy
 msgid "(db files)"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/depends.c:476
+#: lib/depends.c:480
 #, fuzzy
 msgid "(db provides)"
 msgstr "Udostêpniane zasoby:"
 
-#: lib/depends.c:489
+#: lib/depends.c:493
 #, fuzzy
 msgid "(db package)"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/depends.c:839
+#: lib/depends.c:851
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:961
+#: lib/depends.c:973
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1193
+#: lib/depends.c:1207
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1294
+#: lib/depends.c:1308
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1377
+#: lib/depends.c:1391
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1447
+#: lib/depends.c:1461
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1482
+#: lib/depends.c:1496
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1487
+#: lib/depends.c:1501
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1493,7 +1493,7 @@ msgstr "(nie jest liczb±)"
 
 #: lib/formats.c:310
 #, fuzzy
-msgid "(not a OpenPGP signature"
+msgid "(not an OpenPGP signature)"
 msgstr "pomiñ wszelkie sygnatury PGP"
 
 #: lib/fs.c:77
@@ -1743,12 +1743,17 @@ msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
 #: lib/poptI.c:152
+#, fuzzy
+msgid "add suggested packages to transaction"
+msgstr "odpytywanie pakietów w grupie"
+
+#: lib/poptI.c:156
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "instaluj wszystkie pliki, nawet konfiguracyjne, które w innym przypadku by "
 "pominêto"
 
-#: lib/poptI.c:156
+#: lib/poptI.c:160
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1756,148 +1761,148 @@ msgstr ""
 "usuñ wszystkie pakiety, które spe³niaj± wzorzec <pakiet> (zazwyczaj "
 "wy¶wietlany jest b³±d gdy <pakiet> opisuje wiele pakietów)"
 
-#: lib/poptI.c:162 lib/poptI.c:241 lib/poptI.c:244
+#: lib/poptI.c:166 lib/poptI.c:245 lib/poptI.c:248
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:170
 #, fuzzy
 msgid "relocate files in non-relocateable package"
 msgstr "nie mo¿na u¿yæ ¶cie¿ki %s przy przesuwaniu pakietu %s-%s-%s"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:173
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:172
+#: lib/poptI.c:176
 msgid "erase (uninstall) package"
 msgstr "usuñ (odinstaluj) pakiet"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:176
 #, fuzzy
 msgid "<package>+"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/poptI.c:175
+#: lib/poptI.c:179
 msgid "do not install documentation"
 msgstr "nie instaluj dokumentacji"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:181
 #, fuzzy
 msgid "skip files with leading component <path> "
 msgstr "pomiñ pliki le¿±ce w <¶cie¿ce>"
 
-#: lib/poptI.c:178
+#: lib/poptI.c:182
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:183 lib/poptI.c:186
+#: lib/poptI.c:187 lib/poptI.c:190
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "skrócona wersja kombinacji --replacepkgs --replacefiles"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:195
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/poptI.c:192 lib/poptI.c:210 lib/poptI.c:213 lib/poptI.c:320
+#: lib/poptI.c:196 lib/poptI.c:214 lib/poptI.c:217 lib/poptI.c:324
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "        -p <nazwa pakietu>+ "
 
-#: lib/poptI.c:194
+#: lib/poptI.c:198
 msgid "print hash marks as package installs (good with -v)"
 msgstr "wy¶wietlaj znaki hash przy instalacji (fajne z -v)"
 
-#: lib/poptI.c:197
+#: lib/poptI.c:201
 msgid "don't verify package architecture"
 msgstr "nie sprawdzaj architektury systemu"
 
-#: lib/poptI.c:200
+#: lib/poptI.c:204
 msgid "don't verify package operating system"
 msgstr "nie sprawdzaj rodzaju systemu operacyjnego"
 
-#: lib/poptI.c:203
+#: lib/poptI.c:207
 msgid "don't check disk space before installing"
 msgstr "nie sprawdzaj zajêto¶ci dysku przed instalacj±"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:209
 msgid "install documentation"
 msgstr "zainstaluj dokumentacjê"
 
-#: lib/poptI.c:210 lib/poptI.c:213
+#: lib/poptI.c:214 lib/poptI.c:217
 #, fuzzy
 msgid "install package(s)"
 msgstr "instaluj pakiet"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:221
 msgid "update the database, but do not modify the filesystem"
 msgstr "od¶wie¿ bazê, ale nie modyfikuj systemu plików"
 
-#: lib/poptI.c:221 lib/poptI.c:224
+#: lib/poptI.c:225 lib/poptI.c:228
 msgid "do not verify package dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: lib/poptI.c:228 lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptI.c:232 lib/poptQV.c:275 lib/poptQV.c:278
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "nie sprawdzaj plików pakietu"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:235
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "nie zmieniaj kolejno¶ci instalacji pakietów by zapewniæ zale¿no¶ci"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:240
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:248
+#: lib/poptI.c:252
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "nie wykonuj ¿adnych etapów"
 
-#: lib/poptI.c:251
+#: lib/poptI.c:255
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "nie wykonuj ¿adnych etapów"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:258
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "nie wykonuj ¿adnych etapów"
 
-#: lib/poptI.c:257
+#: lib/poptI.c:261
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nie wykonuj ¿adnych etapów"
 
-#: lib/poptI.c:276
+#: lib/poptI.c:280
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "odpytywanie pakietów zahaczanych przez pakiet"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:283
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
-#: lib/poptI.c:282
+#: lib/poptI.c:286
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
-#: lib/poptI.c:285
+#: lib/poptI.c:289
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
-#: lib/poptI.c:288
+#: lib/poptI.c:292
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
-#: lib/poptI.c:292
+#: lib/poptI.c:296
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1905,53 +1910,53 @@ msgstr ""
 "uaktualnij do starej wersji (--force robi to samo automatycznie podczas "
 "uaktualniania)"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:300
 msgid "print percentages as package installs"
 msgstr "wy¶wietlaj stan instalacji w procentach"
 
-#: lib/poptI.c:298
+#: lib/poptI.c:302
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "przesuñ pliki pakietu do drzewa <katalog>, je¶li jest przesuwalny"
 
-#: lib/poptI.c:299
+#: lib/poptI.c:303
 msgid "<dir>"
 msgstr ""
 
-#: lib/poptI.c:301
+#: lib/poptI.c:305
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "przesuñ pliki z drzewa <stara-¶cie¿ka> do drzewa <nowa-¶cie¿ka>"
 
-#: lib/poptI.c:302
+#: lib/poptI.c:306
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "      --relocate <stara-¶cie¿ka>=<nowa-¶cie¿ka>"
 
-#: lib/poptI.c:305
+#: lib/poptI.c:309
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:308
+#: lib/poptI.c:312
 msgid "install even if the package replaces installed files"
 msgstr "instaluj nawet gdy pakiet zastêpuje inne zainstalowane pliki"
 
-#: lib/poptI.c:311
+#: lib/poptI.c:315
 msgid "reinstall if the package is already present"
 msgstr "przeinstaluj je¶li pakiet jest ju¿ zainstalowany"
 
-#: lib/poptI.c:313
+#: lib/poptI.c:317
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:314
+#: lib/poptI.c:318
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:316
+#: lib/poptI.c:320
 msgid "don't install, but tell if it would work or not"
 msgstr "nie instaluj, podaj tylko czy instalacja zadzia³a czy nie"
 
-#: lib/poptI.c:319
+#: lib/poptI.c:323
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "    --upgrade <nazwa pakietu>"
@@ -2236,7 +2241,7 @@ msgstr "nie mo¿na otworzyæ %s: %s"
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê"
 
-#: lib/query.c:122 lib/rpmts.c:413
+#: lib/query.c:122 lib/rpmts.c:430
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³±d w formacie: %s\n"
@@ -2286,8 +2291,9 @@ msgstr "pakiet nie ma ani w³a¶ciciela pliku ani list id"
 msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
-#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:422 lib/rpminstall.c:553
-#: lib/rpminstall.c:956 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:123 lib/rpminstall.c:452
+#: lib/rpminstall.c:583 lib/rpminstall.c:986 lib/rpmts.c:441
+#: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê: %s\n"
@@ -2301,7 +2307,7 @@ msgstr "odpytywanie %s nie powiod³o siê\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:609 lib/rpminstall.c:566
+#: lib/query.c:609 lib/rpminstall.c:596
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
@@ -2371,17 +2377,17 @@ msgstr "numer rekordu pakietu: %d\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:907 lib/rpminstall.c:733
+#: lib/query.c:907 lib/rpminstall.c:763
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
 
-#: lib/rpmal.c:696
+#: lib/rpmal.c:697
 #, fuzzy
 msgid "(added files)"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/rpmal.c:773
+#: lib/rpmal.c:774
 msgid "(added provide)"
 msgstr ""
 
@@ -2540,110 +2546,115 @@ msgstr "przesuwanie %s do %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/rpminstall.c:181
+#: lib/rpminstall.c:186
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:183
+#: lib/rpminstall.c:188
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "nie podano nazw plików do zainstalowania"
 
-#: lib/rpminstall.c:201
+#: lib/rpminstall.c:206
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:203
+#: lib/rpminstall.c:208
 #, fuzzy
 msgid "Repackaging erased files..."
 msgstr "pakiet nie ma plików\n"
 
-#: lib/rpminstall.c:222
+#: lib/rpminstall.c:227
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:224
+#: lib/rpminstall.c:229
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "    --upgrade <nazwa pakietu>"
 
-#: lib/rpminstall.c:369
+#: lib/rpminstall.c:384
+#, fuzzy, c-format
+msgid "Adding goal: %s\n"
+msgstr "Wyszukiwanie wymaganych zasobów...\n"
+
+#: lib/rpminstall.c:399
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "¦ci±ganie %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:382
+#: lib/rpminstall.c:412
 #, c-format
 msgid " ... as %s\n"
 msgstr "... jako %s\n"
 
-#: lib/rpminstall.c:386
+#: lib/rpminstall.c:416
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:507
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:557
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "b³±d czytania z pliku %s\n"
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:563
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM\n"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:812 tools/rpmgraph.c:156
+#: lib/rpminstall.c:575 lib/rpminstall.c:842 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:611
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:595 lib/rpminstall.c:761 lib/rpminstall.c:1160
+#: lib/rpminstall.c:625 lib/rpminstall.c:791 lib/rpminstall.c:1190
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:602 tools/rpmgraph.c:208
+#: lib/rpminstall.c:632 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:632
+#: lib/rpminstall.c:662
 msgid "installing binary packages\n"
 msgstr "instalacja pakietów binarnych\n"
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:686
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/rpminstall.c:736
+#: lib/rpminstall.c:766
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:796
+#: lib/rpminstall.c:826
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpminstall.c:802
+#: lib/rpminstall.c:832
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
 
-#: lib/rpminstall.c:1154
+#: lib/rpminstall.c:1184
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -2862,13 +2873,23 @@ msgstr "Nie mo¿na otworzyæ %s do odczytu: %s."
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/rpmts.c:319
+#: lib/rpmts.c:320
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
+#: lib/rpmts.c:456
+#, fuzzy, c-format
+msgid "Adding: %s\n"
+msgstr "linia: %s"
+
+#: lib/rpmts.c:467
+#, fuzzy, c-format
+msgid "Suggesting: %s\n"
+msgstr "¼ród³a w: %s\n"
+
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:809
+#: lib/rpmts.c:860
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -4826,9 +4847,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "cannot create sourcedir %s\n"
 #~ msgstr "nie mo¿na utworzyæ %s"
-
-#~ msgid "sources in: %s\n"
-#~ msgstr "¼ród³a w: %s\n"
 
 #, fuzzy
 #~ msgid "cannot create specdir %s\n"

@@ -7,6 +7,7 @@
 #include <rpmcli.h>
 
 #include "rpmdb.h"
+#include "rpmds.h"
 
 #define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
 #include "rpmts.h"
@@ -108,6 +109,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     const char * filename = (const char *)key;
     /*@=assignexpose =abstract @*/
     static FD_t fd = NULL;
+    int xx;
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
@@ -117,7 +119,14 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 /*@=boundsread@*/
 	fd = Fopen(filename, "r.ufdio");
 	/*@-type@*/ /* FIX: still necessary? */
-	if (fd)
+	if (fd == NULL || Ferror(fd)) {
+	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
+			Fstrerror(fd));
+	    if (fd) {
+		xx = Fclose(fd);
+		fd = NULL;
+	    }
+	} else
 	    fd = fdLink(fd, "persist (showProgress)");
 	/*@=type@*/
 	return fd;
@@ -128,16 +137,12 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	fd = fdFree(fd, "persist (showProgress)");
 	/*@=type@*/
 	if (fd) {
-	    (void) Fclose(fd);
+	    xx = Fclose(fd);
 	    fd = NULL;
 	}
 	break;
 
     case RPMCALLBACK_INST_START:
-#if 0
-if (_hash_debug)
-fprintf(stderr, "--- INST_START: %p %lu:%lu %p %p\n", arg, amount, total, key, data);
-#endif
 	rpmcliHashesCurrent = 0;
 	if (h == NULL || !(flags & INSTALL_LABEL))
 	    break;
@@ -292,11 +297,12 @@ int rpmInstall(rpmts ts,
 
     if (fileArgv == NULL) goto exit;
 
+    ts->goal = TSM_INSTALL;
+    rpmcliPackagesTotal = 0;
+
     (void) rpmtsSetFlags(ts, ia->transFlags);
     probFilter = ia->probFilter;
     relocations = ia->relocations;
-
-    ts->goal = TSM_INSTALL;
 
     if (ia->installInterfaceFlags & INSTALL_UPGRADE)
 	vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
@@ -359,6 +365,30 @@ restart:
 	fileURL = _free(fileURL);
 	fileURL = eiu->argv[i];
 	eiu->argv[i] = NULL;
+
+#ifdef	NOTYET
+if (fileURL[0] == '=') {
+    rpmds this = rpmdsSingle(RPMTAG_REQUIRENAME, fileURL+1, NULL, 0);
+
+    xx = rpmtsSolve(ts, this, NULL);
+    if (ts->suggests && ts->nsuggests > 0) {
+	fileURL = _free(fileURL);
+	fileURL = ts->suggests[0];
+	ts->suggests[0] = NULL;
+	while (ts->nsuggests-- > 0) {
+	    if (ts->suggests[ts->nsuggests] == NULL)
+		continue;
+	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
+	}
+	ts->suggests = _free(ts->suggests);
+	rpmMessage(RPMMESS_DEBUG, _("Adding goal: %s\n"), fileURL);
+	eiu->pkgURL[eiu->pkgx] = fileURL;
+	fileURL = NULL;
+	eiu->pkgx++;
+    }
+    this = rpmdsFree(this);
+} else
+#endif
 
 	switch (urlIsURL(fileURL)) {
 	case URL_IS_FTP:
@@ -627,7 +657,7 @@ restart:
 
     if (eiu->numRPMS && !stopInstall) {
 
-	rpmcliPackagesTotal = eiu->numRPMS + eiu->numSRPMS;
+	rpmcliPackagesTotal += eiu->numSRPMS;
 
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 

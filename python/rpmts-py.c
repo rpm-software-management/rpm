@@ -310,7 +310,7 @@ rpmts_SolveCallback(rpmts ts, rpmds ds, void * data)
     int res = 1;
 
 if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) %s\n", ts, ds, data, rpmdsDNEVR(ds));
+fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmdsDNEVR(ds));
 
     if (cbInfo->tso == NULL) return res;
     if (cbInfo->pythonError) return res;

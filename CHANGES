@@ -233,6 +233,7 @@
 	- python: include instance in IDTXload, filename in IDTXglob, return
 	- python: argument to ts.addErase (if integer) deletes that instance.
 	- python: rpmmi methods to return this instance, and number of members.
+	- supply transitive closure for CLI packages from rpmdb-redhat database.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

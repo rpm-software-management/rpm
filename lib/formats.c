@@ -307,7 +307,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	}
 
 	if (pktlen == 0 || tag != PGPTAG_SIGNATURE) {
-	    val = xstrdup(_("(not a OpenPGP signature"));
+	    val = xstrdup(_("(not an OpenPGP signature)"));
 	} else {
 	    pgpDig dig = pgpNewDig();
 	    pgpDigParams sigp = &dig->signature;

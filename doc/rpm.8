@@ -96,7 +96,7 @@ rpm \- RPM Package Manager
 .PP
 
 
- [\fB--allfiles\fR] [\fB--badreloc\fR] [\fB--excludepath \fIOLDPATH\fB\fR]
+ [\fB--aid\fR] [\fB--allfiles\fR] [\fB--badreloc\fR] [\fB--excludepath \fIOLDPATH\fB\fR]
  [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
  [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
  [\fB--includedocs\fR] [\fB--justdb\fR] [\fB--nodeps\fR]
@@ -219,6 +219,9 @@ for information on \fBrpm\fR's internal
 \fBhttp\fR
 client support. 
 .PP
+.TP
+\fB--aid\fR
+Add suggested packages to the transaction set when needed.
 .TP
 \fB--allfiles\fR
 Installs or upgrades all the missingok files in the package,
