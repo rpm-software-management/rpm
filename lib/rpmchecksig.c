@@ -39,7 +39,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
     /* open a temp file */
     if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
 	if (makeTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
-	    fprintf(stderr, _("%s: makeTempFile failed\n"));
+	    fprintf(stderr, _("makeTempFile failed\n"));
 	    return 1;
 	}
 	if (fnp)

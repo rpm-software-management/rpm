@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-26 10:55-0400\n"
+"POT-Creation-Date: 1999-09-26 11:41-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2779,8 +2779,7 @@ msgid "%s: fdOpen failed: %s\n"
 msgstr ""
 
 #: ../lib/rpmchecksig.c:42
-#, c-format
-msgid "%s: makeTempFile failed\n"
+msgid "makeTempFile failed\n"
 msgstr ""
 
 #: ../lib/rpmchecksig.c:74

@@ -189,7 +189,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/hash.P .deps/rpmmodule.P .deps/upgrade.P
 SOURCES = $(librpmmodule_la_SOURCES) $(rpmmodule_so_SOURCES)
