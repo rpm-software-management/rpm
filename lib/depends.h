@@ -14,9 +14,9 @@ struct availablePackage {
     /*@dependent@*/ const char * release;
     /*@dependent@*/ int_32 *epoch;
     int providesCount, filesCount;
-    /*@owned@*/ const void * key;
+    /*@dependent@*/ const void * key;
     rpmRelocation * relocs;
-    /*@owned@*/ FD_t fd;
+    /*@dependent@*/ FD_t fd;
 } ;
 
 enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };

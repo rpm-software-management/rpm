@@ -9,17 +9,20 @@ INCLUDES = \
 	-I/usr/include/python1.5 \
         @INCPATH@
 
+EXTRA_DIST = hash.h upgrade.h
 mylibs= \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/popt/libpopt.la
 
+LDADD =
+
 pythondir = $(prefix)/lib/python1.5/site-packages
 python_PROGRAMS = rpmmodule.so
+rpmmodule_so_SOURCES =
+rpmmodule_so_LDFLAGS = -lrpm -lpopt $(LIBS) -shared -Wl,-soname,rpmmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
-EXTRA_DIST = hash.h upgrade.h
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 
-rpmmodule.so: rpmmodule.lo
-	gcc -shared  rpmmodule.lo -lrpm -ldb1 @BZIP2LIB@ -L/usr/local/lib -lz -lc -o $@
-
+rpmmodule.so: $(librpmmodule_la_OBJECTS)
+	$(CC) -o $@ $^ $(rpmmodule_so_LDFLAGS)

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-18 20:22-0400\n"
+"POT-Creation-Date: 1999-09-19 11:24-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1972,33 +1972,33 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:448
+#: ../lib/depends.c:455
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:715
+#: ../lib/depends.c:722
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: ../lib/depends.c:854
+#: ../lib/depends.c:861
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: ../lib/depends.c:916
+#: ../lib/depends.c:923
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:971 ../lib/depends.c:1278
+#: ../lib/depends.c:978 ../lib/depends.c:1285
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:1066
+#: ../lib/depends.c:1073
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""

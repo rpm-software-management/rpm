@@ -106,6 +106,8 @@ static void alFree(/*@only@*/struct availableList * al)
     for (i = 0; i < al->size; i++) {
 	if (al->list[i].provides)
 	    free(al->list[i].provides);
+	if (al->list[i].providesEVR)
+	    free(al->list[i].providesEVR);
 	if (al->list[i].files)
 	    free(al->list[i].files);
 	headerFree(al->list[i].h);
@@ -333,7 +335,12 @@ static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
     parseEVR(bEVR, &bE, &bV, &bR);
 
     /* Compare {A,B} [epoch:]version[-release] */
-    sense = ((aE && *aE && bE && *bE) ? rpmvercmp(aE, bE) : 0);
+    if (aE && *aE && bE && *bE)
+	sense = rpmvercmp(aE, bE);
+    else if (aE && *aE)
+	sense = 1;
+    else if (bE && *bE)
+	sense = -1;
     if (sense == 0) {
 	sense = rpmvercmp(aV, bV);
 	if (sense == 0 && aR && *aR && bR && *bR) {

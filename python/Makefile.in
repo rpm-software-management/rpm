@@ -71,7 +71,6 @@ AS = @AS@
 AWK = @AWK@
 BUILD_RPMCONVERT = @BUILD_RPMCONVERT@
 BZIP2BIN = @BZIP2BIN@
-BZIP2LIB = @BZIP2LIB@
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@
 CC = @CC@
@@ -150,14 +149,18 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 INCLUDES =  	-I$(top_srcdir) 	-I$(top_srcdir)/lib 	-I$(top_srcdir)/popt 	-I/usr/include/python1.5         @INCPATH@
 
 
+EXTRA_DIST = hash.h upgrade.h
 mylibs =  	$(top_builddir)/lib/librpm.la 	$(top_builddir)/popt/libpopt.la
 
 
+LDADD = 
+
 pythondir = $(prefix)/lib/python1.5/site-packages
 python_PROGRAMS = rpmmodule.so
+rpmmodule_so_SOURCES = 
+rpmmodule_so_LDFLAGS = -lrpm -lpopt $(LIBS) -shared -Wl,-soname,rpmmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
-EXTRA_DIST = hash.h upgrade.h
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
@@ -173,11 +176,9 @@ librpmmodule_la_LIBADD =
 librpmmodule_la_OBJECTS =  rpmmodule.lo hash.lo upgrade.lo
 PROGRAMS =  $(python_PROGRAMS)
 
-rpmmodule_so_SOURCES = rpmmodule.so.c
-rpmmodule_so_OBJECTS =  rpmmodule.so.o
+rpmmodule_so_OBJECTS = 
 rpmmodule_so_LDADD = $(LDADD)
 rpmmodule_so_DEPENDENCIES = 
-rpmmodule_so_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -190,10 +191,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/hash.P .deps/rpmmodule.P .deps/rpmmodule.so.P \
-.deps/upgrade.P
-SOURCES = $(librpmmodule_la_SOURCES) rpmmodule.so.c
-OBJECTS = $(librpmmodule_la_OBJECTS) rpmmodule.so.o
+DEP_FILES =  .deps/hash.P .deps/rpmmodule.P .deps/upgrade.P
+SOURCES = $(librpmmodule_la_SOURCES) $(rpmmodule_so_SOURCES)
+OBJECTS = $(librpmmodule_la_OBJECTS) $(rpmmodule_so_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -439,8 +439,8 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-rpmmodule.so: rpmmodule.lo
-	gcc -shared  rpmmodule.lo -lrpm -ldb1 @BZIP2LIB@ -L/usr/local/lib -lz -lc -o $@
+rpmmodule.so: $(librpmmodule_la_OBJECTS)
+	$(CC) -o $@ $^ $(rpmmodule_so_LDFLAGS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
