@@ -6,6 +6,8 @@ LINT = splint
 
 PYVER= 2.2
 
+SUBDIRS = test
+
 pylibdir = $(shell python -c 'import sys; print sys.path[1]')
 pyincdir = $(prefix)/include/python${PYVER}
 

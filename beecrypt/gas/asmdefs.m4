@@ -25,8 +25,13 @@ define(USE_SIZE_DIRECTIVE,yes)
 define(SYMNAME,`GSYM_PREFIX`$1'')
 define(LOCAL,`LSYM_PREFIX`$1'')
 
+ifdef(ALIGN,,`
+define(ALIGN)
+')
+
 define(C_FUNCTION_BEGIN,`
 	TEXTSEG
+	ALIGN
 	GLOBL SYMNAME($1)
 SYMNAME($1):
 ')

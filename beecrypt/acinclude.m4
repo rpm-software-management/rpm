@@ -11,6 +11,11 @@ dnl  LGPL
 dnl  BEECRYPT_INT_TYPES
 AC_DEFUN(BEECRYPT_INT_TYPES,[
   AC_TYPE_SIZE_T
+  bc_typedef_size_t=
+  if test $ac_cv_type_size_t != yes; then
+    bc_typedef_size_t="typedef unsigned size_t;"
+  fi
+  AC_SUBST(TYPEDEF_SIZE_T,$bc_typedef_size_t)
   if test $ac_cv_header_inttypes_h = yes; then
     AC_SUBST(INCLUDE_INTTYPES_H,["#include <inttypes.h>"])
   else
@@ -552,6 +557,27 @@ AC_DEFUN(BEECRYPT_ASM_LSYM_PREFIX,[
       esac
     ])
   AC_SUBST(ASM_LSYM_PREFIX,$bc_cv_asm_lsym_prefix)
+  ])
+
+
+dnl  BEECRYPT_ASM_ALIGN
+AC_DEFUN(BEECRYPT_ASM_ALIGN,[
+  AC_CACHE_CHECK([how to align symbols],
+    bc_cv_asm_align,[
+      case $target_os in
+      linux*)
+        case $target_cpu in
+        i[[3456]]86 | athlon*)
+          bc_cv_asm_align=".align 4"
+          ;;
+        s390x)
+          bc_cv_asm_align=".align 4"
+          ;;
+        esac
+        ;;
+      esac
+    ])
+  AC_SUBST(ASM_ALIGN,$bc_cv_asm_align)
   ])
 
 

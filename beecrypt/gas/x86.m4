@@ -21,7 +21,7 @@ dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ifelse(substr(ASM_ARCH,0,6),athlon,`
 define(USE_BSWAP)
 ')
-ifelse(substr(ASM_ARCHi,0,7),pentium,`
+ifelse(substr(ASM_ARCH,0,7),pentium,`
 define(USE_BSWAP)
 ')
 ifelse(ASM_ARCH,i586,`

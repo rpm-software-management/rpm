@@ -626,6 +626,7 @@ else
   BEECRYPT_ASM_GLOBL
   BEECRYPT_ASM_GSYM_PREFIX
   BEECRYPT_ASM_LSYM_PREFIX
+  BEECRYPT_ASM_ALIGN
   # generate assembler source files from m4 files
   BEECRYPT_ASM_SOURCES
 fi
