@@ -270,7 +270,7 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	    } while (rc > 0 && nextReloc);
 
 	    if (!rc) {
-		newName = alloca(newLen + strlen(mem->names[i]));
+		newName = alloca(newLen + strlen(mem->names[i]) + 1);
 		strcpy(newName, nextReloc->newPath);
 		strcat(newName, mem->names[i] + len);
 		rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
