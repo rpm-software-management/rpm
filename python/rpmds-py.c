@@ -13,6 +13,55 @@
 
 /*@access rpmds @*/
 
+/**
+ * Split EVR into epoch, version, and release components.
+ * @param evr		[epoch:]version[-release] string
+ * @retval *ep		pointer to epoch
+ * @retval *vp		pointer to version
+ * @retval *rp		pointer to release
+ */
+static
+void rpmds_ParseEVR(char * evr,
+		/*@exposed@*/ /*@out@*/ const char ** ep,
+		/*@exposed@*/ /*@out@*/ const char ** vp,
+		/*@exposed@*/ /*@out@*/ const char ** rp)
+	/*@modifies *ep, *vp, *rp @*/
+	/*@requires maxSet(ep) >= 0 /\ maxSet(vp) >= 0 /\ maxSet(rp) >= 0 @*/
+{
+    const char *epoch;
+    const char *version;		/* assume only version is present */
+    const char *release;
+    char *s, *se;
+
+    s = evr;
+    while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
+    se = strrchr(s, '-');		/* se points to version terminator */
+
+    if (*s == ':') {
+	epoch = evr;
+	*s++ = '\0';
+	version = s;
+	/*@-branchstate@*/
+	if (*epoch == '\0') epoch = "0";
+	/*@=branchstate@*/
+    } else {
+	epoch = NULL;	/* XXX disable epoch compare if missing */
+	version = evr;
+    }
+    if (se) {
+/*@-boundswrite@*/
+	*se++ = '\0';
+/*@=boundswrite@*/
+	release = se;
+    } else {
+	release = NULL;
+    }
+
+    if (ep) *ep = epoch;
+    if (vp) *vp = version;
+    if (rp) *rp = release;
+}
+
 /*@null@*/
 static PyObject *
 rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args)
@@ -105,11 +154,64 @@ rpmds_Refs(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsRefs(s->ds));
 }
 
+/**
+ */
+static int compare_values(const char *str1, const char *str2)
+{
+    if (!str1 && !str2)
+	return 0;
+    else if (str1 && !str2)
+	return 1;
+    else if (!str1 && str2)
+	return -1;
+    return rpmvercmp(str1, str2);
+}
+
 static int
 rpmds_compare(rpmdsObject * a, rpmdsObject * b)
 	/*@*/
 {
-    return rpmdsCompare(a->ds, b->ds);
+    char *aEVR = xstrdup(rpmdsEVR(a->ds));
+    const char *aE, *aV, *aR;
+    char *bEVR = xstrdup(rpmdsEVR(b->ds));
+    const char *bE, *bV, *bR;
+    int rc;
+
+    /* XXX W2DO? should N be compared? */
+    rpmds_ParseEVR(aEVR, &aE, &aV, &aR);
+    rpmds_ParseEVR(bEVR, &bE, &bV, &bR);
+
+    rc = compare_values(aE, bE);
+    if (!rc) {
+	rc = compare_values(aV, bV);
+	if (!rc)
+	    rc = compare_values(aR, bR);
+    }
+
+    aEVR = _free(aEVR);
+    bEVR = _free(bEVR);
+
+    return rc;
+}
+
+static PyObject *
+rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
+	/*@*/
+{
+    int rc;
+
+    switch (op) {
+    case Py_NE:
+    case Py_EQ:
+	rc = rpmdsCompare(a->ds, b->ds);
+	if (op == Py_NE)
+	    rc = 1 - rc;
+	break;
+    default:
+	rc = -1;
+	break;
+    }
+    return Py_BuildValue("i", rc);
 }
 
 static PyObject *
@@ -356,12 +458,13 @@ PyTypeObject rpmds_Type = {
 	(getattrofunc) rpmds_getattro,	/* tp_getattro */
 	(setattrofunc) rpmds_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	Py_TPFLAGS_DEFAULT |		/* tp_flags */
+	    Py_TPFLAGS_HAVE_RICHCOMPARE,
 	rpmds_doc,			/* tp_doc */
 #if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
-	0,				/* tp_richcompare */
+	(richcmpfunc) rpmds_richcompare,/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
 	(getiterfunc) rpmds_iter,	/* tp_iter */
 	(iternextfunc) rpmds_iternext,	/* tp_iternext */

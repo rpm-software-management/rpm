@@ -1,0 +1,18 @@
+#!/usr/bin/python
+import rpm
+print cmp(("0","2.6.3","241"),("0","2.6.3","242"))
+print cmp(("0","2.6.3","242"),("0","2.6.3","241"))
+print cmp(("0","2.6.3","242"),("0","2.6.3","242"))
+ds1 = rpm.dsSingle(rpm.RPMTAG_PROVIDENAME,"kernel", "2.6.3-241", 8+4)
+ds1.Debug(-1)
+ds2 = rpm.dsSingle(rpm.RPMTAG_PROVIDENAME,"kernel", "2.6.3-242", 8+2)
+print cmp(ds1,ds2)
+print cmp(ds2,ds1)
+print cmp(ds2,ds2)
+
+print ds1 == ds2
+print ds2 == ds1
+print ds2 == ds2
+print ds1 != ds2
+print ds2 != ds1
+print ds2 != ds2
