@@ -60,12 +60,12 @@ static void * showProgress(const Header h, const rpmCallbackType what,
 		s = headerSprintf(h, "%{NAME}",
 				  rpmTagTable, rpmHeaderFormats, NULL);
 		printf("%-28s", s);
+		fflush(stdout);
 	    } else {
 		s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
 				  rpmTagTable, rpmHeaderFormats, NULL);
 		printf("%s\n", s);
 	    }
-	    fflush(stdout);
 	    free(s);
 	}
 	break;
