@@ -274,7 +274,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	rc = RPMERR_NOSPACE;
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, csa, "w9.gzdio");
+	    rc = cpio_doio(fd, csa, "%{_payload_compression}");
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
@@ -416,12 +416,15 @@ int writeRPM(Header h, const char *fileName, int type,
     return 0;
 }
 
-static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmode)
+static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmodeMacro)
 {
     FD_t cfd;
     int rc;
     const char *failedFile = NULL;
+    const char *fmode = rpmExpand(fmodeMacro, NULL);
 
+    if (!(fmode && fmode[0] == 'w'))
+	fmode = xstrdup("w9.gzdio");
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
@@ -435,6 +438,7 @@ static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmode)
     Fclose(cfd);
     if (failedFile)
 	xfree(failedFile);
+    xfree(fmode);
 
     return rc;
 }

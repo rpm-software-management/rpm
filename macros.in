@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.41 2000/01/11 15:22:35 jbj Exp $
+# $Id: macros.in,v 1.42 2000/01/11 16:13:16 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -165,6 +165,12 @@
 #	Configurable packager information, same as Packager: in a specfile.
 #
 #%packager
+
+#	Compression type and level for package payloads.
+#		"w9.gzdio"	gzip level 9 (default).
+#		"w9.bzdio"	bzip2 level 9 (experimental, at your own risk).
+#
+#%_payload_compression	w9.gzdio
 
 #	The signature to use and the location of configuration files for
 #	signing packages with PGP.
