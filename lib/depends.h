@@ -35,11 +35,24 @@ struct availableList {
     int size, alloced;
 };
 
+struct transactionElement {
+    enum rpmTransactionType { TR_ADDED, TR_REMOVED } type;
+    union { 
+	int addedIndex;
+	struct {
+	    int dboffset;
+	    int dependsOnIndex;
+	} removed;
+    } u;
+};
+
 struct rpmTransactionSet_s {
     rpmdb db;					/* may be NULL */
     int * removedPackages;
     int numRemovedPackages, allocedRemovedPackages;
     struct availableList addedPackages, availablePackages;
+    struct transactionElement * order;
+    int orderCount, orderAlloced;
     char * root;
     FD_t scriptFd;
 };

@@ -5,13 +5,19 @@
 #include "depends.h"
 #include "misc.h"
 
+struct orderListIndex {
+    int alIndex;
+    int orIndex;
+};
+
+static int orderListIndexCmp(const void * one, const void * two);
 static void alMakeIndex(struct availableList * al);
 static void alCreate(struct availableList * al);
 static void alFreeIndex(struct availableList * al);
 static void alFree(struct availableList * al);
-static void alAddPackage(struct availableList * al, Header h, const void * key,
-			 FD_t fd, rpmRelocation * relocs);
-
+static struct availablePackage * alAddPackage(struct availableList * al, 
+					      Header h, const void * key,
+			 		      FD_t fd, rpmRelocation * relocs);
 static int intcmp(const void * a, const void *b);
 static int indexcmp(const void * a, const void *b);
 static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName, 
@@ -32,9 +38,10 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 			    char * package, dbiIndexSet * matches);
 static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
-			struct availablePackage * ordering, int * orderNumPtr, 
+			int * ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack);
+static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends);
 
 static void alCreate(struct availableList * al) {
     al->list = malloc(sizeof(*al->list) * 5);
@@ -69,8 +76,9 @@ static void alFree(struct availableList * al) {
     alFreeIndex(al);
 }
 
-static void alAddPackage(struct availableList * al, Header h, const void * key,
-			 FD_t fd, rpmRelocation * relocs) {
+static struct availablePackage * alAddPackage(struct availableList * al, 
+					      Header h, const void * key,
+			 		      FD_t fd, rpmRelocation * relocs) {
     struct availablePackage * p;
 
     if (al->size == al->alloced) {
@@ -112,6 +120,8 @@ static void alAddPackage(struct availableList * al, Header h, const void * key,
     p->fd = fd;
 
     alFreeIndex(al);
+
+    return p;
 }
 
 static void alMakeIndex(struct availableList * al) {
@@ -226,6 +236,10 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root) {
     alCreate(&rpmdep->addedPackages);
     alCreate(&rpmdep->availablePackages);
 
+    rpmdep->orderAlloced = 5;
+    rpmdep->orderCount = 0;
+    rpmdep->order = malloc(sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+
     return rpmdep;
 }
 
@@ -236,6 +250,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     char * name;
     int count, i, j;
     char ** obsoletes;
+    int alNum;
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
@@ -246,7 +261,15 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
        makes it difficult to generate a return code based on the number of
        packages which failed. */
    
-    alAddPackage(&rpmdep->addedPackages, h, key, fd, relocs);
+    if (rpmdep->orderCount == rpmdep->orderAlloced) {
+	rpmdep->orderAlloced += 5;
+	rpmdep->order = realloc(rpmdep->order, 
+		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+    }
+    rpmdep->order[rpmdep->orderCount].type = TR_ADDED;
+    alNum = alAddPackage(&rpmdep->addedPackages, h, key, fd, relocs) - 
+    		rpmdep->addedPackages.list;
+    rpmdep->order[rpmdep->orderCount++].u.addedIndex = alNum;
 
     if (!upgrade || rpmdep->db == NULL) return 0;
 
@@ -254,7 +277,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
     if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
 	for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	    rpmtransRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
+	    removePackage(rpmdep, dbiIndexRecordOffset(matches, i), alNum);
 	}
 
 	dbiFreeIndexRecord(matches);
@@ -265,7 +288,8 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	for (j = 0; j < count; j++) {
 	    if (!rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))  {
 		for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		    rpmtransRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
+		    removePackage(rpmdep, dbiIndexRecordOffset(matches, i),
+				  alNum);
 		}
 
 		dbiFreeIndexRecord(matches);
@@ -275,14 +299,14 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	free(obsoletes);
     }
 
-	return 0;
+    return 0;
 }
 
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key) {
     alAddPackage(&rpmdep->availablePackages, h, key, NULL, NULL);
 }
 
-void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset) {
+static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends) {
     if (rpmdep->numRemovedPackages == rpmdep->allocedRemovedPackages) {
 	rpmdep->allocedRemovedPackages += 5;
 	rpmdep->removedPackages = realloc(rpmdep->removedPackages,
@@ -290,6 +314,20 @@ void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset) {
     }
 
     rpmdep->removedPackages[rpmdep->numRemovedPackages++] = dboffset;
+
+    if (rpmdep->orderCount == rpmdep->orderAlloced) {
+	rpmdep->orderAlloced += 5;
+	rpmdep->order = realloc(rpmdep->order, 
+		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+    }
+
+    rpmdep->order[rpmdep->orderCount].type = TR_REMOVED;
+    rpmdep->order[rpmdep->orderCount].u.removed.dboffset = dboffset;
+    rpmdep->order[rpmdep->orderCount++].u.removed.dependsOnIndex = depends;
+}
+
+void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset) {
+    removePackage(rpmdep, dboffset, -1);
 }
 
 void rpmtransFree(rpmTransactionSet rpmdep) {
@@ -789,7 +827,7 @@ static int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
 
 static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
-			struct availablePackage * ordering, int * orderNumPtr, 
+			int * ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack) {
     char ** requires, ** requiresVersion;
@@ -870,18 +908,21 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
     }
 
     /* whew -- add this package */
-    ordering[(*orderNumPtr)++] = *package;
+    ordering[(*orderNumPtr)++] = packageNum;
     selected[packageNum] = -1;
 
     return 0;
 }
 
 int rpmdepOrder(rpmTransactionSet rpmdep) {
-    int i;
+    int i, j;
     int * selected;
-    struct availablePackage * order;
-    int orderNum;
+    int * ordering;
+    int orderingCount;
     char ** errorStack;
+    struct transactionElement * newOrder;
+    int newOrderCount = 0;
+    struct orderListIndex * orderList, * needle, key;
 
     alMakeIndex(&rpmdep->addedPackages);
     alMakeIndex(&rpmdep->availablePackages);
@@ -892,21 +933,76 @@ int rpmdepOrder(rpmTransactionSet rpmdep) {
     errorStack = alloca(sizeof(*errorStack) * (rpmdep->addedPackages.size + 1));
     *errorStack++ = NULL;
 
-    order = malloc(sizeof(*order) * (rpmdep->addedPackages.size + 1));
-    orderNum = 0;
+    ordering = alloca(sizeof(*ordering) * (rpmdep->addedPackages.size + 1));
+    orderingCount = 0;
 
     for (i = 0; i < rpmdep->addedPackages.size; i++) {
 	if (!selected[i]) {
 	    if (addOrderedPack(rpmdep, rpmdep->addedPackages.list + i,
-			       order, &orderNum, selected, 1, 0, errorStack)) {
-		free(order);
+			       ordering, &orderingCount, selected, 1, 0, 
+			       errorStack)) {
+		free(ordering);
 		return 1;
 	    }
 	}
     }
 
-    free(rpmdep->addedPackages.list);
-    rpmdep->addedPackages.list = order;
+    /* The order ends up as installed packages followed by removed packages,
+       with removes for upgrades immediately follwing the installation of
+       the new package. This would be easier if we could sort the 
+       addedPackages array, but we store indexes into it in various places. */
+    orderList = malloc(sizeof(*orderList) * rpmdep->addedPackages.size);
+    for (i = 0, j = 0; i < rpmdep->orderCount; i++) {
+	if (rpmdep->order[i].type == TR_ADDED) {
+	    orderList[j].alIndex = rpmdep->order[i].u.addedIndex;
+	    orderList[j].orIndex = i;
+	    j++;
+	}
+    }
+    qsort(orderList, rpmdep->addedPackages.size, sizeof(*orderList), 
+	  orderListIndexCmp);
+
+    newOrder = malloc(sizeof(*newOrder) * rpmdep->orderCount);
+    for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
+	key.alIndex = ordering[i];
+	needle = bsearch(&key, orderList, rpmdep->addedPackages.size,
+			 sizeof(key), orderListIndexCmp);
+	/* bsearch should never, ever fail */
+	
+	newOrder[newOrderCount++] = rpmdep->order[needle->orIndex];
+	for (j = needle->orIndex + 1; j < rpmdep->orderCount; j++) {
+	    if (rpmdep->order[j].type == TR_REMOVED &&
+		rpmdep->order[j].u.removed.dependsOnIndex == needle->alIndex) {
+		newOrder[newOrderCount++] = rpmdep->order[j];
+	    } else {
+		break;
+	    }
+	}
+    }
+
+    for (i = 0; i < rpmdep->orderCount; i++) {
+	if (rpmdep->order[i].type == TR_REMOVED && 
+	    rpmdep->order[i].u.removed.dependsOnIndex == -1)  {
+	    newOrder[newOrderCount++] = rpmdep->order[i];
+	}
+    }
+
+    free(rpmdep->order);
+    rpmdep->order = newOrder;
+    rpmdep->orderAlloced = rpmdep->orderCount;
+    free(orderList);
+
+    return 0;
+}
+
+static int orderListIndexCmp(const void * one, const void * two) {
+    const struct orderListIndex * a = one;
+    const struct orderListIndex * b = two;
+
+    if (a->alIndex < b->alIndex)
+	return -1;
+    if (a->alIndex > b->alIndex)
+	return 1;
 
     return 0;
 }
