@@ -59,6 +59,7 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 			   rpmProblemSet probs);
 static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
 		       const void * key);
+static void skipFiles(struct fileInfo * fi, int noDocs);
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
@@ -171,6 +172,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILEFLAGS, NULL, 
 				(void *) &fi->fflags, NULL);
 
+	skipFiles(fi, flags & RPMTRANS_FLAG_NODOCS);
+
 	fi->type = ADDED;
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
 	fi->ap = alp;
@@ -199,6 +202,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
 				(void *) &fi->fstates, NULL);
 
+	/* Note that as FA_UNKNOWN = 0, this does the right thing */
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
     }
@@ -213,7 +217,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     for (fi = flList; (fi - flList) < flEntries; fi++) {
 	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
 	for (i = 0; i < fi->fc; i++) {
-	    htAddEntry(ht, fi->fps + i, fi);
+	    if (fi->actions[i] != FA_SKIP && fi->actions[i] != FA_SKIPNSTATE)
+	        htAddEntry(ht, fi->fps + i, fi);
 	}
     }
 
@@ -583,7 +588,7 @@ static Header relocateFileList(struct availablePackage * alp,
 		names[i] = newName;
 		relocated = 1;
 	    } else if (actions) {
-		actions[i] = SKIPNSTATE;
+		actions[i] = FA_SKIPNSTATE;
 		rpmMessage(RPMMESS_DEBUG, _("excluding %s\n"), names[i]);
 	    }
 	} 
@@ -666,7 +671,7 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
     enum fileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int i, rc;
-    int save = (newFlags & RPMFILE_NOREPLACE) ? ALTNAME : SAVE;
+    int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
     if (lstat(filespec, &sb)) {
 	/* the file doesn't exist on the disk create it unless the new
@@ -674,9 +679,9 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
 	if (newFlags & RPMFILE_MISSINGOK) {
 	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
 			filespec);
-	    return SKIP;
+	    return FA_SKIP;
 	} else
-	    return CREATE;
+	    return FA_CREATE;
     }
 
     diskWhat = whatis(sb.st_mode);
@@ -686,16 +691,16 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
     /* RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
        them in older packages as well */
     if (newWhat == XDIR)
-	return CREATE;
+	return FA_CREATE;
 
     if (diskWhat != newWhat) {
 	return save;
     } else if (newWhat != dbWhat && diskWhat != dbWhat) {
 	return save;
     } else if (dbWhat != newWhat) {
-	return CREATE;
+	return FA_CREATE;
     } else if (dbWhat != LINK && dbWhat != REG) {
-	return CREATE;
+	return FA_CREATE;
     }
 
     if (dbWhat == REG) {
@@ -706,7 +711,7 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
 
 	if (rc) {
 	    /* assume the file has been removed, don't freak */
-	    return CREATE;
+	    return FA_CREATE;
 	}
 	dbAttr = dbMd5;
 	newAttr = newMd5;
@@ -715,7 +720,7 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
 	i = readlink(filespec, buffer, sizeof(buffer) - 1);
 	if (i == -1) {
 	    /* assume the file has been removed, don't freak */
-	    return CREATE;
+	    return FA_CREATE;
 	}
 	dbAttr = dbLink;
 	newAttr = newLink;
@@ -727,12 +732,12 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
     if (!strcmp(dbAttr, buffer)) {
 	/* this config file has never been modified, so 
 	   just replace it */
-	return CREATE;
+	return FA_CREATE;
     }
 
     if (!strcmp(dbAttr, newAttr)) {
 	/* this file is the same in all versions of this package */
-	return SKIP;
+	return FA_SKIP;
     }
 
     /* the config file on the disk has been modified, but
@@ -875,7 +880,7 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 	fileNum = shared->pkgFileNum;
 
 	if (otherStates[fileNum] == RPMFILE_STATE_NORMAL)
-	    fi->actions[fileNum] = SKIP;
+	    fi->actions[fileNum] = FA_SKIP;
     }
 
     return 0;
@@ -892,6 +897,9 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
     int rc;
    
     for (i = 0; i < fi->fc; i++) {
+	if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
+	    continue;
+
 	htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
 
 	/* We need to figure out the current fate of this file. So,
@@ -910,19 +918,19 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 				 recs[otherPkgNum]->fps[otherFileNum])) 
 			break;
 		if ((otherFileNum >= 0) && 
-		    (recs[otherPkgNum]->actions[otherFileNum] != UNKNOWN))
+		    (recs[otherPkgNum]->actions[otherFileNum] != FA_UNKNOWN))
 		    break;
 	    }
 	    otherPkgNum--;
 	}
 
 	if (fi->type == ADDED && otherPkgNum < 0) {
-	    if (fi->actions[i] == UNKNOWN) {
+	    if (fi->actions[i] == FA_UNKNOWN) {
 		if ((fi->fflags[i] & RPMFILE_CONFIG) && 
 			    !lstat(fi->fl[i], &sb))
-		    fi->actions[i] = BACKUP;
+		    fi->actions[i] = FA_BACKUP;
 		else
-		    fi->actions[i] = CREATE;
+		    fi->actions[i] = FA_CREATE;
 	    }
 	} else if (fi->type == ADDED) {
 	    if (filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
@@ -938,23 +946,23 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	    /* FIXME: is this right??? it locks us into the config
 	       file handling choice we already made, which may very
 	       well be exactly right. What about noreplace files?? */
-	    fi->actions[i] = CREATE;
+	    fi->actions[i] = FA_CREATE;
 	} else if (fi->type == REMOVED && otherPkgNum >= 0) {
-	    fi->actions[i] = SKIP;
+	    fi->actions[i] = FA_SKIP;
 	} else if (fi->type == REMOVED) {
-	    if (fi->actions[i] != SKIP && fi->actions[i] != SKIPNSTATE &&
+	    if (fi->actions[i] != FA_SKIP && fi->actions[i] != FA_SKIPNSTATE &&
 			fi->fstates[i] == RPMFILE_STATE_NORMAL ) {
 		if (S_ISREG(fi->fmodes[i]) && 
 			    (fi->fflags[i] & RPMFILE_CONFIG)) {
 		    rc = mdfile(fi->fl[i], mdsum);
 		    if (!rc && strcmp(fi->fmd5s[i], mdsum)) {
-			fi->actions[i] = BACKUP;
+			fi->actions[i] = FA_BACKUP;
 		    } else {
 			/* FIXME: config files may need to be saved */
-			fi->actions[i] = REMOVE;
+			fi->actions[i] = FA_REMOVE;
 		    }
 		} else {
-		    fi->actions[i] = REMOVE;
+		    fi->actions[i] = FA_REMOVE;
 		}
 	    }
 	}
@@ -980,4 +988,69 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
     headerFree(old);
 
     return rc;
+}
+
+static void skipFiles(struct fileInfo * fi, int noDocs) {
+    int i, j;
+    char ** netsharedPaths = NULL, ** nsp;
+    char ** fileLangs, ** languages, ** lang;
+    char * oneLang[2] = { NULL, NULL };
+    int freeLanguages = 0;
+    char * tmpPath, * chptr;
+
+    if (!noDocs)
+	noDocs = rpmGetBooleanVar(RPMVAR_EXCLUDEDOCS);
+
+    if ((tmpPath = rpmGetVar(RPMVAR_NETSHAREDPATH)))
+	netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
+
+    if (!headerGetEntry(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs, 
+			NULL))
+	fileLangs = NULL;
+
+    if ((chptr = getenv("LINGUAS"))) {
+	languages = splitString(chptr, strlen(chptr), ':');
+	freeLanguages = 1;
+    } else if ((oneLang[0] = getenv("LANG"))) {
+	languages = oneLang;
+    } else {
+	oneLang[0] = "en";
+	languages = oneLang;
+    }
+
+    for (i = 0; i < fi->fc; i++) {
+	if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
+	    continue;
+
+	/* netsharedPaths are not relative to the current root (though 
+	   they do need to take package relocations into account) */
+	for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
+	    j = strlen(*nsp);
+	    if (!strncmp(fi->fl[i], *nsp, j) &&
+		(fi->fl[i][j] == '\0' ||
+		 fi->fl[i][j] == '/'))
+		break;
+	}
+
+	if (nsp && *nsp) {
+	    fi->actions[i] = FA_SKIPNSTATE;
+	    continue;
+	}
+
+	if (fileLangs && languages && *fileLangs[i]) {
+	    for (lang = languages; *lang; lang++)
+		if (!strcmp(*lang, fileLangs[i])) break;
+	    if (!*lang) {
+		fi->actions[i] = FA_SKIPNSTATE;
+		continue;
+	    }
+	}
+
+	if (noDocs && (fi->fflags[i] & RPMFILE_DOC))
+	    fi->actions[i] = FA_SKIPNSTATE;
+    }
+
+    if (netsharedPaths) freeSplitString(netsharedPaths);
+    if (fileLangs) free(fileLangs);
+    if (freeLanguages) freeSplitString(languages);
 }
