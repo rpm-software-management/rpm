@@ -1954,6 +1954,7 @@ char * headerSprintf(Header h, const char * origFmt,
 
 	    strcat(answer, piece);
 	    answerLength += pieceLength;
+	    free(piece);
 	}
     }
 
