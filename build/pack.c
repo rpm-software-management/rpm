@@ -33,6 +33,7 @@
 #include "build.h"
 #include "messages.h"
 #include "md5.h"
+#include "myftw.h"
 
 #define BINARY_HEADER 0
 #define SOURCE_HEADER 1
@@ -546,7 +547,9 @@ static int add_file(struct file_entry **festack, const char *name,
 	/* This means we need to decend with ftw() */
 	Gcount = 0;
 
-	ftw(fullname, add_file_aux, 16);
+	/* We use our own ftw() call, because ftw() uses stat()    */
+	/* instead of lstat(), which causes it to follow symlinks! */
+	myftw(fullname, add_file_aux, 16);
 	
 	free(p);
 
