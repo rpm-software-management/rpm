@@ -68,7 +68,7 @@ void printUsage(void) {
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--provides] [--dump] [targets]"));
-    puts(_("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [--rcfile <file>]"));
+    puts(_("       rpm {--verify -V -y} [-afFpP] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        package1 package2 ... packageN"));
@@ -77,7 +77,8 @@ void printUsage(void) {
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
-    puts(_("       rpm {--checksig} [--rcfile <file>] package1 package2 ... packageN"));
+    puts(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"));
+    puts(_("       rpm {--checksig -K} [--nopgp] [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--querytags}"));
 }
 
@@ -166,7 +167,8 @@ void printHelp(void) {
     puts(_("                          and remove spec file, sources, patches, and icons."));
     puts(_("    --recompile <source_package>"));
     puts(_("                        - like --rebuild, but don't package"));
-    puts(_("    --resign <pkg>+     - sign a package"));
+    puts(_("    --resign <pkg>+     - sign a package (discard current signature)"));
+    puts(_("    --addsign <pkg>+    - add a signature to a package"));
     puts(_("    -K"));
     puts(_("    --checksig <pkg>+   - verify package signature"));
     puts(_("      --nopgp             - skip any PGP signatures (MD5 only)"));
@@ -234,6 +236,7 @@ int main(int argc, char ** argv) {
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, buildMode = 0, ignoreArch = 0;
+    int addSign = NEW_SIGNATURE;
     char * rcfile = NULL;
     char * queryFormat = NULL;
     char buildChar = ' ';
@@ -246,6 +249,7 @@ int main(int argc, char ** argv) {
     char ** currarg;
     int ec = 0;
     struct option optionsTable[] = {
+	    { "addsign", 0, 0, 0 },
 	    { "all", 0, 0, 'a' },
 	    { "arch", 1, 0, 0 },
 	    { "build", 1, 0, 'b' },
@@ -562,6 +566,13 @@ int main(int argc, char ** argv) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_RESIGN;
+		addSign = NEW_SIGNATURE;
+		signIt = 1;
+	    } else if (!strcmp(options[long_index].name, "addsign")) {
+		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
+		    argerror(_("only one major mode may be specified"));
+		bigMode = MODE_RESIGN;
+		addSign = ADD_SIGNATURE;
 		signIt = 1;
 	    } else if (!strcmp(options[long_index].name, "querybynumber")) {
 		if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
@@ -740,7 +751,7 @@ int main(int argc, char ** argv) {
       case MODE_RESIGN:
 	if (optind == argc) 
 	    argerror(_("no packages given for signing"));
-	exit(doReSign(passPhrase, argv + optind));
+	exit(doReSign(addSign, passPhrase, argv + optind));
 	
       case MODE_REBUILD:
       case MODE_RECOMPILE:
