@@ -692,8 +692,10 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(struct availabl
     }	break;
     case IET_PROVIDES:
 	for (i = 0; i < p->providesCount; i++) {
-	    rc = rangesOverlap(p->provides[i], p->providesEVR[i],
-		p->provideFlags[i], keyName, keyEVR, keyFlags);
+	    const char *proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
+	    int proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
+	    rc = rangesOverlap(p->provides[i], proEVR, proFlags,
+			keyName, keyEVR, keyFlags);
 	    if (rc) break;
 	}
     	break;
