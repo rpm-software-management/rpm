@@ -1,6 +1,6 @@
 SUBDIRS = lib
-OBJS = spec.o stringbuf.o
-PROGS = build
+OBJS = spec.o stringbuf.o build.o
+PROGS = rpm
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 DEBUG = -g
@@ -16,7 +16,7 @@ make-subdirs:
 		(cd $$d; $(MAKE)) ;\
 	done
 
-build: build.o $(OBJS)
+rpm: rpm.o $(OBJS)
 
 clean:
 	for d in $(SUBDIRS); do \
