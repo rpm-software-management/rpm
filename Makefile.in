@@ -93,9 +93,9 @@ $(PROGS): $(OBJS)
 
 install: all
 	[ -d $(installprefix)/$(RPMBINDIR) ] || \
-		mkdir $(installprefix)/$(RPMBINDIR)
+		mkdir -p $(installprefix)/$(RPMBINDIR)
 	[ -d $(installprefix)/$(RPMNLSDIR) ] || \
-		mkdir $(installprefix)/$(RPMNLSDIR)
+		mkdir -p $(installprefix)/$(RPMNLSDIR)
 	[ -d $(installprefix)/$(BINDIR) ] || mkdir -p $(installprefix)/$(BINDIR)
 	[ -d $(installprefix)/$(MANDIR) ] || mkdir -p $(installprefix)/$(MANDIR)
 	[ -d $(installprefix)/$(ETCDIR) ] || mkdir -p $(installprefix)/$(ETCDIR)
