@@ -3,7 +3,7 @@
 
 #include "spec.h"
 
-int doBuild(Spec s, int flags);
+int doBuild(Spec s, int flags, char *passPhrase);
 int execPrep(Spec s, int really_exec);
 int execBuild(Spec s);
 int execInstall(Spec s);
