@@ -463,6 +463,7 @@ exit 0
 * Sat Dec 14 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.25
 - rebuild rpm with internal dependency generation enabled.
 - fix: make sure each library has DT_NEEDED for all unresolved syms.
+- generate Elf provides even if file is not executable.
 
 * Fri Dec 13 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.24
 - debug_packages "works", but non-noarch w/o %setup has empty payload.

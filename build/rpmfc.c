@@ -737,12 +737,17 @@ static int rpmfcELF(rpmfc fc)
     char buf[BUFSIZ];
     const char * s;
     unsigned char deptype;
+    struct stat sb, * st = &sb;
     const char * soname = NULL;
     rpmds * depsp, this;
     int_32 tagN, dsContext;
     char * t;
     int xx;
     int isElf64;
+
+    /* Files with executable bit set only. */
+    if (stat(fn, st) != 0)
+	return(-1);
 
     fdno = open(fn, O_RDONLY);
     if (fdno < 0)
@@ -831,7 +836,8 @@ static int rpmfcELF(rpmfc fc)
 	case SHT_GNU_verneed:
 	    deptype = 'R';
 	    data = NULL;
-	    if (!fc->skipReq)
+	    /* Files with executable bit set only. */
+	    if (!fc->skipReq && (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		offset = 0;
 		for (cnt = shdr->sh_info; --cnt >= 0; ) {
@@ -895,9 +901,10 @@ static int rpmfcELF(rpmfc fc)
 			/*@innercontinue@*/ continue;
 			/*@notreached@*/ /*@switchbreak@*/ break;
 		    case DT_NEEDED:
-			/* Add to package requires. */
-			if (fc->skipReq)
+			/* Files with executable bit set only. */
+			if (fc->skipReq || !(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
 			    /*@innercontinue@*/ continue;
+			/* Add to package requires. */
 			deptype = 'R';
 			depsp = &fc->requires;
 			tagN = RPMTAG_REQUIRENAME;
@@ -978,7 +985,6 @@ int rpmfcApply(rpmfc fc)
     const char * N;
     const char * EVR;
     int_32 Flags;
-    struct stat sb, * st = &sb;
     unsigned char deptype;
     int nddict;
     int previx;
@@ -992,11 +998,6 @@ int rpmfcApply(rpmfc fc)
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
 	rpmfcApplyTbl fcat;
 
-	/* Files with executable bit set only. */
-	if (stat(fc->fn[fc->ix], st) != 0
-	 || !(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
-	    continue;
-	    
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
 		/*@innercontinue@*/ continue;
