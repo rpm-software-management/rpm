@@ -14,6 +14,7 @@
 	- fix: create ppc directories correctly.
 	- (re-)enable fixowner/fixgroup macros.
 	- fix: specfile BuildRoot was masking rpmrc macro.
+	- expand twiddles in macrofiles list.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

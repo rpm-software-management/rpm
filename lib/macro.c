@@ -1144,7 +1144,7 @@ rpmDefineMacro(MacroContext *mc, const char *macro, int level)
 }
 
 void
-initMacros(MacroContext *mc, const char *macrofile)
+initMacros(MacroContext *mc, const char *macrofiles)
 {
 	char *m, *mfile, *me;
 	static int first = 1;
@@ -1157,10 +1157,10 @@ initMacros(MacroContext *mc, const char *macrofile)
 		first = 0;
 	}
 
-	if (macrofile == NULL)
+	if (macrofiles == NULL)
 		return;
 
-	for (mfile = m = strdup(macrofile); *mfile; mfile = me) {
+	for (mfile = m = strdup(macrofiles); *mfile; mfile = me) {
 		FILE *fp;
 		char buf[BUFSIZ];
 
@@ -1169,7 +1169,20 @@ initMacros(MacroContext *mc, const char *macrofile)
 		else
 			me = mfile + strlen(mfile);
 
-		if ((fp=fopen(mfile, "r")) == NULL)
+		/* Expand ~/ to $HOME */
+		buf[0] = '\0';
+		if (mfile[0] == '~' && mfile[1] == '/') {
+			char *home;
+			if ((home = getenv("HOME")) != NULL) {
+				mfile += 2;
+				strncpy(buf, home, sizeof(buf));
+				strncat(buf, "/", sizeof(buf) - strlen(buf));
+			}
+		}
+		strncat(buf, mfile, sizeof(buf) - strlen(buf));
+		buf[sizeof(buf)-1] = '\0';
+
+		if ((fp=fopen(buf, "r")) == NULL)
 			continue;
 
 		/* XXX Assume new fangled macro expansion */
@@ -1346,7 +1359,7 @@ rpmGetPath(const char *path, ...)
 #ifdef DEBUG_MACROS
 
 MacroContext mc = { NULL, 0, 0};
-char *macrofile = "./paths:./environment:./macros";
+char *macrofiles = "./paths:./environment:./macros";
 char *testfile = "./test";
 
 int
@@ -1356,7 +1369,7 @@ main(int argc, char *argv[])
 	FILE *fp;
 	int x;
 
-	initMacros(&mc, macrofile);
+	initMacros(&mc, macrofiles);
 	dumpMacroTable(&mc, NULL);
 
 	if ((fp = fopen(testfile, "r")) != NULL) {

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-03-31 08:13-0500\n"
+"POT-Creation-Date: 1999-03-31 11:39-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2597,12 +2597,12 @@ msgstr ""
 msgid "Target buffer overflow"
 msgstr ""
 
-#: ../lib/macro.c:1225 ../lib/macro.c:1233
+#: ../lib/macro.c:1239 ../lib/macro.c:1247
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: ../lib/macro.c:1236
+#: ../lib/macro.c:1250
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
