@@ -23,7 +23,7 @@ extern "C" {
 typedef ssize_t fdio_read_function_t (void *cookie, char *buf, size_t nbytes);
 typedef ssize_t fdio_write_function_t (void *cookie, const char *buf, size_t nbytes);
 #ifdef USE_COOKIE_SEEK_POINTER
-typedef int fdio_seek_function_t (void *cookie, off64_t * offset, int whence);
+typedef int fdio_seek_function_t (void *cookie, _IO_off64_t * offset, int whence);
 #else
 typedef int fdio_seek_function_t (void *cookie, off_t offset, int whence);
 #endif
@@ -83,7 +83,7 @@ size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
 size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 
 #ifdef USE_COOKIE_SEEK_POINTER
-int	Fseek	(FD_t fd, off64_t offset, int whence);
+int	Fseek	(FD_t fd, _IO_off64_t offset, int whence);
 #else
 int	Fseek	(FD_t fd, off_t offset, int whence);
 #endif
@@ -97,12 +97,12 @@ int	Fileno	(FD_t fd);
 
 int	Fcntl	(FD_t, int op, void *lip);
 #ifdef USE_COOKIE_SEEK_POINTER
-ssize_t Pread(FD_t fd, void * buf, size_t count, off64_t offset);
+ssize_t Pread(FD_t fd, void * buf, size_t count, _IO_off64_t offset);
 #else
 ssize_t Pread(FD_t fd, void * buf, size_t count, off_t offset);
 #endif
 #ifdef USE_COOKIE_SEEK_POINTER
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, off64_t offset);
+ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _IO_off64_t offset);
 #else
 ssize_t Pwrite(FD_t fd, const void * buf, size_t count, off_t offset);
 #endif
