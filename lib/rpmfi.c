@@ -1176,7 +1176,11 @@ if (fi->actions == NULL)
 
 	_fdupe(fi, fcolors);
 	_fdupe(fi, fcdictx);
-	_fdupe(fi, ddict);
+
+	if (fi->ddict != NULL)
+	    fi->ddict = memcpy(xmalloc(fi->nddict * sizeof(*fi->ddict)),
+			fi->ddict, fi->nddict * sizeof(*fi->ddict));
+
 	_fdupe(fi, fddictx);
 	_fdupe(fi, fddictn);
 

@@ -161,7 +161,7 @@ static fileAction decideFileFate(const rpmts ts,
 	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
 /*@=nullpass@*/
-     }
+    }
 
     /*
      * The config file on the disk has been modified, but
@@ -661,8 +661,8 @@ assert(otherFi != NULL);
 /*@=boundswrite@*/
 
 	/* Update disk space info for a file. */
-	rpmtsUpdateDSI(ts, fiFps->entry->dev,
-                rpmfiFSize(fi), fi->replacedSizes[i], fixupSize, fi->actions[i]);
+	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
+		fi->replacedSizes[i], fixupSize, fi->actions[i]);
 
     }
     ps = rpmpsFree(ps);
@@ -793,16 +793,16 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
 	/* Don't bother with skipped files */
 	if (XFA_SKIPPING(fi->actions[i])) {
-	    drc[ix]--;	dff[ix] = 1;
+	    drc[ix]--; dff[ix] = 1;
 	    continue;
 	}
 
 	/* Ignore colored files not in our rainbow. */
 	ficolor = rpmfiFColor(fi);
-        if (tscolor && ficolor && !(tscolor & ficolor)) {
+	if (tscolor && ficolor && !(tscolor & ficolor)) {
 	    drc[ix]--;	dff[ix] = 1;
 	    fi->actions[i] = FA_SKIPCOLOR;
-            continue;
+	    continue;
 	}
 
 	/*
@@ -995,7 +995,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int numRemoved;
     int xx;
 
-    /* FIXME: what if the same package is included in ts twice? */
+    /* XXX programmer error segfault avoidance. */
+    if (rpmtsNElements(ts) <= 0)
+	return -1;
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
@@ -1387,7 +1389,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 				7, numRemoved, NULL, ts->notifyData));
 
 		NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_PROGRESS, progress,
-                        numRemoved, NULL, ts->notifyData));
+			numRemoved, NULL, ts->notifyData));
 		progress++;
 
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
