@@ -31,7 +31,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_NAME  			1000
 #define RPMTAG_VERSION			1001
 #define RPMTAG_RELEASE			1002
-#define RPMTAG_SERIAL   		1003
+#define RPMTAG_EPOCH	   		1003
+#define	RPMTAG_SERIAL		RPMTAG_EPOCH	/* backward comaptibility */
 #define	RPMTAG_SUMMARY			1004
 #define RPMTAG_DESCRIPTION		1005
 #define RPMTAG_BUILDTIME		1006
