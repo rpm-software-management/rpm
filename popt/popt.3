@@ -169,6 +169,12 @@ specified to win; for example, "rm -i -f".  \fBPOPT_ARG_VAL\fP causes
 the parsing function not to return a value, since the value of \fIval\fP
 has already been used.
 .sp
+If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_OPTIONAL\fR,
+the argument to the long option may be omitted. If the long option
+is used without an argument, a default value of zero or NULL will be saved
+(if the arg pointer is present), otherwise behavior will be identical to
+a long option with argument.
+.sp
 .RI "The next option, " val ", is the value popt's parsing function 
 should return when the option is encountered.  If it is 0, the parsing
 function does not return a value, instead parsing the next 

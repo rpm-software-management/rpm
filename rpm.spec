@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.12
+Release: 0.13
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Dec 31 2000 Jeff Johnson <jbj@redhat.com>
+- (popt): fix float/double handling (#19701).
+- (popt): non-linux needs <float.h> (#22732).
+- (popt): add POPT_ARGFLAG_OPTIONAL for long options with optional arg.
+- (popt): diddle auto-help to include type of arg expected.
+
 * Sat Dec 30 2000 Jeff Johnson <jbj@redhat.com>
 - (non-linux): move stubs.c to rpmio (#21132).
 - (python): bind initdb (#20988).

@@ -54,7 +54,17 @@ getArgDescrip(const struct poptOption * opt, const char *translation_domain)
 	if (opt->argDescrip) return POPT_(opt->argDescrip);
 
     if (opt->argDescrip) return D_(translation_domain, opt->argDescrip);
-    return POPT_("ARG");
+
+    switch (opt->argInfo & POPT_ARG_MASK) {
+    case POPT_ARG_NONE:		return POPT_("NONE");
+    case POPT_ARG_VAL:		return POPT_("VAL");
+    case POPT_ARG_INT:		return POPT_("INT");
+    case POPT_ARG_LONG:		return POPT_("LONG");
+    case POPT_ARG_STRING:	return POPT_("STRING");
+    case POPT_ARG_FLOAT:	return POPT_("FLOAT");
+    case POPT_ARG_DOUBLE:	return POPT_("DOUBLE");
+    default:			return POPT_("ARG");
+    }
 }
 
 static void singleOptionHelp(FILE * f, int maxLeftCol, 
@@ -70,18 +80,60 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
     const char * argDescrip = getArgDescrip(opt, translation_domain);
 
     left = malloc(maxLeftCol + 1);
-    *left = '\0';
+    left[0] = left[maxLeftCol] = '\0';
 
     if (opt->longName && opt->shortName)
-	sprintf(left, "-%c, --%s", opt->shortName, opt->longName);
+	snprintf(left, maxLeftCol, "-%c, --%s", opt->shortName, opt->longName);
     else if (opt->shortName) 
-	sprintf(left, "-%c", opt->shortName);
+	snprintf(left, maxLeftCol, "-%c", opt->shortName);
     else if (opt->longName)
-	sprintf(left, "--%s", opt->longName);
+	snprintf(left, maxLeftCol, "--%s", opt->longName);
     if (!*left) return ;
     if (argDescrip) {
-	strcat(left, "=");
-	strcat(left, argDescrip);
+	char * le = left + strlen(left);
+	int nl = maxLeftCol - (le - left);
+	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL) {
+	    *le++ = '['; nl--;
+	}
+	if (opt->argDescrip == NULL) {
+	    switch (opt->argInfo & POPT_ARG_MASK) {
+	    case POPT_ARG_NONE:
+		snprintf(le, nl-1, "[true]");
+		break;
+	    case POPT_ARG_VAL:
+	    {   long aLong = opt->val;
+
+		if (opt->argInfo & POPT_ARGFLAG_NOT) aLong = ~aLong;
+		switch (opt->argInfo & POPT_ARGFLAG_LOGICALOPS) {
+		case POPT_ARGFLAG_OR:
+		    snprintf(le, nl-1, "[|=0x%lx]", aLong);	break;
+		case POPT_ARGFLAG_AND:
+		    snprintf(le, nl-1, "[&=0x%lx]", aLong);	break;
+		case POPT_ARGFLAG_XOR:
+		    snprintf(le, nl-1, "[^=0x%lx]", aLong);	break;
+		default:
+		    if (!(aLong == 0L || aLong == 1L || aLong == -1L))
+			snprintf(le, nl-1, "[=%ld]", aLong);
+		    break;
+		}
+	    }	break;
+	    case POPT_ARG_INT:
+	    case POPT_ARG_LONG:
+	    case POPT_ARG_STRING:
+	    case POPT_ARG_FLOAT:
+	    case POPT_ARG_DOUBLE:
+		snprintf(le, nl-1, "=%s", argDescrip);
+		break;
+	    }
+	} else {
+	    snprintf(le, nl-1, "=%s", argDescrip);
+	}
+	nl -= strlen(le);
+	le += strlen(le);
+	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL) {
+	    *le++ = ']'; nl--;
+	}
+	*le = '\0';
     }
 
     if (help)

@@ -674,35 +674,43 @@ int poptGetNextOpt(poptContext con)
 		       con->os > con->optionStack) {
 		    cleanOSE(con->os--);
 		}
-		if (con->os->next == con->os->argc)
-		    return POPT_ERROR_NOARG;
+		if (con->os->next == con->os->argc) {
+		    if (opt->argInfo & POPT_ARGFLAG_OPTIONAL)
+			con->os->nextArg = NULL;
+		    else
+			return POPT_ERROR_NOARG;
+		} else {
 
-		/* make sure this isn't part of a short arg or the
-                   result of an alias expansion */
-		if (con->os == con->optionStack &&
-		   opt->argInfo & POPT_ARGFLAG_STRIP &&
-		   canstrip) {
-		    poptStripArg(con, con->os->next);
-		}
+		    /* make sure this isn't part of a short arg or the
+			result of an alias expansion */
+		    if (con->os == con->optionStack &&
+			opt->argInfo & POPT_ARGFLAG_STRIP &&
+			canstrip) {
+			poptStripArg(con, con->os->next);
+		    }
 		
-		con->os->nextArg = expandNextArg(con, con->os->argv[con->os->next++]);
+		    con->os->nextArg = expandNextArg(con, con->os->argv[con->os->next++]);
+		}
 	    }
 
 	    if (opt->arg) {
 		switch (opt->argInfo & POPT_ARG_MASK) {
 		case POPT_ARG_STRING:
 		    /* XXX memory leak, hard to plug */
-		    *((const char **) opt->arg) = xstrdup(con->os->nextArg);
+		    *((const char **) opt->arg) = (con->os->nextArg)
+			? xstrdup(con->os->nextArg) : NULL;
 		    break;
 
 		case POPT_ARG_INT:
 		case POPT_ARG_LONG:
-		{   long aLong;
+		{   long aLong = 0;
 		    char *end;
 
-		    aLong = strtol(con->os->nextArg, &end, 0);
-		    if (!(end && *end == '\0'))
-			return POPT_ERROR_BADNUMBER;
+		    if (con->os->nextArg) {
+			aLong = strtol(con->os->nextArg, &end, 0);
+			if (!(end && *end == '\0'))
+			    return POPT_ERROR_BADNUMBER;
+		    }
 
 		    if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
 			if (aLong == LONG_MIN || aLong == LONG_MAX)
@@ -719,12 +727,14 @@ int poptGetNextOpt(poptContext con)
 
 		case POPT_ARG_FLOAT:
 		case POPT_ARG_DOUBLE:
-		{   double aDouble;
+		{   double aDouble = 0.0;
 		    char *end;
 
-		    aDouble = strtod(con->os->nextArg, &end);
-		    if (*end)
-			return POPT_ERROR_BADNUMBER;
+		    if (con->os->nextArg) {
+			aDouble = strtod(con->os->nextArg, &end);
+			if (*end)
+			    return POPT_ERROR_BADNUMBER;
+		    }
 
 		    if (aDouble == +HUGE_VAL || aDouble == -HUGE_VAL)
 			return POPT_ERROR_OVERFLOW;
@@ -778,7 +788,9 @@ int poptGetNextOpt(poptContext con)
 	else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL)
 	    /*@-ifempty@*/ ;
 	else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
-	    con->finalArgv[con->finalArgvCount++] = xstrdup(con->os->nextArg);
+	    if (con->os->nextArg)
+	        con->finalArgv[con->finalArgvCount++] =
+			xstrdup(con->os->nextArg);
 	}
     }
 

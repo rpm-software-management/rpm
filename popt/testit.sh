@@ -62,6 +62,11 @@ run test1 "test1 - 32" "arg1: 0 arg2: (none) aFloat: 10.1" -f 10.1
 run test1 "test1 - 33" "arg1: 0 arg2: (none) aFloat: 10.1" --float 10.1
 run test1 "test1 - 34" "arg1: 0 arg2: (none) aDouble: 10.1" -d 10.1
 run test1 "test1 - 35" "arg1: 0 arg2: (none) aDouble: 10.1" --double 10.1
+run test1 "test1 - 36" "arg1: 0 arg2: (none) oStr: (none)" --ostr
+run test1 "test1 - 37" "arg1: 0 arg2: (none) oStr: yadda" --ostr=yadda
+run test1 "test1 - 38" "arg1: 0 arg2: (none) oStr: yadda" --ostr yadda
+run test1 "test1 - 39" "arg1: 0 arg2: (none) oStr: ping rest: pong" --ostr=ping pong
+run test1 "test1 - 40" "arg1: 0 arg2: (none) oStr: ping rest: pong" --ostr ping pong
 
 echo ""
 echo "Passed."

@@ -19,6 +19,7 @@ int inc = 0;
 int shortopt = 0;
 float aFloat = 0.0;
 double aDouble = 0.0;
+char * oStr = (char *)-1;
 int singleDash = 0;
 
 static struct poptOption moreCallbackArgs[] = {
@@ -54,6 +55,9 @@ static struct poptOption options[] = {
 	    "A float argument", "FLOAT" },
 	{ "double", 'd', POPT_ARG_DOUBLE, &aDouble, 0,
 	    "A double argument", "DOUBLE" },
+	{ "ostr", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL, &oStr, 0,
+	    "An optional str", "ARG" },
+
 	{ NULL, '-', POPT_ARG_NONE | POPT_ARGFLAG_DOC_HIDDEN, &singleDash, 0 },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0, NULL },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &callbackArgs, 0, "Callback arguments" },
@@ -128,6 +132,8 @@ int main(int argc, const char ** argv) {
 	fprintf(stdout, " aFloat: %g", aFloat);
     if (aDouble != 0.0)
 	fprintf(stdout, " aDouble: %g", aDouble);
+    if (oStr != (char *)-1)
+	fprintf(stdout, " oStr: %s", (oStr ? oStr : "(none)"));
     if (singleDash)
 	fprintf(stdout, " -");
 

@@ -37,7 +37,8 @@ extern "C" {
 #define POPT_ARG_MASK		0x0000FFFF
 #define POPT_ARGFLAG_ONEDASH	0x80000000  /* allow -longoption */
 #define POPT_ARGFLAG_DOC_HIDDEN 0x40000000  /* don't show in help/usage */
-#define POPT_ARGFLAG_STRIP	0x20000000  /* strip this arg from argv (only applies to long args) */
+#define POPT_ARGFLAG_STRIP	0x20000000  /* strip this arg from argv(only applies to long args) */
+#define	POPT_ARGFLAG_OPTIONAL	0x10000000  /* arg may be missing */
 
 #define	POPT_ARGFLAG_OR		0x08000000 /* arg will be or'ed */
 #define	POPT_ARGFLAG_NOR	0x09000000 /* arg will be nor'ed */
