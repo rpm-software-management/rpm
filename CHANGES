@@ -28,6 +28,7 @@
 	- add AC_SYS_LARGFILE throughout.
 	- statically link rpmdeps against (internal) libfmagic.
 	- use rpmdeps rather than find-{requires,provides}.
+	- bundle libfmagic into librpmbuild for now.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
