@@ -21,6 +21,7 @@
 	  automatically generated dependencies
 	- look for random() in libm if it can't be found be default
 	- fixed problems in Solaris's autodeps stuff (Eric Mumpower)
+	- --setperms should work properly on directories now
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
