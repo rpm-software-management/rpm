@@ -190,6 +190,7 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
 
     fd = open(sigfile, O_RDONLY);
     if (read(fd, sigbuf, 152) != 152) {       /* signature is 152 bytes */
+        perror("bad sigfile:");
 	unlink(sigfile);
 	close(fd);
 	error(RPMERR_SIGGEN, "unable to read 152 bytes of signature");
