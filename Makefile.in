@@ -1,6 +1,6 @@
 SUBDIRS = lib
 OBJS = spec.o build.o pack.o query.o
-PROGS = rpm rpmlead rpmheader rpmarchive rpmbuild
+PROGS = rpm rpmlead rpmheader rpmarchive 
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 DEBUG = -g
@@ -17,7 +17,6 @@ make-subdirs:
 	done
 
 rpm: rpm.o $(OBJS) lib/librpm.a
-rpmbuild: rpmbuild.o $(OBJS) lib/librpm.a
 
 clean:
 	for d in $(SUBDIRS); do \
