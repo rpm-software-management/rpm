@@ -24,7 +24,7 @@ rpm alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILE
 		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh"
 
 rpm alias --setugids -q --qf \
-		   '[chown %{FILEUSERNAME:shescape}:%{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
+		   'chown %{FILEUSERNAME:shescape}:%{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n' \
 		   --pipe "grep -v \(none\) | sh"
 
 rpm alias --requires --qf \
