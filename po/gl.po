@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2003-01-06 18:52-0500\n"
+"POT-Creation-Date: 2003-01-08 14:31-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -1390,7 +1390,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3334 rpmdb/header.c:3363 rpmdb/header.c:3387
+#: rpmdb/header.c:3333 rpmdb/header.c:3362 rpmdb/header.c:3386
 msgid "(not a number)"
 msgstr ""
 
@@ -3097,80 +3097,80 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2428
+#: rpmdb/header.c:2427
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2458
+#: rpmdb/header.c:2457
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2472
+#: rpmdb/header.c:2471
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2486
+#: rpmdb/header.c:2485
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2503
+#: rpmdb/header.c:2502
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2530
+#: rpmdb/header.c:2529
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2545
+#: rpmdb/header.c:2544
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2558
+#: rpmdb/header.c:2557
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2624
+#: rpmdb/header.c:2623
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2633
+#: rpmdb/header.c:2632
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2647 rpmdb/header.c:2694
+#: rpmdb/header.c:2646 rpmdb/header.c:2693
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2657
+#: rpmdb/header.c:2656
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2677
+#: rpmdb/header.c:2676
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2704
+#: rpmdb/header.c:2703
 msgid "| expected at end of expression"
 msgstr ""
 
-#: rpmdb/header.c:2833
+#: rpmdb/header.c:2832
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3138
+#: rpmdb/header.c:3137
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

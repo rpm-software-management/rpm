@@ -2324,7 +2324,6 @@ static void findTag(char * name, const headerTagTableEntry tags,
  * @param tags
  * @param extensions
  * @retval *endPtr
- * @param state
  * @retval *errmsg	error message (if any)
  * @return		0 on success
  */
@@ -2769,7 +2768,7 @@ static int getExtension(Header h, headerTagTagFunction fn,
 /**
  * @param tag
  * @param h		header
- * @param etensions
+ * @param extensions
  * @param ec		extension cache
  * @param element
  * @retval *valp

@@ -326,6 +326,7 @@ int inflate_trees_bits(uIntf * c, uIntf * bb, inflate_huft * FAR * tb,
 
 
 /**
+ * @param nl
  * @param nd		number of distance codes
  * @param c		that many (total) code lengths
  * @param bl		literal desired/actual bit depth

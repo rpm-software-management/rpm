@@ -27,27 +27,16 @@ INCLUDES = \
 	@INCPATH@
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
-myLDFLAGS = # $(staticLDFLAGS)
 
-# XXX libtool can/should generate dependent libs.
-# XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
-# XXX top_builddir ldpaths are wrong building in tree
+myLDFLAGS = \
+	@WITH_LIBELF_LIB@ \
+#	$(staticLDFLAGS)
+
 myLDADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
-	@WITH_LIBELF_LIB@ \
-	@WITH_ZLIB_LIB@ \
-	@INTLLIBS@ \
-	@LIBMISC@
-
-whyLDADD = \
-	$(top_builddir)/lib/.libs/librpm.a \
-	$(top_builddir)/rpmdb/.libs/librpmdb.a \
-	$(top_builddir)/rpmio/.libs/librpmio.a \
-	$(top_builddir)/popt/.libs/libpopt.a \
-	@WITH_LIBELF_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@INTLLIBS@ \
 	@LIBMISC@
@@ -71,7 +60,7 @@ noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
 rpm_LDFLAGS =		$(myLDFLAGS)
-rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(whyLDADD)
+rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
 

@@ -55,6 +55,7 @@
 %__os_install_post    \
     @RPMCONFIGDIR@/brp-compress \
     @RPMCONFIGDIR@/brp-strip \
+    @RPMCONFIGDIR@/brp-strip-static-archive \
     @RPMCONFIGDIR@/brp-strip-comment-note \
 %{nil}
 

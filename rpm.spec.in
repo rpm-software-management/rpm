@@ -10,12 +10,17 @@
 %{?!_lib: %define _lib lib}
 %{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
+%define __bindir	%{__prefix}/bin
+%define __includedir	%{__prefix}/include
+%define __libdir	%{__prefix}/%{_lib}
+%define __mandir	%{__prefix}%{__share}/man
+
 Summary: The RPM package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.53
+Release: 0.54
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -170,12 +175,12 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
-  rm -rf .%{__prefix}/include/beecrypt
-  rm -f .%{__prefix}/%{_lib}/libbeecrypt.{a,la,so.2.2.0}
-  rm -rf .%{__prefix}/include/libelf
-  rm -f .%{__prefix}/%{_lib}/libelf.{a,la}
+  rm -rf .%{__includedir}/beecrypt
+  rm -f .%{__libdir}/libbeecrypt.{a,la,so.2.2.0}
+  rm -rf .%{__includedir}/libelf
+  rm -f .%{__libdir}/libelf.{a,la}
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
-  rm -rf .%{__prefix}%{__share}/man/{fr,ko}
+  rm -rf .%{__mandir}/{fr,ko}
 }
 
 %clean
@@ -214,7 +219,6 @@ if [ $1 = 0 ]; then
 fi
 exit 0
 
-
 %post devel -p /sbin/ldconfig
 %postun devel -p /sbin/ldconfig
 
@@ -233,9 +237,9 @@ exit 0
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY BETA-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
 # XXX comment these lines out if building with rpm that knows not %pubkey attr
-#%pubkey RPM-PGP-KEY
-#%pubkey RPM-GPG-KEY
-#%pubkey BETA-GPG-KEY
+%pubkey RPM-PGP-KEY
+%pubkey RPM-GPG-KEY
+%pubkey BETA-GPG-KEY
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 
 %ifos linux
@@ -250,18 +254,18 @@ exit 0
 %rpmdbattr	/var/lib/rpm/*
 %endif
 
-%rpmattr	%{__prefix}/bin/rpm2cpio
-%rpmattr	%{__prefix}/bin/gendiff
-%rpmattr	%{__prefix}/bin/rpmdb
-#%rpmattr	%{__prefix}/bin/rpm[eiu]
-%rpmattr	%{__prefix}/bin/rpmsign
-%rpmattr	%{__prefix}/bin/rpmquery
-%rpmattr	%{__prefix}/bin/rpmverify
+%rpmattr	%{__bindir}/rpm2cpio
+%rpmattr	%{__bindir}/gendiff
+%rpmattr	%{__bindir}/rpmdb
+#%rpmattr	%{__bindir}/rpm[eiu]
+%rpmattr	%{__bindir}/rpmsign
+%rpmattr	%{__bindir}/rpmquery
+%rpmattr	%{__bindir}/rpmverify
 
-%{__prefix}/%{_lib}/librpm-@VERSION@.so
-%{__prefix}/%{_lib}/librpmdb-@VERSION@.so
-%{__prefix}/%{_lib}/librpmio-@VERSION@.so
-%{__prefix}/%{_lib}/librpmbuild-@VERSION@.so
+%{__libdir}/librpm-@VERSION@.so
+%{__libdir}/librpmdb-@VERSION@.so
+%{__libdir}/librpmio-@VERSION@.so
+%{__libdir}/librpmbuild-@VERSION@.so
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
@@ -327,13 +331,13 @@ exit 0
 %lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
 %lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
 
-%{__prefix}%{__share}/man/man1/gendiff.1*
-%{__prefix}%{__share}/man/man8/rpm.8*
-%{__prefix}%{__share}/man/man8/rpm2cpio.8*
-%lang(ja)	%{__prefix}%{__share}/man/ja/man[18]/*.[18]*
-%lang(pl)	%{__prefix}%{__share}/man/pl/man[18]/*.[18]*
-%lang(ru)	%{__prefix}%{__share}/man/ru/man[18]/*.[18]*
-%lang(sk)	%{__prefix}%{__share}/man/sk/man[18]/*.[18]*
+%{__mandir}/man1/gendiff.1*
+%{__mandir}/man8/rpm.8*
+%{__mandir}/man8/rpm2cpio.8*
+%lang(ja)	%{__mandir}/ja/man[18]/*.[18]*
+%lang(pl)	%{__mandir}/pl/man[18]/*.[18]*
+%lang(ru)	%{__mandir}/ru/man[18]/*.[18]*
+%lang(sk)	%{__mandir}/sk/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
@@ -344,7 +348,7 @@ exit 0
 %dir %{__prefix}/src/@RPMCANONVENDOR@/SRPMS
 %dir %{__prefix}/src/@RPMCANONVENDOR@/RPMS
 %{__prefix}/src/@RPMCANONVENDOR@/RPMS/*
-%rpmattr	%{__prefix}/bin/rpmbuild
+%rpmattr	%{__bindir}/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-files
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
@@ -380,14 +384,14 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
-%{__prefix}%{__share}/man/man8/rpmbuild.8*
-%{__prefix}%{__share}/man/man8/rpmdeps.8*
+%{__mandir}/man8/rpmbuild.8*
+%{__mandir}/man8/rpmdeps.8*
 
 %if %{with_python_subpackage}
 %files python
 %defattr(-,root,root)
-%{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
-%{__prefix}/lib/python%{with_python_version}/site-packages/rpmdb
+%{__libdir}/python%{with_python_version}/site-packages/rpmmodule.so
+%{__libdir}/python%{with_python_version}/site-packages/rpmdb
 %endif
 
 %files devel
@@ -395,21 +399,21 @@ exit 0
 %if %{with_apidocs}
 %doc @WITH_APIDOCS_TARGET@
 %endif
-%{__prefix}/include/rpm
-%{__prefix}/%{_lib}/librpm.a
-%{__prefix}/%{_lib}/librpm.la
-%{__prefix}/%{_lib}/librpm.so
-%{__prefix}/%{_lib}/librpmdb.a
-%{__prefix}/%{_lib}/librpmdb.la
-%{__prefix}/%{_lib}/librpmdb.so
-%{__prefix}/%{_lib}/librpmio.a
-%{__prefix}/%{_lib}/librpmio.la
-%{__prefix}/%{_lib}/librpmio.so
-%{__prefix}/%{_lib}/librpmbuild.a
-%{__prefix}/%{_lib}/librpmbuild.la
-%{__prefix}/%{_lib}/librpmbuild.so
-%{__prefix}%{__share}/man/man8/rpmcache.8*
-%{__prefix}%{__share}/man/man8/rpmgraph.8*
+%{__includedir}/rpm
+%{__libdir}/librpm.a
+%{__libdir}/librpm.la
+%{__libdir}/librpm.so
+%{__libdir}/librpmdb.a
+%{__libdir}/librpmdb.la
+%{__libdir}/librpmdb.so
+%{__libdir}/librpmio.a
+%{__libdir}/librpmio.la
+%{__libdir}/librpmio.so
+%{__libdir}/librpmbuild.a
+%{__libdir}/librpmbuild.la
+%{__libdir}/librpmbuild.so
+%{__mandir}/man8/rpmcache.8*
+%{__mandir}/man8/rpmgraph.8*
 %rpmattr	%{__prefix}/lib/rpm/rpmcache
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_deadlock
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_dump
@@ -417,12 +421,12 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_svc
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_stat
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_verify
-%rpmattr	%{__prefix}/bin/rpmgraph
+%rpmattr	%{__bindir}/rpmgraph
 
 %files -n popt
 %defattr(-,root,root)
-%{__prefix}/%{_lib}/libpopt.so.*
-%{__prefix}%{__share}/man/man3/popt.3*
+%{__libdir}/libpopt.so.*
+%{__mandir}/man3/popt.3*
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/popt.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/popt.mo
 %lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/popt.mo
@@ -454,12 +458,17 @@ exit 0
 %lang(zh_CN)	%{__prefix}/*/locale/zh_CN.GB2312/LC_MESSAGES/popt.mo
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort.
-%{__prefix}/%{_lib}/libpopt.a
-%{__prefix}/%{_lib}/libpopt.la
-%{__prefix}/%{_lib}/libpopt.so
-%{__prefix}/include/popt.h
+%{__libdir}/libpopt.a
+%{__libdir}/libpopt.la
+%{__libdir}/libpopt.so
+%{__includedir}/popt.h
 
 %changelog
+* Wed Jan  8 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.54
+- python: put rpmmodule.so where python expects to find.
+- add brp-strip-static-archive build root policy helper.
+- add -lelf to rpm LDFLAGS, not LDADD, since there is no libelf.la now.
+
 * Tue Jan  7 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.53
 - file: read elf64 notes correctly.
 

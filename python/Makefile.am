@@ -6,6 +6,9 @@ LINT = splint
 
 PYVER= @WITH_PYTHON_VERSION@
 
+pylibdir = $(python -c 'import sys; print sys.path[1]')
+pyincdir = $(prefix)/include/python${PYVER}
+
 SUBDIRS = rpmdb test
 
 EXTRA_DIST = rpmdebug-py.c
@@ -16,7 +19,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
-	-I/usr/include/python${PYVER} \
+	-I$(pyincdir) \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
@@ -33,10 +36,10 @@ mylibs= \
 
 LDADD =
 
-pythondir = $(prefix)/lib/python${PYVER}/site-packages
+pythondir = $(pylibdir)/site-packages
 python_PROGRAMS = rpmmodule.so
 
-rpmdbdir = $(prefix)/lib/python${PYVER}/site-packages/rpmdb
+rpmdbdir = $(pylibdir)/site-packages/rpmdb
 rpmdb_PROGRAMS = _rpmdb.so
 
 noinst_PROGRAMS = poptmodule.so
