@@ -29,6 +29,7 @@ extern int h_errno;
 #include <arpa/inet.h>
 #include <arpa/telnet.h>
 
+#include "rpmlib.h"
 #include "rpmio.h"
 
 #if !defined(HAVE_INET_ATON)
@@ -52,6 +53,16 @@ int inet_aton(const char *cp, struct in_addr *inp);
 static int ftpDebug = 0;
 static int ftpTimeoutSecs = TIMEOUT_SECS;
 static int httpTimeoutSecs = TIMEOUT_SECS;
+
+static rpmCallbackFunction	urlNotify = NULL;
+static void *			urlNotifyData = NULL;
+static int			urlNotifyCount = -1;
+
+void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount) {
+    urlNotify = notify;
+    urlNotifyData = notifyData;
+    urlNotifyCount = (notifyCount >= 0) ? notifyCount : 4096;
+}
 
 static int checkResponse(int fd, int secs, int *ecp, char ** str) {
     static char buf[BUFFER_SIZE + 1];
@@ -406,6 +417,12 @@ static int copyData(FD_t sfd, FD_t tfd) {
     int bytesRead;
     int bytesCopied = 0;
     int rc;
+    int notifier = -1;
+
+    if (urlNotify) {
+	(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
+		0, 0, NULL, urlNotifyData);
+    }
     
     while (1) {
 	FD_ZERO(&emptySet);
@@ -435,11 +452,24 @@ static int copyData(FD_t sfd, FD_t tfd) {
 	    break;
 	}
 	bytesCopied += bytesRead;
+	if (urlNotify && urlNotifyCount > 0) {
+	    int n = bytesCopied/urlNotifyCount;
+	    if (n != notifier) {
+		(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
+			bytesCopied, 0, NULL, urlNotifyData);
+		notifier = n;
+	    }
+	}
     }
 
 if (ftpDebug)
 fprintf(stderr, "++ copied %d bytes: %s\n", bytesCopied, ftpStrerror(rc));
 
+    if (urlNotify) {
+	(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
+		bytesCopied, bytesCopied, NULL, urlNotifyData);
+    }
+    
     fdClose(sfd);
     return rc;
 }

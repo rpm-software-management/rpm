@@ -16,6 +16,7 @@ const char * ftpStrerror(int ftpErrno);
 #define FTPERR_NIC_ABORT_IN_PROGRESS -11
 #define FTPERR_UNKNOWN               -100
 
+void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount);
 int	httpOpen(urlinfo *u);
 int	ftpOpen(urlinfo *u);
 
