@@ -37,6 +37,9 @@ struct rpmxp_s {
     int nodeType;
     int isEmptyElement;
 
+    Header h;
+    headerTagTableEntry tte;
+
     int n;
 };
 #endif

@@ -70,7 +70,8 @@ rpmtool_SOURCES =	rpmtool.c rpmxp.c
 #rpmtool_LDFLAGS =	$(staticLDFLAGS)
 rpmtool_LDADD =		$(LDADD) -lxml2
 
-rpmxml_SOURCES =	rpmxml.c rpmxp.c
-rpmxml_LDADD =		-lxml2
+rpmxml_SOURCES =	rpmxml.c # rpmxp.c
+#rpmxml_LDFLAGS =	$(staticLDFLAGS)
+rpmxml_LDADD =		$(LDADD) -lxml2
 
 $(PROGRAMS): $(LDADD)
