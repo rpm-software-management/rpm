@@ -349,9 +349,9 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 8, al->size, NULL, notifyData));
 	    }
 	}
 
+NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 8, al->size, NULL, notifyData));
 	return al->size + ts->numRemovedPackages;
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 8, al->size, NULL, notifyData));
 
 NOTIFY((NULL, RPMCALLBACK_TRANS_START, 9, al->size, NULL, notifyData));
 

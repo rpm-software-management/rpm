@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-02-22 19:50-0500\n"
+"POT-Creation-Date: 1999-02-23 02:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3137,17 +3137,17 @@ msgstr ""
 msgid "Invalid signature spec in rc file"
 msgstr ""
 
-#: ../lib/transaction.c:639
+#: ../lib/transaction.c:641
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:645
+#: ../lib/transaction.c:647
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:733
+#: ../lib/transaction.c:735
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
