@@ -174,7 +174,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     return rc;
 }
 
-int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
+int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     Header h;
     int i;
     int fileCount;
@@ -198,16 +198,16 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 
     /* dependency checking should go in here */
 
-    if (test) {
+    if (flags & UNINSTALL_TEST) {
 	rmmess = "would remove";
     } else {
 	rmmess = "removing";
     }
 
     message(MESS_DEBUG, "running preuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_PREUN);
+    runScript(prefix, h, RPMTAG_PREUN, flags & UNINSTALL_NOSCRIPTS);
     
-    message(MESS_DEBUG, "%s files test = %d\n", rmmess, test);
+    message(MESS_DEBUG, "%s files test = %d\n", rmmess, flags & UNINSTALL_TEST);
     if (!getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &fileCount)) {
 	puts("(contains no files)");
@@ -252,7 +252,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 
 	    removeFile(fnbuffer, fileStatesList[i], fileFlagsList[i],
 		       fileMd5List[i], fileModesList[i], fileActions[i], 
-		       rmmess, test);
+		       rmmess, flags & UNINSTALL_TEST);
 	}
 
 	free(fileList);
@@ -260,18 +260,18 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
     }
 
     message(MESS_DEBUG, "running postuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_POSTUN);
+    runScript(prefix, h, RPMTAG_POSTUN, flags & UNINSTALL_NOSCRIPTS);
 
     freeHeader(h);
 
     message(MESS_DEBUG, "%s database entry\n", rmmess);
-    if (!test)
+    if (!(flags & UNINSTALL_TEST))
 	rpmdbRemove(db, offset, 0);
 
     return 0;
 }
 
-int runScript(char * prefix, Header h, int tag) {
+int runScript(char * prefix, Header h, int tag, int norunScripts) {
     int count, type;
     char * script;
     char * fn;
@@ -280,13 +280,15 @@ int runScript(char * prefix, Header h, int tag) {
     int child;
     int status;
 
+    if (!norunScripts) return 0;
+    
     if (getEntry(h, tag, &type, (void **) &script, &count)) {
 	fn = tmpnam(NULL);
 	message(MESS_DEBUG, "script found - running from file %s\n", fn);
 	fd = open(fn, O_CREAT | O_RDWR);
 	unlink(fn);
 	if (fd < 0) {
-            error(RPMERR_SCRIPT, "error creating file for (un)install script");
+	    error(RPMERR_SCRIPT, "error creating file for (un)install script");
 	    return 1;
 	}
 	write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
