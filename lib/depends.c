@@ -128,7 +128,7 @@ static void alFree(struct availableList * al)
 
     if (al->numDirs)
 	free(al->dirs);
-	al->dirs = NULL;
+    al->dirs = NULL;
 
     if (al->alloced && al->list)
 	free(al->list);
@@ -139,7 +139,11 @@ static void alFree(struct availableList * al)
 static int dirInfoCompare(const void * one, const void * two) {
     const struct dirInfo * a = one;
     const struct dirInfo * b = two;
+    int lenchk = a->dirNameLen - b->dirNameLen;
 
+    if (lenchk)
+	return lenchk;
+    /* XXX FIXME: this might do "backward" strcmp for speed */
     return strcmp(a->dirName, b->dirName);
 }
 
@@ -211,22 +215,20 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 
 	for (dirNum = 0; dirNum < numDirs; dirNum++) {
 	    dirNeedle.dirName = (char *) dirNames[dirNum];
+	    dirNeedle.dirNameLen = strlen(dirNames[dirNum]);
 	    dirMatch = bsearch(&dirNeedle, al->dirs, origNumDirs,
 			       sizeof(dirNeedle), dirInfoCompare);
 	    if (dirMatch) {
 		dirMapping[dirNum] = dirMatch - al->dirs;
 	    } else {
+		dirMapping[dirNum] = al->numDirs;
 		al->dirs[al->numDirs].dirName = xstrdup(dirNames[dirNum]);
+		al->dirs[al->numDirs].dirNameLen = strlen(dirNames[dirNum]);
 		al->dirs[al->numDirs].files = NULL;
 		al->dirs[al->numDirs].numFiles = 0;
-		al->dirs[al->numDirs].dirNum = al->numDirs;
-		dirMapping[dirNum] = al->numDirs;
 		al->numDirs++;
 	    }
 	}
-
-	if (origNumDirs + al->numDirs)
-	    qsort(al->dirs, al->numDirs, sizeof(dirNeedle), dirInfoCompare);
 
 	free(dirNames);
 
@@ -251,6 +253,10 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 
 	    first = last + 1;
 	}
+
+	if (origNumDirs + al->numDirs)
+	    qsort(al->dirs, al->numDirs, sizeof(dirNeedle), dirInfoCompare);
+
     }
 
     p->key = key;
@@ -763,6 +769,7 @@ alFileSatisfiesDepend(struct availableList * al,
     }
 
     dirNeedle.dirName = (char *) dirName;
+    dirNeedle.dirNameLen = strlen(dirName);
     dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
 		       sizeof(dirNeedle), dirInfoCompare);
     xfree(dirName);

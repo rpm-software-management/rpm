@@ -473,16 +473,22 @@ char * currentDirectory(void)
 
 int _noDirTokens = 1;
 
+static int dncmp(const void * a, const void * b)
+{
+    const char *const * first = a;
+    const char *const * second = b;
+    return strcmp(*first, *second);
+}
+
 void compressFilelist(Header h)
 {
-    const char ** fileNames;
+    char ** fileNames;
     const char ** dirNames;
     const char ** baseNames;
     int_32 * dirIndexes;
     int count;
     int i;
     int dirIndex = -1;
-    int lastLen = -1;
 
     /*
      * This assumes the file list is already sorted, and begins with a
@@ -510,19 +516,24 @@ void compressFilelist(Header h)
     }
 
     for (i = 0; i < count; i++) {
+	const char ** needle;
 	char *baseName = strrchr(fileNames[i], '/') + 1;
+	char savechar;
 	int len = baseName - fileNames[i];
 
-	if (dirIndex < 0 || lastLen != len ||
-		strncmp(dirNames[dirIndex], fileNames[i], len)) {
+	savechar = *baseName;
+	*baseName = '\0';
+	if (dirIndex < 0 ||
+	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
 	    char *s = alloca(len + 1);
-	    memcpy(s, fileNames[i], len);
+	    memcpy(s, fileNames[i], len + 1);
 	    s[len] = '\0';
-	    dirNames[++dirIndex] = s;
-	    lastLen = len;
-	}
+	    dirIndexes[i] = ++dirIndex;
+	    dirNames[dirIndex] = s;
+	} else
+	    dirIndexes[i] = needle - dirNames;
 
-	dirIndexes[i] = dirIndex;
+	*baseName = savechar;
 	baseNames[i] = baseName;
     }
 

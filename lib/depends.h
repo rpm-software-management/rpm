@@ -34,7 +34,7 @@ struct fileIndexEntry {
 
 struct dirInfo {
     /*@owned@*/ char * dirName;			/* xstrdup'd */
-    int dirNum;
+    int dirNameLen;
     /*@owned@*/ struct fileIndexEntry * files;	/* xmalloc'd */
     int numFiles;
 } ;
