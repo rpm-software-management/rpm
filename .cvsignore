@@ -1,0 +1,15 @@
+rpm
+rpm.shared
+rpm2cpio
+lib-rpmrc
+config.h
+config.guess
+config.cache
+Makefile.inc
+config.status
+Makefile
+.depend
+.depend-done
+*.tar.gz
+config.log
+configure

@@ -1,0 +1,7 @@
+Makefile .depend
+rpmlead
+dump
+rpmheader
+rpmarchive
+rpmsignature
+dumpdb
