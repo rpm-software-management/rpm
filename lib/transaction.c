@@ -468,7 +468,7 @@ static Header relocateFileList(struct availablePackage * alp,
     char ** validRelocations, ** actualRelocations;
     char ** names;
     char ** origNames;
-    int len, newLen;
+    int len;
     char * newName;
     int_32 fileCount;
     Header h;
@@ -559,28 +559,20 @@ static Header relocateFileList(struct availablePackage * alp,
 
     /* go through things backwards so that /usr/local relocations take
        precedence over /usr ones */
-    nextReloc = relocations + numRelocations - 1;
-    len = strlen(nextReloc->oldPath);
-    newLen = nextReloc->newPath ? strlen(nextReloc->newPath) : 0;
-    for (i = fileCount - 1; i >= 0 && nextReloc; i--) {
-	do {
-	    rc = (!strncmp(nextReloc->oldPath, names[i], len) && 
-		    (names[i][len] == '/'));
-	    if (!rc) {
-		if (nextReloc == relocations) {
-		    nextReloc = 0;
-		} else {
-		    nextReloc--;
-		    len = strlen(nextReloc->oldPath);
-		    newLen = nextReloc->newPath ? 
-				strlen(nextReloc->newPath) : 0;
-		}
-	    }
-	} while (!rc && nextReloc);
+    for (i = fileCount - 1; i >= 0; i--) {
+	for (j = numRelocations - 1; j >= 0; j--) {
+	    nextReloc = relocations + j;
+	    len = strlen(relocations[j].oldPath);
+	    rc = (!strncmp(relocations[j].oldPath, names[i], len) && 
+		    ((names[i][len] == '/') || !names[i][len]));
+	    if (rc) break;
+	}
 
-	if (rc) {
+	if (j >= 0) {
+	    nextReloc = relocations + j;
 	    if (nextReloc->newPath) {
-		newName = alloca(newLen + strlen(names[i]) + 1);
+		newName = alloca(strlen(nextReloc->newPath) + 
+				 strlen(names[i]) + 1);
 		strcpy(newName, nextReloc->newPath);
 		strcat(newName, names[i] + len);
 		rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
