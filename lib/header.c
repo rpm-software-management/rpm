@@ -121,7 +121,7 @@ int nextIterator(HeaderIterator iter,
 	}
 	break;
     default:
-	fprintf(stderr, "Data type %d not supprted\n", (int) *type);
+	fprintf(stderr, "Data type %d not supported\n", (int) *type);
 	exit(1);
     }
 
@@ -815,7 +815,7 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	}
 	/* Otherwise fall through to STRING_ARRAY_TYPE */
         /* This should not be allowed */
-	fprintf(stderr, "addEntry() STRING_TYPE count must be 0.\n");
+	fprintf(stderr, "addEntry() STRING_TYPE count must be 1.\n");
 	exit(1);
     case STRING_ARRAY_TYPE:
 	/* This is like STRING_TYPE, except it's *always* an array */
