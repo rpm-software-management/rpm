@@ -428,13 +428,13 @@ static void printHelp(void) {
 #ifdef IAM_RPMQV
     puts("");
     puts(         _("  Package specification options:"));
-    printHelpLine(  "     -a, --all           ",
+    printHelpLine(  "     -a, --all            ",
 		  _("query/verify all packages"));
-    printHelpLine(_("     -f <file>+          "),
+    printHelpLine(_("     -f <file>+           "),
 		  _("query/verify package owning <file>"));
-    printHelpLine(_("     -p <packagefile>+   "),
+    printHelpLine(_("     -p <packagefile>+    "),
 		  _("query/verify (uninstalled) package <packagefile>"));
-    printHelpLine(_("     --triggeredby <pkg> "),
+    printHelpLine(_("     --triggeredby <pkg>  "),
 		  _("query/verify packages triggered by <pkg>"));
     printHelpLine(_("     --whatprovides <cap> "),
 		  _("query/verify packages which provide <cap> capability"));

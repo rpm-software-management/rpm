@@ -505,7 +505,7 @@ static void printHelp(void) {
     printHelpLine(_("    --addsign <pkg>+      "),
 		  _("add a signature to a package"));
     puts(         _("    --checksig <pkg>+"));
-    printHelpLine(_("    -K <pkg>+           "),
+    printHelpLine(_("    -K <pkg>+             "),
 		  _("verify package signature"));
     printHelpLine(  "      --nopgp             ",
 		  _("skip any PGP signatures"));
