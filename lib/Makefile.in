@@ -31,6 +31,7 @@ install:
 	install -m 644 -o 0 -g 0 dbindex.h $(INCDIR)
 	install -m 644 -o 0 -g 0 header.h $(INCDIR)
 	install -m 644 -o 0 -g 0 messages.h $(INCDIR)
+	install -m 644 -o 0 -g 0 rpmerr.h $(INCDIR)
 	install -m 644 -o 0 -g 0 librpm.a $(LIBDIR)
 
 clean:
