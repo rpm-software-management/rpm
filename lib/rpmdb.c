@@ -298,6 +298,8 @@ static void removeIndexEntry(dbIndex * dbi, char * key, dbIndexRecord rec,
       case 2:
 	break;   /* error message already generated from dbindex.c */
     }
+
+    freeDBIndexRecord(matches);
 }
 
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
@@ -389,6 +391,8 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     syncDBIndex(db->fileIndex);
 
     unblockSignals();
+
+    freeHeader(h);
 
     return 0;
 }
