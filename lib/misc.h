@@ -2,6 +2,7 @@
 #define H_MISC
 
 #include <unistd.h>
+#include <sys/types.h>
 
 char ** splitString(char * str, int length, char sep);
 void freeSplitString(char ** list);

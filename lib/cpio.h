@@ -2,6 +2,7 @@
 #define H_CPIO
 
 #include <zlib.h>
+#include <sys/types.h>
 
 /* Note the "high" bit is set only if errno is valid */
 #define CPIO_CHECK_ERRNO	0x80000000
