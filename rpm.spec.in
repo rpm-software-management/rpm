@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -488,7 +488,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Wed Dec 17 2003 Jeff Johnson <jbj@jbj.org> 4.2-0.3
+* Mon Dec 22 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.4
+- test build with methods needed for selinux.
+
+* Wed Dec 17 2003 Jeff Johnson <jbj@jbj.org> 4.3-0.3
 - detect (and remove) dbenv files while upgrading to db-4.2.52.
 - fix: dangling pointer brain fart (#107835).
 - fix: ds.Single() method needs malloc'd elements (#109919).
