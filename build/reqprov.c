@@ -95,7 +95,7 @@ static void parseFileForProv(char *f, struct PackageRec *p)
     s++;
     tok = s;
     
-    if ((s = strstr(s, ".so"))) {
+    if ((s = strstr(s, ".so."))) {
 	s += 3;
 	*s = '\0';
 	addReqProv(p, REQUIRE_PROVIDES, tok, NULL);
