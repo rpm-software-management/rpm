@@ -16,7 +16,6 @@ SUBDIRS = popt build lib po intl misc tools scripts tests doc .
 INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/intl \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 

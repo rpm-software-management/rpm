@@ -83,6 +83,9 @@
 /* Define if the patch call you'll be using is 2.1 or older */
 #undef HAVE_OLDPATCH_21
 
+/* Define to the fulkl path name of the static libbz2.a */
+#undef BZIP2LIB
+
 /* A full path to a program, possibly with arguments, that will create a
    directory and all necessary parent directories, ala `mkdir -p'        */
 #undef MKDIR_P

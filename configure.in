@@ -316,15 +316,32 @@ for zlib in z gz ; do
 	       )
 done
 
-BZ2LIB=
-for bz2lib in bz2 ; do
+dnl Try static libraries before shared libraries.
+BZIP2LIB=
+for bz2lib in /usr/local/lib/libbz2.a /usr/lib/libbz2.a ; do
+  AC_MSG_CHECKING(for static $bz2lib)
+  if ! test -f $bz2lib ; then
+    AC_MSG_RESULT(no)
+    continue
+  else
+    AC_MSG_RESULT(yes)
+    BZIP2LIB=$bz2lib
+    AC_DEFINE_UNQUOTED(BZIP2LIB, "$BZIP2LIB")
+    AC_SUBST(BZIP2LIB)
+    break
+  fi
+done
+
+if test -z "$BZIP2LIB" ; then
+  for bz2lib in bz2 ; do
    AC_CHECK_LIB(${bz2lib}, bzread, 
-	[LIBS="$LIBS -l${bz2lib}"; break], 
+	[LIBS="$LIBS ${bz2lib}"; break], 
 	[if test ${bz2lib} = bz2; then 
 	    AC_MSG_WARN([missing libbz2.a (from the bzip2 package)]) 
 	 fi]
 	       )
-done
+  done
+fi
 
 dnl XXX these are needed only by rpmgettext right now
 AM_FUNC_ERROR_AT_LINE
