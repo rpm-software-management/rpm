@@ -339,19 +339,19 @@ struct rpmDependencyConflict {
        which isn't needed as well */
     char * needsName, * needsVersion;
     int needsFlags;
-    void * suggestedPackage;			/* NULL if none */
+    const void * suggestedPackage;			/* NULL if none */
     enum { RPMDEP_SENSE_REQUIRES, RPMDEP_SENSE_CONFLICTS } sense;
 } ;
 
 /* db may be NULL, but don't do things which require the database! */
-/*@only@*/ rpmTransactionSet rpmtransCreateSet(rpmdb db, char * rootdir);
+/*@only@*/ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootdir);
 
 /* if fd is NULL, the callback specified in rpmtransCreateSet() is used to
    open and close the file descriptor. If Header is NULL, the fd is always
    used, otherwise fd is only needed (and only opened) for actual package 
    installation */
 int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
-			void * key, int update, rpmRelocation * relocs);
+			const void * key, int update, rpmRelocation * relocs);
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
 void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
 void rpmtransFree(/*@only@*/ rpmTransactionSet rpmdep);
@@ -380,7 +380,7 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
 
 typedef struct rpmProblem_s {
     Header h, altH;
-    void * key;
+    const void * key;
     rpmProblemType type;
     int ignoreProblem;
     char * str1;

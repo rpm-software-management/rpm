@@ -11,7 +11,7 @@ struct availablePackage {
     char ** files;
     char * name, * version, * release;
     int epoch, hasEpoch, providesCount, filesCount;
-    void * key;
+    const void * key;
     rpmRelocation * relocs;
     FD_t fd;
 } ;
