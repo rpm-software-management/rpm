@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <sys/resource.h>
 #include <sys/stat.h>		/* needed for mkdir(2) prototype! */
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <time.h>

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
@@ -15,6 +16,7 @@
 #include <sys/time.h>  /* For 'select()' interfaces */
 
 #include "pack.h"
+#include "miscfn.h"
 #include "header.h"
 #include "spec.h"
 #include "specP.h"

@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "miscfn.h"
 #include "tread.h"
 
 int timedRead(int fd, void * bufptr, int length) {

@@ -1,5 +1,6 @@
 #if HAVE_CONFIG_H
 # include "config.h"
+# include "miscfn.h"
 #else
 #define HAVE_MACHINE_TYPES_H 1
 #define HAVE_ALLOCA_H 1
