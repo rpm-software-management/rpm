@@ -48,7 +48,7 @@
 
 # include <assert.h>
 
-#define	__xxalloca	alloca
+#define	__alloca	alloca
 #define	__stat		stat
 #define	NAMLEN(_d)	NLENGTH(_d)
 
@@ -130,7 +130,7 @@ static int __glob_pattern_p (const char *pattern, int quote);
    If memory cannot be allocated for PGLOB, GLOB_NOSPACE is returned.
    Otherwise, `glob' returns zero.  */
 int
-xxglob (const char *pattern, int flags,
+glob (const char *pattern, int flags,
 	int (*errfunc) __P ((const char *, int)), glob_t *pglob)
 {
   const char *filename;
@@ -165,7 +165,7 @@ xxglob (const char *pattern, int flags,
 	  if (onealt == NULL)
 	    {
 	      if (!(flags & GLOB_APPEND))
-		xxglobfree (pglob);
+		globfree (pglob);
 	      return GLOB_NOSPACE;
 	    }
 #endif
@@ -187,7 +187,7 @@ xxglob (const char *pattern, int flags,
 #ifndef __GNUC__
 	      free (onealt);
 #endif
-	      return xxglob (pattern, flags & ~GLOB_BRACE, errfunc, pglob);
+	      return glob (pattern, flags & ~GLOB_BRACE, errfunc, pglob);
 	    }
 
 	  /* Now find the end of the whole brace expression.  */
@@ -201,7 +201,7 @@ xxglob (const char *pattern, int flags,
 #ifndef __GNUC__
 		  free (onealt);
 #endif
-		  return xxglob (pattern, flags & ~GLOB_BRACE, errfunc, pglob);
+		  return glob (pattern, flags & ~GLOB_BRACE, errfunc, pglob);
 		}
 	    }
 	  /* Please note that we now can be sure the brace expression
@@ -236,7 +236,7 @@ xxglob (const char *pattern, int flags,
 	      memcpy (&alt_start[next - p], rest, rest_len);
 #endif
 
-	      result = xxglob (onealt,
+	      result = glob (onealt,
 			     ((flags & ~(GLOB_NOCHECK|GLOB_NOMAGIC))
 			      | GLOB_APPEND), errfunc, pglob);
 
@@ -247,7 +247,7 @@ xxglob (const char *pattern, int flags,
 		  free (onealt);
 #endif
 		  if (!(flags & GLOB_APPEND))
-		    xxglobfree (pglob);
+		    globfree (pglob);
 		  return result;
 		}
 
@@ -325,7 +325,7 @@ xxglob (const char *pattern, int flags,
 	  char *drive_spec;
 
 	  ++dirlen;
-	  drive_spec = (char *) __xxalloca (dirlen + 1);
+	  drive_spec = (char *) __alloca (dirlen + 1);
 #ifdef HAVE_MEMPCPY
 	  *((char *) mempcpy (drive_spec, pattern, dirlen)) = '\0';
 #else
@@ -341,7 +341,7 @@ xxglob (const char *pattern, int flags,
 	     from "d:/", since "d:" and "d:/" are not the same.*/
 	}
 #endif
-      newp = (char *) __xxalloca (dirlen + 1);
+      newp = (char *) __alloca (dirlen + 1);
 #ifdef HAVE_MEMPCPY
       *((char *) mempcpy (newp, pattern, dirlen)) = '\0';
 #else
@@ -360,7 +360,7 @@ xxglob (const char *pattern, int flags,
 	  && dirlen > 1)
 	/* "pattern/".  Expand "pattern", appending slashes.  */
 	{
-	  int val = xxglob (dirname, flags | GLOB_MARK, errfunc, pglob);
+	  int val = glob (dirname, flags | GLOB_MARK, errfunc, pglob);
 	  if (val == 0)
 	    pglob->gl_flags = ((pglob->gl_flags & ~GLOB_MARK)
 			       | (flags & GLOB_MARK));
@@ -402,7 +402,7 @@ xxglob (const char *pattern, int flags,
 		/* `sysconf' does not support _SC_LOGIN_NAME_MAX.  Try
 		   a moderate value.  */
 		buflen = 20;
-	      name = (char *) __xxalloca (buflen);
+	      name = (char *) __alloca (buflen);
 
 	      success = getlogin_r (name, buflen) >= 0;
 #   else
@@ -421,7 +421,7 @@ xxglob (const char *pattern, int flags,
 		    /* `sysconf' does not support _SC_GETPW_R_SIZE_MAX.
 		       Try a moderate value.  */
 		    pwbuflen = 1024;
-		  pwtmpbuf = (char *) __xxalloca (pwbuflen);
+		  pwtmpbuf = (char *) __alloca (pwbuflen);
 
 		  while (getpwnam_r (name, &pwbuf, pwtmpbuf, pwbuflen, &p)
 			 != 0)
@@ -432,7 +432,7 @@ xxglob (const char *pattern, int flags,
 			  break;
 			}
 		      pwbuflen *= 2;
-		      pwtmpbuf = (char *) __xxalloca (pwbuflen);
+		      pwtmpbuf = (char *) __alloca (pwbuflen);
 		      __set_errno (save);
 		    }
 #   else
@@ -458,7 +458,7 @@ xxglob (const char *pattern, int flags,
 	    {
 	      char *newp;
 	      size_t home_len = strlen (home_dir);
-	      newp = (char *) __xxalloca (home_len + dirlen);
+	      newp = (char *) __alloca (home_len + dirlen);
 # ifdef HAVE_MEMPCPY
 	      mempcpy (mempcpy (newp, home_dir, home_len),
 		       &dirname[1], dirlen);
@@ -481,7 +481,7 @@ xxglob (const char *pattern, int flags,
 	  else
 	    {
 	      char *newp;
-	      newp = (char *) __xxalloca (end_name - dirname);
+	      newp = (char *) __alloca (end_name - dirname);
 # ifdef HAVE_MEMPCPY
 	      *((char *) mempcpy (newp, dirname + 1, end_name - dirname))
 		= '\0';
@@ -505,7 +505,7 @@ xxglob (const char *pattern, int flags,
 	      /* `sysconf' does not support _SC_GETPW_R_SIZE_MAX.  Try a
 		 moderate value.  */
 	      buflen = 1024;
-	    pwtmpbuf = (char *) __xxalloca (buflen);
+	    pwtmpbuf = (char *) __alloca (buflen);
 
 	    while (getpwnam_r (user_name, &pwbuf, pwtmpbuf, buflen, &p) != 0)
 	      {
@@ -515,7 +515,7 @@ xxglob (const char *pattern, int flags,
 		    break;
 		  }
 		buflen *= 2;
-		pwtmpbuf = __xxalloca (buflen);
+		pwtmpbuf = __alloca (buflen);
 		__set_errno (save);
 	      }
 #  else
@@ -532,7 +532,7 @@ xxglob (const char *pattern, int flags,
 	      char *newp;
 	      size_t home_len = strlen (home_dir);
 	      size_t rest_len = end_name == NULL ? 0 : strlen (end_name);
-	      newp = (char *) __xxalloca (home_len + rest_len + 1);
+	      newp = (char *) __alloca (home_len + rest_len + 1);
 #  ifdef HAVE_MEMPCPY
 	      *((char *) mempcpy (mempcpy (newp, home_dir, home_len),
 				  end_name, rest_len)) = '\0';
@@ -625,7 +625,7 @@ xxglob (const char *pattern, int flags,
 	  dirs.gl_lstat = pglob->gl_lstat;
 	}
 
-      status = xxglob (dirname,
+      status = glob (dirname,
 		     ((flags & (GLOB_ERR | GLOB_NOCHECK | GLOB_NOESCAPE
 				| GLOB_ALTDIRFUNC))
 		      | GLOB_NOSORT | GLOB_ONLYDIR),
@@ -647,8 +647,8 @@ xxglob (const char *pattern, int flags,
 
 	    if (interrupt_state)
 	      {
-		xxglobfree (&dirs);
-		xxglobfree (&files);
+		globfree (&dirs);
+		globfree (&files);
 		return GLOB_ABORTED;
 	      }
 	  }
@@ -665,8 +665,8 @@ xxglob (const char *pattern, int flags,
 
 	  if (status != 0)
 	    {
-	      xxglobfree (&dirs);
-	      xxglobfree (pglob);
+	      globfree (&dirs);
+	      globfree (pglob);
 	      return status;
 	    }
 
@@ -675,8 +675,8 @@ xxglob (const char *pattern, int flags,
 			    &pglob->gl_pathv[old_pathc],
 			    pglob->gl_pathc - old_pathc))
 	    {
-	      xxglobfree (&dirs);
-	      xxglobfree (pglob);
+	      globfree (&dirs);
+	      globfree (pglob);
 	      return GLOB_NOSPACE;
 	    }
 	}
@@ -706,7 +706,7 @@ xxglob (const char *pattern, int flags,
 				     sizeof (char *));
 	      if (pglob->gl_pathv == NULL)
 		{
-		  xxglobfree (&dirs);
+		  globfree (&dirs);
 		  return GLOB_NOSPACE;
 		}
 
@@ -730,8 +730,8 @@ xxglob (const char *pattern, int flags,
 							     + filename_len);
 		  if (pglob->gl_pathv[pglob->gl_pathc] == NULL)
 		    {
-		      xxglobfree (&dirs);
-		      xxglobfree (pglob);
+		      globfree (&dirs);
+		      globfree (pglob);
 		      return GLOB_NOSPACE;
 		    }
 
@@ -763,7 +763,7 @@ xxglob (const char *pattern, int flags,
 	    return GLOB_NOMATCH;
 	}
 
-      xxglobfree (&dirs);
+      globfree (&dirs);
     }
   else
     {
@@ -783,7 +783,7 @@ xxglob (const char *pattern, int flags,
 			    &pglob->gl_pathv[ignore],
 			    pglob->gl_pathc - ignore))
 	    {
-	      xxglobfree (pglob);
+	      globfree (pglob);
 	      return GLOB_NOSPACE;
 	    }
 	}
@@ -804,7 +804,7 @@ xxglob (const char *pattern, int flags,
 	    char *new = xrealloc (pglob->gl_pathv[i], len);
  	    if (new == NULL)
 	      {
-		xxglobfree (pglob);
+		globfree (pglob);
 		return GLOB_NOSPACE;
 	      }
 	    strcpy (&new[len - 2], "/");
@@ -831,7 +831,7 @@ xxglob (const char *pattern, int flags,
 
 /* Free storage allocated in PGLOB by a previous `glob' call.  */
 void
-xxglobfree (glob_t *pglob)
+globfree (glob_t *pglob)
 {
   if (pglob->gl_pathv != NULL)
     {
@@ -1001,7 +1001,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 	  struct stat st;
 	  size_t patlen = strlen (pattern);
 	  size_t dirlen = strlen (directory);
-	  char *fullname = (char *) __xxalloca (dirlen + 1 + patlen + 1);
+	  char *fullname = (char *) __alloca (dirlen + 1 + patlen + 1);
 
 # ifdef HAVE_MEMPCPY
 	  mempcpy (mempcpy (mempcpy (fullname, directory, dirlen),
@@ -1028,7 +1028,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 	{
 	  /* This is a special case for matching directories like in
 	     "*a/".  */
-	  names = (struct globlink *) __xxalloca (sizeof (struct globlink));
+	  names = (struct globlink *) __alloca (sizeof (struct globlink));
 	  names->name = (char *) xmalloc (1);
 	  if (names->name == NULL)
 	    goto memory_error;
@@ -1084,10 +1084,10 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 
 		  name = d->d_name;
 
-		  if (xxfnmatch (pattern, name, fnm_flags) == 0)
+		  if (fnmatch (pattern, name, fnm_flags) == 0)
 		    {
 		      struct globlink *new = (struct globlink *)
-			__xxalloca (sizeof (struct globlink));
+			__alloca (sizeof (struct globlink));
 		      len = NAMLEN (d);
 		      new->name = (char *) xmalloc (len + 1);
 		      if (new->name == NULL)
@@ -1112,7 +1112,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
     {
       size_t len = strlen (pattern);
       nfound = 1;
-      names = (struct globlink *) __xxalloca (sizeof (struct globlink));
+      names = (struct globlink *) __alloca (sizeof (struct globlink));
       names->next = NULL;
       names->name = (char *) xmalloc (len + 1);
       if (names->name == NULL)

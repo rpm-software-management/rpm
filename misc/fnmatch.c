@@ -607,7 +607,7 @@ internal_fnmatch (const char *pattern, const char *string,
 
 
 int
-xxfnmatch (const char *pattern, const char *string, int flags)
+fnmatch (const char *pattern, const char *string, int flags)
 {
   return internal_fnmatch (pattern, string, flags & FNM_PERIOD, flags);
 }
