@@ -30,7 +30,6 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
 			  char * linkto);
-static void printScript(Header h, char * label, int tag);
 
 static char * defaultQueryFormat = 
 	    "Name        : %-27{NAME} Distribution: %{DISTRIBUTION}\n"
@@ -40,6 +39,14 @@ static char * defaultQueryFormat =
 	    "Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n"
 	    "Size        : %{SIZE}\n"
 	    "Description : %{DESCRIPTION}\n";
+static char * requiresQueryFormat = 
+	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]";
+static char * providesQueryFormat = "[%{PROVIDES}\n]";
+static char * scriptQueryFormat = 
+	    "printinstall script:\n%{RPMTAG_PREIN}\n"
+	    "postinstall script:\n%{RPMTAG_POSTIN}\n"
+	    "preuninstall script:\n%{RPMTAG_PREUN}\n"
+	    "postuninstall script:\n%{RPMTAG_POSTIN}\n";
 
 static int queryHeader(Header h, char * chptr) {
     int count = 0;
@@ -143,8 +150,9 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     int notArray = 0;
     time_t dateint;
     struct tm * tstruct;
-    char datestr[100];
+    char buf[100];
     int count;
+    int anint;
 
     strcpy(format, "%");
     while (*chptr && *chptr != '{') chptr++;
@@ -259,11 +267,25 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
 	    dateint = *(((int_32 *) p) + arrayNum);
 	    tstruct = localtime(&dateint);
-	    strftime(datestr, sizeof(datestr) - 1, "%c", tstruct);
-	    printf(format, datestr);
+	    strftime(buf, sizeof(buf) - 1, "%c", tstruct);
+	    printf(format, buf);
 	} else if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
 	    strcat(format, "s");
 	    printf(format, permsString(*(((int_32 *) p) + arrayNum)));
+	} else if (!strcmp(how, "depflags")) {
+	    buf[0] = '\0';
+	    anint = *(((int_32 *) p) + arrayNum);
+	    if (anint & REQUIRE_LESS) 
+		strcat(buf, "<");
+	    if (anint & REQUIRE_GREATER)
+		strcat(buf, ">");
+	    if (anint & REQUIRE_EQUAL)
+		strcat(buf, "=");
+	    if (anint & REQUIRE_SERIAL)
+		strcat(buf, "S");
+	
+	    strcat(format, "s");
+	    printf(format, buf);
 	} else {
 	    strcat(format, "d");
 	    printf(format, *(((int_32 *) p) + arrayNum));
@@ -296,7 +318,6 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
     char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
-    char ** requiresList, ** strlist, ** providesList;
     char ** fileList, ** fileMD5List;
     char * fileStatesList;
     char ** fileOwnerList, ** fileGroupList;
@@ -323,29 +344,11 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	}
 
 	if (queryFlags & QUERY_FOR_PROVIDES) {
-	    if (!getEntry(h, RPMTAG_PROVIDES, &type, 
-		 (void **) &providesList, &count) || !count) {
-		puts("(provides nothing)");
-	    } else {
-		for (i = 0; i < count; i++) {
-		    puts(providesList[i]);
-		}
-		printf("\n");
-	    }
+	    queryHeader(h, providesQueryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_REQUIRES) {
-	    if (!getEntry(h, RPMTAG_REQUIRENAME, &type, 
-		 (void **) &requiresList, &count) || !count) {
-		puts("(requires nothing)");
-	    } else {
-		strlist = requiresList;
-
-	        while (count--) {
-		    puts(*strlist++);
-		}
-		free(requiresList);
-	    }
+	    queryHeader(h, requiresQueryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_LIST) {
@@ -456,21 +459,8 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	}
 
 	if (queryFlags & QUERY_FOR_SCRIPTS) {
-	    printScript(h, "preinstall script:\n", RPMTAG_PREIN);
-	    printScript(h, "postinstall script:\n", RPMTAG_POSTIN);
-	    printScript(h, "preuninstall script:\n", RPMTAG_PREUN);
-	    printScript(h, "preuninstall script:\n", RPMTAG_POSTUN);
+	    queryHeader(h, scriptQueryFormat);
 	}
-    }
-}
-
-static void printScript(Header h, char * label, int tag) {
-    int type, count;
-    char * script;
-
-    if (getEntry(h, tag, &type, (void **) &script, &count)) {
-	printf("%s", label);
-	printf("%s\n", script);
     }
 }
 
