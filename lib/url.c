@@ -15,11 +15,13 @@
 
 /*@access urlinfo@*/
 
+#define	URL_IOBUF_SIZE	4096
+
 #define	RPMURL_DEBUG_IO		0x40000000
 #define	RPMURL_DEBUG_REFS	0x20000000
 
-static int url_debug = 0;
-#define	DBG(_f, _m, _x)	if ((url_debug | (_f)) & (_m)) fprintf _x
+int _url_debug = 0;
+#define	DBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
 
 #define DBGIO(_f, _x)	DBG((_f), RPMURL_DEBUG_IO, _x)
 #define DBGREFS(_f, _x)	DBG((_f), RPMURL_DEBUG_REFS, _x)
@@ -29,6 +31,7 @@ static int uCount = 0;
 
 urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
+    URLSANE(u);
     u->nrefs++;
 DBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     return u;
@@ -42,26 +45,44 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     memset(u, 0, sizeof(*u));
     u->proxyp = -1;
     u->port = -1;
-    u->ftpControl = fdio->new(fdio, "url ftpControl", __FILE__, __LINE__);
+    u->ctrl = NULL;
+    u->data = NULL;
+    u->bufAlloced = 0;
+    u->buf = NULL;
     u->ftpFileDoneNeeded = 0;
-    u->httpVersion = 0;
     u->httpHasRange = 1;
     u->httpContentLength = 0;
-    u->httpPersist = 1;
+    u->httpPersist = u->httpVersion = 0;
     u->nrefs = 0;
+    u->magic = URLMAGIC;
     return XurlLink(u, msg, file, line);
 }
 
-void XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
+urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
+    URLSANE(u);
 DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
-	return;
-    if (u->ftpControl) {
-	if (fdio->fileno(u->ftpControl) >= 0)
-	    fdio->close(u->ftpControl);
-	fdio->deref(u->ftpControl, "url ftpControl (from urlFree)", __FILE__, __LINE__);
-	u->ftpControl = NULL;
+	return u;
+    if (u->ctrl) {
+	if (fdio->fileno(u->ctrl) >= 0)
+	    fdio->close(u->ctrl);
+	u->ctrl = fdio->deref(u->ctrl, "persist ctrl (urlFree)", file, line);
+	if (u->ctrl)
+	    fprintf(stderr, "warning: ctrl nrefs != 0 (%s %s)\n",
+			u->host, u->service);
+    }
+    if (u->data) {
+	if (fdio->fileno(u->data) >= 0)
+	    fdio->close(u->data);
+	u->data = fdio->deref(u->data, "persist data (urlFree)", file, line);
+	if (u->data)
+	    fprintf(stderr, "warning: data nrefs != 0 (%s %s)\n",
+			u->host, u->service);
+    }
+    if (u->buf) {
+	free(u->buf);
+	u->buf = NULL;
     }
     FREE(u->url);
     FREE(u->service);
@@ -74,6 +95,7 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
     FREE(u->proxyh);
 
     /*@-refcounttrans@*/ FREE(u); /*@-refcounttrans@*/
+    return NULL;
 }
 
 void urlFreeCache(void)
@@ -81,10 +103,10 @@ void urlFreeCache(void)
     int i;
     for (i = 0; i < uCount; i++) {
 	if (uCache[i] == NULL) continue;
-	if (uCache[i]->nrefs != 1)
-	    fprintf(stderr, "==> nrefs(%d) != 1 (%s %s)\n", uCache[i]->nrefs,
+	uCache[i] = urlFree(uCache[i], "uCache");
+	if (uCache[i])
+	    fprintf(stderr, "warning: nrefs(%d) != 1 (%s %s)\n", uCache[i]->nrefs,
 			uCache[i]->host, uCache[i]->service);
-	urlFree(uCache[i], "uCache");
     }
     if (uCache)
 	free(uCache);
@@ -111,6 +133,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	return;
 
     u = *uret;
+    URLSANE(u);
 
     ucx = -1;
     for (i = 0; i < uCount; i++) {
@@ -149,7 +172,10 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		uCache = xmalloc(sizeof(*uCache));
 	}
 	uCache[i] = urlLink(u, "uCache (miss)");
-	urlFree(u, "urlSplit (from urlFind miss)");
+	u->ctrl = fdNew(fdio, "persist ctrl");
+	u->bufAlloced = URL_IOBUF_SIZE;
+	u->buf = xcalloc(u->bufAlloced, sizeof(char));
+	u = urlFree(u, "urlSplit (urlFind miss)");
     } else {
 	/* XXX Swap original url and path into the cached structure */
 	const char *up = uCache[i]->path;
@@ -159,14 +185,14 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	up = uCache[ucx]->url;
 	uCache[ucx]->url = u->url;
 	u->url = up;
-	urlFree(u, "urlSplit (from urlFind hit)");
+	u = urlFree(u, "urlSplit (urlFind hit)");
     }
 
     /* This URL is now cached. */
 
     u = urlLink(uCache[i], "uCache");
     *uret = u;
-    urlFree(u, "uCache (from urlFind)");
+    u = urlFree(u, "uCache (urlFind)");
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
@@ -283,7 +309,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	return -1;
 
     if ((se = s = myurl = xstrdup(url)) == NULL) {
-	urlFree(u, "urlSplit (error #1)");
+	u = urlFree(u, "urlSplit (error #1)");
 	return -1;
     }
 
@@ -295,7 +321,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	if (*se == '\0') {
 	    /* XXX can't find path */
 	    if (myurl) free(myurl);
-	    urlFree(u, "urlSplit (error #2)");
+	    u = urlFree(u, "urlSplit (error #2)");
 	    return -1;
 	}
 	/* Item was service. Save service and go for the rest ...*/
@@ -340,7 +366,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	    if (!(end && *end == '\0')) {
 		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
 		if (myurl) free(myurl);
-		urlFree(u, "urlSplit (error #3)");
+		u = urlFree(u, "urlSplit (error #3)");
 		return -1;
 	    }
 	}
@@ -381,13 +407,16 @@ int urlGetFile(const char * url, const char * dest) {
     }
 
     sfu = ufdGetUrlinfo(sfd);
-
     if (sfu != NULL && dest == NULL) {
 	const char *fileName = sfu->path;
 	if ((dest = strrchr(fileName, '/')) != NULL)
 	    dest++;
 	else
 	    dest = fileName;
+    }
+    if (sfu != NULL) {
+	(void) urlFree(sfu, "ufdGetUrlinfo (urlGetFile)");
+	sfu = NULL;
     }
 
     tfd = Fopen(dest, "w.fdio");

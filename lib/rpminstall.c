@@ -46,7 +46,7 @@ static void * showProgress(const Header h, const rpmCallbackType what,
 
     switch (what) {
       case RPMCALLBACK_INST_OPEN_FILE:
-	fd = Fopen(filename, "r.fdio");
+	fd = Fopen(filename, "r.ufdio");
 	return fd;
 
       case RPMCALLBACK_INST_CLOSE_FILE:
@@ -186,7 +186,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
        would create all sorts of confusion later. */
 
     for (filename = packages; *filename; filename++) {
-	fd = Fopen(*filename, "r.fdio");
+	fd = Fopen(*filename, "r.ufdio");
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
 	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), *filename);

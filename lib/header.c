@@ -761,7 +761,7 @@ void headerDump(Header h, FILE *f, int flags,
 		}
 		break;
 	    default:
-		fprintf(stderr, _("Data type %d not supprted\n"), 
+		fprintf(stderr, _("Data type %d not supported\n"), 
 			(int) p->info.type);
 		exit(EXIT_FAILURE);
 		/*@notreached@*/ break;

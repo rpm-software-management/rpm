@@ -16,6 +16,12 @@ noinst_HEADERS = \
 	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
 	rpmdb.h rpmlead.h signature.h
 
+mylibs= $(top_builddir)/lib/.libs/librpm.a \
+        $(top_builddir)/popt/.libs/libpopt.a \
+        @INTLLIBS@ \
+        @LIBMISC@
+
+
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c dbindex.c depends.c falloc.c \
@@ -42,11 +48,14 @@ BUILT_SOURCES = tagtable.c
 .PHONY:	lclint
 .PHONY:	lclint
 lclint:
-	lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES}
+	lclint $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
 tmacro: macro.c
-	$(CC) $(CFLAGS) ${DEFS} -DDEBUG_MACROS ${INCLUDES} -o $@ $<
+	$(CC) $(CFLAGS) $(DEFS) -DDEBUG_MACROS $(INCLUDES) -o $@ $<
 
 rpmeval: macro.c
-	$(CC) $(CFLAGS) ${DEFS} -DDEBUG_MACROS -DEVAL_MACROS ${INCLUDES} -o $@ $<
+	$(CC) $(CFLAGS) $(DEFS) -DDEBUG_MACROS -DEVAL_MACROS $(INCLUDES) -o $@ $<
+
+tufdio: tufdio.c
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) $(LIBS)
 

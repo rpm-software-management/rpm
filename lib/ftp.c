@@ -67,58 +67,41 @@ int inet_aton(const char *cp, struct in_addr *inp);
 int _ftp_debug = 0;
 #define DBG(_f, _x)     if ((_ftp_debug | (_f))) fprintf _x
 
-static int checkResponse(urlinfo u, int fdno, int secs, int *ecp,
-		/*@out@*/ char ** str)
+static int checkResponse(urlinfo u, /*@out@*/ int *ecp, /*@out@*/ char ** str)
 {
-    static char buf[BUFSIZ + 1];	/* XXX Yuk! */
+    char *buf;
+    size_t bufAlloced;
     int bufLength = 0; 
-    fd_set emptySet, readSet;
     const char *s;
     char *se;
-    struct timeval timeout, *tvp = (secs < 0 ? NULL : &timeout);
-    int bytesRead, rc = 0;
-    int doesContinue = 1;
+    int ec = 0;
+    int moretodo = 1;
     char errorCode[4];
  
-    assert(secs > 0);
+    URLSANE(u);
+    buf = u->buf;
+    bufAlloced = u->bufAlloced;
+
     errorCode[0] = '\0';
-    u->httpContentLength = -1;
     
     do {
-	/*
-	 * XXX In order to preserve both getFile and getFd methods with
-	 * XXX HTTP, the response is read 1 char at a time with breaks on
-	 * XXX newlines.
-	 */
-	do {
-	    FD_ZERO(&emptySet);
-	    FD_ZERO(&readSet);
-	    FD_SET(fdno, &readSet);
-
-	    if (tvp) {
-		tvp->tv_sec = secs;
-		tvp->tv_usec = 0;
-	    }
-    
-	    rc = select(fdno + 1, &readSet, &emptySet, &emptySet, tvp);
-	    if (rc < 1) {
-		if (rc == 0) 
-		    return FTPERR_BAD_SERVER_RESPONSE;
-		else
-		    rc = FTPERR_UNKNOWN;
-	    } else
-		rc = 0;
-
-	    se = buf + bufLength;
-	    bytesRead = read(fdno, se, 1);
-	    bufLength += bytesRead;
-	    buf[bufLength] = '\0';
-	} while (bufLength < sizeof(buf) && *se != '\n');
+	int rc;
 
 	/*
-	 * Divide the response into lines. Skip continuation lines.
+	 * Read next line from server.
 	 */
-	for (s = se = buf; *s != '\0'; s = se) {
+	se = buf + bufLength;
+	rc = fdRdline(u->ctrl, se, (bufAlloced - bufLength));
+	if (rc < 0) {
+	    ec = FTPERR_BAD_SERVER_RESPONSE;
+	    continue;
+	} else if (rc == 0 || fdWritable(u->ctrl, 0) < 1)
+	    moretodo = 0;
+
+	/*
+	 * Process next line from server.
+	 */
+	for (s = se; *s != '\0'; s = se) {
 		const char *e;
 
 		while (*se && *se != '\n') se++;
@@ -132,18 +115,21 @@ static int checkResponse(urlinfo u, int fdno, int secs, int *ecp,
 
 		/* HTTP: header termination on empty line */
 		if (*s == '\0') {
-		    doesContinue = 0;
+		    moretodo = 0;
 		    break;
 		}
 		*se++ = '\0';
 
 		/* HTTP: look for "HTTP/1.1 123 ..." */
 		if (!strncmp(s, "HTTP", sizeof("HTTP")-1)) {
+		    u->httpContentLength = -1;
 		    if ((e = strchr(s, '.')) != NULL) {
 			e++;
 			u->httpVersion = *e - '0';
 			if (u->httpVersion < 1 || u->httpVersion > 2)
 			    u->httpPersist = u->httpVersion = 0;
+			else
+			    u->httpPersist = 1;
 		    }
 		    if ((e = strchr(s, ' ')) != NULL) {
 			e++;
@@ -154,7 +140,7 @@ static int checkResponse(urlinfo u, int fdno, int secs, int *ecp,
 		    continue;
 		}
 
-		/* HTTP: look for "<token>: ..." */
+		/* HTTP: look for "token: ..." */
 		for (e = s; *e && !(*e == ' ' || *e == ':'); e++)
 		    ;
 		if (e > s && *e++ == ':') {
@@ -196,40 +182,46 @@ static int checkResponse(urlinfo u, int fdno, int secs, int *ecp,
 		    continue;
 		}
 
+		/* HTTP: look for "<TITLE>501 ... </TITLE>" */
+		if (!strncmp(s, "<TITLE>", sizeof("<TITLE>")-1))
+		    s += sizeof("<TITLE>") - 1;
+
 		/* FTP: look for "123-" and/or "123 " */
 		if (strchr("0123456789", *s)) {
 		    if (errorCode[0]) {
 			if (!strncmp(s, errorCode, sizeof("123")-1) && s[3] == ' ')
-			    doesContinue = 0;
+			    moretodo = 0;
 		    } else {
 			strncpy(errorCode, s, sizeof("123")-1);
 			errorCode[3] = '\0';
 			if (s[3] != '-')
-			    doesContinue = 0;
+			    moretodo = 0;
 		    }
 		}
 	}
 
-	if (doesContinue && se > s) {
+	if (moretodo && se > s) {
 	    bufLength = se - s - 1;
 	    if (s != buf)
 		memcpy(buf, s, bufLength);
 	} else {
 	    bufLength = 0;
 	}
-    } while (doesContinue && !rc);
+    } while (moretodo && ec == 0);
 
     if (str)	*str = buf;
     if (ecp)	*ecp = atoi(errorCode);
 
-    return rc;
+    return ec;
 }
 
 int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
 {
     int ec = 0;
-    int secs = fdGetRdTimeoutSecs(u->ftpControl);
-    int rc =  checkResponse(u, fdio->fileno(u->ftpControl), secs, &ec, str);
+    int rc;
+
+    URLSANE(u);
+    rc = checkResponse(u, &ec, str);
 
     switch (ec) {
     case 550:
@@ -246,42 +238,35 @@ int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
     return rc;
 }
 
-int ftpCommand(urlinfo u, char * command, ...)
+int ftpCommand(urlinfo u, ...)
 {
     va_list ap;
-    int len;
-    char * s;
-    char * req;
+    int len = 0;
+    const char * s, * t;
+    char * te;
     int rc;
 
-    va_start(ap, command);
-    len = strlen(command) + 2;
-    s = va_arg(ap, char *);
-    while (s) {
-	len += strlen(s) + 1;
-	s = va_arg(ap, char *);
+    URLSANE(u);
+    va_start(ap, u);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	if (len) len++;
+	len += strlen(s);
     }
+    len += sizeof("\r\n")-1;
     va_end(ap);
 
-    req = alloca(len + 1);
+    t = te = alloca(len + 1);
 
-    va_start(ap, command);
-    strcpy(req, command);
-    strcat(req, " ");
-    s = va_arg(ap, char *);
-    while (s) {
-	strcat(req, s);
-	strcat(req, " ");
-	s = va_arg(ap, char *);
+    va_start(ap, u);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	if (te > t) *te++ = ' ';
+	te = stpcpy(te, s);
     }
+    te = stpcpy(te, "\r\n");
     va_end(ap);
 
-    req[len - 2] = '\r';
-    req[len - 1] = '\n';
-    req[len] = '\0';
-
-    DBG(0, (stderr, "-> %s", req));
-    if (fdio->write(u->ftpControl, req, len) != len)
+    DBG(0, (stderr, "-> %s", t));
+    if (fdio->write(u->ctrl, t, (te-t)) != (te-t))
 	return FTPERR_SERVER_IO_ERROR;
 
     rc = ftpCheckResponse(u, NULL);
@@ -320,7 +305,7 @@ static int getHostAddress(const char * host, struct in_addr * address)
 static int tcpConnect(const char *host, int port)
 {
     struct sockaddr_in sin;
-    int sock = -1;
+    int fdno = -1;
     int rc;
 
     sin.sin_family = AF_INET;
@@ -331,46 +316,70 @@ static int tcpConnect(const char *host, int port)
     if ((rc = getHostAddress(host, &sin.sin_addr)) < 0)
 	break;
 
-    if ((sock = socket(sin.sin_family, SOCK_STREAM, IPPROTO_IP)) < 0) {
+    if ((fdno = socket(sin.sin_family, SOCK_STREAM, IPPROTO_IP)) < 0) {
 	rc = FTPERR_FAILED_CONNECT;
 	break;
     }
 
-    if (connect(sock, (struct sockaddr *) &sin, sizeof(sin))) {
+    if (connect(fdno, (struct sockaddr *) &sin, sizeof(sin))) {
 	rc = FTPERR_FAILED_CONNECT;
 	break;
     }
   } while (0);
 
-    if (rc < 0 && sock >= 0) {
-	close(sock);
-	return rc;
-    }
+    if (rc < 0)
+	goto errxit;
 
-    DBG(0, (stderr,"++ connect %s:%d on fd %d\n",
+    DBG(0, (stderr,"++ connect %s:%d on fdno %d\n",
 	/*@-unrecog@*/ inet_ntoa(sin.sin_addr) /*@=unrecog@*/ ,
-	ntohs(sin.sin_port), sock));
+	ntohs(sin.sin_port), fdno));
 
-    return sock;
+    return fdno;
+
+errxit:
+    if (fdno >= 0)
+	close(fdno);
+    return rc;
 }
 
 int httpOpen(urlinfo u, const char *httpcmd)
 {
-    int sock;
     const char *host;
     const char *path;
     int port;
+    int rc;
     char *req;
     size_t len;
+    int retrying = 0;
 
-    if (u == NULL || ((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
+    URLSANE(u);
+    assert(u->ctrl != NULL);
+
+    if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
 	return FTPERR_BAD_HOSTNAME;
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
-
     path = (u->proxyh || u->proxyp > 0) ? u->url : u->path;
-    if ((sock = tcpConnect(host, port)) < 0)
-	return sock;
+
+reopen:
+    if (fdio->fileno(u->ctrl) >= 0 && fdWritable(u->ctrl, 0) < 1)
+	fdio->close(u->ctrl);
+
+    if (fdio->fileno(u->ctrl) < 0) {
+	rc = tcpConnect(host, port);
+	fdSetFdno(u->ctrl, (rc >= 0 ? rc : -1));
+	if (rc < 0)
+	    goto errxit;
+
+#ifdef	DYING
+	/* checkResponse() assumes the socket is nonblocking */
+	if (fcntl(fdio->fileno(u->ctrl), F_SETFL, O_NONBLOCK)) {
+	    rc = FTPERR_FAILED_CONNECT;
+	    goto errxit;
+	}
+#endif
+	u->ctrl = fdLink(u->ctrl, "open ctrl (httpOpen)");
+    }
 
     len = sizeof("\
 req x HTTP/1.0\r\n\
@@ -391,32 +400,43 @@ Accept: text/plain\r\n\
 \r\n\
 ",	httpcmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
 
-    if (write(sock, req, len) != len) {
-	close(sock);
-	return FTPERR_SERVER_IO_ERROR;
-    }
-
     DBG(0, (stderr, "-> %s", req));
 
-  { int ec = 0;
-    int secs = fdGetRdTimeoutSecs(u->ftpControl);
-    int rc;
-    rc = checkResponse(u, sock, secs, &ec, NULL);
-
-    switch (ec) {
-    default:
-	if (rc == 0 && ec != 200)	/* not HTTP_OK */
-	    rc = FTPERR_FILE_NOT_FOUND;
-	break;
+    if (fdio->write(u->ctrl, req, len) != len) {
+	rc = FTPERR_SERVER_IO_ERROR;
+	goto errxit;
     }
 
-    if (rc < 0) {
-	close(sock);
-	return rc;
+  { int ec = 0;
+    rc = checkResponse(u, &ec, NULL);
+
+if (_ftp_debug && !(rc == 0 && ec == 200))
+fprintf(stderr, "*** httpOpen: rc %d ec %d\n", rc, ec);
+
+    switch (rc) {
+    case 0:
+	if (ec == 200)
+	    break;
+	/*@fallthrough@*/
+    default:
+	if (!retrying) {	/* not HTTP_OK */
+	    retrying = 1;
+	    fdio->close(u->ctrl);
+	    goto reopen;
+	}
+	rc = FTPERR_FILE_NOT_FOUND;
+	goto errxit;
+	/*@notreached@*/ break;
     }
   }
 
-    return sock;
+    u->ctrl = fdLink(u->ctrl, "open data (httpOpen)");
+    return fdio->fileno(u->ctrl);
+
+errxit:
+    if (fdio->fileno(u->ctrl) >= 0)
+	fdio->close(u->ctrl);
+    return rc;
 }
 
 int ftpOpen(urlinfo u)
@@ -425,10 +445,10 @@ int ftpOpen(urlinfo u)
     const char * user;
     const char * password;
     int port;
-    int secs;
     int rc;
 
-    if (u == NULL || ((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
+    URLSANE(u);
+    if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
 	return FTPERR_BAD_HOSTNAME;
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = IPPORT_FTP;
@@ -448,19 +468,26 @@ int ftpOpen(urlinfo u)
 	}
     }
 
-    secs = fdGetRdTimeoutSecs(u->ftpControl);
-    fdSetFdno(u->ftpControl, tcpConnect(host, port));
-    if (fdio->fileno(u->ftpControl) < 0)
-	return fdio->fileno(u->ftpControl);
+    if (fdio->fileno(u->ctrl) >= 0 && fdWritable(u->ctrl, 0) < 1)
+	fdio->close(u->ctrl);
 
-    /* ftpCheckResponse() assumes the socket is nonblocking */
-    if (fcntl(fdio->fileno(u->ftpControl), F_SETFL, O_NONBLOCK)) {
+    if (fdio->fileno(u->ctrl) < 0) {
+	rc = tcpConnect(host, port);
+	fdSetFdno(u->ctrl, (rc >= 0 ? rc : -1));
+	if (rc < 0)
+	    goto errxit;
+    }
+
+#ifdef	DYING
+    /* checkResponse() assumes the socket is nonblocking */
+    if (fcntl(fdio->fileno(u->ctrl), F_SETFL, O_NONBLOCK)) {
 	rc = FTPERR_FAILED_CONNECT;
 	goto errxit;
     }
+#endif
 
     if ((rc = ftpCheckResponse(u, NULL)))
-	return rc;     
+	goto errxit;
 
     if ((rc = ftpCommand(u, "USER", user, NULL)))
 	goto errxit;
@@ -471,11 +498,12 @@ int ftpOpen(urlinfo u)
     if ((rc = ftpCommand(u, "TYPE", "I", NULL)))
 	goto errxit;
 
-    fdLink(u->ftpControl, "open ftpControl");
-    return fdio->fileno(u->ftpControl);
+    u->ctrl = fdLink(u->ctrl, "open ctrl");
+    return fdio->fileno(u->ctrl);
 
 errxit:
-    fdio->close(u->ftpControl);
+    if (fdio->fileno(u->ctrl) >= 0)
+	fdio->close(u->ctrl);
     return rc;
 }
 
@@ -483,37 +511,46 @@ int ftpFileDone(urlinfo u)
 {
     int rc = 0;
 
-    if (u == NULL)
-	return FTPERR_UNKNOWN;	/* XXX W2DO? */
+    URLSANE(u);
+    assert(u->ftpFileDoneNeeded);
 
     if (u->ftpFileDoneNeeded) {
 	u->ftpFileDoneNeeded = 0;
-	fdFree(u->ftpControl, "ftpFileDone (from ftpFileDone)");
+	u->ctrl = fdFree(u->ctrl, "open data (ftpFileDone)");
+	u->ctrl = fdFree(u->ctrl, "grab data (ftpFileDone)");
 	rc = ftpCheckResponse(u, NULL);
     }
     return rc;
 }
 
-int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
+int ftpFileDesc(urlinfo u, const char *cmd)
 {
     struct sockaddr_in dataAddress;
     int cmdlen;
     char * passReply;
     char * chptr;
     int rc;
+    FD_t fd;
 
-    if (u == NULL || cmd == NULL || fd == NULL)
+    URLSANE(u);
+    if (cmd == NULL)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
     cmdlen = strlen(cmd);
+    fd = u->data;
+
+#ifdef DYING
 /*
  * XXX When ftpFileDesc() is called, there may be a lurking
  * XXX transfer complete message (if ftpFileDone() was not
  * XXX called to clear that message). Clear that message now.
  */
-
     if (u->ftpFileDoneNeeded)
 	rc = ftpFileDone(u);	/* XXX return code ignored */
+#else
+    assert(u->ftpFileDoneNeeded == 0);
+#endif
+
 /*
  * Get the ftp version of the Content-Length.
  */
@@ -523,22 +560,30 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
 
 	memcpy(req, "SIZE", 4);
 	DBG(0, (stderr, "-> %s", req));
-	if (fdio->write(u->ftpControl, req, cmdlen) != cmdlen)
-	    return FTPERR_SERVER_IO_ERROR;
+	if (fdio->write(u->ctrl, req, cmdlen) != cmdlen) {
+	    rc = FTPERR_SERVER_IO_ERROR;
+	    goto errxit;
+	}
 	if ((rc = ftpCheckResponse(u, &passReply)))
-	    return rc;
-	if (sscanf(passReply, "%d %u", &rc, &cl) != 2)
-	    return FTPERR_BAD_SERVER_RESPONSE;
+	    goto errxit;
+	if (sscanf(passReply, "%d %u", &rc, &cl) != 2) {
+	    rc = FTPERR_BAD_SERVER_RESPONSE;
+	    goto errxit;
+	}
 	rc = 0;
 	u->httpContentLength = cl;
     }
 
     DBG(0, (stderr, "-> PASV\n"));
-    if (fdio->write(u->ftpControl, "PASV\r\n", 6) != 6)
-	return FTPERR_SERVER_IO_ERROR;
+    if (fdio->write(u->ctrl, "PASV\r\n", 6) != 6) {
+	rc = FTPERR_SERVER_IO_ERROR;
+	goto errxit;
+    }
 
-    if ((rc = ftpCheckResponse(u, &passReply)))
-	return FTPERR_PASSIVE_ERROR;
+    if ((rc = ftpCheckResponse(u, &passReply))) {
+	rc = FTPERR_PASSIVE_ERROR;
+	goto errxit;
+    }
 
     chptr = passReply;
     while (*chptr && *chptr != '(') chptr++;
@@ -561,8 +606,10 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
 
     {	int i, j;
 	dataAddress.sin_family = AF_INET;
-	if (sscanf(chptr, "%d,%d", &i, &j) != 2)
-	    return FTPERR_PASSIVE_ERROR;
+	if (sscanf(chptr, "%d,%d", &i, &j) != 2) {
+	    rc = FTPERR_PASSIVE_ERROR;
+	    goto errxit;
+	}
 	dataAddress.sin_port = htons((((unsigned)i) << 8) + j);
     }
 
@@ -571,12 +618,19 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
 	if (*chptr == ',') *chptr = '.';
     }
 
-    if (!inet_aton(passReply, &dataAddress.sin_addr))
-	return FTPERR_PASSIVE_ERROR;
+    if (!inet_aton(passReply, &dataAddress.sin_addr)) {
+	rc = FTPERR_PASSIVE_ERROR;
+	goto errxit;
+    }
 
-    fdSetFdno(fd, socket(AF_INET, SOCK_STREAM, IPPROTO_IP));
-    if (fdio->fileno(fd) < 0)
-	return FTPERR_FAILED_CONNECT;
+    rc = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    fdSetFdno(fd, (rc >= 0 ? rc : -1));
+    if (rc < 0) {
+	rc = FTPERR_FAILED_CONNECT;
+	goto errxit;
+    }
+    fd = fdLink(fd, "open data (ftpFileDesc)");
+
     /* XXX setsockopt SO_LINGER */
     /* XXX setsockopt SO_KEEPALIVE */
     /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
@@ -586,19 +640,27 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
 	if (errno == EINTR)
 	    continue;
 	fdio->close(fd);
-	return FTPERR_FAILED_DATA_CONNECT;
+	rc = FTPERR_FAILED_DATA_CONNECT;
+	goto errxit;
     }
 
     DBG(0, (stderr, "-> %s", cmd));
-    if (fdio->write(u->ftpControl, cmd, cmdlen) != cmdlen)
-	return FTPERR_SERVER_IO_ERROR;
+    if (fdio->write(u->ctrl, cmd, cmdlen) != cmdlen) {
+	fdio->close(fd);
+	rc = FTPERR_SERVER_IO_ERROR;
+	goto errxit;
+    }
 
     if ((rc = ftpCheckResponse(u, NULL))) {
 	fdio->close(fd);
-	return rc;
+	goto errxit;
     }
 
     u->ftpFileDoneNeeded = 1;
-    fdLink(u->ftpControl, "ftpFileDone");
+    u->ctrl = fdLink(u->ctrl, "grab data (ftpFileDesc)");
+    u->ctrl = fdLink(u->ctrl, "open data (ftpFileDesc)");
     return 0;
+
+errxit:
+    return rc;
 }

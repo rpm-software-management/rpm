@@ -454,11 +454,14 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     int retcode = 0;
     char *end = NULL;
 
-    switch (source) {
-      case RPMQV_RPM:
-      {	FD_t fd;
+  switch (source) {
+    case RPMQV_RPM:
+    { const char *myargv[2], **argv = myargv;;
 
-	fd = Fopen(arg, "r.ufdio");
+      argv[0] = arg;
+      argv[1] = NULL;
+      while ((arg = *argv++) != NULL) {
+	FD_t fd = Fopen(arg, "r.ufdio");
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
 	    fprintf(stderr, _("open of %s failed: %s\n"), arg,urlStrerror(arg));
@@ -490,9 +493,10 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    retcode = 1;
 	    break;
 	}
-      } break;
+      }
+    }	break;
 
-      case RPMQV_SPECFILE:
+    case RPMQV_SPECFILE:
 	if (showPackage != showQueryPackage)
 	    return 1;
 
@@ -532,7 +536,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	freeSpecVec(spec);
       }	break;
 
-      case RPMQV_ALL:
+    case RPMQV_ALL:
 	for (offset = rpmdbFirstRecNum(db);
 	     offset != 0;
 	     offset = rpmdbNextRecNum(db, offset)) {
@@ -547,7 +551,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-      case RPMQV_GROUP:
+    case RPMQV_GROUP:
 	if (rpmdbFindByGroup(db, arg, &matches)) {
 	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
@@ -557,7 +561,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-      case RPMQV_WHATPROVIDES:
+    case RPMQV_WHATPROVIDES:
 	if (rpmdbFindByProvides(db, arg, &matches)) {
 	    fprintf(stderr, _("no package provides %s\n"), arg);
 	    retcode = 1;
@@ -567,7 +571,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-      case RPMQV_TRIGGEREDBY:
+    case RPMQV_TRIGGEREDBY:
 	if (rpmdbFindByTriggeredBy(db, arg, &matches)) {
 	    fprintf(stderr, _("no package triggers %s\n"), arg);
 	    retcode = 1;
@@ -577,7 +581,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-      case RPMQV_WHATREQUIRES:
+    case RPMQV_WHATREQUIRES:
 	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
 	    fprintf(stderr, _("no package requires %s\n"), arg);
 	    retcode = 1;
@@ -587,7 +591,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-      case RPMQV_PATH:
+    case RPMQV_PATH:
 	if (rpmdbFindByFile(db, arg, &matches)) {
 	    int myerrno = 0;
 	    if (access(arg, F_OK) != 0)
@@ -607,7 +611,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-      case RPMQV_DBOFFSET:
+    case RPMQV_DBOFFSET:
 	recNumber = strtoul(arg, &end, 10);
 	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
 	    fprintf(stderr, _("invalid package number: %s\n"), arg);
@@ -624,7 +628,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-      case RPMQV_PACKAGE:
+    case RPMQV_PACKAGE:
 	rc = rpmdbFindByLabel(db, arg, &matches);
 	if (rc == 1) {
 	    retcode = 1;
@@ -637,7 +641,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
-    }
+  }
    
     return retcode;
 }

@@ -1,6 +1,8 @@
 #ifndef H_RPMURL
 #define H_RPMURL
 
+#include <assert.h>
+
 #ifndef IPPORT_FTP
 #define IPPORT_FTP	21
 #endif
@@ -29,6 +31,9 @@ typedef enum {
     URL_IS_HTTP		= 4
 } urltype;
 
+#define	URLMAGIC	0xd00b1ed0
+#define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
+
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
 /*@refs@*/ int nrefs;
     const char * url;		/* copy of original url */
@@ -42,13 +47,17 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
     const char * proxyh;	/* FTP/HTTP: proxy host */
     int proxyp;			/* FTP/HTTP: proxy port */
     int	port;
-    FD_t ftpControl;
+    FD_t ctrl;			/* control channel */
+    FD_t data;			/* per-xfer data channel */
+    int bufAlloced;		/* sizeof I/O buffer */
+    char *buf;			/* I/O buffer */
     int ftpFileDoneNeeded;
     int openError;		/* Type of open failure */
     int httpVersion;
     int httpHasRange;
     int httpContentLength;
     int httpPersist;
+    int magic;
 } *urlinfo;
 
 #ifdef __cplusplus
@@ -56,10 +65,12 @@ extern "C" {
 #endif
 
 int	ftpCheckResponse(urlinfo u, /*@out@*/ char ** str);
+int	ftpCommand(urlinfo u, ...);
+
 int	httpOpen(urlinfo u, const char * httpcmd);
 int	ftpOpen(urlinfo u);
 int	ftpFileDone(urlinfo u);
-int	ftpFileDesc(urlinfo u, const char * cmd, FD_t fd);
+int	ftpFileDesc(urlinfo u, const char * cmd);
 
 urlinfo	urlLink(urlinfo u, const char * msg);
 urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);
@@ -69,8 +80,8 @@ urlinfo	urlNew(const char * msg);
 urlinfo	XurlNew(const char * msg, const char * file, unsigned line);
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
-void	urlFree( /*@killref@*/ urlinfo u, const char * msg);
-void	XurlFree( /*@killref@*/ urlinfo u, const char * msg, const char * file, unsigned line);
+urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg);
+urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg, const char * file, unsigned line);
 #define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
 
 void	urlFreeCache(void);

@@ -78,8 +78,6 @@ int	Unlink	(const char * path);
 
 /*@observer@*/ extern FDIO_t gzdio;
 
-int timedRead(FD_t fd, /*@out@*/void * bufptr, int length);
-
 void fdSetFdno(FD_t fd, int fdno);
 /*@null@*/ const FDIO_t fdGetIoCookie(FD_t fd);
 void fdSetIoCookie(FD_t fd, FDIO_t iop);
@@ -141,6 +139,12 @@ const char *const ftpStrerror(int errorNumber);
 #define	ufdRename	ufdio->rename
 #define	ufdUnlink	ufdio->unlink
 #endif
+
+int fdWritable(FD_t fd, int secs);
+int fdReadable(FD_t fd, int secs);
+int fdRdline(FD_t fd, /*@out@*/ char * buf, size_t len);
+
+int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 
 /*@observer@*/ extern FDIO_t ufdio;
 #define	timedRead	ufdio->read

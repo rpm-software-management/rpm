@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-05 14:49-0500\n"
+"POT-Creation-Date: 1999-11-09 15:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2111,14 +2111,9 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:201
+#: lib/header.c:201 lib/header.c:764
 #, c-format
 msgid "Data type %d not supported\n"
-msgstr ""
-
-#: lib/header.c:764
-#, c-format
-msgid "Data type %d not supprted\n"
 msgstr ""
 
 #: lib/header.c:1121
@@ -2530,150 +2525,150 @@ msgid "error: could not read database record\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:464
+#: lib/query.c:467
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:477
+#: lib/query.c:480
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:486 lib/rpminstall.c:204
+#: lib/query.c:489 lib/rpminstall.c:204
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:489
+#: lib/query.c:492
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:516
+#: lib/query.c:520
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:541
+#: lib/query.c:545
 msgid "could not read database record!\n"
 msgstr ""
 
-#: lib/query.c:552
+#: lib/query.c:556
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:562
+#: lib/query.c:566
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:572
+#: lib/query.c:576
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:582
+#: lib/query.c:586
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:597
+#: lib/query.c:601
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:600
+#: lib/query.c:604
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:613
+#: lib/query.c:617
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:616
+#: lib/query.c:620
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:619
+#: lib/query.c:623
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:631 lib/rpminstall.c:395
+#: lib/query.c:635 lib/rpminstall.c:395
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/query.c:634
+#: lib/query.c:638
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:656
+#: lib/query.c:660
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:715
+#: lib/query.c:719
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:717
+#: lib/query.c:721
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:719
+#: lib/query.c:723
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:723
+#: lib/query.c:727
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:725
+#: lib/query.c:729
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:727
+#: lib/query.c:731
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:729
+#: lib/query.c:733
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:768
+#: lib/query.c:772
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:770
+#: lib/query.c:774
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:772
+#: lib/query.c:776
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:774
+#: lib/query.c:778
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:778
+#: lib/query.c:782
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:780
+#: lib/query.c:784
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:783
+#: lib/query.c:787
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:785
+#: lib/query.c:789
 msgid "display a verbose file listing"
 msgstr ""
 
@@ -2827,7 +2822,7 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/rpmdb.c:156 lib/url.c:378
+#: lib/rpmdb.c:156 lib/url.c:404
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -3021,59 +3016,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:291
+#: lib/rpmio.c:327
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:294
+#: lib/rpmio.c:330
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:297
+#: lib/rpmio.c:333
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:300
+#: lib/rpmio.c:336
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:303
+#: lib/rpmio.c:339
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:306
+#: lib/rpmio.c:342
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:309
+#: lib/rpmio.c:345
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:312
+#: lib/rpmio.c:348
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:315
+#: lib/rpmio.c:351
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:318
+#: lib/rpmio.c:354
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:321
+#: lib/rpmio.c:357
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:324
+#: lib/rpmio.c:360
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:328
+#: lib/rpmio.c:364
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:368
+#: lib/rpmio.c:412
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3374,22 +3369,22 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: lib/url.c:181
+#: lib/url.c:207
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:206 lib/url.c:232
+#: lib/url.c:232 lib/url.c:258
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:341
+#: lib/url.c:367
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:396
+#: lib/url.c:425
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""
