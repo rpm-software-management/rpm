@@ -133,7 +133,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 
 int doCheckSig(int pgp, char **argv)
 {
-    int fd, ofd, res, res2;
+    int fd, ofd, res, res2, res3, missingKeys;
     struct rpmlead lead;
     char *rpm;
     char result[1024], sigtarget[1024];
@@ -193,6 +193,7 @@ int doCheckSig(int pgp, char **argv)
 
 	sigIter = initIterator(sig);
 	res2 = 0;
+	missingKeys = 0;
 	if (isVerbose()) {
 	    sprintf(buffer, "%s:\n", rpm);
 	} else {
@@ -202,25 +203,35 @@ int doCheckSig(int pgp, char **argv)
 	    if ((tag == SIGTAG_PGP) && !pgp) {
 		continue;
 	    }
-	    if (verifySignature(sigtarget, tag, ptr, count, result)) {
+	    if ((res3 = verifySignature(sigtarget, tag, ptr, count, result))) {
 		if (isVerbose()) {
 		    strcat(buffer, result);
+		    res2 = 1;
 		} else {
 		    switch (tag) {
 		      case SIGTAG_SIZE:
 			strcat(buffer, "SIZE ");
+			res2 = 1;
 			break;
 		      case SIGTAG_MD5:
 			strcat(buffer, "MD5 ");
+			res2 = 1;
 			break;
 		      case SIGTAG_PGP:
-			strcat(buffer, "PGP ");
+			if (res3 == RPMSIG_NOKEY) {
+			    /* Do not consedier this a failure */
+			    strcat(buffer, "(PGP) ");
+			    missingKeys = 1;
+			} else {
+			    strcat(buffer, "PGP ");
+			    res2 = 1;
+			}
 			break;
 		      default:
 			strcat(buffer, "!!! ");
+			res2 = 1;
 		    }
 		}
-		res2 = 1;
 	    } else {
 		if (isVerbose()) {
 		    strcat(buffer, result);
@@ -249,13 +260,15 @@ int doCheckSig(int pgp, char **argv)
 	    if (isVerbose()) {
 		fprintf(stderr, "%s", buffer);
 	    } else {
-		fprintf(stderr, "%sNOT OK\n", buffer);
+		fprintf(stderr, "%sNOT OK%s\n", buffer,
+			missingKeys ? " (MISSING KEYS)" : "");
 	    }
 	} else {
 	    if (isVerbose()) {
 		printf("%s", buffer);
 	    } else {
-		printf("%sOK\n", buffer);
+		printf("%sOK%s\n", buffer,
+		       missingKeys ? " (MISSING KEYS)" : "");
 	    }
 	}
     }
