@@ -10,7 +10,7 @@ OPTS = @DEFS@
 LIBRPMRC_FILENAME=$(libdir)/rpmrc
 NLSDIR=$(prefix)/share/locale
 NLSPACKAGE=rpm
-CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) \
+CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-I$(topdir)/lib -I$(topdir)/misc -Wall -Wstrict-prototypes \
 	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DVERSION=\"$(VERSION)\" 
 LDFLAGS = @LDFLAGS@ @LIBPATH@ -Llib -Lbuild -Lmisc -L$(topdir)/lib \
