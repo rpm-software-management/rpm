@@ -40,8 +40,8 @@ main(int argc, const char *argv[])
     const char ** args;
     const char * ifn;
     const char * ofn = "/dev/null";
-    DIGEST_CTX ctx;
-    GcryMDHd gcry;
+    DIGEST_CTX ctx = NULL;
+    GcryMDHd gcry = NULL;
     const char * idigest;
     const char * odigest;
     const char * sdigest;
@@ -59,10 +59,13 @@ main(int argc, const char *argv[])
 
     if (fips) {
 	struct rpmsw_s begin, end;
+	if (gcrypt)
+	    gcry = gcry_md_open(GCRY_MD_SHA1, 0);
+
 	(void) rpmswNow(&begin);
 
 	if (gcrypt)
-	    gcry = gcry_md_open(GCRY_MD_SHA1, 0);
+	    gcry_md_reset(gcry);
 	else
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, flags);
 	ifn = NULL;
@@ -91,7 +94,7 @@ main(int argc, const char *argv[])
 	    ifn = "aaaaaaaaaaa ...";
 	    for (i = 0; i < 1000000; i++) {
 		if (gcrypt)
-		    gcry_md_write (gcry, ifn, strlen(ifn));
+		    gcry_md_write (gcry, ifn, 1);
 		else
 		    rpmDigestUpdate(ctx, ifn, 1);
 	    }
@@ -102,15 +105,18 @@ main(int argc, const char *argv[])
 	if (ifn == NULL)
 	    return 1;
 	if (gcrypt) {
-	    const char * s = gcry_md_read (gcry, GCRY_MD_SHA1);
-	    digestlen = 2*16;
-	    digest = xcalloc(1, digestlen+1);
+	    const unsigned char * s = gcry_md_read (gcry, 0);
+	    char * t;
+
+	    gcry_md_close(gcry);
+	    digestlen = 2*20;
+	    digest = t = xcalloc(1, digestlen+1);
 	    for (i = 0; i < digestlen; i += 2) {
 		static const char hex[] = "0123456789abcdef";
-		digest[i  ] = hex[ (unsigned)((*s >> 4) & 0x0f) ];
-		digest[i+1] = hex[ (unsigned)((*s++   ) & 0x0f) ];
+		*t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
+		*t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
 	    }
-	    digest[digestlen] = '\0';
+	    *t = '\0';
 	} else
 	    rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
 	(void) rpmswNow(&end);
