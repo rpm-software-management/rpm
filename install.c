@@ -72,15 +72,15 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     FD_t fd;
     int i;
     int mode, rc, major;
-    const char ** packages, ** tpkgs;
+    const char ** packages, ** tmpPackages;
     const char ** filename;
     int numPackages;
-    int numTmpPackages;
+    int numTmpPackages = 0, numBinaryPackages = 0, numSourcePackages = 0;
     int numFailed = 0;
     Header h;
     int isSource;
     int tmpnum = 0;
-    rpmTransactionSet rpmdep = NULL;
+    rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     int stopInstall = 0;
@@ -88,30 +88,31 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     int notifyFlags = interfaceFlags | (rpmIsVerbose ? INSTALL_LABEL : 0 );
     int transFlags = 0;
     rpmProblemSet probs, finalProbs;
+    int dbIsOpen = 0;
+    char ** sourcePackages;
 
-    if (installFlags & RPMINSTALL_TEST) {
-	transFlags |= RPMTRANS_FLAG_TEST;
+    if (installFlags & RPMINSTALL_TEST) 
 	mode = O_RDONLY;
-    } else {
-	mode = (O_RDWR|O_CREAT);
-    }
+    else
+	mode = O_RDWR | O_CREAT;
+
+    if (installFlags & RPMINSTALL_TEST)
+	transFlags |= RPMTRANS_FLAG_TEST;
 
     rpmMessage(RPMMESS_DEBUG, _("counting packages to install\n"));
-    numPackages = 0;
-    for (filename = argv; *filename != NULL; filename++)
-	numPackages++;
+    for (filename = argv, numPackages = 0; *filename; filename++, numPackages++)
+	;
 
     rpmMessage(RPMMESS_DEBUG, _("found %d packages\n"), numPackages);
 
     nb = (numPackages + 1) * sizeof(char *);
     packages = alloca(nb);
     memset(packages, 0, nb);
-    tpkgs = alloca(nb);
-    memset(tpkgs, 0, nb);
+    tmpPackages = alloca(nb);
+    memset(tmpPackages, 0, nb);
     nb = (numPackages + 1) * sizeof(Header);
 
     rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
-    numTmpPackages = 0;
     for (filename = argv, i = 0; *filename; filename++) {
 
 	switch (urlIsURL(*filename)) {
@@ -121,9 +122,9 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	{   int myrc;
 	    const char *tfn;
 	    char tfnpid[64];
-
-	    if (rpmIsVerbose())
+	    if (rpmIsVerbose()) {
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
+	    }
 
 	    sprintf(tfnpid, "rpm-%.5u-%.5u", (int) getpid(), tmpnum++);
 	    /* XXX watchout for rootdir = NULL */
@@ -140,7 +141,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 		packages[i] = NULL;
 		xfree(tfn);
 	    } else {
-		tpkgs[numTmpPackages++] = packages[i++] = tfn;
+		tmpPackages[numTmpPackages++] = packages[i++] = tfn;
 	    }
 	}   break;
 	default:
@@ -149,10 +150,13 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	}
     }
 
+    sourcePackages = alloca(sizeof(*sourcePackages) * i);
+
     rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPackages);
 
-    /* Build up the transaction set. As a special case, source packages
-       are installed right here. */
+    /* Build up the transaction set. As a special case, v1 source packages
+       are installed right here, only because they don't have headers and
+       would create all sorts of confusion later. */
 
     for (filename = packages; *filename; filename++) {
 	fd = fdOpen(*filename, O_RDONLY, 0);
@@ -167,62 +171,53 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 
 	switch (rc) {
 	case 1:
+	    fdClose(fd);
 	    rpmMessage(RPMMESS_ERROR, 
 			_("%s does not appear to be a RPM package\n"), 
 			*filename);
-	    /* fall thru */
+	    break;
 	default:
-	    fdClose(fd);
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *filename);
 	    numFailed++;
 	    packages[i] = NULL;
 	    break;
 	case 0:
-	    if (isSource) {
-		/* XXX FIXME the header will be reread */
-		if (h)
-		    headerFree(h);
-		if (installFlags &= RPMINSTALL_TEST) {
-		    rpmMessage(RPMMESS_DEBUG, _("test install source rpm %s\n"),
-			*filename);
-		    rc = 0;
-		} else {
-		    if (rpmIsVerbose())
-			fprintf(stdout, _("Installing %s\n"), *filename);
-		    fdLseek(fd, 0, SEEK_SET);
-		    rc = rpmInstallSourcePackage(rootdir, fd, NULL, NULL, NULL, NULL, NULL);
-		}
+	    if (isSource && major == 1) {
+		printf("XXX FIXME I can't install v1 source packages!!!\n");
+	    } else if (isSource) {
+		sourcePackages[numSourcePackages++] = *filename;
 		fdClose(fd);
-		if (rc) {
-		    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *filename);
-		    numFailed++;
-		    packages[i] = NULL;
-		}
 	    } else {
-		/* Open the database on first binary rpm */
-		if (db == NULL) {
-		    rpmMessage(RPMMESS_DEBUG, _("opening database mode: 0%o\n"), mode);
+		if (!dbIsOpen) {
+		    rpmMessage(RPMMESS_DEBUG, _("opening database "
+				"mode: 0%o\n"), mode);
 		    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
 			const char *dn;
-			dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
-			rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
+			dn = rpmGetPath( (rootdir ? rootdir : ""), 
+					"%{_dbpath}", NULL);
+			rpmMessage(RPMMESS_ERROR, 
+				_("cannot open %s/packages.rpm\n"), dn);
 			xfree(dn);
 			exit(EXIT_FAILURE);
 		    }
 		    rpmdep = rpmtransCreateSet(db, rootdir);
+		    dbIsOpen = 1;
 		}
+
 		rpmtransAddPackage(rpmdep, h, fd,
 			       packages[i], 
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
+		numBinaryPackages++;
 	    }
 	    break;
 	}
     }
 
-/* Now do the binary packages */
-  if (db != NULL && rpmdep != NULL) {
-    if (!(interfaceFlags & INSTALL_NODEPS)) {
+    rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"), 
+		numSourcePackages, numBinaryPackages);
+
+    if (numBinaryPackages && !(interfaceFlags & INSTALL_NODEPS)) {
 	if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
 	    numFailed = numPackages;
 	    stopInstall = 1;
@@ -237,14 +232,14 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	}
     }
 
-    if (!(interfaceFlags & INSTALL_NOORDER)) {
+    if (numBinaryPackages && !(interfaceFlags & INSTALL_NOORDER)) {
 	if (rpmdepOrder(rpmdep, (void ***) &packages)) {
 	    numFailed = numPackages;
 	    stopInstall = 1;
 	}
     }
 
-    if (!stopInstall) {
+    if (numBinaryPackages && !stopInstall) {
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 	rc = rpmRunTransactions(rpmdep, showProgress, (void *) notifyFlags, 
 				    NULL, &probs, transFlags);
@@ -258,7 +253,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	    rpmProblemSetFree(probs);
 
 	    if (rc < 0) {
-		numFailed += numPackages;
+		numFailed += numBinaryPackages;
 	    } else if (rc) {
 		numFailed += rc;
 		for (i = 0; i < finalProbs->numProblems; i++)
@@ -271,18 +266,33 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 	}
     }
 
-    rpmtransFree(rpmdep);
+    if (numBinaryPackages) rpmtransFree(rpmdep);
+
+
+    if (!stopInstall) {
+	for (i = 0; i < numSourcePackages; i++) {
+	    fd = fdOpen(sourcePackages[i], O_RDONLY, 0);
+	    if (fdFileno(fd) < 0) {
+		rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), 
+			   sourcePackages[i]);
+		continue;
+	    }
+
+	    numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
+			    showProgress, notifyFlags, NULL);
+
+	    fdClose(fd);
+	}
+    }
+
+    for (i = 0; i < numTmpPackages; i++) {
+	unlink(tmpPackages[i]);
+	xfree(tmpPackages[i]);
+    }
 
     /* FIXME how do we close our various fd's? */
 
-    rpmdbClose(db);
-  }	/* db != NULL */
-
-   /* Clean up any temporary files */
-    for (i = 0; i < numTmpPackages; i++) {
-	unlink(tpkgs[i]);
-	xfree(tpkgs[i]);
-    }
+    if (db != NULL) rpmdbClose(db);
 
     return numFailed;
 }
@@ -400,7 +410,7 @@ int doSourceInstall(const char * rootdir, const char * arg, const char ** specFi
     if (rpmIsVerbose())
 	fprintf(stdout, _("Installing %s\n"), arg);
 
-    rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL, NULL, 
+    rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL, 
 				 cookie);
     if (rc == 1) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
