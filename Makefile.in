@@ -24,7 +24,7 @@ INCDIR=$(prefix)/include/rpm
 # -----------------------------------------------------------------------
 
 SUBDIRS = lib build tools
-OBJS = query.o install.o 
+OBJS = query.o install.o verify.o
 PROGS = rpm rpmconvert
 LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a $(LIBEFENCE)
 
