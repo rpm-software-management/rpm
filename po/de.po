@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-01-03 13:27-0500\n"
+"POT-Creation-Date: 2000-01-03 14:31-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3292,67 +3292,67 @@ msgstr "Fehler: kann %s nicht öffnen\n"
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
-#: lib/rpmio.c:771
+#: lib/rpmio.c:774
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:774
+#: lib/rpmio.c:777
 #, fuzzy
 msgid "Bad server response"
 msgstr "Nicht passende Antwort des FTP-Servers"
 
-#: lib/rpmio.c:777
+#: lib/rpmio.c:780
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP IO-Fehler"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:783
 #, fuzzy
 msgid "Server timeout"
 msgstr "Timeout des FTP-Servers"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:786
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
 
-#: lib/rpmio.c:786
+#: lib/rpmio.c:789
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
 
-#: lib/rpmio.c:789
+#: lib/rpmio.c:792
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Verbindung zum FTP-Server fehlgeschlagen"
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:795
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
 
-#: lib/rpmio.c:795
+#: lib/rpmio.c:798
 msgid "IO error to local file"
 msgstr "IO-Fehler bei lokaler Datei"
 
-#: lib/rpmio.c:798
+#: lib/rpmio.c:801
 msgid "Error setting remote server to passive mode"
 msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
 
-#: lib/rpmio.c:801
+#: lib/rpmio.c:804
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: lib/rpmio.c:804
+#: lib/rpmio.c:807
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:811
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: lib/rpmio.c:1341
+#: lib/rpmio.c:1344
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
