@@ -51,6 +51,11 @@ HeaderIterator initIterator(Header h)
     return hi;
 }
 
+void freeIterator(HeaderIterator iter)
+{
+    free(iter);
+}
+
 int nextIterator(HeaderIterator iter,
 		 int_32 *tag, int_32 *type, void **p, int_32 *c)
 {
@@ -103,6 +108,20 @@ int nextIterator(HeaderIterator iter,
     }
 
     return 1;
+}
+
+Header copyHeader(Header h)
+{
+    int_32 tag, type, count;
+    void *ptr;
+    HeaderIterator headerIter = initIterator(h);
+    Header res = newHeader();
+
+    while (nextIterator(headerIter, &tag, &type, &ptr, &count)) {
+	addEntry(res, tag, type, ptr, count);
+    }
+
+    return res;
 }
 
 /********************************************************************/
@@ -393,6 +412,23 @@ void freeHeader(Header h)
 	munmap(h->mmapped_address, 0);
     }
     free(h);
+}
+
+int isEntry(Header h, int_32 tag)
+{
+    struct indexEntry *index = h->index;
+    int x = h->entries_used;
+
+    tag = htonl(tag);
+    while (x && (tag != index->tag)) {
+	index++;
+	x--;
+    }
+    if (x == 0) {
+	return 0;
+    } else {
+	return 1;
+    }
 }
 
 int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
