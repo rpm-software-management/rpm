@@ -7,9 +7,11 @@
 	- updated ru translation (Sergey Kubushin).
 	- add vpkg-provides.sh (Tim Mooney).
 	- don't clobber LDFLAGS in top-level Makefile (Tim Mooney).
-	- build root from cmd line did not set macro %buildroot.
-	- resurrect "rpm -Va --nofiles" (i.e. dependencies only) (#3111)
+	- fix: build root from cmd line did not set macro %buildroot (#1026).
+	- fix: resurrect "rpm -Va --nofiles" (verify dependencies only) (#3111).
 	- rpm-devel should require popt (#3125).
+	- don't spin while waiting for delayed requires/provides input (#3289).
+	- common parse for all dependency token syntax.
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

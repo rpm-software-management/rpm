@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-06-16 16:15-0400\n"
+"POT-Creation-Date: 1999-06-17 11:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1710,55 +1710,55 @@ msgstr ""
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1512
+#: ../build/files.c:1511
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1516
+#: ../build/files.c:1515
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1566
+#: ../build/files.c:1594
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1570
+#: ../build/files.c:1598
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1604
+#: ../build/files.c:1632
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1611
+#: ../build/files.c:1639
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1630
+#: ../build/files.c:1658
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1637
+#: ../build/files.c:1665
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1671
+#: ../build/files.c:1699
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1686
+#: ../build/files.c:1714
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1698
+#: ../build/files.c:1726
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1722
+#: ../build/files.c:1750
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -2015,32 +2015,32 @@ msgstr ""
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:526
+#: ../build/parsePreamble.c:522
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:536
+#: ../build/parsePreamble.c:532
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:683
+#: ../build/parsePreamble.c:679
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:689
+#: ../build/parsePreamble.c:685
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:716
+#: ../build/parsePreamble.c:712
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:741
+#: ../build/parsePreamble.c:737
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2104,34 +2104,29 @@ msgstr ""
 msgid "line %d: second %%prep"
 msgstr ""
 
-#: ../build/parseReqs.c:47 ../build/parseReqs.c:56
+#: ../build/parseReqs.c:95
+#, c-format
+msgid "line %d: tokens must begin with alpha-numeric, '_' or '/': %s"
+msgstr ""
+
+#: ../build/parseReqs.c:106
 #, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:115
+#: ../build/parseReqs.c:139
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:123
+#: ../build/parseReqs.c:149
 #, c-format
 msgid "line %d: Version not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:143
+#: ../build/parseReqs.c:169
 #, c-format
 msgid "line %d: Version required: %s"
-msgstr ""
-
-#: ../build/parseReqs.c:179
-#, c-format
-msgid "line %d: No file names in Obsoletes: %s"
-msgstr ""
-
-#: ../build/parseReqs.c:186
-#, c-format
-msgid "line %d: tokens must begin with alpha-numeric: %s"
 msgstr ""
 
 #: ../build/parseScript.c:138

@@ -1484,10 +1484,9 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     int fromProg[2];
     int status;
     void *oldhandler;
-    int bytesWritten;
     StringBuf readBuff;
-    int bytes;
     unsigned char buf[BUFSIZ+1];
+    int done;
 
     oldhandler = signal(SIGPIPE, SIG_IGN);
 
@@ -1527,37 +1526,66 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     readBuff = newStringBuf();
 
     do {
+	fd_set ibits, obits;
+	struct timeval tv;
+	int nfd, nbw, nbr;
+	int rc;
+
+	done = 0;
+top:
+	/* XXX the select is mainly a timer since all I/O is non-blocking */
+	FD_ZERO(&ibits);
+	FD_ZERO(&obits);
+	if (fromProg[0] >= 0) {
+	    FD_SET(fromProg[0], &ibits);
+	}
+	if (toProg[1] >= 0) {
+	    FD_SET(toProg[1], &obits);
+	}
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+	nfd = ((fromProg[0] > toProg[1]) ? fromProg[0] : toProg[1]);
+	if ((rc = select(nfd, &ibits, &obits, NULL, &tv)) < 0) {
+	    if (errno == EINTR)
+		goto top;
+	    break;
+	}
+
 	/* Write any data to program */
-        if (writeBytesLeft) {
-	    if ((bytesWritten =
-		  write(toProg[1], writePtr,
+	if (toProg[1] >= 0 && FD_ISSET(toProg[1], &obits)) {
+          if (writeBytesLeft) {
+	    if ((nbw = write(toProg[1], writePtr,
 		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 	        if (errno != EAGAIN) {
 		    perror("getOutputFrom()");
 	            exit(EXIT_FAILURE);
 		}
-	        bytesWritten = 0;
+	        nbw = 0;
 	    }
-	    writeBytesLeft -= bytesWritten;
-	    writePtr += bytesWritten;
-	} else if (toProg[1] >= 0) {	/* close write fd */
+	    writeBytesLeft -= nbw;
+	    writePtr += nbw;
+	  } else if (toProg[1] >= 0) {	/* close write fd */
 	    close(toProg[1]);
 	    toProg[1] = -1;
+	  }
 	}
 	
 	/* Read any data from prog */
-	while ((bytes = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
-	    buf[bytes] = '\0';
+	while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
+	    buf[nbr] = '\0';
 	    appendStringBuf(readBuff, buf);
 	}
 
 	/* terminate on (non-blocking) EOF or error */
-    } while (!(bytes == 0 || (bytes < 0 && errno != EAGAIN)));
+	done = (nbr == 0 || (nbr < 0 && errno != EAGAIN));
+
+    } while (!done);
 
     /* Clean up */
     if (toProg[1] >= 0)
     	close(toProg[1]);
-    close(fromProg[0]);
+    if (fromProg[0] >= 0)
+	close(fromProg[0]);
     (void)signal(SIGPIPE, oldhandler);
 
     /* Collect status from prog */

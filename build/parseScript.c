@@ -50,7 +50,7 @@ static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
 
 /* %trigger is a strange combination of %pre and Requires: behavior */
 /* We can handle it by parsing the args before "--" in parseScript. */
-/* We then pass the remaining arguments to parseReqProv, along with */
+/* We then pass the remaining arguments to parseRCPOT, along with   */
 /* an index we just determined.                                     */
 
 int parseScript(Spec spec, int parsePart)
@@ -246,7 +246,7 @@ int parseScript(Spec spec, int parsePart)
 	index = addTriggerIndex(pkg, file, p, prog);
 
 	/* Generate the trigger tags */
-	if ((rc = parseRequiresConflicts(spec, pkg, reqargs, reqtag, index))) {
+	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index))) {
 	    freeStringBuf(sb);
 	    FREE(progArgv);
 	    FREE(argv);

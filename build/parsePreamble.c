@@ -371,7 +371,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_RELEASE:
       case RPMTAG_URL:
 	SINGLE_TOKEN_ONLY;
-	/* These are for backward compatibility */
+	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
 	    if (strchr(field, '-') != NULL) {
 		rpmError(RPMERR_BADSPEC, _("line %d: Illegal char '-' in %s: %s"),
@@ -498,17 +498,13 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_OBSOLETES:
       case RPMTAG_PROVIDES:
-	if ((rc = parseProvidesObsoletes(spec, pkg, field, tag))) {
-	    return rc;
-	}
-	break;
       case RPMTAG_BUILDREQUIRES:
       case RPMTAG_BUILDCONFLICTS:
       case RPMTAG_BUILDPREREQ:
       case RPMTAG_REQUIREFLAGS:
       case RPMTAG_CONFLICTFLAGS:
       case RPMTAG_PREREQ:
-	if ((rc = parseRequiresConflicts(spec, pkg, field, tag, 0))) {
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0))) {
 	    return rc;
 	}
 	break;
