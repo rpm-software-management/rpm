@@ -16,6 +16,9 @@
 	- fixed allocation of temporary paths (Eugene Kanter noticed this)
 	- made tools/dumpdb read the rpmrc so it can find the database
 	- added --nomd5 for -V and -K
+	- don't assume mkdir -p will succeed if the dir exists
+	- use RPMNLS* defines to avoid header file conflicts
+	- bunch of minor cleanups to avoid warnings on other OS's
 
 2.3.1 -> 2.3.2:
 	- fixed bug in new rpmVersionCompare() which made it worse then
