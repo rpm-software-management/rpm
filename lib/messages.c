@@ -13,6 +13,11 @@ void setVerbosity(int level) {
     minLevel = level;
 }
 
+int getVerbosity(void)
+{
+   return minLevel;
+}
+
 int isDebug(void)
 {
     return (minLevel <= MESS_DEBUG);

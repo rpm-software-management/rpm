@@ -12,6 +12,7 @@
 
 void increaseVerbosity(void);
 void setVerbosity(int level);
+int getVerbosity(void);
 void message(int level, char * format, ...);
 int isVerbose(void);
 int isDebug(void);
