@@ -3,6 +3,7 @@
 	  to query by number you now need --querybynumber
 	- made arch_sensitive on by default
 	- handle # comments in preamble
+	- don't barf if we can't canonicalize the hostname during builds
 
 2.0.8 -> 2.0.9:
 	- %files -f <file>
