@@ -67,6 +67,7 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
     con->finalArgvAlloced = argc * 2;
     con->finalArgv = calloc( con->finalArgvAlloced, sizeof(*con->finalArgv) );
     con->execAbsolute = 1;
+    con->arg_strip = NULL;
 
     if (getenv("POSIXLY_CORRECT") || getenv("POSIX_ME_HARDER"))
 	con->flags |= POPT_CONTEXT_POSIXMEHARDER;
@@ -123,6 +124,11 @@ void poptResetContext(poptContext con) {
     }
 
     con->finalArgvCount = 0;
+
+    if (con->arg_strip) {
+	PBM_FREE(con->arg_strip);
+	con->arg_strip = NULL;
+    }
 }
 
 /* Only one of longName, shortName may be set at a time */
@@ -378,6 +384,14 @@ static /*@only@*/ const char * expandNextArg(poptContext con, const char * s)
     return t;
 }
 
+static void poptStripArg(poptContext con, int which)
+{
+    if(con->arg_strip == NULL) {
+	con->arg_strip = PBM_ALLOC(con->optionStack[0].argc);
+    }
+    PBM_SET(which, con->arg_strip);
+}
+
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
 int poptGetNextOpt(poptContext con)
 {
@@ -389,6 +403,7 @@ int poptGetNextOpt(poptContext con)
 	poptCallbackType cb = NULL;
 	const void * cbData = NULL;
 	const char * longArg = NULL;
+	int canstrip = 0;
 
 	while (!con->os->nextCharArg && con->os->next == con->os->argc
 		&& con->os > con->optionStack) {
@@ -403,11 +418,13 @@ int poptGetNextOpt(poptContext con)
 	/* Process next long option */
 	if (!con->os->nextCharArg) {
 	    char * localOptString, * optString;
+	    int thisopt;
 
 	    if (con->os->argb && PBM_ISSET(con->os->next, con->os->argb)) {
 		con->os->next++;
 		continue;
 	    }
+	    thisopt=con->os->next;
 	    origOptString = con->os->argv[con->os->next++];
 
 	    if (con->restLeftover || *origOptString != '-') {
@@ -459,8 +476,15 @@ int poptGetNextOpt(poptContext con)
 		    return POPT_ERROR_BADOPT;
 	    }
 
-	    if (!opt)
+	    if (!opt) {
 		con->os->nextCharArg = origOptString + 1;
+	    } else {
+		if(con->os == con->optionStack &&
+		   opt->argInfo & POPT_ARGFLAG_STRIP) {
+		    canstrip = 1;
+		    poptStripArg(con, thisopt);
+		}
+	    }
 	}
 
 	/* Process next short option */
@@ -510,6 +534,14 @@ int poptGetNextOpt(poptContext con)
 		if (con->os->next == con->os->argc)
 		    return POPT_ERROR_NOARG;
 
+		/* make sure this isn't part of a short arg or the
+                   result of an alias expansion */
+		if(con->os == con->optionStack &&
+		   opt->argInfo & POPT_ARGFLAG_STRIP &&
+		   canstrip) {
+		    poptStripArg(con, con->os->next);
+		}
+		
 		con->os->nextArg = expandNextArg(con, con->os->argv[con->os->next++]);
 	    }
 
@@ -624,6 +656,8 @@ void poptFreeContext(poptContext con) {
     if (con->aliases) free(con->aliases);
     if (con->otherHelp) xfree(con->otherHelp);
     if (con->execPath) xfree(con->execPath);
+    if (con->arg_strip) PBM_FREE(con->arg_strip);
+    
     free(con);
 }
 
@@ -712,4 +746,29 @@ int poptStuffArgs(poptContext con, const char ** argv) {
 
 const char * poptGetInvocationName(poptContext con) {
     return con->os->argv[0];
+}
+
+int poptStrippedArgv(poptContext con, int argc, char **argv)
+{
+    int i,j=1, numargs=argc;
+    
+    for(i=1; i<argc; i++) {
+	if(PBM_ISSET(i, con->arg_strip)) {
+	    numargs--;
+	}
+    }
+    
+    for(i=1; i<argc; i++) {
+	if(PBM_ISSET(i, con->arg_strip)) {
+	    continue;
+	} else {
+	    if(j<numargs) {
+		argv[j++]=argv[i];
+	    } else {
+		argv[j++]='\0';
+	    }
+	}
+    }
+    
+    return(numargs);
 }

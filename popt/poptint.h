@@ -59,6 +59,7 @@ struct poptContext_s {
     /*@only@*/ const char * execPath;
     int execAbsolute;
     /*@only@*/ const char * otherHelp;
+    pbm_set * arg_strip;
 };
 
 #define	xfree(_a)	free((void *)_a)

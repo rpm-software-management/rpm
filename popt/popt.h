@@ -30,6 +30,7 @@ extern "C" {
 #define POPT_ARG_MASK		0x0000FFFF
 #define POPT_ARGFLAG_ONEDASH	0x80000000  /* allow -longoption */
 #define POPT_ARGFLAG_DOC_HIDDEN 0x40000000  /* don't show in help/usage */
+#define POPT_ARGFLAG_STRIP	0x20000000  /* strip this arg from argv (only applies to long args) */
 #define POPT_CBFLAG_PRE		0x80000000  /* call the callback before parse */
 #define POPT_CBFLAG_POST	0x40000000  /* call the callback after parse */
 #define POPT_CBFLAG_INC_DATA	0x20000000  /* use data from the include line,
@@ -119,6 +120,8 @@ void poptPrintHelp(poptContext con, FILE * f, int flags);
 void poptPrintUsage(poptContext con, FILE * f, int flags);
 void poptSetOtherOptionHelp(poptContext con, const char * text);
 /*@observer@*/ const char * poptGetInvocationName(poptContext con);
+/* shuffles argv pointers to remove stripped args, returns new argc */
+int poptStrippedArgv(poptContext con, int argc, char **argv);
 
 #ifdef  __cplusplus
 }
