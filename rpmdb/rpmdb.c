@@ -2210,7 +2210,7 @@ top:
 	    msg = _free(msg);
 
 	    /* Mark header checked. */
-	    if (set && rpmrc == RPMRC_OK) {
+	    if (mi->mi_db && mi->mi_db->db_bits && rpmrc == RPMRC_OK) {
 		pbm_set * set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
 			&mi->mi_db->db_nbits, mi->mi_offset);
 		PBM_SET(mi->mi_offset, set);
