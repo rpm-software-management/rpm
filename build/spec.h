@@ -13,9 +13,6 @@ void freeSpec(Spec s);
 
 void dumpSpec(Spec s, FILE *f);
 
-#define SOURCE 0
-#define PATCH  1
-
 char *getSource(Spec s, int ispatch, int num);
 char *getFullSource(Spec s, int ispatch, int num);
 
