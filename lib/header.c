@@ -412,7 +412,9 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	return 0;
     }
     *type = ntohl(index->type);
-    *c = ntohl(index->count);
+    if (c) {
+	*c = ntohl(index->count);
+    }
 
     /* Now look it up */
     switch (*type) {
