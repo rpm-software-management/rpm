@@ -976,7 +976,7 @@ verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
     (void) rpmDigestFinal(rpmDigestDup(sha1ctx),
 		(void **)&SHA1, NULL, 1);
 
-    if (SHA1 == NULL || strlen(SHA1) != strlen(sig)) {
+    if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
 	res = RPMSIG_BAD;
 	t = stpcpy(t, rpmSigString(res));
 	t = stpcpy(t, " Expected(");
