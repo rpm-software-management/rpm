@@ -1150,7 +1150,7 @@ static rpmRC runTriggers(rpmpsm psm)
 
     if (psm->te) 	/* XXX can't happen */
 	N = rpmteN(psm->te);
-/* ADJUST */
+/* XXX: Might need to adjust instance counts four autorollback. */
     if (N) 		/* XXX can't happen */
 	numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N)
 				+ psm->countCorrection;
@@ -2126,7 +2126,7 @@ assert(psm->mi == NULL);
 		 */
 		rpmMessage(RPMMESS_DEBUG,
 		    _("Attempting to mark %s as installed in score board(%p).\n"),
-		    rpmteN(psm->te), score);
+		    rpmteN(psm->te), (unsigned) score);
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
 		if (se != NULL) se->installed = 1;
 	    }

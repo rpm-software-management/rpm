@@ -874,7 +874,7 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
  *     RPM_TRANS_AUTOROLLBACK
  * 
  * ROLLBACK and AUTOROLLBACK transactions should always be ran as
- * a best effort.  In particular this important to the autorollback 
+ * a best effort.  In particular this is important to the autorollback 
  * feature to avoid rolling back a rollback (otherwise known as 
  * dueling rollbacks (-;).  AUTOROLLBACK's additionally need instance 
  * counts passed to scriptlets to be altered.
@@ -1454,7 +1454,7 @@ rpmts rpmtsCreate(void)
     ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_TOTAL), -1);
-	ts->type = RPMTRANS_TYPE_NORMAL;
+    ts->type = RPMTRANS_TYPE_NORMAL;
     ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
@@ -1506,8 +1506,8 @@ rpmts rpmtsCreate(void)
     ts->dig = NULL;
 
     /* 
-       We only use the score in an autorollback.  So set this to
-       NULL by default.
+     * We only use the score in an autorollback.  So set this to
+     * NULL by default.
      */
     ts->score = NULL;
 
@@ -1656,7 +1656,7 @@ rpmtsScore rpmtsScoreFree(rpmtsScore score)
 
 /* 
  * XXX: Do not get the score and then store it aside for later use.
- *      we will delete it out from under you.  There is not rpmtsScoreLink()
+ *      we will delete it out from under you.  There is no rpmtsScoreLink()
  *      as this may be a very temporary fix for autorollbacks.
  */
 rpmtsScore rpmtsGetScore(rpmts ts) 
@@ -1667,7 +1667,7 @@ rpmtsScore rpmtsGetScore(rpmts ts)
 
 /* 
  * XXX: Do not get the score entry and then store it aside for later use.
- *      we will delete it out from under you.  There is not an 
+ *      we will delete it out from under you.  There is no 
  *      rpmtsScoreEntryLink() as this may be a very temporary fix 
  *      for autorollbacks.
  * XXX: The scores are not sorted.  This should be fixed at earliest

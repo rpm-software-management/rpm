@@ -35,7 +35,7 @@
 /*
  * This is needed for the IDTX definitions.  I think probably those need
  * to be moved into a different source file (idtx.{c,h}), but that is up
- * Jeff Johnson.
+ * to Jeff Johnson.
  */
 #include "rpmcli.h"
 
@@ -1045,6 +1045,33 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     if (rc > 0 && rpmpsNumProblems(ps) > 0)
 	rpmpsPrint(stderr, ps);
     ps = rpmpsFree(ps);
+
+    /*
+     * After we have ran through the transaction we need to
+     * remove any repackaged packages we just installed/upgraded
+     * from the rp repository.
+     */
+    tsi = rpmtsiInit(rollbackTransaction);
+    while((te = rpmtsiNext(tsi, 0)) != NULL) {
+	rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
+	switch (rpmteType(te)) {
+	/* The install elements are repackaged packages */
+	case TR_ADDED:
+	    /* Make sure the filename is still there.  XXX: Can't happen */
+	    if(te->key) {
+		rpmMessage(RPMMESS_NORMAL, _("\tRemoving %s:\n"), te->key);
+		(void) unlink(te->key); /* XXX: Should check for an error? */
+	    }
+	    /*@switchbreak@*/ break;
+                                                                                
+	/* Ignore erase elements...nothing to do */
+	default:
+	    /*@switchbreak@*/ break;
+	}
+    }
+    tsi = rpmtsiFree(tsi);
+
+    /* Free the rollback transaction */
     rollbackTransaction = rpmtsFree(rollbackTransaction);
 
     return rc;
@@ -1148,7 +1175,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 	 * the next one.  Perhaps I should return an error at this
 	 * point, but if this was not the correct one, at least the correct one
 	 * would be found.
-	 * XXX:  Should I be matching name and arch?
+	 * XXX:  Should Match NAC!
 	 */
     	rpmMessage(RPMMESS_DEBUG, _("\tREMOVETID matched INSTALLTID.\n"));
 	if (headerGetEntry(rpIDT->h, RPMTAG_NAME, NULL, (void **) &rpname, NULL)) {
@@ -1194,7 +1221,7 @@ exit:
 /**
  * This is not a generalized function to be called from outside
  * librpm.  It is called internally by rpmtsRun() to add elements
- * to its rollback transaction.
+ * to its autorollback transaction.
  * @param rollbackTransaction		rollback transaction
  * @param runningTransaction		running transaction (the one you want to rollback)
  * @param te 				Transaction element.
@@ -1252,6 +1279,8 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	    /* Add the install element, as we had a repackaged package */
 	    rpmMessage(RPMMESS_DEBUG,
 		_("\tAdded repackaged package header: %s.\n"), rpn);
+	    rpmMessage(RPMMESS_DEBUG,
+		_("\tAdded from install element %s.\n"), rpmteNEVRA(te));
 	    rc = rpmtsAddInstallElement(rollbackTransaction, headerLink(rph),
 		(fnpyKey) rpn, 1, te->relocs);
 	    /*@innerbreak@*/ break;
@@ -1261,6 +1290,8 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	     * have a repackaged package
 	     */
 	    rpmMessage(RPMMESS_DEBUG, _("\tAdded erase element.\n"));
+	    rpmMessage(RPMMESS_DEBUG,
+		_("\tAdded from install element %s.\n"), rpmteNEVRA(te));
 	    rc = rpmtsAddEraseElement(rollbackTransaction, h, db_instance);
 	    /*@innerbreak@*/ break;
 			
@@ -1275,24 +1306,22 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
    case TR_REMOVED:
 	rpmMessage(RPMMESS_DEBUG,
 	    _("Add erase element to auto-rollback transaction.\n"));
-
-	/* See if this element has already been added as an upgrade.
- 	 * If so we want to do nothing.
+	/* See if this element has already been added.
+ 	 * If so we want to do nothing.  Compare N's for match.
+	 * XXX:  Really should compare NAC's.
 	 */
 	pi = rpmtsiInit(rollbackTransaction);
-	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	    if (rpmteType(p) == TR_ADDED) continue;
+	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	    if (!strcmp(rpmteN(p), rpmteN(te))) {
 	    	rpmMessage(RPMMESS_DEBUG, _("\tFound existing upgrade element.\n"));
 	    	rpmMessage(RPMMESS_DEBUG, _("\tNot adding erase element for %s.\n"),
 			rpmteN(te));
 		rc = RPMRC_OK;	
 		pi = rpmtsiFree(pi);
-		/*@loopbreak@*/ break;
+		goto cleanup;
 	    }
 	}
 	pi = rpmtsiFree(pi);
-
 
 	/* Get the repackage header from the current transaction
 	* element.
@@ -1303,6 +1332,8 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	    /* Add the install element */
 	    rpmMessage(RPMMESS_DEBUG,
 		_("\tAdded repackaged package %s.\n"), rpn);
+	    rpmMessage(RPMMESS_DEBUG,
+		_("\tAdded from erase element %s.\n"), rpmteNEVRA(te));
 	    rc = rpmtsAddInstallElement(rollbackTransaction, rph,
 		(fnpyKey) rpn, 1, te->relocs);
 	    if (rc != RPMRC_OK)
@@ -1337,6 +1368,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
  *	free(rpn);
  */
 
+cleanup:
     /* Clean up */
     if (h != NULL)
 	h = headerFree(h);
@@ -1344,6 +1376,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	rph = headerFree(rph);
     return rc;
 }
+
 #define	NOTIFY(_ts, _al) /*@i@*/ if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
@@ -1368,7 +1401,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int rollbackOnFailure = 0;
     void * lock = NULL;
     int xx;
-
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0)

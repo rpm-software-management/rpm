@@ -1281,13 +1281,16 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Clean up after successful rollback. */
 	if (rtids && !rpmIsDebug()) {
 	    int i;
+	    rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
 	    if (rtids->idt)
 	    for (i = 0; i < rtids->nidt; i++) {
 		IDT rrp = rtids->idt + i;
 		if (rrp->val.u32 != thistid)
 		    /*@innercontinue@*/ continue;
-		if (rrp->key)	/* XXX can't happen */
-		    (void) unlink(rrp->key);
+		if (rrp->key) {	/* XXX can't happen */
+		    rpmMessage(RPMMESS_NORMAL, _("\tRemoving %s:\n"), rrp->key);
+		    (void) unlink(rrp->key);	/* XXX: Should check rc??? */
+		}
 	    }
 	}
 
