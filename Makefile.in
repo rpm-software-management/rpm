@@ -1,5 +1,5 @@
 SUBDIRS = lib
-OBJS = spec.o
+OBJS = spec.o stringbuf.o
 PROGS = build
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
@@ -16,7 +16,7 @@ make-subdirs:
 		(cd $$d; $(MAKE)) ;\
 	done
 
-build: build.o spec.o
+build: build.o $(OBJS)
 
 clean:
 	for d in $(SUBDIRS); do \
