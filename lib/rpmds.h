@@ -8,19 +8,6 @@
 
 /**
  */
-typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
-
-/**
- * Problems encountered while checking dependencies.
- */
-struct problemsSet_s {
-    rpmDependencyConflict problems;	/*!< Problems encountered. */
-    int num;			/*!< No. of problems found. */
-    int alloced;		/*!< No. of problems allocated. */
-} ;
-
-/**
- */
 typedef /*@abstract@*/ struct rpmFNSet_s *		rpmFNSet;
 
 /**
@@ -227,9 +214,9 @@ int dsCompare(const rpmDepSet A, const rpmDepSet B)
 /**
  * Report a Requires: or Conflicts: dependency problem.
  */
-void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
+void dsProblem(rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
 		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys)
-	/*@modifies psp, h @*/;
+	/*@modifies tsprobs, h @*/;
 
 /**
  * Compare package provides dependencies from header with a single dependency.

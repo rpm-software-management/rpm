@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-06 17:01-0500\n"
+"POT-Creation-Date: 2001-11-08 16:51-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -852,7 +852,7 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s\n"
 
-#: build/pack.c:603 lib/psm.c:2152
+#: build/pack.c:603 lib/psm.c:2144
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s"
@@ -882,7 +882,7 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s"
 
-#: build/pack.c:683 lib/psm.c:2417
+#: build/pack.c:683 lib/psm.c:2409
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1465,99 +1465,99 @@ msgstr ""
 msgid " failed - "
 msgstr " nie powiod³o siê -"
 
-#: lib/depends.c:115
+#: lib/depends.c:114
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/depends.c:333
+#: lib/depends.c:332
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:338
+#: lib/depends.c:337
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/depends.c:343
+#: lib/depends.c:342
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:634
+#: lib/depends.c:630
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:659
+#: lib/depends.c:655
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:675
+#: lib/depends.c:671
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:696
+#: lib/depends.c:692
 #, fuzzy
 msgid "(db files)"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/depends.c:708
+#: lib/depends.c:704
 #, fuzzy
 msgid "(db provides)"
 msgstr "Udostêpniane zasoby:"
 
-#: lib/depends.c:721
+#: lib/depends.c:717
 #, fuzzy
 msgid "(db package)"
 msgstr "znaleziono %d pakietów\n"
 
-#: lib/depends.c:760
+#: lib/depends.c:756
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
+#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
 #, fuzzy
 msgid "NO "
 msgstr "NIE DOBRZE"
 
-#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
+#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1092
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1345
+#: lib/depends.c:1338
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1419
+#: lib/depends.c:1412
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1494
+#: lib/depends.c:1487
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1555
+#: lib/depends.c:1548
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1590
+#: lib/depends.c:1583
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1595
+#: lib/depends.c:1588
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2217,69 +2217,79 @@ msgstr "podpisz pakiet (porzuæ bierz±c± sygnaturê)"
 msgid "generate signature"
 msgstr "generuj sygnaturê PGP/GPG"
 
-#: lib/problems.c:225
-#, c-format
-msgid " is needed by %s-%s-%s\n"
-msgstr " jest wymagany przez %s-%s-%s\n"
-
-#: lib/problems.c:228
-#, c-format
-msgid " conflicts with %s-%s-%s\n"
+#: lib/problems.c:201
+#, fuzzy
+msgid "conflicts with"
 msgstr " jest w konflikcie z %s-%s-%s\n"
 
-#: lib/problems.c:268
+#: lib/problems.c:201
+#, fuzzy
+msgid "is needed by"
+msgstr " jest wymagany przez %s-%s-%s\n"
+
+#: lib/problems.c:244
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "pakiet %s-%s-%s zbudowano dla innej architektury"
 
-#: lib/problems.c:273
+#: lib/problems.c:249
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "pakiet %s-%s-%s zbudowano dla innego systemu operacyjnego"
 
-#: lib/problems.c:278
+#: lib/problems.c:254
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/problems.c:283
+#: lib/problems.c:259
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/problems.c:288
+#: lib/problems.c:264
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:293
+#: lib/problems.c:269
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "plik %s z pakietu %s-%s-%s jest w konflikcie z plikiem z pakietu %s-%s-%s"
 
-#: lib/problems.c:298
+#: lib/problems.c:274
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "pakiet %s-%s-%s (który jest nowszy ni¿ %s-%s-%s) jest ju¿ zainstalowany"
 
-#: lib/problems.c:303
+#: lib/problems.c:279
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "instalacja pakietu %s-%s-%s wymaga %ld%c w systemie plików %s"
 
-#: lib/problems.c:313
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalacja pakietu %s-%s-%s wymaga %ld%c w systemie plików %s"
 
-#: lib/problems.c:318
+#: lib/problems.c:294
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:325
+#: lib/problems.c:298
+#, fuzzy, c-format
+msgid "package %s has unsatisfied Requires: %s\n"
+msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
+
+#: lib/problems.c:302
+#, fuzzy, c-format
+msgid "package %s has unsatisfied Conflicts: %s\n"
+msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
+
+#: lib/problems.c:307
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s-%s-%s"
@@ -2333,61 +2343,61 @@ msgstr "nie mo¿na zapisaæ do %s"
 msgid "source package expected, binary found\n"
 msgstr "spodziewany pakiet ¼ród³owy a nie binarny"
 
-#: lib/psm.c:1330
+#: lib/psm.c:1322
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "pakiet ¼ród³owy nie zawiera pliku .spec"
 
-#: lib/psm.c:1440
+#: lib/psm.c:1432
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "uruchamianie skryptu postinstall (je¶li istnieje)\n"
 
-#: lib/psm.c:1608
+#: lib/psm.c:1600
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "wykonanie skryptu nie powiod³o siê"
 
-#: lib/psm.c:1615
+#: lib/psm.c:1607
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "wykonanie skryptu nie powiod³o siê"
 
-#: lib/psm.c:1957
+#: lib/psm.c:1949
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "pakiet: %s-%s-%s test plików = %d\n"
 
-#: lib/psm.c:2074
+#: lib/psm.c:2066
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2188
+#: lib/psm.c:2180
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root"
 
-#: lib/psm.c:2197
+#: lib/psm.c:2189
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root"
 
-#: lib/psm.c:2238
+#: lib/psm.c:2230
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiod³o siê %s%s: %s"
 
-#: lib/psm.c:2239
+#: lib/psm.c:2231
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:2425
+#: lib/psm.c:2417
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/psm.c:2428
+#: lib/psm.c:2420
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê"
@@ -2436,8 +2446,8 @@ msgstr "pakiet nie ma ani w³a¶ciciela pliku ani list id"
 msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
-#: lib/query.c:600 lib/query.c:638 lib/rpminstall.c:326 lib/rpminstall.c:466
-#: lib/rpminstall.c:837
+#: lib/query.c:600 lib/query.c:638 lib/rpminstall.c:328 lib/rpminstall.c:470
+#: lib/rpminstall.c:841
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê\n"
@@ -2451,7 +2461,7 @@ msgstr "odpytywanie %s nie powiod³o siê\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:648 lib/rpminstall.c:479
+#: lib/query.c:648 lib/rpminstall.c:483
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -2511,17 +2521,17 @@ msgstr "numer rekordu pakietu: %d\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:854 lib/rpminstall.c:625
+#: lib/query.c:854 lib/rpminstall.c:629
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:766
 #, fuzzy
 msgid "(added files)"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/rpmal.c:868
+#: lib/rpmal.c:865
 #, fuzzy
 msgid "(added provide)"
 msgstr "Udostêpniane zasoby:"
@@ -2591,103 +2601,103 @@ msgid "OK"
 msgstr "OK"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:451
+#: lib/rpmds.c:500
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:480
+#: lib/rpmds.c:529
 #, fuzzy, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "       rpm {--version}"
 
 #. @=branchstate@
-#: lib/rpmds.c:506
+#: lib/rpmds.c:552
 #, fuzzy, c-format
-msgid "package %s-%s-%s has unsatisfied %s: %s\n"
+msgid "package %s has unsatisfied %s: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 
-#: lib/rpminstall.c:153
+#: lib/rpminstall.c:155
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:155
+#: lib/rpminstall.c:157
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "nie podano nazw plików do zainstalowania"
 
-#: lib/rpminstall.c:274
+#: lib/rpminstall.c:276
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "¦ci±ganie %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:288
 #, c-format
 msgid " ... as %s\n"
 msgstr "... jako %s\n"
 
-#: lib/rpminstall.c:290
+#: lib/rpminstall.c:292
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:388
+#: lib/rpminstall.c:390
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:440
+#: lib/rpminstall.c:444
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "b³±d czytania z pliku %s\n"
 
-#: lib/rpminstall.c:446
+#: lib/rpminstall.c:450
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM\n"
 
-#: lib/rpminstall.c:458 lib/rpminstall.c:693
+#: lib/rpminstall.c:462 lib/rpminstall.c:697
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
-#: lib/rpminstall.c:494
+#: lib/rpminstall.c:498
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:512
+#: lib/rpminstall.c:516
 msgid "failed dependencies:\n"
 msgstr "niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:535
+#: lib/rpminstall.c:539
 msgid "installing binary packages\n"
 msgstr "instalacja pakietów binarnych\n"
 
-#: lib/rpminstall.c:558
+#: lib/rpminstall.c:562
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/rpminstall.c:628
+#: lib/rpminstall.c:632
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:656
 msgid "removing these packages would break dependencies:\n"
 msgstr "usuniêcie tych pakietów zerwie zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:683
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpminstall.c:685
+#: lib/rpminstall.c:689
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
@@ -2947,42 +2957,42 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Blok sygnatury: %d\n"
 
-#: lib/transaction.c:247
+#: lib/transaction.c:244
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pominiêty z powodu flagi missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:886
+#: lib/transaction.c:883
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/verify.c:242
+#: lib/verify.c:243
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "pakiet nie specyfikuje ani nazwy u¿ytkownika ani list id (to nie powinno siê "
 "zdarzyæ)"
 
-#: lib/verify.c:263
+#: lib/verify.c:264
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "pakiet nie specyfikuje ani nazwy grupy ani list id (to nie powinno siê "
 "zdarzyæ)"
 
-#: lib/verify.c:420
+#: lib/verify.c:421
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "brak    %s\n"
 
-#: lib/verify.c:517
-#, c-format
-msgid "Unsatisfied dependencies for %s-%s-%s: "
+#: lib/verify.c:518
+#, fuzzy, c-format
+msgid "Unsatisifed dependencies for %s:"
 msgstr "Niespe³nione zale¿no¶ci dla %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:556
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

@@ -13,7 +13,6 @@
 /*@access fnpyKey@*/
 /*@access rpmProblem@*/
 /*@access rpmProblemSet@*/
-/*@access rpmDependencyConflict@*/
 
 rpmProblemSet rpmProblemSetCreate(void)
 {
@@ -144,61 +143,63 @@ void printDepFlags(FILE * fp, const char * version, int flags)
 	fprintf(fp, " %s", version);
 }
 
-static int sameProblem(const rpmDependencyConflict ap,
-		const rpmDependencyConflict bp)
+static int sameProblem(const rpmProblem ap, const rpmProblem bp)
 	/*@*/
 {
-    if (ap->byNEVR && bp->byNEVR && strcmp(ap->byNEVR, bp->byNEVR))
-	return 1;
-    if (ap->needsNEVR && bp->needsNEVR && strcmp(ap->needsNEVR, bp->needsNEVR))
-	return 1;
+    if (ap->pkgNEVR)
+	if (bp->pkgNEVR && strcmp(ap->pkgNEVR, bp->pkgNEVR))
+	    return 1;
+    if (ap->altNEVR)
+	if (bp->altNEVR && strcmp(ap->altNEVR, bp->altNEVR))
+	    return 1;
 
     return 0;
 }
 
 /* XXX FIXME: merge into problems */
-rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
+rpmProblem rpmdepFreeConflicts(rpmProblem conflicts,
 		int numConflicts)
 {
-    rpmDependencyConflict c;
     int i;
 
-    if (conflicts)
+    if (conflicts != NULL)
     for (i = 0; i < numConflicts; i++) {
-	c = conflicts + i;
-	c->byNEVR = _free(c->byNEVR);
-	c->needsNEVR = _free(c->needsNEVR);
-	/*@-evalorder@*/
-	c->suggestedKeys = _free(c->suggestedKeys);
-	/*@=evalorder@*/
+	rpmProblem p = conflicts + i;
+	p->pkgNEVR = _free(p->pkgNEVR);
+	p->altNEVR = _free(p->altNEVR);
+	p->str1 = _free(p->str1);
     }
-
-    return (conflicts = _free(conflicts));
+    conflicts = _free(conflicts);
+    return NULL;
 }
 
 /* XXX FIXME: merge into problems */
-void printDepProblems(FILE * fp,
-		const rpmDependencyConflict conflicts, int numConflicts)
+void printDepProblems(FILE * fp, rpmProblem conflicts, int numConflicts)
 {
-    rpmDependencyConflict c;
+    const char * pkgNEVR, * altNEVR;
+    rpmProblem c;
     int i;
 
     for (i = 0; i < numConflicts; i++) {
 	int j;
 
+	c = conflicts + i;
+
 	/* Filter already displayed problems. */
 	for (j = 0; j < i; j++) {
-	    if (!sameProblem(conflicts + i, conflicts + j))
+	    if (!sameProblem(c, conflicts + j))
 		/*@innerbreak@*/ break;
 	}
 	if (j < i)
 	    continue;
 
-	c = conflicts + i;
-	fprintf(fp, "\t%s %s %s\n", c->needsNEVR+2,
-		((c->needsNEVR[0] == 'C' && c->needsNEVR[1] == ' ')
+	pkgNEVR = (c->pkgNEVR ? c->pkgNEVR : "?pkgNEVR?");
+	altNEVR = (c->altNEVR ? c->altNEVR : "? ?altNEVR?");
+
+	fprintf(fp, "\t%s %s %s\n", altNEVR+2,
+		((altNEVR[0] == 'C' && altNEVR[1] == ' ')
 			?  _("conflicts with") : _("is needed by")),
-		c->byNEVR);
+		pkgNEVR);
     }
 }
 
@@ -227,9 +228,12 @@ static inline int snprintf(/*@out@*/ char * buf, int nb, const char * fmt, ...)
 
 const char * rpmProblemString(const rpmProblem prob)
 {
-/*@observer@*/ const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "");
-/*@observer@*/ const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "");
-/*@observer@*/ const char * str1 = (prob->str1 ? prob->str1 : "");
+/*@observer@*/
+    const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "?pkgNEVR?");
+/*@observer@*/
+    const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "?altNEVR?");
+/*@observer@*/
+    const char * str1 = (prob->str1 ? prob->str1 : "");
     int nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
     char * buf = xmalloc(nb+1);
     int rc;
@@ -291,7 +295,13 @@ const char * rpmProblemString(const rpmProblem prob)
 		pkgNEVR, str1, strerror(prob->ulong1));
 	break;
     case RPMPROB_REQUIRES:
+	rc = snprintf(buf, nb, _("package %s has unsatisfied Requires: %s\n"),
+		pkgNEVR, altNEVR+2);
+	break;
     case RPMPROB_CONFLICT:
+	rc = snprintf(buf, nb, _("package %s has unsatisfied Conflicts: %s\n"),
+		pkgNEVR, altNEVR+2);
+	break;
     default:
 	rc = snprintf(buf, nb,
 		_("unknown error %d encountered while manipulating package %s"),

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-07 19:23-0500\n"
+"POT-Creation-Date: 2001-11-08 16:51-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1410,93 +1410,93 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:115
+#: lib/depends.c:114
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:333
+#: lib/depends.c:332
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:338
+#: lib/depends.c:337
 #, c-format
 msgid "package %s already added, ignoring\n"
 msgstr ""
 
-#: lib/depends.c:343
+#: lib/depends.c:342
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:631
+#: lib/depends.c:630
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:656
+#: lib/depends.c:655
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:672
+#: lib/depends.c:671
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:693
+#: lib/depends.c:692
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:705
+#: lib/depends.c:704
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:718
+#: lib/depends.c:717
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:757
+#: lib/depends.c:756
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:759 lib/rpmds.c:378 lib/rpmds.c:533
+#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:759 lib/rpmds.c:378 lib/rpmds.c:533
+#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1098
+#: lib/depends.c:1092
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1344
+#: lib/depends.c:1338
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1418
+#: lib/depends.c:1412
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1493
+#: lib/depends.c:1487
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1554
+#: lib/depends.c:1548
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1589
+#: lib/depends.c:1583
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1594
+#: lib/depends.c:1588
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2105,65 +2105,75 @@ msgstr ""
 msgid "generate signature"
 msgstr ""
 
-#: lib/problems.c:200
+#: lib/problems.c:201
 msgid "conflicts with"
 msgstr ""
 
-#: lib/problems.c:200
+#: lib/problems.c:201
 msgid "is needed by"
 msgstr ""
 
-#: lib/problems.c:240
+#: lib/problems.c:244
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr ""
 
-#: lib/problems.c:245
+#: lib/problems.c:249
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr ""
 
-#: lib/problems.c:250
+#: lib/problems.c:254
 #, c-format
 msgid "package %s is already installed"
 msgstr ""
 
-#: lib/problems.c:255
+#: lib/problems.c:259
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr ""
 
-#: lib/problems.c:260
+#: lib/problems.c:264
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:265
+#: lib/problems.c:269
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/problems.c:270
+#: lib/problems.c:274
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/problems.c:275
+#: lib/problems.c:279
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:285
+#: lib/problems.c:289
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:290
+#: lib/problems.c:294
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:297
+#: lib/problems.c:298
+#, c-format
+msgid "package %s has unsatisfied Requires: %s\n"
+msgstr ""
+
+#: lib/problems.c:302
+#, c-format
+msgid "package %s has unsatisfied Conflicts: %s\n"
+msgstr ""
+
+#: lib/problems.c:307
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -2468,20 +2478,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:503
+#: lib/rpmds.c:500
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:532
+#: lib/rpmds.c:529
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:554
+#: lib/rpmds.c:552
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2834,12 +2844,12 @@ msgstr ""
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:516
+#: lib/verify.c:518
 #, c-format
 msgid "Unsatisifed dependencies for %s:"
 msgstr ""
 
-#: lib/verify.c:554
+#: lib/verify.c:556
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

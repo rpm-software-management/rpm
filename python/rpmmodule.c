@@ -1356,7 +1356,7 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
-    rpmDependencyConflict conflicts, c;
+    rpmProblem conflicts, c;
     int numConflicts;
     PyObject * list, * cf;
     int i;
@@ -1388,15 +1388,15 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 	    
 	    c = conflicts + i;
 
-	    byName = c->byNEVR;
+	    byName = c->pkgNEVR;
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
 		*byRelease++ = '\0';
 	    if ((byVersion = strrchr(byName, '-')) != NULL)
 		*byVersion++ = '\0';
 
-	    key = c->suggestedKeys[0];
+	    key = c->key;
 
-	    needsName = c->needsNEVR;
+	    needsName = c->altNEVR;
 	    if (needsName[1] == ' ') {
 		sense = (needsName[0] == 'C')
 			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;

@@ -382,6 +382,7 @@ fi
 %lang(fr)	%{__prefix}/*/locale/fr/LC_MESSAGES/rpm.mo
 %lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/rpm.mo
 %lang(ja)	%{__prefix}/*/locale/ja/LC_MESSAGES/rpm.mo
+%lang(ko)	%{__prefix}/*/locale/ko/LC_MESSAGES/rpm.mo
 %lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/rpm.mo
 %lang(pl)	%{__prefix}/*/locale/pl/LC_MESSAGES/rpm.mo
 %lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/rpm.mo
@@ -490,6 +491,7 @@ fi
 %lang(gl)	%{__prefix}/*/locale/gl/LC_MESSAGES/popt.mo
 %lang(hu)	%{__prefix}/*/locale/hu/LC_MESSAGES/popt.mo
 %lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/popt.mo
+%lang(ko)	%{__prefix}/*/locale/ko/LC_MESSAGES/popt.mo
 %lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/popt.mo
 %lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/popt.mo
 %lang(ro)	%{__prefix}/*/locale/ro/LC_MESSAGES/popt.mo
@@ -557,3 +559,10 @@ fi
 - depends.h: hack around teIterator() et al from include for now.
 - rpmds: move trigger dependencies into a rpmDepSet as well.
 - rpmal: availablePackage is totally opaque, alKey with index replaces.
+- fix: harmless typo in db3 chroot hack.
+- fix: big-endian's with sizeof(time_t) != sizeof(int_32) mtime broken.
+- fix: add Korean message catalogs (#54473).
+- add RPHNPLATFORM and PLATFORM tags.
+- linear search on added package provides is dumb.
+- discarding entire signature header when using --addsign is dumb.
+- rip out rpmDependencyConflict, replace with rpmProblem instead.

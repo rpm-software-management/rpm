@@ -29,8 +29,7 @@
 /*@access rpmTransactionSet@*/
 
 /*@access alKey @*/
-/*@access rpmDependencyConflict@*/
-/*@access problemsSet@*/
+/*@access rpmProblemSet@*/
 
 /**
  */
@@ -766,17 +765,17 @@ exit:
 /**
  * Check header requires/conflicts against against installed+added packages.
  * @param ts		transaction set
- * @param psp		dependency problems
  * @param h		header to check
  * @param keyName	dependency name
  * @param multiLib	skip multilib colored dependencies?
  * @return		0 no problems found
  */
-static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
+static int checkPackageDeps(rpmTransactionSet ts,
 		Header h, const char * keyName, uint_32 multiLib)
 	/*@globals fileSystem @*/
-	/*@modifies ts, h, psp, fileSystem */
+	/*@modifies ts, h, fileSystem */
 {
+    rpmProblemSet ps = ts->probs;
     const char * name, * version, * release;
     int scareMem = _DS_SCAREMEM;
     rpmDepSet requires;
@@ -821,7 +820,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    }
 	    /*@=branchstate@*/
 
-	    dsProblem(psp, h, requires, suggestedKeys);
+	    dsProblem(ps, h, requires, suggestedKeys);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -857,7 +856,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	switch (rc) {
 	case 0:		/* conflicts exist. */
 	    /*@-mayaliasunique@*/ /* LCL: NULL may alias h ??? */
-	    dsProblem(psp, h, conflicts, NULL);
+	    dsProblem(ps, h, conflicts, NULL);
 	    /*@=mayaliasunique@*/
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
@@ -878,15 +877,14 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
  * Adding: check name/provides key against each conflict match,
  * Erasing: check name/provides/filename key against each requiredby match.
  * @param ts		transaction set
- * @param psp		dependency problems
  * @param key		dependency name
  * @param mi		rpm database iterator
  * @return		0 no problems found
  */
-static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
+static int checkPackageSet(rpmTransactionSet ts,
 		const char * key, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
 	/*@globals fileSystem @*/
-	/*@modifies ts, mi, psp, fileSystem @*/
+	/*@modifies ts, mi, fileSystem @*/
 {
     Header h;
     int rc = 0;
@@ -894,7 +892,7 @@ static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	if (checkPackageDeps(ts, psp, h, key, 0)) {
+	if (checkPackageDeps(ts, h, key, 0)) {
 	    rc = 1;
 	    break;
 	}
@@ -907,38 +905,34 @@ static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
 /**
  * Erasing: check name/provides/filename key against requiredby matches.
  * @param ts		transaction set
- * @param psp		dependency problems
  * @param key		requires name
  * @return		0 no problems found
  */
-static int checkDependentPackages(rpmTransactionSet ts,
-			problemsSet psp, const char * key)
+static int checkDependentPackages(rpmTransactionSet ts, const char * key)
 	/*@globals fileSystem @*/
-	/*@modifies ts, psp, fileSystem @*/
+	/*@modifies ts, fileSystem @*/
 {
     rpmdbMatchIterator mi;
     mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, key, 0);
-    return checkPackageSet(ts, psp, key, mi);
+    return checkPackageSet(ts, key, mi);
 }
 
 /**
  * Adding: check name/provides key against conflicts matches.
  * @param ts		transaction set
- * @param psp		dependency problems
  * @param key		conflicts name
  * @return		0 no problems found
  */
-static int checkDependentConflicts(rpmTransactionSet ts,
-		problemsSet psp, const char * key)
+static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
 	/*@globals fileSystem @*/
-	/*@modifies ts, psp, fileSystem @*/
+	/*@modifies ts, fileSystem @*/
 {
     int rc = 0;
 
     if (ts->rpmdb) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, key, 0);
-	rc = checkPackageSet(ts, psp, key, mi);
+	rc = checkPackageSet(ts, key, mi);
     }
 
     return rc;
@@ -1714,14 +1708,13 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 }
 
 int rpmdepCheck(rpmTransactionSet ts,
-		rpmDependencyConflict * conflicts, int * numConflicts)
+		rpmProblem * conflicts, int * numConflicts)
 {
     int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
-    problemsSet ps = NULL;
     teIterator pi = NULL; transactionElement p;
     int closeatexit = 0;
     int j, xx;
@@ -1734,10 +1727,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	closeatexit = 1;
     }
 
-    ps = xcalloc(1, sizeof(*ps));
-    ps->alloced = 5;
-    ps->num = 0;
-    ps->problems = xcalloc(ps->alloced, sizeof(*ps->problems));
+    ts->probs = rpmProblemSetCreate();
 
     *conflicts = NULL;
     *numConflicts = 0;
@@ -1775,7 +1765,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	multiLib = p->multiLib;
 
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , pkgNVR);
-	rc = checkPackageDeps(ts, ps, h, NULL, multiLib);
+	rc = checkPackageDeps(ts, h, NULL, multiLib);
 	h = headerFree(h, "alGetHeader");
 
 	if (rc) {
@@ -1791,7 +1781,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    *v++ = '\0';
 	n = pkgNVR;
 
-	rc = checkDependentConflicts(ts, ps, n);
+	rc = checkDependentConflicts(ts, n);
 	pkgNVR = _free(pkgNVR);
 	if (rc)
 	    goto exit;
@@ -1809,7 +1799,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		/*@innercontinue@*/ continue;	/* XXX can't happen */
 
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, ps, Name))
+	    if (!checkDependentConflicts(ts, Name))
 		/*@innercontinue@*/ continue;
 	    rc = 1;
 	    /*@innerbreak@*/ break;
@@ -1838,7 +1828,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		name, version, release);
 
 	    /* Erasing: check name against requiredby matches. */
-	    rc = checkDependentPackages(ts, ps, name);
+	    rc = checkDependentPackages(ts, name);
 	    if (rc)
 		goto exit;
 	}
@@ -1853,7 +1843,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    /*@innercontinue@*/ continue;	/* XXX can't happen */
 
 		/* Erasing: check provides against requiredby matches. */
-		if (!checkDependentPackages(ts, ps, Name))
+		if (!checkDependentPackages(ts, Name))
 		    /*@innercontinue@*/ continue;
 		rc = 1;
 		/*@innerbreak@*/ break;
@@ -1886,7 +1876,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    *fileName = '\0';
 		    (void) stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
 		    /* Erasing: check filename against requiredby matches. */
-		    if (!checkDependentPackages(ts, ps, fileName))
+		    if (!checkDependentPackages(ts, fileName))
 			/*@innercontinue@*/ continue;
 		    rc = 1;
 		    /*@innerbreak@*/ break;
@@ -1905,25 +1895,23 @@ int rpmdepCheck(rpmTransactionSet ts,
     }
     /*@=branchstate@*/
 
-    if (ps->num) {
-	*conflicts = ps->problems;
-	ps->problems = NULL;
-	*numConflicts = ps->num;
+    if (ts->probs->numProblems) {
+	*conflicts = ts->probs->probs;
+	ts->probs->probs = NULL;
+	*numConflicts = ts->probs->numProblems;
     }
     rc = 0;
 
 exit:
     mi = rpmdbFreeIterator(mi);
     pi = teFreeIterator(pi);
-    if (ps) {
-	ps->problems = _free(ps->problems);
-	ps = _free(ps);
-    }
     /*@-branchstate@*/
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
     /*@=branchstate@*/
+    rpmProblemSetFree(ts->probs);
+    ts->probs = NULL;
     return rc;
 }

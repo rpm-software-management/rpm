@@ -118,7 +118,7 @@ struct rpmTransactionSet_s {
     rpmCallbackFunction notify;	/*!< Callback function. */
 /*@observer@*/ /*@null@*/
     rpmCallbackData notifyData;	/*!< Callback private data. */
-/*@dependent@*/
+/*@owned@*/
     rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */

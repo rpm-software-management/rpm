@@ -370,7 +370,7 @@ if (!_debug) {
 
 #ifdef	NOTYET
 if (!_debug) {
-    {	rpmDependencyConflict conflicts = NULL;
+    {	rpmProblem conflicts = NULL;
 	int numConflicts = 0;
 
 	(void) rpmdepCheck(ts, &conflicts, &numConflicts);

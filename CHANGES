@@ -47,6 +47,7 @@
 	- rpmal: availablePackage is totally opaque, alKey with index replaces.
 	- linear search on added package provides is dumb.
 	- discarding entire signature header when using --addsign is dumb.
+	- rip out rpmDependencyConflict, replace with rpmProblem instead.
 
 4.0.3 -> 4.0.4:
 

@@ -8,9 +8,6 @@
 
 #include "debug.h"
 
-/*@access rpmDependencyConflict @*/
-/*@access problemsSet @*/
-
 /*@access alKey@*/
 
 /*@access rpmFNSet @*/
@@ -536,14 +533,15 @@ exit:
     return result;
 }
 
-void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
+void dsProblem(rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
 		const fnpyKey * suggestedKeys)
 {
-    rpmDependencyConflict dcp;
     const char * Name =  dsiGetN(ds);
     const char * DNEVR = dsiGetDNEVR(ds);
     const char * EVR = dsiGetEVR(ds);
     char * byNEVR = hGetNVR(h, NULL);
+    rpmProblemType type;
+    fnpyKey key;
 
     /*@-branchstate@*/
     if (Name == NULL) Name = "?N?";
@@ -554,18 +552,11 @@ void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
     rpmMessage(RPMMESS_DEBUG, _("package %s has unsatisfied %s: %s\n"),
 	    byNEVR, ds->Type, DNEVR+2);
 
-    if (psp->num == psp->alloced) {
-	psp->alloced += 5;
-	psp->problems = xrealloc(psp->problems,
-				sizeof(*psp->problems) * psp->alloced);
-    }
-
-    dcp = psp->problems + psp->num;
-    psp->num++;
-
-    dcp->byNEVR = byNEVR;
-    dcp->needsNEVR = xstrdup(DNEVR);
-    dcp->suggestedKeys = suggestedKeys;
+    type = (DNEVR[0] == 'C' && DNEVR[1] == ' ')
+		? RPMPROB_CONFLICT : RPMPROB_REQUIRES;
+    key = (suggestedKeys ? suggestedKeys[0] : NULL);
+    rpmProblemSetAppend(tsprobs, type, byNEVR, key,
+			NULL, NULL, xstrdup(DNEVR), 0);
 }
 
 int rangeMatchesDepFlags (Header h, const rpmDepSet req)

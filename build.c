@@ -20,7 +20,7 @@ static int checkSpec(rpmTransactionSet ts, Header h)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/
 {
-    rpmDependencyConflict conflicts;
+    rpmProblem conflicts;
     int numConflicts;
     int rc;
 

@@ -501,7 +501,7 @@ restart:
     if (eiu->numFailed) goto exit;
 
     if (eiu->numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
-	rpmDependencyConflict conflicts;
+	rpmProblem conflicts;
 	int numConflicts;
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
@@ -604,7 +604,7 @@ int rpmErase(rpmTransactionSet ts, const char ** argv,
     int count;
     const char ** arg;
     int numFailed = 0;
-    rpmDependencyConflict conflicts;
+    rpmProblem conflicts;
     int numConflicts;
     int stopUninstall = 0;
     int numPackages = 0;

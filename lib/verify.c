@@ -13,7 +13,7 @@
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
-/*@access rpmDependencyConflict @*/
+/*@access rpmProblem @*/
 /*@access rpmTransactionSet @*/
 /*@access TFI_t @*/
 /*@access PSM_t @*/
@@ -490,7 +490,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/
 {
-    rpmDependencyConflict conflicts;
+    rpmProblem conflicts;
     int numConflicts;
     int rc = 0;		/* assume no problems */
     int i;
@@ -502,27 +502,29 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 
     /*@-branchstate@*/
     if (numConflicts) {
-	rpmDependencyConflict c;
+	const char * pkgNEVR, * altNEVR;
+	rpmProblem c;
 	char * t, * te;
 	int nb = 512;
 
-	/*@-type@*/ /* FIX: rpmDependencyConflict usage */
 	for (i = 0; i < numConflicts; i++) {
 	    c = conflicts + i;
-	    nb += strlen(c->needsNEVR+2) + sizeof(", ") - 1;
+	    altNEVR = (c->altNEVR ? c->altNEVR : "? ?altNEVR?");
+	    nb += strlen(altNEVR+2) + sizeof(", ") - 1;
 	}
 	te = t = alloca(nb);
 	*te = '\0';
-	sprintf(te, _("Unsatisifed dependencies for %s:"), conflicts[0].byNEVR);
+	pkgNEVR = (conflicts->pkgNEVR ? conflicts->pkgNEVR : "?pkgNEVR?");
+	sprintf(te, _("Unsatisifed dependencies for %s:"), pkgNEVR);
 	te += strlen(te);
 	for (i = 0; i < numConflicts; i++) {
 	    c = conflicts + i;
+	    altNEVR = (c->altNEVR ? c->altNEVR : "? ?altNEVR?");
 	    if (i) te = stpcpy(te, ", ");
 	    /* XXX FIXME: should probably supply the "[R|C] " type prefix */
-	    te = stpcpy(te, c->needsNEVR+2);
+	    te = stpcpy(te, altNEVR+2);
 	}
 	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
-	/*@=type@*/
 
 	if (te > t) {
 	    *te++ = '\n';

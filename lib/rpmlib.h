@@ -950,11 +950,6 @@ typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
 typedef /*@abstract@*/ struct rpmProblemSet_s * rpmProblemSet;
 
 /**
- * Dependency problems found by rpmdepCheck().
- */
-typedef /*@abstract@*/ struct rpmDependencyConflict_s * rpmDependencyConflict;
-
-/**
  * Enumerate transaction set problem types.
  */
 typedef enum rpmProblemType_e {
@@ -962,8 +957,8 @@ typedef enum rpmProblemType_e {
     RPMPROB_BADOS,	/*!< package ... is for a different operating system */
     RPMPROB_PKG_INSTALLED, /*!< package ... is already installed */
     RPMPROB_BADRELOCATE,/*!< path ... is not relocateable for package ... */
-    RPMPROB_REQUIRES,	/*!< @todo Use for dependency errors. */
-    RPMPROB_CONFLICT,	/*!< @todo Use for dependency errors. */
+    RPMPROB_REQUIRES,	/*!< package ... has unsatisfied Requires: ... */
+    RPMPROB_CONFLICT,	/*!< package ... has unsatisfied Conflicts: ... */
     RPMPROB_NEW_FILE_CONFLICT, /*!< file ... conflicts between attemped installs of ... */
     RPMPROB_FILE_CONFLICT,/*!< file ... from install of ... conflicts with file from package ... */
     RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
@@ -977,7 +972,7 @@ typedef enum rpmProblemType_e {
 struct rpmProblem_s {
 /*@only@*/ /*@null@*/ const char * pkgNEVR;
 /*@only@*/ /*@null@*/ const char * altNEVR;
-/*@kept@*/ /*@null@*/ fnpyKey key;
+/*@dependent@*/ /*@null@*/ fnpyKey key;
     rpmProblemType type;
     int ignoreProblem;
 /*@only@*/ /*@null@*/ const char * str1;
@@ -999,22 +994,12 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 	/*@modifies *fp, fileSystem @*/;
 
 /**
- */
-struct rpmDependencyConflict_s {
-    char * byNEVR;	/*!< package name-version-release */
-    char * needsNEVR;	/*!< dependency [R|C] name ?? epoch:version-release */
-/*@owned@*/ /*@null@*/
-    const fnpyKey * suggestedKeys; /*!< Added package keys, NULL terminated. */
-};
-
-/**
  * Print results of rpmdepCheck() dependency check.
  * @param fp		output file
  * @param conflicts	dependency problems
  * @param numConflicts	no. of dependency problems
  */
-void printDepProblems(FILE * fp, const rpmDependencyConflict conflicts,
-			int numConflicts)
+void printDepProblems(FILE * fp, rpmProblem conflicts, int numConflicts)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
@@ -1474,7 +1459,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts,
  * @return		0 on success
  */
 int rpmdepCheck(rpmTransactionSet ts,
-		/*@exposed@*/ /*@out@*/ rpmDependencyConflict * conflicts,
+		/*@exposed@*/ /*@out@*/ rpmProblem * conflicts,
 		/*@exposed@*/ /*@out@*/ int * numConflicts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, *conflicts, *numConflicts,
@@ -1509,8 +1494,8 @@ int rpmdepOrder(rpmTransactionSet ts)
  * @param numConflicts	no. of dependency problems
  * @retrun		NULL always
  */
-/*@null@*/ rpmDependencyConflict rpmdepFreeConflicts(
-		/*@only@*/ /*@null@*/ rpmDependencyConflict conflicts,
+/*@null@*/ rpmProblem rpmdepFreeConflicts(
+		/*@only@*/ /*@null@*/ rpmProblem conflicts,
 		int numConflicts)
 	/*@modifies conflicts @*/;
 

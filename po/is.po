@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-06 17:01-0500\n"
+"POT-Creation-Date: 2001-11-08 16:51-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -815,7 +815,7 @@ msgstr "Get ekki lesið haus úr %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:2152
+#: build/pack.c:603 lib/psm.c:2144
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Get ekki ritað í pakka: %s\n"
@@ -845,7 +845,7 @@ msgstr "Get ekki lesið innihald %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Get ekki ritað innihald í %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2417
+#: build/pack.c:683 lib/psm.c:2409
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrifaði: %s\n"
@@ -1410,94 +1410,94 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:115
+#: lib/depends.c:114
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/depends.c:333
+#: lib/depends.c:332
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:338
+#: lib/depends.c:337
 #, c-format
 msgid "package %s already added, ignoring\n"
 msgstr ""
 
-#: lib/depends.c:343
+#: lib/depends.c:342
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:634
+#: lib/depends.c:630
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:659
+#: lib/depends.c:655
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:675
+#: lib/depends.c:671
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:696
+#: lib/depends.c:692
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:708
+#: lib/depends.c:704
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:721
+#: lib/depends.c:717
 #, fuzzy
 msgid "(db package)"
 msgstr "uppfæra pakka"
 
-#: lib/depends.c:760
+#: lib/depends.c:756
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
+#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:762 lib/rpmds.c:326 lib/rpmds.c:481
+#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1103
+#: lib/depends.c:1092
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1345
+#: lib/depends.c:1338
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1419
+#: lib/depends.c:1412
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1494
+#: lib/depends.c:1487
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1555
+#: lib/depends.c:1548
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1590
+#: lib/depends.c:1583
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1595
+#: lib/depends.c:1588
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2111,67 +2111,75 @@ msgstr ""
 msgid "generate signature"
 msgstr "búa til undirskrift"
 
-#: lib/problems.c:225
-#, c-format
-msgid " is needed by %s-%s-%s\n"
+#: lib/problems.c:201
+msgid "conflicts with"
 msgstr ""
 
-#: lib/problems.c:228
-#, c-format
-msgid " conflicts with %s-%s-%s\n"
+#: lib/problems.c:201
+msgid "is needed by"
 msgstr ""
 
-#: lib/problems.c:268
+#: lib/problems.c:244
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr ""
 
-#: lib/problems.c:273
+#: lib/problems.c:249
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr ""
 
-#: lib/problems.c:278
+#: lib/problems.c:254
 #, c-format
 msgid "package %s is already installed"
 msgstr ""
 
-#: lib/problems.c:283
+#: lib/problems.c:259
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr ""
 
-#: lib/problems.c:288
+#: lib/problems.c:264
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:293
+#: lib/problems.c:269
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/problems.c:298
+#: lib/problems.c:274
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/problems.c:303
+#: lib/problems.c:279
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:313
+#: lib/problems.c:289
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:318
+#: lib/problems.c:294
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:325
+#: lib/problems.c:298
+#, c-format
+msgid "package %s has unsatisfied Requires: %s\n"
+msgstr ""
+
+#: lib/problems.c:302
+#, c-format
+msgid "package %s has unsatisfied Conflicts: %s\n"
+msgstr ""
+
+#: lib/problems.c:307
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -2224,60 +2232,60 @@ msgstr "get ekki ritað í %%%s %s\n"
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1330
+#: lib/psm.c:1322
 msgid "source package contains no .spec file\n"
 msgstr "pakkinn inniheldur enga .spec skrá\n"
 
-#: lib/psm.c:1440
+#: lib/psm.c:1432
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1608
+#: lib/psm.c:1600
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1615
+#: lib/psm.c:1607
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1957
+#: lib/psm.c:1949
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:2074
+#: lib/psm.c:2066
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2188
+#: lib/psm.c:2180
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2197
+#: lib/psm.c:2189
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2238
+#: lib/psm.c:2230
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2239
+#: lib/psm.c:2231
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2425
+#: lib/psm.c:2417
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "gat ekki opnað %s: %s\n"
 
-#: lib/psm.c:2428
+#: lib/psm.c:2420
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s brást\n"
@@ -2325,8 +2333,8 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:600 lib/query.c:638 lib/rpminstall.c:326 lib/rpminstall.c:466
-#: lib/rpminstall.c:837
+#: lib/query.c:600 lib/query.c:638 lib/rpminstall.c:328 lib/rpminstall.c:470
+#: lib/rpminstall.c:841
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2340,7 +2348,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:648 lib/rpminstall.c:479
+#: lib/query.c:648 lib/rpminstall.c:483
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: gat ekki lesið manifest: %s\n"
@@ -2399,16 +2407,16 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:854 lib/rpminstall.c:625
+#: lib/query.c:854 lib/rpminstall.c:629
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:766
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:868
+#: lib/rpmal.c:865
 msgid "(added provide)"
 msgstr ""
 
@@ -2476,102 +2484,102 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:451
+#: lib/rpmds.c:500
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:480
+#: lib/rpmds.c:529
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:506
+#: lib/rpmds.c:552
 #, c-format
-msgid "package %s-%s-%s has unsatisfied %s: %s\n"
-msgstr ""
-
-#: lib/rpminstall.c:153
-msgid "Preparing..."
+msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
 
 #: lib/rpminstall.c:155
+msgid "Preparing..."
+msgstr ""
+
+#: lib/rpminstall.c:157
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:274
+#: lib/rpminstall.c:276
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:288
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:290
+#: lib/rpminstall.c:292
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:388
+#: lib/rpminstall.c:390
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:440
+#: lib/rpminstall.c:444
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:446
+#: lib/rpminstall.c:450
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:458 lib/rpminstall.c:693
+#: lib/rpminstall.c:462 lib/rpminstall.c:697
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:494
+#: lib/rpminstall.c:498
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:512
+#: lib/rpminstall.c:516
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:535
+#: lib/rpminstall.c:539
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:558
+#: lib/rpminstall.c:562
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:628
+#: lib/rpminstall.c:632
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:656
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:683
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:685
+#: lib/rpminstall.c:689
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -2818,36 +2826,36 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:247
+#: lib/transaction.c:244
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:886
+#: lib/transaction.c:883
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/verify.c:242
+#: lib/verify.c:243
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr "í pakkanum eru engir notandalistar (þetta ætti aldrei að koma fyrir)\n"
 
-#: lib/verify.c:263
+#: lib/verify.c:264
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr "í pakkanum eru engir hópalistar (þetta ætti aldrei að koma fyrir)\n"
 
-#: lib/verify.c:420
+#: lib/verify.c:421
 #, c-format
 msgid "missing    %s"
 msgstr "vantar     %s"
 
-#: lib/verify.c:517
-#, c-format
-msgid "Unsatisfied dependencies for %s-%s-%s: "
+#: lib/verify.c:518
+#, fuzzy, c-format
+msgid "Unsatisifed dependencies for %s:"
 msgstr "Óuppfyllt pakkaskilyrði fyrir %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:556
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
