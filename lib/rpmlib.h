@@ -184,7 +184,8 @@ extern const int rpmTagTableSize;
 #define RPMVAR_FTPPORT			32
 #define RPMVAR_NETSHAREDPATH		33
 #define RPMVAR_DEFAULTDOCDIR		34
-#define RPMVAR_LASTVAR	                35 /* IMPORTANT to keep right! */
+#define RPMVAR_FIXPERMS			35
+#define RPMVAR_LASTVAR	                36 /* IMPORTANT to keep right! */
 
 char *rpmGetVar(int var);
 int rpmGetBooleanVar(int var);

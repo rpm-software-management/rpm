@@ -76,6 +76,7 @@ struct rpmoption optionTable[] = {
     { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
     { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
+    { "fixperms",		RPMVAR_FIXPERMS,		0 },
     { "ftpport",		RPMVAR_FTPPORT,			0 },
     { "ftpproxy",		RPMVAR_FTPPROXY,		0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
