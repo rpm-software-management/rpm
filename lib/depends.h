@@ -120,20 +120,37 @@ struct transactionElement {
 
 /**
  */
+typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
+			/*@out@*/ const void ** p, /*@out@*/int_32 * c)
+				/*@modifies *type, *p, *c @*/;
+
+/**
+ */
 struct transactionFileInfo_s {
   /* for all packages */
     enum rpmTransactionType type;
     enum fileActions * actions;	/*!< file disposition */
 /*@dependent@*/ struct fingerPrint_s * fps; /*!< file fingerprints */
-    Header h;			/*!< package header */
-    uint_32 * fflags;		/*!< File flags (from header) */
-    uint_32 * fsizes;		/*!< File sizes (from header) */
+    HGE_t hge;
+    Header h;			/*!< Package header */
+    const char * n;		/*!< Package name */
+    const char * v;		/*!< Package version */
+    const char * r;		/*!< Package release */
+    const uint_32 * fflags;	/*!< File flags (from header) */
+    const uint_32 * fsizes;	/*!< File sizes (from header) */
     const char ** bnl;		/*!< Base names (from header) */
     const char ** dnl;		/*!< Directory names (from header) */
     const int * dil;		/*!< Directory indices (from header) */
+    const char ** obnl;		/*!< Original Base names (from header) */
+    const char ** odnl;		/*!< Original Directory names (from header) */
+    const int * odil;		/*!< Original Directory indices (from header) */
     const char ** fmd5s;	/*!< file MD5 sums (from header) */
-    uint_16 * fmodes;		/*!< file modes (from header) */
+    const char ** flinks;	/*!< file links (from header) */
+    const uint_16 * fmodes;	/*!< file modes (from header) */
     char * fstates;		/*!< file states (from header) */
+    const char ** fuser;	/*!< file owner(s) */
+    const char ** fgroup;	/*!< file group(s) */
+    const char ** flangs;	/*!< file lang(s) */
     int fc;			/*!< No. of files. */
     int dc;			/*!< No. of directories. */
     int bnlmax;			/*!< Length (in bytes) of longest base name. */
@@ -141,7 +158,6 @@ struct transactionFileInfo_s {
     int magic;
 #define	TFIMAGIC	0x09697923
   /* these are for TR_ADDED packages */
-    const char ** flinks;	/*!< file links (from header) */
     struct availablePackage * ap;
     struct sharedFileInfo * replaced;
     uint_32 * replacedSizes;
@@ -189,6 +205,14 @@ struct problemsSet {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ */
+void loadFi(Header h, struct transactionFileInfo_s * fi);
+
+/**
+ */
+void freeFi(struct transactionFileInfo_s * fi);
 
 /* XXX lib/scriptlet.c */
 /**

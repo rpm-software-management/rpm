@@ -113,12 +113,7 @@ static int rpmInstallLoadMacros(Header h)
  */
 static /*@only@*/ fileMemory newFileMemory(void)
 {
-    fileMemory fileMem = xmalloc(sizeof(*fileMem));
-    fileMem->files = NULL;
-    fileMem->dnl = NULL;
-    fileMem->bnl = NULL;
-    fileMem->cpioNames = NULL;
-    fileMem->md5sums = NULL;
+    fileMemory fileMem = xcalloc(sizeof(*fileMem), 1);
     return fileMem;
 }
 
@@ -128,11 +123,11 @@ static /*@only@*/ fileMemory newFileMemory(void)
  */
 static void freeFileMemory( /*@only@*/ fileMemory fileMem)
 {
-    if (fileMem->files) free(fileMem->files);
     if (fileMem->dnl) free(fileMem->dnl);
     if (fileMem->bnl) free(fileMem->bnl);
     if (fileMem->cpioNames) free(fileMem->cpioNames);
     if (fileMem->md5sums) free(fileMem->md5sums);
+    if (fileMem->files) free(fileMem->files);
     free(fileMem);
 }
 
@@ -154,12 +149,6 @@ static int assembleFileList(TFI_t fi, Header h,
 	/*@out@*/ XFI_t * filesPtr,
 	int stripPrefixLength)
 {
-    enum fileActions * actions;
-    const char ** dnl, ** bnl, ** fmd5s;
-    const int_32 * dil;
-    uint_32 * fflags;
-    uint_32 * fsizes;
-    uint_16 * fmodes;
     fileMemory mem = newFileMemory();
     XFI_t files;
     XFI_t file;
@@ -180,43 +169,18 @@ static int assembleFileList(TFI_t fi, Header h,
 
     files = *filesPtr = mem->files = xcalloc(fileCount, sizeof(*mem->files));
 
-    if (fi) {
-	dnl = fi->dnl;
-	dil = fi->dil;
-	bnl = fi->bnl;
-	fmd5s = fi->fmd5s;
-	fflags = fi->fflags;
-	fmodes = fi->fmodes;
-	fsizes = fi->fsizes;
-	actions = fi->actions;
-    } else {
-	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (void **) &dnl, NULL);
-	mem->dnl = dnl;
-	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dil, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_BASENAMES,NULL, (void **) &bnl, NULL);
-	mem->bnl = bnl;
-	if (!headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
-				(void **) &fmd5s, NULL))
-	    fmd5s = NULL;
-	mem->md5sums = fmd5s;
-	headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fflags, NULL);
-	headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fmodes, NULL);
-	headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fsizes, NULL);
-	actions = NULL;
-    }
-
     for (i = 0, file = files; i < fileCount; i++, file++) {
 	file->state = RPMFILE_STATE_NORMAL;
-	file->action = (actions ? actions[i] : FA_UNKNOWN);
+	file->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
 	file->install = 1;
 
-	file->dn = dnl[dil[i]];
-	file->bn = bnl[i];
+	file->dn = fi->dnl[fi->dil[i]];
+	file->bn = fi->bnl[i];
 	file->cpioPath = mem->cpioNames[i] + stripPrefixLength;
-	file->md5sum = (fmd5s ? fmd5s[i] : NULL);
-	file->mode = fmodes[i];
-	file->size = fsizes[i];
-	file->flags = fflags[i];
+	file->md5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+	file->mode = fi->fmodes[i];
+	file->size = fi->fsizes[i];
+	file->flags = fi->fflags[i];
 
 	rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
 		    file->dn, file->bn, fileActionString(file->action));
@@ -647,10 +611,6 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi,
 					CPIO_MAP_UID | CPIO_MAP_GID;
 	    mappedFiles++;
 	}
-
-#ifdef	DYING
-	qsort(map, mappedFiles, sizeof(*map), cpioFileMapCmp);
-#endif
     }
 
     if (notify)
@@ -706,6 +666,39 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi,
     return rc;
 }
 
+static int chkdir (const char * dpath, const char * dname)
+{
+    struct stat st;
+    int rc;
+
+    if ((rc = Stat(dpath, &st)) < 0) {
+	int ut = urlPath(dpath, NULL);
+	switch (ut) {
+	case URL_IS_PATH:
+	case URL_IS_UNKNOWN:
+	    if (errno != ENOENT)
+		break;
+	    /*@fallthrough@*/
+	case URL_IS_FTP:
+	case URL_IS_HTTP:
+	    /* XXX this will only create last component of directory path */
+	    rc = Mkdir(dpath, 0755);
+	    break;
+	case URL_IS_DASH:
+	    break;
+	}
+	if (rc < 0) {
+	    rpmError(RPMERR_CREATE, _("cannot create %s %s\n"),
+			dname, dpath);
+	    return 2;
+	}
+    }
+    if ((rc = Access(dpath, W_OK))) {
+	rpmError(RPMERR_CREATE, _("cannot write to %s\n"), dpath);
+	return 2;
+    }
+    return 0;
+}
 /**
  * @param h		header
  * @param rootDir	path to top of install tree
@@ -719,118 +712,66 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 			const char ** specFilePtr,
 			rpmCallbackFunction notify, rpmCallbackData notifyData)
 {
+    TFI_t fi = xcalloc(sizeof(*fi), 1);
     const char * specFile = NULL;
     int specFileIndex = -1;
-    const char * _sourcedir = NULL;
-    const char * _specdir = NULL;
+    const char * _sourcedir = rpmGenPath(rootDir, "%{_sourcedir}", "");
+    const char * _specdir = rpmGenPath(rootDir, "%{_specdir}", "");
     int fileCount = 0;
     uint_32 * archiveSizePtr = NULL;
     fileMemory fileMem = NULL;
     XFI_t files = NULL, file;
     int i;
-    const char * currDir = NULL;
     uid_t currUid = getuid();
     gid_t currGid = getgid();
-    struct stat st;
     int rc = 0;
 
     rpmMessage(RPMMESS_DEBUG, _("installing a source package\n"));
 
-    _sourcedir = rpmGenPath(rootDir, "%{_sourcedir}", "");
-    if ((rc = Stat(_sourcedir, &st)) < 0) {
-	int ut = urlPath(_sourcedir, NULL);
-	switch (ut) {
-	case URL_IS_PATH:
-	case URL_IS_UNKNOWN:
-	    if (errno != ENOENT)
-		break;
-	    /*@fallthrough@*/
-	case URL_IS_FTP:
-	case URL_IS_HTTP:
-	    /* XXX this will only create last component of directory path */
-	    rc = Mkdir(_sourcedir, 0755);
-	    break;
-	case URL_IS_DASH:
-	    break;
-	}
-	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create sourcedir %s\n"),
-			_sourcedir);
-	    rc = 2;
-	    goto exit;
-	}
-    }
-    if ((rc = Access(_sourcedir, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %s\n"), _sourcedir);
+    rc = chkdir(_sourcedir, "sourcedir");
+    if (rc) {
 	rc = 2;
 	goto exit;
     }
-    rpmMessage(RPMMESS_DEBUG, _("sources in: %s\n"), _sourcedir);
 
-    _specdir = rpmGenPath(rootDir, "%{_specdir}", "");
-    if ((rc = Stat(_specdir, &st)) < 0) {
-	int ut = urlPath(_specdir, NULL);
-	switch (ut) {
-	case URL_IS_PATH:
-	case URL_IS_UNKNOWN:
-	    if (errno != ENOENT)
-		break;
-	    /*@fallthrough@*/
-	case URL_IS_FTP:
-	case URL_IS_HTTP:
-	    /* XXX this will only create last component of directory path */
-	    rc = Mkdir(_specdir, 0755);
-	    break;
-	case URL_IS_DASH:
-	    break;
-	}
-	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create specdir %s\n"), _specdir);
-	    rc = 2;
-	    goto exit;
-	}
-    }
-    if ((rc = Access(_specdir, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %s\n"), _specdir);
+    rc = chkdir(_specdir, "specdir");
+    if (rc) {
 	rc = 2;
 	goto exit;
     }
-    rpmMessage(RPMMESS_DEBUG, _("spec file in: %s\n"), _specdir);
 
-    if (h != NULL && headerIsEntry(h, RPMTAG_BASENAMES)) {
-	/* we can't remap v1 packages */
-	assembleFileList(NULL, h, &fileMem, &fileCount, &files, 0);
+    loadFi(h, fi);
 
-	for (i = 0, file = files; i < fileCount; i++, file++) {
-	    file->uid = currUid;
-	    file->gid = currGid;
-	}
+    assembleFileList(fi, h, &fileMem, &fileCount, &files, 0);
 
-	if (headerIsEntry(h, RPMTAG_COOKIE))
-	    for (i = 0, file = files; i < fileCount; i++, file++)
+    for (i = 0, file = files; i < fileCount; i++, file++) {
+	file->uid = currUid;
+	file->gid = currGid;
+    }
+
+    if (headerIsEntry(h, RPMTAG_COOKIE))
+	for (i = 0, file = files; i < fileCount; i++, file++)
 		if (file->flags & RPMFILE_SPECFILE) break;
 
-	if (i == fileCount) {
-	    /* find the spec file by name */
-	    for (i = 0, file = files; i < fileCount; i++, file++) {
+    if (i == fileCount) {
+	/* find the spec file by name */
+	for (i = 0, file = files; i < fileCount; i++, file++) {
 		const char * t = file->cpioPath;
 		t += strlen(file->cpioPath) - 5;
 		if (!strcmp(t, ".spec")) break;
-	    }
 	}
+    }
 
-	if (i < fileCount) {
-	    char *t = alloca(strlen(_specdir) + strlen(file->cpioPath) + 5);
-	    (void)stpcpy(stpcpy(t, _specdir), "/");
-	    file->dn = t;
-	    file->bn = file->cpioPath;
-	    specFileIndex = i;
-	} else {
-	    rpmError(RPMERR_NOSPEC,
-		_("source package contains no .spec file\n"));
-	    rc = 2;
-	    goto exit;
-	}
+    if (i < fileCount) {
+	char *t = alloca(strlen(_specdir) + strlen(file->cpioPath) + 5);
+	(void)stpcpy(stpcpy(t, _specdir), "/");
+	file->dn = t;
+	file->bn = file->cpioPath;
+	specFileIndex = i;
+    } else {
+	rpmError(RPMERR_NOSPEC, _("source package contains no .spec file\n"));
+	rc = 2;
+	goto exit;
     }
 
     if (notify)
@@ -840,16 +781,20 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 			    (void **) &archiveSizePtr, NULL))
 	archiveSizePtr = NULL;
 
-    currDir = currentDirectory();
-    Chdir(_sourcedir);
-    if (installArchive(NULL, NULL, fd, fileCount > 0 ? files : NULL,
+    {	const char * currDir = currentDirectory();
+	Chdir(_sourcedir);
+	rc = installArchive(NULL, NULL, fd, fileCount > 0 ? files : NULL,
 			  fileCount, notify, notifyData, NULL, h,
 			  specFileIndex >= 0 ? NULL : &specFile,
-			  archiveSizePtr ? *archiveSizePtr : 0)) {
-	rc = 2;
-	goto exit;
+			  archiveSizePtr ? *archiveSizePtr : 0);
+
+	Chdir(currDir);
+	free((void *)currDir);
+	if (rc) {
+	    rc = 2;
+	    goto exit;
+	}
     }
-    Chdir(currDir);
 
     if (specFileIndex == -1) {
 	char * cSpecFile;
@@ -900,8 +845,11 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
     rc = 0;
 
 exit:
+    if (fi) {
+	freeFi(fi);
+	free(fi);
+    }
     if (fileMem)	freeFileMemory(fileMem);
-    if (currDir)	free((void *)currDir);
     if (_specdir)	free((void *)_specdir);
     if (_sourcedir)	free((void *)_sourcedir);
     return rc;

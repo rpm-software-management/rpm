@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-22 14:07-0500\n"
+"POT-Creation-Date: 2001-01-23 11:02-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2517,7 +2517,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1015 lib/install.c:396
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:360
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2602,17 +2602,17 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:221
+#: lib/install.c:185
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/install.c:247
+#: lib/install.c:211
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/install.c:254
+#: lib/install.c:218
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
@@ -2620,90 +2620,75 @@ msgstr ""
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:688
+#: lib/install.c:648
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/install.c:689
+#: lib/install.c:649
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:737
-msgid "installing a source package\n"
-msgstr ""
-
-#: lib/install.c:757
+#: lib/install.c:691
 #, c-format
-msgid "cannot create sourcedir %s\n"
+msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/install.c:764 lib/install.c:794
+#: lib/install.c:697
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/install.c:768
-#, c-format
-msgid "sources in: %s\n"
+#: lib/install.c:729
+msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:788
-#, c-format
-msgid "cannot create specdir %s\n"
-msgstr ""
-
-#: lib/install.c:798
-#, c-format
-msgid "spec file in: %s\n"
-msgstr ""
-
-#: lib/install.c:830 lib/install.c:860
+#: lib/install.c:772 lib/install.c:805
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:880
+#: lib/install.c:825
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:882 lib/install.c:1152 lib/uninstall.c:43
+#: lib/install.c:827 lib/install.c:1100 lib/uninstall.c:43
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/install.c:977
+#: lib/install.c:925
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:1016
+#: lib/install.c:964
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:1057
+#: lib/install.c:1005
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1062
+#: lib/install.c:1010
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1069
+#: lib/install.c:1017
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
-#: lib/install.c:1106
+#: lib/install.c:1054
 #, c-format
 msgid "%s%s created as %s\n"
 msgstr ""
 
-#: lib/install.c:1147
+#: lib/install.c:1095
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/install.c:1232
+#: lib/install.c:1180
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3687,46 +3672,46 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:483
+#: lib/transaction.c:558
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:486
+#: lib/transaction.c:561
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/transaction.c:489
+#: lib/transaction.c:564
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/transaction.c:560
+#: lib/transaction.c:638
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:609
+#: lib/transaction.c:687
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:616
+#: lib/transaction.c:694
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:688
+#: lib/transaction.c:766
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:693
+#: lib/transaction.c:771
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:817
+#: lib/transaction.c:895
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

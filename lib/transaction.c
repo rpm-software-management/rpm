@@ -64,13 +64,23 @@ struct diskspaceInfo {
 #define	XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
 
-static void loadFi(TFI_t fi)
+void loadFi(Header h, TFI_t fi)
 {
+    HGE_t hge;
     int len, i;
     
-    if (!headerGetEntry(fi->h, RPMTAG_BASENAMES, NULL,
-			     (void **) &fi->bnl, &fi->fc))
-    {
+    /* XXX avoid gcc noise on pointer (4th arg) cast(s) */
+    hge = (fi->type == TR_ADDED)
+	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
+    fi->hge = hge;
+
+    if (h && fi->h == NULL)	fi->h = headerLink(h);
+
+    hge(fi->h, RPMTAG_NAME, NULL, (void **) &fi->n, NULL);
+    hge(fi->h, RPMTAG_VERSION, NULL, (void **) &fi->v, NULL);
+    hge(fi->h, RPMTAG_RELEASE, NULL, (void **) &fi->r, NULL);
+
+    if (!hge(fi->h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
 	fi->dc = 0;
 	fi->fc = 0;
 	fi->dnl = NULL;
@@ -83,12 +93,51 @@ static void loadFi(TFI_t fi)
 	return;
     }
 
-    headerGetEntry(fi->h, RPMTAG_DIRINDEXES, NULL, (void **)&fi->dil, NULL);
-    headerGetEntry(fi->h, RPMTAG_DIRNAMES, NULL, (void **)&fi->dnl, &fi->dc);
-    headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL, (void **)&fi->fmodes, NULL);
-    headerGetEntry(fi->h, RPMTAG_FILEFLAGS, NULL, (void **)&fi->fflags, NULL);
-    headerGetEntry(fi->h, RPMTAG_FILESIZES, NULL, (void **)&fi->fsizes, NULL);
-    headerGetEntry(fi->h, RPMTAG_FILESTATES, NULL, (void **)&fi->fstates, NULL);
+    hge(fi->h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
+    hge(fi->h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
+    hge(fi->h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
+    hge(fi->h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
+    hge(fi->h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
+    hge(fi->h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
+
+    /* actions is initialized earlier for added packages */
+    if (fi->actions == NULL)
+	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+
+    switch (fi->type) {
+    case TR_ADDED:
+	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
+	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
+	hge(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
+
+	/* 0 makes for noops */
+	fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
+
+	break;
+    case TR_REMOVED:
+	fi->n = xstrdup(fi->n);
+	fi->v = xstrdup(fi->v);
+	fi->r = xstrdup(fi->r);
+	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
+	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
+	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
+				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
+	fi->fflags = memcpy(xmalloc(fi->fc * sizeof(*fi->fflags)),
+				fi->fflags, fi->fc * sizeof(*fi->fflags));
+	fi->fmodes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmodes)),
+				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
+	/* XXX there's a tedious segfault here for some version(s) of rpm */
+	if (fi->fstates)
+	    fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
+				fi->fstates, fi->fc * sizeof(*fi->fstates));
+	else
+	    fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
+	fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
+				fi->dil, fi->fc * sizeof(*fi->dil));
+	headerFree(fi->h);
+	fi->h = NULL;
+	break;
+    }
 
     fi->dnlmax = -1;
     for (i = 0; i < fi->dc; i++) {
@@ -105,7 +154,7 @@ static void loadFi(TFI_t fi)
     return;
 }
 
-static void freeFi(TFI_t fi)
+void freeFi(TFI_t fi)
 {
 	if (fi->h) {
 	    headerFree(fi->h); fi->h = NULL;
@@ -121,7 +170,15 @@ static void freeFi(TFI_t fi)
 	}
 	if (fi->bnl) {
 	    free(fi->bnl); fi->bnl = NULL;
+	}
+	if (fi->dnl) {
 	    free(fi->dnl); fi->dnl = NULL;
+	}
+	if (fi->obnl) {
+	    free(fi->obnl); fi->obnl = NULL;
+	}
+	if (fi->odnl) {
+	    free(fi->odnl); fi->odnl = NULL;
 	}
 	if (fi->flinks) {
 	    free(fi->flinks); fi->flinks = NULL;
@@ -129,26 +186,44 @@ static void freeFi(TFI_t fi)
 	if (fi->fmd5s) {
 	    free(fi->fmd5s); fi->fmd5s = NULL;
 	}
+	if (fi->fuser) {
+	    free(fi->fuser); fi->fuser = NULL;
+	}
+	if (fi->fgroup) {
+	    free(fi->fgroup); fi->fgroup = NULL;
+	}
+	if (fi->flangs) {
+	    free(fi->flangs); fi->flangs = NULL;
+	}
 
 	switch (fi->type) {
+	case TR_ADDED:
+	    break;
 	case TR_REMOVED:
+	    if (fi->n) {
+		free((void *)fi->n); fi->n = NULL;
+	    }
+	    if (fi->v) {
+		free((void *)fi->v); fi->v = NULL;
+	    }
+	    if (fi->r) {
+		free((void *)fi->r); fi->r = NULL;
+	    }
 	    if (fi->fsizes) {
-		free(fi->fsizes); fi->fsizes = NULL;
+		free((void *)fi->fsizes); fi->fsizes = NULL;
 	    }
 	    if (fi->fflags) {
-		free(fi->fflags); fi->fflags = NULL;
+		free((void *)fi->fflags); fi->fflags = NULL;
 	    }
 	    if (fi->fmodes) {
-		free(fi->fmodes); fi->fmodes = NULL;
+		free((void *)fi->fmodes); fi->fmodes = NULL;
 	    }
 	    if (fi->fstates) {
-		free(fi->fstates); fi->fstates = NULL;
+		free((void *)fi->fstates); fi->fstates = NULL;
 	    }
 	    if (fi->dil) {
 		free((void *)fi->dil); fi->dil = NULL;
 	    }
-	    break;
-	case TR_ADDED:
 	    break;
 	}
 }
@@ -523,13 +598,16 @@ static Header relocateFileList(const rpmTransactionSet ts,
 	headerFreeData(validRelocations, validType);
     }
 
-    headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, 
-		   &fileCount);
-    headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, 
-		   &dirCount);
-    headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
-    headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fModes, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
+				(const void **) &baseNames, &fileCount);
+    headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
+				(const void **) &dirIndexes, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
+				(const void **) &dirNames, &dirCount);
+    headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
+				(const void **) &fFlags, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
+				(const void **) &fModes, NULL);
 
     skipDirList = alloca(dirCount * sizeof(*skipDirList));
     memset(skipDirList, 0, dirCount * sizeof(*skipDirList));
@@ -1253,13 +1331,13 @@ static int ensureOlder(struct availablePackage * alp, Header old,
     return rc;
 }
 
-static void skipFiles(TFI_t fi, int noDocs)
+static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 {
-    int i;
+    int noDocs = (ts->transFlags & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
-    const char ** fileLangs;
     const char ** languages;
     const char * s;
+    int i;
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
@@ -1270,9 +1348,6 @@ static void skipFiles(TFI_t fi, int noDocs)
 	free((void *)tmpPath);
     }
 
-    if (!headerGetEntry(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs,
-			NULL))
-	fileLangs = NULL;
 
     s = rpmExpand("%{_install_langs}", NULL);
     if (!(s && *s != '%')) {
@@ -1319,12 +1394,12 @@ static void skipFiles(TFI_t fi, int noDocs)
 	/*
 	 * Skip i18n language specific files.
 	 */
-	if (fileLangs && languages && *fileLangs[i]) {
+	if (fi->flangs && languages && *fi->flangs[i]) {
 	    const char **lang, *l, *le;
 	    for (lang = languages; *lang; lang++) {
 		if (!strcmp(*lang, "all"))
 		    break;
-		for (l = fileLangs[i]; *l; l = le) {
+		for (l = fi->flangs[i]; *l; l = le) {
 		    for (le = l; *le && *le != '|'; le++)
 			;
 		    if ((le-l) > 0 && !strncmp(*lang, l, (le-l)))
@@ -1347,7 +1422,9 @@ static void skipFiles(TFI_t fi, int noDocs)
     }
 
     if (netsharedPaths) freeSplitString(netsharedPaths);
-    if (fileLangs) free(fileLangs);
+    if (fi->flangs) {
+	free(fi->flangs); fi->flangs = NULL;
+    }
     if (languages) freeSplitString((char **)languages);
 }
 
@@ -1530,12 +1607,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	preTrans = NULL;
 	preTransCount = 0;
 
+	fi->type = ts->order[oc].type;
 	switch (ts->order[oc].type) {
 	case TR_ADDED:
-	    fi->type = TR_ADDED;
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + i;
 	    fi->ap = alp;
+	    fi->record = 0;
 	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_BASENAMES, NULL,
 					 NULL, &fi->fc)) {
 		fi->h = headerLink(alp->h);
@@ -1546,10 +1624,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    /* Allocate file actions (and initialize to FA_UNKNOWN) */
 	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 	    hdrs[i] = relocateFileList(ts, alp, alp->h, fi->actions);
-	    fi->h = headerLink(hdrs[i]);
+	    loadFi(hdrs[i], fi);
+
+	    /* Skip netshared paths, not our i18n files, and excluded docs */
+	    skipFiles(ts, fi);
 	    break;
 	case TR_REMOVED:
-	    fi->type = TR_REMOVED;
 	    fi->ap = alp = NULL;
 	    fi->record = ts->order[oc].u.removed.dboffset;
 	    {	rpmdbMatchIterator mi;
@@ -1564,55 +1644,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		/* ACK! */
 		continue;
 	    }
+	    /* XXX header arg unused. */
+	    loadFi(fi->h, fi);
 	    break;
 	}
 
-	loadFi(fi);
-	if (fi->fc == 0)
-	    continue;
-
-	/* actions is initialized earlier for added packages */
-	if (fi->actions == NULL)
-	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-
-	switch (ts->order[oc].type) {
-	case TR_ADDED:
-	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL,
-				    (const void **) &fi->fmd5s, NULL);
-	    headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL,
-				    (const void **) &fi->flinks, NULL);
-
-	    /* 0 makes for noops */
-	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
-
-	    /* Skip netshared paths, not our i18n files, and excluded docs */
-	    skipFiles(fi, ts->transFlags & RPMTRANS_FLAG_NODOCS);
-	    break;
-	case TR_REMOVED:
-	    headerGetEntry(fi->h, RPMTAG_FILEMD5S, NULL,
-				    (void **) &fi->fmd5s, NULL);
-	    headerGetEntry(fi->h, RPMTAG_FILELINKTOS, NULL,
-				    (void **) &fi->flinks, NULL);
-	    fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
-				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
-	    fi->fflags = memcpy(xmalloc(fi->fc * sizeof(*fi->fflags)),
-				fi->fflags, fi->fc * sizeof(*fi->fflags));
-	    fi->fmodes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmodes)),
-				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
-	    /* XXX there's a tedious segfault here for some version(s) of rpm */
-	    if (fi->fstates)
-		fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
-				fi->fstates, fi->fc * sizeof(*fi->fstates));
-	    else
-		fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
-	    fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
-				fi->dil, fi->fc * sizeof(*fi->dil));
-	    headerFree(fi->h);
-	    fi->h = NULL;
-	    break;
-	}
-
-        fi->fps = xmalloc(sizeof(*fi->fps) * fi->fc);
+	if (fi->fc)
+	    fi->fps = xmalloc(sizeof(*fi->fps) * fi->fc);
     }
 
     /* Open all database indices before installing. */

@@ -160,9 +160,9 @@ static void mapFree(const void * this) {
     return;
 }
 
-static void mapFreeIterator(/*@only@*/ void * this) {
+static void mapFreeIterator(/*@only@*/ const void * this) {
     if (this)
-	free(this);
+	free((void *)this);
 }
 
 static void * mapInitIterator(const void * this, int numMappings) {
@@ -1230,7 +1230,7 @@ int cpioBuildArchive(FD_t cfd, const void * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, const char ** failedFile)
 {
-    void * mapi = mapInitIterator(mappings, numMappings);
+    const void * mapi = mapInitIterator(mappings, numMappings);
     const void * map;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct cpioCrcPhysicalHeader hdr;
