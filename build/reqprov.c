@@ -110,9 +110,12 @@ static void parseFileForProv(char *f, struct PackageRec *p)
 	soname[0] = '\0';
 	fgets(soname, sizeof(soname)-1, pipe);
 	pclose(pipe);
-	if ((len = strlen(soname))) {
+	/* length 1 lines are empty */
+	if ((len = strlen(soname)) > 1) {
 	    soname[len-1] = '\0';
-	    addReqProv(p, REQUIRE_PROVIDES, soname, NULL);
+	    /* Skip "_end" results */
+	    if (strcmp(soname, "_end"))
+		addReqProv(p, REQUIRE_PROVIDES, soname, NULL);
 	}
     }
 }
@@ -191,8 +194,9 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     writeBytesLeft = 0;
     while (count--) {
         s = *f++;
-        writeBytesLeft += strlen(s) + 1;
-        appendLineStringBuf(writeBuff, s);
+	/* We skip the leading "/" (already normalized) */
+        writeBytesLeft += strlen(s);
+        appendLineStringBuf(writeBuff, s + 1);
 	parseFileForProv(s, p);
     }
     writePtr = getStringBuf(writeBuff);
