@@ -15,6 +15,7 @@
 #include "messages.h"
 #include "rpmlib.h"
 #include "rpmerr.h"
+#include "misc.h"
 
 static void parseFileForProv(char *f, struct PackageRec *p);
 
@@ -105,7 +106,7 @@ static void parseFileForProv(char *f, struct PackageRec *p)
 
 int generateAutoReqProv(Header header, struct PackageRec *p)
 {
-    char **f, *s, *tok;
+    char **f, **fsave, *s, *tok;
     int count;
     int lddPID;
     int lddDead;
@@ -234,8 +235,12 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 
     freeStringBuf(writeBuff);
     s = getStringBuf(readBuff);
-    while (*s) {
-	if (isspace(*s)) {
+    f = fsave = splitString(s, strlen(s), '\n');
+    freeStringBuf(readBuff);
+
+    while (*f) {
+	s = *f;
+	if (isspace(*s) && strstr(s, "=>")) {
 	    while (isspace(*s)) {
 		s++;
 	    }
@@ -247,19 +252,15 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 	    } else {
 		/* ACK! */
 		error(RPMERR_LDD, "ldd is babbling: %s", tok);
+		free(fsave);
 		return 1;
 	    }
-	    s++;
 	}
-	while (*s && *s != '\n') {
-	    s++;
-	}
-	if (*s) {
-	    s++;
-	}
+
+	f++;
     }
-    freeStringBuf(readBuff);
     
+    free(fsave);
     return 0;
 }
 
