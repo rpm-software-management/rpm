@@ -27,7 +27,7 @@ WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS) -I$(srcdir) -I$(srcdir)/lib \
 	-I$(srcdir)/build -I$(srcdir)/misc -I$(srcdir)/.. -I$(srcdir)/../lib \
 	-I$(srcdir)/../build -I$(srcdir)/../misc -I/usr/include \
-	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\"
+	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DVERSION=\"$(VERSION)\" 
 LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L../lib -L../build -L../misc
 AR = ar r
 RANLIB = ranlib
@@ -67,7 +67,7 @@ rpm2cpio: lib/librpm.a rpm2cpio.o
 	$(CC) -o rpm2cpio $(LDFLAGS) rpm2cpio.o $(LOADLIBES) 
 
 rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
-	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" -DVERSION=\"$(VERSION)\" -c rpm.c
+	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" -c rpm.c
 
 # these rules should be in here, but they drive me batty
 #Makefile: Makefile.in misc/Makefile.in lib/Makefile.in build/Makefile.in \
