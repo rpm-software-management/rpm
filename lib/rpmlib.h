@@ -229,9 +229,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix,
 		      char * netsharedPath);
 int rpmVersionCompare(Header first, Header second);
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
-int rpmVerifyFile(char * prefix, Header h, int filenum, int * result);
-int rpmVerifyScript(char * root, Header h, int err);
 int rpmdbRebuild(char * prefix);
+
+int rpmVerifyFile(char * prefix, Header h, int filenum, int * result, 
+		  int omitMask);
+int rpmVerifyScript(char * root, Header h, int err);
 
 typedef struct rpmDependencyCheck * rpmDependencies;
 

@@ -21,7 +21,8 @@
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
 			                 "/usr/X11R6/bin\nexport PATH\n";
 
-int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
+int rpmVerifyFile(char * prefix, Header h, int filenum, int * result, 
+		  int omitMask) {
     char ** fileList, ** md5List, ** linktoList;
     int_32 * verifyFlags, flags;
     int_32 * sizeList, * mtimeList;
@@ -82,6 +83,9 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
     else 
 	flags &= ~(RPMVERIFY_LINKTO);
+
+    /* Don't verify any features in omitMask */
+    flags &= ~omitMask;
 
     if (flags & RPMVERIFY_MD5) {
 	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &md5List, &count);
