@@ -5,6 +5,7 @@
 
 #include "rpmdb.h"
 
+/** */
 int rpmdbRebuild(const char * rootdir)
 {
     rpmdb olddb, newdb;
@@ -50,12 +51,16 @@ int rpmdbRebuild(const char * rootdir)
     if (!access(newrootdbpath, F_OK)) {
 	rpmError(RPMERR_MKDIR, _("temporary database %s already exists"),
 	      newrootdbpath);
+	rc = 1;
+	goto exit;
     }
 
     rpmMessage(RPMMESS_DEBUG, _("creating directory: %s\n"), newrootdbpath);
     if (Mkdir(newrootdbpath, 0755)) {
 	rpmError(RPMERR_MKDIR, _("error creating directory %s: %s"),
 	      newrootdbpath, strerror(errno));
+	rc = 1;
+	goto exit;
     }
 
     rpmMessage(RPMMESS_DEBUG, _("opening old database\n"));
