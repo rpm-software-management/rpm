@@ -3,6 +3,7 @@
 
 /* This is the *only* module users of librpmbuild should need to include */
 #include "rpmlib.h"
+#include "rpmmacro.h"
 
 /* and it shouldn't need these :-( */
 #include "stringbuf.h"
