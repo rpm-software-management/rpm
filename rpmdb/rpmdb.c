@@ -1982,7 +1982,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
     if (dbi->dbi_api == 1) uh = _free(uh);
 
     /* Did the header load correctly? */
-    if (mi->mi_h == NULL) {
+    if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
 	rpmError(RPMERR_BADHEADER,
 		_("rpmdb: damaged header instance #%u retrieved, skipping.\n"),
 		mi->mi_offset);
