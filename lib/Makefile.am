@@ -18,7 +18,7 @@ EXTRA_DIST = getdate.y
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h \
-	rpmal.h rpmds.h rpmfi.h rpmps.h rpmte.h rpmts.h stringbuf.h
+	rpmal.h rpmds.h rpmfi.h rpmps.h rpmsx.h rpmte.h rpmts.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h
 
@@ -34,8 +34,8 @@ librpm_la_SOURCES = \
 	manifest.c misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpminstall.c \
-	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
-	signature.c stringbuf.c transaction.c \
+	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
+	rpmvercmp.c signature.c stringbuf.c transaction.c \
 	verify.c
 librpm_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -77,10 +77,6 @@ BUILT_SOURCES = getdate.c # rpmlib.lcd
 #tds_SOURCES =	tds.c
 #tds_LDFLAGS =	@LDFLAGS_STATIC@ ./librpm.la
 
-noinst_PROGRAMS = setfiles
-setfiles_SOURCES =	setfiles.c
-setfiles_LDFLAGS =	@LDFLAGS_STATIC@ -lselinux $(top_builddir)/popt/libpopt.la # ./librpm.la
-
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
 
@@ -92,12 +88,14 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
-th: th.c librpm.la
-	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
+setfiles: setfiles.o
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
+	-lselinux \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la
+	
 #tds: tds.c librpm.la
 #	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-#
 
 trb: trb.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
@@ -107,6 +105,12 @@ tthread: tthread.o librpm.la
 
 tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
 	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
+
+tre: tre.o
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
+	-lselinux \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la
 
 tcpu: tcpu.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
