@@ -763,8 +763,7 @@ byteswap(struct magic *m, uint32_t nmagic)
  */
 static char *
 mkdbname(const char *fn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@*/
 {
 	static const char ext[] = ".mgc";
 	/*@only@*/

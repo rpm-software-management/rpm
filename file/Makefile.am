@@ -1,31 +1,33 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-noinst_HEADERS = debug.h system.h
-
-bin_PROGRAMS = file
-
-data_DATA = magic magic.mime magic.mgc magic.mime.mgc
-
-MAGIC	 = @datadir@/magic
-CPPFLAGS = -DMAGIC='"$(MAGIC)"'
-
-if FSECT5
-man_MAGIC = magic.5
-else
-man_MAGIC = magic.4
-endif
-fsect = @fsect@
-man_MANS = file.1 $(man_MAGIC)
-
-file_SOURCES = file.c apprentice.c fsmagic.c softmagic.c ascmagic.c \
-	compress.c is_tar.c readelf.c print.c \
-	file.h names.h patchlevel.h readelf.h tar.h
-#file_LDFLAGS = -all-static
-
 EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime \
 	Localstuff Header $(magic_FRAGMENTS) file.man magic.man
 
 BUILT_SOURCES = $(man_MANS) magic magic.mgc magic.mime.mgc
+
+pkgincdir =	@includedir@/fmagic
+pkginc_HEADERS = file.h
+
+noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h
+
+lib_LTLIBRARIES = libfmagic.la
+libfmagic_la_SOURCES = \
+	apprentice.c ascmagic.c fsmagic.c compress.c is_tar.c \
+	print.c readelf.c softmagic.c
+
+bin_PROGRAMS =	file
+file_SOURCES =	file.c
+file_LDADD =	libfmagic.la
+
+data_DATA = magic magic.mime magic.mgc magic.mime.mgc
+
+man_MAGIC = magic.@fsect@
+man_MANS = file.1 $(man_MAGIC)
+
+MAGIC	 = @datadir@/magic
+CPPFLAGS = -DMAGIC='"$(MAGIC)"'
+
+fsect = @fsect@
 
 magic: Header Localstuff $(magic_FRAGMENTS)
 	cat $(srcdir)/Header $(srcdir)/Localstuff > $@
@@ -217,5 +219,5 @@ Magdir/zyxel
 
 .PHONY: lclint
 lclint:
-	lclint $(DEFS) $(INCLUDES) $(file_SOURCES)
+	lclint $(DEFS) $(INCLUDES) $(file_SOURCES) $(libfmagic_la_SOURCES) $(pkginc_HEADERS) $(noinst_HEADERS)
 

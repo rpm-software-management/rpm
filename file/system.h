@@ -190,7 +190,7 @@ extern char *sys_errlist[];
 #define strtoul(a, b, c)	strtol(a, b, c)
 #endif
 
-/*@-declundef -incondefs @*/
+/*@-declundef -exportfcn -incondefs @*/
 /**
  */
 /*@mayexit@*/ /*@only@*/ /*@out@*/
@@ -216,10 +216,12 @@ void * xrealloc (/*@null@*/ /*@only@*/ void * ptr, size_t size)
 
 /**
  */
+/*@-fcnuse@*/
 /*@mayexit@*/ /*@only@*/
 char * xstrdup (const char *str)
 	/*@*/;
-/*@=declundef =incondefs @*/
+/*@=fcnuse@*/
+/*@=declundef =exportfcn=incondefs @*/
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>
@@ -247,11 +249,13 @@ extern void muntrace (void) __THROW
 #endif /* defined(__LCLINT__) */
 #endif	/* HAVE_MCHECK_H */
 
+#if !defined(__LCLINT__)
 /* Memory allocation via macro defs to get meaningful locations from mtrace() */
-#define	xmalloc(_size) 		(malloc(_size) ? : (error("out of memory"), NULL))
-#define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : (error("out of memory"), NULL))
-#define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : (error("out of memory"), NULL))
+#define	xmalloc(_size) 		(malloc(_size) ? : vmefail(0))
+#define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail(0))
+#define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail(0))
 #define	xstrdup(_str)	(strcpy(xmalloc(strlen(_str)+1), (_str)))
+#endif
 
 #if HAVE_LOCALE_H
 # include <locale.h>

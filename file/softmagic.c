@@ -1031,7 +1031,7 @@ sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 		/* and any continuations that match */
 		while (m[magindex+1].cont_level != 0 && ++magindex < nmagic) {
 			if (cont_level < m[magindex].cont_level)
-				continue;
+				/*@innercontinue@*/ continue;
 			if (cont_level > m[magindex].cont_level) {
 				/*
 				 * We're at the end of the level

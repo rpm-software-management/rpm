@@ -128,15 +128,17 @@ extern struct mlist mlist;	/* list of arrays of magic entries	*/
 /*@unchecked@*/
 extern int debug;		/* enable debugging?			*/
 /*@unchecked@*/
-extern int zflag;		/* process compressed files?		*/
+extern int bflag;		/* brief output format	 		*/
+/*@unchecked@*/
+extern int iflag;		/* Output types as mime-types		*/
+/*@unchecked@*/
+extern int kflag;		/* Keep going after the first match	*/
 /*@unchecked@*/
 extern int lflag;		/* follow symbolic links?		*/
 /*@unchecked@*/
 extern int sflag;		/* read/analyze block special files?	*/
 /*@unchecked@*/
-extern int iflag;		/* Output types as mime-types		*/
-/*@unchecked@*/
-extern int kflag;		/* Keep going after the first match	*/
+extern int zflag;		/* process compressed files?		*/
 /*@=exportlocal@*/
 
 /*@mayexit@*/
@@ -180,6 +182,19 @@ extern int   softmagic(unsigned char *buf, int nbytes)
 extern int   tryit(const char *fn, unsigned char *buf, int nb, int zfl)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies buf, fileSystem, internalState @*/;
+/**
+ */
+/*@unused@*/ /*@exits@*/ /*@only@*/
+static inline void * vmefail(/*@unused@*/ size_t nb)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+	error("out of memory");
+	/*@notreached@*/
+/*@-nullret@*/
+	return NULL;
+/*@=nullret@*/
+}
 extern int   zmagic(const char *fname, unsigned char *buf, int nbytes)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies buf, fileSystem, internalState @*/;

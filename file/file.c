@@ -32,7 +32,6 @@
 
 FILE_RCSID("@(#)Id: file.c,v 1.66 2002/07/03 19:00:41 christos Exp ")
 
-
 #ifdef S_IFLNK
 # define USAGE  "Usage: %s [-bciknsvzL] [-f namefile] [-m magicfiles] file...\n"
 #else
@@ -56,19 +55,20 @@ int os2_apptype (const char *fn, char *buf, int nb);
 /*@unchecked@*/
 	int	debug = 0; 	/* debugging 				*/
 /*@unchecked@*/
-	int	lflag = 0;	/* follow Symlinks (BSD only) 		*/
-/*@unchecked@*/
-static	int	bflag = 0;	/* brief output format	 		*/
-/*@unchecked@*/
-	int	zflag = 0;	/* follow (uncompress) compressed files */
-/*@unchecked@*/
-	int	sflag = 0;	/* read block special files		*/
+	int	bflag = 0;	/* brief output format	 		*/
 /*@unchecked@*/
 	int	iflag = 0;
 /*@unchecked@*/
-static	int	nobuffer = 0;   /* Do not buffer stdout */
-/*@unchecked@*/
 	int	kflag = 0;	/* Keep going after the first match	*/
+/*@unchecked@*/
+	int	lflag = 0;	/* follow Symlinks (BSD only) 		*/
+/*@unchecked@*/
+	int	sflag = 0;	/* read block special files		*/
+/*@unchecked@*/
+	int	zflag = 0;	/* follow (uncompress) compressed files */
+
+/*@unchecked@*/
+static	int	nobuffer = 0;   /* Do not buffer stdout */
 
 /*@unchecked@*/ /*@null@*/
 const char *magicfile = 0;	/* where the magic is		*/
@@ -79,142 +79,6 @@ static const char *default_magicfile = MAGIC;
 char *progname;		/* used throughout 			*/
 /*@unchecked@*/
 int lineno;		/* line number in the magic file	*/
-
-int
-tryit(const char *fn, unsigned char *buf, int nb, int zfl)
-{
-
-	/*
-	 * The main work is done here!
-	 * We have the file name and/or the data buffer to be identified. 
-	 */
-
-#ifdef __EMX__
-	/*
-	 * Ok, here's the right place to add a call to some os-specific
-	 * routine, e.g.
-	 */
-	if (os2_apptype(fn, buf, nb) == 1)
-	       return 'o';
-#endif
-	/* try compression stuff */
-	if (zfl && zmagic(fn, buf, nb))
-		return 'z';
-
-	/* try tests in /etc/magic (or surrogate magic file) */
-	if (softmagic(buf, nb))
-		return 's';
-
-	/* try known keywords, check whether it is ASCII */
-	if (ascmagic(buf, nb))
-		return 'a';
-
-	/* abandon hope, all ye who remain here */
-	ckfputs(iflag ? "application/octet-stream" : "data", stdout);
-		return '\0';
-}
-
-/*
- * process - process input file
- */
-void
-process(const char *inname, int wid)
-{
-	int	fd = 0;
-	static  const char stdname[] = "standard input";
-	unsigned char	buf[HOWMANY+1];	/* one extra for terminating '\0' */
-	struct stat	sb;
-	int nbytes = 0;	/* number of bytes read from a datafile */
-	char match = '\0';
-
-	if (strcmp("-", inname) == 0) {
-		if (fstat(0, &sb)<0) {
-			error("cannot fstat `%s' (%s).\n", stdname,
-			      strerror(errno));
-			/*@notreached@*/
-		}
-		inname = stdname;
-	}
-
-	if (wid > 0 && !bflag)
-	     (void) printf("%s:%*s ", inname, 
-			   (int) (wid - strlen(inname)), "");
-
-	if (inname != stdname) {
-		/*
-		 * first try judging the file based on its filesystem status
-		 */
-		if (fsmagic(inname, &sb) != 0) {
-			(void) putchar('\n');
-			return;
-		}
-
-		if ((fd = open(inname, O_RDONLY)) < 0) {
-			/* We can't open it, but we were able to stat it. */
-			if (sb.st_mode & 0002) ckfputs("writeable, ", stdout);
-			if (sb.st_mode & 0111) ckfputs("executable, ", stdout);
-			ckfprintf(stdout, "can't read `%s' (%s).\n",
-			    inname, strerror(errno));
-			return;
-		}
-	}
-
-
-	/*
-	 * try looking at the first HOWMANY bytes
-	 */
-	if ((nbytes = read(fd, (char *)buf, HOWMANY)) == -1) {
-		error("read failed (%s).\n", strerror(errno));
-		/*@notreached@*/
-	}
-
-	if (nbytes == 0)
-		ckfputs(iflag ? "application/x-empty" : "empty", stdout);
-	else {
-		buf[nbytes++] = '\0';	/* null-terminate it */
-		match = tryit(inname, buf, nbytes, zflag);
-	}
-
-#ifdef BUILTIN_ELF
-	if (match == 's' && nbytes > 5) {
-		/*
-		 * We matched something in the file, so this *might*
-		 * be an ELF file, and the file is at least 5 bytes long,
-		 * so if it's an ELF file it has at least one byte
-		 * past the ELF magic number - try extracting information
-		 * from the ELF headers that can't easily be extracted
-		 * with rules in the magic file.
-		 */
-		tryelf(fd, buf, nbytes);
-	}
-#endif
-
-	if (inname != stdname) {
-#ifdef RESTORE_TIME
-		/*
-		 * Try to restore access, modification times if read it.
-		 * This is really *bad* because it will modify the status
-		 * time of the file... And of course this will affect
-		 * backup programs
-		 */
-# ifdef USE_UTIMES
-		struct timeval  utsbuf[2];
-		utsbuf[0].tv_sec = sb.st_atime;
-		utsbuf[1].tv_sec = sb.st_mtime;
-
-		(void) utimes(inname, utsbuf); /* don't care if loses */
-# else
-		struct utimbuf  utbuf;
-
-		utbuf.actime = sb.st_atime;
-		utbuf.modtime = sb.st_mtime;
-		(void) utime(inname, &utbuf); /* don't care if loses */
-# endif
-#endif
-		(void) close(fd);
-	}
-	(void) putchar('\n');
-}
 
 /*
  * unwrap -- read a file of filenames, do each one.
@@ -320,7 +184,7 @@ main(int argc, char **argv)
 	struct stat sb;
 #define OPTSTRING	"bcdf:ikm:nsvzCL"
 #ifdef HAVE_GETOPT_H
-	int longindex;
+	int longindex = 0;
 /*@-nullassign -readonlytrans@*/
 	static struct option long_options[] =
 	{
@@ -372,7 +236,8 @@ main(int argc, char **argv)
 		magicfile = usermagic;
 	else {
 		if ((home = getenv("HOME")) != NULL) {
-			usermagic = xmalloc(strlen(home) + 8);
+			size_t nb = strlen(home) + 8;
+			usermagic = xmalloc(nb);
 			(void)strcpy(usermagic, home);
 			(void)strcat(usermagic, "/.magic");
 			if (stat(usermagic, &sb)<0) 
@@ -385,10 +250,8 @@ main(int argc, char **argv)
 #ifndef HAVE_GETOPT_H
 	while ((c = getopt(argc, argv, OPTSTRING)) != -1)
 #else
-/*@-compdef @*/
 	while ((c = getopt_long(argc, argv, OPTSTRING, long_options,
 	    &longindex)) != -1)
-/*@=compdef @*/
 #endif
 	{
 		switch (c) {
