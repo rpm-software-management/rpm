@@ -1075,7 +1075,7 @@ int packageBinaries(Spec s, char *passPhrase)
 	
 	/**** Process the file list ****/
 	
-	if (process_filelist(outHeader, pr->filelist, &size, s->name,
+	if (process_filelist(outHeader, pr->filelist, &size, nametmp,
 			     packageVersion, packageRelease, RPMLEAD_BINARY)) {
 	    return 1;
 	}
