@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-16 10:57-0500\n"
+"POT-Creation-Date: 2005-03-12 21:01-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -295,68 +295,68 @@ msgstr "нет файлов для подписи\n"
 msgid "cannot access file %s\n"
 msgstr "нет доступа к файлу %s\n"
 
-#: rpmqv.c:570
+#: rpmqv.c:571
 #, c-format
 msgid "pgp not found: "
 msgstr "pgp не найден: "
 
-#: rpmqv.c:575
+#: rpmqv.c:579
 msgid "Enter pass phrase: "
 msgstr "Введите ключевую фразу: "
 
-#: rpmqv.c:577
+#: rpmqv.c:581
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Неверная ключевая фраза\n"
 
-#: rpmqv.c:581
+#: rpmqv.c:585
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Ключевая фраза принята.\n"
 
-#: rpmqv.c:586
+#: rpmqv.c:590
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Неверная спецификация %%_signature в макрофайле.\n"
 
-#: rpmqv.c:593
+#: rpmqv.c:597
 msgid "--sign may only be used during package building"
 msgstr "--sign может быть использован только при сборке пакетов"
 
-#: rpmqv.c:610
+#: rpmqv.c:614
 #, c-format
 msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
-#: rpmqv.c:646
+#: rpmqv.c:650
 msgid "no packages files given for rebuild"
 msgstr "не заданы пакеты для пересборки"
 
-#: rpmqv.c:716
+#: rpmqv.c:720
 msgid "no spec files given for build"
 msgstr "не задан файл спецификации для сборки пакета"
 
-#: rpmqv.c:718
+#: rpmqv.c:722
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: rpmqv.c:740
+#: rpmqv.c:744
 msgid "no packages given for erase"
 msgstr "не заданы пакеты для удаления"
 
-#: rpmqv.c:780
+#: rpmqv.c:784
 msgid "no packages given for install"
 msgstr "не заданы пакеты для установки"
 
-#: rpmqv.c:797
+#: rpmqv.c:801
 msgid "no arguments given for query"
 msgstr "не заданы аргументы запроса"
 
-#: rpmqv.c:812
+#: rpmqv.c:816
 msgid "no arguments given for verify"
 msgstr "не заданы аргументы для верификации"
 
-#: rpmqv.c:827
+#: rpmqv.c:831
 msgid "no arguments given"
 msgstr "не заданы аргументы"
 
@@ -1616,7 +1616,7 @@ msgstr "ошибка создания временного файла %s\n"
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:372 lib/package.c:436 lib/package.c:504 lib/signature.c:233
+#: lib/package.c:372 lib/package.c:436 lib/package.c:513 lib/signature.c:233
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
@@ -1641,73 +1641,78 @@ msgstr ""
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
-#: lib/package.c:473
+#: lib/package.c:470
+#, c-format
+msgid "hdr RSA: BAD, not binary\n"
+msgstr ""
+
+#: lib/package.c:482
 #, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:538 lib/package.c:579 lib/package.c:913 lib/package.c:939
-#: lib/package.c:971
+#: lib/package.c:546 lib/package.c:586 lib/package.c:920 lib/package.c:946
+#: lib/package.c:978
 #, fuzzy, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 "только подписи версии 3 могут быть проверены, пропускается подпись версии %u"
 
-#: lib/package.c:666
+#: lib/package.c:673
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:670
+#: lib/package.c:677
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:678
+#: lib/package.c:685
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:687
+#: lib/package.c:694
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:701
+#: lib/package.c:708
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:714
+#: lib/package.c:721
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:783
+#: lib/package.c:790
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "пакеты версии 1 не поддерживаются этой версией RPM\n"
 
-#: lib/package.c:792
+#: lib/package.c:799
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
-#: lib/package.c:804 lib/rpmchecksig.c:229 lib/rpmchecksig.c:750
+#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:759
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/package.c:811 lib/rpmchecksig.c:236 lib/rpmchecksig.c:758
+#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:767
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
 
-#: lib/package.c:878
+#: lib/package.c:885
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: ошибка headerRead\n"
 
-#: lib/package.c:986 lib/rpmchecksig.c:116 lib/rpmchecksig.c:673
+#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:676
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
@@ -2554,7 +2559,7 @@ msgstr "ошибка makeTempFile\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: ошибка Fwrite: %s\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:732
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:741
 #, c-format
 msgid "%s: not an rpm package\n"
 msgstr "%s: это не пакет RPM\n"
@@ -2604,38 +2609,38 @@ msgstr "%s: ошибка headerRead\n"
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: ошибка headerGetEntry\n"
 
-#: lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:747
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Подписи нет (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:834
+#: lib/rpmchecksig.c:855
 #, fuzzy, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 "только подписи версии 3 могут быть проверены, пропускается подпись версии %u"
 
-#: lib/rpmchecksig.c:1000
+#: lib/rpmchecksig.c:1021
 msgid "NOT OK"
 msgstr "НЕ ОК"
 
-#: lib/rpmchecksig.c:1001 lib/rpmchecksig.c:1015
+#: lib/rpmchecksig.c:1022 lib/rpmchecksig.c:1036
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:1003 lib/rpmchecksig.c:1017
+#: lib/rpmchecksig.c:1024 lib/rpmchecksig.c:1038
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1004 lib/rpmchecksig.c:1018
+#: lib/rpmchecksig.c:1025 lib/rpmchecksig.c:1039
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:1006 lib/rpmchecksig.c:1020
+#: lib/rpmchecksig.c:1027 lib/rpmchecksig.c:1041
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1014
+#: lib/rpmchecksig.c:1035
 msgid "OK"
 msgstr "ОК"
 
@@ -3257,53 +3262,54 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:457 lib/signature.c:571 lib/signature.c:846
-#: lib/signature.c:885
+#: lib/signature.c:461 lib/signature.c:589 lib/signature.c:898
+#: lib/signature.c:937
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Невозможно выполнить %s: %s\n"
 
-#: lib/signature.c:473
+#: lib/signature.c:477
 msgid "pgp failed\n"
 msgstr "ошибка pgp\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:480
+#: lib/signature.c:484
 msgid "pgp failed to write signature\n"
 msgstr "ошибка pgp при записи подписи\n"
 
-#: lib/signature.c:486
+#: lib/signature.c:490
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:504 lib/signature.c:619
+#: lib/signature.c:508 lib/signature.c:637
 msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись\n"
 
-#: lib/signature.c:509
+#: lib/signature.c:513
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:588
-msgid "gpg failed\n"
-msgstr "ошибка gpg\n"
+#: lib/signature.c:606
+#, fuzzy, c-format
+msgid "gpg exec failed (%d)\n"
+msgstr "запуск не удался\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:595
+#: lib/signature.c:613
 msgid "gpg failed to write signature\n"
 msgstr "ошибка gpg при записи подписи\n"
 
-#: lib/signature.c:601
+#: lib/signature.c:619
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:624
+#: lib/signature.c:642
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
@@ -3313,61 +3319,58 @@ msgstr "Получено %d байт подписи GPG\n"
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: lib/signature.c:890 lib/signature.c:945
+#: lib/signature.c:942 lib/signature.c:995
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Неверная спецификация %%_signature в макрофайле\n"
 
-#: lib/signature.c:922
+#: lib/signature.c:975
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:937
+#: lib/signature.c:989
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:986
+#: lib/signature.c:1037
 msgid "Header+Payload size: "
 msgstr "размер Заголовка и Содержимого:"
 
-#: lib/signature.c:1027
+#: lib/signature.c:1078
 msgid "MD5 digest: "
 msgstr "дайджест MD5:"
 
-#: lib/signature.c:1087
+#: lib/signature.c:1138
 msgid "Header SHA1 digest: "
 msgstr "дайджест SHA1 заголовка:"
 
-#: lib/signature.c:1164
-msgid "V3 RSA/MD5 signature: "
-msgstr "подпись RSA/MD5 V3: "
-
-#: lib/signature.c:1291
+#: lib/signature.c:1217 lib/signature.c:1400
 msgid "Header "
 msgstr "Заголовок "
 
-#: lib/signature.c:1293
+#: lib/signature.c:1284
 #, fuzzy
-msgid "V4 DSA signature: "
+msgid " signature: "
 msgstr "подпись DSA V3: "
 
-#: lib/signature.c:1295
-msgid "V3 DSA signature: "
+#: lib/signature.c:1406
+#, fuzzy
+msgid " DSA signature: "
 msgstr "подпись DSA V3: "
 
-#: lib/signature.c:1377
+#: lib/signature.c:1488
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Проверка подписи: НЕПРАВИЛЬНЫЕ ПАРАМЕТРЫ\n"
 
-#: lib/signature.c:1404
+#: lib/signature.c:1519
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Контр. сумма MD5 повреждена: НЕ ПОДДЕРЖИВАЕТСЯ\n"
 
-#: lib/signature.c:1408
+#: lib/signature.c:1523
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: НЕИЗВЕСТНО (%d)\n"
@@ -4258,6 +4261,12 @@ msgstr "использовать базу данных в КАТАЛОГЕ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "gpg failed\n"
+#~ msgstr "ошибка gpg\n"
+
+#~ msgid "V3 RSA/MD5 signature: "
+#~ msgstr "подпись RSA/MD5 V3: "
 
 #, fuzzy
 #~ msgid "disable use of libneon for HTTP"
