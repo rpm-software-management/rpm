@@ -21,7 +21,6 @@ int main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY, 0644);
     }
 
-    read(fd, &buffer, RPMLEAD_SIZE);
     readLead(fd, &lead);
     hd = readHeader(fd);
 
