@@ -414,6 +414,7 @@ void compressFilelist(Header h) {
     int i;
     char * tail;
     int lastDir = -1;
+    int lastLen = -1;
 
     /* This assumes thie file list is already sorted, and begins with a
        single '/'. That assumption isn't critical, but it makes things go
@@ -436,12 +437,13 @@ void compressFilelist(Header h) {
     for (i = 0; i < fileCount; i++) {
 	tail = strrchr(files[i], '/') + 1;
 	
-	if (lastDir < 0 || 
+	if (lastDir < 0 || (lastLen != (tail - files[i])) ||
 		strncmp(dirList[lastDir], files[i], tail - files[i])) {
 	    lastDir++;
 	    dirList[lastDir] = alloca(tail - files[i] + 1);
 	    memcpy(dirList[lastDir], files[i], tail - files[i]);
 	    dirList[lastDir][tail - files[i]] = '\0';
+	    lastLen = tail - files[i];
 	} 
 
 	compDirList[i] = lastDir;
