@@ -67,8 +67,8 @@ extern const int rpmTagTableSize;
 #define RPMTAG_ROOT                     1038
 #define RPMTAG_FILEUSERNAME             1039
 #define RPMTAG_FILEGROUPNAME            1040
-#define RPMTAG_EXCLUDE                  1041
-#define RPMTAG_EXCLUSIVE                1042
+#define RPMTAG_EXCLUDE                  1041 /* not used */
+#define RPMTAG_EXCLUSIVE                1042 /* not used */
 #define RPMTAG_ICON                     1043
 #define RPMTAG_SOURCERPM                1044
 #define RPMTAG_FILEVERIFYFLAGS          1045
@@ -85,6 +85,10 @@ extern const int rpmTagTableSize;
 #define RPMTAG_DEFAULTPREFIX            1056
 #define RPMTAG_BUILDROOT                1057
 #define RPMTAG_INSTALLPREFIX		1058
+#define RPMTAG_EXCLUDEARCH              1059
+#define RPMTAG_EXCLUDEOS                1060
+#define RPMTAG_EXCLUSIVEARCH            1061
+#define RPMTAG_EXCLUSIVEOS              1062
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
