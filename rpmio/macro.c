@@ -1639,9 +1639,9 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     const char ** argv = NULL;
     char * globRoot = NULL;
 #ifdef ENABLE_NLS	
-	char * old_collate = NULL;
-	char * old_ctype = NULL;
-	char * t;
+    const char * old_collate = NULL;
+    const char * old_ctype = NULL;
+    const char * t;
 #endif
 	size_t maxb, nb;
     int i, j;
@@ -1651,14 +1651,16 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     if (rc)
 	return rc;
 #ifdef ENABLE_NLS
+/*@-branchstate@*/
 	t = setlocale(LC_COLLATE, NULL);
 	if (t)
-		old_collate = strdup(t);
+	    old_collate = xstrdup(t);
 	t = setlocale(LC_CTYPE, NULL);
 	if (t)
-		old_ctype = strdup(t);
-	setlocale(LC_COLLATE, "C");
-	setlocale(LC_CTYPE, "C");
+	    old_ctype = xstrdup(t);
+/*@=branchstate@*/
+	(void) setlocale(LC_COLLATE, "C");
+	(void) setlocale(LC_CTYPE, "C");
 #endif
 	
     if (av != NULL)
@@ -1741,14 +1743,16 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 exit:
 #ifdef ENABLE_NLS
+/*@-branchstate@*/
     if (old_collate) {
-	setlocale(LC_COLLATE, old_collate);
-	free(old_collate);
+	(void) setlocale(LC_COLLATE, old_collate);
+	old_collate = _free(old_collate);
     }
     if (old_ctype) {
-	setlocale(LC_CTYPE, old_ctype);
-	free(old_ctype);
+	(void) setlocale(LC_CTYPE, old_ctype);
+	old_ctype = _free(old_ctype);
     }
+/*@=branchstate@*/
 #endif
 	av = _free(av);
 /*@-branchstate@*/

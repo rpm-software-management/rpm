@@ -76,8 +76,8 @@ void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
  */
 int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 		/*@out@*/ const char *** argvPtr)
-	/*@globals fileSystem@*/
-	/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *argcPtr, *argvPtr, fileSystem, internalState @*/;
 
 /**
  * Expand macro into buffer.
