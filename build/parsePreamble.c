@@ -730,54 +730,55 @@ typedef struct PreambleRec_s {
     rpmTag tag;
     int len;
     int multiLang;
+    int obsolete;
 /*@observer@*/ /*@null@*/
     const char * token;
 } * PreambleRec;
 
 /*@unchecked@*/
 static struct PreambleRec_s preambleList[] = {
-    {RPMTAG_NAME,		0, 0, "name"},
-    {RPMTAG_VERSION,		0, 0, "version"},
-    {RPMTAG_RELEASE,		0, 0, "release"},
-    {RPMTAG_EPOCH,		0, 0, "epoch"},
-    {RPMTAG_EPOCH,		0, 0, "serial"},
-    {RPMTAG_SUMMARY,		0, 1, "summary"},
-    {RPMTAG_LICENSE,		0, 0, "copyright"},
-    {RPMTAG_LICENSE,		0, 0, "license"},
-    {RPMTAG_DISTRIBUTION,	0, 0, "distribution"},
-    {RPMTAG_DISTURL,		0, 0, "disturl"},
-    {RPMTAG_VENDOR,		0, 0, "vendor"},
-    {RPMTAG_GROUP,		0, 1, "group"},
-    {RPMTAG_PACKAGER,		0, 0, "packager"},
-    {RPMTAG_URL,		0, 0, "url"},
-    {RPMTAG_SOURCE,		0, 0, "source"},
-    {RPMTAG_PATCH,		0, 0, "patch"},
-    {RPMTAG_NOSOURCE,		0, 0, "nosource"},
-    {RPMTAG_NOPATCH,		0, 0, "nopatch"},
-    {RPMTAG_EXCLUDEARCH,	0, 0, "excludearch"},
-    {RPMTAG_EXCLUSIVEARCH,	0, 0, "exclusivearch"},
-    {RPMTAG_EXCLUDEOS,		0, 0, "excludeos"},
-    {RPMTAG_EXCLUSIVEOS,	0, 0, "exclusiveos"},
-    {RPMTAG_ICON,		0, 0, "icon"},
-    {RPMTAG_PROVIDEFLAGS,	0, 0, "provides"},
-    {RPMTAG_REQUIREFLAGS,	0, 1, "requires"},
-    {RPMTAG_PREREQ,		0, 1, "prereq"},
-    {RPMTAG_CONFLICTFLAGS,	0, 0, "conflicts"},
-    {RPMTAG_OBSOLETEFLAGS,	0, 0, "obsoletes"},
-    {RPMTAG_PREFIXES,		0, 0, "prefixes"},
-    {RPMTAG_PREFIXES,		0, 0, "prefix"},
-    {RPMTAG_BUILDROOT,		0, 0, "buildroot"},
-    {RPMTAG_BUILDARCHS,		0, 0, "buildarchitectures"},
-    {RPMTAG_BUILDARCHS,		0, 0, "buildarch"},
-    {RPMTAG_BUILDCONFLICTS,	0, 0, "buildconflicts"},
-    {RPMTAG_BUILDPREREQ,	0, 1, "buildprereq"},
-    {RPMTAG_BUILDREQUIRES,	0, 1, "buildrequires"},
-    {RPMTAG_AUTOREQPROV,	0, 0, "autoreqprov"},
-    {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
-    {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
-    {RPMTAG_DOCDIR,		0, 0, "docdir"},
-    {RPMTAG_RHNPLATFORM,	0, 0, "rhnplatform"},
-    {RPMTAG_DISTTAG,		0, 0, "disttag"},
+    {RPMTAG_NAME,		0, 0, 0, "name"},
+    {RPMTAG_VERSION,		0, 0, 0, "version"},
+    {RPMTAG_RELEASE,		0, 0, 0, "release"},
+    {RPMTAG_EPOCH,		0, 0, 0, "epoch"},
+    {RPMTAG_EPOCH,		0, 0, 1, "serial"},
+    {RPMTAG_SUMMARY,		0, 1, 0, "summary"},
+    {RPMTAG_LICENSE,		0, 0, 1, "copyright"},
+    {RPMTAG_LICENSE,		0, 0, 0, "license"},
+    {RPMTAG_DISTRIBUTION,	0, 0, 0, "distribution"},
+    {RPMTAG_DISTURL,		0, 0, 0, "disturl"},
+    {RPMTAG_VENDOR,		0, 0, 0, "vendor"},
+    {RPMTAG_GROUP,		0, 1, 0, "group"},
+    {RPMTAG_PACKAGER,		0, 0, 0, "packager"},
+    {RPMTAG_URL,		0, 0, 0, "url"},
+    {RPMTAG_SOURCE,		0, 0, 0, "source"},
+    {RPMTAG_PATCH,		0, 0, 0, "patch"},
+    {RPMTAG_NOSOURCE,		0, 0, 0, "nosource"},
+    {RPMTAG_NOPATCH,		0, 0, 0, "nopatch"},
+    {RPMTAG_EXCLUDEARCH,	0, 0, 0, "excludearch"},
+    {RPMTAG_EXCLUSIVEARCH,	0, 0, 0, "exclusivearch"},
+    {RPMTAG_EXCLUDEOS,		0, 0, 0, "excludeos"},
+    {RPMTAG_EXCLUSIVEOS,	0, 0, 0, "exclusiveos"},
+    {RPMTAG_ICON,		0, 0, 0, "icon"},
+    {RPMTAG_PROVIDEFLAGS,	0, 0, 0, "provides"},
+    {RPMTAG_REQUIREFLAGS,	0, 1, 0, "requires"},
+    {RPMTAG_PREREQ,		0, 1, 0, "prereq"},
+    {RPMTAG_CONFLICTFLAGS,	0, 0, 0, "conflicts"},
+    {RPMTAG_OBSOLETEFLAGS,	0, 0, 0, "obsoletes"},
+    {RPMTAG_PREFIXES,		0, 0, 0, "prefixes"},
+    {RPMTAG_PREFIXES,		0, 0, 0, "prefix"},
+    {RPMTAG_BUILDROOT,		0, 0, 0, "buildroot"},
+    {RPMTAG_BUILDARCHS,		0, 0, 0, "buildarchitectures"},
+    {RPMTAG_BUILDARCHS,		0, 0, 0, "buildarch"},
+    {RPMTAG_BUILDCONFLICTS,	0, 0, 0, "buildconflicts"},
+    {RPMTAG_BUILDPREREQ,	0, 1, 0, "buildprereq"},
+    {RPMTAG_BUILDREQUIRES,	0, 1, 0, "buildrequires"},
+    {RPMTAG_AUTOREQPROV,	0, 0, 0, "autoreqprov"},
+    {RPMTAG_AUTOREQ,		0, 0, 0, "autoreq"},
+    {RPMTAG_AUTOPROV,		0, 0, 0, "autoprov"},
+    {RPMTAG_DOCDIR,		0, 0, 0, "docdir"},
+    {RPMTAG_RHNPLATFORM,	0, 0, 1, "rhnplatform"},
+    {RPMTAG_DISTTAG,		0, 0, 0, "disttag"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0}
     /*@=nullassign@*/
@@ -810,8 +811,13 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
     for (p = preambleList; p->token != NULL; p++) {
 	if (p->token && !xstrncasecmp(spec->line, p->token, p->len))
 	    break;
+	if (p->obsolete) {
+	    rpmError(RPMERR_BADSPEC, _("Obsolete syntax: %s\n"),
+			p->token);
+	    p = NULL;
+	}
     }
-    if (p->token == NULL)
+    if (p == NULL || p->token == NULL)
 	return 1;
 
     s = spec->line + p->len;
