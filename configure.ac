@@ -165,10 +165,10 @@ a=`ls -l foo.chmodtest | awk '{print $1}'`
 rm -f foo.chmodtest
 if test "$a" = "-rwxr-xr-x"; then
     AC_MSG_RESULT(yes)
-    FIXPERMS=a+rX,g-w,o-w 
+    FIXPERMS=a+rX,u+w,g-w,o-w 
 else
     AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
-    FIXPERMS=a+r,g-w,o-w 
+    FIXPERMS=a+r,u+w,g-w,o-w 
 fi
 AC_SUBST(FIXPERMS)
 
