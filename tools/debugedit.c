@@ -1176,7 +1176,7 @@ static struct poptOption optionsTable[] = {
     { "dest-dir",  'd', POPT_ARG_STRING, &dest_dir, 0,
       "directory to rewrite base-dir into", NULL },
     { "list-file",  'l', POPT_ARG_STRING, &list_file, 0,
-      "directory to rewrite base-dir into", NULL },
+      "file where to put list of source and header file names", NULL },
       POPT_AUTOHELP
     { NULL, 0, 0, NULL, 0, NULL, NULL }
 };
