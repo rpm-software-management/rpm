@@ -68,10 +68,13 @@
 /* Define as 1 if we need myrealloc */
 #define NEED_MYREALLOC 0
 
-/* Define as 1 if chown() or chgrp() follows symlinks */
+/* Define as 1 if chown() follows symlinks and you don't have lchown() */
 #define CHOWN_FOLLOWS_SYMLINK 0
 
 /* Define as 1 if you have <sys/select.h> */
 #define HAVE_SYS_SELECT_H 0
+
+/* Define as 1 if you have lchown() */
+#define HAVE_LCHOWN 0
 
 #endif

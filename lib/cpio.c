@@ -207,7 +207,7 @@ static int setInfo(struct cpioHeader * hdr) {
 	    rc = CPIO_UTIME_FAILED;
     } else {
 	#if ! CHOWN_FOLLOWS_SYMLINK
-	    if (!getuid() && !rc && chown(hdr->path, hdr->uid, hdr->gid))
+	    if (!getuid() && !rc && lchown(hdr->path, hdr->uid, hdr->gid))
 		rc = CPIO_CHOWN_FAILED;
 	#endif
     }

@@ -58,4 +58,8 @@ extern void *myrealloc(void *, size_t);
 #include <sys/select.h>
 #endif
 
+#if ! HAVE_LCHOWN
+#define lchown chown
+#endif
+
 #endif
