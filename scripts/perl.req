@@ -112,9 +112,10 @@ sub process_file {
     # Each keyword can appear multiple times.  Don't
     #  bother with datastructures to store these strings,
     #  if we need to print it print it now.
-    
-    if ( m/^\s*\$RPM_Requires\s*=\s*["'](.*)['"]/i) {
-      foreach $_ (split(/\s+/, $1)) {
+    #
+	# Again allow for "our".
+    if ( m/^\s*(our\s+)?\$RPM_Requires\s*=\s*["'](.*)['"]/i) {
+      foreach $_ (split(/\s+/, $2)) {
 	print "$_\n";
       }
     }
