@@ -1,7 +1,7 @@
+** This file is hopelessly out of date! **
+
 Not yet implemented in 2.0:
 
-. dependencies
-. list check (-bl)
 . --where and --search
 
 New in RPM 2.0 (or previously undocumented):
