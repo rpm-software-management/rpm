@@ -1,0 +1,9 @@
+.deps
+.libs
+Makefile
+Makefile.in
+config.h.in
+db_home
+*.la
+*.lo
+*.pyc
