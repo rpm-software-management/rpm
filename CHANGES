@@ -8,6 +8,12 @@
 	- set bzip2path via lib-rpmrc/configure (Toshio Kuratomi)
 	- added finish translation (Raimo Koski)
 	- prefer db_185.h to db.h (Christopher Seawood)
+	- included updated hpux.req (Ralph Goers)
+	- added aix.req (Ralph Goers)
+	- updated hpux.prov, osf.req, osf.prov (Tim Mooney)
+	- set file states for --justdb packages to "not installed"
+	- handle missing file states properly in -e code
+	- install time wasn missing for --justdb packages
 
 2.4.109 -> 2.5:
 	- fixed return code bug in build code

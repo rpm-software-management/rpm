@@ -877,21 +877,30 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	    return 2;
 	}
 
-	if (files) {
-	    fileStates = malloc(sizeof(*fileStates) * fileCount);
-	    for (i = 0; i < fileCount; i++)
-		fileStates[i] = files[i].state;
+	fileStates = malloc(sizeof(*fileStates) * fileCount);
+	for (i = 0; i < fileCount; i++)
+	    fileStates[i] = files[i].state;
 
+	headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates, 
+			fileCount);
+
+	free(fileStates);
+	if (freeFileMem) freeFileMemory(fileMem);
+    } else if (flags & RPMINSTALL_JUSTDB) {
+	char ** fileNames;
+
+	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &fileNames,
+		           &fileCount)) {
+	    fileStates = malloc(sizeof(*fileStates) * fileCount);
+	    memset(fileStates, RPMFILE_STATE_NOTINSTALLED, fileCount);
 	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates, 
 			    fileCount);
-
 	    free(fileStates);
-	    if (freeFileMem) freeFileMemory(fileMem);
 	}
-
-	installTime = time(NULL);
-	headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
     }
+
+    installTime = time(NULL);
+    headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
 
     if (rootdir) {
 	chroot(".");

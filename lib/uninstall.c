@@ -157,8 +157,18 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 		break;
 	    }
 
-	    headerGetEntry(sech, RPMTAG_FILESTATES, &type, 
-		     (void **) &secFileStatesList, &secFileCount);
+	    if (!headerGetEntry(sech, RPMTAG_FILESTATES, &type, 
+		                (void **) &secFileStatesList, NULL)) {
+		/* This shouldn't happen, but some versions of RPM didn't
+		   implement --justdb properly, and chose to leave this stuff
+		   out. */
+		rpmMessage(RPMMESS_DEBUG, 
+			    "package is missing FILESTATES\n");
+		secFileStatesList = alloca(secFileCount);
+		memset(secFileStatesList, RPMFILE_STATE_NOTINSTALLED,
+			secFileCount);
+	    }
+
 	    headerGetEntry(sech, RPMTAG_FILEMD5S, &type, 
 		     (void **) &secFileMd5List, &secFileCount);
 	}
@@ -268,14 +278,23 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	    fnbuffer = alloca(fnbuffersize);
 	}
 
-	headerGetEntry(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, 
-		 &fileCount);
 	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5List, 
 		 &fileCount);
 	headerGetEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
 		 &fileCount);
 	headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
 		 &fileCount);
+
+	if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
+			    (void **) &fileStatesList, NULL)) {
+	    /* This shouldn't happen, but some versions of RPM didn't
+	       implement --justdb properly, and chose to leave this stuff
+	       out. */
+	    rpmMessage(RPMMESS_DEBUG, "package is missing FILESTATES\n");
+	    fileStatesList = alloca(fileCount);
+	    memset(fileStatesList, RPMFILE_STATE_NOTINSTALLED,
+		    fileCount);
+	}
 
 	fileActions = alloca(sizeof(*fileActions) * fileCount);
 	for (i = 0; i < fileCount; i++) 
