@@ -223,7 +223,7 @@ void poptFreeContext(poptContext con) {
     free(con);
 }
 
-int poptAddAlias(poptContext con, struct poptAlias newAlias) {
+int poptAddAlias(poptContext con, struct poptAlias newAlias, int flags) {
     int aliasNum = con->numAliases++;
     struct poptAlias * alias;
 
@@ -342,7 +342,7 @@ static void configLine(poptContext con, char * line) {
 	if (poptParseArgvString(line, &alias.argc, &alias.argv)) return;
 	alias.longName = opt;
 	
-	poptAddAlias(con, alias);
+	poptAddAlias(con, alias, 0);
     }
 }
 
@@ -448,7 +448,7 @@ int poptReadDefaultConfig(poptContext con, int useEnv) {
 	    if (chptr) *chptr = '\0';
 
 	    poptParseArgvString(envValue, &alias.argc, &alias.argv);
-	    poptAddAlias(con, alias);
+	    poptAddAlias(con, alias, 0);
 
 	    if (chptr)
 		envValue = chptr + 1;
@@ -458,4 +458,38 @@ int poptReadDefaultConfig(poptContext con, int useEnv) {
     }
 
     return 0;
+}
+
+char * poptBadOption(poptContext con, int flags) {
+    struct optionStackEntry * os;
+
+    if (flags & POPT_BADOPTION_NOALIAS)
+	os = con->optionStack;
+    else
+	os = con->os;
+
+    return os->argv[os->next - 1];
+}
+
+#define POPT_ERROR_NOARG	-10
+#define POPT_ERROR_BADOPT	-11
+#define POPT_ERROR_OPTSTOODEEP	-13
+#define POPT_ERROR_BADQUOTE	-15	/* only from poptParseArgString() */
+#define POPT_ERROR_ERRNO	-16	/* only from poptParseArgString() */
+
+const char * poptStrerror(const int error) {
+    switch (error) {
+      case POPT_ERROR_NOARG:
+	return "missing argument";
+      case POPT_ERROR_BADOPT:
+	return "unknown option";
+      case POPT_ERROR_OPTSTOODEEP:
+	return "aliases nested too deeply";
+      case POPT_ERROR_BADQUOTE:
+	return "error in paramter quoting";
+      case POPT_ERROR_ERRNO:
+	return strerror(errno);
+      default:
+	return "unknown error";
+    }
 }
