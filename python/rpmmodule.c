@@ -186,12 +186,15 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args)
  */
 static PyObject * errorCB = NULL;
 static PyObject * errorData = NULL;
+static PyThreadState * errorThread = NULL;
 
 /**
  */
 static void errorcb (void)
 {
     PyObject * result, * args = NULL;
+
+    PyEval_RestoreThread(errorThread);
 
     if (errorData)
 	args = Py_BuildValue("(O)", errorData);
@@ -203,6 +206,9 @@ static void errorcb (void)
 	PyErr_Print();
 	PyErr_Clear();
     }
+
+    errorThread = PyEval_SaveThread();
+
     Py_DECREF (result);
 }
 
@@ -240,6 +246,7 @@ static PyObject * errorSetCallback (PyObject * self, PyObject * args)
 
     errorCB = newCB;
     errorData = newData;
+    errorThread = PyEval_SaveThread();
     
     Py_INCREF (errorCB);
     Py_XINCREF (errorData);

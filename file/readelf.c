@@ -93,8 +93,8 @@ getu64(const fmagic fm, uint64_t value)
 			 ? getu32(fm, ph32.p_offset)	\
 			 : getu64(fm, ph64.p_offset))
 #define ph_align	(fm->cls == ELFCLASS32		\
-			 ? getu32(fm, ph32.p_align)	\
-			 : getu64(fm, ph64.p_align))
+			 ? (ph32.p_align ? getu32(fm, ph32.p_align) : 4) \
+			 : (ph64.p_align ? getu64(fm, ph64.p_align) : 4))
 #define nh_size		(fm->cls == ELFCLASS32		\
 			 ? sizeof *nh32			\
 			 : sizeof *nh64)
@@ -156,7 +156,6 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	char nbuf[BUFSIZ];
 	int bufsize;
 	size_t offset, nameoffset;
-	off_t savedoffset;
 
 	if (lseek(fm->fd, off, SEEK_SET) == -1) {
 		error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
@@ -166,10 +165,6 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
   	for ( ; num; num--) {
   		if (read(fm->fd, ph_addr, size) == -1) {
   			error(EXIT_FAILURE, 0, "read failed (%s).\n", strerror(errno));
-			/*@notreached@*/
-		}
-		if ((savedoffset = lseek(fm->fd, 0, SEEK_CUR)) == -1) {
-			error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 			/*@notreached@*/
 		}
 
@@ -297,7 +292,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					/* Content of note is always 0 */
 				}
 			}
-			if ((lseek(fm->fd, savedoffset + offset, SEEK_SET)) == -1) {
+			if ((lseek(fm->fd, ph_offset + offset, SEEK_SET)) == -1) {
 			    error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 			    /*@notreached@*/
 			}

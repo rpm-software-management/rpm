@@ -106,6 +106,8 @@
 	- add brp-strip-static-archive build root policy helper.
 	- add -lelf to rpm LDFLAGS, not LDADD, since there is no libelf.la now.
 	- fix: obscure corner case(s) with rpmvercmp (#50977).
+	- file: *really* read elf64 notes correctly.
+	- python: restore thread context on errorCB (#80744).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
