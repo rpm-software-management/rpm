@@ -108,8 +108,8 @@ main (int argc, char *argv[])
 
     dig = pgpNewDig();
 
-    mp32bzero(&dig->p);	mp32bsethex(&dig->p, fips_p);
-    mp32bzero(&dig->q);	mp32bsethex(&dig->q, fips_q);
+    mpbzero(&dig->p);	mpbsethex(&dig->p, fips_p);
+    mpbzero(&dig->q);	mpbsethex(&dig->q, fips_q);
     mpnzero(&dig->g);	mpnsethex(&dig->g, fips_g);
     mpnzero(&dig->y);	mpnsethex(&dig->y, fips_y);
     mpnzero(&dig->r);	mpnsethex(&dig->r, fips_r);
@@ -121,8 +121,8 @@ main (int argc, char *argv[])
 
 fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
-    mp32bfree(&dig->p);
-    mp32bfree(&dig->q);
+    mpbfree(&dig->p);
+    mpbfree(&dig->q);
     mpnfree(&dig->g);
     mpnfree(&dig->y);
 
@@ -167,8 +167,8 @@ fprintf(stderr, "\n    hm = [ 160]: %s\n\n", digest);
 
 fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
-    mp32bfree(&dig->p);
-    mp32bfree(&dig->q);
+    mpbfree(&dig->p);
+    mpbfree(&dig->q);
     mpnfree(&dig->g);
     mpnfree(&dig->y);
 

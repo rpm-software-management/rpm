@@ -689,7 +689,7 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* n */
-		    mp32bsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
+		    mpbsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
 		    /* Get the keyid */
 		    if (_digp) {
 			uint32* np = _dig->rsa_pk.n.modl;
@@ -722,12 +722,12 @@ fprintf(stderr, "\t     e = "),  mp32println(stderr, _dig->rsa_pk.e.size, _dig->
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* p */
-		    mp32bsethex(&_dig->p, pgpMpiHex(p));
+		    mpbsethex(&_dig->p, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     p = "),  mp32println(stderr, _dig->p.size, _dig->p.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* q */
-		    mp32bsethex(&_dig->q, pgpMpiHex(p));
+		    mpbsethex(&_dig->q, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     q = "),  mp32println(stderr, _dig->q.size, _dig->q.modl);
 		    /*@switchbreak@*/ break;
@@ -1073,8 +1073,8 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	/*@=branchstate@*/
 	dig->sha1ctx = NULL;
 
-	mp32bfree(&dig->p);
-	mp32bfree(&dig->q);
+	mpbfree(&dig->p);
+	mpbfree(&dig->q);
 	mpnfree(&dig->g);
 	mpnfree(&dig->y);
 	mpnfree(&dig->hm);
@@ -1095,7 +1095,7 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	/*@=branchstate@*/
 	dig->md5ctx = NULL;
 
-	mp32bfree(&dig->rsa_pk.n);
+	mpbfree(&dig->rsa_pk.n);
 	mpnfree(&dig->rsa_pk.e);
 	mpnfree(&dig->m);
 	mpnfree(&dig->c);

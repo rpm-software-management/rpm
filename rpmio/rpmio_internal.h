@@ -78,8 +78,8 @@ struct pgpDig_s {
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
 
     /* DSA parameters. */
-    mp32barrett p;
-    mp32barrett q;
+    mpbarrett p;
+    mpbarrett q;
     mpnumber g;
     mpnumber y;
     mpnumber hm;

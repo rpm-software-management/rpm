@@ -1,12 +1,12 @@
 #include "system.h"
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 #include "mp32.h"
 #include "popt.h"
 #include "debug.h"
 
 static int _debug = 0;
 
-static int Zmp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
+static int Zmpbinv_w(const mpbarrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
 {
 	uint32  ysize = b->size+1;
 	int ubits, vbits;
@@ -123,7 +123,7 @@ fprintf(stderr, "       D: "), mp32println(stderr, ysize, D);
 	return 1;
 }
 
-static int Ymp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
+static int Ympbinv_w(const mpbarrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
 {
 	uint32  ysize = b->size+1;
  	int k;
@@ -295,7 +295,7 @@ fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
  *  needs workspace of (6*size+6) words
  *  @note xdata and result cannot point to the same area
  */
-static int Xmp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
+static int Xmpbinv_w(const mpbarrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
 {
 	/*
 	 * Fact: if a element of Zn, then a is invertible if and only if gcd(a,n) = 1
@@ -466,7 +466,7 @@ int
 main(int argc, const char * argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
-    mp32barrett q;
+    mpbarrett q;
     mpnumber s;
     uint32 qsize;
     uint32* qtemp;
@@ -481,7 +481,7 @@ main(int argc, const char * argv[])
 	}
     }
 
-    mp32bzero(&q); mp32bsethex(&q, dsa_q);
+    mpbzero(&q); mpbsethex(&q, dsa_q);
     qsize = q.size;
     qtemp = malloc((13*qsize+13) * sizeof(*qtemp));
     qwksp = qtemp+2*qsize;
@@ -493,15 +493,15 @@ fprintf(stderr, "================================================== %d\n", i);
 	mpnzero(&s); mpnsethex(&s, dsa_s[i]);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
-	rc = Xmp32binv_w(&q, s.size, s.data, qtemp, qwksp);
+	rc = Xmpbinv_w(&q, s.size, s.data, qtemp, qwksp);
 	fprintf(stderr, "beecrypt: "); mp32println(stderr, qsize, qtemp);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
-	rc = Ymp32binv_w(&q, s.size, s.data, qtemp, qwksp);
+	rc = Ympbinv_w(&q, s.size, s.data, qtemp, qwksp);
 	fprintf(stderr, "   Knuth: "); mp32println(stderr, qsize, qtemp);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
-	rc = Zmp32binv_w(&q, s.size, s.data, qtemp, qwksp);
+	rc = Zmpbinv_w(&q, s.size, s.data, qtemp, qwksp);
 	fprintf(stderr, "   Brent: "); mp32println(stderr, qsize, qtemp);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
