@@ -10,7 +10,9 @@ const char * ftpStrerror(int ftpErrno);
 #define FTPERR_BAD_HOSTNAME          -5
 #define FTPERR_FAILED_CONNECT        -6
 #define FTPERR_FILE_IO_ERROR         -7
-#define FTPERR_UNKNOWN               -8
+#define FTPERR_PASSIVE_ERROR         -8
+#define FTPERR_FAILED_DATA_CONNECT   -9
+#define FTPERR_UNKNOWN               -100
 
 int ftpOpen(char * host, char * name, char * password);
 int ftpGetFile(int sock, char * remotename, int dest);

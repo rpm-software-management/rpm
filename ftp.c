@@ -20,13 +20,13 @@
 #include "ftp.h"
 #include "lib/messages.h"
 
-static int ftpCheckResponse(int sock);
+static int ftpCheckResponse(int sock, char ** str);
 static int ftpCommand(int sock, char * command, ...);
 static int ftpReadData(int sock, int out);
 static int getHostAddress(const char * host, struct in_addr * address);
 
-static int ftpCheckResponse(int sock) {
-    char buf[BUFFER_SIZE + 1];
+static int ftpCheckResponse(int sock, char ** str) {
+    static char buf[BUFFER_SIZE + 1];
     int bufLength = 0; 
     fd_set emptySet, readSet;
     char * chptr, * start;
@@ -62,8 +62,10 @@ static int ftpCheckResponse(int sock) {
 	start = chptr = buf;
 	if (start[3] == '-') 
 	    doesContinue = 1;
-	else
+	else {
 	    doesContinue = 0;
+	    if (str) *str = start + 4;
+	}
 
 	if (*start == '4' || *start == '5') {
 	    return FTPERR_BAD_SERVER_RESPONSE;
@@ -131,7 +133,7 @@ int ftpCommand(int sock, char * command, ...) {
         return FTPERR_SERVER_IO_ERROR;
     }
 
-    if ((rc = ftpCheckResponse(sock)))
+    if ((rc = ftpCheckResponse(sock, NULL)))
 	return rc;
 
     return 0;
@@ -189,7 +191,7 @@ int ftpOpen(char * host, char * name, char * password) {
         return FTPERR_FAILED_CONNECT;
     }
 
-    if ((rc = ftpCheckResponse(sock))) {
+    if ((rc = ftpCheckResponse(sock, NULL))) {
         return rc;     
     }
 
@@ -262,79 +264,84 @@ int ftpReadData(int sock, int out) {
 }
 
 int ftpGetFile(int sock, char * remotename, int dest) {
-    int dataSocket, trSocket;
-    struct sockaddr_in myAddress, dataAddress;
+    int dataSocket;
+    struct sockaddr_in dataAddress;
     int i;
-    char portbuf[64];
-    char numbuf[20];
-    char * dotAddress;
+    char * passReply;
     char * chptr;
-    unsigned short dataPort;
+    char * retrCommand;
     int rc;
 
-    i = sizeof(myAddress);
-    if (getsockname(sock, (struct sockaddr *) &myAddress, &i)) {
-        return FTPERR_UNKNOWN;
+    message(MESS_DEBUG, "sending PASV command\n");
+    if (write(sock, "PASV\n", 5) != 5) {
+        return FTPERR_SERVER_IO_ERROR;
     }
+    if ((rc = ftpCheckResponse(sock, &passReply)))
+	return FTPERR_PASSIVE_ERROR;
+
+    chptr = passReply;
+    while (*chptr && *chptr != '(') chptr++;
+    if (*chptr != '(') return FTPERR_PASSIVE_ERROR; 
+    chptr++;
+    passReply = chptr;
+    while (*chptr && *chptr != ')') chptr++;
+    if (*chptr != ')') return FTPERR_PASSIVE_ERROR;
+    *chptr-- = '\0';
+
+    while (*chptr && *chptr != ',') chptr--;
+    if (*chptr != ',') return FTPERR_PASSIVE_ERROR;
+    chptr--;
+    while (*chptr && *chptr != ',') chptr--;
+    if (*chptr != ',') return FTPERR_PASSIVE_ERROR;
+    *chptr++ = '\0';
+    
+    /* now passReply points to the IP portion, and chptr points to the
+       port number portion */
 
     dataAddress.sin_family = AF_INET;
-    dataAddress.sin_port = 0;
-    dataAddress.sin_addr = myAddress.sin_addr;
+    if (sscanf(chptr, "%d,%d", (int *) &dataAddress.sin_port, &i) != 2) {
+	return FTPERR_PASSIVE_ERROR;
+    }
+    dataAddress.sin_port = htons((dataAddress.sin_port << 8) + i);
+
+    chptr = passReply;
+    while (*chptr++) {
+	if (*chptr == ',') *chptr = '.';
+    }
+
+    printf("remote ip is: %s\n", passReply);
+    if (!inet_aton(passReply, &dataAddress.sin_addr)) 
+	return FTPERR_PASSIVE_ERROR;
 
     dataSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     if (dataSocket < 0) {
         return FTPERR_FAILED_CONNECT;
     }
 
-    if (bind(dataSocket, (struct sockaddr *) &dataAddress, 
-	     sizeof(dataAddress))) {
-        close(dataSocket);
-        return FTPERR_FAILED_CONNECT;
-    }
-
-    if (listen(dataSocket, 1)) {
-	close(dataSocket);
-	return FTPERR_UNKNOWN;
-    }
-
-    if (getsockname(dataSocket, (struct sockaddr *) &dataAddress, &i)) {
- 	close(dataSocket);
-	return FTPERR_UNKNOWN;
-    }
-
-    dotAddress = inet_ntoa(dataAddress.sin_addr);
-    dataPort = ntohs(dataAddress.sin_port);
-
-    strcpy(portbuf, dotAddress);
-    for (chptr = portbuf; *chptr; chptr++)
-	if (*chptr == '.') *chptr = ',';
-   
-    sprintf(numbuf, ",%d,%d", dataPort >> 8, dataPort & 0xFF);
-    strcat(portbuf, numbuf);
-
-    message(MESS_DEBUG, "sending PORT command\n");
-
-    if ((rc = ftpCommand(sock, "PORT", portbuf, NULL))) {
-	close(dataSocket);
-	return rc;
-    }
-
     message(MESS_DEBUG, "sending RETR command\n");
-
-    if ((rc = ftpCommand(sock, "RETR", remotename, NULL))) {
-        message(MESS_DEBUG, "RETR command failed\n");
-
-	close(dataSocket);
-	return rc;
+    retrCommand = alloca(strlen(remotename) + 20);
+    sprintf(retrCommand, "RETR %s\n", remotename);
+    i = strlen(retrCommand);
+   
+    if (write(sock, retrCommand, i) != i) {
+        return FTPERR_SERVER_IO_ERROR;
     }
 
-    i = sizeof(dataAddress);
-    trSocket = accept(dataSocket, (struct sockaddr *) &dataAddress, &i);
-    close(dataSocket);
+    message(MESS_DEBUG, "connecting to data socket\n");
+    if (connect(dataSocket, (struct sockaddr *) &dataAddress, 
+	        sizeof(dataAddress))) {
+	close(dataSocket);
+        return FTPERR_FAILED_DATA_CONNECT;
+    }
 
     message(MESS_DEBUG, "data socket open\n");
+   
+    if (ftpCheckResponse(sock, NULL)) {
+	close(dataSocket);
+	return FTPERR_BAD_SERVER_RESPONSE;
+    }
 
-    return ftpReadData(trSocket, dest);
+    return ftpReadData(dataSocket, dest);
 }
 
 void ftpClose(int sock) {
@@ -361,8 +368,14 @@ const char *ftpStrerror(int errorNumber) {
     case FTPERR_FAILED_CONNECT:
       return("Failed to connect to FTP server");
 
+    case FTPERR_FAILED_DATA_CONNECT:
+      return("Failed to establish data connection to FTP server");
+
     case FTPERR_FILE_IO_ERROR:
       return("IO error to local file");
+
+    case FTPERR_PASSIVE_ERROR:
+      return("Error setting remote server to passive mode");
 
     case FTPERR_UNKNOWN:
     default:
