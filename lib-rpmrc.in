@@ -116,6 +116,7 @@ arch_compat: usparc: sparc
 arch_compat: sparc: noarch
 
 arch_compat: ppc: noarch
+arch_compat: noarch: noarch
 
 os_compat:   IRIX64: IRIX
 
@@ -128,5 +129,6 @@ buildarch_compat: i486: i386
 buildarch_compat: i386: noarch
 
 buildarch_compat: sparc: noarch
-
 buildarch_compat: alpha: noarch
+buildarch_compat: m68k: noarch
+buildarch_compat: ppc: noarch
