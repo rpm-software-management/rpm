@@ -7,6 +7,7 @@
 	- RPM is more forgiving of blank user names (dumb)
 	- popt searches for aliases in the correct order now
 	- cleanup query code to handle missing uid lists better
+	- cleanup up configure.in a tad
 
 2.3.4 -> 2.3.5:
 	- %{#TAG} in query format prints the array length
