@@ -9,6 +9,8 @@
 	- dependency checking was broken when no database was being used
 	- don't *ever* let cpio make directories -- we do a better job
 	  (esp because we don't kill symlinks!)
+	- plugged memory leaks in upgrade (again thanks to mpr) -- install,
+	  erase, upgrade, query, and verify all seem to be leakproof
 
 2.2.8 -> 2.2.9:
 	- fixed typo in default rpmrc
