@@ -4,6 +4,7 @@
 #########################
 
 # change 'tests => 1' to 'tests => last_test_to_print';
+# comment to test checkin
 
 use Test;
 use strict;
