@@ -181,6 +181,10 @@
 	- resurrect --specedit for i18n.
 	- fix: 4 memory leaks eliminated.
 	- fix: yet another segfault from bad metadata prevented.
+	- add sha1 test vectors, verify on ix86/alpha/sparc.
+	- add (but disable for now) rpm-perl subpackage from Perl-RPM.
+	- python: parameterize with PYVER to handle 1.5 and/or 2.1 builds.
+	- add build dependency on zlib-devel (#49575).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

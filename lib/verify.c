@@ -326,27 +326,32 @@ int rpmVerifyDigest(Header h)
     int_32 uhc;
     const char * hdigest;
     rpmTagType hdt;
+    int flags = RPMDIGEST_SHA1;
     int ec = 0;		/* assume no problems */
 
     /* Retrieve header digest. */
-    if (!hge(h, RPMTAG_SHA1HEADER, &hdt, (void **) &hdigest, NULL))
-	return 0;
-    if (hdigest == NULL)
-	return 0;
-
+    if (!hge(h, RPMTAG_SHA1HEADER, &hdt, (void **) &hdigest, NULL)) {
+	if (hge(h, RPMTAG_BADSHA1HEADER, &hdt, (void **) &hdigest, NULL))
+	    flags |= (RPMDIGEST_REVERSE|RPMDIGEST_BCSWAP);
+	else
+	    return 0;
+    }
     /* Regenerate original header. */
     if (!hge(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	return 0;
 
+    if (hdigest == NULL || uh == NULL)
+	return 0;
+
     /* Compute header digest. */
-    {	const char * digest;
+    {	DIGEST_CTX ctx = rpmDigestInit(flags);
+	const char * digest;
 	size_t digestlen;
-	int flags = RPMDIGEST_SHA1;
-	DIGEST_CTX ctx = rpmDigestInit(flags);
 
 	rpmDigestUpdate(ctx, uh, uhc);
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
+	/* XXX can't happen: report NULL malloc return as a digest failure. */
 	ec = (digest == NULL || strcmp(hdigest, digest)) ? 1 : 0;
 	digest = _free(digest);
     }

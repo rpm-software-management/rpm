@@ -486,7 +486,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 			sigtarget, Fstrerror(fd));
     }
 
-    fdInitSHA1(fd);
+    fdInitSHA1(fd, 0);
     if (headerWrite(fd, h, HEADER_MAGIC_NO))
 	rc = RPMERR_NOSPACE;
     (void) Fflush(fd);

@@ -381,12 +381,21 @@ byteReverse(byte *buf, unsigned nbytes)
 {
     unsigned nlongs = nbytes / sizeof(uint32);
     uint32 t;
-    do {
-	t = (uint32) ((unsigned) buf[3] << 8 | buf[2]) << 16 |
-	    ((unsigned) buf[1] << 8 | buf[0]);
-	*(uint32 *) buf = t;
-	buf += 4;
-    } while (--nlongs);
+    if (IS_BIG_ENDIAN()) {
+	do {
+	    t = (uint32) ((unsigned) buf[3] << 8 | buf[2]) << 16 |
+		((unsigned) buf[1] << 8 | buf[0]);
+	    *(uint32 *) buf = t;
+	    buf += 4;
+	} while (--nlongs);
+    } else {
+	do {
+	    t = (uint32) ((unsigned) buf[0] << 8 | buf[1]) << 16 |
+		((unsigned) buf[2] << 8 | buf[3]);
+	    *(uint32 *) buf = t;
+	    buf += 4;
+	} while (--nlongs);
+    }
 }
 /*@=shadow@*/
 
@@ -405,6 +414,8 @@ rpmDigestInit(rpmDigestFlags flags)
 	ctx->digest[1] = 0xefcdab89;
 	ctx->digest[2] = 0x98badcfe;
 	ctx->digest[3] = 0x10325476;
+	/* md5 sums are little endian (no swap) so big endian needs the swap. */
+	ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 1 : 0;
     }
 
     if (flags & RPMDIGEST_SHA1) {
@@ -416,12 +427,12 @@ rpmDigestInit(rpmDigestFlags flags)
 	ctx->digest[ 2 ] = 0x98badcfe;
 	ctx->digest[ 3 ] = 0x10325476;
 	ctx->digest[ 4 ] = 0xc3d2e1f0;
+	/* md5 sums are little endian (no swap) so big endian needs the swap. */
+	ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 0 : 1;
     }
 
-    /* md5 sums are little endian (no swap) so big endian needs the swap. */
-    ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 1 : 0;
-    if (flags & RPMDIGEST_NATIVE)
-	ctx->doByteReverse = 0;
+    if (flags & RPMDIGEST_REVERSE)
+	ctx->doByteReverse ^= 1;
 
     ctx->bits[0] = 0;
     ctx->bits[1] = 0;
@@ -507,16 +518,22 @@ rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
     memset(p, 0, count - sizeof(ctx->bits));
     if (ctx->doByteReverse)
 	byteReverse(ctx->in, ctx->datalen - sizeof(ctx->bits));
-    ((uint32 *) ctx->in)[14] = ctx->bits[0];
-    ((uint32 *) ctx->in)[15] = ctx->bits[1];
+
+    if (ctx->flags & (RPMDIGEST_MD5|RPMDIGEST_BCSWAP)) {
+	((uint32 *) ctx->in)[14] = ctx->bits[0];
+	((uint32 *) ctx->in)[15] = ctx->bits[1];
+    } else {
+	((uint32 *) ctx->in)[14] = ctx->bits[1];
+	((uint32 *) ctx->in)[15] = ctx->bits[0];
+    }
     /*@-moduncon@*/
     ctx->transform(ctx);
     /*@=moduncon@*/
 
-    /* Return final digest. */
     if (ctx->doByteReverse)
 	byteReverse((byte *) ctx->digest, ctx->digestlen);
 
+    /* Return final digest. */
     if (!asAscii) {
 	if (lenp) *lenp = ctx->digestlen;
 	if (datap) {

@@ -1,4 +1,5 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@ %{nil}
+%define with_perl_subpackage	0
 %define	with_bzip2		@WITH_BZIP2@ %{nil}
 %define	with_apidocs		@WITH_APIDOCS@ %{nil}
 %define with_internal_db	@WITH_INTERNAL_DB@ %{nil}
@@ -37,12 +38,16 @@ Requires: glibc >= 2.1.92
 %endif
 %endif
 
+BuildRequires: zlib-devel
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
 BuildRequires: bzip2 >= 0.9.0c-2
 %endif
 %if %{with_python_subpackage}
 BuildRequires: python-devel >= 1.5.2
+%endif
+%if %{with_perl_subpackage}
+BuildRequires: perl >= 0:5.00503
 %endif
 
 BuildRoot: %{_tmppath}/%{name}-root
@@ -78,6 +83,37 @@ Requires: rpm = %{version}
 %description build
 This package contains scripts and executable programs that are used to
 build packages using RPM.
+
+%if %{with_perl_subpackage}
+%package perl
+Summary: Native bindings to the RPM API for Perl.
+Version: 0.32
+Group: Development/Languages
+URL: http://www.cpan.org
+Requires: rpm = %{version}
+Requires: perl >= 0:5.00503
+Requires: popt = 1.6.3
+Obsoletes: perl-Perl-RPM
+
+%description perl
+The Perl-RPM module is an attempt to provide Perl-level access to the
+complete application programming interface that is a part of the Red
+Hat Package Manager (RPM). Rather than have scripts rely on executing
+RPM commands and parse the resulting output, this module aims to give
+Perl programmers the ability to do anything that would otherwise have
+been done in C or C++.
+
+The interface is being designed and laid out as a collection of
+classes, at least some of which are also available as tied-hash
+implementations.
+
+At this time, the interface only provides access to the database of
+installed packages, and header data retrieval for RPM and SRPM files
+is not yet installed.  Error management and the export of most defined
+constants, through RPM::Error and RPM::Constants, respectively, are
+also available.
+
+%endif
 
 %if %{with_python_subpackage}
 %package python
@@ -132,6 +168,14 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 
 make
 
+%if %{with_perl_subpackage}
+{ cd Perl-RPM
+  CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
+  export SUBDIR="%{_builddir}/%{buildsubdir}"
+  make INC="-I. -I$SUBDIR/lib -I$SUBDIR/rpmio -I$SUBDIR/popt" %{?_smp_mflags}
+}
+%endif
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -168,6 +212,18 @@ done
 
 %if %{with_apidocs}
 gzip -9n apidocs/man/man*/* || :
+%endif
+
+%if %{with_perl_subpackage}
+{ cd Perl-RPM
+  eval `perl '-V:installsitearch'`
+  eval `perl '-V:installarchlib'`
+  mkdir -p $RPM_BUILD_ROOT/$installarchlib
+  make PREFIX=$RPM_BUILD_ROOT/usr install
+  rm -f $RPM_BUILD_ROOT/$installarchlib/perllocal.pod
+  rm -f $RPM_BUILD_ROOT/$installsitearch/auto/RPM/.packlist
+  cd ..
+}
 %endif
 
 %if %{strip_binaries}
@@ -382,6 +438,15 @@ fi
 %defattr(-,root,root)
 %{__prefix}/lib/python1.5/site-packages/rpmmodule.so
 %{__prefix}/lib/python1.5/site-packages/poptmodule.so
+%endif
+
+%if %{with_perl_subpackage}
+%files perl
+%defattr(-,root,root)
+%rpmattr	%{__prefix}/bin/rpmprune
+%{perl_sitearch}/auto/*
+%{__prefix}%{__share}/man/man1/rpmprune.1*
+%{__prefix}%{__share}/man/man3/RPM*
 %endif
 
 %files devel

@@ -2,13 +2,15 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+PYVER=1.5
+
 INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt \
-	-I/usr/include/python1.5 \
+	-I/usr/include/python${PYVER} \
 	@INCPATH@
 
 EXTRA_DIST = hash.h upgrade.h
@@ -20,7 +22,7 @@ mylibs= \
 
 LDADD =
 
-pythondir = $(prefix)/lib/python1.5/site-packages
+pythondir = $(prefix)/lib/python${PYVER}/site-packages
 python_PROGRAMS = rpmmodule.so poptmodule.so
 
 rpmmodule_so_SOURCES =
@@ -32,10 +34,10 @@ noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 
 rpmmodule.so: $(librpmmodule_la_OBJECTS)
-	$(LINK) -o $@ $^ $(rpmmodule_so_LDFLAGS)
+	$(LINK) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
 
 poptmodule.so: $(poptmodule_so_OBJECTS)
-	$(LINK) -o $@ $^ $(poptmodule_so_LDFLAGS)
+	$(LINK) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
 
 .PHONY:	lclint
 lclint:

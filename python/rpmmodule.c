@@ -12,6 +12,7 @@
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
 #include <locale.h>
+#include <time.h>
 
 #include "Python.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
@@ -23,7 +24,7 @@ extern int _rpmio_debug;
 
 #ifdef __LCLINT__
 #undef	PyObject_HEAD
-#defin	PyObject_HEAD	int _PyObjectHead
+#define	PyObject_HEAD	int _PyObjectHead
 #endif
 
 extern int mdfile(const char *fn, unsigned char *digest);
@@ -648,7 +649,7 @@ static PyMappingMethods hdrAsMapping = {
 /** \ingroup python
  */
 static PyTypeObject hdrType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
 	"header",			/* tp_name */
 	sizeof(hdrObject),		/* tp_size */
@@ -746,7 +747,7 @@ static void rpmdbMIDealloc(rpmdbMIObject * s) {
 /** \ingroup python
  */
 static PyTypeObject rpmdbMIType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
 	"rpmdbMatchIterator",		/* tp_name */
 	sizeof(rpmdbMIObject),	/* tp_size */
@@ -1070,7 +1071,7 @@ static PyMappingMethods rpmdbAsMapping = {
 /**
  */
 static PyTypeObject rpmdbType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
 	"rpmdb",			/* tp_name */
 	sizeof(rpmdbObject),		/* tp_size */
@@ -1511,7 +1512,7 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
 /** \ingroup python
  */
 static PyTypeObject rpmtransType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
 	"rpmtrans",			/* tp_name */
 	sizeof(rpmtransObject),		/* tp_size */
@@ -1640,6 +1641,9 @@ static int pkgCompareVer(void * first, void * second) {
 static void pkgSort(struct pkgSet * psp) {
     int i;
     char *name;
+
+    if (psp->numPackages <= 0)
+	return;
 
     qsort(psp->packages, psp->numPackages, sizeof(*psp->packages),
 	 (void *) pkgCompareVer);
@@ -2423,10 +2427,19 @@ void initrpm(void) {
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
     struct headerSprintfExtension_s * ext;
 
+    m = Py_InitModule("rpm", rpmModuleMethods);
+
+    hdrType.ob_type = &PyType_Type;
+    rpmdbMIType.ob_type = &PyType_Type;
+    rpmdbType.ob_type = &PyType_Type;
+    rpmtransType.ob_type = &PyType_Type;
+
+    if(!m)
+	return;
+
 /*      _rpmio_debug = -1; */
     rpmReadConfigFiles(NULL, NULL);
 
-    m = Py_InitModule("rpm", rpmModuleMethods);
     d = PyModule_GetDict(m);
 
     pyrpmError = PyString_FromString("rpm.error");

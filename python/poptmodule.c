@@ -6,7 +6,7 @@
 
 #define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.3 2001/07/20 17:09:08 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.4 2001/07/21 19:44:22 jbj Exp $";
 
 static char *module_doc = "Python bindings for the popt library\n\
 \n\
@@ -34,6 +34,9 @@ typedef struct poptContext_s {
     /* The index of the option retrieved with getNextOpt()*/
     int opt;
 } poptContextObject;
+
+/* The exception */
+static PyObject *pypoptError;
 
 /* Misc functions */
 void __printPopt(struct poptOption *opts)

@@ -6,13 +6,25 @@
 static rpmDigestFlags flags = RPMDIGEST_MD5;
 extern int _rpmio_debug;
 
+static int fips = 0;
+
+const char * adigest = "a9993e364706816aba3e25717850c26c9cd0d89d";
+const char * bdigest = "84983e441c3bd26ebaae4aa1f95129e5e54670f1";
+const char * cdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
+
 static struct poptOption optionsTable[] = {
  { "md5", '\0', POPT_BIT_SET, 	&flags, RPMDIGEST_MD5,	NULL, NULL },
  { "sha1",'\0', POPT_BIT_SET, 	&flags, RPMDIGEST_SHA1,	NULL, NULL },
- { "native",'\0', POPT_BIT_SET, &flags, RPMDIGEST_NATIVE,	NULL, NULL },
+ { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
+ { "fipsa",'\0', POPT_BIT_SET, &fips, 1,	NULL, NULL },
+ { "fipsb",'\0', POPT_BIT_SET, &fips, 2,	NULL, NULL },
+ { "fipsc",'\0', POPT_BIT_SET, &fips, 3,	NULL, NULL },
  { "debug",'d', POPT_ARG_VAL, &_rpmio_debug, -1,	NULL, NULL },
   POPT_TABLEEND
 };
+
+#define	SHA1_CMD	"/usr/bin/sha1sum"
+#define	MD5_CMD		"/usr/bin/md5sum"
 
 int
 main(int argc, const char *argv[])
@@ -21,24 +33,94 @@ main(int argc, const char *argv[])
     const char ** args;
     const char * ifn;
     const char * ofn = "/dev/null";
+    DIGEST_CTX ctx;
+    const char * idigest;
+    const char * odigest;
+    const char * sdigest;
+    const char * digest;
+    size_t digestlen;
+    int asAscii = 1;
+    int reverse;
     int rc;
+    char appendix;
+    int i;
 
     optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 
+    reverse = (flags & RPMDIGEST_REVERSE);
+    if (fips) {
+	flags &= ~RPMDIGEST_MD5;
+	flags |= RPMDIGEST_SHA1;
+	ctx = rpmDigestInit(flags);
+	ifn = NULL;
+	appendix = ' ';
+	sdigest = NULL;
+	switch (fips) {
+	case 1:
+	    ifn = "abc";
+	    rpmDigestUpdate(ctx, ifn, strlen(ifn));
+	    sdigest = adigest;
+	    appendix = 'A';
+	    break;
+	case 2:
+	    ifn = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+	    rpmDigestUpdate(ctx, ifn, strlen(ifn));
+	    sdigest = bdigest;
+	    appendix = 'B';
+	    break;
+	case 3:
+	    ifn = "aaaaaaaaaaa ...";
+	    for (i = 0; i < 1000000; i++)
+		rpmDigestUpdate(ctx, ifn, 1);
+	    sdigest = cdigest;
+	    appendix = 'C';
+	    break;
+	}
+	if (ifn == NULL)
+	    return 1;
+	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+
+	if (digest) {
+	    fprintf(stdout, "%s     %s\n", digest, ifn);
+	    fflush(stdout);
+	    free((void *)digest);
+	}
+	if (sdigest) {
+	    fprintf(stdout, "%s     FIPS PUB 180-1 Appendix %c\n", sdigest,
+		appendix);
+	    fflush(stdout);
+	}
+	return 0;
+    }
+
     args = poptGetArgs(optCon);
     rc = 0;
+    if (args)
     while ((ifn = *args++) != NULL) {
 	FD_t ifd;
 	FD_t ofd;
 	unsigned char buf[BUFSIZ];
 	ssize_t nb;
-	DIGEST_CTX ctx;
-	const char * idigest;
-	const char * odigest;
-	const char * digest;
-	size_t digestlen;
+
+	sdigest = NULL;
+	{   char *se;
+	    FILE * sfp;
+
+	    se = buf;
+	    *se = '\0';
+	    se = stpcpy(se, ((flags & RPMDIGEST_SHA1) ? SHA1_CMD : MD5_CMD));
+	    *se++ = ' ';
+	    se = stpcpy(se, ifn);
+	    if ((sfp = popen(buf, "r")) != NULL) {
+		fgets(buf, sizeof(buf), sfp);
+		if ((se = strchr(buf, ' ')) != NULL)
+		    *se = '\0';
+		sdigest = xstrdup(buf);
+		pclose(sfp);
+	    }
+	}
 
 	ifd = Fopen(ifn, "r.ufdio");
 	if (ifd == NULL || Ferror(ifd)) {
@@ -48,7 +130,7 @@ main(int argc, const char *argv[])
 	    continue;
 	}
 	idigest = NULL;
-	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ifd) : fdInitMD5(ifd, 0);
+	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ifd, reverse) : fdInitMD5(ifd, reverse);
 
 	ofd = Fopen(ofn, "w.ufdio");
 	if (ofd == NULL || Ferror(ofd)) {
@@ -59,7 +141,7 @@ main(int argc, const char *argv[])
 	    continue;
 	}
 	odigest = NULL;
-	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ofd) : fdInitMD5(ofd, 0);
+	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ofd, reverse) : fdInitMD5(ofd, reverse);
 
 	ctx = rpmDigestInit(flags);
 
@@ -68,14 +150,18 @@ main(int argc, const char *argv[])
 	    (void) Fwrite(buf, 1, nb, ofd);
 	}
 
-	fdFiniMD5(ifd, (void **)&idigest, NULL, 1);
+	(flags & RPMDIGEST_SHA1)
+	    ? fdFiniSHA1(ifd, (void **)&idigest, NULL, asAscii)
+	    : fdFiniMD5(ifd, (void **)&idigest, NULL, asAscii);
 	Fclose(ifd);
 
 	Fflush(ofd);
-	fdFiniMD5(ofd, (void **)&odigest, NULL, 1);
+	(flags & RPMDIGEST_SHA1)
+	    ? fdFiniSHA1(ofd, (void **)&odigest, NULL, asAscii)
+	    : fdFiniMD5(ofd, (void **)&odigest, NULL, asAscii);
 	Fclose(ofd);
 
-	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
+	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
 
 	if (digest) {
 	    fprintf(stdout, "%s     %s\n", digest, ifn);
@@ -91,6 +177,11 @@ main(int argc, const char *argv[])
 	    fprintf(stdout, "%s out %s\n", odigest, ofn);
 	    fflush(stdout);
 	    free((void *)odigest);
+	}
+	if (sdigest) {
+	    fprintf(stdout, "%s cmd %s\n", sdigest, ifn);
+	    fflush(stdout);
+	    free((void *)sdigest);
 	}
     }
     return rc;
