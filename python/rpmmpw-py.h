@@ -1,5 +1,5 @@
-#ifndef H_RPMBC_PY
-#define H_RPMBC_PY
+#ifndef H_RPMMPW_PY
+#define H_RPMMPW_PY
 
 #include "rpmio_internal.h"
 
@@ -9,15 +9,15 @@
 
 /**
  */
-typedef struct rpmbcObject_s {
+typedef struct mpwObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     mpnumber n;
-} rpmbcObject;
+} mpwObject;
 
 /**
  */
 /*@unchecked@*/
-extern PyTypeObject rpmbc_Type;
+extern PyTypeObject mpw_Type;
 
 #endif

@@ -16,6 +16,7 @@ extern PyTypeObject PyFrame_Type;
 #include "rpmfi-py.h"	/* XXX debug only */
 #include "rpmfts-py.h"	/* XXX debug only */
 #include "rpmmi-py.h"	/* XXX debug only */
+#include "rpmmpw-py.h"	/* XXX debug only */
 #include "rpmrc-py.h"	/* XXX debug only */
 #include "rpmte-py.h"	/* XXX debug only */
 #include "rpmts-py.h"	/* XXX debug only */
@@ -59,6 +60,7 @@ static const char * lbl(void * s)
     if (o->ob_type == &PyUnicode_Type)	return "Unicode";
 
     if (o->ob_type == &hdr_Type)	return "hdr";
+    if (o->ob_type == &mpw_Type)	return "mpw";
     if (o->ob_type == &rpmal_Type)	return "rpmal";
     if (o->ob_type == &rpmbc_Type)	return "rpmbc";
     if (o->ob_type == &rpmds_Type)	return "rpmds";

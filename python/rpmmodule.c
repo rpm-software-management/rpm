@@ -26,6 +26,7 @@
 #include "rpmfts-py.h"
 #include "rpmfi-py.h"
 #include "rpmmi-py.h"
+#include "rpmmpw-py.h"
 #include "rpmrc-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
@@ -179,6 +180,7 @@ void initrpm(void)
     if (PyType_Ready(&rpmfts_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
+    if (PyType_Ready(&mpw_Type) < 0) return;
 
     rpmrc_Type.tp_base = &PyDict_Type;
     if (PyType_Ready(&rpmrc_Type) < 0) return;
@@ -208,6 +210,9 @@ void initrpm(void)
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
+
+    Py_INCREF(&mpw_Type);
+    PyModule_AddObject(m, "mpw", (PyObject *) &mpw_Type);
 
     Py_INCREF(&rpmal_Type);
     PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
