@@ -321,6 +321,8 @@ static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
     fl.def.PdirmodeString = NULL;
     fl.def.Uname = NULL;
     fl.def.Gname = NULL;
+    fl.def.Pmode = 0;
+    fl.def.Pdirmode = 0;
     fl.currentLang = NULL;
 
     fl.defVerifyFlags = RPMVERIFY_ALL;
@@ -424,13 +426,11 @@ static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
 	if (installSpecialDoc) {
 	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, 0);
 	}
+	/* fl.current now takes on "ownership" of the specialDocAttrRec */
+	/* allocated string data.                                       */
 	fl.current = specialDocAttrRec;
 	processBinaryFile(pkg, &fl, specialDoc);
 	FREE(specialDoc);
-	FREE(specialDocAttrRec.PmodeString);
-	FREE(specialDocAttrRec.PdirmodeString);
-	FREE(specialDocAttrRec.Uname);
-	FREE(specialDocAttrRec.Gname);
     }
     
     FREE(files);
