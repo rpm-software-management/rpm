@@ -150,18 +150,20 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(noinst_HEADERS)
 
-DIST_COMMON =  Makefile.am Makefile.in alloca.c fnmatch.c getmntent.c \
-glob.c inet_aton.c myrealloc.c realpath.c strdup.c strerror.c strtol.c \
-strtoul.c
+DIST_COMMON =  Makefile.am Makefile.in alloca.c fnmatch.c getcwd.c \
+getmntent.c getwd.c glob.c inet_aton.c myrealloc.c putenv.c realpath.c \
+strdup.c strerror.c strspn.c strstr.c strtol.c strtoul.c
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP = --best
-DEP_FILES =  .deps/alloca.P .deps/fnmatch.P .deps/getmntent.P \
-.deps/glob.P .deps/inet_aton.P .deps/myrealloc.P .deps/realpath.P \
-.deps/strdup.P .deps/strerror.P .deps/strtol.P .deps/strtoul.P
+DEP_FILES =  .deps/alloca.P .deps/fnmatch.P .deps/getcwd.P \
+.deps/getmntent.P .deps/getwd.P .deps/glob.P .deps/inet_aton.P \
+.deps/myrealloc.P .deps/putenv.P .deps/realpath.P .deps/strdup.P \
+.deps/strerror.P .deps/strspn.P .deps/strstr.P .deps/strtol.P \
+.deps/strtoul.P
 SOURCES = $(libmisc_a_SOURCES)
 OBJECTS = $(libmisc_a_OBJECTS)
 
