@@ -113,7 +113,31 @@ to verify the integrity and the origin of the package.  See the
 section on PGP SIGNATURES for /etc/rpmrc details.
 
 .SH QUERY OPTIONS
-There are two sets of options for querying: package selection, and
+
+You may specify the format that the header portion should be printed 
+in. To do this, you use the "\fB\--queryformat\fP" option, followed by 
+the format string.
+
+Query formats are modifed versions of the standard \fBprintf(3)\fP
+formatting. The format is made up of static strings (which may include
+standard C character escapes for newlines, tabs, and other special
+characters) and the \fBprintf(3)\fP type formatters. As \fBrpm\fP
+already knows the type to print, the type specifier must be
+omitted however, and replaced by the name of the header tag to
+be printed, which is enclosed by \fB{}\fP characters. The 
+\fBRPMTAG_\fP portion of the tag name may be omitted, and the
+tag name may be preceded by a \fB-\fP to format the tag as
+a date if possible.
+
+For example, to print only the names of the packages queried, you
+could use \fB%{NAME}\fP as the format string. To print the packages
+name and distribution information in two columns, you could use
+\fB%-30{NAME}%{DISTRIBUTION}\fP.
+
+\fBrpm\fP will print a list of all of the tags it knows about when
+it is invoked with the \fB--querytags\fP argument and nothing else.
+
+There are two subsets of options for querying: package selection, and
 information selection.
 
 Package selection options:
