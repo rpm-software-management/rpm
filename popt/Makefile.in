@@ -54,8 +54,8 @@ depend:
 install:
 	mkdir -p $(PREFIX)/$(INCLUDE)
 	mkdir -p $(PREFIX)/$(LIBS)
-	$INSTALL_DATA) -m 644 popt.h $(PREFIX)/$(INCLUDE)/popt.h
-	$INSTALL_DATA) -m 644 $(LIBPOPT) $(PREFIX)/$(LIBS)/$(LIBPOPT)
+	$(INSTALL_DATA) -m 644 popt.h $(PREFIX)/$(INCLUDE)/popt.h
+	$(INSTALL_DATA) -m 644 $(LIBPOPT) $(PREFIX)/$(LIBS)/$(LIBPOPT)
 
 archive:
 	cvs tag -F $(CVSTAG) .
