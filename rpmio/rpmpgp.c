@@ -625,6 +625,8 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 /*@=mods@*/
 
 	p += 2;
+	if (p > (h + hlen))
+	    return 1;
 
 	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen);
     }	break;
