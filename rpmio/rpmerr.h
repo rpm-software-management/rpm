@@ -76,8 +76,8 @@ typedef enum rpmerrCode_e {
     RPMMESS_ALTNAME	= _em(38),  /*!< file written as .rpmnew */
     RPMMESS_PREREQLOOP	= _em(39),  /*!< loop in prerequisites */
     RPMERR_BADRELOCATE	= _em(40),  /*!< bad relocation was specified */
-/*@=enummemuse@*/
     RPMERR_OLDDB	= _em(41),  /*!< old format database */
+/*@=enummemuse@*/
 
     RPMERR_UNMATCHEDIF	= _em(107), /*!< unclosed %ifarch or %ifos */
     RPMERR_RELOAD	= _em(108), /*!< */

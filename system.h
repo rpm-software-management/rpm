@@ -10,6 +10,17 @@
 #endif
 
 #include <sys/types.h>
+#if defined(__LCLINT__)
+/*@-redef@*/
+typedef unsigned int u_int32_t;
+typedef unsigned short u_int16_t;
+typedef unsigned char u_int8_t;
+/*@-incondefs@*/        /* LCLint 3.0.0.15 */
+typedef int int32_t;
+/*@=incondefs@*/
+/*@=redef@*/
+#endif
+
 #include <sys/stat.h>
 #include <stdio.h>
 

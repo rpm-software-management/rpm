@@ -120,7 +120,9 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     const char * errstr = "(unkown error)";
     const char * str;
 
+/*@-modobserver@*/
     str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+/*@=modobserver@*/
     if (str == NULL)
 	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
     return str;

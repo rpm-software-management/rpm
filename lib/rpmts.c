@@ -205,8 +205,7 @@ int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
 	/* XXX Prefer the newest build if given alternatives. */
 	if (htime <= bhtime)
 	    continue;
-	if (bh)
-	    bh = headerFree(bh, NULL);
+	bh = headerFree(bh, NULL);
 	bh = headerLink(h, NULL);
 	bhtime = htime;
     }

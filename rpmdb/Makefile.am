@@ -11,7 +11,7 @@ INCLUDES = \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
-EXTRA_DIST = db3.c db1.c falloc.c
+EXTRA_DIST = db3.c
 
 EXTRA_PROGRAMS = tjfn
 
@@ -21,7 +21,7 @@ tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h
-noinst_HEADERS = falloc.h fprint.h header_internal.h legacy.h rpmhash.h
+noinst_HEADERS = fprint.h header_internal.h legacy.h rpmhash.h
 
 mylibpaths = \
 	-L$(top_builddir)/lib \
@@ -48,9 +48,6 @@ install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
 	sed -e "s|^dependency_libs='|& -lrpmio|" < librpmdb.la > .librpmdb.la && \
 	mv .librpmdb.la librpmdb.la
-
-falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
 tagtbl.c: $(top_srcdir)/lib/rpmlib.h 
 	@echo '#include "system.h"' > $@
@@ -92,7 +89,4 @@ lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
 
 tdbi: librpmdb.la tdbi.o
-	$(LINK) -all-static $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
-
-tfalloc: librpmdb.la tfalloc.o
 	$(LINK) -all-static $@.o $< $(mylibpaths) $(mylibs) $(LIBS)

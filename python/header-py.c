@@ -2,6 +2,8 @@
  * \file python/header-py.c
  */
 
+#include <sys/time.h>
+
 #include "Python.h"
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */

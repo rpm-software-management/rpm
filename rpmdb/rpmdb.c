@@ -47,10 +47,6 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access pgpDig@*/
 
 /*@unchecked@*/
-static int _debug = 0;
-#define	INLINE
-
-/*@unchecked@*/
 static int _rebuildinprogress = 0;
 /*@unchecked@*/
 static int _db_filter_dups = 0;
@@ -320,7 +316,7 @@ exit:
  * @param tagNum	tag index in header
  * @return		new item
  */
-static INLINE dbiIndexItem dbiIndexNewItem(unsigned int hdrNum, unsigned int tagNum)
+static dbiIndexItem dbiIndexNewItem(unsigned int hdrNum, unsigned int tagNum)
 	/*@*/
 {
     dbiIndexItem rec = xcalloc(1, sizeof(*rec));
@@ -363,12 +359,14 @@ static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
     if (keylen == 0) keylen = strlen(keyp);
 
     memset(key, 0, sizeof(*key));
+/*@-temptrans@*/
     key->data = (void *) keyp;
+/*@=temptrans@*/
     key->size = keylen;
     memset(data, 0, sizeof(*data));
     data->data = datap;
     data->size = datalen;
-    rc = dbiGet(dbi, dbcursor, key, data);
+    rc = dbiGet(dbi, dbcursor, key, data, 0);
     keyp = key->data;
     keylen = key->size;
     datap = data->data;
@@ -453,8 +451,8 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 {
     DBT * key = alloca(sizeof(*key));
     DBT * data = alloca(sizeof(*data));
-    void * datap;
-    size_t datalen;
+    void * datap = NULL;
+    size_t datalen = 0;
     int rc;
 
     if (set->count) {
@@ -504,12 +502,16 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 	}
 
 	memset(key, 0, sizeof(*key));
+/*@-temptrans@*/
 	key->data = (void *) keyp;
+/*@=temptrans@*/
 	key->size = keylen;
 	memset(data, 0, sizeof(*data));
 	data->data = datap;
 	data->size = datalen;
-	rc = dbiPut(dbi, dbcursor, key, data);
+/*@-compdef@*/
+	rc = dbiPut(dbi, dbcursor, key, data, 0);
+/*@=compdef@*/
 
 	if (rc) {
 	    rpmError(RPMERR_DBPUTINDEX,
@@ -520,9 +522,16 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
     } else {
 
 	memset(key, 0, sizeof(*key));
+/*@-temptrans@*/
 	key->data = (void *) keyp;
+/*@=temptrans@*/
 	key->size = keylen;
-	rc = dbiDel(dbi, dbcursor, key, 0);
+	memset(data, 0, sizeof(*data));
+	data->data = datap;
+	data->size = datalen;
+/*@-compdef@*/
+	rc = dbiDel(dbi, dbcursor, key, data, 0);
+/*@=compdef@*/
 
 	if (rc) {
 	    rpmError(RPMERR_DBPUTINDEX,
@@ -553,7 +562,7 @@ static int hdrNumCmp(const void * one, const void * two)
  * @param sortset	should resulting set be sorted?
  * @return		0 success, 1 failure (bad args)
  */
-static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
+static int dbiAppendSet(dbiIndexSet set, const void * recs,
 	int nrecs, size_t recsize, int sortset)
 	/*@modifies *set @*/
 {
@@ -594,7 +603,7 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
  * @param sorted	array is already sorted?
  * @return		0 success, 1 failure (no items found)
  */
-static INLINE int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
+static int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
 		size_t recsize, int sorted)
 	/*@modifies set, recs @*/
 {
@@ -1398,18 +1407,22 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
 	DBT * data = alloca(sizeof(*data));
 
 	memset(key, 0, sizeof(*key));
+/*@-immediatetrans@*/
 	key->data = (void *) &offset;
+/*@=immediatetrans@*/
 	key->size = sizeof(offset);
 	memset(data, 0, sizeof(*data));
 	data->data = uh;
 	data->size = uhlen;
 
 	(void) blockSignals(dbi->dbi_rpmdb, &signalMask);
-	rc = dbiPut(dbi, dbcursor, key, data);
+	rc = dbiPut(dbi, dbcursor, key, data, 0);
 	xx = dbiSync(dbi, 0);
 	(void) unblockSignals(dbi->dbi_rpmdb, &signalMask);
 
+/*@-kepttrans@*/
 	uh = _free(uh);
+/*@=kepttrans@*/
     } else
 fprintf(stderr, "*** dbiUpdateRecord: uh is NULL\n");
     return rc;
@@ -1486,7 +1499,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_version = _free(mi->mi_version);
     /*@-branchstate@*/
     if (dbi && mi->mi_dbc)
-	xx = dbiCclose(dbi, mi->mi_dbc, DBI_ITERATOR);
+	xx = dbiCclose(dbi, mi->mi_dbc, 0);
     /*@=branchstate@*/
     mi->mi_dbc = NULL;
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
@@ -1887,11 +1900,11 @@ int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite) {
     int rc;
     if (mi == NULL)
 	return 0;
-    rc = (mi->mi_cflags & DBI_WRITECURSOR) ? 1 : 0;
+    rc = (mi->mi_cflags & DB_WRITECURSOR) ? 1 : 0;
     if (rewrite)
-	mi->mi_cflags |= DBI_WRITECURSOR;
+	mi->mi_cflags |= DB_WRITECURSOR;
     else
-	mi->mi_cflags &= ~DBI_WRITECURSOR;
+	mi->mi_cflags &= ~DB_WRITECURSOR;
     return rc;
 }
 
@@ -1910,6 +1923,7 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi,
     return rpmdbNextIterator(mi);
 }
 
+/*@-compmempass@*/
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
@@ -1936,7 +1950,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
      * marked with DB_WRITECURSOR as well.
      */
     if (mi->mi_dbc == NULL)
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, (mi->mi_cflags | DBI_ITERATOR));
+	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, mi->mi_cflags);
     dbi->dbi_lastoffset = mi->mi_prevoffset;
     key = alloca(sizeof(*key));
     data = alloca(sizeof(*data));
@@ -1945,6 +1959,7 @@ top:
 
     /* XXX skip over instances with 0 join key */
     do {
+  	/*@-branchstate@*/
 	if (mi->mi_set) {
 	    if (!(mi->mi_setx < mi->mi_set->count))
 		return NULL;
@@ -1960,7 +1975,7 @@ top:
 	    memset(data, 0, sizeof(*data));
 	    data->data = uh;
 	    data->size = uhlen;
-	    rc = dbiGet(dbi, mi->mi_dbc, key, data);
+	    rc = dbiGet(dbi, mi->mi_dbc, key, data, 0);
 	    keyp = key->data;
 	    keylen = key->size;
 	    uh = data->data;
@@ -1988,6 +2003,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
 		return NULL;
 	}
+  	/*@=branchstate@*/
 	mi->mi_setx++;
     } while (mi->mi_offset == 0);
 
@@ -1995,6 +2011,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 	goto exit;
 
     /* Retrieve next header */
+    /*@-branchstate -immediatetrans @*/
     if (uh == NULL) {
 	memset(key, 0, sizeof(*key));
 	key->data = keyp;
@@ -2002,7 +2019,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 	memset(data, 0, sizeof(*data));
 	uh = data->data;
 	uhlen = data->size;
-	rc = dbiGet(dbi, mi->mi_dbc, key, data);
+	rc = dbiGet(dbi, mi->mi_dbc, key, data, 0);
 	keyp = key->data;
 	keylen = key->size;
 	uh = data->data;
@@ -2010,6 +2027,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 	if (rc)
 	    return NULL;
     }
+    /*@=branchstate =immediatetrans @*/
 
     /* Free current header */
     if (mi->mi_h) {
@@ -2062,6 +2080,7 @@ exit:
     /*@-compdef -usereleased@*/ return mi->mi_h; /*@=compdef =usereleased@*/
     /*@=retexpose =retalias@*/
 }
+/*@=compmempass@*/
 
 static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi @*/
@@ -2254,7 +2273,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int rpmtag,
  * @param rec		record to remove
  * @return		0 on success
  */
-static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
+static int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen, dbiIndexItem rec)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
@@ -2286,6 +2305,7 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 {
     DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     Header h;
@@ -2356,12 +2376,15 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	      if (dbi != NULL) {
 
 		memset(key, 0, sizeof(*key));
+/*@-immediatetrans@*/
 		key->data = &hdrNum;
+/*@=immediatetrans@*/
 		key->size = sizeof(hdrNum);
+		memset(data, 0, sizeof(*data));
 
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
-		xx = dbiDel(dbi, dbcursor, key, 0);
-		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
+		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+		xx = dbiDel(dbi, dbcursor, key, data, 0);
+		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
@@ -2386,7 +2409,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	    }
 
 	    printed = 0;
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
+	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
 		const void * valp;
 		size_t vallen;
@@ -2488,7 +2511,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 		xx = removeIndexEntry(dbi, dbcursor, valp, vallen, rec);
 	    }
 
-	    xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
+	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    dbcursor = NULL;
 
 	    if (!dbi->dbi_no_dbsync)
@@ -2521,7 +2544,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
  * @param rec		record to add
  * @return		0 on success
  */
-static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
+static int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
 		const char * keyp, size_t keylen, dbiIndexItem rec)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
@@ -2612,7 +2635,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	datap = h;
 	datalen = headerSizeof(h, HEADER_MAGIC_NO);
 
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
+	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
 
@@ -2620,9 +2643,11 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	key->data = keyp;
 	key->size = keylen;
 	memset(data, 0, sizeof(*data));
-	data->data = datap;
+/*@i@*/	data->data = datap;
 	data->size = datalen;
-	rc = dbiGet(dbi, dbcursor, key, data);
+/*@-compmempass@*/
+	rc = dbiGet(dbi, dbcursor, key, data, 0);
+/*@=compmempass@*/
 	keyp = key->data;
 	keylen = key->size;
 	datap = data->data;
@@ -2645,13 +2670,17 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	key->data = keyp;
 	key->size = keylen;
 	memset(data, 0, sizeof(*data));
+/*@-kepttrans@*/
 	data->data = datap;
+/*@=kepttrans@*/
 	data->size = datalen;
 
-	rc = dbiPut(dbi, dbcursor, key, data);
+/*@-compmempass@*/
+	rc = dbiPut(dbi, dbcursor, key, data, 0);
+/*@=compmempass@*/
 	xx = dbiSync(dbi, 0);
 
-	xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
+	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	dbcursor = NULL;
       }
       /*@=branchstate@*/
@@ -2696,9 +2725,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	    case RPMDBI_PACKAGES:
 	      dbi = dbiOpen(db, rpmtag, 0);
 	      if (dbi != NULL) {
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
+		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 		xx = dbiUpdateRecord(dbi, dbcursor, hdrNum, h);
-		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
+		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
@@ -2750,7 +2779,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	    }
 
 	    printed = 0;
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
+	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
 		const void * valp;
 		size_t vallen;
@@ -2866,7 +2895,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 		}
 		rc += addIndexEntry(dbi, dbcursor, valp, vallen, rec);
 	    }
-	    xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
+	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    dbcursor = NULL;
 
 	    if (!dbi->dbi_no_dbsync)

@@ -105,6 +105,7 @@
 	- add --nosuggests to disable suggested resolutions.
 	- attempt to make peace with automake-1.6.1, autoconf-2.53.
 	- rip out two layers of dbN gook, internal Berkeley db is here to stay.
+	- eliminate db1 support.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
@@ -159,6 +160,9 @@
 	- non-glibc: on upgrade, mergesort is much faster than quicksort.
 	- fix: queries that evaluated to "" incorrectly returned NULL.
 	- fix: packages produced by rpm-4.0 dinna merge signature tags.
+	- fix: rpmdb iterator memory leak in python bindings.
+	- fix: include <sys/time.h> for 6.2 python modules.
+	- remove vestiges of mipseb arch (#62408).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

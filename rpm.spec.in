@@ -377,7 +377,7 @@ fi
 %ifarch armv3l armv4l
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/armv[34][lb]*
 %endif
-%ifarch mips mipsel mipseb
+%ifarch mips mipsel
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/mips*
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*

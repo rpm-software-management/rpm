@@ -12,17 +12,6 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <sys/ipc.h>
 #endif
 
-#if defined(__LCLINT__)
-/*@-redef@*/ /* FIX: rpmio/rpmio.c also declares */
-typedef	unsigned int u_int32_t;
-typedef	unsigned short u_int16_t;
-typedef	unsigned char u_int8_t;
-/*@-incondefs@*/	/* LCLint 3.0.0.15 */
-typedef	int int32_t;
-/*@=incondefs@*/
-/*@=redef@*/
-#endif
-
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>	/* XXX urlPath proto */
@@ -88,9 +77,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    int rc = 0;
-
-    rc = error;
+    int rc = error;
 
     if (printit && rc) {
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */
@@ -313,8 +300,10 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-/*@unused@*/ static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
-		u_int32_t flags)
+#ifdef	DYING
+/*@unused@*/
+static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
+		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcp, fileSystem @*/
 {
@@ -327,97 +316,60 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     return rc;
     /*@=nullstate @*/
 }
-
-static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-    int rc;
-
-    if (dbcursor == NULL) return -2;
-
-    rc = dbcursor->c_close(dbcursor);
-    rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
-    return rc;
-}
-
-static inline int db3c_open(dbiIndex dbi, DB_TXN * txnid,
-			/*@null@*/ /*@out@*/ DBC ** dbcp, int dbiflags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcp, fileSystem @*/
-{
-    DB * db = dbi->dbi_db;
-    int flags;
-    int rc;
-
-    if (db == NULL) return -2;
-    if ((dbiflags & DBI_WRITECURSOR) &&
-	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
-    {
-	flags = DB_WRITECURSOR;
-    } else
-	flags = 0;
-    if (dbcp) *dbcp = NULL;
-    rc = db->cursor(db, txnid, dbcp, flags);
-    rc = cvtdberr(dbi, "db3c_open", rc, _debug);
-
-    return rc;
-}
+#endif
 
 static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    int rc = 0;
+    int rc;
 
-    /* XXX per-iterator cursors */
-    if (flags & DBI_ITERATOR)
-	return db3c_close(dbi, dbcursor);
-
-    if (!dbi->dbi_use_cursors)
-	return 0;
-
-    if (dbcursor) {
-	rc = db3c_close(dbi, dbcursor);
-    }
-    /*@-usereleased -compdef@*/ return rc; /*@=usereleased =compdef@*/
+    assert(dbcursor != NULL);
+    rc = dbcursor->c_close(dbcursor);
+    rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
+    return rc;
 }
 
 static int db3copen(dbiIndex dbi, DB_TXN * txnid,
-		/*@null@*/ /*@out@*/ DBC ** dbcp, unsigned int flags)
+		/*@null@*/ /*@out@*/ DBC ** dbcp, unsigned int dbiflags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
-    DBC * dbcursor;
-    int rc = 0;
+    DB * db = dbi->dbi_db;
+    DBC * dbcursor = NULL;
+    int flags;
+    int rc;
 
-    /* XXX per-iterator cursors */
-    if (flags & DBI_ITERATOR)
-	return db3c_open(dbi, txnid, dbcp, flags);
+    assert(db != NULL);
+    if ((dbiflags & DB_WRITECURSOR) &&
+	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+    {
+	flags = DB_WRITECURSOR;
+    } else
+	flags = 0;
 
-    if (!dbi->dbi_use_cursors) {
-	if (dbcp) *dbcp = NULL;
-	return 0;
-    }
-
-    rc = db3c_open(dbi, txnid, &dbcursor, flags);
+    rc = db->cursor(db, txnid, &dbcursor, flags);
+    rc = cvtdberr(dbi, "db->cursor", rc, _debug);
 
     if (dbcp)
 	/*@-onlytrans@*/ *dbcp = dbcursor; /*@=onlytrans@*/
+    else
+	(void) db3cclose(dbi, dbcursor, 0);
 
     return rc;
 }
 
-static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data)
+static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     int rc;
 
+    assert(db != NULL);
     if (dbcursor == NULL) {
-	if (db == NULL) return -2;
 	rc = db->put(db, dbi->dbi_txnid, key, data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
@@ -428,52 +380,47 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data)
     return rc;
 }
 
-static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, unsigned int flags)
+static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     int rc;
 
+    assert(db != NULL);
     if (dbcursor == NULL) {
-	if (db == NULL) return -2;
 	rc = db->del(db, dbi->dbi_txnid, key, flags);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
     } else {
-	DBT * data = alloca(sizeof(*data));
 	int _printit;
 
-	memset(data, 0, sizeof(*data));
-
+	/* XXX TODO: insure that cursor is positioned with duplicates */
 	rc = dbcursor->c_get(dbcursor, key, data, DB_SET);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
 
 	if (rc == 0) {
-	    /* XXX TODO: loop over duplicates */
 	    rc = dbcursor->c_del(dbcursor, flags);
 	    rc = cvtdberr(dbi, "dbcursor->c_del", rc, _debug);
 	}
-
     }
 
     return rc;
 }
 
-static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data)
+static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     int rc;
 
+    assert(db != NULL);
     if (dbcursor == NULL) {
 	int _printit;
-
-	/*@-compmempass@*/
-	if (db == NULL) return -2;
-	/*@=compmempass@*/
 
 	rc = db->get(db, dbi->dbi_txnid, key, data, 0);
 	/* XXX DB_NOTFOUND can be returned */
@@ -541,7 +488,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     DB * db = dbi->dbi_db;
     int rc = 0;
 
-    if (db == NULL) return -2;
+    assert(db != NULL);
 #if defined(DB_FAST_STAT)
     if (flags)
 	flags = DB_FAST_STAT;

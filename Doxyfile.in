@@ -401,8 +401,6 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/db1.c \
 	@top_srcdir@/rpmdb/db3.c \
 	@top_srcdir@/rpmdb/dbconfig.c \
-	@top_srcdir@/rpmdb/falloc.c \
-	@top_srcdir@/rpmdb/falloc.h \
 	@top_srcdir@/rpmdb/fprint.c \
 	@top_srcdir@/rpmdb/fprint.h \
 	@top_srcdir@/rpmdb/hdrNVR.c \

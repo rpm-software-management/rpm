@@ -449,6 +449,8 @@ teIterator teFreeIterator(/*@only@*//*@null@*/ teIterator tei)
 /**
  * Destroy transaction element iterator.
  * @param tei		transaction element iterator
+ * @param fn
+ * @param ln
  * @return		NULL always
  */
 /*@null@*/
@@ -469,6 +471,8 @@ teIterator teInitIterator(rpmTransactionSet ts)
 /**
  * Create transaction element iterator.
  * @param ts		transaction set
+ * @param fn
+ * @param ln
  * @return		transaction element iterator
  */
 /*@unused@*/ /*@only@*/

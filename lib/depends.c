@@ -21,6 +21,8 @@
 /*@access tsortInfo @*/
 /*@access rpmTransactionSet @*/
 
+/*@access dbiIndex @*/		/* XXX for dbi->dbi_txnid */
+
 /*@access alKey @*/	/* XXX for reordering and RPMAL_NOMATCH assign */
 
 /**
@@ -365,7 +367,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
 		memset(data, 0, sizeof(*data));
 		data->data = datap;
 		data->size = datalen;
-		xx = dbiGet(dbi, dbcursor, key, data);
+		xx = dbiGet(dbi, dbcursor, key, data, 0);
 		DNEVR = key->data;
 		DNEVRlen = key->size;
 		datap = data->data;
@@ -496,11 +498,12 @@ exit:
 	} else {
 	    const char * DNEVR;
 	    xx = 0;
+	    /*@-branchstate@*/
 	    if ((DNEVR = dsiGetDNEVR(dep)) != NULL) {
 		DBC * dbcursor = NULL;
 		size_t DNEVRlen = strlen(DNEVR);
 
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
+		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
 		memset(key, 0, sizeof(*key));
 		key->data = (void *) DNEVR;
@@ -509,9 +512,12 @@ exit:
 		data->data = &rc;
 		data->size = sizeof(rc);
 
-		xx = dbiPut(dbi, dbcursor, key, data);
-		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
+		/*@-compmempass@*/
+		xx = dbiPut(dbi, dbcursor, key, data, 0);
+		/*@=compmempass@*/
+		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    }
+	    /*@=branchstate@*/
 	    if (xx)
 		_cacheDependsRC = 0;
 	}

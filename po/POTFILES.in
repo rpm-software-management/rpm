@@ -53,8 +53,6 @@ lib/verify.c
 rpmdb/db1.c
 rpmdb/db3.c
 rpmdb/dbconfig.c
-rpmdb/falloc.c
-rpmdb/fprint.c
 rpmdb/hdrNVR.c
 rpmdb/header.c
 rpmdb/header_internal.c

@@ -153,6 +153,7 @@ void compressFilelist(Header h)
 	needle = dirNames;
 	savechar = *baseName;
 	*baseName = '\0';
+/*@-compdef@*/
 	if (dirIndex < 0 ||
 	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
 	    char *s = alloca(len + 1);
@@ -162,6 +163,7 @@ void compressFilelist(Header h)
 	    dirNames[dirIndex] = s;
 	} else
 	    dirIndexes[i] = needle - dirNames;
+/*@=compdef@*/
 
 	*baseName = savechar;
 	baseNames[i] = baseName;

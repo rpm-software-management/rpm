@@ -87,7 +87,7 @@ struct _dbiVec {
     int (*copen) (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 			/*@out@*/ DBC ** dbcp, unsigned int flags)
 	/*@globals fileSystem@*/
-	/*@modifies dbi, *txnidp, *dbcp, fileSystem @*/;
+	/*@modifies dbi, *txnid, *dbcp, fileSystem @*/;
 
 /** \ingroup dbi
  * Close database cursor.
@@ -105,10 +105,11 @@ struct _dbiVec {
  * @param dbi		index database handle
  * @param dbcursor	database cursor (NULL will use db->del)
  * @param key		delete key value/length/flags
+ * @param data		delete data value/length/flags
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cdel) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
+    int (*cdel) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 			unsigned int flags)
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/;
@@ -119,9 +120,11 @@ struct _dbiVec {
  * @param dbcursor	database cursor (NULL will use db->get)
  * @param key		retrieve key value/length/flags
  * @param data		retrieve data value/length/flags
+ * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cget) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data)
+    int (*cget) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
+			unsigned int flags)
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/;
 
@@ -131,9 +134,11 @@ struct _dbiVec {
  * @param dbcursor	database cursor (NULL will use db->put)
  * @param key		store key value/length/flags
  * @param data		store data value/length/flags
+ * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cput) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data)
+    int (*cput) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
+			unsigned int flags)
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/;
 
@@ -376,8 +381,7 @@ dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
  */
 /*@-redecl@*/
 /*@exposed@*/
-extern const char *const prDbiOpenFlags(int dbflags,
-						int print_dbenv_flags)
+extern const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	/*@*/;
 /*@=redecl@*/
 
@@ -392,12 +396,13 @@ extern const char *const prDbiOpenFlags(int dbflags,
 		unsigned int flags)
 	/*@modifies db @*/;
 
+/*@-globuse -mods -mustmod @*/
 /** \ingroup dbi
  * Open a database cursor.
  * @param dbi		index database handle
  * @param txnid		database transaction handle
  * @retval dbcp		returned database cursor
- * @param flags		DBI_WRITECURSOR, DBI_ITERATOR or 0
+ * @param flags		DB_WRITECURSOR if writing, or 0
  * @return		0 on success
  */
 /*@unused@*/ static inline
@@ -408,9 +413,6 @@ int dbiCopen(dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 {
     return (*dbi->dbi_vec->copen) (dbi, txnid, dbcp, flags);
 }
-
-#define	DBI_WRITECURSOR		(1 << 0)
-#define	DBI_ITERATOR		(1 << 1)
 
 /** \ingroup dbi
  * Close a database cursor.
@@ -432,11 +434,12 @@ int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
  * @param dbi		index database handle
  * @param dbcursor	database cursor (NULL will use db->del)
  * @param key		delete key value/length/flags
+ * @param data		delete data value/length/flags
  * @param flags		(unused)
  * @return		0 on success
  */
 /*@unused@*/ static inline
-int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
+int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/
@@ -446,11 +449,10 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     int rc;
 
     if (NULkey) key->size++;
-    rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, flags);
+    rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
     if (NULkey) key->size--;
     return rc;
 }
-
 
 /** \ingroup dbi
  * Retrieve (key,data) pair from index database.
@@ -458,10 +460,12 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
  * @param dbcursor	database cursor (NULL will use db->get)
  * @param key		retrieve key value/length/flags
  * @param data		retrieve data value/length/flags
+ * @param flags		(unused)
  * @return		0 on success
  */
 /*@unused@*/ static inline
-int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data)
+int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
@@ -470,7 +474,7 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data)
     int rc;
 
     if (NULkey) key->size++;
-    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data);
+    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
     if (NULkey) key->size--;
     return rc;
 }
@@ -481,10 +485,12 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data)
  * @param dbcursor	database cursor (NULL will use db->put)
  * @param key		store key value/length/flags
  * @param data		store data value/length/flags
+ * @param flags		(unused)
  * @return		0 on success
  */
 /*@unused@*/ static inline
-int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data)
+int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, *key, fileSystem @*/
 {
@@ -493,7 +499,7 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data)
     int rc;
 
     if (NULkey) key->size++;
-    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data);
+    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
     if (NULkey) key->size--;
     return rc;
 }
@@ -573,6 +579,7 @@ int dbiByteSwapped(dbiIndex dbi)
 /*@=mods@*/
     return dbi->dbi_byteswapped;
 }
+/*@=globuse =mods =mustmod @*/
 
 /** \ingroup db1
  * Return base file name for db1 database (legacy).

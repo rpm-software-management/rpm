@@ -101,7 +101,7 @@ struct TFI_s {
 /*@unused@*/
     int_32 * odil;		/*!< Original dirindex(s) (from header) */
 
-/*@only@*/ /*@null@*/
+/*@only@*/
     unsigned char * md5s;	/*!< File md5 sums in binary. */
 
 /*@only@*/ /*@null@*/

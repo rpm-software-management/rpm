@@ -2,6 +2,7 @@
  * \file python/db-py.c
  */
 
+#include <sys/time.h>
 #include <fcntl.h>
 #include <unistd.h>
 
