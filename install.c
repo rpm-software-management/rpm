@@ -22,10 +22,11 @@ void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
     } else {
 	if (matches.count > 1) {
 	    fprintf(stderr, "\"%s\" specifies multiple packages\n", arg);
-	    rpmdbClose(db);
 	}
-	for (i = 0; i < matches.count; i++) {
-	    rpmRemovePackage(prefix, db, matches.recs[i].recOffset, test);
+	else { 
+	    for (i = 0; i < matches.count; i++) {
+		rpmRemovePackage(prefix, db, matches.recs[i].recOffset, test);
+	    }
 	}
 
 	freeDBIndexRecord(matches);
