@@ -140,6 +140,8 @@ struct ne_request_s {
     ne_off_t body_length; /* length of request body */
     ne_off_t body_progress; /* number of bytes of body sent so far */
 
+    int chunked;	/* send request incrementally chunked */
+
     /* temporary store for response lines. */
     char respbuf[BUFSIZ];
 
@@ -487,6 +489,29 @@ static int send_request_body(ne_request *req)
     return ret;
 }
 
+int ne_send_request_chunk(ne_request *req, const char *buffer, size_t size)
+{
+    char chunksize[20];
+    int ret;
+
+    ne_snprintf(chunksize, sizeof chunksize, "%x%s", size, EOL);
+    chunksize[sizeof(chunksize)-1] = '\0';
+
+    ret = ne_sock_fullwrite(req->session->socket, chunksize, strlen(chunksize));
+
+    if (!ret && size > 0)
+	ret = ne_sock_fullwrite(req->session->socket, buffer, size);
+
+    if (!ret)
+	ret = ne_sock_fullwrite(req->session->socket, EOL, sizeof(EOL)-1);
+
+    /* XXX Final EOL on last 0 byte chunk? perhaps call ne_finish_request? */
+    if (!ret && size == 0)
+	ret = ne_sock_fullwrite(req->session->socket, EOL, sizeof(EOL)-1);
+
+    return ret;
+}
+
 /* Lob the User-Agent, connection and host headers in to the request
  * headers */
 static void add_fixed_headers(ne_request *req) 
@@ -665,6 +690,11 @@ void ne_set_request_body_provider64(ne_request *req, off64_t bodysize,
     set_body_length(req, bodysize);
 }
 #endif
+
+void ne_set_request_chunked(ne_request *req, int chunked)
+{
+    req->chunked = chunked;
+}
 
 void ne_set_request_expect100(ne_request *req, int flag)
 {
@@ -1053,7 +1083,10 @@ static int send_request(ne_request *req, const ne_buffer *request)
 	int aret = aborted(req, _("Could not send request"), ret);
 	return RETRY_RET(retry, ret, aret);
     }
-    
+
+    /* Return with request in progress if sending incrementally chunked body. */
+    if (req->chunked) return ret;
+
     if (!req->use_expect100 && req->body_length > 0) {
 	/* Send request body, if not using 100-continue. */
 	ret = send_request_body(req);
@@ -1239,32 +1272,10 @@ static int lookup_host(ne_session *sess, struct host_info *info)
     }
 }
 
-int ne_begin_request(ne_request *req)
+int ne_finish_request(ne_request *req)
 {
     struct body_reader *rdr;
-    struct host_info *host;
-    ne_buffer *data;
     const ne_status *const st = &req->status;
-    int ret;
-
-    /* Resolve hostname if necessary. */
-    host = req->session->use_proxy?&req->session->proxy:&req->session->server;
-    if (host->address == NULL)
-	HTTP_ERR(lookup_host(req->session, host));
-
-    req->resp.mode = R_TILLEOF;
-    
-    /* Build the request string, and send it */
-    data = build_request(req);
-    DEBUG_DUMP_REQUEST(data->data);
-    ret = send_request(req, data);
-    /* Retry this once after a persistent connection timeout. */
-    if (ret == NE_RETRY && !req->session->no_persist) {
-	NE_DEBUG(NE_DBG_HTTP, "Persistent connection timed out, retrying.\n");
-	ret = send_request(req, data);
-    }
-    ne_buffer_destroy(data);
-    if (ret != NE_OK) return ret;
 
     /* Determine whether server claims HTTP/1.1 compliance. */
     req->session->is_http11 = (st->major_version == 1 && 
@@ -1287,9 +1298,9 @@ int ne_begin_request(ne_request *req)
     }
 #endif
 
-    /* HEAD requests and 204, 304 responses have no response body,
+    /* HEAD requests and 201, 204, 304 responses have no response body,
      * regardless of what headers are present. */
-    if (req->method_is_head || st->code == 204 || st->code == 304)
+    if (req->method_is_head || st->code == 201 || st->code == 204 || st->code == 304)
     	req->resp.mode = R_NO_BODY;
 
     /* Prepare for reading the response entity-body.  Call each of the
@@ -1300,6 +1311,42 @@ int ne_begin_request(ne_request *req)
     }
     
     return NE_OK;
+}
+
+int ne_begin_request(ne_request *req)
+{
+    struct body_reader *rdr;
+    struct host_info *host;
+    ne_buffer *data;
+    const ne_status *const st = &req->status;
+    int ret;
+
+    /* Resolve hostname if necessary. */
+    host = req->session->use_proxy?&req->session->proxy:&req->session->server;
+    if (host->address == NULL)
+	HTTP_ERR(lookup_host(req->session, host));
+
+    req->resp.mode = R_TILLEOF;
+    
+    /* Build the request string, and send it */
+    data = build_request(req);
+    DEBUG_DUMP_REQUEST(data->data);
+    ret = send_request(req, data);
+    /* Retry this once after a persistent connection timeout. */
+    if (ret == NE_RETRY && !req->session->no_persist && !req->chunked) {
+	NE_DEBUG(NE_DBG_HTTP, "Persistent connection timed out, retrying.\n");
+	ret = send_request(req, data);
+    }
+    ne_buffer_destroy(data);
+    if (ret != NE_OK) return ret;
+
+    /* Return with request in progress if sending incrementally chunked body. */
+    if (req->chunked)
+	return ret;	/* XXX perhaps NE_INPROGRESS? */
+
+    ret = ne_finish_request(req);
+
+    return ret;
 }
 
 int ne_end_request(ne_request *req)

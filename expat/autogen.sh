@@ -3,14 +3,14 @@
 export CFLAGS
 export LDFLAGS
 
-LTV="libtoolize (GNU libtool) 1.5.6"
+LTV="libtoolize (GNU libtool) 1.5.10"
 ACV="autoconf (GNU Autoconf) 2.59"
-AMV="automake (GNU automake) 1.9.2"
+AMV="automake (GNU automake) 1.9.3"
 USAGE="
 This script documents the versions of the tools I'm using to build rpm:
-	libtool-1.5.6
+	libtool-1.5.10
 	autoconf-2.59
-	automake-1.9.2
+	automake-1.9.3
 Simply edit this script to change the libtool/autoconf/automake versions
 checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.

@@ -258,6 +258,20 @@ ssize_t ne_read_response_block(ne_request *req, /*@out@*/ char *buffer, size_t b
 	/*@globals internalState @*/
 	/*@modifies req, buffer, internalState @*/;
 
+/* Mark the request body as incrementally chunked. */
+void ne_set_request_chunked(ne_request *req, int chunked)
+	/*@modifies req @*/;
+
+/* Send request body chunk.
+ * Return 0 on success, else NE_* return. */
+int ne_send_request_chunk(ne_request *req, const char *buffer, size_t size)
+	/*@modifies req @*/;
+
+/* Finish incrementally chunked request. */
+int ne_finish_request(ne_request *req)
+	/*@globals internalState @*/
+	/*@modifies req, internalState @*/;
+
 /* Include the HTTP/1.1 header "Expect: 100-continue" in request 'req'
  * if 'flag' is non-zero.  Warning: 100-continue support is not
  * implemented correctly in some HTTP/1.1 servers, enabling this
