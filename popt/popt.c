@@ -52,7 +52,7 @@ poptContext poptGetContext(const char * name, int argc, char ** argv,
     con->os = con->optionStack;
     con->os->argc = argc;
     con->os->argv = (const char **)argv;	/* XXX don't change the API */
-    con->os->argb = PBM_ALLOC(argc);
+    con->os->argb = NULL;
 
     if (!(flags & POPT_CONTEXT_KEEP_FIRST))
 	con->os->next = 1;			/* skip argv[0] */
@@ -99,7 +99,7 @@ void poptResetContext(poptContext con) {
     }
     if (con->os->argb) {
 	PBM_FREE(con->os->argb);
-	con->os->argb = PBM_ALLOC(con->os->argc);
+	con->os->argb = NULL;
     }
     con->os->currAlias = NULL;
     con->os->nextCharArg = NULL;
@@ -197,7 +197,7 @@ static int handleAlias(poptContext con, const char * longName, char shortName,
     con->os->currAlias = con->aliases + i;
     poptDupArgv(con->os->currAlias->argc, con->os->currAlias->argv,
 		&con->os->argc, &con->os->argv);
-    con->os->argb = PBM_ALLOC(con->os->argc);
+    con->os->argb = NULL;
 
     return 1;
 }
@@ -693,7 +693,7 @@ int poptStuffArgs(poptContext con, const char ** argv) {
     con->os->nextCharArg = NULL;
     con->os->currAlias = NULL;
     poptDupArgv(argc, argv, &con->os->argc, &con->os->argv);
-    con->os->argb = PBM_ALLOC(argc);
+    con->os->argb = NULL;
     con->os->stuffed = 1;
 
     return 0;
