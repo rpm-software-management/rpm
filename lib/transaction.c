@@ -944,8 +944,15 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 	    /* TESTME: there are more efficient searches in the world... */
 	    for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc;
 		 otherFileNum++) {
+
+		/* If the addresses are the same, so are the values. */
+		if ((fi->fps + i) == (recs[otherPkgNum]->fps + otherFileNum))
+		    break;
+
+		/* Otherwise, compare fingerprints by value. */
 		if (FP_EQUAL(fi->fps[i], recs[otherPkgNum]->fps[otherFileNum]))
 			break;
+
 	    }
 	    /* XXX is this test still necessary? */
 	    if (recs[otherPkgNum]->actions[otherFileNum] != FA_UNKNOWN)

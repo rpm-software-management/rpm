@@ -3,7 +3,7 @@ AM_CONFIG_HEADER(config.h)
 AC_PREREQ(2.12)
 AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE(popt, 1.6)
-ALL_LINGUAS="ro sk tr"
+ALL_LINGUAS="cs da de es fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
 AC_ISC_POSIX
 

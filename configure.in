@@ -15,7 +15,7 @@ AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
-ALL_LINGUAS="cs de fi fr ja pl pt_BR ru sk sl sr sv tr"
+ALL_LINGUAS="cs da de es fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
 LIBOBJS=
 

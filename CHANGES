@@ -41,7 +41,6 @@
 	- fix: sparc64 per-platform directory shouldn't be sparc64linux.
 	- fix: (segfault) verify needs rpmdb while query does not.
 	- add calculated nlink field to -qlv output (like ls -al).
-	- builds against bzip2 1.0
 	- detects and builds properly against the new fopencookie API in
           glibc 2.2.
 	- change popt exec alias in oreder to exec rpm children.
@@ -62,6 +61,10 @@
 	- portability: sparc-sun-solaris2.5.1.
 	- fix: don't count removed files if removed packages is empty set.
 	- fix: permit '\0' as special case key (e.g. "/" in Basenames).
+
+3.0.4 -> 3.0.5
+	- builds against bzip2 1.0
+	- fix: resurrect symlink unique'ifying property of finger prints.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

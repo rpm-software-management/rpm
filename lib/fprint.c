@@ -185,8 +185,16 @@ int fpEqual(const void * key1, const void * key2)
 {
     const fingerPrint *k1 = key1;
     const fingerPrint *k2 = key2;
-    /* XXX negated to preserve strcmp return behavior in ht->eq */
-    return (FP_EQUAL(*k1, *k2) ? 0 : 1);
+
+    /* If the addresses are the same, so are the values. */
+    if (k1 == k2)
+	return 0;
+
+    /* Otherwise, compare fingerprints by value. */
+    if (FP_EQUAL(*k1, *k2))
+	return 0;
+    return 1;
+
 }
 
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 

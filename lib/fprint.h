@@ -46,28 +46,16 @@ typedef struct fingerprint_s {
 #define fpFree(a) free((void *)(a).baseName)
 
 /** */
+#define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
+
+/** */
 #define FP_EQUAL(a, b) ( \
-	(&(a) == &(b)) || ( \
-		((a).entry == (b).entry) && \
-		!strcmp((a).baseName, (b).baseName) && \
-		(((a).subDir && (b).subDir && !strcmp((a).subDir, (b).subDir)) \
-			|| ((a).subDir == (b).subDir)) \
-		) \
-	)
-
-/** */
-#define	FP_ENTRY_EQUAL(a, b) ( \
-	((a)->dev == (b)->dev) && \
-	((a)->ino == (b)->ino) && \
-	!strcmp((a)->dirName, (b)->dirName))
-
-/** */
-#define FP_EQUAL_DIFFERENT_CACHE(a, b) ( \
 	FP_ENTRY_EQUAL((a).entry, (b).entry) && \
-	!strcmp((a).baseName, (b).baseName) && \
-		(((a).subDir && (b).subDir && !strcmp((a).subDir, (b).subDir)) \
-			|| ((a).subDir == (b).subDir)) \
-	)
+	!strcmp((a).baseName, (b).baseName) && ( \
+	    ((a).subDir == (b).subDir) || \
+	    ((a).subDir && (b).subDir && !strcmp((a).subDir, (b).subDir)) \
+	) \
+    )
 
 #ifdef __cplusplus
 extern "C" {
