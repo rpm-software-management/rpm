@@ -46,10 +46,12 @@ public:
 	 * Default constructor
 	 * .
 	 * @param szScript The script
+	 * @param szInterpreter The interpreter to use for script execution
 	 * @param szDir Directory to execute the script in
 	 * @return none
 	 **/
 	 XMLScript(const char* szScript,
+	 		   const char* szInterpreter,
 			   const char* szDir);
 
 	/**
@@ -126,6 +128,28 @@ public:
 	 }
 
 	/**
+	 * Checks if we have an interpreter
+	 * .
+	 * @param none
+	 * @return true if we have an interpreter, false otherwise
+	 **/
+	bool hasInterpreter()
+	{
+		return m_sInterpreter.length() ? true : false;
+	}
+
+	/**
+	 * Gets the interpreter
+	 * .
+	 * @param none
+	 * @return string contating the interpreter
+	 **/
+	const char* getInterpreter()
+	{
+		return m_sInterpreter.c_str();
+	}
+
+	/**
 	 * Checks if we have a direcory
 	 * .
 	 * @param none
@@ -163,6 +187,7 @@ public:
 //
 public:
 	string m_sValue;
+	string m_sInterpreter;
 	string m_sDir;
 };
 
@@ -246,6 +271,40 @@ public:
 //
 public:
 	/**
+	 * Checks if we have an interpreter
+	 * .
+	 * @param none
+	 * @return true if we have an interpreter, false otherwise
+	 **/
+	bool hasInterpreter()
+	{
+		return m_sInterpreter.length() ? true : false;
+	}
+
+	/**
+	 * Gets the interpreter
+	 * .
+	 * @param none
+	 * @return string contatining the interpreter
+	 **/
+	const char* getInterpreter()
+	{
+		return m_sInterpreter.c_str();
+	}
+
+	/**
+	 * Sets the script interpreter
+	 * .
+	 * @param szInterpreter The interpreter
+	 * @return none
+	 **/
+	void setInterpreter(const char* szInterpreter)
+	{
+		if (szInterpreter)
+			m_sInterpreter.assign(szInterpreter);
+	}
+
+	/**
 	 * Gets the number of script entries
 	 * .
 	 * @param none
@@ -282,6 +341,7 @@ public:
 // member variables
 //
 protected:
+	string            m_sInterpreter;
 	vector<XMLScript> m_vScripts;
 };
 
@@ -351,6 +411,57 @@ public:
 	static bool addVerifyScript(XMLAttrs* pAttrs,
 								const char* szScript,
 								XMLSpec* pSpec);
+
+	/**
+	 * Initialises a pre script container
+	 * .
+	 * @param pAttrs The XML attributes
+	 * @param pSpec The spec to which we are adding
+	 * @return true on success, false otherwise
+	 **/
+	static bool createPreScripts(XMLAttrs* pAttrs,
+								 XMLSpec* pSpec);
+
+	/**
+	 * Initialises a post script container
+	 * .
+	 * @param pAttrs The XML attributes
+	 * @param pSpec The spec to which we are adding
+	 * @return true on success, false otherwise
+	 **/
+	static bool createPostScripts(XMLAttrs* pAttrs,
+								  XMLSpec* pSpec);
+
+	/**
+	 * Initialises a preun script container
+	 * .
+	 * @param pAttrs The XML attributes
+	 * @param pSpec The spec to which we are adding
+	 * @return true on success, false otherwise
+	 **/
+	static bool createPreUnScripts(XMLAttrs* pAttrs,
+								   XMLSpec* pSpec);
+
+	/**
+	 * Initialises a postun script container
+	 * .
+	 * @param pAttrs The XML attributes
+	 * @param pSpec The spec to which we are adding
+	 * @return true on success, false otherwise
+	 **/
+	static bool createPostUnScripts(XMLAttrs* pAttrs,
+									XMLSpec* pSpec);
+
+	/**
+	 * Initialises a verify script container
+	 * .
+	 * @param pAttrs The XML attributes
+	 * @param pSpec The spec to which we are adding
+	 * @return true on success, false otherwise
+	 **/
+	static bool createVerifyScripts(XMLAttrs* pAttrs,
+									XMLSpec* pSpec);
+
 //
 // constructors/destructors
 //

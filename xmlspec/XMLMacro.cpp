@@ -7,8 +7,8 @@ using namespace std;
 // attribute structure for XMLMacro
 structValidAttrs g_paMacroAttrs[] =
 {
-	{0x0000,    true,  false, "name"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    true,  false, "name", XATTRTYPE_STRING, {"*", NULL}},
+	{XATTR_END, false, false, "end",  XATTRTYPE_NONE,   {NULL}}
 };
 
 bool XMLMacro::parseCreate(XMLAttrs* pAttrs,
@@ -17,7 +17,7 @@ bool XMLMacro::parseCreate(XMLAttrs* pAttrs,
 {
 	if (!pSpec || !szMacro || !pAttrs->validate(g_paMacroAttrs, (XMLBase*)pAttrs))
 		return false;
-	XMLMacro macro(pAttrs->get("name"), szMacro);
+	XMLMacro macro(pAttrs->asString("name"), szMacro);
 	pSpec->addXMacro(macro);
 	return true;
 }

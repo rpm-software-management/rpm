@@ -41,6 +41,18 @@ public:
 							XMLSpec* pSpec);
 
 	/**
+	 * Creates package objects from an RPM Spec structure
+	 * .
+	 * @param pPackage Pointer to the start package
+	 * @param pSpec pointer to the RPM spec
+	 * @param pXSpec Pointer to the spec object to populate
+	 * @return true on success, false otherwise
+	 **/
+	static bool structCreate(PackageStruct* pPackage,
+							 Spec pSpec,
+							 XMLSpec* pXSpec);
+
+	/**
 	 * Sets the description for the last package
 	 * .
 	 * @param szDescription the description
@@ -69,11 +81,15 @@ public:
 	 * .
 	 * @param szName The package name
 	 * @param szGroup The group this package belongs to
+	 * @param bAutoReq Auto Requires
+	 * @param bAutoProv Auto Provides
 	 * @param bSub true if this is a sub-package
 	 * @return none
 	 **/
 	XMLPackage(const char* szName,
 			   const char* szGroup,
+			   bool bAutoReq,
+			   bool bAutoProv,
 			   bool bSub);
 
 	/**
@@ -193,6 +209,28 @@ public:
 	bool isSubPackage()
 	{
 		return m_bSub;
+	}
+
+	/**
+	 * Tests for auto requires
+	 * .
+	 * @param none
+	 * @return true if we have auto requires, false otherwise
+	 **/
+	bool hasAutoRequires()
+	{
+		return m_bAutoReq;
+	}
+
+	/**
+	 * Tests for auto requires
+	 * .
+	 * @param none
+	 * @return true if we have auto requires, false otherwise
+	 **/
+	bool hasAutoProvides()
+	{
+		return m_bAutoProv;
 	}
 
 	/**
@@ -382,6 +420,8 @@ protected:
 	string              m_sSummary;
 	string              m_sDescription;
 	bool                m_bSub;
+	bool                m_bAutoReq;
+	bool                m_bAutoProv;
 	XMLPackageContainer m_Requires;
 	XMLPackageContainer m_BuildRequires;
 	XMLPackageContainer m_Provides;

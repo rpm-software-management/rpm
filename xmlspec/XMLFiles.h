@@ -13,6 +13,9 @@
 #include "XMLAttrs.h"
 #include "XMLBase.h"
 
+// rpm includes
+#include <rpmbuild.h>
+
 // forward class definitions
 class XMLPackage;
 class XMLFiles;
@@ -50,12 +53,14 @@ public:
 	 * @param szAttr The file's attribute (NULL if default)
 	 * @param szOwner The file's owner (NULL if default)
 	 * @param szGroup The file's group (NULL if default)
+	 * @param szConfig The configuration parameter
 	 * @param szPath The file path
 	 * @return none
 	 **/
 	XMLFile(const char* szAttr,
 			const char* szOwner,
 			const char* szGroup,
+			const char* szConfig,
 			const char* szPath);
 
 	/**
@@ -187,14 +192,37 @@ public:
 		return m_sGroup.c_str();
 	}
 
+	/**
+	 * Checks for config directives
+	 * .
+	 * @param none
+	 * @return true if we have one, false otherwise
+	 **/
+	bool hasConfig()
+	{
+		return m_sConfig.length() ? true : false;
+	}
+
+	/**
+	 * Returns the config attribute
+	 * .
+	 * @param none
+	 * @return the sttribute string
+	 **/
+	const char* getConfig()
+	{
+		return m_sConfig.c_str();
+	}
+
 //
 // member variables
 //
 protected:
-	string    m_sPath;
-	string    m_sAttr;
-	string    m_sOwner;
-	string    m_sGroup;
+	string m_sPath;
+	string m_sAttr;
+	string m_sOwner;
+	string m_sGroup;
+	string m_sConfig;
 };
 
 // <files ...>
@@ -213,6 +241,18 @@ public:
 	 **/
 	static bool parseCreate(XMLAttrs* pAttrs,
 							XMLSpec* pSpec);
+
+	/**
+	 * Creates file objects from an RPM Spec structure
+	 * .
+	 * @param pPackage Pointer to the package
+	 * @param pSpec Pointer to the RPM spec
+	 * @param pXSpec pointer to the XMLSpec object to populate
+	 * @return true on success, false otherwise
+	 **/
+	static bool structCreate(PackageStruct* pPackage,
+							 Spec pSpec,
+							 XMLSpec* pXSpec);
 
 //
 // constructors/destructor

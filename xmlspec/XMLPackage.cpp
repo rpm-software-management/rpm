@@ -3,15 +3,22 @@
 
 // our includes
 #include "XMLPackage.h"
+#include "XMLRPMWrap.h"
 #include "XMLSpec.h"
+
+// rpm includes
+#include <rpmlib.h>
 
 // attribute structure for XMLPackage
 structValidAttrs g_paPackageAttrs[] =
 {
-	{0x0000,    false, false, "name"},
-	{0x0001,    false, false, "group"},
-	{0x0002,    false, false, "sub"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    false, false, "name",        XATTRTYPE_STRING, {"*", NULL}},
+	{0x0001,    false, false, "group",       XATTRTYPE_STRING, {"*", NULL}},
+	{0x0002,    false, false, "autoreq",     XATTRTYPE_BOOL,   {NULL}},
+	{0x0003,    false, false, "autoprov",    XATTRTYPE_BOOL,   {NULL}},
+	{0x0004,    false, false, "autoreqprov", XATTRTYPE_BOOL,   {NULL}},
+	{0x0005,    false, false, "sub",         XATTRTYPE_BOOL,   {NULL}},
+	{XATTR_END, false, false, "end",         XATTRTYPE_NONE,   {NULL}}
 };
 
 bool XMLPackage::parseCreate(XMLAttrs* pAttrs,
@@ -23,30 +30,58 @@ bool XMLPackage::parseCreate(XMLAttrs* pAttrs,
 
 	// setup the name attribute
 	string sName;
-	if (pAttrs->get("name"))
-		sName.assign(pAttrs->get("name"));
-
-	// is this something else but a sub-package
-	bool bSub = true;
-	if (pAttrs->get("sub"))
-		if (strcasecmp(pAttrs->get("sub"), "no") == 0)
-			bSub = false;
+	if (pAttrs->asString("name"))
+		sName.assign(pAttrs->asString("name"));
 
 	// if we have a name, cool, now test if the package already exists
 	if (sName.length()) {
-		XMLPackage package(sName.c_str(),
-						   pAttrs->get("group"),
-						   bSub);
+		XMLPackage package(sName.c_str(), pAttrs->asString("group"),
+						   pAttrs->asBool("autoreq") || pAttrs->asBool("autoreqprov"),
+						   pAttrs->asBool("autoprov") || pAttrs->asBool("autoreqprov"),
+						   pAttrs->asBool("sub"));
 		pSpec->addPackage(package);
 	}
 
 	// already something existing with %{name} ?
 	else {
-		XMLPackage package(NULL,
-						   pAttrs->get("group"),
-						   bSub);
+		XMLPackage package(NULL, pAttrs->asString("group"),
+						   pAttrs->asBool("autoreq") || pAttrs->asBool("autoreqprov"),
+						   pAttrs->asBool("autoprov") || pAttrs->asBool("autoreqprov"),
+						   pAttrs->asBool("sub"));
 		pSpec->addPackage(package);
 	}
+	return true;
+}
+
+bool XMLPackage::structCreate(PackageStruct* pPackage,
+							  Spec pSpec,
+							  XMLSpec* pXSpec)
+{
+	if (!pXSpec || !pSpec || !pPackage || !pPackage->header)
+		return false;
+
+	string sSummary, sGroup, sName;
+	if (!getRPMHeader(pPackage->header, RPMTAG_GROUP, sGroup) ||
+		!getRPMHeader(pPackage->header, RPMTAG_GROUP, sSummary))
+		return false;
+	getRPMHeader(pPackage->header, RPMTAG_NAME, sName);
+	bool bSub = false;
+	if (sName.compare(pXSpec->getName()) == 0) {
+		bSub = true;
+	}
+	// TODO: Description to be added....
+
+	XMLPackage package(bSub ? NULL : sName.c_str(), sGroup.c_str(),
+					   pPackage->autoReq ? true : false,
+					   pPackage->autoProv ? true : false,
+					   bSub);
+	package.setSummary(sSummary.c_str());
+	pXSpec->addPackage(package);
+	XMLPackageContainer::structCreate(pPackage, pSpec, pXSpec);
+	XMLFiles::structCreate(pPackage, pSpec, pXSpec);
+
+	// do the next package and return
+	XMLPackage::structCreate(pPackage->next, pSpec, pXSpec);
 	return true;
 }
 
@@ -74,6 +109,8 @@ bool XMLPackage::setSummary(const char* szSummary,
 
 XMLPackage::XMLPackage(const char* szName,
 					   const char* szGroup,
+					   bool bAutoReq,
+					   bool bAutoProv,
 					   bool bSub)
 	: XMLBase()
 {
@@ -82,6 +119,8 @@ XMLPackage::XMLPackage(const char* szName,
 	if (szGroup)
 		m_sGroup.assign(szGroup);
 	m_bSub = bSub;
+	m_bAutoReq = bAutoReq;
+	m_bAutoProv = bAutoProv;
 }
 
 XMLPackage::XMLPackage(const XMLPackage& rPackage)
@@ -92,6 +131,8 @@ XMLPackage::XMLPackage(const XMLPackage& rPackage)
 	m_sSummary.assign(rPackage.m_sSummary);
 	m_sDescription.assign(rPackage.m_sDescription);
 	m_bSub = rPackage.m_bSub;
+	m_bAutoReq = rPackage.m_bAutoReq;
+	m_bAutoProv = rPackage.m_bAutoProv;
 	m_Requires = rPackage.m_Requires;
 	m_BuildRequires = rPackage.m_BuildRequires;
 	m_Provides = rPackage.m_Provides;
@@ -118,13 +159,19 @@ void XMLPackage::toSpecFile(ostream& rOut)
 	else
 		rOut << endl << endl;
 
-	// add the summary
+	// add the "optional' stuff
 	if (hasSummary())
 		rOut << "summary:        " << getSummary() << endl;
-
-	// do we have a group?
 	if (hasGroup())
 		rOut << "group:          " << getGroup() << endl;
+	if (!hasAutoRequires() && !hasAutoProvides())
+		rOut << "autoreqprov:    no" << endl;
+	else {
+		if (!hasAutoRequires())
+			rOut << "autoreq:        no" << endl;
+		if (!hasAutoProvides())
+			rOut << "autoprov:       no" << endl;
+	}
 
 	getProvides().toSpecFile(rOut, "provides");
 	getObsoletes().toSpecFile(rOut, "obsoletes");
@@ -199,7 +246,16 @@ void XMLPackage::toXMLFile(ostream& rOut)
 	}
 	if (hasGroup())
 		rOut << " group=\"" << getGroup() << "\"";
+	if (!hasAutoRequires() && !hasAutoProvides())
+		rOut << " autoreqprov=\"no\"";
+	else {
+		if (!hasAutoRequires())
+			rOut << " autoreq=\"no\"";
+		if (!hasAutoProvides())
+			rOut << " autoprov=\"no\"";
+	}
 	rOut << ">";
+
 	if (hasSummary())
 		rOut << endl << "\t\t<summary>" << getSummary() << "\t\t</summary>";
 	if (hasDescription())

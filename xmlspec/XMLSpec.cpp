@@ -3,25 +3,29 @@
 
 // our includes
 #include "XMLAttrs.h"
+#include "XMLRPMWrap.h"
 #include "XMLSpec.h"
+
+// rpm includes
+#include <rpmlib.h>
 
 using namespace std;
 
 // attribute structure for XMLSpec
 structValidAttrs g_paSpecAttrs[] =
 {
-	{0x0000,    true,  false, "name"},
-	{0x0001,    true,  false, "version"},
-	{0x0002,    true,  false, "release"},
-	{0x0003,    false, false, "epoch"},
-	{0x0004,    false, false, "distribution"},
-	{0x0005,    false, false, "vendor"},
-	{0x0006,    false, false, "packager"},
-	{0x0007,    false, false, "packager-email"},
-	{0x0008,    false, false, "copyright"},
-	{0x0009,    false, false, "url"},
-	{0x000A,    false, false, "buildroot"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    true,  false, "name",           XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0001,    true,  false, "version",        XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0002,    true,  false, "release",        XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0003,    false, false, "epoch",          XATTRTYPE_INTEGER, {NULL}},
+	{0x0004,    false, false, "distribution",   XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0005,    false, false, "vendor",         XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0006,    false, false, "packager",       XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0007,    false, false, "packager-email", XATTRTYPE_MAIL,    {"*", NULL}},
+	{0x0008,    false, false, "copyright",      XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0009,    false, false, "url",            XATTRTYPE_STRING,  {"*", NULL}},
+	{0x000A,    false, false, "buildroot",      XATTRTYPE_STRING,  {"*", NULL}},
+	{XATTR_END, false, false, "end",            XATTRTYPE_NONE,    {NULL}}
 };
 
 XMLSpec* XMLSpec::parseCreate(XMLAttrs* pAttrs,
@@ -33,40 +37,49 @@ XMLSpec* XMLSpec::parseCreate(XMLAttrs* pAttrs,
 
 	// create and return
 	return new XMLSpec(szFilename,
-					   pAttrs->get("name"),
-					   pAttrs->get("version"),
-					   pAttrs->get("release"),
-					   pAttrs->get("epoch"),
-					   pAttrs->get("distribution"),
-					   pAttrs->get("vendor"),
-					   pAttrs->get("packager"),
-					   pAttrs->get("packager-email"),
-					   pAttrs->get("copyright"),
-					   pAttrs->get("url"),
-					   pAttrs->get("buildroot"));
+					   pAttrs->asString("name"),
+					   pAttrs->asString("version"),
+					   pAttrs->asString("release"),
+					   pAttrs->asString("epoch"),
+					   pAttrs->asString("distribution"),
+					   pAttrs->asString("vendor"),
+					   pAttrs->asString("packager"),
+					   pAttrs->asString("packager-email"),
+					   pAttrs->asString("copyright"),
+					   pAttrs->asString("url"),
+					   pAttrs->asString("buildroot"));
 }
 
-XMLSpec* XMLSpec::structCreate(Spec spec)
+XMLSpec* XMLSpec::structCreate(Spec pSpec)
 {
-	if (!spec)
+	if (!pSpec || !pSpec->packages || !pSpec->packages->header)
 		return NULL;
 
-	XMLSpec* pSpec = new XMLSpec(spec->specFile,
-								 spec->specFile,
-								 "1.0",
-								 "1",
-								 "0",
-								 NULL,
-								 NULL,
-								 NULL,
-								 NULL,
-								 NULL,
-								 NULL,
-								 spec->buildRootURL);
+	// create the spec with values from the RPM stuff
+	string sName, sVersion, sRelease, sEpoch, sDistro;
+	string sVendor, sPackager, sMail, sLicense, sURL;
+	if (!getRPMHeader(pSpec->packages->header, RPMTAG_NAME, sName) ||
+		!getRPMMacro("PACKAGE_VERSION", sVersion) ||
+		!getRPMMacro("PACKAGE_RELEASE", sRelease))
+		return NULL;
+	getRPMHeader(pSpec->packages->header, RPMTAG_EPOCH, sEpoch);
+	getRPMHeader(pSpec->packages->header, RPMTAG_DISTRIBUTION, sDistro);
+	getRPMHeader(pSpec->packages->header, RPMTAG_VENDOR, sVendor);
+	getRPMHeader(pSpec->packages->header, RPMTAG_PACKAGER, sPackager);
+	getRPMHeader(pSpec->packages->header, RPMTAG_LICENSE, sLicense);
+	getRPMHeader(pSpec->packages->header, RPMTAG_URL, sURL);
+	XMLSpec* pXSpec = new XMLSpec(pSpec->specFile, sName.c_str(), sVersion.c_str(),
+								  sRelease.c_str(), sEpoch.c_str(), sDistro.c_str(),
+								  sVendor.c_str(), sPackager.c_str(), sMail.c_str(),
+								  sLicense.c_str(), sURL.c_str(), pSpec->buildRootURL);
 
-	XMLSource::structCreate(spec->sources,
-							pSpec);
-	return pSpec;
+	// add sources, packages all kinds of funny stuff
+	XMLChangelog::structCreate(pSpec, pXSpec);
+	XMLSource::structCreate(pSpec->sources, pSpec, pXSpec);
+	XMLPackage::structCreate(pSpec->packages, pSpec, pXSpec);
+
+	// return the created spec
+	return pXSpec;
 }
 
 XMLSpec::XMLSpec(const char* szFilename,

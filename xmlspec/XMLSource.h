@@ -33,12 +33,14 @@ public:
 	 * Static factory function for the creation of XMLSource, XMLPatch, ...
 	 * objects from RPM Source* structure.
 	 * .
-	 * @param pSpource Pointer to a list of sources
+	 * @param pSource Pointer to a list of sources
+	 * @param pSpec pointer to the RPM spec
 	 * @param pSpec pointer to our spec object
 	 * @return true on success, false otherwise
 	 **/
 	static bool structCreate(Source* pSource,
-							XMLSpec* pSpec);
+							 Spec pSpec,
+							 XMLSpec* pXSpec);
 
 	/**
 	 * Static factory function for the creation of an XMLSource

@@ -50,6 +50,10 @@ enum enumXMLTAGValid
 	XTAG_NO          = 0x0000,
 	XTAG_WRONGSTRUCT,
 	XTAG_SPEC,
+	XTAG_EXCLUDEARCH,
+	XTAG_EXCLUDEOS,
+	XTAG_EXCLUSIVEARCH,
+	XTAG_EXCLUSIVEOS,
 	XTAG_SOURCE,
 	XTAG_PATCH,
 	XTAG_NOSOURCE,
@@ -520,6 +524,46 @@ void startDepth2(structCBData* pData)
 			if (!XMLChangelogDate::parseCreate(pData->m_pAttrs, pData->m_pSpec))
 				createError(XMLERR_ERROR, pData,
 							"Failed to parse 'change' tag (%s).",
+							pData->m_pSpec->getError());
+			else if (pData->m_pSpec->hasWarning())
+				createError(XMLERR_WARNING, pData, pData->m_pSpec->getWarning());
+			break;
+		case XTAG_PRE:
+			if (!XMLPackageScripts::createPreScripts(pData->m_pAttrs, pData->m_pSpec))
+				createError(XMLERR_ERROR, pData,
+							"Failed to parse 'pre' tag (%s).",
+							pData->m_pSpec->getError());
+			else if (pData->m_pSpec->hasWarning())
+				createError(XMLERR_WARNING, pData, pData->m_pSpec->getWarning());
+			break;
+		case XTAG_POST:
+			if (!XMLPackageScripts::createPostScripts(pData->m_pAttrs, pData->m_pSpec))
+				createError(XMLERR_ERROR, pData,
+							"Failed to parse 'pre' tag (%s).",
+							pData->m_pSpec->getError());
+			else if (pData->m_pSpec->hasWarning())
+				createError(XMLERR_WARNING, pData, pData->m_pSpec->getWarning());
+			break;
+		case XTAG_PREUN:
+			if (!XMLPackageScripts::createPreUnScripts(pData->m_pAttrs, pData->m_pSpec))
+				createError(XMLERR_ERROR, pData,
+							"Failed to parse 'pre' tag (%s).",
+							pData->m_pSpec->getError());
+			else if (pData->m_pSpec->hasWarning())
+				createError(XMLERR_WARNING, pData, pData->m_pSpec->getWarning());
+			break;
+		case XTAG_POSTUN:
+			if (!XMLPackageScripts::createPostUnScripts(pData->m_pAttrs, pData->m_pSpec))
+				createError(XMLERR_ERROR, pData,
+							"Failed to parse 'pre' tag (%s).",
+							pData->m_pSpec->getError());
+			else if (pData->m_pSpec->hasWarning())
+				createError(XMLERR_WARNING, pData, pData->m_pSpec->getWarning());
+			break;
+		case XTAG_VERIFY:
+			if (!XMLPackageScripts::createVerifyScripts(pData->m_pAttrs, pData->m_pSpec))
+				createError(XMLERR_ERROR, pData,
+							"Failed to parse 'pre' tag (%s).",
 							pData->m_pSpec->getError());
 			else if (pData->m_pSpec->hasWarning())
 				createError(XMLERR_WARNING, pData, pData->m_pSpec->getWarning());

@@ -40,10 +40,10 @@ public:
 	/**
 	 * Creates and XMLSpec from an RPM Spec structure
 	 * .
-	 * @param spec The RPM spec structure
+	 * @param pSpec The RPM spec structure
 	 * @return Pointer to the created spec
 	 **/
-	static XMLSpec* structCreate(Spec spec);
+	static XMLSpec* structCreate(Spec pSpec);
 
 //
 // constructors/destructor

@@ -11,77 +11,70 @@
 using namespace std;
 
 bool XMLSource::structCreate(Source* pSource,
-							 XMLSpec* pSpec)
+							 Spec pSpec,
+							 XMLSpec* pXSpec)
 {
-	if (!pSpec || !pSource)
+	if (!pXSpec || !pSpec || !pSource)
 		return false;
 
-	do {
-		// create our mirror
-		XMLMirror *pMirror = NULL;
-		if (pSource->source != pSource->fullSource) {
-			unsigned int nLen = pSource->source-pSource->fullSource;
-			char szPath[nLen+1];
-			strncpy(szPath, pSource->fullSource, nLen);
-			szPath[nLen] = '\0';
-			pMirror = new XMLMirror(szPath, NULL, NULL);
-		}
+	// create our mirror
+	XMLMirror *pMirror = NULL;
+	if (pSource->source != pSource->fullSource) {
+		unsigned int nLen = pSource->source-pSource->fullSource;
+		char szPath[nLen+1];
+		strncpy(szPath, pSource->fullSource, nLen);
+		szPath[nLen] = '\0';
+		pMirror = new XMLMirror(szPath, NULL, NULL);
+	}
 
-		// generate the source, nosource, patch
-		XMLSource* pXSource = NULL;
-		XMLNoSource* pXNoSource = NULL;
-		XMLPatch* pXPatch = NULL;
-		switch (pSource->flags) {
-			case RPMBUILD_ISSOURCE:
-    			pXSource = new XMLSource(pSource->source,
-										 pSource->num,
-										 NULL,
-										 NULL,
-										 NULL);
-				pSpec->addSource(*pXSource);
-				if (pMirror)
-					pSpec->lastSource().addMirror(*pMirror);
-				delete pXSource;
-				break;
-			case RPMBUILD_ISNO:
-				pXNoSource = new XMLNoSource(pSource->source,
-											 pSource->num,
-											 NULL,
-											 NULL,
-											 NULL);
-				pSpec->addNoSource(*pXNoSource);
-				if (pMirror)
-					pSpec->lastNoSource().addMirror(*pMirror);
-				delete pXNoSource;
-				break;
-			case RPMBUILD_ISPATCH:
-				pXPatch = new XMLPatch(pSource->source,
-									   pSource->num,
-									   NULL,
-									   NULL);
-				pSpec->addPatch(*pXPatch);
-				if (pMirror)
-					pSpec->lastPatch().addMirror(*pMirror);
-				delete pXPatch;
-				break;
-			default:
-				break;
-		}
-		if (pMirror)
-			delete pMirror;
-	} while ((pSource = pSource->next));
+	// generate the source, nosource, patch
+	XMLSource* pXSource = NULL;
+	XMLNoSource* pXNoSource = NULL;
+	XMLPatch* pXPatch = NULL;
+	switch (pSource->flags) {
+		case RPMBUILD_ISSOURCE:
+			pXSource = new XMLSource(pSource->source, pSource->num,
+									 NULL, NULL, NULL);
+			pXSpec->addSource(*pXSource);
+			if (pMirror)
+				pXSpec->lastSource().addMirror(*pMirror);
+			delete pXSource;
+			break;
+		case RPMBUILD_ISNO:
+			pXNoSource = new XMLNoSource(pSource->source, pSource->num,
+										 NULL, NULL, NULL);
+			pXSpec->addNoSource(*pXNoSource);
+			if (pMirror)
+				pXSpec->lastNoSource().addMirror(*pMirror);
+			delete pXNoSource;
+			break;
+		case RPMBUILD_ISPATCH:
+			pXPatch = new XMLPatch(pSource->source, pSource->num, NULL, NULL);
+			pXSpec->addPatch(*pXPatch);
+			if (pMirror)
+				pXSpec->lastPatch().addMirror(*pMirror);
+			delete pXPatch;
+			break;
+		default:
+			break;
+	}
+	if (pMirror)
+		delete pMirror;
+
+	// do the next source and return
+	XMLSource::structCreate(pSource->next, pSpec, pXSpec);
 	return true;
 }
 
 // attribute structure for XMLSource
 structValidAttrs g_paSourceAttrs[] =
 {
-	{0x0000,    true,  false, "name"},
-	{0x0001,    false, false, "num"},
-	{0x0002,    false, false, "dir"},
-	{0x0003,    false, false, "size"},
-	{0x0004,    false, false, "md5"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    true,  false, "name", XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0001,    false, false, "num",  XATTRTYPE_INTEGER, {NULL}},
+	{0x0002,    false, false, "dir",  XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0003,    false, false, "size", XATTRTYPE_INTEGER, {NULL}},
+	{0x0004,    false, false, "md5",  XATTRTYPE_STRING,  {"*", NULL}},
+	{XATTR_END, false, false, "end",  XATTRTYPE_NONE,    {NULL}}
 };
 
 bool XMLSource::parseCreate(XMLAttrs* pAttrs,
@@ -91,15 +84,9 @@ bool XMLSource::parseCreate(XMLAttrs* pAttrs,
 	if (!pAttrs->validate(g_paSourceAttrs, (XMLBase*)pSpec))
 		return false;
 
-	// create and return
-	unsigned int nNum = 0;
-	if (pAttrs->get("num"))
-		nNum = atoi(pAttrs->get("num"));
-	XMLSource source(pAttrs->get("name"),
-					 nNum,
-					 pAttrs->get("dir"),
-					 pAttrs->get("size"),
-					 pAttrs->get("md5"));
+	XMLSource source(pAttrs->asString("name"), pAttrs->asInteger("num"),
+					 pAttrs->asString("dir"), pAttrs->asString("size"),
+					 pAttrs->asString("md5"));
 	pSpec->addSource(source);
 
 	return true;
@@ -210,14 +197,9 @@ bool XMLNoSource::parseCreate(XMLAttrs* pAttrs,
 	if (!pAttrs->validate(g_paSourceAttrs, (XMLBase*)pSpec))
 		return false;
 
-	unsigned int nNum = 0;
-	if (pAttrs->get("num"))
-		nNum = atoi(pAttrs->get("num"));
-	XMLNoSource source(pAttrs->get("name"),
-					   nNum,
-					   pAttrs->get("dir"),
-					   pAttrs->get("size"),
-					   pAttrs->get("md5"));
+	XMLNoSource source(pAttrs->asString("name"), pAttrs->asInteger("num"),
+					   pAttrs->asString("dir"), pAttrs->asString("size"),
+					   pAttrs->asString("md5"));
 	pSpec->addNoSource(source);
 	return true;
 }
@@ -274,11 +256,11 @@ void XMLNoSource::toRPMStruct(Spec pRPMSpec)
 // attribute structure for XMLPatch
 structValidAttrs g_paPatchAttrs[] =
 {
-	{0x0000,    true,  false, "name"},
-	{0x0001,    false, false, "num"},
-	{0x0002,    false, false, "size"},
-	{0x0003,    false, false, "md5"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    true,  false, "name", XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0001,    false, false, "num",  XATTRTYPE_INTEGER, {NULL}},
+	{0x0002,    false, false, "size", XATTRTYPE_INTEGER, {NULL}},
+	{0x0003,    false, false, "md5",  XATTRTYPE_STRING,  {"*", NULL}},
+	{XATTR_END, false, false, "end",  XATTRTYPE_NONE,    {NULL}}
 };
 
 bool XMLPatch::parseCreate(XMLAttrs* pAttrs,
@@ -288,13 +270,8 @@ bool XMLPatch::parseCreate(XMLAttrs* pAttrs,
 	if (!pAttrs->validate(g_paPatchAttrs, (XMLBase*)pSpec))
 		return false;
 
-	unsigned int nNum = 0;
-	if (pAttrs->get("num"))
-		nNum = atoi(pAttrs->get("num"));
-	XMLPatch patch(pAttrs->get("name"),
-				   nNum,
-				   pAttrs->get("size"),
-				   pAttrs->get("md5"));
+	XMLPatch patch(pAttrs->asString("name"), pAttrs->asInteger("num"),
+				   pAttrs->asString("size"), pAttrs->asString("md5"));
 	pSpec->addPatch(patch);
 	return true;
 }

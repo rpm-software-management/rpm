@@ -204,6 +204,18 @@ public:
 	static bool addObsolete(XMLAttrs* pAttrs,
 							XMLSpec* pSpec);
 
+	/**
+	 * Adds requires/provides/obsoletes from RPM structures
+	 * .
+	 * @param pPackage pointer to the RPM package
+	 * @param pSpec pointer to the RPM spec
+	 * @param pXSpec pointer to the XML spec to populate
+	 * @return true on success, false otherwise
+	 **/
+	static bool structCreate(PackageStruct* pPackage,
+							 Spec pSpec,
+							 XMLSpec* pXSpec);
+
 //
 // constructors/destructor
 //

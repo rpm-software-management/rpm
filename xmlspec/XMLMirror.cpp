@@ -7,10 +7,10 @@ using namespace std;
 // attribute structure for XMLMirror
 structValidAttrs g_paMirrorAttrs[] =
 {
-	{0x0000,    true,  false, "path"},
-	{0x0001,    false, false, "description"},
-	{0x0002,    false, false, "country"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    true,  false, "path",        XATTRTYPE_STRING, {"*", NULL}},
+	{0x0001,    false, false, "description", XATTRTYPE_STRING, {"*", NULL}},
+	{0x0002,    false, false, "country",     XATTRTYPE_STRING, {"*", NULL}},
+	{XATTR_END, false, false, "end",         XATTRTYPE_NONE,   {NULL}}
 };
 
 bool XMLMirror::parseCreate(XMLAttrs* pAttrs,
@@ -21,9 +21,9 @@ bool XMLMirror::parseCreate(XMLAttrs* pAttrs,
 	if (!pAttrs->validate(g_paMirrorAttrs, (XMLBase*)pSpec))
 		return false;
 
-	XMLMirror mirror(pAttrs->get("path"),
-					 pAttrs->get("description"),
-					 pAttrs->get("country"));
+	XMLMirror mirror(pAttrs->asString("path"),
+					 pAttrs->asString("description"),
+					 pAttrs->asString("country"));
 	if (bPatch && pSpec->numPatches())
 		pSpec->lastPatch().addMirror(mirror);
 	else if (!bPatch && pSpec->numSources())

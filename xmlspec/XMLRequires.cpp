@@ -2,17 +2,21 @@
 #include "XMLAttrs.h"
 #include "XMLPackage.h"
 #include "XMLRequires.h"
+#include "XMLRPMWrap.h"
 #include "XMLSpec.h"
+
+// rpm includes
+#include <rpmlib.h>
 
 using namespace std;
 
 // attribute structure for XMLPackageEntry
 structValidAttrs g_paEntryAttrs[] =
 {
-	{0x0000,    true,  false, "name"},
-	{0x0001,    false, false, "version"},
-	{0x0002,    false, false, "cmp"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    true,  false, "name",    XATTRTYPE_STRING, {"*", NULL}},
+	{0x0001,    false, false, "version", XATTRTYPE_STRING, {"*", NULL}},
+	{0x0002,    false, false, "cmp",     XATTRTYPE_STRING, {"*", NULL}},
+	{XATTR_END, false, false, "end",     XATTRTYPE_NONE,   {NULL}}
 };
 
 bool XMLPackageEntry::parseCreate(XMLAttrs* pAttrs,
@@ -23,9 +27,8 @@ bool XMLPackageEntry::parseCreate(XMLAttrs* pAttrs,
 		return false;
 
 	// create and return
-	XMLPackageEntry entry(pAttrs->get("name"),
-						  pAttrs->get("version"),
-						  pAttrs->get("cmp"));
+	XMLPackageEntry entry(pAttrs->asString("name"), pAttrs->asString("version"),
+						  pAttrs->asString("cmp"));
 	rContainer.addEntry(entry);
 	return true;
 }
@@ -174,4 +177,13 @@ bool XMLPackageContainer::addObsolete(XMLAttrs* pAttrs,
 	if (!pSpec)
 		return false;
 	return XMLPackageEntry::parseCreate(pAttrs, pSpec->lastPackage().getObsoletes());
+}
+
+bool XMLPackageContainer::structCreate(PackageStruct* pPackage,
+									   Spec pSpec,
+									   XMLSpec* pXSpec)
+{
+	if (!pXSpec || !pPackage || !pPackage->header)
+		return false;
+	return true;
 }

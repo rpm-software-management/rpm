@@ -9,8 +9,9 @@
 // attribute structure for XMLScript
 structValidAttrs g_paScriptAttrs[] =
 {
-	{0x0000,    false, false, "dir"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    false, false, "dir",         XATTRTYPE_STRING, {"*", NULL}},
+	{0x0001,    false, false, "interpreter", XATTRTYPE_STRING, {"*", NULL}},
+	{XATTR_END, false, false, "end",         XATTRTYPE_NONE,   {NULL}}
 };
 
 bool XMLScript::parseCreate(XMLAttrs* pAttrs,
@@ -19,17 +20,22 @@ bool XMLScript::parseCreate(XMLAttrs* pAttrs,
 {
 	if (!pAttrs->validate(g_paScriptAttrs, (XMLBase*)pAttrs))
 		return false;
-	XMLScript script(szScript, pAttrs->get("dir"));
+	XMLScript script(szScript,
+					 pAttrs->asString("interpreter"),
+					 pAttrs->asString("dir"));
 	rContainer.add(script);
 	return true;
 }
 
 XMLScript::XMLScript(const char* szScript,
+					 const char* szInterpreter,
 					 const char* szDir)
 	: XMLBase()
 {
 	if (szScript)
 		m_sValue.assign(szScript);
+	if (szInterpreter)
+		m_sInterpreter.assign(szInterpreter);
 	if (szDir)
 		m_sDir.assign(szDir);
 }
@@ -38,6 +44,7 @@ XMLScript::XMLScript(const XMLScript& rScript)
 	: XMLBase()
 {
 	m_sValue.assign(rScript.m_sValue);
+	m_sInterpreter.assign(rScript.m_sInterpreter);
 	m_sDir.assign(rScript.m_sDir);
 }
 
@@ -48,6 +55,7 @@ XMLScript::~XMLScript()
 XMLScript XMLScript::operator=(XMLScript script)
 {
 	m_sValue.assign(script.m_sValue);
+	m_sInterpreter.assign(script.m_sInterpreter);
 	m_sDir.assign(script.m_sDir);
 }
 
@@ -70,7 +78,7 @@ void XMLScript::toXMLFile(ostream& rOut,
 void XMLScript::toRPMStruct(StringBuf* pSB)
 {
 	if (hasDirectory()) {
-		char szBuff[getDirectoryLen()+3+1];
+		char szBuff[getDirectoryLen()+3+1]; // 3 == strlen("cd ")
 		sprintf(szBuff, "cd %s", getDirectory());
 		appendStringBuf(*pSB, szBuff);
 	}
@@ -196,6 +204,51 @@ bool XMLPackageScripts::addVerifyScript(XMLAttrs* pAttrs,
 	if (!pSpec)
 		return false;
 	return XMLScript::parseCreate(pAttrs, szScript, pSpec->lastPackage().getVerify());
+}
+
+bool XMLPackageScripts::createPreScripts(XMLAttrs* pAttrs,
+										 XMLSpec* pSpec)
+{
+	if (!pSpec)
+		return false;
+	pSpec->lastPackage().getPre().setInterpreter(pAttrs->asString("interpreter"));
+	return true;
+}
+
+bool XMLPackageScripts::createPostScripts(XMLAttrs* pAttrs,
+										  XMLSpec* pSpec)
+{
+	if (!pSpec)
+		return false;
+	pSpec->lastPackage().getPost().setInterpreter(pAttrs->asString("interpreter"));
+	return true;
+}
+
+bool XMLPackageScripts::createPreUnScripts(XMLAttrs* pAttrs,
+										   XMLSpec* pSpec)
+{
+	if (!pSpec)
+		return false;
+	pSpec->lastPackage().getPreUn().setInterpreter(pAttrs->asString("interpreter"));
+	return true;
+}
+
+bool XMLPackageScripts::createPostUnScripts(XMLAttrs* pAttrs,
+											XMLSpec* pSpec)
+{
+	if (!pSpec)
+		return false;
+	pSpec->lastPackage().getPostUn().setInterpreter(pAttrs->asString("interpreter"));
+	return true;
+}
+
+bool XMLPackageScripts::createVerifyScripts(XMLAttrs* pAttrs,
+											XMLSpec* pSpec)
+{
+	if (!pSpec)
+		return false;
+	pSpec->lastPackage().getVerify().setInterpreter(pAttrs->asString("interpreter"));
+	return true;
 }
 
 XMLPackageScripts::XMLPackageScripts()

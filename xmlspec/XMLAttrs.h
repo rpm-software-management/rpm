@@ -5,13 +5,27 @@
 #include <string>
 #include <vector>
 
+// standard C includes
+#include <string.h>
+
 // our includes
 #include "XMLBase.h"
 
 using namespace std;
 
 // definition for the end of the attributes
-#define XATTR_END  0xFFFF
+#define XATTR_END        0xFFFF
+#define XATTR_NUM_VALSTR 5
+
+enum eAttrType
+{
+	XATTRTYPE_STRING = 0,
+	XATTRTYPE_INTEGER,
+	XATTRTYPE_BOOL,
+	XATTRTYPE_DATE,
+	XATTRTYPE_MAIL,
+	XATTRTYPE_NONE = XATTR_END
+};
 
 struct structValidAttrs
 {
@@ -19,6 +33,8 @@ struct structValidAttrs
 	bool         m_bMandatory;
 	bool         m_bFound;
 	char*        m_szName;
+	unsigned int m_nType;
+	char*        m_szaMatches[XATTR_NUM_VALSTR+1];
 };
 
 // forward class definitions
@@ -84,14 +100,41 @@ public:
 	}
 
 	/**
-	 * Returns the attribute value
+	 * Returns the attribute value (as string)
 	 * .
 	 * @param none
 	 * @return string containing the attribute value
 	 **/
-	const char* getValue()
+	const char* asString()
 	{
 		return m_sValue.c_str();
+	}
+
+	/**
+	 * Returns the attribute value (as integer)
+	 * .
+	 * @param none
+	 * @return the attribute as an integer
+	 **/
+	unsigned int asInteger()
+	{
+		return atoi(m_sValue.c_str());
+	}
+
+	/**
+	 * Returns the attribute value as a boolean
+	 * .
+	 * @param none
+	 * @return true if set, false otherwise
+	 **/
+	bool asBool()
+	{
+		bool isSet = true;
+		if (strcasecmp(m_sValue.c_str(), "no") == 0 ||
+			strcasecmp(m_sValue.c_str(), "0") == 0 ||
+			strcasecmp(m_sValue.c_str(), "false") == 0)
+			isSet = false;
+		return isSet;
 	}
 
 //
@@ -149,15 +192,6 @@ public:
 	bool validate(structValidAttrs* paValids,
 				  XMLBase* pError);
 
-	/**
-	 * Returns the value of an attribute as specified by the name
-	 * .
-	 * @param szName The name of the attribute whose value we are
-	 *               to return
-	 * @return The value or NULL if the attribute was not found
-	 **/
-	const char* get(const char* szName);
-
 //
 // member variables get/set functions
 //
@@ -183,6 +217,33 @@ public:
 	{
 		return m_vAttrs[nNum];
 	}
+
+	/**
+	 * Returns the attribute as specified by the name
+	 * .
+	 * @param szName The name of the attribute whose value we are
+	 *               to return
+	 * @return The attribute as a string
+	 **/
+	const char* asString(const char* szName);
+
+	/**
+	 * Returns the attribute as specified by the name
+	 * .
+	 * @param szName The name of the attribute whose value we are
+	 *               to return
+	 * @return The attribute as an integer
+	 **/
+	unsigned int asInteger(const char* szName);
+
+	/**
+	 * Returns the attribute as specified by the name
+	 * .
+	 * @param szName The name of the attribute whose value we are
+	 *               to return
+	 * @return The attribute as a bool
+	 **/
+	bool asBool(const char* szName);
 
 //
 // protected data members

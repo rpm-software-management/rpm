@@ -68,7 +68,7 @@
 		<summary>This spec is just an example for some funny purpose.</summary>
 		<description>%{summary}</description>
 		 <post>
-			<script>/sbin/ldconfig</script>
+			<script interpreter="/bin/sh">/sbin/ldconfig</script>
 		</post>
 		<postun>
 			<script>/sbin/ldconfig</script>
@@ -142,6 +142,12 @@
 	</clean>
 
 	<changelog>
+		<changes date="Thu May 30 2002"
+				 author="Jaco Greeff"
+				 author-email="jaco@puxedo.org"
+				 version="1.0-04">
+			<change>Added attribute &quot;interpreter&quot; to script</change>
+		</changes>
 		<changes date="Sat May 25 2002"
 				 author="Jaco Greeff"
 				 author-email="jaco@puxedo.org"

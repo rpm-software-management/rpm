@@ -308,6 +308,20 @@ protected:
 class XMLChangelog : public XMLBase
 {
 //
+// static factory functions
+//
+public:
+	/**
+	 * Creates changelog objects from an RPM Spec structure
+	 * .
+	 * @param pSpec Pointer to the RPM spec
+	 * @param pXSpec pointer to the XMLSpec object to populate
+	 * @return true on success, false otherwise
+	 **/
+	static bool structCreate(Spec pSpec,
+							 XMLSpec* pXSpec);
+
+//
 // constructors/destructor
 //
 public:

@@ -3,6 +3,7 @@
 
 // our includes
 #include "XMLChangelog.h"
+#include "XMLRPMWrap.h"
 #include "XMLSpec.h"
 
 using namespace std;
@@ -48,11 +49,11 @@ void XMLChangelogEntry::toXMLFile(ostream& rOut)
 // attribute structure for XMLChangelogDate
 structValidAttrs g_paChangelogDateAttrs[] =
 {
-	{0x0000,    true,  false, "date"},
-	{0x0001,    true,  false, "author"},
-	{0x0002,    false, false, "author-email"},
-	{0x0003,    false, false, "version"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    true,  false, "date",         XATTRTYPE_DATE,   {NULL}},
+	{0x0001,    true,  false, "author",       XATTRTYPE_STRING, {"*", NULL}},
+	{0x0002,    false, false, "author-email", XATTRTYPE_MAIL,   {NULL}},
+	{0x0003,    false, false, "version",      XATTRTYPE_STRING, {"*", NULL}},
+	{XATTR_END, false, false, "end",          XATTRTYPE_NONE,   {NULL}}
 };
 
 bool XMLChangelogDate::parseCreate(XMLAttrs* pAttrs,
@@ -62,10 +63,10 @@ bool XMLChangelogDate::parseCreate(XMLAttrs* pAttrs,
 	if (!pAttrs->validate(g_paChangelogDateAttrs, (XMLBase*)pSpec))
 		return false;
 
-	XMLChangelogDate date(pAttrs->get("date"),
-						  pAttrs->get("author"),
-						  pAttrs->get("author-email"),
-						  pAttrs->get("version"));
+	XMLChangelogDate date(pAttrs->asString("date"),
+						  pAttrs->asString("author"),
+						  pAttrs->asString("author-email"),
+						  pAttrs->asString("version"));
 	pSpec->getChangelog().addDate(date);
 	return true;
 }
@@ -128,6 +129,14 @@ void XMLChangelogDate::toXMLFile(ostream& rOut)
 			getEntry(i).toXMLFile(rOut);
 		rOut << endl << "\t\t</changes>";
 	}
+}
+
+bool XMLChangelog::structCreate(Spec pSpec,
+								XMLSpec* pXSpec)
+{
+	if (!pXSpec || !pSpec)
+		return false;
+	return true;
 }
 
 XMLChangelog::XMLChangelog()

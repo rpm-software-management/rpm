@@ -7,15 +7,21 @@
 #include "XMLPackage.h"
 #include "XMLSpec.h"
 
+// rpm includes
+#include <rpmlib.h>
+#include <stringbuf.h>
+
 using namespace std;
 
 // attribute structure for XMLFile
 structValidAttrs g_paFileAttrs[] =
 {
-	{0x0000,    false, false, "attr"},
-	{0x0001,    false, false, "gid"},
-	{0x0002,    false, false, "uid"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    false, false, "attr",   XATTRTYPE_INTEGER, {NULL}},
+	{0x0001,    false, false, "gid",    XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0002,    false, false, "uid",    XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0003,    false, false, "config", XATTRTYPE_STRING,  {"noreplace",
+															"*", NULL}},
+	{XATTR_END, false, false, "end",    XATTRTYPE_NONE,    {NULL}}
 };
 
 bool XMLFile::parseCreate(XMLAttrs* pAttrs,
@@ -27,10 +33,8 @@ bool XMLFile::parseCreate(XMLAttrs* pAttrs,
 		return false;
 
 	// create and return
-	XMLFile file(pAttrs->get("attr"),
-				 pAttrs->get("uid"),
-				 pAttrs->get("gid"),
-				 szPath);
+	XMLFile file(pAttrs->asString("attr"), pAttrs->asString("uid"),
+				 pAttrs->asString("gid"), pAttrs->asString("config"), szPath);
 	pSpec->lastPackage().getFiles().addFile(file);
 	return true;
 }
@@ -38,6 +42,7 @@ bool XMLFile::parseCreate(XMLAttrs* pAttrs,
 XMLFile::XMLFile(const char* szAttr,
 				 const char* szOwner,
 				 const char* szGroup,
+				 const char* szConfig,
 				 const char* szPath)
 	: XMLBase()
 {
@@ -47,6 +52,8 @@ XMLFile::XMLFile(const char* szAttr,
 		m_sOwner.assign(szOwner);
 	if (szGroup)
 		m_sGroup.assign(szGroup);
+	if (szConfig)
+		m_sConfig.assign(szConfig);
 	if (szPath)
 		m_sPath.assign(szPath);
 }
@@ -57,6 +64,7 @@ XMLFile::XMLFile(const XMLFile& rFile)
 	m_sAttr.assign(rFile.m_sAttr);
 	m_sOwner.assign(rFile.m_sOwner);
 	m_sGroup.assign(rFile.m_sGroup);
+	m_sConfig.assign(rFile.m_sConfig);
 	m_sPath.assign(rFile.m_sPath);
 }
 
@@ -69,6 +77,7 @@ XMLFile XMLFile::operator=(XMLFile file)
 	m_sAttr.assign(file.m_sAttr);
 	m_sOwner.assign(file.m_sOwner);
 	m_sGroup.assign(file.m_sGroup);
+	m_sConfig.assign(file.m_sConfig);
 	m_sPath.assign(file.m_sPath);
 }
 
@@ -80,6 +89,9 @@ void XMLFile::toSpecFile(ostream& rOut)
 		rOut << "," << (hasOwner() ? getOwner() : "-");
 		rOut << "," << (hasGroup() ? getGroup() : "-");
 		rOut << ") ";
+	}
+	if (hasConfig()) {
+		rOut << "%config(" << getConfig() << ") ";
 	}
 	rOut << getPath() << endl;
 }
@@ -93,6 +105,8 @@ void XMLFile::toXMLFile(ostream& rOut)
 		rOut << " uid=\"" << getOwner() << "\"";
 	if (hasGroup())
 		rOut << " gid=\"" << getAttr() << "\"";
+	if (hasConfig())
+		rOut << " config=\"" << getConfig() << "\"";
 	rOut << ">";
 	rOut << getPath() << "</file>";
 }
@@ -100,10 +114,10 @@ void XMLFile::toXMLFile(ostream& rOut)
 // attribute structure for XMLFiles
 structValidAttrs g_paFilesAttrs[] =
 {
-	{0x0000,    false, false, "attr"},
-	{0x0001,    false, false, "gid"},
-	{0x0002,    false, false, "uid"},
-	{XATTR_END, false, false, "end"}
+	{0x0000,    false, false, "attr", XATTRTYPE_INTEGER, {NULL}},
+	{0x0001,    false, false, "gid",  XATTRTYPE_STRING,  {"*", NULL}},
+	{0x0002,    false, false, "uid",  XATTRTYPE_STRING,  {"*", NULL}},
+	{XATTR_END, false, false, "end",  XATTRTYPE_NONE,    {NULL}}
 };
 
 bool XMLFiles::parseCreate(XMLAttrs* pAttrs,
@@ -113,9 +127,19 @@ bool XMLFiles::parseCreate(XMLAttrs* pAttrs,
 	if (!pSpec || !pAttrs->validate(g_paFilesAttrs, (XMLBase*)pSpec))
 		return false;
 
-	pSpec->lastPackage().getFiles().setDefAttr(pAttrs->get("attr"));
-	pSpec->lastPackage().getFiles().setDefOwner(pAttrs->get("uid"));
-	pSpec->lastPackage().getFiles().setDefGroup(pAttrs->get("gid"));
+	pSpec->lastPackage().getFiles().setDefAttr(pAttrs->asString("attr"));
+	pSpec->lastPackage().getFiles().setDefOwner(pAttrs->asString("uid"));
+	pSpec->lastPackage().getFiles().setDefGroup(pAttrs->asString("gid"));
+	return true;
+}
+
+bool XMLFiles::structCreate(PackageStruct* pPackage,
+							Spec pSpec,
+							XMLSpec* pXSpec)
+{
+	if (!pXSpec || !pSpec || !pPackage || !pPackage->fileList)
+		return false;
+
 	return true;
 }
 
