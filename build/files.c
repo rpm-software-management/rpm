@@ -8,6 +8,8 @@
 #include <string.h>
 #include <malloc.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <regex.h>
 
 #include "spec.h"
 #include "package.h"
@@ -94,6 +96,7 @@ static int parseForVerify(char *buf, struct FileList *fl);
 static int parseForLang(char *buf, struct FileList *fl);
 static int parseForAttr(char *buf, struct FileList *fl);
 static int parseForConfig(char *buf, struct FileList *fl);
+static int parseForRegexLang(char *fileName, char **lang);
 static int myGlobPatternP(char *pattern);
 static int glob_error(const char *foo, int bar);
 static void timeCheck(int tc, Header h);
@@ -719,6 +722,7 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
     int_16 fileMode;
     int fileUid, fileGid;
     char *fileUname, *fileGname;
+    char *lang;
     
     strcpy(fileName, cleanFileName(name));
 
@@ -824,9 +828,14 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	fl->fileList[fl->fileListRecsUsed].uname = fileUname;
 	fl->fileList[fl->fileListRecsUsed].gname = fileGname;
 
-	fl->fileList[fl->fileListRecsUsed].lang =
-	    strdup(fl->currentLang ? fl->currentLang : "");
-	
+	if (fl->currentLang) {
+	    fl->fileList[fl->fileListRecsUsed].lang = strdup(fl->currentLang);
+	} else if (! parseForRegexLang(fileName, &lang)) {
+	    fl->fileList[fl->fileListRecsUsed].lang = strdup(lang);
+	} else {
+	    fl->fileList[fl->fileListRecsUsed].lang = strdup("");
+	}
+
 	fl->fileList[fl->fileListRecsUsed].flags = fl->currentFlags;
 	fl->fileList[fl->fileListRecsUsed].verifyFlags =
 	    fl->currentVerifyFlags;
@@ -1019,6 +1028,47 @@ static int parseForVerify(char *buf, struct FileList *fl)
     *resultVerify = not ? ~(verifyFlags) : verifyFlags;
 
     return 0;
+}
+
+static int parseForRegexLang(char *fileName, char **lang)
+{
+    static int initialized = 0;
+    static int hasRegex = 0;
+    static regex_t compiledPatt;
+    static char buf[BUFSIZ];
+    int x;
+    regmatch_t matches[2];
+    char *patt, *s;
+
+    if (! initialized) {
+	initialized = 1;
+	patt = rpmGetVar(RPMVAR_LANGPATT);
+	if (! patt) {
+	    return 1;
+	}
+	if (regcomp(&compiledPatt, patt, REG_EXTENDED)) {
+	    return -1;
+	}
+	hasRegex = 1;
+    }
+    
+    if (! hasRegex) {
+	return 1;
+    }
+
+    if (! regexec(&compiledPatt, fileName, 2, matches, REG_NOTEOL)) {
+	/* Got match */
+	s = fileName + matches[1].rm_eo - 1;
+	x = matches[1].rm_eo - matches[1].rm_so;
+	buf[x] = '\0';
+	while (x) {
+	    buf[--x] = *s--;
+	}
+	*lang = buf;
+	return 0;
+    }
+
+    return 1;
 }
 
 static int parseForLang(char *buf, struct FileList *fl)

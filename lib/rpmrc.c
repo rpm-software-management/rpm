@@ -112,6 +112,7 @@ static struct rpmOption optionTable[] = {
     { "ftpproxy",		RPMVAR_FTPPROXY,		0, 0 },
     { "gzipbin",		RPMVAR_GZIPBIN,			0, 1 },
     { "instchangelog",		RPMVAR_INSTCHANGELOG,		0, 0 },
+    { "langpatt",               RPMVAR_LANGPATT,                0, 0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0 },
     { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0 },
