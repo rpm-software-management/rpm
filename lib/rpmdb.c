@@ -241,6 +241,9 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     dbiIndex dbi = NULL;
     int _dbapi, _dbapi_rebuild, _dbapi_wanted;
     int rc = 0;
+#ifdef	DYING
+    static int _printed = 0;
+#endif
 
     dbix = dbiTagToDbix(rpmtag);
     if (dbix < 0 || dbix >= dbiTagsMax)
@@ -259,7 +262,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     default:
 	_dbapi = _dbapi_wanted;
 	if (_dbapi < 0 || _dbapi >= 4 || mydbvecs[_dbapi] == NULL) {
-	    static int _printed = 0;
+#ifdef	DYING
 	    if (!_printed++)
 		fprintf(stderr, _("\n\
 --> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n\
@@ -267,6 +270,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     and configure \"%%_dbapi 3\" (e.g. create and/or edit /etc/rpm/macros).\n\
 \n\
 "),	    _dbapi_wanted);
+#endif
 	    return NULL;
 	}
 	errno = 0;
@@ -308,8 +312,8 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 
     /* Require conversion. */
     if (rc && _dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
-	static int _printed = 0;
 	rc = (_rebuildinprogress ? 0 : 1);
+#ifdef	DYING
 	if (rc && !_printed++)
 	    fprintf(stderr, _("\n\
 --> The rpm database cannot be opened in db%d format.\n\
@@ -317,12 +321,13 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     your database to db%d format by running \"rpm --rebuilddb\" as root.\n\
 \n\
 "),	_dbapi_wanted, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
+#endif
 	goto exit;
     }
 
     /* Suggest possible configuration */
     if (_dbapi_wanted >= 0 && _dbapi != _dbapi_wanted) {
-	static int _printed = 0;
+#ifdef	DYING
 	if (!_printed++)
 	    fprintf(stderr, _("\n\
 --> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n\
@@ -330,14 +335,15 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     and configure \"%%_dbapi %d\" (e.g. create and/or edit /etc/rpm/macros).\n\
 \n\
 "),	_dbapi_wanted, _dbapi, _dbapi);
+#endif
 	rc = 1;
 	goto exit;
     }
 
     /* Suggest possible configuration */
     if (_dbapi_wanted < 0 && _dbapi != _dbapi_rebuild) {
-	static int _printed = 0;
 	rc = (_rebuildinprogress ? 0 : 1);
+#ifdef	DYING
 	if (rc && !_printed++)
 	    fprintf(stderr, _("\n\
 --> The rpm database is in db%d format, not the suggested db%d format.\n\
@@ -348,6 +354,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 \n\
 "),	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3),
 	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3), _dbapi);
+#endif
 	goto exit;
     }
 
@@ -2324,6 +2331,16 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	return rc;
 
     rc = rpmdbRemoveDatabase(rootdir, newdbpath, _newdbapi);
+
+
+    /* Remove /etc/rpm/macros.db1 configuration file if db3 rebuilt. */
+    if (rc == 0 && _newdbapi == 1 && _olddbapi == 3) {
+	const char * mdb1 = "/etc/rpm/macros.db1";
+	struct stat st;
+	if (!stat(mdb1, &st) && S_ISREG(st.st_mode) && !unlink(mdb1))
+	    rpmMessage(RPMMESS_DEBUG,
+		_("removing %s after successful db3 rebuild.\n"), mdb1);
+    }
     return rc;
 }
 

@@ -1,6 +1,6 @@
-/* (C) 1998 Red Hat Software, Inc. -- Licensing details are in the COPYING
+/* (C) 1998-2000 Red Hat, Inc. -- Licensing details are in the COPYING
    file accompanying popt source distributions, available from
-   ftp://ftp.redhat.com/pub/code/popt */
+   ftp://ftp.rpm.org/pub/rpm/dist. */
 
 #include "system.h"
 

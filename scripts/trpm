@@ -5,11 +5,11 @@ dbg=	# echo
 rpm=/bin/rpm
 rpmb=/usr/bin/rpmbuild
 rpmq=/usr/bin/rpmquery
-rpmdb=/usr/bin/rpmdb
+rpmdb=$rpm
 
 dist=7.0
 type=min
-arch=`$rpm --eval '%{_arch}'`
+arch=`$rpmq --eval '%{_arch}'`
 
 top=`pwd`
 root=$top/$dist
@@ -20,7 +20,7 @@ db1=
 rc="--rcfile $top/rpmrc-$dist"
 sorted=	# "| sort"
 
-minglob="
+min0glob="
 basesystem-
 bash-[12]
 filesystem-
@@ -33,7 +33,7 @@ termcap-
 "
 
 min1glob="
-$minglob
+$min0glob
 bzip2-[01]
 chkconfig-
 db1-1
@@ -56,6 +56,7 @@ procps-2
 psmisc-
 sed-
 shadow-utils-
+readline-2
 rmt-
 tar-
 textutils-
@@ -81,6 +82,7 @@ words-
 baseglob="
 $min2glob
 console-tools-
+gmp-2
 initscripts-
 kernel-2
 modutils-
@@ -102,8 +104,10 @@ db2-devel-
 db3-devel-
 gdbm-devel-
 glibc-devel-
+gmp-devel-
 kernel-headers-
 ncurses-devel-
+readline-devel-
 tcl-
 zlib-devel-
 "
@@ -119,15 +123,17 @@ db3-utils-
 egcs-2
 gcc-2
 gettext-
+krb5-configs-
 krb5-libs-
 libstdc++-
 libtool-
 make-
 m4-
 perl-
+python-1
 tcsh-
 "
-classes="min min1 min2 base devel build"
+classes="min0 min1 min2 base devel build"
 notallpat="(kernel-[^2h])"
 
 for cmd in $*
@@ -141,7 +147,9 @@ do
 	dist=$cmd
 	root=$top/$dist
 	rc="--rcfile $top/rpmrc-$dist $db1"
-	$dbg mkdir -p $root/{X/tmp,X/RPMS,X/SRPMS} || exit 1
+	$dbg mkdir -p $root/{dev,X/RPMS,X/SRPMS}
+	[ ! -c $root/dev/null ] && $dbg $sudo mknod $root/dev/null c 1 3
+	find $root
 	cat << EOF > $top/rpmrc-$dist
 include:    /usr/lib/rpm/rpmrc
 macrofiles: /usr/lib/rpm/macros:/usr/lib/rpm/%{_target}/macros:$top/macros:$top/macros-$dist-$arch
@@ -209,7 +217,7 @@ EOF
 	    echo $type-$dist-$arch not found
 	    exit 1
 	}
-	$dbg $sudo $rpm $rc --root $root $cmd `cat $type-$dist-$arch`
+	$dbg $sudo $rpm $rc --root $root $cmd --notriggers `cat $type-$dist-$arch`
 	;;
     -[Vqei]*|--showrc)
 	$dbg $sudo $rpm $rc --root $root $cmd
