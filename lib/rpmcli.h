@@ -83,51 +83,6 @@ rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
 #define	RPMCLI_POPT_NOHDRCHK		-1031
 
 /* ==================================================================== */
-/** \name RPMBT */
-/*@{*/
-
-/** \ingroup rpmcli
- * Describe build command line request.
- */
-struct rpmBuildArguments_s {
-    int buildAmount;		/*!< Bit(s) to control operation. */
-/*@null@*/
-    const char * buildRootOverride; /*!< from --buildroot */
-/*@null@*/
-    char * targets;		/*!< Target platform(s), comma separated. */
-/*@observer@*/
-    const char * passPhrase;	/*!< Pass phrase. */
-/*@only@*/ /*@null@*/
-    const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
-    int force;			/*!< from --force */
-    int noBuild;		/*!< from --nobuild */
-    int noDeps;			/*!< from --nodeps */
-    int noLang;			/*!< from --nolang */
-    int shortCircuit;		/*!< from --short-circuit */
-    int sign;			/*!< from --sign */
-    int useCatalog;		/*!< from --usecatalog */
-    char buildMode;		/*!< Build mode (one of "btBC") */
-    char buildChar;		/*!< Build stage (one of "abcilps ") */
-/*@observer@*/ /*@null@*/
-    const char * rootdir;
-};
-
-/** \ingroup rpmcli
- */
-typedef	struct rpmBuildArguments_s *	BTA_t;
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct rpmBuildArguments_s	rpmBTArgs;
-
-/** \ingroup rpmcli
- */
-/*@unchecked@*/
-extern struct poptOption		rpmBuildPoptTable[];
-
-/*@}*/
-/* ==================================================================== */
 /** \name RPMQV */
 /*@{*/
 
@@ -453,6 +408,52 @@ int rpmcliVerify(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 		fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
+
+/*@}*/
+/* ==================================================================== */
+/** \name RPMBT */
+/*@{*/
+
+/** \ingroup rpmcli
+ * Describe build command line request.
+ */
+struct rpmBuildArguments_s {
+    rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
+    int buildAmount;		/*!< Bit(s) to control operation. */
+/*@null@*/
+    const char * buildRootOverride; /*!< from --buildroot */
+/*@null@*/
+    char * targets;		/*!< Target platform(s), comma separated. */
+/*@observer@*/
+    const char * passPhrase;	/*!< Pass phrase. */
+/*@only@*/ /*@null@*/
+    const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
+    int force;			/*!< from --force */
+    int noBuild;		/*!< from --nobuild */
+    int noDeps;			/*!< from --nodeps */
+    int noLang;			/*!< from --nolang */
+    int shortCircuit;		/*!< from --short-circuit */
+    int sign;			/*!< from --sign */
+    int useCatalog;		/*!< from --usecatalog */
+    char buildMode;		/*!< Build mode (one of "btBC") */
+    char buildChar;		/*!< Build stage (one of "abcilps ") */
+/*@observer@*/ /*@null@*/
+    const char * rootdir;
+};
+
+/** \ingroup rpmcli
+ */
+typedef	struct rpmBuildArguments_s *	BTA_t;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct rpmBuildArguments_s	rpmBTArgs;
+
+/** \ingroup rpmcli
+ */
+/*@unchecked@*/
+extern struct poptOption		rpmBuildPoptTable[];
 
 /*@}*/
 /* ==================================================================== */

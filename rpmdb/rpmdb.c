@@ -7,7 +7,7 @@
 #define	_USE_COPY_LOAD	/* XXX don't use DB_DBT_MALLOC (yet) */
 
 /*@unchecked@*/
-static int _rpmdb_debug = 0;
+int _rpmdb_debug = 0;
 
 #include <sys/file.h>
 #include <signal.h>
@@ -100,7 +100,9 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
     if (nd > (*odp)) {
 	nd *= 2;
 	nb = __PBM_IX(nd) + 1;
+/*@-unqualifiedtrans@*/
 	*sp = xrealloc(*sp, nb * sizeof(__pbm_bits));
+/*@=unqualifiedtrans@*/
 	for (i = __PBM_IX(*odp) + 1; i < nb; i++)
 	    __PBM_BITS(*sp)[i] = 0;
 	*odp = nd;
@@ -2114,7 +2116,7 @@ top:
 
     /* Check header digest/signature once (if requested). */
 /*@-boundsread -branchstate -sizeoftype @*/
-    if (mi->mi_ts && mi->mi_hdrchk) {
+    if (mi->mi_hdrchk && mi->mi_ts) {
 	const char * msg = NULL;
 	pbm_set * set = NULL;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
@@ -2124,7 +2126,7 @@ top:
 			&mi->mi_db->db_nbits, mi->mi_offset);
 	    if (PBM_ISSET(mi->mi_offset, set)) {
 #ifdef	NOISY
-		rpmMessage(RPMMESS_DEBUG, _("h#%6u: already checked.\n"),
+		rpmMessage(RPMMESS_DEBUG, _("h#%7u: already checked.\n"),
 			mi->mi_offset);
 #endif
 		rpmrc = RPMRC_OK;
@@ -2133,7 +2135,7 @@ top:
 	if (rpmrc == RPMRC_NOTFOUND) {
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
 	    if (msg)
-		rpmMessage(RPMMESS_DEBUG, _("h#%6u: %s"),
+		rpmMessage(RPMMESS_DEBUG, _("h#%7u: %s"),
 			mi->mi_offset, msg);
 	    if (set && rpmrc == RPMRC_OK)
 		PBM_SET(mi->mi_offset, set);

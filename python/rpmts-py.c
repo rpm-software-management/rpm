@@ -530,7 +530,8 @@ fprintf(stderr, "*** GetKeys(%p) ts %p\n", s, s->ts);
     if (!PyArg_ParseTuple(args, ":GetKeys")) return NULL;
 
     rpmtsGetKeys(s->ts, &data, &num);
-    if (data == NULL) {
+    if (data == NULL || num <= 0) {
+	data = _free(data);
 	Py_INCREF(Py_None);
 	return Py_None;
     }
@@ -538,12 +539,13 @@ fprintf(stderr, "*** GetKeys(%p) ts %p\n", s, s->ts);
     tuple = PyTuple_New(num);
 
     for (i = 0; i < num; i++) {
-	PyObject *obj = (PyObject *) data[i];
+	PyObject *obj;
+	obj = (data[i] ? (PyObject *) data[i] : Py_None);
 	Py_INCREF(obj);
 	PyTuple_SetItem(tuple, i, obj);
     }
 
-    free (data);
+    data = _free(data);
 
     return tuple;
 }

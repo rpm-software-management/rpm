@@ -232,8 +232,10 @@ typedef void (*poptCallbackType) (poptContext con,
  * Reinitialize popt context.
  * @param con		context
  */
+/*@-exportlocal@*/
 void poptResetContext(/*@null@*/poptContext con)
 	/*@modifies con @*/;
+/*@=exportlocal@*/
 
 /** \ingroup popt
  * Return value of next option found.

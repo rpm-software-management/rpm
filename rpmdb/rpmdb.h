@@ -11,6 +11,11 @@
 #include <rpmlib.h>
 #include <db.h>
 
+/*@-exportlocal@*/
+/*@unchecked@*/
+extern int _rpmdb_debug;
+/*@=exportlocal@*/
+
 #ifdef	NOTYET
 /** \ingroup rpmdb
  * Database of headers and tag value indices.

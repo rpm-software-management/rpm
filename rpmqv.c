@@ -130,22 +130,22 @@ long _stksize = 64 * 1024L;
 
 static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies *fp, fileSystem @*/
 {
     fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
 
 static void printBanner(FILE * fp)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies *fp, fileSystem @*/
 {
     fprintf(fp, _("Copyright (C) 1998-2002 - Red Hat, Inc.\n"));
     fprintf(fp, _("This program may be freely redistributed under the terms of the GNU GPL\n"));
 }
 
 static void printUsage(poptContext con, FILE * fp, int flags)
-	/*@globals __assert_program_name, rpmEVR, fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals rpmEVR, fileSystem, internalState @*/
+	/*@modifies *fp, fileSystem, internalState @*/
 {
     printVersion(fp);
     printBanner(fp);
@@ -789,9 +789,9 @@ ia->transFlags |= RPMTRANS_FLAG_NOMD5;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 /*@i@*/	    ec += rpmRollback(ts, ia, NULL);
 	} else {
-	    /*@-compmempass@*/ /* FIX: ia->relocations[0].newPath undefined */
+	    /*@-compdef -compmempass@*/ /* FIX: ia->relocations[0].newPath undefined */
 	    ec += rpmInstall(ts, ia, (const char **)poptGetArgs(optCon));
-	    /*@=compmempass@*/
+	    /*@=compdef =compmempass@*/
 	}
 	break;
 

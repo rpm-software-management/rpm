@@ -6,6 +6,11 @@
  * Structures and prototypes used for an "rpmps" problem set.
  */
 
+/*@-exportlocal@*/
+/*@unchecked@*/
+extern int _rpmps_debug;
+/*@=exportlocal@*/
+
 /**
  * Raw data for an element of a problem set.
  */

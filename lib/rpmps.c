@@ -15,13 +15,13 @@
 /*@access rpmProblem @*/
 
 /*@unchecked@*/
-static int _ps_debug = 0;
+int _rpmps_debug = 0;
 
 rpmps XrpmpsUnlink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
 /*@-modfilesystem@*/
-if (_ps_debug > 0 && msg != NULL)
+if (_rpmps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     ps->nrefs--;
@@ -35,7 +35,7 @@ rpmps XrpmpsLink(rpmps ps, const char * msg,
 {
     ps->nrefs++;
 /*@-modfilesystem@*/
-if (_ps_debug > 0 && msg != NULL)
+if (_rpmps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
 /*@-refcounttrans@*/

@@ -518,6 +518,7 @@ fi
 * Sat Jul 27 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.58
 - popt: display sub-table options only once on --usage.
 - wire --nosignatures et al as common options, rework CLI options.
+- python: don't segfault in ts.GetKeys() on erased packages.
 
 * Thu Jul 25 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.57
 - python: remove the old initdb/rebuilddb methods, use ts.fooDB().

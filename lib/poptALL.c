@@ -20,6 +20,33 @@ static int _debug = 0;
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
+extern int _fps_debug;
+
+/*@unchecked@*/
+extern int _fsm_debug;
+
+/*@unchecked@*/
+extern int _rpmal_debug;
+
+/*@unchecked@*/
+extern int _rpmdb_debug;
+
+/*@unchecked@*/
+extern int _rpmds_debug;
+
+/*@unchecked@*/
+extern int _rpmfi_debug;
+
+/*@unchecked@*/
+extern int _rpmps_debug;
+
+/*@unchecked@*/
+extern int _rpmte_debug;
+
+/*@unchecked@*/
+extern int _rpmts_debug;
+
+/*@unchecked@*/
 extern int noLibio;
 /*@=exportheadervar@*/
 
@@ -49,7 +76,7 @@ extern int _rpmio_debug;
  */
 static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies *fp, fileSystem @*/
 {
     fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
@@ -80,9 +107,9 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext,
+	/*@globals rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
+	/*@modifies rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
 
@@ -187,8 +214,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("ROOT") },
 
  { "showrc", '\0', 0, NULL, POPT_SHOWRC,
-	N_("display final rpmrc and macro configuration"),
-	NULL },
+	N_("display final rpmrc and macro configuration"), NULL },
  { "quiet", '\0', 0, NULL, 'q',
 	N_("provide less detailed output"), NULL},
  { "verbose", 'v', 0, NULL, 'v',
@@ -201,14 +227,32 @@ struct poptOption rpmcliAllPoptTable[] = {
        N_("disable use of libio(3) API"), NULL},
 #endif
 
+ { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
+	NULL, NULL},
+ { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
+	N_("debug payload file state machine"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
 #ifdef	DYING
  { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
 	N_("debug option/argument processing"), NULL},
 #endif
+ { "rpmaldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmal_debug, -1,
+	NULL, NULL},
+ { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,
+	NULL, NULL},
+ { "rpmdsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_debug, -1,
+	NULL, NULL},
+ { "rpmfidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfi_debug, -1,
+	NULL, NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
+ { "rpmpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmps_debug, -1,
+	NULL, NULL},
+ { "rpmtedebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmte_debug, -1,
+	NULL, NULL},
+ { "rpmtsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_debug, -1,
+	NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
 

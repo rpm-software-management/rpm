@@ -141,22 +141,26 @@ static fileAction decideFileFate(const rpmts ts,
 	if (domd5(fn, buffer, 0, NULL))
 	    return FA_CREATE;	/* assume file has been removed */
 	omd5 = rpmfiMD5(ofi);
-	if (!memcmp(omd5, buffer, 16))
+	if (omd5 && !memcmp(omd5, buffer, 16))
 	    return FA_CREATE;	/* unmodified config file, replace. */
 	nmd5 = rpmfiMD5(nfi);
-	if (!memcmp(omd5, nmd5, 16))
+/*@-nullpass@*/
+	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
 	    return FA_SKIP;	/* identical file, don't bother. */
+/*@=nullpass@*/
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
 	memset(buffer, 0, sizeof(buffer));
 	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 	    return FA_CREATE;	/* assume file has been removed */
 	oFLink = rpmfiFLink(ofi);
-	if (!strcmp(oFLink, buffer))
+	if (oFLink && !strcmp(oFLink, buffer))
 	    return FA_CREATE;	/* unmodified config file, replace. */
 	nFLink = rpmfiFLink(nfi);
-	if (!strcmp(oFLink, nFLink))
+/*@-nullpass@*/
+	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
+/*@=nullpass@*/
      }
 
     /*
@@ -183,10 +187,16 @@ static int filecmp(rpmfi afi, rpmfi bfi)
     if (awhat == LINK) {
 	const char * alink = rpmfiFLink(afi);
 	const char * blink = rpmfiFLink(bfi);
+	if (alink == blink) return 0;
+	if (alink == NULL) return 1;
+	if (blink == NULL) return -1;
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
 	const unsigned char * amd5 = rpmfiMD5(afi);
 	const unsigned char * bmd5 = rpmfiMD5(bfi);
+	if (amd5 == bmd5) return 0;
+	if (amd5 == NULL) return 1;
+	if (bmd5 == NULL) return -1;
 	return memcmp(amd5, bmd5, 16);
     }
 
@@ -334,7 +344,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 #define	ISROOT(_d)	(((_d)[0] == '/' && (_d)[1] == '\0') ? "" : (_d))
 
 /*@unchecked@*/
-static int _fps_debug = 0;
+int _fps_debug = 0;
 
 static int fpsCompare (const void * one, const void * two)
 	/*@*/

@@ -297,7 +297,9 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 /*@-boundsread@*/
     int_32 il = ntohl(ei[0]);
     int_32 dl = ntohl(ei[1]);
+/*@-castexpose@*/
     entryInfo pe = (entryInfo) &ei[2];
+/*@=castexpose@*/
 /*@=boundsread@*/
     int_32 ildl[2];
     int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;

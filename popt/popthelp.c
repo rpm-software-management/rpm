@@ -554,7 +554,7 @@ static int singleOptionUsage(FILE * fp, int cursor,
 	cursor = 7;
     } 
 
-    if (opt->shortName && opt->longName) {
+    if (opt->longName && opt->shortName) {
 	fprintf(fp, " [-%c|-%s%s%s%s]",
 	    opt->shortName, ((opt->argInfo & POPT_ARGFLAG_ONEDASH) ? "" : "-"),
 	    opt->longName,
@@ -609,7 +609,6 @@ static int itemUsage(FILE * fp, int cursor, poptItem item, int nitems,
 typedef struct poptDone_s {
     int nopts;
     int maxopts;
-/*@observer@*/
     const void ** opts;
 } * poptDone;
 
@@ -623,12 +622,12 @@ typedef struct poptDone_s {
  * @param done		tables already processed
  * @return
  */
-static int singleTableUsage(poptContext con, FILE * fp,
-		int cursor, const struct poptOption * opt,
+static int singleTableUsage(poptContext con, FILE * fp, int cursor,
+		/*@null@*/ const struct poptOption * opt,
 		/*@null@*/ const char * translation_domain,
-		poptDone done)
+		/*@null@*/ poptDone done)
 	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/
+	/*@modifies *fp, done, fileSystem @*/
 {
     /*@-branchstate@*/		/* FIX: W2DO? */
     if (opt != NULL)
@@ -636,19 +635,24 @@ static int singleTableUsage(poptContext con, FILE * fp,
         if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INTL_DOMAIN) {
 	    translation_domain = (const char *)opt->arg;
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
-	    int i = 0;
-	    if (done)
-	    for (i = 0; i < done->nopts; i++) {
-		const void * that = done->opts[i];
-		if (that == NULL || that != opt->arg)
+	    if (done) {
+		int i = 0;
+		for (i = 0; i < done->nopts; i++) {
+/*@-boundsread@*/
+		    const void * that = done->opts[i];
+/*@=boundsread@*/
+		    if (that == NULL || that != opt->arg)
+			/*@innercontinue@*/ continue;
+		    /*@innerbreak@*/ break;
+		}
+		/* Skip if this table has already been processed. */
+		if (opt->arg == NULL || i < done->nopts)
 		    continue;
-		break;
+/*@-boundswrite@*/
+		if (done->nopts < done->maxopts)
+		    done->opts[done->nopts++] = (const void *) opt->arg;
+/*@=boundswrite@*/
 	    }
-	    /* Skip if this table has already been processed. */
-	    if (opt->arg == NULL || i < done->nopts)
-		continue;
-	    if (done->nopts < done->maxopts)
-		done->opts[done->nopts++] = (const void *) opt->arg;
 	    cursor = singleTableUsage(con, fp, cursor, opt->arg,
 			translation_domain, done);
 	} else if ((opt->longName || opt->shortName) &&
@@ -710,8 +714,10 @@ void poptPrintUsage(poptContext con, FILE * fp, /*@unused@*/ int flags)
     done->nopts = 0;
     done->maxopts = 64;
     cursor = done->maxopts * sizeof(*done->opts);
+/*@-boundswrite@*/
     done->opts = memset(alloca(cursor), 0, cursor);
     done->opts[done->nopts++] = (const void *) con->options;
+/*@=boundswrite@*/
 
     cursor = showHelpIntro(con, fp);
     cursor += showShortOptions(con->options, fp, NULL);

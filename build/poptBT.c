@@ -89,7 +89,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_TL:
     case POPT_TP:
     case POPT_TS:
-	if (rba->buildMode == ' ') {
+	if (rba->buildMode == '\0' && rba->buildChar == '\0') {
 	    rba->buildMode = (((unsigned)opt->val) >> 8) & 0xff;
 	    rba->buildChar = (opt->val     ) & 0xff;
 	}
@@ -120,6 +120,18 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	    rba->targets[0] = '\0';
 	}
 	strcat(rba->targets, arg);
+	break;
+
+    case RPMCLI_POPT_NODIGEST:
+	rba->qva_flags |= VERIFY_DIGEST;
+	break;
+
+    case RPMCLI_POPT_NOSIGNATURE:
+	rba->qva_flags |= VERIFY_SIGNATURE;
+	break;
+
+    case RPMCLI_POPT_NOHDRCHK:
+	rba->qva_flags |= VERIFY_HDRCHK;
 	break;
 
     case RPMCLI_POPT_NODEPS:
@@ -212,6 +224,14 @@ struct poptOption rpmBuildPoptTable[] = {
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
 	N_("generate package header(s) compatible with (legacy) rpm[23] packaging"),
 	NULL},
+
+ { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
+        N_("don't verify package digest(s)"), NULL },
+ { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
+        N_("don't verify database header(s) when retrieved"), NULL },
+ { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
+        N_("don't verify package signature(s)"), NULL },
+
  { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
 	N_("do not accept i18N msgstr's from specfile"), NULL},
  { "rmsource", '\0', 0, 0, POPT_RMSOURCE,

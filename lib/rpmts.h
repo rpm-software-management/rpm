@@ -8,9 +8,11 @@
 
 #include "rpmps.h"
 
-/*@unchecked@*/
 /*@-exportlocal@*/
-extern int _ts_debug;
+/*@unchecked@*/
+extern int _rpmts_debug;
+/*@unchecked@*/
+extern int _fps_debug;
 /*@=exportlocal@*/
 
 #define	_RPMTS_VSF_NODIGESTS		(1 << 0)

@@ -63,7 +63,7 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access pgpDigParams @*/
 
 /*@unchecked@*/
-int _ts_debug = 0;
+int _rpmts_debug = 0;
 
 char * hGetNEVR(Header h, const char ** np)
 {
@@ -87,7 +87,7 @@ char * hGetNEVR(Header h, const char ** np)
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
 /*@-modfilesystem@*/
-if (_ts_debug)
+if (_rpmts_debug)
 fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     ts->nrefs--;
@@ -98,7 +98,7 @@ rpmts XrpmtsLink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
     ts->nrefs++;
 /*@-modfilesystem@*/
-if (_ts_debug)
+if (_rpmts_debug)
 fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
