@@ -5,11 +5,10 @@
  * \file rpmio/rpmio_internal.h
  */
 
-/*@-shadow@*/
-static inline int fdFileno(/*@null@*/ void * cookie);
-/*@=shadow@*/
 
 #include <rpmio.h>
+#undef	fdFileno
+
 #include <rpmurl.h>
 
 /** \ingroup rpmio

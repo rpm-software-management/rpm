@@ -360,34 +360,36 @@ off_t	fdSize(FD_t fd)
 
 /* XXX Legacy interfaces needed by gnorpm, rpmfind et al */
 
+/*@-exportlocal@*/
 /**
  */
-/*@-shadow -declundef -fcnuse@*/
 int fdFileno(void * cookie)
 	/*@*/;
-/*@=shadow =declundef =fcnuse@*/
+#define	fdFileno(_fd)		fdio->_fileno(_fd)
 
-
-/*@-exportlocal@*/
 /**
  */
 /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
 	/*@modifies fileSystem @*/;
+#define	fdOpen(_path, _flags, _mode)	fdio->_open((_path), (_flags), (_mode))
 
 /**
  */
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@modifies *cookie, *buf, fileSystem @*/;
+#define	fdRead(_fd, _buf, _count)	fdio->read((_fd), (_buf), (_count))
 
 /**
  */
 ssize_t	fdWrite(void * cookie, const char * buf, size_t count)
 	/*@modifies *cookie, fileSystem @*/;
+#define	fdWrite(_fd, _buf, _count)	fdio->write((_fd), (_buf), (_count))
 
 /**
  */
 int fdClose( /*@only@*/ void * cookie)
 	/*@modifies *cookie, fileSystem @*/;
+#define	fdCLose(_fd)		fdio->close(_fd)
 
 /**
  * FD_t reference count debugging wrappers.

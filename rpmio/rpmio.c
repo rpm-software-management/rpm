@@ -59,6 +59,11 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #endif
 
 #include <rpmio_internal.h>
+#undef	fdFileno
+#undef	fdOpen
+#undef	fdRead
+#undef	fdWrite
+#undef	fdClose
 
 #include "ugid.h"
 #include "rpmmessages.h"
@@ -316,7 +321,9 @@ static inline /*@null@*/ FD_t XfdNew(const char * msg,
     return XfdLink(fd, msg, file, line);
 }
 
+/*@-redef@*/	/* FIX: legacy API should be made static */
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
+/*@=redef@*/
 {
     FD_t fd = c2f(cookie);
     ssize_t rc;
@@ -334,7 +341,9 @@ DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)coun
     return rc;
 }
 
+/*@-redef@*/	/* FIX: legacy API should be made static */
 ssize_t fdWrite(void * cookie, const char * buf, size_t count)
+/*@=redef@*/
 {
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
@@ -388,7 +397,9 @@ DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence
     return rc;
 }
 
+/*@-redef@*/	/* FIX: legacy API should be made static */
 int fdClose( /*@only@*/ void * cookie)
+/*@=redef@*/
 {
     FD_t fd;
     int fdno;
@@ -410,7 +421,9 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned l
     return rc;
 }
 
+/*@-redef@*/	/* FIX: legacy API should be made static */
 /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
+/*@=redef@*/
 {
     FD_t fd;
     int fdno;
