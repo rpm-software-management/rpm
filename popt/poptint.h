@@ -29,19 +29,19 @@ struct poptContext_s {
     int nextLeftover;
     /*@keep@*/ const struct poptOption * options;
     int restLeftover;
-    /*@owned@*/ const char * appName;
-    /*@owned@*/ struct poptAlias * aliases;
+    /*@only@*/ const char * appName;
+    /*@only@*/ struct poptAlias * aliases;
     int numAliases;
     int flags;
     struct execEntry * execs;
     int numExecs;
-    /*@owned@*/ const char ** finalArgv;
+    /*@only@*/ const char ** finalArgv;
     int finalArgvCount;
     int finalArgvAlloced;
     /*@dependent@*/ struct execEntry * doExec;
-    /*@owned@*/ const char * execPath;
+    /*@only@*/ const char * execPath;
     int execAbsolute;
-    /*@owned@*/ const char * otherHelp;
+    /*@only@*/ const char * otherHelp;
 };
 
 #define	xfree(_a)	free((void *)_a)
