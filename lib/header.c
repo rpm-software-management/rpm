@@ -89,17 +89,19 @@ int nextIterator(HeaderIterator iter,
 	if (*c == 1) {
 	    /* Special case -- just return a pointer to the string */
 	    *p = h->data + ntohl(index[slot].offset);
-	} else {
-	    /* Otherwise, build up an array of char* to return */
-	    x = ntohl(index[slot].count);
-	    *p = malloc(x * sizeof(char *));
-	    spp = (char **) *p;
-	    sp = h->data + ntohl(index[slot].offset);
-	    while (x--) {
-		*spp++ = sp;
-		sp = strchr(sp, 0);
-		sp++;
-	    }
+	    break;
+	}
+	/* Fall through to STRING_ARRAY_TYPE */
+    case STRING_ARRAY_TYPE:
+	/* Otherwise, build up an array of char* to return */
+	x = ntohl(index[slot].count);
+	*p = malloc(x * sizeof(char *));
+	spp = (char **) *p;
+	sp = h->data + ntohl(index[slot].offset);
+	while (x--) {
+	    *spp++ = sp;
+	    sp = strchr(sp, 0);
+	    sp++;
 	}
 	break;
     default:
@@ -295,6 +297,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 	    case INT32_TYPE:  	type = "INT32_TYPE"; 	break;
 	    case INT64_TYPE:  	type = "INT64_TYPE"; 	break;
 	    case STRING_TYPE: 	type = "STRING_TYPE"; 	break;
+	    case STRING_ARRAY_TYPE: type = "STRING_ARRAY_TYPE"; break;
 	    default:		type = "(unknown)";	break;
 	}
 
@@ -387,6 +390,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 		}
 		break;
 	    case STRING_TYPE:
+	    case STRING_ARRAY_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d %s\n", ct++, (char *) dp);
 		    dp = strchr(dp, 0);
@@ -470,17 +474,19 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	if (ntohl(index->count) == 1) {
 	    /* Special case -- just return a pointer to the string */
 	    *p = h->data + ntohl(index->offset);
-	} else {
-	    /* Otherwise, build up an array of char* to return */
-	    x = ntohl(index->count);
-	    *p = malloc(x * sizeof(char *));
-	    spp = (char **) *p;
-	    sp = h->data + ntohl(index->offset);
-	    while (x--) {
-		*spp++ = sp;
-		sp = strchr(sp, 0);
-		sp++;
-	    }
+	    break;
+	}
+	/* Fall through to STRING_ARRAY_TYPE */
+    case STRING_ARRAY_TYPE:
+	/* Otherwise, build up an array of char* to return */
+	x = ntohl(index->count);
+	*p = malloc(x * sizeof(char *));
+	spp = (char **) *p;
+	sp = h->data + ntohl(index->offset);
+	while (x--) {
+	    *spp++ = sp;
+	    sp = strchr(sp, 0);
+	    sp++;
 	}
 	break;
     default:
@@ -570,15 +576,18 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	if (c == 1) {
 	    /* Special case -- p is just the string */
 	    length = strlen(p) + 1;
-	} else {
-	    /* Compute sum of length of all strings, including null terminators */
-	    i = c;
-	    spp = p;
-	    length = 0;
-	    while (i--) {
-		/* add one for null termination */
-		length += strlen(*spp++) + 1;
-	    }
+	    break;
+	}
+	/* Otherwise fall through to STRING_ARRAY_TYPE */
+    case STRING_ARRAY_TYPE:
+	/* This is like STRING_TYPE, except it's *always* an array */
+	/* Compute sum of length of all strings, including null terminators */
+	i = c;
+	spp = p;
+	length = 0;
+	while (i--) {
+	    /* add one for null termination */
+	    length += strlen(*spp++) + 1;
 	}
 	break;
     default:
@@ -621,16 +630,18 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	if (c == 1) {
 	    /* Special case -- p is just the string */
 	    strcpy(ptr, p);
-	} else {
-	    /* Otherwise, p is char** */
-	    i = c;
-	    spp = p;
-	    sp = (char *) ptr;
-	    while (i--) {
-		strcpy(sp, *spp);
-		sp += strlen(*spp++) + 1;
-	    }
+	    break;
 	}
+	/* Fall through to STRING_ARRAY_TYPE */
+      case STRING_ARRAY_TYPE:
+	  /* Otherwise, p is char** */
+	  i = c;
+	  spp = p;
+	  sp = (char *) ptr;
+	  while (i--) {
+	      strcpy(sp, *spp);
+	      sp += strlen(*spp++) + 1;
+	  }
 	break;
       default:
 	fprintf(stderr, "Data type %d not supprted\n", (int) type);

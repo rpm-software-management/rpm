@@ -69,5 +69,6 @@ Header copyHeader(Header h);
 #define INT64_TYPE 5
 #define STRING_TYPE 6
 #define BIN_TYPE 7
+#define STRING_ARRAY_TYPE 8
 
 #endif _header_h
