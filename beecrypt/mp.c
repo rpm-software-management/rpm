@@ -822,7 +822,7 @@ void mpsqr(mpw* result, size_t size, const mpw* data)
 
 	*(--result) = 0;
 
-	(void) mpmultwo(size*2, result);
+	(void) mpmultwo(size << 1, result);
 
 	(void) mpaddsqrtrc(size, result, data);
 }
@@ -1243,7 +1243,7 @@ mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 		if (((unsigned)carry) | (unsigned)(xhi >= y))
 		{
 			xhi -= y;
-			result |= 1;
+			result++;
 		}
 		carry = (xhi >> (MP_WBITS-1));
 		xhi <<= 1;
@@ -1254,77 +1254,50 @@ mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 	if (((unsigned)carry) | (unsigned)(xhi >= y))
 	{
 		xhi -= y;
-		result |= 1;
+		result++;
 	}
 	return result;
 }
 #endif
 
-#ifndef ASM_MPNMODW
-mpw mpnmodw(mpw* result, size_t xsize, const mpw* xdata, mpw y, mpw* workspace)
+#ifndef ASM_MPMOD
+void mpmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* workspace)
 {
-	/* result size xsize, workspace size xsize+1 */
-	register mpw q;
-	mpw  qsize = xsize-1;
+	/* result size xsize, workspace size 2*ysize+1 */
+	mpw q, msw;
 	mpw* rdata = result;
+	mpw* ynorm = workspace+ysize+1;
+	size_t shift, qsize = xsize-ysize;
 
+	mpcopy(ysize, ynorm, ydata);
+	shift = mpnorm(ysize, ynorm);
+	msw = *ynorm;
 	mpcopy(xsize, rdata, xdata);
-	/*
-		if (*rdata >= y)
-			*rdata -= y;
-	*/
-	if (mpge(1, rdata, &y))
-		(void) mpsub(1, rdata, &y);
-
-	while (qsize--)
-	{
-		q = mppndiv(rdata[0], rdata[1], y);
-
-/*@-evalorder@*/
-		*workspace = mpsetmul(1, workspace+1, &y, q);
-/*@=evalorder@*/
-
-		while (mplt(2, rdata, workspace))
-		{
-			(void) mpsubx(2, workspace, 1, &y);
-			/* q--; */
-		}
-		(void) mpsub(2, rdata, workspace);
-		rdata++;
-	}
-
-	return *rdata;
-}
-#endif
-
-#ifndef ASM_MPNMOD
-void mpnmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* workspace)
-{
-	/* result size xsize, workspace size xsize+1 */
-	mpw q;
-	mpw msw = *ydata;
-	mpw qsize = xsize-ysize;
-	mpw* rdata = result;
-
-	mpcopy(xsize, rdata, xdata);
-	if (mpge(ysize, rdata, ydata))
-		(void) mpsub(ysize, rdata, ydata);
+	if (mpge(ysize, rdata, ynorm))
+		(void) mpsub(ysize, rdata, ynorm);
 
 	while (qsize--)
 	{
 		q = mppndiv(rdata[0], rdata[1], msw);
 
 /*@-evalorder@*/
-		*workspace = mpsetmul(ysize, workspace+1, ydata, q);
+		*workspace = mpsetmul(ysize, workspace+1, ynorm, q);
 /*@=evalorder@*/
 
 		while (mplt(ysize+1, rdata, workspace))
 		{
-			(void) mpsubx(ysize+1, workspace, ysize, ydata);
+			(void) mpsubx(ysize+1, workspace, ysize, ynorm);
 			q--;
 		}
 		(void) mpsub(ysize+1, rdata, workspace);
 		rdata++;
+	}
+	/* de-normalization steps */
+	while (shift--)
+	{
+		mpdivtwo(ysize, ynorm);
+		if (mpge(ysize, rdata, ynorm))
+			mpsub(ysize, rdata, ynorm);
 	}
 }
 #endif
@@ -1378,10 +1351,11 @@ void mpprintln(size_t size, const mpw* data)
 
 void mpfprint(FILE * f, size_t size, const mpw* data)
 {
-	if (data == NULL)
+	if (data == (mpw*) 0)
 	 	return;
-	if (f == NULL)
+	if (f == (FILE*) 0)
 		f = stderr;
+
 	while (size--)
 	{
 		#if (MP_WBITS == 32)
@@ -1398,16 +1372,16 @@ void mpfprint(FILE * f, size_t size, const mpw* data)
 		# error
 		#endif
 	}
-	fprintf(f, "\n");
 	(void) fflush(f);
 }
 
 void mpfprintln(FILE * f, size_t size, const mpw* data)
 {
-	if (data == NULL)
+	if (data == (mpw*) 0)
 	 	return;
-	if (f == NULL)
+	if (f == (FILE*) 0)
 		f = stderr;
+
 	while (size--)
 	{
 		#if (MP_WBITS == 32)

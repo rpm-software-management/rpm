@@ -662,13 +662,7 @@ mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-mpw mpnmodw(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, mpw y, /*@out@*/ mpw* workspace)
-	/*@modifies result, workspace @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpnmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* workspace)
+void mpmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* workspace)
 	/*@modifies result, workspace @*/;
 
 /**

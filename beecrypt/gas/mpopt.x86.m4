@@ -409,3 +409,11 @@ LOCAL(mpaddsqrtrc_loop):
 	popl %edi
 	ret
 C_FUNCTION_END(mpaddsqrtrc)
+
+
+C_FUNCTION_BEGIN(mppndiv)
+	movl 4(%esp),%edx
+	movl 8(%esp),%eax
+	divl 12(%esp)
+	ret
+C_FUNCTION_END(mppndiv)

@@ -1470,9 +1470,9 @@ fprintf(stderr, "sub ++: borrow\n");
 	zsize = asize;
 	zdata = alloca(zsize * sizeof(*zdata));
 	zsign = x->ob_size * m->ob_size;
-	wksp = alloca((bsize+1) * sizeof(*wksp));
+	wksp = alloca((2*bsize+1) * sizeof(*wksp));
 
-	mpnmod(zdata, asize, adata, bsize, bdata, wksp);
+	mpmod(zdata, asize, adata, bsize, bdata, wksp);
 
 	if (zsign < 0) {
 	    if (m->ob_size < 0) {

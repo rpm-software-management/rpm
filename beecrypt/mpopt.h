@@ -80,6 +80,7 @@
 #  define ASM_MPSETMUL
 #  define ASM_MPADDMUL
 #  define ASM_MPADDSQRTRC
+#  define ASM_MPPNDIV
 # elif defined(OPTIMIZE_IA64)
 #  define ASM_MPZERO
 #  define ASM_MPCOPY
@@ -157,6 +158,7 @@
 #  define ASM_MPSETMUL
 #  define ASM_MPADDMUL
 #  define ASM_MPADDSQRTRC
+#  define ASM_MPPNDIV
 # endif
 #endif
 
