@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.13
+Release: 0.19
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -482,6 +482,12 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Tue Mar  9 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.19
+- fix: sq->reaped needs sighold(SIGCHLD)/sigrelease(SIGCHLD) (#117620).
+
+* Fri Mar  5 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.18
+- selinux: ignore ENOTSUP return from lsetfilecon.
+
 * Mon Mar  1 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.17
 - permit globs in macrofiles: directive (#117217).
 
