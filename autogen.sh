@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LTV="libtoolize (GNU libtool) 1.2d"
+LTV="libtoolize (GNU libtool) 1.2f"
 ACV="Autoconf version 2.13"
 AMV="automake (GNU automake) 1.4"
 USAGE="
