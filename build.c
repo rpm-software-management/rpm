@@ -135,8 +135,8 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	    /* Try again */
 	    pclose(fp);
 
-	    sprintf(cmd, "%s < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
-		    zcmds[res & 0x3], tmpSpecFile);
+	    sprintf(cmd, "%s < %s | tar xOvf - \\*.spec 2>&1 > %s",
+		    zcmds[res & 0x3], arg, tmpSpecFile);
 	    if (!(fp = popen(cmd, "r"))) {
 		fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
@@ -261,6 +261,7 @@ exit:
     return rc;
 }
 
+/** */
 int build(const char * arg, struct rpmBuildArguments * ba,
 	const char * passPhrase, int fromTarball, char * cookie,
 	const char * rcfile, int force, int nodeps)
@@ -372,6 +373,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     }
 }
 
+/** */
 struct poptOption rpmBuildPoptTable[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 		buildArgCallback, 0, NULL, NULL },
