@@ -959,7 +959,7 @@ static void addListEntry(Header h, int_32 tag, char *line)
 
 static void parseForDocFiles(struct PackageRec *package, char *line)
 {
-    if (strncmp(line, "%doc", 4)) {
+    if (! (line = strstr(line, "%doc"))) {
 	return;
     }
 
