@@ -9,9 +9,9 @@
 #include "system.h"
 #include "poptint.h"
 
+/*@-mustmod@*/	/* LCL: *line is modified @*/
 static void configLine(poptContext con, char * line)
-	/*@modifies *line,
-		con->execs, con->numExecs @*/
+	/*@modifies *line, con->execs, con->numExecs @*/
 {
     int nameLength = strlen(con->appName);
     const char * opt;
@@ -63,6 +63,7 @@ static void configLine(poptContext con, char * line)
 	/*@=noeffect@*/
     }
 }
+/*@=mustmod@*/
 
 int poptReadConfigFile(poptContext con, const char * fn)
 {

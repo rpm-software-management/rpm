@@ -11,7 +11,7 @@
 /**
  */
 static struct ReqComp {
-    const char * token;
+/*@observer@*/ /*@null@*/ const char * token;
     rpmsenseFlags sense;
 } ReqComparisons[] = {
     { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
@@ -164,7 +164,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	    SKIPWHITE(v);
 	    ve = v;
 	    SKIPNONWHITE(ve);
-	    break;
+	    /*@innerbreak@*/ break;
 	  }
 	}
 

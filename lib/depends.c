@@ -364,7 +364,8 @@ alAddPackage(availableList al,
 	while (first < p->filesCount) {
 	    last = first;
 	    while ((last + 1) < p->filesCount) {
-		if (dirIndexes[first] != dirIndexes[last + 1]) break;
+		if (dirIndexes[first] != dirIndexes[last + 1])
+		    /*@innerbreak@*/ break;
 		last++;
 	    }
 
@@ -394,7 +395,7 @@ alAddPackage(availableList al,
 
     if (relocs) {
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
-	    ;
+	    {};
 	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
 
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
@@ -514,8 +515,8 @@ static void parseEVR(char * evr,
     if (rp) *rp = release;
 }
 
-const char *rpmNAME = PACKAGE;
-const char *rpmEVR = VERSION;
+/*@observer@*/ const char *rpmNAME = PACKAGE;
+/*@observer@*/ const char *rpmEVR = VERSION;
 int rpmFLAGS = RPMSENSE_EQUAL;
 
 int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
@@ -692,7 +693,9 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
     ts->di = NULL;
+    /*@-assignexpose@*/
     ts->rpmdb = rpmdb;
+    /*@=assignexpose@*/
     ts->scriptFd = NULL;
     ts->id = 0;
     ts->delta = 5;
@@ -979,7 +982,9 @@ alAllFileSatisfiesDepend(const availableList al,
     while (dirMatch > al->dirs && dirInfoCompare(dirMatch-1, &dirNeedle) == 0)
 	dirMatch--;
 
+    /*@-nullptrarith@*/		/* FIX: fileName NULL ??? */
     baseName = strrchr(fileName, '/') + 1;
+    /*@=nullptrarith@*/
 
     for (found = 0, ret = NULL;
 	 dirMatch <= al->dirs + al->numDirs &&
@@ -1007,7 +1012,7 @@ alAllFileSatisfiesDepend(const availableList al,
 	    ret = xrealloc(ret, (found+2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
 		ret[found++] = al->list + dirMatch->files[i].pkgNum;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
     }
 
@@ -1103,7 +1108,8 @@ alAllSatisfiesDepend(const availableList al,
 		proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
 		rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
 				keyName, keyEVR, keyFlags);
-		if (rc) break;
+		if (rc)
+		    /*@innerbreak@*/ break;
 	    }
 	    if (keyType && keyDepend && rc)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),
@@ -1423,7 +1429,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    if (suggestion) {
 		int j;
 		for (j = 0; suggestion[j]; j++)
-		    ;
+		    {};
 		psp->problems[psp->num].suggestedPackages =
 			xmalloc( (j + 1) * sizeof(void *) );
 		for (j = 0; suggestion[j]; j++)
@@ -1603,8 +1609,8 @@ static int checkDependentConflicts(rpmTransactionSet ts,
 
 #if defined(DEPENDENCY_WHITEOUT)
 static struct badDeps_s {
-    const char * pname;
-    const char * qname;
+/*@observer@*/ /*@null@*/ const char * pname;
+/*@observer@*/ /*@null@*/ const char * qname;
 } badDeps[] = {
     { "libtermcap", "bash" },
     { "modutils", "vixie-cron" },
@@ -1632,11 +1638,12 @@ static int ignoreDep(const struct availablePackage * p,
 		const struct availablePackage * q)
 	/*@*/
 {
-    struct badDeps_s *bdp;
+    struct badDeps_s * bdp = badDeps;
 
-    for (bdp = badDeps; bdp->pname != NULL; bdp++) {
+    while (bdp->pname != NULL && bdp->qname != NULL) {
 	if (!strcmp(p->name, bdp->pname) && !strcmp(q->name, bdp->qname))
 	    return 1;
+	bdp++;
     }
     return 0;
 }
@@ -1647,8 +1654,10 @@ static int ignoreDep(const struct availablePackage * p,
  * @param tsi		successor chain
  * @param q		predecessor
  */
-static void markLoop(struct tsortInfo * tsi, struct availablePackage * q)
-	/*@modifies *tsi @*/
+static void markLoop(/*@special@*/ struct tsortInfo * tsi,
+		struct availablePackage * q)
+	/*@uses tsi @*/
+	/*@modifies internalState @*/
 {
     struct availablePackage * p;
 
@@ -2022,7 +2031,7 @@ rescan:
 	    /* T12. Mark predecessor chain, looking for start of loop. */
 	    for (q = r->tsi.tsi_pkg; q != NULL; q = q->tsi.tsi_pkg) {
 		if (q->tsi.tsi_reqx)
-		    break;
+		    /*@innerbreak@*/ break;
 		q->tsi.tsi_reqx = 1;
 	    }
 
@@ -2102,9 +2111,8 @@ rescan:
 	    if (ts->order[j].type == TR_REMOVED &&
 		ts->order[j].u.removed.dependsOnIndex == needle->alIndex) {
 		newOrder[newOrderCount++] = ts->order[j];
-	    } else {
-		break;
-	    }
+	    } else
+		/*@innerbreak@*/ break;
 	}
     }
 
@@ -2175,7 +2183,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    if (!checkDependentConflicts(ts, ps, p->provides[j]))
 		continue;
 	    rc = 1;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	if (rc)
 	    goto exit;
@@ -2214,7 +2222,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    if (!checkDependentPackages(ts, ps, provides[j]))
 			continue;
 		    rc = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 		provides = hfd(provides, pnt);
 		if (rc)
@@ -2248,7 +2256,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    if (!checkDependentPackages(ts, ps, fileName))
 			continue;
 		    rc = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 
 		fileName = _free(fileName);

@@ -43,6 +43,9 @@ typedef	unsigned int u_int32_t;
 typedef	unsigned short u_int16_t;
 typedef	unsigned char u_int8_t;
 typedef	int int32_t;
+/*@-declundef@*/
+/*@only@*/ void * alloca (size_t size)	/*@modifies internalState @*/;
+/*@=declundef@*/
 #endif
 
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
@@ -102,9 +105,9 @@ extern int errno;
 #endif
 
 #ifdef STDC_HEADERS
-/*@-macrounrecog -incondefs -globuse@*/	/* FIX: shrug */
+/*@-macrounrecog -incondefs -globuse -mustmod@*/	/* FIX: shrug */
 #define getopt system_getopt
-/*@=macrounrecog =incondefs =globuse@*/
+/*@=macrounrecog =incondefs =globuse =mustmod@*/
 /*@-skipansiheaders@*/
 #include <stdlib.h>
 /*@=skipansiheaders@*/

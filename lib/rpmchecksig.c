@@ -17,6 +17,7 @@
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
+	/*@modifies *fdp, *fnp, fileSystem @*/
 {
     const char *fn;
     FD_t fd;
@@ -69,6 +70,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 
 static int copyFile(FD_t *sfdp, const char **sfnp,
 	FD_t *tfdp, const char **tfnp)
+	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, fileSystem @*/
 {
     unsigned char buffer[BUFSIZ];
     ssize_t count;

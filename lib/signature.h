@@ -63,7 +63,7 @@ rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *headerp,
  * @return		0 on success, 1 on error
  */
 int rpmWriteSignature(FD_t fd, Header h)
-	/*@modifies fd, h @*/;
+	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup signature
  *  Generate a signature of data in file, insert in header.

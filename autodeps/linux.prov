@@ -51,3 +51,5 @@ done | sort -u
 # --- Tcl modules.
 [ -x /usr/lib/rpm/tcl.prov -a -n "$tcllist" ] &&
     echo $tcllist | tr [:blank:] \\n | /usr/lib/rpm/tcl.prov | sort -u
+
+exit 0

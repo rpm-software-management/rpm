@@ -40,7 +40,9 @@ const char *const tagName(int tag)
     for (i = 0; i < rpmTagTableSize; i++) {
 	if (tag != rpmTagTable[i].val)
 	    continue;
-	strcpy(nameBuf, rpmTagTable[i].name + 7);
+	nameBuf[0] = nameBuf[1] = '\0';
+	if (rpmTagTable[i].name != NULL)	/* XXX programmer error. */
+	    strcpy(nameBuf, rpmTagTable[i].name + 7);
 	for (s = nameBuf+1; *s != '\0'; s++)
 	    *s = xtolower(*s);
 	break;

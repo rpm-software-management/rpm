@@ -142,14 +142,19 @@ extern int _rpmio_debug;
 extern "C" {
 #endif
 
-int fdFgets(FD_t fd, char * buf, size_t len);
+int fdFgets(FD_t fd, char * buf, size_t len)
+	/*@modifies *buf, fd, fileSystem @*/;
 
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
-                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret);
-int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg);
-int ftpCmd(const char * cmd, const char * url, const char * arg2);
+                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
+	/*@modifies *uret, fileSystem @*/;
+int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
+	/*@modifies data, fileSystem @*/;
+int ftpCmd(const char * cmd, const char * url, const char * arg2)
+	/*@modifies fileSystem @*/;
 
-int ufdClose( /*@only@*/ void * cookie);
+int ufdClose( /*@only@*/ void * cookie)
+	/*@modified cookie, fileSystem @*/;
 
 /** \ingroup rpmio
  */
@@ -168,7 +173,9 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
+    /*@-assignexpose@*/
     fd->fps[fd->nfps].io = io;
+    /*@=assignexpose@*/
 }
 
 /** \ingroup rpmio
@@ -178,9 +185,9 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@*/
 {
     FDSANE(fd);
-    /*@+voidabstract@*/
+    /*@+voidabstract -retexpose@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
-    /*@=voidabstract@*/
+    /*@=voidabstract =retexpose@*/
 }
 
 /** \ingroup rpmio
@@ -190,7 +197,9 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@*/
 {
     FDSANE(fd);
+    /*@-retexpose@*/
     return fd->fps[fd->nfps].fp;
+    /*@=retexpose@*/
 }
 
 /** \ingroup rpmio
@@ -200,7 +209,9 @@ void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
+    /*@-assignexpose@*/
     fd->fps[fd->nfps].fp = fp;
+    /*@=assignexpose@*/
 }
 
 /** \ingroup rpmio
@@ -316,7 +327,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
  */
 /*@unused@*/ static inline
 void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
-	/*@modifies *fp @*/
+	/*@modifies *fp, fileSystem @*/
 {
     int opx;
     if (fd == NULL || fd->stats == NULL) return;
@@ -352,7 +363,9 @@ void fdSetSyserrno(FD_t fd, int syserrno, /*@kept@*/ const void * errcookie)
 {
     FDSANE(fd);
     fd->syserrno = syserrno;
+    /*@-assignexpose@*/
     fd->errcookie = errcookie;
+    /*@=assignexpose@*/
 }
 
 /** \ingroup rpmio
@@ -391,9 +404,11 @@ void fdSetCpioPos(FD_t fd, long int cpioPos)
 FD_t c2f(/*@null@*/ void * cookie)
 	/*@*/
 {
+    /*@-castexpose@*/
     FD_t fd = (FD_t) cookie;
+    /*@=castexpose@*/
     FDSANE(fd);
-    /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
+    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 }
 
 /** \ingroup rpmio

@@ -66,7 +66,9 @@ static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
 	    poptCallbackType cb = (poptCallbackType)opt->arg;
 	    /*@=castfcnptr@*/
 	    /* Perform callback. */
+	    /*@-moduncon@*/
 	    cb(con, POPT_CALLBACK_REASON_PRE, NULL, NULL, opt->descrip);
+	    /*@=moduncon@*/
 	}
     }
 }
@@ -86,7 +88,9 @@ static void invokeCallbacksPOST(poptContext con, const struct poptOption * opt)
 	    poptCallbackType cb = (poptCallbackType)opt->arg;
 	    /*@=castfcnptr@*/
 	    /* Perform callback. */
+	    /*@-moduncon@*/
 	    cb(con, POPT_CALLBACK_REASON_POST, NULL, NULL, opt->descrip);
+	    /*@=moduncon@*/
 	}
     }
 }
@@ -123,8 +127,10 @@ static void invokeCallbacksOPTION(poptContext con,
 	    const void * cbData = (cbopt->descrip ? cbopt->descrip : myData);
 	    /* Perform callback. */
 	    if (cb != NULL) {	/* XXX program error */
+		/*@-moduncon@*/
 		cb(con, POPT_CALLBACK_REASON_OPTION, myOpt,
 			con->os->nextArg, cbData);
+		/*@=moduncon@*/
 	    }
 	    /* Terminate (unless explcitly continuing). */
 	    if (!(cbopt->argInfo & POPT_CBFLAG_CONTINUE))
@@ -143,18 +149,18 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
 
     con->os = con->optionStack;
     con->os->argc = argc;
-    /*@-dependenttrans@*/	/* FIX: W2DO? */
+    /*@-dependenttrans -assignexpose@*/	/* FIX: W2DO? */
     con->os->argv = argv;
-    /*@=dependenttrans@*/
+    /*@=dependenttrans =assignexpose@*/
     con->os->argb = NULL;
 
     if (!(flags & POPT_CONTEXT_KEEP_FIRST))
 	con->os->next = 1;			/* skip argv[0] */
 
     con->leftovers = calloc( (argc + 1), sizeof(char *) );
-    /*@-dependenttrans@*/	/* FIX: W2DO? */
+    /*@-dependenttrans -assignexpose@*/	/* FIX: W2DO? */
     con->options = options;
-    /*@=dependenttrans@*/
+    /*@=dependenttrans =assignexpose@*/
     con->aliases = NULL;
     con->numAliases = 0;
     con->flags = flags;
@@ -181,6 +187,7 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
 static void cleanOSE(/*@special@*/ struct optionStackEntry *os)
 	/*@uses os @*/
 	/*@releases os->nextArg, os->argv, os->argb @*/
+	/*@modifies os @*/
 {
     os->nextArg = _free(os->nextArg);
     os->argv = _free(os->argv);
@@ -224,6 +231,7 @@ static int handleExec(/*@special@*/ poptContext con,
 		/*@null@*/ const char * longName, char shortName)
 	/*@uses con->execs, con->numExecs, con->flags, con->doExec,
 		con->finalArgv, con->finalArgvAlloced, con->finalArgvCount @*/
+	/*@modifies con @*/
 {
     int i;
 
@@ -280,6 +288,7 @@ static int handleAlias(/*@special@*/ poptContext con,
 		/*@keep@*/ /*@null@*/ const char * nextCharArg)
 	/*@uses con->aliases, con->numAliases, con->optionStack,
 		con->os, con->os->currAlias, con->os->currAlias->longName @*/
+	/*@modifies con @*/
 {
     int rc;
     int i;
@@ -480,6 +489,7 @@ static const char * findNextArg(/*@special@*/ poptContext con,
 		unsigned argx, int delete_arg)
 	/*@uses con->optionStack, con->os,
 		con->os->next, con->os->argb, con->os->argc, con->os->argv @*/
+	/*@modifies con @*/
 {
     struct optionStackEntry * os = con->os;
     const char * arg;
@@ -500,7 +510,7 @@ static const char * findNextArg(/*@special@*/ poptContext con,
 		if (os->argb != NULL)	/* XXX can't happen */
 		PBM_SET(i, os->argb);
 	    }
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	if (os > con->optionStack) os--;
     } while (arg == NULL);
@@ -555,7 +565,9 @@ expandNextArg(/*@special@*/ poptContext con, const char * s)
     return t;
 }
 
-static void poptStripArg(poptContext con, int which)
+static void poptStripArg(/*@special@*/ poptContext con, int which)
+	/*@uses con->arg_strip, con->optionStack @*/
+	/*@defines con->arg_strip @*/
 	/*@modifies con @*/
 {
     if (con->arg_strip == NULL)
@@ -699,7 +711,7 @@ int poptGetNextOpt(poptContext con)
 
 		/* Check for "--long=arg" option. */
 		for (oe = optString; *oe && *oe != '='; oe++)
-		    ;
+		    {};
 		if (*oe == '=') {
 		    *oe++ = '\0';
 		    /* XXX longArg is mapped back to persistent storage. */
@@ -993,24 +1005,26 @@ int poptAddAlias(poptContext con, struct poptAlias newAlias,
 		/*@unused@*/ int flags)
 {
     int aliasNum = con->numAliases++;
-    struct poptAlias * alias;
 
     /* SunOS won't realloc(NULL, ...) */
-    if (!con->aliases)
-	con->aliases = malloc(sizeof(newAlias) * con->numAliases);
+    if (con->aliases == NULL)
+	con->aliases = malloc(con->numAliases * sizeof(newAlias));
     else
 	con->aliases = realloc(con->aliases,
-			       sizeof(newAlias) * con->numAliases);
-    alias = con->aliases + aliasNum;
+			       con->numAliases * sizeof(newAlias));
 
-    alias->longName = (newAlias.longName)
-	/*@-nullpass@*/		/* FIX: malloc can return NULL. */
-	? strcpy(malloc(strlen(newAlias.longName) + 1), newAlias.longName)
-	/*@=nullpass@*/
-	: NULL;
-    alias->shortName = newAlias.shortName;
-    alias->argc = newAlias.argc;
-    alias->argv = newAlias.argv;
+    if (con->aliases) {
+	struct poptAlias * alias = con->aliases + aliasNum;
+
+	alias->longName = (newAlias.longName)
+	    /*@-nullpass@*/		/* FIX: malloc can return NULL. */
+	    ? strcpy(malloc(strlen(newAlias.longName) + 1), newAlias.longName)
+	    /*@=nullpass@*/
+	    : NULL;
+	alias->shortName = newAlias.shortName;
+	alias->argc = newAlias.argc;
+	alias->argv = newAlias.argv;
+    }
 
     return 0;
 }
@@ -1064,7 +1078,7 @@ int poptStuffArgs(poptContext con, const char ** argv)
 	return POPT_ERROR_OPTSTOODEEP;
 
     for (argc = 0; argv[argc]; argc++)
-	;
+	{};
 
     con->os++;
     con->os->next = 0;

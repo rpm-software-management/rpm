@@ -33,6 +33,7 @@ static int progressCurrent = 0;
 /**
  */
 static void printHash(const unsigned long amount, const unsigned long total)
+	/*@modifies fileSystem @*/
 {
     int hashesNeeded;
     int hashesTotal = 50;
@@ -85,8 +86,11 @@ void * showProgress(/*@null@*/ const void * arg, const rpmCallbackType what,
 			const unsigned long total,
 			/*@null@*/ const void * pkgKey,
 			/*@null@*/ void * data)
+	/*@modifies fileSystem @*/
 {
+    /*@-castexpose@*/
     Header h = (Header) arg;
+    /*@=castexpose@*/
     char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
@@ -325,7 +329,9 @@ restart:
 	    continue;
 	}
 
+	/*@-mustmod@*/	/* LCL: segfault */
 	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	/*@-mustmod@*/
 	(void) Fclose(fd);
 
 	if (rpmrc == RPMRC_FAIL || rpmrc == RPMRC_SHORTREAD) {
@@ -399,7 +405,7 @@ restart:
 			continue;
 		    /* same or newer package already installed */
 		    count = 0;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 		mi = rpmdbFreeIterator(mi);
 		if (count == 0) {

@@ -31,7 +31,8 @@
  * @param urlfn		file url
  * @return		0 on success
  */
-static int checkOwners(const char *urlfn)
+static int checkOwners(const char * urlfn)
+	/*@*/
 {
     struct stat sb;
 
@@ -60,6 +61,7 @@ static int checkOwners(const char *urlfn)
  */
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
+	/*@modifies fileSystem @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -150,6 +152,7 @@ static int checkOwners(const char *urlfn)
  * @return		expanded %setup macro (NULL on error)
  */
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
+	/*@modifies fileSystem @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -263,6 +266,8 @@ static int checkOwners(const char *urlfn)
  * @return		0 on success
  */
 static int doSetupMacro(Spec spec, char *line)
+	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
+		fileSystem @*/
 {
     char buf[BUFSIZ];
     StringBuf before;
@@ -388,13 +393,15 @@ static int doSetupMacro(Spec spec, char *line)
 
     /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
     /* Fix the owner, group, and permissions of the setup build tree */
-    {	static const char *fixmacs[] = {
-	    "%{_fixowner}", "%{_fixgroup}", "%{_fixperms}", NULL
-	};
-	const char **fm;
+    {	/*@observer@*/ static const char *fixmacs[] =
+		{ "%{_fixowner}", "%{_fixgroup}", "%{_fixperms}", NULL };
+	const char ** fm;
 
 	for (fm = fixmacs; *fm; fm++) {
-	    const char *fix = rpmExpand(*fm, " .", NULL);
+	    const char *fix;
+	    /*@-nullpass@*/
+	    fix = rpmExpand(*fm, " .", NULL);
+	    /*@=nullpass@*/
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
 	    fix = _free(fix);
@@ -411,6 +418,7 @@ static int doSetupMacro(Spec spec, char *line)
  * @return		0 on success
  */
 static int doPatchMacro(Spec spec, char *line)
+	/*@modifies spec->prep, fileSystem @*/
 {
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E;

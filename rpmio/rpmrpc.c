@@ -16,7 +16,9 @@ extern int _rpmio_debug;
 /*@=redecl@*/
 
 /* =============================================================== */
-static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode) {
+static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
+	/*@modifies fileSystem @*/
+{
     int rc;
     if ((rc = ftpCmd("MKD", path, NULL)) != 0)
 	return rc;
@@ -29,28 +31,37 @@ static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode) {
     return rc;
 }
 
-static int ftpChdir(const char * path) {
+static int ftpChdir(const char * path)
+	/*@modifies fileSystem @*/
+{
     return ftpCmd("CWD", path, NULL);
 }
 
-static int ftpRmdir(const char * path) {
+static int ftpRmdir(const char * path)
+	/*@modifies fileSystem @*/
+{
     return ftpCmd("RMD", path, NULL);
 }
 
-static int ftpRename(const char * oldpath, const char * newpath) {
+static int ftpRename(const char * oldpath, const char * newpath)
+	/*@modifies fileSystem @*/
+{
     int rc;
     if ((rc = ftpCmd("RNFR", oldpath, NULL)) != 0)
 	return rc;
     return ftpCmd("RNTO", newpath, NULL);
 }
 
-static int ftpUnlink(const char * path) {
+static int ftpUnlink(const char * path)
+	/*@modifies fileSystem @*/
+{
     return ftpCmd("DELE", path, NULL);
 }
 
 /* =============================================================== */
 /* XXX rebuilddb.c: analogues to mkdir(2)/rmdir(2). */
-int Mkdir (const char *path, mode_t mode) {
+int Mkdir (const char * path, mode_t mode)
+{
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
@@ -72,7 +83,8 @@ int Mkdir (const char *path, mode_t mode) {
     return mkdir(path, mode);
 }
 
-int Chdir (const char *path) {
+int Chdir (const char * path)
+{
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
@@ -94,7 +106,8 @@ int Chdir (const char *path) {
     return chdir(path);
 }
 
-int Rmdir (const char *path) {
+int Rmdir (const char * path)
+{
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
@@ -118,7 +131,8 @@ int Rmdir (const char *path) {
 
 /* XXX rpmdb.c: analogue to rename(2). */
 
-int Rename (const char *oldpath, const char * newpath) {
+int Rename (const char * oldpath, const char * newpath)
+{
     const char *oe = NULL;
     const char *ne = NULL;
     int oldut, newut;
@@ -164,7 +178,8 @@ fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (i
     return rename(oldpath, newpath);
 }
 
-int Link (const char *oldpath, const char * newpath) {
+int Link (const char * oldpath, const char * newpath)
+{
     const char *oe = NULL;
     const char *ne = NULL;
     int oldut, newut;
@@ -249,6 +264,7 @@ static int   column_ptr [MAXCOLS]; /* Index from 0 to the starting positions of 
 
 static int
 vfs_split_text (char *p)
+	/*@modifies *p, columns, column_ptr @*/
 {
     char *original = p;
     int  numcols;
@@ -269,6 +285,7 @@ vfs_split_text (char *p)
 
 static int
 is_num (int idx)
+	/*@*/
 {
     if (!columns [idx] || columns [idx][0] < '0' || columns [idx][0] > '9')
 	return 0;
@@ -277,6 +294,7 @@ is_num (int idx)
 
 static int
 is_dos_date(/*@null@*/ const char *str)
+	/*@*/
 {
     if (str != NULL && strlen(str) == 8 &&
 		str[2] == str[5] && strchr("\\-/", (int)str[2]) != NULL)
@@ -286,6 +304,7 @@ is_dos_date(/*@null@*/ const char *str)
 
 static int
 is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
+	/*@modifies *tim @*/
 {
 /*@observer@*/ static const char * week = "SunMonTueWedThuFriSat";
     const char * pos;
@@ -302,6 +321,7 @@ is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 
 static int
 is_month (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
+	/*@modifies *tim @*/
 {
 /*@observer@*/ static const char * month = "JanFebMarAprMayJunJulAugSepOctNovDec";
     const char * pos;
@@ -318,6 +338,7 @@ is_month (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 
 static int
 is_time (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
+	/*@modifies *tim @*/
 {
     const char * p, * p2;
 
@@ -336,6 +357,7 @@ is_time (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 }
 
 static int is_year(/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
+	/*@modifies *tim @*/
 {
     long year;
 
@@ -367,6 +389,7 @@ static int is_year(/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 
 static int
 vfs_parse_filetype (char c)
+	/*@*/
 {
     switch (c) {
         case 'd': return S_IFDIR; 
@@ -385,6 +408,7 @@ vfs_parse_filetype (char c)
 }
 
 static int vfs_parse_filemode (const char *p)
+	/*@*/
 {	/* converts rw-rw-rw- into 0666 */
     int res = 0;
     switch (*(p++)) {
@@ -443,6 +467,7 @@ static int vfs_parse_filemode (const char *p)
 }
 
 static int vfs_parse_filedate(int idx, time_t *t)
+	/*@modifies *t @*/
 {	/* This thing parses from idx in columns[] array */
 
     char *p;
@@ -551,6 +576,7 @@ static int
 vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 		/*@out@*/ const char ** filename,
 		/*@out@*/ const char ** linkname)
+	/*@modifies *st, *filename, *linkname @*/
 {
     int idx, idx2, num_cols;
     int i;
@@ -763,7 +789,8 @@ static /*@only@*/ char * ftpBuf = NULL;
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
-	/*@out@*/ struct stat * st, char * rlbuf, size_t rlbufsiz)
+		/*@out@*/ struct stat * st, char * rlbuf, size_t rlbufsiz)
+	/*@modifies *st, *rlbuf, fileSystem @*/
 {
     FD_t fd;
     const char * path;
@@ -858,7 +885,8 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 
 	    while (*se && *se != '\n') se++;
 	    if (se > s && se[-1] == '\r') se[-1] = '\0';
-	    if (*se == '\0') break;
+	    if (*se == '\0') 
+		/*@innerbreak@*/ break;
 	    *se++ = '\0';
 
 	    if (!strncmp(s, "total ", sizeof("total ")-1)) continue;
@@ -871,25 +899,28 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		    break;
 		case ' ':
 		    if (o || !(n[-3] == ' ' && n[-2] == '-' && n[-1] == '>')) {
-			while (*(++n) == ' ');
+			while (*(++n) == ' ')
+			    {};
 			bingo++;
 			break;
 		    }
-		    for (o = n + 1; *o == ' '; o++);
+		    for (o = n + 1; *o == ' '; o++)
+			{};
 		    n -= 3;
 		    ne = n;
 		    break;
 		default:
 		    break;
 		}
-		if (bingo) break;
+		if (bingo)
+		    /*@innerbreak@*/ break;
 	    }
 
 	    if (nbn != (ne - n))	continue;	/* Same name length? */
 	    if (strncmp(n, bn, nbn))	continue;	/* Same name? */
 
 	    moretodo = 0;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 
         if (moretodo && se > s) {
@@ -940,11 +971,14 @@ exit:
 }
 
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
+	/*@modifies *st @*/
 {
     return ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
 }
 
-static int ftpLstat(const char * path, /*@out@*/ struct stat *st) {
+static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
+	/*@modifies *st @*/
+{
     int rc;
     rc = ftpNLST(path, DO_FTP_LSTAT, st, NULL, 0);
 if (_rpmio_debug)
@@ -952,13 +986,16 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n", path, rc);
     return rc;
 }
 
-static int ftpReadlink(const char * path, char * buf, size_t bufsiz) {
+static int ftpReadlink(const char * path, char * buf, size_t bufsiz)
+	/*@modifies *buf @*/
+{
     return ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
 }
 
 static int ftpGlob(const char * path, int flags,
 		int errfunc(const char * epath, int eerno),
 		/*@out@*/ glob_t * pglob)
+	/*@modifies *pglob, fileSystem @*/
 {
     int rc;
 
@@ -976,7 +1013,9 @@ fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, (unsigned)fl
     return rc;
 }
 
-static void ftpGlobfree(glob_t * pglob) {
+static void ftpGlobfree(glob_t * pglob)
+	/*@modifies *pglob @*/
+{
 if (_rpmio_debug)
 fprintf(stderr, "*** ftpGlobfree(%p)\n", pglob);
     if (pglob->gl_offs == -1) {	/* XXX HACK HACK HACK */
@@ -985,7 +1024,8 @@ fprintf(stderr, "*** ftpGlobfree(%p)\n", pglob);
     }
 }
 
-int Stat(const char * path, struct stat * st) {
+int Stat(const char * path, struct stat * st)
+{
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
@@ -1009,7 +1049,8 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     return stat(path, st);
 }
 
-int Lstat(const char * path, struct stat * st) {
+int Lstat(const char * path, struct stat * st)
+{
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
@@ -1033,7 +1074,8 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     return lstat(path, st);
 }
 
-int Readlink(const char * path, char * buf, size_t bufsiz) {
+int Readlink(const char * path, char * buf, size_t bufsiz)
+{
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
@@ -1055,7 +1097,8 @@ int Readlink(const char * path, char * buf, size_t bufsiz) {
     return readlink(path, buf, bufsiz);
 }
 
-int Access(const char * path, int amode) {
+int Access(const char * path, int amode)
+{
     const char * lpath;
     int ut = urlPath(path, &lpath);
 

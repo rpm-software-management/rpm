@@ -415,45 +415,46 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
     /* in the spec's line buffer.  Except for parsePreamble(),   */
     /* which handles the initial entry into a spec file.         */
     
+    /*@-infloops@*/	/* LCL: parsePart is modified @*/
     while (parsePart < PART_LAST && parsePart != PART_NONE) {
 	switch (parsePart) {
-	  case PART_PREAMBLE:
+	case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
 	    break;
-	  case PART_PREP:
+	case PART_PREP:
 	    parsePart = parsePrep(spec);
 	    break;
-	  case PART_BUILD:
-	  case PART_INSTALL:
-	  case PART_CLEAN:
+	case PART_BUILD:
+	case PART_INSTALL:
+	case PART_CLEAN:
 	    parsePart = parseBuildInstallClean(spec, parsePart);
 	    break;
-	  case PART_CHANGELOG:
+	case PART_CHANGELOG:
 	    parsePart = parseChangelog(spec);
 	    break;
-	  case PART_DESCRIPTION:
+	case PART_DESCRIPTION:
 	    parsePart = parseDescription(spec);
 	    break;
 
-	  case PART_PRE:
-	  case PART_POST:
-	  case PART_PREUN:
-	  case PART_POSTUN:
-	  case PART_VERIFYSCRIPT:
-	  case PART_TRIGGERIN:
-	  case PART_TRIGGERUN:
-	  case PART_TRIGGERPOSTUN:
+	case PART_PRE:
+	case PART_POST:
+	case PART_PREUN:
+	case PART_POSTUN:
+	case PART_VERIFYSCRIPT:
+	case PART_TRIGGERIN:
+	case PART_TRIGGERUN:
+	case PART_TRIGGERPOSTUN:
 	    parsePart = parseScript(spec, parsePart);
 	    break;
 
-	  case PART_FILES:
+	case PART_FILES:
 	    parsePart = parseFiles(spec);
 	    break;
 
-	  case PART_NONE:		/* XXX avoid gcc whining */
-	  case PART_LAST:
-	  case PART_BUILDARCHITECTURES:
+	case PART_NONE:		/* XXX avoid gcc whining */
+	case PART_LAST:
+	case PART_BUILDARCHITECTURES:
 	    break;
 	}
 
@@ -528,6 +529,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    return 0;
 	}
     }
+    /*@=infloops@*/	/* LCL: parsePart is modified @*/
 
     /* Check for description in each package and add arch and os */
   {

@@ -58,8 +58,8 @@ extern int url_iobuf_size;
  * @param msg		debugging identifier (unused)
  * @return		new instance
  */
-urlinfo	urlNew(const char * msg);
-urlinfo	XurlNew(const char * msg, const char * file, unsigned line);
+urlinfo	urlNew(const char * msg)	/*@*/;
+urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
 /**
@@ -68,8 +68,10 @@ urlinfo	XurlNew(const char * msg, const char * file, unsigned line);
  * @param msg		debugging identifier (unused)
  * @return		referenced instance
  */
-urlinfo	urlLink(urlinfo u, const char * msg);
-urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);
+urlinfo	urlLink(urlinfo u, const char * msg)
+	/*@modifies u @*/;
+urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
+	/*@modifies u @*/;
 #define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
 
 /**
@@ -78,21 +80,26 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);
  * @param msg		debugging identifier (unused)
  * @return		dereferenced instance (NULL if freed)
  */
-urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg);
-urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg, const char * file, unsigned line);
+urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
+	/*@modifies u @*/;
+urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
+		const char * file, unsigned line)
+	/*@modifies u @*/;
 #define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
 
 /**
  * Free cached URL control structures.
  */
-void	urlFreeCache(void);
+void urlFreeCache(void)
+	/*@modifies internalState @*/;
 
 /**
  * Return type of URL.
  * @param url		url string
  * @return		type of url
  */
-urltype	urlIsURL(const char * url)	/*@*/;
+urltype	urlIsURL(const char * url)
+	/*@*/;
 
 /**
  * Return path component of URL.
@@ -109,8 +116,8 @@ urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
  * @retval u		address of new control instance pointer
  * @return		0 on success, -1 on error
  */
-int 	urlSplit(const char * url, /*@out@*/ urlinfo * u)
-		/*@modifies *u @*/;
+int urlSplit(const char * url, /*@out@*/ urlinfo * u)
+	/*@modifies *u @*/;
 
 /**
  * Copy data from URL to local file.
@@ -118,7 +125,8 @@ int 	urlSplit(const char * url, /*@out@*/ urlinfo * u)
  * @param dest		file name of destination
  * @return		0 on success, otherwise FTPERR_* code
  */
-int	urlGetFile(const char * url, /*@null@*/ const char * dest);
+int urlGetFile(const char * url, /*@null@*/ const char * dest)
+	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus
 }

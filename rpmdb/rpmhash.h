@@ -6,24 +6,31 @@
  * Hash table implemenation.
  */
 
+/**
+ */
 typedef struct hashTable_s * hashTable;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** */
-typedef unsigned int (*hashFunctionType) (const void * string) /*@*/;
+/**
+ */
+typedef unsigned int (*hashFunctionType) (const void * string)
+	/*@*/;
 
-/** */
-typedef int (*hashEqualityType) (const void * key1, const void * key2) /*@*/;
+/**
+ */
+typedef int (*hashEqualityType) (const void * key1, const void * key2)
+	/*@*/;
 
 /**
  * Return hash value of a string
  * @param string  string on which to calculate hash value
  * @return hash value
  */
-unsigned int hashFunctionString(const void * string) /*@*/;
+unsigned int hashFunctionString(const void * string)
+	/*@*/;
 
 /**
  * Compare two hash table entries for equality.
@@ -31,7 +38,8 @@ unsigned int hashFunctionString(const void * string) /*@*/;
  * @param key2          entry 2
  * @return 0 if entries are equal
  */
-int hashEqualityString(const void * key1, const void * key2) /*@*/;
+int hashEqualityString(const void * key1, const void * key2)
+	/*@*/;
 
 /**
  * Create hash table.
@@ -45,13 +53,15 @@ int hashEqualityString(const void * key1, const void * key2) /*@*/;
  * @return pointer to initialized hash table
  */
 hashTable htCreate(int numBuckets, int keySize, int freeData,
-		hashFunctionType fn, hashEqualityType eq) /*@*/; 
+		hashFunctionType fn, hashEqualityType eq)
+	/*@*/; 
 
 /**
  * Destroy hash table.
  * @param ht            pointer to hash table
  */
-void htFree( /*@only@*/ hashTable ht);
+void htFree( /*@only@*/ hashTable ht)
+	/*@modifies ht @*/;
 
 /**
  * Add item to hash table.
@@ -85,7 +95,8 @@ int htGetEntry(hashTable ht, const void * key,
  * @return 1 if the key is present, 0 otherwise
  */
 /*@unused@*/
-int htHasEntry(hashTable ht, const void * key) /*@*/;
+int htHasEntry(hashTable ht, const void * key)
+	/*@*/;
 
 #ifdef __cplusplus
 }

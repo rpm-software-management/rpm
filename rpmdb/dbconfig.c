@@ -27,7 +27,7 @@ struct _dbiIndex db3dbi;
  *  Analogue to struct poptOption
  */
 struct dbOption {
-/*@null@*/const char * longName;/* may be NULL */
+/*@observer@*/ /*@null@*/const char * longName;	/* may be NULL */
     const char shortName;	/* may be '\0' */
     int argInfo;
 /*@null@*/ void * arg;		/* depends on argInfo */
@@ -315,7 +315,7 @@ dbiIndex db3Free(dbiIndex dbi) {
 }
 
 /** @todo Set a reasonable "last gasp" default db config. */
-static const char *db3_config_default =
+/*@observer@*/ static const char *db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:mp_size=512Kb:pagesize=512:perms=0644";
 
 dbiIndex db3New(rpmdb rpmdb, int rpmtag)
@@ -356,9 +356,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    /* Find and terminate next key=value pair. Save next start point. */
 	    for (oe = o; oe && *oe; oe++) {
 		if (xisspace(*oe))
-		    break;
+		    /*@innerbreak@*/ break;
 		if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
-		    break;
+		    /*@innerbreak@*/ break;
 	    }
 	    if (oe && *oe)
 		*oe++ = '\0';
@@ -367,18 +367,18 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
 	    /* Separate key from value, save value start (if any). */
 	    for (pe = o; pe && *pe && *pe != '='; pe++)
-		;
+		{};
 	    p = (pe ? *pe++ = '\0', pe : NULL);
 
 	    /* Skip over negation at start of token. */
 	    for (tok = o; *tok == '!'; tok++)
-		;
+		{};
 
 	    /* Find key in option table. */
 	    for (opt = rdbOptions; opt->longName != NULL; opt++) {
 		if (strcmp(tok, opt->longName))
 		    continue;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	    if (opt->longName == NULL) {
 		rpmError(RPMERR_DBCONFIG,
@@ -452,8 +452,10 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
     dbOpts = _free(dbOpts);
 
-    *dbi = db3dbi;	/* structure assignment */
     memset(&db3dbi, 0, sizeof(db3dbi));
+    /*@-assignexpose@*/
+    *dbi = db3dbi;	/* structure assignment */
+    /*@=assignexpose@*/
 
     if (!(dbi->dbi_perms & 0600))
 	dbi->dbi_perms = 0644;
@@ -472,7 +474,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	dbi->dbi_jlen = 2 * sizeof(int_32);
 	break;
     }
+    /*@-globstate@*/
     return dbi;
+    /*@=globstate@*/
 }
 
 const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)

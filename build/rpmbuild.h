@@ -136,7 +136,7 @@ void freeNames(void)
  */
 int readLine(Spec spec, int strip)
 	/*@modifies spec->fileStack, spec->readStack, spec->line, spec->lineNum,
-		spec->sl @*/;
+		spec->sl, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Stop reading from spec file, freeing resources.
@@ -186,7 +186,7 @@ void addChangelogEntry(Header h, time_t time, const char * name,
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
-	/*@modifies spec->build, spec->install, spec->clean,
+	/*@modifies spec->build, spec->install, spec->clean, spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->sl @*/;
 
@@ -229,7 +229,11 @@ int parseFiles(Spec spec)
 int parsePreamble(Spec spec, int initialPackage)
 	/*@modifies spec->packages,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
-		spec->sl @*/;
+		spec->buildSubdir, spec->sl,
+		spec->macros, spec->st, spec->buildRootURL,
+		spec->sources, spec->numSources, spec->noSource,
+		spec->buildRestrictions, spec->BANames, spec->BACount,
+		spec->gotBuildRootURL @*/;
 
 /** \ingroup rpmbuild
  * Parse %%prep section of a spec file.
@@ -237,7 +241,7 @@ int parsePreamble(Spec spec, int initialPackage)
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parsePrep(Spec spec)
-	/*@modifies spec->prep,
+	/*@modifies spec->prep, spec->buildSubdir, spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->sl @*/;
 
@@ -368,7 +372,8 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@modifies spec->macros,
 		spec->packages->cpioList, spec->packages->fileList,
-		spec->packages->specialDoc, spec->packages->header @*/;
+		spec->packages->specialDoc, spec->packages->header,
+		fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Create and initialize header for source package.
@@ -411,7 +416,8 @@ int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
 		int anyarch, int force)
-	/*@modifies *specp @*/;
+	/*@modifies *specp,
+		fileSystem @*/;
 
 /** \ingroup rpmbuild
  * @retval specp	spec file control structure
@@ -433,7 +439,8 @@ extern int (*parseSpecVec) (Spec * specp, const char * specFile,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
 		int anyarch, int force)
-	/*@modifies *specp @*/;
+	/*@modifies *specp,
+		fileSystem @*/;
 /*@=declundef@*/
 
 /** \ingroup rpmbuild
@@ -449,7 +456,8 @@ int buildSpec(Spec spec, int what, int test)
 		spec->BASpecs,
 		spec->buildRestrictions, spec->BANames,
 		spec->packages->cpioList, spec->packages->fileList,
-		spec->packages->specialDoc, spec->packages->header @*/;
+		spec->packages->specialDoc, spec->packages->header,
+		fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Generate binary package(s).
@@ -458,7 +466,8 @@ int buildSpec(Spec spec, int what, int test)
  */
 int packageBinaries(Spec spec)
 	/*@modifies spec->packages->header,
-		spec->sourceRpmName @*/;
+		spec->sourceRpmName,
+		fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Generate source package.
@@ -467,7 +476,8 @@ int packageBinaries(Spec spec)
  */
 int packageSources(Spec spec)
 	/*@modifies spec->sourceHeader, spec->cookie,
-		spec->sourceRpmName @*/;
+		spec->sourceRpmName,
+		fileSystem @*/;
 
 #ifdef __cplusplus
 }

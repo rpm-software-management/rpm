@@ -114,6 +114,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @return 			rpmRC return code
  */
 static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
+	/*@modifies fileSystem @*/
 {
     struct stat st;
     rpmRC rc;
@@ -242,6 +243,7 @@ Header rpmFreeSignature(Header h)
 
 static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
+	/*@modifies *sig, *size, fileSystem @*/
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -339,6 +341,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
  */
 static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
+	/*@modifies *sig, *size, fileSystem @*/
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -454,6 +457,7 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
 
 static rpmVerifySignatureReturn
 verifySizeSignature(const char * datafile, int_32 size, char * result)
+	/*@modifies *result, fileSystem @*/
 {
     struct stat st;
 
@@ -474,6 +478,7 @@ verifySizeSignature(const char * datafile, int_32 size, char * result)
 static rpmVerifySignatureReturn
 verifyMD5Signature(const char * datafile, const byte * sig, 
 			      char * result, md5func fn)
+	/*@modifies *result, fileSystem @*/
 {
     byte md5sum[16];
 
@@ -508,6 +513,7 @@ verifyMD5Signature(const char * datafile, const byte * sig,
 static rpmVerifySignatureReturn
 verifyPGPSignature(const char * datafile, const void * sig, int count,
 		char * result)
+	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];
     FD_t sfd;
@@ -624,6 +630,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 static rpmVerifySignatureReturn
 verifyGPGSignature(const char * datafile, const void * sig, int count,
 		char * result)
+	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];
     FD_t sfd;
@@ -689,6 +696,7 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
 }
 
 static int checkPassPhrase(const char * passPhrase, const int sigTag)
+	/*@modifies fileSystem @*/
 {
     int passPhrasePipe[2];
     int pid, status;

@@ -190,7 +190,7 @@ void freeFi(TFI_t fi)
  * @return		0 on success
  */
 int psmStage(PSM_t psm, pkgStage stage)
-	/*@modifies psm @*/;
+	/*@modifies psm, fileSystem @*/;
 
 #ifdef __cplusplus
 }

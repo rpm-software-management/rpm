@@ -127,7 +127,9 @@ myftw_dir (DIR **dirs, int level, int descriptors,
       else
 	flag = MYFTW_F;
 
+      /*@-modunconnomods@*/
       retval = (*func) (fl, dir, &s);
+      /*@=modunconnomods@*/
 
       if (flag == MYFTW_D)
 	{
@@ -223,7 +225,9 @@ int myftw (const char *dir,
   len = strlen (dir);
   memcpy ((void *) buf, (void *) dir, len + 1);
 
+  /*@-modunconnomods@*/
   retval = (*func) (fl, buf, &s);
+  /*@=modunconnomods@*/
 
   if (flag == MYFTW_D)
     {

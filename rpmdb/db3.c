@@ -138,7 +138,9 @@ static int db_env_create(DB_ENV **dbenvp, int foo)
 }
 #endif	/* __USE_DB2 */
 
-static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
+static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
+	/*@modifies fileSystem @*/
+{
     int rc = 0;
 
     rc = error;
@@ -158,6 +160,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 static int db_fini(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile)
+	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = dbi->dbi_dbenv;
@@ -204,14 +207,17 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     return rc;
 }
 
-static int db3_fsync_disable(/*@unused@*/ int fd) {
+static int db3_fsync_disable(/*@unused@*/ int fd)
+	/*@*/
+{
     return 0;
 }
 
-static int db_init(dbiIndex dbi, const char *dbhome,
-		/*@null@*/ const char *dbfile,
+static int db_init(dbiIndex dbi, const char * dbhome,
+		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
-		/*@out@*/ DB_ENV **dbenvp)
+		/*@out@*/ DB_ENV ** dbenvp)
+	/*@modifies dbi, *dbenvp, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
@@ -222,8 +228,10 @@ static int db_init(dbiIndex dbi, const char *dbhome,
 	return 1;
 
     /* XXX HACK */
+    /*@-assignexpose@*/
     if (rpmdb->db_errfile == NULL)
 	rpmdb->db_errfile = stderr;
+    /*@=assignexpose@*/
 
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
@@ -351,6 +359,7 @@ errxit:
 #endif	/* __USE_DB2 || __USE_DB3 */
 
 static int db3sync(dbiIndex dbi, unsigned int flags)
+	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     int rc = 0;
@@ -371,6 +380,7 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
 }
 
 static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
+	/*@modifies fileSystem @*/
 {
     int rc;
 
@@ -381,16 +391,19 @@ static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
 
 /*@unused@*/ static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 		u_int32_t flags)
+	/*@modifies *dbcp, fileSystem @*/
 {
     int rc;
 
+    if (dbcp) *dbcp = NULL;
     rc = dbcursor->c_dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->c_dup", rc, _debug);
     return rc;
 }
 
 static int db3c_get(dbiIndex dbi, DBC * dbcursor,
-	DBT * key, DBT * data, u_int32_t flags)
+		DBT * key, DBT * data, u_int32_t flags)
+	/*@modifies fileSystem @*/
 {
     int _printit;
     int rc;
@@ -412,7 +425,8 @@ static int db3c_get(dbiIndex dbi, DBC * dbcursor,
 }
 
 static int db3c_put(dbiIndex dbi, DBC * dbcursor,
-	DBT * key, DBT * data, u_int32_t flags)
+		DBT * key, DBT * data, u_int32_t flags)
+	/*@modifies fileSystem @*/
 {
     int rc;
 
@@ -423,6 +437,7 @@ static int db3c_put(dbiIndex dbi, DBC * dbcursor,
 }
 
 static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
+	/*@modifies fileSystem @*/
 {
     int rc;
 
@@ -433,7 +448,9 @@ static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
     return rc;
 }
 
-static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp, int dbiflags)
+static inline int db3c_open(dbiIndex dbi, /*@null@*/ /*@out@*/ DBC ** dbcp,
+		int dbiflags)
+	/*@modifies *dbcp, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -448,6 +465,7 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp, int dbiflags)
 	flags = DB_WRITECURSOR;
     } else
 	flags = 0;
+    if (dbcp) *dbcp = NULL;
     rc = db->cursor(db, txnid, dbcp, flags);
 #else	/* __USE_DB3 */
     rc = db->cursor(db, txnid, dbcp);
@@ -459,6 +477,7 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp, int dbiflags)
 
 static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 		unsigned int flags)
+	/*@modifies dbi, fileSystem @*/
 {
     int rc = 0;
 
@@ -479,7 +498,9 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
     /*@-usereleased -compdef@*/ return rc; /*@=usereleased =compdef@*/
 }
 
-static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
+static int db3copen(dbiIndex dbi,
+		/*@null@*/ /*@out@*/ DBC ** dbcp, unsigned int flags)
+	/*@modifies dbi, *dbcp, fileSystem @*/
 {
     DBC * dbcursor;
     int rc = 0;
@@ -508,6 +529,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		const void * datap, size_t datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -537,6 +559,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor,
 static int db3cdel(dbiIndex dbi, DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		/*@unused@*/ unsigned int flags)
+	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -571,6 +594,7 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 		void ** keyp, size_t * keylen,
 		void ** datap, size_t * datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@modifies *keyp, *keylen, *datap, *datalen, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -618,8 +642,9 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 }
 
 static int db3ccount(dbiIndex dbi, DBC * dbcursor,
-		/*@out@*/ unsigned int * countp,
+		/*@null@*/ /*@out@*/ unsigned int * countp,
 		/*@unused@*/ unsigned int flags)
+	/*@modifies *countp, fileSystem @*/
 {
     db_recno_t count = 0;
     int rc = 0;
@@ -633,7 +658,7 @@ static int db3ccount(dbiIndex dbi, DBC * dbcursor,
     return rc;
 }
 
-static int db3byteswapped(dbiIndex dbi)
+static int db3byteswapped(dbiIndex dbi)	/*@*/
 {
     DB * db = dbi->dbi_db;
     int rc = 0;
@@ -647,6 +672,7 @@ static int db3byteswapped(dbiIndex dbi)
 }
 
 static int db3stat(dbiIndex dbi, unsigned int flags)
+	/*@modifies dbi, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
     int rc = 0;
@@ -671,6 +697,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 
 /** @todo Add/use per-rpmdb verify_on_close. */
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * urlfn = NULL;
@@ -772,6 +799,7 @@ exit:
 }
 
 static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+	/*@modifies *dbip, fileSystem @*/
 {
     /*@-nestedextern@*/
     extern struct _dbiVec db3vec;

@@ -96,9 +96,9 @@ extern int _url_debug;
 extern int _noDirTokens;
 
 /*@-varuse@*/
-extern const char * rpmNAME;
+/*@observer@*/ extern const char * rpmNAME;
 /*@=varuse@*/
-extern const char * rpmEVR;
+/*@observer@*/ extern const char * rpmEVR;
 /*@-varuse@*/
 extern int rpmFLAGS;
 /*@=varuse@*/
@@ -110,10 +110,10 @@ extern struct MacroContext_s rpmCLIMacroContext;
 
 static int help = 0;
 static int noUsageMsg = 0;
-/*@null@*/ static const char * pipeOutput = NULL;
+/*@observer@*/ /*@null@*/ static const char * pipeOutput = NULL;
 static int quiet = 0;
-/*@null@*/ static const char * rcfile = NULL;
-/*@null@*/ static char * rootdir = "/";
+/*@observer@*/ /*@null@*/ static const char * rcfile = NULL;
+/*@observer@*/ /*@null@*/ static char * rootdir = "/";
 static int showrc = 0;
 static int showVersion = 0;
 
@@ -401,21 +401,28 @@ long _stksize = 64 * 1024L;
 #endif
 
 /*@exits@*/ static void argerror(const char * desc)
+	/*@modifies fileSystem @*/
 {
     fprintf(stderr, _("rpm: %s\n"), desc);
     exit(EXIT_FAILURE);
 }
 
-static void printVersion(void) {
+static void printVersion(void)
+	/*@modifies fileSystem @*/
+{
     fprintf(stdout, _("RPM version %s\n"), rpmEVR);
 }
 
-static void printBanner(void) {
+static void printBanner(void)
+	/*@modifies fileSystem @*/
+{
     (void) puts(_("Copyright (C) 1998-2000 - Red Hat, Inc."));
     (void) puts(_("This program may be freely redistributed under the terms of the GNU GPL"));
 }
 
-static void printUsage(void) {
+static void printUsage(void)
+	/*@modifies fileSystem @*/
+{
     FILE * fp;
     printVersion();
     printBanner();
@@ -456,7 +463,9 @@ static void printUsage(void) {
 }
 
 #ifdef	DYING
-static void printHelpLine(char * prefix, char * help) {
+static void printHelpLine(char * prefix, char * help)
+	/*@modifies fileSystem @*/
+{
     int indentLength = strlen(prefix) + 3;
     int lineLength = 79 - indentLength;
     int helpLength = strlen(help);
@@ -862,9 +871,9 @@ int main(int argc, const char ** argv)
 	  case 'i':
 #ifdef	IAM_RPMQV
 	    if (bigMode == MODE_QUERY) {
-		/*@-nullassign@*/
+		/*@-nullassign -readonlytrans@*/
 		const char * infoCommand[] = { "--info", NULL };
-		/*@=nullassign@*/
+		/*@=nullassign =readonlytrans@*/
 		(void) poptStuffArgs(optCon, infoCommand);
 	    }
 #endif
@@ -872,9 +881,9 @@ int main(int argc, const char ** argv)
 	    if (bigMode == MODE_INSTALL)
 		/*@-ifempty@*/ ;
 	    if (bigMode == MODE_UNKNOWN) {
-		/*@-nullassign@*/
+		/*@-nullassign -readonlytrans@*/
 		const char * installCommand[] = { "--install", NULL };
-		/*@=nullassign@*/
+		/*@=nullassign =readonlytrans@*/
 		(void) poptStuffArgs(optCon, installCommand);
 	    }
 #endif
@@ -1342,7 +1351,7 @@ int main(int argc, const char ** argv)
 
 	    ec = rpmInstallSource("", pkg, &specFile, &cookie);
 	    if (ec)
-		break;
+		/*@loopbreak@*/ break;
 
 	    ba->rootdir = rootdir;
 	    ec = build(specFile, ba, passPhrase, cookie, rcfile);
@@ -1352,7 +1361,7 @@ int main(int argc, const char ** argv)
 	    specFile = NULL;
 
 	    if (ec)
-		break;
+		/*@loopbreak@*/ break;
 	}
       }	break;
 
@@ -1403,7 +1412,7 @@ int main(int argc, const char ** argv)
 	    ba->rootdir = rootdir;
 	    ec = build(pkg, ba, passPhrase, NULL, rcfile);
 	    if (ec)
-		break;
+		/*@loopbreak@*/ break;
 	    rpmFreeMacros(NULL);
 	    (void) rpmReadConfigFiles(rcfile, NULL);
 	}

@@ -164,6 +164,7 @@ static int getFilesystemList(void)
     while (1) {
 #	if GETMNTENT_ONE
 	    /* this is Linux */
+	    /*@-modunconnomods@*/
 	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
 	    item = *itemptr;	/* structure assignment */
@@ -174,6 +175,7 @@ static int getFilesystemList(void)
 		rdonly = 1;
 	    /*@=compdef@*/
 #endif
+	    /*@=modunconnomods@*/
 #	elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;
@@ -305,7 +307,8 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
 	    if (lastDev != sb.st_dev) {
 		for (j = 0; j < numFilesystems; j++)
-		    if (filesystems && filesystems[j].dev == sb.st_dev) break;
+		    if (filesystems && filesystems[j].dev == sb.st_dev)
+			/*@innerbreak@*/ break;
 
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 

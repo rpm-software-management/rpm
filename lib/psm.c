@@ -220,7 +220,8 @@ void freeFi(TFI_t fi)
     /*@=nullstate@*/
 }
 
-/*@observer@*/ const char *const fiTypeString(TFI_t fi) {
+/*@observer@*/ const char *const fiTypeString(TFI_t fi)
+{
     switch(fi->type) {
     case TR_ADDED:	return " install";
     case TR_REMOVED:	return "   erase";
@@ -234,16 +235,16 @@ void freeFi(TFI_t fi)
  * @todo Should other macros be added from header when installing a package?
  */
 static struct tagMacro {
-	const char *	macroname;	/*!< Macro name to define. */
-	int		tag;		/*!< Header tag to use for value. */
+/*@observer@*/ /*@null@*/ const char *	macroname; /*!< Macro name to define. */
+    int		tag;		/*!< Header tag to use for value. */
 } tagMacros[] = {
-	{ "name",	RPMTAG_NAME },
-	{ "version",	RPMTAG_VERSION },
-	{ "release",	RPMTAG_RELEASE },
+    { "name",		RPMTAG_NAME },
+    { "version",	RPMTAG_VERSION },
+    { "release",	RPMTAG_RELEASE },
 #if 0
-	{ "epoch",	RPMTAG_EPOCH },
+    { "epoch",		RPMTAG_EPOCH },
 #endif
-	{ NULL, 0 }
+    { NULL, 0 }
 };
 
 /**
@@ -252,6 +253,7 @@ static struct tagMacro {
  * @return		0 always
  */
 static int rpmInstallLoadMacros(TFI_t fi, Header h)
+	/*@modifies internalState @*/
 {
     HGE_t hge = (HGE_t)fi->hge;
     struct tagMacro *tagm;
@@ -286,6 +288,7 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
  * @return		0 on success, 1 on failure
  */
 static int mergeFiles(TFI_t fi, Header h, Header newH)
+	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -393,7 +396,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    continue;
 	for (j = 0; j < dirCount; j++)
 	    if (!strcmp(dirNames[j], newDirNames[newDirIndexes[i]]))
-		break;
+		/*@innerbreak@*/ break;
 	if (j == dirCount)
 	    dirNames[dirCount++] = newDirNames[newDirIndexes[i]];
 	((int_32 *) newdata)[k++] = j;
@@ -431,7 +434,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 			   (Flags[k] & RPMSENSE_SENSEMASK))
 		    {
 			newNames[j] = NULL;
-			break;
+			/*@innerbreak@*/ break;
 		    }
 	}
 	for (j = 0, k = 0; j < newCount; j++) {
@@ -465,6 +468,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
  * @return		0 always
  */
 static int markReplacedFiles(PSM_t psm)
+	/*@modifies psm, fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -538,6 +542,7 @@ static int markReplacedFiles(PSM_t psm)
 /**
  */
 static rpmRC chkdir (const char * dpath, const char * dname)
+	/*@modifies fileSystem @*/
 {
     struct stat st;
     int rc;
@@ -592,11 +597,13 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     int i;
 
     ts->notify = notify;
-    /*@-temptrans@*/
+    /*@-temptrans -assignexpose@*/
     ts->notifyData = notifyData;
-    /*@=temptrans@*/
+    /*@=temptrans =assignexpose@*/
 
+    /*@-mustmod@*/	/* LCL: segfault */
     rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+    /*@=mustmod@*/
     if (rc)
 	goto exit;
 
@@ -744,7 +751,8 @@ exit:
     return rc;
 }
 
-static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
+/*@observer@*/ static char * SCRIPT_PATH =
+	"PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
 /**
  * Return scriptlet name from tag.
@@ -752,6 +760,7 @@ static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
  * @return		name of scriptlet
  */
 static /*@observer@*/ const char * const tag2sln(int tag)
+	/*@*/
 {
     switch (tag) {
     case RPMTAG_PREIN:		return "%pre";
@@ -785,6 +794,7 @@ static int runScript(PSM_t psm, Header h,
 		const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
+	/*@modifies psm, fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -921,7 +931,9 @@ static int runScript(PSM_t psm, Header h,
 	    if (ipath && ipath[5] != '%')
 		path = ipath;
 	    (void) doputenv(path);
+	    /*@-modobserver@*/
 	    ipath = _free(ipath);
+	    /*@=modobserver@*/
 	}
 
 	for (i = 0; i < numPrefixes; i++) {
@@ -990,6 +1002,7 @@ static int runScript(PSM_t psm, Header h,
  * @return		rpmRC return code
  */
 static rpmRC runInstScript(PSM_t psm)
+	/*@modifies psm, fileSystem @*/
 {
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
@@ -1033,6 +1046,7 @@ static rpmRC runInstScript(PSM_t psm)
  */
 static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
+	/*@modifies psm, *triggersAlreadyRun, fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1143,6 +1157,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
  * @return		0 on success, 1 on error
  */
 static int runTriggers(PSM_t psm)
+	/*@modifies psm, fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1176,6 +1191,7 @@ static int runTriggers(PSM_t psm)
  * @return		0 on success, 1 on error
  */
 static int runImmedTriggers(PSM_t psm)
+	/*@modifies psm, fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1306,7 +1322,7 @@ assert(psm->mi == NULL);
 		    psm->oh = headerCopy(psm->oh);
 		else
 		    psm->oh = NULL;
-		break;
+		/*@loopbreak@*/ break;
 	    }
 	    psm->mi = rpmdbFreeIterator(psm->mi);
 	    rc = RPMRC_OK;

@@ -13,7 +13,7 @@
 
 /**
  */
-static int_32 copyTagsDuringParse[] = {
+/*@observer@*/ static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -33,7 +33,7 @@ static int_32 copyTagsDuringParse[] = {
 
 /**
  */
-static int requiredTags[] = {
+/*@observer@*/ static int requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -45,7 +45,8 @@ static int requiredTags[] = {
 
 /**
  */
-static void addOrAppendListEntry(Header h, int_32 tag, char *line)
+static void addOrAppendListEntry(Header h, int_32 tag, char * line)
+	/*@modifies h @*/
 {
     int argc;
     const char **argv;
@@ -62,6 +63,7 @@ static void addOrAppendListEntry(Header h, int_32 tag, char *line)
 /**
  */
 static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
+	/*@modifies *name, *flag @*/
 {
     char *tok;
     char linebuf[BUFSIZ];
@@ -92,7 +94,8 @@ static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
 
 /**
  */
-static inline int parseYesNo(const char *s)
+static inline int parseYesNo(const char * s)
+	/*@*/
 {
     return ((!s || (s[0] == 'n' || s[0] == 'N' || s[0] == '0') ||
 	!xstrcasecmp(s, "false") || !xstrcasecmp(s, "off"))
@@ -100,7 +103,7 @@ static inline int parseYesNo(const char *s)
 }
 
 typedef struct tokenBits_s {
-    const char * name;
+/*@observer@*/ /*@null@*/ const char * name;
     rpmsenseFlags bits;
 } * tokenBits;
 
@@ -132,6 +135,7 @@ static struct tokenBits_s buildScriptBits[] = {
  */
 static int parseBits(const char * s, const tokenBits tokbits,
 		/*@out@*/ rpmsenseFlags * bp)
+	/*@modifies *bp @*/
 {
     tokenBits tb;
     const char * se;
@@ -146,8 +150,9 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	    if (s == se)
 		break;
 	    for (tb = tokbits; tb->name; tb++) {
-		if (strlen(tb->name) == (se-s) && !strncmp(tb->name, s, (se-s)))
-		    break;
+		if (tb->name != NULL &&
+		    strlen(tb->name) == (se-s) && !strncmp(tb->name, s, (se-s)))
+		    /*@innerbreak@*/ break;
 	    }
 	    if (tb->name == NULL)
 		break;
@@ -165,6 +170,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 /**
  */
 static inline char * findLastChar(char * s)
+	/*@*/
 {
     char *res = s;
 
@@ -174,21 +180,22 @@ static inline char * findLastChar(char * s)
 	s++;
     }
 
-    /*@-temptrans@*/
+    /*@-temptrans -retalias@*/
     return res;
-    /*@=temptrans@*/
+    /*@=temptrans =retalias@*/
 }
 
 /**
  */
-static int isMemberInEntry(Header header, const char *name, int tag)
+static int isMemberInEntry(Header h, const char *name, int tag)
+	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** names;
     int type, count;
 
-    if (!hge(header, tag, &type, (void **)&names, &count))
+    if (!hge(h, tag, &type, &names, &count))
 	return -1;
     while (count--) {
 	if (!xstrcasecmp(names[count], name))
@@ -201,6 +208,7 @@ static int isMemberInEntry(Header header, const char *name, int tag)
 /**
  */
 static int checkForValidArchitectures(Spec spec)
+	/*@*/
 {
 #ifndef	DYING
     const char *arch = NULL;
@@ -240,6 +248,7 @@ static int checkForValidArchitectures(Spec spec)
 /**
  */
 static int checkForRequired(Header h, const char *name)
+	/*@*/
 {
     int res = 0;
     int *p;
@@ -259,15 +268,12 @@ static int checkForRequired(Header h, const char *name)
 /**
  */
 static int checkForDuplicates(Header h, const char *name)
+	/*@modifies h @*/
 {
     int res = 0;
     int lastTag, tag;
     HeaderIterator hi;
     
-#if 0	/* XXX harmless, but headerInitIterator() does this anyways */
-    headerSort(h);
-#endif
-
     for (hi = headerInitIterator(h), lastTag = 0;
 	headerNextIterator(hi, &tag, NULL, NULL, NULL);
 	lastTag = tag)
@@ -287,7 +293,7 @@ static int checkForDuplicates(Header h, const char *name)
  */
 static struct optionalTag {
     int		ot_tag;
-    const char *ot_mac;
+/*@observer@*/ /*@null@*/ const char * ot_mac;
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
@@ -299,6 +305,7 @@ static struct optionalTag {
 /**
  */
 static void fillOutMainPackage(Header h)
+	/*@modifies h @*/
 {
     struct optionalTag *ot;
 
@@ -314,7 +321,8 @@ static void fillOutMainPackage(Header h)
 
 /**
  */
-static int readIcon(Header h, const char *file)
+static int readIcon(Header h, const char * file)
+	/*@modifies h, fileSystem @*/
 {
     const char *fn = NULL;
     char *icon;
@@ -416,6 +424,11 @@ extern int noLang;
  */
 static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 			     const char *lang)
+	/*@modifies spec->macros, spec->st, spec->buildRootURL,
+		spec->sources, spec->numSources, spec->noSource,
+		spec->buildRestrictions, spec->BANames, spec->BACount,
+		spec->line, spec->gotBuildRootURL,
+		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -670,7 +683,7 @@ typedef struct PreambleRec_s {
     int tag;
     int len;
     int multiLang;
-    const char * token;
+/*@observer@*/ /*@null@*/ const char * token;
 } * PreambleRec;
 static struct PreambleRec_s preambleList[] = {
     {RPMTAG_NAME,		0, 0, "name"},
@@ -721,25 +734,27 @@ static struct PreambleRec_s preambleList[] = {
 /**
  */
 static inline void initPreambleList(void)
+	/*@modifies preambleList @*/
 {
     PreambleRec p;
-    for (p = preambleList; p->token; p++)
-	p->len = strlen(p->token);
+    for (p = preambleList; p->token != NULL; p++)
+	if (p->token) p->len = strlen(p->token);
 }
 
 /**
  */
 static int findPreambleTag(Spec spec, /*@out@*/int * tag,
-	/*@null@*/ /*@out@*/ const char ** macro, char *lang)
+		/*@null@*/ /*@out@*/ const char ** macro, char * lang)
+	/*@modifies *tag, *macro, *lang @*/
 {
-    char *s;
     PreambleRec p;
+    char *s;
 
     if (preambleList[0].len == 0)
 	initPreambleList();
 
-    for (p = preambleList; p->token; p++) {
-	if (!xstrncasecmp(spec->line, p->token, p->len))
+    for (p = preambleList; p->token != NULL; p++) {
+	if (p->token && !xstrncasecmp(spec->line, p->token, p->len))
 	    break;
     }
     if (p->token == NULL)
@@ -778,9 +793,9 @@ static int findPreambleTag(Spec spec, /*@out@*/int * tag,
 
     *tag = p->tag;
     if (macro)
-	/*@-onlytrans@*/	/* FIX: observer, but double indirection. */
+	/*@-onlytrans -observertrans -dependenttrans@*/	/* FIX: double indirection. */
 	*macro = p->token;
-	/*@=onlytrans@*/
+	/*@=onlytrans =observertrans =dependenttrans@*/
     return 0;
 }
 

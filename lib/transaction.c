@@ -62,7 +62,9 @@ struct diskspaceInfo {
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
-static /*@null@*/ void * freeFl(rpmTransactionSet ts, /*@only@*/ /*@null@*/ TFI_t flList)
+static /*@null@*/ void * freeFl(rpmTransactionSet ts,
+		/*@only@*/ /*@null@*/ TFI_t flList)
+	/*@*/
 {
     if (flList) {
 	TFI_t fi;
@@ -93,14 +95,20 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 
 	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
 	for (oc = 0; oc < ts->orderCount; oc++, e++) {
-	    struct availablePackage * alp;
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
-		alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
-		*e = alp->key;
-		break;
+		if (ts->addedPackages.list) {
+		    struct availablePackage * alp;
+		    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+		    *e = alp->key;
+		    break;
+		}
+		/*@fallthrough@*/
+	    default:
 	    case TR_REMOVED:
+		/*@-mods@*/	/* FIX: double indirection. */
 		*e = NULL;
+		/*@=mods@*/
 		break;
 	    }
 	}
@@ -109,6 +117,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 }
 
 static rpmProblemSet psCreate(void)
+	/*@*/
 {
     rpmProblemSet probs;
 
@@ -123,6 +132,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 		const struct availablePackage * alp,
 		const char * dn, const char *bn,
 		Header altH, unsigned long ulong1)
+	/*@modifies probs, alp @*/
 {
     rpmProblem p;
     char *t;
@@ -138,7 +148,9 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 
     p = probs->probs + probs->numProblems++;
     p->type = type;
+    /*@-assignexpose@*/
     p->key = alp->key;
+    /*@=assignexpose@*/
     p->ulong1 = ulong1;
     p->ignoreProblem = 0;
 
@@ -181,6 +193,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 }
 
 static int archOkay(Header h)
+	/*@*/
 {
     void * pkgArch;
     int type, count;
@@ -211,6 +224,7 @@ static int archOkay(Header h)
 }
 
 static int osOkay(Header h)
+	/*@*/
 {
     void * pkgOs;
     int type, count;
@@ -249,6 +263,7 @@ void rpmProblemSetFree(rpmProblemSet probs)
 }
 
 static /*@observer@*/ const char *const ftstring (fileTypes ft)
+	/*@*/
 {
     switch (ft) {
     case XDIR:	return "directory";
@@ -264,6 +279,7 @@ static /*@observer@*/ const char *const ftstring (fileTypes ft)
 }
 
 static fileTypes whatis(uint_16 mode)
+	/*@*/
 {
     if (S_ISDIR(mode))	return XDIR;
     if (S_ISCHR(mode))	return CDEV;
@@ -289,6 +305,7 @@ static fileTypes whatis(uint_16 mode)
 static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		struct availablePackage * alp,
 		Header origH, fileAction * actions)
+	/*@modifies ts, fi, alp, origH, actions @*/
 {
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -382,7 +399,8 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 	    /* Verify that the relocation's old path is in the header. */
 	    for (j = 0; j < numValid; j++)
-		if (!strcmp(validRelocations[j], relocations[i].oldPath)) break;
+		if (!strcmp(validRelocations[j], relocations[i].oldPath))
+		    /*@innerbreak@*/ break;
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions)
 		psAppend(probs, RPMPROB_BADRELOCATE, alp,
@@ -445,7 +463,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		    actualRelocations[numActual] = relocations[j].newPath;
 		    numActual++;
 		}
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	    if (j == numRelocations) {
 		actualRelocations[numActual] = validRelocations[i];
@@ -532,7 +550,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 	    if (strncmp(relocations[j].oldPath, fn, len))
 		continue;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	if (j < 0) continue;
 
@@ -549,7 +567,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 			continue;
 		    if (strncmp(fn, dirNames[j], fnlen))
 			continue;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 		if (j < dirCount)
 		    skipDirList[j] = 1;
@@ -590,7 +608,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		continue;
 	    if (strncmp(fn, dirNames[j], fnlen))
 		continue;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	
 	if (j < dirCount) {
@@ -704,6 +722,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
  * then logarithmic or quadratic.
  */
 static int psTrim(rpmProblemSet filter, rpmProblemSet target)
+	/*@modifies target @*/
 {
     rpmProblem f = filter->probs;
     rpmProblem t = target->probs;
@@ -718,7 +737,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 	    /*@-nullpass@*/	/* LCL: looks good to me */
 	    if (f->h == t->h && f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
-		break;
+		/*@innerbreak@*/ break;
 	    /*@=nullpass@*/
 	    t++;
 	    gotProblems = 1;
@@ -740,6 +759,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 }
 
 static int sharedCmp(const void * one, const void * two)
+	/*@*/
 {
     const struct sharedFileInfo * a = one;
     const struct sharedFileInfo * b = two;
@@ -757,6 +777,7 @@ static fileAction decideFileFate(const char * dirName,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
 			int brokenMd5, rpmtransFlags transFlags)
+	/*@*/
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
@@ -850,6 +871,7 @@ static fileAction decideFileFate(const char * dirName,
 
 static int filecmp(short mode1, const char * md51, const char * link1,
 	           short mode2, const char * md52, const char * link2)
+	/*@*/
 {
     fileTypes what1 = whatis(mode1);
     fileTypes what2 = whatis(mode2);
@@ -869,6 +891,7 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			            int sharedCount, int reportConflicts,
 				    rpmProblemSet probs,
 				    rpmtransFlags transFlags)
+	/*@modifies fi, db, probs @*/
 {
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -924,8 +947,10 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum], h, 0);
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
+		/*@-assignexpose@*/
 		if (!shared->isRemoved)
 		    fi->replaced[numReplaced++] = *shared;
+		/*@=assignexpose@*/
 	    }
 	}
 
@@ -961,6 +986,7 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount)
+	/*@modifies fi, db @*/
 {
     HGE_t hge = fi->hge;
     Header h;
@@ -1000,6 +1026,7 @@ static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
  */
 static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 			   rpmProblemSet probs, struct diskspaceInfo * dsl)
+	/*@modifies fi, probs, dsl @*/
 {
     int i, j;
     struct diskspaceInfo * ds = NULL;
@@ -1060,7 +1087,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 
 	/* Locate this overlapped file in the set of added/removed packages. */
 	for (j = 0; j < numRecs && recs[j] != fi; j++)
-	    ;
+	    {};
 
 	/* Find what the previous disposition of this file was. */
 	otherFileNum = -1;			/* keep gcc quiet */
@@ -1075,18 +1102,18 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 
 		/* If the addresses are the same, so are the values. */
 		if ((fi->fps + i) == (recs[otherPkgNum]->fps + otherFileNum))
-		    break;
+		    /*@innerbreak@*/ break;
 
 		/* Otherwise, compare fingerprints by value. */
 		/*@-nullpass@*/	/* LCL: looks good to me */
 		if (FP_EQUAL(fi->fps[i], recs[otherPkgNum]->fps[otherFileNum]))
-		    break;
+		    /*@innerbreak@*/ break;
 		/*@=nullpass@*/
 
 	    }
 	    /* XXX is this test still necessary? */
 	    if (recs[otherPkgNum]->actions[otherFileNum] != FA_UNKNOWN)
-		break;
+		/*@innerbreak@*/ break;
 	}
 
 	switch (fi->type) {
@@ -1198,6 +1225,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 
 static int ensureOlder(struct availablePackage * alp, Header old,
 		rpmProblemSet probs)
+	/*@modifies alp, probs @*/
 {
     int result, rc = 0;
 
@@ -1215,6 +1243,7 @@ static int ensureOlder(struct availablePackage * alp, Header old,
 }
 
 static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
+	/*@modifies fi @*/
 {
     int noDocs = (ts->transFlags & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
@@ -1289,7 +1318,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 		if (!((*nsp)[len] == '/' || (*nsp)[len] == '\0')) continue;
 	    }
 
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 
 	if (nsp && *nsp) {
@@ -1305,15 +1334,16 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	    const char **lang, *l, *le;
 	    for (lang = languages; *lang != '\0'; lang++) {
 		if (!strcmp(*lang, "all"))
-		    break;
+		    /*@innerbreak@*/ break;
 		for (l = fi->flangs[i]; *l != '\0'; l = le) {
 		    for (le = l; *le != '\0' && *le != '|'; le++)
-			;
+			{};
 		    if ((le-l) > 0 && !strncmp(*lang, l, (le-l)))
-			break;
+			/*@innerbreak@*/ break;
 		    if (*le == '|') le++;	/* skip over | */
 		}
-		if (*l != '\0')	break;
+		if (*l != '\0')
+		    /*@innerbreak@*/ break;
 	    }
 	    if (*lang == NULL) {
 		drc[ix]--;	dff[ix] = 1;
@@ -1366,7 +1396,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 		continue;
 	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), dn);
 	    fi->actions[i] = FA_SKIPNSTATE;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
     }
 
@@ -1392,7 +1422,9 @@ struct tsIterator_s {
  * @param a		transaction element iterator
  * @return		element order count
  */
-static int tsGetOc(void * a) {
+static int tsGetOc(void * a)
+	/*@*/
+{
     struct tsIterator_s * iter = a;
     int oc = iter->ocsave;
     return oc;
@@ -1403,7 +1435,9 @@ static int tsGetOc(void * a) {
  * @param a		transaction element iterator
  * @return		available package pointer
  */
-static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a) {
+static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a)
+	/*@*/
+{
     struct tsIterator_s * iter = a;
     struct availablePackage * alp = NULL;
     int oc = iter->ocsave;
@@ -1411,7 +1445,7 @@ static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a) {
     if (oc != -1) {
 	rpmTransactionSet ts = iter->ts;
 	TFI_t fi = ts->flList + oc;
-	if (fi->type == TR_ADDED)
+	if (ts->addedPackages.list && fi->type == TR_ADDED)
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
     }
     return alp;
@@ -1423,6 +1457,7 @@ static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a) {
  * @return		NULL always
  */
 static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * a)
+	/*@modifies a @*/
 {
     return _free(a);
 }
@@ -1433,6 +1468,7 @@ static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * a)
  * @return		transaction element iterator
  */
 static void * tsInitIterator(/*@kept@*/ const void * a)
+	/*@*/
 {
     rpmTransactionSet ts = (void *)a;
     struct tsIterator_s * iter = NULL;
@@ -1450,7 +1486,9 @@ static void * tsInitIterator(/*@kept@*/ const void * a)
  * @param a		file info iterator
  * @return		next index, -1 on termination
  */
-static /*@dependent@*/ TFI_t tsNextIterator(void * a) {
+static /*@dependent@*/ TFI_t tsNextIterator(void * a)
+	/*@*/
+{
     struct tsIterator_s * iter = a;
     rpmTransactionSet ts = iter->ts;
     TFI_t fi = NULL;
@@ -1506,7 +1544,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     ts->notify = notify;
     ts->notifyData = notifyData;
+    /*@-assignexpose@*/
     ts->probs = *newProbs = psCreate();
+    /*@=assignexpose@*/
     ts->ignoreSet = ignoreSet;
     ts->currDir = _free(ts->currDir);
     ts->currDir = currentDirectory();
@@ -1514,7 +1554,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     ts->id = time(NULL);
 
     memset(psm, 0, sizeof(*psm));
+    /*@-assignexpose@*/
     psm->ts = ts;
+    /*@=assignexpose@*/
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
@@ -1611,7 +1653,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    while (rpmdbNextIterator(mi) != NULL) {
 		psAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp,
 			NULL, NULL, NULL, 0);
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	}
@@ -1726,8 +1768,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     }
     tsi = tsFreeIterator(tsi);
 
+    /*@-moduncon@*/
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
 	NULL, ts->notifyData));
+    /*@=moduncon@*/
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
@@ -1737,8 +1781,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	dbiIndexSet * matches;
 	int knownBad;
 
+	/*@-moduncon@*/
 	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - ts->flList),
 			ts->flEntries, NULL, ts->notifyData));
+	/*@=moduncon@*/
 
 	if (fi->fc == 0) continue;
 
@@ -1800,7 +1846,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    /* Find the end of the files in the other package. */
 	    for (nexti = i + 1; nexti < numShared; nexti++) {
 		if (sharedList[nexti].otherPkg != shared->otherPkg)
-		    break;
+		    /*@innerbreak@*/ break;
 	    }
 
 	    /* Is this file from a package being removed? */
@@ -1809,7 +1855,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		if (ts->removedPackages[j] != shared->otherPkg)
 		    continue;
 		beingRemoved = 1;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 
 	    /* Determine the fate of each file. */
@@ -1869,8 +1915,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	(void) chdir(ts->currDir);
     }
 
+    /*@-moduncon@*/
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
 	NULL, ts->notifyData));
+    /*@=moduncon@*/
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1956,7 +2004,9 @@ assert(alp == fi->ap);
 		    rpmRC rpmrc;
 
 		    hdrs[i] = headerFree(hdrs[i]);
+		    /*@-mustmod@*/	/* LCL: segfault */
 		    rpmrc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
+		    /*@=mustmod@*/
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
 					0, 0, alp->key, ts->notifyData);

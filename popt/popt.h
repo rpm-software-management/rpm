@@ -195,7 +195,7 @@ void poptResetContext(/*@null@*/poptContext con)
  * @return		next option val, -1 on last item, POPT_ERROR_* on error
  */
 int poptGetNextOpt(/*@null@*/poptContext con)
-	/*@modifies con @*/;
+	/*@modifies con, fileSystem @*/;
 
 /*@-redecl@*/
 /** \ingroup popt
@@ -340,20 +340,20 @@ void poptSetExecPath(poptContext con, const char * path, int allowAbsolute)
 /** \ingroup popt
  * Print detailed description of options.
  * @param con		context
- * @param f		ouput file handle
+ * @param fp		ouput file handle
  * @param flags		(unused)
  */
-void poptPrintHelp(poptContext con, FILE * f, /*@unused@*/ int flags)
-	/*@modifies *f @*/;
+void poptPrintHelp(poptContext con, FILE * fp, /*@unused@*/ int flags)
+	/*@modifies *fp, fileSystem @*/;
 
 /** \ingroup popt
  * Print terse description of options.
  * @param con		context
- * @param f		ouput file handle
+ * @param fp		ouput file handle
  * @param flags		(unused)
  */
-void poptPrintUsage(poptContext con, FILE * f, /*@unused@*/ int flags)
-	/*@modifies *f @*/;
+void poptPrintUsage(poptContext con, FILE * fp, /*@unused@*/ int flags)
+	/*@modifies *fp, fileSystem @*/;
 
 /** \ingroup popt
  * Provide text to replace default "[OPTION...]" in help/usage output.

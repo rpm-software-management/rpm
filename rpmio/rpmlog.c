@@ -51,6 +51,7 @@ void rpmlogPrint(FILE *f)
     if (f == NULL)
 	f = stderr;
 
+    if (recs)
     for (i = 0; i < nrecs; i++) {
 	rpmlogRec rec = recs + i;
 	if (rec->message && *rec->message)
@@ -62,6 +63,7 @@ void rpmlogClose (void)
 {
     int i;
 
+    if (recs)
     for (i = 0; i < nrecs; i++) {
 	rpmlogRec rec = recs + i;
 	rec->message = _free(rec->message);
@@ -95,7 +97,8 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
     return ocb;
 }
 
-static char *rpmlogMsgPrefix[] = {
+/*@-readonlytrans@*/	/* FIX: double indeirection. */
+/*@observer@*/ static char *rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */
     N_("fatal error: "),/*!< RPMLOG_CRIT */
@@ -105,6 +108,7 @@ static char *rpmlogMsgPrefix[] = {
     "",			/*!< RPMLOG_INFO */
     "D: ",		/*!< RPMLOG_DEBUG */
 };
+/*@=readonlytrans@*/
 
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
@@ -115,6 +119,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 #endif
 
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
+	/*@modifies internalState @*/
 {
     int pri = RPMLOG_PRI(code);
     int mask = RPMLOG_MASK(pri);

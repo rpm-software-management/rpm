@@ -83,7 +83,9 @@ static /*@observer@*/ char * db_strerror(int error)
     /*@notreached@*/
 }
 
-static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
+static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
+	/*@modifies dbi, fileSystem @*/
+{
     int rc = 0;
 
     if (error == 0)
@@ -106,7 +108,9 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 }
 #endif	/* DYING */
 
-static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags) {
+static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@modifies fileSystem @*/
+{
     int rc = 0;
 
     if (dbi->dbi_db) {
@@ -129,6 +133,7 @@ static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags) {
 }
 
 /*@null@*/ static void * doGetRecord(dbiIndex dbi, unsigned int offset)
+	/*@modifies dbi, fileSystem @*/
 {
     FD_t pkgs = dbi->dbi_db;
     void * uh = NULL;
@@ -234,22 +239,32 @@ exit:
     return uh;
 }
 
-static int db1copen(/*@unused@*/ dbiIndex dbi, /*@unused@*/ DBC ** dbcp, unsigned int flags) {
+static int db1copen(/*@unused@*/ dbiIndex dbi,
+		/*@unused@*/ DBC ** dbcp, unsigned int flags)
+	/*@modifies *dbcp @*/
+{
     /* XXX per-iterator cursors need to be set to non-NULL. */
     if (flags)
 	*dbcp = (DBC *)-1;
     return 0;
 }
 
-static int db1cclose(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, /*@unused@*/ unsigned int flags) {
+static int db1cclose(dbiIndex dbi,
+		/*@unused@*/ DBC * dbcursor, /*@unused@*/ unsigned int flags)
+	/*@modifies dbi @*/
+{
     dbi->dbi_lastoffset = 0;
     return 0;
 }
 
 /*@-compmempass@*/
-static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
-		size_t * keylen, void ** datap, size_t * datalen,
+static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
+		/*@null@*/ void ** keyp,
+		/*@null@*/ size_t * keylen, 
+		/*@null@*/ void ** datap, 
+		/*@null@*/ size_t * datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@modifies dbi, *keyp, *keylen, *datap, *datalen, fileSystem @*/
 {
     DBT key, data;
     int rc = 0;
@@ -339,6 +354,7 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
 
 static int db1cdel(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, const void * keyp,
 		size_t keylen, /*@unused@*/ unsigned int flags)
+	/*@modifies dbi, fileSystem @*/
 {
     DBT key;
     int rc = 0;
@@ -373,6 +389,7 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 		const void * keyp, size_t keylen,
 		const void * datap, size_t datalen,
 		/*@unused@*/ unsigned int flags)
+	/*@modifies dbi, datap, fileSystem @*/
 {
     DBT key, data;
     int rc = 0;
@@ -426,21 +443,25 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 static int db1ccount(/*@unused@*/ dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 		/*@unused@*/ /*@out@*/ unsigned int * countp,
 		/*@unused@*/ unsigned int flags)
+	/*@*/
 {
     return EINVAL;
 }
 
 static int db1byteswapped(/*@unused@*/dbiIndex dbi)
+	/*@*/
 {
     return 0;
 }
 
 static int db1stat(/*@unused@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@*/
 {
     return EINVAL;
 }
 
 static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@modifies dbi, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * base = db1basename(dbi->dbi_rpmtag);
@@ -483,6 +504,7 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
 static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag,
 	/*@out@*/ dbiIndex * dbip)
+	/*@modifies *dbip, fileSystem @*/
 {
     /*@-nestedextern@*/
     extern struct _dbiVec db1vec;

@@ -17,7 +17,8 @@ static int _debug = 0;
 /*@access FD_t@*/		/* XXX compared with NULL */
 
 /*@-exportheadervar@*/
-/*@unused@*/ char * RPMVERSION = VERSION; /* just to put a marker in librpm.a */
+/* just to put a marker in librpm.a */
+/*@unused@*/ /*@observer@*/ char * RPMVERSION = VERSION;
 /*@=exportheadervar@*/
 
 char ** splitString(const char * str, int length, char sep)
@@ -414,6 +415,8 @@ void compressFilelist(Header h)
 
     if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
 	return;		/* no file list */
+    if (fileNames == NULL || count <= 0)
+	return;
 
     dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
     baseNames = alloca(sizeof(*dirNames) * count);
@@ -432,10 +435,14 @@ void compressFilelist(Header h)
 
     for (i = 0; i < count; i++) {
 	const char ** needle;
-	char *baseName = strrchr(fileNames[i], '/') + 1;
 	char savechar;
-	int len = baseName - fileNames[i];
+	char * baseName;
+	int len;
 
+	if (fileNames[i] == NULL)	/* XXX can't happen */
+	    continue;
+	baseName = strrchr(fileNames[i], '/') + 1;
+	len = baseName - fileNames[i];
 	needle = dirNames;
 	savechar = *baseName;
 	*baseName = '\0';
@@ -454,12 +461,14 @@ void compressFilelist(Header h)
     }
 
 exit:
-    (void) headerAddEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
+    if (count > 0) {
+	(void) headerAddEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			dirIndexes, count);
-    (void) headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
-    (void) headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			dirNames, dirIndex + 1);
+    }
 
     fileNames = headerFreeData(fileNames, fnt);
 

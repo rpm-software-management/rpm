@@ -56,7 +56,7 @@ urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
     URLSANE(u);
     u->nrefs++;
 URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
-    return u;
+    /*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
 }
 
 urlinfo XurlNew(const char *msg, const char *file, unsigned line)
@@ -84,7 +84,7 @@ urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
     URLSANE(u);
 URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
-	/*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
+	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
@@ -159,6 +159,7 @@ void urlFreeCache(void)
 }
 
 static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
+	/*@*/
 {
     if (str1 && str2)
 	/*@-nullpass@*/		/* LCL: 2nd arg claims to be NULL */
@@ -169,7 +170,8 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
     return 0;
 }
 
-static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo *uret, int mustAsk)
+static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
+	/*@modifies *uret @*/
 {
     urlinfo u;
     int ucx;
@@ -305,7 +307,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo *uret, int mustAsk)
 }
 
 static struct urlstring {
-    const char *leadin;
+/*@observer@*/ /*@null@*/ const char * leadin;
     urltype	ret;
 } urlstrings[] = {
     { "file://",	URL_IS_PATH },
@@ -315,7 +317,8 @@ static struct urlstring {
     { NULL,		URL_IS_UNKNOWN }
 };
 
-urltype urlIsURL(const char * url) {
+urltype urlIsURL(const char * url)
+{
     struct urlstring *us;
 
     if (url && *url) {
@@ -456,7 +459,8 @@ int urlSplit(const char * url, urlinfo *uret)
     return 0;
 }
 
-int urlGetFile(const char * url, const char * dest) {
+int urlGetFile(const char * url, const char * dest)
+{
     int rc;
     FD_t sfd = NULL;
     FD_t tfd = NULL;

@@ -34,6 +34,7 @@ void fpCacheFree(fingerPrintCache cache)
 static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache,
 			    const char * dirName)
+	/*@*/
 {
     const void ** data;
 
@@ -51,7 +52,8 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
  * @return pointer to the finger print associated with a file path.
  */
 static fingerPrint doLookup(fingerPrintCache cache,
-	const char * dirName, const char * baseName, int scareMemory)
+		const char * dirName, const char * baseName, int scareMemory)
+	/*@modifies cache @*/
 {
     char dir[PATH_MAX];
     const char * cleanDirName;

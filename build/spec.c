@@ -139,7 +139,7 @@ Package newPackage(Spec spec)
     } else {
 	/* Always add package to end of list */
 	for (pp = spec->packages; pp->next != NULL; pp = pp->next)
-	    ;
+	    {};
 	pp->next = p;
     }
     p->next = NULL;

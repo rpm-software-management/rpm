@@ -17,6 +17,7 @@
 /**
  */
 static int checkSpec(Header h)
+	/*@modifies h, fileSystem @*/
 {
     const char * rootdir = NULL;
     rpmdb db = NULL;
@@ -64,6 +65,7 @@ static int checkSpec(Header h)
 /**
  */
 static int isSpecFile(const char * specfile)
+	/*@modifies fileSystem @*/
 {
     char buf[256];
     const char * s;
@@ -101,10 +103,11 @@ static int isSpecFile(const char * specfile)
 /**
  */
 static int buildForTarget(const char * arg, BTA_t ba,
-	const char * passPhrase, char * cookie)
+		const char * passPhrase, char * cookie)
+	/*@modifies fileSystem @*/
 {
     int buildAmount = ba->buildAmount;
-    const char *buildRootURL = NULL;
+    const char * buildRootURL = NULL;
     const char * specFile;
     const char * specURL;
     int specut;
@@ -121,11 +124,12 @@ static int buildForTarget(const char * arg, BTA_t ba,
 
     if (ba->buildMode == 't') {
 	FILE *fp;
-	const char *specDir;
+	const char * specDir;
 	const char * tmpSpecFile;
-	char * cmd, *s;
+	char * cmd, * s;
 	rpmCompressedMagic res = COMPRESSED_OTHER;
-	static const char *zcmds[] = { "cat", "gunzip", "bunzip2", "cat" };
+	/*@observer@*/ static const char *zcmds[] =
+		{ "cat", "gunzip", "bunzip2", "cat" };
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 

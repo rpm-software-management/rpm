@@ -173,28 +173,30 @@ extern "C" {
  * @param a		file stage
  * @return		formatted string
  */
-/*@observer@*/ const char *const fileStageString(fileStage a);
+/*@observer@*/ const char *const fileStageString(fileStage a)	/*@*/;
 
 /**
  * Return formatted string representation of file disposition.
  * @param a		file dispostion
  * @return		formatted string
  */
-/*@observer@*/ const char *const fileActionString(fileAction a);
+/*@observer@*/ const char *const fileActionString(fileAction a)	/*@*/;
 /*@=exportlocal@*/
 
 /**
  * Create file state machine instance.
  * @return		file state machine data
  */
-/*@only@*/ FSM_t newFSM(void);
+/*@only@*/ FSM_t newFSM(void)
+	/*@*/;
 
 /**
  * Destroy file state machine instance.
  * @param fsm		file state machine data
  * @return		always NULL
  */
-/*@null@*/ FSM_t freeFSM(/*@only@*/ /*@null@*/ FSM_t fsm);
+/*@null@*/ FSM_t freeFSM(/*@only@*/ /*@null@*/ FSM_t fsm)
+	/*@modifies fsm @*/;
 
 /**
  * Load external data into file state machine.
@@ -212,7 +214,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
-	/*@modifies fsm, *archiveSize, *failedFile  @*/;
+	/*@modifies fsm, *archiveSize, *failedFile, fileSystem  @*/;
 
 /**
  * Clean file state machine.
@@ -261,7 +263,7 @@ int fsmMapAttrs(FSM_t fsm)
  * @return		0 on success
  */
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
-	/*@modifies fsm @*/;
+	/*@modifies fsm, fileSystem @*/;
 
 #ifdef __cplusplus
 }

@@ -68,13 +68,15 @@ extern "C" {
  * @param sizeHint	number of elements expected
  * @return pointer to initialized fingerprint cache
  */
-/*@only@*/ fingerPrintCache fpCacheCreate(int sizeHint)	/*@*/;
+/*@only@*/ fingerPrintCache fpCacheCreate(int sizeHint)
+	/*@*/;
 
 /**
  * Destroy finger print cache.
  * @param cache		pointer to fingerprint cache
  */
-void		fpCacheFree(/*@only@*/ fingerPrintCache cache);
+void fpCacheFree(/*@only@*/ fingerPrintCache cache)
+	/*@modifies cache @*/;
 
 /**
  * Return finger print of a file path.
@@ -84,8 +86,9 @@ void		fpCacheFree(/*@only@*/ fingerPrintCache cache);
  * @param scareMemory
  * @return pointer to the finger print associated with a file path.
  */
-fingerPrint	fpLookup(fingerPrintCache cache, const char * dirName, 
-			const char * baseName, int scareMemory)	/*@*/;
+fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
+			const char * baseName, int scareMemory)
+	/*@modifies cache @*/;
 
 /**
  * Return hash value for a finger print.
@@ -93,7 +96,8 @@ fingerPrint	fpLookup(fingerPrintCache cache, const char * dirName,
  * @param key		pointer to finger print entry
  * @return hash value
  */
-unsigned int fpHashFunction(const void * key)	/*@*/;
+unsigned int fpHashFunction(const void * key)
+	/*@*/;
 
 /**
  * Compare two finger print entries.
@@ -102,7 +106,8 @@ unsigned int fpHashFunction(const void * key)	/*@*/;
  * @param key2		finger print 2
  * @return result of comparing key1 and key2
  */
-int fpEqual(const void * key1, const void * key2)	/*@*/;
+int fpEqual(const void * key1, const void * key2)
+	/*@*/;
 
 /**
  * Return finger prints of an array of file paths.
@@ -117,7 +122,7 @@ int fpEqual(const void * key1, const void * key2)	/*@*/;
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
 		  const char ** baseNames, const int * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
-			/*@modifies cache, *fpList @*/;
+	/*@modifies cache, *fpList @*/;
 
 /**
  * Return finger prints of all file names in header.

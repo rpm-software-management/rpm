@@ -37,7 +37,8 @@ extern "C" {
  * @param ctx	MD5 private data
  * @param brokenEndian	calculate broken MD5 sum?
  */
-void rpmMD5Init( /*@out@*/ struct MD5Context * ctx, int brokenEndian);
+void rpmMD5Init( /*@out@*/ struct MD5Context * ctx, int brokenEndian)
+	/*@modifies *ctx @*/;
 
 /**
  * Update context to reflect the concatenation of another buffer full.
@@ -47,14 +48,16 @@ void rpmMD5Init( /*@out@*/ struct MD5Context * ctx, int brokenEndian);
  * @param len		no. bytes of data
  */
 void rpmMD5Update(struct MD5Context * ctx, unsigned char const *buf,
-	       unsigned len);
+	       unsigned len)
+	/*@modifies ctx @*/;
 /**
  * Return MD5 digest, and reset context.
  * @retval		MD5 digest
  * @param ctx		MD5 private data
  */
 /*@-fixedformalarray@*/
-void rpmMD5Final(unsigned char digest[16], struct MD5Context * ctx);
+void rpmMD5Final(unsigned char digest[16], struct MD5Context * ctx)
+	/*@modifies digest, ctx @*/;
 /*@=fixedformalarray@*/
 
 /**
@@ -65,7 +68,8 @@ void rpmMD5Final(unsigned char digest[16], struct MD5Context * ctx);
  * @param in		next block of data to add
  */
 /*@-fixedformalarray -exportlocal@*/
-void rpmMD5Transform(uint32 buf[4], uint32 const in[16]);
+void rpmMD5Transform(uint32 buf[4], uint32 const in[16])
+	/*@modifies *buf @*/;
 /*@=fixedformalarray =exportlocal@*/
 
 /**
@@ -74,7 +78,8 @@ void rpmMD5Transform(uint32 buf[4], uint32 const in[16]);
  * @retval digest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdfile(const char *fn, unsigned char *digest);
+int mdfile(const char * fn, unsigned char * digest)
+	/*@modifies digest @*/;
 
 /**
  * Return MD5 sum of file as binary data.
@@ -82,7 +87,8 @@ int mdfile(const char *fn, unsigned char *digest);
  * @retval bindigest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdbinfile(const char *fn, unsigned char *bindigest);
+int mdbinfile(const char * fn, unsigned char * bindigest)
+	/*@modifies *bindigest @*/;
 
 /* These assume a little endian machine and return incorrect results!
    They are here for compatibility with old (broken) versions of RPM */
@@ -94,7 +100,8 @@ int mdbinfile(const char *fn, unsigned char *bindigest);
  * @retval digest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdfileBroken(const char *fn, unsigned char *digest);
+int mdfileBroken(const char * fn, unsigned char * digest)
+	/*@modifies *digest @*/;
 
 /**
  * Return (broken!) MD5 sum of file as binary data.
@@ -103,7 +110,8 @@ int mdfileBroken(const char *fn, unsigned char *digest);
  * @retval bindigest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdbinfileBroken(const char *fn, unsigned char *bindigest);
+int mdbinfileBroken(const char * fn, unsigned char * bindigest)
+	/*@modifies *bindigest @*/;
 
 #ifdef __cplusplus
 }

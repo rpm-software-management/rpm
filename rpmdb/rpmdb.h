@@ -433,7 +433,7 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp,
 		/*@null@*/ void ** datapp, 
 		/*@null@*/ size_t * datalenp,
 		unsigned int flags)
-	/*@modifies *dbcursor, *keypp, *keylenp, *datapp, *datalenp,
+	/*@modifies *dbcursor, **keypp, *keylenp, **datapp, *datalenp,
 		fileSystem @*/;
 
 /** \ingroup dbi

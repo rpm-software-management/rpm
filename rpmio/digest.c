@@ -377,6 +377,7 @@ static union _mendian {
 /*@-shadow@*/
 static void
 byteReverse(byte *buf, unsigned nbytes)
+	/*@modifies *buf @*/
 {
     unsigned nlongs = nbytes / sizeof(uint32);
     uint32 t;
@@ -455,7 +456,9 @@ rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 	memcpy(p, buf, t);
 	if (ctx->doByteReverse)
 	    byteReverse(ctx->in, ctx->datalen);
+	/*@-moduncon@*/
 	ctx->transform(ctx);
+	/*@=moduncon@*/
 	buf += t;
 	len -= t;
     }
@@ -467,7 +470,9 @@ rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 	/*@=mayaliasunique@*/
 	if (ctx->doByteReverse)
 	    byteReverse(ctx->in, ctx->datalen);
+	/*@-moduncon@*/
 	ctx->transform(ctx);
+	/*@=moduncon@*/
     }
 
     /* Handle any remaining bytes of data. */
@@ -495,7 +500,9 @@ rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
 	memset(p, 0, count);
 	if (ctx->doByteReverse)
 	    byteReverse(ctx->in, ctx->datalen);
+	/*@-moduncon@*/
 	ctx->transform(ctx);
+	/*@=moduncon@*/
 	p = ctx->in;
 	count = ctx->datalen;
     }
@@ -506,7 +513,9 @@ rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
 	byteReverse(ctx->in, ctx->datalen - sizeof(ctx->bits));
     ((uint32 *) ctx->in)[14] = ctx->bits[0];
     ((uint32 *) ctx->in)[15] = ctx->bits[1];
+    /*@-moduncon@*/
     ctx->transform(ctx);
+    /*@=moduncon@*/
 
     /* Return final digest. */
     if (ctx->doByteReverse)

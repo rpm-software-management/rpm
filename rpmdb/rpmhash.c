@@ -36,15 +36,18 @@ struct hashTable_s {
  */
 static /*@shared@*/ /*@null@*/
 struct hashBucket *findEntry(hashTable ht, const void * key)
+	/*@*/
 {
     unsigned int hash;
     struct hashBucket * b;
 
+    /*@-modunconnomods@*/
     hash = ht->fn(key) % ht->numBuckets;
     b = ht->buckets[hash];
 
     while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
+    /*@=modunconnomods@*/
 
     return b;
 }

@@ -56,7 +56,7 @@ for f in $scriptlist; do
     interplist="$interplist $interp"
     case $interp in
     */perl)	perllist="$perllist $f" ;;
-    *)		[ "${f%.pm} != "${f}" ] && perllist="$perllist $f" ;;
+    *)		[ "${f%.pm}" != "${f}" ] && perllist="$perllist $f" ;;
     esac
 done
 [ -n "$interplist" ] && { echo "$interplist" | sort -u ; }

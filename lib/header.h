@@ -106,17 +106,17 @@ typedef /*@abstract@*/ struct headerIteratorS *HeaderIterator;
  * Associate tag names with numeric values.
  */
 struct headerTagTableEntry {
-    const char * name;		/*!< Tag name. */
-    int val;			/*!< Tag numeric value. */
+/*@observer@*/ /*@null@*/ const char * name;	/*!< Tag name. */
+    int val;					/*!< Tag numeric value. */
 };
 
 /** \ingroup header
  */
 enum headerSprintfExtenstionType {
-	HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
-	HEADER_EXT_FORMAT,	/*!< headerTagFormatFunction() extension */
-	HEADER_EXT_MORE,	/*!< Chain to next table. */
-	HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
+    HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
+    HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
+    HEADER_EXT_MORE,		/*!< Chain to next table. */
+    HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
 };
 
 /** \ingroup header
@@ -145,15 +145,18 @@ typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-typedef int (*headerTagTagFunction)(Header h, int_32 * type, const void ** data,
-				       int_32 * count, int * freeData);
+typedef int (*headerTagTagFunction) (Header h,
+		/*@null@*/ /*@out@*/ int_32 * type,
+		/*@null@*/ /*@out@*/ const void ** data,
+		/*@null@*/ /*@out@*/ int_32 * count,
+		/*@null@*/ /*@out@*/ int * freeData);
 
 /** \ingroup header
  * Define header tag output formats.
  */
 struct headerSprintfExtension {
     enum headerSprintfExtenstionType type;	/*!< Type of extension. */
-    char * name;				/*!< Name of extension. */
+/*@observer@*/ /*@null@*/ const char * name;	/*!< Name of extension. */
     union {
 /*@unused@*/ void * generic;			/*!< Private extension. */
 	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
@@ -184,7 +187,7 @@ enum hMagic {
  * @return		header (or NULL on error)
  */
 /*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
-	/*@modifies fd @*/;
+	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup header
  * Write (with unload) header to file handle.
@@ -194,7 +197,7 @@ enum hMagic {
  * @return		0 on success, 1 on error
  */
 int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
-	/*@modifies fd, h @*/;
+	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup header
  * Return size of on-disk header representation in bytes.

@@ -268,23 +268,23 @@ static void timeCheck(int tc, Header h)	/*@modifies internalState @*/
 /**
  */
 typedef struct VFA {
-	char *	attribute;
-	int	flag;
+/*@observer@*/ /*@null@*/ const char * attribute;
+    int	flag;
 } VFA_t;
 
 /**
  */
 /*@-exportlocal -exportheadervar@*/
 VFA_t verifyAttrs[] = {
-	{ "md5",	RPMVERIFY_MD5 },
-	{ "size",	RPMVERIFY_FILESIZE },
-	{ "link",	RPMVERIFY_LINKTO },
-	{ "user",	RPMVERIFY_USER },
-	{ "group",	RPMVERIFY_GROUP },
-	{ "mtime",	RPMVERIFY_MTIME },
-	{ "mode",	RPMVERIFY_MODE },
-	{ "rdev",	RPMVERIFY_RDEV },
-	{ NULL, 0 }
+    { "md5",	RPMVERIFY_MD5 },
+    { "size",	RPMVERIFY_FILESIZE },
+    { "link",	RPMVERIFY_LINKTO },
+    { "user",	RPMVERIFY_USER },
+    { "group",	RPMVERIFY_GROUP },
+    { "mtime",	RPMVERIFY_MTIME },
+    { "mode",	RPMVERIFY_MODE },
+    { "rdev",	RPMVERIFY_RDEV },
+    { NULL, 0 }
 };
 /*@=exportlocal =exportheadervar@*/
 
@@ -326,7 +326,7 @@ static int parseForVerify(char * buf, FileList fl)
     /* Bracket %*verify args */
     *pe++ = ' ';
     for (p = pe; *pe && *pe != ')'; pe++)
-	;
+	{};
 
     if (*pe == '\0') {
 	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
@@ -358,7 +358,7 @@ static int parseForVerify(char * buf, FileList fl)
 		if (strcmp(p, vfa->attribute))
 		    continue;
 		verifyFlags |= vfa->flag;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	    if (vfa->attribute)
 		continue;
@@ -419,7 +419,7 @@ static int parseForAttr(char * buf, FileList fl)
     /* Bracket %*attr args */
     *pe++ = ' ';
     for (p = pe; *pe && *pe != ')'; pe++)
-	;
+	{};
 
     if (ret_ar == &(fl->def_ar)) {	/* %defattr */
 	q = pe;
@@ -533,7 +533,7 @@ static int parseForConfig(char * buf, FileList fl)
     /* Bracket %config args */
     *pe++ = ' ';
     for (p = pe; *pe && *pe != ')'; pe++)
-	;
+	{};
 
     if (*pe == '\0') {
 	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
@@ -602,7 +602,7 @@ static int parseForLang(char * buf, FileList fl)
     /* Bracket %lang args */
     *pe++ = ' ';
     for (pe = p; *pe && *pe != ')'; pe++)
-	;
+	{};
 
     if (*pe == '\0') {
 	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
@@ -814,7 +814,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		    fl->currentFlags |= multiLib;
 	    } else
 		fl->currentFlags |= vfa->flag;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	/* if we got an attribute, continue with next token */
 	if (vfa->attribute != NULL)
@@ -2117,8 +2117,8 @@ top:
 /**
  */
 typedef struct {
-    const char *msg;
-    const char *argv[4];
+/*@observer@*/ /*@null@*/ const char *msg;
+/*@observer@*/ /*@null@*/ const char *argv[4];
     int ntag;
     int vtag;
     int ftag;
@@ -2231,7 +2231,9 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 	}
 
 	/* Get the script name to run */
+	/*@-nullderef@*/	/* FIX: double indirection. @*/
 	myargv[0] = (dm->argv[0] ? rpmExpand(dm->argv[0], NULL) : NULL);
+	/*@=nullderef@*/
 
 	if (!(myargv[0] && *myargv[0] != '%')) {
 	    myargv[0] = _free(myargv[0]);
@@ -2250,7 +2252,9 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 
 	/* Expand rest of script arguments (if any) */
 	for (i = 1; i < 4; i++) {
+	    /*@-nullderef@*/	/* FIX: double indirection. @*/
 	    myargv[i] = dm->argv[i] ? rpmExpand(dm->argv[i], NULL) : NULL;
+	    /*@=nullderef@*/
 	}
 
 	readBuf = getOutputFrom(NULL, myargv,

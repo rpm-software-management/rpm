@@ -431,28 +431,29 @@ printNewSpecfile(Spec spec)
     }
 }
 
-void rpmDisplayQueryTags(FILE * f)
+void rpmDisplayQueryTags(FILE * fp)
 {
     const struct headerTagTableEntry * t;
     int i;
     const struct headerSprintfExtension * ext = rpmHeaderFormats;
 
-    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	fprintf(f, "%s\n", t->name + 7);
-    }
+    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++)
+	if (t->name) fprintf(fp, "%s\n", t->name + 7);
 
-    while (ext->name) {
+    while (ext->name != NULL) {
 	if (ext->type == HEADER_EXT_MORE) {
 	    ext = ext->u.more;
 	    continue;
 	}
 	/* XXX don't print query tags twice. */
 	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	    if (t->name == NULL)	/* XXX programmer error. */
+		continue;
 	    if (!strcmp(t->name, ext->name))
-	    	break;
+	    	/*@innerbreak@*/ break;
 	}
 	if (i >= rpmTagTableSize && ext->type == HEADER_EXT_TAG)
-	    fprintf(f, "%s\n", ext->name + 7);
+	    fprintf(fp, "%s\n", ext->name + 7);
 	ext++;
     }
 }
@@ -522,22 +523,24 @@ restart:
 			Fstrerror(fd));
 		if (fd) (void) Fclose(fd);
 		retcode = 1;
-		break;
+		/*@loopbreak@*/ break;
 	    }
 
+	    /*@-mustmod@*/	/* LCL: segfault. */
 	    rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	    /*@=mustmod@*/
 	    (void) Fclose(fd);
 
 	    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADMAGIC)) {
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
 		retcode = 1;
-		break;
+		/*@loopbreak@*/ break;
 	    }
 	    if (rpmrc == RPMRC_OK && h == NULL) {
 		rpmError(RPMERR_QUERY,
 			_("old format source packages cannot be queried\n"));
 		retcode = 1;
-		break;
+		/*@loopbreak@*/ break;
 	    }
 
 	    /* Query a package file. */
@@ -554,7 +557,7 @@ restart:
 			Fstrerror(fd));
 		if (fd) (void) Fclose(fd);
 		retcode = 1;
-		break;
+		/*@loopbreak@*/ break;
 	    }
 	    
 	    /* Read list of packages from manifest. */
@@ -570,7 +573,7 @@ restart:
 	    if (retcode == 0)
 		goto restart;
 
-	    break;
+	    /*@loopbreak@*/ break;
 	}
 
 	fileURL = _free(fileURL);
@@ -680,7 +683,8 @@ restart:
 	char * fn;
 
 	for (s = arg; *s != '\0'; s++)
-	    if (!(*s == '.' || *s == '/')) break;
+	    if (!(*s == '.' || *s == '/'))
+		/*@loopbreak@*/ break;
 
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];

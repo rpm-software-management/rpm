@@ -38,13 +38,15 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 	/*@modifies *secs @*/
 {
     struct tm time;
-    char *p, *pe, *q, ** idx;
+    char * p, * pe, * q, ** idx;
     char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
-    static char * days[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", 
-				NULL };
-    static char * months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
-    static char lengths[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+/*@observer@*/ static char * days[] =
+	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
+/*@observer@*/ static char * months[] =
+	{ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+ 	  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
+/*@observer@*/ static char lengths[] =
+	{ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
     memset(&time, 0, sizeof(time));
 
@@ -55,7 +57,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     if (*p == '\0') return -1;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = days; *idx && strcmp(*idx, p); idx++)
-	;
+	{};
     if (*idx == NULL) return -1;
 
     /* month */
@@ -63,7 +65,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     if (*p == '\0') return -1;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = months; *idx && strcmp(*idx, p); idx++)
-	;
+	{};
     if (*idx == NULL) return -1;
     time.tm_mon = idx - months;
 

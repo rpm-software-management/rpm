@@ -69,7 +69,7 @@ void printDepProblems(FILE * fp,
 	/* Filter already displayed problems. */
 	for (j = 0; j < i; j++) {
 	    if (!sameProblem(conflicts + i, conflicts + j))
-		break;
+		/*@innerbreak@*/ break;
 	}
 	if (j < i)
 	    continue;
@@ -101,7 +101,9 @@ static inline int snprintf(char * buf, int nb, const char * fmt, ...)
     va_list ap;
     int rc;
     va_start(ap, fmt);
+    /*@-modunconnomods@*/
     rc = vsnprintf(buf, nb, fmt, ap);
+    /*@=modunconnomods@*/
     va_end(ap);
     return rc;
 }

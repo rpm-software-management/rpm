@@ -104,7 +104,7 @@ int myGlobPatternP (const char *patternURL)	/*@*/;
  */
 int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 	/*@out@*/ const char *** argvPtr)
-		/*@modifies *argcPtr, *argvPtr @*/;
+		/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
 
 /**
  */

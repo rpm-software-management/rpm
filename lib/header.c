@@ -172,7 +172,7 @@ _free(/*@only@*/ /*@null@*/ const void * p) /*@modifies *p @*/
  */
 /*@mayexit@*/
 static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
-	/*@*/
+	/*@modifies fileSystem @*/
 {
     int length = 0;
 
@@ -1145,7 +1145,7 @@ void headerDump(Header h, FILE *f, int flags,
 			ct++;
 			dp += sizeof(int_8);
 			if (! (ct % 8)) {
-			    break;
+			    /*@loopbreak@*/ break;
 			}
 		    }
 		    fprintf(f, "\n");
@@ -1320,19 +1320,19 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
 
     /* Next, try stripping optional dialect and matching.  */
     for (fe = l; fe < le && *fe != '@'; fe++)
-	;
+	{};
     if (fe < le && !strncmp(td, l, (fe - l)))
 	return 1;
 
     /* Next, try stripping optional codeset and matching.  */
     for (fe = l; fe < le && *fe != '.'; fe++)
-	;
+	{};
     if (fe < le && !strncmp(td, l, (fe - l)))
 	return 1;
 
     /* Finally, try stripping optional country code and matching. */
     for (fe = l; fe < le && *fe != '_'; fe++)
-	;
+	{};
     if (fe < le && !strncmp(td, l, (fe - l)))
 	return 1;
 
@@ -1356,10 +1356,10 @@ headerFindI18NString(Header h, struct indexEntry *entry)
 	(lang = getenv("LC_ALL")) == NULL &&
         (lang = getenv("LC_MESSAGES")) == NULL &&
 	(lang = getenv("LANG")) == NULL)
-	    return entry->data;
+	    /*@-retalias@*/ return entry->data; /*@=retalias@*/
     
     if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
-	return entry->data;
+	/*@-retalias@*/ return entry->data; /*@=retalias@*/
 
     for (l = lang; *l != '\0'; l = le) {
 	const char *td;
@@ -1371,7 +1371,7 @@ headerFindI18NString(Header h, struct indexEntry *entry)
 	if (*l == '\0')
 	    break;
 	for (le = l; *le && *le != ':'; le++)	/* find end of this locale */
-	    ;
+	    {};
 
 	/* For each entry in the header ... */
 	for (langNum = 0, td = table->data, ed = entry->data;
@@ -1384,7 +1384,7 @@ headerFindI18NString(Header h, struct indexEntry *entry)
 	}
     }
 
-    return entry->data;
+    /*@-retalias@*/ return entry->data; /*@=retalias@*/
 }
 
 /**
@@ -1619,8 +1619,12 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
     struct indexEntry *entry;
 
     if (c <= 0) {
+#ifdef	DYING
 	fprintf(stderr, _("Bad count for headerAddEntry(): %d\n"), (int) c);
 	exit(EXIT_FAILURE);
+#else
+	return 0;
+#endif
 	/*@notreached@*/
     }
 
@@ -1685,13 +1689,13 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	const char * charArray[2];
 	int count = 0;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
-	    /*@-observertrans@*/
+	    /*@-observertrans -readonlytrans@*/
 	    charArray[count++] = "C";
-	    /*@=observertrans@*/
+	    /*@=observertrans =readonlytrans@*/
 	} else {
-	    /*@-observertrans@*/
+	    /*@-observertrans -readonlytrans@*/
 	    charArray[count++] = "C";
-	    /*@=observertrans@*/
+	    /*@=observertrans =readonlytrans@*/
 	    charArray[count++] = lang;
 	}
 	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
@@ -1985,6 +1989,8 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
     /* Search extensions first to permit overriding header tags. */
     ext = extensions;
     while (ext->type != HEADER_EXT_LAST) {
+	if (ext->name == NULL)		/* XXX programmer error. */
+	    continue;
 	if (ext->type == HEADER_EXT_TAG && !xstrcasecmp(ext->name, tagname))
 	    break;
 
@@ -2001,7 +2007,8 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
 
     /* Search header tags. */
     for (entry = tags; entry->name; entry++)
-	if (!xstrcasecmp(entry->name, tagname)) break;
+	if (entry->name && !xstrcasecmp(entry->name, tagname))
+	    break;
 
     if (entry->name) {
 	*tagMatch = entry;
@@ -2091,9 +2098,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    chptr = start;
 	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
 	    if (!*chptr || *chptr == '%') {
-		/*@-observertrans@*/
+		/*@-observertrans -readonlytrans@*/
 		if (errmsg) *errmsg = _("missing { after %");
-		/*@=observertrans@*/
+		/*@=observertrans =readonlytrans@*/
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -2121,9 +2128,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    next = start;
 	    while (*next && *next != '}') next++;
 	    if (!*next) {
-		/*@-observertrans@*/
+		/*@-observertrans -readonlytrans@*/
 		if (errmsg) *errmsg = _("missing } after %{");
-		/*@=observertrans@*/
+		/*@=observertrans =readonlytrans@*/
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -2135,9 +2142,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if (*chptr != '\0') {
 		*chptr++ = '\0';
 		if (!*chptr) {
-		    /*@-observertrans@*/
+		    /*@-observertrans -readonlytrans@*/
 		    if (errmsg) *errmsg = _("empty tag format");
-		    /*@=observertrans@*/
+		    /*@=observertrans =readonlytrans@*/
 		    format = freeFormat(format, numTokens);
 		    return 1;
 		}
@@ -2147,9 +2154,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 	    
 	    if (!*start) {
-		/*@-observertrans@*/
+		/*@-observertrans -readonlytrans@*/
 		if (errmsg) *errmsg = _("empty tag name");
-		/*@=observertrans@*/
+		/*@=observertrans =readonlytrans@*/
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -2164,9 +2171,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		format[currToken].u.tag.ext = ext->u.tagFunction;
 		format[currToken].u.tag.extNum = ext - extensions;
 	    } else {
-		/*@-observertrans@*/
+		/*@-observertrans -readonlytrans@*/
 		if (errmsg) *errmsg = _("unknown tag");
-		/*@=observertrans@*/
+		/*@=observertrans =readonlytrans@*/
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -2191,9 +2198,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 
 	    if (!start) {
-		/*@-observertrans@*/
+		/*@-observertrans -readonlytrans@*/
 		if (errmsg) *errmsg = _("] expected at end of array");
-		/*@=observertrans@*/
+		/*@=observertrans =readonlytrans@*/
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -2209,13 +2216,13 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
 	        (*start == '}' && state != PARSER_IN_EXPR)) {
 		if (*start == ']') {
-		    /*@-observertrans@*/
+		    /*@-observertrans -readonlytrans@*/
 		    if (errmsg) *errmsg = _("unexpected ]");
-		    /*@=observertrans@*/
+		    /*@=observertrans =readonlytrans@*/
 		} else {
-		    /*@-observertrans@*/
+		    /*@-observertrans -readonlytrans@*/
 		    if (errmsg) *errmsg = _("unexpected }");
-		    /*@=observertrans@*/
+		    /*@=observertrans =readonlytrans@*/
 		}
 		format = freeFormat(format, numTokens);
 		return 1;
@@ -2278,18 +2285,18 @@ static int parseExpression(struct sprintfToken * token, char * str,
     while (*chptr && *chptr != '?') chptr++;
 
     if (*chptr != '?') {
-	/*@-observertrans@*/
+	/*@-observertrans -readonlytrans@*/
 	if (errmsg) *errmsg = _("? expected in expression");
-	/*@=observertrans@*/
+	/*@=observertrans =readonlytrans@*/
 	return 1;
     }
 
     *chptr++ = '\0';;
 
     if (*chptr != '{') {
-	/*@-observertrans@*/
+	/*@-observertrans -readonlytrans@*/
 	if (errmsg) *errmsg = _("{ expected after ? in expression");
-	/*@=observertrans@*/
+	/*@=observertrans =readonlytrans@*/
 	return 1;
     }
 
@@ -2300,9 +2307,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	return 1;
 
     if (!*end) {
-	/*@-observertrans@*/
+	/*@-observertrans -readonlytrans@*/
 	if (errmsg) *errmsg = _("} expected in expression");
-	/*@=observertrans@*/
+	/*@=observertrans =readonlytrans@*/
 	token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
@@ -2310,9 +2317,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
     chptr = end;
     if (*chptr != ':' && *chptr != '|') {
-	/*@-observertrans@*/
+	/*@-observertrans -readonlytrans@*/
 	if (errmsg) *errmsg = _(": expected following ? subexpression");
-	/*@=observertrans@*/
+	/*@=observertrans =readonlytrans@*/
 	token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
@@ -2327,9 +2334,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	chptr++;
 
 	if (*chptr != '{') {
-	    /*@-observertrans@*/
+	    /*@-observertrans -readonlytrans@*/
 	    if (errmsg) *errmsg = _("{ expected after : in expression");
-	    /*@=observertrans@*/
+	    /*@=observertrans =readonlytrans@*/
 	    token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    return 1;
@@ -2342,9 +2349,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 			errmsg)) 
 	    return 1;
 	if (!*end) {
-	    /*@-observertrans@*/
+	    /*@-observertrans -readonlytrans@*/
 	    if (errmsg) *errmsg = _("} expected in expression");
-	    /*@=observertrans@*/
+	    /*@=observertrans =readonlytrans@*/
 	    token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    return 1;
@@ -2352,9 +2359,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
 	chptr = end;
 	if (*chptr != '|') {
-	    /*@-observertrans@*/
+	    /*@-observertrans -readonlytrans@*/
 	    if (errmsg) *errmsg = _("| expected at end of expression");
-	    /*@=observertrans@*/
+	    /*@=observertrans =readonlytrans@*/
 	    token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.elseFormat =
@@ -2457,8 +2464,10 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     if (tag->type) {
 	ext = extensions;
 	while (ext->type != HEADER_EXT_LAST) {
-	    if (ext->type == HEADER_EXT_FORMAT && 
-		!strcmp(ext->name, tag->type)) {
+	    if (ext->name == NULL)		/* XXX programmer error. */
+		continue;
+	    if (ext->type == HEADER_EXT_FORMAT && !strcmp(ext->name, tag->type))
+	    {
 		tagtype = ext->u.formatFunction;
 		break;
 	    }
@@ -2583,6 +2592,7 @@ static const char * singleSprintf(Header h, struct sprintfToken * token,
 	*val = '\0';
 	len = 0;
 
+	if (condFormat)
 	for (i = 0; i < condNumFormats; i++) {
 	    thisItem = singleSprintf(h, condFormat + i, 
 				     extensions, extCache, element);
@@ -2618,7 +2628,7 @@ static const char * singleSprintf(Header h, struct sprintfToken * token,
 		    continue;
 		val = headerFreeData(val, type);
 	    } 
-	    break;
+	    /*@loopbreak@*/ break;
 	}
 
 	if (numElements == -1) {

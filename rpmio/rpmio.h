@@ -309,13 +309,13 @@ int Access(const char * path, int amode)
 int Glob(const char * pattern, int flags,
 		int errfunc(const char * epath, int eerrno),
 		/*@out@*/ glob_t * pglob)
-	/*@modifies *pglob @*/;
+	/*@modifies *pglob, fileSystem @*/;
 
 /** \ingroup rpmrpc
  * globfree(3) clone.
  */
 void Globfree( /*@only@*/ glob_t * pglob)
-	/*@modifies *pglob @*/;
+	/*@modifies *pglob, fileSystem @*/;
 
 
 /** \ingroup rpmrpc
@@ -435,7 +435,8 @@ typedef enum ftperrCode_e {
 /** \ingroup rpmio
  */
 /*@unused@*/
-/*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd)	/*@*/;
+/*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd)
+	/*@modifies fd @*/;
 
 /** \ingroup rpmio
  */

@@ -8,10 +8,10 @@
 #include "debug.h"
 
 static struct rpmlibProvides {
-    const char * featureName;
-    const char * featureEVR;
+/*@observer@*/ /*@null@*/ const char * featureName;
+/*@observer@*/ /*@null@*/ const char * featureEVR;
     int featureFlags;
-    const char * featureDescription;
+/*@observer@*/ /*@null@*/ const char * featureDescription;
 } rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
@@ -40,10 +40,11 @@ void rpmShowRpmlibProvides(FILE * fp)
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
 	fprintf(fp, "    %s", rlp->featureName);
-	if (rlp->featureFlags)
+	if (rlp->featureEVR && rlp->featureFlags)
 	    printDepFlags(fp, rlp->featureEVR, rlp->featureFlags);
 	fprintf(fp, "\n");
-	fprintf(fp, "\t%s\n", rlp->featureDescription);
+	if (rlp->featureDescription)
+	    fprintf(fp, "\t%s\n", rlp->featureDescription);
     }
 }
 
@@ -54,7 +55,8 @@ int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
     int rc = 0;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
-	rc = rpmRangesOverlap(keyName, keyEVR, keyFlags,
+	if (rlp->featureEVR && rlp->featureFlags)
+	    rc = rpmRangesOverlap(keyName, keyEVR, keyFlags,
 		rlp->featureName, rlp->featureEVR, rlp->featureFlags);
 	if (rc)
 	    break;
@@ -72,9 +74,9 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
     while (rpmlibProvides[n].featureName != NULL)
         n++;
 
-    names = xmalloc(sizeof(*names) * (n+1));
-    versions = xmalloc(sizeof(*versions) * (n+1));
-    flags = xmalloc(sizeof(*flags) * (n+1));
+    names = xcalloc((n+1), sizeof(*names));
+    versions = xcalloc((n+1), sizeof(*versions));
+    flags = xcalloc((n+1), sizeof(*flags));
     
     for (n = 0; rpmlibProvides[n].featureName != NULL; n++) {
         names[n] = rpmlibProvides[n].featureName;
@@ -82,12 +84,20 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
         versions[n] = rpmlibProvides[n].featureEVR;
     }
     
-    names[n] = NULL;
-    versions[n] = NULL;
-    flags[n] = -1;
-    
-    *provNames = names;
-    *provFlags = flags;
-    *provVersions = versions;
+    if (provNames)
+	*provNames = names;
+    else
+	names = _free(names);
+
+    if (provFlags)
+	*provFlags = flags;
+    else
+	flags = _free(flags);
+
+    if (provVersions)
+	*provVersions = versions;
+    else
+	versions = _free(versions);
+
     return n;
 }

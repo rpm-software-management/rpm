@@ -35,9 +35,10 @@ static union _vendian {
 
 /* ========== Verify specific popt args */
 static void verifyArgCallback(/*@unused@*/poptContext con,
-	/*@unused@*/enum poptCallbackReason reason,
-	const struct poptOption * opt, /*@unused@*/const char * arg,
-	/*@unused@*/ const void * data)
+		/*@unused@*/enum poptCallbackReason reason,
+		const struct poptOption * opt, /*@unused@*/const char * arg,
+		/*@unused@*/ const void * data)
+	/*@*/
 {
     QVA_t qva = &rpmQVArgs;
     switch (opt->val) {
@@ -335,6 +336,7 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
  * @return		0 no problems, 1 problems found
  */
 static int verifyHeader(QVA_t qva, Header h)
+	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char buf[BUFSIZ];
@@ -426,6 +428,7 @@ exit:
  * @return		0 no problems, 1 problems found
  */
 static int verifyDependencies(rpmdb rpmdb, Header h)
+	/*@modifies h @*/
 {
     rpmTransactionSet rpmdep;
     rpmDependencyConflict conflicts;

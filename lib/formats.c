@@ -179,7 +179,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ int_32 * type,
 	/*@null@*/ /*@out@*/ const void ** data,
 	/*@null@*/ /*@out@*/ int_32 * count,
 	/*@null@*/ /*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -211,7 +211,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ int_32 * type,
 static int fssizesTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
@@ -262,7 +262,7 @@ static int fssizesTag(Header h, /*@out@*/ int_32 * type,
 static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -333,7 +333,7 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -367,7 +367,7 @@ static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
 		conds[i] = xstrdup("un");
 	    else
 		conds[i] = xstrdup("postun");
-	    break;
+	    /*@innerbreak@*/ break;
 	}
     }
 
@@ -402,9 +402,10 @@ static int filenamesTag(Header h, /*@out@*/ int_32 * type,
 /*@-exportlocal -exportheadervar@*/
 int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
 /*@=exportlocal =exportheadervar@*/
-static const char * language = "LANGUAGE";
+/*@observer@*/ static const char * language = "LANGUAGE";
 
-static char * _macro_i18ndomains = "%{?_i18ndomains:%{_i18ndomains}}";
+/*@observer@*/ static const char * _macro_i18ndomains =
+		"%{?_i18ndomains:%{_i18ndomains}}";
 
 /**
  * @param h		header
@@ -534,7 +535,7 @@ static int descriptionTag(Header h, /*@out@*/ int_32 * type,
 static int groupTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
