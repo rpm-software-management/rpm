@@ -1,0 +1,21 @@
+#!/bin/bash
+# ----------------------------------------------------------
+#       find-provides for Darwin/MacOSX
+# ----------------------------------------------------------
+# This script reads filenames from STDIN and outputs any relevant provides
+# information that needs to be included in the package.
+
+filelist=$(sed -n -e '/\.dylib/p' -e '/\.so/p' -e '/\.bundle/p' | sort | uniq | xargs file -L 2>/dev/null | grep "Mach-O.*ppc" | cut -d: -f1)
+
+for f in $filelist; do
+    libname=$(basename $f | sed -e 's;\..*;;')
+    soname=$(otool -l $f | grep $libname | awk '/ name/ {print $2}')
+
+    if [ "$soname" != "" ]; then
+	if [ ! -L $f ]; then
+	    basename $soname
+	fi
+    else
+	echo ${f##*/}
+    fi
+done | sort -u

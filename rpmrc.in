@@ -1,7 +1,7 @@
 #/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# $Id: rpmrc.in,v 2.65.2.1 2004/11/22 21:41:28 jbj Exp $
+# $Id: rpmrc.in,v 2.65.2.2 2005/01/04 17:46:10 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -10,6 +10,9 @@
 #
 #############################################################
 # Values for RPM_OPT_FLAGS for various platforms
+
+# "fat" binary with both archs, for Darwin
+optflags: fat -O2 -g -arch i386 -arch ppc
 
 optflags: i386 -O2 -g -march=i386 -mcpu=i686
 optflags: i486 -O2 -g -march=i486
@@ -171,6 +174,9 @@ os_canon:       VM/ESA: VM/ESA	19
 os_canon:    Linux/390: OS/390	20
 os_canon:    Linux/ESA: VM/ESA	20
 
+os_canon:       Darwin: darwin	21
+os_canon:       MacOSX: macosx	21
+
 #############################################################
 # For a given uname().machine, the default build arch
 
@@ -242,7 +248,7 @@ arch_compat: pentium3: i686
 arch_compat: i686: i586
 arch_compat: i586: i486
 arch_compat: i486: i386
-arch_compat: i386: noarch
+arch_compat: i386: noarch fat
 
 arch_compat: osfmach3_i686: i686 osfmach3_i586
 arch_compat: osfmach3_i586: i586 osfmach3_i486
@@ -259,7 +265,7 @@ arch_compat: ppciseries: ppc
 arch_compat: ppcpseries: ppc
 arch_compat: ppc64: ppc
 arch_compat: ppc: rs6000
-arch_compat: rs6000: noarch
+arch_compat: rs6000: noarch fat
 arch_compat: ppc64pseries: ppc64
 arch_compat: ppc64iseries: ppc64
 
@@ -330,6 +336,8 @@ os_compat: TOS: FreeMiNT MiNT mint
 os_compat: BSD_OS: bsdi
 os_compat: bsdi4.0: bsdi
 
+os_compat: Darwin: MacOSX
+
 buildarch_compat: ia64: noarch
 
 buildarch_compat: athlon: i686
@@ -338,7 +346,7 @@ buildarch_compat: pentium3: i686
 buildarch_compat: i686: i586
 buildarch_compat: i586: i486
 buildarch_compat: i486: i386
-buildarch_compat: i386: noarch
+buildarch_compat: i386: noarch fat
 
 buildarch_compat: sun4c: noarch
 buildarch_compat: sun4d: noarch
@@ -362,8 +370,8 @@ buildarch_compat: ppc8560: noarch
 buildarch_compat: ppc32dy4: noarch
 buildarch_compat: ppciseries: noarch
 buildarch_compat: ppcpseries: noarch
-buildarch_compat: ppc: noarch
-buildarch_compat: ppc64: noarch
+buildarch_compat: ppc: noarch fat
+buildarch_compat: ppc64: noarch fat
 buildarch_compat: ppc64pseries: ppc64
 buildarch_compat: ppc64iseries: ppc64
 

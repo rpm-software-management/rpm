@@ -126,10 +126,15 @@ extern int pthread_cond_signal(pthread_cond_t *cond)
 
 #include <pthread.h>
 
+#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+/*@unchecked@*/
+static pthread_mutex_t rpmsigTbl_lock = PTHREAD_MUTEX_INITIALIZER;
+#else
 /*@unchecked@*/
 /*@-type@*/
 static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 /*@=type@*/
+#endif
 
 #define	DO_LOCK()	pthread_mutex_lock(&rpmsigTbl_lock);
 #define	DO_UNLOCK()	pthread_mutex_unlock(&rpmsigTbl_lock);
@@ -147,7 +152,7 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
     (void) pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, (__oldtypeptr));\
 	pthread_cleanup_push((__handler), (__arg));
 #define	CLEANUP_RESET(__execute, __oldtype) \
-    (void) pthread_cleanup_pop(__execute); \
+    pthread_cleanup_pop(__execute); \
     (void) pthread_setcanceltype ((__oldtype), &(__oldtype));
 
 #define	SAME_THREAD(_a, _b)	pthread_equal(((pthread_t)_a), ((pthread_t)_b))
@@ -603,6 +608,10 @@ rpmsqExecve (const char ** argv)
     pid_t result;
     sigset_t newMask, oldMask;
     rpmsq sq = memset(alloca(sizeof(*sq)), 0, sizeof(*sq));
+
+#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+	INIT_LOCK ();
+#endif
 
     (void) DO_LOCK ();
     if (ADD_REF (rpmsigTbl_sigchld) == 0) {

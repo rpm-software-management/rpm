@@ -1,0 +1,26 @@
+#!/bin/sh
+# ----------------------------------------------------------------
+#	find-requires for Darwin/MacOSX
+# ----------------------------------------------------------------
+ulimit -c 0
+
+filelist=`sed "s/['\"]/\\\&/g"`
+exelist=`echo $filelist | xargs file | fgrep Mach-O | cut -d: -f1 `
+scriptlist=`echo $filelist | xargs file | egrep ":.* (commands|script) " | cut -d: -f1 `
+
+for f in $exelist; do
+    if [ -x $f ]; then
+        otool -L $f  \
+	| awk '/^\t/ { print }' \
+	| sed -n -e '/ (compatibility version .* current version .*)/p' \
+	| sed -e 's/ (compatibility version .* current version .*)//'
+    fi
+done | sort -u | sed "s/['\"]/\\\&/g" | xargs -n 1 basename | sort -u
+
+for f in $scriptlist; do
+    if [ -x $f ]; then
+        head -1 $f | sed -e 's/^\#\![   ]*//' \
+	| sed -n -e '/^\/bin/!p' | sed -n -e '/^\/usr\/bin/!p' | uniq \
+	| cut -d" " -f1
+    fi
+done

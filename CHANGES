@@ -6,6 +6,7 @@
 	- upgrade to db-4.3.27.
 	- revert MAGIC_COMPRESS, real fix is in libmagic (#143782).
 	- upgrade to file-4.12 internal.
+	- mac os x patches (#131943,#131944,#132924,#132926).
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).
