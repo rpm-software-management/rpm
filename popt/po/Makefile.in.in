@@ -1,8 +1,8 @@
-prefix=@prefix@
 srcdir = @srcdir@
-datadir = @datadir@
 top_srcdir = @top_srcdir@
 VPATH = $(srcdir)
+
+LOCALEDIR=@prefix@/share/locale
 
 INSTALL= @INSTALL@
 INSTALL_PROGRAM= @INSTALL_PROGRAM@
@@ -58,7 +58,7 @@ install:
 	    l=`basename $$n .mo`; \
 	    $(INSTALL) -m 755 -d $(installprefix)/$(LOCALEDIR)/$$l; \
 	    $(INSTALL) -m 755 -d $(installprefix)/$(LOCALEDIR)/$$l/LC_MESSAGES; \
-	    $(INSTALL) -m 644 $$n $(installprefix)/$(LOCALEDIR)/$$l/LC_MESSAGES/rpm.mo; \
+	    $(INSTALL) -m 644 $$n $(installprefix)/$(LOCALEDIR)/$$l/LC_MESSAGES/popt.mo; \
 	done
 
 check:
