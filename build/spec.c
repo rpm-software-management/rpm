@@ -62,7 +62,7 @@ Spec newSpec(void)
     spec->inBuildArchitectures = 0;
     spec->buildArchitectureSpecs = NULL;
 
-    initMacros(&spec->macros);
+    initMacros(&spec->macros, MACROFILE);
     
     spec->autoReq = 1;
     spec->autoProv = 1;
@@ -127,7 +127,7 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
     char *name = NULL;
     char *nump, *fieldp = NULL;
     char buf[BUFSIZ];
-    char expansion[BUFSIZ];
+    char body[BUFSIZ];
     int num = 0;
 
     switch (tag) {
@@ -195,13 +195,13 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
     spec->numSources++;
 
     if (tag != RPMTAG_ICON) {
-	sprintf(expansion, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+	sprintf(body, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(&spec->macros, buf, expansion);
+	addMacro(&spec->macros, buf, NULL, body, -1);
 	sprintf(buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(&spec->macros, buf, p->fullSource);
+	addMacro(&spec->macros, buf, NULL, p->fullSource, -1);
     }
     
     return 0;

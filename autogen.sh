@@ -8,7 +8,7 @@ if [ "$1" = "--noconfigure" ]; then
     exit 0;
 fi
 
-if [ -z "$@" ]; then
+if [ X"$@" = X ]; then
     ./configure --prefix=/usr
 else
     ./configure "$@"

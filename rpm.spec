@@ -6,7 +6,7 @@ Release: 1
 Group: Utilities/System
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
-BuildRoot: /var/tmp/rpm-%{version}
+BuildRoot: /var/tmp/rpm-%{version}-root
 Conflicts: patch < 2.5
 
 %package devel
@@ -64,6 +64,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/find-requires
 /usr/man/man8/rpm.8
 /usr/man/man8/rpm2cpio.8
+/usr/lib/rpm
 /usr/lib/rpmrc
 /usr/lib/rpmpopt
 %dir /usr/src/redhat

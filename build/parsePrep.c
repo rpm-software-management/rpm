@@ -34,7 +34,7 @@ static int doSetupMacro(Spec spec, char *line);
 static int doPatchMacro(Spec spec, char *line);
 static char *doPatch(Spec spec, int c, int strip, char *db,
 		     int reverse, int removeEmpties);
-static int isCompressed(char *file, int *compressed);
+       int isCompressed(char *file, int *compressed);
 static int checkOwners(char *file);
 static char *doUntar(Spec spec, int c, int quietly);
 
@@ -476,7 +476,7 @@ static int checkOwners(char *file)
     return 0;
 }
 
-static int isCompressed(char *file, int *compressed)
+int isCompressed(char *file, int *compressed)
 {
     int fd;
     unsigned char magic[4];

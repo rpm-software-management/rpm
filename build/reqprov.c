@@ -128,7 +128,7 @@ int generateAutoReqProv(Spec spec, Package pkg,
     if (spec->autoProv) {
 	rpmMessage(RPMMESS_NORMAL, "Finding provides...\n");
     
-	argv[0] = "find-provides";
+	argv[0] = FINDPROVIDES;
 	argv[1] = NULL;
 	readBuf = getOutputFrom(NULL, argv,
 				getStringBuf(writeBuf), writeBytes, 1);
@@ -155,7 +155,7 @@ int generateAutoReqProv(Spec spec, Package pkg,
     if (spec->autoReq) {
 	rpmMessage(RPMMESS_NORMAL, "Finding requires...\n");
 
-	argv[0] = "find-requires";
+	argv[0] = FINDREQUIRES;
 	argv[1] = NULL;
 	readBuf = getOutputFrom(NULL, argv,
 				getStringBuf(writeBuf), writeBytes, 0);

@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
+#include "spec.h"
 #include "macro.h"
 #include "misc.h"
 
@@ -19,7 +20,7 @@
 static void dumpTable(struct MacroContext *mc);
 static void expandMacroTable(struct MacroContext *mc);
 static int compareMacros(const void *ap, const void *bp);
-static struct MacroEntry *findEntry(struct MacroContext *mc, char *name);
+static struct MacroEntry *findEntry(struct MacroContext *mc, const char *name);
 static int handleDefine(struct MacroContext *mc, char *buf);
 static int parseMacro(char *p, char **macro, char **next);
 
@@ -34,7 +35,7 @@ static int parseMacro(char *p, char **macro, char **next);
 /*                                                                       */
 /*************************************************************************/
 
-int expandMacros(struct MacroContext *mc, char *buf)
+int expandMacros(Spec spec, struct MacroContext *mc, char *buf, size_t buflen)
 {
     char bufA[1024];
     char *copyTo, *copyFrom;
@@ -189,10 +190,12 @@ static int handleDefine(struct MacroContext *mc, char *buf)
 	}
     }
 
-    if (expandMacros(mc, expansion)) {
+    /* XXX HACK: 1st and last args for compatibility, currently unused*/
+    if (expandMacros(NULL, mc, expansion, 0)) {
+
 	return 1;
     }
-    addMacro(mc, name, expansion);
+    addMacro(mc, name, NULL, expansion, -1);
 
     return 0;
 }
@@ -203,7 +206,7 @@ static int handleDefine(struct MacroContext *mc, char *buf)
 /*                                                                       */
 /*************************************************************************/
 
-void initMacros(struct MacroContext *mc)
+void initMacros(struct MacroContext *mc, const char *macrofile)
 {
     mc->macrosAllocated = 0;
     mc->firstFree = 0;
@@ -222,7 +225,7 @@ void freeMacros(struct MacroContext *mc)
     FREE(mc->macroTable);
 }
 
-void addMacro(struct MacroContext *mc, char *name, char *expansion)
+void addMacro(struct MacroContext *mc, const char *name, const char *o, const char *expansion, int depth)
 {
     struct MacroEntry *p;
 
@@ -245,7 +248,7 @@ void addMacro(struct MacroContext *mc, char *name, char *expansion)
 	  compareMacros);
 }
 
-static struct MacroEntry *findEntry(struct MacroContext *mc, char *name)
+static struct MacroEntry *findEntry(struct MacroContext *mc, const char *name)
 {
     struct MacroEntry key;
 

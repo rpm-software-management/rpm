@@ -33,6 +33,12 @@ $(PROGS): $(LIBOBJECTS)
 pack.o: pack.c
 	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -o $@ -c $<
 
+reqprov.o: reqprov.c
+	$(CC) $(CFLAGS) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
+
+spec.o: spec.c
+	$(CC) $(CFLAGS) -DMACROFILE=\"$(MACROFILE)\" -o $@ -c $<
+
 clean:
 	rm -f *.a *.o *~ $(PROGS)
 

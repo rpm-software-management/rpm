@@ -355,7 +355,7 @@ static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb)
 	return NULL;
     }
     while (fgets(buf, sizeof(buf), f)) {
-	if (expandMacros(&spec->macros, buf)) {
+	if (expandMacros(spec, &spec->macros, buf, sizeof(buf))) {
 	    rpmError(RPMERR_BADSPEC, "line: %s", buf);
 	    return NULL;
 	}

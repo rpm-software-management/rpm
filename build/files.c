@@ -329,7 +329,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	}
 	while (fgets(buf, sizeof(buf), f)) {
 	    handleComments(buf);
-	    if (expandMacros(&spec->macros, buf)) {
+	    if (expandMacros(spec, &spec->macros, buf, sizeof(buf))) {
 		rpmError(RPMERR_BADSPEC, "line: %s", buf);
 		return RPMERR_BADSPEC;
 	    }

@@ -14,12 +14,12 @@ struct MacroContext {
     int firstFree;
 };
 
-void initMacros(struct MacroContext *mc);
+void initMacros(struct MacroContext *mc, const char *macrofile);
 void freeMacros(struct MacroContext *mc);
 
-void addMacro(struct MacroContext *mc, char *name, char *expansion);
+void addMacro(struct MacroContext *mc, const char *n, const char *o, const char *b, int depth);
 
 /* Expand all macros in buf, in place */
-int expandMacros(struct MacroContext *mc, char *buf);
+int expandMacros(Spec spec, struct MacroContext *mc, char *sbuf, size_t sbuflen);
 
 #endif

@@ -115,20 +115,25 @@ install: all
 	[ -d $(installprefix)/$(LIBDIR) ] || mkdir -p $(installprefix)/$(LIBDIR)
 	[ -d $(installprefix)/$(INCDIR) ] || mkdir -p $(installprefix)/$(INCDIR)
 	[ -d $(installprefix)/$(RPMCONFIGDIR) ] ||  \
-		mkdir -p $(installprefix)/$(INCDIR)
+		mkdir -p $(installprefix)/$(RPMCONFIGDIR)
 	if [ -x ./rpm ]; then \
 	    $(INSTALL_PROGRAM) -s -m 755 rpm $(installprefix)/$(RPMBINDIR); \
 	else \
 	    $(INSTALL_PROGRAM) -s -m 755 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
 	fi
-	$(INSTALL_PROGRAM) -m 755 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
+	$(INSTALL_PROGRAM) -m 755 $(srcdir)/gendiff $(installprefix)/$(RPMCONFIGDIR)
+	ln -sf $(RPMCONFIGDIR)/gendiff $(installprefix)/$(BINDIR)/gendiff
 	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
-	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-requires.sh $(installprefix)/$(BINDIR)/find-requires
+	ln -sf $(RPMCONFIGDIR)/find-provides $(installprefix)/$(BINDIR)/find-provides
+	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-requires.sh $(installprefix)/$(RPMCONFIGDIR)/find-requires
+	ln -sf $(RPMCONFIGDIR)/find-requires $(installprefix)/$(BINDIR)/find-requires
 	$(INSTALL_PROGRAM) -s -m 755 rpm2cpio $(installprefix)/$(BINDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
-	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
-	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
+	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(RPMCONFIGDIR)/rpmrc
+	ln -sf $(RPMCONFIGDIR)/rpmrc $(installprefix)/$(LIBDIR)/rpmrc
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(RPMCONFIGDIR)/rpmpopt
+	ln -sf $(RPMCONFIGDIR)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
 		(cd $$d; $(MAKE) installprefix=$(installprefix) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
@@ -193,7 +198,7 @@ archive:
 	@sleep 5
 	@cvs -Q tag -F $(CVSTAG) .
 	@rm -rf /tmp/rpm-$(VERSION) /tmp/rpm
-	@cd /tmp; cvs -Q -d $(CVSROOT) export -r$(CVSTAG) rpm || echo GRRRrrrrr -- ignore [export aborted]
+	@cd /tmp; cvs -Q -d $(CVSROOT) export -r$(CVSTAG) rpm
 	@mv /tmp/rpm /tmp/rpm-$(VERSION)
 	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
 	@cd /tmp/rpm-$(VERSION); ./autogen.sh ; make depend; make distclean

@@ -76,7 +76,7 @@ int readLine(Spec spec, int strip)
     }
 
     if (spec->readStack->reading) {
-	if (expandMacros(&spec->macros, spec->line)) {
+	if (expandMacros(spec, &spec->macros, spec->line, sizeof(spec->line))) {
 	    rpmError(RPMERR_BADSPEC, "line %d: %s", spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}

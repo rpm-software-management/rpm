@@ -3,6 +3,8 @@
 
 #include "header.h"
 #include "stringbuf.h"
+
+typedef struct SpecStruct *Spec;
 #include "macro.h"
 
 #if 0
@@ -123,7 +125,6 @@ struct PackageStruct {
     struct PackageStruct *next;
 };
 
-typedef struct SpecStruct *Spec;
 typedef struct PackageStruct *Package;
 
 Spec newSpec(void);
