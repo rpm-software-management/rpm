@@ -87,6 +87,8 @@ os_canon:	IRIX64: Irix64  10
 os_canon:     NEXTSTEP: NextStep 11
 os_canon:       BSD/OS: BSD_OS 12
 os_canon:       machten: machten 13
+os_canon:  CYGWIN32_NT: cygwin32 14
+os_canon:  CYGWIN32_95: cygwin32 15
 
 #############################################################
 # For a given uname().machine, the default build arch
