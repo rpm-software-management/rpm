@@ -91,7 +91,7 @@ static void alFree(struct availableList * al) {
 	    free(al->list[i].provides);
      }
 
-    if (al->size) free(al->list);
+    if (al->alloced) free(al->list);
     alFreeIndex(al);
 }
 
