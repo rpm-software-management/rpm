@@ -1058,9 +1058,17 @@ void rpmShowRpmlibProvides(FILE * fp)
 /*@}*/
 
 /**
- * Return name of tag from value.
+ * Return  tag data type from value.
  * @param tag		tag value
- * @return		name of tag
+ * @return		tag data type, RPM_NULL_TYPE on not found.
+ */
+int tagType(int tag)
+	/*@*/;
+
+/**
+ * Return tag name from value.
+ * @param tag		tag value
+ * @return		tag name, "(unknown)" on not found
  */
 /*@-redecl@*/
 /*@observer@*/ extern const char *const tagName(int tag)
@@ -1068,9 +1076,9 @@ void rpmShowRpmlibProvides(FILE * fp)
 /*@=redecl@*/
 
 /**
- * Return value of tag from name.
+ * Return tag value from name.
  * @param tagstr	name of tag
- * @return		tag value
+ * @return		tag value, -1 on not found
  */
 int tagValue(const char * tagstr)
 	/*@*/;

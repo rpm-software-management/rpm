@@ -7,11 +7,32 @@
 #include <rpmlib.h>
 #include "debug.h"
 
+static int tagcmp(const void * a, const void * b)
+        /*@*/
+{
+    const headerTagTableEntry aptr = a;
+    const headerTagTableEntry bptr = b;
+    return (aptr->val - bptr->val);
+}
+
+int tagType(int tag)
+{
+    headerTagTableEntry t = memset(alloca(sizeof(*t)), 0, sizeof(*t));
+    headerTagTableEntry needle;
+    int tagtype = RPM_NULL_TYPE;
+
+    t->val = tag;
+    needle = bsearch(t, rpmTagTable, rpmTagTableSize, sizeof(*t), tagcmp);
+    if (needle != NULL)
+	tagtype = needle->type;
+    return tagtype;
+}
+
 const char *const tagName(int tag)
 {
-    int i;
     static char nameBuf[128];	/* XXX yuk */
     char *s;
+    int i;
 
     switch (tag) {
     case RPMDBI_PACKAGES:
