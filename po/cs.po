@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-07-11 11:49-0400\n"
+"POT-Creation-Date: 2000-07-11 17:18-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1775,93 +1775,93 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr "Nelze èíst %s: %s."
 
-#: build/files.c:922
+#: build/files.c:921
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:1011
+#: build/files.c:1010
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Nelze èíst %s: %s."
 
-#: build/files.c:1021
+#: build/files.c:1020
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: build/files.c:1064
+#: build/files.c:1063
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1076
+#: build/files.c:1075
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "soubor %s: %s\n"
 
-#: build/files.c:1150
+#: build/files.c:1149
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1179
+#: build/files.c:1178
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: build/files.c:1232
+#: build/files.c:1231
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/files.c:1239 build/pack.c:100
+#: build/files.c:1238 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1566
+#: build/files.c:1565
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "soubor %s: %s\n"
 
-#: build/files.c:1578 build/parsePrep.c:34
+#: build/files.c:1577 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1633
+#: build/files.c:1632
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nelze spustit pgp"
 
-#: build/files.c:1638
+#: build/files.c:1637
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nelze naèíst cílpodpisu"
 
-#: build/files.c:1720
+#: build/files.c:1719
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "chyba pgp"
 
-#: build/files.c:1724
+#: build/files.c:1723
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1820
+#: build/files.c:1819
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1848 build/files.c:1858
+#: build/files.c:1847 build/files.c:1857
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1968
+#: build/files.c:1967
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "soubor %s: %s\n"

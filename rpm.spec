@@ -1,3 +1,6 @@
+# XXX legacy requires './' payload prefix to be omitted from rpm packages.
+%define	_noPayloadPrefix	1
+
 %define	__prefix	/usr
 %{expand:%%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
@@ -5,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.49
+Release: 0.50
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -259,6 +262,8 @@ fi
 - remove build mode help from rpm.c, use rpmb instead.
 - support for rpmlib(...) internal feature dependencies.
 - fix: set multilibno on sparc per-platform config.
+- fix: legacy requires './' payload prefix to be omitted for rpm itself.
+- fix: remove verbose database +++/--- messages to conform to doco.
 
 * Sun Jul  9 2000 Jeff Johnson <jbj@redhat.com>
 - add pre-transaction syscall's to handle /etc/init.d change.

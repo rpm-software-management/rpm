@@ -1678,7 +1678,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
 
     {	const char *n, *v, *r;
 	headerNVR(h, &n, &v, &r);
-	rpmMessage(RPMMESS_VERBOSE, "  --- %10d %s-%s-%s\n", hdrNum, n, v, r);
+	rpmMessage(RPMMESS_DEBUG, "  --- %10d %s-%s-%s\n", hdrNum, n, v, r);
     }
 
     blockSignals(rpmdb, &signalMask);
@@ -1924,7 +1924,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		    xx = dbiSync(dbi, 0);
 		{   const char *n, *v, *r;
 		    headerNVR(h, &n, &v, &r);
-		    rpmMessage(RPMMESS_VERBOSE, "  +++ %10d %s-%s-%s\n", hdrNum, n, v, r);
+		    rpmMessage(RPMMESS_DEBUG, "  +++ %10d %s-%s-%s\n", hdrNum, n, v, r);
 		}
 		continue;
 		/*@notreached@*/ break;

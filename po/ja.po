@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-07-11 11:49-0400\n"
+"POT-Creation-Date: 2000-07-11 17:18-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.89 2000/07/11 16:16:03 jbj Exp $
+# $Id: ja.po,v 1.90 2000/07/11 22:23:17 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -1746,93 +1746,93 @@ msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 msgid "File listed twice: %s"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:922
+#: build/files.c:921
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:1011
+#: build/files.c:1010
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1021
+#: build/files.c:1020
 #, c-format
 msgid "File not found: %s"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1064
+#: build/files.c:1063
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1076
+#: build/files.c:1075
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1150
+#: build/files.c:1149
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1179
+#: build/files.c:1178
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1232
+#: build/files.c:1231
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1239 build/pack.c:100
+#: build/files.c:1238 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1566
+#: build/files.c:1565
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1578 build/parsePrep.c:34
+#: build/files.c:1577 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1633
+#: build/files.c:1632
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1638
+#: build/files.c:1637
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1720
+#: build/files.c:1719
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1724
+#: build/files.c:1723
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1820
+#: build/files.c:1819
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1848 build/files.c:1858
+#: build/files.c:1847 build/files.c:1857
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1968
+#: build/files.c:1967
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
