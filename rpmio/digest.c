@@ -77,6 +77,47 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Digest = (void *) sha1Digest;
 /*@=type@*/
 	break;
+#if HAVE_BEECRYPT_API_H
+    case PGPHASHALGO_SHA256:
+	ctx->digestlen = 32;
+	ctx->datalen = 64;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramlen = sizeof(sha256Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramlen);
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) sha256Reset;
+	ctx->Update = (void *) sha256Update;
+	ctx->Digest = (void *) sha256Digest;
+/*@=type@*/
+	break;
+    case PGPHASHALGO_SHA384:
+	ctx->digestlen = 48;
+	ctx->datalen = 128;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramlen = sizeof(sha384Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramlen);
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) sha384Reset;
+	ctx->Update = (void *) sha384Update;
+	ctx->Digest = (void *) sha384Digest;
+/*@=type@*/
+	break;
+    case PGPHASHALGO_SHA512:
+	ctx->digestlen = 64;
+	ctx->datalen = 128;
+/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+	ctx->paramlen = sizeof(sha512Param);
+/*@=sizeoftype@*/
+	ctx->param = xcalloc(1, ctx->paramlen);
+/*@-type@*/ /* FIX: cast? */
+	ctx->Reset = (void *) sha512Reset;
+	ctx->Update = (void *) sha512Update;
+	ctx->Digest = (void *) sha512Digest;
+/*@=type@*/
+	break;
+#endif
     case PGPHASHALGO_RIPEMD160:
     case PGPHASHALGO_MD2:
     case PGPHASHALGO_TIGER192:

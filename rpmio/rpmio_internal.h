@@ -28,6 +28,11 @@
 #include <rsa.h>
 #include <rsapk.h>
 #include <sha1.h>
+#if HAVE_BEECRYPT_API_H
+#include <sha256.h>
+#include <sha384.h>
+#include <sha512.h>
+#endif
 
 /** \ingroup rpmio
  * Values parsed from OpenPGP signature/pubkey packet(s).
@@ -74,10 +79,8 @@ struct pgpDig_s {
 
 /*@only@*/ /*@null@*/
     DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
-#ifdef	NOTYET
 /*@only@*/ /*@null@*/
     DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
-#endif
 /*@only@*/ /*@null@*/
     void * md5;			/*!< (rsa) V3 signature hash. */
     size_t md5len;		/*!< (rsa) V3 signature hash length. */

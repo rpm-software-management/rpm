@@ -1382,7 +1382,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     /*@-globs@*/
     t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), VERSION);
     /*@=globs@*/
-    t = stpcpy(t, " (beecrypt-3.0.0)\n\n");
+    t = stpcpy(t, " (beecrypt-4.1.2)\n\n");
 
     if ((enc = b64encode(s, ns)) != NULL) {
 	t = stpcpy(t, enc);
