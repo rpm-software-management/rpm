@@ -42,6 +42,9 @@ struct rpmgi_s {
 /*@dependent@*/
     rpmdbMatchIterator mi;
 
+/*@refcounted@*/
+    FD_t fd;
+
 /*@only@*/
     const char * queryFormat;
 

@@ -14,6 +14,8 @@
 /*@unchecked@*/
 int _rpmgi_debug = 0;
 
+static const char * hdlistpath = "/usr/share/comps/i386/hdlist";
+
 rpmgi XrpmgiUnlink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
 {
     if (gi == NULL) return NULL;
@@ -68,6 +70,10 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
 	gi->ftsp = NULL;
 	gi->fts = NULL;
     }
+    if (gi->fd != NULL) {
+	(void) Fclose(gi->fd);
+	gi->fd = NULL;
+    }
     gi->mi = rpmdbFreeIterator(gi->mi);
     gi->ts = rpmtsFree(gi->ts);
 
@@ -97,6 +103,7 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 
 	break;
     case RPMGI_HDLIST:
+	gi->fd = Fopen(hdlistpath, "r.ufdio");
 	break;
     case RPMGI_ARGLIST:
     case RPMGI_FTSWALK:
@@ -189,6 +196,14 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	}
 	break;
     case RPMGI_HDLIST:
+	h = headerRead(gi->fd, HEADER_MAGIC_YES);
+	if (h != NULL) {
+	    val = rpmgiPathOrQF(gi, "hdlist", &h);
+	} else {
+	    (void) Fclose(gi->fd);
+	    gi->fd = NULL;
+	    gi->i = -1;
+	}
 	break;
     case RPMGI_ARGLIST:
 	if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
@@ -244,7 +259,7 @@ int rpmgiSetQueryFormat(rpmgi gi, const char * queryFormat)
                                                                                 
     if (gi != NULL) {
 	gi->queryFormat = _free(gi->queryFormat);
-        gi->queryFormat = xstrdup(queryFormat);
+        gi->queryFormat = (queryFormat != NULL ? xstrdup(queryFormat) : NULL);
     }
     return rc;
 
