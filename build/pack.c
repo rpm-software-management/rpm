@@ -56,7 +56,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     const char *fmode = rpmExpand(fmodeMacro, NULL);
     const char *failedFile = NULL;
     FD_t cfd;
-    int rc;
+    int rc, ec;
 
     if (!(fmode && fmode[0] == 'w'))
 	fmode = xstrdup("w9.gzdio");
@@ -70,11 +70,16 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
     (void) Fclose(cfd);
-    (void) fsmTeardown(fi->fsm);
+    ec = fsmTeardown(fi->fsm);
+    if (!rc) rc = ec;
 
     if (rc) {
-	rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
+	if (failedFile)
+	    rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
 		failedFile, cpioStrerror(rc));
+	else
+	    rpmError(RPMERR_CPIO, _("create archive failed: %s\n"),
+		cpioStrerror(rc));
       rc = 1;
     }
 

@@ -19,6 +19,8 @@
 
 int _fsm_debug = 0;
 
+static int all_hardlinks_in_package = 1;
+
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
 int strict_erasures = 0;
@@ -382,10 +384,6 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
     fsm->li->nsuffix[fsm->li->linksLeft] = fsm->nsuffix;
     /*@=observertrans =dependenttrans@*/
     if (fsm->goal == FSM_PKGINSTALL) fsm->li->linksLeft++;
-
-#if 0
-fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLeft, st->st_nlink, (int)st->st_size, fsm->li->filex[fsm->li->linksLeft], fsm->li->files[fsm->li->linksLeft]);
-#endif
 
     if (fsm->goal == FSM_PKGBUILD)
 	return (fsm->li->linksLeft > 0);
@@ -1260,8 +1258,20 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		/*@loopbreak@*/ break;
 	}
 
+	/* Flush partial sets of hard linked files. */
+	if (!all_hardlinks_in_package) {
+	    while ((fsm->li = fsm->links) != NULL) {
+		fsm->links = fsm->li->next;
+		fsm->li->next = NULL;
+		if (!rc)
+		    rc = writeLinkedFile(fsm);
+		fsm->li = freeHardLink(fsm->li);
+	    }
+	}
+
 	if (!rc)
 	    rc = fsmStage(fsm, FSM_TRAILER);
+
 	break;
     case FSM_CREATE:
 	{   rpmTransactionSet ts = fsmGetTs(fsm);
@@ -1644,11 +1654,12 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_DESTROY:
 	fsm->path = _free(fsm->path);
 
-	/* Create any remaining links (if no error), and clean up. */
+	/* Check for hard links missing from payload. */
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
-	    if (fsm->goal == FSM_PKGINSTALL && fsm->commit && fsm->li->linksLeft)
+	    if (fsm->goal == FSM_PKGINSTALL &&
+			fsm->commit && fsm->li->linksLeft)
 	    {
 		for (i = 0 ; i < fsm->li->linksLeft; i++) {
 		    if (fsm->li->filex[i] < 0) continue;
@@ -1663,9 +1674,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		    /*@loopbreak@*/ break;
 		}
 	    }
-	    if (fsm->goal == FSM_PKGBUILD) {
+	    if (fsm->goal == FSM_PKGBUILD && all_hardlinks_in_package) {
 		rc = CPIOERR_MISSING_HARDLINK;
-	    }
+            }
 	    fsm->li = freeHardLink(fsm->li);
 	}
 	fsm->ldn = _free(fsm->ldn);
