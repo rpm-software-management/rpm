@@ -4,11 +4,9 @@ autom4te*
 config.h
 config.log
 config.status
-configure
 libltdlc.la
 libtool
 ltdl.lo
-Makefile.in
 stamp-h
 stamp-h1
 
