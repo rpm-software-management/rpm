@@ -743,9 +743,27 @@ static struct badDeps_s {
     { NULL, NULL }
 };
 #else
+/*@unchecked@*/
+static int badDepsInitialized = 0;
+
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static struct badDeps_s * badDeps = NULL;
 #endif
+
+/**
+ */
+static void freeBadDeps(void)
+	/*@globals badDeps, badDepsInitialized @*/
+	/*@modifies badDeps, badDepsInitialized @*/
+{
+    if (badDeps) {
+	struct badDeps_s * bdp;
+	for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++)
+	    bdp->pname = _free(bdp->pname);
+	badDeps = _free(badDeps);
+    }
+    badDepsInitialized = 0;
+}
 
 /**
  * Check for dependency relations to be ignored.
@@ -756,13 +774,13 @@ static struct badDeps_s * badDeps = NULL;
  */
 static int ignoreDep(const transactionElement p,
 		const transactionElement q)
-	/*@*/
+	/*@globals badDeps, badDepsInitialized @*/
+	/*@modifies badDeps, badDepsInitialized @*/
 {
     struct badDeps_s * bdp;
-    static int _initialized = 0;
 
 /*@-globs -mods@*/
-    if (!_initialized) {
+    if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
 	int ac = 0;
@@ -794,7 +812,7 @@ static int ignoreDep(const transactionElement p,
 	}
 	av = _free(av);
 	s = _free(s);
-	_initialized++;
+	badDepsInitialized++;
     }
 /*@=globs =mods@*/
 
@@ -1585,6 +1603,7 @@ assert(newOrderCount == ts->orderCount);
 #else
     rpmtransClean(ts);
 #endif
+    freeBadDeps();
 
     return 0;
 }

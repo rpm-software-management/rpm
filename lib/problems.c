@@ -66,6 +66,7 @@ rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
 	    p->altNEVR = _free(p->altNEVR);
 	    p->str1 = _free(p->str1);
 	}
+	ps->probs = _free(ps->probs);
     }
     (void) rpmpsUnlink(ps, "destroy");
     /*@-refcounttrans -usereleased@*/

@@ -979,8 +979,10 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
 
     fi->action = FA_UNKNOWN;
     fi->flags = 0;
-    if (fi->actions == NULL)
+
+if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+
     fi->keep_header = (scareMem ? 1 : 0);
 
     /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
@@ -991,6 +993,7 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
 
     xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
+
     t = xmalloc(fi->fc * 16);
     fi->md5s = t;
     for (i = 0; i < fi->fc; i++) {
@@ -1011,6 +1014,7 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     /* XXX TR_REMOVED doesn;t need fmtimes or frdevs */
     xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
     xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
+
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
     xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
@@ -1022,6 +1026,8 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     if (fi != NULL)
     if (fi->te != NULL && fi->te->type == TR_ADDED) {
 	Header foo;
+/* XXX DYING */
+if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 	/*@-compdef@*/ /* FIX: fi-md5s undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);

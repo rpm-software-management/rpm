@@ -104,8 +104,8 @@ Header XheaderLink(Header h, /*@null@*/ const char * msg,
 {
     if (h != NULL) h->nrefs++;
 /*@-modfilesystem@*/
-if (_h_debug > 0 && msg != NULL)
-fprintf(stderr, "--> h  %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
+if ((_h_debug > 0 || (h->flags & HEADERFLAG_DEBUG)) && msg != NULL)
+fprintf(stderr, "--> h  %p ++ %d blob %p flags %x %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), (h != NULL ? h->blob : NULL), (h != NULL ? h->flags : 0), msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans -nullret @*/
     return h;
@@ -123,8 +123,8 @@ Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
 	/*@modifies h @*/
 {
 /*@-modfilesystem@*/
-if (_h_debug > 0 && msg != NULL)
-fprintf(stderr, "--> h  %p -- %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
+if ((_h_debug > 0 || (h->flags & HEADERFLAG_DEBUG)) && msg != NULL)
+fprintf(stderr, "--> h  %p -- %d blob %p flags %x %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), (h != NULL ? h->blob : NULL), (h != NULL ? h->flags : 0), msg, fn, ln);
 /*@=modfilesystem@*/
     if (h != NULL) h->nrefs--;
     return NULL;

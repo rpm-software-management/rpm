@@ -309,6 +309,7 @@ void rpmtransClean(rpmTransactionSet ts)
 
 	if (ts->sig != NULL)
 	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+
 	if (ts->dig != NULL)
 	    ts->dig = pgpFreeDig(ts->dig);
     }
@@ -352,6 +353,11 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 /*@-type +voidabstract @*/	/* FIX: double indirection */
 	ts->order = _free(ts->order);
 /*@=type =voidabstract @*/
+
+	if (ts->pkpkt != NULL)
+	    ts->pkpkt = _free(ts->pkpkt);
+	ts->pkpktlen = 0;
+	memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
 /*@-nullstate@*/	/* FIX: partial annotations */
 	rpmtransClean(ts);
@@ -428,6 +434,9 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->probs = NULL;
 
     ts->sig = NULL;
+    ts->pkpkt = NULL;
+    ts->pkpktlen = 0;
+    memset(ts->pksignid, 0, sizeof(ts->pksignid));
     ts->dig = NULL;
 
     ts->nrefs = 0;

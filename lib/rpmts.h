@@ -102,6 +102,12 @@ struct rpmTransactionSet_s {
     int_32  sigtype;		/*!< Current package signature data type. */
 /*@null@*/ const void * sig;	/*!< Current package signature. */
     int_32 siglen;		/*!< Current package signature length. */
+
+/*@only@*/ /*@null@*/
+    const unsigned char * pkpkt;/*!< Current pubkey packet. */
+    size_t pkpktlen;		/*!< Current pubkey packet length. */
+    unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
+
 /*@null@*/
     struct pgpDig_s * dig;	/*!< Current signature/pubkey parametrs. */
 

@@ -1572,12 +1572,14 @@ fileAction * actions = fi->actions;
 
 fi->fstates = NULL;
 fi->actions = NULL;
+		    psm->fi = fiFree(psm->fi, 1);
 		    (void) fiFree(fi, 0);
 /*@-usereleased@*/
 fi->magic = TFIMAGIC;
 fi->te = p;
 fi->record = 0;
 		    (void) fiNew(ts, fi, h, RPMTAG_BASENAMES, 1);
+		    psm->fi = rpmfiLink(fi, "tsInstall");
 fi->fstates = _free(fi->fstates);
 fi->fstates = fstates;
 fi->actions = _free(fi->actions);
@@ -1611,7 +1613,6 @@ fi->actions = actions;
 		p->fd = NULL;
 		/*@=type@*/
 	    }
-	    (void) fiFree(fi, 0);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", teGetNEVR(p));
@@ -1620,13 +1621,13 @@ fi->actions = actions;
 		if (psmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }
-	    (void) fiFree(fi, 0);
 	    /*@switchbreak@*/ break;
 	}
 	xx = rpmdbSync(ts->rpmdb);
 	(void) rpmfiUnlink(psm->fi, "tsInstall");
 	psm->fi = NULL;
 	psm->te = NULL;
+	p->fi = fiFree(fi, 1);
     }
     /*@=branchstate@*/
     pi = teFreeIterator(pi);

@@ -62,6 +62,7 @@ struct headerToken {
 #define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
 #define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
+#define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 

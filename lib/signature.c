@@ -926,9 +926,6 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 {
     struct pgpDigParams_s * sigp = NULL;
     rpmVerifySignatureReturn res;
-    /*@unchecked@*/ /*@only@*/ static const byte * pkpkt = NULL;
-    /*@unchecked@*/ static size_t pkpktlen = 0;
-    /*@unchecked@*/ static byte pksignid[8];
     int xx;
 
     if (ts->sig == NULL || ts->dig == NULL) {
@@ -937,14 +934,16 @@ rpmtsFindPubkey(rpmTransactionSet ts)
     }
     sigp = &ts->dig->signature;
 
-    if (pkpkt == NULL || memcmp(sigp->signid, pksignid, sizeof(pksignid))) {
+    if (ts->pkpkt == NULL
+     || memcmp(sigp->signid, ts->pksignid, sizeof(ts->pksignid)))
+    {
 	int ix = -1;
 	rpmdbMatchIterator mi;
 	Header h;
 
-	pkpkt = _free(pkpkt);
-	pkpktlen = 0;
-	memset(pksignid, 0, sizeof(pksignid));
+	ts->pkpkt = _free(ts->pkpkt);
+	ts->pkpktlen = 0;
+	memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
 	/* Make sure the database is open. */
 	(void) rpmtsOpenDB(ts, ts->dbmode);
@@ -959,7 +958,7 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 		continue;
 	    ix = rpmdbGetIteratorFileNum(mi);
 	    if (ix >= pc
-	    || b64decode(pubkeys[ix], (void **) &pkpkt, &pkpktlen))
+	    || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = -1;
 	    pubkeys = headerFreeData(pubkeys, pt);
 	    break;
@@ -967,7 +966,7 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 	mi = rpmdbFreeIterator(mi);
 
 	/* Was a matching pubkey found? */
-	if (ix < 0 || pkpkt == NULL) {
+	if (ix < 0 || ts->pkpkt == NULL) {
 	    res = RPMSIG_NOKEY;
 	    goto exit;
 	}
@@ -976,15 +975,15 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 	 * Can the pubkey packets be parsed?
 	 * Do the parameters match the signature?
 	 */
-	if (pgpPrtPkts(pkpkt, pkpktlen, NULL, 0)
+	if (pgpPrtPkts(ts->pkpkt, ts->pkpktlen, NULL, 0)
 	 && ts->dig->signature.pubkey_algo == ts->dig->pubkey.pubkey_algo
 #ifdef	NOTYET
 	 && ts->dig->signature.hash_algo == ts->dig->pubkey.hash_algo
 #endif
 	 && !memcmp(ts->dig->signature.signid, ts->dig->pubkey.signid, 8))
 	{
-	    pkpkt = _free(pkpkt);
-	    pkpktlen = 0;
+	    ts->pkpkt = _free(ts->pkpkt);
+	    ts->pkpktlen = 0;
 	    res = RPMSIG_NOKEY;
 	    goto exit;
 	}
@@ -992,7 +991,7 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 	/* XXX Verify the pubkey signature. */
 
 	/* Packet looks good, save the signer id. */
-	memcpy(pksignid, sigp->signid, sizeof(pksignid));
+	memcpy(ts->pksignid, sigp->signid, sizeof(ts->pksignid));
 
 	rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %s\n",
 		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
@@ -1003,9 +1002,9 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 
 #ifdef	NOTNOW
     {
-	if (pkpkt == NULL) {
+	if (ts->pkpkt == NULL) {
 	    const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
-	    if (pgpReadPkts(pkfn, &pkpkt, &pkpktlen) != PGPARMOR_PUBKEY) {
+	    if (pgpReadPkts(pkfn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY) {
 		pkfn = _free(pkfn);
 		res = RPMSIG_NOKEY;
 		goto exit;
@@ -1016,7 +1015,7 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 #endif
 
     /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts(pkpkt, pkpktlen, ts->dig, 0);
+    xx = pgpPrtPkts(ts->pkpkt, ts->pkpktlen, ts->dig, 0);
 
     /* Do the parameters match the signature? */
     if (ts->dig->signature.pubkey_algo == ts->dig->pubkey.pubkey_algo

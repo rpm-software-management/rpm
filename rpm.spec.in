@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.12
+Release: 0.13
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -525,6 +525,7 @@ fi
 - rework most of rpmdb.c prepatory to implementing duplicates.
 - fix: 2 memory leaks in headerSprintf.
 - fix: db mire's access out-of-bounds memory.
+- plug most install mode leaks.
 
 * Fri May  3 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.12
 - use DBT_DB_MALLOC to eliminate re-malloc'ing header blobs.

@@ -1065,6 +1065,20 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	/*@=branchstate@*/
 	dig->sha1ctx = NULL;
 
+	mp32bfree(&dig->p);
+	mp32bfree(&dig->q);
+	mp32nfree(&dig->g);
+	mp32nfree(&dig->y);
+	mp32nfree(&dig->hm);
+	mp32nfree(&dig->r);
+	mp32nfree(&dig->s);
+
+	mp32bfree(&dig->rsa_pk.n);
+	mp32nfree(&dig->rsa_pk.e);
+	mp32nfree(&dig->m);
+	mp32nfree(&dig->c);
+	mp32nfree(&dig->hm);
+
 	dig = _free(dig);
     }
     return dig;
