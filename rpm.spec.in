@@ -310,6 +310,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Dec 16 2000 Jeff Johnson <jbj@redhat.com>
+- gendiff: generate ChangeLog patches more intelligently (#22356).
+
 * Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
 - bump popt version.
 - fix: (transaction.c) assume file state normal if tag is missing.
