@@ -56,14 +56,34 @@ static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
 	       int justcheck) {
     char * filename;
     struct rpmdb db;
+    char * dbpath;
+    int i;
+
+    dbpath = getVar(RPMVAR_DBPATH);
+    if (!dbpath) 
+	dbpath = "/var/lib/rpm/";
+    else  {
+	i = strlen(dbpath);
+	if (dbpath[i - 1] != '/') {
+	    filename = alloca(i);
+	    strcpy(filename, dbpath);
+	    filename[i] = '/';
+	    filename[i + 1] = '\0';
+	    dbpath = filename;
+	}
+    }
     
-    filename = alloca(strlen(prefix) + 40);
+    filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
 
     if (mode & O_WRONLY) 
 	return 1;
 
     strcpy(filename, prefix); 
-    strcat(filename, "/var/lib/rpm/packages.rpm");
+    strcat(filename, dbpath);
+
+    message(MESS_DEBUG, "opening database in %s\n", filename);
+
+    strcat(filename, "packages.rpm");
 
     memset(&db, 0, sizeof(db));
 
@@ -91,7 +111,8 @@ static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
     }
     
     strcpy(filename, prefix); 
-    strcat(filename, "/var/lib/rpm/nameindex.rpm");
+    strcat(filename, dbpath);
+    strcat(filename, "nameindex.rpm");
 
     if (!justcheck || !exists(filename)) {
 	db.nameIndex = openDBIndex(filename, mode, 0644);
@@ -102,7 +123,8 @@ static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
     }
 
     strcpy(filename, prefix); 
-    strcat(filename, "/var/lib/rpm/fileindex.rpm");
+    strcat(filename, dbpath);
+    strcat(filename, "fileindex.rpm");
 
     if (!justcheck || !exists(filename)) {
 	db.fileIndex = openDBIndex(filename, mode, 0644);
@@ -114,7 +136,8 @@ static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
     }
     
     strcpy(filename, prefix); 
-    strcat(filename, "/var/lib/rpm/groupindex.rpm");
+    strcat(filename, dbpath);
+    strcat(filename, "groupindex.rpm");
 
     if (!justcheck || !exists(filename)) {
 	db.groupIndex = openDBIndex(filename, mode, 0644);
@@ -127,7 +150,8 @@ static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
     }
 
     strcpy(filename, prefix); 
-    strcat(filename, "/var/lib/rpm/providesindex.rpm");
+    strcat(filename, dbpath);
+    strcat(filename, "providesindex.rpm");
 
     if (!justcheck || !exists(filename)) {
 	db.providesIndex = openDBIndex(filename, mode, 0644);
@@ -141,7 +165,8 @@ static int doopen (char * prefix, rpmdb *rpmdbp, int mode, int perms,
     }
 
     strcpy(filename, prefix); 
-    strcat(filename, "/var/lib/rpm/requiredby.rpm");
+    strcat(filename, dbpath);
+    strcat(filename, "requiredby.rpm");
 
     if (!justcheck || !exists(filename)) {
 	db.requiredbyIndex = openDBIndex(filename, mode, 0644);
