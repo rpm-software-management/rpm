@@ -26,7 +26,6 @@
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
 #define GETOPT_BUILDROOT 	1007
-#define GETOPT_PROVIDES		1008
 #define GETOPT_QUERYBYNUMBER	1009
 #define GETOPT_DBPATH		1010
 #define GETOPT_TIMECHECK        1012
@@ -86,14 +85,16 @@ static void printUsage(void) {
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--ignoreos] [--nodeps] file1.rpm ... fileN.rpm"));
-    puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
+    puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
-    puts(_("       rpm {--verify -V -y} [-afFpP] [--root <dir>] [--rcfile <file>]"));
+    puts(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
     puts(_("                        [--nomd5] [targets]"));
+    puts(_("       rpm {--fixperms} [-afpg] [target]"));
+    puts(_("       rpm {--setugids} [-afpg] [target]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] package1 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
@@ -170,12 +171,8 @@ static void printHelp(void) {
 		  _("query all packages"));
     printHelpLine("        -f <file>+        ",
 		  _("query package owning <file>"));
-    printHelpLine("        -F                ",
-		  _("like -f, but read file names from stdin"));
     printHelpLine("        -p <packagefile>+ ",
 		  _("query (uninstalled) package <packagefile>"));
-    printHelpLine("        -P                ",
-		  _("like -p, but read package names from stdin"));
     printHelpLine("        --whatprovides <i>",
 		  _("query packages which provide <i> capability"));
     printHelpLine("        --whatrequires <i>",
@@ -217,6 +214,14 @@ static void printHelp(void) {
 		  _("do not verify file md5 checksums"));
     printHelpLine("      --nofiles           ",
 		  _("do not verify file attributes"));
+    puts("");
+    printHelpLine("    --fixperms            ",
+		  _("set the file permissions to those in the package database"
+		    " using the same package specification options as -q"));
+    printHelpLine("    --setugids            ",
+		  _("set the file owner and group to those in the package "
+		    "database using the same package specification options as "
+		    "-q"));
     puts("");
     puts(         "    --install <packagefile>");
     printHelpLine("    -i <packagefile>      ",
@@ -385,13 +390,13 @@ int main(int argc, char ** argv) {
     enum modes bigMode = MODE_UNKNOWN;
     enum querysources querySource = QUERY_PACKAGE;
     enum verifysources verifySource = VERIFY_PACKAGE;
-    int arg;
+    int arg, len;
     int queryFor = 0, test = 0, version = 0, help = 0, force = 0;
     int quiet = 0, replaceFiles = 0, replacePackages = 0, showPercents = 0;
     int showHash = 0, installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, queryTags = 0, excldocs = 0;
-    int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
+    int incldocs = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
     int noMd5 = 0;
@@ -412,7 +417,6 @@ int main(int argc, char ** argv) {
     char * optArg;
     pid_t pipeChild = 0;
     char * pkg;
-    char * smallArgv[2] = { NULL, NULL };
     char ** currarg;
     poptContext optCon;
     int ec = 0;
@@ -458,7 +462,6 @@ int main(int argc, char ** argv) {
 	    { "percent", '\0', 0, &showPercents, 0 },
 	    { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0 },
 	    { "prefix", '\0', POPT_ARG_STRING, &prefix, 0 },
-	    { "provides", '\0', 0, 0, GETOPT_PROVIDES },
 	    { "qf", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
 	    { "query", 'q', 0, 0, 'q' },
 	    { "querybynumber", '\0', 0, 0, GETOPT_QUERYBYNUMBER },
@@ -474,16 +477,10 @@ int main(int argc, char ** argv) {
 	    { "resign", '\0', 0, 0, GETOPT_RESIGN },
 	    { "requires", 'R', 0, 0, 'R' },
 	    { "root", 'r', POPT_ARG_STRING, 0, 'r' },
-	    { "scripts", '\0', 0, &queryScripts, 0 },
 	    { "short-circuit", '\0', 0, &shortCircuit, 0 },
 	    { "showrc", '\0', 0, 0, 0 },
 	    { "sign", '\0', 0, &signIt, 0 },
 	    { "state", 's', 0, 0, 's' },
-	    { "stdin-files", 'F', 0, 0, 'F' },
-	    { "stdin-group", 'G', 0, 0, 'G' },
-	    { "stdin-packages", 'P', 0, 0, 'P' },
-	    { "stdin-query", 'Q', 0, 0, 'Q' },
-	    { "stdin-verify", 'Y', 0, 0, 'Y' },
 	    { "test", '\0', 0, &test, 0 },
 	    { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK },
 	    { "upgrade", 'U', 0, 0, 'U' },
@@ -548,25 +545,12 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_CHECKSIG;
 	    break;
 	    
-	  case 'Q':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SPACKAGE)
-		argerror(_("only one type of query may be performed at a "
-			   "time"));
-	    querySource = QUERY_SPACKAGE;
-	    /* fallthrough */
 	  case 'q':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_QUERY;
 	    break;
 
-	  case 'Y':
-	    if (verifySource != VERIFY_PACKAGE && 
-		verifySource != VERIFY_SPACKAGE)
-		argerror(_("only one type of verify may be performed at a "
-				"time"));
-	    verifySource = VERIFY_SPACKAGE;
-	    /* fallthrough */
 	  case 'V':
 	  case 'y':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFY)
@@ -661,27 +645,11 @@ int main(int argc, char ** argv) {
 	    queryFor |= QUERY_FOR_CONFIG | QUERY_FOR_LIST;
 	    break;
 
-	  case 'P':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SRPM)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    querySource = QUERY_SRPM;
-	    verifySource = VERIFY_SRPM;
-	    break;
-
 	  case 'p':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
 		argerror(_("one type of query/verify may be performed at a " "time"));
 	    querySource = QUERY_RPM;
 	    verifySource = VERIFY_RPM;
-	    break;
-
-	  case 'G':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SGROUP)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    querySource = QUERY_SGROUP;
-	    verifySource = VERIFY_SGROUP;
 	    break;
 
 	  case 'g':
@@ -690,14 +658,6 @@ int main(int argc, char ** argv) {
 				"time"));
 	    querySource = QUERY_GROUP;
 	    verifySource = VERIFY_GRP;
-	    break;
-
-	  case 'F':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SPATH)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    querySource = QUERY_SPATH;
-	    verifySource = VERIFY_SPATH;
 	    break;
 
 	  case 'f':
@@ -717,10 +677,15 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case GETOPT_QUERYFORMAT:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_QUERY;
-	    queryFormat = optArg;
+	    if (queryFormat) {
+		len = strlen(queryFormat) + strlen(optArg) + 1;
+		queryFormat = realloc(queryFormat, len);
+		strcat(queryFormat, optArg);
+	    } else {
+		queryFormat = malloc(strlen(optArg) + 1);
+		strcpy(queryFormat, optArg);
+	    }
+		
 	    queryFor |= QUERY_FOR_INFO;
 	    break;
 
@@ -775,10 +740,6 @@ int main(int argc, char ** argv) {
 	    signIt = 1;
 	    break;
 
-	  case GETOPT_PROVIDES:
-	    queryFor |= QUERY_FOR_PROVIDES;
-	    break;
-
 	  case GETOPT_DBPATH:
             if (optArg[0] != '/')
                 argerror(_("arguments to --dbpath must begin with a /"));
@@ -828,10 +789,6 @@ int main(int argc, char ** argv) {
 	exit(1);
     }
 
-    if (queryScripts) {
-	queryFor |= QUERY_FOR_SCRIPTS;
-    }
-
     if (initdb)
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
@@ -860,6 +817,9 @@ int main(int argc, char ** argv) {
 	argerror(_("--timecheck may only be used during package builds"));
     
     if (bigMode != MODE_QUERY && queryFor) 
+	argerror(_("unexpected query specifiers"));
+
+    if (bigMode != MODE_QUERY && queryFormat) 
 	argerror(_("unexpected query specifiers"));
 
     if (bigMode != MODE_QUERY && bigMode != MODE_VERIFY &&
@@ -959,8 +919,7 @@ int main(int argc, char ** argv) {
 	argerror(_("--dump of queries must be used with -l, -c, or -d"));
 
     if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
-	(bigMode == MODE_QUERY && (querySource == QUERY_RPM ||
-	    querySource == QUERY_SRPM)))) 
+	(bigMode == MODE_QUERY && querySource == QUERY_RPM)))
 	argerror(_("ftp options can only be used during package queries, "
 		 "installs, and upgrades"));
 
@@ -1169,19 +1128,6 @@ int main(int argc, char ** argv) {
 		argerror(_("extra arguments given for query of all packages"));
 
 	    ec = doQuery(rootdir, QUERY_ALL, queryFor, NULL, queryFormat);
-	} else if (querySource == QUERY_SPATH || 
-                   querySource == QUERY_SPACKAGE ||
-		   querySource == QUERY_SRPM) {
-	    char buffer[255];
-	    int i;
-
-	    while (fgets(buffer, 255, stdin)) {
-		i = strlen(buffer) - 1;
-		if (buffer[i] == '\n') buffer[i] = 0;
-		if (strlen(buffer)) 
-		    ec += doQuery(rootdir, querySource, queryFor, buffer, 
-				  queryFormat);
-	    }
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
@@ -1199,19 +1145,6 @@ int main(int argc, char ** argv) {
 
 	if (verifySource == VERIFY_EVERY) {
 	    doVerify(rootdir, VERIFY_EVERY, NULL, verifyFlags);
-	} else if (verifySource == VERIFY_SPATH || 
-                   verifySource == VERIFY_SPACKAGE ||
-		   verifySource == VERIFY_SRPM) {
-	    char buffer[255];
-	    int i;
-
-	    smallArgv[0] = buffer;
-	    while (fgets(buffer, 255, stdin)) {
-		i = strlen(buffer) - 1;
-		if (buffer[i] == '\n') buffer[i] = 0;
-		if (strlen(buffer))
-		    doVerify(rootdir, verifySource, smallArgv, verifyFlags);
-	    }
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
@@ -1226,6 +1159,9 @@ int main(int argc, char ** argv) {
 	fclose(stdout);
 	waitpid(pipeChild, &status, 0);
     }
+
+    /* keeps memory leak checkers quiet */
+    if (queryFormat) free(queryFormat);
 
     return ec;
 }
