@@ -3,6 +3,7 @@
 	- updated fine-requires (Linux version) to add lines for shell
 	  scripts (Donnie Barnes)
 	- didn't package / properly
+	- pre/post script processing had some erroneous free() calls
 
 2.4.5 -> 2.4.6:
 	- added os_canon entries for BSD/OS and NextStep

@@ -404,8 +404,10 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
 
     waitpid(child, &status, 0);
 
-    if (script && !isdebug) unlink(fn);
-    free(fn);
+    if (script) {
+	if (!isdebug) unlink(fn);
+	free(fn);
+    }
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SCRIPT, _("execution of script failed"));
