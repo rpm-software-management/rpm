@@ -135,7 +135,7 @@ struct hdrObject_s {
 /* Data */
 
 static PyObject * pyrpmError;
-static Header transactionSetHeader;
+static Header transactionSetHeader = NULL;
 
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
