@@ -25,8 +25,7 @@ mylibs= \
 	$(top_builddir)/lib/.libs/librpm.so \
 	$(top_builddir)/rpmdb/.libs/librpmdb.so \
 	$(top_builddir)/rpmio/.libs/librpmio.so \
-	$(top_builddir)/popt/.libs/libpopt.so \
-	@WITH_LIBELF_ARCHIVE@
+	$(top_builddir)/popt/.libs/libpopt.so
 
 LDADD =
 

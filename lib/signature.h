@@ -12,15 +12,7 @@
  * Signature types stored in rpm lead.
  */
 typedef	enum sigType_e {
-    RPMSIGTYPE_NONE	= 0,	/*!< unused, legacy. */
-    RPMSIGTYPE_PGP262_1024 = 1,	/*!< unused, legacy. */
-/*@-enummemuse@*/
-    RPMSIGTYPE_BAD	= 2,	/*!< Unknown signature type. */
-/*@=enummemuse@*/
-    RPMSIGTYPE_MD5	= 3,	/*!< unused, legacy. */
-    RPMSIGTYPE_MD5_PGP	= 4,	/*!< unused, legacy. */
-    RPMSIGTYPE_HEADERSIG= 5,	/*!< Header style signature */
-    RPMSIGTYPE_DISABLE	= 6	/*!< Disable verification (debugging only) */
+    RPMSIGTYPE_HEADERSIG= 5	/*!< Header style signature */
 } sigType;
 
 /** \ingroup signature
@@ -49,14 +41,14 @@ Header rpmNewSignature(void)
  * Read (and verify header+payload size) signature header.
  * If an old-style signature is found, we emulate a new style one.
  * @param fd		file handle
- * @retval headerp	address of (signature) header (or NULL)
+ * @retval sighp	address of (signature) header (or NULL)
  * @param sig_type	type of signature header to read (from lead)
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *headerp,
+rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
 		sigType sig_type)
 	/*@globals fileSystem @*/
-	/*@modifies fd, *headerp, fileSystem @*/;
+	/*@modifies fd, *sighp, fileSystem @*/;
 
 /** \ingroup signature
  * Write signature header.

@@ -1151,6 +1151,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
 
+	(void) rpmdbCheckSignals();
+
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
@@ -1183,6 +1185,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	dbiIndexSet * matches;
 	int knownBad;
 	int fc;
+
+	(void) rpmdbCheckSignals();
 
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -1344,6 +1348,9 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	progress = 0;
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
+
+	    (void) rpmdbCheckSignals();
+
 	    if ((fi = rpmtsiFi(pi)) == NULL)
 		continue;	/* XXX can't happen */
 	    switch (rpmteType(p)) {
@@ -1390,6 +1397,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	alKey pkgKey;
 	int gotfd;
+
+	(void) rpmdbCheckSignals();
 
 	gotfd = 0;
 	if ((fi = rpmtsiFi(pi)) == NULL)

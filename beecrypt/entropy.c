@@ -904,8 +904,9 @@ static const char *dev_tty_name = "/dev/tty";
 static int dev_tty_fd = -1;
 
 /** \ingroup ES_tty_m
+ * @todo hpux needs real locking mechanism.
  */
-# ifdef _REENTRANT
+# if defined(_REENTRANT) && !defined(hpux)
 #  if HAVE_SYNCH_H
 /*@unchecked@*/
 static mutex_t dev_tty_lock = DEFAULTMUTEX;
@@ -1556,7 +1557,8 @@ int entropy_dev_tty(uint32* data, int size)
 {
 	register int rc;
 
-	#ifdef _REENTRANT
+/** @todo hpux needs real locking mechanism. */
+	#if defined(_REENTRANT) && !defined(hpux)
 	# if HAVE_SYNCH_H
 	if (mutex_lock(&dev_tty_lock))
 		return -1;
@@ -1581,7 +1583,8 @@ int entropy_dev_tty(uint32* data, int size)
 	(void) close(dev_tty_fd);
 
 dev_tty_end:
-	#ifdef _REENTRANT
+/** @todo hpux needs real locking mechanism. */
+	#if defined(_REENTRANT) && !defined(hpux)
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_tty_lock);
 	# elif HAVE_PTHREAD_H

@@ -538,6 +538,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     const char * s;
     int i;
 
+    (void) rpmdbCheckSignals();
+
     if (qva->qva_showPackage == NULL)
 	return 1;
 

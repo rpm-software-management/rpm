@@ -15,6 +15,7 @@
 #include "legacy.h"	/* XXX for mdbinfile() */
 #include "rpmlead.h"
 #include "signature.h"
+#include "header_internal.h"
 #include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
@@ -108,7 +109,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 }
 
 /**
- * Check package size.
+ * Print package size.
  * @todo rpmio: use fdSize rather than fstat(2) to get file size.
  * @param fd			package file handle
  * @param siglen		signature header size
@@ -116,115 +117,103 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @param datalen		length of header+payload
  * @return 			rpmRC return code
  */
-static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
+static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     struct stat st;
-    int delta;
-    rpmRC rc;
 
-    if (fstat(Fileno(fd), &st))
+    if (fstat(Fileno(fd), &st) < 0)
 	return RPMRC_FAIL;
 
-    if (!S_ISREG(st.st_mode)) {
-	rpmMessage(RPMMESS_DEBUG,
-	    _("file is not regular -- skipping size check\n"));
-	return RPMRC_OK;
-    }
-
     /*@-sizeoftype@*/
-    delta = (sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size;
-    switch (delta) {
-    case -32: /* XXX rpm-4.0 packages */
-    case 32:  /* XXX Legacy headers have a HEADER_IMAGE tag added. */
-    case 0:
-	rc = RPMRC_OK;
-	break;
-    default:
-	rc = RPMRC_OK;	/* XXX repackaging destroys size checks */
-	break;
-    }
-
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
+    rpmMessage(RPMMESS_DEBUG,
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
 		(int)sizeof(struct rpmlead), siglen, pad, datalen);
     /*@=sizeoftype@*/
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
+    rpmMessage(RPMMESS_DEBUG,
 	_("  Actual size: %12d\n"), (int)st.st_size);
 
-    return rc;
+    return RPMRC_OK;
 }
 
-rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
+/*@unchecked@*/
+static unsigned char header_magic[8] = {
+    0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+};
+
+rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type)
 {
-    byte buf[2048];
-    int sigSize, pad;
-    int_32 type, count;
-    int_32 *archSize;
-    Header h = NULL;
+    int_32 block[4];
+    int_32 il;
+    int_32 dl;
+    int_32 * ei = NULL;
+    entryInfo pe;
+    int_32 nb;
+    indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
+    entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
+    Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    int xx;
+    int i;
 
-/*@-boundswrite@*/
-    if (headerp)
-	*headerp = NULL;
-/*@=boundswrite@*/
+    if (sighp)
+	*sighp = NULL;
 
-    buf[0] = 0;
-    switch (sig_type) {
-    case RPMSIGTYPE_NONE:
-	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
-	rc = RPMRC_OK;
-	break;
-    case RPMSIGTYPE_PGP262_1024:
-	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
-	/* These are always 256 bytes */
-	if (timedRead(fd, buf, 256) != 256)
-	    break;
-	h = headerNew();
-	(void) headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
-	rc = RPMRC_OK;
-	break;
-    case RPMSIGTYPE_MD5:
-    case RPMSIGTYPE_MD5_PGP:
-	rpmError(RPMERR_BADSIGTYPE,
-	      _("Old (internal-only) signature!  How did you get that!?\n"));
-	break;
-    case RPMSIGTYPE_HEADERSIG:
-    case RPMSIGTYPE_DISABLE:
-	/* This is a new style signature */
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	if (h == NULL)
-	    break;
+    if (sig_type != RPMSIGTYPE_HEADERSIG)
+	goto exit;
 
-	rc = RPMRC_OK;
-	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
+    if (timedRead(fd, (char *)block, sizeof(block)) != sizeof(block))
+	goto exit;
+    if (memcmp(block, header_magic, sizeof(header_magic)))
+	goto exit;
+    il = ntohl(block[2]);
+    if (il < 0 || il > 32)
+	goto exit;
+    dl = ntohl(block[3]);
+    if (dl < 0 || dl > 8192)
+	goto exit;
 
-	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	if (sig_type == RPMSIGTYPE_HEADERSIG) {
-	    if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type,
-				(void **)&archSize, &count))
-		break;
-/*@-boundsread@*/
-	    rc = checkSize(fd, sigSize, pad, *archSize);
-/*@=boundsread@*/
-	}
-	if (pad && timedRead(fd, buf, pad) != pad)
-	    rc = RPMRC_FAIL;
-	break;
-    default:
-	break;
+    nb = (il * sizeof(struct entryInfo_s)) + dl;
+    ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
+    ei[0] = htonl(il);
+    ei[1] = htonl(dl);
+    pe = (entryInfo) &ei[2];
+    if (timedRead(fd, (char *)pe, nb) != nb)
+	goto exit;
+    
+    /* Sanity check signature tags */
+    memset(info, 0, sizeof(*info));
+    for (i = 0; i < il; i++) {
+	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
+	if (xx != -1)
+	    goto exit;
     }
 
-/*@-boundswrite@*/
-    /* XXX return the signature header no matter what. */
-    if (headerp)
-	*headerp = headerLink(h);
-/*@=boundswrite@*/
+    /* OK, blob looks sane, load the header. */
+    sigh = headerLoad(ei);
+    if (sigh == NULL)
+	goto exit;
+    sigh->flags |= HEADERFLAG_ALLOCATED;
 
-    h = headerFree(h);
+    {	int sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+	int pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
+	int_32 * archSize = NULL;
 
+	/* Position at beginning of header. */
+	if (pad && timedRead(fd, (char *)block, pad) != pad)
+	    goto exit;
+
+	/* Print package component sizes. */
+	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(void **)&archSize, NULL))
+	    rc = printSize(fd, sigSize, pad, *archSize);
+    }
+
+exit:
+    if (rc == RPMRC_OK && sighp && sigh)
+	*sighp = headerLink(sigh);
+    sigh = headerFree(sigh);
     return rc;
 }
 
@@ -510,11 +499,6 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 
     return 0;
 }
-
-/*@unchecked@*/
-static unsigned char header_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
 
 /**
  * Generate header only signature(s) from a header+payload file.

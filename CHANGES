@@ -276,6 +276,14 @@
 	- fix: segfault with --checksig, plug memory leak (#72455).
 	- rpm-4.1 release candidate.
 	- requirement on libelf >= 0.8.2 to work around incompatible soname (#72792).
+	- fix: common sanity check on headers, prevent segfault (#72590).
+	- limit number of NOKEY/UNTRUSTED keys that will be warned once.
+	- libadd -lelf to rpmdb (#73024).
+	- portability: non-linux is easier, more to do (#72893).
+	- fix: SIGCHLD reaper race (#73134).
+	- fix: don't exit with open cursor, there be a stale lock.
+	- fix: check for signal induced exit more often (#73193).
+	- reinterpret the _unsafe_rollbacks macro as earliest rollback.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

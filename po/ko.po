@@ -2631,7 +2631,7 @@ msgstr "%s(을)를 설치합니다\n"
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpmlead.c:54
+#: lib/rpmlead.c:55
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "읽는데 실패함: %s (%d)\n"
@@ -2869,143 +2869,127 @@ msgstr "%s(을)를 복구합니다\n"
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/signature.c:132
-msgid "file is not regular -- skipping size check\n"
-msgstr "파일이 올바르지(regular) 않습니다 -- 용량 검사를 생략합니다\n"
-
-#: lib/signature.c:150
+#: lib/signature.c:131
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "예상(Expected) 용량: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 
-#: lib/signature.c:155
+#: lib/signature.c:136
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr " 실제 용량: %12d\n"
 
-#: lib/signature.c:177
-msgid "No signature\n"
-msgstr "서명이 없습니다\n"
-
-#: lib/signature.c:181
-msgid "Old PGP signature\n"
-msgstr "이전 PGP 서명\n"
-
-#: lib/signature.c:192
-msgid "Old (internal-only) signature!  How did you get that!?\n"
-msgstr "이전 (내부-용) 서명!  어떻게 얻으셨습니까!?\n"
-
-#: lib/signature.c:249
+#: lib/signature.c:238
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:341 lib/signature.c:455 lib/signature.c:735
-#: lib/signature.c:774
+#: lib/signature.c:330 lib/signature.c:444 lib/signature.c:719
+#: lib/signature.c:758
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s(을)를 실행할 수 없음: %s\n"
 
-#: lib/signature.c:357
+#: lib/signature.c:346
 msgid "pgp failed\n"
 msgstr "pgp가 실패함\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:364
+#: lib/signature.c:353
 msgid "pgp failed to write signature\n"
 msgstr "pgp 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:370
+#: lib/signature.c:359
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 서명 용량: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:388 lib/signature.c:503
+#: lib/signature.c:377 lib/signature.c:492
 msgid "unable to read the signature\n"
 msgstr "서명을 읽을 수 없습니다\n"
 
-#: lib/signature.c:393
+#: lib/signature.c:382
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:472
+#: lib/signature.c:461
 msgid "gpg failed\n"
 msgstr "gpg가 실패함\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:479
+#: lib/signature.c:468
 msgid "gpg failed to write signature\n"
 msgstr "gpg 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:485
+#: lib/signature.c:474
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 서명 용량: %d\n"
 
-#: lib/signature.c:508
+#: lib/signature.c:497
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:779 lib/signature.c:834
+#: lib/signature.c:763 lib/signature.c:818
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일 안에 부적합한 %%_signature 내용(spec)이 있습니다\n"
 
-#: lib/signature.c:811
+#: lib/signature.c:795
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일 안에 반드시 \"%%_gpg_name\"을 설정해야 합니다\n"
 
-#: lib/signature.c:826
+#: lib/signature.c:810
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일 안에 반드시 \"%%_pgp_name\"을 설정해야 합니다\n"
 
-#: lib/signature.c:875
+#: lib/signature.c:859
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "헤더의 크기가 너무 큽니다"
 
-#: lib/signature.c:915
+#: lib/signature.c:899
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:971
+#: lib/signature.c:955
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "SHA1 축약(digest) 헤더를 검사하지 않습니다"
 
-#: lib/signature.c:1046
+#: lib/signature.c:1030
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "어떠한 MD5 서명도 검사하지 않습니다"
 
-#: lib/signature.c:1163
+#: lib/signature.c:1147
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1164
+#: lib/signature.c:1148
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1243
+#: lib/signature.c:1227
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1270
+#: lib/signature.c:1254
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 
-#: lib/signature.c:1274
+#: lib/signature.c:1258
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
@@ -3773,6 +3757,18 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "file is not regular -- skipping size check\n"
+#~ msgstr "파일이 올바르지(regular) 않습니다 -- 용량 검사를 생략합니다\n"
+
+#~ msgid "No signature\n"
+#~ msgstr "서명이 없습니다\n"
+
+#~ msgid "Old PGP signature\n"
+#~ msgstr "이전 PGP 서명\n"
+
+#~ msgid "Old (internal-only) signature!  How did you get that!?\n"
+#~ msgstr "이전 (내부-용) 서명!  어떻게 얻으셨습니까!?\n"
 
 #, fuzzy
 #~ msgid "%s: running %s scriptlet\n"

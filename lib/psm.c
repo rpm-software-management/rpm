@@ -33,8 +33,9 @@
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 
+#define	_PSM_DEBUG	0
 /*@unchecked@*/
-int _psm_debug = 0;
+int _psm_debug = _PSM_DEBUG;
 
 /*@access Header @*/		/* compared with NULL */
 /*@access rpmdbMatchIterator @*//* compared with NULL */
@@ -700,10 +701,14 @@ static void handler(int signum)
 		rpmpsm psm = psmtbl.psms[i];
 		if (psm->child != reaped)
 		    /*@innercontinue@*/ continue;
+
+#if _PSM_DEBUG
 /*@-modfilesys@*/
 if (_psm_debug)
 fprintf(stderr, "      Reap: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
 /*@=modfilesys@*/
+#endif
+
 		psm->reaped = reaped;
 		psm->status = status;
 		/*@innerbreak@*/ break;
@@ -889,6 +894,23 @@ fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmt
 }
 
 /**
+ * Return reaped pid safely (i.e. with signals blocked).
+ * @param psm		package state machine data
+ * @return		
+ */
+static inline pid_t psmGetReaped(rpmpsm psm)
+{
+    sigset_t newMask, oldMask;
+    pid_t reaped;
+
+    (void) sigfillset(&newMask);		/* block all signals */
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    reaped = psm->reaped;
+    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    return reaped;
+}
+
+/**
  * Wait for child process to be reaped.
  * @param psm		package state machine data
  * @return		
@@ -899,8 +921,8 @@ static pid_t psmWait(rpmpsm psm)
 {
     if (psm->reaper) {
 	/*@-infloops@*/
-	while (psm->reaped == 0)
-	    (void) sleep(2);
+	while (psmGetReaped(psm) == 0)
+	    (void) pause();
 	/*@=infloops@*/
 /*@-modfilesys@*/
 if (_psm_debug)
@@ -946,8 +968,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, Header h,
-		const char * sln,
+static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
 	/*@globals ldconfig_done, rpmGlobalMacroContext,

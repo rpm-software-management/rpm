@@ -687,15 +687,11 @@ static int enableSignals(void)
 }
 
 /*@unchecked@*/
-static rpmdb dbrock;
+static rpmdb rpmdbRock;
 
-/**
- * Check for signals.
- */
-/*@mayexit@*/
-static int checkSignals(void)
-	/*@globals dbrock, satbl, fileSystem @*/
-	/*@modifies dbrock, fileSystem @*/
+int rpmdbCheckSignals(void)
+	/*@globals rpmdbRock, satbl @*/
+	/*@modifies rpmdbRock @*/
 {
     struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
@@ -714,8 +710,8 @@ static int checkSignals(void)
 	rpmdb db;
 	rpmMessage(RPMMESS_WARNING, "Exiting on signal ...\n");
 /*@-newreftrans@*/
-	while ((db = dbrock) != NULL) {
-/*@i@*/	    dbrock = db->db_next;
+	while ((db = rpmdbRock) != NULL) {
+/*@i@*/	    rpmdbRock = db->db_next;
 	    db->db_next = NULL;
 	    (void) rpmdbClose(db);
 	}
@@ -773,10 +769,10 @@ static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
  */
 /*@mayexit@*/
 static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
-	/*@globals dbrock, fileSystem @*/
-	/*@modifies dbrock, fileSystem @*/
+	/*@globals rpmdbRock, fileSystem @*/
+	/*@modifies rpmdbRock, fileSystem @*/
 {
-    (void) checkSignals();
+    (void) rpmdbCheckSignals();
     return sigprocmask(SIG_SETMASK, oldMask, NULL);
 }
 
@@ -842,8 +838,8 @@ int rpmdbCloseDBI(rpmdb db, int rpmtag)
 /* XXX query.c, rpminstall.c, verify.c */
 /*@-incondefs@*/
 int rpmdbClose(rpmdb db)
-	/*@globals dbrock @*/
-	/*@modifies dbrock @*/
+	/*@globals rpmdbRock @*/
+	/*@modifies rpmdbRock @*/
 {
     rpmdb * prev, next;
     int dbix;
@@ -876,7 +872,7 @@ int rpmdbClose(rpmdb db)
     db->_dbi = _free(db->_dbi);
 
 /*@-newreftrans@*/
-    prev = &dbrock;
+    prev = &rpmdbRock;
     while ((next = *prev) != NULL && next != db)
 	prev = &next->db_next;
     if (next) {
@@ -968,9 +964,9 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
 		int mode, int perms, int flags)
-	/*@globals dbrock, rpmGlobalMacroContext,
+	/*@globals rpmdbRock, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies dbrock, *dbp, rpmGlobalMacroContext,
+	/*@modifies rpmdbRock, *dbp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@requires maxSet(dbp) >= 0 @*/
 {
@@ -1055,8 +1051,8 @@ exit:
 	xx = rpmdbClose(db);
     else {
 /*@-assignexpose -newreftrans@*/
-/*@i@*/	db->db_next = dbrock;
-	dbrock = db;
+/*@i@*/	db->db_next = rpmdbRock;
+	rpmdbRock = db;
 /*@i@*/	*dbp = db;
 /*@=assignexpose =newreftrans@*/
     }
@@ -1700,7 +1696,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_db = rpmdbUnlink(mi->mi_db, "matchIterator");
     mi = _free(mi);
 
-    (void) checkSignals();
+    (void) rpmdbCheckSignals();
 
     return mi;
 }
@@ -2142,8 +2138,6 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return NULL;
 
-    (void) checkSignals();
-
     dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)
 	return NULL;
@@ -2441,7 +2435,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     if (db == NULL)
 	return NULL;
 
-    (void) checkSignals();
+    (void) rpmdbCheckSignals();
 
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
     if (rpmtag == RPMDBI_LABEL) {

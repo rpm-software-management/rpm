@@ -527,3 +527,6 @@ fi
 - unify cachesize configuration, with (or without) a dbenv.
 - comments regarding unsupported (yet) db-4.1.17 functionality.
 - requirement on libelf >= 0.8.2 to work around incompatible soname (#72792).
+- fix: common sanity check on headers, prevent segfault (#72590).
+- limit number of NOKEY/UNTRUSTED keys that will be warned once.
+- libadd -lelf to rpmdb (#73024).

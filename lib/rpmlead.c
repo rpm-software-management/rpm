@@ -12,6 +12,7 @@
 
 #include <rpmlib.h>
 
+#include "signature.h"
 #include "rpmlead.h"
 #include "debug.h"
 
@@ -59,13 +60,12 @@ rpmRC readLead(FD_t fd, struct rpmlead *lead)
 
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic)))
 	return RPMRC_FAIL;
-
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);
     lead->osnum = ntohs(lead->osnum);
-
-    if (lead->major >= 2)
-	lead->signature_type = ntohs(lead->signature_type);
+    lead->signature_type = ntohs(lead->signature_type);
+    if (lead->signature_type != RPMSIGTYPE_HEADERSIG)
+	return RPMRC_FAIL;
 
     return RPMRC_OK;
 }

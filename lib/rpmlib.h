@@ -138,24 +138,6 @@ void headerMergeLegacySigs(Header h, const Header sig)
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	/*@modifies h @*/;
 
-/** 
- * Check header consistency, performing headerGetEntry() the hard way.
- *  
- * Sanity checks on the header are performed while looking for a
- * header-only digest or signature to verify the blob. If found,
- * the digest or signature is verified.
- *
- * @param ts		transaction set
- * @param uh		unloaded header blob
- * @param uc		no. of bytes in blob (or 0 to disable)
- * @retval *msg		signature verification msg
- * @return		RPMRC_OK/RPMRC_NOTFOUND/RPMRC_FAIL
- */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies ts, *msg, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
 /** \ingroup header
  * Retrieve file names from header.
  * The representation of file names in package headers changed in rpm-4.0.
@@ -850,8 +832,50 @@ typedef /*@abstract@*/ struct fsm_s * FSM_t;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 
 /**
- * Return package header from file handle, verifying digests/signatures as
- * available.
+ * Perform simple sanity and range checks on header tag(s).
+ * @param il		no. of tags in header
+ * @param dl		no. of bytes in header data.
+ * @param pev		1st element in tag array, big-endian
+ * @param iv		failing (or last) tag element, host-endian
+ * @param negate	negative offset expected?
+ * @return		-1 on success, otherwise failing tag element index
+ */
+int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+	/*@modifies *iv @*/;
+
+/** 
+ * Check header consistency, performing headerGetEntry() the hard way.
+ *  
+ * Sanity checks on the header are performed while looking for a
+ * header-only digest or signature to verify the blob. If found,
+ * the digest or signature is verified.
+ *
+ * @param ts		transaction set
+ * @param uh		unloaded header blob
+ * @param uc		no. of bytes in blob (or 0 to disable)
+ * @retval *msg		verification error message
+ * @return		RPMRC_OK on success
+ */
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, *msg, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/** 
+ * Return checked and loaded header.
+ * @param ts		transaction set
+ * @param fd		file handle
+ * @retval hdrp		address of header (or NULL)
+ * @retval *msg		verification error message
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
+        /*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+        /*@modifies ts, *msg, rpmGlobalMacroContext,
+                fileSystem, internalState @*/;
+
+/**
+ * Return package header from file handle, verifying digests/signatures.
  * @param ts		transaction set
  * @param fd		file handle
  * @param fn		file name

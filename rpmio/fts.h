@@ -32,7 +32,27 @@
 #ifndef	_FTS_H
 #define	_FTS_H 1
 
+#if defined(__GLIBC__)
 #include <features.h>
+#else
+
+#   define __THROW
+#ifdef  __cplusplus
+# define __BEGIN_DECLS  extern "C" {
+# define __END_DECLS    }
+#else
+# define __BEGIN_DECLS
+# define __END_DECLS
+#endif
+
+#if defined(hpux)
+# define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
+# define	_INCLUDE_POSIX_SOURCE
+# define	_LARGEFILE64_SOURCE
+#endif
+
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>

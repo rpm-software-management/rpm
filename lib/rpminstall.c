@@ -300,6 +300,9 @@ int rpmInstall(rpmts ts,
     ts->goal = TSM_INSTALL;
     rpmcliPackagesTotal = 0;
 
+    if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
+	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
+
     (void) rpmtsSetFlags(ts, ia->transFlags);
     probFilter = ia->probFilter;
     relocations = ia->relocations;
@@ -743,6 +746,9 @@ int rpmErase(rpmts ts,
 	vsflags |= RPMVSF_NOHDRCHK;
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
+    if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
+	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
+
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
@@ -1127,6 +1133,10 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 
 	/* If we've achieved the rollback goal, then we're done. */
 	if (thistid == 0 || thistid < ia->rbtid)
+	    break;
+
+	/* If we've reached the (configured) rollback goal, then we're done. */
+	if (_unsafe_rollbacks && thistid <= _unsafe_rollbacks)
 	    break;
 
 	rpmtsEmpty(ts);

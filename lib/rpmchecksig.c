@@ -606,7 +606,6 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 
     /* Read the header from the package. */
     {	Header h = headerRead(fd, HEADER_MAGIC_YES);
-
 	if (h == NULL) {
 	    rpmError(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
 	    goto exit;

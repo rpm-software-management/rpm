@@ -17,7 +17,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _hdr_debug = 1;
+int _hdr_debug = 0;
 
 /*@-redecl@*/	/* FIX: avoid rpmlib.h, need for debugging. */
 /*@observer@*/ const char *const tagName(int tag)	/*@*/;

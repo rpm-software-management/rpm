@@ -2591,7 +2591,7 @@ msgstr "Installerar %s\n"
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/rpmlead.c:54
+#: lib/rpmlead.c:55
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "läsning misslyckades: %s (%d)\n"
@@ -2822,141 +2822,125 @@ msgstr "Föreslår %s\n"
 msgid "getting list of mounted filesystems\n"
 msgstr "hämtar lista över monterade filsystem\n"
 
-#: lib/signature.c:132
-msgid "file is not regular -- skipping size check\n"
-msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
-
-#: lib/signature.c:150
+#: lib/signature.c:131
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 "Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
 "d)\n"
 
-#: lib/signature.c:155
+#: lib/signature.c:136
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Faktisk storlek: %12d\n"
 
-#: lib/signature.c:177
-msgid "No signature\n"
-msgstr "Ingen signatur\n"
-
-#: lib/signature.c:181
-msgid "Old PGP signature\n"
-msgstr "Gammal PGP-signatur\n"
-
-#: lib/signature.c:192
-msgid "Old (internal-only) signature!  How did you get that!?\n"
-msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?\n"
-
-#: lib/signature.c:249
+#: lib/signature.c:238
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:341 lib/signature.c:455 lib/signature.c:735
-#: lib/signature.c:774
+#: lib/signature.c:330 lib/signature.c:444 lib/signature.c:719
+#: lib/signature.c:758
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: lib/signature.c:357
+#: lib/signature.c:346
 msgid "pgp failed\n"
 msgstr "pgp misslyckades\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:364
+#: lib/signature.c:353
 msgid "pgp failed to write signature\n"
 msgstr "pgp misslyckades att skriva en signatur\n"
 
-#: lib/signature.c:370
+#: lib/signature.c:359
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP signaturstorlek: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:388 lib/signature.c:503
+#: lib/signature.c:377 lib/signature.c:492
 msgid "unable to read the signature\n"
 msgstr "kan inte läsa signaturen\n"
 
-#: lib/signature.c:393
+#: lib/signature.c:382
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGP-signatur\n"
 
-#: lib/signature.c:472
+#: lib/signature.c:461
 msgid "gpg failed\n"
 msgstr "gpg misslyckades\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:479
+#: lib/signature.c:468
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: lib/signature.c:485
+#: lib/signature.c:474
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG-signaturstorlek: %d\n"
 
-#: lib/signature.c:508
+#: lib/signature.c:497
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fick %d byte GPG-signatur\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:779 lib/signature.c:834
+#: lib/signature.c:763 lib/signature.c:818
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Felaktig %%_signature-spec i makrofil\n"
 
-#: lib/signature.c:811
+#: lib/signature.c:795
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:826
+#: lib/signature.c:810
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
 
-#: lib/signature.c:875
+#: lib/signature.c:859
 msgid "Header+Payload size: "
 msgstr "Huvud+laststorlek: "
 
-#: lib/signature.c:915
+#: lib/signature.c:899
 msgid "MD5 digest: "
 msgstr "MD5-summa: "
 
-#: lib/signature.c:971
+#: lib/signature.c:955
 msgid "Header SHA1 digest: "
 msgstr "Huvudets SHA1-summa: "
 
-#: lib/signature.c:1046
+#: lib/signature.c:1030
 msgid "V3 RSA/MD5 signature: "
 msgstr "V3 RSA/MD5-signatur: "
 
-#: lib/signature.c:1163
+#: lib/signature.c:1147
 msgid "Header "
 msgstr "Huvud "
 
-#: lib/signature.c:1164
+#: lib/signature.c:1148
 msgid "V3 DSA signature: "
 msgstr "V3 DSA-signatur: "
 
-#: lib/signature.c:1243
+#: lib/signature.c:1227
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
-#: lib/signature.c:1270
+#: lib/signature.c:1254
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Trasig MD5-summa: STÖDS EJ\n"
 
-#: lib/signature.c:1274
+#: lib/signature.c:1258
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: OKÄND (%d)\n"
@@ -3716,6 +3700,18 @@ msgstr "använd databas i KATALOG"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#~ msgid "file is not regular -- skipping size check\n"
+#~ msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
+
+#~ msgid "No signature\n"
+#~ msgstr "Ingen signatur\n"
+
+#~ msgid "Old PGP signature\n"
+#~ msgstr "Gammal PGP-signatur\n"
+
+#~ msgid "Old (internal-only) signature!  How did you get that!?\n"
+#~ msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?\n"
 
 #~ msgid "%s: running %s scriptlet\n"
 #~ msgstr "%s: kör %s-skript\n"

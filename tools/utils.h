@@ -2,7 +2,6 @@
 #define UTILS_H
 
 #include <stdlib.h>
-#include <stdint.h>
 
 char *strconcat (const char *string1, ...);
 off_t align_up (off_t offset, size_t alignment);
