@@ -628,6 +628,10 @@ int fsmMapAttrs(FSM_t fsm)
 		(fi->fuids ? fi->fuids[i] : fi->uid); /* XXX chmod u-s */
 	gid_t finalGid =
 		(fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
+	dev_t finalRdev =
+		(fi->frdevs ? fi->frdevs[i] : 0);
+	int_32 finalMtime =
+		(fi->fmtimes ? fi->fmtimes[i] : 0);
 
 	if (fsm->mapFlags & CPIO_MAP_MODE)
 	    st->st_mode = (st->st_mode & S_IFMT) | (finalMode & ~S_IFMT);
@@ -636,6 +640,8 @@ int fsmMapAttrs(FSM_t fsm)
 	    if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
 	    && st->st_nlink == 0)
 		st->st_nlink = 1;
+	    st->st_rdev = finalRdev;
+	    st->st_mtime = finalMtime;
 	}
 	if (fsm->mapFlags & CPIO_MAP_UID)
 	    st->st_uid = finalUid;

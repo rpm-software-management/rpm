@@ -51,6 +51,7 @@ struct transactionFileInfo_s {
 /*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
 /* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
     uint_16 * fmodes;		/*!< File mode(s) (from header) */
+    uint_16 * frdevs;		/*!< File rdev(s) (from header) */
 /*@only@*/ /*@null@*/ char * fstates;	/*!< File state(s) (from header) */
 /*@owned@*/ const char ** fuser;	/*!< File owner(s) */
 /*@owned@*/ const char ** fgroup;	/*!< File group(s) */
