@@ -30,7 +30,7 @@ int parseDescription(Spec spec)
     int arg;
     const char **argv = NULL;
     poptContext optCon = NULL;
-    struct spectag *t = NULL;
+    spectag t = NULL;
 
     name = NULL;
     lang = RPMBUILD_DEFAULT_LANG;

@@ -546,11 +546,13 @@ typedef enum rpmTagType_e {
 void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 {
     if (data) {
+	/*@-branchstate@*/
 	if (type < 0 ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)
 		free((void *)data);
+	/*@=branchstate@*/
     }
     return NULL;
 }

@@ -311,7 +311,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     if (specp)
 	*specp = spec;
     else
-	freeSpec(spec);
+	spec = freeSpec(spec);
 
     if (csa != NULL)
 	csa->cpioFdIn = fdi;

@@ -219,7 +219,7 @@ retry:
 	ofi->lineNum++;
 	spec->lineNum = ofi->lineNum;
 	if (spec->sl) {
-	    struct speclines * sl = spec->sl;
+	    speclines sl = spec->sl;
 	    if (sl->sl_nlines == sl->sl_nalloc) {
 		sl->sl_nalloc += 100;
 		sl->sl_lines = (char **) xrealloc(sl->sl_lines, 
@@ -354,8 +354,9 @@ void closeSpec(Spec spec)
 
 extern int noLang;		/* XXX FIXME: pass as arg */
 
+/*@todo Skip parse recursion if os is not compatible. @*/
 int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
-		const char *buildRootURL, int inBuildArch, const char *passPhrase,
+		const char *buildRootURL, int recursing, const char *passPhrase,
 		char *cookie, int anyarch, int force)
 {
     rpmParseState parsePart = PART_PREAMBLE;
@@ -364,7 +365,6 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
     const char *saveArch;
 #endif
     Package pkg;
-    int x, index;
     Spec spec;
     
     /* Set up a new Spec structure with no packages. */
@@ -396,7 +396,7 @@ if (_debug)
 fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootURL, spec->buildRootURL, buildRoot);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
-    spec->inBuildArchitectures = inBuildArch;
+    spec->recursing = recursing;
     spec->anyarch = anyarch;
     spec->force = force;
 
@@ -456,65 +456,72 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	}
 
 	if (parsePart >= PART_LAST) {
-	    freeSpec(spec);
+	    spec = freeSpec(spec);
 	    return parsePart;
 	}
 
 	if (parsePart == PART_BUILDARCHITECTURES) {
-	    spec->buildArchitectureSpecs =
-		xmalloc(sizeof(Spec) * spec->buildArchitectureCount);
+	    int index;
+	    int x;
+
+	    closeSpec(spec);
+
+	    spec->BASpecs = xmalloc(spec->BACount * sizeof(Spec));
 	    index = 0;
-	    if (spec->buildArchitectures != NULL)
-	    for (x = 0; x < spec->buildArchitectureCount; x++) {
-		if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH,
-				    spec->buildArchitectures[x])) {
+	    if (spec->BANames != NULL)
+	    for (x = 0; x < spec->BACount; x++) {
+
+		/* Skip if not arch is not compatible. */
+		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
+		    continue;
 #ifdef	DYING
-		    rpmGetMachine(&saveArch, NULL);
-		    saveArch = xstrdup(saveArch);
-		    rpmSetMachine(spec->buildArchitectures[x], NULL);
+		rpmGetMachine(&saveArch, NULL);
+		saveArch = xstrdup(saveArch);
+		rpmSetMachine(spec->BANames[x], NULL);
 #else
-		    addMacro(NULL, "_target_cpu", NULL, spec->buildArchitectures[x], RMIL_RPMRC);
+		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 #endif
-		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
+		if (parseSpec(&(spec->BASpecs[index]),
 				  specFile, spec->rootURL, buildRootURL, 1,
-				  passPhrase, cookie, anyarch, force)) {
-			spec->buildArchitectureCount = index;
-			freeSpec(spec);
+				  passPhrase, cookie, anyarch, force))
+		{
+			spec->BACount = index;
+			spec = freeSpec(spec);
 			return RPMERR_BADSPEC;
-		    }
-#ifdef	DYING
-		    rpmSetMachine(saveArch, NULL);
-		    saveArch = _free(saveArch);
-#else
-		    delMacro(NULL, "_target_cpu");
-#endif
-		    index++;
 		}
+#ifdef	DYING
+		rpmSetMachine(saveArch, NULL);
+		saveArch = _free(saveArch);
+#else
+		delMacro(NULL, "_target_cpu");
+#endif
+		index++;
 	    }
-	    spec->buildArchitectureCount = index;
+
+	    spec->BACount = index;
 	    if (! index) {
-		freeSpec(spec);
-		rpmError(RPMERR_BADSPEC, _("No buildable architectures\n"));
+		spec = freeSpec(spec);
+		rpmError(RPMERR_BADSPEC,
+			_("No compatible architectures found for build\n"));
 		return RPMERR_BADSPEC;
 	    }
 
-	    /* XXX HACK: Swap sl/st with child.
+	    /*
+	     * Return the 1st child's fully parsed Spec structure.
 	     * The restart of the parse when encountering BuildArch
-	     * causes problems for "rpm -q --specfile --specedit"
-	     * which needs to keep track of the entire spec file.
+	     * causes problems for "rpm -q --specfile". This is
+	     * still a hack because there may be more than 1 arch
+	     * specified (unlikely but possible.) There's also the
+	     * further problem that the macro context, particularly
+	     * %{_target_cpu}, disagrees with the info in the header.
 	     */
-
-	    if (spec->sl && spec->st) {
-		Spec nspec = *spec->buildArchitectureSpecs;
-		struct speclines *sl = spec->sl;
-		struct spectags *st = spec->st;
-		spec->sl = nspec->sl;
-		spec->st = nspec->st;
-		nspec->sl = sl;
-		nspec->st = st;
+	    if (spec->BACount >= 1) {
+		Spec nspec = spec->BASpecs[0];
+		spec->BASpecs = _free(spec->BASpecs);
+		spec = freeSpec(spec);
+		spec = nspec;
 	    }
 
-	    closeSpec(spec);
 	    *specp = spec;
 	    return 0;
 	}
@@ -551,7 +558,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    (void) headerNVR(pkg->header, &name, NULL, NULL);
 	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s\n"),
 			name);
-	    freeSpec(spec);
+	    spec = freeSpec(spec);
 	    return RPMERR_BADSPEC;
 	}
 

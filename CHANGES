@@ -41,6 +41,8 @@
 	- more boring lclint annotations and fiddles.
 	- yet more boring lclint annotations and fiddles.
 	- still more boring lclint annotations and fiddles.
+	- enough lclint annotations and fiddles already.
+	- fix: specfile queries with BuildArch: (#27589).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

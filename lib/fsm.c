@@ -1126,7 +1126,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     struct stat * ost = &fsm->osb;
     int saveerrno = errno;
     int rc = fsm->rc;
-    int left;
+    size_t left;
     int i;
 
 #define	_fafilter(_a)	\

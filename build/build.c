@@ -250,13 +250,13 @@ int buildSpec(Spec spec, int what, int test)
 {
     int rc = 0;
 
-    if (!spec->inBuildArchitectures && spec->buildArchitectureCount) {
+    if (!spec->recursing && spec->BACount) {
 	int x;
-	/* When iterating over buildArchitectures, do the source    */
+	/* When iterating over BANames, do the source    */
 	/* packaging on the first run, and skip RMSOURCE altogether */
-	if (spec->buildArchitectureSpecs != NULL)
-	for (x = 0; x < spec->buildArchitectureCount; x++) {
-	    if ((rc = buildSpec(spec->buildArchitectureSpecs[x],
+	if (spec->BASpecs != NULL)
+	for (x = 0; x < spec->BACount; x++) {
+	    if ((rc = buildSpec(spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {

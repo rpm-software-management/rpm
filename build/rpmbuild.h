@@ -325,16 +325,18 @@ int lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
 
 /** \ingroup rpmbuild
  * Destroy all packages associated with spec file.
- * @param spec		spec file control structure
+ * @param packages	package control structure chain
+ * @return		NULL
  */
-void freePackages(Spec spec)
-	/*@modifies spec->packages @*/;
+/*@null@*/ Package freePackages(/*@only@*/ /*@null@*/ Package packages)
+	/*@modifies packages @*/;
 
 /** \ingroup rpmbuild
  * Destroy package control structure.
  * @param pkg		package control structure
+ * @return		NULL
  */
-void freePackage(/*@only@*/ Package pkg)
+/*@null@*/ Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
 	/*@modifies pkg @*/;
 
 /** \ingroup rpmbuild
@@ -380,7 +382,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
  */
 void initSourceHeader(Spec spec)
 	/*@modifies spec->sourceHeader,
-		spec->buildRestrictions, spec->buildArchitectures,
+		spec->buildRestrictions, spec->BANames,
 		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
@@ -390,7 +392,7 @@ void initSourceHeader(Spec spec)
  */
 int processSourceFiles(Spec spec)
 	/*@modifies spec->sourceHeader, spec->sourceCpioList,
-		spec->buildRestrictions, spec->buildArchitectures,
+		spec->buildRestrictions, spec->BANames,
 		spec->packages->header @*/;
 
 /* global entry points */
@@ -401,7 +403,7 @@ int processSourceFiles(Spec spec)
  * @param specFile
  * @param rootdir
  * @param buildRoot
- * @param inBuildArch
+ * @param recursing	parse is recursive?
  * @param passPhrase
  * @param cookie
  * @param anyarch
@@ -411,7 +413,7 @@ int processSourceFiles(Spec spec)
 int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
 		/*@null@*/ const char * rootdir,
 		/*@null@*/ const char * buildRoot,
-		int inBuildArch,
+		int recursing,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
 		int anyarch, int force)
@@ -422,7 +424,7 @@ int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
  * @param specFile
  * @param rootdir
  * @param buildRoot
- * @param inBuildArch
+ * @param recursing	parse is recursive?
  * @param passPhrase
  * @param cookie
  * @param anyarch
@@ -432,7 +434,7 @@ int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
 extern int (*parseSpecVec) (Spec * specp, const char * specFile,
 		const char * rootdir,
 		/*@null@*/ const char * buildRoot,
-		int inBuildArch,
+		int recursing,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
 		int anyarch, int force)
@@ -448,8 +450,8 @@ extern int (*parseSpecVec) (Spec * specp, const char * specFile,
 int buildSpec(Spec spec, int what, int test)
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->macros,
-		spec->buildArchitectureSpecs,
-		spec->buildRestrictions, spec->buildArchitectures,
+		spec->BASpecs,
+		spec->buildRestrictions, spec->BANames,
 		spec->packages->cpioList, spec->packages->specialDoc,
 		spec->packages->header @*/;
 

@@ -365,8 +365,8 @@ static void
 printNewSpecfile(Spec spec)
 {
     Header h = spec->packages->header;
-    struct speclines *sl = spec->sl;
-    struct spectags *st = spec->st;
+    speclines sl = spec->sl;
+    spectags st = spec->st;
     const char * msgstr = NULL;
     int i, j;
 
@@ -374,7 +374,7 @@ printNewSpecfile(Spec spec)
 	return;
 
     for (i = 0; i < st->st_ntags; i++) {
-	struct spectag * t = st->st_t + i;
+	spectag t = st->st_t + i;
 	const char * tn = tagName(t->t_tag);
 	const char * errstr;
 	char fmt[128];
@@ -471,12 +471,12 @@ int showMatches(QVA_t qva, rpmdbMatchIterator mi, QVF_t showPackage)
  * @todo Eliminate linkage loop into librpmbuild.a
  */
 int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
-		const char *buildRoot, int inBuildArch, const char *passPhrase,
+		const char *buildRoot, int recursing, const char *passPhrase,
 		char *cookie, int anyarch, int force) = NULL;
 /**
  * @todo Eliminate linkage loop into librpmbuild.a
  */
-void	(*freeSpecVec) (Spec spec) = NULL;
+/*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
 
 int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
 	rpmdb rpmdb, QVF_t showPackage)
@@ -584,34 +584,33 @@ restart:
       { Spec spec = NULL;
 	Package pkg;
 	char * buildRoot = NULL;
-	int inBuildArch = 0;
+	int recursing = 0;
 	char * passPhrase = "";
 	char *cookie = NULL;
 	int anyarch = 1;
 	int force = 1;
 
-	rc = parseSpecVec(&spec, arg, "/", buildRoot, inBuildArch, passPhrase,
+	rc = parseSpecVec(&spec, arg, "/", buildRoot, recursing, passPhrase,
 		cookie, anyarch, force);
 	if (rc || spec == NULL) {
 	    
 	    rpmError(RPMERR_QUERY,
 	    		_("query of specfile %s failed, can't parse\n"), arg);
-	    if (spec != NULL) freeSpecVec(spec);
+	    spec = freeSpecVec(spec);
 	    retcode = 1;
 	    break;
 	}
 
 	if (specedit) {
 	    printNewSpecfile(spec);
-	    freeSpecVec(spec);
+	    spec = freeSpecVec(spec);
 	    retcode = 0;
 	    break;
 	}
 
-	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
 	    (void) showPackage(qva, NULL, pkg->header);
-	}
-	freeSpecVec(spec);
+	spec = freeSpecVec(spec);
       }	break;
 
     case RPMQV_ALL:

@@ -169,7 +169,8 @@ static void dupAttrRec(const AttrRec oar, /*@in@*/ /*@out@*/ AttrRec nar)
 #if 0
 /**
  */
-static void dumpAttrRec(const char *msg, AttrRec ar)	/*@*/
+static void dumpAttrRec(const char * msg, AttrRec ar)
+	/*@modifies fileSystem @*/
 {
     if (msg)
 	fprintf(stderr, "%s:\t", msg);
@@ -1835,10 +1836,10 @@ void initSourceHeader(Spec spec)
     }
     headerFreeIterator(hi);
 
-    if (spec->buildArchitectures && spec->buildArchitectureCount > 0) {
+    if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		       RPM_STRING_ARRAY_TYPE,
-		       spec->buildArchitectures, spec->buildArchitectureCount);
+		       spec->BANames, spec->BACount);
     }
 }
 

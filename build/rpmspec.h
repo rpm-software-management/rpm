@@ -59,29 +59,29 @@ typedef struct OpenFileInfo {
 
 /** \ingroup rpmbuild
  */
-struct spectag {
+typedef struct spectag_s {
     int t_tag;
     int t_startx;
     int t_nlines;
 /*@only@*/ const char * t_lang;
 /*@only@*/ const char * t_msgid;
-};
+} * spectag;
 
 /** \ingroup rpmbuild
  */
-struct spectags {
-/*@owned@*/ struct spectag *st_t;
+typedef struct spectags_s {
+/*@owned@*/ spectag st_t;
     int st_nalloc;
     int st_ntags;
-};
+} * spectags;
 
 /** \ingroup rpmbuild
  */
-struct speclines {
+typedef struct speclines_s {
 /*@only@*/ char **sl_lines;
     int sl_nalloc;
     int sl_nlines;
-};
+} * speclines;
 
 /** \ingroup rpmbuild
  * The structure used to store values parsed from a spec file.
@@ -93,8 +93,8 @@ struct SpecStruct {
 /*@only@*/ const char * buildSubdir;
 /*@only@*/ const char * rootURL;
 
-/*@owned@*/ /*@null@*/ struct speclines * sl;
-/*@owned@*/ /*@null@*/ struct spectags * st;
+/*@owned@*/ /*@null@*/ speclines sl;
+/*@owned@*/ /*@null@*/ spectags st;
 
 /*@owned@*/ struct OpenFileInfo * fileStack;
     char lbuf[4*BUFSIZ];
@@ -106,10 +106,10 @@ struct SpecStruct {
 /*@owned@*/ struct ReadLevelEntry * readStack;
 
 /*@refcounted@*/ Header buildRestrictions;
-/*@owned@*/ /*@null@*/ struct SpecStruct ** buildArchitectureSpecs;
-/*@only@*/ /*@null@*/ const char ** buildArchitectures;
-    int buildArchitectureCount;
-    int inBuildArchitectures;
+/*@owned@*/ /*@null@*/ struct SpecStruct ** BASpecs;
+/*@only@*/ /*@null@*/ const char ** BANames;
+    int BACount;
+    int recursing;			/*!< parse is recursive? */
 
     int force;
     int anyarch;
@@ -176,20 +176,23 @@ extern "C" {
 
 /** \ingroup rpmbuild
  * Create and initialize Spec structure.
+ * @return spec		spec file control structure
  */
 /*@only@*/ Spec newSpec(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * Destroy Spec structure.
  * @param spec		spec file control structure
+ * @return		NULL always
  */
-void freeSpec(/*@only@*/ Spec spec)
+/*@null@*/ Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
 	/*@modifies spec @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
+ * @return		NULL always
  */
-extern void (*freeSpecVec) (Spec spec)	/* XXX FIXME */
+extern /*@null@*/ Spec (*freeSpecVec) (Spec spec)	/* XXX FIXME */
 	/*@modifies spec @*/;
 
 /** \ingroup rpmbuild
@@ -199,7 +202,7 @@ struct OpenFileInfo * newOpenFileInfo(void)	/*@*/;
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
  */
-struct spectag * stashSt(Spec spec, Header h, int tag, const char * lang)
+spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	/*@modifies spec->st @*/;
 
 /** \ingroup rpmbuild

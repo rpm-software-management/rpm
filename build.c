@@ -279,8 +279,7 @@ static int buildForTarget(const char * arg, BTA_t ba,
     rc = 0;
 
 exit:
-    if (spec)
-	freeSpec(spec);
+    spec = freeSpec(spec);
     buildRootURL = _free(buildRootURL);
     return rc;
 }

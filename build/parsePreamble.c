@@ -370,14 +370,13 @@ exit:
     return rc;
 }
 
-struct spectag *
-stashSt(Spec spec, Header h, int tag, const char *lang)
+spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    struct spectag *t = NULL;
+    spectag t = NULL;
 
     if (spec->st) {
-	struct spectags *st = spec->st;
+	spectags st = spec->st;
 	if (st->st_ntags == st->st_nalloc) {
 	    st->st_nalloc += 10;
 	    st->st_t = xrealloc(st->st_t, st->st_nalloc * sizeof(*(st->st_t)));
@@ -638,15 +637,15 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	break;
       case RPMTAG_BUILDARCHS:
 	if ((rc = poptParseArgvString(field,
-				      &(spec->buildArchitectureCount),
-				      &(spec->buildArchitectures)))) {
+				      &(spec->BACount),
+				      &(spec->BANames)))) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Bad BuildArchitecture format: %s\n"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	if (!spec->buildArchitectureCount)
-	    spec->buildArchitectures = _free(spec->buildArchitectures);
+	if (!spec->BACount)
+	    spec->BANames = _free(spec->BANames);
 	break;
 
       default:
@@ -839,7 +838,7 @@ int parsePreamble(Spec spec, int initialPackage)
 		}
 		if (handlePreambleTag(spec, pkg, tag, macro, lang))
 		    return RPMERR_BADSPEC;
-		if (spec->buildArchitectures && !spec->inBuildArchitectures)
+		if (spec->BANames && !spec->recursing)
 		    return PART_BUILDARCHITECTURES;
 	    }
 	    if ((rc =
