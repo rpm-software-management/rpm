@@ -15,16 +15,20 @@ typedef /*@abstract@*/ struct cpioHeader * FSM_t;
 
 /**
  */
-#define	FSM_INTERNAL	0x8000
-#define	FSM_QUIET	0x4000
+#define	FSM_VERBOSE	0x8000
+#define	FSM_INTERNAL	0x4000
+#define	FSM_SYSCALL	0x2000
+#define	FSM_DEAD	0x1000
+#define	_fv(_a)		((_a) | FSM_VERBOSE)
 #define	_fi(_a)		((_a) | FSM_INTERNAL)
-#define	_fq(_a)		((_a) | FSM_QUIET)
+#define	_fs(_a)		((_a) | (FSM_INTERNAL | FSM_SYSCALL))
+#define	_fd(_a)		((_a) | (FSM_INTERNAL | FSM_DEAD))
 typedef enum fileStage_e {
     FSM_UNKNOWN =   0,
-    FSM_INIT	=  _fq(1),
-    FSM_PRE	=  _fq(2),
-    FSM_PROCESS	=  _fq(3),
-    FSM_POST	=  _fq(4),
+    FSM_INIT	=  _fv(1),
+    FSM_PRE	=  _fv(2),
+    FSM_PROCESS	=  _fv(3),
+    FSM_POST	=  _fv(4),
     FSM_UNDO	=  5,
     FSM_COMMIT	=  6,
 
@@ -37,31 +41,42 @@ typedef enum fileStage_e {
     FSM_MKDIRS	=  _fi(19),
     FSM_RMDIRS	=  _fi(20),
     FSM_MKLINKS	=  _fi(21),
-    FSM_NOTIFY	=  _fi(22),
+    FSM_NOTIFY	=  _fd(22),
     FSM_DESTROY	=  _fi(23),
-    FSM_VERIFY	=  _fi(24),
-    FSM_FINALIZE=  _fi(25),
+    FSM_VERIFY	=  _fd(24),
+    FSM_FINALIZE=  _fd(25),
 
-    FSM_UNLINK	=  _fi(33),
-    FSM_RENAME	=  _fi(34),
-    FSM_MKDIR	=  _fi(35),
-    FSM_RMDIR	=  _fi(36),
-    FSM_CHOWN	=  _fi(37),
-    FSM_LCHOWN	=  _fi(38),
-    FSM_CHMOD	=  _fi(39),
-    FSM_UTIME	=  _fi(40),
-    FSM_SYMLINK	=  _fi(41),
-    FSM_LINK	=  _fi(42),
-    FSM_MKFIFO	=  _fi(43),
-    FSM_MKNOD	=  _fi(44),
-    FSM_LSTAT	=  _fi(45),
-    FSM_STAT	=  _fi(46),
-    FSM_CHROOT	=  _fi(47),
+    FSM_UNLINK	=  _fs(33),
+    FSM_RENAME	=  _fs(34),
+    FSM_MKDIR	=  _fs(35),
+    FSM_RMDIR	=  _fs(36),
+    FSM_CHOWN	=  _fs(37),
+    FSM_LCHOWN	=  _fs(38),
+    FSM_CHMOD	=  _fs(39),
+    FSM_UTIME	=  _fs(40),
+    FSM_SYMLINK	=  _fs(41),
+    FSM_LINK	=  _fs(42),
+    FSM_MKFIFO	=  _fs(43),
+    FSM_MKNOD	=  _fs(44),
+    FSM_LSTAT	=  _fs(45),
+    FSM_STAT	=  _fs(46),
+    FSM_CHROOT	=  _fs(47),
 
-    FSM_NEXT	=  _fi(65),
+    FSM_NEXT	=  _fd(65),
     FSM_EAT	=  _fi(66),
-    FSM_POS	=  _fi(67),
-    FSM_PAD	=  _fi(68),
+    FSM_POS	=  _fd(67),
+    FSM_PAD	=  _fd(68),
+    FSM_HREAD	=  _fd(69),
+    FSM_HWRITE	=  _fd(70),
+    FSM_DREAD	=  _fs(71),
+    FSM_DWRITE	=  _fs(72),
+
+    FSM_ROPEN	=  _fs(129),
+    FSM_READ	=  _fs(130),
+    FSM_RCLOSE	=  _fs(131),
+    FSM_WOPEN	=  _fs(132),
+    FSM_WRITE	=  _fs(133),
+    FSM_WCLOSE	=  _fs(134),
 } fileStage;
 #undef	_fi
 
@@ -261,9 +276,9 @@ int fsmTeardown(FSM_t fsm);
 int fsmGetIndex(FSM_t fsm);
 
 /**
+ * @return		0 always
  */
-fileAction fsmAction(FSM_t fsm,
-	/*@out@*/ const char ** osuffix, /*@out@*/ const char ** suffix);
+int fsmMap(FSM_t fsm);
 
 /**
  * Archive extraction state machine.

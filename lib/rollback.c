@@ -203,6 +203,18 @@ void freeFi(TFI_t fi)
     case FSM_EAT:	return "eat";
     case FSM_POS:	return "pos";
     case FSM_PAD:	return "pad";
+    case FSM_HREAD:	return "hread";
+    case FSM_HWRITE:	return "hwrite";
+    case FSM_DREAD:	return "Fread";
+    case FSM_DWRITE:	return "Fwrite";
+
+    case FSM_ROPEN:	return "Fopen";
+    case FSM_READ:	return "Fread";
+    case FSM_RCLOSE:	return "Fclose";
+    case FSM_WOPEN:	return "Fopen";
+    case FSM_WRITE:	return "Fwrite";
+    case FSM_WCLOSE:	return "Fclose";
+
     default:		return "???";
     }
     /*@noteached@*/
