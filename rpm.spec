@@ -656,4 +656,7 @@ fi
 - retrieve pubkey(s) from rpmdb, not from detached signature file.
 - reapply Berkeley DB patch #4491.
 - add header DSA signature.
-- add header RSA signature (untested).
+- add header RSA signature (untested, disabled for now).
+- don't bother with signing check if 16 bits of hash don't match.
+- only V3 signatures for now.
+- wire --nodigest/--nosignature options to checksig/query/verify modes.

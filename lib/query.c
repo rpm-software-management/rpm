@@ -157,8 +157,6 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     char * t, * te;
-    rpmQueryFlags queryFlags = qva->qva_flags;
-    const char * queryFormat = qva->qva_queryFormat;
     rpmTagType type;
     int_32 count;
     char * prefix = NULL;
@@ -185,7 +183,8 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
     te = t = xmalloc(BUFSIZ);
     *te = '\0';
 
-    if (queryFormat == NULL && queryFlags == QUERY_FOR_DEFAULT) {
+    if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL)
+    {
 	const char * name, * version, * release;
 	(void) headerNVR(h, &name, &version, &release);
 	te = stpcpy(te, name);
@@ -194,8 +193,8 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 	goto exit;
     }
 
-    if (queryFormat) {
-	const char * str = queryHeader(h, queryFormat);
+    if (qva->qva_queryFormat != NULL) {
+	const char * str = queryHeader(h, qva->qva_queryFormat);
 	nonewline = 1;
 	/*@-branchstate@*/
 	if (str) {
@@ -214,7 +213,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 	/*@=branchstate@*/
     }
 
-    if (!(queryFlags & QUERY_FOR_LIST))
+    if (!(qva->qva_flags & QUERY_FOR_LIST))
 	goto exit;
 
     if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count)) {
@@ -255,12 +254,12 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
     for (i = 0; i < count; i++) {
 
 	/* If querying only docs, skip non-doc files. */
-	if ((queryFlags & QUERY_FOR_DOCS)
+	if ((qva->qva_flags & QUERY_FOR_DOCS)
 	  && !(fileFlagsList[i] & RPMFILE_DOC))
 	    continue;
 
 	/* If querying only configs, skip non-config files. */
-	if ((queryFlags & QUERY_FOR_CONFIG)
+	if ((qva->qva_flags & QUERY_FOR_CONFIG)
 	  && !(fileFlagsList[i] & RPMFILE_CONFIG))
 	    continue;
 
@@ -274,7 +273,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 	    te = stpcpy(te, prefix);
 	/*@=internalglobs@*/
 
-	if (queryFlags & QUERY_FOR_STATE) {
+	if (qva->qva_flags & QUERY_FOR_STATE) {
 	    if (fileStatesList) {
 		rpmfileState fstate = fileStatesList[i];
 		switch (fstate) {
@@ -300,7 +299,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 	    }
 	}
 
-	if (queryFlags & QUERY_FOR_DUMPFILES) {
+	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
 	    sprintf(te, "%s%s %d %d %s 0%o ", 
 				   dirNames[dirIndexes[i]], baseNames[i],
 				   fileSizeList[i], fileMTimeList[i],
@@ -984,6 +983,9 @@ int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 	    return 1;	/* XXX W2DO? */
 	break;
     }
+
+    ts->nodigests = (qva->qva_flags & VERIFY_DIGEST);
+    ts->nosignatures = (qva->qva_flags & VERIFY_SIGNATURE);
 
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */

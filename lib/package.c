@@ -23,6 +23,9 @@
 /*@access rpmTransactionSet@*/
 /*@access Header@*/		/* XXX compared with NULL */
 
+/*@unchecked@*/
+static int _print_pkts = 0;
+
 void headerMergeLegacySigs(Header h, const Header sig)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
@@ -281,25 +284,45 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
     }
 
     /* Figger the most effective available signature. */
-    if (headerIsEntry(sig, RPMSIGTAG_DSA))
-	ts->sigtag = RPMSIGTAG_DSA;
-    if (headerIsEntry(sig, RPMSIGTAG_RSA))
-	ts->sigtag = RPMSIGTAG_RSA;
-    else if (!ts->verify_legacy)	/* leave fd ready to install payload */
-	ts->sigtag = (headerIsEntry(sig, RPMSIGTAG_SHA1)) ? RPMSIGTAG_SHA1 : 0;
-    else if (headerIsEntry(sig, RPMSIGTAG_GPG)) {
-	ts->sigtag = RPMSIGTAG_GPG;
-	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    } else if (headerIsEntry(sig, RPMSIGTAG_PGP)) {
-	ts->sigtag = RPMSIGTAG_PGP;
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-    } else if (headerIsEntry(sig, RPMSIGTAG_SHA1)) {
-	ts->sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
-    } else if (headerIsEntry(sig, RPMSIGTAG_MD5)) {
-	ts->sigtag = RPMSIGTAG_MD5;
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-    } else
-	ts->sigtag = 0;			/* XXX never happens */
+    ts->sigtag = 0;
+    if (ts->verify_legacy) {
+	if (ts->sigtag == 0 && !ts->nosignatures) {
+	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
+		ts->sigtag = RPMSIGTAG_DSA;
+	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
+		ts->sigtag = RPMSIGTAG_RSA;
+	    else if (headerIsEntry(sig, RPMSIGTAG_GPG)) {
+		ts->sigtag = RPMSIGTAG_GPG;
+		fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+	    } else if (headerIsEntry(sig, RPMSIGTAG_PGP)) {
+		ts->sigtag = RPMSIGTAG_PGP;
+		fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+	    }
+	}
+	if (ts->sigtag == 0 && !ts->nodigests) {
+	    if (headerIsEntry(sig, RPMSIGTAG_SHA1))
+		ts->sigtag = RPMSIGTAG_SHA1;
+	    else if (headerIsEntry(sig, RPMSIGTAG_MD5)) {
+		ts->sigtag = RPMSIGTAG_MD5;
+		fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+	    }
+	}
+    } else {
+	if (ts->sigtag == 0 && !ts->nosignatures) {
+	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
+		ts->sigtag = RPMSIGTAG_DSA;
+	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
+		ts->sigtag = RPMSIGTAG_RSA;
+	}
+	if (ts->sigtag == 0 && !ts->nodigests) {
+	    if (headerIsEntry(sig, RPMSIGTAG_SHA1))
+		ts->sigtag = RPMSIGTAG_SHA1;
+	}
+    }
+
+#if 0
+fprintf(stderr, "*** RPF: legacy %d nodigests %d nosignatures %d sigtag %d\n", ts->verify_legacy, ts->nodigests, ts->nosignatures, ts->sigtag);
+#endif
 
     /* Read the metadata, computing digest(s) on the fly. */
     hmagic = ((l->major >= 3) ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
@@ -335,8 +358,8 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
     switch (ts->sigtag) {
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
-	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+			(_print_pkts & rpmIsDebug()));
 	/* XXX only V3 signatures for now. */
 	if (ts->dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
@@ -345,7 +368,6 @@ rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
 	    rc = RPMRC_OK;
 	    goto exit;
 	}
-	/*@fallthrough@*/
     {	void * uh = NULL;
 	int_32 uht;
 	int_32 uhc;
@@ -363,8 +385,8 @@ rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));
-	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+			(_print_pkts & rpmIsDebug()));
 	/* XXX only V3 signatures for now. */
 	if (ts->dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
@@ -394,8 +416,8 @@ rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-rpmMessage(RPMMESS_DEBUG, _("========== Package DSA/RSA signature\n"));
-	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+			(_print_pkts & rpmIsDebug()));
 
 	/* XXX only V3 signatures for now. */
 	if (ts->dig->signature.version != 3) {

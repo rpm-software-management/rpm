@@ -21,6 +21,9 @@
 /*@access FD_t @*/
 /*@access pgpDig @*/
 
+/*@unchecked@*/
+static int _print_pkts = 0;
+
 /**
  */
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
@@ -224,6 +227,8 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 
 	/* Reallocate the signature into one contiguous region. */
 	sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
+	if (sig == NULL)	/* XXX can't happen */
+	    goto exit;
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
@@ -443,7 +448,7 @@ static unsigned char header_magic[8] = {
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static int readFile(FD_t fd, int_32 sigtag, const char * fn, pgpDig dig)
+static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *dig,
 		fileSystem, internalState @*/
@@ -534,6 +539,8 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
     int res = 0;
     int xx;
     rpmRC rc;
+    int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
+    int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
     {
 	memset(l, 0, sizeof(*l));
@@ -565,20 +572,23 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	}
 
 	/* Grab a hint of what needs doing to avoid duplication. */
-	if (headerIsEntry(sig, RPMSIGTAG_DSA))
-	    sigtag = RPMSIGTAG_DSA;
-	else if (headerIsEntry(sig, RPMSIGTAG_RSA))
-	    sigtag = RPMSIGTAG_RSA;
-	else if (headerIsEntry(sig, RPMSIGTAG_GPG))
-	    sigtag = RPMSIGTAG_GPG;
-	else if (headerIsEntry(sig, RPMSIGTAG_PGP))
-	    sigtag = RPMSIGTAG_PGP;
-	else if (headerIsEntry(sig, RPMSIGTAG_MD5))
-	    sigtag = RPMSIGTAG_MD5;
-	else if (headerIsEntry(sig, RPMSIGTAG_SHA1))
-	    sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
-	else
-	    sigtag = 0;			/* XXX never happens */
+	sigtag = 0;
+	if (sigtag == 0 && !nosignatures) {
+	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
+		sigtag = RPMSIGTAG_DSA;
+	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
+		sigtag = RPMSIGTAG_RSA;
+	    else if (headerIsEntry(sig, RPMSIGTAG_GPG))
+		sigtag = RPMSIGTAG_GPG;
+	    else if (headerIsEntry(sig, RPMSIGTAG_PGP))
+		sigtag = RPMSIGTAG_PGP;
+	}
+	if (sigtag == 0 && !nodigests) {
+	    if (headerIsEntry(sig, RPMSIGTAG_MD5))
+		sigtag = RPMSIGTAG_MD5;
+	    else if (headerIsEntry(sig, RPMSIGTAG_SHA1))
+		sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
+	}
 
 	if (headerIsEntry(sig, RPMSIGTAG_PGP)
 	||  headerIsEntry(sig, RPMSIGTAG_PGP5)
@@ -591,7 +601,7 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 
 	/* Read the file, generating digest(s) on the fly. */
 	/*@-mods@*/ /* FIX: double indirection */
-	if (readFile(fd, sigtag, fn, ts->dig)) {
+	if (readFile(fd, fn, ts->dig)) {
 	    res++;
 	    goto bottom;
 	}
@@ -621,9 +631,10 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	    case RPMSIGTAG_GPG:
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
-		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
+		if (nosignatures)
 		     continue;
-		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+			(_print_pkts & rpmIsDebug()));
 
 		/* XXX only V3 signatures for now. */
 		if (ts->dig->signature.version != 3) {
@@ -634,22 +645,22 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 		}
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_SHA1:
-		if (!(qva->qva_flags & VERIFY_DIGEST)) 
+		if (nodigests)
 		     continue;
 		/* XXX Don't bother with header sha1 if header dsa. */
-		if (sigtag == RPMSIGTAG_DSA)
+		if (!nosignatures && sigtag == RPMSIGTAG_DSA)
 		    continue;
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
-		if (!(qva->qva_flags & VERIFY_DIGEST)) 
+		if (nodigests)
 		     continue;
 		/*
 		 * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
 		 * than the -- now unsupported -- legacy md5 breakage.
 		 */
-		if (sigtag == RPMSIGTAG_PGP)
+		if (!nosignatures && sigtag == RPMSIGTAG_PGP)
 		    continue;
 		/*@switchbreak@*/ break;
 	    default:
@@ -670,6 +681,10 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 			b = stpcpy(b, "SIZE ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
+		    case RPMSIGTAG_SHA1:
+			b = stpcpy(b, "SHA1 ");
+			res2 = 1;
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_LEMD5_2:
 		    case RPMSIGTAG_LEMD5_1:
 		    case RPMSIGTAG_MD5:
@@ -677,6 +692,9 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 			res2 = 1;
 			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_RSA:
+			b = stpcpy(b, "RSA ");
+			res2 = 1;
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			switch (res3) {
@@ -685,7 +703,7 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 			    /*@fallthrough@*/
 			case RPMSIG_NOTTRUSTED:
 			{   int offset = 6;
-			    b = stpcpy(b, "(PGP) ");
+			    b = stpcpy(b, "(MD5) (PGP) ");
 			    tempKey = strstr(result, "ey ID");
 			    if (tempKey == NULL) {
 			        tempKey = strstr(result, "keyid:");
@@ -702,12 +720,15 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 			    }
 			}   /*@innerbreak@*/ break;
 			default:
-			    b = stpcpy(b, "PGP ");
+			    b = stpcpy(b, "MD5 PGP ");
 			    res2 = 1;
 			    /*@innerbreak@*/ break;
 			}
 			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_DSA:
+			b = stpcpy(b, "(SHA1) DSA ");
+			res2 = 1;
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_GPG:
 			/* Do not consider this a failure */
 			switch (res3) {
@@ -740,17 +761,24 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "size ");
 			/*@switchbreak@*/ break;
+		    case RPMSIGTAG_SHA1:
+			b = stpcpy(b, "sha1 ");
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_LEMD5_2:
 		    case RPMSIGTAG_LEMD5_1:
 		    case RPMSIGTAG_MD5:
 			b = stpcpy(b, "md5 ");
 			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_RSA:
+			b = stpcpy(b, "rsa ");
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
-			b = stpcpy(b, "pgp ");
+			b = stpcpy(b, "(md5) pgp ");
 			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_DSA:
+			b = stpcpy(b, "(sha1) dsa ");
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_GPG:
 			b = stpcpy(b, "gpg ");
 			/*@switchbreak@*/ break;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-07 17:53-0500\n"
+"POT-Creation-Date: 2002-03-08 17:22-0500\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1615,61 +1615,46 @@ msgstr "%s skapades som %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "fel när tämporärfil %s skapades\n"
 
-#: lib/package.c:181 lib/package.c:257
+#: lib/package.c:184 lib/package.c:260
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "paket med versionsnummer 1 stöds inte av denna version av RPM\n"
 
-#: lib/package.c:202 lib/package.c:265
+#: lib/package.c:205 lib/package.c:268
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM\n"
 
-#: lib/package.c:243 lib/rpmchecksig.c:161 lib/rpmchecksig.c:541
+#: lib/package.c:246 lib/rpmchecksig.c:164 lib/rpmchecksig.c:548
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead misslyckades\n"
 
-#: lib/package.c:249
+#: lib/package.c:252
 #, fuzzy, c-format
 msgid "%s: bad magic\n"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/package.c:274 lib/rpmchecksig.c:179 lib/rpmchecksig.c:557
+#: lib/package.c:277 lib/rpmchecksig.c:182 lib/rpmchecksig.c:564
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature misslyckades\n"
 
-#: lib/package.c:278 lib/rpmchecksig.c:183 lib/rpmchecksig.c:562
+#: lib/package.c:281 lib/rpmchecksig.c:186 lib/rpmchecksig.c:569
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
 
-#: lib/package.c:308 lib/rpmchecksig.c:462
+#: lib/package.c:331 lib/rpmchecksig.c:467
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead misslyckades\n"
 
-#. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:338
-msgid "========== Header RSA signature\n"
-msgstr ""
-
-#: lib/package.c:343 lib/package.c:371 lib/package.c:403 lib/rpmchecksig.c:631
+#: lib/package.c:366 lib/package.c:393 lib/package.c:425 lib/rpmchecksig.c:642
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:366
-msgid "========== Header DSA signature\n"
-msgstr ""
-
-#. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:397
-msgid "========== Package DSA/RSA signature\n"
-msgstr ""
-
-#: lib/package.c:415 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
+#: lib/package.c:437 lib/rpmchecksig.c:113 lib/rpmchecksig.c:496
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
@@ -2015,7 +2000,7 @@ msgstr "visa tillstånd för de listade filerna"
 msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 
-#: lib/poptQV.c:240 lib/poptQV.c:282 lib/poptQV.c:316
+#: lib/poptQV.c:240
 msgid "don't verify MD5 digest of files"
 msgstr "verifiera inte MD5-summor för filer"
 
@@ -2056,46 +2041,46 @@ msgstr "verifiera inte paketberoenden"
 msgid "don't execute verify script(s)"
 msgstr "utför inte (eventuellt) %verifyscript"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:275 lib/poptQV.c:313
 #, fuzzy
 msgid "don't verify digest(s)"
 msgstr "verifiera inte MD5-summor för filer"
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:278 lib/poptQV.c:316
 #, fuzzy
 msgid "don't verify signature(s)"
 msgstr "verifiera inte sökvägen i symboliska länkar"
 
-#: lib/poptQV.c:286 lib/poptQV.c:320
+#: lib/poptQV.c:283
 #, fuzzy
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "verifiera inte huvudets SHA1-summa"
 
-#: lib/poptQV.c:289 lib/poptQV.c:323
+#: lib/poptQV.c:286
 #, fuzzy
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "verifiera inte MD5-summor för filer"
 
-#: lib/poptQV.c:304
+#: lib/poptQV.c:301
 #, fuzzy
-msgid "sign a package, preserving other existing signatures"
+msgid "sign a package, preserving digests"
 msgstr "signera ett paket (släng nuvarande signatur)"
 
-#: lib/poptQV.c:306
+#: lib/poptQV.c:303
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "verifiera paketsignatur"
 
-#: lib/poptQV.c:308
+#: lib/poptQV.c:305
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:310
+#: lib/poptQV.c:307
 #, fuzzy
-msgid "sign a package, discarding all current signatures"
+msgid "sign a package, recomputing digests"
 msgstr "signera ett paket (släng nuvarande signatur)"
 
-#: lib/poptQV.c:312
+#: lib/poptQV.c:309
 msgid "generate signature"
 msgstr "generera signatur"
 
@@ -2263,129 +2248,129 @@ msgstr "%s misslyckades: %s\n"
 msgid "incorrect format: %s\n"
 msgstr "fel format: %s\n"
 
-#: lib/query.c:221
+#: lib/query.c:220
 msgid "(contains no files)"
 msgstr "(innehåller inga filer)"
 
-#: lib/query.c:282
+#: lib/query.c:281
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:285
+#: lib/query.c:284
 msgid "replaced      "
 msgstr "ersatt        "
 
-#: lib/query.c:288
+#: lib/query.c:287
 msgid "not installed "
 msgstr "oinstallerat  "
 
-#: lib/query.c:291
+#: lib/query.c:290
 msgid "net shared    "
 msgstr "nätdelad      "
 
-#: lib/query.c:294
+#: lib/query.c:293
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(okänd %3d)   "
 
-#: lib/query.c:299
+#: lib/query.c:298
 msgid "(no state)    "
 msgstr "(ej tillstnd) "
 
-#: lib/query.c:318 lib/query.c:374
+#: lib/query.c:317 lib/query.c:373
 msgid "package has neither file owner or id lists\n"
 msgstr "paketet har varken filägare eller id-listor\n"
 
-#: lib/query.c:463
+#: lib/query.c:462
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kan inte fråga %s: %s\n"
 
-#: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:333 lib/rpminstall.c:475
+#: lib/query.c:616 lib/query.c:654 lib/rpminstall.c:333 lib/rpminstall.c:475
 #: lib/rpminstall.c:845
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
 
-#: lib/query.c:633
+#: lib/query.c:632
 #, c-format
 msgid "query of %s failed\n"
 msgstr "fråga av %s misslyckades\n"
 
-#: lib/query.c:639
+#: lib/query.c:638
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går inte att fråga om\n"
 
-#: lib/query.c:665 lib/rpminstall.c:488
+#: lib/query.c:664 lib/rpminstall.c:488
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: läsning av paketlista misslyckades: %s\n"
 
-#: lib/query.c:709
+#: lib/query.c:708
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 
-#: lib/query.c:730
+#: lib/query.c:729
 msgid "no packages\n"
 msgstr "inga paket\n"
 
-#: lib/query.c:750
+#: lib/query.c:749
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:760
+#: lib/query.c:759
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:774 lib/query.c:796 lib/query.c:814 lib/query.c:845
+#: lib/query.c:773 lib/query.c:795 lib/query.c:813 lib/query.c:844
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Misslyckades med att läsa %s: %s.\n"
 
-#: lib/query.c:784 lib/query.c:802 lib/query.c:820 lib/query.c:850
+#: lib/query.c:783 lib/query.c:801 lib/query.c:819 lib/query.c:849
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:861
+#: lib/query.c:860
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:872
+#: lib/query.c:871
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:906
+#: lib/query.c:905
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:910
+#: lib/query.c:909
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tillhör inget paket\n"
 
-#: lib/query.c:937
+#: lib/query.c:936
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:940
+#: lib/query.c:939
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paketpost nummer: %u\n"
 
-#: lib/query.c:945
+#: lib/query.c:944
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:956 lib/rpminstall.c:633
+#: lib/query.c:955 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2400,71 +2385,71 @@ msgstr "felaktig db-fil %s\n"
 msgid "(added provide)"
 msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 
-#: lib/rpmchecksig.c:51
+#: lib/rpmchecksig.c:54
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: open misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:63
+#: lib/rpmchecksig.c:66
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile misslyckades\n"
 
-#: lib/rpmchecksig.c:104
+#: lib/rpmchecksig.c:107
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:166
+#: lib/rpmchecksig.c:169
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: Kan inte signera v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:170
+#: lib/rpmchecksig.c:173
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Kan inte signera om v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:239
+#: lib/rpmchecksig.c:244
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:245
+#: lib/rpmchecksig.c:250
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:476
+#: lib/rpmchecksig.c:481
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead misslyckades\n"
 
-#: lib/rpmchecksig.c:547
+#: lib/rpmchecksig.c:554
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:773
+#: lib/rpmchecksig.c:801
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
+#: lib/rpmchecksig.c:802 lib/rpmchecksig.c:816
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:776 lib/rpmchecksig.c:790
+#: lib/rpmchecksig.c:804 lib/rpmchecksig.c:818
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:777 lib/rpmchecksig.c:791
+#: lib/rpmchecksig.c:805 lib/rpmchecksig.c:819
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:779 lib/rpmchecksig.c:793
+#: lib/rpmchecksig.c:807 lib/rpmchecksig.c:821
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:787
+#: lib/rpmchecksig.c:815
 msgid "OK"
 msgstr "OK"
 
@@ -2676,142 +2661,142 @@ msgstr "Kan inte läsa %s, HOME är för stor.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kan inte öppna %s för läsning: %s.\n"
 
-#: lib/signature.c:118
+#: lib/signature.c:119
 msgid "file is not regular -- skipping size check\n"
 msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:128
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 "Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
 "d)\n"
 
-#: lib/signature.c:132
+#: lib/signature.c:133
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Faktisk storlek: %12d\n"
 
-#: lib/signature.c:152
+#: lib/signature.c:153
 msgid "No signature\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:156
+#: lib/signature.c:157
 msgid "Old PGP signature\n"
 msgstr "Gammal PGP-signatur\n"
 
-#: lib/signature.c:169
+#: lib/signature.c:170
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?\n"
 
-#: lib/signature.c:225
+#: lib/signature.c:226
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
-#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:677
-#: lib/signature.c:710
+#: lib/signature.c:307 lib/signature.c:406 lib/signature.c:678
+#: lib/signature.c:711
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: lib/signature.c:322
+#: lib/signature.c:323
 msgid "pgp failed\n"
 msgstr "pgp misslyckades\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:329
+#: lib/signature.c:330
 msgid "pgp failed to write signature\n"
 msgstr "pgp misslyckades att skriva en signatur\n"
 
-#: lib/signature.c:334
+#: lib/signature.c:335
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP signaturstorlek: %d\n"
 
-#: lib/signature.c:350 lib/signature.c:450
+#: lib/signature.c:351 lib/signature.c:451
 msgid "unable to read the signature\n"
 msgstr "kan inte läsa signaturen\n"
 
-#: lib/signature.c:355
+#: lib/signature.c:356
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGP-signatur\n"
 
-#: lib/signature.c:422
+#: lib/signature.c:423
 msgid "gpg failed\n"
 msgstr "gpg misslyckades\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:429
+#: lib/signature.c:430
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: lib/signature.c:434
+#: lib/signature.c:435
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG-signaturstorlek: %d\n"
 
-#: lib/signature.c:455
+#: lib/signature.c:456
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fick %d byte GPG-signatur\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:715 lib/signature.c:770
+#: lib/signature.c:716 lib/signature.c:771
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Felaktig %%_signature-spec i makrofil\n"
 
-#: lib/signature.c:749
+#: lib/signature.c:750
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:762
+#: lib/signature.c:763
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
 
-#: lib/signature.c:806
+#: lib/signature.c:807
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Huvudstorleken för stor"
 
-#: lib/signature.c:846
+#: lib/signature.c:847
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:903
+#: lib/signature.c:906
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1082
+#: lib/signature.c:1102
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "hoppa över eventuella MD5-signaturer"
 
-#: lib/signature.c:1199
+#: lib/signature.c:1221
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1200
+#: lib/signature.c:1222
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:1287
+#: lib/signature.c:1311
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1314
+#: lib/signature.c:1338
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1318
+#: lib/signature.c:1342
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
@@ -3447,6 +3432,10 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
+
+#, fuzzy
+#~ msgid "sign a package, discarding all current signatures"
+#~ msgstr "signera ett paket (släng nuvarande signatur)"
 
 #~ msgid "Generating signature using PGP.\n"
 #~ msgstr "Genererar signatur med PGP.\n"

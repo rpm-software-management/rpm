@@ -270,16 +270,13 @@ struct poptOption rpmVerifyPoptTable[] = {
  { "noscripts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SCRIPT,
         N_("don't execute verify script(s)"), NULL },
- { "nodigest", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "nodigest", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify digest(s)"), NULL },
- { "nosignature", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ { "nosignature", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify signature(s)"), NULL },
 
-/** @todo Add --nomd5 alias to rpmpopt, eliminate. */
- { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
-	N_("don't verify MD5 digest of files"), NULL },
 /** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
  { "nogpg", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
@@ -301,26 +298,22 @@ struct poptOption rpmSignPoptTable[] = {
 	rpmQVSourceArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { "addsign", '\0', 0, NULL, 'A',
-	N_("sign a package, preserving other existing signatures"), NULL },
+	N_("sign a package, preserving digests"), NULL },
  { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
 	N_("verify package signature(s)"), NULL },
  { "import", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'I',
 	N_("import an armored public key"), NULL },
  { "resign", '\0', 0, NULL, 'R',
-	N_("sign a package, discarding all current signatures"), NULL },
+	N_("sign a package, recomputing digests"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
 	N_("generate signature"), NULL },
 
-/** @todo Add --nomd5 alias to rpmpopt, eliminate. */
- { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
-	N_("don't verify MD5 digest of files"), NULL },
-/** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
- { "nogpg", '\0', POPT_BIT_SET,
+ { "nodigest", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_flags, VERIFY_DIGEST,
+        N_("don't verify digest(s)"), NULL },
+ { "nosignature", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify GPG V3 DSA signature(s)"), NULL },
- { "nopgp", '\0', POPT_BIT_SET,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify PGP V3 RSA/MD5 signature(s)"), NULL },
+        N_("don't verify signature(s)"), NULL },
 
    POPT_TABLEEND
 };

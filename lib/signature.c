@@ -19,6 +19,7 @@
 /*@access rpmTransactionSet@*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
+/*@access DIGEST_CTX@*/		/* XXX compared with NULL */
 /*@access pgpDig@*/
 
 /*@-mustmod@*/ /* FIX: internalState not modified? */
@@ -852,7 +853,9 @@ verifyMD5Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
     }
 
 if (md5ctx == NULL) {
+/*@-modfilesys@*/
 fprintf(stderr, "*** MD5 md5ctx %p\n", md5ctx);
+/*@=modfilesys@*/
 res = RPMSIG_NOKEY;
 t = stpcpy(t, rpmSigString(res));
 goto exit;
@@ -909,7 +912,9 @@ verifySHA1Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
     }
 
 if (sha1ctx == NULL) {
+/*@-modfilesys@*/
 fprintf(stderr, "*** SHA1 sha1ctx %p\n", sha1ctx);
+/*@=modfilesys@*/
 res = RPMSIG_NOKEY;
 t = stpcpy(t, rpmSigString(res));
 goto exit;
@@ -973,8 +978,10 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 	pkpktlen = 0;
 	memset(pksignid, 0, sizeof(pksignid));
 
+	/* Make sure the database is open. */
 	(void) rpmtsOpenDB(ts, ts->dbmode);
 
+	/* Retrieve the pubkey that matches the signature. */
 	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    const char ** pubkeys;
@@ -991,13 +998,25 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 	}
 	mi = rpmdbFreeIterator(mi);
 
+	/* Was a matching pubkey found? */
 	if (ix < 0 || pkpkt == NULL) {
 	    res = RPMSIG_NOKEY;
 	    goto exit;
 	}
 
-	/* Make sure the pkt can be parsed, print info if debugging. */
-	if (pgpPrtPkts(pkpkt, pkpktlen, NULL, 0)) {
+	/*
+	 * Can the pubkey packets be parsed?
+	 * Do the parameters match the signature?
+	 */
+	if (pgpPrtPkts(pkpkt, pkpktlen, NULL, 0)
+	 && ts->dig->signature.pubkey_algo == ts->dig->pubkey.pubkey_algo
+#ifdef	NOTYET
+	 && ts->dig->signature.hash_algo == ts->dig->pubkey.hash_algo
+#endif
+	 && !memcmp(ts->dig->signature.signid, ts->dig->pubkey.signid, 8))
+	{
+	    pkpkt = _free(pkpkt);
+	    pkpktlen = 0;
 	    res = RPMSIG_NOKEY;
 	    goto exit;
 	}
@@ -1006,6 +1025,12 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 
 	/* Packet looks good, save the signer id. */
 	memcpy(pksignid, sigp->signid, sizeof(pksignid));
+
+	rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %s\n",
+		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
+		(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
+		pgpHexStr(sigp->signid, sizeof(sigp->signid)));
+
     }
 
 #ifdef	NOTNOW
@@ -1022,16 +1047,11 @@ rpmtsFindPubkey(rpmTransactionSet ts)
     }
 #endif
 
-    rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %s\n",
-    	(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
-    	(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
-	pgpHexStr(sigp->signid, sizeof(sigp->signid)));
-
     /* Retrieve parameters from pubkey packet(s). */
     xx = pgpPrtPkts(pkpkt, pkpktlen, ts->dig, 0);
     /*@=globs =internalglobs =mods =modfilesys@*/
 
-    /* Make sure we have the correct public key. */
+    /* Do the parameters match the signature? */
     if (ts->dig->signature.pubkey_algo == ts->dig->pubkey.pubkey_algo
 #ifdef	NOTYET
      && ts->dig->signature.hash_algo == ts->dig->pubkey.hash_algo
@@ -1097,7 +1117,9 @@ verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX md5ctx)
     }
 
 if (md5ctx == NULL) {
+/*@-modfilesys@*/
 fprintf(stderr, "*** RSA md5ctx %p\n", md5ctx);
+/*@=modfilesys@*/
 res = RPMSIG_NOKEY;
 goto exit;
 }
@@ -1215,7 +1237,9 @@ verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX sha1ctx)
     }
 
 if (sha1ctx == NULL) {
+/*@-modfilesys@*/
 fprintf(stderr, "*** DSA sha1ctx %p\n", sha1ctx);
+/*@=modfilesys@*/
 res = RPMSIG_NOKEY;
 goto exit;
 }

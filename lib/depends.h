@@ -69,13 +69,18 @@ struct rpmTransactionSet_s {
     int orderAlloced;		/*!< No. of allocated transaction elements. */
 
     int chrootDone;		/*!< Has chroot(2) been been done? */
-/*@only@*/ const char * rootDir;/*!< Path to top of install tree. */
-/*@only@*/ const char * currDir;/*!< Current working directory. */
-/*@null@*/ FD_t scriptFd;	/*!< Scriptlet stdout/stderr. */
+/*@only@*/
+    const char * rootDir;	/*!< Path to top of install tree. */
+/*@only@*/
+    const char * currDir;	/*!< Current working directory. */
+/*@null@*/
+    FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
     int_32 id;			/*!< Transaction id. */
 
     int verify_legacy;		/*!< Verify legacy signatures? */
+    int nodigests;		/*!< Verify digests? */
+    int nosignatures;		/*!< Verify signatures? */
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */

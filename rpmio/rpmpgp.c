@@ -1034,6 +1034,9 @@ void pgpCleanDig(struct pgpDig_s * dig)
 	mp32nfree(&dig->c);
 	mp32nfree(&dig->rsahm);
     }
+    /*@-nullstate@*/
+    return;
+    /*@=nullstate@*/
 }
 
 struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)

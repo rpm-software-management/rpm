@@ -144,6 +144,10 @@ typedef enum rpmQueryFlags_e {
     QUERY_FOR_DUMPFILES	= (1 << 27)	/*!< query:  from --dump */
 } rpmQueryFlags;
 
+#define	_QUERY_FOR_BITS	\
+   (QUERY_FOR_LIST|QUERY_FOR_STATE|QUERY_FOR_DOCS|QUERY_FOR_CONFIG|\
+    QUERY_FOR_DUMPFILES)
+
 /** \ingroup rpmcli
  * Bit(s) to control rpmVerify() operation, stored in qva_flags.
  * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs values?.
@@ -354,11 +358,12 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 
 /**
  * Check original header digest.
- * @todo Make digest check part of rpmdb iterator.
- * @todo Wire transaction set here, python bindings prevent.
+ * @deprecated Remove.
+ * @todo Make digest/signature check part of rpmdb iterator.
  * @param h		header
  * @return		0 on success (or unavailable), 1 on digest mismatch
  */
+/*@unused@*/
 int rpmVerifyDigest(Header h)
 	/*@modifies nothing @*/;
 

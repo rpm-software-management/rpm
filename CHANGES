@@ -92,6 +92,7 @@
 	- add header RSA signature (untested, disabled for now).
 `	- don't bother with signing check if 16 bits of hash don't match.
 	- only V3 signatures for now.
+	- wire --nodigest/--nosignature options to checksig/query/verify modes.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

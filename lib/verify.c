@@ -534,8 +534,8 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
     int ec = 0;
     int rc;
 
+#ifdef	DYING
     if (qva->qva_flags & VERIFY_DIGEST) {
-	/* XXX Wire transaction set here, python bindings prevent. */
 	if ((rc = rpmVerifyDigest(h)) != 0) {
 	    const char *n, *v, *r;
 	    (void) headerNVR(h, &n, &v, &r);
@@ -545,6 +545,7 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 	    ec = rc;
 	}
     }
+#endif
     if (qva->qva_flags & VERIFY_DEPS) {
 	if ((rc = verifyDependencies(qva, ts, h)) != 0)
 	    ec = rc;
@@ -583,6 +584,10 @@ int rpmcliVerify(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 	    return 1;	/* XXX W2DO? */
 	break;
     }
+
+    /* XXX verifyFlags are inverted */
+    ts->nodigests = (qva->qva_flags & VERIFY_DIGEST);
+    ts->nosignatures = (qva->qva_flags & VERIFY_SIGNATURE);
 
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
