@@ -1036,6 +1036,7 @@ Spec parseSpec(FILE *f, char *specfile, char *prefixOverride)
 		    /* special case */
 		    gotRoot = 1;
 		    message(MESS_DEBUG, "Got root: %s\n", s);
+		    message(MESS_WARNING, "The Root: tag is depricated.  Use Buildprefix: instead\n");
 		    setVar(RPMVAR_ROOT, s);
 		    break;
 		  case RPMTAG_ICON:
