@@ -418,20 +418,23 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
-	if (spec->buildRoot == NULL) {
-	    const char *buildroot = rpmGetPath("%{buildroot}", NULL);
-	    if (buildroot && *buildroot != '%') {
-		spec->buildRoot = strdup(cleanFileName(buildroot));
-	    } else {
-		spec->buildRoot = strdup(cleanFileName(field));
-	    }
-	    xfree(buildroot);
-	}
 	if (!strcmp(spec->buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: BuildRoot can not be \"/\": %s"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
+	}
+	if (spec->buildRoot == NULL) {
+	    const char *buildroot = rpmGetPath("%{buildroot}", NULL);
+	    if (buildroot && *buildroot != '%') {
+		spec->buildRoot = strdup(cleanFileName(buildroot));
+		macro = NULL;
+	    } else {
+		spec->buildRoot = strdup(cleanFileName(field));
+	    }
+	    xfree(buildroot);
+	} else {
+	    macro = NULL;
 	}
 	spec->gotBuildRoot = 1;
 	break;
@@ -458,6 +461,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
+	macro = NULL;
 	delMacro(&globalMacroContext, "_docdir");
 	addMacro(&globalMacroContext, "_docdir", NULL, field, RMIL_SPEC);
 	break;

@@ -1,7 +1,7 @@
 2.92 -> 2.93
 	- eliminate old rpmrc configuration syntax.
 	- pgp5 support (Carlo Wood <carlo@runaway.xs4all.nl>)
-	- fix: segfault from double close on ftpGetFileDesc ftpAbort path.
+	- fix: segfault from double close on ftpGetFileDesc->ftpAbort path.
 	- fix: don't add header if signature generation failed (Carlo Wood).
 	- more DU 4.0D fiddles (Shing-Gene Yung).
 	- fix: segfault from unknown uid/gid -- use builder's uid/gid instead.
@@ -12,6 +12,8 @@
 	- add %GNUconfigure for full-blown package regeneration.
 	- fix: RPM_ARCH/RPM_OS had wrong values.
 	- fix: create ppc directories correctly.
+	- (re-)enable fixowner/fixgroup macros.
+	- fix: specfile BuildRoot was masking rpmrc macro.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

@@ -487,8 +487,8 @@ static const char *prescriptenviron = "\n\
 RPM_SOURCE_DIR=\"%{_sourcedir}\"\n\
 RPM_BUILD_DIR=\"%{_builddir}\"\n\
 RPM_OPT_FLAGS=\"%{optflags}\"\n\
-RPM_ARCH=\"%{_target_cpu}\"\n\
-RPM_OS=\"%{_target_os}\"\n\
+RPM_ARCH=\"%{_arch}\"\n\
+RPM_OS=\"%{_os}\"\n\
 export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\n\
 RPM_DOC_DIR=\"%{_docdir}\"\n\
 export RPM_DOC_DIR\
