@@ -19,7 +19,7 @@ struct oldrpmFileInfo {
 } ;
 
 void oldrpmfileFromSpecLine(char * str, struct oldrpmFileInfo * fi);
-void oldrpmfileFromInfoLine(char * path, char * state, char * str, 
+void oldrpmfileFromInfoLine(char * path, char * state, char * str,
 			struct oldrpmFileInfo * fi);
 void oldrpmfileFree(struct oldrpmFileInfo * fi);
 char * oldrpmfileToInfoStr(struct oldrpmFileInfo * fi);
@@ -57,4 +57,4 @@ char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * s
 void   oldhdrFree(struct oldrpmHeader * header);
 void   oldhdrSpecFree(struct oldrpmHeaderSpec * spec);
 
-#endif
+#endif	/* H_OLDHEADER */

@@ -1,5 +1,5 @@
-#ifndef _SPEC_H_
-#define _SPEC_H_
+#ifndef _H_SPEC_
+#define _H_SPEC_
 
 #include "header.h"
 #include "stringbuf.h"
@@ -62,7 +62,7 @@ struct SpecStruct {
     char ** buildArchitectures;
     int buildArchitectureCount;
     int inBuildArchitectures;
-    
+
     int gotBuildRoot;
     char *buildRoot;
     char *buildSubdir;
@@ -80,12 +80,12 @@ struct SpecStruct {
     Header sourceHeader;
     int sourceCpioCount;
     struct cpioFileMapping *sourceCpioList;
-    
+
     struct MacroContext macros;
 
     int autoReq;
     int autoProv;
-    
+
     StringBuf prep;
     StringBuf build;
     StringBuf install;
@@ -111,14 +111,14 @@ struct PackageStruct {
     char *verifyFile;
 
     StringBuf specialDoc;
-    
-#if 0    
+
+#if 0
     struct ReqProvTrigger *triggers;
     char *triggerScripts;
 #endif
 
     struct TriggerFileEntry *triggerFiles;
-    
+
     char *fileFile;
     StringBuf fileList; /* If NULL, package will not be written */
 
@@ -126,6 +126,10 @@ struct PackageStruct {
 };
 
 typedef struct PackageStruct *Package;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 Spec newSpec(void);
 void freeSpec(Spec spec);
@@ -136,4 +140,8 @@ char *getFullSource(Spec spec, int num, int flag);
 void freeSources(Spec spec);
 int parseNoSource(Spec spec, char *field, int tag);
 
-#endif /* _SPEC_H_ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _H_SPEC_ */

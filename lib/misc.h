@@ -28,4 +28,4 @@ char * gidToGname(gid_t gid);
 
 int makeTempFile(char * prefix, char ** fnptr, int * fdptr);
 
-#endif
+#endif	/* H_MISC */

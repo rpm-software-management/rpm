@@ -1,5 +1,5 @@
-#ifndef _READ_H_
-#define _READ_H_
+#ifndef _H_READ_
+#define _H_READ_
 
 #include "spec.h"
 
@@ -11,8 +11,16 @@
 /*         1 - EOF     */
 /*        <0 - error   */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int readLine(Spec spec, int strip);
 void closeSpec(Spec spec);
 void handleComments(char *s);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif	/* _H_READ_ */

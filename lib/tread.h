@@ -3,4 +3,4 @@
 
 int timedRead(int fd, void * bufptr, int length);
 
-#endif
+#endif	/* H_TREAD */

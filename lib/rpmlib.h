@@ -129,7 +129,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_TRIGGERPOSTUN            1102 /* internal */
 #define RPMTAG_AUTOREQ                  1103 /* internal */
 #define RPMTAG_AUTOPROV                 1104 /* internal */
-    
+
 #define RPMTAG_EXTERNAL_TAG		1000000
 
 #define RPMFILE_STATE_NORMAL 		0
@@ -145,7 +145,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMFILE_NOREPLACE               (1 << 4)
 #define RPMFILE_SPECFILE                (1 << 5)
 #define RPMFILE_GHOST                   (1 << 6)
-    
+
 #define RPMINSTALL_REPLACEPKG           (1 << 0)
 #define RPMINSTALL_REPLACEFILES         (1 << 1)
 #define RPMINSTALL_TEST                 (1 << 2)
@@ -283,7 +283,7 @@ int rpmdbInit(char * root, int perms);
 void rpmdbClose (rpmdb db);
 
 int rpmdbFirstRecNum(rpmdb db);
-int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);  
+int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
     /* 0 at end, -1 on error */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
@@ -315,7 +315,7 @@ int rpmVersionCompare(Header first, Header second);
 int rpmRemovePackage(char * root, rpmdb db, unsigned int offset, int flags);
 int rpmdbRebuild(char * root);
 
-int rpmVerifyFile(char * root, Header h, int filenum, int * result, 
+int rpmVerifyFile(char * root, Header h, int filenum, int * result,
 		  int omitMask);
 int rpmVerifyScript(char * root, Header h, int err);
 
@@ -339,10 +339,10 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key);
 void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
 
 /* this checks for dependency satisfaction, but *not* ordering */
-int rpmdepCheck(rpmDependencies rpmdep, 
+int rpmdepCheck(rpmDependencies rpmdep,
 		struct rpmDependencyConflict ** conflicts, int * numConflicts);
 /* Orders items, returns error on circle, finals keys[] is NULL. No dependency
-   check is done, use rpmdepCheck() for that. If dependencies are not 
+   check is done, use rpmdepCheck() for that. If dependencies are not
    satisfied a "best-try" ordering is returned. */
 int rpmdepOrder(rpmDependencies order, void *** keysListPtr);
 
@@ -513,5 +513,4 @@ int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
 }
 #endif
 
-    
-#endif
+#endif	/* H_RPMLIB */

@@ -23,7 +23,7 @@ void MD5Transform(uint32 buf[4], uint32 const in[16]);
 int mdfile(char *fn, unsigned char *digest);
 int mdbinfile(char *fn, unsigned char *bindigest);
 
-/* These assume a little endian machine and return incorrect results! 
+/* These assume a little endian machine and return incorrect results!
    They are here for compatibility with old (broken) versions of RPM */
 int mdfileBroken(char *fn, unsigned char *digest);
 int mdbinfileBroken(char *fn, unsigned char *bindigest);
@@ -33,4 +33,4 @@ int mdbinfileBroken(char *fn, unsigned char *bindigest);
  */
 typedef struct MD5Context MD5_CTX;
 
-#endif /* !MD5_H */
+#endif	/* MD5_H */

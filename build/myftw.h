@@ -1,7 +1,7 @@
 /* myftw.h -- ftw() using lstat() instead of stat() */
 
-#ifndef _MYFTW_H_
-#define _MYFTW_H_
+#ifndef _H_MYFTW_
+#define _H_MYFTW_
 
 #include <sys/stat.h>
 
@@ -11,6 +11,10 @@
 #define MYFTW_DNR	2		/* Unreadable directory.  */
 #define MYFTW_NS	3		/* Unstatable file.  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef int (*myftwFunc) (void *fl, char *name, struct stat *statp);
 
 int myftw (const char *dir,
@@ -18,4 +22,8 @@ int myftw (const char *dir,
 	   myftwFunc func,
 	   void *fl);
 
-#endif /* _MYFTW_H_ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _H_MYFTW_ */

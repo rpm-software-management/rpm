@@ -1,5 +1,5 @@
-#ifndef _MISC_H_
-#define _MISC_H_
+#ifndef _H_MISC_
+#define _H_MISC_
 
 #include "spec.h"
 #include "ctype.h"
@@ -15,6 +15,10 @@
 #define PART_SUBNAME  0
 #define PART_NAME     1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void addOrAppendListEntry(Header h, int_32 tag, char *line);
 int parseSimplePart(char *line, char **name, int *flag);
 char *findLastChar(char *s);
@@ -25,4 +29,8 @@ StringBuf getOutputFrom(char *dir, char *argv[],
 			int failNonZero);
 char *cleanFileName(char *name);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif	/* _H_MISC_ */

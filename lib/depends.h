@@ -5,4 +5,4 @@
 
 int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags);
 
-#endif
+#endif	/* H_DEPENDS */

@@ -1,5 +1,5 @@
-#ifndef _PART_H_
-#define _PART_H_
+#ifndef _H_PART_
+#define _H_PART_
 
 #define PART_NONE                0
 #define PART_PREAMBLE            1
@@ -20,6 +20,14 @@
 #define PART_BUILDARCHITECTURES 16
 #define PART_TRIGGERPOSTUN      17
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int isPart(char *line);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif	/* _H_PART_ */

@@ -1,5 +1,5 @@
-#ifndef _MACRO_H
-#define	_MACRO_H
+#ifndef _H_MACRO_
+#define	_H_MACRO_
 
 typedef struct MacroEntry {
 	struct MacroEntry *prev;
@@ -24,6 +24,10 @@ typedef struct MacroContext {
 #endif
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void	initMacros	__P((MacroContext *mc, const char *macrofile));
 void	freeMacros	__P((MacroContext *mc));
 
@@ -33,4 +37,8 @@ int	expandMacros	__P((Spec spec, MacroContext *mc, char *sbuf, size_t sbuflen));
 
 const char *getMacroBody __P((MacroContext *mc, const char *name));
 
-#endif	/* _MACRO_H */
+#ifdef __cplusplus
+}
+#endif
+
+#endif	/* _H_ MACRO_ */

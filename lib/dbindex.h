@@ -46,4 +46,4 @@ void dbiFreeIndexRecord(dbiIndexSet set);
 }
 #endif
 
-#endif
+#endif	/* H_DBINDEX */

@@ -1,5 +1,9 @@
-#ifndef _PARSE_H_
-#define _PARSE_H_
+#ifndef _H_PARSE_
+#define _H_PARSE_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int parseChangelog(Spec spec);
 int parseDescription(Spec spec);
@@ -16,4 +20,8 @@ int parseBuildInstallClean(Spec spec, int parsePart);
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	      int inBuildArch, char *passPhrase, char *cookie);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif	/* _H_PARSE_ */

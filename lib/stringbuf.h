@@ -14,4 +14,4 @@ void stripTrailingBlanksStringBuf(StringBuf sb);
 
 void appendStringBufAux(StringBuf sb, char *s, int nl);
 
-#endif /* _STRINGBUF_H_ */
+#endif	/* _STRINGBUF_H_ */

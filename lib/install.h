@@ -15,11 +15,11 @@ int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 int runInstScript(char * prefix, Header h, int scriptTag, int progTag,
 	          int arg, int norunScripts, int err);
 /* this looks for triggers in the database which h would set off */
-int runTriggers(char * root, rpmdb db, int sense, Header h, 
+int runTriggers(char * root, rpmdb db, int sense, Header h,
 		int countCorrection);
-/* while this looks for triggers in h which are set off by things in the db 
+/* while this looks for triggers in h which are set off by things in the db
    database to calculate arguments to the trigger */
 int runImmedTriggers(char * root, rpmdb db, int sense, Header h,
 		     int countCorrection);
 
-#endif
+#endif	/* H_INSTALL */

@@ -3,4 +3,4 @@
 
 /* placeholder */
 
-#endif
+#endif	/* H_RPM_MALLOC */

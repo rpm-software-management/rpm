@@ -5,4 +5,4 @@
 
 void rpmMessage(int level, char * format, ...);
 
-#endif
+#endif	/* H_MESSAGES */

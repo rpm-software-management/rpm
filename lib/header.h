@@ -1,5 +1,5 @@
 /* RPM - Copyright (C) 1995 Red Hat Software
- * 
+ *
  * header.h - routines for managing rpm tagged structures
  */
 
@@ -47,7 +47,7 @@ enum headerSprintfExtenstionType { HEADER_EXT_LAST = 0, HEADER_EXT_FORMAT,
 
 /* This will only ever be passed RPM_TYPE_INT32 or RPM_TYPE_STRING to
    help keep things simple */
-typedef char * (*headerTagFormatFunction)(int_32 type, const void * data, 
+typedef char * (*headerTagFormatFunction)(int_32 type, const void * data,
 					  char * formatPrefix,
 					  int padding, int element);
 /* This is allowed to fail, which indicates the tag doesn't exist */
@@ -87,18 +87,18 @@ Header headerNew(void);
 void headerFree(Header h);
 
 /* dump a header to a file, in human readable format */
-void headerDump(Header h, FILE *f, int flags, 
+void headerDump(Header h, FILE *f, int flags,
 		const struct headerTagTableEntry * tags);
 
 /* the returned string must be free()d */
-char * headerSprintf(Header h, const char * fmt, 
+char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extentions,
 		     char ** error);
 
 #define HEADER_DUMP_INLINE   1
 
-/* Duplicate tags are okay, but only defined for iteration (with the 
+/* Duplicate tags are okay, but only defined for iteration (with the
    exceptions noted below). While you are allowed to add i18n string
    arrays through this function, you probably don't mean to. See
    headerAddI18NString() instead */
@@ -107,7 +107,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
 /* A NULL lang is interpreted as the C locale.  Here are the rules:
-   
+
 	1) If the tag isn't in the Header, it's added with the passed string
 	   as a version.
 	2) If the tag occurs multiple times in entry, which tag is affected
@@ -171,7 +171,7 @@ void headerSort(Header h);
 #define RPM_STRING_ARRAY_TYPE	8
 #define RPM_I18NSTRING_TYPE	9
 
-/* Tags -- general use tags should start at 1000 (RPM's tag space starts 
+/* Tags -- general use tags should start at 1000 (RPM's tag space starts
    there) */
 
 #define HEADER_I18NTABLE	100
@@ -180,4 +180,4 @@ void headerSort(Header h);
 }
 #endif
 
-#endif /* H_HEADER */
+#endif	/* H_HEADER */

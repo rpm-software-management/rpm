@@ -8,4 +8,4 @@
 int writeLead(int fd, struct rpmlead *lead);
 int readLead(int fd, struct rpmlead *lead);
 
-#endif
+#endif	/* _H_RPMLEAD */

@@ -61,11 +61,11 @@ struct oldrpmdbLabel *oldrpmdbFindPackagesByFile (struct oldrpmdb *oldrpmdb, cha
 struct oldrpmdbLabel *oldrpmdbFindPackagesByLabel (struct oldrpmdb *oldrpmdb,
 						struct oldrpmdbLabel label);
 
-char *oldrpmdbGetPackageGroup (struct oldrpmdb *oldrpmdb, 
+char *oldrpmdbGetPackageGroup (struct oldrpmdb *oldrpmdb,
 			       struct oldrpmdbLabel label);
-char *oldrpmdbGetPackagePostun (struct oldrpmdb *oldrpmdb, 
+char *oldrpmdbGetPackagePostun (struct oldrpmdb *oldrpmdb,
 				struct oldrpmdbLabel label);
-char *oldrpmdbGetPackagePreun (struct oldrpmdb *oldrpmdb, 
+char *oldrpmdbGetPackagePreun (struct oldrpmdb *oldrpmdb,
 				struct oldrpmdbLabel label);
 char *oldrpmdbGetPackageGif (struct oldrpmdb *oldrpmdb, struct oldrpmdbLabel label,
 			     int *size);
@@ -85,4 +85,4 @@ int oldrpmdbLabelCmp (struct oldrpmdbLabel *one, struct oldrpmdbLabel *two);
 
 void oldrpmdbSetPrefix (char *new);
 
-#endif
+#endif	/* _H_OLDRPMDB */

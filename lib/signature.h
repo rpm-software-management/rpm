@@ -1,4 +1,5 @@
 #ifndef H_SIGNATURE
+#define	H_SIGNATURE
 
 /* signature.h - generate and verify signatures */
 
@@ -48,4 +49,4 @@ int rpmLookupSignatureType(void);
 /* Utility to read a pass phrase from the user */
 char *rpmGetPassPhrase(char *prompt);
 
-#endif
+#endif	/* H_SIGNATURE */
