@@ -374,7 +374,7 @@ static /*@only@*/ const char * expandNextArg(poptContext con, const char * s)
 	*te++ = c;
     }
     *te = '\0';
-    t = realloc(t, strlen(t));	/* XXX memory leak, hard to plug */
+    t = realloc(t, strlen(t)+1);	/* XXX memory leak, hard to plug */
     return t;
 }
 
