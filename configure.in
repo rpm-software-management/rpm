@@ -151,6 +151,9 @@ else
     echo "user specificed no gettext; will not build i18n support"
 fi
 
+AC_CHECK_LIB(nsl, gethostname, [LIBSOCKET="-lnsl"])
+AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket $LIBSOCKET"])
+
 AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
 (from the db package)]), $LIBS)
@@ -167,11 +170,6 @@ dnl AmigaOS and IXEmul have a fork() dummy
 		;;
 esac
 
-
-AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -nsl"], [
-    AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket"])
-    AC_CHECK_LIB(nsl, gethostbyname, [LIBSOCKET="-lnsl"])
-])
 
 ZLIB=
 for zlib in z gz ; do
