@@ -2373,9 +2373,7 @@ static int gzdClose( /*@only@*/ void * cookie)
 DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
 /*@=modfilesys@*/
 	if (rc < 0) {
-	    /*@-usereleased@*/
-	    fd->errcookie = gzerror(gzfile, &rc);
-	    /*@=usereleased@*/
+	    fd->errcookie = "gzclose error";
 	    if (rc == Z_ERRNO) {
 		fd->syserrno = errno;
 		fd->errcookie = strerror(fd->syserrno);

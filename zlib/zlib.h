@@ -969,7 +969,7 @@ ZEXTERN int ZEXPORT gzeof OF((gzFile file))
    input stream, otherwise zero.
 */
 
-ZEXTERN int ZEXPORT    gzclose OF((gzFile file))
+ZEXTERN int ZEXPORT    gzclose OF((/*@only@*/ gzFile file))
 	/*@globals fileSystem @*/
 	/*@modifies file, fileSystem @*/;
 /*
