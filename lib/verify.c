@@ -5,15 +5,12 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>	/* XXX PGPHASHALGO and RPMDIGEST_NONE */
-#include <rpmlib.h>
+#include <rpmcli.h>
 #include "rpmps.h"
 
 #include "psm.h"
 #include "rpmfi.h"
 #include "rpmts.h"
-
-#include <rpmcli.h>
 
 #include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */
 #include "ugid.h"

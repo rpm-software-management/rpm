@@ -925,7 +925,7 @@ int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
  */
 int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, /*@null@*/ const char * pattern)
-	/*@modifies mi @*/;
+	/*@modifies mi, mode @*/;
 
 /** \ingroup rpmdb
  * Prepare iterator for lazy writes.

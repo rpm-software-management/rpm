@@ -16,9 +16,6 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
-#include "rpmal.h"
-
-#define	_RPMDS_INTERNAL		/* XXX trigger->i */
 #include "rpmds.h"
 
 #define _RPMFI_INTERNAL
@@ -46,8 +43,6 @@
 
 /*@access rpmfi @*/
 /*@access rpmte @*/	/* XXX rpmInstallSourcePackage */
-
-/*@access alKey @*/
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -85,16 +80,6 @@ int rpmVersionCompare(Header first, Header second)
     rc = headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &two, NULL);
 
     return rpmvercmp(one, two);
-}
-
-/*@observer@*/ const char *const fiTypeString(rpmfi fi)
-{
-    switch(rpmteType(fi->te)) {
-    case TR_ADDED:	return " install";
-    case TR_REMOVED:	return "   erase";
-    default:		return "???";
-    }
-    /*@noteached@*/
 }
 
 /**

@@ -37,7 +37,7 @@ struct rpmfi_s {
 
     rpmTag tagN;		/*!< Header tag. */
 /*@refcounted@*/ /*@null@*/
-    Header h;			/*!< Header for file set (or NULL) */
+    Header h;			/*!< Header for file info set (or NULL) */
 
 /*@only@*/ /*?null?*/
     const char ** bnl;		/*!< Base name(s) (from header) */
@@ -407,7 +407,7 @@ rpmfi rpmfiInitD(/*@null@*/ rpmfi fi, int dx)
 
 /**
  * Destroy a file info set.
- * @param fi		file set
+ * @param fi		file info set
  * @param freefimem	free fi memory too?
  * @return		NULL always
  */
@@ -418,11 +418,11 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi, int freefimem)
 /**
  * Create and load a file info set.
  * @param ts		transaction set
- * @param fi		file set (NULL if creating)
+ * @param fi		file info set (NULL if creating)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
  * @param scareMem	Use pointers to refcounted header memory?
- * @return		new file set
+ * @return		new file info set
  */
 /*@null@*/
 rpmfi rpmfiNew(/*@null@*/ rpmts ts, /*@null@*/ rpmfi fi,
@@ -436,6 +436,17 @@ rpmfi rpmfiNew(/*@null@*/ rpmts ts, /*@null@*/ rpmfi fi,
  */
 fileTypes whatis(uint_16 mode)
 	/*@*/;
+
+/**
+ * Return formatted string representation of package disposition.
+ * @param fi		file info set
+ * @return		formatted string
+ */
+/*@-redef@*/
+/*@observer@*/
+const char *const rpmfiTypeString(rpmfi fi)
+	/*@*/;
+/*@=redef@*/
 
 #ifdef __cplusplus
 }

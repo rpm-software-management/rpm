@@ -12,7 +12,6 @@
 
 #include "cpio.h"
 #include "fsm.h"
-#include "psm.h"	/* XXX fiTypeString */
 #include "rpmerr.h"
 
 #define	_RPMFI_INTERNAL
@@ -216,7 +215,8 @@ static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
  */
 typedef struct dnli_s {
     rpmfi fi;
-/*@only@*/ /*@null@*/ char * active;
+/*@only@*/ /*@null@*/
+    char * active;
     int reverse;
     int isave;
     int i;
@@ -1822,13 +1822,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			rpmError(
 			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
-				fiTypeString(fi), fsm->path);
+				rpmfiTypeString(fi), fsm->path);
 			/*@innerbreak@*/ break;
 		    default:
 			rpmError(
 			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 				_("%s rmdir of %s failed: %s\n"),
-				fiTypeString(fi), fsm->path, strerror(errno));
+				rpmfiTypeString(fi), fsm->path, strerror(errno));
 			/*@innerbreak@*/ break;
 		    }
 		} else {
@@ -1838,7 +1838,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			rpmError(
 			    (strict_erasures ? RPMERR_UNLINK : RPMDEBUG_UNLINK),
 				_("%s unlink of %s failed: %s\n"),
-				fiTypeString(fi), fsm->path, strerror(errno));
+				rpmfiTypeString(fi), fsm->path, strerror(errno));
 		}
 	    }
 	    /* XXX Failure to remove is not (yet) cause for failure. */

@@ -11,7 +11,6 @@
 /*@=incondefs@*/
 #endif
 
-#include "rpmio_internal.h"
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
@@ -344,6 +343,8 @@ exit:
 }
 
 /**
+ * Print copy of spec file, filling in Group/Description/Summary from specspo.
+ * @param spec		spec file control structure
  */
 static void
 printNewSpecfile(Spec spec)
@@ -527,7 +528,7 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 /*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
 /*@=redecl@*/
 
-/*@-bounds@*/ /* LCL: segfault */
+/*@-bounds@*/ /* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     const char ** av = NULL;

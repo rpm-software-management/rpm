@@ -439,6 +439,17 @@ fileTypes whatis(uint_16 mode)
     return REG;
 }
 
+/*@observer@*/
+const char *const rpmfiTypeString(rpmfi fi)
+{
+    switch(rpmteType(fi->te)) {
+    case TR_ADDED:	return " install";
+    case TR_REMOVED:	return "   erase";
+    default:		return "???";
+    }
+    /*@noteached@*/
+}
+
 #define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 /**

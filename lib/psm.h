@@ -97,14 +97,6 @@ extern "C" {
 #endif
 
 /**
- * Return formatted string representation of package disposition.
- * @param fi
- * @return		formatted string
- */
-/*@observer@*/ const char *const fiTypeString(/*@partial@*/rpmfi fi)
-	/*@*/;
-
-/**
  * Package state machine driver.
  * @param psm		package state machine data
  * @param stage		next stage
