@@ -98,6 +98,14 @@ static char *rpmlogMsgPrefix[] = {
     "D: ",		/*!< RPMLOG_DEBUG */
 };
 
+#if !defined(HAVE_VSNPRINTF)
+static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
+	const char * fmt, va_list ap)
+{
+    return vsprintf(buf, fmt, ap);
+}
+#endif
+
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 {
     int pri = RPMLOG_PRI(code);

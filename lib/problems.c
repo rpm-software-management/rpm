@@ -86,6 +86,25 @@ void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
     }
 }
 
+#if !defined(HAVE_VSNPRINTF)
+static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
+	const char * fmt, va_list ap)
+{
+    return vsprintf(buf, fmt, ap);
+}
+#endif
+#if !defined(HAVE_SNPRINTF)
+static inline int snprintf(char * buf, int nb, const char * fmt, ...)
+{
+    va_list ap;
+    int rc;
+    va_start(ap, fmt);
+    rc = vsnprintf(buf, nb, fmt, ap);
+    va_end(ap);
+    return rc;
+}
+#endif
+
 const char * rpmProblemString(rpmProblem prob) /*@*/
 {
     int nb =	(prob->pkgNEVR ? strlen(prob->pkgNEVR) : 0) +

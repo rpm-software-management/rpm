@@ -26,6 +26,7 @@
 	- fix: --excludepath was broken (#24434).
 	- fix: s390 (and ppc?) could return CPIOERR_BAD_HEADER (#28645).
 	- fix: Fwrite's are optimized out by aggressive compiler(irix) (#34711).
+	- portability: vsnprintf/snprintf wrappers for those without (#34657).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
