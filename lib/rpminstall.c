@@ -37,10 +37,15 @@ static void * showProgress(const Header h, const rpmCallbackType what,
     switch (what) {
       case RPMCALLBACK_INST_OPEN_FILE:
 	fd = Fopen(filename, "r.ufdio");
+	fd = fdLink(fd, "persist (showProgress)");
 	return fd;
 
       case RPMCALLBACK_INST_CLOSE_FILE:
-	Fclose(fd);
+	fd = fdFree(fd, "persist (showProgress)");
+	if (fd) {
+	    Fclose(fd);
+	    fd = NULL;
+	}
 	break;
 
       case RPMCALLBACK_INST_START:

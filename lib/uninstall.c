@@ -314,11 +314,13 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	    out = fdDup(Fileno(errfd));
 	} else {
 	    out = Fopen("/dev/null", "w.fdio");
-	    if (Ferror(out))
+	    if (Ferror(out)) {
 		out = fdDup(Fileno(errfd));
+	    }
 	}
     } else {
 	out = fdDup(STDOUT_FILENO);
+	out = fdLink(out, "runScript persist");
     }
     
     if (!(child = fork())) {
@@ -337,10 +339,12 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	    if (Fileno(out) != STDOUT_FILENO)
 		dup2(Fileno(out), STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (Fileno(out) > STDERR_FILENO && Fileno(out) != Fileno(errfd))
+	    if (Fileno(out) > STDERR_FILENO && Fileno(out) != Fileno(errfd)) {
 		Fclose (out);
-	    if (Fileno(errfd) > STDERR_FILENO)
+	    }
+	    if (Fileno(errfd) > STDERR_FILENO) {
 		Fclose (errfd);
+	    }
 	}
 
 	doputenv(SCRIPT_PATH);
