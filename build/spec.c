@@ -372,18 +372,24 @@ Spec parseSpec(FILE *f)
 	s = NULL;
         if ((tag = check_part(line, &s))) {
 	    printf("Switching to part: %d\n", tag);
+	    t1 = 0;
 	    switch (cur_part) {
 	      case PREIN_PART:
 		t1 = RPMTAG_PREIN;
+		break;
 	      case POSTIN_PART:
 		t1 = RPMTAG_POSTIN;
+		break;
 	      case PREUN_PART:
 		t1 = RPMTAG_PREUN;
+		break; 
 	      case POSTUN_PART:
 		t1 = RPMTAG_POSTUN;
+		break;
+	    }
+	    if (t1) {
 		addEntry(cur_package->header, t1,
 			 STRING_TYPE, getStringBuf(sb), 1);
-		break;
 	    }
 	    cur_part = tag;
 	    truncStringBuf(sb);
