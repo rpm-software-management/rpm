@@ -518,6 +518,7 @@ static struct PreambleRec {
     {RPMTAG_PREFIXES,      0, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, 0, "buildroot"},
     {RPMTAG_BUILDARCHS,    0, 0, "buildarchitectures"},
+    {RPMTAG_BUILDARCHS,    0, 0, "buildarch"},
     {RPMTAG_AUTOREQPROV,   0, 0, "autoreqprov"},
     {RPMTAG_DOCDIR,        0, 0, "docdir"},
     {0, 0, 0, 0}
