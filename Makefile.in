@@ -18,6 +18,7 @@ RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))
 MANDIR=$(prefix)/man/man8
 LIBDIR=$(prefix)/lib
 INCDIR=$(prefix)/include/rpm
+ETCDIR=$(ROOT)/etc
 
 .EXPORT_ALL_VARIABLES:
 
@@ -60,9 +61,14 @@ install:
 	install -m 755 -o 0 -g 0 -d $(RPMBINDIR)
 	install -m 755 -o 0 -g 0 -d $(BINDIR)
 	install -m 755 -o 0 -g 0 -d $(MANDIR)
+	install -m 755 -o 0 -g 0 -d $(ETCDIR)
 	install -s -m 755 -o 0 -g 0 rpm $(RPMBINDIR)
 	install -s -m 755 -o 0 -g 0 rpmconvert $(BINDIR)
+	install -m 755 -o 0 -g 0 gendiff $(BINDIR)
 	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
+	if [ ! -f $(ETCDIR)/rpmrc ]; then \
+		install -m 644 -o 0 -g 0 rpmrc $(ETCDIR)/rpmrc; \
+	fi
 	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
 
 clean:
