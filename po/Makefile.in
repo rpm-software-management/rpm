@@ -1,4 +1,4 @@
-CATALOGS = se.mo
+CATALOGS = se.mo fr.mo
 
 POTFILES  = ../rpm.c
 
@@ -26,6 +26,9 @@ install:
 	    install -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l/LC_MESSAGES; \
 	    install -m 644 -o 0 -g 0 $$n $(NLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
 	done
+
+fr.mo:	fr.po
+	msgfmt -o $@ $<
 
 se.mo:	se.po
 	msgfmt -o $@ $<
