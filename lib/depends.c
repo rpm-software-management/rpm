@@ -248,7 +248,8 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
 /*@=type =voidabstract @*/
     }
 
-    p = ts->order[ts->orderCount] = teNew(ts, h, NULL, NULL);
+    p = teNew(ts, h, NULL, NULL);
+    ts->order[ts->orderCount] = p;
     ts->orderCount++;
 
 /*@-type@*/ /* FIX: transactionElement not opaque */
@@ -285,18 +286,18 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     add = dsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
     pkgKey = RPMAL_NOMATCH;
     for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
+	rpmDepSet this;
 
 	/* XXX Only added packages need be checked for dupes. */
 	if (teGetType(p) == TR_REMOVED)
 	    continue;
 
-/*@-type@*/
-	rc = dsCompare(add, p->this);
-/*@=type@*/
+	if ((this = teGetDS(p, RPMTAG_NAME)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	rc = dsCompare(add, this);
 	if (rc != 0) {
-/*@-type@*/
-	    const char * pkgNEVR = dsiGetDNEVR(p->this);
-/*@=type@*/
+	    const char * pkgNEVR = dsiGetDNEVR(this);
 	    const char * addNEVR = dsiGetDNEVR(add);
 	    rpmMessage(RPMMESS_WARNING,
 		_("package %s was already added, replacing with %s\n"),
@@ -326,7 +327,8 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 /*@=type =voidabstract @*/
     }
 
-    p = ts->order[oc] = teNew(ts, h, key, relocs);
+    p = teNew(ts, h, key, relocs);
+    ts->order[oc] = p;
     if (!duplicate)
 	ts->orderCount++;
     
@@ -388,6 +390,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     {	rpmdbMatchIterator mi;
 	Header h2;
 
+	/* XXX FIXME: obsolete all packages with same provide, not just name. */
 	mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    /*@-branchstate@*/
@@ -413,9 +416,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	mi = rpmdbFreeIterator(mi);
     }
 
-/*@-type@*/ /* FIX: transactionElement not opaque */
-    obsoletes = dsiInit(rpmdsLink(p->obsoletes, "Obsoletes"));
-/*@=type@*/
+    obsoletes = dsiInit(rpmdsLink(teGetDS(p, RPMTAG_OBSOLETENAME), "Obsoletes"));
     if (obsoletes != NULL)
     while (dsiNext(obsoletes) >= 0) {
 	const char * Name;
@@ -430,6 +431,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	{   rpmdbMatchIterator mi;
 	    Header h2;
 
+	/* XXX FIXME: obsolete all packages with same provide, not just name. */
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
 
 	    xx = rpmdbPruneIterator(mi,
@@ -745,7 +747,7 @@ static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 	    continue;	/* XXX can't happen */
 
 	/* Filter out requires that came along for the ride. */
-	if (keyName && strcmp(keyName, Name))
+	if (keyName != NULL && strcmp(keyName, Name))
 	    continue;
 
 	Flags = dsiGetFlags(requires);
@@ -942,13 +944,11 @@ static int ignoreDep(const transactionElement p,
 {
     struct badDeps_s * bdp = badDeps;
 
-    /*@-nullpass@*/ /* FIX: {p,q}->name may be NULL. */
     while (bdp->pname != NULL && bdp->qname != NULL) {
 	if (!strcmp(teGetN(p), bdp->pname) && !strcmp(teGetN(q), bdp->qname))
 	    return 1;
 	bdp++;
     }
-    /*@=nullpass@*/
     return 0;
 }
 #endif
@@ -1297,10 +1297,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
     /* XXX Only added packages are ordered (for now). */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
-/*@-type@*/	/* FIX: transactionElement not opaque */
-	requires = p->requires;
-/*@=type@*/
-	if (requires == NULL)
+	if ((requires = teGetDS(p, RPMTAG_REQUIRENAME)) == NULL)
 	    continue;
 
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
@@ -1510,9 +1507,8 @@ prtTSI(" p", teGetTSI(p));
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-/*@-type@*/	/* FIX: transactionElement not opaque */
-		requires = p->requires;
-/*@=type@*/
+		if ((requires = teGetDS(p, RPMTAG_REQUIRENAME)) == NULL)
+		    continue;	/* XXX can't happen */
 		requires = dsiInit(requires);
 		dp = zapRelation(q, p, requires, 1, &nzaps);
 
@@ -1721,21 +1717,22 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 	multiLib = teGetMultiLib(p);
 
-	/*@-type@*/	/* FIX: transactionElement not opaque */
-	provides = p->provides;
-	requires = p->requires;
-	conflicts = p->conflicts;
-	/*@=type@*/
+	provides = teGetDS(p, RPMTAG_PROVIDENAME);
+	requires = teGetDS(p, RPMTAG_REQUIRENAME);
+	conflicts = teGetDS(p, RPMTAG_CONFLICTNAME);
+
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , teGetNEVR(p));
 	rc = checkPackageDeps(ts, teGetNEVR(p), requires, conflicts,
 			NULL, multiLib);
 	if (rc)
 	    goto exit;
 
+#ifdef	DYING	/* XXX all packages now have Provides: name = version-release */
 	/* Adding: check name against conflicts matches. */
 	rc = checkDependentConflicts(ts, teGetN(p));
 	if (rc)
 	    goto exit;
+#endif
 
 	rc = 0;
 	provides = dsiInit(provides);
@@ -1769,15 +1766,15 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 	rpmMessage(RPMMESS_DEBUG,  "========== --- %s\n" , teGetNEVR(p));
 
+#ifdef	DYING	/* XXX all packages now have Provides: name = version-release */
 	/* Erasing: check name against requiredby matches. */
 	rc = checkDependentPackages(ts, teGetN(p));
 	if (rc)
 		goto exit;
+#endif
 
 	rc = 0;
-	/*@-type@*/	/* FIX: transactionElement not opaque */
-	provides = p->provides;
-	/*@=type@*/
+	provides = teGetDS(p, RPMTAG_PROVIDENAME);
 	provides = dsiInit(provides);
 	if (provides != NULL)
 	while (dsiNext(provides) >= 0) {
@@ -1795,12 +1792,8 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-
-
 	rc = 0;
-	/*@-type@*/	/* FIX: transactionElement not opaque */
-	fi = p->fi;
-	/*@=type@*/
+	fi = teGetFI(p, RPMTAG_BASENAMES);
 	if ((fi = tfiInit(fi, 0)) != NULL)
 	while (tfiNext(fi) >= 0) {
 	    const char * fn = tfiGetFN(fi);

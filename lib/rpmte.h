@@ -274,6 +274,24 @@ FD_t teGetFd(transactionElement te)
 fnpyKey teGetKey(transactionElement te)
 	/*@*/;
 
+/**
+ * Retrieve dependency tag set from transaction element.
+ * @param te		transaction element
+ * @param tag		dependency tag
+ * @return		dependency tag set
+ */
+rpmDepSet teGetDS(transactionElement te, rpmTag tag)
+	/*@*/;
+
+/**
+ * Retrieve file info tag set from transaction element.
+ * @param te		transaction element
+ * @param tag		file info tag
+ * @return		file info tag set
+ */
+TFI_t teGetFI(transactionElement te, rpmTag tag)
+	/*@*/;
+
 #if defined(_NEED_TEITERATOR)
 /**
  * Return transaction element index.

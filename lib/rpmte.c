@@ -225,6 +225,40 @@ fnpyKey teGetKey(transactionElement te)
     return (te != NULL ? te->key : NULL);
 }
 
+rpmDepSet teGetDS(transactionElement te, rpmTag tag)
+{
+    if (te == NULL)
+	return NULL;
+
+    if (tag == RPMTAG_NAME)
+	return te->this;
+    else
+    if (tag == RPMTAG_PROVIDENAME)
+	return te->provides;
+    else
+    if (tag == RPMTAG_REQUIRENAME)
+	return te->requires;
+    else
+    if (tag == RPMTAG_CONFLICTNAME)
+	return te->conflicts;
+    else
+    if (tag == RPMTAG_OBSOLETENAME)
+	return te->obsoletes;
+    else
+	return NULL;
+}
+
+TFI_t teGetFI(transactionElement te, rpmTag tag)
+{
+    if (te == NULL)
+	return NULL;
+
+    if (tag == RPMTAG_BASENAMES)
+	return te->fi;
+    else
+	return NULL;
+}
+
 int teiGetOc(teIterator tei)
 {
     return tei->ocsave;

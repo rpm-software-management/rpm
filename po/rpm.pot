@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-16 18:03-0500\n"
+"POT-Creation-Date: 2001-11-16 19:26-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1415,45 +1415,45 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:302
+#: lib/depends.c:303
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:584
+#: lib/depends.c:586
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:609
+#: lib/depends.c:611
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:625
+#: lib/depends.c:627
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:646
+#: lib/depends.c:648
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:658
+#: lib/depends.c:660
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:671
+#: lib/depends.c:673
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:710
+#: lib/depends.c:712
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:712 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:714 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:712 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:714 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr ""
 
@@ -1468,25 +1468,25 @@ msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1371
+#: lib/depends.c:1368
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1448
+#: lib/depends.c:1445
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1508
+#: lib/depends.c:1505
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1545
+#: lib/depends.c:1541
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1550
+#: lib/depends.c:1546
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
