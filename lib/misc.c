@@ -1,4 +1,6 @@
+#include <errno.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "misc.h"
 
@@ -39,4 +41,18 @@ char ** splitString(char * str, int length, char sep) {
 void freeSplitString(char ** list) {
     free(list[0]);
     free(list);
+}
+
+int exists(char * filespec) {
+    struct stat buf;
+
+    if (stat(filespec, &buf)) {
+	switch(errno) {
+	   case ENOENT:
+	   case EINVAL:
+		return 0;
+	}
+    }
+
+    return 1;
 }
