@@ -1,5 +1,5 @@
 AC_INIT(popt.h)
-AM_INIT_AUTOMAKE(popt, 1.2.3)
+AM_INIT_AUTOMAKE(popt, 1.3)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_CC
