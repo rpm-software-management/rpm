@@ -192,7 +192,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     if (flags & RPMVERIFY_GROUP) {
 	if (headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &gnameList, 
 			NULL)) {
-	    name = gidToGname(sb.st_uid);
+	    name = gidToGname(sb.st_gid);
 	    if (!name || strcmp(gnameList[filenum], name))
 		*result |= RPMVERIFY_GROUP;
 	    free(gnameList);

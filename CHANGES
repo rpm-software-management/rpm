@@ -10,6 +10,7 @@
 	- include <sys/time.h> before <sys/resource.h>
 	- include "miscfn.h" first in every file which needs it
 	- created noarch architecture which everything is compatible with
+	- fixed group verification (Benedict Lofstedt)
 
 2.3.11 -> 2.4:
 	- changed RPMNLSDIR directories to and @datadir@ to better
