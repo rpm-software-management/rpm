@@ -197,19 +197,19 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
     }
 
-    for (fi = flList; (fi - flList) < flEntries; fi++) {
-	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
-	for (i = 0; i < fi->fc; i++) {
-	    htAddEntry(ht, fi->fps + i, fi);
-	}
-    }
-
     chptr = currentDirectory();
     currDir = alloca(strlen(chptr) + 1);
     strcpy(currDir, chptr);
     free(chptr);
     chdir("/");
     chroot(ts->root);
+
+    for (fi = flList; (fi - flList) < flEntries; fi++) {
+	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
+	for (i = 0; i < fi->fc; i++) {
+	    htAddEntry(ht, fi->fps + i, fi);
+	}
+    }
 
     for (fi = flList; (fi - flList) < flEntries; fi++) {
 	matches = malloc(sizeof(*matches) * fi->fc);
@@ -321,7 +321,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    if (installBinaryPackage(ts->root, ts->db, fd, 
 				     hdrs[alp - al->list], instFlags, notify, 
 				     notifyData, alp->key, fi->actions, 
-				     fi->fc ? fi->replaced : NULL))
+				     fi->fc ? fi->replaced : NULL,
+				     ts->scriptFd))
 		ourrc++;
 	} else {
 	    ourrc++;
@@ -340,7 +341,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     /* fi is left at the first package which is to be removed */
     for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 	if (removeBinaryPackage(ts->root, ts->db, ts->removedPackages[i], 
-				rmFlags, fi->actions))
+				rmFlags, fi->actions, ts->scriptFd))
 	    ourrc++;
     }
 
@@ -348,6 +349,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     	return -1;
     else
 	return 0;
+}
+
+void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd) {
+    ts->scriptFd = fd;
 }
 
 static rpmProblemSet psCreate(void) {
