@@ -1371,18 +1371,13 @@ assert(psm->mi == NULL);
 		fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
 	    rc = RPMRC_OK;
 	}
-	if (psm->goal == PSM_PKGERASE) {
+	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
 	
 	    /* Retrieve installed header. */
 	    rc = psmStage(psm, PSM_RPMDB_LOAD);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
-	    psm->scriptArg = psm->npkgs_installed - 1;
-	
-	    /* Retrieve installed header. */
-	    rc = psmStage(psm, PSM_RPMDB_LOAD);
-
 	    /* Open output package for writing. */
 	    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
 		const char * pkgbn =
@@ -1428,9 +1423,11 @@ assert(psm->mi == NULL);
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
 
+	    /* Run triggers in other package(s) this package sets off. */
 	    rc = psmStage(psm, PSM_TRIGGERS);
 	    if (rc) break;
 
+	    /* Run triggers in this package other package(s) set off. */
 	    rc = psmStage(psm, PSM_IMMED_TRIGGERS);
 	    if (rc) break;
 
@@ -1534,31 +1531,30 @@ assert(psm->mi == NULL);
 		rc = RPMRC_FAIL;
 		break;
 	    }
-	    if (ts && ts->notify) {
-		unsigned int archiveSize =
-				(fi->archiveSize ? fi->archiveSize : 100);
-		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
-				archiveSize, archiveSize,
-				(fi->ap ? fi->ap->key : NULL), ts->notifyData);
-	    }
+	    psm->what = RPMCALLBACK_INST_PROGRESS;
+	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
+	    psm->total = psm->amount;
+	    (void) psmStage(psm, PSM_NOTIFY);
 	}
 	if (psm->goal == PSM_PKGERASE) {
-	    const void * pkgKey = NULL;
 
 	    if (fi->fc <= 0)				break;
 	    if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
 
-	    if (ts->notify)
-		(void) ts->notify(fi->h, RPMCALLBACK_UNINST_START,
-				fi->fc, fi->fc, pkgKey, ts->notifyData);
+	    psm->what = RPMCALLBACK_UNINST_START;
+	    psm->amount = fi->fc;	/* XXX W2DO? looks wrong. */
+	    psm->total = fi->fc;
+	    (void) psmStage(psm, PSM_NOTIFY);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
 			NULL, NULL, &psm->failedFile);
 	    (void) fsmTeardown(fi->fsm);
 
-	    if (ts->notify)
-		(void) ts->notify(fi->h, RPMCALLBACK_UNINST_STOP,
-				0, fi->fc, pkgKey, ts->notifyData);
+	    psm->what = RPMCALLBACK_UNINST_STOP;
+	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
+	    psm->total = fi->fc;
+	    (void) psmStage(psm, PSM_NOTIFY);
+
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    fileAction * actions = fi->actions;
@@ -1630,9 +1626,11 @@ assert(psm->mi == NULL);
 	    rc = psmStage(psm, PSM_SCRIPT);
 	    if (rc) break;
 
+	    /* Run triggers in other package(s) this package sets off. */
 	    rc = psmStage(psm, PSM_TRIGGERS);
 	    if (rc) break;
 
+	    /* Run triggers in this package other package(s) set off. */
 	    rc = psmStage(psm, PSM_IMMED_TRIGGERS);
 	    if (rc) break;
 
@@ -1648,6 +1646,7 @@ assert(psm->mi == NULL);
 	    rc = psmStage(psm, PSM_SCRIPT);
 	    /* XXX WTFO? postun failures are not cause for erasure failure. */
 
+	    /* Run triggers in other package(s) this package sets off. */
 	    rc = psmStage(psm, PSM_TRIGGERS);
 	    if (rc) break;
 
@@ -1717,6 +1716,9 @@ assert(psm->mi == NULL);
     case PSM_CREATE:
 	break;
     case PSM_NOTIFY:
+	if (ts && ts->notify)
+	    (void) ts->notify(fi->h, psm->what, psm->amount, psm->total,
+		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
 	break;
     case PSM_DESTROY:
 	break;
@@ -1767,10 +1769,12 @@ assert(psm->mi == NULL);
 	break;
     case PSM_TRIGGERS:
 	if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)	break;
+	/* Run triggers in other package(s) this package sets off. */
 	rc = runTriggers(psm);
 	break;
     case PSM_IMMED_TRIGGERS:
 	if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)	break;
+	/* Run triggers in this package other package(s) set off. */
 	rc = runImmedTriggers(psm);
 	break;
 

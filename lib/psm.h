@@ -153,6 +153,9 @@ struct psm_s {
     int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
+    rpmCallbackType what;	/*!< Callback type. */
+    unsigned long amount;	/*!< Callback amount. */
+    unsigned long total;	/*!< Callback total. */
     rpmRC rc;
     pkgStage goal;
     pkgStage stage;
