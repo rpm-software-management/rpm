@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.17 2002/04/12 00:16:33 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.18 2002/05/10 05:53:48 rjray Exp $";
 
 /*
   rpmdb_TIEHASH
@@ -54,7 +54,7 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
 
     /* With that all processed, attempt to open the actual RPM DB */
     /* The retvalp is used for the C-level rpmlib information on databases */
-    retvalp = new_RPM_storage(RPM_Database);
+    Newz(0, retvalp, 1, RPM_Database);
     if (rpmdbOpen(root, &retvalp->dbp, mode, perms) != 0)
         /* rpm lib will have set the error already */
         return (Null(RPM__Database));
@@ -251,10 +251,10 @@ void rpmdb_DESTROY(pTHX_ RPM__Database self)
 
     rpmdbClose(dbstruct->dbp);
     if (dbstruct->offsets)
-        safefree(dbstruct->offsets);
+        Safefree(dbstruct->offsets);
 
     hv_undef(dbstruct->storage);
-    safefree(dbstruct);
+    Safefree(dbstruct);
     hv_undef(self);
 }
 
