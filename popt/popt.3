@@ -53,9 +53,11 @@ and
 Some specific advantages of popt are: it does not utilize global 
 .RI "variables, thus enabling multiple passes in parsing " argv
 .RI "; it can parse an arbitrary array of " argv "-style elements, "
-allowing parsing of command-line-strings from any source; and 
-finally, it provides a standard method of option aliasing (to be 
-discussed at length below.)
+allowing parsing of command-line-strings from any source; 
+it provides a standard method of option aliasing (to be 
+discussed at length below.); it can exec external option filters; and,
+finally, it can automatically generate help and usage messages for
+the application.
 .sp
 Like
 .BR getopt_long() ,
@@ -88,11 +90,13 @@ structures:
 .sp
 .nf
 struct poptOption {
-     const char * longName;  /* may be NULL */
-     char shortName;   /* may be '\\0' */
-     int argInfo;
-     void * arg;   /* depends on argInfo */
-     int val;  /* 0 means don't return, just update flag */
+    const char * longName; /* may be NULL */
+    char shortName;        /* may be '\\0' */
+    int argInfo;
+    void * arg;            /* depends on argInfo */
+    int val;               /* 0 means don't return, just update flag */
+    char * descrip;        /* description for autohelp -- may be NULL */
+    char * argDescrip;     /* argument description for autohelp */
 };
 .fi
 .sp
@@ -107,7 +111,7 @@ The
 .IR argInfo " member tell popt what type of argument is expected" 
 after the argument.  If no option is expected,
 .BR POPT_ARG_NONE " should be used.  (Connoisseurs of " getopt() 
-.RI "will note that " argInfo " is the only field of "
+.RI "will note that " argInfo " is the only required field of "
 .BR "struct poptOption" " that is not directly analogous to a field in "
 .RB "the " getopt_long() " argument table.  The similarity between the "
 .RB "two allows for easy transitions from " getopt_long " to popt.) " 
@@ -138,14 +142,78 @@ an argument, the variable that
 .BR POPT_ARG_INT " and " POPT_ARG_LONG " are converted to the 
 appropriate type, and an error returned if the conversion fails.
 .sp
-.RI "The final option, " val ", is the value popt's parsing function 
+.RI "The next option, " val ", is the value popt's parsing function 
 should return when the option is encountered.  If it is 0, the parsing
 function does not return a value, instead parsing the next 
 command-line argument.
 .sp
+.RI "The last two options, " descrip " and " argDescrip " are only required
+if automatic help messages are desired (automatic usage messages can
+.RI "be generated without them). " descrip " is a text description of the
+.RI "argument and " argdescrip " is a short summary of the type of arguments
+.RI "the option expects, or NULL if the option doesn't require any 
+arguments.
+.sp
+.RB "If popt should automatically provide " --usage " and " --help " (" -? ")
+.RB "options, one line in the table should be the macro " POPT_AUTOHELP ".
+.RB "This macro includes another option table (via " POPT_ARG_INCLUDE_TABLE;
+see below) in the main one which provides the table entries for these
+.RB "arguments. When " --usage " or " --help " are passed to programs which
+use popt's automatical help, popt displays the appropriate message on 
+stderr as soon as it finds the option, and exits the program with a
+return code of 0. If you want to use popt's automatic help generation in
+a different way, you need to explicitly add the option entries to your programs 
+.RB "option table instead of using " POPT_AUTOHELP ".
+.sp
 The final structure in the table should have all the pointer values set
 .RB "to " NULL " and all the arithmetic values set to 0, marking the "
 end of the table.
+.sp
+There are two types of option table entries which do not specify command
+line options. When either of these types of entries are used, the
+\fIlongName\fR element must be \fBNULL\fR and the \fBshortName\fR element
+must be \fB'\\0'\fR.
+.sp
+The first of these special entry types allows the application to nest
+another option table in the current one; such nesting may extend quite
+deeply (the actual depth is limited by the program's stack). Including
+other option tables allows a library to provide a standard set of
+command-line options to every program which uses it (this is often done
+in graphical programming toolkits, for example). To do this, set
+the \fIargInfo\fR field to \fBPOPT_ARG_INCLUDE_TABLE\fR and the
+\fRarg\fR field to point to the table which is being included. If
+automatic help generation is being used, the \fIdescrip\fR field should
+contain a overall description of the option table being included.
+.sp
+The other special option table entry type tells popt to call a function (a
+callback) when any option in that table is found. This is especially usefull
+when included option tables are being used, as the program which provides
+the top-level option table doesn't need to be aware of the other options
+which are provided by the included table. When a callback is set for
+a table, the parsing function never returns information on an option in
+the table. Instead, options information must be retained via the callback
+or by having popt set a variable through the option's \fIarg\fR field.
+Option callbacks should match the following prototype:
+.sp
+.nf
+.BI "void poptCallbackType(poptContext con, 
+.BI "                      const struct poptOption * opt, 
+.BI "                      const char * arg, void * data);
+.fi
+.sp
+The first parameter is the context which is being parsed (see the next
+section for information on contexts), \fIopt\fR points to the option
+which triggered this callback, and \fIarg\fR is the option's argument.
+If the option does not take an argument, \fIarg\fR is \fBNULL\fR.  The
+final parameter, \fIdata\fR is taken from the \fIdescrip\fR field
+of the option table entry which defined the callback. As \fIdescrip\fR
+is a pointer, this allows callback functions to be passed an arbitrary
+set of data (though a typecast will have to be used).
+.sp
+The option table entry which defines a callback has an \fIargInfo\fR of
+\fBPOPT_ARG_CALLBACK\fR, an \fIarg\fR which points to the callback
+function, and a \fIdescrip\fR field which specifies an arbitrary pointer
+to be passed to the callback.
 .SS "2. CREATING A CONTEXT"
 popt can interleave the parsing of multiple command-line sets. It allows
 this by keeping all the state information for a particular set of
@@ -500,18 +568,10 @@ at least some of the features of the extremely rich popt library.
 #include <popt.h>
 #include <stdio.h>
 
-void usage(int exitcode, char *error, char *addl) {
-   fprintf(stderr, "Usage: parse [options] <port>\\n"
-                   " [options] include:\\n"
-                   "    -H,--help   for this help\\n"
-                   "    -r,--raw    for raw mode\\n"
-                   "    -c,--crnl   to add CR with NL on output\\n"
-                   "    -h,--help   for hardware flow control\\n"
-                   "    -s,--swflow for software flow control\\n"
-                   "    -n,--noflow for no flow control\\n"
-                   "    -b,--bps <bps> for signalling rate\\n");
-   if (error) fprintf(stderr, "%s: %s\\n", error, addl);
-   exit(exitcode);
+void usage(poptContext optCon, int exitcode, char *error, char *addl) {
+    poptPrintUsage(optCon, stderr, 0);
+    if (error) fprintf(stderr, "%s: %s\n", error, addl);
+    exit(exitcode);
 }
 
 int main(int argc, char *argv[]) {
@@ -525,26 +585,33 @@ int main(int argc, char *argv[]) {
    poptContext optCon;   /* context for parsing command-line options */
 
    struct poptOption optionsTable[] = {
-	    { "bps", 'b', POPT_ARG_INT, &speed, 0 },
-	    { "crnl", 'c', 0, 0, 'c' },
-	    { "help", 'H', 0, 0, 'H' },
-	    { "hwflow", 'h', 0, 0, 'h' },
-	    { "noflow", 'n', 0, 0, 'n' },
-	    { "raw", 'r', 0, &raw, 0 }, 
-	    { "swflow", 's', 0, 0, 's' },
+	    { "bps", 'b', POPT_ARG_INT, &speed, 0,
+		"signaling rate in bits-per-second", "BPS" },
+	    { "crnl", 'c', 0, 0, 'c',
+		"expand cr characters to cr/lf sequences" },
+	    { "hwflow", 'h', 0, 0, 'h',
+		"use hardware (RTS/CTS) flow control" },
+	    { "noflow", 'n', 0, 0, 'n',
+		"use no flow control" },
+	    { "raw", 'r', 0, &raw, 0,
+		"don't perform any character conversions" },
+	    { "swflow", 's', 0, 0, 's',
+		"use software (XON/XOF) flow control" } ,
+	    POPT_AUTOHELP
 	    { NULL, 0, 0, NULL, 0 }
    };
 
-   if (argc < 2) usage(1, "Not enough arguments", "");
-
    optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
+   poptSetOtherOptionHelp(optCon, "[OPTIONS]* <port>");
+
+   if (argc < 2) {
+	poptPrintUsage(optCon, stderr, 0);
+	exit(1);
+   }
 
    /* Now do options processing, get portname */
    while ((c = poptGetNextOpt(optCon)) >= 0) {
       switch (c) {
-         case 'H':
-            usage(0, NULL, NULL);
-            break;
          case 'c': 
             buf[i++] = 'c';         
             break;
@@ -560,8 +627,8 @@ int main(int argc, char *argv[]) {
       }
    }
    portname = poptGetArg(optCon);
-      if((portname == NULL) || !(poptPeekArg(optCon) == NULL))
-        usage(1, "Specify a single port", ".e.g., /dev/cua0");
+   if((portname == NULL) || !(poptPeekArg(optCon) == NULL))
+      usage(optCon, 1, "Specify a single port", ".e.g., /dev/cua0");
 
    if (c < -1) {
       /* an error occurred during option processing */
@@ -588,7 +655,10 @@ RPM, a popular Linux package management program, makes heavy use
 of popt's features. Many of its command-line arguments are implemented
 through popt aliases, which makes RPM an excellent example of how to
 take advantage of the popt library. For more information on RPM, see
-http://www.rpm.org
+http://www.rpm.org. The popt source code distribution includes test
+program(s) which use all of the features of the popt libraries in
+various ways. If a feature isn't working for you, the popt test code
+is the first place to look.
 .SH BUGS
 None presently known.
 .SH AUTHOR
