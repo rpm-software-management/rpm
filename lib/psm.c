@@ -28,7 +28,6 @@
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "legacy.h"		/* XXX rpmfiBuildFNames() */
-#include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
 #include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
@@ -1452,7 +1451,6 @@ psm->te->h = headerLink(fi->h);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    int i;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 
