@@ -264,9 +264,12 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	xtag = "string";
 	break;
     case RPM_BIN_TYPE:
+    {	int cpl = b64encode_chars_per_line;
+	b64encode_chars_per_line = 0;
 	s = base64Format(type, data, formatPrefix, padding, element);
+	b64encode_chars_per_line = cpl;
 	xtag = "base64";
-	break;
+    }	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
 	anint = *((uint_8 *) data);

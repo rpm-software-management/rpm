@@ -3327,12 +3327,12 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isxml) {
 		const char * tagN = tagName(spft->u.tag.tag);
 
-		need = strlen(tagN) + sizeof("<rpmTag name=>\n") - 1;
+		need = strlen(tagN) + sizeof("    <rpmTag name=\"\">\n") - 1;
 		t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(t, "<rpmTag name=");
+		te = stpcpy(t, "    <rpmTag name=\"");
 		te = stpcpy(te, tagN);
-		te = stpcpy(te, ">\n");
+		te = stpcpy(te, "\">\n");
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
 	    }
@@ -3348,10 +3348,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 
 	    if (isxml) {
-		need = sizeof("<rpmTag/>\n") - 1;
+		need = sizeof("    </rpmTag>\n") - 1;
 		t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(t, "<rpmTag/>\n");
+		te = stpcpy(t, "    </rpmTag>\n");
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
 	    }
@@ -3433,7 +3433,10 @@ char * headerSprintf(Header h, const char * fmt,
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
     sprintfToken nextfmt;
-    char * te;
+    sprintfTag tag;
+    char * t, * te;
+    int isxml;
+    int need;
  
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
@@ -3451,6 +3454,23 @@ char * headerSprintf(Header h, const char * fmt,
     hsa->ec = rpmecNew(hsa->exts);
     hsa->val = xstrdup("");
 
+    tag =
+	(hsa->format->type == PTOK_TAG
+	    ? &hsa->format->u.tag :
+	(hsa->format->type == PTOK_ARRAY
+	    ? &hsa->format->u.array.format->u.tag :
+	NULL));
+    isxml = (tag != NULL && tag->tag == -2 && !strcmp(tag->type, "xml"));
+
+    if (isxml) {
+	need = sizeof("<rpmHeader>\n") - 1;
+	t = hsaReserve(hsa, need);
+/*@-boundswrite@*/
+	te = stpcpy(t, "<rpmHeader>\n");
+/*@=boundswrite@*/
+	hsa->vallen += (te - t);
+    }
+
     hsa = hsaInit(hsa);
     while ((nextfmt = hsaNext(hsa)) != NULL) {
 	te = singleSprintf(hsa, nextfmt, 0);
@@ -3460,6 +3480,15 @@ char * headerSprintf(Header h, const char * fmt,
 	}
     }
     hsa = hsaFini(hsa);
+
+    if (isxml) {
+	need = sizeof("</rpmHeader>\n") - 1;
+	t = hsaReserve(hsa, need);
+/*@-boundswrite@*/
+	te = stpcpy(t, "</rpmHeader>\n");
+/*@=boundswrite@*/
+	hsa->vallen += (te - t);
+    }
 
     if (hsa->val != NULL && hsa->vallen < hsa->alloced)
 	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
