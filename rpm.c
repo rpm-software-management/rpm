@@ -223,6 +223,7 @@ int main(int argc, char ** argv) {
     int badOption = 0;
     int excldocs = 0;
     int incldocs = 0;
+    char * queryFormat = NULL;
     char buildChar = ' ';
     char * prefix = "/";
     char * specFile;
@@ -250,6 +251,7 @@ int main(int argc, char ** argv) {
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
 	    { "query", 0, 0, 'q' },
+	    { "queryformat", 1, 0, 0},
 	    { "quiet", 0, &quiet, 0 },
 	    { "recompile", 0, 0, 0 },
 	    { "rebuild", 0, 0, 0 },
@@ -491,6 +493,12 @@ int main(int argc, char ** argv) {
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_RESIGN;
 		signIt = 1;
+	    } else if (!strcmp(options[long_index].name, "queryformat")) {
+		if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
+		    argerror(_("only one major mode may be specified"));
+		bigMode = MODE_QUERY;
+		queryFormat = optarg;
+		queryFor |= QUERY_FOR_INFO;
 	    }
 	}
     }
@@ -699,7 +707,7 @@ int main(int argc, char ** argv) {
 
       case MODE_QUERY:
 	if (querySource == QUERY_ALL) {
-	    doQuery(prefix, QUERY_ALL, queryFor, NULL);
+	    doQuery(prefix, QUERY_ALL, queryFor, NULL, queryFormat);
 	} else if (querySource == QUERY_SPATH || 
                    querySource == QUERY_SPACKAGE ||
 		   querySource == QUERY_SRPM) {
@@ -710,13 +718,14 @@ int main(int argc, char ** argv) {
 		i = strlen(buffer) - 1;
 		if (buffer[i] == '\n') buffer[i] = 0;
 		if (strlen(buffer)) 
-		    doQuery(prefix, querySource, queryFor, buffer);
+		    doQuery(prefix, querySource, queryFor, buffer, queryFormat);
 	    }
 	} else {
 	    if (optind == argc) 
 		argerror(_("no arguments given for query"));
 	    while (optind < argc) 
-		doQuery(prefix, querySource, queryFor, argv[optind++]);
+		doQuery(prefix, querySource, queryFor, argv[optind++], 
+			queryFormat);
 	}
 	break;
 

@@ -1,3 +1,4 @@
+#include <alloca.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -13,9 +14,13 @@
 #include "rpmlib.h"
 #include "query.h"
 
-static void printHeader(Header h, int queryFlags);
+static void printHeader(Header h, int queryFlags, char * queryFormat);
+static void queryHeader(Header h, const char * incomingFormat);
+static void escapedChar(char ch);
+static const char * handleFormat(Header h, const char * chptr);
 static char * getString(Header h, int tag, char * def);    
-static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags);
+static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags, 
+			char * queryFormat);
 static int findMatches(rpmdb db, char * name, char * version, char * release,
 		       dbIndexSet * matches);
 static void printFileInfo(char * name, unsigned int size, unsigned short mode,
@@ -34,7 +39,140 @@ static char * getString(Header h, int tag, char * def) {
     return str;
 }
 
-static void printHeader(Header h, int queryFlags) {
+static void queryHeader(Header h, const char * chptr) {
+    while (chptr && *chptr) {
+	switch (*chptr) {
+	  case '\\':
+	    chptr++;
+	    if (!*chptr) return;
+	    escapedChar(*chptr++);
+	    break;
+
+	  case '%':
+	    chptr++;
+	    if (!*chptr) return;
+	    if (*chptr == '%') {
+		putchar('%');
+		chptr++;
+	    }
+	    chptr = handleFormat(h, chptr);
+	    break;
+
+	  default:
+	    putchar(*chptr++);
+	}
+    }
+}
+
+static const char * handleFormat(Header h, const char * chptr) {
+    const char * f = chptr;
+    const char * tagptr;
+    char format[20];
+    int i, tagLength;
+    char tag[100];
+    const struct rpmTagTableEntry * t;
+    void * p;
+    int type, count;
+    int isDate = 0;
+    time_t dateint;
+    struct tm * tstruct;
+    char datestr[100];
+
+    strcpy(format, "%");
+    while (*chptr && *chptr != '{') chptr++;
+    if (!*chptr || (chptr - f > (sizeof(format) - 3))) {
+	fprintf(stderr, "bad query format - %s\n", f);
+	return NULL;
+    }
+
+    strncat(format, f, chptr - f);
+
+    tagptr = ++chptr;
+    while (*chptr && *chptr != '}') chptr++;
+    if (tagptr == chptr || !*chptr) {
+	fprintf(stderr, "bad query format - %s\n", f);
+	return NULL;
+    }
+
+    switch (*tagptr) {
+	case '-':	isDate = 1, tagptr++;	break;
+    }
+
+    tagLength = chptr - tagptr;
+    chptr++;
+
+    if (tagLength > (sizeof(tag) - 20)) {
+	fprintf(stderr, "query tag too long\n");
+	return NULL;
+    }
+    memset(tag, 0, sizeof(tag));
+    if (strncmp(tagptr, "RPMTAG_", 7)) {
+	strcpy(tag, "RPMTAG_");
+    }
+    strncat(tag, tagptr, tagLength);
+
+    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	if (!strcmp(tag, t->name)) break;
+    }
+
+    if (i == rpmTagTableSize) {
+	fprintf(stderr, "unknown tag %s\n", tag);
+	return NULL;
+    }
+ 
+    if (!getEntry(h, t->val, &type, &p, &count) || !p) {
+	p = "(unknown)";
+	count = 1;
+	type = STRING_TYPE;
+    } else if (count > 1 || type == STRING_ARRAY_TYPE) {
+	p = "(array)";
+	count = 1;
+	type = STRING_TYPE;
+    }
+
+    switch (type) {
+      case STRING_TYPE:
+	strcat(format, "s");
+	printf(format, p);
+	break;
+
+      case INT32_TYPE:
+	if (isDate) {
+	    strcat(format, "s");
+	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
+	    dateint = *((int_32 *) p);
+	    tstruct = localtime(&dateint);
+	    strftime(datestr, sizeof(datestr) - 1, "%c", tstruct);
+	    printf(format, datestr);
+	} else {
+	    strcat(format, "d");
+	    printf(format, *((int_32 *) p));
+	}
+	break;
+
+      default:
+	printf("(can't handle type %d)", type);
+	break;
+    }
+
+    return chptr;
+}
+
+static void escapedChar(const char ch) {
+    switch (ch) {
+      case 'a': 	putchar('\a'); break;
+      case 'b': 	putchar('\b'); break;
+      case 'f': 	putchar('\f'); break;
+      case 'n': 	putchar('\n'); break;
+      case 'r': 	putchar('\r'); break;
+      case 't': 	putchar('\t'); break;
+      case 'v': 	putchar('\v'); break;
+
+      default:		putchar(ch); break;
+    }
+}
+
+static void printHeader(Header h, int queryFlags, char * queryFormat) {
     char * name, * version, * release;
     char * distribution, * vendor, * group, *description, * buildHost;
     uint_32 * size;
@@ -64,49 +202,56 @@ static void printHeader(Header h, int queryFlags) {
 	printf("%s-%s-%s\n", name, version, release);
     } else {
 	if (queryFlags & QUERY_FOR_INFO) {
-	    distribution = getString(h, RPMTAG_DISTRIBUTION, "");
-	    description = getString(h, RPMTAG_DESCRIPTION, "");
-	    buildHost = getString(h, RPMTAG_BUILDHOST, "");
-	    vendor = getString(h, RPMTAG_VENDOR, "");
-	    group = getString(h, RPMTAG_GROUP, "Unknown");
-	    sourcePackage = getString(h, RPMTAG_SOURCERPM, "Unknown");
-	    if (!getEntry(h, RPMTAG_SIZE, &type, (void **) &size, &count)) 
-		size = NULL;
+	    if (queryFormat) {
+		queryHeader(h, queryFormat);
+	    } else {
+		distribution = getString(h, RPMTAG_DISTRIBUTION, "");
+		description = getString(h, RPMTAG_DESCRIPTION, "");
+		buildHost = getString(h, RPMTAG_BUILDHOST, "");
+		vendor = getString(h, RPMTAG_VENDOR, "");
+		group = getString(h, RPMTAG_GROUP, "Unknown");
+		sourcePackage = getString(h, RPMTAG_SOURCERPM, "Unknown");
+		if (!getEntry(h, RPMTAG_SIZE, &type, (void **) &size, &count)) 
+		    size = NULL;
 
-	    if (getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, 
-			 &count)) {
-		/* this is important if sizeof(int_32) ! sizeof(time_t) */
-		buildDate = *pBuildDate; 
-		tstruct = localtime(&buildDate);
-		strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", tstruct);
-	    } else
-		strcpy(buildDateStr, "(unknown)");
+		if (getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, 
+			     &count)) {
+		    /* this is important if sizeof(int_32) ! sizeof(time_t) */
+		    buildDate = *pBuildDate; 
+		    tstruct = localtime(&buildDate);
+		    strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", 
+			     tstruct);
+		} else
+		    strcpy(buildDateStr, "(unknown)");
 
-	    if (getEntry(h, RPMTAG_INSTALLTIME, &type, (void **) &pInstallDate, 
-		&count)) {
-		/* this is important if sizeof(int_32) ! sizeof(time_t) */
-		installDate = *pInstallDate; 
-		tstruct = localtime(&installDate);
-		strftime(installDateStr, sizeof(installDateStr) - 1, "%c", 
-			 tstruct);
-	    } else 
-		strcpy(installDateStr, "(unknown)");
-	   
-	    printf("Name        : %-27s Distribution: %s\n", 
-		   name, distribution);
-	    printf("Version     : %-27s       Vendor: %s\n", version, vendor);
-	    printf("Release     : %-27s   Build Date: %s\n", release,
-		   buildDateStr); 
-	    printf("Install date: %-27s   Build Host: %s\n", installDateStr, 
-		   buildHost);
-	    printf("Group       : %-27s   Source RPM: %s\n", group, 
-		   sourcePackage);
-	    if (size) 
-		printf("Size        : %d\n", *size);
-	    else 
-		printf("Size        : (unknown)\n");
-	    printf("Description : %s\n", description);
-	    prefix = "    ";
+		if (getEntry(h, RPMTAG_INSTALLTIME, &type, 
+			     (void **) &pInstallDate, 
+		    &count)) {
+		    /* this is important if sizeof(int_32) ! sizeof(time_t) */
+		    installDate = *pInstallDate; 
+		    tstruct = localtime(&installDate);
+		    strftime(installDateStr, sizeof(installDateStr) - 1, "%c", 
+			     tstruct);
+		} else 
+		    strcpy(installDateStr, "(unknown)");
+	       
+		printf("Name        : %-27s Distribution: %s\n", 
+		       name, distribution);
+		printf("Version     : %-27s       Vendor: %s\n", version, 
+			vendor);
+		printf("Release     : %-27s   Build Date: %s\n", release,
+		       buildDateStr); 
+		printf("Install date: %-27s   Build Host: %s\n", 
+			installDateStr, buildHost);
+		printf("Group       : %-27s   Source RPM: %s\n", group, 
+		       sourcePackage);
+		if (size) 
+		    printf("Size        : %d\n", *size);
+		else 
+		    printf("Size        : (unknown)\n");
+		printf("Description : %s\n", description);
+		prefix = "    ";
+	    }
 	}
 
 	if (queryFlags & QUERY_FOR_LIST) {
@@ -291,7 +436,8 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 		sizefield, timefield, namefield);
 }
 
-static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags) {
+static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags, 
+			char * queryFormat) {
     int i;
     Header h;
 
@@ -304,7 +450,7 @@ static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags) {
 	    if (!h) {
 		fprintf(stderr, "error: could not read database record\n");
 	    } else {
-		printHeader(h, queryFlags);
+		printHeader(h, queryFlags, queryFormat);
 		freeHeader(h);
 	    }
 	}
@@ -312,7 +458,7 @@ static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags) {
 }
 
 void doQuery(char * prefix, enum querysources source, int queryFlags, 
-	     char * arg) {
+	     char * arg, char * queryFormat) {
     Header h;
     int offset;
     int fd;
@@ -343,7 +489,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 			fprintf(stderr, "old format source packages cannot be "
 						"queried\n");
 		    } else {
-			printHeader(h, queryFlags);
+			printHeader(h, queryFlags, queryFormat);
 			freeHeader(h);
 		    }
 		    break;
@@ -363,7 +509,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 		fprintf(stderr, "could not read database record!\n");
 		exit(1);
 	    }
-	    printHeader(h, queryFlags);
+	    printHeader(h, queryFlags, queryFormat);
 	    freeHeader(h);
 	    offset = rpmdbNextRecNum(db, offset);
 	}
@@ -374,7 +520,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	if (rpmdbFindByGroup(db, arg, &matches)) {
 	    fprintf(stderr, "group %s does not contain any pacakges\n", arg);
 	} else {
-	    showMatches(db, matches, queryFlags);
+	    showMatches(db, matches, queryFlags, queryFormat);
 	    freeDBIndexRecord(matches);
 	}
 	break;
@@ -384,7 +530,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	if (rpmdbFindByFile(db, arg, &matches)) {
 	    fprintf(stderr, "file %s is not owned by any package\n", arg);
 	} else {
-	    showMatches(db, matches, queryFlags);
+	    showMatches(db, matches, queryFlags, queryFormat);
 	    freeDBIndexRecord(matches);
 	}
 	break;
@@ -399,7 +545,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	    if (!h) 
 		fprintf(stderr, "record %d could not be read\n", recNumber);
 	    else {
-		printHeader(h, queryFlags);
+		printHeader(h, queryFlags, queryFormat);
 		freeHeader(h);
 	    }
 	} else {
@@ -409,7 +555,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	    else if (rc == 2) {
 		fprintf(stderr, "error looking for package %s\n", arg);
 	    } else {
-		showMatches(db, matches, queryFlags);
+		showMatches(db, matches, queryFlags, queryFormat);
 		freeDBIndexRecord(matches);
 	    }
 	}
