@@ -20,9 +20,9 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.16
+Release: 0.18
 Group: System Environment/Base
-Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
+Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
 Conflicts: patch < 2.5
 %ifos linux
@@ -37,10 +37,11 @@ BuildRequires: elfutils-devel
 
 BuildRequires: zlib-devel
 
-BuildRequires: beecrypt-devel >= 3.0.1
-Requires: beecrypt >= 3.0.1
+BuildRequires: beecrypt-devel >= 4.1.2
+Requires: beecrypt >= 4.1.2
 
 BuildRequires: neon-devel
+BuildRequires: sqlite3-devel
 
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
