@@ -507,6 +507,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     char * rpmio_flags;
     FD_t cfd;
     int urltype;
+    int saveerrno;
 
     if (!files) {
 	/* install all files */
@@ -571,12 +572,14 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     rc = cpioInstallArchive(cfd, map, mappedFiles,
 		    ((notify && archiveSize) || specFile) ? callback : NULL,
 		    &info, &failedFile);
+    saveerrno = errno;	/* XXX FIXME: Fclose with libio destroys errno */
     Fclose(cfd);
     headerFree(info.h);
 
     if (rc) {
 	/* this would probably be a good place to check if disk space
 	   was used up - if so, we should return a different error */
+	errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 	rpmError(RPMERR_CPIO, _("unpacking of archive failed%s%s: %s"),
 		(failedFile != NULL ? _(" on file ") : ""),
 		(failedFile != NULL ? failedFile : ""),
