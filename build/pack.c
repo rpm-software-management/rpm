@@ -632,16 +632,17 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	
 	s = strtok(buf, " \t\n");
 	while (s) {
-	    if (!strcmp(s, "%doc")) {
+	    /* Order of comparison here is important */
+	    if (!strcmp(s, "%docdir")) {
+	        s = strtok(NULL, " \t\n");
+		addDocdir(s);
+		break;
+	    } else if (!strcmp(s, "%doc")) {
 		isdoc = 1;
 	    } else if (!strcmp(s, "%config")) {
 		isconf = 1;
 	    } else if (!strcmp(s, "%dir")) {
 		isdir = 1;
-	    } else if (!strcmp(s, "%docdir")) {
-	        s = strtok(NULL, " \t\n");
-		addDocdir(s);
-		break;
 	    } else {
 		if (isdoc && (*s != '/')) {
 		    /* This is a special %doc macro */
