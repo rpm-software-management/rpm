@@ -189,6 +189,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     int toCpio[2];
     int fromCpio[2];
     int toGzip[2];
+    char * cpiobin;
 
     int writeBytesLeft, bytesWritten;
 
@@ -198,6 +199,9 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     int status;
     void *oldhandler;
 
+    cpiobin = getVar(RPMVAR_CPIOBIN);
+    if (!cpiobin) cpiobin = "cpio";
+ 
     *archiveSize = 0;
     
     pipe(toCpio);
@@ -235,7 +239,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	    }
 	}
 
-	execlp("cpio", "cpio",
+	execlp(cpiobin, cpiobin,
 	       (isVerbose()) ? "-ov" : "-o",
 	       (tempdir) ? "-LH" : "-H",
 	       "crc", NULL);
