@@ -34,6 +34,8 @@ LIBBEECRYPT_LT_REVISION = 0
 
 AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
+LINT = splint
+
 SUBDIRS = docs gas masm mwerks tests
 
 SUFFIXES = .S
@@ -76,9 +78,9 @@ sources:
 	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%) | sed -e 's,beecrypt/javaglue.c,,'
 
 # XXX don't bite into javaglue.c (yet)
-.PHONY: lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(libbeecrypt_la_SOURCES:javaglue.c=) tests/beetest.c
+.PHONY: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(libbeecrypt_la_SOURCES:javaglue.c=) tests/beetest.c
 
 .PHONY: listobjs
 listobjs:

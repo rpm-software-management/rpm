@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 PYVER= @WITH_PYTHON_VERSION@
 
 SUBDIRS = rpmdb test
@@ -69,6 +71,6 @@ splint_srcs = hash.c upgrade.c \
  	rpmal-py.c rpmds-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
 	rpmrc-py.c rpmte-py.c rpmts-py.c
 
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(splint_srcs)
+.PHONY:	lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(splint_srcs)
