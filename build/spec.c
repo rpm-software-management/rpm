@@ -571,7 +571,7 @@ Spec parseSpec(FILE *f, char *specfile)
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
 
-    appendLineStringBuf(spec->doc, "DOCDIR=$RPM_DOC_DIR/"
+    appendLineStringBuf(spec->doc, "DOCDIR=$RPM_ROOT_DIR/$RPM_DOC_DIR/"
 			"$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION"
 			"-$RPM_PACKAGE_RELEASE");
     appendLineStringBuf(spec->doc, "rm -rf $DOCDIR");
