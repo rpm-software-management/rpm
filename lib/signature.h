@@ -9,7 +9,7 @@
 int readSignature(int fd, short sig_type, void **sig);
 
 /* Generate a signature of data in file, write it to ofd */
-int makeSignature(char *file, short sig_type, int ofd);
+int makeSignature(char *file, short sig_type, int ofd, char *passPhrase);
 
 /* Verify data on fd with sig.                      */
 /* If result is not NULL, fill it with status info. */
