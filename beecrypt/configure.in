@@ -424,16 +424,19 @@ else
         CFLAGS="$CFLAGS -fomit-frame-pointer"
         ;;
       i386)
-        CFLAGS="$CFLAGS -m386 -march=i386 -fomit-frame-pointer"
+        CFLAGS="$CFLAGS -mcpu=i386 -march=i386 -fomit-frame-pointer"
         ;;
       i486)
-        CFLAGS="$CFLAGS -m486 -march=i486 -fomit-frame-pointer"
+        CFLAGS="$CFLAGS -mcpu=i386 -march=i486 -fomit-frame-pointer"
         ;;
       i586)
-        CFLAGS="$CFLAGS -mpentium -march=pentium -fomit-frame-pointer"
+        CFLAGS="$CFLAGS -mcpu=i386 -march=i586 -fomit-frame-pointer"
         ;;
       i686)
-	CFLAGS="$CFLAGS -mpentiumpro -march=pentiumpro -fomit-frame-pointer"
+	CFLAGS="$CFLAGS -mcpu=i386  -march=i686 -fomit-frame-pointer"
+        ;;
+      sparc)
+        CFLAGS="$CFLAGS -m32 -mtune=ultrasparc"
         ;;
       sparcv8)
         CFLAGS="$CFLAGS -mv8"
@@ -443,8 +446,10 @@ else
 #       CFLAGS="$CFLAGS -mv8plus"
 #       ;;
       sparcv9*)
-        AC_MSG_WARN([gcc currently cannot build 64-bit objects])
-        CFLAGS="$CFLAGS -mcpu=v9 -m64 -mptr64"
+        CFLAGS="$CFLAGS -m32 -mcpu=ultrasparc"
+        ;;
+      sparc64)
+        CFLAGS="$CFLAGS -m64 -mcpu=ultrasparc"
         ;;
       esac
     fi

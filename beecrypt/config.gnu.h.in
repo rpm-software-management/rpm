@@ -193,12 +193,8 @@
 #undef HAVE_LIBTHREAD
 
 /* Name of package */
-#if !defined(PACKAGE)
 #undef PACKAGE
-#endif
 
 /* Version number of package */
-#if !defined(VERSION)
 #undef VERSION
-#endif
 

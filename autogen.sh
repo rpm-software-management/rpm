@@ -22,6 +22,7 @@ recent versions of libtool/autoconf/automake.
 
 (cd popt; ./autogen.sh --noconfigure "$@")
 (cd zlib; ./autogen.sh --noconfigure "$@")
+(cd beecrypt; ./autogen.sh --noconfigure "$@")
 libtoolize --copy --force
 aclocal
 autoheader
