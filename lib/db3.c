@@ -21,7 +21,7 @@ static const char * db_errpfx = "rpmdb";
 static int db_verbose = 1;
 
 static int dbmp_mmapsize = 16 * 1024 * 1024;	/* XXX db2 default: 10 Mb */
-static int dbmp_size = 16 * 1024 * 1024;	/* XXX db2 default: 128 Kb */
+static int dbmp_size = 2 * 1024 * 1024;		/* XXX db2 default: 128 Kb */
 
 /* XXX dbinfo parameters */
 static int db_cachesize = 0;
@@ -33,8 +33,8 @@ static u_int32_t dbh_ffactor = 0;	/* db1 default: 8 */
 static u_int32_t dbh_nelem = 0;		/* db1 default: 1 */
 static u_int32_t dbh_flags = 0;
 
-#if defined(__ISE_DB3)
-static int dbopenflags = 0;
+#if defined(__USE_DB3)
+static int dbopenflags = DB_INIT_MPOOL|DB_SYSTEM_MEM;	/* W2DO? DB_PRIVATE */
 #else
 static int dbopenflags = DB_INIT_MPOOL;
 #endif
@@ -264,13 +264,14 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 #else
 	xx = db_appexit(dbenv);
 	xx = cvtdberr(dbi, "db_appexit", xx, _debug);
-#endif
 	free(dbi->dbi_dbenv);
+#endif
 	dbi->dbi_dbenv = NULL;
     }
 #else
     rc = db->close(db);
 #endif
+    dbi->dbi_db = NULL;
 
     return rc;
 }
@@ -418,10 +419,19 @@ static int db3open(dbiIndex dbi)
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
     char * dbhome = NULL;
+    char * dbfile = NULL;
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
     void * dbinfo = NULL;
     u_int32_t dbflags;
+
+    dbhome = alloca(strlen(dbi->dbi_file) + 1);
+    strcpy(dbhome, dbi->dbi_file);
+    dbfile = strrchr(dbhome, '/');
+    if (dbfile)
+	*dbfile++ = '\0';
+    else
+	dbfile = dbhome;
 
     dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
 		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
@@ -437,12 +447,12 @@ static int db3open(dbiIndex dbi)
 		rc = db->set_pagesize(db, db_pagesize);
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
 	    }
-	    rc = db->open(db, dbi->dbi_file, NULL, dbi_to_dbtype(dbi->dbi_type),
+	    rc = db->open(db, dbfile, NULL, dbi_to_dbtype(dbi->dbi_type),
 			dbflags, dbi->dbi_perms);
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
 	}
 #else
-	rc = db_open(dbi->dbi_file, dbi_to_dbtype(dbi->dbi_type), dbflags,
+	rc = db_open(dbfile, dbi_to_dbtype(dbi->dbi_type), dbflags,
 			dbi->dbi_perms, dbenv, dbinfo, &db);
 	rc = cvtdberr(dbi, "db_open", rc, _debug);
 #endif	/* __USE_DB3 */
@@ -453,13 +463,13 @@ static int db3open(dbiIndex dbi)
     dbi->dbi_dbinfo = dbinfo;
 
 #else
-    dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_flags, dbi->dbi_perms,
+    dbi->dbi_db = dbopen(dbfile, dbi->dbi_flags, dbi->dbi_perms,
 		dbi_to_dbtype(dbi->dbi_type), dbi->dbi_openinfo);
 #endif	/* __USE_DB2 || __USE_DB3 */
 
     if (rc == 0 && dbi->dbi_db != NULL) {
 	rc = 0;
-fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbi->dbi_file);
+fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbfile);
     } else {
 	rc = 1;
     }
