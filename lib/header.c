@@ -769,7 +769,10 @@ Header headerLoad(void * uh)
 	/*@=assignexpose@*/
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
-	if (rdlen != dl) goto errxit;
+#if !defined(MANDRAKE_LOCALE_PACKAGE_DEBUG)
+	if (rdlen != dl)
+	    goto errxit;
+#endif
 	entry->rdlen = rdlen;
 	entry++;
 	h->indexUsed++;
@@ -812,7 +815,8 @@ Header headerLoad(void * uh)
 	/*@=assignexpose@*/
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, ril-1, 0, pe+1, dataStart, entry->info.offset);
-	if (rdlen < 0) goto errxit;
+	if (rdlen < 0)
+	    goto errxit;
 	entry->rdlen = rdlen;
 
 	if (ril < h->indexUsed) {
@@ -823,7 +827,8 @@ Header headerLoad(void * uh)
 
 	    /* Load dribble entries from region. */
 	    rc = regionSwab(newEntry, ne, 0, pe+ril, dataStart, rid);
-	    if (rc < 0) goto errxit;
+	    if (rc < 0)
+		goto errxit;
 	    rdlen += rc;
 
 	  { indexEntry firstEntry = newEntry;

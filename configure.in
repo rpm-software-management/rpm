@@ -20,8 +20,10 @@ ALL_LINGUAS="cs da de en_RN es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR r
 LIBOBJS=
 
 dnl Checks for programs.
-AC_ARG_PROGRAM
 AC_PROG_CC
+AC_PROG_CXX
+AS=${AS-as}
+AC_SUBST(AS)
 if test "$ac_cv_prog_gcc" = yes; then
     CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
 fi
@@ -234,7 +236,12 @@ addlib() {
 }
 
 localdone=
-for dir in $prefix /usr/local
+
+dirs=$prefix
+if test "$cross_compiling" != "yes"; then
+  dirs="$dirs /usr/local"
+fi
+for dir in $dirs
 do
 	case $dir in
 	NONE|/usr)	continue;;
@@ -730,6 +737,7 @@ AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
 
 if test $rpm_cv_glob = no ; then
     AC_MSG_CHECKING(for GNU extensions to glob)
+if test "${rpm_cv_glob_ext+set}" = set; then
     rm -f t
     mkdir t
     mkdir t/p
@@ -746,9 +754,10 @@ main() {
     rpm_cv_glob_ext=yes, rpm_cv_glob_ext=no, rpm_cv_glob_ext=no)
     rm -r t
     AC_MSG_RESULT([$rpm_cv_glob_ext])
+fi
     if test $rpm_cv_glob_ext = no ; then
-	    echo "    --> using the included GNU glob instead." >&AC_FD_MSG
-	    rpm_cv_glob=yes
+	echo "    --> using the included GNU glob instead." >&AC_FD_MSG
+	rpm_cv_glob=yes
     fi
 fi
 
@@ -770,7 +779,7 @@ if test $withval = auto ; then
 main() {
   exit(strcmp("1.5.2", PY_VERSION));
 } ],
-  withval=yes, withval=no, withval=no)
+  withval=yes, withval=no, withval=yes)
   AC_MSG_RESULT($withval)
 fi
 
@@ -1006,6 +1015,8 @@ armv3l*)	RPMCANONARCH=armv3l ;;
 armv4l*)	RPMCANONARCH=armv4l ;;
 armv4b*)	RPMCANONARCH=armv4b ;;
 arm*)		RPMCANONARCH="${build_cpu}" ;;
+mipsel*)	RPMCANONARCH=mipsel ;;
+mips*)		RPMCANONARCH=mips ;;
 m68k*)		RPMCANONARCH=m68k ;;
 *)		RPMCANONARCH=unknown ;;
 esac

@@ -53,17 +53,19 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     rpmdb rpmdb = NULL;
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
     TFI_t fi = csa->cpioList;
-    const char *fmode = rpmExpand(fmodeMacro, NULL);
     const char *failedFile = NULL;
     FD_t cfd;
     int rc, ec;
 
-    if (!(fmode && fmode[0] == 'w'))
-	fmode = xstrdup("w9.gzdio");
-    /*@-nullpass@*/
-    (void) Fflush(fdo);
-    cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-    /*@=nullpass@*/
+    {	const char *fmode = rpmExpand(fmodeMacro, NULL);
+	if (!(fmode && fmode[0] == 'w'))
+	    fmode = xstrdup("w9.gzdio");
+	/*@-nullpass@*/
+	(void) Fflush(fdo);
+	cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
+	/*@=nullpass@*/
+	fmode = _free(fmode);
+    }
     if (cfd == NULL)
 	return 1;
 
@@ -84,7 +86,6 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     }
 
     failedFile = _free(failedFile);
-    fmode = _free(fmode);
     ts = rpmtransFree(ts);
 
     return rc;
@@ -365,7 +366,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    int rc, count, sigtype;
+    int count, sigtype;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
     const char * sha1 = NULL;
@@ -373,6 +374,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     char buf[BUFSIZ];
     Header h;
     Header sig = NULL;
+    int rc = 0;
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
@@ -430,6 +432,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h == NULL) {	/* XXX can't happen */
 	rc = RPMERR_RELOAD;
+	rpmError(RPMERR_RELOAD, _("Unable to create immutable header region.\n"));
 	goto exit;
     }
     /* Re-reference reallocated header. */
@@ -447,14 +450,15 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
+	rpmError(RPMERR_NOSPACE, _("Unable to write %s header\n"), "temp");
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
 	    rc = cpio_doio(fd, h, csa, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
-	    rpmError(RPMERR_CREATE, _("Bad CSA data\n"));
 	    rc = RPMERR_BADARG;
+	    rpmError(RPMERR_BADARG, _("Bad CSA data\n"));
 	}
     }
     rpmio_flags = _free(rpmio_flags);
@@ -487,8 +491,10 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
 
     fdInitSHA1(fd, 0);
-    if (headerWrite(fd, h, HEADER_MAGIC_NO))
+    if (headerWrite(fd, h, HEADER_MAGIC_NO)) {
 	rc = RPMERR_NOSPACE;
+	rpmError(RPMERR_NOSPACE, _("Unable to write %s header\n"), "final");
+    }
     (void) Fflush(fd);
     fdFiniSHA1(fd, (void **)&sha1, NULL, 1);
 
@@ -518,15 +524,16 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
     if (sig == NULL) {	/* XXX can't happen */
 	rc = RPMERR_RELOAD;
+	rpmError(RPMERR_RELOAD, _("Unable to reload %s header.\n"), "signature");
 	goto exit;
     }
 
     /* Open the output file */
     fd = Fopen(fileName, "w.ufdio");
     if (fd == NULL || Ferror(fd)) {
+	rc = RPMERR_CREATE;
 	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
 		fileName, Fstrerror(fd));
-	rc = RPMERR_CREATE;
 	goto exit;
     }
 
@@ -560,9 +567,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	}
 
 	if (writeLead(fd, &lead)) {
+	    rc = RPMERR_NOSPACE;
 	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
 		 Fstrerror(fd));
-	    rc = RPMERR_NOSPACE;
 	    goto exit;
 	}
     }
@@ -575,9 +582,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     /* Append the header and archive */
     ifd = Fopen(sigtarget, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
+	rc = RPMERR_READ;
 	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s\n"),
 		sigtarget, Fstrerror(ifd));
-	rc = RPMERR_READ;
 	goto exit;
     }
 
@@ -585,9 +592,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     {	Header nh = headerRead(ifd, HEADER_MAGIC_YES);
 
 	if (nh == NULL) {
+	    rc = RPMERR_READ;
 	    rpmError(RPMERR_READ, _("Unable to read header from %s: %s\n"),
 			sigtarget, Fstrerror(ifd));
-	    rc = RPMERR_READ;
 	    goto exit;
 	}
 
@@ -599,9 +606,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	nh = headerFree(nh);
 
 	if (rc) {
+	    rc = RPMERR_NOSPACE;
 	    rpmError(RPMERR_NOSPACE, _("Unable to write header to %s: %s\n"),
 			fileName, Fstrerror(fd));
-	    rc = RPMERR_NOSPACE;
 	    goto exit;
 	}
     }
@@ -609,15 +616,15 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     /* Write the payload into the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
+	    rc = RPMERR_READ;
 	    rpmError(RPMERR_READ, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
-	    rc = RPMERR_READ;
 	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
+	    rc = RPMERR_NOSPACE;
 	    rpmError(RPMERR_NOSPACE, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
-	    rc = RPMERR_NOSPACE;
 	    goto exit;
 	}
     }

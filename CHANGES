@@ -197,6 +197,9 @@
 	- add tmpdir to configure db3 tmpdir into chroot tree.
 	- permit lazy db opens within chroot.
 	- fix: diddle dbenv path to accomodate backing store reopen in chroot.
+	- add support for mips (#49283).
+	- add __as, _build_arch, and __cxx macros (#36662, #36663, #49280).
+	- detailed build package error messages.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

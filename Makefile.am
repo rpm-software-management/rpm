@@ -142,7 +142,7 @@ install-data-local:
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
 	    $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
-	@case "@build_cpu@" in \
+	@case "@host_cpu@" in \
 	*86)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
@@ -155,11 +155,13 @@ install-data-local:
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
 	ia64*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
 	s390*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
+	mipsel*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/mipsel ;;\
+	mips*)  $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/mips ;;\
 	powerpc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;;\
-	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@build_cpu@ ;;\
+	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
 	esac
 	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
-	@case "@build_os@" in \
+	@case "@host_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
 	solaris*|linux*) \
 	   chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ;; \

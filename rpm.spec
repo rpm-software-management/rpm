@@ -1,4 +1,5 @@
 %define	with_python_subpackage	1 %{nil}
+%define with_perl_subpackage	1
 %define	with_bzip2		1 %{nil}
 %define	with_apidocs		1 %{nil}
 %define with_internal_db	1 %{nil}
@@ -11,15 +12,16 @@
 %define	_noPayloadPrefix	1
 
 %define	__prefix	/usr
-%{expand:%%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
+%{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
 Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.1
 Version: %{version}
-Release: 0.1
+%{expand: %%define rpm_version %{version}}
+Release: 0.79
 Group: System Environment/Base
-Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
+Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
@@ -37,12 +39,16 @@ Requires: glibc >= 2.1.92
 %endif
 %endif
 
+BuildRequires: zlib-devel
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
 BuildRequires: bzip2 >= 0.9.0c-2
 %endif
 %if %{with_python_subpackage}
 BuildRequires: python-devel >= 1.5.2
+%endif
+%if %{with_perl_subpackage}
+BuildRequires: perl >= 0:5.00503
 %endif
 
 BuildRoot: %{_tmppath}/%{name}-root
@@ -57,7 +63,7 @@ the package like its version, a description, etc.
 %package devel
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{version}, popt = 1.6.3
+Requires: rpm = %{rpm_version}, popt = 1.6.3
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -73,7 +79,7 @@ will manipulate RPM packages and databases.
 %package build
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
-Requires: rpm = %{version}
+Requires: rpm = %{rpm_version}
 
 %description build
 This package contains scripts and executable programs that are used to
@@ -83,8 +89,9 @@ build packages using RPM.
 %package python
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{version}
+Requires: rpm = %{rpm_version}
 Requires: python >= 1.5.2
+Requires: popt = 1.6.3
 
 %description python
 The rpm-python package contains a module which permits applications
@@ -93,6 +100,36 @@ supplied by RPM (RPM Package Manager) libraries.
 
 This package should be installed if you want to develop Python
 programs that will manipulate RPM packages and databases.
+%endif
+
+%if %{with_perl_subpackage}
+%package perl
+Summary: Native bindings to the RPM API for Perl.
+Group: Development/Languages
+URL: http://www.cpan.org
+Requires: rpm = %{rpm_version}
+Requires: perl >= 0:5.00503
+Requires: popt = 1.6.3
+Obsoletes: perl-Perl-RPM
+
+%description perl
+The Perl-RPM module is an attempt to provide Perl-level access to the
+complete application programming interface that is a part of the Red
+Hat Package Manager (RPM). Rather than have scripts rely on executing
+RPM commands and parse the resulting output, this module aims to give
+Perl programmers the ability to do anything that would otherwise have
+been done in C or C++.
+
+The interface is being designed and laid out as a collection of
+classes, at least some of which are also available as tied-hash
+implementations.
+
+At this time, the interface only provides access to the database of
+installed packages, and header data retrieval for RPM and SRPM files
+is not yet installed.  Error management and the export of most defined
+constants, through RPM::Error and RPM::Constants, respectively, are
+also available.
+
 %endif
 
 %package -n popt
@@ -132,6 +169,14 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 
 make
 
+%if %{with_perl_subpackage}
+{ cd Perl-RPM
+  CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
+  export SUBDIR="%{_builddir}/%{buildsubdir}"
+  make INC="-I. -I$SUBDIR/lib -I$SUBDIR/rpmio -I$SUBDIR/popt" %{?_smp_mflags}
+}
+%endif
+
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -170,10 +215,22 @@ done
 gzip -9n apidocs/man/man*/* || :
 %endif
 
+%if %{with_perl_subpackage}
+{ cd Perl-RPM
+  eval `perl '-V:installsitearch'`
+  eval `perl '-V:installarchlib'`
+  mkdir -p $RPM_BUILD_ROOT/$installarchlib
+  make PREFIX=$RPM_BUILD_ROOT/usr install
+  rm -f $RPM_BUILD_ROOT/$installarchlib/perllocal.pod
+  rm -f $RPM_BUILD_ROOT/$installsitearch/auto/RPM/.packlist
+  cd ..
+}
+%endif
+
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
-  strip ./bin/rpm
-  strip .%{__prefix}/bin/rpm2cpio
+  %{__strip} ./bin/rpm
+  %{__strip} .%{__prefix}/bin/rpm2cpio
 }
 %endif
 
@@ -291,17 +348,18 @@ fi
 
 %ifarch i386 i486 i586 i686 athlon
 %attr(-, rpm, rpm)	%{__prefix}/lib/rpm/i[3456]86*
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/athlon*
 %endif
-%ifarch alpha
+%ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, rpm, rpm)	%{__prefix}/lib/rpm/alpha*
 %endif
-%ifarch sparc sparc64
+%ifarch sparc sparcv9 sparc64
 %attr(-, rpm, rpm)	%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
 %attr(-, rpm, rpm)	%{__prefix}/lib/rpm/ia64*
 %endif
-%ifarch powerpc ppc
+%ifarch powerpc ppc ppciseries ppcpseries ppcmac
 %attr(-, rpm, rpm)	%{__prefix}/lib/rpm/ppc*
 %endif
 %ifarch s390 s390x
@@ -309,6 +367,9 @@ fi
 %endif
 %ifarch armv3l armv4l
 %attr(-, rpm, rpm)	%{__prefix}/lib/rpm/armv[34][lb]*
+%endif
+%ifarch mips mipsel mipseb
+%attr(-, rpm, rpm)		%{__prefix}/lib/rpm/mips*
 %endif
 %attr(-, rpm, rpm)		%{__prefix}/lib/rpm/noarch*
 
@@ -381,6 +442,18 @@ fi
 %files python
 %defattr(-,root,root)
 %{__prefix}/lib/python1.5/site-packages/rpmmodule.so
+%{__prefix}/lib/python1.5/site-packages/poptmodule.so
+%endif
+
+%if %{with_perl_subpackage}
+%files perl
+%defattr(-,root,root)
+%rpmattr	%{__prefix}/bin/rpmprune
+%{perl_sitearch}/auto/*
+%{perl_sitearch}/RPM
+%{perl_sitearch}/RPM.pm
+%{__prefix}%{__share}/man/man1/rpmprune.1*
+%{__prefix}%{__share}/man/man3/RPM*
 %endif
 
 %files devel

@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.86 2001/07/28 00:33:07 jbj Exp $
+# $Id: macros.in,v 1.87 2001/07/31 18:13:23 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -67,8 +67,10 @@
 # ---- Build system path macros.
 #
 %__ar			@AR@
+%__as			@AS@
 %__cc			@CC@
 %__cpp			@CPP@
+%__cxx			@CXX@
 %__ld			@__LD@
 %__nm			@__NM@
 %__objcopy		@__OBJCOPY@
@@ -479,6 +481,7 @@
 #	will be used if the per-platform macro file does not exist..
 #
 %_arch			@RPMCANONARCH@
+%_build_arch		@RPMCANONARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_gnu			-gnu

@@ -229,8 +229,8 @@ gzip -9n apidocs/man/man*/* || :
 
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
-  strip ./bin/rpm
-  strip .%{__prefix}/bin/rpm2cpio
+  %{__strip} ./bin/rpm
+  %{__strip} .%{__prefix}/bin/rpm2cpio
 }
 %endif
 
@@ -348,17 +348,18 @@ fi
 
 %ifarch i386 i486 i586 i686 athlon
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/i[3456]86*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/athlon*
 %endif
-%ifarch alpha
+%ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/alpha*
 %endif
-%ifarch sparc sparc64
+%ifarch sparc sparcv9 sparc64
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/ia64*
 %endif
-%ifarch powerpc ppc
+%ifarch powerpc ppc ppciseries ppcpseries ppcmac
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/ppc*
 %endif
 %ifarch s390 s390x
@@ -366,6 +367,9 @@ fi
 %endif
 %ifarch armv3l armv4l
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/armv[34][lb]*
+%endif
+%ifarch mips mipsel mipseb
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/mips*
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*
 
@@ -446,6 +450,8 @@ fi
 %defattr(-,root,root)
 %rpmattr	%{__prefix}/bin/rpmprune
 %{perl_sitearch}/auto/*
+%{perl_sitearch}/RPM
+%{perl_sitearch}/RPM.pm
 %{__prefix}%{__share}/man/man1/rpmprune.1*
 %{__prefix}%{__share}/man/man3/RPM*
 %endif
