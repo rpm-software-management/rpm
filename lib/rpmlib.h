@@ -388,18 +388,12 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset);
  */
 int rpmdbFindByFile(rpmdb db, const char * filespec,
 	/*@out@*/ dbiIndexSet * matches);
-#ifdef	DYING
-/**
- * @param db		rpm database
- */
-int rpmdbFindByGroup(rpmdb db, const char * group,
-	/*@out@*/ dbiIndexSet * matches);
-#endif
 /**
  * @param db		rpm database
  */
 int rpmdbFindPackage(rpmdb db, const char * name,
 	/*@out@*/ dbiIndexSet * matches);
+#ifdef	DYING
 /**
  * @param db		rpm database
  */
@@ -415,12 +409,6 @@ int rpmdbFindByRequiredBy(rpmdb db, const char * requires,
  */
 int rpmdbFindByConflicts(rpmdb db, const char * conflicts,
 	/*@out@*/ dbiIndexSet * matches);
-#ifdef	DYING
-/**
- * @param db		rpm database
- */
-int rpmdbFindByTriggeredBy(rpmdb db, const char * package,
-	/*@out@*/ dbiIndexSet * matches);
 #endif
 
 /* these are just convenience functions */
@@ -429,13 +417,6 @@ int rpmdbFindByTriggeredBy(rpmdb db, const char * package,
  */
 int rpmdbFindByLabel(rpmdb db, const char * label,
 	/*@out@*/ dbiIndexSet * matches);
-#ifdef	DYING
-/**
- * @param db		rpm database
- */
-int rpmdbFindByHeader(rpmdb db, Header h,
-	/*@out@*/ dbiIndexSet * matches);
-#endif
 
 /**
  * Return number of instances of package in rpm database.

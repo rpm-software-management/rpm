@@ -76,20 +76,6 @@ exit:
     return rc;
 }
 
-#ifdef DYING
-/* 0 found matches */
-/* 1 no matches */
-/* 2 error */
-int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches)
-{
-    const char * name, * version, * release;
-
-    headerNVR(h, &name, &version, &release);
-
-    return findMatches(db, name, version, release, matches);
-}
-#endif
-
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */

@@ -120,22 +120,6 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 
 		headerNVR(h, &name, &version, &release);
 
-#ifdef	DYING
-		dbiIndexSet matches = NULL;
-
-		if (!rpmdbFindByHeader(newdb, h, &matches)) {
-
-		    rpmError(RPMERR_INTERNAL,
-			_("duplicated database entry: %s-%s-%s -- skipping."),
-			name, version, release);
-		    skip = 1;
-		}
-
-		if (matches) {
-		    dbiFreeIndexSet(matches);
-		    matches = NULL;
-		}
-#else
 		{   rpmdbMatchIterator mi;
 		    mi = rpmdbInitIterator(newdb, RPMDBI_NAME, name, 0);
 		    rpmdbSetIteratorVersion(mi, version);
@@ -146,7 +130,6 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 		    }
 		    rpmdbFreeIterator(mi);
 		}
-#endif
 
 		if (skip)
 		    continue;

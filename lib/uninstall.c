@@ -535,39 +535,6 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 	return 1;
 
     {	Header triggeredH;
-
-#ifdef	DYING
-	dbiIndexSet matches = NULL;
-	int i;
-
-	if ((rc = rpmdbFindByTriggeredBy(db, name, &matches)) < 0) {
-	    rc = 1;
-	    goto exit;
-	} else if (rc) {
-	    rc = 0;
-	    goto exit;
-	}
-
-	rc = 0;
-	for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-	    if ((triggeredH = rpmdbGetRecord(db, recOffset)) == NULL) {
-		rc = 1;
-		break;
-	    }
-
-	    rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
-			       NULL, scriptFd);
-	
-	    headerFree(triggeredH);
-	}
-
-exit:
-	if (matches) {
-	    dbiFreeIndexSet(matches);
-	    matches = NULL;
-	}
-#else
 	rpmdbMatchIterator mi;
 
 	mi = rpmdbInitIterator(db, RPMDBI_TRIGGER, name, 0);
@@ -577,7 +544,6 @@ exit:
 	}
 
 	rpmdbFreeIterator(mi);
-#endif
     }
 
     return rc;
@@ -605,44 +571,6 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
     {	Header sourceH = NULL;
 	int i;
 
-#ifdef	DYING
-	dbiIndexSet matches = NULL;
-	int j;
-
-	for (i = 0; i < numTriggers; i++) {
-
-	    if (triggersRun[triggerIndices[i]]) continue;
-	
-	    if (matches) {
-		dbiFreeIndexSet(matches);
-		matches = NULL;
-	    }
-
-            if ((j = rpmdbFindPackage(db, triggerNames[i], &matches))) {
-		if (j < 0) rc |= 1;	
-		continue;
-	    }
-
-	    for (j = 0; j < dbiIndexSetCount(matches); j++) {
-		unsigned int recOffset = dbiIndexRecordOffset(matches, j);
-		if ((sourceH = rpmdbGetRecord(db, recOffset)) == NULL) {
-		    rc = 1;
-		    goto exit;
-		}
-		rc |= handleOneTrigger(root, db, sense, sourceH, h, 
-				   countCorrection, dbiIndexSetCount(matches), 
-				   triggersRun, scriptFd);
-		headerFree(sourceH);
-		if (triggersRun[triggerIndices[i]]) break;
-	    }
-	}
-
-exit:
-	if (matches) {
-	    dbiFreeIndexSet(matches);
-	    matches = NULL;
-	}
-#else
 	for (i = 0; i < numTriggers; i++) {
 	    rpmdbMatchIterator mi;
 	    const char * name = triggerNames[i];
@@ -659,7 +587,6 @@ exit:
 
 	    rpmdbFreeIterator(mi);
 	}
-#endif
     }
     return rc;
 }

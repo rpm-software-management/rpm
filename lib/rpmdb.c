@@ -372,6 +372,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     return 0;
 }
 
+#ifdef DYING
 int rpmdbFindByProvides(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_PROVIDES], filespec, 0, matches);
 }
@@ -382,15 +383,6 @@ int rpmdbFindByRequiredBy(rpmdb db, const char * filespec, dbiIndexSet * matches
 
 int rpmdbFindByConflicts(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_CONFLICTS], filespec, 0, matches);
-}
-
-#ifdef	DYING
-int rpmdbFindByTriggeredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_TRIGGER], filespec, 0, matches);
-}
-
-int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_GROUP], group, 0, matches);
 }
 #endif
 

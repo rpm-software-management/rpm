@@ -1053,20 +1053,11 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
     if (filespec) free(filespec);
 }
 
-#ifdef	DYING
-static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
-			/*@dependent@*/ const void * key)
-#else
 static int ensureOlder(rpmdb db, Header new, Header old, rpmProblemSet probs,
 			/*@dependent@*/ const void * key)
-#endif
 {
     int result, rc = 0;
-#ifdef	DYING
-    Header old;
 
-    old = rpmdbGetRecord(db, dbOffset);
-#endif
     if (old == NULL) return 1;
 
     result = rpmVersionCompare(old, new);
@@ -1076,10 +1067,6 @@ static int ensureOlder(rpmdb db, Header new, Header old, rpmProblemSet probs,
 	rc = 1;
 	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, old, 0);
     }
-
-#ifdef	DYING
-    headerFree(old);
-#endif
 
     return rc;
 }
@@ -1199,7 +1186,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int rc, ourrc = 0;
     struct availablePackage * alp;
     rpmProblemSet probs;
+#ifndef DYING
     dbiIndexSet dbi = NULL;
+#endif
     Header * hdrs;
     int fileCount;
     int totalFileCount = 0;
@@ -1290,39 +1279,15 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL, 0);
 
 	if (!(ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
-#ifdef	DYING
-	    rc = rpmdbFindPackage(ts->db, alp->name, &dbi);
-	    switch (rc) {
-	    case 2:
-		if (dbi) {
-		    dbiFreeIndexSet(dbi);
-		    dbi = NULL;
-		}
-		return -1;
-		/*@notreached@*/ break;
-	    case 0:
-		for (i = 0; i < dbiIndexSetCount(dbi); i++)
-		    ensureOlder(ts->db, alp->h, dbiIndexRecordOffset(dbi, i),
-				      probs, alp->key);
-
-		break;
-	    default:
-		break;
-	    }
-	    if (dbi) {
-		dbiFreeIndexSet(dbi);
-		dbi = NULL;
-	    }
-#else
 	    rpmdbMatchIterator mi;
 	    Header oldH;
 	    mi = rpmdbInitIterator(ts->db, RPMDBI_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
 		ensureOlder(ts->db, alp->h, oldH, probs, alp->key);
 	    rpmdbFreeIterator(mi);
-#endif
 	}
 
+#ifndef	DYING
 	rc = findMatches(ts->db, alp->name, alp->version, alp->release, &dbi);
 	switch (rc) {
 	case 2:
@@ -1344,6 +1309,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    dbiFreeIndexSet(dbi);
 	    dbi = NULL;
 	}
+#else
+	if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG)) {
+	}
+#endif
 
 	if (headerGetEntry(alp->h, RPMTAG_BASENAMES, NULL, NULL, 
 			   &fileCount))

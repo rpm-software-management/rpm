@@ -716,14 +716,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     }
     scriptArg += 1;
 
-#ifdef	DYING
-    if (!rpmdbFindByHeader(db, h, &matches))
-	otherOffset = dbiIndexRecordOffset(matches, 0);
-    if (matches) {
-	dbiFreeIndexSet(matches);
-	matches = NULL;
-    }
-#else
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(db, RPMDBI_NAME, name, 0);
 	rpmdbSetIteratorVersion(mi, version);
@@ -734,7 +726,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	}
 	rpmdbFreeIterator(mi);
     }
-#endif
 
     if (rootdir) {
 	/* this loads all of the name services libraries, in case we
