@@ -11,6 +11,7 @@ noinst_PROGRAMS =	sexp
 
 sexp_SOURCES = \
 	sexp-basic.c sexp-input.c sexp-main.c sexp-output.c
+sexp_LDADD =	-lpopt
 
 .PHONY:	sources
 sources:

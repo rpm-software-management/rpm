@@ -70,7 +70,7 @@ typedef struct sexp_inputstream {
   int nBits;           /* number of such bits waiting to be used */
   void (*getChar)();
   int count;           /* number of 8-bit characters output by getChar */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
   FILE *inputFile;     /* where to get input, if not stdin */
 } sexpInputStream;
 
@@ -86,7 +86,7 @@ typedef struct sexp_outputstream {
   long int base64Count;     /* number of hex or base64 chars printed 
 			       this region */
   int mode;                 /* BASE64, ADVANCED, or CANONICAL */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
   FILE *outputFile;         /* where to put output, if not stdout */
 } sexpOutputStream;
 

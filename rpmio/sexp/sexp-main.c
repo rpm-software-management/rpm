@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
+#include <popt.h>
 #include "sexp.h"
 
 /*@unchecked@*/ /*@observer@*/
@@ -36,134 +37,169 @@ static const char *help =
 " The default switches are: -p -a -b -c -x\n"
 " Typical usage: cat certificate-file | sexp -a -x \n";
 
+/*@unchecked@*/
+static int _debug = 0;
+/*@unchecked@*/ /*@null@*/
+static const char * ifn = NULL;
+/*@unchecked@*/ /*@null@*/
+static const char * ofn = NULL;
+/*@unchecked@*/
+static int swa = TRUE;
+/*@unchecked@*/
+static int swb = TRUE;
+/*@unchecked@*/
+static int swc = TRUE;
+/*@unchecked@*/
+static int swl = FALSE;
+/*@unchecked@*/
+static int swp = TRUE;
+/*@unchecked@*/
+static int sws = FALSE;
+/*@unchecked@*/
+static int swx = TRUE;
+/*@unchecked@*/
+static int width = -1;
+
+static struct poptOption optionsTable[] = {
+ { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_debug, -1,
+	NULL, NULL },
+
+ { "advanced", 'a', POPT_ARG_VAL,	&swa, TRUE,
+	"advanced transport format", NULL },
+ { "base64", 'b', POPT_ARG_VAL,		&swb, TRUE,
+	"base64 format", NULL },
+ { "canonical", 'c', POPT_ARG_VAL,	&swc, TRUE,
+	"canonical format", NULL },
+ { "input", 'i', POPT_ARG_STRING,	&ifn, 0,
+	"read input from FILE", "FILE" },
+ { "nolf", 'l', POPT_ARG_VAL,		&swl, TRUE,
+	"suppress linefeeds", NULL },
+ { "output", 'o', POPT_ARG_STRING,	&ofn, 0,
+	"write output to FILE", "FILE" },
+ { "prompt", 'p', POPT_ARG_VAL,		&swp, TRUE,
+	"prompt for input", NULL },
+ { "single", 's', POPT_ARG_VAL,		&sws, TRUE,
+	"single string input", NULL },
+ { "execute", 'x', POPT_ARG_VAL,	&swx, TRUE,
+	"execute loop until EOF", NULL },
+ { "width", 'w', POPT_ARG_INT,		&width, 0,
+	"output line WIDTH", "WIDTH" },
+
+  POPT_AUTOHELP
+  POPT_TABLEEND
+};
+
 /*************************************************************************/
 /* main(argc,argv)
  */
-/*@-mods@*/
-/*@-nullderef@*/
-/*@-nullpass@*/
-/*@-nullstate@*/
+/*@=nullstate@*/
 int main(int argc, char **argv)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{ char *c;
-  int swa = TRUE;
-  int swb = TRUE;
-  int swc = TRUE;
-  int swp = TRUE;
-  int sws = FALSE;
-  int swx = TRUE;
-  int swl = FALSE;
-  int i;
-  sexpObject *object;
-  sexpInputStream *is;
-  sexpOutputStream *os;
-  initializeCharacterTables();
-  initializeMemory();
-  is = newSexpInputStream();
-  os = newSexpOutputStream();
-  /* process switches */
-  if (argc>1) swa = swb = swc = swp = sws = swx = swl = FALSE;
-  for (i=1;i<argc;i++)
-    { c = argv[i];
-      if (*c != '-')
-	{ printf("Unrecognized switch %s\n",c); exit(0); }
-      c++;
-      if (*c == 'a') /* advanced output */
-	swa = TRUE;
-      else if (*c == 'b') /* base-64 output */
-	swb = TRUE;
-      else if (*c == 'c') /* canonical output */
-	swc = TRUE;
-      else if (*c == 'h') /* help */
-	{
-	  printf("%s",help);
-	  (void) fflush(stdout);
-	  exit(0);
-	}
-      else if (*c == 'i') /* input file */
-	{ if (i+1<argc) i++;
-	  is->inputFile = fopen(argv[i],"r");
-	  if (is->inputFile==NULL)
-	    ErrorMessage(ERROR,"Can't open input file.");
-	}
-      else if (*c == 'l') /* suppress linefeeds after output */
-	swl = TRUE;
-      else if (*c == 'o') /* output file */
-	{ if (i+1<argc) i++;
-	  os->outputFile = fopen(argv[i],"w");
-	  if (os->outputFile==NULL)
-	    ErrorMessage(ERROR,"Can't open output file.");
-	}	
-      else if (*c == 'p') /* prompt for input */
-	swp = TRUE;
-      else if (*c == 's') /* treat input as one big string */
-	sws = TRUE;
-      else if (*c == 'w') /* set output width */
-	{ if (i+1<argc) i++;
-	  os->maxcolumn = atoi(argv[i]);
-	}
-      else if (*c == 'x') /* execute repeatedly */
-	swx = TRUE;
-      else
-	{ printf("Unrecognized switch: %s\n",argv[i]); exit(0); }
+	/*@globals optionsTable, ifn, ofn, swa, swb, swc, swl, swp, sws, swx,
+		width, fileSystem, internalState @*/
+	/*@modifies swa, swb, swc, swl, swp, sws, swx,
+		fileSystem, internalState @*/
+{
+    poptContext optCon;
+    int rc;
+    sexpObject *object;
+    sexpInputStream *is;
+    sexpOutputStream *os;
+
+    initializeCharacterTables();
+    initializeMemory();
+    is = newSexpInputStream();
+    os = newSexpOutputStream();
+    /* process switches */
+    if (argc>1)
+	swa = swb = swc = swp = sws = swx = swl = FALSE;
+
+    optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
+    while ((rc = poptGetNextOpt(optCon)) > 0) {
+	switch (rc) {
+	default:
+	    fprintf(stderr, "%s: option table misconfigured (%d)\n",
+		argv[0], rc);
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+        }
     }
-  if (swa == FALSE && swb == FALSE && swc == FALSE)
-    swc = TRUE;  /* must have some output format! */
 
-  /* main loop */
-  if (swp == 0) is->getChar(is);
-  else is->nextChar = -2;  /* this is not EOF */
-  while (is->nextChar != EOF)
-    {
-      if (swp)
-	{ printf("Input:\n"); (void) fflush(stdout); }
-
-      changeInputByteSize(is,8);
-      if (is->nextChar == -2) is->getChar(is);
-
-      skipWhiteSpace(is);
-      if (is->nextChar == EOF) break;
-
-      if (sws == FALSE)
-	object = scanObject(is);
-      else
-	object = scanToEOF(is);
-
-      if (swc)
-	{ if (swp)
-	    { printf("Canonical output:"); (void) fflush(stdout);
-	      os->newLine(os,ADVANCED);
-	    }
-	  canonicalPrintObject(os,object);
-	  if (!swl) { printf("\n"); (void) fflush(stdout); }
-	}
-
-      if (swb)
-	{ if (swp)
-	    { printf("Base64 (of canonical) output:"); (void) fflush(stdout);
-	      os->newLine(os,ADVANCED);
-	    }
-	  base64PrintWholeObject(os,object);
-	  if (!swl) { printf("\n"); (void) fflush(stdout); }
-	}
-
-      if (swa)
-	{ if (swp)
-	    { printf("Advanced transport output:"); (void) fflush(stdout);
-	      os->newLine(os,ADVANCED);
-	    }
-	  advancedPrintObject(os,object);
-	  if (!swl) { printf("\n"); (void) fflush(stdout); }
-	}
-
-      if (!swx) break;
-      if (!swp) skipWhiteSpace(is);
-      else if (!swl) { printf("\n"); (void) fflush(stdout); }
+    if (rc < -1) {
+	fprintf(stderr, "%s", help); (void) fflush(stderr);
+	goto exit;
     }
-  return 0;
+
+    if (ifn != NULL) {
+	is->inputFile = fopen(ifn, "r");
+	if (is->inputFile == NULL)
+	    ErrorMessage(ERROR, "Can't open input file %s.", ifn);
+    }
+    if (ofn != NULL) {
+	os->outputFile = fopen(ofn, "w");
+	if (os->outputFile == NULL)
+	    ErrorMessage(ERROR, "Can't open output file %s.", ofn);
+    }
+    if (width >= 0) {
+	os->maxcolumn = width;
+    }
+
+    if (swa == FALSE && swb == FALSE && swc == FALSE)
+	swc = TRUE;  /* must have some output format! */
+
+    /* main loop */
+    if (swp == 0) is->getChar(is);
+    else is->nextChar = -2;  /* this is not EOF */
+
+    while (is->nextChar != EOF) {
+	if (swp) { fprintf(stdout, "Input:\n"); (void) fflush(stdout); }
+
+	changeInputByteSize(is,8);
+	if (is->nextChar == -2) is->getChar(is);
+
+	skipWhiteSpace(is);
+	if (is->nextChar == EOF) break;
+
+	if (sws == FALSE)
+	    object = scanObject(is);
+	else
+	    object = scanToEOF(is);
+
+	if (swc) {
+	    if (swp) {
+		fprintf(stdout, "Canonical output:"); (void) fflush(stdout);
+		os->newLine(os, ADVANCED);
+	    }
+	    canonicalPrintObject(os, object);
+	    if (!swl) { fprintf(stdout, "\n"); (void) fflush(stdout); }
+	}
+
+	if (swb) {
+	    if (swp) {
+		fprintf(stdout, "Base64 (of canonical) output:"); (void) fflush(stdout);
+		os->newLine(os, ADVANCED);
+	    }
+	    base64PrintWholeObject(os, object);
+	    if (!swl) { fprintf(stdout, "\n"); (void) fflush(stdout); }
+	}
+
+	if (swa) {
+	    if (swp) {
+		fprintf(stdout, "Advanced transport output:"); (void) fflush(stdout);
+		os->newLine(os, ADVANCED);
+	    }
+	    advancedPrintObject(os,object);
+	    if (!swl) { fprintf(stdout, "\n"); (void) fflush(stdout); }
+	}
+
+	if (!swx) break;
+	if (!swp) skipWhiteSpace(is);
+	else if (!swl) { fprintf(stdout, "\n"); (void) fflush(stdout); }
+    }
+    rc = 0;
+
+exit:
+    optCon = poptFreeContext(optCon);
+
+    return rc;
 }
 /*@=nullstate@*/
-/*@=nullpass@*/
-/*@=nullderef@*/
-/*@=mods@*/
