@@ -45,8 +45,6 @@ tagtable.c: rpmlib.h
 	echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry);' >> tagtable.c
 
 install:
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(INCDIR)
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(LIBDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmlib.h $(INCDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/dbindex.h $(INCDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/header.h $(INCDIR)
