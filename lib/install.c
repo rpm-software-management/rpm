@@ -21,6 +21,7 @@
 #include "install.h"
 #include "md5.h"
 #include "misc.h"
+#include "miscfn.h"
 #include "rpmdb.h"
 #include "rpmlib.h"
 #include "messages.h"
