@@ -80,6 +80,7 @@ build packages using RPM.
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 BuildRequires: popt >= 1.5
+Requires: rpm = %{version}
 Requires: popt >= 1.5
 Requires: python >= 1.5.2
 
@@ -132,15 +133,15 @@ cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
 
+%if %{with_apidocs}
+gzip -9n apidocs/man/man*/* || :
+%endif
+
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip .%{__prefix}/bin/rpm2cpio
 }
-%endif
-
-%if %{with_apidocs}
-gzip -9n apidocs/man/man*/* || :
 %endif
 
 %clean
@@ -234,7 +235,25 @@ fi
 %{__prefix}/lib/rpm/armv[34][lb]*
 %endif
 
-%{__prefix}/*/locale/*/LC_MESSAGES/rpm.mo
+%lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
+%lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
+%lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/rpm.mo
+%lang(fi)	%{__prefix}/*/locale/fi/LC_MESSAGES/rpm.mo
+%lang(fr)	%{__prefix}/*/locale/fr/LC_MESSAGES/rpm.mo
+%lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/rpm.mo
+%lang(ja)	%{__prefix}/*/locale/ja/LC_MESSAGES/rpm.mo
+%lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/rpm.mo
+%lang(pl)	%{__prefix}/*/locale/pl/LC_MESSAGES/rpm.mo
+%lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/rpm.mo
+%lang(pt_BR)	%{__prefix}/*/locale/pt_BR/LC_MESSAGES/rpm.mo
+%lang(ro)	%{__prefix}/*/locale/ro/LC_MESSAGES/rpm.mo
+%lang(ru)	%{__prefix}/*/locale/ru/LC_MESSAGES/rpm.mo
+%lang(sk)	%{__prefix}/*/locale/sk/LC_MESSAGES/rpm.mo
+%lang(sl)	%{__prefix}/*/locale/sl/LC_MESSAGES/rpm.mo
+%lang(sr)	%{__prefix}/*/locale/sr/LC_MESSAGES/rpm.mo
+%lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
+%lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
+
 %{__prefix}%{__share}/man/man[18]/*.[18]*
 %lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
 %lang(ru) %{__prefix}%{__share}/man/ru/man[18]/*.[18]*
@@ -300,8 +319,23 @@ fi
 %files -n popt
 %defattr(-,root,root)
 %{__prefix}/lib/libpopt.so.*
-%{__prefix}/*/locale/*/LC_MESSAGES/popt.mo
 %{__prefix}%{__share}/man/man3/popt.3*
+%lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/popt.mo
+%lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/popt.mo
+%lang(gl)	%{__prefix}/*/locale/gl/LC_MESSAGES/popt.mo
+%lang(hu)	%{__prefix}/*/locale/hu/LC_MESSAGES/popt.mo
+%lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/popt.mo
+%lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/popt.mo
+%lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/popt.mo
+%lang(ro)	%{__prefix}/*/locale/ro/LC_MESSAGES/popt.mo
+%lang(ru)	%{__prefix}/*/locale/ru/LC_MESSAGES/popt.mo
+%lang(sk)	%{__prefix}/*/locale/sk/LC_MESSAGES/popt.mo
+%lang(sl)	%{__prefix}/*/locale/sl/LC_MESSAGES/popt.mo
+%lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/popt.mo
+%lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/popt.mo
+%lang(uk)	%{__prefix}/*/locale/uk/LC_MESSAGES/popt.mo
+%lang(wa)	%{__prefix}/*/locale/wa/LC_MESSAGES/popt.mo
+%lang(zh_CN)	%{__prefix}/*/locale/zh_CN.GB2312/LC_MESSAGES/popt.mo
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
 %{__prefix}/lib/libpopt.a
@@ -310,207 +344,5 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Jan 19 2001 Jeff Johnson <jbj@redhat.com>
-- ewt's cpio.c hack.
-- ewt's cpio.c hack reverted.
-
-* Thu Jan 18 2001 Matt Wilson <msw@redhat.com>
-- fix: exit 0 at the end of %pre
-
-* Thu Jan 18 2001 Jeff Johnson <jbj@redhat.com>
-- fix: insure that %lang scopes over hard links correctly.
-- fix: rpmCleanPath was nibbling at .. in macrofiles incorrectly.
-
-* Wed Jan 17 2001 Jeff Johnson <jbj@redhat.com>
-- 1st crack at Mandrake specific per-platform macros.
-
-* Tue Jan 16 2001 Jeff Johnson <jbj@redhat.com>
-- tsort prefers presentation order.
-
-* Mon Jan 15 2001 Jeff Johnson <jbj@redhat.com>
-- fix: extra newline in many error messages (#23947).
-- fix: rpm -Va with db1 needs per-iterator, not per-index, offset.
-- add install/remove transaction id tags.
-
-* Sat Jan 13 2001 Jeff Johnson <jbj@redhat.com>
-- fix the hack.
-
-* Fri Jan 12 2001 Jeff Johnson <jbj@redhat.com>
-- hack: permit installer to determine package ordering using 1000003 tag.
-
-* Thu Jan 11 2001 Jeff Johnson <jbj@redhat.com>
-- fix: don't hang on build error.
-- fix: remove "error: " prefix from signature verification message.
-
-* Wed Jan 10 2001 Jeff Johnson <jbj@redhat.com>
-- successors from tsort are processed in presentation order.
-- fix: find-requires.perl needed update (#23450).
-
-* Tue Jan  9 2001 Jeff Johnson <jbj@redhat.com>
-- fix: digests on input FD_t dinna work.
-- fix: remove rebuilddb debugging leakage.
-
-* Mon Jan  8 2001 Jeff Johnson <jbj@redhat.com>
-- tsorted packages processed in successor count order.
-- fix: resurrect --excludepath (#19666).
-
-* Fri Jan  5 2001 Jeff Johnson <jbj@redhat.com>
-- fix: 3 packages from Red Hat 5.2 had bogus %verifyscript tag.
-
-* Wed Jan  3 2001 Jeff Johnson <jbj@redhat.com>
-- fix: avoid locale issues with strcasecmp/strncasecmp (#23199).
-- remove almost all explicit uses of stderr in rpmlib using rpmError().
-- fix: pass scriptlet args, as in %post -p "/sbin/ldconfig -n /lib".
-	(Rodrigo Barbosa)
-
-* Tue Jan  2 2001 Jeff Johnson <jbj@redhat.com>
-- fix apidocs.
-
-* Mon Jan  1 2001 Jeff Johnson <jbj@redhat.com>
-- use popt autohelp for rpm helper binaries.
-
-* Sun Dec 31 2000 Jeff Johnson <jbj@redhat.com>
-- (popt): fix float/double handling (#19701).
-- (popt): non-linux needs <float.h> (#22732).
-- (popt): add POPT_ARGFLAG_OPTIONAL for long options with optional arg.
-- (popt): diddle auto-help to include type of arg expected.
-
-* Sat Dec 30 2000 Jeff Johnson <jbj@redhat.com>
-- (non-linux): move stubs.c to rpmio (#21132).
-- (python): bind initdb (#20988).
-
-* Fri Dec 29 2000 Jeff Johnson <jbj@redhat.com>
-- fix: hack around alpha mis-compilation signature problems.
-- rpmmodule.c(handleDbResult): return empty list when nothing matches.
-
-* Thu Dec 28 2000 Jeff Johnson <jbj@redhat.com>
-- fix: avoid FAT and other brain-dead file systems that have not inodes.
-
-* Wed Dec 27 2000 Jeff Johnson <jbj@redhat.com>
-- use malloc'ed buffer for large queries.
-
-* Tue Dec 26 2000 Jeff Johnson <jbj@redhat.com>
-- send query/verify output through rpmlog().
-- resurrect rpmErrorSetCallback() and rpmErrorString().
-
-* Thu Dec 21 2000 Jeff Johnson <jbj@redhat.com>
-- immutable headers, once installed by rpm3, need to lose immutablity.
-- fix: removed headers from db need a headerCopy().
-
-* Wed Dec 20 2000 Jeff Johnson <jbj@redhat.com>
-- whiteout mozilla loop for 7.1.
-
-* Tue Dec 19 2000 Jeff Johnson <jbj@redhat.com>
-- gendiff: generate ChangeLog patches more intelligently (#22356).
-- identify install scriptlet failures with the name of the scriptlet.
-- handle install chroot's identically throughout the install process.
-- add rpmlib(HeaderLoadSortsTags) for tracking header regions "just in case".
-- create _tmppath on the fly if not present.
-- remove /etc/rpm/macros.db1 configuration file if db3 rebuilt.
-
-* Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
-- bump popt version.
-- fix: (transaction.c) assume file state normal if tag is missing.
-- fix: failed signature read headerFree segfault.
-- fix: revert ALPHA_LOSSAGE, breaks 6.2/i386.
-- fix: segfault on build path, ignore deleted drips.
-- fix: synthesized callbacks for removed packages have not a pkgkey.
-
-* Tue Dec 12 2000 Jeff Johnson <jbj@redhat.com>
-- bail on header regions.
-- change dependency loop message to RPMMESS_WARNING to use stderr, not stdout.
-
-* Sun Dec 10 2000 Jeff Johnson <jbj@redhat.com>
-- handle added dirtoken tags (mostly) correctly with header regions.
-- add FHS doc/man/info dirs, diddle autoconf goo.
-- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
-
-* Thu Dec  7 2000 Jeff Johnson <jbj@redhat.com>
-- add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
-- python bindings for rpmtransGetKeys().
-- fix: include alignment in count when swabbing header region.
-
-* Wed Dec  6 2000 Jeff Johnson <jbj@redhat.com>
-- improved find-{requires,provides} for aix4/hpux/irix6/osf.
-		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
-- portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
-- python: bind package removal (#21274).
-- autoconfigure building python bindings.
-- autoconfigure generating rpm API doco rpm-devel package.
-- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
-- unify rpmError and rpmMessge interfaces through rpmlog.
-- collect and display rpm build error messages at end of build.
-- use package version 3 if --nodirtokens is specified.
-- add package names to problem sets early, don't save removed header.
-- make sure that replaced tags in region are counted in headerSizeof().
-- support for dmalloc debugging.
-- filter region tags in headerNextIterator, exit throut headerReload.
-
-* Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
-- add missing headerFree for legacy signature header.
-- fix: removed packages leaked DIRINDEXES tag data.
-- reload tags added during install when loading header from rpmdb.
-- avoid brp-compress hang with both compressed/uncompressed man pages.
-
-* Tue Nov 21 2000 Jeff Johnson <jbj@redhat.com>
-- add brp-strip-shared script <rodrigob@conectiva.com.br>.
-- better item/task progress bars <rodrigob@conectiva.com.br>.
-- load headers as single contiguous region.
-- add region marker as RPM_BIN_TYPE in packages and database.
-- fix: don't headerCopy() relocateable packages if not relocating.
-- merge signatures into header after reading from package.
-
-* Mon Nov 20 2000 Jeff Johnson <jbj@redhat.com>
-- add doxygen and lclint annotations most everywhere.
-- consistent return for all signature verification.
-- use enums for almost all rpmlib #define's.
-- API: change rpmProblem typedef to pass by reference, not value.
-- don't trim leading ./ in rpmCleanPath() (#14961).
-- detect (still need to test) rdonly linux file systems.
-- check available inodes as well as blocks on mounted file systems.
-- pass rpmTransactionSet, not elements, to installBinaryPackage et al.
-- add cscope/ctags (Rodrigo Barbosa<rodrigob@conectiva.com.br>).
-- remove getMacroBody() from rpmio API.
-- add support for unzip <rodrigob@conectiva.com.br>
-
-* Thu Nov 16 2000 Jeff Johnson <jbj@redhat.com>
-- don't verify src rpm MD5 sums (yet).
-- md5 sums are little endian (no swap) so big endian needs the swap.
-
-* Wed Nov 15 2000 Jeff Johnson <jbj@redhat.com>
-- fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
-- hpux w/o -D_OPEN_SOURCE has not h_errno.
-- verify MD5 sums of payload files when unpacking archive.
-- hide libio lossage in prototype, not API.
-- add support for SHA1 as well as MD5 message digests.
-
-* Mon Nov 13 2000 Jeff Johnson <jbj@redhat.com>
-- fix: work around for (mis-compilation?!) segfaults on signature paths.
-
-* Sun Nov 12 2000 Jeff Johnson <jbj@redhat.com>
-- fix: duplicate headerFree() on instalBinaryPackage() error return.
-
-* Sat Nov 11 2000 Jeff Johnson <jbj@redhat.com>
-- fix: runTriggers was not adding countCorrection.
-- add rpmGetRpmlibProvides() to retrieve rpmlib(...) provides
-	"Pawel A. Gajda" <mis@k2.net.pl>.
-- syntax to specify source of Requires: (PreReq: now legacy).
-- rip out rpm{get,put}text, use getpo.sh and specspo instead.
-- fine-grained Requires, remove install PreReq's from Requires db.
-
-* Wed Oct 11 2000 Jeff Johnson <jbj@redhat.com>
-- fix: rpm2cpio error check wrong on non-libio platforms.
-
-* Fri Sep 29 2000 Jeff Johnson <jbj@redhat.com>
-- fix: more (possible) xstrdup side effects.
-
-* Wed Sep 27 2000 Jeff Johnson <jbj@redhat.com>
-- bump popt version to 1.6.1.
-
-* Tue Sep 26 2000 Jeff Johnson <jbj@redhat.com>
-- fix: avoid calling getpass twice as side effect of xstrdup macro (#17672).
-- order packages using tsort, clipping PreReq:'s in dependency loops.
-- handle possible db3 dependency on -lpthread more gracefully.
-
-* Thu Sep 14 2000 Jeff Johnson <jbj@redhat.com>
-- start rpm-4.0.1.
+* Mon Feb 19 2001 Jeff Johnson <jbj@redhat.com>
+- start rpm-4.0.3 with --repackage.
