@@ -1,0 +1,22 @@
+The following public key can be used to verify RPM packages built and
+signed by Red Hat Software using `rpm -K'.  If anyone cares to sign
+this key, please send the signed key to marc@redhat.com.
+
+Type bits/keyID    Date       User ID
+pub  1024/CBA29BF9 1996/02/20 Red Hat Software, Inc. <redhat@redhat.com>
+	  
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.6.2
+
+mQCNAzEpXjUAAAEEAKG4/V9oUSiDc9wIge6Bmg6erDGCLzmFyioAho8kDIJSrcmi
+F9qTdPq+fj726pgW1iSb0Y7syZn9Y2lgQm5HkPODfNi8eWyTFSxbr8ygosLRClTP
+xqHVhtInGrfZNLoSpv1LdWOme0yOpOQJnghdOMzKXpgf5g84vaUg6PHLopv5AAUR
+tCpSZWQgSGF0IFNvZnR3YXJlLCBJbmMuIDxyZWRoYXRAcmVkaGF0LmNvbT6JAHUD
+BRAxKetfzauiKSJ6LJEBAed/AvsEiGgjTQzhsZcUuRNrQpV0cDGH9Mpril7P7K7y
+FIzju8biB+Cu6nEknSOHlMLl8usObVlkd8Wf14soHC7SjItiGSKtI8JhauzBJPl6
+fDDeyHGsJKo9f9adKeBMCipCFOuJAJUDBRAxKeqWRHFTaIK/x+0BAY6eA/4m5X4g
+s1UwOUIRnljo9a0cVs6ITL554J9vSCYHZzd87kFwdf5W1Vd82HIkRzcr6cp33E3I
+DkRzaQCMVw2me7HePP7+4Ry2q3EeZMbmNE++VzkxjikzpRb2+F5nGB2UdsElkgbX
+inswebiuOwOrocLbz6JFdDsJPcT5gVfiz15FuA==
+=X6rc
+-----END PGP PUBLIC KEY BLOCK-----
