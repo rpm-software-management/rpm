@@ -19,6 +19,8 @@
 	- implemented %config(missingok) flag in install
 	- added --allfiles flag for -i and -U, which forces all files (even
 	  missingok files) to be installed
+	- implemented %config(noreplace) for the install, but it hasn't
+	  been tested in any way
 
 2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available
