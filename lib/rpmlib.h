@@ -289,8 +289,7 @@ int rpmInstallSourcePackage(char * root, int fd, char ** specFile,
 			    char ** cookie);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 		      struct rpmRelocation * relocations,
-		      int flags, rpmNotifyFunction notify, char * labelFormat,
-		      char * netsharedPath);
+		      int flags, rpmNotifyFunction notify, char * labelFormat);
 int rpmVersionCompare(Header first, Header second);
 int rpmRemovePackage(char * root, rpmdb db, unsigned int offset, int flags);
 int rpmdbRebuild(char * root);
