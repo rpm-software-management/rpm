@@ -67,7 +67,7 @@ elif test X"$CC" = Xcc ; then
 		*-*-osf*)		LDFLAGS_STATIC="-non_shared";;
 		*-*-aix*)		LDFLAGS_STATIC="";;  # -Wl,-bnso doesn't seem to work...
 		*-*-hpux*)		LDFLAGS_STATIC="-Wl,-a,archive_shared";;
-		*-*-solaris*)	LDFLAGS_STATIC="-B static";;
+		*-*-solaris*)	LDFLAGS_STATIC="";;
 		*-*-irix*)		LDFLAGS_STATIC="";;  #should be -non_shared, but can't
 											# link because of crt1.o then.
 		*-*-ultrix*)	LDFLAGS_STATIC="";;  #ultrix doesn't have shared libs.

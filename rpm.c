@@ -493,7 +493,7 @@ int main(int argc, char ** argv) {
     int gotDbpath = 0, building = 0, verifyFlags;
     int rmsource = 0;
     int checksigFlags = 0;
-    int timeCheck = 0;
+    unsigned long int timeCheck = 0L;
     int addSign = NEW_SIGNATURE;
     char buildChar = ' ';
     char * specFile;

@@ -29,6 +29,11 @@
 	- their must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- solaris: don't attempt static link. (Tim Mooney)
+	- fix: timeCheck in rpm.c should be unsigned long. (Tim Mooney)
+	- osf: prov searches only shared libraries. (Tim Mooney)
+	- solaris: set PATH in prov/req scripts. (Tim Mooney)
+	- fix: ignore modes on symlinks. (Tim Mooney)
 	- sub-packages inherit RPMTAG_EPOCH (just like RPMTAG_VERSION/RELEASE).
 	- fix off-by-1 alloca that prevented relocating /.
 	- there must be a { between two % in a query format (unless %% is

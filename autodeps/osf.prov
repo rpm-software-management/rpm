@@ -1,7 +1,7 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: osf.prov,v 1.2 1998/05/29 16:34:27 mooney Exp $
+# $Id: osf.prov,v 1.2 1998/05/29 16:34:27 mooney Exp mooney $
 #
 # This file is distributed under the terms of the GNU Public License
 #
@@ -58,7 +58,7 @@
 PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
 export PATH
 
-for f in `cat -`
+for f in `cat - | xargs file | egrep 'COFF.*shared library' | cut -d: -f1`
 do
 	odump -D $f 2>/dev/null | awk '
 

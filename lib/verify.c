@@ -82,7 +82,8 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
 			RPMVERIFY_LINKTO);
     else if (S_ISLNK(sb.st_mode)) {
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
+		RPMVERIFY_MODE);
 #	if CHOWN_FOLLOWS_SYMLINK
 	    flags &= ~(RPMVERIFY_USER | RPMVERIFY_GROUP);
 #	endif
