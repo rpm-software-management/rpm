@@ -530,8 +530,7 @@ PyTypeObject rpmfts_Type = {
 	(getattrofunc) rpmfts_getattro,	/* tp_getattro */
 	(setattrofunc) rpmfts_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT |		/* tp_flags */
-		Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE,
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, /* tp_flags */
 	rpmfts_doc,			/* tp_doc */
 	(traverseproc) rpmfts_traverse,	/* tp_traverse */
 	0,				/* tp_clear */
