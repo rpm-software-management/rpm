@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-12-24 15:05-0500\n"
+"POT-Creation-Date: 2002-12-26 12:16-0500\n"
 "PO-Revision-Date: 2002-08-19 22:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3080,40 +3080,40 @@ msgstr "tog bort    db-miljö %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "öppnar      db-miljö %s/%s %s\n"
 
-#: rpmdb/db3.c:764
+#: rpmdb/db3.c:775
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "stängde     db-index %s/%s\n"
 
-#: rpmdb/db3.c:831
+#: rpmdb/db3.c:842
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifierade db-index %s/%s\n"
 
-#: rpmdb/db3.c:969
+#: rpmdb/db3.c:980
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1073
+#: rpmdb/db3.c:1084
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db3.c:1310
+#: rpmdb/db3.c:1322
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1312
+#: rpmdb/db3.c:1324
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db3.c:1312
+#: rpmdb/db3.c:1324
 msgid "shared"
 msgstr "delat"
 
-#: rpmdb/db3.c:1316
+#: rpmdb/db3.c:1328
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste       db-index %s/%s\n"
