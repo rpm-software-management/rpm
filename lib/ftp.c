@@ -242,7 +242,7 @@ static int mygethostbyname(const char * host, struct in_addr * address) {
     hostinfo = gethostbyname(host);
     if (!hostinfo) return 1;
 
-    memcpy(address, hostinfo->h_addr_list[0], hostinfo->h_length);
+    memcpy(address, hostinfo->h_addr_list[0], sizeof(*address));
     return 0;
 }
 #endif
