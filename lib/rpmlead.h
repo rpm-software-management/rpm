@@ -28,9 +28,9 @@ struct oldrpmlead {		/* for version 1 packages */
     short type;
     short archnum;
     char name[66];
-    unsigned long specOffset;
-    unsigned long specLength;
-    unsigned long archiveOffset;
+    unsigned int specOffset;
+    unsigned int specLength;
+    unsigned int archiveOffset;
 } ;
 
 int writeLead(int fd, struct rpmlead *lead);
