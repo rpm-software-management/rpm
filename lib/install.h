@@ -24,48 +24,7 @@ struct sharedFileInfo {
 };
 
 /**
- * File disposition(s) during package install/erase.
  */
-enum fileActions {
-    FA_UNKNOWN = 0,	/*!< initial action (default action for source rpm) */
-    FA_CREATE,		/*!< ... to be replaced. */
-    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
-    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
-    FA_SKIP, 		/*!< ... already replaced, don't remove. */
-    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
-    FA_REMOVE,		/*!< ... to be removed. */
-    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
-    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
-    FA_SKIPMULTILIB,	/*!< ... untouched. @todo state "multilib" ???. */
-};
-
-#define XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
-
-/**
- */
-typedef	enum rollbackDir_e {
-    ROLLBACK_SAVE	= 1,	/*!< Save files. */
-    ROLLBACK_RESTORE	= 2,	/*!< Restore files. */
-} rollbackDir;
-
-/**
- * File types.
- * These are the types of files used internally by rpm. The file
- * type is determined by applying stat(2) macros like S_ISDIR to
- * the file mode tag from a header. The values are arbitrary,
- * but are identical to the linux stat(2) file types.
- */
-enum fileTypes {
-    PIPE	= 1,	/*!< pipe/fifo */
-    CDEV	= 2,	/*!< character device */
-    XDIR	= 4,	/*!< directory */
-    BDEV	= 6,	/*!< block device */
-    REG		= 8,	/*!< regular file */
-    LINK	= 10,	/*!< hard link */
-    SOCK	= 12,	/*!< socket */
-};
-
 typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
 
 #ifdef __cplusplus
@@ -106,13 +65,6 @@ int runTriggers(const rpmTransactionSet ts, int sense, Header h,
  */
 int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
 		int countCorrection);
-
-/**
- * Return formatted string representation of file disposition.
- * @param a		file dispostion
- * @return		formatted string
- */
-/*@observer@*/ const char *const fileActionString(enum fileActions a);
 
 /**
  * Install binary package (from transaction set).

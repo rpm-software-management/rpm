@@ -12,6 +12,10 @@
 
 /*@access h@*/		/* compared with NULL */
 
+#define	SUFFIX_RPMORIG	".rpmorig"
+#define	SUFFIX_RPMSAVE	".rpmsave"
+#define	SUFFIX_RPMNEW	".rpmnew"
+
 static char * ridsub = ".rid/";
 static char * ridsep = ";";
 static mode_t riddmode = 0700;
@@ -27,7 +31,6 @@ int dirstashPackage(const rpmTransactionSet ts, const TFI_t fi, rollbackDir dir)
     int i;
 
     assert(fi->type == TR_REMOVED);
-
 
     {	rpmdbMatchIterator mi = NULL;
 
@@ -265,3 +268,220 @@ void freeFi(TFI_t fi)
     }
 }
 
+/*@observer@*/ const char *const fiTypeString(TFI_t fi) {
+    switch(fi->type) {
+    case TR_ADDED:	return "install";
+    case TR_REMOVED:	return "  erase";
+    default:		return "???";
+    }
+    /*@noteached@*/
+}
+
+/*@observer@*/ const char *const fileStageString(fileStage a) {
+    switch(a) {
+    case FI_CREATE:	return "create";
+    case FI_INIT:	return "init";
+    case FI_MAP:	return "map";
+    case FI_SKIP:	return "skip";
+    case FI_PRE:	return "pre-process";
+    case FI_PROCESS:	return "process";
+    case FI_POST:	return "post-process";
+    case FI_NOTIFY:	return "notify";
+    case FI_UNDO:	return "undo";
+    case FI_COMMIT:	return "commit";
+    case FI_DESTROY:	return "destroy";
+    default:		return "???";
+    }
+    /*@noteached@*/
+}
+
+/*@obserever@*/ const char *const fileActionString(fileAction a)
+{
+    switch (a) {
+    case FA_UNKNOWN: return "unknown";
+    case FA_CREATE: return "create";
+    case FA_BACKUP: return "backup";
+    case FA_SAVE: return "save";
+    case FA_SKIP: return "skip";
+    case FA_ALTNAME: return "altname";
+    case FA_REMOVE: return "remove";
+    case FA_SKIPNSTATE: return "skipnstate";
+    case FA_SKIPNETSHARED: return "skipnetshared";
+    case FA_SKIPMULTILIB: return "skipmultilib";
+    default: return "???";
+    }
+    /*@notreached@*/
+}
+
+struct pkgIterator {
+/*@kept@*/ TFI_t fi;
+    int i;
+};
+
+static void pkgFreeIterator(void * this) {
+    if (this) free(this);
+}
+
+static void * pkgInitIterator(TFI_t fi) {
+    struct pkgIterator *pi = xcalloc(sizeof(*pi), 1);
+    pi->fi = fi;
+    switch (fi->type) {
+    case TR_ADDED:	pi->i = 0;		break;
+    case TR_REMOVED:	pi->i = fi->fc;	break;
+    }
+    return pi;
+}
+
+static int pkgNextIterator(void * this) {
+    struct pkgIterator *pi = this;
+    TFI_t fi = pi->fi;
+    int i = -1;
+    switch (fi->type) {
+    case TR_ADDED:
+	if (pi->i < fi->fc)
+	    i = pi->i++;
+	break;
+    case TR_REMOVED:
+	if (pi->i >= 0)
+	    i = --pi->i;
+	break;
+    }
+    return i;
+}
+
+
+int pkgActions(const rpmTransactionSet ts, TFI_t fi)
+{
+    int nb = (!ts->chrootDone ? strlen(ts->rootDir) : 0);
+    char * opath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
+    char * o = (!ts->chrootDone ? stpcpy(opath, ts->rootDir) : opath);
+    char * npath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
+    char * n = (!ts->chrootDone ? stpcpy(npath, ts->rootDir) : npath);
+    int rc = 0;
+    void * pi;
+    int i;
+
+    if (fi->actions == NULL)
+	return rc;
+
+    pi = pkgInitIterator(fi);
+    while ((i = pkgNextIterator(pi)) != -1) {
+	char * ext, * t;
+
+	if (fi->actions[i] & FA_DONE)
+	    continue;
+
+	rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
+			fi->dnl[fi->dil[i]], fi->bnl[i],
+		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
+
+	ext = NULL;
+
+	switch (fi->actions[i] & ~FA_DONE) {
+	case FA_DONE:
+	case FA_SKIP:
+	case FA_SKIPMULTILIB:
+	case FA_UNKNOWN:
+	    continue;
+	    /*@notreached@*/ break;
+
+	case FA_CREATE:
+	    assert(fi->type == TR_ADDED);
+	    continue;
+	    /*@notreached@*/ break;
+
+	case FA_SKIPNSTATE:
+	    if (fi->type == TR_ADDED)
+		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
+	    continue;
+	    /*@notreached@*/ break;
+
+	case FA_SKIPNETSHARED:
+	    if (fi->type == TR_ADDED)
+		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
+	    continue;
+	    /*@notreached@*/ break;
+	case FA_BACKUP:
+	    ext = (fi->type == TR_ADDED ? SUFFIX_RPMORIG : SUFFIX_RPMSAVE);
+	    break;
+
+	case FA_ALTNAME:
+	    assert(fi->type == TR_ADDED);
+	    ext = SUFFIX_RPMNEW;
+	    t = xmalloc(strlen(fi->bnl[i]) + strlen(ext) + 1);
+	    (void)stpcpy(stpcpy(t, fi->bnl[i]), ext);
+	    rpmMessage(RPMMESS_WARNING, _("%s: %s%s created as %s\n"),
+			fiTypeString(fi), fi->dnl[fi->dil[i]], fi->bnl[i], t);
+	    fi->bnl[i] = t;		/* XXX memory leak iff i = 0 */
+	    ext = NULL;
+	    continue;
+	    /*@notreached@*/ break;
+
+	case FA_SAVE:
+	    assert(fi->type == TR_ADDED);
+	    ext = SUFFIX_RPMSAVE;
+	    break;
+
+	case FA_REMOVE:
+	    assert(fi->type == TR_REMOVED);
+	    /* Append file name to (possible) root dir. */
+	    (void) stpcpy( stpcpy(o, fi->dnl[fi->dil[i]]), fi->bnl[i]);
+	    if (S_ISDIR(fi->fmodes[i])) {
+		if (!rmdir(opath))
+		    continue;
+		switch (errno) {
+		case ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
+		case ENOTEMPTY:
+#ifdef	NOTYET
+		    if (fi->fflags[i] & RPMFILE_MISSINGOK)
+			continue;
+#endif
+		    rpmError(RPMERR_RMDIR, 
+			_("%s: cannot remove %s - directory not empty\n"), 
+				fiTypeString(fi), o);
+		    break;
+		default:
+		    rpmError(RPMERR_RMDIR,
+				_("%s rmdir of %s failed: %s\n"),
+				fiTypeString(fi), o, strerror(errno));
+		    break;
+		}
+		rc++;
+		continue;
+		/*@notreached@*/ break;
+	    }
+	    if (!unlink(opath))
+		continue;
+	    if (errno == ENOENT && (fi->fflags[i] & RPMFILE_MISSINGOK))
+		continue;
+	    rpmError(RPMERR_UNLINK, _("%s removal of %s failed: %s\n"),
+				fiTypeString(fi), o, strerror(errno));
+	    rc++;
+	    continue;
+	    /*@notreached@*/ break;
+	}
+
+	if (ext == NULL)
+	    continue;
+
+	/* Append file name to (possible) root dir. */
+	(void) stpcpy( stpcpy(o, fi->dnl[fi->dil[i]]), fi->bnl[i]);
+
+	/* XXX TR_REMOVED dinna do this. */
+	if (access(opath, F_OK) != 0)
+	    continue;
+
+	(void) stpcpy( stpcpy(n, o), ext);
+	rpmMessage(RPMMESS_WARNING, _("%s: %s saved as %s\n"),
+			fiTypeString(fi), o, n);
+
+	if (!rename(opath, npath))
+	    continue;
+
+	rpmError(RPMERR_RENAME, _("%s rename of %s to %s failed: %s\n"),
+			fiTypeString(fi), o, n, strerror(errno));
+	rc++;
+    }
+    pkgFreeIterator(pi);
+    return rc;
+}

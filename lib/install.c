@@ -144,7 +144,7 @@ static void trimChangelog(Header h)
  */
 static int mergeFiles(Header h, Header newH, TFI_t fi)
 {
-    enum fileActions * actions = fi->actions;
+    fileAction * actions = fi->actions;
     int i, j, k, fc;
     int_32 type = 0;
     int_32 count = 0;
@@ -623,24 +623,6 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-/*@obserever@*/ const char *const fileActionString(enum fileActions a)
-{
-    switch (a) {
-    case FA_UNKNOWN: return "unknown";
-    case FA_CREATE: return "create";
-    case FA_BACKUP: return "backup";
-    case FA_SAVE: return "save";
-    case FA_SKIP: return "skip";
-    case FA_ALTNAME: return "altname";
-    case FA_REMOVE: return "remove";
-    case FA_SKIPNSTATE: return "skipnstate";
-    case FA_SKIPNETSHARED: return "skipnetshared";
-    case FA_SKIPMULTILIB: return "skipmultilib";
-    }
-    /*@notreached@*/
-    return "???";
-}
-
 int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 			const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
@@ -711,96 +693,6 @@ exit:
     }
     if (ts)
 	rpmtransFree(ts);
-    return rc;
-}
-
-#define	SUFFIX_RPMORIG	".rpmorig"
-#define	SUFFIX_RPMSAVE	".rpmsave"
-#define	SUFFIX_RPMNEW	".rpmnew"
-
-/**
- * Perform install file actions.
- * @param ts		transaction set
- * @param fi		transaction element file info
- * @return		0 on success, 1 on failure
- */
-static int installActions(const rpmTransactionSet ts, TFI_t fi)
-{
-/*@observer@*/ static char * stepName = "install";
-    int nb = (!ts->chrootDone ? strlen(ts->rootDir) : 0);
-    char * opath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
-    char * o = (!ts->chrootDone ? stpcpy(opath, ts->rootDir) : opath);
-    char * npath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
-    char * n = (!ts->chrootDone ? stpcpy(npath, ts->rootDir) : npath);
-    int rc = 0;
-    int i;
-
-    if (fi->actions == NULL)
-	return rc;
-
-    for (i = 0; i < fi->fc; i++) {
-	char * ext, * t;
-
-	rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
-			fi->dnl[fi->dil[i]], fi->bnl[i],
-		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
-
-	ext = NULL;
-
-	switch (fi->actions[i]) {
-	case FA_CREATE:
-	case FA_SKIP:
-	case FA_SKIPMULTILIB:
-	case FA_UNKNOWN:
-	case FA_REMOVE:
-	    break;
-
-	case FA_SKIPNSTATE:
-	    fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
-	    break;
-
-	case FA_SKIPNETSHARED:
-	    fi->fstates[i] = RPMFILE_STATE_NETSHARED;
-	    break;
-	case FA_BACKUP:
-	    ext = SUFFIX_RPMORIG;
-	    break;
-
-	case FA_ALTNAME:
-	    ext = SUFFIX_RPMNEW;
-	    t = xmalloc(strlen(fi->bnl[i]) + strlen(ext) + 1);
-	    (void)stpcpy(stpcpy(t, fi->bnl[i]), ext);
-	    rpmMessage(RPMMESS_WARNING, _("%s%s created as %s\n"),
-			fi->dnl[fi->dil[i]], fi->bnl[i], t);
-	    fi->bnl[i] = t;		/* XXX memory leak iff i = 0 */
-	    ext = NULL;
-	    break;
-
-	case FA_SAVE:
-	    ext = SUFFIX_RPMSAVE;
-	    break;
-	}
-
-	if (ext == NULL)
-	    continue;
-
-	/* Append file name to (possible) root dir. */
-	(void) stpcpy( stpcpy(o, fi->dnl[fi->dil[i]]), fi->bnl[i]);
-
-	if (access(opath, F_OK) != 0)
-	    continue;
-
-	(void) stpcpy( stpcpy(n, o), ext);
-	rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), o, n);
-
-	if (!rename(opath, npath))
-	    continue;
-
-	rpmError(RPMERR_RENAME, _("%s rename of %s to %s failed: %s\n"),
-			stepName, o, n, strerror(errno));
-	rc = 1;
-	break;
-    }
     return rc;
 }
 
@@ -917,7 +809,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 
 	setFileOwners(fi);
 
-	rc = installActions(ts, fi);
+	rc = pkgActions(ts, fi);
 	if (rc)
 	    goto exit;
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-26 12:00-0500\n"
+"POT-Creation-Date: 2001-01-27 12:37-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2185,55 +2185,80 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:642
+#: lib/cpio.c:650
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:648
+#: lib/cpio.c:656
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:947
+#: lib/cpio.c:962
+#, c-format
+msgid "\t%s path %s\n"
+msgstr ""
+
+#: lib/cpio.c:968
+#, c-format
+msgid "\t%s mkdir/rename %s.TID\n"
+msgstr ""
+
+#: lib/cpio.c:1011
+#, c-format
+msgid "\t%s install %s.TID\n"
+msgstr ""
+
+#: lib/cpio.c:1031
+#, c-format
+msgid "\t%s set info %s.TID\n"
+msgstr ""
+
+#: lib/cpio.c:1053
+#, c-format
+msgid "\t%s rename/rmdir %s\n"
+msgstr ""
+
+#: lib/cpio.c:1130
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1443
+#: lib/cpio.c:1668
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1446
+#: lib/cpio.c:1671
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1447
+#: lib/cpio.c:1672
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1465
+#: lib/cpio.c:1690
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1466
+#: lib/cpio.c:1691
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1467
+#: lib/cpio.c:1692
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1468
+#: lib/cpio.c:1693
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1469
+#: lib/cpio.c:1694
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1478
+#: lib/cpio.c:1703
 msgid " failed - "
 msgstr ""
 
@@ -2639,41 +2664,21 @@ msgstr ""
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:666
+#: lib/install.c:648
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:744
-#, c-format
-msgid "   file: %s%s action: %s\n"
-msgstr ""
-
-#: lib/install.c:773
-#, c-format
-msgid "%s%s created as %s\n"
-msgstr ""
-
-#: lib/install.c:794 lib/uninstall.c:71
-#, c-format
-msgid "%s saved as %s\n"
-msgstr ""
-
-#: lib/install.c:799 lib/uninstall.c:74
-#, c-format
-msgid "%s rename of %s to %s failed: %s\n"
-msgstr ""
-
-#: lib/install.c:819 lib/uninstall.c:125
+#: lib/install.c:711 lib/uninstall.c:24
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/install.c:886 lib/install.c:974 lib/uninstall.c:163 lib/uninstall.c:184
+#: lib/install.c:778 lib/install.c:866 lib/uninstall.c:62 lib/uninstall.c:83
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/install.c:893
+#: lib/install.c:785
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
@@ -3076,6 +3081,41 @@ msgstr ""
 #: lib/query.c:746 lib/rpminstall.c:551
 #, c-format
 msgid "package %s is not installed\n"
+msgstr ""
+
+#: lib/rollback.c:374
+#, c-format
+msgid "   file: %s%s action: %s\n"
+msgstr ""
+
+#: lib/rollback.c:413
+#, c-format
+msgid "%s: %s%s created as %s\n"
+msgstr ""
+
+#: lib/rollback.c:440
+#, c-format
+msgid "%s: cannot remove %s - directory not empty\n"
+msgstr ""
+
+#: lib/rollback.c:445
+#, c-format
+msgid "%s rmdir of %s failed: %s\n"
+msgstr ""
+
+#: lib/rollback.c:457
+#, c-format
+msgid "%s removal of %s failed: %s\n"
+msgstr ""
+
+#: lib/rollback.c:475
+#, c-format
+msgid "%s: %s saved as %s\n"
+msgstr ""
+
+#: lib/rollback.c:481
+#, c-format
+msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
 
 #: lib/rpmchecksig.c:38
@@ -3699,26 +3739,6 @@ msgstr ""
 #: lib/transaction.c:729
 #, c-format
 msgid "%s skipped due to missingok flag\n"
-msgstr ""
-
-#: lib/uninstall.c:45
-#, c-format
-msgid "   file: %s action: %s\n"
-msgstr ""
-
-#: lib/uninstall.c:93
-#, c-format
-msgid "cannot remove %s - directory not empty\n"
-msgstr ""
-
-#: lib/uninstall.c:98
-#, c-format
-msgid "rmdir of %s failed: %s\n"
-msgstr ""
-
-#: lib/uninstall.c:109
-#, c-format
-msgid "removal of %s failed: %s\n"
 msgstr ""
 
 #: lib/verify.c:59

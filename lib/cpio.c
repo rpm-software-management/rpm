@@ -88,6 +88,13 @@ struct cpioHeader {
 /*@owned@*/ const char * path;
     FD_t cfd;
 /*@owned@*/ void * mapi;
+/*@dependent@*/ const void * map;
+/*@owned@*/ struct hardLink * links;
+/*@dependent@*/ struct hardLink * li;
+/*@dependent@*/ const char ** failedFile;
+    int postpone;
+    int rc;
+    fileStage a;
     struct stat sb;
 };
 
@@ -163,7 +170,7 @@ struct mapi {
  */
 static const void * mapLink(const void * this) {
     const struct cpioFileMapping * omap = this;
-    struct cpioFileMapping * nmap = xcalloc(sizeof(*nmap), 1);
+    struct cpioFileMapping * nmap = xcalloc(1, sizeof(*nmap));
     *nmap = *omap;	/* structure assignment */
     return nmap;
 }
@@ -209,7 +216,7 @@ mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
 
     if (fi == NULL)
 	return NULL;
-    mapi = xcalloc(sizeof(*mapi), 1);
+    mapi = xcalloc(1, sizeof(*mapi));
     mapi->ts = ts;
     mapi->fi = fi;
     mapi->i = 0;
@@ -231,8 +238,9 @@ static const void * mapNextIterator(void * this) {
     int i = mapi->i;
 
     do {
-	if (!((i = mapi->i++) < fi->fc))
+	if (!((i = mapi->i) < fi->fc))
 	    return NULL;
+	mapi->i++;
     } while (fi->actions && XFA_SKIPPING(fi->actions[i]));
 
     /* src rpms have simple base name in payload. */
@@ -282,7 +290,7 @@ static const void * mapFind(void * this, const char * hdrPath) {
 
 /**
  */
-static void hdrCallback(const struct cpioHeader * hdr)
+static void pkgCallback(const struct cpioHeader * hdr)
 {
     struct mapi * mapi = hdr->mapi;
     rpmTransactionSet ts;
@@ -618,14 +626,13 @@ static int inline checkDirectory(const char * filename)	/*@*/
 /**
  * Create file from payload stream.
  * @todo Legacy: support brokenEndian MD5 checks?
- * @param cfd		payload file handle
  * @param hdr		file name and stat info
- * @param filemd5	file md5 sum
  * @return		0 on success
  */
-static int expandRegular(const struct cpioHeader * hdr, const char * filemd5)
+static int expandRegular(const struct cpioHeader * hdr)
 		/*@modifies fileSystem, hdr->cfd @*/
 {
+    const char * filemd5;
     FD_t ofd;
     char buf[BUFSIZ];
     int bytesRead;
@@ -634,6 +641,7 @@ static int expandRegular(const struct cpioHeader * hdr, const char * filemd5)
     int rc = 0;
     struct stat sb;
 
+    filemd5 = mapMd5sum(hdr->map);
     /* Rename the old file before attempting unlink to avoid EBUSY errors */
     if (!lstat(hdr->path, &sb)) {
 	strcpy(buf, hdr->path);
@@ -677,7 +685,7 @@ static int expandRegular(const struct cpioHeader * hdr, const char * filemd5)
 
 	/* don't call this with fileSize == fileComplete */
 	if (!rc && left)
-	    hdrCallback(hdr);
+	    pkgCallback(hdr);
     }
 
     if (filemd5) {
@@ -742,7 +750,6 @@ static int expandSymlink(const struct cpioHeader * hdr)
 
 /**
  * Create fifo from payload stream.
- * @param cfd		payload file handle
  * @param hdr		file name and stat info
  * @return		0 on success
  */
@@ -766,7 +773,6 @@ static int expandFifo(const struct cpioHeader * hdr)
 
 /**
  * Create fifo from payload stream.
- * @param cfd		payload file handle
  * @param hdr		file name and stat info
  * @return		0 on success
  */
@@ -810,7 +816,7 @@ static /*@only@*/ struct hardLink * newHardLink(const struct stat * st,
     switch (hltype) {
     case HARDLINK_INSTALL:
 	li->linksLeft = st->st_nlink;
-	li->fileMaps = xmalloc(sizeof(li->fileMaps[0]) * st->st_nlink);
+	li->fileMaps = xcalloc(st->st_nlink, sizeof(li->fileMaps[0]));
 	li->files = NULL;
 	break;
     case HARDLINK_BUILD:
@@ -853,37 +859,35 @@ static void freeHardLink( /*@only@*/ struct hardLink * li)
 
 /**
  * Create hard links to existing file.
- * @param li		set of hard links
- * @retval failedFile	on error, file name that failed
  * @return		0 on success
  */
-static int createLinks(struct hardLink * li, /*@out@*/ const char ** failedFile)
-	/*@modifies fileSystem, *failedFile, li->files, li->linksLeft @*/
+static int createLinks(struct cpioHeader * hdr)
+	/*@modifies hdr, fileSystem @*/
 {
-    int i;
     struct stat sb;
+    int i;
 
-    for (i = 0; i < li->nlink; i++) {
-	if (i == li->createdPath) continue;
-	if (li->files[i] == NULL) continue;
+    for (i = 0; i < hdr->li->nlink; i++) {
+	if (i == hdr->li->createdPath) continue;
+	if (hdr->li->files[i] == NULL) continue;
 
-	if (!lstat(li->files[i], &sb)) {
-	    if (unlink(li->files[i])) {
-		if (failedFile)
-		    *failedFile = xstrdup(li->files[i]);
+	if (!lstat(hdr->li->files[i], &sb)) {
+	    if (unlink(hdr->li->files[i])) {
+		if (hdr->failedFile)
+		    *hdr->failedFile = xstrdup(hdr->li->files[i]);
 		return CPIOERR_UNLINK_FAILED;
 	    }
 	}
 
-	if (link(li->files[li->createdPath], li->files[i])) {
-	    if (failedFile)
-		*failedFile = xstrdup(li->files[i]);
+	if (link(hdr->li->files[hdr->li->createdPath], hdr->li->files[i])) {
+	    if (hdr->failedFile)
+		*hdr->failedFile = xstrdup(hdr->li->files[i]);
 	    return CPIOERR_LINK_FAILED;
 	}
 
-	/*@-unqualifiedtrans@*/ free((void *)li->files[i]) /*@=unqualifiedtrans@*/ ;
-	li->files[i] = NULL;
-	li->linksLeft--;
+	/*@-unqualifiedtrans@*/ free((void *)hdr->li->files[i]) /*@=unqualifiedtrans@*/ ;
+	hdr->li->files[i] = NULL;
+	hdr->li->linksLeft--;
     }
 
     return 0;
@@ -911,14 +915,177 @@ static int eatBytes(FD_t cfd, int amount)
     return 0;
 }
 
+/**
+ * Cpio archive extraction state machine.
+ */
+static int hdrStage(struct cpioHeader * hdr, fileStage a)
+{
+#ifdef	UNUSED
+    const char * const prev = fileStageString(hdr->a);
+#endif
+    const char * const cur = fileStageString(a);
+    struct stat * st = &hdr->sb;
+    int rc = hdr->rc;
+
+    switch (a) {
+    case FI_CREATE:
+	memset(hdr, 0, sizeof(*hdr));
+	hdr->path = NULL;
+	hdr->map = NULL;
+	hdr->links = NULL;
+	hdr->li = NULL;
+	break;
+    case FI_INIT:
+	if (hdr->path) {
+	    free((void *)hdr->path); hdr->path = NULL;
+	}
+	hdr->postpone = 0;
+	rc = getNextHeader(hdr);
+	break;
+    case FI_MAP:
+	if (hdr->mapi) {
+	    hdr->map = mapFind(hdr->mapi, hdr->path);
+	    if (hdr->map) {
+		if (mapFlags(hdr->map, CPIO_MAP_PATH)) {
+		    if (hdr->path) free((void *)hdr->path);
+		    hdr->path = mapFsPath(hdr->map);
+		}
+
+		if (mapFlags(hdr->map, CPIO_MAP_MODE))
+		    st->st_mode = mapFinalMode(hdr->map);
+		if (mapFlags(hdr->map,  CPIO_MAP_UID))
+		    st->st_uid = mapFinalUid(hdr->map);
+		if (mapFlags(hdr->map, CPIO_MAP_GID))
+		    st->st_gid = mapFinalGid(hdr->map);
+	    }
+	}
+	rpmMessage(RPMMESS_DEBUG, _("\t%s path %s\n"), cur, hdr->path);
+	break;
+    case FI_SKIP:
+	eatBytes(hdr->cfd, st->st_size);
+	break;
+    case FI_PRE:
+	rpmMessage(RPMMESS_DEBUG, _("\t%s mkdir/rename %s.TID\n"),
+		cur,  hdr->path);
+	/*
+	 * This won't get hard linked symlinks right, but I can't seem
+	 * to create those anyway.
+	 */
+	if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
+	    for (hdr->li = hdr->links; hdr->li; hdr->li = hdr->li->next) {
+		if (hdr->li->inode == st->st_ino && hdr->li->dev == st->st_dev)
+		    break;
+	    }
+
+	    if (hdr->li == NULL) {
+		hdr->li = newHardLink(st, HARDLINK_BUILD);
+		hdr->li->next = hdr->links;
+		hdr->links = hdr->li;
+	    }
+
+	    hdr->li->files[hdr->li->linksLeft++] = xstrdup(hdr->path);
+
+		/* XXX FIXME 0 length hard linked files are broke. */
+	    if (st->st_size && hdr->li->createdPath == -1) {
+		createLinks(hdr);
+
+		/*
+		 * This only happens for cpio archives which contain
+		 * hardlinks w/ the contents of each hardlink being
+		 * listed (intead of the data being given just once. This
+		 * shouldn't happen, but I've made it happen w/ buggy
+		 * code, so what the heck? GNU cpio handles this well fwiw.
+		 */
+		eatBytes(hdr->cfd, st->st_size);
+	    }
+	    hdr->postpone = 1;
+	    break;
+	}
+	/* XXX diddle hdr->path. */
+	/* XXX keep track of created directories. */
+	rc = checkDirectory(hdr->path);
+	break;
+    case FI_PROCESS:
+	if (hdr->postpone)
+	    break;
+	rpmMessage(RPMMESS_DEBUG, _("\t%s install %s.TID\n"), cur,  hdr->path);
+	if (S_ISREG(st->st_mode))
+	    rc = expandRegular(hdr);
+	else if (S_ISDIR(st->st_mode))
+	    rc = createDirectory(hdr->path, 000);
+	else if (S_ISLNK(st->st_mode))
+	    rc = expandSymlink(hdr);
+	else if (S_ISFIFO(st->st_mode))
+	    rc = expandFifo(hdr);
+	else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
+	    rc = expandDevice(hdr);
+	else if (S_ISSOCK(st->st_mode))
+	    /* this mimics cpio but probably isnt' right */
+	    rc = expandFifo(hdr);
+	else
+	    rc = CPIOERR_UNKNOWN_FILETYPE;
+	break;
+    case FI_POST:
+	if (hdr->postpone)
+	    break;
+	rpmMessage(RPMMESS_DEBUG, _("\t%s set info %s.TID\n"), cur,  hdr->path);
+	if (!rc)
+	    rc = setInfo(hdr);
+
+	if (!rc && S_ISREG(st->st_mode) && st->st_nlink > 1) {
+	    hdr->li->createdPath = --hdr->li->linksLeft;
+	    rc = createLinks(hdr);
+	}
+	break;
+    case FI_NOTIFY:
+	pkgCallback(hdr);
+	break;
+    case FI_UNDO:
+	{   int olderrno = errno;
+	    (void) unlink(hdr->path);
+	    /* XXX remove created directories. */
+	    errno = olderrno;
+	    if (hdr->failedFile && *hdr->failedFile == NULL)
+		*hdr->failedFile = xstrdup(hdr->path);
+	}
+	break;
+    case FI_COMMIT:
+	rpmMessage(RPMMESS_DEBUG, _("\t%s rename/rmdir %s\n"), cur,  hdr->path);
+	break;
+    case FI_DESTROY:
+	if (hdr->path) {
+	    free((void *)hdr->path); hdr->path = NULL;
+	}
+	/* Create any remaining links (if no error), and clean up. */
+	rc = hdr->rc;
+	while ((hdr->li = hdr->links) != NULL) {
+	    hdr->links = hdr->li->next;
+	    hdr->li->next = NULL;
+	    if (rc == 0 && hdr->li->linksLeft)
+		rc = (hdr->li->createdPath != -1)
+			? createLinks(hdr) : CPIOERR_MISSING_HARDLINK;
+	    freeHardLink(hdr->li);
+	}
+	break;
+    default:
+	break;
+    }
+
+    hdr->a = a;
+    hdr->rc = rc;
+    return rc;
+}
+
 /** @todo Verify payload MD5 sum. */
 int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 		const char ** failedFile)
 {
     struct cpioHeader ch, *hdr = &ch;
+#ifdef	DYING
     const void * map = NULL;
     struct hardLink * links = NULL;
     struct hardLink * li = NULL;
+#endif
     int rc = 0;
 
 #ifdef	NOTYET
@@ -927,73 +1094,102 @@ int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
     fdInitMD5(cfd, 0);
 #endif
 
+    /* Initialize hdr. */
+    rc = hdrStage(hdr, FI_CREATE);
+#ifdef	DYING
     memset(hdr, 0, sizeof(*hdr));
     hdr->path = NULL;
-    hdr->mapi = mapInitIterator(ts, fi);
+    hdr->map = NULL;
+    hdr->links = NULL;
+    hdr->li = NULL;
+#endif
     hdr->cfd = fdLink(cfd, "persist (cpioInstallArchive");
     fdSetCpioPos(hdr->cfd, 0);
-    if (failedFile)
-	*failedFile = NULL;
+    hdr->mapi = mapInitIterator(ts, fi);
+    hdr->failedFile = failedFile;
+    if (hdr->failedFile)
+	*hdr->failedFile = NULL;
 
     do {
+#ifdef	DYING
 	struct stat * st;
 
 	if (hdr->path) {
 	    free((void *)hdr->path);
 	    hdr->path = NULL;
 	}
-	if ((rc = getNextHeader(hdr))) {
+#endif
+
+	/* Clean hdr, free'ing memory, and read next archive header. */
+	rc = hdrStage(hdr, FI_INIT);
+#ifdef	DYING
+	rc = getNextHeader(hdr);
+#endif
+	if (rc) {
 #if 0	/* XXX this is the failure point for an unreadable rpm */
 	    rpmError(RPMERR_BADPACKAGE, _("getNextHeader: %s\n"),
 			cpioStrerror(rc));
 #endif
 	    goto exit;
 	}
-	st = &hdr->sb;
 
 	if (!strcmp(hdr->path, TRAILER))
 	    break;
 
-	if (hdr->mapi)
-	    map = mapFind(hdr->mapi, hdr->path);
+#ifdef	DYING
+	st = &hdr->sb;
+#endif
 
-	if (hdr->mapi && map == NULL) {
-	    eatBytes(hdr->cfd, st->st_size);
-	} else {
-	    if (map) {
-		if (mapFlags(map, CPIO_MAP_PATH)) {
+	/* Remap mode/uid/gid/name of file from archive. */
+	(void) hdrStage(hdr, FI_MAP);
+#ifdef	DYING
+	if (hdr->mapi) {
+	    hdr->map = mapFind(hdr->mapi, hdr->path);
+	    if (hdr->map) {
+		if (mapFlags(hdr->map, CPIO_MAP_PATH)) {
 		    if (hdr->path) free((void *)hdr->path);
-		    hdr->path = mapFsPath(map);
+		    hdr->path = mapFsPath(hdr->map);
 		}
 
-		if (mapFlags(map, CPIO_MAP_MODE))
-		    st->st_mode = mapFinalMode(map);
-		if (mapFlags(map,  CPIO_MAP_UID))
-		    st->st_uid = mapFinalUid(map);
-		if (mapFlags(map, CPIO_MAP_GID))
-		    st->st_gid = mapFinalGid(map);
+		if (mapFlags(hdr->map, CPIO_MAP_MODE))
+		    st->st_mode = mapFinalMode(hdr->map);
+		if (mapFlags(hdr->map,  CPIO_MAP_UID))
+		    st->st_uid = mapFinalUid(hdr->map);
+		if (mapFlags(hdr->map, CPIO_MAP_GID))
+		    st->st_gid = mapFinalGid(hdr->map);
 	    }
+	}
+#endif
 
+	if (hdr->mapi && hdr->map == NULL) {
+	    rc = hdrStage(hdr, FI_SKIP);
+#ifdef	DYING
+	    eatBytes(hdr->cfd, st->st_size);
+#endif
+	} else {
+#ifdef	DYING
 	    /*
 	     * This won't get hard linked symlinks right, but I can't seem
 	     * to create those anyway.
 	     */
 	    if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
-		for (li = links; li; li = li->next) {
-		    if (li->inode == st->st_ino && li->dev == st->st_dev) break;
+		for (hdr->li = hdr->links; hdr->li; hdr->li = hdr->li->next) {
+		    if (hdr->li->inode == st->st_ino &&
+			hdr->li->dev == st->st_dev)
+			    break;
 		}
 
-		if (li == NULL) {
-		    li = newHardLink(st, HARDLINK_BUILD);
-		    li->next = links;
-		    links = li;
+		if (hdr->li == NULL) {
+		    hdr->li = newHardLink(st, HARDLINK_BUILD);
+		    hdr->li->next = hdr->links;
+		    hdr->links = hdr->li;
 		}
 
-		li->files[li->linksLeft++] = xstrdup(hdr->path);
+		hdr->li->files[hdr->li->linksLeft++] = xstrdup(hdr->path);
 
 		/* XXX FIXME 0 length hard linked files are broke. */
-		if (st->st_size && li->createdPath == -1) {
-		    createLinks(li, failedFile);
+		if (st->st_size && hdr->li->createdPath == -1) {
+		    createLinks(hdr);
 
 		    /*
 		     * This only happens for cpio archives which contain
@@ -1004,13 +1200,22 @@ int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 		     */
 		    eatBytes(hdr->cfd, st->st_size);
 		}
+	    } else
+#endif
+	    {
 
-	    } else {
+		/* Create any directories in path. */
+		rc = hdrStage(hdr, FI_PRE);
+#ifdef	DYING */
 		rc = checkDirectory(hdr->path);
+#endif
 
 		if (!rc) {
+		    /* Extract file from archive. */
+		    rc = hdrStage(hdr, FI_PROCESS);
+#ifdef	DYING
 		    if (S_ISREG(st->st_mode))
-			rc = expandRegular(hdr, mapMd5sum(map));
+			rc = expandRegular(hdr);
 		    else if (S_ISDIR(st->st_mode))
 			rc = createDirectory(hdr->path, 000);
 		    else if (S_ISLNK(st->st_mode))
@@ -1025,53 +1230,72 @@ int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 		    } else {
 			rc = CPIOERR_UNKNOWN_FILETYPE;
 		    }
+#endif
 		}
 
+		/* If successfully extracted, set final file info. */
+		if (!rc)
+		    rc = hdrStage(hdr, FI_POST);
+#ifdef	DYING
 		if (!rc)
 		    rc = setInfo(hdr);
 
-		if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
+		if (!rc && S_ISREG(st->st_mode) && st->st_nlink > 1) {
 		    li->createdPath = --li->linksLeft;
-		    rc = createLinks(li, failedFile);
+		    rc = createLinks(hdr);
 		}
+#endif
 	    }
 
-	    if (rc && failedFile && *failedFile == NULL) {
+#ifdef	DYING
+	    if (rc && hdr->failedFile && *hdr->failedFile == NULL) {
 		int olderrno;
 
-		*failedFile = xstrdup(hdr->path);
+		*hdr->failedFile = xstrdup(hdr->path);
 		olderrno = errno;
 		unlink(hdr->path);
 		errno = olderrno;
 	    }
+#endif
 	}
 
 	padinfd(hdr->cfd, 4);
 
+	/* Notify on success. */
 	if (!rc)
-	    hdrCallback(hdr);
+#ifdef	DYING
+	    pkgCallback(hdr);
+#else
+	    (void) hdrStage(hdr, FI_NOTIFY);
+#endif
+
+	(void) hdrStage(hdr, (rc ? FI_UNDO : FI_COMMIT));
 
     } while (rc == 0);
 
+    rc = hdrStage(hdr, FI_DESTROY);
+#ifdef	DYING
+    (void) hdrStage(hdr, FI_UNKNOWN);
     if (hdr->path) {
 	free((void *)hdr->path);
 	hdr->path = NULL;
     }
 
     /* Create any remaining links (if no error), and clean up. */
-    while ((li = links) != NULL) {
-	links = li->next;
-	li->next = NULL;
+    while ((hdr->li = hdr->links) != NULL) {
+	hdr->links = hdr->li->next;
+	hdr->li->next = NULL;
 
-	if (rc == 0 && li->linksLeft) {
-	    if (li->createdPath == -1)
+	if (rc == 0 && hdr->li->linksLeft) {
+	    if (hdr->li->createdPath == -1)
 		rc = CPIOERR_MISSING_HARDLINK;
 	    else
-		rc = createLinks(li, failedFile);
+		rc = createLinks(hdr);
 	}
 
-	freeHardLink(li);
+	freeHardLink(hdr->li);
     }
+#endif
 
 #ifdef	NOTYET
     fdFiniMD5(hdr->cfd, (void **)&md5sum, NULL, 1);
@@ -1079,11 +1303,12 @@ int cpioInstallArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
     if (md5sum)
 	free(md5sum);
 #endif
-    rc = 0;
 
 exit:
-    fdFree(hdr->cfd, "persist (cpioInstallArchive");
-    hdr->cfd = NULL;
+    if (hdr->cfd) {
+	fdFree(hdr->cfd, "persist (cpioInstallArchive");
+	hdr->cfd = NULL;
+    }
     if (hdr->mapi)
 	mapFreeIterator(hdr->mapi);
     return rc;

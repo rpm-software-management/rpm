@@ -10,6 +10,67 @@
 
 /**
  */
+typedef enum fileStage_e {
+    FI_CREATE	= 0,
+    FI_INIT,
+    FI_MAP,
+    FI_SKIP,
+    FI_PRE,
+    FI_PROCESS,
+    FI_POST,
+    FI_NOTIFY,
+    FI_UNDO,
+    FI_COMMIT,
+    FI_DESTROY,
+} fileStage;
+
+/**
+ * File disposition(s) during package install/erase transaction.
+ */
+typedef enum fileAction_e {
+    FA_UNKNOWN = 0,	/*!< initial action (default action for source rpm) */
+    FA_CREATE,		/*!< ... to be replaced. */
+    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
+    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
+    FA_SKIP, 		/*!< ... already replaced, don't remove. */
+    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
+    FA_REMOVE,		/*!< ... to be removed. */
+    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
+    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
+    FA_SKIPMULTILIB,	/*!< ... untouched. @todo state "multilib" ???. */
+    FA_DONE = (1 << 31)
+} fileAction;
+
+
+#define XFA_SKIPPING(_a)	\
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
+
+/**
+ */
+typedef	enum rollbackDir_e {
+    ROLLBACK_SAVE	= 1,	/*!< Save files. */
+    ROLLBACK_RESTORE	= 2,	/*!< Restore files. */
+} rollbackDir;
+
+/**
+ * File types.
+ * These are the types of files used internally by rpm. The file
+ * type is determined by applying stat(2) macros like S_ISDIR to
+ * the file mode tag from a header. The values are arbitrary,
+ * but are identical to the linux stat(2) file types.
+ */
+enum fileTypes {
+    PIPE	= 1,	/*!< pipe/fifo */
+    CDEV	= 2,	/*!< character device */
+    XDIR	= 4,	/*!< directory */
+    BDEV	= 6,	/*!< block device */
+    REG		= 8,	/*!< regular file */
+    LINK	= 10,	/*!< hard link */
+    SOCK	= 12,	/*!< socket */
+};
+
+/**
+ */
 typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
 			/*@out@*/ void ** p, /*@out@*/int_32 * c)
 				/*@modifies *type, *p, *c @*/;
@@ -19,7 +80,7 @@ typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
 struct transactionFileInfo_s {
   /* for all packages */
     enum rpmTransactionType type;
-/*@owned@*/ enum fileActions * actions;	/*!< file disposition */
+/*@owned@*/ fileAction * actions;	/*!< file disposition */
 /*@owned@*/ struct fingerPrint_s * fps;	/*!< file fingerprints */
     HGE_t hge;
     Header h;			/*!< Package header */
@@ -94,6 +155,35 @@ void loadFi(Header h, TFI_t fi)
  */
 void freeFi(TFI_t fi)
 	/*@modifies fi @*/;
+
+/**
+ * Return formatted string representation of package disposition.
+ * @param a		package dispostion
+ * @return		formatted string
+ */
+/*@observer@*/ const char *const fiTypeString(TFI_t fi);
+
+/**
+ * Return formatted string representation of file stages.
+ * @param a		file stage
+ * @return		formatted string
+ */
+/*@observer@*/ const char *const fileStageString(fileStage a);
+
+/**
+ * Return formatted string representation of file disposition.
+ * @param a		file dispostion
+ * @return		formatted string
+ */
+/*@observer@*/ const char *const fileActionString(fileAction a);
+
+/**
+ * Perform package install/remove actions.
+ * @param ts		transaction set
+ * @param fi		transaction element file info
+ * @return		0 on success, otherwise no. of failures
+ */
+int pkgActions(const rpmTransactionSet ts, TFI_t fi);
 
 #ifdef __cplusplus
 }

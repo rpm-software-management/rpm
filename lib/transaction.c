@@ -281,7 +281,7 @@ static enum fileTypes whatis(uint_16 mode)
  */
 static Header relocateFileList(const rpmTransactionSet ts,
 		struct availablePackage * alp,
-		Header origH, enum fileActions * actions)
+		Header origH, fileAction * actions)
 {
     static int _printed = 0;
     rpmProblemSet probs = ts->probs;
@@ -703,7 +703,7 @@ static int sharedCmp(const void * one, const void * two)
     return 0;
 }
 
-static enum fileActions decideFileFate(const char * dirName,
+static fileAction decideFileFate(const char * dirName,
 			const char * baseName, short dbMode,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
