@@ -862,6 +862,8 @@ int cpioBuildArchive(int fd, struct cpioFileMapping * mappings,
 	parent = hlink;
 	hlink = hlink->next;
 	free(parent);
+
+	totalsize += size;
     }
 
     memset(&hdr, '0', sizeof(hdr));
