@@ -32,7 +32,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify,
 			  char ** installArchive);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
-				   char * release, int flags);
+				   char * release, int * recOffset, int flags);
 static int setFileOwnerships(char * prefix, char ** fileList, 
 			     char ** fileOwners, char ** fileGroups, 
 			     int fileCount);
@@ -85,6 +85,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     int i;
     int archiveFileCount = 0;
     int installFile = 0;
+    int otherOffset = 0;
     char * ext = NULL, * newpath;
     int prefixLength = strlen(prefix);
     char ** prefixedFileList = NULL;
@@ -120,7 +121,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     message(MESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
 		name, version, release, flags & INSTALL_TEST);
 
-    if (packageAlreadyInstalled(db, name, version, release, flags)) {
+    if (packageAlreadyInstalled(db, name, version, release, &otherOffset, 
+				flags)) {
 	freeHeader(h);
 	return 2;
     }
@@ -273,6 +275,12 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
 	installTime = time(NULL);
 	addEntry(h, RPMTAG_INSTALLTIME, INT32_TYPE, &installTime, 1);
+    }
+
+    /* if this package has already been installed, remove it from the database
+       before adding the new one */
+    if (otherOffset) {
+        rpmdbRemove(db, otherOffset, 1);
     }
 
     if (rpmdbAdd(db, h)) {
@@ -460,7 +468,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 }
 
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
-				   char * release, int flags) {
+				   char * release, int * offset, int flags) {
     char * secVersion, * secRelease;
     Header sech;
     int i;
@@ -482,6 +490,7 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 	    freeHeader(sech);
 
 	    if (!strcmp(secVersion, version) && !strcmp(secRelease, release)) {
+		*offset = matches.recs[i].recOffset;
 		if (!(flags & INSTALL_REPLACEPKG)) {
 		    error(RPMERR_PKGINSTALLED, 
 			  "package %s-%s-%s is already installed",
