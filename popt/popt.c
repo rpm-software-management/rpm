@@ -363,7 +363,9 @@ int poptGetNextOpt(poptContext con) {
 		    break;
 
 		  default:
-		    printf("option type not implemented in popt\n");
+		    /* XXX I18N? */
+		    fprintf(stdout, "option type (%d) not implemented in popt\n",
+		      opt->argInfo);
 		    exit(1);
 		}
 	    }

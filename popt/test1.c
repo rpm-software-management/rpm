@@ -5,7 +5,7 @@
 
 void option_callback(poptContext con, const struct poptOption * opt, 
 		     char * arg, void * data) {
-    printf("callback: %c %s %s ", opt->val, (char *) data, arg);    
+    fprintf(stdout, "callback: %c %s %s ", opt->val, (char *) data, arg);    
 }
 
 int main(int argc, char ** argv) {
@@ -59,23 +59,23 @@ int main(int argc, char ** argv) {
 	return 0;
     }
 
-    printf("arg1: %d arg2: %s", arg1, arg2);
+    fprintf(stdout, "arg1: %d arg2: %s", arg1, arg2);
 
     if (arg3)
-	printf(" arg3: %d", arg3);
+	fprintf(stdout, " arg3: %d", arg3);
     if (inc)
-	printf(" inc: %d", inc);
+	fprintf(stdout, " inc: %d", inc);
 
     rest = poptGetArgs(optCon);
     if (rest) {
-	printf(" rest:");
+	fprintf(stdout, " rest:");
 	while (*rest) {
-	    printf(" %s", *rest);
+	    fprintf(stdout, " %s", *rest);
 	    rest++;
 	}
     }
 
-    printf("\n");
+    fprintf(stdout, "\n");
 
     return 0;
 }
