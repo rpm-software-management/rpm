@@ -62,12 +62,12 @@ int buildSpec(Spec spec, int what, int test)
 	    }
 	}
 
-	if (what & RPMBUILD_PACKAGESOURCE) {
+	if (what & RPMBUILD_PACKAGESOURCE && !test) {
 	    if ((rc = packageSources(spec))) {
 		return rc;
 	    }
 	}
-	if (what & RPMBUILD_PACKAGEBINARY) {
+	if (what & RPMBUILD_PACKAGEBINARY && !test) {
 	    if ((rc = packageBinaries(spec))) {
 		return rc;
 	    }
