@@ -16,7 +16,6 @@ TODO:
 #include <string.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#include <regex.h>
 #include <limits.h>
 #include <ctype.h>
 
