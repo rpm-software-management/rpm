@@ -8,8 +8,8 @@ filelist=$(grep "\\.so" | grep -v "^/lib/ld.so" | xargs file -L 2>/dev/null | gr
 for f in $filelist; do
     soname=$(objdump -p $f | awk '/SONAME/ {print $2}')
 
+    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
     if [ "$soname" != "" ]; then
-	lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
 	if [ ! -L $f ]; then
 	    echo $soname$lib64
 	    objdump -p $f | awk '
@@ -24,6 +24,6 @@ for f in $filelist; do
 		done
 	fi
     else
-	echo ${f##*/}
+	echo ${f##*/}$lib64
     fi
 done | sort -u
