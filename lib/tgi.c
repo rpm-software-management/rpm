@@ -10,7 +10,7 @@
 
 #include "debug.h"
 
-static int gitag = RPMGI_FTSWALK;
+static int gitag = RPMDBI_FTSWALK;
 static int ftsOpts = 0;
 
 static const char * queryFormat = NULL;
@@ -38,13 +38,13 @@ static struct poptOption optionsTable[] = {
  { "rpmgidebug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgi_debug, -1,
 	N_("debug generalized iterator"), NULL},
 
- { "rpmdb", '\0', POPT_ARG_VAL, &gitag, RPMGI_RPMDB,
+ { "rpmdb", '\0', POPT_ARG_VAL, &gitag, RPMDBI_PACKAGES,
 	N_("iterate rpmdb"), NULL },
- { "hdlist", '\0', POPT_ARG_VAL, &gitag, RPMGI_HDLIST,
+ { "hdlist", '\0', POPT_ARG_VAL, &gitag, RPMDBI_HDLIST,
 	N_("iterate hdlist"), NULL },
- { "arglist", '\0', POPT_ARG_VAL, &gitag, RPMGI_ARGLIST,
+ { "arglist", '\0', POPT_ARG_VAL, &gitag, RPMDBI_ARGLIST,
 	N_("iterate arglist"), NULL },
- { "ftswalk", '\0', POPT_ARG_VAL, &gitag, RPMGI_FTSWALK,
+ { "ftswalk", '\0', POPT_ARG_VAL, &gitag, RPMDBI_FTSWALK,
 	N_("iterate fts(3) walk"), NULL },
 
  { "qf", '\0', POPT_ARG_STRING, &queryFormat, 0,
@@ -110,8 +110,10 @@ main(int argc, char *const argv[])
 	(void) rpmtsSetTid(ts, tid);
     }
 
+    gi = rpmgiNew(ts, gitag, NULL, 0);
+
     av = poptGetArgs(optCon);
-    gi = rpmgiNew(ts, gitag, av, ftsOpts);
+    (void) rpmgiSetArgs(gi, av, ftsOpts);
 
     ac = 0;
     while (rpmgiNext(gi) == RPMRC_OK) {

@@ -221,7 +221,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
 }
 
 /**
- * Load globbed arg list into iterator.
+ * Append globbed arg list to iterator.
  * @param gi		generalized iterator
  * @param argv		arg list to be globbed
  * @returns		RPMRC_OK on success
@@ -233,11 +233,6 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_t argv)
     const char * arg;
     rpmRC rpmrc = RPMRC_OK;
 
-    if (gi->argv != NULL)
-	gi->argv = argvFree(gi->argv);
-
-    gi->argv = xcalloc(1, sizeof(*gi->argv));
-    gi->argc = 0;
     if (argv != NULL)
     while ((arg = *argv++) != NULL) {
 	ARGV_t av = NULL;
@@ -289,21 +284,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     (void) rpmgiUnlink(gi, NULL);
 
 /*@-usereleased@*/
-#ifdef	NOTYET
-    switch (gi->tag) {
-    default:
-    case RPMGI_RPMDB:
-	break;
-    case RPMGI_HDLIST:
-	break;
-    case RPMGI_ARGLIST:
-	break;
-    case RPMGI_FTSWALK:
-	break;
-    }
-#endif
 
-    gi->queryFormat = _free(gi->queryFormat);
     gi->hdrPath = _free(gi->hdrPath);
     gi->h = headerFree(gi->h);
 
@@ -330,7 +311,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     return NULL;
 }
 
-rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, int tag, void * keyp, size_t keylen)
 {
     rpmgi gi = xcalloc(1, sizeof(*gi));
 
@@ -339,40 +320,21 @@ rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
 
     gi->ts = rpmtsLink(ts, NULL);
     gi->tag = tag;
+    gi->keyp = keyp;
+    gi->keylen = keylen;
+
     gi->active = 0;
     gi->i = -1;
-
-    gi->queryFormat = NULL;
     gi->hdrPath = NULL;
     gi->h = NULL;
+
     gi->mi = NULL;
     gi->fd = NULL;
-    gi->argv = NULL;
+    gi->argv = xcalloc(1, sizeof(*gi->argv));
     gi->argc = 0;
     gi->ftsOpts = 0;
     gi->ftsp = NULL;
     gi->fts = NULL;
-
-    switch (gi->tag) {
-    default:
-    case RPMGI_RPMDB:
-	break;
-    case RPMGI_HDLIST:
-	break;
-    case RPMGI_ARGLIST:
-    case RPMGI_FTSWALK:
-    {	ARGV_t argv = keyp;		/* HACK */
-	unsigned flags = keylen;	/* HACK */
-	rpmRC rpmrc;
-
-	rpmrc = rpmgiGlobArgv(gi, argv);
-	gi->ftsOpts = flags;
-
-if (_rpmgi_debug < 0)
-fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
-
-    }	break;
-    }
 
     gi = rpmgiLink(gi, NULL);
 
@@ -396,9 +358,9 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
     if (++gi->i >= 0)
     switch (gi->tag) {
     default:
-    case RPMGI_RPMDB:
+    case RPMDBI_PACKAGES:
 	if (!gi->active) {
-	    gi->mi = rpmtsInitIterator(gi->ts, RPMDBI_PACKAGES, NULL, 0);
+	    gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
 if (_rpmgi_debug < 0)
 fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	    gi->active = 1;
@@ -416,7 +378,7 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	}
 	gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 	break;
-    case RPMGI_HDLIST:
+    case RPMDBI_HDLIST:
 	if (!gi->active) {
 	    const char * path = "/usr/share/comps/%{_arch}/hdlist";
 	    gi->fd = rpmgiOpen(path, "r.ufdio");
@@ -434,7 +396,7 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	}
 	gi->hdrPath = rpmExpand("hdlist h# ", hnum, NULL);
 	break;
-    case RPMGI_ARGLIST:
+    case RPMDBI_ARGLIST:
 	if (gi->argv == NULL || gi->argv[gi->i] == NULL)
 	    goto enditer;
 
@@ -448,7 +410,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 
 	gi->hdrPath = xstrdup(gi->argv[gi->i]);
 	break;
-    case RPMGI_FTSWALK:
+    case RPMDBI_FTSWALK:
 	if (gi->argv == NULL)		/* HACK */
 	    goto enditer;
 
@@ -494,6 +456,13 @@ Header rpmgiHeader(rpmgi gi)
 /*@-compdef -refcounttrans -retexpose -usereleased@*/
     return (gi != NULL ? gi->h : NULL);
 /*@=compdef =refcounttrans =retexpose =usereleased@*/
+}
+
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int flags)
+{
+    rpmRC rpmrc = rpmgiGlobArgv(gi, argv);
+    gi->ftsOpts = flags;
+    return rpmrc;
 }
 
 /*@=modfilesys@*/

@@ -17,16 +17,6 @@
 extern int _rpmgi_debug;
 /*@=exportlocal@*/
 
-/**
- * Iterator types.
- */
-typedef enum rpmgiTag_e {
-    RPMGI_RPMDB		= RPMDBI_PACKAGES,
-    RPMGI_HDLIST	= 6,	/* XXX next after RPMDBI_AVAILABLE */
-    RPMGI_ARGLIST	= 7,
-    RPMGI_FTSWALK	= 8
-} rpmgiTag;
-
 #if defined(_RPMGI_INTERNAL)
 /** \ingroup rpmio
  */
@@ -34,12 +24,13 @@ struct rpmgi_s {
 /*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
     int tag;			/*!< Iterator type. */
-    int active;			/*!< Iterator is initialized? */
+    void * keyp;		/*!< Iterator key. */
+    size_t keylen;		/*!< Iterator key length. */
+
+    int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
 /*@null@*/
-    const char * queryFormat;	/*!< Iterator query format. */
-/*@null@*/
-    const char * hdrPath;	/*!< Path to current header object. */
+    const char * hdrPath;	/*!< Path to current iterator header. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Current iterator header. */
 
@@ -119,7 +110,7 @@ rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
  * @return		new general iterator
  */
 /*@null@*/
-rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, int tag, void * keyp, size_t keylen)
 	/*@globals internalState @*/
 	/*@modifies ts, internalState @*/;
 
@@ -144,11 +135,19 @@ const char * rpmgiHdrPath(rpmgi gi)
 /**
  * Return current iteration header.
  * @param gi		generalized iterator
- * @returns		next element
+ * @returns		header
  */
 /*@null@*/
 Header rpmgiHeader(/*@null@*/ rpmgi gi)
         /*@*/;
+
+/**
+ * Load iterator args.
+ * @param gi		generalized iterator
+ * @returns		RPMRC_OK
+ */
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t, int flags)
+	/*@modifies gi @*/;
 
 #ifdef __cplusplus
 }
