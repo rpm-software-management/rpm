@@ -42,6 +42,9 @@ librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 
+# XXX make sure that db.h symlink is generated
+dbconfig.c: db.h
+
 # XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
@@ -65,7 +68,7 @@ tagtbl.c: $(top_srcdir)/lib/rpmlib.h
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
 
 db.h:
-	ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
+	@ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
 
 .created:	db.h
 	for lo in $(DB3LOBJS); do \
@@ -74,7 +77,7 @@ db.h:
 	touch $@
 
 clean-local:
-	rm -f $(DB3LOBJS) *.o .created
+	rm -f $(DB3LOBJS) *.o .created db.h
 
 # XXX TODO: figger why .created addition here dinna work
 BUILT_SOURCES = tagtbl.c # .created
