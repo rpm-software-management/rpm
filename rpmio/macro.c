@@ -315,24 +315,24 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd)
 	    switch (*p) {
 		case '\\':
 		    switch (*(p+1)) {
-			case '\0': break;
-			default: p++; break;
+			case '\0': /*@switchbreak@*/ break;
+			default: p++; /*@switchbreak@*/ break;
 		    }
-		    break;
+		    /*@switchbreak@*/ break;
 		case '%':
 		    switch (*(p+1)) {
-			case '{': p++, bc++; break;
-			case '(': p++, pc++; break;
-			case '%': p++; break;
+			case '{': p++, bc++; /*@switchbreak@*/ break;
+			case '(': p++, pc++; /*@switchbreak@*/ break;
+			case '%': p++; /*@switchbreak@*/ break;
 		    }
-		    break;
-		case '{': if (bc > 0) bc++; break;
-		case '}': if (bc > 0) bc--; break;
-		case '(': if (pc > 0) pc++; break;
-		case ')': if (pc > 0) pc--; break;
+		    /*@switchbreak@*/ break;
+		case '{': if (bc > 0) bc++; /*@switchbreak@*/ break;
+		case '}': if (bc > 0) bc--; /*@switchbreak@*/ break;
+		case '(': if (pc > 0) pc++; /*@switchbreak@*/ break;
+		case ')': if (pc > 0) pc--; /*@switchbreak@*/ break;
 	    }
 	}
-	if (nb <= 0 || (*q != '\\' && !bc && !pc) || *(q+1) == '\0') {
+	if (nb == 0 || (*q != '\\' && !bc && !pc) || *(q+1) == '\0') {
 	    *(++q) = '\0';		/* trim trailing \r, \n */
 	    break;
 	}
@@ -678,21 +678,21 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	    switch (*s) {
 		case '\\':
 		    switch (*(s+1)) {
-			case '\0': break;
-			default: s++; break;
+			case '\0': /*@switchbreak@*/ break;
+			default: s++; /*@switchbreak@*/ break;
 		    }
-		    break;
+		    /*@switchbreak@*/ break;
 		case '%':
 		    switch (*(s+1)) {
-			case '{': *be++ = *s++; bc++; break;
-			case '(': *be++ = *s++; pc++; break;
-			case '%': *be++ = *s++; break;
+			case '{': *be++ = *s++; bc++; /*@switchbreak@*/ break;
+			case '(': *be++ = *s++; pc++; /*@switchbreak@*/ break;
+			case '%': *be++ = *s++; /*@switchbreak@*/ break;
 		    }
-		    break;
-		case '{': if (bc > 0) bc++; break;
-		case '}': if (bc > 0) bc--; break;
-		case '(': if (pc > 0) pc++; break;
-		case ')': if (pc > 0) pc--; break;
+		    /*@switchbreak@*/ break;
+		case '{': if (bc > 0) bc++; /*@switchbreak@*/ break;
+		case '}': if (bc > 0) bc--; /*@switchbreak@*/ break;
+		case '(': if (pc > 0) pc++; /*@switchbreak@*/ break;
+		case ')': if (pc > 0) pc--; /*@switchbreak@*/ break;
 	    }
 	    *be++ = *s++;
 	}

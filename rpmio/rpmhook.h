@@ -2,31 +2,41 @@
 #define RPMHOOK_H
 
 typedef union {
-    const char *s;
+/*@observer@*/
+    const char * s;
     int i;
     float f;
-    void *p;
+/*@observer@*/
+    void * p;
 } rpmhookArgv;
 
 typedef struct rpmhookArgs_s {
     int argc;
-    const char *argt;
+    const char * argt;
     rpmhookArgv argv[1];
 } * rpmhookArgs;
 
-typedef int (*rpmhookFunc)(rpmhookArgs args, void *data);
+typedef int (*rpmhookFunc) (rpmhookArgs args, void *data);
 
-rpmhookArgs rpmhookArgsNew(int argc);
-rpmhookArgs rpmhookArgsFree(rpmhookArgs args);
+/*@only@*/
+rpmhookArgs rpmhookArgsNew(int argc)
+	/*@*/;
+rpmhookArgs rpmhookArgsFree(/*@only@*/ rpmhookArgs args)
+	/*@modifies args @*/;
 
-void rpmhookRegister(const char *name, rpmhookFunc func, void *data);
-void rpmhookUnregister(const char *name, rpmhookFunc func, void *data);
-void rpmhookUnregisterAny(const char *name, rpmhookFunc func);
-void rpmhookUnregisterAll(const char *name);
-void rpmhookCall(const char *name, const char *argt, ...);
-void rpmhookCallArgs(const char *name, rpmhookArgs args);
+void rpmhookRegister(const char *name, rpmhookFunc func, void *data)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+void rpmhookUnregister(const char *name, rpmhookFunc func, void *data)
+	/*@*/;
+void rpmhookUnregisterAny(const char *name, rpmhookFunc func)
+	/*@*/;
+void rpmhookUnregisterAll(const char *name)
+	/*@*/;
+void rpmhookCall(const char *name, const char *argt, ...)
+	/*@*/;
+void rpmhookCallArgs(const char *name, rpmhookArgs args)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 #endif
-
-/* vim:ts=4:sw=4:et
- */

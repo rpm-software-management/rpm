@@ -623,12 +623,14 @@ static int rpm_interactive(lua_State *L)
 }
 
 typedef struct rpmluaHookData_s {
+/*@shared@*/
     lua_State *L;
     int funcRef;
     int dataRef;
 } * rpmluaHookData;
 
 static int rpmluaHookWrapper(rpmhookArgs args, void *data)
+    /*@*/
 {
     rpmluaHookData hookdata = (rpmluaHookData)data;
     lua_State *L = hookdata->L;
@@ -641,23 +643,23 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
 	    case 's':
 		lua_pushstring(L, args->argv[i].s);
 		lua_rawseti(L, -2, i+1);
-		break;
+		/*@switchbreak@*/ break;
 	    case 'i':
-		lua_pushnumber(L, args->argv[i].i);
+		lua_pushnumber(L, (lua_Number)args->argv[i].i);
 		lua_rawseti(L, -2, i+1);
-		break;
+		/*@switchbreak@*/ break;
 	    case 'f':
-		lua_pushnumber(L, args->argv[i].f);
+		lua_pushnumber(L, (lua_Number)args->argv[i].f);
 		lua_rawseti(L, -2, i+1);
-		break;
+		/*@switchbreak@*/ break;
 	    case 'p':
 		lua_pushlightuserdata(L, args->argv[i].p);
 		lua_rawseti(L, -2, i+1);
-		break;
+		/*@switchbreak@*/ break;
 	    default:
-                luaL_error(L, "unsupported type '%c' as "
+                (void) luaL_error(L, "unsupported type '%c' as "
                               "a hook argument\n", args->argt[i]);
-		break;
+		/*@switchbreak@*/ break;
 	}
     }
     if (lua_pcall(L, 1, 1, 0) != 0) {
@@ -673,11 +675,13 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
 }
 
 static int rpm_register(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
 {
     if (!lua_isstring(L, 1)) {
-	luaL_argerror(L, 1, "hook name expected");
+	(void) luaL_argerror(L, 1, "hook name expected");
     } else if (!lua_isfunction(L, 2)) {
-	luaL_argerror(L, 2, "function expected");
+	(void) luaL_argerror(L, 2, "function expected");
     } else {
 	rpmluaHookData hookdata =
 	    lua_newuserdata(L, sizeof(struct rpmluaHookData_s));
@@ -685,7 +689,9 @@ static int rpm_register(lua_State *L)
 	hookdata->dataRef = luaL_ref(L, LUA_REGISTRYINDEX);
 	lua_pushvalue(L, 2);
 	hookdata->funcRef = luaL_ref(L, LUA_REGISTRYINDEX);
+/*@-temptrans@*/
 	hookdata->L = L;
+/*@=temptrans@*/
 	rpmhookRegister(lua_tostring(L, 1), rpmluaHookWrapper, hookdata);
 	return 1;
     }
@@ -693,11 +699,12 @@ static int rpm_register(lua_State *L)
 }
 
 static int rpm_unregister(lua_State *L)
+	/*@modifies L @*/
 {
     if (!lua_isstring(L, 1)) {
-	luaL_argerror(L, 1, "hook name expected");
+	(void) luaL_argerror(L, 1, "hook name expected");
     } else if (!lua_islightuserdata(L, 2)) {
-	luaL_argerror(L, 2, "hook information expected");
+	(void) luaL_argerror(L, 2, "hook information expected");
     } else {
 	rpmluaHookData hookdata = (rpmluaHookData)lua_touserdata(L, 2);
 	luaL_unref(L, LUA_REGISTRYINDEX, hookdata->funcRef);
@@ -708,9 +715,11 @@ static int rpm_unregister(lua_State *L)
 }
 
 static int rpm_call(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
 {
     if (!lua_isstring(L, 1)) {
-	luaL_argerror(L, 1, "hook name expected");
+	(void) luaL_argerror(L, 1, "hook name expected");
     } else {
 	rpmhookArgs args = rpmhookArgsNew(lua_gettop(L)-1);
 	const char *name = lua_tostring(L, 1);
@@ -721,9 +730,10 @@ static int rpm_call(lua_State *L)
 		case LUA_TNIL:
 		    argt[i] = 'p';
 		    args->argv[i].p = NULL;
-		    break;
+		    /*@switchbreak@*/ break;
 		case LUA_TNUMBER: {
 		    float f = (float)lua_tonumber(L, i+1);
+/*@+relaxtypes@*/
 		    if (f == (int)f) {
 			argt[i] = 'i';
 			args->argv[i].i = (int)f;
@@ -731,28 +741,30 @@ static int rpm_call(lua_State *L)
 			argt[i] = 'f';
 			args->argv[i].f = f;
 		    }
-		    break;
-		}
+/*@=relaxtypes@*/
+		}   /*@switchbreak@*/ break;
 		case LUA_TSTRING:
 		    argt[i] = 's';
 		    args->argv[i].s = lua_tostring(L, i+1);
-		    break;
+		    /*@switchbreak@*/ break;
 		case LUA_TUSERDATA:
 		case LUA_TLIGHTUSERDATA:
 		    argt[i] = 'p';
 		    args->argv[i].p = lua_touserdata(L, i+1);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    luaL_error(L, "unsupported Lua type passed to hook");
+		    (void) luaL_error(L, "unsupported Lua type passed to hook");
 		    argt[i] = 'p';
 		    args->argv[i].p = NULL;
-		    break;
+		    /*@switchbreak@*/ break;
 	    }
 	}
+/*@-compdef -kepttrans -usereleased @*/
 	args->argt = argt;
 	rpmhookCallArgs(name, args);
 	free(argt);
-	rpmhookArgsFree(args);
+	(void) rpmhookArgsFree(args);
+/*@=compdef =kepttrans =usereleased @*/
     }
     return 0;
 }
@@ -828,6 +840,3 @@ static int luaopen_rpm(lua_State *L)
 }
 
 /*@=bounds =realcompare =sizeoftype =protoparammatch @*/
-
-/* vim:sts=4:sw=4
-*/
