@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-11-25 15:21-0500\n"
+"POT-Creation-Date: 1998-11-30 12:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -251,7 +251,7 @@ msgstr ""
 msgid "counting packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:325 ../lib/query.c:644 ../verify.c:252
+#: ../install.c:325 ../lib/query.c:643 ../verify.c:252
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -1320,15 +1320,15 @@ msgstr ""
 msgid "verifying record number %u\n"
 msgstr ""
 
-#: ../lib/query.c:409 ../verify.c:138
+#: ../lib/query.c:408 ../verify.c:138
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:533 ../verify.c:177
+#: ../lib/query.c:532 ../verify.c:177
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:452 ../lib/query.c:461 ../verify.c:196 ../verify.c:205
+#: ../lib/query.c:451 ../lib/query.c:460 ../verify.c:196 ../verify.c:205
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -1338,17 +1338,17 @@ msgstr ""
 msgid "%s is not an RPM\n"
 msgstr ""
 
-#: ../lib/query.c:544 ../verify.c:227
+#: ../lib/query.c:543 ../verify.c:227
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:613 ../verify.c:241
+#: ../lib/query.c:612 ../verify.c:241
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:647 ../verify.c:254
+#: ../lib/query.c:646 ../verify.c:254
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
@@ -2616,107 +2616,107 @@ msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
 
-#: ../lib/query.c:113
+#: ../lib/query.c:112
 #, c-format
 msgid "error in format: %s\n"
 msgstr ""
 
-#: ../lib/query.c:150
+#: ../lib/query.c:149
 msgid "(contains no files)"
 msgstr ""
 
-#: ../lib/query.c:203
+#: ../lib/query.c:202
 msgid "normal        "
 msgstr ""
 
-#: ../lib/query.c:205
+#: ../lib/query.c:204
 msgid "replaced      "
 msgstr ""
 
-#: ../lib/query.c:207
+#: ../lib/query.c:206
 msgid "net shared    "
 msgstr ""
 
-#: ../lib/query.c:209
+#: ../lib/query.c:208
 msgid "not installed "
 msgstr ""
 
-#: ../lib/query.c:211
+#: ../lib/query.c:210
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: ../lib/query.c:215
+#: ../lib/query.c:214
 msgid "(no state)    "
 msgstr ""
 
-#: ../lib/query.c:231 ../lib/query.c:261
+#: ../lib/query.c:230 ../lib/query.c:260
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../lib/query.c:404
+#: ../lib/query.c:403
 #, c-format
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../lib/query.c:435
+#: ../lib/query.c:434
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: ../lib/query.c:477
+#: ../lib/query.c:476
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: ../lib/query.c:486
+#: ../lib/query.c:485
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../lib/query.c:490
+#: ../lib/query.c:489
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: ../lib/query.c:509
+#: ../lib/query.c:508
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: ../lib/query.c:554
+#: ../lib/query.c:553
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: ../lib/query.c:564
+#: ../lib/query.c:563
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: ../lib/query.c:574
+#: ../lib/query.c:573
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: ../lib/query.c:592 ../lib/query.c:598
+#: ../lib/query.c:591 ../lib/query.c:597
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: ../lib/query.c:610
+#: ../lib/query.c:609
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../lib/query.c:626
+#: ../lib/query.c:625
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: ../lib/query.c:629
+#: ../lib/query.c:628
 #, c-format
 msgid "showing package: %d\n"
 msgstr ""
 
-#: ../lib/query.c:632
+#: ../lib/query.c:631
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""

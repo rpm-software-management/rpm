@@ -33,7 +33,7 @@ int convertDB(void) {
     char * preun, * postun;
     int i, j;
     
-    if (exists("/var/lib/rpm/packages.rpm")) {
+    if (rpmfileexists("/var/lib/rpm/packages.rpm")) {
 	rpmError(RPMERR_NOCREATEDB, _("RPM database already exists"));
 	return 0;
     }
