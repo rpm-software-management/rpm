@@ -643,10 +643,10 @@ static int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
 	}
     }
 
-    sense = vercmp(version, reqVersion);
+    sense = rpmvercmp(version, reqVersion);
     if (!sense && reqRelease) {
 	/* if a release number is given, use it to break ties */
-	sense = vercmp(release, reqRelease);
+	sense = rpmvercmp(release, reqRelease);
     }
 
     if ((reqFlags & RPMSENSE_LESS) && sense < 0) {

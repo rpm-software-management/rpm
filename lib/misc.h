@@ -7,7 +7,7 @@ void stripTrailingSlashes(char * str);
 
 int exists(char * filespec);
 
-int vercmp(char * one, char * two);
+int rpmvercmp(char * one, char * two);
 
 /* these are like the normal functions, but they malloc() the space which
    is needed */

@@ -63,7 +63,7 @@ int exists(char * filespec) {
     return 1;
 }
 
-int vercmp(char * one, char * two) {
+int rpmvercmp(char * one, char * two) {
     int num1, num2;
     char oldch1, oldch2;
     char * str1, * str2;
