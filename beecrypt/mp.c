@@ -1253,7 +1253,7 @@ void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const 
 	/* expect ydata to be normalized */
 	mpw q;
 	mpw msw = *ydata;
-	mpw qsize = xsize-ysize;
+	size_t qsize = xsize-ysize;
 
 	mpcopy(xsize, result+1, xdata);
 	if (mpge(ysize, result+1, ydata))

@@ -40,6 +40,7 @@
 
 #if defined(__GNUC__)
 # if defined(__i386__)
+#ifdef	BORKED
 static inline uint32_t ROTL32(uint32_t x, const unsigned char n)
 {
 	__asm__("roll %1,%0"
@@ -57,6 +58,7 @@ static inline uint32_t ROTR32(uint32_t x, const unsigned char n)
 
 	return x;
 }
+#endif
 # elif defined(__powerpc__)
 static inline uint32_t ROTL32(uint32_t x, const unsigned char n)
 {

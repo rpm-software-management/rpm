@@ -19,15 +19,15 @@
  */
 struct DIGEST_CTX_s {
     rpmDigestFlags flags;	/*!< Bit(s) to control digest operation. */
-    uint32 datalen;		/*!< No. bytes in block of plaintext data. */
-    uint32 paramlen;		/*!< No. bytes of digest parameters. */
-    uint32 digestlen;		/*!< No. bytes of digest. */
+    uint32_t datalen;		/*!< No. bytes in block of plaintext data. */
+    uint32_t paramlen;		/*!< No. bytes of digest parameters. */
+    uint32_t digestlen;		/*!< No. bytes of digest. */
     void * param;		/*!< Digest parameters. */
     int (*Reset) (void * param)
 	/*@modifies param @*/;	/*!< Digest initialize. */
-    int (*Update) (void * param, const byte * data, int len)
+    int (*Update) (void * param, const byte * data, size_t size)
 	/*@modifies param @*/;	/*!< Digest transform. */
-    int (*Digest) (void * param, /*@out@*/ uint32 * digest)
+    int (*Digest) (void * param, /*@out@*/ byte * digest)
 	/*@modifies param, digest @*/;	/*!< Digest finish. */
 };
 
@@ -109,25 +109,11 @@ DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->
 }
 /*@=mustmod@*/
 
-/*@unchecked@*/
-static int _ie = 0x44332211;
-
-/*@-redef@*/
-/*@unchecked@*/
-static union _dendian {
-/*@unused@*/ int i;
-    char b[4];
-} *_endian = (union _dendian *)&_ie;
-/*@=redef@*/
-
-#define        IS_BIG_ENDIAN()         (_endian->b[0] == '\x44')
-#define        IS_LITTLE_ENDIAN()      (_endian->b[0] == '\x11')
-
 /*@-boundswrite@*/
 int
 rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 {
-    uint32 * digest;
+    byte * digest;
     char * t;
     int i;
 
@@ -139,12 +125,6 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Digest) (ctx->param, digest);
 /*@=noeffectuncon@*/
-
-/*@-sizeoftype@*/
-    if (IS_LITTLE_ENDIAN())
-    for (i = 0; i < (ctx->digestlen/sizeof(uint32)); i++)
-	digest[i] = swapu32(digest[i]);
-/*@=sizeoftype@*/
 
     /* Return final digest. */
 /*@-branchstate@*/
