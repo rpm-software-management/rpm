@@ -1409,6 +1409,7 @@ static struct badDeps_s {
     { "ghostscript-fonts", "ghostscript" },
     /* 7.1 only */
     { "mozilla-psm", "mozilla" },
+    { "arts", "kdelibs-sound" },
     /* 7.0 only */
     { "pango-gtkbeta-devel", "pango-gtkbeta" },
     { "XFree86", "Mesa" },
@@ -1576,6 +1577,7 @@ static inline int addRelation( const rpmTransactionSet ts,
     selected[matchNum] = 1;
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+rpmMessage(RPMMESS_DEBUG, _("========== %s <- %s\n"), q->name, p->name);
     p->tsi.tsi_count++;			/* bump p predecessor count */
     tsi = xmalloc(sizeof(*tsi));
     tsi->tsi_suc = p;
@@ -1647,6 +1649,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     int newOrderCount = 0;
     struct orderListIndex * orderList;
     int nrescans = 10;
+    int _printed = 0;
     int qlen;
     int i, j;
 
@@ -1745,6 +1748,11 @@ rescan:
 		qlen++;
 	    }
 	    free(tsi);
+	}
+	if (!_printed && loopcheck == qlen) {
+	    _printed++;
+	    rpmMessage(RPMMESS_DEBUG,
+		_("========== successors only (presentation order)\n"));
 	}
     }
 
