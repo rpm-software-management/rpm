@@ -8,8 +8,10 @@
 
 /**
  */
+/*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmds_debug;
+/*@=exportlocal@*/
 
 #if defined(_RPMDS_INTERNAL)
 /**

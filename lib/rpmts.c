@@ -55,6 +55,8 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access FD_t @*/		/* XXX compared with NULL */
 /*@access rpmps @*/
 /*@access rpmDiskSpaceInfo @*/
+/*@access rpmte @*/
+/*@access rpmtsi @*/
 /*@access rpmts @*/
 /*@access fnpyKey @*/
 

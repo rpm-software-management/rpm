@@ -42,6 +42,7 @@
 
 /*@access rpmfi @*/
 
+/*@access rpmte @*/
 /*@access rpmtsi @*/
 /*@access rpmts @*/
 

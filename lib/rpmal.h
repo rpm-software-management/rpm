@@ -6,8 +6,10 @@
  * Structures used for managing added/available package lists.
  */
 
+/*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmal_debug;
+/*@=exportlocal@*/
 
 /**
  */

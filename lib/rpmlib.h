@@ -601,10 +601,8 @@ int rpmMachineScore(int type, const char * name)
  * @return		0 always
  */
 int rpmShowRC(FILE * fp)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies *fp, rpmGlobalMacroContext,
-		fileSystem, internalState  @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *fp, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
 /** \ingroup rpmrc
  * @deprecated Use addMacro to set _target_* macros.
@@ -614,8 +612,8 @@ int rpmShowRC(FILE * fp)
  * @param osTable
  */
 void rpmSetTables(int archTable, int osTable)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
  * Set current arch/os names.
@@ -628,8 +626,8 @@ void rpmSetTables(int archTable, int osTable)
  * @param os		os name (or NULL)
  */
 void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
  * Return current arch/os names.

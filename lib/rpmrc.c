@@ -26,9 +26,9 @@ static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 /*@observer@*/ /*@checked@*/
 const char * macrofiles = MACROFILES;
 
-/*@unchecked@*/
+/*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
-/*@unchecked@*/
+/*@only@*/ /*@unchecked@*/
 static const char ** platpat = NULL;
 /*@unchecked@*/
 static int nplatpat = 0;
@@ -780,6 +780,10 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 /**
  */
 static int rpmPlatform(const char * platform)
+	/*@globals nplatpat, platpat,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies nplatpat, platpat,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
     char * b = NULL;
@@ -813,9 +817,11 @@ static int rpmPlatform(const char * platform)
 		*t = '\0';
 	    if (t > p) {
 		platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
+/*@-onlyunqglobaltrans@*/
 		platpat[nplatpat] = xstrdup(p);
 		nplatpat++;
 		platpat[nplatpat] = NULL;
+/*@=onlyunqglobaltrans@*/
 	    }
 	    continue;
 	}
@@ -831,6 +837,7 @@ static int rpmPlatform(const char * platform)
 	vendor = p;
 	while (*p && !(*p == '-' || isspace(*p)))
 	    p++;
+/*@-branchstate@*/
 	if (*p != '-') {
 	    if (*p != '\0') *p++ = '\0';
 	    os = vendor;
@@ -850,22 +857,27 @@ static int rpmPlatform(const char * platform)
 	    }
 	    if (*p != '\0') *p++ = '\0';
 	}
+/*@=branchstate@*/
 
 	addMacro(NULL, "_host_cpu", NULL, cpu, -1);
 	addMacro(NULL, "_host_vendor", NULL, vendor, -1);
 	addMacro(NULL, "_host_os", NULL, os, -1);
 
 	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
+/*@-onlyunqglobaltrans@*/
 	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (gnu && *gnu ? "-" : NULL), gnu, NULL);
 	nplatpat++;
 	platpat[nplatpat] = NULL;
+/*@=onlyunqglobaltrans@*/
 	
 	init_platform++;
     }
     rc = (init_platform ? 0 : -1);
 
 exit:
+/*@-modobserver@*/
     b = _free(b);
+/*@=modobserver@*/
     return rc;
 }
 
@@ -1037,8 +1049,8 @@ static void mfspr_ill(int notused)
  */
 static void defaultMachine(/*@out@*/ const char ** arch,
 		/*@out@*/ const char ** os)
-	/*@globals fileSystem@*/
-	/*@modifies *arch, *os, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *arch, *os, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static struct utsname un;
     static int gotDefaults = 0;
@@ -1087,7 +1099,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 		    fd++) {
 		      if (!xisdigit(un.release[fd]) && (un.release[fd] != '.')) {
 			un.release[fd] = 0;
-			break;
+			/*@innerbreak@*/ break;
 		      }
 		    }
 		    sprintf(un.sysname,"sunos%s",un.release);

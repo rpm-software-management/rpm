@@ -6,8 +6,10 @@
  * Structure(s) used for file info tag sets.
  */
 
+/*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmfi_debug;
+/*@=exportlocal@*/
 
 #if defined(_RPMFI_INTERNAL)
 /**

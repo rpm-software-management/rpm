@@ -8,8 +8,10 @@
 
 /**
  */
+/*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmte_debug;
+/*@=exportlocal@*/
 
 /**
  * Transaction element ordering chain linkage.
@@ -28,11 +30,6 @@ typedef enum rpmElementType_e {
     TR_ADDED		= (1 << 0),	/*!< Package will be installed. */
     TR_REMOVED		= (1 << 1)	/*!< Package will be removed. */
 } rpmElementType;
-
-/*@-exportlocal@*/
-/*@unchecked@*/
-extern int _te_debug;
-/*@=exportlocal@*/
 
 #if	defined(_RPMTE_INTERNAL)
 /** \ingroup rpmte
