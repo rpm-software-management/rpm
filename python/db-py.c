@@ -2,9 +2,13 @@
  * \file python/db-py.c
  */
 
+#include "system.h"
+
+#ifdef	DYING
 #include <sys/time.h>
 #include <fcntl.h>
 #include <unistd.h>
+#endif
 
 #include "Python.h"
 
@@ -19,6 +23,8 @@
 
 #include "db-py.h"
 #include "header-py.h"
+
+#include "debug.h"
 
 /** \ingroup python
  */
@@ -107,11 +113,11 @@ static PyObject * rpmdbMIGetAttr (rpmdbObject *s, char *name) {
 /** \ingroup python
  */
 static void rpmdbMIDealloc(rpmdbMIObject * s) {
-    if (s && s->mi) {
-	rpmdbFreeIterator(s->mi);
+    if (s) {
+	s->mi = rpmdbFreeIterator(s->mi);
+	Py_DECREF (s->db);
+	PyMem_DEL(s);
     }
-    Py_DECREF (s->db);
-    PyMem_DEL(s);
 }
 
 /** \ingroup python
@@ -131,6 +137,35 @@ PyTypeObject rpmdbMIType = {
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
 	0,				/* tp_as_mapping */
+	0,				/* tp_hash */
+	0,				/* tp_call */
+	0,				/* tp_str */
+	0,				/* tp_getattro */
+	0,				/* tp_setattro */
+	0,				/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	NULL,				/* tp_doc */
+#if Py_TPFLAGS_HAVE_ITER
+	0,				/* tp_traverse */
+	0,				/* tp_clear */
+	0,				/* tp_richcompare */
+	0,				/* tp_weaklistoffset */
+	0,				/* tp_iter */
+	0,				/* tp_iternext */
+	0,				/* tp_methods */
+	0,				/* tp_members */
+	0,				/* tp_getset */
+	0,				/* tp_base */
+	0,				/* tp_dict */
+	0,				/* tp_descr_get */
+	0,				/* tp_descr_set */
+	0,				/* tp_dictoffset */
+	0,				/* tp_init */
+	0,				/* tp_alloc */
+	0,				/* tp_new */
+	0,				/* tp_free */
+	0,				/* tp_is_gc */
+#endif
 };
 
 /*@}*/
@@ -214,9 +249,7 @@ static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
 	rpmdbMatchIterator mi;
 	Header h;
 
-	if (s->offsets)
-	    free(s->offsets);
-	s->offsets = NULL;
+	s->offsets = _free(s->offsets);
 	s->noffs = 0;
 	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -224,7 +257,7 @@ static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
 	    s->offsets = realloc(s->offsets, s->noffs * sizeof(s->offsets[0]));
 	    s->offsets[s->noffs-1] = rpmdbGetIteratorOffset(mi);
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
     }
 
     s->offx = 0;
@@ -266,17 +299,15 @@ static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
 /**
  */
 static PyObject * handleDbResult(rpmdbMatchIterator mi) {
-    PyObject * list, *o;
+    PyObject * list = PyList_New(0);
+    PyObject * o;
 
-    list = PyList_New(0);
-
-    /* XXX FIXME: unnecessary header mallocs are side effect here */
     if (mi != NULL) {
 	while (rpmdbNextIterator(mi)) {
 	    PyList_Append(list, o=PyInt_FromLong(rpmdbGetIteratorOffset(mi)));
 	    Py_DECREF(o);
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
     }
 
     return list;
@@ -365,12 +396,9 @@ static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name) {
 /**
  */
 static void rpmdbDealloc(rpmdbObject * s) {
-    if (s->offsets) {
-	free(s->offsets);
-    }
-    if (s->db) {
+    s->offsets = _free(s->offsets);
+    if (s->db)
 	rpmdbClose(s->db);
-    }
     PyMem_DEL(s);
 }
 
@@ -379,16 +407,13 @@ static void rpmdbDealloc(rpmdbObject * s) {
  */
 static int
 rpmdbLength(rpmdbObject * s) {
+    rpmdbMatchIterator mi;
     int count = 0;
 
-    {	rpmdbMatchIterator mi;
-
-	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
-	while (rpmdbNextIterator(mi) != NULL)
-	    count++;
-	rpmdbFreeIterator(mi);
-    }
+    mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
+    while (rpmdbNextIterator(mi) != NULL)
+	count++;
+    mi = rpmdbFreeIterator(mi);
 
     return count;
 }
@@ -411,13 +436,13 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 
     mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, &offset, sizeof(offset));
     if (!(h = rpmdbNextIterator(mi))) {
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 	PyErr_SetString(pyrpmError, "cannot read rpmdb entry");
 	return NULL;
     }
 
     ho = createHeaderObject(h);
-    headerFree(h, NULL);
+    h = headerFree(h, NULL);
 
     return ho;
 }
@@ -447,11 +472,34 @@ PyTypeObject rpmdbType = {
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
-#ifndef DYINGSOON
 	&rpmdbAsMapping,		/* tp_as_mapping */
-#else
-	0,
-#endif
+	0,				/* tp_hash */
+	0,				/* tp_call */
+	0,				/* tp_str */
+	0,				/* tp_getattro */
+	0,				/* tp_setattro */
+	0,				/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	0,				/* tp_doc */
+	0,				/* tp_traverse */
+	0,				/* tp_clear */
+	0,				/* tp_richcompare */
+	0,				/* tp_weaklistoffset */
+	0,				/* tp_iter */
+	0,				/* tp_iternext */
+	0,				/* tp_methods */
+	0,				/* tp_members */
+	0,				/* tp_getset */
+	0,				/* tp_base */
+	0,				/* tp_dict */
+	0,				/* tp_descr_get */
+	0,				/* tp_descr_set */
+	0,				/* tp_dictoffset */
+	0,				/* tp_init */
+	0,				/* tp_alloc */
+	0,				/* tp_new */
+	0,				/* tp_free */
+	0,				/* tp_is_gc */
 };
 
 rpmdb dbFromDb(rpmdbObject * db) {
@@ -501,4 +549,3 @@ PyObject * rebuildDB (PyObject * self, PyObject * args) {
 }
 
 /*@}*/
-

@@ -8,7 +8,7 @@
 /** \ingroup python
  */
 typedef struct hdrObject_s hdrObject;
-extern PyTypeObject hdrType;
+extern PyTypeObject hdr_Type;
 
 /** \ingroup python
  */

@@ -34,7 +34,7 @@ poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c \
-	db-py.c header-py.c rpmds-py.c
+	db-py.c header-py.c rpmds-py.c rpmfi-py.c
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)

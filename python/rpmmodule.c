@@ -2,6 +2,8 @@
  * \file python/rpmmodule.c
  */
 
+#include "system.h"
+
 #include <alloca.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -31,6 +33,10 @@
 
 #include "db-py.h"
 #include "header-py.h"
+#include "rpmds-py.h"
+#include "rpmfi-py.h"
+
+#include "debug.h"
 
 extern int _rpmio_debug;
 
@@ -44,8 +50,6 @@ enum {
 #undef	PyObject_HEAD
 #define	PyObject_HEAD	int _PyObjectHead
 #endif
-
-void initrpm(void);
 
 /* from lib/misc.c */
 int rpmvercmp(const char * one, const char * two);
@@ -169,7 +173,7 @@ struct rpmtsObject_s {
 
 /** \ingroup python
  */
-static PyObject * py_rpmtsAdd(rpmtsObject * s, PyObject * args) {
+static PyObject * rpmts_Add(rpmtsObject * s, PyObject * args) {
     hdrObject * h;
     PyObject * key;
     char * how = NULL;
@@ -179,7 +183,7 @@ static PyObject * py_rpmtsAdd(rpmtsObject * s, PyObject * args) {
     if (!PyArg_ParseTuple(args, "OO|s", &h, &key, &how)) return NULL;
 
     hObj = (PyObject *) h;
-    if (hObj->ob_type != &hdrType) {
+    if (hObj->ob_type != &hdr_Type) {
 	PyErr_SetString(PyExc_TypeError, "bad type for header argument");
 	return NULL;
     }
@@ -206,7 +210,7 @@ static PyObject * py_rpmtsAdd(rpmtsObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * py_rpmtsRemove(rpmtsObject * s, PyObject * args) {
+static PyObject * rpmts_Remove(rpmtsObject * s, PyObject * args) {
     char * name;
     int count;
     rpmdbMatchIterator mi;
@@ -237,7 +241,7 @@ static PyObject * py_rpmtsRemove(rpmtsObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * py_rpmtsDepCheck(rpmtsObject * s, PyObject * args) {
+static PyObject * rpmts_Check(rpmtsObject * s, PyObject * args) {
     rpmps ps;
     rpmProblem p;
     PyObject * list, * cf;
@@ -320,7 +324,7 @@ static PyObject * py_rpmtsDepCheck(rpmtsObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * py_rpmtsOrder(rpmtsObject * s, PyObject * args) {
+static PyObject * rpmts_Order(rpmtsObject * s, PyObject * args) {
     int xx;
 
     if (!PyArg_ParseTuple(args, "")) return NULL;
@@ -333,7 +337,7 @@ static PyObject * py_rpmtsOrder(rpmtsObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * py_rpmtsGetKeys(rpmtsObject * s, PyObject * args) {
+static PyObject * rpmts_GetKeys(rpmtsObject * s, PyObject * args) {
     const void **data = NULL;
     int num, i;
     PyObject *tuple;
@@ -418,7 +422,7 @@ static void * tsCallback(const void * hd, const rpmCallbackType what,
 
 /** \ingroup python
  */
-static PyObject * py_rpmtsRun(rpmtsObject * s, PyObject * args)
+static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 {
     int flags, ignoreSet;
     int rc, i;
@@ -470,24 +474,24 @@ static PyObject * py_rpmtsRun(rpmtsObject * s, PyObject * args)
 /** \ingroup python
  */
 static struct PyMethodDef rpmtsMethods[] = {
-	{"add",		(PyCFunction) py_rpmtsAdd,	1 },
-	{"remove",	(PyCFunction) py_rpmtsRemove,	1 },
-	{"depcheck",	(PyCFunction) py_rpmtsDepCheck,	1 },
-	{"order",	(PyCFunction) py_rpmtsOrder,	1 },
-	{"getKeys",	(PyCFunction) py_rpmtsGetKeys,	1 },
-	{"run",		(PyCFunction) py_rpmtsRun,	1 },
+	{"add",		(PyCFunction) rpmts_Add,	1 },
+	{"remove",	(PyCFunction) rpmts_Remove,	1 },
+	{"depcheck",	(PyCFunction) rpmts_Check,	1 },
+	{"order",	(PyCFunction) rpmts_Order,	1 },
+	{"getKeys",	(PyCFunction) rpmts_GetKeys,	1 },
+	{"run",		(PyCFunction) rpmts_Run,	1 },
 	{NULL,		NULL}		/* sentinel */
 };
 
 /** \ingroup python
  */
-static PyObject * py_rpmtsGetAttr(rpmtsObject * o, char * name) {
+static PyObject * rpmts_getattr(rpmtsObject * o, char * name) {
     return Py_FindMethod(rpmtsMethods, (PyObject *) o, name);
 }
 
 /** \ingroup python
  */
-static void py_rpmtsDealloc(PyObject * o) {
+static void rpmts_dealloc(PyObject * o) {
     rpmtsObject * trans = (void *) o;
 
     trans->ts->rdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
@@ -504,7 +508,7 @@ static void py_rpmtsDealloc(PyObject * o) {
 
 /** \ingroup python
  */
-static int py_rpmtsSetAttr(rpmtsObject * o, char * name,
+static int rpmts_setattr(rpmtsObject * o, char * name,
 			   PyObject * val) {
     int i;
 
@@ -527,21 +531,48 @@ static int py_rpmtsSetAttr(rpmtsObject * o, char * name,
 
 /** \ingroup python
  */
-static PyTypeObject rpmtsType = {
+static PyTypeObject rpmts_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
-	"rpmtrans",			/* tp_name */
+	"rpm.ts",			/* tp_name */
 	sizeof(rpmtsObject),		/* tp_size */
 	0,				/* tp_itemsize */
-	(destructor) py_rpmtsDealloc, 	/* tp_dealloc */
+	(destructor) rpmts_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) py_rpmtsGetAttr, 	/* tp_getattr */
-	(setattrfunc) py_rpmtsSetAttr,	/* tp_setattr */
+	(getattrfunc) rpmts_getattr, 	/* tp_getattr */
+	(setattrfunc) rpmts_setattr,	/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
 	0,				/* tp_as_mapping */
+	0,				/* tp_hash */
+	0,				/* tp_call */
+	0,				/* tp_str */
+	0,				/* tp_getattro */
+	0,				/* tp_setattro */
+	0,				/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	0,				/* tp_doc */
+	0,				/* tp_traverse */
+	0,				/* tp_clear */
+	0,				/* tp_richcompare */
+	0,				/* tp_weaklistoffset */
+	0,				/* tp_iter */
+	0,				/* tp_iternext */
+	0,				/* tp_methods */
+	0,				/* tp_members */
+	0,				/* tp_getset */
+	0,				/* tp_base */
+	0,				/* tp_dict */
+	0,				/* tp_descr_get */
+	0,				/* tp_descr_set */
+	0,				/* tp_dictoffset */
+	0,				/* tp_init */
+	0,				/* tp_alloc */
+	0,				/* tp_new */
+	0,				/* tp_free */
+	0,				/* tp_is_gc */
 };
 
 /*@}*/
@@ -553,7 +584,7 @@ static PyTypeObject rpmtsType = {
 
 /**
  */
-static PyObject * py_rpmtsCreate(PyObject * self, PyObject * args) {
+static PyObject * rpmts_Create(PyObject * self, PyObject * args) {
     rpmtsObject * o;
     rpmdbObject * db = NULL;
     char * rootDir = "/";
@@ -564,7 +595,7 @@ static PyObject * py_rpmtsCreate(PyObject * self, PyObject * args) {
 	return NULL;
     }
 
-    o = (void *) PyObject_NEW(rpmtsObject, &rpmtsType);
+    o = (void *) PyObject_NEW(rpmtsObject, &rpmts_Type);
 
     Py_XINCREF(db);
     o->dbo = db;
@@ -708,7 +739,7 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
     list.packages = alloca(sizeof(list.packages) * list.numPackages);
     for (i = 0; i < list.numPackages; i++) {
 	hdr = (hdrObject *) PyList_GetItem(hdrList, i);
-	if (((PyObject *) hdr)->ob_type != &hdrType) {
+	if (((PyObject *) hdr)->ob_type != &hdr_Type) {
 	    PyErr_SetString(PyExc_TypeError, "list of headers expected");
 	    return NULL;
 	}
@@ -989,7 +1020,7 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
 /**
  */
 static PyMethodDef rpmModuleMethods[] = {
-    { "TransactionSet", (PyCFunction) py_rpmtsCreate, METH_VARARGS, NULL },
+    { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS, NULL },
     { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
     { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS, NULL },
     { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
@@ -1014,24 +1045,28 @@ static PyMethodDef rpmModuleMethods[] = {
     { NULL }
 } ;
 
+void initrpm(void);	/* XXX eliminate gcc warning */
 /**
  */
 void initrpm(void) {
-    PyObject * m, * d, *o, * tag = NULL, * dict;
+    PyObject * d, *o, * tag = NULL, * dict;
     int i;
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
     struct headerSprintfExtension_s * ext;
-    m = Py_InitModule("rpm", rpmModuleMethods);
+    PyObject * m = Py_InitModule("rpm", rpmModuleMethods);
 
-    hdrType.ob_type = &PyType_Type;
+    hdr_Type.ob_type = &PyType_Type;
+    rpmds_Type.ob_type = &PyType_Type;
+    rpmfi_Type.ob_type = &PyType_Type;
+
     rpmdbMIType.ob_type = &PyType_Type;
     rpmdbType.ob_type = &PyType_Type;
-    rpmtsType.ob_type = &PyType_Type;
 
-    if(!m)
+    rpmts_Type.ob_type = &PyType_Type;
+
+    if (m == NULL)
 	return;
 
-/*      _rpmio_debug = -1; */
     rpmReadConfigFiles(NULL, NULL);
 
     d = PyModule_GetDict(m);
