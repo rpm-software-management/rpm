@@ -57,10 +57,17 @@ verifying, querying, and updating software packages. Each software
 package consists of an archive of files along with information about
 the package like its version, a description, etc.
 
+%package libs
+Summary:  Libraries for manipulating RPM packages.
+Group: Development/Libraries
+
+%description libs
+This package contains the RPM shared libraries.
+
 %package devel
 Summary:  Development files for manipulating RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{rpm_version}
+Requires: rpm = %{rpm_version}-%{release}
 
 %description devel
 This package contains the RPM C library and header files. These
@@ -76,7 +83,7 @@ will manipulate RPM packages and databases.
 %package build
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
-Requires: rpm = %{rpm_version}, patch >= 2.5, file
+Requires: rpm = %{rpm_version}-%{release}, patch >= 2.5, file
 Provides: rpmbuild(VendorConfig) = 4.1-1
 
 %description build
@@ -87,7 +94,7 @@ that are used to build packages using the RPM Package Manager.
 %package python
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{rpm_version}
+Requires: rpm = %{rpm_version}-%{release}
 Requires: python >= %{with_python_version}
 Requires: elfutils >= 0.55
 
@@ -280,11 +287,6 @@ exit 0
 %rpmattr	%{__bindir}/rpmquery
 %rpmattr	%{__bindir}/rpmverify
 
-%{__libdir}/librpm-@VERSION@.so
-%{__libdir}/librpmdb-@VERSION@.so
-%{__libdir}/librpmio-@VERSION@.so
-%{__libdir}/librpmbuild-@VERSION@.so
-
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{__prefix}/lib/rpm
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub
@@ -365,6 +367,13 @@ exit 0
 %lang(pl)	%{__mandir}/pl/man[18]/*.[18]*
 %lang(ru)	%{__mandir}/ru/man[18]/*.[18]*
 %lang(sk)	%{__mandir}/sk/man[18]/*.[18]*
+
+%files libs
+%defattr(-,root,root)
+%{__libdir}/librpm-4.3.so
+%{__libdir}/librpmdb-4.3.so
+%{__libdir}/librpmio-4.3.so
+%{__libdir}/librpmbuild-4.3.so
 
 %files build
 %defattr(-,root,root)

@@ -27,6 +27,19 @@
 	- add ppc8[25]60 arches.
 	- fix: evaluate rather than default file_contexts path. (#127501).
 	- avoid "can't happen" recursion while retrieving pubkeys.
+	- add ppc32dy4 arch.
+	- make peace with automake 1.9.1.
+	- fix: defattr for rpm-libs (#130461).
+	- print dependency loops as warning iff --anaconda is specified.
+	- fix: mark uninstalled elf32 files in rpmdb to disable -Va checks.
+	- ia64: add autorelocate_dcolor to macros.in.
+	- disable static linking until libc*.a provides symbols.
+	- fix: revert Obsoletes: "fix" (#134497).
+	- fix: work around for dangling symlinks not globbed (#134362).
+	- display caught signals to diagnose #134474 (gonna be SIGPIPE).
+	- display N-V-R.A in dependency failure messages.
+	- selinux: set "rpm_script_t" always, not just for /bin/sh.
+	- honor inherited SIG_IGN when establishing rpmdb signal exit (#134474).
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).
