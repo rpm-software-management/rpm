@@ -153,14 +153,16 @@ static void printHeader(Header h, int queryFlags) {
 				if (fileStatesList) {
 				    switch (fileStatesList[i]) {
 				      case RPMFILE_STATE_NORMAL:
-					fputs("normal   ", stdout); break;
+					fputs("normal        ", stdout); break;
 				      case RPMFILE_STATE_REPLACED:
-					fputs("replaced   ", stdout); break;
+					fputs("replaced      ", stdout); break;
+				      case RPMFILE_STATE_NOTINSTALLED:
+					fputs("not installed ", stdout); break;
 				      default:
-					fputs("unknown    ", stdout);
+					fputs("(unknown)     ", stdout);
 				    }
 				} else {
-				    fputs("(no state) ", stdout);
+				    fputs(    "(no state)    ", stdout);
 				}
 			    }
 			    
