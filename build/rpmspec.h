@@ -106,7 +106,7 @@ struct SpecStruct {
     /*@owned@*/ struct spectags *st;
 
     /*@owned@*/ struct OpenFileInfo *fileStack;
-    char lbuf[BUFSIZ];
+    char lbuf[4*BUFSIZ];
     char nextpeekc;
     /*@dependent@*/ char *nextline;
     /*@dependent@*/ char *line;

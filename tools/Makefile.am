@@ -29,8 +29,11 @@ noinst_PROGRAMS = \
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = @BUILD_RPMNLSTOOLS@
 
+# XXX non-linux needs libmisc.a
 rpmgettext_SOURCES =	rpmgettext.c
+rpmgettext_LDADD =	$(myLDADD) @LIBMISC@
 
 rpmputtext_SOURCES =	rpmgettext.c
+rpmputtext_LDADD =	$(myLDADD) @LIBMISC@
 
 $(PROGRAMS): $(myLDADD)
