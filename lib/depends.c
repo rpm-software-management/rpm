@@ -26,6 +26,7 @@
 /*@access tsortInfo@*/
 /*@access rpmTransactionSet@*/
 
+/*@access alKey @*/
 /*@access rpmDependencyConflict@*/
 /*@access problemsSet@*/
 
@@ -37,7 +38,7 @@ typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
 /**
  */
 struct orderListIndex_s {
-    int alIndex;
+    alKey pkgKey;
     int orIndex;
 };
 
@@ -205,10 +206,11 @@ static int intcmp(const void * a, const void * b)	/*@*/
  * Add removed package instance to ordered transaction set.
  * @param ts		transaction set
  * @param dboffset	rpm database instance
- * @param depends	installed package of pair (or -1 on erase)
+ * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
-static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
+static int removePackage(rpmTransactionSet ts, int dboffset,
+		alKey depends)
 	/*@modifies ts @*/
 {
     transactionElement p;
@@ -242,7 +244,9 @@ static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
     memset(p, 0, sizeof(*p));
     p->type = TR_REMOVED;
     p->u.removed.dboffset = dboffset;
-    p->u.removed.dependsOnIndex = depends;
+    /*@-assignexpose -temptrans@*/
+    p->u.removed.dependsOnKey = depends;
+    /*@=assignexpose =temptrans@*/
     ts->orderCount++;
 
     return 0;
@@ -292,10 +296,10 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     const char * addNVR = hGetNVR(h, &name);
     const char * pkgNVR = NULL;
     int duplicate = 0;
-    int apx;	/* addedPackages index */
     transactionElement p;
     rpmDepSet obsoletes;
-    int alNum;
+    alKey pkgKey;	/* addedPackages key */
+    int apx;			/* addedPackages index */
     int xx;
     int ec = 0;
     int rc;
@@ -323,7 +327,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 
 	apx++;
 
-	ph = alGetHeader(ts->addedPackages, p->u.addedIndex, 0);
+	ph = alGetHeader(ts->addedPackages, p->u.addedKey, 0);
 	if (ph == NULL)
 	    break;
 
@@ -364,15 +368,15 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	ts->orderAlloced += ts->delta;
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
-    alNum = alAddPackage(ts->addedPackages, apx, h, key, fd, relocs);
-    if (alNum == -1L) {
+    /* XXX cast assumes that available keys are indices, not pointers */
+    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, h, key, fd, relocs);
+    if (pkgKey == RPMAL_NOMATCH) {
 	ec = 1;
 	goto exit;
     }
     p = ts->order + i;
     memset(p, 0, sizeof(*p));
-assert(alNum == apx);
-    p->u.addedIndex = alNum;
+    p->u.addedKey = pkgKey;
 
     p->type = TR_ADDED;
     p->multiLib = 0;
@@ -426,7 +430,7 @@ assert(apx == ts->numAddedPackages);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    /*@-branchstate@*/
 	    if (rpmVersionCompare(h, h2))
-		xx = removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
+		xx = removePackage(ts, rpmdbGetIteratorOffset(mi), pkgKey);
 	    else {
 		uint_32 *pp, multiLibMask = 0, oldmultiLibMask = 0;
 
@@ -473,7 +477,7 @@ assert(apx == ts->numAddedPackages);
 		/*@-branchstate@*/
 		if (dsiGetEVR(obsoletes) == NULL
 		 || headerMatchesDepFlags(h2, obsoletes))
-		    xx = removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
+		    xx = removePackage(ts, rpmdbGetIteratorOffset(mi), pkgKey);
 		/*@=branchstate@*/
 	    }
 	    mi = rpmdbFreeIterator(mi);
@@ -493,13 +497,13 @@ exit:
 
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
 {
-    /* XXX FIXME: return code -1L is error */
-   (void) alAddPackage(ts->availablePackages, -1, h, key, NULL, NULL);
+    /* XXX FIXME: return code RPMAL_NOMATCH is error */
+   (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, h, key, NULL, NULL);
 }
 
 int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
 {
-    return removePackage(ts, dboffset, -1);
+    return removePackage(ts, dboffset, RPMAL_NOMATCH);
 }
 
 /*@-nullstate@*/ /* FIX: better annotations */
@@ -555,20 +559,16 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
  * @todo Eliminate rpmrc provides.
  * @param al		available list
  * @param key		dependency
- * @retval suggestion	possible package(s) to resolve dependency
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
-static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
-		/*@null@*/ /*@out@*/ availablePackage ** suggestion)
+static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 	/*@globals _cacheDependsRC, fileSystem @*/
-	/*@modifies ts, *suggestion, _cacheDependsRC, fileSystem @*/
+	/*@modifies ts, _cacheDependsRC, fileSystem @*/
 {
     rpmdbMatchIterator mi;
     const char * Name;
     Header h;
     int rc;
-
-    if (suggestion) *suggestion = NULL;
 
     if ((Name = dsiGetN(key)) == NULL)
 	return 0;	/* XXX can't happen */
@@ -602,17 +602,6 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 
 	    if (rc >= 0) {
 		dsiNotify(key, _("(cached)"), rc);
-
-		/*@-mods -type@*/ /* FIX: hack to disable noisy debugging */
-		if (suggestion && rc == 1) {
-		    const char * Type = key->Type;
-		    key->Type = NULL;
-		    *suggestion = alAllSatisfiesDepend(ts->availablePackages,
-				key);
-		    key->Type = Type;
-		}
-		/*@=mods =type@*/
-
 		return rc;
 	    }
 	}
@@ -659,10 +648,9 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 	goto unsatisfied;
     }
 
-    if (alSatisfiesDepend(ts->addedPackages, key) != -1L)
-    {
+    /* Search added packages for the dependency. */
+    if (alSatisfiesDepend(ts->addedPackages, key) != RPMAL_NOMATCH)
 	goto exit;
-    }
 
     /* XXX only the installer does not have the database open here. */
     if (ts->rpmdb != NULL) {
@@ -709,15 +697,6 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 #endif
 
     }
-
-    /*@-mods -type@*/	/* FIX: hack to disable noisy debugging */
-    if (suggestion) {
-	const char * Type = key->Type;
-	key->Type = NULL;
-	*suggestion = alAllSatisfiesDepend(ts->availablePackages, key);
-	key->Type = Type;
-    }
-    /*@=mods =type@*/
 
 unsatisfied:
     rc = 1;	/* dependency is unsatisfied */
@@ -779,7 +758,6 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     int_32 Flags;
     int rc, xx;
     int ourrc = 0;
-    availablePackage * suggestion;
 
     xx = headerNVR(h, &name, &version, &release);
 
@@ -801,33 +779,28 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	if (multiLib && !isDependsMULTILIB(Flags))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, requires, &suggestion);
+	rc = unsatisfiedDepend(ts, requires);
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
 	    /*@switchbreak@*/ break;
 	case 1:		/* requirements are not satisfied. */
-	{   const void ** suggestedPkgs;
+	{   const alKey * suggestedPkgs;
 
-	    /*@-branchstate@*/
-	    if (suggestion != NULL) {
-		int j;
+	    suggestedPkgs = NULL;
 
-		for (j = 0; suggestion[j] != NULL; j++)
-			{};
-
-		suggestedPkgs = xmalloc( (j + 1) * sizeof(*suggestedPkgs) );
-		for (j = 0; suggestion[j] != NULL; j++)
-		    suggestedPkgs[j] =
-			alGetKey(ts->availablePackages,
-			    alGetPkgIndex(ts->availablePackages,
-				suggestion[j]));
-		suggestedPkgs[j] = NULL;
-	    } else {
-		suggestedPkgs = NULL;
+	    /*@-branchstate -mods -type@*/ /* FIX: hack to disable noise */
+	    if (ts->availablePackages != NULL) {
+		const char * Type = requires->Type;
+		requires->Type = NULL;
+		suggestedPkgs =
+			alAllSatisfiesDepend(ts->availablePackages, requires);
+		requires->Type = Type;
 	    }
-	    /*@=branchstate@*/
+	    /*@=branchstate =mods =type@*/
+
 	    dsProblem(psp, h, requires, suggestedPkgs);
+
 	}
 	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
@@ -856,7 +829,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	if (multiLib && !isDependsMULTILIB(Flags))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, conflicts, NULL);
+	rc = unsatisfiedDepend(ts, conflicts);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
@@ -1149,30 +1122,30 @@ static inline int addRelation(rpmTransactionSet ts,
     teIterator qi; transactionElement q;
     tsortInfo tsi;
     const char * Name;
-    long matchNum;
+    alKey pkgKey;
     int i = 0;
 
-    /*@-mods -type@*/	/* FIX: hack to disable noisy debugging */
+    /*@-mods -type@*/	/* FIX: hack to disable noise */
     {	const char * Type = requires->Type;
 	requires->Type = NULL;
-	matchNum = alSatisfiesDepend(ts->addedPackages, requires);
+	pkgKey = alSatisfiesDepend(ts->addedPackages, requires);
 	requires->Type = Type;
     }
     /*@=mods =type@*/
 /*@-nullpass@*/
 if (_te_debug)
-fprintf(stderr, "addRelation: matchNum %d\n", (int)matchNum);
+fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 /*@=nullpass@*/
 
     /* Ordering depends only on added package relations. */
-    if (matchNum == -1L)
+    if (pkgKey == RPMAL_NOMATCH)
 	return 0;
 
-/* XXX Set q to the added package that has matchNum == q->u.addedIndex */
+/* XXX Set q to the added package that has pkgKey == q->u.addedKey */
 /* XXX FIXME: bsearch is possible/needed here */
     qi = teInitIterator(ts);
     while ((q = teNext(qi, TR_ADDED)) != NULL) {
-	if (matchNum == q->u.addedIndex)
+	if (pkgKey == q->u.addedKey)
 	    break;
     }
     qi = teFreeIterator(qi);
@@ -1254,8 +1227,8 @@ prtTSI(NULL, &q->tsi);
 static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 {
     /*@-castexpose@*/
-    int a = ((const orderListIndex)one)->alIndex;
-    int b = ((const orderListIndex)two)->alIndex;
+    long a = (long) ((const orderListIndex)one)->pkgKey;
+    long b = (long) ((const orderListIndex)two)->pkgKey;
     /*@=castexpose@*/
     return (a - b);
 }
@@ -1304,7 +1277,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     teIterator ri; transactionElement r;
     tsortInfo tsi;
     tsortInfo tsi_next;
-    int * ordering = alloca(sizeof(*ordering) * (numAddedPackages + 1));
+    alKey * ordering = alloca(sizeof(*ordering) * (numAddedPackages + 1));
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;
@@ -1332,8 +1305,8 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
 	/* Retrieve info from addedPackages. */
-	p->NEVR = alGetNVR(ts->addedPackages, p->u.addedIndex);
-	p->name = alGetNVR(ts->addedPackages, p->u.addedIndex);
+	p->NEVR = alGetNVR(ts->addedPackages, p->u.addedKey);
+	p->name = alGetNVR(ts->addedPackages, p->u.addedKey);
 /*@-nullpass@*/
 	if ((p->release = strrchr(p->name, '-')) != NULL)
 	    *p->release++ = '\0';
@@ -1354,7 +1327,7 @@ prtTSI(p->NEVR, &p->tsi);
 	rpmDepSet requires;
 	int_32 Flags;
 
-	requires = alGetRequires(ts->addedPackages, p->u.addedIndex);
+	requires = alGetRequires(ts->addedPackages, p->u.addedKey);
 
 	if (requires == NULL)
 	    continue;
@@ -1466,7 +1439,7 @@ prtTSI(" p", &p->tsi);
 			orderingCount, q->npreds, q->tsi.tsi_qcnt, q->depth,
 			(2 * q->depth), "",
 			(q->NEVR ? q->NEVR : "???"));
-	ordering[orderingCount] = q->u.addedIndex;
+	ordering[orderingCount] = q->u.addedKey;
 	orderingCount++;
 	qlen--;
 	loopcheck--;
@@ -1562,7 +1535,7 @@ prtTSI(" p", &p->tsi);
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-		requires = alGetRequires(ts->addedPackages, p->u.addedIndex);
+		requires = alGetRequires(ts->addedPackages, p->u.addedKey);
 		requires = dsiInit(requires);
 		dp = zapRelation(q, p, requires, 1, &nzaps);
 
@@ -1624,7 +1597,7 @@ prtTSI(" p", &p->tsi);
 	p->name = _free(p->name);
 
 	/* Prepare added package ordering permutation. */
-	orderList[j].alIndex = p->u.addedIndex;
+	orderList[j].pkgKey = p->u.addedKey;
 	orderList[j].orIndex = teGetOc(pi);
 	j++;
     }
@@ -1634,12 +1607,13 @@ prtTSI(" p", &p->tsi);
     qsort(orderList, numAddedPackages, sizeof(*orderList), orderListIndexCmp);
 
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
+    /*@-branchstate@*/
     for (i = 0, newOrderCount = 0; i < orderingCount; i++)
     {
 	struct orderListIndex_s key;
 	orderListIndex needle;
 
-	key.alIndex = ordering[i];
+	key.pkgKey = ordering[i];
 	needle = bsearch(&key, orderList, numAddedPackages,
 				sizeof(key), orderListIndexCmp);
 	/* bsearch should never, ever fail */
@@ -1653,7 +1627,7 @@ prtTSI(" p", &p->tsi);
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
 	    q = ts->order + j;
 	    if (q->type == TR_REMOVED &&
-		q->u.removed.dependsOnIndex == needle->alIndex) {
+		q->u.removed.dependsOnKey == needle->pkgKey) {
 		/*@-assignexpose@*/
 		newOrder[newOrderCount++] = *q;	/* structure assignment */
 		/*@=assignexpose@*/
@@ -1661,12 +1635,13 @@ prtTSI(" p", &p->tsi);
 		/*@innerbreak@*/ break;
 	}
     }
+    /*@=branchstate@*/
 
     /*@-compmempass -usereleased@*/ /* FIX: ts->order[].{NEVR,name} released */
     pi = teInitIterator(ts);
     /*@=compmempass =usereleased@*/
     while ((p = teNext(pi, TR_REMOVED)) != NULL) {
-	if (p->u.removed.dependsOnIndex == -1) {
+	if (p->u.removed.dependsOnKey == RPMAL_NOMATCH) {
 	    /*@-assignexpose@*/
 	    newOrder[newOrderCount] = *p;	/* structure assignment */
 	    /*@=assignexpose@*/
@@ -1769,7 +1744,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-	h = alGetHeader(ts->addedPackages, p->u.addedIndex, 0);
+	h = alGetHeader(ts->addedPackages, p->u.addedKey, 0);
 	if (h == NULL)		/* XXX can't happen */
 	    break;
 
@@ -1799,7 +1774,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-	provides = alGetProvides(ts->addedPackages, p->u.addedIndex);
+	provides = alGetProvides(ts->addedPackages, p->u.addedKey);
 
 	rc = 0;
 	provides = dsiInit(provides);

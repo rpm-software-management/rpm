@@ -57,6 +57,8 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 
 /*@access PSM_t@*/
 
+/*@access alKey@*/
+
 /*@access TFI_t@*/
 /*@access teIterator@*/
 /*@access transactionElement@*/
@@ -121,7 +123,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 	for (oc = 0; oc < ts->orderCount; oc++, e++) {
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
-		*e = alGetKey(ts->addedPackages, ts->order[oc].u.addedIndex);
+		*e = alGetKey(ts->addedPackages, ts->order[oc].u.addedKey);
 		/*@switchbreak@*/ break;
 	    default:
 	    case TR_REMOVED:
@@ -923,7 +925,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
     int nexti;
-    int lastFailed;
+    alKey pkgKey, lastKey;
     int oc;
     fingerPrintCache fpc;
     struct psm_s psmbuf;
@@ -1031,12 +1033,15 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	rpmdbMatchIterator mi;
 	Header h;
 
-	h = alGetHeader(ts->addedPackages, i, 0);
+	/* XXX cast assumes that available keys are indices, not pointers */
+	pkgKey = (alKey)i;
+
+	h = alGetHeader(ts->addedPackages, pkgKey, 0);
 	if (h == NULL)	/* XXX can't happen */
 	    continue;
 
 	(void) headerNVR(h, &n, &v, &r);
-	key = alGetKey(ts->addedPackages, i);
+	key = alGetKey(ts->addedPackages, pkgKey);
 
 	if (!archOkay(h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
@@ -1075,7 +1080,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-	totalFileCount += alGetFilesCount(ts->addedPackages, i);
+	totalFileCount += alGetFilesCount(ts->addedPackages, pkgKey);
 
 	h = headerFree(h, "alGetHeader (rpmtsRun sanity)");
 
@@ -1110,6 +1115,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      */
     tei = teInitIterator(ts);
     while ((fi = teNextFi(tei)) != NULL) {
+
 	oc = teGetOc(tei);
 	fi->magic = TFIMAGIC;
 
@@ -1120,19 +1126,19 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	case TR_ADDED:
 	    fi->record = 0;
 
-	    i = ts->order[oc].u.addedIndex;
+	    pkgKey = ts->order[oc].u.addedKey;
 
-	    fi->h = alGetHeader(ts->addedPackages, i, 1);
+	    fi->h = alGetHeader(ts->addedPackages, pkgKey, 1);
 #ifdef DYING	/* XXX MULTILIB multiLib from transactionElement */
 	    fi->multiLib = alGetMultiLib(ts->addedPackages, i);
 #else
 	    fi->multiLib = ts->order[oc].multiLib;
 #endif
 	    /*@-kepttrans@*/
-	    fi->key = alGetKey(ts->addedPackages, i);
+	    fi->key = alGetKey(ts->addedPackages, pkgKey);
 	    /*@=kepttrans@*/
-	    fi->relocs = alGetRelocs(ts->addedPackages, i);
-	    fi->fd = alGetFd(ts->addedPackages, i);
+	    fi->relocs = alGetRelocs(ts->addedPackages, pkgKey);
+	    fi->fd = alGetFd(ts->addedPackages, pkgKey);
 
 	    /* XXX availablePackage can be dumped here XXX */
 
@@ -1421,7 +1427,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * Install and remove packages.
      */
 
-    lastFailed = -2;	/* erased packages have -1 */
+    lastKey = (alKey)-2;	/* erased packages have -1 */
     tei = teInitIterator(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
     while ((fi = teNextFi(tei)) != NULL) {
@@ -1434,7 +1440,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	switch (fi->type) {
 	case TR_ADDED:
 
-	    i = ts->order[oc].u.addedIndex;
+	    pkgKey = ts->order[oc].u.addedKey;
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s-%s-%s\n",
 			fi->name, fi->version, fi->release);
@@ -1517,7 +1523,7 @@ fi->relocs = relocs;
 
 		if (psmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
-		    lastFailed = i;
+		    lastKey = pkgKey;
 		}
 		fi->h = headerFree(fi->h, "TR_ADDED fi->h free");
 		if (hsave) {
@@ -1526,7 +1532,7 @@ fi->relocs = relocs;
 		}
 	    } else {
 		ourrc++;
-		lastFailed = i;
+		lastKey = pkgKey;
 	    }
 
 	    h = headerFree(h, "TR_ADDED h free");
@@ -1545,7 +1551,7 @@ fi->relocs = relocs;
 			fi->name, fi->version, fi->release);
 	    oc = teGetOc(tei);
 	    /* If install failed, then we shouldn't erase. */
-	    if (ts->order[oc].u.removed.dependsOnIndex != lastFailed) {
+	    if (ts->order[oc].u.removed.dependsOnKey != lastKey) {
 		if (psmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }

@@ -88,10 +88,10 @@ struct transactionElement_s {
 
 /*@-fielduse@*/	/* LCL: confused by union? */
     union { 
-/*@unused@*/ int addedIndex;
+/*@unused@*/ alKey addedKey;
 /*@unused@*/ struct {
+	    alKey dependsOnKey;
 	    int dboffset;
-	    int dependsOnIndex;
 	} removed;
     } u;
 /*@=fielduse@*/

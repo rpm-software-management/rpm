@@ -1362,8 +1362,8 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 			       conflicts[i].needsVersion,
 
 			       conflicts[i].needsFlags,
-			       conflicts[i].suggestedPackages ?
-				   conflicts[i].suggestedPackages[0] : Py_None,
+			       conflicts[i].suggestedPkgs ?
+				   conflicts[i].suggestedPkgs[0] : Py_None,
 			       conflicts[i].sense);
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);

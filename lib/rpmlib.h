@@ -68,10 +68,26 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 typedef /*@abstract@*/ /*@refcounted@*/
 struct rpmTransactionSet_s * rpmTransactionSet;
 
+#ifdef	DYING
 /** \ingroup rpmtrans
  * A package in a transaction set.
  */
 typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
+#else
+/** \ingroup rpmtrans
+ * An added/available package retrieval key.
+ */
+typedef /*@abstract@*/ void * alKey;
+#define	RPMAL_NOMATCH	((alKey)-1L)
+
+/** \ingroup rpmtrans
+ * An added/available package retrieval index.
+ */
+/*@-mutrep@*/
+typedef /*@abstract@*/ int alNum;
+/*@=mutrep@*/
+
+#endif
 
 typedef /*@abstract@*/ struct rpmDepSet_s * rpmDepSet;
 
@@ -1002,7 +1018,8 @@ struct rpmDependencyConflict_s {
     const char * needsName;	/*!< dependency name */
     const char * needsVersion;	/*!< dependency epoch:version-release */
     int needsFlags;		/*!< dependency flags */
-/*@owned@*/ /*@null@*/ const void ** suggestedPackages; /* terminated by NULL */
+/*@owned@*/ /*@null@*/
+    const alKey * suggestedPkgs; /* terminated by NULL */
     enum {
 	RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
 	RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-04 11:57-0500\n"
+"POT-Creation-Date: 2001-11-04 16:55-0500\n"
 
 #: build.c:36
 #, fuzzy
@@ -911,7 +911,7 @@ msgid "Could not open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/pack.c:603 lib/psm.c:2140
+#: build/pack.c:603 lib/psm.c:2143
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -946,7 +946,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2405
+#: build/pack.c:683 lib/psm.c:2408
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1578,22 +1578,22 @@ msgid " failed - "
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/depends.c:112
+#: lib/depends.c:113
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/depends.c:345
+#: lib/depends.c:349
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:350
+#: lib/depends.c:354
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/depends.c:355
+#: lib/depends.c:359
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
@@ -1602,73 +1602,73 @@ msgstr ""
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:640
+#: lib/depends.c:629
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:656
+#: lib/depends.c:645
 msgid "(rpmlib provides)"
 msgstr ""
 
 # , c-format
-#: lib/depends.c:678
+#: lib/depends.c:666
 #, fuzzy
 msgid "(db files)"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/depends.c:690
+#: lib/depends.c:678
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:703
+#: lib/depends.c:691
 #, fuzzy
 msgid "(db package)"
 msgstr "pesquise todos os pacotes"
 
-#: lib/depends.c:751
+#: lib/depends.c:730
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:753 lib/rpmds.c:230 lib/rpmds.c:384
+#: lib/depends.c:732 lib/rpmds.c:231 lib/rpmds.c:385
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:753 lib/rpmds.c:230 lib/rpmds.c:384
+#: lib/depends.c:732 lib/rpmds.c:231 lib/rpmds.c:385
 msgid "YES"
 msgstr ""
 
 # , c-format
-#: lib/depends.c:1103
+#: lib/depends.c:1076
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "No consegui abrir: %s\n"
 
 #. Record all relations.
-#: lib/depends.c:1350
+#: lib/depends.c:1323
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1424
+#: lib/depends.c:1397
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1499
+#: lib/depends.c:1472
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1560
+#: lib/depends.c:1533
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1595
+#: lib/depends.c:1568
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1600
+#: lib/depends.c:1573
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1777,7 +1777,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:952
+#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:954
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2342,72 +2342,72 @@ msgstr "assine um pacote (descarte a assinatura corrente)"
 msgid "generate signature"
 msgstr "gere assinatura PGP"
 
-#: lib/problems.c:222
+#: lib/problems.c:225
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:225
+#: lib/problems.c:228
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:265
+#: lib/problems.c:268
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/problems.c:270
+#: lib/problems.c:273
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/problems.c:275
+#: lib/problems.c:278
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/problems.c:280
+#: lib/problems.c:283
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/problems.c:285
+#: lib/problems.c:288
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:290
+#: lib/problems.c:293
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/problems.c:295
+#: lib/problems.c:298
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/problems.c:300
+#: lib/problems.c:303
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:310
+#: lib/problems.c:313
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:315
+#: lib/problems.c:318
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:322
+#: lib/problems.c:325
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:268
+#: lib/psm.c:270
 msgid "========== relocations\n"
 msgstr ""
 
@@ -2419,13 +2419,13 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/psm.c:272
+#: lib/psm.c:274
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "RPM verso %s\n"
 
 # , c-format
-#: lib/psm.c:275
+#: lib/psm.c:277
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -2438,7 +2438,7 @@ msgstr "No consegui abrir: %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/psm.c:345
+#: lib/psm.c:347
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "RPM verso %s\n"
@@ -2451,94 +2451,94 @@ msgstr "RPM verso %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/psm.c:411
+#: lib/psm.c:413
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "RPM verso %s\n"
 
-#: lib/psm.c:421
+#: lib/psm.c:423
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
 # , c-format
-#: lib/psm.c:500
+#: lib/psm.c:502
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/psm.c:1149
+#: lib/psm.c:1151
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/psm.c:1155
+#: lib/psm.c:1157
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/psm.c:1195
+#: lib/psm.c:1198
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1318
+#: lib/psm.c:1321
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: lib/psm.c:1428
+#: lib/psm.c:1431
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "no execute nenhum estgio"
 
-#: lib/psm.c:1596
+#: lib/psm.c:1599
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1603
+#: lib/psm.c:1606
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1945
+#: lib/psm.c:1948
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/psm.c:2062
+#: lib/psm.c:2065
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2176
+#: lib/psm.c:2179
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2185
+#: lib/psm.c:2188
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2226
+#: lib/psm.c:2229
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/psm.c:2227
+#: lib/psm.c:2230
 msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:2413
+#: lib/psm.c:2416
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/psm.c:2416
+#: lib/psm.c:2419
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -2670,12 +2670,18 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
 
-#: lib/rpmal.c:728
+#: lib/rpmal.c:800
 #, c-format
 msgid "%9s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/rpmal.c:826
+# , c-format
+#: lib/rpmal.c:803
+#, fuzzy
+msgid "(added files)"
+msgstr "No consegui abrir: %s\n"
+
+#: lib/rpmal.c:907
 msgid "(added provide)"
 msgstr ""
 
@@ -2747,20 +2753,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:354
+#: lib/rpmds.c:355
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:383
+#: lib/rpmds.c:384
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:409
+#: lib/rpmds.c:410
 #, fuzzy, c-format
 msgid "package %s-%s-%s has unsatisfied %s: %s\n"
 msgstr "no foi passado pacote para instalao"
@@ -3125,7 +3131,7 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:241
+#: lib/transaction.c:243
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3139,7 +3145,7 @@ msgstr ""
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
 #. @innercontinue@
-#: lib/transaction.c:880
+#: lib/transaction.c:882
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "RPM verso %s\n"

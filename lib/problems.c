@@ -10,6 +10,7 @@
 #include "misc.h"
 #include "debug.h"
 
+/*@access alKey@*/
 /*@access rpmProblem@*/
 /*@access rpmProblemSet@*/
 /*@access rpmDependencyConflict@*/
@@ -190,7 +191,9 @@ rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 	conflicts[i].byRelease = _free(conflicts[i].byRelease);
 	conflicts[i].needsName = _free(conflicts[i].needsName);
 	conflicts[i].needsVersion = _free(conflicts[i].needsVersion);
-	conflicts[i].suggestedPackages = _free(conflicts[i].suggestedPackages);
+	/*@-evalorder@*/
+	conflicts[i].suggestedPkgs = _free(conflicts[i].suggestedPkgs);
+	/*@=evalorder@*/
     }
 
     return (conflicts = _free(conflicts));

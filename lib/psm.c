@@ -33,6 +33,8 @@ int _fi_debug = 0;
 /*@access rpmTransactionSet@*/
 /*@access TFI_t@*/
 /*@access PSM_t@*/
+
+/*@access alKey@*/
 /*@access rpmDepSet@*/
 
 /*@-redecl -declundef -exportheadervar@*/
@@ -1176,6 +1178,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     int isSource;
     rpmRC rc;
     int i;
+    alKey pkgKey = (alKey)0;
 
     /*@-mods -temptrans -assignexpose@*/
     ts->notify = notify;
@@ -1201,7 +1204,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     fi->type = TR_ADDED;
 
-    fi->h = alGetHeader(ts->addedPackages, 0, 1);
+    fi->h = alGetHeader(ts->addedPackages, pkgKey, 1);
     /* XXX can't happen */
     if (fi->h == NULL) {
 	rc = RPMRC_FAIL;
@@ -1210,10 +1213,10 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     fi->multiLib = 0;	/* MULTILIB for src.rpm's? */
     /*@-kepttrans@*/
-    fi->key = alGetKey(ts->addedPackages, 0);
+    fi->key = alGetKey(ts->addedPackages, pkgKey);
     /*@=kepttrans@*/
-    fi->relocs = alGetRelocs(ts->addedPackages, 0);
-    fi->fd = alGetFd(ts->addedPackages, 0);
+    fi->relocs = alGetRelocs(ts->addedPackages, pkgKey);
+    fi->fd = alGetFd(ts->addedPackages, pkgKey);
 
     /* XXX header arg unused. */
     loadFi(ts, fi, fi->h, 1);

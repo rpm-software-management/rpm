@@ -11,6 +11,7 @@
 /*@access rpmDependencyConflict @*/
 /*@access problemsSet @*/
 
+/*@access alKey@*/
 /*@access rpmDepSet @*/
 
 /*@unchecked@*/
@@ -134,41 +135,41 @@ fprintf(stderr, "*** ds %p ++ %s[%d]\n", ds, ds->Type, ds->Count);
     /*@=nullret@*/
 }
 
-char * dsDNEVR(const char * depend, const rpmDepSet key)
+char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
 {
     char * tbuf, * t;
     size_t nb;
 
     nb = 0;
-    if (depend)	nb += strlen(depend) + 1;
-    if (key->N[key->i])	nb += strlen(key->N[key->i]);
-    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
+    if (dspfx)	nb += strlen(dspfx) + 1;
+    if (ds->N[ds->i])	nb += strlen(ds->N[ds->i]);
+    if (ds->Flags[ds->i] & RPMSENSE_SENSEMASK) {
 	if (nb)	nb++;
-	if (key->Flags[key->i] & RPMSENSE_LESS)	nb++;
-	if (key->Flags[key->i] & RPMSENSE_GREATER) nb++;
-	if (key->Flags[key->i] & RPMSENSE_EQUAL)	nb++;
+	if (ds->Flags[ds->i] & RPMSENSE_LESS)	nb++;
+	if (ds->Flags[ds->i] & RPMSENSE_GREATER) nb++;
+	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	nb++;
     }
-    if (key->EVR[key->i] && *key->EVR[key->i]) {
+    if (ds->EVR[ds->i] && *ds->EVR[ds->i]) {
 	if (nb)	nb++;
-	nb += strlen(key->EVR[key->i]);
+	nb += strlen(ds->EVR[ds->i]);
     }
 
     t = tbuf = xmalloc(nb + 1);
-    if (depend) {
-	t = stpcpy(t, depend);
+    if (dspfx) {
+	t = stpcpy(t, dspfx);
 	*t++ = ' ';
     }
-    if (key->N[key->i])
-	t = stpcpy(t, key->N[key->i]);
-    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
+    if (ds->N[ds->i])
+	t = stpcpy(t, ds->N[ds->i]);
+    if (ds->Flags[ds->i] & RPMSENSE_SENSEMASK) {
 	if (t != tbuf)	*t++ = ' ';
-	if (key->Flags[key->i] & RPMSENSE_LESS)	*t++ = '<';
-	if (key->Flags[key->i] & RPMSENSE_GREATER) *t++ = '>';
-	if (key->Flags[key->i] & RPMSENSE_EQUAL)	*t++ = '=';
+	if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
+	if (ds->Flags[ds->i] & RPMSENSE_GREATER) *t++ = '>';
+	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
     }
-    if (key->EVR[key->i] && *key->EVR[key->i]) {
+    if (ds->EVR[ds->i] && *ds->EVR[ds->i]) {
 	if (t != tbuf)	*t++ = ' ';
-	t = stpcpy(t, key->EVR[key->i]);
+	t = stpcpy(t, ds->EVR[ds->i]);
     }
     *t = '\0';
     return tbuf;
@@ -250,10 +251,10 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
 	}
     }
 
-/*@-modfilesystem@*/
+/*@-modfilesystem -nullderef -nullpass @*/
 if (_ds_debug && i != -1)
 fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, (ds && ds->Type ? ds->Type : "?Type?"), (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
-/*@=modfilesystem@*/
+/*@=modfilesystem =nullderef =nullpass @*/
 
     return i;
 }
@@ -387,14 +388,14 @@ exit:
     return result;
 }
 
-void dsProblem(problemsSet psp, Header h, const rpmDepSet dep,
-		const void ** suggestedPackages)
+void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
+		const alKey * suggestedPkgs)
 {
     rpmDependencyConflict dcp;
-    const char * Name =  dsiGetN(dep);
-    const char * DNEVR = dsiGetDNEVR(dep);
-    const char * EVR = dsiGetEVR(dep);
-    int_32 Flags = dsiGetFlags(dep);
+    const char * Name =  dsiGetN(ds);
+    const char * DNEVR = dsiGetDNEVR(ds);
+    const char * EVR = dsiGetEVR(ds);
+    int_32 Flags = dsiGetFlags(ds);
     const char * name, * version, * release;
     int xx;
 
@@ -408,7 +409,7 @@ void dsProblem(problemsSet psp, Header h, const rpmDepSet dep,
 
     rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s has unsatisfied %s: %s\n"),
 	    name, version, release,
-	    dep->Type,
+	    ds->Type,
 	    DNEVR+2);
 
     if (psp->num == psp->alloced) {
@@ -428,14 +429,14 @@ void dsProblem(problemsSet psp, Header h, const rpmDepSet dep,
     dcp->needsVersion = xstrdup(EVR);
     dcp->needsFlags = Flags;
 
-    if (dep->tagN == RPMTAG_REQUIRENAME)
+    if (ds->tagN == RPMTAG_REQUIRENAME)
 	dcp->sense = RPMDEP_SENSE_REQUIRES;
-    else if (dep->tagN == RPMTAG_CONFLICTNAME)
+    else if (ds->tagN == RPMTAG_CONFLICTNAME)
 	dcp->sense = RPMDEP_SENSE_CONFLICTS;
     else
 	dcp->sense = 0;
 
-    dcp->suggestedPackages = suggestedPackages;
+    dcp->suggestedPkgs = suggestedPkgs;
 }
 
 int rangeMatchesDepFlags (Header h, const rpmDepSet req)

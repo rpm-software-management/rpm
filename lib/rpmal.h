@@ -6,6 +6,12 @@
  * Structures used for managing added/available package lists.
  */
 
+/**
+ * A package from an availableList.
+ */
+typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
+
+#ifdef	DYING
 /** \ingroup rpmdep
  * Info about a single package to be installed.
  */
@@ -35,6 +41,7 @@ struct availablePackage_s {
 /*@null@*/ rpmRelocation * relocs;
 /*@null@*/ FD_t fd;
 };
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,116 +56,119 @@ int alGetSize(const availableList al)
 	/*@*/;
 
 /**
- * Return available package key.
+ * Return available package identifier key.
  * @param al		available list
- * @param pkgNum	available package index
- * @return		available package key
+ * @param pkgKey	available package key
+ * @return		available identifier key
  */
 /*@kept@*/ /*@null@*/
-const void * alGetKey(/*@null@*/ const availableList al, int pkgNum)
+const void * alGetKey(/*@null@*/ const availableList al, /*@null@*/alKey pkgKey)
 	/*@*/;
 
 #ifdef	DYING
 /**
  * Return available package multiLib flag.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		available package multiLib flag
  */
-int alGetMultiLib(/*@null@*/ const availableList al, int pkgNum)
+int alGetMultiLib(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 #endif
 
 /**
  * Return available package files count.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		available package files count
  */
-int alGetFilesCount(/*@null@*/ const availableList al, int pkgNum)
+int alGetFilesCount(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 
 /**
  * Return available package provides.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		available package provides
  */
 /*@null@*/
-rpmDepSet alGetProvides(/*@null@*/ const availableList al, int pkgNum)
+rpmDepSet alGetProvides(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 
 /**
  * Return available package requires.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		available package requires
  */
 /*@null@*/
-rpmDepSet alGetRequires(/*@null@*/ const availableList al, int pkgNum)
+rpmDepSet alGetRequires(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 
 /**
  * Return available package header.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @param unlink	Should alp->h be unlinked?
  * @return		available package header
  */
-Header alGetHeader(/*@null@*/ availableList al, int pkgNum, int unlink)
+Header alGetHeader(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey,
+		int unlink)
 	/*@modifies al @*/;
 
 /**
  * Return available package relocations.
  * @warning alp->relocs set to NULL after call.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		available package relocations
  */
 /*@null@*/
-rpmRelocation * alGetRelocs(/*@null@*/ availableList al, int pkgNum)
+rpmRelocation * alGetRelocs(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
 	/*@modifies al @*/;
 
 /**
  * Return available package file handle.
  * @warning alp->fd set to NULL after call.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		available package file handle
  */
 /*@null@*/
-FD_t alGetFd(/*@null@*/ availableList al, int pkgNum)
+FD_t alGetFd(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
 	/*@modifies al @*/;
 
 /**
  * Return available package.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		available package pointer
  */
 /*@-exportlocal@*/
 /*@dependent@*/ /*@null@*/
-availablePackage alGetPkg(/*@null@*/ availableList al, int pkgNum)
+availablePackage alGetPkg(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 /*@=exportlocal@*/
 
+#ifdef	DYING
 /**
  * Return available package index.
  * @param al		available list
  * @param alp		available package pointer
  * @return		available package index, -1 on failure
  */
-int alGetPkgIndex(/*@null@*/ const availableList al, const availablePackage alp)
+alNum alGetPkgIndex(/*@null@*/ const availableList al, const availablePackage alp)
 	/*@*/;
+#endif
 
 /**
  * Return (malloc'd) available package name-version-release string.
  * @param al		available list
- * @param pkgNum	available package index
+ * @param pkgKey	available package key
  * @return		name-version-release string
  */
 /*@only@*/ /*@null@*/
-char * alGetNVR(/*@null@*/const availableList al, int pkgNum)
+char * alGetNVR(/*@null@*/const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 
 #ifdef	DYING
@@ -195,24 +205,24 @@ availableList alFree(/*@only@*/ /*@null@*/ availableList al)
 /**
  * Delete package from available list.
  * @param al		available list
- * @param pkgNnum	package index
+ * @param pkgKey	package key
  */
 /*@-exportlocal@*/
-void alDelPackage(availableList al, int pkgNum)
+void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
 	/*@modifies al @*/;
 /*@=exportlocal@*/
 
 /**
  * Add package to available list.
  * @param al		available list
- * @param pkgNnum	package index, < 0 to force an append
+ * @param pkgKey	package key, RPMAL_NOMATCH to force an append
  * @param h		package header
  * @param key		package private data
  * @param fd		package file handle
  * @param relocs	package file relocations
  * @return		available package index
  */
-long alAddPackage(availableList al, int pkgNum,
+alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey,
 		Header h, /*@null@*/ /*@dependent@*/ const void * key,
 		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
 	/*@modifies al, h @*/;
@@ -227,26 +237,24 @@ void alMakeIndex(availableList al)
 /**
  * Check added package file lists for package(s) that provide a file.
  * @param al		available list
- * @param keyType	type of dependency
- * @param fileName	file name to search for
+ * @param ds		dependency set
  * @return		available package pointer
  */
 /*@-exportlocal@*/
 /*@only@*/ /*@null@*/
-availablePackage * alAllFileSatisfiesDepend(const availableList al,
-		const char * keyType, const char * fileName)
-	/*@*/;
+alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
  * Check added package file lists for package(s) that have a provide.
  * @param al		available list
- * @param key		dependency
- * @return		available package pointer
+ * @param ds		dependency set
+ * @return		available package keys
  */
 /*@only@*/ /*@null@*/
-availablePackage * alAllSatisfiesDepend(const availableList al,
-		const rpmDepSet key)
+alKey * alAllSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
@@ -254,10 +262,10 @@ availablePackage * alAllSatisfiesDepend(const availableList al,
  * Check added package file lists for first package that has a provide.
  * @todo Eliminate.
  * @param al		available list
- * @param key		dependency
+ * @param ds		dependency set
  * @return		available package index, -1 on not found
  */
-long alSatisfiesDepend(const availableList al, const rpmDepSet key)
+alKey alSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 

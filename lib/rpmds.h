@@ -68,12 +68,12 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 
 /**
  * Return new formatted dependency string.
- * @param depend	type of dependency ("R" == Requires, "C" == Conflcts)
- * @param key		dependency
+ * @param dspfx		formatted dependency string prefix
+ * @param ds		dependency set
  * @return		new formatted dependency (malloc'ed)
  */
 /*@only@*/
-char * dsDNEVR(const char * depend, const rpmDepSet key)
+char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
 	/*@*/;
 
 /**
@@ -152,8 +152,8 @@ int dsCompare(const rpmDepSet A, const rpmDepSet B)
 /**
  * Report a Requires: or Conflicts: dependency problem.
  */
-void dsProblem(problemsSet psp, Header h, const rpmDepSet dep,
-		/*@only@*/ /*@null@*/ const void ** suggestedPackages)
+void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
+		/*@only@*/ /*@null@*/ const alKey * suggestedPkgs)
 	/*@modifies psp, h @*/;
 
 /**
