@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "md5.h"
+#include "misc.h"
 #include "messages.h"
 #include "rpmlib.h"
 
@@ -34,7 +35,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     unsigned char md5sum[40];
     char linkto[1024];
     int size;
-    int_32 * uidList, * gidList;
+    char ** unameList, ** gnameList;
     int useBrokenMd5;
 
     if (headerGetEntry(h, RPMTAG_RPMVERSION, NULL, NULL, NULL))
@@ -72,15 +73,19 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	return 1;
 
     if (S_ISDIR(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+			RPMVERIFY_LINKTO);
     else if (S_ISLNK(sb.st_mode))
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME);
     else if (S_ISFIFO(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+			RPMVERIFY_LINKTO);
     else if (S_ISCHR(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+			RPMVERIFY_LINKTO);
     else if (S_ISBLK(sb.st_mode))
-	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
+			RPMVERIFY_LINKTO);
     else 
 	flags &= ~(RPMVERIFY_LINKTO);
 
@@ -141,14 +146,16 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     }
 
     if (flags & RPMVERIFY_USER) {
-	headerGetEntry(h, RPMTAG_FILEUIDS, &type, (void **) &uidList, &count);
-	if (uidList[filenum] != sb.st_uid)
+	headerGetEntry(h, RPMTAG_FILEUSERNAME, NULL, (void **) &unameList, 
+			NULL);
+	if (strcmp(unameList[filenum], uidToUname(sb.st_uid)))
 	    *result |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
-	headerGetEntry(h, RPMTAG_FILEGIDS, &type, (void **) &gidList, &count);
-	if (gidList[filenum] != sb.st_gid)
+	headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &gnameList, 
+			NULL);
+	if (strcmp(gnameList[filenum], gidToGname(sb.st_gid)))
 	    *result |= RPMVERIFY_GROUP;
     }
 
