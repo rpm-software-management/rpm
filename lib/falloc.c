@@ -38,10 +38,6 @@ FD_t faFileno(faFile fa) {
     return fa->fd;
 }
 
-off_t faLseek(faFile fa, off_t off, int op) {
-    return fdLseek(faFileno(fa), off, op);
-}
-
 static inline ssize_t faRead(faFile fa, /*@out@*/void *buf, size_t count) {
     return fdRead(faFileno(fa), buf, count);
 }
@@ -50,8 +46,29 @@ static inline ssize_t faWrite(faFile fa, const void *buf, size_t count) {
     return fdWrite(faFileno(fa), buf, count);
 }
 
+off_t faLseek(faFile fa, off_t off, int op) {
+    return fdLseek(faFileno(fa), off, op);
+}
+
+void faClose(faFile fa) {
+    fdClose(fa->fd);
+    free(fa);
+}
+
 int faFcntl(faFile fa, int op, void *lip) {
     return fcntl(fdFileno(faFileno(fa)), op, lip);
+}
+
+static inline ssize_t faPRead(faFile fa, /*@out@*/void *buf, size_t count, off_t offset) {
+    if (faLseek(fa, offset, SEEK_SET) < 0)
+	return -1;
+    return faRead(fa, buf, count);
+}
+
+static inline ssize_t faPWrite(faFile fa, const void *buf, size_t count, off_t offset) {
+    if (faLseek(fa, offset, SEEK_SET) < 0)
+	return -1;
+    return faWrite(fa, buf, count);
 }
 
 /* flags here is the same as for open(2) - NULL returned on error */
@@ -88,8 +105,7 @@ faFile faOpen(const char * path, int flags, int perms)
 	fas.firstFree = 0;
 	fas.fileSize = sizeof(newHdr);
     } else {
-	(void)faLseek(&fas, 0, SEEK_SET);
-	if (faRead(&fas, &newHdr, sizeof(newHdr)) != sizeof(newHdr)) {
+	if (faPRead(&fas, &newHdr, sizeof(newHdr), 0) != sizeof(newHdr)) {
 	    fdClose(fas.fd);
 	    return NULL;
 	}
@@ -151,8 +167,7 @@ unsigned int faAlloc(faFile fa, unsigned int size)
     newBlockOffset = 0;
 
     while (nextFreeBlock && !newBlockOffset) {
-	if (faLseek(fa, nextFreeBlock, SEEK_SET) < 0) return 0;
-	if (faRead(fa, &header, sizeof(header)) != sizeof(header)) return 0;
+	if (faPRead(fa, &header, sizeof(header), nextFreeBlock) != sizeof(header)) return 0;
 
 /* XXX W2DO? exit(EXIT_FAILURE) forces the user to discover rpm --rebuilddb */
 	if (!header.isFree) {
@@ -180,8 +195,7 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 
 	footerOffset = newBlockOffset + header.size - sizeof(footer);
 
-	if (faLseek(fa, footerOffset, SEEK_SET) < 0) return 0;
-	if (faRead(fa, &footer, sizeof(footer)) != sizeof(footer)) 
+	if (faPRead(fa, &footer, sizeof(footer), footerOffset) != sizeof(footer)) 
 	    return 0;
 	origFooter = footer;
 
@@ -197,9 +211,8 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	    fa->firstFree = header.freeNext;
 	    updateHeader = 1;
 	} else {
-	    if (faLseek(fa, header.freePrev, SEEK_SET) < 0) return 0;
-	    if (faRead(fa, &prevFreeHeader, sizeof(prevFreeHeader)) !=
-			 sizeof(prevFreeHeader)) 
+	    if (faPRead(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+			header.freePrev) != sizeof(prevFreeHeader)) 
 		return 0;
 	    origPrevFreeHeader = prevFreeHeader;
 
@@ -208,9 +221,8 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 
 	/* and after */
 	if (header.freeNext) {
-	    if (faLseek(fa, header.freeNext, SEEK_SET) < 0) return 0;
-	    if (faRead(fa, &nextFreeHeader, sizeof(nextFreeHeader)) !=
-			 sizeof(nextFreeHeader)) 
+	    if (faPRead(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+			header.freeNext) != sizeof(nextFreeHeader)) 
 		return 0;
 	    origNextFreeHeader = nextFreeHeader;
 
@@ -219,34 +231,26 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 
 	/* if any of these fail, try and restore everything before leaving */
 	if (updateHeader) {
-	    if (faLseek(fa, 0, SEEK_SET) < 0) 
-		return 0;
-	    else if (faWrite(fa, &faHeader, sizeof(faHeader)) !=
+	    if (faPWrite(fa, &faHeader, sizeof(faHeader), 0) !=
 			     sizeof(faHeader)) 
 		return 0;
 	} else {
-	    if (faLseek(fa, header.freePrev, SEEK_SET) < 0)
-		return 0;
-	    else if (faWrite(fa, &prevFreeHeader, sizeof(prevFreeHeader)) !=
-			 sizeof(prevFreeHeader))
+	    if (faPWrite(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+			header.freePrev) != sizeof(prevFreeHeader))
 		return 0;
 	    restorePrevHeader = &origPrevFreeHeader;
 	}
 
 	if (header.freeNext) {
-	    if (faLseek(fa, header.freeNext, SEEK_SET) < 0)
-		return 0;
-	    else if (faWrite(fa, &nextFreeHeader, sizeof(nextFreeHeader)) !=
-			 sizeof(nextFreeHeader))
+	    if (faPWrite(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+			header.freeNext) != sizeof(nextFreeHeader))
 		return 0;
 
 	    restoreNextHeader = &origNextFreeHeader;
 	}
 
 	if (!failed) {
-	    if (faLseek(fa, newBlockOffset, SEEK_SET) < 0) 
-		failed = 1;
-	    else if (faWrite(fa, &header, sizeof(header)) !=
+	    if (faPWrite(fa, &header, sizeof(header), newBlockOffset) !=
 			 sizeof(header)) {
 		failed = 1;
 		restoreHeader = &origHeader;
@@ -254,10 +258,8 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	}
 
 	if (!failed) {
-	    if (faLseek(fa, footerOffset, SEEK_SET) < 0) 
-		failed = 1;
-	    else if (faWrite(fa, &footer, sizeof(footer)) !=
-			 sizeof(footer)) {
+	    if (faPWrite(fa, &footer, sizeof(footer),
+			footerOffset) != sizeof(footer)) {
 		failed = 1;
 		restoreFooter = &origFooter;
 	    }
@@ -267,29 +269,24 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	    if (updateHeader) {
 		faHeader.firstFree = newBlockOffset;
 		fa->firstFree = newBlockOffset;
-	    	(void)faLseek(fa, 0, SEEK_SET);
-	        (void)faWrite(fa, &faHeader, sizeof(faHeader));
+	        (void)faPWrite(fa, &faHeader, sizeof(faHeader), 0);
 	    } 
 
-	    if (restorePrevHeader) {
-	    	(void)faLseek(fa, header.freePrev, SEEK_SET);
-	    	(void)faWrite(fa, restorePrevHeader, sizeof(*restorePrevHeader));
-	    }
+	    if (restorePrevHeader)
+	    	(void)faPWrite(fa, restorePrevHeader, sizeof(*restorePrevHeader),
+				header.freePrev);
 
-	    if (restoreNextHeader) {
-	    	(void)faLseek(fa, header.freeNext, SEEK_SET);
-	    	(void)faWrite(fa, restoreNextHeader, sizeof(*restoreNextHeader));
-	    }
+	    if (restoreNextHeader)
+	    	(void)faPWrite(fa, restoreNextHeader, sizeof(*restoreNextHeader),
+				header.freeNext);
 
-	    if (restoreHeader) {
-	    	(void)faLseek(fa, newBlockOffset, SEEK_SET);
-	    	(void)faWrite(fa, restoreHeader, sizeof(header));
-	    }
+	    if (restoreHeader)
+	    	(void)faPWrite(fa, restoreHeader, sizeof(header),
+				newBlockOffset);
 
-	    if (restoreFooter) {
-	    	(void)faLseek(fa, footerOffset, SEEK_SET);
-	    	(void)faWrite(fa, restoreFooter, sizeof(footer));
-	    }
+	    if (restoreFooter)
+	    	(void)faPWrite(fa, restoreFooter, sizeof(footer),
+				footerOffset);
 
 	    return 0;
 	}
@@ -308,20 +305,14 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	header.freePrev = header.freeNext = 0;
 
 	/* reserve all space up front */
-        (void)faLseek(fa, newBlockOffset, SEEK_SET);
-	if (faWrite(fa, space, size) != size) {
+	if (faPWrite(fa, space, size, newBlockOffset) != size)
 	    return 0;
-	}
 
-        (void)faLseek(fa, newBlockOffset, SEEK_SET);
-	if (faWrite(fa, &header, sizeof(header)) != sizeof(header)) {
+	if (faPWrite(fa, &header, sizeof(header), newBlockOffset) != sizeof(header))
 	    return 0;
-	}
 
-        (void)faLseek(fa, footerOffset, SEEK_SET);
-	if (faWrite(fa, &footer, sizeof(footer)) != sizeof(footer)) {
+	if (faPWrite(fa, &footer, sizeof(footer), footerOffset) != sizeof(footer))
 	    return 0;
-	}
 
 	fa->fileSize += size;
     }
@@ -350,36 +341,32 @@ void faFree(faFile fa, unsigned int offset)
 	nextFreeOffset = fa->firstFree;
 	prevFreeOffset = 0;
     } else {
-	if (faLseek(fa, prevFreeOffset, SEEK_SET) < 0) return;
-	if (faRead(fa, &prevFreeHeader, sizeof(prevFreeHeader)) != 
-		sizeof(prevFreeHeader)) return;
+	if (faPRead(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+			prevFreeOffset) != sizeof(prevFreeHeader))
+	    return;
 
 	while (prevFreeHeader.freeNext && prevFreeHeader.freeNext < offset) {
 	    prevFreeOffset = prevFreeHeader.freeNext;
-	    if (faLseek(fa, prevFreeOffset, SEEK_SET) < 0) return;
-	    if (faRead(fa, &prevFreeHeader, sizeof(prevFreeHeader)) != 
-		    sizeof(prevFreeHeader)) return;
+	    if (faPRead(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+			prevFreeOffset) != sizeof(prevFreeHeader))
+		return;
 	} 
 
 	nextFreeOffset = prevFreeHeader.freeNext;
     }
 
     if (nextFreeOffset) {
-	if (faLseek(fa, nextFreeOffset, SEEK_SET) < 0) return;
-	if (faRead(fa, &nextFreeHeader, sizeof(nextFreeHeader)) != 
-		sizeof(nextFreeHeader)) return;
+	if (faPRead(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+			nextFreeOffset) != sizeof(nextFreeHeader))
+	    return;
     }
 
-    if (faLseek(fa, offset, SEEK_SET) < 0)
-	return;
-    if (faRead(fa, &header, sizeof(header)) != sizeof(header))
+    if (faPRead(fa, &header, sizeof(header), offset) != sizeof(header))
 	return;
 
     footerOffset = offset + header.size - sizeof(footer);
 
-    if (faLseek(fa, footerOffset, SEEK_SET) < 0)
-	return;
-    if (faRead(fa, &footer, sizeof(footer)) != sizeof(footer))
+    if (faPRead(fa, &footer, sizeof(footer), footerOffset) != sizeof(footer))
 	return;
 
     header.isFree = 1;
@@ -387,37 +374,31 @@ void faFree(faFile fa, unsigned int offset)
     header.freePrev = prevFreeOffset;
     footer.isFree = 1;
 
-    (void)faLseek(fa, offset, SEEK_SET);
-    (void)faWrite(fa, &header, sizeof(header));
+    (void)faPWrite(fa, &header, sizeof(header), offset);
 
-    (void)faLseek(fa, footerOffset, SEEK_SET);
-    (void)faWrite(fa, &footer, sizeof(footer));
+    (void)faPWrite(fa, &footer, sizeof(footer), footerOffset);
 
     if (nextFreeOffset) {
 	nextFreeHeader.freePrev = offset;
-	if (faLseek(fa, nextFreeOffset, SEEK_SET) < 0) return;
-	if (faWrite(fa, &nextFreeHeader, sizeof(nextFreeHeader)) != 
-		sizeof(nextFreeHeader)) return;
+	if (faPWrite(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+			nextFreeOffset) != sizeof(nextFreeHeader))
+	    return;
     }
 
     if (prevFreeOffset) {
 	prevFreeHeader.freeNext = offset;
-	if (faLseek(fa, prevFreeOffset, SEEK_SET) < 0) return;
-	(void)faWrite(fa, &prevFreeHeader, sizeof(prevFreeHeader));
+	if (faPWrite(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+			prevFreeOffset) != sizeof(prevFreeHeader))
+	    return;
     } else {
 	fa->firstFree = offset;
 
 	faHeader.magic = FA_MAGIC;
 	faHeader.firstFree = fa->firstFree;
 
-	if (faLseek(fa, 0, SEEK_SET) < 0) return;
-	(void)faWrite(fa, &faHeader, sizeof(faHeader));
+	if (faPWrite(fa, &faHeader, sizeof(faHeader), 0) != sizeof(faHeader))
+	    return;
     }
-}
-
-void faClose(faFile fa) {
-    fdClose(fa->fd);
-    free(fa);
 }
 
 int faFirstOffset(faFile fa) {
@@ -437,19 +418,16 @@ int faNextOffset(faFile fa, unsigned int lastOffset)
 
     if (offset >= fa->fileSize) return 0;
 
-    (void)faLseek(fa, offset, SEEK_SET);
-    if (faRead(fa, &header, sizeof(header)) != sizeof(header)) {
+    if (faPRead(fa, &header, sizeof(header), offset) != sizeof(header))
 	return 0;
-    }
-    if (!lastOffset && !header.isFree) return (offset + sizeof(header));
+    if (!lastOffset && !header.isFree)
+	return (offset + sizeof(header));
 
     do {
 	offset += header.size;
 
-	(void)faLseek(fa, offset, SEEK_SET);
-	if (faRead(fa, &header, sizeof(header)) != sizeof(header)) {
+	if (faPRead(fa, &header, sizeof(header), offset) != sizeof(header))
 	    return 0;
-	}
 
 	if (!header.isFree) break;
     } while (offset < fa->fileSize && header.isFree);
