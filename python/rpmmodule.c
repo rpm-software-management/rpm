@@ -1,5 +1,5 @@
 /** \ingroup py_c
- * \file python/rpmmodule.c
+ * \file python/_rpmmodule.c
  */
 
 #include "system.h"
@@ -168,10 +168,10 @@ static PyMethodDef rpmModuleMethods[] = {
 static char rpm__doc__[] =
 "";
 
-void initrpm(void);	/* XXX eliminate gcc warning */
+void init_rpm(void);	/* XXX eliminate gcc warning */
 /**
  */
-void initrpm(void)
+void init_rpm(void)
 {
     PyObject * d, *o, * tag = NULL, * dict;
     int i;
@@ -197,7 +197,7 @@ void initrpm(void)
     if (PyType_Ready(&spec_Type) < 0) return;
 #endif
 
-    m = Py_InitModule3("rpm", rpmModuleMethods, rpm__doc__);
+    m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
 	return;
 
@@ -206,11 +206,11 @@ void initrpm(void)
     d = PyModule_GetDict(m);
 
 #ifdef	HACK
-    pyrpmError = PyString_FromString("rpm.error");
+    pyrpmError = PyString_FromString("_rpm.error");
     PyDict_SetItemString(d, "error", pyrpmError);
     Py_DECREF(pyrpmError);
 #else
-    pyrpmError = PyErr_NewException("rpm.error", NULL, NULL);
+    pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
     if (pyrpmError != NULL)
 	PyDict_SetItemString(d, "error", pyrpmError);
 #endif

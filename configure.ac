@@ -1245,6 +1245,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	doc/ru/Makefile
 	doc/sk/Makefile
 	python/Makefile
+	python/rpm/Makefile
 	python/rpmdb/Makefile
 	python/rpmdb/test/Makefile
  	lua/Makefile
