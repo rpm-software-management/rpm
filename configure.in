@@ -776,7 +776,7 @@ AC_SUBST(LIBS)
 AC_SUBST(RPM)
 
 # XXX Propagate -lucb to popt ...
-export LIBS INCPATH
+export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt)
 AC_OUTPUT([Makefile rpmrc macros lib/Makefile
