@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-07-11 23:58-0400\n"
+"POT-Creation-Date: 2000-07-12 19:00-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2693,7 +2693,7 @@ msgstr "spodziewany | na koñcu wyra¿enia"
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 
-#: lib/install.c:148 lib/uninstall.c:189
+#: lib/install.c:148 lib/uninstall.c:195
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   plik: %s akcja: %s\n"
@@ -3376,7 +3376,7 @@ msgstr ""
 msgid "error(%d) counting packages"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:91
+#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:97
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
@@ -3851,31 +3851,31 @@ msgstr "%s pominiêty z powodu flagi missingok\n"
 msgid "executing pre-transaction syscall: \"%s\"\n"
 msgstr ""
 
-#: lib/uninstall.c:39
+#: lib/uninstall.c:42
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "nie mo¿na usun±æ %s - katalog nie jest pusty"
 
-#: lib/uninstall.c:42
+#: lib/uninstall.c:46
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "skasowanie katalogu %s nie powiod³o siê"
 
-#: lib/uninstall.c:50
+#: lib/uninstall.c:56
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "skasowanie %s nie powiod³o siê: %s"
 
-#: lib/uninstall.c:135
+#: lib/uninstall.c:141
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "usunie pliki test = %d\n"
 
-#: lib/uninstall.c:203
+#: lib/uninstall.c:209
 msgid "running postuninstall script (if any)\n"
 msgstr "uruchamianie skryptu postinstalacyjnego (je¦li istnieje)\n"
 
-#: lib/uninstall.c:400
+#: lib/uninstall.c:406
 #, fuzzy, c-format
 msgid "execution of %s-%s-%s script failed, exit status %d"
 msgstr "wykonanie skryptu nie powiod³o siê"

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.76 2000/07/12 04:02:38 jbj Exp $
+# $Id: sl.po,v 1.77 2000/07/12 23:19:11 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-11 23:58-0400\n"
+"POT-Creation-Date: 2000-07-12 19:00-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2689,7 +2689,7 @@ msgstr "| prièakovan na koncu izraza"
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
-#: lib/install.c:148 lib/uninstall.c:189
+#: lib/install.c:148 lib/uninstall.c:195
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr " datoteka: %s akcija: %s\n"
@@ -3366,7 +3366,7 @@ msgstr "staro obliko podatkove zbirke pretvorite v novo z --rebuilddb"
 msgid "error(%d) counting packages"
 msgstr "napaka pri iskanju paketa %s\n"
 
-#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:91
+#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:97
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "ni mo¾no prebrati glave pri %d za vpogled"
@@ -3840,31 +3840,31 @@ msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 msgid "executing pre-transaction syscall: \"%s\"\n"
 msgstr ""
 
-#: lib/uninstall.c:39
+#: lib/uninstall.c:42
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "ni mo¾no odstraniti %s - imenik ni prazen"
 
-#: lib/uninstall.c:42
+#: lib/uninstall.c:46
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "odstranitev imenika %s neuspe¹na: %s"
 
-#: lib/uninstall.c:50
+#: lib/uninstall.c:56
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "odstranitev %s neuspe¹na: %s"
 
-#: lib/uninstall.c:135
+#: lib/uninstall.c:141
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "datoteke bomo odstranili, test = %d\n"
 
-#: lib/uninstall.c:203
+#: lib/uninstall.c:209
 msgid "running postuninstall script (if any)\n"
 msgstr "poganjamo poodnamestitvene skripte (èe obstajajo)\n"
 
-#: lib/uninstall.c:400
+#: lib/uninstall.c:406
 #, fuzzy, c-format
 msgid "execution of %s-%s-%s script failed, exit status %d"
 msgstr "skript se ni uspe¹no izvedel"

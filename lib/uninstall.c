@@ -33,14 +33,20 @@ static int removeFile(const char * file, unsigned int flags, short mode,
 
       case FA_REMOVE:
 	if (S_ISDIR(mode)) {
+	    /* XXX should permit %missingok for directories as well */
 	    if (rmdir(file)) {
-		if (errno == ENOTEMPTY)
+		switch (errno) {
+		case ENOENT:	/* XXX rmdir("/") linux 2.2.x kernel hack */
+		case ENOTEMPTY:
 		    rpmError(RPMERR_RMDIR, 
 			_("cannot remove %s - directory not empty"), 
 			file);
-		else
+		    break;
+		default:
 		    rpmError(RPMERR_RMDIR, _("rmdir of %s failed: %s"),
 				file, strerror(errno));
+		    break;
+		}
 		rc = 1;
 	    }
 	} else {

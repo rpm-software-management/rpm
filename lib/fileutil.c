@@ -14,7 +14,7 @@ static struct {
 #define	RPMSYSCALL_RMDIR	1
     { "mv",		-2 },
 #define	RPMSYSCALL_MV		2
-    { "symlink",	2 }
+    { "symlink",	2 },
 #define	RPMSYSCALL_SYMLINK	3
     { "S_ISLNK",	1 }
 #define	RPMSYSCALL_ISLNK	4

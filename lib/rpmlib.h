@@ -71,6 +71,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_VERSION			1001
 #define	RPMTAG_RELEASE			1002
 #define	RPMTAG_EPOCH	   		1003
+#define	RPMTAG_SERIAL		RPMTAG_EPOCH	/* backward comaptibility */
 #define	RPMTAG_SUMMARY			1004
 #define	RPMTAG_DESCRIPTION		1005
 #define	RPMTAG_BUILDTIME		1006
@@ -82,6 +83,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_GIF			1012
 #define	RPMTAG_XPM			1013
 #define	RPMTAG_LICENSE			1014
+#define	RPMTAG_COPYRIGHT	RPMTAG_LICENSE	/* backward comaptibility */
 #define	RPMTAG_PACKAGER			1015
 #define	RPMTAG_GROUP			1016
 #define	RPMTAG_CHANGELOG		1017 /* internal */
@@ -115,6 +117,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_FILEVERIFYFLAGS		1045
 #define	RPMTAG_ARCHIVESIZE		1046
 #define	RPMTAG_PROVIDENAME		1047
+#define	RPMTAG_PROVIDES RPMTAG_PROVIDENAME	/* backward comaptibility */
 #define	RPMTAG_REQUIREFLAGS		1048
 #define	RPMTAG_REQUIRENAME		1049
 #define	RPMTAG_REQUIREVERSION		1050
@@ -149,6 +152,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_POSTUNPROG		1088
 #define	RPMTAG_BUILDARCHS		1089
 #define	RPMTAG_OBSOLETENAME		1090
+#define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME	/* backward comaptibility */
 #define	RPMTAG_VERIFYSCRIPTPROG		1091
 #define	RPMTAG_TRIGGERSCRIPTPROG	1092
 #define	RPMTAG_DOCDIR			1093 /* internal */
