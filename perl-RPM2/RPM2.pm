@@ -9,7 +9,7 @@ use File::Basename;
 use File::Spec;
 
 use vars qw/$VERSION/;
-$VERSION = '0.63';
+$VERSION = '0.64';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
@@ -49,6 +49,25 @@ sub open_rpm_db {
   }
 
   return $self;
+}
+
+sub open_hdlist {
+  my $class = shift;
+  my $file = shift;
+
+  open FH, "<$file"
+    or die "Can't open $file: $!";
+
+  my @ret;
+  while (1) {
+    my ($hdr) = RPM2::_read_from_file(*FH);
+    last unless $hdr;
+
+    push @ret, RPM2::Header->_new_raw($hdr);
+  }
+
+  close FH;
+  return @ret;
 }
 
 sub open_package {

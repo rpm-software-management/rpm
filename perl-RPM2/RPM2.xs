@@ -299,6 +299,28 @@ _create_transaction(vsflags)
 
 	PUSHs(h_sv);
 
+void
+_read_from_file(fp)
+	FILE *fp
+PREINIT:
+	SV *h_sv;
+	FD_t fd;
+	Header h;
+PPCODE:
+	fd = fdDup(fileno(fp));
+	h = headerRead(fd, HEADER_MAGIC_YES);
+
+	if (h) {
+	    EXTEND(SP, 1);
+
+	    h_sv = sv_newmortal();
+	    sv_setref_pv(h_sv, "RPM2::C::Header", (void *)h);
+
+	    PUSHs(h_sv);
+	}
+	Fclose(fd);
+
+
 rpmdb
 _open_rpm_db(for_write)
 	int   for_write

@@ -11,7 +11,7 @@ use strict;
 
 use Test;
 use strict;
-BEGIN { plan tests => 35 };
+BEGIN { plan tests => 59 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -182,3 +182,7 @@ ok(scalar(@rpms) == 1);
 ok($t->run());
 # Test closing the database
 ok($t->close_db());
+
+my @headers = RPM2->open_hdlist("hdlist-test.hdr");
+ok(scalar @headers, 3, 'found three headers in hdlist-test.hdr');
+ok(grep { $_->tag('name') eq 'mod_perl' } @headers);
