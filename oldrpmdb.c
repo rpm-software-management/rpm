@@ -9,10 +9,10 @@
 #include "oldrpmdb.h"
 
 static int labelstrlistToLabelList(char * str, int length, 
-				   struct rpmdbLabel ** list);
+				   struct oldrpmdbLabel ** list);
 static char * prefix = "/var/lib/rpm";
 
-char * rpmdbLabelToLabelstr(struct rpmdbLabel label, int withFileNum) {
+char * oldrpmdbLabelToLabelstr(struct oldrpmdbLabel label, int withFileNum) {
     char * c;
     char buffer[50];
  
@@ -38,7 +38,7 @@ char * rpmdbLabelToLabelstr(struct rpmdbLabel label, int withFileNum) {
     return c;
 }
 
-int rpmdbLabelstrToLabel(char * str, int length, struct rpmdbLabel * label) {
+int oldrpmdbLabelstrToLabel(char * str, int length, struct oldrpmdbLabel * label) {
     char * chptr;
 
     label->freeType = RPMDB_FREENAME;
@@ -71,24 +71,24 @@ int rpmdbLabelstrToLabel(char * str, int length, struct rpmdbLabel * label) {
 }
 
 static int labelstrlistToLabelList(char * str, int length, 
-				   struct rpmdbLabel ** list) {
+				   struct oldrpmdbLabel ** list) {
     char * start, * chptr;
-    struct rpmdbLabel * head = NULL;
-    struct rpmdbLabel * tail = NULL;
-    struct rpmdbLabel * label;
+    struct oldrpmdbLabel * head = NULL;
+    struct oldrpmdbLabel * tail = NULL;
+    struct oldrpmdbLabel * label;
     
     start = str;
     for (chptr = start; (chptr - str) < length; chptr++) {
 	/* spaces following a space get ignored */
 	if (*chptr == ' ' && start < chptr) {
-	    label = malloc(sizeof(struct rpmdbLabel));
+	    label = malloc(sizeof(struct oldrpmdbLabel));
 	    if (!label) {
-		rpmdbFreeLabelList(head);
+		oldrpmdbFreeLabelList(head);
 		return 1;
 	    }
-	    if (rpmdbLabelstrToLabel(start, chptr - start, label)) {
+	    if (oldrpmdbLabelstrToLabel(start, chptr - start, label)) {
 		free(label);
-		rpmdbFreeLabelList(head);
+		oldrpmdbFreeLabelList(head);
 		return 1;
 	    }
 
@@ -106,14 +106,14 @@ static int labelstrlistToLabelList(char * str, int length,
 
     /* a space on the end would break things horribly w/o this test */
     if (start < chptr) {
-	label = malloc(sizeof(struct rpmdbLabel));
+	label = malloc(sizeof(struct oldrpmdbLabel));
 	if (!label) {
-	    rpmdbFreeLabelList(head);
+	    oldrpmdbFreeLabelList(head);
 	    return 1;
 	}
-	if (rpmdbLabelstrToLabel(start, chptr - start, label)) {
+	if (oldrpmdbLabelstrToLabel(start, chptr - start, label)) {
 	    free(label);
-	    rpmdbFreeLabelList(head);
+	    oldrpmdbFreeLabelList(head);
 	    return 1;
 	}
 
@@ -133,101 +133,101 @@ static int labelstrlistToLabelList(char * str, int length,
 }
 
 /* returns 0 on success, -1 on failure */
-int rpmdbOpen(struct rpmdb * rpmdb) {
+int oldrpmdbOpen(struct oldrpmdb * oldrpmdb) {
     unsigned int gdbmFlags;
     char path[255];
     int goterr = 0;
 
-    rpmdb->rpmdbError = RPMDB_NONE;
+    oldrpmdb->rpmdbError = RPMDB_NONE;
 
     gdbmFlags = GDBM_READER;
 
     strcpy(path, prefix);
     strcat(path, "/packages");
-    rpmdb->packages = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
-    if (!rpmdb->packages) {
+    oldrpmdb->packages = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
+    if (!oldrpmdb->packages) {
 	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
     strcpy(path, prefix);
     strcat(path, "/nameidx");
-    rpmdb->nameIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
-    if (!rpmdb->packages) {
+    oldrpmdb->nameIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
+    if (!oldrpmdb->packages) {
 	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
     strcpy(path, prefix);
     strcat(path, "/pathidx");
-    rpmdb->pathIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
-    if (!rpmdb->packages) {
+    oldrpmdb->pathIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
+    if (!oldrpmdb->packages) {
 	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
     strcpy(path, prefix);
     strcat(path, "/iconidx");
-    rpmdb->iconIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
-    if (!rpmdb->iconIndex) {
+    oldrpmdb->iconIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
+    if (!oldrpmdb->iconIndex) {
 	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
     strcpy(path, prefix);
     strcat(path, "/groupindex");
-    rpmdb->groupIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
-    if (!rpmdb->packages) {
+    oldrpmdb->groupIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
+    if (!oldrpmdb->packages) {
 	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
     strcpy(path, prefix);
     strcat(path, "/postidx");
-    rpmdb->postIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
-    if (!rpmdb->postIndex) {
+    oldrpmdb->postIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
+    if (!oldrpmdb->postIndex) {
 	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
     if (goterr) {
-	rpmdbClose(rpmdb);
+	oldrpmdbClose(oldrpmdb);
 	return -1;
     }
 
     return 0;
 }
 
-void rpmdbClose(struct rpmdb * rpmdb) {
-    gdbm_close(rpmdb->packages);
-    gdbm_close(rpmdb->nameIndex);
-    gdbm_close(rpmdb->pathIndex);
-    gdbm_close(rpmdb->postIndex);
-    gdbm_close(rpmdb->groupIndex);
-    gdbm_close(rpmdb->iconIndex);
+void oldrpmdbClose(struct oldrpmdb * oldrpmdb) {
+    gdbm_close(oldrpmdb->packages);
+    gdbm_close(oldrpmdb->nameIndex);
+    gdbm_close(oldrpmdb->pathIndex);
+    gdbm_close(oldrpmdb->postIndex);
+    gdbm_close(oldrpmdb->groupIndex);
+    gdbm_close(oldrpmdb->iconIndex);
 }
 
-struct rpmdbLabel * rpmdbGetAllLabels(struct rpmdb * rpmdb) {
+struct oldrpmdbLabel * oldrpmdbGetAllLabels(struct oldrpmdb * oldrpmdb) {
     datum rec;
 
-    struct rpmdbLabel * head = NULL;
-    struct rpmdbLabel * tail = NULL;
-    struct rpmdbLabel * label;
+    struct oldrpmdbLabel * head = NULL;
+    struct oldrpmdbLabel * tail = NULL;
+    struct oldrpmdbLabel * label;
 
-    rpmdb->rpmdbError = RPMDB_NONE;
+    oldrpmdb->rpmdbError = RPMDB_NONE;
 
-    rec = gdbm_firstkey(rpmdb->packages);
+    rec = gdbm_firstkey(oldrpmdb->packages);
     while (rec.dptr) {
-	label = malloc(sizeof(struct rpmdbLabel));
+	label = malloc(sizeof(struct oldrpmdbLabel));
 	if (!label) {
-	    rpmdbFreeLabelList(head);
-	    rpmdb->rpmdbError = RPMDB_NO_MEMORY;
+	    oldrpmdbFreeLabelList(head);
+	    oldrpmdb->rpmdbError = RPMDB_NO_MEMORY;
 	    return NULL;
 	}
-	if (rpmdbLabelstrToLabel(rec.dptr, rec.dsize, label)) {
+	if (oldrpmdbLabelstrToLabel(rec.dptr, rec.dsize, label)) {
 	    free(label);
-	    rpmdbFreeLabelList(head);
-	    rpmdb->rpmdbError = RPMDB_NO_MEMORY;
+	    oldrpmdbFreeLabelList(head);
+	    oldrpmdb->rpmdbError = RPMDB_NO_MEMORY;
 	    return NULL;
 	}
 
@@ -239,28 +239,28 @@ struct rpmdbLabel * rpmdbGetAllLabels(struct rpmdb * rpmdb) {
 	    tail = tail->next;
 	}
 
-	rec = gdbm_nextkey(rpmdb->packages, rec);
+	rec = gdbm_nextkey(oldrpmdb->packages, rec);
     }
 
     return head;
 }
 
-struct rpmdbLabel * rpmdbFindPackagesByFile(struct rpmdb * rpmdb, char * path) {
+struct oldrpmdbLabel * oldrpmdbFindPackagesByFile(struct oldrpmdb * oldrpmdb, char * path) {
     datum rec;
     datum key;
-    struct rpmdbLabel * list;
+    struct oldrpmdbLabel * list;
 
-    rpmdb->rpmdbError = RPMDB_NONE;
+    oldrpmdb->rpmdbError = RPMDB_NONE;
 
     key.dptr = path;
     key.dsize = strlen(path);
-    rec = gdbm_fetch(rpmdb->pathIndex, key);
+    rec = gdbm_fetch(oldrpmdb->pathIndex, key);
     
     if (!rec.dptr) 
 	return NULL;
     if (labelstrlistToLabelList(rec.dptr, rec.dsize, &list)) {
 	free(rec.dptr);
-	rpmdb->rpmdbError = RPMDB_NO_MEMORY;
+	oldrpmdb->rpmdbError = RPMDB_NO_MEMORY;
 	return NULL;
     }
     free(rec.dptr);
@@ -268,8 +268,8 @@ struct rpmdbLabel * rpmdbFindPackagesByFile(struct rpmdb * rpmdb, char * path) {
     return list;
 }
 
-struct rpmdbLabel * rpmdbFindPackagesByLabel(struct rpmdb * rpmdb, 
-					     struct rpmdbLabel label)
+struct oldrpmdbLabel * oldrpmdbFindPackagesByLabel(struct oldrpmdb * oldrpmdb, 
+					     struct oldrpmdbLabel label)
 
 /* the Name has to be here. The version/release fields optionally
    restrict the search. Either will do. */
@@ -277,22 +277,22 @@ struct rpmdbLabel * rpmdbFindPackagesByLabel(struct rpmdb * rpmdb,
 {
     datum rec;
     datum key;
-    struct rpmdbLabel * list;
-    struct rpmdbLabel * prospect;
-    struct rpmdbLabel * parent;
+    struct oldrpmdbLabel * list;
+    struct oldrpmdbLabel * prospect;
+    struct oldrpmdbLabel * parent;
     int bad;
 
-    rpmdb->rpmdbError = RPMDB_NONE;
+    oldrpmdb->rpmdbError = RPMDB_NONE;
 
     key.dptr = label.name;
     key.dsize = strlen(label.name);
-    rec = gdbm_fetch(rpmdb->nameIndex, key);
+    rec = gdbm_fetch(oldrpmdb->nameIndex, key);
     
     if (!rec.dptr) 
 	return NULL;
     if (labelstrlistToLabelList(rec.dptr, rec.dsize, &list)) {
 	free(rec.dptr);
-	rpmdb->rpmdbError = RPMDB_NO_MEMORY;
+	oldrpmdb->rpmdbError = RPMDB_NO_MEMORY;
 	return NULL;
     }
     free(rec.dptr);
@@ -307,7 +307,7 @@ struct rpmdbLabel * rpmdbFindPackagesByLabel(struct rpmdb * rpmdb,
 	    bad = 1;
 
 	if (bad) {
-	    rpmdbFreeLabel(*prospect);
+	    oldrpmdbFreeLabel(*prospect);
 	    if (!parent) {
 		list = prospect->next;
 		free(prospect);
@@ -325,9 +325,9 @@ struct rpmdbLabel * rpmdbFindPackagesByLabel(struct rpmdb * rpmdb,
     return list;
 }
 
-struct rpmdbLabel rpmdbMakeLabel(char * name, char * version, char * release,
-				 int fileNumber, enum rpmdbFreeType freeType) {
-    struct rpmdbLabel label;
+struct oldrpmdbLabel oldrpmdbMakeLabel(char * name, char * version, char * release,
+				 int fileNumber, enum oldrpmdbFreeType freeType) {
+    struct oldrpmdbLabel label;
 
     label.next = NULL;
     label.freeType = freeType;
@@ -339,18 +339,18 @@ struct rpmdbLabel rpmdbMakeLabel(char * name, char * version, char * release,
     return label;
 }
 
-void rpmdbFreeLabelList(struct rpmdbLabel * list) {
-    struct rpmdbLabel * saved;
+void oldrpmdbFreeLabelList(struct oldrpmdbLabel * list) {
+    struct oldrpmdbLabel * saved;
 
     while (list) {
-	rpmdbFreeLabel(*list);
+	oldrpmdbFreeLabel(*list);
 	saved = list->next;
 	free(list);
 	list = saved;
     }
 }
 
-void rpmdbFreeLabel(struct rpmdbLabel label) {
+void oldrpmdbFreeLabel(struct oldrpmdbLabel label) {
     if (label.freeType == RPMDB_NOFREE) return;
 
     free(label.name);
@@ -361,14 +361,14 @@ void rpmdbFreeLabel(struct rpmdbLabel label) {
 }
 
 /* Returns NULL on error */
-char * rpmdbGetPackageGroup(struct rpmdb * rpmdb, struct rpmdbLabel label) {
+char * oldrpmdbGetPackageGroup(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel label) {
     datum key, rec;
     char * g;
     
     key.dptr = label.name;
     key.dsize = strlen(label.name);
     
-    rec = gdbm_fetch(rpmdb->groupIndex, key);
+    rec = gdbm_fetch(oldrpmdb->groupIndex, key);
     if (!rec.dptr) {
 	return strdup("Unknown");
     }
@@ -382,17 +382,17 @@ char * rpmdbGetPackageGroup(struct rpmdb * rpmdb, struct rpmdbLabel label) {
 }
 
 /* Returns NULL on error or if no icon exists */
-char * rpmdbGetPackageGif(struct rpmdb * rpmdb, struct rpmdbLabel label,
+char * oldrpmdbGetPackageGif(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel label,
 			  int * size) {
     datum key, rec;
     char * labelstr;
 
-    labelstr = rpmdbLabelToLabelstr(label, 0);
+    labelstr = oldrpmdbLabelToLabelstr(label, 0);
     
     key.dptr = labelstr;
     key.dsize = strlen(labelstr);
     
-    rec = gdbm_fetch(rpmdb->iconIndex, key);
+    rec = gdbm_fetch(oldrpmdb->iconIndex, key);
     free(labelstr);
     if (!rec.dptr) {
 	return NULL;
@@ -404,22 +404,22 @@ char * rpmdbGetPackageGif(struct rpmdb * rpmdb, struct rpmdbLabel label,
 }
 
 /* return 0 on success, 1 on failure */
-int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
-			struct rpmdbPackageInfo * pinfo) {
+int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel label,
+			struct oldrpmdbPackageInfo * pinfo) {
     char * labelstr;
     char ** list, ** prelist;
     char ** strptr;
     datum key, rec;
     int i, j;
 
-    labelstr = rpmdbLabelToLabelstr(label, 0);
+    labelstr = oldrpmdbLabelToLabelstr(label, 0);
 
     message(MESS_DEBUG, "pulling %s from database\n", labelstr);
 
     key.dptr = labelstr;
     key.dsize = strlen(labelstr);
     
-    rec = gdbm_fetch(rpmdb->packages, key);
+    rec = gdbm_fetch(oldrpmdb->packages, key);
     if (!rec.dptr) {
 	error(RPMERR_OLDDBCORRUPT, "package not found in database");
 	return 1;
@@ -499,7 +499,7 @@ int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
     return 0;
 }
 
-void rpmdbFreePackageInfo(struct rpmdbPackageInfo package) {
+void oldrpmdbFreePackageInfo(struct oldrpmdbPackageInfo package) {
     int i;
 
     free(package.version);
@@ -520,7 +520,7 @@ void rpmdbFreePackageInfo(struct rpmdbPackageInfo package) {
     free(package.files);
 }
 
-int rpmdbLabelCmp(struct rpmdbLabel * one, struct rpmdbLabel * two) {
+int oldrpmdbLabelCmp(struct oldrpmdbLabel * one, struct oldrpmdbLabel * two) {
     int i;
 
     if ((i = strcmp(one->name, two->name)))
@@ -531,6 +531,6 @@ int rpmdbLabelCmp(struct rpmdbLabel * one, struct rpmdbLabel * two) {
 	return strcmp(one->release, two->release);
 }
 
-void rpmdbSetPrefix(char * new) {
+void oldrpmdbSetPrefix(char * new) {
     prefix = new;
 }

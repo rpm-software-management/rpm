@@ -47,11 +47,11 @@ int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
 }
 
 int convertDB(char * dbprefix) {
-    struct rpmdb olddb;
+    struct oldrpmdb olddb;
     dbIndex * nameIndex, * fileIndex, * groupIndex;
     faFile pkgs;
-    struct rpmdbLabel * packageLabels, * label;
-    struct rpmdbPackageInfo package;
+    struct oldrpmdbLabel * packageLabels, * label;
+    struct oldrpmdbPackageInfo package;
     Header dbentry;
     unsigned int dboffset;
     char * group;
@@ -70,7 +70,7 @@ int convertDB(char * dbprefix) {
     char * fileStatesList;
     int i;
     
-    if (rpmdbOpen(&olddb)) {
+    if (oldrpmdbOpen(&olddb)) {
 	error(RPMERR_OLDDBMISSING, "");
 	return 0;
     }
@@ -91,30 +91,30 @@ int convertDB(char * dbprefix) {
 
     pkgs = faOpen("/var/lib/rpm/packages.rpm", O_RDWR | O_CREAT, 0644);
     if (!pkgs) {
-	rpmdbClose(&olddb);
+	oldrpmdbClose(&olddb);
 	error(RPMERR_DBOPEN, "failed to create /var/lib/rpm/packages.rpm");
 	return 0;
     }
 
     nameIndex = fileIndex = groupIndex = NULL;
     nameIndex = openDBIndex("/var/lib/rpm/nameindex.rpm", 
-				O_RDWR | O_CREAT, 0644);
+				O_RDWR | O_CREAT | O_EXCL, 0644);
     groupIndex = openDBIndex("/var/lib/rpm/groupindex.rpm",
-				O_RDWR | O_CREAT, 0644);
+				O_RDWR | O_CREAT | O_EXCL, 0644);
     fileIndex = openDBIndex("/var/lib/rpm/fileindex.rpm",
-				O_RDWR | O_CREAT, 0644);
+				O_RDWR | O_CREAT | O_EXCL, 0644);
 
     if (!nameIndex || !groupIndex || !fileIndex) {
 	nameIndex ? closeDBIndex(nameIndex) : 0;
 	groupIndex ? closeDBIndex(groupIndex) : 0;
 	fileIndex ? closeDBIndex(fileIndex) : 0;
 
-	rpmdbClose(&olddb);
+	oldrpmdbClose(&olddb);
 	error(RPMERR_DBOPEN, "failed to create index files in /var/lib/rpm");
 	return 0;
     }
 
-    packageLabels = rpmdbGetAllLabels(&olddb);
+    packageLabels = oldrpmdbGetAllLabels(&olddb);
     if (!packageLabels) {
 	error(RPMERR_OLDDBCORRUPT, "");
 	faClose(pkgs);
@@ -122,17 +122,17 @@ int convertDB(char * dbprefix) {
 	closeDBIndex(groupIndex);
 	closeDBIndex(fileIndex);
 	unlink("/var/lib/rpm/packages.rpm");
-	rpmdbClose(&olddb);
+	oldrpmdbClose(&olddb);
 	return 0;
     }
 
     for (label = packageLabels; label; label = label->next) {
-	if (rpmdbGetPackageInfo(&olddb, *label, &package)) {
-	    printf("rpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n", &olddb, olddb.packages);
+	if (oldrpmdbGetPackageInfo(&olddb, *label, &package)) {
+	    printf("oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n", &olddb, olddb.packages);
 	    exit(1);
 	}
 
-	group = rpmdbGetPackageGroup(&olddb, *label);
+	group = oldrpmdbGetPackageGroup(&olddb, *label);
 
 	dbentry = newHeader();
 	addEntry(dbentry, RPMTAG_NAME, STRING_TYPE, package.name, 1);
@@ -151,7 +151,7 @@ int convertDB(char * dbprefix) {
 	addEntry(dbentry, RPMTAG_COPYRIGHT, STRING_TYPE, package.copyright, 1);
 	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, group, 1);
 
-	gif = rpmdbGetPackageGif(&olddb, *label, &gifSize);
+	gif = oldrpmdbGetPackageGif(&olddb, *label, &gifSize);
 	if (gif) {
 	    /*addEntry(dbentry, RPMTAG_GIF, BIN_TYPE, gif, gifSize);*/
 	    free(gif);
@@ -250,10 +250,10 @@ int convertDB(char * dbprefix) {
 	free(group);
 	freeHeader(dbentry);
 
-	rpmdbFreePackageInfo(package);
+	oldrpmdbFreePackageInfo(package);
     }
 
-    rpmdbClose(&olddb);
+    oldrpmdbClose(&olddb);
     faClose(pkgs);
 
     closeDBIndex(nameIndex);

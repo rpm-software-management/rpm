@@ -1,13 +1,15 @@
-#ifndef _H_RPMDB
-#define _H_RPMDB
+#ifndef _H_OLDRPMDB
+#define _H_OLDRPMDB
 
 #include <gdbm.h>
 
 #include "oldrpmfile.h"
 
-typedef enum { RPMDB_NONE, RPMDB_GDBM_ERROR, RPMDB_NO_MEMORY } rpm_error;
+typedef enum {
+    RPMDB_NONE, RPMDB_GDBM_ERROR, RPMDB_NO_MEMORY
+} rpm_error;
 
-struct rpmdb {
+struct oldrpmdb {
     GDBM_FILE packages;
     GDBM_FILE nameIndex;
     GDBM_FILE pathIndex;
@@ -18,56 +20,58 @@ struct rpmdb {
     gdbm_error gdbmError;
 };
 
-enum rpmdbFreeType { RPMDB_NOFREE, RPMDB_FREENAME, RPMDB_FREEALL } ;
-
-struct rpmdbLabel {
-    char * name, * version, * release;
-    enum rpmdbFreeType freeType;
-    struct rpmdbLabel * next;
-    int fileNumber;                     /* -1 means invalid */
+enum oldrpmdbFreeType {
+    RPMDB_NOFREE, RPMDB_FREENAME, RPMDB_FREEALL
 };
 
-struct rpmdbPackageInfo {
-    char * name, * version, * release;
-    char * labelstr;
+struct oldrpmdbLabel {
+    char *name, *version, *release;
+    enum oldrpmdbFreeType freeType;
+    struct oldrpmdbLabel *next;
+    int fileNumber;		/* -1 means invalid */
+};
+
+struct oldrpmdbPackageInfo {
+    char *name, *version, *release;
+    char *labelstr;
     unsigned int installTime, buildTime;
     unsigned int size;
-    char * description;
-    char * distribution;
-    char * vendor;
-    char * buildHost;
-    char * preamble;
-    char * copyright;
+    char *description;
+    char *distribution;
+    char *vendor;
+    char *buildHost;
+    char *preamble;
+    char *copyright;
     unsigned int fileCount;
-    struct rpmFileInfo * files;
-} ;
+    struct rpmFileInfo *files;
+};
 
 #define RPMDB_READER 1
 
-int rpmdbOpen(struct rpmdb * rpmdb);
-void rpmdbClose(struct rpmdb * rpmdb);
-struct rpmdbLabel * rpmdbGetAllLabels(struct rpmdb * rpmdb);
-struct rpmdbLabel * rpmdbFindPackagesByFile(struct rpmdb * rpmdb, char * path);
-struct rpmdbLabel * rpmdbFindPackagesByLabel(struct rpmdb * rpmdb, 
-					     struct rpmdbLabel label);
+int oldrpmdbOpen (struct oldrpmdb *oldrpmdb);
+void oldrpmdbClose (struct oldrpmdb *oldrpmdb);
+struct oldrpmdbLabel *oldrpmdbGetAllLabels (struct oldrpmdb *oldrpmdb);
+struct oldrpmdbLabel *oldrpmdbFindPackagesByFile (struct oldrpmdb *oldrpmdb, char *path);
+struct oldrpmdbLabel *oldrpmdbFindPackagesByLabel (struct oldrpmdb *oldrpmdb,
+						struct oldrpmdbLabel label);
 
-char * rpmdbGetPackageGroup(struct rpmdb * rpmdb, struct rpmdbLabel label);
-char * rpmdbGetPackageGif(struct rpmdb * rpmdb, struct rpmdbLabel label,
-			  int * size);
-int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
-			struct rpmdbPackageInfo * pinfo);
-void rpmdbFreePackageInfo(struct rpmdbPackageInfo package);
+char *oldrpmdbGetPackageGroup (struct oldrpmdb *oldrpmdb, struct oldrpmdbLabel label);
+char *oldrpmdbGetPackageGif (struct oldrpmdb *oldrpmdb, struct oldrpmdbLabel label,
+			     int *size);
+int oldrpmdbGetPackageInfo (struct oldrpmdb *oldrpmdb, struct oldrpmdbLabel label,
+			    struct oldrpmdbPackageInfo *pinfo);
+void oldrpmdbFreePackageInfo (struct oldrpmdbPackageInfo package);
 
-struct rpmdbLabel rpmdbMakeLabel(char * name, char * version, char * release,
-				 int fileNumber, enum rpmdbFreeType freeType);
-void rpmdbFreeLabelList(struct rpmdbLabel * list);
-void rpmdbFreeLabel(struct rpmdbLabel label);
-int rpmdbWasError(struct rpmdb * rpmdb);
+struct oldrpmdbLabel oldrpmdbMakeLabel (char *name, char *version, char *release,
+			    int fileNumber, enum oldrpmdbFreeType freeType);
+void oldrpmdbFreeLabelList (struct oldrpmdbLabel *list);
+void oldrpmdbFreeLabel (struct oldrpmdbLabel label);
+int oldrpmdbWasError (struct oldrpmdb *oldrpmdb);
 
-int rpmdbLabelstrToLabel(char * str, int length, struct rpmdbLabel * label);
-char * rpmdbLabelToLabelstr(struct rpmdbLabel label, int withFileNum);
-int rpmdbLabelCmp(struct rpmdbLabel * one, struct rpmdbLabel * two);
+int oldrpmdbLabelstrToLabel (char *str, int length, struct oldrpmdbLabel *label);
+char *oldrpmdbLabelToLabelstr (struct oldrpmdbLabel label, int withFileNum);
+int oldrpmdbLabelCmp (struct oldrpmdbLabel *one, struct oldrpmdbLabel *two);
 
-void rpmdbSetPrefix(char * new);
+void oldrpmdbSetPrefix (char *new);
 
 #endif
