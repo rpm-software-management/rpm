@@ -267,16 +267,17 @@ char *__progname;
 
 /* ============== from misc/miscfn.h */
 
+#if !defined(USE_GNU_GLOB)
 #if HAVE_FNMATCH_H
 #include <fnmatch.h>
-#else
-#include "misc/fnmatch.h"
 #endif
 
 #if HAVE_GLOB_H
 #include <glob.h>
+#endif
 #else
 #include "misc/glob.h"
+#include "misc/fnmatch.h"
 #endif
 
 #if ! HAVE_S_IFSOCK

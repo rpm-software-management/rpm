@@ -20,106 +20,13 @@
  #pragma alloca
 #endif
 
-#ifdef  HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "system.h"
 
-/* Enable GNU extensions in glob.h.  */
-#ifndef _GNU_SOURCE
-# define _GNU_SOURCE	1
-#endif
+# include <assert.h>
 
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-/* Outcomment the following line for production quality code.  */
-/* #define NDEBUG 1 */
-#include <assert.h>
-
-#include <stdio.h>		/* Needed on stupid SunOS for assert.  */
-
-
-/* Comment out all this code if we are using the GNU C Library, and are not
-   actually compiling the library itself.  This code is part of the GNU C
-   Library, but also included in many other GNU distributions.  Compiling
-   and linking in this code is a waste when using the GNU C library
-   (especially if it is a shared library).  Rather than having every GNU
-   program understand `configure --with-gnu-libc' and omit the object files,
-   it is simpler to just do this in the source for each such file.  */
-
-#define GLOB_INTERFACE_VERSION 1
-#if !defined _LIBC && defined __GNU_LIBRARY__ && __GNU_LIBRARY__ > 1
-# include <gnu-versions.h>
-# if _GNU_GLOB_INTERFACE_VERSION == GLOB_INTERFACE_VERSION
-#  define ELIDE_CODE
-# endif
-#endif
-
-#ifndef ELIDE_CODE
-
-#if defined STDC_HEADERS || defined __GNU_LIBRARY__
-# include <stddef.h>
-#endif
-
-#if defined HAVE_UNISTD_H || defined _LIBC
-# include <unistd.h>
-# ifndef POSIX
-#  ifdef _POSIX_VERSION
-#   define POSIX
-#  endif
-# endif
-#endif
-
-#if !defined _AMIGA && !defined VMS && !defined WINDOWS32
-# include <pwd.h>
-#endif
-
-#if !defined __GNU_LIBRARY__ && !defined STDC_HEADERS
-extern int errno;
-#endif
-#ifndef __set_errno
-# define __set_errno(val) errno = (val)
-#endif
-
-#ifndef	NULL
-# define NULL	0
-#endif
-
-
-#if defined HAVE_DIRENT_H || defined __GNU_LIBRARY__
-# include <dirent.h>
-# define NAMLEN(dirent) strlen((dirent)->d_name)
-#else
-# define dirent direct
-# define NAMLEN(dirent) (dirent)->d_namlen
-# ifdef HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif
-# ifdef HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif
-# ifdef HAVE_NDIR_H
-#  include <ndir.h>
-# endif
-# ifdef HAVE_VMSDIR_H
-#  include "vmsdir.h"
-# endif /* HAVE_VMSDIR_H */
-#endif
-
-
-/* In GNU systems, <dirent.h> defines this macro for us.  */
-#ifdef _D_NAMLEN
-# undef NAMLEN
-# define NAMLEN(d) _D_NAMLEN(d)
-#endif
-
-/* When used in the GNU libc the symbol _DIRENT_HAVE_D_TYPE is available
-   if the `d_type' member for `struct dirent' is available.  */
-#ifdef _DIRENT_HAVE_D_TYPE
-# define HAVE_D_TYPE	1
-#endif
-
+#define	__alloca	alloca
+#define	__stat		stat
+#define	NAMLEN(_d)	NLENGTH(_d)
 
 #if (defined POSIX || defined WINDOWS32) && !defined __GNU_LIBRARY__
 /* Posix does not require that the d_ino field be present, and some
@@ -129,169 +36,12 @@ extern int errno;
 # define REAL_DIR_ENTRY(dp) (dp->d_ino != 0)
 #endif /* POSIX */
 
-#if defined STDC_HEADERS || defined __GNU_LIBRARY__
-# include <stdlib.h>
-# include <string.h>
-# define	ANSI_STRING
-#else	/* No standard headers.  */
+/* Outcomment the following line for production quality code.  */
+/* #define NDEBUG 1 */
 
-extern char *getenv ();
+#define GLOB_INTERFACE_VERSION 1
 
-# ifdef HAVE_STRING_H
-#  include <string.h>
-#  define ANSI_STRING
-# else
-#  include <strings.h>
-# endif
-# ifdef	HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-
-extern char *malloc (), *realloc ();
-extern void free ();
-
-extern void qsort ();
-extern void abort (), exit ();
-
-#endif	/* Standard headers.  */
-
-#ifdef HAVE_GETLOGIN_R
-extern int getlogin_r __P ((char *, size_t));
-#else
-extern char *getlogin __P ((void));
-#endif
-
-#ifndef	ANSI_STRING
-
-# ifndef bzero
-extern void bzero ();
-# endif
-# ifndef bcopy
-extern void bcopy ();
-# endif
-
-# define memcpy(d, s, n)	bcopy ((s), (d), (n))
-# define strrchr	rindex
-/* memset is only used for zero here, but let's be paranoid.  */
-# define memset(s, better_be_zero, n) \
-  ((void) ((better_be_zero) == 0 ? (bzero((s), (n)), 0) : (abort(), 0)))
-#endif	/* Not ANSI_STRING.  */
-
-#if !defined HAVE_STRCOLL && !defined _LIBC
-# define strcoll	strcmp
-#endif
-
-#if !defined HAVE_MEMPCPY && __GLIBC__ - 0 == 2 && __GLIBC_MINOR__ >= 1
-# define HAVE_MEMPCPY	1
-# undef  mempcpy
-# define mempcpy(Dest, Src, Len) __mempcpy (Dest, Src, Len)
-#endif
-
-#ifndef	__GNU_LIBRARY__
-# ifdef	__GNUC__
-__inline
-# endif
-# ifndef __SASC
-#  ifdef WINDOWS32
-static void *
-#  else
-static char *
-# endif
-my_realloc (p, n)
-     char *p;
-     unsigned int n;
-{
-  /* These casts are the for sake of the broken Ultrix compiler,
-     which warns of illegal pointer combinations otherwise.  */
-  if (p == NULL)
-    return (char *) malloc (n);
-  return (char *) realloc (p, n);
-}
-# define	realloc	my_realloc
-# endif /* __SASC */
-#endif /* __GNU_LIBRARY__ */
-
-
-#if !defined __alloca && !defined __GNU_LIBRARY__
-
-# ifdef	__GNUC__
-#  undef alloca
-#  define alloca(n)	__builtin_alloca (n)
-# else	/* Not GCC.  */
-#  ifdef HAVE_ALLOCA_H
-#   include <alloca.h>
-#  else	/* Not HAVE_ALLOCA_H.  */
-#   ifndef _AIX
-#    ifdef WINDOWS32
-#     include <malloc.h>
-#    else
-extern char *alloca ();
-#    endif /* WINDOWS32 */
-#   endif /* Not _AIX.  */
-#  endif /* sparc or HAVE_ALLOCA_H.  */
-# endif	/* GCC.  */
-
-# define __alloca	alloca
-
-#endif
-
-#ifndef __GNU_LIBRARY__
-# define __stat stat
-# ifdef STAT_MACROS_BROKEN
-#  undef S_ISDIR
-# endif
-# ifndef S_ISDIR
-#  define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
-# endif
-#endif
-
-#ifdef _LIBC
-# undef strdup
-# define strdup(str) __strdup (str)
-# define sysconf(id) __sysconf (id)
-# define closedir(dir) __closedir (dir)
-# define opendir(name) __opendir (name)
-# define readdir(str) __readdir (str)
-# define getpwnam_r(name, bufp, buf, len, res) \
-   __getpwnam_r (name, bufp, buf, len, res)
-# ifndef __stat
-#  define __stat(fname, buf) __xstat (_STAT_VER, fname, buf)
-# endif
-#endif
-
-#if !(defined STDC_HEADERS || defined __GNU_LIBRARY__)
-# undef	size_t
-# define size_t	unsigned int
-#endif
-
-/* Some system header files erroneously define these.
-   We want our own definitions from <fnmatch.h> to take precedence.  */
-#ifndef __GNU_LIBRARY__
-# undef	FNM_PATHNAME
-# undef	FNM_NOESCAPE
-# undef	FNM_PERIOD
-#endif
-#include <fnmatch.h>
-
-/* Some system header files erroneously define these.
-   We want our own definitions from <glob.h> to take precedence.  */
-#ifndef __GNU_LIBRARY__
-# undef	GLOB_ERR
-# undef	GLOB_MARK
-# undef	GLOB_NOSORT
-# undef	GLOB_DOOFFS
-# undef	GLOB_NOCHECK
-# undef	GLOB_APPEND
-# undef	GLOB_NOESCAPE
-# undef	GLOB_PERIOD
-#endif
-#include <glob.h>
-
-static
-#if __GNUC__ - 0 >= 2
-inline
-#endif
-const char *next_brace_sub __P ((const char *begin));
+static inline const char *next_brace_sub __P ((const char *begin));
 static int glob_in_dir __P ((const char *pattern, const char *directory,
 			     int flags,
 			     int (*errfunc) (const char *, int),
@@ -302,11 +52,7 @@ static int collated_compare __P ((const __ptr_t, const __ptr_t));
 
 /* Find the end of the sub-pattern in a brace expression.  We define
    this as an inline function if the compiler permits.  */
-static
-#if __GNUC__ - 0 >= 2
-inline
-#endif
-const char *
+static inline const char *
 next_brace_sub (begin)
      const char *begin;
 {
@@ -344,6 +90,8 @@ next_brace_sub (begin)
 
   return cp;
 }
+
+static int __glob_pattern_p (const char *pattern, int quote);
 
 /* Do glob searching for PATTERN, placing results in PGLOB.
    The bits defined above may be set in FLAGS.
@@ -388,7 +136,7 @@ glob (pattern, flags, errfunc, pglob)
 #ifdef __GNUC__
 	  char onealt[strlen (pattern) - 1];
 #else
-	  char *onealt = (char *) malloc (strlen (pattern) - 1);
+	  char *onealt = (char *) xmalloc (strlen (pattern) - 1);
 	  if (onealt == NULL)
 	    {
 	      if (!(flags & GLOB_APPEND))
@@ -794,7 +542,7 @@ glob (pattern, flags, errfunc, pglob)
 	      && S_ISDIR (st.st_mode)))
 	{
 	  pglob->gl_pathv
-	    = (char **) realloc (pglob->gl_pathv,
+	    = (char **) xrealloc (pglob->gl_pathv,
 				 (pglob->gl_pathc +
 				  ((flags & GLOB_DOOFFS) ?
 				   pglob->gl_offs : 0) +
@@ -808,11 +556,11 @@ glob (pattern, flags, errfunc, pglob)
 	      pglob->gl_pathv[pglob->gl_pathc++] = NULL;
 
 #if defined HAVE_STRDUP || defined _LIBC
-	  pglob->gl_pathv[pglob->gl_pathc] = strdup (dirname);
+	  pglob->gl_pathv[pglob->gl_pathc] = xstrdup (dirname);
 #else
 	  {
 	    size_t len = strlen (dirname) + 1;
-	    char *dircopy = malloc (len);
+	    char *dircopy = xmalloc (len);
 	    if (dircopy != NULL)
 	      pglob->gl_pathv[pglob->gl_pathc] = memcpy (dircopy, dirname,
 							 len);
@@ -925,7 +673,7 @@ glob (pattern, flags, errfunc, pglob)
 
 	      /* This is an pessimistic guess about the size.  */
 	      pglob->gl_pathv
-		= (char **) realloc (pglob->gl_pathv,
+		= (char **) xrealloc (pglob->gl_pathv,
 				     (pglob->gl_pathc +
 				      ((flags & GLOB_DOOFFS) ?
 				       pglob->gl_offs : 0) +
@@ -953,7 +701,7 @@ glob (pattern, flags, errfunc, pglob)
 		    /* No directory, ignore this entry.  */
 		    continue;
 
-		  pglob->gl_pathv[pglob->gl_pathc] = malloc (dir_len + 1
+		  pglob->gl_pathv[pglob->gl_pathc] = xmalloc (dir_len + 1
 							     + filename_len);
 		  if (pglob->gl_pathv[pglob->gl_pathc] == NULL)
 		    {
@@ -980,7 +728,7 @@ glob (pattern, flags, errfunc, pglob)
 	      pglob->gl_flags = flags;
 
 	      /* Now we know how large the gl_pathv vector must be.  */
-	      new_pathv = (char **) realloc (pglob->gl_pathv,
+	      new_pathv = (char **) xrealloc (pglob->gl_pathv,
 					     ((pglob->gl_pathc + 1)
 					      * sizeof (char *)));
 	      if (new_pathv != NULL)
@@ -1028,7 +776,7 @@ glob (pattern, flags, errfunc, pglob)
 	    && S_ISDIR (st.st_mode))
 	  {
  	    size_t len = strlen (pglob->gl_pathv[i]) + 2;
-	    char *new = realloc (pglob->gl_pathv[i], len);
+	    char *new = xrealloc (pglob->gl_pathv[i], len);
  	    if (new == NULL)
 	      {
 		globfree (pglob);
@@ -1132,7 +880,7 @@ prefix_array (dirname, array, n)
   for (i = 0; i < n; ++i)
     {
       size_t eltlen = strlen (array[i]) + 1;
-      char *new = (char *) malloc (dirlen + 1 + eltlen);
+      char *new = (char *) xmalloc (dirlen + 1 + eltlen);
       if (new == NULL)
 	{
 	  while (i > 0)
@@ -1163,10 +911,8 @@ prefix_array (dirname, array, n)
 #if !defined _LIBC || !defined NO_GLOB_PATTERN_P
 /* Return nonzero if PATTERN contains any metacharacters.
    Metacharacters can be quoted with backslashes if QUOTE is nonzero.  */
-int
-__glob_pattern_p (pattern, quote)
-     const char *pattern;
-     int quote;
+static int
+__glob_pattern_p (const char *pattern, int quote)
 {
   register const char *p;
   int open = 0;
@@ -1268,7 +1014,7 @@ glob_in_dir (pattern, directory, flags, errfunc, pglob)
 	  /* This is a special case for matching directories like in
 	     "*a/".  */
 	  names = (struct globlink *) __alloca (sizeof (struct globlink));
-	  names->name = (char *) malloc (1);
+	  names->name = (char *) xmalloc (1);
 	  if (names->name == NULL)
 	    goto memory_error;
 	  names->name[0] = '\0';
@@ -1328,7 +1074,7 @@ glob_in_dir (pattern, directory, flags, errfunc, pglob)
 		      struct globlink *new = (struct globlink *)
 			__alloca (sizeof (struct globlink));
 		      len = NAMLEN (d);
-		      new->name = (char *) malloc (len + 1);
+		      new->name = (char *) xmalloc (len + 1);
 		      if (new->name == NULL)
 			goto memory_error;
 #ifdef HAVE_MEMPCPY
@@ -1353,7 +1099,7 @@ glob_in_dir (pattern, directory, flags, errfunc, pglob)
       nfound = 1;
       names = (struct globlink *) __alloca (sizeof (struct globlink));
       names->next = NULL;
-      names->name = (char *) malloc (len + 1);
+      names->name = (char *) xmalloc (len + 1);
       if (names->name == NULL)
 	goto memory_error;
 #ifdef HAVE_MEMPCPY
@@ -1367,7 +1113,7 @@ glob_in_dir (pattern, directory, flags, errfunc, pglob)
   if (nfound != 0)
     {
       pglob->gl_pathv
-	= (char **) realloc (pglob->gl_pathv,
+	= (char **) xrealloc (pglob->gl_pathv,
 			     (pglob->gl_pathc +
 			      ((flags & GLOB_DOOFFS) ? pglob->gl_offs : 0) +
 			      nfound + 1) *
@@ -1415,5 +1161,3 @@ glob_in_dir (pattern, directory, flags, errfunc, pglob)
     }
   return GLOB_NOSPACE;
 }
-
-#endif	/* Not ELIDE_CODE.  */

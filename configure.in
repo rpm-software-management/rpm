@@ -404,7 +404,7 @@ dnl whether or not we should try to build rpmgettext/rpmputtext.
 if test X"$USE_NLS" = Xyes; then
     BUILD_RPMNLSTOOLS="rpmgettext rpmputtext"
     if test X"$USE_INCLUDED_LIBINTL" = Xyes; then
-	INCPATH="$INCPATH -I\$(top_builddir)/intl"
+	INCPATH="-I\$(top_builddir)/intl $INCPATH"
     fi
 else
     BUILD_RPMNLSTOOLS=
@@ -644,23 +644,26 @@ dnl     LIBOBJS="$LIBOBJS regex.o"
 dnl fi
 
 dnl
-dnl XXX Glob may be broken on solaris and aix when %files gets something like
-dnl	/usr/share/locale/*/LC_MESSAGES/*.mo
-dnl (Note: two asterisks in glob pattern.)
+dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
+dnl %files gets something like
+dnl	/usr/*/locale/*/LC_MESSAGES/*.mo
+dnl (Note: more than one asterisk in glob pattern.)
+dnl The next version of rpm is going to need GNU extensions anyways, so ...
 dnl
 AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
     [rpm_cv_glob=yes],
     [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
 
 if test $rpm_cv_glob = no ; then
-    AC_MSG_CHECKING(whether the glob library is broken)
+    AC_MSG_CHECKING(for GNU extensions to glob)
     AC_TRY_RUN([
 #include <unistd.h>
+#include <sys/stat.h>
 #include <glob.h>
-main() { glob_t blah ; exit(glob("doc/*/*.8", 0, NULL, &blah) || blah.gl_pathc < 1); } ],
-    rpm_cv_glob_broken=no, rpm_cv_glob_broken=yes, rpm_cv_glob_broken=yes)
-    AC_MSG_RESULT([$rpm_cv_glob_broken])
-    if test $rpm_cv_glob_broken = yes ; then
+main() { glob_t blah ; blah.stat = stat; exit(glob("doc/*/*.8", 0, NULL, &blah) || blah.gl_pathc < 1); } ],
+    rpm_cv_glob_ext=yes, rpm_cv_glob_ext=no, rpm_cv_glob_ext=no)
+    AC_MSG_RESULT([$rpm_cv_glob_ext])
+    if test $rpm_cv_glob_ext = no ; then
 	    echo "    --> using the included GNU glob instead." >&AC_FD_MSG
 	    rpm_cv_glob=yes
     fi
@@ -668,7 +671,7 @@ fi
 
 if test $rpm_cv_glob = yes; then
     AC_DEFINE(USE_GNU_GLOB)
-    LIBOBJS="$LIBOBJS glob.o"
+    LIBOBJS="$LIBOBJS glob.o fnmatch.o"
 fi
 
 AC_CHECK_FUNCS(setlocale)
@@ -912,7 +915,7 @@ dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
 AC_SUBST(testdir)
 
 if test -n "$LIBOBJS"; then
-    INCPATH="$INCPATH -I\$(top_builddir)/misc"
+    INCPATH="-I\$(top_builddir)/misc $INCPATH"
 fi
 AC_SUBST(INCPATH)
 

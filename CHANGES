@@ -69,8 +69,9 @@
 	- portability: always include arpa/inet.h (HP-UX).
 	- portability: don't use id -u (Brandon Allbery).
 	- portability: don't chown/chgrp -h w/o lchown.
-	- portability: splats in rpm.spec to find /usr/{share,local}/locale/*
+	- portability: splats in rpm.spec to find /usr/{share,lib}/locale/* .
 	- fix: better filter in linux.req to avoid ARM specific objdump output.
+	- fix: use glibc 2.1 glob/fnmatch everywhere.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
