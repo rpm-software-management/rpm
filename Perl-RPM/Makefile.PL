@@ -19,12 +19,15 @@ $OBJECT = join(' ', @OBJECT);
             ($from, "\$(INST_LIBDIR)/$from"); } (sort keys %XS);
 $PM{q(RPM/Error.pm)} = '$(INST_LIBDIR)/RPM/Error.pm';
 
+@SAMPLES = qw(utils/rpmprune);
+%PL_SCRIPTS = map { sprintf("%s.PL", $_) => "$_" } @SAMPLES;
+
 # This shouldn't be necessary, I don't think, but for now it is
 unlink 'RPM/typemap';
 symlink '../typemap', 'RPM/typemap';
 
 # Cruft that MakeMaker wouldn't inherently know about
-$CLEAN = join(' ', values %XS) . " $OBJECT";
+$CLEAN = join(' ', values %XS) . " $OBJECT @SAMPLES";
 $CLEAN .= ' pod2html-* */pod2html-* *.html */*.html RPM/typemap';
 
 #
@@ -46,6 +49,8 @@ WriteMakefile(
               DEFINE       => '',
               PM           => \%PM,
               XS           => \%XS,
+	      PL_FILES     => \%PL_SCRIPTS,
+	      EXE_FILES    => [ @SAMPLES ],
               OBJECT       => $OBJECT,
               INC          => '-I/usr/include/rpm',
               DIR          => [],
