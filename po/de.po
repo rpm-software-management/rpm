@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-12-08 13:59-0500\n"
+"POT-Creation-Date: 1999-12-10 10:36-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3605,27 +3605,27 @@ msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 
 # , c-format
-#: lib/transaction.c:387
+#: lib/transaction.c:389
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/transaction.c:413 lib/transaction.c:497
+#: lib/transaction.c:415 lib/transaction.c:499
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/transaction.c:418
+#: lib/transaction.c:420
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:490
+#: lib/transaction.c:492
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/transaction.c:641
+#: lib/transaction.c:643
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

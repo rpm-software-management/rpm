@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-08 13:59-0500\n"
+msgstr "POT-Creation-Date: 1999-12-10 10:36-0500\n"
 
 #: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
 #, c-format
@@ -3598,7 +3598,7 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/transaction.c:387
+#: lib/transaction.c:389
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "RPM versão %s\n"
@@ -3611,23 +3611,23 @@ msgstr "RPM versão %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/transaction.c:413 lib/transaction.c:497
+#: lib/transaction.c:415 lib/transaction.c:499
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "RPM versão %s\n"
 
-#: lib/transaction.c:418
+#: lib/transaction.c:420
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
 # , c-format
-#: lib/transaction.c:490
+#: lib/transaction.c:492
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/transaction.c:641
+#: lib/transaction.c:643
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
