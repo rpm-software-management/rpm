@@ -49,7 +49,7 @@ else
 fi
 AC_CHECK_FUNCS(strerror)
 AC_CHECK_FUNC(setreuid, [], [
-    AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lucb" USEUCB=y;fi])
+    AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])
 
 AC_OUTPUT(Makefile)

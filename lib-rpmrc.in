@@ -86,7 +86,7 @@ os_canon:       SCO_SV: SCO_SV3.2v5.0.2  9
 os_canon:	IRIX64: Irix64  10
 os_canon:     NEXTSTEP: NextStep 11
 os_canon:       BSD/OS: BSD_OS 12
-os_canon:       machten: machten 13
+os_canon:      machten: machten 13
 os_canon:  CYGWIN32_NT: cygwin32 14
 os_canon:  CYGWIN32_95: cygwin32 15
 
@@ -141,7 +141,8 @@ arch_compat: powerppc: ppc
 arch_compat: usparc: sparc
 arch_compat: sparc: noarch
 
-arch_compat: ppc: noarch
+arch_compat: ppc: rs6000
+arch_compat: rs6000: noarch
 arch_compat: mipseb: noarch
 arch_compat: mipsel: noarch
 

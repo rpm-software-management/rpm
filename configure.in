@@ -356,10 +356,20 @@ AC_CHECK_HEADERS(machine/types.h string.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h unistd.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
-AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
-AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
 AC_CHECK_HEADERS(fcntl.h grp.h malloc.h memory.h netdb.h pwd.h utime.h)
 AC_CHECK_HEADERS(sys/mman.h sys/param.h sys/resource.h sys/utsname.h sys/wait.h)
+
+# solaris2.4 and sinix 5.42 have broken fnmatch. get glob also to be safe.
+case $target in
+    *-*-solaris2.4|mips-sni-sysv4*) 
+	MISCOBJS="$MISCOBJS glob.o fnmatch.o"
+	;;
+    *)
+	AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
+	AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
+	;;
+esac
+
 AC_CHECK_HEADERS(db_185.h)
 
 if test "$PO" = po; then
