@@ -16,6 +16,7 @@
 	- add /usr/lib/rpm/rpmdeps.
 	- add /usr/lib/rpm/magic.
 	- fix: /dev/initctl has not MD5 segfault (#76718).
+	- rpm.8: gpg uses GNUPGHOME, not GPGPATH (#76691).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

@@ -485,6 +485,7 @@ exit 0
 %changelog
 * Fri Oct 25 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.6
 - fix: /dev/initctl has not MD5 segfault (#76718).
+- rpm.8: gpg uses GNUPGHOME, not GPGPATH (#76691).
 
 * Thu Oct 24 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.5
 - add /usr/lib/rpm/rpmdeps.
