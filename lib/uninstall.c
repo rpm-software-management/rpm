@@ -25,7 +25,7 @@
 #include "rpmlib.h"
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
-			                 "/usr/X11R6/bin\nexport PATH\n";
+			                 "/usr/X11R6/bin";
 
 enum fileActions { REMOVE, BACKUP, KEEP };
 
@@ -246,7 +246,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     rpmMessage(RPMMESS_DEBUG, "running preuninstall script (if any)\n");
 
     if (runScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
-		 flags & RPMUNINSTALL_NOSCRIPTS)) {
+		 flags & RPMUNINSTALL_NOSCRIPTS, 0)) {
 	headerFree(h);
 	return 1;
     }
@@ -306,7 +306,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
     rpmMessage(RPMMESS_DEBUG, "running postuninstall script (if any)\n");
     runScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
-		flags & RPMUNINSTALL_NOSCRIPTS);
+		flags & RPMUNINSTALL_NOSCRIPTS, 0);
 
     headerFree(h);
 
@@ -317,8 +317,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     return 0;
 }
 
-int runScript(char * prefix, Header h, int scriptTag, int progTag,
-	      int arg, int norunScripts) {
+int runScript(char * root, Header h, int scriptTag, int progTag,
+	      int arg, int norunScripts, int err) {
     char * script;
     char * fn;
     int fd = -1;
@@ -328,24 +328,40 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
     char upgradeArg[20];
     char * installPrefix = NULL;
     char * installPrefixEnv = NULL;
-    char * argv[10];
-    char ** argvPtr = argv;
     char * program;
+    char ** programArgv;
+    char ** argv = NULL;
+    int programArgc;
+    int programType = 0;
     int pipes[2];
-
-    sprintf(upgradeArg, "%d", arg);
+    int out = 0;
 
     if (norunScripts) return 0;
 
-    /* headerGetEntry() sets the data pointer to NULL if the entry doesn
+    sprintf(upgradeArg, "%d", arg);
+
+    /* headerGetEntry() sets the data pointer to NULL if the entry does
        not exist */
-    headerGetEntry(h, progTag, NULL, (void **) &program, NULL);
+    headerGetEntry(h, progTag, &programType, (void **) &programArgv,
+		   &programArgc);
     headerGetEntry(h, scriptTag, NULL, (void **) &script, NULL);
 
-    if (!program && !script)
+    if (!programArgv && !script)
 	return 0;
-    else if (!program)
-	program = "/bin/sh";
+    else if (!programArgv) {
+	programArgv = malloc(4 * sizeof(char *));
+	programArgv[0] = "/bin/sh";
+	programArgc = 1;
+    } else if (programType == RPM_STRING_TYPE) {
+	program = (char *) programArgv;
+	programArgv = malloc(4 * sizeof(char *));
+	programArgv[0] = program;
+	programArgc = 1;
+    } else {
+	argv = programArgv;
+	programArgv = malloc((programArgc + 3) * sizeof(char *));
+	memcpy(programArgv, argv, programArgc * sizeof(char *));
+    }
 
     if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &installPrefix,
 	    	       NULL)) {
@@ -355,55 +371,87 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
 	strcat(installPrefixEnv, "\n");
     }
 
-    rpmMessage(RPMMESS_DEBUG, "running inst helper %s\n", program);
+    rpmMessage(RPMMESS_DEBUG, "running inst helper %s\n", programArgv[0]);
 
     if (script) {
-	if (makeTempFile(prefix, &fn, &fd))
+	if (makeTempFile(root, &fn, &fd)) {
+	    free(programArgv);
+	    if (argv)
+		free(argv);
 	    return 1;
-	write(fd, "#!", 2);
-	write(fd, program, strlen(program));
+	}
 
-
-	write(fd, "\n", 1);
-
-	if (isdebug && !strcmp(program, "/bin/sh")) 
+	if (isdebug &&
+	    (!strcmp(programArgv[0], "/bin/sh") || 
+	     !strcmp(programArgv[0], "/bin/bash")))
 	    write(fd, "set -x\n", 7);
 
 	if (installPrefixEnv)
 	    write(fd, installPrefixEnv, strlen(installPrefixEnv));
 
-	write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
 	write(fd, script, strlen(script));
 	close(fd);
 
-	program = fn + strlen(prefix);
+	programArgv[programArgc++] = fn + strlen(root);
+	programArgv[programArgc++] = upgradeArg;
     }
 
-    *argvPtr++ = program;
-    if (script) {
-	*argvPtr++ = upgradeArg;
+    programArgv[programArgc] = NULL;
+
+    if (err) {
+	if (rpmIsVerbose()) {
+	    out = err;
+	} else {
+	    out = open("/dev/null", O_WRONLY);
+	    if (out < 0) {
+		out = err;
+	    }
+	}
     }
-    *argvPtr++ = NULL;
-	
+    
     if (!(child = fork())) {
 	/* make stdin inaccessible */
 	pipe(pipes);
 	close(pipes[1]);
-
 	dup2(pipes[0], 0);
+	close(pipes[0]);
 
-	if (strcmp(prefix, "/")) {
-	    rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", prefix);
-	    chroot(prefix);
-	    chdir("/");
+	if (err) {
+	    if (err != 2) dup2(err, 2);
+	    if (out != 1) dup2(out, 1);
+	    /* make sure we don't close stdin/stderr/stdout by mistake! */
+	    /* if (err > 2) close (err);
+	    if (out > 2 && out != err) close (out); */
 	}
 
-	execv(argv[0], argv);
-	_exit(-1);
+	doputenv(SCRIPT_PATH);
+	if (installPrefixEnv) {
+	    doputenv(installPrefixEnv);
+	}
+
+	if (strcmp(root, "/")) {
+	    rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", root);
+	    chroot(root);
+	}
+
+	chdir("/");
+
+	execv(programArgv[0], programArgv);
+ 	_exit(-1);
     }
 
     waitpid(child, &status, 0);
 
+    if (err) {
+	if (out > 2) close(out);
+	if (err > 2) close(err);
+	if (!rpmIsVerbose()) close(out);
+    }
+    
+    free(programArgv);
+    if (argv)
+	free(argv);
+    
     if (script) {
 	if (!isdebug) unlink(fn);
 	free(fn);

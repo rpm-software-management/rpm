@@ -515,7 +515,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     rpmMessage(RPMMESS_DEBUG, "running preinstall script (if any)\n");
     if (runScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
-		  flags & RPMINSTALL_NOSCRIPTS)) {
+		  flags & RPMINSTALL_NOSCRIPTS, 0)) {
 	if (replacedList) free(replacedList);
 	if (freeFileMem) freeFileMemory(fileMem);
 
@@ -673,7 +673,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     rpmMessage(RPMMESS_DEBUG, "running postinstall script (if any)\n");
 
     if (runScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
-		  flags & RPMINSTALL_NOSCRIPTS)) {
+		  flags & RPMINSTALL_NOSCRIPTS, 0)) {
 	return 2;
     }
 
