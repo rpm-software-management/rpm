@@ -16,6 +16,9 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
+int _hdr_debug = 1;
+
 /*@-redecl@*/	/* FIX: avoid rpmlib.h, need for debugging. */
 /*@observer@*/ const char *const tagName(int tag)	/*@*/;
 /*@=redecl@*/
@@ -98,13 +101,19 @@ static
 Header headerLink(Header h)
 	/*@modifies h @*/
 {
-    if (h != NULL)
-	h->nrefs++;
 /*@-nullret@*/
+    if (h == NULL) return NULL;
+/*@=nullret@*/
+
+    h->nrefs++;
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "--> h  %p ++ %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
+/*@=modfilesys@*/
+
     /*@-refcounttrans @*/
     return h;
     /*@=refcounttrans @*/
-/*@=nullret@*/
 }
 
 /** \ingroup header
@@ -116,8 +125,12 @@ static /*@null@*/
 Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/
 {
-    if (h)
-	h->nrefs--;
+    if (h == NULL) return NULL;
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "--> h  %p -- %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
+/*@=modfilesys@*/
+    h->nrefs--;
     return NULL;
 }
 

@@ -475,6 +475,8 @@ if (fileURL[0] == '=') {
 	case RPMRC_NOTFOUND:
 	    goto maybe_manifest;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
 	case RPMRC_OK:
 	default:
 	    /*@switchbreak@*/ break;
@@ -996,6 +998,8 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	default:
 	    goto bottom;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
 	case RPMRC_OK:
 	    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 	    if (isSource)

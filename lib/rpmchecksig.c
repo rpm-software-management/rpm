@@ -681,7 +681,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     pgpDig dig;
     pgpDigParams sigp;
     int_32 siglen;
-    Header sigh;
+    Header sigh = NULL;
     HeaderIterator hi;
     int res = 0;
     int xx;
@@ -987,6 +987,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     }
 
 exit:
+    sigh = rpmFreeSignature(sigh);
     rpmtsCleanDig(ts);
     return res;
 }

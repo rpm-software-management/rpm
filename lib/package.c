@@ -593,6 +593,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     int xx;
     int i;
 
+    if (hdrp) *hdrp = NULL;
     {	struct stat st;
 /*@-boundswrite@*/
 	memset(&st, 0, sizeof(st));
@@ -829,7 +830,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     }
 
 exit:
-    if (rc == RPMRC_OK && hdrp != NULL) {
+    if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
 	/* Convert legacy headers on the fly ... */
 	legacyRetrofit(h, l);
 	

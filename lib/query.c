@@ -579,6 +579,8 @@ restart:
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
 		res = 1;
 		/*@switchbreak@*/ break;
+	    case RPMRC_NOTTRUSTED:
+	    case RPMRC_NOKEY:
 	    case RPMRC_OK:
 		if (h == NULL) {
 		    rpmError(RPMERR_QUERY,

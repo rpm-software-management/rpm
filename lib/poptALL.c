@@ -31,6 +31,9 @@ extern int _fps_debug;
 extern int _fsm_debug;
 
 /*@unchecked@*/
+extern int _hdr_debug;
+
+/*@unchecked@*/
 extern int _psm_debug;
 
 /*@unchecked@*/
@@ -261,6 +264,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("debug payload file state machine"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
+ { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
+	NULL, NULL},
 #ifdef	DYING
  { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
 	N_("debug option/argument processing"), NULL},

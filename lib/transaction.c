@@ -1432,6 +1432,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 			p->fd = NULL;
 			ourrc++;
 			/*@innerbreak@*/ break;
+		    case RPMRC_NOTTRUSTED:
+		    case RPMRC_NOKEY:
 		    case RPMRC_OK:
 			/*@innerbreak@*/ break;
 		    }

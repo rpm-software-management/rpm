@@ -453,6 +453,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	default:
 	    str = _free(str);
 	    break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
 	case RPMRC_OK:
 	    if (h != NULL &&
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
@@ -833,9 +835,10 @@ int rpmtsSetSig(rpmts ts,
 		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
 {
     if (ts != NULL) {
-	ts->sig = headerFreeData(ts->sig, -1);
+	if (ts->sig && ts->sigtype)
+	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
 	ts->sigtag = sigtag;
-	ts->sigtype = sigtype;
+	ts->sigtype = (sig ? sigtype : 0);
 /*@-assignexpose -kepttrans@*/
 	ts->sig = sig;
 /*@=assignexpose =kepttrans@*/
