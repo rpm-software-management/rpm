@@ -8,11 +8,14 @@ AR = ar
 RANLIB = @RANLIB@
 OPTS = @DEFS@
 LIBRPMRC_FILENAME=$(libdir)/rpmrc
+LIBRPMALIAS_FILENAME=$(libdir)/rpmpopt
 NLSDIR=$(prefix)/share/locale
 NLSPACKAGE=rpm
 CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-I$(topdir)/lib -I$(topdir)/misc -Wall -Wstrict-prototypes \
-	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DVERSION=\"$(VERSION)\" 
+	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" \
+	-DLIBRPMALIAS_FILENAME="\"$(LIBRPMALIAS_FILENAME)"\" \
+	-DVERSION=\"$(VERSION)\" 
 LDFLAGS = @LDFLAGS@ @LIBPATH@ -Llib -Lbuild -Lmisc -L$(topdir)/lib \
 		-L$(topdir)/build -L$(topdir)/misc
 VERSION = 2.3.3
