@@ -13,6 +13,7 @@
 	- fix: incomplete cleanup if --rebuilddb fails (#4115).
 	- add versions to provides.
 	- fix: sanity test on specfile fails when encountering i18n chars.
+	- print all dependencies for each package at end of build.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

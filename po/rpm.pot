@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-22 15:36-0400\n"
+"POT-Creation-Date: 1999-07-22 18:35-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1452,19 +1452,7 @@ msgstr ""
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1711
-msgid "Provides:"
-msgstr ""
-
-#: ../build/files.c:1726
-msgid "Prereqs:"
-msgstr ""
-
-#: ../build/files.c:1738
-msgid "Requires:"
-msgstr ""
-
-#: ../build/files.c:1762
+#: ../build/files.c:1825
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -1815,28 +1803,28 @@ msgstr ""
 msgid "line %d: second %%prep"
 msgstr ""
 
-#: ../build/parseReqs.c:102
+#: ../build/parseReqs.c:91
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
 msgstr ""
 
-#: ../build/parseReqs.c:113
+#: ../build/parseReqs.c:102
 #, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:145
+#: ../build/parseReqs.c:134
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:155
+#: ../build/parseReqs.c:144
 #, c-format
 msgid "line %d: Version not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:175
+#: ../build/parseReqs.c:164
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr ""

@@ -1697,53 +1697,116 @@ static int generateAutoReqProv(Spec spec, Package pkg,
     return 0;
 }
 
-static void printReqs(Spec spec, Package pkg)
+typedef struct {
+    const char *msg;
+    int ntag;
+    int vtag;
+    int ftag;
+    int mask;
+    int xor;
+} DepMsg_t;
+
+DepMsg_t depMsgs[] = {
+  { "Provides",
+	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
+	0, -1 },
+  { "PreReq",
+	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_PREREQ, 0 },
+  { "Requires",
+	-1, -1, -1,	/* XXX inherit previous arrays */
+	RPMSENSE_PREREQ, RPMSENSE_PREREQ },
+  { "Conflicts",
+	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
+	0, -1 },
+  { "Obsoletes",
+	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
+	0, -1 },
+  { NULL, 0, 0, 0, 0, 0 }
+};
+
+static void printDepMsg(DepMsg_t *dm, int count, const char **names,
+	const char **versions, int *flags)
 {
-    int startedPreReq = 0;
-    int startedReq = 0;
+    int hasVersions = (versions != NULL);
+    int hasFlags = (flags != NULL);
+    int i, bingo;
 
-    char **names;
-    int x, count;
-    int *flags;
-
-    if (headerGetEntry(pkg->header, RPMTAG_PROVIDES,
-		       NULL, (void **) &names, &count)) {
-	rpmMessage(RPMMESS_NORMAL, _("Provides:"));
-	for (x = 0; x < count; x++) {
-	    rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
+    bingo = 0;
+    for (i = 0; i < count; i++, names++, versions++, flags++) {
+	if (hasFlags && !((*flags & dm->mask) ^ dm->xor))
+	    continue;
+	if (bingo == 0) {
+	    rpmMessage(RPMMESS_NORMAL, "%s:", dm->msg);
+	    bingo = 1;
 	}
-	rpmMessage(RPMMESS_NORMAL, "\n");
-	FREE(names);
+	rpmMessage(RPMMESS_NORMAL, " %s", *names);
+
+	if (hasVersions && !(*versions != NULL && **versions != '\0'))
+	    continue;
+	if (!(hasFlags && (*flags && RPMSENSE_SENSEMASK)))
+	    continue;
+
+	rpmMessage(RPMMESS_NORMAL, " ");
+	if (*flags & RPMSENSE_LESS)
+	    rpmMessage(RPMMESS_NORMAL, "<");
+	if (*flags & RPMSENSE_GREATER)
+	    rpmMessage(RPMMESS_NORMAL, ">");
+	if (*flags & RPMSENSE_EQUAL)
+	    rpmMessage(RPMMESS_NORMAL, "=");
+
+	rpmMessage(RPMMESS_NORMAL, " %s", *versions);
     }
-
-    if (headerGetEntry(pkg->header, RPMTAG_REQUIRENAME,
-		       NULL, (void **) &names, &count)) {
-	headerGetEntry(pkg->header, RPMTAG_REQUIREFLAGS,
-		       NULL, (void **) &flags, NULL);
-	for (x = 0; x < count; x++) {
-	    if (flags[x] & RPMSENSE_PREREQ) {
-		if (! startedPreReq) {
-		    rpmMessage(RPMMESS_NORMAL, _("Prereqs:"));
-		    startedPreReq = 1;
-		}
-		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
-	    }
-	}
-	if (startedPreReq) {
-	    rpmMessage(RPMMESS_NORMAL, "\n");
-	}
-	for (x = 0; x < count; x++) {
-	    if (! (flags[x] & RPMSENSE_PREREQ)) {
-		if (! startedReq) {
-		    rpmMessage(RPMMESS_NORMAL, _("Requires:"));
-		    startedReq = 1;
-		}
-		rpmMessage(RPMMESS_NORMAL, " %s", names[x]);
-	    }
-	}
+    if (bingo)
 	rpmMessage(RPMMESS_NORMAL, "\n");
-	FREE(names);
+}
+
+static void printDeps(Header h)
+{
+    const char **names = NULL;
+    const char **versions = NULL;
+    int *flags = NULL;
+    DepMsg_t *dm;
+    int type, count;
+
+    for (dm = depMsgs; dm->msg != NULL; dm++) {
+	switch (dm->ntag) {
+	case 0:
+	    FREE(names);
+	    break;
+	case -1:
+	    break;
+	default:
+	    FREE(names);
+	    if (!headerGetEntry(h, dm->ntag, &type, (void **) &names, &count))
+		continue;
+	    break;
+	}
+	switch (dm->vtag) {
+	case 0:
+	    FREE(versions);
+	    break;
+	case -1:
+	    break;
+	default:
+	    FREE(versions);
+	    headerGetEntry(h, dm->vtag, NULL, (void **) &versions, NULL);
+	    break;
+	}
+	switch (dm->ftag) {
+	case 0:
+	    flags = NULL;
+	    break;
+	case -1:
+	    break;
+	default:
+	    headerGetEntry(h, dm->ftag, NULL, (void **) &flags, NULL);
+	    break;
+	}
+	printDepMsg(dm, count, names, versions, flags);
     }
+    FREE(names);
+    FREE(versions);
 }
 
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
@@ -1766,7 +1829,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	}
 
 	generateAutoReqProv(spec, pkg, pkg->cpioList, pkg->cpioCount);
-	printReqs(spec, pkg);
+	printDeps(pkg->header);
 	
     }
 
