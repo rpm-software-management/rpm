@@ -92,6 +92,11 @@ extern const int rpmTagTableSize;
 #define RPMTAG_EXCLUSIVEOS              1062
 #define RPMTAG_AUTOREQPROV              1063 /* used internally by builds */
 #define RPMTAG_RPMVERSION		1064
+#define RPMTAG_TRIGGERSCRIPTS           1065
+#define RPMTAG_TRIGGERNAME              1066
+#define RPMTAG_TRIGGERVERSION           1067
+#define RPMTAG_TRIGGERFLAGS             1068
+#define RPMTAG_TRIGGERINDEX             1069
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
@@ -134,6 +139,9 @@ extern const int rpmTagTableSize;
 #define REQUIRE_PROVIDES        (1 << 4)   /* only used internally by builds */
 #define REQUIRE_CONFLICTS       (1 << 5)   /* only used internally by builds */
 #define REQUIRE_SENSEMASK       15         /* Mask to get senses */
+
+#define TRIGGER_ON              (1 << 16)
+#define TROGGER_OFF             (1 << 17)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
