@@ -63,8 +63,61 @@
 # endif
 # if HAVE_AIO_H
 #  include <aio.h>
+#  if defined(__LCLINT__)
+/*@-declundef -exportheader -incondefs -constuse -warnmissingglobs @*/
+	extern int
+nanosleep (const struct timespec *__requested_time,
+                      /*@out@*/ /*@null@*/ struct timespec *__remaining)
+	/*@modifies errno @*/;
+
+	extern void
+aio_init (const struct aioinit *__init)
+	/*@*/;
+	extern int
+aio_read (struct aiocb *__aiocbp)
+	/*@modifies errno, fileSystem, systemState @*/;
+	extern int
+aio_write (struct aiocb *__aiocbp)
+	/*@modifies errno, fileSystem, systemState @*/;
+	extern int
+lio_listio (int __mode,
+                       struct aiocb *const __list[],
+                       int __nent, struct sigevent *__sig)
+	/*@modifies errno, fileSystem, systemState @*/;
+	extern int
+aio_error (const struct aiocb *__aiocbp)
+	/*@modifies errno @*/;
+	extern __ssize_t
+aio_return (struct aiocb *__aiocbp)
+	/*@modifies errno, systemState @*/;
+	extern int
+aio_cancel (int __fildes, /*@null@*/ struct aiocb *__aiocbp)
+	/*@modifies errno, systemState @*/;
+	extern int
+aio_suspend (/*@out@*/ const struct aiocb *const __list[], int __nent,
+                        /*@out@*/ const struct timespec *__timeout)
+	/*@modifies errno, systemState @*/;
+	extern int
+aio_fsync (int __operation, struct aiocb *__aiocbp)
+	/*@modifies errno, fileSystem, systemState @*/;
+
+/*@constant int AIO_CANCELED@*/
+/*@constant int AIO_NOTCANCELED@*/
+/*@constant int AIO_ALLDONE@*/
+/*@constant int LIO_READ@*/
+/*@constant int LIO_WRITE@*/
+/*@constant int LIO_NOP@*/
+/*@constant int LIO_WAIT@*/
+/*@constant int LIO_NOWAIT@*/
+/*@constant int SIGEV_SIGNAL@*/
+/*@constant int SIGEV_NONE@*/
+/*@constant int SIGEV_THREAD@*/
+
+/*@=declundef =exportheader =incondefs =constuse =warnmissingglobs @*/
+#  endif
 # endif
 #endif
+
 #if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
@@ -351,9 +404,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 	memset(&my_aiocb_timeout, 0, sizeof(struct timespec));
 
 	my_aiocb.aio_fildes = fd;
-	/*@-unrecog@*/
 	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
-	/*@=unrecog@*/
 	# endif
 	#endif
 
@@ -365,7 +416,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		return -1;
 	}
 
-	/*@-infloopsuncon@*/
+	/*@-infloops -infloopsuncon@*/
 	while (randombits)
 	{
 		#if WIN32
@@ -393,9 +444,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		/*@=mustfree@*/
 		my_aiocb.aio_nbytes = 1024 * samplesize * channels;
 
-		/*@-moduncon -compdef@*/
 		rc = aio_read(&my_aiocb);
-		/*@=moduncon =compdef@*/
 		# else
 		rc = read(fd, sampledata, 1024 * samplesize * channels);
 		# endif
@@ -412,9 +461,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		my_aiocb_timeout.tv_sec = (timeout / 1000);
 		my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
-		/*@-compdef -moduncon @*/
 		rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
-		/*@=compdef =moduncon @*/
 
 		if (rc < 0)
 		{
@@ -422,17 +469,13 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			if (errno == EAGAIN)
 			{
 				/* certain linux glibc versions are buggy and don't aio_suspend properly */
-				/*@-unrecog -noeffectuncon @*/
-				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
-				/*@=unrecog =noeffectuncon @*/
+				(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 
 				my_aiocb_timeout.tv_sec = (timeout / 1000);
 				my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
 				/* and try again */
-				/*@-compdef -moduncon @*/
 				rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
-				/*@=compdef =moduncon @*/
 			}
 			#endif
 		}
@@ -442,18 +485,14 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			/* cancel any remaining reads */
 			while (rc != AIO_ALLDONE)
 			{
-				/*@-nullpass -moduncon @*/
 				rc = aio_cancel(fd, (struct aiocb*) 0);
-				/*@=nullpass =moduncon @*/
 
 				if (rc == AIO_NOTCANCELED)
 				{
 					my_aiocb_timeout.tv_sec = (timeout / 1000);
 					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
-					/*@-unrecog -noeffectuncon @*/
-					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
-					/*@=unrecog =noeffectuncon @*/
+					(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 				}
 
 				if (rc < 0)
@@ -465,9 +504,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			return -1;
 		}
 
-		/*@-moduncon -compdef @*/
 		rc = aio_error(&my_aiocb);
-		/*@=moduncon =compdef @*/
 
 		if (rc)
 		{
@@ -477,9 +514,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			return -1;
 		}
 
-		/*@-moduncon -compdef @*/
 		rc = aio_return(&my_aiocb);
-		/*@=moduncon =compdef @*/
 
 		if (rc < 0)
 		{
@@ -546,7 +581,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			/*@notreached@*/ /*@switchbreak@*/ break;
 		}
 	}
-	/*@=infloopsuncon@*/
+	/*@=infloops =infloopsuncon@*/
 
 	#if WIN32
 	waveInStop(wavein);
@@ -936,11 +971,8 @@ static int opendevice(const char *device)
  * @param size
  * @return
  */
-/*@-globuse@*/	/* aio_foo annotations aren't correct */
 static int entropy_randombits(int fd, int timeout, uint32* data, int size)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-/*@=globuse@*/
+	/*@*/
 {
 	register byte* bytedata = (byte*) data;
 	register int   bytesize = (((unsigned)size) << 2);
@@ -959,9 +991,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 	memset(&my_aiocb_timeout, 0, sizeof(struct timespec));
 
 	my_aiocb.aio_fildes = fd;
-	/*@-unrecog@*/
 	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
-	/*@=unrecog@*/
 	#endif
 
 	while (bytesize)
@@ -972,9 +1002,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 		/*@=mustfree@*/
 		my_aiocb.aio_nbytes = bytesize;
 
-		/*@-moduncon@*/
 		rc = aio_read(&my_aiocb);
-		/*@=moduncon@*/
 		#else
 		rc = read(fd, bytedata, bytesize);
 		#endif
@@ -986,9 +1014,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 		my_aiocb_timeout.tv_sec = (timeout / 1000);
 		my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
-		/*@-compdef -moduncon @*/
 		rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
-		/*@=compdef =moduncon @*/
 
 		if (rc < 0)
 		{
@@ -996,17 +1022,13 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 			if (errno == EAGAIN)
 			{
 				/* certain linux glibc versions are buggy and don't aio_suspend properly */
-				/*@-unrecog -noeffectuncon @*/
-				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
-				/*@=unrecog =noeffectuncon @*/
+				(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 
 				my_aiocb_timeout.tv_sec = 0;
 				my_aiocb_timeout.tv_nsec = 0;
 
 				/* and try again */
-				/*@-compdef -moduncon @*/
 				rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
-				/*@=compdef =moduncon @*/
 			}
 			#endif
 		}
@@ -1016,18 +1038,14 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 			/* cancel any remaining reads */
 			while (rc != AIO_ALLDONE)
 			{
-				/*@-nullpass -moduncon @*/
 				rc = aio_cancel(fd, (struct aiocb*) 0);
-				/*@=nullpass =moduncon @*/
 
 				if (rc == AIO_NOTCANCELED)
 				{
 					my_aiocb_timeout.tv_sec = (timeout / 1000);
 					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
-					/*@-unrecog -noeffectuncon @*/
-					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
-					/*@=unrecog =noeffectuncon @*/
+					(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 				}
 
 				if (rc < 0)
@@ -1037,16 +1055,12 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 			return -1;
 		}
 
-		/*@-moduncon@*/
 		rc = aio_error(&my_aiocb);
-		/*@=moduncon@*/
 
 		if (rc < 0)
 			return -1;
 
-		/*@-moduncon@*/
 		rc = aio_return(&my_aiocb);
-		/*@=moduncon@*/
 
 		if (rc < 0)
 			return -1;
