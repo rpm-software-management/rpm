@@ -45,6 +45,12 @@ void	rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
         /*@out@*/ void **p, /*@out@*/int_32 *c);
 
+/*
+ * XXX Yet Another dressed entry to unify signature/header tag retrieval.
+ */
+int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
+        int_32 tag, int_32 *type, void **p, int_32 *c);
+
    /* 0 = success */
    /* 1 = bad magic */
    /* 2 = error */
@@ -63,6 +69,18 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMDBI_REMOVED		4
 #define	RPMDBI_AVAILABLE	5
 
+/* Retrofit (and uniqify) signature tags for use by tagName() and rpmQuery. */
+
+/* XXX underscore prevents tagTable generation */
+#define	RPMTAG_SIG_BASE			256
+#define	RPMTAG_SIGSIZE         	        RPMTAG_SIG_BASE+1
+/* the md5 sum was broken *twice* on big endian machines */
+#define	RPMTAG_SIGLEMD5_1		RPMTAG_SIG_BASE+2
+#define	RPMTAG_SIGPGP          	        RPMTAG_SIG_BASE+3
+#define	RPMTAG_SIGLEMD5_2		RPMTAG_SIG_BASE+4
+#define	RPMTAG_SIGMD5		        RPMTAG_SIG_BASE+5
+#define	RPMTAG_SIGGPG		        RPMTAG_SIG_BASE+6
+#define	RPMTAG_SIGPGP5		        RPMTAG_SIG_BASE+7	/* internal */
 
 /* these tags are found in package headers */
 /* none of these can be 0 !!                         */
