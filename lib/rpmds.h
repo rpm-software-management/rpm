@@ -231,7 +231,7 @@ time_t rpmdsBT(/*@null@*/ const rpmds ds)
  * @param ds		dependency set
  * @return		dependency build time, 0 on invalid
  */
-time_t rpmdsSetBuildtime(/*@null@*/ const rpmds ds, time_t BT)
+time_t rpmdsSetBT(/*@null@*/ const rpmds ds, time_t BT)
 	/*@modifies ds @*/;
 
 /**
