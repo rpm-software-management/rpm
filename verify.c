@@ -16,7 +16,7 @@ static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches);
 static void verifyHeader(char * prefix, Header h) {
     char ** fileList;
     int count, type;
-    int_32 verifyResult;
+    int verifyResult;
     int i;
     char * size, * md5, * link, * mtime, * mode;
     char * group, * user, * rdev;
@@ -25,30 +25,31 @@ static void verifyHeader(char * prefix, Header h) {
 	for (i = 0; i < count; i++) {
 	    rpmVerifyFile(prefix, h, i, &verifyResult);
 
-	    size = md5 = link = mtime = mode = "";
-	    user = group = rdev = "";
+	    size = md5 = link = mtime = mode = ".";
+	    user = group = rdev = ".";
 
 	    if (!verifyResult) continue;
 	
 	    if (verifyResult & VERIFY_MD5)
-		md5 = " 5 ";
+		md5 = "5";
 	    if (verifyResult & VERIFY_FILESIZE)
-		size = " S ";
+		size = "S";
 	    if (verifyResult & VERIFY_LINKTO)
-		link = " L ";
+		link = "L";
 	    if (verifyResult & VERIFY_MTIME)
-		mtime = " T ";
+		mtime = "T";
 	    if (verifyResult & VERIFY_RDEV)
-		rdev = " D ";
+		rdev = "D";
 	    if (verifyResult & VERIFY_USER)
-		user = " U ";
+		user = "U";
 	    if (verifyResult & VERIFY_GROUP)
-		group = " G ";
+		group = "G";
 	    if (verifyResult & VERIFY_MODE)
-		mode = " M ";
+		mode = "M";
 
-	    printf("%-38s %4s %4s %3s %3s %4s %4s %5s %4s\n", fileList[i],
-		   size, mode, md5, rdev, link, user, group, mtime);
+	    printf("%s%s%s%s%s%s%s%s %s\n",
+		   size, mode, md5, rdev, link, user, group, mtime, 
+		   fileList[i]);
 	}
 	
 	free(fileList);
@@ -84,12 +85,6 @@ void doVerify(char * prefix, enum verifysources source, char ** argv) {
     rpmdb db;
     dbIndexSet matches;
     char * arg;
-
-    printf("%-38s %4s %4s %3s %3s %4s %4s %5s %4s\n", 
-		"File", "Size", "Mode", "Md5", "Dev", "Link", "User", 
-		"Group", "Time");
-    printf("------------------------------------------------------------"
-	   "------------------\n");
 
     if (source != VERIFY_SRPM && source != VERIFY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
