@@ -111,6 +111,9 @@ varprefix = @varprefix@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+EXTRA_DIST = CHANGES CREDITS README.amiga RPM-PGP-KEY 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh 	docs/[a-z]* gendiff groups po/*.in po/*.po po/rpm.pot 	rpm.8 rpm.8ru rpm.magic rpm.spec rpm2cpio.8 rpm2cpio.8ru
+
+
 SUBDIRS = popt build lib po intl misc tools scripts tests .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
@@ -581,6 +584,7 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
+	$(mkinstalldirs) $(distdir)/autodeps $(distdir)/docs $(distdir)/po
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

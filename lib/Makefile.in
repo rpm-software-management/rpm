@@ -13,14 +13,13 @@
 # Makefile for rpm library.
 
 
-# Generated automatically from Makefile.inc.in by configure.
-
-
 SHELL = @SHELL@
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
 bindir = @bindir@
 sbindir = @sbindir@
@@ -29,6 +28,7 @@ datadir = @datadir@
 sysconfdir = @sysconfdir@
 sharedstatedir = @sharedstatedir@
 localstatedir = @localstatedir@
+libdir = @libdir@
 infodir = @infodir@
 mandir = @mandir@
 includedir = @includedir@
@@ -65,11 +65,16 @@ host_alias = @host_alias@
 host_triplet = @host@
 target_alias = @target_alias@
 target_triplet = @target@
+AR = @AR@
 AWK = @AWK@
 BZIP2BIN = @BZIP2BIN@
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@
+CC = @CC@
+CPP = @CPP@
 DATADIRNAME = @DATADIRNAME@
+FINDPROVIDES = @FINDPROVIDES@
+FINDREQUIRES = @FINDREQUIRES@
 FIXPERMS = @FIXPERMS@
 GENCAT = @GENCAT@
 GMOFILES = @GMOFILES@
@@ -87,8 +92,12 @@ LDFLAGS_STATIC = @LDFLAGS_STATIC@
 LIBDL = @LIBDL@
 LIBMISC = @LIBMISC@
 LIBOBJS = @LIBOBJS@
+LIBRPMALIAS_FILENAME = @LIBRPMALIAS_FILENAME@
+LIBRPMRC_FILENAME = @LIBRPMRC_FILENAME@
 LIBS = @LIBS@
 LN_S = @LN_S@
+LOCALEDIR = @LOCALEDIR@
+MACROFILES = @MACROFILES@
 MAKEINFO = @MAKEINFO@
 MISCDIR = @MISCDIR@
 MISCPATH = @MISCPATH@
@@ -96,14 +105,18 @@ MKDIR = @MKDIR@
 MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
+PACKAGE = @PACKAGE@
 POFILES = @POFILES@
 POSUB = @POSUB@
+RANLIB = @RANLIB@
 ROOT_GROUP = @ROOT_GROUP@
 RPM = @RPM@
+RPMCONFIGDIR = @RPMCONFIGDIR@
 TARGET = @TARGET@
 U = @U@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
+VERSION = @VERSION@
 l = @l@
 testdir = @testdir@
 tmpdir = @tmpdir@
@@ -116,34 +129,12 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build @INCPATH@
 rpmincdir = $(includedir)/rpm
 rpminc_HEADERS =  	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h stringbuf.h
 
-noinst_HEADERS =  	cpio.h depends.h falloc.h install.h 	md5.h oldheader.h oldrpmdb.h rpm_malloc.h 	rpmdb.h rpmlead.h signature.h tread.h
+noinst_HEADERS =  	cpio.h depends.h falloc.h fprint.h hash.h install.h 	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h 	rpmdb.h rpmlead.h signature.h tread.h
 
 
 lib_LIBRARIES = librpm.a
 librpm_a_SOURCES =  	cpio.c dbindex.c depends.c falloc.c 	formats.c fs.c header.c install.c 	lookup.c macro.c md5.c md5sum.c 	messages.c misc.c oldheader.c package.c query.c 	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmbzio.c rpmlead.c 	rpmrc.c signature.c stringbuf.c tagtable.c 	tread.c uninstall.c verify.c transaction.c problems.c hash.c fprint.c
 
-
-CPP = gcc -E
-prefix = /usr
-exec_prefix = ${prefix}
-libdir = ${exec_prefix}/lib
-
-AR = ar
-RANLIB = ranlib
-OPTS = -DHAVE_CONFIG_H
-
-RPMCONFIGDIR = /usr/lib/rpm
-FINDPROVIDES = $(RPMCONFIGDIR)/find-provides
-FINDREQUIRES = $(RPMCONFIGDIR)/find-requires
-LIBRPMRC_FILENAME = $(RPMCONFIGDIR)/rpmrc
-LIBRPMALIAS_FILENAME = $(RPMCONFIGDIR)/rpmpopt
-MACROFILES = $(RPMCONFIGDIR)/macros
-
-LOCALEDIR = /usr/share/locale
-PACKAGE = rpm
-VERSION = 2.91
-
-CC = gcc
 
 BUILT_SOURCES = tagtable.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -188,7 +179,7 @@ OBJECTS = $(librpm_a_OBJECTS)
 all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign lib/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
@@ -419,9 +410,6 @@ all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
-
-#rpmrc.o: rpmrc.c
-#	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c

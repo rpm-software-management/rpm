@@ -129,7 +129,7 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_src
 LDFLAGS = -L$(top_builddir)/popt -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/misc
 LDADD = -lrpm
 
-EXTRA_DIST = fstrcmp.c message.c str-list.c
+EXTRA_DIST = fstrcmp.c message.c str-list.c rpmchecksig.c
 
 noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb 	rpmgettext rpmputtext
 

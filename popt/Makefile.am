@@ -2,10 +2,15 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+EXTRA_DIST = CHANGES autogen.sh findme.h popt.3 popt.spec poptint.h testit.sh \
+	po/*.in po/*.po po/popt.pot popt.ps
+
 SUBDIRS = po
 
 LDFLAGS = -L$(top_builddir)
 INCLUDES = -I$(top_srcdir)
+
+noinst_INCLUDES = findme.h poptint.h
 
 noinst_PROGRAMS = test1
 test1_SOURCES = test1.c
