@@ -313,10 +313,12 @@ static int db0open(dbiIndex dbi)
 		dbi_to_dbtype(dbi->dbi_type), dbi->dbi_openinfo);
 #endif
 
-    if (dbi->dbi_db)
+    if (dbi->dbi_db) {
 	rc = 0;
-    else
+fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbi->dbi_file);
+    } else {
 	rc = 1;
+    }
 
     return rc;
 }

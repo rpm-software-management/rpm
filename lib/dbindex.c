@@ -75,8 +75,7 @@ static void freeDBI( /*@only@*/ /*@null@*/ dbiIndex dbi) {
     }
 }
 
-int _preferDbiMajor = 0;	/* XXX shared with rebuilddb.c */
-int _useDbiMajor = -1;
+int _useDbiMajor = -1;		/* XXX shared with rebuilddb.c */
 
 static struct _dbiVec *mydbvecs[] = {
     DB0vec, DB1vec, DB2vec, DB3vec, NULL

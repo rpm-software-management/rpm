@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.47 2000/03/09 18:13:03 jbj Exp $
+# $Id: macros.in,v 1.48 2000/03/30 19:22:46 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -199,6 +199,16 @@
 #	Configurable vendor information, same as Vendor: in a specfile.
 #
 #%vendor
+
+# Preferred db interface:
+#	0	linux glibc libdb1 routines.
+#	1	db_185.h interface in db2/db3 libdb.a.
+#	2	native db2 interface.
+#	3	native db3 interface.
+%_preferdb		2
+
+# Filter duplicate entries in db (needed only to correct bug pre rpm-3.0.4)
+%_filterdbdups		no
 
 #==============================================================================
 # ---- per-platform macros.

@@ -94,7 +94,6 @@ static int signIt;
 static int test;
 extern int _url_debug;
 extern int _noDirTokens;
-extern int _preferDbiMajor;
 extern int _useDbiMajor;
 
 static int showVersion;
@@ -155,7 +154,6 @@ static struct poptOption optionsTable[] = {
  { "oldpackage", '\0', 0, &oldPackage, 0,	NULL, NULL},
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
- { "preferdb", '\0', POPT_ARG_INT, &_preferDbiMajor, 0,	NULL, NULL},
  { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
  { "query", 'q', 0, NULL, 'q',			NULL, NULL},
  { "querytags", '\0', 0, &queryTags, 0,		NULL, NULL},

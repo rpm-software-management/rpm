@@ -5,8 +5,7 @@
 
 #include "rpmdb.h"
 
-extern int _preferDbiMajor;	/* XXX shared with rebuilddb.c */
-extern int _useDbiMajor;
+extern int _useDbiMajor;	/* XXX shared with dbindex.c */
 
 /** */
 int rpmdbRebuild(const char * rootdir)
@@ -22,7 +21,12 @@ int rpmdbRebuild(const char * rootdir)
     int nocleanup = 1;
     int failed = 0;
     int rc = 0;
-    int unique = 1;	/* XXX always eliminate duplicate entries */
+    int _filterDbDups;		/* XXX always eliminate duplicate entries */
+    int _preferDbiMajor;
+
+    _filterDbDups = rpmExpandNumeric("%{_filterdbdups}");
+    _preferDbiMajor = rpmExpandNumeric("%{_preferdb}");
+fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups, _preferDbiMajor);
 
     tfn = rpmGetPath("%{_dbpath}", NULL);
     if (!(tfn && tfn[0] != '%')) {
@@ -69,7 +73,11 @@ int rpmdbRebuild(const char * rootdir)
 	goto exit;
     }
 
+#if 0
     _useDbiMajor = ((_preferDbiMajor >= 0) ? (_preferDbiMajor & 0x03) : -1);
+#else
+    _useDbiMajor = -1;
+#endif
     rpmMessage(RPMMESS_DEBUG, _("opening old database with dbi_major %d\n"),
 		_useDbiMajor);
     if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 
@@ -103,7 +111,7 @@ int rpmdbRebuild(const char * rootdir)
 		int skip;
 
 		/* XXX always eliminate duplicate entries */
-		if (unique && !rpmdbFindByHeader(newdb, h, &matches)) {
+		if (_filterDbDups && !rpmdbFindByHeader(newdb, h, &matches)) {
 		    const char * name, * version, * release;
 		    headerNVR(h, &name, &version, &release);
 
