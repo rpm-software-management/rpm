@@ -42,6 +42,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
     int mode, rc;
     char * chptr;
     notifyFunction fn;
+    char * printFormat = NULL;
 
     hashesPrinted = 0;
 
@@ -72,7 +73,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
     }
 
     if (interfaceFlags & RPMINSTALL_PERCENT) 
-	printf("%%f %s\n", arg);
+	printFormat = "%%f %s:%s:%s\n";
     else if (isVerbose() && (interfaceFlags & RPMINSTALL_HASH)) {
 	chptr = strrchr(arg, '/');
 	if (!chptr)
@@ -80,11 +81,11 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 	else
 	    chptr++;
 
-	installFlags |= INSTALL_PRINTLABEL;
+	printFormat = "%-28s";
     } else if (isVerbose())
 	printf("Installing %s\n", arg);
 
-    rc = rpmInstallPackage(prefix, db, fd, installFlags, fn);
+    rc = rpmInstallPackage(prefix, db, fd, installFlags, fn, printFormat);
     if (rc == 1) {
 	fprintf(stderr, "error: %s cannot be installed\n", arg);
     }

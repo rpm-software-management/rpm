@@ -75,7 +75,7 @@ int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile) {
 /* 1 bad magic */
 /* 2 error */
 int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
-		      notifyFunction notify) {
+		      notifyFunction notify, char * labelFormat) {
     int rc, isSource;
     char * name, * version, * release;
     Header h, h2;
@@ -98,7 +98,6 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     struct replacedFile * replacedList = NULL;
     char * sptr, * dptr;
     int length;
-    char * s;
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
@@ -134,15 +133,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-    if (flags & INSTALL_PRINTLABEL) {
-	s = alloca(strlen(name) + strlen(version) + strlen(release) + 3);
-	strcpy(s, name);
-	strcat(s, "-");
-	strcat(s, version);
-	strcat(s, "-");
-	strcat(s, release);
-
-	printf("%-28s", s);
+    if (labelFormat) {
+	printf(labelFormat, name, version, release);
 	fflush(stdout);
     }
 
