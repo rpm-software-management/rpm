@@ -21,7 +21,6 @@ static int _debug = 0;
 static int noCache = 0;
 
 static char ** ftsSet;
-static int ftsOpts = 0;
 
 const char * bhpath;
 int bhpathlen = 0;
@@ -516,30 +515,9 @@ static struct poptOption optionsTable[] = {
  { "nocache", '\0', POPT_ARG_VAL,   &noCache, -1,
 	N_("don't update cache database, only print package paths"), NULL },
 
- { "comfollow", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_COMFOLLOW,
-	N_("follow command line symlinks"), NULL },
- { "logical", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_LOGICAL,
-	N_("logical walk"), NULL },
- { "nochdir", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_NOCHDIR,
-	N_("don't change directories"), NULL },
- { "nostat", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_NOSTAT,
-	N_("don't get stat info"), NULL },
- { "physical", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_PHYSICAL,
-	N_("physical walk"), NULL },
- { "seedot", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_SEEDOT,
-	N_("return dot and dot-dot"), NULL },
- { "xdev", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_XDEV,
-	N_("don't cross devices"), NULL },
- { "whiteout", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&ftsOpts, FTS_WHITEOUT,
-	N_("return whiteout information"), NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
+        N_("File tree walk options:"),
+        NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
