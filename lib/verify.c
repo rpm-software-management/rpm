@@ -31,6 +31,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     unsigned short * modeList, * rdevList;
     char * fileStatesList;
     char * filespec;
+    char * name;
     int type, count, rc;
     struct stat sb;
     unsigned char md5sum[40];
@@ -167,7 +168,8 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     if (flags & RPMVERIFY_USER) {
 	if (headerGetEntry(h, RPMTAG_FILEUSERNAME, NULL, (void **) &unameList, 
 			   NULL)) {
-	    if (strcmp(unameList[filenum], uidToUname(sb.st_uid)))
+	    name = uidToUname(sb.st_uid);
+	    if (!name || strcmp(unameList[filenum], name))
 		*result |= RPMVERIFY_USER;
 	    free(unameList);
 	} else if (headerGetEntry(h, RPMTAG_FILEUIDS, NULL, (void **) &uidList, 
@@ -184,7 +186,8 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     if (flags & RPMVERIFY_GROUP) {
 	if (headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &gnameList, 
 			NULL)) {
-	    if (strcmp(gnameList[filenum], gidToGname(sb.st_gid)))
+	    name = gidToGname(sb.st_uid);
+	    if (!name || strcmp(gnameList[filenum], name))
 		*result |= RPMVERIFY_GROUP;
 	    free(gnameList);
 	} else if (headerGetEntry(h, RPMTAG_FILEGIDS, NULL, (void **) &gidList, 
