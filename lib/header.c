@@ -1649,7 +1649,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 
 	for (i = 0; i < condNumFormats; i++) {
 	    thisItem = singleSprintf(h, condFormat + i, 
-				     extensions, extCache, i);
+				     extensions, extCache, element);
 	    thisItemLen = strlen(thisItem);
 	    if ((thisItemLen + len) >= alloced) {
 		alloced = (thisItemLen + len) + 200;

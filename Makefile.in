@@ -168,12 +168,12 @@ depend:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 
-.PHONY noconfig
+.PHONY: noconfig
 noconfig:
 	find . -name "Makefile" -exec rm {} \; 
 	rm -f *gz *rpm config.*
 
-.PHONY archive
+.PHONY: archive
 archive: 
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
