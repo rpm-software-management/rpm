@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.11 2000/02/07 19:28:45 jbj Exp $
+# $Id: ja.po,v 1.12 2000/02/10 00:27:21 jbj Exp $
 #: rpm.c:197
 #, c-format
 msgid "rpm: %s\n"
@@ -607,7 +607,8 @@ msgstr "パッケージに含まれるファイルの状態を表示します(-l の働きを含みます)"
 #: rpm.c:359
 msgid "list only documentation files (implies -l)"
 msgstr ""
-"パッケージに含まれる文書ファイルのみの状態を表示します(-l の働きを含みます)"
+"パッケージに含まれる文書ファイルのみの状態を表示し\n"
+"\t\t\t     ます(-l の働きを含みます)"
 
 #: rpm.c:361
 msgid "list only configuration files (implies -l)"
@@ -639,7 +640,9 @@ msgstr "[アン]インストール時のスクリプトを表示します"
 
 #: rpm.c:372
 msgid "show the trigger scripts contained in the package"
-msgstr "パッケージに含まれるトリガースクリプトを表示します"
+msgstr ""
+"パッケージに含まれるトリガースクリプトを表示しま\n"
+"\t\t\t       す"
 
 #: rpm.c:376
 msgid "    --pipe <cmd>          "
@@ -926,8 +929,8 @@ msgid ""
 "patches, and icons."
 msgstr ""
 "ソースパッケージをインストールし、バイナリパッケー\n"
-"\t\t\t     ジを作成し、specファイル、ソースファイル、パッチ、アイコ\n"
-"\t\t\t     ンを削除します"
+"\t\t\t     ジを作成し、specファイル、ソースファイル、パッチ、\n"
+"\t\t\t     アイコンを削除します"
 
 #: rpm.c:511
 msgid "    --rmsource <spec>     "
