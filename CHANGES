@@ -1,5 +1,13 @@
 2.0.7 -> 2.0.8:
 	- explicitly turn off ASCII armor when running PGP
+	- fixed --noscripts logic, which was on by default and 
+	  off if you specified it!
+	- uses a temp file to pass filenames to cpio in case when 
+	  their are more then 500 filenames in a package
+	- added --rcfile
+	- fixed problem with $HOME/.rcfile not being read
+	- undocumented --search, --where, --keep-temps which
+	  will probably won't be implemented in RPM 2.x anyway
 
 2.0.6 -> 2.0.7:
         - builds now set umask 022 for all scripts
