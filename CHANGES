@@ -35,6 +35,10 @@
 	- new rpmrc entries "arch" and "os" to override
 	- --arch and --os on the command line to override
 	- arch and os are now strings in the package header
+	- added arch_compat handling in /etc/rpmrc
+	- added build_arch to /etc/rpmrc
+	- support arch as string
+	- added --ignorearch option
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
