@@ -22,9 +22,11 @@ capabilities.
 
 %prep
 %setup -q
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
 
 %build
+#CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+
+%configure
 make
 
 %install
@@ -35,9 +37,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-/usr/lib/libpopt.a
-/usr/include/popt.h
-/usr/man/man3/popt.3
+%{_prefix}/lib/libpopt.a
+%{_prefix}/lib/libpopt.la
+%{_prefix}/include/popt.h
+%{_prefix}/man/man3/popt.3
+%{_prefix}/share/locale/*/LC_MESSAGES/popt.mo
 
 %changelog
 * Thu Dec 10 1998 Michael Johnson <johnsonm@redhat.com>

@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST = CHANGES autogen.sh findme.h $(man_MANS) popt.spec poptint.h \
 	testit.sh po/Makefile.in.in po/POTFILES.in po/*.po po/popt.pot popt.ps
 
-SUBDIRS = po
+SUBDIRS = intl po
 
 INCLUDES = -I$(top_srcdir)
 

@@ -1,6 +1,11 @@
 AC_INIT(popt.h)
-AM_INIT_AUTOMAKE(popt, 1.4)
 AM_CONFIG_HEADER(config.h)
+AC_PREREQ(2.12)
+AC_CANONICAL_SYSTEM
+AM_INIT_AUTOMAKE(popt, 1.4)
+ALL_LINGUAS="ro sk"
+
+AC_ISC_POSIX
 
 AC_PROG_CC
 AC_GCC_TRADITIONAL
@@ -61,5 +66,7 @@ AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])
 
-AC_OUTPUT([Makefile  po/Makefile.in],
+AM_GNU_GETTEXT
+
+AC_OUTPUT([Makefile intl/Makefile po/Makefile.in],
 	[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
