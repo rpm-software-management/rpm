@@ -7,12 +7,16 @@
 /* Data read from file descriptors is expected to be in          */
 /* network byte order and is converted on the fly to host order. */
 
+#ifdef HAVE_ASM_BYTEORDER_H
+# include <asm/byteorder.h>
+#endif
+
 #include <stdlib.h>
-#include <asm/byteorder.h>
 #include <ctype.h>
 #include <malloc.h>
 #include <string.h>
 #include <unistd.h>
+#include <netinet/in.h>
 
 #include "header.h"
 #include "rpmlib.h"		/* necessary only for dumpHeader() */
