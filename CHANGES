@@ -2,6 +2,8 @@
 	- added functionality to rpmlib to suggest resolutions for
 	  dependency problems
 	- fix stupid allocation problem in exclude/exclusive stuff
+	- fix nasty bug where pointers in to the header were getting
+	  stale after some realloc()s in addEntry()
 
 2.2 -> 2.2.1:
 	- made rpmRemovePackage() print message in verbose mode
