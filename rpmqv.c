@@ -929,7 +929,7 @@ int main(int argc, const char ** argv)
 
 	  case GETOPT_RCFILE:
 	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
-	    fprintf(stderr, _("Use \"--macros <file:...>\" instead..\n"));
+	    fprintf(stderr, _("Use \"--macros <file:...>\" instead.\n"));
 	    exit(EXIT_FAILURE);
 	    /*@notreached@*/ break;
 
