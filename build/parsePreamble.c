@@ -475,6 +475,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
     return 0;
 }
 
+/* This table has to be in a peculiar order.  If one tag is the */
+/* same as another, plus a few letters, it must come first.     */
+
 static struct PreambleRec {
     int tag;
     int len;
@@ -511,8 +514,8 @@ static struct PreambleRec {
     {RPMTAG_PREREQ,        0, 0, "prereq"},
     {RPMTAG_CONFLICTFLAGS, 0, 0, "conflicts"},
     {RPMTAG_OBSOLETES,     0, 0, "obsoletes"},
-    {RPMTAG_PREFIXES,      0, 0, "prefix"},
     {RPMTAG_PREFIXES,      0, 0, "prefixes"},
+    {RPMTAG_PREFIXES,      0, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, 0, "buildroot"},
     {RPMTAG_BUILDARCHS,    0, 0, "buildarchitectures"},
     {RPMTAG_AUTOREQPROV,   0, 0, "autoreqprov"},

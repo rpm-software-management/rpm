@@ -268,7 +268,7 @@ static char *doUntar(Spec spec, int c, int quietly)
 		"  exit $STATUS\n"
 		"fi",
 		(compressed == COMPRESSED_BZIP2) ?
-		rpmGetVar(RPMVAR_GZIPBIN) : rpmGetVar(RPMVAR_BZIP2BIN),
+		rpmGetVar(RPMVAR_BZIP2BIN) : rpmGetVar(RPMVAR_GZIPBIN),
 		file, taropts);
     } else {
 	sprintf(buf, "tar %s %s", taropts, file);
@@ -434,7 +434,7 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
 		"fi",
 		c,
 		(compressed == COMPRESSED_BZIP2) ?
-		rpmGetVar(RPMVAR_GZIPBIN) : rpmGetVar(RPMVAR_BZIP2BIN),
+		rpmGetVar(RPMVAR_BZIP2BIN) : rpmGetVar(RPMVAR_GZIPBIN),
 		file, strip, args);
     } else {
 	sprintf(buf,
