@@ -100,14 +100,20 @@ static void init_arch_os(void)
     }
 
     uname(&un);
-    if ((!strcmp(un.machine, "osfmach3_i386 machine")) ||
+    if ((!strcmp(un.machine, "osfmach3_i986")) ||
+	(!strcmp(un.machine, "osfmach3_i886")) ||
+	(!strcmp(un.machine, "osfmach3_i786")) ||
+	(!strcmp(un.machine, "osfmach3_i686")) ||
+	(!strcmp(un.machine, "osfmach3_i586")) ||
+	(!strcmp(un.machine, "osfmach3_i486")) ||
+	(!strcmp(un.machine, "osfmach3_i386")) ||
 	(!strcmp(un.machine, "i986")) ||
 	(!strcmp(un.machine, "i886")) ||
 	(!strcmp(un.machine, "i786")) ||
 	(!strcmp(un.machine, "i686")) ||
 	(!strcmp(un.machine, "i586")) ||
 	(!strcmp(un.machine, "i486")) ||
-	(!strcmp(un.machine, "i386"))) {
+	(!strcmp(un.machine, "i386")) {
 	archnum = 1;
 	archname = "i386";
     } else if (!strcmp(un.machine, "alpha")) {
