@@ -113,7 +113,9 @@ typedef uint32_t mphw;
 typedef uint64_t mpdw;
 # endif
 typedef uint32_t mpw;
+/*@-typeuse@*/
 typedef uint16_t mphw;
+/*@=typeuse@*/
 #else
 # error
 #endif

@@ -84,6 +84,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 		nblocks--;
 
+/*@-usedef@*/ /* LCL: dst is initialized. */
 		while (nblocks > 0)
 		{
 			for (i = 0; i < blockwords; i++)
@@ -99,6 +100,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 		for (i = 0; i < blockwords; i++)
 			fdback[i] = dst[i-blockwords];
+/*@=usedef@*/
 	}
 	return 0;
 }
@@ -108,7 +110,7 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
 	register int blockwords = bc->blocksize >> 2;
 	register uint32_t* fdback = bc->getfb(bp);
-	register uint32_t* buf = (uint32_t*) malloc(blockwords * sizeof(uint32_t));
+	register uint32_t* buf = (uint32_t*) malloc(blockwords * sizeof(*buf));
 
 	if (buf)
 	{
@@ -122,7 +124,9 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			for (i = 0; i < blockwords; i++)
 			{
 				tmp = src[i];
+/*@-usedef@*/ /* LCL: buf is initialized. */
 				dst[i] = buf[i] ^ fdback[i];
+/*@-usedef@*/
 				fdback[i] = tmp;
 			}
 

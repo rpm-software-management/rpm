@@ -42,8 +42,8 @@ const hashFunction md5 = { "MD5", sizeof(md5Param), 64, 16, (hashFunctionReset) 
 
 int md5Reset(register md5Param* p)
 {
-	memcpy(p->h, md5hinit, 4 * sizeof(uint32_t));
-	memset(p->data, 0, 16 * sizeof(uint32_t));
+	memcpy(p->h, md5hinit, sizeof(p->h));
+	memset(p->data, 0, sizeof(p->data));
 	#if (MP_WBITS == 64)
 	mpzero(1, p->length);
 	#elif (MP_WBITS == 32)

@@ -71,39 +71,40 @@ int dhaes_pUsable(const dhaes_pParameters* params)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int dhaes_pContextInit       (dhaes_pContext* ctxt, const dhaes_pParameters* params)
-	/*@modifies ctxt */;
+int dhaes_pContextInit       (/*@special@*/ dhaes_pContext* ctxt, const dhaes_pParameters* params)
+	/*@defines ctxt->hash, ctxt->cipher, ctxt->mac @*/
+	/*@modifies ctxt @*/;
 /*@=exportlocal@*/
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pri)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pub)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dhaes_pContextFree       (/*@only@*/ dhaes_pContext* ctxt)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 /**
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mpnumber* ephemeralPublicKey,       mpnumber* mac, const memchunk* cleartext, randomGeneratorContext* rng)
-	/*@modifies ctxt, ephemeralPublicKey, mac, rng */;
+	/*@modifies ctxt, ephemeralPublicKey, mac, rng @*/;
 
 /**
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralPublicKey, const mpnumber* mac, const memchunk* ciphertext)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }

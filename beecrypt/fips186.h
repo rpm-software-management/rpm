@@ -90,7 +90,7 @@ extern BEECRYPTAPI const randomGenerator fips186prng;
 /*@-exportlocal@*/
 BEECRYPTAPI
 int fips186Setup  (fips186Param* fp)
-	/*@modifies fp */;
+	/*@modifies fp @*/;
 /*@=exportlocal@*/
 
 /**
@@ -98,7 +98,7 @@ int fips186Setup  (fips186Param* fp)
 /*@-exportlocal@*/
 BEECRYPTAPI
 int fips186Seed   (fips186Param* fp, const byte* data, size_t size)
-	/*@modifies fp */;
+	/*@modifies fp @*/;
 /*@=exportlocal@*/
 
 /**
@@ -106,7 +106,7 @@ int fips186Seed   (fips186Param* fp, const byte* data, size_t size)
 /*@-exportlocal@*/
 BEECRYPTAPI
 int fips186Next   (fips186Param* fp, byte* data, size_t size)
-	/*@modifies fp, data */;
+	/*@modifies fp, data @*/;
 /*@=exportlocal@*/
 
 /**
@@ -114,7 +114,7 @@ int fips186Next   (fips186Param* fp, byte* data, size_t size)
 /*@-exportlocal@*/
 BEECRYPTAPI
 int fips186Cleanup(fips186Param* fp)
-	/*@modifies fp */;
+	/*@modifies fp @*/;
 /*@=exportlocal@*/
 
 #ifdef __cplusplus

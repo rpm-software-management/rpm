@@ -402,7 +402,7 @@ fprintf(stderr, "--- b64decode %c(%02x) %02x\n", *t, (unsigned)(*t & 0xff), (uns
 	}
     }
     
-    if (ns & 0x3)	return 2;
+    if (((unsigned)ns) & 0x3)	return 2;
 
     nt = (ns / 4) * 3;
     t = te = malloc(nt + 1);

@@ -44,19 +44,19 @@ extern "C" {
  */
 BEECRYPTAPI /*@unused@*/
 int dlpk_pInit(dlpk_p* pk)
-	/*@modifies pk */;
+	/*@modifies pk @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dlpk_pFree(dlpk_p* pk)
-	/*@modifies pk */;
+	/*@modifies pk @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
-	/*@modifies dst */;
+	/*@modifies dst @*/;
 
 /**
  */

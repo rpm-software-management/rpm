@@ -71,7 +71,7 @@ BEECRYPTAPI /*@unused@*/
 void mpcopy(size_t size, /*@out@*/ mpw* dst, const mpw* src)
 	/*@modifies dst @*/;
 #ifndef ASM_MPCOPY
-# define mpcopy(size, dst, src) memcpy(dst, src, MP_WORDS_TO_BYTES(size))
+# define mpcopy(size, dst, src) memcpy(dst, src, MP_WORDS_TO_BYTES((unsigned)size))
 #endif
 
 /**
@@ -80,7 +80,7 @@ BEECRYPTAPI /*@unused@*/
 void mpmove(size_t size, /*@out@*/ mpw* dst, const mpw* src)
 	/*@modifies dst @*/;
 #ifndef ASM_MPMOVE
-# define mpmove(size, dst, src) memmove(dst, src, MP_WORDS_TO_BYTES(size))
+# define mpmove(size, dst, src) memmove(dst, src, MP_WORDS_TO_BYTES((unsigned)size))
 #endif
 
 /**
@@ -353,7 +353,7 @@ size_t mpsize(size_t size, const mpw* data)
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI
 size_t mpbits(size_t size, const mpw* data)
 	/*@*/;
 
@@ -365,7 +365,7 @@ size_t mpmszcnt(size_t size, const mpw* data)
 
 /**
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 size_t mpbitcnt(size_t size, const mpw* data)
 	/*@*/;
 
@@ -379,11 +379,9 @@ size_t mplszcnt(size_t size, const mpw* data)
 
 /**
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
 void mplshift(size_t size, mpw* data, size_t count)
 	/*@modifies data @*/;
-/*@=exportlocal@*/
 
 /**
  */
@@ -455,9 +453,11 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, /*@out@*/ mpw* res
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+/*@-exportlocal@*/
+BEECRYPTAPI
 mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  */
@@ -467,7 +467,7 @@ mpw mpnmodw(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, mpw y, /*@out
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI
 void mpnmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* workspace)
 	/*@modifies result, workspace @*/;
 
@@ -486,26 +486,26 @@ void mpprint(/*@null@*/ FILE * fp, size_t size, /*@null@*/ const mpw* data)
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI
 void mpprintln(/*@null@*/ FILE * fp, size_t size, /*@null@*/ const mpw* data)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI
 int i2osp(/*@out@*/ byte *osdata, size_t ossize, const mpw* idata, size_t isize)
 	/*@modifies osdata @*/;
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI
 int os2ip(/*@out@*/ mpw *idata, size_t isize, const byte* osdata, size_t ossize)
 	/*@modifies idata @*/;
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI
 int hs2ip(/*@out@*/ mpw* idata, size_t isize, const char* hsdata, size_t hssize)
 	/*@modifies idata @*/;
 

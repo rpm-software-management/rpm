@@ -113,9 +113,12 @@ void mpnset(mpnumber* n, size_t size, const mpw* data)
 			n->data = (mpw*) malloc(size * sizeof(*n->data));
 
 		if (n->data && data)
+		{
+			n->size = size;
 			/*@-nullpass@*/ /* data is notnull */
-			mpcopy(n->size = size, n->data, data);
+			mpcopy(n->size, n->data, data);
 			/*@=nullpass@*/
+		}
 		else
 		{
 			n->size = 0;

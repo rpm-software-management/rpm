@@ -41,9 +41,9 @@
 #include "mp.h"
 #include "debug.h"
 
-#define hiBit(a)		((a) & 0x80000000)
-#define loBit(a)		((a) & 0x1)
-#define loBits(a)		((a) & 0x7FFFFFFF)
+#define hiBit(a)		((a) & 0x80000000U)
+#define loBit(a)		((a) & 0x1U)
+#define loBits(a)		((a) & 0x7FFFFFFFU)
 #define mixBits(a, b)	(hiBit(a) | loBits(b))
 
 /*@-sizeoftype@*/
@@ -182,8 +182,8 @@ int mtprngNext(mtprngParam* mp, uint32_t* data, size_t size)
 
 			tmp = *(mp->nextw++);
 			tmp ^= (tmp >> 11);
-			tmp ^= (tmp << 7) & 0x9D2C5680;
-			tmp ^= (tmp << 15) & 0xEFC60000;
+			tmp ^= (tmp << 7) & 0x9D2C5680U;
+			tmp ^= (tmp << 15) & 0xEFC60000U;
 			tmp ^= (tmp >> 18);
 			mp->left--;
 			*(data++) = tmp;

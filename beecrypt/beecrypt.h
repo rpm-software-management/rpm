@@ -253,7 +253,8 @@ extern "C" {
  * Initialize a randomGenerator instance.
  */
 BEECRYPTAPI /*@unused@*/
-int randomGeneratorContextInit(randomGeneratorContext* ctxt, /*@observer@*/ /*@dependent@*/ const randomGenerator* rng)
+int randomGeneratorContextInit(/*@special@*/ /*@null@*/ randomGeneratorContext* ctxt, /*@observer@*/ /*@dependent@*/ /*@null@*/ const randomGenerator* rng)
+	/*@defines ctxt->rng, ctxt->param @*/
 	/*@modifies ctxt->rng, ctxt->param @*/;
 
 /** \ingroup PRNG_m
@@ -400,8 +401,9 @@ extern "C" {
  * Initialize a hashFunction instance.
  */
 BEECRYPTAPI
-int hashFunctionContextInit(hashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const hashFunction* hash)
-	/*@modifies ctxt->algo, ctxt->param */;
+int hashFunctionContextInit(/*@special@*/ hashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const hashFunction* hash)
+	/*@defines ctxt->algo, ctxt->param @*/
+	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup HASH_m
  * Destroy a hashFunction instance.
@@ -409,49 +411,51 @@ int hashFunctionContextInit(hashFunctionContext* ctxt, /*@observer@*/ /*@depende
 BEECRYPTAPI
 int hashFunctionContextFree(/*@special@*/ hashFunctionContext* ctxt)
 	/*@releases ctxt->param @*/
-	/*@modifies ctxt->algo, ctxt->param */;
+	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
 int hashFunctionContextReset(hashFunctionContext* ctxt)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI /*@unused@*/
 int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, size_t size)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI /*@unused@*/
 int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
 int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
 int hashFunctionContextDigest(hashFunctionContext* ctxt, byte* digest)
-	/*@modifies ctxt, *digest */;
+	/*@modifies ctxt, *digest @*/;
 
 /** \ingroup HASH_m
  */
+/*@-exportlocal@*/
 BEECRYPTAPI
 int hashFunctionContextDigestMP(hashFunctionContext* ctxt, mpnumber* d)
-	/*@modifies ctxt, *d */;
+	/*@modifies ctxt, *d @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI /*@unused@*/
 int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* d)
-	/*@modifies ctxt */;
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }
@@ -602,7 +606,8 @@ extern "C" {
  * Initialize a keyedHashFunction instance.
  */
 BEECRYPTAPI
-int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const keyedHashFunction* mac)
+int keyedHashFunctionContextInit(/*@special@*/ keyedHashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const keyedHashFunction* mac)
+	/*@defines ctxt->algo, ctxt->param @*/
 	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup HMAC_m
@@ -646,7 +651,7 @@ int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnum
 
 /** \ingroup HMAC_m
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* digest)
 	/*@modifies ctxt, *digest @*/;
 
@@ -679,34 +684,6 @@ typedef enum
 	ENCRYPT,
 	DECRYPT
 } cipherOperation;
-
-/** \ingroup BC_m
- * @param param		blockcipher parameters
- * @param size		no. of ints
- * @retval dst		ciphertext block
- * @param src		plaintext block
- * @return		0 on success, -1 on failure
- */
-typedef int (*blockModeEncrypt) (blockCipherParam* param, int count, byte* dst, const byte* src)
-	/*@modifies *param, *dst @*/;
-
-/** \ingroup BC_m
- * @param param		blockcipher parameters
- * @param size		no. of ints
- * @retval dst		plainttext block
- * @param src		ciphertext block
- * @return		0 on success, -1 on failure
- */
-typedef int (*blockModeDecrypt) (blockCipherParam* param, int count, byte* dst, const byte* src)
-	/*@modifies *param, *dst @*/;
-
-/** \ingroup BC_m
- */
-typedef struct
-{
-	const blockModeEncrypt	encrypt;
-	const blockModeDecrypt	decrypt;
-} blockMode;
 
 /** \ingroup BC_m
  * Setup the blockcipher parameters with the given secret key for either
@@ -845,7 +822,8 @@ extern "C" {
  * Initialize a blockCipher instance.
  */
 BEECRYPTAPI
-int blockCipherContextInit(blockCipherContext* ctxt, /*@observer@*/ /*@dependent@*/ const blockCipher* ciph)
+int blockCipherContextInit(/*@special@*/ blockCipherContext* ctxt, /*@observer@*/ /*@dependent@*/ const blockCipher* ciph)
+	/*@defines ctxt->algo, ctxt->param, ctxt->op @*/
 	/*@modifies ctxt->algo, ctxt->param, ctxt->op @*/;
 
 /** \ingroup BC_m

@@ -57,7 +57,7 @@
 #  include <aio.h>
 #  if defined(__LCLINT__)
 /*@-declundef -exportheader -incondefs -constuse -warnmissingglobs @*/
-	extern int
+	extern int /*@unused@*/
 nanosleep (const struct timespec *__requested_time,
                       /*@out@*/ /*@null@*/ struct timespec *__remaining)
 	/*@modifies *__remaining, errno @*/;
@@ -156,7 +156,8 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 	/*@globals errno @*/
 	/*@modifies sampledata, errno @*/
 {
-	register int rc = 0, i;
+	register int rc = 0;
+	register unsigned i;
 
 	switch (samplesize)
 	{
@@ -198,7 +199,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 
 					for (i = 0; i < samplecount; i++)
 					{
-						if (i & 1)
+						if (i & 1U)
 						{
 							if ((samples[i] & 0x1) != 0)
 								ones_count_left++;
@@ -339,9 +340,9 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, int swap, int timeout, byte* data, size_t size)
 #else
 /*@-mustmod@*/ /* data is modified, annotations incorrect */
-static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, /*@out@*/ byte* data, size_t size)
+static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, /*@unused@*/ int timeout, /*@out@*/ byte* data, size_t size)
 	/*@globals errno, fileSystem @*/
-	/*@modifies data, errno, fileSystem @*/
+	/*@modifies *data, errno, fileSystem @*/
 #endif
 {
 	size_t randombits = size << 3;
@@ -963,8 +964,8 @@ static int opendevice(const char *device)
  * @param size
  * @return
  */
-static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
-	/*@*/
+static int entropy_randombits(int fd, /*@unused@*/ int timeout, byte* data, size_t size)
+	/*@modifies *data @*/
 {
 	register int rc;
 
@@ -1109,8 +1110,10 @@ static int entropy_ttybits(int fd, byte* data, size_t size)
 	tio_set.c_cc[VMIN] = 1;				/* read 1 tty character at a time */
 	tio_set.c_cc[VTIME] = 0;			/* don't timeout the read */
 	/*@=noeffect@*/
+/*@-bitwisesigned@*/
 	tio_set.c_iflag |= IGNBRK;			/* ignore <ctrl>-c */
 	tio_set.c_lflag &= ~(ECHO|ICANON);	/* don't echo characters */
+/*@=bitwisesigned@*/
 
 	/* change the tty settings, and flush input characters */
 	if (tcsetattr(fd, TCSAFLUSH, &tio_set) < 0)
@@ -1329,9 +1332,9 @@ int entropy_dev_dsp(byte *data, size_t size)
 		int mask, format, samplesize, stereo, speed, swap;
 
 		mask = 0;
-		/*@-shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation@*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_GETFMTS, &mask)) < 0)
-		/*@=shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation@*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_GETFMTS failed");
@@ -1341,6 +1344,7 @@ int entropy_dev_dsp(byte *data, size_t size)
 			goto dev_dsp_end;
 		}
 
+/*@-bitwisesigned@*/
 		#if WORDS_BIGENDIAN
 		if (mask & AFMT_S16_BE)
 		{
@@ -1383,10 +1387,11 @@ int entropy_dev_dsp(byte *data, size_t size)
 
 			goto dev_dsp_end;
 		}
+/*@=bitwisesigned@*/
 
-		/*@-shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation@*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_SETFMT, &format)) < 0)
-		/*@=shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation@*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_SETFMT failed");
@@ -1398,14 +1403,14 @@ int entropy_dev_dsp(byte *data, size_t size)
 
 		/* the next two commands are not critical */
 		stereo = 1;
-		/*@-shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation@*/
 		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
-		/*@=shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation@*/
 
 		speed = 44100;
-		/*@-shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation@*/
 		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
-		/*@=shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation@*/
 
 		rc = entropy_noise_gather(dev_dsp_fd, samplesize, 2, swap, timeout_env ? atoi(timeout_env) : 1000, data, size);
 	}

@@ -227,7 +227,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 	if (ctxt->hash.algo->digestsize > 0)
 	{
 		byte* mackey = digest;
-		byte* cipherkey = digest + ((ctxt->mackeybits + 7) >> 3);
+		byte* cipherkey = digest + ((ctxt->mackeybits + 7U) >> 3);
 
 		if ((rc = keyedHashFunctionContextSetup(&ctxt->mac, mackey, ctxt->mackeybits)))
 			goto setup_end;

@@ -784,10 +784,10 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			{
 				t = rk[3];
 				rk[4] = rk[0] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00) ^
-					(_ae4[(t >> 24)       ] & 0x000000ff) ^
+					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
+					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
+					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
+					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
 					 _arc[i];
 				rk[5] = rk[1] ^ rk[4];
 				rk[6] = rk[2] ^ rk[5];
@@ -803,10 +803,10 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			{
 				t = rk[5];
 				rk[ 6] = rk[0] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00) ^
-					(_ae4[(t >> 24)       ] & 0x000000ff) ^
+					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
+					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
+					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
+					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
 					 _arc[i];
 				rk[ 7] = rk[1] ^ rk[ 6];
 				rk[ 8] = rk[2] ^ rk[ 7];
@@ -824,10 +824,10 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			{
 				t = rk[7];
 				rk[8] = rk[0] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00) ^
-					(_ae4[(t >> 24)       ] & 0x000000ff) ^
+					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
+					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
+					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
+					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
 					 _arc[i];
 				rk[ 9] = rk[1] ^ rk[ 8];
 				rk[10] = rk[2] ^ rk[ 9];
@@ -836,10 +836,10 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 					break;
 				t = rk[7];
 				rk[12] = rk[4] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00) ^
-					(_ae4[(t >> 24)       ] & 0x000000ff);
+					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
+					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
+					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
+					(_ae4[(t >> 24)       ] & 0x000000ffU);
 				rk[13] = rk[5] ^ rk[12];
 				rk[14] = rk[6] ^ rk[13];
 				rk[15] = rk[7] ^ rk[14];
@@ -954,28 +954,28 @@ int aesSetIV(aesParam* ap, const byte* iv)
 
 #define elr() \
 	s0 = \
-		(_ae4[(t0 >> 24)       ] & 0xff000000) ^ \
-		(_ae4[(t1 >> 16) & 0xff] & 0x00ff0000) ^ \
-		(_ae4[(t2 >>  8) & 0xff] & 0x0000ff00) ^ \
-		(_ae4[(t3      ) & 0xff] & 0x000000ff) ^ \
+		(_ae4[(t0 >> 24)       ] & 0xff000000U) ^ \
+		(_ae4[(t1 >> 16) & 0xff] & 0x00ff0000U) ^ \
+		(_ae4[(t2 >>  8) & 0xff] & 0x0000ff00U) ^ \
+		(_ae4[(t3      ) & 0xff] & 0x000000ffU) ^ \
 		rk[0]; \
 	s1 = \
-		(_ae4[(t1 >> 24)       ] & 0xff000000) ^ \
-		(_ae4[(t2 >> 16) & 0xff] & 0x00ff0000) ^ \
-		(_ae4[(t3 >>  8) & 0xff] & 0x0000ff00) ^ \
-		(_ae4[(t0      ) & 0xff] & 0x000000ff) ^ \
+		(_ae4[(t1 >> 24)       ] & 0xff000000U) ^ \
+		(_ae4[(t2 >> 16) & 0xff] & 0x00ff0000U) ^ \
+		(_ae4[(t3 >>  8) & 0xff] & 0x0000ff00U) ^ \
+		(_ae4[(t0      ) & 0xff] & 0x000000ffU) ^ \
 		rk[1]; \
 	s2 = \
-		(_ae4[(t2 >> 24)       ] & 0xff000000) ^ \
-		(_ae4[(t3 >> 16) & 0xff] & 0x00ff0000) ^ \
-		(_ae4[(t0 >>  8) & 0xff] & 0x0000ff00) ^ \
-		(_ae4[(t1      ) & 0xff] & 0x000000ff) ^ \
+		(_ae4[(t2 >> 24)       ] & 0xff000000U) ^ \
+		(_ae4[(t3 >> 16) & 0xff] & 0x00ff0000U) ^ \
+		(_ae4[(t0 >>  8) & 0xff] & 0x0000ff00U) ^ \
+		(_ae4[(t1      ) & 0xff] & 0x000000ffU) ^ \
 		rk[2]; \
 	s3 = \
-		(_ae4[(t3 >> 24)       ] & 0xff000000) ^ \
-		(_ae4[(t0 >> 16) & 0xff] & 0x00ff0000) ^ \
-		(_ae4[(t1 >>  8) & 0xff] & 0x0000ff00) ^ \
-		(_ae4[(t2      ) & 0xff] & 0x000000ff) ^ \
+		(_ae4[(t3 >> 24)       ] & 0xff000000U) ^ \
+		(_ae4[(t0 >> 16) & 0xff] & 0x00ff0000U) ^ \
+		(_ae4[(t1 >>  8) & 0xff] & 0x0000ff00U) ^ \
+		(_ae4[(t2      ) & 0xff] & 0x000000ffU) ^ \
 		rk[3];
 
 #ifndef ASM_AESENCRYPT
@@ -1092,28 +1092,28 @@ int aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
 
 #define dlr() \
    	s0 = \
-   		(_ad4[(t0 >> 24)       ] & 0xff000000) ^ \
-   		(_ad4[(t3 >> 16) & 0xff] & 0x00ff0000) ^ \
-   		(_ad4[(t2 >>  8) & 0xff] & 0x0000ff00) ^ \
-   		(_ad4[(t1      ) & 0xff] & 0x000000ff) ^ \
+   		(_ad4[(t0 >> 24)       ] & 0xff000000U) ^ \
+   		(_ad4[(t3 >> 16) & 0xff] & 0x00ff0000U) ^ \
+   		(_ad4[(t2 >>  8) & 0xff] & 0x0000ff00U) ^ \
+   		(_ad4[(t1      ) & 0xff] & 0x000000ffU) ^ \
    		rk[0]; \
    	s1 = \
-   		(_ad4[(t1 >> 24)       ] & 0xff000000) ^ \
-   		(_ad4[(t0 >> 16) & 0xff] & 0x00ff0000) ^ \
-   		(_ad4[(t3 >>  8) & 0xff] & 0x0000ff00) ^ \
-   		(_ad4[(t2      ) & 0xff] & 0x000000ff) ^ \
+   		(_ad4[(t1 >> 24)       ] & 0xff000000U) ^ \
+   		(_ad4[(t0 >> 16) & 0xff] & 0x00ff0000U) ^ \
+   		(_ad4[(t3 >>  8) & 0xff] & 0x0000ff00U) ^ \
+   		(_ad4[(t2      ) & 0xff] & 0x000000ffU) ^ \
    		rk[1]; \
    	s2 = \
-   		(_ad4[(t2 >> 24)       ] & 0xff000000) ^ \
-   		(_ad4[(t1 >> 16) & 0xff] & 0x00ff0000) ^ \
-   		(_ad4[(t0 >>  8) & 0xff] & 0x0000ff00) ^ \
-   		(_ad4[(t3      ) & 0xff] & 0x000000ff) ^ \
+   		(_ad4[(t2 >> 24)       ] & 0xff000000U) ^ \
+   		(_ad4[(t1 >> 16) & 0xff] & 0x00ff0000U) ^ \
+   		(_ad4[(t0 >>  8) & 0xff] & 0x0000ff00U) ^ \
+   		(_ad4[(t3      ) & 0xff] & 0x000000ffU) ^ \
    		rk[2]; \
    	s3 = \
-   		(_ad4[(t3 >> 24)       ] & 0xff000000) ^ \
-   		(_ad4[(t2 >> 16) & 0xff] & 0x00ff0000) ^ \
-   		(_ad4[(t1 >>  8) & 0xff] & 0x0000ff00) ^ \
-   		(_ad4[(t0      ) & 0xff] & 0x000000ff) ^ \
+   		(_ad4[(t3 >> 24)       ] & 0xff000000U) ^ \
+   		(_ad4[(t2 >> 16) & 0xff] & 0x00ff0000U) ^ \
+   		(_ad4[(t1 >>  8) & 0xff] & 0x0000ff00U) ^ \
+   		(_ad4[(t0      ) & 0xff] & 0x000000ffU) ^ \
    		rk[3];
 
 #ifndef ASM_AESDECRYPT

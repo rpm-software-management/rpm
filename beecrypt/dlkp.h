@@ -45,25 +45,25 @@ extern "C" {
  */
 BEECRYPTAPI /*@unused@*/
 int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
-	/*@modifies kp, rgc */;
+	/*@modifies kp, rgc @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dlkp_pInit(dlkp_p* kp)
-	/*@modifies kp */;
+	/*@modifies kp @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dlkp_pFree(dlkp_p* kp)
-	/*@modifies kp */;
+	/*@modifies kp @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
 int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
-	/*@modifies dst */;
+	/*@modifies dst @*/;
 
 #ifdef __cplusplus
 }

@@ -53,9 +53,11 @@ memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 		byte padvalue;
 		int i;
 
+/*@-usedef@*/ /* LCL: tmp->{data,size} not initialized? */
 		if (tmp->data == (byte*) 0)
 			return (memchunk*) 0;
 		padvalue = tmp->data[tmp->size - 1];
+/*@=usedef@*/
 		if (padvalue > blockbytes)
 			return (memchunk*) 0;
 

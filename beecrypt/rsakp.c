@@ -39,7 +39,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 	 * Generates an RSA Keypair for use with the Chinese Remainder Theorem
 	 */
 
-	register size_t pqsize = (nsize+1) >> 1;
+	register size_t pqsize = (nsize + 1U) >> 1;
 	register mpw* temp = (mpw*) malloc((16*pqsize+6) * sizeof(*temp));
 	register int newn = 1;
 

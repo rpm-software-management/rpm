@@ -57,25 +57,25 @@ extern BEECRYPTAPI const hashFunction sha1;
  */
 BEECRYPTAPI
 void sha1Process(sha1Param* p)
-	/*@modifies p */;
+	/*@modifies p @*/;
 
 /** \ingroup HASH_sha1_m
  */
 BEECRYPTAPI /*@unused@*/
 int  sha1Reset  (sha1Param* p)
-	/*@modifies p */;
+	/*@modifies p @*/;
 
 /** \ingroup HASH_sha1_m
  */
 BEECRYPTAPI /*@unused@*/
 int  sha1Update (sha1Param* p, const byte* data, size_t size)
-	/*@modifies p */;
+	/*@modifies p @*/;
 
 /** \ingroup HASH_sha1_m
  */
 BEECRYPTAPI /*@unused@*/
 int  sha1Digest (sha1Param* p, /*@out@*/ byte* data)
-	/*@modifies p, data */;
+	/*@modifies p, data @*/;
 
 #ifdef __cplusplus
 }

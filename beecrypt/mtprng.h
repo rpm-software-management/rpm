@@ -43,7 +43,7 @@
 
 #define N	624
 #define M	397
-#define K	0x9908B0DF
+#define K	0x9908B0DFU
 
 /**
  */

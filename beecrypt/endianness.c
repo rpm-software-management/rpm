@@ -26,7 +26,7 @@
 #include "endianness.h"
 #include "debug.h"
 
-/*@-shiftimplementation@*/
+/*@-bitwisesigned -shiftimplementation@*/
 int16_t swap16(int16_t n)
 {
 	return (    ((n & 0xff) << 8) |
@@ -77,7 +77,7 @@ int64_t swap64(int64_t n)
 				((n & 0xff00000000000000L) >> 56) );
 	#endif
 }
-/*@=shiftimplementation@*/
+/*@=bitwisesigned =shiftimplementation@*/
 
 int encodeByte(javabyte b, byte *data)
 {

@@ -13,23 +13,18 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds
++likelybounds
 -bufferoverflowhigh
 -aliasunique
 -mayaliasunique
+-compdef		# 83
+-noeffectuncon		# 11
+
 -elseifcomplete
--exportheader
--exportheadervar
--exportlocal
--fcnuse
--typeuse
--varuse
--compdef
--noeffectuncon
 -whileempty
 
 # --- not-yet at strict level
--exportconst		# 4
+-exportconst		# 3
 -exportfcn		# 308
 -exporttype		# 53
 -exportvar		# 14
@@ -39,12 +34,8 @@
 
 -ptrarith		# 212
 
--compdestroy		# 6
--mustdefine		# 49
-
--bitwisesigned		# 77
--strictops		# 48
--sizeoftype		# 22
+-mustdefine		# 54
+-strictops		# 23
 
 -impcheckedstrictglobs
 -impcheckedstrictstatics
@@ -60,6 +51,7 @@
 -ansi-reserved		# goofy
 
 # --- not-yet at standard level
--boolops		# 49
+-boolops		# 53
 -predboolint		# 238
--type			# 965
++matchanyintegral
+-type			# 150

@@ -24,7 +24,6 @@
  */
 
 #include "system.h"
-
 #include "beecrypt.h"
 #include "blockmode.h"
 #include "aes.h"
@@ -40,34 +39,37 @@
 #include "sha1.h"
 #include "sha256.h"
 #include "mp.h"
-
 #include "debug.h"
 
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@unused@*/
 static const char* dsa_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@unused@*/
 static const char* dsa_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@unused@*/
 static const char* dsa_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@unused@*/
 static const char* dsa_x = "2070b3223dba372fde1c0ffc7b2e3b498b260614";
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@unused@*/
 static const char* dsa_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@unused@*/
 static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80290";
 
+/*@unused@*/
 static int testVectorInvMod(const dlkp_p* keypair)
 	/*@*/
 {
 	randomGeneratorContext rngc;
+	int rc = -1;
 
+/*@-branchstate@*/
+	/*@-modobserver -usedef @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=modobserver =usedef @*/
 	{
-		register int rc;
-
 		register size_t  size = keypair->param.p.size;
 		register mpw* temp = (mpw*) malloc((8*size+6) * sizeof(*temp));
 
+		assert(temp != NULL);
 		mpbrndinv_w(&keypair->param.n, &rngc, temp, temp+size, temp+2*size);
 
 		mpbmulmod_w(&keypair->param.n, size, temp, size, temp+size, temp, temp+2*size);
@@ -76,13 +78,15 @@ static int testVectorInvMod(const dlkp_p* keypair)
 
 		free(temp);
 
+		/*@-modobserver -usedef @*/
 		(void) randomGeneratorContextFree(&rngc);
-
-		return rc;
+		/*@=modobserver =usedef @*/
 	}
-	return -1;
+/*@=branchstate@*/
+	return rc;
 }
 
+/*@unused@*/
 static int testVectorExpMod(const dlkp_p* keypair)
 	/*@*/
 {
@@ -100,6 +104,7 @@ static int testVectorExpMod(const dlkp_p* keypair)
 	return rc;
 }
 
+/*@unused@*/
 static int testVectorElGamalV1(const dlkp_p* keypair)
 	/*@*/
 {
@@ -107,7 +112,10 @@ static int testVectorElGamalV1(const dlkp_p* keypair)
 
 	randomGeneratorContext rngc;
 
+/*@-branchstate@*/
+	/*@-modobserver -usedef @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=modobserver =usedef @*/
 	{
 		mpnumber digest, r, s;
 
@@ -116,6 +124,7 @@ static int testVectorElGamalV1(const dlkp_p* keypair)
 		mpnzero(&s);
 
 		mpnsize(&digest, 5);
+		memset(digest.data, 0, digest.size * sizeof(*digest.data));
 
 		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
 
@@ -127,11 +136,15 @@ static int testVectorElGamalV1(const dlkp_p* keypair)
 		mpnfree(&r);
 		mpnfree(&s);
 
+		/*@-modobserver -usedef @*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver =usedef @*/
 	}
+/*@=branchstate@*/
 	return rc;
 }
 
+/*@unused@*/
 static int testVectorElGamalV3(const dlkp_p* keypair)
 	/*@*/
 {
@@ -139,7 +152,10 @@ static int testVectorElGamalV3(const dlkp_p* keypair)
 
 	randomGeneratorContext rngc;
 
+/*@-branchstate@*/
+	/*@-modobserver -usedef @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=modobserver =usedef @*/
 	{
 		mpnumber digest, r, s;
 
@@ -148,6 +164,7 @@ static int testVectorElGamalV3(const dlkp_p* keypair)
 		mpnzero(&s);
 
 		mpnsize(&digest, 5);
+		memset(digest.data, 0, digest.size * sizeof(*digest.data));
 
 		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
 
@@ -159,8 +176,11 @@ static int testVectorElGamalV3(const dlkp_p* keypair)
 		mpnfree(&r);
 		mpnfree(&s);
 
+		/*@-modobserver -usedef @*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver =usedef @*/
 	}
+/*@=branchstate@*/
 	return rc;
 }
 
@@ -186,16 +206,18 @@ static uint32_t keyValue[] =
 };
 	
 static void testBlockInit(uint8_t* block, int length)
-	/*@modifies block @*/
+	/*@modifies *block @*/
 {
 	register int i;
-	for (i = 1; i <= length; i++)
-		*(block++) = (uint8_t) i;
+	for (i = 1; i <= length; i++) {
+		*block = (uint8_t) i;
+		block++;
+	}
 }
 
 static void testBlockCiphers(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	int i, k;
 
@@ -216,6 +238,13 @@ static void testBlockCiphers(void)
 
 			void* encrypt_param = (void*) malloc(tmp->paramsize);
 			void* decrypt_param = (void*) malloc(tmp->paramsize);
+
+			assert(src_block != NULL);
+			assert(enc_block != NULL);
+			assert(dec_block != NULL);
+			assert(spd_block != NULL);
+			assert(encrypt_param != NULL);
+			assert(decrypt_param != NULL);
 
 			printf("  %s:\n", tmp->name);
 
@@ -261,7 +290,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      ECB encrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
+					printf("      ECB encrypts 1M blocks of %u bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
 					#endif
 					#if HAVE_TIME_H
 					tstart = clock();
@@ -270,7 +299,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      ECB decrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
+					printf("      ECB decrypts 1M blocks of %u bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
 					#endif
 					#if HAVE_TIME_H
 					tstart = clock();
@@ -279,16 +308,16 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      CBC encrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
+					printf("      CBC encrypts 1M blocks of %u bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
 					#endif
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockDecrypt(tmp, decrypt_param, CBC, 1024 * 1024, spd_block, spd_block);
+					(void) blockDecryptCBC(tmp, decrypt_param, 1024 * 1024, spd_block, spd_block);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      CBC decrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
+					printf("      CBC decrypts 1M blocks of %u bits in %.3f seconds (%.3f MB/s)\n", tmp->blocksize << 3, ttime, (tmp->blocksize) / ttime);
 					#endif
 				}
 			}
@@ -303,8 +332,8 @@ static void testBlockCiphers(void)
 }
 
 static void testHashFunctions(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	int i, j;
 
@@ -320,6 +349,7 @@ static void testHashFunctions(void)
 		{
 			const hashFunction* tmp = hashFunctionGet(i);
 
+/*@-branchstate@*/
 			if (tmp)
 			{
 				#if HAVE_TIME_H
@@ -332,7 +362,9 @@ static void testHashFunctions(void)
 
 				printf("  %s:\n", tmp->name);
 
+				/*@-modobserver -usedef @*/
 				if (hashFunctionContextInit(&hfc, tmp) == 0)
+				/*@=modobserver =usedef @*/
 				{
 					for (j = 0; j < 4; j++)
 					{
@@ -350,18 +382,22 @@ static void testHashFunctions(void)
 						#endif
 					}
 
+					/*@-modobserver -usedef @*/
 					(void) hashFunctionContextFree(&hfc);
+					/*@=modobserver =usedef @*/
 				}
 
 				mpnfree(&digest);
 			}
+/*@=branchstate@*/
 		}
+		free(data);
 	}
 }
 
 static void testExpMods(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	/*@unchecked@*/ /*@observer@*/
 	static const char* p_512 = "ffcf0a0767f18f9b659d92b9550351430737c3633dc6ae7d52445d937d8336e07a7ccdb119e9ab3e011a8f938151230e91187f84ac05c3220f335193fc5e351b";
@@ -386,7 +422,10 @@ static void testExpMods(void)
 	mpnzero(&y);
 	mpnzero(&tmp);
 
+/*@-branchstate@*/
+	/*@-modobserver -usedef @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=modobserver =usedef @*/
 	{
 		int i;
 		#if HAVE_TIME_H
@@ -466,19 +505,23 @@ static void testExpMods(void)
 		mpnfree(&y);
 		mpnfree(&tmp);
 
+		/*@-modobserver -usedef @*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver =usedef @*/
 	}
 	else
 		printf("random generator setup problem\n");
+/*@=branchstate@*/
 }
 
 static void testRSA(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	randomGeneratorContext rngc;
 	mpnumber hm, s;
 	rsakp kp;
+	int xx;
 
 	mpnzero(&hm);
 	mpnzero(&s);
@@ -487,7 +530,10 @@ static void testRSA(void)
 
 	(void) rsakpInit(&kp);
 
+/*@-branchstate@*/
+	/*@-modobserver -usedef @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=modobserver =usedef @*/
 	{
 		int i;
 
@@ -517,7 +563,7 @@ static void testRSA(void)
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			(void) rsapricrt(&kp, &hm, &s);
+			xx = rsapricrt(&kp, &hm, &s);
 		}
 		#if HAVE_TIME_H
 		tstop = clock();
@@ -531,7 +577,7 @@ static void testRSA(void)
 		#endif
 		for (i = 0; i < 1000; i++)
 		{
-			(void) rsavrfy((rsapk*) &kp, &hm, &s);
+			xx = rsavrfy((rsapk*) &kp, &hm, &s);
 		}
 		#if HAVE_TIME_H
 		tstop = clock();
@@ -540,18 +586,23 @@ static void testRSA(void)
 		#endif
 
 		(void) rsakpFree(&kp);
+
+		/*@-modobserver -usedef @*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver =usedef @*/
 	}
+/*@=branchstate@*/
 }
 
 static void testDLAlgorithms(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	randomGeneratorContext rngc;
 	mpnumber hm, r, s;
 	dldp_p dp;
 	dlkp_p kp;
+	int xx;
 
 	mpnzero(&hm);
 	mpnzero(&r);
@@ -562,7 +613,10 @@ static void testDLAlgorithms(void)
 
 	printf("Timing Discrete Logarithm algorithms:\n");
 
+/*@-branchstate@*/
+	/*@-modobserver -usedef @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=modobserver =usedef @*/
 	{
 		int i;
 
@@ -602,13 +656,13 @@ static void testDLAlgorithms(void)
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			(void) dsasign(&kp.param.p, &kp.param.q, &kp.param.g, &rngc, &hm, &kp.x, &r, &s);
+			xx = dsasign(&kp.param.p, &kp.param.q, &kp.param.g, &rngc, &hm, &kp.x, &r, &s);
 		}
-        #if HAVE_TIME_H
-        tstop = clock();
-        ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-        printf("   100x in %.3f seconds\n", ttime);
-        #endif
+		#if HAVE_TIME_H
+		tstop = clock();
+		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
+		printf("   100x in %.3f seconds\n", ttime);
+		#endif
 
 		printf("  DSA verify:");
 		#if HAVE_TIME_H
@@ -616,7 +670,7 @@ static void testDLAlgorithms(void)
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			(void) dsavrfy(&kp.param.p, &kp.param.q, &kp.param.g, &hm, &kp.y, &r, &s);
+			xx = dsavrfy(&kp.param.p, &kp.param.q, &kp.param.g, &hm, &kp.y, &r, &s);
 		}
 		#if HAVE_TIME_H
 		tstop = clock();
@@ -630,21 +684,28 @@ static void testDLAlgorithms(void)
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
+/*@-usereleased@*/
 		(void) dldp_pgonMake(&dp, &rngc, 1024 >> 5, 768 >> 5);
+/*@=usereleased@*/
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("    done in %.3f seconds\n", ttime);
 		#endif
+/*@-usedef@*/
 		(void) dldp_pFree(&dp);
+/*@=usedef@*/
 
+		/*@-modobserver -usedef @*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver =usedef @*/
 	}
+/*@=branchstate@*/
 }
 
 int main(/*@unused@*/ int argc, /*@unused@*/ char *argv[])
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	int i, j;
 

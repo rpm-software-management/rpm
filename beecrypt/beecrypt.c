@@ -322,8 +322,6 @@ int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
 		return -1;
 
 	ctxt->algo = hash;
-	if (ctxt->param)	/* XXX error? */
-		free(ctxt->param);
 	ctxt->param = (hashFunctionParam*) calloc(hash->paramsize, 1);
 
 	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
@@ -577,8 +575,6 @@ int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHash
 		return -1;
 
 	ctxt->algo = mac;
-	if (ctxt->param)	/* XXX error? */
-		free(ctxt->param);
 	ctxt->param = (keyedHashFunctionParam*) calloc(mac->paramsize, 1);
 
 	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
@@ -849,8 +845,6 @@ int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
 		return -1;
 
 	ctxt->algo = ciph;
-	if (ctxt->param)	/* XXX error? */
-		free(ctxt->param);
 	ctxt->param = (blockCipherParam*) calloc(ciph->paramsize, 1);
 	ctxt->op = NOCRYPT;
 

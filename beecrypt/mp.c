@@ -1169,7 +1169,7 @@ mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 
 	while (count--)
 	{
-		if (carry | (xhi >= y))
+		if (((unsigned)carry) | (unsigned)(xhi >= y))
 		{
 			xhi -= y;
 			result |= 1;
@@ -1180,7 +1180,7 @@ mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 		xlo <<= 1;
 		result <<= 1;
 	}
-	if (carry | (xhi >= y))
+	if (((unsigned)carry) | (unsigned)(xhi >= y))
 	{
 		xhi -= y;
 		result |= 1;
@@ -1272,10 +1272,11 @@ void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const 
 	if (mpge(ysize, result+1, ydata))
 	{
 		(void) mpsub(ysize, result+1, ydata);
-		*(result++) = 1;
+		*result = 1;
 	}
 	else
-		*(result++) = 0;
+		*result = 0;
+	result++;
 
 	while (qsize--)
 	{

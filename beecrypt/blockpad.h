@@ -51,7 +51,7 @@ memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
 BEECRYPTAPI /*@only@*/ /*@null@*/
 memchunk* pkcs5Unpad(int blockbytes,
 		/*@returned@*/ /*@null@*/ /*@out@*/ memchunk* tmp)
-	/*@modifies tmp */;
+	/*@modifies tmp @*/;
 
 /**
  * Copy/enlarge buffer to boundary.
