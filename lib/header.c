@@ -30,6 +30,7 @@ struct headerToken {
     int data_used;
 
     int mutable;
+    int fully_sorted;  /* This means the index and the data! */
 };
 
 struct indexEntry {
@@ -105,6 +106,8 @@ int nextIterator(HeaderIterator iter,
 	}
 	/* Fall through to STRING_ARRAY_TYPE */
     case STRING_ARRAY_TYPE:
+        /* Correction! */
+        *type = STRING_ARRAY_TYPE;
 	/* Otherwise, build up an array of char* to return */
 	x = index[slot].count;
 	*p = malloc(x * sizeof(char *));
@@ -124,26 +127,6 @@ int nextIterator(HeaderIterator iter,
     return 1;
 }
 
-Header copyHeader(Header h)
-{
-    int_32 tag, type, count;
-    void *ptr;
-    HeaderIterator headerIter = initIterator(h);
-    Header res = newHeader();
-
-    while (nextIterator(headerIter, &tag, &type, &ptr, &count)) {
-	addEntry(res, tag, type, ptr, count);
-    }
-
-    return res;
-}
-
-/********************************************************************/
-/*                                                                  */
-/* Reading and writing headers                                      */
-/*                                                                  */
-/********************************************************************/
-
 static int indexSort(const void *ap, const void *bp)
 {
     int_32 a, b;
@@ -160,12 +143,42 @@ static int indexSort(const void *ap, const void *bp)
     }
 }
 
+Header copyHeader(Header h)
+{
+    int_32 tag, type, count;
+    void *ptr;
+    HeaderIterator headerIter;
+    Header res = newHeader();
+   
+    /* Sort the index */
+    qsort(h->index, h->entries_used, sizeof(struct indexEntry), indexSort);
+    headerIter = initIterator(h);
+
+    /* The result here is that the data is also sorted */
+    while (nextIterator(headerIter, &tag, &type, &ptr, &count)) {
+	addEntry(res, tag, type, ptr, count);
+    }
+
+    res->fully_sorted = 1;
+    return res;
+}
+
+/********************************************************************/
+/*                                                                  */
+/* Reading and writing headers                                      */
+/*                                                                  */
+/********************************************************************/
+
 void writeHeader(int fd, Header h)
 {
     int_32 l;
-    struct indexEntry *sortedIndex, *p;
+    struct indexEntry *p;
+    struct indexEntry *copyIndex;
     int c;
     void *converted_data;
+
+    /* This magic actually sorts the data */
+    sizeofHeader(h);
 
     /* We must write using network byte order! */
     
@@ -173,16 +186,17 @@ void writeHeader(int fd, Header h)
     l = htonl(h->entries_used);
     write(fd, &l, sizeof(l));
 
-    /* And the length of the data (number of bytes) */
+    /* Then write the length of the data (number of bytes) */
     l = htonl(h->data_used);
     write(fd, &l, sizeof(l));
 
-    /* Sort and convert the index */
-    sortedIndex = malloc(sizeof(struct indexEntry) * h->entries_used);
-    memcpy(sortedIndex, h->index, sizeof(struct indexEntry) * h->entries_used);
-    qsort(sortedIndex, h->entries_used, sizeof(struct indexEntry), indexSort);
+    /* Make a copy of the index for htonl()  */
+    copyIndex = malloc(sizeof(struct indexEntry) * h->entries_used);
+    memcpy(copyIndex, h->index, sizeof(struct indexEntry) * h->entries_used);
+
+    /* Convert the index */
     c = h->entries_used;
-    p = sortedIndex;
+    p = copyIndex;
     while (c--) {
 	p->tag = htonl(p->tag);
 	p->type = htonl(p->type);
@@ -192,8 +206,8 @@ void writeHeader(int fd, Header h)
     }
 
     /* Write the index */
-    write(fd, sortedIndex, sizeof(struct indexEntry) * h->entries_used);
-    free(sortedIndex);
+    write(fd, copyIndex, sizeof(struct indexEntry) * h->entries_used);
+    free(copyIndex);
 
     /* Finally convert and write the data */
     converted_data = dataHostToNetwork(h);
@@ -296,6 +310,7 @@ Header readHeader(int fd)
     free(h->data);
     h->data = converted_data;
 
+    h->fully_sorted = 1;
     h->mutable = 0;
 
     return h;
@@ -377,6 +392,7 @@ Header loadHeader(void *pv)
     h->data_used = dl;
     h->data = p;
 
+    h->fully_sorted = 0;
     h->mutable = 0;
 
     return h;
@@ -625,6 +641,8 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	}
 	/* Fall through to STRING_ARRAY_TYPE */
     case STRING_ARRAY_TYPE:
+        /* Correction! */
+        *type = STRING_ARRAY_TYPE;
 	/* Otherwise, build up an array of char* to return */
 	x = index->count;
 	*p = malloc(x * sizeof(char *));
@@ -664,6 +682,7 @@ Header newHeader()
     h->entries_malloced = INDEX_MALLOC_SIZE;
     h->entries_used = 0;
 
+    h->fully_sorted = 0;
     h->mutable = 1;
 
     return (Header) h;
@@ -681,12 +700,23 @@ void freeHeader(Header h)
 unsigned int sizeofHeader(Header h)
 {
     unsigned int size;
+    Header newh;
+    Header temph;
 
+    /* Do some real magic to determine the ON-DISK size */
+    if (!h->fully_sorted) {
+        newh = copyHeader(h);
+        temph = malloc(sizeof(*temph));
+        *temph = *h;
+        *h = *newh;
+        freeHeader(temph);
+    }
+   
     size = sizeof(int_32);	/* count of index entries */
     size += sizeof(int_32);	/* length of data */
     size += sizeof(struct indexEntry) * h->entries_used;
     size += h->data_used;
-
+   
     return size;
 }
 
@@ -757,6 +787,9 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	    break;
 	}
 	/* Otherwise fall through to STRING_ARRAY_TYPE */
+        /* This should not be allowed */
+	fprintf(stderr, "addEntry() STRING_TYPE count must be 0.\n");
+	exit(1);
     case STRING_ARRAY_TYPE:
 	/* This is like STRING_TYPE, except it's *always* an array */
 	/* Compute sum of length of all strings, including null terminators */
@@ -801,6 +834,9 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	    break;
 	}
 	/* Fall through to STRING_ARRAY_TYPE */
+        /* This should not be allowed */
+	fprintf(stderr, "addEntry() internal error!.\n");
+	exit(1);
       case STRING_ARRAY_TYPE:
 	  /* Otherwise, p is char** */
 	  i = c;
@@ -817,6 +853,7 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     }
 
     h->data_used += length + pad;
+    h->fully_sorted = 0;
 
     return 1;
 }
