@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "dbindex.h"
 #include "falloc.h"
 #include "header.h"
 #include "misc.h"
@@ -12,12 +13,42 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
+/* prototypes */
+
+int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+		  unsigned int fileNumber);
+
+/****/
+
 int reindexDB(char * dbprefix) {
+    return 0;
+}
+
+int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+		  unsigned int fileNumber) {
+    dbIndexSet set;
+    dbIndexRecord irec;   
+    int rc;
+
+    irec.recOffset = offset;
+    irec.fileNumber = fileNumber;
+
+    rc = searchDBIndex(idx, index, &set);
+    if (rc == -1)  		/* error */
+	return 1;
+
+    if (rc == 1)  		/* new item */
+	set = createDBIndexRecord();
+    appendDBIndexRecord(&set, irec);
+    if (updateDBIndex(idx, index, &set))
+	exit(1);
+    freeDBIndexRecord(set);
     return 0;
 }
 
 int convertDB(char * dbprefix) {
     struct rpmdb olddb;
+    dbIndex * nameIndex, * fileIndex, * groupIndex;
     faFile pkgs;
     struct rpmdbLabel * packageLabels, * label;
     struct rpmdbPackageInfo package;
@@ -40,29 +71,56 @@ int convertDB(char * dbprefix) {
     int i;
     
     if (rpmdbOpen(&olddb)) {
-	error(RPMERR_OLDDBMISSING);
+	error(RPMERR_OLDDBMISSING, "");
 	return 0;
     }
 
     if (exists("/var/lib/rpm/packages.rpm")) {
 #if 0
-	error(RPMERR_NOCREATEDB);
+	error(RPMERR_NOCREATEDB, "RPM database already exists");
 	return 0;
 #endif
 	unlink("/var/lib/rpm/packages.rpm");
     }
 
+    /* if any of the indexes exist, get rid of them */
+    unlink("/var/lib/rpm/nameindex.rpm");
+    unlink("/var/lib/rpm/groupindex.rpm");
+    unlink("/var/lib/rpm/packageindex.rpm");
+    unlink("/var/lib/rpm/fileindex.rpm");
+
     pkgs = faOpen("/var/lib/rpm/packages.rpm", O_RDWR | O_CREAT, 0644);
     if (!pkgs) {
 	rpmdbClose(&olddb);
-	error(RPMERR_DBOPEN);
+	error(RPMERR_DBOPEN, "failed to create /var/lib/rpm/packages.rpm");
+	return 0;
+    }
+
+    nameIndex = fileIndex = groupIndex = NULL;
+    nameIndex = openDBIndex("/var/lib/rpm/nameindex.rpm", 
+				O_RDWR | O_CREAT, 0644);
+    groupIndex = openDBIndex("/var/lib/rpm/groupindex.rpm",
+				O_RDWR | O_CREAT, 0644);
+    fileIndex = openDBIndex("/var/lib/rpm/fileindex.rpm",
+				O_RDWR | O_CREAT, 0644);
+
+    if (!nameIndex || !groupIndex || !fileIndex) {
+	nameIndex ? closeDBIndex(nameIndex) : 0;
+	groupIndex ? closeDBIndex(groupIndex) : 0;
+	fileIndex ? closeDBIndex(fileIndex) : 0;
+
+	rpmdbClose(&olddb);
+	error(RPMERR_DBOPEN, "failed to create index files in /var/lib/rpm");
 	return 0;
     }
 
     packageLabels = rpmdbGetAllLabels(&olddb);
     if (!packageLabels) {
-	error(RPMERR_OLDDBCORRUPT);
+	error(RPMERR_OLDDBCORRUPT, "");
 	faClose(pkgs);
+	closeDBIndex(nameIndex);
+	closeDBIndex(groupIndex);
+	closeDBIndex(fileIndex);
 	unlink("/var/lib/rpm/packages.rpm");
 	rpmdbClose(&olddb);
 	return 0;
@@ -137,11 +195,11 @@ int convertDB(char * dbprefix) {
 		    fileFlagsList[i] |= RPMFILE_CONFIG;
 	    }
 
-	    addEntry(dbentry, RPMTAG_FILENAMES, STRING_TYPE, fileList, 
+	    addEntry(dbentry, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILELINKTOS, STRING_TYPE, fileLinktoList, 
-		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILEMD5S, STRING_TYPE, fileMD5List, 
+	    addEntry(dbentry, RPMTAG_FILELINKTOS, STRING_ARRAY_TYPE, 
+		     fileLinktoList, package.fileCount);
+	    addEntry(dbentry, RPMTAG_FILEMD5S, STRING_ARRAY_TYPE, fileMD5List, 
 		     package.fileCount);
 	    addEntry(dbentry, RPMTAG_FILESIZES, INT32_TYPE, fileSizeList, 
 		     package.fileCount);
@@ -178,6 +236,17 @@ int convertDB(char * dbprefix) {
 
 	writeHeader(pkgs->fd, dbentry);
 
+	/* Now update the appropriate indexes */
+	if (addIndexEntry(nameIndex, package.name, dboffset, 0))
+	    exit(1); /***/
+	if (addIndexEntry(groupIndex, group, dboffset, 0))
+	    exit(1); /***/
+
+	for (i = 0; i < package.fileCount; i++) {
+	    if (addIndexEntry(fileIndex, package.files[i].path, dboffset, i))
+		exit(1); /***/
+	}
+
 	free(group);
 	freeHeader(dbentry);
 
@@ -186,6 +255,10 @@ int convertDB(char * dbprefix) {
 
     rpmdbClose(&olddb);
     faClose(pkgs);
+
+    closeDBIndex(nameIndex);
+    closeDBIndex(groupIndex);
+    closeDBIndex(fileIndex);
 
     reindexDB(dbprefix);
     
