@@ -2,7 +2,7 @@
  * \file lib/depends.c
  */
 
-#define	_DS_SCAREMEM	0
+#define	_DS_SCAREMEM	1
 
 #include "system.h"
 
@@ -125,6 +125,127 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
     /*@=mods =onlytrans =type@*/
 }
 
+char * hGetNEVR(Header h, const char ** np)
+{
+    const char * n, * v, * r;
+    char * NVR, * t;
+
+    (void) headerNVR(h, &n, &v, &r);
+    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+    t = stpcpy(t, n);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, v);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, r);
+    if (np)
+	*np = n;
+    return NVR;
+}
+
+static void delTE(transactionElement p)
+	/*@modifies p @*/
+{
+    rpmRelocation * r;
+
+    if (p->relocs) {
+	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
+	    r->oldPath = _free(r->oldPath);
+	    r->newPath = _free(r->newPath);
+	}
+	p->relocs = _free(p->relocs);
+    }
+
+    p->provides = dsFree(p->provides);
+    p->requires = dsFree(p->requires);
+    p->conflicts = dsFree(p->conflicts);
+    p->obsoletes = dsFree(p->obsoletes);
+    p->fns = fnsFree(p->fns);
+
+    /*@-type@*/ /* FIX: cast? */
+    if (p->fd != NULL)
+        p->fd = fdFree(p->fd, "alAddPackage (rpmtransFree)");
+    /*@=type@*/
+
+    p->os = _free(p->os);
+    p->arch = _free(p->arch);
+    p->epoch = _free(p->epoch);
+    p->NEVR = _free(p->NEVR);
+    p->name = _free(p->name);
+    memset(p, 0, sizeof(*p));	/* XXX trash and burn */
+    /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
+    return;
+    /*@=nullstate@*/
+}
+
+static void addTE(transactionElement p, Header h,
+		/*@null@*/ FD_t fd,
+		/*@null@*/ fnpyKey key,
+		/*@null@*/ rpmRelocation * relocs)
+	/*@modifies p, h @*/
+{
+    int scareMem = _DS_SCAREMEM;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    const char * arch, * os;
+    int_32 * ep;
+    int xx;
+
+    p->NEVR = hGetNEVR(h, NULL);
+    p->name = xstrdup(p->NEVR);
+    if ((p->release = strrchr(p->name, '-')) != NULL)
+	*p->release++ = '\0';
+    if ((p->version = strrchr(p->name, '-')) != NULL)
+	*p->version++ = '\0';
+
+    arch = NULL;
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    p->arch = (arch != NULL ? xstrdup(arch) : NULL);
+    os = NULL;
+    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    p->os = (os != NULL ? xstrdup(os) : NULL);
+
+    ep = NULL;
+    xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
+    /*@-branchstate@*/
+    if (ep) {
+	p->epoch = xmalloc(20);
+	sprintf(p->epoch, "%d", *ep);
+    } else
+	p->epoch = NULL;
+    /*@=branchstate@*/
+
+    p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    p->fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
+    p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
+    p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+    p->obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+
+    /*@-assignexpose -ownedtrans @*/
+    p->key = key;
+    /*@=assignexpose =ownedtrans @*/
+
+    /*@-type@*/ /* FIX: cast? */
+    p->fd = (fd != NULL ? fdLink(fd, "rpmtransAddPackage") : NULL);
+    /*@=type@*/
+
+    if (relocs != NULL) {
+	rpmRelocation * r;
+	int i;
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
+	    {};
+	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
+	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
+	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
+	}
+	p->relocs[i].oldPath = NULL;
+	p->relocs[i].newPath = NULL;
+    } else {
+	p->relocs = NULL;
+    }
+}
+
 rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
 {
     rpmTransactionSet ts;
@@ -215,7 +336,6 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
 		alKey depends)
 	/*@modifies ts, h @*/
 {
-    int scareMem = _DS_SCAREMEM;
     transactionElement p;
 
     /* Filter out duplicate erasures. */
@@ -248,18 +368,7 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
 
     memset(p, 0, sizeof(*p));
 
-    p->NEVR = hGetNEVR(h, NULL);
-    p->name = xstrdup(p->NEVR);
-    if ((p->release = strrchr(p->name, '-')) != NULL)
-	*p->release++ = '\0';
-    if ((p->version = strrchr(p->name, '-')) != NULL)
-	*p->version++ = '\0';
-
-    p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
-    p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-    p->obsoletes = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+    addTE(p, h, NULL, NULL, NULL);
 
     p->type = TR_REMOVED;
     p->u.removed.dboffset = dboffset;
@@ -270,65 +379,33 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
     return 0;
 }
 
-char * hGetNEVR(Header h, const char ** np)
-{
-    const char * n, * v, * r;
-    char * NVR, * t;
-
-    (void) headerNVR(h, &n, &v, &r);
-    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    if (np)
-	*np = n;
-    return NVR;
-}
-
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
-    int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * name = NULL;
     char * addNEVR = hGetNEVR(h, &name);
     char * pkgNEVR = NULL;
     int isSource;
     int duplicate = 0;
-    transactionElement p;
-    rpmDepSet provides;
-    rpmDepSet requires;
-    rpmDepSet conflicts;
+    teIterator pi; transactionElement p;
     rpmDepSet obsoletes;
-    rpmFNSet fns;
     alKey pkgKey;	/* addedPackages key */
     int apx;			/* addedPackages index */
     int xx;
     int ec = 0;
     int rc;
-    int i;
+    int oc;
 
     /*
      * Check for previously added versions with the same name.
      */
-    i = ts->orderCount;
     apx = 0;
-    if ((p = ts->order) != NULL)
-    for (i = 0; i < ts->orderCount; i++, p++) {
+    pi = teInitIterator(ts);
+    /* XXX Only added packages need be checked for dupes. */
+    while ((p = teNext(pi, TR_ADDED)) != NULL) {
 	const char * pname;
 	Header ph;
-
-	/* XXX Only added packages are checked for dupes (for now). */
-	switch (p->type) {
-	case TR_ADDED:
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
 
 	apx++;
 
@@ -367,45 +444,34 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	}
 	break;
     }
+    pi = teFreeIterator(pi);
+    oc = (p == NULL ? ts->orderCount : (p - ts->order));
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
-    /*@-branchstate@*/
-    if (duplicate) {
-	p = ts->order + i;
-	provides = rpmdsLink(p->provides, "xfer");
-	p->provides = rpmdsUnlink(p->provides, "xfer");
-	fns = rpmfnsLink(p->fns, "xfer");
-	p->fns = rpmfnsUnlink(p->fns, "xfer");
-    } else {
-	provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-	fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
-    }
-    /*@=branchstate@*/
+    if (p != NULL && duplicate && oc < ts->orderCount)
+	delTE(p);
 
-    requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-    obsoletes = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-
-    /* XXX cast assumes that available keys are indices, not pointers */
-    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, key, h, provides, fns);
-    if (pkgKey == RPMAL_NOMATCH) {
-	ec = 1;
-	goto exit;
-    }
-
-    /* XXX Note: i == ts->orderCount here almost always. */
-    if (i == ts->orderAlloced) {
+    if (oc == ts->orderAlloced) {
 	ts->orderAlloced += ts->delta;
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
 
-    p = ts->order + i;
+    p = ts->order + oc;
     memset(p, 0, sizeof(*p));
     
-    p->u.addedKey = pkgKey;
+    addTE(p, h, fd, key, relocs);
 
     p->type = TR_ADDED;
+    /* XXX cast assumes that available keys are indices, not pointers */
+    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, p->key, h,
+			p->provides, p->fns);
+    if (pkgKey == RPMAL_NOMATCH) {
+	ec = 1;
+	goto exit;
+    }
+    p->u.addedKey = pkgKey;
+
     p->multiLib = 0;
 
 #ifdef	NOYET
@@ -430,58 +496,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     }
   }
 #endif
-
-    p->NEVR = xstrdup(addNEVR);
-    p->name = xstrdup(addNEVR);
-    if ((p->release = strrchr(p->name, '-')) != NULL)
-	*p->release++ = '\0';
-    if ((p->version = strrchr(p->name, '-')) != NULL)
-	*p->version++ = '\0';
-
-    p->provides = rpmdsUnlink(p->provides, "xfer");
-    p->provides = rpmdsLink(provides, "xfer");
-    provides = rpmdsUnlink(provides, "xfer");
-
-    p->requires = rpmdsUnlink(p->requires, "xfer");
-    p->requires = rpmdsLink(requires, "xfer");
-    requires = rpmdsUnlink(requires, "xfer");
-
-    p->conflicts = rpmdsUnlink(p->conflicts, "xfer");
-    p->conflicts = rpmdsLink(conflicts, "xfer");
-    conflicts = rpmdsUnlink(conflicts, "xfer");
-
-    p->obsoletes = rpmdsUnlink(p->obsoletes, "xfer");
-    p->obsoletes = rpmdsLink(obsoletes, "xfer");
-    obsoletes = rpmdsUnlink(obsoletes, "xfer");
-
-    p->fns = rpmfnsUnlink(p->fns, "xfer");
-    p->fns = rpmfnsLink(fns, "xfer");
-    fns = rpmfnsUnlink(fns, "xfer");
-
-    /*@-assignexpose -ownedtrans @*/
-    p->key = key;
-    /*@=assignexpose =ownedtrans @*/
-
-    /*@-type@*/ /* FIX: cast? */
-    p->fd = (fd != NULL ? fdLink(fd, "rpmtransAddPackage") : NULL);
-    /*@=type@*/
-
-    if (relocs) {
-	rpmRelocation * r;
-
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
-	    {};
-	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
-
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
-	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
-	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
-	}
-	p->relocs[i].oldPath = NULL;
-	p->relocs[i].newPath = NULL;
-    } else {
-	p->relocs = NULL;
-    }
 
     if (!duplicate) {
 assert(apx == ts->numAddedPackages);
@@ -528,7 +542,7 @@ assert(apx == ts->numAddedPackages);
 	mi = rpmdbFreeIterator(mi);
     }
 
-    obsoletes = dsiInit(rpmdsLink(p->obsoletes, "obsoletes"));
+    obsoletes = dsiInit(rpmdsLink(p->obsoletes, "Obsoletes"));
     if (obsoletes != NULL)
     while (dsiNext(obsoletes) >= 0) {
 	const char * Name;
@@ -569,6 +583,7 @@ assert(apx == ts->numAddedPackages);
 exit:
     pkgNEVR = _free(pkgNEVR);
     addNEVR = _free(addNEVR);
+    pi = teFreeIterator(pi);
     return ec;
 }
 
@@ -615,7 +630,9 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 
 	pi = teInitIterator(ts);
 	while ((p = teNextIterator(pi)) != NULL) {
+#ifdef	DYING
 	    rpmRelocation * r;
+
 	    if (p->relocs) {
 		for (r = p->relocs; (r->oldPath || r->newPath); r++) {
 		    r->oldPath = _free(r->oldPath);
@@ -635,8 +652,14 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	        p->fd = fdFree(p->fd, "alAddPackage (rpmtransFree)");
 	    /*@=type@*/
 
+	    p->os = _free(p->os);
+	    p->arch = _free(p->arch);
+	    p->epoch = _free(p->epoch);
 	    p->NEVR = _free(p->NEVR);
 	    p->name = _free(p->name);
+#else
+	    delTE(p);
+#endif
 	}
 	pi = teFreeIterator(pi);
 
@@ -1369,7 +1392,7 @@ static void addQ(transactionElement p,
 
 int rpmdepOrder(rpmTransactionSet ts)
 {
-    int numAddedPackages = alGetSize(ts->addedPackages);
+    int numAddedPackages = ts->numAddedPackages;
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
     teIterator pi; transactionElement p;
     teIterator qi; transactionElement q;
@@ -1388,8 +1411,6 @@ int rpmdepOrder(rpmTransactionSet ts)
     int qlen;
     int i, j;
 
-assert(ts->numAddedPackages == alGetSize(ts->addedPackages));
-
     alMakeIndex(ts->addedPackages);
 
 /*@-modfilesystem -nullpass@*/
@@ -1402,21 +1423,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
     pi = teInitIterator(ts);
     /* XXX Only added packages are ordered (for now). */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
-
 	p->tsi = xcalloc(1, sizeof(*p->tsi));
-
-#ifdef	DYING
-	/* Retrieve info from addedPackages. */
-	p->NEVR = alGetNVR(ts->addedPackages, p->u.addedKey);
-	p->name = alGetNVR(ts->addedPackages, p->u.addedKey);
-	if ((p->release = strrchr(p->name, '-')) != NULL)
-	    *p->release++ = '\0';
-	if ((p->version = strrchr(p->name, '-')) != NULL)
-	    *p->version++ = '\0';
-/*@-modfilesystem@*/
-prtTSI(p->NEVR, p->tsi);
-/*@=modfilesystem@*/
-#endif
     }
     pi = teFreeIterator(pi);
 
@@ -1694,10 +1701,6 @@ prtTSI(" p", p->tsi);
 	    tsi = _free(tsi);
 	}
 	p->tsi = _free(p->tsi);
-#ifdef	DYING
-	p->NEVR = _free(p->NEVR);
-	p->name = _free(p->name);
-#endif
 
 	/* Prepare added package ordering permutation. */
 	orderList[j].pkgKey = p->u.addedKey;
@@ -1833,16 +1836,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 	rpmDepSet provides;
 	uint_32 multiLib;
 
-	/* XXX Only added packages are checked (for now). */
-	switch (p->type) {
-	case TR_ADDED:
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
-
 	h = alGetHeader(ts->addedPackages, p->u.addedKey, 0);
 	if (h == NULL)		/* XXX can't happen */
 	    break;
@@ -1872,7 +1865,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 	pkgNVR = _free(pkgNVR);
 	if (rc)
 	    goto exit;
-
 
 	rc = 0;
 	provides = p->provides;

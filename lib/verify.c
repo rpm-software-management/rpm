@@ -515,7 +515,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	te = t = alloca(nb);
 	*te = '\0';
 	pkgNEVR = (conflicts->pkgNEVR ? conflicts->pkgNEVR : "?pkgNEVR?");
-	sprintf(te, _("Unsatisifed dependencies for %s:"), pkgNEVR);
+	sprintf(te, _("Unsatisifed dependencies for %s: "), pkgNEVR);
 	te += strlen(te);
 	for (i = 0; i < numConflicts; i++) {
 	    c = conflicts + i;

@@ -1091,7 +1091,7 @@ void rpmProblemSetPrint(FILE *fp, rpmProblemSet ps)
 void rpmProblemSetAppend(/*@null@*/ rpmProblemSet ps, rpmProblemType type,
 		/*@null@*/ const char * pkgNEVR,
 		/*@exposed@*/ /*@null@*/ fnpyKey key,
-		const char * dn, const char * bn,
+		/*@null@*/ const char * dn, /*@null@*/ const char * bn,
 		/*@null@*/ const char * altNEVR,
 		unsigned long ulong1)
 	/*@modifies ps @*/;

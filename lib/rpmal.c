@@ -143,9 +143,15 @@ static void alFreeIndex(availableList al)
     }
 }
 
-int alGetSize(const availableList al)
+/**
+ * Return number of packages in list.
+ * @param al		available list
+ * @return		no. of packages in list
+ */
+static int alGetSize(/*@null@*/ const availableList al)
+	/*@*/
 {
-    return al->size;
+    return (al != NULL ? al->size : 0);
 }
 
 static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const availableList al,
@@ -166,12 +172,21 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const availableList al,
     /*@=nullret =temptrans =retalias @*/
 }
 
-availablePackage alGetPkg(const availableList al, alKey pkgKey)
+/**
+ * Return available package.
+ * @param al		available list
+ * @param pkgKey	available package key
+ * @return		available package pointer
+ */
+/*@dependent@*/ /*@null@*/
+static availablePackage alGetPkg(/*@null@*/ const availableList al,
+		/*@null@*/ alKey pkgKey)
+	/*@*/
 {
     availablePackage alp = NULL;
     alNum pkgNum = alKey2Num(al, pkgKey);
 
-    if (al != NULL && pkgNum >= 0 && pkgNum < al->size) {
+    if (al != NULL && pkgNum >= 0 && pkgNum < alGetSize(al)) {
 	if (al->list != NULL)
 	    alp = al->list + pkgNum;
     }
@@ -196,28 +211,6 @@ Header alGetHeader(availableList al, alKey pkgKey, int unlink)
     }
     return h;
 }
-
-#ifdef	DYING
-char * alGetNVR(const availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-    char * pkgNVR = NULL;
-
-    if (alp != NULL) {
-	char * t;
-	t = xcalloc(1,	strlen(alp->name) +
-			strlen(alp->version) +
-			strlen(alp->release) + sizeof("--"));
-	pkgNVR = t;
-	t = stpcpy(t, alp->name);
-	t = stpcpy(t, "-");
-	t = stpcpy(t, alp->version);
-	t = stpcpy(t, "-");
-	t = stpcpy(t, alp->release);
-    }
-    return pkgNVR;
-}
-#endif
 
 availableList alCreate(int delta)
 {
@@ -435,8 +428,8 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 /*@=modfilesys@*/
 
     /*@-assignexpose -temptrans@*/
-    alp->provides = rpmdsLink(provides, "alAddPackage");
-    alp->fns = rpmfnsLink(fns, "alAddPackage");
+    alp->provides = rpmdsLink(provides, "Provides (alAddPackage)");
+    alp->fns = rpmfnsLink(fns, "Files (alAddPackage)");
     /*@=assignexpose =temptrans@*/
 
     if (alp->fns && alp->fns->fc > 0) {

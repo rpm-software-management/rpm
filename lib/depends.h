@@ -66,24 +66,30 @@ struct tsortInfo_s {
  * A single package instance to be installed/removed atomically.
  */
 struct transactionElement_s {
-/*@only@*/ /*@null@*/
-    char * NEVR;
-/*@owned@*/ /*@null@*/
-    char * name;
-/*@dependent@*/ /*@null@*/
-    char * version;
-/*@dependent@*/ /*@null@*/
-    char * release;
-
-    int npreds;				/*!< No. of predecessors. */
-    int depth;				/*!< Max. depth in dependency tree. */
-/*@owned@*/
-    tsortInfo tsi;			/*!< Ordering info. */
-
     enum rpmTransactionType {
 	TR_ADDED,	/*!< Package will be installed. */
 	TR_REMOVED	/*!< Package will be removed. */
     } type;		/*!< Package disposition (installed/removed). */
+
+/*@only@*/
+    const char * NEVR;		/*!< Package name-version-release. */
+/*@owned@*/
+    const char * name;		/*!< Name: */
+/*@only@*/ /*@null@*/
+    char * epoch;
+/*@dependent@*/ /*@null@*/
+    char * version;		/*!< Version: */
+/*@dependent@*/ /*@null@*/
+    char * release;		/*!< Release: */
+/*@only@*/ /*@null@*/
+    const char * arch;		/*!< Architecture hint. */
+/*@only@*/ /*@null@*/
+    const char * os;		/*!< Operating system hint. */
+
+    int npreds;			/*!< No. of predecessors. */
+    int depth;			/*!< Max. depth in dependency tree. */
+/*@owned@*/
+    tsortInfo tsi;		/*!< Dependency ordering chains. */
 
 /*@refcounted@*/ /*@null@*/
     rpmDepSet provides;		/*!< Provides: dependencies. */
@@ -94,19 +100,16 @@ struct transactionElement_s {
 /*@refcounted@*/ /*@null@*/
     rpmDepSet obsoletes;	/*!< Obsoletes: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    rpmFNSet fns;		/*!< File info set. */
+    rpmFNSet fns;		/*!< File information. */
 
-    uint_32 multiLib;	/* (TR_ADDED) MULTILIB */
-    int_32 filesCount;	/* (TR_ADDED) No. files in package. */
+    uint_32 multiLib;		/*!< (TR_ADDED) MULTILIB */
 
 /*@kept@*//*@null@*/
-    fnpyKey key;
-		/*!< (TR_ADDED) Retrieval key (CLI uses file name, e.g.). */
+    fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
 /*@owned@*/ /*@null@*/
-    rpmRelocation * relocs;
-		/*!< (TR_ADDED) Payload file relocations. */
-/*@refcounted@*/ /*@null@*/
-    FD_t fd;	/*!< (TR_ADDED) Payload file descriptor (usually NULL). */
+    rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
+/*@refcounted@*/ /*@null@*/	
+    FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
 /*@-fielduse@*/	/* LCL: confused by union? */
     union { 

@@ -13,7 +13,7 @@
 /*@access rpmFNSet @*/
 
 /*@unchecked@*/
-static int _fns_debug = 1;
+static int _fns_debug = 0;
 
 /*@-shadow@*/	/* XXX copy from depends.c for now. */
 static char * hGetNEVR(Header h, /*@out@*/ const char ** np)
@@ -39,8 +39,8 @@ rpmFNSet XrpmfnsUnlink(rpmFNSet fns, const char * msg, const char * fn, unsigned
 {
     if (fns == NULL) return NULL;
 /*@-modfilesystem@*/
-if (_fns_debug)
-fprintf(stderr, "--> fns %p -- %d %s at %s:%u\n", fns, fns->nrefs, msg, fn, ln);
+if (_fns_debug && msg != NULL)
+fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fns, fns->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     fns->nrefs--;
     return NULL;
@@ -51,8 +51,8 @@ rpmFNSet XrpmfnsLink(rpmFNSet fns, const char * msg, const char * fn, unsigned l
     if (fns == NULL) return NULL;
     fns->nrefs++;
 /*@-modfilesystem@*/
-if (_fns_debug)
-fprintf(stderr, "--> fns %p ++ %d %s at %s:%u\n", fns, fns->nrefs, msg, fn, ln);
+if (_fns_debug && msg != NULL)
+fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fns, fns->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans@*/ return fns; /*@=refcounttrans@*/
 }
@@ -64,11 +64,11 @@ rpmFNSet fnsFree(rpmFNSet fns)
     if (fns == NULL) return NULL;
 
     if (fns->nrefs > 1)
-	return rpmfnsUnlink(fns, "dereference");
+	return rpmfnsUnlink(fns, fns->Type);
 
 /*@-modfilesystem@*/
 if (_fns_debug < 0)
-fprintf(stderr, "*** fns %p -- %s[%d]\n", fns, fns->Type, fns->fc);
+fprintf(stderr, "*** fi %p\t%s[%d]\n", fns, fns->Type, fns->fc);
 /*@=modfilesystem@*/
 
     /*@-branchstate@*/
@@ -102,8 +102,8 @@ fprintf(stderr, "*** fns %p -- %s[%d]\n", fns, fns->Type, fns->fc);
     }
     /*@=branchstate@*/
 
-    (void) rpmfnsUnlink(fns, "destroy");
     /*@-refcounttrans -usereleased@*/
+    (void) rpmfnsUnlink(fns, fns->Type);
     memset(fns, 0, sizeof(*fns));		/* XXX trash and burn */
     fns = _free(fns);
     /*@=refcounttrans =usereleased@*/
@@ -180,26 +180,26 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 
 /*@-modfilesystem@*/
 if (_fns_debug < 0)
-fprintf(stderr, "*** fns %p ++ %s[%d]\n", fns, fns->Type, fns->fc);
+fprintf(stderr, "*** fi %p\t%s[%d]\n", fns, fns->Type, fns->fc);
 /*@=modfilesystem@*/
 
     }
     /*@=branchstate@*/
 
 exit:
-    return rpmfnsLink(fns, "create");
+    return rpmfnsLink(fns, (fns ? fns->Type : NULL));
 }
 
 /*@access rpmDepSet @*/
 
 /*@unchecked@*/
-static int _ds_debug = 1;
+static int _ds_debug = 0;
 
 rpmDepSet XrpmdsUnlink(rpmDepSet ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
 /*@-modfilesystem@*/
-if (_ds_debug)
+if (_ds_debug && msg != NULL)
 fprintf(stderr, "--> ds %p -- %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     ds->nrefs--;
@@ -211,7 +211,7 @@ rpmDepSet XrpmdsLink(rpmDepSet ds, const char * msg, const char * fn, unsigned l
     if (ds == NULL) return NULL;
     ds->nrefs++;
 /*@-modfilesystem@*/
-if (_ds_debug)
+if (_ds_debug && msg != NULL)
 fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
@@ -226,11 +226,11 @@ rpmDepSet dsFree(rpmDepSet ds)
 	return NULL;
 
     if (ds->nrefs > 1)
-	return rpmdsUnlink(ds, "dereference");
+	return rpmdsUnlink(ds, ds->Type);
 
 /*@-modfilesystem@*/
 if (_ds_debug < 0)
-fprintf(stderr, "*** ds %p --\t%s[%d]\n", ds, ds->Type, ds->Count);
+fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
 
@@ -269,7 +269,7 @@ fprintf(stderr, "*** ds %p --\t%s[%d]\n", ds, ds->Type, ds->Count);
 
     ds->DNEVR = _free(ds->DNEVR);
 
-    (void) rpmdsUnlink(ds, "destroy");
+    (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
     memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
     ds = _free(ds);
@@ -339,7 +339,7 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 
 /*@-modfilesystem@*/
 if (_ds_debug < 0)
-fprintf(stderr, "*** ds %p ++\t%s[%d]\n", ds, ds->Type, ds->Count);
+fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
     }
@@ -347,7 +347,7 @@ fprintf(stderr, "*** ds %p ++\t%s[%d]\n", ds, ds->Type, ds->Count);
 
 exit:
     /*@-nullstate@*/ /* FIX: ds->Flags may be NULL */
-    return rpmdsLink(ds, "create");
+    return rpmdsLink(ds, (ds ? ds->Type : NULL));
     /*@=nullstate@*/
 }
 
@@ -487,12 +487,13 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
 
 	} else
 	    ds->i = -1;
-    }
 
-/*@-modfilesystem -nullderef -nullpass @*/
-if (_ds_debug  < 0&& i != -1)
-fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds && ds->Type ? ds->Type : "?Type?"), i, (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
-/*@=modfilesystem =nullderef =nullpass @*/
+/*@-modfilesystem @*/
+if (_ds_debug  < 0 && i != -1)
+fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"), i, (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
+/*@=modfilesystem @*/
+
+    }
 
     return i;
 }

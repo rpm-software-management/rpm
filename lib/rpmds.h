@@ -98,14 +98,14 @@ extern "C" {
  */
 /*@unused@*/ /*@null@*/
 rpmFNSet rpmfnsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns,
-		const char * msg)
+		/*@null@*/ const char * msg)
 	/*@modifies fns @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@-exportlocal@*/
 /*@null@*/
 rpmFNSet XrpmfnsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns,
-		const char * msg, const char * fn, unsigned ln)
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies fns @*/;
 /*@=exportlocal@*/
 #define	rpmfnsUnlink(_fns, _msg) XrpmfnsUnlink(_fns, _msg, __FILE__, __LINE__)
@@ -116,11 +116,11 @@ rpmFNSet XrpmfnsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns,
  * @return		new file info set reference
  */
 /*@unused@*/
-rpmFNSet rpmfnsLink (/*@null@*/ rpmFNSet fns, const char * msg)
+rpmFNSet rpmfnsLink (/*@null@*/ rpmFNSet fns, /*@null@*/ const char * msg)
 	/*@modifies fns @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-rpmFNSet XrpmfnsLink (/*@null@*/ rpmFNSet fns, const char * msg,
+rpmFNSet XrpmfnsLink (/*@null@*/ rpmFNSet fns, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies fns @*/;
 #define	rpmfnsLink(_fns, _msg)	XrpmfnsLink(_fns, _msg, __FILE__, __LINE__)
@@ -152,14 +152,14 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
  */
 /*@unused@*/ /*@null@*/
 rpmDepSet rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
-		const char * msg)
+		/*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@-exportlocal@*/
 /*@null@*/
 rpmDepSet XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
-		const char * msg, const char * fn, unsigned ln)
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies ds @*/;
 /*@=exportlocal@*/
 #define	rpmdsUnlink(_ds, _msg)	XrpmdsUnlink(_ds, _msg, __FILE__, __LINE__)
@@ -170,11 +170,11 @@ rpmDepSet XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
  * @return		new dependency set reference
  */
 /*@unused@*/
-rpmDepSet rpmdsLink (/*@null@*/ rpmDepSet ds, const char * msg)
+rpmDepSet rpmdsLink (/*@null@*/ rpmDepSet ds, /*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-rpmDepSet XrpmdsLink (/*@null@*/ rpmDepSet ds, const char * msg,
+rpmDepSet XrpmdsLink (/*@null@*/ rpmDepSet ds, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies ds @*/;
 #define	rpmdsLink(_ds, _msg)	XrpmdsLink(_ds, _msg, __FILE__, __LINE__)

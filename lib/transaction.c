@@ -61,6 +61,7 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access alKey @*/
 /*@access fnpyKey @*/
 
+/*@access rpmDepSet @*/
 /*@access rpmFNSet @*/
 /*@access TFI_t @*/
 
@@ -71,12 +72,12 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /**
  */
 struct diskspaceInfo {
-    dev_t dev;			/*!< file system device number. */
-    signed long bneeded;	/*!< no. of blocks needed. */
-    signed long ineeded;	/*!< no. of inodes needed. */
-    int bsize;			/*!< file system block size. */
-    signed long bavail;		/*!< no. of blocks available. */
-    signed long iavail;		/*!< no. of inodes available. */
+    dev_t dev;			/*!< File system device number. */
+    signed long bneeded;	/*!< No. of blocks needed. */
+    signed long ineeded;	/*!< No. of inodes needed. */
+    int bsize;			/*!< File system block size. */
+    signed long bavail;		/*!< No. of blocks available. */
+    signed long iavail;		/*!< No. of inodes available. */
 };
 
 /**
@@ -143,67 +144,20 @@ int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 
 /**
  */
-static int archOkay(Header h, /*@out@*/ const char ** pkgArchPtr)
-	/*@modifies *pkgArchPtr @*/
+static int archOkay(/*@null@*/ const char * pkgArch)
+	/*@*/
 {
-    const char * pkgArch;
-    int type, count;
-    int rc = 1;	/* assume AOK */
-
-    if (pkgArchPtr != NULL) *pkgArchPtr = pkgArch = NULL;
-
-    /* make sure we're trying to install this on the proper architecture */
-    (void) headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
-
-#ifdef	DYING
-    if (type == RPM_INT8_TYPE) {
-	int_8 * pkgArchNum;
-	int archNum;
-
-	/* old arch handling */
-	rpmGetArchInfo(NULL, &archNum);
-	pkgArchNum = pkgArch;
-	if (archNum != *pkgArchNum)
-	    rc = 0;
-    } else
-#endif
-
-    if (!rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch)) {
-	rc = 0;
-	if (pkgArchPtr != NULL) *pkgArchPtr = pkgArch;
-    }
-
-    return rc;
+    if (pkgArch == NULL) return 0;
+    return (rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch) ? 1 : 0);
 }
 
 /**
  */
-static int osOkay(Header h, /*@out@*/ const char ** pkgOsPtr)
-	/*@modifies *pkgOsPtr @*/
+static int osOkay(/*@null@*/ const char * pkgOs)
+	/*@*/
 {
-    const char * pkgOs;
-    int type, count;
-    int rc = 1;	/* assume AOK */
-
-    if (pkgOsPtr != NULL) *pkgOsPtr = pkgOs = NULL;
-
-    /* make sure we're trying to install this on the proper os */
-    (void) headerGetEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
-
-#ifdef	DYING
-    if (type == RPM_INT8_TYPE) {
-	/* v1 packages and v2 packages both used improper OS numbers, so just
-	   deal with it hope things work */
-	return 1;
-    } else
-#endif
-
-    if (!rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs)) {
-	rc = 0;
-	if (pkgOsPtr != NULL) *pkgOsPtr = pkgOs;
-    }
-
-    return rc;
+    if (pkgOs == NULL) return 0;
+    return (rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs) ? 1 : 0);
 }
 
 /**
@@ -706,7 +660,13 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 }
 
 /**
+ * Ensure that current package is newer than installed package.
+ * @param ts		transaction set
+ * @param p		current transaction element
+ * @param h		installed header
+ * @return		0 if not newer, 1 if okay
  */
+#ifdef	DYING
 static int ensureOlder(rpmTransactionSet ts,
 		const Header h, /*@null@*/ const Header old,
 		/*@dependent@*/ /*@null@*/ const void * key)
@@ -736,6 +696,64 @@ static int ensureOlder(rpmTransactionSet ts,
 
     return rc;
 }
+#else
+static int ensureOlder(rpmTransactionSet ts, transactionElement p, Header h)
+	/*@modifies ts @*/
+{
+    rpmDepSet req = memset(alloca(sizeof(*req)), 0, sizeof(*req));
+    const char * reqEVR;
+    int_32 reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
+    char * t;
+    int rc;
+
+    if (p == NULL || h == NULL)
+	return 1;
+
+    t = alloca(strlen(p->NEVR) + (p->epoch != NULL ? strlen(p->epoch) : 0) + 1);
+    *t = '\0';
+    reqEVR = t;
+    if (p->epoch != NULL)	t = stpcpy( stpcpy(t, p->epoch), ":");
+    if (p->version != NULL)	t = stpcpy(t, p->version);
+    *t++ = '-';
+    if (p->release != NULL)	t = stpcpy(t, p->release);
+    
+    /*@-compmempass@*/
+    req->i = -1;
+    req->Type = "Requires";
+    req->tagN = RPMTAG_REQUIRENAME;
+    req->DNEVR = NULL;
+    /*@-immediatetrans@*/
+    /*@-assignexpose@*/
+    req->N = (const char **) &p->name;
+    /*@=assignexpose@*/
+    req->EVR = &reqEVR;
+    req->Flags = &reqFlags;
+    /*@=immediatetrans@*/
+    req->Count = 1;
+    (void) dsiNext(dsiInit(req));
+
+    rc = headerMatchesDepFlags(h, req);
+
+    req->DNEVR = _free(req->DNEVR);
+    /*@=compmempass@*/
+
+    /*@-branchstate@*/ /* FIX: p->key ??? */
+    if (rc == 0) {
+	const char * altNEVR = hGetNEVR(h, NULL);
+	rpmProblemSetAppend(ts->probs, RPMPROB_OLDPACKAGE,
+		p->NEVR, p->key,
+		NULL, NULL,
+		altNEVR,
+		0);
+	altNEVR = _free(altNEVR);
+	rc = 1;
+    } else
+	rc = 0;
+    /*@=branchstate@*/
+
+    return rc;
+}
+#endif
 
 /**
  */
@@ -1055,46 +1073,29 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     /* The ordering doesn't matter here */
     tei = teInitIterator(ts);
     while ((p = teNext(tei, TR_ADDED)) != NULL) {
-	const char * n, * v, * r;
-	fnpyKey key;
 	rpmdbMatchIterator mi;
-	const char * str1;
-	Header h;
 
 	pkgKey = p->u.addedKey;
 
-	h = alGetHeader(ts->addedPackages, pkgKey, 0);
-	if (h == NULL)	/* XXX can't happen */
-	    continue;
-
-	(void) headerNVR(h, &n, &v, &r);
-	key = p->key;
-
-	str1 = NULL;
-	if (!archOkay(h, &str1) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH)) {
-	    const char * pkgNEVR = hGetNEVR(h, NULL);
+	/*@-branchstate@*/ /* FIX: p->key ??? */
+	if (!archOkay(p->arch) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
-			pkgNEVR, key,
-			str1, NULL,
+			p->NEVR, p->key,
+			p->arch, NULL,
 			NULL, 0);
-	    pkgNEVR = _free(pkgNEVR);
-	}
 
-	str1 = NULL;
-	if (!osOkay(h, &str1) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS)) {
-	    const char * pkgNEVR = hGetNEVR(h, NULL);
+	if (!osOkay(p->os) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADOS,
-			pkgNEVR, key,
-			str1, NULL,
+			p->NEVR, p->key,
+			p->os, NULL,
 			NULL, 0);
-	    pkgNEVR = _free(pkgNEVR);
-	}
+	/*@=branchstate@*/
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
-	    Header oldH;
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, n, 0);
-	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
-		xx = ensureOlder(ts, h, oldH, key);
+	    Header h;
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, p->name, 0);
+	    while ((h = rpmdbNextIterator(mi)) != NULL)
+		xx = ensureOlder(ts, p, h);
 	    mi = rpmdbFreeIterator(mi);
 	}
 
@@ -1104,17 +1105,17 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	 && !alGetMultiLib(ts->addedPackages, i)
 #endif
 	) {
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, n, 0);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, v);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, r);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, p->name, 0);
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT,
+				p->version);
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
+				p->release);
 
 	    while (rpmdbNextIterator(mi) != NULL) {
-		const char * pkgNEVR = hGetNEVR(h, NULL);
 		rpmProblemSetAppend(ts->probs, RPMPROB_PKG_INSTALLED,
-			pkgNEVR, key,
+			p->NEVR, p->key,
 			NULL, NULL,
 			NULL, 0);
-		pkgNEVR = _free(pkgNEVR);
 		/*@innerbreak@*/ break;
 	    }
 	    mi = rpmdbFreeIterator(mi);
@@ -1123,8 +1124,6 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	/* Count no. of files (if any). */
 	if (p->fns != NULL)
 	    totalFileCount += p->fns->fc;
-
-	h = headerFree(h, "alGetHeader (rpmtsRun sanity)");
 
     }
     tei = teFreeIterator(tei);
@@ -1148,7 +1147,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     /* ===============================================
      * Initialize transaction element file info for package:
      */
-    ts->flEntries = alGetSize(ts->addedPackages) + ts->numRemovedPackages;
+    ts->flEntries = ts->numAddedPackages + ts->numRemovedPackages;
     ts->flList = xcalloc(ts->flEntries, sizeof(*ts->flList));
 
     /*

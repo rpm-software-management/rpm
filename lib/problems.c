@@ -15,7 +15,7 @@
 /*@access rpmProblemSet@*/
 
 /*@unchecked@*/
-static int _ps_debug = 1;
+static int _ps_debug = 0;
 
 rpmProblemSet XrpmpsUnlink(rpmProblemSet ps, const char * msg,
 		const char * fn, unsigned ln)

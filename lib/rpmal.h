@@ -12,14 +12,6 @@
 typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 
 /**
- * Return number of packages in list.
- * @param al		available list
- * @return		no. of packages in list
- */
-int alGetSize(const availableList al)
-	/*@*/;
-
-/**
  * Return available package header.
  * @param al		available list
  * @param pkgKey	available package key
@@ -29,30 +21,6 @@ int alGetSize(const availableList al)
 Header alGetHeader(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey,
 		int unlink)
 	/*@modifies al @*/;
-
-/**
- * Return available package.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		available package pointer
- */
-/*@-exportlocal@*/
-/*@dependent@*/ /*@null@*/
-availablePackage alGetPkg(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
-	/*@*/;
-/*@=exportlocal@*/
-
-#ifdef	DYING
-/**
- * Return (malloc'd) available package name-version-release string.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		name-version-release string
- */
-/*@only@*/ /*@null@*/
-char * alGetNVR(/*@null@*/const availableList al, /*@null@*/ alKey pkgKey)
-	/*@*/;
-#endif
 
 /**
  * Initialize available packckages, items, and directory list.
