@@ -186,7 +186,7 @@ struct poptOption rpmBuildPoptTable[] = {
  { "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, &noDeps, POPT_NODEPS,
-	N_("do not verify package dependencies"), NULL },
+	N_("do not verify build dependencies"), NULL },
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
 	N_("generate package header(s) compatible with (legacy) rpm[23] packaging"),
 	NULL},

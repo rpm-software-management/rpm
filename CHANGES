@@ -164,6 +164,7 @@
 	- add linux per-platform macro %_smp_mflags <sopwith@redhat.com>.
 	- document more popt aliases for --help usage.
 	- remove --tarbuild from man page(s), use -t[abpcils] instead (#48666).
+	- fix: scope multi-mode options like --nodeps correctly (#48825).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -21,7 +21,7 @@ Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils mktemp
-Requires: popt
+Requires: popt = 1.6.3
 %endif
 
 %if !%{with_internal_db}
@@ -54,7 +54,7 @@ the package like its version, a description, etc.
 %package devel
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{version}, popt
+Requires: rpm = %{version}, popt = 1.6.3
 
 %description devel
 This package contains the RPM C library and header files.  These

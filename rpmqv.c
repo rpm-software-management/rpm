@@ -13,6 +13,10 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
+#define	POPT_NODEPS		1025
+#define	POPT_FORCE		1026
+#define	POPT_NOMD5		1027
+
 #ifdef	IAM_RPMBT
 #include "build.h"
 #define GETOPT_REBUILD		1003
@@ -53,7 +57,7 @@ enum modes {
 
     MODE_CHECKSIG	= (1 <<  6),
     MODE_RESIGN		= (1 <<  7),
-#define	MODES_K	 (MODE_CHECKSIG | MODES_RESIGN)
+#define	MODES_K	 (MODE_CHECKSIG | MODE_RESIGN)
 
     MODE_INITDB		= (1 << 10),
     MODE_REBUILDDB	= (1 << 12),
@@ -149,13 +153,13 @@ static struct poptOption rpmAllPoptTable[] = {
 
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
-#if !defined(_AUTOHELP)
- { "help", '\0', 0, &help, 0,			NULL, NULL},
-#endif
 
  /* XXX colliding options */
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
  {  NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',			NULL, NULL},
+ {  "nodeps", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NODEPS,	NULL, NULL},
+ {  "nomd5", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NOMD5,		NULL, NULL},
+ {  "force", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_FORCE,		NULL, NULL},
 #endif
 
 #ifdef	IAM_RPMQV
@@ -440,7 +444,65 @@ int main(int argc, const char ** argv)
 	    rpmIncreaseVerbosity();
 	    break;
 
+/* XXX options used in multiple rpm modes */
+#if defined(IAM_RPMQV) || defined(IAM_RPMK)
+	case POPT_NOMD5:
+#ifdef	IAM_RPMQV
+	    if (bigMode == MODE_VERIFY || qva->qva_mode == 'V')
+		qva->qva_flags |= VERIFY_MD5;
+	    else
+#endif
+#ifdef	IAM_RPMK
+	    if (bigMode & MODES_K)
+		ka->checksigFlags &= ~CHECKSIG_MD5;
+	    else
+#endif
+		/*@-ifempty@*/ ;
+	    break;
+#endif	/* IAM_RPMQV || IAM_RPMK */
+
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
+	case POPT_NODEPS:
+#ifdef	IAM_RPMQV
+	    if (bigMode == MODE_VERIFY || qva->qva_mode == 'V')
+		qva->qva_flags |= VERIFY_DEPS;
+	    else
+#endif
+#ifdef	IAM_RPMEIU
+	    if ((bigMode & MODES_IE) ||
+		(ia->installInterfaceFlags &
+	    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE)))
+		ia->noDeps = 1;
+	    else
+#endif
+#ifdef	IAM_RPMBT
+	    if ((bigMode & MODES_BT) || ba->buildMode != ' ')
+		ba->noDeps = 1;
+	    else
+#endif
+		/*@-ifempty@*/ ;
+	    break;
+
+	case POPT_FORCE:
+#ifdef	IAM_RPMEIU
+	    if ((bigMode & MODES_IE) ||
+		(ia->installInterfaceFlags &
+	    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE)))
+		ia->probFilter |=
+			( RPMPROB_FILTER_REPLACEPKG
+			| RPMPROB_FILTER_REPLACEOLDFILES
+			| RPMPROB_FILTER_REPLACENEWFILES
+			| RPMPROB_FILTER_OLDPACKAGE);
+	    else
+#endif
+#ifdef	IAM_RPMBT
+	    if ((bigMode & MODES_BT) || ba->buildMode != ' ')
+		ba->force = 1;
+	    else
+#endif
+		/*@-ifempty@*/ ;
+	    break;
+
 	case 'i':
 #ifdef	IAM_RPMQV
 	    if (bigMode == MODE_QUERY || qva->qva_mode == 'q') {
