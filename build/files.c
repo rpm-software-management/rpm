@@ -1100,62 +1100,10 @@ fprintf(stderr, "*** PBF fileURL %s\n", fileURL);
     diskURL = rpmGenPath(fl->buildRootURL, NULL, fileURL);
 
     if (doGlob) {
-	int i;
-#ifdef	DYING
-	const char * diskRoot;
-	const char * globURL;
-	char * globRoot = NULL;
-	glob_t glob_result;
-	size_t maxb, nb;
-	int ut;
-	
-	glob_result.gl_pathc = 0;
-	glob_result.gl_pathv = NULL;
-	if (Glob(diskURL, 0, glob_error, &glob_result) ||
-	    (glob_result.gl_pathc < 1)) {
-	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s"), diskURL);
-	    rc = 1;
-	}
-
-	/* XXX Prepend the diskURL leader for globs that have stripped it off */
-	maxb = 0;
-	for (i = 0; i < glob_result.gl_pathc; i++) {
-	    if ((nb = strlen(&(glob_result.gl_pathv[i][0]))) > maxb)
-		maxb = nb;
-	}
-	
-	ut = urlPath(diskURL, &diskRoot);
-	nb = ((ut > URL_IS_DASH) ? (diskRoot - diskURL) : 0);
-	maxb += nb;
-	maxb += 1;
-	globURL = globRoot = alloca(maxb);
-
-	switch (ut) {
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	case URL_IS_PATH:
-	case URL_IS_DASH:
-	    strncpy(globRoot, diskURL, nb);
-	    break;
-	case URL_IS_UNKNOWN:
-	    break;
-	}
-	globRoot += nb;
-	*globRoot = '\0';
-if (_debug)
-fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb, diskURL, globURL, globURL);
-	
-	for (i = 0; rc == 0 && i < glob_result.gl_pathc; i++) {
-	    const char * globFile = &(glob_result.gl_pathv[i][0]);
-	    if (globRoot > globURL && globRoot[-1] == '/')
-		while (*globFile == '/') globFile++;
-	    strcpy(globRoot, globFile);
-	    rc = addFile(fl, globURL, NULL);
-	}
-	Globfree(&glob_result);
-#else
-	int argc = 0;
 	const char ** argv = NULL;
+	int argc = 0;
+	int i;
+
 	rc = rpmGlob(diskURL, &argc, &argv);
 	if (rc == 0) {
 	    for (i = 0; i < argc; i++) {
@@ -1164,7 +1112,6 @@ fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb,
 	    }
 	    xfree(argv);
 	}
-#endif	/* DYING */
     } else {
 	rc = addFile(fl, diskURL, NULL);
     }

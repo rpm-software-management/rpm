@@ -571,7 +571,7 @@ int rpmReadRC(const char * rcfiles)
     {	const char *macrofiles;
 	if ((macrofiles = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
 	    macrofiles = strdup(macrofiles);
-	    initMacros(NULL, macrofiles);
+	    rpmInitMacros(NULL, macrofiles);
 	    xfree(macrofiles);
 	}
     }
@@ -1232,7 +1232,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 
 /*
  * XXX All this macro pokery/jiggery could be achieved by doing a delayed
- *	initMacros(NULL, PER-PLATFORM-MACRO-FILE-NAMES);
+ *	rpmInitMacros(NULL, PER-PLATFORM-MACRO-FILE-NAMES);
  */
     delMacro(NULL, "_target");
     addMacro(NULL, "_target", NULL, ct, RMIL_RPMRC);
@@ -1367,7 +1367,7 @@ int rpmShowRC(FILE *f)
 	    fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
 
-    dumpMacroTable(NULL, f);
+    rpmDumpMacroTable(NULL, f);
 
     return 0;
 }

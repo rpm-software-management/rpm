@@ -100,6 +100,8 @@ extern const char * rpmNAME;
 extern const char * rpmEVR;
 extern int rpmFLAGS;
 
+extern MacroContext rpmCLIMacroContext;
+
 static struct rpmQVArguments rpmQVArgs;
 static struct rpmBuildArguments rpmBArgs;
 
@@ -834,12 +836,14 @@ int main(int argc, const char ** argv)
 	    default:
 		break;
 	    }
-	    addMacro(NULL,"_dbpath", NULL, optArg, RMIL_CMDLINE);
+	    addMacro(NULL, "_dbpath", NULL, optArg, RMIL_CMDLINE);
+	    addMacro(&rpmCLIMacroContext, "_dbpath", NULL, optArg, RMIL_CMDLINE);
 	    gotDbpath = 1;
 	    break;
 
 	  case GETOPT_DEFINEMACRO:
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
+	    rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
 	    break;
 
 	  case GETOPT_EVALMACRO:
@@ -855,6 +859,7 @@ int main(int argc, const char ** argv)
 		argerror("Argument to --timecheck must be integer");
 	    }
 	    addMacro(NULL, "_timecheck", NULL, optArg, RMIL_CMDLINE);
+	    addMacro(&rpmCLIMacroContext, "_timecheck", NULL, optArg, RMIL_CMDLINE);
 	    timeCheck = 1;
 	    break;
 
@@ -1090,15 +1095,19 @@ int main(int argc, const char ** argv)
 
     if (ftpProxy) {
 	addMacro(NULL, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
+	addMacro(&rpmCLIMacroContext, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
     }
     if (ftpPort) {
 	addMacro(NULL, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
+	addMacro(&rpmCLIMacroContext, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
     }
     if (httpProxy) {
 	addMacro(NULL, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
+	addMacro(&rpmCLIMacroContext, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
     }
     if (httpPort) {
 	addMacro(NULL, "_httpport", NULL, httpPort, RMIL_CMDLINE);
+	addMacro(&rpmCLIMacroContext, "_httpport", NULL, httpPort, RMIL_CMDLINE);
     }
 
     if (signIt) {
@@ -1291,7 +1300,7 @@ int main(int argc, const char ** argv)
 			NULL, rcfile, force, noDeps);
 	    if (ec)
 		break;
-	    freeMacros(NULL);       /* XXX macros from CLI are destroyed too */
+	    rpmFreeMacros(NULL);
 	    rpmReadConfigFiles(rcfile, NULL);
 	}
 	break;
@@ -1405,7 +1414,8 @@ int main(int argc, const char ** argv)
     }
 
     poptFreeContext(optCon);
-    freeMacros(NULL);
+    rpmFreeMacros(NULL);
+    rpmFreeMacros(&rpmCLIMacroContext);
     rpmFreeRpmrc();
 
     if (pipeChild) {

@@ -31,7 +31,7 @@ static int _debug = 0;
 #define	urlPath(_xr, _r)	*(_r) = (_xr)
 
 typedef	FILE * FD_t;
-#define Fopen(_path, _fmode)	fopen(_path, "_r");
+#define Fopen(_path, _fmode)	fopen(_path, "r");
 #define	Ferror			ferror
 #define Fstrerror(_fd)		strerror(errno)
 #define	Fread			fread
@@ -47,7 +47,8 @@ typedef	FILE * FD_t;
 
 #include <rpmmacro.h>
 
-struct MacroContext globalMacroContext;
+struct MacroContext rpmGlobalMacroContext;
+struct MacroContext rpmCLIMacroContext;
 
 typedef struct MacroBuf {
 	const char *s;		/* text to expand */
@@ -85,15 +86,12 @@ compareMacroName(const void *ap, const void *bp)
 	MacroEntry *ame = *((MacroEntry **)ap);
 	MacroEntry *bme = *((MacroEntry **)bp);
 
-	if (ame == NULL && bme == NULL) {
+	if (ame == NULL && bme == NULL)
 		return 0;
-	}
-	if (ame == NULL) {
+	if (ame == NULL)
 		return 1;
-	}
-	if (bme == NULL) {
+	if (bme == NULL)
 		return -1;
-	}
 	return strcmp(ame->name, bme->name);
 }
 
@@ -132,14 +130,14 @@ sortMacroTable(MacroContext *mc)
 }
 
 void
-dumpMacroTable(MacroContext * mc, FILE * fp)
+rpmDumpMacroTable(MacroContext * mc, FILE * fp)
 {
 	int i;
 	int nempty = 0;
 	int nactive = 0;
 
 	if (mc == NULL)
-		mc = &globalMacroContext;
+		mc = &rpmGlobalMacroContext;
 	if (fp == NULL)
 		fp = stderr;
     
@@ -171,7 +169,7 @@ findEntry(MacroContext *mc, const char *name, size_t namelen)
 	char namebuf[1024];
 
 	if (mc == NULL)
-		mc = &globalMacroContext;
+		mc = &rpmGlobalMacroContext;
 	if (! mc->firstFree)
 		return NULL;
 
@@ -1061,7 +1059,7 @@ expandMacro(MacroBuf *mb)
 	}
 
 	if (STREQ("dump", f, fn)) {
-		dumpMacroTable(mb->mc, NULL);
+		rpmDumpMacroTable(mb->mc, NULL);
 		while (iseol(*se))
 			se++;
 		s = se;
@@ -1201,7 +1199,7 @@ expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 	if (s == NULL || slen <= 0)
 		return 0;
 	if (mc == NULL)
-		mc = &globalMacroContext;
+		mc = &rpmGlobalMacroContext;
 
 	tbuf = alloca(slen + 1);
 	memset(tbuf, 0, (slen + 1));
@@ -1233,7 +1231,7 @@ addMacro(MacroContext *mc, const char *n, const char *o, const char *b, int leve
 	MacroEntry **mep;
 
 	if (mc == NULL)
-		mc = &globalMacroContext;
+		mc = &rpmGlobalMacroContext;
 
 	/* If new name, expand macro table */
 	if ((mep = findEntry(mc, n, 0)) == NULL) {
@@ -1256,7 +1254,7 @@ delMacro(MacroContext *mc, const char *n)
 	MacroEntry **mep;
 
 	if (mc == NULL)
-		mc = &globalMacroContext;
+		mc = &rpmGlobalMacroContext;
 	/* If name exists, pop entry */
 	if ((mep = findEntry(mc, n, 0)) != NULL) {
 		popMacro(mep);
@@ -1272,20 +1270,40 @@ rpmDefineMacro(MacroContext *mc, const char *macro, int level)
 	MacroBuf macrobuf, *mb = &macrobuf;
 
 	/* XXX just enough to get by */
-	mb->mc = (mc ? mc : &globalMacroContext);
+	mb->mc = (mc ? mc : &rpmGlobalMacroContext);
 	(void)doDefine(mb, macro, level, 0);
 	return 0;
 }
 
+/* Load a macro context into rpmGlobalMacroContext */
 void
-initMacros(MacroContext *mc, const char *macrofiles)
+rpmLoadMacros(MacroContext * mc, int level)
+{
+	int i;
+
+	if (mc == NULL || mc == &rpmGlobalMacroContext)
+		return;
+
+	for (i = 0; i < mc->firstFree; i++) {
+		MacroEntry **mep, *me;
+		mep = &mc->macroTable[i];
+		me = *mep;
+
+		if (me == NULL)		/* XXX this should never happen */
+			continue;
+		addMacro(NULL, me->name, me->opts, me->body, (level - 1));
+	}
+}
+
+void
+rpmInitMacros(MacroContext *mc, const char *macrofiles)
 {
 	char *m, *mfile, *me;
 
 	if (macrofiles == NULL)
 		return;
 	if (mc == NULL)
-		mc = &globalMacroContext;
+		mc = &rpmGlobalMacroContext;
 
 	for (mfile = m = xstrdup(macrofiles); *mfile; mfile = me) {
 		FD_t fd;
@@ -1315,8 +1333,10 @@ initMacros(MacroContext *mc, const char *macrofiles)
 		buf[sizeof(buf)-1] = '\0';
 
 		fd = Fopen(buf, "r.fpio");
-		if (fd == NULL || Ferror(fd))
+		if (fd == NULL || Ferror(fd)) {
+			if (fd) Fclose(fd);
 			continue;
+		}
 
 		/* XXX Assume new fangled macro expansion */
 		max_macro_depth = 16;
@@ -1336,15 +1356,18 @@ initMacros(MacroContext *mc, const char *macrofiles)
 	}
 	if (m)
 		free(m);
+
+	/* Reload cmdline macros */
+	rpmLoadMacros(&rpmCLIMacroContext, RMIL_CMDLINE);
 }
 
 void
-freeMacros(MacroContext *mc)
+rpmFreeMacros(MacroContext *mc)
 {
 	int i;
     
 	if (mc == NULL)
-		mc = &globalMacroContext;
+		mc = &rpmGlobalMacroContext;
 
 	for (i = 0; i < mc->firstFree; i++) {
 		MacroEntry *me;
@@ -1375,6 +1398,7 @@ int isCompressed(const char *file, int *compressed)
     if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, Fstrerror(fd));
+	if (fd) Fclose(fd);
 	return 1;
     }
     nb = Fread(magic, sizeof(char), sizeof(magic), fd);
@@ -1651,7 +1675,7 @@ main(int argc, char *argv[])
 	    exit(1);
 	}
 
-	initMacros(NULL, macrofiles);
+	rpmInitMacros(NULL, macrofiles);
 	for ( ; optind < argc; optind++) {
 	    const char *val;
 
@@ -1661,6 +1685,7 @@ main(int argc, char *argv[])
 		xfree(val);
 	    }
 	}
+	rpmFreeMacros(NULL);
 	return 0;
 }
 
@@ -1676,8 +1701,8 @@ main(int argc, char *argv[])
 	FILE *fp;
 	int x;
 
-	initMacros(NULL, macrofiles);
-	dumpMacroTable(NULL, NULL);
+	rpmInitMacros(NULL, macrofiles);
+	rpmDumpMacroTable(NULL, NULL);
 
 	if ((fp = fopen(testfile, "r")) != NULL) {
 		while(rdcl(buf, sizeof(buf), fp, 1)) {
@@ -1693,6 +1718,7 @@ main(int argc, char *argv[])
 		fprintf(stderr, "%d->%s\n <-\n", x, buf);
 		memset(buf, 0, sizeof(buf));
 	}
+	rpmFreeMacros(NULL);
 
 	return 0;
 }

@@ -33,7 +33,7 @@ typedef /*@abstract@*/ struct MacroContext {
 extern "C" {
 #endif
 
-void	dumpMacroTable	(MacroContext * mc, FILE * fp);
+void	rpmDumpMacroTable	(MacroContext * mc, FILE * fp);
 
 /* XXX this is used only in build/expression.c and will go away. */
 const char *getMacroBody (MacroContext *mc, const char *name);
@@ -45,8 +45,9 @@ void	addMacro	(MacroContext * mc, const char * n, const char * o,
 void	delMacro	(MacroContext * mc, const char * n);
 
 int	rpmDefineMacro	(MacroContext * mc, const char * macro, int level);
-void	initMacros	(MacroContext * mc, const char * macrofile);
-void	freeMacros	(MacroContext * mc);
+void	rpmLoadMacros	(MacroContext *mc, int level);
+void	rpmInitMacros	(MacroContext * mc, const char * macrofiles);
+void	rpmFreeMacros	(MacroContext * mc);
 
 #define COMPRESSED_NOT   0
 #define COMPRESSED_OTHER 1

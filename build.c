@@ -294,7 +294,7 @@ int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 	printf(_("Building for target %s\n"), target);
 
 	/* Read in configuration for target. */
-	freeMacros(NULL);	/* XXX macros from CLI are destroyed too */
+	rpmFreeMacros(NULL);
 	rpmReadConfigFiles(rcfile, target);
 	rc = buildForTarget(arg, ba, passPhrase, fromTarball, cookie,
 		force, nodeps);
@@ -304,7 +304,7 @@ int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 
 exit:
     /* Restore original configuration. */
-    freeMacros(NULL);	/* XXX macros from CLI are destroyed too */
+    rpmFreeMacros(NULL);
     rpmReadConfigFiles(rcfile, NULL);
     return rc;
 }

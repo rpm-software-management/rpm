@@ -21,6 +21,7 @@
 	- perform glob on remote ftp query args.
 	- fix: ftpAbort must close the data channel to read abort status.
 	- perform glob on remote ftp install args.
+	- fix: reload macros from cmd line when re-reading config files.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

@@ -112,9 +112,6 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
     FREE(u->password);
     FREE(u->host);
     FREE(u->portstr);
-#ifdef	DYING
-    FREE(u->path);
-#endif
     FREE(u->proxyu);
     FREE(u->proxyh);
 
@@ -195,18 +192,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	uCache[ucx] = urlLink(u, "uCache (miss)");
 	u = urlFree(u, "urlSplit (urlFind miss)");
     } else {
-#ifdef	DYING
-	/* XXX Swap original url and path into the cached structure */
-	const char *up = uCache[i]->path;
 	ucx = i;
-	uCache[ucx]->path = u->path;
-	u->path = up;
-	up = uCache[ucx]->url;
-	uCache[ucx]->url = u->url;
-	u->url = up;
-#else
-	ucx = i;
-#endif
 	u = urlFree(u, "urlSplit (urlFind hit)");
     }
 
@@ -383,10 +369,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	    continue;
 	}
 	
-	/* Item was everything-but-path. Save path and continue parse on rest */
-#ifdef DYING
-	u->path = xstrdup((*se ? se : "/"));
-#endif
+	/* Item was everything-but-path. Continue parse on rest */
 	*se = '\0';
 	break;
     }
@@ -457,39 +440,16 @@ int urlGetFile(const char * url, const char * dest) {
     sfd = Fopen(url, "r.ufdio");
     if (sfd == NULL || Ferror(sfd)) {
 	rpmMessage(RPMMESS_DEBUG, _("failed to open %s: %s\n"), url, Fstrerror(sfd));
-#ifdef	DYING
-	if (sfd)
-	    Fclose(sfd);
-	return FTPERR_UNKNOWN;
-#else
 	rc = FTPERR_UNKNOWN;
 	goto exit;
-#endif
     }
 
-#ifdef	DYING
-  { urlinfo sfu;
-    sfu = ufdGetUrlinfo(sfd);
-    if (sfu != NULL && dest == NULL) {
-	const char *fileName = sfu->path;
-	if ((dest = strrchr(fileName, '/')) != NULL)
-	    dest++;
-	else
-	    dest = fileName;
-    }
-    if (sfu != NULL) {
-	(void) urlFree(sfu, "ufdGetUrlinfo (urlGetFile)");
-	sfu = NULL;
-    }
-  }
-#else
     if (dest == NULL) {
 	if ((dest = strrchr(sfuPath, '/')) != NULL)
 	    dest++;
 	else
 	    dest = sfuPath;
     }
-#endif
 
     tfd = Fopen(dest, "w.ufdio");
 if (_url_debug)
@@ -497,16 +457,8 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
     if (tfd == NULL || Ferror(tfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
-#ifdef	DYING
-	if (tfd)
-	    Fclose(tfd);
-	if (sfd)
-	    Fclose(sfd);
-	return FTPERR_UNKNOWN;
-#else
 	rc = FTPERR_UNKNOWN;
 	goto exit;
-#endif
     }
 
     switch (urlType) {

@@ -4,7 +4,7 @@
 #include "buildio.h"
 
 extern char *specedit;
-extern MacroContext globalMacroContext;
+extern MacroContext rpmGlobalMacroContext;
 
 #define SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -446,7 +446,7 @@ Spec newSpec(void)
     spec->force = 0;
     spec->anyarch = 0;
 
-    spec->macros = &globalMacroContext;
+    spec->macros = &rpmGlobalMacroContext;
     
     return spec;
 }
