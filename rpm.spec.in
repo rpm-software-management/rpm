@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.32
+Release: 0.33
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -456,9 +456,10 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Dec 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.32
+* Fri Dec 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.33
 - dynamically link /bin/rpm, link against good old -lpthread.
 - test pthread_{mutex,cond}attr_setpshared(), add DB_ENV_PRIVATE if not.
+- error on exclusive Packages fcntl lock if DB_ENV_PRIVATE is set.
 
 * Thu Dec 19 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.31
 - statically link against /usr/lib/nptl/libpthread.a, if present.

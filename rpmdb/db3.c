@@ -1259,7 +1259,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
 	    /*
 	     * Lock a file using fcntl(2). Traditionally this is Packages,
-	     * the file used * to store metadata of installed header(s),
+	     * the file used to store metadata of installed header(s),
 	     * as Packages is always opened, and should be opened first,
 	     * for any rpmdb access.
 	     *
@@ -1271,6 +1271,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	     * the DBENV should provide it's own locking scheme. So try to
 	     * acquire a lock, but permit failures, as some other
 	     * DBENV player may already have acquired the lock.
+	     *
+	     * With NPTL posix mutexes, revert to fcntl lock on non-functioning
+	     * glibc/kernel combinations.
 	     */
 	    if (rc == 0 && dbi->dbi_lockdbfd &&
 		(!dbi->dbi_use_dbenv || _lockdbfd++ == 0))
@@ -1291,9 +1294,10 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
 		    rc = fcntl(fdno, F_SETLK, (void *) &l);
 		    if (rc) {
-			/* Warning only if using CDB locking. */
+			/* Warning iff using non-private CDB locking. */
 			rc = ((dbi->dbi_use_dbenv &&
-				(dbi->dbi_eflags & DB_INIT_CDB))
+				(dbi->dbi_eflags & DB_INIT_CDB) &&
+				!(dbi->dbi_ecflags & DB_ENV_PRIVATE))
 			    ? 0 : 1);
 			rpmError( (rc ? RPMERR_FLOCK : RPMWARN_FLOCK),
 				_("cannot get %s lock on %s/%s\n"),
