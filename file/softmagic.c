@@ -994,11 +994,13 @@ fmagicSMatch(const fmagic fm)
 	/*@globals fileSystem @*/
 	/*@modifies fm, fileSystem @*/
 {
+	struct magic * m;
 	uint32_t nmagic = fm->ml->nmagic;
 	int cont_level = 0;
 	int need_separator = 0;
 	/*@only@*/
-	static int32_t *tmpoff = NULL;
+	static int32_t * tmpoff = NULL;
+	static int tmpdelta = 64;
 	static size_t tmplen = 0;
 	int32_t oldoff = 0;
 	int firstline = 1; /* a flag to print X\n  X\n- X */
@@ -1006,7 +1008,6 @@ fmagicSMatch(const fmagic fm)
 	int i;
 
 	for (i = 0; i < nmagic; i++) {
-		struct magic * m;
 		m = &fm->ml->magic[i];
 		/* if main entry matches, print it... */
 		if (!fmagicSGet(fm, m) ||
@@ -1025,8 +1026,10 @@ fmagicSMatch(const fmagic fm)
 			fmagicPrintf(fm, "\n- ");
 		}
 
-		if ((cont_level+1) >= tmplen)
-			tmpoff = (int32_t *) xrealloc(tmpoff, tmplen += 20);
+		if ((cont_level+1) >= tmplen) {
+			tmplen += tmpdelta;
+			tmpoff = xrealloc(tmpoff, tmplen);
+		}
 		tmpoff[cont_level] = fmagicSPrint(fm, m);
 		cont_level++;
 
@@ -1071,8 +1074,10 @@ fmagicSMatch(const fmagic fm)
 					fmagicPrintf(fm, " ");
 					need_separator = 0;
 				}
-				if ((cont_level+1) >= tmplen)
-					tmpoff = xrealloc(tmpoff, tmplen += 20);
+				if ((cont_level+1) >= tmplen) {
+					tmplen += tmpdelta;
+					tmpoff = xrealloc(tmpoff, tmplen);
+				}
 				tmpoff[cont_level] = fmagicSPrint(fm, m);
 				cont_level++;
 				if (m->desc[0])

@@ -152,7 +152,7 @@ fmagicD(fmagic fm)
 				fmagicPrintf(fm, "unreadable symlink (%s).", strerror(errno));
 				return 1;
 			}
-			buf[nch] = '\0';	/* readlink(2) forgets this */
+			buf[nch] = '\0';	/* readlink(2) needs this */
 
 			/* If broken symlink, say so and quit early. */
 /*@-branchstate@*/
@@ -324,7 +324,7 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 		fmagicPrintf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
 			? "application/x-empty" : "empty"), fm);
 	else {
-		fm->buf[fm->nb++] = '\0';	/* null-terminate it */
+		fm->buf[fm->nb++] = '\0';	/* null-terminate data buffer */
 		match = fmagicF(fm, (fm->flags & FMAGIC_FLAGS_UNCOMPRESS));
 	}
 

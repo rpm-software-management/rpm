@@ -97,6 +97,7 @@
 	- ignore items not in our rainbow (i.e. colors are functional).
 	- fix: dependency helpers now rate limited at 10ms, not 1s.
 	- add per-arch canonical color, only x86_64 enabled for now.
+	- file: avoid ogg/vorbis file classification problems.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
