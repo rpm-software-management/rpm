@@ -452,7 +452,6 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     int status;
     int cpioFailed = 0;
     void * oldhandler;
-    char * cpioBinary;
     int needSecondPipe;
     char line[1024];
     int j;
@@ -474,18 +473,9 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
     if (specFile) *specFile = NULL;
     
-    if (access("/bin/cpio",  X_OK))  {
-	if (access("/usr/bin/cpio",  X_OK))  {
-	    error(RPMERR_CPIO, "cpio cannot be found in /bin or /usr/sbin");
-	    return 1;
-	} else 
-	    cpioBinary = "/usr/bin/cpio";
-    } else
-	cpioBinary = "/bin/cpio";
-
     args = alloca(sizeof(char *) * (fileCount + 10));
 
-    args[i++] = cpioBinary;
+    args[i++] = "cpio";
     args[i++] = "--extract";
     args[i++] = "--unconditional";
     args[i++] = "--preserve-modification-time";
@@ -565,7 +555,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	    close(statusPipe[1]);
 	}
 
-	execv(args[0], args);
+	execvp(args[0], args);
 
 	exit(-1);
     }
