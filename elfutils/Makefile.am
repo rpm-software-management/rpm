@@ -2,8 +2,10 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = m4 doc lib libltdl libelf libebl libdwarf libcpu libasm src \
-	  libelf-po libebl-po libdwarf-po libasm-po po tests
+#SUBDIRS = m4 doc lib libltdl libelf libebl libdwarf libcpu libasm src \
+#	  libelf-po libebl-po libdwarf-po libasm-po po tests
+
+SUBDIRS = m4 doc lib libltdl libelf libebl libdwarf libelf-po libebl-po libdwarf-po po
 
 EXTRA_DIST = splint.rc elfutils.spec.in GPG-KEY NOTES
 

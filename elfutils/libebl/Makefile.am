@@ -21,13 +21,16 @@ AM_CFLAGS = -Wall -Werror -DOBJDIR=\"$(shell pwd)\"
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/libelf -I$(top_srcdir)/lib -I.. \
 	   $(INCLTDL)
 
-lib_LTLIBRARIES = libebl.la
-pkglib_LTLIBRARIES = libebl_i386.la libebl_sh.la libebl_mips.la
+#lib_LTLIBRARIES = libebl.la
+#pkglib_LTLIBRARIES = libebl_i386.la libebl_sh.la libebl_mips.la
+noinst_LTLIBRARIES = libebl.la \
+		libebl_i386.la libebl_sh.la libebl_mips.la
 
 euincludedir = ${includedir}/elfutils
-euinclude_HEADERS = libebl.h elf-knowledge.h
+#euinclude_HEADERS = libebl.h elf-knowledge.h
 
-noinst_HEADERS = libeblP.h libebl_i386.h libebl_sh.h libebl_mips.h
+noinst_HEADERS = libeblP.h libebl_i386.h libebl_sh.h libebl_mips.h \
+		libebl.h elf-knowledge.h
 
 EXTRA_DIST = libebl.map libebl_i386.map libebl_sh.map libebl_mips.map
 

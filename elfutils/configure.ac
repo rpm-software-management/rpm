@@ -17,10 +17,10 @@ dnl along with this program; if not, write to the Free Software Foundation,
 dnl Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl
 AC_INIT([elfutils],[0.51],[drepper@redhat.com],[elfutils])
-AM_INIT_AUTOMAKE([gnits 1.7 dist-bzip2])
+AM_INIT_AUTOMAKE([gnits 1.6.3 dist-bzip2])
 AC_COPYRIGHT([Copyright (C) 1996-2001, 2002 Red Hat, Inc.])
-AC_CONFIG_SRCDIR([src/readelf.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([libelf/elf_begin.c])
+AM_CONFIG_HEADER([config.h])
 AC_PREREQ(2.54)			dnl Minimum Autoconf version required.
 AC_CANONICAL_HOST
 
@@ -138,6 +138,24 @@ dnl tests, because the choice of the file model can (in principle) affect
 dnl whether functions and headers are available, whether they work, etc.
 AC_SYS_LARGEFILE
 
+dnl AC_CONFIG_FILES([Makefile
+dnl 	   elfutils.spec
+dnl 	   m4/Makefile
+dnl 	   doc/Makefile
+dnl 	   lib/Makefile
+dnl 	   libelf/Makefile
+dnl 	   libebl/Makefile
+dnl 	   libdwarf/Makefile
+dnl 	   libcpu/Makefile
+dnl 	   libasm/Makefile
+dnl 	   src/Makefile
+dnl 	   libelf-po/Makefile.in
+dnl 	   libebl-po/Makefile.in
+dnl 	   libdwarf-po/Makefile.in
+dnl 	   libasm-po/Makefile.in
+dnl 	   po/Makefile.in
+dnl 	   tests/Makefile])
+
 AC_CONFIG_FILES([Makefile
 	   elfutils.spec
 	   m4/Makefile
@@ -146,13 +164,8 @@ AC_CONFIG_FILES([Makefile
 	   libelf/Makefile
 	   libebl/Makefile
 	   libdwarf/Makefile
-	   libcpu/Makefile
-	   libasm/Makefile
-	   src/Makefile
 	   libelf-po/Makefile.in
 	   libebl-po/Makefile.in
 	   libdwarf-po/Makefile.in
-	   libasm-po/Makefile.in
-	   po/Makefile.in
-	   tests/Makefile])
+	   po/Makefile.in])
 AC_OUTPUT

@@ -23,10 +23,11 @@ GCC_INCLUDE = -I$(shell $(CC) -print-file-name=include)
 
 LINT = splint
 
-lib_LTLIBRARIES = libelf.la
+#lib_LTLIBRARIES = libelf.la
+noinst_LTLIBRARIES = libelf.la
 
 euincludedir = ${includedir}/elfutils
-euinclude_HEADERS = libelf.h gelf.h nlist.h
+#euinclude_HEADERS = libelf.h gelf.h nlist.h
 
 libelf_la_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		    elf_begin.c elf_next.c elf_rand.c elf_end.c elf_kind.c \
@@ -76,6 +77,7 @@ libelf_la_DEPENDENCIES = $(libelf_la_LIBADD) libelf.map
 
 noinst_HEADERS = elf.h abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
 		 version_xlate.h dl-hash.h \
+		libelf.h gelf.h nlist.h \
 		elf-knowledge.h
 
 EXTRA_DIST = libelf.map
