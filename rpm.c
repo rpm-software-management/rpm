@@ -548,7 +548,6 @@ int main(int argc, char ** argv) {
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_GROUP)
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
-		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_GROUP;
 	    verifySource = VERIFY_GRP;
 	    break;
