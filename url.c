@@ -111,6 +111,8 @@ static int urlFtpLogin(char * url, char ** fileNamePtr) {
     char * userName = NULL;
     char * password = NULL;
     char * proxy;
+    char * portStr, * endPtr;
+    int port;
     int ftpconn;
    
     message(MESS_DEBUG, "getting %s via anonymous ftp\n", url);
@@ -125,8 +127,18 @@ static int urlFtpLogin(char * url, char ** fileNamePtr) {
 		password ? password : "(username)");
 
     proxy = getVar(RPMVAR_FTPPROXY);
+    portStr = getVar(RPMVAR_FTPPORT);
+    if (!portStr) {
+	port = -1;
+    } else {
+	port = strtol(portStr, &endPtr, 0);
+	if (*endPtr) {
+	    fprintf(stderr, "error: ftpport must be a number\n");
+	    return -1;
+	}
+    }
 
-    ftpconn = ftpOpen(machineName, userName, password, proxy);
+    ftpconn = ftpOpen(machineName, userName, password, proxy, port);
 
     free(machineName);
     free(userName);
@@ -197,7 +209,7 @@ int urlGetFile(char * url, char * dest) {
 
     ftpClose(ftpconn);
 
-    return fd;
+    return rc;
 }
 
 int urlIsURL(char * url) {
