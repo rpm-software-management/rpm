@@ -17,6 +17,7 @@
 #include "Python.h"
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
+#include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"
 #include "upgrade.h"
