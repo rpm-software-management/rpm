@@ -6,6 +6,12 @@
 	- more DU 4.0D fiddles (Shing-Gene Yung).
 	- fix: segfault from unknown uid/gid -- use builder's uid/gid instead.
 	- autoReq/autoProv now per-package.
+	- fix: avoid segfault using --prefix until ewt fixes.
+	- add --define "%foo %bar" option.
+	- dump macros to same fd as --showrc uses.
+	- add %GNUconfigure for full-blown package regeneration.
+	- fix: RPM_ARCH/RPM_OS had wrong values.
+	- fix: create ppc directories correctly.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

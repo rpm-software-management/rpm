@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.18 1999/03/27 21:40:56 jbj Exp $
+# $Id: macros.in,v 1.19 1999/03/28 00:47:43 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -18,22 +18,30 @@
 
 #==============================================================================
 # ---- path macros
+#	XXX The use of which here is overly simple.
 #
-%__bzip2                 %(which bzip2)
-%__cat                   %(which cat)
-%__chgrp                 %(which chgrp)
-%__chmod                 %(which chmod)
-%__chown                 %(which chown)
-%__gzip                  %(which gzip)
-%__install               %(which install)
-%__libtoolize            %(which libtoolize)
-%__make                  %(which make)
-%__mkdir                 %(which mkdir)
-%__patch                 %(which patch)
-%__ranlib                %(which ranlib)
-%__rm                    %(which rm)
-%__strip                 %(which strip)
-%__tar                   %(which tar)
+%__bzip2		%(which bzip2)
+%__cat			%(which cat)
+%__chgrp		%(which chgrp)
+%__chmod		%(which chmod)
+%__chown		%(which chown)
+%__cpio			%(which cpio)
+%__gzip			%(which gzip)
+%__install		%(which install)
+%__make			%(which make)
+%__mkdir		%(which mkdir)
+%__patch		%(which patch)
+%__ranlib		%(which ranlib)
+%__rm			%(which rm)
+%__strip		%(which strip)
+%__tar			%(which tar)
+
+# XXX avoid weird failures from which if tools are not installed
+%__libtoolize		libtoolize
+%__aclocal		aclocal
+%__autoheader		autoheader
+%__automake		automake
+%__autoconf		autoconf
 
 #==============================================================================
 # ---- Required rpmrc macros.
@@ -111,8 +119,8 @@
 	RPM_SOURCE_DIR=\"%{_sourcedir}\"\
 	RPM_BUILD_DIR=\"%{_builddir}\"\
 	RPM_OPT_FLAGS=\"%{optflags}\"\
-	RPM_ARCH=\"%{_target_cpu}\"\
-	RPM_OS=\"%{_target_os}\"\
+	RPM_ARCH=\"%{_arch}\"\
+	RPM_OS=\"%{_os}\"\
 	export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
 	RPM_DOC_DIR=\"%{_docdir}\"\
 	export RPM_DOC_DIR\
@@ -162,4 +170,18 @@
 #
 %configure	\
   %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
+  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
+
+#------------------------------------------------------------------------------
+# The GNUconfigure macro does the following:
+#	update config.guess and config.sub.
+#	regenerate all autoconf/automake files
+#	run configure with correct prefix, platform, and CFLAGS.
+#
+%GNUconfigure	\
+  %{__libtoolize} --copy --force} \
+  %{__aclocal} \
+  %{__autoheader} \
+  %{__automake} \
+  %{__autoconf} \
   CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}

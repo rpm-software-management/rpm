@@ -43,22 +43,27 @@ extern MacroContext globalMacroContext;
 extern "C" {
 #endif
 
-#define COMPRESSED_NOT   0
-#define COMPRESSED_OTHER 1
-#define COMPRESSED_BZIP2 2
+void	dumpMacroTable	__P((MacroContext *mc, FILE *f));
 
-int isCompressed(const char *file, int *compressed);
+/* XXX this is used only in build/expression.c and will go away. */
+const char *getMacroBody __P((MacroContext *mc, const char *name));
 
-void	dumpMacroTable	__P((MacroContext *mc));
+int	expandMacros	__P((void *spec, MacroContext *mc, char *sbuf, size_t sbuflen));
+void	addMacro	__P((MacroContext *mc, const char *n, const char *o, const char *b, int depth));
+void	delMacro	__P((MacroContext *mc, const char *n));
 
+int	rpmDefineMacro	__P((MacroContext *mc, const char *macro, int level));
 void	initMacros	__P((MacroContext *mc, const char *macrofile));
 void	freeMacros	__P((MacroContext *mc));
 
-void	addMacro	__P((MacroContext *mc, const char *n, const char *o, const char *b, int depth));
-void	delMacro	__P((MacroContext *mc, const char *n));
-int	expandMacros	__P((void *spec, MacroContext *mc, char *sbuf, size_t sbuflen));
+#define COMPRESSED_NOT   0
+#define COMPRESSED_OTHER 1
+#define COMPRESSED_BZIP2 2
+int	isCompressed	__P((const char *file, int *compressed));
 
-const char *getMacroBody __P((MacroContext *mc, const char *name));
+char *	rpmExpand	__P((const char *arg, ...));
+const char *rpmGetPath	__P((const char *path, ...));
+int	rpmExpandNumeric __P((const char *arg));
 
 #ifdef __cplusplus
 }

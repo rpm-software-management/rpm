@@ -20,6 +20,8 @@
 #define GETOPT_RELOCATE		1016
 #define GETOPT_SHOWRC		1018
 #define GETOPT_EXCLUDEPATH	1019
+#define	GETOPT_DEFINEMACRO	1020
+#define	GETOPT_PREFIX		1021	/* XXX hack to avoid prefix dump */
 
 char * version = VERSION;
 
@@ -85,6 +87,7 @@ static struct poptOption optionsTable[] = {
  { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
+ { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,	NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
@@ -115,7 +118,7 @@ static struct poptOption optionsTable[] = {
  { "oldpackage", '\0', 0, &oldPackage, 0,	NULL, NULL},
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
- { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
+ { "prefix", '\0', POPT_ARG_STRING, &prefix, GETOPT_PREFIX,	NULL, NULL},
  { "query", 'q', 0, NULL, 'q',			NULL, NULL},
  { "querytags", '\0', 0, &queryTags, 0,		NULL, NULL},
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
@@ -819,8 +822,16 @@ int main(int argc, char ** argv) {
 	  case GETOPT_DBPATH:
             if (optArg[0] != '/')
                 argerror(_("arguments to --dbpath must begin with a /"));
-	    addMacro(&globalMacroContext, "_dbpath", NULL, optArg, RMIL_CMDLINE);
+	    addMacro(&globalMacroContext,"_dbpath", NULL, optArg, RMIL_CMDLINE);
 	    gotDbpath = 1;
+	    break;
+
+	  case GETOPT_DEFINEMACRO:
+	    rpmDefineMacro(&globalMacroContext, optArg, RMIL_CMDLINE);
+	    break;
+
+	  case GETOPT_PREFIX:	/* XXX FIXME */
+	    argerror(_("--prefix is broke, use --relocate /oldpath=/newpath instead"));
 	    break;
 
 	  case GETOPT_TIMECHECK:
@@ -988,7 +999,7 @@ int main(int argc, char ** argv) {
 		   "installation"));
 
     if (bigMode != MODE_INSTALL && ignoreSize)
-	argerror(_("--ignoreos may only be specified during package "
+	argerror(_("--ignoresize may only be specified during package "
 		   "installation"));
 
     if (allMatches && bigMode != MODE_UNINSTALL)

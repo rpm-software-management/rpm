@@ -534,89 +534,6 @@ static void setDefaults(void) {
 
 }
 
-/* Return concatenated and expanded macro list */
-char * rpmExpand(const char *arg, ...)
-{
-    char buf[BUFSIZ], *p, *pe;
-    const char *s;
-    va_list ap;
-
-    if (arg == NULL)
-	return strdup("");
-
-    p = buf;
-    strcpy(p, arg);
-    pe = p + strlen(p);
-    *pe = '\0';
-
-    va_start(ap, arg);
-    while ((s = va_arg(ap, const char *)) != NULL) {
-	strcpy(pe, s);
-	pe += strlen(pe);
-	*pe = '\0';
-    }
-    va_end(ap);
-    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
-    return strdup(buf);
-}
-
-int rpmExpandNumeric(const char *arg)
-{
-    const char *val;
-    int rc;
-
-    if (arg == NULL)
-	return 0;
-
-    val = rpmExpand(arg, NULL);
-    if (!(val && *val != '%'))
-	rc = 0;
-    else if (*val == 'Y' || *val == 'y')
-	rc = 1;
-    else if (*val == 'N' || *val == 'n')
-	rc = 0;
-    else {
-	char *end;
-	rc = strtol(val, &end, 0);
-	if (!(end && *end == '\0'))
-	    rc = 0;
-    }
-    xfree(val);
-
-    return rc;
-}
-
-/* Return concatenated and expanded path with multiple /'s removed */
-const char * rpmGetPath(const char *path, ...)
-{
-    char buf[BUFSIZ], *p, *pe;
-    const char *s;
-    va_list ap;
-
-    if (path == NULL)
-	return strdup("");
-
-    p = buf;
-    strcpy(p, path);
-    pe = p + strlen(p);
-    *pe = '\0';
-
-    va_start(ap, path);
-    while ((s = va_arg(ap, const char *)) != NULL) {
-	/* XXX FIXME: this fixes only some of the "...//..." problems */
-	if (pe > p && pe[-1] == '/')
-	    while(*s && *s == '/')	s++;
-	if (*s != '\0') {
-	    strcpy(pe, s);
-	    pe += strlen(pe);
-	    *pe = '\0';
-	}
-    }
-    va_end(ap);
-    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
-    return strdup(buf);
-}
-
 int rpmReadRC(const char * rcfiles)
 {
     char *myrcfiles, *r, *re;
@@ -1323,7 +1240,7 @@ int rpmShowRC(FILE *f)
 	    fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
 
-    dumpMacroTable(&globalMacroContext);
+    dumpMacroTable(&globalMacroContext, f);
 
     return 0;
 }

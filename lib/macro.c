@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <assert.h>
+#include <stdarg.h>
 
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
@@ -10,6 +11,7 @@
 #define rpmError fprintf
 #define RPMERR_BADSPEC stderr
 #define	_(x)	x
+#define	xfree(_p)	free((void *)_p)
 #else
 #include "rpmlib.h"
 #endif
@@ -89,29 +91,32 @@ sortMacroTable(MacroContext *mc)
 }
 
 void
-dumpMacroTable(MacroContext *mc)
+dumpMacroTable(MacroContext *mc, FILE *f)
 {
 	int i;
 	int nempty = 0;
 	int nactive = 0;
+
+	if (f == NULL)
+		f = stderr;
     
-	fprintf(stderr, "========================\n");
+	fprintf(f, "========================\n");
 	for (i = 0; i < mc->firstFree; i++) {
 		MacroEntry *me;
 		if ((me = mc->macroTable[i]) == NULL) {
 			nempty++;
 			continue;
 		}
-		fprintf(stderr, "%3d%c %s", me->level,
+		fprintf(f, "%3d%c %s", me->level,
 			(me->used > 0 ? '=' : ':'), me->name);
-		if (me->opts)
-			fprintf(stderr, "(%s)", me->opts);
-		if (me->body)
-			fprintf(stderr, "\t%s", me->body);
-		fprintf(stderr, "\n");
+		if (me->opts && *me->opts)
+			fprintf(f, "(%s)", me->opts);
+		if (me->body && *me->body)
+			fprintf(f, "\t%s", me->body);
+		fprintf(f, "\n");
 		nactive++;
 	}
-	fprintf(stderr, _("======================== active %d empty %d\n"),
+	fprintf(f, _("======================== active %d empty %d\n"),
 		nactive, nempty);
 }
 
@@ -505,7 +510,7 @@ pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int lev
 	me->prev = prev;
 	me->name = (prev ? prev->name : strdup(n));
 	me->opts = (o ? strdup(o) : NULL);
-	me->body = (b ? strdup(b) : NULL);
+	me->body = strdup(b ? b : "");
 	me->used = 0;
 	me->level = level;
 	*mep = me;
@@ -939,7 +944,7 @@ expandMacro(MacroBuf *mb)
 	}
 
 	if (STREQ("dump", f, fn)) {
-		dumpMacroTable(mb->mc);
+		dumpMacroTable(mb->mc, NULL);
 		if (*se == '\n')
 			se++;
 		s = se;
@@ -1029,10 +1034,12 @@ expandMacro(MacroBuf *mb)
 	}
 
 	/* Recursively expand body of macro */
-	mb->s = me->body;
-	rc = expandMacro(mb);
-	if (rc == 0)
-		me->used++;	/* Mark macro as used */
+	if (me->body && *me->body) {
+		mb->s = me->body;
+		rc = expandMacro(mb);
+		if (rc == 0)
+			me->used++;	/* Mark macro as used */
+	}
 
 	/* Free args for "%name " macros with opts */
 	if (me->opts != NULL)
@@ -1050,6 +1057,7 @@ expandMacro(MacroBuf *mb)
 }
 
 /* =============================================================== */
+/* XXX this is used only in build/expression.c and will go away. */
 const char *
 getMacroBody(MacroContext *mc, const char *name)
 {
@@ -1059,6 +1067,7 @@ getMacroBody(MacroContext *mc, const char *name)
 }
 
 /* =============================================================== */
+
 int
 expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 {
@@ -1123,6 +1132,17 @@ delMacro(MacroContext *mc, const char *name)
 		popMacro(mep);
 }
 
+int
+rpmDefineMacro(MacroContext *mc, const char *macro, int level)
+{
+	MacroBuf macrobuf, *mb = &macrobuf;
+
+	/* XXX just enough to get by */
+	mb->mc = (mc ? mc : &globalMacroContext);
+	(void)doDefine(mb, macro, level, 0);
+	return 0;
+}
+
 void
 initMacros(MacroContext *mc, const char *macrofile)
 {
@@ -1143,7 +1163,6 @@ initMacros(MacroContext *mc, const char *macrofile)
 	for (mfile = m = strdup(macrofile); *mfile; mfile = me) {
 		FILE *fp;
 		char buf[BUFSIZ];
-		MacroBuf macrobuf, *mb = &macrobuf;
 
 		if ((me = strchr(mfile, ':')) != NULL)
 			*me++ = '\0';
@@ -1164,9 +1183,8 @@ initMacros(MacroContext *mc, const char *macrofile)
 
 			if (c != '%')
 				continue;
-			n++;
-			mb->mc = mc;	/* XXX just enough to get by */
-			(void)doDefine(mb, n, RMIL_MACROFILES, 0);
+			n++;	/* skip % */
+			(void)rpmDefineMacro(NULL, n, RMIL_MACROFILES);
 		}
 		fclose(fp);
 	}
@@ -1194,7 +1212,6 @@ freeMacros(MacroContext *mc)
 }
 
 /* =============================================================== */
-
 int isCompressed(const char *file, int *compressed)
 {
     FD_t fd;
@@ -1238,6 +1255,93 @@ int isCompressed(const char *file, int *compressed)
 }
 
 /* =============================================================== */
+/* Return concatenated and expanded macro list */
+char * 
+rpmExpand(const char *arg, ...)
+{
+    char buf[BUFSIZ], *p, *pe;
+    const char *s;
+    va_list ap;
+
+    if (arg == NULL)
+	return strdup("");
+
+    p = buf;
+    strcpy(p, arg);
+    pe = p + strlen(p);
+    *pe = '\0';
+
+    va_start(ap, arg);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	strcpy(pe, s);
+	pe += strlen(pe);
+	*pe = '\0';
+    }
+    va_end(ap);
+    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+    return strdup(buf);
+}
+
+int
+rpmExpandNumeric(const char *arg)
+{
+    const char *val;
+    int rc;
+
+    if (arg == NULL)
+	return 0;
+
+    val = rpmExpand(arg, NULL);
+    if (!(val && *val != '%'))
+	rc = 0;
+    else if (*val == 'Y' || *val == 'y')
+	rc = 1;
+    else if (*val == 'N' || *val == 'n')
+	rc = 0;
+    else {
+	char *end;
+	rc = strtol(val, &end, 0);
+	if (!(end && *end == '\0'))
+	    rc = 0;
+    }
+    xfree(val);
+
+    return rc;
+}
+
+/* Return concatenated and expanded path with multiple /'s removed */
+const char *
+rpmGetPath(const char *path, ...)
+{
+    char buf[BUFSIZ], *p, *pe;
+    const char *s;
+    va_list ap;
+
+    if (path == NULL)
+	return strdup("");
+
+    p = buf;
+    strcpy(p, path);
+    pe = p + strlen(p);
+    *pe = '\0';
+
+    va_start(ap, path);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	/* XXX FIXME: this fixes only some of the "...//..." problems */
+	if (pe > p && pe[-1] == '/')
+	    while(*s && *s == '/')	s++;
+	if (*s != '\0') {
+	    strcpy(pe, s);
+	    pe += strlen(pe);
+	    *pe = '\0';
+	}
+    }
+    va_end(ap);
+    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+    return strdup(buf);
+}
+
+/* =============================================================== */
 
 #ifdef DEBUG_MACROS
 
@@ -1253,7 +1357,7 @@ main(int argc, char *argv[])
 	int x;
 
 	initMacros(&mc, macrofile);
-	dumpMacroTable(&mc);
+	dumpMacroTable(&mc, NULL);
 
 	if ((fp = fopen(testfile, "r")) != NULL) {
 		while(fgets(buf, sizeof(buf), fp)) {

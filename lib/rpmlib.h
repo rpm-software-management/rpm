@@ -243,9 +243,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMVAR_NUM			55     /* number of RPMVAR entries */
 
 #define	xfree(_p)	free((void *)_p)
-char *rpmExpand(const char *arg, ...);
-const char *rpmGetPath(const char *path, ...);
-int rpmExpandNumeric(const char *arg);
 
 char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
