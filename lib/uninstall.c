@@ -538,8 +538,11 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    } else {
 		if (!test) {
 		    if (unlink(file)) {
-			rpmError(RPMERR_UNLINK, _("removal of %s failed: %s"),
-				    file, strerror(errno));
+			if (errno != ENOENT || !(flags & RPMFILE_MISSINGOK)) {
+			    rpmError(RPMERR_UNLINK, 
+				      _("removal of %s failed: %s"),
+					file, strerror(errno));
+			}
 			rc = 1;
 		    }
 		}
