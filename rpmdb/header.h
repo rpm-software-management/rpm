@@ -682,7 +682,9 @@ struct HV_s {
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;
     HDRnextiter	hdrnextiter;
+/*@null@*/
     void *	hdrvecs;
+/*@null@*/
     void *	hdrdata;
     int		hdrversion;
 };

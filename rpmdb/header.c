@@ -118,7 +118,7 @@ fprintf(stderr, "--> h  %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), 
  * @param h		header
  * @return		NULL always
  */
-HSTATIC
+HSTATIC /*@null@*/
 Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
@@ -2889,7 +2889,7 @@ freeExtensionCache(const headerSprintfExtension extensions,
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
-HSTATIC /*@only@*/
+HSTATIC /*@only@*/ /*@null@*/
 char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,

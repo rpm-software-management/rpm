@@ -327,6 +327,8 @@ struct rpmdb_s {
 	/*@*/;
     void (*db_free) (/*@only@*/ void * ptr)
 	/*@modifies *ptr @*/;
+    int		db_opens;
+/*@only@*//*@null@*/ void * db_dbenv;	/*!< Berkeley DB_ENV handle */
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex *	_dbi;		/*!< Tag indices. */
 

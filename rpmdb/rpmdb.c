@@ -934,41 +934,16 @@ static int openDatabase(/*@null@*/ const char * prefix,
     rpmdb db;
     int rc, xx;
     unsigned int gflags = 0;	/* dbiGet() flags */
-    static int _initialized = 0;
+    static int _tags_initialized = 0;
+    static int _dbenv_removed = 0;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
     int minimal = flags & RPMDB_FLAG_MINIMAL;
 
-    if (!_initialized || dbiTagsMax == 0) {
-
-#if 1
-	static int _enable_cdb = -1;
-
-	/* XXX hack in suoport for CDB, otherwise nuke the state. */
-	/*@-mods@*/
-	if (_enable_cdb < 0)
-	    _enable_cdb = rpmExpandNumeric("%{?__dbi_cdb:1}");
-	/*@=mods@*/
-
-	if (!_enable_cdb) {
-	    char * filename;
-	    int i;
-
-	    i = sizeof("//__db.000");
-	    if (prefix) i += strlen(prefix);
-	    if (dbpath) i += strlen(dbpath);
-	    filename = alloca(i);
-	    for (i = 0; i < 16; i++) {
-		sprintf(filename, "%s/%s/__db.%03d",
-			(prefix ? prefix : ""), (dbpath ? dbpath : ""),  i);
-		(void) rpmCleanPath(filename);
-		xx = unlink(filename);
-	    }
-	}
-#endif
+    if (!_tags_initialized || dbiTagsMax == 0) {
 	/*@-mods@*/
 	dbiTagsInit();
 	/*@=mods@*/
-	_initialized++;
+	_tags_initialized++;
     }
 
     /* Insure that _dbapi has one of -1, 1, 2, or 3 */
@@ -987,6 +962,35 @@ static int openDatabase(/*@null@*/ const char * prefix,
     /*@=mods@*/
     if (db == NULL)
 	return 1;
+
+    if (!_dbenv_removed) {
+	static int _enable_cdb = -1;
+
+	/* XXX hack in suoport for CDB, otherwise nuke the state. */
+	/*@-mods@*/
+	if (_enable_cdb < 0)
+	    _enable_cdb = rpmExpandNumeric("%{?__dbi_cdb:1}");
+	/*@=mods@*/
+
+	if (!_enable_cdb) {
+	    char * fn;
+	    int i;
+
+	    i = sizeof("//__db.000");
+	    if (db->db_root) i += strlen(db->db_root);
+	    if (db->db_home) i += strlen(db->db_home);
+	    fn = alloca(i);
+	    for (i = 0; i < 16; i++) {
+		sprintf(fn, "%s/%s/__db.%03d",
+			(db->db_root ? db->db_root : ""),
+			(db->db_home ? db->db_home : ""),  i);
+		(void) rpmCleanPath(fn);
+		(void) unlink(fn);
+	    }
+	}
+	_dbenv_removed++;
+    }
+
     db->db_api = _dbapi;
 
     {	int dbix;

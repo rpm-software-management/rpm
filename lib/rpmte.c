@@ -267,10 +267,14 @@ transactionElement teGetParent(transactionElement te)
 transactionElement teSetParent(transactionElement te, transactionElement pte)
 {
     transactionElement opte = NULL;
+    /*@-branchstate@*/
     if (te != NULL) {
 	opte = te->parent;
+	/*@-assignexpose -temptrans@*/
 	te->parent = pte;
+	/*@=assignexpose =temptrans@*/
     }
+    /*@=branchstate@*/
     return opte;
 }
 

@@ -290,6 +290,7 @@ int teSetTree(transactionElement te, int ntree)
  * @param te		transaction element
  * @return		parent transaction element
  */
+/*@observer@*/ /*@unused@*/
 transactionElement teGetParent(transactionElement te)
 	/*@*/;
 
@@ -313,10 +314,10 @@ int teGetDegree(transactionElement te)
 /**
  * Set number of children of transaction element.
  * @param te		transaction element
- * @param ntree		new number of children
+ * @param ndegree	new number of children
  * @return		previous number of children
  */
-int teSetDegree(transactionElement te, int ntree)
+int teSetDegree(transactionElement te, int ndegree)
 	/*@modifies te @*/;
 
 /**
@@ -345,6 +346,7 @@ void teNewTSI(transactionElement te)
  * Destroy dependency set info of transaction element.
  * @param te		transaction element
  */
+/*@unused@*/
 void teCleanDS(transactionElement te)
 	/*@modifies te @*/;
 

@@ -53,6 +53,7 @@ struct indexEntry {
  */
 struct headerToken {
 /*@unused@*/ struct HV_s hv;	/*!< Header public methods. */
+/*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */
 /*@owned@*/ indexEntry index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
