@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.25 2000/06/20 16:29:23 jbj Exp $
+# $Id: rpmrc.in,v 2.26 2000/06/21 23:48:05 jbj Exp $
 
 #############################################################
 
@@ -77,8 +77,8 @@ arch_canon:	falcon: m68kmint	13
 arch_canon:	atariclone: m68kmint	13
 arch_canon:	milan: m68kmint		13
 arch_canon:	hades: m68kmint		13
+arch_canon:	s390: s390	14
 arch_canon:	i370: i370	14
-arch_canon:	i390: i390	15
 
 #############################################################
 # Canonical OS names and numbers
@@ -196,7 +196,7 @@ arch_compat: atariclone: m68kmint noarch
 arch_compat: milan: m68kmint noarch
 arch_compat: hades: m68kmint noarch
 
-arch_compat: i390: i370
+arch_compat: s390: i370
 arch_compat: i370: noarch
 
 arch_compat: ia64: noarch
@@ -258,7 +258,7 @@ buildarch_compat: milan: m68kmint noarch
 buildarch_compat: hades: m68kmint noarch
 
 buildarch_compat: ia64: noarch
-buildarch_compat: i390: noarch
+buildarch_compat: s390: noarch
 
 macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.specspo:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 

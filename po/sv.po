@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-20 14:36-0400\n"
+"POT-Creation-Date: 2000-06-21 19:14-0400\n"
 "PO-Revision-Date: 2000-06-21 23:38+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1205,11 +1205,6 @@ msgstr "kan inte återöppna lasten: %s\n"
 msgid "Usage: %s {--help}\n"
 msgstr "Användning: %s {--help}\n"
 
-#: rpmqv.c:284
-#, c-format
-msgid "       %s {--version}\n"
-msgstr ""
-
 #: rpmqv.c:287
 #, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -1227,31 +1222,15 @@ msgid ""
 msgstr ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
-#: rpmqv.c:302
-#, c-format
-msgid ""
-"       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-msgstr ""
-
 #: rpmqv.c:312
 #, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr "       %s {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil>]\n"
 
-#: rpmqv.c:318
-#, c-format
-msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
-msgstr ""
-
 #: rpmqv.c:325
 #, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
 msgstr "       %s {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil>]\n"
-
-#: rpmqv.c:328
-#, c-format
-msgid "       %s {--querytags}\n"
-msgstr ""
 
 #: rpmqv.c:329
 #, c-format
@@ -1271,10 +1250,6 @@ msgid ""
 msgstr ""
 "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<fil>]\n"
-
-#: rpmqv.c:335
-msgid "                        [--sign] [--nobuild] ]"
-msgstr ""
 
 #: rpmqv.c:338
 #, c-format
@@ -2048,7 +2023,7 @@ msgstr "rad %d: Tom tagg: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:376
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot kan inte vara \"/\": %s"
@@ -2203,45 +2178,45 @@ msgstr "rad %d: skriptprogram måste börja med \"/\": %s"
 msgid "line %d: Second %s"
 msgstr "rad %d: Andra %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:137
 #, c-format
 msgid "line %d: %s"
 msgstr "rad %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:188
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kan inte öppna %s: %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:200
 msgid "Unclosed %%if"
 msgstr "Oavslutat %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:261
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s:%d: parseExpressionBoolean returnerar %d"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:269
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Fick ett %%else utan något if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:280
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Fick ett %%endif utan något if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
 msgstr "felformatterad %%include-sats"
 
-#: build/parseSpec.c:469
+#: build/parseSpec.c:471
 msgid "No buildable architectures"
 msgstr "Inga byggbara arkitekturer"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:520
 msgid "Package has no %%description: %s"
 msgstr "Paketet har ingen %%description: %s"
 
@@ -3363,11 +3338,6 @@ msgstr "tar bort \"%s\" från %s-index.\n"
 msgid "removing %d entries from %s index:\n"
 msgstr "tar bort %d poster från %s-index:\n"
 
-#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
-msgstr ""
-
 #: lib/rpmdb.c:1877
 #, c-format
 msgid "error(%d) allocating new package instance"
@@ -3387,6 +3357,11 @@ msgstr "lägger till \"%s\" till %s-index.\n"
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr "lägger till %d poster till %s-index:\n"
+
+#: lib/rpmdb.c:1965
+#, c-format
+msgid "%6d %s\n"
+msgstr ""
 
 #: lib/rpmdb.c:2316
 #, c-format
@@ -3958,40 +3933,40 @@ msgstr "Makro %%%s har otillåtet namn (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) var inte använd under nivå %d"
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Okänd flagga %c i %s(%s)"
 
-#: rpmio/macro.c:891
+#: rpmio/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Rekursionsdjup(%d) större än max(%d)"
 
-#: rpmio/macro.c:957 rpmio/macro.c:973
+#: rpmio/macro.c:920 rpmio/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Oavslutad %c: %s"
 
-#: rpmio/macro.c:1013
+#: rpmio/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr "Ett %% följs av ett makro som inte kan parsas"
 
-#: rpmio/macro.c:1139
+#: rpmio/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Inget makro %%%.*s hittat, hoppar över"
 
-#: rpmio/macro.c:1220
+#: rpmio/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "Målbuffer översvämmad"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1400 rpmio/macro.c:1406
+#: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "Fil %s: %s"
 
-#: rpmio/macro.c:1409
+#: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Fil %s är mindre än %d byte"

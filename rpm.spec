@@ -258,6 +258,7 @@ fi
 * Wed Jun 21 2000 Jeff Johnson <jbj@redhat.com>
 - fix: don't expand macros in false branch of %if (kasal@suse.cz).
 - fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
+- uname on i370 has s390 as arch (#11456).
 
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
 - fix: typo in brp-compress caused i18n man pages not to compress.

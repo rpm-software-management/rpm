@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-06-20 14:36-0400\n"
+msgstr "POT-Creation-Date: 2000-06-21 19:14-0400\n"
 
 #: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:425
 #, c-format
@@ -1307,11 +1307,6 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Usage: %s {--help}\n"
 msgstr ""
 
-#: rpmqv.c:284
-#, c-format
-msgid "       %s {--version}\n"
-msgstr ""
-
 #: rpmqv.c:287
 #, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -1328,30 +1323,14 @@ msgid ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 msgstr ""
 
-#: rpmqv.c:302
-#, c-format
-msgid ""
-"       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-msgstr ""
-
 #: rpmqv.c:312
 #, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr ""
 
-#: rpmqv.c:318
-#, c-format
-msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
-msgstr ""
-
 #: rpmqv.c:325
 #, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
-msgstr ""
-
-#: rpmqv.c:328
-#, c-format
-msgid "       %s {--querytags}\n"
 msgstr ""
 
 #: rpmqv.c:329
@@ -1370,11 +1349,6 @@ msgid ""
 "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<file>]\n"
 msgstr ""
-
-#: rpmqv.c:335
-#, fuzzy
-msgid "                        [--sign] [--nobuild] ]"
-msgstr "                          qui matchent <pkg>"
 
 #: rpmqv.c:338
 #, fuzzy, c-format
@@ -2193,7 +2167,7 @@ msgstr ""
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:376
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr ""
@@ -2348,46 +2322,46 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:137
 #, fuzzy, c-format
 msgid "line %d: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:188
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:200
 msgid "Unclosed %%if"
 msgstr ""
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:261
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:269
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:280
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
 msgstr ""
 
-#: build/parseSpec.c:469
+#: build/parseSpec.c:471
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "%s ne peut être construit sur cette architecture\n"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:520
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
@@ -3509,11 +3483,6 @@ msgstr ""
 msgid "removing %d entries from %s index:\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
-msgstr ""
-
 #: lib/rpmdb.c:1877
 #, c-format
 msgid "error(%d) allocating new package instance"
@@ -3532,6 +3501,11 @@ msgstr ""
 #: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:1965
+#, c-format
+msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:2316
@@ -4109,41 +4083,41 @@ msgstr ""
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: rpmio/macro.c:891
+#: rpmio/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: rpmio/macro.c:957 rpmio/macro.c:973
+#: rpmio/macro.c:920 rpmio/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: rpmio/macro.c:1013
+#: rpmio/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1139
+#: rpmio/macro.c:1102
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpmio/macro.c:1220
+#: rpmio/macro.c:1183
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1400 rpmio/macro.c:1406
+#: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmio/macro.c:1409
+#: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -4203,6 +4177,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "                        [--sign] [--nobuild] ]"
+#~ msgstr "                          qui matchent <pkg>"
 
 #, fuzzy
 #~ msgid "query package owning file"

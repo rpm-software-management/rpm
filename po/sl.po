@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.64 2000/06/20 21:45:52 jbj Exp $
+# $Id: sl.po,v 1.65 2000/06/21 23:48:06 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-20 14:36-0400\n"
+"POT-Creation-Date: 2000-06-21 19:14-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1236,11 +1236,6 @@ msgstr "ni mo¾no vnoviè odpreti (payload): %s\n"
 msgid "Usage: %s {--help}\n"
 msgstr "uporaba: rpm {--help}"
 
-#: rpmqv.c:284
-#, fuzzy, c-format
-msgid "       %s {--version}\n"
-msgstr "       rpm {--version}"
-
 #: rpmqv.c:287
 #, fuzzy, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -1258,34 +1253,17 @@ msgid ""
 msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpmqv.c:302
-#, fuzzy, c-format
-msgid ""
-"       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-msgstr ""
-"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
 #: rpmqv.c:312
 #, fuzzy, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr ""
 "       rpm {--erase -e} [--root <imenik>] [--noscripts] [--rcfile <datoteka>]"
 
-#: rpmqv.c:318
-#, fuzzy, c-format
-msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
-msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
 #: rpmqv.c:325
 #, fuzzy, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
 msgstr ""
 "       rpm {--verify -V -y} [-afpg] [--root <imenik>] [--rcfile <datoteka>]"
-
-#: rpmqv.c:328
-#, fuzzy, c-format
-msgid "       %s {--querytags}\n"
-msgstr "       rpm {--querytags}"
 
 #: rpmqv.c:329
 #, fuzzy, c-format
@@ -1305,11 +1283,6 @@ msgid ""
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<datoteka>]"
-
-#: rpmqv.c:335
-#, fuzzy
-msgid "                        [--sign] [--nobuild] ]"
-msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 
 #: rpmqv.c:338
 #, fuzzy, c-format
@@ -2138,7 +2111,7 @@ msgstr "vrstica %d: Prazna znaèka: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:376
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot ne more biti \"/\": %s"
@@ -2295,45 +2268,45 @@ msgstr "vrstica %d: skriptni program se mora zaèeti z ,/`: %s"
 msgid "line %d: Second %s"
 msgstr "vrstica %d: Drugi %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:137
 #, c-format
 msgid "line %d: %s"
 msgstr "vrstica %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:188
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:200
 msgid "Unclosed %%if"
 msgstr "Nezakljuèeni %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:261
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s:%d: parseExpressionBoolean vrne %d"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:269
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Najden %%else brez pripadajoèega if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:280
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Najden %%endif brez pripadajoèega if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
 msgstr "Deformiran stavek %%include"
 
-#: build/parseSpec.c:469
+#: build/parseSpec.c:471
 msgid "No buildable architectures"
 msgstr "Arhitektura za izgradnjo manjka"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:520
 msgid "Package has no %%description: %s"
 msgstr "V paketu manjka %%description: %s"
 
@@ -3436,11 +3409,6 @@ msgstr "odstranjujemo seznam skupin\n"
 msgid "removing %d entries from %s index:\n"
 msgstr "odstranjujemo seznam imen\n"
 
-#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
-msgstr ""
-
 #: lib/rpmdb.c:1877
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
@@ -3459,6 +3427,11 @@ msgstr "preimenujemo %s v %s\n"
 #: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:1965
+#, c-format
+msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:2316
@@ -4033,40 +4006,40 @@ msgstr "Makro %%%s vsebuje nedovoljeno ime (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) ni bil uporabljen pod ravnijo %d"
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznana izbira %c v %s(%s)"
 
-#: rpmio/macro.c:891
+#: rpmio/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Globina rekurzije (%d) veèja od maksimalne (%d)"
 
-#: rpmio/macro.c:957 rpmio/macro.c:973
+#: rpmio/macro.c:920 rpmio/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Nezakljuèeni %c: %s"
 
-#: rpmio/macro.c:1013
+#: rpmio/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr "Oznaki %% sledi nerazèlenljiv makro"
 
-#: rpmio/macro.c:1139
+#: rpmio/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Makro %%%.*s ni najden, preskoèimo"
 
-#: rpmio/macro.c:1220
+#: rpmio/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "Ciljni medpomnilnik prekoraèen"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1400 rpmio/macro.c:1406
+#: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "Datoteka %s: %s"
 
-#: rpmio/macro.c:1409
+#: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
@@ -4126,6 +4099,28 @@ msgstr "vrata URL morajo biti ¹tevilka\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#, fuzzy
+#~ msgid "       %s {--version}\n"
+#~ msgstr "       rpm {--version}"
+
+#, fuzzy
+#~ msgid ""
+#~ "       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
+#~ msgstr ""
+#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+
+#, fuzzy
+#~ msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
+#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+
+#, fuzzy
+#~ msgid "       %s {--querytags}\n"
+#~ msgstr "       rpm {--querytags}"
+
+#, fuzzy
+#~ msgid "                        [--sign] [--nobuild] ]"
+#~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 
 #~ msgid "query package owning file"
 #~ msgstr "poizvedba po paketu, ki vsebuje datoteko"

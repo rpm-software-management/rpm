@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-06-20 14:36-0400\n"
+"POT-Creation-Date: 2000-06-21 19:14-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1243,11 +1243,6 @@ msgstr "nie mo¿na otworzyæ pliku %s\n"
 msgid "Usage: %s {--help}\n"
 msgstr "U¿ycie: rpm {--help}"
 
-#: rpmqv.c:284
-#, fuzzy, c-format
-msgid "       %s {--version}\n"
-msgstr "       rpm {--version}"
-
 #: rpmqv.c:287
 #, fuzzy, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -1265,34 +1260,17 @@ msgid ""
 msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpmqv.c:302
-#, fuzzy, c-format
-msgid ""
-"       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-msgstr ""
-"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
 #: rpmqv.c:312
 #, fuzzy, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr ""
 "       rpm {--erase -e} [--root <katalog>] [--noscripts] [--rcfile <plik>]"
 
-#: rpmqv.c:318
-#, fuzzy, c-format
-msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
-msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
 #: rpmqv.c:325
 #, fuzzy, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
 msgstr ""
 "       rpm {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <plik>]"
-
-#: rpmqv.c:328
-#, fuzzy, c-format
-msgid "       %s {--querytags}\n"
-msgstr "       rpm {--querytags}"
 
 #: rpmqv.c:329
 #, fuzzy, c-format
@@ -1311,11 +1289,6 @@ msgid ""
 "<file>]\n"
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile <plik>]"
-
-#: rpmqv.c:335
-#, fuzzy
-msgid "                        [--sign] [--nobuild] ]"
-msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 
 #: rpmqv.c:338
 #, fuzzy, c-format
@@ -2149,7 +2122,7 @@ msgstr "linia %d: Pusta etykieta: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:376
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "linia %d: wpis BuildRoot nie mo¿e byæ \"/\": %s"
@@ -2305,45 +2278,45 @@ msgstr "linia %d: skrypt (tu jako program) musi siê zaczynaæ od '/': %s"
 msgid "line %d: Second %s"
 msgstr "linia %d: Drugi %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:137
 #, c-format
 msgid "line %d: %s"
 msgstr "linia %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:188
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ: %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:200
 msgid "Unclosed %%if"
 msgstr "Niedomkniête %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:261
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:269
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Napotkano %%else bez if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:280
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Napotkano %%endif bez if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
 msgstr "b³ednie sformatowany wpis %%include"
 
-#: build/parseSpec.c:469
+#: build/parseSpec.c:471
 msgid "No buildable architectures"
 msgstr "Nie mo¿na budowaæ na takie architektury"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:520
 msgid "Package has no %%description: %s"
 msgstr "Pakiet nie ma %%description: %s"
 
@@ -3446,11 +3419,6 @@ msgstr "usuwanie indeksu grupy\n"
 msgid "removing %d entries from %s index:\n"
 msgstr "usuwanie indeksu nazw\n"
 
-#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
-msgstr ""
-
 #: lib/rpmdb.c:1877
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
@@ -3469,6 +3437,11 @@ msgstr "zmiana nazwy %s na %s\n"
 #: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:1965
+#, c-format
+msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:2316
@@ -4046,40 +4019,40 @@ msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d"
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Nieznana opcja %c in %s(%s)"
 
-#: rpmio/macro.c:891
+#: rpmio/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "G³êboko¶æ(%d) rekursji wiêksza mi¿ maks(%d)"
 
-#: rpmio/macro.c:957 rpmio/macro.c:973
+#: rpmio/macro.c:920 rpmio/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Niezakoñczone %c: %s"
 
-#: rpmio/macro.c:1013
+#: rpmio/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr "Napotkano nieprzetwarzalne makro po %%"
 
-#: rpmio/macro.c:1139
+#: rpmio/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête"
 
-#: rpmio/macro.c:1220
+#: rpmio/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "Przepe³nienie bufora docelowego"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1400 rpmio/macro.c:1406
+#: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "Plik %s: %s"
 
-#: rpmio/macro.c:1409
+#: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Plik %s jest mniejszy ni¿ %d bajtów"
@@ -4139,6 +4112,28 @@ msgstr "port musi byæ liczb±\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"
+
+#, fuzzy
+#~ msgid "       %s {--version}\n"
+#~ msgstr "       rpm {--version}"
+
+#, fuzzy
+#~ msgid ""
+#~ "       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
+#~ msgstr ""
+#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+
+#, fuzzy
+#~ msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
+#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+
+#, fuzzy
+#~ msgid "       %s {--querytags}\n"
+#~ msgstr "       rpm {--querytags}"
+
+#, fuzzy
+#~ msgid "                        [--sign] [--nobuild] ]"
+#~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 
 #~ msgid "query package owning file"
 #~ msgstr "sprawdzanie do jakiego pakietu nale¿y plik"

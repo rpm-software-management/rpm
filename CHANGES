@@ -81,6 +81,7 @@
 	- update macros.in from rpm-4.0 (w/o dbi configuration).
 	- fix: don't expand macros in false branch of %if (kasal@suse.cz).
 	- fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
+	- uname on i370 has s390 as arch (#11456).
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

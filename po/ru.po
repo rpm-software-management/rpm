@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-20 14:36-0400\n"
+"POT-Creation-Date: 2000-06-21 19:14-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1247,11 +1247,6 @@ msgstr ""
 "Использование:\n"
 "       rpm {--help}"
 
-#: rpmqv.c:284
-#, fuzzy, c-format
-msgid "       %s {--version}\n"
-msgstr "       rpm {--version}"
-
 #: rpmqv.c:287
 #, fuzzy, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -1269,34 +1264,17 @@ msgid ""
 msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpmqv.c:302
-#, fuzzy, c-format
-msgid ""
-"       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-msgstr ""
-"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
 #: rpmqv.c:312
 #, fuzzy, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr ""
 "       rpm {--erase -e} [--root <каталог>] [--noscripts] [--rcfile <файл>]"
 
-#: rpmqv.c:318
-#, fuzzy, c-format
-msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
-msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
 #: rpmqv.c:325
 #, fuzzy, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
 msgstr ""
 "       rpm {--verify -V -y} [-afpg] [--root <каталог>] [--rcfile <файл>]"
-
-#: rpmqv.c:328
-#, fuzzy, c-format
-msgid "       %s {--querytags}\n"
-msgstr "       rpm {--querytags}"
 
 #: rpmqv.c:329
 #, fuzzy, c-format
@@ -1315,11 +1293,6 @@ msgid ""
 "<file>]\n"
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <файл>]"
-
-#: rpmqv.c:335
-#, fuzzy
-msgid "                        [--sign] [--nobuild] ]"
-msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 
 #: rpmqv.c:338
 #, fuzzy, c-format
@@ -2153,7 +2126,7 @@ msgstr "строка %d: Пустой тэг: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:376
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "строка %d: BuildRoot не может быть \"/\": %s"
@@ -2308,45 +2281,45 @@ msgstr "строка %d: Программы в скриптах должны начинаться с '/': %s"
 msgid "line %d: Second %s"
 msgstr "строка %d: Второе %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:137
 #, c-format
 msgid "line %d: %s"
 msgstr "строка %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:188
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Не могу открыть %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:200
 msgid "Unclosed %%if"
 msgstr "Незакрытый %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:261
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:269
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Найден %%else без if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:280
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Найден %%endif без if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
 msgstr "неверное объявление %%include"
 
-#: build/parseSpec.c:469
+#: build/parseSpec.c:471
 msgid "No buildable architectures"
 msgstr "Нет архитектур, которые можно построить"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:520
 msgid "Package has no %%description: %s"
 msgstr "Пакет не имеет %%description: %s"
 
@@ -3446,11 +3419,6 @@ msgstr "удаляю индекс групп\n"
 msgid "removing %d entries from %s index:\n"
 msgstr "удаляю индекс имен\n"
 
-#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
-msgstr ""
-
 #: lib/rpmdb.c:1877
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
@@ -3469,6 +3437,11 @@ msgstr "переименовываю %s в %s\n"
 #: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:1965
+#, c-format
+msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:2316
@@ -4045,40 +4018,40 @@ msgstr "Макрос %%%s имеет недопустимое имя (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Макрос %%%s (%s) не был использован ниже уровня %d"
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Неизвестная опция %c в %s(%s)"
 
-#: rpmio/macro.c:891
+#: rpmio/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Глубина рекурсии(%d) больше max(%d)"
 
-#: rpmio/macro.c:957 rpmio/macro.c:973
+#: rpmio/macro.c:920 rpmio/macro.c:936
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Незакрытая %c: %s"
 
-#: rpmio/macro.c:1013
+#: rpmio/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr "%% с последующим неразбираемым макросом"
 
-#: rpmio/macro.c:1139
+#: rpmio/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Макрос %s не найден, пропускаю"
 
-#: rpmio/macro.c:1220
+#: rpmio/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "Переполнение целевого буфера"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1400 rpmio/macro.c:1406
+#: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "Файл %s: %s"
 
-#: rpmio/macro.c:1409
+#: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Файл %s меньше %d байт"
@@ -4138,6 +4111,28 @@ msgstr "url port должен быть числом\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "не могу создать %s\n"
+
+#, fuzzy
+#~ msgid "       %s {--version}\n"
+#~ msgstr "       rpm {--version}"
+
+#, fuzzy
+#~ msgid ""
+#~ "       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
+#~ msgstr ""
+#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+
+#, fuzzy
+#~ msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
+#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
+
+#, fuzzy
+#~ msgid "       %s {--querytags}\n"
+#~ msgstr "       rpm {--querytags}"
+
+#, fuzzy
+#~ msgid "                        [--sign] [--nobuild] ]"
+#~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 
 #~ msgid "query package owning file"
 #~ msgstr "найти пакет, которому принадлежит файл"

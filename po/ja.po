@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-06-20 14:36-0400\n"
+"POT-Creation-Date: 2000-06-21 19:14-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.79 2000/06/20 21:45:51 jbj Exp $
+# $Id: ja.po,v 1.80 2000/06/21 23:48:06 jbj Exp $
 #: rpm.c:177 rpmqv.c:256
 #, c-format
 msgid "rpm: %s\n"
@@ -1261,11 +1261,6 @@ msgstr "ファイル %s をオープンできません"
 msgid "Usage: %s {--help}\n"
 msgstr "使用法: rpm {--help}"
 
-#: rpmqv.c:284
-#, c-format
-msgid "       %s {--version}\n"
-msgstr ""
-
 #: rpmqv.c:287
 #, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -1282,30 +1277,14 @@ msgid ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 msgstr ""
 
-#: rpmqv.c:302
-#, c-format
-msgid ""
-"       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-msgstr ""
-
 #: rpmqv.c:312
 #, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr ""
 
-#: rpmqv.c:318
-#, c-format
-msgid "       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"
-msgstr ""
-
 #: rpmqv.c:325
 #, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
-msgstr ""
-
-#: rpmqv.c:328
-#, c-format
-msgid "       %s {--querytags}\n"
 msgstr ""
 
 #: rpmqv.c:329
@@ -1323,10 +1302,6 @@ msgstr ""
 msgid ""
 "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<file>]\n"
-msgstr ""
-
-#: rpmqv.c:335
-msgid "                        [--sign] [--nobuild] ]"
 msgstr ""
 
 #: rpmqv.c:338
@@ -2135,7 +2110,7 @@ msgstr "%d 行目: 空のタグ: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:374
+#: build/parsePreamble.c:442 build/parseSpec.c:376
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
@@ -2291,47 +2266,47 @@ msgstr "%d 行目: スクリプトプログラムは '/' で始まらなければなりません: %s"
 msgid "line %d: Second %s"
 msgstr "%d 行目: 2番目の %s"
 
-#: build/parseSpec.c:135
+#: build/parseSpec.c:137
 #, c-format
 msgid "line %d: %s"
 msgstr "%d 行目: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:186
+#: build/parseSpec.c:188
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "オープンできません: %s\n"
 
-#: build/parseSpec.c:198
+#: build/parseSpec.c:200
 msgid "Unclosed %%if"
 msgstr "%%if が閉じていません"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:261
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s%d: parseExpressionBoolean が %d を返しました"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:269
 #, fuzzy
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: if がないのに %%else があります"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:280
 #, fuzzy
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: if がないのに %%endif があります"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
 msgstr "おかしな %%include ステートメントです"
 
-#: build/parseSpec.c:469
+#: build/parseSpec.c:471
 msgid "No buildable architectures"
 msgstr "作成(build)可能なアーキテクチャはありません"
 
-#: build/parseSpec.c:518
+#: build/parseSpec.c:520
 msgid "Package has no %%description: %s"
 msgstr "パッケージには %%description がありません: %s"
 
@@ -3466,11 +3441,6 @@ msgstr "group インデックスを削除します\n"
 msgid "removing %d entries from %s index:\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
-#, c-format
-msgid "%6d %s\n"
-msgstr ""
-
 #: lib/rpmdb.c:1877
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
@@ -3489,6 +3459,11 @@ msgstr "%s を %s へ名前を変更します\n"
 #: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:1965
+#, c-format
+msgid "%6d %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:2316
@@ -4087,41 +4062,41 @@ msgstr "マクロ %%%s は違法な名前です(%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "マクロ %%%s (%s) はレベル %d 以下で使用されませんでした"
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:698
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "不明なオプション %c (%s(%s)中に)"
 
-#: rpmio/macro.c:891
+#: rpmio/macro.c:854
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "再帰の深さ(%d)が最大値(%d)よりも大きい"
 
-#: rpmio/macro.c:957 rpmio/macro.c:973
+#: rpmio/macro.c:920 rpmio/macro.c:936
 #, fuzzy, c-format
 msgid "Unterminated %c: %s"
 msgstr "終端されていない %c: %s"
 
-#: rpmio/macro.c:1013
+#: rpmio/macro.c:976
 msgid "A %% is followed by an unparseable macro"
 msgstr "A %% は構文解析できないマクロが続いています"
 
-#: rpmio/macro.c:1139
+#: rpmio/macro.c:1102
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "マクロ %%%.*s は見つかりません、スキップします"
 
-#: rpmio/macro.c:1220
+#: rpmio/macro.c:1183
 msgid "Target buffer overflow"
 msgstr "ターゲットバッファオーバーフロー"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1400 rpmio/macro.c:1406
+#: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, c-format
 msgid "File %s: %s"
 msgstr "ファイル %s: %s"
 
-#: rpmio/macro.c:1409
+#: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "ファイル %s: は %d バイトより小さいです"
