@@ -709,7 +709,7 @@ static int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
     char * reqVersion = reqInfo;
     char * reqRelease = NULL;
     int type, count;
-    int_32 serial;
+    int_32 * serial;
     char buf[20];
     int result = 0;
     int sense;
@@ -722,10 +722,9 @@ static int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
 
     if (reqFlags & RPMSENSE_SERIAL) {
 	if (!headerGetEntry(h, RPMTAG_SERIAL, &type, (void *) &serial, &count)) {
-	    headerFree(h);
 	    return 0;
 	}
-	sprintf(buf, "%d", serial);
+	sprintf(buf, "%d", *serial);
 	version = buf;
     } else {
 	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);

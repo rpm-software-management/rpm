@@ -3,6 +3,8 @@
 	  maps to mulitiple group names (Benedict Lofstedt)
 	- added 'make tar' rule for building a distribution tarball
 	  (Horacio Rodriguez Montero)
+	- fixed serial number handling in dependencies and install
+	  code
 
 2.4.7 -> 2.4.8:
 	- added noarch build compatibilities for ppc, m68k
