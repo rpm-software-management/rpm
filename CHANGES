@@ -46,6 +46,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.6 -> 2.5.7:
+	- use portable mkinstalldirs (Tim Mooney).
 	- irix6 autodeps were dup'd (Shing-Gene Yung <shing@cz3.nus.edu.sg>).
 	- getservbyname needed ntohs().
 	- propagate "const char *" into rpmlib prototypes.
