@@ -99,6 +99,7 @@ struct rpmdbObject_s {
 
 struct rpmdbMIObject_s {
     PyObject_HEAD;
+    rpmdbObject *db;
     rpmdbMatchIterator mi;
 } ;
 
@@ -988,6 +989,9 @@ py_rpmdbInitIterator (rpmdbObject * s, PyObject * args) {
     }
     
     mio->mi = rpmdbInitIterator(s->db, tag, key, len);
+    mio->db = s;
+    Py_INCREF (mio->db);
+    
     return mio;
 }
 
@@ -1018,6 +1022,7 @@ static void rpmdbMIDealloc(rpmdbMIObject * s) {
     if (s && s->mi) {
 	rpmdbFreeIterator(s->mi);
     }
+    Py_DECREF (s->db);
 }
 
 static PyObject * rpmdbMIGetAttr (rpmdbObject *s, char *name) {
