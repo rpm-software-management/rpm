@@ -13,9 +13,9 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
-/****/
+int convertDB(void);
 
-int convertDB(char * dbprefix) {
+int convertDB(void) {
     struct oldrpmdb olddb;
     rpmdb db;
     struct oldrpmdbLabel * packageLabels, * label;
@@ -73,7 +73,7 @@ int convertDB(char * dbprefix) {
 
     for (label = packageLabels; label; label = label->next) {
 	if (oldrpmdbGetPackageInfo(&olddb, *label, &package)) {
-	    printf("oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n", &olddb, olddb.packages);
+	    fprintf(stderr, "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n", &olddb, olddb.packages);
 	    exit(1);
 	}
 
@@ -99,12 +99,10 @@ int convertDB(char * dbprefix) {
 	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, group, 1);
 
 	if (preun) {
-	    printf("found preun for %s\n", package.name);
 	    addEntry(dbentry, RPMTAG_PREUN, STRING_TYPE, preun, 1);
 	    free(preun);
 	}
 	if (postun) {
-	    printf("found postun for %s\n", package.name);
 	    addEntry(dbentry, RPMTAG_POSTUN, STRING_TYPE, postun, 1);
 	    free(postun);
 	}
@@ -201,4 +199,16 @@ int convertDB(char * dbprefix) {
     rpmdbClose(db);
 
     return 1;
+}
+
+int main(int argc, char ** argv) {
+    if (argc != 1) {
+	fprintf(stderr, "rpmconvert: no arguments expected");
+	exit(1);
+    }
+
+    printf("rpmconvert 1.0 - convering database in /var/lib/rpm\n");
+    convertDB();
+
+    exit(0);
 }
