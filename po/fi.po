@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-20 20:24-0400\n"
+"POT-Creation-Date: 2000-04-25 15:13-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2135,89 +2135,167 @@ msgid " failed - "
 msgstr "pgp ep‰onnistui"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:434
+#: lib/depends.c:439
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:463
+#: lib/depends.c:468
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:792
+#: lib/depends.c:797
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:841
+#: lib/depends.c:846
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:844
+#: lib/depends.c:849
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package (shouldn't happen).\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:862
+#: lib/depends.c:867
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:895
+#: lib/depends.c:896
+#, fuzzy, c-format
+msgid "%s: %s satisfied by Depends cache.\n"
+msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+
+#: lib/depends.c:909
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:923
+#: lib/depends.c:937
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:941
+#: lib/depends.c:955
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:973
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:972
+#: lib/depends.c:986
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:996
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1030
+#: lib/depends.c:1048
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
 #. conflicts exist.
-#: lib/depends.c:1092
+#: lib/depends.c:1110
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/depends.c:1222
+#: lib/depends.c:1240
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "silmukka edellytysten ketjussa: %s"
 
-#: lib/depends.c:1426
+#: lib/depends.c:1444
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "en voi lukea headeria %d:ss‰ riippuvuutta tarkistaessa"
+
+#: lib/db0.c:565
+#, fuzzy, c-format
+msgid "bad db file %s"
+msgstr "en voinut avata %s: %s"
+
+#: lib/db0.c:574
+#, fuzzy, c-format
+msgid "opening database mode 0x%x in %s\n"
+msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#: lib/db0.c:579 lib/url.c:445
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "en voinut avata %s: %s"
+
+#: lib/db0.c:591
+#, c-format
+msgid "cannot get %s lock on database"
+msgstr "en voi saada %s lukitusta tietokantaan"
+
+#: lib/db0.c:592
+msgid "exclusive"
+msgstr "poissulkevaa"
+
+#: lib/db0.c:592
+msgid "shared"
+msgstr "jaettua"
+
+#: lib/db3.c:249
+#, c-format
+msgid "dbiSetConfig: unrecognized db option: \"%s\" ignored\n"
+msgstr ""
+
+#: lib/db3.c:277
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr ""
+
+#: lib/db3.c:285
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr ""
+
+#: lib/db3.c:293
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr ""
+
+#: lib/db3.c:456
+#, c-format
+msgid "closed  db environment %s/%s(%s)\n"
+msgstr ""
+
+#: lib/db3.c:468
+#, c-format
+msgid "removed db environment %s/%s(%s)\n"
+msgstr ""
+
+#: lib/db3.c:505
+#, c-format
+msgid "opening db environment %s/%s(%s) %s\n"
+msgstr ""
+
+#: lib/db3.c:1117
+#, c-format
+msgid "closed  db index       %s/%s(%s)\n"
+msgstr ""
+
+#: lib/db3.c:1195
+#, c-format
+msgid "opening db index       %s/%s(%s) %s\n"
+msgstr ""
 
 #: lib/falloc.c:135
 #, c-format
@@ -2230,7 +2308,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
+#: lib/header.c:2190 lib/header.c:2206 lib/header.c:2225
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -2263,76 +2341,76 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:250 lib/header.c:813
+#: lib/header.c:250 lib/header.c:815
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1172
+#: lib/header.c:1174
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1581
+#: lib/header.c:1583
 #, c-format
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: lib/header.c:1609
+#: lib/header.c:1611
 msgid "missing } after %{"
 msgstr "puuttuva '{' '%{':n j‰lkeen"
 
-#: lib/header.c:1621
+#: lib/header.c:1623
 msgid "empty tag format"
 msgstr "tyhj‰ nimiˆn formaatti"
 
-#: lib/header.c:1631
+#: lib/header.c:1633
 msgid "empty tag name"
 msgstr "tyhj‰ nimiˆn nimi"
 
-#: lib/header.c:1646
+#: lib/header.c:1648
 msgid "unknown tag"
 msgstr "tuntematon nimiˆ"
 
-#: lib/header.c:1672
+#: lib/header.c:1674
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkom‰‰rittelyn lopusta"
 
-#: lib/header.c:1688
+#: lib/header.c:1690
 msgid "unexpected ]"
 msgstr "odottamaton ']'"
 
-#: lib/header.c:1690
+#: lib/header.c:1692
 msgid "unexpected }"
 msgstr "odottamaton '}'"
 
-#: lib/header.c:1744
+#: lib/header.c:1746
 msgid "? expected in expression"
 msgstr "odotin '?'-merkki‰ ilmauksessa"
 
-#: lib/header.c:1751
+#: lib/header.c:1753
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "odotin '{' '?'-merkin j‰lkeen ilmauksessa "
 
-#: lib/header.c:1761 lib/header.c:1796
+#: lib/header.c:1763 lib/header.c:1798
 msgid "} expected in expression"
 msgstr "odotin '}'-merkki‰ ilmauksessa"
 
-#: lib/header.c:1769
+#: lib/header.c:1771
 msgid ": expected following ? subexpression"
 msgstr "odotin ':' '?'-merkin j‰lkeen ali-ilmauksessa "
 
-#: lib/header.c:1783
+#: lib/header.c:1785
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "odotin '{' ':'-merkin j‰lkeen ilmauksessa "
 
-#: lib/header.c:1804
+#: lib/header.c:1806
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkki‰ ilmauksen lopussa"
 
-#: lib/header.c:1972
+#: lib/header.c:1974
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 
@@ -2674,239 +2752,172 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/query.c:446
-#, c-format
-msgid "record number %u\n"
-msgstr ""
+#: lib/query.c:446 lib/query.c:669
+#, fuzzy, c-format
+msgid "package record number: %u\n"
+msgstr "virheellinen paketin numero: %s\n"
 
 #: lib/query.c:450
 msgid "error: could not read database record\n"
 msgstr "virhe: tietokannan tietuetta ei voinut lukea\n"
 
 #. XXX Fstrerror
-#: lib/query.c:495
+#: lib/query.c:494
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/query.c:513
+#: lib/query.c:512
 msgid "old format source packages cannot be queried\n"
 msgstr "vanhan formaatin l‰hdekoodipaketteja ei voi kysell‰\n"
 
-#: lib/query.c:522 lib/rpminstall.c:231
+#: lib/query.c:521 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s ei vaikuta RPM-paketilta\n"
 
-#: lib/query.c:526
+#: lib/query.c:525
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:559
+#: lib/query.c:558
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:582
+#: lib/query.c:581
 #, fuzzy
 msgid "no packages\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/query.c:592
+#: lib/query.c:591
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/query.c:602
+#: lib/query.c:601
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:612
+#: lib/query.c:611
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mik‰‰n pakettie ei tarvitse %s:a\n"
 
-#: lib/query.c:623
+#: lib/query.c:622
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mik‰‰n paketti ei tarjoa %s:a\n"
 
-#: lib/query.c:639
+#: lib/query.c:638
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/query.c:664
+#: lib/query.c:666
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:667
-#, fuzzy, c-format
-msgid "package record number: %d\n"
-msgstr "virheellinen paketin numero: %s\n"
-
-#: lib/query.c:671
+#: lib/query.c:673
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:682 lib/rpminstall.c:436
+#: lib/query.c:684 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/query.c:685
+#: lib/query.c:687
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: lib/query.c:710
+#: lib/query.c:712
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: avaus ei onnistunut\n"
 
-#: lib/query.c:769
+#: lib/query.c:771
 #, fuzzy
 msgid "query package owning file"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/query.c:771
+#: lib/query.c:773
 #, fuzzy
 msgid "query packages in group"
 msgstr "paketilla ei ole nime‰"
 
-#: lib/query.c:773
+#: lib/query.c:775
 #, fuzzy
 msgid "query a package file"
 msgstr "kysele kaikki paketit"
 
-#: lib/query.c:777
+#: lib/query.c:779
 #, fuzzy
 msgid "query a spec file"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:779
+#: lib/query.c:781
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/query.c:781
+#: lib/query.c:783
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
 
-#: lib/query.c:783
+#: lib/query.c:785
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
 
-#: lib/query.c:822
+#: lib/query.c:824
 #, fuzzy
 msgid "list all configuration files"
 msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
 
-#: lib/query.c:824
+#: lib/query.c:826
 #, fuzzy
 msgid "list all documentation files"
 msgstr "asenna dokumentaatio"
 
-#: lib/query.c:826
+#: lib/query.c:828
 #, fuzzy
 msgid "dump basic file information"
 msgstr "n‰yt‰ paketin tiedot"
 
-#: lib/query.c:828
+#: lib/query.c:830
 #, fuzzy
 msgid "list files in package"
 msgstr "asenna paketti"
 
-#: lib/query.c:832
+#: lib/query.c:834
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:834
+#: lib/query.c:836
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/query.c:836
+#: lib/query.c:838
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:838
+#: lib/query.c:840
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "n‰yt‰ paketin tiedostolistaus"
-
-#: lib/rebuilddb.c:35 lib/rpmdb.c:500
-msgid "no dbpath has been set"
-msgstr "dbpath ei ole asetettu"
-
-#: lib/rebuilddb.c:60
-#, fuzzy, c-format
-msgid "rebuilding database %s into %s\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#: lib/rebuilddb.c:64
-#, c-format
-msgid "temporary database %s already exists"
-msgstr "v‰liaikainen tietokanta %s on jo olemassa"
-
-#: lib/rebuilddb.c:70
-#, fuzzy, c-format
-msgid "creating directory: %s\n"
-msgstr "virhe luotaessa hakemistoa %s: %s"
-
-#: lib/rebuilddb.c:72
-#, c-format
-msgid "error creating directory %s: %s"
-msgstr "virhe luotaessa hakemistoa %s: %s"
-
-#: lib/rebuilddb.c:79
-#, fuzzy, c-format
-msgid "opening old database with dbi_major %d\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#: lib/rebuilddb.c:88
-#, fuzzy, c-format
-msgid "opening new database with dbi_major %d\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#: lib/rebuilddb.c:110
-#, fuzzy, c-format
-msgid "record number %d in database is bad -- skipping."
-msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
-
-#: lib/rebuilddb.c:142
-#, c-format
-msgid "cannot add record originally at %d"
-msgstr "en voi lis‰t‰ tietuetta %d:st‰"
-
-#: lib/rebuilddb.c:158
-msgid "failed to rebuild database; original database remains in place\n"
-msgstr ""
-
-#: lib/rebuilddb.c:166
-msgid "failed to replace old database with new database!\n"
-msgstr ""
-
-#: lib/rebuilddb.c:168
-#, c-format
-msgid "replace files in %s with files from %s to recover"
-msgstr ""
-
-#: lib/rebuilddb.c:174
-#, fuzzy, c-format
-msgid "failed to remove directory %s: %s\n"
-msgstr "en voinut avata %s: %s"
 
 #: lib/rpmchecksig.c:31
 #, fuzzy, c-format
@@ -2993,27 +3004,27 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:118
+#: lib/rpmdb.c:91
 #, c-format
-msgid "error getting record %s from %s"
+msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
+msgstr ""
+
+#: lib/rpmdb.c:135
+#, fuzzy, c-format
+msgid "error getting record %s from %s index"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:139
+#: lib/rpmdb.c:156
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: lib/rpmdb.c:144
-#, c-format
-msgid "error removing record %s into %s"
+#: lib/rpmdb.c:161
+#, fuzzy, c-format
+msgid "error removing record %s from %s"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:302
-#, fuzzy, c-format
-msgid "bad db file %s"
-msgstr "en voinut avata %s: %s"
-
-#: lib/rpmdb.c:343
+#: lib/rpmdb.c:345
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -3021,87 +3032,149 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:359
+#: lib/rpmdb.c:360
 #, fuzzy, c-format
-msgid "cannot open file %s: %s"
-msgstr "en voinut avata tiedostoa %s: "
+msgid "dbiOpen: cannot open %s index"
+msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpmdb.c:569
+#: lib/rpmdb.c:473 lib/rpmdb.c:1795
+msgid "no dbpath has been set"
+msgstr "dbpath ei ole asetettu"
+
+#: lib/rpmdb.c:551
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:753
+#: lib/rpmdb.c:736
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: lib/rpmdb.c:1085
+#: lib/rpmdb.c:1076
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/rpmdb.c:1093
+#: lib/rpmdb.c:1084
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/rpmdb.c:1119
+#: lib/rpmdb.c:1110
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 
-#: lib/rpmdb.c:1152
+#: lib/rpmdb.c:1144
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1159
+#: lib/rpmdb.c:1151
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:1167
+#: lib/rpmdb.c:1159
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:1171
+#: lib/rpmdb.c:1163
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1314
+#: lib/rpmdb.c:1310
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "en voi varata tilaa tietokannalle"
 
-#: lib/rpmdb.c:1361
+#: lib/rpmdb.c:1359
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1374
+#: lib/rpmdb.c:1372
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1381
+#: lib/rpmdb.c:1379
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1385
+#: lib/rpmdb.c:1383
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1700
+#: lib/rpmdb.c:1701
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""
+
+#: lib/rpmdb.c:1820
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#: lib/rpmdb.c:1824
+#, c-format
+msgid "temporary database %s already exists"
+msgstr "v‰liaikainen tietokanta %s on jo olemassa"
+
+#: lib/rpmdb.c:1830
+#, fuzzy, c-format
+msgid "creating directory: %s\n"
+msgstr "virhe luotaessa hakemistoa %s: %s"
+
+#: lib/rpmdb.c:1832
+#, c-format
+msgid "error creating directory %s: %s"
+msgstr "virhe luotaessa hakemistoa %s: %s"
+
+#: lib/rpmdb.c:1839
+#, fuzzy, c-format
+msgid "opening old database with dbi_major %d\n"
+msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#: lib/rpmdb.c:1848
+#, fuzzy, c-format
+msgid "opening new database with dbi_major %d\n"
+msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#: lib/rpmdb.c:1870
+#, fuzzy, c-format
+msgid "record number %d in database is bad -- skipping."
+msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
+
+#: lib/rpmdb.c:1902
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr "en voi lis‰t‰ tietuetta %d:st‰"
+
+#: lib/rpmdb.c:1920
+msgid "failed to rebuild database; original database remains in place\n"
+msgstr ""
+
+#: lib/rpmdb.c:1928
+msgid "failed to replace old database with new database!\n"
+msgstr ""
+
+#: lib/rpmdb.c:1930
+#, c-format
+msgid "replace files in %s with files from %s to recover"
+msgstr ""
+
+#: lib/rpmdb.c:1936
+#, fuzzy, c-format
+msgid "failed to remove directory %s: %s\n"
+msgstr "en voinut avata %s: %s"
 
 #: lib/rpminstall.c:126
 #, fuzzy
@@ -3609,11 +3682,6 @@ msgstr "virhe: ftpport pit‰‰ olla luku\n"
 msgid "url port must be a number\n"
 msgstr "virhe: ftpport pit‰‰ olla luku\n"
 
-#: lib/url.c:445
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "en voinut avata %s: %s"
-
 #. XXX Fstrerror
 #: lib/url.c:462
 #, fuzzy, c-format
@@ -3649,6 +3717,10 @@ msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: avaus ei onnistunut\n"
 
 #, fuzzy
+#~ msgid "cannot open file %s: %s"
+#~ msgstr "en voinut avata tiedostoa %s: "
+
+#, fuzzy
 #~ msgid "package not found with key \"%s\" in %s"
 #~ msgstr "paketti %s ei ole %s:ss‰"
 
@@ -3657,19 +3729,6 @@ msgstr "%s: avaus ei onnistunut\n"
 
 #~ msgid "record number %d in database is bad -- skipping it"
 #~ msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
-
-#, fuzzy
-#~ msgid "opening database mode 0x%x in %s\n"
-#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#~ msgid "cannot get %s lock on database"
-#~ msgstr "en voi saada %s lukitusta tietokantaan"
-
-#~ msgid "exclusive"
-#~ msgstr "poissulkevaa"
-
-#~ msgid "shared"
-#~ msgstr "jaettua"
 
 #~ msgid "cannot read header at %d for update"
 #~ msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"

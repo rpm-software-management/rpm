@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.10
+Release: 0.11
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,6 +219,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue Apr 25 2000 Jeff Johnson <jbj@redhat.com>
+- rebuild to check autoconf configuration in dist-7.0.
+
 * Sun Apr 23 2000 Jeff Johnson <jbj@redhat.com>
 - fix: cpio.c: pre-, not post-, decrement the link count.
 - make db indices as lightweight as possible, with per-dbi config.
