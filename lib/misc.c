@@ -7,8 +7,10 @@
 #include <string.h>
 
 #include "misc.h"
+#include "rpmerr.h"
+#include "messages.h"
 
-static void init_arch_os(void);
+static void init_arch_os(char *arch, char *os);
 
 char ** splitString(char * str, int length, char sep) {
     char * s, * source, * dest;
@@ -68,103 +70,120 @@ static int archnum = -1;
 static char *osname = NULL;
 static char *archname = NULL;
 
+#define FAIL_IF_NOT_INIT \
+{\
+    if (osnum < 0) {\
+	error(RPMERR_INTERNAL, "Internal error: Arch/OS not initialized!");\
+        error(RPMERR_INTERNAL, "Arch: %d\nOS: %d", archnum, osnum);\
+	exit(1);\
+    }\
+}
+
 int getOsNum(void)
 {
-    init_arch_os();
+    FAIL_IF_NOT_INIT;
     return osnum;
 }
 
 int getArchNum(void)
 {
-    init_arch_os();
+    FAIL_IF_NOT_INIT;
     return archnum;
 }
 
 char *getOsName(void)
 {
-    init_arch_os();
+    FAIL_IF_NOT_INIT;
     return osname;
 }
 
 char *getArchName(void)
 {
-    init_arch_os();
+    FAIL_IF_NOT_INIT;
     return archname;
 }
 
-static void init_arch_os(void)
+void initArchOs(char *arch, char *os)
 {
     struct utsname un;
 
-    if (osnum >= 0) {
-	return;
+    uname(&un);
+    
+    if (! arch) {
+	arch = un.machine;
+    }
+    if (! os) {
+	os = un.sysname;
     }
 
-    uname(&un);
-    if ((!strcmp(un.machine, "osfmach3_i986")) ||
-	(!strcmp(un.machine, "osfmach3_i886")) ||
-	(!strcmp(un.machine, "osfmach3_i786")) ||
-	(!strcmp(un.machine, "osfmach3_i686")) ||
-	(!strcmp(un.machine, "osfmach3_i586")) ||
-	(!strcmp(un.machine, "osfmach3_i486")) ||
-	(!strcmp(un.machine, "osfmach3_i386")) ||
-	(!strcmp(un.machine, "i986")) ||
-	(!strcmp(un.machine, "i886")) ||
-	(!strcmp(un.machine, "i786")) ||
-	(!strcmp(un.machine, "i686")) ||
-	(!strcmp(un.machine, "i586")) ||
-	(!strcmp(un.machine, "i486")) ||
-	(!strcmp(un.machine, "i386"))) {
+    if ((!strcmp(arch, "osfmach3_i986")) ||
+	(!strcmp(arch, "osfmach3_i886")) ||
+	(!strcmp(arch, "osfmach3_i786")) ||
+	(!strcmp(arch, "osfmach3_i686")) ||
+	(!strcmp(arch, "osfmach3_i586")) ||
+	(!strcmp(arch, "osfmach3_i486")) ||
+	(!strcmp(arch, "osfmach3_i386"))) {
 	archnum = 1;
-	archname = "i386";
-    } else if (!strcmp(un.machine, "alpha")) {
+	archname = strdup(arch + 9);
+    } else if ((!strcmp(arch, "i986")) ||
+	       (!strcmp(arch, "i886")) ||
+	       (!strcmp(arch, "i786")) ||
+	       (!strcmp(arch, "i686")) ||
+	       (!strcmp(arch, "i586")) ||
+	       (!strcmp(arch, "i486")) ||
+	       (!strcmp(arch, "i386"))) {
+	archnum = 1;
+	archname = strdup(arch);
+    } else if (!strcmp(arch, "alpha")) {
 	archnum = 2;
-	archname = "axp";
-    } else if ((!strcmp(un.machine, "sparc")) ||
-	       (!strncmp(un.machine, "sun4", 4))) {
+	archname = strdup("axp");
+    } else if ((!strcmp(arch, "sparc")) ||
+	       (!strncmp(arch, "sun4", 4))) {
 	archnum = 3;
-	archname = "sparc";
-    } else if (!strcmp(un.machine, "mips")) {
+	archname = strdup("sparc");
+    } else if (!strcmp(arch, "mips")) {
 	/* This is just a place holder for MIPS */
        archnum = 4;
-       archname = "mips";
-    } else if ((!strcmp(un.machine, "osfmach3_ppc")) ||
-	       (!strcmp(un.machine, "ppc"))) {
+       archname = strdup("mips");
+    } else if ((!strcmp(arch, "osfmach3_ppc")) ||
+	       (!strcmp(arch, "ppc"))) {
        archnum = 5;
-       archname = "ppc";
-    } else if ((!strncmp(un.machine, "68000", 5))) {
+       archname = strdup("ppc");
+    } else if ((!strncmp(arch, "68000", 5))) {
 	/* This is just a place holder for 68k */
 	archnum = 6;
-	archname = "68k";
-    } else if ((!strncmp(un.machine, "IP", 2))) {
+	archname = strdup("68k");
+    } else if ((!strncmp(arch, "IP", 2))) {
 	archnum = 7;
-	archname = "sgi";
+	archname = strdup("sgi");
     } else {
 	/* unknown arch */
-	fprintf(stderr, "Unknown arch: %s\n", un.machine);
-	fprintf(stderr, "Please contact bugs@redhat.com\n");
-	exit(1);
+	message(MESS_WARNING, "Unknown architecture: %s\n", arch);
+	message(MESS_WARNING, "Please contact bugs@redhat.com\n");
+	archnum = 255;
+	archname = strdup(arch);
     }
 
-    if (!strcmp(un.sysname, "Linux")) {
+    if (!strcmp(os, "Linux")) {
 	osnum = 1;
-	osname = "Linux";
-    } else if ((!strcmp(un.sysname, "IRIX"))) {
+	osname = strdup("Linux");
+    } else if ((!strcmp(os, "IRIX"))) {
 	osnum = 2;
-	osname = "Irix";
-    } else if ((!strcmp(un.sysname, "SunOS")) &&
+	osname = strdup("Irix");
+    } else if ((!strcmp(os, "SunOS")) &&
 	       (!strncmp(un.release, "5.", 2))) {
 	osnum = 3;
-	osname = "Solaris";
-    } else if ((!strcmp(un.sysname, "SunOS")) &&
+	osname = strdup("Solaris");
+    } else if ((!strcmp(os, "SunOS")) &&
 	       (!strncmp(un.release, "4.", 2))) {
 	osnum = 4;
-	osname = "SunOS";
+	osname = strdup("SunOS");
     } else {
 	/* unknown os */
-	fprintf(stderr, "Unknown OS: %s\n", un.sysname);
-	fprintf(stderr, "Please contact bugs@redhat.com\n");
-	exit(1);
+	message(MESS_WARNING, "Unknown OS: %s\n", os);
+	message(MESS_WARNING, "Please contact bugs@redhat.com\n");
+	osnum = 255;
+	osname = strdup(os);
     }
 }
 
