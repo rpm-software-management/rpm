@@ -1,6 +1,9 @@
 #ifndef H_CONFIG
 #define H_CONFIG
 
+/* Define as 1 if you have ANSI headers */
+#define STDC_HEADERS 0
+
 /* Define as 1 if you have <netinet/in_systm.h> */
 #define HAVE_NETINET_IN_SYSTM_H 0
 
@@ -18,6 +21,12 @@
 
 /* Define as 1 if you have <libintl.h.h> */
 #define HAVE_LIBINTL_H 0
+
+/* Define as 1 if <string.h> defines h_errno */
+#define HAVE_STRING_H 0
+
+/* Define as 1 if your system provides realpath() */
+#define HAVE_REALPATH 0
 
 /* Define as 1 if <netdb.h> defines h_errno */
 #define HAVE_HERRNO 0
