@@ -829,7 +829,7 @@ static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
     return ret;
 }
 
-#ifndef	DYING
+#ifdef	DYING
 static void hexdump(const unsigned char * buf, ssize_t len)
 	/*@*/
 {
@@ -1088,8 +1088,10 @@ assert(fd->req != NULL);
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, rc);
+#ifdef	DYING
 if (count > 0)
 hexdump(buf, count);
+#endif
 
     return rc;
 }
@@ -1558,6 +1560,15 @@ DIR * davOpendir(const char * path)
     char * t;
     int ac, nac;
     int rc;
+
+    /* HACK: glob does not pass dirs with trailing '/' */
+    nb = strlen(path)+1;
+    if (path[nb-1] != '/') {
+	char * t = alloca(nb+1);
+	*t = '\0';
+	(void) stpcpy( stpcpy(t, path), "/");
+	path = t;
+    }
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);

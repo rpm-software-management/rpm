@@ -9,10 +9,16 @@
 
 static int _debug = 0;
 
+extern int noNeon;
+
 #define	HTTPSPATH	"https://localhost/rawhide/test/*.rpm"
+#if 0
 #define	HTTPPATH	"http://localhost/rawhide/test/*.rpm"
+#else
+#define	HTTPPATH	"http://localhost/rawhide/*.rpm"
+#endif
 #define	FTPPATH		"ftp://localhost/pub/rawhide/packages/test/*.rpm"
-#define	DIRPATH		"/var/ftp/pub/rawhide/packages/test"
+#define	DIRPATH		"/var/ftp/pub/rawhide/packages/test/*.rpm"
 static char * dirpath = DIRPATH;
 static char * ftppath = FTPPATH;
 static char * httppath = HTTPPATH;
@@ -46,6 +52,8 @@ static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
+ { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
+	N_("disable use of libneon for HTTP"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
@@ -79,10 +87,14 @@ main(int argc, const char *argv[])
 _av_debug = -1;
 _ftp_debug = -1;
 _dav_debug = -1;
+#if 0
     printGlob(dirpath);
     printGlob(ftppath);
+#endif
     printGlob(httppath);
+#if 0
     printGlob(httpspath);
+#endif
 
     return 0;
 }

@@ -1735,20 +1735,21 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 		maxb = nb;
 	}
 	
-	nb = ((ut > URL_IS_DASH && ut != URL_IS_FTP) ? (path - av[j]) : 0);
+	nb = ((ut == URL_IS_PATH) ? (path - av[j]) : 0);
 	maxb += nb;
 	maxb += 1;
 	globURL = globRoot = xmalloc(maxb);
 
 	switch (ut) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
 	case URL_IS_PATH:
 	case URL_IS_DASH:
 	    strncpy(globRoot, av[j], nb);
 	    /*@switchbreak@*/ break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
 	case URL_IS_FTP:
 	case URL_IS_UNKNOWN:
+	default:
 	    /*@switchbreak@*/ break;
 	}
 	globRoot += nb;

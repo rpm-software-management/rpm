@@ -11,9 +11,9 @@ static int _debug = 0;
 
 extern int noNeon;
 
-#define	HTTPSPATH	"https://wellfleet.jbj.org/test.txt"
-#define	HTTPPATH	"http://wellfleet.jbj.org/test.txt"
-#define	FTPPATH		"ftp://wellfleet.jbj.org/test.txt"
+#define	HTTPSPATH	"https://localhost/test.txt"
+#define	HTTPPATH	"http://localhost/test.txt"
+#define	FTPPATH		"ftp://localhost/test.txt"
 #define	DIRPATH		"/var/ftp/test.txt"
 static char * httpspath = HTTPSPATH;
 static char * httppath = HTTPPATH;
@@ -75,10 +75,10 @@ main(int argc, const char *argv[])
 _av_debug = -1;
 _ftp_debug = -1;
 _dav_debug = 1;
-#if 0
+#if 1
     readFile(dirpath);
 #endif
-#if 0
+#if 1
     readFile(ftppath);
     readFile(ftppath);
     readFile(ftppath);
@@ -88,7 +88,7 @@ _dav_debug = 1;
     readFile(httppath);
     readFile(httppath);
 #endif
-#if 0
+#if 1
     readFile(httpspath);
     readFile(httpspath);
     readFile(httpspath);
