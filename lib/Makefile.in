@@ -46,7 +46,7 @@ install:
 	install -m 644 -o 0 -g 0 librpm.a $(LIBDIR)
 
 clean:
-	rm -f *.a *.o *~ $(PROGS) test.out
+	rm -f *.a *.o *~ $(PROGS) test.out tagtable.c
 
 squeaky: clean
 	rm -f depend
