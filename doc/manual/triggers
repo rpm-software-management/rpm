@@ -122,3 +122,27 @@ never be run when the package containing the trigger is removed.
 While this type of trigger is almost never usefull, they allow a package to
 fix errors introduced by the %postun of another package (or by an earlier 
 version of that package).
+
+Order of Script Execution
+-------------------------
+
+For reference, here's the order in which scripts are executed on a single
+package upgrade:
+
+  new-%pre	for new version of package being installed
+  ...		(all new files are installed)
+  new-%post	for new version of package being installed
+
+  any-%triggerin (%triggerin from other packages set off by new install)
+  new-%triggerin
+  old-%triggerun
+  any-%triggerun (%triggerun from other packages set off by old uninstall)
+
+  old-%preun	for old version of package being removed
+  ...		(all old files are removed)
+  old-%postun	for old version of package being removed
+
+  old-%triggerpostun
+  any-%triggerpostun (%triggerpostun from other packages set off by old un
+		install)
+
