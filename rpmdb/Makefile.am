@@ -191,3 +191,6 @@ lint:
 
 tdbi: librpmdb.la tdbi.o
 	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+
+tsql: librpmdb.la tsql.o
+	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)

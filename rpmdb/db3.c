@@ -1373,6 +1373,48 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*@=nullstate =compmempass@*/
 }
 
+/**
+ * Compile SQL statement.
+ * @param dbi           index database handle
+ * @param flags         (unused)
+ * @return              0 on success
+ */
+static int db3compile (dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
+{
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
+    return EINVAL;
+}
+
+/**
+ * Bind arguments to SQL statement.
+ * @param dbi           index database handle
+ * @param flags         (unused)
+ * @return              0 on success
+ */
+static int db3bind (dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
+{
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
+    return EINVAL;
+}
+
+/**
+ * Exec SQL statement.
+ * @param dbi           index database handle
+ * @param flags         (unused)
+ * @return              0 on success
+ */
+static int db3exec (dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
+{
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
+    return EINVAL;
+}
+
 /** \ingroup db3
  */
 /*@-exportheadervar@*/
@@ -1381,7 +1423,8 @@ struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3associate, db3join,
     db3copen, db3cclose, db3cdup, db3cdel, db3cget, db3cpget, db3cput, db3ccount,
-    db3byteswapped, db3stat
+    db3byteswapped, db3stat,
+    db3compile, db3bind, db3exec
 };
 /*@=exportheadervar@*/
 /*@=type@*/

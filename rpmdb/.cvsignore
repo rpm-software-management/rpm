@@ -17,6 +17,7 @@ rpmdb_svc
 rpmdb_upgrade
 rpmdb_verify
 tagtbl.c
+tsql
 *.la
 *.lcd
 *.lo

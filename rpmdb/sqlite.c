@@ -1338,69 +1338,6 @@ static int sql_byteswapped (dbiIndex dbi)
     return rc;
 }
 
-/** \ingroup dbi
- * Save statistics in database handle.
- * @param dbi           index database handle
- * @param flags         retrieve statistics that don't require traversal?
- * @return              0 on success
- */
-static int sql_stat (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
-{
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-    int rc = 0;
-    char ** resultp;
-    int nrow;
-    int ncolumn;
-    char * pzErrmsg;
-    char * cmd;
-    long nkeys = -1;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_stat()\n");
-#endif
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    if ( dbi->dbi_stats ) {
-	dbi->dbi_stats = _free(dbi->dbi_stats);
-    }
-
-/*@-sizeoftype@*/
-    dbi->dbi_stats = xcalloc(1, sizeof(DB_HASH_STAT));
-/*@=sizeoftype@*/
-
-    cmd = sqlite3_mprintf("SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
-    rc = sqlite3_get_table(sqldb->db, cmd,
-	&resultp, &nrow, &ncolumn, &pzErrmsg);
-    sqlite3_free(cmd);
-
-    if ( rc == 0 && nrow > 0) {
-      nkeys=strtol(resultp[1], NULL, 10);
-
-      rpmMessage(RPMMESS_DEBUG, "  stat on %s nkeys=%ld\n",
-		dbi->dbi_subfile, nkeys);
-    } else {
-      if ( rc ) {
-	rpmMessage(RPMMESS_DEBUG, "stat failed %s (%d)\n",
-		pzErrmsg, rc);
-      }
-    }
-
-    (void) sqlite3_free_table(resultp);
-
-    if (nkeys < 0)
-      nkeys = 4096;  /* Good high value */
-
-    ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys=nkeys;
-
-    return rc;
-}
-
 /**************************************************
  *
  *  All of the following are not implemented!
@@ -1541,6 +1478,111 @@ static int sql_ccount (dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
     return EINVAL;
 }
 
+/** \ingroup dbi
+ * Save statistics in database handle.
+ * @param dbi           index database handle
+ * @param flags         retrieve statistics that don't require traversal?
+ * @return              0 on success
+ */
+static int sql_stat (dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies dbi, fileSystem @*/
+{
+    DB * db = dbi->dbi_db;
+    SQL_DB * sqldb;
+    int rc = 0;
+    char ** resultp;
+    int nrow;
+    int ncolumn;
+    char * pzErrmsg;
+    char * cmd;
+    long nkeys = -1;
+
+#ifdef SQL_TRACE_FUNCTIONS
+    rpmMessage(RPMMESS_DEBUG, "sql_stat()\n");
+#endif
+
+    assert(db != NULL);
+    sqldb = (SQL_DB *)db->app_private;
+    assert(sqldb != NULL && sqldb->db != NULL);
+
+    if ( dbi->dbi_stats ) {
+	dbi->dbi_stats = _free(dbi->dbi_stats);
+    }
+
+/*@-sizeoftype@*/
+    dbi->dbi_stats = xcalloc(1, sizeof(DB_HASH_STAT));
+/*@=sizeoftype@*/
+
+    cmd = sqlite3_mprintf("SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
+    rc = sqlite3_get_table(sqldb->db, cmd,
+	&resultp, &nrow, &ncolumn, &pzErrmsg);
+    sqlite3_free(cmd);
+
+    if ( rc == 0 && nrow > 0) {
+      nkeys=strtol(resultp[1], NULL, 10);
+
+      rpmMessage(RPMMESS_DEBUG, "  stat on %s nkeys=%ld\n",
+		dbi->dbi_subfile, nkeys);
+    } else {
+      if ( rc ) {
+	rpmMessage(RPMMESS_DEBUG, "stat failed %s (%d)\n",
+		pzErrmsg, rc);
+      }
+    }
+
+    (void) sqlite3_free_table(resultp);
+
+    if (nkeys < 0)
+      nkeys = 4096;  /* Good high value */
+
+    ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys=nkeys;
+
+    return rc;
+}
+
+/**
+ * Compile SQL statement.
+ * @param dbi           index database handle
+ * @param flags         (unused)
+ * @return              0 on success
+ */
+static int sql_compile (dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
+{
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
+    return EINVAL;
+}
+
+/**
+ * Bind arguments to SQL statement.
+ * @param dbi           index database handle
+ * @param flags         (unused)
+ * @return              0 on success
+ */
+static int sql_bind (dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
+{
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
+    return EINVAL;
+}
+
+/**
+ * Exec SQL statement.
+ * @param dbi           index database handle
+ * @param flags         (unused)
+ * @return              0 on success
+ */
+static int sql_exec (dbiIndex dbi, /*@unused@*/ unsigned int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *dbcursor, fileSystem @*/
+{
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
+    return EINVAL;
+}
+
 /* Major, minor, patch version of DB.. we're not using db.. so set to 0 */
 /* open, close, sync, associate, join */
 /* cursor_open, cursor_close, cursor_dup, cursor_delete, cursor_get, */
@@ -1563,7 +1605,10 @@ struct _dbiVec sqlitevec = {
     sql_cput,
     sql_ccount,
     sql_byteswapped,
-    sql_stat
+    sql_stat,
+    sql_compile,
+    sql_bind,
+    sql_exec
 };
 
 /*@=modfilesystem@*/
