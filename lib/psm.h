@@ -111,7 +111,8 @@ typedef enum pkgStage_e {
     PSM_CHROOT_IN= 11,
     PSM_CHROOT_OUT=12,
     PSM_SCRIPT	=  13,
-    PSM_TRIGGER	=  14,
+    PSM_TRIGGERS=  14,
+    PSM_IMMED_TRIGGERS= 15,
 } pkgStage;
 #undef	_fv
 #undef	_fi
@@ -123,6 +124,7 @@ typedef enum pkgStage_e {
 struct psm_s {
     rpmTransactionSet ts;
     TFI_t fi;
+/*@observer@*/ const char * stepName;
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int scriptArg;		/*!< No. of installed instances. */

@@ -1402,9 +1402,17 @@ int psmStage(PSM_t psm, pkgStage stage)
 	}
 	break;
     case PSM_SCRIPT:
+	rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
+		psm->stepName, tag2sln(psm->scriptTag));
 	rc = runInstScript(psm);
 	break;
-    case PSM_TRIGGER:
+    case PSM_TRIGGERS:
+	if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS))
+	    rc = runTriggers(psm);
+	break;
+    case PSM_IMMED_TRIGGERS:
+	if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS))
+	    rc = runImmedTriggers(psm);
 	break;
 
     default:
@@ -1423,14 +1431,15 @@ int installBinaryPackage(PSM_t psm)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
-/*@observer@*/ static char * stepName = " install";
     Header oldH = NULL;
     int otherOffset = 0;
     int ec = 2;		/* assume error return */
     int rc;
 
+psm->stepName = " install";
+
     rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
-		stepName, fi->name, fi->version, fi->release,
+		psm->stepName, fi->name, fi->version, fi->release,
 		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
 
     /*
@@ -1493,12 +1502,9 @@ int installBinaryPackage(PSM_t psm)
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
-	stepName, "pre-install");
-
     psm->scriptTag = RPMTAG_PREIN;
     psm->progTag = RPMTAG_PREINPROG;
-    rc = runInstScript(psm);
+    rc = psmStage(psm, PSM_SCRIPT);
     if (rc) {
 	rpmError(RPMERR_SCRIPT,
 		_("skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"),
@@ -1562,31 +1568,22 @@ int installBinaryPackage(PSM_t psm)
     if (rpmdbAdd(ts->rpmdb, ts->id, fi->h))
 	goto exit;
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
-	stepName, "post-install");
-
     psm->scriptTag = RPMTAG_POSTIN;
     psm->progTag = RPMTAG_POSTINPROG;
-    rc = runInstScript(psm);
+    psm->sense = RPMSENSE_TRIGGERIN;
+    psm->countCorrection = 0;
+
+    rc = psmStage(psm, PSM_SCRIPT);
     if (rc)
 	goto exit;
 
-    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
-	/* Run triggers this package sets off */
-	psm->sense = RPMSENSE_TRIGGERIN;
-	psm->countCorrection = 0;
-	rc = runTriggers(psm);
-	if (rc)
-	    goto exit;
+    rc = psmStage(psm, PSM_TRIGGERS);
+    if (rc)
+	goto exit;
 
-	/*
-	 * Run triggers in this package which are set off by other packages in
-	 * the database.
-	 */
-	rc = runImmedTriggers(psm);
-	if (rc)
-	    goto exit;
-    }
+    rc = psmStage(psm, PSM_IMMED_TRIGGERS);
+    if (rc)
+	goto exit;
 
     markReplacedFiles(ts, fi);
 
@@ -1605,13 +1602,13 @@ int removeBinaryPackage(PSM_t psm)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
-/*@observer@*/ static char * stepName = "   erase";
     const char * failedFile = NULL;
     const void * pkgKey = NULL;
     int rc = 0;
 
+psm->stepName = "   erase";
     rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
-		stepName, fi->name, fi->version, fi->release,
+		psm->stepName, fi->name, fi->version, fi->release,
 		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
 
 assert(fi->type == TR_REMOVED);
@@ -1641,34 +1638,26 @@ assert(fi->type == TR_REMOVED);
 	rpmdbFreeIterator(mi);
     }
 
+    psm->scriptTag = RPMTAG_PREUN;
+    psm->progTag = RPMTAG_PREUNPROG;
+    psm->sense = RPMSENSE_TRIGGERUN;
+    psm->countCorrection = -1;
+
     /* Change root directory if requested and not already done. */
     (void) psmStage(psm, PSM_CHROOT_IN);
 
-    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
-	/* run triggers from this package which are keyed on installed 
-	   packages */
-	psm->sense = RPMSENSE_TRIGGERUN;
-	psm->countCorrection = -1;
-	rc = runImmedTriggers(psm);
-	if (rc) {
-	    rc = 2;
-	    goto exit;
-	}
-
-	/* run triggers which are set off by the removal of this package */
-	rc = runTriggers(psm);
-	if (rc) {
-	    rc = 1;
-	    goto exit;
-	}
+    rc = psmStage(psm, PSM_TRIGGERS);
+    if (rc) {
+	rc = 2;
+	goto exit;
+    }
+    rc = psmStage(psm, PSM_IMMED_TRIGGERS);
+    if (rc) {
+	rc = 1;
+	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
-		stepName, "pre-erase");
-
-    psm->scriptTag = RPMTAG_PREUN;
-    psm->progTag = RPMTAG_PREUNPROG;
-    rc = runInstScript(psm);
+    rc = psmStage(psm, PSM_SCRIPT);
     if (rc) {
 	rc = 1;
 	goto exit;
@@ -1689,23 +1678,18 @@ assert(fi->type == TR_REMOVED);
     }
     /* XXX WTFO? erase failures are not cause for stopping. */
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
-		stepName, "post-erase");
-
     psm->scriptTag = RPMTAG_POSTUN;
     psm->progTag = RPMTAG_POSTUNPROG;
-    rc = runInstScript(psm);
+    psm->sense = RPMSENSE_TRIGGERPOSTUN;
+    psm->countCorrection = -1;
+
+    rc = psmStage(psm, PSM_SCRIPT);
     /* XXX WTFO? postun failures are not cause for erasure failure. */
 
-    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
-	/* Run postun triggers which are set off by this package's removal. */
-	psm->sense = RPMSENSE_TRIGGERPOSTUN;
-	psm->countCorrection = -1;
-	rc = runTriggers(psm);
-	if (rc) {
-	    rc = 2;
-	    goto exit;
-	}
+    rc = psmStage(psm, PSM_TRIGGERS);
+    if (rc) {
+	rc = 2;
+	goto exit;
     }
     rc = 0;
 

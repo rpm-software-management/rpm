@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-28 10:48-0500\n"
+"POT-Creation-Date: 2001-02-28 11:37-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1830
+#: build/pack.c:484 lib/psm.c:1814
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1886
+#: build/pack.c:566 lib/psm.c:1870
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2935,18 +2935,17 @@ msgstr ""
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1432 lib/psm.c:1613
-#, c-format
-msgid "%s: %s-%s-%s has %d files, test = %d\n"
-msgstr ""
-
-#. XXX WTFO? erase failures are not cause for stopping.
-#: lib/psm.c:1496 lib/psm.c:1565 lib/psm.c:1666 lib/psm.c:1692
+#: lib/psm.c:1405
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/psm.c:1504
+#: lib/psm.c:1441 lib/psm.c:1610
+#, c-format
+msgid "%s: %s-%s-%s has %d files, test = %d\n"
+msgstr ""
+
+#: lib/psm.c:1510
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
