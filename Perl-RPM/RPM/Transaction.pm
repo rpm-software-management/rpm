@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   $Id: Transaction.pm,v 1.5 2000/11/10 09:55:51 rjray Exp $
+#   $Id: Transaction.pm,v 1.6 2001/03/07 19:17:25 rjray Exp $
 #
 #   Description:    Perl-level glue and such for the RPM::Transaction class,
 #                   the methods and accessors to transaction operations.
@@ -35,8 +35,8 @@ use RPM;
 use RPM::Header;
 use RPM::Package;
 
-$VERSION = '0.292';
-$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.3';
+$revision = do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
