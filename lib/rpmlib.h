@@ -17,6 +17,9 @@ extern "C" {
 int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr);
 int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
 			 int * minor);
+
+int headerNVR(Header h, const char **np, const char **vp, const char **rp);
+
    /* 0 = success */
    /* 1 = bad magic */
    /* 2 = error */
@@ -321,9 +324,9 @@ int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
-    char * oldPath;	/* NULL here evals to RPMTAG_DEFAULTPREFIX, this */
-			/* odd behavior is only for backwards compatibility */
-    char * newPath;	/* NULL means to omit the file completely! */
+    const char * oldPath;	/* NULL here evals to RPMTAG_DEFAULTPREFIX, */
+				/* XXX for backwards compatibility */
+    const char * newPath;	/* NULL means to omit the file completely! */
 } rpmRelocation;
 
 int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,

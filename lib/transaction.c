@@ -227,13 +227,12 @@ static Header relocateFileList(struct availablePackage * alp,
 			       int allowBadRelocate)
 {
     int numValid, numRelocations;
-    int i, j, madeSwap, rc;
+    int i, j, rc;
     rpmRelocation * nextReloc, * relocations = NULL;
     rpmRelocation * rawRelocations = alp->relocs;
-    rpmRelocation tmpReloc;
-    char ** validRelocations, ** actualRelocations;
-    char ** names;
-    char ** origNames;
+    const char ** validRelocations;
+    const char ** names;
+    const char ** origNames;
     int len = 0;
     char * newName;
     int_32 fileCount;
@@ -261,16 +260,19 @@ static Header relocateFileList(struct availablePackage * alp,
 	/* FIXME: default relocations (oldPath == NULL) need to be handled
 	   in the UI, not rpmlib */
 
-	relocations[i].oldPath =
-	    alloca(strlen(rawRelocations[i].oldPath) + 1);
-	strcpy(relocations[i].oldPath, rawRelocations[i].oldPath);
-	stripTrailingSlashes(relocations[i].oldPath);
+	{   const char *s = rawRelocations[i].oldPath;
+	    char *t = alloca(strlen(s) + 1);
+	    strcpy(t, s);
+	    stripTrailingSlashes(t);
+	    relocations[i].oldPath = t;
+	}
 
 	if (rawRelocations[i].newPath) {
-	    relocations[i].newPath =
-		alloca(strlen(rawRelocations[i].newPath) + 1);
-	    strcpy(relocations[i].newPath, rawRelocations[i].newPath);
-	    stripTrailingSlashes(relocations[i].newPath);
+	    const char *s = rawRelocations[i].newPath;
+	    char *t = alloca(strlen(s) + 1);
+	    strcpy(t, s);
+	    stripTrailingSlashes(t);
+	    relocations[i].newPath = t;
 	} else {
 	    relocations[i].newPath = NULL;
 	}
@@ -287,8 +289,10 @@ static Header relocateFileList(struct availablePackage * alp,
 
     /* stupid bubble sort, but it's probably faster here */
     for (i = 0; i < numRelocations; i++) {
+	int madeSwap;
 	madeSwap = 0;
 	for (j = 1; j < numRelocations; j++) {
+	    rpmRelocation tmpReloc;
 	    if (strcmp(relocations[j - 1].oldPath,
 		       relocations[j].oldPath) > 0) {
 		tmpReloc = relocations[j - 1];
@@ -301,6 +305,7 @@ static Header relocateFileList(struct availablePackage * alp,
     }
 
     if (numValid) {
+	const char ** actualRelocations;
 	actualRelocations = malloc(sizeof(*actualRelocations) * numValid);
 	for (i = 0; i < numValid; i++) {
 	    for (j = 0; j < numRelocations; j++) {
@@ -317,8 +322,8 @@ static Header relocateFileList(struct availablePackage * alp,
 	headerAddEntry(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
 		       (void **) actualRelocations, numValid);
 
-	free(actualRelocations);
-	free(validRelocations);
+	xfree(actualRelocations);
+	xfree(validRelocations);
     }
 
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &names,

@@ -151,7 +151,7 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
     int queryFlags = qva->qva_flags;
     const char *queryFormat = qva->qva_queryFormat;
 
-    char * name, * version, * release;
+    const char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
     char ** fileList, ** fileMD5List;
@@ -165,9 +165,7 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
     uint_16 * fileRdevList;
     int i;
 
-    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+    headerNVR(h, &name, &version, &release);
 
     if (!queryFormat && !queryFlags) {
 	fprintf(fp, "%s-%s-%s\n", name, version, release);

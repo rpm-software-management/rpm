@@ -262,7 +262,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		}
 
 		if (defaultReloc) {
-		    free(defaultReloc->oldPath);
+		    xfree(defaultReloc->oldPath);
 		    defaultReloc->oldPath = NULL;
 		}
 

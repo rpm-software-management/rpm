@@ -16,24 +16,17 @@ static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
 static int cpio_gzip(FD_t fdo, CSA_t *csa);
 static int cpio_copy(FD_t fdo, CSA_t *csa);
 
-static int genSourceRpmName(Spec spec)
+static inline int genSourceRpmName(Spec spec)
 {
-    char *name, *version, *release;
-    char fileName[BUFSIZ];
+    if (spec->sourceRpmName == NULL) {
+	const char *name, *version, *release;
+	char fileName[BUFSIZ];
 
-    if (spec->sourceRpmName) {
-	return 0;
-    }
-    
-    headerGetEntry(spec->packages->header, RPMTAG_NAME,
-		   NULL, (void **)&name, NULL);
-    headerGetEntry(spec->packages->header, RPMTAG_VERSION,
-		   NULL, (void **)&version, NULL);
-    headerGetEntry(spec->packages->header, RPMTAG_RELEASE,
-		   NULL, (void **)&release, NULL);
-    sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
+	headerNVR(spec->packages->header, &name, &version, &release);
+	sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
 	    spec->noSource ? "no" : "");
-    spec->sourceRpmName = strdup(fileName);
+	spec->sourceRpmName = strdup(fileName);
+    }
 
     return 0;
 }
@@ -217,14 +210,13 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     return 0;
 }
 
-int writeRPM(Header header, const char *fileName, int type,
+int writeRPM(Header h, const char *fileName, int type,
 		    CSA_t *csa, char *passPhrase, char **cookie)
 {
     FD_t fd, ifd;
     int rc, count, sigtype;
     int archnum, osnum;
     const char *sigtarget;
-    char *name, *version, *release;
     char buf[BUFSIZ];
     Header sig;
     struct rpmlead lead;
@@ -232,7 +224,7 @@ int writeRPM(Header header, const char *fileName, int type,
     if (fdFileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
 	/* Add a bogus archive size to the Header */
-	headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
+	headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
 		&csa->cpioArchiveSize, 1);
     }
 
@@ -240,7 +232,7 @@ int writeRPM(Header header, const char *fileName, int type,
     if (cookie) {
 	sprintf(buf, "%s %d", buildHost(), (int) time(NULL));
 	*cookie = strdup(buf);
-	headerAddEntry(header, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
+	headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }
     
     /* Write the header */
@@ -248,7 +240,7 @@ int writeRPM(Header header, const char *fileName, int type,
 	rpmError(RPMERR_CREATE, _("Unable to open temp file"));
 	return RPMERR_CREATE;
     }
-    headerWrite(fd, header, HEADER_MAGIC_YES);
+    headerWrite(fd, h, HEADER_MAGIC_YES);
 	     
     /* Write the archive and get the size */
     if (csa->cpioList != NULL) {
@@ -268,11 +260,11 @@ int writeRPM(Header header, const char *fileName, int type,
 
     /* Now set the real archive size in the Header */
     if (fdFileno(csa->cpioFdIn) < 0) {
-	headerModifyEntry(header, RPMTAG_ARCHIVESIZE,
+	headerModifyEntry(h, RPMTAG_ARCHIVESIZE,
 		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     }
     (void)fdLseek(fd, 0,  SEEK_SET);
-    headerWrite(fd, header, HEADER_MAGIC_YES);
+    headerWrite(fd, h, HEADER_MAGIC_YES);
 
     fdClose(fd);
 
@@ -286,10 +278,10 @@ int writeRPM(Header header, const char *fileName, int type,
     }
 
     /* Now write the lead */
-    headerGetEntry(header, RPMTAG_NAME, NULL, (void **)&name, NULL);
-    headerGetEntry(header, RPMTAG_VERSION, NULL, (void **)&version, NULL);
-    headerGetEntry(header, RPMTAG_RELEASE, NULL, (void **)&release, NULL);
-    sprintf(buf, "%s-%s-%s", name, version, release);
+    {	const char *name, *version, *release;
+	headerNVR(h, &name, &version, &release);
+	sprintf(buf, "%s-%s-%s", name, version, release);
+    }
 
     if (fdFileno(csa->cpioFdIn) < 0) {
 	rpmGetArchInfo(NULL, &archnum);

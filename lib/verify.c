@@ -306,7 +306,7 @@ static int verifyDependencies(rpmdb db, Header h) {
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     const char * name, * version, * release;
-    int type, count, i;
+    int i;
 
     rpmdep = rpmtransCreateSet(db, NULL);
     rpmtransAddPackage(rpmdep, h, NULL, NULL, 0, NULL);
@@ -315,9 +315,7 @@ static int verifyDependencies(rpmdb db, Header h) {
     rpmtransFree(rpmdep);
 
     if (numConflicts) {
-	headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-	headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
-	headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+	headerNVR(h, &name, &version, &release);
 	fprintf(stdout, _("Unsatisfied dependencies for %s-%s-%s: "),
 		name, version, release);
 	for (i = 0; i < numConflicts; i++) {

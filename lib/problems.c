@@ -47,21 +47,14 @@ void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
 
 char * rpmProblemString(rpmProblem prob)
 {
-    char * name, * version, * release;
+    const char * name, * version, * release;
+    const char * altName, * altVersion, * altRelease;
     char * buf;
-    char * altName, * altVersion, * altRelease;
 
-    headerGetEntry(prob.h, RPMTAG_NAME, NULL, (void **) &name, NULL);
-    headerGetEntry(prob.h, RPMTAG_VERSION, NULL, (void **) &version, NULL);
-    headerGetEntry(prob.h, RPMTAG_RELEASE, NULL, (void **) &release, NULL);
+    headerNVR(prob.h, &name, &version, &release);
 
-    if (prob.altH) {
-	headerGetEntry(prob.altH, RPMTAG_NAME, NULL, (void **) &altName, NULL);
-	headerGetEntry(prob.altH, RPMTAG_VERSION, NULL, (void **) &altVersion, 
-		       NULL);
-	headerGetEntry(prob.altH, RPMTAG_RELEASE, NULL, (void **) &altRelease, 
-		       NULL);
-    }
+    if (prob.altH)
+	headerNVR(prob.altH, &altName, &altVersion, &altRelease);
 
     buf = malloc(strlen(name) + strlen(version) + strlen(release) + 400);
 

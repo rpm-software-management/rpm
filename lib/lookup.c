@@ -13,8 +13,7 @@ int findMatches(rpmdb db, const char * name, const char * version,
     int gotMatches;
     int rc;
     int i;
-    char * pkgRelease, * pkgVersion;
-    int count, type;
+    const char * pkgRelease, * pkgVersion;
     int goodRelease, goodVersion;
     Header h;
 
@@ -28,33 +27,30 @@ int findMatches(rpmdb db, const char * name, const char * version,
 
     /* make sure the version and releases match */
     for (i = 0; i < matches->count; i++) {
-	if (matches->recs[i].recOffset) {
-	    h = rpmdbGetRecord(db, matches->recs[i].recOffset);
-	    if (h == NULL) {
-		rpmError(RPMERR_DBCORRUPT, 
-			 _("cannot read header at %d for lookup"), 
-			matches->recs[i].recOffset);
-		dbiFreeIndexRecord(*matches);
-		return 2;
-	    }
+	if (matches->recs[i].recOffset == 0)
+	    continue;
 
-	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &pkgVersion, 
-			   &count);
-	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &pkgRelease, 
-			   &count);
-	    
-	    goodRelease = goodVersion = 1;
-
-	    if (release && strcmp(release, pkgRelease)) goodRelease = 0;
-	    if (version && strcmp(version, pkgVersion)) goodVersion = 0;
-
-	    if (goodRelease && goodVersion) 
-		gotMatches = 1;
-	    else 
-		matches->recs[i].recOffset = 0;
-
-	    headerFree(h);
+	h = rpmdbGetRecord(db, matches->recs[i].recOffset);
+	if (h == NULL) {
+	    rpmError(RPMERR_DBCORRUPT,_("cannot read header at %d for lookup"), 
+		matches->recs[i].recOffset);
+	    dbiFreeIndexRecord(*matches);
+	    return 2;
 	}
+
+	headerNVR(h, NULL, &pkgVersion, &pkgRelease);
+	    
+	goodRelease = goodVersion = 1;
+
+	if (release && strcmp(release, pkgRelease)) goodRelease = 0;
+	if (version && strcmp(version, pkgVersion)) goodVersion = 0;
+
+	if (goodRelease && goodVersion) 
+	    gotMatches = 1;
+	else 
+	    matches->recs[i].recOffset = 0;
+
+	headerFree(h);
     }
 
     if (!gotMatches) {
@@ -70,11 +66,9 @@ int findMatches(rpmdb db, const char * name, const char * version,
 /* 2 error */
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches)
 {
-    char * name, * version, * release;
+    const char * name, * version, * release;
 
-    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, NULL);
-    headerGetEntry(h, RPMTAG_VERSION, NULL, (void **) &version, NULL);
-    headerGetEntry(h, RPMTAG_RELEASE, NULL, (void **) &release, NULL);
+    headerNVR(h, &name, &version, &release);
 
     return findMatches(db, name, version, release, matches);
 }

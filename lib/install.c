@@ -636,7 +636,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 			 struct sharedFileInfo * sharedList, FD_t scriptFd)
 {
     int rc;
-    char * name, * version, * release;
+    const char * name, * version, * release;
     int fileCount, type, count;
     struct fileInfo * files;
     int_32 installTime;
@@ -657,9 +657,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     if (flags & RPMTRANS_FLAG_JUSTDB)
 	flags |= RPMTRANS_FLAG_NOSCRIPTS;
 
-    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
+    headerNVR(h, &name, &version, &release);
 
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"), 
 		name, version, release, flags & RPMTRANS_FLAG_TEST);

@@ -70,13 +70,13 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     Header h;
     int i;
     int fileCount;
-    char * name, * version, * release;
+    const char * name, * version, * release;
     char * fnbuffer = NULL;
     dbiIndexSet matches;
     int fnbuffersize = 0;
     int prefixLength = strlen(prefix);
     char ** fileList, ** fileMd5List;
-    int type, count;
+    int type;
     uint_32 * fileFlagsList;
     int_16 * fileModesList;
     int scriptArg;
@@ -91,9 +91,8 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 	return 1;
     }
 
-    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name,  &count);
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version,  &count);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release,  &count);
+    headerNVR(h, &name, &version, &release);
+
     /* when we run scripts, we pass an argument which is the number of 
        versions of this package that will be installed when we are finished */
     if (rpmdbFindPackage(db, name, &matches)) {

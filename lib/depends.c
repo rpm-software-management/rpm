@@ -5,12 +5,15 @@
 #include "depends.h"
 #include "misc.h"
 
-static int headerNVR(Header h, const char **np, const char **vp, const char **rp)
+int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
     int type, count;
-    headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count);
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count);
+    if (np && !headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count))
+	*np = NULL;
+    if (vp && !headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count))
+	*vp = NULL;
+    if (rp && !headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count))
+	*rp = NULL;
     return 0;
 }
 
@@ -54,8 +57,8 @@ static void alFree(struct availableList * al)
 	if (al->list[i].relocs) {
 	    r = al->list[i].relocs;
 	    while (r->oldPath || r->newPath) {
-		if (r->oldPath) free(r->oldPath);
-		if (r->newPath) free(r->newPath);
+		if (r->oldPath) xfree(r->oldPath);
+		if (r->newPath) xfree(r->newPath);
 		r++;
 	    }
 
@@ -511,8 +514,7 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqInfo, i
 	sprintf(buf, "%d", *epochval);
 	epoch = buf;
     }
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **)&version, &count);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **)&release, &count);
+    headerNVR(h, NULL, &version, &release);
 
     /* Parse requires version into components */
     Revr = strdup(reqInfo);
