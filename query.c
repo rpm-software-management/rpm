@@ -152,7 +152,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     char how[20], format[20];
     int i, tagLength;
     char tag[100];
-    const struct rpmTagTableEntry * t;
+    const struct headerTagTableEntry * t;
     void * p;
     int type;
     int notArray = 0;
@@ -893,7 +893,7 @@ int findMatches(rpmdb db, char * name, char * version, char * release,
 }
 
 void queryPrintTags(void) {
-    const struct rpmTagTableEntry * t;
+    const struct headerTagTableEntry * t;
     int i;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
