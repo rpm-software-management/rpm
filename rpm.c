@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "install.h"
 #include "lib/rpmerr.h"
@@ -210,6 +211,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
     Spec s;
     char * specfile;
     int res = 0;
+    struct stat statbuf;
 
     if (arg[0] == '/') {
 	specfile = arg;
@@ -221,6 +223,12 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	strcat(specfile, arg);
     }
 
+    stat(specfile, &statbuf);
+    if (! S_ISREG(statbuf.st_mode)) {
+	error(RPMERR_BADSPEC, "File is not a regular file: %s\n", specfile);
+	return 1;
+    }
+    
     if (!(f = fopen(specfile, "r"))) {
 	fprintf(stderr, _("unable to open: %s\n"), specfile);
 	return 1;
