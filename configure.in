@@ -5,6 +5,7 @@ dnl failing causes the script to bomb out with a message. If we can't fix
 dnl it, why check it?
 
 AC_INIT(rpm.c)
+AC_CONFIG_HEADER(misc/misc-config.h)
 
 dnl default to not using NLS
 XGETTEXT=""
@@ -171,6 +172,9 @@ dnl Checks for header files we can live without.
 AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(alloca.h)
 AC_CHECK_HEADERS(machine/types.h)
+AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
+AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
+
 
 if test "$PO" = po; then
     AC_CHECK_HEADERS(libintl.h)
