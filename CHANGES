@@ -50,6 +50,7 @@
 	- autoconfigure building python bindings.
 	- autoconfigure generating rpm API doco.
 	- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
+	- use package version 3 if --nodirtokens is specified.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

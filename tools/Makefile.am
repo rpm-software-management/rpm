@@ -24,12 +24,14 @@ LIBS =
 LDADD = $(myLDADD)
 
 noinst_PROGRAMS = \
-	dump dumpdb javadeps rpmarchive rpmheader rpmlead rpmsignature rpmsort
-
-rpmsort_SOURCES =	rpmsort.c
-rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
+	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature rpmsort
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = @BUILD_RPMNLSTOOLS@
+pkgbin_PROGRAMS = javadeps
+
+rpmsort_SOURCES =	rpmsort.c
+rpmsort_LDFLAGS =
+
+javadeps_SOURCES =	javadeps.c
 
 $(PROGRAMS): $(myLDADD)

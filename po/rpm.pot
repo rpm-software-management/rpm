@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-12-03 19:48-0500\n"
+"POT-Creation-Date: 2000-12-03 20:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1495,7 +1495,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:111 build/pack.c:356
+#: build/build.c:111 build/pack.c:354
 msgid "Unable to open temp file."
 msgstr ""
 
@@ -1685,7 +1685,7 @@ msgstr ""
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1244 build/pack.c:101
+#: build/files.c:1244 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1757,126 +1757,126 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:49
+#: build/pack.c:47
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: build/pack.c:69
+#: build/pack.c:67
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:76
+#: build/pack.c:74
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:152
+#: build/pack.c:150
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:159
+#: build/pack.c:157
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:166
+#: build/pack.c:164
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:173
+#: build/pack.c:171
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:181
+#: build/pack.c:179
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:196
+#: build/pack.c:194
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
 
-#: build/pack.c:222
+#: build/pack.c:220
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:232
+#: build/pack.c:230
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:253
+#: build/pack.c:251
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:259
+#: build/pack.c:257
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:368
+#: build/pack.c:366
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:409
+#: build/pack.c:407
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:419
+#: build/pack.c:417
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:455
+#: build/pack.c:454
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:470
+#: build/pack.c:469
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:480
+#: build/pack.c:479
 #, c-format
 msgid "Unable to read header from %s: %s"
 msgstr ""
 
-#: build/pack.c:494
+#: build/pack.c:493
 #, c-format
 msgid "Unable to write header to %s: %s"
 msgstr ""
 
-#: build/pack.c:504
+#: build/pack.c:503
 #, c-format
 msgid "Unable to read payload from %s: %s"
 msgstr ""
 
-#: build/pack.c:510
+#: build/pack.c:509
 #, c-format
 msgid "Unable to write payload to %s: %s"
 msgstr ""
 
-#: build/pack.c:537
+#: build/pack.c:536
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:602
+#: build/pack.c:601
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:619
+#: build/pack.c:618
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""

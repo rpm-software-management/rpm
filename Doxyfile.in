@@ -325,7 +325,6 @@ INPUT                  = \
 	./rpmio/base64.h \
 	./rpmio/digest.c \
 	./rpmio/macro.c \
-	./rpmio/md5.c \
 	./rpmio/rpmlog.c \
 	./rpmio/rpmerr.h \
 	./rpmio/rpmio.c \

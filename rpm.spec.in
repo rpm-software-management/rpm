@@ -308,6 +308,9 @@ fi
 - autoconfigure building python bindings.
 - autoconfigure generating rpm API doco rpm-devel package.
 - fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
+- unify rpmError and rpmMessge interfaces through rpmlog.
+- collect and display rpm build error messages at end of build.
+- use package version 3 if --nodirtokens is specified.
 
 * Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
 - add missing headerFree for legacy signature header.

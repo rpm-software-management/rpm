@@ -13,8 +13,6 @@
 #include "signature.h"
 #include "rpmlead.h"
 
-#define RPM_MAJOR_NUMBER 4
-
 extern int _noDirTokens;
 
 static inline int genSourceRpmName(Spec spec)
@@ -438,7 +436,8 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	}
 
 	memset(&lead, 0, sizeof(lead));
-	lead.major = RPM_MAJOR_NUMBER;
+	/* XXX Set package version conditioned on noDirTokens. */
+	lead.major = (_noDirTokens ? 3 : 4);
 	lead.minor = 0;
 	lead.type = type;
 	lead.archnum = archnum;

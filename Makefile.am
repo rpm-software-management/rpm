@@ -7,11 +7,10 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	gendiff installplatform platform* \
 	po/*.in po/*.po po/rpm.pot \
-	python/*.am python/*.in python/*.c python/*.h python/testit \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c
 
-# XXX TODO: python perl
-SUBDIRS = intl po popt rpmio lib build misc tools scripts tests doc .
+# XXX TODO: perl
+SUBDIRS = intl po popt rpmio lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt @INCPATH@

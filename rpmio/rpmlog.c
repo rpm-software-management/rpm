@@ -152,6 +152,8 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	fputs(_(rpmlogMsgPrefix[pri]), msgout);
 
     fputs(msg, msgout);
+    if (pri == RPMLOG_ERR) /* XXX Legacy rpmError behavior appends newline. */
+	fputs("\n", msgout);
     fflush(msgout);
     if (pri <= RPMLOG_CRIT)
 	exit(EXIT_FAILURE);
