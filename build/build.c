@@ -263,7 +263,7 @@ static int doSetupMacro(Spec spec, StringBuf sb, char *line)
     }
     
     /* cd into the build subdir */
-    if (opt_c) {
+    if (!opt_c) {
 	sprintf(buf, "cd %s", build_subdir);
 	appendLineStringBuf(sb, buf);
     }
