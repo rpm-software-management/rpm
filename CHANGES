@@ -17,6 +17,7 @@
 	- add -g to optflags in per-platform config.
 	- permit confgure/compile with db3-3.2.9.
 	- permit manifest files as args to query/verify modes.
+	- fix: parameterized macro segfault (Jakub Bogusz <qboosh@pld.org.pl>).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

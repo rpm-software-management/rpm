@@ -16,6 +16,16 @@ static int _debug = 0;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
+
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
 char ** splitString(const char * str, int length, char sep)
@@ -56,8 +66,8 @@ char ** splitString(const char * str, int length, char sep)
 
 void freeSplitString(char ** list)
 {
-    free(list[0]);
-    free(list);
+    list[0] = _free(list[0]);
+    list = _free(list);
 }
 
 int rpmfileexists(const char * urlfn)
@@ -293,11 +303,11 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	char tfnbuf[64];
 #ifndef	NOTYET
 	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
-	if (tempfn)	free((void *)tempfn);
+	tempfn = _free(tempfn);
 	tempfn = rpmGenPath(prefix, tpmacro, tfnbuf);
 #else
 	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
-	if (tempfn)	free((void *)tempfn);
+	tempfn = _free(tempfn);
 	tempfn = rpmGenPath(prefix, tpmacro, mktemp(tfnbuf));
 #endif
 
@@ -347,16 +357,14 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 
     if (fnptr)
 	*fnptr = tempfn;
-    else if (tempfn) {
-	free((void *)tempfn);
-	tempfn = NULL;
-    }
+    else 
+	tempfn = _free(tempfn);
     *fdptr = fd;
 
     return 0;
 
 errxit:
-    if (tempfn) free((void *)tempfn);
+    tempfn = _free(tempfn);
     if (fd) Fclose(fd);
     return 1;
 }
@@ -391,6 +399,7 @@ void compressFilelist(Header h)
     const char ** dirNames;
     const char ** baseNames;
     int_32 * dirIndexes;
+    int fnt;
     int count;
     int i;
     int dirIndex = -1;
@@ -406,7 +415,7 @@ void compressFilelist(Header h)
 	return;		/* Already converted. */
     }
 
-    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL,
+    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, &fnt,
 			(void **) &fileNames, &count))
 	return;		/* no file list */
 
@@ -455,7 +464,7 @@ exit:
     headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			dirNames, dirIndex + 1);
 
-    free((void *)fileNames);
+    fileNames = headerFreeData(fileNames, fnt);
 
     headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
 }
@@ -474,16 +483,17 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     int count;
     const char ** fileNames;
     int size;
+    int bnt, dnt;
     char * data;
     int i;
 
-    if (!headerGetEntry(h, baseNameTag, NULL, (void **) &baseNames, &count)) {
+    if (!headerGetEntry(h, baseNameTag, &bnt, (void **) &baseNames, &count)) {
 	if (fileListPtr) *fileListPtr = NULL;
 	if (fileCountPtr) *fileCountPtr = 0;
 	return;		/* no file list */
     }
 
-    headerGetEntry(h, dirNameTag, NULL, (void **) &dirNames, NULL);
+    headerGetEntry(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
     headerGetEntry(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
 
     size = sizeof(*fileNames) * count;
@@ -497,13 +507,13 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 	data = stpcpy( stpcpy(data, dirNames[dirIndexes[i]]), baseNames[i]);
 	*data++ = '\0';
     }
-    free((void *)baseNames);
-    free((void *)dirNames);
+    baseNames = headerFreeData(baseNames, bnt);
+    dirNames = headerFreeData(dirNames, dnt);
 
     if (fileListPtr)
 	*fileListPtr = fileNames;
     else
-	free((void *)fileNames);
+	fileNames = _free(fileNames);
     if (fileCountPtr) *fileCountPtr = count;
 }
 
@@ -519,7 +529,7 @@ void expandFilelist(Header h)
 	    return;
 	headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
-	free((void *)fileNames);
+	fileNames = _free(fileNames);
     }
 
     headerRemoveEntry(h, RPMTAG_DIRNAMES);
@@ -601,10 +611,11 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	    if (argc == 0)
 		argv = xmalloc((argc+2) * sizeof(*argv));
 	    else
-		argv = xrealloc(argv, (argc+1) * sizeof(*argv));
+		argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+	    argv[argc] = xstrdup(av[j]);
 if (_debug)
-fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, av[j]);
-	    argv[argc++] = xstrdup(av[j]);
+fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
+	    argc++;
 	    continue;
 	}
 	
@@ -656,7 +667,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 	    argv[argc++] = xstrdup(globURL);
 	}
 	Globfree(&gl);
-	free((void *)globURL);
+	globURL = _free(globURL);
     }
     if (argv != NULL && argc > 0) {
 	argv[argc] = NULL;
@@ -670,13 +681,11 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 
 exit:
-    if (av)
-	free((void *)av);
+    av = _free(av);
     if ((rc || argvPtr == NULL) && argv) {
 	for (i = 0; i < argc; i++)
-	    free((void *)argv[i]);
-	free((void *)argv);
-	argv = NULL;
+	    argv[i] = _free(argv[i]);
+	argv = _free(argv);
     }
     return rc;
 }
@@ -833,8 +842,8 @@ void providePackageNVR(Header h)
     }
 
 exit:
-    if (provides) free((void *)provides);
-    if (providesEVR) free((void *)providesEVR);
+    provides = headerFreeData(provides, -1);
+    providesEVR = headerFreeData(providesEVR, -1);
 
     if (bingo) {
 	headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,

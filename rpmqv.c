@@ -639,7 +639,7 @@ static void printHelp(void) {
 		  _("upgrade to an old version of the package (--force on upgrades does this automatically)"));
     puts("");
     puts(         _("   --erase <package>"));
-    printHelpLine(  "   -e <package>           ",
+    printHelpLine(_("   -e <package>           "),
 		  _("erase (uninstall) package"));
     printHelpLine(  "     --allmatches         ",
 		  _("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"));

@@ -15,6 +15,16 @@
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
+
 /* Define if you want percentage progress in the hash bars when
  * writing to a tty (ordinary hash bars otherwise) --claudio
  */
@@ -28,6 +38,8 @@ static int progressTotal = 0;
 static int progressCurrent = 0;
 #endif
 
+/**
+ */
 static void printHash(const unsigned long amount, const unsigned long total)
 {
     int hashesNeeded;
@@ -123,7 +135,7 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	    fprintf(stdout, "%s\n", s);
 	    fflush(stdout);
 	}
-	free(s);
+	s = _free(s);
 	break;
 
     case RPMCALLBACK_TRANS_PROGRESS:
@@ -225,8 +237,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	{   int myrc;
 	    int j;
 	    const char *tfn;
-	    const char ** argv;
-	    int argc;
+	    int argc = 0;
+	    const char ** argv = NULL;
 
 	    myrc = rpmGlob(*fileURL, &argc, &argv);
 	    if (myrc) {
@@ -264,16 +276,15 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 			argv[j], ftpStrerror(myrc));
 		    numFailed++;
 		    pkgURL[i] = NULL;
-		    free((void *)tfn);
+		    tfn = _free(tfn);
 		} else {
 		    tmppkgURL[numTmpPkgs++] = pkgURL[i++] = tfn;
 		}
 	    }
 	    if (argv) {
 		for (j = 0; j < argc; j++)
-		    free((void *)argv[j]);
-		free((void *)argv);
-		argv = NULL;
+		    argv[j] = _free(argv[j]);
+		argv = _free(argv);
 	    }
 	}   break;
 	case URL_IS_PATH:
@@ -342,7 +353,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 					"%{_dbpath}", NULL);
 			rpmMessage(RPMMESS_ERROR, 
 				_("cannot open Packages database in %s\n"), dn);
-			free((void *)dn);
+			dn = _free(dn);
 			numFailed++;
 			pkgURL[i] = NULL;
 			break;
@@ -358,7 +369,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
 				       (void **) &paths, &c) && (c == 1)) {
 			defaultReloc->oldPath = xstrdup(paths[0]);
-			free((void *)paths);
+			paths = _free(paths);
 		    } else {
 			const char * name;
 			headerNVR(h, &name, NULL, NULL);
@@ -419,10 +430,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 			/*@notreached@*/ break;
 		}
 
-		if (defaultReloc) {
-		    free((void *)defaultReloc->oldPath);
-		    defaultReloc->oldPath = NULL;
-		}
+		defaultReloc->oldPath = _free(defaultReloc->oldPath);
 
 		numRPMS++;
 	    }
@@ -502,10 +510,10 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 
     for (i = 0; i < numTmpPkgs; i++) {
 	Unlink(tmppkgURL[i]);
-	free((void *)tmppkgURL[i]);
+	tmppkgURL[i] = _free(tmppkgURL[i]);
     }
-    free((void *)tmppkgURL);	tmppkgURL = NULL;
-    free((void *)pkgURL);	pkgURL = NULL;
+    tmppkgURL = _free(tmppkgURL);
+    pkgURL = _free(pkgURL);
 
     /* FIXME how do we close our various fd's? */
 
@@ -517,11 +525,10 @@ errxit:
     if (numRPMS && ts) rpmtransFree(ts);
     if (tmppkgURL) {
 	for (i = 0; i < numTmpPkgs; i++)
-	    free((void *)tmppkgURL[i]);
-	free((void *)tmppkgURL);
+	    tmppkgURL[i] = _free(tmppkgURL[i]);
+	tmppkgURL = _free(tmppkgURL);
     }
-    if (pkgURL)
-	free((void *)pkgURL);
+    pkgURL = _free(pkgURL);
     if (dbIsOpen) rpmdbClose(db);
     return numPkgs;
 }
@@ -551,7 +558,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	const char *dn;
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
-	free((void *)dn);
+	dn = _free(dn);
 	return -1;
     }
 
@@ -632,14 +639,10 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     }
     if (rc != 0) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
-	if (specFile && *specFile) {
-	    free((void *)*specFile);
-	    *specFile = NULL;
-	}
-	if (cookie && *cookie) {
-	    free(*cookie);
-	    *cookie = NULL;
-	}
+	if (specFile && *specFile)
+	    *specFile = _free(*specFile);
+	if (cookie && *cookie)
+	    *cookie = _free(*cookie);
     }
 
     Fclose(fd);

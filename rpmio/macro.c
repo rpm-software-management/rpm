@@ -801,7 +801,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
     /* Build argv array */
     argv = (const char **) alloca((argc + 1) * sizeof(char *));
     be[-1] = ' ';	/*  be - 1 == b + strlen(b) == buf + strlen(buf)  */
-    buf[0] = '\0';
+    be[0] = '\0';
     b = buf;
     for (c = 0; c < argc; c++) {
 	argv[c] = b;
