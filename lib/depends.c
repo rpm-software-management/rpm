@@ -1061,7 +1061,6 @@ alFileSatisfiesDepend(const availableList al,
 
 /**
  * Check added package file lists for package(s) that have a provide.
- * @todo Provides: /path is broken with added packages.
  * @param al		available list
  * @param keyType	type of dependency
  * @param keyDepend	dependency string representation
@@ -1082,11 +1081,9 @@ alAllSatisfiesDepend(const availableList al,
 
     if (*keyName == '/') {
 	ret = alAllFileSatisfiesDepend(al, keyType, keyName);
-#ifdef	BUGZILLA_52183	/* XXX Provides: /path is broken with added packages. */
+	/* XXX Provides: /path was broken with added packages (#52183). */
 	if (ret != NULL && *ret != NULL)
-#endif
 	    return ret;
-
     }
 
     if (!al->index.size || al->index.index == NULL) return NULL;

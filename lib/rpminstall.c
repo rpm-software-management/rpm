@@ -511,7 +511,7 @@ restart:
 	rpmProblemSet probs = NULL;
 
 #ifdef FANCY_HASH
-	packagesTotal = numRPMS;
+	packagesTotal = numRPMS + numSRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 	rc = rpmRunTransactions(ts, rpmShowProgress,
