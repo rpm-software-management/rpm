@@ -1,21 +1,32 @@
 # This stuff should be reasonably changeable
 
-ifndef RPM_OPT_FLAGS
-RPM_OPT_FLAGS = -O2
-endif
+CC = @CC@
+CPP = @CPP@
+OPTS = @DEFS@
+prefix= @prefix@
+exec_prefix = @exec_prefix@
+srcdir= @srcdir@
+libdir= $(prefix)/lib
+INSTALL= @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+#LIBEFENCE = -lefence
 
 #DEBUG = -g
-OPTS = ${RPM_OPT_FLAGS}
-prefix=$(ROOT)/usr
+installprefix=$(ROOT)
+
 #LIBEFENCE = -lefence
 
 ################################### Leave this stuff alone
 
 ### These are variables meant to be exported
 
+VPATH = $(srcdir)
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
-CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib -Ibuild -I../lib -I../build
-LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build 
+CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS) -I$(srcdir) -I$(srcdir)/lib \
+	-I$(srcdir)/build -I$(srcdir)/misc -I$(srcdir)/.. -I$(srcdir)/../lib \
+	-I$(srcdir)/../build -I$(srcdir)/../misc -I/usr/include
+LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L../lib -L../build -L../misc
 AR = ar r
 RANLIB = ranlib
 VERSION = 2.2.4
@@ -23,21 +34,20 @@ VERSION = 2.2.4
 BINDIR=$(prefix)/bin
 RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))
 MANDIR=$(prefix)/man/man8
-LIBDIR=$(prefix)/lib
+LIBDIR=$(libdir)
 INCDIR=$(prefix)/include/rpm
 ETCDIR=$(ROOT)/etc
 NLSDIR=$(prefix)/lib/locale
 NLSPACKAGE=rpm
 
-.EXPORT_ALL_VARIABLES:
+MDEFINES = CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' CC='$(CC)' 
 
-### End exported variables
 # -----------------------------------------------------------------------
 
-SUBDIRS = lib build tools po
+SUBDIRS = lib build tools po misc
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o
 PROGS = rpm rpm2cpio
-LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a 
+LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
@@ -57,11 +67,21 @@ rpm2cpio: lib/librpm.a rpm2cpio.o
 rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
 	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" -DVERSION=\"$(VERSION)\" -c rpm.c
 
+Makefile: Makefile.in misc/Makefile.in lib/Makefile.in build/Makefile.in \
+          tools/Makefile.in po/Makefile.in config.status
+	sh ./config.status
+
+config.status: configure
+	sh ./config.status --recheck
+
+configure: configure.in
+	cd $(srcdir); autoconf
+
 everything: make-subdirs $(PROGS)
 
 make-subdirs:
 	for d in $(SUBDIRS); do \
-		(cd $$d; $(MAKE)) \
+		(cd $$d; $(MAKE) $(MDEFINES)) \
 		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
 	done && test -z "$$fail"
 
@@ -77,22 +97,22 @@ newtree:
 $(PROGS): $(OBJS)
 
 install: all
-	install -m 755 -o 0 -g 0 -d $(RPMBINDIR)
-	install -m 755 -o 0 -g 0 -d $(BINDIR)
-	install -m 755 -o 0 -g 0 -d $(MANDIR)
-	install -m 755 -o 0 -g 0 -d $(ETCDIR)
-	install -s -m 755 -o 0 -g 0 rpm $(RPMBINDIR)
-	install -m 755 -o 0 -g 0 gendiff $(BINDIR)
-	install -m 755 -o 0 -g 0 find-provides $(BINDIR)
-	install -s -m 755 -o 0 -g 0 rpm2cpio $(BINDIR)
-	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
-	install -m 644 -o 0 -g 0 rpm2cpio.8 $(MANDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(RPMBINDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(BINDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(MANDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(ETCDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(LIBDIR)
+	$(INSTALL) -s -m 755 -o 0 -g 0 rpm $(installprefix)/$(RPMBINDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
+	$(INSTALL) -s -m 755 -o 0 -g 0 rpm2cpio $(installprefix)/$(BINDIR)
+	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
+	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
 	if [ ! -f $(ETCDIR)/rpmrc ]; then \
-		install -m 644 -o 0 -g 0 rpmrc $(ETCDIR)/rpmrc; \
+		$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmrc $(installprefix)/$(ETCDIR)/rpmrc; \
 	fi
-	install -m 644 -o 0 -g 0 usr.lib.rpmrc $(LIBDIR)/rpmrc
-	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
-	(cd po; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
+	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/usr.lib.rpmrc $(installprefix)/$(LIBDIR)/rpmrc
+	(cd lib; make LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
+	(cd po; make NLSDIR=$(installprefix)/$(NLSDIR) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 
 clean:
 	for d in $(SUBDIRS); do \
@@ -113,6 +133,10 @@ co:
 		(cd $$d; co RCS/*,v) ;\
 	done
 
+noconfig:
+	find . -name "Makefile" -exec rm {} \; 
+	rm -f *gz *rpm config.*
+
 archive: 
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
@@ -123,9 +147,9 @@ archive:
 	@tar cSpf - * | (cd /tmp/rpm-$(VERSION); tar xSpf -)
 	@cd /tmp/rpm-$(VERSION); \
 	    make clean; \
+	    make noconfig; \
 	    find . -name "RCS" -exec rm {} \;  ; \
 	    find . -name ".depend" -exec rm {} \;  ; \
-	    rm -f *gz *rpm
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)
 	@cp /tmp/rpm-$(VERSION).tar.gz .
