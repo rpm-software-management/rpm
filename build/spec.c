@@ -49,6 +49,7 @@ static void parseForDocFiles(struct PackageRec *package, char *line);
 static int parseProvides(struct PackageRec *p, char *line);
 static int parseRequires(struct PackageRec *p, char *line);
 static void free_reqprov(struct ReqProv *p);
+static int noSourcePatch(Spec s, char *line, int_32 tag);
 
 /**********************************************************************/
 /*                                                                    */
@@ -185,6 +186,46 @@ char *getFullSource(Spec s, int ispatch, int num)
     } else {
 	return(NULL);
     }
+}
+
+int noSourcePatch(Spec s, char *line, int_32 tag)
+{
+    int_32 array[1024];  /* XXX - max 1024 sources or patches */
+    int_32 num;
+    int count;
+    char *t, *te;
+
+    if (((tag == RPMTAG_NOSOURCE) && s->numNoSource) ||
+	((tag == RPMTAG_NOPATCH) && s->numNoPatch)) {
+	error(RPMERR_BADSPEC, "Only one nosource/nopatch line allowed\n");
+	return(RPMERR_BADSPEC);
+    }
+    
+    count = 0;
+    while ((t = strtok(line, ", \t"))) {
+	num = strtoul(t, &te, 10);
+	if ((*te) || (te == t) || (num == ULONG_MAX)) {
+	    error(RPMERR_BADSPEC, "Bad source/patch number: %s\n", t);
+	    return(RPMERR_BADSPEC);
+	}
+	array[count++] = num;
+	message(MESS_DEBUG, "Skipping source/patch number: %d\n", num);
+	line = NULL;
+    }
+
+    if (count) {
+	if (tag == RPMTAG_NOSOURCE) {
+	    s->numNoSource = count;
+	    s->noSource = malloc(sizeof(int_32) * count);
+	    memcpy(s->noSource, array, sizeof(int_32) * count);
+	} else {
+	    s->numNoPatch = count;
+	    s->noPatch = malloc(sizeof(int_32) * count);
+	    memcpy(s->noPatch, array, sizeof(int_32) * count);
+	}
+    }
+
+    return 0;
 }
 
 /**********************************************************************/
@@ -325,6 +366,8 @@ void freeSpec(Spec s)
 {
     FREE(s->name);
     FREE(s->specfile);
+    FREE(s->noSource);
+    FREE(s->noPatch);
     freeSources(s);
     freeStringBuf(s->prep);
     freeStringBuf(s->build);
@@ -589,6 +632,8 @@ struct preamble_line {
     {RPMTAG_ROOT,         0, "root"},
     {RPMTAG_SOURCE,       0, "source"},
     {RPMTAG_PATCH,        0, "patch"},
+    {RPMTAG_NOSOURCE,     0, "nosource"},
+    {RPMTAG_NOPATCH,      0, "nopatch"},
     {RPMTAG_EXCLUDE,      0, "exclude"},
     {RPMTAG_EXCLUSIVE,    0, "exclusive"},
     {RPMTAG_ICON,         0, "icon"},
@@ -739,6 +784,10 @@ Spec parseSpec(FILE *f, char *specfile)
     spec->doc = newStringBuf();
     spec->clean = newStringBuf();
     spec->packages = NULL;
+    spec->noSource = NULL;
+    spec->noPatch = NULL;
+    spec->numNoSource = 0;
+    spec->numNoPatch = 0;
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
@@ -957,6 +1006,12 @@ Spec parseSpec(FILE *f, char *specfile)
 		      break;
 		  case RPMTAG_ICON:
 		      cur_package->icon = strdup(s);
+		      break;
+		  case RPMTAG_NOPATCH:
+		  case RPMTAG_NOSOURCE:
+		      if (noSourcePatch(spec, s, tag)) {
+			  return NULL;
+		      }
 		      break;
 		  case RPMTAG_SOURCE:
 		  case RPMTAG_PATCH:
