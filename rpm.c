@@ -159,9 +159,10 @@ void printHelp(void) {
     puts(_("                          and remove spec file, sources, patches, and icons."));
     puts(_("    --recompile <source_package>"));
     puts(_("                        - like --rebuild, but don't package"));
-    puts(_("    -K"));
     puts(_("    --resign <pkg>+     - sign a package"));
-    puts(_("    --checksig <pkg>+   - verify PGP signature"));
+    puts(_("    -K"));
+    puts(_("    --checksig <pkg>+   - verify package signature"));
+    puts(_("      --nopgp             - skip any PGP signatures (MD5 only)"));
     puts(_("    --querytags         - list the tags that can be used in a query format"));
 }
 
@@ -222,6 +223,7 @@ int main(int argc, char ** argv) {
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
+    int noPgp = 0;
     char * rcfile = NULL;
     char * queryFormat = NULL;
     char buildChar = ' ';
@@ -251,6 +253,7 @@ int main(int argc, char ** argv) {
 	    { "install", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
 	    { "nodeps", 0, &noDeps, 0 },
+	    { "nopgp", 0, &noPgp, 0 },
 	    { "noscripts", 0, &noScripts, 0 },
 	    { "oldpackage", 0, &oldPackage, 0 },
 	    { "package", 0, 0, 'p' },
@@ -672,7 +675,7 @@ int main(int argc, char ** argv) {
       case MODE_CHECKSIG:
 	if (optind == argc) 
 	    argerror(_("no packages given for signature check"));
-	exit(doCheckSig(argv + optind));
+	exit(doCheckSig(1-noPgp, argv + optind));
 
       case MODE_RESIGN:
 	if (optind == argc) 
