@@ -561,7 +561,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 		if (rc == 1) continue;		/* no matches */
 
 		rpmMessage(RPMMESS_DEBUG, "package %s is now obsolete and will"
-			   "be removed\n", obsoletes[i]);
+			   " be removed\n", obsoletes[i]);
 
 		toRemoveAlloced += matches.count;
 		j = toRemove ? intptr - toRemove : 0; 
