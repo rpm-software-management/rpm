@@ -147,7 +147,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	te = stpcpy(te, n);
 	te = stpcpy( stpcpy(te, "-"), v);
 	te = stpcpy( stpcpy(te, "-"), r);
-	if (tscolor)
+	if (tscolor && a != NULL)
 	    te = stpcpy( stpcpy(te, "."), a);
 /*@=boundswrite@*/
 	goto exit;
