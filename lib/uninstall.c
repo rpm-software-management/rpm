@@ -243,12 +243,14 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	rmmess = "removing";
     }
 
-    rpmMessage(RPMMESS_DEBUG, "running preuninstall script (if any)\n");
+    if (!(flags & RPMUNINSTALL_TEST)) {
+	rpmMessage(RPMMESS_DEBUG, "running preuninstall script (if any)\n");
 
-    if (runScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
-		 flags & RPMUNINSTALL_NOSCRIPTS, 0)) {
-	headerFree(h);
-	return 1;
+	if (runScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
+		     flags & RPMUNINSTALL_NOSCRIPTS, 0)) {
+	    headerFree(h);
+	    return 1;
+	}
     }
     
     rpmMessage(RPMMESS_DEBUG, "%s files test = %d\n", rmmess, flags & RPMUNINSTALL_TEST);
@@ -304,9 +306,11 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	free(fileMd5List);
     }
 
-    rpmMessage(RPMMESS_DEBUG, "running postuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
-		flags & RPMUNINSTALL_NOSCRIPTS, 0);
+    if (!(flags & RPMUNINSTALL_TEST)) {
+	rpmMessage(RPMMESS_DEBUG, "running postuninstall script (if any)\n");
+	runScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
+		    flags & RPMUNINSTALL_NOSCRIPTS, 0);
+    }
 
     headerFree(h);
 
