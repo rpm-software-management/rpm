@@ -149,7 +149,7 @@ swrite(int fd, const void *buf, size_t n)
 		default:
 			n -= rv;
 			buf = ((const char *)buf) + rv;
-			break;
+			/*@switchbreak@*/ break;
 		}
 	while (n > 0);
 	return rn;
@@ -176,7 +176,7 @@ sread(int fd, void *buf, size_t n)
 		default:
 			n -= rv;
 			buf = ((char *)buf) + rv;
-			break;
+			/*@switchbreak@*/ break;
 		}
 	while (n > 0);
 	return rn;
@@ -354,7 +354,7 @@ uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
 
 		execvp(compr[method].argv[0],
 		       (char *const *)compr[method].argv);
-		exit(1);
+		exit(EXIT_FAILURE);
 		/*@notreached@*/ break;
 	case -1:
 		file_error(ms, errno, "could not fork");
@@ -368,16 +368,16 @@ uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
 		case 0: /* child */
 			(void)close(fdout[0]);
 			if (swrite(fdin[1], old, n) != n)
-				exit(1);
-			exit(0);
-			/*@notreached@*/ break;
+				exit(EXIT_FAILURE);
+			exit(EXIT_SUCCESS);
+			/*@notreached@*/ /*@innerbreak@*/ break;
 
 		case -1:
-			exit(1);
-			/*@notreached@*/ break;
+			exit(EXIT_FAILURE);
+			/*@notreached@*/ /*@innerbreak@*/ break;
 
 		default:  /* parent */
-			break;
+			/*@innerbreak@*/ break;
 		}
 		(void) close(fdin[1]);
 		fdin[1] = -1;

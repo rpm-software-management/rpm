@@ -273,11 +273,11 @@ dophn_core(struct magic_set *ms, int class, int swap, int fd, off_t off,
 		offset = 0;
 		for (;;) {
 			if (offset >= (size_t)bufsize)
-				break;
+				/*@innerbreak@*/ break;
 			offset = donote(ms, nbuf, offset, (size_t)bufsize,
 			    class, swap, 4);
 			if (offset == 0)
-				break;
+				/*@innerbreak@*/ break;
 
 		}
 	}
@@ -595,7 +595,7 @@ donote(struct magic_set *ms, unsigned char *nbuf, size_t offset, size_t size,
 					if (j == 0)
 						goto tryanother;
 					else
-						break;
+						/*@innerbreak@*/ break;
 				} else {
 					/*
 					 * A nonprintable
@@ -700,10 +700,10 @@ dophn_exec(struct magic_set *ms, int class, int swap, int fd, off_t off,
 		switch (ph_type) {
 		case PT_DYNAMIC:
 			linking_style = "dynamically";
-			break;
+			/*@switchbreak@*/ break;
 		case PT_INTERP:
 			shared_libraries = " (uses shared libs)";
-			break;
+			/*@switchbreak@*/ break;
 		case PT_NOTE:
 			if ((align = ph_align) & 0x80000000) {
 				if (file_printf(ms, 
@@ -730,17 +730,17 @@ dophn_exec(struct magic_set *ms, int class, int swap, int fd, off_t off,
 			offset = 0;
 			for (;;) {
 				if (offset >= (size_t)bufsize)
-					break;
+					/*@innerbreak@*/ break;
 				offset = donote(ms, nbuf, offset,
 				    (size_t)bufsize, class, swap, align);
 				if (offset == 0)
-					break;
+					/*@innerbreak@*/ break;
 			}
 			if (lseek(fd, savedoffset, SEEK_SET) == (off_t)-1) {
 				file_badseek(ms);
 				return -1;
 			}
-			break;
+			/*@switchbreak@*/ break;
 		}
 	}
 	if (file_printf(ms, ", %s linked%s", linking_style, shared_libraries)

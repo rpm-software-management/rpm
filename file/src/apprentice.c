@@ -667,14 +667,14 @@ parse(struct magic_set *ms, struct magic **magicp, uint32_t *nmagicp, char *l,
 				switch (*l) {
 				case CHAR_IGNORE_LOWERCASE:
 					m->mask |= STRING_IGNORE_LOWERCASE;
-					break;
+					/*@switchbreak@*/ break;
 				case CHAR_COMPACT_BLANK:
 					m->mask |= STRING_COMPACT_BLANK;
-					break;
+					/*@switchbreak@*/ break;
 				case CHAR_COMPACT_OPTIONAL_BLANK:
 					m->mask |=
 					    STRING_COMPACT_OPTIONAL_BLANK;
-					break;
+					/*@switchbreak@*/ break;
 				default:
 					if (ms->flags & MAGIC_CHECK)
 						file_magwarn(ms,
@@ -881,31 +881,31 @@ getstr(struct magic_set *ms, char *s, char *p, int plen, int *slen)
 
 			default:
 				*p++ = (char) c;
-				break;
+				/*@switchbreak@*/ break;
 
 			case 'n':
 				*p++ = '\n';
-				break;
+				/*@switchbreak@*/ break;
 
 			case 'r':
 				*p++ = '\r';
-				break;
+				/*@switchbreak@*/ break;
 
 			case 'b':
 				*p++ = '\b';
-				break;
+				/*@switchbreak@*/ break;
 
 			case 't':
 				*p++ = '\t';
-				break;
+				/*@switchbreak@*/ break;
 
 			case 'f':
 				*p++ = '\f';
-				break;
+				/*@switchbreak@*/ break;
 
 			case 'v':
 				*p++ = '\v';
-				break;
+				/*@switchbreak@*/ break;
 
 			/* \ and up to 3 octal digits */
 			case '0':
@@ -929,7 +929,7 @@ getstr(struct magic_set *ms, char *s, char *p, int plen, int *slen)
 				else
 					--s;
 				*p++ = (char)val;
-				break;
+				/*@switchbreak@*/ break;
 
 			/* \x and up to 2 hex digits */
 			case 'x':
@@ -945,7 +945,7 @@ getstr(struct magic_set *ms, char *s, char *p, int plen, int *slen)
 				} else
 					--s;
 				*p++ = (char)val;
-				break;
+				/*@switchbreak@*/ break;
 			}
 		} else
 			*p++ = (char)c;
@@ -999,31 +999,31 @@ file_showstr(FILE *fp, const char *s, size_t len)
 			
 			case '\n':
 				(void) fputc('n', fp);
-				break;
+				/*@switchbreak@*/ break;
 
 			case '\r':
 				(void) fputc('r', fp);
-				break;
+				/*@switchbreak@*/ break;
 
 			case '\b':
 				(void) fputc('b', fp);
-				break;
+				/*@switchbreak@*/ break;
 
 			case '\t':
 				(void) fputc('t', fp);
-				break;
+				/*@switchbreak@*/ break;
 
 			case '\f':
 				(void) fputc('f', fp);
-				break;
+				/*@switchbreak@*/ break;
 
 			case '\v':
 				(void) fputc('v', fp);
-				break;
+				/*@switchbreak@*/ break;
 
 			default:
 				(void) fprintf(fp, "%.3o", c & 0377);
-				break;
+				/*@switchbreak@*/ break;
 			}
 		}
 	}

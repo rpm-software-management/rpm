@@ -4,7 +4,7 @@ BUILT_SOURCES = listobjs
 EXTRA_DIST = test.c
 
 pkglibdir =  @prefix@/lib/rpm
-#MAGIC    = $(pkglibdir)/magic
+MAGIC    = $(pkglibdir)/magic
 
 AM_CPPFLAGS = -DMAGIC='"$(MAGIC)"'
 

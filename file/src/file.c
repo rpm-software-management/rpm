@@ -226,56 +226,56 @@ main(int argc, char *argv[])
 		case 0 :
 			if (longindex == 1)
 				help();
-			break;
+			/*@switchbreak@*/ break;
 #endif
 		case 'b':
 			++bflag;
-			break;
+			/*@switchbreak@*/ break;
 		case 'c':
 			action = FILE_CHECK;
-			break;
+			/*@switchbreak@*/ break;
 		case 'C':
 			action = FILE_COMPILE;
-			break;
+			/*@switchbreak@*/ break;
 		case 'd':
 			flags |= MAGIC_DEBUG|MAGIC_CHECK;
-			break;
+			/*@switchbreak@*/ break;
 		case 'f':
 			if(action)
 				usage();
 			load(magicfile, flags);
 			unwrap(optarg);
 			++didsomefiles;
-			break;
+			/*@switchbreak@*/ break;
 		case 'F':
 			separator = optarg;
-			break;
+			/*@switchbreak@*/ break;
 		case 'i':
 			flags |= MAGIC_MIME;
-			break;
+			/*@switchbreak@*/ break;
 		case 'k':
 			flags |= MAGIC_CONTINUE;
-			break;
+			/*@switchbreak@*/ break;
 		case 'm':
 			magicfile = optarg;
-			break;
+			/*@switchbreak@*/ break;
 		case 'n':
 			++nobuffer;
-			break;
+			/*@switchbreak@*/ break;
 		case 'N':
 			++nopad;
-			break;
+			/*@switchbreak@*/ break;
 #if defined(HAVE_UTIME) || defined(HAVE_UTIMES)
 		case 'p':
 			flags |= MAGIC_PRESERVE_ATIME;
-			break;
+			/*@switchbreak@*/ break;
 #endif
 		case 'r':
 			flags |= MAGIC_RAW;
-			break;
+			/*@switchbreak@*/ break;
 		case 's':
 			flags |= MAGIC_DEVICES;
-			break;
+			/*@switchbreak@*/ break;
 		case 'v':
 			(void) fprintf(stdout, "%s-%d.%.2d\n", progname,
 				       FILE_VERSION_MAJOR, patchlevel);
@@ -284,16 +284,16 @@ main(int argc, char *argv[])
 			return 1;
 		case 'z':
 			flags |= MAGIC_COMPRESS;
-			break;
+			/*@switchbreak@*/ break;
 #ifdef S_IFLNK
 		case 'L':
 			flags |= MAGIC_SYMLINK;
-			break;
+			/*@switchbreak@*/ break;
 #endif
 		case '?':
 		default:
 			errflg++;
-			break;
+			/*@switchbreak@*/ break;
 		}
 
 	if (errflg) {
@@ -352,12 +352,12 @@ load(/*@unused@*/ const char *m, int flags)
 	magic = magic_open(flags);
 	if (magic == NULL) {
 		(void)fprintf(stderr, "%s: %s\n", progname, strerror(errno));
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if (magic_load(magic, magicfile) == -1) {
 		(void)fprintf(stderr, "%s: %s\n",
 		    progname, magic_error(magic));
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -378,7 +378,7 @@ unwrap(char *fn)
 		if ((f = fopen(fn, "r")) == NULL) {
 			(void)fprintf(stderr, "%s: Cannot open `%s' (%s).\n",
 			    progname, fn, strerror(errno));
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 
 		while (fgets(buf, MAXPATHLEN, f) != NULL) {
@@ -517,7 +517,7 @@ usage(void)
 #ifdef HAVE_GETOPT_LONG
 	(void)fputs("Try `file --help' for more information.\n", stderr);
 #endif
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 #ifdef HAVE_GETOPT_LONG
@@ -549,6 +549,6 @@ help(void)
 "      --help                 display this help and exit\n"
 "      --version              output version information and exit\n"
 );
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 #endif

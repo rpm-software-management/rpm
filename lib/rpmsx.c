@@ -160,13 +160,12 @@ static int rpmsxAdd(rpmsx sx, const char ** bpp)
     }
     sxs = sx->sxs + sx->nsxs;
     sxs->len = stem_len;
-#ifdef  HAVE_STRNDUP
+#ifdef HAVE_STRNDUP
 /*@i@*/    sxs->stem = strndup(*bpp, stem_len);
 #else
     sxs->stem = xmalloc(stem_len+1);
     strncpy(sxs->stem, *bpp, stem_len);
 #endif
-
     sx->nsxs++;
     *bpp += stem_len;
     return sx->nsxs - 1;

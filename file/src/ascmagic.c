@@ -208,7 +208,7 @@ file_ascmagic(struct magic_set *ms, const unsigned char *buf, size_t nbytes)
 		 */
 		for (end = i + 1; end < nbytes; end++)
 			if (ISSPC(ubuf[end]))
-				break;
+				/*@innerbreak@*/ break;
 
 		/*
 		 * compare the word thus isolated against the token list

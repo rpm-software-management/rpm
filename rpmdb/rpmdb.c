@@ -931,8 +931,8 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 	    break;
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
-	case URL_IS_HKP:
 	case URL_IS_FTP:
+	case URL_IS_HKP:
 	case URL_IS_DASH:
 	default:
 	    db->db_root = rpmGetPath(_DB_ROOT, NULL);
@@ -3490,8 +3490,8 @@ static int rpmioFileExists(const char * urlfn)
     switch (urltype) {
     case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	if (Stat(fn, &buf)) {

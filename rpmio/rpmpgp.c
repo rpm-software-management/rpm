@@ -378,7 +378,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	pgpPrtVal("    ", pgpSubTypeTbl, (p[0]&(~PGPSUBTYPE_CRITICAL)));
 	if (p[0] & PGPSUBTYPE_CRITICAL)
 	    if (_print)
-	    fprintf(stderr, " *CRITICAL*");
+		fprintf(stderr, " *CRITICAL*");
 	switch (*p) {
 	case PGPSUBTYPE_PREFER_SYMKEY:	/* preferred symmetric algorithms */
 	    for (i = 1; i < plen; i++)

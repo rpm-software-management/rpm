@@ -673,7 +673,7 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
  */
 const char *const ftpStrerror(int errorNumber)
 {
-  switch (errorNumber) {
+    switch (errorNumber) {
     case 0:
 	return _("Success");
 
@@ -723,7 +723,7 @@ const char *const ftpStrerror(int errorNumber)
     case FTPERR_UNKNOWN:
     default:
 	return _("Unknown or unexpected error");
-  }
+    }
 }
 
 const char *urlStrerror(const char *url)

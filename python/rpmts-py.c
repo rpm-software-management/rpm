@@ -1073,6 +1073,8 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 if (_rpmts_debug)
 fprintf(stderr, "\t%p = fdDup(%d)\n", fd, fdno);
 
+	fcntl(Fileno(fd), F_SETFD, FD_CLOEXEC);
+
 	return fd;
     } else
     if (what == RPMCALLBACK_INST_CLOSE_FILE) {

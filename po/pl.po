@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-17 19:28-0500\n"
+"POT-Creation-Date: 2005-01-23 15:29-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -3047,27 +3047,27 @@ msgstr "Nie mo¿na odczytaæ %s, HOME jest zbyt du¿e.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s.\n"
 
-#: lib/rpmsx.c:375
+#: lib/rpmsx.c:374
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:392
+#: lib/rpmsx.c:391
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:425
+#: lib/rpmsx.c:424
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:440 lib/rpmsx.c:455
+#: lib/rpmsx.c:439 lib/rpmsx.c:454
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:468
+#: lib/rpmsx.c:467
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  nieprawid³owy kontekst %s w lini numer %d\n"
