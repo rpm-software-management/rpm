@@ -34,7 +34,7 @@ typedef struct _value
 {
   enum { VALUE_TYPE_INTEGER, VALUE_TYPE_STRING } type;
   union {
-    char *s;
+    const char *s;
     int i;
   } data;
 } *Value;
@@ -62,7 +62,7 @@ static Value valueMakeString(/*@only@*/ const char *s)
 static void valueFree( /*@only@*/ Value v)
 {
   if (v) {
-    if (v->type == VALUE_TYPE_STRING) free(v->data.s);
+    if (v->type == VALUE_TYPE_STRING) xfree(v->data.s);
     free(v);
   }
 }
@@ -325,7 +325,7 @@ static Value doPrimary(ParseState state)
     break;
 
   case TOK_IDENTIFIER: {
-    char *name = state->tokenValue->data.s;
+    const char *name = state->tokenValue->data.s;
 
     v = valueMakeString( rpmExpand(name, NULL) );
     if (rdToken(state))
@@ -528,7 +528,9 @@ static Value doRelational(ParseState state)
       valueFree(v1);
       v1 = valueMakeInteger(r);
     } else {
-      char *s1 = v1->data.s, *s2 = v2->data.s, r = 0;
+      const char * s1 = v1->data.s;
+      const char * s2 = v2->data.s;
+      int r = 0;
       switch (op) {
       case TOK_EQ:
 	r = (strcmp(s1,s2) == 0);
