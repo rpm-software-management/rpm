@@ -131,6 +131,9 @@ static struct poptOption optionsTable[] = {
  { "httpport", '\0', POPT_ARG_STRING, &httpPort, 0,	NULL, NULL},
  { "httpproxy", '\0', POPT_ARG_STRING, &httpProxy, 0,	NULL, NULL},
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
+ { "i18ndomains", '\0', POPT_ARG_STRING, &i18ndomains, 0,
+	N_("i18n catalogue domains to search for package text"),
+	"DOMAIN1[:DOMAIN2...]" },
  { "ignorearch", '\0', 0, &ignoreArch, 0,	NULL, NULL},
  { "ignoreos", '\0', 0, &ignoreOs, 0,		NULL, NULL},
  { "ignoresize", '\0', 0, &ignoreSize, 0,	NULL, NULL},
@@ -615,13 +618,14 @@ int main(int argc, const char ** argv)
     showrc = 0;
     signIt = 0;
     showVersion = 0;
+    specedit = 0;
     test = 0;
     _url_debug = 0;
 
     /* XXX Eliminate query linkage loop */
     parseSpecVec = parseSpec;
     freeSpecVec = freeSpec;
-    specedit = NULL;
+    i18ndomains = NULL;
 
     /* set up the correct locale */
     setlocale(LC_ALL, "" );

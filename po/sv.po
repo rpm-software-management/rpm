@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.66 $
+# $Revision: 1.67 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-02-22 13:20-0500\n"
+"POT-Creation-Date: 2000-02-22 20:44-0500\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2156,7 +2156,7 @@ msgstr ""
 "problemet.\n"
 
 #: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
-#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
+#: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 

@@ -7,7 +7,7 @@
 #include "rpmbuild.h"
 #include "buildio.h"
 
-extern char *specedit;
+extern int specedit;
 extern MacroContext rpmGlobalMacroContext;
 
 #define SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -354,13 +354,13 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 
 static inline struct speclines * newSl(void)
 {
-    struct speclines *sl;
-    if (specedit == NULL)
-	return NULL;
-    sl = xmalloc(sizeof(struct speclines));
-    sl->sl_lines = NULL;
-    sl->sl_nalloc = 0;
-    sl->sl_nlines = 0;
+    struct speclines *sl = NULL;
+    if (specedit) {
+	sl = xmalloc(sizeof(struct speclines));
+	sl->sl_lines = NULL;
+	sl->sl_nalloc = 0;
+	sl->sl_nlines = 0;
+    }
     return sl;
 }
 
@@ -377,13 +377,13 @@ static inline void freeSl(/*@only@*/struct speclines *sl)
 
 static inline struct spectags * newSt(void)
 {
-    struct spectags *st;
-    if (specedit == NULL)
-	return NULL;
-    st = xmalloc(sizeof(struct spectags));
-    st->st_t = NULL;
-    st->st_nalloc = 0;
-    st->st_ntags = 0;
+    struct spectags *st = NULL;
+    if (specedit) {
+	st = xmalloc(sizeof(struct spectags));
+	st->st_t = NULL;
+	st->st_nalloc = 0;
+	st->st_ntags = 0;
+    }
     return st;
 }
 

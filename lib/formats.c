@@ -352,17 +352,15 @@ static int filenamesTag(Header h, /*@out@*/ int_32 * type,
 
 /* I18N look aside diversions */
 
-#define	ENABLE_I18N_LOOKASIDE
-#ifdef	ENABLE_I18N_LOOKASIDE
+char * i18ndomains = NULL;
+
+int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
+static const char * language = "LANGUAGE";
+
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 {
-#ifdef	NOTYET
-    const char * rpm_query_domains = "specs:powertools";
-#else
-    const char * rpm_query_domains = NULL;
-#endif
     int rc;
 
     *type = RPM_STRING_TYPE;
@@ -370,28 +368,41 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
     *count = 0;
     *freeData = 0;
 
-    if (rpm_query_domains) {
+    if (i18ndomains) {
 	char * dstring, *domain, *de;
-	const char * locale;
-	char * msgkey;
+	const char * langval;
+	const char * msgkey;
 	const char * msgid;
-	const char * n;
-	const char * t = tagName(tag);
 
-	headerNVR(h, &n, NULL, NULL);
-	msgkey = alloca(strlen(n) + strlen(t) + sizeof("()"));
-	sprintf(msgkey, "%s(%s)", n, t);
+	{   const char * tn = tagName(tag);
+	    const char * n;
+	    char * mk;
+	    headerNVR(h, &n, NULL, NULL);
+	    mk = alloca(strlen(n) + strlen(tn) + sizeof("()"));
+	    sprintf(mk, "%s(%s)", n, tn);
+	    msgkey = mk;
+	}
+
+	/* change to en_US for msgkey -> msgid resolution */
+	langval = getenv(language);
+	setenv(language, "en_US", 1);
+	++_nl_msg_cat_cntr;
 
 	msgid = NULL;
-	locale = setlocale(LC_MESSAGES, "C");
-	dstring = xstrdup(rpm_query_domains);
+	dstring = xstrdup(i18ndomains);
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
 	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
 	    if (msgid != msgkey) break;
 	}
-	(void) setlocale(LC_MESSAGES, locale);
+
+	/* restore previous environment for msgid -> msgstr resolution */
+	if (langval)
+	    setenv(language, langval, 1);
+	else
+	    unsetenv(language);
+	++_nl_msg_cat_cntr;
 
 	if (domain && msgid) {
 	    *data = xstrdup(/*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/);
@@ -399,7 +410,9 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	    *freeData = 1;
 	}
 	xfree(dstring);
-	return (*data ? 0 : 1);
+	if (*data) {
+	    return 0;
+	}
     }
 
     rc = headerGetEntry(h, tag, type, (void **)data, count);
@@ -436,14 +449,11 @@ static int groupTag(Header h, /*@out@*/ int_32 * type,
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
-#endif	/* ENABLE_I18N_LOOKASIDE */
 
 const struct headerSprintfExtension rpmHeaderFormats[] = {
-#ifdef	ENABLE_I18N_LOOKASIDE
     { HEADER_EXT_TAG, "RPMTAG_GROUP", { groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION", { descriptionTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY", { summaryTag } },
-#endif	/* ENABLE_I18N_LOOKASIDE */
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES", { filenamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },

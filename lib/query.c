@@ -7,6 +7,8 @@
 #include "rpmbuild.h"
 #include <rpmurl.h>
 
+int specedit = 0;
+
 /* ======================================================================== */
 static char * permsString(int mode)
 {
@@ -131,11 +133,11 @@ static void printFileInfo(FILE *fp, const char * name,
 static int queryHeader(FILE *fp, Header h, const char * chptr)
 {
     char * str;
-    const char * error;
+    const char * errstr;
 
-    str = headerSprintf(h, chptr, rpmTagTable, rpmHeaderFormats, &error);
-    if (!str) {
-	fprintf(stderr, _("error in format: %s\n"), error);
+    str = headerSprintf(h, chptr, rpmTagTable, rpmHeaderFormats, &errstr);
+    if (str == NULL) {
+	fprintf(stderr, _("error in format: %s\n"), errstr);
 	return 1;
     }
 
@@ -329,28 +331,29 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 static void
 printNewSpecfile(Spec spec)
 {
+    Header h = spec->packages->header;
     struct speclines *sl = spec->sl;
     struct spectags *st = spec->st;
-    char buf[8192];
+    const char * msgstr = NULL;
     int i, j;
 
     if (sl == NULL || st == NULL)
 	return;
 
     for (i = 0; i < st->st_ntags; i++) {
-	char *msgstr;
-	struct spectag *t;
-	t = st->st_t + i;
+	struct spectag * t = st->st_t + i;
+	const char * tn = tagName(t->t_tag);
+	const char * errstr;
+	char fmt[128];
 
-	/* XXX Summary tag often precedes name, so build msgid now. */
-	if (t->t_msgid == NULL) {
-	    char *n;
-	    headerGetEntry(spec->packages->header, RPMTAG_NAME, NULL,
-		(void **) &n, NULL);
-	    sprintf(buf, "%s(%s)", n, tagName(t->t_tag));
-	    t->t_msgid = xstrdup(buf);
+	fmt[0] = '\0';
+	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}\n");
+	if (msgstr) xfree(msgstr);
+	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	if (msgstr == NULL) {
+	    fprintf(stderr, _("can't query %s: %s\n"), tn, errstr);
+	    return;
 	}
-	msgstr = xstrdup(/*@-unrecog@*/ dgettext(specedit, t->t_msgid) /*@=unrecog@*/);
 
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
@@ -359,10 +362,10 @@ printNewSpecfile(Spec spec)
 	    sl->sl_lines[t->t_startx] = NULL;
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
 		continue;
-	    sprintf(buf, "%s: %s\n",
-		((t->t_tag == RPMTAG_GROUP) ? "Group" : "Summary"),
-		msgstr);
-	    sl->sl_lines[t->t_startx] = xstrdup(buf);
+	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
+		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
+		sl->sl_lines[t->t_startx] = buf;
+	    }
 	    break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
@@ -380,6 +383,7 @@ printNewSpecfile(Spec spec)
 	    break;
 	}
     }
+    if (msgstr) xfree(msgstr);
 
     for (i = 0; i < sl->sl_nlines; i++) {
 	if (sl->sl_lines[i] == NULL)
@@ -447,7 +451,6 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 		const char *buildRoot, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force) = NULL;
 void	(*freeSpecVec) (Spec spec) = NULL;
-char	*specedit = NULL;
 
 int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage)
@@ -545,7 +548,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    break;
 	}
 
-	if (specedit != NULL) {
+	if (specedit) {
 	    printNewSpecfile(spec);
 	    freeSpecVec(spec);
 	    retcode = 0;
@@ -804,9 +807,8 @@ struct poptOption rpmQueryPoptTable[] = {
 		POPT_QUERYFORMAT, NULL, NULL },
 	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
 		N_("use the following query format"), "QUERYFORMAT" },
-	{ "specedit", '\0', POPT_ARG_STRING, &specedit, 0,
-		N_("substitute i18n sections from the following catalogue"),
-			"METACATALOGUE" },
+	{ "specedit", '\0', POPT_ARG_VAL, &specedit, -1,
+		N_("substitute i18n sections into spec file"), NULL },
 	{ "state", 's', 0, 0, 's',
 		N_("display the states of the listed files"), NULL },
 	{ "verbose", 'v', 0, 0, 'v',

@@ -693,7 +693,8 @@ int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage);
 #define QUERY_FOR_DUMPFILES     (1 << 8)
 
 /*@observer@*/ const char *const tagName(int tag);
-extern char *specedit;
+extern int specedit;
+extern char * i18ndomains;
 extern struct poptOption rpmQueryPoptTable[];
 
 void rpmDisplayQueryTags(FILE * f);

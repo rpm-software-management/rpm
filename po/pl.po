@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-02-22 13:20-0500\n"
+"POT-Creation-Date: 2000-02-22 20:44-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2169,7 +2169,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
-#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
+#: lib/header.c:2189 lib/header.c:2205 lib/header.c:2224
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
