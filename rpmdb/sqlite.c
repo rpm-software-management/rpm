@@ -1211,8 +1211,10 @@ fprintf(stderr, "\tcget(%s) found data 0x%x (%d)\n", dbi->dbi_subfile,
 	}
     }
 
-    if ( rc == DB_NOTFOUND )
-	    fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
+    if (rc == DB_NOTFOUND) {
+if (_debug)
+fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
+    }
 
     /* If we retrieved the 0x0 record.. clear so next pass we'll get them all.. */
     if (scp->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES)
