@@ -74,9 +74,6 @@ struct _dbiIndex rpmdbi[] = {
    right area w/o a linear search through the database. */
 
 struct rpmdb_s {
-#ifdef	DYING
-    FD_t pkgs;
-#endif
     dbiIndex _dbi[RPMDBI_MAX];
 #ifdef	DYING
 #define	nameIndex		_dbi[RPMDBI_NAME]
@@ -167,78 +164,6 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 
     db = newRpmdb();
 
-#ifdef	DYING
-{   int _use_falloc = rpmExpandNumeric("%{_db3_use_falloc}");
-    char * filename;
-    int i;
-
-    i = strlen(dbpath);
-    if (dbpath[i - 1] != '/') {
-	filename = alloca(i + 2);
-	strcpy(filename, dbpath);
-	filename[i] = '/';
-	filename[i + 1] = '\0';
-	dbpath = filename;
-    }
-    
-    filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
-    *filename = '\0';
-
-    switch (urlIsURL(dbpath)) {
-    case URL_IS_UNKNOWN:
-	strcat(filename, prefix); 
-	break;
-    default:
-	break;
-    }
-    strcat(filename, dbpath);
-    (void)rpmCleanPath(filename);
-
-    rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
-	mode, filename);
-
-    if (filename[strlen(filename)-1] != '/')
-	strcat(filename, "/");
-    strcat(filename, "packages.rpm");
-
-  if (_use_falloc || rpmfileexists(filename)) {
-    if (!justcheck || !rpmfileexists(filename)) {
-	struct flock lockinfo;
-	db->pkgs = fadOpen(filename, mode, perms);
-	if (Ferror(db->pkgs)) {
-	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), filename,
-		Fstrerror(db->pkgs));
-	    return 1;
-	}
-
-	/* try and get a lock - this is released by the kernel when we close
-	   the file */
-	lockinfo.l_whence = 0;
-	lockinfo.l_start = 0;
-	lockinfo.l_len = 0;
-	
-	if (mode & O_RDWR) {
-	    lockinfo.l_type = F_WRLCK;
-	    if (Fcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
-		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
-			 _("exclusive"));
-		rpmdbClose(db);
-		return 1;
-	    } 
-	} else {
-	    lockinfo.l_type = F_RDLCK;
-	    if (Fcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
-		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
-			 _("shared"));
-		rpmdbClose(db);
-		return 1;
-	    } 
-	}
-    }
-  }
-}
-#endif
-
     {	int dbix;
 
 	rc = 0;
@@ -249,9 +174,6 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 
 	    rc = openDbFile(prefix, dbpath, dbiTemplate, justcheck, mode,
 			&db->_dbi[dbix]);
-#ifdef	DYING
-	    if (dbix == 0) rc = 0;	/* XXX HACK for non-db3 */
-#endif
 	    if (rc)
 		continue;
 
@@ -338,138 +260,53 @@ void rpmdbClose (rpmdb db)
     	dbiCloseIndex(db->_dbi[dbix]);
     	db->_dbi[dbix] = NULL;
     }
-#ifdef DYING
-    if (db->pkgs != NULL) Fclose(db->pkgs);
-#endif
     free(db);
 }
 
 int rpmdbFirstRecNum(rpmdb db) {
-#ifdef DYING
-    if (db->pkgs == NULL) {
-#endif
-	dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
-	unsigned int offset = 0;
-	void * keyp = &offset;
-	size_t keylen = sizeof(offset);
-	int rc;
+    dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
+    unsigned int offset = 0;
+    void * keyp = &offset;
+    size_t keylen = sizeof(offset);
+    int rc;
 
-	/* XXX skip over instance 0 */
-	do {
-	    rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
-	    if (rc)
-		return 0;
-	    memcpy(&offset, keyp, sizeof(offset));
-	} while (offset == 0);
-	return offset;
-#ifdef DYING
-    }
-
-    return fadFirstOffset(db->pkgs);
-#endif
+    /* XXX skip over instance 0 */
+    do {
+	rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
+	if (rc)
+	    return 0;
+	memcpy(&offset, keyp, sizeof(offset));
+    } while (offset == 0);
+    return offset;
 }
 
 int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     /* 0 at end */
-#ifdef DYING
-    if (db->pkgs == NULL) {
-#endif
-	dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
-	void * keyp = &lastOffset;
-	size_t keylen = sizeof(lastOffset);
-	int rc;
+    dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
+    void * keyp = &lastOffset;
+    size_t keylen = sizeof(lastOffset);
+    int rc;
 
-	rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
-	if (rc)
-	    return 0;
-	memcpy(&lastOffset, keyp, sizeof(lastOffset));
-	return lastOffset;
-#ifdef DYING
-    }
-
-    return fadNextOffset(db->pkgs, lastOffset);
-#endif
+    rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
+    if (rc)
+	return 0;
+    memcpy(&lastOffset, keyp, sizeof(lastOffset));
+    return lastOffset;
 }
-
-#ifdef DYING
-static Header doGetRecord(rpmdb db, unsigned int offset, int pristine)
-{
-    Header h;
-    const char ** fileNames;
-    int fileCount = 0;
-    int i;
-
-    (void)Fseek(db->pkgs, offset, SEEK_SET);
-
-    h = headerRead(db->pkgs, HEADER_MAGIC_NO);
-
-    if (pristine || h == NULL) return h;
-
-    /* the RPM used to build much of RH 5.1 could produce packages whose
-       file lists did not have leading /'s. Now is a good time to fix
-       that */
-
-    /* If this tag isn't present, either no files are in the package or
-       we're dealing with a package that has just the compressed file name
-       list */
-    if (!headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
-			   (void **) &fileNames, &fileCount)) return h;
-
-    for (i = 0; i < fileCount; i++) 
-	if (*fileNames[i] != '/') break;
-
-    if (i == fileCount) {
-	free(fileNames);
-    } else {	/* bad header -- let's clean it up */
-	const char ** newFileNames = alloca(sizeof(*newFileNames) * fileCount);
-	for (i = 0; i < fileCount; i++) {
-	    char * newFileName = alloca(strlen(fileNames[i]) + 2);
-	    if (*fileNames[i] != '/') {
-		newFileName[0] = '/';
-		newFileName[1] = '\0';
-	    } else
-		newFileName[0] = '\0';
-	    strcat(newFileName, fileNames[i]);
-	    newFileNames[i] = newFileName;
-	}
-
-	free(fileNames);
-
-	headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
-			  newFileNames, fileCount);
-    }
-
-    /* The file list was moved to a more compressed format which not
-       only saves memory (nice), but gives fingerprinting a nice, fat
-       speed boost (very nice). Go ahead and convert old headers to
-       the new style (this is a noop for new headers) */
-    compressFilelist(h);
-
-    return h;
-}
-#endif
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 {
-#ifdef	DYING
-    if (db->pkgs == NULL) {
-#endif
-	dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
-	void * uh;
-	size_t uhlen;
-	void * keyp = &offset;
-	size_t keylen = sizeof(offset);
-	int rc;
+    dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
+    void * uh;
+    size_t uhlen;
+    void * keyp = &offset;
+    size_t keylen = sizeof(offset);
+    int rc;
 
-	rc = (*dbi->dbi_vec->get) (dbi, keyp, keylen, &uh, &uhlen);
-	if (rc)
-	    return NULL;
-	return headerLoad(uh);
-#ifdef	DYING
-    }
-
-    return doGetRecord(db, offset, 0);
-#endif
+    rc = (*dbi->dbi_vec->get) (dbi, keyp, keylen, &uh, &uhlen);
+    if (rc)
+	return NULL;
+    return headerLoad(uh);
 }
 
 int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
@@ -747,10 +584,6 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	dbiFreeIndexRecordInstance(rec);
     }
 
-#ifdef	DYING
-    fadFree(db->pkgs, offset);
-#endif
-
     unblockSignals();
 
     headerFree(h);
@@ -814,9 +647,6 @@ int rpmdbAdd(rpmdb db, Header h)
 
     blockSignals();
 
-#ifdef DYING
-    if (db->pkgs == NULL)
-#endif
     {
 	unsigned int firstkey = 0;
 	void * keyp = &firstkey;
@@ -846,22 +676,6 @@ int rpmdbAdd(rpmdb db, Header h)
 	}
 	rc = (*dbi->dbi_vec->put) (dbi, keyp, keylen, datap, datalen);
     }
-#ifdef	DYING
-    else {
-	int newSize;
-	newSize = headerSizeof(h, HEADER_MAGIC_NO);
-	offset = fadAlloc(db->pkgs, newSize);
-	if (offset == 0) {
-	    rc = 1;
-	} else {
-	    (void)Fseek(db->pkgs, offset, SEEK_SET);
-	    fdSetContentLength(db->pkgs, newSize);
-	    rc = headerWrite(db->pkgs, h, HEADER_MAGIC_NO);
-	    fdSetContentLength(db->pkgs, -1);
-	}
-
-    }
-#endif
 
     if (rc) {
 	rpmError(RPMERR_DBCORRUPT, _("cannot allocate new instance in database"));
@@ -976,46 +790,11 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 {
     int rc = 0;
 
-#ifdef	DYING
-    Header oldHeader;
-    int oldSize, newSize;
-
-    oldHeader = doGetRecord(db, offset, 1);
-    if (oldHeader == NULL) {
-	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for update"),
-		offset);
+    if (rpmdbRemove(db, offset, 1))
 	return 1;
-    }
 
-    oldSize = headerSizeof(oldHeader, HEADER_MAGIC_NO);
-    headerFree(oldHeader);
-
-    if (_noDirTokens)
-	expandFilelist(newHeader);
-
-    newSize = headerSizeof(newHeader, HEADER_MAGIC_NO);
-    if (oldSize != newSize) {
-	rpmMessage(RPMMESS_DEBUG, _("header changed size!"));
-#endif
-
-	if (rpmdbRemove(db, offset, 1))
-	    return 1;
-
-	if (rpmdbAdd(db, newHeader)) 
-	    return 1;
-
-#ifdef	DYING
-    } else {
-	blockSignals();
-
-	(void)Fseek(db->pkgs, offset, SEEK_SET);
-	fdSetContentLength(db->pkgs, newSize);
-	rc = headerWrite(db->pkgs, newHeader, HEADER_MAGIC_NO);
-	fdSetContentLength(db->pkgs, -1);
-
-	unblockSignals();
-    }
-#endif
+    if (rpmdbAdd(db, newHeader)) 
+	return 1;
 
     return rc;
 }

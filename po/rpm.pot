@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-11 11:35-0400\n"
+"POT-Creation-Date: 2000-04-11 12:21-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2103,7 +2103,7 @@ msgstr ""
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/falloc.c:124
+#: lib/falloc.c:135
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -2713,7 +2713,7 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:305
+#: lib/rebuilddb.c:34 lib/rpmdb.c:227
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2868,102 +2868,70 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:197
-#, c-format
-msgid "opening database mode 0x%x in %s\n"
-msgstr ""
-
-#: lib/rpmdb.c:209 lib/url.c:445
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr ""
-
-#: lib/rpmdb.c:223 lib/rpmdb.c:231
-#, c-format
-msgid "cannot get %s lock on database"
-msgstr ""
-
-#: lib/rpmdb.c:224
-msgid "exclusive"
-msgstr ""
-
-#: lib/rpmdb.c:232
-msgid "shared"
-msgstr ""
-
-#: lib/rpmdb.c:276
+#: lib/rpmdb.c:198
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:610
+#: lib/rpmdb.c:447
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:639
+#: lib/rpmdb.c:476
 #, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr ""
 
-#: lib/rpmdb.c:648
+#: lib/rpmdb.c:485
 #, c-format
 msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:667
+#: lib/rpmdb.c:503
 #, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:692
+#: lib/rpmdb.c:528
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:698
+#: lib/rpmdb.c:534
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:706
+#: lib/rpmdb.c:542
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:710 lib/rpmdb.c:932
+#: lib/rpmdb.c:546 lib/rpmdb.c:743
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:869
+#: lib/rpmdb.c:681
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:909
+#: lib/rpmdb.c:720
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:921
+#: lib/rpmdb.c:732
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:928
+#: lib/rpmdb.c:739
 #, c-format
 msgid "adding %d entries to %s index:\n"
-msgstr ""
-
-#: lib/rpmdb.c:989
-#, c-format
-msgid "cannot read header at %d for update"
-msgstr ""
-
-#: lib/rpmdb.c:1002
-msgid "header changed size!"
 msgstr ""
 
 #: lib/rpminstall.c:126
@@ -3446,6 +3414,11 @@ msgstr ""
 
 #: lib/url.c:405
 msgid "url port must be a number\n"
+msgstr ""
+
+#: lib/url.c:445
+#, c-format
+msgid "failed to open %s: %s\n"
 msgstr ""
 
 #. XXX Fstrerror

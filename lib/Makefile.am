@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/popt @INCPATH@
 
-EXTRA_DIST = db0.c db1.c db2.c db3.c
+EXTRA_DIST = falloc.c db0.c db1.c db2.c db3.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -19,7 +19,7 @@ mylibs=	-lrpm -lpopt @INTLLIBS@ @LIBMISC@
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c $(DBLIBOBJS) dbindex.c depends.c falloc.c \
+	cpio.c $(DBLIBOBJS) dbindex.c depends.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
 	messages.c misc.c oldheader.c package.c problems.c query.c \
@@ -28,6 +28,9 @@ librpm_la_SOURCES = \
 	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
 librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 #librpm_la_LIBADD = -lpopt
+
+falloc.lo: falloc.c $(top_srcdir)/system.h rpmio.h falloc.h
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
 db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h dbindex.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
@@ -51,25 +54,25 @@ db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h dbindex.h
 	    rm -f $${F}.o ; \
 	done
 
-db1.lo: db1.c $(top_srcdir)/system.h rpmlib.h dbindex.h
+db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h dbindex.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb ; \
+	    @__LD@ -r -o $${F}.o $${F} falloc.lo -L/usr/lib -ldb ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
 		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-		grep -v '^-L $*'` $${F}.o $${F} ; \
+		grep -v '^-L $*' | grep -v '^-L fadio'` $${F}.o $${F} ; \
 	    rm -f $${F}.o ; \
 	done
 
-db0.lo: db0.c $(top_srcdir)/system.h rpmlib.h dbindex.h
+db0.lo: db0.c falloc.lo $(top_srcdir)/system.h rpmlib.h dbindex.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb1 ; \
+	    @__LD@ -r -o $${F}.o $${F} falloc.lo -L/usr/lib -ldb1 ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
 		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-		grep -v '^-L $*'` $${F}.o $${F} ; \
+		grep -v '^-L $*' | grep -v '^-L fadio'` $${F}.o $${F} ; \
 	    rm -f $${F}.o ; \
 	done
 

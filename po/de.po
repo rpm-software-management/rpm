@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-04-07 11:56-0400\n"
+"POT-Creation-Date: 2000-04-11 12:21-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2198,12 +2198,12 @@ msgid " failed - "
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: lib/dbindex.c:99
+#: lib/dbindex.c:103
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/dbindex.c:139
+#: lib/dbindex.c:143
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2211,23 +2211,23 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:152
+#: lib/dbindex.c:156
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/dbindex.c:192
+#: lib/dbindex.c:207
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: lib/dbindex.c:206
+#: lib/dbindex.c:221
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
 # FIXME
-#: lib/dbindex.c:211
+#: lib/dbindex.c:226
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
@@ -2316,7 +2316,7 @@ msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/falloc.c:124
+#: lib/falloc.c:135
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -2437,7 +2437,7 @@ msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
 # , c-format
-#: lib/install.c:146 lib/uninstall.c:200
+#: lib/install.c:146 lib/uninstall.c:184
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -2508,7 +2508,7 @@ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:562 lib/install.c:854 lib/uninstall.c:31
+#: lib/install.c:562 lib/install.c:834 lib/uninstall.c:29
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
@@ -2523,25 +2523,25 @@ msgstr ""
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/install.c:784
+#: lib/install.c:764
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:789
+#: lib/install.c:769
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:814
+#: lib/install.c:794
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:850
+#: lib/install.c:830
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:924
+#: lib/install.c:904
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2960,7 +2960,7 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:295
+#: lib/rebuilddb.c:34 lib/rpmdb.c:227
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
@@ -3026,7 +3026,7 @@ msgstr ""
 
 #: lib/rebuilddb.c:163
 #, c-format
-msgid "replaces files in %s with files from %s to recover"
+msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
 # , c-format
@@ -3120,106 +3120,74 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:192
-#, fuzzy, c-format
-msgid "opening database mode 0x%x in %s\n"
-msgstr "Datenbank aus der vorhandenen neu erstellen"
-
-# , c-format
-#: lib/rpmdb.c:204 lib/url.c:445
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
-
-#: lib/rpmdb.c:218 lib/rpmdb.c:226
-#, c-format
-msgid "cannot get %s lock on database"
-msgstr "kann %s lock für die Datenbank nicht bekommen"
-
-#: lib/rpmdb.c:219
-msgid "exclusive"
-msgstr "exklusiv"
-
-#: lib/rpmdb.c:227
-msgid "shared"
-msgstr "geteilt"
-
-#: lib/rpmdb.c:268
+#: lib/rpmdb.c:198
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:554
+#: lib/rpmdb.c:447
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
-#: lib/rpmdb.c:583
+#: lib/rpmdb.c:476
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:592
+#: lib/rpmdb.c:485
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:610
+#: lib/rpmdb.c:503
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
-#: lib/rpmdb.c:638
+#: lib/rpmdb.c:528
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
 # FIXME
-#: lib/rpmdb.c:644
+#: lib/rpmdb.c:534
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:652
+#: lib/rpmdb.c:542
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:656 lib/rpmdb.c:841
+#: lib/rpmdb.c:546 lib/rpmdb.c:743
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
 # reservieren???
-#: lib/rpmdb.c:774
-msgid "cannot allocate space for database"
+#: lib/rpmdb.c:681
+#, fuzzy
+msgid "cannot allocate new instance in database"
 msgstr "kann keinen Platz für die Datenbank bekommen"
 
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:720
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:830
+#: lib/rpmdb.c:732
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:837
+#: lib/rpmdb.c:739
 #, c-format
 msgid "adding %d entries to %s index:\n"
-msgstr ""
-
-#: lib/rpmdb.c:895
-#, c-format
-msgid "cannot read header at %d for update"
-msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
-
-#: lib/rpmdb.c:908
-msgid "header changed size!"
 msgstr ""
 
 #: lib/rpminstall.c:126
@@ -3667,45 +3635,40 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:42
+#: lib/uninstall.c:40
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
 
-#: lib/uninstall.c:45
+#: lib/uninstall.c:43
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "Entfernen von %s fehlgeschlagen: %s"
 
-#: lib/uninstall.c:53
+#: lib/uninstall.c:51
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "öffnen von %s fehlgeschlagen: %s"
 
-#: lib/uninstall.c:91
+#: lib/uninstall.c:89
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
-#: lib/uninstall.c:106
-#, fuzzy, c-format
-msgid "cannot read packages named %s for uninstall"
-msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
-
-#: lib/uninstall.c:146
+#: lib/uninstall.c:130
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:214
+#: lib/uninstall.c:198
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:228
+#: lib/uninstall.c:212
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:412
+#: lib/uninstall.c:396
 msgid "execution of script failed"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
@@ -3738,6 +3701,12 @@ msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
+
+# , c-format
+#: lib/url.c:445
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
 #. XXX Fstrerror
@@ -3773,6 +3742,26 @@ msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
+
+#, fuzzy
+#~ msgid "opening database mode 0x%x in %s\n"
+#~ msgstr "Datenbank aus der vorhandenen neu erstellen"
+
+#~ msgid "cannot get %s lock on database"
+#~ msgstr "kann %s lock für die Datenbank nicht bekommen"
+
+#~ msgid "exclusive"
+#~ msgstr "exklusiv"
+
+#~ msgid "shared"
+#~ msgstr "geteilt"
+
+#~ msgid "cannot read header at %d for update"
+#~ msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
+
+#, fuzzy
+#~ msgid "cannot read packages named %s for uninstall"
+#~ msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
 #~ msgid "package %s not listed in %s"
 #~ msgstr "Paket %s wird nicht in %s aufgeführt"

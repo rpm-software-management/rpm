@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,6 +219,11 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue Apr 11 2000 Jeff Johnson <jbj@redhat.com>
+- solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)
+- db3: save join keys in endian neutral binary format.
+- treat legacy falloc.c as "special" db[01] index for package headers.
+
 * Thu Apr  6 2000 Jeff Johnson <jbj@redhat.com>
 - use hashed access for package headers.
 

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.23 2000/04/07 16:09:27 jbj Exp $
+# $Id: sl.po,v 1.24 2000/04/11 16:15:55 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-04-07 11:56-0400\n"
+"POT-Creation-Date: 2000-04-11 12:21-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2046,12 +2046,12 @@ msgstr "Interna napaka"
 msgid " failed - "
 msgstr " neuspe¹no - "
 
-#: lib/dbindex.c:99
+#: lib/dbindex.c:103
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/dbindex.c:139
+#: lib/dbindex.c:143
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2059,22 +2059,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:152
+#: lib/dbindex.c:156
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr "ni mo¾no odpreti datoteke %s: %s"
 
-#: lib/dbindex.c:192
+#: lib/dbindex.c:207
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "napaka pri branju zapisa %s iz %s"
 
-#: lib/dbindex.c:206
+#: lib/dbindex.c:221
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "napaka pri pisanju zapisa %s v %s"
 
-#: lib/dbindex.c:211
+#: lib/dbindex.c:226
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "napaka pri brisanju zapisa %s iz %s"
@@ -2165,7 +2165,7 @@ msgstr "ni mo¾no prebrati glave pri %d za preizkus soodvisnosti"
 msgid "loop in prerequisite chain: %s"
 msgstr "zanka v predpogojevani verigi: %s"
 
-#: lib/falloc.c:124
+#: lib/falloc.c:135
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -2284,7 +2284,7 @@ msgstr "| prièakovan na koncu izraza"
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
-#: lib/install.c:146 lib/uninstall.c:200
+#: lib/install.c:146 lib/uninstall.c:184
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr " datoteka: %s akcija: %s\n"
@@ -2352,7 +2352,7 @@ msgstr "izvorni paket ne vsebuje datoteke .spec"
 msgid "renaming %s to %s\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/install.c:562 lib/install.c:854 lib/uninstall.c:31
+#: lib/install.c:562 lib/install.c:834 lib/uninstall.c:29
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s v %s neuspe¹no: %s"
@@ -2366,25 +2366,25 @@ msgstr "prièakovan izvorni paket, najden binarni"
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/install.c:784
+#: lib/install.c:764
 msgid "stopping install as we're running --test\n"
 msgstr "ustavljamo namestitev ker teèemo kot --test\n"
 
-#: lib/install.c:789
+#: lib/install.c:769
 msgid "running preinstall script (if any)\n"
 msgstr "poganjamo prednamestitvene skripte (èe obstajajo)\n"
 
-#: lib/install.c:814
+#: lib/install.c:794
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/install.c:850
+#: lib/install.c:830
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/install.c:924
+#: lib/install.c:904
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
 
@@ -2781,7 +2781,7 @@ msgstr "izpis stanja seznama datotek"
 msgid "display a verbose file listing"
 msgstr "izpis ob¹irnega seznama datotek"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:295
+#: lib/rebuilddb.c:34 lib/rpmdb.c:227
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
@@ -2845,8 +2845,8 @@ msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo neuspe¹na!\n"
 
 #: lib/rebuilddb.c:163
-#, c-format
-msgid "replaces files in %s with files from %s to recover"
+#, fuzzy, c-format
+msgid "replace files in %s with files from %s to recover"
 msgstr "posku¹amo povrniti z nadomestitvijo datotek v %s z datotekami iz %s"
 
 #: lib/rebuilddb.c:169
@@ -2937,103 +2937,72 @@ msgstr ")"
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmdb.c:192
-#, c-format
-msgid "opening database mode 0x%x in %s\n"
-msgstr "odpiramo datoteko z naèinom 0x%x v %s\n"
-
-#: lib/rpmdb.c:204 lib/url.c:445
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "neuspe¹no odpiranje %s: %s\n"
-
-#: lib/rpmdb.c:218 lib/rpmdb.c:226
-#, c-format
-msgid "cannot get %s lock on database"
-msgstr "datoteke ni mo¾no %s zakleniti"
-
-#: lib/rpmdb.c:219
-msgid "exclusive"
-msgstr "izkljuèujoèe"
-
-#: lib/rpmdb.c:227
-msgid "shared"
-msgstr "deljeno"
-
-#: lib/rpmdb.c:268
+#: lib/rpmdb.c:198
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr "staro obliko podatkove zbirke pretvorite v novo z --rebuilddb"
 
 #. error
-#: lib/rpmdb.c:554
+#: lib/rpmdb.c:447
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "paketa ni mo¾no odpreti: %s\n"
 
-#: lib/rpmdb.c:583
+#: lib/rpmdb.c:476
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "paketa %s ni najti v %s"
 
-#: lib/rpmdb.c:592
+#: lib/rpmdb.c:485
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "paketa %s ni najti v %s"
 
-#: lib/rpmdb.c:610
+#: lib/rpmdb.c:503
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "ni mo¾no prebrati glave pri %d za vpogled"
 
-#: lib/rpmdb.c:638
+#: lib/rpmdb.c:528
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstranjujemo vnose v podatkovni zbirki\n"
 
-#: lib/rpmdb.c:644
+#: lib/rpmdb.c:534
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
-#: lib/rpmdb.c:652
+#: lib/rpmdb.c:542
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "odstranjujemo seznam imen\n"
 
-#: lib/rpmdb.c:656 lib/rpmdb.c:841
+#: lib/rpmdb.c:546 lib/rpmdb.c:743
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:774
-msgid "cannot allocate space for database"
+#: lib/rpmdb.c:681
+#, fuzzy
+msgid "cannot allocate new instance in database"
 msgstr "ni mo¾no zagotoviti prostora za podatkovno zbirko"
 
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:720
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:830
+#: lib/rpmdb.c:732
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/rpmdb.c:837
+#: lib/rpmdb.c:739
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
-
-#: lib/rpmdb.c:895
-#, c-format
-msgid "cannot read header at %d for update"
-msgstr "glave pri %d ni mo¾no prebrati za obnovo"
-
-#: lib/rpmdb.c:908
-msgid "header changed size!"
-msgstr "velikost glave se je spremenila!"
 
 #: lib/rpminstall.c:126
 msgid "counting packages to install\n"
@@ -3451,45 +3420,40 @@ msgstr "prestavljamo imenik %s v %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
-#: lib/uninstall.c:42
+#: lib/uninstall.c:40
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "ni mo¾no odstraniti %s - imenik ni prazen"
 
-#: lib/uninstall.c:45
+#: lib/uninstall.c:43
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "odstranitev imenika %s neuspe¹na: %s"
 
-#: lib/uninstall.c:53
+#: lib/uninstall.c:51
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "odstranitev %s neuspe¹na: %s"
 
-#: lib/uninstall.c:91
+#: lib/uninstall.c:89
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "ni mo¾no prebrati glave pri %d za odstranitev"
 
-#: lib/uninstall.c:106
-#, c-format
-msgid "cannot read packages named %s for uninstall"
-msgstr "paketa %s ni mo¾no prebrati za odnamestitev"
-
-#: lib/uninstall.c:146
+#: lib/uninstall.c:130
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "datoteke bomo odstranili, test = %d\n"
 
-#: lib/uninstall.c:214
+#: lib/uninstall.c:198
 msgid "running postuninstall script (if any)\n"
 msgstr "poganjamo poodnamestitvene skripte (èe obstajajo)\n"
 
-#: lib/uninstall.c:228
+#: lib/uninstall.c:212
 msgid "removing database entry\n"
 msgstr "odstranjujemo vnose v podatkovni zbirki\n"
 
-#: lib/uninstall.c:412
+#: lib/uninstall.c:396
 msgid "execution of script failed"
 msgstr "skript se ni uspe¹no izvedel"
 
@@ -3521,6 +3485,11 @@ msgstr "napaka: vrata %s morajo biti ¹tevilka\n"
 #: lib/url.c:405
 msgid "url port must be a number\n"
 msgstr "vrata URL morajo biti ¹tevilka\n"
+
+#: lib/url.c:445
+#, c-format
+msgid "failed to open %s: %s\n"
+msgstr "neuspe¹no odpiranje %s: %s\n"
 
 #. XXX Fstrerror
 #: lib/url.c:462
@@ -3555,6 +3524,27 @@ msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 #: lib/verify.c:381
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: rpmdbOpen() neuspe¹en\n"
+
+#~ msgid "opening database mode 0x%x in %s\n"
+#~ msgstr "odpiramo datoteko z naèinom 0x%x v %s\n"
+
+#~ msgid "cannot get %s lock on database"
+#~ msgstr "datoteke ni mo¾no %s zakleniti"
+
+#~ msgid "exclusive"
+#~ msgstr "izkljuèujoèe"
+
+#~ msgid "shared"
+#~ msgstr "deljeno"
+
+#~ msgid "cannot read header at %d for update"
+#~ msgstr "glave pri %d ni mo¾no prebrati za obnovo"
+
+#~ msgid "header changed size!"
+#~ msgstr "velikost glave se je spremenila!"
+
+#~ msgid "cannot read packages named %s for uninstall"
+#~ msgstr "paketa %s ni mo¾no prebrati za odnamestitev"
 
 #~ msgid "package %s not listed in %s"
 #~ msgstr "paket %s ni naveden v %s"

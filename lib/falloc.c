@@ -34,7 +34,15 @@ struct faFooter {
     unsigned int isFree; 
 } ;
 
-/* flags here is the same as for open(2) - NULL returned on error */
+/* =============================================================== */
+static struct FDIO_s fadio_s = {
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+  fadOpen, NULL, NULL,	NULL, NULL, NULL, NULL, NULL
+};
+FDIO_t fadio = /*@-compmempass@*/ &fadio_s /*@=compmempass@*/ ;
+/* =============================================================== */
+
+/* flags are the same as for open(2) - NULL returned on error */
 FD_t fadOpen(const char * path, int flags, int perms)
 {
     struct faFileHeader newHdr;
@@ -47,6 +55,9 @@ FD_t fadOpen(const char * path, int flags, int perms)
     if (Ferror(fd))
 	/* XXX Fstrerror */
 	return NULL;
+
+    memcpy(fadio, fdio, sizeof(*fadio));
+    fadio->_open = fadOpen;
 
     fdSetIo(fd, fadio);
     fadSetFirstFree(fd, 0);
