@@ -26,14 +26,7 @@
    at least ten.  The ten bytes are six bytes for the longest length/
    distance pair plus four bytes for overloading the bit buffer. */
 
-int inflate_fast(/*bl, bd, tl, td,*/ s, z)
-#if 0
-uInt bl, bd;
-inflate_huft *tl;
-inflate_huft *td; /* need separate declaration for Borland C++ */
-#endif
-inflate_blocks_statef *s;
-z_streamp z;
+int inflate_fast(inflate_blocks_statef *s, z_streamp z)
 {
 inflate_codes_statef *sc = s->sub.decode.codes;
 uInt bl = sc->lbits, bd = sc->dbits;

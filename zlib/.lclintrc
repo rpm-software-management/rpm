@@ -1,4 +1,4 @@
--I. -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -DHAVE_CONFIG_H -D_GNU_SOURCE -DSTDC
 
 +partial
 +forcehints
@@ -15,10 +15,19 @@
 -includenest 16		# getting deep, sigh
 
 # --- not yet
--oldstyle		# painful
 -retvalint		# painful
 -nullret
 -retalias
+
+-protoparammatch
+
+-mustmod
+-mods
+-infloops
+-evalorder
+-bufferoverflowhigh
+-assignexpose
+-moduncon
 
 -modunconnomods
 -noeffectuncon
@@ -27,29 +36,28 @@
 -modobserveruncon
 -modnomods
 
--noparams
+-statictrans
+-staticinittrans
+-observertrans
+-dependenttrans
+-unqualifiedtrans
+-kepttrans
+-immediatetrans
+-temptrans
+
 -castfcnptr
 -sizeoftype
 -globs
--statictrans
 -globstate
 -redef
 -nullpass
--unqualifiedtrans
 -internalglobs
 -compdef
--dependenttrans
 -branchstate
 -compmempass
--observertrans
--readonlytrans
 -nullstate
--kepttrans
 -shiftsigned
 -usereleased
--staticinittrans
--nullassign
--immediatetrans
 -type
 -unsignedcompare
 -nullderef

@@ -94,9 +94,10 @@ extern uInt inflate_mask[17];
 
 /* copy as much as possible from the sliding window to the output area */
 int inflate_flush OF((
-    inflate_blocks_statef *,
-    z_streamp ,
-    int)) __attribute__((regparm(3)));
+    inflate_blocks_statef *s,
+    z_streamp z,
+    int r)) __attribute__((regparm(3)))
+	/*@modifies s @*/;
 
 struct internal_state      {int dummy;}; /* for buggy compilers */
 

@@ -52,16 +52,19 @@ struct inflate_codes_state {
 typedef struct inflate_codes_state FAR inflate_codes_statef;
 
 extern inflate_codes_statef *inflate_codes_new OF((
-    uInt, uInt,
-    inflate_huft *, inflate_huft *,
-    z_streamp ));
+    uInt bl, uInt bd,
+    inflate_huft *tl, inflate_huft *td,
+    z_streamp z))
+	/*@*/;
 
 extern int inflate_codes OF((
-    inflate_blocks_statef *,
-    z_streamp ,
-    int));
+    inflate_blocks_statef *s,
+    z_streamp z,
+    int r))
+	/*@modifies s @*/;
 
 extern void inflate_codes_free OF((
-    inflate_codes_statef *,
-    z_streamp ));
+    inflate_codes_statef *s,
+    z_streamp z))
+	/*@modifies s @*/;
 

@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: deflate.h,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
 
 #ifndef _DEFLATE_H
 #define _DEFLATE_H
@@ -266,13 +266,18 @@ typedef struct internal_state {
  */
 
         /* in trees.c */
-void _tr_init         OF((deflate_state *s));
-int  _tr_tally        OF((deflate_state *s, unsigned dist, unsigned lc));
+void _tr_init         OF((deflate_state *s))
+	/*@modifies *s @*/;
+int  _tr_tally        OF((deflate_state *s, unsigned dist, unsigned lc))
+	/*@modifies *s @*/;
 void _tr_flush_block  OF((deflate_state *s, charf *buf, ulg stored_len,
-			  int eof));
-void _tr_align        OF((deflate_state *s));
+			  int eof))
+	/*@modifies *s @*/;
+void _tr_align        OF((deflate_state *s))
+	/*@modifies *s @*/;
 void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
-                          int eof));
+                          int eof))
+	/*@modifies *s @*/;
 
 #define d_code(dist) \
    ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])

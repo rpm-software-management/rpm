@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id: zutil.h,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/* @(#) $Id: zutil.h,v 1.2 2001/11/21 20:47:36 jbj Exp $ */
 
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
@@ -212,9 +212,12 @@ extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 
 
 typedef uLong (ZEXPORT *check_func) OF((uLong check, const Bytef *buf,
-				       uInt len));
-voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
-void   zcfree  OF((voidpf opaque, voidpf ptr));
+				       uInt len))
+	/*@*/;
+voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size))
+	/*@*/;
+void   zcfree  OF((voidpf opaque, /*@only@*/ voidpf ptr))
+	/*@modifies ptr @*/;
 
 #define ZALLOC(strm, items, size) \
            (*((strm)->zalloc))((strm)->opaque, (items), (size))
@@ -245,6 +248,7 @@ __asm__ __volatile__( \
 } while(0)
 #else
 static __inline__ void quickmemcpy(void *_to, const void *_from, long n)
+	/*@*/
 {
 	char *to = _to, *from = _from;
 	while (n-- > 0)

@@ -33,26 +33,29 @@ struct inflate_huft_s {
 #define MANY 1440
 
 extern int inflate_trees_bits OF((
-    uIntf *,                    /* 19 code lengths */
-    uIntf *,                    /* bits tree desired/actual depth */
-    inflate_huft * FAR *,       /* bits tree result */
-    inflate_huft *,             /* space for trees */
-    z_streamp));                /* for messages */
+    uIntf *c,			/* 19 code lengths */
+    uIntf *bb,			/* bits tree desired/actual depth */
+    inflate_huft * FAR *tb,	/* bits tree result */
+    inflate_huft *hp,		/* space for trees */
+    z_streamp z))		/* for messages */
+	/*@modifies *bb, *tb, *hp @*/;
 
 extern int inflate_trees_dynamic OF((
-    uInt,                       /* number of literal/length codes */
-    uInt,                       /* number of distance codes */
-    uIntf *,                    /* that many (total) code lengths */
-    uIntf *,                    /* literal desired/actual bit depth */
-    uIntf *,                    /* distance desired/actual bit depth */
-    inflate_huft * FAR *,       /* literal/length tree result */
-    inflate_huft * FAR *,       /* distance tree result */
-    inflate_huft *,             /* space for trees */
-    z_streamp));                /* for messages */
+    uInt nl,			/* number of literal/length codes */
+    uInt nd,			/* number of distance codes */
+    uIntf *c,			/* that many (total) code lengths */
+    uIntf *bl,			/* literal desired/actual bit depth */
+    uIntf *bd,			/* distance desired/actual bit depth */
+    inflate_huft * FAR *tl,	/* literal/length tree result */
+    inflate_huft * FAR *td,	/* distance tree result */
+    inflate_huft *hp,		/* space for trees */
+    z_streamp z))		/* for messages */
+	/*@modifies *bl, *bd, *tl, *td, *hp @*/;
 
 extern int inflate_trees_fixed OF((
-    uIntf *,                    /* literal desired/actual bit depth */
-    uIntf *,                    /* distance desired/actual bit depth */
-    inflate_huft * FAR *,       /* literal/length tree result */
-    inflate_huft * FAR *,       /* distance tree result */
-    z_streamp));                /* for memory allocation */
+    uIntf *bl,			/* literal desired/actual bit depth */
+    uIntf *bd,			/* distance desired/actual bit depth */
+    inflate_huft * FAR *tl,	/* literal/length tree result */
+    inflate_huft * FAR *td,	/* distance tree result */
+    z_streamp z))		/* for memory allocation */
+	/*@modifies *bl, *bd, *tl, *td @*/;

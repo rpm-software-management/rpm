@@ -17,16 +17,19 @@ struct __crc32_fool_gcc {
 #endif
 
 static inline void partial_crc32_prep(uLong *crcp)
+	/*@modifies *crcp @*/
 {
 	*crcp ^= 0xffffffffL;
 }
 
 static inline void partial_crc32_finish(uLong *crcp)
+	/*@modifies *crcp @*/
 {
 	*crcp ^= 0xffffffffL;
 }
 
 static inline uLong get_crc_from_partial(uLong *crcp)
+	/*@modifies *crcp @*/
 {
 	return *crcp ^ 0xffffffffL;
 }
@@ -36,6 +39,7 @@ extern const uLongf crc_table[256];
 #define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
 
 static __inline__ uLong __partial_crc32(uLong crc, const Bytef *buf, uInt len, int copy, Bytef *dst)
+	/*@modifies *dst @*/
 {
 	uInt n = len / 4;
 

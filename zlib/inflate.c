@@ -50,8 +50,7 @@ struct internal_state {
 };
 
 
-int ZEXPORT inflateReset(z)
-z_streamp z;
+int ZEXPORT inflateReset(z_streamp z)
 {
   if (z == Z_NULL || z->state == Z_NULL)
     return Z_STREAM_ERROR;
@@ -64,8 +63,7 @@ z_streamp z;
 }
 
 
-int ZEXPORT inflateEnd(z)
-z_streamp z;
+int ZEXPORT inflateEnd(z_streamp z)
 {
   if (z == Z_NULL || z->state == Z_NULL || z->zfree == Z_NULL)
     return Z_STREAM_ERROR;
@@ -78,11 +76,7 @@ z_streamp z;
 }
 
 
-int ZEXPORT inflateInit2_(z, w, version, stream_size)
-z_streamp z;
-int w;
-const char *version;
-int stream_size;
+int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_size)
 {
   if (version == Z_NULL || version[0] != ZLIB_VERSION[0] ||
       stream_size != sizeof(z_stream))
@@ -135,10 +129,7 @@ int stream_size;
 }
 
 
-int ZEXPORT inflateInit_(z, version, stream_size)
-z_streamp z;
-const char *version;
-int stream_size;
+int ZEXPORT inflateInit_(z_streamp z, const char *version, int stream_size)
 {
   return inflateInit2_(z, DEF_WBITS, version, stream_size);
 }
@@ -147,9 +138,7 @@ int stream_size;
 #define NEEDBYTE {if(z->avail_in==0)goto out_NEEDBYTE;r=f;}
 #define NEXTBYTE (z->avail_in--,/*z->total_in++,*/ *z->next_in++)
 
-int ZEXPORT inflate(z, f)
-z_streamp z;
-int f;
+int ZEXPORT inflate(z_streamp z, int f)
 {
   int r;
   uInt b;
@@ -289,10 +278,7 @@ out_NEEDBYTE:
 }
 
 
-int ZEXPORT inflateSetDictionary(z, dictionary, dictLength)
-z_streamp z;
-const Bytef *dictionary;
-uInt  dictLength;
+int ZEXPORT inflateSetDictionary(z_streamp z, const Bytef *dictionary, uInt dictLength)
 {
   uInt length = dictLength;
 
@@ -313,8 +299,7 @@ uInt  dictLength;
 }
 
 
-int ZEXPORT inflateSync(z)
-z_streamp z;
+int ZEXPORT inflateSync(z_streamp z)
 {
   uInt n;       /* number of bytes to look at */
   Bytef *p;     /* pointer to bytes */
@@ -371,8 +356,7 @@ z_streamp z;
  * decompressing, PPP checks that at the end of input packet, inflate is
  * waiting for these length bytes.
  */
-int ZEXPORT inflateSyncPoint(z)
-z_streamp z;
+int ZEXPORT inflateSyncPoint(z_streamp z)
 {
   if (z == Z_NULL || z->state == Z_NULL || z->state->blocks == Z_NULL)
     return Z_STREAM_ERROR;

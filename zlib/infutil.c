@@ -21,10 +21,7 @@ uInt inflate_mask[17] = {
 
 
 /* copy as much as possible from the sliding window to the output area */
-int inflate_flush(s, z, r)
-inflate_blocks_statef *s;
-z_streamp z;
-int r;
+int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
 {
   uInt n;
   Bytef *p;
@@ -44,10 +41,12 @@ int r;
   z->total_out += n;
 
   /* update check information */
+/*@-moduncon@*/
   if (s->checkfn == Z_NULL)
     z->crc = partial_crc32_copy(z->crc, q, n, p);
   else if (s->checkfn != Z_NULL) {
     z->adler = s->check = (*s->checkfn)(s->check, q, n);
+/*@=moduncon@*/
 
     /* copy as far as end of window */
     zmemcpy(p, q, n);
@@ -74,13 +73,17 @@ int r;
     z->total_out += n;
 
     /* update check information */
+/*@-moduncon@*/
     if (!s->checkfn)
 	z->crc = partial_crc32_copy(z->crc, q, n, p);
     else if (s->checkfn != Z_NULL) {
       z->adler = s->check = (*s->checkfn)(s->check, q, n);
+/*@=moduncon@*/
 
       /* copy */
+/*@-aliasunique@*/
       zmemcpy(p, q, n);
+/*@=aliasunique@*/
     }
     p += n;
     q += n;

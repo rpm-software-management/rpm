@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: crc32.c,v 1.2 2001/11/21 20:47:36 jbj Exp $ */
+/* @(#) $Id: crc32.c,v 1.3 2001/11/21 22:01:55 jbj Exp $ */
 
 #include "zlib.h"
 
@@ -15,7 +15,8 @@
 
 local int crc_table_empty = 1;
 local uLongf crc_table[256];
-local void make_crc_table OF((void));
+local void make_crc_table OF((void))
+	/*@*/;
 
 /*
   Generate a table for a byte-wise 32-bit CRC calculation on the polynomial:
@@ -41,7 +42,7 @@ local void make_crc_table OF((void));
   the information needed to generate CRC's on data a byte at a time for all
   combinations of CRC register values and incoming bytes.
 */
-local void make_crc_table()
+local void make_crc_table(void)
 {
   uLong c;
   int n, k;
@@ -126,7 +127,7 @@ local void make_crc_table()
 /* =========================================================================
  * This function can be used by asm versions of crc32()
  */
-const uLongf * ZEXPORT get_crc_table()
+const uLongf * ZEXPORT get_crc_table(void)
 {
 #ifdef DYNAMIC_CRC_TABLE
   if (crc_table_empty) make_crc_table();
@@ -148,10 +149,7 @@ extern uLong partial_crc32(uLong crc, const Bytef *buf, uInt len)
 /*@=sysunrecog@*/
 }
 
-uLong ZEXPORT crc32(crc, buf, len)
-    uLong crc;
-    const Bytef *buf;
-    uInt len;
+uLong ZEXPORT crc32(uLong crc, const Bytef *buf, uInt len)
 {
 	if (buf != Z_NULL)
 /*@-sysunrecog@*/
