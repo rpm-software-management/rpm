@@ -113,4 +113,4 @@ dnl Checks for libraries
 AC_CHECK_LIB(z, gzopen)
 dnl AC_CHECK_LIB(bz2, BZ2_bzReadOpen)
 
-AC_OUTPUT(Makefile doc/Makefile)
+AC_OUTPUT(Makefile magic/Makefile doc/Makefile)

@@ -25,9 +25,4 @@ ltmain.sh
 missing
 stamp-h*
 file
-file.1
-magic.4
-magic
-magic.mgc
-magic.mime.mgc
 file-*.tar.gz
