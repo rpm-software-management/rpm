@@ -110,7 +110,8 @@ static void printUsage(void) {
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        package1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
-    puts(_("                        [--sign] [--test] [--timecheck <s>] specfile"));
+    puts(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>"));
+    puts(_("                        [--buildarch <arch] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
@@ -311,8 +312,12 @@ static void printHelp(void) {
 		  _("remove build tree when done"));
     printHelpLine("      --sign              ",
 		  _("generate PGP signature"));
-    printHelpLine("      --buildroot <s>     ",
-		  _("use s as the build root"));
+    printHelpLine("      --buildroot <dir>     ",
+		  _("use <dir> as the build root"));
+    printHelpLine("      --buildarch <arch>  ",
+		  _("build the packages for architecture <arch>"));
+    printHelpLine("      --buildos <os>  ",
+		  _("build the packages for ositecture <os>"));
     printHelpLine("      --test              ",
 		  _("do not execute any stages"));
     printHelpLine("      --timecheck <s>     ",
