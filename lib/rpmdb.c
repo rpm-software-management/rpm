@@ -317,8 +317,9 @@ int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
 	    }
 
 	    i++;
-	} while ((i == 0) || (allMatches.recs[i].recOffset == 
-				allMatches.recs[i - 1].recOffset));
+	} while ((i < allMatches.count) && 
+			((i == 0) || (allMatches.recs[i].recOffset == 
+				allMatches.recs[i - 1].recOffset)));
 
 	free(fileList);
 	
@@ -396,6 +397,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     char ** fileList, ** providesList, ** requiredbyList;
     char ** conflictList, ** triggerList;
     int i;
+    char * basename;
 
     /* structure assignment */
     rec = dbiReturnIndexRecordInstance(offset, 0);
@@ -475,10 +477,17 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    rpmMessage(RPMMESS_DEBUG, _("removing file index for %s\n"), fileList[i]);
+	    basename = strrchr(fileList[i], '/');
+	    if (!basename) 
+		basename = fileList[i];
+	    else
+		basename++;
+
+	    rpmMessage(RPMMESS_DEBUG, _("removing file index for %s\n"), 
+			basename);
 	    /* structure assignment */
 	    rec = dbiReturnIndexRecordInstance(offset, i);
-	    removeIndexEntry(db->fileIndex, fileList[i], rec, tolerant, 
+	    removeIndexEntry(db->fileIndex, basename, rec, tolerant, 
 			     "file index");
 	}
 	free(fileList);

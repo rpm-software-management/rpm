@@ -128,6 +128,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_AUTOREQ			1103 /* internal */
 #define	RPMTAG_AUTOPROV			1104 /* internal */
 #define	RPMTAG_CAPABILITY		1105
+#define	RPMTAG_SOURCEPACKAGE		1106 /* internal */
+#define	RPMTAG_ORIGFILENAMES		1107
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
@@ -147,19 +149,14 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMFILE_LICENSE			(1 << 7)
 #define	RPMFILE_README			(1 << 8)
 
-#define	RPMINSTALL_REPLACEPKG		(1 << 0)
 #define	RPMINSTALL_REPLACEFILES		(1 << 1)
 #define	RPMINSTALL_TEST			(1 << 2)
-#define	RPMINSTALL_UPGRADE		(1 << 3)
 #define	RPMINSTALL_UPGRADETOOLD		(1 << 4)
 #define	RPMINSTALL_NODOCS		(1 << 5)
 #define	RPMINSTALL_NOSCRIPTS		(1 << 6)
-#define	RPMINSTALL_NOARCH		(1 << 7)
-#define	RPMINSTALL_NOOS			(1 << 8)
 #define	RPMINSTALL_ALLFILES		(1 << 9)
 #define	RPMINSTALL_JUSTDB		(1 << 10)
 #define	RPMINSTALL_KEEPOBSOLETE		(1 << 11)
-#define	RPMINSTALL_FORCERELOCATE	(1 << 12)
 #define	RPMINSTALL_NOTRIGGERS		(1 << 13)
 
 #define	RPMUNINSTALL_TEST		(1 << 0)
@@ -283,8 +280,12 @@ void rpmGetMachine(/*@out@*/char **arch, /*@out@*/char **os);
 
 typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
 
-typedef void (*rpmNotifyFunction)(const unsigned long amount,
-			       const unsigned long total);
+typedef enum rpmNotifyType_e 
+	{ RPMNOTIFY_INST_PROGRESS, RPMNOTIFY_INST_START } rpmNotifyType;
+typedef void (*rpmNotifyFunction)(const Header h, const rpmNotifyType what, 
+				  const unsigned long amount, 
+				  const unsigned long total,
+				  void * data);
 
 int rpmdbOpen (char * root, rpmdb * dbp, int mode, int perms);
     /* 0 on error */
@@ -310,26 +311,26 @@ int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 
 /* we pass these around as an array with a sentinel */
-struct rpmRelocation {
+typedef struct rpmRelocation_s {
     char * oldPath;	/* NULL here evals to RPMTAG_DEFAULTPREFIX, this */
     char * newPath;     /* odd behavior is only for backwards compatibility */
-};
+} rpmRelocation;
 
 int rpmInstallSourcePackage(char * root, FD_t fd, char ** specFile,
-			    rpmNotifyFunction notify, char * labelFormat,
-			    char ** cookie);
-int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
-		      struct rpmRelocation * relocations,
-		      int flags, rpmNotifyFunction notify, char * labelFormat);
+			    rpmNotifyFunction notify, void * notifyData,
+			    char * labelFormat, char ** cookie);
 int rpmVersionCompare(Header first, Header second);
-int rpmRemovePackage(char * root, rpmdb db, unsigned int offset, int flags);
+int removeBinaryPackage(char * root, rpmdb db, unsigned int offset, int flags);
 int rpmdbRebuild(char * root);
 
 int rpmVerifyFile(char * root, Header h, int filenum, int * result,
 		  int omitMask);
 int rpmVerifyScript(char * root, Header h, FD_t err);
 
-typedef struct rpmDependencyCheck * rpmDependencies;
+/* Transaction sets are inherently unordered! RPM may reorder transaction
+   sets to reduce errors. In general, installs/upgrades are done before
+   strict removals, and prerequisite ordering is done on installs/upgrades. */
+typedef struct rpmTransactionSet_s * rpmTransactionSet;
 
 struct rpmDependencyConflict {
     char * byName, * byVersion, * byRelease;
@@ -342,23 +343,62 @@ struct rpmDependencyConflict {
     enum { RPMDEP_SENSE_REQUIRES, RPMDEP_SENSE_CONFLICTS } sense;
 } ;
 
-/*@only@*/ rpmDependencies rpmdepDependencies(rpmdb db); /* db may be NULL */
-void rpmdepAddPackage(rpmDependencies rpmdep, Header h, void * key);
-void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key);
-void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key);
-void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
+/* db may be NULL, but don't do things which require the database! */
+/*@only@*/ rpmTransactionSet rpmtransCreateSet(rpmdb db, char * rootdir);
+
+/* if fd is NULL, the callback specified in rpmtransCreateSet() is used to
+   open and close the file descriptor. If Header is NULL, the fd is always
+   used, otherwise fd is only needed (and only opened) for actual package 
+   installation */
+void rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
+			void * key, int update, rpmRelocation * relocs);
+void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
+void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
+void rpmtransFree(/*@only@*/ rpmTransactionSet rpmdep);
 
 /* this checks for dependency satisfaction, but *not* ordering */
-int rpmdepCheck(rpmDependencies rpmdep,
+int rpmdepCheck(rpmTransactionSet rpmdep,
 		struct rpmDependencyConflict ** conflicts, int * numConflicts);
 /* Orders items, returns error on circle, finals keys[] is NULL. No dependency
    check is done, use rpmdepCheck() for that. If dependencies are not
    satisfied a "best-try" ordering is returned. */
-int rpmdepOrder(rpmDependencies order, void *** keysListPtr);
-
-void rpmdepDone(/*@only@*/ rpmDependencies rpmdep);
+int rpmdepOrder(rpmTransactionSet order, void *** keysListPtr);
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 			 numConflicts);
+
+#define RPMTRANS_FLAG_TEST	(1 << 0)
+
+typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
+				RPMPROB_BADOS,
+				RPMPROB_PKG_INSTALLED,
+				RPMPROB_BADRELOCATE,
+ 			      } rpmProblemType;
+
+typedef struct rpmProblem_s {
+    Header h;
+    void * key;
+    rpmProblemType type;
+    int ignoreProblem;
+    char * str1;
+} rpmProblem;
+
+typedef struct rpmProblemSet_s {
+    int numProblems;
+    int numProblemsAlloced;
+    rpmProblem * probs;
+} * rpmProblemSet;
+
+char * rpmProblemString(rpmProblem prob);
+void rpmProblemSetFree(rpmProblemSet probs);
+void rpmProblemSetFilter(rpmProblemSet ps, int flags);
+int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
+		       void * notifyData, rpmProblemSet okProbs,
+		       rpmProblemSet * newProbs, int flags);
+
+#define RPMPROB_FILTER_IGNOREOS		(1 << 0)
+#define RPMPROB_FILTER_IGNOREARCH	(1 << 1)
+#define RPMPROB_FILTER_REPLACEPKG	(1 << 2)
+#define RPMPROB_FILTER_FORCERELOCATE	(1 << 3)
 
 /** messages.c **/
 
@@ -450,11 +490,11 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define	RPMERR_NOTSRPM		-26     /* a source rpm was expected */
 #define	RPMERR_FLOCK		-27     /* locking the database failed */
 #define	RPMERR_OLDPACKAGE	-28	/* trying upgrading to old version */
-#define	RPMERR_BADARCH          -29     /* bad architecture or arch mismatch */
+/*#define	RPMERR_BADARCH  -29        bad architecture or arch mismatch */
 #define	RPMERR_CREATE		-30	/* failed to create a file */
 #define	RPMERR_NOSPACE		-31	/* out of disk space */
 #define	RPMERR_NORELOCATE	-32	/* tried to do improper relocatation */
-#define	RPMERR_BADOS            -33     /* bad architecture or arch mismatch */
+/*#define	RPMERR_BADOS    -33        bad architecture or arch mismatch */
 #define	RPMMESS_BACKUP          -34     /* backup made during [un]install */
 #define	RPMERR_MTAB		-35	/* failed to read mount table */
 #define	RPMERR_STAT		-36	/* failed to stat something */
@@ -462,6 +502,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define	RPMMESS_ALTNAME         -38     /* file written as .rpmnew */
 #define	RPMMESS_PREREQLOOP      -39     /* loop in prerequisites */
 #define	RPMERR_BADRELOCATE      -40     /* bad relocation was specified */
+#define	RPMERR_OLDDB      	-41     /* old format database */
 
 /* spec.c build.c pack.c */
 #define	RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */

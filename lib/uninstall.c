@@ -193,7 +193,8 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     return rc;
 }
 
-int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
+int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset, 
+			int flags) {
     Header h;
     int i, j;
     int fileCount;

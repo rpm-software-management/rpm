@@ -17,6 +17,8 @@ struct callbackInfo {
     unsigned long archiveSize;
     rpmNotifyFunction notify;
     char ** specFilePtr;
+    Header h;
+    void * notifyData;
 };
 
 struct fileMemory {
@@ -55,25 +57,20 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 				int instFlags, int brokenMd5);
 static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
+			  void * notifydb, Header h,
 			  char ** specFile, int archiveSize);
-static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
-				   char * release, int * recOffset, int flags);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, 
 				 struct fileInfo * files,
 				 int fileCount, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
 static int installSources(Header h, char * rootdir, FD_t fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
-			  char * labelFormat);
+			  void * notifyData, char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
-static int archOkay(Header h);
-static int osOkay(Header h);
 static int ensureOlder(rpmdb db, Header new, int dbOffset);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
-			     int stripPrefixLength,
-			     struct rpmRelocation * rawRelocations,
-			     int allowRandomRelocations);
+			     int stripPrefixLength);
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount);
 static void freeFileMemory(struct fileMemory fileMem);
 static void trimChangelog(Header h);
@@ -82,8 +79,8 @@ static void trimChangelog(Header h);
 /* 1 bad magic */
 /* 2 error */
 int rpmInstallSourcePackage(char * rootdir, FD_t fd, char ** specFile,
-			    rpmNotifyFunction notify, char * labelFormat,
-			    char ** cookie) {
+			    rpmNotifyFunction notify, void * notifyData,
+			    char * labelFormat, char ** cookie) {
     int rc, isSource;
     Header h;
     int major, minor;
@@ -110,7 +107,8 @@ int rpmInstallSourcePackage(char * rootdir, FD_t fd, char ** specFile,
 	}
     }
     
-    rc = installSources(h, rootdir, fd, specFile, notify, labelFormat);
+    rc = installSources(h, rootdir, fd, specFile, notify, notifyData,
+			labelFormat);
     if (h != NULL) headerFree(h);
  
     return rc;
@@ -127,166 +125,26 @@ static void freeFileMemory(struct fileMemory fileMem) {
 /* files should not be preallocated */
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
-			     int stripPrefixLength,
-			     struct rpmRelocation * rawRelocations,
-			     int allowRandomRelocations) {
+			     int stripPrefixLength) {
     uint_32 * fileFlags;
     uint_32 * fileSizes;
     uint_16 * fileModes;
     struct fileInfo * files;
     struct fileInfo * file;
     int fileCount;
-    int i, j, numRelocations = 0, madeSwap, len, newLen;
-    struct rpmRelocation * relocations = NULL;
-    struct rpmRelocation tmpReloc;
-    struct rpmRelocation * nextReloc;
-    char ** validRelocations = NULL, ** actualRelocations;
+    int i;
     char ** fileLangs;
-    char * newName, * chptr;
-    int rc;
-    int numValid;
+    char * chptr;
     char ** languages, ** lang;
 
-    if (rawRelocations) {
-	if (!headerGetEntry(h, RPMTAG_PREFIXES, NULL,
-			    (void **) &validRelocations, &numValid)) {
-	    numValid = 0;
-	}
+    if (!headerGetEntry(h, RPMTAG_ORIGFILENAMES, NULL, (void **) &mem->names, 
+		        fileCountPtr))
+	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
+		           fileCountPtr);
 
-	for (i = 0; rawRelocations[i].newPath; i++) ;
-	numRelocations = i;
-	relocations = alloca(sizeof(*relocations) * numRelocations);
-
-/* XXX this code assumes the validRelocations array won't
-   have trailing /'s in it */
-
-	for (i = 0; i < numRelocations; i++) {
-	    if (!rawRelocations[i].oldPath) {
-		if (!numValid) {
-		    rpmError(RPMERR_NORELOCATE, 
-			     _("package is not relocatable"));
-		    return 1;
-		} else if (numValid != 1){
-		    rpmError(RPMERR_NORELOCATE, 
-			     _("package has multiple relocatable components"));
-		    return 1;
-		}
-		relocations[i].oldPath = 
-		    alloca(strlen(validRelocations[0]) + 1);
-		strcpy(relocations[i].oldPath, validRelocations[0]);
-	    } else {
-		relocations[i].oldPath = 
-		    alloca(strlen(rawRelocations[i].oldPath) + 1);
-		strcpy(relocations[i].oldPath, rawRelocations[i].oldPath);
-		stripTrailingSlashes(relocations[i].oldPath);
-	    }
-
-	    relocations[i].newPath = 
-		alloca(strlen(rawRelocations[i].newPath) + 1);
-	    strcpy(relocations[i].newPath, rawRelocations[i].newPath);
-	    stripTrailingSlashes(relocations[i].newPath);
-
-	    if (!allowRandomRelocations) {
-		for (j = 0; j < numValid; j++) 
-		    if (!strcmp(validRelocations[j],
-				relocations[i].oldPath)) break;
-		if (j == numValid) {
-		    rpmError(RPMERR_BADRELOCATE, _("path %s is not relocatable"),
-			     relocations[i].oldPath);
-		    return 1;
-		}
-	    }
-	}
-
-	/* stupid bubble sort, but it's probably faster here */
-	for (i = 0; i < numRelocations; i++) {
-	    madeSwap = 0;
-	    for (j = 1; j < numRelocations; j++) {
-		if (strcmp(relocations[j - 1].oldPath, 
-			   relocations[j].oldPath) > 0) {
-		    tmpReloc = relocations[j - 1];
-		    relocations[j - 1] = relocations[j];
-		    relocations[j] = tmpReloc;
-		    madeSwap = 1;
-		}
-	    }
-	    if (!madeSwap) break;
-	}
-
-	if (validRelocations) free(validRelocations);
-    }
-
-    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
-			(void **) &validRelocations, &numValid)) {
-	actualRelocations = malloc(sizeof(*actualRelocations) * numValid);
-
-	/* handle the special case of oldPath == NULL, which can only happen
-	   when numValid == 1 (which we've tested for when we build the
-	   relocation table above */
-	for (i = 0; i < numValid; i++) {
-	    for (j = 0; j < numRelocations; j++) {
-		if (!strcmp(validRelocations[i], relocations[j].oldPath)) {
-		    actualRelocations[i] = relocations[j].newPath;
-		    break;
-		}
-	    }
-
-	    if (j == numRelocations)
-		actualRelocations[i] = validRelocations[i];
-	}
-
-	headerAddEntry(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
-		       (void **) actualRelocations, numValid);
-
-	free(validRelocations);
-	free(actualRelocations);
-    }
-
-    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
-		   fileCountPtr);
-    /* get this before we start mucking with this info */
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->cpioNames, 
 		   fileCountPtr);
     fileCount = *fileCountPtr;
-
-    if (relocations) {
-	/* go through things backwards so that /usr/local relocations take
-	   precedence over /usr ones */
-	nextReloc = relocations + numRelocations - 1;
-	len = strlen(nextReloc->oldPath);
-	newLen = strlen(nextReloc->newPath);
-	for (i = fileCount - 1; i >= 0 && nextReloc; i--) {
-	    do {
-		rc = strncmp(nextReloc->oldPath, mem->names[i], len);
-		if (rc > 0) {
-		    if (nextReloc == relocations) {
-			nextReloc = 0;
-		    } else {
-			nextReloc--;
-			len = strlen(nextReloc->oldPath);
-			newLen = strlen(nextReloc->newPath);
-		    }
-		}
-	    } while (rc > 0 && nextReloc);
-
-	    if (!rc) {
-		newName = alloca(newLen + strlen(mem->names[i]) + 1);
-		strcpy(newName, nextReloc->newPath);
-		strcat(newName, mem->names[i] + len);
-		rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
-			   mem->names[i], newName);
-		mem->names[i] = newName;
-	    } 
-	}
-
-	headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
-			  mem->names, fileCount);
-	/* make mem->names point to the new data in the header rather
-	   then the old (now modified) data */
-	free(mem->names);
-	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
-		       fileCountPtr);
-    }
 
     files = *filesPtr = mem->files = malloc(sizeof(*mem->files) * fileCount);
     
@@ -409,19 +267,17 @@ static void trimChangelog(Header h) {
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
-		      struct rpmRelocation * relocations,
-		      int flags, rpmNotifyFunction notify, char * labelFormat)
-{
-    int rc, isSource, major, minor;
+int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
+		         rpmRelocation * relocations,
+		         int flags, rpmNotifyFunction notify, 
+			 void * notifyData) {
+    int rc;
     char * name, * version, * release;
-    Header h;
     int fileCount, type, count;
     struct fileInfo * files;
     int_32 installTime;
     char * fileStates;
     int i, j;
-    int remFlags;
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
@@ -429,9 +285,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
-    int * toRemove = NULL;
-    int toRemoveAlloced = 1;
-    int * intptr = NULL;
     char * tmpPath;
     int scriptArg;
     int hasOthers = 0;
@@ -441,66 +294,14 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
     int freeFileMem = 0;
     char * currDir = NULL, * tmpptr;
     int currDirLen;
-    char ** obsoletes;
 
     if (flags & RPMINSTALL_JUSTDB)
 	flags |= RPMINSTALL_NOSCRIPTS;
-
-    rc = rpmReadPackageHeader(fd, &h, &isSource, &major, &minor);
-    if (rc) return rc;
-
-    if (isSource) {
-	if (flags & RPMINSTALL_TEST) {
-	    rpmMessage(RPMMESS_DEBUG, 
-			_("stopping install as we're running --test\n"));
-	    return 0;
-	}
-
-	if (major == 1) {
-	    notify = NULL;
-	    labelFormat = NULL;
-	    h = NULL;
-	}
-
-	if (flags & RPMINSTALL_JUSTDB) return 0;
-
-	rc = installSources(h, rootdir, fd, NULL, notify, labelFormat);
-	if (h != NULL) headerFree(h);
-
-	return rc;
-    }
 
     headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-    /* We don't use these entries (and never have) and they are pretty
-       misleading. Let's just get rid of them so they don't confuse
-       anyone. */
-    if (headerIsEntry(h, RPMTAG_FILEUSERNAME))
-	headerRemoveEntry(h, RPMTAG_FILEUIDS);
-    if (headerIsEntry(h, RPMTAG_FILEGROUPNAME))
-	headerRemoveEntry(h, RPMTAG_FILEGIDS);
-    
-    if (!(flags & RPMINSTALL_NOARCH) && !archOkay(h)) {
-	rpmError(RPMERR_BADARCH, _("package %s-%s-%s is for a different "
-	      "architecture"), name, version, release);
-	headerFree(h);
-	return 2;
-    }
-
-    if (!(flags & RPMINSTALL_NOOS) && !osOkay(h)) {
-	rpmError(RPMERR_BADOS, _("package %s-%s-%s is for a different "
-	      "operating system"), name, version, release);
-	headerFree(h);
-	return 2;
-    }
-
-    if (packageAlreadyInstalled(db, name, version, release, &otherOffset, 
-				flags)) {
-	headerFree(h);
-	return 2;
-    }
 
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"), 
 		name, version, release, flags & RPMINSTALL_TEST);
@@ -523,78 +324,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
     } else {
 	hasOthers = 1;
 	scriptArg = dbiIndexSetCount(matches) + 1;
-    }
-
-    if (flags & RPMINSTALL_UPGRADE) {
-	/* 
-	   We need to get a list of all old version of this package. We let
-	   this install procede normally then, but:
-
-		1) we don't report conflicts between the new package and
-		   the old versions installed
-		2) when we're done, we uninstall the old versions
-
-	   Note if the version being installed is already installed, we don't
-	   put that in the list -- that situation is handled normally.
-
-	   We also need to handle packages which were made oboslete.
-	*/
-
-	if (hasOthers) {
-	    toRemoveAlloced = dbiIndexSetCount(matches) + 1;
-	    intptr = toRemove = malloc(toRemoveAlloced * sizeof(int));
-	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		if (recOffset != otherOffset) {
-		    if (!(flags & RPMINSTALL_UPGRADETOOLD)) 
-			if (ensureOlder(db, h, recOffset)) {
-			    headerFree(h);
-			    dbiFreeIndexRecord(matches);
-			    return 2;
-			}
-		    *intptr++ = recOffset;
-		}
-	    }
-
-	    dbiFreeIndexRecord(matches);
-	}
-
-	if (!(flags & RPMINSTALL_KEEPOBSOLETE) &&
-	    headerGetEntry(h, RPMTAG_OBSOLETES, NULL, (void **) &obsoletes, 
-				&count)) {
-	    for (i = 0; i < count; i++) {
-		rc = rpmdbFindPackage(db, obsoletes[i], &matches);
-		if (rc == -1) return 2;
-		if (rc == 1) continue;		/* no matches */
-
-		rpmMessage(RPMMESS_DEBUG, _("package %s is now obsolete and will"
-			   " be removed\n"), obsoletes[i]);
-
-		toRemoveAlloced += dbiIndexSetCount(matches);
-		j = toRemove ? intptr - toRemove : 0; 
-		toRemove = realloc(toRemove, toRemoveAlloced * sizeof(int));
-		intptr = toRemove + j;
-
-		for (j = 0; j < dbiIndexSetCount(matches); j++)
-		    *intptr++ = dbiIndexRecordOffset(matches, j);
-
-		dbiFreeIndexRecord(matches);
-	    }
-
-	    free(obsoletes);
-	}
-
-	if (toRemove) {
-	    *intptr++ = 0;
-
-	    /* this means we don't have to free the list */
-	    intptr = alloca(toRemoveAlloced * sizeof(int));
-	    memcpy(intptr, toRemove, toRemoveAlloced * sizeof(int));
-	    free(toRemove);
-	    toRemove = intptr;
-	}
-    } else if (hasOthers) {
-	dbiFreeIndexRecord(matches);
     }
 
     if (rootdir) {
@@ -646,8 +375,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 	    defaultPrefix = NULL;
 	}
 
-	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize,
-			     relocations, flags & RPMINSTALL_FORCERELOCATE)) {
+	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize)) {
 	    if (rootdir) {
 		chroot(".");
 		chdir(currDir);
@@ -712,7 +440,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 	if (netsharedPaths) freeSplitString(netsharedPaths);
 
 	rc = instHandleSharedFiles(db, otherOffset, files, fileCount, 
-				   toRemove, &replacedList, flags);
+				   NULL, &replacedList, flags);
 
 	if (rc) {
 	    if (rootdir) {
@@ -839,13 +567,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 				(void *) &archiveSizePtr, &count))
 	    archiveSizePtr = NULL;
 
-	if (labelFormat) {
-	    fprintf(stdout, labelFormat, name, version, release);
-	    fflush(stdout);
+	if (notify) {
+	    notify(h, RPMNOTIFY_INST_START, 0, 0, notifyData);
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(fd, files, fileCount, notify, 
+	if (installArchive(fd, files, fileCount, notify, notifyData, h,
 			   NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
 	    headerFree(h);
 	    if (replacedList) free(replacedList);
@@ -929,21 +656,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 	}
     }
 
-    if (toRemove && flags & RPMINSTALL_UPGRADE) {
-	rpmMessage(RPMMESS_DEBUG, _("removing old versions of package\n"));
-	intptr = toRemove;
-
-	if (flags & RPMINSTALL_NOSCRIPTS)
-	    remFlags = RPMUNINSTALL_NOSCRIPTS;
-	else
-	    remFlags = 0;
-
-	while (*intptr) {
-	    rpmRemovePackage(rootdir, db, *intptr, remFlags);
-	    intptr++;
-	}
-    }
-
     headerFree(h);
 
     return 0;
@@ -954,7 +666,9 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
     char * chptr;
 
     if (ourInfo->notify)
-	ourInfo->notify(cpioInfo->bytesProcessed, ourInfo->archiveSize);
+	ourInfo->notify(ourInfo->h, RPMNOTIFY_INST_PROGRESS,
+			cpioInfo->bytesProcessed, 
+			ourInfo->archiveSize, ourInfo->notifyData);
 
     if (ourInfo->specFilePtr) {
 	chptr = cpioInfo->file + strlen(cpioInfo->file) - 5;
@@ -966,6 +680,7 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
 /* NULL files means install all files */
 static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
+			  void * notifyData, Header h,
 			  char ** specFile, int archiveSize) {
     int rc, i;
     struct cpioFileMapping * map = NULL;
@@ -983,7 +698,9 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 
     info.archiveSize = archiveSize;
     info.notify = notify;
+    info.notifyData = notifyData;
     info.specFilePtr = specFile;
+    info.h = h;
 
     if (specFile) *specFile = NULL;
 
@@ -1006,7 +723,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     }
 
     if (notify)
-	notify(0, archiveSize);
+	notify(h, RPMNOTIFY_INST_PROGRESS, 0, archiveSize, notifyData);
 
   { CFD_t cfdbuf, *cfd = &cfdbuf;
     cfd->cpioIoType = cpioIoTypeGzFd;
@@ -1027,54 +744,15 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     }
 
     if (notify && archiveSize)
-	notify(archiveSize, archiveSize);
+	notify(h, RPMNOTIFY_INST_PROGRESS, archiveSize, archiveSize, 
+	       notifyData);
     else if (notify) {
-	notify(100, 100);
+	notify(h, RPMNOTIFY_INST_PROGRESS, 100, 100, notifyData);
     }
 
     return 0;
 }
 
-static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
-				   char * release, int * offset, int flags) {
-    char * secVersion, * secRelease;
-    Header sech;
-    int i;
-    dbiIndexSet matches;
-    int type, count;
-
-    if (!rpmdbFindPackage(db, name, &matches)) {
-	for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-	    sech = rpmdbGetRecord(db, recOffset);
-	    if (sech == NULL) {
-		return 1;
-	    }
-
-	    headerGetEntry(sech, RPMTAG_VERSION, &type, (void **) &secVersion, 
-			&count);
-	    headerGetEntry(sech, RPMTAG_RELEASE, &type, (void **) &secRelease, 
-			&count);
-
-	    if (!strcmp(secVersion, version) && !strcmp(secRelease, release)) {
-		*offset = recOffset;
-		if (!(flags & RPMINSTALL_REPLACEPKG)) {
-		    rpmError(RPMERR_PKGINSTALLED, 
-			  _("package %s-%s-%s is already installed"),
-			  name, version, release);
-		    headerFree(sech);
-		    return 1;
-		}
-	    }
-
-	    headerFree(sech);
-	}
-
-	dbiFreeIndexRecord(matches);
-    }
-
-    return 0;
-}
 
 static int filecmp(short mode1, char * md51, char * link1, 
 	           short mode2, char * md52, char * link2) {
@@ -1380,6 +1058,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 /* 2 error */
 static int installSources(Header h, char * rootdir, FD_t fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
+			  void * notifyData,
 			  char * labelFormat) {
     char * specFile;
     char * sourceDir, * specDir;
@@ -1429,7 +1108,7 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 
     if (h && headerIsEntry(h, RPMTAG_FILENAMES)) {
 	/* we can't remap v1 packages */
-	assembleFileList(h, &fileMem, &fileCount, &files, 0, NULL, 0);
+	assembleFileList(h, &fileMem, &fileCount, &files, 0);
 
 	for (i = 0; i < fileCount; i++) {
 	    files[i].relativePath = files[i].relativePath;
@@ -1484,7 +1163,7 @@ static int installSources(Header h, char * rootdir, FD_t fd,
 
     chdir(realSourceDir);
     if (installArchive(fd, fileCount > 0 ? files : NULL,
-			  fileCount, notify, 
+			  fileCount, notify, notifyData, h,
 			  specFileIndex >=0 ? NULL : &specFile, 
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
 	if (fileCount > 0) freeFileMemory(fileMem);
@@ -1663,46 +1342,3 @@ enum fileTypes whatis(short mode) {
     return result;
 }
 
-static int archOkay(Header h) {
-    int_8 * pkgArchNum;
-    void * pkgArch;
-    int type, count, archNum;
-
-    /* make sure we're trying to install this on the proper architecture */
-    headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
-    if (type == RPM_INT8_TYPE) {
-	/* old arch handling */
-	rpmGetArchInfo(NULL, &archNum);
-	pkgArchNum = pkgArch;
-	if (archNum != *pkgArchNum) {
-	    return 0;
-	}
-    } else {
-	/* new arch handling */
-	if (!rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch)) {
-	    return 0;
-	}
-    }
-
-    return 1;
-}
-
-static int osOkay(Header h) {
-    void * pkgOs;
-    int type, count;
-
-    /* make sure we're trying to install this on the proper os */
-    headerGetEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
-    if (type == RPM_INT8_TYPE) {
-	/* v1 packages and v2 packages both used improper OS numbers, so just
-	   deal with it hope things work */
-	return 1;
-    } else {
-	/* new os handling */
-	if (!rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs)) {
-	    return 0;
-	}
-    }
-
-    return 1;
-}

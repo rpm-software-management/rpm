@@ -74,17 +74,17 @@ static int verifyHeader(char * prefix, Header h, int verifyFlags) {
 }
 
 static int verifyDependencies(rpmdb db, Header h) {
-    rpmDependencies rpmdep;
+    rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     char * name, * version, * release;
     int type, count, i;
 
-    rpmdep = rpmdepDependencies(db);
-    rpmdepAddPackage(rpmdep, h, NULL);
+    rpmdep = rpmtransCreateSet(db, NULL);
+    rpmtransAddPackage(rpmdep, h, NULL, NULL, 0, NULL);
 
     rpmdepCheck(rpmdep, &conflicts, &numConflicts);
-    rpmdepDone(rpmdep);
+    rpmtransFree(rpmdep);
 
     if (numConflicts) {
 	headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
@@ -161,7 +161,6 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
     rpmdb db;
     dbiIndexSet matches;
     char * arg;
-    char path[PATH_MAX];
 
     ec = 0;
     if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {

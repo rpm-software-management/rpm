@@ -27,6 +27,7 @@ static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr,
     int isSource;
     char * defaultPrefix;
     struct stat sb;
+    int_32 true = 1;
 
     hdr = hdrPtr ? hdrPtr : &hdrBlock;
     lead = leadPtr ? leadPtr : &leadBlock;
@@ -92,6 +93,12 @@ static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr,
 	    stripTrailingSlashes(defaultPrefix);
 	    headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 			   &defaultPrefix, 1); 
+	}
+
+        if (lead->type == RPMLEAD_SOURCE) {
+	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
+	    	headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
+				&true, 1);
 	}
     } else {
 	rpmError(RPMERR_NEWPACKAGE, _("only packages with major numbers <= 3 "

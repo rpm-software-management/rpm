@@ -2,9 +2,6 @@
 
 #include "rpmlib.h"
 
-static int findMatches(rpmdb db, char * name, char * version, char * release,
-		       dbiIndexSet * matches);
-
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
@@ -57,7 +54,7 @@ int rpmdbFindByLabel(rpmdb db, char * arg, dbiIndexSet * matches) {
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-static int findMatches(rpmdb db, char * name, char * version, char * release,
+int findMatches(rpmdb db, char * name, char * version, char * release,
 		       dbiIndexSet * matches) {
     int gotMatches;
     int rc;

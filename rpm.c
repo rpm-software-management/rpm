@@ -493,8 +493,10 @@ int main(int argc, char ** argv) {
     int ec = 0;
     int status;
     int p[2];
-    struct rpmRelocation * relocations = NULL;
+    rpmRelocation * relocations = NULL;
     int numRelocations = 0;
+    int upgrade = 0;
+    int probFilter = 0;
 	
     /* set the defaults for the various command line options */
     allFiles = 0;
@@ -678,7 +680,7 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_INSTALL;
-	    installFlags |= RPMINSTALL_UPGRADE;
+	    upgrade = 1;
 	    break;
 
 	  case 'p':
@@ -1009,7 +1011,7 @@ int main(int argc, char ** argv) {
     }
 #endif
 
-    if (oldPackage && !(installFlags & RPMINSTALL_UPGRADE))
+    if (oldPackage && upgrade)
 	argerror(_("--oldpackage may only be used during upgrades"));
 
     if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
@@ -1018,7 +1020,7 @@ int main(int argc, char ** argv) {
 	argerror(_("ftp options can only be used during package queries, "
 		 "installs, and upgrades"));
 
-    if (oldPackage || (force && (installFlags & RPMINSTALL_UPGRADE)))
+    if (oldPackage || (force && upgrade))
 	installFlags |= RPMINSTALL_UPGRADETOOLD;
 
     if (noPgp && bigMode != MODE_CHECKSIG)
@@ -1207,22 +1209,25 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_INSTALL:
-	if (force)
-	    installFlags |= (RPMINSTALL_REPLACEPKG | RPMINSTALL_REPLACEFILES);
+	if (force) {
+	    probFilter |= RPMPROB_FILTER_REPLACEPKG;
+	    installFlags |= RPMINSTALL_REPLACEFILES;
+	}
 	if (replaceFiles) installFlags |= RPMINSTALL_REPLACEFILES;
-	if (badReloc) installFlags |= RPMINSTALL_FORCERELOCATE;
-	if (replacePackages) installFlags |= RPMINSTALL_REPLACEPKG;
+	if (badReloc) probFilter |= RPMPROB_FILTER_FORCERELOCATE;
+	if (replacePackages) probFilter |= RPMPROB_FILTER_REPLACEPKG;
 	if (test) installFlags |= RPMINSTALL_TEST;
 	if (noScripts) installFlags |= RPMINSTALL_NOSCRIPTS;
 	if (noTriggers) installFlags |= RPMINSTALL_NOTRIGGERS;
-	if (ignoreArch) installFlags |= RPMINSTALL_NOARCH;
-	if (ignoreOs) installFlags |= RPMINSTALL_NOOS;
+	if (ignoreArch) probFilter |= RPMPROB_FILTER_IGNOREARCH; 
+	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
 	if (allFiles) installFlags |= RPMINSTALL_ALLFILES;
 	if (justdb) installFlags |= RPMINSTALL_JUSTDB;
 
 	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
 	if (showHash) interfaceFlags |= INSTALL_HASH;
 	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
+	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
 	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
 
 	if (!incldocs) {
@@ -1249,7 +1254,7 @@ int main(int argc, char ** argv) {
 	}
 
 	ec += doInstall(rootdir, poptGetArgs(optCon), installFlags, 
-			interfaceFlags, relocations);
+			interfaceFlags, probFilter, relocations);
 	break;
 
       case MODE_QUERY:

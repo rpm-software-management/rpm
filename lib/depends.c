@@ -5,72 +5,32 @@
 #include "depends.h"
 #include "misc.h"
 
-struct availablePackage {
-    Header h;
-    char ** provides;
-    char ** files;
-    char * name, * version, * release;
-    int epoch, hasEpoch, providesCount, filesCount;
-    void * key;
-} ;
-
-enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
-
-struct availableIndexEntry {
-    struct availablePackage * package;
-    char * entry;
-    enum indexEntryType type;
-} ;
-
-struct availableIndex {
-    struct availableIndexEntry * index ;
-    int size;
-} ;
-
-struct availableList {
-    struct availablePackage * list;
-    struct availableIndex index;
-    int size, alloced;
-};
-
-struct rpmDependencyCheck {
-    rpmdb db;					/* may be NULL */
-    int * removedPackages;
-    int numRemovedPackages, allocedRemovedPackages;
-    struct availableList addedPackages, availablePackages;
-};
-
-struct problemsSet {
-    struct rpmDependencyConflict * problems;
-    int num;
-    int alloced;
-};
-
 static void alMakeIndex(struct availableList * al);
 static void alCreate(struct availableList * al);
 static void alFreeIndex(struct availableList * al);
 static void alFree(struct availableList * al);
-static void alAddPackage(struct availableList * al, Header h, void * key);
+static void alAddPackage(struct availableList * al, Header h, void * key,
+			 FD_t fd, rpmRelocation * relocs);
 
 static int intcmp(const void * a, const void *b);
 static int indexcmp(const void * a, const void *b);
-static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName, 
+static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName, 
 			     char * reqVersion, int reqFlags,
 			     struct availablePackage ** suggestion);
-static int checkDependentPackages(rpmDependencies rpmdep, 
+static int checkDependentPackages(rpmTransactionSet rpmdep, 
 			    struct problemsSet * psp, char * key);
-static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
+static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement);
-static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
+static int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset, 
 			        char * reqVersion, int reqFlags);
 struct availablePackage * alSatisfiesDepend(struct availableList * al, 
 					    char * reqName, char * reqVersion, 
 					    int reqFlags);
-static int checkDependentConflicts(rpmDependencies rpmdep, 
+static int checkDependentConflicts(rpmTransactionSet rpmdep, 
 			    struct problemsSet * psp, char * package);
-static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp, 
+static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp, 
 			    char * package, dbiIndexSet * matches);
-static int addOrderedPack(rpmDependencies rpmdep, 
+static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
 			void ** ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
@@ -101,13 +61,15 @@ static void alFree(struct availableList * al) {
 	    free(al->list[i].provides);
 	if (al->list[i].files)
 	    free(al->list[i].files);
+	free(al->list[i].h);
     }
 
     if (al->alloced) free(al->list);
     alFreeIndex(al);
 }
 
-static void alAddPackage(struct availableList * al, Header h, void * key) {
+static void alAddPackage(struct availableList * al, Header h, void * key,
+			 FD_t fd, rpmRelocation * relocs) {
     struct availablePackage * p;
 
     if (al->size == al->alloced) {
@@ -116,7 +78,7 @@ static void alAddPackage(struct availableList * al, Header h, void * key) {
     }
 
     p = al->list + al->size++;
-    p->h = h;
+    p->h = headerLink(h);
 
     headerGetEntry(p->h, RPMTAG_NAME, NULL, (void **) &p->name, NULL);
     headerGetEntry(p->h, RPMTAG_VERSION, NULL, (void **) &p->version, NULL);
@@ -136,7 +98,17 @@ static void alAddPackage(struct availableList * al, Header h, void * key) {
 	p->files = NULL;
     }
 
+    /* We don't use these entries (and rpm >= 2 never have) and they are 
+       pretty misleading. Let's just get rid of them so they don't confuse
+       anyone. */
+    if (headerIsEntry(h, RPMTAG_FILEUSERNAME))
+	headerRemoveEntry(h, RPMTAG_FILEUIDS);
+    if (headerIsEntry(h, RPMTAG_FILEGROUPNAME))
+	headerRemoveEntry(h, RPMTAG_FILEGIDS);
+    
     p->key = key;
+    p->relocs = relocs;
+    p->fd = fd;
 
     alFreeIndex(al);
 }
@@ -222,8 +194,8 @@ int intcmp(const void * a, const void *b) {
     return 1;
 }
 
-rpmDependencies rpmdepDependencies(rpmdb db) {
-    rpmDependencies rpmdep;
+rpmTransactionSet rpmtransCreateSet(rpmdb db, char * root) {
+    rpmTransactionSet rpmdep;
 
     rpmdep = malloc(sizeof(*rpmdep));
     rpmdep->db = db;
@@ -231,6 +203,7 @@ rpmDependencies rpmdepDependencies(rpmdb db) {
     rpmdep->allocedRemovedPackages = 5;
     rpmdep->removedPackages = malloc(sizeof(int) * 
 				     rpmdep->allocedRemovedPackages);
+    rpmdep->root = strdup(root);
 
     alCreate(&rpmdep->addedPackages);
     alCreate(&rpmdep->availablePackages);
@@ -238,22 +211,28 @@ rpmDependencies rpmdepDependencies(rpmdb db) {
     return rpmdep;
 }
 
-void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
+void rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
+			void * key, int upgrade, rpmRelocation * relocs) {
     /* this is an install followed by uninstalls */
     dbiIndexSet matches;
     char * name;
     int count, i, j;
     char ** obsoletes;
 
-    alAddPackage(&rpmdep->addedPackages, h, key);
+    /* FIXME: handling upgrades like this is *almost* okay. It doesn't
+       check to make sure we're upgrading to a newer version, and it
+       makes it difficult to generate a return code based on the number of
+       packages which failed. */
+   
+    alAddPackage(&rpmdep->addedPackages, h, key, fd, relocs);
 
-    if (rpmdep->db == NULL) return;
+    if (!upgrade || rpmdep->db == NULL) return;
 
     headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &name, &count);
 
     if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
 	for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	    rpmdepRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
+	    rpmtransRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
 	}
 
 	dbiFreeIndexRecord(matches);
@@ -264,7 +243,7 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
 	for (j = 0; j < count; j++) {
 	    if (!rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))  {
 		for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		    rpmdepRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
+		    rpmtransRemovePackage(rpmdep, dbiIndexRecordOffset(matches, i));
 		}
 
 		dbiFreeIndexRecord(matches);
@@ -275,15 +254,11 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
     }
 }
 
-void rpmdepAddPackage(rpmDependencies rpmdep, Header h, void * key) {
-    alAddPackage(&rpmdep->addedPackages, h, key);
+void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key) {
+    alAddPackage(&rpmdep->availablePackages, h, key, NULL, NULL);
 }
 
-void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key) {
-    alAddPackage(&rpmdep->availablePackages, h, key);
-}
-
-void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset) {
+void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset) {
     if (rpmdep->numRemovedPackages == rpmdep->allocedRemovedPackages) {
 	rpmdep->allocedRemovedPackages += 5;
 	rpmdep->removedPackages = realloc(rpmdep->removedPackages,
@@ -293,10 +268,11 @@ void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset) {
     rpmdep->removedPackages[rpmdep->numRemovedPackages++] = dboffset;
 }
 
-void rpmdepDone(rpmDependencies rpmdep) {
+void rpmtransFree(rpmTransactionSet rpmdep) {
     alFree(&rpmdep->addedPackages);
     alFree(&rpmdep->availablePackages);
     free(rpmdep->removedPackages);
+    free(rpmdep->root);
 
     free(rpmdep);
 }
@@ -317,7 +293,7 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
     free(conflicts);
 }
 
-int rpmdepCheck(rpmDependencies rpmdep, 
+int rpmdepCheck(rpmTransactionSet rpmdep, 
 		struct rpmDependencyConflict ** conflicts, int * numConflicts) {
     struct availablePackage * p;
     int i, j;
@@ -427,7 +403,7 @@ int rpmdepCheck(rpmDependencies rpmdep,
 
 /* 2 == error */
 /* 1 == dependency not satisfied */
-static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName, 
+static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName, 
 			     char * reqVersion, int reqFlags, 
 			     struct availablePackage ** suggestion) {
     dbiIndexSet matches;
@@ -515,7 +491,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
     return 1;
 }
 
-static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp, 
+static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp, 
 			    char * package, dbiIndexSet * matches) {
     int i;
     Header h;
@@ -545,7 +521,7 @@ static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp,
     return 0;
 }
 
-static int checkDependentPackages(rpmDependencies rpmdep, 
+static int checkDependentPackages(rpmTransactionSet rpmdep, 
 			    struct problemsSet * psp, char * key) {
     dbiIndexSet matches;
     int rc;
@@ -560,7 +536,7 @@ static int checkDependentPackages(rpmDependencies rpmdep,
     return rc;
 }
 
-static int checkDependentConflicts(rpmDependencies rpmdep, 
+static int checkDependentConflicts(rpmTransactionSet rpmdep, 
 			    struct problemsSet * psp, char * package) {
     dbiIndexSet matches;
     int rc;
@@ -576,7 +552,7 @@ static int checkDependentConflicts(rpmDependencies rpmdep,
     return rc;
 }
 
-static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
+static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement) {
     char ** requires, ** requiresVersion;
     char * name, * version, * release;
@@ -630,7 +606,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 		psp->problems = realloc(psp->problems, sizeof(*psp->problems) * 
 			    psp->alloced);
 	    }
-	    psp->problems[psp->num].byHeader = headerCopy(h);
+	    psp->problems[psp->num].byHeader = headerLink(h);
 	    psp->problems[psp->num].byName = strdup(name);
 	    psp->problems[psp->num].byVersion = strdup(version);
 	    psp->problems[psp->num].byRelease = strdup(release);
@@ -673,7 +649,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 		psp->problems = realloc(psp->problems, sizeof(*psp->problems) * 
 			    psp->alloced);
 	    }
-	    psp->problems[psp->num].byHeader = headerCopy(h);
+	    psp->problems[psp->num].byHeader = headerLink(h);
 	    psp->problems[psp->num].byName = strdup(name);
 	    psp->problems[psp->num].byVersion = strdup(version);
 	    psp->problems[psp->num].byRelease = strdup(release);
@@ -757,7 +733,7 @@ int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
     return result;
 }
 
-static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
+static int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset, 
 			        char * reqVersion, int reqFlags) {
     Header h;
     int rc;
@@ -784,7 +760,7 @@ static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset,
    the current selection pass is included as a separate parameter, and is
    incremented when satisfying a prerequisite */
 
-static int addOrderedPack(rpmDependencies rpmdep, 
+static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
 			void ** ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
@@ -873,7 +849,7 @@ static int addOrderedPack(rpmDependencies rpmdep,
     return 0;
 }
 
-int rpmdepOrder(rpmDependencies rpmdep, void *** keysListPtr) {
+int rpmdepOrder(rpmTransactionSet rpmdep, void *** keysListPtr) {
     int i;
     int * selected;
     void ** order;

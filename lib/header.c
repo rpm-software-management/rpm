@@ -42,6 +42,7 @@ struct headerToken {
 
     int sorted;  
     int langNum;
+    int usageCount;
 };
 
 struct entryInfo {
@@ -817,6 +818,7 @@ Header headerNew()
 
     h->sorted = 0;
     h->langNum = -1;
+    h->usageCount = 1;
 
     return (Header) h;
 }
@@ -825,11 +827,18 @@ void headerFree(Header h)
 {
     int i;
 
+    if (--h->usageCount) return;
     for (i = 0; i < h->indexUsed; i++)
 	free(h->index[i].data);
 
     free(h->index);
     free(h);
+}
+
+Header headerLink(Header h)
+{
+    h->usageCount++;
+    return h;
 }
 
 unsigned int headerSizeof(Header h, int magicp)

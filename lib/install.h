@@ -21,5 +21,9 @@ int runTriggers(char * root, rpmdb db, int sense, Header h,
    database to calculate arguments to the trigger */
 int runImmedTriggers(char * root, rpmdb db, int sense, Header h,
 		     int countCorrection);
+int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
+		         rpmRelocation * relocations,
+		         int flags, rpmNotifyFunction notify, 
+			 void * notifyData);
 
 #endif	/* H_INSTALL */

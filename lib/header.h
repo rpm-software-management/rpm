@@ -160,6 +160,7 @@ void headerSetLangPath(Header h, char * lang);
 
 Header headerCopy(Header h);
 void headerSort(Header h);
+Header headerLink(Header h);
 
 void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy);
 
