@@ -22,6 +22,7 @@
 
 static int makePGPSignature(char *file, int ofd, char *passPhrase);
 static int verifyPGPSignature(int fd, void *sig, char *result);
+static int checkPassPhrase(char *passPhrase);
 
 int readSignature(int fd, short sig_type, void **sig)
 {
@@ -85,7 +86,62 @@ char *getPassPhrase(char *prompt)
         pass = getpass("");
     }
 
+    if (checkPassPhrase(pass)) {
+	return NULL;
+    }
+
     return pass;
+}
+
+static int checkPassPhrase(char *passPhrase)
+{
+    char secring[1024];
+    char pubring[1024];
+    char name[1024];
+    int passPhrasePipe[2];
+    FILE *fpipe;
+    int pid, status;
+    int fd;
+
+    sprintf(name, "+myname=\"%s\"", getVar(RPMVAR_PGP_NAME));
+    sprintf(secring, "+secring=\"%s\"", getVar(RPMVAR_PGP_SECRING));
+    sprintf(pubring, "+pubring=\"%s\"", getVar(RPMVAR_PGP_PUBRING));
+
+    pipe(passPhrasePipe);
+    if (!(pid = fork())) {
+	close(0);
+	close(1);
+	close(2);
+	if ((fd = open("/dev/null", O_RDONLY)) != 0) {
+	    dup2(fd, 0);
+	}
+	if ((fd = open("/dev/null", O_WRONLY)) != 1) {
+	    dup2(fd, 1);
+	}
+	dup2(passPhrasePipe[0], 3);
+	setenv("PGPPASSFD", "3", 1);
+	setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	execlp("pgp", "pgp",
+	       "+batchmode=on", "+verbose=0",
+	       name, secring, pubring,
+	       "-sf",
+	       NULL);
+	error(RPMERR_EXEC, "Couldn't exec pgp");
+	exit(RPMERR_EXEC);
+    }
+
+    fpipe = fdopen(passPhrasePipe[1], "w");
+    close(passPhrasePipe[0]);
+    fprintf(fpipe, "%s\n", passPhrase);
+    fclose(fpipe);
+
+    waitpid(pid, &status, 0);
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	return 1;
+    }
+
+    /* passPhrase is good */
+    return 0;
 }
 
 static int makePGPSignature(char *file, int ofd, char *passPhrase)
