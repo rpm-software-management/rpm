@@ -1,3 +1,10 @@
+2.3.5 -> 2.3.6:
+	- -Vf uses realpath() now
+	- -Vp lets you use --ftpproxy, --ftpport
+	- changed popt format, breaking all popt alises :-(
+	- added ability to alias character arguments to popt 
+	- moved --requires, --info to /usr/lib/rpmpopt
+
 2.3.4 -> 2.3.5:
 	- %{#TAG} in query format prints the array length
 	- cleanup up protoypes in rpmlib.h
