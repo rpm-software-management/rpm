@@ -42,6 +42,7 @@ static int showHash;
 static int help;
 static int ignoreArch;
 static int ignoreOs;
+static int ignoreSize;
 static int incldocs;
 static int initdb;
 static int justdb;
@@ -97,6 +98,7 @@ static struct poptOption optionsTable[] = {
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
  { "ignorearch", '\0', 0, &ignoreArch, 0,	NULL, NULL},
  { "ignoreos", '\0', 0, &ignoreOs, 0,		NULL, NULL},
+ { "ignoresize", '\0', 0, &ignoreSize, 0,	NULL, NULL},
  { "includedocs", '\0', 0, &incldocs, 0,	NULL, NULL},
  { "initdb", '\0', 0, &initdb, 0,		NULL, NULL},
 /* info and install both using 'i' is dumb */
@@ -185,7 +187,7 @@ static void printUsage(void) {
     puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--notriggers] [--excludepath <path>]"));
-    puts(_("                        file1.rpm ... fileN.rpm"));
+    puts(_("                        [--ignoresize] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
@@ -194,8 +196,8 @@ static void printUsage(void) {
     puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
     puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
-    puts(_("                        [--badreloc] [--excludepath <path>] file1.rpm ..."));
-    puts(_("                        fileN.rpm"));
+    puts(_("                        [--badreloc] [--excludepath <path>] [--ignoresize]"));
+    puts(_("                        file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
@@ -533,6 +535,7 @@ int main(int argc, char ** argv) {
     help = 0;
     ignoreArch = 0;
     ignoreOs = 0;
+    ignoreSize = 0;
     incldocs = 0;
     initdb = 0;
     justdb = 0;
@@ -982,6 +985,10 @@ int main(int argc, char ** argv) {
 	argerror(_("--ignoreos may only be specified during package "
 		   "installation"));
 
+    if (bigMode != MODE_INSTALL && ignoreSize)
+	argerror(_("--ignoreos may only be specified during package "
+		   "installation"));
+
     if (allMatches && bigMode != MODE_UNINSTALL)
 	argerror(_("--allmatches may only be specified during package "
 		   "erasure"));
@@ -1306,6 +1313,7 @@ int main(int argc, char ** argv) {
 	if (oldPackage) probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	if (ignoreArch) probFilter |= RPMPROB_FILTER_IGNOREARCH; 
 	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
+	if (ignoreSize) probFilter |= RPMPROB_FILTER_DISKSPACE;
 
 	if (allFiles) installFlags |= RPMTRANS_FLAG_ALLFILES;
 	if (justdb) installFlags |= RPMTRANS_FLAG_JUSTDB;
