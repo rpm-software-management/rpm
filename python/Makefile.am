@@ -30,3 +30,7 @@ librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 
 rpmmodule.so: $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $^ $(rpmmodule_so_LDFLAGS)
+
+.PHONY:	lclint
+lclint:
+	lclint $(DEFS) $(INCLUDES) $(librpmmodule_la_SOURCES)

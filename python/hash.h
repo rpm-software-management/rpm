@@ -15,9 +15,9 @@ struct ht_iterator {
 
 typedef struct ht_iterator htIterator;
 
-struct hash_table *htNewTable(int size);
-void htFreeHashTable(struct hash_table *ht);
-void htHashStats(struct hash_table *t);
+/*@only@*/ /*@null@*/ struct hash_table * htNewTable(int size);
+void htFreeHashTable(/*@only@*/ struct hash_table *ht);
+void htHashStats(const struct hash_table *t);
 int htInTable(struct hash_table *t,  const char * dir, const char * base);
 void htAddToTable(struct hash_table *t, const char * dir, const char * base);
 void htPrintHashStats(struct hash_table *t);

@@ -68,7 +68,7 @@ void htFreeHashTable(struct hash_table *ht)
     free(ht);
 }
 
-void htHashStats(struct hash_table *t)
+void htHashStats(const struct hash_table *t)
 {
     int i = 0;
     int empty = 0;
@@ -89,13 +89,13 @@ void htHashStats(struct hash_table *t)
     printf("Avergage Depth: %f\n", (double)t->entries / (double)t->size);
 }
 
-static unsigned int htHashStrings(const char *s, const char *t)
+static unsigned int htHashStrings(const char * s, const char * t)
 {
     unsigned int res = 0;
 
-    while (*s)
+    while (*s != '\0')
 	res = ((res<<1) + (int)(*(s++)));
-    while (*t)
+    while (*t != '\0')
 	res = ((res<<1) + (int)(*(t++)));
 
     return res;

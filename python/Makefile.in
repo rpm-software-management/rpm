@@ -474,6 +474,10 @@ mostlyclean distclean maintainer-clean
 rpmmodule.so: $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $^ $(rpmmodule_so_LDFLAGS)
 
+.PHONY:	lclint
+lclint:
+	lclint $(DEFS) $(INCLUDES) $(librpmmodule_la_SOURCES)
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

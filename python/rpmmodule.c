@@ -20,6 +20,11 @@
 
 extern int _rpmio_debug;
 
+#ifdef __LCLINT__
+#undef	PyObject_HEAD
+#defin	PyObject_HEAD	int _PyObjectHead
+#endif
+
 extern int mdfile(const char *fn, unsigned char *digest);
 
 void initrpm(void);
@@ -1267,7 +1272,7 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
-    struct rpmDependencyConflict * conflicts;
+    struct rpmDependencyConflict_s * conflicts;
     int numConflicts;
     PyObject * list, * cf;
     int i;
@@ -1278,6 +1283,7 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
     if (numConflicts) {
 	list = PyList_New(0);
 
+	/* XXX TODO: rpmlib-4.0.3 can return multiple suggested packages. */
 	for (i = 0; i < numConflicts; i++) {
 	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
 			       conflicts[i].byVersion, conflicts[i].byRelease,
@@ -1286,14 +1292,14 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 			       conflicts[i].needsVersion,
 
 			       conflicts[i].needsFlags,
-			       conflicts[i].suggestedPackage ?
-				   conflicts[i].suggestedPackage : Py_None,
+			       conflicts[i].suggestedPackages ?
+				   conflicts[i].suggestedPackages[0] : Py_None,
 			       conflicts[i].sense);
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
 	}
 
-	rpmdepFreeConflicts(conflicts, numConflicts);
+	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 
 	return list;
     }

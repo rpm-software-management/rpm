@@ -1,0 +1,36 @@
+-I. -I.. -I../lib -I../rpmdb -I../rpmio -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+
++partial
+
+-warnunixlib
+-warnposix
+
++unixlib
+
+# XXX ignore doxygen markings
+-unrecogcomments
+
+# don't-bother-me-yet parameters
+-branchstate		# ~39
+-mustfree		# ~325
+
+# not-yet normal parameters
+-boolops		# ~351 w->n
+-predboolint		# ~200 w->n
+-type			# ~271
+
+# -weak paramaters
+#+boolint
+#-boolops
+#+ignorequals
+#+ignoresigns
+#-mustfree
+#+longintegral
+#+matchanyintegral
+#-nullpass
+#-observertrans
+#-predboolint
+#-predboolothers
+#-retvalint
+#-retvalother
+#-shiftsigned
