@@ -74,17 +74,15 @@
 #define INSTALL_PRINTLABEL	8
 
 #define VERIFY_NONE             0
-#define VERIFY_MD5              1
+#define VERIFY_MD5              (1 << 0)
 #define VERIFY_FILESIZE         (1 << 1)
 #define VERIFY_LINKTO           (1 << 2)
-#define VERIFY_UID              (1 << 3)
-#define VERIFY_GID              (1 << 4)
-#define VERIFY_USERNAME         (1 << 5)
-#define VERIFY_GROUPNAME        (1 << 6)
-#define VERIFY_MTIME            (1 << 7)
-#define VERIFY_MODE             (1 << 8)
-#define VERIFY_RDEV             (1 << 9)
-#define VERIFY_ALL              0xffffffff
+#define VERIFY_USER             (1 << 3)
+#define VERIFY_GROUP            (1 << 4)
+#define VERIFY_MTIME            (1 << 5)
+#define VERIFY_MODE             (1 << 6)
+#define VERIFY_RDEV             (1 << 7)
+#define VERIFY_ALL              ~(VERIFY_NONE)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
@@ -145,5 +143,6 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
+int rpmVerifyFile(char * prefix, Header h, int filenum, int * result);
 
 #endif
