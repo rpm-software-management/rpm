@@ -119,6 +119,8 @@ extern const int rpmTagTableSize;
 #define REQUIRE_GREATER         (1 << 2)
 #define REQUIRE_EQUAL           (1 << 3)
 #define REQUIRE_PROVIDES        (1 << 4)   /* only used internally by builds */
+#define REQUIRE_CONFLICTS       (1 << 5)   /* only used internally by builds */
+#define REQUIRE_SENSEMASK       15         /* Mask to get senses */
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
