@@ -704,7 +704,7 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 
 	otherFileNum = -1;			/* keep gcc quiet */
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
-#if XXX_REMOVED_PACKAGES_LAST
+#if XXX_ERASED_PACKAGES_LAST
 	    if (recs[otherPkgNum]->type != TR_ADDED)
 		continue;
 #endif
@@ -751,10 +751,14 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	    break;
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
-#if XXX_REMOVED_PACKAGES_LAST
+#if XXX_ERASED_PACKAGES_LAST
 		fi->actions[i] = FA_SKIP;
 		break;
 #else
+		if (recs[otherPkgNum]->actions[otherFileNum] != FA_REMOVE) {
+		    fi->actions[i] = FA_SKIP;
+		    break;
+		}
 		recs[otherPkgNum]->actions[otherFileNum] = FA_SKIP;
 #endif
 	    }
