@@ -42,6 +42,17 @@ myLDADD = \
 	@INTLLIBS@ \
 	@LIBMISC@
 
+whyLDADD = \
+	$(top_builddir)/build/.libs/librpmbuild.a \
+	$(top_builddir)/lib/.libs/librpm.a \
+	$(top_builddir)/rpmdb/.libs/librpmdb.a \
+	$(top_builddir)/rpmio/.libs/librpmio.a \
+	$(top_builddir)/popt/.libs/libpopt.a \
+	@WITH_LIBELF_LIB@ \
+	@WITH_ZLIB_LIB@ \
+	@INTLLIBS@ \
+	@LIBMISC@
+
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
@@ -61,7 +72,7 @@ noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
-rpm_LDADD =		rpm.o $(myLDADD)
+rpm_LDADD =		rpm.o $(whyLDADD)
 rpm.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
 

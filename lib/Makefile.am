@@ -39,7 +39,7 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c
-librpm_la_LDFLAGS = -release @VERSION@
+librpm_la_LDFLAGS = -release @VERSION@ @HACK_LIBTOOLPATH@ $(top_builddir)/rpmdb/librpmdb.la
 
 # XXX Add internal libtool dependence
 install-data-local:

@@ -371,7 +371,7 @@ AC_CHECK_HEADER([gelf.h], [
 	AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
 	AC_CHECK_LIB(elf, gelf_getvernaux, [
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
-	    WITH_LIBELF_LIB="/usr/lib/libelf.a"
+	    WITH_LIBELF_LIB="-lelf"
 	])
     ], [
 	if test -d elfutils/libelf ; then
@@ -388,7 +388,7 @@ AC_SUBST(WITH_LIBELF_LIB)
 
 WITH_LIBDWARF_INCLUDE=
 AC_CHECK_HEADER([dwarf.h], [
-	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
+	AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
     ], [
 	if test -d elfutils/libdwarf ; then
 	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
@@ -1104,6 +1104,14 @@ else
     echo "*** no default requires information is available for ${build_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
+
+dnl XXX hack in explicit -L/lib64 -L/usr/lib64 on x86_64
+HACK_LIBTOOLPATH=
+case "${build_cpu}" in
+x86_64*)	HACK_LIBTOOLPATH="-L/lib64 -L/usr/lib64" ;;
+esac
+AC_SUBST(HACK_LIBTOOLPATH)
+
 
 dnl Determine the canonical arch-vendor-os for the build machine
 case "${build_cpu}" in

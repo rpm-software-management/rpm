@@ -42,13 +42,13 @@ debugedit_SOURCES =	debugedit.c hashtab.c
 javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
-rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmdeps_SOURCES =	rpmdeps.c
-rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@ $(top_builddir)/file/libfmagic.la
+#rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@ $(top_builddir)/file/libfmagic.la
 
 rpmgraph_SOURCES =	rpmgraph.c
-rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpminject_SOURCES =	rpminject.c
 rpminject_LDFLAGS =	@LDFLAGS_STATIC@

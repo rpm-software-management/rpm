@@ -34,6 +34,10 @@
 	- add -g to all platforms optflags.
 	- build with external elfutils (preferred), if available.
 	- upgrade to elfutils-0.63.
+	- link rpm libraries together, use shared helpers with external -lelf.
+	- move libfmagic to librpmio.
+	- use libtool-1.4.3, autoconf-2.56.
+	- add explicit -L/lib64 -L/usr/lib64 for libtool mode=relink on x86_64.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

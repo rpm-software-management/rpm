@@ -41,7 +41,7 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
-librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@
+librpmdb_la_LDFLAGS = -release @VERSION@ @HACK_LIBTOOLPATH@ $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la @WITH_LIBELF_LIB@ @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 
