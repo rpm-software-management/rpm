@@ -212,6 +212,7 @@
 	- resurrect --rollback.
 	- renumber the callback types to be an orthogonal bit mask.
 	- provide repackage progress callbacks, compression is slow.
+	- fix: don't repackage %%ghost files.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

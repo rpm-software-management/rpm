@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-04 11:49-0400\n"
+"POT-Creation-Date: 2002-08-04 14:59-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1648,27 +1648,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1660 lib/fsm.c:1796
+#: lib/fsm.c:1662 lib/fsm.c:1798
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/fsm.c:1822
+#: lib/fsm.c:1824
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
 
-#: lib/fsm.c:1828
+#: lib/fsm.c:1830
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "Entfernen von %s fehlgeschlagen: %s"
 
-#: lib/fsm.c:1838
+#: lib/fsm.c:1840
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:1858
+#: lib/fsm.c:1860
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "kann Datei %s nicht öffnen: "

@@ -1618,6 +1618,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	if (fsm->goal == FSM_PKGBUILD) {
+	    if (fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
+		break;
 	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
 		struct hardLink_s * li, * prev;
 
