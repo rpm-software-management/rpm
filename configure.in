@@ -265,6 +265,14 @@ if test $HAS_S_ISSOCK = yes; then
 	AC_DEFINE(HAVE_S_ISSOCK)
 fi
 
+AC_MSG_CHECKING(if timezone is defined...)
+AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
+      HAS_TIMEZONE=yes,HAS_TIMEZONE=no)
+AC_MSG_RESULT($HAS_TIMEZONE)
+if test $HAS_TIMEZONE = no; then
+      AC_DEFINE(NEED_TIMEZONE)
+fi
+
 dnl Checks for library functions.
 AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
 AC_CHECK_FUNC(realpath, AC_DEFINE(HAVE_REALPATH), MISCOBJS="$MISCOBJS realpath.o")
