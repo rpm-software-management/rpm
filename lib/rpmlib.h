@@ -148,13 +148,15 @@ extern const int rpmTagTableSize;
 #define RPMVAR_PGP_SECRING              21
 #define RPMVAR_PGP_PUBRING              22
 #define RPMVAR_EXCLUDEDOCS              23
-#define RPMVAR_LASTVAR	                24 /* IMPORTANT to keep right! */
+#define RPMVAR_ARCH                     24
+#define RPMVAR_OS                       25
+#define RPMVAR_LASTVAR	                26 /* IMPORTANT to keep right! */
 
 char *getVar(int var);
 int getBooleanVar(int var);
 void setVar(int var, char *val);
 
-int readConfigFiles(char * fn);
+int readConfigFiles(char * fn, char * arch, char * os);
 
 typedef struct rpmdb * rpmdb;
 
