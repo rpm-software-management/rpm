@@ -116,6 +116,7 @@ _read_package_info(fp)
 
 	fd = fdDup(fileno(fp));
 #ifdef RPM2_RPM41
+	rpmtsSetVSFlags(ts, _RPMVSF_NOSIGNATURES);
 	rc = rpmReadPackageFile(ts, fd, "filename or other identifier", &ret);
 #else
 	rc = rpmReadPackageInfo(fd, NULL, &ret);
