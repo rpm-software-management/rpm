@@ -57,7 +57,7 @@ make-subdirs:
 
 $(PROGS): $(OBJS)
 
-install:
+install: all
 	install -m 755 -o 0 -g 0 -d $(RPMBINDIR)
 	install -m 755 -o 0 -g 0 -d $(BINDIR)
 	install -m 755 -o 0 -g 0 -d $(MANDIR)
