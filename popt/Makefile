@@ -4,9 +4,12 @@ DEFCFLAGS=-O2
 
 SOURCES =$(subst .o,.c,$(LIBOBJECTS))
 LIBPOPT = libpopt.a
-INSTALL= @INSTALL@
-INSTALL_PROGRAM= @INSTALL_PROGRAM@
-INSTALL_DATA= @INSTALL_DATA@
+LIBS=/usr/lib
+INCLUDE=/usr/include
+
+ifeq (../Makefile.inc,$(wildcard ../Makefile.inc))
+include ../Makefile.inc
+endif
 
 # -----------------------------------------------------------------------
 
@@ -37,6 +40,10 @@ squeaky: clean
 
 depend:
 	$(CPP) $(CFLAGS) -M $(SOURCES) > .depend
+
+install:
+	install -m 644 popt.h $(INCLUDE)/popt.h
+	install -m 644 $(LIBPOPT) $(LIBS)/$(LIBPOPT)
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
