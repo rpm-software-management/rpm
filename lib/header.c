@@ -12,7 +12,6 @@
 #include <ctype.h>
 #include <malloc.h>
 #include <string.h>
-#include <sys/mman.h>
 #include <unistd.h>
 
 #include "header.h"
@@ -478,6 +477,12 @@ void dumpHeader(Header h, FILE * f, int flags)
 	    case RPMTAG_FILEMD5S:	tag = "RPMTAG_FILEMD5S";	break;
 	    case RPMTAG_FILELINKTOS:	tag = "RPMTAG_FILELINKTOS";	break;
 	    case RPMTAG_FILEFLAGS:	tag = "RPMTAG_FILEFLAGS";	break;
+	    case RPMTAG_FILEUSERNAME:	tag = "RPMTAG_FILEUSERNAME";	break;
+	    case RPMTAG_FILEGROUPNAME:	tag = "RPMTAG_FILEGROUPNAME";	break;
+	    case RPMTAG_EXCLUDE:	tag = "RPMTAG_EXCLUDE";		break;
+	    case RPMTAG_EXCLUSIVE:	tag = "RPMTAG_EXCLUSIVE";	break;
+	    case RPMTAG_ICON:		tag = "RPMTAG_ICON";		break;
+	    case RPMTAG_SOURCERPM:	tag = "RPMTAG_SOURCERPM";	break;
 	    default:			tag = "(unknown)";		break;
 	}
 
