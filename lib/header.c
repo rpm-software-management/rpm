@@ -1408,6 +1408,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		    return 1;
 		}
 
+		i = 0;
 		findTag(start, tags, extensions, &entry, &ext);
 
 		if (entry) {
@@ -1767,7 +1768,23 @@ static struct extensionCache * allocateExtensionCache(
 	    ext++;
     }
 
-    return calloc(i, sizeof(struct extensionCache *));
+    return calloc(i, sizeof(struct extensionCache));
+}
+
+void freeExtensionCache(const struct headerSprintfExtension * extensions,
+		        struct extensionCache * cache) {
+    const struct headerSprintfExtension * ext = extensions;
+    int i = 0;
+
+    while (ext->type != HEADER_EXT_LAST) {
+	if (cache[i].freeit) free(cache[i].data);
+
+	i++;
+	if (ext->type == HEADER_EXT_MORE)
+	    ext = ext->u.more;
+	else
+	    ext++;
+    }
 }
 
 char * headerSprintf(Header h, const char * origFmt, 
@@ -1816,6 +1833,7 @@ char * headerSprintf(Header h, const char * origFmt,
     }
 
     free(fmtString);
+    freeExtensionCache(extensions, extCache);
 
     return answer;
 }
