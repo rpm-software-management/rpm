@@ -52,7 +52,7 @@ print "not " if ($hdr->size <= 0);
 print "ok 6\n";
 
 # Check tagtype()
-use RPM::Constants ':rpmtypes';
+use RPM::Constants ':rpmtype';
 
 print "not " unless ($hdr->tagtype(q{size}) == RPM_INT32_TYPE);
 print "ok 7\n";
