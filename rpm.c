@@ -8,6 +8,7 @@
 #include "lib/rpmerr.h"
 #include "lib/messages.h"
 #include "query.h"
+#include "verify.h"
 #include "rpmlib.h"
 #include "build/build.h"
 
@@ -169,6 +170,7 @@ int main(int argc, char ** argv) {
     int long_index;
     enum modes bigMode = MODE_UNKNOWN;
     enum querysources querySource = QUERY_PACKAGE;
+    enum verifysources verifySource = VERIFY_PACKAGE;
     int arg;
     int queryFor = 0;
     int test = 0;
@@ -216,6 +218,7 @@ int main(int argc, char ** argv) {
 	    { "test", 0, &test, 0 },
 	    { "uninstall", 0, 0, 'u' },
 	    { "verbose", 0, 0, 'v' },
+	    { "verify", 0, 0, 'V' },
 	    { "version", 0, &version, 0 },
 	    { 0, 0, 0, 0 } 
 	} ;
@@ -224,7 +227,7 @@ int main(int argc, char ** argv) {
 	exit(-1);
 
     while (1) {
-	arg = getopt_long(argc, argv, "QqhpvPfFilsagGducr:b:", options, 
+	arg = getopt_long(argc, argv, "QqVyYhpvPfFilsagGducr:b:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
@@ -238,6 +241,19 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
 		argerror("only one major mode may be specified");
 	    bigMode = MODE_QUERY;
+	    break;
+
+	  case 'Y':
+	    if (verifySource != VERIFY_PACKAGE && 
+		verifySource != VERIFY_SPACKAGE)
+		argerror("only one type of verify may be performed at a time");
+	    verifySource = VERIFY_SPACKAGE;
+	    /* fallthrough */
+	  case 'V':
+	  case 'y':
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFY)
+		argerror("only one major mode may be specified");
+	    bigMode = MODE_VERIFY;
 	    break;
 
 	  case 'u':
@@ -314,47 +330,51 @@ int main(int argc, char ** argv) {
 
 	  case 'P':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SRPM)
-		argerror("only one type of query may be performed at a time");
+		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_SRPM;
+	    verifySource = VERIFY_SRPM;
 	    break;
 
 	  case 'p':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
-		argerror("only one type of query may be performed at a time");
+		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_RPM;
+	    verifySource = VERIFY_RPM;
 	    break;
 
 	  case 'G':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SGROUP)
-		argerror("only one type of query may be performed at a time");
+		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_SGROUP;
+	    verifySource = VERIFY_SGROUP;
 	    break;
 
 	  case 'g':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_GROUP)
-		argerror("only one type of query may be performed at a time");
+		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_GROUP;
+	    verifySource = VERIFY_GRP;
 	    break;
 
 	  case 'F':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SPATH)
-		argerror("only one type of query may be performed at a time");
+		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_SPATH;
+	    verifySource = VERIFY_SPATH;
 	    break;
 
 	  case 'f':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_PATH)
-		argerror("only one type of query may be performed at a time");
+		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_PATH;
+	    verifySource = VERIFY_PATH;
 	    break;
 
 	  case 'a':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
-		argerror("-a (--all) may only be used for queries");
-	    bigMode = MODE_QUERY;
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_ALL)
-		argerror("only one type of query may be performed at a time");
+		argerror("one type of query/verify may be performed at a time");
 	    querySource = QUERY_ALL;
+	    verifySource = VERIFY_EVERY;
 	    break;
 
 	  case 'h':
@@ -387,7 +407,8 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_QUERY && queryFor) 
 	argerror("unexpected query specifiers");
 
-    if (bigMode != MODE_QUERY && querySource != QUERY_PACKAGE) 
+    if (bigMode != MODE_QUERY && bigMode != MODE_VERIFY &&
+	querySource != QUERY_PACKAGE) 
 	argerror("unexpected query source");
 
     if (bigMode != MODE_INSTALL && force)
@@ -498,6 +519,28 @@ int main(int argc, char ** argv) {
 		argerror("no arguments given for query");
 	    while (optind < argc) 
 		doQuery(prefix, querySource, queryFor, argv[optind++]);
+	}
+	break;
+
+      case MODE_VERIFY:
+	if (verifySource == VERIFY_EVERY) {
+	    doVerify(prefix, VERIFY_EVERY, NULL);
+	} else if (verifySource == VERIFY_SPATH || 
+                   verifySource == VERIFY_SPACKAGE ||
+		   verifySource == VERIFY_SRPM) {
+	    char buffer[255];
+	    int i;
+
+	    while (fgets(buffer, 255, stdin)) {
+		i = strlen(buffer) - 1;
+		if (buffer[i] == '\n') buffer[i] = 0;
+		if (strlen(buffer)) 
+		    doVerify(prefix, verifySource, buffer);
+	    }
+	} else {
+	    if (optind == argc) 
+		argerror("no arguments given for verify");
+	    doVerify(prefix, verifySource, argv + optind);
 	}
 	break;
     }
