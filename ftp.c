@@ -602,7 +602,7 @@ fprintf(stderr, "-> %s", retrCommand);
 	return rc;
     }
 
-    u ->ftpGetFileDoneNeeded = 1;
+    u->ftpGetFileDoneNeeded = 1;
     return 0;
 }
 
