@@ -18,7 +18,7 @@ INCLUDES = -I. \
 
 EXTRA_DIST =	rpminject.c rpmsort.c hashtab.h
 
-EXTRA_PROGRAMS = convertdb1 rpminject rpmsort rpmtool
+EXTRA_PROGRAMS = convertdb1 rpminject rpmsort
 
 LDADD = \
 	$(top_builddir)/lib/librpm.la \
@@ -26,8 +26,7 @@ LDADD = \
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
-noinst_PROGRAMS = rpmtool \
-	dump dumpdb rpmarchive
+noinst_PROGRAMS = rpmtool dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps rpmfile

@@ -13,7 +13,8 @@ typedef enum rpmtoolComponentBits_e {
     RPMTOOL_SHEADER	= (1 << 1),
     RPMTOOL_HEADER	= (1 << 2),
     RPMTOOL_DUMP	= (1 << 3),
-    RPMTOOL_PAYLOAD	= (1 << 4)
+    RPMTOOL_PAYLOAD	= (1 << 4),
+    RPMTOOL_UNCOMPRESS	= (1 << 5)
 } rpmtoolComponentBits;
 
 static rpmtoolComponentBits componentBits = RPMTOOL_NONE;
@@ -37,9 +38,11 @@ static struct poptOption optionsTable[] = {
  { "header", 'H', POPT_BIT_SET,	&componentBits, RPMTOOL_HEADER,
 	N_("extract metadata header"), NULL},
  { "dump", 'D', POPT_BIT_SET,	&componentBits, (RPMTOOL_HEADER|RPMTOOL_DUMP),
-	N_("extract metadata header"), NULL},
- { "payload", 'P', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD,
-	N_("extract payload"), NULL},
+	N_("dump metadata header"), NULL},
+ { "archive", 'A', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD,
+	N_("extract compressed payload"), NULL},
+ { "payload", 'P', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD|RPMTOOL_UNCOMPRESS,
+	N_("extract uncompressed payload"), NULL},
 
  { "file", 'f', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &ofn, 0,
 	N_("output FILE"), N_("FILE") },
@@ -75,10 +78,10 @@ static void initTool(const char * argv0)
 	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpm2cpio")) {
-	componentBits = RPMTOOL_PAYLOAD;
+	componentBits = RPMTOOL_PAYLOAD|RPMTOOL_UNCOMPRESS;
 	ofmt = NULL;
     }
-    if (!strcmp(__progname, "rpmpayload")) {
+    if (!strcmp(__progname, "rpmarchive")) {
 	componentBits = RPMTOOL_PAYLOAD;
 	ofmt = NULL;
     }
@@ -178,37 +181,44 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 
 	/* Read/write package payload. */
 	if (componentBits & RPMTOOL_PAYLOAD) {
-	    const char * payload_compressor = NULL;
-	    const char * rpmio_flags;
-	    FD_t gzdi;
-	    rpmRC rc;
-	    char * t;
+	    if (componentBits & RPMTOOL_UNCOMPRESS) {
+		const char * payload_compressor = NULL;
+		const char * rpmio_flags;
+		FD_t gzdi;
+		rpmRC rc;
+		char * t;
 
-	    /* Retrieve type of payload compression. */
-	    if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
+		/* Retrieve type of payload compression. */
+		if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    (void **) &payload_compressor, NULL))
-		payload_compressor = "gzip";
-	    rpmio_flags = t = alloca(sizeof("r.gzdio"));
-	    *t++ = 'r';
-	    if (!strcmp(payload_compressor, "gzip"))
-		t = stpcpy(t, ".gzdio");
-	    if (!strcmp(payload_compressor, "bzip2"))
-		t = stpcpy(t, ".bzdio");
+		    payload_compressor = "gzip";
+		rpmio_flags = t = alloca(sizeof("r.gzdio"));
+		*t++ = 'r';
+		if (!strcmp(payload_compressor, "gzip"))
+		    t = stpcpy(t, ".gzdio");
+		if (!strcmp(payload_compressor, "bzip2"))
+		    t = stpcpy(t, ".bzdio");
 
-	    gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
-	    if (gzdi == NULL) {
-		fprintf(stderr, "%s: output Fdopen(%s, \"%s\"): %s\n", __progname,
-			(ofn != NULL ? ofn : "-"), rpmio_flags, Fstrerror(fdo));
-		fprintf(stderr, _("cannot re-open payload: %s\n"), Fstrerror(gzdi));
-		ec++;
-		goto bottom;
-	    }
+		gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
+		if (gzdi == NULL) {
+		    fprintf(stderr, "%s: output Fdopen(%s, \"%s\"): %s\n",
+			__progname, (ofn != NULL ? ofn : "-"),
+			rpmio_flags, Fstrerror(fdo));
+		    ec++;
+		    goto bottom;
+		}
 
-	    rc = ufdCopy(gzdi, fdo);
-	    Fclose(gzdi);	/* XXX gzdi == fdi */
-	    if (rc <= 0) {
-		ec++;
-		goto bottom;
+		rc = ufdCopy(gzdi, fdo);
+		xx = Fclose(gzdi);	/* XXX gzdi == fdi */
+		if (rc <= 0) {
+		    ec++;
+		    goto bottom;
+		}
+	    } else {
+		char buffer[BUFSIZ];
+		int ct;
+		while ((ct = Fread(buffer, sizeof(buffer), 1, fdi)))
+		    Fwrite(buffer, ct, 1, fdo);
 	    }
 	}
 
