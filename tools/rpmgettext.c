@@ -36,6 +36,7 @@ char *outputdir = "/tmp/OUT";
 int nlangs = 0;
 char *onlylang[128];
 int metamsgid = 0;
+int nogroups = 1;
 
 int gentran = 0;
 
@@ -303,6 +304,7 @@ gettextfile(FD_t fd, const char *file, FILE *fp, int *poTags)
 	    continue;
 
 	/* XXX skip untranslated RPMTAG_GROUP for now ... */
+    if (nogroups) {
 	switch (*tp) {
 	case RPMTAG_GROUP:
 	    if (count <= 1)
@@ -311,6 +313,7 @@ gettextfile(FD_t fd, const char *file, FILE *fp, int *poTags)
 	default:
 	    break;
 	}
+    }
 
 	/* XXX generate catalog for single language */
 	onlymsgstr = NULL;
@@ -975,7 +978,7 @@ main(int argc, char **argv)
 
     program_name = basename(argv[0]);
 
-    while((c = getopt(argc, argv, "deEMl:I:O:Tv")) != EOF)
+    while((c = getopt(argc, argv, "degEMl:I:O:Tv")) != EOF)
     switch (c) {
     case 'd':
 	debug++;
@@ -1000,6 +1003,9 @@ main(int argc, char **argv)
 	break;
     case 'M':
 	metamsgid++;
+	break;
+    case 'g':
+	nogroups = 0;
 	break;
     case 'v':
 	verbose++;
