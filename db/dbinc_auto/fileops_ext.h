@@ -42,7 +42,7 @@ int __fop_lock_handle __P((DB_ENV *, DB *, u_int32_t, db_lockmode_t, DB_LOCK *, 
 int __fop_file_setup __P((DB *, DB_TXN *, const char *, int, u_int32_t, u_int32_t *));
 int __fop_subdb_setup __P((DB *, DB_TXN *, const char *, const char *, int, u_int32_t));
 int __fop_remove_setup __P((DB *, DB_TXN *, const char *, u_int32_t));
-int __fop_read_meta __P((DB_ENV *, const char *, u_int8_t *, size_t, DB_FH *, int, u_int32_t));
+int __fop_read_meta __P((DB_ENV *, const char *, u_int8_t *, size_t, DB_FH *, int, size_t *, u_int32_t));
 int __fop_dummy __P((DB *, DB_TXN *, const char *, const char *, u_int32_t));
 int __fop_dbrename __P((DB *, const char *, const char *));
 

@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: fop_rec.c,v 1.16 2002/07/08 19:54:51 margo Exp ";
+static const char revid[] = "Id: fop_rec.c,v 1.18 2002/08/14 20:27:01 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -156,7 +156,7 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 	__fop_rename_args *argp;
 	DBMETA *meta;
 	char *real_new, *real_old, *src;
-	int ret, t_ret;
+	int ret;
 	u_int8_t *fileid, mbuf[DBMETASIZE];
 
 	real_new = NULL;
@@ -189,12 +189,10 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 		 * way, shape or form, incorrect, so that we should not restore
 		 * it.
 		 */
-		if ((ret = __fop_read_meta(dbenv,
-		    src, mbuf, DBMETASIZE, NULL, 1, 0)) != 0) {
-			ret = 0;
+		if (__fop_read_meta(
+		    dbenv, src, mbuf, DBMETASIZE, NULL, 1, NULL, 0) != 0)
 			goto done;
-		}
-		if ((t_ret = __db_chk_meta(dbenv, NULL, meta, 1)) != 0)
+		if (__db_chk_meta(dbenv, NULL, meta, 1) != 0)
 			goto done;
 		if (memcmp(argp->fileid.data, meta->uid, DB_FILE_ID_LEN) != 0)
 			goto done;
@@ -239,6 +237,7 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 	DBMETA *meta;
 	char *real_name;
 	int is_real, is_tmp, ret;
+	size_t len;
 	u_int8_t mbuf[DBMETASIZE];
 	u_int32_t cstat;
 
@@ -262,7 +261,15 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 
 	/* Verify that we are manipulating the correct file.  */
 	if ((ret = __fop_read_meta(dbenv,
-	    real_name, mbuf, DBMETASIZE, NULL, 1, 0)) != 0) {
+	    real_name, mbuf, DBMETASIZE, NULL, 1, &len, 0)) != 0) {
+		/*
+		 * If len is non-zero, then the file exists and has something
+		 * in it, but that something isn't a full meta-data page, so
+		 * this is very bad.  Bail out!
+		 */
+		if (len != 0)
+			goto out;
+
 		/* File does not exist. */
 		cstat = TXN_EXPECTED;
 	} else {

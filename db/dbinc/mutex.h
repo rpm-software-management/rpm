@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: mutex.h,v 11.69 2002/08/08 03:19:45 bostic Exp 
+ * Id: mutex.h,v 11.71 2002/09/10 01:36:48 bostic Exp 
  */
 
 #ifndef _DB_MUTEX_H_
@@ -298,16 +298,13 @@ typedef unsigned int tsl_t;
 #ifdef HAVE_MUTEX_WIN32
 #define	MUTEX_FIELDS							\
 	LONG tas;							\
-	union {								\
-		HANDLE event;	/* Windows event HANDLE for wakeups */	\
-		u_int32_t id;	/* ID used for shared mutexes */	\
-	} /* anonymous */;						\
-	LONG nwaiters;
+	LONG nwaiters;							\
+	u_int32_t id;	/* ID used for creating events */		\
 
 #if defined(LOAD_ACTUAL_MUTEX_CODE)
-#define	MUTEX_INIT(x)		0
 #define	MUTEX_SET(tsl)		(!InterlockedExchange((PLONG)tsl, 1))
 #define	MUTEX_UNSET(tsl)	(*(tsl) = 0)
+#define	MUTEX_INIT(tsl)		MUTEX_UNSET(tsl)
 #endif
 #endif
 
@@ -435,7 +432,7 @@ typedef u_int32_t tsl_t;
 })
 
 #define	MUTEX_UNSET(tsl)	(*(tsl) = -1)
-#define	MUTEX_INIT(tsl)		MUTEX_UNSET(tsl)
+#define	MUTEX_INIT(tsl)		(MUTEX_UNSET(tsl), 0)
 #endif
 #endif
 

@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: fop_util.c,v 1.49 2002/08/07 15:40:06 margo Exp ";
+static const char revid[] = "Id: fop_util.c,v 1.52 2002/09/10 02:41:42 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -61,8 +61,11 @@ static int __fop_set_pgsize __P((DB *, DB_FH *, const char *));
 	if (F_ISSET((F), DB_FH_VALID)) {				\
 		if (LF_ISSET(DB_FCNTL_LOCKING))				\
 			(D)->saved_open_fhp = (F);			\
-		else if ((ret = __os_closehandle((D)->dbenv,(F))) != 0)	\
+		else if ((t_ret = __os_closehandle((D)->dbenv,(F))) != 0) { \
+			if (ret == 0)					\
+				ret = t_ret;				\
 			goto err;					\
+		}							\
 	}								\
 }
 
@@ -167,13 +170,13 @@ __fop_file_setup(dbp, txn, name, mode, flags, retidp)
 	DB_ENV *dbenv;
 	DB_FH fh, *fhp;
 	DB_LOCK elock, tmp_lock;
-	DB_LSN lsn;
 	DB_TXN *stxn;
+	char *real_name, *real_tmpname, *tmpname;
 	db_lockmode_t lmode;
+	int created_fhp, created_locker, ret, tmp_created, t_ret, truncating;
+	size_t len;
 	u_int32_t locker, oflags;
 	u_int8_t mbuf[DBMETASIZE];
-	int created_fhp, created_locker, ret, tmp_created, truncating;
-	char *real_name, *real_tmpname, *tmpname;
 
 	DB_ASSERT(name != NULL);
 
@@ -190,7 +193,7 @@ __fop_file_setup(dbp, txn, name, mode, flags, retidp)
 	/*
 	 * If we open a file handle and our caller is doing fcntl(2) locking,
 	 * we can't close it because that would discard the caller's lock.
-	 * Save it until we close the DB handle.
+	 * Save it until we close or refresh the DB handle.
 	 */
 	if (LF_ISSET(DB_FCNTL_LOCKING)) {
 		if ((ret = __os_malloc(dbenv, sizeof(*fhp), &fhp)) != 0)
@@ -234,8 +237,40 @@ retry:	if (!F_ISSET(dbp, DB_AM_COMPENSATE))
 			ret = EEXIST;
 			goto err;
 		}
-reopen:		if ((ret = __fop_read_meta(dbenv, real_name,
-		    mbuf, sizeof(mbuf), fhp, 0, oflags)) != 0)
+
+		/*
+		 * This is special handling for applications that
+		 * are locking outside of Berkeley DB (e.g., Sendmail,
+		 * Postfix).  If we are relying on external FCNTL
+		 * locking and we're going to truncate the file, we
+		 * cannot first open the file to verify that it is
+		 * a DB file and then close/reopen to do the truncate
+		 * since that will lose the external FCNTL lock.
+		 * So, we special case it and leap right into the
+		 * truncate code.
+		 */
+		if (LF_ISSET(DB_FCNTL_LOCKING) && LF_ISSET(DB_TRUNCATE))
+			goto do_trunc;
+
+reopen:		ret = __fop_read_meta(dbenv, real_name,
+		    mbuf, sizeof(mbuf), fhp,
+		    LF_ISSET(DB_FCNTL_LOCKING) && txn == NULL ? 1 : 0,
+		    &len, oflags);
+		/*
+		 * This is special handling for applications that are doing
+		 * file locking outside of Berkeley DB (e.g., Sendmail,
+		 * Postfix).  So, if you're doing FCNTL_LOCKING and are non
+		 * transactional, we're going to treat 0-length files as a
+		 * special case and let you proceed.
+		 */
+		if (ret != 0 &&
+		    LF_ISSET(DB_FCNTL_LOCKING) && txn == NULL && len == 0) {
+			tmpname = (char *)real_name;
+			real_name = NULL;
+			goto creat2;
+		}
+
+		if (ret != 0)
 			goto err;
 
 		if ((ret = __db_meta_setup(dbenv,
@@ -249,7 +284,14 @@ reopen:		if ((ret = __fop_read_meta(dbenv, real_name,
 			if ((ret = REL_ENVLOCK(dbenv, &elock)) != 0)
 				goto err;
 		} else {
-			/* Someone else has file locked; need to wait. */
+			/*
+			 * If someone is doing FCNTL locking outside of us,
+			 * then we should never have a lock conflict and
+			 * should never get to here.  We need to assert that
+			 * because we are about to close the fd which will
+			 * release the FCNTL locks.
+			 */
+			DB_ASSERT(!LF_ISSET(DB_FCNTL_LOCKING));
 			if ((ret = __os_closehandle(dbenv, fhp)) != 0)
 				goto err;
 			ret = __fop_lock_handle(dbenv,
@@ -281,7 +323,7 @@ reopen:		if ((ret = __fop_read_meta(dbenv, real_name,
 			 */
 			if ((ret = __os_closehandle(dbenv, fhp)) != 0)
 				goto err;
-			if ((ret = __os_open(dbenv,
+do_trunc:		if ((ret = __os_open(dbenv,
 			    real_name, DB_OSO_TRUNC, 0, fhp)) != 0)
 				goto err;
 			/*
@@ -324,11 +366,7 @@ reopen:		if ((ret = __fop_read_meta(dbenv, real_name,
 	if ((ret = REL_ENVLOCK(dbenv, &elock)) != 0)
 		goto err;
 
-create:	if (txn == NULL)
-		ZERO_LSN(lsn);
-	else
-		lsn = txn->last_lsn;
-	if ((ret = __db_backup_name(dbenv, name, txn, &tmpname, &lsn)) != 0)
+create:	if ((ret = __db_backup_name(dbenv, name, txn, &tmpname)) != 0)
 		goto err;
 	if (TXN_ON(dbenv) && txn != NULL &&
 	    (ret = dbenv->txn_begin(dbenv, txn, &stxn, 0)) != 0)
@@ -413,7 +451,7 @@ err:		if (stxn != NULL)
 			(void)__fop_remove(dbenv,
 			    NULL, NULL, tmpname, DB_APP_DATA);
 		if (F_ISSET(fhp, DB_FH_VALID))
-			(void)__os_closehandle(dbenv, fhp);
+			CLOSE_HANDLE(dbp, fhp);
 		if (LOCK_ISSET(tmp_lock))
 			__lock_put(dbenv, &tmp_lock);
 		if (LOCK_ISSET(dbp->handle_lock) && txn == NULL)
@@ -424,11 +462,16 @@ err:		if (stxn != NULL)
 			(void)__lock_id_free(dbenv, dbp->lid);
 			dbp->lid = DB_LOCK_INVALIDID;
 		}
-		if (created_fhp)
+		if (created_fhp && !F_ISSET(fhp, DB_FH_VALID))
 			__os_free(dbenv, fhp);
 	}
 
-done:	if (!truncating && tmpname != NULL)
+done:	/*
+	 * There are cases where real_name and tmpname take on the
+	 * exact same string, so we need to make sure that we do not
+	 * free twice.
+	 */
+	if (!truncating && tmpname != NULL && tmpname != real_name)
 		__os_free(dbenv, tmpname);
 	if (real_name != NULL)
 		__os_free(dbenv, real_name);
@@ -509,7 +552,7 @@ __fop_subdb_setup(dbp, txn, mname, name, mode, flags)
 {
 	DB *mdbp;
 	DB_ENV *dbenv;
-	int remove, ret;
+	int do_remove, ret;
 
 	mdbp = NULL;
 	dbenv = dbp->dbenv;
@@ -581,7 +624,7 @@ __fop_subdb_setup(dbp, txn, mname, name, mode, flags)
 
 	/*
 	 * The master's handle lock is under the control of the
-	 * subdb (it acquired the master's locker.  We want to
+	 * subdb (it acquired the master's locker).  We want to
 	 * keep the master's handle lock so that no one can remove
 	 * the file while the subdb is open.  If we register the
 	 * trade event and then invalidate the copy of the lock
@@ -610,11 +653,11 @@ DB_TEST_RECOVERY_LABEL
 
 	/* If we created the master file then we need to remove it.  */
 	if (mdbp != NULL) {
-		remove = F_ISSET(mdbp, DB_AM_CREATED) ? 1 : 0;
-		if (remove)
+		do_remove = F_ISSET(mdbp, DB_AM_CREATED) ? 1 : 0;
+		if (do_remove)
 			F_SET(mdbp, DB_AM_DISCARD);
 		(void)__db_close_i(mdbp, txn, 0);
-		if (remove) {
+		if (do_remove) {
 			(void)db_create(&mdbp, dbp->dbenv, 0);
 			(void)__db_remove_i(mdbp, txn, mname, NULL);
 		}
@@ -637,6 +680,7 @@ __fop_remove_setup(dbp, txn, name, flags)
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
+	DB_FH *fhp;
 	DB_LOCK elock;
 	u_int8_t mbuf[DBMETASIZE];
 	int ret;
@@ -657,13 +701,27 @@ __fop_remove_setup(dbp, txn, name, flags)
 	}
 
 	/*
+	 * We are about to open a file handle and then possibly close it.
+	 * We cannot close handles if we are doing FCNTL locking.  However,
+	 * there is no way to pass the FCNTL flag into this routine via the
+	 * user API.  The only way we can get in here and be doing FCNTL
+	 * locking is if we are trying to clean up an open that was called
+	 * with FCNTL locking.  In that case, the save_fhp should already be
+	 * set.  So, we use that field to tell us if we need to make sure
+	 * that we shouldn't close the handle.
+	 */
+	fhp = dbp->saved_open_fhp;
+	DB_ASSERT(LF_ISSET(DB_FCNTL_LOCKING) ||
+	    fhp == NULL || !F_ISSET(fhp, DB_FH_VALID));
+
+	/*
 	 * Lock environment to protect file open.  That will enable us to
 	 * read the meta-data page and get the fileid so that we can lock
 	 * the handle.
 	 */
 	GET_ENVLOCK(dbenv, dbp->lid, &elock);
 	if ((ret = __fop_read_meta(dbenv,
-	    name, mbuf, sizeof(mbuf), NULL, 0, 0)) != 0)
+	    name, mbuf, sizeof(mbuf), fhp, 0, NULL, 0)) != 0)
 		goto err;
 
 	if ((ret =
@@ -686,26 +744,30 @@ err:	(void)REL_ENVLOCK(dbenv, &elock);
  *	Read the meta-data page from a file and return it in buf.  The
  * open file handle is returned in fhp.
  *
- * PUBLIC: int __fop_read_meta __P((DB_ENV *,
- * PUBLIC:     const char *, u_int8_t *, size_t, DB_FH *, int, u_int32_t));
+ * PUBLIC: int __fop_read_meta __P((DB_ENV *, const char *,
+ * PUBLIC:     u_int8_t *, size_t, DB_FH *, int, size_t *, u_int32_t));
  */
 int
-__fop_read_meta(dbenv, name, buf, size, fhp, errok, flags)
+__fop_read_meta(dbenv, name, buf, size, fhp, errok, nbytesp, flags)
 	DB_ENV *dbenv;
 	const char *name;
 	u_int8_t *buf;
 	size_t size;
 	DB_FH *fhp;
 	int errok;
+	size_t *nbytesp;
 	u_int32_t flags;
 {
 	DB_FH fh, *lfhp;
 	size_t nr;
-	int ret;
+	int myfhp, ret;
 
+	nr = 0;
+	myfhp = 0;
+	memset(&fh, 0, sizeof(fh));
 	lfhp = fhp == NULL ? &fh : fhp;
-	memset(lfhp, 0, sizeof(*fhp));
-	if ((ret = __os_open(dbenv, name, flags, 0, lfhp)) != 0)
+	myfhp = F_ISSET(lfhp, DB_FH_VALID);
+	if (!myfhp && (ret = __os_open(dbenv, name, flags, 0, lfhp)) != 0)
 		goto err;
 	if ((ret = __os_read(dbenv, lfhp, buf, size, &nr)) != 0) {
 		if (!errok)
@@ -722,13 +784,15 @@ __fop_read_meta(dbenv, name, buf, size, fhp, errok, flags)
 	}
 
 err:	/*
-	 * On error, we always close the handle.  If there is no error,
-	 * then we only return the handle if the user didn't pass us
-	 * a handle into which to return it.  If fhp is valid, then
-	 * lfhp is the same as fhp.
+	 * On error, we would like to close the handle.  However, if the
+	 * handle was opened in the caller, we cannot.  If there is no error,
+	 * then we only close the handle if we opened it here.
 	 */
-	if (F_ISSET(lfhp, DB_FH_VALID) && (ret != 0 || fhp == NULL))
+	if (!myfhp && F_ISSET((lfhp), DB_FH_VALID) && (ret != 0 || fhp == NULL))
 		__os_closehandle(dbenv, lfhp);
+
+	if (nbytesp != NULL)
+		*nbytesp = nr;
 	return (ret);
 }
 
@@ -778,8 +842,7 @@ __fop_dummy(dbp, txn, old, new, flags)
 		goto err;
 
 	/* We need to create a dummy file as a place holder. */
-	if ((ret =
-	    __db_backup_name(dbenv, new, txn, &back, &txn->last_lsn)) != 0)
+	if ((ret = __db_backup_name(dbenv, new, stxn, &back)) != 0)
 		goto err;
 	if ((ret = __db_appname(dbenv,
 	    DB_APP_DATA, back, flags, NULL, &realback)) != 0)
@@ -847,7 +910,7 @@ __fop_dummy(dbp, txn, old, new, flags)
 		tmpdbt.data = tmpdbp->fileid;
 		tmpdbt.size = DB_FILE_ID_LEN;
 		namedbt.data = (void *)old;
-		namedbt.size = strlen(old) + 1;
+		namedbt.size = (u_int32_t)strlen(old) + 1;
 		if ((t_ret =
 		    __fop_file_remove_log(dbenv, txn, &lsn, 0, &fiddbt,
 		    &tmpdbt, &namedbt, DB_APP_DATA, stxnid)) != 0 && ret == 0)
