@@ -271,7 +271,12 @@ int poptAddAlias(poptContext con, struct poptAlias newAlias, int flags) {
     int aliasNum = con->numAliases++;
     struct poptAlias * alias;
 
-    con->aliases = realloc(con->aliases, sizeof(newAlias) * con->numAliases);
+    /* SunOS won't realloc(NULL, ...) */
+    if (!con->aliases)
+	con->aliases = malloc(sizeof(newAlias) * con->numAliases);
+    else
+	con->aliases = realloc(con->aliases, 
+			       sizeof(newAlias) * con->numAliases);
     alias = con->aliases + aliasNum;
     
     *alias = newAlias;

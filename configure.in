@@ -322,6 +322,8 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 	echo "hacking things up for sunos"
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
 	AC_DEFINE(NEED_STRINGS_H)
+	AC_DEFINE(NEED_MYREALLOC)
+	MISCOBJS="$MISCOBJS myrealloc.o"
 elif echo "$build_os" | grep hpux > /dev/null; then
 	RPM=rpm.shared
 	echo "hacking things up for hpux"
