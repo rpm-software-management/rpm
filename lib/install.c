@@ -59,8 +59,6 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 static int fileCompare(const void * one, const void * two);
 static int installSources(char * rootdir, int fd, char ** specFilePtr);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
-static int ensureOlder(rpmdb db, char * name, char * newVersion, 
-		       char * newRelease, int dbOffset);
 static int relocateFilelist(Header * hp, char * defaultPrefix, 
 			char * newPrefix, int * relocationSize);
 static int archOkay(Header h);
@@ -232,7 +230,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    for (i = 0; i < matches.count; i++) {
 		if (matches.recs[i].recOffset != otherOffset) {
 		    if (!(flags & INSTALL_UPGRADETOOLD)) 
-			if (ensureOlder(db, name, version, release, 
+			if (rpmEnsureOlder(db, name, version, release, 
 					matches.recs[i].recOffset)) 
 			    return 2;
 		    *intptr++ = matches.recs[i].recOffset;
@@ -1335,8 +1333,8 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
     return 0;
 }
 
-static int ensureOlder(rpmdb db, char * name, char * newVersion, 
-		       char * newRelease, int dbOffset) {
+int rpmEnsureOlder(rpmdb db, char * name, char * newVersion, 
+		   char * newRelease, int dbOffset) {
     Header h;
     char * oldVersion, * oldRelease;
     int rc, result;
