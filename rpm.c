@@ -63,7 +63,7 @@ void printUsage(void) {
     puts("                        [--sign] [--test] [--time-check <s>] specfile");
     puts("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm");
     puts("       rpm {--where} package1 package2 ... packageN");
-    puts("       rpm {--check-sig} package1 package2 ... packageN");
+    puts("       rpm {--checksig} package1 package2 ... packageN");
 }
 
 void printHelp(void) {
@@ -139,7 +139,7 @@ void printHelp(void) {
     puts("                        - install source package, build binary package,");
     puts("                          and remove spec file, sources, patches, and icons.");
     puts("    -K");
-    puts("    --check-sig <pkg>+  - verify PGP signature");
+    puts("    --checksig <pkg>+  - verify PGP signature");
 }
 
 int build(char * arg, int buildAmount, char *passPhrase) {
@@ -212,7 +212,7 @@ int main(int argc, char ** argv) {
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
 	    { "build", 1, 0, 'b' },
-	    { "check-sig", 0, 0, 'K' },
+	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
 	    { "docfiles", 0, 0, 'd' },
