@@ -259,8 +259,9 @@ static char *doUntar(Spec spec, int c, int quietly)
     if (compressed) {
 	sprintf(buf,
 		"%s -dc %s | tar %s -\n"
-		"if [ $? -ne 0 ]; then\n"
-		"  exit $?\n"
+		"STATUS=$?\n"
+		"if [ $STATUS -ne 0 ]; then\n"
+		"  exit $STATUS\n"
 		"fi",
 		rpmGetVar(RPMVAR_GZIPBIN), file, taropts);
     } else {
