@@ -171,9 +171,7 @@ static int mapFind(void * a, const char * fsmPath)
 	if (fi->apath != NULL)
 	    p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath),
 			cpioStrCmp);
-	if (p == NULL) {
-	    fprintf(stderr, "*** not mapped %s\n", fsmPath);
-	} else {
+	if (p) {
 	    iter->i = p - fi->apath;
 	    ix = mapNextIterator(iter);
 	}
@@ -1397,9 +1395,20 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
 		? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
 
-	/* On non-install, detect end-of-loop. */
-	if (fsm->goal != FSM_PKGINSTALL && fsm->ix < 0) {
-	    rc = CPIOERR_HDR_TRAILER;
+	/* Detect end-of-loop and/or mapping error. */
+	if (fsm->ix < 0) {
+	    if (fsm->goal == FSM_PKGINSTALL) {
+#if 0
+		rpmMessage(RPMMESS_WARNING,
+		    _("archive file %s was not found in header file list\n"),
+			fsm->path);
+#endif
+		if (fsm->failedFile && *fsm->failedFile == NULL)
+		    *fsm->failedFile = xstrdup(fsm->path);
+		rc = CPIOERR_UNMAPPED_FILE;
+	    } else {
+		rc = CPIOERR_HDR_TRAILER;
+	    }
 	    break;
 	}
 

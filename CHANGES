@@ -192,6 +192,7 @@
 	- rename pmac to ppcmac.
 	- ia64: revert -O0 compilation.
 	- upgrade to db-3.3.11 final.
+	- fix: don't segfault when presented with rpm-2.4.10 packaging (#49688).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
