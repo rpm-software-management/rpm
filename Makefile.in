@@ -103,7 +103,7 @@ install: all
 	fi
 	
 	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
-	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-provides $(installprefix)/$(BINDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
 	$(INSTALL) -s -m 755 -o 0 -g 0 rpm2cpio $(installprefix)/$(BINDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)

@@ -164,6 +164,15 @@ else
 	RPMSTATIC=rpm
 fi
 
+rm -f ./find-provides.sh
+if test -f find-provides/$build_os ; then
+	echo "using find-provides/$build_os for automatic provides generation"
+	ln -s find-provides/$build_os ./find-provides.sh
+else
+	echo "*** no default provides information is available for $build_os"
+	ln -s find-provides/none ./find-provides.sh
+fi
+
 AC_SUBST(MISCOBJS)
 AC_SUBST(INCPATH)
 AC_SUBST(LIBMISC)
