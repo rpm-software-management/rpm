@@ -1264,9 +1264,9 @@ void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const 
 	size_t qsize = xsize-ysize;
 
 	*result = (mpge(ysize, xdata, ydata) ? 1 : 0);
-	mpcopy(xsize, result + 1, xdata);
+	mpcopy(xsize, result+1, xdata);
 	if (*result)
-		(void) mpsub(ysize, result, ydata);
+		(void) mpsub(ysize, result+1, ydata);
 	result++;
 
 	while (qsize--)
