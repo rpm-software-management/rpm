@@ -216,7 +216,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 		  write(toLdd[1], writePtr,
 		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 	        if (errno != EAGAIN) {
-		    perror("Damn!");
+		    perror("generateAutoReqProv");
 	            exit(1);
 		}
 	        bytesWritten = 0;
