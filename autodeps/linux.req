@@ -18,7 +18,8 @@ fi
 
 #
 # --- Grab the file manifest and classify files.
-filelist=`sed "s/['\"]/\\\&/g"`
+#filelist=`sed "s/['\"]/\\\&/g"`
+filelist=`sed "s/[]['\"*?{}]/\\\\\&/g"`
 exelist=`echo $filelist | xargs -r file | egrep -v ":.* (commands|script) " | \
 	grep ":.*executable" | cut -d: -f1`
 scriptlist=`echo $filelist | xargs -r file | \
