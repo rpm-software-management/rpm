@@ -56,7 +56,7 @@ for SUBST in $SUBSTS ; do
 
   cat $PLATFORM | \
     sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
-	-e "s,@RPMRC_ARCH@,$ARCH," \
+	-e "s,@RPMRC_ARCH@,$arch," \
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
