@@ -92,7 +92,7 @@
 
 #define PY_BSDDB_VERSION "3.3.1"
 
-static char *rcs_id = "$Id: _rpmdb.c,v 1.3 2002/06/03 23:27:05 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.4 2002/06/07 13:12:34 jbj Exp $";
 
 
 #ifdef WITH_THREAD
@@ -533,12 +533,24 @@ static int _DB_put(DBObject* self, DB_TXN *txn, DBT *key, DBT *data, int flags)
 }
 
 /* Get a key/data pair from a cursor */
-static PyObject* _DBCursor_get(DBCursorObject* self, int flags)
+static PyObject* _DBCursor_get(DBCursorObject* self, int extra_flags,
+			       PyObject *args, PyObject *kwargs, char *format)
 {
     int err;
     PyObject* retval = NULL;
     DBT key, data;
+    int dlen = -1;
+    int doff = -1;
+    int flags = 0;
+    char* kwnames[] = { "flags", "dlen", "doff", NULL };
 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, format, kwnames,
+				     &flags, &dlen, &doff)) 
+      return NULL;
+
+    CHECK_CURSOR_NOT_CLOSED(self);
+
+    flags |= extra_flags;
     CLEAR_DBT(key);
     CLEAR_DBT(data);
     if (CHECK_DBFLAG(self->mydb, DB_THREAD)) {
@@ -546,6 +558,9 @@ static PyObject* _DBCursor_get(DBCursorObject* self, int flags)
         data.flags = DB_DBT_MALLOC;
         key.flags = DB_DBT_MALLOC;
     }
+    if (!add_partial_dbt(&data, dlen, doff))
+        return NULL;
+
     MYDB_BEGIN_ALLOW_THREADS;
     err = self->dbc->c_get(self->dbc, &key, &data, flags);
     MYDB_END_ALLOW_THREADS;
@@ -662,10 +677,19 @@ static void
 DB_dealloc(DBObject* self)
 {
     if (self->db != NULL) {
-        MYDB_BEGIN_ALLOW_THREADS;
-        self->db->close(self->db, 0);
+        /* avoid closing a DB when its DBEnv has been closed out from under it */
+        if (!self->myenvobj ||
+            (self->myenvobj && self->myenvobj->db_env)) {
+            MYDB_BEGIN_ALLOW_THREADS;
+            self->db->close(self->db, 0);
+            MYDB_END_ALLOW_THREADS;
+#if PYTHON_API_VERSION >= 1010 /* if Python 2.1 or better use warning framework */
+        } else {
+            PyErr_Warn(PyExc_RuntimeWarning,
+                "DB could not be closed in destructor: DBEnv already closed");
+#endif
+        }
         self->db = NULL;
-        MYDB_END_ALLOW_THREADS;
     }
     if (self->myenvobj) {
         Py_DECREF(self->myenvobj);
@@ -1028,6 +1052,8 @@ DB_close(DBObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args,"|i:close", &flags))
         return NULL;
     if (self->db != NULL) {
+        if (self->myenvobj)
+            CHECK_ENV_NOT_CLOSED(self->myenvobj);
         MYDB_BEGIN_ALLOW_THREADS;
         err = self->db->close(self->db, flags);
         MYDB_END_ALLOW_THREADS;
@@ -2343,16 +2369,9 @@ DBC_count(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_current(DBCursorObject* self, PyObject* args)
+DBC_current(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:current", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_CURRENT);
+    return _DBCursor_get(self,DB_CURRENT,args,kwargs,"|iii:current");
 }
 
 
@@ -2395,39 +2414,38 @@ DBC_dup(DBCursorObject* self, PyObject* args)
     return (PyObject*) newDBCursorObject(dbc, self->mydb);
 }
 
-
 static PyObject*
-DBC_first(DBCursorObject* self, PyObject* args)
+DBC_first(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:first", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_FIRST);
+    return _DBCursor_get(self,DB_FIRST,args,kwargs,"|iii:first");
 }
 
 
 static PyObject*
-DBC_get(DBCursorObject* self, PyObject* args)
+DBC_get(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
     int err, flags;
     PyObject* keyobj = NULL;
     PyObject* dataobj = NULL;
     PyObject* retval = NULL;
+    int dlen = -1;
+    int doff = -1;
     DBT key, data;
+    char* kwnames[] = { "key","data", "flags", "dlen", "doff", NULL };
 
     CLEAR_DBT(key);
     CLEAR_DBT(data);
-    if (!PyArg_ParseTuple(args, "i:get", &flags)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|ii:get", &kwnames[2],
+				     &flags, &dlen, &doff)) {
         PyErr_Clear();
-        if (!PyArg_ParseTuple(args, "Oi:get", &keyobj, &flags)) {
+        if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Oi|ii:get", &kwnames[1], 
+					 &keyobj, &flags, &dlen, &doff)) {
             PyErr_Clear();
-            if (!PyArg_ParseTuple(args, "OOi:get", &keyobj, &dataobj, &flags))
+            if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOi|ii:get", kwnames,
+				  &keyobj, &dataobj, &flags, &dlen, &doff)) {
                 return NULL;
-        }
+	    }
+	}
     }
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -2435,6 +2453,8 @@ DBC_get(DBCursorObject* self, PyObject* args)
     if (keyobj && !make_key_dbt(self->mydb, keyobj, &key, NULL))
         return NULL;
     if (dataobj && !make_dbt(dataobj, &data))
+        return NULL;
+    if (!add_partial_dbt(&data, dlen, doff))
         return NULL;
 
     if (CHECK_DBFLAG(self->mydb, DB_THREAD)) {
@@ -2512,55 +2532,38 @@ DBC_get_recno(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_last(DBCursorObject* self, PyObject* args)
+DBC_last(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:last", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_LAST);
+    return _DBCursor_get(self,DB_LAST,args,kwargs,"|iii:last");
 }
 
 
 static PyObject*
-DBC_next(DBCursorObject* self, PyObject* args)
+DBC_next(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:next", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_NEXT);
+    return _DBCursor_get(self,DB_NEXT,args,kwargs,"|iii:next");
 }
 
 
 static PyObject*
-DBC_prev(DBCursorObject* self, PyObject* args)
+DBC_prev(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:prev", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_PREV);
+    return _DBCursor_get(self,DB_PREV,args,kwargs,"|iii:prev");
 }
 
 
 static PyObject*
-DBC_put(DBCursorObject* self, PyObject* args)
+DBC_put(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags = 0;
     PyObject* keyobj, *dataobj;
     DBT key, data;
+    char* kwnames[] = { "key", "data", "flags", "dlen", "doff", NULL };
+    int dlen = -1;
+    int doff = -1;
 
-    if (!PyArg_ParseTuple(args, "OO|i:put", &keyobj, &dataobj, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|iii:put", kwnames,
+				     &keyobj, &dataobj, &flags, &dlen, &doff))
         return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -2569,6 +2572,7 @@ DBC_put(DBCursorObject* self, PyObject* args)
         return NULL;
     if (!make_dbt(dataobj, &data))
         return NULL;
+    if (!add_partial_dbt(&data, dlen, doff)) return NULL;
 
     MYDB_BEGIN_ALLOW_THREADS;
     err = self->dbc->c_put(self->dbc, &key, &data, flags);
@@ -2581,13 +2585,17 @@ DBC_put(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_set(DBCursorObject* self, PyObject* args)
+DBC_set(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
     int err, flags = 0;
     DBT key, data;
     PyObject* retval, *keyobj;
+    char* kwnames[] = { "key", "flags", "dlen", "doff", NULL };
+    int dlen = -1;
+    int doff = -1;
 
-    if (!PyArg_ParseTuple(args, "O|i:set", &keyobj, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|iii:set", kwnames,
+				     &keyobj, &flags, &dlen, &doff))
         return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -2600,6 +2608,9 @@ DBC_set(DBCursorObject* self, PyObject* args)
         /* Tell BerkeleyDB to malloc the return value (thread safe) */
         data.flags = DB_DBT_MALLOC;
     }
+    if (!add_partial_dbt(&data, dlen, doff))
+        return NULL;
+
     MYDB_BEGIN_ALLOW_THREADS;
     err = self->dbc->c_get(self->dbc, &key, &data, flags|DB_SET);
     MYDB_END_ALLOW_THREADS;
@@ -2632,13 +2643,17 @@ DBC_set(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_set_range(DBCursorObject* self, PyObject* args)
+DBC_set_range(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags = 0;
     DBT key, data;
     PyObject* retval, *keyobj;
+    char* kwnames[] = { "key", "flags", "dlen", "doff", NULL };
+    int dlen = -1;
+    int doff = -1;
 
-    if (!PyArg_ParseTuple(args, "O|i:set_range", &keyobj, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|iii:set_range", kwnames,
+				     &keyobj, &flags, &dlen, &doff))
         return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -2652,6 +2667,8 @@ DBC_set_range(DBCursorObject* self, PyObject* args)
         data.flags = DB_DBT_MALLOC;
         key.flags = DB_DBT_MALLOC;
     }
+    if (!add_partial_dbt(&data, dlen, doff))
+        return NULL;
     MYDB_BEGIN_ALLOW_THREADS;
     err = self->dbc->c_get(self->dbc, &key, &data, flags|DB_SET_RANGE);
     MYDB_END_ALLOW_THREADS;
@@ -2731,15 +2748,19 @@ DBC_get_both(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_set_recno(DBCursorObject* self, PyObject* args)
+DBC_set_recno(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
     int err, irecno, flags=0;
     db_recno_t recno;
     DBT key, data;
     PyObject* retval;
+    int dlen = -1;
+    int doff = -1;
+    char* kwnames[] = { "recno","flags", "dlen", "doff", NULL };
 
-    if (!PyArg_ParseTuple(args, "i|i:set_recno", &irecno, &flags))
-        return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|iii:set_recno", kwnames,
+				     &irecno, &flags, &dlen, &doff))
+      return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
 
@@ -2761,6 +2782,8 @@ DBC_set_recno(DBCursorObject* self, PyObject* args)
         /* Tell BerkeleyDB to malloc the return value (thread safe) */
         data.flags = DB_DBT_MALLOC;
     }
+    if (!add_partial_dbt(&data, dlen, doff))
+        return NULL;
 
     MYDB_BEGIN_ALLOW_THREADS;
     err = self->dbc->c_get(self->dbc, &key, &data, flags|DB_SET_RECNO);
@@ -2780,58 +2803,30 @@ DBC_set_recno(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_consume(DBCursorObject* self, PyObject* args)
+DBC_consume(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:consume", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_CONSUME);
+    return _DBCursor_get(self,DB_CONSUME,args,kwargs,"|iii:consume");
 }
 
 
 static PyObject*
-DBC_next_dup(DBCursorObject* self, PyObject* args)
+DBC_next_dup(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:next_dup", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_NEXT_DUP);
+    return _DBCursor_get(self,DB_NEXT_DUP,args,kwargs,"|iii:next_dup");
 }
 
 
 static PyObject*
-DBC_next_nodup(DBCursorObject* self, PyObject* args)
+DBC_next_nodup(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:next_nodup", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_NEXT_NODUP);
+    return _DBCursor_get(self,DB_NEXT_NODUP,args,kwargs,"|iii:next_nodup");
 }
 
 
 static PyObject*
-DBC_prev_nodup(DBCursorObject* self, PyObject* args)
+DBC_prev_nodup(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:prev_nodup", &flags))
-        return NULL;
-
-    CHECK_CURSOR_NOT_CLOSED(self);
-
-    return _DBCursor_get(self, flags|DB_PREV_NODUP);
+    return _DBCursor_get(self,DB_PREV_NODUP,args,kwargs,"|iii:prev_nodup");
 }
 
 
@@ -2885,6 +2880,8 @@ DBEnv_close(DBEnvObject* self, PyObject* args)
         MYDB_BEGIN_ALLOW_THREADS;
         err = self->db_env->close(self->db_env, flags);
         MYDB_END_ALLOW_THREADS;
+        /* after calling DBEnv->close, regardless of error, this DBEnv
+         * may not be accessed again (BerkeleyDB docs). */
         self->closed = 1;
         self->db_env = NULL;
         RETURN_IF_ERR();
@@ -3633,7 +3630,7 @@ static PyMethodDef DB_methods[] = {
     {"stat",            (PyCFunction)DB_stat,           METH_VARARGS},
     {"sync",            (PyCFunction)DB_sync,           METH_VARARGS},
 #if (DBVER >= 33)
-    {"truncate",        (PyCFunction)DB_truncate,       METH_VARARGS},
+    {"truncate",        (PyCFunction)DB_truncate,       METH_VARARGS|METH_KEYWORDS},
 #endif
     {"type",            (PyCFunction)DB_get_type,       METH_VARARGS},
     {"upgrade",         (PyCFunction)DB_upgrade,        METH_VARARGS},
@@ -3654,25 +3651,25 @@ static PyMappingMethods DB_mapping = {
 static PyMethodDef DBCursor_methods[] = {
     {"close",           (PyCFunction)DBC_close,         METH_VARARGS},
     {"count",           (PyCFunction)DBC_count,         METH_VARARGS},
-    {"current",         (PyCFunction)DBC_current,       METH_VARARGS},
+    {"current",         (PyCFunction)DBC_current,       METH_VARARGS|METH_KEYWORDS},
     {"delete",          (PyCFunction)DBC_delete,        METH_VARARGS},
     {"dup",             (PyCFunction)DBC_dup,           METH_VARARGS},
-    {"first",           (PyCFunction)DBC_first,         METH_VARARGS},
-    {"get",             (PyCFunction)DBC_get,           METH_VARARGS},
+    {"first",           (PyCFunction)DBC_first,         METH_VARARGS|METH_KEYWORDS},
+    {"get",             (PyCFunction)DBC_get,           METH_VARARGS|METH_KEYWORDS},
     {"get_recno",       (PyCFunction)DBC_get_recno,     METH_VARARGS},
-    {"last",            (PyCFunction)DBC_last,          METH_VARARGS},
-    {"next",            (PyCFunction)DBC_next,          METH_VARARGS},
-    {"prev",            (PyCFunction)DBC_prev,          METH_VARARGS},
-    {"put",             (PyCFunction)DBC_put,           METH_VARARGS},
-    {"set",             (PyCFunction)DBC_set,           METH_VARARGS},
-    {"set_range",       (PyCFunction)DBC_set_range,     METH_VARARGS},
+    {"last",            (PyCFunction)DBC_last,          METH_VARARGS|METH_KEYWORDS},
+    {"next",            (PyCFunction)DBC_next,          METH_VARARGS|METH_KEYWORDS},
+    {"prev",            (PyCFunction)DBC_prev,          METH_VARARGS|METH_KEYWORDS},
+    {"put",             (PyCFunction)DBC_put,           METH_VARARGS|METH_KEYWORDS},
+    {"set",             (PyCFunction)DBC_set,           METH_VARARGS|METH_KEYWORDS},
+    {"set_range",       (PyCFunction)DBC_set_range,     METH_VARARGS|METH_KEYWORDS},
     {"get_both",        (PyCFunction)DBC_get_both,      METH_VARARGS},
     {"set_both",        (PyCFunction)DBC_get_both,      METH_VARARGS},
-    {"set_recno",       (PyCFunction)DBC_set_recno,     METH_VARARGS},
-    {"consume",         (PyCFunction)DBC_consume,       METH_VARARGS},
-    {"next_dup",        (PyCFunction)DBC_next_dup,      METH_VARARGS},
-    {"next_nodup",      (PyCFunction)DBC_next_nodup,    METH_VARARGS},
-    {"prev_nodup",      (PyCFunction)DBC_prev_nodup,    METH_VARARGS},
+    {"set_recno",       (PyCFunction)DBC_set_recno,     METH_VARARGS|METH_KEYWORDS},
+    {"consume",         (PyCFunction)DBC_consume,       METH_VARARGS|METH_KEYWORDS},
+    {"next_dup",        (PyCFunction)DBC_next_dup,      METH_VARARGS|METH_KEYWORDS},
+    {"next_nodup",      (PyCFunction)DBC_next_nodup,    METH_VARARGS|METH_KEYWORDS},
+    {"prev_nodup",      (PyCFunction)DBC_prev_nodup,    METH_VARARGS|METH_KEYWORDS},
     {"join_item",       (PyCFunction)DBC_join_item,     METH_VARARGS},
     {NULL,      NULL}       /* sentinel */
 };
@@ -3937,7 +3934,9 @@ DL_EXPORT(void) init_rpmdb(void)
 {
     PyObject* m;
     PyObject* d;
-    PyObject* o;
+    PyObject* pybsddb_version_s = PyString_FromString( PY_BSDDB_VERSION );
+    PyObject* db_version_s = PyString_FromString( DB_VERSION_STRING );
+    PyObject* cvsid_s = PyString_FromString( rcs_id );
 
     /* Initialize the type of the new type objects here; doing it here
        is required for portability to Windows without requiring C++. */
@@ -3958,14 +3957,15 @@ DL_EXPORT(void) init_rpmdb(void)
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
-    PyDict_SetItemString(d, "__version__",
-                         o=PyString_FromString(PY_BSDDB_VERSION));
-    Py_DECREF(o);
-    PyDict_SetItemString(d, "cvsid", o=PyString_FromString(rcs_id));
-    Py_DECREF(o);
-    PyDict_SetItemString(d, "DB_VERSION_STRING",
-                         o=PyString_FromString( DB_VERSION_STRING ));
-    Py_DECREF(o);
+    PyDict_SetItemString(d, "__version__", pybsddb_version_s);
+    PyDict_SetItemString(d, "cvsid", cvsid_s);
+    PyDict_SetItemString(d, "DB_VERSION_STRING", db_version_s);
+    Py_DECREF(pybsddb_version_s);
+    pybsddb_version_s = NULL;
+    Py_DECREF(cvsid_s);
+    cvsid_s = NULL;
+    Py_DECREF(db_version_s);
+    db_version_s = NULL;
 
     ADD_INT(d, DB_VERSION_MAJOR);
     ADD_INT(d, DB_VERSION_MINOR);

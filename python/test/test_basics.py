@@ -322,6 +322,11 @@ class BasicTestCase(unittest.TestCase):
             if verbose:
                 print "searched for '011', found: ", rec
 
+            rec = c.set_range('011',dlen=0,doff=0)
+            if verbose:
+                print "searched (partial) for '011', found: ", rec
+            if rec[1] != '': set.fail('expected empty data portion')
+
         c.set('0499')
         c.delete()
         try:
@@ -339,6 +344,9 @@ class BasicTestCase(unittest.TestCase):
         c2.put('', 'a new value', db.DB_CURRENT)
         assert c.current() == c2.current()
         assert c.current()[1] == 'a new value'
+
+        c2.put('', 'er', db.DB_CURRENT, dlen=0, doff=5)
+        assert c2.current()[1] == 'a newer value'
 
         c.close()
         c2.close()
@@ -411,6 +419,20 @@ class BasicTestCase(unittest.TestCase):
             #print "after",
             assert d.get_size(key) == i
             #print "done"
+
+    #----------------------------------------
+
+    def test06_Truncate(self):
+        d = self.d
+        if verbose:
+            print '\n', '-=' * 30
+            print "Running %s.test99_Truncate..." % self.__class__.__name__
+
+        d.put("abcde", "ABCDE");
+        num = d.truncate()
+        assert num >= 1, "truncate returned <= 0 on non-empty database"
+        num = d.truncate()
+        assert num == 0, "truncate on empty DB returned nonzero (%s)" % `num`
 
 #----------------------------------------------------------------------
 
@@ -531,6 +553,22 @@ class BasicTransactionTestCase(BasicTestCase):
                 print 'log file: ' + log
 
         self.txn = self.env.txn_begin()
+
+    #----------------------------------------
+
+    def test07_TxnTruncate(self):
+        d = self.d
+        if verbose:
+            print '\n', '-=' * 30
+            print "Running %s.test07_TxnTruncate..." % self.__class__.__name__
+
+        d.put("abcde", "ABCDE");
+        txn = self.env.txn_begin()
+        num = d.truncate(txn)
+        assert num >= 1, "truncate returned <= 0 on non-empty database"
+        num = d.truncate(txn)
+        assert num == 0, "truncate on empty DB returned nonzero (%s)" % `num`
+        txn.commit()
 
 
 
