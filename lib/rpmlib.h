@@ -9,11 +9,6 @@
 #include "dbindex.h"
 #include "header.h"
 
-struct rpmTagTableEntry {
-    char * name;
-    int val;
-};
-
 int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr);
 int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
 			 int * minor);
@@ -21,7 +16,7 @@ int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
    /* 1 = bad magic */
    /* 2 = error */
 
-extern const struct rpmTagTableEntry rpmTagTable[];
+extern const struct headerTagTableEntry rpmTagTable[];
 extern const int rpmTagTableSize;
 
 /* these tags are for both the database and packages */
