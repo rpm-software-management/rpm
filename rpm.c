@@ -58,7 +58,7 @@ void printUsage(void) {
     puts(_("                          [--replacepkgs] [--replacefiles] [--search]"));
     puts(_("                          [--root <dir>] [--excludedocs] [--includedocs]"));
     puts(_("                          [--noscripts] file1.rpm ... filen.rpm"));
-    puts(_("       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
+    puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--search] [--oldpackage] [--root <dir>]"));
     puts(_("                          [--excludedocs] [--includedocs]")); 
     puts(_("                          file1.rpm ... filen.rpm"));
