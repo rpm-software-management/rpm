@@ -1,7 +1,8 @@
--I. -I.. -I../build -I../rpmdb -I../rpmio -I../beecrypt -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
-#+forcehints
++forcehints
+
 
 -warnunixlib
 -warnposix
@@ -14,39 +15,32 @@
 -includenest 16		# getting deep, sigh
 
 # --- not yet
-#-loopswitchbreak
-#-casebreak
-#-switchswitchbreak
-#-looploopbreak
-#-looploopcontinue
-#-unreachable
+-oldstyle		# painful
+-retvalint		# painful
+-nullret
+-retalias
+
+-modunconnomods
+-noeffectuncon
+-evalorderuncon
+-infloopsuncon
+-modobserveruncon
+-modnomods
 
 -noparams
--oldstyle
 -castfcnptr
 -sizeoftype
--modunconnomods
--retvalint
--modnomods
 -globs
 -statictrans
--retalias
 -globstate
 -redef
--nullret
 -nullpass
 -unqualifiedtrans
 -internalglobs
--modfilesys
 -compdef
--abstract
 -dependenttrans
--noeffectuncon
 -branchstate
 -compmempass
--whileempty
--infloopsuncon
--formatconst
 -observertrans
 -readonlytrans
 -nullstate
@@ -55,18 +49,12 @@
 -usereleased
 -staticinittrans
 -nullassign
--evalorderuncon
 -immediatetrans
--evalorder
 -type
 -unsignedcompare
 -nullderef
 -exportheader
--modobserveruncon
 
--sysunrecog
--unrecog
--retvalother
 -nullptrarith
 -noeffect
 

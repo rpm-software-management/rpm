@@ -29,7 +29,7 @@
  *          Addison-Wesley, 1983. ISBN 0-201-06672-6.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: trees.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
 
 /* #define GEN_TREES_H */
 
@@ -555,7 +555,7 @@ local void gen_bitlen(s, desc)
         n = s->bl_count[bits];
         while (n != 0) {
             m = s->heap[--h];
-            if (m > max_code) continue;
+            if (m > max_code) /*@innercontinue@*/ continue;
             if (tree[m].Len != (unsigned) bits) {
                 Trace((stderr,"code %d bits %d->%d\n", m, tree[m].Len, bits));
                 s->opt_len += ((long)bits - (long)tree[m].Len)
@@ -676,7 +676,9 @@ local void build_tree(s, desc)
         /* Create a new node father of n and m */
         tree[node].Freq = tree[n].Freq + tree[m].Freq;
         s->depth[node] = (uch) (MAX(s->depth[n], s->depth[m]) + 1);
+/*@-evalorder@*/
         tree[n].Dad = tree[m].Dad = (ush)node;
+/*@=evalorder@*/
 #ifdef DUMP_BL_TREE
         if (tree == s->bl_tree) {
             fprintf(stderr,"\nnode %d(%d), sons %d(%d) %d(%d)",

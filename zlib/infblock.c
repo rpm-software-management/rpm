@@ -153,7 +153,7 @@ int r;
           t = k & 7;                    /* go to byte boundary */
           DUMPBITS(t)
           s->mode = LENS;               /* get length of stored block */
-          break;
+          /*@innerbreak@*/ break;
         case 1:                         /* fixed */
           Tracev((stderr, "inflate:     fixed codes block%s\n",
                  s->last ? " (last)" : ""));
@@ -171,13 +171,13 @@ int r;
           }
           DUMPBITS(3)
           s->mode = CODES;
-          break;
+          /*@innerbreak@*/ break;
         case 2:                         /* dynamic */
           Tracev((stderr, "inflate:     dynamic codes block%s\n",
                  s->last ? " (last)" : ""));
           DUMPBITS(3)
           s->mode = TABLE;
-          break;
+          /*@innerbreak@*/ break;
         case 3:                         /* illegal */
           DUMPBITS(3)
           s->mode = BAD;
@@ -185,7 +185,7 @@ int r;
           r = Z_DATA_ERROR;
           goto leave;
       }
-      break;
+      /*@switchbreak@*/ break;
     case LENS:
       NEEDBITS(32)
       if ((((~b) >> 16) & 0xffff) != (b & 0xffff))
@@ -199,7 +199,7 @@ int r;
       b = k = 0;                      /* dump bits */
       Tracev((stderr, "inflate:       stored length %u\n", s->sub.left));
       s->mode = s->sub.left ? STORED : (s->last ? DRY : TYPE);
-      break;
+      /*@switchbreak@*/ break;
     case STORED:
       if (n == 0)
         goto leave;
@@ -211,12 +211,12 @@ int r;
       p += t;  n -= t;
       q += t;  m -= t;
       if ((s->sub.left -= t) != 0)
-        break;
+        /*@switchbreak@*/ break;
       Tracev((stderr, "inflate:       stored end, %lu total out\n",
               z->total_out + (q >= s->read ? q - s->read :
               (s->end - s->read) + (q - s->window))));
       s->mode = s->last ? DRY : TYPE;
-      break;
+      /*@switchbreak@*/ break;
     case TABLE:
       NEEDBITS(14)
       s->sub.trees.table = t = (uInt)b & 0x3fff;
@@ -239,6 +239,7 @@ int r;
       s->sub.trees.index = 0;
       Tracev((stderr, "inflate:       table sizes ok\n"));
       s->mode = BTREE;
+      /*@fallthrough@*/
     case BTREE:
       while (s->sub.trees.index < 4 + (s->sub.trees.table >> 10))
       {
@@ -262,6 +263,7 @@ int r;
       s->sub.trees.index = 0;
       Tracev((stderr, "inflate:       bits tree ok\n"));
       s->mode = DTREE;
+      /*@fallthrough@*/
     case DTREE:
       while (t = s->sub.trees.table,
              s->sub.trees.index < 258 + (t & 0x1f) + ((t >> 5) & 0x1f))
@@ -334,6 +336,7 @@ int r;
         s->sub.decode.codes = c;
       }
       s->mode = CODES;
+      /*@fallthrough@*/
     case CODES:
       UPDATE
       if ((r = inflate_codes(s, z, r)) != Z_STREAM_END)
@@ -347,14 +350,16 @@ int r;
       if (!s->last)
       {
         s->mode = TYPE;
-        break;
+        /*@switchbreak@*/ break;
       }
       s->mode = DRY;
+      /*@fallthrough@*/
     case DRY:
       FLUSH
       if (s->read != s->write)
         goto leave;
       s->mode = DONE;
+      /*@fallthrough@*/
     case DONE:
       r = Z_STREAM_END;
       goto leave;
@@ -472,13 +477,14 @@ int r;
         if (r != Z_OK)
         {
           c->mode = r == Z_STREAM_END ? WASH : BADCODE;
-          break;
+          /*@switchbreak@*/ break;
         }
       }
 #endif /* !SLOW */
       c->sub.code.need = c->lbits;
       c->sub.code.tree = c->ltree;
       c->mode = LEN;
+      /*@fallthrough@*/
     case LEN:           /* i: get length/literal/eob next */
       j = c->sub.code.need;
       NEEDBITS(j)
@@ -492,26 +498,26 @@ int r;
                  "inflate:         literal '%c'\n" :
                  "inflate:         literal 0x%02x\n", t->base));
         c->mode = LIT;
-        break;
+        /*@switchbreak@*/ break;
       }
       if (e & 16)               /* length */
       {
         c->sub.copy.get = e & 15;
         c->len = t->base;
         c->mode = LENEXT;
-        break;
+        /*@switchbreak@*/ break;
       }
       if ((e & 64) == 0)        /* next table */
       {
         c->sub.code.need = e;
         c->sub.code.tree = t + t->base;
-        break;
+        /*@switchbreak@*/ break;
       }
       if (e & 32)               /* end of block */
       {
         Tracevv((stderr, "inflate:         end of block\n"));
         c->mode = WASH;
-        break;
+        /*@switchbreak@*/ break;
       }
       c->mode = BADCODE;        /* invalid code */
       z->msg = (char*)"invalid literal/length code";
@@ -526,6 +532,7 @@ int r;
       c->sub.code.tree = c->dtree;
       Tracevv((stderr, "inflate:         length %u\n", c->len));
       c->mode = DIST;
+      /*@fallthrough@*/
     case DIST:          /* i: get distance next */
       j = c->sub.code.need;
       NEEDBITS(j)
@@ -537,13 +544,13 @@ int r;
         c->sub.copy.get = e & 15;
         c->sub.copy.dist = t->base;
         c->mode = DISTEXT;
-        break;
+        /*@switchbreak@*/ break;
       }
       if ((e & 64) == 0)        /* next table */
       {
         c->sub.code.need = e;
         c->sub.code.tree = t + t->base;
-        break;
+        /*@switchbreak@*/ break;
       }
       c->mode = BADCODE;        /* invalid code */
       z->msg = (char*)"invalid distance code";
@@ -556,6 +563,7 @@ int r;
       DUMPBITS(j)
       Tracevv((stderr, "inflate:         distance %u\n", c->sub.copy.dist));
       c->mode = COPY;
+      /*@fallthrough@*/
     case COPY:          /* o: copying bytes in window, waiting for space */
 #ifndef __TURBOC__ /* Turbo C bug for following expression */
       f = (uInt)(q - s->window) < c->sub.copy.dist ?
@@ -575,12 +583,12 @@ int r;
         c->len--;
       }
       c->mode = START;
-      break;
+      /*@switchbreak@*/ break;
     case LIT:           /* o: got literal, waiting for output space */
       NEEDOUT
       OUTBYTE(c->sub.lit)
       c->mode = START;
-      break;
+      /*@switchbreak@*/ break;
     case WASH:          /* o: got eob, possibly more output */
       if (k > 7)        /* return unused byte, if any */
       {
@@ -593,6 +601,7 @@ int r;
       if (s->read != s->write)
         goto leave;
       c->mode = END;
+      /*@fallthrough@*/
     case END:
       r = Z_STREAM_END;
       goto leave;

@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: crc32.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/* @(#) $Id: crc32.c,v 1.2 2001/11/21 20:47:36 jbj Exp $ */
 
 #include "zlib.h"
 
@@ -136,12 +136,16 @@ const uLongf * ZEXPORT get_crc_table()
 
 uLong partial_crc32_copy(uLong crc, const Bytef *buf, uInt len, Bytef *dst)
 {
+/*@-sysunrecog@*/
 	return __partial_crc32(crc, buf, len, 1, dst);
+/*@=sysunrecog@*/
 }
 
 extern uLong partial_crc32(uLong crc, const Bytef *buf, uInt len)
 {
+/*@-sysunrecog@*/
 	return __partial_crc32(crc, buf, len, 0, 0);
+/*@=sysunrecog@*/
 }
 
 uLong ZEXPORT crc32(crc, buf, len)
@@ -150,7 +154,9 @@ uLong ZEXPORT crc32(crc, buf, len)
     uInt len;
 {
 	if (buf != Z_NULL)
+/*@-sysunrecog@*/
 		return __partial_crc32(crc ^ 0xffffffffL, buf, len, 0, 0) ^ 0xffffffffL;
+/*@=sysunrecog@*/
 	return 0L;
 }
 

@@ -168,16 +168,17 @@ int f;
         z->state->mode = BAD;
         z->msg = (char*)"unknown compression method";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        break;
+        /*@switchbreak@*/ break;
       }
       if ((z->state->sub.method >> 4) + 8 > z->state->wbits)
       {
         z->state->mode = BAD;
         z->msg = (char*)"invalid window size";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        break;
+        /*@switchbreak@*/ break;
       }
       z->state->mode = FLAG;
+      /*@fallthrough@*/
     case FLAG:
       NEEDBYTE
       b = NEXTBYTE;
@@ -186,27 +187,31 @@ int f;
         z->state->mode = BAD;
         z->msg = (char*)"incorrect header check";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        break;
+        /*@switchbreak@*/ break;
       }
       Tracev((stderr, "inflate: zlib header ok\n"));
       if (!(b & PRESET_DICT))
       {
         z->state->mode = BLOCKS;
-        break;
+        /*@switchbreak@*/ break;
       }
       z->state->mode = DICT4;
+      /*@fallthrough@*/
     case DICT4:
       NEEDBYTE
       z->state->sub.check.need = (uLong)NEXTBYTE << 24;
       z->state->mode = DICT3;
+      /*@fallthrough@*/
     case DICT3:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 16;
       z->state->mode = DICT2;
+      /*@fallthrough@*/
     case DICT2:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 8;
       z->state->mode = DICT1;
+      /*@fallthrough@*/
     case DICT1:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE;
@@ -224,7 +229,7 @@ int f;
       {
         z->state->mode = BAD;
         z->state->sub.marker = 0;       /* can try inflateSync */
-        break;
+        /*@switchbreak@*/ break;
       }
       if (r == Z_OK)
         r = f;
@@ -235,21 +240,25 @@ int f;
       if (z->state->nowrap)
       {
         z->state->mode = DONE;
-        break;
+        /*@switchbreak@*/ break;
       }
       z->state->mode = CHECK4;
+      /*@fallthrough@*/
     case CHECK4:
       NEEDBYTE
       z->state->sub.check.need = (uLong)NEXTBYTE << 24;
       z->state->mode = CHECK3;
+      /*@fallthrough@*/
     case CHECK3:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 16;
       z->state->mode = CHECK2;
+      /*@fallthrough@*/
     case CHECK2:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE << 8;
       z->state->mode = CHECK1;
+      /*@fallthrough@*/
     case CHECK1:
       NEEDBYTE
       z->state->sub.check.need += (uLong)NEXTBYTE;
@@ -259,10 +268,11 @@ int f;
         z->state->mode = BAD;
         z->msg = (char*)"incorrect data check";
         z->state->sub.marker = 5;       /* can't try inflateSync */
-        break;
+        /*@switchbreak@*/ break;
       }
       Tracev((stderr, "inflate: zlib check ok\n"));
       z->state->mode = DONE;
+      /*@fallthrough@*/
     case DONE:
       return Z_STREAM_END;
     case BAD:

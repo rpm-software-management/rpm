@@ -57,8 +57,10 @@ int ret;
   /* load input, output, bit values */
   LOAD
 
+/*@-unrecog@*/
   PREFETCH(p);
   PREFETCH(p+32);
+/*@=unrecog@*/
   /* initialize masks */
   ml = inflate_mask[bl];
   md = inflate_mask[bd];
@@ -66,7 +68,9 @@ int ret;
   /* do until not enough input or output space for fast loop */
   do {                          /* assume called with m >= 258 && n >= 10 */
     /* get literal/length code */
+/*@-unrecog@*/
     PREFETCH(p+64);
+/*@=unrecog@*/
     GRABBITS(20)                /* max bits for literal/length code */
     if ((e = (t = tl + ((uInt)b & ml))->exop) == 0)
     {
@@ -103,7 +107,7 @@ int ret;
 
             /* do the copy */
             m -= c;
-#if 1
+#if 1	/* { */
             if ((uInt)(q - s->window) >= d)     /* offset before dest */
             {                                   /*  just copy */
               r = q - d;
@@ -148,32 +152,34 @@ rest:
             do {                        /* copy all or what's left */
               *q++ = *r++;
             } while (--c);
-#endif
-            break;
+#endif	/* } */
+            /*@innerbreak@*/ break;
           }
           else if ((e & 64) == 0)
           {
             t += t->base;
             e = (t += ((uInt)b & inflate_mask[e]))->exop;
-		continue;
+		/*@innercontinue@*/ continue;
           }
           else
 		goto inv_dist_code;
         } while (1);
-        break;
+/*@-unreachable@*/
+        /*@innerbreak@*/ break;
+/*@=unreachable@*/
       }
 if (!(e & 64)) {
 
         t += t->base;
         if ((e = (t += ((uInt)b & inflate_mask[e]))->exop) != 0)
-		continue;
+		/*@innercontinue@*/ continue;
         DUMPBITS(t->bits)
         Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
                   "inflate:         * literal '%c'\n" :
                   "inflate:         * literal 0x%02x\n", t->base));
         *q++ = (Byte)t->base;
         m--;
-        break;
+        /*@innerbreak@*/ break;
 } else
 { uInt temp = e & 96;
       if (temp == 96)

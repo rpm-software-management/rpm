@@ -5,7 +5,7 @@
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
 
-/* @(#) $Id: gzio.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/* @(#) $Id: gzio.c,v 1.2 2001/11/21 20:47:36 jbj Exp $ */
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -106,8 +106,10 @@ local gzFile gz_open (path, mode, fd)
     s->file = NULL;
     s->z_err = Z_OK;
     s->z_eof = 0;
+/*@-unrecog@*/
     s->stream.crc = /*crc32(0L, Z_NULL, 0)*/0;
 	partial_crc32_prep(&s->stream.crc);
+/*@=unrecog@*/
     s->msg = NULL;
     s->transparent = 0;
     s->mmap_mode = 0;
@@ -177,7 +179,7 @@ local gzFile gz_open (path, mode, fd)
 				munmap(test, Z_BUFSIZE);
 				pos = lseek(fd, 0, SEEK_CUR);
 				s->mmap_end = lseek(fd, 0, SEEK_END);
-				lseek(fd, 0, SEEK_SET);
+				(void) lseek(fd, 0, SEEK_SET);
 
 				s->mmap_pos = pos & ~(off_t)(Z_BUFSIZE - 1);
 				s->inbuf = mmap(0, Z_BUFSIZE, PROT_READ, MAP_SHARED, fd, s->mmap_pos);
@@ -193,7 +195,9 @@ local gzFile gz_open (path, mode, fd)
 	}
 
     if (!s->mmap_mode) {
+/*@-abstract@*/
         s->file = fd < 0 ? F_OPEN(path, fmode) : (FILE*)fdopen(fd, fmode);
+/*@=abstract@*/
 
         if (s->file == NULL) {
             return destroy(s), (gzFile)Z_NULL;
@@ -373,13 +377,13 @@ local void check_header(s)
 	len  =  (uInt)get_byte(s);
 	len += ((uInt)get_byte(s))<<8;
 	/* len is garbage if EOF but the loop below will quit anyway */
-	while (len-- != 0 && get_byte(s) != EOF) ;
+	while (len-- != 0 && get_byte(s) != EOF) {};
     }
     if ((flags & ORIG_NAME) != 0) { /* skip the original file name */
-	while ((c = get_byte(s)) != 0 && c != EOF) ;
+	while ((c = get_byte(s)) != 0 && c != EOF) {};
     }
     if ((flags & COMMENT) != 0) {   /* skip the .gz file comment */
-	while ((c = get_byte(s)) != 0 && c != EOF) ;
+	while ((c = get_byte(s)) != 0 && c != EOF) {};
     }
     if ((flags & HEAD_CRC) != 0) {  /* skip the header crc */
 	for (len = 0; len < 2; len++) (void)get_byte(s);
@@ -494,6 +498,7 @@ again:
 	    /* Check CRC and original size */
 	    start = s->stream.next_out;
 
+/*@-unrecog@*/
 	    if (getLong(s) != get_crc_from_partial(&s->stream.crc)) {
 		s->z_err = Z_DATA_ERROR;
 	    } else {
@@ -514,6 +519,7 @@ again:
 			partial_crc32_prep(&s->stream.crc);
 		}
 	    }
+/*@=unrecog@*/
 	}
 	if (s->z_err != Z_OK || s->z_eof) break;
     }
@@ -552,7 +558,7 @@ char * ZEXPORT gzgets(file, buf, len)
     char *b = buf;
     if (buf == Z_NULL || len <= 0) return Z_NULL;
 
-    while (--len > 0 && gzread(file, buf, 1) == 1 && *buf++ != '\n') ;
+    while (--len > 0 && gzread(file, buf, 1) == 1 && *buf++ != '\n') {};
     *buf = '\0';
     return b == buf && len > 0 ? Z_NULL : b;
 }
@@ -632,6 +638,7 @@ int ZEXPORTVA gzprintf (file, format, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
     char buf[Z_PRINTF_BUFSIZE];
     int len;
 
+/*@-formatconst@*/
 #ifdef HAS_snprintf
     snprintf(buf, sizeof(buf), format, a1, a2, a3, a4, a5, a6, a7, a8,
 	     a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
@@ -639,6 +646,7 @@ int ZEXPORTVA gzprintf (file, format, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
     sprintf(buf, format, a1, a2, a3, a4, a5, a6, a7, a8,
 	    a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20);
 #endif
+/*@=formatconst@*/
     len = strlen(buf); /* old sprintf doesn't return the nb of bytes written */
     if (len <= 0) return 0;
 

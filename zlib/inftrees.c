@@ -223,7 +223,7 @@ uIntf *v;               /* working area: values in order of bit length */
             while (++j < z)     /* try smaller tables up to z bits */
             {
               if ((f <<= 1) <= *++xp)
-                break;          /* enough codes to use up j bits */
+                /*@innerbreak@*/ break; /* enough codes to use up j bits */
               f -= *xp;         /* else deduct codes from patterns */
             }
         }
