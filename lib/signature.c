@@ -11,7 +11,6 @@
 #include <asm/byteorder.h>
 #endif
 
-#include <paths.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
