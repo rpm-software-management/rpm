@@ -1,7 +1,9 @@
-2.4.105 -> 2.5:
+2.4.105 -> 2.4.106:
 	- build: inly check for non-printables in first 128 chars
 	- added %triggerpostun
 	- linux.req generates deps for shared libs
+	- added a CC=@CC@ to popt/Makefile.in
+	- handle signed return types from poptGetNextOpt() properly
 
 2.4.104 -> 2.4.105:
 	- added langpatt: to rpmrc, and mark files with matches
@@ -17,8 +19,6 @@
 	- strntoul() in lib/cpio.c was returning a pointer to freed
 	  memory
 	- headerAppend() was doing a bad memcpy()
-	- added a CC=@CC@ to popt/Makefile.in
-	- handle signed return types from poptGetNextOpt() properly
 
 2.4.103 -> 2.4.104:
 	- fixed popt/Makefile.in to use CPP from configure
