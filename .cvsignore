@@ -5,10 +5,10 @@
 Doxyfile
 Makefile
 Makefile.in
+config.cache
+config.guess
 config.h
 config.h.in
-config.guess
-config.cache
 config.log
 config.status
 config.sub
@@ -27,4 +27,4 @@ rpmconvert
 rpmrc
 stamp-h
 stamp-h.in
-*.tar.gz
+rpm-*.tar.gz

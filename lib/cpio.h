@@ -6,8 +6,20 @@
 
 #include <rpmio.h>
 
+/** \file lib/cpio.h
+ *  Structures used to handle cpio payloads within rpm packages.
+ *
+ *  Warning: Don't think that rpm's cpio implementation behaves just like
+ *  standard cpio.
+ *  The implementation is pretty close, but it has some behaviors which are
+ *  more to RPM's liking. I tried to document the differing behavior in cpio.c,
+ *  but I may have missed some.
+ *
+ */
+
 /* Note the CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
    be positive numbers or this setting the high bit stuff is a bad idea. */
+
 #define CPIOERR_CHECK_ERRNO	0x00008000
 
 #define CPIOERR_BAD_MAGIC	(2			)
@@ -33,32 +45,31 @@
 #define CPIOERR_MISSING_HARDLINK (22			)
 #define CPIOERR_INTERNAL	(23			)
 
-
-/* Don't think this behaves just like standard cpio. It's pretty close, but
-   it has some behaviors which are more to RPM's liking. I tried to document
-   them in cpio.c, but I may have missed some. */
-
 #define CPIO_MAP_PATH		(1 << 0)
 #define CPIO_MAP_MODE		(1 << 1)
 #define CPIO_MAP_UID		(1 << 2)
 #define CPIO_MAP_GID		(1 << 3)
 #define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
 
+/*! The structure used to define a cpio payload file. */
 struct cpioFileMapping {
-    /*@owned@*/ const char * archivePath;
-    /*@owned@*/ const char * fsPath;
-    mode_t finalMode;
-    uid_t finalUid;
-    gid_t finalGid;
+    /*@owned@*/ const char * archivePath; /*!< Path to store in cpio archive. */
+    /*@owned@*/ const char * fsPath;	/*!< Location of payload file. */
+    mode_t finalMode;		/*!< Mode of payload file (from header). */
+    uid_t finalUid;		/*!< Uid of payload file (from header). */
+    gid_t finalGid;		/*!< Gid of payload file (from header). */
     int mapFlags;
 };
 
-/* on cpio building, only "file" is filled in */
+/** The structure passed as first argument during a cpio progress callback.
+ *
+ * Note: When building the cpio payload, only "file" is filled in.
+ */
 struct cpioCallbackInfo {
-    /*@dependent@*/ const char * file;
-    long fileSize;			/* total file size */
-    long fileComplete;			/* amount of file unpacked */
-    long bytesProcessed;		/* bytes in archive read */
+    /*@dependent@*/ const char * file;	/*!< File name being installed. */
+    long fileSize;			/*!< Total file size. */
+    long fileComplete;			/*!< Amount of file unpacked. */
+    long bytesProcessed;		/*!< No. bytes in archive read. */
 };
 
 #ifdef __cplusplus

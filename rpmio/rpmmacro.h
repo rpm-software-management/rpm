@@ -1,19 +1,21 @@
 #ifndef _H_MACRO_
 #define	_H_MACRO_
 
+/*! The structure used to store a macro. */
 typedef /*@abstract@*/ struct MacroEntry {
-	struct MacroEntry *prev;
-	const char *name;	/* Macro name */
-	const char *opts;	/* Macro parameters (ala getopt) */
-	const char *body;	/* Macro body */
-	int	used;		/* No. of expansions */
-	int	level;
+	struct MacroEntry *prev;/*!< Macro entry stack. */
+	const char *name;	/*!< Macro name. */
+	const char *opts;	/*!< Macro parameters (a la getopt) */
+	const char *body;	/*!< Macro body. */
+	int	used;		/*!< No. of expansions. */
+	int	level;		/*!< Scoping level. */
 } MacroEntry;
 
+/*! The structure used to store the set of macros in a context. */
 typedef /*@abstract@*/ struct MacroContext {
-	MacroEntry **	macroTable;
-	int		macrosAllocated;
-	int		firstFree;
+	MacroEntry **	macroTable;	/*!< Macro entry table for context. */
+	int		macrosAllocated;/*!< No. of allocated macros. */
+	int		firstFree;	/*!< No. of macros. */
 } MacroContext;
 
 /*

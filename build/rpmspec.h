@@ -72,8 +72,9 @@ struct speclines {
     int sl_nlines;
 };
 
+/*! The structure used to store values parsed from a spec file. */
 struct SpecStruct {
-    /*@only@*/ const char *specFile;
+    /*@only@*/ const char *specFile;	/*!< Name of the spec file. */
     /*@only@*/ const char *sourceRpmName;
 
     /*@owned@*/ struct speclines *sl;
@@ -116,14 +117,15 @@ struct SpecStruct {
     /*@dependent@*/ struct MacroContext *macros;
 
     /*@only@*/ const char *rootURL;
-    /*@only@*/ StringBuf prep;
-    /*@only@*/ StringBuf build;
-    /*@only@*/ StringBuf install;
-    /*@only@*/ StringBuf clean;
+    /*@only@*/ StringBuf prep;		/*!< %prep scriptlet. */
+    /*@only@*/ StringBuf build;		/*!< %build scriptlet. */
+    /*@only@*/ StringBuf install;	/*!< %install scriptlet. */
+    /*@only@*/ StringBuf clean;		/*!< %clean scriptlet. */
 
-    /*@owned@*/ struct PackageStruct *packages;
+    /*@owned@*/ struct PackageStruct *packages;	/*!< Package list. */
 };
 
+/*! The structure used to store values for a package. */
 struct PackageStruct {
     /*@refcounted@*/ Header header;
 
@@ -135,11 +137,11 @@ struct PackageStruct {
     int autoReq;
     int autoProv;
 
-    char *preInFile;
-    char *postInFile;
-    char *preUnFile;
-    char *postUnFile;
-    char *verifyFile;
+    char *preInFile;		/*!< %pre scriptlet. */
+    char *postInFile;		/*!< %post scriptlet. */
+    char *preUnFile;		/*!< %preun scriptlet. */
+    char *postUnFile;		/*!< %postun scriptlet. */
+    char *verifyFile;		/*!< %verifyscript scriptlet. */
 
     /*@only@*/ StringBuf specialDoc;
 

@@ -184,7 +184,9 @@ INPUT                = \
 	./oldrpmdb.c \
 	./rpm.c \
 	./rpm2cpio.c \
+	./system.h \
 	./build/build.c \
+	./build/buildio.h \
 	./build/expression.c \
 	./build/files.c \
 	./build/misc.c \
@@ -203,55 +205,75 @@ INPUT                = \
 	./build/parseSpec.c \
 	./build/reqprov.c \
 	./build/rpmbuild.h \
+	./build/rpmspec.h \
 	./build/spec.c \
 	./lib/cpio.c \
+	./lib/cpio.h \
 	./lib/dbindex.c \
+	./lib/dbindex.h \
 	./lib/depends.c \
+	./lib/depends.h \
 	./lib/falloc.c \
+	./lib/falloc.h \
 	./lib/formats.c \
 	./lib/fprint.c \
+	./lib/fprint.h \
 	./lib/fs.c \
 	./lib/hash.c \
+	./lib/hash.h \
 	./lib/header.c \
+	./lib/header.h \
 	./lib/install.c \
+	./lib/install.h \
 	./lib/lookup.c \
+	./lib/lookup.h \
 	./lib/macro.c \
-	./lib/misc.h \
 	./lib/md5.c \
+	./lib/md5.h \
 	./lib/md5sum.c \
 	./lib/messages.c \
 	./lib/misc.c \
+	./lib/misc.h \
 	./lib/oldheader.c \
+	./lib/oldheader.h \
+	./lib/oldrpmdb.h \
 	./lib/package.c \
 	./lib/problems.c \
 	./lib/query.c \
 	./lib/rebuilddb.c \
 	./lib/rpmchecksig.c \
 	./lib/rpmdb.c \
+	./lib/rpmdb.h \
 	./lib/rpmerr.c \
 	./lib/rpminstall.c \
 	./lib/rpmio.c \
 	./lib/rpmio.h \
 	./lib/rpmlead.c \
+	./lib/rpmlead.h \
 	./lib/rpmlib.h \
+	./lib/rpmmacro.h \
 	./lib/rpmmalloc.c \
+	./lib/rpm_malloc.h \
 	./lib/rpmrc.c \
+	./lib/rpmurl.h \
 	./lib/signature.c \
+	./lib/signature.h \
 	./lib/stringbuf.c \
 	./lib/stringbuf.h \
 	./lib/stubs.c \
 	./lib/tagName.c \
 	./lib/tagtable.c \
-	./lib/test.c \
 	./lib/transaction.c \
-	./lib/tufdio.c \
 	./lib/uninstall.c \
 	./lib/url.c \
 	./lib/verify.c \
 	./popt/findme.c \
+	./popt/findme.h \
 	./popt/popt.c \
+	./popt/popt.h \
 	./popt/poptconfig.c \
 	./popt/popthelp.c \
+	./popt/poptint.h \
 	./popt/poptparse.c \
 	./tools/dump.c \
 	./tools/dumpdb.c \
@@ -266,17 +288,6 @@ INPUT                = \
 	./tools/rpmlead.c \
 	./tools/rpmsignature.c \
 	./tools/str-list.c
-
-#	./system.h \
-#	./build/buildio.h \
-#	./build/rpmspec.h \
-#	./lib/dbindex.h \
-#	./lib/header.h \
-#	./lib/rpmmacro.h \
-#	./lib/rpmurl.h \
-#	./popt/findme.h \
-#	./popt/poptint.h \
-#	./popt/popt.h \
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

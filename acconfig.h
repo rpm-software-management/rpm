@@ -132,6 +132,9 @@
 /* define if experimental support rpm-4.0 packages is desired */
 #undef ENABLE_V4_PACKAGES
 
+/* Absolute path to rpm top_sourcedir. */
+#undef TOP_SOURCEDIR
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:
