@@ -45,6 +45,44 @@ static int checkSpec(Header h)
     return rc;
 }
 
+/*
+ * Kurwa, durni ameryka?ce sobe zawsze my?l?, ?e ca?y ?wiat mówi po
+ * angielsku...
+ */
+/* XXX this is still a dumb test but at least it's i18n aware */
+static int isSpecFile(const char *specfile)
+{
+    char buf[256];
+    const char * s;
+    FD_t fd;
+    int count;
+    int checking;
+
+    if ((fd = fdOpen(specfile, O_RDONLY, 0)) < 0) {
+	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
+	return 0;
+    }
+    count = fdRead(fd, buf, sizeof(buf));
+    fdClose(fd);
+
+    checking = 1;
+    for (s = buf; count--; s++) {
+	switch (*s) {
+	case '\r':
+	case '\n':
+	    checking = 1;
+	    break;
+	case ':':
+	    checking = 0;
+	    break;
+	default:
+	    if (checking && !(isprint(*s) || isspace(*s))) return 0;
+	    break;
+	}
+    }
+    return 1;
+}
+
 static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	const char *passPhrase, int fromTarball, char *cookie,
 	int force, int nodeps)
@@ -52,13 +90,10 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     int buildAmount = ba->buildAmount;
     const char *buildRoot = ba->buildRootOverride;
     int test = ba->noBuild;
-
     FILE *f;
     const char * specfile;
     int res = 0;
     struct stat statbuf;
-    char * s;
-    int count, fd;
     char buf[BUFSIZ];
     Spec spec = NULL;
 
@@ -167,23 +202,14 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	fprintf(stderr, _("File is not a regular file: %s\n"), specfile);
 	return 1;
     }
-    
-    if ((fd = open(specfile, O_RDONLY)) < 0) {
-	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
+
+    /* Try to verify that the file is actually a specfile */
+    if (!isSpecFile(specfile)) {
+	fprintf(stderr, _("File %s does not appear to be a specfile.\n"),
+		specfile);
 	return 1;
     }
-    count = read(fd, buf, sizeof(buf) < 128 ? sizeof(buf) : 128);
-    close(fd);
-    s = buf;
-    while(count--) {
-	if (! (isprint(*s) || isspace(*s) || (*s == 0x1b))) {
-	    fprintf(stderr, _("File contains non-printable characters(%c): %s\n"), *s,
-		    specfile);
-	    return 1;
-	}
-	s++;
-    }
-
+    
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)

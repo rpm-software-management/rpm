@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-22 13:35-0400\n"
+"POT-Creation-Date: 1999-07-22 15:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,101 +23,101 @@ msgstr ""
 msgid "failed build dependencies:\n"
 msgstr ""
 
-#: ../build.c:83 ../build.c:96
+#: ../build.c:62
+#, c-format
+msgid "Unable to open spec file: %s\n"
+msgstr ""
+
+#: ../build.c:118 ../build.c:131
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr ""
 
 #. Give up
-#: ../build.c:104
+#: ../build.c:139
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: ../build.c:129
+#: ../build.c:164
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr ""
 
-#: ../build.c:167
+#: ../build.c:202
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: ../build.c:172
+#: ../build.c:208
 #, c-format
-msgid "Unable to open spec file: %s\n"
-msgstr ""
-
-#: ../build.c:180
-#, c-format
-msgid "File contains non-printable characters(%c): %s\n"
+msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: ../build.c:233
+#: ../build.c:259
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: ../build.c:242
+#: ../build.c:268
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
 
-#: ../build.c:286
+#: ../build.c:312
 msgid "buildroot already specified"
 msgstr ""
 
-#: ../build.c:292
+#: ../build.c:318
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:296
+#: ../build.c:322
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:317
+#: ../build.c:343
 msgid "override build architecture"
 msgstr ""
 
-#: ../build.c:319
+#: ../build.c:345
 msgid "override build operating system"
 msgstr ""
 
-#: ../build.c:321
+#: ../build.c:347
 msgid "override build root"
 msgstr ""
 
-#: ../build.c:323 ../rpm.c:457
+#: ../build.c:349 ../rpm.c:457
 msgid "remove build tree when done"
 msgstr ""
 
-#: ../build.c:325
+#: ../build.c:351
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: ../build.c:327
+#: ../build.c:353
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: ../build.c:329
+#: ../build.c:355
 msgid "remove sources when done"
 msgstr ""
 
-#: ../build.c:331
+#: ../build.c:357
 msgid "remove specfile when done"
 msgstr ""
 
-#: ../build.c:333 ../rpm.c:455
+#: ../build.c:359 ../rpm.c:455
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: ../build.c:335
+#: ../build.c:361
 msgid "override target platform"
 msgstr ""
 
-#: ../build.c:337
+#: ../build.c:363
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
