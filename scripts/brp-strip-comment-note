@@ -4,6 +4,11 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
 fi
 
+case `uname -a` in
+Darwin*) exit 0 ;;
+*) ;;
+esac
+
 # Strip .comment and .note sections (the latter only if it is not allocated)
 # for already stripped elf files in the build root
 for f in `find $RPM_BUILD_ROOT -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \

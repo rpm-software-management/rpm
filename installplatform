@@ -93,6 +93,9 @@ for SUBST in $SUBSTS ; do
   redhat)
     VENDORSED='-e s,^@redhat@,,'
     ;;
+  apple)
+    VENDORSED='-e s,^@apple@,,'
+    ;;
   esac
 
   cat $PLATFORM \

@@ -1681,7 +1681,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     int argc = 0;
     const char ** argv = NULL;
     char * globRoot = NULL;
-#ifdef ENABLE_NLS	
+#ifdef ENABLE_NLS
     const char * old_collate = NULL;
     const char * old_ctype = NULL;
     const char * t;
@@ -1788,7 +1788,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 
 exit:
-#ifdef ENABLE_NLS
+#ifdef ENABLE_NLS	
 /*@-branchstate@*/
     if (old_collate) {
 	(void) setlocale(LC_COLLATE, old_collate);

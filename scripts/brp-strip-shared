@@ -7,6 +7,11 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
 fi
 
+case `uname -a` in
+Darwin*) exit 0 ;;
+*) ;;
+esac
+
 # Strip ELF shared objects
 # Please note we don't restrict our search to executable files because
 # our libraries are not (should not be, at least) +x.

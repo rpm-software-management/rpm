@@ -82,10 +82,16 @@
 @redhat@#%{nil}
 
 
+@apple@#---------------------------------------------------------------------
+@apple@#	Apple Darwin vendor specific macros
+@apple@#
+@apple@%_use_internal_dependency_generator     0
+@apple@%__so	dylib
+
+
 @mandrake@#---------------------------------------------------------------------
 @mandrake@#	Mandrake vendor specific macros
 @mandrake@# XXX Add a support e-mail address here, please.
-@mandrake@#
 @mandrake@#
 @mandrake@# XXX These values, particularly vendor, need to be regularized, please.
 @mandrake@%_vendor		MandrakeSoft

@@ -4,6 +4,11 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
 fi
 
+case `uname -a` in
+Darwin*) exit 0 ;;
+*) ;;
+esac
+
 # Strip static libraries.
 for f in `find $RPM_BUILD_ROOT -type f -a -exec file {} \; | \
         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \

@@ -183,7 +183,7 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
 	@case "@host_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
-	solaris*|linux*) \
+	solaris*|linux*|darwin*) \
 	   chmod u+x $(top_srcdir)/installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" $(top_srcdir)/installplatform rpmrc macros platform ;; \
 	esac
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
