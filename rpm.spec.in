@@ -38,7 +38,7 @@ BuildRequires: elfutils-devel
 BuildRequires: zlib-devel
 
 BuildRequires: beecrypt-devel >= 3.0.1
-Requires: beecrypt-devel >= 3.0.1
+Requires: beecrypt >= 3.0.1
 
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
