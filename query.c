@@ -29,10 +29,11 @@ void printHeader(Header h, int queryFlags) {
     char * distribution, * vendor, * group, *description, * buildHost;
     uint_32 * size;
     int_32 count, type;
-    int_32 * pBuildDate;
-    time_t buildDate;
+    int_32 * pBuildDate, * pInstallDate;
+    time_t buildDate, installDate;
     char * prefix = NULL;
     char buildDateStr[100];
+    char installDateStr[100];
     struct tm * tstruct;
     char ** fileList;
     char * fileStatesList;
@@ -56,19 +57,33 @@ void printHeader(Header h, int queryFlags) {
 	    sourcePackage = getString(h, RPMTAG_SOURCERPM, "Unknown");
 	    if (!getEntry(h, RPMTAG_SIZE, &type, (void **) &size, &count)) 
 		size = NULL;
-	    getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, &count);
 
-            /* this is important if sizeof(int_32) ! sizeof(time_t) */
-	    buildDate = *pBuildDate; 
-	    tstruct = localtime(&buildDate);
-	    strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", tstruct);
+	    if (getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, 
+			 &count)) {
+		/* this is important if sizeof(int_32) ! sizeof(time_t) */
+		buildDate = *pBuildDate; 
+		tstruct = localtime(&buildDate);
+		strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", tstruct);
+	    } else
+		strcpy(buildDateStr, "(unknown)");
+
+	    if (getEntry(h, RPMTAG_INSTALLTIME, &type, (void **) &pInstallDate, 
+		&count)) {
+		/* this is important if sizeof(int_32) ! sizeof(time_t) */
+		installDate = *pInstallDate; 
+		tstruct = localtime(&installDate);
+		strftime(installDateStr, sizeof(installDateStr) - 1, "%c", 
+			 tstruct);
+	    } else 
+		strcpy(installDateStr, "(unknown)");
 	   
 	    printf("Name        : %-27s Distribution: %s\n", 
 		   name, distribution);
 	    printf("Version     : %-27s       Vendor: %s\n", version, vendor);
 	    printf("Release     : %-27s   Build Date: %s\n", release,
 		   buildDateStr); 
-	    printf("Install date: %-27s   Build Host: %s\n", "", buildHost);
+	    printf("Install date: %-27s   Build Host: %s\n", installDateStr, 
+		   buildHost);
 	    printf("Group       : %-27s   Source RPM: %s\n", group, 
 		   sourcePackage);
 	    if (size) 
