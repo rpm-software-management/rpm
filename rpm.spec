@@ -2,7 +2,7 @@ Summary: Red Hat Package Manager
 Name: rpm
 %define version 2.91
 Version: %{version}
-Release: 7
+Release: 8
 Group: Utilities/System
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
