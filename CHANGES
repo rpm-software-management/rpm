@@ -15,6 +15,7 @@
 		  RPM_BUILD_PREFIX -> RPM_BUILD_ROOT
 					(%prep, %build, %install, %clean)
 	  sorry :-)
+	- allow Prefix: for sub-packages
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
