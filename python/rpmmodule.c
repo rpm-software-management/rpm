@@ -19,6 +19,7 @@
 #include "rpmfts-py.h"
 #include "rpmfi-py.h"
 #include "rpmmi-py.h"
+#include "rpmps-py.h"
 #include "rpmrc-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
@@ -186,6 +187,7 @@ void initrpm(void)
     if (PyType_Ready(&rpmfts_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
+    if (PyType_Ready(&rpmps_Type) < 0) return;
 
     rpmrc_Type.tp_base = &PyDict_Type;
     if (PyType_Ready(&rpmrc_Type) < 0) return;
@@ -235,6 +237,9 @@ void initrpm(void)
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
 
+    Py_INCREF(&rpmps_Type);
+    PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
+
     Py_INCREF(&rpmrc_Type);
     PyModule_AddObject(m, "rc", (PyObject *) &rpmrc_Type);
 
@@ -254,6 +259,7 @@ void initrpm(void)
     rpmfts_Type.ob_type = &PyType_Type;
     rpmfi_Type.ob_type = &PyType_Type;
     rpmmi_Type.ob_type = &PyType_Type;
+    rpmps_Type.ob_type = &PyType_Type;
     rpmte_Type.ob_type = &PyType_Type;
     rpmts_Type.ob_type = &PyType_Type;
     spec_Type.ob_type =  &PyType_Type;

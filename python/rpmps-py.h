@@ -1,0 +1,26 @@
+#ifndef H_RPMPS_PY
+#define H_RPMPS_PY
+
+#include "rpmps.h"
+
+/** \ingroup py_c
+ * \file python/rpmps-py.h
+ */
+
+/**
+ */
+typedef struct rpmpsObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    int		active;
+    int		ix;
+/*@null@*/
+    rpmps	ps;
+} rpmpsObject;
+
+/**
+ */
+/*@unchecked@*/
+extern PyTypeObject rpmps_Type;
+
+#endif
