@@ -797,7 +797,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     psm->child = 0;
     psm->reaped = 0;
     psm->status = 0;
-    psm->reaper = 0;
+    psm->reaper = 1;
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
