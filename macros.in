@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.27 1999/05/04 14:26:56 jbj Exp $
+# $Id: macros.in,v 1.28 1999/05/04 15:11:23 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -210,6 +210,6 @@
   %{__autoheader} \
   %{__automake} \
   %{__autoconf} \
-  %{-C:_mydir="`pwd`"; %{-M: %{__mkdirp} %{-C*};} cd %{-C*};} \
+  %{-C:_mydir="`pwd`"; %{-M:%{__mkdir} -p %{-C*};} cd %{-C*};} \
   CFLAGS="%{optflags}" %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} %* \
   %{-C:cd ${_mydir}; unset _mydir}
