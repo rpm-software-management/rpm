@@ -1116,8 +1116,7 @@ fprintf(stderr, "*** rpmts_SetProbFilter(%p) ts %p ignoreSet %x\n", s, s->ts, ig
 /*@null@*/
 static rpmpsObject *
 rpmts_Problems(rpmtsObject * s, PyObject * args)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
+	/*@modifies s @*/
 {
 
 if (_rpmts_debug)
@@ -1339,6 +1338,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
     }
 
     if (Key) {
+/*@-branchstate@*/
 	if (PyString_Check(Key)) {
 	    key = PyString_AsString(Key);
 	    len = PyString_Size(Key);
@@ -1350,6 +1350,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 	    PyErr_SetString(PyExc_TypeError, "unknown key type");
 	    return NULL;
 	}
+/*@=branchstate@*/
     }
 
     /* XXX If not already opened, open the database O_RDONLY now. */

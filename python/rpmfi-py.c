@@ -535,6 +535,7 @@ fprintf(stderr, "*** rpmfi_alloc(%p,%d) ret %p\n", subtype, nitems, s);
 
 /** \ingroup py_c
  */
+/*@null@*/
 static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/

@@ -1,6 +1,7 @@
 /** \ingroup py_c
  * \file python/rpmps-py.c
  */
+/*@-modunconnomods -evalorderuncon @*/
 
 #include "system.h"
 
@@ -12,7 +13,9 @@
 
 #include "debug.h"
 
+/*@access FILE @*/
 /*@access rpmps @*/
+/*@access rpmProblem @*/
 
 /*@null@*/
 static PyObject *
@@ -27,7 +30,7 @@ rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args)
 
 static PyObject *
 rpmps_iter(rpmpsObject * s)
-	/*@*/
+	/*@modifies s @*/
 {
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_iter(%p)\n", s);
@@ -39,14 +42,14 @@ fprintf(stderr, "*** rpmps_iter(%p)\n", s);
 /*@null@*/
 static PyObject *
 rpmps_iternext(rpmpsObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@modifies s @*/
 {
     PyObject * result = NULL;
     rpmps ps = s->ps;
 
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->ix, s->active);
+
     /* Reset loop indices on 1st entry. */
     if (!s->active) {
 	s->ix = -1;
@@ -93,7 +96,7 @@ rpmps_print(rpmpsObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@modifies s, fp, fileSystem @*/
 {
 if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_print(%p,%p,%x)\n", s, fp, flags);
+fprintf(stderr, "*** rpmps_print(%p,%p,%x)\n", s, (void *)fp, flags);
     if (s && s->ps)
 	rpmpsPrint(fp, s->ps);
     return 0;
@@ -129,7 +132,7 @@ fprintf(stderr, "*** rpmps_length(%p) rc %d\n", s, rc);
 /*@null@*/
 static PyObject *
 rpmps_subscript(rpmpsObject * s, PyObject * key)
-	/*@modifies s @*/
+	/*@*/
 {
     PyObject * result = NULL;
     rpmps ps;
@@ -156,6 +159,7 @@ fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(res
 
 static int
 rpmps_ass_sub(rpmpsObject * s, PyObject * key, PyObject * value)
+	/*@modifies s @*/
 {
     rpmps ps;
     int ix;
@@ -199,6 +203,7 @@ fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, 
 	    return -1;
 	}
 
+/*@-branchstate@*/
 	if (ix >= ps->numProblems) {
 	    /* XXX force append for indices out of range. */
 	    rpmpsAppend(s->ps, p->type, p->pkgNEVR, p->key,
@@ -216,6 +221,7 @@ fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, 
 
 	    *op = *p;	/* structure assignment */
 	}
+/*@=branchstate@*/
     }
 
     return 0;
@@ -230,8 +236,7 @@ static PyMappingMethods rpmps_as_mapping = {
 /** \ingroup py_c
  */
 static int rpmps_init(rpmpsObject * s, PyObject *args, PyObject *kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
+	/*@modifies s @*/
 {
 
 if (_rpmps_debug < 0)
@@ -273,9 +278,9 @@ fprintf(stderr, "*** rpmps_alloc(%p,%d) ret %p\n", subtype, nitems, s);
 
 /** \ingroup py_c
  */
+/*@null@*/
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/
+	/*@*/
 {
     rpmpsObject * s = (void *) PyObject_New(rpmpsObject, subtype);
 
@@ -365,3 +370,4 @@ rpmps_Wrap(rpmps ps)
     s->ix = -1;
     return s;
 }
+/*@=modunconnomods =evalorderuncon @*/

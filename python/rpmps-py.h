@@ -14,7 +14,7 @@ typedef struct rpmpsObject_s {
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     int		active;
     int		ix;
-/*@null@*/
+/*@relnull@*/
     rpmps	ps;
 } rpmpsObject;
 

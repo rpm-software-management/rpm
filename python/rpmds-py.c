@@ -239,8 +239,7 @@ rpmds_iter(rpmdsObject * s)
 /*@null@*/
 static PyObject *
 rpmds_iternext(rpmdsObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@modifies s @*/
 {
     PyObject * result = NULL;
 
@@ -257,8 +256,10 @@ rpmds_iternext(rpmdsObject * s)
 	int tagN = rpmdsTagN(s->ds);
 	int Flags = rpmdsFlags(s->ds);
 
+/*@-branchstate@*/
 	if (N != NULL) N = xstrdup(N);
 	if (EVR != NULL) EVR = xstrdup(EVR);
+/*@=branchstate@*/
 	result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
@@ -315,9 +316,11 @@ rpmds_Notify(rpmdsObject * s, PyObject * args)
 }
 
 /* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
+/*@null@*/
 static PyObject *
 rpmds_Sort(rpmdsObject * s, PyObject * args)
-	/*@modifies s @*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     if (!PyArg_ParseTuple(args, ":Sort"))
 	return NULL;
@@ -326,6 +329,7 @@ rpmds_Sort(rpmdsObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Find(rpmdsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -346,6 +350,7 @@ rpmds_Find(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rc);
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Merge(rpmdsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -560,6 +565,7 @@ fprintf(stderr, "*** rpmds_alloc(%p,%d) ret %p\n", subtype, nitems, s);
 
 /** \ingroup py_c
  */
+/*@null@*/
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
