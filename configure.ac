@@ -1108,7 +1108,7 @@ fi
 dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
 MARK64=
 case "${target_cpu}" in
-x86_64*)	MARK64=64 ;;
+x86_64*|ppc64*|powerpc64*|s390x*)	MARK64=64 ;;
 esac
 AC_SUBST(MARK64)
 
@@ -1119,8 +1119,10 @@ x86_64*)	RPMCANONARCH=x86_64 ;;
 alpha*)		RPMCANONARCH=alpha ;;
 sparc*)		RPMCANONARCH=sparc ;;
 ia64*)		RPMCANONARCH=ia64 ;;
+s390x*)		RPMCANONARCH=s390x ;;
 s390*)		RPMCANONARCH=s390 ;;
-powerpc*)	RPMCANONARCH=ppc ;;
+powerpc64*|ppc64*)	RPMCANONARCH=ppc64 ;;
+powerpc*|ppc*)	RPMCANONARCH=ppc ;;
 armv3l*)	RPMCANONARCH=armv3l ;;
 armv4l*)	RPMCANONARCH=armv4l ;;
 armv4b*)	RPMCANONARCH=armv4b ;;
