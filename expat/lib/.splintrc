@@ -3,7 +3,6 @@
 +partial
 +forcehints
 
-#-warnunixlib
 -warnposix
 
 +unixlib
@@ -34,12 +33,12 @@
 -evalorder		# 5
 -fullinitblock		# 14
 -infloops		# 20
--modnomods		# ? error
+-modnomods		# 238
 -modunconnomods		# 2
 -noeffectuncon		# 94
 -nullderef		# 8
 -nullpass		# 11
--nullstate		# 171
+-nullstate		# 156
 -paramuse		# 146
 -predboolptr		# 177
 -protoparammatch	# 26
@@ -50,10 +49,11 @@
 -type			# 59
 -usereleased		# 8
 
--immediatetrans		# 9
+-dependenttrans		# 1
 -kepttrans		# 5
--temptrans		# 51
--unqualifiedtrans	# 12
+-observertrans		# 2
+-temptrans		# 49
+-unqualifiedtrans	# 11
 
 -casebreak		# 2
 -ifempty
@@ -66,26 +66,26 @@
 -whileempty
 
 # --- not-yet at strict level
--bitwisesigned		# 86
--elseifcomplete		# 2
--forblock		# 6
--ifblock		# 231
--incondefs		# 64
--namechecks		# tedious ANSI compliance checks
--ptrarith		# tedious
+-bitwisesigned
+-elseifcomplete
+-forblock
+-ifblock
+-incondefs
+-namechecks
+-ptrarith
 
--mustdefine		# 25
--shiftimplementation	# 148 ctype.h
+-mustdefine
+-shiftimplementation
 
--strictops		# 37
--whileblock		# 16
+-strictops
+-whileblock
 
 # --- not-yet at checks level
--mustfree		# 26
--usedef			# 31
+-mustfree
+-usedef
 
 # --- not-yet at standard level
-+boolint		# 38
-+charint		# 147
-+ignorequals		# 49
-+matchanyintegral	# 77
++boolint
++charint
++ignorequals
++matchanyintegral

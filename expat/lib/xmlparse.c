@@ -230,7 +230,7 @@ typedef struct {
    an attribute has been specified. */
 typedef struct attribute_id {
   XML_Char *name;
-/*@null@*/
+/*@null@*/ /*@observer@*/
   PREFIX *prefix;
   XML_Bool maybeTokenized;
   XML_Bool xmlns;
@@ -290,6 +290,7 @@ typedef struct {
 typedef struct open_internal_entity {
   const char *internalEventPtr;
   const char *internalEventEndPtr;
+/*@observer@*/
   struct open_internal_entity *next;
   ENTITY *entity;
 } OPEN_INTERNAL_ENTITY;
@@ -530,7 +531,9 @@ parserInit(XML_Parser parser, const XML_Char *encodingName)
 struct XML_ParserStruct {
   /* The first member must be userData so that the XML_GetUserData
      macro works. */
+/*@relnull@*/
   void *m_userData;
+/*@relnull@*/
   void *m_handlerArg;
 /*@null@*/ /*@owned@*/
   char *m_buffer;
@@ -576,7 +579,9 @@ struct XML_ParserStruct {
   XML_XmlDeclHandler m_xmlDeclHandler;
   const ENCODING *m_encoding;
   INIT_ENCODING m_initEncoding;
+/*@observer@*/
   const ENCODING *m_internalEncoding;
+/*@relnull@*/
   const XML_Char *m_protocolEncodingName;
   XML_Bool m_ns;
   XML_Bool m_ns_triplets;
@@ -593,6 +598,7 @@ struct XML_ParserStruct {
   const char *m_eventEndPtr;
 /*@dependent@*/
   const char *m_positionPtr;
+/*@observer@*/
   OPEN_INTERNAL_ENTITY *m_openInternalEntities;
   XML_Bool m_defaultExpandInternalEntities;
   int m_tagLevel;
@@ -610,6 +616,7 @@ struct XML_ParserStruct {
   XML_Bool m_declAttributeIsCdata;
   XML_Bool m_declAttributeIsId;
   DTD *m_dtd;
+/*@relnull@*/
   const XML_Char *m_curBase;
   TAG *m_tagStack;
 /*@null@*/

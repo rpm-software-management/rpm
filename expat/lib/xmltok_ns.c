@@ -64,7 +64,7 @@ NS(XmlInitEncoding)(INIT_ENCODING *p, const ENCODING **encPtr,
   return 1;
 }
 
-/*@null@*/
+/*@null@*/ /*@observer@*/
 static const ENCODING *
 NS(findEncoding)(const ENCODING *enc, const char *ptr, const char *end)
 	/*@*/

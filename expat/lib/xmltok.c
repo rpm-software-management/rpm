@@ -325,6 +325,7 @@ static void PTRCALL
 utf8_toUtf8(const ENCODING *enc,
             const char **fromP, const char *fromLim,
             char **toP, const char *toLim)
+	/*@modifies *fromP, *toP @*/
 {
   char *to;
   const char *from;
@@ -344,6 +345,7 @@ static void PTRCALL
 utf8_toUtf16(const ENCODING *enc,
              const char **fromP, const char *fromLim,
              unsigned short **toP, const unsigned short *toLim)
+	/*@modifies *fromP, *toP @*/
 {
   unsigned short *to = *toP;
   const char *from = *fromP;
