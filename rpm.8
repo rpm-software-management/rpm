@@ -1,25 +1,18 @@
 .\" rpm - Red Hat Package Manager
-.TH rpm 8 "23 October 1995" "Red Hat Software" "Red Hat Commercial Linux"
+.TH rpm 8 "25 February 1996" "Red Hat Software" "Red Hat Linux"
 .SH NAME
 rpm \- Red Hat Package Manager
 .SH SYNOPSIS
 \fBrpm\fP [options] 
-.br
-\fBrpmq\fP [options] 
 .SH DESCRIPTION
 \fBrpm\fP is a powerful \fIpackage manager\fP, which can be used to
 build, install, query, verify, update, and uninstall individual
 software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
-\fBrpmq\fP is a work\-in\-progress rewrite of rpm in the C language.
-It currently handles most querying options well, and installs are
-partially implemented. It is however, much faster then the standard
-\fBrpm\fP.
-
-There are five basic modes of operation, and each takes a different
+There are size basic modes of operation, and each takes a different
 set of options.  They are \fIbuild\fP, \fIinstall\fP, \fIquery\fP,
-\fIverify\fP, and \fIuninstall\fP.
+\fIverify\fP, \FIsignature check\fP, and \fIuninstall\fP.
 
 .I "\fBrpm \-i [install\-options] <package_file>+\fP"
 .br
@@ -27,31 +20,43 @@ set of options.  They are \fIbuild\fP, \fIinstall\fP, \fIquery\fP,
 .br
 .I "\fBrpm \-V|\-y|\-\-verify [verify\-options]\fP"
 .br
+.I "\fBrpm \-\-checksig <package_file>+\fP"
+.br
 .I "\fBrpm \-u <package_name>+\fP"
 .br
 .I "\fBrpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
 
 .SH INSTALL OPTIONS
-.IP "\fB\-U, \-\-upgrade\fP"
-Upgrade the package currently installed to the version in the new RPM.
-This is the same as install, except all other version of the package
-are removed from the system.
-.IP "\fB\-S, \-\-search\fP"
-Search the locations listed in /etc/rpmrc for the rpm.
+.IP "\fB\-\-force\fP"
+Same as using both \-\-replacepkgs, \-\-replacefiles, and 
+\-\-oldpackage.
 .IP "\fB\-h, \-\-hash\fP"
 Print 50 hash marks as the package archive is unpacked.  Use
 with \fB\-v\fP for a nice display.
+.IP "\fB\-\-oldpackage\fP"
+Allow an upgrade to replace a newer package with an older one.
 .IP "\fB\-\-percent\fP"
-Print percentages as files are unpacked from the package archive.
-.IP "\fB\-\-force\fP"
-Install despite any potential conflicts.
-.IP "\fB\-\-test\fP"
-Do not install the package, simply check for and report potential
-conflicts.
+Print percentages as files are unpacked from the package archive. This
+is intended to make RPM easy to run from other tools.
+.IP "\fB\-\-replacefiles\fP"
+Install the packages even if they replace files from other, already
+installed, packages.
+.IP "\fB\-\-replacepkgs\fP"
+Install the packages even if some of them are already installed on this
+system.
 .IP "\fB\-\-root \fI<dir>\fP"
 Do the installation on the system rooted at \fI<dir>\fP.  Note that
 this means the database will be updated under \fI<dir>\fP and any
 \fIpre\fP or \fIpost\fP scripts are run after a chroot() to \fI<dir>\fP.
+.IP "\fB\-S, \-\-search\fP"
+Search the locations listed in /etc/rpmrc for the rpm.
+.IP "\fB\-\-test\fP"
+Do not install the package, simply check for and report potential
+conflicts.
+.IP "\fB\-U, \-\-upgrade\fP"
+Upgrade the package currently installed to the version in the new RPM.
+This is the same as install, except all other version of the package
+are removed from the system.
 
 .SH UNINSTALL OPTIONS
 .IP "\fB\-\-test\fP"
@@ -138,6 +143,10 @@ original package and stored in the rpm database.  Among other things,
 verifying compares the size, MD5 sum, permissions, type, owner and group
 of each file.  Any discrepencies are displayed.  The package specification
 options are the same as for package querying.
+
+.SH SIGNATURE CHECKING
+This checks the PGP signature built into a package to ensure it came from
+a particular source. The PGP configuration information is read from /etc/rpmrc.
 
 .SH REBUILD OPTION
 
