@@ -140,7 +140,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 
 	    if (!getEntry(sech, RPMTAG_FILENAMES, &type, 
 			  (void **) &secFileList, &secFileCount)) {
-		error(RPMERR_DBCORRUPT, "package %s contains no files\n",
+		error(RPMERR_DBCORRUPT, "package %s contains no files",
 		      name);
 		freeHeader(sech);
 		rc = 1;
@@ -235,7 +235,12 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     }
 
     message(MESS_DEBUG, "running preuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_PREUN, scriptArg, flags & UNINSTALL_NOSCRIPTS);
+
+    if (runScript(prefix, h, RPMTAG_PREUN, scriptArg, 
+		 flags & UNINSTALL_NOSCRIPTS)) {
+	freeHeader(h);
+	return 1;
+    }
     
     message(MESS_DEBUG, "%s files test = %d\n", rmmess, flags & UNINSTALL_TEST);
     if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
@@ -364,7 +369,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	waitpid(child, &status, 0);
 
 	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	    error(RPMERR_SCRIPT, "execution of script failed\n");
+	    error(RPMERR_SCRIPT, "execution of script failed");
 	    return 1;
 	}
     }
