@@ -207,7 +207,7 @@ static rpmRC readPackageHeaders(FD_t fd,
 rpmRC rpmReadPackageInfo(FD_t fd, Header * sigp, Header * hdrp)
 {
     rpmRC rc = readPackageHeaders(fd, NULL, sigp, hdrp);
-    if (rc == RPMRC_FAIL)
+    if (rc != RPMRC_OK)
 	return rc;
     if (hdrp == NULL || sigp == NULL)
 	return rc;
@@ -223,7 +223,7 @@ rpmRC rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
     Header sig = NULL;
     rpmRC rc = readPackageHeaders(fd, &lead, &sig, hdrp);
 
-    if (rc == RPMRC_FAIL)
+    if (rc != RPMRC_OK)
 	goto exit;
 
     if (hdrp && *hdrp && sig) {
