@@ -10,6 +10,14 @@
 #include "header.h"
 #include "messages.h"
 
+struct rpmTagTableEntry {
+    char * name;
+    int val;
+};
+
+extern const struct rpmTagTableEntry rpmTagTable[];
+extern const int rpmTagTableSize;
+
 /* these tags are for both the database and packages */
 /* none of these can be 0 !!                         */
 
