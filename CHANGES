@@ -19,6 +19,7 @@
 	- fix: false fingerprint stat cache hit -- "the tetex problem" (#2727).
 	- fix: bsearch needs macro table sorted after undefine. (#3713).
 	- fix: --checksig segfault with odd pgp output (e.g. w/o ~/.pgp) (#3720)
+	- avoid numeric overflow in version comparison (Thayne Harbaugh<tharbaug@liberate.com>).
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).
