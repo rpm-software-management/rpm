@@ -10,6 +10,12 @@
 #include "misc.h"
 #include "rpmlib.h"
 
+#if HAVE_SYS_SYSTEMCFG_H
+#include <sys/systemcfg.h>
+#else
+#define __power_pc() 0
+#endif
+
 /* the rpmrc is read from /etc/rpmrc or $HOME/.rpmrc - it is not affected
    by a --root option */
 
@@ -711,6 +717,9 @@ static void setArchOs(char *arch, char *os, int build)
     }
 
     uname(&un);
+    if (!strcmp(un.sysname, "AIX")) {
+	strcpy(un.manchine, __power_pc() ? "ppc" : "rs6000");
+
     if (build) {
 	if (! arch) {
 	    arch = lookupInDefaultTable(un.machine, archDefaultTable,
