@@ -22,6 +22,10 @@
 /*@access DIGEST_CTX@*/		/* XXX compared with NULL */
 /*@access pgpDig@*/
 
+#if !defined(__GLIBC__)
+char ** environ = NULL;
+#endif
+
 int rpmLookupSignatureType(int action)
 {
     /*@unchecked@*/

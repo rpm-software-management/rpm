@@ -452,8 +452,12 @@ INPUT                  = \
 	@top_srcdir@/popt/popthelp.c \
 	@top_srcdir@/popt/poptint.h \
 	@top_srcdir@/popt/poptparse.c \
+	@top_srcdir@/python/db-py.c \
+	@top_srcdir@/python/db-py.h \
 	@top_srcdir@/python/hash.c \
 	@top_srcdir@/python/hash.h \
+	@top_srcdir@/python/header-py.c \
+	@top_srcdir@/python/header-py.h \
 	@top_srcdir@/python/rpmmodule.c \
 	@top_srcdir@/python/upgrade.c \
 	@top_srcdir@/python/upgrade.h \

@@ -28,6 +28,9 @@ extern int chroot (const char *__path)
 	/*@modifies errno, systemState @*/;
 /*@=superuser =declundef =incondefs @*/
 #endif
+#if !defined(__GLIBC__)
+extern char ** environ;
+#endif
 #endif
 
 #if TIME_WITH_SYS_TIME
