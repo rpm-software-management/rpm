@@ -20,11 +20,14 @@ static void verifyHeader(char * prefix, Header h) {
     int i;
     char * size, * md5, * link, * mtime, * mode;
     char * group, * user, * rdev;
+    int_32 * fileFlagsList;
+
+    getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, &count);
 
     if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count)) {
 	for (i = 0; i < count; i++) {
 	    if (rpmVerifyFile(prefix, h, i, &verifyResult))
-		printf("missing  %s\n", fileList[i]);
+		printf("missing    %s\n", fileList[i]);
 	    else {
 		size = md5 = link = mtime = mode = ".";
 		user = group = rdev = ".";
@@ -48,8 +51,9 @@ static void verifyHeader(char * prefix, Header h) {
 		if (verifyResult & VERIFY_MODE)
 		    mode = "M";
 
-		printf("%s%s%s%s%s%s%s%s %s\n",
+		printf("%s%s%s%s%s%s%s%s %c %s\n",
 		       size, mode, md5, rdev, link, user, group, mtime, 
+		       fileFlagsList[i] & RPMFILE_CONFIG ? 'c' : ' ', 
 		       fileList[i]);
 	    }
 	}
