@@ -210,6 +210,10 @@ fprintf(stderr, "*** addMacros\n");
 	    if (strcmp(rootDir, "/"))
 		addMacro(spec->macros, "_remroot", NULL, rootDir, RMIL_SPEC);
 	    break;
+	case URL_IS_UNKNOWN:
+	case URL_IS_DASH:
+	case URL_IS_PATH:
+	case URL_IS_HKP:
 	default:
 	    break;
 	}
@@ -261,6 +265,10 @@ fprintf(stderr, "*** delMacros\n");
 	    if (strcmp(rootDir, "/"))
 		delMacro(spec->macros, "_remroot");
 	    break;
+	case URL_IS_UNKNOWN:
+	case URL_IS_DASH:
+	case URL_IS_PATH:
+	case URL_IS_HKP:
 	default:
 	    break;
 	}

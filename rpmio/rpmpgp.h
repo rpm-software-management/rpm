@@ -217,7 +217,8 @@ typedef enum pgpSymkeyAlgo_e {
     PGPSYMKEYALGO_AES_128	=  7,	/*!< AES(128-bit key) */
     PGPSYMKEYALGO_AES_192	=  8,	/*!< AES(192-bit key) */
     PGPSYMKEYALGO_AES_256	=  9,	/*!< AES(256-bit key) */
-    PGPSYMKEYALGO_TWOFISH	= 10	/*!< TWOFISH */
+    PGPSYMKEYALGO_TWOFISH	= 10,	/*!< TWOFISH(256-bit key) */
+    PGPSYMKEYALGO_NOENCRYPT	= 110	/*!< no encryption */
 } pgpSymkeyAlgo;
 /*@=typeuse@*/
 
@@ -246,7 +247,8 @@ extern struct pgpValTbl_s pgpSymkeyTbl[];
 typedef enum pgpCompressAlgo_e {
     PGPCOMPRESSALGO_NONE	=  0,	/*!< Uncompressed */
     PGPCOMPRESSALGO_ZIP		=  1,	/*!< ZIP */
-    PGPCOMPRESSALGO_ZLIB	=  2	/*!< ZLIB */
+    PGPCOMPRESSALGO_ZLIB	=  2,	/*!< ZLIB */
+    PGPCOMPRESSALGO_BZIP2	=  3	/*!< BZIP2 */
 } pgpCompressAlgo;
 /*@=typeuse@*/
 
@@ -278,12 +280,15 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
  * @todo Add SHA256.
  */
 typedef enum pgpHashAlgo_e {
-    PGPHASHALGO_MD5		= 1,	/*!< MD5 */
-    PGPHASHALGO_SHA1		= 2,	/*!< SHA1 */
-    PGPHASHALGO_RIPEMD160	= 3,	/*!< RIPEMD160 */
-    PGPHASHALGO_MD2		= 5,	/*!< MD2 */
-    PGPHASHALGO_TIGER192	= 6,	/*!< TIGER192 */
-    PGPHASHALGO_HAVAL_5_160	= 7	/*!< HAVAL-5-160 */
+    PGPHASHALGO_MD5		=  1,	/*!< MD5 */
+    PGPHASHALGO_SHA1		=  2,	/*!< SHA1 */
+    PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD160 */
+    PGPHASHALGO_MD2		=  5,	/*!< MD2 */
+    PGPHASHALGO_TIGER192	=  6,	/*!< TIGER192 */
+    PGPHASHALGO_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
+    PGPHASHALGO_SHA256		=  8,	/*!< SHA256 */
+    PGPHASHALGO_SHA384		=  9,	/*!< SHA384 */
+    PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
 } pgpHashAlgo;
 
 /**
@@ -421,6 +426,7 @@ typedef struct pgpPktSigV4_s {
  */
 /*@-typeuse@*/
 typedef enum pgpSubType_e {
+    PGPSUBTYPE_NONE		=   0, /*!< none */
     PGPSUBTYPE_SIG_CREATE_TIME	=   2, /*!< signature creation time */
     PGPSUBTYPE_SIG_EXPIRE_TIME	=   3, /*!< signature expiration time */
     PGPSUBTYPE_EXPORTABLE_CERT	=   4, /*!< exportable certification */
@@ -428,7 +434,7 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_REGEX		=   6, /*!< regular expression */
     PGPSUBTYPE_REVOCABLE	=   7, /*!< revocable */
     PGPSUBTYPE_KEY_EXPIRE_TIME	=   9, /*!< key expiration time */
-    PGPSUBTYPE_BACKWARD_COMPAT	=  10, /*!< placeholder for backward compatibility */
+    PGPSUBTYPE_ARR		=  10, /*!< additional recipient request */
     PGPSUBTYPE_PREFER_SYMKEY	=  11, /*!< preferred symmetric algorithms */
     PGPSUBTYPE_REVOKE_KEY	=  12, /*!< revocation key */
     PGPSUBTYPE_ISSUER_KEYID	=  16, /*!< issuer key ID */
@@ -442,6 +448,9 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_KEY_FLAGS	=  27, /*!< key flags */
     PGPSUBTYPE_SIGNER_USERID	=  28, /*!< signer's user id */
     PGPSUBTYPE_REVOKE_REASON	=  29, /*!< reason for revocation */
+    PGPSUBTYPE_FEATURES		=  30, /*!< feature flags (gpg) */
+    PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature (gpg) */
+
     PGPSUBTYPE_INTERNAL_100	= 100, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_101	= 101, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_102	= 102, /*!< internal or user-defined */
@@ -452,7 +461,9 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_INTERNAL_107	= 107, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_108	= 108, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_109	= 109, /*!< internal or user-defined */
-    PGPSUBTYPE_INTERNAL_110	= 110 /*!< internal or user-defined */
+    PGPSUBTYPE_INTERNAL_110	= 110, /*!< internal or user-defined */
+
+    PGPSUBTYPE_CRITICAL		= 128  /*!< critical subpacket marker */
 } pgpSubType;
 /*@=typeuse@*/
 
@@ -1068,7 +1079,7 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
 char * pgpHexStr(const byte *p, unsigned int plen)
 	/*@*/
 {
-    static char prbuf[2048];
+    static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
     t = pgpHexCvt(t, p, plen);
     return prbuf;
@@ -1085,7 +1096,7 @@ const char * pgpMpiStr(const byte *p)
 	/*@requires maxRead(p) >= 3 @*/
 	/*@*/
 {
-    static char prbuf[2048];
+    static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
     sprintf(t, "[%4u]: ", pgpGrab(p, 2));
     t += strlen(t);
@@ -1194,6 +1205,18 @@ int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
 int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+
+/**
+ * Calculate OpenPGP public key fingerprint.
+ * @todo V3 non-RSA public keys not implemented.
+ * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
+ * @param pktlen	OpenPGP packet length (no. of bytes)
+ * @retval keyid	publick key fingerprint
+ * @return		0 on sucess, else -1
+ */
+int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
+		/*@out@*/ byte * keyid)
+	/*@modifies *keyid @*/;
 
 /**
  * Print/parse next OpenPGP packet.

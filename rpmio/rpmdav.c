@@ -258,6 +258,10 @@ static int davConnect(urlinfo u)
     const char * path = NULL;
     int rc;
 
+    /* HACK: hkp:// has no steenkin' options */
+    if (!(u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS))
+	return 0;
+
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
     /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
@@ -301,10 +305,15 @@ static int davInit(const char * url, urlinfo * uret)
 	return -1;	/* XXX error returns needed. */
 /*@=globs@*/
 
-    if ((u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS)
-     && u->url != NULL && u->sess == NULL)
-    {
-	ne_server_capabilities * capabilities;
+    if (u->url != NULL && u->sess == NULL)
+    switch (u->urltype) {
+    default:
+	assert(u->urltype != u->urltype);
+	/*@notreached@*/ break;
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_HKP:
+      {	ne_server_capabilities * capabilities;
 
 	/* HACK: oneshots should be done Somewhere Else Instead. */
 /*@-noeffect@*/
@@ -353,7 +362,7 @@ static int davInit(const char * url, urlinfo * uret)
 	rc = davConnect(u);
 	if (rc)
 	    goto exit;
-
+      }	break;
     }
 
 exit:
@@ -1028,8 +1037,8 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
 	fd->contentLength = fd->bytesRemain = -1;
 	fd->url = urlLink(u, "url (davOpen)");
 	fd = fdLink(fd, "grab data (davOpen)");
-assert(urlType == URL_IS_HTTPS || urlType == URL_IS_HTTP);
-	fd->urlType = urlType;	/* URL_IS_HTTPS */
+assert(urlType == URL_IS_HTTPS || urlType == URL_IS_HTTP || urlType == URL_IS_HKP);
+	fd->urlType = urlType;
     }
 
 exit:

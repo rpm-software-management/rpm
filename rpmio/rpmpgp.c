@@ -135,7 +135,8 @@ struct pgpValTbl_s pgpSymkeyTbl[] = {
     { PGPSYMKEYALGO_AES_128,	"AES(128-bit key)" },
     { PGPSYMKEYALGO_AES_192,	"AES(192-bit key)" },
     { PGPSYMKEYALGO_AES_256,	"AES(256-bit key)" },
-    { PGPSYMKEYALGO_TWOFISH,	"TWOFISH" },
+    { PGPSYMKEYALGO_TWOFISH,	"TWOFISH(256-bit key)" },
+    { PGPSYMKEYALGO_NOENCRYPT,	"no encryption" },
     { -1,			"Unknown symmetric key algorithm" },
 };
 
@@ -143,6 +144,7 @@ struct pgpValTbl_s pgpCompressionTbl[] = {
     { PGPCOMPRESSALGO_NONE,	"Uncompressed" },
     { PGPCOMPRESSALGO_ZIP,	"ZIP" },
     { PGPCOMPRESSALGO_ZLIB, 	"ZLIB" },
+    { PGPCOMPRESSALGO_BZIP2, 	"BZIP2" },
     { -1,			"Unknown compression algorithm" },
 };
 
@@ -153,6 +155,9 @@ struct pgpValTbl_s pgpHashTbl[] = {
     { PGPHASHALGO_MD2,		"MD2" },
     { PGPHASHALGO_TIGER192,	"TIGER192" },
     { PGPHASHALGO_HAVAL_5_160,	"HAVAL-5-160" },
+    { PGPHASHALGO_SHA256,	"SHA256" },
+    { PGPHASHALGO_SHA384,	"SHA384" },
+    { PGPHASHALGO_SHA512,	"SHA512" },
     { -1,			"Unknown hash algorithm" },
 };
 
@@ -172,7 +177,7 @@ struct pgpValTbl_s pgpSubTypeTbl[] = {
     { PGPSUBTYPE_REGEX,		"regular expression" },
     { PGPSUBTYPE_REVOCABLE,	"revocable" },
     { PGPSUBTYPE_KEY_EXPIRE_TIME,"key expiration time" },
-    { PGPSUBTYPE_BACKWARD_COMPAT,"placeholder for backward compatibility" },
+    { PGPSUBTYPE_ARR,		"additional recipient request" },
     { PGPSUBTYPE_PREFER_SYMKEY,	"preferred symmetric algorithms" },
     { PGPSUBTYPE_REVOKE_KEY,	"revocation key" },
     { PGPSUBTYPE_ISSUER_KEYID,	"issuer key ID" },
@@ -186,6 +191,9 @@ struct pgpValTbl_s pgpSubTypeTbl[] = {
     { PGPSUBTYPE_KEY_FLAGS,	"key flags" },
     { PGPSUBTYPE_SIGNER_USERID,	"signer's user id" },
     { PGPSUBTYPE_REVOKE_REASON,	"reason for revocation" },
+    { PGPSUBTYPE_FEATURES,	"features" },
+    { PGPSUBTYPE_EMBEDDED_SIG,	"embedded signature" },
+
     { PGPSUBTYPE_INTERNAL_100,	"internal subpkt type 100" },
     { PGPSUBTYPE_INTERNAL_101,	"internal subpkt type 101" },
     { PGPSUBTYPE_INTERNAL_102,	"internal subpkt type 102" },
@@ -367,7 +375,9 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	p += i;
 	hlen -= i;
 
-	pgpPrtVal("    ", pgpSubTypeTbl, p[0]);
+	pgpPrtVal("    ", pgpSubTypeTbl, (p[0]&(~PGPSUBTYPE_CRITICAL)));
+	if (p[0] & PGPSUBTYPE_CRITICAL)
+	    fprintf(stderr, " *CRITICAL*");
 	switch (*p) {
 	case PGPSUBTYPE_PREFER_SYMKEY:	/* preferred symmetric algorithms */
 	    for (i = 1; i < plen; i++)
@@ -419,7 +429,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_TRUST_SIG:
 	case PGPSUBTYPE_REGEX:
 	case PGPSUBTYPE_REVOCABLE:
-	case PGPSUBTYPE_BACKWARD_COMPAT:
+	case PGPSUBTYPE_ARR:
 	case PGPSUBTYPE_REVOKE_KEY:
 	case PGPSUBTYPE_NOTATION:
 	case PGPSUBTYPE_PREFER_KEYSERVER:
@@ -428,6 +438,8 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_KEY_FLAGS:
 	case PGPSUBTYPE_SIGNER_USERID:
 	case PGPSUBTYPE_REVOKE_REASON:
+	case PGPSUBTYPE_FEATURES:
+	case PGPSUBTYPE_EMBEDDED_SIG:
 	case PGPSUBTYPE_INTERNAL_100:
 	case PGPSUBTYPE_INTERNAL_101:
 	case PGPSUBTYPE_INTERNAL_102:
@@ -690,20 +702,6 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 		switch (i) {
 		case 0:		/* n */
 		    (void) mpbsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
-		    /* Get the keyid */
-		    if (_digp) {
-			uint32_t* np = _dig->rsa_pk.n.modl;
-			size_t nsize = _dig->rsa_pk.n.size;
-			uint32_t keyid[2];
-			#if WORDS_BIGENDIAN
-			keyid[0] = np[nsize-2];
-			keyid[1] = np[nsize-1];
-			#else
-			keyid[0] = swapu32(np[nsize-2]);
-			keyid[1] = swapu32(np[nsize-1]);
-			#endif
-			memcpy(_digp->signid, keyid, sizeof(_digp->signid));
-		    }
 if (_debug && _print)
 fprintf(stderr, "\t     n = "),  mpfprintln(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
 		    /*@switchbreak@*/ break;
@@ -939,6 +937,64 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
     return 0;
 }
 
+int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
+		byte * keyid)
+{
+    const byte *s = pkt;
+    DIGEST_CTX ctx;
+    byte version;
+    int rc = -1;	/* assume failure. */
+
+    if (pkt[0] != 0x99)
+	return rc;
+    version = pkt[3];
+
+    switch (version) {
+    case 3:
+      {	pgpPktKeyV3 v = (pgpPktKeyV3) (pkt + 3);
+
+	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
+	switch (v->pubkey_algo) {
+	case PGPPUBKEYALGO_RSA:
+	    s += (pgpMpiLen(s) - 8);
+	    memcpy(keyid, s, 8);
+	    rc = 0;
+	    break;
+	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
+	    break;
+	}
+      }	break;
+    case 4:
+      {	pgpPktKeyV4 v = (pgpPktKeyV4) (pkt + 3);
+	byte * SHA1 = NULL;
+	int i;
+
+	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
+	switch (v->pubkey_algo) {
+	case PGPPUBKEYALGO_RSA:
+	    for (i = 0; i < 2; i++)
+		s += pgpMpiLen(s);
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    for (i = 0; i < 4; i++)
+		s += pgpMpiLen(s);
+	    break;
+	}
+
+	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(ctx, pkt, (s-pkt));
+	(void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 0);
+
+	s = SHA1 + 12;
+	memcpy(keyid, s, 8);
+	rc = 0;
+
+	if (SHA1) free(SHA1);
+      }	break;
+    }
+    return rc;
+}
+
 int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 {
     unsigned int val = *pkt;
@@ -972,6 +1028,14 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 	rc = pgpPrtSig(tag, h, hlen);
 	break;
     case PGPTAG_PUBLIC_KEY:
+	/* Get the public key fingerprint. */
+	if (_digp) {
+	    if (!pgpPubkeyFingerprint(pkt, pktlen, _digp->signid))
+		_digp->saved |= PGPDIG_SAVED_ID;
+	    else
+		memset(_digp->signid, 0, sizeof(_digp->signid));
+	}
+	/*@fallthrough@*/
     case PGPTAG_PUBLIC_SUBKEY:
 	rc = pgpPrtKey(tag, h, hlen);
 	break;

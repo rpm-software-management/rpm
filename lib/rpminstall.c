@@ -451,6 +451,8 @@ if (fileURL[0] == '=') {
 	    eiu->pkgx++;
 	}   /*@switchbreak@*/ break;
 	case URL_IS_PATH:
+	case URL_IS_DASH:	/* WRONG WRONG WRONG */
+	case URL_IS_HKP:	/* WRONG WRONG WRONG */
 	default:
 	    eiu->pkgURL[eiu->pkgx] = fileURL;
 	    fileURL = NULL;

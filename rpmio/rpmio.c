@@ -222,6 +222,7 @@ DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
 	/*@fallthrough@*/
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
     case URL_IS_FTP:
     case URL_IS_DASH:
 	break;
@@ -721,6 +722,7 @@ const char *urlStrerror(const char *url)
     switch (urlIsURL(url)) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
     case URL_IS_FTP:
     {	urlinfo u;
 /* XXX This only works for httpReq/ftpLogin/ftpReq failures */
@@ -1849,6 +1851,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
 	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
     case URL_IS_FTP:
     case URL_IS_DASH:
     default:
@@ -1929,7 +1932,9 @@ int ufdClose( /*@only@*/ void * cookie)
 
 	/* XXX Why not (u->urltype == URL_IS_HTTP) ??? */
 	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
-	if (u->scheme != NULL && !strncmp(u->scheme, "http", sizeof("http")-1))
+	/* XXX Why not (u->urltype == URL_IS_HKP) ??? */
+	if (u->scheme != NULL
+	 && (!strncmp(u->scheme, "http", sizeof("http")-1) || !strncmp(u->scheme, "hkp", sizeof("hkp")-1)))
 	{
 	    /*
 	     * HTTP has 4 (or 5 if persistent malloc) refs on the fd:
@@ -2050,6 +2055,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+    case URL_IS_HKP:
 	fd = davOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
 	    break;
@@ -2976,6 +2982,7 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	switch (urlIsURL(path)) {
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
+	case URL_IS_HKP:
 	    isHTTP = 1;
 	    /*@fallthrough@*/
 	case URL_IS_PATH:
@@ -3151,7 +3158,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 /*@-boundswrite@*/
 int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)
 {
-    static ssize_t blenmax = (8 * BUFSIZ);
+    static ssize_t blenmax = (32 * BUFSIZ);
     ssize_t blen = 0;
     byte * b = NULL;
     ssize_t size;

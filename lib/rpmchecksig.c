@@ -562,6 +562,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
     const char * fn;
     const unsigned char * pkt = NULL;
     ssize_t pktlen = 0;
+    char * t = NULL;
     int res = 0;
     rpmRC rpmrc;
     int rc;
@@ -573,8 +574,22 @@ static int rpmcliImportPubkeys(const rpmts ts,
     while ((fn = *argv++) != NULL) {
 /*@=boundsread@*/
 
-rpmtsClean(ts);
+	rpmtsClean(ts);
 	pkt = _free(pkt);
+	t = _free(t);
+
+	/* If arg looks like a keyid, then attempt keyserver retrieve. */
+	if (fn[0] == '0' && fn[1] == 'x') {
+	    const char * s;
+	    int i;
+	    for (i = 0, s = fn+2; *s && isxdigit(*s); s++, i++)
+		{};
+	    if (i == 8 || i == 16) {
+		t = rpmExpand("%{_hkp_keyserver_query}", fn+2, NULL);
+		if (t && *t != '%')
+		    fn = t;
+	    }
+	}
 
 	/* Read pgp packet. */
 	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
@@ -600,6 +615,7 @@ rpmtsClean(ts);
     
 rpmtsClean(ts);
     pkt = _free(pkt);
+    t = _free(t);
     return res;
 }
 

@@ -16,7 +16,8 @@ typedef enum urltype_e {
     URL_IS_PATH		= 2,	/*!< file://... */
     URL_IS_FTP		= 3,	/*!< ftp://... */
     URL_IS_HTTP		= 4,	/*!< http://... */
-    URL_IS_HTTPS	= 5	/*!< https://... */
+    URL_IS_HTTPS	= 5,	/*!< https://... */
+    URL_IS_HKP		= 6	/*!< hkp://... */
 } urltype;
 
 #define	URLMAGIC	0xd00b1ed0

@@ -5,11 +5,21 @@
 
 static int printing = 1;
 static int _debug = 0;
+int noNeon;
 
 static struct poptOption optionsTable[] = {
  { "print", 'p', POPT_ARG_VAL,	&printing, 1,		NULL, NULL },
  { "noprint", 'n', POPT_ARG_VAL, &printing, 0,		NULL, NULL },
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+ { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
+	N_("disable use of libneon for HTTP"), NULL},
+ { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
+	N_("debug rpmio I/O"), NULL},
+ { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
+	N_("debug URL cache handling"), NULL},
+ { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -31,6 +41,7 @@ main (int argc, const char *argv[])
     if ((args = poptGetArgs(optCon)) != NULL)
     while ((fn = *args++) != NULL) {
 	pgpArmor pa;
+
 	pa = pgpReadPkts(fn, &pkt, &pktlen);
 	if (pa == PGPARMOR_ERROR
 	 || pa == PGPARMOR_NONE

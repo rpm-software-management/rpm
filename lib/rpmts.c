@@ -340,25 +340,36 @@ rpmRC rpmtsFindPubkey(rpmts ts)
     const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
-    pgpDigParams pubp = rpmtsSignature(ts);
-    rpmRC res;
+    pgpDigParams pubp = rpmtsPubkey(ts);
+    rpmRC res = RPMRC_NOKEY;
+    const char * pubkeysource = NULL;
     int xx;
 
-    if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL) {
-	res = RPMRC_NOKEY;
+    if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL)
 	goto exit;
-    }
 
-    if (ts->pkpkt == NULL
-     || memcmp(sigp->signid, ts->pksignid, sizeof(ts->pksignid)))
-    {
-	int ix = -1;
-	rpmdbMatchIterator mi;
-	Header h;
+#if 0
+fprintf(stderr, "==> find sig id %08x %08x ts pubkey id %08x %08x\n",
+pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
+pgpGrab(ts->pksignid, 4), pgpGrab(ts->pksignid+4, 4));
+#endif
 
+    /* Lazy free of previous pubkey if pubkey does not match this signature. */
+    if (memcmp(sigp->signid, ts->pksignid, sizeof(ts->pksignid))) {
+#if 0
+fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, pgpGrab(ts->pksignid, 4), pgpGrab(ts->pksignid+4, 4));
+#endif
 	ts->pkpkt = _free(ts->pkpkt);
 	ts->pkpktlen = 0;
 	memset(ts->pksignid, 0, sizeof(ts->pksignid));
+    }
+
+    /* Try rpmdb keyring lookup. */
+    if (ts->pkpkt == NULL) {
+	int hx = -1;
+	int ix = -1;
+	rpmdbMatchIterator mi;
+	Header h;
 
 	/* Retrieve the pubkey that matches the signature. */
 	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
@@ -368,6 +379,7 @@ rpmRC rpmtsFindPubkey(rpmts ts)
 
 	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
 		continue;
+	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
 /*@-boundsread@*/
 	    if (ix >= pc
@@ -379,56 +391,56 @@ rpmRC rpmtsFindPubkey(rpmts ts)
 	}
 	mi = rpmdbFreeIterator(mi);
 
-	/* Was a matching pubkey found? */
-	if (ix < 0 || ts->pkpkt == NULL) {
-	    res = RPMRC_NOKEY;
-	    goto exit;
-	}
-
-	/*
-	 * Can the pubkey packets be parsed?
-	 * Do the parameters match the signature?
-	 */
-	if (pgpPrtPkts(ts->pkpkt, ts->pkpktlen, NULL, 0)
-	 && sigp->pubkey_algo == pubp->pubkey_algo
-#ifdef	NOTYET
-	 && sigp->hash_algo == pubp->hash_algo
-#endif
-	 && !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)))
-	{
+	if (ix >= 0) {
+	    char hnum[32];
+	    sprintf(hnum, "h#%d", hx);
+	    pubkeysource = xstrdup(hnum);
+	} else {
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
-	    res = RPMRC_NOKEY;
-	    goto exit;
 	}
+    }
 
-	/* XXX Verify the pubkey signature. */
+    /* Try keyserver lookup. */
+    if (ts->pkpkt == NULL) {
+	const char * fn = rpmExpand("%{_hkp_keyserver_query}",
+			pgpHexStr(sigp->signid, sizeof(sigp->signid)), NULL);
 
-	/* Packet looks good, save the signer id. */
-/*@-boundsread@*/
-	memcpy(ts->pksignid, sigp->signid, sizeof(ts->pksignid));
-/*@=boundsread@*/
-
-	rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %s\n",
-		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
-		(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
-		pgpHexStr(sigp->signid, sizeof(sigp->signid)));
-
+	xx = 0;
+	if (fn && *fn != '%') {
+	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
+	}
+	fn = _free(fn);
+	if (xx) {
+	    ts->pkpkt = _free(ts->pkpkt);
+	    ts->pkpktlen = 0;
+	} else {
+	    /* Save new pubkey in local ts keyring for delayed import. */
+	    pubkeysource = xstrdup("keyserver");
+	}
     }
 
 #ifdef	NOTNOW
-    {
-	if (ts->pkpkt == NULL) {
-	    const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
-	    if (pgpReadPkts(pkfn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY) {
-		pkfn = _free(pkfn);
-		res = RPMRC_NOKEY;
-		goto exit;
-	    }
-	    pkfn = _free(pkfn);
+    /* Try filename from macro lookup. */
+    if (ts->pkpkt == NULL) {
+	const char * fn = rpmExpand("%{_gpg_pubkey}", NULL);
+
+	xx = 0;
+	if (fn && *fn != '%')
+	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
+	fn = _free(fn);
+	if (xx) {
+	    ts->pkpkt = _free(ts->pkpkt);
+	    ts->pkpktlen = 0;
+	} else {
+	    pubkeysource = xstrdup("macro");
 	}
     }
 #endif
+
+    /* Was a matching pubkey found? */
+    if (ts->pkpkt == NULL || ts->pkpktlen <= 0)
+	goto exit;
 
     /* Retrieve parameters from pubkey packet(s). */
     xx = pgpPrtPkts(ts->pkpkt, ts->pkpktlen, dig, 0);
@@ -439,13 +451,31 @@ rpmRC rpmtsFindPubkey(rpmts ts)
      && sigp->hash_algo == pubp->hash_algo
 #endif
      &&	!memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) )
-	res = RPMRC_OK;
-    else
-	res = RPMRC_NOKEY;
+    {
 
-    /* XXX Verify the signature signature. */
+	/* XXX Verify any pubkey signatures. */
+
+	/* Pubkey packet looks good, save the signer id. */
+/*@-boundsread@*/
+	memcpy(ts->pksignid, pubp->signid, sizeof(ts->pksignid));
+/*@=boundsread@*/
+
+	if (pubkeysource)
+	    rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
+		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
+		(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
+		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
+		pubkeysource);
+
+	res = RPMRC_OK;
+    }
 
 exit:
+    pubkeysource = _free(pubkeysource);
+    if (res != RPMRC_OK) {
+	ts->pkpkt = _free(ts->pkpkt);
+	ts->pkpktlen = 0;
+    }
     return res;
 }
 
@@ -943,6 +973,7 @@ const char * rpmtsRootDir(rpmts ts)
 	    break;
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
+	case URL_IS_HKP:
 	case URL_IS_FTP:
 	case URL_IS_DASH:
 	default:

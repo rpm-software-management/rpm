@@ -897,6 +897,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
+	case URL_IS_DASH:
+	case URL_IS_HKP:
 	default:
 	    break;
 	}

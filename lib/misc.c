@@ -34,6 +34,7 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    rc = Mkdir(dpath, 0755);
 	    break;
 	case URL_IS_DASH:
+	case URL_IS_HKP:
 	    break;
 	}
 	if (rc < 0) {
@@ -165,6 +166,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 
 	switch (temput) {
 	case URL_IS_DASH:
+	case URL_IS_HKP:
 	    goto errxit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case URL_IS_HTTPS:

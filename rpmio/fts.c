@@ -188,6 +188,7 @@ Fts_open(char * const * argv, int options,
 		/* Use fchdir(2) speedup only if local DASDI. */
 		switch (urlIsURL(*argv)) {
 		case URL_IS_DASH:
+		case URL_IS_HKP:
 /*@-boundswrite@*/
 			__set_errno (ENOENT);
 /*@=boundswrite@*/
