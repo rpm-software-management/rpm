@@ -68,4 +68,7 @@
 /* Define as 1 if we need myrealloc */
 #define NEED_MYREALLOC 0
 
+/* Define as 1 if chown() or chgrp() follows symlinks */
+#define CHOWN_FOLLOWS_SYMLINK 0
+
 #endif

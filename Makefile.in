@@ -134,6 +134,7 @@ clean:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 	rm -f *.a *.o core *~ $(PROGS) rpm.shared
+	find . -name "*.orig" -exec rm {} \;
 	find . -name core -exec rm {} \;
 
 .PHONY:		distclean

@@ -265,6 +265,28 @@ if test $HAS_S_ISSOCK = yes; then
 	AC_DEFINE(HAVE_S_ISSOCK)
 fi
 
+dnl Does chown() follow symlinks? This should be a good enough test.
+AC_MSG_CHECKING(whether chown() follows symlinks...)
+if test `id -u` = 0; then
+    rm -f foo bar
+    touch foo
+    ln -s foo bar
+    chown 10 bar
+    if test `ls -l foo | awk '{print $3}'` != "root"; then
+	result=yes
+    else
+	result=no
+    fi
+    rm -f foo bar
+else
+    AC_MSG_CHECKING((cannot check by non-root user))
+    result=yes
+fi
+AC_MSG_RESULT($result)
+if test $result = yes; then
+	AC_DEFINE(CHOWN_FOLLOWS_SYMLINK)
+fi
+
 AC_MSG_CHECKING(if timezone is defined...)
 AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
       HAS_TIMEZONE=yes,HAS_TIMEZONE=no)
