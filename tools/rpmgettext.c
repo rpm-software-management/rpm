@@ -11,12 +11,30 @@
 
 #include "intl.h"
 
+#define	MYDEBUG	0
+
+#ifdef	MYDEBUG
+#include <stdarg.h>
+static void dpf(char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    fflush(stderr);
+}
+
+#define	DPRINTF(_lvl, _fmt)	if ((_lvl) <= debug) dpf _fmt
+#else
+#define	DPRINTF(_lvl, _fmt)
+#endif
+
 const char *progname = NULL;
-int debug = 0;
+int debug = MYDEBUG;
 int verbose = 0;
 int escape = 1;		/* use octal escape sequence for !isprint(c)? */
-char *inputdir = NULL;
-char *outputdir = NULL;
+char *inputdir = "/mnt/redhat/comps/dist/5.2";
+char *outputdir = "/tmp/OUT";
+
 int gentran = 0;
 
 static inline char *
@@ -216,6 +234,8 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
     const char *sourcerpm;
     char buf[BUFSIZ];
     
+    DPRINTF(99, ("gettextfile(%d,\"%s\",%p,%p)\n", fd, file, fp, poTags));
+
     fprintf(fp, "\n#========================================================");
 
     readLead(fd, &lead);
@@ -553,13 +573,14 @@ slurp(const char *file, char **ibufp, size_t *nbp)
     size_t nb;
     int fd;
 
+    DPRINTF(99, ("slurp(\"%s\",%p,%p)\n", file, ibufp, nbp));
+
     if (ibufp)
 	*ibufp = NULL;
     if (nbp)
 	*nbp = 0;
 
     if (stat(file, &sb) < 0) {
-	perror(file);
 	fprintf(stderr, "stat(%s): %s\n", file, strerror(errno));
 	return 1;
     }
@@ -637,13 +658,16 @@ parsepofile(const char *file, message_list_ty **mlpp, string_list_ty **flpp)
     message_ty *mp;
     KW_t *kw;
     char *lang;
-    char *buf, *s, *se, *t, *f;
+    char *buf, *s, *se, *t, *f, *fe;
     size_t nb;
     int c, rc;
     int state = 1;
+    int gotmsgstr = 0;
 
-if (debug)
-fprintf(stderr, "================ %s\n", file);
+    DPRINTF(99, ("parsepofile(\"%s\",%p,%p)\n", file, mlpp, flpp));
+
+DPRINTF(100, ("================ %s\n", file));
+
     if ((rc = slurp(file, &buf, &nb)) != 0)
 	return rc;
 
@@ -667,26 +691,28 @@ fprintf(stderr, "================ %s\n", file);
 
 		if (mp == NULL) {
 			mp = message_alloc(NULL);
-			message_list_append(mlp, mp);
 		}
 
 		if (c == '#') {
 			while ((c = *se) && c != '\n') se++;
 	/* === s:se has comment */
-if (debug)
-fprintf(stderr, "%.*s\n", (int)(se-s), s);
+DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 
 			if (c)
-				*se == '\0';	/* zap \n */
+				*se = '\0';	/* zap \n */
 			switch (s[1]) {
 			case ':':
-				if ((f = strrchr(s, ':')) == NULL) {
-					fprintf(stderr, "malformed #: xref at \"%.20s\"\n", s);
+				f = s+2;
+				while (*f && strchr(" \t", *f)) f++;
+				fe = f;
+				while (*fe && !strchr("\n:", *fe)) fe++;
+				if (*fe != ':') {
+					fprintf(stderr, "malformed #: xref at \"%.60s\"\n", s);
 					break;
 				}
-				*f++ = '\0';
-				message_comment_filepos(mp, s, -getTagVal(f));
-				string_list_append_unique(flp, s);
+				*fe++ = '\0';
+				string_list_append_unique(flp, f);
+				message_comment_filepos(mp, f, getTagVal(fe));
 				break;
 			case '.':
 				message_comment_dot_append(mp, xstrdup(s));
@@ -712,8 +738,7 @@ fprintf(stderr, "%.*s\n", (int)(se-s), s);
 			break;
 		}
 	/* === s:se has keyword */
-if (debug)
-fprintf(stderr, "%.*s", (int)(se-s), s);
+DPRINTF(100, ("%.*s", (int)(se-s), s));
 
 		SKIPWHITE;
 		s = se;
@@ -727,16 +752,14 @@ fprintf(stderr, "%.*s", (int)(se-s), s);
 			}
 			s++;	/* skip ( */
 	/* === s:se has lang */
-if (debug)
-fprintf(stderr, "(%.*s)", (int)(se-s), s);
+DPRINTF(100, ("(%.*s)", (int)(se-s), s));
 			*se = '\0';
 			lang = s;
 			if (c)
 				se++;	/* skip ) */
 		} else
 			lang = "C";
-if (debug)
-fprintf(stderr, "\n");
+DPRINTF(100, ("\n"));
 
 		SKIPWHITE;
 		if (*se != '"') {
@@ -785,10 +808,13 @@ fprintf(stderr, "\n");
 			message_variant_append(mp, xstrdup(lang), xstrdup(tbuf), &pos);
 			lang = NULL;
 		}
-
-		mp = NULL;
+		/* XXX Peek to see if next item is comment */
+		SKIPWHITE;
+		if (*se == '#') {
+			message_list_append(mlp, mp);
+			mp = NULL;
+		}
 		state = 1;
-
 		break;
 	}
 	s = se;
@@ -817,14 +843,16 @@ readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs, CSA_t *
     Spec spec;
     int rc;
 
+    DPRINTF(99, ("readRPM(\"%s\",%p,%p,%p,%p)\n", fileName, specp, lead, sigs, csa));
+
     if (fileName != NULL && (fdi = open(fileName, O_RDONLY, 0644)) < 0) {
-	perror("cannot open package");
+	fprintf(stderr, "readRPM: open %s: %s\n", fileName, strerror(errno));
 	exit(1);
     }
 
     /* Get copy of lead */
     if ((rc = read(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
-	perror("cannot read lead");
+	fprintf(stderr, "readRPM: read %s: %s\n", fileName, strerror(errno));
 	exit(1);
     }
     lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
@@ -874,6 +902,8 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
     char **langs;
     char buf[BUFSIZ];
     
+    DPRINTF(99, ("headerInject(%p,%p,%p)\n", h, poTags, mlp));
+
     if ((langs = headerGetLangs(h)) == NULL)
 	return 1;
 
@@ -886,8 +916,7 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
 
 	/* Search for the msgid */
 	e = *s;
-	expandRpmPO(buf, e);
-	if ((mp = message_list_search(mlp, buf)) != NULL) {
+	if ((mp = message_list_search(mlp, e)) != NULL) {
 
 #if 0
 	    for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
@@ -916,6 +945,8 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
     CSA_t csabuf, *csa = &csabuf;
     int rc;
 
+    DPRINTF(99, ("rewriteBinaryRPM(\"%s\",\"%s\",%p)\n", fni, fno, mlp));
+
     csa->cpioArchiveSize = 0;
     csa->cpioFdIn = -1;
     csa->cpioList = NULL;
@@ -940,19 +971,6 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
     }
 }
 
-static int
-mlptoheader(message_list_ty **mlpp, Header *newhp)
-{
-	message_list_ty *mlp;
-	Header newh;
-
-	if (mlpp)
-		*mlpp = mlp;
-	if (newhp)
-		*newhp = newh;
-	return 0;
-}
-
 /* ================================================================== */
 
 #define	STDINFN	"<stdin>"
@@ -963,6 +981,8 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 {
 	char fni[BUFSIZ], fno[BUFSIZ];
 	const char *fn;
+
+	DPRINTF(99, ("rpmgettext(%d,\"%s\",%p)\n", fd, file, ofp));
 
 	if (file == NULL)
 	    file = STDINFN;
@@ -999,7 +1019,7 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 	}
 
 	if ((fd = open(fni, O_RDONLY, 0644)) < 0) {
-	    perror(fni);
+	    fprintf(stderr, "rpmgettext: open %s: %s\n", fni, strerror(errno));
 	    return 2;
 	}
 
@@ -1035,32 +1055,35 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 	char fn[BUFSIZ], fni[BUFSIZ], fno[BUFSIZ];
 	int j, rc;
 
+	DPRINTF(99, ("rpmputtext(%d,\"%s\",%p)\n", fd, file, ofp));
+
 	if ((rc = parsepofile(file, &mlp, &flp)) != 0)
 		return rc;
 
 	for (j = 0; j < flp->nitems && rc == 0; j++) {
-	    char *fne;
+	    char *f, *fe;
 
-	    strcpy(fn, flp->item[j]);
+	    f = fn;
+	    strcpy(f, flp->item[j]);
 
 	    /* Find the text after the name-version-release */
-	    if ((fne = strrchr(fn, '-')) == NULL ||
-		(fne = strchr(fne, '.')) == NULL) {
+	    if ((fe = strrchr(f, '-')) == NULL ||
+		(fe = strchr(fe, '.')) == NULL) {
 		fprintf(stderr, "skipping malformed xref \"%s\"\n", fn);
 		continue;
 	    }
-	    fne++;	/* skip . */
+	    fe++;	/* skip . */
 
-	    if ( !strcmp(fne, "src.rpm") ) {
+	    if ( !strcmp(fe, "src.rpm") ) {
 	    } else {
 		char **a, *arch;
 
-		for (a = archs; *a; a++) {
-		    arch = *a;
-		/* Append ".arch.rpm"
-		    *fne = '\0';
-		    strcat(fne, arch);
-		    strcat(fne, ".rpm");
+		for (a = archs; (arch = *a) != NULL && rc == 0; a++) {
+
+		/* Append ".arch.rpm" */
+		    *fe = '\0';
+		    strcat(fe, arch);
+		    strcat(fe, ".rpm");
 
 		/* Build input "inputdir/arch/fn" */
 		    fni[0] = '\0';
@@ -1070,7 +1093,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 			strcat(fni, arch);
 			strcat(fni, "/");
 		    }
-		    strcat(fni, fn);
+		    strcat(fni, f);
 	
 		/* Build output "outputdir/arch/fn" */
 		    fno[0] = '\0';
@@ -1080,9 +1103,11 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 			strcat(fno, arch);
 			strcat(fno, "/");
 		    }
-		    strcat(fno, fn);
+		    strcat(fno, f);
 
-		    rc = rewriteBinaryRPM(fni, fno, mlp);
+		/* XXX skip over noarch/exclusivearch */
+		    if (!access(fni, R_OK))
+			rc = rewriteBinaryRPM(fni, fno, mlp);
 		}
 	    }
 	}
@@ -1097,6 +1122,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 static int
 rpmchktext(int fd, const char *file, FILE *ofp)
 {
+	DPRINTF(99, ("rpmchktext(%d,\"%s\",%p)\n", fd, file, ofp));
 	return parsepofile(file, NULL, NULL);
 }
 
