@@ -708,7 +708,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
 	xx = rpmfcHelper(fc, 'P', "perl");
-	if (is_executable)
+	if (is_executable || fc->fcolor->vals[fc->ix] & RPMFC_TEXT)
 	    xx = rpmfcHelper(fc, 'R', "perl");
     }
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
