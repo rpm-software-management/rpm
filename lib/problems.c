@@ -113,7 +113,7 @@ const char * rpmProblemString(rpmProblem prob) /*@*/
 	break;
     case RPMPROB_NEW_FILE_CONFLICT:
 	snprintf(buf, nb,
-		_("file %s conflicts between attemped installs of %s and %s"),
+		_("file %s conflicts between attempted installs of %s and %s"),
 		prob->str1, prob->pkgNEVR, prob->altNEVR);
 	break;
     case RPMPROB_FILE_CONFLICT:
