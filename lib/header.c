@@ -853,3 +853,33 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c) {
 
     return 0;
 }
+
+int headerRemoveEntry(Header h, int_32 tag) {
+    struct indexEntry * entry, * last;
+
+    entry = findEntry(h, tag, RPM_NULL_TYPE);
+    if (!entry) return 1;
+
+    /* make sure entry points to the first occurence of this tag */
+    while (entry > h->index && (entry - 1)->info.tag == tag)  
+	entry--;
+
+    /* We might be better off just counting the number of items off the
+       end and issuing one big memcpy, but memcpy() doesn't have to work
+       on overlapping regions thanks to ANSI <sigh>. A alloca() and two
+       memcpy() would probably still be a win (as our moving from the
+       end to the middle isn't very nice to the qsort() we'll have to
+       do to make up for this!), but I'm too lazy to implement it. Just
+       remember that this repeating this is basically nlogn thanks to this
+       dumb implementation (but n is the best we'd do anyway) */
+
+    last = h->index + h->indexUsed;
+    while (entry->info.tag == tag && entry < last) {
+	*(entry++) = *(--last);
+    }
+    h->indexUsed = last - h->index;
+
+    h->sorted = 0;
+
+    return 0;
+}

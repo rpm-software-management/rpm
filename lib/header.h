@@ -79,6 +79,9 @@ int headerGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
 int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
 
 int headerIsEntry(Header h, int_32 tag);
+/* removes all entries of type tag from the header, returns 1 if none were
+   found */
+int headerRemoveEntry(Header h, int_32 tag);
 
 HeaderIterator headerInitIterator(Header h);
 int headerNextIterator(HeaderIterator iter,
