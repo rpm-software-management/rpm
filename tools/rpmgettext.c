@@ -1,5 +1,7 @@
 /* rpmheader: spit out the header portion of a package */
 
+#define	_GNU_SOURCE	1
+
 #include "system.h"
 
 #include "../build/rpmbuild.h"
@@ -31,7 +33,6 @@ static void dpf(char *format, ...)
 const char *progname = NULL;
 int debug = MYDEBUG;
 int verbose = 0;
-int escape = 1;		/* use octal escape sequence for !isprint(c)? */
 char *inputdir = "/mnt/redhat/comps/dist/5.2";
 char *outputdir = "/tmp/OUT";
 char *onlylang = NULL;
@@ -122,6 +123,90 @@ headerGetLangs(Header h)
     return table;
 }
 
+/* ================================================================== */
+
+static const char *
+genSrpmFileName(Header h)
+{
+    char *name, *version, *release, *sourcerpm;
+    char sfn[BUFSIZ], bfn[BUFSIZ];
+
+    headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&name, NULL);
+    headerGetEntry(h, RPMTAG_VERSION, NULL, (void **)&version, NULL);
+    headerGetEntry(h, RPMTAG_RELEASE, NULL, (void **)&release, NULL);
+    sprintf(sfn, "%s-%s-%s.src.rpm", name, version, release);
+
+    headerGetEntry(h, RPMTAG_SOURCERPM, NULL, (void **)&sourcerpm, NULL);
+
+#if 0
+    if (strcmp(sourcerpm, sfn))
+	return strdup(sourcerpm);
+
+    return NULL;
+#else
+    return strdup(sourcerpm);
+#endif
+
+}
+
+static const char *
+hasLang(const char *onlylang, char **langs, char **s)
+{
+	const char *e = *s;
+	int i = 0;
+
+	while(langs[i] && strcmp(langs[i], onlylang)) {
+		i++;
+		e += strlen(e) + 1;
+	}
+#if 0
+	if (langs[i] && *e)
+		return e;
+	return NULL;
+#else
+	return onlylang;
+#endif
+}
+
+/* ================================================================== */
+/* XXX stripped down gettext environment */
+
+#define	HAVE_LOCALE_H	1
+#include <libintl.h>
+#include <string.h>
+
+#define	xstrdup		strdup
+#define	xmalloc		malloc
+#define	xrealloc	realloc
+
+#define	PARAMS(_x)	_x
+/* Length from which starting on warnings about too long strings are given.
+   Several systems have limits for strings itself, more have problems with
+   strings in their tools (important here: gencat).  1024 bytes is a
+   conservative limit.  Because many translation let the message size grow
+   (German translations are always bigger) choose a length < 1024.  */
+#if !defined(WARN_ID_LEN)
+#define WARN_ID_LEN 900
+#endif
+
+/* This is the page width for the message_print function.  It should
+   not be set to more than 79 characters (Emacs users will appreciate
+   it).  It is used to wrap the msgid and msgstr strings, and also to
+   wrap the file position (#:) comments.  */
+#if !defined(PAGE_WIDTH)
+#define PAGE_WIDTH 79
+#endif
+
+#include "fstrcmp.c"
+
+#include "str-list.c"
+
+#define	_LIBGETTEXT_H	1	/* XXX WTFO? _LIBINTL_H is undef? */
+#undef	_			/* XXX WTFO? */
+#include "message.c"
+
+/* ================================================================== */
+
 /* XXX cribbed from gettext/src/message.c */
 static const char escapes[] = "\b\f\n\r\t";
 static const char escape_names[] = "bfnrt";
@@ -188,51 +273,6 @@ contractRpmPO(char *t, const char *s)
 	}
     }
     *t = '\0';
-}
-
-/* ================================================================== */
-
-static const char *
-genSrpmFileName(Header h)
-{
-    char *name, *version, *release, *sourcerpm;
-    char sfn[BUFSIZ], bfn[BUFSIZ];
-
-    headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&name, NULL);
-    headerGetEntry(h, RPMTAG_VERSION, NULL, (void **)&version, NULL);
-    headerGetEntry(h, RPMTAG_RELEASE, NULL, (void **)&release, NULL);
-    sprintf(sfn, "%s-%s-%s.src.rpm", name, version, release);
-
-    headerGetEntry(h, RPMTAG_SOURCERPM, NULL, (void **)&sourcerpm, NULL);
-
-#if 0
-    if (strcmp(sourcerpm, sfn))
-	return strdup(sourcerpm);
-
-    return NULL;
-#else
-    return strdup(sourcerpm);
-#endif
-
-}
-
-static const char *
-hasLang(const char *onlylang, char **langs, char **s)
-{
-	const char *e = *s;
-	int i = 0;
-
-	while(langs[i] && strcmp(langs[i], onlylang)) {
-		i++;
-		e += strlen(e) + 1;
-	}
-#if 0
-	if (langs[i] && *e)
-		return e;
-	return NULL;
-#else
-	return onlylang;
-#endif
 }
 
 static int poTags[] = {
@@ -331,277 +371,6 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
     FREE(langs);
 
     return 0;
-}
-
-/* ================================================================== */
-#define	xstrdup		strdup
-#define	xmalloc		malloc
-#define	xrealloc	realloc
-#define	PARAMS(_x)	_x
-
-#include "fstrcmp.c"
-
-#include "str-list.c"
-
-#include "rpmpo.h"
-
-message_ty *
-message_alloc (msgid)
-     char *msgid;
-{
-  message_ty *mp;
-
-  mp = xmalloc (sizeof (message_ty));
-  mp->msgid = msgid;
-  mp->comment = NULL;
-  mp->comment_dot = NULL;
-  mp->filepos_count = 0;
-  mp->filepos = NULL;
-  mp->variant_count = 0;
-  mp->variant = NULL;
-  mp->used = 0;
-  mp->obsolete = 0;
-  mp->is_fuzzy = 0;
-  mp->is_c_format = undecided;
-  mp->do_wrap = undecided;
-  return mp;
-}
-
-void
-message_free (mp)
-     message_ty *mp;
-{
-  size_t j;
-
-  if (mp->comment != NULL)
-    string_list_free (mp->comment);
-  if (mp->comment_dot != NULL)
-    string_list_free (mp->comment_dot);
-  free ((char *) mp->msgid);
-  for (j = 0; j < mp->variant_count; ++j)
-    free ((char *) mp->variant[j].msgstr);
-  if (mp->variant != NULL)
-    free (mp->variant);
-  for (j = 0; j < mp->filepos_count; ++j)
-    free ((char *) mp->filepos[j].file_name);
-  if (mp->filepos != NULL)
-    free (mp->filepos);
-  free (mp);
-}
-
-message_variant_ty *
-message_variant_search (mp, domain)
-     message_ty *mp;
-     const char *domain;
-{
-  size_t j;
-  message_variant_ty *mvp;
-
-  for (j = 0; j < mp->variant_count; ++j)
-    {
-      mvp = &mp->variant[j];
-      if (0 == strcmp (domain, mvp->domain))
-        return mvp;
-    }
-  return 0;
-}
-
-void
-message_variant_append (mp, domain, msgstr, pp)
-     message_ty *mp;
-     const char *domain;
-     const char *msgstr;
-     const lex_pos_ty *pp;
-{
-  size_t nbytes;
-  message_variant_ty *mvp;
-
-  nbytes = (mp->variant_count + 1) * sizeof (mp->variant[0]);
-  mp->variant = xrealloc (mp->variant, nbytes);
-  mvp = &mp->variant[mp->variant_count++];
-  mvp->domain = domain;
-  mvp->msgstr = msgstr;
-  mvp->pos = *pp;
-}
-
-void
-message_comment_append (mp, s)
-     message_ty *mp;
-     const char *s;
-{
-  if (mp->comment == NULL)
-    mp->comment = string_list_alloc ();
-  string_list_append (mp->comment, s);
-}
-
-void
-message_comment_dot_append (mp, s)
-     message_ty *mp;
-     const char *s;
-{
-  if (mp->comment_dot == NULL)
-    mp->comment_dot = string_list_alloc ();
-  string_list_append (mp->comment_dot, s);
-}
-
-void
-message_comment_filepos (mp, name, line)
-     message_ty *mp;
-     const char *name;
-     size_t line;
-{
-  size_t nbytes;
-  lex_pos_ty *pp;
-  int min, max;
-  int j;
-
-  /* See if we have this position already.  They are kept in sorted
-     order, so use a binary chop.  */
-  /* FIXME: use bsearch */
-  min = 0;
-  max = (int) mp->filepos_count - 1;
-  while (min <= max)
-    {
-      int mid;
-      int cmp;
-
-      mid = (min + max) / 2;
-      pp = &mp->filepos[mid];
-      cmp = strcmp (pp->file_name, name);
-      if (cmp == 0)
-	cmp = (int) pp->line_number - line;
-      if (cmp == 0)
-	return;
-      if (cmp < 0)
-	min = mid + 1;
-      else
-	max = mid - 1;
-    }
-
-  /* Extend the list so that we can add an position to it.  */
-  nbytes = (mp->filepos_count + 1) * sizeof (mp->filepos[0]);
-  mp->filepos = xrealloc (mp->filepos, nbytes);
-
-  /* Shuffle the rest of the list up one, so that we can insert the
-     position at ``min''.  */
-  /* FIXME: use memmove */
-  for (j = mp->filepos_count; j > min; --j)
-    mp->filepos[j] = mp->filepos[j - 1];
-  mp->filepos_count++;
-
-  /* Insert the postion into the empty slot.  */
-  pp = &mp->filepos[min];
-  pp->file_name = xstrdup (name);
-  pp->line_number = line;
-}
-
-message_list_ty *
-message_list_alloc ()
-{
-  message_list_ty *mlp;
-
-  mlp = xmalloc (sizeof (message_list_ty));
-  mlp->nitems = 0;
-  mlp->nitems_max = 0;
-  mlp->item = 0;
-  return mlp;
-}
-
-void
-message_list_append (mlp, mp)
-     message_list_ty *mlp;
-     message_ty *mp;
-{
-  if (mlp->nitems >= mlp->nitems_max)
-    {
-      size_t nbytes;
-
-      mlp->nitems_max = mlp->nitems_max * 2 + 4;
-      nbytes = mlp->nitems_max * sizeof (message_ty *);
-      mlp->item = xrealloc (mlp->item, nbytes);
-    }
-  mlp->item[mlp->nitems++] = mp;
-}
-
-void
-message_list_delete_nth (mlp, n)
-     message_list_ty *mlp;
-     size_t n;
-{
-  size_t j;
-
-  if (n >= mlp->nitems)
-    return;
-  message_free (mlp->item[n]);
-  for (j = n + 1; j < mlp->nitems; ++j)
-    mlp->item[j - 1] = mlp->item[j];
-  mlp->nitems--;
-}
-
-message_ty *
-message_list_search (mlp, msgid)
-     message_list_ty *mlp;
-     const char *msgid;
-{
-  size_t j;
-
-  for (j = 0; j < mlp->nitems; ++j)
-    {
-      message_ty *mp;
-
-      mp = mlp->item[j];
-      if (0 == strcmp (msgid, mp->msgid))
-        return mp;
-    }
-  return 0;
-}
-
-message_ty *
-message_list_search_fuzzy (mlp, msgid)
-     message_list_ty *mlp;
-     const char *msgid;
-{
-  size_t j;
-  double best_weight;
-  message_ty *best_mp;
-
-  best_weight = 0.6;
-  best_mp = NULL;
-  for (j = 0; j < mlp->nitems; ++j)
-    {
-      size_t k;
-      double weight;
-      message_ty *mp;
-
-      mp = mlp->item[j];
-
-      for (k = 0; k < mp->variant_count; ++k)
-        if (mp->variant[k].msgstr != NULL && mp->variant[k].msgstr[0] != '\0')
-          break;
-      if (k >= mp->variant_count)
-        continue;
-
-      weight = fstrcmp (msgid, mp->msgid);
-      if (weight > best_weight)
-        {
-          best_weight = weight;
-          best_mp = mp;
-        }
-    }
-  return best_mp;
-}
-
-void
-message_list_free (mlp)
-     message_list_ty *mlp;
-{
-  size_t j;
-
-  for (j = 0; j < mlp->nitems; ++j)
-    message_free (mlp->item[j]);
-  if (mlp->item)
-    free (mlp->item);
-  free (mlp);
 }
 
 /* ================================================================== */
@@ -742,7 +511,9 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 			if (c)
 				*se = '\0';	/* zap \n */
 			switch (s[1]) {
-			case ':':
+			case '~':	/* archival translations */
+				break;
+			case ':':	/* file cross reference */
 				f = s+2;
 				while (*f && strchr(" \t", *f)) f++;
 				fe = f;
@@ -755,10 +526,15 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 				string_list_append_unique(flp, f);
 				message_comment_filepos(mp, f, getTagVal(fe));
 				break;
-			case '.':
+			case '.':	/* automatic comments */
 				message_comment_dot_append(mp, xstrdup(s));
 				break;
+			case ',':	/* flag... */
+				mp->is_c_format = parse_c_format_description_string(f);
+				break;
 			default:
+				/* XXX might want to fix and/or warn here */
+			case ' ':	/* flag... */
 				message_comment_append(mp, xstrdup(s));
 				break;
 			}
@@ -1194,13 +970,16 @@ main(int argc, char **argv)
 
     progname = basename(argv[0]);
 
-    while((c = getopt(argc, argv, "del:I:O:Tv")) != EOF)
+    while((c = getopt(argc, argv, "deEl:I:O:Tv")) != EOF)
     switch (c) {
     case 'd':
 	debug++;
 	break;
     case 'e':
-	escape = 0;
+	message_print_style_escape(0);
+	break;
+    case 'E':
+	message_print_style_escape(1);
 	break;
     case 'l':
 	onlylang = optarg;
