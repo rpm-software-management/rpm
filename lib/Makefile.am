@@ -57,9 +57,9 @@ getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
 	$(YACC) $(srcdir)/getdate.y
 	-@if test -f y.tab.c; then \
-	 { echo "/*@-globstate -retvalint -unqualifiedtrans -usedef -varuse@*/";\
+	 { echo "/*@-globstate -retvalint -unqualifiedtrans -usedef -varuse -nullderef@*/";\
 	   cat y.tab.c ;\
-	   echo "/*@=globstate =retvalint =unqualifiedtrans =usedef =varuse@*/";\
+	   echo "/*@=globstate =retvalint =unqualifiedtrans =usedef =varuse =nullderef@*/";\
 	 } > getdate.c ;\
 	   rm -f y.tab.c; \
 	else \
@@ -72,7 +72,10 @@ getdate.c: getdate.y
 
 BUILT_SOURCES = tagtable.c getdate.c
 
-.PHONY:	lclint
+.PHONY:	sources
+sources:
+	@echo $(librpm_la_SOURCES:%=lib/%)
+
 .PHONY:	lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)

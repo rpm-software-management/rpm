@@ -291,7 +291,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		Header origH, fileAction * actions)
 {
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
     rpmProblemSet probs = ts->probs;
     int allowBadRelocate = (ts->ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
@@ -335,7 +335,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
      * should be added, but, since relocateFileList() can be called more
      * than once for the same header, don't bother if already present.
      */
-    if (numRelocations == 0) {
+    if (rawRelocations == NULL || numRelocations == 0) {
 	if (numValid) {
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
 		(void) headerAddEntry(origH, RPMTAG_INSTPREFIXES,
@@ -358,8 +358,11 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     for (i = 0; i < numRelocations; i++) {
 	char * t;
 
-	/* FIXME: default relocations (oldPath == NULL) need to be handled
-	   in the UI, not rpmlib */
+	/*
+	 * Default relocations (oldPath == NULL) are handled in the UI,
+	 * not rpmlib.
+	 */
+	if (rawRelocations[i].oldPath == NULL) continue; /* XXX can't happen */
 
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
@@ -399,7 +402,9 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	madeSwap = 0;
 	for (j = 1; j < numRelocations; j++) {
 	    rpmRelocation tmpReloc;
-	    if (strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
+	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
+		relocations[j    ].oldPath == NULL || /* XXX can't happen */
+	strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
 		continue;
 	    tmpReloc = relocations[j - 1];
 	    relocations[j - 1] = relocations[j];
@@ -413,6 +418,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	_printed = 1;
 	rpmMessage(RPMMESS_DEBUG, _("========== relocations\n"));
 	for (i = 0; i < numRelocations; i++) {
+	    if (relocations[i].oldPath == NULL) continue; /* XXX can't happen */
 	    if (relocations[i].newPath == NULL)
 		rpmMessage(RPMMESS_DEBUG, _("%5d exclude  %s\n"),
 			i, relocations[i].oldPath);
@@ -431,7 +437,8 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	numActual = 0;
 	for (i = 0; i < numValid; i++) {
 	    for (j = 0; j < numRelocations; j++) {
-		if (strcmp(validRelocations[i], relocations[j].oldPath))
+		if (relocations[j].oldPath == NULL || /* XXX can't happen */
+		    strcmp(validRelocations[i], relocations[j].oldPath))
 		    continue;
 		/* On install, a relocate to NULL means skip the path. */
 		if (relocations[j].newPath) {
@@ -509,6 +516,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	 * relocation list be a good idea?
 	 */
 	for (j = numRelocations - 1; j >= 0; j--) {
+	    if (relocations[j].oldPath == NULL) continue; /* XXX can't happen */
 	    len = strcmp(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
@@ -569,9 +577,11 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		fnlen = te - fn;
 	    } else
 		te = fn + strlen(fn);
+	    /*@-nullpass -nullderef@*/	/* LCL: te != NULL here. */
 	    if (strcmp(baseNames[i], te)) /* basename changed too? */
 		baseNames[i] = alloca_strdup(te);
 	    *te = '\0';			/* terminate new directory name */
+	    /*@=nullpass =nullderef@*/
 	}
 
 	/* Does this directory already exist in the directory list? */
@@ -612,6 +622,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
 
+	    if (relocations[j].oldPath == NULL) continue; /* XXX can't happen */
 	    len = strcmp(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
@@ -704,9 +715,11 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 	    continue;
 	}
 	while ((t - target->probs) < target->numProblems) {
+	    /*@-nullpass@*/	/* LCL: looks good to me */
 	    if (f->h == t->h && f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
 		break;
+	    /*@=nullpass@*/
 	    t++;
 	    gotProblems = 1;
 	}
@@ -851,14 +864,14 @@ static int filecmp(short mode1, const char * md51, const char * link1,
     return 0;
 }
 
-static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
+static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount, int reportConflicts,
 				    rpmProblemSet probs,
 				    rpmtransFlags transFlags)
 {
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     int oltype, omtype;
     Header h;
     int i;
@@ -945,7 +958,7 @@ static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
     return 0;
 }
 
-static int handleRmvdInstalledFiles(TFI_t fi, rpmdb db,
+static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount)
 {
@@ -1065,8 +1078,10 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 		    break;
 
 		/* Otherwise, compare fingerprints by value. */
+		/*@-nullpass@*/	/* LCL: looks good to me */
 		if (FP_EQUAL(fi->fps[i], recs[otherPkgNum]->fps[otherFileNum]))
-			break;
+		    break;
+		/*@=nullpass@*/
 
 	    }
 	    /* XXX is this test still necessary? */
@@ -1356,7 +1371,9 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     }
 
     if (netsharedPaths) freeSplitString(netsharedPaths);
+#ifdef	DYING	/* XXX freeFi will deal with this later. */
     fi->flangs = _free(fi->flangs);
+#endif
     if (languages) freeSplitString((char **)languages);
 }
 
@@ -1559,6 +1576,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * - count files.
      */
     /* The ordering doesn't matter here */
+    if (ts->addedPackages.list != NULL)
     for (alp = ts->addedPackages.list;
 	(alp - ts->addedPackages.list) < ts->addedPackages.size;
 	alp++)
@@ -1879,7 +1897,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	ts->flList = freeFl(ts, ts->flList);
 	ts->flEntries = 0;
+	/*@-nullstate@*/
 	return ts->orderCount;
+	/*@=nullstate@*/
     }
 
     /* ===============================================
@@ -1995,8 +2015,10 @@ assert(alp == fi->ap);
     ts->flList = freeFl(ts, ts->flList);
     ts->flEntries = 0;
 
+    /*@-nullstate@*/
     if (ourrc)
     	return -1;
     else
 	return 0;
+    /*@=nullstate@*/
 }

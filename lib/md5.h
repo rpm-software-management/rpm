@@ -23,7 +23,9 @@ struct MD5Context {
 /*
  * This is needed to make RSAREF happy on some MS-DOS compilers.
  */
+/*@-mutrep@*/	/* FIX: redefine as pointer */
 typedef /*@abstract@*/ struct MD5Context MD5_CTX;
+/*@=mutrep@*/
 
 #ifdef __cplusplus
 extern "C" {

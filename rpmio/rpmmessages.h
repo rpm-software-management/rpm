@@ -56,12 +56,14 @@ extern "C" {
 
 /**
  */
-typedef void * (*rpmCallbackFunction)(const void * h, 
-				      const rpmCallbackType what, 
-				      const unsigned long amount, 
-				      const unsigned long total,
-				      const void * pkgKey,
-				      rpmCallbackData data);
+typedef /*@only@*/ /*@null@*/
+    void * (*rpmCallbackFunction)
+		(/*@null@*/ const void * h, 
+		const rpmCallbackType what, 
+		const unsigned long amount, 
+		const unsigned long total,
+		/*@null@*/ const void * pkgKey,
+		/*@null@*/ rpmCallbackData data);
 
 /**
  */

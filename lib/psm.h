@@ -187,7 +187,7 @@ void freeFi(TFI_t fi)
  * @param a		package dispostion
  * @return		formatted string
  */
-/*@observer@*/ const char *const fiTypeString(TFI_t fi);
+/*@observer@*/ const char *const fiTypeString(/*@partial@*/TFI_t fi);
 
 /**
  * Package state machine driver.
@@ -195,7 +195,7 @@ void freeFi(TFI_t fi)
  * @param stage		next stage
  * @return		0 on success
  */
-int psmStage(PSM_t psm, pkgStage stage)
+int psmStage(/*@partial@*/ PSM_t psm, pkgStage stage)
 	/*@modifies psm @*/;
 
 #ifdef __cplusplus

@@ -10,7 +10,7 @@
 #include "debug.h"
 
 extern int specedit;
-extern MacroContext rpmGlobalMacroContext;
+extern struct MacroContext_s rpmGlobalMacroContext;
 
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -84,9 +84,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     }
 
     if (pkg)
-	/*@-dependenttrans@*/
-	*pkg = p;
-	/*@=dependenttrans@*/
+	/*@-dependenttrans@*/ *pkg = p; /*@=dependenttrans@*/
     return ((p == NULL) ? 1 : 0);
 }
 
@@ -249,6 +247,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     char buf[BUFSIZ];
     int num = 0;
 
+    buf[0] = '\0';
     switch (tag) {
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
@@ -281,7 +280,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 
 	nump = buf;
 	SKIPSPACE(nump);
-	if (! *nump) {
+	if (nump == NULL || *nump == '\0') {
 	    num = 0;
 	} else {
 	    if (parseNum(buf, &num)) {
@@ -315,7 +314,9 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     spec->numSources++;
 
     if (tag != RPMTAG_ICON) {
+	/*@-nullpass@*/		/* LCL: varargs needs null annotate. */
 	const char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
+	/*@=nullpass@*/
 
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
@@ -331,9 +332,9 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 
 /**
  */
-static inline struct speclines * newSl(void)
+static inline /*@only@*/ /*@null@*/ struct speclines * newSl(void)
 {
-    struct speclines *sl = NULL;
+    struct speclines * sl = NULL;
     if (specedit) {
 	sl = xmalloc(sizeof(struct speclines));
 	sl->sl_lines = NULL;
@@ -345,7 +346,7 @@ static inline struct speclines * newSl(void)
 
 /**
  */
-static inline void freeSl(/*@only@*/struct speclines *sl)
+static inline void freeSl(/*@only@*/ /*@null@*/ struct speclines * sl)
 {
     int i;
     if (sl == NULL)
@@ -360,7 +361,7 @@ static inline void freeSl(/*@only@*/struct speclines *sl)
 
 /**
  */
-static inline struct spectags * newSt(void)
+static inline /*@only@*/ /*@null@*/ struct spectags * newSt(void)
 {
     struct spectags *st = NULL;
     if (specedit) {
@@ -374,7 +375,7 @@ static inline struct spectags * newSt(void)
 
 /**
  */
-static inline void freeSt(/*@only@*/struct spectags *st)
+static inline void freeSt(/*@only@*/ /*@null@*/ struct spectags *st)
 {
     int i;
     if (st == NULL)
@@ -497,6 +498,7 @@ void freeSpec(/*@only@*/ Spec spec)
     spec->buildRestrictions = NULL;
 
     if (!spec->inBuildArchitectures) {
+	if (spec->buildArchitectureSpecs != NULL)
 	while (spec->buildArchitectureCount--) {
 	    /*@-unqualifiedtrans@*/
 	    freeSpec(
@@ -513,8 +515,10 @@ void freeSpec(/*@only@*/ Spec spec)
     spec->cookie = _free(spec->cookie);
 
     freeSources(spec->sources);	spec->sources = NULL;
+    /*@-nullstate@*/	/* FIX: non-null pointers, shrug. */
     freePackages(spec);
     closeSpec(spec);
+    /*@=nullstate@*/
     
     spec = _free(spec);
 }

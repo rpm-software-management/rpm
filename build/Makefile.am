@@ -24,6 +24,9 @@ install-data-local:
 	sed -e "s|^dependency_libs='|& -lrpm|" < librpmbuild.la > .librpmbuild.la && \
 	mv .librpmbuild.la librpmbuild.la
 
+.PHONY:	sources
+sources:
+	@echo $(librpmbuild_la_SOURCES:%=build/%)
 
 .PHONY:	lclint
 lclint:

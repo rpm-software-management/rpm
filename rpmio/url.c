@@ -39,6 +39,16 @@ int _url_debug = 0;
 /*@only@*/ /*@null@*/ static urlinfo *uCache = NULL;
 static int uCount = 0;
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this != NULL)	free((void *)this);
+    return NULL;
+}
+
 urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
@@ -89,7 +99,8 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	/*@-usereleased@*/
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
-			u, u->ctrl, u->host, u->service);
+			u, u->ctrl, (u->host ? u->host : ""),
+			(u->service ? u->service : ""));
 	/*@=usereleased@*/
     }
     if (u->data) {
@@ -108,53 +119,55 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	/*@-usereleased@*/
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
-			u, u->data, u->host, u->service);
+			u, u->data, (u->host ? u->host : ""),
+			(u->service ? u->service : ""));
 	/*@=usereleased@*/
     }
-    if (u->buf) {
-	free(u->buf);
-	u->buf = NULL;
-    }
-    if (u->url)		free((void *)u->url);
-    if (u->service)	free((void *)u->service);
-    if (u->user)	free((void *)u->user);
-    if (u->password)	free((void *)u->password);
-    if (u->host)	free((void *)u->host);
-    if (u->portstr)	free((void *)u->portstr);
-    if (u->proxyu)	free((void *)u->proxyu);
-    if (u->proxyh)	free((void *)u->proxyh);
+    u->buf = _free(u->buf);
+    u->url = _free(u->url);
+    u->service = _free((void *)u->service);
+    u->user = _free((void *)u->user);
+    u->password = _free((void *)u->password);
+    u->host = _free((void *)u->host);
+    u->portstr = _free((void *)u->portstr);
+    u->proxyu = _free((void *)u->proxyu);
+    u->proxyh = _free((void *)u->proxyh);
 
-    /*@-refcounttrans@*/ free((void *)u); /*@-refcounttrans@*/
+    /*@-refcounttrans@*/ u = _free(u); /*@-refcounttrans@*/
     return NULL;
 }
 
 void urlFreeCache(void)
 {
-    int i;
-    for (i = 0; i < uCount; i++) {
-	if (uCache[i] == NULL) continue;
-	uCache[i] = urlFree(uCache[i], "uCache");
-	if (uCache[i])
-	    fprintf(stderr, _("warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
-		i, uCache[i], uCache[i]->nrefs,
-		uCache[i]->host, uCache[i]->service);
+    if (uCache) {
+	int i;
+	for (i = 0; i < uCount; i++) {
+	    if (uCache[i] == NULL) continue;
+	    uCache[i] = urlFree(uCache[i], "uCache");
+	    if (uCache[i])
+		fprintf(stderr,
+			_("warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
+			i, uCache[i], uCache[i]->nrefs,
+			(uCache[i]->host ? uCache[i]->host : ""),
+			(uCache[i]->service ? uCache[i]->service : ""));
+	}
     }
-    if (uCache)
-	free(uCache);
-    uCache = NULL;
+    uCache = _free(uCache);
     uCount = 0;
 }
 
-static int urlStrcmp(const char *str1, const char *str2)
+static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
 {
     if (str1 && str2)
-	return (strcmp(str1, str2));
+	/*@-nullpass@*/		/* LCL: 2nd arg claims to be NULL */
+	return strcmp(str1, str2);
+	/*@=nullpass@*/
     if (str1 != str2)
 	return -1;
     return 0;
 }
 
-static void urlFind(urlinfo *uret, int mustAsk)
+static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo *uret, int mustAsk)
 {
     urlinfo u;
     int ucx;
@@ -162,6 +175,11 @@ static void urlFind(urlinfo *uret, int mustAsk)
 
     if (uret == NULL)
 	return;
+
+    if (uCache == NULL) {
+	*uret = NULL;
+	return;
+    }
 
     u = *uret;
     URLSANE(u);
@@ -215,19 +233,18 @@ static void urlFind(urlinfo *uret, int mustAsk)
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
-    if (u->proxyh) {
-	free((void *)u->proxyh);
-	u->proxyh = NULL;
-    }
+    u->proxyh = _free(u->proxyh);
 
     /* Perform one-time FTP initialization */
     if (u->urltype == URL_IS_FTP) {
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
+	    /*@observer@*/ const char * host = (u->host ? u->host : "");
+	    /*@observer@*/ const char * user = (u->user ? u->user : "");
 	    char * prompt;
-	    prompt = alloca(strlen(u->host) + strlen(u->user) + 256);
-	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
-	    if (u->password)	free((void *)u->password);
+	    prompt = alloca(strlen(host) + strlen(user) + 256);
+	    sprintf(prompt, _("Password for %s@%s: "), user, host);
+	    u->password = _free(u->password);
 	    u->password = /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/;
 	    u->password = xstrdup(u->password);	/* XXX xstrdup has side effects. */
 	}
@@ -235,13 +252,14 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_ftpproxy}", NULL);
 	    if (proxy && *proxy != '%') {
+		/*@observer@*/ const char * host = (u->host ? u->host : "");
 		const char *uu = (u->user ? u->user : "anonymous");
-		char *nu = xmalloc(strlen(uu) + sizeof("@") + strlen(u->host));
-		(void) stpcpy( stpcpy( stpcpy(nu, uu), "@"), u->host);
+		char *nu = xmalloc(strlen(uu) + sizeof("@") + strlen(host));
+		(void) stpcpy( stpcpy( stpcpy(nu, uu), "@"), host);
 		u->proxyu = nu;
 		u->proxyh = xstrdup(proxy);
 	    }
-	    free((void *)proxy);
+	    proxy = _free(proxy);
 	}
 
 	if (u->proxyp < 0) {
@@ -251,12 +269,12 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		int port = strtol(proxy, &end, 0);
 		if (!(end && *end == '\0')) {
 		    fprintf(stderr, _("error: %sport must be a number\n"),
-			u->service);
+			(u->service ? u->service : ""));
 		    return;
 		}
 		u->proxyp = port;
 	    }
-	    free((void *)proxy);
+	    proxy = _free(proxy);
 	}
     }
 
@@ -267,7 +285,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
 	    if (proxy && *proxy != '%')
 		u->proxyh = xstrdup(proxy);
-	    free((void *)proxy);
+	    proxy = _free(proxy);
 	}
 
 	if (u->proxyp < 0) {
@@ -277,12 +295,12 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		int port = strtol(proxy, &end, 0);
 		if (!(end && *end == '\0')) {
 		    fprintf(stderr, _("error: %sport must be a number\n"),
-			u->service);
+			(u->service ? u->service : ""));
 		    return;
 		}
 		u->proxyp = port;
 	    }
-	    free((void *)proxy);
+	    proxy = _free(proxy);
 	}
 
     }
@@ -415,7 +433,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	    u->port = strtol(u->portstr, &end, 0);
 	    if (!(end && *end == '\0')) {
 		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
-		if (myurl) free(myurl);
+		myurl = _free(myurl);
 		u = urlFree(u, "urlSplit (error #3)");
 		return -1;
 	    }
@@ -434,7 +452,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	    u->port = IPPORT_HTTP;
     }
 
-    if (myurl) free(myurl);
+    myurl = _free(myurl);
     if (uret) {
 	*uret = u;
 	urlFind(uret, 0);
@@ -466,9 +484,12 @@ int urlGetFile(const char * url, const char * dest) {
 	    dest = sfuPath;
     }
 
+    if (dest == NULL)
+	return FTPERR_UNKNOWN;
+
     tfd = Fopen(dest, "w.ufdio");
 if (_url_debug)
-fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
+fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : NULL), dest);
     if (tfd == NULL || Ferror(tfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));

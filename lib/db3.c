@@ -109,8 +109,9 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
     return rc;
 }
 
-static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
-		/*@unused@*/ const char * dbsubfile)
+static int db_fini(dbiIndex dbi, const char * dbhome,
+		/*@null@*/ const char * dbfile,
+		/*@unused@*/ /*@null@*/ const char * dbsubfile)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = dbi->dbi_dbenv;
@@ -161,8 +162,10 @@ static int db3_fsync_disable(/*@unused@*/ int fd) {
     return 0;
 }
 
-static int db_init(dbiIndex dbi, const char *dbhome, const char *dbfile,
-		/*@unused@*/ const char * dbsubfile, /*@out@*/ DB_ENV **dbenvp)
+static int db_init(dbiIndex dbi, const char *dbhome,
+		/*@null@*/ const char *dbfile,
+		/*@unused@*/ /*@null@*/ const char * dbsubfile,
+		/*@out@*/ DB_ENV **dbenvp)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
@@ -189,18 +192,21 @@ static int db_init(dbiIndex dbi, const char *dbhome, const char *dbfile,
 	goto errxit;
 
 #if defined(__USE_DB3)
+    if (dbenv == NULL)
+	return 1;
+
   { int xx;
     dbenv->set_errcall(dbenv, rpmdb->db_errcall);
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /* dbenv->set_paniccall(???) */
-    dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
+    (void) dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-    dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
+    (void) dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-    dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
+    (void) dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
 		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-    dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
+    (void) dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
  /* dbenv->set_lg_max(???) */
  /* dbenv->set_lk_conflicts(???) */
@@ -269,12 +275,13 @@ errxit:
 static int db3sync(dbiIndex dbi, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
-    int rc;
+    int rc = 0;
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
     int _printit;
 
-    rc = db->sync(db, flags);
+    if (db != NULL)
+	rc = db->sync(db, flags);
     /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
     _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
     rc = cvtdberr(dbi, "db->sync", rc, _printit);
@@ -337,9 +344,11 @@ static int db3c_put(dbiIndex dbi, DBC * dbcursor,
     return rc;
 }
 
-static inline int db3c_close(dbiIndex dbi, /*@only@*/ DBC * dbcursor)
+static inline int db3c_close(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor)
 {
     int rc;
+
+    if (dbcursor == NULL) return -2;
 
     rc = dbcursor->c_close(dbcursor);
     rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
@@ -353,6 +362,7 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp)
     int flags;
     int rc;
 
+    if (db == NULL) return -2;
 #if defined(__USE_DB3)
     if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
 	flags = DB_WRITECURSOR;
@@ -367,7 +377,7 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp)
     return rc;
 }
 
-static int db3cclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor,
+static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 		unsigned int flags)
 {
     int rc = 0;
@@ -432,6 +442,7 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor,
     data.size = datalen;
 
     if (dbcursor == NULL) {
+	if (db == NULL) return -2;
 	rc = db->put(db, txnid, &key, &data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
@@ -459,6 +470,7 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor,
     key.size = keylen;
 
     if (dbcursor == NULL) {
+	if (db == NULL) return -2;
 	rc = db->del(db, txnid, &key, 0);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
     } else {
@@ -496,6 +508,9 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 
     if (dbcursor == NULL) {
 	int _printit;
+	/*@-compmempass@*/
+	if (db == NULL) return -2;
+	/*@=compmempass@*/
 	rc = db->get(db, txnid, &key, &data, 0);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
@@ -517,9 +532,9 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
 	/*@=onlytrans@*/
     }
 
-    /*@-compmempass@*/
+    /*@-compmempass -nullstate@*/
     return rc;
-    /*@=compmempass@*/
+    /*@=compmempass =nullstate@*/
 }
 
 static int db3byteswapped(dbiIndex dbi)
@@ -528,7 +543,8 @@ static int db3byteswapped(dbiIndex dbi)
     int rc = 0;
 
 #if defined(__USE_DB3)
-    rc = db->get_byteswapped(db);
+    if (db != NULL)
+	rc = db->get_byteswapped(db);
 #endif	/* __USE_DB3 */
 
     return rc;
@@ -583,7 +599,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     }
 
     if (dbi->dbi_use_dbenv)
-	xx = db_fini(dbi, dbhome, dbfile, dbsubfile);
+	/*@-nullstate@*/
+	xx = db_fini(dbi, (dbhome ? dbhome : ""), dbfile, dbsubfile);
+	/*@=nullstate@*/
 
 #else	/* __USE_DB2 || __USE_DB3 */
 
@@ -622,7 +640,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if (dbip)
 	*dbip = NULL;
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
+	/*@-nullstate@*/
 	return 1;
+	/*@=nullstate@*/
     dbi->dbi_api = DB_VERSION_MAJOR;
 
     urlfn = rpmGenPath(
@@ -671,7 +691,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 #if defined(__USE_DB3)
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
-	if (rc == 0) {
+	if (rc == 0 && db != NULL) {
 	    if (dbi->dbi_lorder) {
 		rc = db->set_lorder(db, dbi->dbi_lorder);
 		rc = cvtdberr(dbi, "db->set_lorder", rc, _debug);
@@ -776,7 +796,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 				_("cannot get %s lock on %s/%s\n"),
 				((dbi->dbi_mode & O_RDWR)
 					? _("exclusive") : _("shared")),
-				dbhome, dbfile);
+				dbhome, (dbfile ? dbfile : ""));
 			rc = 1;
 		    } else if (dbfile) {
 			rpmMessage(RPMMESS_DEBUG,
@@ -838,7 +858,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
     urlfn = _free(urlfn);
 
+    /*@-nullstate@*/
     return rc;
+    /*@=nullstate@*/
 }
 
 /** \ingroup db3

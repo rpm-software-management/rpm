@@ -87,7 +87,7 @@ struct indexEntry {
  * The Header data structure.
  */
 struct headerToken {
-/*@owned@*/ struct indexEntry *index;	/*!< Array of tags. */
+/*@owned@*/ struct indexEntry * index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
     int region_allocated;	/*!< Is 1st header region allocated? */
@@ -99,13 +99,13 @@ struct headerToken {
 /**
  */
 struct sprintfTag {
-    headerTagTagFunction ext;   /*!< if NULL tag element is invalid */
+/*@null@*/ headerTagTagFunction ext;   /*!< if NULL tag element is invalid */
     int extNum;
     int_32 tag;
     int justOne;
     int arrayCount;
 /*@kept@*/ char * format;
-/*@kept@*/ char * type;
+/*@kept@*/ /*@null@*/ char * type;
     int pad;
 };
 
@@ -140,9 +140,9 @@ struct sprintfToken {
 	    int len;
 	} string;
 	struct {
-	    /*@only@*/ struct sprintfToken * ifFormat;
+	/*@only@*/ /*@null@*/ struct sprintfToken * ifFormat;
 	    int numIfTokens;
-	    /*@only@*/ struct sprintfToken * elseFormat;
+	/*@only@*/ /*@null@*/ struct sprintfToken * elseFormat;
 	    int numElseTokens;
 	    struct sprintfTag tag;
 	} cond;
@@ -238,7 +238,7 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
  * @param regionid	region offset
  * @return		no. bytes of data in region
  */
-static int regionSwab(struct indexEntry * entry, int il, int dl,
+static int regionSwab(/*@null@*/ struct indexEntry * entry, int il, int dl,
 		const struct entryInfo * pe, char * dataStart, int regionid)
 {
     char * tprev = NULL;
@@ -315,8 +315,11 @@ assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
  * @retval c		address of count (or NULL)
  * @param minMem	string pointers refer to header memory?
  */
-static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
-	/*@out@*/ const void ** p, /*@out@*/ int_32 * c, int minMem)
+static void copyEntry(const struct indexEntry * entry,
+	/*@null@*/ /*@out@*/ int_32 * type,
+	/*@null@*/ /*@out@*/ const void ** p,
+	/*@null@*/ /*@out@*/ int_32 * c,
+	int minMem)
 		/*@modifies *type, *p, *c @*/
 {
     int_32 count = entry->info.count;
@@ -481,7 +484,7 @@ Header headerCopy(Header h)
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData((void *)ptr, type))
     {
-	(void) headerAddEntry(nh, tag, type, ptr, count);
+	if (ptr) (void) headerAddEntry(nh, tag, type, ptr, count);
     }
     headerFreeIterator(hi);
 
@@ -925,6 +928,8 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
     int length;
     const void * uh;
 
+    if (h == NULL)
+	return 1;
     uh = doHeaderUnload(h, &length);
     switch (magicp) {
     case HEADER_MAGIC_YES:
@@ -1129,11 +1134,13 @@ void headerDump(Header h, FILE *f, int flags,
  * @param type		entry type
  * @return 		header entry
  */
-static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type)
+static /*@null@*/
+struct indexEntry * findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
 {
     struct indexEntry * entry, * entry2, * last;
     struct indexEntry key;
 
+    if (h == NULL) return NULL;
     if (!h->sorted) headerSort(h);
 
     key.info.tag = tag;
@@ -1330,8 +1337,10 @@ headerFindI18NString(Header h, struct indexEntry *entry)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-	/*@out@*/ const void **p, /*@out@*/ int_32 *c, int minMem)
+static int intGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
+	/*@null@*/ /*@out@*/ const void ** p,
+	/*@null@*/ /*@out@*/ int_32 *c,
+	int minMem)
 		/*@modifies *type, *p, *c @*/
 {
     struct indexEntry * entry;
@@ -1431,8 +1440,12 @@ int headerUsageCount(Header h)
 unsigned int headerSizeof(Header h, enum hMagic magicp)
 {
     struct indexEntry * entry;
-    unsigned int size = 0, pad = 0;
+    unsigned int size = 0;
+    unsigned int pad = 0;
     int i;
+
+    if (h == NULL)
+	return size;
 
     headerSort(h);
 
@@ -1485,7 +1498,7 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
 {
     const char ** src;
     char * dst;
-    int i, len;
+    int i;
 
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
@@ -1495,9 +1508,11 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
 	src = (const char **) srcPtr;
 	dst = dstPtr;
 	while (i--) {
-	    len = *src ? strlen(*src) + 1 : 0;
-	    memcpy(dst, *src, len);
-	    dst += len;
+	    if (*src) {
+		int len = strlen(*src) + 1;
+		memcpy(dst, *src, len);
+		dst += len;
+	    }
 	    src++;
 	}
 	break;
@@ -1573,6 +1588,7 @@ headerGetLangs(Header h)
     if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (const void **)&s, &count))
 	return NULL;
 
+    /* XXX xcalloc never returns NULL. */
     if ((table = (char **)xcalloc((count+1), sizeof(char *))) == NULL)
 	return NULL;
 
@@ -1580,13 +1596,12 @@ headerGetLangs(Header h)
 	table[i] = e;
     table[count] = NULL;
 
-    return table;
+    /*@-nullret@*/ return table; /*@=nullret@*/	/* LCL: double indirection? */
 }
 
 int headerAddI18NString(Header h, int_32 tag, const char * string, const char * lang)
 {
     struct indexEntry * table, * entry;
-    char * chptr;
     const char ** strArray;
     int length;
     int ghosts;
@@ -1618,12 +1633,15 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
     }
 
+    if (!table)
+	return 0;
     if (!lang) lang = "C";
 
-    chptr = table->data;
-    for (langNum = 0; langNum < table->info.count; langNum++) {
-	if (!strcmp(chptr, lang)) break;
-	chptr += strlen(chptr) + 1;
+    {	const char * l = table->data;
+	for (langNum = 0; langNum < table->info.count; langNum++) {
+	    if (!strcmp(l, lang)) break;
+	    l += strlen(l) + 1;
+	}
     }
 
     if (langNum >= table->info.count) {
@@ -1837,10 +1855,12 @@ static char escapedChar(const char ch)	/*@*/
     }
 }
 
-static void freeFormat( /*@only@*/ struct sprintfToken * format, int num)
+static
+void freeFormat( /*@only@*/ /*@null@*/ struct sprintfToken * format, int num)
 {
     int i;
 
+    if (format == NULL) return;
     for (i = 0; i < num; i++) {
 	switch (format[i].type) {
 	case PTOK_ARRAY:
@@ -1914,13 +1934,14 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
 static int parseExpression(struct sprintfToken * token, char * str, 
 	const struct headerTagTableEntry * tags, 
 	const struct headerSprintfExtension * extensions,
-	/*@out@*/char ** endPtr, /*@out@*/const char ** errmsg)
+	/*@out@*/char ** endPtr, /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 		/*@modifies str, *str, *token, *endPtr, *errmsg @*/;
 
 static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	const struct headerSprintfExtension * extensions,
 	/*@out@*/struct sprintfToken ** formatPtr, /*@out@*/int * numTokensPtr,
-	/*@out@*/char ** endPtr, int state, /*@out@*/const char ** errmsg)
+	/*@null@*/ /*@out@*/char ** endPtr, int state,
+	/*@null@*/ /*@out@*/errmsg_t * errmsg)
 	  /*@modifies str, *str, *formatPtr, *numTokensPtr, *endPtr, *errmsg @*/
 {
     char * chptr, * start, * next, * dst;
@@ -1990,7 +2011,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
 	    if (!*chptr || *chptr == '%') {
 		/*@-observertrans@*/
-		*errmsg = _("missing { after %");
+		if (errmsg) *errmsg = _("missing { after %");
 		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
@@ -2020,7 +2041,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    while (*next && *next != '}') next++;
 	    if (!*next) {
 		/*@-observertrans@*/
-		*errmsg = _("missing } after %{");
+		if (errmsg) *errmsg = _("missing } after %{");
 		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
@@ -2034,7 +2055,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		*chptr++ = '\0';
 		if (!*chptr) {
 		    /*@-observertrans@*/
-		    *errmsg = _("empty tag format");
+		    if (errmsg) *errmsg = _("empty tag format");
 		    /*@=observertrans@*/
 		    freeFormat(format, numTokens);
 		    return 1;
@@ -2046,7 +2067,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    
 	    if (!*start) {
 		/*@-observertrans@*/
-		*errmsg = _("empty tag name");
+		if (errmsg) *errmsg = _("empty tag name");
 		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
@@ -2063,7 +2084,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		format[currToken].u.tag.extNum = ext - extensions;
 	    } else {
 		/*@-observertrans@*/
-		*errmsg = _("unknown tag");
+		if (errmsg) *errmsg = _("unknown tag");
 		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
@@ -2090,7 +2111,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 
 	    if (!start) {
 		/*@-observertrans@*/
-		*errmsg = _("] expected at end of array");
+		if (errmsg) *errmsg = _("] expected at end of array");
 		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
@@ -2106,19 +2127,20 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	case '}':
 	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
 	        (*start == '}' && state != PARSER_IN_EXPR)) {
-		if (*start == ']')
+		if (*start == ']') {
 		    /*@-observertrans@*/
-		    *errmsg = _("unexpected ]");
+		    if (errmsg) *errmsg = _("unexpected ]");
 		    /*@=observertrans@*/
-		else
+		} else {
 		    /*@-observertrans@*/
-		    *errmsg = _("unexpected }");
+		    if (errmsg) *errmsg = _("unexpected }");
 		    /*@=observertrans@*/
+		}
 		freeFormat(format, numTokens);
 		return 1;
 	    }
 	    *start++ = '\0';
-	    *endPtr = start;
+	    if (endPtr) *endPtr = start;
 	    done = 1;
 	    break;
 
@@ -2161,20 +2183,20 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 static int parseExpression(struct sprintfToken * token, char * str, 
 	const struct headerTagTableEntry * tags, 
 	const struct headerSprintfExtension * extensions,
-	/*@out@*/ char ** endPtr, /*@out@*/ const char ** errmsg)
+	/*@out@*/ char ** endPtr, /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 {
     const struct headerTagTableEntry * tag;
     const struct headerSprintfExtension * ext;
     char * chptr;
     char * end;
 
-    *errmsg = NULL;
+    if (errmsg) *errmsg = NULL;
     chptr = str;
     while (*chptr && *chptr != '?') chptr++;
 
     if (*chptr != '?') {
 	/*@-observertrans@*/
-	*errmsg = _("? expected in expression");
+	if (errmsg) *errmsg = _("? expected in expression");
 	/*@=observertrans@*/
 	return 1;
     }
@@ -2183,7 +2205,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
     if (*chptr != '{') {
 	/*@-observertrans@*/
-	*errmsg = _("{ expected after ? in expression");
+	if (errmsg) *errmsg = _("{ expected after ? in expression");
 	/*@=observertrans@*/
 	return 1;
     }
@@ -2196,7 +2218,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
     if (!*end) {
 	/*@-observertrans@*/
-	*errmsg = _("} expected in expression");
+	if (errmsg) *errmsg = _("} expected in expression");
 	/*@=observertrans@*/
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	token->u.cond.ifFormat = NULL;
@@ -2206,7 +2228,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
     chptr = end;
     if (*chptr != ':' && *chptr != '|') {
 	/*@-observertrans@*/
-	*errmsg = _(": expected following ? subexpression");
+	if (errmsg) *errmsg = _(": expected following ? subexpression");
 	/*@=observertrans@*/
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	token->u.cond.ifFormat = NULL;
@@ -2223,7 +2245,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
 	if (*chptr != '{') {
 	    /*@-observertrans@*/
-	    *errmsg = _("{ expected after : in expression");
+	    if (errmsg) *errmsg = _("{ expected after : in expression");
 	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
@@ -2238,7 +2260,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	    return 1;
 	if (!*end) {
 	    /*@-observertrans@*/
-	    *errmsg = _("} expected in expression");
+	    if (errmsg) *errmsg = _("} expected in expression");
 	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
@@ -2248,7 +2270,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	chptr = end;
 	if (*chptr != '|') {
 	    /*@-observertrans@*/
-	    *errmsg = _("| expected at end of expression");
+	    if (errmsg) *errmsg = _("| expected at end of expression");
 	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
@@ -2580,7 +2602,7 @@ static void freeExtensionCache(const struct headerSprintfExtension * extensions,
 char * headerSprintf(Header h, const char * origFmt, 
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extensions,
-		     const char ** errmsg)
+		     errmsg_t * errmsg)
 {
     char * fmtString;
     struct sprintfToken * format;
@@ -2671,16 +2693,17 @@ static char * hexFormat(int_32 type, const void * data,
 
 static char * realDateFormat(int_32 type, const void * data, 
 		char * formatPrefix, int padding, /*@unused@*/int element,
-		char * strftimeFormat)
+		const char * strftimeFormat)
 		/*@modifies formatPrefix @*/
 {
     char * val;
-    struct tm * tstruct;
-    char buf[50];
 
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
+	struct tm * tstruct;
+	char buf[50];
+
 	val = xmalloc(50 + padding);
 	strcat(formatPrefix, "s");
 
@@ -2688,7 +2711,9 @@ static char * realDateFormat(int_32 type, const void * data,
 	{   time_t dateint = *((int_32 *) data);
 	    tstruct = localtime(&dateint);
 	}
-	(void)strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+	buf[0] = '\0';
+	if (tstruct)
+	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
 	sprintf(val, formatPrefix, buf);
     }
 

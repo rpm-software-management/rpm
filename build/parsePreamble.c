@@ -428,6 +428,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     int num;
     int rc;
     
+    if (field == NULL) return RPMERR_BADSPEC;	/* XXX can't happen */
     /* Find the start of the "field" and strip trailing space */
     while ((*field) && (*field != ':'))
 	field++;
@@ -664,12 +665,13 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 
 /**
  */
-static struct PreambleRec {
+typedef struct PreambleRec_s {
     int tag;
     int len;
     int multiLang;
-    char *token;
-} preambleList[] = {
+    const char * token;
+} * PreambleRec;
+static struct PreambleRec_s preambleList[] = {
     {RPMTAG_NAME,		0, 0, "name"},
     {RPMTAG_VERSION,		0, 0, "version"},
     {RPMTAG_RELEASE,		0, 0, "release"},
@@ -710,24 +712,27 @@ static struct PreambleRec {
     {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
     {RPMTAG_DOCDIR,		0, 0, "docdir"},
+    /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0}
+    /*@=nullassign@*/
 };
 
 /**
  */
 static inline void initPreambleList(void)
 {
-    struct PreambleRec *p;
+    PreambleRec p;
     for (p = preambleList; p->token; p++)
 	p->len = strlen(p->token);
 }
 
 /**
  */
-static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, char *lang)
+static int findPreambleTag(Spec spec, /*@out@*/int * tag,
+	/*@null@*/ /*@out@*/ const char ** macro, char *lang)
 {
     char *s;
-    struct PreambleRec *p;
+    PreambleRec p;
 
     if (preambleList[0].len == 0)
 	initPreambleList();
@@ -772,7 +777,7 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
 
     *tag = p->tag;
     if (macro)
-	/*@-onlytrans@*/
+	/*@-onlytrans@*/	/* FIX: observer, but double indirection. */
 	*macro = p->token;
 	/*@=onlytrans@*/
     return 0;
@@ -782,7 +787,7 @@ int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
     int tag, rc;
-    char *name, *linep, *macro;
+    char *name, *linep;
     int flag;
     Package pkg;
     char fullName[BUFSIZ];
@@ -822,6 +827,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	if (rc)
 	    return rc;
 	while (! (nextPart = isPart(spec->line))) {
+	    const char * macro;
 	    /* Skip blank lines */
 	    linep = spec->line;
 	    SKIPSPACE(linep);

@@ -6,7 +6,7 @@
  */
 
 /*@-shadow@*/
-static inline int fdFileno(void * cookie);
+static inline int fdFileno(/*@null@*/ void * cookie);
 /*@=shadow@*/
 
 #include <rpmio.h>
@@ -85,8 +85,9 @@ void rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len);
  * @retval lenp		address of digest length
  * @param asAscii	return digest as ascii string?
  */
-void rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
-	/*@out@*/ size_t *lenp, int asAscii);
+void rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
+	/*@null@*/ /*@out@*/ void ** datap,
+	/*@null@*/ /*@out@*/ size_t *lenp, int asAscii);
 
 /** \ingroup rpmio
  * The FD_t File Handle data structure.
@@ -147,21 +148,24 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline /*@null@*/ const FDIO_t fdGetIo(FD_t fd) {
+/*@unused@*/ static inline
+/*@null@*/ const FDIO_t fdGetIo(FD_t fd) {
     FDSANE(fd);
     return fd->fps[fd->nfps].io;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdSetIo(FD_t fd, FDIO_t io) {
+/*@unused@*/ static inline
+void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io) {
     FDSANE(fd);
     fd->fps[fd->nfps].io = io;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd) {
+/*@unused@*/ static inline
+/*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd) {
     FDSANE(fd);
     /*@+voidabstract@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
@@ -170,35 +174,40 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd) {
+/*@unused@*/ static inline
+/*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd) {
     FDSANE(fd);
     return fd->fps[fd->nfps].fp;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdSetFp(FD_t fd, /*@kept@*/ void * fp) {
+/*@unused@*/ static inline
+void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp) {
     FDSANE(fd);
     fd->fps[fd->nfps].fp = fp;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline int fdGetFdno(FD_t fd) {
+/*@unused@*/ static inline
+int fdGetFdno(FD_t fd) {
     FDSANE(fd);
     return fd->fps[fd->nfps].fdno;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdSetFdno(FD_t fd, int fdno) {
+/*@unused@*/ static inline
+void fdSetFdno(FD_t fd, int fdno) {
     FDSANE(fd);
     fd->fps[fd->nfps].fdno = fdno;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdSetContentLength(FD_t fd, ssize_t contentLength)
+/*@unused@*/ static inline
+void fdSetContentLength(FD_t fd, ssize_t contentLength)
 {
     FDSANE(fd);
     fd->contentLength = fd->bytesRemain = contentLength;
@@ -206,8 +215,8 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdPush(FD_t fd, FDIO_t io,
-	void * fp, int fdno)
+/*@unused@*/ static inline
+void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 {
     FDSANE(fd);
     if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
@@ -231,16 +240,17 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdstat_enter(FD_t fd, int opx)
+/*@unused@*/ static inline void fdstat_enter(/*@null@*/ FD_t fd, int opx)
 {
-    if (fd->stats == NULL) return;
+    if (fd == NULL || fd->stats == NULL) return;
     fd->stats->ops[opx].count++;
     (void) gettimeofday(&fd->stats->begin, NULL);
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline time_t tvsub(struct timeval *etv, struct timeval *btv) {
+/*@unused@*/ static inline
+time_t tvsub(struct timeval * etv, struct timeval * btv) {
     time_t secs, usecs;
     if (!(etv && btv)) return 0;
     secs = etv->tv_sec - btv->tv_sec;
@@ -254,9 +264,11 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdstat_exit(FD_t fd, int opx, ssize_t rc)
+/*@unused@*/ static inline
+void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 {
     struct timeval end;
+    if (fd == NULL) return;
     if (rc == -1) fd->syserrno = errno;
     if (fd->stats == NULL) return;
     (void) gettimeofday(&end, NULL);
@@ -277,9 +289,10 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdstat_print(FD_t fd, const char * msg, FILE * fp) {
+/*@unused@*/ static inline
+void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp) {
     int opx;
-    if (fd->stats == NULL) return;
+    if (fd == NULL || fd->stats == NULL) return;
     for (opx = 0; opx < 4; opx++) {
 	OPSTAT_t *ops = &fd->stats->ops[opx];
 	if (ops->count <= 0) continue;
@@ -306,7 +319,8 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdSetSyserrno(FD_t fd, int syserrno, /*@kept@*/ const void * errcookie) {
+/*@unused@*/ static inline
+void fdSetSyserrno(FD_t fd, int syserrno, /*@kept@*/ const void * errcookie) {
     FDSANE(fd);
     fd->syserrno = syserrno;
     fd->errcookie = errcookie;
@@ -314,28 +328,32 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline int fdGetRdTimeoutSecs(FD_t fd) {
+/*@unused@*/ static inline
+int fdGetRdTimeoutSecs(FD_t fd) {
     FDSANE(fd);
     return fd->rd_timeoutsecs;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline long int fdGetCpioPos(FD_t fd) {
+/*@unused@*/ static inline
+long int fdGetCpioPos(FD_t fd) {
     FDSANE(fd);
     return fd->fd_cpioPos;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdSetCpioPos(FD_t fd, long int cpioPos) {
+/*@unused@*/ static inline
+void fdSetCpioPos(FD_t fd, long int cpioPos) {
     FDSANE(fd);
     fd->fd_cpioPos = cpioPos;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline FD_t c2f(void * cookie) {
+/*@mayexit@*/ /*@unused@*/ static inline
+FD_t c2f(/*@null@*/ void * cookie) {
     FD_t fd = (FD_t) cookie;
     FDSANE(fd);
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
@@ -343,7 +361,8 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdInitMD5(FD_t fd, int flags) {
+/*@unused@*/ static inline
+void fdInitMD5(FD_t fd, int flags) {
     if (flags) flags = RPMDIGEST_NATIVE;
     flags |= RPMDIGEST_MD5;
     fd->digest = rpmDigestInit(flags);
@@ -351,13 +370,15 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdInitSHA1(FD_t fd) {
+/*@unused@*/ static inline
+void fdInitSHA1(FD_t fd) {
     fd->digest = rpmDigestInit(RPMDIGEST_SHA1);
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdFiniMD5(FD_t fd, void **datap, size_t *lenp, int asAscii) {
+/*@unused@*/ static inline
+void fdFiniMD5(FD_t fd, void **datap, size_t *lenp, int asAscii) {
     if (fd->digest == NULL) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
@@ -371,7 +392,8 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdFiniSHA1(FD_t fd, void **datap, size_t *lenp, int asAscii) {
+/*@unused@*/ static inline
+void fdFiniSHA1(FD_t fd, void **datap, size_t *lenp, int asAscii) {
     if (fd->digest == NULL) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
@@ -386,7 +408,8 @@ int ufdClose( /*@only@*/ void * cookie);
 /*@-shadow@*/
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline int fdFileno(void * cookie) {
+/*@unused@*/ static inline
+int fdFileno(/*@null@*/ void * cookie) {
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);

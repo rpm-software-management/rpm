@@ -681,7 +681,8 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 
 exit:
     av = _free(av);
-    if ((rc || argvPtr == NULL) && argv) {
+    if (rc || argvPtr == NULL) {
+	if (argv != NULL)
 	for (i = 0; i < argc; i++)
 	    argv[i] = _free(argv[i]);
 	argv = _free(argv);

@@ -155,10 +155,10 @@ struct _dbiVec {
  * Describes an index database (implemented on Berkeley db[123] API).
  */
 struct _dbiIndex {
-    const char *	dbi_root;
-    const char *	dbi_home;
-    const char *	dbi_file;
-    const char *	dbi_subfile;
+/*@null@*/ const char *	dbi_root;
+/*@null@*/ const char *	dbi_home;
+/*@null@*/ const char *	dbi_file;
+/*@null@*/ const char *	dbi_subfile;
 
     int			dbi_cflags;	/*!< db_create/db_env_create flags */
     int			dbi_oeflags;	/*!< common (db,dbenv}->open flags */
@@ -183,7 +183,7 @@ struct _dbiIndex {
 
 	/* dbenv parameters */
     int			dbi_lorder;
-    void		(*db_errcall) (const char *db_errpfx, char *buffer);
+/*@null@*/ void		(*db_errcall) (const char *db_errpfx, char *buffer);
 /*@shared@*/ FILE *	dbi_errfile;
     const char *	dbi_errpfx;
     int			dbi_verbose;
@@ -208,19 +208,19 @@ struct _dbiIndex {
 	/* dbinfo parameters */
     int			dbi_cachesize;	/*!< */
     int			dbi_pagesize;	/*!< (fs blksize) */
-    void *		(*dbi_malloc) (size_t nbytes);
+/*@null@*/ void *	(*dbi_malloc) (size_t nbytes);
 	/* hash access parameters */
     unsigned int	dbi_h_ffactor;	/*!< */
-    unsigned int	(*dbi_h_hash_fcn) (const void *bytes, unsigned int length);
+/*@null@*/ unsigned int	(*dbi_h_hash_fcn) (const void *bytes, unsigned int length);
     unsigned int	dbi_h_nelem;	/*!< */
     unsigned int	dbi_h_flags;	/*!< DB_DUP, DB_DUPSORT */
-    int			(*dbi_h_dup_compare_fcn) (const DBT *, const DBT *);
+/*@null@*/ int		(*dbi_h_dup_compare_fcn) (const DBT *, const DBT *);
 	/* btree access parameters */
     int			dbi_bt_flags;
     int			dbi_bt_minkey;
-    int			(*dbi_bt_compare_fcn)(const DBT *, const DBT *);
-    int			(*dbi_bt_dup_compare_fcn) (const DBT *, const DBT *);
-    size_t		(*dbi_bt_prefix_fcn) (const DBT *, const DBT *);
+/*@null@*/ int		(*dbi_bt_compare_fcn)(const DBT *, const DBT *);
+/*@null@*/ int		(*dbi_bt_dup_compare_fcn) (const DBT *, const DBT *);
+/*@null@*/ size_t	(*dbi_bt_prefix_fcn) (const DBT *, const DBT *);
 	/* recno access parameters */
     int			dbi_re_flags;
     int			dbi_re_delim;
@@ -234,10 +234,10 @@ struct _dbiIndex {
 
     unsigned int dbi_lastoffset;	/*!< db1 with falloc.c needs this */
 
-    void *	dbi_db;			/*!< dbi handle */
-    void *	dbi_dbenv;
-    void *	dbi_dbinfo;
-    void *	dbi_rmw;		/*!< db cursor (with DB_WRITECURSOR) */
+/*@only@*//*@null@*/ void * dbi_db;	/*!< dbi handle */
+/*@only@*//*@null@*/ void * dbi_dbenv;
+/*@only@*//*@null@*/ void * dbi_dbinfo;
+/*@only@*//*@null@*/ void * dbi_rmw;	/*!< db cursor (with DB_WRITECURSOR) */
 
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*!< private methods */
 
@@ -295,7 +295,7 @@ void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
  * @param print_dbenv_flags	format db env flags instead?
  * @return			formatted flags (static buffer)
  */
-/*@exposed@*/ const char *const prDbiOpenFlags(int dbflags,
+/*@exposed@*/ extern const char *const prDbiOpenFlags(int dbflags,
 						int print_dbenv_flags);
 
 /** \ingroup dbi
@@ -305,7 +305,7 @@ void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
  * @param flags		(unused)
  * @return		index database handle
  */
-/*@only@*/ /*@null@*/ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag,
+/*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb rpmdb, int rpmtag,
 		unsigned int flags);
 
 /** \ingroup dbi
@@ -400,8 +400,8 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 /** \ingroup rpmdb
  * @param rpmdb		rpm database
  */
-int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
-		    int numItems);
+int rpmdbFindFpList(/*@null@*/ rpmdb rpmdb, fingerPrint * fpList,
+		/*@out@*/dbiIndexSet * matchList, int numItems);
 
 /** \ingroup dbi
  * Destroy set of index database items.

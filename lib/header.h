@@ -181,7 +181,7 @@ enum hMagic {
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
-Header headerRead(FD_t fd, enum hMagic magicp)
+/*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
 	/*@modifies fd @*/;
 
 /** \ingroup header
@@ -191,7 +191,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
-int headerWrite(FD_t fd, Header h, enum hMagic magicp)
+int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
 	/*@modifies fd, h @*/;
 
 /** \ingroup header
@@ -200,7 +200,7 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
  * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
-unsigned int headerSizeof(Header h, enum hMagic magicp)
+unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -208,14 +208,14 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
  * @param p		on-disk header (with offsets)
  * @return		header
  */
-Header headerLoad(/*@kept@*/ void *p)	/*@*/;
+/*@null@*/ Header headerLoad(/*@kept@*/ void * p)	/*@*/;
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
  * @param p		on-disk header (with offsets)
  * @return		header
  */
-Header headerCopyLoad(void *p)	/*@*/;
+/*@null@*/ Header headerCopyLoad(void * p)	/*@*/;
 
 /** \ingroup header
  * Convert header to on-disk representation.
@@ -232,7 +232,7 @@ Header headerCopyLoad(void *p)	/*@*/;
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
-Header headerReload(/*@only@*/ Header h, int tag)
+/*@null@*/ Header headerReload(/*@only@*/ Header h, int tag)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -272,7 +272,9 @@ void headerDump(Header h, FILE *f, int flags,
 		const struct headerTagTableEntry * tags);
 #define HEADER_DUMP_INLINE   1
 
+/*@-redef@*/	/* LCL: no clue */
 typedef const char * errmsg_t;
+/*@=redef@*/
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -288,7 +290,7 @@ typedef const char * errmsg_t;
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extentions,
-		     /*@out@*/ errmsg_t * errmsg)
+		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;
 
 /** \ingroup header
@@ -397,8 +399,8 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c
  * @retval c		address of number of values
  * @return		1 on success, 0 on failure
  */
-int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-	/*@out@*/ void **p, /*@out@*/int_32 *c)
+int headerGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 *type,
+	/*@null@*/ /*@out@*/ void **p, /*@null@*/ /*@out@*/int_32 *c)
 		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
@@ -439,7 +441,7 @@ int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-int headerIsEntry(Header h, int_32 tag)	/*@*/;
+int headerIsEntry(/*@null@*/Header h, int_32 tag)	/*@*/;
 
 /** \ingroup header
  * Delete tag in header.
@@ -486,7 +488,7 @@ void headerFreeIterator( /*@only@*/ HeaderIterator iter);
  * @param h		header
  * @return		new header instance
  */
-Header headerCopy(Header h)
+/*@null@*/ Header headerCopy(Header h)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -536,8 +538,8 @@ typedef enum rpmTagType_e {
  * @param type		type of data
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void * headerFreeData(
-			/*@only@*/ const void * data, rpmTagType type)
+/*@unused@*/ static inline /*@null@*/
+void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 {
     if (data) {
 	if (type < 0 ||

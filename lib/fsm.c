@@ -54,6 +54,7 @@ static /*@only@*//*@null@*/ const char * fsmFsPath(/*@null@*/ const FSM_t fsm,
     if (fsm) {
 	int nb;
 	char * t;
+	/*@-nullpass@*/		/* LCL: subdir/suffix != NULL */
 	nb = strlen(fsm->dirName) +
 	    (st && subdir && !S_ISDIR(st->st_mode) ? strlen(subdir) : 0) +
 	    (st && suffix && !S_ISDIR(st->st_mode) ? strlen(suffix) : 0) +
@@ -65,6 +66,7 @@ static /*@only@*//*@null@*/ const char * fsmFsPath(/*@null@*/ const FSM_t fsm,
 	t = stpcpy(t, fsm->baseName);
 	if (st && suffix && !S_ISDIR(st->st_mode))
 	    t = stpcpy(t, suffix);
+	/*@=nullpass@*/
     }
     return s;
 }
@@ -283,10 +285,11 @@ static /*@observer@*/ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
 {
     const char * dn = NULL;
 
-    if (dnli && dnli->active) {
+    if (dnli) {
 	TFI_t fi = dnli->fi;
 	int i = -1;
 
+	if (dnli->active)
 	do {
 	    i = (!dnli->reverse ? dnli->i++ : --dnli->i);
 	} while (i >= 0 && i < fi->dc && !dnli->active[i]);
@@ -384,7 +387,9 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
     fsm->path = _free(fsm->path);
     fsm->ix = ix;
     rc = fsmStage(fsm, FSM_MAP);
+    /*@-nullstate@*/	/* FIX: fsm->path null annotation? */
     return rc;
+    /*@=nullstate@*/
 }
 /*@=compmempass@*/
 
@@ -453,7 +458,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
     if (fsm->goal == FSM_PKGINSTALL) {
-	if (ts->id > 0)
+	if (ts && ts->id > 0)
 	    sprintf(fsm->sufbuf, ";%08x", (unsigned)ts->id);
     }
 
@@ -480,7 +485,9 @@ int fsmTeardown(FSM_t fsm) {
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;
+    /*@-nullstate@*/	/* FIX: fsm->iter null annotation? */
     return rc;
+    /*@=nullstate@*/
 }
 
 int fsmMapPath(FSM_t fsm)
@@ -566,8 +573,10 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    const struct stat * st = &fsm->sb;
 	    fsm->path = _free(fsm->path);
+	    /*@-nullstate@*/	/* FIX: fsm->path null annotation? */
 	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
+	    /*@=nullstate@*/
 	}
     }
     return rc;
@@ -1473,8 +1482,12 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->diskchecked && fsm->exists && fsm->osuffix) {
 	    const char * opath = fsm->opath;
 	    const char * path = fsm->path;
+	    /*@-nullstate@*/	/* FIX: fsm->opath null annotation? */
 	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);
+	    /*@=nullstate@*/
+	    /*@-nullstate@*/	/* FIX: fsm->path null annotation? */
 	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
+	    /*@=nullstate@*/
 	    rc = fsmStage(fsm, FSM_RENAME);
 	    if (!rc) {
 		rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"),
@@ -1539,7 +1552,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		if (!rc && fsm->nsuffix) {
 		    const char * opath = fsmFsPath(fsm, st, NULL, NULL);
 		    rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"),
-				opath, fsm->path);
+				(opath ? opath : ""), fsm->path);
 		    opath = _free(opath);
 		}
 		fsm->opath = _free(fsm->opath);

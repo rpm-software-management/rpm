@@ -18,7 +18,7 @@ static int _debug = 0;
 static struct PartRec {
     int part;
     int len;
-    char *token;
+/*@observer@*/ /*@null@*/ const char * token;
 } partList[] = {
     { PART_PREAMBLE,      0, "%package"},
     { PART_PREP,          0, "%prep"},
@@ -193,7 +193,8 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	if (!fgets(ofi->readBuf, BUFSIZ, fdGetFp(ofi->fd))) {
+	FILE * f = fdGetFp(ofi->fd);
+	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if\n"));
@@ -218,7 +219,7 @@ retry:
 	ofi->lineNum++;
 	spec->lineNum = ofi->lineNum;
 	if (spec->sl) {
-	    struct speclines *sl = spec->sl;
+	    struct speclines * sl = spec->sl;
 	    if (sl->sl_nlines == sl->sl_nalloc) {
 		sl->sl_nalloc += 100;
 		sl->sl_lines = (char **) xrealloc(sl->sl_lines, 
@@ -463,6 +464,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    spec->buildArchitectureSpecs =
 		xmalloc(sizeof(Spec) * spec->buildArchitectureCount);
 	    index = 0;
+	    if (spec->buildArchitectures != NULL)
 	    for (x = 0; x < spec->buildArchitectureCount; x++) {
 		if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH,
 				    spec->buildArchitectures[x])) {

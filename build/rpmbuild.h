@@ -77,7 +77,8 @@ extern "C" {
 /** \ingroup rpmbuild
  * Destroy uid/gid caches.
  */
-void freeNames(void);
+void freeNames(void)
+	/*@modifies internalState */;
 
 /** \ingroup rpmbuild
  * Return cached user name from user id.
@@ -85,7 +86,7 @@ void freeNames(void);
  * @param		user id
  * @return		cached user name
  */
-/*@observer@*/ const char *getUname(uid_t uid);
+/*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return cached user name.
@@ -93,7 +94,7 @@ void freeNames(void);
  * @param		user name
  * @return		cached user name
  */
-/*@observer@*/ const char *getUnameS(const char *uname);
+/*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return cached group name from group id.
@@ -101,7 +102,7 @@ void freeNames(void);
  * @param		group id
  * @return		cached group name
  */
-/*@observer@*/ const char *getGname(gid_t gid);
+/*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
 
 /** \ingroup rpmbuild
  * Return cached group name.
@@ -109,19 +110,19 @@ void freeNames(void);
  * @param		group name
  * @return		cached group name
  */
-/*@observer@*/ const char *getGnameS(const char *gname);
+/*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return build hostname.
  * @return		build hostname
  */
-/*@observer@*/ const char *const buildHost(void);
+/*@observer@*/ const char * const buildHost(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return build time stamp.
  * @return		build time stamp
  */
-/*@observer@*/ time_t *const getBuildTime(void);
+/*@observer@*/ time_t * const getBuildTime(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * Read next line from spec file.
@@ -129,26 +130,30 @@ void freeNames(void);
  * @param strip		truncate comments?
  * @return		0 on success, 1 on EOF, <0 on error
  */
-int readLine(Spec spec, int strip);
+int readLine(Spec spec, int strip)
+	/*@modifies spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl @*/;
 
 /** \ingroup rpmbuild
  * Stop reading from spec file, freeing resources.
  * @param spec		spec file control structure
  */
-void closeSpec(Spec spec);
+void closeSpec(/*@partial@*/ Spec spec)
+	/*@modifies spec->fileStack @*/;
 
 /** \ingroup rpmbuild
  * Truncate comment lines.
  * @param s		skip white space, truncate line at '#'
  */
-void handleComments(char *s);
+void handleComments(char * s)
+	/*@modifies s @*/;
 
 /** \ingroup rpmbuild
  * Check line for section separator, return next parser state.
  * @param		line from spec file
  * @return		next parser state
  */
-rpmParseState isPart(const char *line);
+rpmParseState isPart(const char * line)	/*@*/;
 
 /** \ingroup rpmbuild
  * Parse a number.
@@ -156,7 +161,8 @@ rpmParseState isPart(const char *line);
  * @retval res		pointer to int
  * @return		0 on success, 1 on failure
  */
-int parseNum(const char *line, /*@out@*/int *res);
+int parseNum(/*@null@*/ const char * line, /*@null@*/ /*@out@*/int * res)
+	/*@modifies *res @*/;
 
 /** \ingroup rpmbuild
  * Add changelog entry to header.
@@ -165,7 +171,9 @@ int parseNum(const char *line, /*@out@*/int *res);
  * @param name		person who made the change
  * @param text		description of change
  */
-void addChangelogEntry(Header h, time_t time, const char *name, const char *text);
+void addChangelogEntry(Header h, time_t time, const char * name,
+	const char * text)
+	/*@modifies h @*/;
 
 /** \ingroup rpmbuild
  * Parse %%build/%%install/%%clean section(s) of a spec file.
@@ -173,28 +181,40 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
  * @param parsePart	current rpmParseState
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parseBuildInstallClean(Spec spec, rpmParseState parsePart);
+int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
+	/*@modifies spec->build, spec->install, spec->clean,
+		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl @*/;
 
 /** \ingroup rpmbuild
  * Parse %%changelog section of a spec file.
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parseChangelog(Spec spec);
+int parseChangelog(Spec spec)
+	/*@modifies spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl,
+		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
  * Parse %%description section of a spec file.
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parseDescription(Spec spec);
+int parseDescription(Spec spec)
+	/*@modifies spec->packages,
+		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl, spec->st @*/;
 
 /** \ingroup rpmbuild
  * Parse %%files section of a spec file.
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parseFiles(Spec spec);
+int parseFiles(Spec spec)
+	/*@modifies spec->packages,
+		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl @*/;
 
 /** \ingroup rpmbuild
  * Parse tags from preamble of a spec file.
@@ -202,14 +222,20 @@ int parseFiles(Spec spec);
  * @param initialPackage
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parsePreamble(Spec spec, int initialPackage);
+int parsePreamble(Spec spec, int initialPackage)
+	/*@modifies spec->packages,
+		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl @*/;
 
 /** \ingroup rpmbuild
  * Parse %%prep section of a spec file.
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parsePrep(Spec spec);
+int parsePrep(Spec spec)
+	/*@modifies spec->prep,
+		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl @*/;
 
 /** \ingroup rpmbuild
  * Parse dependency relations from spec file and/or autogenerated output buffer.
@@ -221,8 +247,9 @@ int parsePrep(Spec spec);
  * @param flags		dependency flags already known from context
  * @return		0 on success, RPMERR_BADSPEC on failure
  */
-int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index,
-	       rpmsenseFlags flags);
+int parseRCPOT(Spec spec, Package pkg, const char * field, int tag, int index,
+	       rpmsenseFlags flags)
+	/*@modifies nothing @*/;
 
 /** \ingroup rpmbuild
  * Parse %%pre et al scriptlets from a spec file.
@@ -230,7 +257,10 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index,
  * @param parsePart	current rpmParseState
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parseScript(Spec spec, int parsePart);
+int parseScript(Spec spec, int parsePart)
+	/*@modifies spec->packages,
+		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->sl @*/;
 
 /** \ingroup rpmbuild
  * Parse %%trigger et al scriptlets from a spec file.
@@ -240,7 +270,8 @@ int parseScript(Spec spec, int parsePart);
  * @param tag
  * @return
  */
-int parseTrigger(Spec spec, Package pkg, char *field, int tag);
+int parseTrigger(Spec spec, Package pkg, char * field, int tag)
+	/*@modifies nothing @*/;
 
 /** \ingroup rpmbuild
  * Evaluate boolean expression.
@@ -248,7 +279,7 @@ int parseTrigger(Spec spec, Package pkg, char *field, int tag);
  * @param expr		expression to parse
  * @return
  */
-int parseExpressionBoolean(Spec spec, const char * expr);
+int parseExpressionBoolean(Spec spec, const char * expr)	/*@*/;
 
 /** \ingroup rpmbuild
  * Evaluate string expression.
@@ -256,7 +287,8 @@ int parseExpressionBoolean(Spec spec, const char * expr);
  * @param expr		expression to parse
  * @return
  */
-char *parseExpressionString(Spec spec, const char * expr);
+char * parseExpressionString(Spec spec, const char * expr)
+	/*@modifies nothing @*/;
 
 /** \ingroup rpmbuild
  * Run a build script, assembled from spec file scriptlet section.
@@ -268,7 +300,8 @@ char *parseExpressionString(Spec spec, const char * expr);
  * @param test		don't execute scripts or package if testing
  * @return		0 on success, RPMERR_SCRIPT on failure
  */
-int doScript(Spec spec, int what, const char *name, StringBuf sb, int test);
+int doScript(Spec spec, int what, const char * name, StringBuf sb, int test)
+		/*@modifies spec->macros, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * Find sub-package control structure by name.
@@ -278,26 +311,31 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test);
  * @retval pkg		package control structure
  * @return		0 on success, 1 on failure
  */
-int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg);
+int lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
+	/*@out@*/ Package * pkg)
+		/*@modifies spec->packages, *pkg @*/;
 
 /** \ingroup rpmbuild
  * Create and initialize package control structure.
  * @param spec		spec file control structure
  * @return		package control structure
  */
-/*@only@*/ Package newPackage(Spec spec);
+/*@only@*/ Package newPackage(Spec spec)
+	/*@modifies spec->packages, spec->packages->next @*/;
 
 /** \ingroup rpmbuild
  * Destroy all packages associated with spec file.
  * @param spec		spec file control structure
  */
-void freePackages(Spec spec);
+void freePackages(Spec spec)
+	/*@modifies spec->packages @*/;
 
 /** \ingroup rpmbuild
  * Destroy package control structure.
  * @param pkg		package control structure
  */
-void freePackage(/*@only@*/ Package pkg);
+void freePackage(/*@only@*/ Package pkg)
+	/*@modifies pkg @*/;
 
 /** \ingroup rpmbuild
  * Add dependency to header, filtering duplicates.
@@ -310,8 +348,9 @@ void freePackage(/*@only@*/ Package pkg);
  * @return		0 always
  */
 int addReqProv(/*@unused@*/Spec spec, Header h,
-		rpmsenseFlags flag, const char *depName, const char *depEVR,
-		int index);
+		rpmsenseFlags flag, const char * depName, const char * depEVR,
+		int index)
+	/*@modifies h @*/;
 
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
@@ -320,7 +359,8 @@ int addReqProv(/*@unused@*/Spec spec, Header h,
  * @param featureEVR	rpm feature epoch/version/release
  * @return		0 always
  */
-int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR);
+int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
+	/*@modifies h @*/;
 
 /** \ingroup rpmbuild
  * Post-build processing for binary package(s).
@@ -329,20 +369,28 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR);
  * @param test		don't execute scripts or package if testing
  * @return		0 on success
  */
-int processBinaryFiles(Spec spec, int installSpecialDoc, int test);
+int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
+	/*@modifies spec->packages->cpioList, spec->packages->specialDoc,
+		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
  * Create and initialize header for source package.
  * @param spec		spec file control structure
  */
-void initSourceHeader(Spec spec);
+void initSourceHeader(Spec spec)
+	/*@modifies spec->sourceHeader,
+		spec->buildRestrictions, spec->buildArchitectures,
+		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
  * Post-build processing for source package.
  * @param spec		spec file control structure
  * @return		0 on success
  */
-int processSourceFiles(Spec spec);
+int processSourceFiles(Spec spec)
+	/*@modifies spec->sourceHeader, spec->sourceCpioList,
+		spec->buildRestrictions, spec->buildArchitectures,
+		spec->packages->header @*/;
 
 /* global entry points */
 
@@ -359,9 +407,14 @@ int processSourceFiles(Spec spec);
  * @param force
  * @return
  */
-int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
-		const char *buildRoot, int inBuildArch, const char *passPhrase,
-		char *cookie, int anyarch, int force);
+int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
+		const char * rootdir,
+		/*@null@*/ const char * buildRoot,
+		int inBuildArch,
+		/*@null@*/ const char * passPhrase,
+		/*@null@*/ char * cookie,
+		int anyarch, int force)
+	/*@modifies *specp @*/;
 
 /** \ingroup rpmbuild
  * @retval specp	spec file control structure
@@ -375,10 +428,14 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
  * @param force
  * @return
  */
-extern int (*parseSpecVec) (Spec *specp, const char *specFile,
-		const char *rootdir, const char *buildRoot,
-		int inBuildArch, const char *passPhrase,
-		char *cookie, int anyarch, int force);	/* XXX FIXME */
+extern int (*parseSpecVec) (Spec * specp, const char * specFile,
+		const char * rootdir,
+		/*@null@*/ const char * buildRoot,
+		int inBuildArch,
+		/*@null@*/ const char * passPhrase,
+		/*@null@*/ char * cookie,
+		int anyarch, int force)
+	/*@modifies *specp @*/;
 
 /** \ingroup rpmbuild
  * Build stages state machine driver.
@@ -387,21 +444,31 @@ extern int (*parseSpecVec) (Spec *specp, const char *specFile,
  * @param test		don't execute scripts or package if testing
  * @return		0 on success
  */
-int buildSpec(Spec spec, int what, int test);
+int buildSpec(Spec spec, int what, int test)
+	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
+		spec->sourceRpmName, spec->macros,
+		spec->buildArchitectureSpecs,
+		spec->buildRestrictions, spec->buildArchitectures,
+		spec->packages->cpioList, spec->packages->specialDoc,
+		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
  * Generate binary package(s).
  * @param spec		spec file control structure
  * @return		0 on success
  */
-int packageBinaries(Spec spec);
+int packageBinaries(Spec spec)
+	/*@modifies spec->packages->header,
+		spec->sourceRpmName @*/;
 
 /** \ingroup rpmbuild
  * Generate source package.
  * @param spec		spec file control structure
  * @return		0 on success
  */
-int packageSources(Spec spec);
+int packageSources(Spec spec)
+	/*@modifies spec->sourceHeader, spec->cookie,
+		spec->sourceRpmName @*/;
 
 #ifdef __cplusplus
 }

@@ -36,7 +36,7 @@ static void verifyArgCallback(/*@unused@*/poptContext con,
 	const struct poptOption * opt, /*@unused@*/const char * arg,
 	/*@unused@*/ const void * data)
 {
-    QVA_t *qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVArgs;
     switch (opt->val) {
     case POPT_NODEPS: qva->qva_flags |= VERIFY_DEPS; break;
     case POPT_NOFILES: qva->qva_flags |= VERIFY_FILES; break;
@@ -300,7 +300,7 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum,
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd)
+int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
 {
     rpmdb rpmdb = NULL;
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
@@ -326,7 +326,7 @@ int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd)
 }
 
 /* ======================================================================== */
-static int verifyHeader(QVA_t *qva, Header h)
+static int verifyHeader(QVA_t qva, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char buf[BUFSIZ];
@@ -467,7 +467,7 @@ static int verifyDependencies(rpmdb rpmdb, Header h)
     return rc;
 }
 
-int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
+int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
 {
     FD_t fdo;
     int ec = 0;
@@ -483,11 +483,12 @@ int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
     if ((qva->qva_flags & VERIFY_SCRIPT) &&
 	(rc = rpmVerifyScript(qva->qva_prefix, h, fdo)) != 0)
 	    ec = rc;
-    (void) Fclose(fdo);
+    if (fdo)
+	rc = Fclose(fdo);
     return ec;
 }
 
-int rpmVerify(QVA_t *qva, rpmQVSources source, const char *arg)
+int rpmVerify(QVA_t qva, rpmQVSources source, const char *arg)
 {
     rpmdb rpmdb = NULL;
     int rc;

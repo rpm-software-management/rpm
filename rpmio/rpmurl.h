@@ -26,21 +26,21 @@ typedef enum {
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
 /*@refs@*/ int nrefs;		/*!< no. of references */
-    const char * url;		/*!< copy of original url */
-    const char * service;
-    const char * user;
-    const char * password;
-    const char * host;
-    const char * portstr;
-    const char * proxyu;	/*!< FTP: proxy user */
-    const char * proxyh;	/*!< FTP/HTTP: proxy host */
+/*@owned@*//*@null@*/ const char * url;		/*!< copy of original url */
+/*@owned@*//*@null@*/ const char * service;
+/*@owned@*//*@null@*/ const char * user;
+/*@owned@*//*@null@*/ const char * password;
+/*@owned@*//*@null@*/ const char * host;
+/*@owned@*//*@null@*/ const char * portstr;
+/*@owned@*//*@null@*/ const char * proxyu;	/*!< FTP: proxy user */
+/*@owned@*//*@null@*/ const char * proxyh;	/*!< FTP/HTTP: proxy host */
     int proxyp;			/*!< FTP/HTTP: proxy port */
     int	port;
     int urltype;
     FD_t ctrl;			/*!< control channel */
     FD_t data;			/*!< per-xfer data channel */
     int bufAlloced;		/*!< sizeof I/O buffer */
-    char *buf;			/*!< I/O buffer */
+/*@owned@*/ char *buf;		/*!< I/O buffer */
     int openError;		/*!< Type of open failure */
     int httpVersion;
     int httpHasRange;
@@ -118,7 +118,7 @@ int 	urlSplit(const char * url, /*@out@*/ urlinfo * u)
  * @param dest		file name of destination
  * @return		0 on success, otherwise FTPERR_* code
  */
-int	urlGetFile(const char * url, const char * dest);
+int	urlGetFile(const char * url, /*@null@*/ const char * dest);
 
 #ifdef __cplusplus
 }

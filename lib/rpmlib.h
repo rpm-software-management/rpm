@@ -442,7 +442,7 @@ typedef	enum rpmsenseFlags_e {
  * @deprecated Use rpmExpand() with appropriate macro expression.
  * @todo Eliminate from API.
  */
-const char * rpmGetVar(int var);
+/*@observer@*/ /*@null@*/ const char * rpmGetVar(int var)	/*@*/;
 
 /** \ingroup rpmrc
  * Set value of an rpmrc variable.
@@ -476,7 +476,8 @@ enum rpm_machtable_e {
  * @param target	target platform (NULL uses default)
  * @return		0 on success, -1 on error
  */
-int rpmReadConfigFiles(const char * file, const char * target);
+int rpmReadConfigFiles(/*@null@*/ const char * file,
+		/*@null@*/ const char * target);
 
 /** \ingroup rpmrc
  * Read rpmrc (and macro) configuration file(s).
@@ -491,7 +492,9 @@ int rpmReadRC(const char * file);
  * @retval name		address of arch name (or NULL)
  * @retval num		address of arch number (or NULL)
  */
-void rpmGetArchInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
+void rpmGetArchInfo( /*@null@*/ /*@out@*/ const char ** name,
+	/*@null@*/ /*@out@*/ int * num)
+		/*@modifies *name, *num @*/;
 
 /** \ingroup rpmrc
  * Return current os name and/or number.
@@ -499,7 +502,9 @@ void rpmGetArchInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
  * @retval name		address of os name (or NULL)
  * @retval num		address of os number (or NULL)
  */
-void rpmGetOsInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
+void rpmGetOsInfo( /*@null@*/ /*@out@*/ const char ** name,
+	/*@null@*/ /*@out@*/ int * num)
+		/*@modifies *name, *num @*/;
 
 /** \ingroup rpmrc
  * Return arch/os score of a name.
@@ -541,7 +546,7 @@ void rpmSetTables(int archTable, int osTable);  /* only used by build code */
  * @param arch		arch name (or NULL)
  * @param os		os name (or NULL)
  */
-void rpmSetMachine(const char * arch, const char * os);
+void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os);
 
 /** \ingroup rpmrc
  * Return current arch/os names.
@@ -551,7 +556,9 @@ void rpmSetMachine(const char * arch, const char * os);
  * @retval arch		address of arch name (or NULL)
  * @retval os		address of os name (or NULL)
  */
-void rpmGetMachine( /*@out@*/ const char **arch, /*@out@*/ const char **os);
+void rpmGetMachine( /*@null@*/ /*@out@*/ const char **arch,
+	/*@null@*/ /*@out@*/ const char **os)
+		/*@modifies *arch, *os @*/;
 
 /** \ingroup rpmrc
  * Destroy rpmrc arch/os compatibility tables.
@@ -579,7 +586,9 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
  * @param perms		database permissions
  * @return		0 on success
  */
-int rpmdbOpen (const char * root, /*@out@*/ rpmdb * dbp, int mode, int perms);
+int rpmdbOpen (/*@null@*/ const char * root, /*@null@*/ /*@out@*/ rpmdb * dbp,
+	int mode, int perms)
+		/*@modifies *dbp, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Initialize database.
@@ -587,28 +596,32 @@ int rpmdbOpen (const char * root, /*@out@*/ rpmdb * dbp, int mode, int perms);
  * @param perms		database permissions
  * @return		0 on success
  */
-int rpmdbInit(const char * root, int perms);
+int rpmdbInit(/*@null@*/ const char * root, int perms)
+		/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Close all database indices and free rpmdb.
  * @param rpmdb		rpm database
  * @return		0 always
  */
-int rpmdbClose ( /*@only@*/ rpmdb rpmdb);
+int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb rpmdb)
+		/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Sync all database indices.
  * @param rpmdb		rpm database
  * @return		0 always
  */
-int rpmdbSync (rpmdb rpmdb);
+int rpmdbSync (/*@null@*/ rpmdb rpmdb)
+		/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Open all database indices.
  * @param rpmdb		rpm database
  * @return		0 always
  */
-int rpmdbOpenAll (rpmdb rpmdb);
+int rpmdbOpenAll (/*@null@*/ rpmdb rpmdb)
+		/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Return number of instances of package in rpm database.
@@ -616,7 +629,8 @@ int rpmdbOpenAll (rpmdb rpmdb);
  * @param name		rpm package name
  * @return		number of instances
  */
-int rpmdbCountPackages(rpmdb db, const char *name);
+int rpmdbCountPackages(rpmdb db, const char * name)
+		/*@*/;
 
 /** \ingroup rpmdb
  */
@@ -627,7 +641,8 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  * @param mi		rpm database iterator
  * @return		NULL always
  */
-rpmdbMatchIterator rpmdbFreeIterator(/*@only@*//*@null@*/rpmdbMatchIterator mi)
+/*@null@*/ rpmdbMatchIterator rpmdbFreeIterator(
+		/*@only@*//*@null@*/rpmdbMatchIterator mi)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -635,21 +650,21 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*//*@null@*/rpmdbMatchIterator mi)
  * @param mi		rpm database iterator
  * @return		rpm database handle
  */
-/*@kept@*/ rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi)	/*@*/;
+/*@kept@*/ rpmdb rpmdbGetIteratorRpmDB(/*@null@*/ rpmdbMatchIterator mi) /*@*/;
 
 /** \ingroup rpmdb
  * Return join key for current position of rpm database iterator.
  * @param mi		rpm database iterator
  * @return		current join key
  */
-unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi)	/*@*/;
+unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Return number of elements in rpm database iterator.
  * @param mi		rpm database iterator
  * @return		number of elements
  */
-int rpmdbGetIteratorCount(rpmdbMatchIterator mi)	/*@*/;
+int rpmdbGetIteratorCount(/*@null@*/ rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Append items to set of package instances to iterate.
@@ -658,8 +673,8 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi)	/*@*/;
  * @param nHdrNums	number of elements in array
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums,
-	int nHdrNums)
+int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
+	/*@null@*/ const int * hdrNums, int nHdrNums)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -670,8 +685,8 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums,
  * @param sorted	is the array sorted? (array will be sorted on return)
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
-	int nHdrNums, int sorted)
+int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
+	/*@null@*/ int * hdrNums, int nHdrNums, int sorted)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -680,7 +695,8 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
  * @param mi		rpm database iterator
  * @param version	version to check for
  */
-void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version)
+void rpmdbSetIteratorVersion(/*@null@*/ rpmdbMatchIterator mi,
+	/*@null@*/ const char * version)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -689,7 +705,8 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version)
  * @param mi		rpm database iterator
  * @param release	release to check for
  */
-void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release)
+void rpmdbSetIteratorRelease(/*@null@*/ rpmdbMatchIterator mi,
+	/*@null@*/ const char * release)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -698,7 +715,7 @@ void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release)
  * @param modified	new value of modified
  * @return		previous value
  */
-int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
+int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
 		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -723,8 +740,9 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			/*@kept@*/ rpmdb rpmdb, int rpmtag,
-			const void * key, size_t keylen);
+			/*@kept@*/ /*@null@*/ rpmdb rpmdb, int rpmtag,
+			/*@null@*/ const void * key, size_t keylen)
+		/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.
@@ -734,7 +752,7 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
  * @return		0 on success
  */
 int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
-	/*@modifies h @*/;
+		/*@modifies h, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
@@ -743,13 +761,15 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
  * @param offset	location in Packages dbi
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb db, int rid, unsigned int offset);
+int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int offset)
+		/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
  * @param root		path to top of install tree
  */
-int rpmdbRebuild(const char * root);
+int rpmdbRebuild(/*@null@*/ const char * root)
+		/*@modifies fileSystem @*/;
 
 /*@}*/
 /* ==================================================================== */
@@ -779,11 +799,11 @@ typedef enum rpmProblemType_e {
 typedef /*@abstract@*/ struct rpmProblem_s {
 /*@only@*/ /*@null@*/ const char * pkgNEVR;
 /*@only@*/ /*@null@*/ const char * altNEVR;
-/*@kept@*/ const void * key;
-    Header h;
+/*@kept@*/ /*@null@*/ const void * key;
+/*@null@*/ Header h;
     rpmProblemType type;
     int ignoreProblem;
-/*@only@*/ const char * str1;
+/*@only@*/ /*@null@*/ const char * str1;
     unsigned long ulong1;
 } * rpmProblem;
 
@@ -867,8 +887,9 @@ typedef /*@null@*/
 /**
  * Prototype for headerGetEntry() vector.
  */
-typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
-			/*@out@*/ void ** p, /*@out@*/int_32 * c)
+typedef int (*HGE_t) (Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
+			/*@null@*/ /*@out@*/ void ** p,
+			/*@null@*/ /*@out@*/int_32 * c)
 				/*@modifies *type, *p, *c @*/;
 
 /**
@@ -1284,10 +1305,10 @@ int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes,
 /** \ingroup rpmcli
  * Describe build command line request.
  */
-struct rpmBuildArguments {
+struct rpmBuildArguments_s {
     int buildAmount;		/*!< Bit(s) to control operation. */
-    const char *buildRootOverride; /*!< from --buildroot */
-    char *targets;		/*!< Target platform(s), comma separated. */
+/*@null@*/ const char * buildRootOverride; /*!< from --buildroot */
+/*@null@*/ char * targets;	/*!< Target platform(s), comma separated. */
     int force;			/*!< from --force */
     int noBuild;		/*!< from --nobuild */
     int noDeps;			/*!< from --nodeps */
@@ -1297,15 +1318,15 @@ struct rpmBuildArguments {
     int useCatalog;		/*!< from --usecatalog */
     char buildMode;		/*!< Build mode (one of "btBC") */
     char buildChar;		/*!< Build stage (one of "abcilps ") */
-/*@dependent@*/ const char *rootdir;
+/*@dependent@*/ /*@null@*/ const char * rootdir;
 };
 /** \ingroup rpmcli
  */
-typedef	struct rpmBuildArguments BTA_t;
+typedef	struct rpmBuildArguments_s * BTA_t;
 
 /** \ingroup rpmcli
  */
-extern struct rpmBuildArguments         rpmBTArgs;
+extern struct rpmBuildArguments_s         rpmBTArgs;
 
 /** \ingroup rpmcli
  */
@@ -1357,7 +1378,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
  * @param scriptFd	file handle to use for stderr (or NULL)
  * @return		0 on success
  */
-int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd);
+int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd);
 
 /** \ingroup rpmcli
  * The command line argument will be used to retrieve header(s) ...
@@ -1399,20 +1420,20 @@ typedef enum rpmVerifyFlags_e {
 /** \ingroup rpmcli
  * Describe query/verify command line request.
  */
-typedef struct rpmQVArguments {
+typedef struct rpmQVArguments_s {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
     int 	qva_sourceCount;/*!< Exclusive check (>1 is error). */
     int		qva_flags;	/*!< Bit(s) to control operation. */
     int		qva_verbose;	/*!< (unused) */
-/*@only@*/ const char *qva_queryFormat;/*!< Format for headerSprintf(). */
-/*@dependent@*/ const char *qva_prefix;	/*!< Path to top of install tree. */
+/*@only@*/ /*@null@*/ const char * qva_queryFormat; /*!< Format for headerSprintf(). */
+/*@dependent@*/ /*@null@*/ const char * qva_prefix; /*!< Path to top of install tree. */
     char	qva_mode;	/*!< 'q' is query, 'v' is verify mode. */
     char	qva_char;	/*!< (unused) always ' ' */
-} QVA_t;
+} * QVA_t;
 
 /** \ingroup rpmcli
  */
-extern QVA_t rpmQVArgs;
+extern struct rpmQVArguments_s rpmQVArgs;
 
 /** \ingroup rpmcli
  */
@@ -1423,7 +1444,7 @@ extern struct poptOption rpmQVSourcePoptTable[];
  * @param db		rpm database
  * @param h		header to use for query/verify
  */
-typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
+typedef	int (*QVF_t) (QVA_t qva, rpmdb db, Header h);
 
 /** \ingroup rpmcli
  * Display query/verify information for each header in iterator.
@@ -1432,7 +1453,7 @@ typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
  * @param showPackage	query/verify display routine
  * @return		result of last non-zero showPackage() return
  */
-int showMatches(QVA_t *qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
+int showMatches(QVA_t qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
 	QVF_t showPackage);
 
 /** \ingroup rpmcli
@@ -1458,7 +1479,7 @@ void rpmDisplayQueryTags(FILE * f);
  * @param showPackage	query/verify specific display routine
  * @return		showPackage() result, 1 if rpmdbInitIterator() is NULL
  */
-int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
+int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage);
 
 /** \ingroup rpmcli
@@ -1469,7 +1490,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
  * @param h		header to use for query
  * @return		0 always
  */
-int showQueryPackage(QVA_t *qva, rpmdb db, Header h);
+int showQueryPackage(QVA_t qva, rpmdb db, Header h);
 
 /** \ingroup rpmcli
  * Display package information.
@@ -1478,7 +1499,7 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h);
  * @param arg		name of source to query
  * @return		rpmQueryVerify() result, or 1 on rpmdbOpen() failure
  */
-int rpmQuery(QVA_t *qva, rpmQVSources source, const char * arg);
+int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg);
 
 /** \ingroup rpmcli
  */
@@ -1491,7 +1512,7 @@ extern struct poptOption rpmVerifyPoptTable[];
  * @param h		header to use for verify
  * @return		result of last non-zero verify return
  */
-int showVerifyPackage(QVA_t *qva, /*@only@*/ rpmdb db, Header h);
+int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb db, Header h);
 
 /** \ingroup rpmcli
  * Verify package install.
@@ -1500,7 +1521,7 @@ int showVerifyPackage(QVA_t *qva, /*@only@*/ rpmdb db, Header h);
  * @param arg		name of source to verify
  * @return		rpmQueryVerify() result, or 1 on rpmdbOpen() failure
  */
-int rpmVerify(QVA_t *qva, rpmQVSources source, const char *arg);
+int rpmVerify(QVA_t qva, rpmQVSources source, const char *arg);
 
 /*@}*/
 /* ==================================================================== */
@@ -1532,11 +1553,11 @@ typedef enum rpmInstallInterfaceFlags_e {
  * @param relocations	package file relocations
  * @return		0 on success
  */
-int rpmInstall(const char * rootdir, const char ** argv,
+int rpmInstall(/*@null@*/ const char * rootdir, /*@null@*/ const char ** argv,
 		rpmtransFlags transFlags, 
 		rpmInstallInterfaceFlags interfaceFlags,
 		rpmprobFilterFlags probFilter,
-		rpmRelocation * relocations);
+		/*@null@*/ rpmRelocation * relocations);
 
 /** \ingroup rpmcli
  * Install source rpm package.
@@ -1566,7 +1587,7 @@ typedef enum rpmEraseInterfaceFlags_e {
  * @param interfaceFlags bits to control rpmInstall()
  * @return		0 on success
  */
-int rpmErase(const char * rootdir, const char ** argv,
+int rpmErase(/*@null@*/ const char * rootdir, /*@null@*/ const char ** argv,
 		rpmtransFlags transFlags, 
 		rpmEraseInterfaceFlags interfaceFlags);
 
@@ -1656,7 +1677,8 @@ typedef enum rpmCheckSigFlags_e {
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv);
+int rpmCheckSig(rpmCheckSigFlags flags, /*@null@*/ const char ** argv)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmReSign() operation.
@@ -1673,7 +1695,9 @@ typedef enum rpmResignFlags_e {
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmReSign(rpmResignFlags add, char *passPhrase, const char ** argv);
+int rpmReSign(rpmResignFlags add, char * passPhrase,
+		/*@null@*/ const char ** argv)
+	/*@modifies fileSystem @*/;
 
 /*@}*/
 

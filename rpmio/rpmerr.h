@@ -65,6 +65,7 @@ typedef enum rpmerrCode_e {
     RPMERR_OLDDB	= _em(41),  /*!< old format database */
 
     RPMERR_UNMATCHEDIF	= _em(107), /*!< unclosed %ifarch or %ifos */
+    RPMERR_RELOAD	= _em(108), /*!< */
     RPMERR_BADARG	= _em(109), /*!< */
     RPMERR_SCRIPT	= _em(110), /*!< errors related to script exec */
     RPMERR_READ		= _em(111), /*!< */

@@ -19,6 +19,7 @@ static int _build_debug = 0;
 /**
  */
 static void doRmSource(Spec spec)
+	/*@modifies fileSystem @*/
 {
     struct Source *p;
     Package pkg;
@@ -253,6 +254,7 @@ int buildSpec(Spec spec, int what, int test)
 	int x;
 	/* When iterating over buildArchitectures, do the source    */
 	/* packaging on the first run, and skip RMSOURCE altogether */
+	if (spec->buildArchitectureSpecs != NULL)
 	for (x = 0; x < spec->buildArchitectureCount; x++) {
 	    if ((rc = buildSpec(spec->buildArchitectureSpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |

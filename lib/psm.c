@@ -212,6 +212,10 @@ void freeFi(TFI_t fi)
     if (fi->h) {
 	headerFree(fi->h); fi->h = NULL;
     }
+
+    /*@-nullstate@*/
+    return;
+    /*@=nullstate@*/
 }
 
 /*@observer@*/ const char *const fiTypeString(TFI_t fi) {
@@ -282,7 +286,7 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
 static int mergeFiles(TFI_t fi, Header h, Header newH)
 {
     HGE_t hge = (HGE_t)fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     fileAction * actions = fi->actions;
     int i, j, k, fc;
     int_32 type = 0;
@@ -601,12 +605,16 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     }
 
     (void) rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
+    if (ts->addedPackages.list == NULL) {	/* XXX can't happen */
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
 
     fi->type = TR_ADDED;
     fi->ap = ts->addedPackages.list;
     loadFi(h, fi);
     hge = fi->hge;
-    hfd = fi->hfd;
+    hfd = (fi->hfd ? fi->hfd : headerFreeData);
     headerFree(h);	/* XXX reference held by transaction set */
     h = NULL;
 
@@ -780,7 +788,7 @@ static int runScript(PSM_t psm, Header h,
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     const char ** argv = NULL;
     int argc = 0;
     const char ** prefixes = NULL;
@@ -879,6 +887,7 @@ static int runScript(PSM_t psm, Header h,
 	out = fdDup(STDOUT_FILENO);
 	out = fdLink(out, "runScript persist");
     }
+    if (out == NULL) return 1;	/* XXX can't happen */
     
     if (!(child = fork())) {
 	const char * rootDir;
@@ -925,7 +934,7 @@ static int runScript(PSM_t psm, Header h,
 	    }
 	}
 
-	rootDir = ts->rootDir;
+	if ((rootDir = ts->rootDir) != NULL)	/* XXX can't happen */
 	switch(urlIsURL(rootDir)) {
 	case URL_IS_PATH:
 	    rootDir += sizeof("file://") - 1;
@@ -983,7 +992,7 @@ static rpmRC runInstScript(PSM_t psm)
 {
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     void ** programArgv;
     int programArgc;
     const char ** argv;
@@ -1027,7 +1036,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     const char ** triggerNames;
     const char ** triggerEVR;
     const char ** triggerScripts;
@@ -1166,7 +1175,7 @@ static int runImmedTriggers(PSM_t psm)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     const char ** triggerNames;
     int numTriggers;
     int_32 * triggerIndices;
@@ -1255,7 +1264,7 @@ int psmStage(PSM_t psm, pkgStage stage)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
-    HFD_t hfd = fi->hfd;
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpmRC rc = psm->rc;
     int saveerrno;
 
@@ -1505,7 +1514,17 @@ assert(psm->mi == NULL);
 	    /* Retrieve type of payload compression. */
 	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
 
+	    if (alp->fd == NULL) {	/* XXX can't happen */
+		rc = RPMRC_FAIL;
+		break;
+	    }
+	    /*@-nullpass@*/	/* LCL: alp->fd != NULL here. */
 	    psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
+	    /*@=nullpass@*/
+	    if (psm->cfd == NULL) {	/* XXX can't happen */
+		rc = RPMRC_FAIL;
+		break;
+	    }
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
@@ -1561,8 +1580,18 @@ assert(psm->mi == NULL);
 	    fi->action = FA_COPYOUT;
 	    fi->actions = NULL;
 
+	    if (psm->fd == NULL) {	/* XXX can't happen */
+		rc = RPMRC_FAIL;
+		break;
+	    }
+	    /*@-nullpass@*/	/* LCL: psm->fd != NULL here. */
 	    (void) Fflush(psm->fd);
 	    psm->cfd = Fdopen(fdDup(Fileno(psm->fd)), psm->rpmio_flags);
+	    /*@=nullpass@*/
+	    if (psm->cfd == NULL) {	/* XXX can't happen */
+		rc = RPMRC_FAIL;
+		break;
+	    }
 
 	    /* XXX failedFile? */
 	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd, NULL, NULL);

@@ -305,7 +305,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
 	    if (lastDev != sb.st_dev) {
 		for (j = 0; j < numFilesystems; j++)
-		    if (filesystems[j].dev == sb.st_dev) break;
+		    if (filesystems && filesystems[j].dev == sb.st_dev) break;
 
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 

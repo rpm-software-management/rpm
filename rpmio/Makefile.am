@@ -22,7 +22,10 @@ install-data-local:
 	sed -e "s|^dependency_libs='|& -lpopt|" < librpmio.la > .librpmio.la && \
 	mv .librpmio.la librpmio.la
 
-.PHONY:	lclint
+.PHONY:	sources
+sources:
+	@echo $(librpmio_la_SOURCES:%=rpmio/%)
+
 .PHONY:	lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)

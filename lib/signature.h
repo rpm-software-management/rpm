@@ -40,7 +40,7 @@ extern "C" {
  * Return new, empty (signature) header instance.
  * @return		signature header
  */
-Header rpmNewSignature(void);
+Header rpmNewSignature(void)	/*@*/;
 
 /** \ingroup signature
  * Read (and verify header+archive size) signature header.
@@ -50,21 +50,24 @@ Header rpmNewSignature(void);
  * @param sig_type	type of signature header to read (from lead).
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(FD_t fd, /*@out@*/ Header *header, sigType sig_type);
+rpmRC rpmReadSignature(FD_t fd, /*@out@*/ Header *header, sigType sig_type)
+	/*@modifies fd, *header @*/;
 
 /** \ingroup signature
  * Write signature header.
  * @param fd		file handle
- * @param header	(signature) header
+ * @param h		(signature) header
  * @return		0 on success, 1 on error
  */
-int rpmWriteSignature(FD_t fd, Header header);
+int rpmWriteSignature(FD_t fd, Header h)
+	/*@modifies fd, h @*/;
 
 /** \ingroup signature
  *  Generate a signature of data in file, insert in header.
  */
-int rpmAddSignature(Header h, const char *file,
-		    int_32 sigTag, const char *passPhrase);
+int rpmAddSignature(Header h, const char * file,
+		    int_32 sigTag, /*@null@*/ const char * passPhrase)
+	/*@modifies h @*/;
 
 /******************************************************************/
 
@@ -76,17 +79,21 @@ int rpmAddSignature(Header h, const char *file,
 /** \ingroup signature
  * Return type of signature in effect for building.
  */
-int rpmLookupSignatureType(int action);
+int rpmLookupSignatureType(int action)
+	/*@modifies internalState @*/;
 
 /** \ingroup signature
  *  Read a pass phrase from the user.
  */
-char * rpmGetPassPhrase(const char *prompt, const int sigTag);
+/*@null@*/ char * rpmGetPassPhrase(const char *prompt, const int sigTag)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup signature
  *  Return path to pgp executable of given type, or NULL when not found.
  */
-/*@null@*/ const char * rpmDetectPGPVersion( /*@out@*/ pgpVersion *pgpVersion);
+/*@null@*/ const char * rpmDetectPGPVersion(
+			/*@null@*/ /*@out@*/ pgpVersion *pgpVersion)
+	/*@modifies *pgpVersion, fileSystem @*/;
 
 #ifdef __cplusplus
 }

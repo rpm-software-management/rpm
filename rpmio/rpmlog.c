@@ -12,6 +12,16 @@
 static int nrecs = 0;
 static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this != NULL)	free((void *)this);
+    return NULL;
+}
+
 int rpmlogGetNrecs(void)
 {
     return nrecs;
@@ -19,7 +29,7 @@ int rpmlogGetNrecs(void)
 
 int rpmlogCode(void)
 {
-    if (nrecs > 0)
+    if (recs != NULL && nrecs > 0)
 	return recs[nrecs-1].code;
     return -1;
 }
@@ -27,7 +37,7 @@ int rpmlogCode(void)
 
 const char * rpmlogMessage(void)
 {
-    if (nrecs > 0)
+    if (recs != NULL && nrecs > 0)
 	return recs[nrecs-1].message;
     return _("(no error)");
 }
@@ -52,13 +62,9 @@ void rpmlogClose (void)
 
     for (i = 0; i < nrecs; i++) {
 	rpmlogRec rec = recs + i;
-	if (rec->message) {
-	    free((void *)rec->message);
-	    rec->message = NULL;
-	}
+	rec->message = _free(rec->message);
     }
-    free(recs);
-    recs = NULL;
+    recs = _free(recs);
     nrecs = 0;
 }
 
@@ -112,10 +118,8 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     int mask = RPMLOG_MASK(pri);
     /*@unused@*/ int fac = RPMLOG_FAC(code);
     char *msgbuf, *msg;
-    int freeMsgbuf = 1;
     int msgnb = BUFSIZ, nb;
     FILE * msgout = stderr;
-    rpmlogRec rec;
 
     if ((mask & rpmlogMask) == 0)
 	return;
@@ -126,7 +130,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     /* Allocate a sufficently large buffer for output. */
     while (1) {
 	va_list apc;
-	/*@-sysunrecog@*/ __va_copy(apc, ap); /*@=sysunrecog@*/
+	/*@-sysunrecog -usedef@*/ __va_copy(apc, ap); /*@=sysunrecog =usedef@*/
 	/*@-unrecog@*/ nb = vsnprintf(msgbuf, msgnb, fmt, apc); /*@=unrecog@*/
 	if (nb > -1 && nb < msgnb)
 	    break;
@@ -146,14 +150,13 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	    recs = xmalloc((nrecs+2) * sizeof(*recs));
 	else
 	    recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
+	recs[nrecs].code = code;
+	recs[nrecs].message = msg = msgbuf;
+	msgbuf = NULL;
 	recs[nrecs+1].code = 0;
 	recs[nrecs+1].message = NULL;
-	rec = recs + nrecs;
 	++nrecs;
 
-	rec->code = code;
-	rec->message = msgbuf;
-	freeMsgbuf = 0;
 
 	if (_rpmlogCallback) {
 	    _rpmlogCallback();
@@ -183,8 +186,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 
     (void) fputs(msg, msgout);
     (void) fflush(msgout);
-    if (freeMsgbuf)
-	free(msgbuf);
+    msgbuf = _free(msgbuf);
     if (pri <= RPMLOG_CRIT)
 	exit(EXIT_FAILURE);
 }

@@ -34,6 +34,10 @@ libpopt_la_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
 
 man_MANS = popt.3
 
+.PHONY:	sources
+sources:
+	@echo $(libpopt_la_SOURCES:%=popt/%)
+
 .PHONY: lclint
 lclint:
 	lclint ${DEFS} ${INCLUDES} ${libpopt_la_SOURCES}

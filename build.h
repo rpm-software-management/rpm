@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
-	  char *cookie, const char * rcfile);
+int build(const char * arg, BTA_t ba, const char * passPhrase,
+	  char * cookie, /*@null@*/ const char * rcfile);
 
 #ifdef __cplusplus
 }

@@ -154,7 +154,7 @@ typedef void (*rpmlogCallback) (void);
  */
 typedef /*@abstract@*/ struct rpmlogRec_s {
     int		code;
-    const char	* message;
+/*@owned@*/ /*@null@*/ const char * message;
 } * rpmlogRec;
 
 #ifdef __cplusplus
@@ -171,7 +171,7 @@ int rpmlogGetNrecs(void);
  * Return text of last rpmError() message.
  * @return		text of last message
  */
-/*@observer@*/ const char * rpmlogMessage(void);
+/*@observer@*/ /*@null@*/ const char * rpmlogMessage(void);
 
 /**
  * Return error code from last rpmError() message.
@@ -219,21 +219,21 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
  * Set rpmlog callback function.
  * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
  */
-rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb);
+extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb);
 
 /**
  * Return error code from last rpmError() message.
  * @deprecated Perl-RPM needs, use rpmlogCode() instead.
  * @return		code from last message
  */
-int rpmErrorCode(void);
+extern int rpmErrorCode(void);
 
 /**
  * Return text of last rpmError() message.
  * @deprecated gnorpm needs, use rpmlogMessage() instead.
  * @return		text of last message
  */
-/*@observer@*/ const char * rpmErrorString(void);
+/*@observer@*/ /*@null@*/ extern const char * rpmErrorString(void);
 
 #ifdef __cplusplus
 }

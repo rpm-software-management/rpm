@@ -27,6 +27,7 @@
 #include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
+/*@access FD_t@*/		/* XXX compared with NULL */
 
 typedef	unsigned char byte;
 
@@ -98,7 +99,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 	  saved_pgp_version = PGP_NOTDETECTED;
     }
 
-    if (pgpbin && pgpVer)
+    if (pgpVer && pgpbin)
 	*pgpVer = saved_pgp_version;
     return pgpbin;
 }
@@ -199,7 +200,9 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     }
 
     if (rc == 0 && headerp)
+	/*@-nullderef@*/
 	*headerp = h;
+	/*@=nullderef@*/
     else if (h)
 	headerFree(h);
 
@@ -238,7 +241,7 @@ void rpmFreeSignature(Header h)
 }
 
 static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
-		/*@out@*/ int_32 * size, const char * passPhrase)
+		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -281,12 +284,14 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 		break;
 	    }
 	}
-	rpmError(RPMERR_EXEC, _("Couldn't exec pgp (%s)\n"), path);
+	rpmError(RPMERR_EXEC, _("Couldn't exec pgp (%s)\n"),
+			(path ? path : NULL));
 	_exit(RPMERR_EXEC);
     }
 
     (void) close(inpipe[0]);
-    (void) write(inpipe[1], passPhrase, strlen(passPhrase));
+    if (passPhrase)
+	(void) write(inpipe[1], passPhrase, strlen(passPhrase));
     (void) write(inpipe[1], "\n", 1);
     (void) close(inpipe[1]);
 
@@ -298,7 +303,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 
     if (stat(sigfile, &st)) {
 	/* PGP failed to write signature */
-	(void) unlink(sigfile);  /* Just in case */
+	if (sigfile) (void) unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
 	return 1;
     }
@@ -308,11 +313,13 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     *sig = xmalloc(*size);
     
     {	FD_t fd;
-	int rc;
+	int rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
-	rc = timedRead(fd, *sig, *size);
-	(void) unlink(sigfile);
-	(void) Fclose(fd);
+	if (fd != NULL && !Ferror(fd)) {
+	    rc = timedRead(fd, *sig, *size);
+	    if (sigfile) (void) unlink(sigfile);
+	    (void) Fclose(fd);
+	}
 	if (rc != *size) {
 	    *sig = _free(*sig);
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
@@ -331,7 +338,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
  * creation crop up.
  */
 static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
-		/*@out@*/ int_32 * size, const char * passPhrase)
+		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -364,8 +371,10 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 
     fpipe = fdopen(inpipe[1], "w");
     (void) close(inpipe[0]);
-    fprintf(fpipe, "%s\n", passPhrase);
-    (void) fclose(fpipe);
+    if (fpipe) {
+	fprintf(fpipe, "%s\n", (passPhrase ? passPhrase : ""));
+	(void) fclose(fpipe);
+    }
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
@@ -375,7 +384,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 
     if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
-	(void) unlink(sigfile);  /* Just in case */
+	if (sigfile) (void) unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
 	return 1;
     }
@@ -385,11 +394,13 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     *sig = xmalloc(*size);
     
     {	FD_t fd;
-	int rc;
+	int rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
-	rc = timedRead(fd, *sig, *size);
-	(void) unlink(sigfile);
-	(void) Fclose(fd);
+	if (fd != NULL && !Ferror(fd)) {
+	    rc = timedRead(fd, *sig, *size);
+	    if (sigfile) (void) unlink(sigfile);
+	    (void) Fclose(fd);
+	}
 	if (rc != *size) {
 	    *sig = _free(*sig);
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
@@ -500,7 +511,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 {
     int pid, status, outpipe[2];
     FD_t sfd;
-    char *sigfile;
+/*@observer@*/ const char * sigfile;
     byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
@@ -528,8 +539,10 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     tmppath = _free(tmppath);
   }
     sfd = Fopen(sigfile, "w.fdio");
-    (void)Fwrite(sig, sizeof(char), count, sfd);
-    (void) Fclose(sfd);
+    if (sfd != NULL && !Ferror(sfd)) {
+	(void) Fwrite(sig, sizeof(char), count, sfd);
+	(void) Fclose(sfd);
+    }
 
     /* Now run PGP */
     outpipe[0] = outpipe[1] = 0;
@@ -579,26 +592,28 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     (void) close(outpipe[1]);
     file = fdopen(outpipe[0], "r");
     result[0] = '\0';
-    while (fgets(buf, 1024, file)) {
-	if (strncmp("File '", buf, 6) &&
-	    strncmp("Text is assu", buf, 12) &&
-	    strncmp("This signature applies to another message", buf, 41) &&
-	    buf[0] != '\n') {
-	    strcat(result, buf);
+    if (file) {
+	while (fgets(buf, 1024, file)) {
+	    if (strncmp("File '", buf, 6) &&
+		strncmp("Text is assu", buf, 12) &&
+		strncmp("This signature applies to another message", buf, 41) &&
+		buf[0] != '\n') {
+		strcat(result, buf);
+	    }
+	    if (!strncmp("WARNING: Can't find the right public key", buf, 40))
+		res = RPMSIG_NOKEY;
+	    else if (!strncmp("Signature by unknown keyid:", buf, 27))
+		res = RPMSIG_NOKEY;
+	    else if (!strncmp("WARNING: The signing key is not trusted", buf, 39))
+		res = RPMSIG_NOTTRUSTED;
+	    else if (!strncmp("Good signature", buf, 14))
+		res = RPMSIG_OK;
 	}
-	if (!strncmp("WARNING: Can't find the right public key", buf, 40))
-	    res = RPMSIG_NOKEY;
-	else if (!strncmp("Signature by unknown keyid:", buf, 27))
-	    res = RPMSIG_NOKEY;
-	else if (!strncmp("WARNING: The signing key is not trusted", buf, 39))
-	    res = RPMSIG_NOTTRUSTED;
-	else if (!strncmp("Good signature", buf, 14))
-	    res = RPMSIG_OK;
+	(void) fclose(file);
     }
-    (void) fclose(file);
 
     (void) waitpid(pid, &status, 0);
-    (void) unlink(sigfile);
+    if (sigfile) (void) unlink(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
@@ -623,8 +638,10 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     tmppath = _free(tmppath);
   }
     sfd = Fopen(sigfile, "w.fdio");
-    (void) Fwrite(sig, sizeof(char), count, sfd);
-    (void) Fclose(sfd);
+    if (sfd != NULL && !Ferror(sfd)) {
+	(void) Fwrite(sig, sizeof(char), count, sfd);
+	(void) Fclose(sfd);
+    }
 
     /* Now run GPG */
     outpipe[0] = outpipe[1] = 0;
@@ -652,16 +669,18 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     (void) close(outpipe[1]);
     file = fdopen(outpipe[0], "r");
     result[0] = '\0';
-    while (fgets(buf, 1024, file)) {
-	strcat(result, buf);
-	if (!xstrncasecmp("gpg: Can't check signature: Public key not found", buf, 48)) {
-	    res = RPMSIG_NOKEY;
+    if (file) {
+	while (fgets(buf, 1024, file)) {
+	    strcat(result, buf);
+	    if (!xstrncasecmp("gpg: Can't check signature: Public key not found", buf, 48)) {
+		res = RPMSIG_NOKEY;
+	    }
 	}
+	(void) fclose(file);
     }
-    (void) fclose(file);
   
     (void) waitpid(pid, &status, 0);
-    (void) unlink(sigfile);
+    if (sigfile) (void) unlink(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
@@ -757,7 +776,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
     return 0;
 }
 
-char *rpmGetPassPhrase(const char * prompt, const int sigTag)
+char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 {
     char *pass;
     int aok;

@@ -42,6 +42,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	    continue;
 	    /*@notreached@*/ break;
 	}
+	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(h, tag))
 	    (void) headerAddEntry(h, tag, type, ptr, count);
     }
@@ -71,6 +72,7 @@ Header headerRegenSigHeader(const Header h)
 	    continue;
 	    /*@notreached@*/ break;
 	}
+	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(sig, stag))
 	    (void) headerAddEntry(sig, stag, type, ptr, count);
     }

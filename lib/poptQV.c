@@ -9,7 +9,7 @@
 #include <rpmurl.h>
 #include "debug.h"
 
-struct rpmQVArguments rpmQVArgs;
+struct rpmQVArguments_s rpmQVArgs;
 int specedit = 0;
 
 /* ======================================================================== */
@@ -27,7 +27,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	const struct poptOption * opt, /*@unused@*/ const char * arg, 
 	/*@unused@*/ const void * data)
 {
-    QVA_t *qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVArgs;
 
     switch (opt->val) {
     case 'q':
@@ -99,7 +99,7 @@ static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptC
 			     const struct poptOption * opt, const char * arg, 
 			     /*@unused@*/ const void * data)
 {
-    QVA_t *qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVArgs;
 
     switch (opt->val) {
     case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;

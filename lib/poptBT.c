@@ -11,7 +11,7 @@
 #include "build.h"
 #include "debug.h"
 
-struct rpmBuildArguments         rpmBTArgs;
+struct rpmBuildArguments_s         rpmBTArgs;
 
 #define	POPT_USECATALOG		1000
 #define	POPT_NOLANG		1001
@@ -59,7 +59,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	const struct poptOption * opt, const char * arg,
 	/*@unused@*/ const void * data)
 {
-    struct rpmBuildArguments * rba = &rpmBTArgs;
+    BTA_t rba = &rpmBTArgs;
 
     switch (opt->val) {
     case POPT_REBUILD:

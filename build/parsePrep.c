@@ -296,7 +296,7 @@ static int doSetupMacro(Spec spec, char *line)
 
 	if (parseNum(optArg, &num)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup: %s\n"),
-		     spec->lineNum, optArg);
+		     spec->lineNum, (optArg ? optArg : "???"));
 	    freeStringBuf(before);
 	    freeStringBuf(after);
 	    poptFreeContext(optCon);

@@ -6,10 +6,13 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-int parseNum(const char *line, int *res)
+int parseNum(const char * line, int * res)
 {
     char * s1 = NULL;
+    unsigned long rc;
 
-    *res = strtoul(line, &s1, 10);
-    return (((*s1) || (s1 == line) || (*res == ULONG_MAX)) ? 1 : 0);
+    if (line == NULL) return 1;
+    rc = strtoul(line, &s1, 10);
+    if (res) *res = rc;
+    return (((*s1) || (s1 == line) || (rc == ULONG_MAX)) ? 1 : 0);
 }

@@ -155,7 +155,7 @@ struct FDIO_s {
 /** \ingroup rpmio
  * strerror(3) clone.
  */
-/*@observer@*/ const char * Fstrerror(FD_t fd);
+/*@observer@*/ const char * Fstrerror(/*@null@*/ FD_t fd);
 
 /** \ingroup rpmio
  * fread(3) clone.
@@ -165,7 +165,7 @@ size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
 /** \ingroup rpmio
  * fwrite(3) clone.
  */
-size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
+size_t	Fwrite	(const void * buf, size_t size, size_t nmemb, FD_t fd);
 
 
 /** \ingroup rpmio
@@ -180,23 +180,23 @@ int	Fclose	( /*@killref@*/ FD_t fd);
 
 /** \ingroup rpmio
  */
-FD_t	Fdopen	(FD_t fd, const char * fmode);
+/*@null@*/ FD_t	Fdopen	(FD_t fd, const char * fmode);
 
 /** \ingroup rpmio
  * fopen(3) clone.
  */
-FD_t	Fopen	(const char * path, const char * fmode);
+/*@null@*/ FD_t	Fopen	(/*@null@*/ const char * path, /*@null@*/ const char * fmode);
 
 
 /** \ingroup rpmio
  * fflush(3) clone.
  */
-int	Fflush	(FD_t fd);
+int	Fflush	(/*@null@*/ FD_t fd);
 
 /** \ingroup rpmio
  * ferror(3) clone.
  */
-int	Ferror	(FD_t fd);
+int	Ferror	(/*@null@*/ FD_t fd);
 
 /** \ingroup rpmio
  * fileno(3) clone.
@@ -292,17 +292,17 @@ void	Globfree( /*@only@*/ glob_t * pglob);
 /** \ingroup rpmrpc
  * opendir(3) clone.
  */
-DIR *	Opendir	(const char * name);
+/*@null@*/ DIR *	Opendir	(const char * name);
 
 /** \ingroup rpmrpc
  * readdir(3) clone.
  */
-struct dirent *	Readdir	(DIR * dir);
+/*@null@*/ struct dirent *	Readdir	(DIR * dir);
 
 /** \ingroup rpmrpc
  * closedir(3) clone.
  */
-int	Closedir(DIR * dir);
+int	Closedir(/*@only@*/ DIR * dir);
 /*@}*/
 
 

@@ -34,7 +34,8 @@ struct hashTable_s {
  * @param key           pointer to key value
  * @return pointer to hash bucket of key (or NULL)
  */
-static /*@shared@*/ struct hashBucket * findEntry(hashTable ht, const void * key)
+static /*@shared@*/ /*@null@*/
+struct hashBucket *findEntry(hashTable ht, const void * key)
 {
     unsigned int hash;
     struct hashBucket * b;

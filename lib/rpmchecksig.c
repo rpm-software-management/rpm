@@ -99,7 +99,7 @@ exit:
     return rc;
 }
 
-int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
+int rpmReSign(rpmResignFlags add, char * passPhrase, const char ** argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -112,6 +112,8 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
     int res = EXIT_FAILURE;
     rpmRC rc;
     
+    if (argv == NULL) return 0;
+
     tmprpm[0] = '\0';
     while ((rpm = *argv++) != NULL) {
 
@@ -246,6 +248,8 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
     int res = 0;
     rpmRC rc;
 
+    if (argv == NULL) return 0;
+
     while ((rpm = *argv++) != NULL) {
 
 	if (manageFile(&fd, &rpm, O_RDONLY, 0)) {
@@ -318,6 +322,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 		continue;
 		/*@notreached@*/ break;
 	    }
+	    if (ptr == NULL) continue;	/* XXX can't happen */
 
 	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, 
 					   result))) {

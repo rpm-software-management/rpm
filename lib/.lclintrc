@@ -16,7 +16,6 @@
 
 # not-yet normal parameters
 -boolops		# ~831 w->n
-#-null			# ~267
 -predboolint		# ~576 w->n
 -type			# ~872
 

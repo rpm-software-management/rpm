@@ -12,12 +12,12 @@
 
 /**
  */
-typedef struct cpioSourceArchive {
+typedef /*@abstract@*/ struct cpioSourceArchive_s {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
 /*@dependent@*/ TFI_t cpioList;
-    struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
-} CSA_t;
+/*@only@*/ struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
+} * CSA_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,8 +32,10 @@ extern "C" {
  * @param csa
  * @return		0 on success
  */
-int readRPM(const char *fileName, /*@out@*/ Spec *specp, /*@out@*/ struct rpmlead *lead,
-		/*@out@*/ Header *sigs, CSA_t *csa);
+int readRPM(/*@null@*/ const char * fileName, /*@out@*/ Spec * specp,
+		/*@out@*/ struct rpmlead * lead, /*@out@*/ Header * sigs,
+		CSA_t csa)
+	/*@modifies *specp, *sigs, csa, csa->cpioFdIn @*/;
 
 /**
  * Write rpm package to file.
@@ -49,8 +51,10 @@ int readRPM(const char *fileName, /*@out@*/ Spec *specp, /*@out@*/ struct rpmlea
  * @retval cookie	generated cookie (i.e build host/time)
  * @return		0 on success
  */
-int writeRPM(Header *hdrp, const char *fileName, int type,
-		CSA_t *csa, char *passPhrase, /*@out@*/ const char **cookie);
+int writeRPM(Header * hdrp, const char * fileName, int type,
+		CSA_t csa, /*@null@*/ char * passPhrase,
+		/*@out@*/ const char ** cookie)
+	/*@modifies *hdrp, *cookie, csa, csa->cpioArchiveSize @*/;
 
 #ifdef __cplusplus
 }

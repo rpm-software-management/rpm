@@ -6,21 +6,21 @@
  */
 
 /*! The structure used to store a macro. */
-typedef /*@abstract@*/ struct MacroEntry {
-    struct MacroEntry *prev;/*!< Macro entry stack. */
+typedef /*@abstract@*/ struct MacroEntry_s {
+    struct MacroEntry_s *prev;/*!< Macro entry stack. */
     const char *name;	/*!< Macro name. */
     const char *opts;	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
     int	used;		/*!< No. of expansions. */
     int	level;		/*!< Scoping level. */
-} MacroEntry;
+} * MacroEntry;
 
 /*! The structure used to store the set of macros in a context. */
-typedef /*@abstract@*/ struct MacroContext {
-    MacroEntry **macroTable;	/*!< Macro entry table for context. */
+typedef /*@abstract@*/ struct MacroContext_s {
+/*@owned@*//*@null@*/ MacroEntry *macroTable;	/*!< Macro entry table for context. */
     int		macrosAllocated;/*!< No. of allocated macros. */
     int		firstFree;	/*!< No. of macros. */
-} MacroContext;
+} * MacroContext;
 
 /**
  * Markers for sources of macros added throughout rpm.
@@ -42,9 +42,11 @@ extern "C" {
 /**
  * Print macros to file stream.
  * @param mc		macro context (NULL uses global context).
- * @param fp		file stream
+ * @param fp		file stream (NULL uses stderr).
  */
-void	rpmDumpMacroTable	(MacroContext * mc, FILE * fp);
+void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
+					/*@null@*/ FILE * fp)
+	/*@modifies *fp, fileSystem @*/;
 
 /**
  * Expand macro into buffer.
@@ -56,8 +58,10 @@ void	rpmDumpMacroTable	(MacroContext * mc, FILE * fp);
  * @param sbuflen	size of buffer
  * @return		0 on success
  */
-int	expandMacros	(void * spec, MacroContext * mc, char * sbuf,
-				size_t sbuflen);
+int	expandMacros	(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
+				/*@in@*/ /*@out@*/ char * sbuf,
+				size_t sbuflen)
+	/*@modifies *sbuf, internalState @*/;
 
 /**
  * Add macro to context.
@@ -68,15 +72,18 @@ int	expandMacros	(void * spec, MacroContext * mc, char * sbuf,
  * @param b		macro body
  * @param level		macro recursion level (0 is entry API)
  */
-void	addMacro	(MacroContext * mc, const char * n, const char * o,
-				const char * b, int level);
+void	addMacro	(/*@null@*/ MacroContext mc, const char * n,
+				/*@null@*/ const char * o,
+				/*@null@*/ const char * b, int level)
+	/*@modifies mc, internalState @*/;
 
 /**
  * Delete macro from context.
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
  */
-void	delMacro	(MacroContext * mc, const char * n);
+void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
+	/*@modifies mc, internalState @*/;
 
 /**
  * Define macro in context.
@@ -85,27 +92,32 @@ void	delMacro	(MacroContext * mc, const char * n);
  * @param level		macro recursion level (0 is entry API)
  * @return		@todo Document.
  */
-int	rpmDefineMacro	(MacroContext * mc, const char * macro, int level);
+int	rpmDefineMacro	(/*@null@*/ MacroContext mc, const char * macro,
+				int level)
+	/*@modifies mc, internalState @*/;
 
 /**
  * Load macros from context into global context.
  * @param mc		macro context (NULL does nothing).
  * @param level		macro recursion level (0 is entry API)
  */
-void	rpmLoadMacros	(MacroContext *mc, int level);
+void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
+	/*@modifies mc, internalState @*/;
 
 /**
  * Initialize macro context from set of macrofile(s).
  * @param mc		macro context (NULL uses global context).
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
-void	rpmInitMacros	(MacroContext * mc, const char * macrofiles);
+void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
+	/*@modifies mc, internalState, fileSystem @*/;
 
 /**
  * Destroy macro context.
  * @param mc		macro context (NULL uses global context).
  */
-void	rpmFreeMacros	(MacroContext * mc);
+void	rpmFreeMacros	(/*@null@*/ MacroContext mc)
+	/*@modifies mc, internalState @*/;
 
 typedef enum rpmCompressedMagic_e {
     COMPRESSED_NOT		= 0,	/*!< not compressed */
@@ -120,28 +132,33 @@ typedef enum rpmCompressedMagic_e {
  * @retval compressed	address of compression type
  * @return		0 on success, 1 on I/O error
  */
-int	isCompressed	(const char * file, rpmCompressedMagic * compressed);
+int	isCompressed	(const char * file,
+				/*@out@*/ rpmCompressedMagic * compressed)
+	/*@modifies *compressed, fileSystem @*/;
 
 /**
  * Return (malloc'ed) concatenated macro expansion(s).
  * @param arg		macro(s) to expand (NULL terminates list)
  * @return		macro expansion (malloc'ed)
  */
-char *	rpmExpand	(const char * arg, ...);
+char *	rpmExpand	(/*@null@*/ const char * arg, ...)
+	/*@*/;
 
 /**
  * Canonicalize file path.
  * @param path		path to canonicalize (in-place)
  * @return		canonicalized path (malloc'ed)
  */
-char *	rpmCleanPath	(char * path);
+/*@null@*/ char * rpmCleanPath	(/*@null@*/ char * path)
+	/*@modifies *path @*/;
 
 /**
  * Return (malloc'ed) expanded, canonicalized, file path.
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
-const char *rpmGetPath	(const char * path, ...);
+const char *rpmGetPath	(/*@null@*/ const char * path, ...)
+	/*@*/;
 
 /**
  * Merge 3 args into path, any or all of which may be a url.
@@ -153,8 +170,10 @@ const char *rpmGetPath	(const char * path, ...);
  * @param file		file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
-const char *rpmGenPath	(const char * root, const char * mdir,
-				const char * file);
+const char *rpmGenPath	(/*@null@*/ const char * root,
+			/*@null@*/ const char * mdir,
+			/*@null@*/ const char * file)
+	/*@*/;
 
 /**
  * Return macro expansion as a numeric value.
@@ -163,7 +182,8 @@ const char *rpmGenPath	(const char * root, const char * mdir,
  * @param arg		macro to expand
  * @return		numeric value
  */
-int	rpmExpandNumeric (const char * arg);
+int	rpmExpandNumeric (const char * arg)
+	/*@*/;
 
 #ifdef __cplusplus
 }

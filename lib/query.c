@@ -42,7 +42,7 @@ static void printFileInfo(char * te, const char * name,
     if (now == 0) {
 	now = time(NULL);
 	tm = localtime(&now);
-	nowtm = *tm;	/* structure assignment */
+	if (tm) nowtm = *tm;	/* structure assignment */
     }
 
     if (owner) 
@@ -78,6 +78,8 @@ static void printFileInfo(char * te, const char * name,
 
     /* Convert file mtime to display format */
     tm = localtime(&when);
+    timefield[0] = '\0';
+    if (tm != NULL)
     {	const char *fmt;
 	if (now > when + 6L * 30L * 24L * 60L * 60L ||	/* Old. */
 	    now < when - 60L * 60L)			/* In the future.  */
@@ -103,7 +105,7 @@ static void printFileInfo(char * te, const char * name,
 
 /**
  */
-static inline const char * queryHeader(Header h, const char * qfmt)
+static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 {
     const char * errstr;
     const char * str;
@@ -134,7 +136,7 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
     return nlink;
 }
 
-int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
+int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -451,7 +453,7 @@ void rpmDisplayQueryTags(FILE * f)
     }
 }
 
-int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
+int showMatches(QVA_t qva, rpmdbMatchIterator mi, QVF_t showPackage)
 {
     Header h;
     int ec = 0;
@@ -476,7 +478,7 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
  */
 void	(*freeSpecVec) (Spec spec) = NULL;
 
-int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
+int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
 	rpmdb rpmdb, QVF_t showPackage)
 {
     rpmdbMatchIterator mi = NULL;
@@ -676,7 +678,10 @@ restart:
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];
 	    fn = /*@-unrecog@*/ realpath(arg, fnbuf) /*@=unrecog@*/;
-	    fn = xstrdup( (fn ? fn : arg) );
+	    if (fn)
+		fn = xstrdup(fn);
+	    else
+		fn = xstrdup(arg);
 	} else
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
@@ -749,7 +754,7 @@ restart:
     return retcode;
 }
 
-int rpmQuery(QVA_t *qva, rpmQVSources source, const char * arg)
+int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
 {
     rpmdb rpmdb = NULL;
     int rc;

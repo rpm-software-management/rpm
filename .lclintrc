@@ -1,6 +1,6 @@
 -I. -I./build -I./lib -I./rpmio -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
-+partial
+#+partial
 
 -warnunixlib
 -warnposix
@@ -11,23 +11,15 @@
 -unrecogcomments
 
 # don't-bother-me-yet parameters
-#-branchstate
-#-immediatetrans
+-branchstate		# painful
 -mustfree		# alloca is painful
-#-observertrans
-#-statictrans
 
 # not-yet normal parameters
 -boolops		# w->n
--fixedformalarray
--null
 -predboolint		# w->n
--predboolothers		# w->n
--retvalint		# w->n
--type
+-type			#
 
-
-# not-yet -weak paramaters
+# -weak paramaters
 #+boolint
 #-boolops
 #+ignorequals

@@ -20,10 +20,12 @@ extern int _noDirTokens;
 /*@access TFI_t @*/	/* compared with NULL */
 /*@access Header @*/	/* compared with NULL */
 /*@access FD_t @*/	/* compared with NULL */
+/*@access CSA_t @*/
 
 /**
  */
 static inline int genSourceRpmName(Spec spec)
+	/*@modifies spec->sourceRpmName @*/
 {
     if (spec->sourceRpmName == NULL) {
 	const char *name, *version, *release;
@@ -41,8 +43,9 @@ static inline int genSourceRpmName(Spec spec)
 /**
  * @todo Create transaction set *much* earlier.
  */
-static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t * csa,
+static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * fmodeMacro)
+	/*@modifies csa, fileSystem @*/
 {
     const char * rootDir = "/";
     rpmdb rpmdb = NULL;
@@ -55,8 +58,12 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t * csa,
 
     if (!(fmode && fmode[0] == 'w'))
 	fmode = xstrdup("w9.gzdio");
+    /*@-nullpass@*/
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
+    /*@=nullpass@*/
+    if (cfd == NULL)
+	return 1;
 
     rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
@@ -78,7 +85,8 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t * csa,
 
 /**
  */
-static int cpio_copy(FD_t fdo, CSA_t *csa)
+static int cpio_copy(FD_t fdo, CSA_t csa)
+	/*@modifies csa, fileSystem @*/
 {
     char buf[BUFSIZ];
     size_t nb;
@@ -103,6 +111,7 @@ static int cpio_copy(FD_t fdo, CSA_t *csa)
  */
 static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 		const char * file, /*@only@*/ StringBuf sb)
+	/*@modifies fileSystem @*/
 {
     char buf[BUFSIZ];
     const char * fn = buf;
@@ -118,7 +127,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 	freeStringBuf(sb);
 	return NULL;
     }
-    f = fdGetFp(fd);
+    if ((f = fdGetFp(fd)) != NULL)
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
@@ -137,6 +146,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 /**
  */
 static int addFileToTag(Spec spec, const char * file, Header h, int tag)
+	/*@modifies h, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
@@ -159,6 +169,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 /**
  */
 static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
+	/*@modifies h, fileSystem @*/
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -176,6 +187,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 /**
  */
 static int processScriptFiles(Spec spec, Package pkg)
+	/*@modifies pkg->header, fileSystem @*/
 {
     struct TriggerFileEntry *p;
     
@@ -243,27 +255,26 @@ static int processScriptFiles(Spec spec, Package pkg)
 }
 
 int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
-	    CSA_t *csa)
+	    CSA_t csa)
 {
     FD_t fdi;
     Spec spec;
     rpmRC rc;
 
-    if (fileName != NULL) {
-	fdi = Fopen(fileName, "r.ufdio");
-	if (fdi == NULL || Ferror(fdi)) {
-	    rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
+    fdi = (fileName != NULL) ? Fopen(fileName, "r.ufdio") : fdDup(STDIN_FILENO);
+    if (fdi == NULL || Ferror(fdi)) {
+	rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"),
+		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
-	    return RPMERR_BADMAGIC;
-	}
-    } else {
-	fdi = fdDup(STDIN_FILENO);
+	if (fdi) (void) Fclose(fdi);
+	return RPMERR_BADMAGIC;
     }
 
     /* Get copy of lead */
     if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
-	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"), fileName,
-	    Fstrerror(fdi));
+	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
+		(fileName ? fileName : "<stdin>"),
+		Fstrerror(fdi));
 	return RPMERR_BADMAGIC;
     }
 
@@ -284,7 +295,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     switch (rc) {
     case RPMRC_BADMAGIC:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
-		fileName);
+		(fileName ? fileName : "<stdin>"));
 	return RPMERR_BADMAGIC;
     case RPMRC_OK:
 	break;
@@ -293,7 +304,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     case RPMRC_SHORTREAD:
     default:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
-		fileName);
+		(fileName ? fileName : "<stdin>"));
 	return RPMERR_BADMAGIC;
 	/*@notreached@*/ break;
     }
@@ -303,7 +314,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     else
 	freeSpec(spec);
 
-    if (csa)
+    if (csa != NULL)
 	csa->cpioFdIn = fdi;
     else
 	(void) Fclose(fdi);
@@ -312,7 +323,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
 }
 
 int writeRPM(Header *hdrp, const char *fileName, int type,
-		    CSA_t *csa, char *passPhrase, const char **cookie)
+		    CSA_t csa, char *passPhrase, const char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -385,7 +396,13 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
     
     /* Reallocate the header into one contiguous region. */
+    /*@-refcounttrans -usereleased@*/
     *hdrp = h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+    if (h == NULL) {	/* XXX can't happen */
+	rc = RPMERR_RELOAD;
+	goto exit;
+    }
+    /*@=refcounttrans =usereleased@*/
 
     /*
      * Write the header+archive into a temp file so that the size of
@@ -393,7 +410,8 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
      */
     if (makeTempFile(NULL, &sigtarget, &fd)) {
 	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));
-	return RPMERR_CREATE;
+	rc = RPMERR_CREATE;
+	goto exit;
     }
 
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
@@ -452,6 +470,10 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 
     /* Reallocate the signature into one contiguous region. */
     sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
+    if (sig == NULL) {	/* XXX can't happen */
+	rc = RPMERR_RELOAD;
+	goto exit;
+    }
 
     /* Open the output file */
     fd = Fopen(fileName, "w.ufdio");
@@ -579,7 +601,9 @@ exit:
     else
 	(void) Unlink(fileName);
 
+    /*@-nullstate@*/	/* FIX: *hdrp may be NULL */
     return rc;
+    /*@=nullstate@*/
 }
 
 static int_32 copyTags[] = {
@@ -591,7 +615,8 @@ static int_32 copyTags[] = {
 
 int packageBinaries(Spec spec)
 {
-    CSA_t csabuf, *csa = &csabuf;
+    struct cpioSourceArchive_s csabuf;
+    CSA_t csa = &csabuf;
     int rc;
     const char *errorString;
     Package pkg;
@@ -685,7 +710,8 @@ int packageBinaries(Spec spec)
 
 int packageSources(Spec spec)
 {
-    CSA_t csabuf, *csa = &csabuf;
+    struct cpioSourceArchive_s csabuf;
+    CSA_t csa = &csabuf;
     int rc;
 
     /* Add some cruft */

@@ -13,7 +13,6 @@ static int _debug = 0;
 #define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
 
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
-#define	FREE(_x)	{ if (_x) free((void *)_x); (_x) = NULL; }
 
 #ifdef DEBUG_MACROS
 #include <sys/types.h>
@@ -56,8 +55,8 @@ typedef	FILE * FD_t;
 /*@access MacroContext@*/
 /*@access MacroEntry@*/
 
-struct MacroContext rpmGlobalMacroContext;
-struct MacroContext rpmCLIMacroContext;
+struct MacroContext_s rpmGlobalMacroContext;
+struct MacroContext_s rpmCLIMacroContext;
 
 /**
  * Macro expansion state.
@@ -70,7 +69,7 @@ typedef struct MacroBuf {
 	int macro_trace;	/*!< Pre-print macro to expand? */
 	int expand_trace;	/*!< Post-print macro expansion? */
 /*@shared@*/ void *spec;	/*!< (future) %file expansion info. */
-/*@dependent@*/ MacroContext *mc;
+/*@dependent@*/ MacroContext mc;
 } MacroBuf;
 
 #define SAVECHAR(_mb, _c) { *(_mb)->t = (_c), (_mb)->t++, (_mb)->nb--; }
@@ -90,6 +89,16 @@ int print_expand_trace = 0;
 
 #define	MACRO_CHUNK_SIZE	16
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this != NULL)	free((void *)this);
+    return NULL;
+}
+
 /* =============================================================== */
 
 /**
@@ -101,8 +110,8 @@ int print_expand_trace = 0;
 static int
 compareMacroName(const void *ap, const void *bp)
 {
-	MacroEntry *ame = *((MacroEntry **)ap);
-	MacroEntry *bme = *((MacroEntry **)bp);
+	MacroEntry ame = *((MacroEntry *)ap);
+	MacroEntry bme = *((MacroEntry *)bp);
 
 	if (ame == NULL && bme == NULL)
 		return 0;
@@ -118,16 +127,16 @@ compareMacroName(const void *ap, const void *bp)
  * @param mc		macro context
  */
 static void
-expandMacroTable(MacroContext *mc)
+expandMacroTable(MacroContext mc)
 {
 	if (mc->macroTable == NULL) {
 		mc->macrosAllocated = MACRO_CHUNK_SIZE;
-		mc->macroTable = (MacroEntry **)
+		mc->macroTable = (MacroEntry *)
 		    xmalloc(sizeof(*(mc->macroTable)) * mc->macrosAllocated);
 		mc->firstFree = 0;
 	} else {
 		mc->macrosAllocated += MACRO_CHUNK_SIZE;
-		mc->macroTable = (MacroEntry **)
+		mc->macroTable = (MacroEntry *)
 		    xrealloc(mc->macroTable, sizeof(*(mc->macroTable)) *
 				mc->macrosAllocated);
 	}
@@ -139,52 +148,55 @@ expandMacroTable(MacroContext *mc)
  * @param mc		macro context
  */
 static void
-sortMacroTable(MacroContext *mc)
+sortMacroTable(MacroContext mc)
 {
-	int i;
+    int i;
 
-	qsort(mc->macroTable, mc->firstFree, sizeof(*(mc->macroTable)),
+    if (mc == NULL || mc->macroTable == NULL)
+	return;
+
+    qsort(mc->macroTable, mc->firstFree, sizeof(*(mc->macroTable)),
 		compareMacroName);
 
-	/* Empty pointers are now at end of table. Reset first free index. */
-	for (i = 0; i < mc->firstFree; i++) {
-		if (mc->macroTable[i] != NULL)
-			continue;
-		mc->firstFree = i;
-		break;
-	}
+    /* Empty pointers are now at end of table. Reset first free index. */
+    for (i = 0; i < mc->firstFree; i++) {
+	if (mc->macroTable[i] != NULL)
+	    continue;
+	mc->firstFree = i;
+	break;
+    }
 }
 
 void
-rpmDumpMacroTable(MacroContext * mc, FILE * fp)
+rpmDumpMacroTable(MacroContext mc, FILE * fp)
 {
-	int i;
-	int nempty = 0;
-	int nactive = 0;
+    int nempty = 0;
+    int nactive = 0;
 
-	if (mc == NULL)
-		mc = &rpmGlobalMacroContext;
-	if (fp == NULL)
-		fp = stderr;
+    if (mc == NULL) mc = &rpmGlobalMacroContext;
+    if (fp == NULL) fp = stderr;
     
-	fprintf(fp, "========================\n");
+    fprintf(fp, "========================\n");
+    if (mc->macroTable != NULL) {
+	int i;
 	for (i = 0; i < mc->firstFree; i++) {
-		MacroEntry *me;
-		if ((me = mc->macroTable[i]) == NULL) {
-			/* XXX this should never happen */
-			nempty++;
-			continue;
-		}
-		fprintf(fp, "%3d%c %s", me->level,
+	    MacroEntry me;
+	    if ((me = mc->macroTable[i]) == NULL) {
+		/* XXX this should never happen */
+		nempty++;
+		continue;
+	    }
+	    fprintf(fp, "%3d%c %s", me->level,
 			(me->used > 0 ? '=' : ':'), me->name);
-		if (me->opts && *me->opts)
-			fprintf(fp, "(%s)", me->opts);
-		if (me->body && *me->body)
-			fprintf(fp, "\t%s", me->body);
-		fprintf(fp, "\n");
-		nactive++;
+	    if (me->opts && *me->opts)
+		    fprintf(fp, "(%s)", me->opts);
+	    if (me->body && *me->body)
+		    fprintf(fp, "\t%s", me->body);
+	    fprintf(fp, "\n");
+	    nactive++;
 	}
-	fprintf(fp, _("======================== active %d empty %d\n"),
+    }
+    fprintf(fp, _("======================== active %d empty %d\n"),
 		nactive, nempty);
 }
 
@@ -195,32 +207,32 @@ rpmDumpMacroTable(MacroContext * mc, FILE * fp)
  * @param namelen	no. of byes
  * @return		address of slot in macro table with name (or NULL)
  */
-/*@dependent@*/ static MacroEntry **
-findEntry(MacroContext *mc, const char *name, size_t namelen)
+/*@dependent@*/ /*@null@*/ static MacroEntry *
+findEntry(MacroContext mc, const char *name, size_t namelen)
 {
-	MacroEntry keybuf, *key, **ret;
-	char namebuf[1024];
+    MacroEntry key, *ret;
+    struct MacroEntry_s keybuf;
+    char namebuf[1024];
 
-	if (mc == NULL)
-		mc = &rpmGlobalMacroContext;
-	if (! mc->firstFree)
-		return NULL;
+    if (mc == NULL) mc = &rpmGlobalMacroContext;
+    if (mc->macroTable == NULL || mc->firstFree == 0)
+	return NULL;
 
-	if (namelen > 0) {
-		strncpy(namebuf, name, namelen);
-		namebuf[namelen] = '\0';
-		name = namebuf;
-	}
+    if (namelen > 0) {
+	strncpy(namebuf, name, namelen);
+	namebuf[namelen] = '\0';
+	name = namebuf;
+    }
     
-	key = &keybuf;
-	memset(key, 0, sizeof(*key));
-	/*@-temptrans@*/
-	key->name = (char *)name;
-	/*@=temptrans@*/
-	ret = (MacroEntry **)bsearch(&key, mc->macroTable, mc->firstFree,
+    key = &keybuf;
+    memset(key, 0, sizeof(*key));
+    /*@-temptrans@*/
+    key->name = (char *)name;
+    /*@=temptrans@*/
+    ret = (MacroEntry *) bsearch(&key, mc->macroTable, mc->firstFree,
 			sizeof(*(mc->macroTable)), compareMacroName);
-	/* XXX TODO: find 1st empty slot and return that */
-	return ret;
+    /* XXX TODO: find 1st empty slot and return that */
+    return ret;
 }
 
 /* =============================================================== */
@@ -231,33 +243,35 @@ findEntry(MacroContext *mc, const char *name, size_t namelen)
 /*@dependent@*/ static char *
 rdcl(char *buf, size_t size, FD_t fd, int escapes)
 {
-	char *q = buf;
-	size_t nb = 0;
-	size_t nread = 0;
+    char *q = buf;
+    size_t nb = 0;
+    size_t nread = 0;
+    FILE * f = fdGetFILE(fd);
 
-	*q = '\0';
-	do {
-		/* read next line */
-		if (fgets(q, size, fdGetFILE(fd)) == NULL)
-			break;
-		nb = strlen(q);
-		nread += nb;
-		for (q += nb - 1; nb > 0 && iseol(*q); q--)
-			nb--;
-		if (!(nb > 0 && *q == '\\')) {	/* continue? */
-			*(++q) = '\0';		/* trim trailing \r, \n */
-			break;
-		}
-		if (escapes) {			/* copy escape too */
-			q++;
-			nb++;
-		}
-		size -= nb;
-		if (*q == '\r')			/* XXX avoid \r madness */
-			*q = '\n';
-		*(++q) = '\0';			/* next char in buf */
-	} while (size > 0);
-	return (nread > 0 ? buf : NULL);
+    *q = '\0';
+    if (f != NULL)
+    do {
+	/* read next line */
+	if (fgets(q, size, f) == NULL)
+	    break;
+	nb = strlen(q);
+	nread += nb;
+	for (q += nb - 1; nb > 0 && iseol(*q); q--)
+	    nb--;
+	if (!(nb > 0 && *q == '\\')) {	/* continue? */
+	    *(++q) = '\0';		/* trim trailing \r, \n */
+	    break;
+	}
+	if (escapes) {			/* copy escape too */
+	    q++;
+	    nb++;
+	}
+	size -= nb;
+	if (*q == '\r')			/* XXX avoid \r madness */
+	    *q = '\n';
+	*(++q) = '\0';			/* next char in buf */
+    } while (size > 0);
+    return (nread > 0 ? buf : NULL);
 }
 
 /**
@@ -617,7 +631,7 @@ doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
  * @return		address to continue parsing
  */
 /*@dependent@*/ static const char *
-doUndefine(MacroContext *mc, const char *se)
+doUndefine(MacroContext mc, const char *se)
 {
 	const char *s = se;
 	char buf[BUFSIZ], *n = buf, *ne = n;
@@ -644,7 +658,7 @@ doUndefine(MacroContext *mc, const char *se)
 
 #ifdef	DYING
 static void
-dumpME(const char *msg, MacroEntry *me)
+dumpME(const char *msg, MacroEntry me)
 {
 	if (msg)
 		fprintf(stderr, "%s", msg);
@@ -665,18 +679,25 @@ dumpME(const char *msg, MacroEntry *me)
  * @param level		macro recursion level
  */
 static void
-pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int level)
+pushMacro(/*@out@*/ MacroEntry *mep,
+		const char *n, /*@null@*/ const char *o,
+		/*@null@*/ const char *b, int level)
 {
-	MacroEntry *prev = (*mep ? *mep : NULL);
-	MacroEntry *me = (MacroEntry *) xmalloc(sizeof(*me));
+    /*@-usedef@*/
+    MacroEntry prev = (mep && *mep ? *mep : NULL);
+    /*@=usedef@*/
+    MacroEntry me = (MacroEntry) xmalloc(sizeof(*me));
 
-	me->prev = prev;
-	me->name = (prev ? prev->name : xstrdup(n));
-	me->opts = (o ? xstrdup(o) : NULL);
-	me->body = xstrdup(b ? b : "");
-	me->used = 0;
-	me->level = level;
+    me->prev = prev;
+    me->name = (prev ? prev->name : xstrdup(n));
+    me->opts = (o ? xstrdup(o) : NULL);
+    me->body = xstrdup(b ? b : "");
+    me->used = 0;
+    me->level = level;
+    if (mep)
 	*mep = me;
+    else
+	me = _free(me);
 }
 
 /**
@@ -684,18 +705,18 @@ pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int lev
  * @param mep		address of macro entry slot
  */
 static void
-popMacro(MacroEntry **mep)
+popMacro(MacroEntry *mep)
 {
-	MacroEntry *me = (*mep ? *mep : NULL);
+	MacroEntry me = (*mep ? *mep : NULL);
 
 	if (me) {
 		/* XXX cast to workaround const */
 		/*@-onlytrans@*/
 		if ((*mep = me->prev) == NULL)
-			FREE(me->name);
-		FREE(me->opts);
-		FREE(me->body);
-		FREE(me);
+			me->name = _free(me->name);
+		me->opts = _free(me->opts);
+		me->body = _free(me->body);
+		me = _free(me);
 		/*@=onlytrans@*/
 	}
 }
@@ -707,40 +728,42 @@ popMacro(MacroEntry **mep)
 static void
 freeArgs(MacroBuf *mb)
 {
-	MacroContext *mc = mb->mc;
-	int ndeleted = 0;
-	int i;
+    MacroContext mc = mb->mc;
+    int ndeleted = 0;
+    int i;
 
-	/* Delete dynamic macro definitions */
-	for (i = 0; i < mc->firstFree; i++) {
-		MacroEntry **mep, *me;
-		int skiptest = 0;
-		mep = &mc->macroTable[i];
-		me = *mep;
+    if (mc == NULL || mc->macroTable == NULL)
+	return;
 
-		if (me == NULL)		/* XXX this should never happen */
-			continue;
-		if (me->level < mb->depth)
-			continue;
-		if (strlen(me->name) == 1 && strchr("#*0", *me->name)) {
-			if (*me->name == '*' && me->used > 0)
-				skiptest = 1;
-			/* XXX skip test for %# %* %0 */
-		} else if (!skiptest && me->used <= 0) {
+    /* Delete dynamic macro definitions */
+    for (i = 0; i < mc->firstFree; i++) {
+	MacroEntry *mep, me;
+	int skiptest = 0;
+	mep = &mc->macroTable[i];
+	me = *mep;
+
+	if (me == NULL)		/* XXX this should never happen */
+	    continue;
+	if (me->level < mb->depth)
+	    continue;
+	if (strlen(me->name) == 1 && strchr("#*0", *me->name)) {
+	    if (*me->name == '*' && me->used > 0)
+		skiptest = 1; /* XXX skip test for %# %* %0 */
+	} else if (!skiptest && me->used <= 0) {
 #if NOTYET
-			rpmError(RPMERR_BADSPEC,
-			    _("Macro %%%s (%s) was not used below level %d\n"),
-				me->name, me->body, me->level);
+	    rpmError(RPMERR_BADSPEC,
+			_("Macro %%%s (%s) was not used below level %d\n"),
+			me->name, me->body, me->level);
 #endif
-		}
-		popMacro(mep);
-		if (!(mep && *mep))
-			ndeleted++;
 	}
+	popMacro(mep);
+	if (!(mep && *mep))
+	    ndeleted++;
+    }
 
-	/* If any deleted macros, sort macro table */
-	if (ndeleted)
-		sortMacroTable(mc);
+    /* If any deleted macros, sort macro table */
+    if (ndeleted)
+	sortMacroTable(mc);
 }
 
 /**
@@ -752,7 +775,7 @@ freeArgs(MacroBuf *mb)
  * @return		address to continue parsing
  */
 /*@dependent@*/ static const char *
-grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
+grabArgs(MacroBuf *mb, const MacroEntry me, const char *se, char lastc)
 {
     char buf[BUFSIZ], *b, *be;
     char aname[16];
@@ -762,6 +785,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
     int c;
 
     /* Copy macro name as argv[0], save beginning of args.  */
+    buf[0] = '\0';
     b = be = stpcpy(buf, me->name);
 
     addMacro(mb->mc, "0", NULL, buf, mb->depth);
@@ -828,7 +852,9 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
 	}
 	*be++ = '-';
 	*be++ = c;
+	/*@-usedef@*/
 	if (o[1] == ':') {
+	/*@=usedef@*/
 	    *be++ = ' ';
 	    be = stpcpy(be, optarg);
 	}
@@ -847,12 +873,14 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
     addMacro(mb->mc, "#", NULL, aname, mb->depth);
 
     /* Add macro for each arg. Concatenate args for %*. */
-    *be = '\0';
-    for (c = optind; c < argc; c++) {
-	sprintf(aname, "%d", (c - optind + 1));
-	addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
-	*be++ = ' ';
-	be = stpcpy(be, argv[c]);
+    if (be) {
+	*be = '\0';
+	for (c = optind; c < argc; c++) {
+	    sprintf(aname, "%d", (c - optind + 1));
+	    addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
+	    *be++ = ' ';
+	    be = stpcpy(be, argv[c]);
+	}
     }
 
     /* Add unexpanded args as macro. */
@@ -987,8 +1015,8 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 static int
 expandMacro(MacroBuf *mb)
 {
-    MacroEntry **mep;
-    MacroEntry *me;
+    MacroEntry *mep;
+    MacroEntry me;
     const char *s = mb->s, *se;
     const char *f, *fe;
     const char *g, *ge;
@@ -1216,7 +1244,7 @@ expandMacro(MacroBuf *mb)
 		if (g && g < ge) {		/* Expand X in %{-f:X} */
 			rc = expandT(mb, g, gn);
 		} else
-		if (me->body && *me->body) {	/* Expand %{-f}/%{-f*} */
+		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
 			rc = expandT(mb, me->body, strlen(me->body));
 		}
 		s = se;
@@ -1300,7 +1328,7 @@ expandMacro(MacroBuf *mb)
 /* =============================================================== */
 
 int
-expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
+expandMacros(void *spec, MacroContext mc, char *s, size_t slen)
 {
 	MacroBuf macrobuf, *mb = &macrobuf;
 	char *tbuf;
@@ -1308,8 +1336,7 @@ expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 
 	if (s == NULL || slen <= 0)
 		return 0;
-	if (mc == NULL)
-		mc = &rpmGlobalMacroContext;
+	if (mc == NULL) mc = &rpmGlobalMacroContext;
 
 	tbuf = alloca(slen + 1);
 	memset(tbuf, 0, (slen + 1));
@@ -1340,12 +1367,11 @@ expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 }
 
 void
-addMacro(MacroContext *mc, const char *n, const char *o, const char *b, int level)
+addMacro(MacroContext mc, const char *n, const char *o, const char *b, int level)
 {
-	MacroEntry **mep;
+	MacroEntry *mep;
 
-	if (mc == NULL)
-		mc = &rpmGlobalMacroContext;
+	if (mc == NULL) mc = &rpmGlobalMacroContext;
 
 	/* If new name, expand macro table */
 	if ((mep = findEntry(mc, n, 0)) == NULL) {
@@ -1363,12 +1389,11 @@ addMacro(MacroContext *mc, const char *n, const char *o, const char *b, int leve
 }
 
 void
-delMacro(MacroContext *mc, const char *n)
+delMacro(MacroContext mc, const char *n)
 {
-	MacroEntry **mep;
+	MacroEntry *mep;
 
-	if (mc == NULL)
-		mc = &rpmGlobalMacroContext;
+	if (mc == NULL) mc = &rpmGlobalMacroContext;
 	/* If name exists, pop entry */
 	if ((mep = findEntry(mc, n, 0)) != NULL) {
 		popMacro(mep);
@@ -1379,7 +1404,7 @@ delMacro(MacroContext *mc, const char *n)
 }
 
 int
-rpmDefineMacro(MacroContext *mc, const char *macro, int level)
+rpmDefineMacro(MacroContext mc, const char *macro, int level)
 {
 	MacroBuf macrobuf, *mb = &macrobuf;
 
@@ -1393,116 +1418,115 @@ rpmDefineMacro(MacroContext *mc, const char *macro, int level)
 }
 
 void
-rpmLoadMacros(MacroContext * mc, int level)
+rpmLoadMacros(MacroContext mc, int level)
 {
+
+    if (mc == NULL || mc == &rpmGlobalMacroContext)
+	return;
+
+    if (mc->macroTable != NULL) {
 	int i;
-
-	if (mc == NULL || mc == &rpmGlobalMacroContext)
-		return;
-
 	for (i = 0; i < mc->firstFree; i++) {
-		MacroEntry **mep, *me;
-		mep = &mc->macroTable[i];
-		me = *mep;
+	    MacroEntry *mep, me;
+	    mep = &mc->macroTable[i];
+	    me = *mep;
 
-		if (me == NULL)		/* XXX this should never happen */
-			continue;
-		addMacro(NULL, me->name, me->opts, me->body, (level - 1));
+	    if (me == NULL)		/* XXX this should never happen */
+		continue;
+	    addMacro(NULL, me->name, me->opts, me->body, (level - 1));
 	}
+    }
 }
 
 void
-rpmInitMacros(MacroContext *mc, const char *macrofiles)
+rpmInitMacros(MacroContext mc, const char *macrofiles)
 {
-	char *m, *mfile, *me;
+    char *m, *mfile, *me;
 
-	if (macrofiles == NULL)
-		return;
-	if (mc == NULL)
-		mc = &rpmGlobalMacroContext;
+    if (macrofiles == NULL)
+	return;
+    if (mc == NULL) mc = &rpmGlobalMacroContext;
 
-	for (mfile = m = xstrdup(macrofiles); *mfile != '\0'; mfile = me) {
-		FD_t fd;
-		char buf[BUFSIZ];
+    for (mfile = m = xstrdup(macrofiles); mfile && *mfile != '\0'; mfile = me) {
+	FD_t fd;
+	char buf[BUFSIZ];
 
-		for (me = mfile; (me = strchr(me, ':')) != NULL; me++) {
-			if (!(me[1] == '/' && me[2] == '/'))
-				break;
-		}
-
-		if (me && *me == ':')
-			*me++ = '\0';
-		else
-			me = mfile + strlen(mfile);
-
-		/* Expand ~/ to $HOME */
-		buf[0] = '\0';
-		if (mfile[0] == '~' && mfile[1] == '/') {
-			char *home;
-			if ((home = getenv("HOME")) != NULL) {
-				mfile += 2;
-				strncpy(buf, home, sizeof(buf));
-				strncat(buf, "/", sizeof(buf) - strlen(buf));
-			}
-		}
-		strncat(buf, mfile, sizeof(buf) - strlen(buf));
-		buf[sizeof(buf)-1] = '\0';
-
-		fd = Fopen(buf, "r.fpio");
-		if (fd == NULL || Ferror(fd)) {
-			if (fd) (void) Fclose(fd);
-			continue;
-		}
-
-		/* XXX Assume new fangled macro expansion */
-		max_macro_depth = 16;
-
-		while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
-			char c, *n;
-
-			n = buf;
-			SKIPBLANK(n, c);
-
-			if (c != '%')
-				continue;
-			n++;	/* skip % */
-			(void)rpmDefineMacro(NULL, n, RMIL_MACROFILES);
-		}
-		(void) Fclose(fd);
-	}
-	if (m) {
-		free(m);
-		m = NULL;
+	for (me = mfile; (me = strchr(me, ':')) != NULL; me++) {
+	    if (!(me[1] == '/' && me[2] == '/'))
+		break;
 	}
 
-	/* Reload cmdline macros */
-	rpmLoadMacros(&rpmCLIMacroContext, RMIL_CMDLINE);
+	if (me && *me == ':')
+	    *me++ = '\0';
+	else
+	    me = mfile + strlen(mfile);
+
+	/* Expand ~/ to $HOME */
+	buf[0] = '\0';
+	if (mfile[0] == '~' && mfile[1] == '/') {
+	    char *home;
+	    if ((home = getenv("HOME")) != NULL) {
+		mfile += 2;
+		strncpy(buf, home, sizeof(buf));
+		strncat(buf, "/", sizeof(buf) - strlen(buf));
+	    }
+	}
+	strncat(buf, mfile, sizeof(buf) - strlen(buf));
+	buf[sizeof(buf)-1] = '\0';
+
+	fd = Fopen(buf, "r.fpio");
+	if (fd == NULL || Ferror(fd)) {
+	    if (fd) (void) Fclose(fd);
+	    continue;
+	}
+
+	/* XXX Assume new fangled macro expansion */
+	max_macro_depth = 16;
+
+	while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
+	    char c, *n;
+
+	    n = buf;
+	    SKIPBLANK(n, c);
+
+	    if (c != '%')
+		continue;
+	    n++;	/* skip % */
+	    (void)rpmDefineMacro(NULL, n, RMIL_MACROFILES);
+	}
+	(void) Fclose(fd);
+    }
+    m = _free(m);
+
+    /* Reload cmdline macros */
+    rpmLoadMacros(&rpmCLIMacroContext, RMIL_CMDLINE);
 }
 
 /*@-globstate@*/
 void
-rpmFreeMacros(MacroContext *mc)
+rpmFreeMacros(MacroContext mc)
 {
-	int i;
     
-	if (mc == NULL)
-		mc = &rpmGlobalMacroContext;
+    if (mc == NULL) mc = &rpmGlobalMacroContext;
 
+    if (mc->macroTable != NULL) {
+	int i;
 	for (i = 0; i < mc->firstFree; i++) {
-		MacroEntry *me;
-		while ((me = mc->macroTable[i]) != NULL) {
-			/* XXX cast to workaround const */
-			/*@-onlytrans@*/
-			if ((mc->macroTable[i] = me->prev) == NULL)
-				FREE(me->name);
-			/*@=onlytrans@*/
-			FREE(me->opts);
-			FREE(me->body);
-			FREE(me);
-		}
+	    MacroEntry me;
+	    while ((me = mc->macroTable[i]) != NULL) {
+		/* XXX cast to workaround const */
+		/*@-onlytrans@*/
+		if ((mc->macroTable[i] = me->prev) == NULL)
+		    me->name = _free(me->name);
+		/*@=onlytrans@*/
+		me->opts = _free(me->opts);
+		me->body = _free(me->body);
+		me = _free(me);
+	    }
 	}
-	FREE(mc->macroTable);
-	memset(mc, 0, sizeof(*mc));
+	mc->macroTable = _free(mc->macroTable);
+    }
+    memset(mc, 0, sizeof(*mc));
 }
 /*@=globstate@*/
 
@@ -1601,7 +1625,7 @@ rpmExpandNumeric(const char *arg)
 	if (!(end && *end == '\0'))
 	    rc = 0;
     }
-    free((void *)val);
+    val = _free(val);
 
     return rc;
 }
@@ -1612,6 +1636,9 @@ char *rpmCleanPath(char * path)
     const char *s;
     char *se, *t, *te;
     int begin = 1;
+
+    if (path == NULL)
+	return NULL;
 
 /*fprintf(stderr, "*** RCP %s ->\n", path); */
     s = t = te = path;
@@ -1767,9 +1794,9 @@ fprintf(stderr, "*** RGP ut %d file %s nurl %d\n", ut, file, nurl);
 
     result = rpmGetPath(url, root, "/", mdir, "/", file, NULL);
 
-    free((void *)xroot);
-    free((void *)xmdir);
-    free((void *)xfile);
+    xroot = _free(xroot);
+    xmdir = _free(xmdir);
+    xfile = _free(xfile);
 if (_debug)
 fprintf(stderr, "*** RGP result %s\n", result);
     return result;
@@ -1814,7 +1841,7 @@ main(int argc, char *argv[])
 	    val = rpmGetPath(argv[optind], NULL);
 	    if (val) {
 		fprintf(stdout, "%s:\t%s\n", argv[optind], val);
-		free((void *)val);
+		val = _free(val);
 	    }
 	}
 	rpmFreeMacros(NULL);

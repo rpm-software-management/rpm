@@ -310,7 +310,9 @@ if (keylen)	*keylen = key.size;
 	if (datalen)	*datalen = data.size;
     }
 
+    /*@-nullstate@*/
     return rc;
+    /*@=nullstate@*/
 }
 /*@=compmempass@*/
 
@@ -335,7 +337,8 @@ static int db1cdel(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, const void * keyp,
 	/*@=usedef@*/
 	key.size = keylen;
 
-	rc = db->del(db, &key, 0);
+	if (db)
+	    rc = db->del(db, &key, 0);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
     }
 
@@ -382,7 +385,8 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
     } else {
 	DB * db = dbi->dbi_db;
 
-	rc = db->put(db, &key, &data, 0);
+	if (db)
+	    rc = db->put(db, &key, &data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     }
 
@@ -495,7 +499,7 @@ static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 exit:
     if (rc == 0 && dbi->dbi_db != NULL && dbip) {
 	dbi->dbi_vec = &db1vec;
-	*dbip = dbi;
+	if (dbip) *dbip = dbi;
     } else
 	(void) db1close(dbi, 0);
 

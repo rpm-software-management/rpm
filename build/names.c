@@ -17,6 +17,7 @@ static gid_t gids[1024];
 /*@owned@*/ /*@null@*/ static const char *gnames[1024];
 static int gid_used = 0;
     
+/*@-nullderef@*/	/* FIX: shrug */
 void freeNames(void)
 {
     int x;
@@ -109,6 +110,7 @@ const char *getGnameS(const char *gname)
     gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
     return gnames[x];
 }
+/*@=nullderef@*/
 
 time_t *const getBuildTime(void)
 {

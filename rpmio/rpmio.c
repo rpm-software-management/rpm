@@ -105,11 +105,15 @@ int _rpmio_debug = 0;
 
 /* =============================================================== */
 
-static /*@observer@*/ const char * fdbg(FD_t fd)
+static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
 {
     static char buf[BUFSIZ];
     char *be = buf;
     int i;
+
+    buf[0] = '\0';
+    if (fd == NULL)
+	return buf;
 
 #if DYING
     sprintf(be, "fd %p", fd);	be += strlen(be);
@@ -194,7 +198,7 @@ FD_t fdDup(int fdno) {
 	return NULL;
     fd = fdNew("open (fdDup)");
     fdSetFdno(fd, nfdno);
-DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, fd, fdbg(fd)));
+DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
@@ -227,7 +231,7 @@ DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie,
 #endif
 
 /* =============================================================== */
-static inline FD_t XfdLink(void * cookie, const char *msg, const char *file, unsigned line) {
+static inline /*@null@*/ FD_t XfdLink(void * cookie, const char *msg, const char *file, unsigned line) {
     FD_t fd;
 if (cookie == NULL)
 DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, FDNREFS(cookie)+1, msg, file, line));
@@ -256,7 +260,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 
 static inline /*@null@*/ FD_t XfdNew(const char *msg, const char *file, unsigned line) {
     FD_t fd = (FD_t) xmalloc(sizeof(struct _FD_s));
-    if (fd == NULL)
+    if (fd == NULL) /* XXX xmalloc never returns NULL */
 	return NULL;
     fd->nrefs = 0;
     fd->flags = 0;
@@ -372,7 +376,7 @@ int fdClose( /*@only@*/ void * cookie) {
     rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
-DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", fd, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
 
     fd = fdFree(fd, "open (fdClose)");
     return rc;
@@ -418,9 +422,9 @@ int fdWritable(FD_t fd, int secs)
 	    tvp->tv_usec = 0;
 	}
 	errno = 0;
-	/*@-compdef@*/
+	/*@-compdef -nullpass@*/
 	rc = select(fdno + 1, NULL, &wrfds, NULL, tvp);
-	/*@=compdef@*/
+	/*@=compdef =nullpass@*/
 
 if (_rpmio_debug && !(rc == 1 && errno == 0))
 fprintf(stderr, "*** fdWritable fdno %d rc %d %s\n", fdno, rc, strerror(errno));
@@ -458,9 +462,9 @@ int fdReadable(FD_t fd, int secs)
 	    tvp->tv_usec = 0;
 	}
 	errno = 0;
-	/*@-compdef@*/
+	/*@-compdef -nullpass@*/
 	rc = select(fdno + 1, &rdfds, NULL, NULL, tvp);
-	/*@=compdef@*/
+	/*@=compdef =nullpass@*/
 
 	if (rc < 0) {
 	    switch (errno) {
@@ -615,7 +619,9 @@ static int mygethostbyname(const char * host, struct in_addr * address)
     hostinfo = /*@-unrecog@*/ gethostbyname(host) /*@=unrecog@*/;
     if (!hostinfo) return 1;
 
+    /*@-nullderef@*/
     memcpy(address, hostinfo->h_addr_list[0], sizeof(*address));
+    /*@=nullderef@*/
     return 0;
 }
 #endif
@@ -923,8 +929,9 @@ static int ftpLogin(urlinfo u)
 	user = "anonymous";
 
     if ((password = u->password) == NULL) {
-	if (getuid()) {
-	    struct passwd * pw = getpwuid(getuid());
+ 	uid_t uid = getuid();
+	struct passwd * pw;
+	if (uid && (pw = getpwuid(uid)) != NULL) {
 	    char *myp = alloca(strlen(pw->pw_name) + sizeof("@"));
 	    strcpy(myp, pw->pw_name);
 	    strcat(myp, "@");
@@ -1192,7 +1199,7 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 
 	if (fdFileno(u->ctrl) < 0) {
 	    rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
-			u->host,
+			u->host ? u->host : "???",
 			u->user ? u->user : "ftp",
 			u->password ? u->password : "(username)");
 
@@ -1367,6 +1374,7 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
+    if (path == NULL) path = "";
 
 reopen:
     if (fdFileno(ctrl) >= 0 && (rc = fdWritable(ctrl, 0)) < 1) {
@@ -1621,11 +1629,11 @@ int ufdClose( /*@only@*/ void * cookie)
 
 	    /* XXX if not using libio, lose the fp from fpio */
 	    {   FILE * fp;
-		/*@+voidabstract@*/
+		/*@+voidabstract -nullpass@*/
 		fp = fdGetFILE(fd);
 		if (noLibio && fp)
 		    fdSetFp(fd, NULL);
-		/*@=voidabstract@*/
+		/*@=voidabstract =nullpass@*/
 	    }
 
 	    /*
@@ -1634,9 +1642,7 @@ int ufdClose( /*@only@*/ void * cookie)
 	     *	"grab data (ufdOpen FTP)"		rpmio.c:892
 	     *	"open data (ftpReq)"			ftp.c:633
 	     *	"fopencookie"				rpmio.c:1507
-	     */
-
-	    /*
+	     *
 	     * Normal FTP has 5 refs on the ctrl fd:
 	     *	"persist ctrl"				url.c:176
 	     *	"grab ctrl (urlConnect FTP)"		rpmio.c:404
@@ -1664,7 +1670,8 @@ int ufdClose( /*@only@*/ void * cookie)
 	    }
 	}
 
-	if (!strcmp(u->service, "http")) {
+	/* XXX Why not (u->urltype == URL_IS_HTTP) ??? */
+	if (u->service != NULL && !strcmp(u->service, "http")) {
 	    if (fd->wr_chunked) {
 		int rc;
 	    /* XXX HTTP PUT requires terminating 0 length chunk. */
@@ -1695,11 +1702,11 @@ fprintf(stderr, "-> \r\n");
 
 	    /* XXX if not using libio, lose the fp from fpio */
 	    {   FILE * fp;
-		/*@+voidabstract@*/
+		/*@+voidabstract -nullpass@*/
 		fp = fdGetFILE(fd);
 		if (noLibio && fp)
 		    fdSetFp(fd, NULL);
-		/*@=voidabstract@*/
+		/*@=voidabstract =nullpass@*/
 	    }
 
 	    if (fd->persist && u->httpVersion &&
@@ -1910,7 +1917,7 @@ static /*@null@*/ FD_t gzdOpen(const char *path, const char *fmode) {
     fd = fdNew("open (gzdOpen)");
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
     
-DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, fd, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fdLink(fd, "gzdOpen");
 }
 
@@ -1941,11 +1948,13 @@ static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     gzFile *gzfile;
     ssize_t rc;
 
-    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+    if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
     gzfile = gzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
     rc = gzread(gzfile, buf, count);
+    /*@-compdef@*/
 DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
+    /*@=compdef@*/
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -1955,7 +1964,9 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
+	/*@-compdef@*/
 	if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+	/*@=compdef@*/
     }
     return rc;
 }
@@ -1965,7 +1976,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count) {
     gzFile *gzfile;
     ssize_t rc;
 
-    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+    if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     if (fd->digest && count > 0) rpmDigestUpdate(fd->digest, buf, count);
 
@@ -1998,6 +2009,7 @@ static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence) {
     FD_t fd = c2f(cookie);
     gzFile *gzfile;
 
+    if (fd == NULL) return -2;
     assert(fd->bytesRemain == -1);	/* XXX FIXME */
     gzfile = gzdFileno(fd);
     fdstat_enter(fd, FDSTAT_SEEK);
@@ -2078,7 +2090,7 @@ FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 # define bzwrite BZ2_bzwrite
 #endif /* HAVE_BZ2_1_0 */
 
-static inline /*@dependent@*/ /*@null@*/ void * bzdFileno(FD_t fd) {
+static inline /*@dependent@*/ void * bzdFileno(FD_t fd) {
     void * rc = NULL;
     int i;
 
@@ -2129,18 +2141,24 @@ static int bzdFlush(FD_t fd) {
 static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     FD_t fd = c2f(cookie);
     BZFILE *bzfile;
-    ssize_t rc;
+    ssize_t rc = 0;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
-    rc = bzread(bzfile, buf, count);
+    if (bzfile)
+	/*@-compdef@*/
+	rc = bzread(bzfile, buf, count);
+	/*@=compdef@*/
     if (rc == -1) {
 	int zerror = 0;
-	fd->errcookie = bzerror(bzfile, &zerror);
+	if (bzfile)
+	    fd->errcookie = bzerror(bzfile, &zerror);
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
+	/*@-compdef@*/
 	if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+	/*@=compdef@*/
     }
     return rc;
 }
@@ -2256,16 +2274,18 @@ size_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
 #ifdef __LCLINT__
     *(char *)buf = '\0';
 #endif
-DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, fd, fdbg(fd)));
+DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
 
     if (fdGetIo(fd) == fpio) {
-	/*@+voidabstract@*/
+	/*@+voidabstract -nullpass@*/
 	rc = fread(buf, size, nmemb, fdGetFILE(fd));
-	/*@=voidabstract@*/
+	/*@=voidabstract =nullpass@*/
 	return rc;
     }
 
+    /*@-nullderef@*/
     _read = FDIOVEC(fd, read);
+    /*@=nullderef@*/
 
     rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
     return rc;
@@ -2276,16 +2296,18 @@ size_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd) {
     int rc;
 
     FDSANE(fd);
-DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, fd, fdbg(fd)));
+DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
 
     if (fdGetIo(fd) == fpio) {
-	/*@+voidabstract@*/
+	/*@+voidabstract -nullpass@*/
 	rc = fwrite(buf, size, nmemb, fdGetFILE(fd));
-	/*@=voidabstract@*/
+	/*@=voidabstract =nullpass@*/
 	return rc;
     }
 
+    /*@-nullderef@*/
     _write = FDIOVEC(fd, write);
+    /*@=nullderef@*/
 
     rc = (_write ? _write(fd, buf, size * nmemb) : -2);
     return rc;
@@ -2308,24 +2330,26 @@ DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(f
     if (fdGetIo(fd) == fpio) {
 	FILE *fp;
 
-	/*@+voidabstract@*/
+	/*@+voidabstract -nullpass@*/
 	fp = fdGetFILE(fd);
-	/*@=voidabstract@*/
 	rc = fseek(fp, offset, whence);
+	/*@=voidabstract =nullpass@*/
 	return rc;
     }
 
+    /*@-nullderef@*/
     _seek = FDIOVEC(fd, seek);
+    /*@=nullderef@*/
 
     rc = (_seek ? _seek(fd, pos, whence) : -2);
     return rc;
 }
 
 int Fclose(FD_t fd) {
-    int rc, ec = 0;
+    int rc = 0, ec = 0;
 
     FDSANE(fd);
-DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", fd, fdbg(fd)));
+DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 
     fd = fdLink(fd, "Fclose");
     while (fd->nfps >= 0) {
@@ -2335,17 +2359,18 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", fd, fdbg(fd)));
 	    FILE *fp;
 	    int fpno;
 
-	    /*@+voidabstract@*/
+	    /*@+voidabstract -nullpass@*/
 	    fp = fdGetFILE(fd);
-	    /*@=voidabstract@*/
 	    fpno = fileno(fp);
+	    /*@=voidabstract =nullpass@*/
 	/* XXX persistent HTTP/1.1 returns the previously opened fp */
 	    if (fd->nfps > 0 && fpno == -1 &&
 		fd->fps[fd->nfps-1].io == ufdio &&
 		fd->fps[fd->nfps-1].fp == fp &&
 		fd->fps[fd->nfps-1].fdno >= 0)
 	    {
-		(void) fflush(fp);
+		if (fp)
+		    rc = fflush(fp);
 		fd->nfps--;
 		/*@-refcounttrans@*/
 		rc = ufdClose(fd);
@@ -2355,19 +2380,23 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", fd, fdbg(fd)));
 		    break;
 		fdSetFp(fd, NULL);
 		fd->nfps++;
-		rc = fclose(fp);
+		if (fp)
+		    rc = fclose(fp);
 		fdPop(fd);
 		if (noLibio)
 		    fdSetFp(fd, NULL);
 	    } else {
-		rc = fclose(fp);
+		if (fp)
+		    rc = fclose(fp);
 		if (fpno == -1) {
 		    fd = fdFree(fd, "fopencookie (Fclose)");
 		    fdPop(fd);
 		}
 	    }
 	} else {
+	    /*@-nullderef@*/
 	    fdio_close_function_t * _close = FDIOVEC(fd, close);
+	    /*@=nullderef@*/
 	    rc = _close(fd);
 	}
 	if (fd->nfps == 0)
@@ -2501,10 +2530,10 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    if (noLibio) {
 		int fdno = Fileno(fd);
 		FILE * fp = fdopen(fdno, stdio);
-/*@+voidabstract@*/
+/*@+voidabstract -nullpass@*/
 if (_rpmio_debug)
 fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
-/*@=voidabstract@*/
+/*@=voidabstract =nullpass@*/
 		if (fp == NULL)
 		    return NULL;
 		/* XXX gzdio/bzdio use fp for private data */
@@ -2542,16 +2571,16 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 
 	if (fp) {
 	    /* XXX gzdio/bzdio use fp for private data */
-	    /*@+voidabstract@*/
+	    /*@+voidabstract -nullpass@*/
 	    if (fdGetFp(fd) == NULL)
 		fdSetFp(fd, fp);
 	    fdPush(fd, fpio, fp, fileno(fp));	/* Push fpio onto stack */
-	    /*@=voidabstract@*/
+	    /*@=voidabstract =nullpass@*/
 	    fd = fdLink(fd, "fopencookie");
 	}
     }
 
-DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, fd, fdbg(fd)));
+DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
@@ -2575,7 +2604,7 @@ if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	fd = fdOpen(path, flags, perms);
 	if (fdFileno(fd) < 0) {
-	    (void) fdClose(fd);
+	    if (fd) (void) fdClose(fd);
 	    return NULL;
 	}
     } else if (!strcmp(end, "fadio")) {
@@ -2623,23 +2652,28 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	}
     }
 
-    fd = Fdopen(fd, fmode);
+    if (fd)
+	fd = Fdopen(fd, fmode);
     return fd;
 }
 
 int Fflush(FD_t fd)
 {
+    void * vh;
     if (fd == NULL) return -1;
     if (fdGetIo(fd) == fpio)
-	/*@+voidabstract@*/
+	/*@+voidabstract -nullpass@*/
 	return fflush(fdGetFILE(fd));
-	/*@=voidabstract@*/
-    if (fdGetIo(fd) == gzdio)
-	return gzdFlush(fdGetFp(fd));
+	/*@=voidabstract =nullpass@*/
+
+    vh = fdGetFp(fd);
+    if (vh && fdGetIo(fd) == gzdio)
+	return gzdFlush(vh);
 #if HAVE_BZLIB_H
-    if (fdGetIo(fd) == bzdio)
-	return bzdFlush(fdGetFp(fd));
+    if (vh && fdGetIo(fd) == bzdio)
+	return bzdFlush(vh);
 #endif
+
     return 0;
 }
 
@@ -2652,9 +2686,9 @@ int Ferror(FD_t fd) {
 	int ec;
 	
 	if (fps->io == fpio) {
-	    /*@+voidabstract@*/
+	    /*@+voidabstract -nullpass@*/
 	    ec = ferror(fdGetFILE(fd));
-	    /*@=voidabstract@*/
+	    /*@=voidabstract =nullpass@*/
 	} else if (fps->io == gzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 #if HAVE_BZLIB_H
@@ -2679,7 +2713,7 @@ int Fileno(FD_t fd) {
     for (i = fd->nfps ; rc == -1 && i >= 0; i--) {
 	rc = fd->fps[i].fdno;
     }
-DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", fd, rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
     return rc;
 }
 

@@ -14,12 +14,12 @@
 struct tsortInfo {
     union {
 	int	count;
-	/*@kept@*/ struct availablePackage * suc;
+	/*@kept@*//*@null@*/ struct availablePackage * suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
-/*@owned@*/ struct tsortInfo * tsi_next;
-/*@kept@*/ struct availablePackage * tsi_pkg;
+/*@owned@*//*@null@*/ struct tsortInfo * tsi_next;
+/*@kept@*//*@null@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
 } ;
@@ -35,11 +35,11 @@ struct availablePackage {
 /*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
 /*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
 /*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
-/*@owned@*/ const char ** requires;	/*!< Requires: name strings. */
-/*@owned@*/ const char ** requiresEVR;	/*!< Requires: [epoch:]version[-release] strings. */
-/*@dependent@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
-/*@owned@*/ const char ** baseNames;	/*!< Header file basenames. */
-/*@dependent@*/ int_32 * epoch;		/*!< Header epoch (if any). */
+/*@owned@*//*@null@*/ const char ** requires;	/*!< Requires: name strings. */
+/*@owned@*//*@null@*/ const char ** requiresEVR;/*!< Requires: [epoch:]version[-release] strings. */
+/*@dependent@*//*@null@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
+/*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
+/*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
     int providesCount;			/*!< No. of Provide:'s in header. */
     int requiresCount;			/*!< No. of Require:'s in header. */
     int filesCount;			/*!< No. of files in header. */
@@ -47,8 +47,8 @@ struct availablePackage {
     int depth;				/*!< Max. depth in dependency tree. */
     struct tsortInfo tsi;		/*!< Dependency tsort data. */
     uint_32 multiLib;	/* MULTILIB */
-/*@kept@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
-    rpmRelocation * relocs;
+/*@kept@*//*@null@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
+/*@null@*/ rpmRelocation * relocs;
 /*@null@*/ FD_t fd;
 } ;
 
@@ -78,7 +78,7 @@ struct availableIndex {
 struct fileIndexEntry {
     int pkgNum;				/*!< Containing package number. */
     int fileFlags;	/* MULTILIB */
-/*@dependent@*/ const char * baseName;	/*!< File basename. */
+/*@dependent@*/ /*@null@*/ const char * baseName;	/*!< File basename. */
 } ;
 
 /** \ingroup rpmdep
@@ -101,7 +101,7 @@ struct availableList {
     int size;				/*!< No. of pkgs in list. */
     int alloced;			/*!< No. of pkgs allocated for list. */
     int numDirs;			/*!< No. of directories. */
-/*@owned@*/ dirInfo dirs;		/*!< Set of directories. */
+/*@owned@*/ /*@null@*/ dirInfo dirs;	/*!< Set of directories. */
 } ;
 
 /** \ingroup rpmdep

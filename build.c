@@ -10,11 +10,15 @@
 #include "build.h"
 #include "debug.h"
 
+/*@access rpmTransactionSet @*/	/* XXX compared with NULL @*/
+/*@access rpmdb @*/		/* XXX compared with NULL @*/
+/*@access FD_t @*/		/* XXX compared with NULL @*/
+
 /**
  */
 static int checkSpec(Header h)
 {
-    char *rootdir = NULL;
+    const char * rootdir = NULL;
     rpmdb db = NULL;
     int mode = O_RDONLY;
     rpmTransactionSet ts;
@@ -29,7 +33,7 @@ static int checkSpec(Header h)
 	const char *dn;
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
 	rpmError(RPMERR_OPEN, _("cannot open rpm database in %s\n"), dn);
-	free((void *)dn);
+	dn = _free(dn);
 	exit(EXIT_FAILURE);
     }
     ts = rpmtransCreateSet(db, rootdir);
@@ -44,10 +48,10 @@ static int checkSpec(Header h)
 	rc = 1;
     }
 
-    if (ts)
+    if (ts != NULL)
 	rpmtransFree(ts);
-    if (db)
-	rpmdbClose(db);
+    if (db != NULL)
+	(void) rpmdbClose(db);
 
     return rc;
 }
@@ -59,7 +63,7 @@ static int checkSpec(Header h)
 /* XXX this is still a dumb test but at least it's i18n aware */
 /**
  */
-static int isSpecFile(const char *specfile)
+static int isSpecFile(const char * specfile)
 {
     char buf[256];
     const char * s;
@@ -74,7 +78,7 @@ static int isSpecFile(const char *specfile)
 	return 0;
     }
     count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd);
-    Fclose(fd);
+    (void) Fclose(fd);
 
     checking = 1;
     for (s = buf; count--; s++) {
@@ -96,8 +100,8 @@ static int isSpecFile(const char *specfile)
 
 /**
  */
-static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
-	const char *passPhrase, char *cookie)
+static int buildForTarget(const char * arg, BTA_t ba,
+	const char * passPhrase, char * cookie)
 {
     int buildAmount = ba->buildAmount;
     const char *buildRootURL = NULL;
@@ -129,46 +133,48 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	/* XXX FWIW, default %{_specdir} is root.root 0755 */
 	{   char tfn[64];
 	    strcpy(tfn, "rpm-spec.XXXXXX");
+	    /*@-unrecog@*/
 	    tmpSpecFile = rpmGetPath("%{_specdir}/", mktemp(tfn), NULL);
+	    /*@=unrecog@*/
 	}
 
-	isCompressed(arg, &res);
+	(void) isCompressed(arg, &res);
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
 	sprintf(cmd, "%s < %s | tar xOvf - Specfile 2>&1 > %s",
 			zcmds[res & 0x3], arg, tmpSpecFile);
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
-	    free((void *)specDir);
-	    free((void *)tmpSpecFile);
+	    specDir = _free(specDir);
+	    tmpSpecFile = _free(tmpSpecFile);
 	    return 1;
 	}
 	if ((!fgets(buf, sizeof(buf) - 1, fp)) || !strchr(buf, '/')) {
 	    /* Try again */
-	    pclose(fp);
+	    (void) pclose(fp);
 
 	    sprintf(cmd, "%s < %s | tar xOvf - \\*.spec 2>&1 > %s",
 		    zcmds[res & 0x3], arg, tmpSpecFile);
 	    if (!(fp = popen(cmd, "r"))) {
 		rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
-		free((void *)specDir);
-		free((void *)tmpSpecFile);
+		specDir = _free(specDir);
+		tmpSpecFile = _free(tmpSpecFile);
 		return 1;
 	    }
 	    if (!fgets(buf, sizeof(buf) - 1, fp)) {
 		/* Give up */
 		rpmError(RPMERR_READ, _("Failed to read spec file from %s\n"),
 			arg);
-		unlink(tmpSpecFile);
-		free((void *)specDir);
-		free((void *)tmpSpecFile);
+		(void) unlink(tmpSpecFile);
+		specDir = _free(specDir);
+		tmpSpecFile = _free(tmpSpecFile);
 	    	return 1;
 	    }
 	}
-	pclose(fp);
+	(void) pclose(fp);
 
 	cmd = s = buf;
-	while (*cmd) {
+	while (*cmd != '\0') {
 	    if (*cmd == '/') s = cmd + 1;
 	    cmd++;
 	}
@@ -182,16 +188,16 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	specURL = s = alloca(strlen(specDir) + strlen(cmd) + 5);
 	sprintf(s, "%s/%s", specDir, cmd);
 	res = rename(tmpSpecFile, s);
-	free((void *)specDir);
+	specDir = _free(specDir);
 	
 	if (res) {
 	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m\n"),
 			tmpSpecFile, s);
-	    unlink(tmpSpecFile);
-	    free((void *)tmpSpecFile);
+	    (void) unlink(tmpSpecFile);
+	    tmpSpecFile = _free(tmpSpecFile);
 	    return 1;
 	}
-	free((void *)tmpSpecFile);
+	tmpSpecFile = _free(tmpSpecFile);
 
 	/* Make the directory which contains the tarball the source 
 	   directory for this run */
@@ -268,23 +274,23 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	goto exit;
     }
     
-    if (ba->buildMode == 't') Unlink(specURL);
+    if (ba->buildMode == 't')
+	(void) Unlink(specURL);
     rc = 0;
 
 exit:
     if (spec)
 	freeSpec(spec);
-    if (buildRootURL)
-	free((void *)buildRootURL);
+    buildRootURL = _free(buildRootURL);
     return rc;
 }
 
-int build(const char * arg, struct rpmBuildArguments * ba,
+int build(const char * arg, BTA_t ba,
 	const char * passPhrase, char * cookie, const char * rcfile)
 {
     char *t, *te;
     int rc = 0;
-    char *targets = ba->targets;
+    char * targets = ba->targets;
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
 
@@ -305,7 +311,7 @@ int build(const char * arg, struct rpmBuildArguments * ba,
 	target = alloca(te-t+1);
 	strncpy(target, t, (te-t));
 	target[te-t] = '\0';
-	if (*te)
+	if (*te != '\0')
 	    te++;
 	else	/* XXX Perform clean-up after last target build. */
 	    ba->buildAmount |= cleanFlags;
@@ -314,7 +320,7 @@ int build(const char * arg, struct rpmBuildArguments * ba,
 
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
-	rpmReadConfigFiles(rcfile, target);
+	(void) rpmReadConfigFiles(rcfile, target);
 	rc = buildForTarget(arg, ba, passPhrase, cookie);
 	if (rc)
 	    break;
@@ -323,6 +329,6 @@ int build(const char * arg, struct rpmBuildArguments * ba,
 exit:
     /* Restore original configuration. */
     rpmFreeMacros(NULL);
-    rpmReadConfigFiles(rcfile, NULL);
+    (void) rpmReadConfigFiles(rcfile, NULL);
     return rc;
 }

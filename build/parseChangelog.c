@@ -35,6 +35,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
  * @return 		0 on success, -1 on error
  */
 static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
+	/*@modifies *secs @*/
 {
     struct tm time;
     char *p, *pe, *q, ** idx;
@@ -103,6 +104,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
  * @return		0 on success
  */
 static int addChangelog(Header h, StringBuf sb)
+	/*@modifies h @*/
 {
     char *s;
     int i;

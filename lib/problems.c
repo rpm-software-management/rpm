@@ -107,74 +107,74 @@ static inline int snprintf(char * buf, int nb, const char * fmt, ...)
 
 const char * rpmProblemString(rpmProblem prob) /*@*/
 {
-    int nb =	(prob->pkgNEVR ? strlen(prob->pkgNEVR) : 0) +
-		(prob->str1 ? strlen(prob->str1) : 0) +
-		(prob->altNEVR ? strlen(prob->altNEVR) : 0) +
-		100;
+/*@observer@*/ const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "");
+/*@observer@*/ const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "");
+/*@observer@*/ const char * str1 = (prob->str1 ? prob->str1 : "");
+    int nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
     char * buf = xmalloc(nb+1);
 
     switch (prob->type) {
     case RPMPROB_BADARCH:
 	(void) snprintf(buf, nb,
 		_("package %s is for a different architecture"),
-		prob->pkgNEVR);
+		pkgNEVR);
 	break;
     case RPMPROB_BADOS:
 	(void) snprintf(buf, nb,
 		_("package %s is for a different operating system"),
-		prob->pkgNEVR);
+		pkgNEVR);
 	break;
     case RPMPROB_PKG_INSTALLED:
 	(void) snprintf(buf, nb,
 		_("package %s is already installed"),
-		prob->pkgNEVR);
+		pkgNEVR);
 	break;
     case RPMPROB_BADRELOCATE:
 	(void) snprintf(buf, nb,
 		_("path %s in package %s is not relocateable"),
-		prob->str1, prob->pkgNEVR);
+		str1, pkgNEVR);
 	break;
     case RPMPROB_NEW_FILE_CONFLICT:
 	(void) snprintf(buf, nb,
 		_("file %s conflicts between attempted installs of %s and %s"),
-		prob->str1, prob->pkgNEVR, prob->altNEVR);
+		str1, pkgNEVR, altNEVR);
 	break;
     case RPMPROB_FILE_CONFLICT:
 	(void) snprintf(buf, nb,
 	    _("file %s from install of %s conflicts with file from package %s"),
-		prob->str1, prob->pkgNEVR, prob->altNEVR);
+		str1, pkgNEVR, altNEVR);
 	break;
     case RPMPROB_OLDPACKAGE:
 	(void) snprintf(buf, nb,
 		_("package %s (which is newer than %s) is already installed"),
-		prob->altNEVR, prob->pkgNEVR);
+		altNEVR, pkgNEVR);
 	break;
     case RPMPROB_DISKSPACE:
 	(void) snprintf(buf, nb,
 	    _("installing package %s needs %ld%cb on the %s filesystem"),
-		prob->pkgNEVR,
+		pkgNEVR,
 		prob->ulong1 > (1024*1024)
 		    ? (prob->ulong1 + 1024 * 1024 - 1) / (1024 * 1024)
 		    : (prob->ulong1 + 1023) / 1024,
 		prob->ulong1 > (1024*1024) ? 'M' : 'K',
-		prob->str1);
+		str1);
 	break;
     case RPMPROB_DISKNODES:
 	(void) snprintf(buf, nb,
 	    _("installing package %s needs %ld inodes on the %s filesystem"),
-		prob->pkgNEVR, (long)prob->ulong1, prob->str1);
+		pkgNEVR, (long)prob->ulong1, str1);
 	break;
     case RPMPROB_BADPRETRANS:
 	(void) snprintf(buf, nb,
 		_("package %s pre-transaction syscall(s): %s failed: %s"),
-		prob->pkgNEVR, prob->str1, strerror(prob->ulong1));
+		pkgNEVR, str1, strerror(prob->ulong1));
 	break;
     case RPMPROB_REQUIRES:
     case RPMPROB_CONFLICT:
     default:
 	(void) snprintf(buf, nb,
 		_("unknown error %d encountered while manipulating package %s"),
-		prob->type, prob->pkgNEVR);
+		prob->type, pkgNEVR);
 	break;
     }
 

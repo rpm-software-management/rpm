@@ -185,7 +185,7 @@ extern "C" {
  * Create file state machine instance.
  * @return		file state machine data
  */
-/*@only@*/ /*@null@*/ FSM_t newFSM(void);
+/*@only@*/ FSM_t newFSM(void);
 
 /**
  * Destroy file state machine instance.
@@ -254,7 +254,7 @@ int fsmMapAttrs(FSM_t fsm)
  * @param stage		next stage
  * @return		0 on success
  */
-int fsmStage(FSM_t fsm, fileStage stage)
+int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
 		/*@modifies fsm @*/;
 
 #ifdef __cplusplus

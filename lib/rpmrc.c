@@ -22,27 +22,27 @@ const char * macrofiles = MACROFILES;
 
 typedef /*@owned@*/ const char * cptr_t;
 
-struct machCacheEntry {
+typedef struct machCacheEntry_s {
     const char * name;
     int count;
     cptr_t * equivs;
     int visited;
-};
+} * machCacheEntry;
 
-struct machCache {
-    struct machCacheEntry * cache;
+typedef struct machCache_s {
+    machCacheEntry cache;
     int size;
-};
+} * machCache;
 
-struct machEquivInfo {
+typedef struct machEquivInfo_s {
     const char * name;
     int score;
-};
+} * machEquivInfo;
 
-struct machEquivTable {
+typedef struct machEquivTable_s {
     int count;
-    struct machEquivInfo * list;
-};
+    machEquivInfo list;
+} * machEquivTable;
 
 struct rpmvarValue {
     const char * value;
@@ -58,35 +58,35 @@ struct rpmOption {
     struct rpmOptionValue * value;
 };
 
-struct defaultEntry {
-/*@owned@*/ const char * name;
-/*@owned@*/ const char * defName;
-};
+typedef struct defaultEntry_s {
+/*@owned@*/ /*@null@*/ const char * name;
+/*@owned@*/ /*@null@*/ const char * defName;
+} * defaultEntry;
 
-struct canonEntry {
+typedef struct canonEntry_s {
 /*@owned@*/ const char * name;
 /*@owned@*/ const char * short_name;
     short num;
-};
+} * canonEntry;
 
 /* tags are 'key'canon, 'key'translate, 'key'compat
  *
  * for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work
  */
-struct tableType {
+typedef struct tableType_s {
     const char * const key;
     const int hasCanon;
     const int hasTranslate;
-    struct machEquivTable equiv;
-    struct machCache cache;
-    struct defaultEntry * defaults;
-    struct canonEntry * canons;
+    struct machEquivTable_s equiv;
+    struct machCache_s cache;
+    defaultEntry defaults;
+    canonEntry canons;
     int defaultsLength;
     int canonsLength;
-};
+} * tableType;
 
 /*@-fullinitblock@*/
-static struct tableType tables[RPM_MACHTABLE_COUNT] = {
+static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
     { "arch", 1, 0 },
     { "os", 1, 0 },
     { "buildarch", 0, 1 },
@@ -115,18 +115,22 @@ static int defaultsInitialized = 0;
 
 /* prototypes */
 static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn);
-static void rpmSetVarArch(int var, const char * val, const char * arch);
-static void rebuildCompatTables(int type, const char *name);
+static void rpmSetVarArch(int var, const char * val,
+	/*@null@*/ const char * arch);
+static void rebuildCompatTables(int type, const char * name);
 
-static int optionCompare(const void * a, const void * b) {
+static int optionCompare(const void * a, const void * b)
+		/*@*/
+{
     return xstrcasecmp(((struct rpmOption *) a)->name,
 		      ((struct rpmOption *) b)->name);
 }
 
-static void rpmRebuildTargetVars(const char **target, const char ** canontarget);
+static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget);
 
-static /*@observer@*/ struct machCacheEntry *
-machCacheFindEntry(struct machCache * cache, const char * key)
+static /*@observer@*/ /*@null@*/ machCacheEntry
+machCacheFindEntry(const machCache cache, const char * key)
+		/*@*/
 {
     int i;
 
@@ -137,12 +141,12 @@ machCacheFindEntry(struct machCache * cache, const char * key)
 }
 
 static int machCompatCacheAdd(char * name, const char * fn, int linenum,
-				struct machCache * cache)
+				machCache cache)
 {
     char * chptr, * equivs;
     int delEntry = 0;
     int i;
-    struct machCacheEntry * entry = NULL;
+    machCacheEntry entry = NULL;
 
     while (*name && xisspace(*name)) name++;
 
@@ -203,8 +207,8 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     return 0;
 }
 
-static /*@observer@*/ struct machEquivInfo *
-	machEquivSearch(const struct machEquivTable * table, const char * name)
+static /*@observer@*/ /*@null@*/ machEquivInfo
+machEquivSearch(const machEquivTable table, const char * name)
 {
     int i;
 
@@ -215,10 +219,11 @@ static /*@observer@*/ struct machEquivInfo *
     return NULL;
 }
 
-static void machAddEquiv(struct machEquivTable * table, const char * name,
+static void machAddEquiv(machEquivTable table, const char * name,
 			   int distance)
+		/*@modifies table->list, table->count @*/
 {
-    struct machEquivInfo * equiv;
+    machEquivInfo equiv;
 
     equiv = machEquivSearch(table, name);
     if (!equiv) {
@@ -233,12 +238,12 @@ static void machAddEquiv(struct machEquivTable * table, const char * name,
     }
 }
 
-static void machCacheEntryVisit(struct machCache * cache,
-				  struct machEquivTable * table,
+static void machCacheEntryVisit(machCache cache,
+				  machEquivTable table,
 				  const char * name,
 	  			  int distance)
 {
-    struct machCacheEntry * entry;
+    machCacheEntry entry;
     int i;
 
     entry = machCacheFindEntry(cache, name);
@@ -255,9 +260,8 @@ static void machCacheEntryVisit(struct machCache * cache,
     }
 }
 
-static void machFindEquivs(struct machCache * cache,
-			     struct machEquivTable * table,
-			     const char * key)
+static void machFindEquivs(machCache cache, machEquivTable table,
+	const char * key)
 {
     int i;
 
@@ -276,14 +280,17 @@ static void machFindEquivs(struct machCache * cache,
      *	Yuck. We have to start at a point at traverse it, remembering how
      *	far away everything is.
      */
+    /*@-nullstate@*/	/* FIX: table->list may be NULL. */
     machAddEquiv(table, key, 1);
     machCacheEntryVisit(cache, table, key, 2);
+    return;
+    /*@=nullstate@*/
 }
 
-static int addCanon(struct canonEntry ** table, int * tableLen, char * line,
+static int addCanon(canonEntry * table, int * tableLen, char * line,
 		    const char * fn, int lineNum)
 {
-    struct canonEntry *t;
+    canonEntry t;
     char *s, *s1;
     const char * tname;
     const char * tshort_name;
@@ -291,11 +298,11 @@ static int addCanon(struct canonEntry ** table, int * tableLen, char * line,
 
     if (! *tableLen) {
 	*tableLen = 2;
-	*table = xmalloc(2 * sizeof(struct canonEntry));
+	*table = xmalloc(2 * sizeof(struct canonEntry_s));
     } else {
 	(*tableLen) += 2;
 	/*@-unqualifiedtrans@*/
-	*table = xrealloc(*table, sizeof(struct canonEntry) * (*tableLen));
+	*table = xrealloc(*table, sizeof(struct canonEntry_s) * (*tableLen));
 	/*@=unqualifiedtrans@*/
     }
     t = & ((*table)[*tableLen - 2]);
@@ -314,38 +321,40 @@ static int addCanon(struct canonEntry ** table, int * tableLen, char * line,
 	return RPMERR_RPMRC;
     }
 
+    /*@-nullpass@*/	/* LCL: s != NULL here. */
     tnum = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (tnum == ULONG_MAX)) {
 	rpmError(RPMERR_RPMRC, _("Bad arch/os number: %s (%s:%d)\n"), s,
 	      fn, lineNum);
 	return(RPMERR_RPMRC);
     }
+    /*@=nullpass@*/
 
     t[0].name = xstrdup(tname);
-    t[0].short_name = xstrdup(tshort_name);
+    t[0].short_name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
     t[0].num = tnum;
 
     /* From A B C entry */
     /* Add  B B C entry */
-    t[1].name = xstrdup(tshort_name);
-    t[1].short_name = xstrdup(tshort_name);
+    t[1].name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
+    t[1].short_name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
     t[1].num = tnum;
 
     return 0;
 }
 
-static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
+static int addDefault(defaultEntry *table, int *tableLen, char *line,
 			const char *fn, int lineNum)
 {
-    struct defaultEntry *t;
+    defaultEntry t;
 
     if (! *tableLen) {
 	*tableLen = 1;
-	*table = xmalloc(sizeof(struct defaultEntry));
+	*table = xmalloc(sizeof(struct defaultEntry_s));
     } else {
 	(*tableLen)++;
 	/*@-unqualifiedtrans@*/
-	*table = xrealloc(*table, sizeof(struct defaultEntry) * (*tableLen));
+	*table = xrealloc(*table, sizeof(struct defaultEntry_s) * (*tableLen));
 	/*@=unqualifiedtrans@*/
     }
     t = & ((*table)[*tableLen - 1]);
@@ -365,14 +374,15 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     }
 
     t->name = xstrdup(t->name);
-    t->defName = xstrdup(t->defName);
+    t->defName = (t->defName ? xstrdup(t->defName) : NULL);
     /*@=temptrans@*/
 
     return 0;
 }
 
-static /*@null@*/ const struct canonEntry *lookupInCanonTable(const char *name,
-	const struct canonEntry *table, int tableLen)
+static /*@null@*/ const canonEntry lookupInCanonTable(const char *name,
+	const canonEntry table, int tableLen)
+		/*@*/
 {
     while (tableLen) {
 	tableLen--;
@@ -386,14 +396,14 @@ static /*@null@*/ const struct canonEntry *lookupInCanonTable(const char *name,
     return NULL;
 }
 
-static /*@observer@*/ const char * lookupInDefaultTable(const char *name,
-		const struct defaultEntry *table, int tableLen)
+static /*@observer@*/ /*@null@*/
+const char * lookupInDefaultTable(const char *name,
+		const defaultEntry table, int tableLen)
 {
     while (tableLen) {
 	tableLen--;
-	if (!strcmp(name, table[tableLen].name)) {
+	if (table[tableLen].name && !strcmp(name, table[tableLen].name))
 	    return table[tableLen].defName;
-	}
     }
 
     return name;
@@ -422,7 +432,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
     return 0;
 }
 
-static void setVarDefault(int var, const char *macroname, const char *val, const char *body)
+static void setVarDefault(int var, const char *macroname, const char *val,
+	/*@null@*/ const char *body)
 {
     if (var >= 0) {	/* XXX Dying ... */
 	if (rpmGetVar(var)) return;
@@ -530,7 +541,7 @@ int rpmReadRC(const char * rcfiles)
 
     /* Read each file in rcfiles. */
     rc = 0;
-    for (r = myrcfiles = xstrdup(rcfiles); *r != '\0'; r = re) {
+    for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
 	char fn[4096];
 	FD_t fd;
 
@@ -959,21 +970,24 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
     static struct utsname un;
     static int gotDefaults = 0;
     char * chptr;
-    const struct canonEntry * canon;
+    canonEntry canon;
+    int rc;
 
     if (!gotDefaults) {
-	(void) uname(&un);
+	rc = uname(&un);
+	if (rc) return;
 
 #if !defined(__linux__)
 #ifdef SNI
 	/* USUALLY un.sysname on sinix does start with the word "SINIX"
 	 * let's be absolutely sure
 	 */
-	sprintf(un.sysname,"SINIX");
+	strncpy(un.sysname, "SINIX", sizeof(un.sysname));
 #endif
+	/*@-nullpass@*/
 	if (!strcmp(un.sysname, "AIX")) {
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
-	    sprintf(un.sysname,"aix%s.%s",un.version,un.release);
+	    sprintf(un.sysname,"aix%s.%s", un.version, un.release);
 	}
 	else if (!strcmp(un.sysname, "SunOS")) {
 	    if (!strncmp(un.release,"4", 1)) /* SunOS 4.x */ {
@@ -995,10 +1009,10 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 	}
 	else if (!strcmp(un.sysname, "HP-UX"))
 	    /*make un.sysname look like hpux9.05 for example*/
-	    sprintf(un.sysname, "hpux%s", strpbrk(un.release,"123456789"));
+	    sprintf(un.sysname, "hpux%s", strpbrk(un.release, "123456789"));
 	else if (!strcmp(un.sysname, "OSF1"))
 	    /*make un.sysname look like osf3.2 for example*/
-	    sprintf(un.sysname,"osf%s",strpbrk(un.release,"123456789"));
+	    sprintf(un.sysname, "osf%s", strpbrk(un.release, "123456789"));
 	else if (!strncmp(un.sysname, "IP", 2))
 	    un.sysname[2] = '\0';
 	else if (!strncmp(un.sysname, "SINIX", 5)) {
@@ -1014,7 +1028,7 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 	    char * prelid = NULL;
 	    FD_t fd = Fopen("/etc/.relid", "r.fdio");
 	    int gotit = 0;
-	    if (!Ferror(fd)) {
+	    if (fd != NULL && !Ferror(fd)) {
 		chptr = xcalloc(1, 256);
 		{   int irelid = Fread(chptr, sizeof(*chptr), 256, fd);
 		    (void) Fclose(fd);
@@ -1034,6 +1048,7 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 	    /* wrong, just for now, find out how to look for i586 later*/
 	    strcpy(un.machine,"i486");
 	}
+	/*@=nullpass@*/
 #endif	/* __linux__ */
 
 	/* get rid of the hyphens in the sysname */
@@ -1169,10 +1184,12 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
     if (os) *os = un.sysname;
 }
 
-static const char * rpmGetVarArch(int var, const char * arch) {
-    struct rpmvarValue * next;
+static /*@observer@*/ /*@null@*/
+const char * rpmGetVarArch(int var, /*@null@*/ const char * arch)
+{
+    const struct rpmvarValue * next;
 
-    if (!arch) arch = current[ARCH];
+    if (arch == NULL) arch = current[ARCH];
 
     if (arch) {
 	next = &values[var];
@@ -1188,7 +1205,7 @@ static const char * rpmGetVarArch(int var, const char * arch) {
     return next ? next->value : NULL;
 }
 
-const char *rpmGetVar(int var)
+/*@observer@*/ /*@null@*/ const char *rpmGetVar(int var)
 {
     return rpmGetVarArch(var, NULL);
 }
@@ -1230,7 +1247,9 @@ static void rpmSetVarArch(int var, const char * val, const char * arch) {
 	    }
 	}
 
+	/*@-nullpass@*/	/* LCL: arch != NULL here. */
 	if (next->arch && arch && !strcmp(next->arch, arch)) {
+	/*@=nullpass@*/
 	    next->value = _free(next->value);
 	    next->arch = _free(next->arch);
 	} else if (next->arch || arch) {
@@ -1263,7 +1282,7 @@ void rpmSetTables(int archTable, int osTable) {
 }
 
 int rpmMachineScore(int type, const char * name) {
-    struct machEquivInfo * info = machEquivSearch(&tables[type].equiv, name);
+    machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
     return (info != NULL ? info->score : 0);
 }
 
@@ -1288,6 +1307,7 @@ void rpmSetMachine(const char * arch, const char * os) {
 			    tables[currTables[ARCH]].defaults,
 			    tables[currTables[ARCH]].defaultsLength);
     }
+    if (arch == NULL) return;	/* XXX can't happen */
 
     if (os == NULL) {
 	os = host_os;
@@ -1296,6 +1316,7 @@ void rpmSetMachine(const char * arch, const char * os) {
 			    tables[currTables[OS]].defaults,
 			    tables[currTables[OS]].defaultsLength);
     }
+    if (os == NULL) return;	/* XXX can't happen */
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	current[ARCH] = _free(current[ARCH]);
@@ -1328,10 +1349,11 @@ static void rebuildCompatTables(int type, const char * name) {
 		   name);
 }
 
-static void getMachineInfo(int type, /*@out@*/ const char ** name,
-			/*@out@*/int * num)
+static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
+			/*@null@*/ /*@out@*/int * num)
+		/*@modifies *name, *num @*/
 {
-    const struct canonEntry * canon;
+    canonEntry canon;
     int which = currTables[type];
 
     /* use the normal canon tables, even if we're looking up build stuff */
@@ -1462,7 +1484,7 @@ void rpmFreeRpmrc(void)
     int i, j, k;
 
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
-	struct tableType *t;
+	tableType t;
 	t = tables + i;
 	if (t->equiv.list) {
 	    for (j = 0; j < t->equiv.count; j++)
@@ -1472,7 +1494,7 @@ void rpmFreeRpmrc(void)
 	}
 	if (t->cache.cache) {
 	    for (j = 0; j < t->cache.size; j++) {
-		struct machCacheEntry *e;
+		machCacheEntry e;
 		e = t->cache.cache + j;
 		if (e == NULL)	continue;
 		e->name = _free(e->name);
@@ -1524,7 +1546,7 @@ int rpmShowRC(FILE *fp)
 {
     struct rpmOption *opt;
     int i;
-    struct machEquivTable * equivTable;
+    machEquivTable equivTable;
 
     /* the caller may set the build arch which should be printed here */
     fprintf(fp, "ARCHITECTURE AND OS:\n");

@@ -274,22 +274,22 @@ is_num (int idx)
 }
 
 static int
-is_dos_date(char *str)
+is_dos_date(/*@null@*/ const char *str)
 {
-    if (strlen(str) == 8 && str[2] == str[5] && strchr("\\-/", (int)str[2]) != NULL)
+    if (str != NULL && strlen(str) == 8 &&
+		str[2] == str[5] && strchr("\\-/", (int)str[2]) != NULL)
 	return 1;
-
     return 0;
 }
 
 static int
-is_week (const char * str, /*@out@*/ struct tm * tim)
+is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 {
 /*@observer@*/ static const char * week = "SunMonTueWedThuFriSat";
     const char * pos;
 
     /*@-observertrans -mayaliasunique@*/
-    if ((pos=strstr(week, str)) != NULL) {
+    if (str != NULL && (pos=strstr(week, str)) != NULL) {
     /*@=observertrans =mayaliasunique@*/
         if (tim != NULL)
 	    tim->tm_wday = (pos - week)/3;
@@ -299,13 +299,13 @@ is_week (const char * str, /*@out@*/ struct tm * tim)
 }
 
 static int
-is_month (const char * str, /*@out@*/ struct tm * tim)
+is_month (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 {
 /*@observer@*/ static const char * month = "JanFebMarAprMayJunJulAugSepOctNovDec";
     const char * pos;
     
     /*@-observertrans -mayaliasunique@*/
-    if ((pos=strstr(month, str)) != NULL) {
+    if (str != NULL && (pos = strstr(month, str)) != NULL) {
     /*@=observertrans -mayaliasunique@*/
         if (tim != NULL)
 	    tim->tm_mon = (pos - month)/3;
@@ -315,34 +315,35 @@ is_month (const char * str, /*@out@*/ struct tm * tim)
 }
 
 static int
-is_time (const char * str, /*@out@*/ struct tm * tim)
+is_time (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 {
     const char * p, * p2;
 
-    if ((p=strchr(str, ':')) && (p2=strrchr(str, ':'))) {
+    if (str != NULL && (p = strchr(str, ':')) && (p2 = strrchr(str, ':'))) {
 	if (p != p2) {
     	    if (sscanf (str, "%2d:%2d:%2d", &tim->tm_hour, &tim->tm_min, &tim->tm_sec) != 3)
 		return 0;
-	}
-	else {
+	} else {
 	    if (sscanf (str, "%2d:%2d", &tim->tm_hour, &tim->tm_min) != 2)
 		return 0;
 	}
-    }
-    else 
+    } else 
         return 0;
     
     return 1;
 }
 
-static int is_year(const char * str, /*@out@*/ struct tm * tim)
+static int is_year(/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 {
     long year;
+
+    if (str == NULL)
+	return 0;
 
     if (strchr(str,':'))
         return 0;
 
-    if (strlen(str)!=4)
+    if (strlen(str) != 4)
         return 0;
 
     if (sscanf(str, "%ld", &year) != 1)
@@ -812,6 +813,11 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 
     if (u->openError < 0) {
 	fd = fdLink(fd, "error data (ftpStat)");
+	rc = -2;
+	goto exit;
+    }
+
+    if (bn == NULL || nbn <= 0) {
 	rc = -2;
 	goto exit;
     }

@@ -32,29 +32,29 @@ struct TriggerFileEntry {
 /** \ingroup rpmbuild
  */
 struct Source {
-/*@owned@*/ char *fullSource;
-/*@dependent@*/ char *source;     /* Pointer into fullSource */
+/*@owned@*/ char * fullSource;
+/*@dependent@*/ char * source;     /* Pointer into fullSource */
     int flags;
     int num;
-/*@owned@*/ struct Source *next;
+/*@owned@*/ struct Source * next;
 };
 
 /** \ingroup rpmbuild
  */
 typedef struct ReadLevelEntry {
     int reading;
-/*@dependent@*/ struct ReadLevelEntry *next;
+/*@dependent@*/ struct ReadLevelEntry * next;
 } RLE_t;
 
 /** \ingroup rpmbuild
  */
 typedef struct OpenFileInfo {
-/*@only@*/ const char *fileName;
+/*@only@*/ const char * fileName;
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
 /*@dependent@*/ char *readPtr;
-/*@owned@*/ struct OpenFileInfo *next;
+/*@owned@*/ struct OpenFileInfo * next;
 } OFI_t;
 
 /** \ingroup rpmbuild
@@ -63,8 +63,8 @@ struct spectag {
     int t_tag;
     int t_startx;
     int t_nlines;
-/*@only@*/ const char *t_lang;
-/*@only@*/ const char *t_msgid;
+/*@only@*/ const char * t_lang;
+/*@only@*/ const char * t_msgid;
 };
 
 /** \ingroup rpmbuild
@@ -87,27 +87,27 @@ struct speclines {
  * The structure used to store values parsed from a spec file.
  */
 struct SpecStruct {
-/*@only@*/ const char *specFile;	/*!< Name of the spec file. */
-/*@only@*/ const char *sourceRpmName;
-/*@only@*/ const char *buildRootURL;
-/*@only@*/ const char *buildSubdir;
-/*@only@*/ const char *rootURL;
+/*@only@*/ const char * specFile;	/*!< Name of the spec file. */
+/*@only@*/ const char * sourceRpmName;
+/*@only@*/ const char * buildRootURL;
+/*@only@*/ const char * buildSubdir;
+/*@only@*/ const char * rootURL;
 
-/*@owned@*/ struct speclines *sl;
-/*@owned@*/ struct spectags *st;
+/*@owned@*/ /*@null@*/ struct speclines * sl;
+/*@owned@*/ /*@null@*/ struct spectags * st;
 
-/*@owned@*/ struct OpenFileInfo *fileStack;
+/*@owned@*/ struct OpenFileInfo * fileStack;
     char lbuf[4*BUFSIZ];
     char nextpeekc;
-/*@dependent@*/ char *nextline;
-/*@dependent@*/ char *line;
+/*@dependent@*/ char * nextline;
+/*@dependent@*/ char * line;
     int lineNum;
 
-/*@owned@*/ struct ReadLevelEntry *readStack;
+/*@owned@*/ struct ReadLevelEntry * readStack;
 
 /*@refcounted@*/ Header buildRestrictions;
-/*@owned@*/ struct SpecStruct **buildArchitectureSpecs;
-/*@only@*/ const char ** buildArchitectures;
+/*@owned@*/ /*@null@*/ struct SpecStruct ** buildArchitectureSpecs;
+/*@only@*/ /*@null@*/ const char ** buildArchitectures;
     int buildArchitectureCount;
     int inBuildArchitectures;
 
@@ -116,25 +116,25 @@ struct SpecStruct {
 
     int gotBuildRootURL;
 
-    char *passPhrase;
+/*@null@*/ char * passPhrase;
     int timeCheck;
-    const char *cookie;
+/*@null@*/ const char * cookie;
 
-/*@owned@*/ struct Source *sources;
+/*@owned@*/ struct Source * sources;
     int numSources;
     int noSource;
 
 /*@refcounted@*/ Header sourceHeader;
 /*@owned@*/ void * sourceCpioList;
 
-/*@dependent@*/ struct MacroContext *macros;
+/*@dependent@*/ /*@null@*/ MacroContext macros;
 
 /*@only@*/ StringBuf prep;		/*!< %prep scriptlet. */
 /*@only@*/ StringBuf build;		/*!< %build scriptlet. */
 /*@only@*/ StringBuf install;		/*!< %install scriptlet. */
 /*@only@*/ StringBuf clean;		/*!< %clean scriptlet. */
 
-/*@owned@*/ struct PackageStruct *packages;	/*!< Package list. */
+/*@owned@*/ struct PackageStruct * packages;	/*!< Package list. */
 };
 
 /** \ingroup rpmbuild
@@ -145,35 +145,30 @@ struct PackageStruct {
 
 /*@owned@*/ void * cpioList;
 
-/*@owned@*/ struct Source *icon;
+/*@owned@*/ struct Source * icon;
 
     int autoReq;
     int autoProv;
 
-/*@only@*/ const char *preInFile;	/*!< %pre scriptlet. */
-/*@only@*/ const char *postInFile;	/*!< %post scriptlet. */
-/*@only@*/ const char *preUnFile;	/*!< %preun scriptlet. */
-/*@only@*/ const char *postUnFile;	/*!< %postun scriptlet. */
-/*@only@*/ const char *verifyFile;	/*!< %verifyscript scriptlet. */
+/*@only@*/ const char * preInFile;	/*!< %pre scriptlet. */
+/*@only@*/ const char * postInFile;	/*!< %post scriptlet. */
+/*@only@*/ const char * preUnFile;	/*!< %preun scriptlet. */
+/*@only@*/ const char * postUnFile;	/*!< %postun scriptlet. */
+/*@only@*/ const char * verifyFile;	/*!< %verifyscript scriptlet. */
 
 /*@only@*/ StringBuf specialDoc;
 
-#if 0
-    struct ReqProvTrigger *triggers;
-    char *triggerScripts;
-#endif
+/*@only@*/ struct TriggerFileEntry * triggerFiles;
 
-/*@only@*/ struct TriggerFileEntry *triggerFiles;
-
-/*@only@*/ const char *fileFile;
+/*@only@*/ const char * fileFile;
 /*@only@*/ StringBuf fileList; /* If NULL, package will not be written */
 
-/*@dependent@*/ struct PackageStruct *next;
+/*@dependent@*/ struct PackageStruct * next;
 };
 
 /** \ingroup rpmbuild
  */
-typedef struct PackageStruct *Package;
+typedef struct PackageStruct * Package;
 
 #ifdef __cplusplus
 extern "C" {
@@ -182,37 +177,44 @@ extern "C" {
 /** \ingroup rpmbuild
  * Create and initialize Spec structure.
  */
-/*@only@*/ Spec newSpec(void);
+/*@only@*/ Spec newSpec(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * Destroy Spec structure.
  * @param spec		spec file control structure
  */
-void freeSpec(/*@only@*/ Spec spec);
+void freeSpec(/*@only@*/ Spec spec)
+	/*@modifies spec @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
  */
-extern void (*freeSpecVec) (Spec spec);	/* XXX FIXME */
+extern void (*freeSpecVec) (Spec spec)	/* XXX FIXME */
+	/*@modifies spec @*/;
 
 /** \ingroup rpmbuild
  */
-struct OpenFileInfo * newOpenFileInfo(void);
-
-/** \ingroup rpmbuild
- * @param spec		spec file control structure
- */
-struct spectag *stashSt(Spec spec, Header h, int tag, const char *lang);
+struct OpenFileInfo * newOpenFileInfo(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
  */
-int addSource(Spec spec, Package pkg, const char *field, int tag);
+struct spectag * stashSt(Spec spec, Header h, int tag, const char * lang)
+	/*@modifies spec->st @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
  */
-int parseNoSource(Spec spec, const char *field, int tag);
+int addSource(Spec spec, Package pkg, const char * field, int tag)
+	/*@modifies spec->sources, spec->numSources,
+		spec->st,
+		pkg->icon @*/;
+
+/** \ingroup rpmbuild
+ * @param spec		spec file control structure
+ */
+int parseNoSource(Spec spec, const char * field, int tag)
+	/*@modifies nothing @*/;
 
 #ifdef __cplusplus
 }

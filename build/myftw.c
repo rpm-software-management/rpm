@@ -49,6 +49,7 @@ Cambridge, MA 02139, USA.  */
 
 /**
  */
+/*@-nullstate@*/
 static int
 myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
@@ -106,8 +107,10 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	{
 	  newlev = (level + 1) % descriptors;
 
+	  /*@-unqualifiedtrans@*/
 	  if (dirs[newlev] != NULL)
 	    (void) Closedir (dirs[newlev]);
+	  /*@=unqualifiedtrans@*/
 
 	  dirs[newlev] = Opendir (dir);
 	  if (dirs[newlev] != NULL)
@@ -165,6 +168,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 
   return errno == 0 ? 0 : -1;
 }
+/*@=nullstate@*/
 
 /* Call a function on every element in a directory tree.  */
 

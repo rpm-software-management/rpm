@@ -79,20 +79,24 @@ static void printHash(const unsigned long amount, const unsigned long total)
 
 /**
  */
-static void * showProgress(const void * arg, const rpmCallbackType what,
-			   const unsigned long amount,
-			   const unsigned long total,
-			   const void * pkgKey, void * data)
+static /*@null@*/
+void * showProgress(/*@null@*/ const void * arg, const rpmCallbackType what,
+			const unsigned long amount,
+			const unsigned long total,
+			/*@null@*/ const void * pkgKey,
+			/*@null@*/ void * data)
 {
     Header h = (Header) arg;
     char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
     const char * filename = pkgKey;
-    static FD_t fd;
+    static FD_t fd = NULL;
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
+	if (filename == NULL || filename[0] == '\0')
+	    return NULL;
 	fd = Fopen(filename, "r.ufdio");
 	if (fd)
 	    fd = fdLink(fd, "persist (showProgress)");
@@ -109,10 +113,11 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 
     case RPMCALLBACK_INST_START:
 	hashesPrinted = 0;
-	if (!(flags & INSTALL_LABEL))
+	if (h == NULL || !(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH) {
-	    s = headerSprintf(h, "%{NAME}", rpmTagTable, rpmHeaderFormats,NULL);
+	    s = headerSprintf(h, "%{NAME}",
+				rpmTagTable, rpmHeaderFormats, NULL);
 #ifdef FANCY_HASH
 	    if (isatty (STDOUT_FILENO))
 		fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
@@ -121,13 +126,14 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 		fprintf(stdout, "%-28s", s);
 #endif
 	    (void) fflush(stdout);
+	    s = _free(s);
 	} else {
 	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}",
 				  rpmTagTable, rpmHeaderFormats, NULL);
 	    fprintf(stdout, "%s\n", s);
 	    (void) fflush(stdout);
+	    s = _free(s);
 	}
-	s = _free(s);
 	break;
 
     case RPMCALLBACK_TRANS_PROGRESS:
@@ -207,6 +213,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     FD_t fd;
     int rc;
     int i;
+
+    if (fileArgv == NULL) return 0;
 
     while (defaultReloc && defaultReloc->oldPath)
 	defaultReloc++;
@@ -299,7 +307,7 @@ restart:
     if (numFailed) goto exit;
 
     /* Continue processing file arguments, building transaction set. */
-    for (fnp = pkgURL+prevx; *fnp; fnp++, prevx++) {
+    for (fnp = pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
 	const char * fileName;
 	rpmRC rpmrc;
 	int isSource;
@@ -452,7 +460,7 @@ restart:
 	rc = rpmReadPackageManifest(fd, &argc, &argv);
 	if (rc)
 	    rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
-			fileURL, Fstrerror(fd));
+			*fnp, Fstrerror(fd));
 	(void) Fclose(fd);
 
 	/* If successful, restart the query loop. */
@@ -565,6 +573,8 @@ int rpmErase(const char * rootdir, const char ** argv,
     int numPackages = 0;
     rpmProblemSet probs;
 
+    if (argv == NULL) return 0;
+
     if (transFlags & RPMTRANS_FLAG_TEST)
 	mode = O_RDONLY;
     else
@@ -649,8 +659,11 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     if (rpmIsVerbose())
 	fprintf(stdout, _("Installing %s\n"), arg);
 
-    {	rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL,
+    {
+	/*@-mayaliasunique@*/
+	rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL,
 				 cookie);
+	/*@=mayaliasunique@*/
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
     }
     if (rc != 0) {

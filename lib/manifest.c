@@ -66,14 +66,16 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     const char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     const char ** argv = (argvPtr ? *argvPtr : NULL);
+    FILE * f = fdGetFp(fd);
     int rc = 0;
     int i;
 
+    if (f != NULL)
     while (1) {
 	char line[BUFSIZ];
 
 	/* Read next line. */
-	s = fgets(line, sizeof(line) - 1, fdGetFp(fd));
+	s = fgets(line, sizeof(line) - 1, f);
 	if (s == NULL) {
 	    /* XXX Ferror check needed */
 	    break;
@@ -129,7 +131,8 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	    memcpy(nav + ac, argv + i, (argc - i) * sizeof(*nav));
 	nav[nac] = NULL;
 
-	*argvPtr = argv = _free(argv);
+	if (argvPtr)
+	    *argvPtr = argv = _free(argv);
 	av = _free(av);
 	av = nav;
 	ac = nac;
@@ -145,10 +148,13 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 
 exit:
     if (argvPtr == NULL || (rc != 0 && av)) {
+	if (av)
 	for (i = 0; i < ac; i++)
 	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
 	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
     }
     freeStringBuf(sb);
+    /*@-nullstate@*/
     return rc;
+    /*@=nullstate@*/
 }

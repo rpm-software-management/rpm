@@ -114,9 +114,9 @@ extern const char * rpmNAME;
 extern const char * rpmEVR;
 extern int rpmFLAGS;
 
-extern MacroContext rpmCLIMacroContext;
+extern struct MacroContext_s rpmCLIMacroContext;
 
-extern struct rpmBuildArguments		rpmBTArgs;
+extern struct rpmBuildArguments_s	rpmBTArgs;
 
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
@@ -575,7 +575,7 @@ static void printHelp(void) {
 int main(int argc, const char ** argv)
 {
     enum modes bigMode = MODE_UNKNOWN;
-    QVA_t *qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVArgs;
     int arg;
     rpmtransFlags transFlags = RPMTRANS_FLAG_NONE;
     rpmInstallInterfaceFlags installInterfaceFlags = INSTALL_NONE;

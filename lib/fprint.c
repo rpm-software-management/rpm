@@ -97,6 +97,10 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    cdnl = end - dir;
 	}
     }
+    fp.entry = NULL;
+    fp.subDir = NULL;
+    fp.baseName = NULL;
+    if (cleanDirName == NULL) return fp;	/* XXX can't happen */
 
     buf = strcpy(alloca(cdnl + 1), cleanDirName);
     end = buf + cdnl;
@@ -107,9 +111,6 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	*end = '\0';
     }
 
-    fp.entry = NULL;
-    fp.subDir = NULL;
-    fp.baseName = NULL;
     while (1) {
 
 	/* as we're stating paths here, we want to follow symlinks */
@@ -163,7 +164,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 
     /*@notreached@*/
 
-    return fp;
+    /*@-nullret@*/ return fp; /*@=nullret@*/	/* LCL: can't happen. */
 }
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
@@ -200,8 +201,10 @@ int fpEqual(const void * key1, const void * key2)
 	return 0;
 
     /* Otherwise, compare fingerprints by value. */
+    /*@-nullpass@*/	/* LCL: whines about (*k2).subdir */
     if (FP_EQUAL(*k1, *k2))
 	return 0;
+    /*@=nullpass@*/
     return 1;
 
 }

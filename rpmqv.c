@@ -29,7 +29,7 @@ static int initdb = 0;
 #define GETOPT_RELOCATE		1016
 #define GETOPT_EXCLUDEPATH	1019
 static int incldocs = 0;
-static char * prefix = NULL;
+/*@null@*/ static const char * prefix = NULL;
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMK
@@ -94,16 +94,16 @@ extern const char * rpmNAME;
 extern const char * rpmEVR;
 extern int rpmFLAGS;
 
-extern MacroContext rpmCLIMacroContext;
+extern struct MacroContext_s rpmCLIMacroContext;
 
 /* options for all executables */
 
 static int help = 0;
 static int noUsageMsg = 0;
-static char * pipeOutput = NULL;
+/*@null@*/ static const char * pipeOutput = NULL;
 static int quiet = 0;
-static char * rcfile = NULL;
-static char * rootdir = "/";
+/*@null@*/ static const char * rcfile = NULL;
+/*@null@*/ static char * rootdir = "/";
 static int showrc = 0;
 static int showVersion = 0;
 
@@ -398,15 +398,15 @@ static void printVersion(void) {
 }
 
 static void printBanner(void) {
-    puts(_("Copyright (C) 1998-2000 - Red Hat, Inc."));
-    puts(_("This program may be freely redistributed under the terms of the GNU GPL"));
+    (void) puts(_("Copyright (C) 1998-2000 - Red Hat, Inc."));
+    (void) puts(_("This program may be freely redistributed under the terms of the GNU GPL"));
 }
 
 static void printUsage(void) {
     FILE * fp;
     printVersion();
     printBanner();
-    puts("");
+    (void) puts("");
 
     fp = stdout;
 
@@ -690,11 +690,11 @@ int main(int argc, const char ** argv)
     enum modes bigMode = MODE_UNKNOWN;
 
 #ifdef	IAM_RPMQV
-    QVA_t *qva = &rpmQVArgs;
+    QVA_t qva = &rpmQVArgs;
 #endif
 
 #ifdef	IAM_RPMBT
-    struct rpmBuildArguments *ba = &rpmBTArgs;
+    BTA_t ba = &rpmBTArgs;
 #endif
 
 #ifdef	IAM_RPMEIU
@@ -733,6 +733,7 @@ int main(int argc, const char ** argv)
     }
 
     /* Set the major mode based on argv[0] */
+    /*@-nullpass@*/
 #ifdef	IAM_RPMBT
     if (!strcmp(__progname, "rpmb"))	bigMode = MODE_BUILD;
     if (!strcmp(__progname, "rpmt"))	bigMode = MODE_TARBUILD;
@@ -749,6 +750,7 @@ int main(int argc, const char ** argv)
     if (!strcmp(__progname, "rpmi"))	bigMode = MODE_INSTALL;
     if (!strcmp(__progname, "rpmu"))	bigMode = MODE_INSTALL;
 #endif
+    /*@=nullpass@*/
 
     /* set the defaults for the various command line options */
     _ftp_debug = 0;
@@ -779,9 +781,11 @@ int main(int argc, const char ** argv)
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
+    /*@-nullpass -temptrans@*/
     optCon = poptGetContext(__progname, argc, argv, optionsTable, 0);
-    poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
-    poptReadDefaultConfig(optCon, 1);
+    /*@=nullpass =temptrans@*/
+    (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+    (void) poptReadDefaultConfig(optCon, 1);
     poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
     /* reading rcfile early makes it easy to override */
@@ -801,7 +805,7 @@ int main(int argc, const char ** argv)
 	exit(EXIT_FAILURE);
 
     if (showrc) {
-	rpmShowRC(stdout);
+	(void) rpmShowRC(stdout);
 	exit(EXIT_SUCCESS);
     }
 
@@ -845,16 +849,20 @@ int main(int argc, const char ** argv)
 	  case 'i':
 #ifdef	IAM_RPMQV
 	    if (bigMode == MODE_QUERY) {
+		/*@-nullassign@*/
 		const char * infoCommand[] = { "--info", NULL };
-		poptStuffArgs(optCon, infoCommand);
+		/*@=nullassign@*/
+		(void) poptStuffArgs(optCon, infoCommand);
 	    }
 #endif
 #ifdef	IAM_RPMEIU
 	    if (bigMode == MODE_INSTALL)
 		/*@-ifempty@*/ ;
 	    if (bigMode == MODE_UNKNOWN) {
+		/*@-nullassign@*/
 		const char * installCommand[] = { "--install", NULL };
-		poptStuffArgs(optCon, installCommand);
+		/*@=nullassign@*/
+		(void) poptStuffArgs(optCon, installCommand);
 	    }
 #endif
 	    break;
@@ -947,8 +955,8 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMK */
 
 	  case GETOPT_DEFINEMACRO:
-	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
-	    rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
+	    (void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
+	    (void) rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
 	    noUsageMsg = 1;
 	    break;
 
@@ -1137,7 +1145,7 @@ int main(int argc, const char ** argv)
 		 "erasure, and building"));
 #endif	/* IAM_RPMEIU */
 
-    if (rootdir[1] && (bigMode & ~MODES_FOR_ROOT))
+    if (rootdir && rootdir[1] && (bigMode & ~MODES_FOR_ROOT))
 	argerror(_("--root (-r) may only be specified during "
 		 "installation, erasure, querying, and "
 		 "database rebuilds"));
@@ -1232,30 +1240,30 @@ int main(int argc, const char ** argv)
 	}
     } else {
     	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
-        rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
+        (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
     if (pipeOutput) {
-	pipe(p);
+	(void) pipe(p);
 
 	if (!(pipeChild = fork())) {
-	    close(p[1]);
-	    dup2(p[0], STDIN_FILENO);
-	    close(p[0]);
-	    execl("/bin/sh", "/bin/sh", "-c", pipeOutput, NULL);
+	    (void) close(p[1]);
+	    (void) dup2(p[0], STDIN_FILENO);
+	    (void) close(p[0]);
+	    (void) execl("/bin/sh", "/bin/sh", "-c", pipeOutput, NULL);
 	    fprintf(stderr, _("exec failed\n"));
 	}
 
-	close(p[0]);
-	dup2(p[1], STDOUT_FILENO);
-	close(p[1]);
+	(void) close(p[0]);
+	(void) dup2(p[1], STDOUT_FILENO);
+	(void) close(p[1]);
     }
 	
     switch (bigMode) {
 #ifdef	IAM_RPMDB
       case MODE_INITDB:
-	rpmdbInit(rootdir, 0644);
+	(void) rpmdbInit(rootdir, 0644);
 	break;
 
       case MODE_REBUILDDB:
@@ -1366,7 +1374,7 @@ int main(int argc, const char ** argv)
 	    if (ec)
 		break;
 	    rpmFreeMacros(NULL);
-	    rpmReadConfigFiles(rcfile, NULL);
+	    (void) rpmReadConfigFiles(rcfile, NULL);
 	}
       }	break;
 
@@ -1566,8 +1574,8 @@ exit:
     rpmFreeRpmrc();
 
     if (pipeChild) {
-	fclose(stdout);
-	(void)waitpid(pipeChild, &status, 0);
+	(void) fclose(stdout);
+	(void) waitpid(pipeChild, &status, 0);
     }
 
     /* keeps memory leak checkers quiet */
@@ -1587,5 +1595,7 @@ exit:
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 #endif
+    /*@-globstate@*/
     return ec;
+    /*@=globstate@*/
 }
