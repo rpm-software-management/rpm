@@ -3,6 +3,7 @@
 .libs
 Makefile
 Makefile.in
+convertdb1
 dump
 dumpdb
 javadeps

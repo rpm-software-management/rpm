@@ -28,6 +28,7 @@ db.h
 db_cxx.h
 db_ext.h
 db_int.h
+db_int_def.h
 btree_ext.h
 clib_ext.h
 common_ext.h

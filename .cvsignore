@@ -36,6 +36,5 @@ rpm2cpio
 rpmconvert
 rpmpopt*
 rpmrc
-stamp-h
-stamp-h.in
+stamp-h*
 rpm-*.tar.gz
