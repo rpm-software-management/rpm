@@ -101,7 +101,7 @@ static void parseFileForProv(char *f, struct PackageRec *p)
     }
     s++;
     
-    if (strstr(s, ".so.")) {
+    if (strstr(s, ".so")) {
 	sprintf(command,
 		"objdump --raw %s%s --section=.dynstr 2> /dev/null |"
 		"tr '\\0' '\\n' | tail -1",
