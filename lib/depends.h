@@ -60,6 +60,7 @@ struct transactionElement_s {
     char * version;
 /*@dependent@*/ /*@null@*/
     char * release;
+
     int npreds;				/*!< No. of predecessors. */
     int depth;				/*!< Max. depth in dependency tree. */
     struct tsortInfo_s tsi;
@@ -67,6 +68,10 @@ struct transactionElement_s {
 	TR_ADDED,	/*!< Package will be installed. */
 	TR_REMOVED	/*!< Package will be removed. */
     } type;		/*!< Package disposition (installed/removed). */
+
+    uint_32 multiLib;	/* (TR_ADDED) MULTILIB */
+    int_32 filesCount;	/* (TR_ADDED) No. files in package. */
+
 /*@-fielduse@*/	/* LCL: confused by union? */
     union { 
 /*@unused@*/ int addedIndex;
@@ -76,6 +81,7 @@ struct transactionElement_s {
 	} removed;
     } u;
 /*@=fielduse@*/
+
 };
 
 /**
@@ -105,29 +111,39 @@ struct rpmTransactionSet_s {
     rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
+
     int filesystemCount;	/*!< No. of mounted filesystems. */
 /*@dependent@*/
     const char ** filesystems;	/*!< Mounted filesystem names. */
 /*@only@*/
     struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */
+
     int dbmode;			/*!< Database open mode. */
 /*@refcounted@*/ /*@null@*/
     rpmdb rpmdb;		/*!< Database handle. */
 /*@only@*/ hashTable ht;	/*!< Fingerprint hash table. */
+
 /*@only@*/
     int * removedPackages;	/*!< Set of packages being removed. */
-    int numRemovedPackages;	/*!< No. removed rpmdb instances. */
+    int numRemovedPackages;	/*!< No. removed package instances. */
     int allocedRemovedPackages;	/*!< Size of removed packages array. */
+
 /*@only@*/
     availableList addedPackages;/*!< Set of packages being installed. */
+    int numAddedPackages;	/*!< No. added package instances. */
+
 /*@only@*/
     availableList availablePackages;
-				/*!< Universe of possible packages. */
+				/*!< Universe of available packages. */
+    int numAvailablePackages;	/*!< No. available package instances. */
+
 /*@only@*/
     transactionElement order;	/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
+
 /*@only@*/ TFI_t flList;	/*!< Transaction element(s) file info. */
+
     int flEntries;		/*!< No. of transaction elements. */
     int chrootDone;		/*!< Has chroot(2) been been done? */
 /*@only@*/ const char * rootDir;/*!< Path to top of install tree. */
@@ -170,7 +186,7 @@ extern "C" {
  * @retval np		name tag value
  * @return		name-version-release string
  */
-/*@only@*/ const char * hGetNVR(Header h, /*@out@*/ const char ** np )
+/*@only@*/ char * hGetNVR(Header h, /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
 
 /** \ingroup rpmdep

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.182 2001/11/01 20:15:19 jbj Exp $
+# $Id: sl.po,v 1.183 2001/11/01 23:18:38 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-01 14:59-0500\n"
+"POT-Creation-Date: 2001-11-01 17:49-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1480,11 +1480,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
+#: lib/depends.c:213 lib/depends.c:887 lib/depends.c:1019
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
+#: lib/depends.c:213 lib/depends.c:887 lib/depends.c:1019
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
@@ -1494,57 +1494,57 @@ msgstr "NI DOBRO"
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/depends.c:547
+#: lib/depends.c:590
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:552
+#: lib/depends.c:595
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:557
+#: lib/depends.c:600
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:795
+#: lib/depends.c:886
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (predpomnjeno)\n"
 
-#: lib/depends.c:824
+#: lib/depends.c:915
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:841
+#: lib/depends.c:932
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:864
+#: lib/depends.c:955
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s DA (db datoteke)\n"
 
-#: lib/depends.c:877
+#: lib/depends.c:968
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:891
+#: lib/depends.c:982
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %s zadovoljen ob paketih db.\n"
 
-#: lib/depends.c:907
+#: lib/depends.c:998
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NE\n"
 
-#: lib/depends.c:928
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) dodano v predpomnilnik Depends.\n"
@@ -1552,53 +1552,53 @@ msgstr "%s: (%s, %s) dodano v predpomnilnik Depends.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:994
+#: lib/depends.c:1085
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
 
 #. conflicts exist.
-#: lib/depends.c:1074
+#: lib/depends.c:1172
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s jw v sporu z: %s\n"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1428
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1581
+#: lib/depends.c:1683
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1668
+#: lib/depends.c:1770
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1744
+#: lib/depends.c:1852
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1830
+#: lib/depends.c:1938
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1864
+#: lib/depends.c:1972
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1869
+#: lib/depends.c:1977
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2958 lib/header.c:2979 lib/header.c:3001
+#: lib/header.c:2962 lib/header.c:2983 lib/header.c:3005
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -1691,89 +1691,89 @@ msgstr "opozorilo: %s ustvarjen kot %s"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:342
+#: lib/header.c:346
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "¹tevec grabData() RPM_STRING_TYPE mora biti 1.\n"
 
 #. @-modfilesys@
-#: lib/header.c:379 lib/header_internal.c:161 lib/psm.c:949
+#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:949
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Tip podatkov %d ni podprt\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2215
+#: lib/header.c:2219
 #, c-format
 msgid "missing { after %"
 msgstr "manjkajoèi { za %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2245
+#: lib/header.c:2249
 msgid "missing } after %{"
 msgstr "manjkajoèi } za %{"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2259
+#: lib/header.c:2263
 msgid "empty tag format"
 msgstr "oblika znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2273
+#: lib/header.c:2277
 msgid "empty tag name"
 msgstr "ime znaèke manjka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2290
+#: lib/header.c:2294
 msgid "unknown tag"
 msgstr "neznana znaèka"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2317
+#: lib/header.c:2321
 msgid "] expected at end of array"
 msgstr "na koncu polja je prièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2335
+#: lib/header.c:2339
 msgid "unexpected ]"
 msgstr "neprièakovan ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2339
+#: lib/header.c:2343
 msgid "unexpected }"
 msgstr "neprièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2405
+#: lib/header.c:2409
 msgid "? expected in expression"
 msgstr "v izrazu je prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2414
+#: lib/header.c:2418
 msgid "{ expected after ? in expression"
 msgstr "v izrazu je za { prièakovan ?"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2427 lib/header.c:2469
+#: lib/header.c:2431 lib/header.c:2473
 msgid "} expected in expression"
 msgstr "v izrazu je prièakovan }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2437
+#: lib/header.c:2441
 msgid ": expected following ? subexpression"
 msgstr "za podizrazom ? je prièakovano :"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2454
+#: lib/header.c:2458
 msgid "{ expected after : in expression"
 msgstr "v izrazu je za : prièakovan {"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2479
+#: lib/header.c:2483
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
-#: lib/header.c:2702
+#: lib/header.c:2706
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 

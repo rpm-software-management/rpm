@@ -35,6 +35,7 @@
 	- add some dinky availablePackage methods.
 	- transaction.c: cleanly uncouple availablePackage from TFI_t.
 	- add header refcount annotations throughout.
+	- depends.c: availablePackage is (almost) opaque.
 
 4.0.3 -> 4.0.4:
 

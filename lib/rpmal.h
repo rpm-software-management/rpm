@@ -19,7 +19,9 @@ struct availablePackage_s {
 /*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
 /*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
     int filesCount;			/*!< No. of files in header. */
+#ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
+#endif
 /*@kept@*//*@null@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
 /*@null@*/ rpmRelocation * relocs;
 /*@null@*/ FD_t fd;
@@ -47,6 +49,7 @@ int alGetSize(const availableList al)
 const void * alGetKey(/*@null@*/ const availableList al, int pkgNum)
 	/*@*/;
 
+#ifdef	DYING
 /**
  * Return available package multiLib flag.
  * @param al		available list
@@ -55,6 +58,7 @@ const void * alGetKey(/*@null@*/ const availableList al, int pkgNum)
  */
 int alGetMultiLib(/*@null@*/ const availableList al, int pkgNum)
 	/*@*/;
+#endif
 
 /**
  * Return available package files count.
@@ -121,9 +125,11 @@ FD_t alGetFd(/*@null@*/ availableList al, int pkgNum)
  * @param pkgNum	available package index
  * @return		available package pointer
  */
+/*@-exportlocal@*/
 /*@dependent@*/ /*@null@*/
 availablePackage alGetPkg(/*@null@*/ availableList al, int pkgNum)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return available package index.
@@ -193,10 +199,9 @@ void alDelPackage(availableList al, int pkgNum)
  * @param key		package private data
  * @param fd		package file handle
  * @param relocs	package file relocations
- * @return		available package pointer
+ * @return		available package index
  */
-/*@exposed@*/
-availablePackage alAddPackage(availableList al, int pkgNum,
+long alAddPackage(availableList al, int pkgNum,
 		Header h, /*@null@*/ /*@dependent@*/ const void * key,
 		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
 	/*@modifies al, h @*/;

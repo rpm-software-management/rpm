@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-01 14:59-0500\n"
+"POT-Creation-Date: 2001-11-01 17:49-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1461,11 +1461,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
+#: lib/depends.c:213 lib/depends.c:887 lib/depends.c:1019
 msgid "YES"
 msgstr "EVET"
 
-#: lib/depends.c:213 lib/depends.c:796 lib/depends.c:928
+#: lib/depends.c:213 lib/depends.c:887 lib/depends.c:1019
 msgid "NO "
 msgstr "HAYIR "
 
@@ -1474,57 +1474,57 @@ msgstr "HAYIR "
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
-#: lib/depends.c:547
+#: lib/depends.c:590
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:552
+#: lib/depends.c:595
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "%s zaten kurulu"
 
-#: lib/depends.c:557
+#: lib/depends.c:600
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:795
+#: lib/depends.c:886
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (arabellekli)\n"
 
-#: lib/depends.c:824
+#: lib/depends.c:915
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:841
+#: lib/depends.c:932
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:864
+#: lib/depends.c:955
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s EVET (db dosyalarý)\n"
 
-#: lib/depends.c:877
+#: lib/depends.c:968
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:891
+#: lib/depends.c:982
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s EVET (db paketi)\n"
 
-#: lib/depends.c:907
+#: lib/depends.c:998
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s HAYIR\n"
 
-#: lib/depends.c:928
+#: lib/depends.c:1019
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
@@ -1532,54 +1532,54 @@ msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:994
+#: lib/depends.c:1085
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1074
+#: lib/depends.c:1172
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi çeliþiyor: %s\n"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1428
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1581
+#: lib/depends.c:1683
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1668
+#: lib/depends.c:1770
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1852
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1830
+#: lib/depends.c:1938
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1864
+#: lib/depends.c:1972
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1869
+#: lib/depends.c:1977
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2958 lib/header.c:2979 lib/header.c:3001
+#: lib/header.c:2962 lib/header.c:2983 lib/header.c:3005
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -1673,88 +1673,88 @@ msgstr "%s %s olarak oluþturuldu\n"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:342
+#: lib/header.c:346
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
 
 #. @-modfilesys@
-#: lib/header.c:379 lib/header_internal.c:161 lib/psm.c:949
+#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:949
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d veri türü desteklenmiyor\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2215
+#: lib/header.c:2219
 #, c-format
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2245
+#: lib/header.c:2249
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2259
+#: lib/header.c:2263
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2273
+#: lib/header.c:2277
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2290
+#: lib/header.c:2294
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2317
+#: lib/header.c:2321
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2335
+#: lib/header.c:2339
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2339
+#: lib/header.c:2343
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2405
+#: lib/header.c:2409
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2414
+#: lib/header.c:2418
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2427 lib/header.c:2469
+#: lib/header.c:2431 lib/header.c:2473
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2437
+#: lib/header.c:2441
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2454
+#: lib/header.c:2458
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2479
+#: lib/header.c:2483
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
-#: lib/header.c:2702
+#: lib/header.c:2706
 msgid "(unknown type)"
 msgstr "(bilinmeyen tür)"
 

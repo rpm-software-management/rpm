@@ -1205,7 +1205,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 	goto exit;
     }
 
-    fi->multiLib = alGetMultiLib(ts->addedPackages, 0);
+    fi->multiLib = 0;	/* MULTILIB for src.rpm's? */
     /*@-kepttrans@*/
     fi->key = alGetKey(ts->addedPackages, 0);
     /*@=kepttrans@*/

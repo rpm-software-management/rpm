@@ -412,8 +412,10 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->currDir = NULL;
     ts->chrootDone = 0;
 
+    ts->numAddedPackages = 0;
     ts->addedPackages = alCreate(ts->delta);
 
+    ts->numAvailablePackages = 0;
     ts->availablePackages = alCreate(ts->delta);
 
     ts->orderAlloced = ts->delta;
@@ -452,6 +454,7 @@ static int intcmp(const void * a, const void * b)	/*@*/
 static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
 	/*@modifies ts @*/
 {
+    transactionElement p;
 
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
@@ -478,18 +481,20 @@ static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
 	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
     }
 
-    ts->order[ts->orderCount].type = TR_REMOVED;
-    ts->order[ts->orderCount].u.removed.dboffset = dboffset;
-    ts->order[ts->orderCount].u.removed.dependsOnIndex = depends;
+    p = ts->order + ts->orderCount;
+    memset(p, 0, sizeof(*p));
+    p->type = TR_REMOVED;
+    p->u.removed.dboffset = dboffset;
+    p->u.removed.dependsOnIndex = depends;
     ts->orderCount++;
 
     return 0;
 }
 
-const char * hGetNVR(Header h, const char ** np )
+char * hGetNVR(Header h, const char ** np )
 {
-    const char * NVR, * n, * v, * r;
-    char * t;
+    const char * n, * v, * r;
+    char * NVR, * t;
 
     (void) headerNVR(h, &n, &v, &r);
     NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
@@ -512,35 +517,73 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     const char * addNVR = hGetNVR(h, &name);
     const char * pkgNVR = NULL;
     rpmTagType ont, ovt;
+    int duplicate = 0;
+    int apx;	/* addedPackages index */
+#ifdef	DYING
     availablePackage p;
+#else
+    transactionElement p;
+#endif
     rpmDepSet obsoletes = memset(alloca(sizeof(*obsoletes)), 0, sizeof(*obsoletes));
     int alNum;
     int xx;
     int ec = 0;
     int rc;
-    int i = ts->orderCount;
+    int i;
 
     /*
      * Check for previously added versions with the same name.
      */
     i = ts->orderCount;
-    for (i = 0; i < ts->orderCount; i++) {
+    apx = 0;
+    if ((p = ts->order) != NULL)
+    for (i = 0; i < ts->orderCount; i++, p++) {
+	const char * pname;
 	Header ph;
 
-	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
+	/* XXX Only added packages are checked for dupes (for now). */
+	switch (p->type) {
+	case TR_ADDED:
+	    /*@switchbreak@*/ break;
+	case TR_REMOVED:
+	default:
+	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	}
+
+	apx++;
+
+#ifdef	DYING
+	if ((p = alGetPkg(ts->addedPackages, te->u.addedIndex)) == NULL)
 	    break;
 
 	/*@-type@*/ /* FIX: availablePackage excision */
 	if (strcmp(p->name, name))
 	    continue;
 	/*@=type@*/
-	pkgNVR = alGetNVR(ts->addedPackages, i);
+	pkgNVR = alGetNVR(ts->addedPackages, te->u.addedIndex);
 	if (pkgNVR == NULL)	/* XXX can't happen */
 	    continue;
 
-	ph = alGetHeader(ts->addedPackages, i, 0);
+	ph = alGetHeader(ts->addedPackages, te->u.addedIndex, 0);
+#else
+	ph = alGetHeader(ts->addedPackages, p->u.addedIndex, 0);
+	if (ph == NULL)
+	    break;
+
+	pkgNVR = _free(pkgNVR);
+	pname = NULL;
+	pkgNVR = hGetNVR(ph, &pname);
+
+	if (strcmp(pname, name)) {
+            pkgNVR = _free(pkgNVR);
+            ph = headerFree(ph, "alGetHeader nomatch");
+            continue;
+	}
+	
+#endif
 	rc = rpmVersionCompare(ph, h);
-	ph = headerFree(ph, "alGetHeader");
+	ph = headerFree(ph, "alGetHeader match");
 
 	if (rc > 0) {
 	    rpmMessage(RPMMESS_WARNING,
@@ -556,18 +599,18 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	    rpmMessage(RPMMESS_WARNING,
 		_("older package %s already added, replacing with %s\n"),
 		pkgNVR, addNVR);
+	    duplicate = 1;
 	}
 	break;
     }
 
     /* XXX Note: i == ts->orderCount here almost always. */
-
     if (i == ts->orderAlloced) {
 	ts->orderAlloced += ts->delta;
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
-    ts->order[i].type = TR_ADDED;
 
+#ifdef	DYING
     {	availablePackage this =
 		alAddPackage(ts->addedPackages, i, h, key, fd, relocs);
     	alNum = alGetPkgIndex(ts->addedPackages, this);
@@ -577,9 +620,49 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     /* XXX sanity check */
     if (alGetPkg(ts->addedPackages, alNum) == NULL)
 	goto exit;
+#else
+    alNum = alAddPackage(ts->addedPackages, apx, h, key, fd, relocs);
+    if (alNum == -1L) {
+	ec = 1;
+	goto exit;
+    }
+    p = ts->order + i;
+    memset(p, 0, sizeof(*p));
+assert(alNum == apx);
+    p->u.addedIndex = alNum;
+#endif
 
-    if (i == ts->orderCount)
+    p->type = TR_ADDED;
+    p->multiLib = 0;
+
+#ifdef	NOYET
+  /* XXX this needs a search over ts->order, not ts->addedPackages */
+  { uint_32 *pp = NULL;
+    /* XXX This should be added always so that packages look alike.
+     * XXX However, there is logic in files.c/depends.c that checks for
+     * XXX existence (rather than value) that will need to change as well.
+     */
+    if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
+	multiLibMask = *pp;
+
+    if (multiLibMask) {
+	for (i = 0; i < pkgNum - 1; i++) {
+	    if (!strcmp (p->name, al->list[i].name)
+		&& hge(al->list[i].h, RPMTAG_MULTILIBS, NULL,
+				  (void **) &pp, NULL)
+		&& !rpmVersionCompare(p->h, al->list[i].h)
+		&& *pp && !(*pp & multiLibMask))
+		    p->multiLib = multiLibMask;
+	}
+    }
+  }
+#endif
+
+    if (!duplicate) {
+assert(apx == ts->numAddedPackages);
+	ts->numAddedPackages++;
 	ts->orderCount++;
+    }
 
     if (!upgrade)
 	goto exit;
@@ -612,11 +695,14 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		if (oldmultiLibMask && multiLibMask
 		 && !(oldmultiLibMask & multiLibMask))
 		{
+#ifdef	DYING
 		    /*@-type@*/ /* FIX: availablePackage excision */
 		    availablePackage alp = alGetPkg(ts->addedPackages, alNum);
 		    if (alp != NULL)
 			alp->multiLib = multiLibMask;
 		    /*@=type@*/
+#endif
+		    p->multiLib = multiLibMask;
 		}
 	    }
 	    /*@=branchstate@*/
@@ -673,8 +759,13 @@ exit:
 
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
 {
+#ifdef	DYING
     availablePackage al;
     al = alAddPackage(ts->availablePackages, -1, h, key, NULL, NULL);
+#else
+    /* XXX FIXME: return code -1L is error */
+   (void) alAddPackage(ts->availablePackages, -1, h, key, NULL, NULL);
+#endif
 }
 
 int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
@@ -709,7 +800,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	ts->di = _free(ts->di);
 	ts->removedPackages = _free(ts->removedPackages);
 	ts->order = _free(ts->order);
-	/*@-type@*/ /* FIX: cast? */
+	/*@-type@*/
 	if (ts->scriptFd != NULL) {
 	    ts->scriptFd =
 		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
@@ -1016,10 +1107,17 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 			{};
 		    pp->suggestedPackages =
 			xmalloc( (j + 1) * sizeof(*pp->suggestedPackages) );
+#ifdef	DYING
 		    /*@-type@*/ /* FIX: availablePackage excision */
 		    for (j = 0; suggestion[j] != NULL; j++)
 			pp->suggestedPackages[j] = suggestion[j]->key;
 		    /*@=type@*/
+#else
+		    for (j = 0; suggestion[j] != NULL; j++)
+			pp->suggestedPackages[j] =
+			    alGetKey(ts->availablePackages,
+				alGetPkgIndex(ts->availablePackages, suggestion[j]));
+#endif
 		    pp->suggestedPackages[j] = NULL;
 		} else {
 		    pp->suggestedPackages = NULL;
@@ -1532,6 +1630,8 @@ int rpmdepOrder(rpmTransactionSet ts)
     int qlen;
     int i, j;
 
+assert(ts->numAddedPackages == alGetSize(ts->addedPackages));
+
     alMakeIndex(ts->addedPackages);
 
 /*@-modfilesystem -nullpass@*/
@@ -1544,6 +1644,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
     if ((p = ts->order) != NULL)
     for (i = 0; i < ts->orderCount; i++, p++) {
 
+#ifdef	DYING
 	/* Initialize tsortInfo. */
 	memset(&p->tsi, 0, sizeof(p->tsi));
 	p->npreds = 0;
@@ -1552,6 +1653,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 	p->name = NULL;
 	p->version = NULL;
 	p->release = NULL;
+#endif
 
 	/* XXX Only added packages are ordered (for now). */
 	switch (p->type) {
@@ -1694,7 +1796,8 @@ rescan:
 	qlen++;
 /*@-modfilesystem -nullpass@*/
 if (_te_debug)
-fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
+fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, p->NEVR);
+prtTSI(" p", &p->tsi);
 /*@=modfilesystem =nullpass@*/
     }
 
@@ -1735,6 +1838,11 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 		addQ(p, &q->tsi.tsi_suc, &r);
 		/*@=nullstate@*/
 		qlen++;
+/*@-modfilesystem -nullpass@*/
+if (_te_debug)
+fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, p->NEVR);
+prtTSI(" p", &p->tsi);
+/*@=modfilesystem =nullpass@*/
 	    }
 	    tsi = _free(tsi);
 	}
@@ -1869,8 +1977,6 @@ fprintf(stderr, "\t+++ %p[%d] %s addQ ++ q %p %d\n", p, i, p->NEVR, q, qlen);
 	rpmMessage(RPMMESS_ERROR, _("rpmdepOrder failed, %d elements remain\n"),
 			loopcheck);
 	return loopcheck;
-
-	return 1;
     }
 
     /*
@@ -1994,9 +2100,11 @@ int rpmdepCheck(rpmTransactionSet ts,
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
-    availablePackage p;
     problemsSet ps = NULL;
+    transactionElement p;
+#ifdef	DYING
     int numAddedPackages;
+#endif
     int closeatexit = 0;
     int i, j, xx;
     int rc;
@@ -2008,7 +2116,9 @@ int rpmdepCheck(rpmTransactionSet ts,
 	closeatexit = 1;
     }
 
+#ifdef	DYING
     numAddedPackages = alGetSize(ts->addedPackages);
+#endif
 
     ps = xcalloc(1, sizeof(*ps));
     ps->alloced = 5;
@@ -2025,24 +2135,41 @@ int rpmdepCheck(rpmTransactionSet ts,
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    for (i = 0; i < numAddedPackages; i++)
-    {
-	char * pkgNVR, * n, * v, * r;
+    if ((p = ts->order) != NULL)
+    for (i = 0; i < ts->orderCount; i++, p++) {
+	char * pkgNVR = NULL, * n, * v, * r;
 	rpmDepSet provides;
 	uint_32 multiLib;
 
-	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
-	    break;
+	/* XXX Only added packages are checked (for now). */
+	switch (p->type) {
+	case TR_ADDED:
+	    /*@switchbreak@*/ break;
+	case TR_REMOVED:
+	default:
+	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	}
 
-	pkgNVR = alGetNVR(ts->addedPackages, i);
+#ifdef	DYING
+	pkgNVR = alGetNVR(ts->addedPackages, p->u.addedIndex);
 	if (pkgNVR == NULL)	/* XXX can't happen */
 	    break;
-	multiLib = alGetMultiLib(ts->addedPackages, i);
+	multiLib = alGetMultiLib(ts->addedPackages, p->u.addedIndex);
+#else
+	h = alGetHeader(ts->addedPackages, p->u.addedIndex, 0);
+	if (h == NULL)		/* XXX can't happen */
+	    break;
+
+	pkgNVR = _free(pkgNVR);
+	pkgNVR = hGetNVR(h, NULL);
+	multiLib = p->multiLib;
+#endif
 
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , pkgNVR);
-	h = alGetHeader(ts->addedPackages, i, 0);
 	rc = checkPackageDeps(ts, ps, h, NULL, multiLib);
 	h = headerFree(h, "alGetHeader");
+
 	if (rc) {
 	    pkgNVR = _free(pkgNVR);
 	    goto exit;
@@ -2061,7 +2188,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-	provides = alGetProvides(ts->addedPackages, i);
+	provides = alGetProvides(ts->addedPackages, p->u.addedIndex);
 	if (provides->Count == 0 || provides->N == NULL)
 	    continue;
 

@@ -1118,8 +1118,10 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 
 	/* XXX multilib should not display "already installed" problems */
 	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG)
-	 && !alGetMultiLib(ts->addedPackages, i))
-	{
+#ifdef DYING	/* XXX MULTILIB multiLib from transactionElement */
+	 && !alGetMultiLib(ts->addedPackages, i)
+#endif
+	) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, n, 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, v);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, r);
@@ -1181,7 +1183,11 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    i = ts->order[oc].u.addedIndex;
 
 	    fi->h = alGetHeader(ts->addedPackages, i, 1);
+#ifdef DYING	/* XXX MULTILIB multiLib from transactionElement */
 	    fi->multiLib = alGetMultiLib(ts->addedPackages, i);
+#else
+	    fi->multiLib = ts->order[oc].multiLib;
+#endif
 	    /*@-kepttrans@*/
 	    fi->key = alGetKey(ts->addedPackages, i);
 	    /*@=kepttrans@*/

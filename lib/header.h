@@ -320,7 +320,7 @@ Header (*HDRlink) (Header h, const char * msg, const char * fn, unsigned ln)
  * @return		NULL always
  */
 typedef
-Header (*HDRunlink) (/*@killref@*/ Header h,
+Header (*HDRunlink) (/*@killref@*/ /*@null@*/ Header h,
 		const char * msg, const char * fn, unsigned ln)
         /*@modifies h @*/;
 

@@ -107,7 +107,9 @@ Header XheaderLink(Header h, const char * msg, const char * fn, unsigned ln)
 if (_h_debug)
 fprintf(stderr, "--> h %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
 /*@=modfilesystem@*/
-    /*@-refcounttrans@*/ return h; /*@=refcounttrans@*/
+    /*@-refcounttrans -nullret @*/
+    return h;
+    /*@=refcounttrans =nullret @*/
 }
 
 /** \ingroup header
@@ -124,7 +126,7 @@ Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
 if (_h_debug)
 fprintf(stderr, "--> h %p -- %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
 /*@=modfilesystem@*/
-    h->nrefs--;
+    if (h != NULL) h->nrefs--;
     return NULL;
 }
 
@@ -140,6 +142,7 @@ Header XheaderFree( /*@null@*/ /*@killref@*/ Header h,
 {
     (void) XheaderUnlink(h, msg, fn, ln);
 
+    /*@-usereleased@*/
     if (h == NULL || h->nrefs > 0)
 	return NULL;	/* XXX return previous header? */
 
@@ -163,6 +166,7 @@ Header XheaderFree( /*@null@*/ /*@killref@*/ Header h,
 
     /*@-refcounttrans@*/ h = _free(h); /*@=refcounttrans@*/
     return h;
+    /*@=usereleased@*/
 }
 
 /** \ingroup header

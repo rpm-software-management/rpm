@@ -125,11 +125,13 @@ const void * alGetKey(const availableList al, int pkgNum)
     /*@=retexpose@*/
 }
 
+#ifdef	DYING
 int alGetMultiLib(const availableList al, int pkgNum)
 {
     availablePackage alp = alGetPkg(al, pkgNum);
     return (alp != NULL ? alp->multiLib : 0);
 }
+#endif
 
 int alGetFilesCount(const availableList al, int pkgNum)
 {
@@ -421,7 +423,7 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
     /*@=nullstate@*/
 }
 
-availablePackage
+long
 alAddPackage(availableList al, int pkgNum,
 		Header h, /*@null@*/ /*@dependent@*/ const void * key,
 		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
@@ -432,8 +434,10 @@ alAddPackage(availableList al, int pkgNum,
     rpmTagType dnt, bnt;
     availablePackage p;
     int i, xx;
+#ifdef	DYING
     uint_32 multiLibMask = 0;
     uint_32 * pp = NULL;
+#endif
 
     if (pkgNum >= 0 && pkgNum < al->size) {
 	alDelPackage(al, pkgNum);
@@ -447,8 +451,10 @@ alAddPackage(availableList al, int pkgNum,
 
     p = al->list + pkgNum;
 
-    p->h = headerLink(h, "alAddPackage");	/* XXX reference held by transaction set */
+    p->h = headerLink(h, "alAddPackage");
+#ifdef	DYING
     p->multiLib = 0;	/* MULTILIB */
+#endif
 
     xx = headerNVR(p->h, &p->name, &p->version, &p->release);
 
@@ -457,6 +463,8 @@ if (_al_debug)
 fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->version, p->release);
 /*@=modfilesys@*/
 
+#ifdef	DYING
+  { uint_32 *pp = NULL;
     /* XXX This should be added always so that packages look alike.
      * XXX However, there is logic in files.c/depends.c that checks for
      * XXX existence (rather than value) that will need to change as well.
@@ -474,6 +482,8 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 		    p->multiLib = multiLibMask;
 	}
     }
+  }
+#endif
 
     if (!hge(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, NULL))
 	p->epoch = NULL;
@@ -614,7 +624,8 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 
     alFreeIndex(al);
 
-    return p;
+assert((p - al->list) == pkgNum);
+    return (p - al->list);
 }
 
 /**
@@ -654,12 +665,14 @@ void alMakeIndex(availableList al)
 	for (i = 0; i < al->size; i++) {
 	    for (j = 0; j < al->list[i].provides.Count; j++) {
 
+#ifdef	NOTNOW	/* XXX FIXME: multilib colored dependency search */
 		/* If multilib install, skip non-multilib provides. */
 		if (al->list[i].multiLib &&
 		    !isDependsMULTILIB(al->list[i].provides.Flags[j])) {
 			ai->size--;
 			/*@innercontinue@*/ continue;
 		}
+#endif
 
 		ai->index[k].package = al->list + i;
 		/*@-assignexpose@*/
@@ -725,6 +738,7 @@ alAllFileSatisfiesDepend(const availableList al,
 			strcmp(dirMatch->files[i].baseName, baseName))
 		/*@innercontinue@*/ continue;
 
+#ifdef	NOTNOW	/* XXX FIXME: multilib colored dependency search */
 	    /*
 	     * If a file dependency would be satisfied by a file
 	     * we are not going to install, skip it.
@@ -732,6 +746,7 @@ alAllFileSatisfiesDepend(const availableList al,
 	    if (al->list[dirMatch->files[i].pkgNum].multiLib &&
 			!isFileMULTILIB(dirMatch->files[i].fileFlags))
 	        /*@innercontinue@*/ continue;
+#endif
 
 	    if (keyType)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added files)\n"),
