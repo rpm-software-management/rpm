@@ -296,41 +296,44 @@ static int useCatalog = 0;
 
 static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
                              const struct poptOption * opt, const char * arg,
-                             struct rpmBuildArguments * data)
+                             const void * data)
 {
+    struct rpmBuildArguments * rba = (struct rpmBuildArguments *) data;
+
     switch (opt->val) {
-    case POPT_USECATALOG: data->useCatalog = 1; break;
-    case POPT_NOBUILD: data->noBuild = 1; break;
-    case POPT_NOLANG: data->noLang = 1; break;
-    case POPT_SHORTCIRCUIT: data->shortCircuit = 1; break;
-    case POPT_RMSOURCE: data->buildAmount |= RPMBUILD_RMSOURCE; break;
-    case POPT_RMSPEC: data->buildAmount |= RPMBUILD_RMSPEC; break;
-    case POPT_RMBUILD: data->buildAmount |= RPMBUILD_RMBUILD; break;
+    case POPT_USECATALOG: rba->useCatalog = 1; break;
+    case POPT_NOBUILD: rba->noBuild = 1; break;
+    case POPT_NOLANG: rba->noLang = 1; break;
+    case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
+    case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
+    case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
+    case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
     case POPT_BUILDROOT:
-	if (data->buildRootOverride) {
+	if (rba->buildRootOverride) {
 	    fprintf(stderr, _("buildroot already specified"));
 	    exit(EXIT_FAILURE);
+	    /*@notreached@*/
 	}
-	data->buildRootOverride = xstrdup(arg);
+	rba->buildRootOverride = xstrdup(arg);
 	break;
     case POPT_BUILDARCH:
 	fprintf(stderr, _("--buildarch has been obsoleted.  Use the --target option instead.\n")); 
 	exit(EXIT_FAILURE);
-	break;
+	/*@notreached@*/ break;
     case POPT_BUILDOS:
 	fprintf(stderr, _("--buildos has been obsoleted.  Use the --target option instead.\n")); 
 	exit(EXIT_FAILURE);
-	break;
+	/*@notreached@*/ break;
     case POPT_TARGETPLATFORM:
-	if (data->targets) {
-	    int len = strlen(data->targets) + strlen(arg) + 2;
-	    data->targets = xrealloc(data->targets, len);
-	    strcat(data->targets, ",");
+	if (rba->targets) {
+	    int len = strlen(rba->targets) + strlen(arg) + 2;
+	    rba->targets = xrealloc(rba->targets, len);
+	    strcat(rba->targets, ",");
 	} else {
-	    data->targets = xmalloc(strlen(arg) + 1);
-	    data->targets[0] = '\0';
+	    rba->targets = xmalloc(strlen(arg) + 1);
+	    rba->targets[0] = '\0';
 	}
-	strcat(data->targets, arg);
+	strcat(rba->targets, arg);
 	break;
     }
 }

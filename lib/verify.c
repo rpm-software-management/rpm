@@ -21,8 +21,10 @@ static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;
 /* ========== Verify specific popt args */
 static void verifyArgCallback(/*@unused@*/poptContext con,
 	/*@unused@*/enum poptCallbackReason reason,
-	const struct poptOption * opt, /*@unused@*/const char * arg, QVA_t *qva)
+	const struct poptOption * opt, /*@unused@*/const char * arg,
+	const void * data)
 {
+    QVA_t *qva = (QVA_t *) data;
     switch (opt->val) {
       case POPT_NOFILES: qva->qva_flags |= VERIFY_FILES; break;
     }

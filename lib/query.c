@@ -657,8 +657,9 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg)
 /* ========== Query/Verify source popt args */
 static void rpmQVSourceArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptCallbackReason reason,
 			     const struct poptOption * opt, /*@unused@*/const char * arg, 
-			     QVA_t *qva)
+			     const void * data)
 {
+    QVA_t *qva = (QVA_t *) data;
 
     switch (opt->val) {
       case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;
@@ -710,8 +711,10 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
 static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
-			     QVA_t *qva)
+			     const void * data)
 {
+    QVA_t *qva = (QVA_t *) data;
+
     switch (opt->val) {
       case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
       case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;

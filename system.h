@@ -251,6 +251,8 @@ char *__progname;
 # undef textdomain
 # define textdomain(Domain) /* empty */
 # define _(Text) Text
+# undef dgettext
+# define dgettext(DomainName, Text) Text
 #endif
 
 #define N_(Text) Text

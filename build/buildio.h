@@ -7,7 +7,7 @@
 
 typedef struct cpioSourceArchive {
     CFD_t	cpioCfd;
-    int		cpioArchiveSize;
+    unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
     /*@only@*/struct cpioFileMapping *cpioList;
     int		cpioCount;
