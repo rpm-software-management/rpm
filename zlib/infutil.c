@@ -2,14 +2,15 @@
  * Copyright (C) 1995-1998 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
-
+#if 1
 #include "zutil.h"
 #include "infblock.h"
 #include "inftrees.h"
 #include "infcodes.h"
 #include "infutil.h"
+#endif
 
-struct inflate_codes_state {int dummy;}; /* for buggy compilers */
+#include "crc32.h"
 
 /* And'ing with mask[n] masks the lower n bits */
 uInt inflate_mask[17] = {
@@ -43,11 +44,15 @@ int r;
   z->total_out += n;
 
   /* update check information */
-  if (s->checkfn != Z_NULL)
+  if (s->checkfn == Z_NULL)
+    z->crc = partial_crc32_copy(z->crc, q, n, p);
+  else if (s->checkfn != Z_NULL) {
     z->adler = s->check = (*s->checkfn)(s->check, q, n);
 
-  /* copy as far as end of window */
-  zmemcpy(p, q, n);
+    /* copy as far as end of window */
+    zmemcpy(p, q, n);
+  }
+
   p += n;
   q += n;
 
@@ -69,11 +74,14 @@ int r;
     z->total_out += n;
 
     /* update check information */
-    if (s->checkfn != Z_NULL)
+    if (!s->checkfn)
+	z->crc = partial_crc32_copy(z->crc, q, n, p);
+    else if (s->checkfn != Z_NULL) {
       z->adler = s->check = (*s->checkfn)(s->check, q, n);
 
-    /* copy */
-    zmemcpy(p, q, n);
+      /* copy */
+      zmemcpy(p, q, n);
+    }
     p += n;
     q += n;
   }

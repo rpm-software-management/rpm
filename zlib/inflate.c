@@ -144,8 +144,8 @@ int stream_size;
 }
 
 
-#define NEEDBYTE {if(z->avail_in==0)return r;r=f;}
-#define NEXTBYTE (z->avail_in--,z->total_in++,*z->next_in++)
+#define NEEDBYTE {if(z->avail_in==0)goto out_NEEDBYTE;r=f;}
+#define NEXTBYTE (z->avail_in--,/*z->total_in++,*/ *z->next_in++)
 
 int ZEXPORT inflate(z, f)
 z_streamp z;
@@ -153,9 +153,10 @@ int f;
 {
   int r;
   uInt b;
-
+#if 0
   if (z == Z_NULL || z->state == Z_NULL || z->next_in == Z_NULL)
     return Z_STREAM_ERROR;
+#endif
   f = f == Z_FINISH ? Z_BUF_ERROR : Z_OK;
   r = Z_BUF_ERROR;
   while (1) switch (z->state->mode)
@@ -272,6 +273,9 @@ int f;
 #ifdef NEED_DUMMY_RETURN
   return Z_STREAM_ERROR;  /* Some dumb compilers complain without this */
 #endif
+
+out_NEEDBYTE:
+	return r;
 }
 
 

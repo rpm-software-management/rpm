@@ -3,9 +3,11 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: crc32.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
 
 #include "zlib.h"
+
+#include "crc32.h"
 
 #define local static
 
@@ -65,7 +67,7 @@ local void make_crc_table()
 /* ========================================================================
  * Table of CRC-32's of all single-byte values (made by make_crc_table)
  */
-local const uLongf crc_table[256] = {
+/*local*/ const uLongf crc_table[256] = {
   0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
   0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
   0xe0d5e91eL, 0x97d2d988L, 0x09b64c2bL, 0x7eb17cbdL, 0xe7b82d07L,
@@ -132,31 +134,23 @@ const uLongf * ZEXPORT get_crc_table()
   return (const uLongf *)crc_table;
 }
 
-/* ========================================================================= */
-#define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
-#define DO2(buf)  DO1(buf); DO1(buf);
-#define DO4(buf)  DO2(buf); DO2(buf);
-#define DO8(buf)  DO4(buf); DO4(buf);
+uLong partial_crc32_copy(uLong crc, const Bytef *buf, uInt len, Bytef *dst)
+{
+	return __partial_crc32(crc, buf, len, 1, dst);
+}
 
-/* ========================================================================= */
+extern uLong partial_crc32(uLong crc, const Bytef *buf, uInt len)
+{
+	return __partial_crc32(crc, buf, len, 0, 0);
+}
+
 uLong ZEXPORT crc32(crc, buf, len)
     uLong crc;
     const Bytef *buf;
     uInt len;
 {
-    if (buf == Z_NULL) return 0L;
-#ifdef DYNAMIC_CRC_TABLE
-    if (crc_table_empty)
-      make_crc_table();
-#endif
-    crc = crc ^ 0xffffffffL;
-    while (len >= 8)
-    {
-      DO8(buf);
-      len -= 8;
-    }
-    if (len) do {
-      DO1(buf);
-    } while (--len);
-    return crc ^ 0xffffffffL;
+	if (buf != Z_NULL)
+		return __partial_crc32(crc ^ 0xffffffffL, buf, len, 0, 0) ^ 0xffffffffL;
+	return 0L;
 }
+

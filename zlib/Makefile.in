@@ -39,7 +39,7 @@ libdir = ${exec_prefix}/lib
 includedir = ${prefix}/include
 
 OBJS = adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o \
-       zutil.o inflate.o infblock.o inftrees.o infcodes.o infutil.o inffast.o
+       zutil.o inflate.o infblock.o inftrees.o infutil.o inffast.o
 
 OBJA =
 # to use the asm code: make OBJA=match.o
@@ -161,18 +161,16 @@ lclint:
 
 adler32.o: zlib.h zconf.h
 compress.o: zlib.h zconf.h
-crc32.o: zlib.h zconf.h
+crc32.o: zlib.h zconf.h crc32.h
 deflate.o: deflate.h zutil.h zlib.h zconf.h
 example.o: zlib.h zconf.h
-gzio.o: zutil.h zlib.h zconf.h
+gzio.o: zutil.h zlib.h zconf.h crc32.h
 infblock.o: infblock.h inftrees.h infcodes.h infutil.h zutil.h zlib.h zconf.h
-infcodes.o: zutil.h zlib.h zconf.h
-infcodes.o: inftrees.h infblock.h infcodes.h infutil.h inffast.h
-inffast.o: zutil.h zlib.h zconf.h inftrees.h
+inffast.o: zutil.h zlib.h zconf.h inftrees.h crc32.h
 inffast.o: infblock.h infcodes.h infutil.h inffast.h
 inflate.o: zutil.h zlib.h zconf.h infblock.h
 inftrees.o: zutil.h zlib.h zconf.h inftrees.h
-infutil.o: zutil.h zlib.h zconf.h infblock.h inftrees.h infcodes.h infutil.h
+infutil.o: zutil.h zlib.h zconf.h infblock.h inftrees.h infcodes.h infutil.h crc32.h
 minigzip.o:  zlib.h zconf.h 
 trees.o: deflate.h zutil.h zlib.h zconf.h trees.h
 uncompr.o: zlib.h zconf.h

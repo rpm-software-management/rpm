@@ -5,11 +5,17 @@
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: gzio.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/mman.h>
 
 #include <stdio.h>
 
 #include "zutil.h"
+
+#include "crc32.h"
 
 struct internal_state {int dummy;}; /* for buggy compilers */
 
@@ -17,7 +23,7 @@ struct internal_state {int dummy;}; /* for buggy compilers */
 #  ifdef MAXSEG_64K
 #    define Z_BUFSIZE 4096 /* minimize memory usage for 16-bit DOS */
 #  else
-#    define Z_BUFSIZE 16384
+#    define Z_BUFSIZE (256 * 1024) /*262144 16384*/
 #  endif
 #endif
 #ifndef Z_PRINTF_BUFSIZE
@@ -44,12 +50,15 @@ typedef struct gz_stream {
     FILE     *file;   /* .gz file */
     Byte     *inbuf;  /* input buffer */
     Byte     *outbuf; /* output buffer */
-    uLong    crc;     /* crc32 of uncompressed data */
     char     *msg;    /* error message */
     char     *path;   /* path name for debugging only */
     int      transparent; /* 1 if input file is not a .gz file */
     char     mode;    /* 'w' or 'r' */
+    char     mmap_mode;
     long     startpos; /* start of compressed data in file (header skipped) */
+    off_t    mmap_pos;
+    off_t    mmap_end;
+    int      fd;
 } gz_stream;
 
 
@@ -97,9 +106,11 @@ local gzFile gz_open (path, mode, fd)
     s->file = NULL;
     s->z_err = Z_OK;
     s->z_eof = 0;
-    s->crc = crc32(0L, Z_NULL, 0);
+    s->stream.crc = /*crc32(0L, Z_NULL, 0)*/0;
+	partial_crc32_prep(&s->stream.crc);
     s->msg = NULL;
     s->transparent = 0;
+    s->mmap_mode = 0;
 
     s->path = (char*)ALLOC(strlen(path)+1);
     if (s->path == NULL) {
@@ -153,10 +164,40 @@ local gzFile gz_open (path, mode, fd)
     s->stream.avail_out = Z_BUFSIZE;
 
     errno = 0;
-    s->file = fd < 0 ? F_OPEN(path, fmode) : (FILE*)fdopen(fd, fmode);
+	if ((fd >= 0) && (s->mode == 'r')) {
+		struct stat stat;
+		if (!fstat(fd, &stat) && S_ISREG(stat.st_mode) && (lseek(fd, 0, SEEK_CUR) != -1)) {
+			char *test = mmap(0, Z_BUFSIZE, PROT_READ, MAP_SHARED, fd, 0);
+			if (test != (char *)-1) {
+				long n;
+				off_t pos;
+				s->mmap_mode = 1;
+				s->fd = fd;
+				TRYFREE(s->inbuf);
+				munmap(test, Z_BUFSIZE);
+				pos = lseek(fd, 0, SEEK_CUR);
+				s->mmap_end = lseek(fd, 0, SEEK_END);
+				lseek(fd, 0, SEEK_SET);
 
-    if (s->file == NULL) {
-        return destroy(s), (gzFile)Z_NULL;
+				s->mmap_pos = pos & ~(off_t)(Z_BUFSIZE - 1);
+				s->inbuf = mmap(0, Z_BUFSIZE, PROT_READ, MAP_SHARED, fd, s->mmap_pos);
+				s->mmap_pos += Z_BUFSIZE;
+				s->stream.next_in = s->inbuf + (pos & (Z_BUFSIZE - 1));
+				s->stream.avail_in = s->mmap_end - pos;
+				if (s->stream.avail_in > (s->mmap_pos - pos))
+					s->stream.avail_in = s->mmap_pos - pos;
+				for (n=0; n<s->stream.avail_in; n+=4096)
+					((volatile char *)s->inbuf)[n];
+			}
+		}
+	}
+
+    if (!s->mmap_mode) {
+        s->file = fd < 0 ? F_OPEN(path, fmode) : (FILE*)fdopen(fd, fmode);
+
+        if (s->file == NULL) {
+            return destroy(s), (gzFile)Z_NULL;
+        }
     }
     if (s->mode == 'w') {
         /* Write a very simple .gz header:
@@ -171,7 +212,10 @@ local gzFile gz_open (path, mode, fd)
          */
     } else {
 	check_header(s); /* skip the .gz header */
-	s->startpos = (ftell(s->file) - s->stream.avail_in);
+	if (s->mmap_mode)
+		s->startpos = s->mmap_pos - s->stream.avail_in;
+	else
+		s->startpos = (ftell(s->file) - s->stream.avail_in);
     }
     
     return (gzFile)s;
@@ -228,24 +272,58 @@ int ZEXPORT gzsetparams (file, level, strategy)
     return deflateParams (&(s->stream), level, strategy);
 }
 
+static inline int gz_refill_inbuf(gz_stream *s)
+{
+	if (s->mmap_mode) {
+		long n;
+		s->stream.avail_in = 0;
+		if (s->mmap_pos >= s->mmap_end) {
+			s->z_eof = 1;
+			return 0;
+		}
+		if (s->inbuf)
+			munmap(s->inbuf, Z_BUFSIZE);
+		s->inbuf = mmap(s->inbuf, Z_BUFSIZE, PROT_READ, MAP_SHARED|MAP_FIXED, s->fd, s->mmap_pos);
+		if (s->inbuf == (Byte *)-1) {
+			s->inbuf = NULL;
+			s->z_err = errno;
+			return 1;
+		}
+		s->stream.next_in = s->inbuf;
+		s->stream.avail_in = Z_BUFSIZE;
+		s->mmap_pos += Z_BUFSIZE;
+		if (s->mmap_pos > s->mmap_end)
+			s->stream.avail_in = s->mmap_end - s->mmap_pos + Z_BUFSIZE;
+		for (n=0; n<s->stream.avail_in; n+=4096)
+			((volatile char *)s->inbuf)[n];
+		return 0;
+	}
+
+	s->stream.avail_in = fread(s->inbuf, 1, Z_BUFSIZE, s->file);
+	if (s->stream.avail_in == 0) {
+		s->z_eof = 1;
+		if (ferror(s->file)) {
+			s->z_err = Z_ERRNO;
+			return 1;
+		}
+	}
+	s->stream.next_in = s->inbuf;
+	return 0;
+}
+
 /* ===========================================================================
      Read a byte from a gz_stream; update next_in and avail_in. Return EOF
    for end of file.
    IN assertion: the stream s has been sucessfully opened for reading.
 */
-local int get_byte(s)
+local inline int get_byte(s)
     gz_stream *s;
 {
     if (s->z_eof) return EOF;
     if (s->stream.avail_in == 0) {
 	errno = 0;
-	s->stream.avail_in = fread(s->inbuf, 1, Z_BUFSIZE, s->file);
-	if (s->stream.avail_in == 0) {
-	    s->z_eof = 1;
-	    if (ferror(s->file)) s->z_err = Z_ERRNO;
+	if(gz_refill_inbuf(s))
 	    return EOF;
-	}
-	s->stream.next_in = s->inbuf;
     }
     s->stream.avail_in--;
     return *(s->stream.next_in)++;
@@ -322,6 +400,14 @@ local int destroy (s)
 
     TRYFREE(s->msg);
 
+	if (s->mmap_mode) {
+		if (s->inbuf)
+			munmap(s->inbuf, Z_BUFSIZE);
+		s->inbuf = NULL;
+		close(s->fd);
+		s->mmap_mode = 0;
+	}
+
     if (s->stream.state != NULL) {
 	if (s->mode == 'w') {
 #ifdef NO_DEFLATE
@@ -374,7 +460,9 @@ int ZEXPORT gzread (file, buf, len)
 
 	if (s->transparent) {
 	    /* Copy first the lookahead bytes: */
-	    uInt n = s->stream.avail_in;
+	    uInt n;
+again:
+		n = s->stream.avail_in;
 	    if (n > s->stream.avail_out) n = s->stream.avail_out;
 	    if (n > 0) {
 		zmemcpy(s->stream.next_out, s->stream.next_in, n);
@@ -385,8 +473,8 @@ int ZEXPORT gzread (file, buf, len)
 		s->stream.avail_in  -= n;
 	    }
 	    if (s->stream.avail_out > 0) {
-		s->stream.avail_out -= fread(next_out, 1, s->stream.avail_out,
-					     s->file);
+		if (!s->stream.avail_in && !gz_refill_inbuf(s))
+			goto again;
 	    }
 	    len -= s->stream.avail_out;
 	    s->stream.total_in  += (uLong)len;
@@ -397,24 +485,16 @@ int ZEXPORT gzread (file, buf, len)
         if (s->stream.avail_in == 0 && !s->z_eof) {
 
             errno = 0;
-            s->stream.avail_in = fread(s->inbuf, 1, Z_BUFSIZE, s->file);
-            if (s->stream.avail_in == 0) {
-                s->z_eof = 1;
-		if (ferror(s->file)) {
-		    s->z_err = Z_ERRNO;
-		    break;
-		}
-            }
-            s->stream.next_in = s->inbuf;
+	    if (gz_refill_inbuf(s))
+		break;
         }
         s->z_err = inflate(&(s->stream), Z_NO_FLUSH);
 
 	if (s->z_err == Z_STREAM_END) {
 	    /* Check CRC and original size */
-	    s->crc = crc32(s->crc, start, (uInt)(s->stream.next_out - start));
 	    start = s->stream.next_out;
 
-	    if (getLong(s) != s->crc) {
+	    if (getLong(s) != get_crc_from_partial(&s->stream.crc)) {
 		s->z_err = Z_DATA_ERROR;
 	    } else {
 	        (void)getLong(s);
@@ -430,13 +510,13 @@ int ZEXPORT gzread (file, buf, len)
 		    inflateReset(&(s->stream));
 		    s->stream.total_in = total_in;
 		    s->stream.total_out = total_out;
-		    s->crc = crc32(0L, Z_NULL, 0);
+		    s->stream.crc = /*crc32(0L, Z_NULL, 0)*/0;
+			partial_crc32_prep(&s->stream.crc);
 		}
 	    }
 	}
 	if (s->z_err != Z_OK || s->z_eof) break;
     }
-    s->crc = crc32(s->crc, start, (uInt)(s->stream.next_out - start));
 
     return (int)(len - s->stream.avail_out);
 }
@@ -509,7 +589,7 @@ int ZEXPORT gzwrite (file, buf, len)
         s->z_err = deflate(&(s->stream), Z_NO_FLUSH);
         if (s->z_err != Z_OK) break;
     }
-    s->crc = crc32(s->crc, (const Bytef *)buf, len);
+    s->stream.crc = partial_crc32(s->stream.crc, (const Bytef *)buf, len);
 
     return (int)(len - s->stream.avail_in);
 }
@@ -749,7 +829,8 @@ int ZEXPORT gzrewind (file)
     s->z_eof = 0;
     s->stream.avail_in = 0;
     s->stream.next_in = s->inbuf;
-    s->crc = crc32(0L, Z_NULL, 0);
+    s->stream.crc = 0;
+	partial_crc32_prep(&s->stream.crc);
 	
     if (s->startpos == 0) { /* not a compressed file */
 	rewind(s->file);
@@ -834,7 +915,7 @@ int ZEXPORT gzclose (file)
         err = do_flush (file, Z_FINISH);
         if (err != Z_OK) return destroy((gz_stream*)file);
 
-        putLong (s->file, s->crc);
+        putLong (s->file, get_crc_from_partial(&s->stream.crc));
         putLong (s->file, s->stream.total_in);
 #endif
     }

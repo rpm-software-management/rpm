@@ -72,6 +72,11 @@ struct inflate_blocks_state {
 #define LOADIN {p=z->next_in;n=z->avail_in;b=s->bitb;k=s->bitk;}
 #define NEEDBYTE {if(n)r=Z_OK;else LEAVE}
 #define NEXTBYTE (n--,*p++)
+#ifdef __i386__
+#define NEXTSHORT (n-=2, p+=2, (uLong)((unsigned short *)p)[-1])
+#else
+#define NEXTSHORT (n-=2, p+=2, (uLong)p[-2] | ((uLong)p[-1] << 8))
+#endif
 #define NEEDBITS(j) {while(k<(j)){NEEDBYTE;b|=((uLong)NEXTBYTE)<<k;k+=8;}}
 #define DUMPBITS(j) {b>>=(j);k-=(j);}
 /*   output bytes */
@@ -88,10 +93,10 @@ struct inflate_blocks_state {
 extern uInt inflate_mask[17];
 
 /* copy as much as possible from the sliding window to the output area */
-extern int inflate_flush OF((
+int inflate_flush OF((
     inflate_blocks_statef *,
     z_streamp ,
-    int));
+    int)) __attribute__((regparm(3)));
 
 struct internal_state      {int dummy;}; /* for buggy compilers */
 

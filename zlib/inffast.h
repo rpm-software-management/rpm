@@ -9,9 +9,10 @@
  */
 
 extern int inflate_fast OF((
-    uInt,
+ /*   uInt,
     uInt,
     inflate_huft *,
     inflate_huft *,
+ */
     inflate_blocks_statef *,
-    z_streamp ));
+    z_streamp )); // __attribute__((regparm(3)));

@@ -9,15 +9,16 @@
 #include "infcodes.h"
 #include "infutil.h"
 #include "inffast.h"
-
-struct inflate_codes_state {int dummy;}; /* for buggy compilers */
+#include "crc32.h"
 
 /* simplify the use of the inflate_huft type with some defines */
 #define exop word.what.Exop
 #define bits word.what.Bits
 
 /* macros for bit input with no checking and for returning unused bytes */
-#define GRABBITS(j) {while(k<(j)){b|=((uLong)NEXTBYTE)<<k;k+=8;}}
+#define GRABBITS(j) {\
+	if (k+8 < (j)) { b |= NEXTSHORT << k; k += 16; } \
+	if (k<(j)){b|=((uLong)NEXTBYTE)<<k;k+=8;}}
 #define UNGRAB {c=z->avail_in-n;c=(k>>3)<c?k>>3:c;n+=c;p-=c;k-=c<<3;}
 
 /* Called with number of bytes left to write in window at least 258
@@ -25,13 +26,19 @@ struct inflate_codes_state {int dummy;}; /* for buggy compilers */
    at least ten.  The ten bytes are six bytes for the longest length/
    distance pair plus four bytes for overloading the bit buffer. */
 
-int inflate_fast(bl, bd, tl, td, s, z)
+int inflate_fast(/*bl, bd, tl, td,*/ s, z)
+#if 0
 uInt bl, bd;
 inflate_huft *tl;
 inflate_huft *td; /* need separate declaration for Borland C++ */
+#endif
 inflate_blocks_statef *s;
 z_streamp z;
 {
+inflate_codes_statef *sc = s->sub.decode.codes;
+uInt bl = sc->lbits, bd = sc->dbits;
+inflate_huft *tl = sc->ltree;
+inflate_huft *td = sc->dtree; /* need separate declaration for Borland C++ */
   inflate_huft *t;      /* temporary pointer */
   uInt e;               /* extra bits or operation */
   uLong b;              /* bit buffer */
@@ -45,10 +52,13 @@ z_streamp z;
   uInt c;               /* bytes to copy */
   uInt d;               /* distance back to copy from */
   Bytef *r;             /* copy source pointer */
+int ret;
 
   /* load input, output, bit values */
   LOAD
 
+  PREFETCH(p);
+  PREFETCH(p+32);
   /* initialize masks */
   ml = inflate_mask[bl];
   md = inflate_mask[bd];
@@ -56,6 +66,7 @@ z_streamp z;
   /* do until not enough input or output space for fast loop */
   do {                          /* assume called with m >= 258 && n >= 10 */
     /* get literal/length code */
+    PREFETCH(p+64);
     GRABBITS(20)                /* max bits for literal/length code */
     if ((e = (t = tl + ((uInt)b & ml))->exop) == 0)
     {
@@ -63,8 +74,7 @@ z_streamp z;
       Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
                 "inflate:         * literal '%c'\n" :
                 "inflate:         * literal 0x%02x\n", t->base));
-      *q++ = (Byte)t->base;
-      m--;
+      OUTBYTE((Byte)t->base);
       continue;
     }
     do {
@@ -93,6 +103,7 @@ z_streamp z;
 
             /* do the copy */
             m -= c;
+#if 1
             if ((uInt)(q - s->window) >= d)     /* offset before dest */
             {                                   /*  just copy */
               r = q - d;
@@ -106,65 +117,99 @@ z_streamp z;
               if (c > e)                /* if source crosses, */
               {
                 c -= e;                 /* copy to end of window */
+#ifdef __i386__
+	{int delta = (int)q - (int)r;
+	if (delta <= 0 || delta > 3) {
+		quickmemcpy(q, r, e);
+		q += e;
+		e = 0;
+		goto rest;
+	}
+	}
+#endif
                 do {
                   *q++ = *r++;
                 } while (--e);
+rest:
                 r = s->window;          /* copy rest from start of window */
               }
             }
+#ifdef __i386__
+	{int delta = (int)q - (int)r;
+	if (delta <= 0 || delta > 3) {
+		quickmemcpy(q, r, c);
+		q += c;
+		r += c;
+		c = 0;
+		break;
+	}
+	}
+#endif
             do {                        /* copy all or what's left */
               *q++ = *r++;
             } while (--c);
+#endif
             break;
           }
           else if ((e & 64) == 0)
           {
             t += t->base;
             e = (t += ((uInt)b & inflate_mask[e]))->exop;
+		continue;
           }
           else
-          {
-            z->msg = (char*)"invalid distance code";
-            UNGRAB
-            UPDATE
-            return Z_DATA_ERROR;
-          }
+		goto inv_dist_code;
         } while (1);
         break;
       }
-      if ((e & 64) == 0)
-      {
+if (!(e & 64)) {
+
         t += t->base;
-        if ((e = (t += ((uInt)b & inflate_mask[e]))->exop) == 0)
-        {
-          DUMPBITS(t->bits)
-          Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
-                    "inflate:         * literal '%c'\n" :
-                    "inflate:         * literal 0x%02x\n", t->base));
-          *q++ = (Byte)t->base;
-          m--;
-          break;
-        }
-      }
-      else if (e & 32)
-      {
-        Tracevv((stderr, "inflate:         * end of block\n"));
-        UNGRAB
-        UPDATE
-        return Z_STREAM_END;
-      }
-      else
-      {
-        z->msg = (char*)"invalid literal/length code";
-        UNGRAB
-        UPDATE
-        return Z_DATA_ERROR;
-      }
+        if ((e = (t += ((uInt)b & inflate_mask[e]))->exop) != 0)
+		continue;
+        DUMPBITS(t->bits)
+        Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
+                  "inflate:         * literal '%c'\n" :
+                  "inflate:         * literal 0x%02x\n", t->base));
+        *q++ = (Byte)t->base;
+        m--;
+        break;
+} else
+{ uInt temp = e & 96;
+      if (temp == 96)
+	goto stream_end;
+      if (temp == 64)
+	goto data_error;
+}
     } while (1);
   } while (m >= 258 && n >= 10);
 
   /* not enough input or output--restore pointers and return */
-  UNGRAB
-  UPDATE
-  return Z_OK;
+  ret = Z_OK;
+
+ungrab:
+        UNGRAB
+        UPDATE
+	return ret;
+
+data_error:
+      {
+        z->msg = (char*)"invalid literal/length code";
+        ret = Z_DATA_ERROR;
+	goto ungrab;
+      }
+
+stream_end:
+      {
+        Tracevv((stderr, "inflate:         * end of block\n"));
+        ret = Z_STREAM_END;
+	goto ungrab;
+      }
+
+inv_dist_code:
+          {
+            z->msg = (char*)"invalid distance code";
+            ret = Z_DATA_ERROR;
+	    goto ungrab;
+          }
 }

@@ -83,7 +83,7 @@ typedef struct z_stream_s {
 
     int     data_type;  /* best guess about the data type: ascii or binary */
     uLong   adler;      /* adler32 value of the uncompressed data */
-    uLong   reserved;   /* reserved for future use */
+    uLong   crc;	/* crc32 as updated during decompression */
 } z_stream;
 
 typedef z_stream FAR *z_streamp;

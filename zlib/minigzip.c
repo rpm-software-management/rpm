@@ -13,7 +13,7 @@
  * or in pipe mode.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: minigzip.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
 
 #include <stdio.h>
 #include "zlib.h"
@@ -61,7 +61,7 @@
 #endif
 #define SUFFIX_LEN (sizeof(GZ_SUFFIX)-1)
 
-#define BUFLEN      16384
+#define BUFLEN      (16384 * 2)
 #define MAX_NAME_LEN 1024
 
 #ifdef MAXSEG_64K
