@@ -27,14 +27,14 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     filename = alloca(strlen(prefix) + 40);
 
     if (mode & O_WRONLY) 
-	return 0;
+	return 1;
 
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/packages.rpm");
     db.pkgs = faOpen(filename, mode, 0644);
     if (!db.pkgs) {
 	error(RPMERR_DBOPEN, "failed to open %s\n", filename);
-	return 0;
+	return 1;
     }
     
     strcpy(filename, prefix); 
@@ -42,7 +42,7 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     db.nameIndex = openDBIndex(filename, mode, 0644);
     if (!db.nameIndex) {
 	faClose(db.pkgs);
-	return 0;
+	return 1;
     }
     
     strcpy(filename, prefix); 
@@ -51,7 +51,7 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     if (!db.fileIndex) {
 	faClose(db.pkgs);
 	closeDBIndex(db.nameIndex);
-	return 0;
+	return 1;
     }
     
     strcpy(filename, prefix); 
@@ -60,13 +60,13 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     if (!db.groupIndex) {
 	faClose(db.pkgs);
 	closeDBIndex(db.nameIndex);
-	return 0;
+	return 1;
     }
 
     *rpmdbp = malloc(sizeof(struct rpmdb));
     **rpmdbp = db;
 
-    return 1;
+    return 0;
 }
 
 int rpmdbCreate (rpmdb db, int mode, int perms);
@@ -177,9 +177,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	message(MESS_DEBUG, "package has no files\n");
     }
 
-    if (!faFree(db->pkgs, offset)) {
-	printf("faFree failed!\n");
-    }
+    faFree(db->pkgs, offset);
 
     return 0;
 }
@@ -223,6 +221,10 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     } 
    
     dboffset = faAlloc(db->pkgs, sizeofHeader(dbentry));
+    if (!dboffset) {
+	error(RPMERR_DBCORRUPT, "cannot allocate space for database");
+	return 1;
+    }
     lseek(db->pkgs->fd, dboffset, SEEK_SET);
 
     writeHeader(db->pkgs->fd, dbentry);
