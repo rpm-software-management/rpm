@@ -1,4 +1,5 @@
 #include <netinet/in.h>
+#include <netinet/ip.h>
 #include <alloca.h>
 #include <arpa/inet.h>
 #include <ctype.h>
