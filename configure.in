@@ -196,6 +196,7 @@ if echo "$build" | grep solaris >/dev/null ; then
 	# binaries if you use -ldl
 	echo "hacking things up for solaris"
 	LIBDL=-ldl
+	RPMSTATIC=rpm.static
 else
 	RPMSTATIC=rpm
 fi
