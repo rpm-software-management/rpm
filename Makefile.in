@@ -23,9 +23,9 @@ INCDIR=$(prefix)/include/rpm
 ### End exported variables
 # -----------------------------------------------------------------------
 
-SUBDIRS = lib build
+SUBDIRS = lib build tools
 OBJS = query.o install.o 
-PROGS = rpm rpmlead rpmheader rpmarchive rpmconvert rpmsignature rpmchecksig
+PROGS = rpm rpmconvert
 LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
