@@ -17,8 +17,6 @@
 #include "rpmlib.h"
 #include "build/build.h"
 
-#define _(String) gettext(String)
-
 #define GETOPT_QUERYFORMAT	1000
 #define GETOPT_WHATREQUIRES	1001
 #define GETOPT_WHATPROVIDES	1002
