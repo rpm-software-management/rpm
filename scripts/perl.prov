@@ -136,15 +136,15 @@ sub process_file {
 
     # here are examples of VERSION lines from the perl distribution
 
-    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/);
-    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.8 $, 10;
-    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.8 $)[1];
+    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/);
+    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.9 $, 10;
+    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.9 $)[1];
     #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
-
-    if ( 
-	($package) && 
-	(m/^\s*\$VERSION\s*=\s+/)
-       ) {
+    # 
+    # or with the new "our" pragma you could (read will) see:
+    #
+    #    our $VERSION = '1.00'
+    if (($package) && (m/^\s*(our\s+)?\$VERSION\s*=\s+/)) {
 
       # first see if the version string contains the string
       # '$Revision' this often causes bizzare strings and is the most
@@ -160,13 +160,23 @@ sub process_file {
       }
       $require{$package}=$version;
     }
-    
+  
+    # Allow someone to have a variable that defines virtual packages
+    # The variable is called $RPM_Provides.  It must be scoped with 
+    # "our", but not "local" or "my" (just would not make sense). 
+    # 
+    # For instance:
+    #  
+    #     $RPM_Provides = "blah bleah"
+    # 
+    # Will generate provides for "blah" and "bleah".
+    #
     # Each keyword can appear multiple times.  Don't
     #  bother with datastructures to store these strings,
     #  if we need to print it print it now.
 	
-    if ( m/^\s*\$RPM_Provides\s*=\s*["'](.*)['"]/i) {
-      foreach $_ (spit(/\s+/, $1)) {
+    if ( m/^\s*(our\s+)?\$RPM_Provides\s*=\s*["'](.*)['"]/i) {
+      foreach $_ (split(/\s+/, $2)) {
 	print "$_\n";
       }
     }
