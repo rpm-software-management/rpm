@@ -158,7 +158,7 @@ char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header) {
 void oldhdrFree(struct oldrpmHeader * header) {
     free(header->name);
     free(header->spec);
-    header->group ? free(header->icon) : 0;
+    header->icon ? free(header->icon) : 0;
     header->group ? free(header->group) : 0;
 }
 
