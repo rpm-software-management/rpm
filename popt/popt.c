@@ -40,7 +40,7 @@ poptContext poptGetContext(char * name ,int argc, char ** argv,
     con->os->currAlias = NULL;
     con->os->next = 1;			/* skip argv[0] */
 
-    con->leftovers = malloc(sizeof(char *) * argc);
+    con->leftovers = malloc(sizeof(char *) * (argc + 1));
     con->numLeftovers = 0;
     con->nextLeftover = 0;
     con->restLeftover = 0;
@@ -214,6 +214,10 @@ char * poptPeekArg(poptContext con) {
 
 char ** poptGetArgs(poptContext con) {
     if (con->numLeftovers == con->nextLeftover) return NULL;
+
+    /* some apps like [like RPM ;-) ] need this NULL terminated */
+    con->leftovers[con->numLeftovers] = NULL;
+
     return (con->leftovers + con->nextLeftover);
 }
 
