@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.13 2001/03/08 06:11:20 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.14 2001/05/12 11:40:27 rjray Exp $";
 
 /*
   rpmdb_TIEHASH
@@ -111,7 +111,7 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
            thus cached on the hash itself */
         svp = hv_fetch(dbstruct->storage, (char *)name, namelen, FALSE);
         if (svp && SvROK(*svp))
-            return newRV(SvRV(*svp));
+            return newSVsv(*svp);
 
 #if RPM_MAJOR < 4
         /* This is the old (3.0.4+) way of setting up and searching */
