@@ -244,19 +244,14 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 
 	    rc = openDbFile(prefix, dbpath, dbiTemplate, justcheck, mode,
 			&db->_dbi[dbix]);
-	    if (dbix == 0) rc = 0;	/* XXX HACK */
+	    if (dbix == 0) rc = 0;	/* XXX HACK for non-db3 */
 	    if (rc)
 		continue;
 
 	    switch (dbix) {
 	    case 1:
-		if (minimal) {
-		    if (dbp)
-			*dbp = db;
-		    else
-			rpmdbClose(db);
-		    return 0;
-		}
+		if (minimal)
+		    goto exit;
 		break;
 	    case 2:
 
@@ -280,6 +275,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 	}
     }
 
+exit:
     if (!(rc || justcheck || dbp == NULL))
 	*dbp = db;
     else
@@ -325,13 +321,13 @@ void rpmdbClose (rpmdb db)
 {
     int dbix;
 
-    if (db->pkgs != NULL) Fclose(db->pkgs);
-    for (dbix = RPMDBI_MAX; --dbix >= RPMDBI_MAX; ) {
+    for (dbix = RPMDBI_MAX; --dbix >= RPMDBI_MIN; ) {
 	if (db->_dbi[dbix] == NULL)
 	    continue;
     	dbiCloseIndex(db->_dbi[dbix]);
     	db->_dbi[dbix] = NULL;
     }
+    if (db->pkgs != NULL) Fclose(db->pkgs);
     free(db);
 }
 
@@ -658,8 +654,6 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 
 	    dbi = db->_dbi[dbix];
 
-if (_debug)
-fprintf(stderr, "*** removing dbix %d tag %d offset 0x%x\n", dbix, dbi->dbi_rpmtag, offset);
 	    if (dbi->dbi_rpmtag == 0) {
 		/* XXX TODO: remove h to packages.rpm */
 		(void) (*dbi->dbi_vec->del) (dbi, &offset, sizeof(offset), 0);
@@ -846,8 +840,6 @@ int rpmdbAdd(rpmdb db, Header h)
 
 	    dbi = db->_dbi[dbix];
 
-if (_debug)
-fprintf(stderr, "*** adding dbix %d tag %d offset 0x%x\n", dbix, dbi->dbi_rpmtag, offset);
 	    if (dbi->dbi_rpmtag == 0) {
 		size_t uhlen = headerSizeof(h, HEADER_MAGIC_NO);
 		void * uh = headerUnload(h);

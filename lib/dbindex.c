@@ -10,24 +10,28 @@ static int _debug = 0;
 /*@access dbiIndexSet@*/
 /*@access dbiIndexRecord@*/
 
-#if HAVE_DB1_DB_H
+#if USE_DB0
 extern struct _dbiVec db0vec;
 #define	DB0vec		&db0vec
 #else
 #define	DB0vec		NULL
 #endif
 
-#if HAVE_DB_185_H
+#if USE_DB1
 extern struct _dbiVec db1vec;
 #define	DB1vec		&db1vec
 #else
 #define	DB1vec		NULL
 #endif
 
+#if USE_DB2
 extern struct _dbiVec db2vec;
 #define	DB2vec		&db2vec
+#else
+#define	DB2vec		NULL
+#endif
 
-#if HAVE_DB3_DB_H
+#if USE_DB3
 extern struct _dbiVec db3vec;
 #define	DB3vec		&db3vec
 #else

@@ -315,13 +315,13 @@ AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
     AC_CHECK_LIB(db-3.0, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"]))
 )
 dnl Check for Berkeley db2 API.
-AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
-  AC_CHECK_LIB(db, db_open, [LIBS="$LIBS -ldb"; DBLIBOBJS="$DBLIBOBJS db2.c"])
-)
-dnl Check for Berkeley db1 API retrofit to db2 database.
-AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"],
-    AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"])
-)
+dnl AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
+dnl   AC_CHECK_LIB(db, db_open, [LIBS="$LIBS -ldb"; DBLIBOBJS="$DBLIBOBJS db2.c"])
+dnl )
+dnl Check for Berkeley db1 API retrofit to db2/db3 database.
+dnl AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"],
+dnl     AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"])
+dnl )
 dnl Check for Berkeley db1 API in glibc.
 AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db0.c"])
 
@@ -330,6 +330,15 @@ if test X"$DBLIBOBJS" = X; then
 fi
 dnl AC_DEFINE_UNQUOTED(DBLIBOBJS, "$DBLIBOBJS")
 AC_SUBST(DBLIBOBJS)
+
+for dbi in $DBLIBOBJS; do
+  case $dbi in
+  db3.c) AC_DEFINE(USE_DB3) ;;
+  db2.c) AC_DEFINE(USE_DB2) ;;
+  db1.c) AC_DEFINE(USE_DB1) ;;
+  db0.c) AC_DEFINE(USE_DB0) ;;
+  esac
+done
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
 	LIBOBJS=fakefork.o])

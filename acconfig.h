@@ -141,6 +141,18 @@
 /* Use the included glob.c? */
 #undef USE_GNU_GLOB
 
+/* Use the Berkeley db3 API? */
+#undef USE_DB3
+
+/* Use the Berkeley db2 API? */
+#undef USE_DB2
+
+/* Use the Berkeley db1 retrofit to db2/db3 API? */
+#undef USE_DB1
+
+/* Use the Berkeley db1 API from glibc? */
+#undef USE_DB0
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:
