@@ -6,8 +6,6 @@
 /*****************************
 TODO:
 
-. strip blank lines, leading/trailing spaces in %preamble
-. %doc globbing
 . should be able to drop the -n in non-%package parts
 
 ******************************/
@@ -296,12 +294,22 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
     while (req || (req = strtok(line, " ,\t\n"))) {
 	flags = (flag == RPMTAG_CONFLICTFLAGS) ?
 	    RPMSENSE_CONFLICTS : RPMSENSE_ANY;
+	if (flag == RPMTAG_CONFLICTFLAGS && req[0] == '/') {
+	    rpmError(RPMERR_BADSPEC,
+		     "No file names in Conflicts: %s", req);
+	    return RPMERR_BADSPEC;
+	}
 	if ((version = strtok(NULL, " ,\t\n"))) {
 	    rc = ReqComparisons;
 	    while (rc->token && strcmp(version, rc->token)) {
 		rc++;
 	    }
 	    if (rc->token) {
+		if (req[0] == '/') {
+		    rpmError(RPMERR_BADSPEC,
+			     "No versions on file names in Requires: %s", req);
+		    return RPMERR_BADSPEC;
+		}
 		/* read a version */
 		flags |= rc->flags;
 		version = strtok(NULL, " ,\t\n");
@@ -332,6 +340,11 @@ static int parseProvides(struct PackageRec *p, char *line)
     int flags = RPMSENSE_PROVIDES;
     
     while ((prov = strtok(line, " ,\t\n"))) {
+	if (prov[0] == '/') {
+	    rpmError(RPMERR_BADSPEC,
+		     "No file names in provides: %s", prov);
+	    return RPMERR_BADSPEC;
+	}
 	addReqProv(p, flags, prov, NULL);
 	line = NULL;
     }
