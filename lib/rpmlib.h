@@ -93,6 +93,9 @@ extern const int rpmTagTableSize;
 #define RPMTAG_TRIGGERFLAGS             1068
 #define RPMTAG_TRIGGERINDEX             1069
 #define RPMTAG_VERIFYSCRIPT             1079
+#define RPMTAG_CHANGELOGTIME            1080
+#define RPMTAG_CHANGELOGNAME            1081
+#define RPMTAG_CHANGELOGTEXT            1082
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
