@@ -68,9 +68,12 @@
 
 #define INSTALL_REPLACEPKG	1
 #define INSTALL_REPLACEFILES	2
-#define INSTALL_PROGRESS	4
+#define INSTALL_TEST		4
 
 typedef struct rpmdb * rpmdb;
+
+typedef void (*notifyFunction)(const unsigned long amount,
+			       const unsigned long total);
 
 int rpmdbOpen (char * prefix, rpmdb * dbp, int mode, int perms);
     /* 0 on error */
@@ -87,7 +90,8 @@ int rpmdbFindByFile(rpmdb db, char * filespec, dbIndexSet * matches);
 int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches);
 int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches);
 
-int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, int test);
+int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
+		      notifyFunction notify);
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
