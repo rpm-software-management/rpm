@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.58 2000/05/30 16:52:31 jbj Exp $
+# $Id: macros.in,v 1.59 2000/05/31 03:35:51 msw Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -495,37 +495,37 @@ CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
 CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
 FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
 %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
-./configure %{_target_platform} \
- 	--prefix=%{_prefix} \
-	--exec-prefix=%{_exec_prefix} \
-	--bindir=%{_bindir} \
-	--sbindir=%{_sbindir} \
-	--sysconfdir=%{_sysconfdir} \
-	--datadir=%{_datadir} \
-	--includedir=%{_includedir} \
-	--libdir=%{_libdir} \
-	--libexecdir=%{_libexecdir} \
-	--localstatedir=%{_localstatedir} \
-	--sharedstatedir=%{_sharedstatedir} \
-	--mandir=%{_mandir} \
+./configure %{_target_platform} \\\
+ 	--prefix=%{_prefix} \\\
+	--exec-prefix=%{_exec_prefix} \\\
+	--bindir=%{_bindir} \\\
+	--sbindir=%{_sbindir} \\\
+	--sysconfdir=%{_sysconfdir} \\\
+	--datadir=%{_datadir} \\\
+	--includedir=%{_includedir} \\\
+	--libdir=%{_libdir} \\\
+	--libexecdir=%{_libexecdir} \\\
+	--localstatedir=%{_localstatedir} \\\
+	--sharedstatedir=%{_sharedstatedir} \\\
+	--mandir=%{_mandir} \\\
 	--infodir=%{_infodir}
 #------------------------------------------------------------------------------
 # The make install analogue of %configure:
-%makeinstall { \
-   make install \
-	prefix=%{?buildroot:%{buildroot}}%{_prefix} \
-	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \
-	bindir=%{?buildroot:%{buildroot}}%{_bindir} \
-	sbindir=%{?buildroot:%{buildroot}}%{_sbindir} \
-	sysconfdir=%{?buildroot:%{buildroot}}%{_sysconfdir} \
-	datadir=%{?buildroot:%{buildroot}}%{_datadir} \
-	includedir=%{?buildroot:%{buildroot}}%{_includedir} \
-	libdir=%{?buildroot:%{buildroot}}%{_libdir} \
-	libexecdir=%{?buildroot:%{buildroot}}%{_libexecdir} \
-	localstatedir=%{?buildroot:%{buildroot}}%{_localstatedir} \
-	sharedstatedir=%{?buildroot:%{buildroot}}%{_sharedstatedir} \
-	mandir=%{?buildroot:%{buildroot}}%{_mandir} \
-	infodir=%{?buildroot:%{buildroot}}%{_infodir} \
+%makeinstall { \\\
+   make install \\\
+	prefix=%{?buildroot:%{buildroot}}%{_prefix} \\\
+	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \\\
+	bindir=%{?buildroot:%{buildroot}}%{_bindir} \\\
+	sbindir=%{?buildroot:%{buildroot}}%{_sbindir} \\\
+	sysconfdir=%{?buildroot:%{buildroot}}%{_sysconfdir} \\\
+	datadir=%{?buildroot:%{buildroot}}%{_datadir} \\\
+	includedir=%{?buildroot:%{buildroot}}%{_includedir} \\\
+	libdir=%{?buildroot:%{buildroot}}%{_libdir} \\\
+	libexecdir=%{?buildroot:%{buildroot}}%{_libexecdir} \\\
+	localstatedir=%{?buildroot:%{buildroot}}%{_localstatedir} \\\
+	sharedstatedir=%{?buildroot:%{buildroot}}%{_sharedstatedir} \\\
+	mandir=%{?buildroot:%{buildroot}}%{_mandir} \\\
+	infodir=%{?buildroot:%{buildroot}}%{_infodir} \\\
    }
 
 #------------------------------------------------------------------------------
