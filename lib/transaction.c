@@ -1079,6 +1079,7 @@ int keep_header = 0;
     }
     tei = teFreeIterator(tei);
 
+#ifdef	DYING
     /* FIXME: it seems a bit silly to read in all of these headers twice */
     /* The ordering doesn't matter here */
     if (ts->numRemovedPackages > 0) {
@@ -1094,6 +1095,25 @@ int keep_header = 0;
 	}
 	mi = rpmdbFreeIterator(mi);
     }
+#else
+    /* The ordering doesn't matter here */
+    tei = teInitIterator(ts);
+    while ((p = teNext(tei, TR_REMOVED)) != NULL) {
+	rpmFNSet fns;
+
+	fns = p->fns;
+	if (fns == NULL)
+	    continue;
+	if (fns->bnl == NULL)
+	    continue;	/* XXX can't happen */
+	if (fns->dnl == NULL)
+	    continue;	/* XXX can't happen */
+	if (fns->dil == NULL)
+	    continue;	/* XXX can't happen */
+	totalFileCount += fns->fc;
+    }
+    tei = teFreeIterator(tei);
+#endif
 
     /* ===============================================
      * Initialize transaction element file info for package:

@@ -1716,6 +1716,19 @@ prtTSI(" p", p->tsi);
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
 
+    /* Clean up after dependency checks */
+    pi = teInitIterator(ts);
+    while ((p = teNextIterator(pi)) != NULL) {
+	p->this = dsFree(p->this);
+	p->provides = dsFree(p->provides);
+	p->requires = dsFree(p->requires);
+	p->conflicts = dsFree(p->conflicts);
+	p->obsoletes = dsFree(p->obsoletes);
+    }
+    pi = teFreeIterator(pi);
+
+    ts->addedPackages = alFree(ts->addedPackages);
+
     return 0;
 }
 
