@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.7 2000/08/11 08:17:42 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.8 2000/10/05 04:48:59 rjray Exp $";
 
 /*
   Use this define for deriving the saved rpmdb struct, rather than coding
@@ -41,10 +41,6 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
     RPM_Database* dbstruct;
     RPM__Database TIEHASH;
 
-    new_RPM__Database(TIEHASH);
-    /* The dbstruct is used for the C-level rpmlib information on databases */
-    dbstruct = safemalloc(sizeof(RPM_Database));
-    Zero(dbstruct, 1, RPM_Database);
     if (opts)
     {
         if (SvROK(opts) && (SvTYPE(opts) == SVt_PVHV))
@@ -72,15 +68,24 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
     }
 
     /* With that all processed, attempt to open the actual RPM DB */
+    /* The dbstruct is used for the C-level rpmlib information on databases */
+    dbstruct = safemalloc(sizeof(RPM_Database));
+    Zero(dbstruct, 1, RPM_Database);
     if (rpmdbOpen(root, &dbstruct->dbp, mode, perms) != 0)
         /* rpm lib will have set the error already */
-        return ((RPM__Database)0);
+        return (Null(RPM__Database));
     else
     {
         dbstruct->current_rec = 0;
+#if RPM_MAJOR < 4
         dbstruct->index_set = (void *)NULL;
+#else
+        dbstruct->noffs = dbstruct->offx = 0;
+        dbstruct->offsets = (int *)NULL;
+#endif
     }
 
+    new_RPM__Database(TIEHASH);
     /* STRUCT_KEY is used to stash the C-level struct on the TIEHASH obj */
     hv_store_nomg(TIEHASH,
                   STRUCT_KEY, STRUCT_KEY_LEN, newSViv((unsigned)dbstruct),
@@ -94,12 +99,15 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
     int namelen;             /* Arg for SvPV(..., len)               */
     int offset;              /* In case they pass an integer offset  */
     Header hdr;              /* For rpmdbGetRecord() calls           */
+#if RPM_MAJOR >= 4
+    rpmdbMatchIterator mi;
+#endif
     SV** svp;
     RPM__Header FETCH;
     RPM_Database* dbstruct;  /* This is the struct used to hold C-level data */
 
     /* Any successful operation will re-assign this */
-    FETCH = (RPM__Header)0;
+    FETCH = Null(RPM__Header);
 
     dbstruct_from_object_ret(svp, dbstruct, self, FETCH);
     /* De-reference key, if it is a reference */
@@ -123,6 +131,8 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
             return FETCH;
         }
 
+#if RPM_MAJOR < 4
+        /* This is the old (3.0.4+) way of setting up and searching */
         /* Create an index set if we don't already have one */
         if (! dbstruct->index_set)
         {
@@ -154,6 +164,16 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
                 return FETCH;
             }
         }
+#else
+        /* This is the 4.0 way */
+        mi =  rpmdbInitIterator(dbstruct->dbp, RPMTAG_NAME, name, 0);
+        while ((hdr = rpmdbNextIterator(mi)) != NULL)
+        {
+            offset = rpmdbGetIteratorOffset(mi);
+            break;
+        }
+        rpmdbFreeIterator(mi);
+#endif
     }
     else if (SvIOK(key))
     {
@@ -168,10 +188,19 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
         return FETCH;
     }
 
+#if RPM_MAJOR < 4
     hdr = rpmdbGetRecord(dbstruct->dbp, offset);
     /* An error results in hdr getting NULL, which is just fine */
+#else
+    mi = rpmdbInitIterator(dbstruct->dbp, RPMDBI_PACKAGES,
+                           &offset, sizeof(offset));
+    hdr = rpmdbNextIterator(mi);
+#endif
     if (hdr)
     {
+#if RPM_MAJOR >= 4
+        hdr = headerLink(hdr);
+#endif
         FETCH = rpmhdr_TIEHASH(aTHX_ sv_2mortal(newSVpv("RPM::Header", 12)),
                                sv_2mortal(newRV((SV *)hdr)),
                                RPM_HEADER_FROM_REF | RPM_HEADER_READONLY);
@@ -183,6 +212,9 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
                           newSViv((unsigned)FETCH), FALSE);
         }
     }
+#if RPM_MAJOR >= 4
+    rpmdbFreeIterator(mi);
+#endif
 
     return FETCH;
 }
@@ -208,11 +240,40 @@ int rpmdb_FIRSTKEY(pTHX_ RPM__Database self, SV** key, RPM__Header* value)
     SV** svp;
 
     dbstruct_from_object_ret(svp, dbstruct, self, 0);
+#if RPM_MAJOR < 4
     /* This more or less resets our "iterator" */
     dbstruct->current_rec = 0;
 
     if (! (dbstruct->current_rec = rpmdbFirstRecNum(dbstruct->dbp)))
         return 0;
+#else
+    if (dbstruct->offsets == NULL || dbstruct->noffs <= 0)
+    {
+        rpmdbMatchIterator mi;
+        Header h;
+
+        if (dbstruct->offsets)
+            free(dbstruct->offsets);
+        dbstruct->offsets = NULL;
+        dbstruct->noffs = 0;
+        mi = rpmdbInitIterator(dbstruct->dbp, RPMDBI_PACKAGES, NULL, 0);
+        while ((h = rpmdbNextIterator(mi)) != NULL)
+        {
+            dbstruct->noffs++;
+            dbstruct->offsets =
+                realloc(dbstruct->offsets,
+                        dbstruct->noffs * sizeof(dbstruct->offsets[0]));
+            dbstruct->offsets[dbstruct->noffs-1] = rpmdbGetIteratorOffset(mi);
+        }
+        rpmdbFreeIterator(mi);
+    }
+
+    if (dbstruct->offsets == NULL || dbstruct->noffs <= 0)
+        return 0;
+
+    dbstruct->offx = 0;
+    dbstruct->current_rec = dbstruct->offsets[dbstruct->offx++];
+#endif
 
     *value = rpmdb_FETCH(aTHX_ self, newSViv(dbstruct->current_rec));
     *key = rpmhdr_FETCH(aTHX_ *value, newSVpv("name", 4), Nullch, 0, 0);
@@ -228,9 +289,18 @@ int rpmdb_NEXTKEY(pTHX_ RPM__Database self, SV* key,
 
     dbstruct_from_object_ret(svp, dbstruct, self, 0);
 
+#if RPM_MAJOR < 4
     if (! (dbstruct->current_rec = rpmdbNextRecNum(dbstruct->dbp,
                                                    dbstruct->current_rec)))
         return 0;
+#else
+    if (dbstruct->offsets == NULL || dbstruct->noffs <= 0)
+         return 0;
+    if (dbstruct->offx >= dbstruct->noffs)
+        return 0;
+
+    dbstruct->current_rec = dbstruct->offsets[dbstruct->offx++];
+#endif
 
     *nextvalue = rpmdb_FETCH(aTHX_ self, newSViv(dbstruct->current_rec));
     *nextkey = rpmhdr_FETCH(aTHX_ *nextvalue, newSVpv("name", 4),
@@ -247,8 +317,17 @@ void rpmdb_DESTROY(pTHX_ RPM__Database self)
     dbstruct_from_object(svp, dbstruct, self);
 
     rpmdbClose(dbstruct->dbp);
+#if RPM_MAJOR < 4
     if (dbstruct->index_set)
         dbiFreeIndexRecord(*dbstruct->index_set);
+#else
+    if (dbstruct->offsets)
+        safefree(dbstruct->offsets);
+    dbstruct->noffs = dbstruct->offx = 0;
+    dbstruct->offsets = NULL;
+#endif
+
+    hv_undef(self);
 }
 
 int rpmdb_init(SV* class, const char* root, int perms)
@@ -275,6 +354,9 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
     AV* return_val;
     int result, loop;
     RPM__Header tmp_hdr;
+#if RPM_MAJOR >= 4
+    rpmdbMatchIterator mi;
+#endif
     
     /* Any successful operation will store items on this */
     return_val = newAV();
@@ -286,28 +368,24 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
     /* Get the string */
     str = SvPV(string, len);
 
+#if RPM_MAJOR < 4
     /* Create an index set if we don't already have one */
     if (! dbstruct->index_set)
     {
         dbstruct->index_set = (dbiIndexSet *)safemalloc(sizeof(dbiIndexSet));
         Zero(dbstruct->index_set, 1, dbiIndexSet);
     }
-    /*
-      Run the search
-      This goes back to the comment below at the ALIAS: XS keyword, that the
-      indexing here shouldn't be hard-coded.
-    */
-    if (idx == 0)
+    if (idx == RPMTAG_BASENAMES)
         result = rpmdbFindByFile(dbstruct->dbp, str, dbstruct->index_set);
-    else if (idx == 1)
+    else if (idx == RPMTAG_GROUP)
         result = rpmdbFindByGroup(dbstruct->dbp, str, dbstruct->index_set);
-    else if (idx == 2)
+    else if (idx == RPMTAG_PROVIDENAME)
         result = rpmdbFindByProvides(dbstruct->dbp, str, dbstruct->index_set);
-    else if (idx == 3)
+    else if (idx == RPMTAG_REQUIRENAME)
         result = rpmdbFindByRequiredBy(dbstruct->dbp,str, dbstruct->index_set);
-    else if (idx == 4)
+    else if (idx == RPMTAG_CONFLICTNAME)
         result = rpmdbFindByConflicts(dbstruct->dbp, str, dbstruct->index_set);
-    else if (idx == 5)
+    else if (idx == RPMTAG_NAME)
         result = rpmdbFindPackage(dbstruct->dbp, str, dbstruct->index_set);
 
     /* The various rpmdbFind*() routines return 0 on success */
@@ -321,6 +399,21 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
             av_store(return_val, loop, sv_2mortal(newSViv((I32)tmp_hdr)));
         }
     }
+#else
+    mi = rpmdbInitIterator(dbstruct->dbp, idx, str, 0);
+    if (mi)
+    {
+        av_extend(return_val, rpmdbGetIteratorCount(mi));
+        loop = 0;
+        while ((rpmdbNextIterator(mi)) != NULL)
+        {
+            idx = rpmdbGetIteratorOffset(mi);
+            tmp_hdr = rpmdb_FETCH(aTHX_ self, sv_2mortal(newSViv(idx)));
+            av_store(return_val, loop++, sv_2mortal(newSViv((I32)tmp_hdr)));
+        }
+    }
+    rpmdbFreeIterator(mi);
+#endif
 
     return return_val;
 }
@@ -489,11 +582,11 @@ rpmdb_find_by_file(self, string)
     PROTOTYPE: $$
     ALIAS:
     # These should not be hard-coded, fix in later rev
-        find_by_group = 1
-        find_by_provides = 2
-        find_by_required_by = 3
-        find_by_conflicts = 4
-        find_by_package = 5
+        find_by_group = RPMTAG_GROUP
+        find_by_provides = RPMTAG_PROVIDENAME
+        find_by_required_by = RPMTAG_REQUIRENAME
+        find_by_conflicts = RPMTAG_CONFLICTNAME
+        find_by_package = RPMTAG_NAME
     PPCODE:
     {
         AV* matches;
@@ -502,6 +595,7 @@ rpmdb_find_by_file(self, string)
         RPM__Header hdr;
         SV* hdr_ptr;
 
+        if (ix == 0) ix = RPMTAG_BASENAMES;
         matches = rpmdb_find_by_whatever(aTHX_ self, string, ix);
         if ((len = av_len(matches)) != -1)
         {

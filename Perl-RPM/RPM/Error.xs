@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Error.xs,v 1.1 2000/08/02 08:45:16 rjray Exp $";
+static char * const rcsid = "$Id: Error.xs,v 1.2 2000/10/05 04:48:59 rjray Exp $";
 
 static CV* err_callback;
 
@@ -36,7 +36,7 @@ static void rpm_catch_errors(void)
     SvPOK_on(rpm_errSV);
 
     /* If there is a current callback, invoke it: */
-    if (err_callback != NULL)
+    if (err_callback != Nullcv)
     {
         /* This is just standard boilerplate for calling perl from C */
         dSP;
@@ -98,7 +98,7 @@ SV* set_error_callback(pTHX_ SV* newcb)
     }
     else
     {
-        err_callback = Null(CV *);
+        err_callback = Nullcv;
     }
 
     return oldcb;

@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.9 2000/08/18 08:23:25 rjray Exp $
+ * $Id: RPM.h,v 1.10 2000/10/05 04:48:59 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -41,8 +41,10 @@
 #endif
 
 #include <rpm/rpmlib.h>
-#include <rpm/header.h>
-#include <rpm/dbindex.h>
+#if RPM_MAJOR < 4
+#  include <rpm/header.h>
+#  include <rpm/dbindex.h>
+#endif
 
 /*
  *    Perl complement: RPM::Database
@@ -58,7 +60,13 @@
 typedef struct {
     rpmdb dbp;
     int current_rec;
+#if RPM_MAJOR < 4
     dbiIndexSet* index_set;
+#else
+    int noffs;
+    int offx;
+    int* offsets;
+#endif
 } RPM_Database;
 
 typedef HV* RPM__Database;
@@ -124,10 +132,12 @@ typedef struct {
     /* Should this be treated as a read-only source? */
     int read_only;
     /* The current notify/callback function associated with this package */
-    rpmCallbackFunction callback;
+    CV* callback;
 } RPM_Package;
 
-#define new_RPM__Package(x) x = (RPM_Package *)safemalloc(sizeof(RPM_Package))
+typedef RPM_Package* RPM__Package;
+
+#define new_RPM__Package(x) x = (RPM__Package)safemalloc(sizeof(RPM_Package))
 
 
 /*

@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.16 2000/08/25 15:21:11 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.17 2000/10/05 04:48:59 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -237,7 +237,7 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
 
     hdr_struct = safemalloc(sizeof(RPM_Header));
     Zero(hdr_struct, 1, RPM_Header);
-    TIEHASH = (RPM__Header)0;
+    TIEHASH = Null(RPM__Header);
 
     if (! source)
         hdr_struct->hdr = headerNew();
@@ -910,6 +910,8 @@ void rpmhdr_DESTROY(pTHX_ RPM__Header self)
         headerFreeIterator(hdr->iterator);
     if (hdr->hdr)
         headerFree(hdr->hdr);
+
+    hv_undef(self);
 }
 
 unsigned int rpmhdr_size(pTHX_ RPM__Header self)

@@ -8,6 +8,7 @@ use ExtUtils::MakeMaker;
          RPM/Error.xs       RPM/Error.c
          RPM/Header.xs      RPM/Header.c
         );
+#         RPM/Package.xs     RPM/Package.c
 
 @OBJECT = values %XS;
 for (@OBJECT)
@@ -45,11 +46,25 @@ information, stopped"
 
 chomp($rpm_version = qx($rpm_binary --version));
 $rpm_version = (reverse split(/ /, $rpm_version))[0];
-$rpm_version = join('', map { sprintf "%03d", $_ } split(/\./, $rpm_version));
+@rpm_version = split(/\./, $rpm_version);
+push(@rpm_version, '0') unless (@rpm_version > 2);
+$rpm_version = join('', map { sprintf "%03d", $_ } @rpm_version);
 $rpm_version =~ s/^0*//;
 die "RPM version must be at least 3.0.4, due to I/O features not available
 prior to that version. Stopped"
     unless ($rpm_version >= 3000004);
+# Starting with RPM 4.0, there are a number of subtle-but-significant changes
+if ($rpm_version >= 4000000)
+{
+    $rpm_defines = "-DRPM_MAJOR=$rpm_version[0] -DRPM_MINOR=$rpm_version[1]" .
+        " -DRPM_PATCH=$rpm_version[2]";
+    $rpm_libs = '-lrpm -lrpmio -lpopt';
+}
+else
+{
+    $rpm_defines = '';
+    $rpm_libs = '-lrpm -lpopt';
+}
 
 # Check for needed header files
 $rpm_libdir = '';
@@ -67,13 +82,13 @@ WriteMakefile(
               NAME         => 'RPM',
               DISTNAME     => 'Perl-RPM',
               VERSION_FROM => 'RPM.pm',
-              LIBS         => '-lrpm -lpopt',
-              DEFINE       => '',
+              LIBS         => $rpm_libs,
+              DEFINE       => $rpm_defines,
               PM           => \%PM,
               XS           => \%XS,
               EXE_FILES    => [ @SAMPLES ],
               OBJECT       => $OBJECT,
-              INC          => "-I$rpm_libdir",
+              INC          => "-I. -I$rpm_libdir",
               DIR          => [],
               dist         => { COMPRESS => 'gzip -9f' },
               clean        => { FILES => $CLEAN },
