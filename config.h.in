@@ -83,4 +83,8 @@
 /* Define as one if you have <sys/mnttab.h> */
 #define HAVE_SYS_MNTTAB_H 0
 
+/* Define as one if you have getmntent(), you'll also need one of the above
+   two defined */
+#define HAVE_GETMNTENT 0
+
 #endif
