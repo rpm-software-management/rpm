@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-05-12 19:24-0400\n"
+"POT-Creation-Date: 2000-05-17 12:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2082,53 +2082,53 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/cpio.c:351
+#: lib/cpio.c:359
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "%s okunamadý: %s"
 
-#: lib/cpio.c:357
+#: lib/cpio.c:365
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:597
+#: lib/cpio.c:609
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1047
+#: lib/cpio.c:1070
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "hata: "
 
-#: lib/cpio.c:1050
+#: lib/cpio.c:1073
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1074
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1069
+#: lib/cpio.c:1092
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1093
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(bilinmeyen tip)"
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1094
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1095
 #, fuzzy
 msgid "Internal error"
 msgstr "ölümcül hata: "
 
-#: lib/cpio.c:1081
+#: lib/cpio.c:1104
 #, fuzzy
 msgid " failed - "
 msgstr "PGP hata verdi"
@@ -2752,200 +2752,200 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""
 
-#: lib/query.c:140
+#: lib/query.c:141
 #, c-format
 msgid "error in format: %s\n"
 msgstr "format hatasý: %s\n"
 
-#: lib/query.c:183
+#: lib/query.c:200
 msgid "(contains no files)"
 msgstr "(hiç dosya içermiyor)"
 
-#: lib/query.c:240
+#: lib/query.c:259
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:242
+#: lib/query.c:261
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:244
+#: lib/query.c:263
 #, fuzzy
 msgid "not installed "
 msgstr "%s pakedi yüklenmemiþ\n"
 
-#: lib/query.c:246
+#: lib/query.c:265
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:248
+#: lib/query.c:267
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(bilinmeyen tip)"
 
-#: lib/query.c:252
+#: lib/query.c:271
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:269 lib/query.c:310
+#: lib/query.c:288 lib/query.c:331
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:354
+#: lib/query.c:375
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "hata: %s eriþilemiyor\n"
 
 #. XXX Fstrerror
-#: lib/query.c:471
+#: lib/query.c:492
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s 'ye erisimde belirtilen hata oluþtu: %s\n"
 
-#: lib/query.c:489
+#: lib/query.c:510
 msgid "old format source packages cannot be queried\n"
 msgstr "eski tip kaynak paketleri sorgulanamýyor\n"
 
-#: lib/query.c:498 lib/rpminstall.c:231
+#: lib/query.c:519 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s bir RPM paketi deðil (gibi)\n"
 
-#: lib/query.c:502
+#: lib/query.c:523
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:535
+#: lib/query.c:556
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:558
+#: lib/query.c:579
 #, fuzzy
 msgid "no packages\n"
 msgstr "Tüm paketleri sorgulama"
 
-#: lib/query.c:568
+#: lib/query.c:589
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s grubu hiç paket içermiyor\n"
 
-#: lib/query.c:578
+#: lib/query.c:599
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "hiç bir paket %s tetiklemiyor\n"
 
-#: lib/query.c:588
+#: lib/query.c:609
 #, c-format
 msgid "no package requires %s\n"
 msgstr "hiç bir paket %s gerektirmiyor\n"
 
-#: lib/query.c:599
+#: lib/query.c:620
 #, c-format
 msgid "no package provides %s\n"
 msgstr "hiç bir paket  %s saðlamýyor\n"
 
-#: lib/query.c:615
+#: lib/query.c:636
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/query.c:618
+#: lib/query.c:639
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/query.c:643
+#: lib/query.c:664
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/query.c:646
+#: lib/query.c:667
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/query.c:650
+#: lib/query.c:671
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "%d numaralý kayýt okunamadý\n"
 
-#: lib/query.c:661 lib/rpminstall.c:435
+#: lib/query.c:682 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s pakedi yüklenmemiþ\n"
 
-#: lib/query.c:740
+#: lib/query.c:761
 #, fuzzy
 msgid "query package owning file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:742
+#: lib/query.c:763
 #, fuzzy
 msgid "query packages in group"
 msgstr "pakedin adý yok :-)"
 
-#: lib/query.c:744
+#: lib/query.c:765
 #, fuzzy
 msgid "query a package file"
 msgstr "Tüm paketleri sorgulama"
 
-#: lib/query.c:748
+#: lib/query.c:769
 #, fuzzy
 msgid "query a spec file"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:750
+#: lib/query.c:771
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:752
+#: lib/query.c:773
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
 
-#: lib/query.c:754
+#: lib/query.c:775
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
-#: lib/query.c:793
+#: lib/query.c:814
 #, fuzzy
 msgid "list all configuration files"
 msgstr ""
 "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
 
-#: lib/query.c:795
+#: lib/query.c:816
 #, fuzzy
 msgid "list all documentation files"
 msgstr "paket ile gelen belgeleri de yükler"
 
-#: lib/query.c:797
+#: lib/query.c:818
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paket bilgisini gösterme"
 
-#: lib/query.c:799
+#: lib/query.c:820
 #, fuzzy
 msgid "list files in package"
 msgstr "paket yüklemek"
 
-#: lib/query.c:803
+#: lib/query.c:824
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:805
+#: lib/query.c:826
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:807
+#: lib/query.c:828
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:809
+#: lib/query.c:830
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Paketin içerdiði dosyalarý gösterme"
@@ -3092,7 +3092,7 @@ msgstr "%s kaydý %s dosyasýna yazýlamýyor"
 msgid "error removing record %s from %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:683 lib/rpmdb.c:2186
+#: lib/rpmdb.c:683 lib/rpmdb.c:2192
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
@@ -3108,111 +3108,111 @@ msgstr ""
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
 
-#: lib/rpmdb.c:1050 lib/rpmdb.c:1560 lib/uninstall.c:90
+#: lib/rpmdb.c:1050 lib/rpmdb.c:1566 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
-#: lib/rpmdb.c:1611
+#: lib/rpmdb.c:1617
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1622
+#: lib/rpmdb.c:1628
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1631
+#: lib/rpmdb.c:1637
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1638 lib/rpmdb.c:1861
+#: lib/rpmdb.c:1644 lib/rpmdb.c:1867
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
 # reservieren???
-#: lib/rpmdb.c:1774
+#: lib/rpmdb.c:1780
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "Veritabaný için yer bulunamadý"
 
-#: lib/rpmdb.c:1829
+#: lib/rpmdb.c:1835
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1845
+#: lib/rpmdb.c:1851
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1854
+#: lib/rpmdb.c:1860
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2211
+#: lib/rpmdb.c:2217
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2215
+#: lib/rpmdb.c:2221
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "geçici veritabaný %s mevcut"
 
-#: lib/rpmdb.c:2221
+#: lib/rpmdb.c:2227
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2229
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2230
+#: lib/rpmdb.c:2236
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2239
+#: lib/rpmdb.c:2245
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2262
+#: lib/rpmdb.c:2268
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rpmdb.c:2294
+#: lib/rpmdb.c:2300
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d de yer alan kayýt saklayamýyor"
 
-#: lib/rpmdb.c:2312
+#: lib/rpmdb.c:2318
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2326
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2322
+#: lib/rpmdb.c:2328
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2332
+#: lib/rpmdb.c:2338
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2340
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -3317,67 +3317,67 @@ msgstr "hata: %s eriþilemiyor\n"
 msgid "Installing %s\n"
 msgstr "%s yükleniyor\n"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:796
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:799
 #, fuzzy
 msgid "Bad server response"
 msgstr "FTP sunucusundan kötü yanýt"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:802
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP I/O hatasý"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:805
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP sunucusu zaman aþýmý"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:808
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:811
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:814
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "FTP sunucusuna baðlanýlamadý"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:817
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:820
 msgid "IO error to local file"
 msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
 
-#: lib/rpmio.c:814
+#: lib/rpmio.c:823
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:826
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: lib/rpmio.c:820
+#: lib/rpmio.c:829
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:824
+#: lib/rpmio.c:833
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP bilinmeyen ya da beklenmeyen hata"
 
-#: lib/rpmio.c:1357
+#: lib/rpmio.c:1366
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.101 $
+# $Revision: 1.102 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-05-12 19:24-0400\n"
+"POT-Creation-Date: 2000-05-17 12:19-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1987,51 +1987,51 @@ msgstr "rad %d: Felaktigt no%s-tal: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "rad %d: Felaktigt %s-tal: %s\n"
 
-#: lib/cpio.c:351
+#: lib/cpio.c:359
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "kan inte flytta %s till %s: %s\n"
 
-#: lib/cpio.c:357
+#: lib/cpio.c:365
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "kan inte ta bort %s: %s\n"
 
-#: lib/cpio.c:597
+#: lib/cpio.c:609
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1047
+#: lib/cpio.c:1070
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fel 0x%x)"
 
-#: lib/cpio.c:1050
+#: lib/cpio.c:1073
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1074
 msgid "Bad/unreadable  header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: lib/cpio.c:1069
+#: lib/cpio.c:1092
 msgid "Header size too big"
 msgstr "Huvudstorlek för stor"
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1093
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1094
 msgid "Missing hard link"
 msgstr "Saknad hårdlänk"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1095
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: lib/cpio.c:1081
+#: lib/cpio.c:1104
 msgid " failed - "
 msgstr " misslyckades - "
 
@@ -2658,187 +2658,187 @@ msgstr "installation av paket %s-%s-%s kräver %ld%cb på filsystem %s"
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "okänt fel %d uppträdde under manipulation av paket %s-%s-%s"
 
-#: lib/query.c:140
+#: lib/query.c:141
 #, c-format
 msgid "error in format: %s\n"
 msgstr "fel i format: %s\n"
 
-#: lib/query.c:183
+#: lib/query.c:200
 msgid "(contains no files)"
 msgstr "(innehåller inga filer)"
 
-#: lib/query.c:240
+#: lib/query.c:259
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:242
+#: lib/query.c:261
 msgid "replaced      "
 msgstr "ersatt        "
 
-#: lib/query.c:244
+#: lib/query.c:263
 msgid "not installed "
 msgstr "oinstallerat  "
 
-#: lib/query.c:246
+#: lib/query.c:265
 msgid "net shared    "
 msgstr "nätdelad      "
 
-#: lib/query.c:248
+#: lib/query.c:267
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(okänd %3d)   "
 
-#: lib/query.c:252
+#: lib/query.c:271
 msgid "(no state)    "
 msgstr "(ej tillstnd) "
 
-#: lib/query.c:269 lib/query.c:310
+#: lib/query.c:288 lib/query.c:331
 msgid "package has neither file owner or id lists"
 msgstr "paketet har varken filägare eller id-listor"
 
-#: lib/query.c:354
+#: lib/query.c:375
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "kan inte ta bort %s: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:471
+#: lib/query.c:492
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades öppna %s: %s\n"
 
-#: lib/query.c:489
+#: lib/query.c:510
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går ej att fråga om\n"
 
-#: lib/query.c:498 lib/rpminstall.c:231
+#: lib/query.c:519 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s verkar inte vara ett RPM-paket\n"
 
-#: lib/query.c:502
+#: lib/query.c:523
 #, c-format
 msgid "query of %s failed\n"
 msgstr "fråga om %s misslyckades\n"
 
-#: lib/query.c:535
+#: lib/query.c:556
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga om spec-fil %s misslyckades, kan inte parsa\n"
 
-#: lib/query.c:558
+#: lib/query.c:579
 #, fuzzy
 msgid "no packages\n"
 msgstr "hittade %d paket\n"
 
-#: lib/query.c:568
+#: lib/query.c:589
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:578
+#: lib/query.c:599
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:588
+#: lib/query.c:609
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:599
+#: lib/query.c:620
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:615
+#: lib/query.c:636
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:618
+#: lib/query.c:639
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "fil %s ägs inte av något paket\n"
 
-#: lib/query.c:643
+#: lib/query.c:664
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:646
+#: lib/query.c:667
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "paketpost nummer: %d\n"
 
-#: lib/query.c:650
+#: lib/query.c:671
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:661 lib/rpminstall.c:435
+#: lib/query.c:682 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
 
-#: lib/query.c:740
+#: lib/query.c:761
 msgid "query package owning file"
 msgstr "undersök paket som äger fil"
 
-#: lib/query.c:742
+#: lib/query.c:763
 msgid "query packages in group"
 msgstr "undersök paket i grupp"
 
-#: lib/query.c:744
+#: lib/query.c:765
 msgid "query a package file"
 msgstr "undersök en paketfil"
 
-#: lib/query.c:748
+#: lib/query.c:769
 msgid "query a spec file"
 msgstr "fråga om en spec-fil"
 
-#: lib/query.c:750
+#: lib/query.c:771
 msgid "query the pacakges triggered by the package"
 msgstr "undersök paket utlösta av paketet"
 
-#: lib/query.c:752
+#: lib/query.c:773
 msgid "query the packages which require a capability"
 msgstr "fråga om paket som behöver en egenskap"
 
-#: lib/query.c:754
+#: lib/query.c:775
 msgid "query the packages which provide a capability"
 msgstr "fråga om paket som tillhandahåller en egenskap"
 
-#: lib/query.c:793
+#: lib/query.c:814
 msgid "list all configuration files"
 msgstr "lista alla konfigurationsfiler"
 
-#: lib/query.c:795
+#: lib/query.c:816
 msgid "list all documentation files"
 msgstr "lista alla dokumentationsfiler"
 
-#: lib/query.c:797
+#: lib/query.c:818
 msgid "dump basic file information"
 msgstr "visa filinformation"
 
-#: lib/query.c:799
+#: lib/query.c:820
 msgid "list files in package"
 msgstr "lista filer i paketet"
 
-#: lib/query.c:803
+#: lib/query.c:824
 msgid "use the following query format"
 msgstr "använd följande frågeformat"
 
-#: lib/query.c:805
+#: lib/query.c:826
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "ersätt översatta sektioner från följande katalog"
 
-#: lib/query.c:807
+#: lib/query.c:828
 msgid "display the states of the listed files"
 msgstr "visa tillstånd för de listade filerna"
 
-#: lib/query.c:809
+#: lib/query.c:830
 msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 
@@ -2982,7 +2982,7 @@ msgstr "fel när post %s sparades i %s"
 msgid "error removing record %s from %s"
 msgstr "fel när post %s togs bort ur %s"
 
-#: lib/rpmdb.c:683 lib/rpmdb.c:2186
+#: lib/rpmdb.c:683 lib/rpmdb.c:2192
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
@@ -3000,111 +3000,111 @@ msgstr ""
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "kan inte öppna paket: %s\n"
 
-#: lib/rpmdb.c:1050 lib/rpmdb.c:1560 lib/uninstall.c:90
+#: lib/rpmdb.c:1050 lib/rpmdb.c:1566 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "kan inte läsa huvud vid %d för uppslagning"
 
-#: lib/rpmdb.c:1611
+#: lib/rpmdb.c:1617
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "tar bort databasposter\n"
 
-#: lib/rpmdb.c:1622
+#: lib/rpmdb.c:1628
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "tar bort gruppindex\n"
 
-#: lib/rpmdb.c:1631
+#: lib/rpmdb.c:1637
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "tar bort namnindex\n"
 
-#: lib/rpmdb.c:1638 lib/rpmdb.c:1861
+#: lib/rpmdb.c:1644 lib/rpmdb.c:1867
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1774
+#: lib/rpmdb.c:1780
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "kan inte allokera plats för databas"
 
-#: lib/rpmdb.c:1829
+#: lib/rpmdb.c:1835
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1845
+#: lib/rpmdb.c:1851
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/rpmdb.c:1854
+#: lib/rpmdb.c:1860
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2211
+#: lib/rpmdb.c:2217
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: lib/rpmdb.c:2215
+#: lib/rpmdb.c:2221
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tillfällig databas %s existerar redan"
 
-#: lib/rpmdb.c:2221
+#: lib/rpmdb.c:2227
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "skapar katalog: %s\n"
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2229
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "fel när katalog skapades %s: %s"
 
-#: lib/rpmdb.c:2230
+#: lib/rpmdb.c:2236
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "öppnar gammal databas\n"
 
-#: lib/rpmdb.c:2239
+#: lib/rpmdb.c:2245
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas\n"
 
-#: lib/rpmdb.c:2262
+#: lib/rpmdb.c:2268
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den"
 
-#: lib/rpmdb.c:2294
+#: lib/rpmdb.c:2300
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kan inte lägga till post ursprungligen vid %d"
 
-#: lib/rpmdb.c:2312
+#: lib/rpmdb.c:2318
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen; orginaldatabasen finns kvar\n"
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2326
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: lib/rpmdb.c:2322
+#: lib/rpmdb.c:2328
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: lib/rpmdb.c:2332
+#: lib/rpmdb.c:2338
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "skapar katalog: %s\n"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2340
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"
@@ -3206,59 +3206,59 @@ msgstr "kan inte öppna %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:796
 msgid "Success"
 msgstr "Lyckades"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:799
 msgid "Bad server response"
 msgstr "Konstigt svar från server"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:802
 msgid "Server IO error"
 msgstr "IO-fel mot server"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:805
 msgid "Server timeout"
 msgstr "Förbindelsen med servern dog ut (timeout)"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:808
 msgid "Unable to lookup server host address"
 msgstr "Kunde inte slå upp serverns adress"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:811
 msgid "Unable to lookup server host name"
 msgstr "Kunde inte slå upp serverns namn"
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:814
 msgid "Failed to connect to server"
 msgstr "Misslyckades med att kontakta servern"
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:817
 msgid "Failed to establish data connection to server"
 msgstr "Misslyckades med att etablera en dataförbindelse till servern"
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:820
 msgid "IO error to local file"
 msgstr "IO-fel mot lokal fil"
 
-#: lib/rpmio.c:814
+#: lib/rpmio.c:823
 msgid "Error setting remote server to passive mode"
 msgstr "Fel när den fjärrservern sattes i passivt läge"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:826
 msgid "File not found on server"
 msgstr "Filen fanns inte på servern"
 
-#: lib/rpmio.c:820
+#: lib/rpmio.c:829
 msgid "Abort in progress"
 msgstr "Avbruten under gång"
 
-#: lib/rpmio.c:824
+#: lib/rpmio.c:833
 msgid "Unknown or unexpected error"
 msgstr "Okänt eller oväntat fel"
 
-#: lib/rpmio.c:1357
+#: lib/rpmio.c:1366
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "loggar in på %s som %s, lösenord %s\n"
