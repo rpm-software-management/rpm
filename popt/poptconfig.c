@@ -66,8 +66,11 @@ static void configLine(poptContext con, char * line)
 	if (j != i)
 	    item->argv[j] = item->argv[i];
     }
-    if (j != i)
+    if (j != i) {
 	item->argv[j] = NULL;
+	item->argc = j;
+    }
+    
     /*@=modobserver@*/
 	
     if (!strcmp(entryType, "alias"))

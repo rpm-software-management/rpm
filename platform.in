@@ -72,6 +72,10 @@
 	infodir=%{?buildroot:%{buildroot}}%{_infodir} \\\
   install
 
+%_smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \
+	&& RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \
+	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j${RPM_BUILD_NCPUS}")
+
 @MULTILIBSTART@
 #---------------------------------------------------------------------
 #	Multilibs

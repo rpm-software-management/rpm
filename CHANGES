@@ -160,6 +160,10 @@
 	- fix: -i CLI context broken Yet Again.
 	- unlink all __db.nnn files before 1st db open.
 	- python bindings should not segfault when fed bad data.
+	- fix: adjust arg count for --POPTdesc/--POPTargs deletion.
+	- add linux per-platform macro %_smp_mflags <sopwith@redhat.com>.
+	- document more popt aliases for --help usage.
+	- remove --tarbuild from man page(s), use -t[abpcils] instead (#48666).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

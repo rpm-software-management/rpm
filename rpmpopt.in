@@ -4,6 +4,13 @@
 # This file *should not be modified*. Local customizations
 # belong in /etc/popt, not here. This file will be replaced
 # whenever a new version of RPM is installed.
+#
+# Note: Not all popt aliases are documented. This is a decision on my
+# part as to which are the more important aliases. Feel free to clip
+# a copy of the alias/exec here and place in /etc/popt or ~/.popt with
+# your own words added. It's easier than arguing about how many options
+# fit on the head of an executable :-)
+#
 
 rpm	alias --scripts --qf '\
 %|PREIN?{preinstall scriptlet\
@@ -27,12 +34,13 @@ rpm	alias --scripts --qf '\
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
 rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
-		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh"
+		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh" \
+	--POPTdesc=$"set permissions of files in a package"
 
 rpm	alias --setugids -q --qf \
         '[ch %{FILEUSERNAME:shescape} %{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
-        --pipe "(echo 'ch() { chown -- \"$1\" \"$3\";chgrp -- \"$2\" \"$3\"; }';grep -v \(none\))|sh"
-
+        --pipe "(echo 'ch() { chown -- \"$1\" \"$3\";chgrp -- \"$2\" \"$3\"; }';grep -v \(none\))|sh" \
+	--POPTdesc=$"set user/group ownership of files in a package"
 
 rpm	alias --conflicts	--qf \
   "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
@@ -77,8 +85,11 @@ rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VER
 rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
 
-rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides
-rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires
+rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides \
+	--POPTdesc=$"find package name that contains a provided capability (needs rpmdb-redhat package installed)"
+
+rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires \
+	--POPTdesc=$"find package name that contains a required capability (needs rpmdb-redhat package installed)"
 
 # colon separated i18n domains to use as PO catalogue lookaside for
 * retrieving header group/description/summary.
@@ -87,7 +98,9 @@ rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendo
 rpm alias --i18ndomains --define '_i18ndomains !#:+'
 
 # Build policies enabled from command line. Last policy applies.
-rpm alias --buildpolicy --define '__os_install_post @RPMCONFIGDIR@/brp-!#:+'
+rpm alias --buildpolicy --define '__os_install_post @RPMCONFIGDIR@/brp-!#:+' \
+	--POPTdesc=$"set buildroot <policy> (e.g. compress man pages)" \
+	--POPTargs=$"<policy>"
 
 # Choose db interface:
 #	0	same as 1
@@ -164,8 +177,12 @@ rpm	exec -V			rpmv -V
 rpm	exec -y			rpmv -y
 rpm	exec --verify		rpmv --verify
 
-rpm	alias --with		--define "_with_!#:+       --with-!#:+"
-rpm	alias --without		--define "_without_!#:+    --without-!#:+"
+rpm	alias --with		--define "_with_!#:+       --with-!#:+" \
+	--POPTdesc=$"enable configure <option> for build" \
+	--POPTargs=$"<option>"
+rpm	alias --without		--define "_without_!#:+    --without-!#:+" \
+	--POPTdesc=$"disable configure <option> for build" \
+	--POPTargs=$"<option>"
 #==============================================================================
 rpmb	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use <dir> as the directory for the database" \
@@ -175,19 +192,27 @@ rpmb	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmb	alias --httpport	--define '_httpport !#:+'
 rpmb	alias --httpproxy	--define '_httpproxy !#:+'
 rpmb	alias --timecheck	--define '_timecheck !#:+'
-rpmb	alias --with		--define "_with_!#:+       --with-!#:+"
-rpmb	alias --without		--define "_without_!#:+    --without-!#:+"
+rpmb	alias --with		--define "_with_!#:+       --with-!#:+" \
+	--POPTdesc=$"enable configure <option> for build" \
+	--POPTargs=$"<option>"
+rpmb	alias --without		--define "_without_!#:+    --without-!#:+" \
+	--POPTdesc=$"disable configure <option> for build" \
+	--POPTargs=$"<option>"
 #==============================================================================
 rpmbuild	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use <dir> as the directory for the database" \
 	--POPTargs=$"<dir>"
-rpmbuild	alias --ftpport		--define '_ftpport !#:+'
-rpmbuild	alias --ftpproxy	--define '_ftpproxy !#:+'
-rpmbuild	alias --httpport	--define '_httpport !#:+'
-rpmbuild	alias --httpproxy	--define '_httpproxy !#:+'
-rpmbuild	alias --timecheck	--define '_timecheck !#:+'
-rpmbuild	alias --with		--define "_with_!#:+     --with-!#:+"
-rpmbuild	alias --without		--define "_without_!#:+  --without-!#:+"
+rpmbuild alias --ftpport		--define '_ftpport !#:+'
+rpmbuild alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmbuild alias --httpport	--define '_httpport !#:+'
+rpmbuild alias --httpproxy	--define '_httpproxy !#:+'
+rpmbuild alias --timecheck	--define '_timecheck !#:+'
+rpmbuild alias --with		--define "_with_!#:+     --with-!#:+" \
+	--POPTdesc=$"enable configure <option> for build" \
+	--POPTargs=$"<option>"
+rpmbuild alias --without	--define "_without_!#:+  --without-!#:+" \
+	--POPTdesc=$"disable configure <option> for build" \
+	--POPTargs=$"<option>"
 #==============================================================================
 rpmd	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use <dir> as the directory for the database" \
@@ -258,13 +283,6 @@ rpmq	alias --scripts --qf '\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
-rpmq	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
-		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh"
-
-rpmq	alias --setugids -q --qf \
-        '[ch %{FILEUSERNAME:shescape} %{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
-        --pipe "(echo 'ch() { chown -- \"$1\" \"$3\";chgrp -- \"$2\" \"$3\"; }';grep -v \(none\))|sh"
-
 rpmq	alias --conflicts	--qf \
   "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
 	--POPTdesc=$"list capabilities this package conflicts with"
@@ -274,9 +292,6 @@ rpmq	alias --obsoletes	--qf \
 rpmq	alias --provides	--qf \
   "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list capabilities that this package provides"
-
-# XXX prereq output is part of requires for query
-#rpmq	alias --prereq	--qf '[%{PREREQ}:depflags\n]'
 
 rpmq	alias --requires	--qf \
   "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
