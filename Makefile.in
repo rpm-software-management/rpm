@@ -38,6 +38,7 @@ OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o build.o \
 PROGS = @RPM@ rpm2cpio
 LIBS = @LIBS@ @LIBINTL@ @LIBDL@
 LOADLIBES = -lrpmbuild -lpopt -lrpm @LIBMISC@
+LDFLAGS_STATIC = @LDFLAGS_STATIC@
 
 SOURCES = $(subst .o,.c,$(OBJS))
 
