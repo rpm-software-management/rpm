@@ -436,22 +436,24 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	    t = stpcpy(t, ".bzdio");
     }
 
-    {
-	FD_t cfd;
-	(void) Fflush(alp->fd);
+    {	FD_t cfd;
 
 	cfd = Fdopen(fdDup(Fileno(alp->fd)), rpmio_flags);
 	cfd = fdLink(cfd, "persist (installArchive");
 
-	rc = fsmSetup(fi->fsm, FSM_INSTALL, ts, fi, cfd, NULL, &failedFile);
+	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi, cfd, NULL, &failedFile);
+#ifdef	DYING
 	rc = cpioInstallArchive(fi->fsm);
+#endif
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	Fclose(cfd);
 	(void) fsmTeardown(fi->fsm);
 
 	if (!rc && ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT) {
-	    rc = fsmSetup(fi->fsm, FSM_COMMIT, ts, fi, NULL, NULL, &failedFile);
+	    rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi, NULL, NULL, &failedFile);
+#ifdef	DYING
 	    rc = cpioInstallArchive(fi->fsm);
+#endif
 	    (void) fsmTeardown(fi->fsm);
 	}
     }
@@ -729,6 +731,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     HGE_t hge = (HGE_t)fi->hge;
 /*@observer@*/ static char * stepName = " install";
     Header oldH = NULL;
+    int chrootDone = 0;
     int otherOffset = 0;
     int ec = 2;		/* assume error return */
     int rc;
@@ -809,7 +812,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	goto exit;
     }
 
-    if (ts->rootDir) {
+    if (ts->rootDir && !ts->chrootDone) {
 	static int _loaded = 0;
 
 	/*
@@ -824,7 +827,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 
 	chdir("/");
 	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
-	ts->chrootDone = 1;
+	chrootDone = ts->chrootDone = 1;
     }
 
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
@@ -854,9 +857,9 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	    goto exit;
     }
 
-    if (ts->rootDir) {
+    if (ts->rootDir && chrootDone) {
 	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
-	ts->chrootDone = 0;
+	chrootDone = ts->chrootDone = 0;
 	chdir(ts->currDir);
     }
 

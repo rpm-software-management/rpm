@@ -18,6 +18,8 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
 /*@observer@*/ static char * stepName = "   erase";
     Header h;
+    int chrootDone = 0;
+    const char * failedFile = NULL;
     const void * pkgKey = NULL;
     int rc = 0;
 
@@ -48,6 +50,12 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	rpmdbFreeIterator(mi);
     }
 
+    if (ts->rootDir && !ts->chrootDone) {
+	chdir("/");
+	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+	chrootDone = ts->chrootDone = 1;
+    }
+
     if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
@@ -73,7 +81,11 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	    (void)ts->notify(h, RPMCALLBACK_UNINST_START, fi->fc, fi->fc,
 		pkgKey, ts->notifyData);
 
-	rc = pkgActions(ts, fi, FSM_COMMIT);
+	rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi, NULL, NULL, &failedFile);
+#ifdef	DYING
+	rc = cpioInstallArchive(fi->fsm);
+#endif
+	(void) fsmTeardown(fi->fsm);
 
 	if (ts->notify)
 	    (void)ts->notify(h, RPMCALLBACK_UNINST_STOP, 0, fi->fc,
@@ -92,6 +104,12 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	rc = runTriggers(ts, RPMSENSE_TRIGGERPOSTUN, h, -1);
 	if (rc)
 	    return 2;
+    }
+
+    if (ts->rootDir && chrootDone) {
+	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
+	chrootDone = ts->chrootDone = 0;
+	chdir(ts->currDir);
     }
 
     if (!(ts->transFlags & RPMTRANS_FLAG_TEST))

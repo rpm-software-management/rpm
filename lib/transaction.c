@@ -1081,7 +1081,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
 		/* Here is an overlapped added file we don't want to nuke. */
-		if (recs[otherPkgNum]->actions[otherFileNum] != FA_REMOVE) {
+		if (recs[otherPkgNum]->actions[otherFileNum] != FA_ERASE) {
 		    /* On updates, don't remove files. */
 		    fi->actions[i] = FA_SKIP;
 		    break;
@@ -1094,7 +1094,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	    if (fi->fstates[i] != RPMFILE_STATE_NORMAL)
 		break;
 	    if (!(S_ISREG(fi->fmodes[i]) && (fi->fflags[i] & RPMFILE_CONFIG))) {
-		fi->actions[i] = FA_REMOVE;
+		fi->actions[i] = FA_ERASE;
 		break;
 	    }
 		
@@ -1105,7 +1105,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 		    break;
 		}
 	    }
-	    fi->actions[i] = FA_REMOVE;
+	    fi->actions[i] = FA_ERASE;
 	    break;
 	}
 
@@ -1130,7 +1130,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 		ds->bneeded -= BLOCK_ROUND(fi->replacedSizes[i], ds->bsize);
 		break;
 
-	      case FA_REMOVE:
+	      case FA_ERASE:
 		ds->ineeded--;
 		ds->bneeded -= s;
 		break;

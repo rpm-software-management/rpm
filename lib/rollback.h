@@ -32,19 +32,21 @@ typedef enum fileStage_e {
     FSM_UNDO	=  5,
     FSM_FINI	=  6,
 
-    FSM_INSTALL =  7,
-    FSM_ERASE	=  8,
-    FSM_BUILD	=  9,
+    FSM_PKGINSTALL	=  7,
+    FSM_PKGERASE	=  8,
+    FSM_PKGBUILD	=  9,
+    FSM_PKGCOMMIT	= 10,
+    FSM_PKGUNDO		= 11,
 
-    FSM_CREATE	=  _fi(17),
-    FSM_MAP	=  _fi(18),
+    FSM_CREATE	=  _fd(17),
+    FSM_MAP	=  _fd(18),
     FSM_MKDIRS	=  _fi(19),
     FSM_RMDIRS	=  _fi(20),
     FSM_MKLINKS	=  _fi(21),
     FSM_NOTIFY	=  _fd(22),
-    FSM_DESTROY	=  _fi(23),
+    FSM_DESTROY	=  _fd(23),
     FSM_VERIFY	=  _fd(24),
-    FSM_COMMIT	=  _fi(25),
+    FSM_COMMIT	=  _fd(25),
 
     FSM_UNLINK	=  _fs(33),
     FSM_RENAME	=  _fs(34),
@@ -92,7 +94,7 @@ typedef enum fileAction_e {
     FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
     FA_SKIP, 		/*!< ... already replaced, don't remove. */
     FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
-    FA_REMOVE,		/*!< ... to be removed. */
+    FA_ERASE,		/*!< ... to be removed. */
     FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
     FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
     FA_SKIPMULTILIB,	/*!< ... untouched. @todo state "multilib" ???. */
@@ -131,6 +133,7 @@ enum fileTypes {
 struct transactionFileInfo_s {
   /* for all packages */
     enum rpmTransactionType type;
+    fileAction action;		/*!< File disposition default. */
 /*@owned@*/ fileAction * actions;	/*!< File disposition(s) */
 /*@owned@*/ struct fingerPrint_s * fps;	/*!< File fingerprint(s) */
     HGE_t hge;			/*!< Vector to headerGetEntry() */
@@ -140,6 +143,7 @@ struct transactionFileInfo_s {
 /*@owned@*/ const char * version;
 /*@owned@*/ const char * release;
     int_32 epoch;
+    uint_32 flags;		/*!< File flag default. */
     const uint_32 * fflags;	/*!< File flag(s) (from header) */
     const uint_32 * fsizes;	/*!< File size(s) (from header) */
     const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
@@ -239,6 +243,7 @@ void freeFi(TFI_t fi)
  */
 /*@observer@*/ const char *const fileActionString(fileAction a);
 
+#ifdef	DYING
 /**
  * Perform package install/remove actions for s single file.
  * @todo Eliminate.
@@ -259,6 +264,7 @@ int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a);
  * @return		0 on success, otherwise no. of failures
  */
 int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a);
+#endif
 
 /**
  * Load external data into file state machine.

@@ -69,6 +69,7 @@ typedef enum cpioMapFlags_e {
 extern "C" {
 #endif
 
+#ifdef	DYING
 /** \ingroup payload
  * The RPM internal equivalent of the command line "cpio -i".
  *
@@ -93,6 +94,7 @@ int cpioInstallArchive(FSM_t fsm)
  */
 int cpioBuildArchive(FSM_t fsm)
 	/*@modifies fileSystem, fsm @*/;
+#endif
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.

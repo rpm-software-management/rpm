@@ -68,12 +68,16 @@ void loadFi(Header h, TFI_t fi)
     hge(fi->h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
     hge(fi->h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
 
+    fi->action = FA_UNKNOWN;
+    fi->flags = 0;
+
     /* actions is initialized earlier for added packages */
     if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
     switch (fi->type) {
     case TR_ADDED:
+	fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
 	hge(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
@@ -84,6 +88,7 @@ void loadFi(Header h, TFI_t fi)
 
 	break;
     case TR_REMOVED:
+	fi->mapflags = CPIO_MAP_PATH;
 	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
 	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
@@ -179,6 +184,13 @@ void freeFi(TFI_t fi)
 /*@observer@*/ const char *const fileStageString(fileStage a) {
     switch(a) {
     case FSM_UNKNOWN:	return "unknown";
+
+    case FSM_PKGINSTALL:return "pkginstall";
+    case FSM_PKGERASE:	return "pkgerase";
+    case FSM_PKGBUILD:	return "pkgbuild";
+    case FSM_PKGCOMMIT:	return "pkgcommit";
+    case FSM_PKGUNDO:	return "pkgundo";
+
     case FSM_CREATE:	return "create";
     case FSM_INIT:	return "init";
     case FSM_MAP:	return "map";
@@ -243,7 +255,7 @@ void freeFi(TFI_t fi)
     case FA_SAVE:	return "save";
     case FA_SKIP:	return "skip";
     case FA_ALTNAME:	return "altname";
-    case FA_REMOVE:	return "remove";
+    case FA_ERASE:	return "erase";
     case FA_SKIPNSTATE: return "skipnstate";
     case FA_SKIPNETSHARED: return "skipnetshared";
     case FA_SKIPMULTILIB: return "skipmultilib";
@@ -252,6 +264,7 @@ void freeFi(TFI_t fi)
     /*@notreached@*/
 }
 
+#ifdef	DYING
 /**
  */
 struct pkgIterator {
@@ -319,3 +332,4 @@ int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a)
     }
     return rc;
 }
+#endif
