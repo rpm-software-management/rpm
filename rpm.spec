@@ -1,9 +1,9 @@
 Summary: Red Hat Package Manager
 Name: rpm
-Version: 2.3.8
+Version: 2.3.9
 Release: 1
 Group: Utilities/System
-Source: ftp://ftp.redhat.com/pub/code/rpm/rpm-2.3.8.tar.gz
+Source: ftp://ftp.redhat.com/pub/code/rpm/rpm-2.3.9.tar.gz
 Copyright: GPL
 BuildRoot: /tmp/rpm
 Requires: cpio
