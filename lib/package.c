@@ -563,22 +563,7 @@ verifyinfo_exit:
 /*@-boundswrite@*/
     buf[0] = '\0';
 /*@=boundswrite@*/
-    switch (rpmVerifySignature(ts, buf)) {
-    case RPMSIG_OK:		/* Signature is OK. */
-	rc = RPMRC_OK;
-	break;
-    case RPMSIG_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
-    case RPMSIG_NOKEY:		/* Key is unavailable. */
-	rc = RPMRC_OK;
-	break;
-    case RPMSIG_UNKNOWN:	/* Signature is unknown type. */
-	rc = RPMRC_OK;
-	break;
-    default:
-    case RPMSIG_BAD:		/* Signature does not verify. */
-	rc = RPMRC_FAIL;
-	break;
-    }
+    rc = rpmVerifySignature(ts, buf);
 
 /*@-boundswrite@*/
     if (msg != NULL)
@@ -619,7 +604,8 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     }
 
     memset(l, 0, sizeof(*l));
-    if (readLead(fd, l)) {
+    rc = readLead(fd, l);
+    if (rc != RPMRC_OK) {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
@@ -643,14 +629,18 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 
     /* Read the signature header. */
     rc = rpmReadSignature(fd, &sigh, l->signature_type);
-    if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
+    switch (rc) {
+    default:
 	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
 	goto exit;
-    }
-    if (sigh == NULL) {
-	rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
-	rc = RPMRC_FAIL;
-	goto exit;
+	/*@notreached@*/ break;
+    case RPMRC_OK:
+	if (sigh == NULL) {
+	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+	break;
     }
 
 #define	_chk(_mask)	(sigtag == 0 && !(vsflags & (_mask)))
@@ -818,24 +808,24 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 /*@-boundswrite@*/
     buf[0] = '\0';
 /*@=boundswrite@*/
-    switch (rpmVerifySignature(ts, buf)) {
-    case RPMSIG_OK:		/* Signature is OK. */
+    rc = rpmVerifySignature(ts, buf);
+    switch (rc) {
+    case RPMRC_OK:		/* Signature is OK. */
 	rpmMessage(RPMMESS_DEBUG, "%s: %s", fn, buf);
-	rc = RPMRC_OK;
 	break;
-    case RPMSIG_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
-    case RPMSIG_NOKEY:		/* Key is unavailable. */
+    case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
+    case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
     {	int lvl = (rpmtsStashKeyid(ts) ? RPMMESS_DEBUG : RPMMESS_WARNING);
 	rpmMessage(lvl, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
     }	break;
-    case RPMSIG_UNKNOWN:	/* Signature is unknown type. */
+    case RPMRC_NOTFOUND:	/* Signature is unknown type. */
 	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;
     default:
-    case RPMSIG_BAD:		/* Signature does not verify. */
+    case RPMRC_FAIL:		/* Signature does not verify. */
 	rpmMessage(RPMMESS_ERROR, "%s: %s", fn, buf);
 	rc = RPMRC_FAIL;
 	break;

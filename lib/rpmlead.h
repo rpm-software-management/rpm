@@ -13,9 +13,9 @@ extern "C" {
  * Write lead to file handle.
  * @param fd		file handle
  * @param lead		data address
- * @return		0 on success, 1 on error
+ * @return		0 on success
  */
-int writeLead(FD_t fd, const struct rpmlead *lead)
+rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
@@ -23,9 +23,9 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
  * Read lead from file handle.
  * @param fd		file handle
  * @retval lead		data address
- * @return		0 on success, 1 on error
+ * @return		0 on success
  */
-int readLead(FD_t fd, /*@out@*/ struct rpmlead *lead)
+rpmRC readLead(FD_t fd, /*@out@*/ struct rpmlead *lead)
 	/*@modifies fd, *lead @*/;
 
 #ifdef __cplusplus

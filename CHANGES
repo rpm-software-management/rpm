@@ -260,6 +260,8 @@
 	- fix: region trailer offset sanity check wrong (#71996).
 	- fix: don't stop if db1 database is currently in /var/lib/rpm (#72224).
 	- add a macro to create a sub-package with debugging symbols.
+	- merge signature returns into rpmRC.
+	- python: exceptions on NOKEY/NOTTRUSTED.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

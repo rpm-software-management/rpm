@@ -155,10 +155,10 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
  * @param fi		transaction element file info
  * @param h		header from
  * @param newH		header to
- * @return		0 on success, 1 on failure
+ * @return		0 on success
  */
 /*@-boundswrite@*/
-static int mergeFiles(rpmfi fi, Header h, Header newH)
+static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)fi->hge;
@@ -249,7 +249,7 @@ static int mergeFiles(rpmfi fi, Header h, Header newH)
 	default:
 	    rpmError(RPMERR_DATATYPE, _("Data type %d not supported\n"),
 			(int) type);
-	    return 1;
+	    return RPMRC_FAIL;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 	data = hfd(data, type);
@@ -333,7 +333,7 @@ static int mergeFiles(rpmfi fi, Header h, Header newH)
 	newEVR = hfd(newEVR, nvt);
 	Names = hfd(Names, rnt);
     }
-    return 0;
+    return RPMRC_OK;
 }
 /*@=boundswrite@*/
 
@@ -343,7 +343,7 @@ static int mergeFiles(rpmfi fi, Header h, Header newH)
  * @return		0 always
  */
 /*@-bounds@*/
-static int markReplacedFiles(const rpmpsm psm)
+static rpmRC markReplacedFiles(const rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -359,7 +359,7 @@ static int markReplacedFiles(const rpmpsm psm)
     int num, xx;
 
     if (!(rpmfiFC(fi) > 0 && fi->replaced))
-	return 0;
+	return RPMRC_OK;
 
     num = prev = 0;
     for (sfi = replaced; sfi->otherPkg; sfi++) {
@@ -369,7 +369,7 @@ static int markReplacedFiles(const rpmpsm psm)
 	num++;
     }
     if (num == 0)
-	return 0;
+	return RPMRC_OK;
 
     offsets = alloca(num * sizeof(*offsets));
     offsets[0] = 0;
@@ -414,7 +414,7 @@ static int markReplacedFiles(const rpmpsm psm)
     }
     mi = rpmdbFreeIterator(mi);
 
-    return 0;
+    return RPMRC_OK;
 }
 /*@=bounds@*/
 
@@ -436,10 +436,20 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     int i;
 
     rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
-    if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE) || h == NULL) {
+    switch (rc) {
+    case RPMRC_NOTTRUSTED:
+    case RPMRC_NOKEY:
+    case RPMRC_OK:
+	break;
+    default:
 	goto exit;
+	/*@notreached@*/ break;
     }
-    rc = RPMRC_OK;				/* XXX HACK */
+    if (h == NULL)
+	goto exit;
+
+    rc = RPMRC_OK;
+
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
     if (!isSource) {
@@ -934,9 +944,9 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @param arg1		no. instances of package installed after scriptlet exec
  *			(-1 is no arg)
  * @param arg2		ditto, but for the target package
- * @return		0 on success, 1 on error
+ * @return		0 on success
  */
-static int runScript(rpmpsm psm, Header h,
+static rpmRC runScript(rpmpsm psm, Header h,
 		const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
@@ -967,7 +977,7 @@ static int runScript(rpmpsm psm, Header h,
     const char *n, *v, *r;
 
     if (progArgv == NULL && script == NULL)
-	return 0;
+	return rc;
 
     psm->child = 0;
     psm->reaped = 0;
@@ -1030,7 +1040,7 @@ static int runScript(rpmpsm psm, Header h,
 	/*@-branchstate@*/
 	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
 	    if (freePrefixes) free(prefixes);
-	    return 1;
+	    return RPMRC_FAIL;
 	}
 	/*@=branchstate@*/
 
@@ -1083,7 +1093,7 @@ static int runScript(rpmpsm psm, Header h,
     } else {
 	out = fdDup(STDOUT_FILENO);
     }
-    if (out == NULL) return 1;	/* XXX can't happen */
+    if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     
     /*@-branchstate@*/
     if (!psmFork(psm)) {
@@ -1259,7 +1269,8 @@ exit:
  * @param triggersAlreadyRun
  * @return
  */
-static int handleOneTrigger(const rpmpsm psm, Header sourceH, Header triggeredH,
+static rpmRC handleOneTrigger(const rpmpsm psm,
+			Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState@*/
 	/*@modifies psm, sourceH, triggeredH, *triggersAlreadyRun,
@@ -1356,9 +1367,9 @@ static int handleOneTrigger(const rpmpsm psm, Header sourceH, Header triggeredH,
 /**
  * Run trigger scripts in the database that are fired by this header.
  * @param psm		package state machine data
- * @return		0 on success, 1 on error
+ * @return		0 on success
  */
-static int runTriggers(rpmpsm psm)
+static rpmRC runTriggers(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext,
@@ -1397,9 +1408,9 @@ static int runTriggers(rpmpsm psm)
 /**
  * Run triggers from this header that are fired by headers in the database.
  * @param psm		package state machine data
- * @return		0 on success, 1 on error
+ * @return		0 on success
  */
-static int runImmedTriggers(rpmpsm psm)
+static rpmRC runImmedTriggers(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext,
@@ -1417,14 +1428,14 @@ static int runImmedTriggers(rpmpsm psm)
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
 
-    if (fi->h == NULL)	return 0;	/* XXX can't happen */
+    if (fi->h == NULL)	return rc;	/* XXX can't happen */
 
     if (!(	hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
 			(void **) &triggerNames, &numTriggers) &&
 		hge(fi->h, RPMTAG_TRIGGERINDEX, &tit,
 			(void **) &triggerIndices, &numTriggerIndices))
 	)
-	return 0;
+	return rc;
 
     triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
     memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
@@ -1571,7 +1582,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
  * on install with -v.
  */
 /*@-bounds -nullpass@*/ /* FIX: testing null annotation for fi->h */
-int rpmpsmStage(rpmpsm psm, pkgStage stage)
+rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -1642,8 +1653,8 @@ assert(psm->mi == NULL);
 	     * need the leading / stripped.
 	     */
 	    {   const char * p;
-		rc = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
-		fi->striplen = (rc ? strlen(p) + 1 : 1); 
+		xx = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
+		fi->striplen = (xx ? strlen(p) + 1 : 1); 
 	    }
 	    fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -1670,7 +1681,7 @@ assert(psm->mi == NULL);
 	
 	    /* Retrieve installed header. */
 	    rc = rpmpsmStage(psm, PSM_RPMDB_LOAD);
-if (rc == 0)
+if (rc == RPMRC_OK)
 if (psm->te)
 psm->te->h = headerLink(fi->h);
 	}
@@ -1710,7 +1721,7 @@ psm->te->h = headerLink(fi->h);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
 		rc = rpmpsmStage(psm, PSM_SCRIPT);
-		if (rc) {
+		if (rc != RPMRC_OK) {
 		    rpmError(RPMERR_SCRIPT,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
 			psm->stepName, tag2sln(psm->scriptTag), rc,
@@ -1808,10 +1819,9 @@ psm->te->h = headerLink(fi->h);
 		strncpy(lead.name, rpmteNEVR(psm->te), sizeof(lead.name));
 
 		rc = writeLead(psm->fd, &lead);
-		if (rc) {
+		if (rc != RPMRC_OK) {
 		    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
 			 Fstrerror(psm->fd));
-		    rc = RPMRC_FAIL;
 		    break;
 		}
 	    }

@@ -344,9 +344,9 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 /**
  * Retrieve pubkey from rpm database.
  * @param ts		rpm transaction
- * @return		RPMSIG_OK on success, RPMSIG_NOKEY if not found
+ * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
  */
-rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
+rpmRC rpmtsFindPubkey(rpmts ts)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState */;
 

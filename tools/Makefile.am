@@ -14,7 +14,7 @@ INCLUDES = -I. \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c rpmsort.c
+EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h
 
 EXTRA_PROGRAMS = rpminject rpmsort
 

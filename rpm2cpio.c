@@ -47,15 +47,15 @@ int main(int argc, char **argv)
     }
 
     switch (rc) {
-    case RPMRC_BADSIZE:
     case RPMRC_OK:
+    case RPMRC_NOKEY:
+    case RPMRC_NOTTRUSTED:
 	break;
     case RPMRC_NOTFOUND:
 	fprintf(stderr, _("argument is not an RPM package\n"));
 	exit(EXIT_FAILURE);
 	break;
     case RPMRC_FAIL:
-    case RPMRC_SHORTREAD:
     default:
 	fprintf(stderr, _("error reading header from package\n"));
 	exit(EXIT_FAILURE);

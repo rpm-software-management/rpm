@@ -1422,7 +1422,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 				rpmteNEVR(p), &p->h);
 		    vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
-		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
+		    switch (rpmrc) {
+		    default:
 			/*@-noeffectuncon@*/ /* FIX: notify annotations */
 			p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
 					0, 0,
@@ -1430,6 +1431,9 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 			/*@=noeffectuncon@*/
 			p->fd = NULL;
 			ourrc++;
+			/*@innerbreak@*/ break;
+		    case RPMRC_OK:
+			/*@innerbreak@*/ break;
 		    }
 		    if (rpmteFd(p) != NULL) gotfd = 1;
 		}

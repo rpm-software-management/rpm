@@ -573,25 +573,32 @@ restart:
 
 	    (void) Fclose(fd);
 
-	    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_NOTFOUND)) {
+	    res = 0;
+	    switch (rpmrc) {
+	    default:
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
 		res = 1;
-		/*@loopbreak@*/ break;
-	    }
-	    if (rpmrc == RPMRC_OK && h == NULL) {
-		rpmError(RPMERR_QUERY,
+		/*@switchbreak@*/ break;
+	    case RPMRC_OK:
+		if (h == NULL) {
+		    rpmError(RPMERR_QUERY,
 			_("old format source packages cannot be queried\n"));
-		res = 1;
-		/*@loopbreak@*/ break;
-	    }
+		    res = 1;
+		    /*@switchbreak@*/ break;
+		}
 
-	    /* Query a package file. */
-	    if (rpmrc == RPMRC_OK) {
+		/* Query a package file. */
 		res = qva->qva_showPackage(qva, ts, h);
 		h = headerFree(h);
 		rpmtsEmpty(ts);
 		continue;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPMRC_NOTFOUND:
+		res = 0;
+		/*@switchbreak@*/ break;
 	    }
+	    if (res)
+		/*@loopbreak@*/ break;
 
 	    /* Try to read a package manifest. */
 	    fd = Fopen(fileURL, "r.fpio");

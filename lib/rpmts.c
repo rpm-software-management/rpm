@@ -170,17 +170,17 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
     return mi;
 }
 
-rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
+rpmRC rpmtsFindPubkey(rpmts ts)
 {
     const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     pgpDigParams pubp = rpmtsSignature(ts);
-    rpmVerifySignatureReturn res;
+    rpmRC res;
     int xx;
 
     if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL) {
-	res = RPMSIG_NOKEY;		/* XXX RPMSIG_ARGS */
+	res = RPMRC_NOKEY;
 	goto exit;
     }
 
@@ -216,7 +216,7 @@ rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
 
 	/* Was a matching pubkey found? */
 	if (ix < 0 || ts->pkpkt == NULL) {
-	    res = RPMSIG_NOKEY;
+	    res = RPMRC_NOKEY;
 	    goto exit;
 	}
 
@@ -233,7 +233,7 @@ rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
 	{
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
-	    res = RPMSIG_NOKEY;
+	    res = RPMRC_NOKEY;
 	    goto exit;
 	}
 
@@ -257,7 +257,7 @@ rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
 	    const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
 	    if (pgpReadPkts(pkfn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY) {
 		pkfn = _free(pkfn);
-		res = RPMSIG_NOKEY;
+		res = RPMRC_NOKEY;
 		goto exit;
 	    }
 	    pkfn = _free(pkfn);
@@ -274,9 +274,9 @@ rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
      && sigp->hash_algo == pubp->hash_algo
 #endif
      &&	!memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) )
-	res = RPMSIG_OK;
+	res = RPMRC_OK;
     else
-	res = RPMSIG_NOKEY;
+	res = RPMRC_NOKEY;
 
     /* XXX Verify the signature signature. */
 
@@ -449,17 +449,22 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	}
 	rpmrc = rpmReadPackageFile(ts, fd, str, &h);
 	xx = Fclose(fd);
-	if (rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) {
+	switch (rpmrc) {
+	default:
+	    str = _free(str);
+	    break;
+	case RPMRC_OK:
 	    if (h != NULL &&
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
 	    {
 		rpmMessage(RPMMESS_DEBUG, _("Adding: %s\n"), str);
 		rc = -1;
 		/* XXX str memory leak */
-	    } else
-		str = _free(str);
-	} else
+		break;
+	    }
 	    str = _free(str);
+	    break;
+	}
 	h = headerFree(h);
 	goto exit;
     }

@@ -338,15 +338,15 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     }
 
     switch (rc) {
+    case RPMRC_OK:
+    case RPMRC_NOKEY:
+    case RPMRC_NOTTRUSTED:
+	break;
     case RPMRC_NOTFOUND:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
 		(fileName ? fileName : "<stdin>"));
 	return RPMERR_BADMAGIC;
-    case RPMRC_OK:
-	break;
     case RPMRC_FAIL:
-    case RPMRC_BADSIZE:
-    case RPMRC_SHORTREAD:
     default:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
 		(fileName ? fileName : "<stdin>"));
@@ -624,7 +624,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	    strncpy(lead.name, buf, sizeof(lead.name));
 	}
 
-	if (writeLead(fd, &lead)) {
+	if (writeLead(fd, &lead) != RPMRC_OK) {
 	    rc = RPMERR_NOSPACE;
 	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
 		 Fstrerror(fd));

@@ -18,8 +18,8 @@ typedef	enum rpmRC_e {
     RPMRC_OK		= 0,	/*!< Generic success code */
     RPMRC_NOTFOUND	= 1,	/*!< Generic not found code. */
     RPMRC_FAIL		= 2,	/*!< Generic failure code. */
-    RPMRC_BADSIZE	= 3,
-    RPMRC_SHORTREAD	= 4
+    RPMRC_NOTTRUSTED	= 3,	/*!< Signature is OK, but key is not trusted. */
+    RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
 } rpmRC;
 
 /*@-redecl@*/
@@ -1129,17 +1129,6 @@ enum rpmtagSignature {
     RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< internal RSA header signature. */
 };
 
-/**
- *  Return codes from verifySignature().
- */
-typedef enum rpmVerifySignatureReturn_e {
-    RPMSIG_OK		= 0,	/*!< Signature is OK. */
-    RPMSIG_UNKNOWN	= 1,	/*!< Signature is unknown. */
-    RPMSIG_BAD		= 2,	/*!< Signature does not verify. */
-    RPMSIG_NOKEY	= 3,	/*!< Key is unavailable. */
-    RPMSIG_NOTTRUSTED	= 4	/*!< Signature is OK, but key is not trusted. */
-} rpmVerifySignatureReturn;
-
 /** \ingroup signature
  * Verify a signature from a package.
  *
@@ -1153,7 +1142,7 @@ typedef enum rpmVerifySignatureReturn_e {
  * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
-rpmVerifySignatureReturn rpmVerifySignature(const rpmts ts,
+rpmRC rpmVerifySignature(const rpmts ts,
 		/*@out@*/ char * result)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, *result, rpmGlobalMacroContext,

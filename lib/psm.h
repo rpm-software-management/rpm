@@ -174,7 +174,7 @@ rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
  * @param stage		next stage
  * @return		0 on success
  */
-int rpmpsmStage(rpmpsm psm, pkgStage stage)
+rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

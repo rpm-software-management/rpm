@@ -22,7 +22,7 @@ static unsigned char lead_magic[] = {
 
 /* The lead needs to be 8 byte aligned */
 
-int writeLead(FD_t fd, const struct rpmlead *lead)
+rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
 {
     struct rpmlead l;
 
@@ -38,13 +38,13 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
 	
 /*@-boundswrite@*/
     if (Fwrite(&l, 1, sizeof(l), fd) != sizeof(l))
-	return 1;
+	return RPMRC_FAIL;
 /*@=boundswrite@*/
 
-    return 0;
+    return RPMRC_OK;
 }
 
-int readLead(FD_t fd, struct rpmlead *lead)
+rpmRC readLead(FD_t fd, struct rpmlead *lead)
 {
 /*@-boundswrite@*/
     memset(lead, 0, sizeof(*lead));
@@ -53,12 +53,12 @@ int readLead(FD_t fd, struct rpmlead *lead)
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
 	rpmError(RPMERR_READ, _("read failed: %s (%d)\n"), Fstrerror(fd), 
 	      errno);
-	return 1;
+	return RPMRC_FAIL;
     }
     /*@=type@*/
 
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic)))
-	return 1;
+	return RPMRC_FAIL;
 
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);
@@ -67,5 +67,5 @@ int readLead(FD_t fd, struct rpmlead *lead)
     if (lead->major >= 2)
 	lead->signature_type = ntohs(lead->signature_type);
 
-    return 0;
+    return RPMRC_OK;
 }

@@ -204,7 +204,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 /*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
 /*@=boundswrite@*/
-	if (readLead(fd, l)) {
+	rc = readLead(fd, l);
+	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), rpm);
 	    goto exit;
 	}
@@ -222,13 +223,17 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	}
 
 	rc = rpmReadSignature(fd, &sigh, l->signature_type);
-	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
+	switch (rc) {
+	default:
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    goto exit;
-	}
-	if (sigh == NULL) {
-	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
-	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case RPMRC_OK:
+	    if (sigh == NULL) {
+		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
+		goto exit;
+	    }
+	    /*@switchbreak@*/ break;
 	}
 
 	/* Write the header and archive to a temp file */
@@ -343,7 +348,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    goto exit;
 
 	l->signature_type = RPMSIGTYPE_HEADERSIG;
-	if (writeLead(ofd, l)) {
+	rc = writeLead(ofd, l);
+	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
@@ -687,7 +693,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 /*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
 /*@=boundswrite@*/
-	if (readLead(fd, l)) {
+	rc = readLead(fd, l);
+	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), fn);
 	    res++;
 	    goto exit;
@@ -703,15 +710,19 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	}
 
 	rc = rpmReadSignature(fd, &sigh, l->signature_type);
-	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
+	switch (rc) {
+	default:
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
 	    res++;
 	    goto exit;
-	}
-	if (sigh == NULL) {
-	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
-	    res++;
-	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case RPMRC_OK:
+	    if (sigh == NULL) {
+		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+		res++;
+		goto exit;
+	    }
+	    /*@switchbreak@*/ break;
 	}
 
 	/* Grab a hint of what needs doing to avoid duplication. */
@@ -844,10 +855,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			switch (res3) {
-			case RPMSIG_NOKEY:
+			case RPMRC_NOKEY:
 			    res2 = 1;
 			    /*@fallthrough@*/
-			case RPMSIG_NOTTRUSTED:
+			case RPMRC_NOTTRUSTED:
 			{   int offset = 6;
 			    b = stpcpy(b, "(MD5) (PGP) ");
 			    tempKey = strstr(result, "ey ID");
@@ -856,7 +867,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 				offset = 9;
 			    }
 			    if (tempKey) {
-			      if (res3 == RPMSIG_NOKEY) {
+			      if (res3 == RPMRC_NOKEY) {
 				m = stpcpy(m, " PGP#");
 				m = stpncpy(m, tempKey + offset, 8);
 				*m = '\0';
@@ -880,7 +891,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    case RPMSIGTAG_GPG:
 			/* Do not consider this a failure */
 			switch (res3) {
-			case RPMSIG_NOKEY:
+			case RPMRC_NOKEY:
 			    b = stpcpy(b, "(GPG) ");
 			    m = stpcpy(m, " GPG#");
 			    tempKey = strstr(result, "ey ID");

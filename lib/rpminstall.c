@@ -463,20 +463,26 @@ if (fileURL[0] == '=') {
 	tvsflags = rpmtsSetVSFlags(ts, vsflags);
 	eiu->rpmrc = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
 	tvsflags = rpmtsSetVSFlags(ts, tvsflags);
-
-	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
-
 	xx = Fclose(eiu->fd);
 	eiu->fd = NULL;
 
-	if (eiu->rpmrc == RPMRC_FAIL || eiu->rpmrc == RPMRC_SHORTREAD) {
+	switch (eiu->rpmrc) {
+	case RPMRC_FAIL:
+	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *eiu->fnp);
 	    eiu->numFailed++; *eiu->fnp = NULL;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case RPMRC_NOTFOUND:
+	    goto maybe_manifest;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case RPMRC_OK:
+	default:
+	    /*@switchbreak@*/ break;
 	}
 
-	if (eiu->isSource &&
-		(eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE))
-	{
+	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
+
+	if (eiu->isSource) {
 	    rpmMessage(RPMMESS_DEBUG, "\tadded source package [%d]\n",
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
@@ -488,95 +494,87 @@ if (fileURL[0] == '=') {
 	    continue;
 	}
 
-	if (eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) {
+	if (eiu->relocations) {
+	    const char ** paths;
+	    int pft;
+	    int c;
 
-	    if (eiu->relocations) {
-		const char ** paths;
-		int pft;
-		int c;
-
-		if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,
+	    if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,
 				       (void **) &paths, &c) && (c == 1))
-		{
-		    eiu->relocations->oldPath = xstrdup(paths[0]);
-		    paths = headerFreeData(paths, pft);
-		} else {
-		    const char * name;
-		    xx = headerNVR(eiu->h, &name, NULL, NULL);
-		    rpmMessage(RPMMESS_ERROR,
-			       _("package %s is not relocateable\n"), name);
-		    eiu->numFailed++;
-		    goto exit;
-		    /*@notreached@*/
-		}
-	    }
-
-	    /* On --freshen, verify package is installed and newer */
-	    if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
-		rpmdbMatchIterator mi;
+	    {
+		eiu->relocations->oldPath = xstrdup(paths[0]);
+		paths = headerFreeData(paths, pft);
+	    } else {
 		const char * name;
-		Header oldH;
-		int count;
-
 		xx = headerNVR(eiu->h, &name, NULL, NULL);
-		mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
-		count = rpmdbGetIteratorCount(mi);
-		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
-		    if (rpmVersionCompare(oldH, eiu->h) < 0)
-			/*@innercontinue@*/ continue;
-		    /* same or newer package already installed */
-		    count = 0;
-		    /*@innerbreak@*/ break;
-		}
-		mi = rpmdbFreeIterator(mi);
-		if (count == 0) {
-		    eiu->h = headerFree(eiu->h);
-		    continue;
-		}
-		/* Package is newer than those currently installed. */
+		rpmMessage(RPMMESS_ERROR,
+			       _("package %s is not relocateable\n"), name);
+		eiu->numFailed++;
+		goto exit;
+		/*@notreached@*/
 	    }
+	}
 
-	    /*@-abstract@*/
-	    rc = rpmtsAddInstallElement(ts, eiu->h, (fnpyKey)fileName,
+	/* On --freshen, verify package is installed and newer */
+	if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
+	    rpmdbMatchIterator mi;
+	    const char * name;
+	    Header oldH;
+	    int count;
+
+	    xx = headerNVR(eiu->h, &name, NULL, NULL);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
+	    count = rpmdbGetIteratorCount(mi);
+	    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
+		if (rpmVersionCompare(oldH, eiu->h) < 0)
+		    /*@innercontinue@*/ continue;
+		/* same or newer package already installed */
+		count = 0;
+		/*@innerbreak@*/ break;
+	    }
+	    mi = rpmdbFreeIterator(mi);
+	    if (count == 0) {
+		eiu->h = headerFree(eiu->h);
+		continue;
+	    }
+	    /* Package is newer than those currently installed. */
+	}
+
+	/*@-abstract@*/
+	rc = rpmtsAddInstallElement(ts, eiu->h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			relocations);
-	    /*@=abstract@*/
+	/*@=abstract@*/
 
-	    /* XXX reference held by transaction set */
-	    eiu->h = headerFree(eiu->h);
-	    if (eiu->relocations)
-		eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
+	/* XXX reference held by transaction set */
+	eiu->h = headerFree(eiu->h);
+	if (eiu->relocations)
+	    eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
-	    switch(rc) {
-	    case 0:
-		rpmMessage(RPMMESS_DEBUG, "\tadded binary package [%d]\n",
+	switch(rc) {
+	case 0:
+	    rpmMessage(RPMMESS_DEBUG, "\tadded binary package [%d]\n",
 			eiu->numRPMS);
-		/*@switchbreak@*/ break;
-	    case 1:
-		rpmMessage(RPMMESS_ERROR,
+	    /*@switchbreak@*/ break;
+	case 1:
+	    rpmMessage(RPMMESS_ERROR,
 			    _("error reading from file %s\n"), *eiu->fnp);
-		eiu->numFailed++;
-		goto exit;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    case 2:
-		rpmMessage(RPMMESS_ERROR,
+	    eiu->numFailed++;
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case 2:
+	    rpmMessage(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
 			    *eiu->fnp);
-		eiu->numFailed++;
-		goto exit;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    }
-
-	    eiu->numRPMS++;
-	    continue;
+	    eiu->numFailed++;
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-	if (eiu->rpmrc != RPMRC_NOTFOUND) {
-	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *eiu->fnp);
-	    eiu->numFailed++; *eiu->fnp = NULL;
-	    break;
-	}
+	eiu->numRPMS++;
+	continue;
 
+maybe_manifest:
 	/* Try to read a package manifest. */
 	eiu->fd = Fopen(*eiu->fnp, "r.fpio");
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
@@ -599,7 +597,7 @@ if (fileURL[0] == '=') {
 	eiu->fd = NULL;
 
 	/* If successful, restart the query loop. */
-	if (rc == 0) {
+	if (rc == RPMRC_OK) {
 	    eiu->prevx++;
 	    goto restart;
 	}
@@ -971,19 +969,18 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
     FD_t fd;
     const char ** av = NULL;
     int ac = 0;
-    int rc;
+    rpmRC rpmrc;
     int xx;
     int i;
 
     av = NULL;	ac = 0;
-    rc = rpmGlob(globstr, &ac, &av);
+    xx = rpmGlob(globstr, &ac, &av);
 
-    if (rc == 0)
+    if (xx == 0)
     for (i = 0; i < ac; i++) {
 	rpmTagType type;
 	int_32 count;
 	int isSource;
-	rpmRC rpmrc;
 
 	fd = Fopen(av[i], "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
@@ -993,13 +990,17 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	    continue;
 	}
 
-	xx = rpmReadPackageFile(ts, fd, av[i], &h);
-	rpmrc = (xx ? RPMRC_FAIL : RPMRC_OK);		/* XXX HACK */
-	isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
-
-	if (rpmrc != RPMRC_OK || isSource) {
-	    (void) Fclose(fd);
-	    continue;
+	rpmrc = rpmReadPackageFile(ts, fd, av[i], &h);
+	(void) Fclose(fd);
+	switch (rpmrc) {
+	default:
+	    goto bottom;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	case RPMRC_OK:
+	    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+	    if (isSource)
+		goto bottom;
+	    /*@switchbreak@*/ break;
 	}
 
 	tidp = NULL;
@@ -1007,11 +1008,9 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp) {
 
 	    idtx = IDTXgrow(idtx, 1);
-	    if (idtx == NULL || idtx->idt == NULL) {
-		h = headerFree(h);
-		(void) Fclose(fd);
-		continue;
-	    }
+	    if (idtx == NULL || idtx->idt == NULL)
+		goto bottom;
+
 	    {	IDT idt;
 		idt = idtx->idt + idtx->nidt;
 		idt->h = headerLink(h);
@@ -1023,9 +1022,8 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	    idtx->nidt++;
 	}
 	/*@=branchstate@*/
-
+bottom:
 	h = headerFree(h);
-	(void) Fclose(fd);
     }
 
     for (i = 0; i < ac; i++)

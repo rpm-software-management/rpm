@@ -141,23 +141,23 @@ restart:
 	Fclose(fd);
 	fd = NULL;
 
-	if (rpmrc == RPMRC_FAIL || rpmrc == RPMRC_SHORTREAD) {
-	    numFailed++; *fnp = NULL;
-	    continue;
-	}
-
-	if (rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) {
-	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
-	    h = headerFree(h); 
-	    continue;
-	}
-
-	if (rpmrc != RPMRC_NOTFOUND) {
+	switch (rpmrc) {
+	case RPMRC_FAIL:
+	default:
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
 	    numFailed++; *fnp = NULL;
-	    break;
+	    /*@switchbreak@*/ break;
+	case RPMRC_OK:
+	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
+	    /*@switchbreak@*/ break;
+	case RPMRC_NOTFOUND:
+	    goto maybe_manifest;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
+	h = headerFree(h); 
+	continue;
 
+maybe_manifest:
 	/* Try to read a package manifest. */
 	fd = Fopen(*fnp, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {

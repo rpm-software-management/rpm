@@ -721,7 +721,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct, fileSystem @*/
 	/*@modifies s, _Py_NoneStruct, fileSystem @*/
 {
-    hdrObject * hdr;
+    PyObject * result = NULL;
     Header h;
     FD_t fd;
     int fdno;
@@ -737,25 +737,32 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p\n", s, s->ts);
     Fclose(fd);
 
     switch (rpmrc) {
-    case RPMRC_BADSIZE:
     case RPMRC_OK:
-	hdr = hdr_Wrap(h);
-	h = headerFree(h);	/* XXX ref held by hdr */
+	if (h)
+	    result = Py_BuildValue("N", hdr_Wrap(h));
+	h = headerFree(h);	/* XXX ref held by result */
 	break;
 
     case RPMRC_NOTFOUND:
 	Py_INCREF(Py_None);
-	hdr = (hdrObject *) Py_None;
+	result = Py_None;
+	break;
+
+    case RPMRC_NOKEY:
+	PyErr_SetString(pyrpmError, "public key not availaiable");
+	break;
+
+    case RPMRC_NOTTRUSTED:
+	PyErr_SetString(pyrpmError, "public key not trusted");
 	break;
 
     case RPMRC_FAIL:
-    case RPMRC_SHORTREAD:
     default:
 	PyErr_SetString(pyrpmError, "error reading package header");
-	return NULL;
+	break;
     }
 
-    return Py_BuildValue("N", hdr);
+    return result;
 }
 
 /** \ingroup python
@@ -794,8 +801,17 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 	Py_INCREF(Py_None);
 	result = Py_None;
 	break;
-    default:
+
+    case RPMRC_NOKEY:
+	PyErr_SetString(pyrpmError, "public key not availaiable");
+	break;
+
+    case RPMRC_NOTTRUSTED:
+	PyErr_SetString(pyrpmError, "public key not trusted");
+	break;
+
     case RPMRC_FAIL:
+    default:
 	PyErr_SetString(pyrpmError, msg);
 	break;
     }

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.87
+Release: 0.88
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -522,6 +522,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Aug 22 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.88
+- merge signature returns into rpmRC.
+- python: exceptions on NOKEY/NOTTRUSTED.
+
 * Thu Aug 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.87
 - fix: don't stop if db1 database is currently in /var/lib/rpm (#72224).
 - add a macro to create a sub-package with debugging symbols.
