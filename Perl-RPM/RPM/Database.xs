@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.16 2002/04/11 22:41:15 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.17 2002/04/12 00:16:33 rjray Exp $";
 
 /*
   rpmdb_TIEHASH
@@ -82,6 +82,7 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
     int namelen;             /* Arg for SvPV(..., len)               */
     int offset;              /* In case they pass an integer offset  */
     Header hdr;              /* For rpmdbGetRecord() calls           */
+    Header lasthdr;          /* For searching latest rpm             */
     rpmdbMatchIterator mi;
     SV** svp;
     SV* FETCH;
@@ -106,11 +107,24 @@ SV* rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
             return newSVsv(*svp);
 
         offset = -1;
+        lasthdr = NULL;
         mi =  rpmdbInitIterator(dbstruct->dbp, RPMTAG_NAME, name, 0);
         while ((hdr = rpmdbNextIterator(mi)) != NULL)
         {
-            offset = rpmdbGetIteratorOffset(mi);
-            break;
+            /* There might be more than one match. Find the newest one. */
+            if (lasthdr == NULL)
+            {
+                lasthdr = headerLink(hdr);
+                offset = rpmdbGetIteratorOffset(mi);
+            }
+            else
+            {
+                if (rpmVersionCompare(hdr, lasthdr) == 1)
+                {
+                    lasthdr = headerLink(hdr);
+                    offset = rpmdbGetIteratorOffset(mi);
+                }
+            }
         }
         rpmdbFreeIterator(mi);
         if (offset == -1)
