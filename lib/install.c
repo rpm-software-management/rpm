@@ -391,13 +391,15 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    free(obsoletes);
 	}
 
-	*intptr++ = 0;
+	if (toRemove) {
+	    *intptr++ = 0;
 
-	/* this means we don't have to free the list */
-	intptr = alloca(toRemoveAlloced * sizeof(int));
-	memcpy(intptr, toRemove, toRemoveAlloced * sizeof(int));
-	free(toRemove);
-	toRemove = intptr;
+	    /* this means we don't have to free the list */
+	    intptr = alloca(toRemoveAlloced * sizeof(int));
+	    memcpy(intptr, toRemove, toRemoveAlloced * sizeof(int));
+	    free(toRemove);
+	    toRemove = intptr;
+	}
     } else if (hasOthers) {
 	dbiFreeIndexRecord(matches);
     }
@@ -675,7 +677,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	return 2;
     }
 
-    if (flags & RPMINSTALL_UPGRADE) {
+    if (toRemove && flags & RPMINSTALL_UPGRADE) {
 	rpmMessage(RPMMESS_DEBUG, "removing old versions of package\n");
 	intptr = toRemove;
 	while (*intptr) {
@@ -1027,10 +1029,12 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 
 	rpmMessage(RPMMESS_DEBUG, "file %s is shared\n", secFileList[secNum]);
 
-	intptr = notErrors;
-	while (*intptr) {
-	    if (*intptr == sharedList[i].secRecOffset) break;
-	    intptr++;
+	if (notErrors) {
+	    intptr = notErrors;
+	    while (*intptr) {
+		if (*intptr == sharedList[i].secRecOffset) break;
+		intptr++;
+	    }
 	}
 
 	/* if this instance of the shared file is already recorded as
