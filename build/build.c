@@ -67,10 +67,10 @@ struct Script *openScript(Spec spec, int builddir, char *name)
     fprintf(script->file, "RPM_DOC_DIR=\"%s\"\n", getVar(RPMVAR_DOCDIR));
     fprintf(script->file, "RPM_OPT_FLAGS=\"%s\"\n", getVar(RPMVAR_OPTFLAGS));
 
-    getEntry(main_package->header, RPMTAG_VERSION, &foo, (void **)&s, &foo);
-    getEntry(main_package->header, RPMTAG_RELEASE, &foo, (void **)&s, &foo);
     fprintf(script->file, "RPM_PACKAGE_NAME=\"%s\"\n", spec->name);
+    getEntry(main_package->header, RPMTAG_VERSION, &foo, (void **)&s, &foo);
     fprintf(script->file, "RPM_PACKAGE_VERSION=\"%s\"\n", s);
+    getEntry(main_package->header, RPMTAG_RELEASE, &foo, (void **)&s, &foo);
     fprintf(script->file, "RPM_PACKAGE_RELEASE=\"%s\"\n", s);
 
     if (isVerbose()) {
