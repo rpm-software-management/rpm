@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-09 10:40-0400\n"
+"POT-Creation-Date: 2000-06-09 17:03-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2598,7 +2598,7 @@ msgstr "%s açýlamadý: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/db1.c:430 rpmio/url.c:444
+#: lib/db1.c:430 rpmio/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -2919,7 +2919,7 @@ msgstr ""
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:425 lib/misc.c:430 lib/misc.c:436
+#: lib/misc.c:273 lib/misc.c:278 lib/misc.c:284
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
@@ -4015,150 +4015,150 @@ msgstr "% den sonra eksik {"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 
-#: rpmio/rpmio.c:808
+#: rpmio/rpmio.c:532
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:811
+#: rpmio/rpmio.c:535
 #, fuzzy
 msgid "Bad server response"
 msgstr "FTP sunucusundan kötü yanýt"
 
-#: rpmio/rpmio.c:814
+#: rpmio/rpmio.c:538
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP I/O hatasý"
 
-#: rpmio/rpmio.c:817
+#: rpmio/rpmio.c:541
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP sunucusu zaman aþýmý"
 
-#: rpmio/rpmio.c:820
+#: rpmio/rpmio.c:544
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
 
-#: rpmio/rpmio.c:823
+#: rpmio/rpmio.c:547
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
 
-#: rpmio/rpmio.c:826
+#: rpmio/rpmio.c:550
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "FTP sunucusuna baðlanýlamadý"
 
-#: rpmio/rpmio.c:829
+#: rpmio/rpmio.c:553
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
 
-#: rpmio/rpmio.c:832
+#: rpmio/rpmio.c:556
 msgid "IO error to local file"
 msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
 
-#: rpmio/rpmio.c:835
+#: rpmio/rpmio.c:559
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
 
-#: rpmio/rpmio.c:838
+#: rpmio/rpmio.c:562
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:841
+#: rpmio/rpmio.c:565
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:845
+#: rpmio/rpmio.c:569
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1378
+#: rpmio/rpmio.c:1164
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/macro.c:160
+#: rpmio/macro.c:161
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: rpmio/macro.c:255
+#: rpmio/macro.c:256
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:290
+#: rpmio/macro.c:291
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:469
+#: rpmio/macro.c:470
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: rpmio/macro.c:495
+#: rpmio/macro.c:496
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: rpmio/macro.c:501
+#: rpmio/macro.c:502
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: rpmio/macro.c:506
+#: rpmio/macro.c:507
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: rpmio/macro.c:511
+#: rpmio/macro.c:512
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: rpmio/macro.c:536
+#: rpmio/macro.c:537
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: rpmio/macro.c:613
+#: rpmio/macro.c:614
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: rpmio/macro.c:710
+#: rpmio/macro.c:711
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: rpmio/macro.c:890
+#: rpmio/macro.c:891
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: rpmio/macro.c:956 rpmio/macro.c:972
+#: rpmio/macro.c:957 rpmio/macro.c:973
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: rpmio/macro.c:1012
+#: rpmio/macro.c:1013
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1138
+#: rpmio/macro.c:1139
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "%s pakedi %s içerisinde bulunamadý"
 
-#: rpmio/macro.c:1219
+#: rpmio/macro.c:1220
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1399 rpmio/macro.c:1405
+#: rpmio/macro.c:1400 rpmio/macro.c:1406
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "%s açýlamadý: %s"
 
-#: rpmio/macro.c:1408
+#: rpmio/macro.c:1409
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -4184,38 +4184,38 @@ msgstr ""
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:87
+#: rpmio/url.c:88
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:104
+#: rpmio/url.c:105
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:131
+#: rpmio/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:217
+#: rpmio/url.c:218
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s'%s için parola"
 
-#: rpmio/url.c:242 rpmio/url.c:268
+#: rpmio/url.c:243 rpmio/url.c:269
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "hata: ftpport bir sayý olmalý\n"
 
-#: rpmio/url.c:404
+#: rpmio/url.c:405
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "hata: ftpport bir sayý olmalý\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:461
+#: rpmio/url.c:462
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s yaratýlamýyor\n"
