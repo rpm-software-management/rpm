@@ -419,7 +419,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fileGnameList[c] = fest->gname;
 	    *size += fest->statbuf.st_size;
 	    if (S_ISREG(fest->statbuf.st_mode)) {
-		if (rpmGetVar(RPMVAR_ROOT)) {
+		if ((type == RPMLEAD_BINARY) &&
+		    rpmGetVar(RPMVAR_ROOT)) {
 		    sprintf(buf, "%s%s", rpmGetVar(RPMVAR_ROOT), fest->file);
 		} else {
 		    strcpy(buf, fest->file);
