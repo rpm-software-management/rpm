@@ -1,3 +1,9 @@
+4.1 -> 4.2:
+	- set cachesize without a dbenv, the default is far too small.
+	- db: don't return EACCES on db->close w/o environment.
+	- unify cachesize configuration, with (or without) a dbenv.
+	- comments regarding unsupported (yet) db-4.1.17 functionality.
+
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
 	- drop rpmio/base64.[ch] in favor of beecrypt.

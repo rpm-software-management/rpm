@@ -321,8 +321,8 @@ struct _dbiIndex {
     int	dbi_region_init;
     int	dbi_tas_spins;
 	/* mpool sub-system parameters */
-    int	dbi_mp_mmapsize;	/*!< (10Mb) */
-    int	dbi_mp_size;	/*!< (128Kb) */
+    int	dbi_mmapsize;	/*!< (10Mb) */
+    int	dbi_cachesize;	/*!< (128Kb) */
 	/* lock sub-system parameters */
     unsigned int dbi_lk_max;
     unsigned int dbi_lk_detect;
@@ -340,7 +340,6 @@ struct _dbiIndex {
 	/*@modifies fileSystem @*/;
 #endif
 	/* dbinfo parameters */
-    int	dbi_cachesize;		/*!< */
     int	dbi_pagesize;		/*!< (fs blksize) */
 /*@unused@*/ /*@null@*/
     void * (*dbi_malloc) (size_t nbytes)

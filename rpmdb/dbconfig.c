@@ -190,9 +190,11 @@ struct poptOption rdbOptions[] = {
  { "lorder",	0,POPT_ARG_INT,		&db3dbi.dbi_lorder, 0,
 	NULL, NULL },
 
- { "mp_mmapsize", 0,POPT_ARG_INT,	&db3dbi.dbi_mp_mmapsize, 0,
+ { "mmapsize", 0,POPT_ARG_INT,		&db3dbi.dbi_mmapsize, 0,
 	NULL, NULL },
- { "mp_size",	0,POPT_ARG_INT,		&db3dbi.dbi_mp_size, 0,
+ { "mp_mmapsize", 0,POPT_ARG_INT,	&db3dbi.dbi_mmapsize, 0,
+	NULL, NULL },
+ { "mp_size",	0,POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0,
 	NULL, NULL },
  { "pagesize",	0,POPT_ARG_INT,		&db3dbi.dbi_pagesize, 0,
 	NULL, NULL },
@@ -259,7 +261,7 @@ dbiIndex db3Free(dbiIndex dbi)
 /** @todo Set a reasonable "last gasp" default db config. */
 /*@observer@*/ /*@unchecked@*/
 static const char *db3_config_default =
-    "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:mp_size=512Kb:pagesize=512:perms=0644";
+    "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
 
 /*@-bounds@*/
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
@@ -432,8 +434,8 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
 	dbi->dbi_use_dbenv = 1;
 	dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
-	dbi->dbi_mp_mmapsize = 16 * 1024 * 1024;
-	dbi->dbi_mp_size = 1 * 1024 * 1024;
+	dbi->dbi_mmapsize = 16 * 1024 * 1024;
+	dbi->dbi_cachesize = 1 * 1024 * 1024;
     }
 
     if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)
