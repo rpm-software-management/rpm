@@ -11,14 +11,20 @@
 #include "rpmdb.h"
 
 struct fileInfo {
-    Header h;
+  /* for all packages */
     enum fileInfo_e { ADDED, REMOVED } type;
-    enum instActions * actions;
-    char ** fl, ** fmd5s, ** flinks;
-    uint_32 * fflags;
-    uint_16 * fmodes;
+    enum fileActions * actions;
     fingerPrint * fps;
+    uint_32 * fflags;
+    char ** fl, ** fmd5s;
+    uint_16 * fmodes;
+    Header h;
     int fc;
+  /* these are for ADDED packages */
+    char ** flinks;
+    struct availablePackage * ap;
+  /* for REMOVED packages */
+    unsigned int record;
 };
 
 struct sharedFileInfo {
@@ -36,13 +42,21 @@ static Header relocateFileList(struct availablePackage * alp,
 			       rpmProblemSet probs);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
 static int sharedCmp(const void * one, const void * two);
-static enum instActions decideFileFate(char * filespec, short dbMode, 
+static enum fileActions decideFileFate(char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int newFlags,
 				int brokenMd5);
 enum fileTypes whatis(short mode);
 static int filecmp(short mode1, char * md51, char * link1, 
 	           short mode2, char * md52, char * link2);
+static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
+			            struct sharedFileInfo * shared,
+			            int sharedCount, rpmProblemSet probs);
+static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
+			            struct sharedFileInfo * shared,
+			            int sharedCount);
+void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
+			   rpmProblemSet probs);
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
@@ -64,17 +78,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     int totalFileCount = 0;
     hashTable ht;
     struct fileInfo * flList, * fi;
-    struct fileInfo ** recs;
-    int numRecs;
-    char ** otherMd5s, ** otherLinks;
-    Header h;
-    char * otherStates;
     struct sharedFileInfo * shared, * sharedList;
-    uint_32 * otherFlags;
-    uint_16 * otherModes;
     int numShared;
-    int pkgNum, otherPkgNum;
-    int otherFileNum, fileNum;
+    int pkgNum;
+    int flEntries;
+    int last;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -112,66 +120,82 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    totalFileCount += fileCount;
     }
 
+    /* FIXME: it seems a bit silly to read in all of these headers twice */
+    for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
+	Header h;
+
+	if ((h = rpmdbGetRecord(ts->db, ts->removedPackages[i]))) {
+	    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, NULL, 
+			       &fileCount))
+		totalFileCount += fileCount;
+	}
+    }
+
     flList = alloca(sizeof(*flList) * (al->size + ts->numRemovedPackages));
 
     ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
     fi = flList;
 
-    /* FIXME: we'd be better off assembling one very large file list and
+    /* FIXME?: we'd be better off assembling one very large file list and
        calling fpLookupList only once. I'm not sure that the speedup is
        worth the trouble though. */
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++, fi++) {
-	if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	fi->h = alp->h;
+
+	if (!headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) &fi->fl, &fi->fc))
 	    continue;
-	headerGetEntryMinMemory(alp->h, RPMTAG_FILEMD5S, NULL, 
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
 				(void *) &fi->fmd5s, NULL);
-	headerGetEntryMinMemory(alp->h, RPMTAG_FILELINKTOS, NULL, 
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL, 
 				(void *) &fi->flinks, NULL);
-	headerGetEntryMinMemory(alp->h, RPMTAG_FILEMODES, NULL, 
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMODES, NULL, 
 				(void *) &fi->fmodes, NULL);
-	headerGetEntryMinMemory(alp->h, RPMTAG_FILEFLAGS, NULL, 
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILEFLAGS, NULL, 
 				(void *) &fi->fflags, NULL);
 
-	fi->h = alp->h;
 	fi->type = ADDED;
 	fi->actions = malloc(sizeof(*fi->actions) * fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
+	fi->ap = alp;
+	fi++;
+    }
+
+    for (i = 0; i < ts->numRemovedPackages; i++) {
+	fi->type = REMOVED;
+	fi->record = ts->removedPackages[i];
+	fi->h = rpmdbGetRecord(ts->db, fi->record);
+	if (!fi->h) {
+	    /* ACK! */
+	    continue;
+	}
+	if (!headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
+				     (void *) &fi->fl, &fi->fc)) {
+	    continue;
+	}
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILEFLAGS, NULL, 
+				(void *) &fi->fflags, NULL);
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
+				(void *) &fi->fmd5s, NULL);
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMODES, NULL, 
+				(void *) &fi->fmodes, NULL);
+
+	fi->actions = malloc(sizeof(*fi->actions) * fi->fc);
+        fi->fps = alloca(fi->fc * sizeof(*fi->fps));
+
+	fi++;
+    }
+
+    flEntries = fi - flList;
+    for (pkgNum = 0, fi = flList; pkgNum < flEntries; pkgNum++, fi++) {
 	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
 	for (i = 0; i < fi->fc; i++) {
-	     htAddEntry(ht, fi->fps + i, fi);
-	     fi->actions[i] = UNKNOWN;
+	    htAddEntry(ht, fi->fps + i, fi);
+	    fi->actions[i] = UNKNOWN;
 	}
     }
 
-/* FIXME 
-    for (i = 0; i < ts->numRemovedPackages; i++) {
-	flList[numPackages]->h = alp->h;
-	flList[numPackages]->info = info;
-	aggregateFileList(flList + numPackages, ht);
-	numPackages++;
-    }
-*/
-
-
-#if 0
-    /* We build this list to reduce database i/o, while still allowing
-       error messages to come out in a sensible order. */
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
-	if (!ts->db || rpmdbFindByFile(ts->db, fi->fl[i], &matches))
-	    continue;
-
-	for (j = 0; j < matches.count; j++) {
-	    
-	}
-    }
-#endif
-
-    numPackages = 0;
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
-	if (alp->h != flList[numPackages].h) continue;
-	fi = flList + numPackages;
-
+    for (pkgNum = 0, fi = flList; pkgNum < flEntries; pkgNum++, fi++) {
 	matches = malloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
@@ -195,122 +219,35 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
 	i = 0;
 	while (i < numShared) {
-	    h = rpmdbGetRecord(ts->db, sharedList[i].otherPkg);
-	    if (!h) {
-		i++;
+	    last = i + 1;
+	    j = sharedList[i].otherPkg;
+	    while ((sharedList[last].otherPkg == j) && (last < numShared))
+		last++;
+	    last--;
+
+	    /* if this package is about to be removed, we don't actually
+	       have any file conflicts */
+	    for (j = 0; j < ts->numRemovedPackages; j++)
+		if (ts->removedPackages[j] == sharedList[i].otherPkg)
+		    break;
+	    if (j < ts->numRemovedPackages) {
+		j = sharedList[i].otherPkg;
+		i = last + 1;
 		continue;
 	    }
 
-	    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL,
-				    (void **) &otherMd5s, NULL);
-	    headerGetEntryMinMemory(h, RPMTAG_FILELINKTOS, NULL,
-				    (void **) &otherLinks, NULL);
-	    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-				    (void **) &otherStates, &j);
-	    headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
-				    (void **) &otherModes, &j);
-	    headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
-				    (void **) &otherFlags, &j);
+	    if (fi->type == ADDED)
+		handleInstInstalledFiles(fi, ts->db, sharedList + i, last - i,
+					 probs);
+	    else
+		handleRmvdInstalledFiles(fi, ts->db, sharedList + i, last - i);
 
-	    j = i;
-	    shared = sharedList + i;
-	    while (sharedList[i].otherPkg == shared->otherPkg) {
-		otherFileNum = shared->otherFileNum;
-		fileNum = shared->pkgFileNum;
-		if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL) {
-		    if (filecmp(otherModes[otherFileNum],
-				otherMd5s[otherFileNum],
-				otherLinks[otherFileNum],
-				fi->fmodes[fileNum],
-				fi->fmd5s[fileNum],
-				fi->flinks[fileNum])) {
-			/* FIXME: we need to pass the conflicting header */
-			psAppend(probs, RPMPROB_FILE_CONFLICT, alp->key, 
-				 alp->h, fi->fl[fileNum]);
-		    }
-
-		    if ((otherFlags[otherFileNum] | fi->fflags[fileNum])
-			 	& RPMFILE_CONFIG) {
-			fi->actions[fileNum] = decideFileFate(fi->fl[fileNum],
-				otherModes[otherFileNum], 
-				otherMd5s[otherFileNum],
-				otherLinks[otherFileNum],
-				fi->fmodes[fileNum],
-				fi->fmd5s[fileNum],
-				fi->flinks[fileNum],
-				fi->fflags[fileNum], 
-			        !headerIsEntry(h, RPMTAG_RPMVERSION));
-		    }
-		}
-
-		shared++;
-	    }
-
-	    free(otherMd5s);
-	    free(otherLinks);
-	    headerFree(h);
-
-	    i = shared - sharedList;
+	    i = last + 1;
 	}
 
 	free(sharedList);
 
-	for (i = 0; i < fi->fc; i++) {
-	    htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
-
-	    /* We need to figure out the current fate of this file. So,
-	       work backwards from this file and look for a final action
-	       we can work against. */
-	    for (j = 0; recs[j] != fi; j++);
-
-	    otherPkgNum = j - 1;
-	    otherFileNum = -1;			/* keep gcc quiet */
-	    while (otherPkgNum >= 0) {
-		if (recs[otherPkgNum]->type != ADDED) continue;
-
-		/* FIXME: there are more efficient searches in the world... */
-		for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc; 
-		     otherFileNum++)
-		    if (FP_EQUAL(fi->fps[i], 
-				 recs[otherPkgNum]->fps[otherFileNum])) 
-			break;
-		if ((otherFileNum >= 0) && 
-		    (recs[otherPkgNum]->actions[otherFileNum] == CREATE))
-		    break;
-		otherPkgNum--;
-	    }
-
-	    if (otherPkgNum < 0) {
-		struct stat sb;
-
-		/* If it isn't in the database, install it. 
-		   FIXME: check for config files here for .rpmorig purporses! */
-		if (fi->actions[i] == UNKNOWN) {
-		    if (lstat(fi->fl[i], &sb))
-			fi->actions[i] = CREATE;
-		    else
-			fi->actions[i] = BACKUP;
-		}
-	    } else {
-		if (filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
-			    recs[otherPkgNum]->fmd5s[otherFileNum],
-			    recs[otherPkgNum]->flinks[otherFileNum],
-			    fi->fmodes[i],
-			    fi->fmd5s[i],
-			    fi->flinks[i])) {
-		    psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, alp->key, 
-			     alp->h, fi->fl[i]);
-		}
-
-		/* FIXME: is this right??? it locks us into the config
-		   file handling choice we already made, which may very
-		   well be exactly right. */
-		fi->actions[i] = recs[otherPkgNum]->actions[otherFileNum];
-		recs[otherPkgNum]->actions[otherFileNum] = SKIP;
-	    }
-	}
-
-	numPackages++;
+	handleOverlappedFiles(fi, ht, probs);
     }
 
     htFree(ht);
@@ -320,8 +257,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	if (alp->h != flList[numPackages].h) continue;
 	fi = flList + numPackages;
 	free(fi->fl);
-	free(fi->fmd5s);
-	free(fi->flinks);
+	if (fi->type == ADDED) {
+	    free(fi->fmd5s);
+	    free(fi->flinks);
+	}
 
 	numPackages++;
     }
@@ -342,11 +281,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     }
 
     numPackages = 0;
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++, fi++) {
 	fi = flList + numPackages;
 	if (installBinaryPackage(ts->root, ts->db, al->list[pkgNum].fd, 
-			  	 hdrs[pkgNum], al->list[pkgNum].relocs, 
-				 instFlags, notify, notifyData, 
+			  	 hdrs[pkgNum], instFlags, notify, notifyData, 
 				 fi->actions))
 	    ourrc++;
 	headerFree(hdrs[pkgNum]);
@@ -357,9 +295,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	}
     }
 
-    for (i = 0; i < ts->numRemovedPackages; i++) {
+    fi = flList + numPackages;
+    for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 	if (removeBinaryPackage(ts->root, ts->db, ts->removedPackages[i], 
-				rmFlags))
+				rmFlags, fi->actions))
 	    ourrc++;
     }
 
@@ -638,7 +577,7 @@ static int sharedCmp(const void * one, const void * two) {
     return 0;
 }
 
-static enum instActions decideFileFate(char * filespec, short dbMode, 
+static enum fileActions decideFileFate(char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int newFlags,
 				int brokenMd5) {
@@ -712,7 +651,7 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 
     if (!strcmp(dbAttr, newAttr)) {
 	/* this file is the same in all versions of this package */
-	return KEEP;
+	return SKIP;
     }
 
     /* the config file on the disk has been modified, but
@@ -759,4 +698,172 @@ static int filecmp(short mode1, char * md51, char * link1,
 	return strcmp(md51, md52);
 
     return 0;
+}
+
+static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
+			            struct sharedFileInfo * shared,
+			            int sharedCount, rpmProblemSet probs) {
+    Header h;
+    int i;
+    char ** otherMd5s, ** otherLinks;
+    char * otherStates;
+    uint_32 * otherFlags;
+    uint_16 * otherModes;
+    int otherFileNum;
+    int fileNum;
+
+    if (!(h = rpmdbGetRecord(db, shared->otherPkg)))
+	return 1;
+
+    headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
+			    (void **) &otherMd5s, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_FILELINKTOS, NULL,
+			    (void **) &otherLinks, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
+			    (void **) &otherStates, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
+			    (void **) &otherModes, NULL);
+    headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
+			    (void **) &otherFlags, NULL);
+
+    for (i = 0; i < sharedCount; i++, shared++) {
+	otherFileNum = shared->otherFileNum;
+	fileNum = shared->pkgFileNum;
+	if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL) {
+	    if (filecmp(otherModes[otherFileNum],
+			otherMd5s[otherFileNum],
+			otherLinks[otherFileNum],
+			fi->fmodes[fileNum],
+			fi->fmd5s[fileNum],
+			fi->flinks[fileNum])) {
+		/* FIXME: we need to pass the conflicting header */
+		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, 
+			 fi->ap->h, fi->fl[fileNum]);
+	    }
+
+	    if ((otherFlags[otherFileNum] | fi->fflags[fileNum])
+			& RPMFILE_CONFIG) {
+		fi->actions[fileNum] = decideFileFate(fi->fl[fileNum],
+			otherModes[otherFileNum], 
+			otherMd5s[otherFileNum],
+			otherLinks[otherFileNum],
+			fi->fmodes[fileNum],
+			fi->fmd5s[fileNum],
+			fi->flinks[fileNum],
+			fi->fflags[fileNum], 
+			!headerIsEntry(h, RPMTAG_RPMVERSION));
+	    }
+	}
+    }
+
+    free(otherMd5s);
+    free(otherLinks);
+    headerFree(h);
+
+    return 0;
+}
+
+static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
+			            struct sharedFileInfo * shared,
+			            int sharedCount) {
+    Header h;
+    int otherFileNum;
+    int fileNum;
+    char * otherStates;
+    int i;
+    
+    if (!(h = rpmdbGetRecord(db, shared->otherPkg)))
+	return 1;
+
+    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
+			    (void **) &otherStates, NULL);
+
+    for (i = 0; i < sharedCount; i++, shared++) {
+	otherFileNum = shared->otherFileNum;
+	fileNum = shared->pkgFileNum;
+
+	if (otherStates[fileNum] == RPMFILE_STATE_NORMAL)
+	    fi->actions[fileNum] = SKIP;
+    }
+
+    return 0;
+}
+
+void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
+			     rpmProblemSet probs) {
+    int i, j;
+    struct fileInfo ** recs;
+    int numRecs;
+    int otherPkgNum, otherFileNum;
+    struct stat sb;
+    char mdsum[50];
+    int rc;
+   
+    for (i = 0; i < fi->fc; i++) {
+	htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
+
+	/* We need to figure out the current fate of this file. So,
+	   work backwards from this file and look for a final action
+	   we can work against. */
+	for (j = 0; recs[j] != fi; j++);
+
+	otherPkgNum = j - 1;
+	otherFileNum = -1;			/* keep gcc quiet */
+	while (otherPkgNum >= 0) {
+	    if (recs[otherPkgNum]->type != ADDED) continue;
+
+	    /* TESTME: there are more efficient searches in the world... */
+	    for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc; 
+		 otherFileNum++)
+		if (FP_EQUAL(fi->fps[i], 
+			     recs[otherPkgNum]->fps[otherFileNum])) 
+		    break;
+	    if ((otherFileNum >= 0) && 
+		(recs[otherPkgNum]->actions[otherFileNum] == CREATE))
+		break;
+	    otherPkgNum--;
+	}
+
+	if (fi->type == ADDED && otherPkgNum < 0) {
+	    /* If it isn't in the database, install it. 
+	       FIXME: check for config files here for .rpmorig purporses! */
+	    if (fi->actions[i] == UNKNOWN) {
+		if ((fi->fflags[i] & RPMFILE_CONFIG) && 
+			    !lstat(fi->fl[i], &sb))
+		    fi->actions[i] = BACKUP;
+		else
+		    fi->actions[i] = CREATE;
+	    }
+	} else if (fi->type == ADDED) {
+	    if (filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
+			recs[otherPkgNum]->fmd5s[otherFileNum],
+			recs[otherPkgNum]->flinks[otherFileNum],
+			fi->fmodes[i],
+			fi->fmd5s[i],
+			fi->flinks[i])) {
+		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap->key, 
+			 fi->ap->h, fi->fl[i]);
+	    }
+
+	    /* FIXME: is this right??? it locks us into the config
+	       file handling choice we already made, which may very
+	       well be exactly right. */
+	    fi->actions[i] = recs[otherPkgNum]->actions[otherFileNum];
+	    recs[otherPkgNum]->actions[otherFileNum] = SKIP;
+	} else if (fi->type == REMOVED && otherPkgNum >= 0) {
+	    fi->actions[i] = SKIP;
+	} else if (fi->type == REMOVED) {
+	    if (S_ISREG(fi->fmodes[i]) && (fi->fflags[i] & RPMFILE_CONFIG)) {
+		rc = mdfile(fi->fl[i], mdsum);
+		if (!rc && strcmp(fi->fmd5s[i], mdsum)) {
+		    fi->actions[i] = BACKUP;
+		} else {
+		    /* FIXME: config files may need to be saved */
+		    fi->actions[i] = REMOVE;
+		}
+	    } else {
+		fi->actions[i] = REMOVE;
+	    }
+	}
+    }
 }
