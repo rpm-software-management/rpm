@@ -341,8 +341,8 @@ char * oldrpmfileToInfoStr(struct oldrpmFileInfo * fi) {
     else
 	buf = malloc(100);
 
-    sprintf(buf, "%ld %ld %s %o %d %d %s %s %x ", fi->size, fi->mtime,
-		fi->md5, fi->mode, fi->uid, fi->gid,
+    sprintf(buf, "%ld %ld %s %o %d %d %s %s %x ", (long)fi->size, (long)fi->mtime,
+		fi->md5, fi->mode, (int)fi->uid, (int)fi->gid,
 		fi->isconf ? "1" : "0", fi->isdoc ? "1" : "0",
 		fi->rdev);
     

@@ -48,6 +48,9 @@ int packageSources(Spec spec)
     int_32 tag, count;
     char **ptr;
 
+#ifdef	__LCLINT__
+#define	VERSION	"3.0"
+#endif
     /* Add some cruft */
     headerAddEntry(spec->sourceHeader, RPMTAG_RPMVERSION,
 		   RPM_STRING_TYPE, VERSION, 1);
@@ -106,7 +109,7 @@ int packageBinaries(Spec spec)
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 
-	if (!pkg->fileList)
+	if (pkg->fileList == NULL)
 	    continue;
 
 	if ((rc = processScriptFiles(spec, pkg)))
@@ -181,14 +184,14 @@ int readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
 	    strerror(errno));
 	return RPMERR_BADMAGIC;
     }
-    lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
+    (void)lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
 
     /* Reallocate build data structures */
     spec = newSpec();
     spec->packages = newPackage(spec);
 
     /* XXX the header just allocated will be allocated again */
-    if (spec->packages->header) {
+    if (spec->packages->header != NULL) {
 	headerFree(spec->packages->header);
 	spec->packages->header = NULL;
     }
@@ -272,7 +275,7 @@ int writeRPM(Header header, char *fileName, int type,
 	headerModifyEntry(header, RPMTAG_ARCHIVESIZE,
 		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     }
-    lseek(fd, 0,  SEEK_SET);
+    (void)lseek(fd, 0,  SEEK_SET);
     headerWrite(fd, header, HEADER_MAGIC_YES);
 
     close(fd);
@@ -456,7 +459,7 @@ static int addFileToTag(Spec spec, char *file, Header h, int tag)
 	headerRemoveEntry(h, tag);
     }
 
-    if (! (sb = addFileToTagAux(spec, file, sb))) {
+    if ((sb = addFileToTagAux(spec, file, sb)) == NULL) {
 	return 1;
     }
     
@@ -472,7 +475,7 @@ static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
     char *s;
 
     sb = newStringBuf();
-    if (! (sb = addFileToTagAux(spec, file, sb))) {
+    if ((sb = addFileToTagAux(spec, file, sb)) == NULL) {
 	return 1;
     }
 

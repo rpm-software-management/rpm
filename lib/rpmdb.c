@@ -117,7 +117,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 
     if (!justcheck || !exists(filename)) {
 	db.pkgs = faOpen(filename, mode, 0644);
-	if (!db.pkgs) {
+	if (db.pkgs == NULL) {
 	    rpmError(RPMERR_DBOPEN, _("failed to open %s\n"), filename);
 	    return 1;
 	}
@@ -130,14 +130,14 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 	
 	if (mode & O_RDWR) {
 	    lockinfo.l_type = F_WRLCK;
-	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
+	    if (faFcntl(db.pkgs, F_SETLK, (void *) &lockinfo)) {
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
 			 _("exclusive"));
 		return 1;
 	    } 
 	} else {
 	    lockinfo.l_type = F_RDLCK;
-	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
+	    if (faFcntl(db.pkgs, F_SETLK, (void *) &lockinfo)) {
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
 			 _("shared"));
 		return 1;
@@ -189,7 +189,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 }
 
 void rpmdbClose (rpmdb db) {
-    if (db->pkgs) faClose(db->pkgs);
+    if (db->pkgs != NULL) faClose(db->pkgs);
     if (db->fileIndex) dbiCloseIndex(db->fileIndex);
     if (db->groupIndex) dbiCloseIndex(db->groupIndex);
     if (db->nameIndex) dbiCloseIndex(db->nameIndex);
@@ -210,9 +210,9 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
 }
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
-    lseek(db->pkgs->fd, offset, SEEK_SET);
+    (void)faLseek(db->pkgs, offset, SEEK_SET);
 
-    return headerRead(db->pkgs->fd, HEADER_MAGIC_NO);
+    return headerRead(faFileno(db->pkgs), HEADER_MAGIC_NO);
 }
 
 int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
@@ -305,7 +305,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     rec.fileNumber = 0;
 
     h = rpmdbGetRecord(db, offset);
-    if (!h) {
+    if (h == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
 	      offset);
 	return 1;
@@ -468,9 +468,9 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	if (count) free(fileList);
 	return 1;
     }
-    lseek(db->pkgs->fd, dboffset, SEEK_SET);
+    (void)faLseek(db->pkgs, dboffset, SEEK_SET);
 
-    headerWrite(db->pkgs->fd, dbentry, HEADER_MAGIC_NO);
+    headerWrite(faFileno(db->pkgs), dbentry, HEADER_MAGIC_NO);
 
     /* Now update the appropriate indexes */
     if (addIndexEntry(db->nameIndex, name, dboffset, 0))
@@ -522,7 +522,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
     int oldSize;
 
     oldHeader = rpmdbGetRecord(db, offset);
-    if (!oldHeader) {
+    if (oldHeader == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for update"),
 		offset);
 	return 1;
@@ -541,9 +541,9 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
     } else {
 	blockSignals();
 
-	lseek(db->pkgs->fd, offset, SEEK_SET);
+	(void)faLseek(db->pkgs, offset, SEEK_SET);
 
-	headerWrite(db->pkgs->fd, newHeader, HEADER_MAGIC_NO);
+	headerWrite(faFileno(db->pkgs), newHeader, HEADER_MAGIC_NO);
 
 	unblockSignals();
     }

@@ -91,7 +91,7 @@ int rpmReadSignature(int fd, Header *header, short sig_type)
 	rpmMessage(RPMMESS_DEBUG, _("New Header signature\n"));
 	/* This is a new style signature */
 	h = headerRead(fd, HEADER_MAGIC_YES);
-	if (! h) {
+	if (h == NULL) {
 	    return 1;
 	}
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
@@ -137,7 +137,7 @@ int rpmWriteSignature(int fd, Header header)
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	memset(buf, 0, pad);
-	write(fd, buf, pad);
+	(void)write(fd, buf, pad);
     }
     return 0;
 }
@@ -216,7 +216,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     fprintf(fpipe, "%s\n", passPhrase);
     fclose(fpipe);
 
-    waitpid(pid, &status, 0);
+    (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SIGGEN, _("pgp failed"));
 	return 1;
@@ -362,7 +362,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
     /* Write out the signature */
     sigfile = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsig");
     sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    write(sfd, sig, count);
+    (void)write(sfd, sig, count);
     close(sfd);
 
     /* Now run PGP */
@@ -400,7 +400,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
     }
     fclose(file);
 
-    waitpid(pid, &status, 0);
+    (void)waitpid(pid, &status, 0);
     unlink(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
@@ -473,7 +473,7 @@ static int checkPassPhrase(char *passPhrase)
     fprintf(fpipe, "%s\n", passPhrase);
     fclose(fpipe);
 
-    waitpid(pid, &status, 0);
+    (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	return 1;
     }

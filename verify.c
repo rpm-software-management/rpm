@@ -132,7 +132,7 @@ static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 		matches.recs[i].recOffset);
 	    
 	h = rpmdbGetRecord(db, matches.recs[i].recOffset);
-	if (!h) {
+	if (h == NULL) {
 		fprintf(stderr, _("error: could not read database record\n"));
 		ec = 1;
 	} else {
@@ -172,7 +172,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 	     offset != 0;
 	     offset = rpmdbNextRecNum(db, offset)) {
 		h = rpmdbGetRecord(db, offset);
-		if (!h) {
+		if (h == NULL) {
 		    fprintf(stderr, _("could not read database record!\n"));
 		    return 1;	/* XXX was exit(1) */
 		}

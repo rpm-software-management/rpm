@@ -4,6 +4,9 @@
 
 #include "misc.h"
 
+#ifdef __LCLINT__
+#define	VERSION	"3.0"
+#endif
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
 char ** splitString(char * str, int length, char sep) {

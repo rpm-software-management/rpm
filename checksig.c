@@ -172,7 +172,7 @@ int doCheckSig(int flags, char **argv)
 	    res++;
 	    continue;
 	}
-	if (! sig) {
+	if (sig == NULL) {
 	    fprintf(stderr, _("%s: No signature available\n"), rpm);
 	    res++;
 	    continue;
@@ -278,16 +278,16 @@ int doCheckSig(int flags, char **argv)
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
-		fprintf(stderr, "%s", buffer);
+		fprintf(stderr, "%s", (char *)buffer);
 	    } else {
-		fprintf(stderr, "%s%s%s\n", buffer, _("NOT OK"),
+		fprintf(stderr, "%s%s%s\n", (char *)buffer, _("NOT OK"),
 			missingKeys ? _(" (MISSING KEYS)") : "");
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		fprintf(stdout, "%s", buffer);
+		fprintf(stdout, "%s", (char *)buffer);
 	    } else {
-		fprintf(stdout, "%s%s%s\n", buffer, _("OK"),
+		fprintf(stdout, "%s%s%s\n", (char *)buffer, _("OK"),
 		       missingKeys ? _(" (MISSING KEYS)") : "");
 	    }
 	}

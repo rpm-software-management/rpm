@@ -65,7 +65,7 @@ faFile faOpen(char * path, int flags, int perms) {
 	fas.fileSize = sizeof(newHdr);
     }
     else {
-	lseek(fas.fd, 0, SEEK_SET);
+	(void)lseek(fas.fd, 0, SEEK_SET);
 	if (read(fas.fd, &newHdr, sizeof(newHdr)) != sizeof(newHdr)) {
 	    close(fas.fd);
 	    return NULL;
@@ -124,7 +124,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) return 0;
 
 	if (!header.isFree) {
-	    fprintf(stderr, _("free list corrupt (%d)- contact "
+	    fprintf(stderr, _("free list corrupt (%u)- contact "
 			"support@redhat.com\n"), nextFreeBlock);
 	    exit(1);
 	}
@@ -229,28 +229,28 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	    if (updateHeader) {
 		faHeader.firstFree = newBlockOffset;
 		fa->firstFree = newBlockOffset;
-	    	lseek(fa->fd, 0, SEEK_SET);
-	        write(fa->fd, &faHeader, sizeof(faHeader));
+	    	(void)lseek(fa->fd, 0, SEEK_SET);
+	        (void)write(fa->fd, &faHeader, sizeof(faHeader));
 	    } 
 
 	    if (restorePrevHeader) {
-	    	lseek(fa->fd, header.freePrev, SEEK_SET);
-	    	write(fa->fd, restorePrevHeader, sizeof(*restorePrevHeader));
+	    	(void)lseek(fa->fd, header.freePrev, SEEK_SET);
+	    	(void)write(fa->fd, restorePrevHeader, sizeof(*restorePrevHeader));
 	    }
 
 	    if (restoreNextHeader) {
-	    	lseek(fa->fd, header.freeNext, SEEK_SET);
-	    	write(fa->fd, restoreNextHeader, sizeof(*restoreNextHeader));
+	    	(void)lseek(fa->fd, header.freeNext, SEEK_SET);
+	    	(void)write(fa->fd, restoreNextHeader, sizeof(*restoreNextHeader));
 	    }
 
 	    if (restoreHeader) {
-	    	lseek(fa->fd, newBlockOffset, SEEK_SET);
-	    	write(fa->fd, restoreHeader, sizeof(header));
+	    	(void)lseek(fa->fd, newBlockOffset, SEEK_SET);
+	    	(void)write(fa->fd, restoreHeader, sizeof(header));
 	    }
 
 	    if (restoreFooter) {
-	    	lseek(fa->fd, footerOffset, SEEK_SET);
-	    	write(fa->fd, restoreFooter, sizeof(footer));
+	    	(void)lseek(fa->fd, footerOffset, SEEK_SET);
+	    	(void)write(fa->fd, restoreFooter, sizeof(footer));
 	    }
 
 	    return 0;
@@ -270,17 +270,17 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	header.freePrev = header.freeNext = 0;
 
 	/* reserve all space up front */
-        lseek(fa->fd, newBlockOffset, SEEK_SET);
+        (void)lseek(fa->fd, newBlockOffset, SEEK_SET);
 	if (write(fa->fd, space, size) != size) {
 	    return 0;
 	}
 
-        lseek(fa->fd, newBlockOffset, SEEK_SET);
+        (void)lseek(fa->fd, newBlockOffset, SEEK_SET);
 	if (write(fa->fd, &header, sizeof(header)) != sizeof(header)) {
 	    return 0;
 	}
 
-        lseek(fa->fd, footerOffset, SEEK_SET);
+        (void)lseek(fa->fd, footerOffset, SEEK_SET);
 	if (write(fa->fd, &footer, sizeof(footer)) != sizeof(footer)) {
 	    return 0;
 	}
@@ -348,11 +348,11 @@ void faFree(faFile fa, unsigned int offset) {
     header.freePrev = prevFreeOffset;
     footer.isFree = 1;
 
-    lseek(fa->fd, offset, SEEK_SET);
-    write(fa->fd, &header, sizeof(header));
+    (void)lseek(fa->fd, offset, SEEK_SET);
+    (void)write(fa->fd, &header, sizeof(header));
 
-    lseek(fa->fd, footerOffset, SEEK_SET);
-    write(fa->fd, &footer, sizeof(footer));
+    (void)lseek(fa->fd, footerOffset, SEEK_SET);
+    (void)write(fa->fd, &footer, sizeof(footer));
 
     if (nextFreeOffset) {
 	nextFreeHeader.freePrev = offset;
@@ -364,7 +364,7 @@ void faFree(faFile fa, unsigned int offset) {
     if (prevFreeOffset) {
 	prevFreeHeader.freeNext = offset;
 	if (lseek(fa->fd, prevFreeOffset, SEEK_SET) < 0) return;
-	write(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader));
+	(void)write(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader));
     } else {
 	fa->firstFree = offset;
 
@@ -372,13 +372,25 @@ void faFree(faFile fa, unsigned int offset) {
 	faHeader.firstFree = fa->firstFree;
 
 	if (lseek(fa->fd, 0, SEEK_SET) < 0) return;
-	write(fa->fd, &faHeader, sizeof(faHeader));
+	(void)write(fa->fd, &faHeader, sizeof(faHeader));
     }
 }
 
 void faClose(faFile fa) {
     close(fa->fd);
     free(fa);
+}
+
+int faFcntl(faFile fa, int op, void *lip) {
+    return fcntl(fa->fd, op, lip);
+}
+
+int faLseek(faFile fa, off_t off, int op) {
+    return lseek(fa->fd, off, op);
+}
+
+int faFileno(faFile fa) {
+    return fa->fd;
 }
 
 int faFirstOffset(faFile fa) {
@@ -397,7 +409,7 @@ int faNextOffset(faFile fa, unsigned int lastOffset) {
 
     if (offset >= fa->fileSize) return 0;
 
-    lseek(fa->fd, offset, SEEK_SET);
+    (void)lseek(fa->fd, offset, SEEK_SET);
     if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) {
 	return 0;
     }
@@ -406,7 +418,7 @@ int faNextOffset(faFile fa, unsigned int lastOffset) {
     do {
 	offset += header.size;
 
-	lseek(fa->fd, offset, SEEK_SET);
+	(void)lseek(fa->fd, offset, SEEK_SET);
 	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) {
 	    return 0;
 	}

@@ -55,7 +55,7 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
 	    rpmMessage(RPMMESS_DEBUG, _("archive offset is %d\n"), 
 			oldLead->archiveOffset);
-	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
+	    (void)lseek(fd, oldLead->archiveOffset, SEEK_SET);
 	    
 	    /* we can't put togeher a header for old format source packages,
 	       there just isn't enough information there. We'll return
@@ -76,8 +76,8 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 	}
 	*hdr = headerRead(fd, (lead->major >= 3) ?
 			  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-	if (! *hdr) {
-	    if (sigs) headerFree(*sigs);
+	if (*hdr == NULL) {
+	    if (sigs != NULL) headerFree(*sigs);
 	    return 2;
 	}
 
@@ -99,7 +99,7 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 	return 2;
     } 
 
-    if (!hdrPtr) headerFree(*hdr);
+    if (hdrPtr == NULL) headerFree(*hdr);
     
     return 0;
 }
@@ -148,7 +148,7 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
     int i, j;
     char ** unames, ** gnames;
 
-    lseek(fd, 0, SEEK_SET);
+    (void)lseek(fd, 0, SEEK_SET);
     if (oldhdrReadFromStream(fd, &oldheader)) {
 	return 1;
     }

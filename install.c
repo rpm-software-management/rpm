@@ -82,7 +82,7 @@ static int installPackages(char * rootdir, char ** packages,
 	} else if (rpmIsVerbose())
 	    fprintf(stdout, _("Installing %s\n"), *filename);
 
-	if (db) {
+	if (db != NULL) {
 	    rc = rpmInstallPackage(rootdir, db, fd, relocations, installFlags, 
 				   fn, printFormat);
 	} else {
@@ -202,7 +202,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	    *filename = NULL;
 	} else if (isSource) {
 	    /* the header will be NULL if this is a v1 source package */
-	    if (binaryHeaders[numBinaryPackages])
+	    if (binaryHeaders[numBinaryPackages] != NULL)
 		headerFree(binaryHeaders[numBinaryPackages]);
 
 	    numSourcePackages++;
@@ -271,7 +271,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     for (i = 0; i < numBinaryPackages; i++) 
 	headerFree(binaryHeaders[i]);
 
-    if (db) rpmdbClose(db);
+    if (db != NULL) rpmdbClose(db);
 
     return numFailed;
 }

@@ -1,0 +1,36 @@
+-I. -I./build -I./lib -I./popt
+
+-Du_long=unsigned
+-Du_int=unsigned
+-Du_short=short
+-Du_char=char
+
+-Du_int32_t=unsigned
+-Du_int16_t=short
+
+-Dfd_set=void
+
++partial
+
++unixlib	#-> +posixlib
+-warnunixlib
+
++boolint
+-boolops
+-fixedformalarray
+-formattype
+-fullinitblock
++ignorequals
++ignoresigns
++longintegral
++matchanyintegral
+-mustfree
+-nullpass
+-observertrans
+-predboolint
+-predboolothers
+-redef
+-retvalint
+-retvalother
+-shiftsigned
+-type

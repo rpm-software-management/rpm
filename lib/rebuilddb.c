@@ -47,7 +47,7 @@ int rpmdbRebuild(char * rootdir) {
 
     recnum = rpmdbFirstRecNum(olddb);
     while (recnum > 0) {
-	if (!(h = rpmdbGetRecord(olddb, recnum))) {
+	if ((h = rpmdbGetRecord(olddb, recnum)) == NULL) {
 	    rpmError(RPMERR_INTERNAL,
 			_("record number %d in database is bad -- skipping it"),
 			recnum);

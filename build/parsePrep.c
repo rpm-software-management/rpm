@@ -19,6 +19,10 @@
 	    { 0, 0, 0, 0, 0 }
     };
 
+#ifdef	__LCLINT__
+#define	MKDIR_P	"mkdir -p"
+#endif
+
 #ifdef DYING
 static int doSetupMacro(Spec spec, char *line);
 static int doPatchMacro(Spec spec, char *line);
@@ -286,6 +290,9 @@ static int doSetupMacro(Spec spec, char *line)
     /* clean up permissions etc */
     if (!geteuid()) {
 	appendLineStringBuf(spec->prep, "chown -R root .");
+#ifdef	__LCLINT__
+#define	ROOT_GROUP	"root"
+#endif
 	appendLineStringBuf(spec->prep, "chgrp -R " ROOT_GROUP " .");
     }
 
@@ -303,7 +310,7 @@ static int doPatchMacro(Spec spec, char *line)
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E;
     char *s;
-    char buf[BUFSIZ];
+    char buf[BUFSIZ], *bp;
     int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
 
@@ -318,8 +325,11 @@ static int doPatchMacro(Spec spec, char *line)
 	strcpy(buf, line);
     }
     
-    strtok(buf, " \t\n");  /* remove %patch */
-    while ((s = strtok(NULL, " \t\n"))) {
+    for (bp = buf; (s = strtok(bp, " \t\n")) != NULL;) {
+	if (bp) {	/* remove 1st token (%patch) */
+		bp = NULL;
+		continue;
+	}
 	if (!strcmp(s, "-P")) {
 	    opt_P = 1;
 	} else if (!strcmp(s, "-R")) {
@@ -402,7 +412,7 @@ int parsePrep(Spec spec, int force)
     StringBuf buf;
     char **lines, **saveLines;
 
-    if (spec->prep) {
+    if (spec->prep != NULL) {
 	rpmError(RPMERR_BADSPEC, _("line %d: second %%prep"), spec->lineNum);
 	return RPMERR_BADSPEC;
     }

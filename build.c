@@ -90,7 +90,7 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
 	   directory for this run */
 
 	if (*arg != '/') {
-	    getcwd(buf, BUFSIZ);
+	    (void)getcwd(buf, BUFSIZ);
 	    strcat(buf, "/");
 	    strcat(buf, arg);
 	} else 
@@ -105,7 +105,7 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
 	specfile = arg;
     } else {
 	specfile = alloca(BUFSIZ);
-	getcwd(specfile, BUFSIZ);
+	(void)getcwd(specfile, BUFSIZ);
 	strcat(specfile, "/");
 	strcat(specfile, arg);
     }

@@ -10,6 +10,12 @@
 #include "md5.h"
 #include "rpmmacro.h"
 
+#ifdef	__LCLINT__
+#define	FINDPROVIDES	"/usr/lib/rpm/find-provides"
+#define	FINDREQUIRES	"/usr/lib/rpm/find-requires"
+#define	MKDIR_P		"mkdir -p"
+#endif
+
 #define MAXDOCDIR 1024
 
 struct FileListRec {
@@ -362,7 +368,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     if (!strcmp(resultAttr->PmodeString, "-")) {
 	resultAttr->PmodeString = NULL;
     } else {
-	x = sscanf(resultAttr->PmodeString, "%o", &(resultAttr->Pmode));
+	x = sscanf(resultAttr->PmodeString, "%o", (unsigned *)&(resultAttr->Pmode));
 	if ((x == 0) || (resultAttr->Pmode >> 12)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad %s() mode spec: %s"), name, buf);
 	    resultAttr->PmodeString = resultAttr->Uname =
@@ -379,7 +385,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 	    resultAttr->PdirmodeString = strdup(resultAttr->PdirmodeString);
 	} else {
 	    x = sscanf(resultAttr->PdirmodeString, "%o",
-		       &(resultAttr->Pdirmode));
+		       (unsigned *)&(resultAttr->Pdirmode));
 	    if ((x == 0) || (resultAttr->Pdirmode >> 12)) {
 		rpmError(RPMERR_BADSPEC,
 			 _("Bad %s() dirmode spec: %s"), name, buf);
@@ -1511,10 +1517,10 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     if (toProg[1] >= 0)
     	close(toProg[1]);
     close(fromProg[0]);
-    signal(SIGPIPE, oldhandler);
+    (void)signal(SIGPIPE, oldhandler);
 
     /* Collect status from prog */
-    waitpid(progPID, &status, 0);
+    (void)waitpid(progPID, &status, 0);
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	rpmError(RPMERR_EXEC, _("%s failed"), argv[0]);
 	return NULL;
@@ -1560,7 +1566,7 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	argv[1] = NULL;
 	readBuf = getOutputFrom(NULL, argv,
 				getStringBuf(writeBuf), writeBytes, 1);
-	if (!readBuf) {
+	if (readBuf == NULL) {
 	    rpmError(RPMERR_EXEC, _("Failed to find provides"));
 	    freeStringBuf(writeBuf);
 	    return RPMERR_EXEC;
@@ -1587,7 +1593,7 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	argv[1] = NULL;
 	readBuf = getOutputFrom(NULL, argv,
 				getStringBuf(writeBuf), writeBytes, 0);
-	if (!readBuf) {
+	if (readBuf == NULL) {
 	    rpmError(RPMERR_EXEC, _("Failed to find requires"));
 	    freeStringBuf(writeBuf);
 	    return RPMERR_EXEC;
@@ -1675,7 +1681,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     
     res = 0;
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	if (!pkg->fileList) {
+	if (pkg->fileList == NULL) {
 	    continue;
 	}
 

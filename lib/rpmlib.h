@@ -279,7 +279,7 @@ void rpmGetMachine(char **arch, char **os);
 
 /** **/
 
-typedef struct rpmdb_s * rpmdb;
+typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
 
 typedef void (*rpmNotifyFunction)(const unsigned long amount,
 			       const unsigned long total);

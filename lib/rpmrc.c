@@ -11,6 +11,11 @@
 
 #include "misc.h"
 
+#ifdef	__LCLINT__
+#define	LIBRPMRC_FILENAME	"/usr/lib/rpm/rpmrc"
+#define	MACROFILES		"/usr/lib/rpm/macros"
+#endif
+
 static char *usrlibrpmrc = LIBRPMRC_FILENAME;
 static char *etcrpmrc = "/etc/rpmrc";
 static char *macrofiles = MACROFILES;

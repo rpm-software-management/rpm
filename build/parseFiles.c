@@ -70,7 +70,7 @@ int parseFiles(Spec spec)
 	return RPMERR_BADSPEC;
     }
 
-    if (pkg->fileList) {
+    if (pkg->fileList != NULL) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Second %%files list"),
 		 spec->lineNum);
 	FREE(argv);

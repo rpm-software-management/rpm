@@ -260,12 +260,12 @@ void headerWrite(int fd, Header h, int magicp)
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	write(fd, header_magic, sizeof(header_magic));
+	(void)write(fd, header_magic, sizeof(header_magic));
 	l = htonl(0);
-	write(fd, &l, sizeof(l));
+	(void)write(fd, &l, sizeof(l));
     }
     
-    write(fd, p, length);
+    (void)write(fd, p, length);
 
     free(p);
 }
@@ -594,7 +594,7 @@ void headerDump(Header h, FILE *f, int flags,
 	    tag = tage->name;
 
 	fprintf(f, "Entry      : %.3d (%d)%-14s %-18s 0x%.8x %.8d\n", i,
-		p->info.tag, tag, type, (uint_32) p->info.offset, (uint_32) 
+		p->info.tag, tag, type, (unsigned) p->info.offset, (int) 
 		p->info.count);
 
 	if (flags & HEADER_DUMP_INLINE) {
@@ -606,8 +606,8 @@ void headerDump(Header h, FILE *f, int flags,
 	    case RPM_INT32_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%08x (%d)\n", ct++,
-			    (uint_32) *((int_32 *) dp),
-			    (uint_32) *((int_32 *) dp));
+			    (unsigned) *((int_32 *) dp),
+			    (int) *((int_32 *) dp));
 		    dp += sizeof(int_32);
 		}
 		break;
@@ -615,16 +615,16 @@ void headerDump(Header h, FILE *f, int flags,
 	    case RPM_INT16_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%04x (%d)\n", ct++,
-			    (short int) *((int_16 *) dp),
-			    (short int) *((int_16 *) dp));
+			    (unsigned) *((int_16 *) dp),
+			    (int) *((int_16 *) dp));
 		    dp += sizeof(int_16);
 		}
 		break;
 	    case RPM_INT8_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%02x (%d)\n", ct++,
-			    (char) *((int_8 *) dp),
-			    (char) *((int_8 *) dp));
+			    (unsigned) *((int_8 *) dp),
+			    (int) *((int_8 *) dp));
 		    dp += sizeof(int_8);
 		}
 		break;
@@ -632,7 +632,7 @@ void headerDump(Header h, FILE *f, int flags,
 	      while (c > 0) {
 		  fprintf(f, "       Data: %.3d ", ct);
 		  while (c--) {
-		      fprintf(f, "%02x ", (unsigned char) *(int_8 *)dp);
+		      fprintf(f, "%02x ", (unsigned) *(int_8 *)dp);
 		      ct++;
 		      dp += sizeof(int_8);
 		      if (! (ct % 8)) {
@@ -646,7 +646,7 @@ void headerDump(Header h, FILE *f, int flags,
 		while (c--) {
 		    ch = (char) *((char *) dp);
 		    fprintf(f, "       Data: %.3d 0x%2x %c (%d)\n", ct++,
-			    ch,
+			    (unsigned)ch,
 			    (isprint(ch) ? ch : ' '),
 			    (char) *((char *) dp));
 		    dp += sizeof(char);
@@ -1985,7 +1985,7 @@ static char * realDateFormat(int_32 type, const void * data,
 	/* this is important if sizeof(int_32) ! sizeof(time_t) */
 	dateint = *((int_32 *) data);
 	tstruct = localtime(&dateint);
-	strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+	(void)strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
 	sprintf(val, formatPrefix, buf);
     }
 

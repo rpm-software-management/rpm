@@ -31,6 +31,6 @@ int mdbinfileBroken(char *fn, unsigned char *bindigest);
 /*
  * This is needed to make RSAREF happy on some MS-DOS compilers.
  */
-typedef struct MD5Context MD5_CTX;
+typedef /*@abstract@*/ struct MD5Context MD5_CTX;
 
 #endif	/* MD5_H */

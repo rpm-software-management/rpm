@@ -11,14 +11,14 @@
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
 			                 "/usr/X11R6/bin";
 
-enum fileActions { REMOVE, BACKUP, KEEP };
+typedef enum fileActions { REMOVE, BACKUP, KEEP } fileActions_t;
 
 static int sharedFileCmp(const void * one, const void * two);
 static int handleSharedFiles(rpmdb db, int offset, char ** fileList, 
 			     char ** fileMd5List, int fileCount, 
-			     enum fileActions * fileActions);
+			     fileActions_t * fileActions);
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
-		      short mode, enum fileActions action, 
+		      short mode, fileActions_t action, 
 		      int brokenMd5, int test);
 static int runScript(Header h, char * root, int progArgc, char ** progArgv, 
 		     char * script, int arg1, int arg2, int errfd);
@@ -80,7 +80,7 @@ int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 
 static int handleSharedFiles(rpmdb db, int offset, char ** fileList, 
 			     char ** fileMd5List, int fileCount, 
-			     enum fileActions * fileActions) {
+			     fileActions_t * fileActions) {
     Header sech = NULL;
     int secOffset = 0;
     struct sharedFile * sharedList;
@@ -112,7 +112,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 
 	    secOffset = sharedList[i].secRecOffset;
 	    sech = rpmdbGetRecord(db, secOffset);
-	    if (!sech) {
+	    if (sech == NULL) {
 		rpmError(RPMERR_DBCORRUPT, 
 			 _("cannot read header at %d for uninstall"), offset);
 		rc = 1;
@@ -206,14 +206,14 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     uint_32 * fileFlagsList;
     int_16 * fileModesList;
     char * fileStatesList;
-    enum { REMOVE, BACKUP, KEEP } * fileActions;
+    fileActions_t * fileActions;
     int scriptArg;
 
     if (flags & RPMUNINSTALL_JUSTDB)
 	flags |= RPMUNINSTALL_NOSCRIPTS;
 
     h = rpmdbGetRecord(db, offset);
-    if (!h) {
+    if (h == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
 	      offset);
 	return 1;
@@ -420,9 +420,9 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
 
 	if (rpmIsDebug() &&
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
-	    write(fd, "set -x\n", 7);
+	    (void)write(fd, "set -x\n", 7);
 
-	write(fd, script, strlen(script));
+	(void)write(fd, script, strlen(script));
 	close(fd);
 
 	argv[argc++] = fn + strlen(root);
@@ -487,7 +487,7 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
  	_exit(-1);
     }
 
-    waitpid(child, &status, 0);
+    (void)waitpid(child, &status, 0);
 
     if (freePrefixes) free(prefixes);
 
@@ -539,7 +539,7 @@ int runInstScript(char * root, Header h, int scriptTag, int progTag,
 }
 
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
-		      short mode, enum fileActions action, 
+		      short mode, fileActions_t action, 
 		      int brokenMd5, int test) {
     char currentMd5[40];
     int rc = 0;
@@ -729,7 +729,7 @@ int runTriggers(char * root, rpmdb db, int sense, Header h,
 
     rc = 0;
     for (i = 0; i < matches.count; i++) {
-	if (!(triggeredH = rpmdbGetRecord(db, matches.recs[i].recOffset))) 
+	if ((triggeredH = rpmdbGetRecord(db, matches.recs[i].recOffset)) == NULL) 
 	    return 1;
 
 	rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
@@ -772,7 +772,7 @@ int runImmedTriggers(char * root, rpmdb db, int sense, Header h,
 	} 
 
 	for (j = 0; j < matches.count; j++) {
-	    if (!(sourceH = rpmdbGetRecord(db, matches.recs[j].recOffset))) 
+	    if ((sourceH = rpmdbGetRecord(db, matches.recs[j].recOffset)) == NULL) 
 		return 1;
 	    rc |= handleOneTrigger(root, db, sense, sourceH, h, 
 				   countCorrection, matches.count, triggersRun);

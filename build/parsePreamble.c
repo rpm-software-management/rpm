@@ -72,7 +72,7 @@ static int parseSimplePart(char *line, char **name, int *flag)
     strcpy(linebuf, line);
 
     /* Throw away the first token (the %xxxx) */
-    strtok(linebuf, " \t\n");
+    (void)strtok(linebuf, " \t\n");
     
     if (!(tok = strtok(NULL, " \t\n"))) {
 	*name = NULL;

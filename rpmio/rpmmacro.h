@@ -1,7 +1,7 @@
 #ifndef _H_MACRO_
 #define	_H_MACRO_
 
-typedef struct MacroEntry {
+typedef /*@abstract@*/ struct MacroEntry {
 	struct MacroEntry *prev;
 	const char *name;	/* Macro name */
 	const char *opts;	/* Macro parameters (ala getopt) */
@@ -10,7 +10,7 @@ typedef struct MacroEntry {
 	int	level;
 } MacroEntry;
 
-typedef struct MacroContext {
+typedef /*@abstract@*/ struct MacroContext {
 	MacroEntry **	macroTable;
 	int		macrosAllocated;
 	int		firstFree;

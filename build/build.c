@@ -79,7 +79,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
       case RPMBUILD_STRINGBUF:
 	break;
     }
-    if ((what != RPMBUILD_RMBUILD) && !sb) {
+    if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
 	return 0;
     }
     
@@ -133,7 +133,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 	FREE(scriptName);
 	return RPMERR_SCRIPT;
     }
-    wait(&status);
+    (void)wait(&status);
     if (! WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)"),
 		 scriptName, name);

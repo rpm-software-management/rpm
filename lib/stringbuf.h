@@ -1,7 +1,7 @@
 #ifndef _STRINGBUF_H_
 #define _STRINGBUF_H_
 
-typedef struct StringBufRec *StringBuf;
+typedef /*@abstract@*/ struct StringBufRec *StringBuf;
 
 StringBuf newStringBuf(void);
 void freeStringBuf(StringBuf sb);

@@ -7,8 +7,10 @@
 #define HAVE_SYS_SOCKET_H 1
 #endif
 
+#ifndef __LCLINT__
 #if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
+#endif
 #endif
 
 #if HAVE_NETINET_IN_SYSTM_H

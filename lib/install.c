@@ -111,7 +111,7 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
     }
     
     rc = installSources(h, rootdir, fd, specFile, notify, labelFormat);
-    if (h) headerFree(h);
+    if (h != NULL) headerFree(h);
  
     return rc;
 }
@@ -464,7 +464,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	if (flags & RPMINSTALL_JUSTDB) return 0;
 
 	rc = installSources(h, rootdir, fd, NULL, notify, labelFormat);
-	if (h) headerFree(h);
+	if (h != NULL) headerFree(h);
 
 	return rc;
     }
@@ -610,7 +610,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 
 	/* this loads all of the name services libraries, in case we
 	   don't have access to them in the chroot() */
-	getpwnam("root");
+	(void)getpwnam("root");
 	endpwent();
 
 	chdir("/");
@@ -1044,7 +1044,7 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
     if (!rpmdbFindPackage(db, name, &matches)) {
 	for (i = 0; i < matches.count; i++) {
 	    sech = rpmdbGetRecord(db, matches.recs[i].recOffset);
-	    if (!sech) {
+	    if (sech == NULL) {
 		return 1;
 	    }
 
@@ -1245,7 +1245,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 
 	    secOffset = sharedList[i].secRecOffset;
 	    sech = rpmdbGetRecord(db, secOffset);
-	    if (!sech) {
+	    if (sech == NULL) {
 		rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for "
 		      "uninstall"), secOffset);
 		rc = 1;
@@ -1461,7 +1461,7 @@ static int installSources(Header h, char * rootdir, int fd,
 	}
     }
 
-    if (labelFormat && h) {
+    if (labelFormat && h != NULL) {
 	headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
 	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
 	headerGetEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
@@ -1543,7 +1543,7 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 
     for (fileInfo = replList; fileInfo->recOffset; fileInfo++) {
 	if (secOffset != fileInfo->recOffset) {
-	    if (secHeader) {
+	    if (secHeader != NULL) {
 		/* ignore errors here - just do the best we can */
 
 		rpmdbUpdateRecord(db, secOffset, secHeader);
@@ -1552,7 +1552,7 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 
 	    secOffset = fileInfo->recOffset;
 	    sh = rpmdbGetRecord(db, secOffset);
-	    if (!sh) {
+	    if (sh == NULL) {
 		secOffset = 0;
 	    } else {
 		secHeader = headerCopy(sh);	/* so we can modify it */
@@ -1569,7 +1569,7 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 	secStates[fileInfo->fileNumber] = RPMFILE_STATE_REPLACED;
     }
 
-    if (secHeader) {
+    if (secHeader != NULL) {
 	/* ignore errors here - just do the best we can */
 
 	rpmdbUpdateRecord(db, secOffset, secHeader);
@@ -1620,7 +1620,7 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset) {
     int result, rc = 0;
 
     old = rpmdbGetRecord(db, dbOffset);
-    if (!old) return 1;
+    if (old == NULL) return 1;
 
     result = rpmVersionCompare(old, new);
     if (result < 0)

@@ -247,7 +247,7 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
 
     alAddPackage(&rpmdep->addedPackages, h, key);
 
-    if (!rpmdep->db) return;
+    if (rpmdep->db == NULL) return;
 
     headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &name, &count);
 
@@ -368,7 +368,7 @@ int rpmdepCheck(rpmDependencies rpmdep,
     /* now look at the removed packages and make sure they aren't critical */
     for (i = 0; i < rpmdep->numRemovedPackages; i++) {
 	h = rpmdbGetRecord(rpmdep->db, rpmdep->removedPackages[i]);
-	if (!h) {
+	if (h == NULL) {
 	    rpmError(RPMERR_DBCORRUPT, 
 			_("cannot read header at %d for dependency check"),
 		        rpmdep->removedPackages[i]);
@@ -453,7 +453,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 			  reqFlags))
 	return 0;
 
-    if (rpmdep->db) {
+    if (rpmdep->db != NULL) {
 	if (*reqName == '/') {
 	    /* reqFlags better be 0! */
 	    if (!rpmdbFindByFile(rpmdep->db, reqName, &matches)) {
@@ -523,7 +523,7 @@ static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp,
 	    continue;
 
 	h = rpmdbGetRecord(rpmdep->db, matches->recs[i].recOffset);
-	if (!h) {
+	if (h == NULL) {
 	    rpmError(RPMERR_DBCORRUPT, 
                      _("cannot read header at %d for dependency check"),
 		     rpmdep->removedPackages[i]);
@@ -561,7 +561,7 @@ static int checkDependentConflicts(rpmDependencies rpmdep,
     dbiIndexSet matches;
     int rc;
 
-    if (!rpmdep->db) return 0;
+    if (rpmdep->db == NULL) return 0;
 
     if (rpmdbFindByConflicts(rpmdep->db, package, &matches)) {
 	return 0;
@@ -759,7 +759,7 @@ static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset,
     int rc;
 
     h = rpmdbGetRecord(rpmdep->db, recOffset);
-    if (!h) {
+    if (h == NULL) {
 	rpmMessage(RPMMESS_DEBUG, _("dbrecMatchesDepFlags() failed to read header"));
 	return 0;
     }

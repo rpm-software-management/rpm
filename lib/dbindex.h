@@ -19,7 +19,7 @@ typedef struct {
     int count;
 } dbiIndexSet;
 
-typedef struct {
+typedef /*@abstract@*/ struct {
     DB * db;
     char * indexname;
 } dbiIndex;

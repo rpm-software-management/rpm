@@ -34,8 +34,8 @@ typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 #endif
 
-typedef struct headerToken *Header;
-typedef struct headerIteratorS *HeaderIterator;
+typedef /*@abstract@*/ struct headerToken *Header;
+typedef /*@abstract@*/ struct headerIteratorS *HeaderIterator;
 
 struct headerTagTableEntry {
     char * name;

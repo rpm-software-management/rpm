@@ -69,7 +69,7 @@ static int matchTok(char *token, char *line);
 
 static int matchTok(char *token, char *line)
 {
-    char buf[BUFSIZ], *tok;
+    char buf[BUFSIZ], *bp, *tok;
 
     /*
      * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
@@ -77,8 +77,8 @@ static int matchTok(char *token, char *line)
      * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
      */
     strcpy(buf, line);
-    strtok(buf, " \n\t");
-    while ((tok = strtok(NULL, " \n\t"))) {
+    for (bp = buf; (tok = strtok(bp, " \n\t")) != NULL;) {
+	bp = NULL;
 	if (! strcasecmp(tok, token)) {
 	    return 1;
 	}

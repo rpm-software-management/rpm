@@ -79,7 +79,7 @@ static int findMatches(rpmdb db, char * name, char * version, char * release,
     for (i = 0; i < matches->count; i++) {
 	if (matches->recs[i].recOffset) {
 	    h = rpmdbGetRecord(db, matches->recs[i].recOffset);
-	    if (!h) {
+	    if (h == NULL) {
 		rpmError(RPMERR_DBCORRUPT, 
 			 _("cannot read header at %d for lookup"), 
 			matches->recs[i].recOffset);

@@ -419,7 +419,7 @@ void freeSpec(Spec spec)
 	free(rl);
     }
     
-    if (spec->sourceHeader) {
+    if (spec->sourceHeader != NULL) {
 	headerFree(spec->sourceHeader);
     }
 

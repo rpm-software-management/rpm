@@ -60,13 +60,13 @@ static inline off_t saferead(CFD_t *cfd, void * vbuf, size_t amount) {
 	switch (cfd->cpioIoType) {
 	default:
 #ifdef	PARANOID
-		fprintf(stderr, "\tsaferead(%p,%p,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsaferead(%p,%p,%x)\n", cfd, vbuf, (unsigned)amount);
 		exit(1);
 		break;
 #endif
 	case cpioIoTypeDebug:
 		nb = amount;
-		fprintf(stderr, "\tsaferead(%p,%p,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsaferead(%p,%p,%x)\n", cfd, vbuf, (unsigned)amount);
 		break;
 	case cpioIoTypeFd:
 		nb = read(cfd->cpioFd, buf, amount);
@@ -103,7 +103,7 @@ static inline void padinfd(CFD_t * cfd, int modulo) {
     int amount;
     
     amount = (modulo - cfd->cpioPos % modulo) % modulo;
-    ourread(cfd, buf, amount);
+    (void)ourread(cfd, buf, amount);
 }
 
 static inline off_t safewrite(CFD_t *cfd, void * vbuf, size_t amount) {
@@ -115,13 +115,13 @@ static inline off_t safewrite(CFD_t *cfd, void * vbuf, size_t amount) {
 	switch (cfd->cpioIoType) {
 	default:
 #ifdef	PARANOID
-		fprintf(stderr, "\tsafewrite(%p,%p,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsafewrite(%p,%p,%x)\n", cfd, vbuf, (unsigned)amount);
 		exit(1);
 		break;
 #endif
 	case cpioIoTypeDebug:
 		nb = amount;
-		fprintf(stderr, "\tsafewrite(%p,%p,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsafewrite(%p,%p,%x)\n", cfd, vbuf, (unsigned)amount);
 		break;
 	case cpioIoTypeFd:
 		nb = write(cfd->cpioFd, buf, amount);

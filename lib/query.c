@@ -227,10 +227,10 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 					"neither file owner or id lists"));
 			    }
 
-			    fprintf(stdout, " %s %s %d ", 
+			    fprintf(stdout, " %s %s %u ", 
 				 fileFlagsList[i] & RPMFILE_CONFIG ? "1" : "0",
 				 fileFlagsList[i] & RPMFILE_DOC ? "1" : "0",
-				 fileRdevList[i]);
+				 (unsigned)fileRdevList[i]);
 
 			    if (strlen(fileLinktoList[i]))
 				fprintf(stdout, "%s\n", fileLinktoList[i]);
@@ -359,7 +359,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 	sprintf(groupfield, "%-8d", gid);
 
     /* this is normally right */
-    sprintf(sizefield, "%10d", size);
+    sprintf(sizefield, "%10u", size);
 
     /* this knows too much about dev_t */
 
@@ -368,10 +368,10 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 	sprintf(namefield, "%s -> %s", name, linkto);
     } else if (S_ISCHR(mode)) {
 	perms[0] = 'c';
-	sprintf(sizefield, "%3d, %3d", rdev >> 8, rdev & 0xFF);
+	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
     } else if (S_ISBLK(mode)) {
 	perms[0] = 'b';
-	sprintf(sizefield, "%3d, %3d", rdev >> 8, rdev & 0xFF);
+	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
     }
 
     /* this is important if sizeof(int_32) ! sizeof(time_t) */
@@ -379,10 +379,10 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     tstruct = localtime(&themtime);
 
     if (tstruct->tm_year == thisYear || 
-	((tstruct->tm_year + 1) == thisYear && tstruct->tm_mon > thisMonth)) 
-	strftime(timefield, sizeof(timefield) - 1, "%b %d %H:%M", tstruct);
+      ((tstruct->tm_year + 1) == thisYear && tstruct->tm_mon > thisMonth)) 
+	(void)strftime(timefield, sizeof(timefield) - 1, "%b %d %H:%M",tstruct);
     else
-	strftime(timefield, sizeof(timefield) - 1, "%b %d  %Y", tstruct);
+	(void)strftime(timefield, sizeof(timefield) - 1, "%b %d  %Y", tstruct);
 
     fprintf(stdout, "%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
 		sizefield, timefield, namefield);
@@ -399,7 +399,7 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
 			matches.recs[i].recOffset);
 	    
 	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
-	    if (!h) {
+	    if (h == NULL) {
 		fprintf(stderr, _("error: could not read database record\n"));
 	    } else {
 		printHeader(h, queryFlags, queryFormat);
@@ -458,7 +458,7 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 
 	    switch (rc) {
 		case 0:
-		    if (!h) {
+		    if (h == NULL) {
 			fprintf(stderr, _("old format source packages cannot "
 				"be queried\n"));
 		    } else {
@@ -484,7 +484,7 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 	offset = rpmdbFirstRecNum(db);
 	while (offset) {
 	    h = rpmdbGetRecord(db, offset);
-	    if (!h) {
+	    if (h == NULL) {
 		fprintf(stderr, _("could not read database record!\n"));
 		return 1;
 	    }
@@ -583,8 +583,7 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	rpmMessage(RPMMESS_DEBUG, _("showing package: %d\n"), recNumber);
 	h = rpmdbGetRecord(db, recNumber);
-
-	if (!h)  {
+	if (h == NULL)  {
 	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
 	    retcode = 1;
 	} else {

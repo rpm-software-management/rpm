@@ -9,6 +9,12 @@
 #include "popt/popt.h"
 #include "verify.h"
 
+#ifdef	__LCLINT__
+#define	VERSION			"3.0"
+#define	LIBRPMALIAS_FILENAME	"/usr/lib/rpm/rpmpopt"
+#define	RPMCONFIGDIR		"/usr/lib/rpm"
+#endif
+
 #define GETOPT_REBUILD		1003
 #define GETOPT_RECOMPILE	1004
 #define GETOPT_ADDSIGN		1005
@@ -556,7 +562,7 @@ int main(int argc, char ** argv) {
     rpm_version = 0;
 
     /* set up the correct locale */
-    setlocale(LC_ALL, "" );
+    (void)setlocale(LC_ALL, "" );
 
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
@@ -696,7 +702,7 @@ int main(int argc, char ** argv) {
 	    if (bigMode == MODE_QUERY)
 		poptStuffArgs(optCon, infoCommand);
 	    else if (bigMode == MODE_INSTALL)
-		/* ignore it */ ;
+		/*@-ifempty@*/ ;
 	    else if (bigMode == MODE_UNKNOWN)
 		poptStuffArgs(optCon, installCommand);
 	    break;
@@ -1317,7 +1323,7 @@ int main(int argc, char ** argv) {
 
     if (pipeChild) {
 	fclose(stdout);
-	waitpid(pipeChild, &status, 0);
+	(void)waitpid(pipeChild, &status, 0);
     }
 
     /* keeps memory leak checkers quiet */
