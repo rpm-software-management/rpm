@@ -29,6 +29,7 @@
 	- their must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- sub-packages inherit RPMTAG_EPOCH (just like RPMTAG_VERSION/RELEASE).
 	- fix off-by-1 alloca that prevented relocating /.
 
 2.5.4 -> 2.5.5:
