@@ -1411,6 +1411,7 @@ assert(psm->mi == NULL);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->progTag = RPMTAG_PREINPROG;
+
 	    rc = psmStage(psm, PSM_SCRIPT);
 	    if (rc) {
 		rpmError(RPMERR_SCRIPT,
@@ -1419,23 +1420,13 @@ assert(psm->mi == NULL);
 			fi->name, fi->version, fi->release);
 		break;
 	    }
-
-#ifdef	DYING
-	    /* Change root directory if requested and not already done. */
-	    (void) psmStage(psm, PSM_CHROOT_IN);
-#endif
 	}
+
 	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptTag = RPMTAG_PREUN;
 	    psm->progTag = RPMTAG_PREUNPROG;
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
-
-#ifdef	DYING
-	    /* Change root directory if requested and not already done. */
-	    rc = psmStage(psm, PSM_CHROOT_IN);
-	    if (rc) break;
-#endif
 
 	    rc = psmStage(psm, PSM_TRIGGERS);
 	    if (rc) break;
@@ -1504,11 +1495,6 @@ assert(psm->mi == NULL);
 	    /* Write the metadata section into the package. */
 	    rc = headerWrite(psm->fd, psm->oh, HEADER_MAGIC_YES);
 	    if (rc) break;
-
-#ifdef	DYING
-	    /* Change root directory if requested and not already done. */
-	    rc = psmStage(psm, PSM_CHROOT_IN);
-#endif
 	}
 	break;
     case PSM_PROCESS:
@@ -1602,11 +1588,6 @@ assert(psm->mi == NULL);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = time(NULL);
-
-#ifdef	DYING
-	    /* Restore root directory if changed. */
-	    (void) psmStage(psm, PSM_CHROOT_OUT);
-#endif
 
 	    if (fi->fc > 0 && fi->fstates)
 		headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
