@@ -62,9 +62,9 @@ void printUsage(void) {
     puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                          file1.rpm ... fileN.rpm"));
-    puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "));
+    puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-D]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
-    puts(_("			    [targets]"));
+    puts(_("                        [--provides] [--deps] [--requiredby] [targets]"));
     puts(_("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
@@ -86,7 +86,7 @@ void printHelp(void) {
     puts(_("usage:"));
     puts(_("   --help		- print this message"));
     puts(_("   --version	- print the version of rpm being used"));
-    puts(_("all modes support the following arguments"));
+    puts(_("   all modes support the following arguments"));
     puts(_("      --rcfile <file>     - use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
     puts(_("       -v		      - be a little more verbose"));
     puts(_("       -vv		      - be incredible verbose (for debugging)"));
@@ -98,13 +98,17 @@ void printHelp(void) {
     puts(_("        -f <file>+        - query package owning <file>"));
     puts(_("        -F                - like -f, but read file names from stdin"));
     puts(_("        -p <packagefile>+ - query (uninstalled) package <packagefile>"));
-    puts(_("        -P                - like -f, but read package names from stdin"));
+    puts(_("        -P                - like -p, but read package names from stdin"));
+    puts(_("	   --provides <item>  - query packages which provide <item> capability"));
+    puts(_("	   --requiredby <item> - query packages which require <item> capability"));
     puts(_("      Information selection options:"));
     puts(_("        -i                - display package information"));
     puts(_("        -l                - display package file list"));
     puts(_("        -s                - show file states (implies -l)"));
     puts(_("        -d                - list only documentation files (implies -l)"));
     puts(_("        -c                - list only configuration files (implies -l)"));
+    puts(_("        --deps"));
+    puts(_("        -D                - list package dependencies"));
     puts(_("        --scripts         - print the various [un]install scripts"));
     puts(_(""));
     puts(_("    -V"));
@@ -212,30 +216,12 @@ int main(int argc, char ** argv) {
     enum querysources querySource = QUERY_PACKAGE;
     enum verifysources verifySource = VERIFY_PACKAGE;
     int arg;
-    int queryFor = 0;
-    int test = 0;
-    int version = 0;
-    int help = 0;
-    int force = 0;
-    int quiet = 0;
-    int replaceFiles = 0;
-    int replacePackages = 0;
-    int showPercents = 0;
-    int showHash = 0;
-    int installFlags = 0;
-    int uninstallFlags = 0;
-    int interfaceFlags = 0;
-    int buildAmount = 0;
-    int oldPackage = 0;
-    int clean = 0;
-    int signIt = 0;
-    int shortCircuit = 0;
-    int badOption = 0;
-    int queryTags = 0;
-    int excldocs = 0;
-    int incldocs = 0;
-    int queryScripts = 0;
-    int noScripts = 0;
+    int queryFor = 0, test = 0, version = 0, help = 0, force = 0;
+    int quiet = 0, replaceFiles = 0, replacePackages = 0, showPercents = 0;
+    int showHash = 0, installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
+    int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
+    int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
+    int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     char * rcfile = NULL;
     char * queryFormat = NULL;
     char buildChar = ' ';
@@ -251,6 +237,7 @@ int main(int argc, char ** argv) {
 	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
+	    { "deps", 0, 0, 'D' },
 	    { "docfiles", 0, 0, 'd' },
 	    { "erase", 0, 0, 'e' },
             { "excludedocs", 0, &excldocs, 0},
@@ -263,10 +250,12 @@ int main(int argc, char ** argv) {
             { "includedocs", 0, &incldocs, 0},
 	    { "install", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
+	    { "nodeps", 0, &noDeps, 0 },
 	    { "noscripts", 0, &noScripts, 0 },
 	    { "oldpackage", 0, &oldPackage, 0 },
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
+	    { "provides", 0, 0, 0 },
 	    { "query", 0, 0, 'q' },
 	    { "querybynumber", 0, 0, 0 },
 	    { "queryformat", 1, 0, 0 },
@@ -278,6 +267,7 @@ int main(int argc, char ** argv) {
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "resign", 0, 0, 0 },
+	    { "requiredby", 0, 0, 0 },
 	    { "root", 1, 0, 'r' },
 	    { "scripts", 0, &queryScripts, 0 },
 	    { "short-circuit", 0, &shortCircuit, 0 },
@@ -320,7 +310,7 @@ int main(int argc, char ** argv) {
     while (1) {
 	long_index = 0;
 
-	arg = getopt_long(argc, argv, "QqVyUYhpvKPfFilseagGducr:b:", options, 
+	arg = getopt_long(argc, argv, "QqVyUYhpvKPfFilseagGDducr:b:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
@@ -432,6 +422,10 @@ int main(int argc, char ** argv) {
 	    queryFor |= QUERY_FOR_LIST | QUERY_FOR_STATE;
 	    break;
 
+	  case 'D':
+	    queryFor |= QUERY_FOR_DEPS;
+	    break;
+
 	  case 'l':
 	    queryFor |= QUERY_FOR_LIST;
 	    break;
@@ -513,7 +507,19 @@ int main(int argc, char ** argv) {
 	  default:
 	    if (options[long_index].flag)
 		*options[long_index].flag = 1;
-	    else if (!strcmp(options[long_index].name, "rebuild")) {
+	    else if (!strcmp(options[long_index].name, "requiredby")) {
+		if (querySource != QUERY_PACKAGE && 
+		    querySource != QUERY_REQUIREDBY)
+		    argerror(_("one type of query/verify may be performed at a "
+				    "time"));
+		querySource = QUERY_REQUIREDBY;
+	    } else if (!strcmp(options[long_index].name, "provides")) {
+		if (querySource != QUERY_PACKAGE && 
+		    querySource != QUERY_PROVIDES)
+		    argerror(_("one type of query/verify may be performed at a "
+				    "time"));
+		querySource = QUERY_PROVIDES;
+	    } else if (!strcmp(options[long_index].name, "rebuild")) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_REBUILD;
@@ -601,6 +607,10 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noScripts)
 	argerror(_("--noscripts may only be specified during package "
 		   "installation and uninstallation"));
+
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noDeps)
+	argerror(_("--nodeps may only be specified during package "
+		   "installation, uninstallation, and verification"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && test)
 	argerror(_("--test may only be specified during package installation "
@@ -736,11 +746,11 @@ int main(int argc, char ** argv) {
 	if (optind == argc) 
 	    argerror(_("no packages given for uninstall"));
 
-	if (noScripts) uninstallFlags |= INSTALL_NOSCRIPTS;
+	if (noScripts) uninstallFlags |= UNINSTALL_NOSCRIPTS;
 	if (test) uninstallFlags |= UNINSTALL_TEST;
+	if (noDeps) interfaceFlags |= RPMUNINSTALL_NODEPS;
 
-	while (optind < argc) 
-	    doUninstall(prefix, argv[optind++], uninstallFlags, 0);
+	doUninstall(prefix, argv + optind, uninstallFlags, interfaceFlags);
 	break;
 
       case MODE_INSTALL:
@@ -752,7 +762,7 @@ int main(int argc, char ** argv) {
 
 	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
 	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
-
+	if (noDeps) interfaceFlags |= RPMINSTALL_NODEPS;
 
 	if (!incldocs) {
 	    if (excldocs)
@@ -764,9 +774,7 @@ int main(int argc, char ** argv) {
 	if (optind == argc) 
 	    argerror(_("no packages given for install"));
 
-	while (optind < argc) 
-	    ec += doInstall(prefix, argv[optind++], installFlags, 
-			    interfaceFlags);
+	ec += doInstall(prefix, argv + optind, installFlags, interfaceFlags);
 	break;
 
       case MODE_QUERY:
