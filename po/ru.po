@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-02-21 20:45-0500\n"
+"POT-Creation-Date: 2000-02-22 07:13-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3425,27 +3425,27 @@ msgstr "Вы должны установить \"%%_gpg_name:\" в вашем макрофайле"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Вы должны установить \"%%_pgp_name:\" в вашем макрофайле"
 
-#: lib/transaction.c:389
+#: lib/transaction.c:400
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "исключаю %s\n"
 
-#: lib/transaction.c:415 lib/transaction.c:499
+#: lib/transaction.c:427 lib/transaction.c:511
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/transaction.c:420
+#: lib/transaction.c:432
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещаю %s в %s\n"
 
-#: lib/transaction.c:492
+#: lib/transaction.c:504
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещаю %s в %s\n"
 
-#: lib/transaction.c:643
+#: lib/transaction.c:656
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"

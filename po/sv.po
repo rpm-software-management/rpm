@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.64 $
+# $Revision: 1.65 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-02-21 20:45-0500\n"
+"POT-Creation-Date: 2000-02-22 07:13-0500\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3401,27 +3401,27 @@ msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 
-#: lib/transaction.c:389
+#: lib/transaction.c:400
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "hoppar över %s%s\n"
 
-#: lib/transaction.c:415 lib/transaction.c:499
+#: lib/transaction.c:427 lib/transaction.c:511
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
-#: lib/transaction.c:420
+#: lib/transaction.c:432
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "flyttar %s till %s\n"
 
-#: lib/transaction.c:492
+#: lib/transaction.c:504
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
-#: lib/transaction.c:643
+#: lib/transaction.c:656
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"

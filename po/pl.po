@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-02-21 20:45-0500\n"
+"POT-Creation-Date: 2000-02-22 07:13-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3418,27 +3418,27 @@ msgstr "Musisz ustawiæ \"%%_gpg_name\" w pliku swego makra"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Musisz ustawiæ \"%%_pgp_name\" w pliku swego makra"
 
-#: lib/transaction.c:389
+#: lib/transaction.c:400
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "wy³±czanie %s\n"
 
-#: lib/transaction.c:415 lib/transaction.c:499
+#: lib/transaction.c:427 lib/transaction.c:511
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/transaction.c:420
+#: lib/transaction.c:432
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/transaction.c:492
+#: lib/transaction.c:504
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/transaction.c:643
+#: lib/transaction.c:656
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pominiêty z powodu flagi missingok\n"

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-02-21 20:45-0500\n"
+msgstr "POT-Creation-Date: 2000-02-22 07:13-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -3522,27 +3522,27 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
-#: lib/transaction.c:389
+#: lib/transaction.c:400
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:415 lib/transaction.c:499
+#: lib/transaction.c:427 lib/transaction.c:511
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:420
+#: lib/transaction.c:432
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:492
+#: lib/transaction.c:504
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/transaction.c:643
+#: lib/transaction.c:656
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

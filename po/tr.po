@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-21 20:45-0500\n"
+"POT-Creation-Date: 2000-02-22 07:13-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3537,27 +3537,27 @@ msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 
-#: lib/transaction.c:389
+#: lib/transaction.c:400
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "%s alýnýyor\n"
 
-#: lib/transaction.c:415 lib/transaction.c:499
+#: lib/transaction.c:427 lib/transaction.c:511
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:420
+#: lib/transaction.c:432
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:492
+#: lib/transaction.c:504
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:643
+#: lib/transaction.c:656
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

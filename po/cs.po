@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-21 20:45-0500\n"
+"POT-Creation-Date: 2000-02-22 07:13-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -3489,27 +3489,27 @@ msgstr "V souboru rpmrc se musí nastavit \"pgp_name:\""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "V souboru rpmrc se musí nastavit \"pgp_name:\""
 
-#: lib/transaction.c:389
+#: lib/transaction.c:400
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "Probíhá naèítání %s\n"
 
-#: lib/transaction.c:415 lib/transaction.c:499
+#: lib/transaction.c:427 lib/transaction.c:511
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "vytváøí se adresáø: %s\n"
 
-#: lib/transaction.c:420
+#: lib/transaction.c:432
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "Probíhá získávání %s jako %s\n"
 
-#: lib/transaction.c:492
+#: lib/transaction.c:504
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Probíhá získávání %s jako %s\n"
 
-#: lib/transaction.c:643
+#: lib/transaction.c:656
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
