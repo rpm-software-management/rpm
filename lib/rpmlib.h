@@ -8,6 +8,7 @@
 #include "rpmio.h"
 #include "dbindex.h"
 #include "header.h"
+#include "popt.h"	/* XXX you now need to install the popt package */
 
 #ifdef __cplusplus
 extern "C" {
