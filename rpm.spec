@@ -37,7 +37,7 @@ will manipulate RPM packages and databases.
 %setup -q
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr --disable-shared
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
 make
 
 %install
@@ -56,6 +56,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip ./usr/bin/rpm2cpio
+  strip ./usr/lib/rpm/rpmputtext ./usr/lib/rpm/rpmgettext
 }
 
 %clean
@@ -80,8 +81,8 @@ fi
 /usr/man/man8/rpm.8
 /usr/man/man8/rpm2cpio.8
 /usr/lib/rpm
-/usr/lib/rpmrc
-/usr/lib/rpmpopt
+#/usr/lib/rpmrc
+#/usr/lib/rpmpopt
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS

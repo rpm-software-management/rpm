@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-28 09:56-0400\n"
+"POT-Creation-Date: 1999-04-29 17:08-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3142,128 +3142,128 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: ../lib/signature.c:146
+#: ../lib/signature.c:147
 msgid "No signature\n"
 msgstr ""
 
-#: ../lib/signature.c:149
+#: ../lib/signature.c:150
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: ../lib/signature.c:162
+#: ../lib/signature.c:163
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 
-#: ../lib/signature.c:166
+#: ../lib/signature.c:167
 msgid "New Header signature\n"
 msgstr ""
 
 #. 8-byte pad
-#: ../lib/signature.c:174 ../lib/signature.c:212
+#: ../lib/signature.c:175 ../lib/signature.c:213
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:175 ../lib/signature.c:213
+#: ../lib/signature.c:176 ../lib/signature.c:214
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:305 ../lib/signature.c:811
+#: ../lib/signature.c:306 ../lib/signature.c:812
 msgid "Couldn't exec pgp"
 msgstr ""
 
-#: ../lib/signature.c:316
+#: ../lib/signature.c:317
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: ../lib/signature.c:323
+#: ../lib/signature.c:324
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:328
+#: ../lib/signature.c:329
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:339 ../lib/signature.c:415
+#: ../lib/signature.c:340 ../lib/signature.c:416
 msgid "unable to read the signature"
 msgstr ""
 
-#: ../lib/signature.c:344
+#: ../lib/signature.c:345
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: ../lib/signature.c:381 ../lib/signature.c:786
+#: ../lib/signature.c:382 ../lib/signature.c:787
 msgid "Couldn't exec gpg"
 msgstr ""
 
-#: ../lib/signature.c:392
+#: ../lib/signature.c:393
 msgid "gpg failed"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: ../lib/signature.c:399
+#: ../lib/signature.c:400
 msgid "gpg failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:404
+#: ../lib/signature.c:405
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:420
+#: ../lib/signature.c:421
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: ../lib/signature.c:435
+#: ../lib/signature.c:436
 #, c-format
 msgid "sigsize         : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:436
+#: ../lib/signature.c:437
 #, c-format
 msgid "Header + Archive: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:437
+#: ../lib/signature.c:438
 #, c-format
 msgid "expected size   : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:441
+#: ../lib/signature.c:442
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: ../lib/signature.c:559 ../lib/signature.c:606
+#: ../lib/signature.c:560 ../lib/signature.c:607
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: ../lib/signature.c:604 ../lib/signature.c:676
+#: ../lib/signature.c:605 ../lib/signature.c:677
 msgid "exec failed!\n"
 msgstr ""
 
-#: ../lib/signature.c:678
+#: ../lib/signature.c:679
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: ../lib/signature.c:715
+#: ../lib/signature.c:716
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: ../lib/signature.c:727
+#: ../lib/signature.c:728
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: ../lib/signature.c:735 ../lib/signature.c:815
+#: ../lib/signature.c:736 ../lib/signature.c:816
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 

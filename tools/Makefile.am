@@ -19,8 +19,10 @@ mylibs=	$(top_builddir)/build/librpmbuild.la \
 
 LDADD = $(top_builddir)/lib/librpm.la
 
-noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb \
-	rpmgettext rpmputtext
+noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
+
+pkgbindir = @RPMCONFIGDIR@
+pkgbin_PROGRAMS = rpmgettext rpmputtext
 
 rpmgettext_SOURCES =	rpmgettext.c
 rpmgettext_LDADD =	$(mylibs) @LIBMISC@

@@ -6,6 +6,7 @@
 	- fix: --querybypkg in man page should be --filesbypkg
 	- fix: optflags not implicitly set to canonical arch value.
 	- fix: prefer pgp2.6.3 over pgp5 if both are installed.
+	- make sure that rpm-the-package auto-requires glibc.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.
