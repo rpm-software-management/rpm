@@ -773,7 +773,7 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	
 	fl->inFtw = 1;  /* Flag to indicate file has buildRoot prefixed */
 	fl->isDir = 1;  /* Keep it from following myftw() again         */
-	myftw(diskName, 16, addFile, fl);
+	myftw(diskName, 16, (myftwFunc) addFile, fl);
 	fl->isDir = 0;
 	fl->inFtw = 0;
     } else {

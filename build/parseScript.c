@@ -10,10 +10,9 @@
 #include "reqprov.h"
 #include "package.h"
 
-/* Define this to be 1 to turn on -p "<prog> <args>..." ability */
-#define USE_PROG_STRING_ARRAY 0
+static int addTriggerIndex(Package pkg, char *file, char *script, char *prog);
 
-/* these have to be globab because of stupid compilers */
+/* these have to be global because of stupid compilers */
     static char *name;
     static char *prog;
     static char *file;
@@ -23,6 +22,11 @@
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f' },
 	{ 0, 0, 0, 0, 0 }
     };
+
+/* %trigger is a strange combination of %pre and Requires: behavior */
+/* We can handle it by parsing the args before "--" in parseScript. */
+/* We then pass the remaining arguments to parseReqProv, along with */
+/* an index we just determined.                                     */
 
 int parseScript(Spec spec, int parsePart)
 {
@@ -37,20 +41,23 @@ int parseScript(Spec spec, int parsePart)
     char **progArgv = NULL;
     int progArgc;
     char *partname = NULL;
+    int reqtag = 0;
     int tag = 0;
     int progtag = 0;
     int flag = PART_SUBNAME;
     Package pkg;
     StringBuf sb;
     int nextPart;
+    int index;
+    char reqargs[BUFSIZ];
 
-    char *name = NULL;
-    char *prog = "/bin/sh";
-    char *file = NULL;
-    
     int rc, argc;
     char arg, **argv = NULL;
     poptContext optCon = NULL;
+    
+    name = NULL;
+    prog = "/bin/sh";
+    file = NULL;
     
     switch (parsePart) {
       case PART_PRE:
@@ -77,8 +84,33 @@ int parseScript(Spec spec, int parsePart)
 	tag = PART_VERIFYSCRIPT;
 	progtag = RPMTAG_VERIFYSCRIPTPROG;
 	partname = "%verifyscript";
+	break;
+      case PART_TRIGGERIN:
+	tag = RPMTAG_TRIGGERSCRIPTS;
+	reqtag = RPMTAG_TRIGGERIN;
+	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	break;
+      case PART_TRIGGERUN:
+	tag = RPMTAG_TRIGGERSCRIPTS;
+	reqtag = RPMTAG_TRIGGERUN;
+	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	partname = "%triggerun";
+	break;
     }
 
+    if (tag == RPMTAG_TRIGGERSCRIPTS) {
+	/* break line into two */
+	p = strstr(spec->line, "--");
+	if (!p) {
+	    rpmError(RPMERR_BADSPEC, "line %d: triggers must have --: %s",
+		     spec->lineNum, spec->line);
+	    return RPMERR_BADSPEC;
+	}
+
+	*p = '\0';
+	strcpy(reqargs, p + 2);
+    }
+    
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, "line %d: Error parsing %s: %s",
 		 spec->lineNum, partname, poptStrerror(rc));
@@ -110,7 +142,7 @@ int parseScript(Spec spec, int parsePart)
 	poptFreeContext(optCon);
 	return RPMERR_BADSPEC;
     }
-    
+
     if (poptPeekArg(optCon)) {
 	if (! name) {
 	    name = poptGetArg(optCon);
@@ -133,12 +165,14 @@ int parseScript(Spec spec, int parsePart)
 	return RPMERR_BADSPEC;
     }
 
-    if (headerIsEntry(pkg->header, progtag)) {
-	rpmError(RPMERR_BADSPEC, "line %d: Second %s",
-		 spec->lineNum, partname);
-	FREE(argv);
-	poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+    if (tag != RPMTAG_TRIGGERSCRIPTS) {
+	if (headerIsEntry(pkg->header, progtag)) {
+	    rpmError(RPMERR_BADSPEC, "line %d: Second %s",
+		     spec->lineNum, partname);
+	    FREE(argv);
+	    poptFreeContext(optCon);
+	    return RPMERR_BADSPEC;
+	}
     }
 
     if ((rc = poptParseArgvString(prog, &progArgc, &progArgv))) {
@@ -164,35 +198,45 @@ int parseScript(Spec spec, int parsePart)
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
-#if USE_PROG_STRING_ARRAY
-    addReqProv(spec, pkg, RPMSENSE_PREREQ, progArgv[0], NULL);
-    headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
-		   progArgv, progArgc);
-#else
-    addReqProv(spec, pkg, RPMSENSE_PREREQ, prog, NULL);
-    headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE, prog, 1);
-#endif
-    if (*p) {
-	headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
-    }
+    addReqProv(spec, pkg, RPMSENSE_PREREQ, prog, NULL, 0);
 
-    if (file) {
-	switch (parsePart) {
-	  case PART_PRE:
-	    pkg->preInFile = strdup(file);
-	    break;
-	  case PART_POST:
-	    pkg->postInFile = strdup(file);
-	    break;
-	  case PART_PREUN:
-	    pkg->preUnFile = strdup(file);
-	    break;
-	  case PART_POSTUN:
-	    pkg->postUnFile = strdup(file);
-	    break;
-	  case PART_VERIFYSCRIPT:
-	    pkg->verifyFile = strdup(file);
-	    break;
+    /* Trigger script insertion is always delayed in order to */
+    /* get the index right.                                   */
+    if (tag == RPMTAG_TRIGGERSCRIPTS) {
+	/* Add file/index/prog triple to the trigger file list */
+	index = addTriggerIndex(pkg, file, p, prog);
+
+	/* Generate the trigger tags */
+	if ((rc = parseRequiresConflicts(spec, pkg, reqargs, reqtag, index))) {
+	    freeStringBuf(sb);
+	    FREE(progArgv);
+	    FREE(argv);
+	    poptFreeContext(optCon);
+	    return rc;
+	}
+    } else {
+	headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE, prog, 1);
+	if (*p) {
+	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
+	}
+	if (file) {
+	    switch (parsePart) {
+	      case PART_PRE:
+		pkg->preInFile = strdup(file);
+		break;
+	      case PART_POST:
+		pkg->postInFile = strdup(file);
+		break;
+	      case PART_PREUN:
+		pkg->preUnFile = strdup(file);
+		break;
+	      case PART_POSTUN:
+		pkg->postUnFile = strdup(file);
+		break;
+	      case PART_VERIFYSCRIPT:
+		pkg->verifyFile = strdup(file);
+		break;
+	    }
 	}
     }
     
@@ -202,4 +246,37 @@ int parseScript(Spec spec, int parsePart)
     poptFreeContext(optCon);
     
     return nextPart;
+}
+
+static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
+{
+    struct TriggerFileEntry *new;
+    struct TriggerFileEntry *list = pkg->triggerFiles;
+    struct TriggerFileEntry *last = NULL;
+    int index = 0;
+
+    while (list) {
+	last = list;
+	list = list->next;
+    }
+
+    if (last) {
+	index = last->index + 1;
+    }
+
+    new = malloc(sizeof(*new));
+
+    new->fileName = (file) ? strdup(file) : NULL;
+    new->script = (*script) ? strdup(script) : NULL;
+    new->prog = strdup(prog);
+    new->index = index;
+    new->next = NULL;
+
+    if (last) {
+	last->next = new;
+    } else {
+	pkg->triggerFiles = new;
+    }
+
+    return index;
 }

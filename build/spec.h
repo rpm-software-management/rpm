@@ -15,6 +15,14 @@ struct ReqProvTrigger {
 };
 #endif
 
+struct TriggerFileEntry {
+    int index;
+    char *fileName;
+    char *script;
+    char *prog;
+    struct TriggerFileEntry *next;
+};
+
 #define RPMBUILD_ISSOURCE     1
 #define RPMBUILD_ISPATCH     (1 << 1)
 #define RPMBUILD_ISICON      (1 << 2)
@@ -105,6 +113,8 @@ struct PackageStruct {
     struct ReqProvTrigger *triggers;
     char *triggerScripts;
 #endif
+
+    struct TriggerFileEntry *triggerFiles;
     
     char *fileFile;
     StringBuf fileList; /* If NULL, package will not be written */

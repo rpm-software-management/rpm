@@ -27,7 +27,8 @@ static struct ReqComp {
     { NULL, 0 },
 };
 
-int parseRequiresConflicts(Spec spec, Package pkg, char *field, int tag)
+int parseRequiresConflicts(Spec spec, Package pkg, char *field,
+			   int tag, int index)
 {
     char buf[BUFSIZ], *bufp, *version, *name;
     int flags;
@@ -52,6 +53,12 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field, int tag)
 	} else if (tag == RPMTAG_PREREQ) {
 	    flags = RPMSENSE_PREREQ;
 	    name = "PreReq";
+	} else if (tag == RPMTAG_TRIGGERIN) {
+	    flags = RPMSENSE_TRIGGERIN;
+	    name = "%triggerin";
+	} else if (tag == RPMTAG_TRIGGERUN) {
+	    flags = RPMSENSE_TRIGGERUN;
+	    name = "%triggerun";
 	} else {
 	    flags = RPMSENSE_ANY;
 	    name = "Requires";
@@ -89,7 +96,7 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field, int tag)
 	}
 
 	addReqProv(spec, pkg, flags, req,
-		   (flags & RPMSENSE_SENSEMASK) ? version : NULL);
+		   (flags & RPMSENSE_SENSEMASK) ? version : NULL, index);
 
 	/* If there is no sense, we just read the next token */
 	req = (flags & RPMSENSE_SENSEMASK) ? NULL : version;
@@ -117,7 +124,7 @@ int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag)
 		     spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	addReqProv(spec, pkg, flags, prov, NULL);
+	addReqProv(spec, pkg, flags, prov, NULL, 0);
 	line = NULL;
     }
 

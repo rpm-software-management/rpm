@@ -20,6 +20,7 @@ static struct PartRec {
     {PART_CHANGELOG,    0, "%changelog"},
     {PART_DESCRIPTION,  0, "%description"},
     {PART_TRIGGERUN,    0, "%triggerun"},
+    {PART_TRIGGERIN,    0, "%triggerin"},
     {PART_TRIGGERIN,    0, "%trigger"},
     {PART_VERIFYSCRIPT, 0, "%verifyscript"},
     {0, 0, 0}

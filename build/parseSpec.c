@@ -80,11 +80,14 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	  case PART_DESCRIPTION:
 	    parsePart = parseDescription(spec);
 	    break;
+
 	  case PART_PRE:
 	  case PART_POST:
 	  case PART_PREUN:
 	  case PART_POSTUN:
 	  case PART_VERIFYSCRIPT:
+	  case PART_TRIGGERIN:
+	  case PART_TRIGGERUN:
 	    parsePart = parseScript(spec, parsePart);
 	    break;
 
@@ -92,12 +95,6 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	    parsePart = parseFiles(spec);
 	    break;
 
-	  case PART_TRIGGERIN:
-	  case PART_TRIGGERUN:
-	    printf("Triggers are not supported yet.\n");
-	    exit(1);
-	    /*parsePart = parseTrigger(spec, parsePart);*/
-	    break;
 	}
 
 	if (parsePart < 0) {

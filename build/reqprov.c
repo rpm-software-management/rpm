@@ -10,14 +10,17 @@
 #include "misc.h"
 #include "lib/misc.h"
 
-int addReqProv(Spec spec, Package pkg, int flag, char *name, char *version)
+int addReqProv(Spec spec, Package pkg,
+	       int flag, char *name, char *version, int index)
 {
     char **names;
     char **versions = NULL;
     int *flags = NULL;
+    int *indexes = NULL;
     int nametag = 0;
     int versiontag = 0;
     int flagtag = 0;
+    int indextag = 0;
     int len;
     int extra = 0;
     
@@ -34,7 +37,13 @@ int addReqProv(Spec spec, Package pkg, int flag, char *name, char *version)
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
 	extra = RPMSENSE_PREREQ;
-    } else {	
+    } else if (flag & RPMSENSE_TRIGGER) {
+	nametag = RPMTAG_TRIGGERNAME;
+	versiontag = RPMTAG_TRIGGERVERSION;
+	flagtag = RPMTAG_TRIGGERFLAGS;
+	indextag = RPMTAG_TRIGGERINDEX;
+	extra = flag & RPMSENSE_TRIGGER;
+    } else {
 	nametag = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
@@ -51,15 +60,21 @@ int addReqProv(Spec spec, Package pkg, int flag, char *name, char *version)
 			   (void *) &versions, NULL);
 	    headerGetEntry(pkg->header, flagtag, NULL, (void *) &flags, NULL);
 	}
+	if (indextag) {
+	    headerGetEntry(pkg->header, indextag, NULL,
+			   (void *) &indexes, NULL);
+	}
 	while (len) {
 	    len--;
 	    if (!strcmp(names[len], name)) {
 		if (!flagtag ||
 		    (!strcmp(versions[len], version) && flags[len] == flag)) {
-		    /* The same */
-		    FREE(names);
-		    FREE(versions);
-		    return 0;
+		    if (!indextag || (index == indexes[len])) {
+			/* The same */
+			FREE(names);
+			FREE(versions);
+			return 0;
+		    }
 		}
 	    }
 	}
@@ -74,6 +89,10 @@ int addReqProv(Spec spec, Package pkg, int flag, char *name, char *version)
 			       RPM_STRING_ARRAY_TYPE, &version, 1);
 	headerAddOrAppendEntry(pkg->header, flagtag,
 			       RPM_INT32_TYPE, &flag, 1);
+    }
+    if (indextag) {
+	headerAddOrAppendEntry(pkg->header, indextag,
+			       RPM_INT32_TYPE, &index, 1);
     }
 
     return 0;
@@ -119,7 +138,7 @@ int generateAutoReqProv(Spec spec, Package pkg,
     freeStringBuf(readBuf);
     while (*f) {
 	if (**f) {
-	    addReqProv(spec, pkg, RPMSENSE_PROVIDES, *f, NULL);
+	    addReqProv(spec, pkg, RPMSENSE_PROVIDES, *f, NULL, 0);
 	}
 	f++;
     }
@@ -144,7 +163,7 @@ int generateAutoReqProv(Spec spec, Package pkg,
     freeStringBuf(readBuf);
     while (*f) {
 	if (**f) {
-	    addReqProv(spec, pkg, RPMSENSE_ANY, *f, NULL);
+	    addReqProv(spec, pkg, RPMSENSE_ANY, *f, NULL, 0);
 	}
 	f++;
     }

@@ -1,6 +1,8 @@
 2.4.104 -> 2.4.105:
 	- added langpath: to rpmrc, and mark files with matches
-	- added some C++ cruft to rpmlib header files.
+	- added some C++ cruft to rpmlib header files
+	- added trigger support to build code
+	- got rid of annoying mwftw() type warning
 
 2.4.103 -> 2.4.104:
 	- fixed popt/Makefile.in to use CPP from configure

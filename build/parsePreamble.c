@@ -440,7 +440,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_REQUIREFLAGS:
       case RPMTAG_CONFLICTFLAGS:
       case RPMTAG_PREREQ:
-	if ((rc = parseRequiresConflicts(spec, pkg, field, tag))) {
+	if ((rc = parseRequiresConflicts(spec, pkg, field, tag, 0))) {
 	    return rc;
 	}
 	break;

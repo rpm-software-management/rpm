@@ -3,15 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* %trigger is a strange combination of %pre and Requires: behavior */
-/* We can handle it by handing the args before "--" to parseScript, */
-/* which in the case of triggers should return an index.  We then   */
-/* can pass the remaining arguments to parseReqProv, along with the */
-/* index we just obtained.  In theory, then, all script arguments   */
-/* and behavior is in parseScript, and the require behavior is in   */
-/* parseReqProv, with just a little glue used here.                 */
-
-int parseTrigger(Spec spec, int parsePart)
+int parseTrigger(Spec spec, int part)
 {
     int nextPart;
     char **lineArgv, **triggerArgv;
@@ -26,6 +18,10 @@ int parseTrigger(Spec spec, int parsePart)
     triggerArgv = lineArgv;
     triggerArgc = lineArgc;
 
+    /* New stuff starts here */
+    
+    parseScript(spec, part);
+    
     dash = 0;
     while (dash <= lineArgc) {
 	if (!strcmp(lineArgv[dash], "--")) {
@@ -42,8 +38,14 @@ int parseTrigger(Spec spec, int parsePart)
 	dash++;
     }
 
-    if ((rc = parseReqArgs(spec, triggerArgc, triggerArgv,
+    if ((rc = parseRequiresConflicts(spec, pkg, field,
+				     RPMSENSE_TRIGGER_IN, index,
+				     triggerArgc, triggerArgv))) {
+	free(lineArgv);
+	return rc;
+    }
 
+    return 0;
 }
 
 int addTrigger(struct PackageRec *package,

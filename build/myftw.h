@@ -11,9 +11,11 @@
 #define MYFTW_DNR	2		/* Unreadable directory.  */
 #define MYFTW_NS	3		/* Unstatable file.  */
 
+typedef int (*myftwFunc) (void *fl, char *name, struct stat *statp);
+
 int myftw (const char *dir,
 	   int descriptors,
-	   int (*func) (void *fl, char *name, struct stat *statp),
+	   myftwFunc func,
 	   void *fl);
 
 #endif /* _MYFTW_H_ */

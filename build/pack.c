@@ -27,7 +27,9 @@
 #define RPM_MAJOR_NUMBER 3
 
 static int processScriptFiles(Spec spec, Package pkg);
+static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb);
 static int addFileToTag(Spec spec, char *file, Header h, int tag);
+static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
 static int writeRPM(Header header, char *fileName, int type,
 		    struct cpioFileMapping *cpioList, int cpioCount,
 		    char *passPhrase, char **cookie);
@@ -327,29 +329,41 @@ static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
     return 0;
 }
 
-static int addFileToTag(Spec spec, char *file, Header h, int tag)
+static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb)
 {
-    StringBuf sb;
     char *s;
     char buf[BUFSIZ];
     FILE *f;
 
-    sb = newStringBuf();
-    if (headerGetEntry(h, tag, NULL, (void **)&s, NULL)) {
-	appendLineStringBuf(sb, s);
-	headerRemoveEntry(h, tag);
-    }
     sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
 	    spec->buildSubdir, file);
     if ((f = fopen(buf, "r")) == NULL) {
 	freeStringBuf(sb);
-	return 1;
+	return NULL;
     }
     while (fgets(buf, sizeof(buf), f)) {
 	expandMacros(&spec->macros, buf);
 	appendStringBuf(sb, buf);
     }
     fclose(f);
+
+    return sb;
+}
+
+static int addFileToTag(Spec spec, char *file, Header h, int tag)
+{
+    StringBuf sb;
+    char *s;
+
+    sb = newStringBuf();
+    if (headerGetEntry(h, tag, NULL, (void **)&s, NULL)) {
+	appendLineStringBuf(sb, s);
+	headerRemoveEntry(h, tag);
+    }
+
+    if (! (sb = addFileToTagAux(spec, file, sb))) {
+	return 1;
+    }
     
     headerAddEntry(h, tag, RPM_STRING_TYPE, getStringBuf(sb), 1);
 
@@ -357,8 +371,28 @@ static int addFileToTag(Spec spec, char *file, Header h, int tag)
     return 0;
 }
 
+static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
+{
+    StringBuf sb;
+    char *s;
+
+    sb = newStringBuf();
+    if (! (sb = addFileToTagAux(spec, file, sb))) {
+	return 1;
+    }
+
+    s = getStringBuf(sb);
+    headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, &s, 1);
+
+    freeStringBuf(sb);
+    return 0;
+}
+
 static int processScriptFiles(Spec spec, Package pkg)
 {
+    struct TriggerFileEntry *p;
+    char *bull = "";
+    
     if (pkg->preInFile) {
 	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
 	    rpmError(RPMERR_BADFILENAME,
@@ -394,6 +428,31 @@ static int processScriptFiles(Spec spec, Package pkg)
 		     "Could not open VerifyScript file: %s", pkg->verifyFile);
 	    return RPMERR_BADFILENAME;
 	}
+    }
+
+    p = pkg->triggerFiles;
+    while (p) {
+	headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTPROG,
+			       RPM_STRING_ARRAY_TYPE, &(p->prog), 1);
+	if (p->script) {
+	    headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
+				   RPM_STRING_ARRAY_TYPE, &(p->script), 1);
+	} else if (p->fileName) {
+	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
+				  RPMTAG_TRIGGERSCRIPTS)) {
+		rpmError(RPMERR_BADFILENAME,
+			 "Could not open Trigger script file: %s",
+			 p->fileName);
+		return RPMERR_BADFILENAME;
+	    }
+	} else {
+	    /* This is dumb.  When the header supports NULL string */
+	    /* this will go away.                                  */
+	    headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
+				   RPM_STRING_ARRAY_TYPE, &bull, 1);
+	}
+	
+	p = p->next;
     }
 
     return 0;

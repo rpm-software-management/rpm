@@ -6,6 +6,8 @@
 
 #include <stdlib.h>
 
+static void freeTriggerFiles(struct TriggerFileEntry *p);
+    
 int lookupPackage(Spec spec, char *name, int flag, Package *pkg)
 {
     char buf[BUFSIZ];
@@ -64,6 +66,8 @@ Package newPackage(Spec spec)
     p->triggers = NULL;
     p->triggerScripts = NULL;
 #endif
+
+    p->triggerFiles = NULL;
     
     p->fileFile = NULL;
     p->fileList = NULL;
@@ -124,5 +128,21 @@ void freePackage(Package p)
 
     freeStringBuf(p->specialDoc);
 
+    freeTriggerFiles(p->triggerFiles);
+
     free(p);
+}
+
+static void freeTriggerFiles(struct TriggerFileEntry *p)
+{
+    struct TriggerFileEntry *o;
+    
+    while (p) {
+	FREE(p->fileName);
+	FREE(p->script);
+	FREE(p->prog);
+	o = p;
+	p = p->next;
+	free(o);
+    }
 }

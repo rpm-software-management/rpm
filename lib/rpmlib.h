@@ -94,11 +94,11 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_EXCLUSIVEOS              1062
 #define RPMTAG_AUTOREQPROV              1063 /* internal */
 #define RPMTAG_RPMVERSION		1064
-#define RPMTAG_TRIGGERSCRIPTS           1065 /* internal */
-#define RPMTAG_TRIGGERNAME              1066 /* internal */
-#define RPMTAG_TRIGGERVERSION           1067 /* internal */
-#define RPMTAG_TRIGGERFLAGS             1068 /* internal */
-#define RPMTAG_TRIGGERINDEX             1069 /* internal */
+#define RPMTAG_TRIGGERSCRIPTS           1065
+#define RPMTAG_TRIGGERNAME              1066
+#define RPMTAG_TRIGGERVERSION           1067
+#define RPMTAG_TRIGGERFLAGS             1068
+#define RPMTAG_TRIGGERINDEX             1069
 #define RPMTAG_VERIFYSCRIPT             1079
 #define RPMTAG_CHANGELOGTIME            1080
 #define RPMTAG_CHANGELOGNAME            1081
@@ -120,7 +120,10 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_FILELANGS                1097
 #define RPMTAG_PREFIXES                 1098
 #define RPMTAG_INSTPREFIXES             1099
-
+#define RPMTAG_TRIGGERSCRIPTPROG        1100
+#define RPMTAG_TRIGGERIN                1101 /* internal */
+#define RPMTAG_TRIGGERUN                1102 /* internal */
+    
 #define RPMTAG_EXTERNAL_TAG		1000000
 
 #define RPMFILE_STATE_NORMAL 		0
@@ -178,8 +181,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMSENSE_SENSEMASK       15       /* Mask to get senses, ie serial, */
                                           /* less, greater, equal.          */
 
-#define RPMSENSE_TRIGGER_IN      (1 << 16)
-#define RPMSENSE_TRIGGER_UN      (1 << 17)
+#define RPMSENSE_TRIGGERIN       (1 << 16)
+#define RPMSENSE_TRIGGERUN       (1 << 17)
+#define RPMSENSE_TRIGGER         (RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
