@@ -21,7 +21,7 @@ struct availablePackage {
 /*@null@*/ FD_t fd;
 } ;
 
-enum indexEntryType { IET_NAME, IET_PROVIDES };
+enum indexEntryType { IET_PROVIDES=1 };
 
 struct availableIndexEntry {
 /*@dependent@*/ struct availablePackage * package;
