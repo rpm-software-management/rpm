@@ -275,9 +275,10 @@ static int doSetupMacro(Spec spec, StringBuf sb, char *line)
     /* clean up permissions etc */
     sprintf(buf, "cd %s/%s", getVar(RPMVAR_BUILDDIR), build_subdir);
     appendLineStringBuf(sb, buf);
-    /* XXX - should check if root here first */
-    strcpy(buf, "chown -R root.root .");
-    appendLineStringBuf(sb, buf);
+    if (! geteuid()) {
+	strcpy(buf, "chown -R root.root .");
+	appendLineStringBuf(sb, buf);
+    }
     strcpy(buf, "chmod -R a+rX,g-w,o-w .");
     appendLineStringBuf(sb, buf);
     
@@ -476,12 +477,49 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line)
     return 0;
 }
 
+static int checkSources(Spec s)
+{
+    struct sources *source;
+    struct PackageRec *package;
+    char buf[1024];
+
+    /* Check that we can access all the sources */
+    source = s->sources;
+    while (source) {
+	sprintf(buf, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
+	if (access(buf, R_OK)) {
+	    error(RPMERR_BADSPEC, "missing source or patch: %s",
+		  source->source);
+	    return RPMERR_BADSPEC;
+	}
+	source = source->next;
+    }
+
+    /* ... and icons */
+    package = s->packages;
+    while (package) {
+	if (package->icon) {
+	    sprintf(buf, "%s/%s", getVar(RPMVAR_SOURCEDIR), package->icon);
+	    if (access(buf, R_OK)) {
+		error(RPMERR_BADSPEC, "missing icon: %s", package->icon);
+		return RPMERR_BADSPEC;
+	    }
+	}
+	package = package->next;
+    }
+    
+    return 0;
+}
+
 int execPrep(Spec s, int really_exec)
 {
     char **lines, **lines1, *p;
     StringBuf out;
     int res;
 
+    if (checkSources(s)) {
+	return 1;
+    }
     out = newStringBuf();
     
     p = getStringBuf(s->prep);
@@ -557,6 +595,8 @@ int doBuild(Spec s, int flags)
 	}
     }
 
+    markBuildTime();
+    
     if (flags & RPMBUILD_BINARY) {
 	if (packageBinaries(s)) {
 	    return 1;
