@@ -362,8 +362,6 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     char sizefield[15];
     char ownerfield[9], groupfield[9];
     char timefield[100] = "";
-    time_t themtime;
-    time_t currenttime;
     static int thisYear = 0;
     static int thisMonth = 0;
     struct tm * tstruct;
@@ -373,7 +371,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     perms = permsString(mode);
 
     if (!thisYear) {
-	currenttime = time(NULL);
+	time_t currenttime = time(NULL);
 	tstruct = localtime(&currenttime);
 	thisYear = tstruct->tm_year;
 	thisMonth = tstruct->tm_mon;
@@ -408,8 +406,9 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     }
 
     /* this is important if sizeof(int_32) ! sizeof(time_t) */
-    themtime = mtime;
-    tstruct = localtime(&themtime);
+    {	time_t themtime = mtime;
+	tstruct = localtime(&themtime);
+    }
 
     if (tstruct->tm_year == thisYear || 
       ((tstruct->tm_year + 1) == thisYear && tstruct->tm_mon > thisMonth)) 

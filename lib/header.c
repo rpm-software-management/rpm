@@ -2000,7 +2000,6 @@ static char * realDateFormat(int_32 type, const void * data,
 			     char * formatPrefix, int padding, int element,
 			     char * strftimeFormat) {
     char * val;
-    time_t dateint;
     struct tm * tstruct;
     char buf[50];
 
@@ -2012,8 +2011,9 @@ static char * realDateFormat(int_32 type, const void * data,
 	strcat(formatPrefix, "s");
 
 	/* this is important if sizeof(int_32) ! sizeof(time_t) */
-	dateint = *((int_32 *) data);
-	tstruct = localtime(&dateint);
+	{   time_t dateint = *((int_32 *) data);
+	    tstruct = localtime(&dateint);
+	}
 	(void)strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
 	sprintf(val, formatPrefix, buf);
     }

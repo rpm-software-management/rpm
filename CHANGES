@@ -22,6 +22,7 @@
 	- avoid numeric overflow in version comparison (Thayne Harbaugh<tharbaug@liberate.com>).
 	- move url.c and ftp.c to rpmlib right next to query.
 	- 12 more dead strtoks.
+	- changelog stamp broken w/ big endian 64 bit time_t (Stephane Erania).
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

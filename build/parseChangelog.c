@@ -2,18 +2,19 @@
 
 #include "rpmbuild.h"
 
-static void addChangelogEntry(Header h, int time, char *name, char *text)
+static void addChangelogEntry(Header h, time_t time, char *name, char *text)
 {
+    int_32 mytime = time;	/* XXX convert to header representation */
     if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
 	headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-			  &time, 1);
+			  &mytime, 1);
 	headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
 			  &name, 1);
 	headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
 			 &text, 1);
     } else {
 	headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-		       &time, 1);
+		       &mytime, 1);
 	headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
 		       &name, 1);
 	headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
@@ -88,7 +89,8 @@ static int addChangelog(Header h, StringBuf sb)
 {
     char *s;
     int i;
-    int time, lastTime = 0;
+    time_t time;
+    time_t lastTime = 0;
     char *date, *name, *text, *next;
 
     s = getStringBuf(sb);
@@ -120,7 +122,7 @@ static int addChangelog(Header h, StringBuf sb)
 	    SKIPNONSPACE(s);
 	}
 	SKIPSPACE(date);
-	if (dateToTimet(date, (time_t *)&time)) {
+	if (dateToTimet(date, &time)) {
 	    rpmError(RPMERR_BADSPEC, _("bad date in %%changelog: %s"), date);
 	    return RPMERR_BADSPEC;
 	}

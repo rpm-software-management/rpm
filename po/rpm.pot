@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-03 18:48-0400\n"
+"POT-Creation-Date: 1999-07-06 13:15-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1785,27 +1785,27 @@ msgstr ""
 msgid "line %d: second %s"
 msgstr ""
 
-#: ../build/parseChangelog.c:101
+#: ../build/parseChangelog.c:103
 msgid "%%changelog entries must start with *"
 msgstr ""
 
-#: ../build/parseChangelog.c:109
+#: ../build/parseChangelog.c:111
 msgid "incomplete %%changelog entry"
 msgstr ""
 
-#: ../build/parseChangelog.c:124
+#: ../build/parseChangelog.c:126
 msgid "bad date in %%changelog: %s"
 msgstr ""
 
-#: ../build/parseChangelog.c:129
+#: ../build/parseChangelog.c:131
 msgid "%%changelog not in decending chronological order"
 msgstr ""
 
-#: ../build/parseChangelog.c:137 ../build/parseChangelog.c:148
+#: ../build/parseChangelog.c:139 ../build/parseChangelog.c:150
 msgid "missing name in %%changelog"
 msgstr ""
 
-#: ../build/parseChangelog.c:155
+#: ../build/parseChangelog.c:157
 msgid "no description in %%changelog"
 msgstr ""
 
