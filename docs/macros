@@ -1,0 +1,41 @@
+SPEC FILE MACROS
+================
+
+RPM 2.3.9 introduces simple spec file macros.  The macros can do
+straight text substitution only.  Macros can be used anywhere in
+a spec file, and in "included file lists" (those read in using
+%files -f <file>).
+
+Defining a Macro
+----------------
+
+To define a macro use:
+
+%define <name> <expansion>
+
+All whitespace surrounding <expansion> is removed.  Name may be composed
+of alphanumeric characters, and the character `_'.  Macro expansion is
+performed on <expansion> so that <expansion> my reference other macros
+that have already been defined.
+
+Using a Macro
+-------------
+
+To use a macro, write:
+
+%<name>
+
+or
+
+%{<name>}
+
+The later allows you to place the expansion adjacent to other text.
+
+Predefined Macros
+-----------------
+
+The following macros are defined as the values they reference are
+specified in the spec file:
+
+PACKAGE_VERSION
+PACKAGE_RELEASE
