@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.18 2002/04/11 22:42:08 rjray Exp $
+ * $Id: RPM.h,v 1.19 2002/05/10 05:50:19 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -73,8 +73,6 @@
         else \
             (header) = Null(type *); \
     }
-
-#define new_RPM_storage(type) (type *)safemalloc(sizeof(type))
 
 /*
  *    Perl complement: RPM::Database
