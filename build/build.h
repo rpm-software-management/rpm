@@ -3,10 +3,19 @@
 
 #include "spec.h"
 
+int doBuild(Spec s, int flags);
 int execPrep(Spec s);
 int execBuild(Spec s);
 int execInstall(Spec s);
 int execClean(Spec s);
 int verifyList(Spec s);
+
+#define RPMBUILD_PREP        1
+#define RPMBUILD_BUILD      (1 << 1)
+#define RPMBUILD_INSTALL    (1 << 2)
+#define RPMBUILD_BINARY     (1 << 3)
+#define RPMBUILD_SOURCE     (1 << 4)
+#define RPMBUILD_CLEAN      (1 << 5)
+#define RPMBUILD_LIST       (1 << 6)
 
 #endif _BUILD_H_
