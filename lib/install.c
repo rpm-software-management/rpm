@@ -1240,7 +1240,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
     for (i = 0; i < sharedCount; i++) {
 	/* if a file isn't going to be installed it doesn't matter who
 	   it's shared with */
-	if (!files[sharedList[i].mainFileNumber].action == SKIP) continue;
+	if (files[sharedList[i].mainFileNumber].action == SKIP) continue;
 
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
