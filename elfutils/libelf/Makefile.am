@@ -77,8 +77,7 @@ libelf_la_DEPENDENCIES = $(libelf_la_LIBADD) libelf.map
 
 noinst_HEADERS = elf.h abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
 		 version_xlate.h dl-hash.h \
-		libelf.h gelf.h nlist.h \
-		elf-knowledge.h
+		libelf.h gelf.h nlist.h
 
 EXTRA_DIST = libelf.map
 

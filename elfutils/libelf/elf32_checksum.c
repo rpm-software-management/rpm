@@ -28,11 +28,7 @@
 #include "gelf.h"
 #include "libelfP.h"
 
-#ifdef	XXXHACK
 #include "../libebl/elf-knowledge.h"
-#else
-#include "elf-knowledge.h"
-#endif
 
 #ifndef LIBELFBITS
 # define LIBELFBITS 32
@@ -40,7 +36,8 @@
 
 
 extern uint32_t __libelf_crc32 (uint32_t crc, unsigned char *buf, size_t len)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 
 
 #define process_block(crc, data) \
@@ -48,8 +45,7 @@ extern uint32_t __libelf_crc32 (uint32_t crc, unsigned char *buf, size_t len)
 
 
 long int
-elfw2(LIBELFBITS,checksum) (elf)
-     Elf *elf;
+elfw2(LIBELFBITS,checksum) (Elf *elf)
 {
   size_t shstrndx;
   Elf_Scn *scn;
