@@ -605,11 +605,11 @@ int execPrep(Spec s, int really_exec, int test)
     lines = splitString(p, strlen(p), '\n');
     lines1 = lines;
     while (*lines) {
-	if (! strncasecmp(*lines, "%setup", 6)) {
+	if (! strncmp(*lines, "%setup", 6)) {
 	    if (doSetupMacro(s, out, *lines)) {
 		return 1;
 	    }
-	} else if (! strncasecmp(*lines, "%patch", 6)) {
+	} else if (! strncmp(*lines, "%patch", 6)) {
 	    if (doPatchMacro(s, out, *lines)) {
 		return 1;
 	    }
