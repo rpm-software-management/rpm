@@ -30,7 +30,7 @@
 #define GETOPT_DBPATH		1010
 #define GETOPT_TIMECHECK        1012
 #define GETOPT_REBUILDDB        1013
-#define GETOPT_INFO             1016
+#define GETOPT_INSTALL		1014
 
 char * version = VERSION;
 
@@ -419,6 +419,8 @@ int main(int argc, char ** argv) {
     char * pkg;
     char ** currarg;
     poptContext optCon;
+    char * infoCommand[] = { "--info", NULL };
+    char * installCommand[] = { "--install", NULL };
     int ec = 0;
     int status;
     int p[2];
@@ -444,13 +446,13 @@ int main(int argc, char ** argv) {
 	    { "group", 'g', 0, 0, 'g' },
 	    { "hash", 'h', 0, &showHash, 0 },
 	    { "help", '\0', 0, &help, 0 },
+	    {  NULL, 'i', 0, 0, 'i' },
 	    { "ignorearch", '\0', 0, &ignoreArch, 0 },
 	    { "ignoreos", '\0', 0, &ignoreOs, 0 },
-	/* info and install both using 'i' is dumb */
-	    { "info", '\0', 0, 0, GETOPT_INFO },
             { "includedocs", '\0', 0, &incldocs, 0},
 	    { "initdb", '\0', 0, &initdb, 0 },
-	    { "install", 'i', 0, 0, 'i' },
+	/* info and install both using 'i' is dumb */
+	    { "install", '\0', 0, 0, GETOPT_INSTALL },
 	    { "list", 'l', 0, 0, 'l' },
 	    { "nodeps", '\0', 0, &noDeps, 0 },
 	    { "nofiles", '\0', 0, &noFiles, 0 },
@@ -475,7 +477,6 @@ int main(int argc, char ** argv) {
 	    { "replacefiles", '\0', 0, &replaceFiles, 0 },
 	    { "replacepkgs", '\0', 0, &replacePackages, 0 },
 	    { "resign", '\0', 0, 0, GETOPT_RESIGN },
-	    { "requires", 'R', 0, 0, 'R' },
 	    { "root", 'r', POPT_ARG_STRING, &rootdir, 0 },
 	    { "short-circuit", '\0', 0, &shortCircuit, 0 },
 	    { "showrc", '\0', 0, 0, 0 },
@@ -604,18 +605,17 @@ int main(int argc, char ** argv) {
 
 	  case 'i':
 	    if (bigMode == MODE_QUERY)
-		queryFor |= QUERY_FOR_INFO;
+		poptStuffArgs(optCon, infoCommand);
 	    else if (bigMode == MODE_INSTALL)
 		/* ignore it */ ;
 	    else if (bigMode == MODE_UNKNOWN)
-		bigMode = MODE_INSTALL;
+		poptStuffArgs(optCon, installCommand);
 	    break;
 
-	  case GETOPT_INFO:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
+	  case GETOPT_INSTALL:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
 		argerror(_("only one major mode may be specified"));
-	    queryFor |= QUERY_FOR_INFO;
-	    bigMode = MODE_QUERY;
+	    bigMode = MODE_INSTALL;
 	    break;
 
 	  case 'U':
@@ -627,10 +627,6 @@ int main(int argc, char ** argv) {
 
 	  case 's':
 	    queryFor |= QUERY_FOR_LIST | QUERY_FOR_STATE;
-	    break;
-
-	  case 'R':
-	    queryFor |= QUERY_FOR_REQUIRES;
 	    break;
 
 	  case 'l':
@@ -685,8 +681,6 @@ int main(int argc, char ** argv) {
 		queryFormat = malloc(strlen(optArg) + 1);
 		strcpy(queryFormat, optArg);
 	    }
-		
-	    queryFor |= QUERY_FOR_INFO;
 	    break;
 
 	  case GETOPT_WHATREQUIRES:
