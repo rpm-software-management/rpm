@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-05-02 04:48-0400\n"
+"POT-Creation-Date: 2000-05-06 19:31-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2134,91 +2134,91 @@ msgid " failed - "
 msgstr "PGP hata verdi"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:439
+#: lib/depends.c:434
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:468
+#: lib/depends.c:463
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #: lib/depends.c:786
 #, c-format
-msgid "%s: %s satisfied by added file list.\n"
+msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
 #: lib/depends.c:835
 #, fuzzy, c-format
-msgid "%s: %s satisfied by added package.\n"
+msgid "%s: %-45s YES (added package)\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/depends.c:838
-#, fuzzy, c-format
-msgid "%s: %s satisfied by added package (shouldn't happen).\n"
-msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
-
-#: lib/depends.c:856
+#: lib/depends.c:839
 #, c-format
-msgid "%s: %s satisfied by added provide.\n"
+msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
 msgstr ""
 
-#: lib/depends.c:890
-#, fuzzy, c-format
-msgid "%s: %s satisfied by Depends cache.\n"
-msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
-
-#: lib/depends.c:904
+#: lib/depends.c:858
 #, c-format
-msgid "%s: %s satisfied by rpmrc provides.\n"
+msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:901
 #, c-format
-msgid "%s: %s satisfied by db file lists.\n"
+msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:950
+#: lib/depends.c:918
 #, c-format
-msgid "%s: %s satisfied by db provides.\n"
+msgid "%s: %-45s YES (rpmrc provides)\n"
+msgstr ""
+
+#: lib/depends.c:941
+#, c-format
+msgid "%s: %-45s YES (db files)\n"
+msgstr ""
+
+#: lib/depends.c:954
+#, c-format
+msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
 #: lib/depends.c:968
 #, fuzzy, c-format
-msgid "%s: %s satisfied by db packages.\n"
+msgid "%s: %-45s YES (db packages)\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/depends.c:981
+#: lib/depends.c:985
 #, c-format
-msgid "%s: %s satisfied by rpmlib version.\n"
+msgid "%s: %-45s YES (rpmlib version)\n"
 msgstr ""
 
-#: lib/depends.c:991
+#: lib/depends.c:996
 #, c-format
-msgid "%s: %s unsatisfied.\n"
+msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1010
+#: lib/depends.c:1016
 #, fuzzy, c-format
-msgid "%s: (%s, %d) added to Depends cache.\n"
+msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1059
+#: lib/depends.c:1065
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
 #. conflicts exist.
-#: lib/depends.c:1121
+#: lib/depends.c:1127
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: lib/depends.c:1251
+#: lib/depends.c:1254
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "gerekenler zincirinde döngü: %s"
@@ -2233,55 +2233,55 @@ msgstr ""
 msgid "removed db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:419
+#: lib/db1.c:420
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "%s açýlamadý: %s"
 
-#: lib/db1.c:424
+#: lib/db1.c:425
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/db1.c:432 lib/url.c:445
+#: lib/db1.c:434 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/db1.c:448
+#: lib/db1.c:450
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý"
 
-#: lib/db1.c:449 lib/db3.c:1059
+#: lib/db1.c:451 lib/db3.c:1080
 msgid "exclusive"
 msgstr "özel"
 
-#: lib/db1.c:449 lib/db3.c:1059
+#: lib/db1.c:451 lib/db3.c:1080
 msgid "shared"
 msgstr "paylaþýlan (shared)"
 
-#: lib/db2.c:133 lib/db3.c:456
+#: lib/db2.c:133
 #, c-format
 msgid "closed  db environment %s/%s(%s)\n"
 msgstr ""
 
-#: lib/db2.c:145 lib/db3.c:468
+#: lib/db2.c:145
 #, c-format
 msgid "removed db environment %s/%s(%s)\n"
 msgstr ""
 
-#: lib/db2.c:182 lib/db3.c:505
+#: lib/db2.c:182
 #, c-format
 msgid "opening db environment %s/%s(%s) %s\n"
 msgstr ""
 
-#: lib/db2.c:557 lib/db3.c:876
+#: lib/db2.c:557
 #, c-format
 msgid "closed  db index       %s/%s(%s)\n"
 msgstr ""
 
-#: lib/db2.c:635 lib/db3.c:965
+#: lib/db2.c:635
 #, c-format
 msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
 msgstr ""
@@ -2306,14 +2306,39 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:1057
+#: lib/db3.c:464
+#, c-format
+msgid "closed  db environment %s/%s\n"
+msgstr ""
+
+#: lib/db3.c:476
+#, c-format
+msgid "removed db environment %s/%s\n"
+msgstr ""
+
+#: lib/db3.c:513
+#, c-format
+msgid "opening db environment %s/%s %s\n"
+msgstr ""
+
+#: lib/db3.c:884
+#, c-format
+msgid "closed  db index       %s/%s\n"
+msgstr ""
+
+#: lib/db3.c:975
 #, fuzzy, c-format
-msgid "cannot get %s lock on %s/%s(%s)\n"
+msgid "opening db index       %s/%s %s mode=0x%x\n"
+msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
+
+#: lib/db3.c:1078
+#, fuzzy, c-format
+msgid "cannot get %s lock on %s/%s\n"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý"
 
-#: lib/db3.c:1064
+#: lib/db3.c:1085
 #, c-format
-msgid "locked  db index       %s/%s(%s)\n"
+msgid "locked  db index       %s/%s\n"
 msgstr ""
 
 #: lib/falloc.c:135
@@ -2454,83 +2479,83 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:364
+#: lib/install.c:365
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:365
+#: lib/install.c:366
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:409
+#: lib/install.c:410
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "paket yüklemek"
 
-#: lib/install.c:429
+#: lib/install.c:430
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/install.c:435 lib/install.c:465
+#: lib/install.c:436 lib/install.c:466
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/install.c:439
+#: lib/install.c:440
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:459
+#: lib/install.c:460
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/install.c:469
+#: lib/install.c:470
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/install.c:503 lib/install.c:531
+#: lib/install.c:504 lib/install.c:532
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/install.c:553
+#: lib/install.c:554
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:555 lib/install.c:829 lib/uninstall.c:28
+#: lib/install.c:556 lib/install.c:830 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s 'nin isminin  %s 'ye çevrilmesinde belirtilen hata oluþtu: %s"
 
-#: lib/install.c:646
+#: lib/install.c:647
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:701
+#: lib/install.c:702
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
 
-#: lib/install.c:759
+#: lib/install.c:760
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:764
+#: lib/install.c:765
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:789
+#: lib/install.c:790
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:825
+#: lib/install.c:826
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
@@ -2851,81 +2876,76 @@ msgstr "%d numaralý kayýt okunamadý\n"
 msgid "package %s is not installed\n"
 msgstr "%s pakedi yüklenmemiþ\n"
 
-#: lib/query.c:683
-#, fuzzy
-msgid "rpmQuery: rpmdbOpen() failed\n"
-msgstr "%s: Eriþilemedi\n"
-
-#: lib/query.c:742
+#: lib/query.c:740
 #, fuzzy
 msgid "query package owning file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:744
+#: lib/query.c:742
 #, fuzzy
 msgid "query packages in group"
 msgstr "pakedin adý yok :-)"
 
-#: lib/query.c:746
+#: lib/query.c:744
 #, fuzzy
 msgid "query a package file"
 msgstr "Tüm paketleri sorgulama"
 
-#: lib/query.c:750
+#: lib/query.c:748
 #, fuzzy
 msgid "query a spec file"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:752
+#: lib/query.c:750
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:754
+#: lib/query.c:752
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
 
-#: lib/query.c:756
+#: lib/query.c:754
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
-#: lib/query.c:795
+#: lib/query.c:793
 #, fuzzy
 msgid "list all configuration files"
 msgstr ""
 "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
 
-#: lib/query.c:797
+#: lib/query.c:795
 #, fuzzy
 msgid "list all documentation files"
 msgstr "paket ile gelen belgeleri de yükler"
 
-#: lib/query.c:799
+#: lib/query.c:797
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paket bilgisini gösterme"
 
-#: lib/query.c:801
+#: lib/query.c:799
 #, fuzzy
 msgid "list files in package"
 msgstr "paket yüklemek"
 
-#: lib/query.c:805
+#: lib/query.c:803
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:807
+#: lib/query.c:805
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:809
+#: lib/query.c:807
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:811
+#: lib/query.c:809
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Paketin içerdiði dosyalarý gösterme"
@@ -3020,174 +3040,179 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:196
+#: lib/rpmdb.c:218
 msgid ""
 "\n"
-"--> This version of rpm was not compiled with support for db%d. Please    "
-"verify the setting of the macro %%_dbapi using \"rpm --showrc\" and    "
-"correct your configuration.\n"
-msgstr ""
-
-#: lib/rpmdb.c:223
-msgid ""
-"\n"
-"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
-"    db1 to db3 on-disk format.\n"
+"--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
+"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
+"    and configure \"%%_dbapi -1\" (e.g. create and/or edit "
+"/etc/rpm/macros).\n"
 "\n"
 msgstr ""
 
-#. XXX FIXME: dbNopen handles failures already.
-#: lib/rpmdb.c:239
+#. failed to open with any dbapi
+#: lib/rpmdb.c:249
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "hata: %s eriþilemiyor\n"
 
-#: lib/rpmdb.c:293
+#: lib/rpmdb.c:257
+msgid ""
+"\n"
+"--> The database is in db%d format, not the suggested db%d format.\n"
+"    Please verify the setting of the macros %%_dbapi and %%_dbapi_rebuild\n"
+"    using \"rpm --showrc\", and either run \"rpm --rebuilddb\" as root\n"
+"    to convert your database from db%d to db%d format, or configure\n"
+"    \"%%_dbapi_rebuild %d\" (e.g. create and/or edit /etc/rpm/macros).\n"
+"\n"
+msgstr ""
+
+#: lib/rpmdb.c:270
+msgid ""
+"\n"
+"--> The configured %%_dbapi was db%d, but the database is db%d format.\n"
+"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
+"    and configure \"%%_dbapi %d\" (e.g. create and/or edit "
+"/etc/rpm/macros).\n"
+"\n"
+msgstr ""
+
+#: lib/rpmdb.c:335
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
-#: lib/rpmdb.c:410
+#: lib/rpmdb.c:452
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "%s kaydý %s dosyasýna yazýlamýyor"
 
-#: lib/rpmdb.c:419
+#: lib/rpmdb.c:461
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:619 lib/rpmdb.c:2078
+#: lib/rpmdb.c:683 lib/rpmdb.c:2186
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
-#: lib/rpmdb.c:708
+#: lib/rpmdb.c:780
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:912
+#: lib/rpmdb.c:984
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
 
-#: lib/rpmdb.c:978 lib/rpmdb.c:1496 lib/uninstall.c:90
+#: lib/rpmdb.c:1050 lib/rpmdb.c:1560 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
-#: lib/rpmdb.c:1451
-#, fuzzy, c-format
-msgid "key \"%s\" not found in %s"
-msgstr "%s pakedi %s içerisinde bulunamadý"
-
-#: lib/rpmdb.c:1459
-#, fuzzy, c-format
-msgid "key \"%s\" not removed from %s"
-msgstr "%s pakedi %s içerisinde bulunamadý"
-
-#: lib/rpmdb.c:1541
+#: lib/rpmdb.c:1611
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1550
+#: lib/rpmdb.c:1622
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1558
+#: lib/rpmdb.c:1631
 #, fuzzy, c-format
-msgid "removing %d entries in %s index:\n"
+msgid "removing %d entries from %s index:\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1562
-#, c-format
-msgid "\t%6d %s\n"
-msgstr ""
-
-# reservieren???
-#: lib/rpmdb.c:1712
-#, fuzzy
-msgid "cannot allocate new instance in database"
-msgstr "Veritabaný için yer bulunamadý"
-
-#: lib/rpmdb.c:1761
-#, c-format
-msgid "adding 0 %s entries.\n"
-msgstr ""
-
-#: lib/rpmdb.c:1777
-#, c-format
-msgid "adding \"%s\" to %s index.\n"
-msgstr ""
-
-#: lib/rpmdb.c:1784
-#, c-format
-msgid "adding %d entries to %s index:\n"
-msgstr ""
-
-#: lib/rpmdb.c:1788
+#: lib/rpmdb.c:1638 lib/rpmdb.c:1861
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2103
+# reservieren???
+#: lib/rpmdb.c:1774
+#, fuzzy
+msgid "cannot allocate new instance in database"
+msgstr "Veritabaný için yer bulunamadý"
+
+#: lib/rpmdb.c:1829
+#, c-format
+msgid "adding 0 %s entries.\n"
+msgstr ""
+
+#: lib/rpmdb.c:1845
+#, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr ""
+
+#: lib/rpmdb.c:1854
+#, c-format
+msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:2211
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2107
+#: lib/rpmdb.c:2215
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "geçici veritabaný %s mevcut"
 
-#: lib/rpmdb.c:2113
+#: lib/rpmdb.c:2221
 #, fuzzy, c-format
-msgid "creating directory: %s\n"
+msgid "creating directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2115
+#: lib/rpmdb.c:2223
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2121
+#: lib/rpmdb.c:2230
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2131
+#: lib/rpmdb.c:2239
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2155
+#: lib/rpmdb.c:2262
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rpmdb.c:2187
+#: lib/rpmdb.c:2294
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d de yer alan kayýt saklayamýyor"
 
-#: lib/rpmdb.c:2205
-msgid "failed to rebuild database; original database remains in place\n"
+#: lib/rpmdb.c:2312
+msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2213
+#: lib/rpmdb.c:2320
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2215
+#: lib/rpmdb.c:2322
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2221
+#: lib/rpmdb.c:2332
+#, fuzzy, c-format
+msgid "removing directory %s\n"
+msgstr "%s dizinin oluþturulmasýnda hata: %s"
+
+#: lib/rpmdb.c:2334
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -3650,11 +3675,7 @@ msgstr ""
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:213
-msgid "removing database entry\n"
-msgstr ""
-
-#: lib/uninstall.c:397
+#: lib/uninstall.c:390
 msgid "execution of script failed"
 msgstr "betik (script) çalýþtýrýlamadý "
 
@@ -3717,10 +3738,29 @@ msgstr "% den sonra eksik {"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 
-#: lib/verify.c:381
 #, fuzzy
-msgid "rpmVerify: rpmdbOpen() failed\n"
-msgstr "%s: Eriþilemedi\n"
+#~ msgid "%s: %s satisfied by added package (shouldn't happen).\n"
+#~ msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
+
+#, fuzzy
+#~ msgid "%s: %s satisfied by Depends cache.\n"
+#~ msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
+
+#, fuzzy
+#~ msgid "rpmQuery: rpmdbOpen() failed\n"
+#~ msgstr "%s: Eriþilemedi\n"
+
+#, fuzzy
+#~ msgid "key \"%s\" not found in %s"
+#~ msgstr "%s pakedi %s içerisinde bulunamadý"
+
+#, fuzzy
+#~ msgid "key \"%s\" not removed from %s"
+#~ msgstr "%s pakedi %s içerisinde bulunamadý"
+
+#, fuzzy
+#~ msgid "rpmVerify: rpmdbOpen() failed\n"
+#~ msgstr "%s: Eriþilemedi\n"
 
 #~ msgid "cannot read header at %d for dependency check"
 #~ msgstr "baðýmlýlýk sorgulamasý için %d numaralý baþlýk okunamýyor"

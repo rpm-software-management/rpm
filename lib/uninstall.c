@@ -209,15 +209,8 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	}
     }
 
-    if (!(flags & RPMTRANS_FLAG_TEST)) {
-	rpmMessage(RPMMESS_DEBUG, _("removing database entry\n"));
-	/*
-	 * XXX rpmdbRemove used to have 2nd arg, tolerant = 0. This generates
-	 * XXX an error message because of a db-1.85 hash access bug that
-	 * XXX cannot be easily fixed. So, we turn off the error message.
-	 */
-	rpmdbRemove(db, offset, 0);
-    }
+    if (!(flags & RPMTRANS_FLAG_TEST))
+	rpmdbRemove(db, offset);
 
     rc = 0;
 

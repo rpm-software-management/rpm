@@ -17,6 +17,18 @@ const char *const tagName(int tag)
 	strcpy(nameBuf, "Depends");
 	return nameBuf;
 	/*@notreached@*/ break;
+    case RPMDBI_ADDED:
+	strcpy(nameBuf, "Added");
+	return nameBuf;
+	/*@notreached@*/ break;
+    case RPMDBI_REMOVED:
+	strcpy(nameBuf, "Removed");
+	return nameBuf;
+	/*@notreached@*/ break;
+    case RPMDBI_AVAILABLE:
+	strcpy(nameBuf, "Available");
+	return nameBuf;
+	/*@notreached@*/ break;
     }
 
     strcpy(nameBuf, "(unknown)");
@@ -39,6 +51,12 @@ int tagValue(const char * tagstr)
 	return RPMDBI_PACKAGES;
     if (!strcmp(tagstr, "Depends"))
 	return RPMDBI_DEPENDS;
+    if (!strcmp(tagstr, "Added"))
+	return RPMDBI_ADDED;
+    if (!strcmp(tagstr, "Removed"))
+	return RPMDBI_REMOVED;
+    if (!strcmp(tagstr, "Available"))
+	return RPMDBI_AVAILABLE;
 
     for (t = rpmTagTable; t->name != NULL; t++) {
 	if (!strcasecmp(t->name + 7, tagstr))

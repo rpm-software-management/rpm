@@ -57,6 +57,10 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMDBI_PACKAGES		0
 #define	RPMDBI_DEPENDS		1
 #define	RPMDBI_LABEL		2	/* XXX remove rpmdbFindByLabel from API */
+#define	RPMDBI_ADDED		3
+#define	RPMDBI_REMOVED		4
+#define	RPMDBI_AVAILABLE	5
+
 
 /* these tags are found in package headers */
 /* none of these can be 0 !!                         */
@@ -394,14 +398,24 @@ unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
 
 /**
- * Modify iterator to append given set of package instances.
- *  TODO: replace with a more general mechanism.
+ * Append items to set of package instances to iterate.
  * @param mi		rpm database iterator
- * @param offsets	array of package instances to match.
- * @param numOffsets	number of elements in array
+ * @param hdrNums	array of package instances
+ * @param nHdrNums	number of elements in array
+ * @return		0 on success, 1 on failure (bad args)
  */
-void rpmdbAppendIteratorMatches(rpmdbMatchIterator mi, int * offsets,
-	int numOffsets);
+int rpmdbAppendIterator(rpmdbMatchIterator mi, int * hdrNums, int nHdrNums);
+
+/**
+ * Remove items from set of package instances to iterate.
+ * @param mi		rpm database iterator
+ * @param hdrNums	array of package instances
+ * @param nHdrNums	number of elements in array
+ * @param sorted	is the array sorted? (array will be sorted on return)
+ * @return		0 on success, 1 on failure (bad args)
+ */
+int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
+	int nHdrNums, int sorted);
 
 /**
  * Modify iterator to filter out headers that do not match version.
@@ -453,15 +467,15 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * Remove package header from rpm database and indices.
  * @param rpmdb		rpm database
  * @param offset	location in Packages dbi
- * @param tolerant	(legacy) print error messages?
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
+int rpmdbRemove(rpmdb db, unsigned int offset);
 
 /**
  * Add package header to rpm database and indices.
  * @param rpmdb		rpm database
  * @param rpmtag	rpm tag
+ * @return		0 on success
  */
 int rpmdbAdd(rpmdb rpmdb, Header dbentry);
 

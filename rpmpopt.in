@@ -82,9 +82,15 @@ rpm alias --i18ndomains --define '_i18ndomains !#:+'
 # Build policies enabled from command line. Last policy applies.
 rpm alias --buildpolicy --define '__os_install_post @RPMCONFIGDIR@/brp-!#:+'
 
-# Preferred db interface:
-#	0	linux glibc libdb1 routines.
-#	1	db_185.h interface in db2/db3 libdb.a.
+# Choose db interface:
+#	0	same as 1
+#	1	native db1 interface (e.g. linux glibc libdb1 routines).
 #	2	native db2 interface.
 #	3	native db3 interface.
-rpm alias --preferdb --define '_preferdb !#:+'
+#	-1	db3 -> db2 -> db1 (as available).
+#
+# There are two macros so that --rebuilddb can convert db1 -> db3
+rpm alias --dbapi		 --define '_dbapi !#:+'
+rpm alias --rebuilddbapi	 --define '_dbapi_rebuild !#:+'
+
+rpm alias --rebuilddbpath	 --define '_dbapath_rebuild !#:+'

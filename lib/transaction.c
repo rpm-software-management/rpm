@@ -1309,8 +1309,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	Header h;
 
 	mi = rpmdbInitIterator(ts->db, RPMDBI_PACKAGES, NULL, 0);
-	rpmdbAppendIteratorMatches(mi,
-		ts->removedPackages, ts->numRemovedPackages);
+	rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
 		totalFileCount += fileCount;

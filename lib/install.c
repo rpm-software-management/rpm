@@ -248,7 +248,7 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 	offsets[num++] = fileInfo->otherPkg;
 
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
-    rpmdbAppendIteratorMatches(mi, offsets, num);
+    rpmdbAppendIterator(mi, offsets, num);
 
     fileInfo = replList;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -266,6 +266,7 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 	    fileInfo++;
 	}
 
+	/* XXX for dbN with falloc, headers *must* be the same size */
 	rpmdbSetIteratorModified(mi, modified);
     }
     rpmdbFreeIterator(mi);
@@ -887,9 +888,8 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
     /* if this package has already been installed, remove it from the database
        before adding the new one */
-    if (otherOffset) {
-        rpmdbRemove(db, otherOffset, 1);
-    }
+    if (otherOffset)
+        rpmdbRemove(db, otherOffset);
 
     if (rpmdbAdd(db, h)) {
 	rc = 2;

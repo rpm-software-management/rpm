@@ -348,13 +348,8 @@ static int intcmp(const void * a, const void *b)
 {
     const int * aptr = a;
     const int * bptr = b;
-
-    if (*aptr < *bptr)
-	return -1;
-    else if (*aptr == *bptr)
-	return 0;
-
-    return 1;
+    int rc = (*aptr - *bptr);
+    return rc;
 }
 
 static void parseEVR(char *evr,
@@ -508,8 +503,12 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
     result = 0;
     for (i = 0; i < providesCount; i++) {
 
+	/* Filter out provides that came along for the ride. */
+	if (strcmp(provides[i], reqName))
+	    continue;
+
 	result = rangesOverlap(provides[i], providesEVR[i], provideFlags[i],
-		reqName, reqEVR, reqFlags);
+			reqName, reqEVR, reqFlags);
 
 	/* If this provide matches the require, we're done. */
 	if (result)
@@ -522,7 +521,9 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
     return result;
 }
 
-int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, int reqFlags)
+/* XXX FIXME: eliminate when obsoletes is correctly implemented */
+int headerMatchesDepFlags(Header h,
+	const char * reqName, const char * reqEVR, int reqFlags)
 {
     const char *name, *version, *release;
     int_32 * epoch;
@@ -677,21 +678,20 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	    Header h2;
 
 	    mi = rpmdbInitIterator(rpmdep->db, RPMTAG_NAME, obsoletes[j], 0);
-	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
-		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-		if (bsearch(&recOffset,
-			rpmdep->removedPackages, rpmdep->numRemovedPackages,
-			sizeof(int), intcmp))
-		    continue;
 
+	    rpmdbPruneIterator(mi,
+		rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+
+	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
 		/*
 		 * Rpm prior to 3.0.3 does not have versioned obsoletes.
 		 * If no obsoletes version info is available, match all names.
 		 */
 		if (obsoletesEVR == NULL ||
 		    headerMatchesDepFlags(h2,
-			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j])) {
-			removePackage(rpmdep, recOffset, alNum);
+			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j]))
+		{
+		    removePackage(rpmdep, rpmdbGetIteratorOffset(mi), alNum);
 		}
 	    }
 	    rpmdbFreeIterator(mi);
@@ -783,8 +783,8 @@ alFileSatisfiesDepend(struct availableList * al,
     for (i = 0; i < dirMatch->numFiles; i++) {
 	if (!strcmp(dirMatch->files[i].baseName, baseName)) {
 	    if (keyType)
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added file "
-			    "list.\n"), keyType, fileName);
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added files)\n"),
+			    keyType, fileName);
 	    return al->list + dirMatch->files[i].pkgNum;
 	}
     }
@@ -832,10 +832,11 @@ alFileSatisfiesDepend(struct availableList * al,
 	(void) stpcpy( stpcpy( stpcpy(t, p->version) , "-") , p->release);
 	rc = rangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
 	if (keyType && keyDepend && rc)
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added package.\n"), keyType, keyDepend);
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added package)\n"),
+			keyType, keyDepend+2);
     }	break;
 #else
-	rpmError(RPMERR_INTERNAL, _("%s: %s satisfied by added package (shouldn't happen).\n"), keyType, keyDepend);
+	rpmError(RPMERR_INTERNAL, _("%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"), keyType, keyDepend+2);
 	break;
 #endif
     case IET_PROVIDES:
@@ -844,7 +845,8 @@ alFileSatisfiesDepend(struct availableList * al,
 	    int proFlags;
 
 	    /* Filter out provides that came along for the ride. */
-	    if (strcmp(p->provides[i], keyName))	continue;
+	    if (strcmp(p->provides[i], keyName))
+		continue;
 
 	    proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
 	    proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
@@ -853,8 +855,8 @@ alFileSatisfiesDepend(struct availableList * al,
 	    if (rc) break;
 	}
 	if (keyType && keyDepend && rc)
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added "
-			"provide.\n"), keyType, keyDepend+2);
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),
+			keyType, keyDepend+2);
     	break;
     }
 
@@ -883,14 +885,26 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
      */
     if (_cacheDependsRC) {
-	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_DEPENDS, keyDepend, 0);
-	if (mi) {
-	    rc = rpmdbGetIteratorOffset(mi);
-	    rpmdbFreeIterator(mi);
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by Depends cache.\n"), keyType, keyDepend+2);
-	    return rc;
+	dbiIndex dbi;
+	dbi = dbiOpen(rpmdep->db, RPMDBI_DEPENDS, 0);
+	if (dbi == NULL)
+	    _cacheDependsRC = 0;
+	else {
+	    size_t keylen = strlen(keyDepend);
+	    void * datap = NULL;
+	    size_t datalen = 0;
+	    int xx;
+	    xx = dbiCopen(dbi, NULL, 0);
+	    xx = dbiGet(dbi, (void **)&keyDepend, &keylen, &datap, &datalen, 0);
+	    if (xx == 0 && datap && datalen == 4) {
+		memcpy(&rc, datap, datalen);
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s %-3s (cached)\n"),
+			keyType, keyDepend, (rc ? "NO" : "YES"));
+		xx = dbiCclose(dbi, NULL, 0);
+		return rc;
+	    }
+	    xx = dbiCclose(dbi, NULL, 0);
 	}
-	rpmdbFreeIterator(mi);
     }
 
   { const char * rcProvidesString;
@@ -901,7 +915,8 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	i = strlen(keyName);
 	while ((start = strstr(rcProvidesString, keyName))) {
 	    if (isspace(start[i]) || start[i] == '\0' || start[i] == ',') {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by rpmrc provides.\n"), keyType, keyDepend+2);
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmrc provides)\n"),
+			keyType, keyDepend+2);
 		goto exit;
 	    }
 	    rcProvidesString = start + 1;
@@ -918,56 +933,45 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    /* keyFlags better be 0! */
 
 	    mi = rpmdbInitIterator(rpmdep->db, RPMTAG_BASENAMES, keyName, 0);
+
+	    rpmdbPruneIterator(mi,
+			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-		if (bsearch(&recOffset,
-			    rpmdep->removedPackages,
-			    rpmdep->numRemovedPackages,
-			    sizeof(int), intcmp))
-		    continue;
-		break;
-	    }
-	    rpmdbFreeIterator(mi);
-	    if (h) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db file lists.\n"), keyType, keyDepend+2);
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db files)\n"),
+			keyType, keyDepend+2);
+		rpmdbFreeIterator(mi);
 		goto exit;
 	    }
+	    rpmdbFreeIterator(mi);
 	}
 
 	mi = rpmdbInitIterator(rpmdep->db, RPMTAG_PROVIDENAME, keyName, 0);
+	rpmdbPruneIterator(mi,
+			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-	    if (bsearch(&recOffset,
-			rpmdep->removedPackages,
-			rpmdep->numRemovedPackages,
-			sizeof(int), intcmp))
-		continue;
-	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags))
-		break;
+	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db provides)\n"),
+			keyType, keyDepend+2);
+		rpmdbFreeIterator(mi);
+		goto exit;
+	    }
 	}
 	rpmdbFreeIterator(mi);
-	if (h) {
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db provides.\n"), keyType, keyDepend+2);
-	    goto exit;
-	}
 
 #ifdef	DYING
 	mi = rpmdbInitIterator(rpmdep->db, RPMTAG_NAME, keyName, 0);
+	rpmdbPruneIterator(mi,
+			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-	    if (bsearch(&recOffset,
-			rpmdep->removedPackages,
-			rpmdep->numRemovedPackages,
-			sizeof(int), intcmp))
-		continue;
-	    if (headerMatchesDepFlags(h, keyName, keyEVR, keyFlags))
-		break;
+	    if (headerMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db packages)\n"),
+			keyType, keyDepend+2);
+		rpmdbFreeIterator(mi);
+		goto exit;
+	    }
 	}
 	rpmdbFreeIterator(mi);
-	if (h) {
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend+2);
-	    goto exit;
-	}
 #endif
 
 	/*
@@ -978,7 +982,8 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	if (!strcmp(keyName, rpmNAME)) {
 	    i = rangesOverlap(keyName, keyEVR, keyFlags, rpmNAME, rpmEVR, rpmFLAGS);
 	    if (i) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by rpmlib version.\n"), keyType, keyDepend+2);
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib version)\n"),
+			keyType, keyDepend+2);
 		goto exit;
 	    }
 	}
@@ -988,7 +993,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, NULL, NULL,
 				keyName, keyEVR, keyFlags);
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: %s unsatisfied.\n"), keyType, keyDepend+2);
+    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s NO\n"), keyType, keyDepend+2);
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
@@ -1004,11 +1009,12 @@ exit:
 	    int xx;
 	    xx = dbiCopen(dbi, NULL, 0);
 	    xx = dbiPut(dbi, keyDepend, strlen(keyDepend), &rc, sizeof(rc), 0);
-	    if (xx) {
+	    if (xx)
 		_cacheDependsRC = 0;
-	    } else {
-		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %d) added to Depends cache.\n"), keyType, keyDepend, rc);
-	    }
+#if 0	/* XXX NOISY */
+	    else
+		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %s) added to Depends cache.\n"), keyType, keyDepend, (rc ? "NO" : "YES"));
+#endif
 	    xx = dbiCclose(dbi, NULL, 0);
 	}
     }
@@ -1049,7 +1055,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend("R", requires[i], requiresEVR[i], requireFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, " requires", keyDepend,
+	rc = unsatisfiedDepend(rpmdep, " Requires", keyDepend,
 		requires[i], requiresEVR[i], requireFlags[i], &suggestion);
 
 	switch (rc) {
@@ -1057,7 +1063,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	    break;
 	case 1:		/* requirements are not satisfied. */
 	    rpmMessage(RPMMESS_DEBUG, _("package %s require not satisfied: %s\n"),
-		    name, keyDepend);
+		    name, keyDepend+2);
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
@@ -1112,14 +1118,14 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend("C", conflicts[i], conflictsEVR[i], conflictFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, "conflicts", keyDepend,
+	rc = unsatisfiedDepend(rpmdep, "Conflicts", keyDepend,
 		conflicts[i], conflictsEVR[i], conflictFlags[i], NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
 	    rpmMessage(RPMMESS_DEBUG, _("package %s conflicts: %s\n"),
-		    name, keyDepend);
+		    name, keyDepend+2);
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
@@ -1164,12 +1170,9 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
     Header h;
     int rc = 0;
 
+    rpmdbPruneIterator(mi,
+		rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-	if (bsearch(&recOffset, rpmdep->removedPackages,
-		    rpmdep->numRemovedPackages, sizeof(int), intcmp))
-	    continue;
-
 	if (checkPackageDeps(rpmdep, psp, h, key)) {
 	    rc = 1;
 	    break;
@@ -1449,7 +1452,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 
     /* now look at the removed packages and make sure they aren't critical */
     mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PACKAGES, NULL, 0);
-    rpmdbAppendIteratorMatches(mi, rpmdep->removedPackages,
+    rpmdbAppendIterator(mi, rpmdep->removedPackages,
 		rpmdep->numRemovedPackages);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 

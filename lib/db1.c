@@ -404,12 +404,13 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     const char * urlfn = NULL;
     const char * fn = NULL;
     dbiIndex dbi = NULL;
+    extern struct _dbiVec db1vec;
     int rc = 0;
 
     if (dbip)
 	*dbip = NULL;
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
-	return 1;
+	return -1;
     dbi->dbi_api = DB_VERSION_MAJOR;
 
     base = db1basename(rpmtag);
@@ -417,7 +418,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     (void) urlPath(urlfn, &fn);
     if (!(fn && *fn != '\0')) {
 	rpmError(RPMERR_DBOPEN, _("bad db file %s"), urlfn);
-	rc = 1;
+	rc = -1;
 	goto exit;
     }
 
@@ -429,9 +430,9 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 	pkgs = fadOpen(fn, dbi->dbi_mode, dbi->dbi_perms);
 	if (Ferror(pkgs)) {
+	    rc = errno;
 	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), urlfn,
 		Fstrerror(pkgs));
-	    rc = 1;
 	    goto exit;
 	}
 
@@ -445,9 +446,9 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
 
 	    if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
+		rc = errno;
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"),
 		    ((dbi->dbi_mode & O_RDWR) ? _("exclusive") : _("shared")));
-		rc = 1;
 		goto exit;
 	    }
 	}
@@ -462,15 +463,14 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 	dbi->dbi_db = dbopen(fn, dbimode, dbi->dbi_perms,
 		db3_to_dbtype(dbi->dbi_type), dbopeninfo);
-	if (dbi->dbi_db == NULL) rc = 1;
-	if (dbi->dbi_debug)
-	    fprintf(stderr, "db1open: rc %d db %p dbip %p\n", rc, dbi->dbi_db, dbip);
+	if (dbi->dbi_db == NULL) rc = errno;
     }
 
 exit:
-    if (rc == 0 && dbi->dbi_db != NULL && dbip)
+    if (rc == 0 && dbi->dbi_db != NULL && dbip) {
+	dbi->dbi_vec = &db1vec;
 	*dbip = dbi;
-    else
+    } else
 	db1close(dbi, 0);
 
     if (base) {

@@ -313,14 +313,14 @@ static int verifyHeader(QVA_t *qva, Header h)
     return ec;
 }
 
-static int verifyDependencies(/*@only@*/rpmdb db, Header h) {
+static int verifyDependencies(/*@only@*/ rpmdb rpmdb, Header h) {
     rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     const char * name, * version, * release;
     int i;
 
-    rpmdep = rpmtransCreateSet(db, NULL);
+    rpmdep = rpmtransCreateSet(rpmdb, NULL);
     rpmtransAddPackage(rpmdep, h, NULL, NULL, 0, NULL);
 
     rpmdepCheck(rpmdep, &conflicts, &numConflicts);
@@ -346,13 +346,13 @@ static int verifyDependencies(/*@only@*/rpmdb db, Header h) {
 }
 
 /** */
-int showVerifyPackage(QVA_t *qva, rpmdb db, Header h)
+int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
 {
     int ec, rc;
     FD_t fdo;
     ec = 0;
     if ((qva->qva_flags & VERIFY_DEPS) &&
-	(rc = verifyDependencies(db, h)) != 0)
+	(rc = verifyDependencies(rpmdb, h)) != 0)
 	    ec = rc;
     if ((qva->qva_flags & VERIFY_FILES) &&
 	(rc = verifyHeader(qva, h)) != 0)
@@ -368,7 +368,7 @@ int showVerifyPackage(QVA_t *qva, rpmdb db, Header h)
 /** */
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg)
 {
-    rpmdb db = NULL;
+    rpmdb rpmdb = NULL;
     int rc;
 
     switch (source) {
@@ -377,17 +377,15 @@ int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg)
 	    break;
 	/*@fallthrough@*/
     default:
-	if (rpmdbOpen(qva->qva_prefix, &db, O_RDONLY, 0644)) {
-	    fprintf(stderr, _("rpmVerify: rpmdbOpen() failed\n"));
+	if (rpmdbOpen(qva->qva_prefix, &rpmdb, O_RDONLY, 0644))
 	    return 1;
-	}
 	break;
     }
 
-    rc = rpmQueryVerify(qva, source, arg, db, showVerifyPackage);
+    rc = rpmQueryVerify(qva, source, arg, rpmdb, showVerifyPackage);
 
-    if (db)
-	rpmdbClose(db);
+    if (rpmdb)
+	rpmdbClose(rpmdb);
 
     return rc;
 }

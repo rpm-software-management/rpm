@@ -9,7 +9,7 @@
 
 #include "fprint.h"
 
-typedef /*@abstract@*/ struct _dbiIndexRecord * dbiIndexRecord;
+typedef /*@abstract@*/ struct _dbiIndexItem * dbiIndexItem;
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
 /* this will break if sizeof(int) != 4 */
@@ -18,9 +18,9 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
  * Note: In rpm-3.0.4 and earlier, this structure was passed by value,
  * and was identical to the "data saved" structure below.
  */
-struct _dbiIndexRecord {
-    unsigned int recOffset;		/*!< byte offset of header in db */
-    unsigned int fileNumber;		/*!< file array index */
+struct _dbiIndexItem {
+    unsigned int hdrNum;		/*!< header instance in db */
+    unsigned int tagNum;		/*!< tag index in header */
     unsigned int fpNum;			/*!< finger print index */
     unsigned int dbNum;			/*!< database index */
 };
@@ -38,7 +38,7 @@ typedef	struct _dbiIR * DBIR_t;
  * Items retrieved from the index database.
  */
 struct _dbiIndexSet {
-/*@owned@*/ struct _dbiIndexRecord * recs; /*!< array of records */
+/*@owned@*/ struct _dbiIndexItem * recs; /*!< array of records */
     int count;				/*!< number of records */
 };
 
