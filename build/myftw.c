@@ -27,6 +27,11 @@ Cambridge, MA 02139, USA.  */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <ftw.h>
+
+#ifndef NAMLEN
+#define NAMLEN(a) strlen((a)->d_name)
+#endif
+
 #include "myftw.h"
 
 /* Traverse one level of a directory tree.  */
@@ -61,7 +66,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	  continue;
 	}
 
-      d_namlen = strlen (entry->d_name) + 1;
+      d_namlen = NAMLEN(entry) + 1;
       if (d_namlen + len > PATH_MAX)
 	{
 #ifdef ENAMETOOLONG
@@ -168,7 +173,7 @@ int myftw (const char *dir,
   if (descriptors <= 0)
     descriptors = 1;
 
-  dirs = (DIR **) __alloca (descriptors * sizeof (DIR *));
+  dirs = (DIR **) alloca (descriptors * sizeof (DIR *));
   i = descriptors;
   while (i-- > 0)
     dirs[i] = NULL;
