@@ -648,11 +648,6 @@ static Header relocateFileList(struct availablePackage * alp,
     }
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
-    /* FIXME? this code assumes the validRelocations array won't
-       have trailing /'s in it */
-    /* FIXME: all of this needs to be tested with an old format
-       relocateable package */
-
     for (i = 0; i < numRelocations; i++) {
 	/* FIXME: default relocations (oldPath == NULL) need to be handled
 	   in the UI, not rpmlib */
