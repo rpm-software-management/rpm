@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.29 1999/05/05 19:01:01 jbj Exp $
+# $Id: macros.in,v 1.30 1999/05/10 22:58:35 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -236,8 +236,6 @@
 #	%{perl_sitearch}/Image
 #	%dir %{perl_sitearch}/auto/Image
 #
-%requires_eq()	%(LC_ALL="C" rpm -q \
-	--queryformat 'Requires:%%{NAME} = %%{VERSION}' %1| \
-	grep -v "is not")
+%requires_eq()	%(LC_ALL="C" rpm -q --queryformat 'Requires:%%{NAME} = %%{VERSION}' %1| grep -v "is not")
 %perl_sitearch	%(eval "`perl -V:installsitearch`"; echo $installsitearch)
 %perl_archlib	%(eval "`perl -V:installarchlib`"; echo $installarchlib)
