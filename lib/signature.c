@@ -34,7 +34,7 @@ static int verifyPGPSignature(const char *datafile, void *sig,
 			      int count, char *result, int sigTag);
 static int verifyGPGSignature(const char *datafile, void *sig,
 			      int count, char *result);
-static int checkPassPhrase(const char *passPhrase, const int sigType);
+static int checkPassPhrase(const char *passPhrase, const int sigTag);
 
 int rpmLookupSignatureType(void)
 {
@@ -61,7 +61,7 @@ int rpmLookupSignatureType(void)
 /* rpmDetectPGPVersion() returns the absolute path to the "pgp"  */
 /* executable of the requested version, or NULL when none found. */
 
-const char * rpmDetectPGPVersion(int sigType)
+const char * rpmDetectPGPVersion(int sigTag)
 {
     /* Actually this should support having more then one pgp version. */ 
     /* At the moment only one version is possible since we only       */
@@ -92,7 +92,7 @@ const char * rpmDetectPGPVersion(int sigType)
     	free(pgpvbin);
     }
 
-    switch (sigType)
+    switch (sigTag)
     {
 	case RPMSIGTAG_PGP:
 	    if (pgp_version == 26)
@@ -268,7 +268,7 @@ static int makePGPSignature(const char *file, void **sig, int_32 *size,
 
 	/* dosetenv("PGPPASS", passPhrase, 1); */
 
-	if ((path = rpmDetectPGPVersion(sigTag)) != NULL {
+	if ((path = rpmDetectPGPVersion(sigTag)) != NULL) {
 	    switch(sigTag) {
 	    case RPMSIGTAG_PGP:
 		execlp(path, "pgp", "+batchmode=on", "+verbose=0", "+armor=off",
@@ -442,7 +442,7 @@ int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 	}
 	break;
       case RPMSIGTAG_PGP:
-      case RPMSIGTAG_PGP%:
+      case RPMSIGTAG_PGP5:
 	return verifyPGPSignature(file, sig, count, result, sigTag);
 	break;
       case RPMSIGTAG_GPG:
@@ -727,7 +727,7 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
     return pass;
 }
 
-static int checkPassPhrase(const char *passPhrase, const int sigType)
+static int checkPassPhrase(const char *passPhrase, const int sigTag)
 {
     int passPhrasePipe[2];
     int pid, status;
@@ -751,7 +751,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigType)
 	}
 	dup2(passPhrasePipe[0], 3);
 
-	switch (sigType) {
+	switch (sigTag) {
 	case RPMSIGTAG_GPG:
 	{   const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
 	    const char *name = rpmExpand("%{_gpg_name}", NULL);
@@ -774,7 +774,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigType)
 	    if (pgp_path && *pgp_path != '%')
 		dosetenv("PGPPATH", pgp_path, 1);
 
-	    if ((path = rpmDetectPGPVersion(sigTag)) != NULL {
+	    if ((path = rpmDetectPGPVersion(sigTag)) != NULL) {
 		switch(sigTag) {
 		case RPMSIGTAG_PGP:
 		    execlp(path, "pgp", "+batchmode=on", "+verbose=0",
@@ -782,7 +782,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigType)
 		    break;
 		case RPMSIGTAG_PGP5:
 		    execlp(path,"pgps", "+batchmode=on", "+verbose=0",
-			name, "-f", file, NULL);
+			name, "-f", NULL);
 		    break;
 		}
 	    }
