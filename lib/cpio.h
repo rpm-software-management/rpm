@@ -93,27 +93,50 @@ typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
  * directory unless a mapping is given which specifies an absolute
  * directory. The mode mapping is only used for the permission bits, not
  * for the file type. The owner/group mappings are ignored for the nonroot
- * user. If *failedFile is non-NULL on return, it should be free()d.
+ * user.
+ *
+ * @param cfd		file handle
+ * @param mappings	archive info for extraction
+ * @param numMappings	number of archive elements
+ * @param cb		progress callback
+ * @param cbData	progress callback data
+ * @retval failedFile	file name (malloc'ed) that caused failure (if any)
+ * @return		0 on success
  */
 int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
-		       /*@out@*/const char ** failedFile);
+		       /*@out@*/const char ** failedFile)
+	/*@modifies fileSystem, cfd, *failedFile @*/;
+
 /**
  * The RPM internal equivalent of the command line "cpio -o".
+ *
+ * @param cfd		file handle
+ * @param mappings	archive info for building
+ * @param numMappings	number of archive elements
+ * @param cb		progress callback
+ * @param cbData	progress callback data
+ * @retval failedFile	file name (malloc'ed) that caused failure (if any)
+ * @return		0 on success
  */
 int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
-		     unsigned int * archiveSize, /*@out@*/const char ** failedFile);
+		     unsigned int * archiveSize, /*@out@*/const char ** failedFile)
+	/*@modifies fileSystem, cfd, *archiveSize, *failedFile @*/;
 
 /**
- * Compare two cpio file map entries.
+ * Compare two cpio file map entries (qsort/bsearch).
  * This is designed to be qsort/bsearch compatible.
+ * @param a		1st map
+ * @param b		2nd map
+ * return		result of comparison
  */
-int cpioFileMapCmp(const void * a, const void * b);
+int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
 
 /**
+ * Return fornmatted error message on payload handling failure.
  */
-/*@observer@*/ const char *cpioStrerror(int rc);
+/*@observer@*/ const char *cpioStrerror(int rc)		/*@*/;
 
 #ifdef __cplusplus
 }

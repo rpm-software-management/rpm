@@ -20,8 +20,16 @@ int headerNVR(Header h, const char **np, const char **vp, const char **rp)
     return 0;
 }
 
-static /*@only@*/ char *printDepend(const char * depend, const char * key, const char * keyEVR,
-	int keyFlags)
+/**
+ * Return formatted dependency string.
+ * @param depend	type of dependency ("R" == Requires, "C" == Conflcts)
+ * @param key		dependency name string
+ * @param keyEVR	dependency [epoch:]version[-release] string
+ * @param keyFlags	dependency logical range qualifiers
+ * @return		formatted dependency (malloc'ed)
+ */
+static /*@only@*/ char *printDepend(const char * depend, const char * key,
+	const char * keyEVR, int keyFlags)	/*@*/
 {
     char *tbuf, *t;
     size_t nb;
@@ -84,7 +92,12 @@ struct orderListIndex {
     int orIndex;
 };
 
+/**
+ * Destroy available item index.
+ * @param al		available list
+ */
 static void alFreeIndex(struct availableList * al)
+	/*@modifies al->index @*/
 {
     if (al->index.size) {
 	if (al->index.index)
@@ -94,7 +107,12 @@ static void alFreeIndex(struct availableList * al)
     }
 }
 
-static void alCreate( /*@out@*/ struct availableList * al)
+/**
+ * Initialize available packckages, items, and directories list.
+ * @param al		available list
+ */
+static void alCreate(struct availableList * al)
+	/*@modifies *al @*/
 {
     al->alloced = 5;
     al->size = 0;
@@ -107,6 +125,10 @@ static void alCreate( /*@out@*/ struct availableList * al)
     al->dirs = NULL;
 }
 
+/**
+ * Free available packages, items, and directories members.
+ * @param al		available list
+ */
 static void alFree(struct availableList * al)
 {
     int i;
@@ -133,7 +155,7 @@ static void alFree(struct availableList * al)
     }
 
     for (i = 0; i < al->numDirs; i++) {
-	free(al->dirs[i].dirName);
+	xfree(al->dirs[i].dirName);
 	free(al->dirs[i].files);
     }
 
@@ -147,7 +169,14 @@ static void alFree(struct availableList * al)
     alFreeIndex(al);
 }
 
-static int dirInfoCompare(const void * one, const void * two) {
+/**
+ * Compare two directory info entries by name (qsort/bsearch).
+ * @param one		1st directory info
+ * @param two		2nd directory info
+ * @return		result of comparison
+ */
+static int dirInfoCompare(const void * one, const void * two)	/*@*/
+{
     const struct dirInfo * a = one;
     const struct dirInfo * b = two;
     int lenchk = a->dirNameLen - b->dirNameLen;
@@ -159,6 +188,15 @@ static int dirInfoCompare(const void * one, const void * two) {
     return strcmp(a->dirName, b->dirName);
 }
 
+/**
+ * Add package to available list.
+ * @param al		available list
+ * @param h		package header
+ * @param key		package private data
+ * @param fd		package file handle
+ * @param relocs	package file relocations
+ * @return		available package pointer
+ */
 static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList * al,
 		Header h, /*@dependent@*/ const void * key,
 		FD_t fd, rpmRelocation * relocs)
@@ -318,6 +356,12 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     return p;
 }
 
+/**
+ * Compare two available index entries by name (qsort/bsearch).
+ * @param one		1st available index entry
+ * @param two		2nd available index entry
+ * @return		result of comparison
+ */
 static int indexcmp(const void * one, const void * two)
 {
     const struct availableIndexEntry * a = one;
@@ -330,7 +374,12 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
+/**
+ * Generate index for available list.
+ * @param al		available list
+ */
 static void alMakeIndex(struct availableList * al)
+	/*@modifies al->index @*/
 {
     struct availableIndex * ai = &al->index;
     int i, j, k;
@@ -366,6 +415,12 @@ static void alMakeIndex(struct availableList * al)
     }
 }
 
+/**
+ * Compare removed package instances (qsort/bsearch).
+ * @param a		1st instance address
+ * @param b		2nd instance address
+ * @return		result of comparison
+ */
 static int intcmp(const void * a, const void *b)
 {
     const int * aptr = a;
@@ -374,6 +429,13 @@ static int intcmp(const void * a, const void *b)
     return rc;
 }
 
+/**
+ * Split EVR into epoch, version, and release components.
+ * @param evr		[epoch:]version[-release] string
+ * @retval *ep		pointer to epoch
+ * @retval *vp		pointer to version
+ * @retval *rp		pointer to release
+ */
 static void parseEVR(char *evr,
 	/*@exposed@*/ /*@out@*/ const char **ep,
 	/*@exposed@*/ /*@out@*/ const char **vp,
@@ -611,7 +673,14 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
     return rpmdep;
 }
 
+/**
+ * Add removed package instance to ordered transaction set.
+ * @param rpmdep	rpm transaction set
+ * @param dboffset	rpm database instance
+ * @param depends	installed package of pair (or -1 on erase)
+ */
 static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends)
+	/*@modifies rpmdep @*/
 {
     if (rpmdep->numRemovedPackages == rpmdep->allocedRemovedPackages) {
 	rpmdep->allocedRemovedPackages += 5;
@@ -782,6 +851,13 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
     free(conflicts);
 }
 
+/**
+ * Check added package file lists for a file.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param fileName	file name to search for
+ * @return		available package pointer
+ */
 /*@dependent@*/ /*@null@*/ static struct availablePackage *
 alFileSatisfiesDepend(struct availableList * al,
 	const char * keyType, const char * fileName)
@@ -831,6 +907,16 @@ alFileSatisfiesDepend(struct availableList * al,
     return NULL;
 }
 
+/**
+ * Check added package file lists for a provide.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param keyDepend	dependency string representation
+ * @param keyName	dependency name string
+ * @param keyEVR	dependency [epoch:]version[-release] string
+ * @param keyFlags	dependency logical range qualifiers
+ * @return		available package pointer
+ */
 /*@dependent@*/ /*@null@*/ static struct availablePackage * alSatisfiesDepend(
 	struct availableList * al,
 	const char * keyType, const char * keyDepend,
@@ -882,8 +968,17 @@ alFileSatisfiesDepend(struct availableList * al,
     return NULL;
 }
 
-/* 2 == error */
-/* 1 == dependency not satisfied */
+/**
+ * Check key for an unsatisfied dependency.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param keyDepend	dependency string representation
+ * @param keyName	dependency name string
+ * @param keyEVR	dependency [epoch:]version[-release] string
+ * @param keyFlags	dependency logical range qualifiers
+ * @retval suggestion	possible package to resolve dependency
+ * @return		0 if satisfied, 1 if not satisfied, 2 if error
+ */
 static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	const char * keyType, const char * keyDepend,
 	const char * keyName, const char * keyEVR, int keyFlags,
@@ -893,7 +988,6 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     rpmdbMatchIterator mi;
     Header h;
     int rc = 0;	/* assume dependency is satisfied */
-    int i;
 
     if (suggestion) *suggestion = NULL;
 
@@ -924,8 +1018,10 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	}
     }
 
+#ifdef	DYING
   { const char * rcProvidesString;
     const char * start;
+    int i;
 
     if (!(keyFlags & RPMSENSE_SENSEMASK) &&
 	(rcProvidesString = rpmGetVar(RPMVAR_PROVIDES))) {
@@ -940,6 +1036,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	}
     }
   }
+#endif
 
     /*
      * New features in rpm packaging implicitly add versioned dependencies
@@ -1315,6 +1412,12 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
     return rc;
 }
 
+/**
+ * Compare ordered list entries by index (qsort/bsearch).
+ * @param a		1st ordered list entry
+ * @param b		2nd ordered list entry
+ * @return		result of comparison
+ */
 static int orderListIndexCmp(const void * one, const void * two)
 {
     int a = ((const struct orderListIndex *)one)->alIndex;

@@ -3,62 +3,86 @@
 
 #include <header.h>
 
+/**
+ * Info about a single package to be installed/removed.
+ */
 struct availablePackage {
-    Header h;
-/*@owned@*/ const char ** provides;
-/*@owned@*/ const char ** providesEVR;
-/*@dependent@*/ int * provideFlags;
-/*@owned@*/ const char ** baseNames;
-/*@dependent@*/ const char * name;
-/*@dependent@*/ const char * version;
-/*@dependent@*/ const char * release;
-/*@dependent@*/ int_32 * epoch;
-    int providesCount;
-    int filesCount;
+    Header h;				/*!< Package header. */
+/*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
+/*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
+/*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
+/*@owned@*/ const char ** baseNames;	/*!< Header file basenames. */
+/*@dependent@*/ const char * name;	/*!< Header name. */
+/*@dependent@*/ const char * version;	/*!< Header version. */
+/*@dependent@*/ const char * release;	/*!< Header release. */
+/*@dependent@*/ int_32 * epoch;		/*!< Header epoch (if any). */
+    int providesCount;			/*!< No. of Provide:'s in header. */
+    int filesCount;			/*!< No. of files in header. */
     uint_32 multiLib;	/* MULTILIB */
-/*@dependent@*/ const void * key;
+/*@dependent@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
     rpmRelocation * relocs;
 /*@null@*/ FD_t fd;
 } ;
 
-enum indexEntryType { IET_PROVIDES=1 };
-
+/**
+ * A single available item (e.g. a Provides: dependency).
+ */
 struct availableIndexEntry {
-/*@dependent@*/ struct availablePackage * package;
-/*@dependent@*/ const char * entry;
-    size_t entryLen;
-    enum indexEntryType type;
+/*@dependent@*/ struct availablePackage * package; /*!< Containing package. */
+/*@dependent@*/ const char * entry;	/*!< Available item name. */
+    size_t entryLen;			/*!< No. of bytes in name. */
+    enum indexEntryType {
+	IET_PROVIDES=1		/*!< A Provides: dependency. */
+    } type;				/*!< Type of available item. */
 } ;
 
-struct fileIndexEntry {
-    int pkgNum;
-    int fileFlags;	/* MULTILIB */
-/*@dependent@*/ const char * baseName;
-} ;
-
-struct dirInfo {
-/*@owned@*/ char * dirName;			/* xstrdup'd */
-    int dirNameLen;
-/*@owned@*/ struct fileIndexEntry * files;	/* xmalloc'd */
-    int numFiles;
-} ;
-
+/**
+ * Index of all available items.
+ */
 struct availableIndex {
-/*@null@*/ struct availableIndexEntry * index ;
-    int size;
+/*@null@*/ struct availableIndexEntry * index; /*!< Array of available items. */
+    int size;				/*!< No. of available items. */
 } ;
 
+/**
+ * A file to be installed/removed.
+ */
+struct fileIndexEntry {
+    int pkgNum;				/*!< Containing package number. */
+    int fileFlags;	/* MULTILIB */
+/*@dependent@*/ const char * baseName;	/*!< File basename. */
+} ;
+
+/**
+ * A directory to be installed/removed.
+ */
+struct dirInfo {
+/*@owned@*/ const char * dirName;	/*!< Directory path (+ trailing '/'). */
+    int dirNameLen;			/*!< No. bytes in directory path. */
+/*@owned@*/ struct fileIndexEntry * files; /*!< Array of files in directory. */
+    int numFiles;			/*!< No. files in directory. */
+} ;
+
+/**
+ * Set of available packages, items, and directories.
+ */
 struct availableList {
-/*@owned@*/ /*@null@*/ struct availablePackage * list;
-    struct availableIndex index;
+/*@owned@*/ /*@null@*/ struct availablePackage * list;	/*!< Set of packages. */
+    struct availableIndex index;	/*!< Set of available items. */
     int size;
     int alloced;
-    int numDirs;
-/*@owned@*/ struct dirInfo * dirs;		/* xmalloc'd */
+    int numDirs;			/*! No. of directories. */
+/*@owned@*/ struct dirInfo * dirs;	/*!< Set of directories. */
 };
 
+/**
+ * A single package instance to be installed/removed atomically.
+ */
 struct transactionElement {
-    enum rpmTransactionType { TR_ADDED, TR_REMOVED } type;
+    enum rpmTransactionType {
+	TR_ADDED,	/*!< Package will be installed. */
+	TR_REMOVED	/*!< Package will be removed. */
+    } type;		/*!< Package disposition (installed/removed). */
     union { 
 	int addedIndex;
 	struct {
@@ -68,18 +92,21 @@ struct transactionElement {
     } u;
 };
 
+/**
+ * The set of packages to be installed/removed atomically.
+ */
 struct rpmTransactionSet_s {
-/*@owned@*/ /*@null@*/ rpmdb rpmdb;			/* may be NULL */
-/*@only@*/ int * removedPackages;
-    int numRemovedPackages;
-    int allocedRemovedPackages;
-    struct availableList addedPackages;
-    struct availableList availablePackages;
-/*@only@*/ struct transactionElement * order;
+/*@owned@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */
+/*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
+    int numRemovedPackages;		/*!< No. removed rpmdb instances. */
+    int allocedRemovedPackages;		/*!< Size of removed packages array. */
+    struct availableList addedPackages;	/*!< Set of packages being installed. */
+    struct availableList availablePackages; /*!< Universe of possible packages to install. */
+/*@only@*/ struct transactionElement * order; /*!< Packages sorted by dependencies. */
     int orderCount;
     int orderAlloced;
-/*@only@*/ const char * rootDir;
-/*@only@*/ const char * currDir;
+/*@only@*/ const char * rootDir;	/*!< Path to top of install tree. */
+/*@only@*/ const char * currDir;	/*!< Current working directory. */
 /*@null@*/ FD_t scriptFd;
 };
 

@@ -16,7 +16,9 @@
 #define CPIO_CRC_MAGIC	"070702"
 #define TRAILER		"TRAILER!!!"
 
-/** */
+/**
+ * Keeps track of set of all hard linked files in archive.
+ */
 struct hardLink {
     struct hardLink * next;
     const char ** files;	/* nlink of these, used by install */
@@ -31,7 +33,9 @@ struct hardLink {
 
 enum hardLinkType { HARDLINK_INSTALL=1, HARDLINK_BUILD };
 
-/** */
+/**
+ * Cpio archive header information.
+ */
 struct cpioCrcPhysicalHeader {
     char magic[6];
     char inode[8];
@@ -51,7 +55,9 @@ struct cpioCrcPhysicalHeader {
 
 #define	PHYS_HDR_SIZE	110		/* don't depend on sizeof(struct) */
 
-/** */
+/**
+ * File name and stat information.
+ */
 struct cpioHeader {
     /*@owned@*/ const char * path;
     struct stat sb;
@@ -67,6 +73,7 @@ static void prtli(const char *msg, struct hardLink * li)
 
 /** */
 static inline off_t saferead(FD_t cfd, /*@out@*/void * vbuf, size_t amount)
+	/*@modifies cfd, *vbuf @*/
 {
     off_t rc = 0;
     char * buf = vbuf;
@@ -88,6 +95,7 @@ static inline off_t saferead(FD_t cfd, /*@out@*/void * vbuf, size_t amount)
 
 /** */
 static inline off_t ourread(FD_t cfd, /*@out@*/void * buf, size_t size)
+	/*@modifies cfd, *buf @*/
 {
     off_t i = saferead(cfd, buf, size);
     if (i > 0)
@@ -97,6 +105,7 @@ static inline off_t ourread(FD_t cfd, /*@out@*/void * buf, size_t size)
 
 /** */
 static inline void padinfd(FD_t cfd, int modulo)
+	/*@modifies cfd @*/
 {
     int buf[10];
     int amount;
@@ -107,6 +116,7 @@ static inline void padinfd(FD_t cfd, int modulo)
 
 /** */
 static inline off_t safewrite(FD_t cfd, const void * vbuf, size_t amount)
+	/*@modifies cfd @*/
 {
     off_t rc = 0;
     const char * buf = vbuf;
@@ -129,6 +139,7 @@ static inline off_t safewrite(FD_t cfd, const void * vbuf, size_t amount)
 
 /** */
 static inline int padoutfd(FD_t cfd, size_t * where, int modulo)
+	/*@modifies cfd, *where @*/
 {
     static int buf[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     int amount;
@@ -143,6 +154,7 @@ static inline int padoutfd(FD_t cfd, size_t * where, int modulo)
 
 /** */
 static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
+	/*@modifies *endptr @*/
 {
     char * buf, * end;
     unsigned long ret;
@@ -169,6 +181,7 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
 
 /** */
 static int getNextHeader(FD_t cfd, struct cpioHeader * hdr)
+	/*@modifies cfd, hdr->path, hdr->sb  @*/
 {
     struct cpioCrcPhysicalHeader physHeader;
     struct stat * st = &hdr->sb;
@@ -217,7 +230,6 @@ static int getNextHeader(FD_t cfd, struct cpioHeader * hdr)
     return 0;
 }
 
-/** */
 int cpioFileMapCmp(const void * a, const void * b)
 {
     const char * afn = ((const struct cpioFileMapping *)a)->archivePath;
@@ -233,6 +245,7 @@ int cpioFileMapCmp(const void * a, const void * b)
 /* This could trash files in the path! I'm not sure that's a good thing */
 /** */
 static int createDirectory(const char * path, mode_t perms)
+	/*@modifies fileSystem @*/
 {
     struct stat sb;
 
@@ -270,6 +283,7 @@ static int createDirectory(const char * path, mode_t perms)
 
 /** */
 static int setInfo(struct cpioHeader * hdr)
+	/*@modifies fileSystem @*/
 {
     int rc = 0;
     struct utimbuf stamp;
@@ -296,7 +310,7 @@ static int setInfo(struct cpioHeader * hdr)
 }
 
 /** */
-static int inline checkDirectory(const char * filename)
+static int inline checkDirectory(const char * filename)	/*@*/
 {
     /*@only@*/ static char * lastDir = NULL;	/* XXX memory leak */
     static int lastDirLength = 0;
@@ -344,6 +358,7 @@ static int inline checkDirectory(const char * filename)
 /** */
 static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 			 cpioCallback cb, void * cbData)
+		/*@modifies fileSystem, cfd @*/
 {
     FD_t ofd;
     char buf[BUFSIZ];
@@ -409,6 +424,7 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 
 /** */
 static int expandSymlink(FD_t cfd, const struct cpioHeader * hdr)
+		/*@modifies fileSystem, cfd @*/
 {
     char buf[2048], buf2[2048];
     struct stat sb;
@@ -444,6 +460,7 @@ static int expandSymlink(FD_t cfd, const struct cpioHeader * hdr)
 
 /** */
 static int expandFifo( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
+		/*@modifies fileSystem @*/
 {
     struct stat sb;
 
@@ -462,6 +479,7 @@ static int expandFifo( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
 
 /** */
 static int expandDevice( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
+		/*@modifies fileSystem @*/
 {
     const struct stat * st = &hdr->sb;
     struct stat sb;
@@ -482,7 +500,7 @@ static int expandDevice( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
 
 /** */
 static /*@only@*/ struct hardLink * newHardLink(const struct stat * st,
-				enum hardLinkType hltype)
+				enum hardLinkType hltype)	/*@*/
 {
     struct hardLink * li = xmalloc(sizeof(*li));
 
@@ -535,6 +553,7 @@ static void freeHardLink( /*@only@*/ struct hardLink * li)
 
 /** */
 static int createLinks(struct hardLink * li, /*@out@*/ const char ** failedFile)
+	/*@modifies fileSystem, *failedFile, li->files, li->linksLeft @*/
 {
     int i;
     struct stat sb;
@@ -567,6 +586,7 @@ static int createLinks(struct hardLink * li, /*@out@*/ const char ** failedFile)
 
 /** */
 static int eatBytes(FD_t cfd, int amount)
+	/*@modifies cfd @*/
 {
     char buf[4096];
     int bite;
@@ -581,7 +601,6 @@ static int eatBytes(FD_t cfd, int amount)
     return 0;
 }
 
-/** */
 int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
 		       const char ** failedFile)
@@ -751,6 +770,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 static int writeFile(FD_t cfd, const struct stat * st,
 	const struct cpioFileMapping * map, /*@out@*/ size_t * sizep,
 	int writeData)
+	/*@modifies cfd, *sizep @*/
 {
     struct cpioCrcPhysicalHeader hdr;
     char buf[8192], symbuf[2048];
@@ -896,6 +916,7 @@ static int writeLinkedFile(FD_t cfd, const struct hardLink * hlink,
 			   cpioCallback cb, void * cbData,
 			   /*@out@*/size_t * sizep,
 			   /*@out@*/const char ** failedFile)
+	/*@modifies cfd, *sizep, *failedFile @*/
 {
     int i, rc;
     size_t size, total;
@@ -941,7 +962,6 @@ static int writeLinkedFile(FD_t cfd, const struct hardLink * hlink,
     return 0;
 }
 
-/** */
 int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, const char ** failedFile)
@@ -1059,7 +1079,6 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
     return 0;
 }
 
-/** */
 const char * cpioStrerror(int rc)
 {
     static char msg[256];
