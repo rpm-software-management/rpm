@@ -129,9 +129,13 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
 	s++;
     }
 
-    if (parseSpec(&spec, specfile, buildRoot, 0, passPhrase, cookie)) {
-	return 1;
+#define	_anyarch(_f)	\
+(((_f)&(RPMBUILD_PACKAGESOURCE|RPMBUILD_PACKAGEBINARY)) == RPMBUILD_PACKAGESOURCE)
+    if (parseSpec(&spec, specfile, buildRoot, 0, passPhrase, cookie,
+	_anyarch(buildAmount))) {
+	    return 1;
     }
+#undef	_anyarch
 
     if (buildSpec(spec, buildAmount, test)) {
 	freeSpec(spec);

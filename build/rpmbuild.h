@@ -104,7 +104,7 @@ char *cleanFileName(char *name);
 int parseChangelog(Spec spec);
 int parseDescription(Spec spec);
 int parseFiles(Spec spec);
-int parsePreamble(Spec spec, int initialPackage);
+int parsePreamble(Spec spec, int initialPackage, int anyarch);
 int parsePrep(Spec spec);
 int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 			   int tag, int index);
@@ -137,7 +137,7 @@ int processSourceFiles(Spec spec);
 /* global entry points */
 
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
-		int inBuildArch, char *passPhrase, char *cookie);
+		int inBuildArch, char *passPhrase, char *cookie, int anyarch);
 int buildSpec(Spec spec, int what, int test);
 
 int packageBinaries(Spec spec);
