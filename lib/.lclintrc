@@ -11,9 +11,9 @@
 -unrecogcomments
 
 # don't-bother-me-yet parameters
--branchstate
+-branchstate		# ~100 occurences, painful
 #-immediatetrans
--mustfree
+-mustfree		# alloca is painful
 #-observertrans
 #-statictrans
 
