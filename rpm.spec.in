@@ -192,7 +192,7 @@ fi
 #  rm -rf .%{__prefix}/lib/${f}*
 # done
 # rm -f .%{__prefix}/share/man/man1/file.1*
-  rm -f .%{__prefix}/share/magic*
+# rm -f .%{__prefix}/share/magic*
 }
 
 %clean
@@ -395,6 +395,8 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/javadeps
 %rpmattr	%{__prefix}/lib/rpm/magic
 %rpmattr	%{__prefix}/lib/rpm/magic.mgc
+%rpmattr	%{__prefix}/lib/rpm/magic.mime
+%rpmattr	%{__prefix}/lib/rpm/magic.mime.mgc
 %rpmattr	%{__prefix}/lib/rpm/magic.prov
 %rpmattr	%{__prefix}/lib/rpm/magic.req
 %rpmattr	%{__prefix}/lib/rpm/perl.prov

@@ -1,5 +1,5 @@
 /** \ingroup header
- * \file lib/header.c
+ * \file rpmdb/header.c
  */
 
 /* RPM - Copyright (C) 1995-2002 Red Hat Software */

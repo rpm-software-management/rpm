@@ -2,7 +2,7 @@
 #define H_HEADER
 
 /** \ingroup header
- * \file lib/header.h
+ * \file rpmdb/header.h
  *
  * An rpm header carries all information about a package. A header is
  * a collection of data elements called tags. Each tag has a data type,

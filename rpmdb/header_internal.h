@@ -2,7 +2,7 @@
 #define H_HEADER_INTERNAL
 
 /** \ingroup header
- * \file lib/header_internal.h
+ * \file rpmdb/header_internal.h
  */
 
 #include <header.h>

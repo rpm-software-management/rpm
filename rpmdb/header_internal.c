@@ -1,6 +1,6 @@
 /*@-sizeoftype@*/
 /** \ingroup header
- * \file lib/header_internal.c
+ * \file rpmdb/header_internal.c
  */
 
 #include "system.h"

@@ -1,5 +1,5 @@
 /**
- * \file lib/stubs.c
+ * \file rpmio/stubs.c
  */
 
 /* XXX Portable shared libraries require rpmlib to contain these functions. */

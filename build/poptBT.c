@@ -1,5 +1,5 @@
 /** \ingroup rpmcli
- * \file lib/poptBT.c
+ * \file build/poptBT.c
  *  Popt tables for build modes.
  */
 
