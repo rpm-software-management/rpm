@@ -975,6 +975,8 @@ int rpmdepOrder(rpmTransactionSet rpmdep) {
 	    j++;
 	}
     }
+    if (j > rpmdep->addedPackages.size) abort();
+
     qsort(orderList, rpmdep->addedPackages.size, sizeof(*orderList), 
 	  orderListIndexCmp);
 
@@ -1002,6 +1004,8 @@ int rpmdepOrder(rpmTransactionSet rpmdep) {
 	    newOrder[newOrderCount++] = rpmdep->order[i];
 	}
     }
+
+    if (newOrderCount != rpmdep->orderCount) abort();
 
     free(rpmdep->order);
     rpmdep->order = newOrder;
