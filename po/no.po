@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-04 15:48-0400\n"
-"PO-Revision-Date: 2000-06-22 21:59+02:00\n"
+"POT-Creation-Date: 2000-08-07 15:28-0400\n"
+"PO-Revision-Date: 2000-08-04 02:59+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -257,9 +257,8 @@ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <katalog>] [--nodeps] [--allmatches]"
 
 #: rpm.c:241 rpmqv.c:315
-#, fuzzy
 msgid "                        [--justdb] [--notriggers] package1 ... packageN"
-msgstr "                        [--justdb] [--notriggers] rpakke1 ... pakkeN"
+msgstr "                        [--justdb] [--notriggers] pakke1 ... pakkeN"
 
 #: rpm.c:242
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
@@ -800,9 +799,8 @@ msgid "    --checksig <pkg>+"
 msgstr ""
 
 #: rpm.c:502
-#, fuzzy
 msgid "    -K <pkg>+             "
-msgstr "    --pipe <kmd>          "
+msgstr "    -K <pkg>+             "
 
 #: rpm.c:503 rpmqv.c:617
 msgid "verify package signature"
@@ -1267,31 +1265,28 @@ msgid "query/verify all packages"
 msgstr ""
 
 #: rpmqv.c:434
-#, fuzzy
 msgid "     -f <file>+           "
-msgstr "        -f <fil>+         "
+msgstr "     -f <fil>+            "
 
 #: rpmqv.c:435
 msgid "query/verify package owning <file>"
 msgstr ""
 
 #: rpmqv.c:436
-#, fuzzy
 msgid "     -p <packagefile>+    "
-msgstr "        -p <pakkefil>+ "
+msgstr "     -p <pakkefil>+       "
 
 #: rpmqv.c:437
 msgid "query/verify (uninstalled) package <packagefile>"
 msgstr ""
 
 #: rpmqv.c:438
-#, fuzzy
 msgid "     --triggeredby <pkg>  "
-msgstr "        --triggeredby <pakke>"
+msgstr "     --triggeredby <pakke>"
 
 #: rpmqv.c:439
 msgid "query/verify packages triggered by <pkg>"
-msgstr ""
+msgstr "spør/verifisér pakker utløst av <pakke>"
 
 #: rpmqv.c:440
 msgid "     --whatprovides <cap> "
@@ -3083,9 +3078,9 @@ msgid "cannot open %s index using db%d - %s (%d)"
 msgstr ""
 
 #: lib/rpmdb.c:293
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s index"
-msgstr "kan ikke åpne %s/packages.rpm\n"
+msgstr "kan ikke åpne %s indeks"
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3303,76 +3298,76 @@ msgid "%s cannot be installed\n"
 msgstr ""
 
 #: lib/rpminstall.c:253
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "kan ikke åpne %s/packages.rpm\n"
+msgstr "kan ikke åpne pakkedatabase i %s\n"
 
 #: lib/rpminstall.c:273
 #, c-format
 msgid "package %s is not relocateable\n"
-msgstr ""
+msgstr "pakke %s kan ikke relokeres\n"
 
 #: lib/rpminstall.c:318
 #, c-format
 msgid "error reading from file %s\n"
-msgstr ""
+msgstr "feil under lesing fra fil %s\n"
 
 #: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
-msgstr ""
+msgstr "fil %s trenger en nyere versjon av RPM\n"
 
 #: lib/rpminstall.c:340
 #, c-format
 msgid "found %d source and %d binary packages\n"
-msgstr ""
+msgstr "fant %d kilde- og %d binærpakker\n"
 
 #: lib/rpminstall.c:351
 msgid "failed dependencies:\n"
-msgstr ""
+msgstr "feilede avhengigheter:\n"
 
 #: lib/rpminstall.c:369
 msgid "installing binary packages\n"
-msgstr ""
+msgstr "installerer binærpakker\n"
 
 #: lib/rpminstall.c:467
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
-msgstr ""
+msgstr "\"%s\" spesifiserer flere pakker\n"
 
 #: lib/rpminstall.c:490
 msgid "removing these packages would break dependencies:\n"
-msgstr ""
+msgstr "fjerning av disse pakkene vil ødelegge avhengigheter:\n"
 
 #: lib/rpminstall.c:518
 #, c-format
 msgid "cannot open %s: %s\n"
-msgstr ""
+msgstr "kan ikke åpne %s: %s\n"
 
 #: lib/rpminstall.c:524
 #, c-format
 msgid "Installing %s\n"
-msgstr ""
+msgstr "Installerer %s\n"
 
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
-msgstr ""
+msgstr "lesing feilet: %s (%d)"
 
 #: lib/rpmrc.c:147
 #, c-format
 msgid "missing second ':' at %s:%d"
-msgstr ""
+msgstr "mangler andre ':' ved %s:%d"
 
 #: lib/rpmrc.c:150
 #, c-format
 msgid "missing architecture name at %s:%d"
-msgstr ""
+msgstr "manglende navn på arkitektur ved %s:%d"
 
 #: lib/rpmrc.c:310
 #, c-format
 msgid "Incomplete data line at %s:%d"
-msgstr ""
+msgstr "Ukomplett datalinje ved %s:%d"
 
 #: lib/rpmrc.c:314
 #, c-format
@@ -3865,67 +3860,14 @@ msgstr ""
 #: rpmio/url.c:462
 #, c-format
 msgid "failed to create %s: %s\n"
-msgstr ""
+msgstr "kunne ikke opprette %s: %s\n"
 
 #~ msgid ""
 #~ "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 #~ msgstr ""
 #~ "                        [--ftpproxy <vert>] [--ftpport <port>] [--justdb]"
 
-#, fuzzy
 #~ msgid ""
 #~ "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 #~ msgstr ""
 #~ "                        [--triggeredby] [--ftpuseport] [--ftpproxy <vert>]"
-
-#~ msgid "RPM database already exists"
-#~ msgstr "RPM-databasen eksisterer allerede"
-
-#~ msgid "Old db is missing"
-#~ msgstr "Gammel db mangler"
-
-#~ msgid "failed to create RPM database /var/lib/rpm"
-#~ msgstr "feilet å opprette RPM-database i /var/lib/rpm"
-
-#~ msgid "Old db is corrupt"
-#~ msgstr "Gammel db er korrupt"
-
-#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-#~ msgstr "oldrpmdbGetPackageInfo feilet &olddb = %p olddb.packages = %p\n"
-
-#~ msgid "rpmconvert: no arguments expected"
-#~ msgstr "rpmconvert: ingen argumenter forventet"
-
-#~ msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-#~ msgstr "rpmconvert 1.0 - konverterer database i /var/lib/rpm\n"
-
-#~ msgid "pulling %s from database\n"
-#~ msgstr "henter %s fra databasen\n"
-
-#~ msgid "package not found in database"
-#~ msgstr "pakke ikke funnet i databasen"
-
-#~ msgid "no copyright!\n"
-#~ msgstr "ingen lisens!\n"
-
-#~ msgid ""
-#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<file>]"
-#~ msgstr ""
-#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  <fil>]"
-
-#~ msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-#~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-
-#~ msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-#~ msgstr "       rpm {--rmsource} [--rcfile <fil>] [-v] specfil"
-
-#~ msgid ""
-#~ "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr ""
-#~ "       rpm {--rebuild} [--rcfile <file>] [-v] kilde1.rpm ... kildeN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr ""
-#~ "       rpm {--recompile} [--rcfile <fil>] [-v] kilde1.rpm ... kildeN.rpm"
