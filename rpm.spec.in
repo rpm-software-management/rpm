@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.10
+Release: 0.11
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -521,6 +521,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu May  2 2002 Jeff Johnson <jbj@redhat.com>
+- eliminate db1 support.
+- enable CDB by default.
+
 * Wed May  1 2002 Jeff Johnson <jbj@redhat.com>
 - attempt to make peace with automake-1.6.1, autoconf-2.53.
 - rip out two layers of dbN gook, internal Berkeley db is here to stay.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-01 18:05-0400\n"
+"POT-Creation-Date: 2002-05-02 19:33-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1425,57 +1425,57 @@ msgstr "헤더에 아카이브 파일이 없습니다"
 msgid " failed - "
 msgstr " 실패함 - "
 
-#: lib/depends.c:153
+#: lib/depends.c:155
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:380
+#: lib/depends.c:382
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:405
+#: lib/depends.c:407
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:421
+#: lib/depends.c:423
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:442
+#: lib/depends.c:444
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일    %s\n"
 
-#: lib/depends.c:454
+#: lib/depends.c:456
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:467
+#: lib/depends.c:469
 #, fuzzy
 msgid "(db package)"
 msgstr "패키지가 없습니다\n"
 
-#: lib/depends.c:783
+#: lib/depends.c:789
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:903
+#: lib/depends.c:909
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\" (을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1171
+#: lib/depends.c:1177
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1277
+#: lib/depends.c:1283
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1483,20 +1483,20 @@ msgid ""
 msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 깊이[depth])\n"
 
-#: lib/depends.c:1370
+#: lib/depends.c:1376
 msgid "========== successors only (presentation order)\n"
 msgstr "========== 후임자 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1440
+#: lib/depends.c:1446
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1475
+#: lib/depends.c:1481
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1480
+#: lib/depends.c:1486
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2236,134 +2236,134 @@ msgstr "%2$s 파일의 %1$s (이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s (이)가 실패함: %s\n"
 
-#: lib/query.c:125 lib/rpmts.c:227
+#: lib/query.c:127 lib/rpmts.c:226
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
 
-#: lib/query.c:221
+#: lib/query.c:223
 msgid "(contains no files)"
 msgstr "(파일이 포함되어 있지 않음)"
 
-#: lib/query.c:282
+#: lib/query.c:284
 msgid "normal        "
 msgstr "정상(normal)        "
 
-#: lib/query.c:285
+#: lib/query.c:287
 msgid "replaced      "
 msgstr "교체됨(replaced)    "
 
-#: lib/query.c:288
+#: lib/query.c:290
 msgid "not installed "
 msgstr "설치되어 있지 않음  "
 
-#: lib/query.c:291
+#: lib/query.c:293
 msgid "net shared    "
 msgstr "net 공유됨          "
 
-#: lib/query.c:294
+#: lib/query.c:296
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(알 수 없는 %3d)    "
 
-#: lib/query.c:299
+#: lib/query.c:301
 msgid "(no state)    "
 msgstr "(상태를 알 수 없음) "
 
-#: lib/query.c:318 lib/query.c:374
+#: lib/query.c:320 lib/query.c:376
 msgid "package has neither file owner or id lists\n"
 msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 
-#: lib/query.c:464
+#: lib/query.c:466
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s (을)를 질의할 수 없음: %s\n"
 
-#: lib/query.c:618 lib/query.c:656 lib/rpminstall.c:352 lib/rpminstall.c:494
+#: lib/query.c:620 lib/query.c:658 lib/rpminstall.c:352 lib/rpminstall.c:494
 #: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s (을)를 여는데 실패함: %s\n"
 
-#: lib/query.c:634
+#: lib/query.c:636
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s (을)를 질의하는데 실패했습니다\n"
 
-#: lib/query.c:640
+#: lib/query.c:642
 msgid "old format source packages cannot be queried\n"
 msgstr "이전 형식의 소스 패키지는 질의할 수 없습니다\n"
 
-#: lib/query.c:666 lib/rpminstall.c:507
+#: lib/query.c:668 lib/rpminstall.c:507
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 읽는데 실패했습니다: %s\n"
 
-#: lib/query.c:710
+#: lib/query.c:712
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s spec 파일을 질의하는데 실패했습니다, 파일을 분석할 수 없습니다\n"
 
-#: lib/query.c:731
+#: lib/query.c:733
 msgid "no packages\n"
 msgstr "패키지가 없습니다\n"
 
-#: lib/query.c:751
+#: lib/query.c:753
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s 그룹은 어떤 패키지에도 포함되어 있지 않습니다\n"
 
-#: lib/query.c:761
+#: lib/query.c:763
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s (을)를 발생시키는 패키지가 없습니다\n"
 
-#: lib/query.c:775 lib/query.c:797 lib/query.c:818 lib/query.c:853
+#: lib/query.c:777 lib/query.c:799 lib/query.c:820 lib/query.c:855
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s (을)를 읽는데 실패함: %s.\n"
 
-#: lib/query.c:785 lib/query.c:803 lib/query.c:828 lib/query.c:858
+#: lib/query.c:787 lib/query.c:805 lib/query.c:830 lib/query.c:860
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s (을)를 발생시키는 패키지가 없습니다\n"
 
-#: lib/query.c:869
+#: lib/query.c:871
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s (을)를 필요로 하는 패키지가 없습니다\n"
 
-#: lib/query.c:880
+#: lib/query.c:882
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s (을)를 제공하는 패키지가 없습니다\n"
 
-#: lib/query.c:914
+#: lib/query.c:916
 #, c-format
 msgid "file %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: lib/query.c:918
+#: lib/query.c:920
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s 파일은 어떤 패키지에도 속해 있지 않습니다\n"
 
-#: lib/query.c:945
+#: lib/query.c:947
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/query.c:948
+#: lib/query.c:950
 #, c-format
 msgid "package record number: %u\n"
 msgstr "패키지 기록(record) 번호: %u\n"
 
-#: lib/query.c:953
+#: lib/query.c:955
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u (은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:964 lib/rpminstall.c:675
+#: lib/query.c:966 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지는 설치되어 있지 않습니다\n"
@@ -2841,12 +2841,12 @@ msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 "%s-%s-%s: 고정 헤더 영역 축약(immutable header region digest) 검사에 실패함\n"
 
-#: rpmdb/db1.c:98 rpmdb/db3.c:98
+#: rpmdb/db1.c:98 rpmdb/db3.c:85
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "%3$s 의 db%1$d 오류(%2$d): %4$s\n"
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:101
+#: rpmdb/db1.c:101 rpmdb/db3.c:88
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d 오류(%d): %s\n"
@@ -2891,87 +2891,73 @@ msgstr "열린   db 파일    %s 모드 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "잠겨있는 데이터베이스의 %s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1121
+#: rpmdb/db1.c:573 rpmdb/db3.c:1068
 msgid "exclusive"
 msgstr "제외함(exclusive)"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1121
+#: rpmdb/db1.c:573 rpmdb/db3.c:1068
 msgid "shared"
 msgstr "공유됨"
 
-#: rpmdb/db3.c:127
+#: rpmdb/db3.c:114
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "닫힌   db 환경    %s/%s\n"
 
-#: rpmdb/db3.c:145
+#: rpmdb/db3.c:132
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "삭제된 db 환경    %s/%s\n"
 
-#: rpmdb/db3.c:185
+#: rpmdb/db3.c:172
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "열린   db 환경    %s/%s\n"
 
-#: rpmdb/db3.c:614
+#: rpmdb/db3.c:561
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "닫힌   db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:681
+#: rpmdb/db3.c:628
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "검증된 db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:903
+#: rpmdb/db3.c:850
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "열린   db 인덱스  %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1119
+#: rpmdb/db3.c:1066
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "잠겨있는 %2$s/%3$s 의 %1$s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1125
+#: rpmdb/db3.c:1072
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠긴   db 인덱스  %s/%s\n"
 
-#: rpmdb/dbconfig.c:400
+#: rpmdb/dbconfig.c:389
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "인증되지 않은 db 옵션: \"%s\" (을)를 무시합니다.\n"
 
-#: rpmdb/dbconfig.c:438
+#: rpmdb/dbconfig.c:427
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s (은)는 부적합한 수치 값입니다, 생략합니다\n"
 
-#: rpmdb/dbconfig.c:447
+#: rpmdb/dbconfig.c:436
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s (은)는 너무 크거나 너무 작은 정수(long) 값입니다, 생략합니다\n"
 
-#: rpmdb/dbconfig.c:456
+#: rpmdb/dbconfig.c:445
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s (은)는 너무 크거나 너무 작은 정수(int) 값입니다, 생략합니다\n"
-
-#: rpmdb/falloc.c:183
-#, c-format
-msgid ""
-"free list corrupt (%u)- please run\n"
-"\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
-"if \"rpm --rebuilddb\" fails to correct the problem.\n"
-msgstr ""
-"빈(free) 목록의 손상 (%u)- 다음과 같은 명령을 실행해 주십시요\n"
-"\t\"rpm --rebuilddb\"\n"
-"만일, \"rpm --rebuilddb\" 명령이 실패할 경우에는 http://www.rpm.org 이나 \n"
-"rpm-list@redhat.com 메일링 리스트를 통해 자세한 정보를 얻으실 수 있습니다.\n"
 
 #. This should not be allowed
 #. @-modfilesys@
@@ -3068,153 +3054,153 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "(기존의) rpm[23] 패키징과 호환하는 헤더를 생성합니다"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:165
+#: rpmdb/rpmdb.c:161
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 "DB 태그 초기화[dbiTagsInit]: 인증되지 않은 태그 이름: \"%s\" (은)는 무시됩니"
 "다\n"
 
-#: rpmdb/rpmdb.c:258
+#: rpmdb/rpmdb.c:254
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "db%2$d (을)를 이용하여 %1$s 인덱스를 열 수 없습니다 - %3$s (%4$d)\n"
 
-#: rpmdb/rpmdb.c:280
+#: rpmdb/rpmdb.c:276
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s 인덱스를 열 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:379
+#: rpmdb/rpmdb.c:377
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:516
+#: rpmdb/rpmdb.c:518
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "%3$s (으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:529
+#: rpmdb/rpmdb.c:538
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "%3$s 에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:788
+#: rpmdb/rpmdb.c:797
 msgid "no dbpath has been set\n"
 msgstr "db경로가 설정되어 있지 않습니다\n"
 
 #. error
-#: rpmdb/rpmdb.c:1174
+#: rpmdb/rpmdb.c:1183
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "패키지의 수를 세는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:1971 rpmdb/rpmdb.c:3357
+#: rpmdb/rpmdb.c:1986 rpmdb/rpmdb.c:3386
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u (이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2034
+#: rpmdb/rpmdb.c:2052
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u (이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2306
+#: rpmdb/rpmdb.c:2326
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x 의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2472
+#: rpmdb/rpmdb.c:2495
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\" (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2476
+#: rpmdb/rpmdb.c:2499
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2663
+#: rpmdb/rpmdb.c:2692
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2858
+#: rpmdb/rpmdb.c:2887
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\" (을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:2862
+#: rpmdb/rpmdb.c:2891
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3243
+#: rpmdb/rpmdb.c:3272
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축 한 후에 %s (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3276
+#: rpmdb/rpmdb.c:3305
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3303
+#: rpmdb/rpmdb.c:3332
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s 에 데이터베이스 %1$s (을)를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3307
+#: rpmdb/rpmdb.c:3336
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s (이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3313
+#: rpmdb/rpmdb.c:3342
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3315
+#: rpmdb/rpmdb.c:3344
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3322
+#: rpmdb/rpmdb.c:3351
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3333
+#: rpmdb/rpmdb.c:3362
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:3426
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u 에 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3415
+#: rpmdb/rpmdb.c:3444
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3423
+#: rpmdb/rpmdb.c:3452
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3425
+#: rpmdb/rpmdb.c:3454
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 $2$s 의 파일을 $1$s 의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3435
+#: rpmdb/rpmdb.c:3464
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3437
+#: rpmdb/rpmdb.c:3466
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
@@ -3426,6 +3412,20 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s (을)를 생성하는데 실패함: %s\n"
+
+#~ msgid ""
+#~ "free list corrupt (%u)- please run\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "More information is available from http://www.rpm.org or the rpm-"
+#~ "list@redhat.com mailing list\n"
+#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
+#~ msgstr ""
+#~ "빈(free) 목록의 손상 (%u)- 다음과 같은 명령을 실행해 주십시요\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "만일, \"rpm --rebuilddb\" 명령이 실패할 경우에는 http://www.rpm.org 이"
+#~ "나 \n"
+#~ "rpm-list@redhat.com 메일링 리스트를 통해 자세한 정보를 얻으실 수 있습니"
+#~ "다.\n"
 
 #~ msgid ""
 #~ "old format database is present; use --rebuilddb to generate a new format "

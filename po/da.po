@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-01 18:05-0400\n"
+"POT-Creation-Date: 2002-05-02 19:33-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1435,76 +1435,76 @@ msgstr ""
 msgid " failed - "
 msgstr " mislykkedes - "
 
-#: lib/depends.c:153
+#: lib/depends.c:155
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakken %s er allerede installeret"
 
-#: lib/depends.c:380
+#: lib/depends.c:382
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:405
+#: lib/depends.c:407
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:421
+#: lib/depends.c:423
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:442
+#: lib/depends.c:444
 #, fuzzy
 msgid "(db files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/depends.c:454
+#: lib/depends.c:456
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#: lib/depends.c:467
+#: lib/depends.c:469
 #, fuzzy
 msgid "(db package)"
 msgstr "ingen pakker\n"
 
-#: lib/depends.c:783
+#: lib/depends.c:789
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:903
+#: lib/depends.c:909
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1171
+#: lib/depends.c:1177
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1277
+#: lib/depends.c:1283
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1370
+#: lib/depends.c:1376
 msgid "========== successors only (presentation order)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1440
+#: lib/depends.c:1446
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1475
+#: lib/depends.c:1481
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1480
+#: lib/depends.c:1486
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2247,134 +2247,134 @@ msgstr "kunne ikke åbne %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: lib/query.c:125 lib/rpmts.c:227
+#: lib/query.c:127 lib/rpmts.c:226
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
 
-#: lib/query.c:221
+#: lib/query.c:223
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:282
+#: lib/query.c:284
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:285
+#: lib/query.c:287
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:288
+#: lib/query.c:290
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:291
+#: lib/query.c:293
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:294
+#: lib/query.c:296
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:299
+#: lib/query.c:301
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:318 lib/query.c:374
+#: lib/query.c:320 lib/query.c:376
 msgid "package has neither file owner or id lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:464
+#: lib/query.c:466
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
 
-#: lib/query.c:618 lib/query.c:656 lib/rpminstall.c:352 lib/rpminstall.c:494
+#: lib/query.c:620 lib/query.c:658 lib/rpminstall.c:352 lib/rpminstall.c:494
 #: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/query.c:634
+#: lib/query.c:636
 #, c-format
 msgid "query of %s failed\n"
 msgstr "forespørgsel af %s mislykkedes\n"
 
-#: lib/query.c:640
+#: lib/query.c:642
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:666 lib/rpminstall.c:507
+#: lib/query.c:668 lib/rpminstall.c:507
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
 
-#: lib/query.c:710
+#: lib/query.c:712
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "forespørgsel af spec-fil %s mislykkedes, kunne ikke tolkes\n"
 
-#: lib/query.c:731
+#: lib/query.c:733
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:751
+#: lib/query.c:753
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s indeholder ingen pakker\n"
 
-#: lib/query.c:761
+#: lib/query.c:763
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:775 lib/query.c:797 lib/query.c:818 lib/query.c:853
+#: lib/query.c:777 lib/query.c:799 lib/query.c:820 lib/query.c:855
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Kunne ikke læse %s: %s.\n"
 
-#: lib/query.c:785 lib/query.c:803 lib/query.c:828 lib/query.c:858
+#: lib/query.c:787 lib/query.c:805 lib/query.c:830 lib/query.c:860
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:869
+#: lib/query.c:871
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:880
+#: lib/query.c:882
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:914
+#: lib/query.c:916
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:918
+#: lib/query.c:920
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:945
+#: lib/query.c:947
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:948
+#: lib/query.c:950
 #, c-format
 msgid "package record number: %u\n"
 msgstr "pakkens post-nummer: %u\n"
 
-#: lib/query.c:953
+#: lib/query.c:955
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:964 lib/rpminstall.c:675
+#: lib/query.c:966 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -2854,12 +2854,12 @@ msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:98 rpmdb/db3.c:98
+#: rpmdb/db1.c:98 rpmdb/db3.c:85
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d fejl(%d) fra %s: %s\n"
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:101
+#: rpmdb/db1.c:101 rpmdb/db3.c:88
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d fejl(%d): %s\n"
@@ -2902,88 +2902,73 @@ msgstr "åbner db-fil      %s modus 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kunne ikke opnå %s lås på database\n"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1121
+#: rpmdb/db1.c:573 rpmdb/db3.c:1068
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1121
+#: rpmdb/db1.c:573 rpmdb/db3.c:1068
 msgid "shared"
 msgstr "delt"
 
-#: rpmdb/db3.c:127
+#: rpmdb/db3.c:114
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "lukkede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:145
+#: rpmdb/db3.c:132
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "fjernede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:185
+#: rpmdb/db3.c:172
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "åbner   db-miljø  %s/%s %s\n"
 
-#: rpmdb/db3.c:614
+#: rpmdb/db3.c:561
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:681
+#: rpmdb/db3.c:628
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:903
+#: rpmdb/db3.c:850
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1119
+#: rpmdb/db3.c:1066
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1125
+#: rpmdb/db3.c:1072
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"
 
-#: rpmdb/dbconfig.c:400
+#: rpmdb/dbconfig.c:389
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "ukendt db-tilvalg: \"%s\" ignoreret\n"
 
-#: rpmdb/dbconfig.c:438
+#: rpmdb/dbconfig.c:427
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s har ugyldig talværdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:447
+#: rpmdb/dbconfig.c:436
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:456
+#: rpmdb/dbconfig.c:445
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"
-
-#: rpmdb/falloc.c:183
-#, c-format
-msgid ""
-"free list corrupt (%u)- please run\n"
-"\t\"rpm --rebuilddb\"\n"
-"More information is available from http://www.rpm.org or the rpm-list@redhat."
-"com mailing list\n"
-"if \"rpm --rebuilddb\" fails to correct the problem.\n"
-msgstr ""
-"fri-listen er ikke konsistent (%u)- kør venligst\n"
-"\t\"rpm --rebuilddb\"\n"
-"Mere information kan findes på http://www.rpm.org ellerpostlisten rpm-"
-"list@redhat.com\n"
-"hvis \"rpm --rebuilddb\" ikke løser problemet.\n"
 
 #. This should not be allowed
 #. @-modfilesys@
@@ -3080,153 +3065,153 @@ msgstr ""
 "generér hoveder, der er kompatible med (gamle) rpm[23]-indpakningsversioner"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:165
+#: rpmdb/rpmdb.c:161
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: ukendt mærkenavn: \"%s\" ignoreret\n"
 
-#: rpmdb/rpmdb.c:258
+#: rpmdb/rpmdb.c:254
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "kan ikke åbne '%s'-indeks ved brug af db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:280
+#: rpmdb/rpmdb.c:276
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "kan ikke åbne '%s'-indeks\n"
 
-#: rpmdb/rpmdb.c:379
+#: rpmdb/rpmdb.c:377
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:516
+#: rpmdb/rpmdb.c:518
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:529
+#: rpmdb/rpmdb.c:538
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:788
+#: rpmdb/rpmdb.c:797
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
 #. error
-#: rpmdb/rpmdb.c:1174
+#: rpmdb/rpmdb.c:1183
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "fejl(%d) ved optælling af pakker\n"
 
-#: rpmdb/rpmdb.c:1971 rpmdb/rpmdb.c:3357
+#: rpmdb/rpmdb.c:1986 rpmdb/rpmdb.c:3386
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:2034
+#: rpmdb/rpmdb.c:2052
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2306
+#: rpmdb/rpmdb.c:2326
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2472
+#: rpmdb/rpmdb.c:2495
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2476
+#: rpmdb/rpmdb.c:2499
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2663
+#: rpmdb/rpmdb.c:2692
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:2858
+#: rpmdb/rpmdb.c:2887
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:2862
+#: rpmdb/rpmdb.c:2891
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:3243
+#: rpmdb/rpmdb.c:3272
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3276
+#: rpmdb/rpmdb.c:3305
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3303
+#: rpmdb/rpmdb.c:3332
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3307
+#: rpmdb/rpmdb.c:3336
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3313
+#: rpmdb/rpmdb.c:3342
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3315
+#: rpmdb/rpmdb.c:3344
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3322
+#: rpmdb/rpmdb.c:3351
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3333
+#: rpmdb/rpmdb.c:3362
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:3426
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3415
+#: rpmdb/rpmdb.c:3444
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3423
+#: rpmdb/rpmdb.c:3452
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3425
+#: rpmdb/rpmdb.c:3454
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3435
+#: rpmdb/rpmdb.c:3464
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3437
+#: rpmdb/rpmdb.c:3466
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
@@ -3437,6 +3422,19 @@ msgstr "url-port skal være et tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
+
+#~ msgid ""
+#~ "free list corrupt (%u)- please run\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "More information is available from http://www.rpm.org or the rpm-"
+#~ "list@redhat.com mailing list\n"
+#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
+#~ msgstr ""
+#~ "fri-listen er ikke konsistent (%u)- kør venligst\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "Mere information kan findes på http://www.rpm.org ellerpostlisten rpm-"
+#~ "list@redhat.com\n"
+#~ "hvis \"rpm --rebuilddb\" ikke løser problemet.\n"
 
 #~ msgid ""
 #~ "old format database is present; use --rebuilddb to generate a new format "
