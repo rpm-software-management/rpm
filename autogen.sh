@@ -12,7 +12,7 @@ You need to install:
 
 [ "`libtoolize --version`" != "$LTV" ] && echo "$USAGE" && exit 1
 [ "`autoconf --version`" != "$ACV" ] && echo "$USAGE" && exit 1
-[ "`automake --version | head -1`" != "$AMV" ] && echo "$USAGE" && exit 1
+[ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" && exit 1
 
 (cd popt; ./autogen.sh --noconfigure "$@")
 libtoolize --copy --force
