@@ -65,7 +65,7 @@ static char * strerror(int errno) {
 
 void poptSetExecPath(poptContext con, const char * path, int allowAbsolute) {
     if (con->execPath) free(con->execPath);
-    con->execPath = strdup(con->execPath);
+    con->execPath = strdup(path);
     con->execAbsolute = allowAbsolute;
 }
 
