@@ -50,7 +50,7 @@ typedef struct urlinfo {
 extern "C" {
 #endif
 
-/*@only@*/ /*@observer@*/ const char * ftpStrerror(int ftpErrno);
+/*@observer@*/ const char *const ftpStrerror(int ftpErrno);
 
 void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount);
 int	httpOpen(urlinfo *u);

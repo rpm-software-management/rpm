@@ -179,7 +179,6 @@ static int doSetupMacro(Spec spec, char *line)
     char ** argv;
     int arg;
     char * optArg;
-    char * chptr;
     int rc;
     int num;
 
@@ -212,15 +211,12 @@ static int doSetupMacro(Spec spec, char *line)
 	    return RPMERR_BADSPEC;
 	}
 
-	chptr = doUntar(spec, num, quietly);
-	if (!chptr) {
-	    return RPMERR_BADSPEC;
-	}
+	{   const char *chptr = doUntar(spec, num, quietly);
+	    if (chptr == NULL)
+		return RPMERR_BADSPEC;
 
-	if (arg == 'a')
-	    appendLineStringBuf(after, chptr);
-	else
-	    appendLineStringBuf(before, chptr);
+	    appendLineStringBuf((arg == 'a' ? after : before), chptr);
+	}
     }
 
     if (arg < -1) {
@@ -269,10 +265,9 @@ static int doSetupMacro(Spec spec, char *line)
 
     /* do the default action */
    if (!createDir && !skipDefaultAction) {
-	chptr = doUntar(spec, 0, quietly);
-	if (!chptr) {
+	const char *chptr = doUntar(spec, 0, quietly);
+	if (!chptr)
 	    return RPMERR_BADSPEC;
-	}
 	appendLineStringBuf(spec->prep, chptr);
     }
 
@@ -285,10 +280,9 @@ static int doSetupMacro(Spec spec, char *line)
     }
 
     if (createDir && !skipDefaultAction) {
-	chptr = doUntar(spec, 0, quietly);
-	if (!chptr) {
+	const char * chptr = doUntar(spec, 0, quietly);
+	if (chptr == NULL)
 	    return RPMERR_BADSPEC;
-	}
 	appendLineStringBuf(spec->prep, chptr);
     }
     

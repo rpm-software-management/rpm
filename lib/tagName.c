@@ -2,7 +2,7 @@
 
 #include <rpmlib.h>
 
-const char *tagName(int tag)
+const char *const tagName(int tag)
 {
     int i;
     static char nameBuf[128];	/* XXX yuk */

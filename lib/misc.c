@@ -464,8 +464,8 @@ void compressFilelist(Header h) {
 
 /* this is pretty straight-forward. The only thing that even resembles a trick
    is getting all of this into a single xmalloc'd block */
-static void doBuildFileList(Header h, char *** fileListPtr, 
-			    int * fileCountPtr, int baseNameTag,
+static void doBuildFileList(Header h, /*@out@*/ char *** fileListPtr, 
+			    /*@out@*/ int * fileCountPtr, int baseNameTag,
 			    int dirListTag, int dirIndexesTag) {
     int * dirList;
     char ** dirs;

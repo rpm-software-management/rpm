@@ -294,9 +294,9 @@ extern int noLang;
 static int noBuild = 0;
 static int useCatalog = 0;
 
-static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
-                             const struct poptOption * opt, const char * arg,
-                             const void * data)
+static void buildArgCallback( /*@unused@*/ poptContext con,
+	/*@unused@*/ enum poptCallbackReason reason,
+	const struct poptOption * opt, const char * arg, const void * data)
 {
     struct rpmBuildArguments * rba = (struct rpmBuildArguments *) data;
 

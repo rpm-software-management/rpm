@@ -1082,7 +1082,7 @@ int main(int argc, char ** argv)
 		        !rpmDetectPGPVersion(NULL)) {
 		        fprintf(stderr, _("pgp not found: "));
 			exit(EXIT_FAILURE);
-		    }	/* fall through */
+		    }	/*@fallthrough@*/
 		  case RPMSIGTAG_GPG:
 		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
 		    if (passPhrase == NULL) {
@@ -1096,7 +1096,7 @@ int main(int argc, char ** argv)
 		    fprintf(stderr,
 		            _("Invalid %%_signature spec in macro file.\n"));
 		    exit(EXIT_FAILURE);
-		    break;
+		    /*@notreached@*/ break;
 		}
 	    }
 	} else {
@@ -1153,7 +1153,7 @@ int main(int argc, char ** argv)
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	exit(ec);
-	break;
+	/*@notreached@*/ break;
 
       case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
@@ -1162,7 +1162,7 @@ int main(int argc, char ** argv)
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	exit(ec);
-	break;
+	/*@notreached@*/ break;
 	
       case MODE_REBUILD:
       case MODE_RECOMPILE:
@@ -1202,17 +1202,21 @@ int main(int argc, char ** argv)
 	  /* these fallthroughs are intentional */
 	  case 'a':
 	    buildArgs.buildAmount |= RPMBUILD_PACKAGESOURCE;
+	    /*@fallthrough@*/
 	  case 'b':
 	    buildArgs.buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    buildArgs.buildAmount |= RPMBUILD_CLEAN;
+	    /*@fallthrough@*/
 	  case 'i':
 	    buildArgs.buildAmount |= RPMBUILD_INSTALL;
 	    if ((buildArgs.buildChar == 'i') && buildArgs.shortCircuit)
 		break;
+	    /*@fallthrough@*/
 	  case 'c':
 	    buildArgs.buildAmount |= RPMBUILD_BUILD;
 	    if ((buildArgs.buildChar == 'c') && buildArgs.shortCircuit)
 		break;
+	    /*@fallthrough@*/
 	  case 'p':
 	    buildArgs.buildAmount |= RPMBUILD_PREP;
 	    break;

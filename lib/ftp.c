@@ -660,7 +660,7 @@ int ftpClose(FD_t fd) {
     return 0;
 }
 
-const char *ftpStrerror(int errorNumber) {
+const char *const ftpStrerror(int errorNumber) {
   switch (errorNumber) {
     case 0:
 	return _("Success");

@@ -87,26 +87,26 @@ struct sprintfToken {
     enum { PTOK_NONE = 0, PTOK_TAG, PTOK_ARRAY, PTOK_STRING, PTOK_COND } type;
     union {
 	struct {
-	    struct sprintfToken * format;
+	    /*@only@*/ struct sprintfToken * format;
 	    int numTokens;
 	} array;
 	struct sprintfTag tag;
 	struct {
-	    char * string;
+	    /*@dependent@*/ char * string;
 	    int len;
 	} string;
 	struct {
-	    struct sprintfToken * ifFormat;
+	    /*@only@*/ struct sprintfToken * ifFormat;
 	    int numIfTokens;
-	    struct sprintfToken * elseFormat;
+	    /*@only@*/ struct sprintfToken * elseFormat;
 	    int numElseTokens;
 	    struct sprintfTag tag;
 	} cond;
     } u;
 };
 
-static void copyEntry(struct indexEntry * entry, /*@out@*/int_32 *type,
-	/*@out@*/void **p, /*@out@*/int_32 *c, int minimizeMemory)
+static void copyEntry(struct indexEntry * entry, /*@out@*/ int_32 * type,
+	/*@out@*/ void ** p, /*@out@*/ int_32 * c, int minimizeMemory)
 {
     int i, tableSize;
     char ** ptrEntry;
@@ -907,7 +907,8 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
     return 0;
 }
 
-static char *headerFindI18NString(Header h, struct indexEntry *entry)
+/*@dependent@*/ static char *
+headerFindI18NString(Header h, struct indexEntry *entry)
 {
     const char *lang, *l, *le;
     struct indexEntry * table;
@@ -1016,7 +1017,7 @@ void headerFree(Header h)
 	free(h->index[i].data);
 
     free(h->index);
-    free(h);
+    /*@-refcounttrans@*/ free(h); /*@=refcounttrans@*/
 }
 
 Header headerLink(Header h)
@@ -1165,7 +1166,6 @@ headerGetLangs(Header h)
 int headerAddI18NString(Header h, int_32 tag, char * string, char * lang)
 {
     struct indexEntry * table, * entry;
-    char * charArray[2];
     char * chptr;
     char ** strArray;
     int length;
@@ -1181,16 +1181,17 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang)
     }
 
     if (!table && !entry) {
+	char * charArray[2];
+	int count = 0;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
-	    charArray[0] = "C";
-	    if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
-				&charArray, 1)) return 0;
+	    charArray[count++] = "C";
 	} else {
-	    charArray[0] = "C";
-	    charArray[1] = lang;
-	    if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
-				&charArray, 2)) return 0;
+	    charArray[count++] = "C";
+	    charArray[count++] = lang;
 	}
+	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
+			&charArray, count))
+	    return 0;
 	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
     }
 
@@ -1386,13 +1387,21 @@ static void freeFormat( /*@only@*/ struct sprintfToken * format, int num)
     int i;
 
     for (i = 0; i < num; i++) {
-	if (format[i].type == PTOK_ARRAY) 
+	switch (format[i].type) {
+	case PTOK_ARRAY:
 	    freeFormat(format[i].u.array.format, format[i].u.array.numTokens);
-	if (format[i].type == PTOK_COND) { 
+	    break;
+	case PTOK_COND:
 	    freeFormat(format[i].u.cond.ifFormat, 
 			format[i].u.cond.numIfTokens);
 	    freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
+	    break;
+        case PTOK_NONE:
+	case PTOK_TAG:
+	case PTOK_STRING:
+	default:
+	    break;
 	}
     }
     free(format);
@@ -1669,12 +1678,13 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 static int parseExpression(struct sprintfToken * token, char * str, 
 	const struct headerTagTableEntry * tags, 
 	const struct headerSprintfExtension * extensions,
-	/*@out@*/char ** endPtr, /*@out@*/const char ** error)
+	/*@out@*/ char ** endPtr, /*@out@*/ const char ** error)
 {
     char * chptr, * end;
     const struct headerTagTableEntry * tag;
     const struct headerSprintfExtension * ext;
 
+    *error = NULL;
     chptr = str;
     while (*chptr && *chptr != '?') chptr++;
 
@@ -1698,6 +1708,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
     if (!*end) {
 	*error = _("} expected in expression");
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	token->u.cond.ifFormat = NULL;
 	return 1;
     }
 
@@ -1705,6 +1716,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
     if (*chptr != ':' && *chptr != '|') {
 	*error = _(": expected following ? subexpression");
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	token->u.cond.ifFormat = NULL;
 	return 1;
     }
 
@@ -1718,6 +1730,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	if (*chptr != '{') {
 	    *error = _("{ expected after : in expression");
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    token->u.cond.ifFormat = NULL;
 	    return 1;
 	}
 
@@ -1730,6 +1743,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	if (!*end) {
 	    *error = _("} expected in expression");
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    token->u.cond.ifFormat = NULL;
 	    return 1;
 	}
 
@@ -1737,7 +1751,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	if (*chptr != '|') {
 	    *error = _("| expected at end of expression");
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    token->u.cond.ifFormat = NULL;
 	    freeFormat(token->u.cond.elseFormat, token->u.cond.numElseTokens);
+	    token->u.cond.elseFormat = NULL;
 	    return 1;
 	}
     }

@@ -536,12 +536,12 @@ int poptAddAlias(poptContext con, struct poptAlias newAlias,
 			       sizeof(newAlias) * con->numAliases);
     alias = con->aliases + aliasNum;
     
-    alias->longName = (newAlias->longName)
-	? strcpy(malloc(strlen(newAlias->longName) + 1), newAlias->longName)
+    alias->longName = (newAlias.longName)
+	? strcpy(malloc(strlen(newAlias.longName) + 1), newAlias.longName)
 	: NULL;
-    alias->shortName = newAlias->shortName;
-    alias->argc = newAlias->argc;
-    alias->argv = newAlias->argv;
+    alias->shortName = newAlias.shortName;
+    alias->argc = newAlias.argc;
+    alias->argv = newAlias.argv;
 
     return 0;
 }
