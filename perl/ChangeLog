@@ -1,0 +1,10 @@
+1999-07-14  Cristian Gafton  <gafton@redhat.com>
+
+	* test.pl: Added test for the number fo tags and the number of 
+	files in the test package
+
+Revision history for Perl extension rpm.
+
+0.01  Mon Jul 12 13:07:43 1999
+	- original version; created by h2xs 1.19
+

@@ -1,0 +1,10 @@
+ChangeLog
+MANIFEST
+Makefile.PL
+constant.c
+rpm.pm
+rpm.xs
+test.pl
+typemap
+foo.i386.rpm
+junk.xs
