@@ -202,10 +202,12 @@ struct rpmDependencyConflict {
     char * byName, * byVersion, * byRelease;
     char * needsName, * needsVersion;
     int needsFlags;
+    enum { RPMDEP_SENSE_REQUIRES, RPMDEP_SENSE_CONFLICTS } sense;
 } ;
 
 rpmDependencies rpmdepDependencies(rpmdb db); 	       /* db may be NULL */
 void rpmdepAddPackage(rpmDependencies rpmdep, Header h);
+void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h);
 void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
 int rpmdepCheck(rpmDependencies rpmdep, 
 		struct rpmDependencyConflict ** conflicts, int * numConflicts);
