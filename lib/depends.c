@@ -100,9 +100,9 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
 	for (i = 0; i < matches.count; i++) {
 	    rpmdepRemovePackage(rpmdep, matches.recs[i].recOffset);
 	}
-    }
 
-    freeDBIndexRecord(matches);
+	freeDBIndexRecord(matches);
+    }
 }
 
 void rpmdepAddPackage(rpmDependencies rpmdep, Header h) {
