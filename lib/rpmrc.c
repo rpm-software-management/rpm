@@ -1123,7 +1123,7 @@ void rpmGetOsInfo(char ** name, int * num) {
 void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 {
 
-    char *ca = NULL, *co = NULL, *ct;
+    char *ca = NULL, *co = NULL, *ct = NULL;
     int x;
 
     /* Rebuild the compat table to recalculate the current target arch.  */
@@ -1142,30 +1142,41 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	    if ((co = strrchr(c, '-')) == NULL) {
 		co = c;
 	    } else {
-		if (!strcmp(co, "-gnu"))
+		if (!strcasecmp(co, "-gnu"))
 		    *co = '\0';
 		if ((co = strrchr(c, '-')) == NULL)
 		    co = c;
 		else
 		    co++;
 	    }
+	    if (co != NULL) co = strdup(co);
 	}
-	ct = strdup(*buildtarget);
     } else {
-	/* Set build target from default arch and os */
+	/* Set build target from rpm arch and os */
 	rpmGetArchInfo(&ca,NULL);
+	if (ca)	ca = strdup(ca);
 	rpmGetOsInfo(&co,NULL);
+	if (co)	co = strdup(co);
+    }
 
-	if (ca == NULL) defaultMachine(&ca, NULL);
-	if (co == NULL) defaultMachine(NULL, &co);
+    /* If still not set, Set target arch/os from default uname(2) values */
+    if (ca == NULL) {
+	defaultMachine(&ca, NULL);
 	ca = strdup(ca);
-	for (x = 0; ca[x]; x++)
-	    ca[x] = tolower(ca[x]);
-	co = strdup(co);
-	for (x = 0; co[x]; x++)
-	    co[x] = tolower(co[x]);
+     }
+    for (x = 0; ca[x]; x++)
+	ca[x] = tolower(ca[x]);
 
-	ct = malloc(strlen(co)+strlen(ca)+2);
+    if (co == NULL) {
+	defaultMachine(NULL, &co);
+	co = strdup(co);
+    }
+    for (x = 0; co[x]; x++)
+	co[x] = tolower(co[x]);
+
+    /* XXX For now, set canonical target to arch-os */
+    if (ct == NULL) {
+	ct = malloc(strlen(ca) + sizeof("-") + strlen(co));
 	sprintf(ct, "%s-%s", ca, co);
     }
 
@@ -1184,7 +1195,8 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	*canontarget = ct;
     else
 	free(ct);
-    free(ca);	/* XXX this frees co too */
+    free(ca);
+    free(co);
 }
 
 int rpmShowRC(FILE *f)
