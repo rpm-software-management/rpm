@@ -2,8 +2,7 @@
 <!DOCTYPE rpmHeader [
 <!ELEMENT rpmHeader (rpmTag+)>
 <!ELEMENT rpmTag	(string+|integer+|base64+)>
-<!ATTLIST rpmTag name	CDATA #REQUIRED
->
+<!ATTLIST rpmTag name	CDATA #REQUIRED>
 <!ELEMENT string	(#PCDATA)>
 <!ELEMENT integer	(#PCDATA)>
 <!ELEMENT base64	(#PCDATA)>
