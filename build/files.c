@@ -1,5 +1,9 @@
 #include "system.h"
 
+#if !defined(ALLPERMS)
+#define	ALLPERMS	07777
+#endif
+
 #include <regex.h>
 #include <signal.h>	/* getOutputFrom() */
 
