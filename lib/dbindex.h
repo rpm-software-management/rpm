@@ -47,7 +47,7 @@ dbiIndexSet dbiCreateIndexRecord(void);
 void dbiFreeIndexRecord(dbiIndexSet set);
 int dbiGetFirstKey(dbiIndex * dbi, const char ** key);
 
-extern int dbiIndexSetCount(dbiIndexSet set);
+extern unsigned int dbiIndexSetCount(dbiIndexSet set);
 
 /* structure return */
 extern dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber);

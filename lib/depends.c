@@ -355,7 +355,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
     return result;
 }
 
-int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, int reqFlags)
+int headerMatchesDepFlags(Header h, /*@unused@*/const char *reqName, const char * reqEVR, int reqFlags)
 {
     const char * epoch, * version, * release;
     const char * reqEpoch = NULL;

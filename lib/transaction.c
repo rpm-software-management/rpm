@@ -579,7 +579,7 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
     uint_16 * otherModes;
     int numReplaced = 0;
 
-    if (!(h = rpmdbGetRecord(db, shared->otherPkg)))
+    if ((h = rpmdbGetRecord(db, shared->otherPkg)) == NULL)
 	return 1;
 
     headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
@@ -655,7 +655,7 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
     const char * otherStates;
     int i;
    
-    if (!(h = rpmdbGetRecord(db, shared->otherPkg)))
+    if ((h = rpmdbGetRecord(db, shared->otherPkg)) == NULL)
 	return 1;
 
     headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
@@ -1083,8 +1083,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    if (rc == 2) {
 		return -1;
 	    } else if (!rc) {
-		for (i = 0; i < dbi.count; i++)
-		    ensureOlder(ts->db, alp->h, dbi.recs[i].recOffset,
+		for (i = 0; i < dbiIndexSetCount(dbi); i++)
+		    ensureOlder(ts->db, alp->h, dbiIndexRecordOffset(dbi, i),
 				      probs, alp->key);
 
 		dbiFreeIndexRecord(dbi);
@@ -1155,7 +1155,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	case TR_REMOVED:
 	    fi->record = ts->order[oc].u.removed.dboffset;
 	    fi->h = rpmdbGetRecord(ts->db, fi->record);
-	    if (!fi->h) {
+	    if (fi->h == NULL) {
 		/* ACK! */
 		continue;
 	    }
@@ -1257,7 +1257,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	numShared = 0;
 	for (i = 0; i < fi->fc; i++)
-	    numShared += matches[i].count;
+	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
 	shared = sharedList = malloc(sizeof(*sharedList) * (numShared + 1));
@@ -1266,9 +1266,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	     * Take care not to mark files as replaced in packages that will
 	     * have been removed before we will get here.
 	     */
-	    for (j = 0; j < matches[i].count; j++) {
+	    for (j = 0; j < dbiIndexSetCount(matches[i]); j++) {
 		int k, ro;
-		ro = matches[i].recs[j].recOffset;
+		ro = dbiIndexRecordOffset(matches[i], j);
 		knownBad = 0;
 		for (k = 0; ro != knownBad && k < ts->orderCount; k++) {
 		    switch (ts->order[k].type) {
@@ -1282,8 +1282,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		}
 
 		shared->pkgFileNum = i;
-		shared->otherPkg = matches[i].recs[j].recOffset;
-		shared->otherFileNum = matches[i].recs[j].fileNumber;
+		shared->otherPkg = dbiIndexRecordOffset(matches[i], j);
+		shared->otherFileNum = dbiIndexRecordFileNumber(matches[i], j);
 		shared->isRemoved = (knownBad == ro);
 		shared++;
 	    }

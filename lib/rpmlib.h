@@ -14,11 +14,11 @@
 extern "C" {
 #endif
 
-int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr);
-int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
-			 int * minor);
+int rpmReadPackageInfo(FD_t fd, /*@out@*/Header * signatures, /*@out@*/Header * hdr);
+int rpmReadPackageHeader(FD_t fd, /*@out@*/Header * hdr, /*@out@*/int * isSource, /*@out@*/int * major,
+			 /*@out@*/int * minor);
 
-int headerNVR(Header h, const char **np, const char **vp, const char **rp);
+int headerNVR(Header h, /*@out@*/const char **np, /*@out@*/const char **vp, /*@out@*/const char **rp);
 
    /* 0 = success */
    /* 1 = bad magic */
@@ -310,17 +310,17 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
     /* 0 at end, -1 on error */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
-int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches);
-int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches);
-int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches);
-int rpmdbFindByProvides(rpmdb db, const char * provides, dbiIndexSet * matches);
-int rpmdbFindByRequiredBy(rpmdb db, const char * requires, dbiIndexSet * matches);
-int rpmdbFindByConflicts(rpmdb db, const char * conflicts, dbiIndexSet * matches);
-int rpmdbFindByTriggeredBy(rpmdb db, const char * package, dbiIndexSet * matches);
+int rpmdbFindByFile(rpmdb db, const char * filespec, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByGroup(rpmdb db, const char * group, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindPackage(rpmdb db, const char * name, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByProvides(rpmdb db, const char * provides, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByRequiredBy(rpmdb db, const char * requires, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByConflicts(rpmdb db, const char * conflicts, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByTriggeredBy(rpmdb db, const char * package, /*@out@*/dbiIndexSet * matches);
 
 /* these are just convenience functions */
-int rpmdbFindByLabel(rpmdb db, const char * label, dbiIndexSet * matches);
-int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
+int rpmdbFindByLabel(rpmdb db, const char * label, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByHeader(rpmdb db, Header h, /*@out@*/dbiIndexSet * matches);
 
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
@@ -628,7 +628,7 @@ void rpmFreeSignature(Header h);
 int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
 
-int rpmGetFilesystemList(const char *** listptr, int * num);
+int rpmGetFilesystemList(/*@out@*/const char *** listptr, /*@out@*/int * num);
 int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags);
 

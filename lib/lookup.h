@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 int findMatches(rpmdb db, const char * name, const char * version,
-	const char * release, dbiIndexSet * matches);
+	const char * release, /*@out@*/dbiIndexSet * matches);
 
 #ifdef __cplusplus
 }

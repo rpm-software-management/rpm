@@ -7,10 +7,20 @@
 #define HAVE_SYS_SOCKET_H 1
 #endif
 
-#ifndef __LCLINT__
+#if ! HAVE_HERRNO
+extern int h_errno;
+#endif
+
+#include <stdarg.h>
+
+#ifdef	__LCLINT__
+#define	ntohl(_x)	(_x)
+#define	ntohs(_x)	(_x)
+#define	htonl(_x)	(_x)
+#define	htons(_x)	(_x)
+#else
 #if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
-#endif
 #endif
 
 #if HAVE_NETINET_IN_SYSTM_H
@@ -18,16 +28,11 @@
 # include <netinet/in_systm.h>
 #endif
 
-#if ! HAVE_HERRNO
-extern int h_errno;
-#endif
-
-#include <stdarg.h>
-
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <arpa/telnet.h>
+#endif	/* __LCLINT__ */
 
 #include <rpmlib.h>
 #include <rpmio.h>

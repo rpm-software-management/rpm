@@ -134,7 +134,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
 /* Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements w/
    RPM_I18NSTRING_TYPE equivalent enreies are translated (if HEADER_I18NTABLE
    entry is present). */
-int headerGetEntry(Header h, int_32 tag, int_32 *type, /*@out@*/void **p, int_32 *c);
+int headerGetEntry(Header h, int_32 tag, /*@out@*/int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c);
 /* This gets an entry, and uses as little extra RAM as possible to represent
    it (this is only an issue for RPM_STRING_ARRAY_TYPE. */
 int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, /*@out@*/void **p, int_32 *c);

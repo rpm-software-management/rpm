@@ -15,7 +15,7 @@ struct lookupCache {
 static int strCompare(const void * a, const void * b)
 {
     const char * const * one = a;
-    const char * const * two = a;
+    const char * const * two = b;
 
     return strcmp(*one, *two);
 }

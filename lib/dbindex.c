@@ -2,7 +2,7 @@
 
 #include <rpmlib.h>
 
-int dbiIndexSetCount(dbiIndexSet set) {
+unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set.count;
 }
 

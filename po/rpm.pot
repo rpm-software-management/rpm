@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-11 19:59-0400\n"
+"POT-Creation-Date: 1999-09-12 16:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2012,8 +2012,8 @@ msgid ""
 msgstr ""
 
 #: ../lib/formats.c:65 ../lib/formats.c:83 ../lib/formats.c:104
-#: ../lib/formats.c:137 ../lib/header.c:2078 ../lib/header.c:2095
-#: ../lib/header.c:2115
+#: ../lib/formats.c:137 ../lib/header.c:2085 ../lib/header.c:2102
+#: ../lib/header.c:2122
 msgid "(not a number)"
 msgstr ""
 
@@ -2041,136 +2041,136 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: ../lib/ftp.c:650
+#: ../lib/ftp.c:655
 msgid "Success"
 msgstr ""
 
-#: ../lib/ftp.c:653
+#: ../lib/ftp.c:658
 msgid "Bad server response"
 msgstr ""
 
-#: ../lib/ftp.c:656
+#: ../lib/ftp.c:661
 msgid "Server IO error"
 msgstr ""
 
-#: ../lib/ftp.c:659
+#: ../lib/ftp.c:664
 msgid "Server timeout"
 msgstr ""
 
-#: ../lib/ftp.c:662
+#: ../lib/ftp.c:667
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: ../lib/ftp.c:665
+#: ../lib/ftp.c:670
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: ../lib/ftp.c:668
+#: ../lib/ftp.c:673
 msgid "Failed to connect to server"
 msgstr ""
 
-#: ../lib/ftp.c:671
+#: ../lib/ftp.c:676
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: ../lib/ftp.c:674
+#: ../lib/ftp.c:679
 msgid "IO error to local file"
 msgstr ""
 
-#: ../lib/ftp.c:677
+#: ../lib/ftp.c:682
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: ../lib/ftp.c:680
+#: ../lib/ftp.c:685
 msgid "File not found on server"
 msgstr ""
 
-#: ../lib/ftp.c:683
+#: ../lib/ftp.c:688
 msgid "Abort in progress"
 msgstr ""
 
-#: ../lib/ftp.c:687
+#: ../lib/ftp.c:692
 msgid "Unknown or unexpected error"
 msgstr ""
 
 #. This should not be allowed
-#: ../lib/header.c:162
+#: ../lib/header.c:169
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: ../lib/header.c:192
+#: ../lib/header.c:199
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:734
+#: ../lib/header.c:741
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
-#: ../lib/header.c:1078
+#: ../lib/header.c:1085
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1478
+#: ../lib/header.c:1485
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1506
+#: ../lib/header.c:1513
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1518
+#: ../lib/header.c:1525
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1528
+#: ../lib/header.c:1535
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1543
+#: ../lib/header.c:1550
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1569
+#: ../lib/header.c:1576
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1585
+#: ../lib/header.c:1592
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1587
+#: ../lib/header.c:1594
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1639
+#: ../lib/header.c:1646
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1646
+#: ../lib/header.c:1653
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1656 ../lib/header.c:1688
+#: ../lib/header.c:1663 ../lib/header.c:1695
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1663
+#: ../lib/header.c:1670
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1676
+#: ../lib/header.c:1683
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1695
+#: ../lib/header.c:1702
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1862
+#: ../lib/header.c:1869
 msgid "(unknown type)"
 msgstr ""
 
@@ -2380,29 +2380,29 @@ msgstr ""
 msgid "error creating temporary file %s"
 msgstr ""
 
-#: ../lib/oldheader.c:292
+#: ../lib/oldheader.c:299
 #, c-format
 msgid "bad file state: %s"
 msgstr ""
 
-#: ../lib/package.c:228
+#: ../lib/package.c:235
 msgid "package is a version one package!\n"
 msgstr ""
 
-#: ../lib/package.c:233
+#: ../lib/package.c:240
 msgid "old style source package -- I'll do my best\n"
 msgstr ""
 
-#: ../lib/package.c:236
+#: ../lib/package.c:243
 #, c-format
 msgid "archive offset is %d\n"
 msgstr ""
 
-#: ../lib/package.c:246
+#: ../lib/package.c:253
 msgid "old style binary package\n"
 msgstr ""
 
-#: ../lib/package.c:290
+#: ../lib/package.c:297
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2807,7 +2807,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:173 ../lib/url.c:421
+#: ../lib/rpmdb.c:173 ../lib/url.c:428
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -2999,7 +2999,7 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: ../lib/rpmlead.c:41
+#: ../lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
 msgstr ""
@@ -3273,27 +3273,27 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: ../lib/url.c:135
+#: ../lib/url.c:142
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: ../lib/url.c:159 ../lib/url.c:185
+#: ../lib/url.c:166 ../lib/url.c:192
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: ../lib/url.c:270
+#: ../lib/url.c:277
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX PARANOIA
-#: ../lib/url.c:307
+#: ../lib/url.c:314
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../lib/url.c:436
+#: ../lib/url.c:443
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""

@@ -21,7 +21,7 @@ int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
 void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath);
 int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath);
 /* matchList must be preallocated!!! */
-int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
+int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
 		    int numItems);
 
 #ifdef __cplusplus

@@ -195,7 +195,9 @@ char *alloca ();
 #endif
 
 #if HAVE_NETDB_H
+#ifndef __LCLINT__
 #include <netdb.h>
+#endif	/* __LCLINT__ */
 #endif
 
 #if HAVE_PWD_H
@@ -265,7 +267,9 @@ extern void *myrealloc(void *, size_t);
 
 #if HAVE_SYS_SOCKET_H
 #include <sys/types.h>
+#ifndef	__LCLINT__
 #include <sys/socket.h>
+#endif	/* __LCLINT__ */
 #endif
 
 #if HAVE_SYS_SELECT_H

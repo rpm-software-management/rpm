@@ -4,7 +4,14 @@
 # include <machine/types.h>
 #endif
 
+#ifdef	__LCLINT__
+#define	ntohl(_x)	(_x)
+#define	ntohs(_x)	(_x)
+#define	htonl(_x)	(_x)
+#define	htons(_x)	(_x)
+#else
 #include <netinet/in.h>
+#endif	/* __LCLINT__ */
 
 #include <rpmlib.h>
 
