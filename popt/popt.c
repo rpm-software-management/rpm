@@ -370,7 +370,7 @@ int poptGetNextOpt(poptContext con) {
 	}
 
 	if (cb)
-	    cb(con, opt->val, con->os->nextArg, cbData);
+	    cb(con, opt, con->os->nextArg, cbData);
 	else if (opt->val) 
 	    done = 1;
 

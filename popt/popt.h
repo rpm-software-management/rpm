@@ -55,8 +55,9 @@ extern struct poptOption poptHelpOptions[];
 typedef struct poptContext_s * poptContext;
 typedef struct poptOption * poptOption;
 
-typedef void (*poptCallbackType)(poptContext con, int key, const char * arg, 
-				 void * data);
+typedef void (*poptCallbackType)(poptContext con, 
+			         const struct poptOption * opt,
+				 const char * arg, void * data);
 
 poptContext poptGetContext(char * name, int argc, char ** argv, 
 			   const struct poptOption * options, int flags);
