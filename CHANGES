@@ -1,6 +1,7 @@
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
 	- add configure scaffolding to support rpm-4.0 packages.
+	- include shared libs in rpm-devel (no versioning yet).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

@@ -43,14 +43,6 @@ make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/usr/lib
-
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/SOURCES
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/SPECS
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/SRPMS
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/BUILD
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/${RPM_ARCH}
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/noarch
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 
@@ -74,16 +66,13 @@ fi
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY CHANGES GROUPS
-%doc docs/*
+%doc RPM-PGP-KEY CHANGES GROUPS docs/*
 /bin/rpm
 /usr/bin/rpm2cpio
 /usr/bin/gendiff
 /usr/man/man8/rpm.8
 /usr/man/man8/rpm2cpio.8
 /usr/lib/rpm
-#/usr/lib/rpmrc
-#/usr/lib/rpmpopt
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS
@@ -96,5 +85,5 @@ fi
 %files devel
 %defattr(-,root,root)
 /usr/include/rpm
-/usr/lib/librpm.a
-/usr/lib/librpmbuild.a
+/usr/lib/librpm.*
+/usr/lib/librpmbuild.*
