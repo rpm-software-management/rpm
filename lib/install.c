@@ -1,4 +1,7 @@
-#include <alloca.h>
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <grp.h>
@@ -22,7 +25,7 @@
 #include "rpmlib.h"
 
 enum instActions { CREATE, BACKUP, KEEP, SAVE, SKIP };
-enum fileTypes { DIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
+enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
 struct fileToInstall {
     char * fileName;
@@ -583,7 +586,8 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	filelist = alloca(strlen(tmpPath) + 40);
 
 	message(MESS_DEBUG, "using a %s filelist\n", tmpPath);
-	sprintf(filelist, "%s/rpm-cpiofilelist.%d.tmp", tmpPath, getpid());
+	sprintf(filelist, "%s/rpm-cpiofilelist.%d.tmp", tmpPath, 
+		(int) getpid());
 	f = fopen(filelist, "w");
 	if (!f) {
 	    error(RPMERR_CREATE, "failed to create %s: %s", filelist,
@@ -1011,8 +1015,8 @@ static int mkdirIfNone(char * directory, mode_t perms) {
     return errno;
 }
 
-int filecmp(short mode1, char * md51, char * link1, 
-	      short mode2, char * md52, char * link2) {
+static int filecmp(short mode1, char * md51, char * link1, 
+	           short mode2, char * md52, char * link2) {
     enum fileTypes what1, what2;
 
     what1 = whatis(mode1);
@@ -1028,9 +1032,10 @@ int filecmp(short mode1, char * md51, char * link1,
     return 0;
 }
 
-enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
-				char * dbLink, short newMode, char * newMd5,
-				char * newLink, int brokenMd5) {
+static enum instActions decideFileFate(char * filespec, short dbMode, 
+					char * dbMd5, char * dbLink, 
+					short newMode, char * newMd5,
+					char * newLink, int brokenMd5) {
     char buffer[1024];
     char * dbAttr, * newAttr;
     enum fileTypes dbWhat, newWhat, diskWhat;
@@ -1455,7 +1460,7 @@ enum fileTypes whatis(short mode) {
     enum fileTypes result;
 
     if (S_ISDIR(mode))
-	result = DIR;
+	result = XDIR;
     else if (S_ISCHR(mode))
 	result = CDEV;
     else if (S_ISBLK(mode))
