@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1995-2002 Jean-loup Gailly.
+ * Copyright (C) 1995-2003 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -57,7 +57,7 @@
 /*@-exportheadervar@*/
 /*@unused@*/ /*@observer@*/
 const char deflate_copyright[] =
-   " deflate 1.1.4 Copyright 1995-2002 Jean-loup Gailly ";
+   " deflate 1.2.0.1 Copyright 1995-2003 Jean-loup Gailly ";
 /*@=exportheadervar@*/
 
 /*
@@ -88,8 +88,10 @@ local block_state deflate_stored OF((deflate_state *s, int flush))
 	/*@modifies *s @*/;
 local block_state deflate_fast   OF((deflate_state *s, int flush))
 	/*@modifies *s @*/;
+#ifndef FASTEST
 local block_state deflate_slow   OF((deflate_state *s, int flush))
 	/*@modifies *s @*/;
+#endif
 local void lm_init        OF((deflate_state *s))
 	/*@modifies *s @*/;
 local void putShortMSB    OF((deflate_state *s, uInt b))
@@ -98,6 +100,7 @@ local void flush_pending  OF((z_streamp strm))
 	/*@modifies strm @*/;
 local int read_buf        OF((z_streamp strm, Bytef *buf, unsigned size))
 	/*@modifies strm, *buf @*/;
+#ifndef FASTEST
 #ifdef ASMV
       void match_init OF((void))	/* asm code initialization */
 	/*@*/;
@@ -107,6 +110,9 @@ local int read_buf        OF((z_streamp strm, Bytef *buf, unsigned size))
 local uInt longest_match  OF((deflate_state *s, IPos cur_match))
 	/*@modifies *s @*/;
 #endif
+#endif
+local uInt longest_match_fast  OF((deflate_state *s, IPos cur_match))
+	/*@modifies *s @*/;
 
 #ifdef DEBUG
 local  void check_match OF((deflate_state *s, IPos start, IPos match,
@@ -149,6 +155,12 @@ typedef struct config_s {
 } config;
 
 /*@observer@*/ /*@unchecked@*/
+#ifdef FASTEST
+local const config configuration_table[2] = {
+/*      good lazy nice chain */
+/* 0 */ {0,    0,  0,    0, deflate_stored},  /* store only */
+/* 1 */ {4,    4,  8,    4, deflate_fast}}; /* maximum speed, no lazy matches */
+#else
 local const config configuration_table[10] = {
 /*      good lazy nice chain */
 /* 0 */ {0,    0,  0,    0, deflate_stored},  /* store only */
@@ -162,6 +174,7 @@ local const config configuration_table[10] = {
 /* 7 */ {8,   32, 128, 256, deflate_slow},
 /* 8 */ {32, 128, 258, 1024, deflate_slow},
 /* 9 */ {32, 258, 258, 4096, deflate_slow}}; /* maximum compression */
+#endif
 
 /* Note: the deflate() code requires max_lazy >= MIN_MATCH and max_chain >= 4
  * For deflate_fast() (levels <= 3) good is ignored and lazy has a different
@@ -252,9 +265,10 @@ int ZEXPORT deflateInit2_(z_streamp strm, int level, int method,
     }
     if (strm->zfree == Z_NULL) strm->zfree = zcfree;
 
-    if (level == Z_DEFAULT_COMPRESSION) level = 6;
 #ifdef FASTEST
-    level = 1;
+    if (level != 0) level = 1;
+#else
+    if (level == Z_DEFAULT_COMPRESSION) level = 6;
 #endif
 
     if (windowBits < 0) { /* undocumented feature: suppress zlib header */
@@ -263,7 +277,7 @@ int ZEXPORT deflateInit2_(z_streamp strm, int level, int method,
     }
     if (memLevel < 1 || memLevel > MAX_MEM_LEVEL || method != Z_DEFLATED ||
         windowBits < 9 || windowBits > 15 || level < 0 || level > 9 ||
-	strategy < 0 || strategy > Z_HUFFMAN_ONLY) {
+	strategy < 0 || strategy > Z_RLE) {
         return Z_STREAM_ERROR;
     }
     s = (deflate_state *) ZALLOC(strm, 1, sizeof(deflate_state));
@@ -293,6 +307,7 @@ int ZEXPORT deflateInit2_(z_streamp strm, int level, int method,
 
     if (s->window == Z_NULL || s->prev == Z_NULL || s->head == Z_NULL ||
         s->pending_buf == Z_NULL) {
+	s->status = FINISH_STATE;
         strm->msg = (char*)ERR_MSG(Z_MEM_ERROR);
         deflateEnd (strm);
         return Z_MEM_ERROR;
@@ -317,10 +332,12 @@ int ZEXPORT deflateSetDictionary (z_streamp strm, const Bytef * dictionary,
     IPos hash_head = 0;
 
     if (strm == Z_NULL || strm->state == Z_NULL || dictionary == Z_NULL ||
-        strm->state->status != INIT_STATE) return Z_STREAM_ERROR;
+	(!strm->state->noheader && strm->state->status != INIT_STATE))
+	return Z_STREAM_ERROR;
 
     s = strm->state;
-    strm->adler = adler32(strm->adler, dictionary, dictLength);
+    if (!s->noheader)
+	strm->adler = adler32(strm->adler, dictionary, dictLength);
 
     if (length < MIN_MATCH) return Z_OK;
     if (length > MAX_DIST(s)) {
@@ -350,7 +367,7 @@ int ZEXPORT deflateSetDictionary (z_streamp strm, const Bytef * dictionary,
 int ZEXPORT deflateReset (z_streamp strm)
 {
     deflate_state *s;
-    
+
     if (strm == Z_NULL || strm->state == Z_NULL ||
         strm->zalloc == Z_NULL || strm->zfree == Z_NULL) return Z_STREAM_ERROR;
 
@@ -385,10 +402,12 @@ int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
     if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
     s = strm->state;
 
-    if (level == Z_DEFAULT_COMPRESSION) {
-	level = 6;
-    }
-    if (level < 0 || level > 9 || strategy < 0 || strategy > Z_HUFFMAN_ONLY) {
+#ifdef FASTEST
+    if (level != 0) level = 1;
+#else
+    if (level == Z_DEFAULT_COMPRESSION) level = 6;
+#endif
+    if (level < 0 || level > 9 || strategy < 0 || strategy > Z_RLE) {
 	return Z_STREAM_ERROR;
     }
     func = configuration_table[s->level].func;
@@ -410,6 +429,46 @@ int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
 
 /* ========================================================================= */
 /**
+ * For the default windowBits of 15 and memLevel of 8, this function returns
+ * a close to exact, as well as small, upper bound on the compressed size.
+ * They are coded as constants here for a reason--if the #define's are
+ * changed, then this function needs to be changed as well.  The return
+ * value for 15 and 8 only works for those exact settings.
+ *
+ * For any setting other than those defaults for windowBits and memLevel,
+ * the value returned is a conservative worst case for the maximum expansion
+ * resulting from using fixed blocks instead of stored blocks, which deflate
+ * can emit on compressed data for some combinations of the parameters.
+ *
+ * This function could be more sophisticated to provide closer upper bounds
+ * for every combination of windowBits and memLevel, as well as noheader.
+ * But even the conservative upper bound of about 14% expansion does not
+ * seem onerous for output buffer allocation.
+ */
+uLong ZEXPORT deflateBound(z_streamp strm, uLong sourceLen)
+{
+    deflate_state *s;
+    uLong destLen;
+
+    /* conservative upper bound */
+    destLen = sourceLen +
+              ((sourceLen + 7) >> 3) + ((sourceLen + 63) >> 6) + 11;
+
+    /* if can't get parameters, return conservative bound */
+    if (strm == Z_NULL || strm->state == Z_NULL)
+	return destLen;
+
+    /* if not default parameters, return conservative bound */
+    s = strm->state;
+    if (s->w_bits != 15 || s->hash_bits != 8 + 7)
+	return destLen;
+
+    /* default settings: return tight bound for that case */
+    return compressBound(sourceLen);
+}
+
+/* ========================================================================= */
+/**
  * Put a short in the pending buffer. The 16-bit value is put in MSB order.
  * IN assertion: the stream state is correct and there is enough room in
  * pending_buf.
@@ -418,7 +477,7 @@ local void putShortMSB (deflate_state * s, uInt b)
 {
     put_byte(s, (Byte)(b >> 8));
     put_byte(s, (Byte)(b & 0xff));
-}   
+}
 
 /* ========================================================================= */
 /**
@@ -506,7 +565,7 @@ int ZEXPORT deflate (z_streamp strm, int flush)
 
     /* Make sure there is something to do and avoid duplicate consecutive
      * flushes. For repeated and useless calls with Z_FINISH, we keep
-     * returning Z_STREAM_END instead of Z_BUFF_ERROR.
+     * returning Z_STREAM_END instead of Z_BUF_ERROR.
      */
     } else if (strm->avail_in == 0 && flush <= old_flush &&
 	       flush != Z_FINISH) {
@@ -658,7 +717,7 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
     ds->bl_desc.dyn_tree = ds->bl_tree;
 
     return Z_OK;
-#endif
+#endif /* MAXSEG_64K */
 }
 
 /* ========================================================================= */
@@ -716,6 +775,7 @@ local void lm_init (deflate_state * s)
 #endif
 }
 
+#ifndef	FASTEST
 /* ========================================================================= */
 /**
  * Set match_start to the longest match starting at the given string and
@@ -730,7 +790,6 @@ local void lm_init (deflate_state * s)
 /* For 80x86 and 680x0, an optimized version will be provided in match.asm or
  * match.S. The code will be functionally equivalent.
  */
-#ifndef FASTEST
 local uInt longest_match(deflate_state * s, IPos cur_match)
 {
     unsigned chain_length = s->max_chain_length;/* max hash chain length */
@@ -866,12 +925,13 @@ local uInt longest_match(deflate_state * s, IPos cur_match)
     if ((uInt)best_len <= s->lookahead) return (uInt)best_len;
     return s->lookahead;
 }
+#endif /* ASMV */
+#endif /* FASTEST */
 
-#else /* FASTEST */
 /* ---------------------------------------------------------------------------
- * Optimized version for level == 1 only
+ * Optimized version for level == 1 or strategy == Z_RLE only
  */
-local uInt longest_match(deflate_state * s, IPos cur_match)
+local uInt longest_match_fast(deflate_state * s, IPos cur_match)
 {
     register Bytef *scan = s->window + s->strstart; /* current string */
     register Bytef *match;                       /* matched string */
@@ -921,8 +981,6 @@ local uInt longest_match(deflate_state * s, IPos cur_match)
     s->match_start = cur_match;
     return len <= s->lookahead ? len : s->lookahead;
 }
-#endif /* FASTEST */
-#endif /* ASMV */
 
 #ifdef DEBUG
 /* ========================================================================= */
@@ -948,7 +1006,7 @@ local void check_match(deflate_state * s, IPos start, IPos match, int length)
 }
 #else
 #  define check_match(s, start, match, length)
-#endif
+#endif /* DEBUG */
 
 /* ========================================================================= */
 /**
@@ -1173,10 +1231,19 @@ local block_state deflate_fast(deflate_state * s, int flush)
              * of window index 0 (in particular we have to avoid a match
              * of the string with itself at the start of the input file).
              */
-            if (s->strategy != Z_HUFFMAN_ONLY) {
+#ifdef FASTEST
+	    if ((s->strategy < Z_HUFFMAN_ONLY) ||
+		(s->strategy == Z_RLE && s->strstart - hash_head == 1)) {
+		s->match_length = longest_match_fast (s, hash_head);
+	    }
+#else
+	    if (s->strategy < Z_HUFFMAN_ONLY) {
                 s->match_length = longest_match (s, hash_head);
+	    } else if (s->strategy == Z_RLE && s->strstart - hash_head == 1) {
+		s->match_length = longest_match_fast (s, hash_head);
             }
-            /* longest_match() sets match_start */
+#endif
+	    /* longest_match() or longest_match_fast() sets match_start */
         }
         if (s->match_length >= MIN_MATCH) {
             check_match(s, s->strstart, s->match_start, s->match_length);
@@ -1228,6 +1295,7 @@ local block_state deflate_fast(deflate_state * s, int flush)
     return flush == Z_FINISH ? finish_done : block_done;
 }
 
+#ifndef	FASTEST
 /* ========================================================================= */
 /**
  * Same as above, but achieves better compression. We use a lazy
@@ -1272,10 +1340,12 @@ local block_state deflate_slow(deflate_state * s, int flush)
              * of window index 0 (in particular we have to avoid a match
              * of the string with itself at the start of the input file).
              */
-            if (s->strategy != Z_HUFFMAN_ONLY) {
+            if (s->strategy < Z_HUFFMAN_ONLY) {
                 s->match_length = longest_match (s, hash_head);
-            }
-            /* longest_match() sets match_start */
+            } else if (s->strategy == Z_RLE && s->strstart - hash_head == 1) {
+		s->match_length = longest_match_fast (s, hash_head);
+	    }
+	    /* longest_match() or longest_match_fast() sets match_start */
 
             if (s->match_length <= 5 && (s->strategy == Z_FILTERED ||
                  (s->match_length == MIN_MATCH &&
@@ -1348,3 +1418,4 @@ local block_state deflate_slow(deflate_state * s, int flush)
     FLUSH_BLOCK(s, flush == Z_FINISH);
     return flush == Z_FINISH ? finish_done : block_done;
 }
+#endif /* FASTEST */

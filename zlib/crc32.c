@@ -9,7 +9,7 @@
  * increase in speed on a Power PC using gcc -O3.
  */
 
-/* @(#) $Id: crc32.c,v 1.9 2003/03/08 21:47:46 jbj Exp $ */
+/* @(#) $Id: crc32.c,v 1.10 2003/03/08 23:18:09 jbj Exp $ */
 
 #ifdef MAKECRCH
 #  include <stdio.h>
@@ -99,7 +99,7 @@ local void make_crc_table()
     poly = 0UL;
     for (n = 0; n < sizeof(p)/sizeof(unsigned char); n++)
         poly |= 1UL << (31 - p[n]);
- 
+
     /* generate a crc for every 8-bit value */
     for (n = 0; n < 256; n++) {
         c = (unsigned long)n;
@@ -128,7 +128,7 @@ local void make_crc_table()
     /* write out CRC tables to crc32.h */
     {
         FILE *out;
-    
+
         out = fopen("crc32.h", "w");
         if (out == NULL) return;
         fprintf(out, "/* crc32.h -- tables for rapid CRC calculation\n");
@@ -199,7 +199,7 @@ unsigned long ZEXPORT crc32(unsigned long crc, const unsigned char FAR *buf,
 #ifdef BYFOUR
     {
         u4 endian;
-    
+
         endian = 1;
         if (*((unsigned char *)(&endian)))
             return crc32_little(crc, buf, len);

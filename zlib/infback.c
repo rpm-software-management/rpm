@@ -143,8 +143,8 @@ local void fixedtables(struct inflate_state FAR *state)
 #define PULL() \
     do { \
         if (have == 0) { \
-            next = in(opaque, &have); \
-            if (next == Z_NULL || have == 0) { \
+            have = in(in_desc, &next); \
+            if (have == 0) { \
                 next = Z_NULL; \
                 ret = Z_BUF_ERROR; \
                 goto leave; \
@@ -197,7 +197,7 @@ local void fixedtables(struct inflate_state FAR *state)
         if (left == 0) { \
             put = state->window; \
             left = state->wsize; \
-            if (out(opaque, put, left)) { \
+            if (out(out_desc, put, left)) { \
                 ret = Z_BUF_ERROR; \
                 goto leave; \
             } \
@@ -217,12 +217,12 @@ local void fixedtables(struct inflate_state FAR *state)
    returns.  The application must not change the window/output buffer until
    inflateBack() returns.
 
-   in() and out() are called with the "opaque" parameter provided in the
+   in() and out() are called with a descriptor parameter provided in the
    inflateBack() call.  This parameter can be a structure that provides the
    information required to do the read or write, as well as accumulated
    information on the input and output such as totals and check values.
 
-   in() should return Z_NULL on failure.  out() should return non-zero on
+   in() should return 0 on failure.  out() should return non-zero on
    failure.  If either in() or out() fails, than inflateBack() returns a
    Z_BUF_ERROR.  strm->next_in can be checked for Z_NULL to see whether it
    was in() or out() that caused in the error.  Otherwise,  inflateBack()
@@ -231,8 +231,8 @@ local void fixedtables(struct inflate_state FAR *state)
    inflateBack() can also return Z_STREAM_ERROR if the input parameters
    are not correct, i.e. strm is Z_NULL or the state was not initialized.
  */
-int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, out_func out,
-		void FAR *opaque)
+int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, void FAR *in_desc,
+		out_func out, void FAR *out_desc)
 {
     struct inflate_state FAR *state;
     unsigned char *next, *put;	/* next input and output */
@@ -444,6 +444,7 @@ int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, out_func out,
             }
             Tracev((stderr, "inflate:       codes ok\n"));
             state->mode = LEN;
+
         case LEN:
             /* use inflate_fast() if we have enough input and output */
             if (have >= 6 && left >= 258) {
@@ -570,7 +571,7 @@ int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, out_func out,
             /* inflate stream terminated properly -- write leftover output */
             ret = Z_STREAM_END;
             if (left < state->wsize) {
-                if (out(opaque, state->window, state->wsize - left))
+                if (out(out_desc, state->window, state->wsize - left))
                     ret = Z_BUF_ERROR;
             }
             goto leave;
@@ -593,11 +594,8 @@ int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, out_func out,
 
 int ZEXPORT inflateBackEnd(z_stream FAR *strm)
 {
-    struct inflate_state FAR *state;
-
     if (strm == Z_NULL || strm->state == Z_NULL || strm->zfree == Z_NULL)
         return Z_STREAM_ERROR;
-    state = (struct inflate_state FAR *)strm->state;
     ZFREE(strm, strm->state);
     strm->state = Z_NULL;
     Tracev((stderr, "inflate: end\n"));

@@ -69,6 +69,15 @@
  * 1.2.beta7	27 Jan 2003
  * - Changed many types to unsigned or unsigned short to avoid warnings
  * - Added inflateCopy() function
+ *
+ * 1.2.0        9 Mar 2003
+ * - Changed inflateBack() interface to provide separate opaque descriptors
+ *   for the in() and out() functions
+ * - Changed inflateBack() argument and in_func typedef to swap the length
+ *   and buffer address return values for the input function
+ * - Check next_in and next_out for Z_NULL on entry to inflate()
+ *
+ * The history for versions past 1.2.0 are in ChangeLog in zlib distribution.
  */
 
 #include "zutil.h"
@@ -529,7 +538,8 @@ int ZEXPORT inflate(z_streamp strm, int flush)
     static const unsigned short order[19] = /* permutation of code lengths */
         {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
 
-    if (strm == Z_NULL || strm->state == Z_NULL)
+    if (strm == Z_NULL || strm->state == Z_NULL || strm->next_out == Z_NULL ||
+        (strm->next_in == Z_NULL && strm->avail_in != 0))
         return Z_STREAM_ERROR;
 
     state = (struct inflate_state FAR *)strm->state;

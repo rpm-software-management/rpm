@@ -34,7 +34,7 @@
  *          Addison-Wesley, 1983. ISBN 0-201-06672-6.
  */
 
-/* @(#) $Id: trees.c,v 1.9 2002/06/22 18:51:58 jbj Exp $ */
+/* @(#) $Id: trees.c,v 1.10 2003/03/08 23:18:09 jbj Exp $ */
 
 /* #define GEN_TREES_H */
 
@@ -270,7 +270,6 @@ local void send_bits(deflate_state * s, int value, int length)
 #endif /* DEBUG */
 
 
-#define MAX(a,b) (a >= b ? a : b)
 /* the arguments must not have side effects */
 
 /* ========================================================================= */
@@ -719,7 +718,8 @@ local void build_tree(deflate_state * s, tree_desc * desc)
 
         /* Create a new node father of n and m */
         tree[node].Freq = tree[n].Freq + tree[m].Freq;
-        s->depth[node] = (uch) (MAX(s->depth[n], s->depth[m]) + 1);
+        s->depth[node] = (uch)((s->depth[n] >= s->depth[m] ?
+                                s->depth[n] : s->depth[m]) + 1);
         tree[n].Dad = tree[m].Dad = (ush)node;
 #ifdef DUMP_BL_TREE
         if (tree == s->bl_tree) {

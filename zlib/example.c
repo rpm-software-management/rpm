@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1995-2002 Jean-loup Gailly.
+ * Copyright (C) 1995-2003 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -536,6 +536,8 @@ int main(int argc, char * argv[])
     test_dict_deflate(compr, comprLen);
     test_dict_inflate(compr, comprLen, uncompr, uncomprLen);
 
-    exit(0);
-    return 0; /* to avoid warning */
+    free(compr);
+    free(uncompr);
+
+    return 0;
 }

@@ -1,5 +1,6 @@
 /* minigzip.c -- simulate gzip using the zlib compression library
  * Copyright (C) 1995-2002 Jean-loup Gailly.
+ * Adapted for Z_RLE by Cosmin Truta, 2003.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -13,7 +14,7 @@
  * or in pipe mode.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: minigzip.c,v 1.5 2002/03/17 15:46:23 jbj Exp $ */
 
 #include <stdio.h>
 #include "zlib.h"
@@ -250,10 +251,11 @@ void file_uncompress(char * file)
 
 
 /* ===========================================================================
- * Usage:  minigzip [-d] [-f] [-h] [-1 to -9] [files...]
+ * Usage:  minigzip [-d] [-f] [-h] [-r] [-1 to -9] [files...]
  *   -d : decompress
  *   -f : compress with Z_FILTERED
  *   -h : compress with Z_HUFFMAN_ONLY
+ *   -r : compress with Z_RLE
  *   -1 to -9 : compression level
  */
 
@@ -275,6 +277,8 @@ int main(int argc, char * argv[])
 	outmode[3] = 'f';
       else if (strcmp(*argv, "-h") == 0)
 	outmode[3] = 'h';
+      else if (strcmp(*argv, "-r") == 0)
+	outmode[3] = 'R';
       else if ((*argv)[0] == '-' && (*argv)[1] >= '1' && (*argv)[1] <= '9' &&
 	       (*argv)[2] == 0)
 	outmode[2] = (*argv)[1];

@@ -1,5 +1,5 @@
 /* zutil.h -- internal interface and configuration of the compression library
- * Copyright (C) 1995-2002 Jean-loup Gailly.
+ * Copyright (C) 1995-2003 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id: zutil.h,v 1.8 2002/10/07 09:05:07 jbj Exp $ */
+/* @(#) $Id: zutil.h,v 1.9 2003/03/08 23:18:09 jbj Exp $ */
 
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
@@ -38,7 +38,7 @@ typedef ush FAR ushf;
 typedef unsigned long  ulg;
 
 /*@unchecked@*/
-extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
+extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 
 #define ERR_MSG(err) z_errmsg[Z_NEED_DICT-(err)]
@@ -150,6 +150,30 @@ extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
          /* functions */
+
+#ifdef __STDC_VERSION__
+#  if __STDC_VERSION__ >= 199901L
+#    ifndef STDC99
+#      define STDC99
+#    endif
+#  endif
+#endif
+#if !defined(STDC99) && !(defined(__TURBOC__) && __TURBOC__ >= 0x550) && !defined(VSNPRINTF_DEFINED)
+#  ifdef MSDOS
+     /* vsnprintf may exist on some MS-DOS compilers (DJGPP?),
+        but for now we just assume it doesn't. */
+#    define NO_vsnprintf
+#  endif
+#  ifdef WIN32
+     /* In Win32, vsnprintf is available as the "non-ANSI" _vsnprintf. */
+#    if !defined(vsnprintf) && !defined(__TURBOC__)
+#      define vsnprintf _vsnprintf
+#    endif
+#  endif
+#  ifdef __TURBOC__
+#    define NO_vsnprintf
+#  endif
+#endif
 
 #ifdef HAVE_STRERROR
    extern char *strerror OF((int));

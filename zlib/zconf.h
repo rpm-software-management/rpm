@@ -1,10 +1,10 @@
 /*@-constuse -typeuse@*/
 /* zconf.h -- configuration of the zlib compression library
- * Copyright (C) 1995-2002 Jean-loup Gailly.
+ * Copyright (C) 1995-2003 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: zconf.h,v 1.8 2002/11/05 23:08:19 jbj Exp $ */
+/* @(#) $Id: zconf.h,v 1.9 2003/03/08 21:47:46 jbj Exp $ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H
@@ -25,6 +25,7 @@
 #  define deflateCopy	z_deflateCopy
 #  define deflateReset	z_deflateReset
 #  define deflateParams	z_deflateParams
+#  define deflateBound	z_deflateBound
 #  define inflateInit2_	z_inflateInit2_
 #  define inflateSetDictionary z_inflateSetDictionary
 #  define inflateSync	z_inflateSync
@@ -33,6 +34,7 @@
 #  define inflateReset	z_inflateReset
 #  define compress	z_compress
 #  define compress2	z_compress2
+#  define compressBound	z_compressBound
 #  define uncompress	z_uncompress
 #  define adler32	z_adler32
 #  define crc32		z_crc32
@@ -82,9 +84,15 @@
 #  endif
 #endif
 
+#if defined __HOS_AIX__
+#  ifndef STDC
+#    define STDC
+#  endif
+#endif
+
 #ifndef STDC
 #  ifndef const /* cannot use !defined(STDC) && !defined(const) on Mac */
-#    define const
+#    define const	/* note: need a more gentle solution here */
 #  endif
 #endif
 
@@ -94,7 +102,10 @@
 #endif
 
 /* Old Borland C incorrectly complains about missing returns: */
-#if defined(__BORLANDC__) && (__BORLANDC__ < 0x500)
+#if defined(__BORLANDC__) && (__BORLANDC__ < 0x460)
+#  define NEED_DUMMY_RETURN
+#endif
+#if defined(__TURBOC__) && !defined(__BORLANDC__)
 #  define NEED_DUMMY_RETURN
 #endif
 
@@ -162,17 +173,24 @@
 #  endif
 #endif
 
+#if defined(WIN32) && (!defined(ZLIB_WIN32_NODLL)) && (!defined(ZLIB_DLL))
+#  define ZLIB_DLL
+#endif
+
 /* Compile with -DZLIB_DLL for Windows DLL support */
 #if defined(ZLIB_DLL)
-#  if defined(_WINDOWS) || defined(WINDOWS)
+#  if defined(_WINDOWS) || defined(WINDOWS) || defined(WIN32)
+#    ifndef WINAPIV
 #    ifdef FAR
 #      undef FAR
 #    endif
 #    include <windows.h>
-#    define ZEXPORT  WINAPI
+#    endif
 #    ifdef WIN32
+#      define ZEXPORT  WINAPI
 #      define ZEXPORTVA  WINAPIV
 #    else
+#      define ZEXPORT  WINAPI _export
 #      define ZEXPORTVA  FAR _cdecl _export
 #    endif
 #  endif
@@ -180,7 +198,7 @@
 #    if (__BORLANDC__ >= 0x0500) && defined (WIN32)
 #      include <windows.h>
 #      define ZEXPORT __declspec(dllexport) WINAPI
-#      define ZEXPORTRVA __declspec(dllexport) WINAPIV
+#      define ZEXPORTVA __declspec(dllexport) WINAPIV
 #    else
 #      if defined (_Windows) && defined (__DLL__)
 #        define ZEXPORT _export
@@ -212,7 +230,7 @@
 #   define FAR
 #endif
 
-#if !defined(MACOS) && !defined(TARGET_OS_MAC)
+#if !defined(__MACTYPES__)
 typedef unsigned char  Byte;  /* 8 bits */
 #endif
 typedef unsigned int   uInt;  /* 16 bits or more */
@@ -230,9 +248,11 @@ typedef uInt  FAR uIntf;
 typedef uLong FAR uLongf;
 
 #ifdef STDC
+   typedef void const *voidpc;
    typedef void FAR *voidpf;
    typedef void     *voidp;
 #else
+   typedef Byte const *voidpc;
    typedef Byte FAR *voidpf;
    typedef Byte     *voidp;
 #endif
@@ -240,6 +260,9 @@ typedef uLong FAR uLongf;
 #ifdef HAVE_UNISTD_H
 #  include <sys/types.h> /* for off_t */
 #  include <unistd.h>    /* for SEEK_* and off_t */
+#  ifdef VMS
+#    include <unixio.h>   /* for off_t */
+#  endif
 #  define z_off_t  off_t
 #endif
 #ifndef SEEK_SET
@@ -256,11 +279,13 @@ typedef uLong FAR uLongf;
 #   pragma map(deflateInit_,"DEIN")
 #   pragma map(deflateInit2_,"DEIN2")
 #   pragma map(deflateEnd,"DEEND")
+#   pragma map(deflateBound,"DEBND")
 #   pragma map(inflateInit_,"ININ")
 #   pragma map(inflateInit2_,"ININ2")
 #   pragma map(inflateEnd,"INEND")
 #   pragma map(inflateSync,"INSY")
 #   pragma map(inflateSetDictionary,"INSEDI")
+#   pragma map(compressBound,"CMBND")
 #   pragma map(inflate_table,"INTABL")
 #   pragma map(inflate_fast,"INFA")
 #   pragma map(inflate_copyright,"INCOPY")

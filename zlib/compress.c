@@ -64,3 +64,12 @@ int ZEXPORT compress (Bytef * dest, uLongf * destLen, const Bytef * source,
 {
     return compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
 }
+
+/* ===========================================================================
+     If the default memLevel or windowBits for deflateInit() is changed, then
+   this function needs to be updated.
+ */
+uLong ZEXPORT compressBound (uLong sourceLen)
+{
+    return sourceLen + (sourceLen >> 12) + (sourceLen >> 14) + 11;
+}
