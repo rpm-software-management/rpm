@@ -149,6 +149,10 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 	  case RPMFILE_STATE_REPLACED:
 	    message(MESS_DEBUG, "     file has already been replaced\n");
 	    break;
+
+	  case RPMFILE_STATE_NOTINSTALLED:
+	    message(MESS_DEBUG, "     file was never installed\n");
+	    break;
     
 	  case RPMFILE_STATE_NORMAL:
 	    if (!strcmp(fileMd5List[sharedList[i].mainFileNumber],
@@ -213,9 +217,6 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 	    fnbuffer = alloca(fnbuffersize);
 	}
 
-	fileActions = alloca(sizeof(*fileActions) * fileCount);
-	for (i = 0; i < fileCount; i++) fileActions[i] = REMOVE;
-
 	getEntry(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, 
 		 &fileCount);
 	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5List, 
@@ -224,6 +225,13 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 		 &fileCount);
 	getEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
 		 &fileCount);
+
+	fileActions = alloca(sizeof(*fileActions) * fileCount);
+	for (i = 0; i < fileCount; i++) 
+	    if (fileStatesList[i] == RPMFILE_STATE_NOTINSTALLED) 
+		fileActions[i] = KEEP;
+	    else
+		fileActions[i] = REMOVE;
 
 	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, fileActions);
 
