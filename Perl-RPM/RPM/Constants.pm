@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.4 2000/08/06 08:57:09 rjray Exp $
+#   $Id: Constants.pm,v 1.5 2000/08/07 09:33:08 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = '0.27';
-$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE
@@ -167,7 +167,6 @@ $revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_DIRINDEXES
                 RPMTAG_DIRNAMES
                 RPMTAG_DISTRIBUTION
-                RPMTAG_EPOCH
                 RPMTAG_EXCLUDEARCH
                 RPMTAG_EXCLUDEOS
                 RPMTAG_EXCLUSIVEARCH
@@ -215,7 +214,6 @@ $revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_REQUIREFLAGS
                 RPMTAG_REQUIRENAME
                 RPMTAG_REQUIREVERSION
-                RPMTAG_ROOT
                 RPMTAG_RPMVERSION
                 RPMTAG_SIZE
                 RPMTAG_SOURCE
@@ -466,10 +464,6 @@ way of B<RPMTAG_DIRINDEXES> above.
 A text label identifying the name given to the overall larger distribution
 the package itself is a part of.
 
-=item RPMTAG_EPOCH ($)
-
-Not documented yet.
-
 =item RPMTAG_EXCLUDEARCH ($)
 
 Not documented yet.
@@ -510,11 +504,14 @@ the package had on the system on which the package was built.
 
 =item RPMTAG_FILELANGS (@)
 
-Not documented yet.
+Used to specify language-specific files, which may then be marked for skipping
+based on the list of accepted languages at install-time.
 
 =item RPMTAG_FILELINKTOS (@)
 
-Not documented yet.
+A list of names with exactly as many elements as there are filenames; each
+slot in this list is either empty, or (if not) gives the name of a file that
+the current filename should be made as a symbolic link to.
 
 =item RPMTAG_FILEMD5S (@)
 
@@ -552,7 +549,9 @@ files in C<RPMTAG_BASENAMES>. See also C<RPMTAG_GROUPNAME>.
 
 =item RPMTAG_FILEVERIFYFLAGS (@)
 
-Not documented yet.
+A list of flags (implemented as a bit-field within an integer) for each file
+in the archive, specifying what should be checked during the verification
+stage. See the B<RPMVERIFY_*> constants below.
 
 =item RPMTAG_GIF ($)
 
@@ -574,11 +573,14 @@ See C<RPMTAG_XPM> below and C<RPMTAG_GIF> above.
 
 =item RPMTAG_INSTALLTIME ($)
 
-Not documented yet.
+The time at which the package was installed on your system. Should only be
+present in header objects from the database, not from uninstalled packages.
 
 =item RPMTAG_INSTPREFIXES (@)
 
-Not documented yet.
+Specifies one or more prefixes that are set to the environment variables,
+C<RPM_INSTALL_PREFIX{n}>, where C<{n}> is a number starting from zero. These
+are set before executing any of the scripts (pre- or post-install, or verify).
 
 =item RPMTAG_LICENSE ($)
 
@@ -618,19 +620,24 @@ Not documented yet.
 
 =item RPMTAG_POSTIN (@)
 
-Not documented yet.
+Post-installation scripts, each entry in the list holds the text for a full
+script.
 
 =item RPMTAG_POSTINPROG (@)
 
-Not documented yet.
+The program (and additional arguments) for executing post-installation scripts.
+The default is B</bin/sh> with no arguments. This is much like the C argv/argc
+pair, in that list subscript 0 represents the program itself while the
+remaining list items (if any) are arguments to the program.
 
 =item RPMTAG_POSTUN (@)
 
-Not documented yet.
+Post-uninstallation scripts, again with one full script per array item.
 
 =item RPMTAG_POSTUNPROG (@)
 
-Not documented yet.
+Specification of the program to run post-uninstallation scripts. See
+B<RPMTAG_POSTINPROG>.
 
 =item RPMTAG_PREFIXES (@)
 
@@ -638,19 +645,14 @@ Not documented yet.
 
 =item RPMTAG_PREIN (@)
 
-Not documented yet.
-
 =item RPMTAG_PREINPROG (@)
-
-Not documented yet.
 
 =item RPMTAG_PREUN (@)
 
-Not documented yet.
-
 =item RPMTAG_PREUNPROG (@)
 
-Not documented yet.
+Specification of the scripts and commands to use in executing them, for
+pre-installation and pre-uninstallation. See the B<RPMTAG_POST*> set above.
 
 =item RPMTAG_PROVIDEFLAGS (@)
 
@@ -683,10 +685,6 @@ B<RPMTAG_REQUIRENAME> is required to have data in all elements of the array.
 The other two wil have the same number of elements, though some (or most)
 may be null. This is the same approach as is used to specify the elements
 that the package provides and those the package obsoletes (see above).
-
-=item RPMTAG_ROOT (@)
-
-Not documented yet.
 
 =item RPMTAG_RPMVERSION ($)
 
@@ -1071,6 +1069,78 @@ Not documented yet.
 
 =back
 
+=head2 File-Verification Flags
+
+The values in the B<RPMTAG_FILEVERIFYFLAGS> list defined in the header-tags
+section earlier represent various combinations of the following values.
+
+=over
+
+=item RPMVERIFY_ALL
+
+A full mask that will match any tested C<RPMVERIFY_*> value
+(except B<RPMVERIFY_NONE>).
+
+=item RPMVERIFY_NONE
+
+An empty mask that will not match any tested verification flags.
+
+=item RPMVERIFY_FILESIZE
+
+Test the file size against the value in the header.
+
+=item RPMVERIFY_GROUP
+
+Test the file group ID against the value it should have been set to.
+
+=item RPMVERIFY_LINKTO
+
+If the file was to be a symbolic link, check that it is set correctly.
+
+=item RPMVERIFY_MD5
+
+Check the MD5 checksum for the file.
+
+=item RPMVERIFY_MODE
+
+Verify the file mode against the value it was to be set to.
+
+=item RPMVERIFY_MTIME
+
+Check the file modification-time against that which it should have been set.
+
+=item RPMVERIFY_RDEV
+
+Check the device field of the inode, if relevant.
+
+=item RPMVERIFY_USER
+
+Check the user ID to which ownership was set.
+
+=back
+
+When the verification of a given file fails, the return value contains the
+relevant bits from the values above, corresponding to what test(s) failed.
+In addition, any of the following may be set to indicate a larger problem:
+
+=over
+
+=item RPMVERIFY_LSTATFAIL
+
+The attempt to read the inode information via C<lstat()> was not successful.
+This will guarantee that other bits in the return value are set, as well.
+
+=item RPMVERIFY_READFAIL
+
+The attempt to read the file or its data (for the sake of MD5, etc.) failed.
+
+=item RPMVERIFY_READLINKFAIL
+
+An attempt to do a C<readlink()> on the file, expected to be a symbolic link,
+failed.
+
+=back
+
 =head2 Not Yet Defined
 
 =over
@@ -1296,58 +1366,6 @@ Not documented yet.
 Not documented yet.
 
 =item RPMTRANS_FLAG_TEST
-
-Not documented yet.
-
-=item RPMVERIFY_ALL
-
-Not documented yet.
-
-=item RPMVERIFY_FILESIZE
-
-Not documented yet.
-
-=item RPMVERIFY_GROUP
-
-Not documented yet.
-
-=item RPMVERIFY_LINKTO
-
-Not documented yet.
-
-=item RPMVERIFY_LSTATFAIL
-
-Not documented yet.
-
-=item RPMVERIFY_MD5
-
-Not documented yet.
-
-=item RPMVERIFY_MODE
-
-Not documented yet.
-
-=item RPMVERIFY_MTIME
-
-Not documented yet.
-
-=item RPMVERIFY_NONE
-
-Not documented yet.
-
-=item RPMVERIFY_RDEV
-
-Not documented yet.
-
-=item RPMVERIFY_READFAIL
-
-Not documented yet.
-
-=item RPMVERIFY_READLINKFAIL
-
-Not documented yet.
-
-=item RPMVERIFY_USER
 
 Not documented yet.
 
