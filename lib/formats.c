@@ -13,6 +13,8 @@ static char * permsFormat(int_32 type, const void * data,
 		          char * formatPrefix, int padding, int element);
 static char * depflagsFormat(int_32 type, const void * data, 
 		             char * formatPrefix, int padding, int element);
+static char * triggertypeFormat(int_32 type, const void * data, 
+		         char * formatPrefix, int padding, int element);
 static char * fflagsFormat(int_32 type, const void * data, 
 		           char * formatPrefix, int padding, int element);
 static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
@@ -20,17 +22,24 @@ static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
 static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
 		      int * freeData);
 static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData);
+		         int * freeData);
+static int triggercondsTag(Header h, int_32 * type, void ** data, 
+			   int_32 * count, int * freeData);
+static int triggertypeTag(Header h, int_32 * type, void ** data, 
+			  int_32 * count, int * freeData);
 static char * permsString(int mode);
 
 const struct headerSprintfExtension rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS", { triggercondsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms", { permsFormat } },
     { HEADER_EXT_FORMAT, "permissions", { permsFormat } },
+    { HEADER_EXT_FORMAT, "triggertype", { triggertypeFormat } },
     { HEADER_EXT_MORE, NULL, { (void *) headerDefaultFormats } }
 } ;
 
@@ -83,6 +92,23 @@ static char * permsString(int mode) {
     }
 
     return perms;
+}
+
+static char * triggertypeFormat(int_32 type, const void * data, 
+		         char * formatPrefix, int padding, int element) {
+    const int_32 * item = data;
+    char * val;
+
+    if (type != RPM_INT32_TYPE) {
+	val = malloc(20);
+	strcpy(val, _("(not a number)"));
+    } else if (*item & RPMSENSE_TRIGGERIN) {
+	val = strdup("in");
+    } else {
+	val = strdup("un");
+    }
+
+    return val;
 }
 
 static char * permsFormat(int_32 type, const void * data, 
@@ -140,7 +166,7 @@ static char * depflagsFormat(int_32 type, const void * data,
 		         char * formatPrefix, int padding, int element) {
     char * val;
     char buf[10];
-    int anint = *((int_32 *) data);
+    int anint = *(((int_32 *) data) + element);
 
     if (type != RPM_INT32_TYPE) {
 	val = malloc(20);
@@ -220,6 +246,104 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     *type = RPM_INT32_TYPE;
     *freeData = 1;
     *data = usages;
+
+    return 0;
+}
+
+static int triggercondsTag(Header h, int_32 * type, void ** data, 
+			   int_32 * count, int * freeData) {
+    int_32 * indices, * flags;
+    char ** names, ** versions;
+    int numNames, numScripts;
+    char ** conds, ** s;
+    char * item, * flagsStr;
+    char * chptr;
+    int i, j;
+    char buf[5];
+
+    if (!headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, (void **) &names, 
+			&numNames)) {
+	*freeData = 0;
+	return 0;
+    }
+
+    headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
+    headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    headerGetEntry(h, RPMTAG_TRIGGERVERSION, NULL, (void **) &versions, NULL);
+    headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, (void **) &s, &numScripts);
+    free(s);
+
+    *freeData = 1;
+    *data = conds = malloc(sizeof(char * ) * numScripts);
+    *count = numScripts;
+    *type = RPM_STRING_ARRAY_TYPE;
+    for (i = 0; i < numScripts; i++) {
+	chptr = malloc(1);
+	*chptr = '\0';
+
+	for (j = 0; j < numNames; j++) {
+	    if (indices[j] != i) continue;
+
+	    item = malloc(strlen(names[j]) + strlen(versions[j]) + 20);
+	    if (flags[j] & RPMSENSE_SENSEMASK) {
+		buf[0] = '%', buf[1] = '\0';
+		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf,
+					  0, j);
+		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
+		free(flagsStr);
+	    } else {
+		strcpy(item, names[j]);
+	    }
+
+	    chptr = realloc(chptr, strlen(chptr) + strlen(item) + 5);
+	    if (*chptr) strcat(chptr, ", ");
+	    strcat(chptr, item);
+	    free(item);
+	}
+
+	conds[i] = chptr;
+    }
+
+    free(names);
+    free(versions);
+
+    return 0;
+}
+
+static int triggertypeTag(Header h, int_32 * type, void ** data, 
+			   int_32 * count, int * freeData) {
+    int_32 * indices, * flags;
+    char ** conds, ** s;
+    int i, j;
+    char buf[5];
+    int numScripts, numNames;
+
+    if (!headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, 
+			&numNames)) {
+	*freeData = 0;
+	return 1;
+    }
+
+    headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+
+    headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, (void **) &s, &numScripts);
+    free(s);
+
+    *freeData = 1;
+    *data = conds = malloc(sizeof(char * ) * numScripts);
+    *count = numScripts;
+    *type = RPM_STRING_ARRAY_TYPE;
+    for (i = 0; i < numScripts; i++) {
+	for (j = 0; j < numNames; j++) {
+	    if (indices[j] != i) continue;
+
+	    if (flags[j] & RPMSENSE_TRIGGERIN)
+		conds[i] = strdup("in");
+	    else
+		conds[i] = strdup("un");
+	    break;
+	}
+    }
 
     return 0;
 }

@@ -5,6 +5,9 @@
 	- respect LINGUAS when install package files
 	- added trigger support to build code
 	- got rid of annoying mwftw() type warning
+	- fixed many command line options which got broke by changes
+	  for non-gcc compilers
+	- added trigger support in install code
 
 2.4.103 -> 2.4.104:
 	- fixed popt/Makefile.in to use CPP from configure

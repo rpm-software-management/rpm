@@ -16,6 +16,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "dbindex.h"
+#include "depends.h"
 #include "install.h"
 #include "intl.h"
 #include "messages.h"
@@ -34,8 +36,10 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 			     char ** fileMd5List, int fileCount, 
 			     enum fileActions * fileActions);
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
-		      short mode, enum fileActions action, char * rmmess, 
+		      short mode, enum fileActions action, 
 		      int brokenMd5, int test);
+static int runScript(Header h, char * root, int progArgc, char ** progArgv, 
+		     char * script, int arg1, int arg2, int errfd);
 
 static int sharedFileCmp(const void * one, const void * two) {
     if (((struct sharedFile *) one)->secRecOffset <
@@ -200,7 +204,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     Header h;
     int i, j;
     int fileCount;
-    char * rmmess, * name, * version, * release;
+    char * name, * version, * release;
     char * fnbuffer = NULL;
     dbiIndexSet matches;
     int fnbuffersize = 0;
@@ -237,23 +241,24 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     scriptArg = matches.count - 1;
     dbiFreeIndexRecord(matches);
 
-    if (flags & RPMUNINSTALL_TEST) {
-	rmmess = "would remove";
-    } else {
-	rmmess = "removing";
+    /* run triggers from this package which are keyed on installed packages */
+    if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1)) {
+	return 2;
     }
 
-    if (!(flags & RPMUNINSTALL_TEST)) {
-	rpmMessage(RPMMESS_DEBUG, "running preuninstall script (if any)\n");
+    /* run triggers which are set off by the removal of this package */
+    if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1))
+	return 1;
 
-	if (runScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
-		     flags & RPMUNINSTALL_NOSCRIPTS, 0)) {
+    if (!(flags & RPMUNINSTALL_TEST)) {
+	if (runInstScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
+		          flags & RPMUNINSTALL_NOSCRIPTS, 0)) {
 	    headerFree(h);
 	    return 1;
 	}
     }
     
-    rpmMessage(RPMMESS_DEBUG, "%s files test = %d\n", rmmess, 
+    rpmMessage(RPMMESS_DEBUG, "will remove files test = %d\n", 
 		flags & RPMUNINSTALL_TEST);
     if (!(flags & RPMUNINSTALL_JUSTDB) &&
 	headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
@@ -321,7 +326,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
 	    removeFile(fnbuffer, fileStatesList[i], fileFlagsList[i],
 		       fileMd5List[i], fileModesList[i], fileActions[i], 
-		       rmmess, !headerIsEntry(h, RPMTAG_RPMVERSION),
+		       !headerIsEntry(h, RPMTAG_RPMVERSION),
 		       flags & RPMUNINSTALL_TEST);
 	}
 
@@ -331,68 +336,49 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
     if (!(flags & RPMUNINSTALL_TEST)) {
 	rpmMessage(RPMMESS_DEBUG, "running postuninstall script (if any)\n");
-	runScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
-		    flags & RPMUNINSTALL_NOSCRIPTS, 0);
+	runInstScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
+		      flags & RPMUNINSTALL_NOSCRIPTS, 0);
     }
 
     headerFree(h);
 
-    rpmMessage(RPMMESS_DEBUG, "%s database entry\n", rmmess);
+    rpmMessage(RPMMESS_DEBUG, "removing database entry\n");
     if (!(flags & RPMUNINSTALL_TEST))
 	rpmdbRemove(db, offset, 0);
 
     return 0;
 }
 
-int runScript(char * root, Header h, int scriptTag, int progTag,
-	      int arg, int norunScripts, int err) {
-    char * script;
-    char * fn;
-    int fd = -1;
-    int isdebug = rpmIsDebug();
-    int child;
-    int status;
-    char upgradeArg[20];
+static int runScript(Header h, char * root, int progArgc, char ** progArgv, 
+		     char * script, int arg1, int arg2, int errfd) {
+    char ** argv;
+    int argc;
     char ** prefixes = NULL;
     int numPrefixes;
     char * oldPrefix;
-    char * program;
-    char ** programArgv;
-    char ** argv = NULL;
-    int programArgc;
-    int programType = 0;
-    int pipes[2];
-    int out = 0;
-    int freePrefixes = 0;
     int maxPrefixLength;
+    int len;
     char * prefixBuf;
+    pid_t child;
+    int status;
+    char * fn;
+    int fd;
     int i;
+    int freePrefixes;
+    int pipes[2];
+    int out = 1;
 
-    if (norunScripts) return 0;
-
-    sprintf(upgradeArg, "%d", arg);
-
-    /* headerGetEntry() sets the data pointer to NULL if the entry does
-       not exist */
-    headerGetEntry(h, progTag, &programType, (void **) &programArgv,
-		   &programArgc);
-    headerGetEntry(h, scriptTag, NULL, (void **) &script, NULL);
-
-    if (!programArgv && !script)
+    if (!progArgv && !script)
 	return 0;
-    else if (!programArgv) {
-	programArgv = malloc(4 * sizeof(char *));
-	programArgv[0] = "/bin/sh";
-	programArgc = 1;
-    } else if (programType == RPM_STRING_TYPE) {
-	program = (char *) programArgv;
-	programArgv = malloc(4 * sizeof(char *));
-	programArgv[0] = program;
-	programArgc = 1;
+    else if (!progArgv) {
+	argv = alloca(5 * sizeof(char *));
+	argv[0] = "/bin/sh";
+	argc = 1;
     } else {
-	argv = programArgv;
-	programArgv = malloc((programArgc + 3) * sizeof(char *));
-	memcpy(programArgv, argv, programArgc * sizeof(char *));
+	argv = progArgv;
+	argv = alloca((progArgc + 4) * sizeof(char *));
+	memcpy(argv, progArgv, progArgc * sizeof(char *));
+	argc = progArgc;
     }
 
     if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void *) &prefixes,
@@ -409,42 +395,45 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 
     maxPrefixLength = 0;
     for (i = 0; i < numPrefixes; i++) {
-	child = strlen(prefixes[i]);
-	if (child > maxPrefixLength) maxPrefixLength = child;
+	len = strlen(prefixes[i]);
+	if (len > maxPrefixLength) maxPrefixLength = len;
     }
     prefixBuf = alloca(maxPrefixLength + 50);
 
-    rpmMessage(RPMMESS_DEBUG, "running inst helper %s\n", programArgv[0]);
-
     if (script) {
 	if (makeTempFile(root, &fn, &fd)) {
-	    free(programArgv);
-	    if (argv)
-		free(argv);
+	    free(argv);
+	    if (freePrefixes) free(prefixes);
 	    return 1;
 	}
 
-	if (isdebug &&
-	    (!strcmp(programArgv[0], "/bin/sh") || 
-	     !strcmp(programArgv[0], "/bin/bash")))
+	if (rpmIsDebug() &&
+	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
 	    write(fd, "set -x\n", 7);
 
 	write(fd, script, strlen(script));
 	close(fd);
 
-	programArgv[programArgc++] = fn + strlen(root);
-	programArgv[programArgc++] = upgradeArg;
+	argv[argc++] = fn + strlen(root);
+	if (arg1 >= 0) {
+	    argv[argc] = alloca(20);
+	    sprintf(argv[argc++], "%d", arg1);
+	}
+	if (arg2 >= 0) {
+	    argv[argc] = alloca(20);
+	    sprintf(argv[argc++], "%d", arg2);
+	}
     }
 
-    programArgv[programArgc] = NULL;
+    argv[argc] = NULL;
 
-    if (err) {
+    if (errfd) {
 	if (rpmIsVerbose()) {
-	    out = err;
+	    out = errfd;
 	} else {
 	    out = open("/dev/null", O_WRONLY);
 	    if (out < 0) {
-		out = err;
+		out = errfd;
 	    }
 	}
     }
@@ -456,12 +445,12 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 	dup2(pipes[0], 0);
 	close(pipes[0]);
 
-	if (err) {
-	    if (err != 2) dup2(err, 2);
+	if (errfd) {
+	    if (errfd != 2) dup2(errfd, 2);
 	    if (out != 1) dup2(out, 1);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    /* if (err > 2) close (err);
-	    if (out > 2 && out != err) close (out); */
+	    if (errfd > 2) close (errfd);
+	    if (out > 2 && out != errfd) close (out); 
 	}
 
 	doputenv(SCRIPT_PATH);
@@ -478,13 +467,12 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 	}
 
 	if (strcmp(root, "/")) {
-	    rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", root);
 	    chroot(root);
 	}
 
 	chdir("/");
 
-	execv(programArgv[0], programArgv);
+	execv(argv[0], argv);
  	_exit(-1);
     }
 
@@ -492,18 +480,13 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 
     if (freePrefixes) free(prefixes);
 
-    if (err) {
+    if (errfd) {
 	if (out > 2) close(out);
-	if (err > 2) close(err);
-	if (!rpmIsVerbose()) close(out);
+	if (errfd > 2) close(errfd);
     }
     
-    free(programArgv);
-    if (argv)
-	free(argv);
-    
     if (script) {
-	if (!isdebug) unlink(fn);
+	if (!rpmIsDebug()) unlink(fn);
 	free(fn);
     }
 
@@ -515,8 +498,37 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
     return 0;
 }
 
+int runInstScript(char * root, Header h, int scriptTag, int progTag,
+	          int arg, int norunScripts, int err) {
+    void ** programArgv;
+    int programArgc;
+    char ** argv;
+    int programType;
+    char * script;
+    int rc;
+
+    if (norunScripts) return 0;
+
+    /* headerGetEntry() sets the data pointer to NULL if the entry does
+       not exist */
+    headerGetEntry(h, progTag, &programType, (void **) &programArgv,
+		   &programArgc);
+    headerGetEntry(h, scriptTag, NULL, (void **) &script, NULL);
+
+    if (programArgv && programType == RPM_STRING_TYPE) {
+	argv = alloca(sizeof(char *));
+	*argv = (char *) programArgv;
+    } else {
+	argv = (char **) programArgv;
+    }
+
+    rc = runScript(h, root, programArgc, argv, script, arg, -1, err);
+    if (programType == RPM_STRING_ARRAY_TYPE) free(programArgv);
+    return rc;
+}
+
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
-		      short mode, enum fileActions action, char * rmmess, 
+		      short mode, enum fileActions action, 
 		      int brokenMd5, int test) {
     char currentMd5[40];
     int rc = 0;
@@ -571,7 +583,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    break;
 
 	  case REMOVE:
-	    rpmMessage(RPMMESS_DEBUG, "%s - %s\n", file, rmmess);
+	    rpmMessage(RPMMESS_DEBUG, "%s - removing\n", file);
 	    if (S_ISDIR(mode)) {
 		if (!test) {
 		    if (rmdir(file)) {
@@ -599,7 +611,151 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    }
 	    break;
 	}
-   }
+    }
  
-   return 0;
+    return 0;
+}
+
+static int handleOneTrigger(char * root, rpmdb db, int sense, Header sourceH,
+			    Header triggeredH, int arg1correction, int arg2,
+			    char * triggersAlreadyRun) {
+    char ** triggerNames, ** triggerVersions;
+    char ** triggerScripts, ** triggerProgs;
+    int_32 * triggerFlags, * triggerIndices;
+    char * triggerPackageName, * sourceName;
+    int numTriggers;
+    int rc = 0;
+    int i;
+    int index;
+    dbiIndexSet matches;
+
+    if (!headerGetEntry(triggeredH, RPMTAG_TRIGGERNAME, NULL, 
+			(void **) &triggerNames, &numTriggers)) {
+	headerFree(triggeredH);
+	return 0;
+    }
+
+    headerGetEntry(sourceH, RPMTAG_NAME, NULL, (void **) &sourceName, NULL);
+
+    headerGetEntry(triggeredH, RPMTAG_TRIGGERFLAGS, NULL, 
+		   (void **) &triggerFlags, NULL);
+    headerGetEntry(triggeredH, RPMTAG_TRIGGERVERSION, NULL, 
+		   (void **) &triggerVersions, NULL);
+
+    for (i = 0; i < numTriggers; i++) {
+	if (!(triggerFlags[i] & sense)) continue;
+	if (strcmp(triggerNames[i], sourceName)) continue;
+	if (!headerMatchesDepFlags(sourceH, triggerVersions[i], 
+				   triggerFlags[i])) continue;
+
+	headerGetEntry(triggeredH, RPMTAG_TRIGGERINDEX, NULL,
+		       (void **) &triggerIndices, NULL);
+	headerGetEntry(triggeredH, RPMTAG_TRIGGERSCRIPTS, NULL,
+		       (void **) &triggerScripts, NULL);
+	headerGetEntry(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, NULL,
+		       (void **) &triggerProgs, NULL);
+
+	headerGetEntry(triggeredH, RPMTAG_NAME, NULL, 
+		       (void **) &triggerPackageName, NULL);
+	rpmdbFindPackage(db, triggerPackageName, &matches);
+	dbiFreeIndexRecord(matches);
+
+	index = triggerIndices[i];
+	if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
+	    rc = runScript(triggeredH, root, 1, triggerProgs + index,
+			    triggerScripts[index], 
+			    matches.count + arg1correction, arg2, 0);
+	    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
+	}
+
+	free(triggerScripts);
+	free(triggerProgs);
+
+	/* each target/source header pair can only result in a single
+	   script being run */
+	break;
+    }
+
+    free(triggerNames);
+
+    return rc;
+}
+
+int runTriggers(char * root, rpmdb db, int sense, Header h,
+		int countCorrection) {
+    char * packageName;
+    dbiIndexSet matches, otherMatches;
+    Header triggeredH;
+    int numPackage;
+    int rc;
+    int i, j;
+
+    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &packageName, NULL);
+
+    if ((rc = rpmdbFindByTriggeredBy(db, packageName, &matches)) < 0)
+	return 1;
+    else if (rc)
+	return 0;
+
+    rpmdbFindPackage(db, packageName, &otherMatches);
+    numPackage = otherMatches.count + countCorrection;
+    dbiFreeIndexRecord(otherMatches);
+
+    rc = 0;
+    for (i = 0; i < matches.count; i++) {
+	if (!(triggeredH = rpmdbGetRecord(db, matches.recs[i].recOffset))) 
+	    return 1;
+
+	rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
+			       NULL);
+	
+	headerFree(triggeredH);
+    }
+
+    dbiFreeIndexRecord(matches);
+
+    return rc;
+    
+}
+
+int runImmedTriggers(char * root, rpmdb db, int sense, Header h,
+		     int countCorrection) {
+    int rc = 0;
+    dbiIndexSet matches;
+    char ** triggerNames;
+    int numTriggers;
+    int i, j;
+    int_32 * triggerIndices;
+    char * triggersRun;
+    Header sourceH;
+
+    if (!headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, (void **) &triggerNames, 
+			&numTriggers))
+	return 0;
+    headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &triggerIndices, 
+		   &i);
+    triggersRun = alloca(sizeof(*triggersRun) * i);
+    memset(triggersRun, 0, sizeof(*triggersRun) * i);
+
+    for (i = 0; i < numTriggers; i++) {
+	if (triggersRun[triggerIndices[i]]) continue;
+	
+        if ((j = rpmdbFindPackage(db, triggerNames[i], &matches))) {
+	    if (j < 0) rc |= 1;	
+	    continue;
+	} 
+
+	for (j = 0; j < matches.count; j++) {
+	    if (!(sourceH = rpmdbGetRecord(db, matches.recs[j].recOffset))) 
+		return 1;
+	    rc |= handleOneTrigger(root, db, sense, sourceH, h, 
+				   countCorrection, matches.count, triggersRun);
+	    headerFree(sourceH);
+	    if (triggersRun[triggerIndices[i]]) break;
+	}
+
+	dbiFreeIndexRecord(matches);
+    }
+
+    return rc;
 }

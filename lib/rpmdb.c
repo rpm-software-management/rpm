@@ -35,7 +35,7 @@
 struct rpmdb_s {
     faFile pkgs;
     dbiIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
-    dbiIndex * requiredbyIndex, * conflictsIndex;
+    dbiIndex * requiredbyIndex, * conflictsIndex, * triggerIndex;
 };
 
 static void removeIndexEntry(dbiIndex * dbi, char * name, dbiIndexRecord rec,
@@ -72,11 +72,32 @@ int rpmdbInit (char * prefix, int perms) {
     return openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 1);
 }
 
+static int openDbFile(char * prefix, char * dbpath, char * shortName, 
+		      int justCheck, int perms, dbiIndex ** db){
+    char * filename = alloca(strlen(prefix) + strlen(dbpath) + 
+			     strlen(shortName) + 20);
+
+    if (!prefix) prefix="";
+
+    strcpy(filename, prefix); 
+    strcat(filename, dbpath);
+    strcat(filename, shortName);
+
+    if (!justCheck || !exists(filename)) {
+	*db = dbiOpenIndex(filename, perms, 0644);
+	if (!*db) {
+	    return 1;
+	}
+    }
+
+    return 0;
+}
+
 int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode, 
 		 int perms, int justcheck) {
     char * filename;
     struct rpmdb_s db;
-    int i;
+    int i, rc;
     struct flock lockinfo;
 
     /* we should accept NULL as a valid prefix */
@@ -135,91 +156,37 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 	}
     }
     
-    strcpy(filename, prefix); 
-    strcat(filename, dbpath);
-    strcat(filename, "nameindex.rpm");
+    rc = openDbFile(prefix, dbpath, "nameindex.rpm", justcheck, mode,
+		    &db.nameIndex);
+    if (!rc)
+	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode,
+			&db.fileIndex);
+    if (!rc)
+	rc = openDbFile(prefix, dbpath, "providesindex.rpm", justcheck, mode,
+			&db.providesIndex);
+    if (!rc)
+	rc = openDbFile(prefix, dbpath, "requiredby.rpm", justcheck, mode,
+			&db.requiredbyIndex);
+    if (!rc)
+	rc = openDbFile(prefix, dbpath, "conflictsindex.rpm", justcheck, mode,
+			&db.conflictsIndex);
+    if (!rc)
+	rc = openDbFile(prefix, dbpath, "groupindex.rpm", justcheck, mode,
+			&db.groupIndex);
+    if (!rc)
+	rc = openDbFile(prefix, dbpath, "triggerindex.rpm", justcheck, mode,
+			&db.triggerIndex);
 
-    if (!justcheck || !exists(filename)) {
-	db.nameIndex = dbiOpenIndex(filename, mode, 0644);
-	if (!db.nameIndex) {
-	    faClose(db.pkgs);
-	    return 1;
-	}
-    }
-
-    strcpy(filename, prefix); 
-    strcat(filename, dbpath);
-    strcat(filename, "fileindex.rpm");
-
-    if (!justcheck || !exists(filename)) {
-	db.fileIndex = dbiOpenIndex(filename, mode, 0644);
-	if (!db.fileIndex) {
-	    faClose(db.pkgs);
-	    dbiCloseIndex(db.nameIndex);
-	    return 1;
-	}
-    }
-    
-    strcpy(filename, prefix); 
-    strcat(filename, dbpath);
-    strcat(filename, "groupindex.rpm");
-
-    if (!justcheck || !exists(filename)) {
-	db.groupIndex = dbiOpenIndex(filename, mode, 0644);
-	if (!db.groupIndex) {
-	    faClose(db.pkgs);
-	    dbiCloseIndex(db.nameIndex);
-	    dbiCloseIndex(db.fileIndex);
-	    return 1;
-	}
-    }
-
-    strcpy(filename, prefix); 
-    strcat(filename, dbpath);
-    strcat(filename, "providesindex.rpm");
-
-    if (!justcheck || !exists(filename)) {
-	db.providesIndex = dbiOpenIndex(filename, mode, 0644);
-	if (!db.providesIndex) {
-	    faClose(db.pkgs);
-	    dbiCloseIndex(db.fileIndex);
-	    dbiCloseIndex(db.nameIndex);
-	    dbiCloseIndex(db.groupIndex);
-	    return 1;
-	}
-    }
-
-    strcpy(filename, prefix); 
-    strcat(filename, dbpath);
-    strcat(filename, "requiredby.rpm");
-
-    if (!justcheck || !exists(filename)) {
-	db.requiredbyIndex = dbiOpenIndex(filename, mode, 0644);
-	if (!db.requiredbyIndex) {
-	    faClose(db.pkgs);
-	    dbiCloseIndex(db.fileIndex);
-	    dbiCloseIndex(db.nameIndex);
-	    dbiCloseIndex(db.groupIndex);
-	    dbiCloseIndex(db.providesIndex);
-	    return 1;
-	}
-    }
-
-    strcpy(filename, prefix); 
-    strcat(filename, dbpath);
-    strcat(filename, "conflictsindex.rpm");
-
-    if (!justcheck || !exists(filename)) {
-	db.conflictsIndex = dbiOpenIndex(filename, mode, 0644);
-	if (!db.conflictsIndex) {
-	    faClose(db.pkgs);
-	    dbiCloseIndex(db.fileIndex);
-	    dbiCloseIndex(db.nameIndex);
-	    dbiCloseIndex(db.groupIndex);
-	    dbiCloseIndex(db.providesIndex);
-	    dbiCloseIndex(db.requiredbyIndex);
-	    return 1;
-	}
+    if (rc) {
+	faClose(db.pkgs);
+	if (db.nameIndex) dbiCloseIndex(db.nameIndex);
+	if (db.fileIndex) dbiCloseIndex(db.fileIndex);
+	if (db.providesIndex) dbiCloseIndex(db.providesIndex);
+	if (db.requiredbyIndex) dbiCloseIndex(db.requiredbyIndex);
+	if (db.conflictsIndex) dbiCloseIndex(db.conflictsIndex);
+	if (db.groupIndex) dbiCloseIndex(db.groupIndex);
+	if (db.triggerIndex) dbiCloseIndex(db.triggerIndex);
+	return 1;
     }
 
     *rpmdbp = malloc(sizeof(struct rpmdb_s));
@@ -240,6 +207,7 @@ void rpmdbClose (rpmdb db) {
     if (db->providesIndex) dbiCloseIndex(db->providesIndex);
     if (db->requiredbyIndex) dbiCloseIndex(db->requiredbyIndex);
     if (db->conflictsIndex) dbiCloseIndex(db->conflictsIndex);
+    if (db->triggerIndex) dbiCloseIndex(db->triggerIndex);
     free(db);
 }
 
@@ -294,6 +262,10 @@ int rpmdbFindByConflicts(rpmdb db, char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->conflictsIndex, filespec, matches);
 }
 
+int rpmdbFindByTriggeredBy(rpmdb db, char * filespec, dbiIndexSet * matches) {
+    return dbiSearchIndex(db->triggerIndex, filespec, matches);
+}
+
 int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches) {
     return dbiSearchIndex(db->groupIndex, group, matches);
 }
@@ -337,7 +309,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     unsigned int count;
     dbiIndexRecord rec;
     char ** fileList, ** providesList, ** requiredbyList;
-    char ** conflictList;
+    char ** conflictList, ** triggerList;
     int i;
 
     rec.recOffset = offset;
@@ -390,6 +362,18 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 			     1, "requiredby index");
 	}
 	free(requiredbyList);
+    }
+
+    if (headerGetEntry(h, RPMTAG_TRIGGERNAME, &type, (void **) &triggerList, 
+	 &count)) {
+	/* triggerList often contains duplicates */
+	for (i = 0; i < count; i++) {
+	    rpmMessage(RPMMESS_DEBUG, "removing trigger index for %s\n", 
+		       triggerList[i]);
+	    removeIndexEntry(db->triggerIndex, triggerList[i], rec, 
+			     1, "trigger index");
+	}
+	free(triggerList);
     }
 
     if (headerGetEntry(h, RPMTAG_CONFLICTNAME, &type, (void **) &conflictList, 
@@ -453,13 +437,15 @@ static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
 
 int rpmdbAdd(rpmdb db, Header dbentry) {
     unsigned int dboffset;
-    unsigned int i;
+    unsigned int i, j;
     char ** fileList;
     char ** providesList;
     char ** requiredbyList;
     char ** conflictList;
+    char ** triggerList;
     char * name, * group;
-    int count, providesCount, requiredbyCount, conflictCount;
+    int count = 0, providesCount = 0, requiredbyCount = 0, conflictCount = 0;
+    int triggerCount = 0;
     int type;
     int rc = 0;
 
@@ -468,25 +454,16 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 
     if (!group) group = "Unknown";
 
-    if (!headerGetEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
-	 &count)) {
-	count = 0;
-    } 
-
-    if (!headerGetEntry(dbentry, RPMTAG_PROVIDES, &type, (void **) &providesList, 
-	 &providesCount)) {
-	providesCount = 0;
-    } 
-
-    if (!headerGetEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
-		  (void **) &requiredbyList, &requiredbyCount)) {
-	requiredbyCount = 0;
-    } 
-
-    if (!headerGetEntry(dbentry, RPMTAG_CONFLICTNAME, &type, 
-		  (void **) &conflictList, &conflictCount)) {
-	conflictCount = 0;
-    } 
+    headerGetEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+	           &count);
+    headerGetEntry(dbentry, RPMTAG_PROVIDES, &type, (void **) &providesList, 
+	           &providesCount);
+    headerGetEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
+		   (void **) &requiredbyList, &requiredbyCount);
+    headerGetEntry(dbentry, RPMTAG_CONFLICTNAME, &type, 
+		   (void **) &conflictList, &conflictCount);
+    headerGetEntry(dbentry, RPMTAG_TRIGGERNAME, &type, 
+		   (void **) &triggerList, &triggerCount);
 
     blockSignals();
 
@@ -496,6 +473,8 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	unblockSignals();
 	if (providesCount) free(providesList);
 	if (requiredbyCount) free(requiredbyList);
+	if (conflictCount) free(conflictList);
+	if (triggerCount) free(triggerList);
 	if (count) free(fileList);
 	return 1;
     }
@@ -509,36 +488,40 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     if (addIndexEntry(db->groupIndex, group, dboffset, 0))
 	rc = 1;
 
-    for (i = 0; i < conflictCount; i++) {
-	if (addIndexEntry(db->conflictsIndex, conflictList[i], dboffset, 0))
-	    rc = 1;
+    for (i = 0; i < triggerCount; i++) {
+	/* don't add duplicates */
+	for (j = 0; j < i; j++)
+	    if (!strcmp(triggerList[i], triggerList[j])) break;
+	if (j == i)
+	    rc += addIndexEntry(db->triggerIndex, triggerList[i], dboffset, 0);
     }
 
-    for (i = 0; i < requiredbyCount; i++) {
-	if (addIndexEntry(db->requiredbyIndex, requiredbyList[i], dboffset, 0))
-	    rc = 1;
-    }
+    for (i = 0; i < conflictCount; i++)
+	rc += addIndexEntry(db->conflictsIndex, conflictList[i], dboffset, 0);
 
-    for (i = 0; i < providesCount; i++) {
-	if (addIndexEntry(db->providesIndex, providesList[i], dboffset, 0))
-	    rc = 1;
-    }
+    for (i = 0; i < requiredbyCount; i++)
+	rc += addIndexEntry(db->requiredbyIndex, requiredbyList[i], 
+			    dboffset, 0);
 
-    for (i = 0; i < count; i++) {
-	if (addIndexEntry(db->fileIndex, fileList[i], dboffset, i))
-	    rc = 1;
-    }
+    for (i = 0; i < providesCount; i++)
+	rc += addIndexEntry(db->providesIndex, providesList[i], dboffset, 0);
+
+    for (i = 0; i < count; i++) 
+	rc += addIndexEntry(db->fileIndex, fileList[i], dboffset, i);
 
     dbiSyncIndex(db->nameIndex);
     dbiSyncIndex(db->groupIndex);
     dbiSyncIndex(db->fileIndex);
     dbiSyncIndex(db->providesIndex);
     dbiSyncIndex(db->requiredbyIndex);
+    dbiSyncIndex(db->triggerIndex);
 
     unblockSignals();
 
     if (requiredbyCount) free(requiredbyList);
     if (providesCount) free(providesList);
+    if (conflictCount) free(conflictList);
+    if (triggerCount) free(triggerList);
     if (count) free(fileList);
 
     return rc;

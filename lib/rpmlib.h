@@ -112,7 +112,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_BUILDARCHS               1089
 #define RPMTAG_OBSOLETES                1090
 #define RPMTAG_VERIFYSCRIPTPROG         1091
-#define RPMTAG_TRIGGERSCRIPTPROGS       1092
+#define RPMTAG_TRIGGERSCRIPTPROG        1092
 #define RPMTAG_DOCDIR                   1093 /* internal */
 #define RPMTAG_COOKIE                   1094
 #define RPMTAG_FILEDEVICES              1095
@@ -120,9 +120,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_FILELANGS                1097
 #define RPMTAG_PREFIXES                 1098
 #define RPMTAG_INSTPREFIXES             1099
-#define RPMTAG_TRIGGERSCRIPTPROG        1100
-#define RPMTAG_TRIGGERIN                1101 /* internal */
-#define RPMTAG_TRIGGERUN                1102 /* internal */
+#define RPMTAG_TRIGGERIN                1100 /* internal */
+#define RPMTAG_TRIGGERUN                1101 /* internal */
     
 #define RPMTAG_EXTERNAL_TAG		1000000
 
@@ -282,6 +281,7 @@ int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches);
 int rpmdbFindByProvides(rpmdb db, char * provides, dbiIndexSet * matches);
 int rpmdbFindByRequiredBy(rpmdb db, char * requires, dbiIndexSet * matches);
 int rpmdbFindByConflicts(rpmdb db, char * conflicts, dbiIndexSet * matches);
+int rpmdbFindByTriggeredBy(rpmdb db, char * package, dbiIndexSet * matches);
 
 /* these are just convience functions */
 int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);

@@ -752,8 +752,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
     }
 
     rpmMessage(RPMMESS_DEBUG, "running preinstall script (if any)\n");
-    if (runScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
-		  flags & RPMINSTALL_NOSCRIPTS, 0)) {
+    if (runInstScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
+		      flags & RPMINSTALL_NOSCRIPTS, 0)) {
 	if (replacedList) free(replacedList);
 	if (freeFileMem) freeFileMemory(fileMem);
 
@@ -914,8 +914,19 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 
     rpmMessage(RPMMESS_DEBUG, "running postinstall script (if any)\n");
 
-    if (runScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
-		  flags & RPMINSTALL_NOSCRIPTS, 0)) {
+    if (runInstScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
+		      flags & RPMINSTALL_NOSCRIPTS, 0)) {
+	return 2;
+    }
+
+    /* Run triggers this package sets off */
+    if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
+	return 2;
+    }
+
+    /* Run triggers in this package which are set off by other things in
+       the database. */
+    if (runImmedTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
 	return 2;
     }
 

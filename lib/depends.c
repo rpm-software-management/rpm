@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "depends.h"
 #include "intl.h"
 #include "misc.h"
 #include "rpmlib.h"
@@ -72,7 +73,6 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement);
 static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
 			        char * reqVersion, int reqFlags);
-static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags);
 struct availablePackage * alSatisfiesDepend(struct availableList * al, 
 					    char * reqName, char * reqVersion, 
 					    int reqFlags);
@@ -709,7 +709,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
     return ourrc;
 }
 
-static int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
+int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
     char * name, * version, * release, * chptr;
     char * reqVersion = reqInfo;
     char * reqRelease = NULL;

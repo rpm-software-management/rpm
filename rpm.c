@@ -45,6 +45,7 @@
 #define GETOPT_INSTALL		1014
 #define GETOPT_RMSOURCE		1015
 #define GETOPT_RELOCATE		1016
+#define GETOPT_TRIGGEREDBY	1017
 
 char * version = VERSION;
 
@@ -158,6 +159,7 @@ static struct poptOption optionsTable[] = {
 	{ "tarball", 't', POPT_ARG_STRING, 0, 't' },
 	{ "test", '\0', 0, &test, 0 },
 	{ "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK },
+	{ "triggeredby", '\0', 0, 0, GETOPT_TRIGGEREDBY },
 	{ "upgrade", 'U', 0, 0, 'U' },
 	{ "uninstall", 'u', 0, 0, 'u' },
 	{ "verbose", 'v', 0, 0, 'v' },
@@ -503,10 +505,9 @@ int main(int argc, char ** argv) {
     int queryFor = 0;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0;
-    int shortCircuit = 0, queryTags = 0, excldocs = 0;
     int showrc = 0;
     int gotDbpath = 0, building = 0, verifyFlags;
-    int noMd5 = 0, allFiles = 0, justdb = 0, rmsource = 0;
+    int noMd5 = 0, rmsource = 0;
     int checksigFlags = 0;
     int timeCheck = 0;
     int addSign = NEW_SIGNATURE;
@@ -532,44 +533,42 @@ int main(int argc, char ** argv) {
     struct rpmRelocation * relocations = NULL;
     int numRelocations = 0;
 	
-	
-	/* set the defaults for the various command line options */
-	allFiles = 0;
-	allMatches = 0;
-	badReloc = 0;
-	clean = 0;
-	dump = 0;
-	excldocs = 0;
-	force = 0;
-	ftpProxy = NULL;
-	ftpPort = NULL;
-	showHash = 0;
-	help = 0;
-	ignoreArch = 0;
-	ignoreOs = 0;
-	incldocs = 0;
-	initdb = 0;
-	justdb = 0;
-	noDeps = 0;
-	noOrder = 0;
-	noFiles = 0;
-	noMd5 = 0;
-	noPgp = 0;
-	noScripts = 0;
-	oldPackage = 0;
-	showPercents = 0;
-	pipeOutput = NULL;
-	prefix = NULL;
-	queryTags = 0;
-	quiet = 0;
-	replaceFiles = 0;
-	replacePackages = 0;
-	rootdir = "/";
-	shortCircuit = 0;
-	signIt = 0;
-	test = 0;
-	rpm_version = 0;
-
+    /* set the defaults for the various command line options */
+    allFiles = 0;
+    allMatches = 0;
+    badReloc = 0;
+    clean = 0;
+    dump = 0;
+    excldocs = 0;
+    force = 0;
+    ftpProxy = NULL;
+    ftpPort = NULL;
+    showHash = 0;
+    help = 0;
+    ignoreArch = 0;
+    ignoreOs = 0;
+    incldocs = 0;
+    initdb = 0;
+    justdb = 0;
+    noDeps = 0;
+    noOrder = 0;
+    noFiles = 0;
+    noMd5 = 0;
+    noPgp = 0;
+    noScripts = 0;
+    oldPackage = 0;
+    showPercents = 0;
+    pipeOutput = NULL;
+    prefix = NULL;
+    queryTags = 0;
+    quiet = 0;
+    replaceFiles = 0;
+    replacePackages = 0;
+    rootdir = "/";
+    shortCircuit = 0;
+    signIt = 0;
+    test = 0;
+    rpm_version = 0;
 
     /* set up the correct locale */
     setlocale(LC_ALL, "" );
@@ -785,6 +784,14 @@ int main(int argc, char ** argv) {
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
 	    querySource = QUERY_WHATPROVIDES;
+	    break;
+
+	  case GETOPT_TRIGGEREDBY:
+	    if (querySource != QUERY_PACKAGE && 
+		querySource != QUERY_TRIGGEREDBY)
+		argerror(_("one type of query/verify may be performed at a "
+				"time"));
+	    querySource = QUERY_TRIGGEREDBY;
 	    break;
 
 	  case GETOPT_REBUILD:
