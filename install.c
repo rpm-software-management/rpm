@@ -365,7 +365,9 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	for (i = 0; i < numPackages; i++) {
 	    rpmMessage(RPMMESS_DEBUG, "uninstalling record number %d\n",
 			packageOffsets[i]);
-	    rpmRemovePackage(rootdir, db, packageOffsets[i], uninstallFlags);
+	    if (rpmRemovePackage(rootdir, db, packageOffsets[i], 
+				 uninstallFlags))
+		numFailed++;
 	}
     }
 
