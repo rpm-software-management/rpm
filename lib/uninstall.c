@@ -551,9 +551,11 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	break;
 
       case RPMFILE_STATE_NORMAL:
-	if ((action == REMOVE) && (flags & RPMFILE_CONFIG)) {
+	if(S_ISREG(mode) &&
+	  (action == REMOVE) && (flags & RPMFILE_CONFIG)) {
 	    /* if it's a config file, we may not want to remove it */
 	    rpmMessage(RPMMESS_DEBUG, _("finding md5sum of %s\n"), file);
+
 	    if (brokenMd5)
 		rc = mdfileBroken(file, currentMd5);
 	    else
