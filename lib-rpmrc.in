@@ -36,7 +36,7 @@ arch_canon:    000050703700:   rs6000  8
 
 arch_canon:    9000/712:       hppa1.1 9
 
-arch_cnaon:    sun4u:   usparc  9
+arch_cnaon:    sun4u:   usparc  10
 
 #############################################################
 # Canonical OS names and numbers
