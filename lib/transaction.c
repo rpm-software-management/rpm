@@ -1092,7 +1092,7 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 	otherFileNum = shared->otherFileNum;
 	fileNum = shared->pkgFileNum;
 
-	if (otherStates[fileNum] == RPMFILE_STATE_NORMAL)
+	if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL)
 	    fi->actions[fileNum] = FA_SKIP;
     }
 

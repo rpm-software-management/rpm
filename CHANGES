@@ -16,6 +16,7 @@
 	- fix: resurrect -Vp, -Vf and -Vg functionality.
 	- colesce query and verify modes.
 	- better cpio error message if package contains missing hard links.
+	- fix: shared file not skipped when removed.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.
