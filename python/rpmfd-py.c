@@ -227,7 +227,7 @@ PyTypeObject rpmfd_Type = {
 
 rpmfdObject * rpmfd_Wrap(FD_t fd)
 {
-    rpmfdObject *s = PyObject_NEW(rpmfdObject, &rpmfd_Type);
+    rpmfdObject *s = PyObject_New(rpmfdObject, &rpmfd_Type);
     if (s == NULL)
 	return NULL;
     s->fd = fd;

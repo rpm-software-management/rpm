@@ -6,7 +6,7 @@
 
 #define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.7 2002/06/05 20:28:03 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.8 2002/12/10 19:46:03 jbj Exp $";
 
 static char *module_doc = "Python bindings for the popt library\n\
 \n\
@@ -329,7 +329,7 @@ static void ctxDealloc(poptContextObject *self, PyObject *args)
         self->options = NULL;
     }
     poptFreeContext(self->ctx);
-    PyMem_DEL(self);
+    PyObject_Del(self);
 }
 
 static PyTypeObject poptContextType = {
@@ -598,7 +598,7 @@ static PyObject * getContext(PyObject *self, PyObject *args)
 	/* Presumably they've set the exception at a previous level */
 	return NULL;
     /* Parse argv */
-    c = PyObject_NEW(poptContextObject, &poptContextType);
+    c = PyObject_New(poptContextObject, &poptContextType);
     c->options = opts;
     c->optionsNo = count;
     c->opt = -1;

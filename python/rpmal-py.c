@@ -118,7 +118,7 @@ rpmal_dealloc(rpmalObject * s)
 {
     if (s) {
 	s->al = rpmalFree(s->al);
-	PyMem_DEL(s);
+	PyObject_Del(s);
     }
 }
 
@@ -190,7 +190,7 @@ PyTypeObject rpmal_Type = {
 rpmalObject *
 rpmal_Wrap(rpmal al)
 {
-    rpmalObject *s = PyObject_NEW(rpmalObject, &rpmal_Type);
+    rpmalObject *s = PyObject_New(rpmalObject, &rpmal_Type);
     if (s == NULL)
 	return NULL;
     s->al = al;

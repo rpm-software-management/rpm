@@ -8,6 +8,8 @@ PYVER= @WITH_PYTHON_VERSION@
 
 SUBDIRS = rpmdb test
 
+EXTRA_DIST = rpmdebug-py.c
+
 INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \

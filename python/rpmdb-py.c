@@ -208,7 +208,7 @@ static void rpmdb_dealloc(rpmdbObject * s)
 {
     if (s->db)
 	rpmdbClose(s->db);
-    PyMem_DEL(s);
+    PyObject_Del(s);
 }
 
 /**
@@ -290,7 +290,7 @@ rpmdbObject * rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "|is", &forWrite, &root)) return NULL;
 
-    o = PyObject_NEW(rpmdbObject, &rpmdb_Type);
+    o = PyObject_New(rpmdbObject, &rpmdb_Type);
     o->db = NULL;
 
     if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0644)) {

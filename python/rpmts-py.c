@@ -25,6 +25,7 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
 static int _rpmts_debug = 0;
 
 /*@access alKey @*/
@@ -1329,7 +1330,7 @@ fprintf(stderr, "%p -- ts %p db %p\n", trans, trans->ts, trans->ts->rdb);
     /* this will free the keyList, and decrement the ref count of all
        the items on the list as well :-) */
     Py_DECREF(trans->keyList);
-    PyMem_DEL(o);
+    PyObject_Del(o);
 }
 
 /** \ingroup python
@@ -1362,6 +1363,81 @@ static int rpmts_setattr(rpmtsObject * o, char * name, PyObject * val)
     }
 
     return 0;
+}
+
+/** \ingroup python
+ */
+static int rpmts_init(rpmtsObject * s, PyObject *args, PyObject *kwds)
+	/*@*/
+{
+    char * rootDir = "/";
+    int vsflags = rpmExpandNumeric("%{?_vsflags_up2date}");
+
+if (_rpmts_debug < 0)
+fprintf(stderr, "*** rpmts_init(%p,%p,%p)\n", s, args, kwds);
+
+    if (!PyArg_ParseTuple(args, "|si:rpmts_init", &rootDir, &vsflags))
+	return -1;
+
+    s->ts = rpmtsCreate();
+    (void) rpmtsSetRootDir(s->ts, rootDir);
+    (void) rpmtsSetVSFlags(s->ts, vsflags);
+    s->keyList = PyList_New(0);         
+    s->scriptFd = NULL;                 
+    s->tsi = NULL;
+    s->tsiFilter = 0;
+
+    return 0;
+}
+
+/** \ingroup python
+ */
+static void rpmts_free(rpmtsObject * s)
+	/*@*/
+{
+if (_rpmts_debug)
+fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
+    rpmtsFree(s->ts);
+
+    if (s->scriptFd)
+	Fclose(s->scriptFd);
+
+    /* this will free the keyList, and decrement the ref count of all
+       the items on the list as well :-) */
+    Py_DECREF(s->keyList);
+
+   _PyObject_GC_Del((PyObject *)s);
+}
+
+/** \ingroup python
+ */
+static PyObject * rpmts_alloc(PyTypeObject * subtype, int nitems)
+	/*@*/
+{
+    PyObject * s = PyType_GenericAlloc(subtype, nitems);
+
+if (_rpmts_debug < 0)
+fprintf(stderr, "*** rpmts_alloc(%p,%d) ret %p\n", subtype, nitems, s);
+    return s;
+}
+
+/** \ingroup python
+ */
+static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+	/*@*/
+{
+    rpmtsObject * s = (void *) PyObject_New(rpmtsObject, subtype);
+
+    /* Perform additional initialization. */
+    if (rpmts_init(s, args, kwds) < 0) {
+	rpmts_free(s);
+	return NULL;
+    }
+
+if (_rpmts_debug)
+fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, s->ts->rdb);
+
+    return (PyObject *)s;
 }
 
 /**
@@ -1411,10 +1487,10 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
+	(initproc) rpmts_init,		/* tp_init */
+	(allocfunc) rpmts_alloc,	/* tp_alloc */
+	(newfunc) rpmts_new,		/* tp_new */
+	(destructor) rpmts_free,	/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };

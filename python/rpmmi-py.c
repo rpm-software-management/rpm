@@ -208,7 +208,7 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
 {
     if (s) {
 	if (s->mi) s->mi = rpmdbFreeIterator(s->mi);
-	PyMem_DEL(s);
+	PyObject_Del(s);
     }
 }
 
@@ -278,7 +278,7 @@ PyTypeObject rpmmi_Type = {
 
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
 {
-    rpmmiObject * mio = (rpmmiObject *) PyObject_NEW(rpmmiObject, &rpmmi_Type);
+    rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
 
     if (mio == NULL) {
         PyErr_SetString(pyrpmError, "out of memory creating rpmmiObject");

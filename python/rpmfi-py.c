@@ -370,7 +370,7 @@ rpmfi_dealloc(/*@only@*/ /*@null@*/ rpmfiObject * s)
 {
     if (s) {
 	s->fi = rpmfiFree(s->fi);
-	PyMem_DEL(s);
+	PyObject_Del(s);
     }
 }
 
@@ -490,7 +490,7 @@ rpmfi fiFromFi(rpmfiObject * s)
 rpmfiObject *
 rpmfi_Wrap(rpmfi fi)
 {
-    rpmfiObject *s = PyObject_NEW(rpmfiObject, &rpmfi_Type);
+    rpmfiObject *s = PyObject_New(rpmfiObject, &rpmfi_Type);
 
     if (s == NULL)
 	return NULL;

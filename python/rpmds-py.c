@@ -235,7 +235,7 @@ rpmds_dealloc(rpmdsObject * s)
 {
     if (s) {
 	s->ds = rpmdsFree(s->ds);
-	PyMem_DEL(s);
+	PyObject_Del(s);
     }
 }
 
@@ -354,7 +354,7 @@ rpmds dsFromDs(rpmdsObject * s)
 rpmdsObject *
 rpmds_Wrap(rpmds ds)
 {
-    rpmdsObject * s = PyObject_NEW(rpmdsObject, &rpmds_Type);
+    rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
 
     if (s == NULL)
 	return NULL;

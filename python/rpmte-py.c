@@ -421,7 +421,7 @@ PyTypeObject rpmte_Type = {
 
 rpmteObject * rpmte_Wrap(rpmte te)
 {
-    rpmteObject *s = PyObject_NEW(rpmteObject, &rpmte_Type);
+    rpmteObject *s = PyObject_New(rpmteObject, &rpmte_Type);
     if (s == NULL)
 	return NULL;
     s->te = te;

@@ -387,7 +387,7 @@ static void hdr_dealloc(hdrObject * s)
     s->md5list = _free(s->md5list);
     s->fileList = _free(s->fileList);
     s->linkList = _free(s->linkList);
-    PyMem_DEL(s);
+    PyObject_Del(s);
 }
 
 /** \ingroup python
@@ -632,7 +632,7 @@ PyTypeObject hdr_Type = {
 
 hdrObject * hdr_Wrap(Header h)
 {
-    hdrObject * hdr = PyObject_NEW(hdrObject, &hdr_Type);
+    hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
     hdr->h = headerLink(h);
     hdr->fileList = hdr->linkList = hdr->md5list = NULL;
     hdr->uids = hdr->gids = hdr->mtimes = hdr->fileSizes = NULL;
