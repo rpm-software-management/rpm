@@ -487,7 +487,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_SGROUP:
       case QUERY_GROUP:
 	if (rpmdbFindByGroup(db, arg, &matches)) {
-	    fprintf(stderr, "group %s does not contain any pacakges\n", arg);
+	    fprintf(stderr, "group %s does not contain any packages\n", arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -514,7 +514,12 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_SPACKAGE:
       case QUERY_PACKAGE:
 	if (isdigit(arg[0])) {
-	    recNumber = atoi(arg);
+	    char *end = NULL;
+	    recNumber = strtoul(arg, &end, 10);
+	    if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
+		fprintf(stderr, "invalid package name: %s\n", arg);
+		return 1;
+	    }
 	    message(MESS_DEBUG, "showing package: %d\n", recNumber);
 	    h = rpmdbGetRecord(db, recNumber);
 
