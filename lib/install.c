@@ -556,6 +556,9 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 
 /**
  * Setup payload map and install payload archive.
+ *
+ * @todo Add endian tag so that srpm MD5 sums can ber verified when installed.
+ *
  * @param fd		file handle of package (positioned at payload)
  * @param files		files to install (NULL means "all files")
  * @param fileCount	no. files to install
@@ -610,7 +613,13 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
 #else
 	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
 #endif
-	    map[mappedFiles].md5sum = files[i].md5sum;
+	    /* XXX Can't do src rpm MD5 sum verification yet. */
+	    map[mappedFiles].md5sum =
+		specFile == NULL ? files[i].md5sum : NULL;
+	    /* XXX Can't do src rpm MD5 sum verification (yet). */
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
+	    map[mappedFiles].md5sum = headerIsEntry(h, RPMTAG_SOURCERPM)
+			?  files[i].md5sum : NULL;
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;

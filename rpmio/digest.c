@@ -407,7 +407,8 @@ rpmDigestInit(rpmDigestFlags flags)
 	ctx->digest[ 4 ] = 0xc3d2e1f0;
     }
 
-    ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 0 : 1;
+    /* md5 sums are little endian (no swap) so big endian needs the swap. */
+    ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 1 : 0;
     if (flags & RPMDIGEST_NATIVE)
 	ctx->doByteReverse = 0;
 

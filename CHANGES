@@ -33,6 +33,8 @@
 	- fix: duplicate headerFree() on installBinaryPackage() error return.
 	- fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
 	- hpux w/o -D_OPEN_SOURCE has not h_errno.
+	- syntax to specify source of Requires: (PreReq: now legacy).
+	- md5 sums are little endian (no swap) so big endian needs the swap.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
