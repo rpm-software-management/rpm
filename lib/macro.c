@@ -1487,7 +1487,8 @@ rpmExpandNumeric(const char *arg)
     return rc;
 }
 
-const char *rpmCleanPath(char * path)
+/* XXX FIXME: ../sbin/./../bin/ */
+char *rpmCleanPath(char * path)
 {
     const char *s;
     char *se, *t, *te;

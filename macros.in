@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.43 2000/01/11 19:12:35 jbj Exp $
+# $Id: macros.in,v 1.44 2000/01/12 21:48:58 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -116,6 +116,8 @@
 #%buildroot
 
 #	The sub-directory (relative to %{_builddir}) where sources are compiled.
+#	This macro is set after processing %setup, either explicitly from the
+#	value given to -n or the default name-version.
 #
 #%buildsubdir
 

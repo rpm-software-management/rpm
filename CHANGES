@@ -42,6 +42,7 @@
 	- use only %_install_langs, not LINGUAS/LANG when deciding to install.
 	- configurable compression type/level for package payloads.
 	- default value for %_install_langs is all.
+	- fix: resurrect relative path's in fprint lookup queries.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

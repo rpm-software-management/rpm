@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-01-11 11:56-0500\n"
+"POT-Creation-Date: 2000-01-12 16:44-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1421,7 +1421,7 @@ msgstr ""
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1164 build/pack.c:481
+#: build/files.c:1164 build/pack.c:485
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1549,47 +1549,47 @@ msgstr ""
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:430
+#: build/pack.c:433
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: build/pack.c:449
+#: build/pack.c:453
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:456
+#: build/pack.c:460
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:536
+#: build/pack.c:540
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:543
+#: build/pack.c:547
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:550
+#: build/pack.c:554
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:557
+#: build/pack.c:561
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:569
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:580
+#: build/pack.c:584
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2862,76 +2862,76 @@ msgid ""
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:469
+#: lib/rpmdb.c:470
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: lib/rpmdb.c:480
+#: lib/rpmdb.c:481
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:504 lib/uninstall.c:87
+#: lib/rpmdb.c:505 lib/uninstall.c:87
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/rpmdb.c:512
+#: lib/rpmdb.c:513
 msgid "package has no name"
 msgstr ""
 
-#: lib/rpmdb.c:514
+#: lib/rpmdb.c:515
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:519
+#: lib/rpmdb.c:520
 msgid "package has no group\n"
 msgstr ""
 
-#: lib/rpmdb.c:521
+#: lib/rpmdb.c:522
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:529
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:543
+#: lib/rpmdb.c:544
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:555
+#: lib/rpmdb.c:556
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:566
+#: lib/rpmdb.c:567
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:577
+#: lib/rpmdb.c:578
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:586
+#: lib/rpmdb.c:587
 msgid "package has no files\n"
 msgstr ""
 
-#: lib/rpmdb.c:692
+#: lib/rpmdb.c:693
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:751
+#: lib/rpmdb.c:752
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:765
 msgid "header changed size!"
 msgstr ""
 

@@ -55,7 +55,7 @@ void	rpmFreeMacros	(MacroContext * mc);
 int	isCompressed	(const char * file, int * compressed);
 
 char *	rpmExpand	(const char * arg, ...);
-const char *rpmCleanPath(char * path);
+char *	rpmCleanPath	(char * path);
 const char *rpmGetPath	(const char * path, ...);
 const char *rpmGenPath	(const char * root, const char * mdir,
 				const char * file);

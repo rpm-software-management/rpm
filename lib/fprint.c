@@ -1,6 +1,8 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmmacro.h>	/* XXX for rpmCleanPath */
+
 #include "fprint.h"
 
 fingerPrintCache fpCacheCreate(int sizeHint)
@@ -34,6 +36,8 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	const char * dirName, const char * baseName, int scareMemory)
 {
     char dir[PATH_MAX];
+    const char * cleanDirName;
+    size_t cdnl;
     char * end;		    /* points to the '\0' at the end of "buf" */
     fingerPrint fp;
     struct stat sb;
@@ -42,12 +46,20 @@ static fingerPrint doLookup(fingerPrintCache cache,
 
     /* assert(*dirName == '/' || !scareMemory); */
 
-    if (*dirName != '/') {
-	scareMemory = 0;
+    /* XXX WATCHOUT: fp.subDir is set below from relocated dirName arg */
+    cleanDirName = dirName;
+    cdnl = strlen(cleanDirName);
+
+    if (*cleanDirName == '/') {
+	if (!scareMemory)
+	    cleanDirName =
+		rpmCleanPath(strcpy(alloca(cdnl+1), dirName));
+    } else {
+	scareMemory = 0;	/* XXX causes memory leak */
 
 	/* Using realpath on the arg isn't correct if the arg is a symlink,
 	 * especially if the symlink is a dangling link.  What we 
-	 * do instaed is use realpath() on `.' and then append arg to
+	 * do instead is use realpath() on `.' and then append arg to
 	 * the result.
 	 */
 
@@ -55,21 +67,24 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	   oh well. likewise if it's too long.  */
 	dir[0] = '\0';
 	if ( /*@-unrecog@*/ realpath(".", dir) /*@=unrecog@*/ != NULL) {
-	    char *s = alloca(strlen(dir) + strlen(dirName) + 2);
-	    sprintf(s, "%s/%s", dir, dirName);
-	    dirName = s;
+	    end = dir + strlen(dir);
+	    if (end[-1] != '/')	*end++ = '/';
+	    end = stpncpy(end, cleanDirName, sizeof(dir) - (end - dir));
+	    *end = '\0';
+	    rpmCleanPath(dir);	/* XXX possible /../ from concatenation */
+	    end = dir + strlen(dir);
+	    if (end[-1] != '/')	*end++ = '/';
+	    *end = '\0';
+	    cleanDirName = dir;
+	    cdnl = end - dir;
 	}
     }
 
-    /* FIXME: perhaps we should collapse //, /./, and /../ stuff if
-       !scareMemory?? */
-
-    buf = alloca(strlen(dirName) + 1);
-    strcpy(buf, dirName);
-    end = buf + strlen(buf);
+    buf = strcpy(alloca(cdnl + 1), cleanDirName);
+    end = buf + cdnl;
 
     /* no need to pay attention to that extra little / at the end of dirName */
-    if (*(end - 1) == '/' && buf[1]) {
+    if (buf[1] && end[-1] == '/') {
 	end--;
 	*end = '\0';
     }
@@ -82,9 +97,10 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	if ((cacheHit = cacheContainsDirectory(cache, *buf ? buf : "/"))) {
 	    fp.entry = cacheHit;
 	} else if (!stat(*buf ? buf : "/", &sb)) {
-	    size_t nb = sizeof(*fp.entry) + (*buf ? strlen(buf) : 1) + 1;
+	    size_t nb = sizeof(*fp.entry) + (*buf ? (end-buf) : 1) + 1;
 	    char * dn = xmalloc(nb);
 	    struct fprintCacheEntry_s * newEntry = (void *)dn;
+
 	    dn += sizeof(*newEntry);
 	    strcpy(dn, (*buf ? buf : "/"));
 	    newEntry->ino = sb.st_ino;
@@ -97,7 +113,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	}
 
         if (fp.entry) {
-	    fp.subDir = dirName + (end - buf);
+	    fp.subDir = cleanDirName + (end - buf);
 	    if (fp.subDir[0] == '/' && fp.subDir[1] != '\0')
 		fp.subDir++;
 	    if (fp.subDir[0] == '\0')
