@@ -34,7 +34,7 @@
 #define PARSER_IN_EXPR  2
 
 /*@unchecked@*/
-static int _h_debug = 0;
+static int _h_debug = 1;
 
 /** \ingroup header
  */
@@ -99,13 +99,14 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
  * @return		referenced header instance
  */
 HSTATIC
-Header XheaderLink(Header h, const char * msg, const char * fn, unsigned ln)
+Header XheaderLink(Header h, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
     if (h != NULL) h->nrefs++;
 /*@-modfilesystem@*/
-if (_h_debug)
-fprintf(stderr, "--> h %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
+if (_h_debug > 0 && msg != NULL)
+fprintf(stderr, "--> h  %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans -nullret @*/
     return h;
@@ -119,12 +120,12 @@ fprintf(stderr, "--> h %p ++ %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), m
  */
 HSTATIC
 Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
-		const char * msg, const char * fn, unsigned ln)
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
 /*@-modfilesystem@*/
-if (_h_debug)
-fprintf(stderr, "--> h %p -- %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
+if (_h_debug > 0 && msg != NULL)
+fprintf(stderr, "--> h  %p -- %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), msg, fn, ln);
 /*@=modfilesystem@*/
     if (h != NULL) h->nrefs--;
     return NULL;
@@ -136,8 +137,8 @@ fprintf(stderr, "--> h %p -- %d %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), m
  * @return		NULL always
  */
 HSTATIC /*@null@*/
-Header XheaderFree( /*@null@*/ /*@killref@*/ Header h,
-		const char * msg, const char * fn, unsigned ln)
+Header XheaderFree(/*@killref@*/ /*@null@*/ Header h,
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
     (void) XheaderUnlink(h, msg, fn, ln);

@@ -92,6 +92,8 @@ struct transactionElement_s {
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
 /*@refcounted@*/ /*@null@*/
+    rpmDepSet this;		/*!< This package's provided NEVR. */
+/*@refcounted@*/ /*@null@*/
     rpmDepSet provides;		/*!< Provides: dependencies. */
 /*@refcounted@*/ /*@null@*/
     rpmDepSet requires;		/*!< Requires: dependencies. */

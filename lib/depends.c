@@ -155,6 +155,7 @@ static void delTE(transactionElement p)
 	p->relocs = _free(p->relocs);
     }
 
+    p->this = dsFree(p->this);
     p->provides = dsFree(p->provides);
     p->requires = dsFree(p->requires);
     p->conflicts = dsFree(p->conflicts);
@@ -163,14 +164,14 @@ static void delTE(transactionElement p)
 
     /*@-type@*/ /* FIX: cast? */
     if (p->fd != NULL)
-        p->fd = fdFree(p->fd, "alAddPackage (rpmtransFree)");
+        p->fd = fdFree(p->fd, "alAddPackage (delTE)");
     /*@=type@*/
 
     p->os = _free(p->os);
     p->arch = _free(p->arch);
     p->epoch = _free(p->epoch);
-    p->NEVR = _free(p->NEVR);
     p->name = _free(p->name);
+    p->NEVR = _free(p->NEVR);
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
     /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
     return;
@@ -185,8 +186,8 @@ static void addTE(transactionElement p, Header h,
 {
     int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char * arch, * os;
     int_32 * ep;
+    const char * arch, * os;
     int xx;
 
     p->NEVR = hGetNEVR(h, NULL);
@@ -213,6 +214,7 @@ static void addTE(transactionElement p, Header h,
 	p->epoch = NULL;
     /*@=branchstate@*/
 
+    p->this = dsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
     p->fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
     p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
@@ -224,7 +226,7 @@ static void addTE(transactionElement p, Header h,
     /*@=assignexpose =ownedtrans @*/
 
     /*@-type@*/ /* FIX: cast? */
-    p->fd = (fd != NULL ? fdLink(fd, "rpmtransAddPackage") : NULL);
+    p->fd = (fd != NULL ? fdLink(fd, "addTE") : NULL);
     /*@=type@*/
 
     if (relocs != NULL) {
@@ -383,15 +385,12 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char * name = NULL;
-    char * addNEVR = hGetNEVR(h, &name);
-    char * pkgNEVR = NULL;
     int isSource;
     int duplicate = 0;
     teIterator pi; transactionElement p;
+    rpmDepSet add;
     rpmDepSet obsoletes;
     alKey pkgKey;	/* addedPackages key */
-    int apx;			/* addedPackages index */
     int xx;
     int ec = 0;
     int rc;
@@ -399,53 +398,29 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 
     /*
      * Check for previously added versions with the same name.
+     * FIXME: only catches previously added, older packages.
      */
-    apx = 0;
+    add = dsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
+    pkgKey = RPMAL_NOMATCH;
     pi = teInitIterator(ts);
     /* XXX Only added packages need be checked for dupes. */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
-	const char * pname;
-	Header ph;
-
-	apx++;
-
-	ph = alGetHeader(ts->addedPackages, p->u.addedKey, 0);
-	if (ph == NULL)
-	    break;
-
-	pkgNEVR = _free(pkgNEVR);
-	pname = NULL;
-	pkgNEVR = hGetNEVR(ph, &pname);
-
-	if (strcmp(pname, name)) {
-            pkgNEVR = _free(pkgNEVR);
-            ph = headerFree(ph, "alGetHeader nomatch");
-            continue;
-	}
-	
-	rc = rpmVersionCompare(ph, h);
-	ph = headerFree(ph, "alGetHeader match");
-
-	if (rc > 0) {
+	rc = dsCompare(add, p->this);
+	if (rc != 0) {
+	    const char * pkgNEVR = dsiGetDNEVR(p->this);
+	    const char * addNEVR = dsiGetDNEVR(add);
 	    rpmMessage(RPMMESS_WARNING,
-		_("newer package %s already added, skipping %s\n"),
-		pkgNEVR, addNEVR);
-	    goto exit;
-	} else if (rc == 0) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("package %s already added, ignoring\n"),
-		pkgNEVR);
-	    goto exit;
-	} else {
-	    rpmMessage(RPMMESS_WARNING,
-		_("older package %s already added, replacing with %s\n"),
-		pkgNEVR, addNEVR);
+		_("package %s was already added, replacing with %s\n"),
+		(pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
+		(addNEVR ? addNEVR + 2 : "?addNEVR?"));
 	    duplicate = 1;
+	    pkgKey = p->u.addedKey;
+	    break;
 	}
-	break;
     }
     pi = teFreeIterator(pi);
-    oc = (p == NULL ? ts->orderCount : (p - ts->order));
+    add = dsFree(add);
+    oc = (p ? (p - ts->order) : ts->orderCount);
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
@@ -463,8 +438,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     addTE(p, h, fd, key, relocs);
 
     p->type = TR_ADDED;
-    /* XXX cast assumes that available keys are indices, not pointers */
-    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, p->key, h,
+    pkgKey = alAddPackage(ts->addedPackages, pkgKey, p->key, h,
 			p->provides, p->fns);
     if (pkgKey == RPMAL_NOMATCH) {
 	ec = 1;
@@ -498,7 +472,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 #endif
 
     if (!duplicate) {
-assert(apx == ts->numAddedPackages);
 	ts->numAddedPackages++;
 	ts->orderCount++;
     }
@@ -581,8 +554,6 @@ assert(apx == ts->numAddedPackages);
     ec = 0;
 
 exit:
-    pkgNEVR = _free(pkgNEVR);
-    addNEVR = _free(addNEVR);
     pi = teFreeIterator(pi);
     return ec;
 }
@@ -630,36 +601,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 
 	pi = teInitIterator(ts);
 	while ((p = teNextIterator(pi)) != NULL) {
-#ifdef	DYING
-	    rpmRelocation * r;
-
-	    if (p->relocs) {
-		for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-		    r->oldPath = _free(r->oldPath);
-		    r->newPath = _free(r->newPath);
-		}
-		p->relocs = _free(p->relocs);
-	    }
-
-	    p->provides = dsFree(p->provides);
-	    p->requires = dsFree(p->requires);
-	    p->conflicts = dsFree(p->conflicts);
-	    p->obsoletes = dsFree(p->obsoletes);
-	    p->fns = fnsFree(p->fns);
-
-	    /*@-type@*/ /* FIX: cast? */
-	    if (p->fd != NULL)
-	        p->fd = fdFree(p->fd, "alAddPackage (rpmtransFree)");
-	    /*@=type@*/
-
-	    p->os = _free(p->os);
-	    p->arch = _free(p->arch);
-	    p->epoch = _free(p->epoch);
-	    p->NEVR = _free(p->NEVR);
-	    p->name = _free(p->name);
-#else
 	    delTE(p);
-#endif
 	}
 	pi = teFreeIterator(pi);
 
@@ -874,29 +816,26 @@ exit:
 /**
  * Check header requires/conflicts against against installed+added packages.
  * @param ts		transaction set
- * @param h		header to check
- * @param keyName	dependency name
+ * @param pkgNEVR	package name-version-release
+ * @param requires	Requires: dependencies (or NULL)
+ * @param conflicts	Conflicts: dependencies (or NULL)
+ * @param keyName	dependency name to filter (or NULL)
  * @param multiLib	skip multilib colored dependencies?
  * @return		0 no problems found
  */
-static int checkPackageDeps(rpmTransactionSet ts,
-		Header h, const char * keyName, uint_32 multiLib)
+static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
+		/*@null@*/ rpmDepSet requires, /*@null@*/ rpmDepSet conflicts,
+		/*@null@*/ const char * keyName, uint_32 multiLib)
 	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem */
+	/*@modifies ts, requires, conflicts, fileSystem */
 {
     rpmProblemSet ps = ts->probs;
-    const char * name, * version, * release;
-    int scareMem = _DS_SCAREMEM;
-    rpmDepSet requires;
-    rpmDepSet conflicts;
     const char * Name;
     int_32 Flags;
-    int rc, xx;
+    int rc;
     int ourrc = 0;
 
-    xx = headerNVR(h, &name, &version, &release);
-
-    requires = dsiInit(dsNew(h, RPMTAG_REQUIRENAME, scareMem));
+    requires = dsiInit(requires);
     if (requires != NULL)
     while (!ourrc && dsiNext(requires) >= 0) {
 
@@ -929,7 +868,7 @@ static int checkPackageDeps(rpmTransactionSet ts,
 	    }
 	    /*@=branchstate@*/
 
-	    dsProblem(ps, h, requires, suggestedKeys);
+	    dsProblem(ps, pkgNEVR, requires, suggestedKeys);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -939,9 +878,8 @@ static int checkPackageDeps(rpmTransactionSet ts,
 	    /*@switchbreak@*/ break;
 	}
     }
-    requires = dsFree(requires);
 
-    conflicts = dsiInit(dsNew(h, RPMTAG_CONFLICTNAME, scareMem));
+    conflicts = dsiInit(conflicts);
     if (conflicts != NULL)
     while (!ourrc && dsiNext(conflicts) >= 0) {
 
@@ -965,7 +903,7 @@ static int checkPackageDeps(rpmTransactionSet ts,
 	switch (rc) {
 	case 0:		/* conflicts exist. */
 	    /*@-mayaliasunique@*/ /* LCL: NULL may alias h ??? */
-	    dsProblem(ps, h, conflicts, NULL);
+	    dsProblem(ps, pkgNEVR, conflicts, NULL);
 	    /*@=mayaliasunique@*/
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
@@ -976,7 +914,6 @@ static int checkPackageDeps(rpmTransactionSet ts,
 	    /*@switchbreak@*/ break;
 	}
     }
-    conflicts = dsFree(conflicts);
 
     return ourrc;
 }
@@ -995,20 +932,33 @@ static int checkPackageSet(rpmTransactionSet ts,
 	/*@globals fileSystem @*/
 	/*@modifies ts, mi, fileSystem @*/
 {
+    int scareMem = 1;
     Header h;
-    int rc = 0;
+    int ec = 0;
 
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	if (checkPackageDeps(ts, h, key, 0)) {
-	    rc = 1;
+	const char * pkgNEVR;
+	rpmDepSet requires, conflicts;
+	int rc;
+
+	pkgNEVR = hGetNEVR(h, NULL);
+	requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, key, 0);
+	conflicts = dsFree(conflicts);
+	requires = dsFree(requires);
+	pkgNEVR = _free(pkgNEVR);
+
+	if (rc) {
+	    ec = 1;
 	    break;
 	}
     }
     mi = rpmdbFreeIterator(mi);
 
-    return rc;
+    return ec;
 }
 
 /**
@@ -1392,6 +1342,9 @@ static void addQ(transactionElement p,
 
 int rpmdepOrder(rpmTransactionSet ts)
 {
+	rpmDepSet requires;
+	int_32 Flags;
+
     int numAddedPackages = ts->numAddedPackages;
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
     teIterator pi; transactionElement p;
@@ -1432,8 +1385,6 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
     pi = teInitIterator(ts);
     /* XXX Only added packages are ordered (for now). */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
-	rpmDepSet requires;
-	int_32 Flags;
 
 	requires = p->requires;
 	if (requires == NULL)
@@ -1629,7 +1580,6 @@ prtTSI(" p", p->tsi);
 
 	    /* T13. Print predecessor chain from start of loop. */
 	    while ((p = q) != NULL && (q = p->tsi->tsi_chain) != NULL) {
-		rpmDepSet requires;
 		const char * dp;
 		char buf[4096];
 
@@ -1804,7 +1754,6 @@ int rpmdepCheck(rpmTransactionSet ts,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi = NULL;
-    Header h = NULL;
     teIterator pi = NULL; transactionElement p;
     int closeatexit = 0;
     int j, xx;
@@ -1832,37 +1781,19 @@ int rpmdepCheck(rpmTransactionSet ts,
     pi = teInitIterator(ts);
     /* XXX Only added packages are checked (for now). */
     while ((p = teNext(pi, TR_ADDED)) != NULL) {
-	char * pkgNVR = NULL, * n, * v, * r;
 	rpmDepSet provides;
 	uint_32 multiLib;
 
-	h = alGetHeader(ts->addedPackages, p->u.addedKey, 0);
-	if (h == NULL)		/* XXX can't happen */
-	    break;
-
-	pkgNVR = _free(pkgNVR);
-	pkgNVR = hGetNEVR(h, NULL);
 	multiLib = p->multiLib;
 
-        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , pkgNVR);
-	rc = checkPackageDeps(ts, h, NULL, multiLib);
-	h = headerFree(h, "alGetHeader");
-
-	if (rc) {
-	    pkgNVR = _free(pkgNVR);
+        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , p->NEVR);
+	rc = checkPackageDeps(ts, p->NEVR, p->requires, p->conflicts,
+			NULL, multiLib);
+	if (rc)
 	    goto exit;
-	}
 
 	/* Adding: check name against conflicts matches. */
-
-	if ((r = strrchr(pkgNVR, '-')) != NULL)
-	    *r++ = '\0';
-	if ((v = strrchr(pkgNVR, '-')) != NULL)
-	    *v++ = '\0';
-	n = pkgNVR;
-
-	rc = checkDependentConflicts(ts, n);
-	pkgNVR = _free(pkgNVR);
+	rc = checkDependentConflicts(ts, p->name);
 	if (rc)
 	    goto exit;
 
@@ -1894,17 +1825,17 @@ int rpmdepCheck(rpmTransactionSet ts,
     /*@-branchstate@*/
     if (ts->numRemovedPackages > 0) {
       rpmDepSet provides;
+      Header h;
 
       mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
       xx = rpmdbAppendIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages);
       while ((h = rpmdbNextIterator(mi)) != NULL) {
 
-	{   const char * name, * version, * release;
-
-	    xx = headerNVR(h, &name, &version, &release);
-	    rpmMessage(RPMMESS_DEBUG,  "========== --- %s-%s-%s\n" ,
-		name, version, release);
+	{   const char * name = NULL;
+	    const char * pkgNEVR = hGetNEVR(h, &name);
+	    rpmMessage(RPMMESS_DEBUG,  "========== --- %s\n" , pkgNEVR);
+	    pkgNEVR = _free(pkgNEVR);
 
 	    /* Erasing: check name against requiredby matches. */
 	    rc = checkDependentPackages(ts, name);

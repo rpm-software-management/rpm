@@ -81,7 +81,7 @@ struct rpmDepSet_s {
 /*@only@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
 /*@only@*/
-    const int_32 * Flags;	/*!< Flags identifying context/comparison. */
+    int_32 * Flags;		/*!< Flags identifying context/comparison. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
 /*@refs@*/ int nrefs;		/*!< Reference count. */
@@ -209,6 +209,29 @@ char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
 	/*@*/;
 
 /**
+ * Create, load and initialize a dependency for this header. 
+ * @param h		header
+ * @param tagN		type of dependency
+ * @param Flags		comparison flags
+ * @return		new dependency set
+ */
+/*@null@*/
+rpmDepSet dsThis(Header h, rpmTag tagN, int_32 Flags)
+	/*@*/;
+
+/**
+ * Create, load and initialize a dependency set of size 1.
+ * @param tagN		type of dependency
+ * @param N		name
+ * @param EVR		epoch:version-release
+ * @param Flags		comparison flags
+ * @return		new dependency set
+ */
+/*@null@*/
+rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
+	/*@*/;
+
+/**
  * Return dependency set count.
  * @param ds		dependency set
  * @return		current count
@@ -309,9 +332,10 @@ int dsCompare(const rpmDepSet A, const rpmDepSet B)
 /**
  * Report a Requires: or Conflicts: dependency problem.
  */
-void dsProblem(/*@null@*/ rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
+void dsProblem(/*@null@*/ rpmProblemSet tsprobs,
+		const char * pkgNEVR, const rpmDepSet ds,
 		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys)
-	/*@modifies tsprobs, h @*/;
+	/*@modifies tsprobs @*/;
 
 /**
  * Compare package provides dependencies from header with a single dependency.

@@ -61,7 +61,6 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access alKey @*/
 /*@access fnpyKey @*/
 
-/*@access rpmDepSet @*/
 /*@access rpmFNSet @*/
 /*@access TFI_t @*/
 
@@ -700,9 +699,9 @@ static int ensureOlder(rpmTransactionSet ts,
 static int ensureOlder(rpmTransactionSet ts, transactionElement p, Header h)
 	/*@modifies ts @*/
 {
-    rpmDepSet req = memset(alloca(sizeof(*req)), 0, sizeof(*req));
-    const char * reqEVR;
     int_32 reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
+    const char * reqEVR;
+    rpmDepSet req;
     char * t;
     int rc;
 
@@ -717,25 +716,9 @@ static int ensureOlder(rpmTransactionSet ts, transactionElement p, Header h)
     *t++ = '-';
     if (p->release != NULL)	t = stpcpy(t, p->release);
     
-    /*@-compmempass@*/
-    req->i = -1;
-    req->Type = "Requires";
-    req->tagN = RPMTAG_REQUIRENAME;
-    req->DNEVR = NULL;
-    /*@-immediatetrans@*/
-    /*@-assignexpose@*/
-    req->N = (const char **) &p->name;
-    /*@=assignexpose@*/
-    req->EVR = &reqEVR;
-    req->Flags = &reqFlags;
-    /*@=immediatetrans@*/
-    req->Count = 1;
-    (void) dsiNext(dsiInit(req));
-
+    req = dsSingle(RPMTAG_REQUIRENAME, p->name, reqEVR, reqFlags);
     rc = headerMatchesDepFlags(h, req);
-
-    req->DNEVR = _free(req->DNEVR);
-    /*@=compmempass@*/
+    req = dsFree(req);
 
     /*@-branchstate@*/ /* FIX: p->key ??? */
     if (rc == 0) {

@@ -46,7 +46,7 @@ Header headerNew(void)
  */
 /*@unused@*/ static inline
 /*@null@*/ Header XheaderFree( /*@killref@*/ /*@null@*/ Header h,
-		const char * msg, const char * fn, unsigned ln)
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
@@ -62,7 +62,8 @@ Header headerNew(void)
  * @return		new theader reference
  */
 /*@unused@*/ static inline
-Header XheaderLink(Header h, const char * msg, const char * fn, unsigned ln)
+Header XheaderLink(Header h, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
     return (h2hv(h)->Xhdrlink) (h, msg, fn, ln);
@@ -76,7 +77,7 @@ Header XheaderLink(Header h, const char * msg, const char * fn, unsigned ln)
  */
 /*@unused@*/ static inline
 Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
-		const char * msg, const char * fn, unsigned ln)
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
     /*@-abstract@*/

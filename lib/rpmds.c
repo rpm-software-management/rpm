@@ -15,26 +15,6 @@
 /*@unchecked@*/
 static int _fns_debug = 0;
 
-/*@-shadow@*/	/* XXX copy from depends.c for now. */
-static char * hGetNEVR(Header h, /*@out@*/ const char ** np)
-	/*@modifies *np @*/
-{
-    const char * n, * v, * r;
-    char * NVR, * t;
-
-    (void) headerNVR(h, &n, &v, &r);
-    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    if (np)
-	*np = n;
-    return NVR;
-}
-/*@=shadow@*/
-
 rpmFNSet XrpmfnsUnlink(rpmFNSet fns, const char * msg, const char * fn, unsigned ln)
 {
     if (fns == NULL) return NULL;
@@ -89,7 +69,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fns, fns->Type, fns->fc);
 
 	/*@-evalorder@*/
 	if (fns->h != NULL) {
-	    fns->h = headerFree(fns->h, "fnsFree");
+	    fns->h = headerFree(fns->h, fns->Type);
 	} else {
 	    fns->fmtimes = _free(fns->fmtimes);
 	    fns->fmodes = _free(fns->fmodes);
@@ -137,9 +117,9 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 	int xx;
 
 	fns = xcalloc(1, sizeof(*fns));
-	fns->h = headerLink(h, "fnsNew");
-	fns->i = -1;
 	fns->Type = Type;
+	fns->h = headerLink(h, fns->Type);
+	fns->i = -1;
 	fns->tagN = tagN;
 	fns->bnl = N;
 	fns->fc = Count;
@@ -175,7 +155,7 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 	    _fdupe(fns, fsizes);
 	    _fdupe(fns, frdevs);
 	    _fdupe(fns, dil);
-	    fns->h = headerFree(fns->h, "fnsNew");
+	    fns->h = headerFree(fns->h, fns->Type);
 	}
 
 /*@-modfilesystem@*/
@@ -263,7 +243,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	/*@-evalorder@*/
 	ds->Flags = (ds->h != NULL ? hfd(ds->Flags, ds->Ft) : _free(ds->Flags));
 	/*@=evalorder@*/
-	ds->h = headerFree(ds->h, "dsFree");
+	ds->h = headerFree(ds->h, ds->Type);
     }
     /*@=branchstate@*/
 
@@ -322,9 +302,9 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 	int xx;
 
 	ds = xcalloc(1, sizeof(*ds));
-	ds->h = (scareMem ? headerLink(h, "dsNew") : NULL);
-	ds->i = -1;
 	ds->Type = Type;
+	ds->h = (scareMem ? headerLink(h, ds->Type) : NULL);
+	ds->i = -1;
 	ds->DNEVR = NULL;
 	ds->tagN = tagN;
 	ds->N = N;
@@ -389,6 +369,121 @@ char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
     }
     *t = '\0';
     return tbuf;
+}
+
+rpmDepSet dsThis(Header h, rpmTag tagN, int_32 Flags)
+{
+    HGE_t hge = (HGE_t) headerGetEntryMinMemory;
+    rpmDepSet ds = NULL;
+    const char * Type;
+    const char * n, * v, * r;
+    int_32 * ep;
+    const char ** N, ** EVR;
+    char * t;
+    int xx;
+
+    if (tagN == RPMTAG_PROVIDENAME) {
+	Type = "Provides";
+    } else
+    if (tagN == RPMTAG_REQUIRENAME) {
+	Type = "Requires";
+    } else
+    if (tagN == RPMTAG_CONFLICTNAME) {
+	Type = "Conflicts";
+    } else
+    if (tagN == RPMTAG_OBSOLETENAME) {
+	Type = "Obsoletes";
+    } else
+    if (tagN == RPMTAG_TRIGGERNAME) {
+	Type = "Trigger";
+    } else
+	goto exit;
+
+    xx = headerNVR(h, &n, &v, &r);
+    ep = NULL;
+    xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
+
+    t = xmalloc(sizeof(*N) + strlen(n) + 1);
+    N = (const char **) t;
+    t += sizeof(*N);
+    N[0] = t;
+    t = stpcpy(t, n);
+
+    t = xmalloc(sizeof(*EVR) +
+		(ep ? 20 : 0) + strlen(v) + strlen(r) + sizeof("-"));
+    EVR = (const char **) t;
+    t += sizeof(*EVR);
+    EVR[0] = t;
+    if (ep) {
+	sprintf(t, "%d:", *ep);
+	t += strlen(t);
+    }
+    t = stpcpy( stpcpy( stpcpy( t, v), "-"), r);
+
+    ds = xcalloc(1, sizeof(*ds));
+    ds->h = NULL;
+    ds->Type = Type;
+    ds->tagN = tagN;
+    ds->Count = 1;
+    ds->N = N;
+    ds->EVR = EVR;
+    ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+    ds->i = 0;
+    {	char pre[2];
+	pre[0] = ds->Type[0];
+	pre[1] = '\0';
+	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
+	ds->DNEVR = dsDNEVR(pre, ds);
+	/*@=nullstate@*/
+    }
+
+exit:
+    return rpmdsLink(ds, (ds ? ds->Type : NULL));
+}
+
+rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
+{
+    rpmDepSet ds = NULL;
+    const char * Type;
+
+    if (tagN == RPMTAG_PROVIDENAME) {
+	Type = "Provides";
+    } else
+    if (tagN == RPMTAG_REQUIRENAME) {
+	Type = "Requires";
+    } else
+    if (tagN == RPMTAG_CONFLICTNAME) {
+	Type = "Conflicts";
+    } else
+    if (tagN == RPMTAG_OBSOLETENAME) {
+	Type = "Obsoletes";
+    } else
+    if (tagN == RPMTAG_TRIGGERNAME) {
+	Type = "Trigger";
+    } else
+	goto exit;
+
+    ds = xcalloc(1, sizeof(*ds));
+    ds->h = NULL;
+    ds->Type = Type;
+    ds->tagN = tagN;
+    ds->Count = 1;
+    /*@-assignexpose@*/
+    ds->N = xmalloc(sizeof(*ds->N));		ds->N[0] = N;
+    ds->EVR = xmalloc(sizeof(*ds->EVR));	ds->EVR[0] = EVR;
+    /*@=assignexpose@*/
+    ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+    ds->i = 0;
+    {	char t[2];
+	t[0] = ds->Type[0];
+	t[1] = '\0';
+	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
+	ds->DNEVR = dsDNEVR(t, ds);
+	/*@=nullstate@*/
+    }
+
+exit:
+    return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
 int dsiGetCount(rpmDepSet ds)
@@ -629,13 +724,12 @@ exit:
     return result;
 }
 
-void dsProblem(rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
+void dsProblem(rpmProblemSet tsprobs, const char * pkgNEVR, const rpmDepSet ds,
 		const fnpyKey * suggestedKeys)
 {
     const char * Name =  dsiGetN(ds);
     const char * DNEVR = dsiGetDNEVR(ds);
     const char * EVR = dsiGetEVR(ds);
-    char * pkgNEVR = hGetNEVR(h, NULL);
     rpmProblemType type;
     fnpyKey key;
 
@@ -655,7 +749,6 @@ void dsProblem(rpmProblemSet tsprobs, Header h, const rpmDepSet ds,
     key = (suggestedKeys ? suggestedKeys[0] : NULL);
     rpmProblemSetAppend(tsprobs, type, pkgNEVR, key,
 			NULL, NULL, DNEVR, 0);
-    pkgNEVR = _free(pkgNEVR);
 }
 
 int rangeMatchesDepFlags (Header h, const rpmDepSet req)
@@ -705,46 +798,33 @@ exit:
 int headerMatchesDepFlags(Header h, const rpmDepSet req)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char *name, *version, *release;
+    const char * pkgN, * v, * r;
     int_32 * epoch;
     const char * pkgEVR;
-    char * p;
+    char * t;
     int_32 pkgFlags = RPMSENSE_EQUAL;
-    rpmDepSet pkg = memset(alloca(sizeof(*pkg)), 0, sizeof(*pkg));
-    int rc;
+    rpmDepSet pkg;
+    int rc = 1;	/* XXX assume match as names should be the same already here */
 
     if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
-	return 1;
+	return rc;
 
     /* Get package information from header */
-    (void) headerNVR(h, &name, &version, &release);
+    (void) headerNVR(h, &pkgN, &v, &r);
 
-    pkgEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
-    *p = '\0';
+    pkgEVR = t = alloca(21 + strlen(v) + 1 + strlen(r) + 1);
+    *t = '\0';
     if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
-	sprintf(p, "%d:", *epoch);
-	while (*p != '\0')
-	    p++;
+	sprintf(t, "%d:", *epoch);
+	while (*t != '\0')
+	    t++;
     }
-    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+    (void) stpcpy( stpcpy( stpcpy(t, v) , "-") , r);
 
-    /*@-compmempass@*/ /* FIX: move pkg immediate variables from stack */
-    pkg->i = -1;
-    pkg->Type = "Provides";
-    pkg->tagN = RPMTAG_PROVIDENAME;
-    pkg->DNEVR = NULL;
-    /*@-immediatetrans@*/
-    pkg->N = &name;
-    pkg->EVR = &pkgEVR;
-    pkg->Flags = &pkgFlags;
-    /*@=immediatetrans@*/
-    pkg->Count = 1;
-    (void) dsiNext(dsiInit(pkg));
-
-    rc = dsCompare(pkg, req);
-
-    pkg->DNEVR = _free(pkg->DNEVR);
-    /*@=compmempass@*/
+    if ((pkg = dsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
+	rc = dsCompare(pkg, req);
+	pkg = dsFree(pkg);
+    }
 
     return rc;
 }

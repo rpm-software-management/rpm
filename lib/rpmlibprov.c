@@ -11,13 +11,16 @@
 
 #include "debug.h"
 
-/*@access rpmDepSet@*/
-
+/**
+ */
 struct rpmlibProvides_s {
-/*@observer@*/ /*@null@*/ const char * featureName;
-/*@observer@*/ /*@null@*/ const char * featureEVR;
+/*@observer@*/ /*@null@*/
+    const char * featureName;
+/*@observer@*/ /*@null@*/
+    const char * featureEVR;
     int featureFlags;
-/*@observer@*/ /*@null@*/ const char * featureDescription;
+/*@observer@*/ /*@null@*/
+    const char * featureDescription;
 };
 
 /*@observer@*/ /*@unchecked@*/
@@ -64,22 +67,14 @@ int rpmCheckRpmlibProvides(const rpmDepSet key)
 {
     const struct rpmlibProvides_s * rlp;
     int rc = 0;
-    rpmDepSet pro = memset(alloca(sizeof(*pro)), 0, sizeof(*pro));
 
-    pro->Type = "Provides";
-    pro->tagN = RPMTAG_PROVIDENAME;
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
 	if (rlp->featureEVR && rlp->featureFlags) {
-	    /*@-immediatetrans@*/
-	    pro->DNEVR = NULL;
-	    pro->N = (const char **) &rlp->featureName;
-	    pro->EVR = (const char **) &rlp->featureEVR;
-	    pro->Flags = &rlp->featureFlags;
-	    /*@=immediatetrans@*/
-	    pro->Count = 1;
-	    (void) dsiNext(dsiInit(pro));
+	    rpmDepSet pro;
+	    pro = dsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
+			rlp->featureEVR, rlp->featureFlags);
 	    rc = dsCompare(pro, key);
-	    pro->DNEVR = _free(pro->DNEVR);
+	    pro = dsFree(pro);
 	}
 	if (rc)
 	    break;

@@ -301,8 +301,8 @@ Header (*HDRnew) (void)
  * @return		NULL always
  */
 typedef
-/*@null@*/ Header (*HDRfree) (/*@null@*/ /*@killref@*/ Header h,
-		const char * msg, const char * fn, unsigned ln)
+/*@null@*/ Header (*HDRfree) (/*@killref@*/ /*@null@*/ Header h,
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -311,7 +311,8 @@ typedef
  * @return		referenced header instance
  */
 typedef
-Header (*HDRlink) (Header h, const char * msg, const char * fn, unsigned ln)
+Header (*HDRlink) (Header h, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -321,7 +322,7 @@ Header (*HDRlink) (Header h, const char * msg, const char * fn, unsigned ln)
  */
 typedef
 Header (*HDRunlink) (/*@killref@*/ /*@null@*/ Header h,
-		const char * msg, const char * fn, unsigned ln)
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
         /*@modifies h @*/;
 
 /** \ingroup header
