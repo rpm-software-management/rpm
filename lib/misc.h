@@ -6,4 +6,9 @@ void freeSplitString(char ** list);
 
 int exists(char * filespec);
 
+int getOsNum(void);
+int getArchNum(void);
+char *getOsName(void);
+char *getArchName(void);
+
 #endif

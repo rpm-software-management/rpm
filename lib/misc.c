@@ -1,8 +1,11 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <sys/utsname.h>
 
 #include "misc.h"
+
+static void init_arch_os(void);
 
 char ** splitString(char * str, int length, char sep) {
     char * s, * source, * dest;
@@ -55,4 +58,62 @@ int exists(char * filespec) {
     }
 
     return 1;
+}
+
+static int osnum = -1;
+static int archnum = -1;
+static char *osname = NULL;
+static char *archname = NULL;
+
+int getOsNum(void)
+{
+    init_arch_os();
+    return osnum;
+}
+
+int getArchNum(void)
+{
+    init_arch_os();
+    return archnum;
+}
+
+char *getOsName(void)
+{
+    init_arch_os();
+    return osname;
+}
+
+char *getArchName(void)
+{
+    init_arch_os();
+    return archname;
+}
+
+static void init_arch_os(void)
+{
+    struct utsname un;
+
+    if (osnum >= 0) {
+	return;
+    }
+
+    uname(&un);
+    if ((!strcmp(un.machine, "i586")) ||
+	(!strcmp(un.machine, "i486")) ||
+	(!strcmp(un.machine, "i386"))) {
+	archnum = 1;
+	archname = "i386";
+    } else if (!strcmp(un.machine, "axp")) {
+	archnum = 2;
+	archname = "axp";
+    } else {
+	/* XXX unknown arch - how should we handle this? */
+    }
+
+    if (!strcmp(un.sysname, "Linux")) {
+	osnum = 1;
+	osname = "Linux";
+    } else {
+	/* XXX unknown os - how should we handle this? */
+    }
 }
