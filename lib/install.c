@@ -538,6 +538,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     char line[1024];
     int j;
     int i = 0;
+    int childGotStatus = 0;
     unsigned long totalSize = 0;
     unsigned long sizeInstalled = 0;
     struct fileToInstall fileInstalled;
@@ -671,7 +672,9 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	     kill(child, SIGTERM);
 	} else if (bytesRead == 0) {
 	     /* if it's not dead yet, it will be when we close the pipe */
+	     waitpid(child, &status, 0);
 	     childDead = 1;
+	     childGotStatus = 1;
 	} else if (bytesRead && write(p[1], buf, bytesRead) != bytesRead) {
 	     cpioFailed = 1;
 	     childDead = 1;
@@ -738,7 +741,9 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     close(p[1]);
     if (needSecondPipe) close(statusPipe[0]);
     signal(SIGPIPE, oldhandler);
-    waitpid(child, &status, 0);
+
+    if (!childGotStatus)
+	waitpid(child, &status, 0);
 
     if (filelist) {
 	unlink(filelist);
