@@ -43,6 +43,7 @@ struct oldrpmHeaderSpec {
     char * distribution;
     char * buildHost;
     char * copyright;
+    char * prein, * postin, * preun, * postun;
 
     int buildTime;
 

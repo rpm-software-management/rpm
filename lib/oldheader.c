@@ -165,6 +165,10 @@ void oldhdrSpecFree(struct oldrpmHeaderSpec * spec) {
     free(spec->vendor);
     free(spec->distribution);
     free(spec->buildHost);
+    if (spec->postun) free(spec->postun);
+    if (spec->postin) free(spec->postin);
+    if (spec->preun) free(spec->preun);
+    if (spec->prein) free(spec->prein);
 
     while (spec->fileCount) {
 	spec->fileCount--;
@@ -178,7 +182,10 @@ char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * s
     char ** lines;
     char ** strptr;
     char ** files = NULL;
-    int inFilelist = 0, i;
+    char ** str = NULL;
+    int strlength = 0;
+    int i;
+    enum { FILELIST, PREIN, POSTIN, PREUN, POSTUN, PREAMBLE } state = PREAMBLE;
 
     lines = splitString(header->spec, header->specLength, '\n');
     if (!lines) {
@@ -190,29 +197,65 @@ char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * s
     spec->vendor = NULL;
     spec->description = NULL;
     spec->copyright = NULL;
+    spec->prein = spec->postin = NULL;
+    spec->preun = spec->postun = NULL;
 
     spec->fileCount = 0;
     for (strptr = lines; *strptr; strptr++) {
-	if (inFilelist) {
-	    if (**strptr) 
-		spec->fileCount++;
-	} else {
-	    if (!strncmp("Description: ", *strptr, 13))
-		spec->description = strdup((*strptr) + 13);
-	    else if (!strncmp("Distribution: ", *strptr, 14))
-		spec->distribution = strdup((*strptr) + 14);
-	    else if (!strncmp("Vendor: ", *strptr, 8))
-		spec->vendor = strdup((*strptr) + 8);
-	    else if (!strncmp("BuildHost: ", *strptr, 11))
-		spec->buildHost = strdup((*strptr) + 11);
-	    else if (!strncmp("BuildTime: ", *strptr, 11))
-		spec->buildTime = atoi((*strptr) + 11);
-	    else if (!strncmp("Copyright: ", *strptr, 11))
-		spec->copyright = strdup((*strptr) + 11);
-	    else if (!strncmp("%speci", *strptr, 6)) {
-		inFilelist = 1;
-		files = strptr + 1;
+	if (!strncmp("%speci", *strptr, 6)) {
+	    state = FILELIST;
+	    files = strptr + 1;
+	} else if (!strncmp("%postun", *strptr, 7)) {
+	    state = POSTUN;
+	    str = &spec->postun;
+	}
+	else if (!strncmp("%preun", *strptr, 6)) {
+	    state = PREUN;
+	    str = &spec->preun;
+	}
+	else if (!strncmp("%post", *strptr, 5)) {
+	    state = POSTIN;
+	    str = &spec->postin;
+	}
+	else if (!strncmp("%pre", *strptr, 4)) {
+	    state = PREIN;
+	    str = &spec->prein;
+	}
+	else {
+	    switch (state) {
+	      case FILELIST: 
+		if (**strptr) 
+		    spec->fileCount++;
+		break;
+
+	      case PREAMBLE:
+		if (!strncmp("Description: ", *strptr, 13))
+		    spec->description = strdup((*strptr) + 13);
+		else if (!strncmp("Distribution: ", *strptr, 14))
+		    spec->distribution = strdup((*strptr) + 14);
+		else if (!strncmp("Vendor: ", *strptr, 8))
+		    spec->vendor = strdup((*strptr) + 8);
+		else if (!strncmp("BuildHost: ", *strptr, 11))
+		    spec->buildHost = strdup((*strptr) + 11);
+		else if (!strncmp("BuildDate: ", *strptr, 11))
+		    spec->buildTime = atoi((*strptr) + 11);
+		else if (!strncmp("Copyright: ", *strptr, 11))
+		    spec->copyright = strdup((*strptr) + 11);
+		break;
+
+	      case PREUN: case PREIN: case POSTIN: case POSTUN:
+		if (!*str)  {
+		    *str = malloc(strlen(*strptr) + 2);
+		    strlength = 0;
+		    (*str)[0] = '\0';
+		}
+		else
+		    *str = realloc(*str, strlength + strlen(*strptr) + 2);
+		strcat(*str, *strptr);
+		strcat(*str, "\n");
+		strlength += strlen(*strptr) + 1;
 	    }
+		
 	}
     }
 
