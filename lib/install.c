@@ -110,11 +110,13 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 		        fileCountPtr))
 	return 0;
 
+#if 0
     if (!headerGetEntry(h, RPMTAG_ORIGFILENAMES, NULL, 
 			(void **) &mem->cpioNames, NULL))
 	headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &mem->cpioNames, 
 		           fileCountPtr);
     headerRemoveEntry(h, RPMTAG_ORIGFILENAMES);
+#endif
 
     fileCount = *fileCountPtr;
 

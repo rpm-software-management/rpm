@@ -72,7 +72,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     int i;
     int fileCount;
     const char * name, * version, * release;
-    const char ** fileList;
+    const char ** baseNameList;
     int type;
     int scriptArg;
     int rc = 0;
@@ -131,26 +131,37 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 		flags & RPMTRANS_FLAG_TEST);
 
     if (!(flags & RPMTRANS_FLAG_JUSTDB) &&
-	headerGetEntry(h, RPMTAG_OLDFILENAMES, &type, (void **) &fileList, 
+	headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseNameList, 
 	               &fileCount)) {
 	const char ** fileMd5List;
 	uint_32 * fileFlagsList;
 	int_16 * fileModesList;
+	const char ** dirNames;
+	int_32 * dirIndexes;
 	char * fnbuffer = NULL;
 	int prefixlen = 0;
+
+	headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirIndexes,
+	               NULL);
+	headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirNames,
+	               NULL);
 
 	/* Get alloca buffer for largest possible prefix + filename. */
 	if (prefix && prefix[0] != '\0') {
 	    int fnbuffersize = 0;
 	    size_t fnlen;
 
-	    prefixlen = strlen(prefix);
 	    for (i = 0; i < fileCount; i++) {
-		if ((fnlen = strlen(fileList[i])) > fnbuffersize)
+		fnlen = strlen(baseNameList[i]) + 
+			strlen(dirNames[dirIndexes[i]]);
+		if (fnlen > fnbuffersize)
 		    fnbuffersize = fnlen;
 	    }
-	    fnbuffersize += strlen(prefix) + sizeof("/");
-	    fnbuffer = alloca(fnbuffersize);
+
+	    prefixlen = strlen(prefix);
+	    fnbuffersize += prefixlen + sizeof("/");
+	    fnbuffer = alloca(fnbuffersize + 1);
+
 	    strcpy(fnbuffer, prefix);
 	    if (fnbuffer[prefixlen-1] != '/') {
 		fnbuffer[prefixlen++] = '/';
@@ -167,23 +178,28 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 
 	/* Traverse filelist backwards to help insure that rmdir() will work. */
 	for (i = fileCount - 1; i >= 0; i--) {
-	    const char * fn;
+	    const char * dirName;
 
-	    fn = fileList[i];
+	    dirName = dirNames[dirIndexes[i]];
+
 	    if (prefixlen) {
-		if (*fn == '/') fn++;
-		strcpy(fnbuffer + prefixlen, fn);
-		fn = fnbuffer;
+		if (*dirName == '/') dirName++;
+		strcpy(fnbuffer + prefixlen, dirName);
+	    } else {
+		strcpy(fnbuffer, dirName);
 	    }
+	    strcat(fnbuffer, baseNameList[i]);
 
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
-			fn, fileActionString(actions[i]));
+			fnbuffer, fileActionString(actions[i]));
 
 	    if (!(flags & RPMTRANS_FLAG_TEST))
-		removeFile(fn, fileFlagsList[i], fileModesList[i], actions[i]);
+		removeFile(fnbuffer, fileFlagsList[i], fileModesList[i], 
+			   actions[i]);
 	}
 
-	free(fileList);
+	free(baseNameList);
+	free(dirNames);
 	free(fileMd5List);
     }
 

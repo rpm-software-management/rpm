@@ -1352,11 +1352,15 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 {
     struct availablePackage * p;
     int i, j;
-    const char ** files;
+    const char ** baseFileNames, ** dirList;
+    int_32 * dirIndexes;
     int fileCount;
     int rc;
     Header h = NULL;
     struct problemsSet ps;
+    char * filespec = NULL;
+    int fileAlloced = 0;
+    int len;
 
     ps.alloced = 5;
     ps.num = 0;
@@ -1431,18 +1435,31 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    if (rc)	goto exit;
 	}
 
-	if (headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &files,
-		 &fileCount)) {
+	if (headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, 
+			   (void **) &baseFileNames, &fileCount)) {
+	    headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, 
+			    (void **) &dirList, NULL);
+	    headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, 
+			    (void **) &dirIndexes, NULL);
 	    rc = 0;
 	    for (j = 0; j < fileCount; j++) {
+		len = strlen(baseFileNames[j]) + 1 + 
+		      strlen(dirList[dirIndexes[j]]);
+		if (len > fileAlloced) {
+		    fileAlloced = len * 2;
+		    filespec = xrealloc(filespec, fileAlloced);
+		}
+		strcpy(filespec, dirList[dirIndexes[j]]);
+		strcat(filespec, baseFileNames[j]);
 		/* Erasing: check filename against requiredby matches. */
-		if (checkDependentPackages(rpmdep, &ps, files[j])) {
+		if (checkDependentPackages(rpmdep, &ps, filespec)) {
 		    rc = 1;
 		    break;
 		}
 	    }
 
-	    free(files);
+	    free(baseFileNames);
+	    free(dirList);
 	    if (rc) goto exit;
 	}
 
@@ -1460,9 +1477,10 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     return 0;
 
 exit:
-    if (h) {
+    if (h) 
 	headerFree(h);
-    }
+    if (filespec)
+	free(filespec);
     if (ps.problems)	free(ps.problems);
     return 1;
 }

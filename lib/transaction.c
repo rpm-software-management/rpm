@@ -246,9 +246,18 @@ static Header relocateFileList(struct availablePackage * alp,
     rpmRelocation * relocations = NULL;
     const char ** validRelocations;
     const char ** names;
-    int_32 fileCount;
+    char ** baseFileNames, ** dirNames;
+    int_32 * dirIndexes;
+    int_32 * newDirIndexes;
+    int_32 fileCount, dirCount;
+    char * skipDirList;
     Header h;
-    int relocated = 0;
+    int relocated = 0, len;
+    char * str;
+    int fileAlloced = 0;
+    char * filespec = NULL;
+    char * chptr;
+    int haveRelocatedFile = 0;
 
     if (!headerGetEntry(origH, RPMTAG_PREFIXES, NULL,
 			(void **) &validRelocations, &numValid))
@@ -275,19 +284,19 @@ static Header relocateFileList(struct availablePackage * alp,
 	/* FIXME: default relocations (oldPath == NULL) need to be handled
 	   in the UI, not rpmlib */
 
-	{   const char *s = rawRelocations[i].oldPath;
-	    char *t = alloca(strlen(s) + 1);
-	    strcpy(t, s);
-	    stripTrailingSlashes(t);
-	    relocations[i].oldPath = t;
-	}
+	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
+	   too, but those are more trouble to fix up. :-( */
+	str = alloca(strlen(rawRelocations[i].oldPath) + 1);
+	strcpy(str, rawRelocations[i].oldPath);
+	stripTrailingSlashes(str);
+	relocations[i].oldPath = str;
 
+	/* An old path w/o a new path is valid, and indicates exclusion */
 	if (rawRelocations[i].newPath) {
-	    const char *s = rawRelocations[i].newPath;
-	    char *t = alloca(strlen(s) + 1);
-	    strcpy(t, s);
-	    stripTrailingSlashes(t);
-	    relocations[i].newPath = t;
+	    str = alloca(strlen(rawRelocations[i].newPath) + 1);
+	    strcpy(str, rawRelocations[i].newPath);
+	    stripTrailingSlashes(str);
+	    relocations[i].newPath = str;
 
 	    /* Verify that the relocation's old path is in the header. */
 	    for (j = 0; j < numValid; j++)
@@ -319,6 +328,7 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Add relocation values to the header */
     if (numValid) {
 	const char ** actualRelocations;
+
 	actualRelocations = xmalloc(sizeof(*actualRelocations) * numValid);
 	for (i = 0; i < numValid; i++) {
 	    for (j = 0; j < numRelocations; j++) {
@@ -338,51 +348,184 @@ static Header relocateFileList(struct availablePackage * alp,
 	xfree(validRelocations);
     }
 
-    headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &names, &fileCount);
+    /* For all relocations, we go through sorted file and relocation lists 
+     * backwards so that /usr/local relocations take precedence over /usr 
+     * ones. */
 
-    /* Relocate all file paths.
-     * Go through sorted file and relocation lists backwards so that /usr/local
-     * relocations take precedence over /usr ones.
-     */
-    for (i = fileCount - 1; i >= 0; i--) {
+    headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseFileNames, 
+		   &fileCount);
+    headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirIndexes, NULL);
+    headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirNames, 
+		   &dirCount);
+    skipDirList = xcalloc(sizeof(*skipDirList), dirCount);
+
+    newDirIndexes = alloca(sizeof(*newDirIndexes) * fileCount);
+    memcpy(newDirIndexes, dirIndex, sizeof(*newDirIndexes) * fileCount);
+    dirIndexes = newDirIndexes;
+
+    /* Start off by relocating directories. */
+    for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
 	    int len;
+
 	    len = strlen(relocations[j].oldPath);
-	    if (strncmp(relocations[j].oldPath, names[i], len))
+	    if (strncmp(relocations[j].oldPath, dirNames[i], len))
 		continue;
 
-	    /* Only directories or complete file paths can be relocated */
-	    if (!(names[i][len] == '/' || names[i][len] == '\0'))
+	    /* Only subdirectories or complete file paths may be relocated. We
+	       don't check for '\0' as our directory names all end in '/'. */
+	    if (!(dirNames[i][len] == '/'))
 		continue;
 
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char *s = relocations[j].newPath;
-		char *t = alloca(strlen(s) + strlen(names[i]) - len + 1);
+		char *t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
+
 		strcpy(t, s);
-		strcat(t, names[i] + len);
-		rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
-			names[i], t);
-		names[i] = t;
+		strcat(t, dirNames[i] + len);
+		rpmMessage(RPMMESS_DEBUG, _("relocating directory %s to %s\n"),
+			dirNames[i], t);
+		dirNames[i] = t;
 		relocated = 1;
-	    } else /* On install, a relocate to NULL means skip the file */
-	    if (actions) {
-		actions[i] = FA_SKIPNSTATE;
-		rpmMessage(RPMMESS_DEBUG, _("excluding %s\n"), names[i]);
+	    } else if (actions) {
+		/* On install, a relocate to NULL means skip the file */
+		skipDirList[i] = 1;
+		rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
+			   dirNames[i]);
 	    }
 	    break;
 	}
     }
 
+    /* Now relocate individual files. */
+
+    for (i = fileCount - 1; i >= 0; i--) {
+	/* If we're skipping the directory this file is part of, skip this
+	   file as well. */
+	if (skipDirList[dirIndexes[i]]) {
+	    actions[i] = FA_SKIPNSTATE;
+	    rpmMessage(RPMMESS_DEBUG, _("excluding file %s%s\n"), 
+		       dirNames[dirIndexes[i]], baseFileNames[i]);
+	    continue;
+	} 
+
+	/* See if this file needs relocating (which will only occur if the
+	   full file path we have exactly matches a path in the relocation
+	   list. XXX FIXME: Would a bsearch of the (already sorted) 
+	   relocation list be a good idea? */
+
+	len = strlen(dirNames[dirIndexes[i]]) + strlen(baseFileNames[i]) + 1;
+	if (len >= fileAlloced) {
+	    fileAlloced = len * 2;
+	    filespec = xrealloc(filespec, fileAlloced);
+	}
+	strcpy(filespec, dirNames[dirIndexes[i]]);
+	strcat(filespec, baseFileNames[i]);
+
+	for (j = numRelocations - 1; j >= 0; j--)
+	    if (!strcmp(relocations[j].oldPath, filespec)) break;
+
+	if (j < 0) continue;
+
+	if (actions && !relocations[j].newPath) {
+	    /* On install, a relocate to NULL means skip the file */
+	    skipDirList[i] = 1;
+	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
+		       dirNames[i]);
+	    continue;
+	}
+
+	rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
+		    filespec, relocations[j].newPath);
+	relocated = 1;
+
+	len = strlen(relocations[j].newPath);
+	if (len >= fileAlloced) {
+	    fileAlloced = len * 2;
+	    filespec = xrealloc(filespec, fileAlloced);
+	}
+	strcpy(filespec, relocations[j].newPath);
+	chptr = strrchr(filespec, '/');
+	*chptr++ = '\0';
+
+	/* filespec is the new path, and chptr is the new basename */
+	if (strcmp(baseFileNames[i], chptr)) {
+	    baseFileNames[i] = alloca(strlen(chptr) + 1);
+	    strcpy(baseFileNames[i], chptr);
+	}
+
+	/* Does this directory already exist in the directory list? */
+	for (j = 0; j < dirCount; j++)
+	    if (!strcmp(filespec, dirNames[j])) break;
+	
+	if (j < dirCount) {
+	    dirIndexes[i] = j;
+	    continue;
+	}
+
+	/* Creating new paths is a pita */
+	if (!haveRelocatedFile) {
+	    char ** newDirList;
+	    int k;
+
+	    haveRelocatedFile = 1;
+	    newDirList = malloc(sizeof(*newDirList) * (dirCount + 1));
+	    for (k = 0; k < dirCount; k++) {
+		newDirList[k] = alloca(strlen(dirNames[k]) + 1);
+		strcpy(newDirList[k], dirNames[k]);
+	    }
+	    free(dirNames);
+	    dirNames = newDirList;
+	} else {
+	    dirNames = realloc(dirNames, 
+			       sizeof(*dirNames) * (dirCount + 1));
+	}
+
+	dirNames[dirCount] = alloca(strlen(filespec) + 1);
+	strcpy(dirNames[dirCount], filespec);
+	dirIndexes[i] = dirCount;
+	dirCount++;
+    }
+
+/*XXX FIXME: this needs to be updated to deal with compressed lists! will
+      be straightforward */
+
     /* Save original filenames in header and replace (relocated) filenames. */
     if (relocated) {
 	const char ** origNames;
-	headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &origNames, NULL);
-	headerAddEntry(h, RPMTAG_ORIGFILENAMES, RPM_STRING_ARRAY_TYPE,
+	int origDirCount;
+	int_32 * origDirIndexes;
+
+	headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &origNames, 
+		       NULL);
+	headerAddEntry(h, RPMTAG_ORIGCOMPFILELIST, RPM_STRING_ARRAY_TYPE,
 			  origNames, fileCount);
 	xfree(origNames);
-	headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			  names, fileCount);
+
+	headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &origNames, 
+		       &origDirCount);
+	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, RPM_STRING_ARRAY_TYPE,
+			  origNames, origDirCount);
+	xfree(origNames);
+
+	headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &origDirIndexes, 
+		       NULL);
+	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, RPM_STRING_ARRAY_TYPE,
+			  origDirIndexes, fileCount);
+	xfree(origNames);
+
+	headerModifyEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE,
+			  baseFileNames, fileCount);
+	headerModifyEntry(h, RPMTAG_COMPFILEDIRS, RPM_STRING_ARRAY_TYPE,
+			  dirIndexes, fileCount);
+	headerModifyEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE,
+			  dirNames, dirCount);
     }
+
+    free(baseFileNames);
+    free(dirNames);
+    if (filespec) free(filespec);
+    free(skipDirList);
 
     xfree(names);
 
@@ -1115,7 +1258,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    dbiFreeIndexRecord(dbi);
 	}
 
-	if (headerGetEntry(alp->h, RPMTAG_OLDFILENAMES, NULL, NULL, &fileCount))
+	if (headerGetEntry(alp->h, RPMTAG_COMPFILELIST, NULL, NULL, 
+			   &fileCount))
 	    totalFileCount += fileCount;
     }
 
@@ -1125,7 +1269,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	Header h;
 
 	if ((h = rpmdbGetRecord(ts->db, ts->removedPackages[i]))) {
-	    if (headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, NULL,
+	    if (headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, NULL,
 			       &fileCount))
 		totalFileCount += fileCount;
 	    headerFree(h);
@@ -1138,8 +1282,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     flEntries = ts->addedPackages.size + ts->numRemovedPackages;
     flList = alloca(sizeof(*flList) * (flEntries));
 
-    ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
-
     /* FIXME?: we'd be better off assembling one very large file list and
        calling fpLookupList only once. I'm not sure that the speedup is
        worth the trouble though. */
@@ -1151,7 +1293,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 
-	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_OLDFILENAMES, NULL,
+	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_COMPFILELIST, NULL,
 					 NULL, &fi->fc)) {
 		fi->h = headerLink(alp->h);
 		hdrs[i] = headerLink(fi->h);
@@ -1241,6 +1383,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     chdir("/");
     chroot(ts->root);
+
+    ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
 
     /* ===============================================
      * Add fingerprint for each file not skipped.

@@ -137,7 +137,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_AUTOPROV			1104 /* internal */
 #define	RPMTAG_CAPABILITY		1105
 #define	RPMTAG_SOURCEPACKAGE		1106 /* internal */
-#define	RPMTAG_ORIGFILENAMES		1107
 #define	RPMTAG_BUILDPREREQ		1108 /* internal */
 #define	RPMTAG_BUILDREQUIRES		1109 /* internal */
 #define	RPMTAG_BUILDCONFLICTS		1110 /* internal */
@@ -149,6 +148,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_COMPFILEDIRS		1116
 #define RPMTAG_COMPFILELIST		1117
 #define RPMTAG_COMPDIRLIST	        1118
+#define	RPMTAG_ORIGCOMPFILEDIRS		1119 /* internal */
+#define	RPMTAG_ORIGCOMPFILELIST		1120 /* internal */
+#define	RPMTAG_ORIGCOMPDIRLIST		1121 /* internal */
 
 #define	RPMTAG_FIRSTFREE_TAG		1119 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000
