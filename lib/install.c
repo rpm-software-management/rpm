@@ -2,7 +2,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <grp.h>
-#include <misc.h>
 #include <pwd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,6 +16,7 @@
 #include "header.h"
 #include "install.h"
 #include "md5.h"
+#include "misc.h"
 #include "package.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
@@ -682,6 +682,8 @@ static int mkdirIfNone(char * directory, mode_t perms) {
     for (chptr = directory; *chptr; chptr++)
 	if (*chptr != '/') break;
     if (!*chptr) return 0;
+
+    if (exists(directory)) return 0;
 
     message(MESS_DEBUG, "trying to make %s\n", directory);
 
