@@ -44,7 +44,7 @@ Cambridge, MA 02139, USA.  */
 static int
 myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
-	   int (*func) (void *fl, char *name, struct stat *statp),
+	   myftwFunc func,
 	   void *fl)
 {
   int got;
@@ -163,7 +163,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 
 int myftw (const char *dir,
 	   int descriptors,
-	   int (*func) (void *fl, char *name, struct stat *statp),
+	   myftwFunc func,
 	   void *fl)
 {
   DIR **dirs;

@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	rc = EXIT_SUCCESS;
     }
 
-    gzdClose(gzdi);
+    gzdClose(gzdi);	/* XXX gzdi == fdi */
 
     return rc;
 }

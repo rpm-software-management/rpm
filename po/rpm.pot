@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-11-24 14:20-0500\n"
+"POT-Creation-Date: 1998-11-24 19:36-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1467,53 +1467,53 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: ../build/files.c:202
+#: ../build/files.c:205
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: ../build/files.c:230 ../build/files.c:242 ../build/files.c:315
-#: ../build/files.c:327 ../build/files.c:354
+#: ../build/files.c:233 ../build/files.c:245 ../build/files.c:318
+#: ../build/files.c:330 ../build/files.c:357
 #, c-format
 msgid "Bad %s() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:278
+#: ../build/files.c:281
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: ../build/files.c:338
+#: ../build/files.c:341
 msgid "No files after %%defattr(): %s"
 msgstr ""
 
-#: ../build/files.c:366
+#: ../build/files.c:369
 #, c-format
 msgid "Bad %s() mode spec: %s"
 msgstr ""
 
-#: ../build/files.c:384
+#: ../build/files.c:387
 #, c-format
 msgid "Bad %s() dirmode spec: %s"
 msgstr ""
 
-#: ../build/files.c:439
+#: ../build/files.c:442
 msgid "Bad %%config() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:457
+#: ../build/files.c:460
 msgid "Invalid %%config token: %s"
 msgstr ""
 
-#: ../build/files.c:480 ../build/files.c:492 ../build/files.c:505
+#: ../build/files.c:483 ../build/files.c:495 ../build/files.c:508
 msgid "Bad %%lang() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:511
+#: ../build/files.c:514
 msgid "%%lang() entries are 2 characters: %s"
 msgstr ""
 
-#: ../build/files.c:517
+#: ../build/files.c:520
 msgid "Only one entry in %%lang(): %s"
 msgstr ""
 
@@ -1525,113 +1525,114 @@ msgstr ""
 msgid "Only one arg for %%docdir"
 msgstr ""
 
-#: ../build/files.c:639
+#. We already got a file -- error
+#: ../build/files.c:638
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: ../build/files.c:652
+#: ../build/files.c:651
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:664
+#: ../build/files.c:663
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:744
+#: ../build/files.c:740
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:896
+#: ../build/files.c:893
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:906 ../build/files.c:1026
+#: ../build/files.c:903 ../build/files.c:1019
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:953
+#: ../build/files.c:950
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:958
+#: ../build/files.c:955
 #, c-format
 msgid "File %d: %s\n"
 msgstr ""
 
-#: ../build/files.c:1010
+#: ../build/files.c:1003
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1068
+#: ../build/files.c:1062
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1074 ../build/pack.c:451
+#: ../build/files.c:1068 ../build/pack.c:451
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1392 ../build/parsePrep.c:40
+#: ../build/files.c:1376 ../build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1446
+#: ../build/files.c:1430
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1450
+#: ../build/files.c:1434
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1500
+#: ../build/files.c:1484
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1504
+#: ../build/files.c:1488
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1538
+#: ../build/files.c:1522
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1545
+#: ../build/files.c:1529
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1564
+#: ../build/files.c:1548
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1571
+#: ../build/files.c:1555
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1605
+#: ../build/files.c:1589
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1620
+#: ../build/files.c:1604
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1632
+#: ../build/files.c:1616
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1656
+#: ../build/files.c:1640
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -2285,120 +2286,120 @@ msgstr ""
 msgid "instchangelog value in rpmrc should be a number, but isn't"
 msgstr ""
 
-#: ../lib/install.c:454 ../lib/install.c:735
+#: ../lib/install.c:455 ../lib/install.c:736
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:485
+#: ../lib/install.c:486
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr ""
 
-#: ../lib/install.c:492
+#: ../lib/install.c:493
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr ""
 
-#: ../lib/install.c:504
+#: ../lib/install.c:505
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
 #. no matches
-#: ../lib/install.c:569
+#: ../lib/install.c:570
 #, c-format
 msgid "package %s is now obsolete and will be removed\n"
 msgstr ""
 
-#: ../lib/install.c:680
+#: ../lib/install.c:681
 #, c-format
 msgid "file %s in netshared path\n"
 msgstr ""
 
-#: ../lib/install.c:697
+#: ../lib/install.c:698
 #, c-format
 msgid "%s exists - creating with alternate name\n"
 msgstr ""
 
-#: ../lib/install.c:702
+#: ../lib/install.c:703
 #, c-format
 msgid "%s exists - backing up\n"
 msgstr ""
 
-#: ../lib/install.c:741
+#: ../lib/install.c:742
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:772
+#: ../lib/install.c:773
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:806
+#: ../lib/install.c:807
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:810 ../lib/install.c:1521 ../lib/uninstall.c:597
+#: ../lib/install.c:811 ../lib/install.c:1522 ../lib/uninstall.c:598
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:911
+#: ../lib/install.c:912
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:932
+#: ../lib/install.c:933
 msgid "removing old versions of package\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:1023
+#: ../lib/install.c:1024
 #, c-format
 msgid "unpacking of archive failed on file %s: %d: %s"
 msgstr ""
 
-#: ../lib/install.c:1062
+#: ../lib/install.c:1063
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr ""
 
-#: ../lib/install.c:1110
+#: ../lib/install.c:1111
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: ../lib/install.c:1128
+#: ../lib/install.c:1129
 msgid "\tfile type on disk is different then package - saving\n"
 msgstr ""
 
-#: ../lib/install.c:1131
+#: ../lib/install.c:1132
 msgid ""
 "\tfile type in database is different then disk and package file - saving\n"
 msgstr ""
 
-#: ../lib/install.c:1135
+#: ../lib/install.c:1136
 msgid "\tfile type changed - replacing\n"
 msgstr ""
 
-#: ../lib/install.c:1139
+#: ../lib/install.c:1140
 msgid "\tcan't check file for changes - replacing\n"
 msgstr ""
 
 #. assume the file has been removed, don't freak
-#: ../lib/install.c:1151 ../lib/install.c:1161
+#: ../lib/install.c:1152 ../lib/install.c:1162
 msgid "\tfile not present - creating"
 msgstr ""
 
 #. this config file has never been modified, so
 #. just replace it
-#: ../lib/install.c:1174
+#: ../lib/install.c:1175
 msgid "\told == current, replacing with new version\n"
 msgstr ""
 
 #. this file is the same in all versions of this package
-#: ../lib/install.c:1181
+#: ../lib/install.c:1182
 msgid "\told == new, keeping\n"
 msgstr ""
 
@@ -2406,78 +2407,78 @@ msgstr ""
 #. the ones in the two packages are different. It would
 #. be nice if RPM was smart enough to at least try and
 #. merge the difference ala CVS, but...
-#: ../lib/install.c:1189
+#: ../lib/install.c:1190
 msgid "\tfiles changed too much - backing up\n"
 msgstr ""
 
-#: ../lib/install.c:1251 ../lib/rpmdb.c:309 ../lib/uninstall.c:118
+#: ../lib/install.c:1252 ../lib/rpmdb.c:309 ../lib/uninstall.c:118
 #: ../lib/uninstall.c:218
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: ../lib/install.c:1264 ../lib/uninstall.c:131
+#: ../lib/install.c:1265 ../lib/uninstall.c:131
 #, c-format
 msgid "package %s-%s-%s contain shared files\n"
 msgstr ""
 
-#: ../lib/install.c:1269 ../lib/uninstall.c:136
+#: ../lib/install.c:1270 ../lib/uninstall.c:136
 #, c-format
 msgid "package %s contains no files"
 msgstr ""
 
-#: ../lib/install.c:1291 ../lib/uninstall.c:159
+#: ../lib/install.c:1292 ../lib/uninstall.c:159
 #, c-format
 msgid "file %s is shared\n"
 msgstr ""
 
-#: ../lib/install.c:1307
+#: ../lib/install.c:1308
 msgid "\told version already replaced\n"
 msgstr ""
 
-#: ../lib/install.c:1310
+#: ../lib/install.c:1311
 msgid "\tother version never installed\n"
 msgstr ""
 
-#: ../lib/install.c:1318
+#: ../lib/install.c:1319
 #, c-format
 msgid "%s conflicts with file from %s-%s-%s"
 msgstr ""
 
-#: ../lib/install.c:1337
+#: ../lib/install.c:1338
 #, c-format
 msgid "%s from %s-%s-%s will be replaced\n"
 msgstr ""
 
-#: ../lib/install.c:1401
+#: ../lib/install.c:1402
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:1417 ../lib/install.c:1422
+#: ../lib/install.c:1418 ../lib/install.c:1423
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:1426
+#: ../lib/install.c:1427
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:1427
+#: ../lib/install.c:1428
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:1460 ../lib/install.c:1499
+#: ../lib/install.c:1461 ../lib/install.c:1500
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:1519
+#: ../lib/install.c:1520
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/install.c:1635
+#: ../lib/install.c:1636
 #, c-format
 msgid "package %s-%s-%s (which is newer) is already installed"
 msgstr ""
@@ -3097,59 +3098,59 @@ msgstr ""
 msgid "removing database entry\n"
 msgstr ""
 
-#: ../lib/uninstall.c:511
+#: ../lib/uninstall.c:512
 msgid "execution of script failed"
 msgstr ""
 
-#: ../lib/uninstall.c:556
+#: ../lib/uninstall.c:557
 #, c-format
 msgid "%s has already been replaced\n"
 msgstr ""
 
 #. if it's a config file, we may not want to remove it
-#: ../lib/uninstall.c:563
+#: ../lib/uninstall.c:564
 #, c-format
 msgid "finding md5sum of %s\n"
 msgstr ""
 
-#: ../lib/uninstall.c:572
+#: ../lib/uninstall.c:573
 msgid "    failed - assuming file removed\n"
 msgstr ""
 
-#: ../lib/uninstall.c:575
+#: ../lib/uninstall.c:576
 msgid "    file changed - will save\n"
 msgstr ""
 
-#: ../lib/uninstall.c:579
+#: ../lib/uninstall.c:580
 msgid "    file unchanged - will remove\n"
 msgstr ""
 
-#: ../lib/uninstall.c:587
+#: ../lib/uninstall.c:588
 #, c-format
 msgid "keeping %s\n"
 msgstr ""
 
-#: ../lib/uninstall.c:591
+#: ../lib/uninstall.c:592
 #, c-format
 msgid "saving %s as %s.rpmsave\n"
 msgstr ""
 
-#: ../lib/uninstall.c:605
+#: ../lib/uninstall.c:606
 #, c-format
 msgid "%s - removing\n"
 msgstr ""
 
-#: ../lib/uninstall.c:611
+#: ../lib/uninstall.c:612
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr ""
 
-#: ../lib/uninstall.c:614
+#: ../lib/uninstall.c:615
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr ""
 
-#: ../lib/uninstall.c:624
+#: ../lib/uninstall.c:625
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr ""

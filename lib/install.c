@@ -411,7 +411,8 @@ static void trimChangelog(Header h) {
 /* 2 error */
 int rpmInstallPackage(char * rootdir, rpmdb db, FD_t fd,
 		      struct rpmRelocation * relocations,
-		      int flags, rpmNotifyFunction notify, char * labelFormat) {
+		      int flags, rpmNotifyFunction notify, char * labelFormat)
+{
     int rc, isSource, major, minor;
     char * name, * version, * release;
     Header h;
@@ -1009,7 +1010,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 
   { CFD_t cfdbuf, *cfd = &cfdbuf;
     cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdFdopen(fd, "r");		/* XXX cpioGzFd == fd */
+    cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fd)), "r");
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
 			    ((notify && archiveSize) || specFile) ? 
 				callback : NULL, 

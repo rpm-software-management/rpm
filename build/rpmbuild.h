@@ -94,7 +94,7 @@ int isPart(char *line);
 /* from build/misc.h */
 
 int parseNum(char *line, /*@out@*/int *res);
-char *cleanFileName(char *name);
+char *cleanFileName(const char *name);
 
 /* from build/parse.h */
 

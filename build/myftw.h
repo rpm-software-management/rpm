@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-typedef int (*myftwFunc) (void *fl, char *name, struct stat *statp);
+typedef int (*myftwFunc) (void *fl, const char *name, struct stat *statp);
 
 int myftw (const char *dir,
 	   int descriptors,

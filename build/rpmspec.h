@@ -71,8 +71,8 @@ struct SpecStruct {
     int anyarch;
 
     int gotBuildRoot;
-    /*@only@*/ char *buildRoot;
-    /*@only@*/ char *buildSubdir;
+    /*@only@*/ const char *buildRoot;
+    /*@only@*/ const char *buildSubdir;
 
     char *passPhrase;
     int timeCheck;

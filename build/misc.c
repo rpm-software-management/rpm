@@ -17,10 +17,11 @@ int parseNum(char *line, int *res)
     return 0;
 }
 
-char *cleanFileName(char *name)
+char *cleanFileName(const char *name)
 {
     static char res[BUFSIZ];
-    char *copyTo, *copyFrom, copied;
+    char *copyTo, copied;
+    const char *copyFrom;
 
     /* Copy to fileName, eliminate duplicate "/" and trailing "/" */
     copyTo = res;

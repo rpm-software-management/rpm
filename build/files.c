@@ -13,30 +13,33 @@
 #define MAXDOCDIR 1024
 
 typedef struct {
+    struct stat fl_st;
+#define	fl_dev	fl_st.st_dev
+#define	fl_ino	fl_st.st_ino
+#define	fl_mode	fl_st.st_mode
+#define	fl_nlink fl_st.st_nlink	/* unused */
+#define	fl_uid	fl_st.st_uid
+#define	fl_gid	fl_st.st_gid
+#define	fl_rdev	fl_st.st_rdev
+#define	fl_size	fl_st.st_size
+#define	fl_mtime fl_st.st_mtime
+
     const char *diskName; /* get file from here       */
     const char *fileName; /* filename in cpio archive */
-    mode_t mode;
-    uid_t uid;
-    gid_t gid;
-    dev_t device;
-    ino_t inode;
     const char *uname;
     const char *gname;
     int flags;
     int verifyFlags;
-    int size;
-    int mtime;
-    dev_t rdev;
     const char *lang;
 } FileListRec;
 
 struct AttrRec {
     const char *PmodeString;
-    int Pmode;
     const char *PdirmodeString;
-    int Pdirmode;
     const char *Uname;
     const char *Gname;
+    mode_t Pmode;
+    mode_t Pdirmode;
 };
 
 struct FileList {
@@ -61,7 +64,7 @@ struct FileList {
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
-    char *docDirs[MAXDOCDIR];
+    const char *docDirs[MAXDOCDIR];
     int docDirCount;
     
     FileListRec *fileList;
@@ -75,16 +78,16 @@ static int processPackageFiles(Spec spec, Package pkg,
 static void freeFileList(FileListRec *fileList, int count);
 static int compareFileListRecs(const void *ap, const void *bp);
 static int isDoc(struct FileList *fl, const char *fileName);
-static int processBinaryFile(Package pkg, struct FileList *fl, char *fileName);
-static int addFile(struct FileList *fl, char *name, struct stat *statp);
+static int processBinaryFile(Package pkg, struct FileList *fl, const char *fileName);
+static int addFile(struct FileList *fl, const char *name, struct stat *statp);
 static int parseForSimple(Spec spec, Package pkg, char *buf,
-			  struct FileList *fl, char **fileName);
+			  struct FileList *fl, const char **fileName);
 static int parseForVerify(char *buf, struct FileList *fl);
 static int parseForLang(char *buf, struct FileList *fl);
 static int parseForAttr(char *buf, struct FileList *fl);
 static int parseForConfig(char *buf, struct FileList *fl);
-static int parseForRegexLang(char *fileName, char **lang);
-static int myGlobPatternP(char *pattern);
+static int parseForRegexLang(const char *fileName, char **lang);
+static int myGlobPatternP(const char *pattern);
 static int glob_error(const char *foo, int bar);
 static void timeCheck(int tc, Header h);
 static void genCpioListAndHeader(struct FileList *fl,
@@ -98,9 +101,9 @@ static char *strtokWithQuotes(char *s, char *delim);
  *
  * Return nonzero if PATTERN has any special globbing chars in it.
  */
-static int myGlobPatternP (char *pattern)
+static int myGlobPatternP (const char *pattern)
 {
-    register char *p = pattern;
+    register const char *p = pattern;
     register char c;
     int open = 0;
   
@@ -523,7 +526,7 @@ static int parseForLang(char *buf, struct FileList *fl)
     return 0;
 }
 
-static int parseForRegexLang(char *fileName, char **lang)
+static int parseForRegexLang(const char *fileName, char **lang)
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -531,7 +534,8 @@ static int parseForRegexLang(char *fileName, char **lang)
     static char buf[BUFSIZ];
     int x;
     regmatch_t matches[2];
-    char *patt, *s;
+    const char *patt;
+    const char *s;
 
     if (! initialized) {
 	initialized = 1;
@@ -545,23 +549,19 @@ static int parseForRegexLang(char *fileName, char **lang)
 	hasRegex = 1;
     }
     
-    if (! hasRegex) {
+    if (! hasRegex || regexec(&compiledPatt, fileName, 2, matches, REG_NOTEOL))
 	return 1;
-    }
 
-    if (! regexec(&compiledPatt, fileName, 2, matches, REG_NOTEOL)) {
-	/* Got match */
-	s = fileName + matches[1].rm_eo - 1;
-	x = matches[1].rm_eo - matches[1].rm_so;
-	buf[x] = '\0';
-	while (x) {
-	    buf[--x] = *s--;
-	}
+    /* Got match */
+    s = fileName + matches[1].rm_eo - 1;
+    x = matches[1].rm_eo - matches[1].rm_so;
+    buf[x] = '\0';
+    while (x) {
+	buf[--x] = *s--;
+    }
+    if (lang)
 	*lang = buf;
-	return 0;
-    }
-
-    return 1;
+    return 0;
 }
 
 typedef struct VFA {
@@ -588,7 +588,7 @@ VFA_t virtualFileAttributes[] = {
 };
 
 static int parseForSimple(Spec spec, Package pkg, char *buf,
-			  struct FileList *fl, char **fileName)
+			  struct FileList *fl, const char **fileName)
 {
     char *s, *t;
     int res, specialDoc = 0;
@@ -635,8 +635,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 
 	if (*fileName) {
 	    /* We already got a file -- error */
-	    rpmError(RPMERR_BADSPEC,
-		_("Two files on one line: %s"), *fileName);
+	    rpmError(RPMERR_BADSPEC, _("Two files on one line: %s"), *fileName);
 	    fl->processingFailed = 1;
 	    res = 1;
 	}
@@ -694,11 +693,8 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 
 static int compareFileListRecs(const void *ap, const void *bp)
 {
-    const char *a, *b;
-
-    a = ((FileListRec *)ap)->fileName;
-    b = ((FileListRec *)bp)->fileName;
-
+    const char *a = ((FileListRec *)ap)->fileName;
+    const char *b = ((FileListRec *)bp)->fileName;
     return strcmp(a, b);
 }
 
@@ -749,9 +745,9 @@ static void genCpioListAndHeader(struct FileList *fl,
 	if (! (flp->flags & RPMFILE_GHOST)) {
 	    clp->fsPath = strdup(flp->diskName);
 	    clp->archivePath = strdup(flp->fileName + skipLen);
-	    clp->finalMode = flp->mode;
-	    clp->finalUid = flp->uid;
-	    clp->finalGid = flp->gid;
+	    clp->finalMode = flp->fl_mode;
+	    clp->finalUid = flp->fl_uid;
+	    clp->finalGid = flp->fl_gid;
 	    clp->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE |
 		CPIO_MAP_UID | CPIO_MAP_GID;
 	    if (isSrc) {
@@ -765,58 +761,58 @@ static void genCpioListAndHeader(struct FileList *fl,
 	headerAddOrAppendEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileName), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
-			       &(flp->size), 1);
+			       &(flp->fl_size), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->uname), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->gname), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
-			       &(flp->mtime), 1);
-    if (sizeof(flp->mode) != sizeof(uint_16)) {
-	uint_16 pmode = (uint_16)flp->mode;
+			       &(flp->fl_mtime), 1);
+    if (sizeof(flp->fl_mode) != sizeof(uint_16)) {
+	uint_16 pmode = (uint_16)flp->fl_mode;
 	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(pmode), 1);
     } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
-			       &(flp->mode), 1);
+			       &(flp->fl_mode), 1);
     }
-    if (sizeof(flp->rdev) != sizeof(uint_16)) {
-	uint_16 prdev = (uint_16)flp->rdev;
+    if (sizeof(flp->fl_rdev) != sizeof(uint_16)) {
+	uint_16 prdev = (uint_16)flp->fl_rdev;
 	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(prdev), 1);
     } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
-			       &(flp->rdev), 1);
+			       &(flp->fl_rdev), 1);
     }
-    if (sizeof(flp->device) != sizeof(uint_32)) {
-	uint_32 pdevice = (uint_32)flp->device;
+    if (sizeof(flp->fl_dev) != sizeof(uint_32)) {
+	uint_32 pdevice = (uint_32)flp->fl_dev;
 	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(pdevice), 1);
     } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
-			       &(flp->device), 1);
+			       &(flp->fl_dev), 1);
     }
 	headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-			       &(flp->inode), 1);
+			       &(flp->fl_ino), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
 			       &(flp->lang), 1);
 	
 	/* We used to add these, but they should not be needed */
 	/* headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
-	 *		   RPM_INT32_TYPE, &(flp->uid), 1);
+	 *		   RPM_INT32_TYPE, &(flp->fl_uid), 1);
 	 * headerAddOrAppendEntry(h, RPMTAG_FILEGIDS,
-	 *		   RPM_INT32_TYPE, &(flp->gid), 1);
+	 *		   RPM_INT32_TYPE, &(flp->fl_gid), 1);
 	 */
 	
 	buf[0] = '\0';
-	if (S_ISREG(flp->mode))
+	if (S_ISREG(flp->fl_mode))
 	    mdfile(flp->diskName, buf);
 	s = buf;
 	headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
 	
 	buf[0] = '\0';
-	if (S_ISLNK(flp->mode))
+	if (S_ISLNK(flp->fl_mode))
 	    buf[readlink(flp->diskName, buf, BUFSIZ)] = '\0';
 	s = buf;
 	headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
@@ -831,7 +827,7 @@ static void genCpioListAndHeader(struct FileList *fl,
 	
 	if (!isSrc && isDoc(fl, flp->fileName))
 	    flp->flags |= RPMFILE_DOC;
-	if (S_ISDIR(flp->mode))
+	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
 
 	headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
@@ -851,14 +847,15 @@ static void freeFileList(FileListRec *fileList, int count)
     FREE(fileList);
 }
 
-static int addFile(struct FileList *fl, char *name, struct stat *statp)
+static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 {
     FileListRec *flp;
     char fileName[BUFSIZ];
     char diskName[BUFSIZ];
     struct stat statbuf;
-    int_16 fileMode;
-    int fileUid, fileGid;
+    mode_t fileMode;
+    uid_t fileUid;
+    gid_t fileGid;
     char *fileUname, *fileGname;
     char *lang;
     
@@ -966,11 +963,13 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	    
     flp = &fl->fileList[fl->fileListRecsUsed];
 
+    flp->fl_st = *statp;	/* structure assignment */
+    flp->fl_mode = fileMode;
+    flp->fl_uid = fileUid;
+    flp->fl_gid = fileGid;
+
     flp->fileName = strdup(fileName);
     flp->diskName = strdup(diskName);
-    flp->mode = fileMode;
-    flp->uid = fileUid;
-    flp->gid = fileGid;
     flp->uname = fileUname;
     flp->gname = fileGname;
 
@@ -985,21 +984,15 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
     flp->flags = fl->currentFlags;
     flp->verifyFlags = fl->currentVerifyFlags;
 
-    flp->size = statp->st_size;
-    flp->mtime = statp->st_mtime;
-    flp->rdev = statp->st_rdev;
-    flp->device = statp->st_dev;
-    flp->inode = statp->st_ino;
+    fl->totalFileSize += flp->fl_size;
 
     fl->fileListRecsUsed++;
-
-    fl->totalFileSize += flp->size;
     fl->fileCount++;
 
     return 0;
 }
 
-static int processBinaryFile(Package pkg, struct FileList *fl, char *fileName)
+static int processBinaryFile(Package pkg, struct FileList *fl, const char *fileName)
 {
     char fullname[BUFSIZ];
     glob_t glob_result;
@@ -1044,7 +1037,8 @@ static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
 {
     struct FileList fl;
-    char *s, **files, **fp, *fileName;
+    char *s, **files, **fp;
+    const char *fileName;
     char buf[BUFSIZ];
     FILE *f;
 
@@ -1370,23 +1364,13 @@ int processSourceFiles(Spec spec)
 	flp->fileName = strdup(fn);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
-    {	struct stat sb;
-	stat(s, &sb);
-	flp->mode = sb.st_mode;
-	flp->uid = sb.st_uid;
-	flp->gid = sb.st_gid;
-	flp->size = sb.st_size;
-	flp->mtime = sb.st_mtime;
-	flp->rdev = sb.st_rdev;
-	flp->device = sb.st_dev;
-	flp->inode = sb.st_ino;
-    }
+	stat(s, &flp->fl_st);
 
-	flp->uname = getUname(flp->uid);
-	flp->gname = getGname(flp->gid);
+	flp->uname = getUname(flp->fl_uid);
+	flp->gname = getGname(flp->fl_gid);
 	flp->lang = strdup("");
 	
-	fl.totalFileSize += flp->size;
+	fl.totalFileSize += flp->fl_size;
 	
 	if (! (flp->uname && flp->gname)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), s);
