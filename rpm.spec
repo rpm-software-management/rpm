@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.38
+Release: 0.39
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -255,6 +255,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Jun 18 2000 Jeff Johnson <jbj@redhat.com>
+- require --rebuilddb to convert db1 -> db3, better messages.
+
 * Fri Jun 16 2000 Jeff Johnson <jbj@redhat.com>
 - fix: resurrect symlink unique'ifying property of finger prints.
 

@@ -20,6 +20,7 @@ static int _debug = 0;
 #include "misc.h"
 
 extern int _noDirTokens;
+static int _rebuildinprogress = 0;
 
 int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 
@@ -259,8 +260,8 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
     Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n\
     and configure \"%%_dbapi -1\" (e.g. create and/or edit /etc/rpm/macros).\n\
 \n\
-"), _dbapi_wanted);
-	   return NULL;
+"),	    _dbapi_wanted);
+	    return NULL;
 	}
 	errno = 0;
 	dbi = NULL;
@@ -284,43 +285,89 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
     	break;
     }
 
-    if (_dbapi <= 0) {		/* failed to open with any dbapi */
+    /* Failed to open with any dbapi */
+    if (_dbapi <= 0) {
 	static int _printed[32];
 	if (!_printed[dbix & 0x1f]++)
 	    rpmError(RPMERR_DBOPEN, _("dbiOpen: cannot open %s index"),
 		tagName(rpmtag));
 	rc = 1;
-    } else			/* suggest possible conversion */
-    if (_dbapi_wanted < 0 && _dbapi != _dbapi_rebuild) {
+	goto exit;
+    }
+
+    /* Require conversion. */
+    if (_dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
 	static int _printed = 0;
-	rc = (dbi->dbi_rpmtag != RPMDBI_PACKAGES);
+	rc = (_rebuildinprogress ? 0 : 1);
 	if (rc && !_printed++)
 	    fprintf(stderr, _("\n\
---> The database is in db%d format, not the suggested db%d format.\n\
+--> The rpm database is in db%d format, not the suggested db%d format.\n\
+    If you have just upgraded the rpm package you need to convert\n\
+    your database to db%d format by running \"rpm --rebuilddb\" as root.\n\
+\n\
+"),	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3),
+	(_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
+	goto exit;
+    }
+
+    /* Suggest possible configuration */
+    if (_dbapi_wanted >= 0 && _dbapi != _dbapi_wanted) {
+	static int _printed = 0;
+	if (!_printed++)
+	    fprintf(stderr, _("\n\
+--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n\
+    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n\
+    and configure \"%%_dbapi %d\" (e.g. create and/or edit /etc/rpm/macros).\n\
+\n\
+"),	_dbapi_wanted, _dbapi, _dbapi);
+	rc = 1;
+	goto exit;
+    }
+
+    /* Suggest possible configuration */
+    if (_dbapi_wanted < 0 && _dbapi != _dbapi_rebuild) {
+	static int _printed = 0;
+	rc = (_rebuildinprogress ? 0 : 1);
+	if (rc && !_printed++)
+	    fprintf(stderr, _("\n\
+--> The rpm database is in db%d format, not the suggested db%d format.\n\
     Please verify the setting of the macros %%_dbapi and %%_dbapi_rebuild\n\
     using \"rpm --showrc\", and either run \"rpm --rebuilddb\" as root\n\
     to convert your database from db%d to db%d format, or configure\n\
     \"%%_dbapi_rebuild %d\" (e.g. create and/or edit /etc/rpm/macros).\n\
 \n\
-"), _dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3),
-    _dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3), _dbapi);
-    } else			/* suggest possible configuration */
-    if (_dbapi_wanted >= 0 && _dbapi != _dbapi_wanted) {
-	static int _printed = 0;
-	if (!_printed++)
-	    fprintf(stderr, _("\n\
---> The configured %%_dbapi was db%d, but the database is db%d format.\n\
-    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n\
-    and configure \"%%_dbapi %d\" (e.g. create and/or edit /etc/rpm/macros).\n\
-\n\
-"), _dbapi_wanted, _dbapi, _dbapi);
-	rc = 1;
+"),	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3),
+	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3), _dbapi);
+	goto exit;
     }
 
+    /* Two co-resident databases. */
+    if (rc == 0 && dbi) {
+	const char * pkgs = rpmGenPath(rpmdb->db_root, "%{_dbpath}/", "packages.rpm");
+	static int _printed = 0;
+
+	rc = (_dbapi > 1 && rpmfileexists(pkgs) && !_rebuildinprogress);
+	if (rc && !_printed++)
+		fprintf(stderr, _("\n\
+--> An rpm database in db1 format exists in %s.\n\
+    Please convert to db%d format by running \"rpm --rebuilddb\" as root.\n\
+\n\
+"),	pkgs, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
+	if (rc && dbi) {
+	    xfree(pkgs);
+	    pkgs = rpmGenPath( dbi->dbi_root, dbi->dbi_home,
+		(dbi->dbi_file ? dbi->dbi_file : tagName(dbi->dbi_rpmtag)));
+	    dbiClose(dbi, 0);
+	    unlink(pkgs);
+	}
+	xfree(pkgs);
+	goto exit;
+    }
+
+exit:
     if (rc == 0 && dbi) {
 	rpmdb->_dbi[dbix] = dbi;
     } else if (dbi) {
-	/* XXX FIXME: dbNopen handles failures already. */
 	db3Free(dbi);
 	dbi = NULL;
     }
@@ -2225,6 +2272,7 @@ int rpmdbRebuild(const char * rootdir)
 
     _dbapi = rpmExpandNumeric("%{_dbapi}");
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
+    _rebuildinprogress = 1;
 
     tfn = rpmGetPath("%{_dbpath}", NULL);
     if (!(tfn && tfn[0] != '%')) {
