@@ -506,7 +506,7 @@ static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
     o = PyObject_NEW(rpmdbObject, &rpmdbType);
     o->db = NULL;
 
-    if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0)) {
+    if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0644)) {
 	char * errmsg = "cannot open database in %s";
 	char * errstr = NULL;
 	int errsize;
