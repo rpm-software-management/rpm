@@ -6,16 +6,14 @@ dnl it, why check it?
 
 AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
-
+AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 AM_INIT_AUTOMAKE(rpm, 4.1)
 AM_CONFIG_HEADER(config.h)
-
-AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
-ALL_LINGUAS="cs da de en_RN es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN.GB2312"
+ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr"
 
 echo "
 
@@ -25,8 +23,8 @@ echo "
 *                                                                          *
 * This is source code from the development branch of rpm-4.1.              *
 *                                                                          *
-* If you want the "production" rpm-4.0.3 code, then you should either use  *
-* an rpm-4.0.3 src.rpm, or, if using a CVS checkout, do the following:     *
+* If you want the "production" rpm-4.0.4 code, then you should either use  *
+* an rpm-4.0.4 src.rpm, or, if using a CVS checkout, do the following:     *
 *                                                                          *
 *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
 *       (no password, just carriage return)                                *
@@ -325,7 +323,7 @@ do
 	fi
 
 	AC_MSG_CHECKING(for $dir/include in INCPATH)
-	if test -d $dir/include ; then
+	if test -d $dir/include 2>/dev/null ; then
 		if [ "$dir" != "/usr/local" ] ; then
 		    INCPATH="$INCPATH -I$dir/include"
 		fi
@@ -1185,13 +1183,13 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt beecrypt zlib $WITH_DB_SUBDIR)
+AC_CONFIG_SUBDIRS(popt beecrypt zlib db3)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile scripts/brp-redhat tools/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
-	misc/Makefile po/Makefile.in intl/Makefile
+	misc/Makefile intl/Makefile po/Makefile.in
 	doc/Makefile doc/manual/Makefile
 	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
 	python/Makefile ],

@@ -51,18 +51,18 @@ clean-local:
 	rm -f $(BEECRYPTLOBJS) *.o .created
 
 tdigest_SOURCES = tdigest.c
-tdigest_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
+tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 trpmio_SOURCES = trpmio.c
-trpmio_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
+trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tkey_SOURCES = tkey.c
 tkey_LDFLAGS = -all-static
-tkey_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
+tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tring_SOURCES = tring.c
 tring_LDFLAGS = -all-static
-tring_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
+tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 dumpasn1_SOURCES = dumpasn1.c
 

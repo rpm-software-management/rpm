@@ -34,10 +34,10 @@ poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 
-rpmmodule.so: $(librpmmodule_la_OBJECTS)
+rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
 
-poptmodule.so: $(poptmodule_so_OBJECTS)
+poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
 	$(LINK) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
 
 .PHONY:	lclint

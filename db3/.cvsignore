@@ -12,8 +12,6 @@ db_config.h
 libtool
 config.status
 include.tcl
-db.h
-db_int.h
 berkeley_db_svc
 db_archive
 db_checkpoint
@@ -26,7 +24,10 @@ db_stat
 db_upgrade
 db_verify
 db3libobjs
+db.h
+db_cxx.h
 db_ext.h
+db_int.h
 btree_ext.h
 clib_ext.h
 common_ext.h

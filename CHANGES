@@ -80,6 +80,7 @@
 	- simple automake wrapper for zlib.
 	- splint fiddles.
 	- make peace with gcc-3.1, remove compiler cruft.
+	- make peace with automake et al in 8.0, ugh.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-01 10:09-0500\n"
+"POT-Creation-Date: 2002-02-10 13:58-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -73,258 +73,258 @@ msgstr "virhe etsittäessä pakettia %s\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: rpmqv.c:109
+#: rpmqv.c:108
 msgid "print the version of rpm being used"
 msgstr "tulosta käytetyn rpm:n versio"
 
-#: rpmqv.c:112
+#: rpmqv.c:111
 msgid "provide less detailed output"
 msgstr ""
 
-#: rpmqv.c:114
+#: rpmqv.c:113
 msgid "provide more detailed output"
 msgstr ""
 
-#: rpmqv.c:116
+#: rpmqv.c:115
 msgid "define macro <name> with value <body>"
 msgstr ""
 
-#: rpmqv.c:117
+#: rpmqv.c:116
 msgid "'<name> <body>'"
 msgstr ""
 
-#: rpmqv.c:119
+#: rpmqv.c:118
 #, fuzzy
 msgid "print macro expansion of <expr>+"
 msgstr "tulosta käytetyn rpm:n versio"
 
-#: rpmqv.c:120
+#: rpmqv.c:119
 msgid "<expr>+"
 msgstr ""
 
-#: rpmqv.c:122
+#: rpmqv.c:121
 msgid "send stdout to <cmd>"
 msgstr "lähetä vakiotuloste <komento>:lle"
 
-#: rpmqv.c:123
+#: rpmqv.c:122
 msgid "<cmd>"
 msgstr ""
 
-#: rpmqv.c:125
+#: rpmqv.c:124
 msgid "use <dir> as the top level directory"
 msgstr "käytä <hakem> ylimpänä hakemistona"
 
-#: lib/poptI.c:210 rpmqv.c:126
+#: lib/poptI.c:210 rpmqv.c:125
 msgid "<dir>"
 msgstr ""
 
-#: rpmqv.c:128
+#: rpmqv.c:127
 msgid "read <file:...> instead of default macro file(s)"
 msgstr ""
 
-#: rpmqv.c:129 rpmqv.c:133 rpmqv.c:137
+#: rpmqv.c:128 rpmqv.c:132 rpmqv.c:136
 msgid "<file:...>"
 msgstr ""
 
-#: rpmqv.c:132 rpmqv.c:136
+#: rpmqv.c:131 rpmqv.c:135
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr ""
 
-#: rpmqv.c:140
+#: rpmqv.c:139
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: rpmqv.c:145
+#: rpmqv.c:144
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: rpmqv.c:148
+#: rpmqv.c:147
 msgid "debug protocol data stream"
 msgstr ""
 
-#: rpmqv.c:150
+#: rpmqv.c:149
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: rpmqv.c:152
+#: rpmqv.c:151
 msgid "debug URL cache handling"
 msgstr ""
 
-#: rpmqv.c:172
+#: rpmqv.c:171
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:175
+#: rpmqv.c:174
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:181
+#: rpmqv.c:180
 msgid "Signature options:"
 msgstr ""
 
-#: rpmqv.c:187
+#: rpmqv.c:186
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:193
+#: rpmqv.c:192
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:199
+#: rpmqv.c:198
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:204
+#: rpmqv.c:203
 msgid "Common options for all rpm modes:"
 msgstr ""
 
 #. @-modfilesys -globs @
-#: lib/poptI.c:27 rpmqv.c:221
+#: lib/poptI.c:27 rpmqv.c:220
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: rpmqv.c:229
+#: rpmqv.c:228
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versio %s\n"
 
-#: rpmqv.c:236
+#: rpmqv.c:235
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr ""
 
-#: rpmqv.c:237
+#: rpmqv.c:236
 #, fuzzy
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Tätä ohjelmaa voi vapaasti levittää GNU GPL:n puittessa"
 
-#: rpmqv.c:249
+#: rpmqv.c:248
 #, fuzzy, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "käyttö: rpm {--help}"
 
-#: rpmqv.c:589
+#: rpmqv.c:593
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
-#: rpmqv.c:590
+#: rpmqv.c:594
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Käytä sen sijaan -e tai --erase .\n"
 
-#: rpmqv.c:596
+#: rpmqv.c:600
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpmqv.c:637 rpmqv.c:643 rpmqv.c:649 rpmqv.c:687
+#: rpmqv.c:641 rpmqv.c:647 rpmqv.c:653 rpmqv.c:691
 msgid "only one major mode may be specified"
 msgstr "vain yksi päämoodi voidaan määritellä"
 
-#: rpmqv.c:666
+#: rpmqv.c:670
 msgid "one type of query/verify may be performed at a time"
 msgstr "yhden tyyppinen kysely/tarkistus voidaan suorittaa kerralla"
 
-#: rpmqv.c:670
+#: rpmqv.c:674
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "odottamaton kyselyn lähde"
 
-#: rpmqv.c:673
+#: rpmqv.c:677
 #, fuzzy
 msgid "unexpected query format"
 msgstr "odottamaton kyselyn lähde"
 
-#: rpmqv.c:676
+#: rpmqv.c:680
 msgid "unexpected query source"
 msgstr "odottamaton kyselyn lähde"
 
-#: rpmqv.c:717
+#: rpmqv.c:721
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath parametri annettu toiminnolle, joka ei käytä tietokantaa"
 
-#: rpmqv.c:723
+#: rpmqv.c:727
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "vain asennus tai päivitys voidaan pakottaa"
 
-#: rpmqv.c:725
+#: rpmqv.c:729
 msgid "files may only be relocated during package installation"
 msgstr "tiedostoja voidaan siirtää toiselle polulle vain asennettaessa"
 
-#: rpmqv.c:728
+#: rpmqv.c:732
 msgid "only one of --prefix or --relocate may be used"
 msgstr "vain toinen --prefix tai --relocate voidaan antaa"
 
-#: rpmqv.c:731
+#: rpmqv.c:735
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate: voidaan käyttää vain uusia paketteja asennettaessa"
 
-#: rpmqv.c:734
+#: rpmqv.c:738
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix: voidaan käyttää vain uusia paketteja asennettaessa"
 
-#: rpmqv.c:737
+#: rpmqv.c:741
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix parametrien pitää alkaa /-merkillä"
 
-#: rpmqv.c:740
+#: rpmqv.c:744
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h): voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:744
+#: rpmqv.c:748
 msgid "--percent may only be specified during package installation"
 msgstr "--percent: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:749
+#: rpmqv.c:753
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:753
+#: rpmqv.c:757
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:757
+#: rpmqv.c:761
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:761
+#: rpmqv.c:765
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:765
+#: rpmqv.c:769
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "vain toinen --excludedocs tai --includedocs voidaan antaa"
 
-#: rpmqv.c:769
+#: rpmqv.c:773
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:773
+#: rpmqv.c:777
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:778
+#: rpmqv.c:782
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoreos: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:782
+#: rpmqv.c:786
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches: voidaan käyttää vain paketteja poistettaessa"
 
-#: rpmqv.c:786
+#: rpmqv.c:790
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles: voidaan käyttää vain paketteja asennettaessa"
 
-#: rpmqv.c:791
+#: rpmqv.c:795
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb: voidaan käyttää vain paketteja asennettaessa tai poistettaessa"
 
-#: rpmqv.c:796
+#: rpmqv.c:800
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
@@ -332,7 +332,7 @@ msgid ""
 msgstr ""
 "--justdb: voidaan käyttää vain paketteja asennettaessa tai poistettaessa"
 
-#: rpmqv.c:801
+#: rpmqv.c:805
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
@@ -340,7 +340,7 @@ msgid ""
 msgstr ""
 "--justdb: voidaan käyttää vain paketteja asennettaessa tai poistettaessa"
 
-#: rpmqv.c:805
+#: rpmqv.c:809
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -349,7 +349,7 @@ msgstr ""
 "--nodeps: voidaan käyttää vain paketteja asennettaessa, poistettaessa tai "
 "tarkistettaessa"
 
-#: rpmqv.c:810
+#: rpmqv.c:814
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -357,7 +357,7 @@ msgstr ""
 "--test: voidaan käyttää vain paketteja asennettaessa, poistettaessa ja "
 "käännettäessä"
 
-#: rpmqv.c:815
+#: rpmqv.c:819
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -365,84 +365,84 @@ msgstr ""
 "--root (-r): voidaan käyttää vain paketteja asennettaessa, poistettaessa, "
 "kyseltäessä ja tietokannan uudelleenluonnissa"
 
-#: rpmqv.c:827
+#: rpmqv.c:831
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametrit --root (-r):lle alettava /-merkillä"
 
-#: rpmqv.c:851
+#: rpmqv.c:855
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:856
+#: rpmqv.c:860
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: rpmqv.c:875
+#: rpmqv.c:879
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: rpmqv.c:880
+#: rpmqv.c:884
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:882
+#: rpmqv.c:886
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: rpmqv.c:886
+#: rpmqv.c:890
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: rpmqv.c:891
+#: rpmqv.c:895
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpmqv.c:898
+#: rpmqv.c:902
 msgid "--sign may only be used during package building"
 msgstr "--sign: voidaan käyttää vain paketteja käännettäessä"
 
-#: rpmqv.c:915
+#: rpmqv.c:919
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: avaus ei onnistunut\n"
 
-#: rpmqv.c:947
+#: rpmqv.c:951
 msgid "no packages files given for rebuild"
 msgstr "uudelleenkäännolle ei määritelty paketteja"
 
-#: rpmqv.c:1015
+#: rpmqv.c:1019
 msgid "no spec files given for build"
 msgstr "käännökselle ei annettu määrittelytiedostoja"
 
-#: rpmqv.c:1017
+#: rpmqv.c:1021
 msgid "no tar files given for build"
 msgstr "käännökselle ei määritelty tar-tiedostoja"
 
-#: rpmqv.c:1036
+#: rpmqv.c:1043
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "allekirjoitukselle ei määritelty paketteja"
 
-#: rpmqv.c:1047
+#: rpmqv.c:1085
 msgid "no packages given for install"
 msgstr "asennukselle ei määritelty paketteja"
 
-#: rpmqv.c:1093
+#: rpmqv.c:1103
 msgid "no arguments given for query"
 msgstr "kyselylle ei annettu parametrejä"
 
-#: rpmqv.c:1106
+#: rpmqv.c:1116
 msgid "no arguments given for verify"
 msgstr "tarkistukselle ei annettu parametrejä"
 
-#: rpmqv.c:1114
+#: rpmqv.c:1124
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags: odottamattomia parametrejä"
 
-#: rpmqv.c:1130
+#: rpmqv.c:1140
 #, fuzzy
 msgid "no arguments given"
 msgstr "kyselylle ei annettu parametrejä"
@@ -844,7 +844,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus epäonnistui\n"
 
-#: build/pack.c:603 lib/psm.c:1426
+#: build/pack.c:603 lib/psm.c:1444
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
@@ -874,7 +874,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:683 lib/psm.c:1700
+#: build/pack.c:683 lib/psm.c:1725
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1512,48 +1512,48 @@ msgstr ""
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:958
+#: lib/depends.c:962
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1073
+#: lib/depends.c:1081
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
 #. Record all relations.
-#: lib/depends.c:1341
+#: lib/depends.c:1349
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1447
+#: lib/depends.c:1455
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1540
+#: lib/depends.c:1548
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1610
+#: lib/depends.c:1618
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1645
+#: lib/depends.c:1653
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1650
+#: lib/depends.c:1658
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2965 rpmdb/header.c:2986 rpmdb/header.c:3008
+#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -1605,37 +1605,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fsm.c:1185
+#: lib/fsm.c:1191
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1470
+#: lib/fsm.c:1476
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1591 lib/fsm.c:1719
+#: lib/fsm.c:1597 lib/fsm.c:1727
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/fsm.c:1745
+#: lib/fsm.c:1753
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "en voi poistaa %s -hakemisto ei ole tyhjä"
 
-#: lib/fsm.c:1751
+#: lib/fsm.c:1759
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s:n rmdir epäonnistui: %s"
 
-#: lib/fsm.c:1761
+#: lib/fsm.c:1769
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/fsm.c:1780
+#: lib/fsm.c:1791
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -1911,217 +1911,237 @@ msgstr "älä asenna, mutta kerro onnistuisiko se"
 msgid "upgrade package(s)"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:83
+#: lib/poptQV.c:95
 #, fuzzy
 msgid "query/verify all packages"
 msgstr "kysele kaikki paketit"
 
-#: lib/poptQV.c:85
+#: lib/poptQV.c:97
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "kyselymoodi"
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:99
 #, fuzzy
 msgid "query/verify package(s) owning file"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/poptQV.c:89
-#, fuzzy
-msgid "query/verify package(s) in group"
-msgstr "paketilla ei ole nimeä"
-
-#: lib/poptQV.c:91
-#, fuzzy
-msgid "query/verify a package file (i.e. a binary *.rpm file)"
-msgstr "kysele kaikki paketit"
-
-#: lib/poptQV.c:93
-#, fuzzy
-msgid "rpm query mode"
-msgstr "kyselymoodi"
-
-#: lib/poptQV.c:97
-msgid "display known query tags"
-msgstr ""
-
-#: lib/poptQV.c:99
-#, fuzzy
-msgid "query a spec file"
-msgstr "%s:n kysely ei onnistunut\n"
-
-#: lib/poptQV.c:99
-msgid "<spec>"
-msgstr ""
-
 #: lib/poptQV.c:101
 #, fuzzy
-msgid "query the package(s) triggered by the package"
+msgid "query/verify package(s) with file identifier"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #: lib/poptQV.c:103
 #, fuzzy
+msgid "query/verify package(s) in group"
+msgstr "paketilla ei ole nimeä"
+
+#: lib/poptQV.c:105
+#, fuzzy
+msgid "query/verify package(s) with header identifier"
+msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
+
+#: lib/poptQV.c:107
+#, fuzzy
+msgid "query/verify a package file (i.e. a binary *.rpm file)"
+msgstr "kysele kaikki paketit"
+
+#: lib/poptQV.c:109
+#, fuzzy
+msgid "query/verify package(s) with package identifier"
+msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
+
+#: lib/poptQV.c:111
+#, fuzzy
+msgid "rpm query mode"
+msgstr "kyselymoodi"
+
+#: lib/poptQV.c:115
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:117
+#, fuzzy
+msgid "query a spec file"
+msgstr "%s:n kysely ei onnistunut\n"
+
+#: lib/poptQV.c:117
+msgid "<spec>"
+msgstr ""
+
+#: lib/poptQV.c:119
+#, fuzzy
+msgid "query/verify package(s) from install transaction"
+msgstr "paketilla ei ole nimeä"
+
+#: lib/poptQV.c:121
+#, fuzzy
+msgid "query the package(s) triggered by the package"
+msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
+
+#: lib/poptQV.c:123
+#, fuzzy
 msgid "rpm verify mode"
 msgstr "kyselymoodi"
 
-#: lib/poptQV.c:106
+#: lib/poptQV.c:126
 #, fuzzy
 msgid "rpm verify mode (legacy)"
 msgstr "kyselymoodi"
 
-#: lib/poptQV.c:108
+#: lib/poptQV.c:128
 #, fuzzy
 msgid "query/verify the package(s) which require a dependency"
 msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
 
-#: lib/poptQV.c:110
+#: lib/poptQV.c:130
 #, fuzzy
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
 
-#: lib/poptQV.c:170
+#: lib/poptQV.c:190
 #, fuzzy
 msgid "list all configuration files"
 msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
 
-#: lib/poptQV.c:172
+#: lib/poptQV.c:192
 #, fuzzy
 msgid "list all documentation files"
 msgstr "asenna dokumentaatio"
 
-#: lib/poptQV.c:174
+#: lib/poptQV.c:194
 #, fuzzy
 msgid "dump basic file information"
 msgstr "näytä paketin tiedot"
 
-#: lib/poptQV.c:176
+#: lib/poptQV.c:196
 #, fuzzy
 msgid "list files in package"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:201
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:185
+#: lib/poptQV.c:205
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:188
+#: lib/poptQV.c:208
 #, fuzzy, c-format
 msgid "skip %%readme files"
 msgstr "%s: readLead  epäonnistui\n"
 
-#: lib/poptQV.c:194
+#: lib/poptQV.c:214
 #, fuzzy
 msgid "use the following query format"
 msgstr "odottamaton kyselyn lähde"
 
-#: lib/poptQV.c:196
+#: lib/poptQV.c:216
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/poptQV.c:198
+#: lib/poptQV.c:218
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:200
+#: lib/poptQV.c:220
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "näytä paketin tiedostolistaus"
 
-#: lib/poptQV.c:220 lib/poptQV.c:262 lib/poptQV.c:296
+#: lib/poptQV.c:240 lib/poptQV.c:282 lib/poptQV.c:316
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:223
+#: lib/poptQV.c:243
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:246
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:229
+#: lib/poptQV.c:249
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:232
+#: lib/poptQV.c:252
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:235
+#: lib/poptQV.c:255
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:238 lib/poptQV.c:241
+#: lib/poptQV.c:258 lib/poptQV.c:261
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:264
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:246
+#: lib/poptQV.c:266
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "älä tarkista paketin riippuvuuksia"
 
-#: lib/poptQV.c:248 lib/poptQV.c:252
+#: lib/poptQV.c:268 lib/poptQV.c:272
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "älä suorita mitään vaiheita"
 
-#: lib/poptQV.c:255
+#: lib/poptQV.c:275
 #, fuzzy
 msgid "don't verify digest(s)"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:258
+#: lib/poptQV.c:278
 #, fuzzy
 msgid "don't verify signature(s)"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:266 lib/poptQV.c:300
+#: lib/poptQV.c:286 lib/poptQV.c:320
 #, fuzzy
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:269 lib/poptQV.c:303
+#: lib/poptQV.c:289 lib/poptQV.c:323
 #, fuzzy
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "asenna paketti"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:304
 #, fuzzy
 msgid "sign a package, preserving other existing signatures"
 msgstr "allekirjoita paketti (hylkää nykyinen allekirjoitus)"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:306
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "tarkista paketin allekirjoitus"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:308
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:290
+#: lib/poptQV.c:310
 #, fuzzy
 msgid "sign a package, discarding all current signatures"
 msgstr "allekirjoita paketti (hylkää nykyinen allekirjoitus)"
 
-#: lib/poptQV.c:292
+#: lib/poptQV.c:312
 #, fuzzy
 msgid "generate signature"
 msgstr "generoi PGP-allekirjoitus"
@@ -2207,7 +2227,7 @@ msgid "is needed by"
 msgstr "vaatii %s-%s-%s\n"
 
 #. @-modfilesys@
-#: lib/psm.c:247 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#: lib/psm.c:247 rpmdb/header.c:383 rpmdb/header_internal.c:161
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2256,31 +2276,31 @@ msgstr "paketti %s-%s-%s  sisältää jaettuja tiedostoja\n"
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1468
+#: lib/psm.c:1493
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1477
+#: lib/psm.c:1502
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "ryhmässä %s ei ole paketteja\n"
 
-#: lib/psm.c:1519
+#: lib/psm.c:1544
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/psm.c:1520
+#: lib/psm.c:1545
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1708
+#: lib/psm.c:1733
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/psm.c:1711
+#: lib/psm.c:1736
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp epäonnistui"
@@ -2330,82 +2350,92 @@ msgstr "paketilla ei ole nimeä"
 msgid "can't query %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/query.c:599 lib/query.c:637 lib/rpminstall.c:333 lib/rpminstall.c:475
+#: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:333 lib/rpminstall.c:475
 #: lib/rpminstall.c:845
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/query.c:615
+#: lib/query.c:633
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:621
+#: lib/query.c:639
 msgid "old format source packages cannot be queried\n"
 msgstr "vanhan formaatin lähdekoodipaketteja ei voi kysellä\n"
 
-#: lib/query.c:647 lib/rpminstall.c:488
+#: lib/query.c:665 lib/rpminstall.c:488
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead  epäonnistui\n"
 
-#: lib/query.c:691
+#: lib/query.c:709
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:712
+#: lib/query.c:730
 #, fuzzy
 msgid "no packages\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/query.c:732
+#: lib/query.c:750
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "ryhmässä %s ei ole paketteja\n"
 
-#: lib/query.c:742
+#: lib/query.c:760
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "mikään paketti ei laukaise %s:a\n"
 
-#: lib/query.c:752
+#: lib/query.c:774 lib/query.c:796 lib/query.c:814 lib/query.c:845
+#, fuzzy, c-format
+msgid "malformed %s: %s\n"
+msgstr "En voi lukea %s: %s."
+
+#: lib/query.c:784 lib/query.c:802 lib/query.c:820 lib/query.c:850
+#, fuzzy, c-format
+msgid "no package matches %s: %s\n"
+msgstr "mikään paketti ei laukaise %s:a\n"
+
+#: lib/query.c:861
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mikään pakettie ei tarvitse %s:a\n"
 
-#: lib/query.c:763
+#: lib/query.c:872
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mikään paketti ei tarjoa %s:a\n"
 
-#: lib/query.c:798
+#: lib/query.c:906
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/query.c:802
+#: lib/query.c:910
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mikään paketti\n"
 
-#: lib/query.c:829
+#: lib/query.c:937
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:832
+#: lib/query.c:940
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:837
+#: lib/query.c:945
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:848 lib/rpminstall.c:633
+#: lib/query.c:956 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -3006,84 +3036,84 @@ msgstr ""
 
 #. This should not be allowed
 #. @-modfilesys@
-#: rpmdb/header.c:347
+#: rpmdb/header.c:346
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2222
+#: rpmdb/header.c:2208
 #, c-format
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2252
+#: rpmdb/header.c:2238
 msgid "missing } after %{"
 msgstr "puuttuva '{' '%{':n jälkeen"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2266
+#: rpmdb/header.c:2252
 msgid "empty tag format"
 msgstr "tyhjä nimiön formaatti"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2280
+#: rpmdb/header.c:2266
 msgid "empty tag name"
 msgstr "tyhjä nimiön nimi"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2297
+#: rpmdb/header.c:2283
 msgid "unknown tag"
 msgstr "tuntematon nimiö"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2324
+#: rpmdb/header.c:2310
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkomäärittelyn lopusta"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2342
+#: rpmdb/header.c:2328
 msgid "unexpected ]"
 msgstr "odottamaton ']'"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2346
+#: rpmdb/header.c:2332
 msgid "unexpected }"
 msgstr "odottamaton '}'"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2412
+#: rpmdb/header.c:2398
 msgid "? expected in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2421
+#: rpmdb/header.c:2407
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "odotin '{' '?'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2434 rpmdb/header.c:2476
+#: rpmdb/header.c:2420 rpmdb/header.c:2462
 msgid "} expected in expression"
 msgstr "odotin '}'-merkkiä ilmauksessa"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2444
+#: rpmdb/header.c:2430
 msgid ": expected following ? subexpression"
 msgstr "odotin ':' '?'-merkin jälkeen ali-ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2461
+#: rpmdb/header.c:2447
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "odotin '{' ':'-merkin jälkeen ilmauksessa "
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2486
+#: rpmdb/header.c:2472
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
-#: rpmdb/header.c:2709
+#: rpmdb/header.c:2695
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 
@@ -3153,7 +3183,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
-#: rpmdb/rpmdb.c:2097 rpmdb/rpmdb.c:3350
+#: rpmdb/rpmdb.c:2097 rpmdb/rpmdb.c:3372
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
@@ -3168,251 +3198,251 @@ msgstr ""
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:stä päivittäessä"
 
-#: rpmdb/rpmdb.c:2492
+#: rpmdb/rpmdb.c:2540
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: rpmdb/rpmdb.c:2501
+#: rpmdb/rpmdb.c:2544
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: rpmdb/rpmdb.c:2702
+#: rpmdb/rpmdb.c:2714
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
-#: rpmdb/rpmdb.c:2783
+#: rpmdb/rpmdb.c:2873
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2794
+#: rpmdb/rpmdb.c:2877
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: rpmdb/rpmdb.c:3236
+#: rpmdb/rpmdb.c:3258
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3269
+#: rpmdb/rpmdb.c:3291
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:3296
+#: rpmdb/rpmdb.c:3318
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3300
+#: rpmdb/rpmdb.c:3322
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "väliaikainen tietokanta %s on jo olemassa"
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3328
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3308
+#: rpmdb/rpmdb.c:3330
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3315
+#: rpmdb/rpmdb.c:3337
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3326
+#: rpmdb/rpmdb.c:3348
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3390
+#: rpmdb/rpmdb.c:3412
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lisätä tietuetta %d:stä"
 
-#: rpmdb/rpmdb.c:3408
+#: rpmdb/rpmdb.c:3430
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3416
+#: rpmdb/rpmdb.c:3438
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3418
+#: rpmdb/rpmdb.c:3440
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3428
+#: rpmdb/rpmdb.c:3450
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3430
+#: rpmdb/rpmdb.c:3452
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: rpmio/macro.c:228
+#: rpmio/macro.c:226
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: rpmio/macro.c:355
+#: rpmio/macro.c:353
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:398
+#: rpmio/macro.c:396
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:633
+#: rpmio/macro.c:631
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:662
+#: rpmio/macro.c:660
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:668
+#: rpmio/macro.c:666
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:673
+#: rpmio/macro.c:671
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:679
+#: rpmio/macro.c:677
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:716
+#: rpmio/macro.c:714
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:828
+#: rpmio/macro.c:826
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:948
+#: rpmio/macro.c:946
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "(tuntematon tyyppi)"
 
-#: rpmio/macro.c:1149
+#: rpmio/macro.c:1147
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1218 rpmio/macro.c:1235
+#: rpmio/macro.c:1216 rpmio/macro.c:1233
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: rpmio/macro.c:1276
+#: rpmio/macro.c:1274
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1405
+#: rpmio/macro.c:1403
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: rpmio/macro.c:1481
+#: rpmio/macro.c:1479
 msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1680 rpmio/macro.c:1686
+#: rpmio/macro.c:1678 rpmio/macro.c:1684
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: rpmio/macro.c:1689
+#: rpmio/macro.c:1687
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:660
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:663
 #, fuzzy
 msgid "Bad server response"
 msgstr "Virheellinen FTP-palvelijan vastaus"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:666
 #, fuzzy
 msgid "Server I/O error"
 msgstr "FTP:n IO-virhe"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:669
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP-palvelimen timeout"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:672
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP-palvelimen osoitetta ei löytynyt"
 
-#: rpmio/rpmio.c:671
+#: rpmio/rpmio.c:675
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP-palvelimen nimeä ei löytynyt"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:678
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "En saanut yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:677
+#: rpmio/rpmio.c:681
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "En saanut data-yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:684
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "Paikallisen tiedoston IO-virhe"
 
-#: rpmio/rpmio.c:683
+#: rpmio/rpmio.c:687
 msgid "Error setting remote server to passive mode"
 msgstr "Virhe asetettaessa palvelinta passiiviin moodiin"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:690
 msgid "File not found on server"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:693
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:697
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP:n tuntematon tai odottamaton virhe"
 
-#: rpmio/rpmio.c:1365
+#: rpmio/rpmio.c:1369
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
