@@ -19,7 +19,6 @@ char *inputdir = NULL;
 char *outputdir = NULL;
 int gentran = 0;
 
-
 static inline char *
 basename(const char *file)
 {
@@ -39,6 +38,18 @@ getTagString(int tval)
     }
     sprintf(buf, "<RPMTAG_%d>", tval);
     return buf;
+}
+
+static int
+getTagVal(const char *tname)
+{
+    const struct headerTagTableEntry *t;
+
+    for (t = rpmTagTable; t->name != NULL; t++) {
+	if (!strncmp(tname, t->name, strlen(t->name)))
+	    return t->val;
+    }
+    return 0;
 }
 
 const struct headerTypeTableEntry {
@@ -162,6 +173,26 @@ contractRpmPO(char *t, const char *s)
 
 /* ================================================================== */
 
+static const char *
+genSrpmFileName(Header h)
+{
+    char *name, *version, *release, *sourcerpm;
+    char sfn[BUFSIZ], bfn[BUFSIZ];
+
+    headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&name, NULL);
+    headerGetEntry(h, RPMTAG_VERSION, NULL, (void **)&version, NULL);
+    headerGetEntry(h, RPMTAG_RELEASE, NULL, (void **)&release, NULL);
+    sprintf(sfn, "%s-%s-%s.src.rpm", name, version, release);
+
+    headerGetEntry(h, RPMTAG_SOURCERPM, NULL, (void **)&sourcerpm, NULL);
+
+    if (strcmp(sourcerpm, sfn))
+	return strdup(sourcerpm);
+
+    return NULL;
+
+}
+
 static int poTags[] = {
     RPMTAG_DESCRIPTION,
     RPMTAG_GROUP,
@@ -182,6 +213,7 @@ gettextfile(int fd, const char *file, FILE *fp)
     Header h;
     int *tp;
     char **langs;
+    const char *sourcerpm;
     char buf[BUFSIZ];
     
     fprintf(fp, "\n#========================================================");
@@ -193,6 +225,8 @@ gettextfile(int fd, const char *file, FILE *fp)
 
     if ((langs = headerGetLangs(h)) == NULL)
 	return 1;
+
+    sourcerpm = genSrpmFileName(h);
 
     for (tp = poTags; *tp != 0; tp++) {
 	char **s, *e;
@@ -212,7 +246,9 @@ gettextfile(int fd, const char *file, FILE *fp)
 	}
 
 	/* Print xref comment */
-	fprintf(fp, "\n#: %s:%s\n", file, getTagString(*tp));
+	fprintf(fp, "\n#: %s:%s\n", basename(file), getTagString(*tp));
+	if (sourcerpm)
+	    fprintf(fp, "#: %s:%d\n", sourcerpm, 0);
 
 	/* Print msgid */
 	e = *s;
@@ -230,95 +266,10 @@ gettextfile(int fd, const char *file, FILE *fp)
 	    FREE(s)
     }
     
+    FREE((char *)sourcerpm);
     FREE(langs);
 
     return 0;
-}
-
-/* ================================================================== */
-
-static int
-readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs, CSA_t *csa)
-{
-    int fdi = 0;
-    Spec spec;
-    int rc;
-
-    if (fileName != NULL && (fdi = open(fileName, O_RDONLY, 0644)) < 0) {
-	perror("cannot open package");
-	exit(1);
-    }
-
-    /* Get copy of lead */
-    if ((rc = read(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
-	perror("cannot read lead");
-	exit(1);
-    }
-    lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
-
-    /* Reallocate build data structures */
-    spec = newSpec();
-    spec->packages = newPackage(spec);
-
-    /* XXX the header just allocated will be allocated again */
-    if (spec->packages->header) {
-	headerFree(spec->packages->header);
-	spec->packages->header = NULL;
-    }
-
-   /* Read the rpm lead and header */
-    rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
-    switch (rc) {
-    case 1:
-	fprintf(stderr, _("error: %s is not an RPM package\n"), fileName);
-	exit(1);
-    case 0:
-	break;
-    default:
-	fprintf(stderr, _("error: reading header from %s\n"), fileName);
-	exit(1);
-	break;
-    }
-
-    if (specp)		*specp = spec;
-
-    if (csa) {
-	csa->cpioFdIn = fdi;
-    } else if (fdi != 0) {
-	close(fdi);
-    }
-
-    return 0;
-}
-
-static int
-rewriteBinaryRPM(char *fni, char *fno)
-{
-    struct rpmlead lead;	/* XXX FIXME: exorcize lead/arch/os */
-    Header sigs;
-    Spec spec;
-    CSA_t csabuf, *csa = &csabuf;
-    int rc;
-
-    csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = -1;
-    csa->cpioList = NULL;
-    csa->cpioCount = 0;
-    csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
-
-    /* Read rpm and (partially) recreate spec/pkg control structures */
-    rc = readRPM(fni, &spec, &lead, &sigs, csa);
-    if (rc)
-	return rc;
-
-    /* Rewrite the rpm */
-    if (lead.type == RPMLEAD_SOURCE) {
-	return writeRPM(spec->packages->header, fno, (int)lead.type,
-		csa, spec->passPhrase, &(spec->cookie));
-    } else {
-	return writeRPM(spec->packages->header, fno, (int)lead.type,
-		csa, spec->passPhrase, NULL);
-    }
 }
 
 /* ================================================================== */
@@ -430,6 +381,57 @@ message_comment_dot_append (mp, s)
   string_list_append (mp->comment_dot, s);
 }
 
+void
+message_comment_filepos (mp, name, line)
+     message_ty *mp;
+     const char *name;
+     size_t line;
+{
+  size_t nbytes;
+  lex_pos_ty *pp;
+  int min, max;
+  int j;
+
+  /* See if we have this position already.  They are kept in sorted
+     order, so use a binary chop.  */
+  /* FIXME: use bsearch */
+  min = 0;
+  max = (int) mp->filepos_count - 1;
+  while (min <= max)
+    {
+      int mid;
+      int cmp;
+
+      mid = (min + max) / 2;
+      pp = &mp->filepos[mid];
+      cmp = strcmp (pp->file_name, name);
+      if (cmp == 0)
+	cmp = (int) pp->line_number - line;
+      if (cmp == 0)
+	return;
+      if (cmp < 0)
+	min = mid + 1;
+      else
+	max = mid - 1;
+    }
+
+  /* Extend the list so that we can add an position to it.  */
+  nbytes = (mp->filepos_count + 1) * sizeof (mp->filepos[0]);
+  mp->filepos = xrealloc (mp->filepos, nbytes);
+
+  /* Shuffle the rest of the list up one, so that we can insert the
+     position at ``min''.  */
+  /* FIXME: use memmove */
+  for (j = mp->filepos_count; j > min; --j)
+    mp->filepos[j] = mp->filepos[j - 1];
+  mp->filepos_count++;
+
+  /* Insert the postion into the empty slot.  */
+  pp = &mp->filepos[min];
+  pp->file_name = xstrdup (name);
+  pp->line_number = line;
+}
+
 message_list_ty *
 message_list_alloc ()
 {
@@ -517,19 +519,6 @@ slurp(const char *file, char **ibufp, size_t *nbp)
     return 0;
 }
 
-typedef struct {
-	char *name;
-	int len;
-	int haslang;
-} KW_t;
-
-KW_t keywords[] = {
-	{ "domain",	6, 0 },
-	{ "msgid",	5, 0 },
-	{ "msgstr",	6, 1 },
-	NULL
-};
-
 static char *
 matchchar(const char *p, char pl, char pr)
 {
@@ -553,6 +542,19 @@ matchchar(const char *p, char pl, char pr)
 	return NULL;
 }
 
+typedef struct {
+	char *name;
+	int len;
+	int haslang;
+} KW_t;
+
+KW_t keywords[] = {
+	{ "domain",	6, 0 },
+	{ "msgid",	5, 0 },
+	{ "msgstr",	6, 1 },
+	NULL
+};
+
 #define	SKIPWHITE {while ((c = *se) && strchr("\b\f\n\r\t ", c)) se++;}
 #define	NEXTLINE  {state = 0; while ((c = *se) && c != '\n') se++; if (c == '\n') se++;}
 
@@ -564,7 +566,7 @@ parsepofile(const char *file, message_list_ty **mlpp)
     message_ty *mp;
     KW_t *kw;
     char *lang;
-    char *buf, *s, *se, *t;
+    char *buf, *s, *se, *t, *f;
     size_t nb;
     int c, rc;
     int state = 1;
@@ -605,7 +607,14 @@ fprintf(stderr, "%.*s\n", (int)(se-s), s);
 			if (c)
 				*se == '\0';	/* zap \n */
 			switch (s[1]) {
-			case ':':	/* XXX for now fall thru */
+			case ':':
+				if ((f = strrchr(s, ':')) == NULL) {
+					fprintf(stderr, "malformed #: xref at \"%.20s\"\n", s);
+					break;
+				}
+				*f++ = '\0';
+				message_comment_filepos(mp, s, -getTagVal(f));
+				break;
 			case '.':
 				message_comment_dot_append(mp, xstrdup(s));
 				break;
@@ -723,6 +732,93 @@ fprintf(stderr, "\n");
 
 /* ================================================================== */
 
+static int
+readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs, CSA_t *csa)
+{
+    int fdi = 0;
+    Spec spec;
+    int rc;
+
+    if (fileName != NULL && (fdi = open(fileName, O_RDONLY, 0644)) < 0) {
+	perror("cannot open package");
+	exit(1);
+    }
+
+    /* Get copy of lead */
+    if ((rc = read(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
+	perror("cannot read lead");
+	exit(1);
+    }
+    lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
+
+    /* Reallocate build data structures */
+    spec = newSpec();
+    spec->packages = newPackage(spec);
+
+    /* XXX the header just allocated will be allocated again */
+    if (spec->packages->header) {
+	headerFree(spec->packages->header);
+	spec->packages->header = NULL;
+    }
+
+   /* Read the rpm lead and header */
+    rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
+    switch (rc) {
+    case 1:
+	fprintf(stderr, _("error: %s is not an RPM package\n"), fileName);
+	exit(1);
+    case 0:
+	break;
+    default:
+	fprintf(stderr, _("error: reading header from %s\n"), fileName);
+	exit(1);
+	break;
+    }
+
+    if (specp)
+	*specp = spec;
+
+    if (csa) {
+	csa->cpioFdIn = fdi;
+    } else if (fdi != 0) {
+	close(fdi);
+    }
+
+    return 0;
+}
+
+static int
+rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
+{
+    struct rpmlead lead;	/* XXX FIXME: exorcize lead/arch/os */
+    Header sigs;
+    Spec spec;
+    CSA_t csabuf, *csa = &csabuf;
+    int rc;
+
+    csa->cpioArchiveSize = 0;
+    csa->cpioFdIn = -1;
+    csa->cpioList = NULL;
+    csa->cpioCount = 0;
+    csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
+
+    /* Read rpm and (partially) recreate spec/pkg control structures */
+    rc = readRPM(fni, &spec, &lead, &sigs, csa);
+    if (rc)
+	return rc;
+
+    /* Rewrite the rpm */
+    if (lead.type == RPMLEAD_SOURCE) {
+	return writeRPM(spec->packages->header, fno, (int)lead.type,
+		csa, spec->passPhrase, &(spec->cookie));
+    } else {
+	return writeRPM(spec->packages->header, fno, (int)lead.type,
+		csa, spec->passPhrase, NULL);
+    }
+}
+
+/* ================================================================== */
+
 #define	STDINFN	"<stdin>"
 
 #define	RPMGETTEXT	"rpmgettext"
@@ -787,26 +883,31 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 static int
 rpmputtext(int fd, const char *file, FILE *ofp)
 {
-	char fni[BUFSIZ], fno[BUFSIZ];
+	message_list_ty *mlp;
+	char fni[BUFSIZ], fno[BUFSIZ], fnp[BUFSIZ];
+	int rc;
 
-	fni[0] = '\0';
-	if (inputdir && *file != '/') {
-	    strcpy(fni, inputdir);
-	    strcat(fni, "/");
-	}
-	strcat(fni, file);
+	/* XXX use po file with same basename as rpm. */
+	strcpy(fnp, file);
 
-	fno[0] = '\0';
-	if (outputdir) {
-	    strcpy(fno, outputdir);
-	    strcat(fno, "/");
-	    strcat(fno, basename(file));
-	} else {
-	    strcat(fno, file);
-	    strcat(fno, ".out");
-	}
+	if ((rc = parsepofile(file, &mlp)) != 0)
+		return rc;
 
-	return rewriteBinaryRPM(fni, fno);
+	/* XXX hardwire dirnames for now */
+	strcpy(fni, "/mnt/redhat/comps/dist/5.2/sparc");
+	strcat(fni, "/");
+	strcat(fni, basename(file));
+	
+	strcpy(fno, "/tmp/OUT");
+	strcat(fno, "/");
+	strcat(fno, basename(file));
+
+	rc = rewriteBinaryRPM(fni, fno, mlp);
+
+	if (mlp)
+		message_list_free(mlp);
+
+	return rc;
 }
 
 #define	RPMCHKTEXT	"rpmchktext"
@@ -869,7 +970,14 @@ main(int argc, char **argv)
 	    }
 	}
     } else if (!strcmp(progname, RPMPUTTEXT)) {
-	rc = 0;
+	if (optind == argc) {
+	    rc = rpmputtext(0, STDINFN, stdout);
+	} else {
+	    for ( ; optind < argc; optind++ ) {
+		if ((rc = rpmputtext(0, argv[optind], stdout)) != 0)
+		    break;
+	    }
+	}
     } else if (!strcmp(progname, RPMCHKTEXT)) {
 	if (optind == argc) {
 	    rc = rpmchktext(0, STDINFN, stdout);
