@@ -15,6 +15,7 @@
 	- add new fully recursive macro.c
 	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
 	- create /usr/lib/rpm directory and move rpmrc et al there
+	- added :hex query format
 
 2.5.2 -> 2.5.3:
 	- fix infinite recursion on non-ERANGE return from getcwd() during
