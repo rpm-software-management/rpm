@@ -606,17 +606,6 @@ static int rpmfcSCRIPT(rpmfc fc)
     return 0;
 }
 
-#define	_permitstr(_a, _b)	(!strncmp((_a), (_b), sizeof(_b)-1))
-static int rpmfcELFpermit(const char *s)
-{
-    if (_permitstr(s, "GLIBCPP_"))	return 1;
-    if (_permitstr(s, "GLIBC_"))	return 1;
-    if (_permitstr(s, "GCC_"))		return 1;
-    if (_permitstr(s, "REDHAT_"))	return 1;
-    return 0;
-}
-#undef _permitstr
-
 static int rpmfcELF(rpmfc fc)
 {
 #if HAVE_GELF_H && HAVE_LIBELF
@@ -638,10 +627,11 @@ static int rpmfcELF(rpmfc fc)
     const char * s;
     char deptype;
     const char * soname = NULL;
+    ARGV_t * depsp;
     const char * depval;
-    size_t ns;
     char * t;
     int xx;
+    int isElf64;
 
     fdno = open(fn, O_RDONLY);
     if (fdno < 0)
@@ -655,6 +645,8 @@ static int rpmfcELF(rpmfc fc)
      || (ehdr = gelf_getehdr(elf, &ehdr_mem)) == NULL
      || !(ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC))
 	goto exit;
+
+    isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
 
     /*@-branchstate -uniondef @*/
     scn = NULL;
@@ -687,13 +679,14 @@ static int rpmfcELF(rpmfc fc)
 			    break;
 
 			s = elf_strptr(elf, shdr->sh_link, aux->vda_name);
-			if (!rpmfcELFpermit(s)) {
+			/* XXX Ick, but what's a girl to do. */
+			if (!strncmp("ld-", s, 3) || !strncmp("lib", s, 3))
+			{
 			    soname = _free(soname);
 			    soname = xstrdup(s);
 			    auxoffset += aux->vda_next;
 			    continue;
 			}
-			ns = strlen(s);
 
 			t = buf;
 			*t = '\0';
@@ -702,13 +695,16 @@ static int rpmfcELF(rpmfc fc)
 			depval = t;
 			t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
 
+#if !defined(__alpha__)
+			if (isElf64)
+			    t = stpcpy(t, "(64bit)");
+#endif
+
 			/* Add to package provides. */
 			xx = rpmfcSaveArg(&fc->provides, depval);
 
 			/* Add to file dependencies. */
-			if (ns < (sizeof(buf)-64)) {
-			    xx = rpmfcSaveArg(&fc->ddict, buf);
-			}
+			xx = rpmfcSaveArg(&fc->ddict, buf);
 
 			auxoffset += aux->vda_next;
 		    }
@@ -738,14 +734,7 @@ static int rpmfcELF(rpmfc fc)
 			    break;
 
 			s = elf_strptr(elf, shdr->sh_link, aux->vna_name);
-			if (!rpmfcELFpermit(s)) {
-			    auxoffset += aux->vna_next;
-			    continue;
-			}
-			ns = strlen(s);
-
-			if (soname == NULL)
-			    soname = xstrdup("libc.so.6");
+assert(soname);
 
 			t = buf;
 			*t = '\0';
@@ -754,13 +743,16 @@ static int rpmfcELF(rpmfc fc)
 			depval = t;
 			t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
 
+#if !defined(__alpha__)
+			if (isElf64)
+			    t = stpcpy(t, "(64bit)");
+#endif
+
 			/* Add to package requires. */
 			xx = rpmfcSaveArg(&fc->requires, depval);
 
 			/* Add to file dependencies. */
-			if (ns < (sizeof(buf)-64)) {
-			    xx = rpmfcSaveArg(&fc->ddict, buf);
-			}
+			xx = rpmfcSaveArg(&fc->ddict, buf);
 
 			auxoffset += aux->vna_next;
 		    }
@@ -773,8 +765,6 @@ static int rpmfcELF(rpmfc fc)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
 		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
-		    t = buf;
-		    *t = '\0';
 		    s = NULL;
 		    switch (dyn->d_tag) {
 		    default:
@@ -784,25 +774,35 @@ static int rpmfcELF(rpmfc fc)
 			/* Add to package requires. */
 			deptype = 'R';
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
-			xx = rpmfcSaveArg(&fc->requires, s);
+			depsp = &fc->requires;
 			/*@switchbreak@*/ break;
 		    case DT_SONAME:
 			/* Add to package provides. */
 			deptype = 'P';
+			depsp = &fc->provides;
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
-			xx = rpmfcSaveArg(&fc->provides, s);
 			/*@switchbreak@*/ break;
 		    }
 		    if (s == NULL)
 			continue;
-		    ns = strlen(s);
+
+		    t = buf;
+		    *t = '\0';
+		    sprintf(t, "%08d%c ", fc->ix, deptype);
+		    t += strlen(t);
+		    depval = t;
+		    t = stpcpy(t, s);
+
+#if !defined(__alpha__)
+		    if (isElf64)
+			t = stpcpy(t, "()(64bit)");
+#endif
+
+		    /* Add to package requires. */
+		    xx = rpmfcSaveArg(depsp, depval);
+
 		    /* Add to file dependencies. */
-		    if (ns < (sizeof(buf)-64)) {
-			sprintf(t, "%08d%c ", fc->ix, deptype);
-			t += strlen(t);
-			t = stpcpy(t, s);
-			xx = rpmfcSaveArg(&fc->ddict, buf);
-		    }
+		    xx = rpmfcSaveArg(&fc->ddict, buf);
 		}
 	    }
 	    /*@switchbreak@*/ break;
