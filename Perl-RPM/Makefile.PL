@@ -34,8 +34,9 @@ $CLEAN .= ' pod2html-* */pod2html-* *.html */*.html RPM/typemap';
 # Check for non-Perl dependancies:
 #
 print "Checking for required software components...\n";
-@packages = `rpm -qa`;
-unless (grep(/rpm\-devel/, @packages) && grep(/popt/, @packages))
+chomp($rpm_devel = qx(rpm -q rpm-devel 2>/dev/null));
+chomp($popt = qx(rpm -q popt 2>/dev/null));
+unless ($rpm_devel and $popt)
 {
     die "The Perl-RPM package relies on both the popt and rpm-devel packages
 being installed. Stopped";
@@ -49,8 +50,8 @@ WriteMakefile(
               DEFINE       => '',
               PM           => \%PM,
               XS           => \%XS,
-	      PL_FILES     => \%PL_SCRIPTS,
-	      EXE_FILES    => [ @SAMPLES ],
+              PL_FILES     => \%PL_SCRIPTS,
+              EXE_FILES    => [ @SAMPLES ],
               OBJECT       => $OBJECT,
               INC          => '-I/usr/include/rpm',
               DIR          => [],
