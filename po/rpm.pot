@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-27 18:06-0500\n"
+"POT-Creation-Date: 2000-02-29 18:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1235,8 +1235,7 @@ msgid "cannot re-open payload: %s\n"
 msgstr ""
 
 #: build/build.c:110 build/pack.c:312
-#, c-format
-msgid "Unable to open temp file %s."
+msgid "Unable to open temp file."
 msgstr ""
 
 #: build/build.c:189

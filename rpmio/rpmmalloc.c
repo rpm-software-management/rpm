@@ -2,7 +2,7 @@
 
 void *vmefail(void)
 {
-    fprintf(stderr, _("virtual memory exhausted.\n"));
+    fprintf(stderr, _("memory alloc returned NULL.\n"));
     exit(EXIT_FAILURE);
     /*@notreached@*/
     return NULL;
@@ -12,7 +12,9 @@ void *vmefail(void)
 
 void * xmalloc (size_t size)
 {
-    register void *value = malloc (size);
+    register void *value;
+    if (size == 0) size++;
+    value = malloc (size);
     if (value == 0)
 	value = vmefail();
     return value;
@@ -20,7 +22,10 @@ void * xmalloc (size_t size)
 
 void * xcalloc (size_t nmemb, size_t size)
 {
-    register void *value = calloc (nmemb, size);
+    register void *value;
+    if (size == 0) size++;
+    if (nmemb == 0) nmemb++;
+    value = calloc (nmemb, size);
     if (value == 0)
 	value = vmefail();
     return value;
@@ -28,7 +33,9 @@ void * xcalloc (size_t nmemb, size_t size)
 
 void * xrealloc (void *ptr, size_t size)
 {
-    register void *value = realloc (ptr, size);
+    register void *value;
+    if (size == 0) size++;
+    value = realloc (ptr, size);
     if (value == 0)
 	value = vmefail();
     return value;
