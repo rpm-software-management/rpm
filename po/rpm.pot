@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-11-22 14:35-0500\n"
+"POT-Creation-Date: 1998-11-23 16:37-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1812,103 +1812,103 @@ msgstr ""
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: ../build/parsePreamble.c:155
+#: ../build/parsePreamble.c:156
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:160
+#: ../build/parsePreamble.c:161
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:165
+#: ../build/parsePreamble.c:166
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:170
+#: ../build/parsePreamble.c:171
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:206
+#: ../build/parsePreamble.c:207
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:227
+#: ../build/parsePreamble.c:229
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:271 ../build/parsePreamble.c:279
+#: ../build/parsePreamble.c:273 ../build/parsePreamble.c:281
 #, c-format
 msgid "Unable to read icon: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:289
+#: ../build/parsePreamble.c:291
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:320
+#: ../build/parsePreamble.c:322
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: ../build/parsePreamble.c:328
+#: ../build/parsePreamble.c:330
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:379
+#: ../build/parsePreamble.c:381
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:392
+#: ../build/parsePreamble.c:394
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:404
+#: ../build/parsePreamble.c:406
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:415
+#: ../build/parsePreamble.c:417
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:479
+#: ../build/parsePreamble.c:481
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:489
+#: ../build/parsePreamble.c:491
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:633
+#: ../build/parsePreamble.c:635
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:639
+#: ../build/parsePreamble.c:641
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:666
+#: ../build/parsePreamble.c:668
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:691
+#: ../build/parsePreamble.c:693
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2138,8 +2138,8 @@ msgid "free list corrupt (%u)- contact support@redhat.com\n"
 msgstr ""
 
 #: ../lib/formats.c:97 ../lib/formats.c:114 ../lib/formats.c:134
-#: ../lib/formats.c:166 ../lib/header.c:1944 ../lib/header.c:1960
-#: ../lib/header.c:1980
+#: ../lib/formats.c:166 ../lib/header.c:1946 ../lib/header.c:1962
+#: ../lib/header.c:1982
 msgid "(not a number)"
 msgstr ""
 
@@ -2163,84 +2163,84 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: ../lib/header.c:664
+#: ../lib/header.c:666
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
 #. This should not be allowed
-#: ../lib/header.c:877
+#: ../lib/header.c:879
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: ../lib/header.c:907
+#: ../lib/header.c:909
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:966
+#: ../lib/header.c:968
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1300
+#: ../lib/header.c:1302
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1307
+#: ../lib/header.c:1309
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1317 ../lib/header.c:1349
+#: ../lib/header.c:1319 ../lib/header.c:1351
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1324
+#: ../lib/header.c:1326
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1337
+#: ../lib/header.c:1339
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1356
+#: ../lib/header.c:1358
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1450
+#: ../lib/header.c:1452
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1478
+#: ../lib/header.c:1480
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1490
+#: ../lib/header.c:1492
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1500
+#: ../lib/header.c:1502
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1515
+#: ../lib/header.c:1517
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1541
+#: ../lib/header.c:1543
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1557
+#: ../lib/header.c:1559
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1559
+#: ../lib/header.c:1561
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1734
+#: ../lib/header.c:1736
 msgid "(unknown type)"
 msgstr ""
 
@@ -2410,7 +2410,7 @@ msgstr ""
 msgid "\tfiles changed too much - backing up\n"
 msgstr ""
 
-#: ../lib/install.c:1251 ../lib/rpmdb.c:308 ../lib/uninstall.c:118
+#: ../lib/install.c:1251 ../lib/rpmdb.c:309 ../lib/uninstall.c:118
 #: ../lib/uninstall.c:218
 #, c-format
 msgid "cannot read header at %d for uninstall"
@@ -2725,7 +2725,7 @@ msgstr ""
 msgid "rebuilding database in rootdir %s\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:18 ../lib/rpmdb.c:43 ../lib/rpmdb.c:56
+#: ../lib/rebuilddb.c:18 ../lib/rpmdb.c:44 ../lib/rpmdb.c:57
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2780,94 +2780,94 @@ msgstr ""
 msgid "failed to remove %s: %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:111
+#: ../lib/rpmdb.c:112
 #, c-format
 msgid "opening database in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:120
+#: ../lib/rpmdb.c:121
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:133 ../lib/rpmdb.c:140
+#: ../lib/rpmdb.c:134 ../lib/rpmdb.c:141
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: ../lib/rpmdb.c:134
+#: ../lib/rpmdb.c:135
 msgid "exclusive"
 msgstr ""
 
-#: ../lib/rpmdb.c:141
+#: ../lib/rpmdb.c:142
 msgid "shared"
 msgstr ""
 
-#: ../lib/rpmdb.c:274
+#: ../lib/rpmdb.c:275
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:285
+#: ../lib/rpmdb.c:286
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:316
+#: ../lib/rpmdb.c:317
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:318
+#: ../lib/rpmdb.c:319
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:323
+#: ../lib/rpmdb.c:324
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:325
+#: ../lib/rpmdb.c:326
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:332
+#: ../lib/rpmdb.c:333
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:347
+#: ../lib/rpmdb.c:348
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:359
+#: ../lib/rpmdb.c:360
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:370
+#: ../lib/rpmdb.c:371
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:381
+#: ../lib/rpmdb.c:382
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:389
+#: ../lib/rpmdb.c:390
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:458
+#: ../lib/rpmdb.c:462
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:525
+#: ../lib/rpmdb.c:526
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:534
+#: ../lib/rpmdb.c:535
 msgid "header changed size!"
 msgstr ""
 

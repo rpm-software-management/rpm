@@ -27,10 +27,11 @@ static int requiredTags[] = {
     RPMTAG_SUMMARY,
     RPMTAG_GROUP,
     RPMTAG_LICENSE,
-/* You really ought to have these, but many people don't: */
-/*    RPMTAG_PACKAGER,                                    */
-/*    RPMTAG_DISTRIBUTION,                                */
-/*    RPMTAG_VENDOR,                                      */
+#if 0	/* XXX You really ought to have these, but many people don't: */
+    RPMTAG_PACKAGER,
+    RPMTAG_DISTRIBUTION,
+    RPMTAG_VENDOR,
+#endif
     0
 };
 
@@ -199,15 +200,14 @@ static char *tagName(int tag)
 static int checkForRequired(Header h, char *name)
 {
     int res = 0;
-    int *p = requiredTags;
+    int *p;
 
-    while (*p) {
+    for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
 	    rpmError(RPMERR_BADSPEC, _("%s field must be present in package: %s"),
 		     tagName(*p), name);
 	    res = 1;
 	}
-	p++;
     }
 
     return res;
@@ -219,7 +219,9 @@ static int checkForDuplicates(Header h, char *name)
     int lastTag, tag;
     HeaderIterator hi;
     
+#if 0	/* XXX harmless, but headerInitIterator() does this anyways */
     headerSort(h);
+#endif
     hi = headerInitIterator(h);
     lastTag = 0;
     while (headerNextIterator(hi, &tag, NULL, NULL, NULL)) {

@@ -226,9 +226,11 @@ Header headerCopy(Header h)
     HeaderIterator headerIter;
     Header res = headerNew();
    
+#if 0	/* XXX harmless, but headerInitIterator() does this anyways */
     /* Sort the index -- not really necessary but some old apps may depend
        on this and it certainly won't hurt anything */
     headerSort(h);
+#endif
     headerIter = headerInitIterator(h);
 
     while (headerNextIterator(headerIter, &tag, &type, &ptr, &count)) {
