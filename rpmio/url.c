@@ -9,7 +9,8 @@
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */
 
-#include <rpmbuild.h>
+#include <rpmmacro.h>
+#include <rpmmessages.h>
 #include <rpmio_internal.h>
 
 #ifndef	IPPORT_FTP
@@ -28,10 +29,10 @@ int url_iobuf_size = URL_IOBUF_SIZE;
 #define	RPMURL_DEBUG_REFS	0x20000000
 
 int _url_debug = 0;
-#define	DBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
+#define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
 
-#define DBGIO(_f, _x)	DBG((_f), RPMURL_DEBUG_IO, _x)
-#define DBGREFS(_f, _x)	DBG((_f), RPMURL_DEBUG_REFS, _x)
+#define URLDBGIO(_f, _x)	URLDBG((_f), RPMURL_DEBUG_IO, _x)
+#define URLDBGREFS(_f, _x)	URLDBG((_f), RPMURL_DEBUG_REFS, _x)
 
 /*@only@*/ /*@null@*/ static urlinfo *uCache = NULL;
 static int uCount = 0;
@@ -40,7 +41,7 @@ urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
     u->nrefs++;
-DBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
+URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     return u;
 }
 
@@ -67,7 +68,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
 urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
-DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
+URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
 	return u;
     if (u->ctrl) {
@@ -108,16 +109,16 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
 	free(u->buf);
 	u->buf = NULL;
     }
-    FREE(u->url);
-    FREE(u->service);
-    FREE(u->user);
-    FREE(u->password);
-    FREE(u->host);
-    FREE(u->portstr);
-    FREE(u->proxyu);
-    FREE(u->proxyh);
+    if (u->url)		xfree(u->url);
+    if (u->service)	xfree(u->service);
+    if (u->user)	xfree(u->user);
+    if (u->password)	xfree(u->password);
+    if (u->host)	xfree(u->host);
+    if (u->portstr)	xfree(u->portstr);
+    if (u->proxyu)	xfree(u->proxyu);
+    if (u->proxyh)	xfree(u->proxyh);
 
-    /*@-refcounttrans@*/ FREE(u); /*@-refcounttrans@*/
+    /*@-refcounttrans@*/ xfree(u); /*@-refcounttrans@*/
     return NULL;
 }
 
@@ -206,7 +207,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
-    FREE(u->proxyh);
+    if (u->proxyh)	xfree(u->proxyh);
 
     /* Perform one-time FTP initialization */
     if (u->urltype == URL_IS_FTP) {
@@ -215,7 +216,7 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	    char * prompt;
 	    prompt = alloca(strlen(u->host) + strlen(u->user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
-	    FREE(u->password);
+	    if (u->password)	xfree(u->password);
 	    u->password = xstrdup( /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/ );
 	}
 

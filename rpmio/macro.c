@@ -39,8 +39,9 @@ typedef	FILE * FD_t;
 
 #else
 
-#include <rpmlib.h>
 #include <rpmio_internal.h>
+#include <rpmmessages.h>
+#include <rpmerr.h>
 
 #endif
 

@@ -3,6 +3,7 @@
 
 #include <rpmio.h>
 #include <rpmurl.h>
+#include <assert.h>
 
 typedef struct _FDSTACK_s {
 	FDIO_t		io;
@@ -56,8 +57,30 @@ struct _FD_s {
 };
 /*@access FD_t */
 
-#include <assert.h>
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
+
+extern int _rpmio_debug;
+
+#define DBG(_f, _m, _x) \
+    if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x
+
+#define DBGIO(_f, _x)   DBG((_f), RPMIO_DEBUG_IO, _x)
+#define DBGREFS(_f, _x) DBG((_f), RPMIO_DEBUG_REFS, _x)
+
+#define xfree(_p)       free((void *)_p)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int fdFgets(FD_t fd, char * buf, size_t len);
+
+/*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
+                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret);
+int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg);
+int ftpCmd(const char * cmd, const char * url, const char * arg2);
+
+int ufdClose( /*@only@*/ void * cookie);
 
 static inline /*@null@*/ const FDIO_t fdGetIo(FD_t fd) {
     FDSANE(fd);
@@ -240,5 +263,9 @@ static inline void fadSetFirstFree(FD_t fd, unsigned int firstFree) {
     FDSANE(fd);
     fd->firstFree = firstFree;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* H_RPMIO_INTERNAL */

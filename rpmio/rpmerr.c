@@ -2,7 +2,7 @@
 
 #include <stdarg.h>
 
-#include <rpmlib.h>
+#include <rpmerr.h>
 
 static struct err {
     int code;

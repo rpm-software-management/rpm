@@ -2,7 +2,7 @@
 
 #include <stdarg.h>
 
-#include <rpmlib.h>
+#include <rpmmessages.h>
 
 static int minLevel = RPMMESS_NORMAL;
 

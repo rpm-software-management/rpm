@@ -27,7 +27,6 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c verify.c
 librpm_la_LDFLAGS = -L$(top_builddir)/rpmio/.libs -lrpmio
-#	-L$(top_builddir)/popt -lpopt
 librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 
 # XXX Drill out -L ldflags remnants until libtool-1.4 appears
