@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.7 1999/04/04 20:10:34 jbj Exp $
+# $Id: rpmrc.in,v 2.8 1999/04/16 22:26:17 jbj Exp $
 
 #############################################################
 
@@ -103,6 +103,11 @@ buildarchtranslate: osfmach3_ppc: ppc
 buildarchtranslate: powerpc: ppc
 buildarchtranslate: powerppc: ppc
 
+buildarchtranslate: sun4c: sparc
+buildarchtranslate: sun4d: sparc
+buildarchtranslate: sun4m: sparc
+buildarchtranslate: sun4u: sparc64
+
 #############################################################
 # Architecture compatibility
 
@@ -128,6 +133,10 @@ arch_compat: osfmach3_ppc: ppc
 arch_compat: powerpc: ppc
 arch_compat: powerppc: ppc
 
+arch_compat: sun4c: sparc
+arch_compat: sun4d: sparc
+arch_compat: sun4m: sparc
+arch_compat: sun4u: sparc
 arch_compat: sparc64: sparc
 arch_compat: sparc: noarch
 
@@ -147,6 +156,7 @@ arch_compat: armv4b: arm armv4 noarch
 arch_compat: armv4l: arm armv4 noarch
 
 os_compat:   IRIX64: IRIX
+os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
 os_compat: solaris2.6: solaris2.3 solaris2.4 solaris2.5
 os_compat: solaris2.5: solaris2.3 solaris2.4
 os_compat: solaris2.4: solaris2.3
@@ -172,6 +182,10 @@ buildarch_compat: i586: i486
 buildarch_compat: i486: i386
 buildarch_compat: i386: noarch
 
+buildarch_compat: sun4c: noarch
+buildarch_compat: sun4d: noarch
+buildarch_compat: sun4m: noarch
+buildarch_compat: sun4u: noarch
 buildarch_compat: sparc64: noarch
 buildarch_compat: sparc: noarch
 buildarch_compat: alpha: noarch
