@@ -61,6 +61,7 @@ marc@redhat.com and ewt@redhat.com.
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <netinet/in.h>
 */
 
 #include <stdarg.h>
@@ -91,10 +92,15 @@ char *FILE_NAME=0;
 /*the name of the last class file seen*/
 char *CLASS_NAME=0;
 
+/*The string to put before each line, 
+  this is a formatted version of CLASS_NAME */
+char *OUTPUT_PREFIX=0;
+
 /*arguments chosen*/
 int ARG_PROVIDES=0;
 int ARG_REQUIRES=0;
 int ARG_RPMFORMAT=0;
+int ARG_DEPSFORMAT=0;
 int ARG_KEYWORDS=0;
 int ARG_STARPROV=0;
 
@@ -111,11 +117,12 @@ char *KEYWORD_EPOCH=0;
    unique. After the change no function used more then 26% of the over
    all time.
 
-   I implement a simple mechanism to remove most duplicate dependencies.
-   The print_table is a table of string which are to be printed.  Just
-   before the program exists it is sorted and all unique entries are
-   printed.  If it fills up during then it is flushed using the same
-   technique as above. 
+   I implement a simple mechanism to remove most duplicate
+   dependencies.  The print_table is a table of string, with
+   duplicates, which are to be printed.  Just before the program
+   exists it is sorted and all unique entries are printed.  If it
+   fills up during then it is flushed using the same technique as
+   above.
 
    The functions which manipulate the table are:
 	void print_table_flush(void)
@@ -134,7 +141,7 @@ void usage (void);
 void outofmemory(void);
 void die(char *format, ...);
 size_t my_fread(void *ptr, size_t size, size_t nitems, FILE *stream);
-void check_range(short value, short poolSize);
+void check_range(short entryNum, short value, short poolSize);
 char *is_lower_equal (char *string, char *pattern);
 int findJavaMagic (FILE *fileHandle);
 int my_strcmp (const void *a, const void *b);
@@ -142,10 +149,11 @@ void print_table_flush(void);
 void print_table_add(char *str);
 char *formatClassName(char *pSomeString, char terminator, char print_star);
 void dumpRefType(char *pSomeString);
-void dumpRequires(symbolTable_t *symbolTable);
 void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable);
-void findClassName  (FILE *fileHandle, symbolTable_t *symbolTable);
 void freeSymbolTable (symbolTable_t *symbolTable);
+char *findClassName (FILE *fileHandle, symbolTable_t *symbolTable);
+void dumpProvides(char *className);
+void dumpRequires(symbolTable_t *symbolTable);
 void processJavaFile (FILE *fileHandle);
 
 /*--------- functions ---------*/
@@ -157,7 +165,7 @@ usage (void)
 	 "\t\t\treturn information about their dependencies.\n\n");
   printf("USAGE:\n");
   printf("\t javadeps { --provides | --requires } \n"
-	 "\t\t   [--rpmformat] [--keywords] \n"
+	 "\t\t   [--rpmformat] [--depsformat] [--keywords] \n"
 	 "\t\t     [--] classfile-name ... \n\n"
 	 "\t javadeps [--help]\n\n");
   printf("\n\n");
@@ -165,26 +173,31 @@ usage (void)
   printf("List the dependencies or the fully qualified class names, of the \n"
 	 "classfiles listed on the command line. \n\n");
   printf("OPTIONS:\n\n");
-  printf("--requires  For each class files listed in the arguments,\n"
-	 " -r         print the list of class files that would be\n"
-	 "            required to run these java programs.  This does not \n"
-	 "            include anyting instantiated by reflection.\n\n");
-  printf("--provides  For each class files listed in the arguments, \n"
-	 " -p         Print the fully qualified java classes,\n"
-	 "            that they provide.\n\n");
-  printf("--rpmformat format the output to match that used by RPM's \n"
-	 " -F         (Red Hat Package Manager) dependency analysis  \n"
-	 "            database. The default is not --rpmformat.\n\n");
-  printf("--keywords  Make use of any keywords embeded in the classfile.\n"
-	 " -k         The default is not --keyword.\n\n");
-  printf("--starprov  Add the star notation provides to the provides list.\n"
-	 " -s         The default is not --starprov.  This is only for use\n"
-	 "            with (Sun) jhtml dependencies, and since jhtml is \n"
-	 "            deprecated so is this option.\n\n");
-  printf("--help      Display this page and exit.\n\n");
-  printf("--          This stops the processing of arguments, making it \n"
-	 "            easier for users to have filenames like '--keywords',\n"
-	 "            without the command line parser getting confused.\n\n");
+  printf("--requires   For each class files listed in the arguments,\n"
+	 " -r          print the list of class files that would be\n"
+	 "             required to run these java programs.  This does not \n"
+	 "             include anyting instantiated by reflection.\n\n");
+  printf("--provides   For each class files listed in the arguments, \n"
+	 " -p          Print the fully qualified java classes,\n"
+	 "             that they provide.\n\n");
+  printf("--rpmformat  Format the output to match that used by RPM's \n"
+	 " -F          (Red Hat Package Manager) dependency analysis  \n"
+	 "             database. The default is not --rpmformat.\n\n");
+  printf("--depsformat print the name of the class which  \n"
+	 " -d          This is mostly used in conjunctions with --requires \n"
+	 "             to list the class file dependencies in a format "
+	 "             similar to traditional Makefile dependencies. The "
+	 "             default is not --depsformat.\n\n");
+  printf("--keywords   Make use of any keywords embeded in the classfile.\n"
+	 " -k          The default is not --keyword.\n\n");
+  printf("--starprov   Add the star notation provides to the provides list.\n"
+	 " -s          The default is not --starprov.  This is only for use\n"
+	 "             with (Sun) jhtml dependencies, and since jhtml is \n"
+	 "             deprecated so is this option.\n\n");
+  printf("--help       Display this page and exit.\n\n");
+  printf("--           This stops the processing of arguments, making it \n"
+	 "             easier for users to have filenames like '--keywords',\n"
+	 "             without the command line parser getting confused.\n\n");
   printf("\n\n");
   printf("If any of the class file names in the argument list is '-' then\n"
 	 "<stdin> will be read instead of reading from a file.  The\n"
@@ -231,7 +244,7 @@ usage (void)
 	 "                  output of --provides.\n\n"
 	 "'RPM_Requires: '  This string lists additional requirements of\n"
 	 "                  the java class.  The string should be a white \n"
-	 "                  space ([\\t\v\\n\\r\\f\\ ]) separated list of \n"
+	 "                  space ([\\t   \v\\n\\r\\f\\ ]) separated list of \n"
 	 "                  dependency strings.  Each dependency string must\n"
 	 "                  be of the same format as would be valid in the \n"
 	 "                  Requires or Provides line of the specfile.  This\n"
@@ -244,7 +257,7 @@ usage (void)
 	 "assumed to be zero. \n\n"
 	 "");
   printf("EXAMPLES (Java Keywords): \n\n"
-	 "\t public static final String REVISION = \"$Revision: 2.8 $\";\n"
+	 "\t public static final String REVISION = \"$Revision: 2.9 $\";\n"
 	 "\t public static final String EPOCH = \"4\";\n"
 	 "\t public static final String REQUIRES = \"RPM_Requires: "
 	 "java(gnu.regexp.RE) java(com.ibm.site.util.Options)>=1.5\";\n"
@@ -256,6 +269,7 @@ usage (void)
 	 "\tjavadeps --help\n\n"
 	 "\n"
 	 "\tjavadeps --requires --rpmformat --keywords -- filename.class\n\n"
+	 "\tjavadeps --requires --depsformat -- filename.class\n\n"
 	 "\tjavadeps --requires -- filename1.class filename2.class\n\n"
 	 "\tcat filename2.class | javadeps --requires -- filename1.class -\n\n"
 	 "\tunzip -p filename.jar | javadeps --requires -- - \n\n"
@@ -273,7 +287,7 @@ void outofmemory(void) {
   /* Its doubtful we could do a printf if there is really a memory
     issue but at least halt the program */
 
-  fprintf(stderr, "Could not allocate memory");
+  fprintf(stderr, "Could not allocate memory\n");
   exit(-1);
 }
 
@@ -286,7 +300,10 @@ void die(char *format, ...) {
   char  *newformat = NULL, *newmsg = NULL;
   va_list ap;
 
-  if ( !(newformat = malloc(1024)) || !(newmsg = malloc(1024)) )
+  if ( 
+      !(newformat = (char*) malloc(1024)) || 
+      !(newmsg = (char*) malloc(1024)) 
+      )
     outofmemory();
 
   /* Rewrite format line, to include additional information.  The
@@ -351,11 +368,12 @@ size_t my_fread(void *ptr, size_t size, size_t nitems, FILE *stream) {
 }
 
 
-void check_range(short value, short poolSize) {
+void check_range(short entryNum, short value, short poolSize) {
 
   if (value > poolSize) {
-    die("Value: %d, is out of range of the constant pool\n",
-	value);
+    die("Symbol Table Entry Number: %d, Value: %d, "
+	"is out of range of the constant pool. Pool Size: %d\n",
+	entryNum, value, poolSize);
   }
   return ;
 }
@@ -482,13 +500,13 @@ print_table_flush(void) {
   qsort( (void *) PRINT_TABLE, (size_t) SIZE_PRINT_TABLE, 
 	 sizeof(char *), &my_strcmp);
 
-  printf("%s",PRINT_TABLE[0]);
+  printf("%s\n",PRINT_TABLE[0]);
   last_string = PRINT_TABLE[0];
   PRINT_TABLE[0] = NULL;
   
   for (i = 1; i < SIZE_PRINT_TABLE; i++) {
     if ( strcmp(last_string, PRINT_TABLE[i]) ){
-      printf("%s",PRINT_TABLE[i]);
+      printf("%s\n",PRINT_TABLE[i]);
       free(last_string);
       last_string = PRINT_TABLE[i];
     } else {
@@ -516,6 +534,21 @@ print_table_add(char *str) {
     print_table_flush();
   }
   
+  if (OUTPUT_PREFIX) {
+    char *new_str;
+
+    new_str= (char*) malloc(strlen(OUTPUT_PREFIX)+strlen(str)+1);
+    if (!new_str){
+      outofmemory();
+    }
+
+    new_str[0]='\0';
+    strcat(new_str,OUTPUT_PREFIX);
+    strcat(new_str,str);
+    free(str);
+    str=new_str;
+  }
+
   PRINT_TABLE[SIZE_PRINT_TABLE] = str;
   SIZE_PRINT_TABLE++;
   return ;
@@ -602,7 +635,7 @@ char
   char *ClassName_Break_Set=0;
 
 
-  out_string = malloc(strlen(in_string) + 10);
+  out_string = (char*) malloc(strlen(in_string) + 10);
   if ( !out_string ) {
     outofmemory();
   }
@@ -611,7 +644,7 @@ char
   /*these characters end the current parse of the string in function
     formatClassName.*/
   
-  ClassName_Break_Set = malloc(3);
+  ClassName_Break_Set = (char*) malloc(3);
   if ( !ClassName_Break_Set ) {
     outofmemory();
   }
@@ -678,7 +711,6 @@ char
     strcat(out_string, ")");
   }
 
-  strcat(out_string, "\n");
   free(ClassName_Break_Set);
   return out_string;
 }
@@ -765,9 +797,6 @@ dumpRequires(symbolTable_t *symbolTable) {
 
 
 /* Read a java class files symbol table into memory. 
-		- also  -
-   Find the proper name of the current Java Class file.
-   Print it regardless of: --provides | --requires
 */
 
 
@@ -783,6 +812,7 @@ void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable)
   my_fread(&ignore, 4, 1, fileHandle);
 
   my_fread(&(symbolTable->poolSize), 2, 1, fileHandle);
+  symbolTable->poolSize=ntohs(symbolTable->poolSize);
 
   /* new the tables */
 
@@ -835,6 +865,8 @@ void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable)
 		   terminated.  I termiante them to be safe. */
 
 		my_fread(&length, 2, 1, fileHandle);
+		length=ntohs(length);
+
 		someString = (char*) malloc(length+1);
 		if(!someString){
 		  outofmemory();
@@ -919,9 +951,9 @@ void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable)
 	  break;
 	case 7: /* Class */
 	  my_fread(&value, 2, 1, fileHandle);
+	  symbolTable->classRef[i]=ntohs(value);
 	  /* record which const it's referencing */
-	  check_range(value, symbolTable->poolSize);
-	  symbolTable->classRef[i]=value;
+	  check_range(i, symbolTable->classRef[i], symbolTable->poolSize);
 	  break;
 	case 8: /* String */
 	  my_fread(&ignore, 2, 1, fileHandle);
@@ -938,9 +970,9 @@ void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable)
 	case 12: /* constant name/type */
 	  my_fread(&ignore, 2, 1, fileHandle);
 	  my_fread(&type, 2, 1, fileHandle);
+	  symbolTable->typeRef[i]=ntohs(type);
 	  /* record the name, and the type it's referencing. */
-	  check_range(type, symbolTable->poolSize);
-	  symbolTable->typeRef[i]=type;
+	  check_range(i, symbolTable->typeRef[i], symbolTable->poolSize);
 	  break;
 	default:
 	  die("Unknown tag type: %d.\n",
@@ -953,18 +985,16 @@ void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable)
 }
  
 
-/* 
-   Find the proper name of the current Java Class file.
-   Print it regardless of: --provides | --requires
+/*  Find the proper name of the current Java Class file and return a
+    formatted of the name. 
 */
 
-void 
+char*
 findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
   char ignore[10];
   unsigned short type = 0;
   unsigned short class = 0;
-  char *out_string;
-  char *newline;
+  char *className;
 
   /* seek a little past the end of the table */
   
@@ -973,14 +1003,50 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
   /* read the name of this classfile */
   
   my_fread(&type, 2, 1, fileHandle);
+  type=ntohs(type);
   class = symbolTable->classRef[type];
   if( !class ||
       !symbolTable->stringList[class] ) {
       die("Couln't find class: %d, provided by file.\n", class);
   }
-  CLASS_NAME=symbolTable->stringList[class];
 
-  out_string = formatClassName(symbolTable->stringList[class], '\0', 0);
+  className=symbolTable->stringList[class];
+  
+  return className;
+
+}
+
+
+/*  Print the name of the class that we have found and whos symbol
+   table is loaded into memory.
+
+   The name may need to have the version number printed after it, if
+   there are keywords in the symbol table.  
+
+   Additionally the class name may need to be printed twice, once with
+   the regular name of the class and once with the leaf class replaced
+   with a star.
+
+*/
+
+void
+dumpProvides(char *className) {
+  char *formattedClassName;
+  char *out_string;
+  char *newline;
+
+  /* Provide the star version of this class for jhtml
+     dependencies. This option is deprecated since jhtml is
+     deprecated. */
+  
+  if (ARG_STARPROV) {
+    print_table_add(formatClassName(className, '\0', 1));
+  }
+
+  /* If we have information about the version number of this class
+     then add it to the formatted name and print this as well. */
+
+  out_string = formatClassName(className, '\0', 0);
 
   {
     int len = 10;
@@ -999,12 +1065,12 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
     }
     
     out_string = realloc(out_string, len );
+    if (!out_string){
+      outofmemory();
+    }
+  
   }
 
-  if (!out_string){
-    outofmemory();
-  }
-  
   if( KEYWORD_VERSION || KEYWORD_REVISION ){
     /* It is easier to remove the extra new line here in one place
        then to try and add a newline every where that formatClassName
@@ -1017,7 +1083,7 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
        lines down.*/
     {
       char *copy_string;
-      copy_string = (char*) malloc(strlen(out_string));
+      copy_string = (char*) malloc(strlen(out_string)+1);
       if (!copy_string){
 	outofmemory();
       }
@@ -1041,19 +1107,10 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
     }
     strcat(out_string, "\n");
   }
-  
+
   print_table_add(out_string);
   out_string=NULL;
 
-  /* Provide the star version of this class for jhtml
-     dependencies. This option is deprecated since jhtml is
-     deprecated. */
-  
-  if (ARG_STARPROV) {
-    out_string = formatClassName(symbolTable->stringList[class], '\0', 1);
-    print_table_add(out_string);
-  }
-  
   return ;  
 }
 
@@ -1081,28 +1138,45 @@ void freeSymbolTable (symbolTable_t *symbolTable)
   free(symbolTable->typeRef);
   symbolTable->typeRef=0;
   
-  free(symbolTable);
-  symbolTable=0;
-
   return ;
 }
 
 
-/* process each file, 
-   must be called directly after finding 
+/* Process each file.
+   This procedure must be called directly after finding 
    the magic number.
 */
 
 void processJavaFile (FILE *fileHandle) {
   symbolTable_t symbolTable= {0};
-  
+  char *format_class_name;
+
   genSymbolTable(fileHandle, &symbolTable);
-  findClassName(fileHandle, &symbolTable);
+  CLASS_NAME=findClassName(fileHandle, &symbolTable);
   
+  if(ARG_DEPSFORMAT) {
+    char *prefix_seperator = ": ";
+
+    format_class_name = formatClassName(CLASS_NAME, '\0', 0);
+
+    OUTPUT_PREFIX = (char*) malloc(strlen(format_class_name)+
+				   strlen(prefix_seperator)+1);
+    if (!OUTPUT_PREFIX){
+      outofmemory();
+    }
+    OUTPUT_PREFIX = strcpy(OUTPUT_PREFIX, format_class_name);
+    strcat(OUTPUT_PREFIX, prefix_seperator);
+  }
+
+  if(ARG_PROVIDES) {
+    dumpProvides(CLASS_NAME);
+  }
   if(ARG_REQUIRES) {
     dumpRequires(&symbolTable);
   }
 
+  free(OUTPUT_PREFIX);
+  OUTPUT_PREFIX = 0;
   freeSymbolTable(&symbolTable);
 
   return ;
@@ -1144,6 +1218,8 @@ main(int argc, char **argv)
       usage();
     } else if ( !strcmp("-F",argv[i]) || !strcmp("--rpmformat",argv[i]) ) {
       ARG_RPMFORMAT=1;
+    } else if ( !strcmp("-d",argv[i]) || !strcmp("--depsformat",argv[i]) ) {
+      ARG_DEPSFORMAT=1;
     } else if ( !strcmp("-k",argv[i]) || !strcmp("--keywords",argv[i]) ) {
       ARG_KEYWORDS=1;
     } else if ( !strcmp("-s",argv[i]) || !strcmp("--starprov",argv[i]) ) {
