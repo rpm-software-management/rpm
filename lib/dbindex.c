@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "dbindex.h"
+#include "intl.h"
 #include "rpmlib.h"
 
 dbiIndex * dbiOpenIndex(char * filename, int flags, int perms) {
@@ -18,7 +19,7 @@ dbiIndex * dbiOpenIndex(char * filename, int flags, int perms) {
     if (!db->db) {
 	free(db->indexname);
 	free(db);
-	rpmError(RPMERR_DBOPEN, "cannot open file %s: ", filename, 
+	rpmError(RPMERR_DBOPEN, _("cannot open file %s: "), filename, 
 			      strerror(errno));
 	return NULL;
     }
@@ -45,7 +46,7 @@ int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
 
     rc = dbi->db->get(dbi->db, &key, &data, 0);
     if (rc == -1) {
-	rpmError(RPMERR_DBGETINDEX, "error getting record %s from %s",
+	rpmError(RPMERR_DBGETINDEX, _("error getting record %s from %s"),
 		str, dbi->indexname);
 	return -1;
     } else if (rc == 1) {
@@ -73,14 +74,14 @@ int dbiUpdateIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
 
 	rc = dbi->db->put(dbi->db, &key, &data, 0);
 	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, "error storing record %s into %s",
+	    rpmError(RPMERR_DBPUTINDEX, _("error storing record %s into %s"),
 		    str, dbi->indexname);
 	    return 1;
 	}
     } else {
 	rc = dbi->db->del(dbi->db, &key, 0);
 	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, "error removing record %s into %s",
+	    rpmError(RPMERR_DBPUTINDEX, _("error removing record %s into %s"),
 		    str, dbi->indexname);
 	    return 1;
 	}

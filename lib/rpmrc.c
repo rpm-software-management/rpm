@@ -203,10 +203,10 @@ static int machCompatCacheAdd(char * name, char * fn, int linenum,
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
     if (!*chptr) {
-	rpmError(RPMERR_RPMRC, "missing second ':' at %s:%d", fn, linenum);
+	rpmError(RPMERR_RPMRC, _("missing second ':' at %s:%d"), fn, linenum);
 	return 1;
     } else if (chptr == name) {
-	rpmError(RPMERR_RPMRC, "missing architecture name at %s:%d", fn, 
+	rpmError(RPMERR_RPMRC, _("missing architecture name at %s:%d"), fn, 
 			     linenum);
 	return 1;
     }
@@ -343,18 +343,18 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
     t->short_name = strtok(NULL, " \t");
     s = strtok(NULL, " \t");
     if (! (t->name && t->short_name && s)) {
-	rpmError(RPMERR_RPMRC, "Incomplete data line at %s:%d", fn, lineNum);
+	rpmError(RPMERR_RPMRC, _("Incomplete data line at %s:%d"), fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	rpmError(RPMERR_RPMRC, "Too many args in data line at %s:%d",
+	rpmError(RPMERR_RPMRC, _("Too many args in data line at %s:%d"),
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
 
     t->num = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (t->num == ULONG_MAX)) {
-	rpmError(RPMERR_RPMRC, "Bad arch/os number: %s (%s:%d)", s,
+	rpmError(RPMERR_RPMRC, _("Bad arch/os number: %s (%s:%d)"), s,
 	      fn, lineNum);
 	return(RPMERR_RPMRC);
     }
@@ -387,11 +387,12 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     t->name = strtok(line, ": \t");
     t->defName = strtok(NULL, " \t");
     if (! (t->name && t->defName)) {
-	rpmError(RPMERR_RPMRC, "Incomplete default line at %s:%d", fn, lineNum);
+	rpmError(RPMERR_RPMRC, _("Incomplete default line at %s:%d"), 
+		 fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	rpmError(RPMERR_RPMRC, "Too many args in default line at %s:%d",
+	rpmError(RPMERR_RPMRC, _("Too many args in default line at %s:%d"),
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
@@ -481,7 +482,7 @@ int rpmReadRC(char * file) {
 	close(fd);
 	if (rc) return rc;
     } else {
-	rpmError(RPMERR_RPMRC, "Unable to open %s for reading: %s.", 
+	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."), 
 		 LIBRPMRC_FILENAME, strerror(errno));
 	return 1;
     }
@@ -497,7 +498,7 @@ int rpmReadRC(char * file) {
 	close(fd);
 	if (rc) return rc;
     } else if (file) {
-	rpmError(RPMERR_RPMRC, "Unable to open %s for reading: %s.", file,
+	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."), file,
 		 strerror(errno));
 	return 1;
     }
@@ -540,7 +541,7 @@ static int doReadRC(int fd, char * filename) {
     fstat(fd, &sb);
     next = buf = alloca(sb.st_size + 2);
     if (read(fd, buf, sb.st_size) != sb.st_size) {
-	rpmError(RPMERR_RPMRC, "Failed to read %s: %s.", filename,
+	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
 		 strerror(errno));
 	return 1;
     }
@@ -570,7 +571,8 @@ static int doReadRC(int fd, char * filename) {
 	}
 
 	if (*chptr != ':') {
-	    rpmError(RPMERR_RPMRC, "missing ':' at %s:%d", filename, linenum);
+	    rpmError(RPMERR_RPMRC, _("missing ':' at %s:%d"), 
+		     filename, linenum);
 	    return 1;
 	}
 
@@ -585,7 +587,7 @@ static int doReadRC(int fd, char * filename) {
 	    while (isspace(*start) && *start) start++;
 
 	    if (! *start) {
-		rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
+		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d"), 
 		      option->name, filename, linenum);
 		return 1;
 	    }
@@ -596,7 +598,7 @@ static int doReadRC(int fd, char * filename) {
 
 		if (!*chptr) {
 		    rpmError(RPMERR_RPMRC, 
-				"missing architecture for %s at %s:%d", 
+				_("missing architecture for %s at %s:%d"), 
 			  	option->name, filename, linenum);
 		    return 1;
 		}
@@ -606,7 +608,7 @@ static int doReadRC(int fd, char * filename) {
 		while (isspace(*chptr) && *chptr) chptr++;
 		if (!*chptr) {
 		    rpmError(RPMERR_RPMRC, 
-				"missing argument for %s at %s:%d", 
+				_("missing argument for %s at %s:%d"), 
 			  	option->name, filename, linenum);
 		    return 1;
 		}
@@ -649,7 +651,7 @@ static int doReadRC(int fd, char * filename) {
 	    }
 
 	    if (!gotit) {
-		rpmError(RPMERR_RPMRC, "bad option '%s' at %s:%d", 
+		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d"), 
 			    start, filename, linenum);
 	    }
 	}

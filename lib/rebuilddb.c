@@ -11,6 +11,7 @@
 #include <alloca.h>
 #endif
 
+#include "intl.h"
 #include "messages.h"
 #include "rpmdb.h"
 #include "rpmlib.h"
@@ -26,7 +27,7 @@ int rpmdbRebuild(char * rootdir) {
 
     dbpath = rpmGetVar(RPMVAR_DBPATH);
     if (!dbpath) {
-	rpmMessage(RPMMESS_DEBUG, "no dbpath has been set");
+	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
 	return 1;
     }
 
@@ -34,13 +35,13 @@ int rpmdbRebuild(char * rootdir) {
     sprintf(newdbpath, "%s/%s/rebuilddb.%d", rootdir, dbpath, (int) getpid());
 
     if (!access(newdbpath, F_OK)) {
-	rpmError(RPMERR_MKDIR, "temporary database %s already exists",
+	rpmError(RPMERR_MKDIR, _("temporary database %s already exists"),
 	      newdbpath);
     }
 
     rpmMessage(RPMMESS_DEBUG, "creating directory: %s\n", newdbpath);
     if (mkdir(newdbpath, 0755)) {
-	rpmError(RPMERR_MKDIR, "error creating directory %s: %s",
+	rpmError(RPMERR_MKDIR, _("error creating directory %s: %s"),
 	      newdbpath, strerror(errno));
     }
 
@@ -59,7 +60,8 @@ int rpmdbRebuild(char * rootdir) {
     recnum = rpmdbFirstRecNum(olddb);
     while (recnum > 0) {
 	if (!(h = rpmdbGetRecord(olddb, recnum))) {
-	    rpmError(RPMERR_INTERNAL, "cannot read database record at %d", recnum);
+	    rpmError(RPMERR_INTERNAL, _("cannot read database record at %d"),
+			recnum);
 	    failed = 1;
 	    break;
 	}
@@ -71,14 +73,15 @@ int rpmdbRebuild(char * rootdir) {
 	    headerIsEntry(h, RPMTAG_RELEASE) &&
 	    headerIsEntry(h, RPMTAG_BUILDTIME)) {
 	    if (rpmdbAdd(newdb, h)) {
-		rpmError(RPMERR_INTERNAL, "cannot add record originally at %d", 
-		      recnum);
+		rpmError(RPMERR_INTERNAL, 
+			 _("cannot add record originally at %d"), recnum);
 		failed = 1;
 		break;
 	    }
 	} else {
-	    rpmError(RPMERR_INTERNAL, "record number %d in database is bad "
-			"-- skipping it", recnum);
+	    rpmError(RPMERR_INTERNAL, 
+		     _("record number %d in database is bad -- skipping it"), 
+		     recnum);
 	}
 	recnum = rpmdbNextRecNum(olddb, recnum);
     }

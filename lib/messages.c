@@ -48,19 +48,19 @@ void rpmMessage(int level, char * format, ...) {
 	    break;
 
 	  case RPMMESS_WARNING:
-	    fprintf(stderr, "warning: ");
+	    fprintf(stderr, _("warning: "));
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    break;
 
 	  case RPMMESS_ERROR:
-	    fprintf(stderr, "error: ");
+	    fprintf(stderr, _("error: "));
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    break;
 
 	  case RPMMESS_FATALERROR:
-	    fprintf(stderr, "fatal error: ");
+	    fprintf(stderr, _("fatal error: "));
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
 	    exit(1);

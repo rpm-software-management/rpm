@@ -10,6 +10,7 @@
 
 #include "errno.h"
 #include "header.h"
+#include "intl.h"
 #include "misc.h"
 #include "oldheader.h"
 #include "rpmlead.h"
@@ -88,8 +89,8 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 	    return 2;
 	}
     } else {
-	rpmError(RPMERR_NEWPACKAGE, "only packages with major numbers <= 3 are"
-		" supported by this version of RPM");
+	rpmError(RPMERR_NEWPACKAGE, _("only packages with major numbers <= 3 "
+		"are supported by this version of RPM"));
 	return 2;
     } 
 

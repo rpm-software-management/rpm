@@ -12,6 +12,7 @@
 #endif
 
 #include "ftp.h"
+#include "intl.h"
 #include "messages.h"
 #include "miscfn.h"
 #include "rpmlib.h"
@@ -55,7 +56,7 @@ static char * getFtpPassword(char * machine, char * account, int mustAsk) {
 	free(pwCache[i].pw);
 
     prompt = alloca(strlen(machine) + strlen(account) + 50);
-    sprintf(prompt, "Password for %s@%s: ", account, machine);
+    sprintf(prompt, _("Password for %s@%s: "), account, machine);
 
     pwCache[i].pw = strdup(getpass(prompt));
 
@@ -139,7 +140,7 @@ static int urlFtpLogin(char * url, char ** fileNamePtr) {
     } else {
 	port = strtol(portStr, &endPtr, 0);
 	if (*endPtr) {
-	    fprintf(stderr, "error: ftpport must be a number\n");
+	    fprintf(stderr, _("error: ftpport must be a number\n"));
 	    return -1;
 	}
     }
@@ -197,7 +198,7 @@ int urlGetFile(char * url, char * dest) {
     fd = creat(dest, 0600);
 
     if (fd < 0) {
-	rpmMessage(RPMMESS_DEBUG, "failed to create %s\n", dest);
+	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
 	ftpClose(ftpconn);
 	free(fileName);
 	return FTPERR_UNKNOWN;

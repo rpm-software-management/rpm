@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 
 #include "header.h"
+#include "intl.h"
 #include "rpmlib.h"
 
 static char * permsFormat(int_32 type, const void * data, 
@@ -88,7 +89,7 @@ static char * permsFormat(int_32 type, const void * data,
 
     if (type != RPM_INT32_TYPE) {
 	val = malloc(20);
-	strcpy(val, "(not a number)");
+	strcpy(val, _("(not a number)"));
     } else {
 	val = malloc(15 + padding);
 	strcat(formatPrefix, "s");
@@ -108,7 +109,7 @@ static char * fflagsFormat(int_32 type, const void * data,
 
     if (type != RPM_INT32_TYPE) {
 	val = malloc(20);
-	strcpy(val, "(not a number)");
+	strcpy(val, _("(not a number)"));
     } else {
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
@@ -140,7 +141,7 @@ static char * depflagsFormat(int_32 type, const void * data,
 
     if (type != RPM_INT32_TYPE) {
 	val = malloc(20);
-	strcpy(val, "(not a number)");
+	strcpy(val, _("(not a number)"));
     } else {
 	*buf = '\0';
 

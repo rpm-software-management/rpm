@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "intl.h"
 #include "misc.h"
 #include "rpmlib.h"
 #include "messages.h"
@@ -378,8 +379,8 @@ int rpmdepCheck(rpmDependencies rpmdep,
 	h = rpmdbGetRecord(rpmdep->db, rpmdep->removedPackages[i]);
 	if (!h) {
 	    rpmError(RPMERR_DBCORRUPT, 
-			"cannot read header at %d for dependency "
-		  "check", rpmdep->removedPackages[i]);
+			_("cannot read header at %d for dependency check"),
+		        rpmdep->removedPackages[i]);
 	    free(ps.problems);
 	    return 1;
 	}
@@ -532,8 +533,9 @@ static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp,
 
 	h = rpmdbGetRecord(rpmdep->db, matches->recs[i].recOffset);
 	if (!h) {
-	    rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for dependency "
-		  "check", rpmdep->removedPackages[i]);
+	    rpmError(RPMERR_DBCORRUPT, 
+                     _("cannot read header at %d for dependency check"),
+		     rpmdep->removedPackages[i]);
 	    return 1;
 	}
 
@@ -817,7 +819,7 @@ static int addOrderedPack(rpmDependencies rpmdep,
 	    strcat(errorString, " ");
 	}
 	
-	rpmError(RPMMESS_PREREQLOOP, "loop in prerequisite chain: %s",
+	rpmError(RPMMESS_PREREQLOOP, _("loop in prerequisite chain: %s"),
 		 errorString);
 
 	return 1;

@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 
 #include "header.h"
+#include "intl.h"
 #include "tread.h"
 
 #define INDEX_MALLOC_SIZE 8
@@ -1196,14 +1197,14 @@ static int parseExpression(struct sprintfToken * token, char * str,
     while (*chptr && *chptr != '?') chptr++;
 
     if (*chptr != '?') {
-	*error = "? expected in expression";
+	*error = _("? expected in expression");
 	return 1;
     }
 
     *chptr++ = '\0';;
 
     if (*chptr != '{') {
-	*error = "{ exected after ? in expression";
+	*error = _("{ exected after ? in expression");
 	return 1;
     }
 
@@ -1213,14 +1214,14 @@ static int parseExpression(struct sprintfToken * token, char * str,
 		    &token->u.cond.numIfTokens, &end, PARSER_IN_EXPR, error)) 
 	return 1;
     if (!*end) {
-	*error = "} expected in expression";
+	*error = _("} expected in expression");
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
     }
 
     chptr = end;
     if (*chptr != ':' && *chptr != '|') {
-	*error = ": expected following ? subexpression";
+	*error = _(": expected following ? subexpression");
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
     }
@@ -1233,7 +1234,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	chptr++;
 
 	if (*chptr != '{') {
-	    *error = "{ exected after : in expression";
+	    *error = _("{ exected after : in expression");
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    return 1;
 	}
@@ -1245,14 +1246,14 @@ static int parseExpression(struct sprintfToken * token, char * str,
 			error)) 
 	    return 1;
 	if (!*end) {
-	    *error = "} expected in expression";
+	    *error = _("} expected in expression");
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    return 1;
 	}
 
 	chptr = end;
 	if (*chptr != '|') {
-	    *error = "| expected at end of expression";
+	    *error = _("| expected at end of expression");
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    freeFormat(token->u.cond.elseFormat, token->u.cond.numElseTokens);
 	    return 1;
@@ -1346,7 +1347,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		chptr = start;
 		while (*chptr && *chptr != '{') chptr++;
 		if (!*chptr) {
-		    *error = "missing { after %";
+		    *error = _("missing { after %");
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
@@ -1374,7 +1375,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		next = start;
 		while (*next && *next != '}') next++;
 		if (!*next) {
-		    *error = "missing } after %{";
+		    *error = _("missing } after %{");
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
@@ -1386,7 +1387,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		if (*chptr) {
 		    *chptr++ = '\0';
 		    if (!*chptr) {
-			*error = "empty tag format";
+			*error = _("empty tag format");
 			freeFormat(format, numTokens);
 			return 1;
 		    }
@@ -1396,7 +1397,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		}
 	    
 		if (!*start) {
-		    *error = "empty tag name";
+		    *error = _("empty tag name");
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
@@ -1410,7 +1411,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		    format[currToken].u.tag.ext = ext->u.tagFunction;
 		    format[currToken].u.tag.extNum = ext - extensions;
 		} else {
-		    *error = "unknown tag";
+		    *error = _("unknown tag");
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
@@ -1436,7 +1437,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 
 	    if (!start) {
-		*error = "] expected at end of array";
+		*error = _("] expected at end of array");
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1452,9 +1453,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
 	        (*start == '}' && state != PARSER_IN_EXPR)) {
 		if (*start == ']')
-		    *error = "unexpected ]";
+		    *error = _("unexpected ]");
 		else
-		    *error = "unexpected }";
+		    *error = _("unexpected }");
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1529,13 +1530,13 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 			 extCache + tag->extNum)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
-	    data = "(none)";
+	    data = _("(none)");
 	}
     } else {
 	if (!headerGetEntry(h, tag->tag, &type, &data, &count)){
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
-	    data = "(none)";
+	    data = _("(none)");
 	}
 
 	mayfree = 1;
@@ -1629,7 +1630,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 
       default:
 	val = malloc(20);
-	strcpy(val, "(unknown type)");
+	strcpy(val, _("(unknown type)"));
     }
 
     return val;
@@ -1718,7 +1719,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 
 	if (numElements == -1) {
 	    val = malloc(20);
-	    strcpy(val, "(none)");
+	    strcpy(val, _("(none)"));
 	} else {
 	    alloced = numElements * token->u.array.numTokens * 20;
 	    val = malloc(alloced);
@@ -1819,7 +1820,7 @@ static char * octalFormat(int_32 type, const void * data,
 
     if (type != RPM_INT32_TYPE) {
 	val = malloc(20);
-	strcpy(val, "(not a number)");
+	strcpy(val, _("(not a number)"));
     } else {
 	val = malloc(20 + padding);
 	strcat(formatPrefix, "o");
@@ -1839,7 +1840,7 @@ static char * realDateFormat(int_32 type, const void * data,
 
     if (type != RPM_INT32_TYPE) {
 	val = malloc(20);
-	strcpy(val, "(not a number)");
+	strcpy(val, _("(not a number)"));
     } else {
 	val = malloc(50 + padding);
 	strcat(formatPrefix, "s");

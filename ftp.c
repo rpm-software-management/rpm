@@ -48,6 +48,7 @@ extern int h_errno;
 #include <arpa/inet.h>
 
 #include "inet_aton.h"		/* for systems too stupid to provide this */
+#include "intl.h"
 
 #define TIMEOUT_SECS 60
 #define BUFFER_SIZE 4096
@@ -441,38 +442,38 @@ void ftpClose(int sock) {
 const char *ftpStrerror(int errorNumber) {
   switch (errorNumber) {
     case FTPERR_BAD_SERVER_RESPONSE:
-      return ("Bad FTP server response");
+      return _("Bad FTP server response");
 
     case FTPERR_SERVER_IO_ERROR:
-      return("FTP IO error");
+      return _("FTP IO error");
 
     case FTPERR_SERVER_TIMEOUT:
-      return("FTP server timeout");
+      return _("FTP server timeout");
 
     case FTPERR_BAD_HOST_ADDR:
-      return("Unable to lookup FTP server host address");
+      return _("Unable to lookup FTP server host address");
 
     case FTPERR_BAD_HOSTNAME:
-      return("Unable to lookup FTP server host name");
+      return _("Unable to lookup FTP server host name");
 
     case FTPERR_FAILED_CONNECT:
-      return("Failed to connect to FTP server");
+      return _("Failed to connect to FTP server");
 
     case FTPERR_FAILED_DATA_CONNECT:
-      return("Failed to establish data connection to FTP server");
+      return _("Failed to establish data connection to FTP server");
 
     case FTPERR_FILE_IO_ERROR:
-      return("IO error to local file");
+      return _("IO error to local file");
 
     case FTPERR_PASSIVE_ERROR:
-      return("Error setting remote server to passive mode");
+      return _("Error setting remote server to passive mode");
 
     case FTPERR_FILE_NOT_FOUND:
-      return("File not found on server");
+      return _("File not found on server");
 
     case FTPERR_UNKNOWN:
     default:
-      return("FTP Unknown or unexpected error");
+      return _("FTP Unknown or unexpected error");
   }
 }
   
