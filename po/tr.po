@@ -1,3 +1,19 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 1998-09-25 05:05-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+
 # Turkish Messages for RPM
 # Revised by KGF <kgf@wpi.edu>, 1998.
 #
@@ -10,1354 +26,1631 @@
 # 
 # May 5, 1998 
 #
-
-#: /home/ewt/redhat/rpm/rpm.c:191
 # , c-format
+#: /home/devel/jbj/src/rpm3/rpm.c:188
+#, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Sürüm %s\n"
 
-#: /home/ewt/redhat/rpm/rpm.c:195
+#: /home/devel/jbj/src/rpm3/rpm.c:192
 msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr "Copyright (C) 1998 - Red Hat Software"
 
-#: /home/ewt/redhat/rpm/rpm.c:196
-msgid "This may be freely redistributed under the terms of the GNU Public License"
+#: /home/devel/jbj/src/rpm3/rpm.c:193
+msgid ""
+"This may be freely redistributed under the terms of the GNU Public License"
 msgstr "Bu ðrogram GNU Kamu lisansý uyarýnca serbestçe daðýtýlabilir."
 
-#: /home/ewt/redhat/rpm/rpm.c:205
+#: /home/devel/jbj/src/rpm3/rpm.c:202
 msgid "usage: rpm {--help}"
 msgstr "Kullaným: rpm {--help}"
 
-#: /home/ewt/redhat/rpm/rpm.c:206
+#: /home/devel/jbj/src/rpm3/rpm.c:203
 msgid "       rpm {--version}"
 msgstr "       rpm {--version}"
 
-#: /home/ewt/redhat/rpm/rpm.c:207
+#: /home/devel/jbj/src/rpm3/rpm.c:204
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr "       rpm {--initdb}   [--dbpath <dizin>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:208
-msgid "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-msgstr "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+#: /home/devel/jbj/src/rpm3/rpm.c:205
+msgid ""
+"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: /home/ewt/redhat/rpm/rpm.c:209
+#: /home/devel/jbj/src/rpm3/rpm.c:206
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-msgstr "                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
+msgstr ""
+"                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
 
-
-#: /home/ewt/redhat/rpm/rpm.c:210
+#: /home/devel/jbj/src/rpm3/rpm.c:207
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
-#: /home/ewt/redhat/rpm/rpm.c:211
-msgid "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-msgstr "                        [--rcfile <dosya>] [--ignorearch] [--dbpath <dizin>]"
+#: /home/devel/jbj/src/rpm3/rpm.c:208
+msgid ""
+"                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
+msgstr ""
+"                        [--rcfile <dosya>] [--ignorearch] [--dbpath <dizin>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:212
-msgid "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
-msgstr "                        [--prefix <dizin>] [--ignoreos] [--nodeps] [--allfiles]"
+#: /home/devel/jbj/src/rpm3/rpm.c:209
+msgid ""
+"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
+msgstr ""
+"                        [--prefix <dizin>] [--ignoreos] [--nodeps] "
+"[--allfiles]"
 
-#: /home/ewt/redhat/rpm/rpm.c:213
-msgid "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
-msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>] [--justdb]"
+#: /home/devel/jbj/src/rpm3/rpm.c:210
+msgid ""
+"                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
+msgstr ""
+"                        [--ftpproxy <sunucu>] [--ftpport <port>] [--justdb]"
 
-#: /home/ewt/redhat/rpm/rpm.c:214 /home/ewt/redhat/rpm/rpm.c:222
+#: /home/devel/jbj/src/rpm3/rpm.c:211 /home/devel/jbj/src/rpm3/rpm.c:219
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
 msgstr "                        [--noorder] [--relocate eskidizin=yenidizin]"
 
-#: /home/ewt/redhat/rpm/rpm.c:215 /home/ewt/redhat/rpm/rpm.c:223
-msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
+#: /home/devel/jbj/src/rpm3/rpm.c:212
+#, fuzzy
+msgid ""
+"                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"
 msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 
-#: /home/ewt/redhat/rpm/rpm.c:216
-msgid "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-msgstr "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+#: /home/devel/jbj/src/rpm3/rpm.c:213
+msgid ""
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgstr ""
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: /home/ewt/redhat/rpm/rpm.c:217
+#: /home/devel/jbj/src/rpm3/rpm.c:214
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <dizin>] [--noscripts]"
 
-#: /home/ewt/redhat/rpm/rpm.c:218
-msgid "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-msgstr "                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
+#: /home/devel/jbj/src/rpm3/rpm.c:215
+msgid ""
+"                        [--excludedocs] [--includedocs] [--rcfile <file>]"
+msgstr ""
+"                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:219
-msgid "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-msgstr "                        [--ignorearch]  [--dbpath <dizin>] [--prefix <dizin>] "
+#: /home/devel/jbj/src/rpm3/rpm.c:216
+msgid ""
+"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
+msgstr ""
+"                        [--ignorearch]  [--dbpath <dizin>] [--prefix "
+"<dizin>] "
 
-#: /home/ewt/redhat/rpm/rpm.c:220
+#: /home/devel/jbj/src/rpm3/rpm.c:217
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:221
+#: /home/devel/jbj/src/rpm3/rpm.c:218
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-msgstr "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+msgstr ""
+"                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
-#: /home/ewt/redhat/rpm/rpm.c:224
+#: /home/devel/jbj/src/rpm3/rpm.c:220
+msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
+msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:221
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
-#: /home/ewt/redhat/rpm/rpm.c:225
+#: /home/devel/jbj/src/rpm3/rpm.c:222
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr "                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
+msgstr ""
+"                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:226
+#: /home/devel/jbj/src/rpm3/rpm.c:223
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
-#: /home/ewt/redhat/rpm/rpm.c:227
-msgid "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpuseport] [--ftpproxy <sunucu>] [--ftpport <port>]"
+#: /home/devel/jbj/src/rpm3/rpm.c:224
+#, fuzzy
+msgid ""
+"                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
+msgstr ""
+"                        [--ftpuseport] [--ftpproxy <sunucu>] [--ftpport "
+"<port>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:228
-msgid "                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
-msgstr "                        [--provides] [--dump] [--dbpath <dizin>] [--changelog]"
+#: /home/devel/jbj/src/rpm3/rpm.c:225
+#, fuzzy
+msgid ""
+"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
+msgstr ""
+"                        [--dbpath <dizin>] [--nodeps] [--nofiles] "
+"[--noscripts]"
 
-#: /home/ewt/redhat/rpm/rpm.c:229
-msgid "                        [targets]"
-msgstr "                        [targets]"
+#: /home/devel/jbj/src/rpm3/rpm.c:226
+#, fuzzy
+msgid "                        [--changelog] [--dbpath <dir>] [targets]"
+msgstr "                        [--nomd5] [targets]"
 
-#: /home/ewt/redhat/rpm/rpm.c:230
+#: /home/devel/jbj/src/rpm3/rpm.c:227
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-msgstr "       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
+msgstr ""
+"       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:231
-msgid "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
-msgstr "                        [--dbpath <dizin>] [--nodeps] [--nofiles] [--noscripts]"
+#: /home/devel/jbj/src/rpm3/rpm.c:228
+msgid ""
+"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
+msgstr ""
+"                        [--dbpath <dizin>] [--nodeps] [--nofiles] "
+"[--noscripts]"
 
-#: /home/ewt/redhat/rpm/rpm.c:232
+#: /home/devel/jbj/src/rpm3/rpm.c:229
 msgid "                        [--nomd5] [targets]"
 msgstr "                        [--nomd5] [targets]"
 
-#: /home/ewt/redhat/rpm/rpm.c:233
+#: /home/devel/jbj/src/rpm3/rpm.c:230
 msgid "       rpm {--setperms} [-afpg] [target]"
 msgstr "       rpm {--setperms} [-afpg] [target]"
 
-#: /home/ewt/redhat/rpm/rpm.c:234
+#: /home/devel/jbj/src/rpm3/rpm.c:231
 msgid "       rpm {--setugids} [-afpg] [target]"
 msgstr "       rpm {--setugids} [-afpg] [target]"
 
-#: /home/ewt/redhat/rpm/rpm.c:235
+#: /home/devel/jbj/src/rpm3/rpm.c:232
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
 "       rpm {--erase -e] [--root <dizin>] [--noscripts] [--rcfile <dosya>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:236
+#: /home/devel/jbj/src/rpm3/rpm.c:233
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <dizin>] [--nodeps] [--allmatches]"
 
-#: /home/ewt/redhat/rpm/rpm.c:237
-msgid "                        [--justdb] package1 ... packageN"
+#: /home/devel/jbj/src/rpm3/rpm.c:234
+#, fuzzy
+msgid ""
+"                        [--justdb] [--notriggers] rpackage1 ... packageN"
 msgstr "                        [--justdb] paket1 ... paketN"
 
-#: /home/ewt/redhat/rpm/rpm.c:238
-msgid "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
-msgstr "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <dosya>]"
+#: /home/devel/jbj/src/rpm3/rpm.c:235
+msgid ""
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
+msgstr ""
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
+"<dosya>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:239
-msgid "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
-msgstr "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
+#: /home/devel/jbj/src/rpm3/rpm.c:236
+#, fuzzy
+msgid "                        [--sign] [--test] [--timecheck <s>] ]"
+msgstr ""
+"                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:240
-msgid "                        [--buildarch <arch>] [--rmsource] specfile"
-msgstr "                        [--buildarch <mimari>] [--rmsource] specdosyasý"
+#: /home/devel/jbj/src/rpm3/rpm.c:237
+#, fuzzy
+msgid "                        [--buildplatform=platform1[,platform2...]]"
+msgstr "                        [targets]"
 
-#: /home/ewt/redhat/rpm/rpm.c:241
+#: /home/devel/jbj/src/rpm3/rpm.c:238
+#, fuzzy
+msgid "                        [--rmsource] specfile"
+msgstr ""
+"                        [--buildarch <mimari>] [--rmsource] specdosyasý"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:239
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
 msgstr "       rpm {--rmsource} [--rcfile <dosya>] [-v] specdosyasý"
 
-#: /home/ewt/redhat/rpm/rpm.c:242
-msgid "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr "       rpm {--rebuild} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
+#: /home/devel/jbj/src/rpm3/rpm.c:240
+msgid ""
+"       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgstr ""
+"       rpm {--rebuild} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
 
-#: /home/ewt/redhat/rpm/rpm.c:243
-msgid "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr "       rpm {--recompile} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
+#: /home/devel/jbj/src/rpm3/rpm.c:241
+msgid ""
+"       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgstr ""
+"       rpm {--recompile} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
 
-#: /home/ewt/redhat/rpm/rpm.c:244
+#: /home/devel/jbj/src/rpm3/rpm.c:242
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--resign} [--rcfile <dosya>] paket1 paket2 ... paketN"
 
-#: /home/ewt/redhat/rpm/rpm.c:245
+#: /home/devel/jbj/src/rpm3/rpm.c:243
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--addsign} [--rcfile <dosya>] paket1 paket2 ... paketN"
 
-#: /home/ewt/redhat/rpm/rpm.c:246
+#: /home/devel/jbj/src/rpm3/rpm.c:244
 msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
 msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <dosya>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:247
+#: /home/devel/jbj/src/rpm3/rpm.c:245
 msgid "                           package1 ... packageN"
 msgstr "                           paket1 ... paketN"
 
-#: /home/ewt/redhat/rpm/rpm.c:248
+#: /home/devel/jbj/src/rpm3/rpm.c:246
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
 
-#: /home/ewt/redhat/rpm/rpm.c:249
+#: /home/devel/jbj/src/rpm3/rpm.c:247
 msgid "       rpm {--querytags}"
 msgstr "       rpm {--querytags}"
 
-#: /home/ewt/redhat/rpm/rpm.c:283
+#: /home/devel/jbj/src/rpm3/rpm.c:281
 msgid "usage:"
 msgstr "Kullaným:"
 
-#: /home/ewt/redhat/rpm/rpm.c:285
+#: /home/devel/jbj/src/rpm3/rpm.c:283
 msgid "print this message"
 msgstr "Bu bilgiyi verir"
 
-#: /home/ewt/redhat/rpm/rpm.c:287
+#: /home/devel/jbj/src/rpm3/rpm.c:285
 msgid "print the version of rpm being used"
 msgstr "Kullanýlan RPM sürümünü verir"
 
-#: /home/ewt/redhat/rpm/rpm.c:288
+#: /home/devel/jbj/src/rpm3/rpm.c:286
 msgid "   all modes support the following arguments:"
 msgstr "   tüm kipler aþaðýdaki argümanlarý kabul ederler:"
 
-#: /home/ewt/redhat/rpm/rpm.c:290
+#: /home/devel/jbj/src/rpm3/rpm.c:288
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanýn"
 
-#: /home/ewt/redhat/rpm/rpm.c:292
+#: /home/devel/jbj/src/rpm3/rpm.c:290
 msgid "be a little more verbose"
 msgstr "daha çok açýklama verir"
 
-#: /home/ewt/redhat/rpm/rpm.c:294
+#: /home/devel/jbj/src/rpm3/rpm.c:292
 msgid "be incredibly verbose (for debugging)"
 msgstr "çok fazla açýklama verir (hata ayýklama için)"
 
-#: /home/ewt/redhat/rpm/rpm.c:296
+#: /home/devel/jbj/src/rpm3/rpm.c:294
 msgid "query mode"
 msgstr "Sorgulama kipi"
 
-#: /home/ewt/redhat/rpm/rpm.c:298 /home/ewt/redhat/rpm/rpm.c:352 /home/ewt/redhat/rpm/rpm.c:410 /home/ewt/redhat/rpm/rpm.c:436 /home/ewt/redhat/rpm/rpm.c:498
+#: /home/devel/jbj/src/rpm3/rpm.c:296 /home/devel/jbj/src/rpm3/rpm.c:354
+#: /home/devel/jbj/src/rpm3/rpm.c:414 /home/devel/jbj/src/rpm3/rpm.c:442
+#: /home/devel/jbj/src/rpm3/rpm.c:502
 msgid "use <dir> as the top level directory"
 msgstr "kök (baþlangýç) dizini olarak <dizin> kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:300 /home/ewt/redhat/rpm/rpm.c:350 /home/ewt/redhat/rpm/rpm.c:378 /home/ewt/redhat/rpm/rpm.c:426 /home/ewt/redhat/rpm/rpm.c:496
+#: /home/devel/jbj/src/rpm3/rpm.c:298 /home/devel/jbj/src/rpm3/rpm.c:352
+#: /home/devel/jbj/src/rpm3/rpm.c:380 /home/devel/jbj/src/rpm3/rpm.c:430
+#: /home/devel/jbj/src/rpm3/rpm.c:500
 msgid "use <dir> as the directory for the database"
 msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:302
+#: /home/devel/jbj/src/rpm3/rpm.c:300
 msgid "use s as the header format (implies -i)"
 msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
 
-#: /home/ewt/redhat/rpm/rpm.c:303
-msgid "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
-msgstr "   yükleme, güncelleme ve sorgulama (-p ile) iþlemlerimde dosya isimleri "
-
-#: /home/ewt/redhat/rpm/rpm.c:304
-msgid "   of file names as well as the following options:\n"
+#: /home/devel/jbj/src/rpm3/rpm.c:301
+msgid ""
+"   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
-"   yerine FTP adreslerini aþaðýdaki seçeneklerle kabul eder:\n"
+"   yükleme, güncelleme ve sorgulama (-p ile) iþlemlerimde dosya isimleri "
 
-#: /home/ewt/redhat/rpm/rpm.c:306
+#: /home/devel/jbj/src/rpm3/rpm.c:302
+msgid "   of file names as well as the following options:\n"
+msgstr "   yerine FTP adreslerini aþaðýdaki seçeneklerle kabul eder:\n"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:304
 msgid "hostname or IP of ftp proxy"
 msgstr "Makina ismi veya FTP-Proxy'nin IP numarasý"
 
-#: /home/ewt/redhat/rpm/rpm.c:308
+#: /home/devel/jbj/src/rpm3/rpm.c:306
 msgid "port number of ftp server (or proxy)"
 msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
 
-#: /home/ewt/redhat/rpm/rpm.c:309
+#: /home/devel/jbj/src/rpm3/rpm.c:307
 msgid "      Package specification options:"
 msgstr "      Paket seçim seçenekleri:"
 
-#: /home/ewt/redhat/rpm/rpm.c:311
+#: /home/devel/jbj/src/rpm3/rpm.c:309
 msgid "query all packages"
 msgstr "Tüm paketleri sorgulama"
 
-#: /home/ewt/redhat/rpm/rpm.c:313
+#: /home/devel/jbj/src/rpm3/rpm.c:311
 msgid "query package owning <file>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: /home/ewt/redhat/rpm/rpm.c:315
+#: /home/devel/jbj/src/rpm3/rpm.c:313
 msgid "query (uninstalled) package <packagefile>"
 msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
 
-#: /home/ewt/redhat/rpm/rpm.c:317
+#: /home/devel/jbj/src/rpm3/rpm.c:315
+#, fuzzy
+msgid "query packages triggered by <package>"
+msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:317
 msgid "query packages which provide <i> capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
-#: /home/ewt/redhat/rpm/rpm.c:319
+#: /home/devel/jbj/src/rpm3/rpm.c:319
 msgid "query packages which require <i> capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
 
-#: /home/ewt/redhat/rpm/rpm.c:320
+#: /home/devel/jbj/src/rpm3/rpm.c:320
 msgid "      Information selection options:"
 msgstr "      Bilgilendirme seçenekleri:"
 
-#: /home/ewt/redhat/rpm/rpm.c:322
+#: /home/devel/jbj/src/rpm3/rpm.c:322
 msgid "display package information"
 msgstr "Paket bilgisini gösterme"
 
-#: /home/ewt/redhat/rpm/rpm.c:324
+#: /home/devel/jbj/src/rpm3/rpm.c:324
 msgid "display the package's change log"
 msgstr "Paketin 'Change Log' (deðiþiklik) bilgisini gösterme"
 
-#: /home/ewt/redhat/rpm/rpm.c:326
+#: /home/devel/jbj/src/rpm3/rpm.c:326
 msgid "display package file list"
 msgstr "Paketin içerdiði dosyalarý gösterme"
 
-#: /home/ewt/redhat/rpm/rpm.c:328
+#: /home/devel/jbj/src/rpm3/rpm.c:328
 msgid "show file states (implies -l)"
 msgstr "dosyalarýn durumunu gösterir (-l gerektirir)"
 
-#: /home/ewt/redhat/rpm/rpm.c:330
+#: /home/devel/jbj/src/rpm3/rpm.c:330
 msgid "list only documentation files (implies -l)"
 msgstr "sadece belge dosyalarýný gösterir (-l gerektirir)"
 
-#: /home/ewt/redhat/rpm/rpm.c:332
+#: /home/devel/jbj/src/rpm3/rpm.c:332
 msgid "list only configuration files (implies -l)"
-msgstr "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
+msgstr ""
+"sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
 
-#: /home/ewt/redhat/rpm/rpm.c:334
-msgid "show all verifiable information for each file (must be used with -l, -c, or -d)"
-msgstr "her dosya için doðrulanabilir bilgileri göster (-l, -c veya -d ile kullanýlmalý)"
+#: /home/devel/jbj/src/rpm3/rpm.c:334
+msgid ""
+"show all verifiable information for each file (must be used with -l, -c, or "
+"-d)"
+msgstr ""
+"her dosya için doðrulanabilir bilgileri göster (-l, -c veya -d ile "
+"kullanýlmalý)"
 
-#: /home/ewt/redhat/rpm/rpm.c:336
+#: /home/devel/jbj/src/rpm3/rpm.c:336
 msgid "list capabilities package provides"
 msgstr "paketin saðladýðý yetenekleri sýralar"
 
-#: /home/ewt/redhat/rpm/rpm.c:337
+#: /home/devel/jbj/src/rpm3/rpm.c:337
 msgid "        --requires"
 msgstr "        --requires"
 
-#: /home/ewt/redhat/rpm/rpm.c:339
+#: /home/devel/jbj/src/rpm3/rpm.c:339
 msgid "list package dependencies"
 msgstr "paketin baðýmlýlýklarýný (gerektirdiði paketleri) gösterir"
 
-#: /home/ewt/redhat/rpm/rpm.c:341
+#: /home/devel/jbj/src/rpm3/rpm.c:341
 msgid "print the various [un]install scripts"
 msgstr "paketin çeþitli yükleme, silme betiklerini (scripts) gösterir"
 
-#: /home/ewt/redhat/rpm/rpm.c:346
+#: /home/devel/jbj/src/rpm3/rpm.c:343
+msgid "show the trigger scripts contained in the package"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:348
 msgid "send stdout to <cmd>"
 msgstr "standart çýktýyý <KOMUT>'a gönderir"
 
-#: /home/ewt/redhat/rpm/rpm.c:348
-msgid "verify a package installation using the same same package specification options as -q"
+#: /home/devel/jbj/src/rpm3/rpm.c:350
+msgid ""
+"verify a package installation using the same same package specification "
+"options as -q"
 msgstr "paketi -q ile belirtilen paket parametrelerini kullanarak doðrula"
 
-#: /home/ewt/redhat/rpm/rpm.c:354 /home/ewt/redhat/rpm/rpm.c:398 /home/ewt/redhat/rpm/rpm.c:430
+#: /home/devel/jbj/src/rpm3/rpm.c:356 /home/devel/jbj/src/rpm3/rpm.c:400
+#: /home/devel/jbj/src/rpm3/rpm.c:434
 msgid "do not verify package dependencies"
 msgstr "paket baðýmlýlýklarýný doðrulamaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:356
+#: /home/devel/jbj/src/rpm3/rpm.c:358
 msgid "do not verify file md5 checksums"
 msgstr "dosyalarýn 'md5-checksum' larýný doðrulamaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:358
+#: /home/devel/jbj/src/rpm3/rpm.c:360
 msgid "do not verify file attributes"
 msgstr "dosya özelliklerini doðrulamaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:361
-msgid "set the file permissions to those in the package database using the same package specification options as -q"
-msgstr "dosya eriþim haklarýný veri tabanýnda yer alanlarla -q ile belirtilen paket parametrelerini kullanarak güncelle"
+#: /home/devel/jbj/src/rpm3/rpm.c:363
+msgid ""
+"set the file permissions to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+"dosya eriþim haklarýný veri tabanýnda yer alanlarla -q ile belirtilen paket "
+"parametrelerini kullanarak güncelle"
 
-#: /home/ewt/redhat/rpm/rpm.c:364
-msgid "set the file owner and group to those in the package database using the same package specification options as -q"
-msgstr "dosya kullanýcý ve grup bilgilerini veri tabanýnda yer alanlarla -q ile belirtilen paket parametrelerini kullanarak güncelle"
+#: /home/devel/jbj/src/rpm3/rpm.c:366
+msgid ""
+"set the file owner and group to those in the package database using the same "
+"package specification options as -q"
+msgstr ""
+"dosya kullanýcý ve grup bilgilerini veri tabanýnda yer alanlarla -q ile "
+"belirtilen paket parametrelerini kullanarak güncelle"
 
-#: /home/ewt/redhat/rpm/rpm.c:370
+#: /home/devel/jbj/src/rpm3/rpm.c:372
 msgid "install package"
 msgstr "paket yüklemek"
 
-#: /home/ewt/redhat/rpm/rpm.c:372
+#: /home/devel/jbj/src/rpm3/rpm.c:374
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr "dosyalarý <eskidizin> den <yenidizin> e relocate et"
 
-#: /home/ewt/redhat/rpm/rpm.c:374
+#: /home/devel/jbj/src/rpm3/rpm.c:376
 msgid "relocate files even though the package doesn't allow it"
 msgstr "paket desteklemese bile dosyalarý relocate et"
 
-#: /home/ewt/redhat/rpm/rpm.c:376
+#: /home/devel/jbj/src/rpm3/rpm.c:378
 msgid "relocate the package to <dir>, if relocatable"
-msgstr ""
-"paketin yerini (eðer deðitirilebiliyorsa) <dizin>'e deðiþtirir"
+msgstr "paketin yerini (eðer deðitirilebiliyorsa) <dizin>'e deðiþtirir"
 
-#: /home/ewt/redhat/rpm/rpm.c:380
+#: /home/devel/jbj/src/rpm3/rpm.c:382
 msgid "do not install documentation"
 msgstr "yazýlýmýn belgelerini yüklemez"
 
-#: /home/ewt/redhat/rpm/rpm.c:382
+#: /home/devel/jbj/src/rpm3/rpm.c:384
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs --replacefiles'ýn kýsaltmasý"
 
-#: /home/ewt/redhat/rpm/rpm.c:385
+#: /home/devel/jbj/src/rpm3/rpm.c:387
 msgid "print hash marks as package installs (good with -v)"
 msgstr "yükleme sýrasýnda bir gösterge çýkarýr (-v seçeneði ile iyi)"
 
-#: /home/ewt/redhat/rpm/rpm.c:387
+#: /home/devel/jbj/src/rpm3/rpm.c:389
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
-"tüm dosyalarý, hatta normal olarak atlanabilecek yapýlandýrmalarý bile,"
-"yükler"
+"tüm dosyalarý, hatta normal olarak atlanabilecek yapýlandýrmalarý bile,yükler"
 
-#: /home/ewt/redhat/rpm/rpm.c:390
+#: /home/devel/jbj/src/rpm3/rpm.c:392
 msgid "don't verify package architecture"
 msgstr "paket mimarisini doðrulamaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:392
+#: /home/devel/jbj/src/rpm3/rpm.c:394
 msgid "don't verify package operating system"
 msgstr "paketin ait olduðu iþletim sistemini doðrulamaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:394
+#: /home/devel/jbj/src/rpm3/rpm.c:396
 msgid "install documentation"
 msgstr "paket ile gelen belgeleri de yükler"
 
-#: /home/ewt/redhat/rpm/rpm.c:396 /home/ewt/redhat/rpm/rpm.c:428
+#: /home/devel/jbj/src/rpm3/rpm.c:398 /home/devel/jbj/src/rpm3/rpm.c:432
 msgid "update the database, but do not modify the filesystem"
 msgstr "veri tabanýný günceller, ama dosya sistemini deðiþtirmez"
 
-#: /home/ewt/redhat/rpm/rpm.c:400 /home/ewt/redhat/rpm/rpm.c:432
+#: /home/devel/jbj/src/rpm3/rpm.c:402 /home/devel/jbj/src/rpm3/rpm.c:436
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "paket yükleme sýrasýný baðýmlýlýklara göre düzenleme"
 
-#: /home/ewt/redhat/rpm/rpm.c:402
+#: /home/devel/jbj/src/rpm3/rpm.c:404
 msgid "don't execute any installation scripts"
 msgstr "yükleme betiklerini (scripts) çalýþtýrmaz."
 
-#: /home/ewt/redhat/rpm/rpm.c:404
+#: /home/devel/jbj/src/rpm3/rpm.c:406 /home/devel/jbj/src/rpm3/rpm.c:440
+msgid "don't execute any scripts triggered by this package"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/rpm.c:408
 msgid "print percentages as package installs"
 msgstr "yükleme sýrasýnda geliþme yüzde olarak gösterilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:406
+#: /home/devel/jbj/src/rpm3/rpm.c:410
 msgid "install even if the package replaces installed files"
 msgstr "paket mevcut dosyalarý silse bile paketi yükler"
 
-#: /home/ewt/redhat/rpm/rpm.c:408
+#: /home/devel/jbj/src/rpm3/rpm.c:412
 msgid "reinstall if the package is already present"
 msgstr "paket mevcutsa yeniden yükler"
 
-#: /home/ewt/redhat/rpm/rpm.c:412
+#: /home/devel/jbj/src/rpm3/rpm.c:416
 msgid "don't install, but tell if it would work or not"
 msgstr "yükleme yapmaz, sadece çalýþýp çalýþmayacaðýný belirtir"
 
-#: /home/ewt/redhat/rpm/rpm.c:416
+#: /home/devel/jbj/src/rpm3/rpm.c:420
 msgid "upgrade package (same options as --install, plus)"
 msgstr "Paketi günceller (seçenekler --install ile ayný, ek olarak)"
 
-#: /home/ewt/redhat/rpm/rpm.c:418
-msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
-msgstr "pakedin eski bir sürüme güncellenmesini saðlar (--force ayný iþi görür)"
+#: /home/devel/jbj/src/rpm3/rpm.c:422
+msgid ""
+"upgrade to an old version of the package (--force on upgrades does this "
+"automatically)"
+msgstr ""
+"pakedin eski bir sürüme güncellenmesini saðlar (--force ayný iþi görür)"
 
-#: /home/ewt/redhat/rpm/rpm.c:422
+#: /home/devel/jbj/src/rpm3/rpm.c:426
 msgid "erase (uninstall) package"
 msgstr "paketi siler (uninstall)"
 
-#: /home/ewt/redhat/rpm/rpm.c:424
-msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
-msgstr "<paket> ile eþlenen tüm paketleri siler (birden fazla paket eþlenirse bir hata mesajý çýkmasý gerekir)"
+#: /home/devel/jbj/src/rpm3/rpm.c:428
+msgid ""
+"remove all packages which match <package> (normally an error is generated if "
+"<package> specified multiple packages)"
+msgstr ""
+"<paket> ile eþlenen tüm paketleri siler (birden fazla paket eþlenirse bir "
+"hata mesajý çýkmasý gerekir)"
 
-#: /home/ewt/redhat/rpm/rpm.c:434
+#: /home/devel/jbj/src/rpm3/rpm.c:438
 msgid "do not execute any package specific scripts"
 msgstr "pakete ait hiçbir betik (Script) çalýþtýrýlmaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:438
+#: /home/devel/jbj/src/rpm3/rpm.c:444
 msgid "    -b<stage> <spec>      "
 msgstr "    -b<adým> <spec>      "
 
-#: /home/ewt/redhat/rpm/rpm.c:440
+#: /home/devel/jbj/src/rpm3/rpm.c:446
 msgid "build package, where <stage> is one of:"
 msgstr "paket yaratýr, <adým> aþaðýdaki harflerden biridir:"
 
-#: /home/ewt/redhat/rpm/rpm.c:442
+#: /home/devel/jbj/src/rpm3/rpm.c:448
 msgid "prep (unpack sources and apply patches)"
 msgstr "hazýrlama (kaynaklar açýlýr ve yamalar uygulanýr)"
 
-#: /home/ewt/redhat/rpm/rpm.c:444
 # , c-format
+#: /home/devel/jbj/src/rpm3/rpm.c:450
+#, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr "kontrol ( %files üstünkörü bir kontrol edilir)"
 
-#: /home/ewt/redhat/rpm/rpm.c:446
+#: /home/devel/jbj/src/rpm3/rpm.c:452
 msgid "compile (prep and compile)"
 msgstr "derleme (hazýrlama ve derleme)"
 
-#: /home/ewt/redhat/rpm/rpm.c:448
+#: /home/devel/jbj/src/rpm3/rpm.c:454
 msgid "install (prep, compile, install)"
 msgstr "yükleme (hazýrlama, derleme, yükleme)"
 
-#: /home/ewt/redhat/rpm/rpm.c:450
+#: /home/devel/jbj/src/rpm3/rpm.c:456
 msgid "binary package (prep, compile, install, package)"
 msgstr ""
 "çalýþtýrýlabilir paket yaratma (hazýrlama, derleme, yükleme, paketleme)"
 
-#: /home/ewt/redhat/rpm/rpm.c:452
+#: /home/devel/jbj/src/rpm3/rpm.c:458
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
-"çalýþtýrýlabilir ve Kaynak paket yaratmak (hazýrlama, derleme, yükleme ve"
-"paketleme)"
+"çalýþtýrýlabilir ve Kaynak paket yaratmak (hazýrlama, derleme, yükleme "
+"vepaketleme)"
 
-#: /home/ewt/redhat/rpm/rpm.c:454
+#: /home/devel/jbj/src/rpm3/rpm.c:460
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "doðrudan belirtilen adýma atlar (sadece c ve i için)"
 
-#: /home/ewt/redhat/rpm/rpm.c:456
+#: /home/devel/jbj/src/rpm3/rpm.c:462
 msgid "remove build tree when done"
 msgstr "iþlem sonunda paket yaratma yapýsýný siler"
 
-#: /home/ewt/redhat/rpm/rpm.c:458
+#: /home/devel/jbj/src/rpm3/rpm.c:464
 msgid "remove sources and spec file when done"
 msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 
-#: /home/ewt/redhat/rpm/rpm.c:460
+#: /home/devel/jbj/src/rpm3/rpm.c:466
 msgid "generate PGP signature"
 msgstr "PGP-imzasý yaratýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:462
+#: /home/devel/jbj/src/rpm3/rpm.c:468
 msgid "use <dir> as the build root"
 msgstr "paket yaratýlýrken <dizin> baþlangýç dizini olarak kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:464
-msgid "build the packages for architecture <arch>"
-msgstr "paketleri <arch> mimarisi için oluþturur"
+#: /home/devel/jbj/src/rpm3/rpm.c:470
+msgid "build the packages for the platform1...platformN build targets."
+msgstr ""
 
-#: /home/ewt/redhat/rpm/rpm.c:466
-msgid "build the packages for ositecture <os>"
-msgstr "paketleri <os> iþletim sistemi için oluþturur"
-
-#: /home/ewt/redhat/rpm/rpm.c:468
+#: /home/devel/jbj/src/rpm3/rpm.c:472
 msgid "do not execute any stages"
 msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:470
+#: /home/devel/jbj/src/rpm3/rpm.c:474
 msgid "set the time check to S seconds (0 disables it)"
 msgstr "zaman kontrolünü S saniyeye ayarlar (0 ile tümüyle kaldýrýr)"
 
-#: /home/ewt/redhat/rpm/rpm.c:473
-msgid "install source package, build binary package and remove spec file, sources, patches, and icons."
-msgstr "kaynak paketini yükler, çalýþýr paketi oluþturur ve spec dosyasý, kaynaklar ile yamalarý siler"
+#: /home/devel/jbj/src/rpm3/rpm.c:477
+msgid ""
+"install source package, build binary package and remove spec file, sources, "
+"patches, and icons."
+msgstr ""
+"kaynak paketini yükler, çalýþýr paketi oluþturur ve spec dosyasý, kaynaklar "
+"ile yamalarý siler"
 
-#: /home/ewt/redhat/rpm/rpm.c:475
+#: /home/devel/jbj/src/rpm3/rpm.c:479
 msgid "remove sources and spec file"
 msgstr "kaynak dosyalarýný ve spec dosyasýný siler"
 
-#: /home/ewt/redhat/rpm/rpm.c:477
+#: /home/devel/jbj/src/rpm3/rpm.c:481
 msgid "like --rebuild, but don't build any package"
 msgstr "--rebuild gibi, ama paket yaratmaz"
 
-#: /home/ewt/redhat/rpm/rpm.c:479
+#: /home/devel/jbj/src/rpm3/rpm.c:483
 msgid "sign a package (discard current signature)"
 msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
 
-#: /home/ewt/redhat/rpm/rpm.c:481
+#: /home/devel/jbj/src/rpm3/rpm.c:485
 msgid "add a signature to a package"
 msgstr "pakete bir imza ekler"
 
-#: /home/ewt/redhat/rpm/rpm.c:484
+#: /home/devel/jbj/src/rpm3/rpm.c:488
 msgid "verify package signature"
 msgstr "paket imzasýný doðrular"
 
-#: /home/ewt/redhat/rpm/rpm.c:486
+#: /home/devel/jbj/src/rpm3/rpm.c:490
 msgid "skip any PGP signatures"
 msgstr "tüm PGP imzalarýný atlar"
 
-#: /home/ewt/redhat/rpm/rpm.c:488
+#: /home/devel/jbj/src/rpm3/rpm.c:492
 msgid "skip any MD5 signatures"
 msgstr "tüm MD5 imzalarýný atlar"
 
-#: /home/ewt/redhat/rpm/rpm.c:490
+#: /home/devel/jbj/src/rpm3/rpm.c:494
 msgid "list the tags that can be used in a query format"
 msgstr "sorgulama sýrasýnda kullanýlabilecek 'Tag'leri sýralar"
 
-#: /home/ewt/redhat/rpm/rpm.c:492
+#: /home/devel/jbj/src/rpm3/rpm.c:496
 msgid "make sure a valid database exists"
 msgstr "geçerli bir veri tabaný olmasýný saðlar"
 
-#: /home/ewt/redhat/rpm/rpm.c:494
+#: /home/devel/jbj/src/rpm3/rpm.c:498
 msgid "rebuild database from existing database"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: /home/ewt/redhat/rpm/rpm.c:625 /home/ewt/redhat/rpm/rpm.c:631 /home/ewt/redhat/rpm/rpm.c:638 /home/ewt/redhat/rpm/rpm.c:644 /home/ewt/redhat/rpm/rpm.c:653 /home/ewt/redhat/rpm/rpm.c:660 /home/ewt/redhat/rpm/rpm.c:705 /home/ewt/redhat/rpm/rpm.c:711 /home/ewt/redhat/rpm/rpm.c:800 /home/ewt/redhat/rpm/rpm.c:807 /home/ewt/redhat/rpm/rpm.c:813 /home/ewt/redhat/rpm/rpm.c:820 /home/ewt/redhat/rpm/rpm.c:826 /home/ewt/redhat/rpm/rpm.c:834 /home/ewt/redhat/rpm/rpm.c:867 /home/ewt/redhat/rpm/rpm.c:909 /home/ewt/redhat/rpm/rpm.c:915
+#: /home/devel/jbj/src/rpm3/rpm.c:637 /home/devel/jbj/src/rpm3/rpm.c:643
+#: /home/devel/jbj/src/rpm3/rpm.c:650 /home/devel/jbj/src/rpm3/rpm.c:656
+#: /home/devel/jbj/src/rpm3/rpm.c:665 /home/devel/jbj/src/rpm3/rpm.c:672
+#: /home/devel/jbj/src/rpm3/rpm.c:718 /home/devel/jbj/src/rpm3/rpm.c:724
+#: /home/devel/jbj/src/rpm3/rpm.c:813 /home/devel/jbj/src/rpm3/rpm.c:820
+#: /home/devel/jbj/src/rpm3/rpm.c:826 /home/devel/jbj/src/rpm3/rpm.c:834
+#: /home/devel/jbj/src/rpm3/rpm.c:840 /home/devel/jbj/src/rpm3/rpm.c:848
+#: /home/devel/jbj/src/rpm3/rpm.c:881 /home/devel/jbj/src/rpm3/rpm.c:927
+#: /home/devel/jbj/src/rpm3/rpm.c:933
 msgid "only one major mode may be specified"
 msgstr "sadece bir ana kip (major mode) belirtilebilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:646
+#: /home/devel/jbj/src/rpm3/rpm.c:658
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
 
-#: /home/ewt/redhat/rpm/rpm.c:648
+#: /home/devel/jbj/src/rpm3/rpm.c:660
 msgid "Use -e or --erase instead.\n"
 msgstr "Yerine  -e veya --erase komutunu kullanýn\n"
 
-#: /home/ewt/redhat/rpm/rpm.c:664
+#: /home/devel/jbj/src/rpm3/rpm.c:676
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--build (-b) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
 
-#: /home/ewt/redhat/rpm/rpm.c:668
+#: /home/devel/jbj/src/rpm3/rpm.c:680
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--tarbuild (-t) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
 
-#: /home/ewt/redhat/rpm/rpm.c:734 /home/ewt/redhat/rpm/rpm.c:741 /home/ewt/redhat/rpm/rpm.c:749 /home/ewt/redhat/rpm/rpm.c:757 /home/ewt/redhat/rpm/rpm.c:777 /home/ewt/redhat/rpm/rpm.c:785 /home/ewt/redhat/rpm/rpm.c:793
+#: /home/devel/jbj/src/rpm3/rpm.c:747 /home/devel/jbj/src/rpm3/rpm.c:754
+#: /home/devel/jbj/src/rpm3/rpm.c:762 /home/devel/jbj/src/rpm3/rpm.c:770
+#: /home/devel/jbj/src/rpm3/rpm.c:790 /home/devel/jbj/src/rpm3/rpm.c:798
+#: /home/devel/jbj/src/rpm3/rpm.c:806
 msgid "one type of query/verify may be performed at a time"
 msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:842
+#: /home/devel/jbj/src/rpm3/rpm.c:856
 msgid "arguments to --dbpath must begin with a /"
 msgstr "--dbpath için verilen argümanlar '/' ile baþlamalý"
 
-#: /home/ewt/redhat/rpm/rpm.c:849
+#: /home/devel/jbj/src/rpm3/rpm.c:863
 msgid "one type of query may be performed at a time"
 msgstr "bir anda sadece tek bir tarz sorgulama yapýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:873
+#: /home/devel/jbj/src/rpm3/rpm.c:887
 msgid "relocations must begin with a /"
 msgstr "relocate iþlemi / ile baþlamalý"
 
-#: /home/ewt/redhat/rpm/rpm.c:875
+#: /home/devel/jbj/src/rpm3/rpm.c:889
 msgid "relocations must contain a ="
 msgstr "relocate satýrýnda = bulunmalý"
 
-#: /home/ewt/redhat/rpm/rpm.c:878
+#: /home/devel/jbj/src/rpm3/rpm.c:892
 msgid "relocations must have a / following the ="
 msgstr "relocate için = den sonra bir / gerekir"
 
-#: /home/ewt/redhat/rpm/rpm.c:927
+#: /home/devel/jbj/src/rpm3/rpm.c:945
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath veritabaný kullanýlmayan bir iþlemde belirtildi"
 
-#: /home/ewt/redhat/rpm/rpm.c:932
+#: /home/devel/jbj/src/rpm3/rpm.c:950
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck sadece paket oluþturulurken kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:935 /home/ewt/redhat/rpm/rpm.c:938
+#: /home/devel/jbj/src/rpm3/rpm.c:953 /home/devel/jbj/src/rpm3/rpm.c:956
 msgid "unexpected query specifiers"
 msgstr "sorgulama için beklenmeyen bilgiler girildi"
 
-#: /home/ewt/redhat/rpm/rpm.c:942
+#: /home/devel/jbj/src/rpm3/rpm.c:960
 msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynaðý girildi"
 
-#: /home/ewt/redhat/rpm/rpm.c:945
+#: /home/devel/jbj/src/rpm3/rpm.c:963
 msgid "only installation and upgrading may be forced"
 msgstr "sadece yükleme ve güncelleme zorlanabilir (force edilebilir)"
 
-#: /home/ewt/redhat/rpm/rpm.c:948
+#: /home/devel/jbj/src/rpm3/rpm.c:966
 msgid "files may only be relocated during package installation"
 msgstr "dosyalar sadece paket yüklemesi sýrasýnda relocate edilebilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:951
+#: /home/devel/jbj/src/rpm3/rpm.c:969
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:954
+#: /home/devel/jbj/src/rpm3/rpm.c:972
 msgid "--relocate may only be used when installing new packages"
 msgstr "--relocate sadece yeni paketler yüklenirken kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:957
+#: /home/devel/jbj/src/rpm3/rpm.c:975
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:960
+#: /home/devel/jbj/src/rpm3/rpm.c:978
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix komutunun argümanlarý '/' ile baþlamalý"
 
-#: /home/ewt/redhat/rpm/rpm.c:963
+#: /home/devel/jbj/src/rpm3/rpm.c:981
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:967
+#: /home/devel/jbj/src/rpm3/rpm.c:985
 msgid "--percent may only be specified during package installation"
 msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:971
+#: /home/devel/jbj/src/rpm3/rpm.c:989
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:975
+#: /home/devel/jbj/src/rpm3/rpm.c:993
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:979
+#: /home/devel/jbj/src/rpm3/rpm.c:997
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:983
+#: /home/devel/jbj/src/rpm3/rpm.c:1001
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:987
+#: /home/devel/jbj/src/rpm3/rpm.c:1005
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "--excludedocs ve --includedocs bir arada kullanýlamaz (bi daha olmasýn)"
 
-#: /home/ewt/redhat/rpm/rpm.c:991
+#: /home/devel/jbj/src/rpm3/rpm.c:1009
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:995
+#: /home/devel/jbj/src/rpm3/rpm.c:1013
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:999
+#: /home/devel/jbj/src/rpm3/rpm.c:1017
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches sadece paket silinmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1003
+#: /home/devel/jbj/src/rpm3/rpm.c:1021
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1007
+#: /home/devel/jbj/src/rpm3/rpm.c:1025
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb sadece paket yükleme ve silmelerinde kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1012
-msgid "--noscripts may only be specified during package installation, erasure, and verification"
+#: /home/devel/jbj/src/rpm3/rpm.c:1030
+msgid ""
+"--noscripts may only be specified during package installation, erasure, and "
+"verification"
 msgstr "--noscripts sadece paket yükleme, silme ve doðrulamalarýnda kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1017
-msgid "--nodeps may only be specified during package installation, erasure, and verification"
-msgstr "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
+#: /home/devel/jbj/src/rpm3/rpm.c:1034
+#, fuzzy
+msgid ""
+"--notriggers may only be specified during package installation, erasure, and "
+"verification"
+msgstr ""
+"--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1021
+#: /home/devel/jbj/src/rpm3/rpm.c:1039
+msgid ""
+"--nodeps may only be specified during package installation, erasure, and "
+"verification"
+msgstr ""
+"--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
+
+#: /home/devel/jbj/src/rpm3/rpm.c:1043
 msgid "--nofiles may only be specified during package verification"
 msgstr "--nofiles sadece paket doðrulamasý sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1026
-msgid "--test may only be specified during package installation, erasure, and building"
+#: /home/devel/jbj/src/rpm3/rpm.c:1048
+msgid ""
+"--test may only be specified during package installation, erasure, and "
+"building"
 msgstr "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1031
-msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
-msgstr "--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde kullanýlýr"
+#: /home/devel/jbj/src/rpm3/rpm.c:1053
+msgid ""
+"--root (-r) may only be specified during installation, erasure, querying, "
+"and database rebuilds"
+msgstr ""
+"--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde "
+"kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1036
+#: /home/devel/jbj/src/rpm3/rpm.c:1058
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) komutun argümanlarý '/' ile baþlamalý"
 
-#: /home/ewt/redhat/rpm/rpm.c:1039
+#: /home/devel/jbj/src/rpm3/rpm.c:1061
 msgid "--clean may only be used with -b and -t"
 msgstr "--clean sadece -b ve -t ile kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1042
+#: /home/devel/jbj/src/rpm3/rpm.c:1064
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--rmsource sadece -b ve -t ile kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1045
+#: /home/devel/jbj/src/rpm3/rpm.c:1067
 msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit sadece paket oluþturulmasý sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1048
-msgid "--short-circuit may only be used with -bc, -bi, -tc or -ti"
+#: /home/devel/jbj/src/rpm3/rpm.c:1071
+#, fuzzy
+msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 "--short-circuit mutlaka -bc, bi, -tc veya -ti ile beraber kullanýlmalýdýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1053
+#: /home/devel/jbj/src/rpm3/rpm.c:1076
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1056
+#: /home/devel/jbj/src/rpm3/rpm.c:1079
 msgid "--dump may only be used during queries"
 msgstr "--dump sadece sorgulama sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1059
+#: /home/devel/jbj/src/rpm3/rpm.c:1082
 msgid "--dump of queries must be used with -l, -c, or -d"
 msgstr "sorgulamada --dump mutlaka -l, -c, or -d ile kullanýlmalýdýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1064
-msgid "ftp options can only be used during package queries, installs, and upgrades"
+#: /home/devel/jbj/src/rpm3/rpm.c:1087
+msgid ""
+"ftp options can only be used during package queries, installs, and upgrades"
 msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1071
+#: /home/devel/jbj/src/rpm3/rpm.c:1094
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp sadece Ýmza kontrolü sýrasýnda kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1074
-msgid "--nopgp may only be used during signature checking and package verification"
-msgstr "--nopgp sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlýr"
+#: /home/devel/jbj/src/rpm3/rpm.c:1097
+msgid ""
+"--nopgp may only be used during signature checking and package verification"
+msgstr ""
+"--nopgp sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlýr"
 
-#: /home/ewt/redhat/rpm/rpm.c:1087
+#: /home/devel/jbj/src/rpm3/rpm.c:1110
 msgid "Pass phrase check failed\n"
 msgstr "Parola kontrolü baþarýsýzlýkla sonuçlandý\n"
 
-#: /home/ewt/redhat/rpm/rpm.c:1090
+#: /home/devel/jbj/src/rpm3/rpm.c:1113
 msgid "Pass phrase is good.\n"
 msgstr "Parola doðru.\n"
 
-#: /home/ewt/redhat/rpm/rpm.c:1102
+#: /home/devel/jbj/src/rpm3/rpm.c:1125
 msgid "--sign may only be used during package building"
 msgstr "--sign sadece paket olusturulurken kullanýlabilir"
 
-#: /home/ewt/redhat/rpm/rpm.c:1136
+#: /home/devel/jbj/src/rpm3/rpm.c:1159
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags için beklenmeyen argümanlar"
 
-#: /home/ewt/redhat/rpm/rpm.c:1147
+#: /home/devel/jbj/src/rpm3/rpm.c:1170
 msgid "no packages given for signature check"
 msgstr "imzasý kontrol edilecek paketler belirtilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1154
+#: /home/devel/jbj/src/rpm3/rpm.c:1177
 msgid "no packages given for signing"
 msgstr "imzalanacak paketler belirtilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1163
+#: /home/devel/jbj/src/rpm3/rpm.c:1186
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluþturmak için paket dosyalarý belirtilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1223
+#: /home/devel/jbj/src/rpm3/rpm.c:1249
 msgid "no spec files given for build"
 msgstr "oluþturma için gerekli spec dosyasý belirtilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1225
+#: /home/devel/jbj/src/rpm3/rpm.c:1251
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirttilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1237
+#: /home/devel/jbj/src/rpm3/rpm.c:1264
 msgid "no packages given for uninstall"
 msgstr "sistemden silinecek paketler belirtilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1275
+#: /home/devel/jbj/src/rpm3/rpm.c:1304
 msgid "no packages given for install"
 msgstr "yüklenecek paketler belirtilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1299
+#: /home/devel/jbj/src/rpm3/rpm.c:1328
 msgid "extra arguments given for query of all packages"
 msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1304
+#: /home/devel/jbj/src/rpm3/rpm.c:1333
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: /home/ewt/redhat/rpm/rpm.c:1321
+#: /home/devel/jbj/src/rpm3/rpm.c:1350
 msgid "no arguments given for verify"
 msgstr "doðrulama için hiç argüman belirtilmedi"
 
-#: /home/ewt/redhat/rpm/query.c:40
+#: /home/devel/jbj/src/rpm3/query.c:28
+#, c-format
 msgid "error in format: %s\n"
 msgstr "format hatasý: %s\n"
 
-#: /home/ewt/redhat/rpm/query.c:77
+#: /home/devel/jbj/src/rpm3/query.c:65
 msgid "(contains no files)"
 msgstr "(hiç dosya içermiyor)"
 
-#: /home/ewt/redhat/rpm/query.c:331 /home/ewt/redhat/rpm/verify.c:127
+#: /home/devel/jbj/src/rpm3/query.c:319 /home/devel/jbj/src/rpm3/verify.c:138
 msgid "error: could not read database record\n"
 msgstr "hata: veritabaný kaydý okunamadý\n"
 
-#: /home/ewt/redhat/rpm/query.c:367 /home/ewt/redhat/rpm/query.c:374 /home/ewt/redhat/rpm/verify.c:179 /home/ewt/redhat/rpm/verify.c:186
+#: /home/devel/jbj/src/rpm3/query.c:355 /home/devel/jbj/src/rpm3/query.c:362
+#: /home/devel/jbj/src/rpm3/verify.c:194 /home/devel/jbj/src/rpm3/verify.c:201
+#, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s 'ye erisimde belirtilen hata oluþtu: %s\n"
 
-#: /home/ewt/redhat/rpm/query.c:390
+#: /home/devel/jbj/src/rpm3/query.c:378
 msgid "old format source packages cannot be queried\n"
 msgstr "eski tip kaynak paketleri sorgulanamýyor\n"
 
-#: /home/ewt/redhat/rpm/query.c:399
+#: /home/devel/jbj/src/rpm3/query.c:387
+#, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s bir RPM paketi deðil (gibi)\n"
 
-#: /home/ewt/redhat/rpm/query.c:403
+#: /home/devel/jbj/src/rpm3/query.c:391
+#, c-format
 msgid "query of %s failed\n"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: /home/ewt/redhat/rpm/query.c:416 /home/ewt/redhat/rpm/verify.c:163
+#: /home/devel/jbj/src/rpm3/query.c:404 /home/devel/jbj/src/rpm3/verify.c:178
 msgid "could not read database record!\n"
 msgstr "veritabaný kaydý okunamadý!\n"
 
-#: /home/ewt/redhat/rpm/query.c:427 /home/ewt/redhat/rpm/verify.c:209
+#: /home/devel/jbj/src/rpm3/query.c:415 /home/devel/jbj/src/rpm3/verify.c:224
+#, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s grubu hiç paket içermiyor\n"
 
-#: /home/ewt/redhat/rpm/query.c:437
+#: /home/devel/jbj/src/rpm3/query.c:425
+#, c-format
 msgid "no package provides %s\n"
 msgstr "hiç bir paket  %s saðlamýyor\n"
 
-#: /home/ewt/redhat/rpm/query.c:447
+#: /home/devel/jbj/src/rpm3/query.c:435
+#, c-format
 msgid "no package triggers %s\n"
 msgstr "hiç bir paket %s tetiklemiyor\n"
 
-#: /home/ewt/redhat/rpm/query.c:457
+#: /home/devel/jbj/src/rpm3/query.c:445
+#, c-format
 msgid "no package requires %s\n"
 msgstr "hiç bir paket %s gerektirmiyor\n"
 
-#: /home/ewt/redhat/rpm/query.c:471 /home/ewt/redhat/rpm/verify.c:223
+#: /home/devel/jbj/src/rpm3/query.c:463 /home/devel/jbj/src/rpm3/query.c:469
+msgid "maximum path length exceeded\n"
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/query.c:481
+#, fuzzy, c-format
+msgid "file %s: %s\n"
+msgstr "%s açýlamadý: %s"
+
+#: /home/devel/jbj/src/rpm3/query.c:484 /home/devel/jbj/src/rpm3/verify.c:238
+#, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: /home/ewt/redhat/rpm/query.c:482
+#: /home/devel/jbj/src/rpm3/query.c:497
+#, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: /home/ewt/redhat/rpm/query.c:485
+#: /home/devel/jbj/src/rpm3/query.c:500
+#, c-format
 msgid "showing package: %d\n"
 msgstr "%d : numaralý paketi gösteriyorum\n"
 
-#: /home/ewt/redhat/rpm/query.c:489
+#: /home/devel/jbj/src/rpm3/query.c:504
+#, c-format
 msgid "record %d could not be read\n"
 msgstr "%d numaralý kayýt okunamadý\n"
 
-#: /home/ewt/redhat/rpm/install.c:332 /home/ewt/redhat/rpm/query.c:501 /home/ewt/redhat/rpm/verify.c:234
+#: /home/devel/jbj/src/rpm3/install.c:321 /home/devel/jbj/src/rpm3/query.c:516
+#: /home/devel/jbj/src/rpm3/verify.c:249
+#, c-format
 msgid "package %s is not installed\n"
 msgstr "%s pakedi yüklenmemiþ\n"
 
-#: /home/ewt/redhat/rpm/query.c:504 /home/ewt/redhat/rpm/verify.c:236
+#: /home/devel/jbj/src/rpm3/query.c:519 /home/devel/jbj/src/rpm3/verify.c:251
+#, c-format
 msgid "error looking for package %s\n"
 msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: /home/ewt/redhat/rpm/install.c:79 /home/ewt/redhat/rpm/install.c:195
+#: /home/devel/jbj/src/rpm3/install.c:68
+#: /home/devel/jbj/src/rpm3/install.c:184
+#, c-format
 msgid "error: cannot open file %s\n"
 msgstr "hata: %s dosyasý okunamadý\n"
 
-#: /home/ewt/redhat/rpm/install.c:96
+#: /home/devel/jbj/src/rpm3/install.c:85
+#, c-format
 msgid "Installing %s\n"
 msgstr "%s yükleniyor\n"
 
-#: /home/ewt/redhat/rpm/install.c:114 /home/ewt/redhat/rpm/install.c:208
+#: /home/devel/jbj/src/rpm3/install.c:103
+#: /home/devel/jbj/src/rpm3/install.c:197
+#, c-format
 msgid "error: %s does not appear to be a RPM package\n"
 msgstr "hata: %s herhangi bir RPM pakedine ait görünmüyor\n"
 
-#: /home/ewt/redhat/rpm/install.c:119 /home/ewt/redhat/rpm/install.c:213 /home/ewt/redhat/rpm/install.c:422
+#: /home/devel/jbj/src/rpm3/install.c:108
+#: /home/devel/jbj/src/rpm3/install.c:202
+#: /home/devel/jbj/src/rpm3/install.c:411
+#, c-format
 msgid "error: %s cannot be installed\n"
 msgstr "hata: %s yüklenemedi\n"
 
-#: /home/ewt/redhat/rpm/install.c:166
+#: /home/devel/jbj/src/rpm3/install.c:155
+#, c-format
 msgid "Retrieving %s\n"
 msgstr "%s alýnýyor\n"
 
-#: /home/ewt/redhat/rpm/install.c:177
+#: /home/devel/jbj/src/rpm3/install.c:166
+#, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
 msgstr "hata: %s atlanýyor - aktarým baþarýsýz - %s\n"
 
-#: /home/ewt/redhat/rpm/install.c:233 /home/ewt/redhat/rpm/install.c:322
+#: /home/devel/jbj/src/rpm3/install.c:222
+#: /home/devel/jbj/src/rpm3/install.c:311
+#, c-format
 msgid "error: cannot open %s%s/packages.rpm\n"
 msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
 
-#: /home/ewt/redhat/rpm/install.c:254
+#: /home/devel/jbj/src/rpm3/install.c:243
 msgid "failed dependencies:\n"
 msgstr "baðýmlýlýk hatasý, aþaðýdaki paketlere ihtiyacýnýz var:\n"
 
-#: /home/ewt/redhat/rpm/install.c:335
+#: /home/devel/jbj/src/rpm3/install.c:324
+#, c-format
 msgid "error searching for package %s\n"
 msgstr "%s paketi bulunamadý\n"
 
-#: /home/ewt/redhat/rpm/install.c:343
+#: /home/devel/jbj/src/rpm3/install.c:332
+#, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
 
-#: /home/ewt/redhat/rpm/install.c:380
+#: /home/devel/jbj/src/rpm3/install.c:369
 msgid "removing these packages would break dependencies:\n"
 msgstr "bu paketin silinmesi aþaðýdaki baðýmlýlýklarý etkileyecektir:\n"
 
-#: /home/ewt/redhat/rpm/install.c:413
+#: /home/devel/jbj/src/rpm3/install.c:402
+#, c-format
 msgid "error: cannot open %s\n"
 msgstr "hata: %s eriþilemiyor\n"
 
-#: /home/ewt/redhat/rpm/install.c:461
+#: /home/devel/jbj/src/rpm3/install.c:450
+#, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ", %s-%s-%s tarafýndan kullanýlýyor\n"
 
-#: /home/ewt/redhat/rpm/install.c:464
+#: /home/devel/jbj/src/rpm3/install.c:453
+#, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ", %s-%s-%s ile çeliþiyor\n"
 
-#: /home/ewt/redhat/rpm/verify.c:90
+#: /home/devel/jbj/src/rpm3/verify.c:91
+#, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 
-#: /home/ewt/redhat/rpm/checksig.c:31 /home/ewt/redhat/rpm/checksig.c:162
+#: /home/devel/jbj/src/rpm3/checksig.c:26
+#: /home/devel/jbj/src/rpm3/checksig.c:157
+#, c-format
 msgid "%s: Open failed\n"
 msgstr "%s: Eriþilemedi\n"
 
-#: /home/ewt/redhat/rpm/checksig.c:35 /home/ewt/redhat/rpm/checksig.c:167
+#: /home/devel/jbj/src/rpm3/checksig.c:30
+#: /home/devel/jbj/src/rpm3/checksig.c:162
+#, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: 'readLead' hata verdi\n"
 
-#: /home/ewt/redhat/rpm/checksig.c:39
+#: /home/devel/jbj/src/rpm3/checksig.c:34
+#, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: v1.0-RPM (eski sürüm) imzalanamýyor\n"
 
-#: /home/ewt/redhat/rpm/checksig.c:43
+#: /home/devel/jbj/src/rpm3/checksig.c:38
+#, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0-RPM (eski sürüm) yeniden imzalanamýyor\n"
 
-#: /home/ewt/redhat/rpm/checksig.c:47 /home/ewt/redhat/rpm/checksig.c:177
+#: /home/devel/jbj/src/rpm3/checksig.c:42
+#: /home/devel/jbj/src/rpm3/checksig.c:172
+#, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: 'rpmReadSignature' hata verdi\n"
 
-#: /home/ewt/redhat/rpm/checksig.c:60 /home/ewt/redhat/rpm/checksig.c:191
+#: /home/devel/jbj/src/rpm3/checksig.c:55
+#: /home/devel/jbj/src/rpm3/checksig.c:186
 msgid "Couldn't read the header/archive"
 msgstr "'header/archive' okunamadý"
 
-#: /home/ewt/redhat/rpm/checksig.c:67
+#: /home/devel/jbj/src/rpm3/checksig.c:62
 msgid "Couldn't write header/archive to temp file"
 msgstr "'header/archive' geçici bir dosyaya yazýlamadý"
 
-#: /home/ewt/redhat/rpm/checksig.c:115
+#: /home/devel/jbj/src/rpm3/checksig.c:110
 msgid "Couldn't read sigtarget"
 msgstr "Ýmza hedefi 'sigtarget' okunamadý"
 
-#: /home/ewt/redhat/rpm/checksig.c:124
+#: /home/devel/jbj/src/rpm3/checksig.c:119
 msgid "Couldn't write package"
 msgstr "Paket yazýlamadý"
 
-#: /home/ewt/redhat/rpm/checksig.c:172
+#: /home/devel/jbj/src/rpm3/checksig.c:167
+#, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
 
-#: /home/ewt/redhat/rpm/checksig.c:182
+#: /home/devel/jbj/src/rpm3/checksig.c:177
+#, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ýmza bulunmuyor\n"
 
-#: /home/ewt/redhat/rpm/checksig.c:198
+#: /home/devel/jbj/src/rpm3/checksig.c:193
+#, c-format
 msgid "Unable to write %s"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: /home/ewt/redhat/rpm/checksig.c:290 /home/ewt/redhat/rpm/checksig.c:297
+#: /home/devel/jbj/src/rpm3/checksig.c:285
+#: /home/devel/jbj/src/rpm3/checksig.c:292
 msgid " (MISSING KEYS)"
 msgstr " (EKSÝK ANAHTARLAR)"
 
-#: /home/ewt/redhat/rpm/url.c:59
+#: /home/devel/jbj/src/rpm3/url.c:47
+#, c-format
 msgid "Password for %s@%s: "
 msgstr "%s'%s için parola"
 
-#: /home/ewt/redhat/rpm/url.c:143
+#: /home/devel/jbj/src/rpm3/url.c:131
 msgid "error: ftpport must be a number\n"
 msgstr "hata: ftpport bir sayý olmalý\n"
 
-#: /home/ewt/redhat/rpm/url.c:201
+#: /home/devel/jbj/src/rpm3/url.c:189
+#, c-format
 msgid "failed to create %s\n"
 msgstr "%s yaratýlamýyor\n"
 
-#: /home/ewt/redhat/rpm/ftp.c:445
+#: /home/devel/jbj/src/rpm3/ftp.c:425
 msgid "Bad FTP server response"
 msgstr "FTP sunucusundan kötü yanýt"
 
-#: /home/ewt/redhat/rpm/ftp.c:448
+#: /home/devel/jbj/src/rpm3/ftp.c:428
 msgid "FTP IO error"
 msgstr "FTP I/O hatasý"
 
-#: /home/ewt/redhat/rpm/ftp.c:451
+#: /home/devel/jbj/src/rpm3/ftp.c:431
 msgid "FTP server timeout"
 msgstr "FTP sunucusu zaman aþýmý"
 
-#: /home/ewt/redhat/rpm/ftp.c:454
+#: /home/devel/jbj/src/rpm3/ftp.c:434
 msgid "Unable to lookup FTP server host address"
 msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
 
-#: /home/ewt/redhat/rpm/ftp.c:457
+#: /home/devel/jbj/src/rpm3/ftp.c:437
 msgid "Unable to lookup FTP server host name"
 msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
 
-#: /home/ewt/redhat/rpm/ftp.c:460
+#: /home/devel/jbj/src/rpm3/ftp.c:440
 msgid "Failed to connect to FTP server"
 msgstr "FTP sunucusuna baðlanýlamadý"
 
-#: /home/ewt/redhat/rpm/ftp.c:463
+#: /home/devel/jbj/src/rpm3/ftp.c:443
 msgid "Failed to establish data connection to FTP server"
 msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
 
-#: /home/ewt/redhat/rpm/ftp.c:466
+#: /home/devel/jbj/src/rpm3/ftp.c:446
 msgid "IO error to local file"
 msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
 
-#: /home/ewt/redhat/rpm/ftp.c:469
+#: /home/devel/jbj/src/rpm3/ftp.c:449
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
 
-#: /home/ewt/redhat/rpm/ftp.c:472
+#: /home/devel/jbj/src/rpm3/ftp.c:452
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: /home/ewt/redhat/rpm/ftp.c:476
+#: /home/devel/jbj/src/rpm3/ftp.c:456
 msgid "FTP Unknown or unexpected error"
 msgstr "FTP bilinmeyen ya da beklenmeyen hata"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:320 /home/ewt/redhat/rpm/lib/uninstall.c:135
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:310
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:118
+#, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "%d numaralý paketin silmek için gereken 'header' kýsmý okunamadý"
 
-#: /home/ewt/redhat/rpm/lib/uninstall.c:148
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:131
+#, c-format
 msgid "package %s-%s-%s contain shared files\n"
 msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
 
-#: /home/ewt/redhat/rpm/lib/uninstall.c:499
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:506
 msgid "execution of script failed"
 msgstr "betik (script) çalýþtýrýlamadý "
 
-#: /home/ewt/redhat/rpm/lib/uninstall.c:583
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:590
+#, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s 'nin isminin  %s 'ye çevrilmesinde belirtilen hata oluþtu: %s"
 
-#: /home/ewt/redhat/rpm/lib/uninstall.c:597
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:604
+#, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "%s silinemedi - belirtilen dizin boþ deðil"
 
-#: /home/ewt/redhat/rpm/lib/uninstall.c:600
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:607
+#, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "%s dizinin silinmesinde belirtilen hata oluþtu: %s"
 
-#: /home/ewt/redhat/rpm/lib/uninstall.c:610
+#: /home/devel/jbj/src/rpm3/lib/uninstall.c:617
+#, c-format
 msgid "removal of %s failed: %s"
 msgstr "%s 'in silinmesinde belirtilen hata oluþtu: %s"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:132
 # , c-format
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:122
+#, c-format
 msgid "failed to open %s\n"
 msgstr "%s 'ye eriþimde hata oluþtu\n"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:145 /home/ewt/redhat/rpm/lib/rpmdb.c:152
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:135
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:142
+#, c-format
 msgid "cannot get %s lock on database"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:146
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:136
 msgid "exclusive"
 msgstr "özel"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:153
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:143
 msgid "shared"
 msgstr "paylaþýlan (shared)"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:286
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:276
+#, c-format
 msgid "package %s not listed in %s"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:297
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:287
+#, c-format
 msgid "package %s not found in %s"
 msgstr "%s pakedi %s içerisinde bulunamadý"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:328
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:318
 msgid "package has no name"
 msgstr "pakedin adý yok :-)"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:473
 # reservieren???
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:463
 msgid "cannot allocate space for database"
 msgstr "Veritabaný için yer bulunamadý"
 
-#: /home/ewt/redhat/rpm/lib/rpmdb.c:537
+#: /home/devel/jbj/src/rpm3/lib/rpmdb.c:527
+#, c-format
 msgid "cannot read header at %d for update"
 msgstr "%d numaralý paketin güncelleme için gereken 'header' kýsmý okunamadý"
 
-#: /home/ewt/redhat/rpm/lib/signature.c:99
+#: /home/devel/jbj/src/rpm3/lib/signature.c:88
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Eski imza !!! Eee bunu nasýl baþardýn bakiiim ?"
 
-#: /home/ewt/redhat/rpm/lib/signature.c:222 /home/ewt/redhat/rpm/lib/signature.c:479
+#: /home/devel/jbj/src/rpm3/lib/signature.c:211
+#: /home/devel/jbj/src/rpm3/lib/signature.c:468
 msgid "Couldn't exec pgp"
 msgstr "PGP çalýþtýrýlamadý"
 
-#: /home/ewt/redhat/rpm/lib/signature.c:233
+#: /home/devel/jbj/src/rpm3/lib/signature.c:222
 msgid "pgp failed"
 msgstr "PGP hata verdi"
 
 #. PGP failed to write signature
 #. Just in case
-#: /home/ewt/redhat/rpm/lib/signature.c:240
+#: /home/devel/jbj/src/rpm3/lib/signature.c:229
 msgid "pgp failed to write signature"
 msgstr "PGP imzasýnýn yazýlmasý sýrasýnda hata oluþtu"
 
-#: /home/ewt/redhat/rpm/lib/signature.c:253
+#: /home/devel/jbj/src/rpm3/lib/signature.c:242
 msgid "unable to read the signature"
 msgstr "imzayý okumak mümkün olmadý"
 
-#: /home/ewt/redhat/rpm/lib/signature.c:396
+#: /home/devel/jbj/src/rpm3/lib/signature.c:385
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "PGP çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn."
 
-#: /home/ewt/redhat/rpm/lib/signature.c:430
+#: /home/devel/jbj/src/rpm3/lib/signature.c:419
 msgid "You must set \"pgp_name:\" in your rpmrc file"
 msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 
-#: /home/ewt/redhat/rpm/lib/dbindex.c:22
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:16
+#, c-format
 msgid "cannot open file %s: "
 msgstr "%s dosyasý açýlamýyor: "
 
-#: /home/ewt/redhat/rpm/lib/dbindex.c:49
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:43
+#, c-format
 msgid "error getting record %s from %s"
 msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
-#: /home/ewt/redhat/rpm/lib/dbindex.c:77
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:71
+#, c-format
 msgid "error storing record %s into %s"
 msgstr "%s kaydý %s dosyasýna yazýlamýyor"
 
-#: /home/ewt/redhat/rpm/lib/dbindex.c:84
+#: /home/devel/jbj/src/rpm3/lib/dbindex.c:78
+#, c-format
 msgid "error removing record %s into %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: /home/ewt/redhat/rpm/lib/depends.c:383 /home/ewt/redhat/rpm/lib/depends.c:538
+#: /home/devel/jbj/src/rpm3/lib/depends.c:374
+#: /home/devel/jbj/src/rpm3/lib/depends.c:529
+#, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "baðýmlýlýk sorgulamasý için %d numaralý baþlýk okunamýyor"
 
-#: /home/ewt/redhat/rpm/lib/depends.c:825
+#: /home/devel/jbj/src/rpm3/lib/depends.c:816
+#, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "gerekenler zincirinde döngü: %s"
 
-#: /home/ewt/redhat/rpm/lib/formats.c:104 /home/ewt/redhat/rpm/lib/formats.c:121 /home/ewt/redhat/rpm/lib/formats.c:141 /home/ewt/redhat/rpm/lib/formats.c:173 /home/ewt/redhat/rpm/lib/header.c:1848 /home/ewt/redhat/rpm/lib/header.c:1868
+#: /home/devel/jbj/src/rpm3/lib/formats.c:99
+#: /home/devel/jbj/src/rpm3/lib/formats.c:116
+#: /home/devel/jbj/src/rpm3/lib/formats.c:136
+#: /home/devel/jbj/src/rpm3/lib/formats.c:168
+#: /home/devel/jbj/src/rpm3/lib/header.c:1925
+#: /home/devel/jbj/src/rpm3/lib/header.c:1941
+#: /home/devel/jbj/src/rpm3/lib/header.c:1961
 msgid "(not a number)"
 msgstr "(üye deðil)"
 
-#: /home/ewt/redhat/rpm/lib/fs.c:53
+#: /home/devel/jbj/src/rpm3/lib/fs.c:42
+#, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr "mntctl() çaðrýsý boyut bilgisi vermedi: %s"
 
-#: /home/ewt/redhat/rpm/lib/fs.c:128
+#: /home/devel/jbj/src/rpm3/lib/fs.c:117
+#, c-format
 msgid "failed to open %s: %s"
 msgstr "%s açýlamadý: %s"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1204
+#: /home/devel/jbj/src/rpm3/lib/header.c:1281
 msgid "? expected in expression"
 msgstr "dizi içerisinde ? bekleniyordu"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1211
-msgid "{ exected after ? in expression"
+#: /home/devel/jbj/src/rpm3/lib/header.c:1288
+#, fuzzy
+msgid "{ expected after ? in expression"
 msgstr "dizi içerisinde ? den sonra { bekleniyordu"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1221 /home/ewt/redhat/rpm/lib/header.c:1253
+#: /home/devel/jbj/src/rpm3/lib/header.c:1298
+#: /home/devel/jbj/src/rpm3/lib/header.c:1330
 msgid "} expected in expression"
 msgstr "dizi içerisinde } bekleniyordu"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1228
+#: /home/devel/jbj/src/rpm3/lib/header.c:1305
 msgid ": expected following ? subexpression"
 msgstr "? altdizisinden sonra : bekleniyordu"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1241
-msgid "{ exected after : in expression"
+#: /home/devel/jbj/src/rpm3/lib/header.c:1318
+#, fuzzy
+msgid "{ expected after : in expression"
 msgstr "dizide : den sonra { bekleniyordu"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1260
+#: /home/devel/jbj/src/rpm3/lib/header.c:1337
 msgid "| expected at end of expression"
 msgstr "dizinin sonunda | bekleniyordu"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1354
+#: /home/devel/jbj/src/rpm3/lib/header.c:1431
+#, c-format
 msgid "missing { after %"
 msgstr "% den sonra eksik {"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1382
+#: /home/devel/jbj/src/rpm3/lib/header.c:1459
 msgid "missing } after %{"
 msgstr "%{ den sonra eksik }"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1394
+#: /home/devel/jbj/src/rpm3/lib/header.c:1471
 msgid "empty tag format"
 msgstr "boþ tag tanýmlamasý"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1404
+#: /home/devel/jbj/src/rpm3/lib/header.c:1481
 msgid "empty tag name"
 msgstr "boþ tag ismi"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1419
+#: /home/devel/jbj/src/rpm3/lib/header.c:1496
 msgid "unknown tag"
 msgstr "bilinmeyen tag"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1445
+#: /home/devel/jbj/src/rpm3/lib/header.c:1522
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] bekleniyordu"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1461
+#: /home/devel/jbj/src/rpm3/lib/header.c:1538
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1463
+#: /home/devel/jbj/src/rpm3/lib/header.c:1540
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1538 /home/ewt/redhat/rpm/lib/header.c:1544 /home/ewt/redhat/rpm/lib/header.c:1727
+#: /home/devel/jbj/src/rpm3/lib/header.c:1615
+#: /home/devel/jbj/src/rpm3/lib/header.c:1621
+#: /home/devel/jbj/src/rpm3/lib/header.c:1804
 msgid "(none)"
 msgstr "(hiçbiri)"
 
-#: /home/ewt/redhat/rpm/lib/header.c:1638
+#: /home/devel/jbj/src/rpm3/lib/header.c:1715
 msgid "(unknown type)"
 msgstr "(bilinmeyen tip)"
 
-#: /home/ewt/redhat/rpm/lib/lookup.c:91
+#: /home/devel/jbj/src/rpm3/lib/lookup.c:86
+#, c-format
 msgid "cannot read header at %d for lookup"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
-#: /home/ewt/redhat/rpm/lib/rebuilddb.c:30
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:19
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
-#: /home/ewt/redhat/rpm/lib/rebuilddb.c:38
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:27
+#, c-format
 msgid "temporary database %s already exists"
 msgstr "geçici veritabaný %s mevcut"
 
-#: /home/ewt/redhat/rpm/lib/rebuilddb.c:44
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:33
+#, c-format
 msgid "error creating directory %s: %s"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: /home/ewt/redhat/rpm/lib/rebuilddb.c:63
-msgid "cannot read database record at %d"
-msgstr "%d numaralý veritabaný kaydý okunamýyor"
-
-#: /home/ewt/redhat/rpm/lib/rebuilddb.c:77
-msgid "cannot add record originally at %d"
-msgstr "%d de yer alan kayýt saklayamýyor"
-
-#: /home/ewt/redhat/rpm/lib/rebuilddb.c:83
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:53
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:71
+#, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: /home/ewt/redhat/rpm/lib/messages.c:53
+#: /home/devel/jbj/src/rpm3/lib/rebuilddb.c:65
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr "%d de yer alan kayýt saklayamýyor"
+
+#: /home/devel/jbj/src/rpm3/lib/messages.c:53
 msgid "warning: "
 msgstr "uyarý: "
 
-#: /home/ewt/redhat/rpm/lib/messages.c:59
+#: /home/devel/jbj/src/rpm3/lib/messages.c:59
 msgid "error: "
 msgstr "hata: "
 
-#: /home/ewt/redhat/rpm/lib/messages.c:65
+#: /home/devel/jbj/src/rpm3/lib/messages.c:65
 msgid "fatal error: "
 msgstr "ölümcül hata: "
 
-#: /home/ewt/redhat/rpm/lib/package.c:110
-msgid "only packages with major numbers <= 3 are supported by this version of RPM"
-msgstr "RPM'in bu sürümünde sadece major numarasý <= 3 olan paketler destekleniyor"
+#: /home/devel/jbj/src/rpm3/lib/messages.c:72
+msgid "internal error (rpm bug?): "
+msgstr ""
 
-#: /home/ewt/redhat/rpm/lib/rpmlead.c:49
+#: /home/devel/jbj/src/rpm3/lib/package.c:98
+msgid ""
+"only packages with major numbers <= 3 are supported by this version of RPM"
+msgstr ""
+"RPM'in bu sürümünde sadece major numarasý <= 3 olan paketler destekleniyor"
+
+#: /home/devel/jbj/src/rpm3/lib/rpmlead.c:43
+#, c-format
 msgid "read failed: %s (%d)"
 msgstr "okuma hatasý: %s (%d)"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:213
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:212
+#, c-format
 msgid "missing second ':' at %s:%d"
 msgstr "%s te ikinci ':' eksik:%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:216
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:215
+#, c-format
 msgid "missing architecture name at %s:%d"
 msgstr "%s te eksik mimari tanýmlamasý:%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:353
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:352
+#, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr "%s te eksik data satýrý:%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:357
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:356
+#, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr "%s te data satýrýnda çok fazla argüman:%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:364
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:363
+#, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr "Kötü arch/os numarasý %s: (%s:%d)"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:397
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:396
+#, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr "%s te eksik default satýrý:%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:402
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:401
+#, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr "%s te default satýrýnda çok fazla argüman:%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:493 /home/ewt/redhat/rpm/lib/rpmrc.c:509
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:531
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:547
+#, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "%s okuma eriþimi için açýlamadý:%s."
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:552
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:591
+#, c-format
 msgid "Failed to read %s: %s."
 msgstr "%s okunamadý: %s"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:582
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:622
+#, c-format
 msgid "missing ':' at %s:%d"
 msgstr "%s te eksik ':' :%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:598 /home/ewt/redhat/rpm/lib/rpmrc.c:619
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:638
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:733
+#, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "%s için %s te eksik argüman :%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:609
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:668
+#, fuzzy, c-format
+msgid "no macroname for setenv %s:%d"
+msgstr "%s için %s te eksik argüman :%d"
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:699
+#, c-format
+msgid "expansion failed at %s:d \"%s\""
+msgstr ""
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:705
+#, fuzzy, c-format
+msgid "cannot open %s at %s:%d"
+msgstr "%s dosyasý açýlamýyor: "
+
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:723
+#, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "%s için %s te eksik mimari:%d"
 
-#: /home/ewt/redhat/rpm/lib/rpmrc.c:662
+#: /home/devel/jbj/src/rpm3/lib/rpmrc.c:790
+#, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "%s geçersiz seçenek %s:%d"
+
+#~ msgid ""
+#~ "                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
+#~ msgstr ""
+#~ "                        [--provides] [--dump] [--dbpath <dizin>] "
+#~ "[--changelog]"
+
+#~ msgid "build the packages for architecture <arch>"
+#~ msgstr "paketleri <arch> mimarisi için oluþturur"
+
+#~ msgid "build the packages for ositecture <os>"
+#~ msgstr "paketleri <os> iþletim sistemi için oluþturur"
+
+#~ msgid "cannot read database record at %d"
+#~ msgstr "%d numaralý veritabaný kaydý okunamýyor"

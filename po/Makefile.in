@@ -12,7 +12,7 @@ MSGMERGE = msgmerge
 
 NLSPACKAGE = rpm
 
-CATALOGS = de.mo fi.mo fr.mo pt_BR.mo ru.mo sr.mo sv.mo tr.mo
+CATALOGS = cz.mo de.mo fi.mo fr.mo pt_BR.mo ru.mo sr.mo sv.mo tr.mo
 
 POTFILES  = $(topsrcdir)/rpm.c 		$(topsrcdir)/query.c 		\
 	$(topsrcdir)/install.c 		$(topsrcdir)/verify.c 		\
@@ -43,10 +43,10 @@ update-po: Makefile
 	@catalogs='$(CATALOGS)'; \
 	for cat in $$catalogs; do \
 		lang=`echo $$cat | sed 's/.mo//'`; \
-		if tupdate $(NLSPACKAGE).pot $$lang.po > $$lang.pot ; then \
-			echo "tupdate of $$lang succeeded" ; \
+		if msgmerge $$lang.po $(NLSPACKAGE).pot  > $$lang.pox ; then \
+			echo "msgmerge of $$lang succeeded" ; \
 		else \
-			echo "tupdate of $$lang failed" ; \
+			echo "msgmerge of $$lang failed" ; \
 			rm -f $$lang.pot ; \
 		fi \
 	done

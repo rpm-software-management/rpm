@@ -1,4 +1,5 @@
 2.5.4 -> 2.9
+	- update po files; add cz to catalogs.
 	- cpio_gzip: dup the fd before doing gzdopen (Thanks Erik!)
 	- add --noLang to skip non-default languages.
 	- writeRPM can now copy cpio archive from fd.
