@@ -531,10 +531,12 @@ typedef enum rpmTagType_e {
 /*@unused@*/ static inline /*@null@*/ void * headerFreeData(
 			/*@only@*/ const void * data, rpmTagType type)
 {
-    if (type == RPM_STRING_ARRAY_TYPE ||
-	type == RPM_I18NSTRING_TYPE ||
-	type == RPM_BIN_TYPE) {
-	if (data) free((void *)data);
+    if (data) {
+	if (type < 0 ||
+	    type == RPM_STRING_ARRAY_TYPE ||
+	    type == RPM_I18NSTRING_TYPE ||
+	    type == RPM_BIN_TYPE)
+		free((void *)data);
     }
     return NULL;
 }

@@ -55,6 +55,7 @@ static int badReloc;
 static int dirStash;
 static int excldocs;
 static int force;
+extern int _fsm_debug;
 extern int _ftp_debug;
 static int showHash;
 static int help;
@@ -122,6 +123,7 @@ static struct poptOption optionsTable[] = {
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
  { "freshen", 'F', 0, 0, 'F',			NULL, NULL},
+ { "fsmdebug", '\0', POPT_ARG_VAL, &_fsm_debug, -1,		NULL, NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
  { "help", '\0', 0, &help, 0,			NULL, NULL},

@@ -1688,26 +1688,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     }
 
     /* ===============================================
-     * Save removed files before upgrading.
-     */
-    if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	i = -2;
-	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
-	    switch (ts->order[oc].type) {
-	    case TR_ADDED:
-		i = ts->order[oc].u.addedIndex;
-		break;
-	    case TR_REMOVED:
-		if (ts->order[oc].u.removed.dependsOnIndex != i)
-		    break;
-		if (ts->transFlags & RPMTRANS_FLAG_DIRSTASH)
-		    dirstashPackage(ts, fi, ROLLBACK_SAVE);
-		break;
-	    }
-	}
-    }
-
-    /* ===============================================
      * Install and remove packages.
      */
 

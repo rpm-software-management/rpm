@@ -12,87 +12,17 @@
 
 /*@access h@*/		/* compared with NULL */
 
-#define	SUFFIX_RPMORIG	".rpmorig"
-#define	SUFFIX_RPMSAVE	".rpmsave"
-#define	SUFFIX_RPMNEW	".rpmnew"
-
-static char * ridsub = ".rid/";
-static char * ridsep = ";";
-static mode_t riddmode = 0700;
-static mode_t ridfmode = 0000;
-
-int dirstashPackage(const rpmTransactionSet ts, const TFI_t fi, rollbackDir dir)
-{
-    unsigned int offset = fi->record;
-    char tsid[20], ofn[BUFSIZ], nfn[BUFSIZ];
-    const char * s, * t;
-    char * se, * te;
-    Header h;
-    int i;
-
-    assert(fi->type == TR_REMOVED);
-
-    {	rpmdbMatchIterator mi = NULL;
-
-	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
-				&offset, sizeof(offset));
-
-	h = rpmdbNextIterator(mi);
-	if (h == NULL) {
-	    rpmdbFreeIterator(mi);
-	    return 1;
-	}
-	h = headerLink(h);
-	rpmdbFreeIterator(mi);
-    }
-
-    sprintf(tsid, "%08x", ts->id);
-
-    /* Create rid sub-directories if necessary. */
-    if (strchr(ridsub, '/')) {
-	for (i = 0; i < fi->dc; i++) {
-
-	    t = te = nfn;
-	    *te = '\0';
-	    te = stpcpy(te, fi->dnl[i]);
-	    te = stpcpy(te, ridsub);
-	    if (te[-1] == '/')
-		*(--te) = '\0';
-fprintf(stderr, "*** mkdir(%s,%o)\n", t, (int)riddmode);
-	}
-    }
-
-    /* Rename files about to be removed. */
-    for (i = 0; i < fi->fc; i++) {
-
-	if (S_ISDIR(fi->fmodes[i]))
-	    continue;
-
-	s = se = ofn;
-	*se = '\0';
-	se = stpcpy( stpcpy(se, fi->dnl[fi->dil[i]]), fi->bnl[i]);
-
-	t = te = nfn;
-	*te = '\0';
-	te = stpcpy(te, fi->dnl[fi->dil[i]]);
-	if (ridsub)
-	    te = stpcpy(te, ridsub);
-	te = stpcpy( stpcpy( stpcpy(te, fi->bnl[i]), ridsep), tsid);
-
-	s = strrchr(s, '/') + 1;
-	t = strrchr(t, '/') + 1;
-fprintf(stderr, "*** rename(%s,%s%s)\n", s, (ridsub ? ridsub : ""), t);
-fprintf(stderr, "*** chmod(%s%s,%o)\n", (ridsub ? ridsub : ""), t, ridfmode);
-    }
-
-    return 0;
-}
-
 void loadFi(Header h, TFI_t fi)
 {
     HGE_t hge;
-    int len, i;
+    uint_32 * uip;
+    int len;
+    int rc;
+    int i;
     
+    if (fi->fsm == NULL)
+	fi->fsm = newFSM();
+
     /* XXX avoid gcc noise on pointer (4th arg) cast(s) */
     hge = (fi->type == TR_ADDED)
 	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
@@ -108,19 +38,16 @@ void loadFi(Header h, TFI_t fi)
     hge(fi->h, RPMTAG_RELEASE, NULL, (void **) &fi->release, NULL);
     fi->release = xstrdup(fi->release);
 
+    /* -1 means not found */
+    rc = hge(fi->h, RPMTAG_EPOCH, NULL, (void **) &uip, NULL);
+    fi->epoch = (rc ? *uip : -1);
+    /* 0 means unknown */
+    rc = hge(fi->h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
+    fi->archiveSize = (rc ? *uip : 0);
+
     if (!hge(fi->h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
 	fi->dc = 0;
 	fi->fc = 0;
-	fi->dnl = NULL;
-	fi->bnl = NULL;
-	fi->dil = NULL;
-	fi->fmodes = NULL;
-	fi->fflags = NULL;
-	fi->fsizes = NULL;
-	fi->fstates = NULL;
-	fi->fmd5s = NULL;
-	fi->flinks = NULL;
-	fi->flangs = NULL;
 	return;
     }
 
@@ -184,9 +111,6 @@ void loadFi(Header h, TFI_t fi)
 
 void freeFi(TFI_t fi)
 {
-    if (fi->h) {
-	headerFree(fi->h); fi->h = NULL;
-    }
     if (fi->name) {
 	free((void *)fi->name); fi->name = NULL;
     }
@@ -205,33 +129,17 @@ void freeFi(TFI_t fi)
     if (fi->replaced) {
 	free(fi->replaced); fi->replaced = NULL;
     }
-    if (fi->bnl) {
-	free(fi->bnl); fi->bnl = NULL;
-    }
-    if (fi->dnl) {
-	free(fi->dnl); fi->dnl = NULL;
-    }
-    if (fi->obnl) {
-	free(fi->obnl); fi->obnl = NULL;
-    }
-    if (fi->odnl) {
-	free(fi->odnl); fi->odnl = NULL;
-    }
-    if (fi->flinks) {
-	free(fi->flinks); fi->flinks = NULL;
-    }
-    if (fi->fmd5s) {
-	free(fi->fmd5s); fi->fmd5s = NULL;
-    }
-    if (fi->fuser) {
-	free(fi->fuser); fi->fuser = NULL;
-    }
-    if (fi->fgroup) {
-	free(fi->fgroup); fi->fgroup = NULL;
-    }
-    if (fi->flangs) {
-	free(fi->flangs); fi->flangs = NULL;
-    }
+
+    fi->bnl = headerFreeData(fi->bnl, -1);
+    fi->dnl = headerFreeData(fi->dnl, -1);
+    fi->obnl = headerFreeData(fi->obnl, -1);
+    fi->odnl = headerFreeData(fi->odnl, -1);
+    fi->flinks = headerFreeData(fi->flinks, -1);
+    fi->fmd5s = headerFreeData(fi->fmd5s, -1);
+    fi->fuser = headerFreeData(fi->fuser, -1);
+    fi->fgroup = headerFreeData(fi->fgroup, -1);
+    fi->flangs = headerFreeData(fi->flangs, -1);
+
     if (fi->apath) {
 	free(fi->apath); fi->apath = NULL;
     }
@@ -245,26 +153,21 @@ void freeFi(TFI_t fi)
 	free(fi->fmapflags); fi->fmapflags = NULL;
     }
 
+    fi->fsm = freeFSM(fi->fsm);
+
     switch (fi->type) {
     case TR_ADDED:
 	    break;
     case TR_REMOVED:
-	if (fi->fsizes) {
-	    free((void *)fi->fsizes); fi->fsizes = NULL;
-	}
-	if (fi->fflags) {
-	    free((void *)fi->fflags); fi->fflags = NULL;
-	}
-	if (fi->fmodes) {
-	    free((void *)fi->fmodes); fi->fmodes = NULL;
-	}
-	if (fi->fstates) {
-	    free((void *)fi->fstates); fi->fstates = NULL;
-	}
-	if (fi->dil) {
-	    free((void *)fi->dil); fi->dil = NULL;
-	}
+	fi->fsizes = headerFreeData(fi->fsizes, -1);
+	fi->fflags = headerFreeData(fi->fflags, -1);
+	fi->fmodes = headerFreeData(fi->fmodes, -1);
+	fi->fstates = headerFreeData(fi->fstates, -1);
+	fi->dil = headerFreeData(fi->dil, -1);
 	break;
+    }
+    if (fi->h) {
+	headerFree(fi->h); fi->h = NULL;
     }
 }
 
@@ -279,31 +182,39 @@ void freeFi(TFI_t fi)
 
 /*@observer@*/ const char *const fileStageString(fileStage a) {
     switch(a) {
-    case FI_CREATE:	return "create";
-    case FI_INIT:	return "init";
-    case FI_MAP:	return "map";
-    case FI_SKIP:	return "skip";
-    case FI_PRE:	return "pre-process";
-    case FI_PROCESS:	return "process";
-    case FI_POST:	return "post-process";
-    case FI_NOTIFY:	return "notify";
-    case FI_UNDO:	return "undo";
-    case FI_COMMIT:	return "commit";
-    case FI_DESTROY:	return "destroy";
-    case FI_VERIFY:	return "verify";
-    case FI_UNLINK:	return "unlink";
-    case FI_RENAME:	return "rename";
-    case FI_MKDIR:	return "mkdir";
-    case FI_RMDIR:	return "rmdir";
-    case FI_CHOWN:	return "chown";
-    case FI_LCHOWN:	return "lchown";
-    case FI_CHMOD:	return "chmod";
-    case FI_UTIME:	return "utime";
-    case FI_SYMLINK:	return "symlink";
-    case FI_LINK:	return "link";
-    case FI_MKFIFO:	return "mkfifo";
-    case FI_MKNOD:	return "mknod";
-    default:		return "???";
+    case FSM_CREATE:	return "create";
+    case FSM_INIT:	return "init";
+    case FSM_MAP:	return "map ";
+    case FSM_MKDIRS:	return "mkdirs";
+    case FSM_RMDIRS:	return "rmdirs";
+    case FSM_PRE:	return "pre ";
+    case FSM_PROCESS:	return "process";
+    case FSM_POST:	return "post";
+    case FSM_MKLINKS:	return "mklinks";
+    case FSM_NOTIFY:	return "notify";
+    case FSM_UNDO:	return "undo";
+    case FSM_COMMIT:	return "commit";
+    case FSM_DESTROY:	return "destroy";
+    case FSM_VERIFY:	return "verify";
+
+    case FSM_UNLINK:	return "unlink";
+    case FSM_RENAME:	return "rename";
+    case FSM_MKDIR:	return "mkdir";
+    case FSM_RMDIR:	return "rmdir";
+    case FSM_CHOWN:	return "chown";
+    case FSM_LCHOWN:	return "lchown";
+    case FSM_CHMOD:	return "chmod";
+    case FSM_UTIME:	return "utime";
+    case FSM_SYMLINK:	return "symlink";
+    case FSM_LINK:	return "link";
+    case FSM_MKFIFO:	return "mkfifo";
+    case FSM_MKNOD:	return "mknod";
+
+    case FSM_NEXT:	return "next";
+    case FSM_EAT:	return "eat ";
+    case FSM_POS:	return "pos ";
+    case FSM_PAD:	return "pad ";
+    default:		return "??? ";
     }
     /*@noteached@*/
 }
@@ -311,65 +222,71 @@ void freeFi(TFI_t fi)
 /*@obserever@*/ const char *const fileActionString(fileAction a)
 {
     switch (a) {
-    case FA_UNKNOWN: return "unknown";
-    case FA_CREATE: return "create";
-    case FA_BACKUP: return "backup";
-    case FA_SAVE: return "save";
-    case FA_SKIP: return "skip";
-    case FA_ALTNAME: return "altname";
-    case FA_REMOVE: return "remove";
+    case FA_UNKNOWN:	return "unknown";
+    case FA_CREATE:	return "create";
+    case FA_BACKUP:	return "backup";
+    case FA_SAVE:	return "save";
+    case FA_SKIP:	return "skip";
+    case FA_ALTNAME:	return "altname";
+    case FA_REMOVE:	return "remove";
     case FA_SKIPNSTATE: return "skipnstate";
     case FA_SKIPNETSHARED: return "skipnetshared";
     case FA_SKIPMULTILIB: return "skipmultilib";
-    default: return "???";
+    default:		return "???";
     }
     /*@notreached@*/
 }
 
+/**
+ */
 struct pkgIterator {
-/*@kept@*/ TFI_t fi;
+/*@dependent@*/ /*@kept@*/ TFI_t fi;
     int i;
 };
 
-static void pkgFreeIterator(void * this) {
+/**
+ */
+static /*@null@*/ void * pkgFreeIterator(/*@only@*/ /*@null@*/ void * this) {
     if (this) free(this);
+    return NULL;
 }
 
-static void * pkgInitIterator(TFI_t fi) {
+/**
+ */
+static /*@only@*/ void * pkgInitIterator(/*@kept@*/ TFI_t fi) {
     struct pkgIterator *pi = xcalloc(sizeof(*pi), 1);
     pi->fi = fi;
     switch (fi->type) {
-    case TR_ADDED:	pi->i = 0;		break;
+    case TR_ADDED:	pi->i = 0;	break;
     case TR_REMOVED:	pi->i = fi->fc;	break;
     }
     return pi;
 }
 
-static int pkgNextIterator(void * this) {
+/**
+ */
+static int pkgNextIterator(/*@null@*/ void * this) {
     struct pkgIterator *pi = this;
-    TFI_t fi = pi->fi;
     int i = -1;
-    switch (fi->type) {
-    case TR_ADDED:
-	if (pi->i < fi->fc)
-	    i = pi->i++;
-	break;
-    case TR_REMOVED:
-	if (pi->i >= 0)
-	    i = --pi->i;
-	break;
+
+    if (pi) {
+	TFI_t fi = pi->fi;
+	switch (fi->type) {
+	case TR_ADDED:
+	    if (pi->i < fi->fc)
+		i = pi->i++;
+	    break;
+	case TR_REMOVED:
+	    if (pi->i >= 0)
+		i = --pi->i;
+	    break;
+	}
     }
     return i;
 }
 
-
-int pkgActions(const rpmTransactionSet ts, TFI_t fi)
+int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a)
 {
-    int nb = (!ts->chrootDone ? strlen(ts->rootDir) : 0);
-    char * opath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
-    char * o = (!ts->chrootDone ? stpcpy(opath, ts->rootDir) : opath);
-    char * npath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
-    char * n = (!ts->chrootDone ? stpcpy(npath, ts->rootDir) : npath);
     int rc = 0;
     void * pi;
     int i;
@@ -379,121 +296,8 @@ int pkgActions(const rpmTransactionSet ts, TFI_t fi)
 
     pi = pkgInitIterator(fi);
     while ((i = pkgNextIterator(pi)) != -1) {
-	char * ext, * t;
-
-	if (fi->actions[i] & FA_DONE)
-	    continue;
-
-	rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
-			fi->dnl[fi->dil[i]], fi->bnl[i],
-		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
-
-	ext = NULL;
-
-	switch (fi->actions[i] & ~FA_DONE) {
-	case FA_DONE:
-	case FA_SKIP:
-	case FA_SKIPMULTILIB:
-	case FA_UNKNOWN:
-	    continue;
-	    /*@notreached@*/ break;
-
-	case FA_CREATE:
-	    assert(fi->type == TR_ADDED);
-	    continue;
-	    /*@notreached@*/ break;
-
-	case FA_SKIPNSTATE:
-	    if (fi->type == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
-	    continue;
-	    /*@notreached@*/ break;
-
-	case FA_SKIPNETSHARED:
-	    if (fi->type == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
-	    continue;
-	    /*@notreached@*/ break;
-	case FA_BACKUP:
-	    ext = (fi->type == TR_ADDED ? SUFFIX_RPMORIG : SUFFIX_RPMSAVE);
-	    break;
-
-	case FA_ALTNAME:
-	    assert(fi->type == TR_ADDED);
-	    ext = SUFFIX_RPMNEW;
-	    t = xmalloc(strlen(fi->bnl[i]) + strlen(ext) + 1);
-	    (void)stpcpy(stpcpy(t, fi->bnl[i]), ext);
-	    rpmMessage(RPMMESS_WARNING, _("%s: %s%s created as %s\n"),
-			fiTypeString(fi), fi->dnl[fi->dil[i]], fi->bnl[i], t);
-	    fi->bnl[i] = t;		/* XXX memory leak iff i = 0 */
-	    ext = NULL;
-	    continue;
-	    /*@notreached@*/ break;
-
-	case FA_SAVE:
-	    assert(fi->type == TR_ADDED);
-	    ext = SUFFIX_RPMSAVE;
-	    break;
-
-	case FA_REMOVE:
-	    assert(fi->type == TR_REMOVED);
-	    /* Append file name to (possible) root dir. */
-	    (void) stpcpy( stpcpy(o, fi->dnl[fi->dil[i]]), fi->bnl[i]);
-	    if (S_ISDIR(fi->fmodes[i])) {
-		if (!rmdir(opath))
-		    continue;
-		switch (errno) {
-		case ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
-		case ENOTEMPTY:
-#ifdef	NOTYET
-		    if (fi->fflags[i] & RPMFILE_MISSINGOK)
-			continue;
-#endif
-		    rpmError(RPMERR_RMDIR, 
-			_("%s: cannot remove %s - directory not empty\n"), 
-				fiTypeString(fi), o);
-		    break;
-		default:
-		    rpmError(RPMERR_RMDIR,
-				_("%s rmdir of %s failed: %s\n"),
-				fiTypeString(fi), o, strerror(errno));
-		    break;
-		}
-		rc++;
-		continue;
-		/*@notreached@*/ break;
-	    }
-	    if (!unlink(opath))
-		continue;
-	    if (errno == ENOENT && (fi->fflags[i] & RPMFILE_MISSINGOK))
-		continue;
-	    rpmError(RPMERR_UNLINK, _("%s removal of %s failed: %s\n"),
-				fiTypeString(fi), o, strerror(errno));
+	if (pkgAction(ts, fi, i, a))
 	    rc++;
-	    continue;
-	    /*@notreached@*/ break;
-	}
-
-	if (ext == NULL)
-	    continue;
-
-	/* Append file name to (possible) root dir. */
-	(void) stpcpy( stpcpy(o, fi->dnl[fi->dil[i]]), fi->bnl[i]);
-
-	/* XXX TR_REMOVED dinna do this. */
-	if (access(opath, F_OK) != 0)
-	    continue;
-
-	(void) stpcpy( stpcpy(n, o), ext);
-	rpmMessage(RPMMESS_WARNING, _("%s: %s saved as %s\n"),
-			fiTypeString(fi), o, n);
-
-	if (!rename(opath, npath))
-	    continue;
-
-	rpmError(RPMERR_RENAME, _("%s rename of %s to %s failed: %s\n"),
-			fiTypeString(fi), o, n, strerror(errno));
-	rc++;
     }
     pkgFreeIterator(pi);
     return rc;

@@ -416,12 +416,6 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	return 0;
     }
 
-    {	uint_32 * asp;
-	rc = headerGetEntry(fi->h, RPMTAG_ARCHIVESIZE, NULL,
-				(void **) &asp, NULL);
-	fi->archiveSize = (rc ? *asp : 0);
-    }
-
     /* Retrieve type of payload compression. */
     {	const char * payload_compressor = NULL;
 	char * t;
@@ -437,12 +431,18 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	    t = stpcpy(t, ".bzdio");
     }
 
-    {	FD_t cfd;
+    {
+	FD_t cfd;
 	(void) Fflush(alp->fd);
+
 	cfd = Fdopen(fdDup(Fileno(alp->fd)), rpmio_flags);
-	rc = cpioInstallArchive(ts, fi, cfd, &failedFile);
+	cfd = fdLink(cfd, "persist (installArchive");
+
+	rc = fsmSetup(fi->fsm, ts, fi, cfd, &failedFile);
+	rc = cpioInstallArchive(fi->fsm);
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	Fclose(cfd);
+	(void) fsmTeardown(fi->fsm);
     }
 
     if (rc) {
@@ -456,6 +456,13 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 		(failedFile != NULL ? failedFile : ""),
 		cpioStrerror(rc));
 	rc = 1;
+    } else {
+	if (ts && ts->notify) {
+	    unsigned int archiveSize = (fi->archiveSize ? fi->archiveSize : 100);
+	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
+			archiveSize, archiveSize,
+			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+	}
     }
 
     if (failedFile)
@@ -809,7 +816,7 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 
 	setFileOwners(fi);
 
-	rc = pkgActions(ts, fi);
+	rc = pkgActions(ts, fi, FSM_COMMIT);
 	if (rc)
 	    goto exit;
 

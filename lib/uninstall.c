@@ -73,7 +73,7 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	    (void)ts->notify(h, RPMCALLBACK_UNINST_START, fi->fc, fi->fc,
 		pkgKey, ts->notifyData);
 
-	rc = pkgActions(ts, fi);
+	rc = pkgActions(ts, fi, FSM_COMMIT);
 
 	if (ts->notify)
 	    (void)ts->notify(h, RPMCALLBACK_UNINST_STOP, 0, fi->fc,
