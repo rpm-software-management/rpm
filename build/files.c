@@ -207,6 +207,23 @@ static void timeCheck(int tc, Header h)
     }
 }
 
+typedef struct VFA {
+	char *	attribute;
+	int	flag;
+} VFA_t;
+
+VFA_t verifyAttrs[] = {
+	{ "md5",	RPMVERIFY_MD5 },
+	{ "size",	RPMVERIFY_FILESIZE },
+	{ "link",	RPMVERIFY_LINKTO },
+	{ "user",	RPMVERIFY_USER },
+	{ "group",	RPMVERIFY_GROUP },
+	{ "mtime",	RPMVERIFY_MTIME },
+	{ "mode",	RPMVERIFY_MODE },
+	{ "rdev",	RPMVERIFY_RDEV },
+	{ NULL, 0 }
+};
+
 static int parseForVerify(char *buf, struct FileList *fl)
 {
     char *p, *q, *start, *end, *name;
@@ -259,24 +276,18 @@ static int parseForVerify(char *buf, struct FileList *fl)
     q = ourbuf;
     while ((p = strtok(q, ", \n\t")) != NULL) {
 	q = NULL;
+	{   VFA_t *vfa;
+	    for (vfa = verifyAttrs; vfa->attribute != NULL; vfa++) {
+		if (strcmp(p, vfa->attribute))
+		    continue;
+		verifyFlags |= vfa->flag;
+		break;
+	    }
+	    if (vfa->attribute)
+		continue;
+	}
 	if (!strcmp(p, "not")) {
 	    not = 1;
-	} else if (!strcmp(p, "md5")) {
-	    verifyFlags |= RPMVERIFY_MD5;
-	} else if (!strcmp(p, "size")) {
-	    verifyFlags |= RPMVERIFY_FILESIZE;
-	} else if (!strcmp(p, "link")) {
-	    verifyFlags |= RPMVERIFY_LINKTO;
-	} else if (!strcmp(p, "user")) {
-	    verifyFlags |= RPMVERIFY_USER;
-	} else if (!strcmp(p, "group")) {
-	    verifyFlags |= RPMVERIFY_GROUP;
-	} else if (!strcmp(p, "mtime")) {
-	    verifyFlags |= RPMVERIFY_MTIME;
-	} else if (!strcmp(p, "mode")) {
-	    verifyFlags |= RPMVERIFY_MODE;
-	} else if (!strcmp(p, "rdev")) {
-	    verifyFlags |= RPMVERIFY_RDEV;
 	} else {
 	    rpmError(RPMERR_BADSPEC, _("Invalid %s token: %s"), name, p);
 	    fl->processingFailed = 1;
@@ -563,11 +574,6 @@ static int parseForRegexLang(const char *fileName, char **lang)
 	*lang = buf;
     return 0;
 }
-
-typedef struct VFA {
-	char *	attribute;
-	int	flag;
-} VFA_t;
 
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
