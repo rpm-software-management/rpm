@@ -226,7 +226,7 @@ Replacement path for /usr/lib/rpm.  Must contain your key rings.
 .IP "\fBpgp_pubring\fP"
 The full path to your public key ring.
 .IP "\fBpgp_secring\fP"
-The full path to your public key ring.
+The full path to your secret key ring.
 .PP
 The bare minimum you need to do to get PGP singature checking working
 is install PGP and run the following:
@@ -240,7 +240,7 @@ pgp -ka RPM-PGP-KEY pubring.pgp
 .fi
 
 You should then be able to check the signatures of packages produced
-by Red Hat Software using pgp \-K.
+by Red Hat Software using rpm \-K.
 
 If you want to be able to sign packages you create yourself, you also
 need to create your own public and secret key pair (see the PGP manual).
