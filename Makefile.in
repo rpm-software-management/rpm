@@ -139,7 +139,7 @@ distclean:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
-	rm -f *.a *.o core *~ $(PROGS) rpm.shared librpmrc
+	rm -f *.a *.o core *~ $(PROGS) rpm.shared librpmrc find-provides.sh find-requires.sh
 	rm -f .depend Makefile Makefile.inc config.h config.cache config.status config.log
 
 
