@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-05-23 17:06-0400\n"
+"POT-Creation-Date: 2002-05-28 12:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1415,66 +1415,66 @@ msgstr ""
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:389
+#: lib/depends.c:391
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:414
+#: lib/depends.c:416
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:430
+#: lib/depends.c:432
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:451
+#: lib/depends.c:453
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:463
+#: lib/depends.c:465
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:476
+#: lib/depends.c:478
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:815
+#: lib/depends.c:817
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:935
+#: lib/depends.c:937
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1205
+#: lib/depends.c:1207
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1311
+#: lib/depends.c:1313
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1404
+#: lib/depends.c:1406
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1474
+#: lib/depends.c:1476
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1509
+#: lib/depends.c:1511
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1514
+#: lib/depends.c:1516
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

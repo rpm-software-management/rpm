@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.17
+Release: 0.18
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -416,8 +416,8 @@ fi
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
 %rpmattr	%{__prefix}/lib/rpm/config.site
-%rpmattr	%{__prefix}/lib/rpm/cpanflute
-%rpmattr	%{__prefix}/lib/rpm/cpanflute2
+#%rpmattr	%{__prefix}/lib/rpm/cpanflute
+#%rpmattr	%{__prefix}/lib/rpm/cpanflute2
 %rpmattr	%{__prefix}/lib/rpm/cross-build
 %rpmattr	%{__prefix}/lib/rpm/find-lang.sh
 %rpmattr	%{__prefix}/lib/rpm/find-prov.pl
@@ -515,6 +515,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue May 28 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.18
+- add rpmal/rpmte/rpmfd methods to bindings.
+- drop cpanflute and cpanflute2, will be in Chip's CPAN package now.
+
 * Sun May 26 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.17
 - fix: un-resurrect "()(64bit)" markings using objdump on i386.
 

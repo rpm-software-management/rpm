@@ -101,33 +101,33 @@ struct hdrObject_s {
 
 /** \ingroup python
  */
-static PyObject * hdrKeyList(hdrObject * s, PyObject * args) {
+static PyObject * hdrKeyList(hdrObject * s, PyObject * args)
+{
     PyObject * list, *o;
-    HeaderIterator iter;
+    HeaderIterator hi;
     int tag, type;
 
     if (!PyArg_ParseTuple(args, "")) return NULL;
 
     list = PyList_New(0);
 
-    iter = headerInitIterator(s->h);
-    while (headerNextIterator(iter, &tag, &type, NULL, NULL)) {
+    hi = headerInitIterator(s->h);
+    while (headerNextIterator(hi, &tag, &type, NULL, NULL)) {
         if (tag == HEADER_I18NTABLE) continue;
 
 	switch (type) {
-	  case RPM_BIN_TYPE:
-	  case RPM_INT32_TYPE:
-	  case RPM_CHAR_TYPE:
-	  case RPM_INT8_TYPE:
-	  case RPM_INT16_TYPE:
-	  case RPM_STRING_ARRAY_TYPE:
-	  case RPM_STRING_TYPE:
+	case RPM_BIN_TYPE:
+	case RPM_INT32_TYPE:
+	case RPM_CHAR_TYPE:
+	case RPM_INT8_TYPE:
+	case RPM_INT16_TYPE:
+	case RPM_STRING_ARRAY_TYPE:
+	case RPM_STRING_TYPE:
 	    PyList_Append(list, o=PyInt_FromLong(tag));
 	    Py_DECREF(o);
 	}
     }
-
-    headerFreeIterator(iter);
+    headerFreeIterator(hi);
 
     return list;
 }
@@ -170,7 +170,8 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) 
  *	(attr_name, correctValue, currentValue)
  * It should be passed the file number to verify.
  */
-static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
+static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args)
+{
     int fileNumber;
     rpmVerifyAttrs verifyResult = 0;
     PyObject * list, * tuple, * attrName;
@@ -393,7 +394,8 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args) {
+static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args)
+{
     expandFilelist (s->h);
 
     Py_INCREF(Py_None);
@@ -402,7 +404,8 @@ static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * hdrCompressFilelist(hdrObject * s, PyObject * args) {
+static PyObject * hdrCompressFilelist(hdrObject * s, PyObject * args)
+{
     compressFilelist (s->h);
 
     Py_INCREF(Py_None);
@@ -436,7 +439,8 @@ static void mungeFilelist(Header h)
 
 /** 
  */
-static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
+static PyObject * rhnUnload(hdrObject * s, PyObject * args)
+{
     int len;
     char * uh;
     PyObject * rc;
@@ -496,7 +500,8 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args) {
+static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args)
+{
     if (!PyArg_ParseTuple(args, ""))
 	return NULL;
 
@@ -508,7 +513,8 @@ static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * hdrSprintf(hdrObject * s, PyObject * args) {
+static PyObject * hdrSprintf(hdrObject * s, PyObject * args)
+{
     char * fmt;
     char * r;
     errmsg_t err;
@@ -529,6 +535,12 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args) {
     return result;
 }
 
+/**
+ */
+static int hdr_compare(hdrObject * a, hdrObject * b)
+{
+    return rpmVersionCompare(a->h, b->h);
+}
 
 /** \ingroup python
  */
@@ -562,13 +574,15 @@ static struct PyMethodDef hdr_methods[] = {
 
 /** \ingroup python
  */
-static PyObject * hdr_getattr(hdrObject * s, char * name) {
+static PyObject * hdr_getattr(hdrObject * s, char * name)
+{
     return Py_FindMethod(hdr_methods, (PyObject * ) s, name);
 }
 
 /** \ingroup python
  */
-static void hdr_dealloc(hdrObject * s) {
+static void hdr_dealloc(hdrObject * s)
+{
     if (s->h) headerFree(s->h, "hdr_dealloc s->h");
     s->md5list = _free(s->md5list);
     s->fileList = _free(s->fileList);
@@ -596,7 +610,8 @@ long tagNumFromPyObject (PyObject *item)
 
 /** \ingroup python
  */
-static PyObject * hdr_subscript(hdrObject * s, PyObject * item) {
+static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
+{
     int type, count, i, tag = -1;
     void * data;
     PyObject * o, * metao;
@@ -639,37 +654,37 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item) {
     }
 
     switch (tag) {
-      case RPMTAG_OLDFILENAMES:
-      case RPMTAG_FILESIZES:
-      case RPMTAG_FILESTATES:
-      case RPMTAG_FILEMODES:
-      case RPMTAG_FILEUIDS:
-      case RPMTAG_FILEGIDS:
-      case RPMTAG_FILERDEVS:
-      case RPMTAG_FILEMTIMES:
-      case RPMTAG_FILEMD5S:
-      case RPMTAG_FILELINKTOS:
-      case RPMTAG_FILEFLAGS:
-      case RPMTAG_ROOT:
-      case RPMTAG_FILEUSERNAME:
-      case RPMTAG_FILEGROUPNAME:
+    case RPMTAG_OLDFILENAMES:
+    case RPMTAG_FILESIZES:
+    case RPMTAG_FILESTATES:
+    case RPMTAG_FILEMODES:
+    case RPMTAG_FILEUIDS:
+    case RPMTAG_FILEGIDS:
+    case RPMTAG_FILERDEVS:
+    case RPMTAG_FILEMTIMES:
+    case RPMTAG_FILEMD5S:
+    case RPMTAG_FILELINKTOS:
+    case RPMTAG_FILEFLAGS:
+    case RPMTAG_ROOT:
+    case RPMTAG_FILEUSERNAME:
+    case RPMTAG_FILEGROUPNAME:
 	forceArray = 1;
 	break;
-      case RPMTAG_SUMMARY:
-      case RPMTAG_GROUP:
-      case RPMTAG_DESCRIPTION:
+    case RPMTAG_SUMMARY:
+    case RPMTAG_GROUP:
+    case RPMTAG_DESCRIPTION:
 	freeData = 1;
 	break;
-      default:
+    default:
         break;
     }
 
     switch (type) {
-      case RPM_BIN_TYPE:
+    case RPM_BIN_TYPE:
 	o = PyString_FromStringAndSize(data, count);
 	break;
 
-      case RPM_INT32_TYPE:
+    case RPM_INT32_TYPE:
 	if (count != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < count; i++) {
@@ -683,8 +698,8 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item) {
 	}
 	break;
 
-      case RPM_CHAR_TYPE:
-      case RPM_INT8_TYPE:
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
 	if (count != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < count; i++) {
@@ -698,7 +713,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item) {
 	}
 	break;
 
-      case RPM_INT16_TYPE:
+    case RPM_INT16_TYPE:
 	if (count != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < count; i++) {
@@ -712,7 +727,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item) {
 	}
 	break;
 
-      case RPM_STRING_ARRAY_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
 	stringArray = data;
 
 	metao = PyList_New(0);
@@ -725,7 +740,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item) {
 	o = metao;
 	break;
 
-      case RPM_STRING_TYPE:
+    case RPM_STRING_TYPE:
 	if (count != 1 || forceArray) {
 	    stringArray = data;
 
@@ -743,7 +758,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item) {
 	}
 	break;
 
-      default:
+    default:
 	PyErr_SetString(PyExc_TypeError, "unsupported type in header");
 	return NULL;
     }
@@ -776,7 +791,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_print */
 	(getattrfunc) hdr_getattr, 	/* tp_getattr */
 	0,				/* tp_setattr */
-	0,				/* tp_compare */
+	(cmpfunc) hdr_compare,		/* tp_compare */
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
 	0,	 			/* tp_as_sequence */
@@ -812,24 +827,27 @@ PyTypeObject hdr_Type = {
 #endif
 };
 
-hdrObject * createHeaderObject(Header h) {
-    hdrObject * ho = PyObject_NEW(hdrObject, &hdr_Type);
-    ho->h = headerLink(h, NULL);
-    ho->fileList = ho->linkList = ho->md5list = NULL;
-    ho->uids = ho->gids = ho->mtimes = ho->fileSizes = NULL;
-    ho->modes = ho->rdevs = NULL;
-    return ho;
+hdrObject * hdr_Wrap(Header h)
+{
+    hdrObject * hdr = PyObject_NEW(hdrObject, &hdr_Type);
+    hdr->h = headerLink(h, NULL);
+    hdr->fileList = hdr->linkList = hdr->md5list = NULL;
+    hdr->uids = hdr->gids = hdr->mtimes = hdr->fileSizes = NULL;
+    hdr->modes = hdr->rdevs = NULL;
+    return hdr;
 }
 
-Header hdrGetHeader(hdrObject * h) {
-    return h->h;
+Header hdrGetHeader(hdrObject * s)
+{
+    return s->h;
 }
 
 /**
  */
-PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
-    hdrObject * h;
-    Header header;
+PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
+{
+    hdrObject * hdr;
+    Header h;
     FD_t fd;
     int rawFd;
     int isSource = 0;
@@ -840,7 +858,7 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     fd = fdDup(rawFd);
     {	rpmts ts;
 	ts = rpmtsCreate();
-	rc = rpmReadPackageFile(ts, fd, "rpmHeaderFromPackage", &header);
+	rc = rpmReadPackageFile(ts, fd, "rpmHeaderFromPackage", &h);
 	rpmtsFree(ts);
     }
     Fclose(fd);
@@ -848,17 +866,14 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     switch (rc) {
     case RPMRC_BADSIZE:
     case RPMRC_OK:
-	h = (hdrObject *) PyObject_NEW(PyObject, &hdr_Type);
-	h->h = header;
-	h->fileList = h->linkList = h->md5list = NULL;
-	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
-	h->modes = h->rdevs = NULL;
-	isSource = headerIsEntry(header, RPMTAG_SOURCEPACKAGE);
+	isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+	hdr = hdr_Wrap(h);
+	h = headerFree(h, NULL);	/* XXX ref held by hdr */
 	break;
 
     case RPMRC_NOTFOUND:
 	Py_INCREF(Py_None);
-	h = (hdrObject *) Py_None;
+	hdr = (hdrObject *) Py_None;
 	break;
 
     case RPMRC_FAIL:
@@ -868,15 +883,17 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
 	return NULL;
     }
 
-    return Py_BuildValue("(Ni)", h, isSource);
+    return Py_BuildValue("(Ni)", hdr, isSource);
 }
 
 /**
  */
-PyObject * hdrLoad(PyObject * self, PyObject * args) {
-    char * obj, * copy=NULL;
-    Header hdr;
-    hdrObject * h;
+PyObject * hdrLoad(PyObject * self, PyObject * args)
+{
+    hdrObject * hdr;
+    char * copy = NULL;
+    char * obj;
+    Header h;
     int len;
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
@@ -889,30 +906,27 @@ PyObject * hdrLoad(PyObject * self, PyObject * args) {
     }
     memcpy (copy, obj, len);
 
-    hdr = headerLoad(copy);
-    if (!hdr) {
+    h = headerLoad(copy);
+    if (!h) {
 	PyErr_SetString(pyrpmError, "bad header");
 	return NULL;
     }
-    headerAllocated(hdr);
-    compressFilelist (hdr);
-    providePackageNVR (hdr);
+    headerAllocated(h);
+    compressFilelist (h);
+    providePackageNVR (h);
 
-    h = (hdrObject *) PyObject_NEW(PyObject, &hdr_Type);
-    h->h = hdr;
-    h->fileList = h->linkList = h->md5list = NULL;
-    h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
-    h->modes = h->rdevs = NULL;
+    hdr = hdr_Wrap(h);
+    h = headerFree(h, NULL);	/* XXX ref held by hdr */
 
-    return (PyObject *) h;
+    return (PyObject *) hdr;
 }
 
 /**
  */
-PyObject * rhnLoad(PyObject * self, PyObject * args) {
+PyObject * rhnLoad(PyObject * self, PyObject * args)
+{
     char * obj, * copy=NULL;
-    Header hdr;
-    hdrObject * h;
+    Header h;
     int len;
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
@@ -925,47 +939,46 @@ PyObject * rhnLoad(PyObject * self, PyObject * args) {
     }
     memcpy (copy, obj, len);
 
-    hdr = headerLoad(copy);
-    if (!hdr) {
+    h = headerLoad(copy);
+    if (!h) {
 	PyErr_SetString(pyrpmError, "bad header");
 	return NULL;
     }
-    headerAllocated(hdr);
+    headerAllocated(h);
 
     /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
-    if (!headerIsEntry(hdr, RPMTAG_HEADERIMMUTABLE)) {
+    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	PyErr_SetString(pyrpmError, "bad header, not immutable");
-	headerFree(hdr, "rhnLoad hdr #1");
+	headerFree(h, "rhnLoad #1");
 	return NULL;
     }
 
     /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
-    if (!headerIsEntry(hdr, RPMTAG_SHA1HEADER)
-    &&  !headerIsEntry(hdr, RPMTAG_SHA1RHN)) {
+    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)
+    &&  !headerIsEntry(h, RPMTAG_SHA1RHN)) {
 	PyErr_SetString(pyrpmError, "bad header, no digest");
-	headerFree(hdr, "rhnLoad hdr #2");
+	headerFree(h, "rhnLoad #2");
 	return NULL;
     }
 
     /* Retrofit a RHNPlatform: tag. */
-    if (!headerIsEntry(hdr, RPMTAG_RHNPLATFORM)) {
+    if (!headerIsEntry(h, RPMTAG_RHNPLATFORM)) {
 	const char * arch;
 	int_32 at;
-	if (headerGetEntry(hdr, RPMTAG_ARCH, &at, (void **)&arch, NULL))
-	    headerAddEntry(hdr, RPMTAG_RHNPLATFORM, at, arch, 1);
+	if (headerGetEntry(h, RPMTAG_ARCH, &at, (void **)&arch, NULL))
+	    headerAddEntry(h, RPMTAG_RHNPLATFORM, at, arch, 1);
     }
 
-    h = createHeaderObject(hdr);
-
-    return (PyObject *) h;
+    return (PyObject *) hdr_Wrap(h);
 }
 
 /**
  */
-PyObject * rpmReadHeaders (FD_t fd) {
+PyObject * rpmReadHeaders (FD_t fd)
+{
     PyObject * list;
-    Header header;
-    hdrObject * h;
+    Header h;
+    hdrObject * hdr;
 
     if (!fd) {
 	PyErr_SetFromErrno(pyrpmError);
@@ -974,27 +987,24 @@ PyObject * rpmReadHeaders (FD_t fd) {
 
     list = PyList_New(0);
     Py_BEGIN_ALLOW_THREADS
-    header = headerRead(fd, HEADER_MAGIC_YES);
+    h = headerRead(fd, HEADER_MAGIC_YES);
     Py_END_ALLOW_THREADS
 
-    while (header) {
-	compressFilelist (header);
-	providePackageNVR (header);
-	h = (hdrObject *) PyObject_NEW(PyObject, &hdr_Type);
-	h->h = header;
-	h->fileList = h->linkList = h->md5list = NULL;
-	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
-	h->modes = h->rdevs = NULL;
-	if (PyList_Append(list, (PyObject *) h)) {
+    while (h) {
+	compressFilelist(h);
+	providePackageNVR(h);
+	hdr = hdr_Wrap(h);
+	if (PyList_Append(list, (PyObject *) hdr)) {
 	    Py_DECREF(list);
-	    Py_DECREF(h);
+	    Py_DECREF(hdr);
 	    return NULL;
 	}
+	Py_DECREF(hdr);
 
-	Py_DECREF(h);
+	h = headerFree(h, NULL);	/* XXX ref held by hdr */
 
 	Py_BEGIN_ALLOW_THREADS
-	header = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd, HEADER_MAGIC_YES);
 	Py_END_ALLOW_THREADS
     }
 
@@ -1003,7 +1013,8 @@ PyObject * rpmReadHeaders (FD_t fd) {
 
 /**
  */
-PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args) {
+PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args)
+{
     FD_t fd;
     int fileno;
     PyObject * list;
@@ -1019,7 +1030,8 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args) {
 
 /**
  */
-PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args) {
+PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args)
+{
     char * filespec;
     FD_t fd;
     PyObject * list;
@@ -1042,29 +1054,31 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args) {
  * This assumes the order of list matches the order of the new headers, and
  * throws an exception if that isn't true.
  */
-int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag) {
-    Header newH;
-    HeaderIterator iter;
-    int_32 * newMatch, * oldMatch;
-    hdrObject * ho;
+int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
+{
+    Header h;
+    HeaderIterator hi;
+    int_32 * newMatch;
+    int_32 * oldMatch;
+    hdrObject * hdr;
     int count = 0;
     int type, c, tag;
     void * p;
 
     Py_BEGIN_ALLOW_THREADS
-    newH = headerRead(fd, HEADER_MAGIC_YES);
+    h = headerRead(fd, HEADER_MAGIC_YES);
     Py_END_ALLOW_THREADS
 
-    while (newH) {
-	if (!headerGetEntry(newH, matchTag, NULL, (void **) &newMatch, NULL)) {
+    while (h) {
+	if (!headerGetEntry(h, matchTag, NULL, (void **) &newMatch, NULL)) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
 	    return 1;
 	}
 
-	ho = (hdrObject *) PyList_GetItem(list, count++);
-	if (!ho) return 1;
+	hdr = (hdrObject *) PyList_GetItem(list, count++);
+	if (!hdr) return 1;
 
-	if (!headerGetEntry(ho->h, matchTag, NULL, (void **) &oldMatch, NULL)) {
+	if (!headerGetEntry(hdr->h, matchTag, NULL, (void **) &oldMatch, NULL)) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
 	    return 1;
 	}
@@ -1074,37 +1088,39 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag) {
 	    return 1;
 	}
 
-	ho->md5list = _free(ho->md5list);
-	ho->fileList = _free(ho->fileList);
-	ho->linkList = _free(ho->linkList);
+	hdr->md5list = _free(hdr->md5list);
+	hdr->fileList = _free(hdr->fileList);
+	hdr->linkList = _free(hdr->linkList);
 
-	iter = headerInitIterator(newH);
-
-	while (headerNextIterator(iter, &tag, &type, (void *) &p, &c)) {
+	for (hi = headerInitIterator(h);
+	    headerNextIterator(hi, &tag, &type, (void *) &p, &c);
+	    p = headerFreeData(p, type))
+	{
 	    /* could be dupes */
-	    headerRemoveEntry(ho->h, tag);
-	    headerAddEntry(ho->h, tag, type, p, c);
-	    headerFreeData(p, type);
+	    headerRemoveEntry(hdr->h, tag);
+	    headerAddEntry(hdr->h, tag, type, p, c);
 	}
 
-	headerFreeIterator(iter);
+	headerFreeIterator(hi);
 
 	Py_BEGIN_ALLOW_THREADS
-	newH = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd, HEADER_MAGIC_YES);
 	Py_END_ALLOW_THREADS
     }
 
     return 0;
 }
 
-PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args) {
+PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args)
+{
     FD_t fd;
     int fileno;
     PyObject * list;
     int rc;
     int matchTag;
 
-    if (!PyArg_ParseTuple(args, "Oii", &list, &fileno, &matchTag)) return NULL;
+    if (!PyArg_ParseTuple(args, "Oii", &list, &fileno, &matchTag))
+	return NULL;
 
     if (!PyList_Check(list)) {
 	PyErr_SetString(PyExc_TypeError, "first parameter must be a list");
@@ -1126,17 +1142,20 @@ PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args) {
 
 /**
  */
-PyObject * versionCompare (PyObject * self, PyObject * args) {
+PyObject * versionCompare (PyObject * self, PyObject * args)
+{
     hdrObject * h1, * h2;
 
-    if (!PyArg_ParseTuple(args, "O!O!", &hdr_Type, &h1, &hdr_Type, &h2)) return NULL;
+    if (!PyArg_ParseTuple(args, "O!O!", &hdr_Type, &h1, &hdr_Type, &h2))
+	return NULL;
 
-    return Py_BuildValue("i", rpmVersionCompare(h1->h, h2->h));
+    return Py_BuildValue("i", hdr_compare(h1, h2));
 }
 
 /**
  */
-PyObject * labelCompare (PyObject * self, PyObject * args) {
+PyObject * labelCompare (PyObject * self, PyObject * args)
+{
     char *v1, *r1, *e1, *v2, *r2, *e2;
     int rc;
 

@@ -27,7 +27,8 @@
 /** \ingroup python
  */
 static PyObject *
-rpmmi_Next(rpmmiObject * s, PyObject * args) {
+rpmmi_Next(rpmmiObject * s, PyObject * args)
+{
     /* XXX assume header? */
     Header h;
     hdrObject * ho;
@@ -40,7 +41,7 @@ rpmmi_Next(rpmmiObject * s, PyObject * args) {
 	return Py_None;
     }
 
-    ho = createHeaderObject(h);
+    ho = hdr_Wrap(h);
     
     return (PyObject *) ho;
 }
@@ -48,7 +49,8 @@ rpmmi_Next(rpmmiObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject *
-rpmmi_Pattern(rpmmiObject * s, PyObject * args) {
+rpmmi_Pattern(rpmmiObject * s, PyObject * args)
+{
     PyObject *TagN = NULL;
     int type;
     char * pattern;
@@ -79,7 +81,7 @@ static struct PyMethodDef rpmmi_methods[] = {
 - Retrieve next header that matches.\n" },
     {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS,
 "mi.pattern(TagN, mire_type, pattern)\n\
-- Set a secondary match pattern on retrieved header tags\n" },
+- Set a secondary match pattern on tags from retrieved header.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
@@ -434,7 +436,7 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
 	return NULL;
     }
 
-    ho = createHeaderObject(h);
+    ho = hdr_Wrap(h);
     h = headerFree(h, NULL);
 
     return ho;
@@ -450,7 +452,8 @@ static PyMappingMethods rpmdb_as_mapping = {
 
 /**
  */
-static void rpmdb_dealloc(rpmdbObject * s) {
+static void rpmdb_dealloc(rpmdbObject * s)
+{
     s->offsets = _free(s->offsets);
     if (s->db)
 	rpmdbClose(s->db);
@@ -459,7 +462,8 @@ static void rpmdb_dealloc(rpmdbObject * s) {
 
 /**
  */
-static PyObject * rpmdb_getattr(rpmdbObject * s, char * name) {
+static PyObject * rpmdb_getattr(rpmdbObject * s, char * name)
+{
     return Py_FindMethod(rpmdb_methods, (PyObject * ) s, name);
 }
 
@@ -516,7 +520,8 @@ PyTypeObject rpmdb_Type = {
 #endif
 };
 
-rpmdb dbFromDb(rpmdbObject * db) {
+rpmdb dbFromDb(rpmdbObject * db)
+{
     return db->db;
 }
 
@@ -554,7 +559,8 @@ rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
 
 /**
  */
-PyObject * rebuildDB (PyObject * self, PyObject * args) {
+PyObject * rebuildDB (PyObject * self, PyObject * args)
+{
     char * root = "";
 
     if (!PyArg_ParseTuple(args, "s", &root)) return NULL;

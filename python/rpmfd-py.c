@@ -162,7 +162,7 @@ static char rpmfd_doc[] =
 PyTypeObject rpmfd_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
-	"rpm.io",			/* tp_name */
+	"rpm.fd",			/* tp_name */
 	sizeof(rpmfdObject),		/* tp_size */
 	0,				/* tp_itemsize */
 	(destructor)0,		 	/* tp_dealloc */

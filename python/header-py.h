@@ -14,8 +14,12 @@ extern PyTypeObject hdr_Type;
  */
 PyObject * pyrpmError;
 
-hdrObject * createHeaderObject(Header h);
+hdrObject * hdr_Wrap(Header h);
+
 Header hdrGetHeader(hdrObject * h);
+
+long tagNumFromPyObject (PyObject *item);
+
 PyObject * labelCompare (PyObject * self, PyObject * args);
 PyObject * versionCompare (PyObject * self, PyObject * args);
 PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args);
@@ -26,6 +30,5 @@ PyObject * rpmReadHeaders (FD_t fd);
 PyObject * rhnLoad(PyObject * self, PyObject * args);
 PyObject * hdrLoad(PyObject * self, PyObject * args);
 PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args);
-long tagNumFromPyObject (PyObject *item);
 
 #endif

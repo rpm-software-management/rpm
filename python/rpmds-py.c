@@ -73,7 +73,7 @@ rpmds_TagN(rpmdsObject * s, PyObject * args)
 }
 
 static int
-rpmds_Compare(rpmdsObject * a, rpmdsObject * b)
+rpmds_compare(rpmdsObject * a, rpmdsObject * b)
 {
     return rpmdsCompare(a->ds, b->ds);
 }
@@ -234,18 +234,18 @@ PyTypeObject rpmds_Type = {
 	sizeof(rpmdsObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
 	/* methods */
-	(destructor)rpmds_dealloc,	/* tp_dealloc */
-	(printfunc)rpmds_print,		/* tp_print */
-	(getattrfunc)rpmds_getattr,	/* tp_getattr */
-	(setattrfunc)0,			/* tp_setattr */
-	(cmpfunc)rpmds_Compare,		/* tp_compare */
-	(reprfunc)0,			/* tp_repr */
+	(destructor) rpmds_dealloc,	/* tp_dealloc */
+	(printfunc) rpmds_print,	/* tp_print */
+	(getattrfunc) rpmds_getattr,	/* tp_getattr */
+	(setattrfunc) 0,		/* tp_setattr */
+	(cmpfunc) rpmds_compare,	/* tp_compare */
+	(reprfunc) 0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
 	&rpmds_as_mapping,		/* tp_as_mapping */
-	(hashfunc)0,			/* tp_hash */
-	(ternaryfunc)0,			/* tp_call */
-	(reprfunc)0,			/* tp_str */
+	(hashfunc) 0,			/* tp_hash */
+	(ternaryfunc) 0,		/* tp_call */
+	(reprfunc) 0,			/* tp_str */
 	0,				/* tp_getattro */
 	0,				/* tp_setattro */
 	0,				/* tp_as_buffer */
@@ -256,8 +256,8 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc)rpmds_Iter,	/* tp_iter */
-	(iternextfunc)rpmds_Next,	/* tp_iternext */
+	(getiterfunc) rpmds_Iter,	/* tp_iter */
+	(iternextfunc) rpmds_Next,	/* tp_iternext */
 	rpmds_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */

@@ -118,6 +118,8 @@
 	- add rpmds/rpmfi/rpmts methods to bindings.
 	- re-enable rpm-python sub-package.
 	- fix: resurrect "()(64bit)" markings using objdump.
+	- add rpmal/rpmte/rpmfd methods to bindings.
+	- drop cpanflute and cpanflute2, will be in Chip's CPAN package now.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

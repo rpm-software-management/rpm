@@ -121,7 +121,7 @@ static char rpmal_doc[] =
 PyTypeObject rpmal_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
-	"rpm.ds",			/* tp_name */
+	"rpm.al",			/* tp_name */
 	sizeof(rpmalObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
 	/* methods */

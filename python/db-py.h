@@ -19,6 +19,8 @@ struct rpmdbObject_s {
     int *offsets;
 } ;
 
+extern PyTypeObject rpmdb_Type;
+
 /** \ingroup python
  */
 typedef struct rpmmiObject_s rpmmiObject;
@@ -31,10 +33,10 @@ struct rpmmiObject_s {
     rpmdbObject *db;
 } ;
 
-extern PyTypeObject rpmdb_Type;
 extern PyTypeObject rpmmi_Type;
 
 rpmdb dbFromDb(rpmdbObject * db);
+
 rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args);
 PyObject * rebuildDB (PyObject * self, PyObject * args);
 
