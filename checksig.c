@@ -198,6 +198,9 @@ int doCheckSig(int pgp, char **argv)
 	    sprintf(buffer, "%s: ", rpm);
 	}
 	while (nextIterator(sigIter, &tag, &type, &ptr, &count)) {
+	    if ((tag == SIGTAG_PGP) && !pgp) {
+		continue;
+	    }
 	    if (verifySignature(sigtarget, tag, ptr, count, result)) {
 		if (isVerbose()) {
 		    strcat(buffer, result);
