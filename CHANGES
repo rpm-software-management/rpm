@@ -1,4 +1,7 @@
-2.4.99 -> 2.5:
+2.4.100 -> 2.5
+	- handle files with spaces (put double quotes around them)
+
+2.4.99 -> 2.4.100:
 	- fixed handling of --rebuild and --recompile
 	- fixed rpmlibbuild.a typo in Makefile
 	- fixed handling of '\' in spec files (a specific case of a more

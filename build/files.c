@@ -95,6 +95,7 @@ static void timeCheck(int tc, Header h);
 static void genCpioListAndHeader(struct FileList *fl,
 				 struct cpioFileMapping **cpioList,
 				 int *cpioCount, Header h, int isSrc);
+static char *strtokWithQuotes(char *s, char *delim);
 
 int processSourceFiles(Spec spec)
 {
@@ -845,17 +846,17 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
     specialDocBuf[0] = '\0';
     *fileName = NULL;
     res = 0;
-    s = strtok(buf, " \t\n");
+    s = strtokWithQuotes(buf, " \t\n");
     while (s) {
 	if (!strcmp(s, "%docdir")) {
-	    s = strtok(NULL, " \t\n");
+	    s = strtokWithQuotes(NULL, " \t\n");
 	    if (fl->docDirCount == MAXDOCDIR) {
 		rpmError(RPMERR_INTERNAL, "Hit limit for %%docdir");
 		fl->processingFailed = 1;
 		res = 1;
 	    }
 	    fl->docDirs[fl->docDirCount++] = strdup(s);
-	    if (strtok(NULL, " \t\n")) {
+	    if (strtokWithQuotes(NULL, " \t\n")) {
 		rpmError(RPMERR_INTERNAL, "Only one arg for %%docdir");
 		fl->processingFailed = 1;
 		res = 1;
@@ -891,7 +892,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 		*fileName = s;
 	    }
 	}
-	s = strtok(NULL, " \t\n");
+	s = strtokWithQuotes(NULL, " \t\n");
     }
 
     if (specialDoc) {
@@ -1280,4 +1281,61 @@ static int myGlobPatternP (char *pattern)
 static int glob_error(const char *foo, int bar)
 {
     return 1;
+}
+
+/* strtokWithQuotes() modified from glibc strtok() */
+/* Copyright (C) 1991, 1996 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with the GNU C Library; see the file COPYING.LIB.  If
+   not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
+
+static char *strtokWithQuotes(char *s, char *delim)
+{
+    static char *olds = NULL;
+    char *token;
+
+    if (s == NULL) {
+	s = olds;
+    }
+
+    /* Skip leading delimiters */
+    s += strspn(s, delim);
+    if (*s == '\0') {
+	return NULL;
+    }
+
+    /* Find the end of the token.  */
+    token = s;
+    if (*token == '"') {
+	token++;
+	/* Find next " char */
+	s = strchr(token, '"');
+    } else {
+	s = strpbrk(token, delim);
+    }
+
+    /* Terminate it */
+    if (s == NULL) {
+	/* This token finishes the string */
+	olds = strchr(token, '\0');
+    } else {
+	/* Terminate the token and make olds point past it */
+	*s = '\0';
+	olds = s+1;
+    }
+
+    return token;
 }
