@@ -34,4 +34,10 @@
 /* Define as 1 if <netdb.h> defines h_errno */
 #define HAVE_HERRNO 0
 
+/* Define as 1 if <sys/stat.h> defines S_ISLNK */
+#define HAVE_S_ISLNK 0
+
+/* Define as 1 if <sys/stat.h> defines S_ISSOCK */
+#define HAVE_S_ISSOCK 0
+
 #endif
