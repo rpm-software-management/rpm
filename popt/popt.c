@@ -543,3 +543,7 @@ int poptStuffArgs(poptContext con, char ** argv) {
 
     return 0;
 }
+
+const char * poptGetInvocationName(poptContext con) {
+    return con->os->argv[0];
+}
