@@ -470,30 +470,17 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
 /*    rpmSetMachine(canonarch, canonos); */
 
 
-   {	const char *buildarch;
-	const char *buildos;
+   {	char *buildarch;
+	char *buildos;
 
 	/* XXX getMacroBody() may be nuked -- (see below) */
+	/* XXX the macro names buildarch/buildos don't exist */
 	buildarch = (char *) getMacroBody(&globalMacroContext, "buildarch");
 	buildos = (char *) getMacroBody(&globalMacroContext, "buildos");
 
-	/*
-	 * XXX Capitalizing the 'L' is needed to insure that
-	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
-	 * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-	 * XXX A copy of this string is embedded in headers and is
-	 * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->
-	 * XXX to verify correct arch/os from headers.
-	 */
-	if (!strcmp(buildos, "linux")) {
-	    char *mybuildos = strdup(buildos);
-	    buildos[0] = 'L';
-	    rpmSetMachine(buildarch, mybuildos);
-	    free(mybuildos);
-	} else {
-	    rpmSetMachine(buildarch, buildos);
-	}
+	rpmSetMachine(buildarch, buildos);
    }
+
     return 0;
 }
 
@@ -760,7 +747,7 @@ static int doReadRC(int fd, char * filename) {
 			  	option->name, filename, linenum);
 		    return 1;
 		}
-		if (option->macroize && strcmp(start, current[ARCH])) {
+		if (option->macroize && !strcmp(start, current[ARCH])) {
 		    char *s = buf;
 		    if (option->localize)
 			*s++ = '_';
@@ -1139,6 +1126,16 @@ void rpmSetMachine(char * arch, char * os) {
     if (!current[OS] || strcmp(os, current[OS])) {
 	if (current[OS]) free(current[OS]);
 	current[OS] = strdup(os);
+	/*
+	 * XXX Capitalizing the 'L' is needed to insure that old
+	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
+	 * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+	 * XXX A copy of this string is embedded in headers and is
+	 * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->
+	 * XXX to verify correct arch/os from headers.
+	 */
+	if (!strcmp(current[OS], "linux"))
+	    *current[OS]= 'L';
 	rebuildCompatTables(OS, realOs);
     }
 }
