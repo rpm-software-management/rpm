@@ -308,9 +308,9 @@ static int process_filelist(Header header, StringBuf sb)
 
 	/* Add the header entries */
 	c = count;
-	addEntry(header, RPMTAG_FILENAMES, STRING_TYPE, fileList, c);
-	addEntry(header, RPMTAG_FILELINKTOS, STRING_TYPE, fileLinktoList, c);
-	addEntry(header, RPMTAG_FILEMD5S, STRING_TYPE, fileMD5List, c);
+	addEntry(header, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, c);
+	addEntry(header, RPMTAG_FILELINKTOS, STRING_ARRAY_TYPE, fileLinktoList, c);
+	addEntry(header, RPMTAG_FILEMD5S, STRING_ARRAY_TYPE, fileMD5List, c);
 	addEntry(header, RPMTAG_FILESIZES, INT32_TYPE, fileSizeList, c);
 	addEntry(header, RPMTAG_FILEUIDS, INT32_TYPE, fileUIDList, c);
 	addEntry(header, RPMTAG_FILEGIDS, INT32_TYPE, fileGIDList, c);
