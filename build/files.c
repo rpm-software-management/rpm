@@ -1411,7 +1411,7 @@ void initSourceHeader(Spec spec)
 {
     HeaderIterator hi;
     int tag, type, count;
-    void * ptr;
+    const void * ptr;
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */

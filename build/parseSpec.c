@@ -414,7 +414,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
     
     while (parsePart != PART_NONE) {
 	switch (parsePart) {
-	  case PART_PREAMBLE:
+	 case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
 	    break;
@@ -448,6 +448,9 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    parsePart = parseFiles(spec);
 	    break;
 
+	  case PART_NONE:		/* XXX avoid gcc whining */
+	  case PART_BUILDARCHITECTURES:
+	    break;
 	}
 
 	if (parsePart < 0) {

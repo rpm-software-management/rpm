@@ -137,7 +137,10 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
  */
 typedef enum rpmTag_e {
 
-    RPMTAG_HEADERIMAGE		= HEADER_IMAGE,	/*!< Header allocated image. */
+    RPMTAG_HEADERIMAGE		= HEADER_IMAGE,		/*!< Current image. */
+    RPMTAG_HEADERSIGNATURES	= HEADER_SIGNATURES,	/*!< Signatures. */
+    RPMTAG_HEADERIMMUTABLE	= HEADER_IMMUTABLE,	/*!< Original image. */
+    RPMTAG_HEADERREGIONS	= HEADER_REGIONS,	/*!< Regions. */
 
     RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, /*!< I18N string locales. */
 
@@ -915,8 +918,8 @@ typedef enum rpmtransFlags_e {
  * @retval		address of array of rpmlib internal provide versions
  * @return		no. of entries
  */
-int rpmGetRpmlibProvides(/*@out@*/ const char ***provNames,
-	/*@out@*/ int **provFlags, /*@out@*/ const char ***provVersions)
+int rpmGetRpmlibProvides(/*@out@*/ const char *** provNames,
+	/*@out@*/ int ** provFlags, /*@out@*/ const char *** provVersions)
 		/*@ modifies *provNames, *provFlags, *provVersions @*/;
 
 /** \ingroup rpmtrans
@@ -1386,11 +1389,11 @@ typedef enum rpmVerifySignatureReturn_e {
  * @param sigTag	type of signature
  * @param sig		signature itself
  * @param count		no. of bytes in signature
- * @param result	detailed text result of signature verification
+ * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
 rpmVerifySignatureReturn rpmVerifySignature(const char *file,
-		int_32 sigTag, void *sig, int count, char *result);
+		int_32 sigTag, const void * sig, int count, char *result);
 
 /** \ingroup signature
  * Destroy signature header from package.
