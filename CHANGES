@@ -2,6 +2,14 @@
 	- %changelog processing
 	- fixed broken requires/conflicts parsing for spec file
 	- vastly improved --rebuilddb's robustness
+	- fixed misplaced free() (only affected inconsistent databases)
+	- added conflicts documentation to docs/dependencies
+	- using multiple query formats has them all concatenated
+	- removed stdin based query and verify selectors
+	- installs rpmpopt in libdir
+	- moved --provides and --scripts to rpmpopt
+	- added --setperms, --setugids
+	- incorporated newer de.po from Karsten Weiss
 
 2.3.2 -> 2.3.3:
 	- Ripped out header internals and redid them. Any compatibility 
