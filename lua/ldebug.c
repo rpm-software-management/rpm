@@ -1,5 +1,5 @@
 /*
-** $Id: ldebug.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: ldebug.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Debug Interface
 ** See Copyright Notice in lua.h
 */
@@ -27,13 +27,17 @@
 
 
 
-static const char *getfuncname (CallInfo *ci, const char **name);
+/*@null@*/
+static const char *getfuncname (CallInfo *ci, const char **name)
+	/*@modifies ci, *name @*/;
 
 
 #define isLua(ci)	(!((ci)->state & CI_C))
 
 
-static int currentpc (CallInfo *ci) {
+static int currentpc (CallInfo *ci)
+	/*@modifies ci @*/
+{
   if (!isLua(ci)) return -1;  /* function is not a Lua function? */
   if (ci->state & CI_HASFRAME)  /* function has a frame? */
     ci->u.l.savedpc = *ci->u.l.pc;  /* use `pc' from there */
@@ -42,7 +46,9 @@ static int currentpc (CallInfo *ci) {
 }
 
 
-static int currentline (CallInfo *ci) {
+static int currentline (CallInfo *ci)
+	/*@modifies ci @*/
+{
   int pc = currentpc(ci);
   if (pc < 0)
     return -1;  /* only active lua functions have current-line information */
@@ -114,7 +120,10 @@ LUA_API int lua_getstack (lua_State *L, int level, lua_Debug *ar) {
 }
 
 
-static Proto *getluaproto (CallInfo *ci) {
+/*@null@*/
+static Proto *getluaproto (CallInfo *ci)
+	/*@*/
+{
   return (isLua(ci) ? ci_func(ci)->l.p : NULL);
 }
 
@@ -158,7 +167,9 @@ LUA_API const char *lua_setlocal (lua_State *L, const lua_Debug *ar, int n) {
 }
 
 
-static void funcinfo (lua_Debug *ar, StkId func) {
+static void funcinfo (lua_Debug *ar, StkId func)
+	/*@modifies ar @*/
+{
   Closure *cl = clvalue(func);
   if (cl->c.isC) {
     ar->source = "=[C]";
@@ -174,7 +185,10 @@ static void funcinfo (lua_Debug *ar, StkId func) {
 }
 
 
-static const char *travglobals (lua_State *L, const TObject *o) {
+/*@null@*/
+static const char *travglobals (lua_State *L, const TObject *o)
+	/*@*/
+{
   Table *g = hvalue(gt(L));
   int i = sizenode(g);
   while (i--) {
@@ -186,7 +200,9 @@ static const char *travglobals (lua_State *L, const TObject *o) {
 }
 
 
-static void info_tailcall (lua_State *L, lua_Debug *ar) {
+static void info_tailcall (lua_State *L, lua_Debug *ar)
+	/*@modifies L, ar @*/
+{
   ar->name = ar->namewhat = "";
   ar->what = "tail";
   ar->linedefined = ar->currentline = -1;
@@ -198,7 +214,9 @@ static void info_tailcall (lua_State *L, lua_Debug *ar) {
 
 
 static int auxgetinfo (lua_State *L, const char *what, lua_Debug *ar,
-                    StkId f, CallInfo *ci) {
+                    StkId f, /*@null@*/ CallInfo *ci)
+	/*@modifies L, ar, ci @*/
+{
   int status = 1;
   for (; *what; what++) {
     switch (*what) {
@@ -215,7 +233,9 @@ static int auxgetinfo (lua_State *L, const char *what, lua_Debug *ar,
         break;
       }
       case 'n': {
+/*@-modobserver@*/
         ar->namewhat = (ci) ? getfuncname(ci, &ar->name) : NULL;
+/*@=modobserver@*/
         if (ar->namewhat == NULL) {
           /* try to find a global name */
           if ((ar->name = travglobals(L, f)) != NULL)
@@ -272,7 +292,9 @@ LUA_API int lua_getinfo (lua_State *L, const char *what, lua_Debug *ar) {
 
 
 
-static int precheck (const Proto *pt) {
+static int precheck (const Proto *pt)
+	/*@*/
+{
   check(pt->maxstacksize <= MAXSTACK);
   check(pt->sizelineinfo == pt->sizecode || pt->sizelineinfo == 0);
   lua_assert(pt->numparams+pt->is_vararg <= pt->maxstacksize);
@@ -281,7 +303,9 @@ static int precheck (const Proto *pt) {
 }
 
 
-static int checkopenop (const Proto *pt, int pc) {
+static int checkopenop (const Proto *pt, int pc)
+	/*@*/
+{
   Instruction i = pt->code[pc+1];
   switch (GET_OPCODE(i)) {
     case OP_CALL:
@@ -296,12 +320,16 @@ static int checkopenop (const Proto *pt, int pc) {
 }
 
 
-static int checkRK (const Proto *pt, int r) {
+static int checkRK (const Proto *pt, int r)
+	/*@*/
+{
   return (r < pt->maxstacksize || (r >= MAXSTACK && r-MAXSTACK < pt->sizek));
 }
 
 
-static Instruction luaG_symbexec (const Proto *pt, int lastpc, int reg) {
+static Instruction luaG_symbexec (const Proto *pt, int lastpc, int reg)
+	/*@*/
+{
   int pc;
   int last;  /* stores position of last instruction that changed `reg' */
   last = pt->sizecode-1;  /* points to final return (a `neutral' instruction) */
@@ -440,7 +468,10 @@ int luaG_checkcode (const Proto *pt) {
 }
 
 
-static const char *kname (Proto *p, int c) {
+/*@observer@*/
+static const char *kname (Proto *p, int c)
+	/*@*/
+{
   c = c - MAXSTACK;
   if (c >= 0 && ttisstring(&p->k[c]))
     return svalue(&p->k[c]);
@@ -449,12 +480,17 @@ static const char *kname (Proto *p, int c) {
 }
 
 
-static const char *getobjname (CallInfo *ci, int stackpos, const char **name) {
+/*@observer@*/ /*@null@*/
+static const char *getobjname (CallInfo *ci, int stackpos, const char **name)
+	/*@modifies ci, *name @*/
+{
   if (isLua(ci)) {  /* a Lua function? */
     Proto *p = ci_func(ci)->l.p;
     int pc = currentpc(ci);
     Instruction i;
+/*@-observertrans -dependenttrans @*/
     *name = luaF_getlocalname(p, stackpos+1, pc);
+/*@=observertrans =dependenttrans @*/
     if (*name)  /* is a local? */
       return "local";
     i = luaG_symbexec(p, pc, stackpos);  /* try symbolic execution */
@@ -475,12 +511,16 @@ static const char *getobjname (CallInfo *ci, int stackpos, const char **name) {
       }
       case OP_GETTABLE: {
         int k = GETARG_C(i);  /* key index */
+/*@-observertrans -dependenttrans @*/
         *name = kname(p, k);
+/*@=observertrans =dependenttrans @*/
         return "field";
       }
       case OP_SELF: {
         int k = GETARG_C(i);  /* key index */
+/*@-observertrans -dependenttrans @*/
         *name = kname(p, k);
+/*@=observertrans =dependenttrans @*/
         return "method";
       }
       default: break;
@@ -490,7 +530,10 @@ static const char *getobjname (CallInfo *ci, int stackpos, const char **name) {
 }
 
 
-static const char *getfuncname (CallInfo *ci, const char **name) {
+/*@observer@*/ /*@null@*/
+static const char *getfuncname (CallInfo *ci, const char **name)
+	/*@modifies ci, *name @*/
+{
   Instruction i;
   if ((isLua(ci) && ci->u.l.tailcalls > 0) || !isLua(ci - 1))
     return NULL;  /* calling function is not Lua (or is unknown) */
@@ -504,7 +547,9 @@ static const char *getfuncname (CallInfo *ci, const char **name) {
 
 
 /* only ANSI way to check whether a pointer points to an array */
-static int isinstack (CallInfo *ci, const TObject *o) {
+static int isinstack (CallInfo *ci, const TObject *o)
+	/*@*/
+{
   StkId p;
   for (p = ci->base; p < ci->top; p++)
     if (o == p) return 1;
@@ -512,7 +557,9 @@ static int isinstack (CallInfo *ci, const TObject *o) {
 }
 
 
-void luaG_typeerror (lua_State *L, const TObject *o, const char *op) {
+void luaG_typeerror (lua_State *L, const TObject *o, const char *op)
+	/*@*/
+{
   const char *name = NULL;
   const char *t = luaT_typenames[ttype(o)];
   const char *kind = (isinstack(L->ci, o)) ?
@@ -551,7 +598,9 @@ int luaG_ordererror (lua_State *L, const TObject *p1, const TObject *p2) {
 }
 
 
-static void addinfo (lua_State *L, const char *msg) {
+static void addinfo (lua_State *L, const char *msg)
+	/*@modifies L @*/
+{
   CallInfo *ci = L->ci;
   if (isLua(ci)) {  /* is Lua code? */
     char buff[LUA_IDSIZE];  /* add file:line information */

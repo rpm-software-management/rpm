@@ -1,5 +1,5 @@
 /*
-** $Id: lauxlib.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lauxlib.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Auxiliary functions for building Lua libraries
 ** See Copyright Notice in lua.h
 */
@@ -66,7 +66,9 @@ LUALIB_API int luaL_typerror (lua_State *L, int narg, const char *tname) {
 }
 
 
-static void tag_error (lua_State *L, int narg, int tag) {
+static void tag_error (lua_State *L, int narg, int tag)
+	/*@modifies L @*/
+{
   luaL_typerror(L, narg, lua_typename(L, tag)); 
 }
 
@@ -255,7 +257,9 @@ LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
 ** =======================================================
 */
 
-static int checkint (lua_State *L, int topop) {
+static int checkint (lua_State *L, int topop)
+	/*@modifies L @*/
+{
   int n = (int)lua_tonumber(L, -1);
   if (n == 0 && !lua_isnumber(L, -1)) n = -1;
   lua_pop(L, topop);
@@ -263,7 +267,9 @@ static int checkint (lua_State *L, int topop) {
 }
 
 
-static void getsizes (lua_State *L) {
+static void getsizes (lua_State *L)
+	/*@modifies L @*/
+{
   lua_rawgeti(L, LUA_REGISTRYINDEX, ARRAYSIZE_REF);
   if (lua_isnil(L, -1)) {  /* no `size' table? */
     lua_pop(L, 1);  /* remove nil */
@@ -334,7 +340,9 @@ int luaL_getn (lua_State *L, int t) {
 #define LIMIT	(LUA_MINSTACK/2)
 
 
-static int emptybuffer (luaL_Buffer *B) {
+static int emptybuffer (luaL_Buffer *B)
+	/*@modifies B @*/
+{
   size_t l = bufflen(B);
   if (l == 0) return 0;  /* put nothing on stack */
   else {
@@ -346,7 +354,9 @@ static int emptybuffer (luaL_Buffer *B) {
 }
 
 
-static void adjuststack (luaL_Buffer *B) {
+static void adjuststack (luaL_Buffer *B)
+	/*@modifies B @*/
+{
   if (B->lvl > 1) {
     lua_State *L = B->L;
     int toget = 1;  /* number of levels to concat */
@@ -461,12 +471,17 @@ LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
 */
 
 typedef struct LoadF {
+/*@dependent@*/
   FILE *f;
   char buff[LUAL_BUFFERSIZE];
 } LoadF;
 
 
-static const char *getF (lua_State *L, void *ud, size_t *size) {
+/*@observer@*/ /*@null@*/
+static const char *getF (lua_State *L, void *ud, size_t *size)
+	/*@globals fileSystem @*/
+	/*@modifies *size, fileSystem @*/
+{
   LoadF *lf = (LoadF *)ud;
   (void)L;
   if (feof(lf->f)) return NULL;
@@ -475,7 +490,9 @@ static const char *getF (lua_State *L, void *ud, size_t *size) {
 }
 
 
-static int errfile (lua_State *L, int fnameindex) {
+static int errfile (lua_State *L, int fnameindex)
+	/*@modifies L @*/
+{
   const char *filename = lua_tostring(L, fnameindex) + 1;
   lua_pushfstring(L, "cannot read %s: %s", filename, strerror(errno));
   lua_remove(L, fnameindex);
@@ -521,7 +538,9 @@ typedef struct LoadS {
 } LoadS;
 
 
-static const char *getS (lua_State *L, void *ud, size_t *size) {
+static const char *getS (lua_State *L, void *ud, size_t *size)
+	/*@modifies *size @*/
+{
   LoadS *ls = (LoadS *)ud;
   (void)L;
   if (ls->size == 0) return NULL;
@@ -549,7 +568,10 @@ LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t size,
 */
 
 
-static void callalert (lua_State *L, int status) {
+static void callalert (lua_State *L, int status)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/
+{
   if (status != 0) {
     lua_getglobal(L, "_ALERT");
     if (lua_isfunction(L, -1)) {
@@ -564,7 +586,10 @@ static void callalert (lua_State *L, int status) {
 }
 
 
-static int aux_do (lua_State *L, int status) {
+static int aux_do (lua_State *L, int status)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/
+{
   if (status == 0) {  /* parse OK? */
     status = lua_pcall(L, 0, LUA_MULTRET, 0);  /* call main */
   }

@@ -1,5 +1,5 @@
 /*
-** $Id: lgc.c,v 1.2 2004/03/19 21:14:32 niemeyer Exp $
+** $Id: lgc.c,v 1.3 2004/03/23 05:09:14 jbj Exp $
 ** Garbage Collector
 ** See Copyright Notice in lua.h
 */
@@ -23,10 +23,15 @@
 
 
 typedef struct GCState {
+/*@null@*/
   GCObject *tmark;  /* list of marked objects to be traversed */
+/*@null@*/
   GCObject *wk;  /* list of traversed key-weak tables (to be cleared) */
+/*@null@*/
   GCObject *wv;  /* list of traversed value-weak tables */
+/*@null@*/
   GCObject *wkv;  /* list of traversed key-value weak tables */
+/*@null@*/
   global_State *g;
 } GCState;
 
@@ -67,7 +72,9 @@ typedef struct GCState {
 
 
 
-static void reallymarkobject (GCState *st, GCObject *o) {
+static void reallymarkobject (GCState *st, GCObject *o)
+	/*@modifies st, o @*/
+{
   lua_assert(!ismarked(o));
   setbit(o->gch.marked, 0);  /* mark object */
   switch (o->gch.tt) {
@@ -86,7 +93,9 @@ static void reallymarkobject (GCState *st, GCObject *o) {
       break;
     }
     case LUA_TTHREAD: {
+/*@-onlytrans@*/
       gcototh(o)->gclist = st->tmark;
+/*@=onlytrans@*/
       st->tmark = o;
       break;
     }
@@ -100,7 +109,9 @@ static void reallymarkobject (GCState *st, GCObject *o) {
 }
 
 
-static void marktmu (GCState *st) {
+static void marktmu (GCState *st)
+	/*@modifies st @*/
+{
   GCObject *u;
   for (u = st->g->tmudata; u; u = u->gch.next) {
     unmark(u);  /* may be marked, if left from previous GC */
@@ -134,20 +145,26 @@ size_t luaC_separateudata (lua_State *L) {
     }
   }
   /* insert collected udata with gc event into `tmudata' list */
+/*@-dependenttrans@*/
   *lastcollected = G(L)->tmudata;
+/*@=dependenttrans@*/
   G(L)->tmudata = collected;
   return deadmem;
 }
 
 
-static void removekey (Node *n) {
+static void removekey (Node *n)
+	/*@modifies n @*/
+{
   setnilvalue(gval(n));  /* remove corresponding value ... */
   if (iscollectable(gkey(n)))
     setttype(gkey(n), LUA_TNONE);  /* dead key; remove it */
 }
 
 
-static void traversetable (GCState *st, Table *h) {
+static void traversetable (GCState *st, Table *h)
+	/*@modifies st, h @*/
+{
   int i;
   int weakkey = 0;
   int weakvalue = 0;
@@ -187,7 +204,9 @@ static void traversetable (GCState *st, Table *h) {
 }
 
 
-static void traverseproto (GCState *st, Proto *f) {
+static void traverseproto (GCState *st, Proto *f)
+	/*@modifies st, f @*/
+{
   int i;
   stringmark(f->source);
   for (i=0; i<f->sizek; i++) {  /* mark literal strings */
@@ -205,7 +224,9 @@ static void traverseproto (GCState *st, Proto *f) {
 
 
 
-static void traverseclosure (GCState *st, Closure *cl) {
+static void traverseclosure (GCState *st, Closure *cl)
+	/*@modifies st, cl @*/
+{
   if (cl->c.isC) {
     int i;
     for (i=0; i<cl->c.nupvalues; i++)  /* mark its upvalues */
@@ -227,7 +248,9 @@ static void traverseclosure (GCState *st, Closure *cl) {
 }
 
 
-static void checkstacksizes (lua_State *L, StkId max) {
+static void checkstacksizes (lua_State *L, StkId max)
+	/*@modifies L @*/
+{
   int used = L->ci - L->base_ci;  /* number of `ci' in use */
   if (4*used < L->size_ci && 2*BASIC_CI_SIZE < L->size_ci)
     luaD_reallocCI(L, L->size_ci/2);  /* still big enough... */
@@ -239,7 +262,9 @@ static void checkstacksizes (lua_State *L, StkId max) {
 }
 
 
-static void traversestack (GCState *st, lua_State *L1) {
+static void traversestack (GCState *st, lua_State *L1)
+	/*@modifies st, L1 @*/
+{
   StkId o, lim;
   CallInfo *ci;
   markobject(st, gt(L1));
@@ -258,7 +283,9 @@ static void traversestack (GCState *st, lua_State *L1) {
 }
 
 
-static void propagatemarks (GCState *st) {
+static void propagatemarks (GCState *st)
+	/*@modifies st @*/
+{
   while (st->tmark) {  /* traverse marked objects */
     switch (st->tmark->gch.tt) {
       case LUA_TTABLE: {
@@ -275,7 +302,9 @@ static void propagatemarks (GCState *st) {
       }
       case LUA_TTHREAD: {
         lua_State *th = gcototh(st->tmark);
+/*@-dependenttrans@*/
         st->tmark = th->gclist;
+/*@=dependenttrans@*/
         traversestack(st, th);
         break;
       }
@@ -291,7 +320,9 @@ static void propagatemarks (GCState *st) {
 }
 
 
-static int valismarked (const TObject *o) {
+static int valismarked (const TObject *o)
+	/*@modifies o @*/
+{
   if (ttisstring(o))
     stringmark(tsvalue(o));  /* strings are `values', so are never weak */
   return !iscollectable(o) || testbit(o->value.gc->gch.marked, 0);
@@ -301,7 +332,9 @@ static int valismarked (const TObject *o) {
 /*
 ** clear collected keys from weaktables
 */
-static void cleartablekeys (GCObject *l) {
+static void cleartablekeys (/*@null@*/ GCObject *l)
+	/*@modifies l @*/
+{
   while (l) {
     Table *h = gcotoh(l);
     int i = sizenode(h);
@@ -319,7 +352,9 @@ static void cleartablekeys (GCObject *l) {
 /*
 ** clear collected values from weaktables
 */
-static void cleartablevalues (GCObject *l) {
+static void cleartablevalues (/*@null@*/ GCObject *l)
+	/*@modifies l @*/
+{
   while (l) {
     Table *h = gcotoh(l);
     int i = h->sizearray;
@@ -340,7 +375,9 @@ static void cleartablevalues (GCObject *l) {
 }
 
 
-static void freeobj (lua_State *L, GCObject *o) {
+static void freeobj (lua_State *L, GCObject *o)
+	/*@modifies L, o @*/
+{
   switch (o->gch.tt) {
     case LUA_TPROTO: luaF_freeproto(L, gcotop(o)); break;
     case LUA_TFUNCTION: luaF_freeclosure(L, gcotocl(o)); break;
@@ -364,7 +401,9 @@ static void freeobj (lua_State *L, GCObject *o) {
 }
 
 
-static int sweeplist (lua_State *L, GCObject **p, int limit) {
+static int sweeplist (lua_State *L, GCObject **p, int limit)
+	/*@modifies L, *p @*/
+{
   GCObject *curr;
   int count = 0;  /* number of collected items */
   while ((curr = *p) != NULL) {
@@ -374,7 +413,9 @@ static int sweeplist (lua_State *L, GCObject **p, int limit) {
     }
     else {
       count++;
+/*@-dependenttrans@*/
       *p = curr->gch.next;
+/*@=dependenttrans@*/
       freeobj(L, curr);
     }
   }
@@ -382,7 +423,9 @@ static int sweeplist (lua_State *L, GCObject **p, int limit) {
 }
 
 
-static void sweepstrings (lua_State *L, int all) {
+static void sweepstrings (lua_State *L, int all)
+	/*@modifies L @*/
+{
   int i;
   for (i=0; i<G(L)->strt.size; i++) {  /* for each list */
     G(L)->strt.nuse -= sweeplist(L, &G(L)->strt.hash[i], all);
@@ -390,7 +433,9 @@ static void sweepstrings (lua_State *L, int all) {
 }
 
 
-static void checkSizes (lua_State *L, size_t deadmem) {
+static void checkSizes (lua_State *L, size_t deadmem)
+	/*@modifies L @*/
+{
   /* check size of string hash */
   if (G(L)->strt.nuse < cast(ls_nstr, G(L)->strt.size/4) &&
       G(L)->strt.size > MINSTRTABSIZE*2)
@@ -404,7 +449,9 @@ static void checkSizes (lua_State *L, size_t deadmem) {
 }
 
 
-static void do1gcTM (lua_State *L, Udata *udata) {
+static void do1gcTM (lua_State *L, Udata *udata)
+	/*@modifies L, udata @*/
+{
   const TObject *tm = fasttm(L, udata->uv.metatable, TM_GC);
   if (tm != NULL) {
     setobj2s(L->top, tm);
@@ -444,7 +491,9 @@ void luaC_sweep (lua_State *L, int all) {
 
 
 /* mark root set */
-static void markroot (GCState *st, lua_State *L) {
+static void markroot (GCState *st, lua_State *L)
+	/*@modifies st, L @*/
+{
   global_State *g = st->g;
   markobject(st, defaultmeta(L));
   markobject(st, registry(L));
@@ -454,7 +503,9 @@ static void markroot (GCState *st, lua_State *L) {
 }
 
 
-static size_t mark (lua_State *L) {
+static size_t mark (lua_State *L)
+	/*@modifies L @*/
+{
   size_t deadmem;
   GCState st;
   GCObject *wkv;

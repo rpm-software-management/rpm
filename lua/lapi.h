@@ -1,5 +1,5 @@
 /*
-** $Id: lapi.h,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lapi.h,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Auxiliary functions from Lua API
 ** See Copyright Notice in lua.h
 */
@@ -11,6 +11,7 @@
 #include "lobject.h"
 
 
-void luaA_pushobject (lua_State *L, const TObject *o);
+void luaA_pushobject (lua_State *L, const TObject *o)
+	/*@modifies L @*/;
 
 #endif

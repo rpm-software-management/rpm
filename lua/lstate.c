@@ -1,5 +1,5 @@
 /*
-** $Id: lstate.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lstate.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Global State
 ** See Copyright Notice in lua.h
 */
@@ -39,13 +39,18 @@ union UEXTRASPACE {L_Umaxalign a; LUA_USERSTATE b;};
 ** you can change this function through the official API:
 ** call `lua_setpanicf'
 */
-static int default_panic (lua_State *L) {
+static int default_panic (lua_State *L)
+	/*@*/
+{
   UNUSED(L);
   return 0;
 }
 
 
-static lua_State *mallocstate (lua_State *L) {
+/*@null@*/
+static lua_State *mallocstate (/*@null@*/ lua_State *L)
+	/*@modifies L @*/
+{
   lu_byte *block = (lu_byte *)luaM_malloc(L, sizeof(lua_State) + EXTRASPACE);
   if (block == NULL) return NULL;
   else {
@@ -55,13 +60,17 @@ static lua_State *mallocstate (lua_State *L) {
 }
 
 
-static void freestate (lua_State *L, lua_State *L1) {
+static void freestate (/*@null@*/ lua_State *L, lua_State *L1)
+	/*@modifies L @*/
+{
   luaM_free(L, cast(lu_byte *, L1) - EXTRASPACE,
                sizeof(lua_State) + EXTRASPACE);
 }
 
 
-static void stack_init (lua_State *L1, lua_State *L) {
+static void stack_init (lua_State *L1, lua_State *L)
+	/*@modifies L1, L @*/
+{
   L1->stack = luaM_newvector(L, BASIC_STACK_SIZE + EXTRA_STACK, TObject);
   L1->stacksize = BASIC_STACK_SIZE + EXTRA_STACK;
   L1->top = L1->stack;
@@ -77,7 +86,9 @@ static void stack_init (lua_State *L1, lua_State *L) {
 }
 
 
-static void freestack (lua_State *L, lua_State *L1) {
+static void freestack (lua_State *L, lua_State *L1)
+	/*@modifies L, L1 @*/
+{
   luaM_freearray(L, L1->base_ci, L1->size_ci, CallInfo);
   luaM_freearray(L, L1->stack, L1->stacksize, TObject);
 }
@@ -86,7 +97,9 @@ static void freestack (lua_State *L, lua_State *L1) {
 /*
 ** open parts that may cause memory-allocation errors
 */
-static void f_luaopen (lua_State *L, void *ud) {
+static void f_luaopen (lua_State *L, void *ud)
+	/*@modifies L @*/
+{
   /* create a new global state */
   global_State *g = luaM_new(NULL, global_State);
   UNUSED(ud);
@@ -123,7 +136,9 @@ static void f_luaopen (lua_State *L, void *ud) {
 }
 
 
-static void preinit_state (lua_State *L) {
+static void preinit_state (lua_State *L)
+	/*@modifies L @*/
+{
   L->stack = NULL;
   L->stacksize = 0;
   L->errorJmp = NULL;
@@ -135,13 +150,15 @@ static void preinit_state (lua_State *L) {
   L->openupval = NULL;
   L->size_ci = 0;
   L->nCcalls = 0;
-  L->base_ci = L->ci = NULL;
+  L->ci = L->base_ci = NULL;
   L->errfunc = 0;
   setnilvalue(gt(L));
 }
 
 
-static void close_state (lua_State *L) {
+static void close_state (lua_State *L)
+	/*@modifies L @*/
+{
   luaF_close(L, L->stack);  /* close all upvalues for this thread */
   if (G(L)) {  /* close global state */
     luaC_sweep(L, 1);  /* collect all elements */
@@ -178,6 +195,7 @@ void luaE_freethread (lua_State *L, lua_State *L1) {
 }
 
 
+/*@null@*/
 LUA_API lua_State *lua_open (void) {
   lua_State *L = mallocstate(NULL);
   if (L) {  /* allocation OK? */
@@ -197,7 +215,9 @@ LUA_API lua_State *lua_open (void) {
 }
 
 
-static void callallgcTM (lua_State *L, void *ud) {
+static void callallgcTM (lua_State *L, void *ud)
+	/*@modifies L @*/
+{
   UNUSED(ud);
   luaC_callGCTM(L);  /* call GC metamethods for all udata */
 }

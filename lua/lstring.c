@@ -1,5 +1,5 @@
 /*
-** $Id: lstring.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lstring.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** String table (keeps all strings handled by Lua)
 ** See Copyright Notice in lua.h
 */
@@ -48,7 +48,10 @@ void luaS_resize (lua_State *L, int newsize) {
 }
 
 
-static TString *newlstr (lua_State *L, const char *str, size_t l, lu_hash h) {
+/*@null@*/
+static TString *newlstr (lua_State *L, const char *str, size_t l, lu_hash h)
+	/*@modifies L @*/
+{
   TString *ts = cast(TString *, luaM_malloc(L, sizestring(l)));
   stringtable *tb;
   ts->tsv.len = l;

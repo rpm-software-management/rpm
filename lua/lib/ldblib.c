@@ -1,5 +1,5 @@
 /*
-** $Id: ldblib.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: ldblib.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Interface from Lua to its debug API
 ** See Copyright Notice in lua.h
 */
@@ -18,21 +18,27 @@
 
 
 
-static void settabss (lua_State *L, const char *i, const char *v) {
+static void settabss (lua_State *L, const char *i, const char *v)
+	/*@modifies L @*/
+{
   lua_pushstring(L, i);
   lua_pushstring(L, v);
   lua_rawset(L, -3);
 }
 
 
-static void settabsi (lua_State *L, const char *i, int v) {
+static void settabsi (lua_State *L, const char *i, int v)
+	/*@modifies L @*/
+{
   lua_pushstring(L, i);
   lua_pushnumber(L, (lua_Number)v);
   lua_rawset(L, -3);
 }
 
 
-static int getinfo (lua_State *L) {
+static int getinfo (lua_State *L)
+	/*@modifies L @*/
+{
   lua_Debug ar;
   const char *options = luaL_optstring(L, 2, "flnSu");
   if (lua_isnumber(L, 1)) {
@@ -80,7 +86,9 @@ static int getinfo (lua_State *L) {
 }
     
 
-static int getlocal (lua_State *L) {
+static int getlocal (lua_State *L)
+	/*@modifies L @*/
+{
   lua_Debug ar;
   const char *name;
   if (!lua_getstack(L, luaL_checkint(L, 1), &ar))  /* level out of range? */
@@ -98,7 +106,9 @@ static int getlocal (lua_State *L) {
 }
 
 
-static int setlocal (lua_State *L) {
+static int setlocal (lua_State *L)
+	/*@modifies L @*/
+{
   lua_Debug ar;
   if (!lua_getstack(L, luaL_checkint(L, 1), &ar))  /* level out of range? */
     return luaL_argerror(L, 1, "level out of range");
@@ -108,7 +118,9 @@ static int setlocal (lua_State *L) {
 }
 
 
-static int auxupvalue (lua_State *L, int get) {
+static int auxupvalue (lua_State *L, int get)
+	/*@modifies L @*/
+{
   const char *name;
   int n = luaL_checkint(L, 2);
   luaL_checktype(L, 1, LUA_TFUNCTION);
@@ -121,22 +133,30 @@ static int auxupvalue (lua_State *L, int get) {
 }
 
 
-static int getupvalue (lua_State *L) {
+static int getupvalue (lua_State *L)
+	/*@modifies L @*/
+{
   return auxupvalue(L, 1);
 }
 
 
-static int setupvalue (lua_State *L) {
+static int setupvalue (lua_State *L)
+	/*@modifies L @*/
+{
   luaL_checkany(L, 3);
   return auxupvalue(L, 0);
 }
 
 
 
+/*@unchecked@*/
 static const char KEY_HOOK = 'h';
 
 
-static void hookf (lua_State *L, lua_Debug *ar) {
+static void hookf (lua_State *L, lua_Debug *ar)
+	/*@modifies L @*/
+{
+  /*@observer@*/
   static const char *const hooknames[] =
     {"call", "return", "line", "count", "tail return"};
   lua_pushlightuserdata(L, (void *)&KEY_HOOK);
@@ -154,7 +174,9 @@ static void hookf (lua_State *L, lua_Debug *ar) {
 }
 
 
-static int makemask (const char *smask, int count) {
+static int makemask (const char *smask, int count)
+	/*@*/
+{
   int mask = 0;
   if (strchr(smask, 'c')) mask |= LUA_MASKCALL;
   if (strchr(smask, 'r')) mask |= LUA_MASKRET;
@@ -164,7 +186,9 @@ static int makemask (const char *smask, int count) {
 }
 
 
-static char *unmakemask (int mask, char *smask) {
+static char *unmakemask (int mask, char *smask)
+	/*@modifies *smask @*/
+{
   int i = 0;
   if (mask & LUA_MASKCALL) smask[i++] = 'c';
   if (mask & LUA_MASKRET) smask[i++] = 'r';
@@ -174,7 +198,9 @@ static char *unmakemask (int mask, char *smask) {
 }
 
 
-static int sethook (lua_State *L) {
+static int sethook (lua_State *L)
+	/*@modifies L @*/
+{
   if (lua_isnoneornil(L, 1)) {
     lua_settop(L, 1);
     lua_sethook(L, NULL, 0, 0);  /* turn off hooks */
@@ -192,7 +218,9 @@ static int sethook (lua_State *L) {
 }
 
 
-static int gethook (lua_State *L) {
+static int gethook (lua_State *L)
+	/*@modifies L @*/
+{
   char buff[5];
   int mask = lua_gethookmask(L);
   lua_Hook hook = lua_gethook(L);
@@ -208,7 +236,10 @@ static int gethook (lua_State *L) {
 }
 
 
-static int debug (lua_State *L) {
+static int debug (lua_State *L)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/
+{
   for (;;) {
     char buffer[250];
     fputs("lua_debug> ", stderr);
@@ -224,7 +255,9 @@ static int debug (lua_State *L) {
 #define LEVELS1	12	/* size of the first part of the stack */
 #define LEVELS2	10	/* size of the second part of the stack */
 
-static int errorfb (lua_State *L) {
+static int errorfb (lua_State *L)
+	/*@modifies L @*/
+{
   int level = 1;  /* skip level 0 (it's this function) */
   int firstpart = 1;  /* still before eventual `...' */
   lua_Debug ar;
@@ -275,6 +308,8 @@ static int errorfb (lua_State *L) {
 }
 
 
+/*@-readonlytrans@*/
+/*@unchecked@*/
 static const luaL_reg dblib[] = {
   {"getlocal", getlocal},
   {"getinfo", getinfo},
@@ -287,6 +322,7 @@ static const luaL_reg dblib[] = {
   {"traceback", errorfb},
   {NULL, NULL}
 };
+/*@=readonlytrans@*/
 
 
 LUALIB_API int luaopen_debug (lua_State *L) {

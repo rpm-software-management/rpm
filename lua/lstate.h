@@ -1,5 +1,5 @@
 /*
-** $Id: lstate.h,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lstate.h,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Global State
 ** See Copyright Notice in lua.h
 */
@@ -63,6 +63,7 @@ struct lua_longjmp;  /* defined in ldo.c */
 
 
 typedef struct stringtable {
+/*@null@*/
   GCObject **hash;
   ls_nstr nuse;  /* number of elements */
   int size;
@@ -73,12 +74,16 @@ typedef struct stringtable {
 ** informations about a call
 */
 typedef struct CallInfo {
+/*@dependent@*/ /*@relnull@*/
   StkId base;  /* base for called function */
+/*@dependent@*/ /*@relnull@*/
   StkId	top;  /* top for this function */
   int state;  /* bit fields; see below */
   union {
     struct {  /* for Lua functions */
+/*@observer@*/
       const Instruction *savedpc;
+/*@observer@*/
       const Instruction **pc;  /* points to `pc' variable in `luaV_execute' */
       int tailcalls;  /* number of tail calls lost under this entry */
     } l;
@@ -110,8 +115,11 @@ typedef struct CallInfo {
 */
 typedef struct global_State {
   stringtable strt;  /* hash table for strings */
+/*@owned@*/
   GCObject *rootgc;  /* list of (almost) all collectable objects */
+/*@dependent@*/ /*@null@*/
   GCObject *rootudata;   /* (separated) list of all userdata */
+/*@dependent@*/ /*@null@*/
   GCObject *tmudata;  /* list of userdata to be GC */
   Mbuffer buff;  /* temporary buffer for string concatentation */
   lu_mem GCthreshold;
@@ -130,14 +138,22 @@ typedef struct global_State {
 */
 struct lua_State {
   CommonHeader;
+/*@dependent@*/ /*@relnull@*/
   StkId top;  /* first free slot in the stack */
+/*@dependent@*/ /*@relnull@*/
   StkId base;  /* base of current function */
+/*@relnull@*/
   global_State *l_G;
+/*@dependent@*/ /*@relnull@*/
   CallInfo *ci;  /* call info for current function */
+/*@dependent@*/
   StkId stack_last;  /* last free slot in the stack */
+/*@owned@*/ /*@relnull@*/
   StkId stack;  /* stack base */
   int stacksize;
+/*@dependent@*/ /*@relnull@*/
   CallInfo *end_ci;  /* points after end of ci array*/
+/*@owned@*/ /*@relnull@*/
   CallInfo *base_ci;  /* array of CallInfo's */
   unsigned short size_ci;  /* size of array `base_ci' */
   unsigned short nCcalls;  /* number of nested C calls */
@@ -146,10 +162,14 @@ struct lua_State {
   lu_byte hookinit;
   int basehookcount;
   int hookcount;
+/*@relnull@*/
   lua_Hook hook;
   TObject _gt;  /* table of globals */
+/*@dependent@*/ /*@relnull@*/
   GCObject *openupval;  /* list of open upvalues in this stack */
+/*@dependent@*/ /*@relnull@*/
   GCObject *gclist;
+/*@relnull@*/
   struct lua_longjmp *errorJmp;  /* current error recover point */
   ptrdiff_t errfunc;  /* current error handling function (stack index) */
 };
@@ -188,8 +208,11 @@ union GCObject {
 #define valtogco(v)	(cast(GCObject *, (v)))
 
 
-lua_State *luaE_newthread (lua_State *L);
-void luaE_freethread (lua_State *L, lua_State *L1);
+/*@null@*/
+lua_State *luaE_newthread (lua_State *L)
+	/*@modifies L @*/;
+void luaE_freethread (lua_State *L, lua_State *L1)
+	/*@modifies L, L1 @*/;
 
 #endif
 

@@ -1,5 +1,5 @@
 /*
-** $Id: lobject.h,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lobject.h,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Type definitions for Lua objects
 ** See Copyright Notice in lua.h
 */
@@ -33,7 +33,7 @@ typedef union GCObject GCObject;
 ** Common Header for all collectable objects (in macro form, to be
 ** included in other objects)
 */
-#define CommonHeader	GCObject *next; lu_byte tt; lu_byte marked
+#define CommonHeader	/*@dependent@*/ /*@null@*/ GCObject *next; lu_byte tt; lu_byte marked
 
 
 /*
@@ -50,6 +50,7 @@ typedef struct GCheader {
 ** Union of all Lua values
 */
 typedef union {
+/*@relnull@*/
   GCObject *gc;
   void *p;
   lua_Number n;
@@ -209,12 +210,19 @@ typedef union Udata {
 */
 typedef struct Proto {
   CommonHeader;
+/*@relnull@*/
   TObject *k;  /* constants used by the function */
+/*@relnull@*/
   Instruction *code;
+/*@relnull@*/
   struct Proto **p;  /* functions defined inside the function */
+/*@relnull@*/
   int *lineinfo;  /* map from opcodes to source lines */
+/*@relnull@*/
   struct LocVar *locvars;  /* information about local variables */
+/*@relnull@*/
   TString **upvalues;  /* upvalue names */
+/*@relnull@*/
   TString  *source;
   int sizeupvalues;
   int sizek;  /* size of `k' */
@@ -223,6 +231,7 @@ typedef struct Proto {
   int sizep;  /* size of `p' */
   int sizelocvars;
   int lineDefined;
+/*@relnull@*/
   GCObject *gclist;
   lu_byte nups;  /* number of upvalues */
   lu_byte numparams;
@@ -232,6 +241,7 @@ typedef struct Proto {
 
 
 typedef struct LocVar {
+/*@relnull@*/
   TString *varname;
   int startpc;  /* first point where variable is active */
   int endpc;    /* first point where variable is dead */
@@ -245,6 +255,7 @@ typedef struct LocVar {
 
 typedef struct UpVal {
   CommonHeader;
+/*@null@*/
   TObject *v;  /* points to stack or to its own value */
   TObject value;  /* the value (when closed) */
 } UpVal;
@@ -255,7 +266,7 @@ typedef struct UpVal {
 */
 
 #define ClosureHeader \
-	CommonHeader; lu_byte isC; lu_byte nupvalues; GCObject *gclist
+	CommonHeader; lu_byte isC; lu_byte nupvalues; /*@null@*/ GCObject *gclist
 
 typedef struct CClosure {
   ClosureHeader;
@@ -298,7 +309,9 @@ typedef struct Table {
   lu_byte flags;  /* 1<<p means tagmethod(p) is not present */ 
   lu_byte lsizenode;  /* log2 of size of `node' array */
   struct Table *metatable;
+/*@null@*/
   TObject *array;  /* array part */
+/*@owned@*/ /*@null@*/
   Node *node;
   Node *firstfree;  /* this position is free; all positions after it are full */
   GCObject *gclist;
@@ -319,18 +332,28 @@ typedef struct Table {
 
 
 
+/*@unchecked@*/
 extern const TObject luaO_nilobject;
 
-int luaO_log2 (unsigned int x);
-int luaO_int2fb (unsigned int x);
+int luaO_log2 (unsigned int x)
+	/*@*/;
+int luaO_int2fb (unsigned int x)
+	/*@*/;
 #define fb2int(x)	(((x) & 7) << ((x) >> 3))
 
-int luaO_rawequalObj (const TObject *t1, const TObject *t2);
-int luaO_str2d (const char *s, lua_Number *result);
+int luaO_rawequalObj (const TObject *t1, const TObject *t2)
+	/*@*/;
+int luaO_str2d (const char *s, lua_Number *result)
+	/*@modifies *result @*/;
 
-const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_list argp);
-const char *luaO_pushfstring (lua_State *L, const char *fmt, ...);
-void luaO_chunkid (char *out, const char *source, int len);
+/*@observer@*/
+const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_list argp)
+	/*@modifies L @*/;
+/*@observer@*/
+const char *luaO_pushfstring (lua_State *L, const char *fmt, ...)
+	/*@modifies L @*/;
+void luaO_chunkid (char *out, const char *source, int len)
+	/*@modifies *out @*/;
 
 
 #endif

@@ -1,5 +1,5 @@
 /*
-** $Id: lvm.c,v 1.2 2004/03/19 21:14:32 niemeyer Exp $
+** $Id: lvm.c,v 1.3 2004/03/23 05:09:14 jbj Exp $
 ** Lua virtual machine
 ** See Copyright Notice in lua.h
 */
@@ -64,7 +64,9 @@ int luaV_tostring (lua_State *L, StkId obj) {
 }
 
 
-static void traceexec (lua_State *L) {
+static void traceexec (lua_State *L)
+	/*@modifies L @*/
+{
   lu_byte mask = L->hookmask;
   if (mask & LUA_MASKCOUNT) {  /* instruction-hook set? */
     if (L->hookcount == 0) {
@@ -96,7 +98,9 @@ static void traceexec (lua_State *L) {
 
 
 static void callTMres (lua_State *L, const TObject *f,
-                       const TObject *p1, const TObject *p2) {
+                       const TObject *p1, const TObject *p2)
+	/*@modifies L @*/
+{
   setobj2s(L->top, f);  /* push function */
   setobj2s(L->top+1, p1);  /* 1st argument */
   setobj2s(L->top+2, p2);  /* 2nd argument */
@@ -109,7 +113,9 @@ static void callTMres (lua_State *L, const TObject *f,
 
 
 static void callTM (lua_State *L, const TObject *f,
-                    const TObject *p1, const TObject *p2, const TObject *p3) {
+                    const TObject *p1, const TObject *p2, const TObject *p3)
+	/*@modifies L @*/
+{
   setobj2s(L->top, f);  /* push function */
   setobj2s(L->top+1, p1);  /* 1st argument */
   setobj2s(L->top+2, p2);  /* 2nd argument */
@@ -120,8 +126,11 @@ static void callTM (lua_State *L, const TObject *f,
 }
 
 
+/*@observer@*/
 static const TObject *luaV_index (lua_State *L, const TObject *t,
-                                  TObject *key, int loop) {
+                                  TObject *key, int loop)
+	/*@modifies L, t @*/
+{
   const TObject *tm = fasttm(L, hvalue(t)->metatable, TM_INDEX);
   if (tm == NULL) return &luaO_nilobject;  /* no TM */
   if (ttisfunction(tm)) {
@@ -131,8 +140,11 @@ static const TObject *luaV_index (lua_State *L, const TObject *t,
   else return luaV_gettable(L, tm, key, loop);
 }
 
+/*@observer@*/
 static const TObject *luaV_getnotable (lua_State *L, const TObject *t,
-                                       TObject *key, int loop) {
+                                       TObject *key, int loop)
+	/*@modifies L @*/
+{
   const TObject *tm = luaT_gettmbyobj(L, t, TM_INDEX);
   if (ttisnil(tm))
     luaG_typeerror(L, t, "index");
@@ -140,7 +152,9 @@ static const TObject *luaV_getnotable (lua_State *L, const TObject *t,
     callTMres(L, tm, t, key);
     return L->top;
   }
+/*@-modobserver@*/
   else return luaV_gettable(L, tm, key, loop);
+/*@=modobserver@*/
 }
 
 
@@ -193,7 +207,9 @@ void luaV_settable (lua_State *L, const TObject *t, TObject *key, StkId val) {
 
 
 static int call_binTM (lua_State *L, const TObject *p1, const TObject *p2,
-                       StkId res, TMS event) {
+                       StkId res, TMS event)
+	/*@modifies L @*/
+{
   ptrdiff_t result = savestack(L, res);
   const TObject *tm = luaT_gettmbyobj(L, p1, event);  /* try first operand */
   if (ttisnil(tm))
@@ -206,8 +222,11 @@ static int call_binTM (lua_State *L, const TObject *p1, const TObject *p2,
 }
 
 
+/*@null@*/
 static const TObject *get_compTM (lua_State *L, Table *mt1, Table *mt2,
-                                  TMS event) {
+                                  TMS event)
+	/*@modifies mt1, mt2 @*/
+{
   const TObject *tm1 = fasttm(L, mt1, event);
   const TObject *tm2;
   if (tm1 == NULL) return NULL;  /* no metamethod */
@@ -221,7 +240,9 @@ static const TObject *get_compTM (lua_State *L, Table *mt1, Table *mt2,
 
 
 static int call_orderTM (lua_State *L, const TObject *p1, const TObject *p2,
-                         TMS event) {
+                         TMS event)
+	/*@modifies L @*/
+{
   const TObject *tm1 = luaT_gettmbyobj(L, p1, event);
   const TObject *tm2;
   if (ttisnil(tm1)) return -1;  /* no metamethod? */
@@ -233,7 +254,9 @@ static int call_orderTM (lua_State *L, const TObject *p1, const TObject *p2,
 }
 
 
-static int luaV_strcmp (const TString *ls, const TString *rs) {
+static int luaV_strcmp (const TString *ls, const TString *rs)
+	/*@*/
+{
   const char *l = getstr(ls);
   size_t ll = ls->tsv.len;
   const char *r = getstr(rs);
@@ -269,7 +292,9 @@ int luaV_lessthan (lua_State *L, const TObject *l, const TObject *r) {
 }
 
 
-static int luaV_lessequal (lua_State *L, const TObject *l, const TObject *r) {
+static int luaV_lessequal (lua_State *L, const TObject *l, const TObject *r)
+	/*@modifies L @*/
+{
   int res;
   if (ttype(l) != ttype(r))
     return luaG_ordererror(L, l, r);
@@ -346,7 +371,9 @@ void luaV_concat (lua_State *L, int total, int last) {
 
 
 static void Arith (lua_State *L, StkId ra,
-                   const TObject *rb, const TObject *rc, TMS op) {
+                   const TObject *rb, const TObject *rc, TMS op)
+	/*@modifies L, ra @*/
+{
   TObject tempb, tempc;
   const TObject *b, *c;
   if ((b = luaV_tonumber(rb, &tempb)) != NULL &&
@@ -691,8 +718,10 @@ StkId luaV_execute (lua_State *L) {
           luaG_runerror(L, "`for' initial value must be a number");
         if (!tonumber(plimit, ra+1))
           luaG_runerror(L, "`for' limit must be a number");
+/*@-modobserver@*/
         if (!tonumber(pstep, ra+2))
           luaG_runerror(L, "`for' step must be a number");
+/*@=modobserver@*/
         step = nvalue(pstep);
         idx = nvalue(ra) + step;  /* increment index */
         limit = nvalue(plimit);

@@ -1,5 +1,5 @@
 /*
-** $Id: llex.h,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: llex.h,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Lexical Analyzer
 ** See Copyright Notice in lua.h
 */
@@ -38,6 +38,7 @@ enum RESERVED {
 
 typedef union {
   lua_Number r;
+/*@null@*/
   TString *ts;
 } SemInfo;  /* semantics information */
 
@@ -63,13 +64,21 @@ typedef struct LexState {
 } LexState;
 
 
-void luaX_init (lua_State *L);
-void luaX_setinput (lua_State *L, LexState *LS, ZIO *z, TString *source);
-int luaX_lex (LexState *LS, SemInfo *seminfo);
-void luaX_checklimit (LexState *ls, int val, int limit, const char *msg);
-void luaX_syntaxerror (LexState *ls, const char *s);
-void luaX_errorline (LexState *ls, const char *s, const char *token, int line);
-const char *luaX_token2str (LexState *ls, int token);
+void luaX_init (lua_State *L)
+	/*@modifies L @*/;
+void luaX_setinput (lua_State *L, LexState *LS, ZIO *z, TString *source)
+	/*@modifies LS, z @*/;
+int luaX_lex (LexState *LS, SemInfo *seminfo)
+	/*@modifies LS, seminfo @*/;
+void luaX_checklimit (LexState *ls, int val, int limit, const char *msg)
+	/*@modifies ls @*/;
+void luaX_syntaxerror (LexState *ls, const char *s)
+	/*@modifies ls @*/;
+void luaX_errorline (LexState *ls, const char *s, const char *token, int line)
+	/*@modifies ls @*/;
+/*@observer@*/
+const char *luaX_token2str (LexState *ls, int token)
+	/*@modifies ls @*/;
 
 
 #endif

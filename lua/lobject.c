@@ -1,5 +1,5 @@
 /*
-** $Id: lobject.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lobject.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Some generic functions over Lua objects
 ** See Copyright Notice in lua.h
 */
@@ -101,7 +101,9 @@ int luaO_str2d (const char *s, lua_Number *result) {
 
 
 
-static void pushstr (lua_State *L, const char *str) {
+static void pushstr (lua_State *L, const char *str)
+	/*@modifies L @*/
+{
   setsvalue2s(L->top, luaS_new(L, str));
   incr_top(L);
 }

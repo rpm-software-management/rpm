@@ -10,6 +10,8 @@
 #include "lua.h"
 #include "lauxlib.h"
 
+/*@access regex_t @*/
+
 /* Sanity check */
 #if !defined(WITH_POSIX) && !defined(WITH_PCRE)
 #error Define WITH_POSIX or WITH_PCRE, otherwise this library is useless!
@@ -22,7 +24,9 @@
 
 #include <regex.h>
 
-static int rex_comp(lua_State *L) {
+static int rex_comp(lua_State *L)
+	/*@modifies L @*/
+{
   size_t l;
   const char *pattern;
   int res;
@@ -46,22 +50,28 @@ static int rex_comp(lua_State *L) {
   return 1;
 }
 
-static void rex_getargs(lua_State *L, size_t *len, size_t *ncapt,
-                        const char **text, regex_t **pr, regmatch_t **match) {
+static void rex_getargs(lua_State *L, /*@unused@*/ size_t *len, size_t *ncapt,
+                        const char **text, regex_t **pr, regmatch_t **match)
+	/*@modifies L, *ncapt, *text, *pr, *match @*/
+{
   luaL_checkany(L, 1);
   *pr = (regex_t *)lua_touserdata(L, 1);
+/*@-observertrans -dependenttrans @*/
 #ifdef REG_BASIC
   *text = luaL_checklstring(L, 2, len);
 #else
   *text = luaL_checklstring(L, 2, NULL);
 #endif
+/*@=observertrans =dependenttrans @*/
   *ncapt = (*pr)->re_nsub;
   luaL_checkstack(L, *ncapt + 2, "too many captures");
   *match = malloc((*ncapt + 1) * sizeof(regmatch_t));
 }
 
 static void rex_push_matches(lua_State *L, const char *text, regmatch_t *match,
-                             size_t ncapt) {
+                             size_t ncapt)
+	/*@modifies L @*/
+{
   size_t i;
   lua_newtable(L);
   for (i = 1; i <= ncapt; i++) {
@@ -73,7 +83,9 @@ static void rex_push_matches(lua_State *L, const char *text, regmatch_t *match,
   }
 }
 
-static int rex_match(lua_State *L) {
+static int rex_match(lua_State *L)
+	/*@modifies L @*/
+{
   int res;
 #ifdef REG_BASIC
   size_t len;
@@ -108,7 +120,9 @@ static int rex_match(lua_State *L) {
     return 0;
 }
 
-static int rex_gmatch(lua_State *L) {
+static int rex_gmatch(lua_State *L)
+	/*@modifies L @*/
+{
   int res;
 #ifdef REG_BASIC
   size_t len;
@@ -154,19 +168,24 @@ static int rex_gmatch(lua_State *L) {
   return 1;
 }
 
-static int rex_gc (lua_State *L) {
+static int rex_gc (lua_State *L)
+	/*@modifies L @*/
+{
   regex_t *r = (regex_t *)luaL_checkudata(L, 1, "regex_t");
   if (r)
     regfree(r);
   return 0;
 }
 
+/*@-readonlytrans@*/
+/*@unchecked@*/
 static const luaL_reg rexmeta[] = {
   {"match",   rex_match},
   {"gmatch",  rex_gmatch},
   {"__gc",    rex_gc},
   {NULL, NULL}
 };
+/*@=readonlytrans@*/
 
 #endif /* WITH_POSIX */
 
@@ -297,6 +316,8 @@ static const luaL_reg pcremeta[] = {
 
 /* Open the library */
 
+/*@-readonlytrans@*/
+/*@unchecked@*/
 static const luaL_reg rexlib[] = {
 #ifdef WITH_POSIX
   {"newPOSIX", rex_comp},
@@ -306,8 +327,10 @@ static const luaL_reg rexlib[] = {
 #endif
   {NULL, NULL}
 };
+/*@=readonlytrans@*/
 
 static void createmeta(lua_State *L, const char *name)
+	/*@modifies L @*/
 {
   luaL_newmetatable(L, name);   /* create new metatable */
   lua_pushliteral(L, "__index");

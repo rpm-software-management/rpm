@@ -1,5 +1,5 @@
 /*
-** $Id: ldo.c,v 1.2 2004/03/19 21:14:32 niemeyer Exp $
+** $Id: ldo.c,v 1.3 2004/03/23 05:09:14 jbj Exp $
 ** Stack and Call structure of Lua
 ** See Copyright Notice in lua.h
 */
@@ -47,7 +47,9 @@ struct lua_longjmp {
 };
 
 
-static void seterrorobj (lua_State *L, int errcode, StkId oldtop) {
+static void seterrorobj (lua_State *L, int errcode, StkId oldtop)
+	/*@modifies L, oldtop @*/
+{
   switch (errcode) {
     case LUA_ERRMEM: {
       setsvalue2s(oldtop, luaS_new(L, MEMERRMSG));
@@ -91,7 +93,9 @@ int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud) {
 }
 
 
-static void restore_stack_limit (lua_State *L) {
+static void restore_stack_limit (lua_State *L)
+	/*@modifies L @*/
+{
   L->stack_last = L->stack+L->stacksize-1;
   if (L->size_ci > LUA_MAXCALLS) {  /* there was an overflow? */
     int inuse = (L->ci - L->base_ci);
@@ -103,7 +107,9 @@ static void restore_stack_limit (lua_State *L) {
 /* }====================================================== */
 
 
-static void correctstack (lua_State *L, TObject *oldstack) {
+static void correctstack (lua_State *L, TObject *oldstack)
+	/*@modifies L @*/
+{
   CallInfo *ci;
   GCObject *up;
   L->top = (L->top - oldstack) + L->stack;
@@ -143,7 +149,9 @@ void luaD_growstack (lua_State *L, int n) {
 }
 
 
-static void luaD_growCI (lua_State *L) {
+static void luaD_growCI (lua_State *L)
+	/*@modifies L @*/
+{
   if (L->size_ci > LUA_MAXCALLS)  /* overflow while handling overflow? */
     luaD_throw(L, LUA_ERRERR);
   else {
@@ -180,7 +188,9 @@ void luaD_callhook (lua_State *L, int event, int line) {
 }
 
 
-static void adjust_varargs (lua_State *L, int nfixargs, StkId base) {
+static void adjust_varargs (lua_State *L, int nfixargs, StkId base)
+	/*@modifies L @*/
+{
   int i;
   Table *htab;
   TObject nname;
@@ -203,7 +213,10 @@ static void adjust_varargs (lua_State *L, int nfixargs, StkId base) {
 }
 
 
-static StkId tryfuncTM (lua_State *L, StkId func) {
+/*@dependent@*/
+static StkId tryfuncTM (lua_State *L, StkId func)
+	/*@modifies L @*/
+{
   const TObject *tm = luaT_gettmbyobj(L, func, TM_CALL);
   StkId p;
   ptrdiff_t funcr = savestack(L, func);
@@ -264,7 +277,10 @@ StkId luaD_precall (lua_State *L, StkId func) {
 }
 
 
-static StkId callrethooks (lua_State *L, StkId firstResult) {
+/*@dependent@*/
+static StkId callrethooks (lua_State *L, StkId firstResult)
+	/*@modifies L @*/
+{
   ptrdiff_t fr = savestack(L, firstResult);  /* next call may change stack */
   luaD_callhook(L, LUA_HOOKRET, -1);
   if (!(L->ci->state & CI_C)) {  /* Lua function? */
@@ -317,7 +333,9 @@ void luaD_call (lua_State *L, StkId func, int nResults) {
 }
 
 
-static void resume (lua_State *L, void *ud) {
+static void resume (lua_State *L, void *ud)
+	/*@modifies L @*/
+{
   StkId firstResult;
   int nargs = *cast(int *, ud);
   CallInfo *ci = L->ci;
@@ -347,7 +365,9 @@ static void resume (lua_State *L, void *ud) {
 }
 
 
-static int resume_error (lua_State *L, const char *msg) {
+static int resume_error (lua_State *L, const char *msg)
+	/*@modifies L @*/
+{
   L->top = L->ci->base;
   setsvalue2s(L->top, luaS_new(L, msg));
   incr_top(L);
@@ -356,7 +376,9 @@ static int resume_error (lua_State *L, const char *msg) {
 }
 
 
-LUA_API int lua_resume (lua_State *L, int nargs) {
+LUA_API int lua_resume (lua_State *L, int nargs)
+	/*@modifies L @*/
+{
   int status;
   lu_byte old_allowhooks;
   lua_lock(L);
@@ -383,7 +405,9 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
 }
 
 
-LUA_API int lua_yield (lua_State *L, int nresults) {
+LUA_API int lua_yield (lua_State *L, int nresults)
+	/*@modifies L @*/
+{
   CallInfo *ci;
   lua_lock(L);
   ci = L->ci;
@@ -439,7 +463,9 @@ struct SParser {  /* data to `f_parser' */
   int bin;
 };
 
-static void f_parser (lua_State *L, void *ud) {
+static void f_parser (lua_State *L, void *ud)
+	/*@modifies L @*/
+{
   struct SParser *p;
   Proto *tf;
   Closure *cl;

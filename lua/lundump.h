@@ -1,5 +1,5 @@
 /*
-** $Id: lundump.h,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lundump.h,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** load pre-compiled Lua chunks
 ** See Copyright Notice in lua.h
 */
@@ -11,16 +11,22 @@
 #include "lzio.h"
 
 /* load one chunk; from lundump.c */
-Proto* luaU_undump (lua_State* L, ZIO* Z, Mbuffer* buff);
+/*@null@*/
+Proto* luaU_undump (lua_State* L, ZIO* Z, Mbuffer* buff)
+	/*@*/;
 
 /* find byte order; from lundump.c */
-int luaU_endianness (void);
+int luaU_endianness (void)
+	/*@*/;
 
 /* dump one chunk; from ldump.c */
-void luaU_dump (lua_State* L, const Proto* Main, lua_Chunkwriter w, void* data);
+void luaU_dump (lua_State* L, const Proto* Main, lua_Chunkwriter w, void* data)
+	/*@*/;
 
 /* print one chunk; from print.c */
-void luaU_print (const Proto* Main);
+/*@unused@*/
+void luaU_print (const Proto* Main)
+	/*@*/;
 
 /* definitions for headers of binary files */
 #define	LUA_SIGNATURE	"\033Lua"	/* binary files start with "<esc>Lua" */

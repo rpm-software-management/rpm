@@ -1,5 +1,5 @@
 /*
-** $Id: lapi.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lapi.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Lua API
 ** See Copyright Notice in lua.h
 */
@@ -27,6 +27,7 @@
 #include "lvm.h"
 
 
+/*@unused@*/
 const char lua_ident[] =
   "$Lua: " LUA_VERSION " " LUA_COPYRIGHT " $\n"
   "$Authors: " LUA_AUTHORS " $\n"
@@ -45,7 +46,10 @@ const char lua_ident[] =
 
 
 
-static TObject *negindex (lua_State *L, int idx) {
+/*@dependent@*/ /*@null@*/
+static TObject *negindex (lua_State *L, int idx)
+	/*@*/
+{
   if (idx > LUA_REGISTRYINDEX) {
     api_check(L, idx != 0 && -idx <= L->top - L->base);
     return L->top+idx;
@@ -65,7 +69,10 @@ static TObject *negindex (lua_State *L, int idx) {
 }
 
 
-static TObject *luaA_index (lua_State *L, int idx) {
+/*@dependent@*/ /*@relnull@*/
+static TObject *luaA_index (lua_State *L, int idx)
+	/*@*/
+{
   if (idx > 0) {
     api_check(L, idx <= L->top - L->base);
     return L->base + idx - 1;
@@ -78,7 +85,10 @@ static TObject *luaA_index (lua_State *L, int idx) {
 }
 
 
-static TObject *luaA_indexAcceptable (lua_State *L, int idx) {
+/*@dependent@*/ /*@null@*/
+static TObject *luaA_indexAcceptable (lua_State *L, int idx)
+	/*@*/
+{
   if (idx > 0) {
     TObject *o = L->base+(idx-1);
     api_check(L, idx <= L->stack_last - L->base);
@@ -144,7 +154,9 @@ LUA_API lua_State *lua_newthread (lua_State *L) {
   api_incr_top(L);
   lua_unlock(L);
   lua_userstateopen(L1);
+/*@-kepttrans@*/
   return L1;
+/*@=kepttrans@*/
 }
 
 
@@ -662,12 +674,15 @@ LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
 ** Execute a protected call.
 */
 struct CallS {  /* data to `f_call' */
+/*@dependent@*/
   StkId func;
   int nresults;
 };
 
 
-static void f_call (lua_State *L, void *ud) {
+static void f_call (lua_State *L, void *ud)
+	/*@modifies L @*/
+{
   struct CallS *c = cast(struct CallS *, ud);
   luaD_call(L, c->func, c->nresults);
 }
@@ -697,7 +712,9 @@ struct CCallS {  /* data to `f_Ccall' */
 };
 
 
-static void f_Ccall (lua_State *L, void *ud) {
+static void f_Ccall (lua_State *L, void *ud)
+	/*@modifies L @*/
+{
   struct CCallS *c = cast(struct CCallS *, ud);
   Closure *cl;
   cl = luaF_newCclosure(L, 0);
@@ -851,7 +868,9 @@ LUA_API void *lua_newuserdata (lua_State *L, size_t size) {
   setuvalue(L->top, u);
   api_incr_top(L);
   lua_unlock(L);
+/*@-kepttrans@*/
   return u + 1;
+/*@=kepttrans@*/
 }
 
 
@@ -872,8 +891,11 @@ LUA_API int lua_pushupvalues (lua_State *L) {
 }
 
 
+/*@observer@*/ /*@null@*/
 static const char *aux_upvalue (lua_State *L, int funcindex, int n,
-                                TObject **val) {
+                                TObject **val)
+	/*@modifies *val @*/
+{
   Closure *f;
   StkId fi = luaA_index(L, funcindex);
   if (!ttisfunction(fi)) return NULL;
@@ -886,7 +908,9 @@ static const char *aux_upvalue (lua_State *L, int funcindex, int n,
   else {
     Proto *p = f->l.p;
     if (n > p->sizeupvalues) return NULL;
+/*@-onlytrans@*/
     *val = f->l.upvals[n-1]->v;
+/*@=onlytrans@*/
     return getstr(p->upvalues[n-1]);
   }
 }

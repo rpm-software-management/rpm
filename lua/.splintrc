@@ -1,0 +1,92 @@
+-I. -I./include -I./local -DHAVE_CONFIG_H -DUSE_DLOPEN -DWITH_POSIX -D_GNU_SOURCE -D_REENTRANT -DUSE_POPEN
+
+#+partial
++forcehints
+
+
+#-warnunixlib
+-warnposix
+
++unixlib
+
+#-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
++enumindex		# 20
+
+-boolops		# 8
+-branchstate		# 54
+-bufferoverflowhigh	# 1
+-castfcnptr		# 1
+-compdef		# 111
+-compdestroy		# 18
+-compmempass		# 137
+-declundef		# 42
+-evalorder		# 60
+-infloops		# 2
+-mayaliasunique		# 4
+-moduncon		# 5 dlopen et al
+-modunconnomods		# 6 ctype.h
+-noeffect		# 169
+-noeffectuncon		# 5
+-nullderef		# 109
+-nullpass		# 28
+-nullptrarith		# 11
+-nullret		# 1
+-nullstate		# 19
+-predboolptr		# 34
+-protoparammatch	# 58
+-realcompare		# 8
+-retalias		# 30
+-retvalint		# 44
+-retvalother		# 42
+-shiftnegative		# 8
+-sizeoftype		# 125
+-stackref		# 5
+-type			# 12
+-uniondef		# 26
+-unrecog
+-usereleased		# 13
+
+-immediatetrans		# 40
+-temptrans		# 27
+-unqualifiedtrans	# 2
+
+-casebreak		# 3
+-looploopbreak		# 1
+-loopswitchbreak	# 89
+-switchswitchbreak	# 9
+
+-exportheader		# 233
+-exportlocal		# 13
+-exporttype
+
+-fielduse		# 24
+-typeuse		# 1 ls_hash
+
+# --- not-yet at strict level
+-bitwisesigned		#
+-elseifcomplete		#
+-forblock		#
+-ifblock		#
+-incondefs		#
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		# tedious
+
+-mustdefine		#
+-shiftimplementation	#
+
+-strictops		#
+-whileblock		#
+
+# --- not-yet at checks level
+-mustfree		#
+-usedef			#
+
+# --- not-yet at standard level
++boolint		#
++charint		#
++ignorequals		#
++matchanyintegral	#

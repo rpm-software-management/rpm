@@ -1,5 +1,5 @@
 /*
-** $Id: ldo.h,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: ldo.h,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Stack and Call structure of Lua
 ** See Copyright Notice in lua.h
 */
@@ -41,20 +41,34 @@
 /* type of protected functions, to be ran by `runprotected' */
 typedef void (*Pfunc) (lua_State *L, void *ud);
 
-void luaD_resetprotection (lua_State *L);
-int luaD_protectedparser (lua_State *L, ZIO *z, int bin);
-void luaD_callhook (lua_State *L, int event, int line);
-StkId luaD_precall (lua_State *L, StkId func);
-void luaD_call (lua_State *L, StkId func, int nResults);
+/*@unused@*/
+void luaD_resetprotection (lua_State *L)
+	/*@modifies L @*/;
+int luaD_protectedparser (lua_State *L, ZIO *z, int bin)
+	/*@modifies L, z @*/;
+void luaD_callhook (lua_State *L, int event, int line)
+	/*@modifies L @*/;
+/*@null@*/
+StkId luaD_precall (lua_State *L, StkId func)
+	/*@modifies L @*/;
+void luaD_call (lua_State *L, StkId func, int nResults)
+	/*@modifies L @*/;
 int luaD_pcall (lua_State *L, Pfunc func, void *u,
-                ptrdiff_t oldtop, ptrdiff_t ef);
-void luaD_poscall (lua_State *L, int wanted, StkId firstResult);
-void luaD_reallocCI (lua_State *L, int newsize);
-void luaD_reallocstack (lua_State *L, int newsize);
-void luaD_growstack (lua_State *L, int n);
+                ptrdiff_t oldtop, ptrdiff_t ef)
+	/*@modifies L @*/;
+void luaD_poscall (lua_State *L, int wanted, StkId firstResult)
+	/*@modifies L @*/;
+void luaD_reallocCI (lua_State *L, int newsize)
+	/*@modifies L @*/;
+void luaD_reallocstack (lua_State *L, int newsize)
+	/*@modifies L @*/;
+void luaD_growstack (lua_State *L, int n)
+	/*@modifies L @*/;
 
-void luaD_throw (lua_State *L, int errcode);
-int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud);
+void luaD_throw (lua_State *L, int errcode)
+	/*@modifies L @*/;
+int luaD_rawrunprotected (lua_State *L, Pfunc f, /*@null@*/ void *ud)
+	/*@modifies L @*/;
 
 
 #endif

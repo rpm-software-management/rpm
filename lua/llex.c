@@ -1,5 +1,5 @@
 /*
-** $Id: llex.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: llex.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Lexical Analyzer
 ** See Copyright Notice in lua.h
 */
@@ -27,6 +27,7 @@
 
 
 /* ORDER RESERVED */
+/*@observer@*/ /*@unchecked@*/
 static const char *const token2string [] = {
     "and", "break", "do", "else", "elseif",
     "end", "false", "for", "function", "if",
@@ -68,7 +69,9 @@ void luaX_errorline (LexState *ls, const char *s, const char *token, int line) {
 }
 
 
-static void luaX_error (LexState *ls, const char *s, const char *token) {
+static void luaX_error (LexState *ls, const char *s, const char *token)
+	/*@modifies ls @*/
+{
   luaX_errorline(ls, s, token, ls->linenumber);
 }
 
@@ -101,7 +104,9 @@ const char *luaX_token2str (LexState *ls, int token) {
 }
 
 
-static void luaX_lexerror (LexState *ls, const char *s, int token) {
+static void luaX_lexerror (LexState *ls, const char *s, int token)
+	/*@modifies ls @*/
+{
   if (token == TK_EOS)
     luaX_error(ls, s, luaX_token2str(ls, token));
   else
@@ -109,7 +114,9 @@ static void luaX_lexerror (LexState *ls, const char *s, int token) {
 }
 
 
-static void inclinenumber (LexState *LS) {
+static void inclinenumber (LexState *LS)
+	/*@modifies LS @*/
+{
   next(LS);  /* skip `\n' */
   ++LS->linenumber;
   luaX_checklimit(LS, LS->linenumber, MAX_INT, "lines in a chunk");
@@ -158,7 +165,9 @@ void luaX_setinput (lua_State *L, LexState *LS, ZIO *z, TString *source) {
 #define save_and_next(LS, l)  (save(LS, LS->current, l), next(LS))
 
 
-static size_t readname (LexState *LS) {
+static size_t readname (LexState *LS)
+	/*@modifies LS @*/
+{
   size_t l = 0;
   checkbuffer(LS, l);
   do {
@@ -171,7 +180,9 @@ static size_t readname (LexState *LS) {
 
 
 /* LUA_NUMBER */
-static void read_numeral (LexState *LS, int comma, SemInfo *seminfo) {
+static void read_numeral (LexState *LS, int comma, SemInfo *seminfo)
+	/*@modifies LS, seminfo @*/
+{
   size_t l = 0;
   checkbuffer(LS, l);
   if (comma) save(LS, '.', l);
@@ -208,7 +219,9 @@ static void read_numeral (LexState *LS, int comma, SemInfo *seminfo) {
 }
 
 
-static void read_long_string (LexState *LS, SemInfo *seminfo) {
+static void read_long_string (LexState *LS, /*@null@*/ SemInfo *seminfo)
+	/*@modifies LS, seminfo @*/
+{
   int cont = 0;
   size_t l = 0;
   checkbuffer(LS, l);
@@ -255,7 +268,9 @@ static void read_long_string (LexState *LS, SemInfo *seminfo) {
 }
 
 
-static void read_string (LexState *LS, int del, SemInfo *seminfo) {
+static void read_string (LexState *LS, int del, SemInfo *seminfo)
+	/*@modifies LS, seminfo @*/
+{
   size_t l = 0;
   checkbuffer(LS, l);
   save_and_next(LS, l);

@@ -21,6 +21,7 @@ struct modeLookup
 
 typedef struct modeLookup modeLookup;
 
+/*@observer@*/ /*@unchecked@*/
 static modeLookup modesel[] =
 {
 	/* RWX char				Posix Constant */
@@ -41,6 +42,7 @@ static modeLookup modesel[] =
 
 
 static int rwxrwxrwx(mode_t *mode, const char *p)
+	/*@modifies *mode @*/
 {
 	int count;
 	mode_t tmp_mode = *mode;
@@ -62,6 +64,7 @@ static int rwxrwxrwx(mode_t *mode, const char *p)
 
 			default:
 			return -4; /* failed! -- bad rwxrwxrwx mode change */
+			/*@notreached@*/
 			break;
 		}
 		p++;
@@ -71,6 +74,7 @@ static int rwxrwxrwx(mode_t *mode, const char *p)
 }
 
 static void modechopper(mode_t mode, char *p)
+	/*@modifies *p @*/
 {
 	/* requires char p[10] */
 	int count;
@@ -94,6 +98,7 @@ static void modechopper(mode_t mode, char *p)
 }
 
 static int mode_munch(mode_t *mode, const char* p)
+	/*@modifies *mode @*/
 {
 
 	char op=0;

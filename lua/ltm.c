@@ -1,5 +1,5 @@
 /*
-** $Id: ltm.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: ltm.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Tag methods
 ** See Copyright Notice in lua.h
 */
@@ -19,6 +19,7 @@
 
 
 
+/*@observer@*/
 const char *const luaT_typenames[] = {
   "nil", "boolean", "userdata", "number",
   "string", "table", "function", "userdata", "thread"
@@ -26,6 +27,7 @@ const char *const luaT_typenames[] = {
 
 
 void luaT_init (lua_State *L) {
+/*@observer@*/
   static const char *const luaT_eventname[] = {  /* ORDER TM */
     "__index", "__newindex",
     "__gc", "__mode", "__eq",
@@ -56,7 +58,8 @@ const TObject *luaT_gettm (Table *events, TMS event, TString *ename) {
 }
 
 
-const TObject *luaT_gettmbyobj (lua_State *L, const TObject *o, TMS event) {
+const TObject *luaT_gettmbyobj (lua_State *L, const TObject *o, TMS event)
+{
   TString *ename = G(L)->tmname[event];
   switch (ttype(o)) {
     case LUA_TTABLE:

@@ -1,5 +1,5 @@
 /*
-** $Id: lzio.h,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: lzio.h,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Buffered streams
 ** See Copyright Notice in lua.h
 */
@@ -22,19 +22,24 @@ typedef struct Zio ZIO;
 
 #define zname(z)	((z)->name)
 
-void luaZ_init (ZIO *z, lua_Chunkreader reader, void *data, const char *name);
-size_t luaZ_read (ZIO* z, void* b, size_t n);	/* read next n bytes */
-int luaZ_lookahead (ZIO *z);
+void luaZ_init (ZIO *z, lua_Chunkreader reader, void *data, const char *name)
+	/*@modifies z @*/;
+size_t luaZ_read (ZIO* z, void* b, size_t n)	/* read next n bytes */
+	/*@modifies z, *b @*/;
+int luaZ_lookahead (ZIO *z)
+	/*@modifies z @*/;
 
 
 
 typedef struct Mbuffer {
+/*@relnull@*/
   char *buffer;
   size_t buffsize;
 } Mbuffer;
 
 
-char *luaZ_openspace (lua_State *L, Mbuffer *buff, size_t n);
+char *luaZ_openspace (lua_State *L, Mbuffer *buff, size_t n)
+	/*@modifies L, buff @*/;
 
 #define luaZ_initbuffer(L, buff) ((buff)->buffer = NULL, (buff)->buffsize = 0)
 
@@ -52,6 +57,7 @@ char *luaZ_openspace (lua_State *L, Mbuffer *buff, size_t n);
 
 struct Zio {
   size_t n;			/* bytes still unread */
+/*@relnull@*/
   const char *p;		/* current position in buffer */
   lua_Chunkreader reader;
   void* data;			/* additional data */
@@ -59,6 +65,7 @@ struct Zio {
 };
 
 
-int luaZ_fill (ZIO *z);
+int luaZ_fill (ZIO *z)
+	/*@modifies z @*/;
 
 #endif

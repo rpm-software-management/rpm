@@ -1,5 +1,5 @@
 /*
-** $Id: loadlib.c,v 1.1 2004/03/16 21:58:30 niemeyer Exp $
+** $Id: loadlib.c,v 1.2 2004/03/23 05:09:14 jbj Exp $
 ** Dynamic library loader for Lua
 ** See Copyright Notice in lua.h
 *
@@ -46,6 +46,7 @@
 #include <dlfcn.h>
 
 static int loadlib(lua_State *L)
+	/*@modifies L @*/
 {
  const char *path=luaL_checkstring(L,1);
  const char *init=luaL_checkstring(L,2);
@@ -93,6 +94,7 @@ static int loadlib(lua_State *L)
 #include <windows.h>
 
 static void pusherror(lua_State *L)
+	/*@modifies L @*/
 {
  int error=GetLastError();
  char buffer[128];
@@ -104,6 +106,7 @@ static void pusherror(lua_State *L)
 }
 
 static int loadlib(lua_State *L)
+	/*@modifies L @*/
 {
  const char *path=luaL_checkstring(L,1);
  const char *init=luaL_checkstring(L,2);
@@ -164,6 +167,7 @@ static int loadlib(lua_State *L)
 #endif
 
 static int loadlib(lua_State *L)
+	/*@modifies L @*/
 {
  lua_pushnil(L);
  lua_pushliteral(L,LOADLIB);
