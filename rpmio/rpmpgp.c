@@ -351,7 +351,7 @@ fprintf(stderr, "*** %s %s\n", pre, t);
     mpnsethex(mpn, t);
     t = _free(t);
 if (_debug && _print)
-fprintf(stderr, "\t %s ", pre), mpprintln(stderr, mpn->size, mpn->data);
+fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
 /*@=boundswrite@*/
@@ -483,7 +483,7 @@ static int pgpPrtSigParams(/*@unused@*/ pgpTag tag, byte pubkey_algo, byte sigty
 		case 0:		/* m**d */
 		    mpnsethex(&_dig->c, pgpMpiHex(p));
 if (_debug && _print)
-fprintf(stderr, "\t  m**d = "),  mpprintln(stderr, _dig->c.size, _dig->c.data);
+fprintf(stderr, "\t  m**d = "),  mpfprintln(stderr, _dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -705,12 +705,12 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 			memcpy(_digp->signid, keyid, sizeof(_digp->signid));
 		    }
 if (_debug && _print)
-fprintf(stderr, "\t     n = "),  mpprintln(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
+fprintf(stderr, "\t     n = "),  mpfprintln(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* e */
 		    mpnsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
 if (_debug && _print)
-fprintf(stderr, "\t     e = "),  mpprintln(stderr, _dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
+fprintf(stderr, "\t     e = "),  mpfprintln(stderr, _dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -724,22 +724,22 @@ fprintf(stderr, "\t     e = "),  mpprintln(stderr, _dig->rsa_pk.e.size, _dig->rs
 		case 0:		/* p */
 		    mpbsethex(&_dig->p, pgpMpiHex(p));
 if (_debug && _print)
-fprintf(stderr, "\t     p = "),  mpprintln(stderr, _dig->p.size, _dig->p.modl);
+fprintf(stderr, "\t     p = "),  mpfprintln(stderr, _dig->p.size, _dig->p.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* q */
 		    mpbsethex(&_dig->q, pgpMpiHex(p));
 if (_debug && _print)
-fprintf(stderr, "\t     q = "),  mpprintln(stderr, _dig->q.size, _dig->q.modl);
+fprintf(stderr, "\t     q = "),  mpfprintln(stderr, _dig->q.size, _dig->q.modl);
 		    /*@switchbreak@*/ break;
 		case 2:		/* g */
 		    mpnsethex(&_dig->g, pgpMpiHex(p));
 if (_debug && _print)
-fprintf(stderr, "\t     g = "),  mpprintln(stderr, _dig->g.size, _dig->g.data);
+fprintf(stderr, "\t     g = "),  mpfprintln(stderr, _dig->g.size, _dig->g.data);
 		    /*@switchbreak@*/ break;
 		case 3:		/* y */
 		    mpnsethex(&_dig->y, pgpMpiHex(p));
 if (_debug && _print)
-fprintf(stderr, "\t     y = "),  mpprintln(stderr, _dig->y.size, _dig->y.data);
+fprintf(stderr, "\t     y = "),  mpfprintln(stderr, _dig->y.size, _dig->y.data);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
