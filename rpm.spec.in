@@ -227,10 +227,10 @@ fi
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 
 %ifos linux
-%config(missingok)	/etc/cron.daily/rpm
-%config(missingok)	/etc/logrotate.d/rpm
-%dir			/etc/rpm
-%config(missingok)	/etc/rpm/macros.db1
+%config(noreplace,missingok)	/etc/cron.daily/rpm
+%config(noreplace,missingok)	/etc/logrotate.d/rpm
+%dir				/etc/rpm
+%config(noreplace,missingok)	/etc/rpm/macros.db1
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Basenames
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Conflictname

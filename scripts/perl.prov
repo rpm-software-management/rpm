@@ -84,7 +84,7 @@ sub process_file {
   
   open(FILE, "<$file") || return;
 
-  my ($package, $version) = ();
+  my ($package, $version, $incomment, $inover) = ();
 
   while (<FILE>) {
     
@@ -94,12 +94,24 @@ sub process_file {
     # properly belongs in the over/back section) but people do not
     # read the perldoc.
 
-    if ( (m/^=(head1|head2|pod|item)/) .. (m/^=(cut)/) ) {
-      next;
+    if (m/^=(head1|head2|pod|item)/) {
+      $incomment = 1;
+    }
+
+    if (m/^=(cut)/) {
+      $incomment = 0;
     }
     
-    if ( (m/^=(over)/) .. (m/^=(back)/) ) {
-      next;
+    if (m/^=(over)/) {
+      $inover = 1;
+    }
+
+    if (m/^=(back)/) {
+      $inover = 0;
+    }
+
+    if ($incomment || $inover) {
+       next;
     }
     
     # skip the data section
@@ -123,9 +135,9 @@ sub process_file {
 
     # here are examples of VERSION lines from the perl distribution
 
-    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
-    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.4 $, 10;
-    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.4 $)[1];
+    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/);
+    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.5 $, 10;
+    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.5 $)[1];
     #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
 
     if ( 
