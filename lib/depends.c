@@ -284,8 +284,17 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &name, &count);
 
     if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
+	Header h2;
+
 	for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	    removePackage(rpmdep, dbiIndexRecordOffset(matches, i), alNum);
+	    h2 = rpmdbGetRecord(rpmdep->db, dbiIndexRecordOffset(matches, i));
+	    if (h2) {
+		if (rpmVersionCompare(h, h2)) {
+		    removePackage(rpmdep, dbiIndexRecordOffset(matches, i), 
+				  alNum);
+		}
+		headerFree(h2);
+	    }
 	}
 
 	dbiFreeIndexRecord(matches);
