@@ -49,6 +49,7 @@ void dumpHeader(Header h, FILE *f, int flags);
 
 int getEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
 int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+int modifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
 int isEntry(Header h, int_32 tag);
 

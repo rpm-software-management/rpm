@@ -536,6 +536,52 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     return 1;
 }
 
+int modifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
+{
+    struct indexEntry *index;
+
+    /* First find the tag */
+    index = findEntry(h, tag);
+    if (! index) {
+	return 0;
+    }
+
+    if (type != ntohl(index->type)) {
+	return 0;
+    }
+
+    if (c != 1) {
+	return 0;
+    }
+
+    if (ntohl(index->count) != 1) {
+	return 0;
+    }
+    
+    switch ((int) ntohl(index->type)) {
+    case INT64_TYPE:
+	*((int_64 *)(h->data + ntohl(index->offset))) = *((int_64 *)p);
+	break;
+    case INT32_TYPE:
+	*((int_32 *)(h->data + ntohl(index->offset))) = *((int_32 *)p);
+	break;
+    case INT16_TYPE:
+	*((int_16 *)(h->data + ntohl(index->offset))) = *((int_16 *)p);
+	break;
+    case INT8_TYPE:
+	*((int_8 *)(h->data + ntohl(index->offset))) = *((int_8 *)p);
+	break;
+    case BIN_TYPE:
+    case CHAR_TYPE:
+	*((char *)(h->data + ntohl(index->offset))) = *((char *)p);
+	break;
+    default:
+	return 0;
+    }
+
+    return 1;
+}
+
 /********************************************************************/
 
 /*
