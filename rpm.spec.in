@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.14
+Release: 0.15
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jan  2 2001 Jeff Johnson <jbj@redhat.com>
+- fix apidocs.
+
 * Mon Jan  1 2001 Jeff Johnson <jbj@redhat.com>
 - use popt autohelp for rpm helper binaries.
 
