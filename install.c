@@ -33,6 +33,7 @@ static void printHash(const unsigned long amount, const unsigned long total) {
 static void printPercent(const unsigned long amount, const unsigned long total) 
 {
     printf("%%%% %f\n", (float) (((float) amount) / total) * 100);
+    fflush(stdout);
 }
 
 void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) {
