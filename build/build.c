@@ -148,13 +148,15 @@ int execPart(Spec s, char *sb, char *name, int builddir)
 static void doSweep(Spec s)
 {
     char buf[1024];
-    
-    struct Script *script;
-    script = openScript(s, 0, "sweep");
-    sprintf(buf, "rm -rf %s\n", build_subdir);
-    writeScript(script, buf);
-    execScript(script);
-    freeScript(script);
+
+    if (strcmp(build_subdir, ".")) {
+        struct Script *script;
+        script = openScript(s, 0, "sweep");
+        sprintf(buf, "rm -rf %s\n", build_subdir);
+        writeScript(script, buf);
+        execScript(script);
+        freeScript(script);
+    }
 }
 
 static int doSetupMacro(Spec spec, StringBuf sb, char *line)
