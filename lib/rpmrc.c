@@ -87,7 +87,9 @@ static struct tableType tables[RPM_MACHTABLE_COUNT] = {
 
 /* this *must* be kept in alphabetical order */
 static struct rpmOption optionTable[] = {
+    { "arch",			RPMVAR_ARCH,			0, 1 },
     { "builddir",		RPMVAR_BUILDDIR,		0, 0 },
+    { "buildplatform",		RPMVAR_BUILDPLATFORM,           0, 1 },
     { "buildroot",              RPMVAR_BUILDROOT,               0, 0 },
     { "buildshell",             RPMVAR_BUILDSHELL,              0, 0 },
     { "bzip2bin",		RPMVAR_BZIP2BIN,		0, 1 },
@@ -99,11 +101,13 @@ static struct rpmOption optionTable[] = {
     { "ftpport",		RPMVAR_FTPPORT,			0, 0 },
     { "ftpproxy",		RPMVAR_FTPPROXY,		0, 0 },
     { "gzipbin",		RPMVAR_GZIPBIN,			0, 1 },
+    { "include",		RPMVAR_INCLUDE,			0, 1 },
     { "instchangelog",		RPMVAR_INSTCHANGELOG,		0, 0 },
     { "langpatt",               RPMVAR_LANGPATT,                0, 0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0 },
     { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0 },
+    { "os",			RPMVAR_OS,                      0, 1 },
     { "packager",               RPMVAR_PACKAGER,                0, 0 },
     { "pgp_name",               RPMVAR_PGP_NAME,                0, 0 },
     { "pgp_path",               RPMVAR_PGP_PATH,                0, 0 },
@@ -170,11 +174,15 @@ static void machFindEquivs(struct machCache * cache,
 			     struct machEquivTable * table,
 			     char * key);
 
+static char * ProcessInclude(char * original);
+
 
 static int optionCompare(const void * a, const void * b) {
     return strcasecmp(((struct rpmOption *) a)->name,
 		      ((struct rpmOption *) b)->name);
 }
+
+
 
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache, 
 						  char * key) {
@@ -424,6 +432,9 @@ static char *lookupInDefaultTable(char *name, struct defaultEntry *table,
 }
 
 int rpmReadConfigFiles(char * file, char * arch, char * os, int building) {
+
+    rpmSetMachine(arch, os);
+
     if (rpmReadRC(file)) return -1;
 
     if (building)
@@ -453,11 +464,18 @@ static void setPathDefault(int var, char * s) {
 }
 
 static void setDefaults(void) {
+    char * arch, * os;
+
     rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
     rpmSetVar(RPMVAR_SIGTYPE, "none");
     rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
     rpmSetVar(RPMVAR_TOPDIR, "/usr/src/redhat");
     rpmSetVar(RPMVAR_BUILDSHELL, "/bin/sh");
+    defaultMachine(&arch, &os);
+    rpmSetVar(RPMVAR_ARCH,arch);
+    rpmSetVar(RPMVAR_OS,os);
+
+
 }
 
 int rpmReadRC(char * file) {
@@ -533,6 +551,8 @@ static int doReadRC(int fd, char * filename) {
     struct rpmOption searchOption, * option;
     int i;
     int gotit;
+    int fdinclude;
+    char * filetoinclude;
 
     fstat(fd, &sb);
     next = buf = alloca(sb.st_size + 2);
@@ -587,6 +607,23 @@ static int doReadRC(int fd, char * filename) {
 		      option->name, filename, linenum);
 		return 1;
 	    }
+
+            if (option->var == RPMVAR_INCLUDE) {
+
+               filetoinclude = ProcessInclude(start);
+
+               fdinclude = open(filetoinclude, O_RDONLY);
+               if (fdinclude >= 0) {
+                 doReadRC(fdinclude,filetoinclude);
+                 close(fd);
+                 free(filetoinclude);
+               } else {
+                 rpmError(RPMERR_RPMRC, 
+                   _("included file %s at %s:%d cannot be opened"),
+		   filetoinclude, filename, linenum);
+                 return 1;
+               }
+            }
 
 	    if (option->archSpecific) {
 		chptr = start;
@@ -999,3 +1036,71 @@ int rpmShowRC(FILE *f)
     
     return 0;
 }
+
+static char * ProcessInclude(char * original) {
+
+#define MODE_COPYING 1
+#define MODE_MACRO 0
+
+  int mode = MODE_COPYING;
+  char final[2048];
+  int startmacro = 0;
+  int i, finalpos;
+  char *valtosub,vartosub[1024];
+  char * result;
+  struct rpmOption searchOption, * option;
+
+  finalpos = 0;
+  for (i=0;i<strlen(original); i++) {
+    if (mode == MODE_MACRO) {
+      if ((original[i] == '.')
+         || (original[i] == ' ')
+         || (original[i] == '/')
+         || (original[i] == '%')) {
+         mode = MODE_COPYING;
+
+         /* substitute the variable here */
+         vartosub[i-startmacro-1]= '\0';
+         final[finalpos]='\0';
+
+         searchOption.name = vartosub;
+         option = bsearch(&searchOption, optionTable, optionTableSize,
+			 sizeof(struct rpmOption), optionCompare);
+
+         if (!option) {
+           rpmError(RPMERR_RPMRC, _("The variable \%%%s does not exist\n"), 
+              vartosub);
+           exit(1);
+         }
+
+         valtosub = rpmGetVar(option->var);
+         if (!valtosub) {
+           rpmError(RPMERR_RPMRC, _("The variable \%%%s is not defined"), 
+              vartosub);
+           exit(1);
+         }
+         strcat(final,valtosub);
+         finalpos = finalpos + strlen(valtosub);
+      } else {
+        vartosub[i-startmacro-1]=original[i];
+      }
+    }
+    if (mode == MODE_COPYING) {
+      if (original[i]!='%') {
+        final[finalpos] = original[i];
+        finalpos++;
+      } else {
+        mode = MODE_MACRO;
+        startmacro=i;
+      }
+    }
+  }
+
+  final[finalpos]='\0';
+
+  result = malloc(strlen(final))+1;
+  strcpy(result,final);
+  return result;
+}
+
+

@@ -240,8 +240,12 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVAR_INSTCHANGELOG            40
 #define RPMVAR_BZIP2BIN     		41
 #define RPMVAR_LANGPATT                 42
+#define RPMVAR_INCLUDE                  43
+#define RPMVAR_ARCH                     44
+#define RPMVAR_OS                       45
+#define RPMVAR_BUILDPLATFORM            46
 
-#define RPMVAR_NUM			43     /* number of RPMVAR entries */
+#define RPMVAR_NUM			47     /* number of RPMVAR entries */
 
 char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
