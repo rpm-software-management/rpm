@@ -458,6 +458,7 @@ exit 0
 %changelog
 * Fri Dec 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.32
 - dynamically link /bin/rpm, link against good old -lpthread.
+- test pthread_{mutex,cond}attr_setpshared(), add DB_ENV_PRIVATE if not.
 
 * Thu Dec 19 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.31
 - statically link against /usr/lib/nptl/libpthread.a, if present.

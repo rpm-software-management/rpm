@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-19 18:36-0500\n"
+"POT-Creation-Date: 2002-12-20 11:00-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -3092,40 +3092,40 @@ msgstr ""
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:243
+#: rpmdb/db3.c:287
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:719
+#: rpmdb/db3.c:769
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:786
+#: rpmdb/db3.c:836
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1016
+#: rpmdb/db3.c:1066
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1249
+#: rpmdb/db3.c:1299
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1251
+#: rpmdb/db3.c:1301
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1251
+#: rpmdb/db3.c:1301
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1255
+#: rpmdb/db3.c:1305
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""

@@ -213,6 +213,50 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
     return 0;
 }
 
+#if HAVE_LIBPTHREAD
+#if HAVE_PTHREAD_H
+#include <pthread.h>
+#endif
+
+static int db3_pthread_nptl(void)
+	/*@*/
+{
+    pthread_mutex_t mutex;
+    pthread_mutexattr_t mutexattr, *mutexattrp = NULL;
+    pthread_cond_t cond;
+    pthread_condattr_t condattr, *condattrp = NULL;
+    int ret = 0;
+
+    ret = pthread_mutexattr_init(&mutexattr);
+    if (ret == 0) {
+	ret = pthread_mutexattr_setpshared(&mutexattr, PTHREAD_PROCESS_SHARED);
+	mutexattrp = &mutexattr;
+    }
+
+    if (ret == 0)
+	ret = pthread_mutex_init(&mutex, mutexattrp);
+    if (mutexattrp != NULL)
+	pthread_mutexattr_destroy(mutexattrp);
+    (void) pthread_mutex_destroy(&mutex);
+    if (ret)
+	return ret;
+
+    ret = pthread_condattr_init(&condattr);
+    if (ret == 0) {
+	ret = pthread_condattr_setpshared(&condattr, PTHREAD_PROCESS_SHARED);
+	condattrp = &condattr;
+    }
+
+    if (ret == 0)
+	ret = pthread_cond_init(&cond, condattrp);
+
+    if (condattrp != NULL)
+	(void)pthread_condattr_destroy(condattrp);
+    (void) pthread_cond_destroy(&cond);
+    return ret;
+}
+#endif
+
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
@@ -246,6 +290,12 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     /* XXX Can't do RPC w/o host. */
     if (dbi->dbi_host == NULL)
 	dbi->dbi_ecflags &= ~DB_CLIENT;
+
+#if HAVE_LIBPTHREAD
+    /* XXX Set DB_ENV_PRIVATE if not nptl. */
+    if (db3_pthread_nptl())
+	dbi->dbi_ecflags |= DB_ENV_PRIVATE;
+#endif
 
     /* XXX Set a default shm_key. */
     if ((dbi->dbi_eflags & DB_SYSTEM_MEM) && dbi->dbi_shmkey == 0) {

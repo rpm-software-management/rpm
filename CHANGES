@@ -61,6 +61,7 @@
 	- remove popt aliases for -U et al.
 	- add -I/usr/include/nptl, Conflicts: kernel < 2.4.20.
 	- dynamically link /bin/rpm, link against good old -lpthread.
+	- test pthread_{mutex,cond}attr_setpshared(), add DB_ENV_PRIVATE if not.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
