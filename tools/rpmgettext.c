@@ -729,16 +729,22 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
 
     /* Inject new strings into header tags */
     if ((rc = headerInject(spec->packages->header, poTags, mlp)) != 0)
-	return rc;
+	goto exit;
 
     /* Rewrite the rpm */
     if (lead.type == RPMLEAD_SOURCE) {
-	return writeRPM(spec->packages->header, fno, (int)lead.type,
+	rc = writeRPM(spec->packages->header, fno, (int)lead.type,
 		csa, spec->passPhrase, &(spec->cookie));
     } else {
-	return writeRPM(spec->packages->header, fno, (int)lead.type,
+	rc = writeRPM(spec->packages->header, fno, (int)lead.type,
 		csa, spec->passPhrase, NULL);
     }
+
+exit:
+    if (csa->cpioFdIn >= 0)
+	close(csa->cpioFdIn);
+    return rc;
+
 }
 
 /* ================================================================== */
