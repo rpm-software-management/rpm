@@ -369,7 +369,7 @@ static int runScript(Header h, char * root, int progArgc, char ** progArgv,
     char * fn;
     int fd;
     int i;
-    int freePrefixes;
+    int freePrefixes = 0;
     int pipes[2];
     int out = 1;
 
