@@ -1,5 +1,6 @@
 0.65  2003-12-08 cturner
 	* add RPM2->open_hdlist to read hdlists created by anaconda's genhdlist
+	* fix some typemap entries to allow compilation on older gcc's onces again
 
 0.63  2003-03-16 cturner
 	* add support for install/erase from James Olin Oden; experimental but looks solid.  API may change.
