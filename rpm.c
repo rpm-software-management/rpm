@@ -1170,7 +1170,7 @@ int main(int argc, char ** argv) {
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    if (doSourceInstall("/", pkg, &specFile))
+	    if (doSourceInstall("/", pkg, &specFile, NULL))
 		exit(1);
 
 	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
