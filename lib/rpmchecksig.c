@@ -27,10 +27,10 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
     /* open a file and set *fdp */
     if (*fdp == NULL && fnp && *fnp) {
 	mode_t mode = (flags & O_CREAT) ? 0644 : 0;
-	fd = fdOpen(*fnp, flags, mode);
+	fd = fdio->open(*fnp, flags, mode);
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
-	    fprintf(stderr, _("%s: fdOpen failed: %s\n"), *fnp,
+	    fprintf(stderr, _("%s: open failed: %s\n"), *fnp,
 		strerror(errno));
 	    return 1;
 	}

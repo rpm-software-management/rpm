@@ -58,6 +58,7 @@ int inet_aton(const char *cp, struct in_addr *inp);
 #endif
 
 #include <rpmurl.h>
+/*@access urlinfo@*/
 
 #ifdef __MINT__
 # ifndef EAGAIN
@@ -84,7 +85,7 @@ void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCoun
     urlNotifyCount = (notifyCount >= 0) ? notifyCount : 4096;
 }
 
-static int checkResponse(int fd, int secs, int *ecp, /*@out@*/char ** str) {
+static int checkResponse(int fd, int secs, int *ecp, /*@out@*/ char ** str) {
     static char buf[BUFFER_SIZE + 1];
     int bufLength = 0; 
     fd_set emptySet, readSet;
@@ -190,7 +191,7 @@ static int checkResponse(int fd, int secs, int *ecp, /*@out@*/char ** str) {
     return rc;
 }
 
-static int ftpCheckResponse(urlinfo *u, /*@out@*/char ** str) {
+static int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str) {
     int ec = 0;
     int rc =  checkResponse(u->ftpControl, ftpTimeoutSecs, &ec, str);
 
@@ -209,7 +210,7 @@ static int ftpCheckResponse(urlinfo *u, /*@out@*/char ** str) {
     return rc;
 }
 
-static int ftpCommand(urlinfo *u, char * command, ...) {
+static int ftpCommand(urlinfo u, char * command, ...) {
     va_list ap;
     int len;
     char * s;
@@ -312,7 +313,7 @@ static int tcpConnect(const char *host, int port)
     return sock;
 }
 
-int httpOpen(urlinfo *u)
+int httpOpen(urlinfo u)
 {
     int sock;
     const char *host;
@@ -364,7 +365,7 @@ int httpOpen(urlinfo *u)
     return sock;
 }
 
-int ftpOpen(urlinfo *u)
+int ftpOpen(urlinfo u)
 {
     const char * host;
     const char * user;
@@ -422,7 +423,7 @@ errxit:
     return rc;
 }
 
-static int copyData( /*@only@*/ FD_t sfd, FD_t tfd) {
+static int copyData( /*@killref@*/ FD_t sfd, FD_t tfd) {
     char buf[BUFFER_SIZE];
     fd_set emptySet, readSet;
     struct timeval timeout;
@@ -487,10 +488,13 @@ static int copyData( /*@only@*/ FD_t sfd, FD_t tfd) {
 }
 
 int ftpAbort(FD_t fd) {
-    urlinfo *u = ufdGetUrlinfo(fd);
+    urlinfo u = ufdGetUrlinfo(fd);
     char buf[BUFFER_SIZE];
     int rc;
     int tosecs = ftpTimeoutSecs;
+
+    if (u == NULL)
+	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
     DBG(fdDebug(fd), (stderr, "-> ABOR\n"));
 
@@ -500,6 +504,7 @@ int ftpAbort(FD_t fd) {
     if (write(u->ftpControl, buf, 7) != 7) {
 	close(u->ftpControl);
 	u->ftpControl = -1;
+	urlFree(u, "ufdGetUrlinfo (from ftpAbort #1)");
 	return FTPERR_SERVER_IO_ERROR;
     }
     if (Fileno(fd) >= 0) {
@@ -515,11 +520,15 @@ int ftpAbort(FD_t fd) {
     ftpTimeoutSecs = tosecs;
 
     if (Fileno(fd) >= 0)
-	Fclose(fd);
+	fdio->close(fd);
+    urlFree(u, "ufdGetUrlinfo (from ftpAbort)");
     return 0;
 }
 
-static int ftpGetFileDone(urlinfo *u) {
+static int ftpGetFileDone(urlinfo u) {
+    if (u == NULL)
+	return FTPERR_UNKNOWN;	/* XXX W2DO? */
+
     if (u->ftpGetFileDoneNeeded) {
 	u->ftpGetFileDoneNeeded = 0;
 	if (ftpCheckResponse(u, NULL))
@@ -530,7 +539,7 @@ static int ftpGetFileDone(urlinfo *u) {
 
 int ftpGetFileDesc(FD_t fd)
 {
-    urlinfo * u = ufdGetUrlinfo(fd);
+    urlinfo u = ufdGetUrlinfo(fd);
     const char *remotename;
     struct sockaddr_in dataAddress;
     int i, j;
@@ -538,6 +547,9 @@ int ftpGetFileDesc(FD_t fd)
     char * chptr;
     char * retrCommand;
     int rc;
+
+    if (u == NULL)
+	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
     remotename = u->path;
 
@@ -551,11 +563,15 @@ int ftpGetFileDesc(FD_t fd)
 	rc = ftpGetFileDone(u);
 
     DBG(fdDebug(fd), (stderr, "-> PASV\n"));
-    if (write(u->ftpControl, "PASV\r\n", 6) != 6)
+    if (write(u->ftpControl, "PASV\r\n", 6) != 6) {
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #1)");
 	return FTPERR_SERVER_IO_ERROR;
+    }
 
-    if ((rc = ftpCheckResponse(u, &passReply)))
+    if ((rc = ftpCheckResponse(u, &passReply))) {
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #2)");
 	return FTPERR_PASSIVE_ERROR;
+    }
 
     chptr = passReply;
     while (*chptr && *chptr != '(') chptr++;
@@ -578,6 +594,7 @@ int ftpGetFileDesc(FD_t fd)
 
     dataAddress.sin_family = AF_INET;
     if (sscanf(chptr, "%d,%d", &i, &j) != 2) {
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #3)");
 	return FTPERR_PASSIVE_ERROR;
     }
     dataAddress.sin_port = htons((((unsigned)i) << 8) + j);
@@ -587,12 +604,16 @@ int ftpGetFileDesc(FD_t fd)
 	if (*chptr == ',') *chptr = '.';
     }
 
-    if (!inet_aton(passReply, &dataAddress.sin_addr)) 
+    if (!inet_aton(passReply, &dataAddress.sin_addr)) {
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #4)");
 	return FTPERR_PASSIVE_ERROR;
+    }
 
     ufdSetFd(fd, socket(AF_INET, SOCK_STREAM, IPPROTO_IP));
-    if (Fileno(fd) < 0)
+    if (Fileno(fd) < 0) {
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #5)");
 	return FTPERR_FAILED_CONNECT;
+    }
 
     retrCommand = alloca(strlen(remotename) + 20);
     sprintf(retrCommand, "RETR %s\r\n", remotename);
@@ -603,20 +624,24 @@ int ftpGetFileDesc(FD_t fd)
 	if (errno == EINTR)
 	    continue;
 	Fclose(fd);
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #6)");
 	return FTPERR_FAILED_DATA_CONNECT;
     }
 
     DBG(fdDebug(fd), (stderr, "-> %s", retrCommand));
     if (write(u->ftpControl, retrCommand, i) != i) {
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #7)");
 	return FTPERR_SERVER_IO_ERROR;
     }
 
     if ((rc = ftpCheckResponse(u, NULL))) {
 	Fclose(fd);
+	urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc #8)");
 	return rc;
     }
 
     u->ftpGetFileDoneNeeded = 1;
+    urlFree(u, "ufdGetUrlinfo (from ftpGetFileDesc)");
     return 0;
 }
 
@@ -627,27 +652,37 @@ int httpGetFile(FD_t sfd, FD_t tfd) {
 int ftpGetFile(FD_t sfd, FD_t tfd)
 {
     /* XXX sfd will be freed by copyData -- grab sfd->fd_url now */
-    urlinfo * sfu = ufdGetUrlinfo(sfd);
+    urlinfo sfu = ufdGetUrlinfo(sfd);
     int rc;
 
     /* XXX normally sfd = ufdOpen(...) and this code does not execute */
     if (Fileno(sfd) < 0 && (rc = ftpGetFileDesc(sfd)) < 0) {
 	Fclose(sfd);
+	urlFree(sfu, "ufdGetUrlinfo (from ftpGetFile #1)");
 	return rc;
     }
 
     rc = copyData(sfd, tfd);
-    if (rc < 0)
+    if (rc < 0) {
+	urlFree(sfu, "ufdGetUrlinfo (from ftpGetFile #2)");
 	return rc;
+    }
 
-    return ftpGetFileDone(sfu);
+    rc = ftpGetFileDone(sfu);
+    urlFree(sfu, "ufdGetUrlinfo (from ftpGetFile)");
+    return rc;
 }
 
 int ftpClose(FD_t fd) {
-    urlinfo * u = ufdGetUrlinfo(fd);
-    int fdno = u->ftpControl;
-    if (fdno >= 0)
+    urlinfo u = ufdGetUrlinfo(fd);
+    int fdno;
+
+    if (u == NULL)
+	return FTPERR_UNKNOWN;	/* XXX W2DO? */
+
+    if ((fdno = u->ftpControl) >= 0)
 	close(fdno);
+    urlFree(u, "ufdGetUrlinfo (from ftpClose)");
     return 0;
 }
 

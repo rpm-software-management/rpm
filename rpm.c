@@ -1401,7 +1401,7 @@ int main(int argc, const char ** argv)
     /* keeps memory leak checkers quiet */
     freeNames();
     freeFilesystems();
-    freeUrlinfoCache();
+    urlFreeCache();
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
     if (ba->buildRootOverride) xfree(ba->buildRootOverride);
     if (ba->targets) free(ba->targets);

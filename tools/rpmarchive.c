@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
     } else {
-	fdi = fdOpen(argv[1], O_RDONLY, 0644);
+	fdi = ufdio->open(argv[1], O_RDONLY, 0644);
     }
 
     readLead(fdi, &lead);

@@ -29,7 +29,7 @@ typedef enum {
     URL_IS_HTTP		= 4
 } urltype;
 
-typedef struct urlinfo {
+typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
     const char *url;		/* copy of original url */
     const char *service;
     const char *user;
@@ -44,7 +44,8 @@ typedef struct urlinfo {
     int ftpControl;
     int ftpGetFileDoneNeeded;
     int openError;		/* Type of open failure */
-} urlinfo;
+/*@refs@*/ int nrefs;
+} *urlinfo;
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,21 +54,31 @@ extern "C" {
 /*@observer@*/ const char *const ftpStrerror(int ftpErrno);
 
 void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount);
-int	httpOpen(urlinfo *u);
-int	ftpOpen(urlinfo *u);
+int	httpOpen(urlinfo u);
+int	ftpOpen(urlinfo u);
 
-int	httpGetFile( /*@only@*/ FD_t sfd, FD_t tfd);
-int	ftpGetFile( /*@only@*/ FD_t sfd, FD_t tfd);
+int	httpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
+int	ftpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 int	ftpGetFileDesc(FD_t);
-int	ftpAbort( /*@only@*/ FD_t fd);
-int	ftpClose( /*@only@*/ FD_t fd);
+int	ftpAbort( /*@killref@*/ FD_t fd);
+int	ftpClose( /*@killref@*/ FD_t fd);
 
-/*@only@*/ urlinfo	*newUrlinfo(void);
-void	freeUrlinfo( /*@only@*/ urlinfo *u);
-void	freeUrlinfoCache(void);
+urlinfo	urlLink(urlinfo u, const char *msg);
+urlinfo	XurlLink(urlinfo u, const char *msg, const char *file, unsigned line);
+#define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
+
+urlinfo	urlNew(const char *msg);
+urlinfo	XurlNew(const char *msg, const char *file, unsigned line);
+#define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
+
+void	urlFree( /*@killref@*/ urlinfo u, const char *msg);
+void	XurlFree( /*@killref@*/ urlinfo u, const char *msg, const char *file, unsigned line);
+#define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
+
+void	urlFreeCache(void);
 
 urltype	urlIsURL(const char * url);
-int 	urlSplit(const char *url, /*@out@*/ urlinfo **u);
+int 	urlSplit(const char *url, /*@out@*/ urlinfo *u);
 
 int	urlGetFile(const char * url, const char * dest);
 

@@ -23,14 +23,16 @@
 #define RPMERR_BADSPEC stderr
 #undef	_
 #define	_(x)	x
-#define	xfree(_p)	free((void *)_p)
+#define	xfree(_p)		free((void *)_p)
 typedef	int FD_t;
-#define	Ferror(_x)	(_x)
-#define	fdOpen		open
+#define	Ferror(_x)		(_x)
+#define	fdOpen			open
 #define	Fread(_b, _s, _n, _fd)	read(_fd, _b, _s)
 #define	Fclose(_fd)		close(_fd)
 #else
 #include <rpmlib.h>
+#include <rpmio.h>
+#define	fdOpen			fdio->open
 #endif
 
 #include <rpmmacro.h>

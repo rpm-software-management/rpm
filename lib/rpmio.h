@@ -6,28 +6,51 @@
 #include <unistd.h>
 #include <stdio.h>
 
-typedef	/*@abstract@*/ struct _FD {
-	int		fd_fd;		/* file descriptor */
-/*@owned@*/ void *	fd_bzd;		/* bzdio: I/O cookie */
-/*@owned@*/ void *	fd_gzd;		/* gzdio: I/O cookie */
-/*@dependent@*/ void *	fd_url;		/* ufdio: URL info */
-/*@observer@*/ const void *fd_errcookie;/* opaque error token */
-	int		fd_errno;	/* last system errno encountered */
-/*@observer@*/ const char *fd_errstr;
-	int		fd_flags;
-	unsigned int	firstFree;	/* fadio: */
-	long int	fileSize;	/* fadio: */
-	long int	fd_cpioPos;	/* cfdio: */
-	long int	fd_pos;
-/*@dependent@*/ cookie_io_functions_t * fd_io;
-} *FD_t;
+typedef	/*@abstract@*/ /*@refcounted@*/ struct _FD_s * FD_t;
+typedef /*@observer@*/ struct FDIO_s * FDIO_t;
+
+typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie, const char *msg, const char *file, unsigned line);
+typedef /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd, const char *msg, const char *file, unsigned line);
+
+typedef /*@null@*/ FD_t fdio_new_function_t (FDIO_t iop, const char *msg, const char *file, unsigned line);
+
+typedef int fdio_fileno_function_t (void * cookie);
+
+typedef FD_t fdio_open_function_t (const char *path, int flags, mode_t mode);
+
+typedef int fdio_mkdir_function_t (const char *path, mode_t mode);
+typedef int fdio_chdir_function_t (const char *path);
+typedef int fdio_rmdir_function_t (const char *path);
+typedef int fdio_rename_function_t (const char *oldpath, const char *newpath);
+typedef int fdio_unlink_function_t (const char *path);
+
+struct FDIO_s {
+  cookie_read_function_t *read;
+  cookie_write_function_t *write;
+  cookie_seek_function_t *seek;
+  cookie_close_function_t *close;
+
+  fdio_ref_function_t *ref;
+  fdio_deref_function_t *deref;
+  fdio_new_function_t *new;
+  fdio_fileno_function_t *fileno;
+
+  fdio_open_function_t *open;
+#ifdef NOTYET
+  fdio_mkdir_function_t *mkdir;
+  fdio_chdir_function_t *chdir;
+  fdio_rmdir_function_t *rmdir;
+  fdio_rename_function_t *rename;
+  fdio_unlink_function_t *unlink;
+#endif
+};
 
 /*@observer@*/ const char * Fstrerror(FD_t fd);
 
 size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
 size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 int	Fseek	(FD_t fd, long int offset, int whence);
-int	Fclose	( /*@only@*/ FD_t fd);
+int	Fclose	( /*@killref@*/ FD_t fd);
 FILE *	Fopen	(const char * path, const char * fmode);
 
 int	Ferror	(FD_t fd);
@@ -54,31 +77,31 @@ extern "C" {
 
 int timedRead(FD_t fd, /*@out@*/void * bufptr, int length);
 
-extern /*@only@*/ /*@null@*/ FD_t fdNew(cookie_io_functions_t * iop);
-extern int fdValid(FD_t fd);
+/*@null@*/ const FDIO_t fdGetIoCookie(FD_t fd);
+void fdSetIoCookie(FD_t fd, FDIO_t iop);
+#define	fdLink(_fd, _msg)	fdio->ref(_fd, _msg, __FILE__, __LINE__)
+#define	fdFree(_fd, _msg)	fdio->deref(_fd, _msg, __FILE__, __LINE__)
+#define	fdNew(_iop, _msg)	fdio->new(_iop, _msg, __FILE__, __LINE__)
 
-extern /*@only@*/ /*@null@*/ FD_t fdOpen(const char * pathname, int flags, mode_t mode);
-extern /*@only@*/ /*@null@*/ FD_t fdDup(int fdno);
-extern /*@dependent@*/ /*@null@*/ FILE *fdFdopen( /*@only@*/ FD_t fd, const char * mode);
+extern /*@null@*/ FD_t fdDup(int fdno);
+extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 
-/*@observer@*/ /*@null@*/ const cookie_io_functions_t * fdGetIoCookie(FD_t fd);
-void fdSetIoCookie(FD_t fd, cookie_io_functions_t * io);
-
+long int fdGetCpioPos(FD_t fd);
+void fdSetCpioPos(FD_t fd, long int cpioPos);
 int fdDebug(FD_t fd);
 void fdDebugOn(FD_t fd);
 void fdDebugOff(FD_t fd);
 
-extern cookie_io_functions_t fdio;
+/*@observer@*/ extern FDIO_t fdio;
 
 /*
  * Support for FTP/HTTP I/O.
  */
-/*@only@*/ FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
-/*@dependent@*/ void * ufdGetUrlinfo(FD_t fd);
+/*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
 void ufdSetFd(FD_t fd, int fdno);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
-extern cookie_io_functions_t ufdio;
+/*@observer@*/ extern FDIO_t ufdio;
 
 /*
  * Support for first fit File Allocation I/O.
@@ -89,7 +112,7 @@ void fadSetFileSize(FD_t fd, long int fileSize);
 unsigned int fadGetFirstFree(FD_t fd);
 void fadSetFirstFree(FD_t fd, unsigned int firstFree);
 
-extern cookie_io_functions_t fadio;
+/*@observer@*/ extern FDIO_t fadio;
 
 #ifdef	HAVE_ZLIB_H
 /*
@@ -100,13 +123,13 @@ extern cookie_io_functions_t fadio;
 
 extern /*@dependent@*/ /*@null@*/ gzFile * gzdFileno(FD_t fd);
 
-extern /*@only@*/ /*@null@*/ FD_t gzdOpen(const char * pathname, const char * mode);
+extern /*@null@*/ FD_t gzdOpen(const char * pathname, const char * mode);
 
-extern /*@only@*/ /*@null@*/ FD_t gzdFdopen( /*@only@*/ FD_t fd, const char * mode);
+extern /*@null@*/ FD_t gzdFdopen( /*@only@*/ void * cookie, const char * mode);
 
 extern int gzdFlush(FD_t fd);
 
-extern cookie_io_functions_t gzdio;
+/*@observer@*/ extern FDIO_t gzdio;
 
 #endif	/* HAVE_ZLIB_H */
 
@@ -119,13 +142,13 @@ extern cookie_io_functions_t gzdio;
 
 extern /*@dependent@*/ /*@null@*/ BZFILE * bzdFileno(FD_t fd);
 
-extern /*@only@*/ /*@null@*/ FD_t bzdOpen(const char * pathname, const char * mode);
+extern /*@null@*/ FD_t bzdOpen(const char * pathname, const char * mode);
 
-extern /*@only@*/ /*@null@*/ FD_t bzdFdopen( /*@only@*/ FD_t fd, const char * mode);
+extern /*@null@*/ FD_t bzdFdopen( /*@only@*/ void * cookie, const char * mode);
 
 extern int bzdFlush(FD_t fd);
 
-extern cookie_io_functions_t bzdio;
+/*@observer@*/ extern FDIO_t bzdio;
 
 #endif	/* HAVE_BZLIB_H */
 

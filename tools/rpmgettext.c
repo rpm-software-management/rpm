@@ -761,7 +761,7 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
     DPRINTF(99, ("rewriteBinaryRPM(\"%s\",\"%s\",%p)\n", fni, fno, mlp));
 
     csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = fdNew(&fdio);
+    csa->cpioFdIn = fdNew(fdio, "init (rewriteBinary)");
     csa->cpioList = NULL;
     csa->cpioCount = 0;
     csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
@@ -836,7 +836,7 @@ rpmgettext(FD_t fd, const char *file, FILE *ofp)
 	    }
 	}
 
-	fd = fdOpen(fni, O_RDONLY, 0644);
+	fd = fdio->open(fni, O_RDONLY, 0644);
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
 	    fprintf(stderr, _("rpmgettext: open %s: %s\n"), fni, strerror(errno));

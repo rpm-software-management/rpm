@@ -43,12 +43,12 @@ FD_t fadOpen(const char * path, int flags, int perms)
     if (flags & O_WRONLY)
 	return NULL;
 
-    fd = ufdOpen(path, flags, perms);
+    fd = ufdio->open(path, flags, perms);
     if (Ferror(fd))
 	/* XXX Fstrerror */
 	return NULL;
 
-    fdSetIoCookie(fd, &fadio);
+    fdSetIoCookie(fd, fadio);
     fadSetFirstFree(fd, 0);
     fadSetFileSize(fd, Fseek(fd, 0, SEEK_END));
 

@@ -145,7 +145,7 @@ char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header) {
     char * rc;
     FD_t fd;
 
-    fd = fdOpen(filename, O_RDONLY, 0);
+    fd = fdio->open(filename, O_RDONLY, 0);
     if (Ferror(fd))
 	/* XXX Fstrerror */
 	return strerror(errno);

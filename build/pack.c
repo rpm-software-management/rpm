@@ -63,7 +63,7 @@ int packageSources(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew(&fdio);
+	csa->cpioFdIn = fdNew(fdio, "init (packageSources)");
 	csa->cpioList = spec->sourceCpioList;
 	csa->cpioCount = spec->sourceCpioCount;
 
@@ -160,7 +160,7 @@ int packageBinaries(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew(&fdio);
+	csa->cpioFdIn = fdNew(fdio, "init (packageBinaries)");
 	csa->cpioList = pkg->cpioList;
 	csa->cpioCount = pkg->cpioCount;
 
@@ -183,7 +183,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     int rc;
 
     if (fileName != NULL) {
-	fdi = fdOpen(fileName, O_RDONLY, 0644);
+	fdi = fdio->open(fileName, O_RDONLY, 0644);
 	if (Ferror(fdi)) {
 	    /* XXX Fstrerror */
 	    rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
@@ -312,7 +312,7 @@ int writeRPM(Header h, const char *fileName, int type,
     }
 
     /* Open the output file */
-    fd = fdOpen(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    fd = fdio->open(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     if (Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmError(RPMERR_CREATE, _("Could not open %s\n"), fileName);
@@ -376,7 +376,7 @@ int writeRPM(Header h, const char *fileName, int type,
     rpmFreeSignature(sig);
 	
     /* Append the header and archive */
-    ifd = fdOpen(sigtarget, O_RDONLY, 0);
+    ifd = fdio->open(sigtarget, O_RDONLY, 0);
     while ((count = Fread(buf, sizeof(buf), 1, ifd)) > 0) {
 	if (count == -1) {
 	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget: %s"),

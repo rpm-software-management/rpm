@@ -387,7 +387,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	default:
 	    return 1;
 	}
-	fd = fdOpen(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
+	fd = fdio->open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
     } while (Ferror(fd) && errno == EEXIST);
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {

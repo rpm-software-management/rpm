@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 int main(int argc, char ** argv)
 {
@@ -11,18 +11,18 @@ int main(int argc, char ** argv)
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
     } else {
-	fdi = fdOpen(argv[1], O_RDONLY, 0644);
+	fdi = ufdio->open(argv[1], O_RDONLY, 0644);
     }
 
-    if (Fileno(fdi) < 0) {
+    if (Ferror(fdi)) {
 	fprintf(stderr, _("cannot open %s: %s\n"), argv[1], strerror(errno));
-	exit(1);
+	exit(EXIT_FAILURE);
     }
 
     h = headerRead(fdi, HEADER_MAGIC_YES);
     if (!h) {
 	fprintf(stderr, _("headerRead error: %s\n"), strerror(errno));
-	exit(1);
+	exit(EXIT_FAILURE);
     }
     Fclose(fdi);
   

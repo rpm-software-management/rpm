@@ -543,7 +543,7 @@ int rpmReadRC(const char * rcfiles)
 	strcat(fn, r);
 
 	/* Read another rcfile */
-	fd = ufdOpen(fn, O_RDONLY, 0);
+	fd = ufdio->open(fn, O_RDONLY, 0);
 	if (Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	    if (rcfiles == defrcfiles && myrcfiles != r)
@@ -658,7 +658,7 @@ static int doReadRC(FD_t fd, const char * filename)
 		    /*@notreached@*/
 		}
 
-		fdinc = fdOpen(fn, O_RDONLY, 0);
+		fdinc = fdio->open(fn, O_RDONLY, 0);
 		if (Ferror(fdinc)) {
 		    /* XXX Fstrerror */
 		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d"),
@@ -830,7 +830,7 @@ static void defaultMachine(const char ** arch, const char ** os) {
                  !strncmp(un.release, "4.0", 3)) {
            /* we are on ncr-sysv4 */
 	   char *prelid = NULL;
-           FD_t fd = fdOpen("/etc/.relid", O_RDONLY, 0700);
+           FD_t fd = fdio->open("/etc/.relid", O_RDONLY, 0700);
            if (!Ferror(fd)) {
               chptr = (char *) xcalloc(1, 256);
               if (chptr != NULL) {

@@ -9,17 +9,34 @@
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */
 
-#include "rpmbuild.h"
-
+#include <rpmbuild.h>
+#include <rpmio.h>
 #include <rpmurl.h>
 
-typedef /*@owned@*/ urlinfo * urlinfop;
-/*@only@*/ /*@null@*/ static urlinfop *uCache = NULL;
+/*@access urlinfo@*/
+
+#define	RPMURL_DEBUG_IO		0x40000000
+#define	RPMURL_DEBUG_REFS	0x20000000
+
+static int url_debug = 0;
+#define	DBG(_f, _m, _x)	if ((url_debug | (_f)) & (_m)) fprintf _x
+
+#define DBGIO(_f, _x)	DBG((_f), RPMURL_DEBUG_IO, _x)
+#define DBGREFS(_f, _x)	DBG((_f), RPMURL_DEBUG_REFS, _x)
+
+/*@only@*/ /*@null@*/ static urlinfo *uCache = NULL;
 static int uCount = 0;
 
-urlinfo *newUrlinfo(void)
+urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
-    urlinfo *u;
+    u->nrefs++;
+DBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
+    return u;
+}
+
+urlinfo XurlNew(const char *msg, const char *file, unsigned line)
+{
+    urlinfo u;
     if ((u = xmalloc(sizeof(*u))) == NULL)
 	return NULL;
     memset(u, 0, sizeof(*u));
@@ -27,11 +44,15 @@ urlinfo *newUrlinfo(void)
     u->port = -1;
     u->ftpControl = -1;
     u->ftpGetFileDoneNeeded = 0;
-    return u;
+    u->nrefs = 0;
+    return XurlLink(u, msg, file, line);
 }
 
-void freeUrlinfo(urlinfo *u)
+void XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
+DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
+    if (--u->nrefs > 0)
+	return;
     if (u->ftpControl >= 0)
 	close(u->ftpControl);
     FREE(u->url);
@@ -44,15 +65,18 @@ void freeUrlinfo(urlinfo *u)
     FREE(u->proxyu);
     FREE(u->proxyh);
 
-    FREE(u);
+    /*@-refcounttrans@*/ FREE(u); /*@-refcounttrans@*/
 }
 
-void freeUrlinfoCache(void)
+void urlFreeCache(void)
 {
     int i;
     for (i = 0; i < uCount; i++) {
-	if (uCache[i])
-	    freeUrlinfo(uCache[i]);
+	if (uCache[i] == NULL) continue;
+	if (uCache[i]->nrefs != 1)
+	    fprintf(stderr, "==> nrefs(%d) != 1 (%s %s)\n", uCache[i]->nrefs,
+			uCache[i]->host, uCache[i]->service);
+	urlFree(uCache[i], "uCache");
     }
     if (uCache)
 	free(uCache);
@@ -69,10 +93,10 @@ static int urlStrcmp(const char *str1, const char *str2)
     return 0;
 }
 
-static void findUrlinfo(urlinfo **uret, int mustAsk)
+static void urlFind(urlinfo *uret, int mustAsk)
 {
-    urlinfo *u;
-    urlinfo **empty;
+    urlinfo u;
+    int ucx;
     int i;
 
     if (uret == NULL)
@@ -80,12 +104,12 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 
     u = *uret;
 
-    empty = NULL;
+    ucx = -1;
     for (i = 0; i < uCount; i++) {
-	urlinfo *ou;
+	urlinfo ou;
 	if ((ou = uCache[i]) == NULL) {
-	    if (empty == NULL)
-		empty = &uCache[i];
+	    if (ucx < 0)
+		ucx = i;
 	    continue;
 	}
 
@@ -109,28 +133,32 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
     }
 
     if (i == uCount) {
-	if (empty == NULL) {
-	    uCount++;
+	if (ucx < 0) {
+	    ucx = uCount++;
 	    if (uCache)
 		uCache = xrealloc(uCache, sizeof(*uCache) * uCount);
 	    else
 		uCache = xmalloc(sizeof(*uCache));
-	    empty = &uCache[i];
 	}
-	*empty = u;
+	uCache[i] = urlLink(u, "uCache (miss)");
+	urlFree(u, "urlSplit (from urlFind miss)");
     } else {
-	/* Swap original url and path into the cached structure */
+	/* XXX Swap original url and path into the cached structure */
 	const char *up = uCache[i]->path;
-	uCache[i]->path = u->path;
+	ucx = i;
+	uCache[ucx]->path = u->path;
 	u->path = up;
-	up = uCache[i]->url;
-	uCache[i]->url = u->url;
+	up = uCache[ucx]->url;
+	uCache[ucx]->url = u->url;
 	u->url = up;
-	freeUrlinfo(u);
+	urlFree(u, "urlSplit (from urlFind hit)");
     }
 
     /* This URL is now cached. */
-    *uret = u = uCache[i];
+
+    u = urlLink(uCache[i], "uCache");
+    *uret = u;
+    urlFree(u, "uCache (from urlFind)");
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
@@ -141,9 +169,9 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
 	    char * prompt;
-	    FREE(u->password);
 	    prompt = alloca(strlen(u->host) + strlen(u->user) + 40);
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
+	    FREE(u->password);
 	    u->password = xstrdup( /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/ );
 	}
 
@@ -235,19 +263,19 @@ urltype urlIsURL(const char * url)
  * Split URL into components. The URL can look like
  *	service://user:password@host:port/path
  */
-int urlSplit(const char * url, urlinfo **uret)
+int urlSplit(const char * url, urlinfo *uret)
 {
-    urlinfo *u;
+    urlinfo u;
     char *myurl;
     char *s, *se, *f, *fe;
 
     if (uret == NULL)
 	return -1;
-    if ((u = newUrlinfo()) == NULL)
+    if ((u = urlNew("urlSplit")) == NULL)
 	return -1;
 
     if ((se = s = myurl = xstrdup(url)) == NULL) {
-	freeUrlinfo(u);
+	urlFree(u, "urlSplit (error #1)");
 	return -1;
     }
 
@@ -259,7 +287,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	if (*se == '\0') {
 	    /* XXX can't find path */
 	    if (myurl) free(myurl);
-	    freeUrlinfo(u);
+	    urlFree(u, "urlSplit (error #2)");
 	    return -1;
 	}
 	/* Item was service. Save service and go for the rest ...*/
@@ -304,7 +332,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	    if (!(end && *end == '\0')) {
 		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
 		if (myurl) free(myurl);
-		freeUrlinfo(u);
+		urlFree(u, "urlSplit (error #3)");
 		return -1;
 	    }
 	}
@@ -325,7 +353,7 @@ int urlSplit(const char * url, urlinfo **uret)
     if (myurl) free(myurl);
     if (uret) {
 	*uret = u;
-	findUrlinfo(uret, 0);
+	urlFind(uret, 0);
     }
     return 0;
 }
@@ -334,9 +362,9 @@ int urlGetFile(const char * url, const char * dest) {
     int rc;
     FD_t sfd = NULL;
     FD_t tfd = NULL;
-    urlinfo * sfu;
+    urlinfo sfu;
 
-    sfd = ufdOpen(url, O_RDONLY, 0);
+    sfd = ufdio->open(url, O_RDONLY, 0);
     if (sfd == NULL || Ferror(sfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to open %s\n"), url);
@@ -354,7 +382,7 @@ int urlGetFile(const char * url, const char * dest) {
 	    dest = fileName;
     }
 
-    tfd = fdOpen(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
+    tfd = fdio->open(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
     if (Ferror(tfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);

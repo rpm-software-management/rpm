@@ -59,7 +59,7 @@ static int isSpecFile(const char *specfile)
     int count;
     int checking;
 
-    fd = ufdOpen(specfile, O_RDONLY, 0);
+    fd = ufdio->open(specfile, O_RDONLY, 0);
     if (Ferror(fd)) {
 	/* XXX Fstrerror */
 	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);

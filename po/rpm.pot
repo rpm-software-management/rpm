@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-01 08:40-0500\n"
+"POT-Creation-Date: 1999-11-02 09:31-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1915,51 +1915,51 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:331
+#: lib/cpio.c:330
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:337
+#: lib/cpio.c:336
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:528
+#: lib/cpio.c:527
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:992
+#: lib/cpio.c:991
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:995
+#: lib/cpio.c:994
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:996
+#: lib/cpio.c:995
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1014
+#: lib/cpio.c:1013
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1015
+#: lib/cpio.c:1014
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1016
+#: lib/cpio.c:1015
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1017
+#: lib/cpio.c:1016
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1026
+#: lib/cpio.c:1025
 msgid " failed - "
 msgstr ""
 
@@ -2078,7 +2078,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
-#: lib/header.c:2138 lib/header.c:2155 lib/header.c:2175
+#: lib/header.c:2139 lib/header.c:2156 lib/header.c:2176
 msgid "(not a number)"
 msgstr ""
 
@@ -2106,136 +2106,136 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: lib/ftp.c:657
+#: lib/ftp.c:692
 msgid "Success"
 msgstr ""
 
-#: lib/ftp.c:660
+#: lib/ftp.c:695
 msgid "Bad server response"
 msgstr ""
 
-#: lib/ftp.c:663
+#: lib/ftp.c:698
 msgid "Server IO error"
 msgstr ""
 
-#: lib/ftp.c:666
+#: lib/ftp.c:701
 msgid "Server timeout"
 msgstr ""
 
-#: lib/ftp.c:669
+#: lib/ftp.c:704
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/ftp.c:672
+#: lib/ftp.c:707
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/ftp.c:675
+#: lib/ftp.c:710
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/ftp.c:678
+#: lib/ftp.c:713
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/ftp.c:681
+#: lib/ftp.c:716
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/ftp.c:684
+#: lib/ftp.c:719
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/ftp.c:687
+#: lib/ftp.c:722
 msgid "File not found on server"
 msgstr ""
 
-#: lib/ftp.c:690
+#: lib/ftp.c:725
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/ftp.c:694
+#: lib/ftp.c:729
 msgid "Unknown or unexpected error"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:169
+#: lib/header.c:170
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:200
+#: lib/header.c:201
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:763
+#: lib/header.c:764
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
-#: lib/header.c:1120
+#: lib/header.c:1121
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1529
+#: lib/header.c:1530
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: lib/header.c:1557
+#: lib/header.c:1558
 msgid "missing } after %{"
 msgstr ""
 
-#: lib/header.c:1569
+#: lib/header.c:1570
 msgid "empty tag format"
 msgstr ""
 
-#: lib/header.c:1579
+#: lib/header.c:1580
 msgid "empty tag name"
 msgstr ""
 
-#: lib/header.c:1594
+#: lib/header.c:1595
 msgid "unknown tag"
 msgstr ""
 
-#: lib/header.c:1620
+#: lib/header.c:1621
 msgid "] expected at end of array"
 msgstr ""
 
-#: lib/header.c:1636
+#: lib/header.c:1637
 msgid "unexpected ]"
 msgstr ""
 
-#: lib/header.c:1638
+#: lib/header.c:1639
 msgid "unexpected }"
 msgstr ""
 
-#: lib/header.c:1692
+#: lib/header.c:1693
 msgid "? expected in expression"
 msgstr ""
 
-#: lib/header.c:1699
+#: lib/header.c:1700
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: lib/header.c:1709 lib/header.c:1744
+#: lib/header.c:1710 lib/header.c:1745
 msgid "} expected in expression"
 msgstr ""
 
-#: lib/header.c:1717
+#: lib/header.c:1718
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: lib/header.c:1731
+#: lib/header.c:1732
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: lib/header.c:1752
+#: lib/header.c:1753
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:1921
+#: lib/header.c:1922
 msgid "(unknown type)"
 msgstr ""
 
@@ -2348,84 +2348,84 @@ msgstr ""
 msgid "cannot read header at %d for lookup"
 msgstr ""
 
-#: lib/macro.c:151
+#: lib/macro.c:153
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: lib/macro.c:245
+#: lib/macro.c:247
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: lib/macro.c:280
+#: lib/macro.c:282
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: lib/macro.c:459
+#: lib/macro.c:461
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: lib/macro.c:485
+#: lib/macro.c:487
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: lib/macro.c:491
+#: lib/macro.c:493
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: lib/macro.c:496
+#: lib/macro.c:498
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: lib/macro.c:501
+#: lib/macro.c:503
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: lib/macro.c:526
+#: lib/macro.c:528
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: lib/macro.c:603
+#: lib/macro.c:605
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: lib/macro.c:700
+#: lib/macro.c:702
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: lib/macro.c:872
+#: lib/macro.c:874
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: lib/macro.c:938 lib/macro.c:954
+#: lib/macro.c:940 lib/macro.c:956
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: lib/macro.c:994
+#: lib/macro.c:996
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: lib/macro.c:1117
+#: lib/macro.c:1119
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: lib/macro.c:1198
+#: lib/macro.c:1200
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/macro.c:1347 lib/macro.c:1355
+#: lib/macro.c:1349 lib/macro.c:1357
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: lib/macro.c:1358
+#: lib/macro.c:1360
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -2792,7 +2792,7 @@ msgstr ""
 #. XXX Fstrerror
 #: lib/rpmchecksig.c:33
 #, c-format
-msgid "%s: fdOpen failed: %s\n"
+msgid "%s: open failed: %s\n"
 msgstr ""
 
 #: lib/rpmchecksig.c:44
@@ -2879,7 +2879,7 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/rpmdb.c:156 lib/url.c:342
+#: lib/rpmdb.c:156 lib/url.c:370
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -3074,7 +3074,7 @@ msgid "Installing %s\n"
 msgstr ""
 
 #. XXX PARANOIA
-#: lib/rpmio.c:170
+#: lib/rpmio.c:228
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3374,22 +3374,22 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: lib/url.c:146
+#: lib/url.c:173
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:170 lib/url.c:196
+#: lib/url.c:198 lib/url.c:224
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:305
+#: lib/url.c:333
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:360
+#: lib/url.c:388
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""

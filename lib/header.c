@@ -14,6 +14,7 @@
 #define	ntohs(_x)	(_x)
 #define	htonl(_x)	(_x)
 #define	htons(_x)	(_x)
+/*@-observertrans@*/	/* XXX FIXME */
 #else
 #include <netinet/in.h>
 #endif	/* __LCLINT__ */
@@ -1397,7 +1398,7 @@ static void freeFormat( /*@only@*/ struct sprintfToken * format, int num)
 	    freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
 	    break;
-        case PTOK_NONE:
+	case PTOK_NONE:
 	case PTOK_TAG:
 	case PTOK_STRING:
 	default:

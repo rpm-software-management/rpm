@@ -1,8 +1,7 @@
 #include "system.h"
 
+#include <rpmio.h>
 #include "cpio.h"
-
-/*@access FD_t@*/
 
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
@@ -79,7 +78,7 @@ static inline off_t ourread(FD_t cfd, /*@out@*/void * buf, size_t size)
 {
     off_t i = saferead(cfd, buf, size);
     if (i > 0)
-	cfd->fd_cpioPos += i;
+	fdSetCpioPos(cfd, fdGetCpioPos(cfd) + i);
     return i;
 }
 
@@ -88,7 +87,7 @@ static inline void padinfd(FD_t cfd, int modulo)
     int buf[10];
     int amount;
     
-    amount = (modulo - cfd->fd_cpioPos % modulo) % modulo;
+    amount = (modulo - fdGetCpioPos(cfd) % modulo) % modulo;
     (void)ourread(cfd, buf, amount);
 }
 
@@ -342,7 +341,7 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 	}
     }
 
-    ofd = fdOpen(hdr->path, O_CREAT | O_WRONLY, 0);
+    ofd = fdio->open(hdr->path, O_CREAT | O_WRONLY, 0);
     if (Ferror(ofd)) 
 	return CPIOERR_OPEN_FAILED;
 
@@ -366,7 +365,7 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 	/* don't call this with fileSize == fileComplete */
 	if (!rc && cb && left) {
 	    cbInfo.fileComplete = hdr->size - left;
-	    cbInfo.bytesProcessed = cfd->fd_cpioPos;
+	    cbInfo.bytesProcessed = fdGetCpioPos(cfd);
 	    cb(&cbInfo, cbData);
 	}
     }
@@ -517,7 +516,7 @@ int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
     struct hardLink * links = NULL;
     struct hardLink * li = NULL;
 
-    cfd->fd_cpioPos = 0;
+    fdSetCpioPos(cfd, 0);
     if (failedFile)
 	*failedFile = NULL;
 
@@ -645,7 +644,7 @@ int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 	    cbInfo.file = ch.path;
 	    cbInfo.fileSize = ch.size;
 	    cbInfo.fileComplete = ch.size;
-	    cbInfo.bytesProcessed = cfd->fd_cpioPos;
+	    cbInfo.bytesProcessed = fdGetCpioPos(cfd);
 	    cb(&cbInfo, cbData);
 	}
 
@@ -747,7 +746,7 @@ static int writeFile(FD_t cfd, struct stat sb, struct cpioFileMapping * map,
 	size_t nmapped;
 #endif
 
-	datafd = fdOpen(map->fsPath, O_RDONLY, 0);
+	datafd = fdio->open(map->fsPath, O_RDONLY, 0);
 	if (Ferror(datafd))
 	    return CPIOERR_OPEN_FAILED;
 
