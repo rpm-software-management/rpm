@@ -89,6 +89,7 @@ int headerNextIterator(HeaderIterator iter,
 void headerFreeIterator(HeaderIterator iter);
 
 Header headerCopy(Header h);
+void headerSort(Header h);
 
 /* Entry Types */
 

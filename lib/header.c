@@ -56,7 +56,6 @@ struct indexEntry {
     int length;			/* Computable, but why bother */
 };
 
-static void indexSort(Header h);
 static int indexCmp(const void *ap, const void *bp);
 static void *doHeaderUnload(Header h, int * lengthPtr);
 static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type);
@@ -80,7 +79,7 @@ HeaderIterator headerInitIterator(Header h)
 {
     HeaderIterator hi = malloc(sizeof(struct headerIteratorS));
 
-    indexSort(h);
+    headerSort(h);
 
     hi->h = h;
     hi->next_index = 0;
@@ -125,7 +124,7 @@ static int indexCmp(const void *ap, const void *bp)
     }
 }
 
-static void indexSort(Header h) {
+void headerSort(Header h) {
     if (!h->sorted) {
 	qsort(h->index, h->indexUsed, sizeof(struct indexEntry), indexCmp);
 	h->sorted = 1;
@@ -141,7 +140,7 @@ Header headerCopy(Header h)
    
     /* Sort the index -- not really necessary but some old apps may depend
        on this and it certainly won't hurt anything */
-    indexSort(h);
+    headerSort(h);
     headerIter = headerInitIterator(h);
 
     while (headerNextIterator(headerIter, &tag, &type, &ptr, &count)) {
@@ -317,7 +316,7 @@ static void *doHeaderUnload(Header h, int * lengthPtr)
     char * chptr, * src, * dataStart;
     int count;
 
-    indexSort(h);
+    headerSort(h);
 
     *lengthPtr = headerSizeof(h, 0);
     pi = p = malloc(*lengthPtr);
@@ -517,7 +516,7 @@ static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type)
     struct indexEntry * entry, * entry2, * last;
     struct indexEntry key;
 
-    if (!h->sorted) indexSort(h);
+    if (!h->sorted) headerSort(h);
 
     key.info.tag = tag;
 
@@ -652,7 +651,7 @@ unsigned int headerSizeof(Header h, int magicp)
     int i, diff;
     int_32 type;
 
-    indexSort(h);
+    headerSort(h);
 
     size = sizeof(int_32);	/* count of index entries */
     size += sizeof(int_32);	/* length of data */
