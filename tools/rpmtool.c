@@ -9,48 +9,132 @@
 #include "misc.h"
 #include "debug.h"
 
-typedef enum rpmtoolComponentBits_e {
-    RPMTOOL_NONE	= 0,
-    RPMTOOL_LEAD	= (1 << 0),
-    RPMTOOL_SHEADER	= (1 << 1),
-    RPMTOOL_HEADER	= (1 << 2),
-    RPMTOOL_DUMP	= (1 << 3),
-    RPMTOOL_XML		= (1 << 4),
-    RPMTOOL_PAYLOAD	= (1 << 5),
-    RPMTOOL_UNCOMPRESS	= (1 << 6)
-} rpmtoolComponentBits;
+typedef enum rpmtoolIOBits_e {
+    RPMIOBITS_NONE	= 0,
+    RPMIOBITS_LEAD	= (1 <<  0),
+    RPMIOBITS_SHEADER	= (1 <<  1),
+    RPMIOBITS_HEADER	= (1 <<  2),
+    RPMIOBITS_PAYLOAD	= (1 <<  3),
+    RPMIOBITS_FDIO	= (1 <<  4),
+    RPMIOBITS_UFDIO	= (1 <<  5),
+    RPMIOBITS_GZDIO	= (1 <<  6),
+    RPMIOBITS_BZDIO	= (1 <<  7),
+    RPMIOBITS_UNCOMPRESS= (1 <<  8),
+    RPMIOBITS_BINARY	= (1 <<  9),
+    RPMIOBITS_DUMP	= (1 << 10),
+    RPMIOBITS_XML	= (1 << 11)
+} rpmtoolIOBits;
 
-static rpmtoolComponentBits componentBits = RPMTOOL_NONE;
 static const char * iav[] = { "-", NULL };
-static const char * ipath = NULL;
 static const char * ifmt = NULL;
+static const char * ipath = NULL;
+static const char * imode = NULL;
+static rpmtoolIOBits ibits = RPMIOBITS_NONE;
+
 static const char * oav[] = { "-", NULL };
-static const char * opath = NULL;
 static const char * ofmt = NULL;
+static const char * opath = NULL;
+static const char * omode = NULL;
+static rpmtoolIOBits obits = RPMIOBITS_NONE;
 
 static int _rpmtool_debug = 0;
+
+static struct iobits_s {
+    const char * name;
+    rpmtoolIOBits bits;
+} iobits[] = {
+    { "lead",		RPMIOBITS_LEAD },
+    { "sheader",	RPMIOBITS_SHEADER },
+    { "header",		RPMIOBITS_HEADER },
+    { "payload",	RPMIOBITS_PAYLOAD },
+#define	_RPMIOBITS_PKGMASK \
+    (RPMIOBITS_LEAD|RPMIOBITS_SHEADER|RPMIOBITS_HEADER|RPMIOBITS_PAYLOAD)
+
+    { "fdio",		RPMIOBITS_FDIO },
+    { "ufdio",		RPMIOBITS_UFDIO },
+    { "gzdio",		RPMIOBITS_GZDIO },
+    { "bzdio",		RPMIOBITS_BZDIO },
+#define	_RPMIOBITS_MODEMASK \
+    (RPMIOBITS_FDIO|RPMIOBITS_UFDIO|RPMIOBITS_GZDIO|RPMIOBITS_BZDIO)
+
+    { "uncompress",	RPMIOBITS_UNCOMPRESS },
+    { "binary",		RPMIOBITS_BINARY },
+    { "dump",		RPMIOBITS_DUMP },
+    { "xml",		RPMIOBITS_XML },
+    { NULL,	0 },
+};
+
+static int parseFmt(const char * fmt, rpmtoolIOBits * bits, const char ** mode)
+{
+    const char *f, *fe;
+
+    if (fmt != NULL)
+    for (f = fmt; f && *f; f = fe) {
+	struct iobits_s * iop;
+	size_t nfe;
+	
+	if ((fe = strchr(f, ',')) == NULL)
+	    fe = f + strlen(f);
+	nfe = (fe - f);
+
+	for (iop = iobits; iop->name != NULL; iop++) {
+	    if (strncmp(iop->name, f, nfe))
+		continue;
+	    *bits |= iop->bits;
+	    if ((iop->bits & _RPMIOBITS_MODEMASK) && mode && *mode) {
+		char * t = xmalloc(2 + strlen(iop->name) + 1);
+		t[0] = (*mode)[0];
+		t[1] = (*mode)[1];
+		(void) stpcpy(t+2, iop->name);
+		*mode = _free(*mode);
+		*mode = t;
+	    }
+	    break;
+	}
+
+	if (iop->name == NULL) {
+	    fprintf(stderr, _("%s: unknown format token \"%*s\", ignored\n"),
+			__progname, nfe, f);
+	}
+
+	if (*fe == ',') fe++;	/* skip ',' */
+    }
+    return 0;
+}
+
 
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_rpmtool_debug, -1,
 	NULL, NULL },
 
- { "lead", 'L', POPT_BIT_SET,	&componentBits, RPMTOOL_LEAD,
+ { "lead", 'L', POPT_BIT_SET,	&obits, RPMIOBITS_LEAD,
 	N_("extract lead"), NULL},
- { "sheader", 'S', POPT_BIT_SET,&componentBits, RPMTOOL_SHEADER,
+ { "sheader", 'S', POPT_BIT_SET,&obits, RPMIOBITS_SHEADER,
 	N_("extract signature header"), NULL},
- { "header", 'H', POPT_BIT_SET,	&componentBits, RPMTOOL_HEADER,
+ { "header", 'H', POPT_BIT_SET,	&obits, RPMIOBITS_HEADER,
 	N_("extract metadata header"), NULL},
- { "dump", 'D', POPT_BIT_SET,	&componentBits, (RPMTOOL_HEADER|RPMTOOL_DUMP),
+ { "dump", 'D', POPT_BIT_SET,	&obits, (RPMIOBITS_HEADER|RPMIOBITS_DUMP),
 	N_("dump metadata header"), NULL},
- { "xml", 'X', POPT_BIT_SET,	&componentBits, (RPMTOOL_HEADER|RPMTOOL_XML),
+ { "xml", 'X', POPT_BIT_SET,	&obits, (RPMIOBITS_HEADER|RPMIOBITS_XML),
 	N_("dump metadata header in xml"), NULL},
- { "archive", 'A', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD,
+ { "archive", 'A', POPT_BIT_SET,&obits, RPMIOBITS_PAYLOAD,
 	N_("extract compressed payload"), NULL},
- { "payload", 'P', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD|RPMTOOL_UNCOMPRESS,
+ { "payload", 'P', POPT_BIT_SET,&obits, RPMIOBITS_PAYLOAD|RPMIOBITS_UNCOMPRESS,
 	N_("extract uncompressed payload"), NULL},
+
+ { "ipath", 0, POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &ipath, 0,
+	N_("input PATH"), N_("PATH") },
+ { "imode", 0, POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &imode, 0,
+	N_("input MODE"), N_("MODE") },
+ { "ifmt", 'I', POPT_ARG_STRING,			&ifmt, 0,
+	N_("input format, FMT is comma separated list of (lead|sheader|header|payload), (ufdio|gzdio|bzdio), (binary|xml)"), N_("FMT") },
 
  { "opath", 0, POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &opath, 0,
 	N_("output PATH"), N_("PATH") },
+ { "omode", 0, POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &omode, 0,
+	N_("output MODE"), N_("MODE") },
+ { "ofmt", 'O', POPT_ARG_STRING,			&ofmt, 0,
+	N_("ouput format, FMT is comma separated list of (lead|sheader|header|payload), (ufdio|gzdio|bzdio), (binary|xml|dump)"), N_("FMT") },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
@@ -71,32 +155,39 @@ static void initTool(const char * argv0)
     }
 
     if (!strcmp(__progname, "rpmlead")) {
-	componentBits = RPMTOOL_LEAD;
-	ofmt = "lead";
+	ibits = _RPMIOBITS_PKGMASK;
+	obits = RPMIOBITS_LEAD;
+	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmsignature")) {
-	componentBits = RPMTOOL_SHEADER;
+	ibits = _RPMIOBITS_PKGMASK;
+	obits = RPMIOBITS_SHEADER;
 	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmheader")) {
-	componentBits = RPMTOOL_HEADER;
+	ibits = _RPMIOBITS_PKGMASK;
+	obits = RPMIOBITS_HEADER;
 	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpm2cpio")) {
-	componentBits = RPMTOOL_PAYLOAD|RPMTOOL_UNCOMPRESS;
+	ibits = _RPMIOBITS_PKGMASK;
+	obits = RPMIOBITS_PAYLOAD | RPMIOBITS_UNCOMPRESS;
 	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmarchive")) {
-	componentBits = RPMTOOL_PAYLOAD;
+	ibits = _RPMIOBITS_PKGMASK;
+	obits = RPMIOBITS_PAYLOAD;
 	ofmt = NULL;
     }
     if (!strcmp(__progname, "dump")) {
-	componentBits = RPMTOOL_HEADER | RPMTOOL_DUMP;
-	ofmt = "dump";
+	ibits = _RPMIOBITS_PKGMASK;
+	obits = RPMIOBITS_HEADER | RPMIOBITS_DUMP;
+	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmdump")) {
-	componentBits = RPMTOOL_HEADER | RPMTOOL_DUMP;
-	ofmt = "dump";
+	ibits = _RPMIOBITS_PKGMASK;
+	obits = RPMIOBITS_HEADER | RPMIOBITS_DUMP;
+	ofmt = NULL;
     }
 }
 
@@ -118,8 +209,12 @@ main(int argc, char *const argv[])
     int ec = 0;
     int xx;
 
+    imode = xstrdup("r.ufdio");
+    omode = xstrdup("w.ufdio");
+
     initTool(argv[0]);       /* Retrofit glibc __progname */
 
+    /* Parse CLI options and args. */
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
 	exit(EXIT_FAILURE);
@@ -131,32 +226,70 @@ fprintf(stderr, "*** av %p av[0] %p av[1] %p\n", av,
 (av && av[0] && av[1] ? av[1] : NULL));
     if (av == NULL) av = iav;
 
+    /* Parse input and output format. */
+    parseFmt(ifmt, &ibits, &imode);
+    if (!(ibits & _RPMIOBITS_PKGMASK))
+	ibits |= _RPMIOBITS_PKGMASK;
+
+    parseFmt(ofmt, &obits, &omode);
+    if (!(obits & _RPMIOBITS_PKGMASK))
+	obits |= RPMIOBITS_HEADER;
+
+    /* Insure desired output is possible. */
+    if (((ibits & obits) & _RPMIOBITS_PKGMASK) != (obits & _RPMIOBITS_PKGMASK))
+    {
+	fprintf(stderr, _("%s: no input(0x%x) for output(0x%x) components\n"),
+		__progname, ibits, obits);
+	ec++;
+	goto bottom;
+    }
+
     while ((ifn = *av++) != NULL) {
 
+	/* Open input file. */
 	if (fdi == NULL) {
 if (_rpmtool_debug)
-fprintf(stderr, "*** Fopen(%s,r.ufdio)\n", ifn);
-	    fdi = Fopen(ifn, "r.ufdio");
+fprintf(stderr, "*** Fopen(%s,%s)\n", ifn, imode);
+	    fdi = Fopen(ifn, imode);
 	    if (fdi == NULL || Ferror(fdi)) {
-		fprintf(stderr, "%s: input  Fopen(%s, \"r\"): %s\n", __progname,
-			ifn, Fstrerror(fdi));
+		fprintf(stderr, _("%s: input  Fopen(%s, \"%s\"): %s\n"),
+			__progname, ifn, imode, Fstrerror(fdi));
 		ec++;
 		goto bottom;
 	    }
 	}
 
 	/* Read package components. */
-	if (readLead(fdi, &lead) != RPMRC_OK
-	 || rpmReadSignature(fdi, &sigh, lead.signature_type, NULL) != RPMRC_OK)
-	{
-	    ec++;
-	    goto bottom;
+	if (ibits & RPMIOBITS_LEAD) {
+	    rc = readLead(fdi, &lead);
+	    if (rc != RPMRC_OK) {
+		fprintf(stderr, _("%s: readLead(%s) failed(%d)\n"),
+			__progname, ifn, rc);
+		ec++;
+		goto bottom;
+	    }
 	}
-	h = headerRead(fdi,
-		(lead.major >= 3) ?  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-	if (h == NULL) {
-	    ec++;
-	    goto bottom;
+
+	if (ibits & RPMIOBITS_SHEADER) {
+	    const char * msg = NULL;
+	    rc = rpmReadSignature(fdi, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
+	    if (rc != RPMRC_OK) {
+		fprintf(stderr, _("%s: rpmReadSignature(%s) failed(%d): %s\n"),
+			__progname, ifn, rc, msg);
+		msg = _free(msg);
+		ec++;
+		goto bottom;
+	    }
+	}
+
+	if (ibits & RPMIOBITS_HEADER) {
+	    h = headerRead(fdi, HEADER_MAGIC_YES);
+	    if (h == NULL) {
+		fprintf(stderr, _("%s: headerRead(%s) failed\n"),
+			__progname, ifn);
+		ec++;
+		goto bottom;
+	    }
 	}
 
 	/* Determine output file name, and create directories in path. */
@@ -170,8 +303,8 @@ fprintf(stderr, "*** Fopen(%s,r.ufdio)\n", ifn);
 		ofn = headerSprintf(h, s, rpmTagTable, rpmHeaderFormats, &errstr);
 		s = _free(s);
 		if (ofn == NULL) {
-		    fprintf(stderr, "%s: headerSprintf(%s): %s\n", __progname,
-				ofn, errstr);
+		    fprintf(stderr, _("%s: headerSprintf(%s) failed: %s\n"),
+				__progname, ofn, errstr);
 		    ec++;
 		    goto bottom;
 		}
@@ -188,34 +321,37 @@ fprintf(stderr, "*** Fopen(%s,r.ufdio)\n", ifn);
 		}
 		s = _free(s);
 		if (rc != RPMRC_OK) {
+		    fprintf(stderr, _("%s: rpmMkdirPath(%s) failed.\n"),
+				__progname, ofn);
 		    ec++;
 		    goto bottom;
 		}
 	    }
+
+	    /* Open output file. */
 if (_rpmtool_debug)
-fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
-	    fdo = (ofn != NULL ? Fopen(ofn, "w.ufdio") : fdDup(STDOUT_FILENO));
+fprintf(stderr, "*** Fopen(%s,%s)\n", (ofn != NULL ? ofn : "-"), omode);
+	    fdo = (ofn != NULL ? Fopen(ofn, omode) : fdDup(STDOUT_FILENO));
 	    if (fdo == NULL || Ferror(fdo)) {
-		fprintf(stderr, "%s: output Fopen(%s, \"w\"): %s\n", __progname,
-			(ofn != NULL ? ofn : "<stdout>"), Fstrerror(fdo));
+		fprintf(stderr, _("%s: output Fopen(%s, \"%s\"): %s\n"),
+			__progname, (ofn != NULL ? ofn : "<stdout>"),
+			omode, Fstrerror(fdo));
 		ec++;
 		goto bottom;
 	    }
 	}
 
 	/* Write package components. */
-	if (componentBits & RPMTOOL_LEAD)
+	if (obits & RPMIOBITS_LEAD)
 	    writeLead(fdo, &lead);
 
-	if (componentBits & RPMTOOL_SHEADER)
+	if (obits & RPMIOBITS_SHEADER)
 	    rpmWriteSignature(fdo, sigh);
 
-	if (componentBits & RPMTOOL_HEADER) {
-	    if ((componentBits & RPMTOOL_DUMP)
-	     || (ofmt != NULL && !strcmp(ofmt, "dump"))) {
+	if (obits & RPMIOBITS_HEADER) {
+	    if (obits & RPMIOBITS_DUMP) {
 		headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
-	    } else if ((componentBits & RPMTOOL_XML)
-	     || (ofmt != NULL && !strcmp(ofmt, "xml"))) {
+	    } else if (obits & RPMIOBITS_XML) {
 		const char * errstr = NULL;
 
 		s = "[%{*:xml}\n]";
@@ -231,8 +367,8 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 		headerWrite(fdo, h, HEADER_MAGIC_YES);
 	}
 
-	if (componentBits & RPMTOOL_PAYLOAD) {
-	    if (componentBits & RPMTOOL_UNCOMPRESS) {
+	if (obits & RPMIOBITS_PAYLOAD) {
+	    if (obits & RPMIOBITS_UNCOMPRESS) {
 		const char * payload_compressor = NULL;
 		const char * rpmio_flags;
 		FD_t gzdi;
@@ -250,7 +386,7 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 
 		gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
 		if (gzdi == NULL) {
-		    fprintf(stderr, "%s: output Fdopen(%s, \"%s\"): %s\n",
+		    fprintf(stderr, _("%s: output Fdopen(%s, \"%s\"): %s\n"),
 			__progname, (ofn != NULL ? ofn : "-"),
 			rpmio_flags, Fstrerror(fdo));
 		    ec++;
@@ -300,6 +436,9 @@ exit:
 	fdi = NULL;
     }
     optCon = rpmcliFini(optCon);
+
+    imode = _free(imode);
+    omode = _free(omode);
 
     return ec;
 }
