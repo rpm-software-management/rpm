@@ -88,6 +88,9 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
 /* signature verification */
 static PyObject * checkSig (PyObject * self, PyObject * args);
 
+/* hack to get the current header that's in the transaction set */
+static PyObject * getTsHeader (PyObject * self, PyObject * args);
+
 /* internal functions */
 static long tagNumFromPyObject (PyObject *item);
 static void mungeFilelist(Header h);
@@ -132,6 +135,7 @@ struct hdrObject_s {
 /* Data */
 
 static PyObject * pyrpmError;
+static Header transactionSetHeader;
 
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
@@ -150,6 +154,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
     { "checksig", (PyCFunction) checkSig, METH_VARARGS, NULL },
+    { "getTransactionCallbackHeader", (PyCFunction) getTsHeader, METH_VARARGS, NULL },
 /*      { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL }, */
     { NULL }
 } ;
@@ -1648,6 +1653,8 @@ struct tsCallbackType {
     int pythonError;
 };
 
+
+
 static void * tsCallback(const Header h, const rpmCallbackType what,
 		         const unsigned long amount, const unsigned long total,
 	                 const void * pkgKey, void * data) {
@@ -1659,6 +1666,7 @@ static void * tsCallback(const Header h, const rpmCallbackType what,
     if (cbInfo->pythonError) return NULL;
 
     if (!pkgKey) pkgKey = Py_None;
+    transactionSetHeader = h;    
 
     args = Py_BuildValue("(illOO)", what, amount, total, pkgKey, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
@@ -1823,6 +1831,20 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 	rc = rpmCheckSig(flags, av);
     }
     return Py_BuildValue("i", rc);
+}
+
+
+static PyObject * getTsHeader (PyObject * self, PyObject * args) {
+    hdrObject * h;
+
+    h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
+    h->h = transactionSetHeader;
+    h->sigs = NULL;
+    h->fileList = h->linkList = h->md5list = NULL;
+    h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
+    h->modes = h->rdevs = NULL;
+    
+    return h;
 }
 
 /* disable 
