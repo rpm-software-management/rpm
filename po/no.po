@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-09 18:19-0400\n"
+"POT-Creation-Date: 2002-08-10 13:48-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -3592,6 +3592,93 @@ msgstr "%s: åpne feilet: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: lesing av manifest feilet: %s\n"
+
+#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
+msgid "list install/erase scriptlets from package(s)"
+msgstr ""
+
+#: ../rpmpopt:38
+msgid "set permissions of files in a package"
+msgstr ""
+
+#: ../rpmpopt:43
+msgid "set user/group ownership of files in a package"
+msgstr ""
+
+#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
+msgid "list capabilities this package conflicts with"
+msgstr ""
+
+#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
+msgid "list other packages removed by installing this package"
+msgstr ""
+
+#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
+msgid "list capabilities that this package provides"
+msgstr ""
+
+#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
+msgid "list capabilities required by package(s)"
+msgstr ""
+
+#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
+msgid "list descriptive information from package(s)"
+msgstr ""
+
+#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
+msgid "list change logs for this package"
+msgstr ""
+
+#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
+msgid "list trigger scriptlets from package(s)"
+msgstr ""
+
+#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
+msgid "list package(s) by install time, most recent first"
+msgstr ""
+
+#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
+msgid "list all files from each package"
+msgstr ""
+
+#: ../rpmpopt:90 ../rpmpopt:93
+msgid ""
+"find package name that contains a provided capability (needs rpmdb-redhat "
+"package installed)"
+msgstr ""
+
+#: ../rpmpopt:103
+msgid "set buildroot <policy> (e.g. compress man pages)"
+msgstr ""
+
+#: ../rpmpopt:104
+msgid "<policy>"
+msgstr ""
+
+#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
+msgid "enable configure <option> for build"
+msgstr ""
+
+#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
+#: ../rpmpopt:213
+msgid "<option>"
+msgstr ""
+
+#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
+msgid "disable configure <option> for build"
+msgstr ""
+
+#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
+#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
+#: ../rpmpopt:409 ../rpmpopt:417
+msgid "use database in DIRECTORY"
+msgstr ""
+
+#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
+#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
+#: ../rpmpopt:410 ../rpmpopt:418
+msgid "DIRECTORY"
+msgstr ""
 
 #, fuzzy
 #~ msgid "%s: base64 encode failed.\n"

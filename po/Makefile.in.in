@@ -83,12 +83,15 @@ all-no:
 
 $(srcdir)/$(PACKAGE).pot: $(POTFILES) $(srcdir)/POTFILES.in
 	$(XGETTEXT) --default-domain=$(PACKAGE) --directory=$(top_srcdir) \
-	  --add-comments --keyword=_ --keyword=N_ \
+	  --add-comments --keyword=_ --keyword=N_ --keyword=POPT_ \
 	  --files-from=$(srcdir)/POTFILES.in \
 	&& test ! -f $(PACKAGE).po \
 	   || ( rm -f $(srcdir)/$(PACKAGE).pot \
-		&& mv $(PACKAGE).po $(srcdir)/$(PACKAGE).pot )
+		&& mv $(PACKAGE).po $(srcdir)/$(PACKAGE).pot \
+		&& cat $(srcdir)/rpmpopt.pot >> $(srcdir)/$(PACKAGE).pot )
 
+$(srcdir)/rpmpopt.pot: $(top_srcdir)/rpmpopt $(srcdir)/$(PACKAGE).pot
+	bash --dump-po-strings $< > $@
 
 install: install-exec install-data
 install-exec:
