@@ -38,6 +38,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 #include "rpmdb.h"
 #include "fprint.h"
 #include "legacy.h"
+#include "header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 #include "debug.h"
 
 /*@access dbiIndexSet@*/
@@ -1973,8 +1974,7 @@ top:
 	    key->data = keyp = (void *)mi->mi_keyp;
 	    key->size = keylen = mi->mi_keylen;
 	    memset(data, 0, sizeof(*data));
-	    data->data = uh;
-	    data->size = uhlen;
+	    data->flags |= DB_DBT_MALLOC;
 	    rc = dbiGet(dbi, mi->mi_dbc, key, data, 0);
 	    keyp = key->data;
 	    keylen = key->size;
@@ -2017,8 +2017,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 	key->data = keyp;
 	key->size = keylen;
 	memset(data, 0, sizeof(*data));
-	uh = data->data;
-	uhlen = data->size;
+	data->flags |= DB_DBT_MALLOC;
 	rc = dbiGet(dbi, mi->mi_dbc, key, data, 0);
 	keyp = key->data;
 	keylen = key->size;
@@ -2040,7 +2039,9 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
     if (uh == NULL)
 	goto exit;
 
-    mi->mi_h = headerCopyLoad(uh);
+    mi->mi_h = headerLoad(uh);
+    mi->mi_h->flags |= HEADERFLAG_ALLOCATED;
+
     /* XXX db1 with hybrid, simulated db interface on falloc.c needs free. */
     /*@-branchstate@*/
     if (dbi->dbi_api == 1) uh = _free(uh);
