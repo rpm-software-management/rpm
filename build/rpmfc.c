@@ -446,7 +446,8 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { " compressed",		RPMFC_COMPRESSED },
 
-  { "troff or preprocessor input",		RPMFC_MANPAGE },
+  { "troff or preprocessor input",	RPMFC_MANPAGE|RPMFC_INCLUDE },
+  { "GNU Info",			RPMFC_MANPAGE|RPMFC_INCLUDE },
 
   { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
@@ -1150,7 +1151,8 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     size_t slen;
     int fcolor;
     int xx;
-    int msflags = 0;	/* XXX what MAGIC_FOO flags? */
+    static const char * magicfile = "/usr/lib/rpm/magic";
+    int msflags = MAGIC_COMPRESS|MAGIC_CHECK;	/* XXX what MAGIC_FOO flags? */
     magic_t ms = NULL;
 
     if (fc == NULL || argv == NULL)
@@ -1167,10 +1169,20 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     xx = argvAdd(&fc->cdict, "directory");
 
     ms = magic_open(msflags);
-    /* XXX check errors. */
+    if (ms == NULL) {
+	xx = RPMERR_EXEC;
+	rpmError(xx, _("magic_open(0x%x) failed: %s\n"),
+		msflags, strerror(errno));
+assert(ms != NULL);	/* XXX figger a proper return path. */
+    }
 
-    xx = magic_load(ms, "/usr/lib/rpm/magic");
-    /* XXX check errors. */
+    xx = magic_load(ms, magicfile);
+    if (xx == -1) {
+	xx = RPMERR_EXEC;
+	rpmError(xx, _("magic_load(ms, \"%s\") failed: %s\n"),
+		magicfile, magic_error(ms));
+assert(xx != -1);	/* XXX figger a proper return path. */
+    }
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
@@ -1185,7 +1197,12 @@ assert(s != NULL);
 	    ftype = "Perl5 module source text";
 	else {
 	    ftype = magic_file(ms, s);
-assert(ftype != NULL);
+	    if (ftype == NULL) {
+		xx = RPMERR_EXEC;
+		rpmError(xx, _("magic_file(ms, \"%s\") faileds: %s\n"),
+			s, magic_error(ms));
+assert(ftype != NULL);	/* XXX figger a proper return path. */
+	    }
 	}
 /*@=branchstate@*/
 

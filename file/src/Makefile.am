@@ -20,10 +20,6 @@ libmagic_la_SOURCES = magic.c apprentice.c softmagic.c ascmagic.c \
 	funcs.c apptype.c
 libmagic_la_LDFLAGS = -version-info 1:0:0
 
-pkglib_PROGRAMS = rpmfile
-rpmfile: file
-	-cp $< $@
-
 noinst_PROGRAMS = file
 file_SOURCES = file.c
 file_LDFLAGS = -all-static

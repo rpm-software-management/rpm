@@ -31,6 +31,7 @@ noinst_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps rpmfile
+MAGIC	= $(pkgbindir)/magic
 
 bin_PROGRAMS =	rpmgraph
 
@@ -49,11 +50,12 @@ rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
 #rpmdeps_LDFLAGS =	$(staticLDFLAGS)
 
-rpmfile.c: $(top_builddir)/file/src/file.c
+rpmfile.c: $(top_srcdir)/file/src/file.c
 	rm -f $@
 	ln -s $< $@
 
 rpmfile_SOURCES =	rpmfile.c
+rpmfile_CFLAGS =	-DMAGIC='"$(MAGIC)"'
 rpmfile_LDADD =		$(top_builddir)/rpmio/librpmio.la
 #rpmfile_LDFLAGS =	$(staticLDFLAGS)
 
