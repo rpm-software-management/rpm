@@ -24,6 +24,8 @@
 	- --setperms should work properly on directories now
 	- --justdb on install, upgrade, and erasure causes a database
 	  update w/o the filesystem being touched
+	- fixed version comparison of a package w/ a serial tag against
+	  a package w/o one
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
