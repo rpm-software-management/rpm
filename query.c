@@ -264,6 +264,9 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
 	    strcat(format, "s");
 	    printf(format, permsString(*(((int_16 *) p) + arrayNum)));
+	} else if (!strcmp(how, "octal")) {
+	    strcat(format, "#o");
+	    printf(format, *(((int_16 *) p) + arrayNum) & 0xFFFF);
 	} else {
 	    strcat(format, "d");
 	    printf(format, *(((int_16 *) p) + arrayNum));
@@ -287,6 +290,9 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	    if (anint & RPMFILE_CONFIG)
 		strcat(buf, "c");
 	    printf(format, buf);
+	} else if (!strcmp(how, "octal")) {
+	    strcat(format, "#o");
+	    printf(format, *(((int_32 *) p) + arrayNum));
 	} else if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
 	    strcat(format, "s");
 	    printf(format, permsString(*(((int_32 *) p) + arrayNum)));
