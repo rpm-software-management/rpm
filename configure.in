@@ -836,7 +836,10 @@ mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$build_vendor"
 case "${build_vendor}" in
-unknown|pc)	test -f /etc/redhat-release && RPMCANONVENDOR=redhat ;;
+unknown|pc|redhat|pld)
+	test -f /etc/redhat-release && RPMCANONVENDOR=redhat
+	test -f /etc/pld-release && RPMCANONVENDOR=pld
+	;;
 esac
 RPMCANONOS="$build_os_noversion"
 AC_SUBST(RPMCANONARCH)

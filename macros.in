@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.45 2000/01/17 18:12:32 jbj Exp $
+# $Id: macros.in,v 1.46 2000/02/13 19:24:19 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -427,21 +427,81 @@ cd %{u2p:%{_builddir}}\
   CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
 
 #------------------------------------------------------------------------------
-# The GNUconfigure macro does the following:
-#	update config.guess and config.sub.
-#	regenerate all autoconf/automake files
-#	optionally change to a directory (make the directory if requested).
-#	run configure with correct prefix, platform, and CFLAGS.
-#	optionally restore current directory.
+# This is an improved version of %configure that may replace the above
+# macro at some point (from PLD team).
 #
-%GNUconfigure(MC:)	\
-  %{__libtoolize} --copy --force \
-  %{__aclocal} \
-  %{__autoheader} \
-  %{__automake} \
-  %{__autoconf} \
-  %{-C:_mydir="`pwd`"; %{-M:%{__mkdir} -p %{-C*};} cd %{-C*};} \
-  CFLAGS="%{optflags}" %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} %* \
+#%configure { CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
+# CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
+# FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
+# ./configure %{_target_platform} \
+# 	--prefix=%{_prefix} \
+#	--exec-prefix=%{_exec_prefix} \
+#	--bindir=%{_bindir} \
+#	--sbindir=%{_sbindir} \
+#	--sysconfdir=%{_sysconfdir} \
+#	--datadir=%{_datadir} \
+#	--includedir=%{_includedir} \
+#	--libdir=%{_libdir} \
+#	--libexecdir=%{_libexecdir} \
+#	--localstatedir=%{_localstatedir} \
+#	--sharedstatedir=%{_sharedstatedir} \
+#	--mandir=%{_mandir} \
+#	--infodir=%{_infodir} }
+
+#------------------------------------------------------------------------------
+# The GNUconfigure macro does the following:
+#       update config.guess and config.sub.
+#       regenerate all autoconf/automake files
+#       optionally change to a directory (make the directory if requested).
+#       run configure with correct prefix, platform, and CFLAGS.
+#       optionally restore current directory.
+#
+# Based on autogen.sh from GNOME and orginal GNUconfigure
+#
+%GNUconfigure(MCs:)      \
+  CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; \
+  LDFLAGS="${LDFLAGS:-'%{-s:-s}'}"  ; export LDFLAGS; \
+  %{-C:_mydir="`pwd`"; %{-M: %{__mkdir} -p %{-C*};} cd %{-C*}} \
+  dirs="`find ${_mydir} -name configure.in -print`"; export dirs; \
+    for coin in `echo ${dirs}` \
+do \
+  dr=`dirname ${coin}`; \
+if test -f ${dr}/NO-AUTO-GEN; then \
+ : \
+else \
+     macrodirs=`sed -n -e 's,AM_ACLOCAL_INCLUDE(\(.*\)),\1,gp' < ${coin}`; \
+    ( cd ${dr}; \
+      aclocalinclude="${ACLOCAL_FLAGS}"; \
+      for k in ${macrodirs}; do \
+        if test -d ${k}; then \
+          aclocalinclude="${aclocalinclude} -I ${k}"; \
+        ##else \
+        ##  echo "**Warning**: No such directory \`${k}'.  Ignored." \
+        fi \
+      done \
+      if grep "^AM_GNU_GETTEXT" configure.in >/dev/null; then \
+        if grep "sed.*POTFILES" configure.in >/dev/null; then \
+          : do nothing -- we still have an old unmodified configure.in \
+        else \
+          test -r ${dr}/aclocal.m4 || touch ${dr}/aclocal.m4; \
+          echo "no" | gettextize --force --copy; \
+          test -r ${dr}/aclocal.m4 && %{__chmod} u+w ${dr}/aclocal.m4; \
+        fi \
+      fi \
+      if grep "^AM_PROG_LIBTOOL" configure.in >/dev/null; then \
+        %{__libtoolize} --force --copy; \
+      fi \
+      aclocal ${aclocalinclude}; \
+      if grep "^AM_CONFIG_HEADER" configure.in >/dev/null; then \
+        %{__autoheader}; \
+      fi \
+      echo "Running automake --gnu ${am_opt} ..."; \
+      %{__automake} --add-missing --gnu ${am_opt}; \
+      %{__autoconf}; \
+    ); \
+  fi \
+done \
+  %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} --exec-prefix=%{_exec_prefix} --bindir=%{_bindir} --sbindir=%{_sbindir} --sysconfdir=%{_sysconfdir} --datadir=%{_datadir} --includedir=%{_includedir} --libdir=%{_libdir} --libexecdir=%{_libexecdir} --localstatedir=%{_localstatedir} --sharedstatedir=%{_sharedstatedir} --mandir=%{_mandir} --infodir=%{_infodir} %* ; \
   %{-C:cd ${_mydir}; unset _mydir}
 
 #------------------------------------------------------------------------------
@@ -469,3 +529,23 @@ cd %{u2p:%{_builddir}}\
 %requires_eq()	%(LC_ALL="C" rpm -q --queryformat 'Requires:%%{NAME} = %%{VERSION}' %1| grep -v "is not")
 %perl_sitearch	%(eval "`perl -V:installsitearch`"; echo $installsitearch)
 %perl_archlib	%(eval "`perl -V:installarchlib`"; echo $installarchlib)
+
+#------------------------------------------------------------------------------
+# arch macro for all Intel i?86 compatibile processors
+#  (Note: This macro (and it's analogues) will probably be obsoleted when
+#   rpm can use regular expressions against target platforms in macro
+#   conditionals. This change will be introduced after rpm-3.0.4).
+#
+%ix86   i386 i486 i586 i686 i786 i886 i986
+
+#------------------------------------------------------------------------
+# Use in %install to generate locale specific file lists. For example,
+#
+# %install
+# ...
+# %find_lang %{name}
+# ...
+# %files -f %{name}.lang
+#
+%find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+

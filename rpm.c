@@ -1044,7 +1044,8 @@ int main(int argc, const char ** argv)
 
     if (noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "
-		   "building, installation, erasure, and verification"));
+		   "building, rebuilding, recompilation, installation,"
+		   "erasure, and verification"));
 
     if (test && (bigMode & ~MODES_FOR_TEST))
 	argerror(_("--test may only be specified during package installation, "

@@ -12,7 +12,7 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
 EXTRA_PROGRAMS = rpmconvert
 
 # XXX TODO: python perl
-SUBDIRS = intl po popt build lib misc tools scripts tests doc perl .
+SUBDIRS = intl po popt build lib misc tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-02-07 14:27-0500\n"
+"POT-Creation-Date: 2000-02-13 14:17-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1235,13 +1235,13 @@ msgstr ""
 #: rpm.c:1046
 #, fuzzy
 msgid ""
-"--nodeps may only be specified during package building, installation, "
-"erasure, and verification"
+"--nodeps may only be specified during package building, rebuilding, "
+"recompilation, installation,erasure, and verification"
 msgstr ""
 "--nodeps darf nur während der Paketinstallation, -deinstallation und "
 "-überprüfung angegeben werden"
 
-#: rpm.c:1050
+#: rpm.c:1051
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -1249,7 +1249,7 @@ msgstr ""
 "--test darf nur während der Paketinstallation, -deinstallation und "
 "-erstellung angegeben werden"
 
-#: rpm.c:1054
+#: rpm.c:1055
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1257,22 +1257,22 @@ msgstr ""
 "--root (-r) darf nur während der Paketinstallation, -deinstallation, "
 "-anfrage und Datenbankneuerstellungen angegeben werden"
 
-#: rpm.c:1066
+#: rpm.c:1067
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
 
-#: rpm.c:1072
+#: rpm.c:1073
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage darf nur während Aktualisierungen benutzt werden"
 
-#: rpm.c:1077
+#: rpm.c:1078
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "ftp-Optionen können nur während Paketanfragen, -installationen und "
 "-aktualisierungen benutzt werden"
 
-#: rpm.c:1083
+#: rpm.c:1084
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
@@ -1280,107 +1280,107 @@ msgstr ""
 "ftp-Optionen können nur während Paketanfragen, -installationen und "
 "-aktualisierungen benutzt werden"
 
-#: rpm.c:1087
+#: rpm.c:1088
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp darf nur während der Signatur-Überprüfung benutzt werden"
 
-#: rpm.c:1090
+#: rpm.c:1091
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nopgp darf nur während der Signatur-Überprüfung benutzt werden"
 
-#: rpm.c:1093
+#: rpm.c:1094
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp darf nur während der Signatur- und Paketüberprüfung angegeben werden"
 
-#: rpm.c:1121
+#: rpm.c:1122
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1126
+#: rpm.c:1127
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: rpm.c:1141
+#: rpm.c:1142
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpm.c:1145
+#: rpm.c:1146
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1147
+#: rpm.c:1148
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
 
-#: rpm.c:1150
+#: rpm.c:1151
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
-#: rpm.c:1155
+#: rpm.c:1156
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1161
+#: rpm.c:1162
 msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paketerstellung benutzt werden"
 
-#: rpm.c:1176
+#: rpm.c:1177
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: rpm.c:1195
+#: rpm.c:1196
 msgid "unexpected arguments to --querytags "
 msgstr "Unerwartete Argumente zu --querytags "
 
-#: rpm.c:1206
+#: rpm.c:1207
 msgid "no packages given for signature check"
 msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
 
-#: rpm.c:1217
+#: rpm.c:1218
 msgid "no packages given for signing"
 msgstr "Es wurden keine Pakete für die Signatur angeben"
 
-#: rpm.c:1229
+#: rpm.c:1230
 msgid "no packages files given for rebuild"
 msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
 
-#: rpm.c:1292
+#: rpm.c:1293
 msgid "no spec files given for build"
 msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
 
-#: rpm.c:1294
+#: rpm.c:1295
 msgid "no tar files given for build"
 msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 
-#: rpm.c:1310
+#: rpm.c:1311
 msgid "no packages given for uninstall"
 msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
 
-#: rpm.c:1360
+#: rpm.c:1361
 msgid "no packages given for install"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: rpm.c:1383
+#: rpm.c:1384
 msgid "extra arguments given for query of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: rpm.c:1388
+#: rpm.c:1389
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: rpm.c:1405
+#: rpm.c:1406
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: rpm.c:1409
+#: rpm.c:1410
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
@@ -2306,8 +2306,8 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
-#: lib/header.c:2189 lib/header.c:2206 lib/header.c:2226
+#: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
+#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
 msgid "(not a number)"
 msgstr "(keine Zahl)"
 
@@ -2338,81 +2338,81 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:218
+#: lib/header.c:220
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:249 lib/header.c:812
+#: lib/header.c:251 lib/header.c:814
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1171
+#: lib/header.c:1173
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1580
+#: lib/header.c:1582
 #, c-format
 msgid "missing { after %"
 msgstr "fehlende { nach %{"
 
-#: lib/header.c:1608
+#: lib/header.c:1610
 msgid "missing } after %{"
 msgstr "fehlende } nach %{"
 
 # »Tag« übersetzen??? -ke-
-#: lib/header.c:1620
+#: lib/header.c:1622
 msgid "empty tag format"
 msgstr "leeres »Tag«-Format"
 
-#: lib/header.c:1630
+#: lib/header.c:1632
 msgid "empty tag name"
 msgstr "leerer »Tag«-Name"
 
-#: lib/header.c:1645
+#: lib/header.c:1647
 msgid "unknown tag"
 msgstr "unbekannter »Tag«"
 
-#: lib/header.c:1671
+#: lib/header.c:1673
 msgid "] expected at end of array"
 msgstr "] am Ende des Arrays erwartet"
 
-#: lib/header.c:1687
+#: lib/header.c:1689
 msgid "unexpected ]"
 msgstr "unerwartete ]"
 
-#: lib/header.c:1689
+#: lib/header.c:1691
 msgid "unexpected }"
 msgstr "unerwartete }"
 
-#: lib/header.c:1743
+#: lib/header.c:1745
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: lib/header.c:1750
+#: lib/header.c:1752
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ nach ? im Ausdruck erwartet"
 
-#: lib/header.c:1760 lib/header.c:1795
+#: lib/header.c:1762 lib/header.c:1797
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
-#: lib/header.c:1768
+#: lib/header.c:1770
 msgid ": expected following ? subexpression"
 msgstr ": nach ? Unterausdruck erwartet"
 
-#: lib/header.c:1782
+#: lib/header.c:1784
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ nach : im Ausdruck erwartet"
 
-#: lib/header.c:1803
+#: lib/header.c:1805
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#: lib/header.c:1972
+#: lib/header.c:1973
 msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
@@ -2762,174 +2762,174 @@ msgstr ""
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:421
+#: lib/query.c:422
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: lib/query.c:425
+#: lib/query.c:426
 msgid "error: could not read database record\n"
 msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
 
 #. XXX Fstrerror
-#: lib/query.c:471
+#: lib/query.c:472
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/query.c:489
+#: lib/query.c:490
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:498 lib/rpminstall.c:231
+#: lib/query.c:499 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: lib/query.c:502
+#: lib/query.c:503
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:535
+#: lib/query.c:536
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:560
+#: lib/query.c:561
 msgid "could not read database record!\n"
 msgstr "kann Datenbank-Eintrag nicht lesen!\n"
 
-#: lib/query.c:571
+#: lib/query.c:572
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/query.c:581
+#: lib/query.c:582
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "kein Paket triggert %s\n"
 
-#: lib/query.c:591
+#: lib/query.c:592
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: lib/query.c:602
+#: lib/query.c:603
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
 # , c-format
-#: lib/query.c:618
+#: lib/query.c:619
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/query.c:621
+#: lib/query.c:622
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/query.c:634
+#: lib/query.c:635
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:637
+#: lib/query.c:638
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:640
+#: lib/query.c:641
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:652 lib/rpminstall.c:435
+#: lib/query.c:653 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/query.c:655
+#: lib/query.c:656
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/query.c:677
+#: lib/query.c:678
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: lib/query.c:736
+#: lib/query.c:737
 #, fuzzy
 msgid "query package owning file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:738
+#: lib/query.c:739
 #, fuzzy
 msgid "query packages in group"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, fuzzy
 msgid "query a package file"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/query.c:744
+#: lib/query.c:745
 #, fuzzy
 msgid "query a spec file"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:746
+#: lib/query.c:747
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:748
+#: lib/query.c:749
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
-#: lib/query.c:750
+#: lib/query.c:751
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
-#: lib/query.c:789
+#: lib/query.c:790
 #, fuzzy
 msgid "list all configuration files"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: lib/query.c:791
+#: lib/query.c:792
 #, fuzzy
 msgid "list all documentation files"
 msgstr "Dokumentation installieren"
 
-#: lib/query.c:793
+#: lib/query.c:794
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paketinformationen anzeigen"
 
-#: lib/query.c:795
+#: lib/query.c:796
 #, fuzzy
 msgid "list files in package"
 msgstr "Paket installieren"
 
-#: lib/query.c:799
+#: lib/query.c:800
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:801
+#: lib/query.c:802
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:804
+#: lib/query.c:805
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:806
+#: lib/query.c:807
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"

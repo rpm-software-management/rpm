@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-02-07 14:27-0500\n"
+msgstr "POT-Creation-Date: 2000-02-13 14:17-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -1209,13 +1209,13 @@ msgstr ""
 #: rpm.c:1046
 #, fuzzy
 msgid ""
-"--nodeps may only be specified during package building, installation, "
-"erasure, and verification"
+"--nodeps may only be specified during package building, rebuilding, "
+"recompilation, installation,erasure, and verification"
 msgstr ""
 "--test ne peut être spécifié que lors de l'installation ou désinstallation "
 "d'un package"
 
-#: rpm.c:1050
+#: rpm.c:1051
 #, fuzzy
 msgid ""
 "--test may only be specified during package installation, erasure, and "
@@ -1224,7 +1224,7 @@ msgstr ""
 "--test ne peut être spécifié que lors de l'installation ou désinstallation "
 "d'un package"
 
-#: rpm.c:1054
+#: rpm.c:1055
 #, fuzzy
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
@@ -1233,130 +1233,130 @@ msgstr ""
 "--root (-r) ne peut être spécifié que lors de l'installation, de la "
 "désinstallation ou de l'interrogation d'un package"
 
-#: rpm.c:1066
+#: rpm.c:1067
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: rpm.c:1072
+#: rpm.c:1073
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage ne peut être spécifié que lors de mises à jour"
 
-#: rpm.c:1077
+#: rpm.c:1078
 #, fuzzy
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1083
+#: rpm.c:1084
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1087
+#: rpm.c:1088
 #, fuzzy
 msgid "--nopgp may only be used during signature checking"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1090
+#: rpm.c:1091
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1093
+#: rpm.c:1094
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1121
+#: rpm.c:1122
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1126
+#: rpm.c:1127
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpm.c:1141
+#: rpm.c:1142
 #, fuzzy
 msgid "pgp not found: "
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpm.c:1145
+#: rpm.c:1146
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1147
+#: rpm.c:1148
 msgid "Pass phrase check failed\n"
 msgstr "La vérification du mot de passe a échoué\n"
 
-#: rpm.c:1150
+#: rpm.c:1151
 msgid "Pass phrase is good.\n"
 msgstr "Mot de passe correct.\n"
 
-#: rpm.c:1155
+#: rpm.c:1156
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1161
+#: rpm.c:1162
 msgid "--sign may only be used during package building"
 msgstr "--sign ne peut être spécifié que lors de la construction d'un package"
 
-#: rpm.c:1176
+#: rpm.c:1177
 #, fuzzy
 msgid "exec failed\n"
 msgstr "La construction a échoué.\n"
 
-#: rpm.c:1195
+#: rpm.c:1196
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpm.c:1206
+#: rpm.c:1207
 msgid "no packages given for signature check"
 msgstr "aucun package n'a été spécifié pour la vérification de signature"
 
-#: rpm.c:1217
+#: rpm.c:1218
 #, fuzzy
 msgid "no packages given for signing"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpm.c:1229
+#: rpm.c:1230
 msgid "no packages files given for rebuild"
 msgstr "aucun package n'a été spécifié pour la reconstruction"
 
-#: rpm.c:1292
+#: rpm.c:1293
 msgid "no spec files given for build"
 msgstr "aucun package n'a été spécifié pour la construction"
 
-#: rpm.c:1294
+#: rpm.c:1295
 #, fuzzy
 msgid "no tar files given for build"
 msgstr "aucun package n'a été spécifié pour la construction"
 
-#: rpm.c:1310
+#: rpm.c:1311
 msgid "no packages given for uninstall"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpm.c:1360
+#: rpm.c:1361
 msgid "no packages given for install"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: rpm.c:1383
+#: rpm.c:1384
 #, fuzzy
 msgid "extra arguments given for query of all packages"
 msgstr "aucun argument n'a été fourni pour la requête"
 
-#: rpm.c:1388
+#: rpm.c:1389
 msgid "no arguments given for query"
 msgstr "aucun argument n'a été fourni pour la requête"
 
-#: rpm.c:1405
+#: rpm.c:1406
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "aucun argument n'a été fourni pour la requête"
 
-#: rpm.c:1409
+#: rpm.c:1410
 msgid "no arguments given for verify"
 msgstr "aucun argument n'a été fourni pour la vérification"
 
@@ -2244,8 +2244,8 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
-#: lib/header.c:2189 lib/header.c:2206 lib/header.c:2226
+#: lib/formats.c:68 lib/formats.c:85 lib/formats.c:105 lib/formats.c:137
+#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
 msgid "(not a number)"
 msgstr ""
 
@@ -2274,80 +2274,80 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:218
+#: lib/header.c:220
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:249 lib/header.c:812
+#: lib/header.c:251 lib/header.c:814
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1171
+#: lib/header.c:1173
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1580
+#: lib/header.c:1582
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: lib/header.c:1608
+#: lib/header.c:1610
 msgid "missing } after %{"
 msgstr ""
 
-#: lib/header.c:1620
+#: lib/header.c:1622
 msgid "empty tag format"
 msgstr ""
 
-#: lib/header.c:1630
+#: lib/header.c:1632
 msgid "empty tag name"
 msgstr ""
 
-#: lib/header.c:1645
+#: lib/header.c:1647
 msgid "unknown tag"
 msgstr ""
 
-#: lib/header.c:1671
+#: lib/header.c:1673
 msgid "] expected at end of array"
 msgstr ""
 
-#: lib/header.c:1687
+#: lib/header.c:1689
 #, fuzzy
 msgid "unexpected ]"
 msgstr "source de requête inattendue"
 
-#: lib/header.c:1689
+#: lib/header.c:1691
 #, fuzzy
 msgid "unexpected }"
 msgstr "source de requête inattendue"
 
-#: lib/header.c:1743
+#: lib/header.c:1745
 msgid "? expected in expression"
 msgstr ""
 
-#: lib/header.c:1750
+#: lib/header.c:1752
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: lib/header.c:1760 lib/header.c:1795
+#: lib/header.c:1762 lib/header.c:1797
 msgid "} expected in expression"
 msgstr ""
 
-#: lib/header.c:1768
+#: lib/header.c:1770
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: lib/header.c:1782
+#: lib/header.c:1784
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: lib/header.c:1803
+#: lib/header.c:1805
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:1972
+#: lib/header.c:1973
 msgid "(unknown type)"
 msgstr ""
 
@@ -2688,175 +2688,175 @@ msgstr ""
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:421
+#: lib/query.c:422
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: lib/query.c:425
+#: lib/query.c:426
 msgid "error: could not read database record\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:471
+#: lib/query.c:472
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "La construction a échoué.\n"
 
-#: lib/query.c:489
+#: lib/query.c:490
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:498 lib/rpminstall.c:231
+#: lib/query.c:499 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:502
+#: lib/query.c:503
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:535
+#: lib/query.c:536
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:560
+#: lib/query.c:561
 msgid "could not read database record!\n"
 msgstr ""
 
-#: lib/query.c:571
+#: lib/query.c:572
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:581
+#: lib/query.c:582
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/query.c:591
+#: lib/query.c:592
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:602
+#: lib/query.c:603
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:618
+#: lib/query.c:619
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:621
+#: lib/query.c:622
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:634
+#: lib/query.c:635
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:637
+#: lib/query.c:638
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:640
+#: lib/query.c:641
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:652 lib/rpminstall.c:435
+#: lib/query.c:653 lib/rpminstall.c:435
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/query.c:655
+#: lib/query.c:656
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:677
+#: lib/query.c:678
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:736
+#: lib/query.c:737
 #, fuzzy
 msgid "query package owning file"
 msgstr ""
 "        -f <file>+        - interroge le package à qui appartient <file>"
 
-#: lib/query.c:738
+#: lib/query.c:739
 #, fuzzy
 msgid "query packages in group"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/query.c:740
+#: lib/query.c:741
 #, fuzzy
 msgid "query a package file"
 msgstr ""
 "        -f <file>+        - interroge le package à qui appartient <file>"
 
-#: lib/query.c:744
+#: lib/query.c:745
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:746
+#: lib/query.c:747
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr ""
 "        -f <file>+        - interroge le package à qui appartient <file>"
 
-#: lib/query.c:748
+#: lib/query.c:749
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:750
+#: lib/query.c:751
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:789
+#: lib/query.c:790
 #, fuzzy
 msgid "list all configuration files"
 msgstr ""
 "        -c                - donne uniquement la liste des fichiers de "
 "configuration (implique -l)"
 
-#: lib/query.c:791
+#: lib/query.c:792
 #, fuzzy
 msgid "list all documentation files"
 msgstr ""
 "        -d                - donne uniquement la liste des fichiers de "
 "documentation (implique -l)"
 
-#: lib/query.c:793
+#: lib/query.c:794
 #, fuzzy
 msgid "dump basic file information"
 msgstr ""
 "        -i                - affiche les informations relatives à un package"
 
-#: lib/query.c:795
+#: lib/query.c:796
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:799
+#: lib/query.c:800
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:801
+#: lib/query.c:802
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:804
+#: lib/query.c:805
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:806
+#: lib/query.c:807
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "        -l                - affiche la liste des packages"
