@@ -29,8 +29,6 @@ lib/depends.c
 lib/formats.c
 lib/fs.c
 lib/fsm.c
-lib/header.c
-lib/header_internal.c
 lib/manifest.c
 lib/misc.c
 lib/package.c
@@ -57,6 +55,8 @@ rpmdb/dbconfig.c
 rpmdb/falloc.c
 rpmdb/fprint.c
 rpmdb/hdrNVR.c
+rpmdb/header.c
+rpmdb/header_internal.c
 rpmdb/legacy.c
 rpmdb/poptDB.c
 rpmdb/rpmhash.c

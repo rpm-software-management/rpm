@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-18 12:42-0500\n"
+"POT-Creation-Date: 2001-11-19 17:41-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1552,7 +1552,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
+#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
@@ -1638,94 +1638,6 @@ msgstr "otvorenie %s zlyhalo\n"
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:347
-#, fuzzy
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
-
-#. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "Typ údajov %d nie je podorovaný\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2220
-#, c-format
-msgid "missing { after %"
-msgstr "chýbajúce { po %"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2250
-msgid "missing } after %{"
-msgstr "chýbajúce } po %{"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2264
-msgid "empty tag format"
-msgstr "prázdny tag formát"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2278
-msgid "empty tag name"
-msgstr "prázdne meno tagu"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2295
-msgid "unknown tag"
-msgstr "neznámy tag"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2322
-msgid "] expected at end of array"
-msgstr "] oèakávané na konci poµa"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2340
-msgid "unexpected ]"
-msgstr "neoèakávané ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2344
-msgid "unexpected }"
-msgstr "neoèakávané }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2410
-msgid "? expected in expression"
-msgstr "? oèakávané vo výraze"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2419
-msgid "{ expected after ? in expression"
-msgstr "{ oèakávané po ? vo výraze"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2432 lib/header.c:2474
-msgid "} expected in expression"
-msgstr "} oèakávané vo výraze"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2442
-msgid ": expected following ? subexpression"
-msgstr ": oèakávané po ? podvýraze"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2459
-msgid "{ expected after : in expression"
-msgstr "{ oèakávané po : vo výraze"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2484
-msgid "| expected at end of expression"
-msgstr "| oèakávené na konci výrazu"
-
-#: lib/header.c:2707
-msgid "(unknown type)"
-msgstr "(neznámy typ)"
 
 #: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
 #, fuzzy, c-format
@@ -2281,6 +2193,12 @@ msgstr " koliduje s %s-%s-%s\n"
 #, fuzzy
 msgid "is needed by"
 msgstr " je vy¾adované %s-%s-%s\n"
+
+#. @-modfilesys@
+#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "Typ údajov %d nie je podorovaný\n"
 
 #: lib/psm.c:442
 #, fuzzy, c-format
@@ -3080,6 +2998,88 @@ msgid ""
 "com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:347
+#, fuzzy
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "grabData() RPM_STRING_TYPE poèet musí by» 1.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2220
+#, c-format
+msgid "missing { after %"
+msgstr "chýbajúce { po %"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2250
+msgid "missing } after %{"
+msgstr "chýbajúce } po %{"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2264
+msgid "empty tag format"
+msgstr "prázdny tag formát"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2278
+msgid "empty tag name"
+msgstr "prázdne meno tagu"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2295
+msgid "unknown tag"
+msgstr "neznámy tag"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2322
+msgid "] expected at end of array"
+msgstr "] oèakávané na konci poµa"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2340
+msgid "unexpected ]"
+msgstr "neoèakávané ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2344
+msgid "unexpected }"
+msgstr "neoèakávané }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2410
+msgid "? expected in expression"
+msgstr "? oèakávané vo výraze"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2419
+msgid "{ expected after ? in expression"
+msgstr "{ oèakávané po ? vo výraze"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2432 rpmdb/header.c:2474
+msgid "} expected in expression"
+msgstr "} oèakávané vo výraze"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2442
+msgid ": expected following ? subexpression"
+msgstr ": oèakávané po ? podvýraze"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2459
+msgid "{ expected after : in expression"
+msgstr "{ oèakávané po : vo výraze"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2484
+msgid "| expected at end of expression"
+msgstr "| oèakávené na konci výrazu"
+
+#: rpmdb/header.c:2707
+msgid "(unknown type)"
+msgstr "(neznámy typ)"
 
 #: rpmdb/poptDB.c:19
 msgid "initialize database"

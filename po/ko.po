@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-18 12:42-0500\n"
+"POT-Creation-Date: 2001-11-19 17:41-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1511,7 +1511,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
+#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
@@ -1598,93 +1598,6 @@ msgstr "%s %s 링크를 해제하는데 실패함: %s\n"
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s (이)가 %s (으)로 생성되었습니다\n"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:347
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "dataLength() RPM_STRING_TYPE 카운트는 반드시 '1' 이어야 합니다.\n"
-
-#. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "%d 데이터 유형은 사용하실 수 없습니다\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2220
-#, c-format
-msgid "missing { after %"
-msgstr "'%' 뒤에 '{' 를 찾을 수 없습니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2250
-msgid "missing } after %{"
-msgstr "'%{' 뒤에 '}' 를 찾을 수 없습니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2264
-msgid "empty tag format"
-msgstr "태그 형식이 비어있습니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2278
-msgid "empty tag name"
-msgstr "태그 이름이 비어있습니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2295
-msgid "unknown tag"
-msgstr "알 수 없는 태그 입니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2322
-msgid "] expected at end of array"
-msgstr "배열의 끝부분에 ']' 가 필요합니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2340
-msgid "unexpected ]"
-msgstr "불필요한 ']' 가 사용되고 있습니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2344
-msgid "unexpected }"
-msgstr "불필요한 '}' 가 사용되고 있습니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2410
-msgid "? expected in expression"
-msgstr "표현식에 '?' 가 필요합니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2419
-msgid "{ expected after ? in expression"
-msgstr "표현식에서 '?' 뒤에 '{' 가 필요합니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2432 lib/header.c:2474
-msgid "} expected in expression"
-msgstr "표현식에 '}' 가 필요합니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2442
-msgid ": expected following ? subexpression"
-msgstr "하부 표현식(subexpression)의 '?' 다음에 ':' 이 필요합니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2459
-msgid "{ expected after : in expression"
-msgstr "표현식에서 ':' 뒤에 '{' 가 필요합니다"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2484
-msgid "| expected at end of expression"
-msgstr "표현식의 끝부분에 '|' 가 필요합니다"
-
-#: lib/header.c:2707
-msgid "(unknown type)"
-msgstr "(알 수 없는 유형)"
 
 #: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
 #, c-format
@@ -2215,6 +2128,12 @@ msgstr " %s-%s-%s (와)과 충돌합니다\n"
 #, fuzzy
 msgid "is needed by"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
+
+#. @-modfilesys@
+#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "%d 데이터 유형은 사용하실 수 없습니다\n"
 
 #: lib/psm.c:442
 #, c-format
@@ -3009,6 +2928,87 @@ msgstr ""
 "\t\"rpm --rebuilddb\"\n"
 "만일, \"rpm --rebuilddb\" 명령이 실패할 경우에는 http://www.rpm.org 이나 \n"
 "rpm-list@redhat.com 메일링 리스트를 통해 자세한 정보를 얻으실 수 있습니다.\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:347
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "dataLength() RPM_STRING_TYPE 카운트는 반드시 '1' 이어야 합니다.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2220
+#, c-format
+msgid "missing { after %"
+msgstr "'%' 뒤에 '{' 를 찾을 수 없습니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2250
+msgid "missing } after %{"
+msgstr "'%{' 뒤에 '}' 를 찾을 수 없습니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2264
+msgid "empty tag format"
+msgstr "태그 형식이 비어있습니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2278
+msgid "empty tag name"
+msgstr "태그 이름이 비어있습니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2295
+msgid "unknown tag"
+msgstr "알 수 없는 태그 입니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2322
+msgid "] expected at end of array"
+msgstr "배열의 끝부분에 ']' 가 필요합니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2340
+msgid "unexpected ]"
+msgstr "불필요한 ']' 가 사용되고 있습니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2344
+msgid "unexpected }"
+msgstr "불필요한 '}' 가 사용되고 있습니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2410
+msgid "? expected in expression"
+msgstr "표현식에 '?' 가 필요합니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2419
+msgid "{ expected after ? in expression"
+msgstr "표현식에서 '?' 뒤에 '{' 가 필요합니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2432 rpmdb/header.c:2474
+msgid "} expected in expression"
+msgstr "표현식에 '}' 가 필요합니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2442
+msgid ": expected following ? subexpression"
+msgstr "하부 표현식(subexpression)의 '?' 다음에 ':' 이 필요합니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2459
+msgid "{ expected after : in expression"
+msgstr "표현식에서 ':' 뒤에 '{' 가 필요합니다"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2484
+msgid "| expected at end of expression"
+msgstr "표현식의 끝부분에 '|' 가 필요합니다"
+
+#: rpmdb/header.c:2707
+msgid "(unknown type)"
+msgstr "(알 수 없는 유형)"
 
 #: rpmdb/poptDB.c:19
 msgid "initialize database"

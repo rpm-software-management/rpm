@@ -341,18 +341,18 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 
     buf[0] = '\0';
     switch (rpmVerifySignature(ts, buf)) {
-    case RPMSIG_OK:		/*!< Signature is OK. */
+    case RPMSIG_OK:		/* Signature is OK. */
 	rpmMessage(RPMMESS_VERBOSE, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;
-    case RPMSIG_UNKNOWN:	/*!< Signature is unknown. */
-    case RPMSIG_NOKEY:		/*!< Key is unavailable. */
-    case RPMSIG_NOTTRUSTED:	/*!< Signature is OK, but key is not trusted. */
+    case RPMSIG_UNKNOWN:	/* Signature is unknown. */
+    case RPMSIG_NOKEY:		/* Key is unavailable. */
+    case RPMSIG_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
 	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;
     default:
-    case RPMSIG_BAD:		/*!< Signature does not verify. */
+    case RPMSIG_BAD:		/* Signature does not verify. */
 	rpmMessage(RPMMESS_ERROR, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;

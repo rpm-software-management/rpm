@@ -360,11 +360,6 @@ INPUT                  = \
 	@top_srcdir@/lib/fs.c \
 	@top_srcdir@/lib/fsm.c \
 	@top_srcdir@/lib/fsm.h \
-	@top_srcdir@/lib/hdrinline.h \
-	@top_srcdir@/lib/header.c \
-	@top_srcdir@/lib/header.h \
-	@top_srcdir@/lib/header_internal.c \
-	@top_srcdir@/lib/header_internal.h \
 	@top_srcdir@/lib/manifest.c \
 	@top_srcdir@/lib/manifest.h \
 	@top_srcdir@/lib/misc.c \
@@ -405,6 +400,11 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/fprint.c \
 	@top_srcdir@/rpmdb/fprint.h \
 	@top_srcdir@/rpmdb/hdrNVR.c \
+	@top_srcdir@/rpmdb/hdrinline.h \
+	@top_srcdir@/rpmdb/header.c \
+	@top_srcdir@/rpmdb/header.h \
+	@top_srcdir@/rpmdb/header_internal.c \
+	@top_srcdir@/rpmdb/header_internal.h \
 	@top_srcdir@/rpmdb/legacy.c \
 	@top_srcdir@/rpmdb/legacy.h \
 	@top_srcdir@/rpmdb/poptDB.c \

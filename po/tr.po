@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-18 12:42-0500\n"
+"POT-Creation-Date: 2001-11-19 17:41-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1534,7 +1534,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
+#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -1621,93 +1621,6 @@ msgstr "%s / %s bað kaldýrýlamadý: %s\n"
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:347
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
-
-#. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "%d veri türü desteklenmiyor\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2220
-#, c-format
-msgid "missing { after %"
-msgstr "%% den sonraki { yok"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2250
-msgid "missing } after %{"
-msgstr "%%{ den sonraki } yok"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2264
-msgid "empty tag format"
-msgstr "etiket biçemi boþ"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2278
-msgid "empty tag name"
-msgstr "etiket ismi boþ"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2295
-msgid "unknown tag"
-msgstr "bilinmeyen etiket"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2322
-msgid "] expected at end of array"
-msgstr "dizinin sonunda ] gerekli"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2340
-msgid "unexpected ]"
-msgstr "beklenmeyen ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2344
-msgid "unexpected }"
-msgstr "beklenmeyen }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2410
-msgid "? expected in expression"
-msgstr "ifade içerisinde ? gerekli"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2419
-msgid "{ expected after ? in expression"
-msgstr "ifade içerisinde ? dan sonra { gerekli"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2432 lib/header.c:2474
-msgid "} expected in expression"
-msgstr "ifade içinde } gerekli"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2442
-msgid ": expected following ? subexpression"
-msgstr "? alt ifadesinden sonra : gerekli"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2459
-msgid "{ expected after : in expression"
-msgstr "ifade içersinde : den sonra { gerekli"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2484
-msgid "| expected at end of expression"
-msgstr "ifadenin sonunda | gerekli"
-
-#: lib/header.c:2707
-msgid "(unknown type)"
-msgstr "(bilinmeyen tür)"
 
 #: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
 #, c-format
@@ -2235,6 +2148,12 @@ msgstr " %s-%s-%s ile çeliþiyor\n"
 #, fuzzy
 msgid "is needed by"
 msgstr " %s-%s-%s için gerekli\n"
+
+#. @-modfilesys@
+#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "%d veri türü desteklenmiyor\n"
 
 #: lib/psm.c:442
 #, c-format
@@ -3023,6 +2942,87 @@ msgstr ""
 "eðer \"rpm --rebuilddb\" çalýþmazsa problemin çözümü ve\n"
 "daha fazla bilgi için http://www.rpm.org adresine bakýn veya rpm-list@redhat."
 "com e-posta listesine kaydolun.\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:347
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2220
+#, c-format
+msgid "missing { after %"
+msgstr "%% den sonraki { yok"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2250
+msgid "missing } after %{"
+msgstr "%%{ den sonraki } yok"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2264
+msgid "empty tag format"
+msgstr "etiket biçemi boþ"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2278
+msgid "empty tag name"
+msgstr "etiket ismi boþ"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2295
+msgid "unknown tag"
+msgstr "bilinmeyen etiket"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2322
+msgid "] expected at end of array"
+msgstr "dizinin sonunda ] gerekli"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2340
+msgid "unexpected ]"
+msgstr "beklenmeyen ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2344
+msgid "unexpected }"
+msgstr "beklenmeyen }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2410
+msgid "? expected in expression"
+msgstr "ifade içerisinde ? gerekli"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2419
+msgid "{ expected after ? in expression"
+msgstr "ifade içerisinde ? dan sonra { gerekli"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2432 rpmdb/header.c:2474
+msgid "} expected in expression"
+msgstr "ifade içinde } gerekli"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2442
+msgid ": expected following ? subexpression"
+msgstr "? alt ifadesinden sonra : gerekli"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2459
+msgid "{ expected after : in expression"
+msgstr "ifade içersinde : den sonra { gerekli"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2484
+msgid "| expected at end of expression"
+msgstr "ifadenin sonunda | gerekli"
+
+#: rpmdb/header.c:2707
+msgid "(unknown type)"
+msgstr "(bilinmeyen tür)"
 
 #: rpmdb/poptDB.c:19
 msgid "initialize database"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-18 12:42-0500\n"
+"POT-Creation-Date: 2001-11-19 17:41-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1570,7 +1570,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
+#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -1656,94 +1656,6 @@ msgstr "%s のオープンに失敗: %s\n"
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:347
-#, fuzzy
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
-
-#. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "データタイプ %d はサポートされていません\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2220
-#, c-format
-msgid "missing { after %"
-msgstr "% の後に { がありません"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2250
-msgid "missing } after %{"
-msgstr "%{ の後に } がありません"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2264
-msgid "empty tag format"
-msgstr "空のタグフォーマット"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2278
-msgid "empty tag name"
-msgstr "空のタグ名"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2295
-msgid "unknown tag"
-msgstr "不明なタグ"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2322
-msgid "] expected at end of array"
-msgstr "配列の後に ] が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2340
-msgid "unexpected ]"
-msgstr "予期せぬ ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2344
-msgid "unexpected }"
-msgstr "予期せぬ }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2410
-msgid "? expected in expression"
-msgstr "式中で ? が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2419
-msgid "{ expected after ? in expression"
-msgstr "式中で ? の後に { が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2432 lib/header.c:2474
-msgid "} expected in expression"
-msgstr "式中に } が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2442
-msgid ": expected following ? subexpression"
-msgstr "以下の ? サブ式の に: が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2459
-msgid "{ expected after : in expression"
-msgstr "式中で : の後に { が期待されます"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2484
-msgid "| expected at end of expression"
-msgstr "式の終りに | が期待されます"
-
-#: lib/header.c:2707
-msgid "(unknown type)"
-msgstr "(不明なタイプ)"
 
 #: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
 #, fuzzy, c-format
@@ -2326,6 +2238,12 @@ msgstr " %s-%s-%s と競合します\n"
 #, fuzzy
 msgid "is needed by"
 msgstr "は %s-%s-%s に必要とされています\n"
+
+#. @-modfilesys@
+#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "データタイプ %d はサポートされていません\n"
 
 #: lib/psm.c:442
 #, fuzzy, c-format
@@ -3135,6 +3053,88 @@ msgstr ""
 "もし問題を解決するために実行した \"rpm --rebuilddb\" が失敗したら、\n"
 "http://www.rpm.org もしくは rpm-list@redhat.com メーリングリストから\n"
 "詳細な情報が取得できます。\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:347
+#, fuzzy
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2220
+#, c-format
+msgid "missing { after %"
+msgstr "% の後に { がありません"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2250
+msgid "missing } after %{"
+msgstr "%{ の後に } がありません"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2264
+msgid "empty tag format"
+msgstr "空のタグフォーマット"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2278
+msgid "empty tag name"
+msgstr "空のタグ名"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2295
+msgid "unknown tag"
+msgstr "不明なタグ"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2322
+msgid "] expected at end of array"
+msgstr "配列の後に ] が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2340
+msgid "unexpected ]"
+msgstr "予期せぬ ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2344
+msgid "unexpected }"
+msgstr "予期せぬ }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2410
+msgid "? expected in expression"
+msgstr "式中で ? が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2419
+msgid "{ expected after ? in expression"
+msgstr "式中で ? の後に { が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2432 rpmdb/header.c:2474
+msgid "} expected in expression"
+msgstr "式中に } が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2442
+msgid ": expected following ? subexpression"
+msgstr "以下の ? サブ式の に: が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2459
+msgid "{ expected after : in expression"
+msgstr "式中で : の後に { が期待されます"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2484
+msgid "| expected at end of expression"
+msgstr "式の終りに | が期待されます"
+
+#: rpmdb/header.c:2707
+msgid "(unknown type)"
+msgstr "(不明なタイプ)"
 
 #: rpmdb/poptDB.c:19
 msgid "initialize database"

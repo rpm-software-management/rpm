@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-18 12:42-0500\n"
+"POT-Creation-Date: 2001-11-19 17:41-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -1508,7 +1508,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
+#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
 msgid "(not a number)"
 msgstr "(não é um número)"
 
@@ -1594,93 +1594,6 @@ msgstr "o acesso ao %s falhou: %s\n"
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:347
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "o valor RPM_STRING_TYPE do dataLength() tem de ser 1.\n"
-
-#. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "O tipo de dados %d não é suportado\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2220
-#, c-format
-msgid "missing { after %"
-msgstr "falta um { depois do %"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2250
-msgid "missing } after %{"
-msgstr "falta um } depois do %{"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2264
-msgid "empty tag format"
-msgstr "formato da opção em branco"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2278
-msgid "empty tag name"
-msgstr "nome da opção em branco"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2295
-msgid "unknown tag"
-msgstr "opção desconhecida"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2322
-msgid "] expected at end of array"
-msgstr "] esperado no fim do vector"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2340
-msgid "unexpected ]"
-msgstr "] inesperado"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2344
-msgid "unexpected }"
-msgstr "} inesperado"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2410
-msgid "? expected in expression"
-msgstr "esperado um ? na expressão"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2419
-msgid "{ expected after ? in expression"
-msgstr "esperado um { a seguir ao ? na expressão"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2432 lib/header.c:2474
-msgid "} expected in expression"
-msgstr "esperado um } na expressão"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2442
-msgid ": expected following ? subexpression"
-msgstr "esperado um : a seguir à sub-expressão ?"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2459
-msgid "{ expected after : in expression"
-msgstr "esperado um { a seguir ao : na expressão"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2484
-msgid "| expected at end of expression"
-msgstr "esperado um | no fim da expressão"
-
-#: lib/header.c:2707
-msgid "(unknown type)"
-msgstr "(tipo desconhecido)"
 
 #: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
 #, c-format
@@ -2212,6 +2125,12 @@ msgstr " está em conflito com o %s-%s-%s\n"
 #, fuzzy
 msgid "is needed by"
 msgstr " é necessário pelo %s-%s-%s\n"
+
+#. @-modfilesys@
+#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "O tipo de dados %d não é suportado\n"
 
 #: lib/psm.c:442
 #, fuzzy, c-format
@@ -2996,6 +2915,87 @@ msgstr ""
 "Existe mais informação disponível em http://www.rpm.org ou na\n"
 "'mailing list' rpm-list@redhat.com\n"
 "se o \"rpm --rebuild\" não conseguir corrigir o problema.\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:347
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "o valor RPM_STRING_TYPE do dataLength() tem de ser 1.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2220
+#, c-format
+msgid "missing { after %"
+msgstr "falta um { depois do %"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2250
+msgid "missing } after %{"
+msgstr "falta um } depois do %{"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2264
+msgid "empty tag format"
+msgstr "formato da opção em branco"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2278
+msgid "empty tag name"
+msgstr "nome da opção em branco"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2295
+msgid "unknown tag"
+msgstr "opção desconhecida"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2322
+msgid "] expected at end of array"
+msgstr "] esperado no fim do vector"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2340
+msgid "unexpected ]"
+msgstr "] inesperado"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2344
+msgid "unexpected }"
+msgstr "} inesperado"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2410
+msgid "? expected in expression"
+msgstr "esperado um ? na expressão"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2419
+msgid "{ expected after ? in expression"
+msgstr "esperado um { a seguir ao ? na expressão"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2432 rpmdb/header.c:2474
+msgid "} expected in expression"
+msgstr "esperado um } na expressão"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2442
+msgid ": expected following ? subexpression"
+msgstr "esperado um : a seguir à sub-expressão ?"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2459
+msgid "{ expected after : in expression"
+msgstr "esperado um { a seguir ao : na expressão"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2484
+msgid "| expected at end of expression"
+msgstr "esperado um | no fim da expressão"
+
+#: rpmdb/header.c:2707
+msgid "(unknown type)"
+msgstr "(tipo desconhecido)"
 
 #: rpmdb/poptDB.c:19
 msgid "initialize database"

@@ -14,8 +14,8 @@ INCLUDES = \
 EXTRA_DIST = db3.c db1.c falloc.c
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmdb.h
-noinst_HEADERS = falloc.h fprint.h legacy.h rpmhash.h
+pkginc_HEADERS = header.h hdrinline.h rpmdb.h
+noinst_HEADERS = falloc.h fprint.h header_internal.h legacy.h rpmhash.h
 
 mylibpaths = \
 	-L$(top_builddir)/lib/.libs \
@@ -29,7 +29,9 @@ DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
 
 lib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = $(DBLIBSRCS) \
-	dbconfig.c fprint.c hdrNVR.c legacy.c poptDB.c rpmhash.c rpmdb.c \
+	dbconfig.c fprint.c \
+	hdrNVR.c header.c header_internal.c legacy.c \
+	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)

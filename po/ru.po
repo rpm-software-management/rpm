@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-18 12:42-0500\n"
+"POT-Creation-Date: 2001-11-19 17:41-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1530,7 +1530,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
+#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -1617,93 +1617,6 @@ msgstr "%s невозможно удалить %s: %s\n"
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s создан как %s\n"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:347
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "dataLength() допустим только один элемент типа RPM_STRING_TYPE\n"
-
-#. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "Тип данных %d не поддерживается\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2220
-#, c-format
-msgid "missing { after %"
-msgstr "отсутствует \"{\" после \"%\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2250
-msgid "missing } after %{"
-msgstr "отсутствует \"}\" после \"%{\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2264
-msgid "empty tag format"
-msgstr "пустой формат тэга"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2278
-msgid "empty tag name"
-msgstr "пустое имя тэга"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2295
-msgid "unknown tag"
-msgstr "неизвестный тэг"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2322
-msgid "] expected at end of array"
-msgstr "в конце массива ожидалась \"]\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2340
-msgid "unexpected ]"
-msgstr "неожиданная \"]\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2344
-msgid "unexpected }"
-msgstr "неожиданная \"}\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2410
-msgid "? expected in expression"
-msgstr "в выражении ожидалось \"?\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2419
-msgid "{ expected after ? in expression"
-msgstr "в выражении после \"?\" ожидалось \"{\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2432 lib/header.c:2474
-msgid "} expected in expression"
-msgstr "в выражении ожидалось \"}\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2442
-msgid ": expected following ? subexpression"
-msgstr "в выражении после \"?\" ожидалось \":\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2459
-msgid "{ expected after : in expression"
-msgstr "в выражении после \":\" ожидалось \"{\""
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2484
-msgid "| expected at end of expression"
-msgstr "в конце выражения ожидался \"|\""
-
-#: lib/header.c:2707
-msgid "(unknown type)"
-msgstr "(неизвестный тип)"
 
 #: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
 #, c-format
@@ -2228,6 +2141,12 @@ msgstr " конфликтует с %s-%s-%s\n"
 #, fuzzy
 msgid "is needed by"
 msgstr " нужен для %s-%s-%s\n"
+
+#. @-modfilesys@
+#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "Тип данных %d не поддерживается\n"
 
 #: lib/psm.c:442
 #, c-format
@@ -3018,6 +2937,87 @@ msgstr ""
 "\t\"rpm --rebuilddb\"\n"
 "Более подробная информация доступна на http://www.rpm.org или в списке "
 "рассылки rpm-list@redhat.com\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:347
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "dataLength() допустим только один элемент типа RPM_STRING_TYPE\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2220
+#, c-format
+msgid "missing { after %"
+msgstr "отсутствует \"{\" после \"%\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2250
+msgid "missing } after %{"
+msgstr "отсутствует \"}\" после \"%{\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2264
+msgid "empty tag format"
+msgstr "пустой формат тэга"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2278
+msgid "empty tag name"
+msgstr "пустое имя тэга"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2295
+msgid "unknown tag"
+msgstr "неизвестный тэг"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2322
+msgid "] expected at end of array"
+msgstr "в конце массива ожидалась \"]\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2340
+msgid "unexpected ]"
+msgstr "неожиданная \"]\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2344
+msgid "unexpected }"
+msgstr "неожиданная \"}\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2410
+msgid "? expected in expression"
+msgstr "в выражении ожидалось \"?\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2419
+msgid "{ expected after ? in expression"
+msgstr "в выражении после \"?\" ожидалось \"{\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2432 rpmdb/header.c:2474
+msgid "} expected in expression"
+msgstr "в выражении ожидалось \"}\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2442
+msgid ": expected following ? subexpression"
+msgstr "в выражении после \"?\" ожидалось \":\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2459
+msgid "{ expected after : in expression"
+msgstr "в выражении после \":\" ожидалось \"{\""
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2484
+msgid "| expected at end of expression"
+msgstr "в конце выражения ожидался \"|\""
+
+#: rpmdb/header.c:2707
+msgid "(unknown type)"
+msgstr "(неизвестный тип)"
 
 #: rpmdb/poptDB.c:19
 msgid "initialize database"

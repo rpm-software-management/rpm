@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-18 12:42-0500\n"
+"POT-Creation-Date: 2001-11-19 17:41-0500\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1514,7 +1514,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
+#: rpmdb/header.c:2963 rpmdb/header.c:2984 rpmdb/header.c:3006
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -1601,93 +1601,6 @@ msgstr "%s unlink av %s misslyckades: %s\n"
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
-
-#. This should not be allowed
-#. @-modfilesys@
-#: lib/header.c:347
-msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-msgstr "dataLength() RPM_STRING_TYPE antal måste vara 1.\n"
-
-#. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
-#, c-format
-msgid "Data type %d not supported\n"
-msgstr "Datatyp %d stöds inte\n"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2220
-#, c-format
-msgid "missing { after %"
-msgstr "{ fattas efter %"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2250
-msgid "missing } after %{"
-msgstr "} fattas efter %{"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2264
-msgid "empty tag format"
-msgstr "tomt taggformat"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2278
-msgid "empty tag name"
-msgstr "tomt taggnamn"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2295
-msgid "unknown tag"
-msgstr "okänd tagg"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2322
-msgid "] expected at end of array"
-msgstr "] förväntades vid slutet på vektor"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2340
-msgid "unexpected ]"
-msgstr "oväntad ]"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2344
-msgid "unexpected }"
-msgstr "oväntad }"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2410
-msgid "? expected in expression"
-msgstr "? förväntades i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2419
-msgid "{ expected after ? in expression"
-msgstr "{ förväntades efter ? i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2432 lib/header.c:2474
-msgid "} expected in expression"
-msgstr "} förväntades i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2442
-msgid ": expected following ? subexpression"
-msgstr ": förväntades efter ? i deluttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2459
-msgid "{ expected after : in expression"
-msgstr "{ förväntades efter : i uttryck"
-
-#. @-observertrans -readonlytrans@
-#: lib/header.c:2484
-msgid "| expected at end of expression"
-msgstr "| förväntades vid slutet på uttryck"
-
-#: lib/header.c:2707
-msgid "(unknown type)"
-msgstr "(okänd typ)"
 
 #: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
 #, c-format
@@ -2211,6 +2124,12 @@ msgstr " står i konflikt med %s-%s-%s\n"
 #, fuzzy
 msgid "is needed by"
 msgstr " behövs av %s-%s-%s\n"
+
+#. @-modfilesys@
+#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#, c-format
+msgid "Data type %d not supported\n"
+msgstr "Datatyp %d stöds inte\n"
 
 #: lib/psm.c:442
 #, c-format
@@ -3001,6 +2920,87 @@ msgstr ""
 "Mer information finns tillgänglig från http://www.rpm.org eller sändlistan\n"
 "rpm-list@redhat.com om \"rpm --rebuilddb\" inte lyckas rätta till "
 "problemet.\n"
+
+#. This should not be allowed
+#. @-modfilesys@
+#: rpmdb/header.c:347
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
+msgstr "dataLength() RPM_STRING_TYPE antal måste vara 1.\n"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2220
+#, c-format
+msgid "missing { after %"
+msgstr "{ fattas efter %"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2250
+msgid "missing } after %{"
+msgstr "} fattas efter %{"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2264
+msgid "empty tag format"
+msgstr "tomt taggformat"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2278
+msgid "empty tag name"
+msgstr "tomt taggnamn"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2295
+msgid "unknown tag"
+msgstr "okänd tagg"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2322
+msgid "] expected at end of array"
+msgstr "] förväntades vid slutet på vektor"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2340
+msgid "unexpected ]"
+msgstr "oväntad ]"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2344
+msgid "unexpected }"
+msgstr "oväntad }"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2410
+msgid "? expected in expression"
+msgstr "? förväntades i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2419
+msgid "{ expected after ? in expression"
+msgstr "{ förväntades efter ? i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2432 rpmdb/header.c:2474
+msgid "} expected in expression"
+msgstr "} förväntades i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2442
+msgid ": expected following ? subexpression"
+msgstr ": förväntades efter ? i deluttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2459
+msgid "{ expected after : in expression"
+msgstr "{ förväntades efter : i uttryck"
+
+#. @-observertrans -readonlytrans@
+#: rpmdb/header.c:2484
+msgid "| expected at end of expression"
+msgstr "| förväntades vid slutet på uttryck"
+
+#: rpmdb/header.c:2707
+msgid "(unknown type)"
+msgstr "(okänd typ)"
 
 #: rpmdb/poptDB.c:19
 msgid "initialize database"

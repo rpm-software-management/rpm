@@ -587,3 +587,4 @@ fi
 - drop requirement that removed packages immediately follow added.
 - hybrid chainsaw/presentation ordering algorithm.
 - convert file md5sum's to binary on the fly, reducing memory footprint.
+- header handling moved to librpmdb to avoid linkage loops.
