@@ -1836,15 +1836,18 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 
 static PyObject * getTsHeader (PyObject * self, PyObject * args) {
     hdrObject * h;
-
-    h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
-    h->h = transactionSetHeader;
-    h->sigs = NULL;
-    h->fileList = h->linkList = h->md5list = NULL;
-    h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
-    h->modes = h->rdevs = NULL;
     
-    return h;
+    if (transactionSetHeader) {
+	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
+	h->h = headerLink(transactionSetHeader);
+	h->sigs = NULL;
+	h->fileList = h->linkList = h->md5list = NULL;
+	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
+	h->modes = h->rdevs = NULL;
+	return h;
+    }
+    Py_INCREF(Py_None);
+    return (hdrObject *) Py_None;
 }
 
 /* disable 
