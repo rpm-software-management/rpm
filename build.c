@@ -338,6 +338,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
+	rpmFreeRpmrc();
 	(void) rpmReadConfigFiles(rcfile, target);
 	rc = buildForTarget(ts, arg, ba);
 	if (rc)
@@ -348,6 +349,7 @@ exit:
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
     /* Restore original configuration. */
     rpmFreeMacros(NULL);
+    rpmFreeRpmrc();
     (void) rpmReadConfigFiles(rcfile, NULL);
 
     return rc;
