@@ -737,6 +737,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (psm->sq.child == 0) {
 	const char * rootDir;
 	int pipes[2];
+	int flag;
+	int fdno;
 
 	pipes[0] = pipes[1] = 0;
 	/* make stdin inaccessible */
@@ -744,6 +746,15 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	xx = close(pipes[1]);
 	xx = dup2(pipes[0], STDIN_FILENO);
 	xx = close(pipes[0]);
+
+	/* XXX Force FD_CLOEXEC on 1st 100 inherited fdno's. */
+	for (fdno = 3; fdno < 100; fdno++) {
+	    flag = fcntl(fdno, F_GETFD);
+	    if (flag == -1 || (flag & FD_CLOEXEC))
+		continue;
+	    xx = fcntl(fdno, F_SETFD, FD_CLOEXEC);
+	    /* XXX W2DO? debug msg for inheirited fdno w/o FD_CLOEXEC */
+	}
 
 	if (scriptFd != NULL) {
 	    int sfdno = Fileno(scriptFd);

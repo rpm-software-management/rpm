@@ -22,6 +22,7 @@
 	- fix: only first "mkdir -p" directory had context set.
 	- stable sort for policy specifications, patterns before paths.
 	- set "rpm_script_t" exec type for scriptlets iff /bin/sh, else default.
+	- force FD_CLOEXEC on 1st 100 inherited fdno's.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
