@@ -20,8 +20,6 @@
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
 
-char * version = VERSION;
-
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
 	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, MODE_TARBUILD,
@@ -67,7 +65,10 @@ static int showrc;
 static int signIt;
 static int test;
 
-static int rpm_version;
+static int showVersion;
+extern const char * rpmNAME;
+extern const char * rpmEVR;
+extern int rpmFLAGS;
 
 static struct rpmQVArguments rpmQVArgs;
 static struct rpmBuildArguments buildArgs;
@@ -137,7 +138,7 @@ static struct poptOption optionsTable[] = {
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
  { "verify", 'V', 0, 0, 'V',			NULL, NULL},
  {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
- { "version", '\0', 0, &rpm_version, 0,		NULL, NULL},
+ { "version", '\0', 0, &showVersion, 0,		NULL, NULL},
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
@@ -166,7 +167,7 @@ static void printUsage(void);
 static void printHelpLine(char * prefix, char * help);
 
 static void printVersion(void) {
-    fprintf(stdout, _("RPM version %s\n"), version);
+    fprintf(stdout, _("RPM version %s\n"), rpmEVR);
 }
 
 static void printBanner(void) {
@@ -532,6 +533,7 @@ int main(int argc, char ** argv)
 #if HAVE_MCHECK_H && HAVE_MTRACE
     mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 #endif
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
 
     /* set the defaults for the various command line options */
     allFiles = 0;
@@ -571,7 +573,7 @@ int main(int argc, char ** argv)
     showrc = 0;
     signIt = 0;
     test = 0;
-    rpm_version = 0;
+    showVersion = 0;
 
     /* XXX Eliminate query linkage loop */
     parseSpecVec = parseSpec;
@@ -848,7 +850,7 @@ int main(int argc, char ** argv)
     if (quiet)
 	rpmSetVerbosity(RPMMESS_QUIET);
 
-    if (rpm_version) printVersion();
+    if (showVersion) printVersion();
     if (help) printHelp();
 
     if (arg < -1) {
@@ -1123,7 +1125,7 @@ int main(int argc, char ** argv)
 	
     switch (bigMode) {
       case MODE_UNKNOWN:
-	if (!rpm_version && !help && !noUsageMsg) printUsage();
+	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
 
       case MODE_REBUILDDB:

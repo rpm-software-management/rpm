@@ -13,6 +13,7 @@ int main(int argc, char **argv)
     Header hd;
     int rc;
     
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
     } else {

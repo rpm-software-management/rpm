@@ -292,9 +292,9 @@ static void parseEVR(char *evr, /*@exposed@*/ /*@out@*/const char **ep, /*@expos
     if (rp) *rp = release;
 }
 
-static char *rpmName = PACKAGE;
-static char *rpmEVR = VERSION;
-static int rpmFlags = RPMSENSE_EQUAL;
+const char *rpmNAME = PACKAGE;
+const char *rpmEVR = VERSION;
+int rpmFLAGS = RPMSENSE_EQUAL;
 
 static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
 	const char *BName, const char *BEVR, int BFlags)
@@ -826,8 +826,8 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	 * version. Provide implicit rpm version in last ditch effort to
 	 * satisfy an rpm dependency.
 	 */
-	if (!strcmp(keyName, rpmName)) {
-	    i = rangesOverlap(keyName, keyEVR, keyFlags, rpmName, rpmEVR, rpmFlags);
+	if (!strcmp(keyName, rpmNAME)) {
+	    i = rangesOverlap(keyName, keyEVR, keyFlags, rpmNAME, rpmEVR, rpmFLAGS);
 	    if (i) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by rpmlib version.\n"), keyType, keyDepend);
 		goto exit;

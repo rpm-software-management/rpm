@@ -10,6 +10,7 @@ int main(int argc, char **argv)
     FD_t fdi, fdo;
     struct rpmlead lead;
     
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
     } else {

@@ -11,6 +11,7 @@ int main(int argc, char **argv)
     struct rpmlead lead;
     Header sig;
     
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
     } else {

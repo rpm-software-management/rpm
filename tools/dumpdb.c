@@ -10,6 +10,7 @@ int main(int argc, char ** argv)
     int blockNum = 0;
     rpmdb db;
 
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
     rpmReadConfigFiles(NULL, NULL);
 
     if (argc == 2) {

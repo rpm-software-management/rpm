@@ -4,15 +4,6 @@
 
 #include "rpmlib.h"
 
-char *zlib_err [] = {
-   "No",
-   "Unix",
-   "Data",
-   "Memory",
-   "Buffer",
-   "Version"
-};
-
 int main(int argc, char **argv)
 {
     FD_t fdi, fdo;
@@ -22,6 +13,7 @@ int main(int argc, char **argv)
     int ct;
     FD_t gzdi;
     
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
     } else {

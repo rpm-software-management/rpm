@@ -527,6 +527,7 @@ main(int argc, char *argv[])
     int ec = 0;
     injmode_t lastmode = INJ_UNKNOWN;
 
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
     (void)setlocale(LC_ALL, "" );
 
 #ifdef  __LCLINT__

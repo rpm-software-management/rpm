@@ -203,19 +203,24 @@ void *vmefail(void);
 #endif
 
 
-#if HAVE_MCHECK_H && defined(__GNUC__)
-
 /* Memory allocation via macro defs to get meaningful locations from mtrace() */
-
+#if HAVE_MCHECK_H && defined(__GNUC__)
 #define	xmalloc(_size) 		(malloc(_size) ? : vmefail())
-
 #define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail())
-
 #define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail())
-
 #define	xstrdup(_str)	(strcpy((malloc(strlen(_str)+1) ? : vmefail()), (_str)))
-
 #endif	/* HAVE_MCHECK_H && defined(__GNUC__) */
+
+/* Retrofit glibc __progname */
+char *__progname;
+#if defined __GLIBC__ && __GLIBC__ >= 2
+#define	setprogname(pn)
+#else
+#define	setprogname(pn)	\
+  { if ((__progname = strrchr(pn, '/')) __progname++; \
+    else __progname = pn;		\
+  }
+#endif
 
 #if HAVE_NETDB_H
 #ifndef __LCLINT__

@@ -15,6 +15,7 @@ int main(int argc, char **argv)
     char result[1024];
     int res;
     
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1) {
 	fd = 0;
     } else {

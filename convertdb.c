@@ -11,7 +11,8 @@
 
 int convertDB(void);
 
-int convertDB(void) {
+int convertDB(void)
+{
     struct oldrpmdb olddb;
     rpmdb db;
     struct oldrpmdbLabel * packageLabels, * label;
@@ -196,7 +197,9 @@ int convertDB(void) {
     return 1;
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char ** argv)
+{
+    setprogname(argv[0]);
     if (argc != 1) {
 	fprintf(stderr, _("rpmconvert: no arguments expected"));
 	exit(EXIT_FAILURE);

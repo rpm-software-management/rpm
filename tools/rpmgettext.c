@@ -32,7 +32,6 @@ static void dpf(char *format, ...)
 #define	DPRINTF(_lvl, _fmt)
 #endif
 
-const char *program_name = NULL;
 int debug = MYDEBUG;
 int verbose = 0;
 char *inputdir = NULL;
@@ -994,7 +993,7 @@ main(int argc, char **argv)
     int errflg = 0;
     FD_t fdi;
 
-    program_name = basename(argv[0]);
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
 
     while((c = getopt(argc, argv, "degEMl:C:I:O:Tv")) != EOF)
     switch (c) {
@@ -1047,7 +1046,7 @@ main(int argc, char **argv)
 
     fdi = fdDup(STDIN_FILENO);
 
-    if (!strcmp(program_name, RPMGETTEXT)) {
+    if (!strcmp(__progname, RPMGETTEXT)) {
 	if (optind == argc) {
 	    rc = rpmgettext(fdi, STDINFN, stdout);
 	} else {
@@ -1056,15 +1055,15 @@ main(int argc, char **argv)
 		    break;
 	    }
 	}
-    } else if (!strcmp(program_name, RPMPUTTEXT)) {
+    } else if (!strcmp(__progname, RPMPUTTEXT)) {
 	if (mastercatalogue == NULL) {
 		fprintf(stderr, _("%s: must specify master PO catalogue with -C\n"),
-			program_name);
+			__progname);
 		exit(1);
         }
 	if (optind == argc) {
 		fprintf(stderr, _("%s: no binary rpms on cmd line\n"),
-			program_name);
+			__progname);
 		exit(1);
 	} else {
 	    string_list_ty *drillp = string_list_alloc();
@@ -1074,7 +1073,7 @@ main(int argc, char **argv)
 	    rc = rpmputtext(fdi, mastercatalogue, stdout, drillp);
 	    string_list_free(drillp);
 	}
-    } else if (!strcmp(program_name, RPMCHKTEXT)) {
+    } else if (!strcmp(__progname, RPMCHKTEXT)) {
 	if (optind == argc) {
 	    rc = rpmchktext(fdi, STDINFN, stdout);
 	} else {

@@ -17,19 +17,21 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <stdarg.h>
-#include <err.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <stdio.h>
+#include "system.h"
 
-#ifdef USE_IN_LIBIO
-# define flockfile(s) _IO_flockfile (s)
-# define funlockfile(s) _IO_funlockfile (s)
+#ifdef HAVE_LIBIO
+#define flockfile(s)            _IO_flockfile (s)
+#define funlockfile(s)          _IO_funlockfile (s)
+#else
+#define flockfile(s)
+#define funlockfile(s)
+#define putc_unlocked(c,fp)     putc(c,fp);
+#define fputs_unlocked(s,fp)    fputs(s,fp);
+#define __set_errno(error)      errno = error
+#define __ptr_t                 void *
 #endif
 
-extern char *__progname;
+#include <err.h>
 
 #define VA(call)							      \
 {									      \
