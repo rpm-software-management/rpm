@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt @INCPATH@
 
-EXTRA_DIST = db3.c db2.c db1.c falloc.c
+EXTRA_DIST = db3.c db2.c db1.c falloc.c getdate.y
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -23,7 +23,7 @@ LIBS =
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c $(DBLIBSRCS) dbconfig.c depends.c \
-	formats.c fprint.c fs.c fsm.c hash.c header.c \
+	formats.c fprint.c fs.c fsm.c getdate.c hash.c header.c \
 	md5.c md5sum.c misc.c package.c problems.c \
 	poptBT.c poptQV.c psm.c query.c \
 	rpmchecksig.c rpmdb.c rpminstall.c \
@@ -52,6 +52,19 @@ tagtable.c: rpmlib.h
 	@echo '};' >> tagtable.c
 	@echo '' >> tagtable.c
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
+
+getdate.c: getdate.y
+	@echo expect 10 shift/reduce conflicts
+	$(YACC) $(srcdir)/getdate.y
+	-@if test -f y.tab.c; then \
+	   mv y.tab.c getdate.c ;\
+	else \
+	   if test -f getdate.tab.c ; then \
+	       mv getdate.tab.c getdate.c ; \
+	   else \
+	       echo '*** Unable to create getdate.c' ;\
+	   fi ;\
+	fi
 
 BUILT_SOURCES = tagtable.c
 
