@@ -953,15 +953,16 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmtsi qi;	rpmte q;
     int numAdded;
     int numRemoved;
+    void * lock;
     int xx;
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0)
 	return -1;
 
-    void *lock = rpmtsAcquireLock(ts);
-    if (!lock)
-	return -1;
+    lock = rpmtsAcquireLock(ts);
+    if (lock == NULL)
+	return -1;	/* XXX W2DO? */
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));

@@ -26,7 +26,7 @@ static void rpmsxSort(rpmsx sx)
     int i, j;
 
     /* Stable sort for policy regex's and paths. */
-    sxp = xmalloc(sizeof(*sxp) * sx->Count);
+    sxp = xcalloc(sx->Count, sizeof(*sxp));
 
     /* Regex patterns first ... */
     j = 0;

@@ -1767,12 +1767,13 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     } else
 	fn = rpmGenPath(buildURL, NULL, fn);
 
+/*@-branchstate@*/
     switch (tag) {
     default:
 	rpmError(RPMERR_BADSPEC, _("%s: can't load unknown tag (%d).\n"),
 		fn, tag);
 	goto exit;
-	/*@notreached@*/
+	/*@notreached@*/ break;
     case RPMTAG_PUBKEYS:
 	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
 	    rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
@@ -1793,6 +1794,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	pkt = NULL;
 	break;
     }
+/*@=branchstate@*/
 
     xx = headerAddOrAppendEntry(pkg->header, tag,
 		RPM_STRING_ARRAY_TYPE, &apkt, 1);

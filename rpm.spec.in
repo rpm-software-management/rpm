@@ -482,6 +482,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Feb 25 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.15
+- serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
+
 * Sun Feb 22 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.14
 - add ia32e arch.
 - stable sort for policy specifications, patterns before paths.

@@ -13,6 +13,7 @@
 #define	POPT_WCHAR_HACK
 #ifdef 	POPT_WCHAR_HACK
 #include <wchar.h>			/* for mbsrtowcs */
+/*@access mbstate_t @*/
 #endif
 #include "poptint.h"
 
@@ -340,11 +341,11 @@ static void singleOptionHelp(FILE * fp, size_t maxLeftCol,
 		mbstate_t t;
 		size_t n;
 
-		memset (&t, '\0', sizeof (t));	/* In initial state.  */
+		memset ((void *)&t, '\0', sizeof (t));	/* In initial state.  */
 		/* Determine number of characters.  */
 		n = mbsrtowcs (NULL, &scopy, strlen(scopy), &t);
 
-		displaypad = (lelen-n);
+		displaypad = (int) (lelen-n);
 	    }
 #endif
 	}
@@ -381,7 +382,7 @@ static void singleOptionHelp(FILE * fp, size_t maxLeftCol,
 	while (ch > (help + 1) && isspace(*ch)) ch--;
 	ch++;
 
-	sprintf(format, "%%.%ds\n%%%ds", (int) (ch - help), indentLength);
+	sprintf(format, "%%.%ds\n%%%ds", (int) (ch - help), (int) indentLength);
 	/*@-formatconst@*/
 	fprintf(fp, format, help, " ");
 	/*@=formatconst@*/
@@ -439,7 +440,9 @@ static size_t maxArgWidth(const struct poptOption * opt,
 		mbstate_t t;
 		size_t n;
 
-		memset (&t, '\0', sizeof (t));	/* In initial state.  */
+/*@-boundswrite@*/
+		memset ((void *)&t, '\0', sizeof (t));	/* In initial state.  */
+/*@=boundswrite@*/
 		/* Determine number of characters.  */
 		n = mbsrtowcs (NULL, &scopy, strlen(scopy), &t);
 		len += sizeof("=")-1 + n;
@@ -613,7 +616,9 @@ static size_t singleOptionUsage(FILE * fp, size_t cursor,
 	mbstate_t t;
 	size_t n;
 
-	memset (&t, '\0', sizeof (t));	/* In initial state.  */
+/*@-boundswrite@*/
+	memset ((void *)&t, '\0', sizeof (t));	/* In initial state.  */
+/*@=boundswrite@*/
 	/* Determine number of characters.  */
 	n = mbsrtowcs (NULL, &scopy, strlen(scopy), &t);
 	len += sizeof("=")-1 + n;

@@ -1,7 +1,12 @@
 #ifndef RPMLOCK_H
 #define RPMLOCK_H 
 
-void *rpmtsAcquireLock(rpmts ts);
-void rpmtsFreeLock(void *lock);
+/*@only@*/ /*@null@*/
+void * rpmtsAcquireLock(rpmts ts)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+void rpmtsFreeLock(/*@only@*/ /*@null@*/ void *lock)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lock, fileSystem, internalState @*/;
 
 #endif
