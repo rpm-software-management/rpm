@@ -39,7 +39,14 @@ struct cpioFileMapping {
     int mapFlags;
 };
 
-typedef void (*cpioCallback)(char * filespec);
+struct cpioCallbackInfo {
+    char * file;
+    long fileSize;			/* total file size */
+    long fileComplete;			/* amount of file unpacked */
+    long bytesProcessed;		/* bytes in archive read */
+};
+
+typedef void (*cpioCallback)(struct cpioCallbackInfo * filespec, void * data);
 
 /* If no mappings are passed, this installs everything! If one is passed
    it should be sorted according to cpioFileMapCmp() and only files included
@@ -49,7 +56,8 @@ typedef void (*cpioCallback)(char * filespec);
    for the file type. The owner/group mappings are ignored for the nonroot
    user. If *failedFile is non-NULL on return, it should be free()d. */
 int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings, 
-		       int numMappings, cpioCallback cb, char ** failedFile);
+		       int numMappings, cpioCallback cb, void * cbData,
+		       char ** failedFile);
 
 /* This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);

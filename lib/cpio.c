@@ -148,10 +148,7 @@ static int createDirectory(char * path) {
     struct stat sb;
     int dounlink;
 
-    if (!access(path, X_OK)) {
-	if (lstat(path, &sb))
-	    return CPIO_STAT_FAILED;
-
+    if (!lstat(path, &sb)) {
 	if (S_ISDIR(sb.st_mode)) {
 	    return 0;
 	} else if (S_ISLNK(sb.st_mode)) {
@@ -240,20 +237,26 @@ static int checkDirectory(char * filename) {
     return rc;
 }
 
-static int expandRegular(struct ourfd * fd, struct cpioHeader * hdr) {
+static int expandRegular(struct ourfd * fd, struct cpioHeader * hdr,
+			 cpioCallback cb, void * cbData) {
     int out;
-    char buf[16384];
+    char buf[8192];
     int bytesRead;
     int left = hdr->size;
     int rc = 0;
+    struct cpioCallbackInfo cbInfo;
+    struct stat sb;
 
-    if (!access(hdr->path, X_OK))
+    if (!lstat(hdr->path, &sb))
 	if (unlink(hdr->path))
 	    return CPIO_UNLINK_FAILED;
 
     out = open(hdr->path, O_CREAT | O_WRONLY, 0);
     if (out < 0) 
 	return CPIO_OPEN_FAILED;
+
+    cbInfo.file = hdr->path;
+    cbInfo.fileSize = hdr->size;
 
     while (left) {
 	bytesRead = ourread(fd, buf, left < sizeof(buf) ? left : sizeof(buf));
@@ -268,6 +271,13 @@ static int expandRegular(struct ourfd * fd, struct cpioHeader * hdr) {
 	}
 
 	left -= bytesRead;
+
+	/* don't call this with fileSize == fileComplete */
+	if (!rc && cb && left) {
+	    cbInfo.fileComplete = hdr->size - left;
+	    cbInfo.bytesProcessed = fd->pos;
+	    cb(&cbInfo, cbData);
+	}
     }
 
     close(out);
@@ -277,8 +287,9 @@ static int expandRegular(struct ourfd * fd, struct cpioHeader * hdr) {
 
 static int expandSymlink(struct ourfd * fd, struct cpioHeader * hdr) {
     char buf[2048];
+    struct stat sb;
 
-    if (!access(hdr->path, X_OK))
+    if (!lstat(hdr->path, &sb))
 	if (unlink(hdr->path))
 	    return CPIO_UNLINK_FAILED;
 
@@ -299,10 +310,7 @@ static int expandSymlink(struct ourfd * fd, struct cpioHeader * hdr) {
 static int expandFifo(struct ourfd * fd, struct cpioHeader * hdr) {
     struct stat sb;
 
-    if (!access(hdr->path, X_OK)) {
-	if (lstat(hdr->path, &sb))
-	    return CPIO_STAT_FAILED;
-
+    if (!lstat(hdr->path, &sb)) {
 	if (S_ISFIFO(sb.st_mode)) return 0;
 
 	if (unlink(hdr->path))
@@ -316,7 +324,9 @@ static int expandFifo(struct ourfd * fd, struct cpioHeader * hdr) {
 }
 
 static int expandDevice(struct ourfd * fd, struct cpioHeader * hdr) {
-    if (!access(hdr->path, X_OK))
+    struct stat sb;
+
+    if (!lstat(hdr->path, &sb))
 	if (unlink(hdr->path))
 	    return CPIO_UNLINK_FAILED;
 
@@ -327,7 +337,8 @@ static int expandDevice(struct ourfd * fd, struct cpioHeader * hdr) {
 }
 
 int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings, 
-		       int numMappings, cpioCallback cb, char ** failedFile) {
+		       int numMappings, cpioCallback cb, void * cbData,
+		       char ** failedFile) {
     struct cpioHeader ch;
     struct ourfd fd;
     int rc = 0;
@@ -335,6 +346,7 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
     struct cpioFileMapping needle;
     mode_t cpioMode;
     int olderr;
+    struct cpioCallbackInfo cbInfo;
 
     fd.fd = stream;
     fd.pos = 0;
@@ -377,7 +389,7 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 
 	    if (!rc) {
 		if (S_ISREG(ch.mode))
-		    rc = expandRegular(&fd, &ch);
+		    rc = expandRegular(&fd, &ch, cb, cbData);
 		else if (S_ISDIR(ch.mode))
 		    rc = createDirectory(ch.path);
 		else if (S_ISLNK(ch.mode))
@@ -407,6 +419,15 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 	}
 
 	padfd(&fd, 4);
+
+	if (!rc && cb) {
+	    cbInfo.file = ch.path;
+	    cbInfo.fileSize = ch.size;
+	    cbInfo.fileComplete = ch.size;
+	    cbInfo.bytesProcessed = fd.pos;
+	    cb(&cbInfo, cbData);
+	}
+
 	free(ch.path);
     } while (1 && !rc);
 

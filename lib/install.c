@@ -30,6 +30,11 @@
 enum instActions { UNKNOWN, CREATE, BACKUP, KEEP, SAVE, SKIP };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
+struct callbackInfo {
+    unsigned long archiveSize;
+    rpmNotifyFunction notify;
+};
+
 struct fileMemory {
     char ** md5s;
     char ** links;
@@ -573,7 +578,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     return 0;
 }
 
-#define BLOCKSIZE 1024
+static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
+    struct callbackInfo * ourInfo = data;
+
+    ourInfo->notify(cpioInfo->bytesProcessed, ourInfo->archiveSize);
+}
 
 /* NULL files means install all files */
 static int installArchive(char * prefix, int fd, struct fileInfo * files,
@@ -583,6 +592,7 @@ static int installArchive(char * prefix, int fd, struct fileInfo * files,
     int rc, i;
     struct cpioFileMapping * map;
     char * failedFile;
+    struct callbackInfo info;
 
     if (!files) {
 	/* install all files */
@@ -591,6 +601,9 @@ static int installArchive(char * prefix, int fd, struct fileInfo * files,
 	/* no files to install */
 	return 0;
     }
+
+    info.archiveSize = archiveSize;
+    info.notify = notify;
 
     if (specFile) *specFile = NULL;
 
@@ -611,18 +624,23 @@ static int installArchive(char * prefix, int fd, struct fileInfo * files,
     qsort(map, fileCount, sizeof(*map), cpioFileMapCmp);
 
     stream = gzdopen(fd, "r");
-    rc = cpioInstallArchive(stream, map, fileCount, NULL, &failedFile);
+    rc = cpioInstallArchive(stream, map, fileCount, 
+			    (notify && archiveSize) ? callback : NULL, 
+			    &info, &failedFile);
 
     if (rc) {
 	/* this would probably be a good place to check if disk space
 	   was used up - if so, we should return a different error */
-	rpmError(RPMERR_CPIO, "unpacking of archive failed on file %s: %d", 
-		 failedFile, rc);
+	rpmError(RPMERR_CPIO, "unpacking of archive failed on file %s: %d: %s", 
+		 failedFile, rc, strerror(errno));
 	return 1;
     }
 
-    if (notify)
+    if (notify && archiveSize)
 	notify(archiveSize, archiveSize);
+    else if (notify) {
+	notify(100, 100);
+    }
 
     return 0;
 }
