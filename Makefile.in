@@ -1,6 +1,7 @@
 include Makefile.inc
 
 srcdir= @srcdir@
+top_srcdir= @top_srcdir@
 
 INSTALL= @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -19,7 +20,6 @@ CVSTAG = r$(subst .,-,$(VERSION))
 ### These are variables meant to be exported
 
 VPATH = $(srcdir)
-WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 
 BINDIR=$(prefix)/bin
 RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))
@@ -31,6 +31,7 @@ ETCDIR=$(ROOT)/etc
 # -----------------------------------------------------------------------
 
 SUBDIRS = popt @MISCDIR@ lib build tools @PO@
+ALLSUBDIRS = popt misc lib build tools po
 INSTSUBDIRS = lib @PO@
 OTHERSUBDIRS = docs autodeps
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o build.o \
@@ -41,16 +42,16 @@ LOADLIBES = -lrpmbuild -lpopt -lrpm @LIBMISC@
 
 SOURCES = $(subst .o,.c,$(OBJS))
 
-ifeq (.depend,$(wildcard .depend))
+ifeq (.depend-done,$(wildcard .depend-done))
 TARGET=everything
 else
-TARGET=depend everything
+TARGET=@TARGET@
 endif
 
 all: $(TARGET)
 
 rpm: lib/librpm.a build/librpmbuild.a @MISCPATH@ $(OBJS) 
-	$(CC) -o rpm -static $(OBJS) $(LDFLAGS) $(LOADLIBES) $(LIBS) \
+	$(CC) -o rpm $(LDFLAGS_STATIC) $(OBJS) $(LDFLAGS) $(LOADLIBES) $(LIBS) \
 		$(LIBEFENCE)
 
 rpm.shared: lib/librpm.a build/librpmbuild.a $(OBJS)
@@ -113,19 +114,21 @@ install: all
 	[ -d $(installprefix)/$(ETCDIR) ] || mkdir -p $(installprefix)/$(ETCDIR)
 	[ -d $(installprefix)/$(LIBDIR) ] || mkdir -p $(installprefix)/$(LIBDIR)
 	[ -d $(installprefix)/$(INCDIR) ] || mkdir -p $(installprefix)/$(INCDIR)
+	[ -d $(installprefix)/$(RPMCONFIGDIR) ] ||  \
+		mkdir -p $(installprefix)/$(INCDIR)
 	if [ -x ./rpm ]; then \
-	    $(INSTALL) -s -m 755 rpm $(installprefix)/$(RPMBINDIR); \
+	    $(INSTALL_PROGRAM) -s -m 755 rpm $(installprefix)/$(RPMBINDIR); \
 	else \
-	    $(INSTALL) -s -m 755 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
+	    $(INSTALL_PROGRAM) -s -m 755 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
 	fi
-	$(INSTALL) -m 755 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
-	$(INSTALL) -m 755 $(topdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
-	$(INSTALL) -m 755 $(topdir)/find-requires.sh $(installprefix)/$(BINDIR)/find-requires
-	$(INSTALL) -s -m 755 rpm2cpio $(installprefix)/$(BINDIR)
-	$(INSTALL) -m 644 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
-	$(INSTALL) -m 644 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
-	$(INSTALL) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
-	$(INSTALL) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
+	$(INSTALL_PROGRAM) -m 755 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
+	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
+	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-requires.sh $(installprefix)/$(BINDIR)/find-requires
+	$(INSTALL_PROGRAM) -s -m 755 rpm2cpio $(installprefix)/$(BINDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
+	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
+	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
 		(cd $$d; $(MAKE) installprefix=$(installprefix) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
@@ -148,7 +151,7 @@ tar:
 
 .PHONY:		clean
 clean:
-	for d in $(SUBDIRS); do \
+	for d in $(ALLSUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
 	rm -f *.a *.o core *~ $(PROGS) rpm.shared
@@ -157,19 +160,23 @@ clean:
 
 .PHONY:		distclean
 distclean:	
-	for d in $(SUBDIRS); do \
+	for d in $(ALLSUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
 	rm -f *.a *.o core *~ $(PROGS) rpm.shared librpmrc find-provides.sh find-requires.sh
-	rm -f .depend Makefile Makefile.inc config.h config.cache config.status config.log lib-rpmrc
+	rm -f .depend-done Makefile Makefile.inc config.h config.cache 
+	rm -f config.status config.log lib-rpmrc
 
 
 .PHONY:		depend
 depend:
-	$(CPP) $(CFLAGS) -M $(srcdir)/$(SOURCES) > .depend
-	for d in $(SUBDIRS); do \
+	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
+	$(CPP) -MM $(CFLAGS) $(srcdir)/$(SOURCES) | \
+		sed s+$$topdir_path+$(top_srcdir)+g > .depend ; \
+	for d in $(ALLSUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
+	echo > .depend-done
 
 .PHONY: noconfig
 noconfig:
@@ -189,10 +196,7 @@ archive:
 	@cd /tmp; cvs export -r$(CVSTAG) rpm
 	@mv /tmp/rpm /tmp/rpm-$(VERSION)
 	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
-	@cd /tmp/rpm-$(VERSION); \
-	    autoconf
-	@cd /tmp/rpm-$(VERSION)/popt; \
-	    autoconf
+	@./autogen.sh --noconfigure
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)
 	@cp /tmp/rpm-$(VERSION).tar.gz .

@@ -17,11 +17,72 @@ MISCOBJS=
 
 AC_CANONICAL_SYSTEM
 
+RPMCONFIGDIR='$(libdir)'
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
+
+dnl
+dnl if CC is gcc, we can rebuild the dependencies (since the depend rule
+dnl requires gcc).  If it's not, don't rebuild dependencies -- use what was
+dnl shipped with RPM.
+dnl
+if test X"$GCC" = Xyes ; then
+	TARGET="depend everything"
+else
+	TARGET="everything"
+	#
+	# let the top level Makefile know that we're done with `depend'
+	#
+	echo > .depend-done
+fi
+AC_SUBST(TARGET)
+
+
+dnl
+dnl This is a quick hack, to make it so that we can statically link the
+dnl rpm binary on as many platforms as possible.
+dnl
+dnl a *much* better solution would be to use libtool to determine the proper
+dnl way to statically link on your platform.
+dnl
+AC_MSG_CHECKING(what additional CFLAGS are needed to link statically)
+if test X"$GCC" = Xyes ; then
+	case "$target" in
+		*-*-hpux*)		CFLAGS_STATIC="-Wl,-a,archive_shared";; #works better
+		*-*-*)			CFLAGS_STATIC="-static";;
+	esac
+elif test X"$CC" = Xcc ; then
+	case "$target" in
+		*-*-linux*)		CFLAGS_STATIC="-static";;
+		*-*-freebsd*)	CFLAGS_STATIC="-static";;
+		*-*-osf*)		CFLAGS_STATIC="-non_shared";;
+		*-*-aix*)		CFLAGS_STATIC="";;  # -Wl,-bnso doesn't seem to work...
+		*-*-hpux*)		CFLAGS_STATIC="-Wl,-a,archive_shared";;
+		*-*-solaris*)	CFLAGS_STATIC="-B static";;
+		*-*-irix*)		CFLAGS_STATIC="";;  #should be -non_shared, but can't
+											# link because of crt1.o then.
+		*-*-ultrix*)	CFLAGS_STATIC="";;  #ultrix doesn't have shared libs.
+		*-*-*)			CFLAGS_STATIC=""
+AC_MSG_WARN([
+
+Unable to guess what option to pass to $CC to generate a static
+executable.  You will need to set the CFLAGS_STATIC macro in Makefile.inc to
+the appropriate argument(s) if you want to build a static rpm executable.
+
+])
+		;;
+	esac
+else
+	# a shot in the dark...
+	CFLAGS_STATIC="-static"
+fi
+AC_MSG_RESULT($CFLAGS_STATIC)
+AC_SUBST(CFLAGS_STATIC)
+
 
 AC_MSG_CHECKING(POSIX chmod...)
 touch foo.chmodtest
@@ -36,6 +97,45 @@ else
     AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
     FIXPERMS=a+r,g-w,o-w 
 fi
+
+dnl
+dnl see if we have a mkdir that supports `-p'.
+dnl
+AC_PATH_PROGS(MKDIR, mkdir, mkdir)
+AC_MSG_CHECKING(if $MKDIR supports -p)
+rm -rf conftest
+$MKDIR -p conftest/a 2>/dev/null
+if test $? = 0 ; then
+	rmdir conftest/a 2>/dev/null
+	if test $? = 0  ; then
+		:
+	else
+		MKDIR_P=0
+	fi
+
+	rmdir conftest 2>/dev/null
+	if test $? = 0 ; then
+		MKDIR_P="$MKDIR -p"
+	else
+		MKDIR_P=0
+	fi
+else
+	MKDIR_P=0
+fi
+
+if test X"$MKDIR_P" = X0 ; then
+	AC_MSG_RESULT(no)
+	AC_PATH_PROGS(MKDIRHIER, mkdirhier, mkdirhier)
+	MKDIR_P="$MKDIRHIER"
+else
+	AC_MSG_RESULT(yes)
+fi
+dnl
+dnl substitute this into config.h, so the C source picks it up.
+dnl
+AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}")
+
+
 
 AC_AIX
 AC_MINIX
@@ -217,7 +317,9 @@ AC_HEADER_MAJOR
 AC_CHECK_HEADERS(netinet/in_systm.h limits.h)
 AC_CHECK_HEADERS(alloca.h dirent.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(machine/types.h string.h)
+AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h unistd.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
+AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
 AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
 AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
 
@@ -266,10 +368,6 @@ fi
 AC_MSG_CHECKING(if timezone is defined...)
 AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
       HAS_TIMEZONE=yes,HAS_TIMEZONE=no)
-AC_MSG_RESULT($HAS_TIMEZONE)
-if test $HAS_TIMEZONE = no; then
-      AC_DEFINE(NEED_TIMEZONE)
-fi
 
 dnl Checks for library functions.
 AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
@@ -283,6 +381,7 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
 AC_CHECK_FUNC(strerror, [], MISCOBJS="$MISCOBJS strerror.o")
 AC_CHECK_FUNC(strtol, [], MISCOBJS="$MISCOBJS strtol.o")
 AC_CHECK_FUNC(strtoul, [], MISCOBJS="$MISCOBJS strtoul.o")
+AC_CHECK_FUNC(strdup, [], MISCOBJS="$MISCOBJS strdup.o")
 LCHOWN=no
 AC_CHECK_FUNC(lchown, [LCHOWN=yes; AC_DEFINE(HAVE_LCHOWN)])
 
@@ -298,7 +397,7 @@ if test "$LCHOWN" = no; then
 	result=no
     fi
     if test $result = unknown; then
-	if test `id | cut -f 2 -d \= | cut -f 1 -d \(` = 0; then
+	if test `id | cut -f2 -d\= | cut -f1 -d\(` = 0; then
 	    rm -f foo bar
 	    touch foo
 	    ln -s foo bar
@@ -320,6 +419,44 @@ if test "$LCHOWN" = no; then
 	    AC_DEFINE(CHOWN_FOLLOWS_SYMLINK)
     fi
 fi
+
+
+dnl
+dnl figure out what root's primary group is
+dnl
+AC_MSG_CHECKING(root's primary group)
+AC_TRY_RUN([#include <stdio.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+
+int main()
+{
+	struct passwd *root = NULL;
+	struct group *roots_group = NULL;
+	FILE * tempfile = NULL;
+
+	root = getpwuid( (uid_t) 0 );
+	if (root != NULL) {
+		roots_group = getgrgid(root->pw_gid);
+		if (roots_group != NULL) {
+			tempfile = fopen("conftest_rootg", "w");
+			if (tempfile != NULL) {
+				fprintf(tempfile, "%s\n", roots_group->gr_name);
+				fclose(tempfile);
+				exit(0);
+			}
+		}
+	}
+
+	exit(1);
+}], ROOT_GROUP=`cat conftest_rootg`,
+	ROOT_GROUP="root",ROOT_GROUP="root"
+)
+AC_DEFINE_UNQUOTED(ROOT_GROUP, "$ROOT_GROUP")
+AC_MSG_RESULT($ROOT_GROUP)
+AC_SUBST(ROOT_GROUP)
+
 
 if test "x$varprefix" = "x"; then
     varprefix=`echo $prefix | sed 's/usr/var/'`
@@ -363,11 +500,16 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 	AC_DEFINE(NEED_MYREALLOC)
 	MISCOBJS="$MISCOBJS myrealloc.o"
 elif echo "$build_os" | grep hpux > /dev/null; then
-	RPM=rpm.shared
+	#RPM=rpm.shared
+	RPM=rpm
+	LIBDL=-ldld
 	echo "hacking things up for hpux"
 elif echo "$build_os" | grep irix > /dev/null; then
 	RPM=rpm.shared
 	echo "hacking things up for irix"
+elif echo "$build_os" | grep aix > /dev/null; then
+	RPM=rpm.shared
+	echo "hacking things up for aix"
 fi
 
 rm -f ./find-provides.sh
@@ -414,6 +556,7 @@ AC_SUBST(FIXPERMS)
 AC_SUBST(MISCDIR)
 AC_SUBST(LIBMISC)
 AC_SUBST(MISCPATH)
+AC_SUBST(RPMCONFIGDIR)
 
 if test -d newbuild ; then
    NBMAKEFILE=newbuild/Makefile

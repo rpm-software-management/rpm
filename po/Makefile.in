@@ -38,19 +38,16 @@ $(NLSPACKAGE).pot: $(POTFILES)
 
 
 update-po: Makefile
-	$(MAKE) $(NLSPACKAGE).pot
-	catalogs='$(CATALOGS)'; \
+	@$(MAKE) $(NLSPACKAGE).pot
+	@catalogs='$(CATALOGS)'; \
 	for cat in $$catalogs; do \
 		lang=`echo $$cat | sed 's/.mo//'`; \
-		mv $$lang.po $$lang.old.po; \
-		echo "$$lang:"; \
-		if $(MSGMERGE) $$lang.old.po $(NLSPACKAGE).pot -o $$lang.po; then \
-		rm -f $$lang.old.po; \
-	else \
-		echo "msgmerge for $$cat failed!"; \
-		rm -f $$lang.po; \
-		mv $$lang.old.po $$lang.po; \
-	fi; \
+		if tupdate $(NLSPACKAGE).pot $$lang.po > $$lang.pot ; then \
+			echo "tupdate of $$lang succeeded" ; \
+		else \
+			echo "tupdate of $$lang failed" ; \
+			rm -f $$lang.pot ; \
+		fi \
 	done
 
 clean:

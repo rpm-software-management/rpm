@@ -3,17 +3,18 @@ topsrcdir=@topsrcdir@
 CPP = @CPP@
 prefix= @prefix@
 exec_prefix = @exec_prefix@
-libdir= $(prefix)/lib
+libdir= @libdir@
 
 AR = ar
 RANLIB = @RANLIB@
 OPTS = @DEFS@
-LIBRPMRC_FILENAME=$(libdir)/rpmrc
-LIBRPMALIAS_FILENAME=$(libdir)/rpmpopt
+RPMCONFIGDIR=@RPMCONFIGDIR@
+LIBRPMRC_FILENAME==$(RPMCONFIGDIR)/rpmrc
+LIBRPMALIAS_FILENAME=$(RPMCONFIGDIR)/rpmpopt
 RPMNLSDIR=@datadir@/locale
 RPMNLSPACKAGE=rpm
-CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) -I$(topsrcdir)\
-	-I$(topsrcdir)/lib -I$(topsrcdir)/misc -Wall -Wstrict-prototypes 
+CFLAGS = -I$(topdir) -I$(topsrcdir) @CFLAGS@ @INCPATH@ $(OPTS) \
+	  -I$(topsrcdir)/lib -I$(topsrcdir)/misc
 LDFLAGS = @LDFLAGS@ -L$(topdir)/lib -L$(topdir)/build -L$(topdir)/misc \
 	  -L$(topdir)/popt
 VERSION = 2.4.103
