@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-08 17:12-0400\n"
+"POT-Creation-Date: 1999-07-10 11:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,7 +273,7 @@ msgstr ""
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:201 ../lib/query.c:575
+#: ../install.c:201 ../lib/query.c:574
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
@@ -311,7 +311,7 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:382 ../lib/query.c:729
+#: ../install.c:382 ../lib/query.c:728
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2677,159 +2677,159 @@ msgstr ""
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: ../lib/query.c:108
+#: ../lib/query.c:107
 msgid "list all configuration files"
 msgstr ""
 
-#: ../lib/query.c:110
+#: ../lib/query.c:109
 msgid "list all documentation files"
 msgstr ""
 
-#: ../lib/query.c:112
+#: ../lib/query.c:111
 msgid "dump basic file information"
 msgstr ""
 
-#: ../lib/query.c:114
+#: ../lib/query.c:113
 msgid "list files in package"
 msgstr ""
 
-#: ../lib/query.c:118
+#: ../lib/query.c:117
 msgid "use the following query format"
 msgstr ""
 
-#: ../lib/query.c:120
+#: ../lib/query.c:119
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: ../lib/query.c:123
+#: ../lib/query.c:122
 msgid "display the states of the listed files"
 msgstr ""
 
-#: ../lib/query.c:125
+#: ../lib/query.c:124
 msgid "display a verbose file listing"
 msgstr ""
 
-#: ../lib/query.c:136
+#: ../lib/query.c:135
 #, c-format
 msgid "error in format: %s\n"
 msgstr ""
 
-#: ../lib/query.c:177
+#: ../lib/query.c:176
 msgid "(contains no files)"
 msgstr ""
 
-#: ../lib/query.c:230
+#: ../lib/query.c:229
 msgid "normal        "
 msgstr ""
 
-#: ../lib/query.c:232
+#: ../lib/query.c:231
 msgid "replaced      "
 msgstr ""
 
-#: ../lib/query.c:234
+#: ../lib/query.c:233
 msgid "net shared    "
 msgstr ""
 
-#: ../lib/query.c:236
+#: ../lib/query.c:235
 msgid "not installed "
 msgstr ""
 
-#: ../lib/query.c:238
+#: ../lib/query.c:237
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: ../lib/query.c:242
+#: ../lib/query.c:241
 msgid "(no state)    "
 msgstr ""
 
-#: ../lib/query.c:258 ../lib/query.c:288
+#: ../lib/query.c:257 ../lib/query.c:287
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../lib/query.c:511
+#: ../lib/query.c:510
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: ../lib/query.c:515
+#: ../lib/query.c:514
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:553
+#: ../lib/query.c:552
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: ../lib/query.c:566
+#: ../lib/query.c:565
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: ../lib/query.c:578
+#: ../lib/query.c:577
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: ../lib/query.c:605
+#: ../lib/query.c:604
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: ../lib/query.c:639
+#: ../lib/query.c:638
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:650
+#: ../lib/query.c:649
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:660
+#: ../lib/query.c:659
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: ../lib/query.c:670
+#: ../lib/query.c:669
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: ../lib/query.c:680
+#: ../lib/query.c:679
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: ../lib/query.c:695
+#: ../lib/query.c:694
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../lib/query.c:698
+#: ../lib/query.c:697
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:711
+#: ../lib/query.c:710
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: ../lib/query.c:714
+#: ../lib/query.c:713
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: ../lib/query.c:717
+#: ../lib/query.c:716
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: ../lib/query.c:732
+#: ../lib/query.c:731
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../lib/query.c:754
+#: ../lib/query.c:753
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 

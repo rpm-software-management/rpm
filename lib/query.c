@@ -73,7 +73,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
 };
 
 /* ========== Query specific popt args */
-extern char *specedit;
 
 static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
