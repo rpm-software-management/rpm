@@ -265,9 +265,12 @@ int parseScript(Spec spec, int parsePart)
 	if (progArgc == 1)
 	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE,
 			*progArgv, progArgc);
-	else
+	else {
+	    (void) rpmlibNeedsFeature(pkg->header,
+			"ScriptletInterpreterArgs", "4.0.3-1");
 	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
 			progArgv, progArgc);
+	}
 
 	if (*p != '\0')
 	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);

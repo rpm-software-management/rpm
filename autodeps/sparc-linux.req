@@ -21,11 +21,18 @@ pythonlist=
 tcllist=
 
 #
+# --- Alpha does not mark 64bit dependencies
+case `uname -m` in
+  alpha*)	mark64="" ;;
+  *)		mark64="()(64bit)" ;;
+esac
+
+#
 # --- Executable sonames.
 for f in $exelist; do
     [ -r $f -a -x $f ] || continue
     lib64=`if file -L $f 2>/dev/null | \
-	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
     ldd $f | awk '/=>/ {
 	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) {
 	    gsub(/'\''"/,"\\&",$1);
@@ -39,7 +46,7 @@ done | xargs -r -n 1 basename | sort -u
 for f in $liblist; do
     [ -r $f ] || continue
     lib64=`if file -L $f 2>/dev/null | \
-	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
     ldd $f | awk '/=>/ {
 	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) {
 	    gsub(/'\''"/,"\\&",$1);
@@ -56,17 +63,17 @@ for f in $scriptlist; do
     interplist="$interplist $interp"
     case $interp in
     */perl)	perllist="$perllist $f" ;;
-    *)		[ "${f%.pm} != "${f}" ] && perllist="$perllist $f" ;;
+    *)		[ "${f%.pm}" != "${f}" ] && perllist="$perllist $f" ;;
     esac
 done
-[ -n "$interplist" ] && { echo "$interplist" | sort -u ; }
+[ -n "$interplist" ] && { echo "$interplist" | tr [:blank:] \\n | sort -u ; }
 
 #
 # --- Weak symbol versions (from glibc).
 for f in $liblist $exelist ; do
     [ -r $f ] || continue
     lib64=`if file -L $f 2>/dev/null | \
-	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
     objdump -p $f | awk '
 	BEGIN { START=0; LIBNAME=""; }
 	/Version References:/ { START=1; }

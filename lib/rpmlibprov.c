@@ -31,6 +31,9 @@ static struct rpmlibProvides {
     { "rpmlib(HeaderLoadSortsTags)",    "4.0.1-1",
 	(                RPMSENSE_EQUAL),
     N_("header tags are always sorted after being loaded.") },
+    { "rpmlib(ScriptletInterpreterArgs)",    "4.0.3-1",
+	(                RPMSENSE_EQUAL),
+    N_("the scriptlet interpreter can use arguments from header.") },
     { NULL,				NULL, 0,	NULL }
 };
 
