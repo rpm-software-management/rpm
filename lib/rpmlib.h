@@ -51,6 +51,8 @@
 #define RPMTAG_FILELINKTOS		1036
 #define RPMTAG_FILEFLAGS		1037
 #define RPMTAG_ROOT                     1038
+#define RPMTAG_FILEUSERNAME             1039
+#define RPMTAG_FILEGROUPNAME            1040
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
