@@ -33781,7 +33781,7 @@ echo "${ECHO_T}yes" >&6
 	    -e 's/return;//' \
 	    -e 's/^}/__dbsrv_timeout(0);}/' \
 	    -e '}' \
-	    -e '1,/^#include/s/^#include/#include "db_config.h"\
+	    -e '1,/^#include/s/^#include/#include "db_config.h"\n#include "db_int_def.h"\
 &/' > db_server_svc.c
 
 	$RPCGEN -c $XDR_FILE |
