@@ -1,7 +1,7 @@
 -I. -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
 
 #+partial
-#+forcehints
++forcehints
 
 -warnunixlib
 -warnposix

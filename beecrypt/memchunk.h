@@ -59,7 +59,7 @@ memchunk* memchunkResize(/*@only@*/ /*@null@*/memchunk* m, int size)
 
 /**
  */
-BEECRYPTAPI /*@only@*/ /*@null@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk*	memchunkClone(const memchunk* m);
 
 #ifdef __cplusplus

@@ -753,4 +753,11 @@ EOF
 fi
 
 dnl Output
-AC_OUTPUT(Doxyfile Makefile docs/Makefile gas/Makefile masm/Makefile mwerks/Makefile tests/Makefile)
+AC_OUTPUT([ Doxyfile Makefile beecrypt.spec
+	docs/Makefile gas/Makefile masm/Makefile mwerks/Makefile
+	tests/Makefile ],
+  [     
+        echo timestamp > stamp-h.in
+  ]
+
+)

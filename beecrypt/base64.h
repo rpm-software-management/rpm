@@ -88,7 +88,7 @@ char*		b64enc(const memchunk*);
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk*	b64dec(const char*);
 
 #ifdef __cplusplus

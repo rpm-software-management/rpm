@@ -46,7 +46,9 @@ static int _debug = 0;
 
 #include <stdio.h>
 
+/*@-readonlytrans@*/
 static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+/*@=readonlytrans@*/
 
 /* encode 64 characters per line */
 #define CHARS_PER_LINE	64
@@ -69,10 +71,10 @@ char* b64enc(const memchunk* chunk)
 
 		while (div > 0)
 		{
-			buf[0] = to_b64[ (data[0] >> 2) & 0x3f];
-			buf[1] = to_b64[((data[0] << 4) & 0x30) | ((data[1] >> 4) & 0xf)];
-			buf[2] = to_b64[((data[1] << 2) & 0x3c) | ((data[2] >> 6) & 0x3)];
-			buf[3] = to_b64[  data[2] & 0x3f];
+			buf[0] = to_b64[ ((unsigned)data[0] >> 2) & 0x3f];
+			buf[1] = to_b64[(((unsigned)data[0] << 4) & 0x30) | (((unsigned)data[1] >> 4) & 0xf)];
+			buf[2] = to_b64[(((unsigned)data[1] << 2) & 0x3c) | (((unsigned)data[2] >> 6) & 0x3)];
+			buf[3] = to_b64[  (unsigned)data[2] & 0x3f];
 			data += 3;
 			buf += 4;
 			div--;
@@ -87,16 +89,16 @@ char* b64enc(const memchunk* chunk)
 		switch (rem)
 		{
 		case 2:
-			buf[0] = to_b64[ (data[0] >> 2) & 0x3f];
-			buf[1] = to_b64[((data[0] << 4) & 0x30) + ((data[1] >> 4) & 0xf)];
-			buf[2] = to_b64[ (data[1] << 2) & 0x3c];
+			buf[0] = to_b64[ ((unsigned)data[0] >> 2) & 0x3f];
+			buf[1] = to_b64[(((unsigned)data[0] << 4) & 0x30) + (((unsigned)data[1] >> 4) & 0xf)];
+			buf[2] = to_b64[ ((unsigned)data[1] << 2) & 0x3c];
 			buf[3] = '=';
 			buf += 4;
 			chars += 4;
 			break;
 		case 1:
-			buf[0] = to_b64[ (data[0] >> 2) & 0x3f];
-			buf[1] = to_b64[ (data[0] << 4) & 0x30];
+			buf[0] = to_b64[ ((unsigned)data[0] >> 2) & 0x3f];
+			buf[1] = to_b64[ ((unsigned)data[0] << 4) & 0x30];
 			buf[2] = '=';
 			buf[3] = '=';
 			buf += 4;
@@ -140,7 +142,7 @@ memchunk* b64dec(const char* string)
 					for (i = 0; i < vrfy; i++)
 					{
 						if (isspace(tmp[i]))
-							continue;
+							/*@innercontinue@*/ continue;
 
 						if (tmp[i] == '=')
 						{
@@ -152,7 +154,7 @@ memchunk* b64dec(const char* string)
 								return 0;
 
 							/* end-of-message recognized */
-							break;
+							/*@innerbreak@*/ break;
 						}
 						else
 						{
@@ -189,6 +191,7 @@ memchunk* b64dec(const char* string)
 						if (isspace(ch))
 							continue;
 
+						bits = 0;
 						if ((ch >= 'A') && (ch <= 'Z'))
 						{
 							bits = (byte) (ch - 'A');
@@ -211,23 +214,25 @@ memchunk* b64dec(const char* string)
 						}
 						else if (ch == '=')
 							break;
+						else
+							{};
 
 						switch (qw++)
 						{
 						case 0:
 							data[tw+0] = (bits << 2) & 0xfc;
-							break;
+							/*@switchbreak@*/ break;
 						case 1:
 							data[tw+0] |= (bits >> 4) & 0x03;
 							data[tw+1] = (bits << 4) & 0xf0;
-							break;
+							/*@switchbreak@*/ break;
 						case 2:
 							data[tw+1] |= (bits >> 2) & 0x0f;
 							data[tw+2] = (bits << 6) & 0xc0;
-							break;
+							/*@switchbreak@*/ break;
 						case 3:
 							data[tw+2] |= bits & 0x3f;
-							break;
+							/*@switchbreak@*/ break;
 						}
 
 						if (qw == 4)

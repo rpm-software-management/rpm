@@ -74,20 +74,11 @@ int dldp_pFree(/*@special@*/ dldp_p* dp)
 	/*@releases dp->p.modl, dp->q.modl, dp->n.modl @*/
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n @*/;
 
-<<<<<<< dldp.h
 /**
  */
 BEECRYPTAPI
 int dldp_pCopy(dldp_p* dst, const dldp_p* src)
 	/*@modifies dst @*/;
-=======
-BEECRYPTAPI
-int dldp_pInit(dldp_p*);
-BEECRYPTAPI
-int dldp_pFree(dldp_p*);
-BEECRYPTAPI
-int dldp_pCopy(dldp_p*, const dldp_p*);
->>>>>>> 1.1.1.3
 
 /*
  * Functions for generating keys

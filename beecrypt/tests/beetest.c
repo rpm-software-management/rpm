@@ -125,6 +125,8 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 
 	randomGeneratorContext rngc;
 
+	memset(&rngc, 0, sizeof(randomGeneratorContext));
+
 	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	/*@=nullpass =modobserver @*/
@@ -137,9 +139,11 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 
 		mp32nsize(&digest, 5);
 
-		rngc.rng->next(rngc.param, digest.data, digest.size);
+		/*@-noeffectuncon@*/ /* LCL: ??? */
+		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
+		/*@=noeffectuncon@*/
 
-		dsasign(&keypair->param.p, &keypair->param.q, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
+		(void) dsasign(&keypair->param.p, &keypair->param.q, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
 
 		rc = dsavrfy(&keypair->param.p, &keypair->param.q, &keypair->param.g, &digest, &keypair->y, &r, &s);
 
@@ -147,7 +151,9 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 		mp32nfree(&r);
 		mp32nfree(&s);
 
-		randomGeneratorContextFree(&rngc);
+		/*@-modobserver@*/
+		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver@*/
 	}
 	return rc;
 }
@@ -764,15 +770,16 @@ static void testDLAlgorithms(void)
 	dldp_p dp;
 	dlkp_p kp;
 
-	memset(&rc, 0, sizeof(randomGeneratorContext));
+	memset(&rngc, 0, sizeof(randomGeneratorContext));
 	memset(&dp, 0, sizeof(dldp_p));
+	memset(&kp, 0, sizeof(dlkp_p));
 
 	mp32nzero(&hm);
 	mp32nzero(&r);
 	mp32nzero(&s);
 
-	dldp_pInit(&dp);
-	dlkp_pInit(&kp);
+	(void) dldp_pInit(&dp);
+	(void) dlkp_pInit(&kp);
 
 	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
@@ -795,12 +802,12 @@ static void testDLAlgorithms(void)
 		printf("  done in %.3f seconds\n", ttime);
 		#endif
 
-		dlkp_pInit(&kp);
+		(void) dlkp_pInit(&kp);
 		printf("Generating keypair\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
-		dlkp_pPair(&kp, &rngc, &dp);
+		(void) dlkp_pPair(&kp, &rngc, &dp);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -808,15 +815,17 @@ static void testDLAlgorithms(void)
 		#endif
 
 		mp32nsize(&hm, 5);
-		rngc.rng->next(rngc.param, hm.data, hm.size);
+		/*@-noeffectuncon@*/ /* LCL: ??? */
+		(void) rngc.rng->next(rngc.param, hm.data, hm.size);
+		/*@=noeffectuncon@*/
 		
-		printf("DSA signing (%d bits)\n", kp.param.p.size << 5);
+		printf("DSA signing (%u bits)\n", kp.param.p.size << 5);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			dsasign(&kp.param.p, &kp.param.q, &kp.param.g, &rngc, &hm, &kp.x, &r, &s);
+			(void) dsasign(&kp.param.p, &kp.param.q, &kp.param.g, &rngc, &hm, &kp.x, &r, &s);
 		}
         #if HAVE_TIME_H
         tstop = clock();
@@ -824,13 +833,15 @@ static void testDLAlgorithms(void)
         printf("  100x in %.3f seconds\n", ttime);
         #endif
 
-		printf("DSA verification (%d bits)\n", kp.param.p.size << 5);
+		printf("DSA verification (%u bits)\n", kp.param.p.size << 5);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
 		for (i = 0; i < 100; i++)
 		{
-			dsavrfy(&kp.param.p, &kp.param.q, &kp.param.g, &hm, &kp.y, &r, &s);
+			/*@-noeffect@*/	/* check return code */
+			(void) dsavrfy(&kp.param.p, &kp.param.q, &kp.param.g, &hm, &kp.y, &r, &s);
+			/*@=noeffect@*/
 		}
 		#if HAVE_TIME_H
 		tstop = clock();
@@ -838,7 +849,9 @@ static void testDLAlgorithms(void)
 		printf("  100x in %.3f seconds\n", ttime);
 		#endif
 		(void) dlkp_pFree(&kp);
+		memset(&kp, 0, sizeof(dlkp_p));
 		(void) dldp_pFree(&dp);
+		memset(&dp, 0, sizeof(dldp_p));
 
 		printf("Generating P (1024 bits) Q (768 bits) G with order (P-1)\n");
 		#if HAVE_TIME_H
@@ -851,8 +864,11 @@ static void testDLAlgorithms(void)
 		printf("  done in %.3f seconds\n", ttime);
 		#endif
 		(void) dldp_pFree(&dp);
+		memset(&dp, 0, sizeof(dldp_p));
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver@*/
 	}
 }
 
@@ -1020,7 +1036,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	else
 		exit(EXIT_FAILURE);
 
-	/*@-compdef@*/
+	memset(&keypair, 0, sizeof(dlkp_p));
 	(void) dlkp_pInit(&keypair);
 
 	mp32bsethex(&keypair.param.p, dsa_p);
@@ -1058,7 +1074,6 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 #endif
 
 	(void) dlkp_pFree(&keypair);
-	/*@=compdef@*/
 
 	if (testVectorRSA())
 		printf("RSA works!\n");

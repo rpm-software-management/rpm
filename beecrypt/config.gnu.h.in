@@ -123,6 +123,9 @@
 /* Define if you have the <ctype.h> header file.  */
 #undef HAVE_CTYPE_H
 
+/* Define if you have the <dlfcn.h> header file.  */
+#undef HAVE_DLFCN_H
+
 /* Define if you have the <errno.h> header file.  */
 #undef HAVE_ERRNO_H
 
@@ -190,12 +193,8 @@
 #undef HAVE_LIBTHREAD
 
 /* Name of package */
-#if !defined(PACKAGE)
 #undef PACKAGE
-#endif
 
 /* Version number of package */
-#if !defined(VERSION)
 #undef VERSION
-#endif
 
