@@ -6,6 +6,8 @@
 
 #include "query.h"
 
+char * version = "2.0a";
+
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIY,
 	     MODE_UNKNOWN };
 
@@ -16,8 +18,109 @@ static void argerror(char * desc) {
     exit(1);
 }
 
-void doQuery(enum querysources source, int queryFlags, char * arg) {
-    printf("querying not yet implemented\n");
+void printHelp(void);
+void printVersion(void);
+void printBanner(void);
+void printUsage(void);
+
+void printVersion(void) {
+    printf("RPM version %s\n", version);
+}
+
+void printBanner(void) {
+    puts("Copyright (C) 1995 - Red Hat Software");
+    puts("This may be freely redistributed under the terms of the GNU "
+	 "Public License");
+}
+
+void printUsage(void) {
+    printVersion();
+    printBanner();
+    puts("");
+
+    puts("usage: rpm {--help}");
+    puts("       rpm {--version}");
+    puts("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]");
+    puts("                          [--search] [--root <dir>] file1.rpm ... filen.rpm");
+    puts("       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]");
+    puts("                          [--search] [--root <dir>] file1.rpm ... fileN.rpm");
+    puts("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] ");
+    puts("                        [--root <dir>] [targets]");
+    puts("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]");
+    puts("       rpm {--uninstall -u] [--root <dir>] package1 package2 ... packageN");
+    puts("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]");
+    puts("                        [--test] [--time-check <s>] specfile");
+    puts("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm");
+    puts("       rpm {--where} package1 package2 ... packageN");
+}
+
+void printHelp(void) {
+    printVersion();
+    printBanner();
+    puts("");
+
+    puts("usage:");
+    puts("   --help		- print this message");
+    puts("   --version		- print the version of rpm being used");
+    puts("    -q                  - query mode");
+    puts("      --root <dir>	- use <dir> as the top level directory");
+    puts("      Package specification options:");
+    puts("        -a                - query all packages");
+    puts("        -f <file>+        - query package owning <file>");
+    puts("        -F                - like -f, but read file names from stdin");
+    puts("        -p <packagefile>+ - query (uninstalled) package <packagefile>");
+    puts("        -P                - like -f, but read package names from stdin");
+    puts("      Information selection options:");
+    puts("        -i                - display package information");
+    puts("        -l                - display package file list");
+    puts("        -s                - show file states (implies -l)");
+    puts("        -d                - list only documentation files (implies -l)");
+    puts("        -c                - list only configuration files (implies -l)");
+    puts("");
+    puts("    -V");
+    puts("    -y");
+    puts("    --verify            - verify a package installation");
+    puts("			  same package specification options as -q");
+    puts("      --root <dir>	- use <dir> as the top level directory");
+    puts("");
+    puts("    --install <packagefile>");
+    puts("    -i <packagefile>	- install package");
+    puts("       -v	        - be a little verbose ");
+    puts("       -h");
+    puts("      --hash            - print hash marks as package installs (good with -v)");
+    puts("      --percent         - print percentages as package installs");
+    puts("      --force           - install despite potential conflicts");
+    puts("      --test            - don't install, but tell if it would work or not");
+    puts("      --search          - search the paths listed in /etc/rpmrc for rpms");
+    puts("      --root <dir>	- use <dir> as the top level directory");
+    puts("");
+    puts("    --upgrade <packagefile>");
+    puts("    -U <packagefile>	- upgrade package (same options as --install)");
+    puts("");
+    puts("    --uninstall <package>");
+    puts("    -u <package>        - uninstall package");
+    puts("      --root <dir>	- use <dir> as the top level directory");
+    puts("");
+    puts("    -b<stage> <spec>    - build package, where <stage> is one of:");
+    puts("			  p - prep (unpack sources and apply patches)");
+    puts("			  l - list check (do some cursory checks on %files)");
+    puts("			  c - compile (prep and compile)");
+    puts("			  i - install (prep, compile, install)");
+    puts("			  b - binary package (prep, compile, install, package)");
+    puts("			  a - bin/src package (prep, compile, install, package)");
+    puts("      --short-circuit   - skip straight to specified stage (only for c,i)");
+    puts("      --clean           - remove build tree when done");
+    puts("      --keep-temps      - do not delete scripts (or any temp files) in /tmp");
+    puts("      --test            - do not execute any stages, implies --keep-temps");
+    puts("			  in /tmp - useful for testing");
+    puts("      --time-check <s>  - set the time check to S seconds (0 disables it)");
+    puts("");
+    puts("    --where <pkg>+      - search paths listed in /etc/rpmrc for rpms");
+    puts("                          matching <pkg>");
+    puts("");
+    puts("    --rebuild <source_package>");
+    puts("                        - install source package, build binary package,");
+    puts("                          and remove spec file, sources, patches, and icons.");
 }
 
 int main(int argc, char ** argv) {
@@ -28,6 +131,9 @@ int main(int argc, char ** argv) {
     int force = 0;
     int queryFor = 0;
     int test = 0;
+    int version = 0;
+    int help = 0;
+    char * prefix = "";
     struct option options[] = {
 	    { "query", 0, 0, 'q' },
 	    { "stdin-query", 0, 0, 'Q' },
@@ -45,12 +151,16 @@ int main(int argc, char ** argv) {
 	    { "force", 0, &force, 0 },
 	    { "quiet", 0, 0, 0 },
 	    { "test", 0, &test, 0 },
+	    { "version", 0, &version, 0 },
+	    { "help", 0, &help, 0 },
+	    { "docfiles", 0, 0, 'd' },
+	    { "configfiles", 0, 0, 'c' },
 	    { 0, 0, 0, 0 } 
 	} ;
 
 
     while (1) {
-	arg = getopt_long(argc, argv, "QqpvPfFilsar:", options, &long_index);
+	arg = getopt_long(argc, argv, "QqpvPfFilsadcr:", options, &long_index);
 	if (arg == -1) break;
 
 	switch (arg) {
@@ -91,6 +201,14 @@ int main(int argc, char ** argv) {
 
 	  case 'l':
 	    queryFor |= QUERY_FOR_LIST;
+	    break;
+
+	  case 'd':
+	    queryFor |= QUERY_FOR_DOCS;
+	    break;
+
+	  case 'c':
+	    queryFor |= QUERY_FOR_CONFIG;
 	    break;
 
 	  case 'P':
@@ -140,8 +258,8 @@ int main(int argc, char ** argv) {
 	}
     }
 
-    if (bigMode == MODE_UNKNOWN)
-	argerror("no operation specified");
+    if (version) printVersion();
+    if (help) printHelp();
 
     if (bigMode != MODE_QUERY && queryFor) 
 	argerror("unexpected query specifiers");
@@ -154,7 +272,8 @@ int main(int argc, char ** argv) {
 
     switch (bigMode) {
       case MODE_UNKNOWN:
-	argerror("no operation specified");
+	if (!version && !help) printUsage();
+	exit(0);
 
       case MODE_INSTALL:
 	while (optind < argc) 
@@ -164,7 +283,7 @@ int main(int argc, char ** argv) {
 
       case MODE_QUERY:
 	if (querySource == QUERY_ALL) {
-	    doQuery(QUERY_ALL, queryFor, NULL);
+	    doQuery(prefix, QUERY_ALL, queryFor, NULL);
 	} else if (querySource == QUERY_SPATH || 
                    querySource == QUERY_SPACKAGE ||
 		   querySource == QUERY_SRPM) {
@@ -175,13 +294,13 @@ int main(int argc, char ** argv) {
 		i = strlen(buffer) - 1;
 		if (buffer[i] == '\n') buffer[i] = 0;
 		if (strlen(buffer)) 
-		    doQuery(querySource, queryFor, buffer);
+		    doQuery(prefix, querySource, queryFor, buffer);
 	    }
 	} else {
 	    if (optind == argc) 
 		argerror("no arguments given for query");
 	    while (optind < argc) 
-		doQuery(querySource, queryFor, argv[optind++]);
+		doQuery(prefix, querySource, queryFor, argv[optind++]);
 	}
 	break;
     }
