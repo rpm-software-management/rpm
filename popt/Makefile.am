@@ -15,6 +15,13 @@ noinst_PROGRAMS = test1
 test1_SOURCES = test1.c
 test1_LDADD = $(lib_LTLIBRARIES)
 
+noinst_SCRIPTS = testit.sh
+
+TESTS_ENVIRONMENT = \
+test1="`pwd`/.libs/lt-test1"
+
+TESTS = testit.sh
+
 include_HEADERS = popt.h
 lib_LTLIBRARIES = libpopt.la
 libpopt_la_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
