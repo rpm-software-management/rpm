@@ -190,6 +190,10 @@ char *alloca ();
 #include <malloc.h>
 #endif
 
+#if HAVE_MCHECK_H
+#include <mcheck.h>
+#endif
+
 #if HAVE_NETDB_H
 #include <netdb.h>
 #endif

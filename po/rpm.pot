@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-11 16:59-0400\n"
+"POT-Creation-Date: 1999-09-11 19:59-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -922,297 +922,297 @@ msgstr ""
 msgid "rebuild database from existing database"
 msgstr ""
 
-#: ../rpm.c:634 ../rpm.c:640 ../rpm.c:647 ../rpm.c:653 ../rpm.c:662
-#: ../rpm.c:669 ../rpm.c:716 ../rpm.c:722 ../rpm.c:756 ../rpm.c:762
-#: ../rpm.c:768 ../rpm.c:776 ../rpm.c:811 ../rpm.c:866 ../rpm.c:873
+#: ../rpm.c:638 ../rpm.c:644 ../rpm.c:651 ../rpm.c:657 ../rpm.c:666
+#: ../rpm.c:673 ../rpm.c:720 ../rpm.c:726 ../rpm.c:760 ../rpm.c:766
+#: ../rpm.c:772 ../rpm.c:780 ../rpm.c:815 ../rpm.c:870 ../rpm.c:877
 msgid "only one major mode may be specified"
 msgstr ""
 
-#: ../rpm.c:655
+#: ../rpm.c:659
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr ""
 
-#: ../rpm.c:657
+#: ../rpm.c:661
 msgid "Use -e or --erase instead.\n"
 msgstr ""
 
-#: ../rpm.c:673
+#: ../rpm.c:677
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 
-#: ../rpm.c:677
+#: ../rpm.c:681
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 
-#: ../rpm.c:729 ../rpm.c:735 ../rpm.c:742 ../rpm.c:749 ../rpm.c:880
+#: ../rpm.c:733 ../rpm.c:739 ../rpm.c:746 ../rpm.c:753 ../rpm.c:884
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: ../rpm.c:784
+#: ../rpm.c:788
 msgid "arguments to --dbpath must begin with a /"
 msgstr ""
 
-#: ../rpm.c:817
+#: ../rpm.c:821
 msgid "relocations must begin with a /"
 msgstr ""
 
-#: ../rpm.c:819
+#: ../rpm.c:823
 msgid "relocations must contain a ="
 msgstr ""
 
-#: ../rpm.c:822
+#: ../rpm.c:826
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: ../rpm.c:831
+#: ../rpm.c:835
 msgid "exclude paths must begin with a /"
 msgstr ""
 
-#: ../rpm.c:840
+#: ../rpm.c:844
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: ../rpm.c:893
+#: ../rpm.c:897
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: ../rpm.c:898
+#: ../rpm.c:902
 msgid "--timecheck may only be used during package builds"
 msgstr ""
 
-#: ../rpm.c:901
+#: ../rpm.c:905
 msgid "unexpected query flags"
 msgstr ""
 
-#: ../rpm.c:904
+#: ../rpm.c:908
 msgid "unexpected query format"
 msgstr ""
 
-#: ../rpm.c:908
+#: ../rpm.c:912
 msgid "unexpected query source"
 msgstr ""
 
-#: ../rpm.c:914
+#: ../rpm.c:918
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 
-#: ../rpm.c:917
+#: ../rpm.c:921
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: ../rpm.c:920
+#: ../rpm.c:924
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 
-#: ../rpm.c:923
+#: ../rpm.c:927
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: ../rpm.c:926
+#: ../rpm.c:930
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: ../rpm.c:929
+#: ../rpm.c:933
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: ../rpm.c:932
+#: ../rpm.c:936
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:936
+#: ../rpm.c:940
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:940
+#: ../rpm.c:944
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:944
+#: ../rpm.c:948
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:948
+#: ../rpm.c:952
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:952
+#: ../rpm.c:956
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:956
+#: ../rpm.c:960
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: ../rpm.c:960
+#: ../rpm.c:964
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:964
+#: ../rpm.c:968
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:968
+#: ../rpm.c:972
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:972
+#: ../rpm.c:976
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: ../rpm.c:976
+#: ../rpm.c:980
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:980
+#: ../rpm.c:984
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: ../rpm.c:985
+#: ../rpm.c:989
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 
-#: ../rpm.c:989
+#: ../rpm.c:993
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 
-#: ../rpm.c:995
+#: ../rpm.c:999
 msgid ""
 "--nodeps may only be specified during package building, installation, "
 "erasure, and verification"
 msgstr ""
 
-#: ../rpm.c:1000
+#: ../rpm.c:1004
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: ../rpm.c:1005
+#: ../rpm.c:1009
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: ../rpm.c:1010
+#: ../rpm.c:1014
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: ../rpm.c:1013
+#: ../rpm.c:1017
 msgid "--oldpackage may only be used during upgrades"
 msgstr ""
 
-#: ../rpm.c:1018
+#: ../rpm.c:1022
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 
-#: ../rpm.c:1024
+#: ../rpm.c:1028
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
 
-#: ../rpm.c:1028
+#: ../rpm.c:1032
 msgid "--nopgp may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1031
+#: ../rpm.c:1035
 msgid "--nogpg may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1034
+#: ../rpm.c:1038
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 
-#: ../rpm.c:1058
+#: ../rpm.c:1062
 msgid "no files to sign\n"
 msgstr ""
 
-#: ../rpm.c:1063
+#: ../rpm.c:1067
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: ../rpm.c:1078
+#: ../rpm.c:1082
 msgid "pgp not found: "
 msgstr ""
 
-#: ../rpm.c:1082
+#: ../rpm.c:1086
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: ../rpm.c:1084
+#: ../rpm.c:1088
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: ../rpm.c:1087
+#: ../rpm.c:1091
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: ../rpm.c:1092
+#: ../rpm.c:1096
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1098
+#: ../rpm.c:1102
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: ../rpm.c:1113
+#: ../rpm.c:1117
 msgid "exec failed\n"
 msgstr ""
 
-#: ../rpm.c:1132
+#: ../rpm.c:1136
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: ../rpm.c:1143
+#: ../rpm.c:1147
 msgid "no packages given for signature check"
 msgstr ""
 
-#: ../rpm.c:1155
+#: ../rpm.c:1159
 msgid "no packages given for signing"
 msgstr ""
 
-#: ../rpm.c:1168
+#: ../rpm.c:1172
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: ../rpm.c:1225
+#: ../rpm.c:1229
 msgid "no spec files given for build"
 msgstr ""
 
-#: ../rpm.c:1227
+#: ../rpm.c:1231
 msgid "no tar files given for build"
 msgstr ""
 
-#: ../rpm.c:1239
+#: ../rpm.c:1243
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: ../rpm.c:1288
+#: ../rpm.c:1292
 msgid "no packages given for install"
 msgstr ""
 
-#: ../rpm.c:1311
+#: ../rpm.c:1315
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: ../rpm.c:1316
+#: ../rpm.c:1320
 msgid "no arguments given for query"
 msgstr ""
 
-#: ../rpm.c:1333
+#: ../rpm.c:1337
 msgid "extra arguments given for verify of all packages"
 msgstr ""
 
-#: ../rpm.c:1337
+#: ../rpm.c:1341
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -1976,27 +1976,27 @@ msgstr ""
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:651
+#: ../lib/depends.c:656
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:784
+#: ../lib/depends.c:789
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:823
+#: ../lib/depends.c:828
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:876 ../lib/depends.c:1176
+#: ../lib/depends.c:881 ../lib/depends.c:1181
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:970
+#: ../lib/depends.c:975
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""

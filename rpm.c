@@ -530,6 +530,10 @@ int main(int argc, char ** argv)
     int upgrade = 0;
     int probFilter = 0;
 	
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+#endif
+
     /* set the defaults for the various command line options */
     allFiles = 0;
     allMatches = 0;
