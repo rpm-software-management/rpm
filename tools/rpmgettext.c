@@ -34,6 +34,7 @@ int verbose = 0;
 int escape = 1;		/* use octal escape sequence for !isprint(c)? */
 char *inputdir = "/mnt/redhat/comps/dist/5.2";
 char *outputdir = "/tmp/OUT";
+char *onlylang = NULL;
 
 int gentran = 0;
 
@@ -211,6 +212,21 @@ genSrpmFileName(Header h)
 
 }
 
+static char *
+hasLang(const char *onlylang, char **langs, char **s)
+{
+	char *e = *s;
+	int i = 0;
+
+	while(langs[i] && strcmp(langs[i], onlylang)) {
+		i++;
+		e += strlen(e) + 1;
+	}
+	if (langs[i] && *e)
+		return e;
+	return NULL;
+}
+
 static int poTags[] = {
     RPMTAG_DESCRIPTION,
     RPMTAG_GROUP,
@@ -249,7 +265,7 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
     sourcerpm = genSrpmFileName(h);
 
     for (tp = poTags; *tp != 0; tp++) {
-	char **s, *e;
+	char **s, *e, *onlymsgstr;
 	int i, type, count;
 
 	if (!headerGetRawEntry(h, *tp, &type, (void **)&s, &count))
@@ -265,6 +281,13 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
 	    break;
 	}
 
+	/* XXX generate catalog for single language */
+	onlymsgstr = NULL;
+	if (onlylang != NULL &&
+	   (onlymsgstr = hasLang(onlylang, langs, s)) == NULL)
+		continue;
+	
+
 	/* Print xref comment */
 	fprintf(fp, "\n#: %s:%s\n", basename(file), getTagString(*tp));
 	if (sourcerpm)
@@ -278,8 +301,13 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
 	if (count <= 1)
 	    fprintf(fp, "msgstr \"\"\n");
 	for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
+		if (!(onlymsgstr == NULL || onlymsgstr == e))
+			continue;
 		expandRpmPO(buf, e);
-		fprintf(fp, "msgstr(%s) %s\n", langs[i], buf);
+		fprintf(fp, "msgstr");
+		if (onlymsgstr == NULL)
+			fprintf(fp, "(%s)", langs[i]);
+		fprintf(fp, " %s\n", buf);
 	}
 
 	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
@@ -1153,13 +1181,16 @@ main(int argc, char **argv)
 
     progname = basename(argv[0]);
 
-    while((c = getopt(argc, argv, "deI:O:Tv")) != EOF)
+    while((c = getopt(argc, argv, "del:I:O:Tv")) != EOF)
     switch (c) {
     case 'd':
 	debug++;
 	break;
     case 'e':
 	escape = 0;
+	break;
+    case 'l':
+	onlylang = optarg;
 	break;
     case 'I':
 	inputdir = optarg;
