@@ -61,7 +61,7 @@ static void alFree(struct availableList * al) {
 	    free(al->list[i].provides);
 	if (al->list[i].files)
 	    free(al->list[i].files);
-	free(al->list[i].h);
+	headerFree(al->list[i].h);
     }
 
     if (al->alloced) free(al->list);
@@ -197,6 +197,8 @@ int intcmp(const void * a, const void *b) {
 rpmTransactionSet rpmtransCreateSet(rpmdb db, char * root) {
     rpmTransactionSet rpmdep;
     int rootLength;
+
+    if (!root) root = "";
 
     rpmdep = malloc(sizeof(*rpmdep));
     rpmdep->db = db;
