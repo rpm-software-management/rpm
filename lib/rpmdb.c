@@ -15,9 +15,19 @@
 
 /* XXX the signal handling in here is not thread safe */
 
+/* the requiredbyIndex isn't stricly necessary. In a perfect world, we could
+   have each header keep a list of packages that need it. However, we
+   can't reserve space in the header for extra information so all of the
+   required packages would move in the database every time a package was
+   added or removed. Instead, each package (or virtual package) name
+   keeps a list of package offsets of packages that might depend on this
+   one. Version numbers still need verification, but it gets us in the
+   right area w/o a linear search through the database. */
+
 struct rpmdb {
     faFile pkgs;
-    dbIndex * nameIndex, * fileIndex, * groupIndex;
+    dbIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
+    dbIndex * requiredbyIndex;
 };
 
 static void removeIndexEntry(dbIndex * dbi, char * name, dbIndexRecord rec,
@@ -83,6 +93,30 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     if (!db.groupIndex) {
 	faClose(db.pkgs);
 	closeDBIndex(db.nameIndex);
+	closeDBIndex(db.fileIndex);
+	return 1;
+    }
+
+    strcpy(filename, prefix); 
+    strcat(filename, "/var/lib/rpm/providesindex.rpm");
+    db.providesIndex = openDBIndex(filename, mode, 0644);
+    if (!db.providesIndex) {
+	faClose(db.pkgs);
+	closeDBIndex(db.fileIndex);
+	closeDBIndex(db.nameIndex);
+	closeDBIndex(db.groupIndex);
+	return 1;
+    }
+
+    strcpy(filename, prefix); 
+    strcat(filename, "/var/lib/rpm/requiredby.rpm");
+    db.requiredbyIndex = openDBIndex(filename, mode, 0644);
+    if (!db.requiredbyIndex) {
+	faClose(db.pkgs);
+	closeDBIndex(db.fileIndex);
+	closeDBIndex(db.nameIndex);
+	closeDBIndex(db.groupIndex);
+	closeDBIndex(db.providesIndex);
 	return 1;
     }
 
@@ -100,6 +134,8 @@ void rpmdbClose (rpmdb db) {
     closeDBIndex(db->fileIndex);
     closeDBIndex(db->groupIndex);
     closeDBIndex(db->nameIndex);
+    closeDBIndex(db->providesIndex);
+    closeDBIndex(db->requiredbyIndex);
     free(db);
 }
 
@@ -120,6 +156,14 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
 
 int rpmdbFindByFile(rpmdb db, char * filespec, dbIndexSet * matches) {
     return searchDBIndex(db->fileIndex, filespec, matches);
+}
+
+int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches) {
+    return searchDBIndex(db->providesIndex, filespec, matches);
+}
+
+int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches) {
+    return searchDBIndex(db->requiredbyIndex, filespec, matches);
 }
 
 int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches) {
@@ -161,7 +205,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     int type;
     unsigned int count;
     dbIndexRecord rec;
-    char ** fileList;
+    char ** fileList, ** providesList, ** requiredbyList;
     int i;
 
     rec.recOffset = offset;
@@ -190,6 +234,28 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	removeIndexEntry(db->groupIndex, group, rec, tolerant, "group index");
     }
 
+    if (getEntry(h, RPMTAG_PROVIDES, &type, (void **) &providesList, 
+	 &count)) {
+	for (i = 0; i < count; i++) {
+	    message(MESS_DEBUG, "removing provides index for %s\n", 
+		    providesList[i]);
+	    removeIndexEntry(db->providesIndex, providesList[i], rec, tolerant, 
+			     "providesfile index");
+	}
+	free(providesList);
+    }
+
+    if (getEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requiredbyList, 
+	 &count)) {
+	for (i = 0; i < count; i++) {
+	    message(MESS_DEBUG, "removing requiredby index for %s\n", 
+		    requiredbyList[i]);
+	    removeIndexEntry(db->requiredbyIndex, requiredbyList[i], rec, 
+			     tolerant, "requiredby index");
+	}
+	free(requiredbyList);
+    }
+
     if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
@@ -198,6 +264,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	    removeIndexEntry(db->fileIndex, fileList[i], rec, tolerant, 
 			     "file index");
 	}
+	free(fileList);
     } else {
 	message(MESS_DEBUG, "package has no files\n");
     }
@@ -239,8 +306,10 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     unsigned int dboffset;
     unsigned int i;
     char ** fileList;
+    char ** providesList;
+    char ** requiredbyList;
     char * name, * group;
-    int count;
+    int count, providesCount, requiredbyCount;
     int type;
     int rc = 0;
 
@@ -254,12 +323,25 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	count = 0;
     } 
 
+    if (!getEntry(dbentry, RPMTAG_PROVIDES, &type, (void **) &providesList, 
+	 &providesCount)) {
+	providesCount = 0;
+    } 
+
+    if (!getEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
+		  (void **) &requiredbyList, &requiredbyCount)) {
+	requiredbyCount = 0;
+    } 
+
     blockSignals();
 
     dboffset = faAlloc(db->pkgs, sizeofHeader(dbentry));
     if (!dboffset) {
 	error(RPMERR_DBCORRUPT, "cannot allocate space for database");
 	unblockSignals();
+	if (providesCount) free(providesList);
+	if (requiredbyCount) free(requiredbyList);
+	if (count) free(fileList);
 	return 1;
     }
     lseek(db->pkgs->fd, dboffset, SEEK_SET);
@@ -272,6 +354,16 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     if (addIndexEntry(db->groupIndex, group, dboffset, 0))
 	rc = 1;
 
+    for (i = 0; i < requiredbyCount; i++) {
+	if (addIndexEntry(db->requiredbyIndex, requiredbyList[i], dboffset, 0))
+	    rc = 1;
+    }
+
+    for (i = 0; i < providesCount; i++) {
+	if (addIndexEntry(db->providesIndex, providesList[i], dboffset, 0))
+	    rc = 1;
+    }
+
     for (i = 0; i < count; i++) {
 	if (addIndexEntry(db->fileIndex, fileList[i], dboffset, i))
 	    rc = 1;
@@ -280,9 +372,13 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     syncDBIndex(db->nameIndex);
     syncDBIndex(db->groupIndex);
     syncDBIndex(db->fileIndex);
+    syncDBIndex(db->providesIndex);
+    syncDBIndex(db->requiredbyIndex);
 
     unblockSignals();
 
+    if (requiredbyCount) free(requiredbyList);
+    if (providesCount) free(providesList);
     if (count) free(fileList);
 
     return rc;
