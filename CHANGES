@@ -202,6 +202,7 @@
 	- detailed build package error messages.
 	- fix: i18n tags not terminated correctly with NUL (#50304).
 	- add explicit casts to work around a s390 compiler problem.
+	- fix: autoconf glob tests (#50845).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

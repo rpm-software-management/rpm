@@ -1,6 +1,6 @@
-dnl aclocal.m4 generated automatically by aclocal 1.4-p4
+dnl aclocal.m4 generated automatically by aclocal 1.4-p5
 
-dnl Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+dnl Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -19,7 +19,7 @@ dnl PARTICULAR PURPOSE.
 dnl Usage:
 dnl AM_INIT_AUTOMAKE(package,version, [no-define])
 
-AC_DEFUN(AM_INIT_AUTOMAKE,
+AC_DEFUN([AM_INIT_AUTOMAKE],
 [AC_REQUIRE([AC_PROG_INSTALL])
 PACKAGE=[$1]
 AC_SUBST(PACKAGE)
@@ -47,7 +47,7 @@ AC_REQUIRE([AC_PROG_MAKE_SET])])
 # Check to make sure that the build environment is sane.
 #
 
-AC_DEFUN(AM_SANITY_CHECK,
+AC_DEFUN([AM_SANITY_CHECK],
 [AC_MSG_CHECKING([whether build environment is sane])
 # Just in case
 sleep 1
@@ -88,7 +88,7 @@ AC_MSG_RESULT(yes)])
 
 dnl AM_MISSING_PROG(NAME, PROGRAM, DIRECTORY)
 dnl The program must properly implement --version.
-AC_DEFUN(AM_MISSING_PROG,
+AC_DEFUN([AM_MISSING_PROG],
 [AC_MSG_CHECKING(for working $2)
 # Run test in a subshell; some versions of sh will print an error if
 # an executable is not found, even if stderr is redirected.
@@ -104,7 +104,7 @@ AC_SUBST($1)])
 
 # Like AC_CONFIG_HEADER, but automatically create stamp file.
 
-AC_DEFUN(AM_CONFIG_HEADER,
+AC_DEFUN([AM_CONFIG_HEADER],
 [AC_PREREQ([2.12])
 AC_CONFIG_HEADER([$1])
 dnl When config.status generates a header, we must update the stamp-h file.
@@ -146,7 +146,7 @@ AC_DEFUN([AC_ISC_POSIX],
 
 # serial 1
 
-AC_DEFUN(AM_C_PROTOTYPES,
+AC_DEFUN([AM_C_PROTOTYPES],
 [AC_REQUIRE([AM_PROG_CC_STDC])
 AC_REQUIRE([AC_PROG_CPP])
 AC_MSG_CHECKING([for function prototypes])
@@ -183,7 +183,7 @@ AC_SUBST(ANSI2KNR)dnl
 # program @code{ansi2knr}, which comes with Ghostscript.
 # @end defmac
 
-AC_DEFUN(AM_PROG_CC_STDC,
+AC_DEFUN([AM_PROG_CC_STDC],
 [AC_REQUIRE([AC_PROG_CC])
 AC_BEFORE([$0], [AC_C_INLINE])
 AC_BEFORE([$0], [AC_C_CONST])
@@ -3580,7 +3580,7 @@ ifelse([AC_DISABLE_FAST_INSTALL])
 dnl From Jim Meyering.  Use this if you use the GNU error.[ch].
 dnl FIXME: Migrate into libit
 
-AC_DEFUN(AM_FUNC_ERROR_AT_LINE,
+AC_DEFUN([AM_FUNC_ERROR_AT_LINE],
 [AC_CACHE_CHECK([for error_at_line], am_cv_lib_error_at_line,
  [AC_TRY_LINK([],[error_at_line(0, 0, "", 0, "");],
               am_cv_lib_error_at_line=yes,

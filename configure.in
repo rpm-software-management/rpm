@@ -21,6 +21,8 @@ LIBOBJS=
 
 dnl Checks for programs.
 AC_PROG_CC
+AC_AIX
+AC_MINIX
 AC_PROG_CXX
 AS=${AS-as}
 AC_SUBST(AS)
@@ -143,8 +145,6 @@ dnl
 AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}")
 AC_SUBST(MKDIR_P)
 
-AC_AIX
-AC_MINIX
 AC_ISC_POSIX
 
 dnl This test must precede tests of compiler characteristics like
@@ -736,8 +736,7 @@ AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
     [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
 
 if test $rpm_cv_glob = no ; then
-    AC_MSG_CHECKING(for GNU extensions to glob)
-if test "${rpm_cv_glob_ext+set}" = set; then
+    AC_CACHE_CHECK([for GNU extensions to glob], rpm_cv_glob_ext, [
     rm -f t
     mkdir t
     mkdir t/p
@@ -753,19 +752,17 @@ main() {
 } ],
     rpm_cv_glob_ext=yes, rpm_cv_glob_ext=no, rpm_cv_glob_ext=no)
     rm -r t
-    AC_MSG_RESULT([$rpm_cv_glob_ext])
-fi
-    if test $rpm_cv_glob_ext = no ; then
+    ])
+    if test "$rpm_cv_glob_ext" = no ; then
 	echo "    --> using the included GNU glob instead." >&AC_FD_MSG
 	rpm_cv_glob=yes
     fi
 fi
 
-if test $rpm_cv_glob = yes; then
+if test "$rpm_cv_glob" = yes; then
     AC_DEFINE(USE_GNU_GLOB)
     LIBOBJS="$LIBOBJS glob.o fnmatch.o"
 fi
-
 dnl
 dnl Auto-detect whether python bindings should be built.
 dnl

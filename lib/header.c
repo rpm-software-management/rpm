@@ -365,8 +365,14 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	if (ieprev.info.type == RPM_I18NSTRING_TYPE)
 	    tdel = ieprev.length;
 
-	tprev = (ie.info.tag < HEADER_I18NTABLE)
-		? (dataStart - REGION_TAG_COUNT) : t;
+	if (ie.info.tag >= HEADER_I18NTABLE) {
+	    tprev = t;
+	} else {
+	    tprev = dataStart;
+	    /* XXX HEADER_IMAGE tags don't include region sub-tag. */
+	    if (ie.info.tag != HEADER_IMMUTABLE)
+		tprev -= REGION_TAG_COUNT;
+	}
 
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
@@ -394,8 +400,17 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
     }
     tdel = (tprev ? (t - tprev) : 0);
     tl += tdel;
+
+    /* XXX
+     * There are two hacks here:
+     *	1) tl is 16b (i.e. REGION_TAG_COUNT) short while doing headerReload().
+     *	2) the 8/98 rpm bug with inserting i18n tags needs to use tl, not dl.
+     */
+    if (tl+REGION_TAG_COUNT == dl)
+	tl += REGION_TAG_COUNT;
     if (tl > dl)
 	dl = tl;
+
     return dl;
 }
 
@@ -779,8 +794,10 @@ Header headerLoad(void * uh)
 	/*@=assignexpose@*/
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
+#if 0	/* XXX don't check, the 8/98 i18n bug fails here. */
 	if (rdlen != dl)
 	    goto errxit;
+#endif
 	entry->rdlen = rdlen;
 	entry++;
 	h->indexUsed++;
@@ -803,7 +820,7 @@ Header headerLoad(void * uh)
 
 	    if (hdrchkData(off))
 		goto errxit;
-	   if (off) {
+	    if (off) {
 		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
 		ril = rdl/sizeof(*pe);
