@@ -561,7 +561,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    else
 		rc = mdfile(file, currentMd5);
 
-	    if (mdfile(file, currentMd5)) 
+	    if (rc) 
 		rpmMessage(RPMMESS_DEBUG, 
 				_("    failed - assuming file removed\n"));
 	    else {
