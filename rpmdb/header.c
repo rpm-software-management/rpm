@@ -489,7 +489,8 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 {
     unsigned char * tprev = NULL;
     unsigned char * t = NULL;
-    int tdel, tl = dl;
+    int tdel = 0;
+    int tl = dl;
     struct indexEntry_s ieprev;
 
 /*@-boundswrite@*/

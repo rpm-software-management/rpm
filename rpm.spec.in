@@ -130,11 +130,7 @@ WITH_PYTHON="--without-python"
 %endif
 
 %ifos linux
-%ifarch x86_64 s390 s390x 
-CFLAGS="$RPM_OPT_FLAGS -fPIC"; export CFLAGS
-%else
 CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
-%endif
 ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \

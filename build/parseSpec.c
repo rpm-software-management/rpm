@@ -5,9 +5,6 @@
 
 #include "system.h"
 
-/*@unchecked@*/
-static int _debug = 0;
-
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
 #include "rpmds.h"

@@ -561,7 +561,7 @@ PyTypeObject rpmfts_Type = {
 	(initproc) rpmfts_init,		/* tp_init */
 	rpmfts_alloc,			/* tp_alloc */
 	rpmfts_new,			/* tp_new */
-	rpmfts_free,			/* tp_free */
+	(freefunc) rpmfts_free,		/* tp_free */
 	0,				/* tp_is_gc */
 };
 /*@=fullinitblock@*/

@@ -22,7 +22,7 @@
 /*@access pgpDigParams @*/
 
 /*@unchecked@*/
-extern int _print_pkts = 0;
+int _print_pkts = 0;
 
 /**
  */

@@ -10,6 +10,7 @@
 	- fix: escape '+' in regex patterns through RPMMIRE_DEFAULT (#103851).
 	- RPMMIRE_DEFAULT is overkill, use RPMMIRE_STRCMP instead (#103851).
 	- don't use mktemp if mkstemp is available (#103850).
+	- use -fPIC -DPIC on all platforms, not just mandatory (#112713).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

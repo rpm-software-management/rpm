@@ -369,7 +369,7 @@ PyTypeObject rpmrc_Type = {
 	rpmrc_init,			/* tp_init */
 	rpmrc_alloc,			/* tp_alloc */
 	rpmrc_new,			/* tp_new */
-	rpmrc_free,			/* tp_free */
+	(freefunc) rpmrc_free,		/* tp_free */
 	0,				/* tp_is_gc */
 };
 #else

@@ -880,7 +880,8 @@ freeArgs(MacroBuf mb)
  */
 /*@-bounds@*/
 /*@dependent@*/ static const char *
-grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char *lastc)
+grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
+		const char * lastc)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
@@ -1176,7 +1177,7 @@ expandMacro(MacroBuf mb)
     int c;
     int rc = 0;
     int negate;
-    char *grab;
+    const char * lastc;
     int chkexist;
 
     if (++mb->depth > max_macro_depth) {
@@ -1210,7 +1211,7 @@ expandMacro(MacroBuf mb)
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
 		t = mb->t;	/* save expansion pointer for printExpand */
 	negate = 0;
-	grab = NULL;
+	lastc = NULL;
 	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
@@ -1245,8 +1246,8 @@ expandMacro(MacroBuf mb)
 		/* For "%name " macros ... */
 /*@-globs@*/
 		if ((c = *fe) && isblank(c))
-			if ((grab = strchr(fe,'\n')) == NULL)
-                grab = strchr(fe, '\0');
+			if ((lastc = strchr(fe,'\n')) == NULL)
+                lastc = strchr(fe, '\0');
 /*@=globs@*/
 		/*@switchbreak@*/ break;
 	case '(':		/* %(...) shell escape */
@@ -1293,7 +1294,7 @@ expandMacro(MacroBuf mb)
 			ge = se - 1;
 			/*@innerbreak@*/ break;
 		case ' ':
-			grab = se-1;
+			lastc = se-1;
 			/*@innerbreak@*/ break;
 		default:
 			/*@innerbreak@*/ break;
@@ -1447,8 +1448,8 @@ expandMacro(MacroBuf mb)
 
 	/* Setup args for "%name " macros with opts */
 	if (me && me->opts != NULL) {
-		if (grab != NULL) {
-			se = grabArgs(mb, me, fe, grab);
+		if (lastc != NULL) {
+			se = grabArgs(mb, me, fe, lastc);
 		} else {
 			addMacro(mb->mc, "**", NULL, "", mb->depth);
 			addMacro(mb->mc, "*", NULL, "", mb->depth);
