@@ -1,0 +1,12 @@
+.deps
+.libs
+Makefile
+Makefile.in
+elflint
+i386_ld.lo
+ld
+libld_elf_i386.la
+nm
+readelf
+size
+strip
