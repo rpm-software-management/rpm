@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-06-22 20:54-0400\n"
+msgstr "POT-Creation-Date: 2000-06-22 21:17-0400\n"
 
 #: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:435
 #, c-format
@@ -1285,20 +1285,20 @@ msgstr "aucun argument n'a été fourni pour la requête"
 msgid "no arguments given for verify"
 msgstr "aucun argument n'a été fourni pour la vérification"
 
-#: rpm2cpio.c:22
+#: rpm2cpio.c:23
 #, fuzzy, c-format
 msgid "cannot open package: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpm2cpio.c:32
+#: rpm2cpio.c:33
 msgid "argument is not an RPM package\n"
 msgstr ""
 
-#: rpm2cpio.c:36
+#: rpm2cpio.c:37
 msgid "error reading header from package\n"
 msgstr ""
 
-#: rpm2cpio.c:43
+#: rpm2cpio.c:59
 #, fuzzy, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "impossible d'ouvrir: %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2000-06-22 20:54-0400\n"
+"POT-Creation-Date: 2000-06-22 21:17-0400\n"
 "PO-Revision-Date: 2000-03-07 05:17+01:00\n"
 "Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish/Dansk <dansk@klid.dk>\n"
@@ -1160,20 +1160,20 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpm2cpio.c:22
+#: rpm2cpio.c:23
 #, c-format
 msgid "cannot open package: %s\n"
 msgstr ""
 
-#: rpm2cpio.c:32
+#: rpm2cpio.c:33
 msgid "argument is not an RPM package\n"
 msgstr ""
 
-#: rpm2cpio.c:36
+#: rpm2cpio.c:37
 msgid "error reading header from package\n"
 msgstr ""
 
-#: rpm2cpio.c:43
+#: rpm2cpio.c:59
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr ""

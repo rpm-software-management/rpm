@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-06-22 20:54-0400\n"
+"POT-Creation-Date: 2000-06-22 21:17-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1221,20 +1221,20 @@ msgstr "zbyt wiele argumentów dla weryfikacji wszystkich pakietów"
 msgid "no arguments given for verify"
 msgstr "nie podano argumentów dla sprawdzania"
 
-#: rpm2cpio.c:22
+#: rpm2cpio.c:23
 #, fuzzy, c-format
 msgid "cannot open package: %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: rpm2cpio.c:32
+#: rpm2cpio.c:33
 msgid "argument is not an RPM package\n"
 msgstr "argument nie jest pakietem RPM\n"
 
-#: rpm2cpio.c:36
+#: rpm2cpio.c:37
 msgid "error reading header from package\n"
 msgstr "b³±d odczytu nag³ówka z pakietu\n"
 
-#: rpm2cpio.c:43
+#: rpm2cpio.c:59
 #, fuzzy, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s\n"

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.66 2000/06/23 01:19:47 jbj Exp $
+# $Id: sl.po,v 1.67 2000/06/23 01:44:36 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-22 20:54-0400\n"
+"POT-Creation-Date: 2000-06-22 21:17-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1214,20 +1214,20 @@ msgstr "pri preverjanju paketov so podani odveèni argumenti"
 msgid "no arguments given for verify"
 msgstr "argumenti za preverjanje niso podani"
 
-#: rpm2cpio.c:22
+#: rpm2cpio.c:23
 #, c-format
 msgid "cannot open package: %s\n"
 msgstr "paketa ni mo¾no odpreti: %s\n"
 
-#: rpm2cpio.c:32
+#: rpm2cpio.c:33
 msgid "argument is not an RPM package\n"
 msgstr "navedeni argument ni paket RPM\n"
 
-#: rpm2cpio.c:36
+#: rpm2cpio.c:37
 msgid "error reading header from package\n"
 msgstr "napaka pri branju glave paketa\n"
 
-#: rpm2cpio.c:43
+#: rpm2cpio.c:59
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "ni mo¾no vnoviè odpreti (payload): %s\n"
