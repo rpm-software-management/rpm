@@ -3,3 +3,4 @@ Error.c
 Database.c
 Constants.c
 *.html
+pod2html-*
