@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmte-py.c
  */
 
@@ -289,7 +289,7 @@ rpmte_FI(rpmteObject * s, PyObject * args)
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -390,7 +390,7 @@ static int rpmte_setattro(PyObject * o, PyObject * n, PyObject * v)
 static char rpmte_doc[] =
 "";
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmte_Type = {

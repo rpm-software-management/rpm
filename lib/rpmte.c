@@ -85,8 +85,8 @@ static void delTE(rpmte p)
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals fileSystem @*/
-	/*@modifies ts, p, h, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies ts, p, h, rpmGlobalMacroContext, fileSystem @*/
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -106,10 +106,22 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
-    p->arch = (arch != NULL ? xstrdup(arch) : NULL);
+    if (arch != NULL) {
+	p->arch = xstrdup(arch);
+	p->archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
+    } else {
+	p->arch = NULL;
+	p->archScore = 0;
+    }
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
-    p->os = (os != NULL ? xstrdup(os) : NULL);
+    if (os != NULL) {
+	p->os = xstrdup(os);
+	p->osScore = rpmMachineScore(RPM_MACHTABLE_INSTOS, os);
+    } else {
+	p->os = NULL;
+	p->osScore = 0;
+    }
 
     nb = strlen(p->NEVR) + 1;
     if (p->arch)
@@ -148,6 +160,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->relocs[i].oldPath = NULL;
 	p->relocs[i].newPath = NULL;
     }
+    p->autorelocatex = -1;
 
     p->key = key;
     p->fd = NULL;
@@ -193,10 +206,10 @@ rpmte rpmteNew(const rpmts ts, Header h,
     int_32 * ep;
     int xx;
 
+    p->type = type;
     addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
-	p->type = type;
 	p->u.addedKey = pkgKey;
 	ep = NULL;
 	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, (void **)&ep, NULL);
@@ -205,7 +218,6 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	    p->pkgFileSize += 96 + 256 + *ep;
 	break;
     case TR_REMOVED:
-	p->type = type;
 	p->u.removed.dependsOnKey = pkgKey;
 	p->u.removed.dboffset = dboffset;
 	break;

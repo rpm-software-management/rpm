@@ -20,6 +20,10 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "debug.h"
 
+#if !defined(DB_CLIENT)	/* XXX db-4.2.42 retrofit */
+#define	DB_CLIENT	DB_RPCCLIENT
+#endif
+
 /*@access rpmdb @*/
 /*@access dbiIndex @*/
 /*@access dbiIndexSet @*/
@@ -453,7 +457,7 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     if (db != NULL)
 	rc = db->sync(db, flags);
     /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     _printit = _debug;
 #else
     _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
@@ -690,13 +694,12 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
 {
     DB * db = dbi->dbi_db;
     DB * secondary = dbisecondary->dbi_db;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
-    DB_TXN * txnid = NULL;
-#endif
     int rc;
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
+    DB_TXN * txnid = NULL;
+
     rc = db->associate(db, txnid, secondary, callback, flags);
 #else
     rc = db->associate(db, secondary, callback, flags);
@@ -892,7 +895,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     DB_TXN * txnid = NULL;
 #endif
     u_int32_t oflags;
@@ -1254,7 +1257,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			? dbfullpath : dbfile;
 #endif
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
 		rc = db->open(db, txnid, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 #else

@@ -77,6 +77,8 @@ struct rpmte_s {
     const char * arch;		/*!< Architecture hint. */
 /*@only@*/ /*@null@*/
     const char * os;		/*!< Operating system hint. */
+    int archScore;		/*!< (TR_ADDED) Arch score. */
+    int osScore;		/*!< (TR_ADDED) Os score. */
 
     rpmte parent;		/*!< Parent transaction element. */
     int degree;			/*!< No. of immediate children. */
@@ -107,6 +109,7 @@ struct rpmte_s {
 /*@owned@*/ /*@null@*/
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
+    int autorelocatex;		/*!< (TR_ADDED) Auto relocation entry index. */
 /*@refcounted@*/ /*@null@*/	
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
@@ -168,8 +171,8 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@null@*/ rpmRelocation * relocs,
 		int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Retrieve type of transaction element.

@@ -3,7 +3,7 @@
 
 #include "rpmte.h"
 
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmte-py.h
  */
 

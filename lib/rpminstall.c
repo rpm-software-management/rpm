@@ -787,7 +787,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 		    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 		if (recOffset) {
 		    (void) rpmtsAddEraseElement(ts, h, recOffset);

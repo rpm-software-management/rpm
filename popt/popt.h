@@ -229,7 +229,8 @@ typedef void (*poptCallbackType) (poptContext con,
  * @param flags		or'd POPT_CONTEXT_* bits
  * @return		initialized popt context
  */
-/*@only@*/ /*@null@*/ poptContext poptGetContext(
+/*@only@*/ /*@null@*/
+poptContext poptGetContext(
 		/*@dependent@*/ /*@keep@*/ const char * name,
 		int argc, /*@dependent@*/ /*@keep@*/ const char ** argv,
 		/*@dependent@*/ /*@keep@*/ const struct poptOption * options,
@@ -258,7 +259,7 @@ int poptGetNextOpt(/*@null@*/poptContext con)
  * @param con		context
  * @return		option argument, NULL if no argument is available
  */
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@null@*/ /*@unused@*/
 const char * poptGetOptArg(/*@null@*/poptContext con)
 	/*@modifies con @*/;
 
@@ -267,7 +268,7 @@ const char * poptGetOptArg(/*@null@*/poptContext con)
  * @param con		context
  * @return		next argument, NULL if no argument is available
  */
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@null@*/ /*@unused@*/
 const char * poptGetArg(/*@null@*/poptContext con)
 	/*@modifies con @*/;
 
@@ -276,7 +277,7 @@ const char * poptGetArg(/*@null@*/poptContext con)
  * @param con		context
  * @return		current argument, NULL if no argument is available
  */
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@null@*/ /*@unused@*/
 const char * poptPeekArg(/*@null@*/poptContext con)
 	/*@*/;
 
@@ -314,6 +315,7 @@ poptContext poptFreeContext( /*@only@*/ /*@null@*/ poptContext con)
  * @param argv		argument array, NULL terminated
  * @return		0 on success, POPT_ERROR_OPTSTOODEEP on failure
  */
+/*@unused@*/
 int poptStuffArgs(poptContext con, /*@keep@*/ const char ** argv)
 	/*@modifies con @*/;
 
@@ -357,6 +359,7 @@ int poptReadConfigFile(poptContext con, const char * fn)
  * @param useEnv	(unused)
  * @return		0 on success, POPT_ERROR_ERRNO on failure
  */
+/*@unused@*/
 int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies con->execs, con->numExecs,
@@ -460,6 +463,7 @@ const char *const poptStrerror(const int error)
  * @param path		single path to search for executables
  * @param allowAbsolute	absolute paths only?
  */
+/*@unused@*/
 void poptSetExecPath(poptContext con, const char * path, int allowAbsolute)
 	/*@modifies con @*/;
 

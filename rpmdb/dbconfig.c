@@ -34,8 +34,16 @@ static int dbi_tear_down;
 /*@unchecked@*/
 struct poptOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
+#if defined(DB_CLIENT)
  { "client",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_CLIENT,
 	NULL, NULL },
+#endif
+#if defined(DB_RPCCLIENT)
+ { "client",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_RPCCLIENT,
+	NULL, NULL },
+ { "rpcclient",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_RPCCLIENT,
+	NULL, NULL },
+#endif
 
  { "xa_create",	0,POPT_BIT_SET,	&db3dbi.dbi_cflags, DB_XA_CREATE,
 	NULL, NULL },

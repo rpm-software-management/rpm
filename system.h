@@ -19,6 +19,14 @@ typedef unsigned char u_int8_t;
 /*@-incondefs@*/        /* LCLint 3.0.0.15 */
 typedef int int32_t;
 /*@=incondefs@*/
+/* XXX from /usr/include/bits/sigset.h */
+/*@-sizeoftype@*/
+# define _SIGSET_NWORDS (1024 / (8 * sizeof (unsigned long int)))
+typedef struct
+  {
+    unsigned long int __val[_SIGSET_NWORDS];
+  } __sigset_t;
+/*@=sizeoftype@*/
 /*@=redef@*/
 #endif
 

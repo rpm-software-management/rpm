@@ -579,7 +579,7 @@ static PyObject* _DBCursor_get(DBCursorObject* self, int extra_flags,
     char* kwnames[] = { "flags", "dlen", "doff", NULL };
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, format, kwnames,
-				     &flags, &dlen, &doff)) 
+				     &flags, &dlen, &doff))
       return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -1634,7 +1634,7 @@ DB_open(DBObject* self, PyObject* args, PyObject* kwargs)
 	 * explicitly passed) but we are in a transaction ready environment:
 	 *   add DB_AUTO_COMMIT to allow for older pybsddb apps using transactions
 	 *   to work on BerkeleyDB 4.1 without needing to modify their
-	 *   DBEnv or DB open calls. 
+	 *   DBEnv or DB open calls.
 	 * TODO make this behaviour of the library configurable.
 	 */
 	flags |= DB_AUTO_COMMIT;
@@ -2618,7 +2618,7 @@ DBC_get(DBCursorObject* self, PyObject* args, PyObject *kwargs)
     {
         PyErr_Clear();
         if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Oi|ii:get",
-                                         &kwnames[1], 
+                                         &kwnames[1],
 					 &keyobj, &flags, &dlen, &doff))
         {
             PyErr_Clear();

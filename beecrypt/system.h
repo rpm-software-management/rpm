@@ -23,10 +23,12 @@
 /* XXX from /usr/include/bits/sigest.h in glibc-2.2.4 */
 /*@-sizeoftype@*/
 # define _SIGSET_NWORDS (1024 / (8 * sizeof (unsigned long int)))
+/*@-redef@*/
 typedef struct
   {
     unsigned long int __val[_SIGSET_NWORDS];
   } __sigset_t;
+/*@=redef@*/
 /*@=sizeoftype@*/
 #endif
 

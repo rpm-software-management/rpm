@@ -29,7 +29,7 @@ librpmbuild_la_SOURCES = \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
-librpmbuild_la_LDFLAGS = -release @VERSION@ $(LDFLAGS) \
+librpmbuild_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \

@@ -1,27 +1,53 @@
 4.2 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
+	- fix: short option help missing string terminator.
+	- unify signal handling in librpmio, use condvar to deliver signal.
+	- permit secondary tag match patterns with RPMQV_ALL.
+	- fix: cut-n-paste error setting nopromote for Conflicts: (#81965).
+	- don't use error string after gzclose (Dmitry V. Levin).
+
+4.2 -> 4.2.1:
+	- fix: nested %if handling, optind initialization posix vs. glibc.
+	- add version check for package with provides and obsoletes.
+	- hack out O_DIRECT support in db4 for now.
+	- build with external beecrypt-3.0.0.
+	- x86_64 -> athlon, ppc64[ip]series -> ppc64 arch compatibility.
+	- treat missing epoch's exactly the same as Epoch: 0.
 	- pass structure pointer, not args, through headerSprintf call chain.
 	- add ":xml" header format modifier.
 	- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
-	- fix: short option help missing string terminator.
-	- unify signal handling in librpmio, use condvar to deliver signal.
-	- resurrect manifests, RPMRC_NOTFOUND returned by readLead().
-	- permit secondary tag match patterns with RPMQV_ALL.
-	- python: missed tuple refcount in IDTXload/IDTXglob.
-	- fix: IDTXglob should return REMOVETID sorted headers (#89857).
-	- fix: cut-n-paste error setting nopromote for Conflicts: (#81965).
-	- don't use error string after gzclose (Dmitry V. Levin).
-	- fix: nested %if handling, optind initialization posix vs. glibc.
-	- add version check for package with provides and obsoletes.
-	- x86_64 -> athlon, ppc64[ip]series -> ppc64 arch compatibility.
-	- treat missing epoch's exactly the same as Epoch: 0.
 	- add ".arch" suffix to erase colored packages with identical NEVR.
 	- update ja man pages (#92261).
+	- backport rpmsw stopwatch, insturment rpmts operations.
+	? toy method to enable --stats through bindings.
+	- fdCLose typo (#97257).
 	- brp-python-bytecompile to automagically bytecode compile python.
+	? update for fr.po (#97829).
 	- don't attempt to remove dbenv on --rebuilddb.
 	- autorelocate ix86 package file paths on ia64.
+	- resurrect manifests, RPMRC_NOTFOUND returned by readLead().
+	- python: missed tuple refcount in IDTXload/IDTXglob.
+	- fix: IDTXglob should return REMOVETID sorted headers (#89857).
 	- resolve elf32/elf64 file conflicts to prefer elf64.
 	- apply debugedit patch necessary to produce kernel -debuginfo files.
+	? ia64: autorelocate only colored, not every, file when installing.
+	? repair find-debuginfo.sh to avoid recursing in /usr/lib/debug.
+	? fix: ia64: don't attempt autorelocate on .src.rpm's.
+	? fix: debuginfo: -not -path /usr/lib/debug needed -prune too.
+	? fix: packages w/o file colors segfault.
+	? add amd64 as alias for x86_64 (#99553).
+	? fix: add -n to brp-compress to avoid needless file conflicts.
+	? fix: ia32 on ia64 segfaults because of automagic file relocations.
+	? speed up convertdb1 (#103206).
+	? revert i18n table change to preserve help array size.
+	? add config directories for ppc64pseries/ppc64iseries.
+	? filter GLIBC_PRIVATE dependencies.
+	- fix: check added provides against installed conflicts (#110317).
+	- changes for python 2.3
+	- changes for libtool-1.5
+	- changes for automake-1.7.8
+	- changes for db-4.2.42.
+	- splint fiddles.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

@@ -1414,7 +1414,9 @@ assert(psm != NULL);
 
 	    pkgKey = rpmteAddedKey(p);
 
-	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s\n", rpmteNEVR(p));
+	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
 	    p->h = NULL;
 	    /*@-type@*/ /* FIX: rpmte not opaque */
 	    {
@@ -1514,7 +1516,9 @@ assert(psm != NULL);
 	case TR_REMOVED:
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
 
-	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
+	    rpmMessage(RPMMESS_DEBUG, "========== --- %s %s-%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
 	    /*
 	     * XXX This has always been a hack, now mostly broken.
 	     * If install failed, then we shouldn't erase.

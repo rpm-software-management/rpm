@@ -659,8 +659,9 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int_32 fileCount;
     int_32 dirCount;
     uint_32 * fFlags = NULL;
+    uint_32 * fColors = NULL;
+    uint_32 * dColors = NULL;
     uint_16 * fModes = NULL;
-    char * skipDirList;
     Header h;
     int nrelocated = 0;
     int fileAlloced = 0;
@@ -829,10 +830,11 @@ assert(p != NULL);
     xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
     xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, &dirCount);
     xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
+    xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fColors, NULL);
     xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fModes, NULL);
 
-    skipDirList = alloca(dirCount * sizeof(*skipDirList));
-    memset(skipDirList, 0, dirCount * sizeof(*skipDirList));
+    dColors = alloca(dirCount * sizeof(*dColors));
+    memset(dColors, 0, dirCount * sizeof(*dColors));
 
     newDirIndexes = alloca(sizeof(*newDirIndexes) * fileCount);
     memcpy(newDirIndexes, dirIndexes, sizeof(*newDirIndexes) * fileCount);
@@ -859,11 +861,12 @@ assert(p != NULL);
 	}
 	/*@=branchstate@*/
 
-	if (fn == NULL)		/* XXX can't happen */
-	    continue;
+assert(fn != NULL);		/* XXX can't happen */
 	*fn = '\0';
 	fnlen = stpcpy( stpcpy(fn, dirNames[dirIndexes[i]]), baseNames[i]) - fn;
 
+if (fColors != NULL)
+dColors[dirIndexes[i]] |= fColors[i];
 	/*
 	 * See if this file path needs relocating.
 	 */
@@ -910,8 +913,6 @@ assert(p != NULL);
 			/*@innercontinue@*/ continue;
 		    /*@innerbreak@*/ break;
 		}
-		if (j < dirCount)
-		    skipDirList[j] = 1;
 	    }
 	    if (actions) {
 		actions[i] = FA_SKIPNSTATE;
@@ -980,6 +981,11 @@ assert(p != NULL);
     /* Finish off by relocating directories. */
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
+
+           /* XXX Don't autorelocate uncolored directories. */
+           if (j == p->autorelocatex
+            && (dColors[i] == 0 || !(dColors[i] & 0x1)))
+               /*@innercontinue@*/ continue;
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;
@@ -1295,42 +1301,54 @@ if (fi->actions == NULL)
 
     if (ts != NULL)
     if (fi != NULL)
-    if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED) {
+    if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED
+     && !headerIsEntry(h, RPMTAG_SOURCEPACKAGE)
+     && !headerIsEntry(h, RPMTAG_ORIGBASENAMES))
+    {
 	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
 	const char * errstr;
 	char * newPath;
-	const char * march = NULL;
-	const char * harch = NULL;
 	Header foo;
-
-	/* XXX add os (or platform) checks. */
-	rpmGetArchInfo(&march, NULL);
 
 	/* XXX error handling. */
 	newPath = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	fmt = _free(fmt);
 
-	if (newPath != NULL && *newPath != '\0'
-	 && hge(h, RPMTAG_ARCH, NULL, (void **) &harch, NULL)
-	 && harch != NULL && !rpmMachineScore(RPM_MACHTABLE_INSTARCH, harch) )
+#if __ia64__
+	/* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
+ 	if (newPath != NULL && *newPath != '\0'
+	 && strlen(newPath) >= (sizeof("/emul/i386")-1)
+	 && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
+	 && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
+	 && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
+ 	{
+	    newPath[7] = 'a';
+	    newPath[8] = '3';
+	    newPath[9] = '2';
+	}
+#endif
+ 
+	/* XXX Make sure autoreloc is not already specified. */
+	i = p->nrelocs;
+	if (newPath != NULL && *newPath != '\0' && p->relocs != NULL)
+	for (i = 0; i < p->nrelocs; i++) {
+	   if (strcmp(p->relocs[i].oldPath, "/"))
+		continue;
+	   if (strcmp(p->relocs[i].newPath, newPath))
+		continue;
+	   break;
+	}
+
+	/* XXX test for incompatible arch triggering autorelocation is dumb. */
+	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs
+	 && p->archScore == 0)
 	{
 
-#if __ia64__
-	    /* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
-	    if (strlen(newPath) >= (sizeof("/emul/i386")-1)
-	     && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
-	     && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
-	     && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
-	    {
-		newPath[7] = 'a';
-		newPath[8] = '3';
-		newPath[9] = '2';
-	    }
-#endif
 	    p->relocs =
 		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
 	    p->relocs[p->nrelocs].oldPath = xstrdup("/");
 	    p->relocs[p->nrelocs].newPath = xstrdup(newPath);
+	    p->autorelocatex = p->nrelocs;
 	    p->nrelocs++;
 	    p->relocs[p->nrelocs].oldPath = NULL;
 	    p->relocs[p->nrelocs].newPath = NULL;

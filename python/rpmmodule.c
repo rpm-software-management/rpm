@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmmodule.c
  */
 
@@ -19,10 +19,6 @@
 #include "header_internal.h"
 
 #include "header-py.h"
-#include "rpmbc-py.h"
-#include "rpmmpw-py.h"
-#include "rpmrng-py.h"
-
 #include "rpmal-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
@@ -187,10 +183,7 @@ void initrpm(void)
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
-    if (PyType_Ready(&mpw_Type) < 0) return;
-    if (PyType_Ready(&rng_Type) < 0) return;
     if (PyType_Ready(&rpmal_Type) < 0) return;
-    if (PyType_Ready(&rpmbc_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfd_Type) < 0) return;
     if (PyType_Ready(&rpmfts_Type) < 0) return;
@@ -226,17 +219,8 @@ void initrpm(void)
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
 
-    Py_INCREF(&mpw_Type);
-    PyModule_AddObject(m, "mpw", (PyObject *) &mpw_Type);
-
-    Py_INCREF(&rng_Type);
-    PyModule_AddObject(m, "rng", (PyObject *) &rng_Type);
-
     Py_INCREF(&rpmal_Type);
     PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
-
-    Py_INCREF(&rpmbc_Type);
-    PyModule_AddObject(m, "bc", (PyObject *) &rpmbc_Type);
 
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
@@ -263,10 +247,7 @@ void initrpm(void)
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
 #else
     hdr_Type.ob_type = &PyType_Type;
-    mpw_Type.ob_type = &PyType_Type;
-    rng_Type.ob_type = &PyType_Type;
     rpmal_Type.ob_type = &PyType_Type;
-    rpmbc_Type.ob_type = &PyType_Type;
     rpmds_Type.ob_type = &PyType_Type;
     rpmfd_Type.ob_type = &PyType_Type;
     rpmfts_Type.ob_type = &PyType_Type;
@@ -292,7 +273,7 @@ void initrpm(void)
             PyDict_SetItemString(d, (char *) extensions->name, o=PyCObject_FromVoidPtr(ext, NULL));
 	    Py_DECREF(o);
             PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
-	    Py_DECREF(o);    
+	    Py_DECREF(o);
         }
         extensions++;
     }
@@ -304,7 +285,7 @@ void initrpm(void)
 #define REGISTER_ENUM(val) \
     PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
     Py_DECREF(o);
-    
+
     REGISTER_ENUM(RPMFILE_STATE_NORMAL);
     REGISTER_ENUM(RPMFILE_STATE_REPLACED);
     REGISTER_ENUM(RPMFILE_STATE_NOTINSTALLED);

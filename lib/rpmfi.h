@@ -496,8 +496,8 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
  */
 /*@null@*/
 rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Retrieve file classes from header.
@@ -510,8 +510,8 @@ rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
  */
 void rpmfiBuildFClasses(Header h,
 		/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
-	/*@globals fileSystem @*/
-	/*@modifies h, *fclassp, *fcp, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Retrieve per-file dependencies from header.
@@ -525,8 +525,8 @@ void rpmfiBuildFClasses(Header h,
  */
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
-	/*@globals fileSystem @*/
-	/*@modifies h, *fdepsp, *fcp, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies h, *fdepsp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Return file type from mode_t.
@@ -553,7 +553,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
  * @return		file dispostion
  */
 fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
-	/*@globals fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies nfi, fileSystem, internalState @*/;
 
 /**

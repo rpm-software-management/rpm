@@ -3,7 +3,7 @@
 
 #include "rpmio_internal.h"
 
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmmpw-py.h
  */
 

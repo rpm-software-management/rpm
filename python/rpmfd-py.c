@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmfd-py.c
  */
 
@@ -91,7 +91,7 @@ static int closeCallback(FILE * f)
 	    node->fd = fdFree(node->fd, "closeCallback");
 	node = _free (node);
     }
-    return 0; 
+    return 0;
 }
 
 /**
@@ -104,12 +104,12 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
     char * path;
     char * mode = "r.ufdio";
     FDlist *node;
-    
+
     if (!PyArg_ParseTuple(args, "s|s", &path, &mode))
 	return NULL;
-    
+
     node = xmalloc (sizeof(FDlist));
-    
+
     node->fd = Fopen(path, mode);
     node->fd = fdLink(node->fd, "doFopen");
     node->note = xstrdup (path);
@@ -119,7 +119,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
 	node = _free (node);
 	return NULL;
     }
-    
+
     if (Ferror(node->fd)) {
 	const char *err = Fstrerror(node->fd);
 	node = _free(node);
@@ -144,11 +144,11 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
 	fdhead = node;
     }
     fdtail = node;
-    
+
     return PyFile_FromFile (node->f, path, mode, closeCallback);
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -163,7 +163,7 @@ static struct PyMethodDef rpmfd_methods[] = {
 
 /* ---------- */
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static void
 rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
@@ -188,7 +188,7 @@ static int rpmfd_setattro(PyObject * o, PyObject * n, PyObject * v)
     return PyObject_GenericSetAttr(o, n, v);
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies s @*/
@@ -220,7 +220,7 @@ fprintf(stderr, "*** rpmfd_init(%p,%p,%p)\n", s, args, kwds);
     return 0;
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static void rpmfd_free(/*@only@*/ rpmfdObject * s)
 	/*@modifies s @*/
@@ -233,7 +233,7 @@ fprintf(stderr, "%p -- fd %p\n", s, s->fd);
     PyObject_Del((PyObject *)s);
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static PyObject * rpmfd_alloc(PyTypeObject * subtype, int nitems)
 	/*@*/
@@ -245,7 +245,7 @@ fprintf(stderr, "*** rpmfd_alloc(%p,%d) ret %p\n", subtype, nitems, s);
     return s;
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static rpmfdObject * rpmfd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 	/*@*/
@@ -270,7 +270,7 @@ fprintf(stderr, "%p ++ fd %p\n", s, s->fd);
 static char rpmfd_doc[] =
 "";
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmfd_Type = {

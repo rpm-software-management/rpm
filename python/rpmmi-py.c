@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmmi-py.c
  */
 
@@ -90,7 +90,7 @@ rpmmi_iternext(rpmmiObject * s)
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
     Header h;
-    
+
     if (s->mi == NULL || (h = rpmdbNextIterator(s->mi)) == NULL) {
 	s->mi = rpmdbFreeIterator(s->mi);
 	return NULL;
@@ -106,7 +106,7 @@ rpmmi_Next(rpmmiObject * s, PyObject *args)
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * result;
-    
+
     if (!PyArg_ParseTuple(args, ":Next"))
 	return NULL;
 
@@ -164,7 +164,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
     int type;
     char * pattern;
     rpmTag tag;
-    
+
     if (!PyArg_ParseTuple(args, "Ois:Pattern", &TagN, &type, &pattern))
 	return NULL;
 
@@ -177,10 +177,10 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
 
     Py_INCREF (Py_None);
     return Py_None;
-    
+
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -199,7 +199,7 @@ static struct PyMethodDef rpmmi_methods[] = {
 };
 /*@=fullinitblock@*/
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
 	/*@globals rpmGlobalMacroContext @*/
@@ -229,7 +229,7 @@ static int rpmmi_setattro(PyObject * o, PyObject * n, PyObject * v)
 static char rpmmi_doc[] =
 "";
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmmi_Type = {

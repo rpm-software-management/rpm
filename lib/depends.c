@@ -78,8 +78,8 @@ static int intcmp(const void * a, const void * b)
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/
 {
     rpmte p;
 
@@ -1620,7 +1620,7 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
-	rpmMessage(RPMMESS_DEBUG,  "========== +++ %s %s/%s 0x%x\n",
+	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 	rc = checkPackageDeps(ts, rpmteNEVR(p),
@@ -1631,19 +1631,10 @@ int rpmtsCheck(rpmts ts)
 	if (rc)
 	    goto exit;
 
-#if defined(DYING) || defined(__LCLINT__)
-	/* XXX all packages now have Provides: name = version-release */
-	/* Adding: check name against conflicts matches. */
-	rc = checkDependentConflicts(ts, rpmteN(p));
-	if (rc)
-	    goto exit;
-#endif
-
 	rc = 0;
 	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
 	provides = rpmdsInit(provides);
-	if (provides == NULL || rpmdsN(provides) == NULL)
-	    continue;
+	if (provides != NULL)
 	while (rpmdsNext(provides) >= 0) {
 	    const char * Name;
 
@@ -1670,7 +1661,7 @@ int rpmtsCheck(rpmts ts)
 	rpmfi fi;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
-	rpmMessage(RPMMESS_DEBUG,  "========== --- %s %s/%s 0x%x\n",
+	rpmMessage(RPMMESS_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 

@@ -37,7 +37,8 @@ extern __const __int32_t *__ctype_toupper;
 
 #if defined(__LCLINT__)
 /*@-declundef -incondefs @*/ /* LCL: missing annotation */
-/*@only@*/ /*@out@*/ void * alloca (size_t __size)
+/*@only@*/ /*@out@*/
+void * alloca (size_t __size)
 	/*@ensures MaxSet(result) == (__size - 1) @*/
 	/*@*/;
 /*@=declundef =incondefs @*/
@@ -61,7 +62,8 @@ char *alloca ();
 #endif
 
 /*@-redecl -redef@*/
-/*@mayexit@*/ /*@only@*/ char * xstrdup (const char *str)
+/*@mayexit@*/ /*@only@*/ /*@unused@*/
+char * xstrdup (const char *str)
 	/*@*/;
 /*@=redecl =redef@*/
 

@@ -1,18 +1,18 @@
 #ifndef RPMPYTHON_HEADER
 #define RPMPYTHON_HEADER
 
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/header-py.h
  */
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 typedef struct hdrObject_s hdrObject;
 
 /*@unchecked@*/
 extern PyTypeObject hdr_Type;
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 PyObject * pyrpmError;
 

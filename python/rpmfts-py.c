@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmfts-py.c
  */
 
@@ -48,7 +48,7 @@ static const char * ftsInfoStr(int fts_info)
 	/*@*/
 {
     if (!(fts_info >= 1 && fts_info <= 14))
-	fts_info = 0; 
+	fts_info = 0;
     return ftsInfoStrings[ fts_info ];
 }
 
@@ -88,7 +88,7 @@ rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
     s->roots[0] = t;
     s->roots[ac] = NULL;
     (void) stpcpy(t, root);
-    
+
     s->options = options;
     s->ignore = ignore;
     s->compare = NULL;
@@ -267,7 +267,7 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -294,13 +294,13 @@ static PyMemberDef rpmfts_members[] = {
     {"__dict__",T_OBJECT,offsetof(rpmftsObject, md_dict),	READONLY,
 	NULL},
     {"callbacks",T_OBJECT,offsetof(rpmftsObject, callbacks),	0,
-"Callback dictionary per fts_info state: FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"}, 
+"Callback dictionary per fts_info state: FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"},
     {"options",	T_INT,	offsetof(rpmftsObject, options),	0,
 "Option bit(s): FTS_{COMFOLLOW|LOGICAL|NOCHDIR|NOSTAT|PHYSICAL|SEEDOT|XDEV}"},
     {"ignore",	T_INT,	offsetof(rpmftsObject, ignore),		0,
-"Ignore bit(s): (1 << info) with info one of FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"}, 
+"Ignore bit(s): (1 << info) with info one of FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"},
     {NULL, 0, 0, 0, NULL}
-};              
+};
 
 static PyObject * rpmfts_getattro(PyObject * o, PyObject * n)
 	/*@*/
@@ -454,7 +454,7 @@ rpmfts_debug(__FUNCTION__, s);
 
     CONSTANT(FTS_DONTCHDIR);
     CONSTANT(FTS_SYMFOLLOW);
-    
+
     CONSTANT(FTS_AGAIN);
     CONSTANT(FTS_FOLLOW);
     CONSTANT(FTS_NOINSTR);
@@ -505,7 +505,7 @@ static int rpmfts_print(rpmftsObject * s,  FILE * fp, /*@unused@*/ int flags)
 static char rpmfts_doc[] =
 "";
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmfts_Type = {

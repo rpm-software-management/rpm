@@ -1,12 +1,12 @@
 /*
  *
- * 
- * 
+ *
+ *
  */
 
 #define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.8 2002/12/10 19:46:03 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.9 2003/11/23 19:52:38 jbj Exp $";
 
 static char *module_doc = "Python bindings for the popt library\n\
 \n\
@@ -23,7 +23,7 @@ and is always available from ftp://ftp.rpm.org/pub/rpm/dist";
 #define debug(x, y) { printf("%s: %s\n", x, y); }
 #else
 #define debug(x, y) {}
-#endif 
+#endif
 
 /* Functins and datatypes needed for the context object */
 typedef struct poptContext_s {
@@ -65,7 +65,7 @@ static PyObject * __poptOptionValue2PyObject(const struct poptOption *option)
             /* Do nothing */
             Py_INCREF(Py_None);
             return Py_None;
-        case POPT_ARG_STRING: 
+        case POPT_ARG_STRING:
             if (*(char **)(option->arg) == NULL) {
                 Py_INCREF(Py_None);
                 return Py_None;
@@ -163,7 +163,7 @@ static PyObject * ctxGetArgs(poptContextObject *self, PyObject *argsFoo)
     list = PyList_New(size);
     if (list == NULL)
 	return NULL;
-    for (i = 0; i < size; i++) 
+    for (i = 0; i < size; i++)
 	PyList_SetItem(list, i, PyString_FromString(args[i]));
     return list;
 }
@@ -172,7 +172,7 @@ static PyObject * ctxBadOption(poptContextObject *self, PyObject *args)
 {
     int flags = 0;
     const char *badOption;
-    if (!PyArg_ParseTuple(args, "|i", &flags)) 
+    if (!PyArg_ParseTuple(args, "|i", &flags))
 	return NULL;
     badOption = poptBadOption(self->ctx, flags);
     if (badOption == NULL) {
@@ -185,7 +185,7 @@ static PyObject * ctxBadOption(poptContextObject *self, PyObject *args)
 static PyObject * ctxReadDefaultConfig(poptContextObject *self, PyObject *args)
 {
     int flags = 0;
-    if (!PyArg_ParseTuple(args, "|i", &flags)) 
+    if (!PyArg_ParseTuple(args, "|i", &flags))
 	return NULL;
     return PyInt_FromLong(poptReadDefaultConfig(self->ctx, flags));
 }
@@ -201,7 +201,7 @@ static PyObject * ctxReadConfigFile(poptContextObject *self, PyObject *args)
 static PyObject * ctxSetOtherOptionHelp(poptContextObject *self, PyObject *args)
 {
     const char *option;
-    if (!PyArg_ParseTuple(args, "s", &option)) 
+    if (!PyArg_ParseTuple(args, "s", &option))
 	return NULL;
     poptSetOtherOptionHelp(self->ctx, option);
     Py_INCREF(Py_None);
@@ -213,7 +213,7 @@ static PyObject * ctxPrintHelp(poptContextObject *self, PyObject *args)
     FILE *f;
     int flags = 0;
     PyObject *file;
-    if (!PyArg_ParseTuple(args, "|O!i", &PyFile_Type, &file, &flags)) 
+    if (!PyArg_ParseTuple(args, "|O!i", &PyFile_Type, &file, &flags))
 	return NULL;
     f = PyFile_AsFile(file);
     if (f == NULL)
@@ -254,7 +254,7 @@ static PyObject * ctxGetOptValues(poptContextObject *self, PyObject *args)
 	return NULL;
     /* Create the list */
     list = PyList_New(self->optionsNo);
-    if (list == NULL) 
+    if (list == NULL)
 	return NULL;
     for (i = 0; i < self->optionsNo; i++) {
         PyObject *item;
@@ -383,7 +383,7 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
         PyErr_SetString(pypoptError, "List is too short");
         return 0;
     }
-    
+
     /* longName */
     o = PyList_GetItem(list, 0);
     /* Sanity check */
@@ -393,10 +393,10 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
         if (!PyString_Check(o)) {
             PyErr_SetString(pypoptError, "Long name should be a string");
             return 0;
-        } 
+        }
         opt->longName = PyString_AsString(o);
     }
-    
+
     /* shortName */
     o = PyList_GetItem(list, 1);
     /* Sanity check */
@@ -423,7 +423,7 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
         PyErr_SetString(pypoptError, "At least one of the short name and long name must be specified");
         return 0;
     }
-    
+
     /* argInfo */
     o = PyList_GetItem(list, 2);
     /* Sanity check */
@@ -432,7 +432,7 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
         return 0;
     }
     opt->argInfo = PyInt_AsLong(o);
-    
+
     /* Initialize the rest of the arguments with safe defaults */
     switch(opt->argInfo) {
 	case POPT_ARG_STRING:
@@ -464,7 +464,7 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
     /* If nothing left, end the stuff here */
     if (listSize == 3)
         return 1;
-    
+
     /* val */
     o = PyList_GetItem(list, 3);
     /* Sanity check */
@@ -584,7 +584,7 @@ static PyObject * getContext(PyObject *self, PyObject *args)
     struct poptOption *opts;
     poptContextObject *c;
     /* We should receive name, argv and a list */
-    if (!PyArg_ParseTuple(args, "zO!O!|i", &name, &PyList_Type, &a, 
+    if (!PyArg_ParseTuple(args, "zO!O!|i", &name, &PyList_Type, &a,
         &PyList_Type, &o, &flags))
         return NULL;
     /* Parse argv */
@@ -667,7 +667,7 @@ void initpopt()
     module = Py_InitModule3("popt", poptModuleMethods, module_doc);
     /* Init the constants */
     dict = PyModule_GetDict(module);
-    PyDict_SetItemString(dict, "__version__", 
+    PyDict_SetItemString(dict, "__version__",
         PyString_FromString(PY_POPT_VERSION));
     PyDict_SetItemString(dict, "cvsid", PyString_FromString(rcs_id));
     for (c = intConstants; c->name; c++) {

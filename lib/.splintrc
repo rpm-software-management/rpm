@@ -3,7 +3,6 @@
 +partial
 +forcehints
 
-#-warnunixlib
 -warnposix
 
 +unixlib
@@ -19,7 +18,7 @@
 -redecl
 -bufferoverflowhigh
 
--nullpass
+-nullpass		# rpmExpand annoyance
 
 # --- +partial artifacts
 -declundef

@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmrc-py.c
  */
 
@@ -249,7 +249,7 @@ fprintf(stderr, "*** rpmrc_next(%p[%s],%p)\n", s, lbl(s), args);
     return NULL;
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static int rpmrc_init(PyObject * s, PyObject *args, PyObject *kwds)
 	/*@*/
@@ -261,7 +261,7 @@ fprintf(stderr, "*** rpmrc_init(%p[%s],%p,%p)\n", s, lbl(s), args, kwds);
     return 0;
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static void rpmrc_free(PyObject * s)
 	/*@*/
@@ -271,7 +271,7 @@ fprintf(stderr, "*** rpmrc_free(%p[%s])\n", s, lbl(s));
    _PyObject_GC_Del(s);
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static PyObject * rpmrc_alloc(PyTypeObject * subtype, int nitems)
 	/*@*/
@@ -283,7 +283,7 @@ fprintf(stderr, "*** rpmrc_alloc(%p[%s},%d) ret %p[%s]\n", subtype, lbl(subtype)
     return (PyObject *) ns;
 }
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 static PyObject * rpmrc_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 	/*@*/
@@ -322,7 +322,7 @@ static struct PyMethodDef rpmrc_methods[] = {
 };
 /*@=fullinitblock@*/
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 /*@-fullinitblock@*/
 #if Py_TPFLAGS_HAVE_ITER

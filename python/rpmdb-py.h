@@ -3,15 +3,15 @@
 
 #include "rpmdb.h"
 
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmdb-py.h
  */
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 typedef struct rpmdbObject_s rpmdbObject;
 
-/** \ingroup py_c  
+/** \ingroup py_c
  */
 struct rpmdbObject_s {
     PyObject_HEAD

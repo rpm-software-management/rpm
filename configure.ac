@@ -23,9 +23,9 @@ echo "
 *                                                                          *
 * This is source code from the development branch of rpm-4.3.              *
 *                                                                          *
-* If you want the "production" rpm-4.2 code, then you should               *
-* use an rpm-4.1.1 or rpm-4.2 src.rpm. Alternatively, if using a           *
-* CVS checkout, do the following:                                          *
+* If you want the "production" rpm-4.2.1 code, then you should use a       *
+* rpm-4.2.1 src.rpm. Alternatively, if using a CVS checkout, do            *
+* the following:                                                           *
 *                                                                          *
 *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
 *       (no password, just carriage return)                                *
@@ -787,11 +787,11 @@ AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
 AC_MSG_RESULT($HAS_TIMEZONE)
 
 dnl Check for missing typedefs
+AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
-AC_TYPE_MODE_T
 AC_TYPE_SIZE_T
-AC_STRUCT_ST_RDEV
+AC_TYPE_ST_RDEV_T
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
@@ -890,28 +890,41 @@ AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
 
-  AC_MSG_CHECKING(for python 2.2)
-  AC_TRY_RUN([
-#include <python2.2/Python.h>
+AC_MSG_CHECKING(for python 2.3)
+AC_TRY_RUN([
+#include <python2.3/Python.h>
 main() {
-  exit(strncmp("2.2", PY_VERSION, 3));
+  exit(strncmp("2.3", PY_VERSION, 3));
 } ],
   withval=yes, withval=no, withval=yes)
   AC_MSG_RESULT($withval)
   if test $withval = yes ; then
-    WITH_PYTHON_VERSION="2.2"
+    WITH_PYTHON_VERSION="2.3"
   else
-
-    AC_MSG_CHECKING(for python 1.5.2)
+  
+    AC_MSG_CHECKING(for python 2.2)
     AC_TRY_RUN([
-#include <python1.5/Python.h>
-main() {
-  exit(strcmp("1.5.2", PY_VERSION));
-} ],
+  #include <python2.2/Python.h>
+  main() {
+    exit(strncmp("2.2", PY_VERSION, 3));
+  } ],
     withval=yes, withval=no, withval=yes)
     AC_MSG_RESULT($withval)
     if test $withval = yes ; then
-      WITH_PYTHON_VERSION="1.5"
+      WITH_PYTHON_VERSION="2.2"
+    else
+  
+      AC_MSG_CHECKING(for python 1.5.2)
+      AC_TRY_RUN([
+  #include <python1.5/Python.h>
+  main() {
+    exit(strcmp("1.5.2", PY_VERSION));
+  } ],
+      withval=yes, withval=no, withval=yes)
+      AC_MSG_RESULT($withval)
+      if test $withval = yes ; then
+        WITH_PYTHON_VERSION="1.5"
+      fi
     fi
   fi
 

@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmfi-py.c
  */
 
@@ -126,7 +126,7 @@ rpmfi_MD5(rpmfiObject * s, PyObject * args)
     char fmd5[33];
     char * t;
     int i;
-    
+
     if (!PyArg_ParseTuple(args, ":MD5")) return NULL;
     MD5 = rpmfiMD5(s->fi);
     for (i = 0, t = fmd5; i < 16; i++, t += 2)

@@ -1,4 +1,4 @@
-/** \ingroup py_c  
+/** \ingroup py_c
  * \file python/rpmds-py.c
  */
 
@@ -146,7 +146,7 @@ rpmds_iternext(rpmdsObject * s)
 	    PyTuple_SET_ITEM(result, 1, Py_BuildValue("s", EVR));
 	    PyTuple_SET_ITEM(result, 2, PyInt_FromLong(Flags));
 	}
-	    
+
     } else
 	s->active = 0;
 
@@ -235,7 +235,7 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.Refs -> Refs	- Return current Refs.\n" },
  {"next",	(PyCFunction)rpmds_Next,	METH_VARARGS,
 "ds.next() -> (N, EVR, Flags)\n\
-- Retrieve next dependency triple.\n" }, 
+- Retrieve next dependency triple.\n" },
  {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS,
 	NULL},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS,

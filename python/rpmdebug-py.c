@@ -6,7 +6,6 @@ extern PyTypeObject PyDictIter_Type;
 /*@unchecked@*/
 extern PyTypeObject PyFrame_Type;
 
-#include "rpmbc-py.h"   /* XXX debug only */
 #include <rpmcli.h>	/* XXX debug only */
 
 #include "header-py.h"	/* XXX debug only */
@@ -16,9 +15,7 @@ extern PyTypeObject PyFrame_Type;
 #include "rpmfi-py.h"	/* XXX debug only */
 #include "rpmfts-py.h"	/* XXX debug only */
 #include "rpmmi-py.h"	/* XXX debug only */
-#include "rpmmpw-py.h"	/* XXX debug only */
 #include "rpmrc-py.h"	/* XXX debug only */
-#include "rpmrng-py.h"	/* XXX debug only */
 #include "rpmte-py.h"	/* XXX debug only */
 #include "rpmts-py.h"	/* XXX debug only */
 
@@ -32,7 +29,7 @@ static const char * lbl(void * s)
     if (o == NULL)	return "null";
 
     if (o == Py_None)	return "None";
- 
+
 
     if (o->ob_type == &PyType_Type)	return o->ob_type->tp_name;
 
@@ -71,10 +68,7 @@ static const char * lbl(void * s)
     if (o->ob_type == &PyUnicode_Type)	return "Unicode";
 
     if (o->ob_type == &hdr_Type)	return "hdr";
-    if (o->ob_type == &mpw_Type)	return "mpw";
-    if (o->ob_type == &rng_Type)	return "rng";
     if (o->ob_type == &rpmal_Type)	return "rpmal";
-    if (o->ob_type == &rpmbc_Type)	return "rpmbc";
     if (o->ob_type == &rpmds_Type)	return "rpmds";
     if (o->ob_type == &rpmfd_Type)	return "rpmfd";
     if (o->ob_type == &rpmfi_Type)	return "rpmfi";

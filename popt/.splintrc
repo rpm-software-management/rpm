@@ -3,7 +3,6 @@
 #+partial
 +forcehints
 
-#-warnunixlib
 -warnposix
 
 +unixlib
@@ -17,13 +16,11 @@
 -bufferoverflowhigh
 
 # --- +partial artifacts
--fcnuse			# 7
 
 # --- not-yet at strict level
 -bitwisesigned		# 75
 -elseifcomplete		# 18
 -exportfcn		# 25
--globs			# 12 <ctype.h>
 -ifblock		# 202
 -namechecks		# 206
 -ptrarith		# 43

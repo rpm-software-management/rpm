@@ -7,6 +7,7 @@
 #if defined(__LCLINT__)
 #define	_BITS_SIGTHREAD_H	/* XXX avoid __sigset_t heartburn. */
 
+/*@-incondefs -protoparammatch@*/
 /*@-exportheader@*/
 /*@constant int SA_SIGINFO@*/
 extern int sighold(int sig)
@@ -61,34 +62,42 @@ extern void _pthread_cleanup_push(/*@out@*/ struct _pthread_cleanup_buffer *__bu
 	/*@modifies internalState @*/;
 
 extern int pthread_mutexattr_destroy(pthread_mutexattr_t *attr)
-	/*@modifies *attr @*/;
+	/*@globals errno, internalState @*/
+	/*@modifies *attr, errno, internalState @*/;
 extern int pthread_mutexattr_init(/*@out@*/ pthread_mutexattr_t *attr)
-	/*@modifies *attr @*/;
+	/*@globals errno, internalState @*/
+	/*@modifies *attr, errno, internalState @*/;
 
 int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict attr,
 		/*@out@*/ int *restrict type)
 	/*@modifies *type @*/;
 int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type)
-	/*@modifies *attr @*/;
+	/*@globals errno, internalState @*/
+	/*@modifies *attr, errno, internalState @*/;
 
 extern int pthread_mutex_destroy(pthread_mutex_t *mutex)
 	/*@modifies *mutex @*/;
 extern int pthread_mutex_init(/*@out@*/ pthread_mutex_t *restrict mutex,
 		/*@null@*/ const pthread_mutexattr_t *restrict attr)
-	/*@modifies *mutex @*/;
+	/*@globals errno, internalState @*/
+	/*@modifies *mutex, errno, internalState @*/;
 
 extern int pthread_mutex_lock(pthread_mutex_t *mutex)
-	/*@modifies *mutex @*/;
+	/*@globals errno @*/
+	/*@modifies *mutex, errno @*/;
 extern int pthread_mutex_trylock(pthread_mutex_t *mutex)
-	/*@modifies *mutex @*/;
+	/*@globals errno @*/
+	/*@modifies *mutex, errno @*/;
 extern int pthread_mutex_unlock(pthread_mutex_t *mutex)
-	/*@modifies *mutex @*/;
+	/*@globals errno @*/
+	/*@modifies *mutex, errno @*/;
 
 extern int pthread_cond_destroy(pthread_cond_t *cond)
 	/*@modifies *cond @*/;
 extern int pthread_cond_init(/*@out@*/ pthread_cond_t *restrict cond,
 		const pthread_condattr_t *restrict attr)
-	/*@modifies *cond @*/;
+	/*@globals errno, internalState @*/
+	/*@modifies *cond, errno, internalState @*/;
 
 extern int pthread_cond_timedwait(pthread_cond_t *restrict cond,
 		pthread_mutex_t *restrict mutex,
@@ -98,11 +107,14 @@ extern int pthread_cond_wait(pthread_cond_t *restrict cond,
 		pthread_mutex_t *restrict mutex)
 	/*@modifies *cond, *mutex @*/;
 extern int pthread_cond_broadcast(pthread_cond_t *cond)
-	/*@modifies *cond @*/;
+	/*@globals errno, internalState @*/
+	/*@modifies *cond, errno, internalState @*/;
 extern int pthread_cond_signal(pthread_cond_t *cond)
-	/*@modifies *cond @*/;
+	/*@globals errno, internalState @*/
+	/*@modifies *cond, errno, internalState @*/;
 
 /*@=exportheader@*/
+/*@=incondefs =protoparammatch@*/
 #endif
 
 #include <signal.h>

@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
-"POT-Creation-Date: 2003-05-15 18:53+0200\n"
+"POT-Creation-Date: 2003-08-26 15:43-0400\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1423,7 +1423,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3533 rpmdb/header.c:3562 rpmdb/header.c:3586
+#: rpmdb/header.c:3509 rpmdb/header.c:3538 rpmdb/header.c:3562
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -1478,7 +1478,8 @@ msgid "file %s is on an unknown device\n"
 msgstr "plik %s jest na nieznanym urz±dzeniu\n"
 
 #: lib/fsm.c:350
-msgid "========== Directories not explictly included in package:\n"
+#, fuzzy
+msgid "========== Directories not explicitly included in package:\n"
 msgstr "========== Katalogi nie w³±czone explicite do pakietu:\n"
 
 #: lib/fsm.c:352
@@ -2233,7 +2234,7 @@ msgstr "%s nie powiód³ siê na pliku %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
 
-#: lib/query.c:118 lib/rpmts.c:460
+#: lib/query.c:118 lib/rpmts.c:558
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³êdny format: %s\n"
@@ -2281,7 +2282,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli ani id plików\n"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:462
-#: lib/rpminstall.c:593 lib/rpminstall.c:1015 lib/rpmts.c:471
+#: lib/rpminstall.c:593 lib/rpminstall.c:1018 lib/rpmts.c:569
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2365,7 +2366,7 @@ msgstr "numer rekordu pakietu: %u\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:766 lib/rpminstall.c:779
+#: lib/query.c:766 lib/rpminstall.c:778
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2499,31 +2500,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
 
-#: lib/rpmfi.c:659
+#: lib/rpmfi.c:546
+#, c-format
+msgid "%s skipped due to missingok flag\n"
+msgstr "%s pominiêty z powodu flagi missingok\n"
+
+#: lib/rpmfi.c:783
 msgid "========== relocations\n"
 msgstr "========== przesuniêcia\n"
 
-#: lib/rpmfi.c:663
+#: lib/rpmfi.c:787
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d wy³±czenie  %s\n"
 
-#: lib/rpmfi.c:666
+#: lib/rpmfi.c:790
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d przesuniêcie %s -> %s\n"
 
-#: lib/rpmfi.c:794
+#: lib/rpmfi.c:918
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "wy³±czanie %s %s\n"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:928
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/rpmfi.c:891
+#: lib/rpmfi.c:1015
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie katalogu %s do %s\n"
@@ -2574,7 +2580,7 @@ msgstr "... jako %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:481 lib/rpminstall.c:869 tools/rpmgraph.c:140
+#: lib/rpminstall.c:481 lib/rpminstall.c:872 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
@@ -2599,7 +2605,7 @@ msgstr "plik %s wymaga nowszej wersji RPM-a\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:637 lib/rpminstall.c:807 lib/rpminstall.c:1236
+#: lib/rpminstall.c:637 lib/rpminstall.c:810 lib/rpminstall.c:1239
 #: tools/rpmgraph.c:195
 msgid "Failed dependencies:\n"
 msgstr "Niespe³nione zale¿no¶ci:\n"
@@ -2617,22 +2623,22 @@ msgstr "instalacja pakietów binarnych\n"
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s\n"
 
-#: lib/rpminstall.c:782
+#: lib/rpminstall.c:787
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:853
+#: lib/rpminstall.c:856
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s\n"
 
-#: lib/rpminstall.c:859
+#: lib/rpminstall.c:862
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
 
-#: lib/rpminstall.c:1230
+#: lib/rpminstall.c:1233
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
@@ -2854,30 +2860,45 @@ msgstr "Nie mo¿na otworzyæ %s do odczytu: %s.\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Packages w %s\n"
 
-#: lib/rpmts.c:350
+#: lib/rpmts.c:246
+#, fuzzy, c-format
+msgid "extra '(' in package label: %s\n"
+msgstr "b³êdny numer pakietu: %s\n"
+
+#: lib/rpmts.c:264
+#, fuzzy, c-format
+msgid "missing '(' in package label: %s\n"
+msgstr "Brak '(' w %s %s\n"
+
+#: lib/rpmts.c:272
+#, fuzzy, c-format
+msgid "missing ')' in package label: %s\n"
+msgstr "b³êdny numer pakietu: %s\n"
+
+#: lib/rpmts.c:448
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Solve w %s\n"
 
-#: lib/rpmts.c:492
+#: lib/rpmts.c:590
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Dodawane: %s\n"
 
-#: lib/rpmts.c:504
+#: lib/rpmts.c:602
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Sugerowane: %s\n"
 
-#: lib/rpmts.c:972
+#: lib/rpmts.c:1070
 msgid "mounted filesystems:\n"
 msgstr "podmontowane systemy plików:\n"
 
-#: lib/rpmts.c:974
+#: lib/rpmts.c:1072
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr "    i    urz bloków  bl.wolnych    i.wolnych punkt montowania\n"
 
-#: lib/rpmts.c:1030
+#: lib/rpmts.c:1128
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
@@ -3041,13 +3062,8 @@ msgstr "Uszkodzony skrót MD5: NIE OBS£UGIWANY\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Sygnatura: NIEZNANA (%d)\n"
 
-#: lib/transaction.c:105
-#, c-format
-msgid "%s skipped due to missingok flag\n"
-msgstr "%s pominiêty z powodu flagi missingok\n"
-
 #. @innercontinue@
-#: lib/transaction.c:954
+#: lib/transaction.c:891
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "wy³±czanie katalogu %s\n"
@@ -3060,7 +3076,7 @@ msgstr "wy³±czanie katalogu %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1067
+#: lib/transaction.c:1004
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "sprawdzanie poprawno¶ci %d elementów\n"
@@ -3073,7 +3089,7 @@ msgstr "sprawdzanie poprawno¶ci %d elementów\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1155
+#: lib/transaction.c:1092
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "obliczanie %d odcisków plików\n"
@@ -3081,7 +3097,7 @@ msgstr "obliczanie %d odcisków plików\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1236
+#: lib/transaction.c:1173
 msgid "computing file dispositions\n"
 msgstr "obliczanie dyspozycji plików\n"
 
@@ -3133,7 +3149,9 @@ msgstr "sprawdzono  indeks db     %s/%s\n"
 #: rpmdb/db3.c:986
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-msgstr "znaleziono wy³±czne muteksy posix(%d), dodanie DB_PRIVATE, u¿ycie blokady fcntl\n"
+msgstr ""
+"znaleziono wy³±czne muteksy posix(%d), dodanie DB_PRIVATE, u¿ycie blokady "
+"fcntl\n"
 
 #: rpmdb/db3.c:1090
 #, c-format
@@ -3178,77 +3196,77 @@ msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
 
-#: rpmdb/header.c:2709
+#: rpmdb/header.c:2685
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/header.c:2739
+#: rpmdb/header.c:2715
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/header.c:2755
+#: rpmdb/header.c:2731
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/header.c:2767
+#: rpmdb/header.c:2743
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/header.c:2776
+#: rpmdb/header.c:2752
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/header.c:2803
+#: rpmdb/header.c:2779
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/header.c:2816
+#: rpmdb/header.c:2792
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/header.c:2829
+#: rpmdb/header.c:2805
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/header.c:2893
+#: rpmdb/header.c:2869
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/header.c:2900
+#: rpmdb/header.c:2876
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/header.c:2912 rpmdb/header.c:2952
+#: rpmdb/header.c:2888 rpmdb/header.c:2928
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/header.c:2920
+#: rpmdb/header.c:2896
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/header.c:2938
+#: rpmdb/header.c:2914
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/header.c:2960
+#: rpmdb/header.c:2936
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3061
+#: rpmdb/header.c:3037
 msgid "(index out of range)"
 msgstr "(indeks spoza zakresu)"
 
-#: rpmdb/header.c:3308
+#: rpmdb/header.c:3284
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
-#: rpmdb/header.c:3624
+#: rpmdb/header.c:3600
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3640
+#: rpmdb/header.c:3616
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
@@ -3425,25 +3443,25 @@ msgstr "nag³ówek #%u w bazie danych jest b³êdny -- pominiêto.\n"
 msgid "cannot add record originally at %u\n"
 msgstr "nie mo¿na dodaæ rekordu bêd±cego oryginalnie przy %u\n"
 
-#: rpmdb/rpmdb.c:3770
+#: rpmdb/rpmdb.c:3766
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: rpmdb/rpmdb.c:3778
+#: rpmdb/rpmdb.c:3774
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: rpmdb/rpmdb.c:3780
+#: rpmdb/rpmdb.c:3776
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "aby odzyskaæ, nale¿y zast±piæ pliki w %s plikami z %s"
 
-#: rpmdb/rpmdb.c:3790
+#: rpmdb/rpmdb.c:3786
 #, c-format
 msgid "removing directory %s\n"
 msgstr "usuwanie katalogu %s\n"
 
-#: rpmdb/rpmdb.c:3792
+#: rpmdb/rpmdb.c:3788
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
@@ -3804,8 +3822,8 @@ msgid "DIRECTORY"
 msgstr "KATALOG"
 
 # --- from popt/po/pl.po (in popt.h, not in .pot) ---
-msgid "Options implemented via popt alias/exec:"
-msgstr "Opcje zaimplementowane poprzez popt alias/exec:"
+#~ msgid "Options implemented via popt alias/exec:"
+#~ msgstr "Opcje zaimplementowane poprzez popt alias/exec:"
 
-msgid "Help options:"
-msgstr "Opcje pomocy:"
+#~ msgid "Help options:"
+#~ msgstr "Opcje pomocy:"

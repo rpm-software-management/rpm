@@ -98,7 +98,8 @@ struct pgpDig_s {
 typedef struct _FDSTACK_s {
 /*@exposed@*/
     FDIO_t		io;
-/*@dependent@*/ void *	fp;
+/*@dependent@*/
+    void *		fp;
     int			fdno;
 } FDSTACK_t;
 
