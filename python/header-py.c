@@ -490,6 +490,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
     }
 
+    /* Retrieve data from extension or header. */
     if (ext) {
         ext->u.tagFunction(s->h, &type, (const void **) &data, &count, &freeData);
     } else {
@@ -498,6 +499,8 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
             return NULL;
         }
         
+	if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count))
+	    return PyList_New(0);
     }
 
     switch (tag) {
@@ -536,16 +539,6 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	break;
     default:
         break;
-    }
-
-    if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
-	if (forceArray) {
-	    return PyList_New(0);
-	}
-	else {
-            Py_INCREF(Py_None);
-            return Py_None;
-	}
     }
 
     switch (type) {
