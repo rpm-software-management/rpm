@@ -9,11 +9,11 @@ postuninstall script: %{RPMTAG_POSTUN}\
 verify script:\
 %{VERIFYSCRIPT}\n'
 
-rpm alias --setperms -q --qf '[%{FILEMODES:octal} %{FILENAMES}\n]' \
+rpm alias --setperms -q --qf '[%{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
 		   --pipe "sed 's/^.../chmod /' | sh"
 
 rpm alias --setugids -q --qf \
-		   '[chown %{FILEUSERNAME}:%{FILEGROUPNAME} %{FILENAMES}\n]' \
+		   '[chown %{FILEUSERNAME:shescape}:%{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
 		   --pipe "sh"
 
 rpm alias --requires --qf \
