@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "sexp.h"
 
-char *help = 
+static const char *help = 
 "The program `sexp' reads, parses, and prints out S-expressions.\n"
 " INPUT:\n"
 "   Input is normally taken from stdin, but this can be changed:\n"
@@ -38,7 +38,12 @@ char *help =
 /*************************************************************************/
 /* main(argc,argv)
  */
+/*@-mods@*/
+/*@-nullderef@*/
+/*@-nullpass@*/
 int main(int argc, char **argv)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 { char *c;
   int swa = TRUE;
   int swb = TRUE;
@@ -154,5 +159,8 @@ int main(int argc, char **argv)
       if (!swp) skipWhiteSpace(is);
       else if (!swl) { printf("\n"); fflush(stdout); }
     }
-  return(0);
+  return 0;
 }
+/*@=nullpass@*/
+/*@=nullderef@*/
+/*@=mods@*/

@@ -46,7 +46,9 @@ void initializeMemory(void)
 char *sexpAlloc(int n)
 { char *c = (char *)malloc((unsigned int) n);
   if (c == NULL) ErrorMessage(ERROR,"Error in sexpAlloc: out of memory!",0,0);
-  return(c);
+/*@-nullret@*/
+  return c;
+/*@=nullret@*/
 }
 
 /***********************************/
@@ -60,24 +62,24 @@ char *sexpAlloc(int n)
 sexpSimpleString *newSimpleString(void)
 {
   sexpSimpleString *ss;
-  ss = (sexpSimpleString *) sexpAlloc(sizeof(sexpSimpleString));
+  ss = (sexpSimpleString *) sexpAlloc(sizeof(*ss));
   ss->length = 0;
   ss->allocatedLength = 16;
   ss->string = (octet *)sexpAlloc(16);
-  return(ss);
+  return ss;
 }
 			      
 /* simpleStringLength(ss)
  * returns length of simple string 
  */
 long int simpleStringLength(sexpSimpleString *ss)
-{ return(ss->length); }
+{ return ss->length; }
 
 /* simpleStringString(ss)
  * returns pointer to character array of simple string 
  */
 octet *simpleStringString(sexpSimpleString *ss)
-{ return(ss->string); }
+{ return ss->string; }
 
 /* reallocateSimpleString(ss)
  * Changes space allocated to ss.
@@ -87,7 +89,10 @@ sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
 {
   int newsize, i;
   octet *newstring;
-  if (ss==NULL) ss = newSimpleString();
+  if (ss == NULL) {
+    ss = newSimpleString();
+    if (ss == NULL) return NULL;
+  }
   if (ss->string == NULL) 
     ss->string = (octet *)sexpAlloc(16);
   else
@@ -101,7 +106,7 @@ sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
       ss->string = newstring;
       ss->allocatedLength = newsize;
     }
-  return(ss);
+  return ss;
 }
 
 /* appendCharToSimpleString(c,ss)
@@ -110,11 +115,16 @@ sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
  */
 void appendCharToSimpleString(int c, sexpSimpleString *ss)
 {
-  if (ss==NULL) ss = newSimpleString();
+  if (ss==NULL) {
+    ss = newSimpleString();
+    if (ss == NULL) return;
+  }
   if (ss->string == NULL || ss->length == ss->allocatedLength )
     ss = reallocateSimpleString(ss);
-  ss->string[ss->length] = (octet) (c & 0xFF);
-  ss->length++;
+  if (ss != NULL && ss->string != NULL) {
+    ss->string[ss->length] = (octet) (c & 0xFF);
+    ss->length++;
+  }
 }
 
 /****************************/
@@ -132,14 +142,14 @@ sexpString *newSexpString(void)
   s->type = SEXP_STRING;
   s->presentationHint = NULL;
   s->string = NULL;
-  return(s);
+  return s;
 }
 
 /* sexpStringPresentationHint()
  * returns presentation hint field of the string 
  */
 sexpSimpleString *sexpStringPresentationHint(sexpString *s)
-{ return(s->presentationHint); }
+{ return s->presentationHint; }
 
 /* setSexpStringPresentationHint()
  * assigns the presentation hint field of the string
@@ -157,7 +167,7 @@ void setSexpStringString(sexpString *s, sexpSimpleString *ss)
  * returns the string field of the string
  */
 sexpSimpleString *sexpStringString(sexpString *s)
-{ return(s->string); }
+{ return s->string; }
 
 /* closeSexpString()
  * finish up string computations after created 
@@ -181,7 +191,7 @@ sexpList *newSexpList(void)
   list->type = SEXP_LIST;
   list->first = NULL;
   list->rest = NULL;
-  return(list);
+  return list;
 }
 
 /* sexpAddSexpListObject()
@@ -191,12 +201,13 @@ void sexpAddSexpListObject(sexpList *list, sexpObject *object)
 {
   if (list->first == NULL)
     list->first = object;
-  else
-    { while (list->rest != NULL) list = list->rest;
-      list->rest = newSexpList();
+  else {
+    while (list->rest != NULL)
       list = list->rest;
+    list->rest = newSexpList();
+    if ((list = list->rest) != NULL)
       list->first = object;
-    }
+  }
 }
 
 /* closeSexpList()
@@ -214,22 +225,22 @@ void closeSexpList(sexpList *list)
  * return the iterator for going over a list 
  */
 sexpIter *sexpListIter(sexpList *list)
-{ return((sexpIter *)list); }
+{ return (sexpIter *)list; }
 
 /* sexpIterNext()
  * advance iterator to next element of list, or else return null
  */
 sexpIter *sexpIterNext(sexpIter *iter)
-{ if (iter == NULL) return(NULL);
-  return((sexpIter *)(((sexpList *)iter)->rest));
+{ if (iter == NULL) return NULL;
+  return (sexpIter *)(((sexpList *)iter)->rest);
 }
 
 /* sexpIterObject ()
  * return object corresponding to current state of iterator
  */
 sexpObject *sexpIterObject(sexpIter *iter)
-{ if (iter == NULL) return(NULL);
-  return(((sexpList *)iter)->first);
+{ if (iter == NULL) return NULL;
+  return ((sexpList *)iter)->first;
 }
 
 /****************************/
@@ -237,11 +248,11 @@ sexpObject *sexpIterObject(sexpIter *iter)
 /****************************/
 
 int isObjectString(sexpObject *object)
-{ if (((sexpString *)object)->type == SEXP_STRING) return(TRUE);
-  else                                             return(FALSE);
+{ if (((sexpString *)object)->type == SEXP_STRING) return TRUE;
+  else                                             return FALSE;
 }
 
 int isObjectList(sexpObject *object)
-{ if (((sexpList *)object)->type == SEXP_LIST) return(TRUE);
-  else                                         return(FALSE);
+{ if (((sexpList *)object)->type == SEXP_LIST) return TRUE;
+  else                                         return FALSE;
 }

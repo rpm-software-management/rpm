@@ -28,13 +28,16 @@ typedef unsigned char octet;
 typedef struct sexp_simplestring { 
   long int length;
   long int allocatedLength;
+/*@null@*/
   octet *string;
 } sexpSimpleString;
 
 /* sexpString */
 typedef struct sexp_string {
   int type;
+/*@null@*/
   sexpSimpleString *presentationHint;
+/*@null@*/
   sexpSimpleString *string;
 } sexpString;
 
@@ -42,7 +45,9 @@ typedef struct sexp_string {
 /* If first is NULL, then rest must also be NULL; this is empty list */
 typedef struct sexp_list {  
   char type;
+/*@null@*/
   union sexp_object *first;
+/*@null@*/
   struct sexp_list  *rest;
 } sexpList;
 
@@ -87,43 +92,57 @@ typedef struct sexp_outputstream {
 
 /* sexp-basic */
 void ErrorMessage(int level, const char *msg, int c1, int c2)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 void initializeMemory(void)
 	/*@*/;
 char *sexpAlloc(int n)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 sexpSimpleString *newSimpleString(void)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 long int simpleStringLength(sexpSimpleString *ss)
 	/*@*/;
+/*@null@*/
 octet *simpleStringString(sexpSimpleString *ss)
 	/*@*/;
+/*@null@*/
 sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies ss, fileSystem @*/;
 void appendCharToSimpleString(int c, sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies ss, fileSystem @*/;
 sexpString *newSexpString(void)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+/*@null@*/
 sexpSimpleString *sexpStringPresentationHint(sexpString *s)
 	/*@*/;
 void setSexpStringPresentationHint(sexpString *s, sexpSimpleString *ss)
-	/*@*/;
+	/*@modifies s @*/;
 void setSexpStringString(sexpString *s, sexpSimpleString *ss)
-	/*@*/;
+	/*@modifies s @*/;
+/*@null@*/
 sexpSimpleString *sexpStringString(sexpString *s)
 	/*@*/;
 void closeSexpString(sexpString *s)
 	/*@*/;
 sexpList *newSexpList(void)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 void sexpAddSexpListObject(sexpList *list, sexpObject *object)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies list, fileSystem @*/;
 void closeSexpList(sexpList *list)
 	/*@*/;
 sexpIter *sexpListIter(sexpList *list)
 	/*@*/;
+/*@null@*/
 sexpIter *sexpIterNext(sexpIter *iter)
 	/*@*/;
+/*@null@*/
 sexpObject *sexpIterObject(sexpIter *iter)
 	/*@*/;
 int isObjectString(sexpObject *object)
@@ -147,89 +166,116 @@ int isTokenChar(int c)
 int isAlpha(int c)
 	/*@*/;
 void changeInputByteSize(sexpInputStream *is, int newByteSize)
-	/*@*/;
+	/*@modifies is @*/;
 void getChar(sexpInputStream *is)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 sexpInputStream *newSexpInputStream(void)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 void skipWhiteSpace(sexpInputStream *is)
-	/*@*/;
+	/*@modifies is @*/;
 void skipChar(sexpInputStream *is, int c)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 void scanToken(sexpInputStream *is, sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, ss, fileSystem @*/;
 sexpObject *scanToEOF(sexpInputStream *is)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 unsigned long int scanDecimal(sexpInputStream *is)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int length)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, ss, fileSystem @*/;
 void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, ss, fileSystem @*/;
 void scanHexString(sexpInputStream *is, sexpSimpleString *ss, long int length)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, ss, fileSystem @*/;
 void scanBase64String(sexpInputStream *is, sexpSimpleString *ss, long int length)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, ss, fileSystem @*/;
 sexpSimpleString *scanSimpleString(sexpInputStream *is)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 sexpString *scanString(sexpInputStream *is)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 sexpList *scanList(sexpInputStream *is)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 sexpObject *scanObject(sexpInputStream *is)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
 
 /* sexp-output */
 void putChar(sexpOutputStream *os, int c)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void varPutChar(sexpOutputStream *os, int c)
-	/*@*/;
+	/*@modifies os @*/;
 void changeOutputByteSize(sexpOutputStream *os, int newByteSize, int mode)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void flushOutput(sexpOutputStream * os)
-	/*@*/;
+	/*@modifies os @*/;
 void newLine(sexpOutputStream *os, int mode)
-	/*@*/;
+	/*@modifies os @*/;
 sexpOutputStream *newSexpOutputStream(void)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 void printDecimal(sexpOutputStream *os, long int n)
-	/*@*/;
+	/*@modifies os @*/;
 void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void canonicalPrintString(sexpOutputStream *os, sexpString *s)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void canonicalPrintList(sexpOutputStream *os, sexpList *list)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void canonicalPrintObject(sexpOutputStream *os, sexpObject *object)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void base64PrintWholeObject(sexpOutputStream *os, sexpObject *object)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 int canPrintAsToken(sexpOutputStream *os, sexpSimpleString *ss)
 	/*@*/;
 void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-	/*@*/;
+	/*@modifies os @*/;
 int advancedLengthSimpleStringToken(sexpSimpleString *ss)
 	/*@*/;
 void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 int advancedLengthSimpleStringVerbatim(sexpSimpleString *ss)
 	/*@*/;
 void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 int advancedLengthSimpleStringHexadecimal(sexpSimpleString *ss)
 	/*@*/;
 int canPrintAsQuotedString(sexpSimpleString *ss)
 	/*@*/;
 void advancedPrintQuotedStringSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-	/*@*/;
+	/*@modifies os @*/;
 int advancedLengthSimpleStringQuotedString(sexpSimpleString *ss)
 	/*@*/;
 void advancedPrintSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void advancedPrintString(sexpOutputStream *os, sexpString *s)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 int advancedLengthSimpleStringBase64(sexpSimpleString *ss)
 	/*@*/;
 int advancedLengthSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
@@ -239,6 +285,8 @@ int advancedLengthString(sexpOutputStream *os, sexpString *s)
 int advancedLengthList(sexpOutputStream *os, sexpList *list)
 	/*@*/;
 void advancedPrintList(sexpOutputStream *os, sexpList *list)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;
 void advancedPrintObject(sexpOutputStream *os, sexpObject *object)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies os, fileSystem @*/;

@@ -25,6 +25,7 @@ char alpha[256];            /* alpha[c] is true if c is alphabetic A-Z a-z */
 /* initializeCharacterTables
  * initializes all of the above arrays
  */ 
+/*@-mods@*/
 void initializeCharacterTables(void)
 { int i;
   for (i=0;i<256;i++) upper[i] = i;
@@ -64,6 +65,7 @@ void initializeCharacterTables(void)
   tokenchar['+'] = TRUE;
   tokenchar['='] = TRUE;
 }
+/*@=mods@*/
 
 /* isWhiteSpace(c)
  * Returns TRUE if c is a whitespace character (space, tab, etc. ).
@@ -187,7 +189,7 @@ sexpInputStream *newSexpInputStream(void)
   is->bits = 0;
   is->nBits = 0;
   is->inputFile = stdin;
-  return(is);
+  return is;
 }
 
 /*****************************************/
@@ -245,7 +247,7 @@ sexpObject *scanToEOF(sexpInputStream *is)
       appendCharToSimpleString(is->nextChar,ss);
       is->getChar(is);
     }
-  return((sexpObject *)s);
+  return (sexpObject *)s;
 }
 
 /* scanDecimal(is)
@@ -260,7 +262,7 @@ unsigned long int scanDecimal(sexpInputStream *is)
       if (i++ > 8)
 	ErrorMessage(ERROR,"Decimal number %d... too long.",(int)value,0);
     }
-  return(value);
+  return value;
 }
 
 /* scanVerbatimString(is,ss,length)
@@ -440,7 +442,7 @@ sexpSimpleString *scanSimpleString(sexpInputStream *is)
 		 is->count, is->nextChar );
   if (simpleStringLength(ss) == 0)
     ErrorMessage(WARNING,"Simple string has zero length.",0,0);
-  return(ss);
+  return ss;
 }
 
 /* scanString(is)
@@ -463,7 +465,7 @@ sexpString *scanString(sexpInputStream *is)
   ss = scanSimpleString(is);
   setSexpStringString(s,ss);
   closeSexpString(s);
-  return(s);
+  return s;
 }
 
 /* scanList(is)
@@ -489,7 +491,7 @@ sexpList *scanList(sexpInputStream *is)
 	{ 
 	  skipChar(is,')');
 	  closeSexpList(list);
-	  return(list);
+	  return list;
 	}
       else 
         { object = scanObject(is);
@@ -511,14 +513,14 @@ sexpObject *scanObject(sexpInputStream *is)
       skipChar(is,'{');              /*   important! */
       object = scanObject(is);
       skipChar(is,'}');
-      return(object);
+      return object;
     }
   else
     { if (is->nextChar == '(')
 	object = (sexpObject *)scanList(is);
       else
 	object = (sexpObject *)scanString(is);
-      return(object);
+      return object;
     }
 }
 

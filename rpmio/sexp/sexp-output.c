@@ -130,7 +130,7 @@ sexpOutputStream *newSexpOutputStream(void)
   os->nBits = 0;
   os->outputFile = stdout;
   os->mode = CANONICAL;
-  return(os);
+  return os;
 }
 
 /*******************/
@@ -157,11 +157,10 @@ void printDecimal(sexpOutputStream *os, long int n)
  */
 void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { 
-  long int len;
+  long int len = simpleStringLength(ss);
   long int i;
-  octet *c;
-  len = simpleStringLength(ss);
-  c = simpleStringString(ss);
+  octet * c = simpleStringString(ss);
+
   if (c == NULL) 
     ErrorMessage(ERROR,"Can't print NULL string verbatim",0,0);
   /* print out len: */
@@ -177,15 +176,16 @@ void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *
 void canonicalPrintString(sexpOutputStream *os, sexpString *s)
 { sexpSimpleString *ph, *ss;
   ph = sexpStringPresentationHint(s);
-  if (ph != NULL) 
-    { varPutChar(os,'[');
-      canonicalPrintVerbatimSimpleString(os,ph);
-      varPutChar(os,']');
-    }
+  if (ph != NULL) {
+    varPutChar(os,'[');
+    canonicalPrintVerbatimSimpleString(os,ph);
+    varPutChar(os,']');
+  }
   ss = sexpStringString(s);
   if (ss == NULL)
     ErrorMessage(ERROR,"NULL string can't be printed.",0,0);
-  canonicalPrintVerbatimSimpleString(os,ss);
+  else
+    canonicalPrintVerbatimSimpleString(os,ss);
 }
 
 /* canonicalPrintList(os,list)
@@ -196,12 +196,12 @@ void canonicalPrintList(sexpOutputStream *os, sexpList *list)
   sexpObject *object;
   varPutChar(os,'(');
   iter = sexpListIter(list);
-  while (iter != NULL)
-    { object = sexpIterObject(iter);
-      if (object != NULL) 
-	  canonicalPrintObject(os,object);
-      iter = sexpIterNext(iter);
-    }
+  while (iter != NULL) {
+    object = sexpIterObject(iter);
+    if (object != NULL) 
+	canonicalPrintObject(os,object);
+    iter = sexpIterNext(iter);
+  }
   varPutChar(os,')');
 }
 
@@ -251,13 +251,14 @@ int canPrintAsToken(sexpOutputStream *os, sexpSimpleString *ss)
   long int len;
   len = simpleStringLength(ss);
   c = simpleStringString(ss);
-  if (len <= 0) return(FALSE);
-  if (isDecDigit((int)*c)) return(FALSE);
+  if (c == NULL) return FALSE;
+  if (len <= 0) return FALSE;
+  if (isDecDigit((int)*c)) return FALSE;
   if (os->maxcolumn > 0 && os->column + len >= os->maxcolumn)
-    return(FALSE);
+    return FALSE;
   for (i=0;i<len;i++)
-    if (!isTokenChar((int)(*c++))) return(FALSE);
-  return(TRUE);
+    if (!isTokenChar((int)(*c++))) return FALSE;
+  return TRUE;
 }
 
 /* advancedPrintTokenSimpleString(os,ss)
@@ -280,7 +281,7 @@ void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
  * Returns length for printing simple string ss as a token 
  */
 int advancedLengthSimpleStringToken(sexpSimpleString *ss)
-{ return(simpleStringLength(ss)); }
+{ return simpleStringLength(ss); }
 
 
 /* VERBATIM */ 
@@ -311,7 +312,7 @@ int advancedLengthSimpleStringVerbatim(sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
   int i = 1;
   while (len > 9L) { i++; len = len / 10; }
-  return(i+1+len);
+  return (i+1+len);
 }
 
 /* BASE64 */
@@ -361,7 +362,7 @@ void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
  */
 int advancedLengthSimpleStringHexadecimal(sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
-  return(1+2*len+1);
+  return (1+2*len+1);
 }
 
 /* QUOTED STRING */
@@ -374,12 +375,13 @@ int canPrintAsQuotedString(sexpSimpleString *ss)
 {
   long int i, len;
   octet *c = simpleStringString(ss);
+  if (c == NULL) return FALSE ;
   len = simpleStringLength(ss);
-  if (len < 0) return(FALSE);
+  if (len < 0) return FALSE;
   for (i=0;i<len;i++,c++)
     if (!isTokenChar((int)(*c)) && *c != ' ') 
-      return(FALSE);
-  return(TRUE);
+      return FALSE;
+  return TRUE;
 }
 
 /* advancedPrintQuotedStringSimpleString(os,ss)
@@ -410,7 +412,7 @@ void advancedPrintQuotedStringSimpleString(sexpOutputStream *os, sexpSimpleStrin
  */
 int advancedLengthSimpleStringQuotedString(sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
-  return(1+len+1);
+  return (1+len+1);
 }
 
 /* SIMPLE STRING */
@@ -446,14 +448,15 @@ void advancedPrintString(sexpOutputStream *os, sexpString *s)
     }
   if (ss == NULL)
     ErrorMessage(ERROR,"NULL string can't be printed.",0,0);
-  advancedPrintSimpleString(os,ss);
+  else
+    advancedPrintSimpleString(os,ss);
 }
 
 /* advancedLengthSimpleStringBase64(ss)
  * Returns length for printing simple string ss as a base64 string
  */
 int advancedLengthSimpleStringBase64(sexpSimpleString *ss)
-{ return(2+4*((simpleStringLength(ss)+2)/3)); }
+{ return (2+4*((simpleStringLength(ss)+2)/3)); }
 
 /* advancedLengthSimpleString(os,ss)
  * Returns length of printed image of s
@@ -461,15 +464,15 @@ int advancedLengthSimpleStringBase64(sexpSimpleString *ss)
 int advancedLengthSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
   if (canPrintAsToken(os,ss)) 
-    return(advancedLengthSimpleStringToken(ss));
+    return advancedLengthSimpleStringToken(ss);
   else if (canPrintAsQuotedString(ss))
-    return(advancedLengthSimpleStringQuotedString(ss));
+    return advancedLengthSimpleStringQuotedString(ss);
   else if (len <= 4 && os->byteSize == 8) 
-    return(advancedLengthSimpleStringHexadecimal(ss));
+    return advancedLengthSimpleStringHexadecimal(ss);
   else if (os->byteSize == 8)
-    return(advancedLengthSimpleStringBase64(ss));
+    return advancedLengthSimpleStringBase64(ss);
   else 
-    return(0);  /* an error condition */
+    return 0;  /* an error condition */
 }
 
 /* advancedLengthString(os,s)
@@ -483,7 +486,7 @@ int advancedLengthString(sexpOutputStream *os, sexpString *s)
     len += 2+advancedLengthSimpleString(os,ph);
   if (ss != NULL)
     len += advancedLengthSimpleString(os,ss);
-  return(len);
+  return len;
 }
 
 /* advancedLengthList(os,list)
@@ -506,7 +509,7 @@ int advancedLengthList(sexpOutputStream *os, sexpList *list)
 	}
       iter = sexpIterNext(iter);
     }
-  return(len+1);  /* for final paren */
+  return len+1;  /* for final paren */
 }
 
 /* advancedPrintList(os,list)

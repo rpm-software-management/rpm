@@ -27,11 +27,9 @@
 -ifempty
 -infloopsuncon
 -internalglobs
--mods
 -noeffect
 -noeffectuncon
--nullpass
--nullret
+#-nullpass
 -nullstate
 -paramuse
 -readonlytrans
