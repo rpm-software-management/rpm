@@ -20,6 +20,7 @@ struct option {
 
 /* this *must* be kept in alphabetical order */
 struct option optionTable[] = {
+    { "arch",		        RPMVAR_ARCH,		        0 },
     { "arch_sensitive",		RPMVAR_ARCHSENSITIVE,		0 },
     { "builddir",		RPMVAR_BUILDDIR,		0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
@@ -27,6 +28,7 @@ struct option optionTable[] = {
     { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1 },
+    { "os",		        RPMVAR_OS,             		0 },
     { "pgp_name",               RPMVAR_PGP_NAME,                0 },
     { "pgp_path",               RPMVAR_PGP_PATH,                0 },
     { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0 },
@@ -42,10 +44,11 @@ struct option optionTable[] = {
     { "timecheck",		RPMVAR_TIMECHECK,		0 },
     { "topdir",			RPMVAR_TOPDIR,			0 },
     { "vendor",			RPMVAR_VENDOR,			0 },
-} ;
+};
+
 static int optionTableSize = sizeof(optionTable) / sizeof(struct option);
 
-static int readRpmrc(FILE * fd, char * fn);
+static int readRpmrc(FILE * fd, char * fn, int readArchSpecific);
 static void setDefaults(void);
 static void setPathDefault(int var, char * s);
 static int optionCompare(const void * a, const void * b);
@@ -54,15 +57,13 @@ static int optionCompare(const void * a, const void * b) {
     return strcmp(((struct option *) a)->name, ((struct option *) b)->name);
 }
 
-static int readRpmrc(FILE * f, char * fn) {
+static int readRpmrc(FILE * f, char * fn, int readArchSpecific) {
     char buf[1024];
     char * start;
     char * chptr;
     static char * archName = NULL;
     int linenum = 0;
     struct option * option, searchOption;
-
-    if (!archName) archName = getArchName();
 
     while (fgets(buf, sizeof(buf), f)) {
 	linenum++;
@@ -130,8 +131,10 @@ static int readRpmrc(FILE * f, char * fn) {
 	    return 1;
 	}
 
-	if (option->archSpecific) {
+	if (option->archSpecific && readArchSpecific) {
 	    start = chptr;
+
+	    if (!archName) archName = getArchName();
 
 	    for (chptr = start; *chptr && !isspace(*chptr); chptr++);
 	    if (! *chptr) {
@@ -154,7 +157,9 @@ static int readRpmrc(FILE * f, char * fn) {
 		setVar(option->var, chptr);
 	    }
 	} else {
-	    setVar(option->var, chptr);
+	    if (!readArchSpecific) {
+		setVar(option->var, chptr);
+	    }
 	}
     }
 
@@ -171,13 +176,12 @@ static void setDefaults(void) {
     setVar(RPMVAR_PGP_NAME, NULL);
 }
 
-int readConfigFiles(char * file) {
+static int readConfigFilesAux(char *file, int readArchSpecific)
+{
     FILE * f;
     char * fn;
     char * home;
     int rc = 0;
-
-    setDefaults();
 
     if (file) 
 	fn = file;
@@ -186,7 +190,7 @@ int readConfigFiles(char * file) {
 
     f = fopen(fn, "r");
     if (f) {
-	rc = readRpmrc(f, "/etc/rpmrc");
+	rc = readRpmrc(f, "/etc/rpmrc", readArchSpecific);
 	fclose(f);
 	if (rc) return rc;
     }
@@ -199,12 +203,30 @@ int readConfigFiles(char * file) {
 	    strcat(fn, "/.rpmrc");
 	    f = fopen(fn, "r");
 	    if (f) {
-		rc |= readRpmrc(f, fn);
+		rc |= readRpmrc(f, fn, readArchSpecific);
 		fclose(f);
 		if (rc) return rc;
 	    }
 	}
     }
+
+    return 0;
+}
+
+int readConfigFiles(char * file, char * arch, char * os) {
+    int rc = 0;
+
+    setDefaults();
+    setVar(RPMVAR_ARCH, arch);
+    setVar(RPMVAR_OS, os);
+
+    rc = readConfigFilesAux(file, 0);  /* non-arch specific */
+    if (rc) return rc;
+
+    initArchOs(getVar(RPMVAR_ARCH), getVar(RPMVAR_OS));
+    
+    rc = readConfigFilesAux(file, 1);  /* arch-sepcific     */
+    if (rc) return rc;
 	
     /* set default directories here */
 
@@ -212,7 +234,7 @@ int readConfigFiles(char * file) {
     setPathDefault(RPMVAR_RPMDIR, "RPMS");    
     setPathDefault(RPMVAR_SRPMDIR, "SRPMS");    
     setPathDefault(RPMVAR_SOURCEDIR, "SOURCES");    
-    setPathDefault(RPMVAR_SPECDIR, "SPECS");    
+    setPathDefault(RPMVAR_SPECDIR, "SPECS");
 
     return 0;
 }
