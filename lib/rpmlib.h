@@ -261,6 +261,7 @@ void rpmSetTables(int archTable, int osTable);  /* only used by build code */
 /* if either are NULL, they are set to the default value (munged uname())
    pushed through a translation table (if appropriate) */
 void rpmSetMachine(char * arch, char * os);
+void rpmGetMachine(char **arch, char **os);
 
 /** **/
 

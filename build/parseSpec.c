@@ -19,6 +19,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
     char *name, *arch, *os;
+    char *saveArch;
     Package pkg;
     int x, index;
     Spec spec;
@@ -111,6 +112,8 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	    while (x < spec->buildArchitectureCount) {
 		if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH,
 				    spec->buildArchitectures[x])) {
+		    rpmGetMachine(&saveArch, NULL);
+		    saveArch = strdup(saveArch);
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
 				  specFile, buildRoot, 1,
@@ -119,6 +122,8 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 			freeSpec(spec);
 			return RPMERR_BADSPEC;
 		    }
+		    rpmSetMachine(saveArch, NULL);
+		    free(saveArch);
 		    index++;
 		}
 		x++;

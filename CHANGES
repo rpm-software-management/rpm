@@ -11,6 +11,7 @@
 	- headerGetEntry() should return count of 1 when returning
           strings plucked from i18n strings
 	- do not remove comments in scripts
+	- save/restore existing arch when done with buildarch
 
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource

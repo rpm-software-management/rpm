@@ -872,6 +872,17 @@ int rpmMachineScore(int type, char * name) {
 	return 0;
 }
 
+void rpmGetMachine(char **arch, char **os)
+{
+    if (arch) {
+	*arch = current[ARCH];
+    }
+
+    if (os) {
+	*os = current[OS];
+    }
+}
+
 void rpmSetMachine(char * arch, char * os) {
     int transOs = os == NULL;
     int transArch = arch == NULL;
