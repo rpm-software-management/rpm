@@ -319,7 +319,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 			     write(toCpio[1], writePtr,
 				   (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 				if (errno != EAGAIN) {
-					perror("Damn!");
+					perror("Build failed.  Damn!");
 					exit(1);
 				}
 				bytesWritten = 0;
