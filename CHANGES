@@ -12,6 +12,22 @@
 	  in rpmrc
 	- don't exit when there is an unknown option in an rpmrc, just
 	  give an error and continue
+	- tried once again to get things working properly with 2.1's
+	  write behavior
+	- added -E option for %patch
+	- added UltraSPARC support to lib-rpmrc
+	- moved default topdir and optflags settings to lib-rpmrc from 
+	  /etc/rpmrc
+	- removed /etc/rpmrc from standard distribution
+	- use separate chgrp/chown commands in %setup macro
+	- kill(2) arguments were backwards in lib/install.c
+	- fileFile logging needed stdio to handle NULL args to %s
+	- default docdir (for %doc macro) set in lib-rpmrc rather then
+	  hardcoded
+	- removed some of the \n from args to error() [though many are
+	  still left]
+	- uninstall should fail if the preuninstall script fails
+	- --root works with --initdb now
 
 2.2.6 -> 2.2.7:
 	- applied lots of portability patches
