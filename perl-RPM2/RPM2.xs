@@ -23,15 +23,43 @@ _populate_header_tags(HV *href)
     }
 }
 
+void
+_populate_constant(HV *href, char *name, int val)
+{
+    hv_store(href, name, strlen(name), newSViv(val), 0);
+}
+
+#define REGISTER_CONSTANT(name) _populate_constant(constants, #name, name)
+
 MODULE = RPM2		PACKAGE = RPM2
 
 PROTOTYPES: ENABLE
 BOOT:
     {
-	HV *header_tags;
+	HV *header_tags, *constants;
 	rpmReadConfigFiles(NULL, NULL);
+
 	header_tags = perl_get_hv("RPM2::header_tag_map", TRUE);
 	_populate_header_tags(header_tags);
+
+	constants = perl_get_hv("RPM2::constants", TRUE);
+
+	/* not the 'standard' way of doing perl constants, but a lot easier to maintain */
+	REGISTER_CONSTANT(RPMVSF_DEFAULT);
+	REGISTER_CONSTANT(RPMVSF_NOHDRCHK);
+	REGISTER_CONSTANT(RPMVSF_NEEDPAYLOAD);
+	REGISTER_CONSTANT(RPMVSF_NOSHA1HEADER);
+	REGISTER_CONSTANT(RPMVSF_NOMD5HEADER);
+	REGISTER_CONSTANT(RPMVSF_NODSAHEADER);
+	REGISTER_CONSTANT(RPMVSF_NORSAHEADER);
+	REGISTER_CONSTANT(RPMVSF_NOSHA1);
+	REGISTER_CONSTANT(RPMVSF_NOMD5);
+	REGISTER_CONSTANT(RPMVSF_NODSA);
+	REGISTER_CONSTANT(RPMVSF_NORSA);
+	REGISTER_CONSTANT(_RPMVSF_NODIGESTS);
+	REGISTER_CONSTANT(_RPMVSF_NOSIGNATURES);
+	REGISTER_CONSTANT(_RPMVSF_NOHEADER);
+	REGISTER_CONSTANT(_RPMVSF_NOPAYLOAD);
     }
 
 void
@@ -66,8 +94,9 @@ rpmvercmp(one, two)
 	char* two
 
 void
-_read_package_info(fp)
+_read_package_info(fp, vsflags)
 	FILE *fp
+	int vsflags
     PREINIT:
 #ifdef RPM2_RPM41
 	rpmts ts;
@@ -90,7 +119,7 @@ _read_package_info(fp)
 
 	fd = fdDup(fileno(fp));
 #ifdef RPM2_RPM41
-	rpmtsSetVSFlags(ts, _RPMVSF_NOSIGNATURES);
+	rpmtsSetVSFlags(ts, vsflags);
 	rc = rpmReadPackageFile(ts, fd, "filename or other identifier", &ret);
 #else
 	rc = rpmReadPackageInfo(fd, NULL, &ret);

@@ -116,3 +116,6 @@ RPM2->add_macro("rpm2_test_macro", "testval $$");
 ok(RPM2->expand_macro("%rpm2_test_macro") eq "testval $$");
 RPM2->delete_macro("rpm2_test_macro");
 ok(RPM2->expand_macro("%rpm2_test_macro") eq "%rpm2_test_macro");
+
+ok(RPM2->vsf_nosha1 == 65536);
+

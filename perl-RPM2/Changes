@@ -1,0 +1,9 @@
+0.60  2003-03-08 cturner
+	* Add tagformat method on header objects from James Olin Oden
+
+	* Redo a lot of the XS bindings to properly perform
+	  refcounting on underlying C objects
+
+	* Add expand_macro call to... expand a macro!
+
+	* Add ability to change VS flags on open_package.. more coming

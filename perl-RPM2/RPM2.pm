@@ -13,6 +13,25 @@ use vars qw/@ISA/;
 
 bootstrap RPM2 $VERSION;
 
+foreach my $tag (keys %RPM2::constants) {
+  my $sub = q {
+    sub [[method]] {
+      my $self = shift;
+      return $RPM2::constants{[[tag]]};
+    }
+  };
+
+  my $method = lc $tag;
+  $method =~ s/^rpm//;
+  $sub =~ s/\[\[method\]\]/$method/g;
+  $sub =~ s/\[\[tag\]\]/$tag/g;
+  eval $sub;
+
+  if ($@) {
+    die $@;
+  }
+}
+
 sub open_rpm_db {
   my $class = shift;
   my %params = @_;
@@ -33,11 +52,14 @@ sub open_rpm_db {
 sub open_package {
   my $class = shift;
   my $file = shift;
+  my $flags = shift;
+
+  $flags = RPM2->vsf_default unless defined $flags;
 
   open FH, "<$file"
     or die "Can't open $file: $!";
 
-  my $hdr = RPM2::_read_package_info(*FH);
+  my $hdr = RPM2::_read_package_info(*FH, $flags);
   close FH;
 
   $hdr = RPM2::Header->_new_raw($hdr, realpath($file));
