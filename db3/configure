@@ -15,3 +15,6 @@ listobjs:\
 distdir install:\
 \
 db3_install: all install_setip \\' > Makefile
+
+# Generate manifest for rpmdb.
+make -s listobjs > db3lobjs
