@@ -8,7 +8,10 @@
 
 RPM_BUILD_ROOT=$1
 
-[ ! -d "$RPM_BUILD_ROOT" ] && exit 1
+if [ ! -d "$RPM_BUILD_ROOT" ] ; then
+	cat > /dev/null
+	exit 1
+fi
 
 [ "$TMPDIR" ] || TMPDIR=/tmp
 FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`

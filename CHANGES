@@ -27,6 +27,8 @@
 	- fix: don't break header SHA1 if non-existent user/group (#97727).
 	- remove fuids/fgids from rpmfi, easier to lookup fuser/fgroup instead.
 	- merge sensible parts of openpkg rpm.patch.bugfix (#104780).
+	- mark _javadocdir as documentation (#102898).
+	- flush pipe before exit 1 in check-files (#103867).
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.
