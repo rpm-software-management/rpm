@@ -64,7 +64,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_POSTIN			1024
 #define	RPMTAG_PREUN			1025
 #define	RPMTAG_POSTUN			1026
-#define	RPMTAG_FILENAMES		1027
+#define	RPMTAG_OLDFILENAMES		1027 /* obsolete */
 #define	RPMTAG_FILESIZES		1028
 #define	RPMTAG_FILESTATES		1029
 #define	RPMTAG_FILEMODES		1030
@@ -146,8 +146,11 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_PROVIDEVERSION		1113
 #define	RPMTAG_OBSOLETEFLAGS		1114
 #define	RPMTAG_OBSOLETEVERSION		1115
+#define	RPMTAG_COMPFILEDIRS		1116
+#define RPMTAG_COMPFILELIST		1117
+#define RPMTAG_COMPDIRLIST	        1118
 
-#define	RPMTAG_FIRSTFREE_TAG		1116 /* internal */
+#define	RPMTAG_FIRSTFREE_TAG		1119 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 #define	RPMFILE_STATE_NORMAL 		0

@@ -309,11 +309,14 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
 
     if (pristine) return h;
 
-    /* the RPM used to buildmuch of RH 5.1 could produce packages whose
+    /* the RPM used to build much of RH 5.1 could produce packages whose
        file lists did not have leading /'s. Now is a good time to fix
        that */
 
-    if (!headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
+    /* If this tag isn't present, either no files are in the package or
+       we're dealing with a package that has just the compressed file name
+       list */
+    if (!headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
 			   (void **) &fileList, &fileCount)) return h;
 
     for (i = 0; i < fileCount; i++) 
@@ -321,23 +324,28 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
 
     if (i == fileCount) {
 	free(fileList);
-	return h;
+    } else {
+	/* bad header -- let's clean it up */
+	newList = alloca(sizeof(*newList) * fileCount);
+	for (i = 0; i < fileCount; i++) {
+	    newList[i] = alloca(strlen(fileList[i]) + 2);
+	    if (*fileList[i] == '/')
+		strcpy(newList[i], fileList[i]);
+	    else
+		sprintf(newList[i], "/%s", fileList[i]);
+	}
+
+	free(fileList);
+
+	headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
+			  newList, fileCount);
     }
 
-    /* bad header -- let's clean it up */
-    newList = alloca(sizeof(*newList) * fileCount);
-    for (i = 0; i < fileCount; i++) {
-	newList[i] = alloca(strlen(fileList[i]) + 2);
-	if (*fileList[i] == '/')
-	    strcpy(newList[i], fileList[i]);
-	else
-	    sprintf(newList[i], "/%s", fileList[i]);
-    }
-
-    free(fileList);
-
-    headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
-		      newList, fileCount);
+    /* The file list was moved to a more compressed format which not
+       only saves memory (nice), but gives fingerprinting a nice, fat
+       speed boost (very nice). Go ahead and convert old headers to
+       the new style (this is a noop for new headers) */
+    compressFilelist(h);
 
     return h;
 }
@@ -375,7 +383,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 	    continue;
 	}
 
-	headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
+	headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
 				(void **) &fileList, NULL);
 
 	do {
@@ -542,7 +550,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	free(conflictList);
     }
 
-    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+    if (headerGetEntry(h, RPMTAG_OLDFILENAMES, &type, (void **) &fileList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
 	    basename = strrchr(fileList[i], '/');
@@ -620,7 +628,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     if (!group) group = "Unknown";
 
     count = 0;
-    headerGetEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+    headerGetEntry(dbentry, RPMTAG_OLDFILENAMES, &type, (void **) &fileList, 
 	           &count);
     headerGetEntry(dbentry, RPMTAG_PROVIDENAME, &type, (void **) &providesList, 
 	           &providesCount);
@@ -893,7 +901,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	{   const char ** fullfl, **fl;
 	    int_32 fc;
 	   
-	    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
+	    headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
 				(void **) &fullfl, &fc);
 
 	    fl = xcalloc(num, sizeof(*fl));

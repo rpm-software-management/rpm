@@ -153,7 +153,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
     const char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
-    const char ** fileList;
+    const char ** dirList, ** baseNameList;
     const char ** fileMD5List;
     const char * fileStatesList;
     const char ** fileOwnerList = NULL;
@@ -164,6 +164,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
     int_32 * fileGIDList = NULL;
     uint_16 * fileModeList;
     uint_16 * fileRdevList;
+    int_32 * dirIndexList;
     int i;
 
     headerNVR(h, &name, &version, &release);
@@ -175,8 +176,8 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 	    queryHeader(fp, h, queryFormat);
 
 	if (queryFlags & QUERY_FOR_LIST) {
-	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
-		 &count)) {
+	    if (!headerGetEntry(h, RPMTAG_COMPFILELIST, &type, 
+				(void **) &baseNameList, &count)) {
 		fputs(_("(contains no files)"), fp);
 		fputs("\n", fp);
 	    } else {
@@ -184,6 +185,10 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 			 (void **) &fileStatesList, &count)) {
 		    fileStatesList = NULL;
 		}
+		headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL,
+			 (void **) &dirList, NULL);
+		headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, 
+			 (void **) &dirIndexList, NULL);
 		headerGetEntry(h, RPMTAG_FILEFLAGS, &type, 
 			 (void **) &fileFlagsList, &count);
 		headerGetEntry(h, RPMTAG_FILESIZES, &type, 
@@ -245,9 +250,10 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 				fputs(    _("(no state)    "), fp);
 			    }
 			}
-			    
+
 			if (queryFlags & QUERY_FOR_DUMPFILES) {
-			    fprintf(fp, "%s %d %d %s 0%o ", fileList[i],
+			    fprintf(fp, "%s%s %d %d %s 0%o ", 
+				   dirList[dirIndexList[i]], baseNameList[i],
 				   fileSizeList[i], fileMTimeList[i],
 				   fileMD5List[i], fileModeList[i]);
 
@@ -273,28 +279,43 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 				fprintf(fp, "X\n");
 
 			} else if (!rpmIsVerbose()) {
-			    fputs(fileList[i], fp);
+			    fputs(dirList[dirIndexList[i]], fp);
+			    fputs(baseNameList[i], fp);
 			    fputs("\n", fp);
-			} else if (fileOwnerList && fileGroupList) 
-			    printFileInfo(fp, fileList[i], fileSizeList[i],
-					  fileModeList[i], fileMTimeList[i],
-					  fileRdevList[i], fileOwnerList[i], 
-					  fileGroupList[i], -1, 
-					  -1, fileLinktoList[i]);
-			else if (fileUIDList && fileGIDList) {
-			    printFileInfo(fp, fileList[i], fileSizeList[i],
-					  fileModeList[i], fileMTimeList[i],
-					  fileRdevList[i], NULL, 
-					  NULL, fileUIDList[i], 
-					  fileGIDList[i], fileLinktoList[i]);
 			} else {
-			    rpmError(RPMERR_INTERNAL, _("package has "
-				    "neither file owner or id lists"));
+			    char * filespec;
+
+			    filespec = malloc(strlen(dirList[dirIndexList[i]])
+					      + strlen(baseNameList[i]) + 1);
+			    strcpy(filespec, dirList[dirIndexList[i]]);
+			    strcat(filespec, baseNameList[i]);
+					
+			    if (fileOwnerList && fileGroupList) {
+				printFileInfo(fp, filespec, fileSizeList[i],
+					      fileModeList[i], fileMTimeList[i],
+					      fileRdevList[i], 
+					      fileOwnerList[i], 
+					      fileGroupList[i], -1, 
+					      -1, fileLinktoList[i]);
+			    } else if (fileUIDList && fileGIDList) {
+				printFileInfo(fp, filespec, fileSizeList[i],
+					      fileModeList[i], fileMTimeList[i],
+					      fileRdevList[i], NULL, 
+					      NULL, fileUIDList[i], 
+					      fileGIDList[i], 
+					      fileLinktoList[i]);
+			    } else {
+				rpmError(RPMERR_INTERNAL, _("package has "
+					"neither file owner or id lists"));
+			    }
+
+			    free(filespec);
 			}
 		    }
 		}
 	    
-		free(fileList);
+		free(dirList);
+		free(baseNameList);
 		free(fileLinktoList);
 		free(fileMD5List);
 		if (fileOwnerList) free(fileOwnerList);

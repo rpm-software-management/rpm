@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#include "header.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,6 +35,8 @@ char * gidToGname(gid_t gid);
 int makeTempFile(const char * prefix, /*@out@*/ const char ** fnptr,
 	/*@out@*/ FD_t * fdptr);
 char * currentDirectory(void);		/* result needs to be freed */
+void compressFilelist(Header h);
+void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr);
 
 #ifdef __cplusplus
 }

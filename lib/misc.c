@@ -404,3 +404,99 @@ char * currentDirectory(void) {
 
     return currDir;
 }
+
+void compressFilelist(Header h) {
+    char ** files;
+    char ** dirList;
+    int * compDirList;
+    char ** baseNames;
+    int fileCount;
+    int i;
+    char * tail;
+    int lastDir = -1;
+
+    /* This assumes thie file list is already sorted, and begins with a
+       single '/'. That assumption isn't critical, but it makes things go
+       a bit faster. */
+
+    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &files,
+			&fileCount)) 
+	/* no file list */
+	return;
+
+    if (files[0][0] != '/') {
+	/* HACK. Source RPM, so just do things differently */
+	return ;
+    }
+
+    dirList = alloca(sizeof(*dirList) * fileCount);	/* worst case */
+    baseNames = alloca(sizeof(*dirList) * fileCount); 
+    compDirList = alloca(sizeof(*compDirList) * fileCount); 
+
+    for (i = 0; i < fileCount; i++) {
+	tail = strrchr(files[i], '/') + 1;
+	
+	if (lastDir < 0 || 
+		strncmp(dirList[lastDir], files[i], tail - files[i])) {
+	    lastDir++;
+	    dirList[lastDir] = alloca(tail - files[i] + 1);
+	    memcpy(dirList[lastDir], files[i], tail - files[i]);
+	    dirList[lastDir][tail - files[i]] = '\0';
+	} 
+
+	compDirList[i] = lastDir;
+	baseNames[i] = tail;
+    }
+
+    headerAddEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE, dirList, 
+		   lastDir + 1);
+    headerAddEntry(h, RPMTAG_COMPFILEDIRS, RPM_INT32_TYPE, compDirList, 
+		   fileCount);
+    headerAddEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE, baseNames, 
+		   fileCount);
+
+    free(files);
+
+    headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
+}
+
+/* this is pretty straight-forward. The only thing that even resembles a trick
+   is getting all of this into a single malloc'd block */
+void buildFileList(Header h, char *** fileListPtr, int * fileCountPtr) {
+    int * dirList;
+    char ** dirs;
+    char ** tails;
+    int count;
+    char ** fileList;
+    int size;
+    char * data;
+    int i;
+
+    if (!headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &tails,
+			&count)) 
+	/* no file list */
+	return;
+
+    headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirs,
+			&count); 
+    headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirList,
+			&count); 
+
+    size = sizeof(*fileList) * count;
+    for (i = 0; i < count; i++) {
+	size += strlen(tails[i]) + strlen(dirs[dirList[i]]) + 1;
+    }
+
+    fileList = malloc(size);
+    data = ((char *) fileList) + (sizeof(*fileList) * count);
+
+    for (i = 0; i < count; i++) {
+        fileList[i] = data;
+	strcpy(data, dirs[dirList[i]]);
+	strcat(data, tails[i]);
+	data += strlen(tails[i]) + strlen(dirs[dirList[i]]) + 1;
+    }
+
+    *fileListPtr = fileList;
+    *fileCountPtr = count;
+}

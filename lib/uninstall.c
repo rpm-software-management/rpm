@@ -131,7 +131,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 		flags & RPMTRANS_FLAG_TEST);
 
     if (!(flags & RPMTRANS_FLAG_JUSTDB) &&
-	headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+	headerGetEntry(h, RPMTAG_OLDFILENAMES, &type, (void **) &fileList, 
 	               &fileCount)) {
 	const char ** fileMd5List;
 	uint_32 * fileFlagsList;

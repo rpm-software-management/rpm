@@ -338,7 +338,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	xfree(validRelocations);
     }
 
-    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &names, &fileCount);
+    headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &names, &fileCount);
 
     /* Relocate all file paths.
      * Go through sorted file and relocation lists backwards so that /usr/local
@@ -376,11 +376,11 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Save original filenames in header and replace (relocated) filenames. */
     if (relocated) {
 	const char ** origNames;
-	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &origNames, NULL);
+	headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &origNames, NULL);
 	headerAddEntry(h, RPMTAG_ORIGFILENAMES, RPM_STRING_ARRAY_TYPE,
 			  origNames, fileCount);
 	xfree(origNames);
-	headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE,
+	headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			  names, fileCount);
     }
 
@@ -1115,7 +1115,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    dbiFreeIndexRecord(dbi);
 	}
 
-	if (headerGetEntry(alp->h, RPMTAG_FILENAMES, NULL, NULL, &fileCount))
+	if (headerGetEntry(alp->h, RPMTAG_OLDFILENAMES, NULL, NULL, &fileCount))
 	    totalFileCount += fileCount;
     }
 
@@ -1125,7 +1125,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	Header h;
 
 	if ((h = rpmdbGetRecord(ts->db, ts->removedPackages[i]))) {
-	    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, NULL,
+	    if (headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, NULL,
 			       &fileCount))
 		totalFileCount += fileCount;
 	    headerFree(h);
@@ -1151,7 +1151,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 
-	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL,
+	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_OLDFILENAMES, NULL,
 					 NULL, &fi->fc)) {
 		fi->h = headerLink(alp->h);
 		hdrs[i] = headerLink(fi->h);
@@ -1177,7 +1177,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    break;
 	}
 
-	if (!headerGetEntry(fi->h, RPMTAG_FILENAMES, NULL,
+	if (!headerGetEntry(fi->h, RPMTAG_OLDFILENAMES, NULL,
 				     (void **) &fi->fl, &fi->fc)) {
 	    /* This catches removed packages w/ no file lists */
 	    fi->fc = 0;

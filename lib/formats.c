@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include "misc.h"
 
 static char * permsString(int mode)
 {
@@ -199,7 +200,7 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     uint_32 * usages;
     int numFiles;
 
-    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL)) 
+    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &filenames, NULL)) 
 	filenames = NULL;
 
     if (!headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, 
@@ -330,7 +331,20 @@ static int triggertypeTag(Header h, int_32 * type, /*@out@*/void ** data,
     return 0;
 }
 
+static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data, 
+			   int_32 * count, int * freeData) {
+    *type = RPM_STRING_ARRAY_TYPE;
+
+    buildFileList(h, (char ***) data, count);
+    *freeData = 1;
+
+    *freeData = 0;
+
+    return 0; 
+}
+
 const struct headerSprintfExtension rpmHeaderFormats[] = {
+    { HEADER_EXT_TAG, "RPMTAG_FILENAMES", { filenamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },

@@ -159,7 +159,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	    p->provideFlags = NULL;
     }
 
-    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &p->files,
+    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &p->files,
 	&p->filesCount)) {
 	p->filesCount = 0;
 	p->files = NULL;
@@ -1333,7 +1333,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    if (rc)	goto exit;
 	}
 
-	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &files,
+	if (headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &files,
 		 &fileCount)) {
 	    rc = 0;
 	    for (j = 0; j < fileCount; j++) {

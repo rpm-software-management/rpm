@@ -142,7 +142,7 @@ static int readOldHeader(FD_t fd, /*@out@*/Header * hdr, /*@unused@*/ /*@out@*/i
 	    }
 	}
 
-	headerAddEntry(*hdr, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
+	headerAddEntry(*hdr, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
 			fileList, spec.fileCount);
 	headerAddEntry(*hdr, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE, 
 		 fileLinktoList, spec.fileCount);
@@ -168,6 +168,8 @@ static int readOldHeader(FD_t fd, /*@out@*/Header * hdr, /*@unused@*/ /*@out@*/i
 			unames, spec.fileCount);
 	headerAddEntry(*hdr, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE, 
 			gnames, spec.fileCount);
+
+	compressFilelist(*hdr);
 
 	free(fileList);
 	free(fileLinktoList);
@@ -285,6 +287,12 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 	    headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 			   &defaultPrefix, 1); 
 	}
+
+	/* The file list was moved to a more compressed format which not
+	   only saves memory (nice), but gives fingerprinting a nice, fat
+	   speed boost (very nice). Go ahead and convert old headers to
+	   the new style (this is a noop for new headers) */
+	compressFilelist(*hdr);
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
         if (lead->type == RPMLEAD_SOURCE) {

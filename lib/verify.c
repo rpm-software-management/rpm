@@ -44,9 +44,9 @@ struct poptOption rpmVerifyPoptTable[] = {
 int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result, 
 		  int omitMask)
 {
-    char ** fileList, ** md5List, ** linktoList;
+    char ** baseNameList, ** md5List, ** linktoList, ** dirNameList;
     int_32 * verifyFlags, flags;
-    int_32 * sizeList, * mtimeList;
+    int_32 * sizeList, * mtimeList, * dirIndexList;
     unsigned short * modeList, * rdevList;
     char * fileStatesList;
     char * filespec;
@@ -90,13 +90,18 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
 	flags = RPMVERIFY_ALL;
     }
 
-    headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count);
-    filespec = alloca(strlen(fileList[filenum]) + strlen(prefix) + 5);
-    strcpy(filespec, prefix);
-    strcat(filespec, "/");
-    strcat(filespec, fileList[filenum]);
+    headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseNameList, 
+		   &count);
+    headerGetEntry(h, RPMTAG_COMPFILEDIRS, &type, (void **) &dirIndexList, 
+		   NULL);
+    headerGetEntry(h, RPMTAG_COMPDIRLIST, &type, (void **) &dirNameList, NULL);
 
-    free(fileList);
+    filespec = alloca(strlen(dirNameList[dirIndexList[filenum]]) + 
+		      strlen(baseNameList[filenum]) + strlen(prefix) + 5);
+    sprintf(filespec, "%s/%s%s", prefix, dirNameList[dirIndexList[filenum]],
+		baseNameList[filenum]);
+    free(baseNameList);
+    free(dirNameList);
     
     *result = 0;
 
@@ -242,7 +247,7 @@ int rpmVerifyScript(const char * root, Header h, FD_t err)
 /* ======================================================================== */
 static int verifyHeader(QVA_t *qva, Header h)
 {
-    const char ** fileList;
+    char ** fileList;
     int count, type;
     int verifyResult;
     int i, ec, rc;
@@ -253,7 +258,9 @@ static int verifyHeader(QVA_t *qva, Header h)
     if (!(qva->qva_flags & VERIFY_MD5)) omitMask = RPMVERIFY_MD5;
 
     if (headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL) &&
-       headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count)) {
+       headerIsEntry(h, RPMTAG_COMPFILELIST)) {
+	buildFileList(h, &fileList, &count);
+
 	for (i = 0; i < count; i++) {
 	    if ((rc = rpmVerifyFile(qva->qva_prefix, h, i, &verifyResult, omitMask)) != 0) {
 		fprintf(stdout, _("missing    %s\n"), fileList[i]);
