@@ -127,7 +127,7 @@ POPT_ARG_LONG	A long integer is expected	long
 POPT_ARG_VAL	Integer value taken from \f(CWval\fR	int
 .TE
 .sp
-If \fIargInfo\fR value is logically or'd with \fBPOPT_ARGFLAG_ONEDASH\fR,
+If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_ONEDASH\fR,
 the long argument may be given with a single - instead of two. For example,
 if \fB--longopt\fR is an option with \fBPOPT_ARGFLAG_ONEDASH\fR, is
 specified, \fB-longopt\fR is accepted as well.
@@ -179,6 +179,9 @@ stderr as soon as it finds the option, and exits the program with a
 return code of 0. If you want to use popt's automatic help generation in
 a different way, you need to explicitly add the option entries to your programs 
 .RB "option table instead of using " POPT_AUTOHELP ".
+.sp
+If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_DOC_HIDDEN\fR,
+the argument will not be shown in help output.
 .sp
 The final structure in the table should have all the pointer values set
 .RB "to " NULL " and all the arithmetic values set to 0, marking the "
