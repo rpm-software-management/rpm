@@ -13,18 +13,6 @@ INCLUDES = -I. \
 
 LIBS =
 
-EXTRA_PROGRAMS = tfr
-tfr_SOURCES = tfr.c
-tfr_LDFLAGS = -all-static
-tfr_LDADD = \
-	$(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la \
-	@WITH_LIBELF_LIB@ \
-	@INTLLIBS@
-
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = argv.h buildio.h rpmfc.h
