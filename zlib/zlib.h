@@ -94,7 +94,7 @@ typedef struct z_stream_s {
     uInt     avail_out; /* remaining free space at next_out */
     uLong    total_out; /* total nb of bytes output so far */
 
-/*@relnull@*/
+/*@relnull@*/ /*@observer@*/
     char     *msg;      /* last error message, NULL if no error */
 /*@relnull@*/
     struct internal_state FAR *state; /* not visible by applications */
@@ -195,6 +195,7 @@ typedef z_stream FAR *z_streamp;
 
                         /* basic functions */
 
+/*@observer@*/
 ZEXTERN const char * ZEXPORT zlibVersion OF((void))
 	/*@*/;
 /* The application can compare zlibVersion and ZLIB_VERSION for consistency.
@@ -968,6 +969,7 @@ ZEXTERN int ZEXPORT uncompress OF((Bytef *dest,   uLongf *destLen,
 
 typedef voidp gzFile;
 
+/*@null@*/
 ZEXTERN gzFile ZEXPORT gzopen  OF((const char *path, const char *mode))
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -987,6 +989,7 @@ ZEXTERN gzFile ZEXPORT gzopen  OF((const char *path, const char *mode))
    can be checked to distinguish the two cases (if errno is zero, the
    zlib error is Z_MEM_ERROR).  */
 
+/*@null@*/
 ZEXTERN gzFile ZEXPORT gzdopen  OF((int fd, const char *mode))
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -1056,6 +1059,7 @@ ZEXTERN int ZEXPORT gzputs OF((gzFile file, const char *s))
       gzputs returns the number of characters written, or -1 in case of error.
 */
 
+/*@null@*/
 ZEXTERN char * ZEXPORT gzgets OF((gzFile file, char *buf, int len))
 	/*@globals fileSystem @*/
 	/*@modifies file, buf, fileSystem @*/;
@@ -1153,7 +1157,7 @@ ZEXTERN int ZEXPORT gzeof OF((gzFile file))
    input stream, otherwise zero.
 */
 
-ZEXTERN int ZEXPORT    gzclose OF((gzFile file))
+ZEXTERN int ZEXPORT    gzclose OF((/*@only@*/ gzFile file))
 	/*@globals fileSystem @*/
 	/*@modifies file, fileSystem @*/;
 /*
@@ -1162,6 +1166,7 @@ ZEXTERN int ZEXPORT    gzclose OF((gzFile file))
    error number (see function gzerror below).
 */
 
+/*@observer@*/
 ZEXTERN const char * ZEXPORT gzerror OF((gzFile file, int *errnum))
 	/*@modifies *errnum @*/;
 /*
@@ -1188,7 +1193,7 @@ ZEXTERN void ZEXPORT gzclearerr OF((gzFile file))
    compression library.
 */
 
-ZEXTERN uLong ZEXPORT adler32 OF((uLong adler, const Bytef *buf, uInt len))
+ZEXTERN uLong ZEXPORT adler32 OF((uLong adler, /*@null@*/ const Bytef *buf, uInt len))
 	/*@*/;
 
 /*
@@ -1206,7 +1211,7 @@ ZEXTERN uLong ZEXPORT adler32 OF((uLong adler, const Bytef *buf, uInt len))
      if (adler != original_adler) error();
 */
 
-ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len))
+ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, /*@null@*/ const Bytef *buf, uInt len))
 	/*@*/;
 /*
      Update a running crc with the bytes buf[0..len-1] and return the updated
@@ -1268,10 +1273,12 @@ ZEXTERN int ZEXPORT inflateBackInit_ OF((z_stream FAR *strm, int windowBits,
     struct internal_state {int dummy;}; /* hack for buggy compilers */
 #endif
 
+/*@observer@*/
 ZEXTERN const char   * ZEXPORT zError           OF((int err))
 	/*@*/;
 ZEXTERN int            ZEXPORT inflateSyncPoint OF((z_streamp z))
 	/*@modifies z @*/;
+/*@observer@*/
 ZEXTERN const uLongf * ZEXPORT get_crc_table    OF((void))
 	/*@*/;
 

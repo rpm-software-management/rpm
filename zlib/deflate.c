@@ -51,6 +51,7 @@
 
 #include "deflate.h"
 
+/*@unchecked@*/ /*@observer@*/
 const char deflate_copyright[] =
    " deflate 1.2.1.1 Copyright 1995-2003 Jean-loup Gailly ";
 /*
@@ -142,6 +143,7 @@ typedef struct config_s {
    compress_func func;
 } config;
 
+/*@unchecked@*/ /*@observer@*/
 #ifdef FASTEST
 local const config configuration_table[2] = {
 /*      good lazy nice chain */

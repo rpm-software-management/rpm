@@ -7,6 +7,8 @@
 
 /* @(#) $Id$ */
 
+/*@access FILE @*/
+
 #include <stdio.h>
 
 #include "zutil.h"
@@ -45,6 +47,7 @@ extern void   free   OF((voidpf ptr))
 #define ALLOC(size) malloc(size)
 #define TRYFREE(p) {if (p) free(p);}
 
+/*@unchecked@*/ /*@observer@*/
 static int const gz_magic[2] = {0x1f, 0x8b}; /* gzip magic header */
 
 /* gzip flag byte */
@@ -59,7 +62,7 @@ typedef struct gz_stream {
     z_stream stream;
     int      z_err;   /* error code for last stream operation */
     int      z_eof;   /* set if end of input file */
-/*@relnull@*/
+/*@relnull@*/ /*@dependent@*/
     FILE     *file;   /* .gz file */
 /*@relnull@*/
     Byte     *inbuf;  /* input buffer */
@@ -80,6 +83,7 @@ typedef struct gz_stream {
 } gz_stream;
 
 
+/*@null@*/
 local gzFile gz_open      OF((const char *path, const char *mode, int  fd))
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
@@ -92,7 +96,7 @@ local int    get_byte     OF((gz_stream *s))
 local void   check_header OF((gz_stream *s))
 	/*@globals errno, fileSystem @*/
 	/*@modifies s, errno, fileSystem @*/;
-local int    destroy      OF((gz_stream *s))
+local int    destroy      OF((/*@only@*/ gz_stream *s))
 	/*@globals fileSystem @*/
 	/*@modifies s, fileSystem @*/;
 local void   putLong      OF((FILE *file, uLong x))

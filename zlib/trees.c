@@ -58,15 +58,19 @@
 #define REPZ_11_138  18
 /* repeat a zero length 11-138 times  (7 bits of repeat count) */
 
+/*@unchecked@*/ /*@observer@*/
 local const int extra_lbits[LENGTH_CODES] /* extra bits for each length code */
    = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0};
 
+/*@unchecked@*/ /*@observer@*/
 local const int extra_dbits[D_CODES] /* extra bits for each distance code */
    = {0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13};
 
+/*@unchecked@*/ /*@observer@*/
 local const int extra_blbits[BL_CODES]/* extra bits for each bit length code */
    = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7};
 
+/*@unchecked@*/ /*@observer@*/
 local const uch bl_order[BL_CODES]
    = {16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15};
 /* The lengths of the bit length codes are sent in order of decreasing
@@ -87,6 +91,7 @@ local const uch bl_order[BL_CODES]
 #if defined(GEN_TREES_H) || !defined(STDC)
 /* non ANSI compilers may not accept trees.h */
 
+/*@unchecked@*/
 local ct_data static_ltree[L_CODES+2];
 /* The static literal tree. Since the bit lengths are imposed, there is no
  * need for the L_CODES extra codes used during heap construction. However
@@ -94,6 +99,7 @@ local ct_data static_ltree[L_CODES+2];
  * below).
  */
 
+/*@unchecked@*/
 local ct_data static_dtree[D_CODES];
 /* The static distance tree. (Actually a trivial tree since all codes use
  * 5 bits.)
@@ -108,9 +114,11 @@ uch _dist_code[DIST_CODE_LEN];
 uch _length_code[MAX_MATCH-MIN_MATCH+1];
 /* length code for each normalized match length (0 == MIN_MATCH) */
 
+/*@unchecked@*/
 local int base_length[LENGTH_CODES];
 /* First normalized length for each code (0 = MIN_MATCH) */
 
+/*@unchecked@*/
 local int base_dist[D_CODES];
 /* First normalized distance for each code (0 = distance of 1) */
 
@@ -119,19 +127,24 @@ local int base_dist[D_CODES];
 #endif /* GEN_TREES_H */
 
 struct static_tree_desc_s {
+/*@observer@*/ /*@relnull@*/
     const ct_data *static_tree;  /* static tree or NULL */
+/*@observer@*/
     const intf *extra_bits;      /* extra bits for each code or NULL */
     int     extra_base;          /* base index for extra_bits */
     int     elems;               /* max number of elements in the tree */
     int     max_length;          /* max bit length for the codes */
 };
 
+/*@unchecked@*/
 local static_tree_desc  static_l_desc =
 {static_ltree, extra_lbits, LITERALS+1, L_CODES, MAX_BITS};
 
+/*@unchecked@*/
 local static_tree_desc  static_d_desc =
 {static_dtree, extra_dbits, 0,          D_CODES, MAX_BITS};
 
+/*@unchecked@*/
 local static_tree_desc  static_bl_desc =
 {(const ct_data *)0, extra_blbits, 0,   BL_CODES, MAX_BL_BITS};
 
@@ -881,6 +894,7 @@ void _tr_stored_block(deflate_state *s, charf *buf, ulg stored_len, int eof)
  * on one bit only.
  */
 void _tr_align(deflate_state *s)
+	/*@globals static_ltree @*/
 {
     send_bits(s, STATIC_TREES<<1, 3);
     send_code(s, END_BLOCK, static_ltree);
@@ -909,6 +923,7 @@ void _tr_align(deflate_state *s)
  * trees or store, and output the encoded block to the zip file.
  */
 void _tr_flush_block(deflate_state *s, charf *buf, ulg stored_len, int eof)
+	/*@globals static_dtree, static_ltree @*/
 {
     ulg opt_lenb, static_lenb; /* opt_len and static_len in bytes */
     int max_blindex = 0;  /* index of last bit length code of non zero freq */
@@ -1052,6 +1067,7 @@ int _tr_tally (deflate_state *s, unsigned dist, unsigned lc)
  * Send the block data compressed using the given Huffman trees
  */
 local void compress_block(deflate_state *s, ct_data *ltree, ct_data *dtree)
+	/*@globals base_dist, base_length @*/
 {
     unsigned dist;      /* distance of matched string */
     int lc;             /* match length or unmatched char (if dist == 0) */

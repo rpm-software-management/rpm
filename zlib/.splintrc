@@ -12,43 +12,28 @@
 +strict			# lclint level
 
 # --- in progress
--globs
 -infloops		# 1
--nullassign		# 1
--staticinittrans	# 5
 
--abstract		# 4
 -aliasunique		# 2
--assignexpose
 -branchstate
 -bufferoverflowhigh
 -castfcnptr		# 6
--compdef		# 16
--compmempass		# 37
+-compdef		# 20
+-compmempass		# 39
 -evalorder		# 2
--globstate		# 1
--mods			# 5
 -noeffectuncon		# 10
 -nullderef		# 9
--nullpass		# 24
+-nullpass		# 2
 -nullptrarith		# 4
--nullret		# 11
--protoparammatch	# 22
+-protoparammatch	# 4
 -redef			# 4
--retalias		# 4
 -retvalint		# painful
 -sizeoftype		# 106
 -type			# 3
--usereleased		# 38
+-usereleased		# 35
 
--dependenttrans		# 2
--immediatetrans
--kepttrans		# 8
--observertrans
--readonlytrans
--statictrans
--temptrans		# 7
--unqualifiedtrans	# 10
+-statictrans		# 4
+-temptrans		# 6
 
 -casebreak
 -looploopbreak
