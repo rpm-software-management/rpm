@@ -27,6 +27,9 @@
 	- added --initdb to aid in database initialization
 	- --queryformat can print items of type INT8
 	- "sourceless" packages with nosource: and nopatch:
+	- [] now allows interation through query formats
+	- '-' flag for query tags removed
+	- :date and :perms supported as query format specifiers
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
