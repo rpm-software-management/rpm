@@ -743,14 +743,37 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
 	return rc;
 	
     if (writeData && S_ISREG(sb.st_mode)) {
-	/* FIXME: we should use mmap here if it's available */
+	char *b;
+#if HAVE_MMAP
+	void *mapped;
+	size_t nmapped;
+#endif
+
 	if (fdFileno(datafd = fdOpen(map->fsPath, O_RDONLY, 0)) < 0)
 	    return CPIOERR_OPEN_FAILED;
+
+#if HAVE_MMAP
+	nmapped = 0;
+	mapped = mmap(NULL, sb.st_size, PROT_READ, MAP_SHARED, fdFileno(datafd), 0);
+	if (mapped != (void *)-1) {
+	    b = (char *)mapped;
+	    nmapped = sb.st_size;
+	} else
+#endif
+	{
+	    b = buf;
+	}
 
 	size += sb.st_size;
 
 	while (sb.st_size) {
-	    amount = fdRead(datafd, buf, 
+#if HAVE_MMAP
+	  if (mapped != (void *)-1) {
+	    amount = nmapped;
+	  } else
+#endif
+	  {
+	    amount = fdRead(datafd, b, 
 		     sb.st_size > sizeof(buf) ? sizeof(buf) : sb.st_size);
 	    if (amount <= 0) {
 		olderrno = errno;
@@ -758,8 +781,9 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
 		errno = olderrno;
 		return CPIOERR_READ_FAILED;
 	    }
+	  }
 
-	    if ((rc = safewrite(cfd, buf, amount)) != amount) {
+	    if ((rc = safewrite(cfd, b, amount)) != amount) {
 		olderrno = errno;
 		fdClose(datafd);
 		errno = olderrno;
@@ -768,6 +792,12 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
 
 	    sb.st_size -= amount;
 	}
+
+#if HAVE_MMAP
+	if (mapped != (void *)-1) {
+	    munmap(mapped, nmapped);
+	}
+#endif
 
 	fdClose(datafd);
     } else if (writeData && S_ISLNK(sb.st_mode)) {
