@@ -641,7 +641,7 @@ verifyGPGSignature(const char *datafile, const void * sig, int count, char *resu
     result[0] = '\0';
     while (fgets(buf, 1024, file)) {
 	strcat(result, buf);
-	if (!strncmp("gpg: Can't check signature: Public key not found", buf, 48)) {
+	if (!strncasecmp("gpg: Can't check signature: Public key not found", buf, 48)) {
 	    res = RPMSIG_NOKEY;
 	}
     }

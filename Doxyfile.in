@@ -315,7 +315,6 @@ INPUT                  = \
 	./lib/signature.h \
 	./lib/stringbuf.c \
 	./lib/stringbuf.h \
-	./lib/stubs.c \
 	./lib/tagName.c \
 	./lib/tagtable.c \
 	./lib/transaction.c \
@@ -336,6 +335,7 @@ INPUT                  = \
 	./rpmio/rpmmessages.h \
 	./rpmio/rpmrpc.c \
 	./rpmio/rpmurl.h \
+	./rpmio/stubs.c \
 	./rpmio/ugid.c \
 	./rpmio/ugid.h \
 	./rpmio/url.c \

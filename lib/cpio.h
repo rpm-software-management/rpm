@@ -145,7 +145,7 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
 
 /** \ingroup payload
- * Return fornmatted error message on payload handling failure.
+ * Return formatted error message on payload handling failure.
  * @param		error code
  * @return		formatted error string
  */

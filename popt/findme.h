@@ -9,6 +9,11 @@
 #ifndef H_FINDME
 #define H_FINDME
 
-const char * findProgramPath(const char * argv0);
+/**
+ * Return absolute path to executable by searching PATH.
+ * @param argv0		name of executable
+ * @return		(malloc'd) absolute path to executable (or NULL)
+ */
+/*@null@*/ const char * findProgramPath(const char * argv0);
 
 #endif

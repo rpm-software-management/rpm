@@ -1032,7 +1032,7 @@ typedef enum rpmprobFilterFlags_e {
 } rpmprobFilterFlags;
 
 /** \ingroup rpmtrans
- * Process all packages in transactions set.
+ * Process all packages in transaction set.
  * @param ts		rpm transaction set
  * @param notify	progress callback
  * @param notifyData	progress callback private data
