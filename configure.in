@@ -80,7 +80,6 @@ topdir=`pwd`
 if test $prefix != "/usr" -a $prefix != "/usr/local"; then
 	echo $ac_n "checking for $prefix/lib... $ac_c"
 	if test -d $prefix/lib ; then
-	       LIBS="$LIBS -L$prefix/lib"
 	       LIBPATH="$LIBPATH -L$prefix/lib"
 	       
 	       echo "yes"
@@ -100,7 +99,6 @@ fi
 
 AC_MSG_CHECKING(checking for /usr/local/lib...)
 if test -d /usr/local/lib ; then
-	LIBS="$LIBS -L/usr/local/lib"
 	LIBPATH="$LIBPATH -L/usr/local/lib"
 	
 	AC_MSG_RESULT(yes)
@@ -155,11 +153,11 @@ fi
 
 AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
-(from the db package)]), $LIBS)
+(from the db package)]), $LIBPATH)
            )
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
-	MISCOBJS=fakefork.o], $LIBS)
+	MISCOBJS=fakefork.o], $LIBPATH)
 
 dnl AmigaOS and IXEmul have a fork() dummy
     case "$target" in
@@ -172,7 +170,6 @@ esac
 
 AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"])
 
-
 ZLIB=
 for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
@@ -180,7 +177,7 @@ for zlib in z gz ; do
 	[if test ${zlib} = gz; then 
 	    AC_MSG_WARN([sorry this package needs libz.a or libgz.a (from the zlib package)]) 
 	 fi]
-	       , $LIBS)
+	       , $LIBPATH)
 done
 AC_SUBST(ZLIB)
 
