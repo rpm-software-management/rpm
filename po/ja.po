@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-25 08:50-0500\n"
+"POT-Creation-Date: 2000-12-26 14:00-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.131 2000/12/26 13:10:20 jbj Exp $
+# $Id: ja.po,v 1.132 2000/12/26 19:07:02 jbj Exp $
 #: rpm.c:185 rpmqv.c:269
 #, c-format
 msgid "rpm: %s\n"
@@ -3177,120 +3177,120 @@ msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
 
-#: lib/query.c:223
+#: lib/query.c:224
 msgid "(contains no files)"
 msgstr "ファイルを含んでいません"
 
-#: lib/query.c:274
+#: lib/query.c:275
 msgid "normal        "
 msgstr "通常"
 
-#: lib/query.c:276
+#: lib/query.c:277
 msgid "replaced      "
 msgstr "置き換えられています"
 
-#: lib/query.c:278
+#: lib/query.c:279
 msgid "not installed "
 msgstr "インストールされていません"
 
-#: lib/query.c:280
+#: lib/query.c:281
 msgid "net shared    "
 msgstr "ネット共有"
 
-#: lib/query.c:282
+#: lib/query.c:283
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)"
 
-#: lib/query.c:287
+#: lib/query.c:288
 msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
-#: lib/query.c:306 lib/query.c:351
+#: lib/query.c:307 lib/query.c:352
 msgid "package has neither file owner or id lists"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:405
+#: lib/query.c:403
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:521
+#: lib/query.c:519
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:541
+#: lib/query.c:539
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:550 lib/rpminstall.c:312
+#: lib/query.c:548 lib/rpminstall.c:312
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s は RPM パッケージではありません\n"
 
-#: lib/query.c:554
+#: lib/query.c:552
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:588
+#: lib/query.c:586
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:611
+#: lib/query.c:609
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:622
+#: lib/query.c:620
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:632
+#: lib/query.c:630
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:642
+#: lib/query.c:640
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:653
+#: lib/query.c:651
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:684
+#: lib/query.c:682
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:688
+#: lib/query.c:686
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:714
+#: lib/query.c:712
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:717
+#: lib/query.c:715
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:722
+#: lib/query.c:720
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:733 lib/rpminstall.c:546
+#: lib/query.c:731 lib/rpminstall.c:546
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"

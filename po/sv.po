@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-25 08:50-0500\n"
+"POT-Creation-Date: 2000-12-26 14:00-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3048,119 +3048,119 @@ msgstr "okänt fel %d uppträdde under manipulation av paket %s-%s-%s"
 msgid "incorrect format: %s\n"
 msgstr "fel i format: %s\n"
 
-#: lib/query.c:223
+#: lib/query.c:224
 msgid "(contains no files)"
 msgstr "(innehåller inga filer)"
 
-#: lib/query.c:274
+#: lib/query.c:275
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:276
+#: lib/query.c:277
 msgid "replaced      "
 msgstr "ersatt        "
 
-#: lib/query.c:278
+#: lib/query.c:279
 msgid "not installed "
 msgstr "oinstallerat  "
 
-#: lib/query.c:280
+#: lib/query.c:281
 msgid "net shared    "
 msgstr "nätdelad      "
 
-#: lib/query.c:282
+#: lib/query.c:283
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(okänd %3d)   "
 
-#: lib/query.c:287
+#: lib/query.c:288
 msgid "(no state)    "
 msgstr "(ej tillstnd) "
 
-#: lib/query.c:306 lib/query.c:351
+#: lib/query.c:307 lib/query.c:352
 msgid "package has neither file owner or id lists"
 msgstr "paketet har varken filägare eller id-listor"
 
-#: lib/query.c:405
+#: lib/query.c:403
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kan inte fråga om %s: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:521
+#: lib/query.c:519
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades öppna %s: %s\n"
 
-#: lib/query.c:541
+#: lib/query.c:539
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går ej att fråga om\n"
 
-#: lib/query.c:550 lib/rpminstall.c:312
+#: lib/query.c:548 lib/rpminstall.c:312
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s verkar inte vara ett RPM-paket\n"
 
-#: lib/query.c:554
+#: lib/query.c:552
 #, c-format
 msgid "query of %s failed\n"
 msgstr "fråga om %s misslyckades\n"
 
-#: lib/query.c:588
+#: lib/query.c:586
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga om spec-fil %s misslyckades, kan inte parsa\n"
 
-#: lib/query.c:611
+#: lib/query.c:609
 msgid "no packages\n"
 msgstr "inga paket\n"
 
-#: lib/query.c:622
+#: lib/query.c:620
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:632
+#: lib/query.c:630
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:642
+#: lib/query.c:640
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:653
+#: lib/query.c:651
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:684
+#: lib/query.c:682
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:688
+#: lib/query.c:686
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tillhör inget paket\n"
 
-#: lib/query.c:714
+#: lib/query.c:712
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:717
+#: lib/query.c:715
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paketpost nummer: %u\n"
 
-#: lib/query.c:722
+#: lib/query.c:720
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:733 lib/rpminstall.c:546
+#: lib/query.c:731 lib/rpminstall.c:546
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"

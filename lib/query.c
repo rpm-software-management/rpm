@@ -152,6 +152,7 @@ static inline char * queryHeader(char * te, Header h, const char * qfmt)
 	return te;
     }
     te = stpcpy(te, str);
+    te += strlen(te);
     return te;
 }
 
@@ -213,7 +214,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
     }
 
     if (queryFormat)
-	queryHeader(te, h, queryFormat);
+	te = queryHeader(te, h, queryFormat);
 
     if (!(queryFlags & QUERY_FOR_LIST))
 	goto exit;
@@ -365,11 +366,8 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
     rc = 0;
 
 exit:
-    if (te > t) {
-	*te++ = '\n';
-	*te = '\0';
+    if (te > t)
 	rpmMessage(RPMMESS_NORMAL, "%s", t);
-    }
     if (dirNames) free(dirNames);
     if (baseNames) free(baseNames);
     if (fileLinktoList) free(fileLinktoList);
