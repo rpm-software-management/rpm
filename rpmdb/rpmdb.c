@@ -1046,9 +1046,12 @@ DBT * key = alloca(sizeof(*key));
     if (dbi != NULL) {
 	dbcursor = NULL;
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+
 memset(key, 0, sizeof(*key));
 key->data = (void *) baseName;
 key->size = strlen(baseName);
+if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+
 	rc = dbiSearch(dbi, dbcursor, key, &allMatches);
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
@@ -2088,32 +2091,25 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
     }
 }
 
-static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi,
-		const void * keyp, size_t keylen, int fpNum)
+static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, DBT * key,
+		int fpNum)
 	/*@globals fileSystem @*/
 	/*@modifies mi, fileSystem @*/
 {
-DBT * key = alloca(sizeof(*key));
     dbiIndex dbi = NULL;
     DBC * dbcursor = NULL;
     dbiIndexSet set = NULL;
     int rc;
     int xx;
 
-    if (!(mi && keyp))
+    if (!(mi && key->data))
 	return 1;
 
     dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
     if (dbi == NULL)
 	return 1;
 
-    if (keylen == 0)
-	keylen = strlen(keyp);
-
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-memset(key, 0, sizeof(*key));
-key->data = (void *) keyp;
-key->size = keylen;
     rc = dbiSearch(dbi, dbcursor, key, &set);
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
@@ -2187,8 +2183,6 @@ DBT * key = alloca(sizeof(*key));
 
     dbi->dbi_lastoffset = 0;		/* db0: rewind to beginning */
 
-if (keyp && keylen == 0) keylen = strlen((char *)keyp);
-
     if (rpmtag != RPMDBI_PACKAGES && keyp) {
 	DBC * dbcursor = NULL;
 	int rc;
@@ -2204,10 +2198,14 @@ if (keyp && keylen == 0) keylen = strlen((char *)keyp);
 	    rc = rpmdbFindByFile(db, keyp, &set);
 	} else {
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+
 memset(key, 0, sizeof(*key));
 key->data = (void *) keyp;
 key->size = keylen;
+if (key->size == 0) key->size = strlen((char *)key->data);
+if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	    rc = dbiSearch(dbi, dbcursor, key, &set);
+
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	}
@@ -2257,41 +2255,6 @@ key->size = keylen;
     /*@-nullret@*/ /* FIX: mi->mi_{keyp,dbc,set,re->preg} are NULL */
     return mi;
     /*@=nullret@*/
-}
-
-/**
- * Remove entry from database index.
- * @param dbi		index database handle
- * @param dbcursor	index database cursor
- * @param key		search key/length
- * @param rec		record to remove
- * @return		0 on success
- */
-static int removeIndexEntry(dbiIndex dbi, DBC * dbcursor, DBT * key,
-		dbiIndexItem rec)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
-{
-    dbiIndexSet set = NULL;
-    int rc;
-    
-    rc = dbiSearch(dbi, dbcursor, key, &set);
-
-    if (rc < 0)			/* not found */
-	rc = 0;
-    else if (rc > 0)		/* error */
-	rc = 1;		/* error message already generated from dbindex.c */
-    else {			/* success */
-	/*@-mods@*/	/* a single rec is not modified */
-	rc = dbiPruneSet(set, rec, 1, sizeof(*rec), 1);
-	/*@=mods@*/
-	if (rc == 0 && dbiUpdateIndex(dbi, dbcursor, key, set))
-	    rc = 1;
-    }
-
-    set = dbiFreeIndexSet(set);
-
-    return rc;
 }
 
 /*@-mods@*/
@@ -2405,6 +2368,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
+		dbiIndexSet set;
 		const void * valp;
 		size_t vallen;
 		int stringvalued;
@@ -2502,10 +2466,29 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 		 * the header instance. It's easier to just ignore errors
 		 * than to do things correctly.
 		 */
+
 memset(key, 0, sizeof(*key));
 key->data = (void *) valp;
 key->size = vallen;
-		xx = removeIndexEntry(dbi, dbcursor, key, rec);
+if (key->size == 0) key->size = strlen((char *)key->data);
+if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+ 
+		set = NULL;
+		xx = dbiSearch(dbi, dbcursor, key, &set);
+
+		if (xx < 0)		/* not found */
+		    xx = 0;
+		else if (xx > 0)	/* error */
+		    xx = 1; /* error message already generated from dbindex.c */
+		else {			/* success */
+		    /*@-mods@*/	/* a single rec is not modified */
+		    xx = dbiPruneSet(set, rec, 1, sizeof(*rec), 1);
+		    /*@=mods@*/
+		    if (xx == 0 && dbiUpdateIndex(dbi, dbcursor, key, set))
+		        xx = 1;
+		}
+		set = dbiFreeIndexSet(set);
+
 	    }
 
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
@@ -2528,47 +2511,6 @@ key->size = vallen;
     (void) unblockSignals(db, &signalMask);
 
     h = headerFree(h, "rpmdbRemove");
-
-    return 0;
-}
-
-/**
- * Add entry to database index.
- * @param dbi		index database handle
- * @param dbcursor	index database cursor
- * @param key		search key/length
- * @param rec		record to add
- * @return		0 on success
- */
-static int addIndexEntry(dbiIndex dbi, DBC * dbcursor, DBT * key,
-		dbiIndexItem rec)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
-{
-    dbiIndexSet set = NULL;
-    int rc;
-
-    rc = dbiSearch(dbi, dbcursor, key, &set);
-
-    if (rc > 0) {		/* error */
-	rc = 1;
-    } else {
-
-	/* With duplicates, cursor is positioned, discard the record. */
-	/*@-branchstate@*/
-	if (rc == 0 && dbi->dbi_permit_dups)
-	    set = dbiFreeIndexSet(set);
-	/*@=branchstate@*/
-
-	if (set == NULL || rc < 0) {		/* not found */
-	    rc = 0;
-	    set = xcalloc(1, sizeof(*set));
-	}
-	(void) dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
-	if (dbiUpdateIndex(dbi, dbcursor, key, set))
-	    rc = 1;
-    }
-    set = dbiFreeIndexSet(set);
 
     return 0;
 }
@@ -2777,6 +2719,7 @@ DBT * key = alloca(sizeof(*key));
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
+		dbiIndexSet set;
 		const void * valp;
 		size_t vallen;
 		int stringvalued;
@@ -2892,7 +2835,33 @@ DBT * key = alloca(sizeof(*key));
 memset(key, 0, sizeof(*key));
 key->data = (void *) valp;
 key->size = vallen;
-		rc += addIndexEntry(dbi, dbcursor, key, rec);
+if (key->size == 0) key->size = strlen((char *)key->data);
+if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+
+		set = NULL;
+		xx = dbiSearch(dbi, dbcursor, key, &set);
+
+		if (xx > 0) {				/* error */
+		    xx = 1;
+		} else {
+
+		/* With duplicates, cursor is positioned, discard the record. */
+		    /*@-branchstate@*/
+		    if (xx == 0 && dbi->dbi_permit_dups)
+			set = dbiFreeIndexSet(set);
+		    /*@=branchstate@*/
+
+		    if (set == NULL || xx < 0) {	/* not found */
+			xx = 0;
+			set = xcalloc(1, sizeof(*set));
+		    }
+		    (void) dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
+		    if (dbiUpdateIndex(dbi, dbcursor, key, set))
+			xx = 1;
+		}
+		set = dbiFreeIndexSet(set);
+		rc += xx;
+
 	    }
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    dbcursor = NULL;
@@ -2923,6 +2892,7 @@ exit:
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
 		    int numItems)
 {
+DBT * key = alloca(sizeof(*key));
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi;
@@ -2936,7 +2906,11 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
-	xx = rpmdbGrowIterator(mi, fpList[i].baseName, 0, i);
+memset(key, 0, sizeof(*key));
+key->data = (void *) fpList[i].baseName;
+key->size = strlen((char *)key->data);
+if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+	xx = rpmdbGrowIterator(mi, key, i);
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
     }
 
@@ -3015,29 +2989,6 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
     return 0;
 
-}
-
-char * db1basename (int rpmtag)
-{
-    char * base = NULL;
-    /*@-branchstate@*/
-    switch (rpmtag) {
-    case RPMDBI_PACKAGES:	base = "packages.rpm";		break;
-    case RPMTAG_NAME:		base = "nameindex.rpm";		break;
-    case RPMTAG_BASENAMES:	base = "fileindex.rpm";		break;
-    case RPMTAG_GROUP:		base = "groupindex.rpm";	break;
-    case RPMTAG_REQUIRENAME:	base = "requiredby.rpm";	break;
-    case RPMTAG_PROVIDENAME:	base = "providesindex.rpm";	break;
-    case RPMTAG_CONFLICTNAME:	base = "conflictsindex.rpm";	break;
-    case RPMTAG_TRIGGERNAME:	base = "triggerindex.rpm";	break;
-    default:
-      {	const char * tn = tagName(rpmtag);
-	base = alloca( strlen(tn) + sizeof(".idx") + 1 );
-	(void) stpcpy( stpcpy(base, tn), ".idx");
-      }	break;
-    }
-    /*@=branchstate@*/
-    return xstrdup(base);
 }
 
 /**
@@ -3122,16 +3073,6 @@ static int rpmdbRemoveDatabase(const char * prefix,
     case 2:
     case 1:
     case 0:
-	if (dbiTags != NULL)
-	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base = db1basename(dbiTags[i]);
-	    sprintf(filename, "%s/%s/%s", prefix, dbpath, base);
-	    (void)rpmCleanPath(filename);
-	    if (!rpmioFileExists(filename))
-		continue;
-	    xx = unlink(filename);
-	    base = _free(base);
-	}
 	break;
     }
 
@@ -3226,34 +3167,6 @@ static int rpmdbMoveDatabase(const char * prefix,
     case 2:
     case 1:
     case 0:
-	if (dbiTags != NULL)
-	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base;
-	    int rpmtag;
-
-	    /* Filter out temporary databases */
-	    switch ((rpmtag = dbiTags[i])) {
-	    case RPMDBI_AVAILABLE:
-	    case RPMDBI_ADDED:
-	    case RPMDBI_REMOVED:
-	    case RPMDBI_DEPENDS:
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    default:
-		/*@switchbreak@*/ break;
-	    }
-
-	    base = db1basename(rpmtag);
-	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
-	    (void)rpmCleanPath(ofilename);
-	    if (!rpmioFileExists(ofilename))
-		continue;
-	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
-	    (void)rpmCleanPath(nfilename);
-	    if ((xx = Rename(ofilename, nfilename)) != 0)
-		rc = 1;
-	    base = _free(base);
-	}
 	break;
     }
     if (rc || _olddbapi == _newdbapi)

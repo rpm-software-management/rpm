@@ -6,6 +6,7 @@
  * Access RPM indices using Berkeley DB interface(s).
  */
 
+#include <assert.h>
 #include <rpmlib.h>
 #include <db.h>
 
@@ -444,14 +445,8 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-    int NULkey =
-	(key && key->data && *((char *)key->data) == '\0' && key->size == 0);
-    int rc;
-
-    if (NULkey) key->size++;
-    rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
-    if (NULkey) key->size--;
-    return rc;
+    assert(key->size > 0);
+    return (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
 }
 
 /** \ingroup dbi
@@ -469,14 +464,8 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
-    int NULkey =
-	(key && key->data && *((char *)key->data) == '\0' && key->size == 0);
-    int rc;
-
-    if (NULkey) key->size++;
-    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
-    if (NULkey) key->size--;
-    return rc;
+    assert(key->size > 0);
+    return (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
 }
 
 /** \ingroup dbi
@@ -494,14 +483,8 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem@*/
 	/*@modifies *dbcursor, *key, fileSystem @*/
 {
-    int NULkey =
-	(key && key->data && *((char *)key->data) == '\0' && key->size == 0);
-    int rc;
-
-    if (NULkey) key->size++;
-    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
-    if (NULkey) key->size--;
-    return rc;
+    assert(key->size > 0);
+    return (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
 }
 
 /** \ingroup dbi
@@ -581,13 +564,6 @@ int dbiByteSwapped(dbiIndex dbi)
 }
 /*@=globuse =mods =mustmod @*/
 
-/** \ingroup db1
- * Return base file name for db1 database (legacy).
- * @param rpmtag	rpm tag
- * @return		base file name of db1 database
- */
-char * db1basename(int rpmtag)
-	/*@*/;
 /*@=exportlocal@*/
 
 /** \ingroup rpmdb
