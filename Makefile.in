@@ -77,6 +77,12 @@ depend:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 
+co:
+	co RCS/*,v
+	for d in $(SUBDIRS); do \
+		(cd $$d; co RCS/*,v) ;\
+	done
+
 archive: 
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
