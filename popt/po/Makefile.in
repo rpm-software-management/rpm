@@ -13,7 +13,7 @@ MSGMERGE = msgmerge
 
 NLSPACKAGE = popt
 
-LINGUAS = 
+LINGUAS = ro
 CATALOGS = $(addsuffix .mo, $(LINGUAS))
 
 POTFILES = $(shell ls ../*.c)
