@@ -166,13 +166,13 @@ static char * depflagsFormat(int_32 type, const void * data,
 		         char * formatPrefix, int padding, int element) {
     char * val;
     char buf[10];
-    int anint = *(((int_32 *) data) + element);
+    int anint = *((int_32 *) data);
 
     if (type != RPM_INT32_TYPE) {
 	val = malloc(20);
 	strcpy(val, _("(not a number)"));
     } else {
-	*buf = '\0';
+	buf[0] = '\0';
 
 	if (anint & RPMSENSE_LESS) 
 	    strcat(buf, "<");

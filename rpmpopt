@@ -53,3 +53,6 @@ rpm alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGE
 rpm alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
+
+rpm alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %-27{NAME} %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)}|\n' \
+	--pipe "sort -r -n | sed 's,^..........,,'"
