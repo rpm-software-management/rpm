@@ -762,7 +762,7 @@ static void rpmSetVarArch(int var, char * val, char * arch) {
 	    if (next->value) free(next->value);
 	    if (next->arch) free(next->arch);
 	} else if (next->arch || arch) {
-	    next->next = malloc(sizeof(*malloc));
+	    next->next = malloc(sizeof(*next->next));
 	    next = next->next;
 	    next->next = NULL;
 	}

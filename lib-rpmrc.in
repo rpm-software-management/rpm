@@ -115,3 +115,15 @@ arch_compat: sparc: noarch
 arch_compat: ppc: noarch
 
 os_compat:   IRIX64: IRIX
+
+buildarch_compat: i986: i886
+buildarch_compat: i886: i786
+buildarch_compat: i786: i686
+buildarch_compat: i686: i586
+buildarch_compat: i586: i486
+buildarch_compat: i486: i386
+buildarch_compat: i386: noarch
+
+buildarch_compat: sparc: noarch
+
+buildarch_compat: alpha: noarch
