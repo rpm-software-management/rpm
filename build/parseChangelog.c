@@ -23,22 +23,28 @@ static int dateToTimet(const char * datestr, time_t * secs);
     
 int parseChangelog(Spec spec)
 {
-    int nextPart, res;
+    int nextPart, res, rc;
     StringBuf sb;
 
     sb = newStringBuf();
     
     /* There are no options to %changelog */
-    if (readLine(spec, STRIP_COMMENTS) > 0) {
+    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	freeStringBuf(sb);
 	return PART_NONE;
+    }
+    if (rc) {
+	return rc;
     }
     
     while (! (nextPart = isPart(spec->line))) {
 	appendStringBuf(sb, spec->line);
-	if (readLine(spec, STRIP_COMMENTS) > 0) {
+	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
+	}
+	if (rc) {
+	    return rc;
 	}
     }
 

@@ -186,7 +186,9 @@ static int handleDefine(struct MacroContext *mc, char *buf)
 	}
     }
 
-    expandMacros(mc, expansion);
+    if (expandMacros(mc, expansion)) {
+	return 1;
+    }
     addMacro(mc, name, expansion);
 
     return 0;
@@ -204,7 +206,6 @@ void initMacros(struct MacroContext *mc)
     mc->firstFree = 0;
     mc->macroTable = NULL;
     expandMacroTable(mc);
-
 }
 
 void freeMacros(struct MacroContext *mc)

@@ -76,7 +76,10 @@ int readLine(Spec spec, int strip)
     }
 
     if (spec->readStack->reading) {
-	expandMacros(&spec->macros, spec->line);
+	if (expandMacros(&spec->macros, spec->line)) {
+	    rpmError(RPMERR_BADSPEC, "line %d: %s", spec->lineNum, spec->line);
+	    return RPMERR_BADSPEC;
+	}
     }
 
     rpmGetArchInfo(&arch, NULL);

@@ -56,7 +56,7 @@ static int readIcon(Header h, char *file);
 int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
-    int tag;
+    int tag, rc;
     char *name, *mainName, *linep, *macro;
     int flag;
     Package pkg;
@@ -91,9 +91,12 @@ int parsePreamble(Spec spec, int initialPackage)
 	headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
     }
 
-    if (readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS) > 0) {
+    if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else {
+	if (rc) {
+	    return rc;
+	}
 	while (! (nextPart = isPart(spec->line))) {
 	    /* Skip blank lines */
 	    linep = spec->line;
@@ -111,9 +114,13 @@ int parsePreamble(Spec spec, int initialPackage)
 		    return PART_BUILDARCHITECTURES;
 		}
 	    }
-	    if (readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS) > 0) {
+	    if ((rc =
+		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
+	    }
+	    if (rc) {
+		return rc;
 	    }
 	}
     }

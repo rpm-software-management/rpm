@@ -44,7 +44,7 @@ static char *doUntar(Spec spec, int c, int quietly);
 
 int parsePrep(Spec spec)
 {
-    int nextPart, res;
+    int nextPart, res, rc;
     StringBuf buf;
     char **lines, **saveLines;
 
@@ -56,8 +56,11 @@ int parsePrep(Spec spec)
     spec->prep = newStringBuf();
 
     /* There are no options to %prep */
-    if (readLine(spec, STRIP_NOTHING) > 0) {
+    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	return PART_NONE;
+    }
+    if (rc) {
+	return rc;
     }
     
     buf = newStringBuf();
@@ -66,9 +69,12 @@ int parsePrep(Spec spec)
 	/* Need to expand the macros inline.  That way we  */
 	/* can give good line number information on error. */
 	appendStringBuf(buf, spec->line);
-	if (readLine(spec, STRIP_NOTHING) > 0) {
+	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
+	}
+	if (rc) {
+	    return rc;
 	}
     }
 

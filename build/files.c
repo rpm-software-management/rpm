@@ -323,7 +323,10 @@ static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
 	}
 	while (fgets(buf, sizeof(buf), f)) {
 	    handleComments(buf);
-	    expandMacros(&spec->macros, buf);
+	    if (expandMacros(&spec->macros, buf)) {
+		rpmError(RPMERR_BADSPEC, "line: %s", buf);
+		return RPMERR_BADSPEC;
+	    }
 	    appendStringBuf(pkg->fileList, buf);
 	}
 	fclose(f);

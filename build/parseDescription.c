@@ -92,14 +92,21 @@ int parseDescription(Spec spec)
     
     sb = newStringBuf();
 
-    if (readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS) > 0) {
+    if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else {
+	if (rc) {
+	    return rc;
+	}
 	while (! (nextPart = isPart(spec->line))) {
 	    appendLineStringBuf(sb, spec->line);
-	    if (readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS) > 0) {
+	    if ((rc =
+		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
+	    }
+	    if (rc) {
+		return rc;
 	    }
 	}
     }

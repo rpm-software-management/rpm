@@ -4,7 +4,7 @@
 
 int parseBuildInstallClean(Spec spec, int parsePart)
 {
-    int nextPart;
+    int nextPart, rc;
     StringBuf *sbp = NULL;
     char *name = NULL;
 
@@ -31,14 +31,20 @@ int parseBuildInstallClean(Spec spec, int parsePart)
     *sbp = newStringBuf();
 
     /* There are no options to %build, %install, or %clean */
-    if (readLine(spec, STRIP_NOTHING) > 0) {
+    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	return PART_NONE;
+    }
+    if (rc) {
+	return rc;
     }
     
     while (! (nextPart = isPart(spec->line))) {
 	appendStringBuf(*sbp, spec->line);
-	if (readLine(spec, STRIP_NOTHING) > 0) {
+	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	    return PART_NONE;
+	}
+	if (rc) {
+	    return rc;
 	}
     }
 

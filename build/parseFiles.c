@@ -89,14 +89,20 @@ int parseFiles(Spec spec)
     }
     pkg->fileList = newStringBuf();
     
-    if (readLine(spec, STRIP_COMMENTS) > 0) {
+    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else {
+	if (rc) {
+	    return rc;
+	}
 	while (! (nextPart = isPart(spec->line))) {
 	    appendStringBuf(pkg->fileList, spec->line);
-	    if (readLine(spec, STRIP_COMMENTS) > 0) {
+	    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
+	    }
+	    if (rc) {
+		return rc;
 	    }
 	}
     }
