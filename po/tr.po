@@ -421,7 +421,7 @@ msgstr "oluþturma için gereken tar dosyalarý belirtilmemiþ"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "imzalanacak paket(ler) belirtilmedi"
+msgstr "yüklenecek paket(ler) belirtilmedi"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1806,7 +1806,7 @@ msgstr "%%postun betiði (varsa) çalýþtýrýlmaz"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "dosyalarýn MD5 özümlemesi doðrulanmaz"
+msgstr "paket baðýmlýlýklarý doðrulanmaz"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -2305,7 +2305,7 @@ msgstr "db dosyasý %s hatalý\n"
 #: lib/rpmal.c:765
 #, fuzzy
 msgid "(added provide)"
-msgstr "%s: %-45s EVET (db saðlar)\n"
+msgstr "%s: %-45s EVET (önlem eklendi)\n"
 
 #: lib/rpmchecksig.c:58
 #, c-format
@@ -2564,7 +2564,7 @@ msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 #: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
+msgstr "%s paketi çeliþiyor: %s\n"
 
 #: lib/rpmps.c:278
 #, c-format
@@ -2794,8 +2794,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "Baþlýk SHA1 özümlemesi doðrulanmaz"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3387,198 +3388,8 @@ msgstr "url portu bir sayý olmalý\n"
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"
 
-#, fuzzy
-#~ msgid "%s: bad magic\n"
-#~ msgstr "Magic hatalý"
-
-#, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: bildirge okuma baþarýsýz: %s\n"
-
-#~ msgid "%s-%s-%s: immutable header region digest check failed\n"
-#~ msgstr "%s-%s-%s: deðiþmez baþlýk alaný özet denetimi baþarýsýz\n"
-
-#~ msgid ""
-#~ "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
-#~ msgstr ""
-#~ "%d(0x%08x) göreli konumunda paket zinciri kopuk, yeniden baðlanmaya "
-#~ "çalýþýlýyor...\n"
-
-#~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-#~ msgstr "%d(0x%08x) göreli konumunda kopan zincir yeniden baðlanýyor.\n"
-
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "kapanan db dosyasý     %s\n"
-
-#~ msgid "removed db file        %s\n"
-#~ msgstr "silinen db dosyasý     %s\n"
-
-#~ msgid "bad db file %s\n"
-#~ msgstr "db dosyasý %s hatalý\n"
-
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "Veritabaný için %s kilit alýnamadý\n"
-
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "paketler taranýrken hata(%d)\n"
-
-#~ msgid ""
-#~ "free list corrupt (%u)- please run\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "More information is available from http://www.rpm.org or the rpm-"
-#~ "list@redhat.com mailing list\n"
-#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
-#~ msgstr ""
-#~ "serbest liste bozuk (%u)- lütfen \t\"rpm --rebuilddb\" ile çalýþtýrýn\n"
-#~ "eðer \"rpm --rebuilddb\" çalýþmazsa problemin çözümü ve\n"
-#~ "daha fazla bilgi için http://www.rpm.org adresine bakýn veya rpm-"
-#~ "list@redhat.com e-posta listesine kaydolun.\n"
-
-#~ msgid ""
-#~ "old format database is present; use --rebuilddb to generate a new format "
-#~ "database\n"
-#~ msgstr ""
-#~ "veritabaný eski sürüme ait; yeni sürüm bir veritabaný oluþturmak için --"
-#~ "rebuilddb kullanýn\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "dosyalarýn sembolik bað dosya yollarý doðrulanmaz"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "baðýmlýlýklarda hata; gerekli paketler:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(bilinmeyen tür)"
-
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "rpm denetleme kipi (eski tip)"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
-
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "paket hem kullanýcý ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
-#~ "deðil)\n"
-
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "paket hem grup ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
-#~ "deðil)\n"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
-
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "PGP kullanarak imza üretiliyor.\n"
-
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "GPG kullanýlarak imza üretiliyor.\n"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "sistemden silinecek paket(ler) belirtilmedi"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "pgp çalýþtýrýlamadý (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "gpg çalýþtýrýlamadý\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "pgp çalýþtýrýlamadý\n"
-
-#~ msgid "========== relocations\n"
-#~ msgstr "========== yeniden konumlama\n"
-
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "%5d %s'i dýþlýyor\n"
-
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%5d yeniden konumlandýrýlýyor: %s -> %s\n"
-
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "multilib dosya yolu dýþlanýyor %s%s\n"
-
-#~ msgid "excluding %s %s\n"
-#~ msgstr "%s %s dýþlanýyor\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "%s %s'e konumlanýyor\n"
-
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "%s dizini %s de yeniden konumlanýyor\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s EVET (dosyalar eklendi)\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "%s paketi çeliþiyor: %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "%s: %-45s %-s (arabellekli)\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db files)\n"
-#~ msgstr "%s: %-45s EVET (db dosyalarý)\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "%s: %-45s EVET (db paketi)\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "%s: %-45s HAYIR\n"
-
-#~ msgid "%s: %-45s YES (added provide)\n"
-#~ msgstr "%s: %-45s EVET (önlem eklendi)\n"
-
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "%s dizininde rpm veritabaný açýlamýyor\n"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "%s/packages.rpm açýlamýyor\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "pakete bir imza ekler"
-
-#~ msgid "verify package signature"
-#~ msgstr "paket imzasýný denetler"
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "tüm GPG imzalarýný atlar"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "tüm PGP imzalarýný atlar"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "dosyalarýn 'md5-checksum' larýný denetlemez"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
-
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "tüm paketlerin denetlenmesi için fazladan argümanlar belirtildi"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "imzasý kontrol edilecek paket(ler) belirtilmedi"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"
@@ -3933,6 +3744,9 @@ msgstr "%s oluþturulamadý: %s\n"
 #~ "bir paketin kurulumunu -q ile belirtilen paket parametrelerini kullanarak "
 #~ "denetler"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "dosyalarýn 'md5-checksum' larýný denetlemez"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "dosya özelliklerini denetlemez"
 
@@ -4054,11 +3868,20 @@ msgstr "%s oluþturulamadý: %s\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    --addsign <pkt>+      "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "pakete bir imza ekler"
+
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    --checksig <pkt>+"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <pkt>+             "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "tüm PGP imzalarýný atlar"
+
+#~ msgid "skip any GPG signatures"
+#~ msgstr "tüm GPG imzalarýný atlar"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "geçerli bir veritabanýnýz varsa kullanmayýn"
@@ -4116,6 +3939,149 @@ msgstr "%s oluþturulamadý: %s\n"
 #~ msgstr ""
 #~ "--nomd5 sadece imza kontrolü veya paket denetimi sýrasýnda kullanýlýr"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "imzasý kontrol edilecek paket(ler) belirtilmedi"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "imzalanacak paket(ler) belirtilmedi"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "sistemden silinecek paket(ler) belirtilmedi"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
+
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "tüm paketlerin denetlenmesi için fazladan argümanlar belirtildi"
+
+#~ msgid "%s: %-45s YES (added files)\n"
+#~ msgstr "%s: %-45s EVET (dosyalar eklendi)\n"
+
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "%s: %-45s %-s (arabellekli)\n"
+
+#~ msgid "%s: %-45s YES (db files)\n"
+#~ msgstr "%s: %-45s EVET (db dosyalarý)\n"
+
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "%s: %-45s EVET (db paketi)\n"
+
+#~ msgid "%s: %-45s NO\n"
+#~ msgstr "%s: %-45s HAYIR\n"
+
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
+
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
+
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "%s paketi çeliþiyor: %s\n"
+
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "rpm denetleme kipi (eski tip)"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: bildirge okuma baþarýsýz: %s\n"
+
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "%s/packages.rpm açýlamýyor\n"
+
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "PGP kullanarak imza üretiliyor.\n"
+
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "GPG kullanýlarak imza üretiliyor.\n"
+
+#~ msgid "========== relocations\n"
+#~ msgstr "========== yeniden konumlama\n"
+
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "%5d %s'i dýþlýyor\n"
+
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "%5d yeniden konumlandýrýlýyor: %s -> %s\n"
+
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "multilib dosya yolu dýþlanýyor %s%s\n"
+
+#~ msgid "excluding %s %s\n"
+#~ msgstr "%s %s dýþlanýyor\n"
+
+#~ msgid "relocating %s to %s\n"
+#~ msgstr "%s %s'e konumlanýyor\n"
+
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "%s dizini %s de yeniden konumlanýyor\n"
+
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "paket hem kullanýcý ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
+#~ "deðil)\n"
+
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "paket hem grup ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
+#~ "deðil)\n"
+
+#~ msgid "%s-%s-%s: immutable header region digest check failed\n"
+#~ msgstr "%s-%s-%s: deðiþmez baþlýk alaný özet denetimi baþarýsýz\n"
+
+#~ msgid ""
+#~ "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
+#~ msgstr ""
+#~ "%d(0x%08x) göreli konumunda paket zinciri kopuk, yeniden baðlanmaya "
+#~ "çalýþýlýyor...\n"
+
+#~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
+#~ msgstr "%d(0x%08x) göreli konumunda kopan zincir yeniden baðlanýyor.\n"
+
+#~ msgid "closed  db file        %s\n"
+#~ msgstr "kapanan db dosyasý     %s\n"
+
+#~ msgid "removed db file        %s\n"
+#~ msgstr "silinen db dosyasý     %s\n"
+
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
+
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "Veritabaný için %s kilit alýnamadý\n"
+
+#~ msgid ""
+#~ "free list corrupt (%u)- please run\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "More information is available from http://www.rpm.org or the rpm-"
+#~ "list@redhat.com mailing list\n"
+#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
+#~ msgstr ""
+#~ "serbest liste bozuk (%u)- lütfen \t\"rpm --rebuilddb\" ile çalýþtýrýn\n"
+#~ "eðer \"rpm --rebuilddb\" çalýþmazsa problemin çözümü ve\n"
+#~ "daha fazla bilgi için http://www.rpm.org adresine bakýn veya rpm-"
+#~ "list@redhat.com e-posta listesine kaydolun.\n"
+
+#~ msgid ""
+#~ "old format database is present; use --rebuilddb to generate a new format "
+#~ "database\n"
+#~ msgstr ""
+#~ "veritabaný eski sürüme ait; yeni sürüm bir veritabaný oluþturmak için --"
+#~ "rebuilddb kullanýn\n"
+
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "paketler taranýrken hata(%d)\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(bilinmeyen tür)"
+
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "pgp çalýþtýrýlamadý (%s)\n"
+
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "gpg çalýþtýrýlamadý\n"
+
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr ""
 #~ "pgp çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn.\n"
@@ -4123,3 +4089,6 @@ msgstr "%s oluþturulamadý: %s\n"
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 #~ msgstr ""
 #~ "gpg çalýþtýrýlamadý. GPG kontrollerini atlamak için --nogpg kullanýn.\n"
+
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "pgp çalýþtýrýlamadý\n"

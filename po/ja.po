@@ -434,7 +434,7 @@ msgstr "作成(build)のための tar ファイルがありません"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "署名のためのパッケージがありません"
+msgstr "インストールのためのパッケージがありません"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1848,7 +1848,7 @@ msgstr "どの段階も実行しません"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "パッケージ中のファイルの検証をしません"
+msgstr "パッケージの依存関係の検証をしません"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -1959,7 +1959,7 @@ msgstr "<file> を所有しているパッケージを問い合わせます"
 #: lib/poptQV.c:101
 #, fuzzy
 msgid "query/verify package(s) with file identifier"
-msgstr "<file> を所有しているパッケージを問い合わせます"
+msgstr "ファイルを所有しているパッケージを問い合わせます"
 
 #: lib/poptQV.c:103
 #, fuzzy
@@ -1969,7 +1969,7 @@ msgstr "グループ中のパッケージについて問い合わせます\n"
 #: lib/poptQV.c:105
 #, fuzzy
 msgid "query/verify package(s) with header identifier"
-msgstr "<file> を所有しているパッケージを問い合わせます"
+msgstr "ファイルを所有しているパッケージを問い合わせます"
 
 #: lib/poptQV.c:107
 #, fuzzy
@@ -1979,7 +1979,7 @@ msgstr "パッケージファイルについて問い合わせます"
 #: lib/poptQV.c:109
 #, fuzzy
 msgid "query/verify package(s) with package identifier"
-msgstr "<file> を所有しているパッケージを問い合わせます"
+msgstr "ファイルを所有しているパッケージを問い合わせます"
 
 #: lib/poptQV.c:111
 #, fuzzy
@@ -2385,7 +2385,7 @@ msgstr "不正なファイルの状態: %s"
 #: lib/rpmal.c:765
 #, fuzzy
 msgid "(added provide)"
-msgstr "%s: %s は db が提供することによって満されます。\n"
+msgstr "%s: %s は provide に加えることによって満されます。\n"
 
 #: lib/rpmchecksig.c:58
 #, fuzzy, c-format
@@ -2656,7 +2656,7 @@ msgstr "パッケージ %s は require が満たされていません: %s\n"
 #: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "パッケージ %s は require が満たされていません: %s\n"
+msgstr "%s と競合するパッケージがあります: %s\n"
 
 #: lib/rpmps.c:278
 #, fuzzy, c-format
@@ -2893,8 +2893,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "パッケージ中のファイルの検証をしません"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3503,200 +3504,8 @@ msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
 
 #, fuzzy
-#~ msgid "%s: bad magic\n"
-#~ msgstr "不正なマジック"
-
-#, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: Fread に失敗しました: %s\n"
-
-#, fuzzy
-#~ msgid "removed db file        %s\n"
-#~ msgstr "%s 用の file インデックスを削除します\n"
-
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "不正なファイルの状態: %s"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "データベースモード 0x%x のオープン (%s)\n"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "データベースの %s をロックできません"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "パッケージ %s の探索エラー\n"
-
-#~ msgid ""
-#~ "free list corrupt (%u)- please run\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "More information is available from http://www.rpm.org or the rpm-"
-#~ "list@redhat.com mailing list\n"
-#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
-#~ msgstr ""
-#~ "free list corrupt (%u)- 以下を実行してください\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "もし問題を解決するために実行した \"rpm --rebuilddb\" が失敗したら、\n"
-#~ "http://www.rpm.org もしくは rpm-list@redhat.com メーリングリストから\n"
-#~ "詳細な情報が取得できます。\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "パッケージ中のファイルの検証をしません"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "依存性の欠如:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "%s: %s はパッケージに加えることによって満されます。\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(不明なタイプ)"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "問い合わせモード"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "パッケージに署名します(現在の署名は捨てられます)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "パッケージに署名します(現在の署名は捨てられます)"
-
-#, fuzzy
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "パッケージは ユーザ名と id リストの両方が欠けています(これは決して起きては"
-#~ "ならない)"
-
-#, fuzzy
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "パッケージはグループ名と id リストの両方が欠けています(これは決して起きて"
-#~ "はならない)"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "新しいヘッダ署名\n"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "新しいヘッダ署名\n"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "パッケージに署名します(現在の署名は捨てられます)"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "PGP を使用して署名の生成中\n"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "GPG を使用して署名の生成中\n"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "アンインストールのためのパッケージがありません"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "pgp を実行できません(%s)"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "gpg を実行できません"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "pgp を実行できません"
-
-#, fuzzy
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "OS は除外されています: %s"
-
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%s を %s に再配置しています\n"
-
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "ファイルの除外: %s%s\n"
-
-#, fuzzy
-#~ msgid "excluding %s %s\n"
-#~ msgstr "ファイルの除外: %s%s\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "%s を %s に再配置しています\n"
-
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "ディレクトリ %s を %s に再配置しています\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "%s と競合するパッケージがあります: %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "%s: %s は db パッケージによって満されています。\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "%s: %s は db パッケージによって満されています。\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "ファイル %s: %s\n"
-
-#, fuzzy
-#~ msgid "%s: %-45s YES (added provide)\n"
-#~ msgstr "%s: %s は provide に加えることによって満されます。\n"
-
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "%s/packages.rpm をオープンできません\n"
-
-#, fuzzy
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "%s/packages.rpm をオープンできません\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "パッケージに署名を追加します"
-
-#~ msgid "verify package signature"
-#~ msgstr "署名の検証をします"
-
-#, fuzzy
-#~ msgid "skip any GPG signatures"
-#~ msgstr "GPG 署名をスキップします"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "PGP 署名をスキップします"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "ファイルの md5 チェックサムの検証をしません"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "全パッケージの問い合わせのために余分な引数があります"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "全パッケージの検証のために余分な引数があります"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "署名検査のためのパッケージがありません"
 
 #, fuzzy
 #~ msgid "Usage: rpm {--help}"
@@ -3835,6 +3644,9 @@ msgstr "%s の作成に失敗しました\n"
 #~ "-q と同様に同じパッケージ指定オプションを取り\n"
 #~ "インストールの状況を検証します"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "ファイルの md5 チェックサムの検証をしません"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "ファイル属性の検証をしません"
 
@@ -3912,6 +3724,16 @@ msgstr "%s の作成に失敗しました\n"
 #~ msgid "like --rebuild, but don't build any package"
 #~ msgstr "--rebuild に似ていますが、パッケージを作成しません"
 
+#~ msgid "add a signature to a package"
+#~ msgstr "パッケージに署名を追加します"
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "PGP 署名をスキップします"
+
+#, fuzzy
+#~ msgid "skip any GPG signatures"
+#~ msgstr "GPG 署名をスキップします"
+
 #~ msgid "make sure a valid database exists"
 #~ msgstr "有効なデータベースが存在することを確かめます"
 
@@ -3965,6 +3787,142 @@ msgstr "%s の作成に失敗しました\n"
 #~ "verification"
 #~ msgstr "--nomd5 は署名検査とパッケージ検証時のみ使用できます"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "署名検査のためのパッケージがありません"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "署名のためのパッケージがありません"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "アンインストールのためのパッケージがありません"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "全パッケージの問い合わせのために余分な引数があります"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "全パッケージの検証のために余分な引数があります"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (added files)\n"
+#~ msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "%s: %s は db パッケージによって満されています。\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "%s: %s は db パッケージによって満されています。\n"
+
+#, fuzzy
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "%s: %s はパッケージに加えることによって満されます。\n"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "パッケージ %s は require が満たされていません: %s\n"
+
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "%s と競合するパッケージがあります: %s\n"
+
+#, fuzzy
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "問い合わせモード"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: Fread に失敗しました: %s\n"
+
+#, fuzzy
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "%s/packages.rpm をオープンできません\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "PGP を使用して署名の生成中\n"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "GPG を使用して署名の生成中\n"
+
+#, fuzzy
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "OS は除外されています: %s"
+
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "%s を %s に再配置しています\n"
+
+#, fuzzy
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "ファイルの除外: %s%s\n"
+
+#, fuzzy
+#~ msgid "excluding %s %s\n"
+#~ msgstr "ファイルの除外: %s%s\n"
+
+#~ msgid "relocating %s to %s\n"
+#~ msgstr "%s を %s に再配置しています\n"
+
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "ディレクトリ %s を %s に再配置しています\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "パッケージは ユーザ名と id リストの両方が欠けています(これは決して起きては"
+#~ "ならない)"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "パッケージはグループ名と id リストの両方が欠けています(これは決して起きて"
+#~ "はならない)"
+
+#, fuzzy
+#~ msgid "removed db file        %s\n"
+#~ msgstr "%s 用の file インデックスを削除します\n"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "データベースモード 0x%x のオープン (%s)\n"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "データベースの %s をロックできません"
+
+#~ msgid ""
+#~ "free list corrupt (%u)- please run\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "More information is available from http://www.rpm.org or the rpm-"
+#~ "list@redhat.com mailing list\n"
+#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
+#~ msgstr ""
+#~ "free list corrupt (%u)- 以下を実行してください\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "もし問題を解決するために実行した \"rpm --rebuilddb\" が失敗したら、\n"
+#~ "http://www.rpm.org もしくは rpm-list@redhat.com メーリングリストから\n"
+#~ "詳細な情報が取得できます。\n"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "パッケージ %s の探索エラー\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(不明なタイプ)"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "pgp を実行できません(%s)"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "gpg を実行できません"
+
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr ""
@@ -3976,6 +3934,10 @@ msgstr "%s の作成に失敗しました\n"
 #~ msgstr ""
 #~ "gpg を実行できませんでした。\n"
 #~ "GPG チェックをスキップするために --nogpg を使用してください。"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "pgp を実行できません"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4256,6 +4218,9 @@ msgstr "%s の作成に失敗しました\n"
 #~ msgid "expected size   : %d\n"
 #~ msgstr "期待されるサイズ: %d\n"
 
+#~ msgid "New Header signature\n"
+#~ msgstr "新しいヘッダ署名\n"
+
 #, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "パス %s は再配置できません(パッケージ %s-%s-%s に対して)"
@@ -4336,10 +4301,6 @@ msgstr "%s の作成に失敗しました\n"
 #, fuzzy
 #~ msgid "%s: %-45s YES (rpmlib version)\n"
 #~ msgstr "%s: %s は rpmlib のバージョンによって満されています。\n"
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "ファイルを所有しているパッケージを問い合わせます"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

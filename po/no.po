@@ -410,7 +410,7 @@ msgstr "ingen tar-fil oppgitt for bygging"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "ingen pakker oppgitt for signering"
+msgstr "ingen pakker oppgitt for installering"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1770,7 +1770,7 @@ msgstr "ikke kjør %%postun skriptlet (hvis noen)"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "ikke verifiser header SHA1 digest"
+msgstr "ikke verifiser pakkeavhengigheter"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -2750,8 +2750,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "ikke verifiser header SHA1 digest"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3340,89 +3341,8 @@ msgstr "url-port må være et tall\n"
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#, fuzzy
-#~ msgid "%s: bad magic\n"
-#~ msgstr "Ugyldig magi"
-
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: lesing av manifest feilet: %s\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "kan ikke åpne pakkedatabase i %s\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "ikke verifiser sti til symbolske lenker for filer"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "feilede avhengigheter:\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(ukjent type)"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "signer en pakke (forkast nåværende signatur)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "signer en pakke (forkast nåværende signatur)"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "signer en pakke (forkast nåværende signatur)"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "ingen pakker oppgitt for avinstallering"
-
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%5d omplasser %s -> %s\n"
-
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "ekskluderer multilib-sti %s%s\n"
-
-#~ msgid "excluding %s %s\n"
-#~ msgstr "eksluderer %s %s\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "relokerer %s til %s\n"
-
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "relokerer katalog %s til %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "%s: %s\n"
-
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "kan ikke åpne database i %s\n"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "kan ikke åpne %s/packages.rpm\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "legg til signatur til en pakke"
-
-#~ msgid "verify package signature"
-#~ msgstr "verifiser pakkesignatur"
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "hopp over GPG-signaturer"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "hopp over PGP-signaturer"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "ikke verifiser filens md5 sjekksum"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "ekstra argumenter oppgitt for spørring på alle pakker"
-
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "ekstra argumenter oppgitt for verfisering av alle pakker"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "ingen pakke oppgitt for signatursjekk"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"
@@ -3772,6 +3692,9 @@ msgstr "kunne ikke opprette %s: %s\n"
 #~ "verifiser en pakkeinstallasjon ved å bruke samme alternativer for "
 #~ "pakkespesifikasjon som -q"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "ikke verifiser filens md5 sjekksum"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "ikke verifiser filattributter"
 
@@ -3890,11 +3813,20 @@ msgstr "kunne ikke opprette %s: %s\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    --addsign <pakke>+    "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "legg til signatur til en pakke"
+
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    --checksig <pakke>+"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <pkg>+             "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "hopp over PGP-signaturer"
+
+#~ msgid "skip any GPG signatures"
+#~ msgstr "hopp over GPG-signaturer"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "sjekk at en gyldig database eksisterer"
@@ -3931,3 +3863,48 @@ msgstr "kunne ikke opprette %s: %s\n"
 
 #~ msgid "--apply may only be specified during package installation"
 #~ msgstr "--apply kan kun spesifiseres under pakkeinstallasjon"
+
+#~ msgid "no packages given for signature check"
+#~ msgstr "ingen pakke oppgitt for signatursjekk"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "ingen pakker oppgitt for signering"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "ingen pakker oppgitt for avinstallering"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "ekstra argumenter oppgitt for spørring på alle pakker"
+
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "ekstra argumenter oppgitt for verfisering av alle pakker"
+
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "pakke %s er i konflikt: %s\n"
+
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: lesing av manifest feilet: %s\n"
+
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "kan ikke åpne %s/packages.rpm\n"
+
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "%5d omplasser %s -> %s\n"
+
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "ekskluderer multilib-sti %s%s\n"
+
+#~ msgid "excluding %s %s\n"
+#~ msgstr "eksluderer %s %s\n"
+
+#~ msgid "relocating %s to %s\n"
+#~ msgstr "relokerer %s til %s\n"
+
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "relokerer katalog %s til %s\n"
+
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "kan ikke åpne pakkedatabase i %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(ukjent type)"

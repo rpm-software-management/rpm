@@ -452,7 +452,7 @@ msgstr "no foram passados arquivos tar para construo"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "no foram passados pacotes para assinatura"
+msgstr "no foi passado pacote para instalao"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1944,7 +1944,7 @@ msgstr "no execute nenhum estgio"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "instale pacote"
+msgstr "no verifique as dependncias do pacote"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -2754,7 +2754,7 @@ msgstr "no foi passado pacote para instalao"
 #: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "no foi passado pacote para instalao"
+msgstr "no foi passado pacote para desinstalao"
 
 #: lib/rpmps.c:278
 #, c-format
@@ -2995,8 +2995,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "instale pacote"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3625,171 +3626,8 @@ msgstr "No consegui abrir o pipe tar: %s\n"
 
 # , c-format
 #, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "No consegui abrir: %s\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "No consegui abrir: %s\n"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "no foi passado pacote para desinstalao"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "no foi passado pacote para instalao"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "instale pacote"
-
-#, fuzzy
-#~ msgid "failed dependencies:\n"
-#~ msgstr "lista dependncias do pacote"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "modo pesquisa"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "assine um pacote (descarte a assinatura corrente)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "assine um pacote (descarte a assinatura corrente)"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "gere assinatura PGP"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "gere assinatura PGP"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "assine um pacote (descarte a assinatura corrente)"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "gere assinatura PGP"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "gere assinatura PGP"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "no foi passado pacote para desinstalao"
-
-# , c-format
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "No consegui ler o arquivo spec de %s\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "No consegui ler o arquivo spec de %s\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "No consegui ler o arquivo spec de %s\n"
-
-# "Project-Id-Version: rpm-2.5.3\n"
-# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
-# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
-# "Language-Team: Portuguese <pt@li.org>\n"
-# "MIME-Version: 1.0\n"
-# "Content-Type: text/plain; charset=ISO-8859-1\n"
-# "Content-Transfer-Encoding: 8-bit\n"
-# , c-format
-#, fuzzy
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "RPM verso %s\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "No consegui abrir: %s\n"
-
-# "Project-Id-Version: rpm-2.5.3\n"
-# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
-# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
-# "Language-Team: Portuguese <pt@li.org>\n"
-# "MIME-Version: 1.0\n"
-# "Content-Type: text/plain; charset=ISO-8859-1\n"
-# "Content-Transfer-Encoding: 8-bit\n"
-# , c-format
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "RPM verso %s\n"
-
-# "Project-Id-Version: rpm-2.5.3\n"
-# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
-# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
-# "Language-Team: Portuguese <pt@li.org>\n"
-# "MIME-Version: 1.0\n"
-# "Content-Type: text/plain; charset=ISO-8859-1\n"
-# "Content-Transfer-Encoding: 8-bit\n"
-# , c-format
-#, fuzzy
-#~ msgid "excluding %s %s\n"
-#~ msgstr "RPM verso %s\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "No consegui abrir: %s\n"
-
-#, fuzzy
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "no foi passado pacote para desinstalao"
-
-# , c-format
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "No consegui ler o arquivo spec de %s\n"
-
-# , c-format
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "No consegui abrir: %s\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "adicione uma assinatura a um pacote"
-
-#~ msgid "verify package signature"
-#~ msgstr "verifique a assinatura do pacote"
-
-#, fuzzy
-#~ msgid "skip any GPG signatures"
-#~ msgstr "desconsidere quaisquer assinaturas PGP"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "desconsidere quaisquer assinaturas PGP"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "no verifique os checksums md5 do arquivo"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr ""
-#~ "foram passados argumentos em excesso para pesquisa em todos os pacotes"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr ""
-#~ "foram passados argumentos em excesso para pesquisa em todos os pacotes"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "nenhum pacote informado para checagem de assinatura"
 
 #, fuzzy
 #~ msgid "Usage: rpm {--help}"
@@ -4135,6 +3973,9 @@ msgstr "No consegui abrir o pipe tar: %s\n"
 #~ "verifique uma instalao de pacote usando as mesmas opes de especificao de "
 #~ "pacote do -q"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "no verifique os checksums md5 do arquivo"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "no verifique os atributos dos arquivos"
 
@@ -4236,6 +4077,9 @@ msgstr "No consegui abrir o pipe tar: %s\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    -b<estgio> <spec>    "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "adicione uma assinatura a um pacote"
+
 #, fuzzy
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    -b<estgio> <spec>    "
@@ -4243,6 +4087,13 @@ msgstr "No consegui abrir o pipe tar: %s\n"
 #, fuzzy
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -b<estgio> <spec>    "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "desconsidere quaisquer assinaturas PGP"
+
+#, fuzzy
+#~ msgid "skip any GPG signatures"
+#~ msgstr "desconsidere quaisquer assinaturas PGP"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "certifique que um banco de dados vlido existe"
@@ -4300,6 +4151,122 @@ msgstr "No consegui abrir o pipe tar: %s\n"
 #~ msgstr ""
 #~ "--nopgp somente pode ser usado durante checagem de assinaturas e "
 #~ "verificao de pacotes"
+
+#~ msgid "no packages given for signature check"
+#~ msgstr "nenhum pacote informado para checagem de assinatura"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "no foram passados pacotes para assinatura"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "no foi passado pacote para desinstalao"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr ""
+#~ "foram passados argumentos em excesso para pesquisa em todos os pacotes"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr ""
+#~ "foram passados argumentos em excesso para pesquisa em todos os pacotes"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "no foi passado pacote para instalao"
+
+#, fuzzy
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "no foi passado pacote para desinstalao"
+
+#, fuzzy
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "modo pesquisa"
+
+# , c-format
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "No consegui abrir: %s\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "gere assinatura PGP"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "gere assinatura PGP"
+
+# "Project-Id-Version: rpm-2.5.3\n"
+# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
+# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
+# "Language-Team: Portuguese <pt@li.org>\n"
+# "MIME-Version: 1.0\n"
+# "Content-Type: text/plain; charset=ISO-8859-1\n"
+# "Content-Transfer-Encoding: 8-bit\n"
+# , c-format
+#, fuzzy
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "RPM verso %s\n"
+
+# , c-format
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "No consegui abrir: %s\n"
+
+# "Project-Id-Version: rpm-2.5.3\n"
+# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
+# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
+# "Language-Team: Portuguese <pt@li.org>\n"
+# "MIME-Version: 1.0\n"
+# "Content-Type: text/plain; charset=ISO-8859-1\n"
+# "Content-Transfer-Encoding: 8-bit\n"
+# , c-format
+#, fuzzy
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "RPM verso %s\n"
+
+# "Project-Id-Version: rpm-2.5.3\n"
+# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
+# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
+# "Language-Team: Portuguese <pt@li.org>\n"
+# "MIME-Version: 1.0\n"
+# "Content-Type: text/plain; charset=ISO-8859-1\n"
+# "Content-Transfer-Encoding: 8-bit\n"
+# , c-format
+#, fuzzy
+#~ msgid "excluding %s %s\n"
+#~ msgstr "RPM verso %s\n"
+
+# , c-format
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "No consegui abrir: %s\n"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "no foi passado pacote para desinstalao"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "no foi passado pacote para instalao"
+
+# , c-format
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "No consegui ler o arquivo spec de %s\n"
+
+# , c-format
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "No consegui ler o arquivo spec de %s\n"
+
+# , c-format
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "No consegui ler o arquivo spec de %s\n"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4705,6 +4672,10 @@ msgstr "No consegui abrir o pipe tar: %s\n"
 #~ msgstr "pesquise pacotes que fornecem a capacidade <i>"
 
 #, fuzzy
+#~ msgid "New Header signature\n"
+#~ msgstr "gere assinatura PGP"
+
+#, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "no foi passado pacote para instalao"
 
@@ -4764,10 +4735,6 @@ msgstr "No consegui abrir o pipe tar: %s\n"
 #~ msgid "                        [--sign] [--nobuild] ]"
 #~ msgstr ""
 #~ "                        [--sign] [--test] [--timecheck <S>] arquivo-spec"
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
 # , c-format
 #, fuzzy

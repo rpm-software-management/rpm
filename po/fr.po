@@ -455,7 +455,7 @@ msgstr "aucun package n'a t spcifi pour la construction"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "aucun package n'a t spcifi pour la dsinstallation"
+msgstr "aucun package n'a t spcifi pour l'installation"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1851,7 +1851,8 @@ msgstr ""
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
 msgid "don't verify package signature(s)"
-msgstr "      --sign            - genre une signature PGP"
+msgstr ""
+"        -f <file>+        - interroge le package  qui appartient <file>"
 
 #: lib/poptI.c:192
 #, fuzzy
@@ -2145,8 +2146,9 @@ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr ""
 
 #: lib/poptQV.c:298
+#, fuzzy
 msgid "sign package(s) (identical to --resign)"
-msgstr ""
+msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
 #: lib/poptQV.c:300
 #, fuzzy
@@ -2158,8 +2160,9 @@ msgid "import an armored public key"
 msgstr ""
 
 #: lib/poptQV.c:304
+#, fuzzy
 msgid "sign package(s) (identical to --addsign)"
-msgstr ""
+msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
 #: lib/poptQV.c:306
 #, fuzzy
@@ -2647,7 +2650,7 @@ msgstr "aucun package n'a t spcifi pour l'installation"
 #: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "aucun package n'a t spcifi pour l'installation"
+msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
 #: lib/rpmps.c:278
 #, c-format
@@ -3475,95 +3478,8 @@ msgid "failed to create %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "aucun package n'a t spcifi pour la dsinstallation"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "aucun package n'a t spcifi pour l'installation"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr ""
-#~ "        -f <file>+        - interroge le package  qui appartient <file>"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "      --sign            - genre une signature PGP"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "      --sign            - genre une signature PGP"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "      --sign            - genre une signature PGP"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "      --sign            - genre une signature PGP"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "aucun package n'a t spcifi pour la dsinstallation"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "aucun package n'a t spcifi pour la dsinstallation"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "impossible d'ouvrir: %s\n"
-
-#, fuzzy
-#~ msgid "skip any GPG signatures"
-#~ msgstr "      --sign            - genre une signature PGP"
-
-#, fuzzy
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "aucun argument n'a t fourni pour la requte"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "aucun argument n'a t fourni pour la requte"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "aucun package n'a t spcifi pour la vrification de signature"
 
 #, fuzzy
 #~ msgid ""
@@ -3814,6 +3730,10 @@ msgstr "impossible d'ouvrir: %s\n"
 #~ msgstr "    --checksig <pkg>+  - vrifie la signature PGP"
 
 #, fuzzy
+#~ msgid "skip any GPG signatures"
+#~ msgstr "      --sign            - genre une signature PGP"
+
+#, fuzzy
 #~ msgid "-u and --uninstall are deprecated and no longer work.\n"
 #~ msgstr "-u et --uninstall sont obsoltes et seront bientt supprims.\n"
 
@@ -3849,6 +3769,72 @@ msgstr "impossible d'ouvrir: %s\n"
 #~ "--nomd5 may only be used during signature checking and package "
 #~ "verification"
 #~ msgstr "--sign ne peut tre spcifi que lors de la construction d'un package"
+
+#~ msgid "no packages given for signature check"
+#~ msgstr "aucun package n'a t spcifi pour la vrification de signature"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "aucun package n'a t spcifi pour la dsinstallation"
+
+#, fuzzy
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "aucun argument n'a t fourni pour la requte"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "aucun argument n'a t fourni pour la requte"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "aucun package n'a t spcifi pour l'installation"
+
+#, fuzzy
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "aucun package n'a t spcifi pour la dsinstallation"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "      --sign            - genre une signature PGP"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "      --sign            - genre une signature PGP"
+
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "aucun package n'a t spcifi pour la dsinstallation"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "aucun package n'a t spcifi pour l'installation"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4107,6 +4093,10 @@ msgstr "impossible d'ouvrir: %s\n"
 #~ msgstr "    --checksig <pkg>+  - vrifie la signature PGP"
 
 #, fuzzy
+#~ msgid "New Header signature\n"
+#~ msgstr "      --sign            - genre une signature PGP"
+
+#, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "aucun package n'a t spcifi pour l'installation"
 
@@ -4130,11 +4120,6 @@ msgstr "impossible d'ouvrir: %s\n"
 #, fuzzy
 #~ msgid "                        [--sign] [--nobuild] ]"
 #~ msgstr "                          qui matchent <pkg>"
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr ""
-#~ "        -f <file>+        - interroge le package  qui appartient <file>"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

@@ -476,7 +476,7 @@ msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "Es wurden keine Pakete für die Signatur angeben"
+msgstr "Es wurden keine Pakete für die Installation angegeben"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1578,9 +1578,8 @@ msgid "(cached)"
 msgstr ""
 
 #: lib/depends.c:416
-#, fuzzy
 msgid "(rpmrc provides)"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
+msgstr ""
 
 #: lib/depends.c:432
 #, fuzzy
@@ -1594,9 +1593,8 @@ msgid "(db files)"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 #: lib/depends.c:465
-#, fuzzy
 msgid "(db provides)"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
+msgstr ""
 
 #: lib/depends.c:478
 #, fuzzy
@@ -1937,7 +1935,7 @@ msgstr "Keine Stufen ausführen"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "Paket installieren"
+msgstr "Dateiabhängigkeiten nicht überprüfen"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -2471,9 +2469,8 @@ msgid "(added files)"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 #: lib/rpmal.c:765
-#, fuzzy
 msgid "(added provide)"
-msgstr "die Datei »%s« gehört zu keinem Paket\n"
+msgstr ""
 
 #: lib/rpmchecksig.c:58
 #, fuzzy, c-format
@@ -2980,8 +2977,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "Paket installieren"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3597,164 +3595,8 @@ msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 #, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: »readLead« fehlgeschlagen\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "Öffnen von %s fehlgeschlagen: %s"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "Datenbank aus der vorhandenen neu erstellen"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "kann %s lock für die Datenbank nicht bekommen"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "Fehler beim Suchen nach Paket %s\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "Paket installieren"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(unbekannter Typ)"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "Anfrage-Modus"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "nicht möglich, die Signatur zu lesen"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "nicht möglich, die Signatur zu lesen"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "PGP-Signatur generieren"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "PGP-Signatur generieren"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Konnte pgp nicht durchführen"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Konnte pgp nicht durchführen"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Konnte pgp nicht durchführen"
-
-# , c-format
-#, fuzzy
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "Hole %s heraus\n"
-
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "kann Datei %s nicht öffnen: "
-
-# , c-format
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "Hole %s heraus\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "excluding %s %s\n"
-#~ msgstr "Hole %s heraus\n"
-
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
-
-#, fuzzy
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "Paket %s wird nicht in %s aufgeführt"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
-
-# , c-format
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "Öffnen von %s fehlgeschlagen: %s"
-
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
-
-#, fuzzy
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "Signatur einem Paket hinzufügen"
-
-#~ msgid "verify package signature"
-#~ msgstr "Paketsignatur überprüfen"
-
-#, fuzzy
-#~ msgid "skip any GPG signatures"
-#~ msgstr "alle PGP-Signaturen überspringen"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "alle PGP-Signaturen überspringen"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "md5-Prüfsumme der Datei nicht überprüfen"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
 
 #, fuzzy
 #~ msgid "Usage: rpm {--help}"
@@ -4082,6 +3924,9 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 #~ msgstr ""
 #~ "Ein Paket mit denselben Paketspezifikations-Optionen wie bei -q überprüfen"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "md5-Prüfsumme der Datei nicht überprüfen"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "Dateiattribute nicht überprüfen"
 
@@ -4192,6 +4037,9 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    -b<STUFE> <SPEC>      "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "Signatur einem Paket hinzufügen"
+
 #, fuzzy
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    -b<STUFE> <SPEC>      "
@@ -4199,6 +4047,13 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 #, fuzzy
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -b<STUFE> <SPEC>      "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "alle PGP-Signaturen überspringen"
+
+#, fuzzy
+#~ msgid "skip any GPG signatures"
+#~ msgstr "alle PGP-Signaturen überspringen"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "Sicherstellen, daß eine gültige Datenbank vorhanden ist"
@@ -4258,6 +4113,108 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 #~ "--nopgp darf nur während der Signatur- und Paketüberprüfung angegeben "
 #~ "werden"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "Es wurden keine Pakete für die Signatur angeben"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
+
+#, fuzzy
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
+
+#, fuzzy
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "die Datei »%s« gehört zu keinem Paket\n"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "Paket %s wird nicht in %s aufgeführt"
+
+#, fuzzy
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "Paket %s wird nicht in %s aufgeführt"
+
+#, fuzzy
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "Anfrage-Modus"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: »readLead« fehlgeschlagen\n"
+
+#, fuzzy
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "PGP-Signatur generieren"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "PGP-Signatur generieren"
+
+# , c-format
+#, fuzzy
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "Hole %s heraus\n"
+
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "kann Datei %s nicht öffnen: "
+
+# , c-format
+#, fuzzy
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "Hole %s heraus\n"
+
+# , c-format
+#, fuzzy
+#~ msgid "excluding %s %s\n"
+#~ msgstr "Hole %s heraus\n"
+
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "Datenbank aus der vorhandenen neu erstellen"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "kann %s lock für die Datenbank nicht bekommen"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "Fehler beim Suchen nach Paket %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(unbekannter Typ)"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Konnte pgp nicht durchführen"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Konnte pgp nicht durchführen"
+
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
@@ -4265,6 +4222,10 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 #, fuzzy
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 #~ msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Konnte pgp nicht durchführen"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4699,6 +4660,10 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 #~ msgstr "%s: Öffnen fehlgeschlagen\n"
 
 #, fuzzy
+#~ msgid "New Header signature\n"
+#~ msgstr "nicht möglich, die Signatur zu lesen"
+
+#, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "Paket %s ist nicht installiert\n"
 
@@ -4762,10 +4727,6 @@ msgstr "anlegen von %s fehlgeschlagen\n"
 #~ msgstr ""
 #~ "                        [--sign] [--test] [--timecheck <S>] [--buildos "
 #~ "<BS>]"
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

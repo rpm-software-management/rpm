@@ -115,12 +115,16 @@
 	- opaque (well mostly) rpmTransactionSet using methods.
 	- Grand Renaming of rpm data types.
 	- fix: synthesize unpacking progress callbacks for packages w/o files.
-	- add rpmds/rpmfi/rpmts methods to bindings.
-	- re-enable rpm-python sub-package.
+	- python: add rpmds/rpmfi/rpmts methods.
+	- python: re-enable rpm-python sub-package.
 	- fix: resurrect "()(64bit)" markings using objdump.
-	- add rpmal/rpmte/rpmfd methods to bindings.
-	- drop cpanflute and cpanflute2, will be in Chip's CPAN package now.
-	- eliminate legacy db methods, add ts.dbMatch method.
+	- python: add rpmal/rpmte/rpmfd methods.
+	- perl: drop cpanflute and cpanflute2, will be in Chip's CPAN package.
+	- python: eliminate legacy db methods, add ts.dbMatch method.
+	- fix: use getgrnam, not getpwnam, to convert gid -> group.
+	- fix: avoid sign extension, use only 16 bits, when verifying rdev.
+	- python: separate {add,del}Macro methods, prepare for macro dictionary.
+	- i18n: copy current production PO files to top-of-stack.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

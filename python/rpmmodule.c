@@ -21,6 +21,7 @@
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
 #include "rpmmi-py.h"
+#include "rpmrc-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
 
@@ -35,36 +36,6 @@
  * \name Module: rpm
  */
 /*@{*/
-
-/**
- */
-static PyObject * doAddMacro(PyObject * self, PyObject * args)
-{
-    char * name, * val;
-
-    if (!PyArg_ParseTuple(args, "ss", &name, &val))
-	return NULL;
-
-    addMacro(NULL, name, NULL, val, RMIL_DEFAULT);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/**
- */
-static PyObject * doDelMacro(PyObject * self, PyObject * args)
-{
-    char * name;
-
-    if (!PyArg_ParseTuple(args, "s", &name))
-	return NULL;
-
-    delMacro(NULL, name);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
 
 /**
  */
@@ -348,10 +319,14 @@ static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
 - Create a transaction set.\n" },
-    { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS,
+
+    { "newrc", (PyCFunction) rpmrc_Create, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS,
+    { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS,
 	NULL },
+    { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS,
+	NULL },
+
     { "archscore", (PyCFunction) archScore, METH_VARARGS,
 	NULL },
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS,
@@ -392,6 +367,11 @@ static PyMethodDef rpmModuleMethods[] = {
     { NULL }
 } ;
 
+/**
+ */
+static char rpm__doc__[] =
+"";
+
 void initrpm(void);	/* XXX eliminate gcc warning */
 /**
  */
@@ -403,7 +383,21 @@ void initrpm(void)
     struct headerSprintfExtension_s * ext;
     PyObject * m;
 
-    m = Py_InitModule("rpm", rpmModuleMethods);
+    if (PyType_Ready(&hdr_Type) < 0) return;
+    if (PyType_Ready(&rpmal_Type) < 0) return;
+    if (PyType_Ready(&rpmdb_Type) < 0) return;
+    if (PyType_Ready(&rpmds_Type) < 0) return;
+    if (PyType_Ready(&rpmfd_Type) < 0) return;
+    if (PyType_Ready(&rpmfi_Type) < 0) return;
+    if (PyType_Ready(&rpmmi_Type) < 0) return;
+
+    rpmrc_Type.tp_base = &PyDict_Type;
+    if (PyType_Ready(&rpmrc_Type) < 0) return;
+
+    if (PyType_Ready(&rpmte_Type) < 0) return;
+    if (PyType_Ready(&rpmts_Type) < 0) return;
+
+    m = Py_InitModule3("rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
 	return;
 
@@ -421,39 +415,33 @@ void initrpm(void)
 	PyDict_SetItemString(d, "error", pyrpmError);
 #endif
 
-    rpmal_Type.ob_type = &PyType_Type;
-    Py_INCREF(&rpmal_Type);
-    PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
-
-    rpmdb_Type.ob_type = &PyType_Type;
-    Py_INCREF(&rpmdb_Type);
-    PyModule_AddObject(m, "db", (PyObject *) &rpmdb_Type);
-
-    rpmds_Type.ob_type = &PyType_Type;
-    Py_INCREF(&rpmds_Type);
-    PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
-
-    rpmfd_Type.ob_type = &PyType_Type;
-    Py_INCREF(&rpmfd_Type);
-    PyModule_AddObject(m, "fd", (PyObject *) &rpmfd_Type);
-
-    rpmfi_Type.ob_type = &PyType_Type;
-    Py_INCREF(&rpmfi_Type);
-    PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
-
-    hdr_Type.ob_type = &PyType_Type;
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
 
-    rpmmi_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmal_Type);
+    PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
+
+    Py_INCREF(&rpmdb_Type);
+    PyModule_AddObject(m, "db", (PyObject *) &rpmdb_Type);
+
+    Py_INCREF(&rpmds_Type);
+    PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
+
+    Py_INCREF(&rpmfd_Type);
+    PyModule_AddObject(m, "fd", (PyObject *) &rpmfd_Type);
+
+    Py_INCREF(&rpmfi_Type);
+    PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
+
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
 
-    rpmte_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmrc_Type);
+    PyModule_AddObject(m, "rc", (PyObject *) &rpmrc_Type);
+
     Py_INCREF(&rpmte_Type);
     PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
 
-    rpmts_Type.ob_type = &PyType_Type;
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
 

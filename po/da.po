@@ -411,7 +411,7 @@ msgstr "ingen tar-arkiver angivet til opbygning"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "ingen pakker angivet ved signering"
+msgstr "ingen pakker angivet ved installation"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1792,7 +1792,7 @@ msgstr "udfør ikke eventuelle skripter"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "verificér ikke filerne i pakke"
+msgstr "undlad at tjekke pakkers afhængighedskrav"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -2301,7 +2301,7 @@ msgstr "ugyldig db-fil %s\n"
 #: lib/rpmal.c:765
 #, fuzzy
 msgid "(added provide)"
-msgstr "%s: %-45s JA (db tilfører)\n"
+msgstr "%s: %-45s JA (tilføjede 'provide')\n"
 
 #: lib/rpmchecksig.c:58
 #, c-format
@@ -2562,7 +2562,7 @@ msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 #: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
+msgstr "pakke %s skaber konflikt: %s\n"
 
 #: lib/rpmps.c:278
 #, c-format
@@ -2794,8 +2794,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "verificér ikke filerne i pakke"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3391,198 +3392,8 @@ msgstr "url-port skal være et tal\n"
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
 
-#, fuzzy
-#~ msgid "%s: bad magic\n"
-#~ msgstr "Ugyldigt magisk tal"
-
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: læs manifest mislykkedes: %s\n"
-
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "lukket  db-fil    %s\n"
-
-#~ msgid "removed db file        %s\n"
-#~ msgstr "fjernet db-fil    %s\n"
-
-#~ msgid "bad db file %s\n"
-#~ msgstr "ugyldig db-fil %s\n"
-
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "åbner db-fil      %s modus 0x%x\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "kunne ikke opnå %s lås på database\n"
-
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "fejl(%d) ved optælling af pakker\n"
-
-#~ msgid ""
-#~ "free list corrupt (%u)- please run\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "More information is available from http://www.rpm.org or the rpm-"
-#~ "list@redhat.com mailing list\n"
-#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
-#~ msgstr ""
-#~ "fri-listen er ikke konsistent (%u)- kør venligst\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "Mere information kan findes på http://www.rpm.org ellerpostlisten rpm-"
-#~ "list@redhat.com\n"
-#~ "hvis \"rpm --rebuilddb\" ikke løser problemet.\n"
-
-#~ msgid ""
-#~ "old format database is present; use --rebuilddb to generate a new format "
-#~ "database\n"
-#~ msgstr ""
-#~ "gammelt databaseformat til stede; brug --rebuilddb for at oprette en "
-#~ "database med det nye format\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "verificér ikke filerne i pakke"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "%s: (%s, %s) tilføjet til afhængigheds-buffer.\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(ukendt type)"
-
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "gammel rpm verifikationstilstand"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "underskriv en pakke (slet nuværende signatur)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "underskriv en pakke (slet nuværende signatur)"
-
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "pakken har hverken en liste over brugernavne eller id (det burde ikke "
-#~ "kunne ske)\n"
-
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "pakken har hverken en liste over gruppenavne eller id (det burde ikke "
-#~ "kunne ske)\n"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "========== tsort'er pakker\n"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "underskriv en pakke (slet nuværende signatur)"
-
-#, fuzzy
-#~ msgid "========== Package RSA signature\n"
-#~ msgstr "========== tsort'er pakker\n"
-
-#, fuzzy
-#~ msgid "========== Package DSA signature\n"
-#~ msgstr "========== tsort'er pakker\n"
-
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "Genererer signatur med pgp.\n"
-
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "Genererer signatur med gpg.\n"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "ingen pakker angivet ved afinstallation"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Kunne ikke køre pgp (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Kunne ikke køre gpg\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Kunne ikke køre pgp\n"
-
-#~ msgid "========== relocations\n"
-#~ msgstr "========== gemmer omrokeringer\n"
-
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "%5d ekskluderer %s\n"
-
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%5d omrokerer %s -> %s\n"
-
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "ekskluderer multilib-sti %s%s\n"
-
-#~ msgid "excluding %s %s\n"
-#~ msgstr "ekskluderer %s %s\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "omrokerer %s til %s\n"
-
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "omrokerer kataloget %s til %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s JA (tilføjede filer)\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "pakke %s skaber konflikt: %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "%s: %-45s %-3s (husket)\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db files)\n"
-#~ msgstr "%s: %-45s JA (db-filer)\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "%s: %-45s JA (db-pakke)\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "%s: %-45s NEJ\n"
-
-#~ msgid "%s: %-45s YES (added provide)\n"
-#~ msgstr "%s: %-45s JA (tilføjede 'provide')\n"
-
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "kan ikke åbne rpm-database i %s\n"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "kunne ikke åbne %s/packages.rpm\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "tilføj signatur til pakke"
-
-#~ msgid "verify package signature"
-#~ msgstr "verificér pakkesignatur"
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "overspring eventuelle GPG-signaturer"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "overspring eventuelle PGP-signaturer"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "tjek ikke filers md5-checksummer"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "ekstra parametre angivet ved forespørgsel på alle pakker"
-
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "ekstra parametre angivet ved verifikation af alle pakker"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "ingen pakker angivet ved signatur-tjek"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm %s\n"
@@ -3930,6 +3741,9 @@ msgstr "kunne ikke oprette %s: %s\n"
 #~ "options as -q"
 #~ msgstr "tjek en pakkes installation ved brug af samme pakkeangivelse som -q"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "tjek ikke filers md5-checksummer"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "tjek ikke filegenskaber"
 
@@ -4048,11 +3862,20 @@ msgstr "kunne ikke oprette %s: %s\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    --addsign <pakke>+    "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "tilføj signatur til pakke"
+
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    --checksig <pakke>+"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <pakke>+           "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "overspring eventuelle PGP-signaturer"
+
+#~ msgid "skip any GPG signatures"
+#~ msgstr "overspring eventuelle GPG-signaturer"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "tjek at der eksisterer en gyldig database"
@@ -4110,11 +3933,146 @@ msgstr "kunne ikke oprette %s: %s\n"
 #~ "verification"
 #~ msgstr "--nomd5 kan kun bruges ved signaturkontrol og pakkeverifikation"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "ingen pakker angivet ved signatur-tjek"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "ingen pakker angivet ved signering"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "ingen pakker angivet ved afinstallation"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "ekstra parametre angivet ved forespørgsel på alle pakker"
+
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "ekstra parametre angivet ved verifikation af alle pakker"
+
+#~ msgid "%s: %-45s YES (added files)\n"
+#~ msgstr "%s: %-45s JA (tilføjede filer)\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "%s: %-45s %-3s (husket)\n"
+
+#~ msgid "%s: %-45s YES (db files)\n"
+#~ msgstr "%s: %-45s JA (db-filer)\n"
+
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "%s: %-45s JA (db-pakke)\n"
+
+#~ msgid "%s: %-45s NO\n"
+#~ msgstr "%s: %-45s NEJ\n"
+
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "%s: (%s, %s) tilføjet til afhængigheds-buffer.\n"
+
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
+
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "pakke %s skaber konflikt: %s\n"
+
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "gammel rpm verifikationstilstand"
+
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: læs manifest mislykkedes: %s\n"
+
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "kunne ikke åbne %s/packages.rpm\n"
+
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "Genererer signatur med pgp.\n"
+
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "Genererer signatur med gpg.\n"
+
+#~ msgid "========== relocations\n"
+#~ msgstr "========== gemmer omrokeringer\n"
+
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "%5d ekskluderer %s\n"
+
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "%5d omrokerer %s -> %s\n"
+
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "ekskluderer multilib-sti %s%s\n"
+
+#~ msgid "excluding %s %s\n"
+#~ msgstr "ekskluderer %s %s\n"
+
+#~ msgid "relocating %s to %s\n"
+#~ msgstr "omrokerer %s til %s\n"
+
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "omrokerer kataloget %s til %s\n"
+
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "pakken har hverken en liste over brugernavne eller id (det burde ikke "
+#~ "kunne ske)\n"
+
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "pakken har hverken en liste over gruppenavne eller id (det burde ikke "
+#~ "kunne ske)\n"
+
+#~ msgid "closed  db file        %s\n"
+#~ msgstr "lukket  db-fil    %s\n"
+
+#~ msgid "removed db file        %s\n"
+#~ msgstr "fjernet db-fil    %s\n"
+
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "åbner db-fil      %s modus 0x%x\n"
+
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "kunne ikke opnå %s lås på database\n"
+
+#~ msgid ""
+#~ "free list corrupt (%u)- please run\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "More information is available from http://www.rpm.org or the rpm-"
+#~ "list@redhat.com mailing list\n"
+#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
+#~ msgstr ""
+#~ "fri-listen er ikke konsistent (%u)- kør venligst\n"
+#~ "\t\"rpm --rebuilddb\"\n"
+#~ "Mere information kan findes på http://www.rpm.org ellerpostlisten rpm-"
+#~ "list@redhat.com\n"
+#~ "hvis \"rpm --rebuilddb\" ikke løser problemet.\n"
+
+#~ msgid ""
+#~ "old format database is present; use --rebuilddb to generate a new format "
+#~ "database\n"
+#~ msgstr ""
+#~ "gammelt databaseformat til stede; brug --rebuilddb for at oprette en "
+#~ "database med det nye format\n"
+
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "fejl(%d) ved optælling af pakker\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(ukendt type)"
+
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Kunne ikke køre pgp (%s)\n"
+
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Kunne ikke køre gpg\n"
+
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr "Kunne ikke køre pgp. Brug --nopgp for at overspringe PGP-tjek.\n"
 
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 #~ msgstr "Kunne ikke køre gpg. Brug --nogpg for at overspringe GPG-tjek.\n"
+
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Kunne ikke køre pgp\n"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4294,6 +4252,9 @@ msgstr "kunne ikke oprette %s: %s\n"
 
 #~ msgid "locked  db index       %s/%s\n"
 #~ msgstr "låste   db-index  %s/%s\n"
+
+#~ msgid "========== tsorting packages\n"
+#~ msgstr "========== tsort'er pakker\n"
 
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, "

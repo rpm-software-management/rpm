@@ -1753,12 +1753,12 @@ msgstr ""
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "ekki yfirfara MD5 undirritun skráa"
+msgstr "ekki skoða pakkaskilyrðin"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
 msgid "don't verify package signature(s)"
-msgstr "búa til undirskrift"
+msgstr "ekki skoða pakkaskilyrðin"
 
 #: lib/poptI.c:192
 msgid "do not execute any scriptlet(s) triggered by this package"
@@ -2163,7 +2163,7 @@ msgstr ""
 #: lib/query.c:664 lib/rpminstall.c:513
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
-msgstr "gat ekki búið til %%%s %s\n"
+msgstr "get ekki opnað pakka gagnagrunn í\n"
 
 #: lib/query.c:708
 #, c-format
@@ -2192,7 +2192,7 @@ msgstr "Get ekki lesið %s: %s.\n"
 #: lib/query.c:783 lib/query.c:801 lib/query.c:826 lib/query.c:856
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
-msgstr "gat ekki búið til %%%s %s\n"
+msgstr "get ekki opnað pakka gagnagrunn í\n"
 
 #: lib/query.c:867
 #, c-format
@@ -2279,7 +2279,7 @@ msgstr ""
 #: lib/rpmchecksig.c:512
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
-msgstr "%s: Fseek brást: %s\n"
+msgstr "%s: gat ekki lesið manifest: %s\n"
 
 #: lib/rpmchecksig.c:583
 #, c-format
@@ -2333,9 +2333,9 @@ msgstr ""
 
 #. @=branchstate@
 #: lib/rpmds.c:605
-#, c-format
+#, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
-msgstr ""
+msgstr "get ekki opnað pakka gagnagrunn í\n"
 
 #: lib/rpminstall.c:165
 msgid "Preparing..."
@@ -2724,8 +2724,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "ekki yfirfara SHA1 undirritunina"
 
 #: lib/signature.c:1073
 msgid "V3 RSA/MD5 signature: "
@@ -3313,46 +3314,8 @@ msgstr "gátt slóðar verður að vera tala\n"
 msgid "failed to create %s: %s\n"
 msgstr "gat ekki búið til %s: %s\n"
 
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: gat ekki lesið manifest: %s\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "get ekki fengið %s lás á gagnagrunninn\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "ekki yfirfara symlink slóð skráa"
-
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "í pakkanum eru engir notandalistar (þetta ætti aldrei að koma fyrir)\n"
-
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr "í pakkanum eru engir hópalistar (þetta ætti aldrei að koma fyrir)\n"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Gat ekki keyrt pgp (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Gat ekki keyrt gpg\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Gat ekki keyrt pgp\n"
-
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%5d færa %s -> %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "%s: %s\n"
-
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "get ekki opnað pakka gagnagrunn í %s\n"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "get ekki opnað %s/packages.rpm\n"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"
@@ -3693,3 +3656,30 @@ msgstr "gat ekki búið til %s: %s\n"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <pakki>+           "
+
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "get ekki opnað %s/packages.rpm\n"
+
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "%5d færa %s -> %s\n"
+
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "í pakkanum eru engir notandalistar (þetta ætti aldrei að koma fyrir)\n"
+
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr "í pakkanum eru engir hópalistar (þetta ætti aldrei að koma fyrir)\n"
+
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "get ekki fengið %s lás á gagnagrunninn\n"
+
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Gat ekki keyrt pgp (%s)\n"
+
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Gat ekki keyrt gpg\n"
+
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Gat ekki keyrt pgp\n"

@@ -130,9 +130,13 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
 /** \ingroup python
  */
 static struct PyMethodDef rpmmi_methods[] = {
+#if Py_TPFLAGS_HAVE_ITER
+    {"iter",	    (PyCFunction) rpmmi_Iter,		METH_VARARGS,
+	NULL},
     {"next",	    (PyCFunction) rpmmi_Next,		METH_VARARGS,
 "mi.next() -> hdr\n\
 - Retrieve next header that matches.\n" },
+#endif
     {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS,
 "mi.pattern(TagN, mire_type, pattern)\n\
 - Set a secondary match pattern on tags from retrieved header.\n" },

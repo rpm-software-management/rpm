@@ -422,7 +422,7 @@ msgstr "neboli zadané ¾iadne tar-súbory pre zostavenie"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "neboli zadané ¾iadne balíky na podpis"
+msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1474,9 +1474,8 @@ msgid "(cached)"
 msgstr ""
 
 #: lib/depends.c:416
-#, fuzzy
 msgid "(rpmrc provides)"
-msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
+msgstr ""
 
 #: lib/depends.c:432
 #, fuzzy
@@ -1824,7 +1823,7 @@ msgstr "nevykona» ¾iadne etapy"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "zobrazi» súbory v balíku"
+msgstr "neoverova» závislosti balíka"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -1929,7 +1928,7 @@ msgstr "opýta» sa na balík vlastniaci <súbor>"
 #: lib/poptQV.c:101
 #, fuzzy
 msgid "query/verify package(s) with file identifier"
-msgstr "opýta» sa na balík vlastniaci <súbor>"
+msgstr "opýta» sa balíku vlastniaceho súbor"
 
 #: lib/poptQV.c:103
 #, fuzzy
@@ -1939,7 +1938,7 @@ msgstr "opýta» sa v¹etkých balíkov v skupine"
 #: lib/poptQV.c:105
 #, fuzzy
 msgid "query/verify package(s) with header identifier"
-msgstr "opýta» sa na balík vlastniaci <súbor>"
+msgstr "opýta» sa balíku vlastniaceho súbor"
 
 #: lib/poptQV.c:107
 #, fuzzy
@@ -1949,7 +1948,7 @@ msgstr "opýta» sa súboru balíka"
 #: lib/poptQV.c:109
 #, fuzzy
 msgid "query/verify package(s) with package identifier"
-msgstr "opýta» sa na balík vlastniaci <súbor>"
+msgstr "opýta» sa balíku vlastniaceho súbor"
 
 #: lib/poptQV.c:111
 #, fuzzy
@@ -2345,9 +2344,8 @@ msgid "(added files)"
 msgstr "chybný stav súboru: %s"
 
 #: lib/rpmal.c:765
-#, fuzzy
 msgid "(added provide)"
-msgstr "Poskytuje:"
+msgstr ""
 
 #: lib/rpmchecksig.c:58
 #, fuzzy, c-format
@@ -2436,9 +2434,9 @@ msgid ""
 msgstr ""
 
 #: lib/rpmds.c:581
-#, fuzzy, c-format
+#, c-format
 msgid "  %s    A %s\tB %s\n"
-msgstr "          rpm {--version}"
+msgstr ""
 
 #. @=branchstate@
 #: lib/rpmds.c:605
@@ -2607,7 +2605,7 @@ msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 #: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
+msgstr "balík %s koliduje: %s\n"
 
 #: lib/rpmps.c:278
 #, c-format
@@ -2843,8 +2841,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "zobrazi» súbory v balíku"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3444,193 +3443,8 @@ msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
 
 #, fuzzy
-#~ msgid "%s: bad magic\n"
-#~ msgstr "Chybné magické èíslo"
-
-#, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: readLead zlyhalo\n"
-
-#, fuzzy
-#~ msgid "removed db file        %s\n"
-#~ msgstr "odstraòuje sa index súborov pre %s\n"
-
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "chybný stav súboru: %s"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "otvára sa databáza s právami 0x%x v %s\n"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "nie je mo¾né získa» %s zámok pre databázu"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "chyba pri hµadaní balíka %s\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "old format database is present; use --rebuilddb to generate a new format "
-#~ "database\n"
-#~ msgstr ""
-#~ "existuje databáza v starom formáte; pou¾ite --rebuilddb pre vytvorenie "
-#~ "databázy v novom formáte"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "zobrazi» súbory v balíku"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "nevyrie¹ené závislosti:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(neznámy typ)"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "re¾im otázok"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "podpísa» balík (znièi» aktuálny podpis)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "podpísa» balík (znièi» aktuálny podpis)"
-
-#, fuzzy
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "v balíku chýba tak meno pou¾ívateµa, ako aj zoznamy identifikácií (nemalo "
-#~ "by sa nikdy sta»)"
-
-#, fuzzy
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by "
-#~ "sa nikdy sta»)"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "Nová hlavièka podpisu\n"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "Nová hlavièka podpisu\n"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "podpísa» balík (znièi» aktuálny podpis)"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "Vytvára sa PGP podpis: %d\n"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "Vytvára sa PGP podpis: %d\n"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "neboli zadané ¾iadne balíky pre odin¹talovanie"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Nie je mo¾né spusti» pgp"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Nie je mo¾né spusti» gpg"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Nie je mo¾né spusti» pgp"
-
-#, fuzzy
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "OS je vynechaný: %s"
-
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "presúva sa %s do %s\n"
-
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "vynecháva sa %s\n"
-
-#, fuzzy
-#~ msgid "excluding %s %s\n"
-#~ msgstr "vynecháva sa %s\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "presúva sa %s do %s\n"
-
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "presúva sa %s do %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "balík %s koliduje: %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db provides)\n"
-#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "súbor %s: %s\n"
-
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "prida» podpis balíku"
-
-#~ msgid "verify package signature"
-#~ msgstr "overi» podpis balíka"
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "vynecha» akékoµvek GPG podpisy"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "vynecha» akékoµvek PGP podpisy"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "neoverova» md5 kontrolné súèty súborov"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "boli zadané nadbytoèné argumenty otázky pre v¹etky balíky"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "boli zadané nadbytoèné argumenty otázky pre v¹etky balíky"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "neboli zadané ¾iadne balíky pre overenie podpisu"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"
@@ -4013,6 +3827,9 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #~ "overi» in¹taláciu balíka s pou¾itím rovnakých volieb ¹pecifikácia balíka "
 #~ "ako pre -q"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "neoverova» md5 kontrolné súèty súborov"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "neoverova» atribúty súborov"
 
@@ -4134,6 +3951,9 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    --addsign <balík>+    "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "prida» podpis balíku"
+
 #, fuzzy
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    --checksig <balík>+   "
@@ -4141,6 +3961,12 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #, fuzzy
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    --resign <balík>+     "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "vynecha» akékoµvek PGP podpisy"
+
+#~ msgid "skip any GPG signatures"
+#~ msgstr "vynecha» akékoµvek GPG podpisy"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "uisti» sa, ¾e existuje platná databáza"
@@ -4194,6 +4020,132 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #~ "verification"
 #~ msgstr "--nomd5 mô¾e by» pou¾íté iba poèas overenia podpisu alebo balíka"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "neboli zadané ¾iadne balíky pre overenie podpisu"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "neboli zadané ¾iadne balíky na podpis"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "neboli zadané ¾iadne balíky pre odin¹talovanie"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "boli zadané nadbytoèné argumenty otázky pre v¹etky balíky"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "boli zadané nadbytoèné argumenty otázky pre v¹etky balíky"
+
+#, fuzzy
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
+
+#, fuzzy
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
+
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "balík %s koliduje: %s\n"
+
+#, fuzzy
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "re¾im otázok"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: readLead zlyhalo\n"
+
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "Vytvára sa PGP podpis: %d\n"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "Vytvára sa PGP podpis: %d\n"
+
+#, fuzzy
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "OS je vynechaný: %s"
+
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "presúva sa %s do %s\n"
+
+#, fuzzy
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "vynecháva sa %s\n"
+
+#, fuzzy
+#~ msgid "excluding %s %s\n"
+#~ msgstr "vynecháva sa %s\n"
+
+#~ msgid "relocating %s to %s\n"
+#~ msgstr "presúva sa %s do %s\n"
+
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "presúva sa %s do %s\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "v balíku chýba tak meno pou¾ívateµa, ako aj zoznamy identifikácií (nemalo "
+#~ "by sa nikdy sta»)"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by "
+#~ "sa nikdy sta»)"
+
+#, fuzzy
+#~ msgid "removed db file        %s\n"
+#~ msgstr "odstraòuje sa index súborov pre %s\n"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "otvára sa databáza s právami 0x%x v %s\n"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "nie je mo¾né získa» %s zámok pre databázu"
+
+#, fuzzy
+#~ msgid ""
+#~ "old format database is present; use --rebuilddb to generate a new format "
+#~ "database\n"
+#~ msgstr ""
+#~ "existuje databáza v starom formáte; pou¾ite --rebuilddb pre vytvorenie "
+#~ "databázy v novom formáte"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "chyba pri hµadaní balíka %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(neznámy typ)"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Nie je mo¾né spusti» pgp"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Nie je mo¾né spusti» gpg"
+
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr ""
@@ -4203,6 +4155,10 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 #~ msgstr ""
 #~ "Nie je mo¾né spusti» gpg. Pou¾ite --nogpg pre vynechanie GPG kontrol."
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Nie je mo¾né spusti» pgp"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4708,6 +4664,9 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #~ msgid "expected size   : %d\n"
 #~ msgstr "oèakávaná veµkos»: %d\n"
 
+#~ msgid "New Header signature\n"
+#~ msgstr "Nová hlavièka podpisu\n"
+
 #, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "balík %s nie je nain¹talovaný\n"
@@ -4822,6 +4781,10 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #~ "rpm"
 
 #, fuzzy
+#~ msgid "       %s {--version}\n"
+#~ msgstr "          rpm {--version}"
+
+#, fuzzy
 #~ msgid ""
 #~ "       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 #~ msgstr ""
@@ -4840,9 +4803,6 @@ msgstr "nepodarilo sa vytvori» %s\n"
 #, fuzzy
 #~ msgid "                        [--sign] [--nobuild] ]"
 #~ msgstr "                           [--sign] [--nobuild] [--timecheck <s>] ]"
-
-#~ msgid "query package owning file"
-#~ msgstr "opýta» sa balíku vlastniaceho súbor"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

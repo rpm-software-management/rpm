@@ -417,7 +417,7 @@ msgstr "nedostaju 'tar' datoteke za kreiranje"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "nedostaje paket za potpisivanje"
+msgstr "nedostaje paket za instalaciju"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1463,9 +1463,8 @@ msgid "(cached)"
 msgstr ""
 
 #: lib/depends.c:416
-#, fuzzy
 msgid "(rpmrc provides)"
-msgstr "datoteka %s ne pripada nijednom paketu\n"
+msgstr ""
 
 #: lib/depends.c:432
 #, fuzzy
@@ -1478,9 +1477,8 @@ msgid "(db files)"
 msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/depends.c:465
-#, fuzzy
 msgid "(db provides)"
-msgstr "datoteka %s ne pripada nijednom paketu\n"
+msgstr ""
 
 #: lib/depends.c:478
 #, fuzzy
@@ -1813,7 +1811,7 @@ msgstr "nemoj izvr¹iti nijednu fazu"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "instaliraj paket"
+msgstr "nemoj proveravati zavisnosti paketa"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -2339,9 +2337,8 @@ msgid "(added files)"
 msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/rpmal.c:765
-#, fuzzy
 msgid "(added provide)"
-msgstr "datoteka %s ne pripada nijednom paketu\n"
+msgstr ""
 
 #: lib/rpmchecksig.c:58
 #, fuzzy, c-format
@@ -2839,8 +2836,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "instaliraj paket"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3447,159 +3445,8 @@ msgid "failed to create %s: %s\n"
 msgstr "neuspelo kreiranje %s\n"
 
 #, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: Neuspeo 'readLead'\n"
-
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "neuspelo otvaranje %s: %s"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "rekreiraj bazu podataka iz postojeæe baze"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "gre¹ka kod potrage za paketom %s\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "instaliraj paket"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "lo¹e meðuzavisnosti:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "datoteka %s ne pripada nijednom paketu\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(nepoznat tip)"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "re¾im upita"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "potpi¹i paket (ukloni tekuæi potpis)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "potpi¹i paket (ukloni tekuæi potpis)"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "ne mogu da proèitam potpis"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "ne mogu da proèitam potpis"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "potpi¹i paket (ukloni tekuæi potpis)"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "napravi PGP potpis"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "napravi PGP potpis"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "neodstaje paket za deinstalaciju"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Ne mogu da izvr¹im PGP"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Ne mogu da izvr¹im PGP"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Ne mogu da izvr¹im PGP"
-
-#, fuzzy
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "Pribavljam %s\n"
-
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "Ne mogu da otvorim datoteku %s: "
-
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "Pribavljam %s\n"
-
-#, fuzzy
-#~ msgid "excluding %s %s\n"
-#~ msgstr "Pribavljam %s\n"
-
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "datoteka %s ne pripada nijednom paketu\n"
-
-#, fuzzy
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "paket %s nije naveden u %s"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "datoteka %s ne pripada nijednom paketu\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "datoteka %s ne pripada nijednom paketu\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "neuspelo otvaranje %s: %s"
-
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
-
-#, fuzzy
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "dodaj potpis u paket"
-
-#~ msgid "verify package signature"
-#~ msgstr "proveri potpis u paketu"
-
-#, fuzzy
-#~ msgid "skip any GPG signatures"
-#~ msgstr "preskoèi sve PGP potpise"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "preskoèi sve PGP potpise"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "nemoj proveravati md5 kontrolne sume datoteke"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "suvi¹ni argumenti su navedeni za upit nad svim paketima"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "suvi¹ni argumenti su navedeni za upit nad svim paketima"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "nedostaje paket za proveru potpisa"
 
 #, fuzzy
 #~ msgid "Usage: rpm {--help}"
@@ -3842,6 +3689,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ "proveri instalaciju paketa koristeæi iste opcije za odreðenje paketa kao "
 #~ "i -q"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "nemoj proveravati md5 kontrolne sume datoteke"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "nemoj proveravati atribute datoteke"
 
@@ -3944,6 +3794,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    -b<faza> <spec>\t "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "dodaj potpis u paket"
+
 #, fuzzy
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    -b<faza> <spec>\t "
@@ -3951,6 +3804,13 @@ msgstr "neuspelo kreiranje %s\n"
 #, fuzzy
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -b<faza> <spec>\t "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "preskoèi sve PGP potpise"
+
+#, fuzzy
+#~ msgid "skip any GPG signatures"
+#~ msgstr "preskoèi sve PGP potpise"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "uveri se da postoji ispravna baza podataka"
@@ -4006,6 +3866,105 @@ msgstr "neuspelo kreiranje %s\n"
 #~ "verification"
 #~ msgstr "--nopgp se mo¾e koristiti samo kod provere potpisa ili paketa"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "nedostaje paket za proveru potpisa"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "nedostaje paket za potpisivanje"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "neodstaje paket za deinstalaciju"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "suvi¹ni argumenti su navedeni za upit nad svim paketima"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "suvi¹ni argumenti su navedeni za upit nad svim paketima"
+
+#, fuzzy
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "datoteka %s ne pripada nijednom paketu\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "datoteka %s ne pripada nijednom paketu\n"
+
+#, fuzzy
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "datoteka %s ne pripada nijednom paketu\n"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "paket %s nije naveden u %s"
+
+#, fuzzy
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "paket %s nije naveden u %s"
+
+#, fuzzy
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "re¾im upita"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: Neuspeo 'readLead'\n"
+
+#, fuzzy
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "napravi PGP potpis"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "napravi PGP potpis"
+
+#, fuzzy
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "Pribavljam %s\n"
+
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "Ne mogu da otvorim datoteku %s: "
+
+#, fuzzy
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "Pribavljam %s\n"
+
+#, fuzzy
+#~ msgid "excluding %s %s\n"
+#~ msgstr "Pribavljam %s\n"
+
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "rekreiraj bazu podataka iz postojeæe baze"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "gre¹ka kod potrage za paketom %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(nepoznat tip)"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Ne mogu da izvr¹im PGP"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Ne mogu da izvr¹im PGP"
+
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr ""
@@ -4015,6 +3974,10 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 #~ msgstr ""
 #~ "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Ne mogu da izvr¹im PGP"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4422,6 +4385,10 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgstr "%s: Neuspelo otvaranje\n"
 
 #, fuzzy
+#~ msgid "New Header signature\n"
+#~ msgstr "ne mogu da proèitam potpis"
+
+#, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "paket %s nije instaliran\n"
 
@@ -4450,10 +4417,6 @@ msgstr "neuspelo kreiranje %s\n"
 #~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 #~ "<file>]"
 #~ msgstr "\trpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <datoteka>]"
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "upit nad paketom koji ima <datoteku>"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

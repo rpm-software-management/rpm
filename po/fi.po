@@ -424,7 +424,7 @@ msgstr "k‰‰nnˆkselle ei m‰‰ritelty tar-tiedostoja"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "allekirjoitukselle ei m‰‰ritelty paketteja"
+msgstr "asennukselle ei m‰‰ritelty paketteja"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1470,9 +1470,8 @@ msgid "(cached)"
 msgstr ""
 
 #: lib/depends.c:416
-#, fuzzy
 msgid "(rpmrc provides)"
-msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+msgstr ""
 
 #: lib/depends.c:432
 #, fuzzy
@@ -1485,9 +1484,8 @@ msgid "(db files)"
 msgstr "en voinut avata %s: %s"
 
 #: lib/depends.c:465
-#, fuzzy
 msgid "(db provides)"
-msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+msgstr ""
 
 #: lib/depends.c:478
 #, fuzzy
@@ -1821,7 +1819,7 @@ msgstr "‰l‰ suorita mit‰‰n vaiheita"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "asenna paketti"
+msgstr "‰l‰ tarkista paketin riippuvuuksia"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -2348,9 +2346,8 @@ msgid "(added files)"
 msgstr "en voinut avata %s: %s"
 
 #: lib/rpmal.c:765
-#, fuzzy
 msgid "(added provide)"
-msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+msgstr ""
 
 #: lib/rpmchecksig.c:58
 #, fuzzy, c-format
@@ -2848,8 +2845,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "asenna paketti"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3456,159 +3454,8 @@ msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti ep‰onnistui\n"
 
 #, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: readLead  ep‰onnistui\n"
-
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "en voinut avata %s: %s"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "en voi saada %s lukitusta tietokantaan"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "virhe etsitt‰ess‰ pakettia %s\n"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "asenna paketti"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "puuttuvat riippuvuudet:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(tuntematon tyyppi)"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "kyselymoodi"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "allekirjoita paketti (hylk‰‰ nykyinen allekirjoitus)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "allekirjoita paketti (hylk‰‰ nykyinen allekirjoitus)"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "en voinut lukea allekirjoitusta"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "en voinut lukea allekirjoitusta"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "allekirjoita paketti (hylk‰‰ nykyinen allekirjoitus)"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "generoi PGP-allekirjoitus"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "generoi PGP-allekirjoitus"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "poistolle ei m‰‰ritelty paketteja"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "En voinut ajaa pgp:t‰"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "En voinut ajaa pgp:t‰"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "En voinut ajaa pgp:t‰"
-
-#, fuzzy
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "Haen: %s\n"
-
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "en voinut avata tiedostoa %s: "
-
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "Haen: %s\n"
-
-#, fuzzy
-#~ msgid "excluding %s %s\n"
-#~ msgstr "Haen: %s\n"
-
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "virhe luotaessa hakemistoa %s: %s"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "en voinut avata %s: %s"
-
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
-
-#, fuzzy
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "lis‰‰ allekirjoitus pakettiin"
-
-#~ msgid "verify package signature"
-#~ msgstr "tarkista paketin allekirjoitus"
-
-#, fuzzy
-#~ msgid "skip any GPG signatures"
-#~ msgstr "ohita PGP-allekirjoitukset"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "ohita PGP-allekirjoitukset"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "‰l‰ tarkista tiedostojen md5-tarkistussummia"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "allekirjoituksen tarkistukselle ei m‰‰ritelty paketteja"
 
 #, fuzzy
 #~ msgid "Usage: rpm {--help}"
@@ -3942,6 +3789,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ "tarkista paketin asennus k‰ytt‰en samoja paketin m‰‰rittelyparametrej‰ "
 #~ "kuin -q "
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "‰l‰ tarkista tiedostojen md5-tarkistussummia"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "‰l‰ tarkista tiedostojen ominaisuuksia"
 
@@ -4044,6 +3894,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    -b<vaihe> <m‰‰rittely> "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "lis‰‰ allekirjoitus pakettiin"
+
 #, fuzzy
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    -b<vaihe> <m‰‰rittely> "
@@ -4051,6 +3904,13 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #, fuzzy
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -b<vaihe> <m‰‰rittely> "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "ohita PGP-allekirjoitukset"
+
+#, fuzzy
+#~ msgid "skip any GPG signatures"
+#~ msgstr "ohita PGP-allekirjoitukset"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "tarkista, ett‰ kunnollinen tietokanta lˆytyy"
@@ -4108,6 +3968,105 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa ja "
 #~ "paketteja todennettaessa"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "allekirjoituksen tarkistukselle ei m‰‰ritelty paketteja"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "allekirjoitukselle ei m‰‰ritelty paketteja"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "poistolle ei m‰‰ritelty paketteja"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
+
+#, fuzzy
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+
+#, fuzzy
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "paketti %s ei ole %s:ss‰"
+
+#, fuzzy
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "paketti %s ei ole %s:ss‰"
+
+#, fuzzy
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "kyselymoodi"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: readLead  ep‰onnistui\n"
+
+#, fuzzy
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "generoi PGP-allekirjoitus"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "generoi PGP-allekirjoitus"
+
+#, fuzzy
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "Haen: %s\n"
+
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "en voinut avata tiedostoa %s: "
+
+#, fuzzy
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "Haen: %s\n"
+
+#, fuzzy
+#~ msgid "excluding %s %s\n"
+#~ msgstr "Haen: %s\n"
+
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "virhe luotaessa hakemistoa %s: %s"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "en voi saada %s lukitusta tietokantaan"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "virhe etsitt‰ess‰ pakettia %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(tuntematon tyyppi)"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "En voinut ajaa pgp:t‰"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "En voinut ajaa pgp:t‰"
+
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr "En voinut ajaa pgp:t‰. K‰yt‰ --nopgpg ohittaaksesi PGP-tarkistus"
@@ -4115,6 +4074,10 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #, fuzzy
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 #~ msgstr "En voinut ajaa pgp:t‰. K‰yt‰ --nopgpg ohittaaksesi PGP-tarkistus"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "En voinut ajaa pgp:t‰"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4556,6 +4519,10 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgstr "%s: avaus ei onnistunut\n"
 
 #, fuzzy
+#~ msgid "New Header signature\n"
+#~ msgstr "en voinut lukea allekirjoitusta"
+
+#, fuzzy
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "paketti %s ei ole asennettu\n"
 
@@ -4623,10 +4590,6 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgstr ""
 #~ "                        [--sign] [--test] [--timecheck <s>] [--buildos "
 #~ "<kj>]"
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

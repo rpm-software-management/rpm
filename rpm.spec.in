@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.19
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -515,17 +515,23 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jun  1 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.20
+- fix: use getgrnam, not getpwnam, to convert gid -> group.
+- fix: avoid sign extension, use only 16 bits, when verifying rdev.
+- python: separate {add,del}Macro methods, prepare for macro dictionary.
+- i18n: copy current production PO files to top-of-stack.
+
 * Tue May 28 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.19
-- add rpmal/rpmte/rpmfd methods to bindings.
-- drop cpanflute and cpanflute2, will be in Chip's CPAN package now.
-- eliminate legacy db methods, add ts.dbMatch method.
+- python: add rpmal/rpmte/rpmfd methods to bindings.
+- perl: drop cpanflute and cpanflute2, will be in Chip's CPAN package.
+- python: eliminate legacy db methods, add ts.dbMatch method.
 
 * Sun May 26 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.17
 - fix: un-resurrect "()(64bit)" markings using objdump on i386.
 
 * Fri May 24 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.16
-- add rpmds/rpmfi/rpmts methods to bindings.
-- re-enable rpm-python sub-package.
+- python: add rpmds/rpmfi/rpmts methods.
+- python: re-enable rpm-python sub-package.
 - fix: resurrect "()(64bit)" markings using objdump.
 
 * Sun May 19 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.15

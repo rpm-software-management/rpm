@@ -425,7 +425,7 @@ msgstr "nie podano nazw plików tar do budowania"
 #: rpmqv.c:1056
 #, fuzzy
 msgid "no packages given for erase"
-msgstr "nie podano nazwy pakietu do podpisania"
+msgstr "nie podano nazw plików do zainstalowania"
 
 #: rpmqv.c:1097
 msgid "no packages given for install"
@@ -1476,9 +1476,8 @@ msgid "(cached)"
 msgstr ""
 
 #: lib/depends.c:416
-#, fuzzy
 msgid "(rpmrc provides)"
-msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+msgstr ""
 
 #: lib/depends.c:432
 #, fuzzy
@@ -1828,7 +1827,7 @@ msgstr "nie wykonuj ¿adnych etapów"
 #: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
-msgstr "nie sprawdzaj plików pakietu"
+msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
 #: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
@@ -1933,7 +1932,7 @@ msgstr "zapytaj do jakiego pakietu nale¿y <plik>"
 #: lib/poptQV.c:101
 #, fuzzy
 msgid "query/verify package(s) with file identifier"
-msgstr "zapytaj do jakiego pakietu nale¿y <plik>"
+msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
 #: lib/poptQV.c:103
 #, fuzzy
@@ -1943,7 +1942,7 @@ msgstr "odpytywanie pakietów w grupie"
 #: lib/poptQV.c:105
 #, fuzzy
 msgid "query/verify package(s) with header identifier"
-msgstr "zapytaj do jakiego pakietu nale¿y <plik>"
+msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
 #: lib/poptQV.c:107
 #, fuzzy
@@ -1953,7 +1952,7 @@ msgstr "odpytywanie pakietu"
 #: lib/poptQV.c:109
 #, fuzzy
 msgid "query/verify package(s) with package identifier"
-msgstr "zapytaj do jakiego pakietu nale¿y <plik>"
+msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
 #: lib/poptQV.c:111
 #, fuzzy
@@ -2347,9 +2346,8 @@ msgid "(added files)"
 msgstr "b³êdny status pliku: %s"
 
 #: lib/rpmal.c:765
-#, fuzzy
 msgid "(added provide)"
-msgstr "Udostêpniane zasoby:"
+msgstr ""
 
 #: lib/rpmchecksig.c:58
 #, fuzzy, c-format
@@ -2438,9 +2436,9 @@ msgid ""
 msgstr ""
 
 #: lib/rpmds.c:581
-#, fuzzy, c-format
+#, c-format
 msgid "  %s    A %s\tB %s\n"
-msgstr "       rpm {--version}"
+msgstr ""
 
 #. @=branchstate@
 #: lib/rpmds.c:605
@@ -2611,7 +2609,7 @@ msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 #: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
-msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
+msgstr "pakiet %s jest w konflikcie: %s\n"
 
 #: lib/rpmps.c:278
 #, fuzzy, c-format
@@ -2847,8 +2845,9 @@ msgid "MD5 digest: "
 msgstr ""
 
 #: lib/signature.c:887
+#, fuzzy
 msgid "Header SHA1 digest: "
-msgstr ""
+msgstr "nie sprawdzaj plików pakietu"
 
 #: lib/signature.c:1073
 #, fuzzy
@@ -3448,192 +3447,8 @@ msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"
 
 #, fuzzy
-#~ msgid "%s: bad magic\n"
-#~ msgstr "B³êdny magic"
-
-#, fuzzy
-#~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: readLead nie powiod³o siê\n"
-
-#, fuzzy
-#~ msgid "removed db file        %s\n"
-#~ msgstr "usuwanie indeksu plików dla %s\n"
-
-#, fuzzy
-#~ msgid "bad db file %s\n"
-#~ msgstr "b³êdny status pliku: %s"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "b³±d szukania pakietu %s\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "old format database is present; use --rebuilddb to generate a new format "
-#~ "database\n"
-#~ msgstr ""
-#~ "baza danych jest w starym formacie; u¿yj --rebuilddb aby wygenerowaæ "
-#~ "bazê  w nowym formacie"
-
-#, fuzzy
-#~ msgid "don't verify signature(s)"
-#~ msgstr "nie sprawdzaj plików pakietu"
-
-#~ msgid "failed dependencies:\n"
-#~ msgstr "niespe³nione zale¿no¶ci:\n"
-
-#, fuzzy
-#~ msgid "%9s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(nieznany typ)"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "tryb odpytywania"
-
-#, fuzzy
-#~ msgid "sign a package, preserving digests"
-#~ msgstr "podpisz pakiet (porzuæ bierz±c± sygnaturê)"
-
-#, fuzzy
-#~ msgid "sign a package, recomputing digests"
-#~ msgstr "podpisz pakiet (porzuæ bierz±c± sygnaturê)"
-
-#, fuzzy
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "pakiet nie specyfikuje ani nazwy u¿ytkownika ani list id (to nie powinno "
-#~ "siê zdarzyæ)"
-
-#, fuzzy
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "pakiet nie specyfikuje ani nazwy grupy ani list id (to nie powinno siê "
-#~ "zdarzyæ)"
-
-#, fuzzy
-#~ msgid "========== Header RSA signature\n"
-#~ msgstr "Nowa sygnatura nag³ówka\n"
-
-#, fuzzy
-#~ msgid "========== Header DSA signature\n"
-#~ msgstr "Nowa sygnatura nag³ówka\n"
-
-#, fuzzy
-#~ msgid "sign a package, discarding all current signatures"
-#~ msgstr "podpisz pakiet (porzuæ bierz±c± sygnaturê)"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "Generowanie sygnatury: %d\n"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "Generowanie sygnatury: %d\n"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "nie podano nazw plików do usuniêcia"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Nie mo¿na uruchomiæ pgp"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Nie mo¿na uruchomiæ gpg"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Nie mo¿na uruchomiæ pgp"
-
-#, fuzzy
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "Ten OS nie jest wspierany: %s"
-
-#, fuzzy
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "przesuwanie %s do %s\n"
-
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "wy³±czanie %s\n"
-
-#, fuzzy
-#~ msgid "excluding %s %s\n"
-#~ msgstr "wy³±czanie %s\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "przesuwanie %s do %s\n"
-
-#, fuzzy
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "przesuwanie %s do %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (added files)\n"
-#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "pakiet %s jest w konflikcie: %s\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s %-s (cached)\n"
-#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db provides)\n"
-#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s YES (db package)\n"
-#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
-
-#, fuzzy
-#~ msgid "%9s: %-45s NO\n"
-#~ msgstr "plik %s: %s\n"
-
-#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
-
-#~ msgid "add a signature to a package"
-#~ msgstr "dodaj sygnaturê do pakietu"
-
-#~ msgid "verify package signature"
-#~ msgstr "sprawd¼ sygnaturê pakietu"
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "pomiñ wszelkie sygnatury GPG"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "pomiñ wszelkie sygnatury PGP"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "nie sprawdzaj sum kontrolnych md5 plików"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "zbyt wiele argumentów dla odpytywania wszystkich pakietów"
-
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "zbyt wiele argumentów dla weryfikacji wszystkich pakietów"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "nie podano nazwy pakietu do sprawdzenia sygnatury"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"
@@ -4004,6 +3819,9 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #~ "options as -q"
 #~ msgstr "sprawd¼ stan pakietu (u¿ywa tych samych opcji co -q)"
 
+#~ msgid "do not verify file md5 checksums"
+#~ msgstr "nie sprawdzaj sum kontrolnych md5 plików"
+
 #~ msgid "do not verify file attributes"
 #~ msgstr "nie sprawdzaj atrybutów plików"
 
@@ -4122,6 +3940,9 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #~ msgid "    --addsign <pkg>+      "
 #~ msgstr "    --addsign <pakiet>+   "
 
+#~ msgid "add a signature to a package"
+#~ msgstr "dodaj sygnaturê do pakietu"
+
 #, fuzzy
 #~ msgid "    --checksig <pkg>+"
 #~ msgstr "    --checksig <pakiet>+  "
@@ -4129,6 +3950,12 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #, fuzzy
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    --resign <pakiet>+    "
+
+#~ msgid "skip any PGP signatures"
+#~ msgstr "pomiñ wszelkie sygnatury PGP"
+
+#~ msgid "skip any GPG signatures"
+#~ msgstr "pomiñ wszelkie sygnatury GPG"
 
 #~ msgid "make sure a valid database exists"
 #~ msgstr "upewnij siê, ¿e poprawna baza istnieje"
@@ -4184,6 +4011,131 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #~ "--nomd5 mo¿na u¿yæ tylko podczas sprawdzania sygnatury i weryfkiacji "
 #~ "pakietu"
 
+#~ msgid "no packages given for signature check"
+#~ msgstr "nie podano nazwy pakietu do sprawdzenia sygnatury"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "nie podano nazwy pakietu do podpisania"
+
+#~ msgid "no packages given for uninstall"
+#~ msgstr "nie podano nazw plików do usuniêcia"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "zbyt wiele argumentów dla odpytywania wszystkich pakietów"
+
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "zbyt wiele argumentów dla weryfikacji wszystkich pakietów"
+
+#, fuzzy
+#~ msgid "%s: %-45s %-s (cached)\n"
+#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#, fuzzy
+#~ msgid "%s: %-45s YES (db package)\n"
+#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#, fuzzy
+#~ msgid "%s: (%s, %s) added to Depends cache.\n"
+#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#, fuzzy
+#~ msgid "package %s-%s-%s require not satisfied: %s\n"
+#~ msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
+
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "pakiet %s jest w konflikcie: %s\n"
+
+#, fuzzy
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "tryb odpytywania"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: readLead nie powiod³o siê\n"
+
+#~ msgid "cannot open %s/packages.rpm\n"
+#~ msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
+
+#, fuzzy
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "Generowanie sygnatury: %d\n"
+
+#, fuzzy
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "Generowanie sygnatury: %d\n"
+
+#, fuzzy
+#~ msgid "%5d exclude  %s\n"
+#~ msgstr "Ten OS nie jest wspierany: %s"
+
+#, fuzzy
+#~ msgid "%5d relocate %s -> %s\n"
+#~ msgstr "przesuwanie %s do %s\n"
+
+#, fuzzy
+#~ msgid "excluding multilib path %s%s\n"
+#~ msgstr "wy³±czanie %s\n"
+
+#, fuzzy
+#~ msgid "excluding %s %s\n"
+#~ msgstr "wy³±czanie %s\n"
+
+#~ msgid "relocating %s to %s\n"
+#~ msgstr "przesuwanie %s do %s\n"
+
+#, fuzzy
+#~ msgid "relocating directory %s to %s\n"
+#~ msgstr "przesuwanie %s do %s\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "pakiet nie specyfikuje ani nazwy u¿ytkownika ani list id (to nie powinno "
+#~ "siê zdarzyæ)"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "pakiet nie specyfikuje ani nazwy grupy ani list id (to nie powinno siê "
+#~ "zdarzyæ)"
+
+#, fuzzy
+#~ msgid "removed db file        %s\n"
+#~ msgstr "usuwanie indeksu plików dla %s\n"
+
+#, fuzzy
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
+
+#, fuzzy
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
+
+#, fuzzy
+#~ msgid ""
+#~ "old format database is present; use --rebuilddb to generate a new format "
+#~ "database\n"
+#~ msgstr ""
+#~ "baza danych jest w starym formacie; u¿yj --rebuilddb aby wygenerowaæ "
+#~ "bazê  w nowym formacie"
+
+#, fuzzy
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "b³±d szukania pakietu %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(nieznany typ)"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Nie mo¿na uruchomiæ pgp"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Nie mo¿na uruchomiæ gpg"
+
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 #~ msgstr "Nie mo¿na uruchomiæ pgp. U¿yj --nopgp aby pomin±æ sprawdz. PGP"
@@ -4191,6 +4143,10 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #, fuzzy
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 #~ msgstr "Nie mo¿na uruchomiæ gpg. U¿yj --nopgp aby pomin±æ sprawdz. GPG"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Nie mo¿na uruchomiæ pgp"
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -4691,6 +4647,9 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #~ msgid "expected size   : %d\n"
 #~ msgstr "oczekiwany rozmiar: %d\n"
 
+#~ msgid "New Header signature\n"
+#~ msgstr "Nowa sygnatura nag³ówka\n"
+
 #~ msgid "path %s is not relocateable for package %s-%s-%s"
 #~ msgstr "nie mo¿na u¿yæ ¶cie¿ki %s przy przesuwaniu pakietu %s-%s-%s"
 
@@ -4801,6 +4760,10 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #~ "¼ród³owyN.rpm"
 
 #, fuzzy
+#~ msgid "       %s {--version}\n"
+#~ msgstr "       rpm {--version}"
+
+#, fuzzy
 #~ msgid ""
 #~ "       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 #~ msgstr ""
@@ -4817,9 +4780,6 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 #, fuzzy
 #~ msgid "                        [--sign] [--nobuild] ]"
 #~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-
-#~ msgid "query package owning file"
-#~ msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

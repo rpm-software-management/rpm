@@ -33,17 +33,16 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     unsigned short fmode = rpmfiFMode(fi);
     rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
-    const char * filespec = rpmfiFN(fi);
-    const char * rootDir;
-    int rc;
+    const char * fn = rpmfiFN(fi);
+    const char * rootDir = rpmtsRootDir(ts);
     struct stat sb;
+    int rc;
 
     /* Prepend the path to root (if specified). */
-    rootDir = rpmtsRootDir(ts);
     if (rootDir && *rootDir != '\0'
      && !(rootDir[0] == '/' && rootDir[1] == '\0'))
     {
-	int nb = strlen(filespec) + strlen(rootDir) + 1;
+	int nb = strlen(fn) + strlen(rootDir) + 1;
 	char * tb = alloca(nb);
 	char * t;
 
@@ -54,8 +53,8 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    --t;
 	    *t = '\0';
 	}
-	t = stpcpy(t, filespec);
-	filespec = t;
+	t = stpcpy(t, fn);
+	fn = t;
     }
 
     *result = RPMVERIFY_NONE;
@@ -73,7 +72,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	break;
     }
 
-    if (filespec == NULL || Lstat(filespec, &sb) != 0) {
+    if (fn == NULL || Lstat(fn, &sb) != 0) {
 	*result |= RPMVERIFY_LSTATFAIL;
 	return 1;
     }
@@ -118,7 +117,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     if (flags & RPMVERIFY_MD5) {
 	unsigned char md5sum[16];
 
-	rc = domd5(filespec, md5sum, 0);
+	rc = domd5(fn, md5sum, 0);
 	if (rc)
 	    *result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	else {
@@ -132,7 +131,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	char linkto[1024];
 	int size = 0;
 
-	if ((size = Readlink(filespec, linkto, sizeof(linkto)-1)) == -1)
+	if ((size = Readlink(fn, linkto, sizeof(linkto)-1)) == -1)
 	    *result |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
 	    const char * flink = rpmfiFLink(fi);
@@ -175,7 +174,9 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	{
 	    *result |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
-	    if (sb.st_rdev != rpmfiFRdev(fi))
+	    uint_16 st_rdev = (sb.st_rdev & 0xffff);
+	    uint_16 frdev = (rpmfiFRdev(fi) & 0xffff);
+	    if (st_rdev != frdev)
 		*result |= RPMVERIFY_RDEV;
 	} 
     }
@@ -193,7 +194,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 
     if (flags & RPMVERIFY_GROUP) {
-	const char * name = uidToUname(sb.st_gid);
+	const char * name = gidToGname(sb.st_gid);
 	const char * fgroup = rpmfiFGroup(fi);
 	if (name == NULL || fgroup == NULL || strcmp(name, fgroup))
 	    *result |= RPMVERIFY_GROUP;
