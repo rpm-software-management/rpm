@@ -1,4 +1,5 @@
 Makefile
 Makefile.in
 file.1
+libmagic.3
 magic.4
