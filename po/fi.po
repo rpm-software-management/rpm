@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-02-13 14:17-0500\n"
+"POT-Creation-Date: 2000-02-15 11:21-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1569,43 +1569,48 @@ msgstr "virhe: tiedostoa %s ei voi avata\n"
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1507 build/parsePrep.c:34
+#: build/files.c:1499
+#, fuzzy, c-format
+msgid "Bad file: %s: %s"
+msgstr "en voinut avata %s: %s"
+
+#: build/files.c:1511 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1562
+#: build/files.c:1566
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1567
+#: build/files.c:1571
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1649
+#: build/files.c:1653
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp epäonnistui"
 
-#: build/files.c:1653
+#: build/files.c:1657
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1743
+#: build/files.c:1747
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1771 build/files.c:1780
+#: build/files.c:1775 build/files.c:1784
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1887
+#: build/files.c:1891
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
@@ -2858,62 +2863,72 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "näytä paketin tiedostolistaus"
 
-#: lib/rebuilddb.c:25 lib/rpmdb.c:252
+#: lib/rebuilddb.c:26 lib/rpmdb.c:252
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: lib/rebuilddb.c:50
+#: lib/rebuilddb.c:51
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/rebuilddb.c:54
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "väliaikainen tietokanta %s on jo olemassa"
 
-#: lib/rebuilddb.c:60
+#: lib/rebuilddb.c:61
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 msgid "opening old database\n"
 msgstr ""
 
-#: lib/rebuilddb.c:75
+#: lib/rebuilddb.c:76
 msgid "opening new database\n"
 msgstr ""
 
-#: lib/rebuilddb.c:85 lib/rebuilddb.c:103
+#: lib/rebuilddb.c:86
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: lib/rebuilddb.c:97
+#: lib/rebuilddb.c:104
+#, c-format
+msgid "duplicated database entry: %s-%s-%s -- skipping."
+msgstr ""
+
+#: lib/rebuilddb.c:113
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "en voi lisätä tietuetta %d:stä"
 
-#: lib/rebuilddb.c:116
+#: lib/rebuilddb.c:119
+#, fuzzy, c-format
+msgid "record number %d in database is bad -- skipping."
+msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
+
+#: lib/rebuilddb.c:132
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:124
+#: lib/rebuilddb.c:140
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:126
+#: lib/rebuilddb.c:142
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:132
+#: lib/rebuilddb.c:148
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"

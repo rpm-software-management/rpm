@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-02-13 14:17-0500\n"
+"POT-Creation-Date: 2000-02-15 11:21-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1504,43 +1504,48 @@ msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: build/files.c:1507 build/parsePrep.c:34
+#: build/files.c:1499
+#, fuzzy, c-format
+msgid "Bad file: %s: %s"
+msgstr "súbor %s: %s\n"
+
+#: build/files.c:1511 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1562
+#: build/files.c:1566
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: build/files.c:1567
+#: build/files.c:1571
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:1649
+#: build/files.c:1653
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: build/files.c:1653
+#: build/files.c:1657
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:1743
+#: build/files.c:1747
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:1771 build/files.c:1780
+#: build/files.c:1775 build/files.c:1784
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:1887
+#: build/files.c:1891
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
@@ -2770,62 +2775,72 @@ msgstr "zobrazii» stav daných súborov"
 msgid "display a verbose file listing"
 msgstr "zobrazi» podrobný zoznam súborov balíka"
 
-#: lib/rebuilddb.c:25 lib/rpmdb.c:252
+#: lib/rebuilddb.c:26 lib/rpmdb.c:252
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rebuilddb.c:50
+#: lib/rebuilddb.c:51
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rebuilddb.c:54
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rebuilddb.c:60
+#: lib/rebuilddb.c:61
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 msgid "opening old database\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rebuilddb.c:75
+#: lib/rebuilddb.c:76
 msgid "opening new database\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rebuilddb.c:85 lib/rebuilddb.c:103
+#: lib/rebuilddb.c:86
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rebuilddb.c:97
+#: lib/rebuilddb.c:104
+#, c-format
+msgid "duplicated database entry: %s-%s-%s -- skipping."
+msgstr ""
+
+#: lib/rebuilddb.c:113
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rebuilddb.c:116
+#: lib/rebuilddb.c:119
+#, fuzzy, c-format
+msgid "record number %d in database is bad -- skipping."
+msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
+
+#: lib/rebuilddb.c:132
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rebuilddb.c:124
+#: lib/rebuilddb.c:140
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rebuilddb.c:126
+#: lib/rebuilddb.c:142
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rebuilddb.c:132
+#: lib/rebuilddb.c:148
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"

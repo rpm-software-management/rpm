@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-02-13 14:17-0500\n"
+"POT-Creation-Date: 2000-02-15 11:21-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1501,43 +1501,48 @@ msgstr "Не могу открыть файл %%files: %s"
 msgid "line: %s"
 msgstr "строка: %s"
 
-#: build/files.c:1507 build/parsePrep.c:34
+#: build/files.c:1499
+#, fuzzy, c-format
+msgid "Bad file: %s: %s"
+msgstr "файл %s: %s\n"
+
+#: build/files.c:1511 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Неверная пара хозяин/группа: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1562
+#: build/files.c:1566
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Не могу исполнить %s"
 
-#: build/files.c:1567
+#: build/files.c:1571
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Не могу форкнуть %s"
 
-#: build/files.c:1649
+#: build/files.c:1653
 #, c-format
 msgid "%s failed"
 msgstr "%s не удалось"
 
-#: build/files.c:1653
+#: build/files.c:1657
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1743
+#: build/files.c:1747
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Определяю требования пакета...\n"
 
-#: build/files.c:1771 build/files.c:1780
+#: build/files.c:1775 build/files.c:1784
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Ошибка определения сервисов, предоставляемых пакетом"
 
-#: build/files.c:1887
+#: build/files.c:1891
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываю файлы: %s\n"
@@ -2766,62 +2771,72 @@ msgstr "показать состояние показанных файлов"
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
-#: lib/rebuilddb.c:25 lib/rpmdb.c:252
+#: lib/rebuilddb.c:26 lib/rpmdb.c:252
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
-#: lib/rebuilddb.c:50
+#: lib/rebuilddb.c:51
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраиваю базу в корневом каталоге %s\n"
 
-#: lib/rebuilddb.c:54
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rebuilddb.c:60
+#: lib/rebuilddb.c:61
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 msgid "opening old database\n"
 msgstr "открываю старую базу\n"
 
-#: lib/rebuilddb.c:75
+#: lib/rebuilddb.c:76
 msgid "opening new database\n"
 msgstr "открываю новую базу\n"
 
-#: lib/rebuilddb.c:85 lib/rebuilddb.c:103
+#: lib/rebuilddb.c:86
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rebuilddb.c:97
+#: lib/rebuilddb.c:104
+#, c-format
+msgid "duplicated database entry: %s-%s-%s -- skipping."
+msgstr ""
+
+#: lib/rebuilddb.c:113
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "не могу добавить запись (первоначально в %d)"
 
-#: lib/rebuilddb.c:116
+#: lib/rebuilddb.c:119
+#, fuzzy, c-format
+msgid "record number %d in database is bad -- skipping."
+msgstr "запись номер %d в базе неверна, пропускаю"
+
+#: lib/rebuilddb.c:132
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rebuilddb.c:124
+#: lib/rebuilddb.c:140
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rebuilddb.c:126
+#: lib/rebuilddb.c:142
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rebuilddb.c:132
+#: lib/rebuilddb.c:148
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"

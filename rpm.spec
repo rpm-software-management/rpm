@@ -214,6 +214,10 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue Feb 15 2000 Jeff Johnson <jbj@redhat.com>
+- new rpm-build package to isolate rpm dependencies on perl/bash2.
+- always remove duplicate identical package entries on --rebuilddb.
+
 * Wed Feb  9 2000 Jeff Johnson <jbj@redhat.com>
 - brp-compress deals with hard links correctly.
 

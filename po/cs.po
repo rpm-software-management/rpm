@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-13 14:17-0500\n"
+"POT-Creation-Date: 2000-02-15 11:21-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1531,43 +1531,48 @@ msgstr "chyba: nelze otevøít soubor %s\n"
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1507 build/parsePrep.c:34
+#: build/files.c:1499
+#, fuzzy, c-format
+msgid "Bad file: %s: %s"
+msgstr "soubor %s: %s\n"
+
+#: build/files.c:1511 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1562
+#: build/files.c:1566
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nelze spustit pgp"
 
-#: build/files.c:1567
+#: build/files.c:1571
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nelze naèíst cílpodpisu"
 
-#: build/files.c:1649
+#: build/files.c:1653
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "chyba pgp"
 
-#: build/files.c:1653
+#: build/files.c:1657
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1743
+#: build/files.c:1747
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1771 build/files.c:1780
+#: build/files.c:1775 build/files.c:1784
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1887
+#: build/files.c:1891
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "soubor %s: %s\n"
@@ -2820,62 +2825,72 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "zobrazit seznam souborù balíèkù"
 
-#: lib/rebuilddb.c:25 lib/rpmdb.c:252
+#: lib/rebuilddb.c:26 lib/rpmdb.c:252
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
-#: lib/rebuilddb.c:50
+#: lib/rebuilddb.c:51
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "databáze se pøestavuje v koøenovém adresáøi %s\n"
 
-#: lib/rebuilddb.c:54
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáze %s ji¾ existuje"
 
-#: lib/rebuilddb.c:60
+#: lib/rebuilddb.c:61
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytváøí se adresáø: %s\n"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 msgid "opening old database\n"
 msgstr "otevírá se stará databáze\n"
 
-#: lib/rebuilddb.c:75
+#: lib/rebuilddb.c:76
 msgid "opening new database\n"
 msgstr "otevírá se nová databáze\n"
 
-#: lib/rebuilddb.c:85 lib/rebuilddb.c:103
+#: lib/rebuilddb.c:86
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "záznam èíslo %d v databázi je chybný -- vynechává se"
 
-#: lib/rebuilddb.c:97
+#: lib/rebuilddb.c:104
+#, c-format
+msgid "duplicated database entry: %s-%s-%s -- skipping."
+msgstr ""
+
+#: lib/rebuilddb.c:113
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nelze pøidat záznam - pùvodnì u %d"
 
-#: lib/rebuilddb.c:116
+#: lib/rebuilddb.c:119
+#, fuzzy, c-format
+msgid "record number %d in database is bad -- skipping."
+msgstr "záznam èíslo %d v databázi je chybný -- vynechává se"
+
+#: lib/rebuilddb.c:132
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "databázi nelze pøestavit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rebuilddb.c:124
+#: lib/rebuilddb.c:140
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rebuilddb.c:126
+#: lib/rebuilddb.c:142
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "aby se obnovily, nahrazuje soubory v %s soubory z %s"
 
-#: lib/rebuilddb.c:132
+#: lib/rebuilddb.c:148
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nelze odstranit %s: %s\n"
