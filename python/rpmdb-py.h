@@ -29,9 +29,9 @@ extern PyTypeObject rpmdb_Type;
 rpmdb dbFromDb(rpmdbObject * db)
 	/*@*/;
 
-rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args)
+rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
-PyObject * rebuildDB (PyObject * self, PyObject * args)
+PyObject * rebuildDB (PyObject * self, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 #endif

@@ -28,11 +28,15 @@ static int _rpmfd_debug = 1;
 
 /*@null@*/
 static PyObject *
-rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args)
+rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmfd_debug)) return NULL;
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfd_debug))
+	return NULL;
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -95,15 +99,16 @@ static int closeCallback(FILE * f)
  */
 /*@null@*/
 static PyObject *
-rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
+rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals fdhead, fdtail @*/
 	/*@modifies fdhead, fdtail @*/
 {
     char * path;
     char * mode = "r.ufdio";
     FDlist *node;
+    char * kwlist[] = {"path", "mode", NULL};
 
-    if (!PyArg_ParseTuple(args, "s|s", &path, &mode))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s", kwlist, &path, &mode))
 	return NULL;
 
     node = xmalloc (sizeof(FDlist));
@@ -153,9 +158,9 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfd_methods[] = {
-    {"Debug",	(PyCFunction)rpmfd_Debug,	METH_VARARGS,
+    {"Debug",	(PyCFunction)rpmfd_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
-    {"Fopen",	(PyCFunction)rpmfd_Fopen,	METH_VARARGS,
+    {"Fopen",	(PyCFunction)rpmfd_Fopen,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
     {NULL,		NULL}		/* sentinel */
 };
@@ -195,11 +200,13 @@ static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
 {
     char * path;
     char * mode = "r.ufdio";
+    char * kwlist[] = {"path", "mode", NULL};
 
 if (_rpmfd_debug)
 fprintf(stderr, "*** rpmfd_init(%p,%p,%p)\n", s, args, kwds);
 
-    if (!PyArg_ParseTuple(args, "s|s:rpmfd_init", &path, &mode))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s:rpmfd_init", kwlist,
+	    &path, &mode))
 	return -1;
 
     s->fd = Fopen(path, mode);

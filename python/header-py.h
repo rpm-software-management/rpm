@@ -25,25 +25,25 @@ Header hdrGetHeader(hdrObject * h)
 long tagNumFromPyObject (PyObject *item)
 	/*@*/;
 
-PyObject * labelCompare (PyObject * self, PyObject * args)
+PyObject * labelCompare (PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
-PyObject * versionCompare (PyObject * self, PyObject * args)
+PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
-PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args)
+PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	/*@*/;
-PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args)
+PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
-PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args)
+PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
-PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args)
+PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 PyObject * rpmReadHeaders (FD_t fd)
 	/*@*/;
-PyObject * rhnLoad(PyObject * self, PyObject * args)
+PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
-PyObject * hdrLoad(PyObject * self, PyObject * args)
+PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 
 #endif

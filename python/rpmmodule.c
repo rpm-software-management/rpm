@@ -39,12 +39,13 @@
 
 /**
  */
-static PyObject * archScore(PyObject * self, PyObject * args)
+static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * arch;
     int score;
+    char * kwlist[] = {"arch", NULL};
 
-    if (!PyArg_ParseTuple(args, "s", &arch))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
 	return NULL;
 
     score = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
@@ -54,12 +55,13 @@ static PyObject * archScore(PyObject * self, PyObject * args)
 
 /**
  */
-static PyObject * setLogFile (PyObject * self, PyObject * args)
+static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
 {
     PyObject * fop = NULL;
     FILE * fp = NULL;
+    char * kwlist[] = {"fileObject", NULL};
 
-    if (!PyArg_ParseTuple(args, "|O:logSetFile", &fop))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:logSetFile", kwlist, &fop))
 	return NULL;
 
     if (fop) {
@@ -78,11 +80,13 @@ static PyObject * setLogFile (PyObject * self, PyObject * args)
 
 /**
  */
-static PyObject * setVerbosity (PyObject * self, PyObject * args)
+static PyObject *
+setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
 {
     int level;
+    char * kwlist[] = {"level", NULL};
 
-    if (!PyArg_ParseTuple(args, "i", &level))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &level))
 	return NULL;
 
     rpmSetVerbosity(level);
@@ -93,20 +97,28 @@ static PyObject * setVerbosity (PyObject * self, PyObject * args)
 
 /**
  */
-static PyObject * setEpochPromote (PyObject * self, PyObject * args)
+static PyObject *
+setEpochPromote (PyObject * self, PyObject * args, PyObject * kwds)
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmds_nopromote))
+    char * kwlist[] = {"promote", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
+	    &_rpmds_nopromote))
 	return NULL;
+
     Py_INCREF(Py_None);
     return (PyObject *) Py_None;
 }
 
 /**
  */
-static PyObject * setStats (PyObject * self, PyObject * args)
+static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmts_stats))
+    char * kwlist[] = {"stats", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmts_stats))
 	return NULL;
+
     Py_INCREF(Py_None);
     return (PyObject *) Py_None;
 }
@@ -114,7 +126,7 @@ static PyObject * setStats (PyObject * self, PyObject * args)
 /**
  */
 static PyMethodDef rpmModuleMethods[] = {
-    { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS,
+    { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS|METH_KEYWORDS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
 - Create a transaction set.\n" },
 
@@ -122,42 +134,42 @@ static PyMethodDef rpmModuleMethods[] = {
     { "newrc", (PyCFunction) rpmrc_Create, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 #endif
-    { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS,
+    { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS,
-	NULL },
-
-    { "archscore", (PyCFunction) archScore, METH_VARARGS,
+    { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS,
-	NULL },
-    { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS,
-	NULL },
-    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS,
-	NULL },
-    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS,
-	NULL },
-    { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS,
-	NULL },
-    { "readHeaderFromFD", (PyCFunction) rpmSingleHeaderFromFD, METH_VARARGS,
+    { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS,
+    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "readHeaderFromFD", (PyCFunction) rpmSingleHeaderFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS,
-	NULL },
-    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS,
-	NULL },
-    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS,
-	NULL },
-    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS,
-	NULL },
-    { "setStats", (PyCFunction) setStats, METH_VARARGS,
+    { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS,
+    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "setStats", (PyCFunction) setStats, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+
+    { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS|METH_KEYWORDS,
 "rpm.dsSingle(TagN, N, [EVR, [Flags]] -> ds\n\
 - Create a single element dependency set.\n" },
     { NULL }

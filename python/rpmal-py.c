@@ -14,26 +14,32 @@
 
 /*@null@*/
 static PyObject *
-rpmal_Debug(/*@unused@*/ rpmalObject * s, PyObject * args)
+rpmal_Debug(/*@unused@*/ rpmalObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmal_debug)) return NULL;
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmal_debug))
+    	return NULL;
+
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 /*@null@*/
 static PyObject *
-rpmal_Add(rpmalObject * s, PyObject * args)
+rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     rpmdsObject * dso;
     rpmfiObject * fio;
     PyObject * key;
     alKey pkgKey;
+    char * kwlist[] = {"packageKey", "key", "dso", "fileInfo", NULL};
 
-    if (!PyArg_ParseTuple(args, "iOO!O!:Add", &pkgKey, &key, &rpmds_Type, &dso, &rpmfi_Type, &fio))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "iOO!O!:Add", kwlist,
+	    &pkgKey, &key, &rpmds_Type, &dso, &rpmfi_Type, &fio))
 	return NULL;
 
     /* XXX errors */
@@ -45,13 +51,14 @@ rpmal_Add(rpmalObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmal_Del(rpmalObject * s, PyObject * args)
+rpmal_Del(rpmalObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
     alKey pkgKey;
+    char * kwlist[] = {"key", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:Del", &pkgKey))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Del", kwlist, &pkgKey))
 	return NULL;
 
     rpmalDel(s->al, pkgKey);
@@ -62,14 +69,18 @@ rpmal_Del(rpmalObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmal_AddProvides(rpmalObject * s, PyObject * args)
+rpmal_AddProvides(rpmalObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
     rpmdsObject * dso;
     alKey pkgKey;
+    char * kwlist[] = {"index", "packageIndex", "dso", NULL};
 
-    if (!PyArg_ParseTuple(args, "iOO!O!:AddProvides", &pkgKey, &rpmds_Type, &dso))
+    /* XXX: why is there an argument listed in the format string that
+     *      isn't handled?  Is that for transaction color? */
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "iOO!O!:AddProvides", kwlist,
+	    &pkgKey, &rpmds_Type, &dso))
 	return NULL;
 
     /* XXX transaction colors */
@@ -81,13 +92,10 @@ rpmal_AddProvides(rpmalObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmal_MakeIndex(rpmalObject * s, PyObject * args)
+rpmal_MakeIndex(rpmalObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, ":MakeIndex"))
-	return NULL;
-
     rpmalMakeIndex(s->al);
 
     Py_INCREF(Py_None);
@@ -97,15 +105,15 @@ rpmal_MakeIndex(rpmalObject * s, PyObject * args)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmal_methods[] = {
- {"Debug",	(PyCFunction)rpmal_Debug,	METH_VARARGS,
+ {"Debug",	(PyCFunction)rpmal_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"add",	(PyCFunction)rpmal_Add,		METH_VARARGS,
+ {"add",	(PyCFunction)rpmal_Add,		METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"delete",	(PyCFunction)rpmal_Del,		METH_VARARGS,
+ {"delete",	(PyCFunction)rpmal_Del,		METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"addProvides",(PyCFunction)rpmal_AddProvides,	METH_VARARGS,
+ {"addProvides",(PyCFunction)rpmal_AddProvides,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"makeIndex",(PyCFunction)rpmal_MakeIndex,	METH_VARARGS,
+ {"makeIndex",(PyCFunction)rpmal_MakeIndex,	METH_NOARGS,
 	NULL},
  {NULL,		NULL }		/* sentinel */
 };

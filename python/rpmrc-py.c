@@ -29,11 +29,14 @@ static int _rc_debug = 0;
 
 /**
  */
-PyObject * rpmrc_AddMacro(/*@unused@*/ PyObject * self, PyObject * args)
+PyObject *
+rpmrc_AddMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * name, * val;
+    char * kwlist[] = {"name", "value", NULL};
 
-    if (!PyArg_ParseTuple(args, "ss:AddMacro", &name, &val))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss:AddMacro", kwlist,
+	    &name, &val))
 	return NULL;
 
     addMacro(NULL, name, NULL, val, -1);
@@ -44,11 +47,13 @@ PyObject * rpmrc_AddMacro(/*@unused@*/ PyObject * self, PyObject * args)
 
 /**
  */
-PyObject * rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args)
+PyObject *
+rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * name;
+    char * kwlist[] = {"name", NULL};
 
-    if (!PyArg_ParseTuple(args, "s:DelMacro", &name))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:DelMacro", kwlist, &name))
 	return NULL;
 
     delMacro(NULL, name);
@@ -236,6 +241,7 @@ fprintf(stderr, "*** rpmrc_iternext(%p[%s])\n", s, lbl(s));
 /**
  */
 /*@null@*/
+/* XXX: does this _actually_ take any arguments?  I don't think it does... */
 static PyObject * rpmrc_next(PyObject * s, PyObject *args)
 	/*@*/
 {
@@ -312,9 +318,9 @@ fprintf(stderr, "*** rpmrc_new(%p[%s],%p,%p) ret %p[%s]\n", subtype, lbl(subtype
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmrc_methods[] = {
-    { "addMacro",	(PyCFunction) rpmrc_AddMacro, METH_VARARGS,
+    { "addMacro",	(PyCFunction) rpmrc_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "delMacro",	(PyCFunction) rpmrc_DelMacro, METH_VARARGS,
+    { "delMacro",	(PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 #if Py_TPFLAGS_HAVE_ITER && PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 4
     { "next",		(PyCFunction) rpmrc_next,     METH_VARARGS,

@@ -173,11 +173,14 @@ rpmfts_debug(__FUNCTION__, s);
 
 /*@null@*/
 static PyObject *
-rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args)
+rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i:Debug", &_rpmfts_debug))
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Debug", kwlist,
+	    &_rpmfts_debug))
 	return NULL;
 
     Py_INCREF(Py_None);
@@ -186,16 +189,19 @@ rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmfts_Open(rpmftsObject * s, PyObject * args)
+rpmfts_Open(rpmftsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     char * root = NULL;
     int options = -1;
     int ignore = -1;
     int xx;
+    /* XXX: there's bound to be a better name than "ignore" */
+    char * kwlist[] = {"root", "options", "ignore", NULL};
 
 rpmfts_debug(__FUNCTION__, s);
-    if (!PyArg_ParseTuple(args, "|sii:Open", &root, &options, &ignore))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|sii:Open", kwlist,
+	    &root, &options, &ignore))
 	return NULL;
 
     xx = rpmfts_initialize(s, root, options, ignore);
@@ -206,14 +212,13 @@ rpmfts_debug(__FUNCTION__, s);
 
 /*@null@*/
 static PyObject *
-rpmfts_Read(rpmftsObject * s, PyObject * args)
+rpmfts_Read(rpmftsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result;
 
 rpmfts_debug(__FUNCTION__, s);
-    if (!PyArg_ParseTuple(args, ":Read")) return NULL;
 
     result = rpmfts_step(s);
 
@@ -227,14 +232,16 @@ rpmfts_debug(__FUNCTION__, s);
 
 /*@null@*/
 static PyObject *
-rpmfts_Children(rpmftsObject * s, PyObject * args)
+rpmfts_Children(rpmftsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
     int instr;
+    char * kwlist[] = {"instructions", NULL};
 
 rpmfts_debug(__FUNCTION__, s);
-    if (!PyArg_ParseTuple(args, "i:Children", &instr)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Children", kwlist, &instr))
+	return NULL;
 
     if (!(s && s->ftsp))
 	return NULL;
@@ -249,26 +256,27 @@ rpmfts_debug(__FUNCTION__, s);
 
 /*@null@*/
 static PyObject *
-rpmfts_Close(rpmftsObject * s, PyObject * args)
+rpmfts_Close(rpmftsObject * s)
 	/*@modifies s @*/
 {
 
 rpmfts_debug(__FUNCTION__, s);
-    if (!PyArg_ParseTuple(args, ":Close")) return NULL;
 
     return Py_BuildValue("i", rpmfts_state(s, RPMFTS_CLOSE));
 }
 
 /*@null@*/
 static PyObject *
-rpmfts_Set(rpmftsObject * s, PyObject * args)
+rpmfts_Set(rpmftsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     int instr = 0;
     int rc = 0;
+    char * kwlist[] = {"instructions", NULL};
 
 rpmfts_debug(__FUNCTION__, s);
-    if (!PyArg_ParseTuple(args, "i:Set", &instr)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Set", kwlist, &instr))
+	return NULL;
 
     if (s->ftsp && s->fts)
 	rc = Fts_set(s->ftsp, s->fts, instr);
@@ -281,17 +289,17 @@ rpmfts_debug(__FUNCTION__, s);
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfts_methods[] = {
-    {"Debug",	(PyCFunction)rpmfts_Debug,	METH_VARARGS,
+    {"Debug",	(PyCFunction)rpmfts_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
-    {"open",	(PyCFunction)rpmfts_Open,	METH_VARARGS,
+    {"open",	(PyCFunction)rpmfts_Open,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
-    {"read",	(PyCFunction)rpmfts_Read,	METH_VARARGS,
+    {"read",	(PyCFunction)rpmfts_Read,	METH_NOARGS,
 	NULL},
-    {"children",(PyCFunction)rpmfts_Children,	METH_VARARGS,
+    {"children",(PyCFunction)rpmfts_Children,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
-    {"close",	(PyCFunction)rpmfts_Close,	METH_VARARGS,
+    {"close",	(PyCFunction)rpmfts_Close,	METH_NOARGS,
 	NULL},
-    {"set",	(PyCFunction)rpmfts_Set,	METH_VARARGS,
+    {"set",	(PyCFunction)rpmfts_Set,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
     {NULL,		NULL}		/* sentinel */
 };
@@ -390,9 +398,11 @@ static int rpmfts_init(rpmftsObject * s, PyObject *args, PyObject *kwds)
     char * root = NULL;
     int options = -1;
     int ignore = -1;
+    char * kwlist[] = {"root", "options", "ignore", NULL};
 
 rpmfts_debug(__FUNCTION__, s);
-    if (!PyArg_ParseTuple(args, "|sii:rpmfts_init", &root, &options, &ignore))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|sii:rpmfts_init", kwlist,
+	    &root, &options, &ignore))
 	return -1;
 
     return rpmfts_initialize(s, root, options, ignore);
@@ -405,7 +415,11 @@ static PyObject * rpmfts_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     rpmftsObject *s;
     PyObject *o;
     PyObject *n = NULL;
+    char * kwlist[] = {0};
 
+    /* All the other _new() functions claim to be _init in their errors...*/
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":rpmfts_new", kwlist))
+	return NULL;
 
     if ((s = PyObject_GC_New(rpmftsObject, type)) == NULL)
 	return NULL;

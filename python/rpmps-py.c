@@ -19,11 +19,15 @@
 
 /*@null@*/
 static PyObject *
-rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args)
+rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmps_debug)) return NULL;
+    char * kwlist[] = {"debugLevel", NULL};
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmps_debug))
+	return NULL;
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -70,7 +74,7 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->i
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmps_methods[] = {
- {"Debug",	(PyCFunction)rpmps_Debug,	METH_VARARGS,
+ {"Debug",	(PyCFunction)rpmps_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {NULL,		NULL}		/* sentinel */
 };
@@ -238,11 +242,12 @@ static PyMappingMethods rpmps_as_mapping = {
 static int rpmps_init(rpmpsObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies s @*/
 {
+    char * kwlist[] = {NULL};
 
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_init(%p,%p,%p)\n", s, args, kwds);
 
-    if (!PyArg_ParseTuple(args, ":rpmps_init"))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":rpmps_init", kwlist))
 	return -1;
 
     s->ps = rpmpsCreate();

@@ -24,11 +24,11 @@ struct rpmrcObject_s {
 extern PyTypeObject rpmrc_Type;
 
 /*@null@*/
-PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args)
+PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
 /*@null@*/
-PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args)
+PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
 

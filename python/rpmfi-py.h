@@ -27,7 +27,7 @@ rpmfiObject * rpmfi_Wrap(rpmfi fi)
 	/*@*/;
 
 /*@null@*/
-rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args)
+rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 

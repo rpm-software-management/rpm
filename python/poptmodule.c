@@ -6,7 +6,7 @@
 
 #define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.9 2003/11/23 19:52:38 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.10 2004/11/17 17:05:39 pauln Exp $";
 
 static char *module_doc = "Python bindings for the popt library\n\
 \n\
@@ -88,29 +88,23 @@ static PyObject * __poptOptionValue2PyObject(const struct poptOption *option)
     return NULL;
 }
 
-static PyObject * ctxReset(poptContextObject *self, PyObject *args)
+static PyObject * ctxReset(poptContextObject *self)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
     poptResetContext(self->ctx);
     self->opt = -1;
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-static PyObject * ctxGetNextOpt(poptContextObject *self, PyObject *args)
+static PyObject * ctxGetNextOpt(poptContextObject *self)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
     self->opt = poptGetNextOpt(self->ctx);
     return PyInt_FromLong(self->opt);
 }
 
-static PyObject * ctxGetOptArg(poptContextObject *self, PyObject *args)
+static PyObject * ctxGetOptArg(poptContextObject *self)
 {
     const char *opt;
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
     opt = poptGetOptArg(self->ctx);
     if (opt == NULL) {
 	Py_INCREF(Py_None);
@@ -119,11 +113,9 @@ static PyObject * ctxGetOptArg(poptContextObject *self, PyObject *args)
     return PyString_FromString(opt);
 }
 
-static PyObject * ctxGetArg(poptContextObject *self, PyObject *args)
+static PyObject * ctxGetArg(poptContextObject *self)
 {
     const char *arg;
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
     arg = poptGetArg(self->ctx);
     if (arg == NULL) {
 	Py_INCREF(Py_None);
@@ -132,11 +124,9 @@ static PyObject * ctxGetArg(poptContextObject *self, PyObject *args)
     return PyString_FromString(arg);
 }
 
-static PyObject * ctxPeekArg(poptContextObject *self, PyObject *args)
+static PyObject * ctxPeekArg(poptContextObject *self)
 {
     const char *arg;
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
     arg = poptPeekArg(self->ctx);
     if (arg == NULL) {
 	Py_INCREF(Py_None);
@@ -145,13 +135,11 @@ static PyObject * ctxPeekArg(poptContextObject *self, PyObject *args)
     return PyString_FromString(arg);
 }
 
-static PyObject * ctxGetArgs(poptContextObject *self, PyObject *argsFoo)
+static PyObject * ctxGetArgs(poptContextObject *self)
 {
     const char **args;
     PyObject *list;
     int size, i;
-    if (!PyArg_ParseTuple(argsFoo, ""))
-        return NULL;
     args = poptGetArgs(self->ctx);
     if (args == NULL) {
 	Py_INCREF(Py_None);
@@ -168,12 +156,16 @@ static PyObject * ctxGetArgs(poptContextObject *self, PyObject *argsFoo)
     return list;
 }
 
-static PyObject * ctxBadOption(poptContextObject *self, PyObject *args)
+static PyObject *
+ctxBadOption(poptContextObject *self, PyObject *args, PyObject *kwds)
 {
     int flags = 0;
     const char *badOption;
-    if (!PyArg_ParseTuple(args, "|i", &flags))
+    char * kwlist[] = {"flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &flags))
 	return NULL;
+
     badOption = poptBadOption(self->ctx, flags);
     if (badOption == NULL) {
         Py_INCREF(Py_None);
@@ -182,39 +174,56 @@ static PyObject * ctxBadOption(poptContextObject *self, PyObject *args)
     return PyString_FromString(badOption);
 }
 
-static PyObject * ctxReadDefaultConfig(poptContextObject *self, PyObject *args)
+static PyObject *
+ctxReadDefaultConfig(poptContextObject *self, PyObject *args, PyObject *kwds)
 {
     int flags = 0;
-    if (!PyArg_ParseTuple(args, "|i", &flags))
+    char * kwlist[] = {"flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &flags))
 	return NULL;
+
     return PyInt_FromLong(poptReadDefaultConfig(self->ctx, flags));
 }
 
-static PyObject * ctxReadConfigFile(poptContextObject *self, PyObject *args)
+static PyObject *
+ctxReadConfigFile(poptContextObject *self, PyObject *args, PyObject *kwds)
 {
     const char *filename;
-    if (!PyArg_ParseTuple(args, "s", &filename))
+    char * kwlist[] = {"filename", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &filename))
 	return NULL;
+
     return PyInt_FromLong(poptReadConfigFile(self->ctx, filename));
 }
 
-static PyObject * ctxSetOtherOptionHelp(poptContextObject *self, PyObject *args)
+static PyObject *
+ctxSetOtherOptionHelp(poptContextObject *self, PyObject *args, PyObject *kwds)
 {
     const char *option;
-    if (!PyArg_ParseTuple(args, "s", &option))
+    char * kwlist[] = {"option", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &option))
 	return NULL;
+
     poptSetOtherOptionHelp(self->ctx, option);
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-static PyObject * ctxPrintHelp(poptContextObject *self, PyObject *args)
+static PyObject *
+ctxPrintHelp(poptContextObject *self, PyObject *args, PyObject *kwds)
 {
     FILE *f;
     int flags = 0;
     PyObject *file;
-    if (!PyArg_ParseTuple(args, "|O!i", &PyFile_Type, &file, &flags))
+    char * kwlist[] = {"file", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O!i", kwlist, &PyFile_Type,
+	    &file, &flags))
 	return NULL;
+
     f = PyFile_AsFile(file);
     if (f == NULL)
         f = stderr;
@@ -223,14 +232,19 @@ static PyObject * ctxPrintHelp(poptContextObject *self, PyObject *args)
     return Py_None;
 }
 
-static PyObject * ctxPrintUsage(poptContextObject *self, PyObject *args)
+static PyObject *
+ctxPrintUsage(poptContextObject *self, PyObject *args, PyObject *kwds)
 {
     FILE *f;
     int flags = 0;
     PyObject *file;
-    if (!PyArg_ParseTuple(args, "|O!i", &PyFile_Type, &file, &flags))
+    char *kwlist[] = {"file", "flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O!i", kwlist, &PyFile_Type,
+	    &file, &flags))
 	return NULL;
-        f = PyFile_AsFile(file);
+
+    f = PyFile_AsFile(file);
     if (f == NULL)
         f = stderr;
     poptPrintUsage(self->ctx, f, flags);
@@ -246,12 +260,11 @@ static PyObject * ctxPrintUsage(poptContextObject *self, PyObject *args)
 /* Added ctxGetOptValues */
 /*******************************/
 /* Builds a list of values corresponding to each option */
-static PyObject * ctxGetOptValues(poptContextObject *self, PyObject *args)
+static PyObject * ctxGetOptValues(poptContextObject *self)
 {
     PyObject *list;
     int i;
-    if (!PyArg_ParseTuple(args, ""))
-	return NULL;
+
     /* Create the list */
     list = PyList_New(self->optionsNo);
     if (list == NULL)
@@ -267,11 +280,10 @@ static PyObject * ctxGetOptValues(poptContextObject *self, PyObject *args)
     return list;
 }
 
-static PyObject * ctxGetOptValue(poptContextObject *self, PyObject *args)
+static PyObject * ctxGetOptValue(poptContextObject *self)
 {
     int i;
-    if (!PyArg_ParseTuple(args, ""))
-	return NULL;
+
     if (self->opt < 0) {
         /* No processing */
         Py_INCREF(Py_None);
@@ -289,25 +301,25 @@ static PyObject * ctxGetOptValue(poptContextObject *self, PyObject *args)
 }
 
 static struct PyMethodDef ctxMethods[] = {
-    {"reset", (PyCFunction)ctxReset, METH_VARARGS},
-    {"getNextOpt", (PyCFunction)ctxGetNextOpt, METH_VARARGS},
-    {"getOptArg", (PyCFunction)ctxGetOptArg, METH_VARARGS},
-    {"getArg", (PyCFunction)ctxGetArg, METH_VARARGS},
-    {"peekArg", (PyCFunction)ctxPeekArg, METH_VARARGS},
-    {"getArgs", (PyCFunction)ctxGetArgs, METH_VARARGS},
-    {"badOption", (PyCFunction)ctxBadOption, METH_VARARGS},
-    {"readDefaultConfig", (PyCFunction)ctxReadDefaultConfig, METH_VARARGS},
-    {"readConfigFile", (PyCFunction)ctxReadConfigFile, METH_VARARGS},
-    {"setOtherOptionHelp", (PyCFunction)ctxSetOtherOptionHelp, METH_VARARGS},
-    {"printHelp", (PyCFunction)ctxPrintHelp, METH_VARARGS},
-    {"printUsage", (PyCFunction)ctxPrintUsage, METH_VARARGS},
+    {"reset", (PyCFunction)ctxReset, METH_NOARGS},
+    {"getNextOpt", (PyCFunction)ctxGetNextOpt, METH_NOARGS},
+    {"getOptArg", (PyCFunction)ctxGetOptArg, METH_NOARGS},
+    {"getArg", (PyCFunction)ctxGetArg, METH_NOARGS},
+    {"peekArg", (PyCFunction)ctxPeekArg, METH_NOARGS},
+    {"getArgs", (PyCFunction)ctxGetArgs, METH_NOARGS},
+    {"badOption", (PyCFunction)ctxBadOption, METH_VARARGS|METH_KEYWORDS},
+    {"readDefaultConfig", (PyCFunction)ctxReadDefaultConfig, METH_VARARGS|METH_KEYWORDS},
+    {"readConfigFile", (PyCFunction)ctxReadConfigFile, METH_VARARGS|METH_KEYWORDS},
+    {"setOtherOptionHelp", (PyCFunction)ctxSetOtherOptionHelp, METH_VARARGS|METH_KEYWORDS},
+    {"printHelp", (PyCFunction)ctxPrintHelp, METH_VARARGS|METH_KEYWORDS},
+    {"printUsage", (PyCFunction)ctxPrintUsage, METH_VARARGS|METH_KEYWORDS},
     /*
     {"addAlias", (PyCFunction)ctxAddAlias},
     {"stuffArgs", (PyCFunction)ctxStuffArgs},
     {"callbackType", (PyCFunction)ctxCallbackType},
     */
-    {"getOptValues", (PyCFunction)ctxGetOptValues, METH_VARARGS},
-    {"getOptValue", (PyCFunction)ctxGetOptValue, METH_VARARGS},
+    {"getOptValues", (PyCFunction)ctxGetOptValues, METH_NOARGS},
+    {"getOptValue", (PyCFunction)ctxGetOptValue, METH_NOARGS},
     {NULL, NULL}
 };
 
@@ -316,7 +328,7 @@ static PyObject * ctxGetAttr(poptContextObject *s, char *name)
     return Py_FindMethod(ctxMethods, (PyObject *)s, name);
 }
 
-static void ctxDealloc(poptContextObject *self, PyObject *args)
+static void ctxDealloc(poptContextObject *self)
 {
     if (self->options != NULL) {
         int i;
@@ -575,7 +587,7 @@ char ** __getArgv(PyObject *list, int *argc)
 }
 
 
-static PyObject * getContext(PyObject *self, PyObject *args)
+static PyObject * getContext(PyObject *self, PyObject *args, PyObject *kwds)
 {
     const char *name;
     PyObject *a, *o;
@@ -583,10 +595,13 @@ static PyObject * getContext(PyObject *self, PyObject *args)
     int argc, count, flags = 0;
     struct poptOption *opts;
     poptContextObject *c;
+    char *kwlist[] = {"name", "argv", "list", NULL};
+
     /* We should receive name, argv and a list */
-    if (!PyArg_ParseTuple(args, "zO!O!|i", &name, &PyList_Type, &a,
-        &PyList_Type, &o, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "zO!O!|i", kwlist,
+	    &name, &PyList_Type, &a, &PyList_Type, &o, &flags))
         return NULL;
+
     /* Parse argv */
     argv = __getArgv(a, &argc);
     if (argv == NULL)
@@ -611,19 +626,21 @@ struct _pyIntConstant {
     const int value;
 };
 
-static PyObject * _strerror(PyObject *self, PyObject *args)
+static PyObject * _strerror(PyObject *self, PyObject *args, PyObject *kwds)
 {
     int error;
-    if (!PyArg_ParseTuple(args, "i", &error)) {
+    char *kwlist[] = {"error", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &error))
 	return NULL;
-    }
+
     return PyString_FromString(poptStrerror(error));
 }
 
 /* Methods for the popt module */
 static struct PyMethodDef poptModuleMethods[] = {
-    {"getContext", (PyCFunction)getContext, METH_VARARGS, NULL},
-    {"strerror", (PyCFunction)_strerror, METH_VARARGS, NULL},
+    {"getContext", (PyCFunction)getContext, METH_VARARGS|METH_KEYWORDS},
+    {"strerror", (PyCFunction)_strerror, METH_VARARGS|METH_KEYWORDS},
     {NULL, NULL}
 };
 

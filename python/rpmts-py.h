@@ -28,7 +28,7 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
-rpmtsObject * rpmts_Create(PyObject * s, PyObject * args)
+rpmtsObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 

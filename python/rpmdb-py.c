@@ -107,7 +107,7 @@
  */
 /*@null@*/
 static rpmmiObject *
-rpmdb_Match (rpmdbObject * s, PyObject * args)
+rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -115,8 +115,10 @@ rpmdb_Match (rpmdbObject * s, PyObject * args)
     char *key = NULL;
     int len = 0;
     int tag = RPMDBI_PACKAGES;
+    char * kwlist[] = {"tagNumber", "key", "len", NULL};
 
-    if (!PyArg_ParseTuple(args, "|Ozi", &TagN, &key, &len))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Ozi", kwlist,
+	    &TagN, &key, &len))
 	return NULL;
 
     if (TagN && (tag = tagNumFromPyObject (TagN)) == -1) {
@@ -132,7 +134,7 @@ rpmdb_Match (rpmdbObject * s, PyObject * args)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmdb_methods[] = {
-    {"match",	    (PyCFunction) rpmdb_Match,	METH_VARARGS,
+    {"match",	    (PyCFunction) rpmdb_Match,	METH_VARARGS|METH_KEYWORDS,
 "db.match([TagN, [key, [len]]]) -> mi\n\
 - Create an rpm db match iterator.\n" },
     {NULL,		NULL}		/* sentinel */
@@ -285,12 +287,16 @@ rpmdb dbFromDb(rpmdbObject * db)
 
 /**
  */
-rpmdbObject * rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args) {
+rpmdbObject *
+rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds) {
     rpmdbObject * o;
     char * root = "";
     int forWrite = 0;
+    char * kwlist[] = {"forWrite", "rootdir", NULL};
 
-    if (!PyArg_ParseTuple(args, "|is", &forWrite, &root)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|is", kwlist,
+	    &forWrite, &root))
+	return NULL;
 
     o = PyObject_New(rpmdbObject, &rpmdb_Type);
     o->db = NULL;
@@ -317,11 +323,14 @@ rpmdbObject * rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args) {
 /**
  * @todo Permit header checks when doing --rebuilddb.
  */
-PyObject * rebuildDB (/*@unused@*/ PyObject * self, PyObject * args)
+PyObject *
+rebuildDB (/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * rootDir = "";
+    char * kwlist[] = {"rootdir", NULL};
 
-    if (!PyArg_ParseTuple(args, "s", &rootDir)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &rootDir))
+	return NULL;
 
     return Py_BuildValue("i", rpmdbRebuild(rootDir, NULL, NULL));
 }

@@ -54,186 +54,171 @@
 
 /*@null@*/
 static PyObject *
-rpmte_Debug(/*@unused@*/ rpmteObject * s, /*@unused@*/ PyObject * args)
+rpmte_Debug(/*@unused@*/ rpmteObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmte_debug)) return NULL;
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmte_debug))
+	return NULL;
+
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 /*@null@*/
 static PyObject *
-rpmte_TEType(rpmteObject * s, PyObject * args)
+rpmte_TEType(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":TEType")) return NULL;
     return Py_BuildValue("i", rpmteType(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_N(rpmteObject * s, PyObject * args)
+rpmte_N(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":N")) return NULL;
     return Py_BuildValue("s", rpmteN(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_E(rpmteObject * s, PyObject * args)
+rpmte_E(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":E")) return NULL;
     return Py_BuildValue("s", rpmteE(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_V(rpmteObject * s, PyObject * args)
+rpmte_V(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":V")) return NULL;
     return Py_BuildValue("s", rpmteV(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_R(rpmteObject * s, PyObject * args)
+rpmte_R(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":R")) return NULL;
     return Py_BuildValue("s", rpmteR(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_A(rpmteObject * s, PyObject * args)
+rpmte_A(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":A")) return NULL;
     return Py_BuildValue("s", rpmteA(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_O(rpmteObject * s, PyObject * args)
+rpmte_O(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":O")) return NULL;
     return Py_BuildValue("s", rpmteO(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_NEVR(rpmteObject * s, PyObject * args)
+rpmte_NEVR(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":NEVR")) return NULL;
     return Py_BuildValue("s", rpmteNEVR(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_Color(rpmteObject * s, PyObject * args)
+rpmte_Color(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Color")) return NULL;
     return Py_BuildValue("i", rpmteColor(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_PkgFileSize(rpmteObject * s, PyObject * args)
+rpmte_PkgFileSize(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":PkgFileSize")) return NULL;
     return Py_BuildValue("i", rpmtePkgFileSize(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_Depth(rpmteObject * s, PyObject * args)
+rpmte_Depth(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Depth")) return NULL;
     return Py_BuildValue("i", rpmteDepth(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_Npreds(rpmteObject * s, PyObject * args)
+rpmte_Npreds(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Npreds")) return NULL;
     return Py_BuildValue("i", rpmteNpreds(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_Degree(rpmteObject * s, PyObject * args)
+rpmte_Degree(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Degree")) return NULL;
     return Py_BuildValue("i", rpmteDegree(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_Parent(rpmteObject * s, PyObject * args)
+rpmte_Parent(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Parent")) return NULL;
     return Py_BuildValue("i", rpmteParent(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_Tree(rpmteObject * s, PyObject * args)
+rpmte_Tree(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Tree")) return NULL;
     return Py_BuildValue("i", rpmteTree(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_AddedKey(rpmteObject * s, PyObject * args)
+rpmte_AddedKey(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":AddedKey")) return NULL;
     return Py_BuildValue("i", rpmteAddedKey(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_DependsOnKey(rpmteObject * s, PyObject * args)
+rpmte_DependsOnKey(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":DependsOnKey")) return NULL;
     return Py_BuildValue("i", rpmteDependsOnKey(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_DBOffset(rpmteObject * s, PyObject * args)
+rpmte_DBOffset(rpmteObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":DBOffset")) return NULL;
     return Py_BuildValue("i", rpmteDBOffset(s->te));
 }
 
 /*@null@*/
 static PyObject *
-rpmte_Key(rpmteObject * s, PyObject * args)
+rpmte_Key(rpmteObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
     PyObject * Key;
 
-    if (!PyArg_ParseTuple(args, ":Key")) return NULL;
     /* XXX how to insure this is a PyObject??? */
     Key = (PyObject *) rpmteKey(s->te);
     if (Key == NULL) {
@@ -245,15 +230,17 @@ rpmte_Key(rpmteObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmte_DS(rpmteObject * s, PyObject * args)
+rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
     PyObject * TagN = NULL;
     rpmds ds;
     rpmTag tag;
+    char * kwlist[] = {"tag", NULL};
 
-    if (!PyArg_ParseTuple(args, "O:DS", &TagN)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:DS", kwlist, &TagN))
+	return NULL;
 
     tag = tagNumFromPyObject(TagN);
     if (tag == -1) {
@@ -276,15 +263,17 @@ rpmte_DS(rpmteObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmte_FI(rpmteObject * s, PyObject * args)
+rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
     PyObject * TagN = NULL;
     rpmfi fi;
     rpmTag tag;
+    char * kwlist[] = {"tag", NULL};
 
-    if (!PyArg_ParseTuple(args, "O:FI", &TagN)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:FI", kwlist, &TagN))
+	return NULL;
 
     tag = tagNumFromPyObject(TagN);
     if (tag == -1) {
@@ -310,59 +299,59 @@ rpmte_FI(rpmteObject * s, PyObject * args)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmte_methods[] = {
-    {"Debug",	(PyCFunction)rpmte_Debug,	METH_VARARGS,
+    {"Debug",	(PyCFunction)rpmte_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
-    {"Type",	(PyCFunction)rpmte_TEType,	METH_VARARGS,
+    {"Type",	(PyCFunction)rpmte_TEType,	METH_NOARGS,
 "te.Type() -> Type\n\
 - Return element type (rpm.TR_ADDED | rpm.TR_REMOVED).\n" },
-    {"N",	(PyCFunction)rpmte_N,		METH_VARARGS,
+    {"N",	(PyCFunction)rpmte_N,		METH_NOARGS,
 "te.N() -> N\n\
 - Return element name.\n" },
-    {"E",	(PyCFunction)rpmte_E,		METH_VARARGS,
+    {"E",	(PyCFunction)rpmte_E,		METH_NOARGS,
 "te.E() -> E\n\
 - Return element epoch.\n" },
-    {"V",	(PyCFunction)rpmte_V,		METH_VARARGS,
+    {"V",	(PyCFunction)rpmte_V,		METH_NOARGS,
 "te.V() -> V\n\
 - Return element version.\n" },
-    {"R",	(PyCFunction)rpmte_R,		METH_VARARGS,
+    {"R",	(PyCFunction)rpmte_R,		METH_NOARGS,
 "te.R() -> R\n\
 - Return element release.\n" },
-    {"A",	(PyCFunction)rpmte_A,		METH_VARARGS,
+    {"A",	(PyCFunction)rpmte_A,		METH_NOARGS,
 "te.A() -> A\n\
 - Return element arch.\n" },
-    {"O",	(PyCFunction)rpmte_O,		METH_VARARGS,
+    {"O",	(PyCFunction)rpmte_O,		METH_NOARGS,
 "te.O() -> O\n\
 - Return element os.\n" },
-    {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_VARARGS,
+    {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_NOARGS,
 "te.NEVR() -> NEVR\n\
 - Return element name-version-release.\n" },
-    {"Color",(PyCFunction)rpmte_Color,		METH_VARARGS,
+    {"Color",(PyCFunction)rpmte_Color,		METH_NOARGS,
 	NULL},
-    {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_VARARGS,
+    {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
 	NULL},
-    {"Depth",	(PyCFunction)rpmte_Depth,	METH_VARARGS,
+    {"Depth",	(PyCFunction)rpmte_Depth,	METH_NOARGS,
 	NULL},
-    {"Npreds",	(PyCFunction)rpmte_Npreds,	METH_VARARGS,
+    {"Npreds",	(PyCFunction)rpmte_Npreds,	METH_NOARGS,
 	NULL},
-    {"Degree",	(PyCFunction)rpmte_Degree,	METH_VARARGS,
+    {"Degree",	(PyCFunction)rpmte_Degree,	METH_NOARGS,
 	NULL},
-    {"Parent",	(PyCFunction)rpmte_Parent,	METH_VARARGS,
+    {"Parent",	(PyCFunction)rpmte_Parent,	METH_NOARGS,
 	NULL},
-    {"Tree",	(PyCFunction)rpmte_Tree,	METH_VARARGS,
+    {"Tree",	(PyCFunction)rpmte_Tree,	METH_NOARGS,
 	NULL},
-    {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_VARARGS,
+    {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_NOARGS,
 	NULL},
-    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_VARARGS,
+    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
 	NULL},
-    {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_VARARGS,
+    {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
 	NULL},
-    {"Key",	(PyCFunction)rpmte_Key,		METH_VARARGS,
+    {"Key",	(PyCFunction)rpmte_Key,		METH_NOARGS,
 	NULL},
-    {"DS",	(PyCFunction)rpmte_DS,		METH_VARARGS,
+    {"DS",	(PyCFunction)rpmte_DS,		METH_VARARGS|METH_KEYWORDS,
 "te.DS(TagN) -> DS\n\
 - Return the TagN dependency set (or None). TagN is one of\n\
 	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'\n" },
-    {"FI",	(PyCFunction)rpmte_FI,		METH_VARARGS,
+    {"FI",	(PyCFunction)rpmte_FI,		METH_VARARGS|METH_KEYWORDS,
 "te.FI(TagN) -> FI\n\
 - Return the TagN dependency set (or None). TagN must be 'Basenames'.\n" },
     {NULL,		NULL}		/* sentinel */

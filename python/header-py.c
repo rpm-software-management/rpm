@@ -157,14 +157,12 @@ struct hdrObject_s {
 
 /** \ingroup py_c
  */
-static PyObject * hdrKeyList(hdrObject * s, PyObject * args)
+static PyObject * hdrKeyList(hdrObject * s)
 	/*@*/
 {
     PyObject * list, *o;
     HeaderIterator hi;
     int tag, type;
-
-    if (!PyArg_ParseTuple(args, "")) return NULL;
 
     list = PyList_New(0);
 
@@ -226,7 +224,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 
 /** \ingroup py_c
  */
-static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args)
+static PyObject * hdrExpandFilelist(hdrObject * s)
 	/*@*/
 {
     expandFilelist (s->h);
@@ -237,7 +235,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args)
 
 /** \ingroup py_c
  */
-static PyObject * hdrCompressFilelist(hdrObject * s, PyObject * args)
+static PyObject * hdrCompressFilelist(hdrObject * s)
 	/*@*/
 {
     compressFilelist (s->h);
@@ -274,16 +272,13 @@ static void mungeFilelist(Header h)
 
 /**
  */
-static PyObject * rhnUnload(hdrObject * s, PyObject * args)
+static PyObject * rhnUnload(hdrObject * s)
 	/*@*/
 {
     int len;
     char * uh;
     PyObject * rc;
     Header h;
-
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
 
     h = headerLink(s->h);
 
@@ -336,12 +331,9 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args)
 
 /** \ingroup py_c
  */
-static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args)
+static PyObject * hdrFullFilelist(hdrObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ""))
-	return NULL;
-
     mungeFilelist (s->h);
 
     Py_INCREF(Py_None);
@@ -350,15 +342,16 @@ static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args)
 
 /** \ingroup py_c
  */
-static PyObject * hdrSprintf(hdrObject * s, PyObject * args)
+static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
 	/*@*/
 {
     char * fmt;
     char * r;
     errmsg_t err;
     PyObject * result;
+    char * kwlist[] = {"format", NULL};
 
-    if (!PyArg_ParseTuple(args, "s", &fmt))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &fmt))
 	return NULL;
 
     r = headerSprintf(s->h, fmt, rpmTagTable, rpmHeaderFormats, &err);
@@ -390,26 +383,26 @@ static long hdr_hash(PyObject * h)
  */
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef hdr_methods[] = {
-    {"keys",		(PyCFunction) hdrKeyList,	METH_VARARGS,
+    {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_VARARGS,
+    {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_NOARGS,
 	NULL },
-    {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_VARARGS,
+    {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
 	NULL },
-    {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_VARARGS,
+    {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
 	NULL },
-    {"rhnUnload",	(PyCFunction) rhnUnload,	METH_VARARGS,
+    {"rhnUnload",	(PyCFunction) rhnUnload,	METH_NOARGS,
 	NULL },
-    {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS,
+    {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_VARARGS,
+    {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
 	NULL},
-    {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS,
+    {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
-    {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS,
+    {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
 
     {NULL,		NULL}		/* sentinel */
@@ -722,15 +715,17 @@ Header hdrGetHeader(hdrObject * s)
 
 /**
  */
-PyObject * hdrLoad(PyObject * self, PyObject * args)
+PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 {
     hdrObject * hdr;
     char * copy = NULL;
     char * obj;
     Header h;
     int len;
+    char * kwlist[] = {"headers", NULL};
 
-    if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &obj, &len))
+	return NULL;
 
     /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
@@ -757,13 +752,15 @@ PyObject * hdrLoad(PyObject * self, PyObject * args)
 
 /**
  */
-PyObject * rhnLoad(PyObject * self, PyObject * args)
+PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * obj, * copy=NULL;
     Header h;
     int len;
+    char * kwlist[] = {"headers", NULL};
 
-    if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &obj, &len))
+	return NULL;
 
     /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
@@ -847,13 +844,16 @@ PyObject * rpmReadHeaders (FD_t fd)
 
 /**
  */
-PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args)
+PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
     int fileno;
     PyObject * list;
+    char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTuple(args, "i", &fileno)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fileno))
+	return NULL;
+
     fd = fdDup(fileno);
 
     list = rpmReadHeaders (fd);
@@ -864,13 +864,16 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args)
 
 /**
  */
-PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args)
+PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
 {
     char * filespec;
     FD_t fd;
     PyObject * list;
+    char * kwlist[] = {"file", NULL};
 
-    if (!PyArg_ParseTuple(args, "s", &filespec)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &filespec))
+	return NULL;
+
     fd = Fopen(filespec, "r.fdio");
 
     if (!fd) {
@@ -946,15 +949,18 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     return 0;
 }
 
-PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args)
+PyObject *
+rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
     int fileno;
     PyObject * list;
     int rc;
     int matchTag;
+    char * kwlist[] = {"list", "fd", "matchTag", NULL};
 
-    if (!PyArg_ParseTuple(args, "Oii", &list, &fileno, &matchTag))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Oii", kwlist, &list,
+	    &fileno, &matchTag))
 	return NULL;
 
     if (!PyList_Check(list)) {
@@ -977,15 +983,18 @@ PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args)
 
 /**
  */
-PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args)
+PyObject *
+rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
     int fileno;
     off_t offset;
     PyObject * tuple;
     Header h;
+    char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTuple(args, "i", &fileno)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fileno))
+	return NULL;
 
     offset = lseek(fileno, 0, SEEK_CUR);
 
@@ -1020,11 +1029,13 @@ PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args)
 
 /**
  */
-PyObject * versionCompare (PyObject * self, PyObject * args)
+PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
 {
     hdrObject * h1, * h2;
+    char * kwlist[] = {"version0", "version1", NULL};
 
-    if (!PyArg_ParseTuple(args, "O!O!", &hdr_Type, &h1, &hdr_Type, &h2))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!", kwlist, &hdr_Type,
+	    &h1, &hdr_Type, &h2))
 	return NULL;
 
     return Py_BuildValue("i", hdr_compare(h1, h2));
@@ -1043,12 +1054,14 @@ static int compare_values(const char *str1, const char *str2)
     return rpmvercmp(str1, str2);
 }
 
-PyObject * labelCompare (PyObject * self, PyObject * args)
+PyObject * labelCompare (PyObject * self, PyObject * args, PyObject * kwds)
 {
     char *v1, *r1, *e1, *v2, *r2, *e2;
     int rc;
+    char * kwlist[] = {"epoch0", "version0", "release0",
+    		       "epoch1", "version1", "release1", NULL};
 
-    if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "(zzz)(zzz)", kwlist,
 			&e1, &v1, &r1, &e2, &v2, &r2))
 	return NULL;
 

@@ -64,102 +64,96 @@ void rpmds_ParseEVR(char * evr,
 
 /*@null@*/
 static PyObject *
-rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args)
+rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmds_debug)) return NULL;
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmds_debug))
+	return NULL;
+
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 /*@null@*/
 static PyObject *
-rpmds_Count(rpmdsObject * s, PyObject * args)
+rpmds_Count(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Count")) return NULL;
     return Py_BuildValue("i", rpmdsCount(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_Ix(rpmdsObject * s, PyObject * args)
+rpmds_Ix(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Ix")) return NULL;
     return Py_BuildValue("i", rpmdsIx(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_DNEVR(rpmdsObject * s, PyObject * args)
+rpmds_DNEVR(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":DNEVR")) return NULL;
     return Py_BuildValue("s", rpmdsDNEVR(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_N(rpmdsObject * s, PyObject * args)
+rpmds_N(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":N")) return NULL;
     return Py_BuildValue("s", rpmdsN(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_EVR(rpmdsObject * s, PyObject * args)
+rpmds_EVR(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":EVR")) return NULL;
     return Py_BuildValue("s", rpmdsEVR(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_Flags(rpmdsObject * s, PyObject * args)
+rpmds_Flags(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Flags")) return NULL;
     return Py_BuildValue("i", rpmdsFlags(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_BT(rpmdsObject * s, PyObject * args)
+rpmds_BT(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":BT")) return NULL;
     return Py_BuildValue("i", (int) rpmdsBT(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_TagN(rpmdsObject * s, PyObject * args)
+rpmds_TagN(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":TagN")) return NULL;
     return Py_BuildValue("i", rpmdsTagN(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_Color(rpmdsObject * s, PyObject * args)
+rpmds_Color(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Color")) return NULL;
     return Py_BuildValue("i", rpmdsColor(s->ds));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_Refs(rpmdsObject * s, PyObject * args)
+rpmds_Refs(rpmdsObject * s)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":Refs")) return NULL;
     return Py_BuildValue("i", rpmdsRefs(s->ds));
 }
 
@@ -269,14 +263,11 @@ rpmds_iternext(rpmdsObject * s)
 
 /*@null@*/
 static PyObject *
-rpmds_Next(rpmdsObject * s, PyObject *args)
+rpmds_Next(rpmdsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result;
-
-    if (!PyArg_ParseTuple(args, ":Next"))
-	return NULL;
 
     result = rpmds_iternext(s);
 
@@ -289,27 +280,33 @@ rpmds_Next(rpmdsObject * s, PyObject *args)
 
 /*@null@*/
 static PyObject *
-rpmds_SetNoPromote(rpmdsObject * s, PyObject * args)
+rpmds_SetNoPromote(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     int nopromote;
+    char * kwlist[] = {"noPromote", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:SetNoPromote", &nopromote))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetNoPromote", kwlist,
+	    &nopromote))
 	return NULL;
+
     return Py_BuildValue("i", rpmdsSetNoPromote(s->ds, nopromote));
 }
 
 /*@null@*/
 static PyObject *
-rpmds_Notify(rpmdsObject * s, PyObject * args)
+rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
     const char * where;
     int rc;
+    char * kwlist[] = {"location", "returnCode", NULL};
 
-    if (!PyArg_ParseTuple(args, "si:Notify", &where, &rc))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "si:Notify", kwlist,
+	    &where, &rc))
 	return NULL;
+
     rpmdsNotify(s->ds, where, rc);
     Py_INCREF(Py_None);
     return Py_None;
@@ -318,12 +315,10 @@ rpmds_Notify(rpmdsObject * s, PyObject * args)
 /* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
 /*@null@*/
 static PyObject *
-rpmds_Sort(rpmdsObject * s, PyObject * args)
+rpmds_Sort(rpmdsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, ":Sort"))
-	return NULL;
     /* XXX sort on (N,EVR,F) here. */
     Py_INCREF(Py_None);
     return Py_None;
@@ -331,15 +326,17 @@ rpmds_Sort(rpmdsObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmds_Find(rpmdsObject * s, PyObject * args)
+rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     PyObject * to = NULL;
     rpmdsObject * o;
     int rc;
+    char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTuple(args, "O:Find", &to))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Find", kwlist, &to))
 	return NULL;
+
     /* XXX ds type check needed. */
     o = (rpmdsObject *)to;
 
@@ -352,14 +349,16 @@ rpmds_Find(rpmdsObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmds_Merge(rpmdsObject * s, PyObject * args)
+rpmds_Merge(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     PyObject * to = NULL;
     rpmdsObject * o;
+    char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTuple(args, "O:Find", &to))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Merge", kwlist, &to))
 	return NULL;
+
     /* XXX ds type check needed. */
     o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
@@ -367,14 +366,16 @@ rpmds_Merge(rpmdsObject * s, PyObject * args)
 
 #ifdef	NOTYET
 static PyObject *
-rpmds_Compare(rpmdsObject * s, PyObject * args)
+rpmds_Compare(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     PyObject * to = NULL;
     rpmdsObject * o;
+    char * kwlist[] = {"other", NULL};
 
-    if (!PyArg_ParseTuple(args, "O:Compare", &to))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Compare", kwlist, &to))
 	return NULL;
+
     /* XXX ds type check needed. */
     o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsCompare(s->ds, o->ds));
@@ -382,7 +383,7 @@ rpmds_Compare(rpmdsObject * s, PyObject * args)
 
 /*@null@*/
 static PyObject *
-rpmds_Problem(rpmdsObject * s, PyObject * args)
+rpmds_Problem(rpmdsObject * s)
 	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":Problem"))
@@ -395,45 +396,45 @@ rpmds_Problem(rpmdsObject * s, PyObject * args)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmds_methods[] = {
- {"Debug",	(PyCFunction)rpmds_Debug,	METH_VARARGS,
+ {"Debug",	(PyCFunction)rpmds_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"Count",	(PyCFunction)rpmds_Count,	METH_VARARGS,
+ {"Count",	(PyCFunction)rpmds_Count,	METH_NOARGS,
 	"ds.Count -> Count	- Return no. of elements.\n" },
- {"Ix",		(PyCFunction)rpmds_Ix,		METH_VARARGS,
+ {"Ix",		(PyCFunction)rpmds_Ix,		METH_NOARGS,
 	"ds.Ix -> Ix		- Return current element index.\n" },
- {"DNEVR",	(PyCFunction)rpmds_DNEVR,	METH_VARARGS,
+ {"DNEVR",	(PyCFunction)rpmds_DNEVR,	METH_NOARGS,
 	"ds.DNEVR -> DNEVR	- Return current DNEVR.\n" },
- {"N",		(PyCFunction)rpmds_N,		METH_VARARGS,
+ {"N",		(PyCFunction)rpmds_N,		METH_NOARGS,
 	"ds.N -> N		- Return current N.\n" },
- {"EVR",	(PyCFunction)rpmds_EVR,		METH_VARARGS,
+ {"EVR",	(PyCFunction)rpmds_EVR,		METH_NOARGS,
 	"ds.EVR -> EVR		- Return current EVR.\n" },
- {"Flags",	(PyCFunction)rpmds_Flags,	METH_VARARGS,
+ {"Flags",	(PyCFunction)rpmds_Flags,	METH_NOARGS,
 	"ds.Flags -> Flags	- Return current Flags.\n" },
- {"BT",		(PyCFunction)rpmds_BT,		METH_VARARGS,
+ {"BT",		(PyCFunction)rpmds_BT,		METH_NOARGS,
 	"ds.BT -> BT	- Return build time.\n" },
- {"TagN",	(PyCFunction)rpmds_TagN,	METH_VARARGS,
+ {"TagN",	(PyCFunction)rpmds_TagN,	METH_NOARGS,
 	"ds.TagN -> TagN	- Return current TagN.\n" },
- {"Color",	(PyCFunction)rpmds_Color,	METH_VARARGS,
+ {"Color",	(PyCFunction)rpmds_Color,	METH_NOARGS,
 	"ds.Color -> Color	- Return current Color.\n" },
- {"Refs",	(PyCFunction)rpmds_Refs,	METH_VARARGS,
+ {"Refs",	(PyCFunction)rpmds_Refs,	METH_NOARGS,
 	"ds.Refs -> Refs	- Return current Refs.\n" },
- {"next",	(PyCFunction)rpmds_Next,	METH_VARARGS,
+ {"next",	(PyCFunction)rpmds_Next,	METH_NOARGS,
 "ds.next() -> (N, EVR, Flags)\n\
 - Retrieve next dependency triple.\n" },
- {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS,
+ {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS,
+ {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"Sort",	(PyCFunction)rpmds_Sort,	METH_VARARGS,
+ {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
 	NULL},
- {"Find",	(PyCFunction)rpmds_Find,	METH_VARARGS,
+ {"Find",	(PyCFunction)rpmds_Find,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"Merge",	(PyCFunction)rpmds_Merge,	METH_VARARGS,
+ {"Merge",	(PyCFunction)rpmds_Merge,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
 #ifdef	NOTYET
- {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS,
+ {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
- {"Problem",	(PyCFunction)rpmds_Problem,	METH_VARARGS,
+ {"Problem",	(PyCFunction)rpmds_Problem,	METH_NOARGS,
 	NULL},
 #endif
  {NULL,		NULL}		/* sentinel */
@@ -520,12 +521,15 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
     PyObject * to = NULL;
     int tagN = RPMTAG_REQUIRENAME;
     int flags = 0;
+    char * kwlist[] = {"header", "tag", "flags", NULL};
 
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
 
-    if (!PyArg_ParseTuple(args, "O!|Oi:rpmds_init", &hdr_Type, &ho, &to, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_init", kwlist, 
+	    &hdr_Type, &ho, &to, &flags))
 	return -1;
+
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
 	if (tagN == -1) {
@@ -660,16 +664,19 @@ rpmds_Wrap(rpmds ds)
 }
 
 rpmdsObject *
-rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args)
+rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
     int tagN = RPMTAG_PROVIDENAME;
     const char * N;
     const char * EVR = NULL;
     int Flags = 0;
+    char * kwlist[] = {"to", "name", "evr", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "Os|si:Single", &to, &N, &EVR, &Flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Os|si:Single", kwlist,
+	    &to, &N, &EVR, &Flags))
 	return NULL;
+
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
 	if (tagN == -1) {
@@ -683,15 +690,18 @@ rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args)
 }
 
 rpmdsObject *
-hdr_dsFromHeader(PyObject * s, PyObject * args)
+hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
     hdrObject * ho = (hdrObject *)s;
     PyObject * to = NULL;
     rpmTag tagN = RPMTAG_REQUIRENAME;
     int flags = 0;
+    char * kwlist[] = {"to", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|Oi:dsFromHeader", &to, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Oi:dsFromHeader", kwlist,
+	    &to, &flags))
 	return NULL;
+
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
 	if (tagN == -1) {
@@ -703,13 +713,11 @@ hdr_dsFromHeader(PyObject * s, PyObject * args)
 }
 
 rpmdsObject *
-hdr_dsOfHeader(PyObject * s, PyObject * args)
+hdr_dsOfHeader(PyObject * s)
 {
     hdrObject * ho = (hdrObject *)s;
     int tagN = RPMTAG_PROVIDENAME;
     int Flags = RPMSENSE_EQUAL;
 
-    if (!PyArg_ParseTuple(args, ":dsOfHeader"))
-	return NULL;
     return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
 }

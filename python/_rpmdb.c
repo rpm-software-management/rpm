@@ -102,7 +102,7 @@
 #endif
 
 #define PY_BSDDB_VERSION "4.2.4"
-static char *rcs_id = "$Id: _rpmdb.c,v 1.13 2004/10/16 12:50:52 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.14 2004/11/17 17:05:39 pauln Exp $";
 
 
 #ifdef WITH_THREAD
@@ -965,15 +965,17 @@ DBLock_dealloc(DBLockObject* self)
 /* DB methods */
 
 static PyObject*
-DB_append(DBObject* self, PyObject* args)
+DB_append(DBObject* self, PyObject* args, PyObject * kwargs)
 {
     PyObject* txnobj = NULL;
     PyObject* dataobj;
     db_recno_t recno;
     DBT key, data;
     DB_TXN *txn = NULL;
+    char* kwnames[] = {"data", "transaction", NULL};
 
-    if (!PyArg_ParseTuple(args, "O|O:append", &dataobj, &txnobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O:append", kwnames,
+				     &dataobj, &txnobj))
         return NULL;
 
     CHECK_DB_NOT_CLOSED(self);
@@ -1173,11 +1175,14 @@ DB_associate(DBObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DB_close(DBObject* self, PyObject* args)
+DB_close(DBObject* self, PyObject* args, PyObject * kwargs)
 {
     int err, flags=0;
-    if (!PyArg_ParseTuple(args,"|i:close", &flags))
+    char *kwnames[] = {"flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:close", kwnames, &flags))
         return NULL;
+
     if (self->db != NULL) {
         if (self->myenvobj)
             CHECK_ENV_NOT_CLOSED(self->myenvobj);
@@ -1244,12 +1249,14 @@ _DB_consume(DBObject* self, PyObject* args, PyObject* kwargs, int consume_flag)
     return retval;
 }
 
+/* XXX wtf?  This cannot possibly be the right prototype. --pj */
 static PyObject*
 DB_consume(DBObject* self, PyObject* args, PyObject* kwargs, int consume_flag)
 {
     return _DB_consume(self, args, kwargs, DB_CONSUME);
 }
 
+/* XXX wtf?  This cannot possibly be the right prototype. --pj */
 static PyObject*
 DB_consume_wait(DBObject* self, PyObject* args, PyObject* kwargs,
                 int consume_flag)
@@ -1312,12 +1319,10 @@ DB_delete(DBObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DB_fd(DBObject* self, PyObject* args)
+DB_fd(DBObject* self)
 {
     int err, the_fd;
 
-    if (!PyArg_ParseTuple(args,":fd"))
-        return NULL;
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1487,15 +1492,13 @@ DB_get_both(DBObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DB_get_byteswapped(DBObject* self, PyObject* args)
+DB_get_byteswapped(DBObject* self)
 {
 #if (DBVER >= 33)
     int err = 0;
 #endif
     int retval = -1;
 
-    if (!PyArg_ParseTuple(args,":get_byteswapped"))
-        return NULL;
     CHECK_DB_NOT_CLOSED(self);
 
 #if (DBVER >= 33)
@@ -1513,12 +1516,10 @@ DB_get_byteswapped(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_get_type(DBObject* self, PyObject* args)
+DB_get_type(DBObject* self)
 {
     int type;
 
-    if (!PyArg_ParseTuple(args,":get_type"))
-        return NULL;
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1531,16 +1532,17 @@ DB_get_type(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_join(DBObject* self, PyObject* args)
+DB_join(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags=0;
     int length, x;
     PyObject* cursorsObj;
     DBC** cursors;
     DBC*  dbc;
+    char* kwnames[] = {"cursors", "flags", NULL};
 
-
-    if (!PyArg_ParseTuple(args,"O|i:join", &cursorsObj, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|i:join", kwnames,
+				     &cursorsObj, &flags))
         return NULL;
 
     CHECK_DB_NOT_CLOSED(self);
@@ -1749,7 +1751,7 @@ DB_remove(DBObject* self, PyObject* args, PyObject* kwargs)
     char* filename;
     char* database = NULL;
     int err, flags=0;
-    char* kwnames[] = { "filename", "dbname", "flags", NULL};
+    char* kwnames[] = { "filename", "dbname", "flags", NULL };
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|zi:remove", kwnames,
                                      &filename, &database, &flags))
@@ -1765,16 +1767,18 @@ DB_remove(DBObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DB_rename(DBObject* self, PyObject* args)
+DB_rename(DBObject* self, PyObject* args, PyObject * kwargs)
 {
     char* filename;
     char* database;
     char* newname;
     int err, flags=0;
+    char* kwnames[] = {"filename", "database", "newname", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "sss|i:rename", &filename, &database, &newname,
-                          &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sss|i:rename", kwnames,
+				     &filename, &database, &newname, &flags))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1786,12 +1790,15 @@ DB_rename(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_bt_minkey(DBObject* self, PyObject* args)
+DB_set_bt_minkey(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, minkey;
+    char* kwnames[] = {"minkey", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_bt_minkey", &minkey ))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_bt_minkey", kwnames,
+				     &minkey))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1803,14 +1810,16 @@ DB_set_bt_minkey(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_cachesize(DBObject* self, PyObject* args)
+DB_set_cachesize(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     int gbytes = 0, bytes = 0, ncache = 0;
+    char* kwnames[] = {"gbytes", "bytes", "ncache", NULL};
 
-    if (!PyArg_ParseTuple(args,"ii|i:set_cachesize",
-                          &gbytes,&bytes,&ncache))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ii|i:set_cachesize",
+				     kwnames, &gbytes, &bytes, &ncache))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1822,12 +1831,15 @@ DB_set_cachesize(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_flags(DBObject* self, PyObject* args)
+DB_set_flags(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_flags", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_flags", kwnames, 
+				     &flags))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1841,12 +1853,15 @@ DB_set_flags(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_h_ffactor(DBObject* self, PyObject* args)
+DB_set_h_ffactor(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, ffactor;
+    char* kwnames[] = {"ffactor", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_h_ffactor", &ffactor))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_h_ffactor", kwnames,
+				     &ffactor))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1858,12 +1873,15 @@ DB_set_h_ffactor(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_h_nelem(DBObject* self, PyObject* args)
+DB_set_h_nelem(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, nelem;
+    char* kwnames[] = {"nelem", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_h_nelem", &nelem))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_h_nelem", kwnames,
+				     &nelem))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1875,12 +1893,15 @@ DB_set_h_nelem(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_lorder(DBObject* self, PyObject* args)
+DB_set_lorder(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, lorder;
+    char* kwnames[] = {"lorder", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_lorder", &lorder))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lorder", kwnames,
+				     &lorder))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1892,12 +1913,15 @@ DB_set_lorder(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_pagesize(DBObject* self, PyObject* args)
+DB_set_pagesize(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, pagesize;
+    char* kwnames[] = {"pagesize", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_pagesize", &pagesize))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_pagesize", kwnames,
+				     &pagesize))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1909,14 +1933,17 @@ DB_set_pagesize(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_re_delim(DBObject* self, PyObject* args)
+DB_set_re_delim(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     char delim;
+    char* kwnames[] = {"delim", NULL};
 
-    if (!PyArg_ParseTuple(args,"b:set_re_delim", &delim)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "b:set_re_delim", kwnames,
+				     &delim)) {
         PyErr_Clear();
-        if (!PyArg_ParseTuple(args,"c:set_re_delim", &delim))
+        if (!PyArg_ParseTupleAndKeywords(args, kwargs, "c:set_re_delim",
+					 kwnames, &delim))
             return NULL;
     }
 
@@ -1930,12 +1957,15 @@ DB_set_re_delim(DBObject* self, PyObject* args)
 }
 
 static PyObject*
-DB_set_re_len(DBObject* self, PyObject* args)
+DB_set_re_len(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, len;
+    char* kwnames[] = {"len", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_re_len", &len))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_re_len", kwnames,
+				     &len))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1947,16 +1977,20 @@ DB_set_re_len(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_re_pad(DBObject* self, PyObject* args)
+DB_set_re_pad(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     char pad;
+    char* kwnames[] = {"pad", NULL};
 
-    if (!PyArg_ParseTuple(args,"b:set_re_pad", &pad)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "b:set_re_pad", kwnames,
+				     &pad)) {
         PyErr_Clear();
-        if (!PyArg_ParseTuple(args,"c:set_re_pad", &pad))
+        if (!PyArg_ParseTupleAndKeywords(args, kwargs, "c:set_re_pad", kwnames,
+					 &pad))
             return NULL;
     }
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1968,13 +2002,16 @@ DB_set_re_pad(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_set_re_source(DBObject* self, PyObject* args)
+DB_set_re_source(DBObject* self, PyObject* args, PyObject *kwargs)
 {
     int err;
     char *re_source;
+    char* kwnames[] = {"source", NULL};
 
-    if (!PyArg_ParseTuple(args,"s:set_re_source", &re_source))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s:set_re_source", kwnames,
+				     &re_source))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -1987,13 +2024,16 @@ DB_set_re_source(DBObject* self, PyObject* args)
 
 #if (DBVER >= 32)
 static PyObject*
-DB_set_q_extentsize(DBObject* self, PyObject* args)
+DB_set_q_extentsize(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     int extentsize;
+    char* kwnames[] = {"extentsize", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_q_extentsize", &extentsize))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_q_extentsize",
+				     kwnames, &extentsize))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -2005,15 +2045,16 @@ DB_set_q_extentsize(DBObject* self, PyObject* args)
 #endif
 
 static PyObject*
-DB_stat(DBObject* self, PyObject* args)
+DB_stat(DBObject* self, PyObject* args, PyObject *kwargs)
 {
     int err, flags = 0, type;
     void* sp;
     PyObject* d;
+    char* kwnames[] = {"flags", NULL};
 
-
-    if (!PyArg_ParseTuple(args, "|i:stat", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:stat", kwnames, &flags))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -2118,13 +2159,15 @@ DB_stat(DBObject* self, PyObject* args)
 }
 
 static PyObject*
-DB_sync(DBObject* self, PyObject* args)
+DB_sync(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     int flags = 0;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args,"|i:sync", &flags ))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:sync", kwnames, &flags))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -2162,13 +2205,16 @@ DB_truncate(DBObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DB_upgrade(DBObject* self, PyObject* args)
+DB_upgrade(DBObject* self, PyObject* args, PyObject *kwargs)
 {
     int err, flags=0;
     char *filename;
+    char* kwnames[] = {"filename", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args,"s|i:upgrade", &filename, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i:upgrade", kwnames,
+				     &filename, &flags))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -2219,13 +2265,16 @@ DB_verify(DBObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DB_set_get_returns_none(DBObject* self, PyObject* args)
+DB_set_get_returns_none(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags=0;
     int oldValue=0;
+    char* kwnames[] = {"returns_none", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_get_returns_none", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_get_returns_none",
+				     kwnames, &flags))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
 
     if (self->moduleFlags.getReturnsNone)
@@ -2387,16 +2436,19 @@ DB_ass_sub(DBObject* self, PyObject* keyobj, PyObject* dataobj)
 
 
 static PyObject*
-DB_has_key(DBObject* self, PyObject* args)
+DB_has_key(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     PyObject* keyobj;
     DBT key, data;
     PyObject* txnobj = NULL;
     DB_TXN *txn = NULL;
+    char* kwnames[] = {"key", "txn", NULL};
 
-    if (!PyArg_ParseTuple(args,"O|O:has_key", &keyobj, &txnobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O:has_key", kwnames,
+				     &keyobj, &txnobj))
         return NULL;
+
     CHECK_DB_NOT_CLOSED(self);
     if (!make_key_dbt(self, keyobj, &key, NULL))
         return NULL;
@@ -2529,13 +2581,15 @@ _DB_make_list(DBObject* self, DB_TXN* txn, int type)
 
 
 static PyObject*
-DB_keys(DBObject* self, PyObject* args)
+DB_keys(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     PyObject* txnobj = NULL;
     DB_TXN *txn = NULL;
+    char* kwnames[] = {"txn", NULL};
 
-    if (!PyArg_ParseTuple(args,"|O:keys", &txnobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O:keys", kwnames, &txnobj))
         return NULL;
+
     if (!checkTxnObj(txnobj, &txn))
         return NULL;
     return _DB_make_list(self, txn, _KEYS_LIST);
@@ -2543,13 +2597,16 @@ DB_keys(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_items(DBObject* self, PyObject* args)
+DB_items(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     PyObject* txnobj = NULL;
     DB_TXN *txn = NULL;
+    char* kwnames[] = {"txn", NULL};
 
-    if (!PyArg_ParseTuple(args,"|O:items", &txnobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O:items", kwnames,
+				     &txnobj))
         return NULL;
+
     if (!checkTxnObj(txnobj, &txn))
         return NULL;
     return _DB_make_list(self, txn, _ITEMS_LIST);
@@ -2557,12 +2614,14 @@ DB_items(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DB_values(DBObject* self, PyObject* args)
+DB_values(DBObject* self, PyObject* args, PyObject* kwargs)
 {
     PyObject* txnobj = NULL;
     DB_TXN *txn = NULL;
+    char* kwnames[] = {"txn", NULL};
 
-    if (!PyArg_ParseTuple(args,"|O:values", &txnobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O:values", kwnames,
+				     &txnobj))
         return NULL;
     if (!checkTxnObj(txnobj, &txn))
         return NULL;
@@ -2574,12 +2633,9 @@ DB_values(DBObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_close(DBCursorObject* self, PyObject* args)
+DBC_close(DBCursorObject* self)
 {
     int err = 0;
-
-    if (!PyArg_ParseTuple(args, ":close"))
-        return NULL;
 
     if (self->dbc != NULL) {
         MYDB_BEGIN_ALLOW_THREADS;
@@ -2593,13 +2649,14 @@ DBC_close(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_count(DBCursorObject* self, PyObject* args)
+DBC_count(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int err = 0;
     db_recno_t count;
     int flags = 0;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:count", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:count", kwnames, &flags))
         return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -2621,11 +2678,13 @@ DBC_current(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 
 
 static PyObject*
-DBC_delete(DBCursorObject* self, PyObject* args)
+DBC_delete(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags=0;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:delete", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:delete", kwnames,
+				     &flags))
         return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -2641,12 +2700,13 @@ DBC_delete(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBC_dup(DBCursorObject* self, PyObject* args)
+DBC_dup(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags =0;
     DBC* dbc = NULL;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:dup", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:dup", kwnames, &flags))
         return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -2749,15 +2809,12 @@ DBC_get(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 
 
 static PyObject*
-DBC_get_recno(DBCursorObject* self, PyObject* args)
+DBC_get_recno(DBCursorObject* self)
 {
     int err;
     db_recno_t recno;
     DBT key;
     DBT data;
-
-    if (!PyArg_ParseTuple(args, ":get_recno"))
-        return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
 
@@ -3005,12 +3062,14 @@ _DBC_get_set_both(DBCursorObject* self, PyObject* keyobj, PyObject* dataobj,
 }
 
 static PyObject*
-DBC_get_both(DBCursorObject* self, PyObject* args)
+DBC_get_both(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags=0;
     PyObject *keyobj, *dataobj;
+    char* kwnames[] = {"key", "data", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "OO|i:get_both", &keyobj, &dataobj, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|i:get_both", kwnames,
+				     &keyobj, &dataobj, &flags))
         return NULL;
 
     /* if the cursor is closed, self->mydb may be invalid */
@@ -3022,14 +3081,12 @@ DBC_get_both(DBCursorObject* self, PyObject* args)
 
 /* Return size of entry */
 static PyObject*
-DBC_get_current_size(DBCursorObject* self, PyObject* args)
+DBC_get_current_size(DBCursorObject* self)
 {
     int err, flags=DB_CURRENT;
     PyObject* retval = NULL;
     DBT key, data;
 
-    if (!PyArg_ParseTuple(args, ":get_current_size"))
-        return NULL;
     CHECK_CURSOR_NOT_CLOSED(self);
     CLEAR_DBT(key);
     CLEAR_DBT(data);
@@ -3054,12 +3111,14 @@ DBC_get_current_size(DBCursorObject* self, PyObject* args)
 }
 
 static PyObject*
-DBC_set_both(DBCursorObject* self, PyObject* args)
+DBC_set_both(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags=0;
     PyObject *keyobj, *dataobj;
+    char* kwnames[] = {"key", "data", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "OO|i:set_both", &keyobj, &dataobj, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|i:set_both", kwnames,
+				     &keyobj, &dataobj, &flags))
         return NULL;
 
     /* if the cursor is closed, self->mydb may be invalid */
@@ -3159,13 +3218,15 @@ DBC_prev_nodup(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 
 
 static PyObject*
-DBC_join_item(DBCursorObject* self, PyObject* args)
+DBC_join_item(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags=0;
     DBT key, data;
     PyObject* retval;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:join_item", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:join_item", kwnames,
+				     &flags))
         return NULL;
 
     CHECK_CURSOR_NOT_CLOSED(self);
@@ -3202,11 +3263,12 @@ DBC_join_item(DBCursorObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_close(DBEnvObject* self, PyObject* args)
+DBEnv_close(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags = 0;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:close", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:close", kwnames, &flags))
         return NULL;
     if (!self->closed) {      /* Don't close more than once */
         MYDB_BEGIN_ALLOW_THREADS;
@@ -3223,12 +3285,14 @@ DBEnv_close(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_open(DBEnvObject* self, PyObject* args)
+DBEnv_open(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags=0, mode=0660;
     char *db_home;
+    char* kwnames[] = {"db_home", "flags", "mode", NULL};
 
-    if (!PyArg_ParseTuple(args, "z|ii:open", &db_home, &flags, &mode))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "z|ii:open", kwnames,
+				     &db_home, &flags, &mode))
         return NULL;
 
     CHECK_ENV_NOT_CLOSED(self);
@@ -3244,13 +3308,16 @@ DBEnv_open(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_remove(DBEnvObject* self, PyObject* args)
+DBEnv_remove(DBEnvObject* self, PyObject* args, PyObject *kwargs)
 {
     int err, flags=0;
     char *db_home;
+    char* kwnames[] = {"db_home", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "s|i:remove", &db_home, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i:remove", kwnames,
+				     &db_home, &flags))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
     MYDB_BEGIN_ALLOW_THREADS;
     err = self->db_env->remove(self->db_env, db_home, flags);
@@ -3360,13 +3427,16 @@ DBEnv_set_timeout(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 #endif /* DBVER >= 40 */
 
 static PyObject*
-DBEnv_set_shm_key(DBEnvObject* self, PyObject* args)
+DBEnv_set_shm_key(DBEnvObject* self, PyObject* args, PyObject *kwargs)
 {
     int err;
     long shm_key = 0;
+    char* kwnames[] = {"shm_key", NULL};
 
-    if (!PyArg_ParseTuple(args, "l:set_shm_key", &shm_key))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "l:set_shm_key", kwnames,
+				     &shm_key))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     err = self->db_env->set_shm_key(self->db_env, shm_key);
@@ -3375,13 +3445,15 @@ DBEnv_set_shm_key(DBEnvObject* self, PyObject* args)
 }
 
 static PyObject*
-DBEnv_set_cachesize(DBEnvObject* self, PyObject* args)
+DBEnv_set_cachesize(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, gbytes=0, bytes=0, ncache=0;
+    char* kwnames[] = {"gbytes", "bytes", "ncache", NULL};
 
-    if (!PyArg_ParseTuple(args, "ii|i:set_cachesize",
-                          &gbytes, &bytes, &ncache))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ii|i:set_cachesize",
+				     kwnames, &gbytes, &bytes, &ncache))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3394,13 +3466,15 @@ DBEnv_set_cachesize(DBEnvObject* self, PyObject* args)
 
 #if (DBVER >= 32)
 static PyObject*
-DBEnv_set_flags(DBEnvObject* self, PyObject* args)
+DBEnv_set_flags(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, flags=0, onoff=0;
+    char* kwnames[] = {"flags", "onoff", NULL};
 
-    if (!PyArg_ParseTuple(args, "ii:set_flags",
-                          &flags, &onoff))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ii:set_flags", kwnames,
+				     &flags, &onoff))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3413,13 +3487,16 @@ DBEnv_set_flags(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_data_dir(DBEnvObject* self, PyObject* args)
+DBEnv_set_data_dir(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     char *dir;
+    char* kwnames[] = {"dir", NULL};
 
-    if (!PyArg_ParseTuple(args, "s:set_data_dir", &dir))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s:set_data_dir", kwnames,
+				     &dir))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3431,12 +3508,15 @@ DBEnv_set_data_dir(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_lg_bsize(DBEnvObject* self, PyObject* args)
+DBEnv_set_lg_bsize(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, lg_bsize;
+    char* kwnames[] = {"lg_bsize", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_lg_bsize", &lg_bsize))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lg_bsize", kwnames,
+				     &lg_bsize))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3448,13 +3528,16 @@ DBEnv_set_lg_bsize(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_lg_dir(DBEnvObject* self, PyObject* args)
+DBEnv_set_lg_dir(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     char *dir;
+    char* kwnames[] = {"dir", NULL};
 
-    if (!PyArg_ParseTuple(args, "s:set_lg_dir", &dir))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s:set_lg_dir", kwnames,
+				     &dir))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3465,12 +3548,15 @@ DBEnv_set_lg_dir(DBEnvObject* self, PyObject* args)
 }
 
 static PyObject*
-DBEnv_set_lg_max(DBEnvObject* self, PyObject* args)
+DBEnv_set_lg_max(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, lg_max;
+    char* kwnames[] = {"lg_max", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_lg_max", &lg_max))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lg_max", kwnames,
+				     &lg_max))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3482,12 +3568,15 @@ DBEnv_set_lg_max(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_lk_detect(DBEnvObject* self, PyObject* args)
+DBEnv_set_lk_detect(DBEnvObject* self, PyObject* args, PyObject *kwargs)
 {
     int err, lk_detect;
+    char* kwnames[] = {"lk_detect", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_lk_detect", &lk_detect))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lk_detect", kwnames,
+				     &lk_detect))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3499,12 +3588,15 @@ DBEnv_set_lk_detect(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_lk_max(DBEnvObject* self, PyObject* args)
+DBEnv_set_lk_max(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, max;
+    char* kwnames[] = {"max", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_lk_max", &max))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lk_max", kwnames,
+				     &max))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3518,12 +3610,15 @@ DBEnv_set_lk_max(DBEnvObject* self, PyObject* args)
 #if (DBVER >= 32)
 
 static PyObject*
-DBEnv_set_lk_max_locks(DBEnvObject* self, PyObject* args)
+DBEnv_set_lk_max_locks(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, max;
+    char* kwnames[] = {"max_locks", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_lk_max_locks", &max))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lk_max_locks",
+				     kwnames, &max))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3535,12 +3630,15 @@ DBEnv_set_lk_max_locks(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_lk_max_lockers(DBEnvObject* self, PyObject* args)
+DBEnv_set_lk_max_lockers(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, max;
+    char* kwnames[] = {"max_lockers", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_lk_max_lockers", &max))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lk_max_lockers",
+				     kwnames, &max))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3552,12 +3650,15 @@ DBEnv_set_lk_max_lockers(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_lk_max_objects(DBEnvObject* self, PyObject* args)
+DBEnv_set_lk_max_objects(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, max;
+    char* kwnames[] = {"max_objects", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_lk_max_objects", &max))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_lk_max_objects",
+				     kwnames, &max))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3571,12 +3672,15 @@ DBEnv_set_lk_max_objects(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_mp_mmapsize(DBEnvObject* self, PyObject* args)
+DBEnv_set_mp_mmapsize(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, mp_mmapsize;
+    char* kwnames[] = {"mp_mmapsize", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_mp_mmapsize", &mp_mmapsize))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_mp_mmapsize", kwnames,
+				     &mp_mmapsize))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3588,13 +3692,16 @@ DBEnv_set_mp_mmapsize(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_tmp_dir(DBEnvObject* self, PyObject* args)
+DBEnv_set_tmp_dir(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     char *dir;
+    char* kwnames[] = {"dir", NULL};
 
-    if (!PyArg_ParseTuple(args, "s:set_tmp_dir", &dir))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s:set_tmp_dir", kwnames,
+				     &dir))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3626,12 +3733,15 @@ DBEnv_txn_begin(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DBEnv_txn_checkpoint(DBEnvObject* self, PyObject* args)
+DBEnv_txn_checkpoint(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, kbyte=0, min=0, flags=0;
+    char* kwnames[] = {"kbyte", "min", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|iii:txn_checkpoint", &kbyte, &min, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|iii:txn_checkpoint",
+				     kwnames, &kbyte, &min, &flags))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3647,12 +3757,15 @@ DBEnv_txn_checkpoint(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_tx_max(DBEnvObject* self, PyObject* args)
+DBEnv_set_tx_max(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, max;
+    char* kwnames[] = {"max", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:set_tx_max", &max))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i:set_tx_max", kwnames,
+				     &max))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3664,13 +3777,16 @@ DBEnv_set_tx_max(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_lock_detect(DBEnvObject* self, PyObject* args)
+DBEnv_lock_detect(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err, atype, flags=0;
     int aborted = 0;
+    char* kwnames[] = {"atype", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "i|i:lock_detect", &atype, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|i:lock_detect", kwnames,
+				     &atype, &flags))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3686,16 +3802,17 @@ DBEnv_lock_detect(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_lock_get(DBEnvObject* self, PyObject* args)
+DBEnv_lock_get(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags=0;
     int locker, lock_mode;
     DBT obj;
     PyObject* objobj;
+    char* kwnames[] = {"locker", "object", "mode", "flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "iOi|i:lock_get", &locker, &objobj, &lock_mode, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "iOi|i:lock_get", kwnames,
+				     &locker, &objobj, &lock_mode, &flags))
         return NULL;
-
 
     if (!make_dbt(objobj, &obj))
         return NULL;
@@ -3705,13 +3822,10 @@ DBEnv_lock_get(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_lock_id(DBEnvObject* self, PyObject* args)
+DBEnv_lock_id(DBEnvObject* self)
 {
     int err;
     u_int32_t theID;
-
-    if (!PyArg_ParseTuple(args, ":lock_id"))
-        return NULL;
 
     CHECK_ENV_NOT_CLOSED(self);
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3728,12 +3842,14 @@ DBEnv_lock_id(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_lock_put(DBEnvObject* self, PyObject* args)
+DBEnv_lock_put(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     DBLockObject* dblockobj;
+    char* kwnames[] = {"lock_type", "object", NULL};
 
-    if (!PyArg_ParseTuple(args, "O!:lock_put", &DBLock_Type, &dblockobj))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:lock_put", kwnames,
+				     &DBLock_Type, &dblockobj))
         return NULL;
 
     CHECK_ENV_NOT_CLOSED(self);
@@ -3750,15 +3866,18 @@ DBEnv_lock_put(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_lock_stat(DBEnvObject* self, PyObject* args)
+DBEnv_lock_stat(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     DB_LOCK_STAT* sp;
     PyObject* d = NULL;
     u_int32_t flags = 0;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:lock_stat", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:lock_stat", kwnames,
+				     &flags))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3816,15 +3935,17 @@ DBEnv_lock_stat(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_log_archive(DBEnvObject* self, PyObject* args)
+DBEnv_log_archive(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags=0;
     int err;
     char **log_list_start, **log_list;
     PyObject* list;
     PyObject* item = NULL;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:log_archive", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:log_archive", kwnames,
+				     &flags))
         return NULL;
 
     CHECK_ENV_NOT_CLOSED(self);
@@ -3865,15 +3986,18 @@ DBEnv_log_archive(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_txn_stat(DBEnvObject* self, PyObject* args)
+DBEnv_txn_stat(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int err;
     DB_TXN_STAT* sp;
     PyObject* d = NULL;
     u_int32_t flags=0;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:txn_stat", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:txn_stat", kwnames,
+				     &flags))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     MYDB_BEGIN_ALLOW_THREADS;
@@ -3915,13 +4039,16 @@ DBEnv_txn_stat(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBEnv_set_get_returns_none(DBEnvObject* self, PyObject* args)
+DBEnv_set_get_returns_none(DBEnvObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags=0;
     int oldValue=0;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args,"i:set_get_returns_none", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"i:set_get_returns_none",
+				     kwnames, &flags))
         return NULL;
+
     CHECK_ENV_NOT_CLOSED(self);
 
     if (self->moduleFlags.getReturnsNone)
@@ -3939,12 +4066,14 @@ DBEnv_set_get_returns_none(DBEnvObject* self, PyObject* args)
 
 
 static PyObject*
-DBTxn_commit(DBTxnObject* self, PyObject* args)
+DBTxn_commit(DBTxnObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags=0, err;
     DB_TXN *txn;
+    char* kwnames[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|i:commit", &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:commit", kwnames,
+				     &flags))
         return NULL;
 
     if (!self->txn) {
@@ -3966,14 +4095,16 @@ DBTxn_commit(DBTxnObject* self, PyObject* args)
 }
 
 static PyObject*
-DBTxn_prepare(DBTxnObject* self, PyObject* args)
+DBTxn_prepare(DBTxnObject* self, PyObject* args, PyObject* kwargs)
 {
 #if (DBVER >= 33)
     int err;
     char* gid=NULL;
     int   gid_size=0;
+    char* kwnames[] = {"gid", NULL};
 
-    if (!PyArg_ParseTuple(args, "s#:prepare", &gid, &gid_size))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#:prepare", kwnames, &gid,
+				     &gid_size))
         return NULL;
 
     if (gid_size != DB_XIDDATASIZE) {
@@ -3998,8 +4129,9 @@ DBTxn_prepare(DBTxnObject* self, PyObject* args)
     RETURN_NONE();
 #else
     int err;
+    char* kwnames[] = {NULL};
 
-    if (!PyArg_ParseTuple(args, ":prepare"))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, ":prepare", kwnames))
         return NULL;
 
     if (!self->txn) {
@@ -4017,13 +4149,10 @@ DBTxn_prepare(DBTxnObject* self, PyObject* args)
 
 
 static PyObject*
-DBTxn_abort(DBTxnObject* self, PyObject* args)
+DBTxn_abort(DBTxnObject* self)
 {
     int err;
     DB_TXN *txn;
-
-    if (!PyArg_ParseTuple(args, ":abort"))
-        return NULL;
 
     if (!self->txn) {
         PyErr_SetObject(DBError, Py_BuildValue("(is)", 0,
@@ -4045,12 +4174,9 @@ DBTxn_abort(DBTxnObject* self, PyObject* args)
 
 
 static PyObject*
-DBTxn_id(DBTxnObject* self, PyObject* args)
+DBTxn_id(DBTxnObject* self)
 {
     int id;
-
-    if (!PyArg_ParseTuple(args, ":id"))
-        return NULL;
 
     if (!self->txn) {
         PyErr_SetObject(DBError, Py_BuildValue("(is)", 0,
@@ -4071,59 +4197,59 @@ DBTxn_id(DBTxnObject* self, PyObject* args)
 /* Method definition tables and type objects */
 
 static PyMethodDef DB_methods[] = {
-    {"append",          (PyCFunction)DB_append,         METH_VARARGS},
+    {"append",          (PyCFunction)DB_append,         METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 33)
     {"associate",       (PyCFunction)DB_associate,      METH_VARARGS|METH_KEYWORDS},
 #endif
-    {"close",           (PyCFunction)DB_close,          METH_VARARGS},
+    {"close",           (PyCFunction)DB_close,          METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 32)
     {"consume",         (PyCFunction)DB_consume,        METH_VARARGS|METH_KEYWORDS},
     {"consume_wait",    (PyCFunction)DB_consume_wait,   METH_VARARGS|METH_KEYWORDS},
 #endif
     {"cursor",          (PyCFunction)DB_cursor,         METH_VARARGS|METH_KEYWORDS},
     {"delete",          (PyCFunction)DB_delete,         METH_VARARGS|METH_KEYWORDS},
-    {"fd",              (PyCFunction)DB_fd,             METH_VARARGS},
+    {"fd",              (PyCFunction)DB_fd,             METH_NOARGS},
     {"get",             (PyCFunction)DB_get,            METH_VARARGS|METH_KEYWORDS},
     {"get_both",        (PyCFunction)DB_get_both,       METH_VARARGS|METH_KEYWORDS},
-    {"get_byteswapped", (PyCFunction)DB_get_byteswapped,METH_VARARGS},
+    {"get_byteswapped", (PyCFunction)DB_get_byteswapped,METH_NOARGS},
     {"get_size",        (PyCFunction)DB_get_size,       METH_VARARGS|METH_KEYWORDS},
-    {"get_type",        (PyCFunction)DB_get_type,       METH_VARARGS},
-    {"join",            (PyCFunction)DB_join,           METH_VARARGS},
+    {"get_type",        (PyCFunction)DB_get_type,       METH_NOARGS},
+    {"join",            (PyCFunction)DB_join,           METH_VARARGS|METH_KEYWORDS},
     {"key_range",       (PyCFunction)DB_key_range,      METH_VARARGS|METH_KEYWORDS},
-    {"has_key",         (PyCFunction)DB_has_key,        METH_VARARGS},
-    {"items",           (PyCFunction)DB_items,          METH_VARARGS},
-    {"keys",            (PyCFunction)DB_keys,           METH_VARARGS},
+    {"has_key",         (PyCFunction)DB_has_key,        METH_VARARGS|METH_KEYWORDS},
+    {"items",           (PyCFunction)DB_items,          METH_VARARGS|METH_KEYWORDS},
+    {"keys",            (PyCFunction)DB_keys,           METH_VARARGS|METH_KEYWORDS},
     {"open",            (PyCFunction)DB_open,           METH_VARARGS|METH_KEYWORDS},
     {"put",             (PyCFunction)DB_put,            METH_VARARGS|METH_KEYWORDS},
     {"remove",          (PyCFunction)DB_remove,         METH_VARARGS|METH_KEYWORDS},
-    {"rename",          (PyCFunction)DB_rename,         METH_VARARGS},
-    {"set_bt_minkey",   (PyCFunction)DB_set_bt_minkey,  METH_VARARGS},
-    {"set_cachesize",   (PyCFunction)DB_set_cachesize,  METH_VARARGS},
+    {"rename",          (PyCFunction)DB_rename,         METH_VARARGS|METH_KEYWORDS},
+    {"set_bt_minkey",   (PyCFunction)DB_set_bt_minkey,  METH_VARARGS|METH_KEYWORDS},
+    {"set_cachesize",   (PyCFunction)DB_set_cachesize,  METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 41)
     {"set_encrypt",     (PyCFunction)DB_set_encrypt,    METH_VARARGS|METH_KEYWORDS},
 #endif
-    {"set_flags",       (PyCFunction)DB_set_flags,      METH_VARARGS},
-    {"set_h_ffactor",   (PyCFunction)DB_set_h_ffactor,  METH_VARARGS},
-    {"set_h_nelem",     (PyCFunction)DB_set_h_nelem,    METH_VARARGS},
-    {"set_lorder",      (PyCFunction)DB_set_lorder,     METH_VARARGS},
-    {"set_pagesize",    (PyCFunction)DB_set_pagesize,   METH_VARARGS},
-    {"set_re_delim",    (PyCFunction)DB_set_re_delim,   METH_VARARGS},
-    {"set_re_len",      (PyCFunction)DB_set_re_len,     METH_VARARGS},
-    {"set_re_pad",      (PyCFunction)DB_set_re_pad,     METH_VARARGS},
-    {"set_re_source",   (PyCFunction)DB_set_re_source,  METH_VARARGS},
+    {"set_flags",       (PyCFunction)DB_set_flags,      METH_VARARGS|METH_KEYWORDS},
+    {"set_h_ffactor",   (PyCFunction)DB_set_h_ffactor,  METH_VARARGS|METH_KEYWORDS},
+    {"set_h_nelem",     (PyCFunction)DB_set_h_nelem,    METH_VARARGS|METH_KEYWORDS},
+    {"set_lorder",      (PyCFunction)DB_set_lorder,     METH_VARARGS|METH_KEYWORDS},
+    {"set_pagesize",    (PyCFunction)DB_set_pagesize,   METH_VARARGS|METH_KEYWORDS},
+    {"set_re_delim",    (PyCFunction)DB_set_re_delim,   METH_VARARGS|METH_KEYWORDS},
+    {"set_re_len",      (PyCFunction)DB_set_re_len,     METH_VARARGS|METH_KEYWORDS},
+    {"set_re_pad",      (PyCFunction)DB_set_re_pad,     METH_VARARGS|METH_KEYWORDS},
+    {"set_re_source",   (PyCFunction)DB_set_re_source,  METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 32)
-    {"set_q_extentsize",(PyCFunction)DB_set_q_extentsize,METH_VARARGS},
+    {"set_q_extentsize",(PyCFunction)DB_set_q_extentsize,METH_VARARGS|METH_KEYWORDS},
 #endif
-    {"stat",            (PyCFunction)DB_stat,           METH_VARARGS},
-    {"sync",            (PyCFunction)DB_sync,           METH_VARARGS},
+    {"stat",            (PyCFunction)DB_stat,           METH_VARARGS|METH_KEYWORDS},
+    {"sync",            (PyCFunction)DB_sync,           METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 33)
     {"truncate",        (PyCFunction)DB_truncate,       METH_VARARGS|METH_KEYWORDS},
 #endif
-    {"type",            (PyCFunction)DB_get_type,       METH_VARARGS},
-    {"upgrade",         (PyCFunction)DB_upgrade,        METH_VARARGS},
-    {"values",          (PyCFunction)DB_values,         METH_VARARGS},
+    {"type",            (PyCFunction)DB_get_type,       METH_VARARGS|METH_KEYWORDS},
+    {"upgrade",         (PyCFunction)DB_upgrade,        METH_VARARGS|METH_KEYWORDS},
+    {"values",          (PyCFunction)DB_values,         METH_VARARGS|METH_KEYWORDS},
     {"verify",          (PyCFunction)DB_verify,         METH_VARARGS|METH_KEYWORDS},
-    {"set_get_returns_none",(PyCFunction)DB_set_get_returns_none,      METH_VARARGS},
+    {"set_get_returns_none",(PyCFunction)DB_set_get_returns_none,      METH_VARARGS|METH_KEYWORDS},
     {NULL,      NULL}       /* sentinel */
 };
 
@@ -4136,37 +4262,37 @@ static PyMappingMethods DB_mapping = {
 
 
 static PyMethodDef DBCursor_methods[] = {
-    {"close",           (PyCFunction)DBC_close,         METH_VARARGS},
-    {"count",           (PyCFunction)DBC_count,         METH_VARARGS},
+    {"close",           (PyCFunction)DBC_close,         METH_NOARGS},
+    {"count",           (PyCFunction)DBC_count,         METH_VARARGS|METH_KEYWORDS},
     {"current",         (PyCFunction)DBC_current,       METH_VARARGS|METH_KEYWORDS},
-    {"delete",          (PyCFunction)DBC_delete,        METH_VARARGS},
-    {"dup",             (PyCFunction)DBC_dup,           METH_VARARGS},
+    {"delete",          (PyCFunction)DBC_delete,        METH_VARARGS|METH_KEYWORDS},
+    {"dup",             (PyCFunction)DBC_dup,           METH_VARARGS|METH_KEYWORDS},
     {"first",           (PyCFunction)DBC_first,         METH_VARARGS|METH_KEYWORDS},
     {"get",             (PyCFunction)DBC_get,           METH_VARARGS|METH_KEYWORDS},
-    {"get_recno",       (PyCFunction)DBC_get_recno,     METH_VARARGS},
+    {"get_recno",       (PyCFunction)DBC_get_recno,     METH_NOARGS},
     {"last",            (PyCFunction)DBC_last,          METH_VARARGS|METH_KEYWORDS},
     {"next",            (PyCFunction)DBC_next,          METH_VARARGS|METH_KEYWORDS},
     {"prev",            (PyCFunction)DBC_prev,          METH_VARARGS|METH_KEYWORDS},
     {"put",             (PyCFunction)DBC_put,           METH_VARARGS|METH_KEYWORDS},
     {"set",             (PyCFunction)DBC_set,           METH_VARARGS|METH_KEYWORDS},
     {"set_range",       (PyCFunction)DBC_set_range,     METH_VARARGS|METH_KEYWORDS},
-    {"get_both",        (PyCFunction)DBC_get_both,      METH_VARARGS},
-    {"get_current_size",(PyCFunction)DBC_get_current_size, METH_VARARGS},
-    {"set_both",        (PyCFunction)DBC_set_both,      METH_VARARGS},
+    {"get_both",        (PyCFunction)DBC_get_both,      METH_VARARGS|METH_KEYWORDS},
+    {"get_current_size",(PyCFunction)DBC_get_current_size, METH_NOARGS},
+    {"set_both",        (PyCFunction)DBC_set_both,      METH_VARARGS|METH_KEYWORDS},
     {"set_recno",       (PyCFunction)DBC_set_recno,     METH_VARARGS|METH_KEYWORDS},
     {"consume",         (PyCFunction)DBC_consume,       METH_VARARGS|METH_KEYWORDS},
     {"next_dup",        (PyCFunction)DBC_next_dup,      METH_VARARGS|METH_KEYWORDS},
     {"next_nodup",      (PyCFunction)DBC_next_nodup,    METH_VARARGS|METH_KEYWORDS},
     {"prev_nodup",      (PyCFunction)DBC_prev_nodup,    METH_VARARGS|METH_KEYWORDS},
-    {"join_item",       (PyCFunction)DBC_join_item,     METH_VARARGS},
+    {"join_item",       (PyCFunction)DBC_join_item,     METH_VARARGS|METH_KEYWORDS},
     {NULL,      NULL}       /* sentinel */
 };
 
 
 static PyMethodDef DBEnv_methods[] = {
-    {"close",           (PyCFunction)DBEnv_close,            METH_VARARGS},
-    {"open",            (PyCFunction)DBEnv_open,             METH_VARARGS},
-    {"remove",          (PyCFunction)DBEnv_remove,           METH_VARARGS},
+    {"close",           (PyCFunction)DBEnv_close,            METH_VARARGS|METH_KEYWORDS},
+    {"open",            (PyCFunction)DBEnv_open,             METH_VARARGS|METH_KEYWORDS},
+    {"remove",          (PyCFunction)DBEnv_remove,           METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 41)
     {"dbremove",        (PyCFunction)DBEnv_dbremove,         METH_VARARGS|METH_KEYWORDS},
     {"dbrename",        (PyCFunction)DBEnv_dbrename,         METH_VARARGS|METH_KEYWORDS},
@@ -4175,44 +4301,44 @@ static PyMethodDef DBEnv_methods[] = {
 #if (DBVER >= 40)
     {"set_timeout",     (PyCFunction)DBEnv_set_timeout,      METH_VARARGS|METH_KEYWORDS},
 #endif
-    {"set_shm_key",     (PyCFunction)DBEnv_set_shm_key,      METH_VARARGS},
-    {"set_cachesize",   (PyCFunction)DBEnv_set_cachesize,    METH_VARARGS},
-    {"set_data_dir",    (PyCFunction)DBEnv_set_data_dir,     METH_VARARGS},
+    {"set_shm_key",     (PyCFunction)DBEnv_set_shm_key,      METH_VARARGS|METH_KEYWORDS},
+    {"set_cachesize",   (PyCFunction)DBEnv_set_cachesize,    METH_VARARGS|METH_KEYWORDS},
+    {"set_data_dir",    (PyCFunction)DBEnv_set_data_dir,     METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 32)
-    {"set_flags",       (PyCFunction)DBEnv_set_flags,        METH_VARARGS},
+    {"set_flags",       (PyCFunction)DBEnv_set_flags,        METH_VARARGS|METH_KEYWORDS},
 #endif
-    {"set_lg_bsize",    (PyCFunction)DBEnv_set_lg_bsize,     METH_VARARGS},
-    {"set_lg_dir",      (PyCFunction)DBEnv_set_lg_dir,       METH_VARARGS},
-    {"set_lg_max",      (PyCFunction)DBEnv_set_lg_max,       METH_VARARGS},
-    {"set_lk_detect",   (PyCFunction)DBEnv_set_lk_detect,    METH_VARARGS},
-    {"set_lk_max",      (PyCFunction)DBEnv_set_lk_max,       METH_VARARGS},
+    {"set_lg_bsize",    (PyCFunction)DBEnv_set_lg_bsize,     METH_VARARGS|METH_KEYWORDS},
+    {"set_lg_dir",      (PyCFunction)DBEnv_set_lg_dir,       METH_VARARGS|METH_KEYWORDS},
+    {"set_lg_max",      (PyCFunction)DBEnv_set_lg_max,       METH_VARARGS|METH_KEYWORDS},
+    {"set_lk_detect",   (PyCFunction)DBEnv_set_lk_detect,    METH_VARARGS|METH_KEYWORDS},
+    {"set_lk_max",      (PyCFunction)DBEnv_set_lk_max,       METH_VARARGS|METH_KEYWORDS},
 #if (DBVER >= 32)
-    {"set_lk_max_locks", (PyCFunction)DBEnv_set_lk_max_locks, METH_VARARGS},
-    {"set_lk_max_lockers", (PyCFunction)DBEnv_set_lk_max_lockers, METH_VARARGS},
-    {"set_lk_max_objects", (PyCFunction)DBEnv_set_lk_max_objects, METH_VARARGS},
+    {"set_lk_max_locks", (PyCFunction)DBEnv_set_lk_max_locks, METH_VARARGS|METH_KEYWORDS},
+    {"set_lk_max_lockers", (PyCFunction)DBEnv_set_lk_max_lockers, METH_VARARGS|METH_KEYWORDS},
+    {"set_lk_max_objects", (PyCFunction)DBEnv_set_lk_max_objects, METH_VARARGS|METH_KEYWORDS},
 #endif
-    {"set_mp_mmapsize", (PyCFunction)DBEnv_set_mp_mmapsize,  METH_VARARGS},
-    {"set_tmp_dir",     (PyCFunction)DBEnv_set_tmp_dir,      METH_VARARGS},
+    {"set_mp_mmapsize", (PyCFunction)DBEnv_set_mp_mmapsize,  METH_VARARGS|METH_KEYWORDS},
+    {"set_tmp_dir",     (PyCFunction)DBEnv_set_tmp_dir,      METH_VARARGS|METH_KEYWORDS},
     {"txn_begin",       (PyCFunction)DBEnv_txn_begin,        METH_VARARGS|METH_KEYWORDS},
-    {"txn_checkpoint",  (PyCFunction)DBEnv_txn_checkpoint,   METH_VARARGS},
-    {"txn_stat",        (PyCFunction)DBEnv_txn_stat,         METH_VARARGS},
-    {"set_tx_max",      (PyCFunction)DBEnv_set_tx_max,       METH_VARARGS},
-    {"lock_detect",     (PyCFunction)DBEnv_lock_detect,      METH_VARARGS},
-    {"lock_get",        (PyCFunction)DBEnv_lock_get,         METH_VARARGS},
-    {"lock_id",         (PyCFunction)DBEnv_lock_id,          METH_VARARGS},
-    {"lock_put",        (PyCFunction)DBEnv_lock_put,         METH_VARARGS},
-    {"lock_stat",       (PyCFunction)DBEnv_lock_stat,        METH_VARARGS},
-    {"log_archive",     (PyCFunction)DBEnv_log_archive,      METH_VARARGS},
-    {"set_get_returns_none",(PyCFunction)DBEnv_set_get_returns_none, METH_VARARGS},
+    {"txn_checkpoint",  (PyCFunction)DBEnv_txn_checkpoint,   METH_VARARGS|METH_KEYWORDS},
+    {"txn_stat",        (PyCFunction)DBEnv_txn_stat,         METH_VARARGS|METH_KEYWORDS},
+    {"set_tx_max",      (PyCFunction)DBEnv_set_tx_max,       METH_VARARGS|METH_KEYWORDS},
+    {"lock_detect",     (PyCFunction)DBEnv_lock_detect,      METH_VARARGS|METH_KEYWORDS},
+    {"lock_get",        (PyCFunction)DBEnv_lock_get,         METH_VARARGS|METH_KEYWORDS},
+    {"lock_id",         (PyCFunction)DBEnv_lock_id,          METH_NOARGS},
+    {"lock_put",        (PyCFunction)DBEnv_lock_put,         METH_VARARGS|METH_KEYWORDS},
+    {"lock_stat",       (PyCFunction)DBEnv_lock_stat,        METH_VARARGS|METH_KEYWORDS},
+    {"log_archive",     (PyCFunction)DBEnv_log_archive,      METH_VARARGS|METH_KEYWORDS},
+    {"set_get_returns_none",(PyCFunction)DBEnv_set_get_returns_none, METH_VARARGS|METH_KEYWORDS},
     {NULL,      NULL}       /* sentinel */
 };
 
 
 static PyMethodDef DBTxn_methods[] = {
-    {"commit",          (PyCFunction)DBTxn_commit,      METH_VARARGS},
-    {"prepare",         (PyCFunction)DBTxn_prepare,     METH_VARARGS},
-    {"abort",           (PyCFunction)DBTxn_abort,       METH_VARARGS},
-    {"id",              (PyCFunction)DBTxn_id,          METH_VARARGS},
+    {"commit",          (PyCFunction)DBTxn_commit,      METH_VARARGS|METH_KEYWORDS},
+    {"prepare",         (PyCFunction)DBTxn_prepare,     METH_VARARGS|METH_KEYWORDS},
+    {"abort",           (PyCFunction)DBTxn_abort,       METH_NOARGS},
+    {"id",              (PyCFunction)DBTxn_id,          METH_NOARGS},
     {NULL,      NULL}       /* sentinel */
 };
 
@@ -4394,10 +4520,14 @@ DB_construct(PyObject* self, PyObject* args, PyObject* kwargs)
 
 
 static PyObject*
-DBEnv_construct(PyObject* self, PyObject* args)
+DBEnv_construct(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     int flags = 0;
-    if (!PyArg_ParseTuple(args, "|i:DbEnv", &flags)) return NULL;
+    char* kwnames[] = {"flags", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i:DbEnv", kwnames, &flags))
+	return NULL;
+
     return (PyObject* )newDBEnvObject(flags);
 }
 
@@ -4407,23 +4537,21 @@ static char bsddb_version_doc[] =
 underlying DB library.";
 
 static PyObject*
-bsddb_version(PyObject* self, PyObject* args)
+bsddb_version(PyObject* self)
 {
     int major, minor, patch;
 
-        if (!PyArg_ParseTuple(args, ":version"))
-        return NULL;
-        db_version(&major, &minor, &patch);
-        return Py_BuildValue("(iii)", major, minor, patch);
+    db_version(&major, &minor, &patch);
+    return Py_BuildValue("(iii)", major, minor, patch);
 }
 
 
 /* List of functions defined in the module */
 
 static PyMethodDef bsddb_methods[] = {
-    {"DB",      (PyCFunction)DB_construct,      METH_VARARGS | METH_KEYWORDS },
-    {"DBEnv",   (PyCFunction)DBEnv_construct,   METH_VARARGS},
-    {"version", (PyCFunction)bsddb_version,     METH_VARARGS, bsddb_version_doc},
+    {"DB",      (PyCFunction)DB_construct,      METH_VARARGS|METH_KEYWORDS},
+    {"DBEnv",   (PyCFunction)DBEnv_construct,   METH_VARARGS|METH_KEYWORDS},
+    {"version", (PyCFunction)bsddb_version,     METH_NOARGS, bsddb_version_doc},
     {NULL,      NULL}       /* sentinel */
 };
 

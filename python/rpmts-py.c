@@ -168,11 +168,15 @@ struct rpmtsCallbackType_s {
  */
 /*@null@*/
 static PyObject *
-rpmts_Debug(/*@unused@*/ rpmtsObject * s, PyObject * args)
+rpmts_Debug(/*@unused@*/ rpmtsObject * s, PyObject * args, PyObject * kwds)
         /*@globals _Py_NoneStruct @*/
         /*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i:Debug", &_rpmts_debug)) return NULL;
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Debug", kwlist,
+    	    &_rpmts_debug))
+	return NULL;
 
 if (_rpmts_debug < 0)
 fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
@@ -211,7 +215,7 @@ fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
  */
 /*@null@*/
 static PyObject *
-rpmts_AddInstall(rpmtsObject * s, PyObject * args)
+rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -219,8 +223,10 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args)
     PyObject * key;
     char * how = "u";	/* XXX default to upgrade element if missing */
     int isUpgrade = 0;
+    char * kwlist[] = {"header", "key", "how", NULL};
 
-    if (!PyArg_ParseTuple(args, "O!O|s:AddInstall", &hdr_Type, &h, &key, &how))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O|s:AddInstall", kwlist,
+    	    &hdr_Type, &h, &key, &how))
 	return NULL;
 
     {	PyObject * hObj = (PyObject *) h;
@@ -257,18 +263,19 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
  */
 /*@null@*/
 static PyObject *
-rpmts_AddErase(rpmtsObject * s, PyObject * args)
+rpmts_AddErase(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * o;
     int count;
     rpmdbMatchIterator mi;
+    char * kwlist[] = {"name", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "O:AddErase", &o))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:AddErase", kwlist, &o))
         return NULL;
 
     if (PyString_Check(o)) {
@@ -355,7 +362,7 @@ fprintf(stderr, "*** rpmts_SolveCallback(%p,%p,%p) \"%s\"\n", ts, ds, data, rpmd
  */
 /*@null@*/
 static PyObject *
-rpmts_Check(rpmtsObject * s, PyObject * args)
+rpmts_Check(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -365,9 +372,11 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
     struct rpmtsCallbackType_s cbInfo;
     int i;
     int xx;
+    char * kwlist[] = {"callback", NULL};
 
     memset(&cbInfo, 0, sizeof(cbInfo));
-    if (!PyArg_ParseTuple(args, "|O:Check", &cbInfo.cb))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:Check", kwlist,
+	    &cbInfo.cb))
 	return NULL;
 
     if (cbInfo.cb != NULL) {
@@ -475,7 +484,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
  */
 /*@null@*/
 static PyObject *
-rpmts_Order(rpmtsObject * s, PyObject * args)
+rpmts_Order(rpmtsObject * s)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -483,8 +492,6 @@ rpmts_Order(rpmtsObject * s, PyObject * args)
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Order(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":Order")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmtsOrder(s->ts);
@@ -497,14 +504,12 @@ fprintf(stderr, "*** rpmts_Order(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_Clean(rpmtsObject * s, PyObject * args)
+rpmts_Clean(rpmtsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":Clean")) return NULL;
 
     rpmtsClean(s->ts);
 
@@ -516,7 +521,7 @@ fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_IDTXload(rpmtsObject * s, PyObject * args)
+rpmts_IDTXload(rpmtsObject * s)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -526,8 +531,6 @@ rpmts_IDTXload(rpmtsObject * s, PyObject * args)
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":IDTXload")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     idtx = IDTXload(s->ts, tag);
@@ -563,7 +566,7 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_IDTXglob(rpmtsObject * s, PyObject * args)
+rpmts_IDTXglob(rpmtsObject * s)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -574,8 +577,6 @@ rpmts_IDTXglob(rpmtsObject * s, PyObject * args)
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":IDTXglob")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
@@ -613,7 +614,7 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_Rollback(rpmtsObject * s, PyObject * args)
+rpmts_Rollback(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -622,11 +623,13 @@ rpmts_Rollback(rpmtsObject * s, PyObject * args)
     const char ** av = NULL;
     uint_32 rbtid;
     int rc;
+    char * kwlist[] = {"transactionId", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "i:Rollback", &rbtid)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Rollback", kwlist, &rbtid))
+    	return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     memset(ia, 0, sizeof(*ia));
@@ -650,15 +653,13 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_OpenDB(rpmtsObject * s, PyObject * args)
+rpmts_OpenDB(rpmtsObject * s)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":OpenDB")) return NULL;
 
     if (s->ts->dbmode == -1)
 	s->ts->dbmode = O_RDONLY;
@@ -670,15 +671,13 @@ fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_CloseDB(rpmtsObject * s, PyObject * args)
+rpmts_CloseDB(rpmtsObject * s)
 	/*@modifies s @*/
 {
     int rc;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":CloseDB")) return NULL;
 
     rc = rpmtsCloseDB(s->ts);
     s->ts->dbmode = -1;		/* XXX disable lazy opens */
@@ -690,7 +689,7 @@ fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_InitDB(rpmtsObject * s, PyObject * args)
+rpmts_InitDB(rpmtsObject * s)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -698,8 +697,6 @@ rpmts_InitDB(rpmtsObject * s, PyObject * args)
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_InitDB(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":InitDB")) return NULL;
 
     rc = rpmtsInitDB(s->ts, O_RDONLY);
     if (rc == 0)
@@ -712,7 +709,7 @@ fprintf(stderr, "*** rpmts_InitDB(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_RebuildDB(rpmtsObject * s, PyObject * args)
+rpmts_RebuildDB(rpmtsObject * s)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -720,8 +717,6 @@ rpmts_RebuildDB(rpmtsObject * s, PyObject * args)
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":RebuildDB")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmtsRebuildDB(s->ts);
@@ -734,7 +729,7 @@ fprintf(stderr, "*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_VerifyDB(rpmtsObject * s, PyObject * args)
+rpmts_VerifyDB(rpmtsObject * s)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -742,8 +737,6 @@ rpmts_VerifyDB(rpmtsObject * s, PyObject * args)
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":VerifyDB")) return NULL;
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmtsVerifyDB(s->ts);
@@ -756,7 +749,7 @@ fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args)
+rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies s, rpmGlobalMacroContext, fileSystem @*/
 {
@@ -765,8 +758,11 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args)
     FD_t fd;
     int fdno;
     rpmRC rpmrc;
+    char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:HdrFromFdno", &fdno)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:HdrFromFdno", kwlist,
+	    &fdno))
+    	return NULL;
 
     fd = fdDup(fdno);
     rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
@@ -806,7 +802,7 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
  */
 /*@null@*/
 static PyObject *
-rpmts_HdrCheck(rpmtsObject * s, PyObject * args)
+rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -816,11 +812,14 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args)
     const void * uh;
     int uc;
     rpmRC rpmrc;
+    char * kwlist[] = {"headers", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "O:HdrCheck", &blob)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:HdrCheck", kwlist, &blob))
+    	return NULL;
+
     if (blob == Py_None) {
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -862,17 +861,21 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_SetVSFlags(rpmtsObject * s, PyObject * args)
+rpmts_SetVSFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     rpmVSFlags vsflags;
+    char * kwlist[] = {"flags", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "i:SetVSFlags", &vsflags)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetVSFlags", kwlist,
+	    &vsflags))
+    	return NULL;
 
-    /* XXX FIXME: value check on vsflags. */
+    /* XXX FIXME: value check on vsflags, or build pure python object 
+     * for it, and require an object of that type */
 
     return Py_BuildValue("i", rpmtsSetVSFlags(s->ts, vsflags));
 }
@@ -881,17 +884,20 @@ fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_SetColor(rpmtsObject * s, PyObject * args)
+rpmts_SetColor(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     uint_32 tscolor;
+    char * kwlist[] = {"color", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_SetColor(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "i:Color", &tscolor)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Color", kwlist, &tscolor))
+    	return NULL;
 
-    /* XXX FIXME: value check on tscolor. */
+    /* XXX FIXME: value check on tscolor, or build pure python object
+     * for it, and require an object of that type */
 
     return Py_BuildValue("i", rpmtsSetColor(s->ts, tscolor));
 }
@@ -900,7 +906,7 @@ fprintf(stderr, "*** rpmts_SetColor(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args)
+rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
@@ -908,11 +914,14 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args)
     unsigned char * pkt;
     unsigned int pktlen;
     int rc;
+    char * kwlist[] = {"octets", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "O:PgpPrtPkts", &blob)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:PgpPrtPkts", kwlist, &blob))
+    	return NULL;
+
     if (blob == Py_None) {
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -933,7 +942,7 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args)
+rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -941,11 +950,15 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args)
     unsigned char * pkt;
     unsigned int pktlen;
     int rc;
+    char * kwlist[] = {"pubkey", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "O:PgpImportPubkey", &blob)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:PgpImportPubkey",
+    	    kwlist, &blob))
+	return NULL;
+
     if (blob == Py_None) {
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -966,7 +979,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
-rpmts_GetKeys(rpmtsObject * s, PyObject * args)
+rpmts_GetKeys(rpmtsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
@@ -976,8 +989,6 @@ rpmts_GetKeys(rpmtsObject * s, PyObject * args)
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_GetKeys(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTuple(args, ":GetKeys")) return NULL;
 
     rpmtsGetKeys(s->ts, &data, &num);
     if (data == NULL || num <= 0) {
@@ -1081,29 +1092,38 @@ fprintf(stderr, "\t%ld:%ld key %p\n", amount, total, pkgKey);
 
 /** \ingroup py_c
  */
-static PyObject * rpmts_SetFlags(rpmtsObject * s, PyObject * args)
+static PyObject *
+rpmts_SetFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     rpmtransFlags transFlags = 0;
+    char * kwlist[] = {"flags", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:SetFlags", &transFlags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetFlags", kwlist,
+	    &transFlags))
 	return NULL;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_SetFlags(%p) ts %p transFlags %x\n", s, s->ts, transFlags);
+
+    /* XXX FIXME: value check on flags, or build pure python object 
+     * for it, and require an object of that type */
 
     return Py_BuildValue("i", rpmtsSetFlags(s->ts, transFlags));
 }
 
 /** \ingroup py_c
  */
-static PyObject * rpmts_SetProbFilter(rpmtsObject * s, PyObject * args)
+static PyObject *
+rpmts_SetProbFilter(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
     rpmprobFilterFlags ignoreSet = 0;
     rpmprobFilterFlags oignoreSet;
+    char * kwlist[] = {"ignoreSet", NULL};
 
-    if (!PyArg_ParseTuple(args, "i:ProbFilter", &ignoreSet))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:ProbFilter", kwlist,
+	    &ignoreSet))
 	return NULL;
 
 if (_rpmts_debug)
@@ -1119,22 +1139,20 @@ fprintf(stderr, "*** rpmts_SetProbFilter(%p) ts %p ignoreSet %x\n", s, s->ts, ig
  */
 /*@null@*/
 static rpmpsObject *
-rpmts_Problems(rpmtsObject * s, PyObject * args)
+rpmts_Problems(rpmtsObject * s)
 	/*@modifies s @*/
 {
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Problems(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, ":Problems"))
-	return NULL;
-
     return rpmps_Wrap( rpmtsProblems(s->ts) );
 }
 
 /** \ingroup py_c
  */
-static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
+static PyObject *
+rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -1142,8 +1160,10 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
     PyObject * list;
     rpmps ps;
     struct rpmtsCallbackType_s cbInfo;
+    char * kwlist[] = {"callback", "data", NULL};
 
-    if (!PyArg_ParseTuple(args, "OO:Run", &cbInfo.cb, &cbInfo.data))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO:Run", kwlist,
+	    &cbInfo.cb, &cbInfo.data))
 	return NULL;
 
     cbInfo.tso = s;
@@ -1171,7 +1191,6 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 	}
 	sx = rpmsxFree(sx);
     } 
-
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
@@ -1288,7 +1307,7 @@ fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static specObject *
-spec_Parse(rpmtsObject * s, PyObject * args)
+spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -1300,11 +1319,11 @@ spec_Parse(rpmtsObject * s, PyObject * args)
     char *cookie = NULL;
     int anyarch = 1;
     int force = 1;
+    char * kwlist[] = {"specfile", NULL};
 
-    if (!PyArg_ParseTuple(args, "s:Parse", &specfile)) {
-                    return NULL;
-    }
-                        
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:Parse", kwlist, &specfile))
+	return NULL;
+
     if (parseSpec(s->ts, specfile,"/", buildRoot,recursing, passPhrase,
              cookie, anyarch, force)!=0) {
              PyErr_SetString(pyrpmError, "can't parse specfile\n");
@@ -1319,7 +1338,7 @@ spec_Parse(rpmtsObject * s, PyObject * args)
  */
 /*@null@*/
 static rpmmiObject *
-rpmts_Match(rpmtsObject * s, PyObject * args)
+rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
@@ -1329,11 +1348,13 @@ rpmts_Match(rpmtsObject * s, PyObject * args)
     long lkey = 0;
     int len = 0;
     int tag = RPMDBI_PACKAGES;
+    char * kwlist[] = {"tagNumber", "key", NULL};
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "|OO:Match", &TagN, &Key))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OO:Match", kwlist,
+	    &TagN, &Key))
 	return NULL;
 
     if (TagN && (tag = tagNumFromPyObject (TagN)) == -1) {
@@ -1375,66 +1396,66 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmts_methods[] = {
- {"Debug",	(PyCFunction)rpmts_Debug,	METH_VARARGS,
+ {"Debug",	(PyCFunction)rpmts_Debug,	METH_VARARGS|METH_KEYWORDS,
         NULL},
 
- {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
+ {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS,
+ {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"check",	(PyCFunction) rpmts_Check,	METH_VARARGS,
+ {"check",	(PyCFunction) rpmts_Check,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"order",	(PyCFunction) rpmts_Order,	METH_VARARGS,
+ {"order",	(PyCFunction) rpmts_Order,	METH_NOARGS,
 	NULL },
- {"setFlags",	(PyCFunction) rpmts_SetFlags,	METH_VARARGS,
+ {"setFlags",	(PyCFunction) rpmts_SetFlags,	METH_VARARGS|METH_KEYWORDS,
 "ts.setFlags(transFlags) -> previous transFlags\n\
 - Set control bit(s) for executing ts.run().\n\
   Note: This method replaces the 1st argument to the old ts.run()\n" },
- {"setProbFilter",	(PyCFunction) rpmts_SetProbFilter,	METH_VARARGS,
+ {"setProbFilter",	(PyCFunction) rpmts_SetProbFilter,	METH_VARARGS|METH_KEYWORDS,
 "ts.setProbFilter(ignoreSet) -> previous ignoreSet\n\
 - Set control bit(s) for ignoring problems found by ts.run().\n\
   Note: This method replaces the 2nd argument to the old ts.run()\n" },
- {"problems",	(PyCFunction) rpmts_Problems,	METH_VARARGS,
+ {"problems",	(PyCFunction) rpmts_Problems,	METH_NOARGS,
 "ts.problems() -> ps\n\
 - Return current problem set.\n" },
- {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS,
+ {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS|METH_KEYWORDS,
 "ts.run(callback, data) -> (problems)\n\
 - Run a transaction set, returning list of problems found.\n\
   Note: The callback may not be None.\n" },
- {"clean",	(PyCFunction) rpmts_Clean,	METH_VARARGS,
+ {"clean",	(PyCFunction) rpmts_Clean,	METH_NOARGS,
 	NULL },
- {"IDTXload",	(PyCFunction) rpmts_IDTXload,	METH_VARARGS,
+ {"IDTXload",	(PyCFunction) rpmts_IDTXload,	METH_NOARGS,
 "ts.IDTXload() -> ((tid,hdr,instance)+)\n\
 - Return list of installed packages reverse sorted by transaction id.\n" },
- {"IDTXglob",	(PyCFunction) rpmts_IDTXglob,	METH_VARARGS,
+ {"IDTXglob",	(PyCFunction) rpmts_IDTXglob,	METH_NOARGS,
 "ts.IDTXglob() -> ((tid,hdr,instance)+)\n\
 - Return list of removed packages reverse sorted by transaction id.\n" },
- {"rollback",	(PyCFunction) rpmts_Rollback,	METH_VARARGS,
+ {"rollback",	(PyCFunction) rpmts_Rollback,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_VARARGS,
+ {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_NOARGS,
 "ts.openDB() -> None\n\
 - Open the default transaction rpmdb.\n\
   Note: The transaction rpmdb is lazily opened, so ts.openDB() is seldom needed.\n" },
- {"closeDB",	(PyCFunction) rpmts_CloseDB,	METH_VARARGS,
+ {"closeDB",	(PyCFunction) rpmts_CloseDB,	METH_NOARGS,
 "ts.closeDB() -> None\n\
 - Close the default transaction rpmdb.\n\
   Note: ts.closeDB() disables lazy opens, and should hardly ever be used.\n" },
- {"initDB",	(PyCFunction) rpmts_InitDB,	METH_VARARGS,
+ {"initDB",	(PyCFunction) rpmts_InitDB,	METH_NOARGS,
 "ts.initDB() -> None\n\
 - Initialize the default transaction rpmdb.\n\
  Note: ts.initDB() is seldom needed anymore.\n" },
- {"rebuildDB",	(PyCFunction) rpmts_RebuildDB,	METH_VARARGS,
+ {"rebuildDB",	(PyCFunction) rpmts_RebuildDB,	METH_NOARGS,
 "ts.rebuildDB() -> None\n\
 - Rebuild the default transaction rpmdb.\n" },
- {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_VARARGS,
+ {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_NOARGS,
 "ts.verifyDB() -> None\n\
 - Verify the default transaction rpmdb.\n" },
- {"hdrFromFdno",(PyCFunction) rpmts_HdrFromFdno,METH_VARARGS,
+ {"hdrFromFdno",(PyCFunction) rpmts_HdrFromFdno,METH_VARARGS|METH_KEYWORDS,
 "ts.hdrFromFdno(fdno) -> hdr\n\
 - Read a package header from a file descriptor.\n" },
- {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS,
+ {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"setVSFlags",(PyCFunction) rpmts_SetVSFlags,	METH_VARARGS,
+ {"setVSFlags",(PyCFunction) rpmts_SetVSFlags,	METH_VARARGS|METH_KEYWORDS,
 "ts.setVSFlags(vsflags) -> ovsflags\n\
 - Set signature verification flags. Values for vsflags are:\n\
     rpm.RPMVSF_NOHDRCHK      if set, don't check rpmdb headers\n\
@@ -1446,21 +1467,21 @@ static struct PyMethodDef rpmts_methods[] = {
     rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
     rpm._RPMVSF_NODIGESTS    if set, don't check digest(s)\n\
     rpm._RPMVSF_NOSIGNATURES if set, don't check signature(s)\n" },
- {"setColor",(PyCFunction) rpmts_SetColor,	METH_VARARGS,
+ {"setColor",(PyCFunction) rpmts_SetColor,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS,
+ {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS,
+ {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
+ {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_NOARGS,
 	NULL },
- {"parseSpec",	(PyCFunction) spec_Parse,	METH_VARARGS,
+ {"parseSpec",	(PyCFunction) spec_Parse,	METH_VARARGS|METH_KEYWORDS,
 "ts.parseSpec(\"/path/to/foo.spec\") -> spec\n\
 - Parse a spec file.\n" },
- {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS,
+ {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
- {"next",		(PyCFunction)rpmts_Next,	METH_VARARGS,
+ {"next",		(PyCFunction)rpmts_Next,	METH_NOARGS,
 "ts.next() -> te\n\
 - Retrieve next transaction set element.\n" },
     {NULL,		NULL}		/* sentinel */
@@ -1524,15 +1545,20 @@ static int rpmts_init(rpmtsObject * s, PyObject *args, PyObject *kwds)
 {
     char * rootDir = "/";
     int vsflags = rpmExpandNumeric("%{?_vsflags_up2date}");
+    char * kwlist[] = {"rootdir", "vsflags", 0};
 
 if (_rpmts_debug < 0)
 fprintf(stderr, "*** rpmts_init(%p,%p,%p)\n", s, args, kwds);
 
-    if (!PyArg_ParseTuple(args, "|si:rpmts_init", &rootDir, &vsflags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_init", kwlist,
+	    &rootDir, &vsflags))
 	return -1;
 
     s->ts = rpmtsCreate();
+    /* XXX: Why is there no rpmts_SetRootDir() ? */
     (void) rpmtsSetRootDir(s->ts, rootDir);
+    /* XXX: make this use common code with rpmts_SetVSFlags() to check the
+     *      python objects */
     (void) rpmtsSetVSFlags(s->ts, vsflags);
     s->keyList = PyList_New(0);
     s->scriptFd = NULL;
@@ -1651,20 +1677,26 @@ PyTypeObject rpmts_Type = {
 
 /**
  */
+/* XXX: This should use the same code as rpmts_init */
 rpmtsObject *
-rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args)
+rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
 {
     rpmtsObject * o;
     char * rootDir = "/";
     int vsflags = rpmExpandNumeric("%{?_vsflags_up2date}");
+    char * kwlist[] = {"rootdir", "vsflags", NULL};
 
-    if (!PyArg_ParseTuple(args, "|si:Create", &rootDir, &vsflags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:Create", kwlist,
+	    &rootDir, &vsflags))
 	return NULL;
 
     o = (void *) PyObject_New(rpmtsObject, &rpmts_Type);
 
     o->ts = rpmtsCreate();
+    /* XXX: Why is there no rpmts_SetRootDir() ? */
     (void) rpmtsSetRootDir(o->ts, rootDir);
+    /* XXX: make this use common code with rpmts_SetVSFlags() to check the
+     *      python objects */
     (void) rpmtsSetVSFlags(o->ts, vsflags);
 
     o->keyList = PyList_New(0);

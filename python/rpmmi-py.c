@@ -97,14 +97,11 @@ rpmmi_iternext(rpmmiObject * s)
  */
 /*@null@*/
 static PyObject *
-rpmmi_Next(rpmmiObject * s, PyObject *args)
+rpmmi_Next(rpmmiObject * s)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * result;
-
-    if (!PyArg_ParseTuple(args, ":Next"))
-	return NULL;
 
     result = rpmmi_iternext(s);
 
@@ -119,13 +116,10 @@ rpmmi_Next(rpmmiObject * s, PyObject *args)
  */
 /*@null@*/
 static PyObject *
-rpmmi_Instance(rpmmiObject * s, PyObject * args)
+rpmmi_Instance(rpmmiObject * s)
 	/*@*/
 {
     int rc = 0;
-
-    if (!PyArg_ParseTuple(args, ":Instance"))
-	return NULL;
 
     if (s->mi != NULL)
 	rc = rpmdbGetIteratorOffset(s->mi);
@@ -137,13 +131,10 @@ rpmmi_Instance(rpmmiObject * s, PyObject * args)
  */
 /*@null@*/
 static PyObject *
-rpmmi_Count(rpmmiObject * s, PyObject * args)
+rpmmi_Count(rpmmiObject * s)
 	/*@*/
 {
     int rc = 0;
-
-    if (!PyArg_ParseTuple(args, ":Instance"))
-	return NULL;
 
     if (s->mi != NULL)
 	rc = rpmdbGetIteratorCount(s->mi);
@@ -155,7 +146,7 @@ rpmmi_Count(rpmmiObject * s, PyObject * args)
  */
 /*@null@*/
 static PyObject *
-rpmmi_Pattern(rpmmiObject * s, PyObject * args)
+rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
@@ -163,8 +154,10 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
     int type;
     char * pattern;
     rpmTag tag;
+    char * kwlist[] = {"tag", "type", "patern", NULL};
 
-    if (!PyArg_ParseTuple(args, "Ois:Pattern", &TagN, &type, &pattern))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Ois:Pattern", kwlist,
+	    &TagN, &type, &pattern))
 	return NULL;
 
     if ((tag = tagNumFromPyObject (TagN)) == -1) {
@@ -184,14 +177,14 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmmi_methods[] = {
-    {"next",	    (PyCFunction) rpmmi_Next,		METH_VARARGS,
+    {"next",	    (PyCFunction) rpmmi_Next,		METH_NOARGS,
 "mi.next() -> hdr\n\
 - Retrieve next header that matches. Iterate directly in python if possible.\n" },
-    {"instance",    (PyCFunction) rpmmi_Instance,	METH_VARARGS,
+    {"instance",    (PyCFunction) rpmmi_Instance,	METH_NOARGS,
 	NULL },
-    {"count",       (PyCFunction) rpmmi_Count,		METH_VARARGS,
+    {"count",       (PyCFunction) rpmmi_Count,		METH_NOARGS,
 	NULL },
-    {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS,
+    {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS|METH_KEYWORDS,
 "mi.pattern(TagN, mire_type, pattern)\n\
 - Set a secondary match pattern on tags from retrieved header.\n" },
     {NULL,		NULL}		/* sentinel */
