@@ -1,6 +1,8 @@
 2.4.104 -> 2.4.105:
-	- added langpath: to rpmrc, and mark files with matches
-	- added some C++ cruft to rpmlib header files
+	- added langpatt: to rpmrc, and mark files with matches
+	- added some C++ cruft to rpmlib.h
+	- added find-requires and find-provides for hpux (Tim Mooney)
+	- respect LINGUAS when install package files
 	- added trigger support to build code
 	- got rid of annoying mwftw() type warning
 

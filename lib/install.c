@@ -161,9 +161,11 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     struct rpmRelocation tmpReloc;
     struct rpmRelocation * nextReloc;
     char ** validRelocations = NULL, ** actualRelocations;
-    char * newName;
+    char ** fileLangs;
+    char * newName, * chptr;
     int rc;
     int numValid;
+    char ** languages, ** lang;
 
     if (rawRelocations) {
 	if (!headerGetEntry(h, RPMTAG_PREFIXES, NULL,
@@ -313,6 +315,13 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
     headerGetEntry(h, RPMTAG_FILELINKTOS, NULL, (void **) &mem->links, NULL);
+    languages = NULL;
+    headerGetEntry(h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs, NULL);
+
+    if ((chptr = getenv("LINGUAS"))) {
+	languages = splitString(chptr, strlen(chptr), ':');
+    } else
+	languages = NULL;
 
     for (i = 0, file = files; i < fileCount; i++, file++) {
 	file->state = RPMFILE_STATE_NORMAL;
@@ -326,6 +335,16 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	file->link = mem->links[i];
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
+
+	if (fileLangs && languages && *fileLangs[i]) {
+	    for (lang = languages; *lang; lang++)
+		if (!strcmp(*lang, fileLangs[i])) break;
+	    if (!*lang) {
+		file->install = 0;
+		rpmMessage(RPMMESS_DEBUG, "not installing %s -- linguas\n",
+			   file->relativePath);
+	    }
+	}
     }
 
     return 0;
