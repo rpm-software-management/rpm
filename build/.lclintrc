@@ -7,6 +7,13 @@
 
 +unixlib
 
+# don't-bother-me-yet parameters
+-branchstate
+-immediatetrans
+-mustfree
+-observertrans
+-statictrans
+
 # not-yet normal parameters
 -boolops		# w->n
 -fixedformalarray

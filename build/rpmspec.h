@@ -67,7 +67,7 @@ struct spectags {
 };
 
 struct speclines {
-    char **sl_lines;
+    /*@only@*/ char **sl_lines;
     int sl_nalloc;
     int sl_nlines;
 };

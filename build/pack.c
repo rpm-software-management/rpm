@@ -80,7 +80,7 @@ int packageBinaries(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
     int rc;
-    char *errorString;
+    const char *errorString;
     char *name;
     Package pkg;
 
@@ -376,7 +376,7 @@ int writeRPM(Header h, const char *fileName, int type,
 static int cpio_gzip(FD_t fdo, CSA_t *csa) {
     CFD_t *cfd = &csa->cpioCfd;
     int rc;
-    char *failedFile;
+    const char *failedFile;
 
     cfd->cpioIoType = cpioIoTypeGzFd;
     cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fdo)), "w9");
@@ -389,6 +389,8 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa) {
     }
 
     gzdClose(cfd->cpioGzFd);
+    if (failedFile)
+	xfree(failedFile);
 
     return rc;
 }
