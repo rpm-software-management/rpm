@@ -8,6 +8,7 @@
 #define INSTALL_NODEPS          (1 << 2)
 
 #define UNINSTALL_NODEPS        (1 << 0)
+#define UNINSTALL_ALLMATCHES    (1 << 1)
 
 int doInstall(char * rootdir, char ** argv, char * prefix, int installFlags, 
 	      int interfaceFlags);

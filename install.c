@@ -282,7 +282,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     int mode;
     int rc;
     int count;
-    int numPackages;
+    int numPackages, packageOffsetsAlloced;
     int * packageOffsets;
     char ** arg;
     int numFailed = 0;
@@ -294,9 +294,9 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     rpmMessage(RPMMESS_DEBUG, "counting packages to uninstall\n");
     for (arg = argv, numPackages = 0; *arg; arg++, numPackages++)
 	;
-    rpmMessage(RPMMESS_DEBUG, "found %d packages to uninstall\n", numPackages);
 
-    packageOffsets = alloca(sizeof(int *) * numPackages);
+    packageOffsetsAlloced = numPackages;
+    packageOffsets = malloc(sizeof(int *) * packageOffsetsAlloced);
 
     if (uninstallFlags & RPMUNINSTALL_TEST) 
 	mode = O_RDONLY;
@@ -309,7 +309,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     }
 
     j = 0;
-    for (arg = argv, numPackages = 0; *arg; arg++, numPackages++) {
+    numPackages = 0;
+    for (arg = argv; *arg; arg++) {
 	rc = findPackageByLabel(db, *arg, &matches);
 	if (rc == 1) {
 	    fprintf(stderr, "package %s is not installed\n", *arg);
@@ -322,11 +323,17 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	    for (i = 0; i < matches.count; i++)
 		if (matches.recs[i].recOffset) count++;
 
-	    if (count > 1) {
+	    if (count > 1 && !(interfaceFlags & UNINSTALL_ALLMATCHES)) {
 		fprintf(stderr, "\"%s\" specifies multiple packages\n", *arg);
 		numFailed++;
 	    }
 	    else { 
+		numPackages += matches.count;
+		if (numPackages > packageOffsetsAlloced) {
+		    packageOffsetsAlloced = numPackages + 5;
+		    packageOffsets = realloc(packageOffsets, 
+				sizeof(int *) * packageOffsetsAlloced);
+		}
 		for (i = 0; i < matches.count; i++) {
 		    if (matches.recs[i].recOffset) {
 			packageOffsets[j++] = matches.recs[i].recOffset;
@@ -337,7 +344,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	    dbiFreeIndexRecord(matches);
 	}
     }
-    numPackages = j;
+
+    rpmMessage(RPMMESS_DEBUG, "found %d packages to uninstall\n", numPackages);
 
     if (!(interfaceFlags & UNINSTALL_NODEPS)) {
 	rpmdep = rpmdepDependencies(db);
@@ -372,6 +380,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     }
 
     rpmdbClose(db);
+
+    free(packageOffsets);
 
     return numFailed;
 }
