@@ -468,8 +468,12 @@ static int find_preamble_line(char *line, char **s)
     while (p->token && strncasecmp(line, p->token, p->len)) {
         p++;
     }
-    if (!p) return 0;
+    if (!p->token) return 0;
     *s = line + p->len;
+    *s += strspn(*s, " \t");
+    if (**s != ':') {
+	return 0;
+    }
     *s += strspn(*s, ": \t");
     return p->tag;
 }
@@ -783,11 +787,18 @@ Spec parseSpec(FILE *f, char *specfile)
 		      }
 		      break;
 		  default:
-		    message(MESS_DEBUG, "Skipping: %s\n", line);
+		      /* message(MESS_DEBUG, "Skipping: %s\n", line); */
+		      /* This shouldn't happen? */
+		      error(RPMERR_INTERNAL, "Bogus token");
+		      return NULL;
 		}		
 	    } else {
 	        /* Not a recognized preamble part */
-	        message(MESS_DEBUG, "Unknown Field: %s\n", line);
+		s1 = line;
+		while (*s1 && *s1 != ' ' && *s1 != '\t') s1++;
+		if (*s1) {
+		    message(MESS_WARNING, "Unknown Field: %s\n", line);
+		}
 	    }
 	    break;
 	  case PREP_PART:
