@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_seek.c,v 11.12 2000/11/30 00:58:42 ubell Exp $";
+static const char revid[] = "Id: os_seek.c,v 11.18 2002/07/12 18:56:52 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -20,7 +20,6 @@ static const char revid[] = "$Id: os_seek.c,v 11.12 2000/11/30 00:58:42 ubell Ex
 #endif
 
 #include "db_int.h"
-#include "os_jump.h"
 
 /*
  * __os_seek --
@@ -56,18 +55,24 @@ __os_seek(dbenv, fhp, pgsize, pageno, relative, isrewind, db_whence)
 		return (EINVAL);
 	}
 
-	if (__db_jump.j_seek != NULL)
-		ret = __db_jump.j_seek(fhp->fd,
+	if (DB_GLOBAL(j_seek) != NULL)
+		ret = DB_GLOBAL(j_seek)(fhp->fd,
 		    pgsize, pageno, relative, isrewind, whence);
 	else {
 		offset = (off_t)pgsize * pageno + relative;
 		if (isrewind)
 			offset = -offset;
-		ret =
-		    lseek(fhp->fd, offset, whence) == -1 ? __os_get_errno() : 0;
+		do {
+			ret = lseek(fhp->fd, offset, whence) == -1 ?
+			    __os_get_errno() : 0;
+		} while (ret == EINTR);
 	}
 
-	if (ret != 0)
+	if (ret == 0) {
+		fhp->pgsize = pgsize;
+		fhp->pgno = pageno;
+		fhp->offset = relative;
+	} else
 		__db_err(dbenv, "seek: %lu %d %d: %s",
 		    (u_long)pgsize * pageno + relative,
 		    isrewind, db_whence, strerror(ret));

@@ -22,8 +22,13 @@ struct __fh_t {
 	int	  fd;			/* POSIX file descriptor. */
 	char	*name;			/* File name. */
 
+	u_int32_t pagesize;		/* Underlying page size. */
+
 	u_int32_t log_size;		/* XXX: Log file size. */
-	u_int32_t pagesize;		/* XXX: Page size. */
+
+	u_int32_t pgno;			/* Last seek. */
+	u_int32_t pgsize;
+	u_int32_t offset;
 
 #define	DB_FH_NOSYNC	0x01		/* Handle doesn't need to be sync'd. */
 #define	DB_FH_UNLINK	0x02		/* Unlink on close */
