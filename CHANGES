@@ -8,6 +8,11 @@
 	- uses chroot() for installs --root option
 	- archive expansion doesn't create new devices or symlinks when
 	  the proper files already exist
+	- added -p to %post (etc) to specify the program which a script
+	  is run through
+	- if -p is used w/ an empty script, the specified program is
+	  executed directly 
+	- the -p argument (or /bin/sh) is automaticall added as a prereq
 
 2.4.1 -> 2.4.2:
 	- completely rewrote queryformat code
