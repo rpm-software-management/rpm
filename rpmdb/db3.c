@@ -844,7 +844,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		dbi->dbi_use_dbenv = 0;
 	    }
 
-	    /* ... DB_RDONLY maps dphome perms across files ...  */
+	    /* ... DB_RDONLY maps dbhome perms across files ...  */
 	    if (dbi->dbi_temporary) {
 		oflags |= DB_CREATE;
 		dbi->dbi_oeflags |= DB_CREATE;
@@ -865,8 +865,13 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		dbi->dbi_eflags &= ~DB_JOINENV;
 	    } else {
 		/* ... pre-existent (or bogus) DBENV, will join ... */
-		dbi->dbi_oeflags &= ~DB_CREATE;
-		dbi->dbi_eflags |= DB_JOINENV;
+		if (dbi->dbi_eflags & DB_PRIVATE) {
+		    dbi->dbi_eflags &= ~DB_JOINENV;
+		} else {
+		    dbi->dbi_eflags |= DB_JOINENV;
+		    dbi->dbi_oeflags &= ~DB_CREATE;
+		    dbi->dbi_oeflags &= ~DB_THREAD;
+		}
 	    }
 	    dbf = _free(dbf);
 	}

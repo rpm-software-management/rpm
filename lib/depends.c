@@ -25,6 +25,8 @@
 /*@access rpmDependencyConflict@*/
 /*@access availableList@*/
 
+static int _cacheDependsRC = 1;
+
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
     int type;
@@ -1190,7 +1192,6 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 		/*@null@*/ /*@out@*/ struct availablePackage *** suggestion)
 	/*@modifies ts, *suggestion @*/
 {
-    static int _cacheDependsRC = 1;
     rpmdbMatchIterator mi;
     Header h;
     int rc = 0;	/* assume dependency is satisfied */
@@ -2145,6 +2146,37 @@ rescan:
     return 0;
 }
 
+/**
+ * Close a single database index.
+ * @param db		rpm database
+ * @param rpmtag	rpm tag
+ * @return              0 on success
+ */
+static int rpmdbCloseDBI(rpmdb db, int rpmtag)
+	/*@ modifies fileSystem @*/
+{
+    int dbix;
+    int rc = 0;
+
+    if (db == NULL || db->_dbi == NULL || dbiTags == NULL)
+	return 0;
+
+    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	if (dbiTags[dbix] != rpmtag)
+	    continue;
+	if (db->_dbi[dbix] != NULL) {
+	    int xx;
+	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
+	    xx = dbiClose(db->_dbi[dbix], 0);
+	    if (xx && rc == 0) rc = xx;
+	    db->_dbi[dbix] = NULL;
+	    /*@=unqualifiedtrans@*/
+	}
+	break;
+    }
+    return rc;
+}
+
 int rpmdepCheck(rpmTransactionSet ts,
 		rpmDependencyConflict * conflicts, int * numConflicts)
 {
@@ -2299,5 +2331,7 @@ exit:
     mi = rpmdbFreeIterator(mi);
     ps->problems = _free(ps->problems);
     ps = _free(ps);
+    if (_cacheDependsRC)
+	(void) rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
     return rc;
 }

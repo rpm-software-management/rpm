@@ -233,6 +233,7 @@
 	- fix: initialize "verify" transaction stepName with -vv (#53582).
 	- fix: ftp remote globs broken (#46892).
 	- popt: clarify X consortium license in popt.3 man page.
+	- close/discard Depends index after rpmdepCheck() use.
 
 4.0 -> 4.0.[12]
 	- fix: avoid calling getpass twice as side effect of xstrdup macro

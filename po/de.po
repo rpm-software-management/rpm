@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-12 22:32-0400\n"
+"POT-Creation-Date: 2001-09-15 17:19-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2295,114 +2295,114 @@ msgid " failed - "
 msgstr "pgp fehlgeschlagen"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:566
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:593
+#: lib/depends.c:595
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1020
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1128
+#: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1220
+#: lib/depends.c:1221
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1249
+#: lib/depends.c:1250
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1266
+#: lib/depends.c:1267
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1291
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1303
+#: lib/depends.c:1304
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1317
+#: lib/depends.c:1318
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1333
+#: lib/depends.c:1334
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1354
+#: lib/depends.c:1355
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1426
+#: lib/depends.c:1427
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1505
+#: lib/depends.c:1506
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 # FIXME
-#: lib/depends.c:1751
+#: lib/depends.c:1752
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 #. Record all relations.
-#: lib/depends.c:1900
+#: lib/depends.c:1901
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1958
+#: lib/depends.c:1959
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2008
+#: lib/depends.c:2009
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2060
+#: lib/depends.c:2061
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2089
+#: lib/depends.c:2090
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3836,11 +3836,11 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "cannot get %s lock on database\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1131
+#: rpmdb/db1.c:562 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1131
+#: rpmdb/db1.c:562 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "geteilt"
 
@@ -3869,17 +3869,17 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "verified db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:911
+#: rpmdb/db3.c:916
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1129
+#: rpmdb/db3.c:1134
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db3.c:1135
+#: rpmdb/db3.c:1140
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"

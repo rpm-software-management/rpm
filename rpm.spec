@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1.04
+Release: 1.05
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Sep 15 2001 Jeff Johnson <jbj@redhat.com>
+- close/discard Depends index after rpmdepCheck() use.
+
 * Thu Sep 13 2001 Jeff Johnson <jbj@redhat.com>
 - fix: initialize "verify" transaction stepName with -vv (#53582).
 - fix: ftp remote globs broken (#46892).

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-12 22:32-0400\n"
+"POT-Creation-Date: 2001-09-15 17:19-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2121,7 +2121,7 @@ msgid " failed - "
 msgstr " baþarýsýz - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:566
 #, fuzzy, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2130,107 +2130,107 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:593
+#: lib/depends.c:595
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:594 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
 msgid "YES"
 msgstr "EVET"
 
-#: lib/depends.c:594 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/depends.c:1018
+#: lib/depends.c:1020
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s EVET (dosyalar eklendi)\n"
 
-#: lib/depends.c:1128
+#: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s EVET (önlem eklendi)\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1221
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (arabellekli)\n"
 
-#: lib/depends.c:1249
+#: lib/depends.c:1250
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:1266
+#: lib/depends.c:1267
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1291
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s EVET (db dosyalarý)\n"
 
-#: lib/depends.c:1303
+#: lib/depends.c:1304
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1318
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s EVET (db paketi)\n"
 
-#: lib/depends.c:1333
+#: lib/depends.c:1334
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s HAYIR\n"
 
-#: lib/depends.c:1354
+#: lib/depends.c:1355
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1426
+#: lib/depends.c:1427
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1505
+#: lib/depends.c:1506
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi çeliþiyor: %s\n"
 
-#: lib/depends.c:1751
+#: lib/depends.c:1752
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1900
+#: lib/depends.c:1901
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1958
+#: lib/depends.c:1959
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:2008
+#: lib/depends.c:2009
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:2060
+#: lib/depends.c:2061
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:2089
+#: lib/depends.c:2090
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
@@ -3587,11 +3587,11 @@ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "Veritabaný için %s kilit alýnamadý\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1131
+#: rpmdb/db1.c:562 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1131
+#: rpmdb/db1.c:562 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "paylaþýmlý"
 
@@ -3620,17 +3620,17 @@ msgstr "kapandý      db endeks %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:911
+#: rpmdb/db3.c:916
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1129
+#: rpmdb/db3.c:1134
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1135
+#: rpmdb/db3.c:1140
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-12 22:32-0400\n"
+"POT-Creation-Date: 2001-09-15 17:19-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2106,7 +2106,7 @@ msgid " failed - "
 msgstr " 실패함 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:564
+#: lib/depends.c:566
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2115,107 +2115,107 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:593
+#: lib/depends.c:595
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:594 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
 msgid "YES"
 msgstr "예"
 
-#: lib/depends.c:594 lib/depends.c:1221 lib/depends.c:1354
+#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
 msgid "NO "
 msgstr "아니오"
 
-#: lib/depends.c:1018
+#: lib/depends.c:1020
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s 예 (파일이 추가됨)\n"
 
-#: lib/depends.c:1128
+#: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1220
+#: lib/depends.c:1221
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (캐시됨)\n"
 
-#: lib/depends.c:1249
+#: lib/depends.c:1250
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:1266
+#: lib/depends.c:1267
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1290
+#: lib/depends.c:1291
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s 예 (db 파일)\n"
 
-#: lib/depends.c:1303
+#: lib/depends.c:1304
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1318
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s 예 (db 패키지)\n"
 
-#: lib/depends.c:1333
+#: lib/depends.c:1334
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s 아니오\n"
 
-#: lib/depends.c:1354
+#: lib/depends.c:1355
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1426
+#: lib/depends.c:1427
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1505
+#: lib/depends.c:1506
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "패키지 %s (이)가 충돌함: %s\n"
 
-#: lib/depends.c:1751
+#: lib/depends.c:1752
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\" (을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1900
+#: lib/depends.c:1901
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1958
+#: lib/depends.c:1959
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 깊이[depth])\n"
 
-#: lib/depends.c:2008
+#: lib/depends.c:2009
 msgid "========== successors only (presentation order)\n"
 msgstr "========== 후임자 [successors only] (표현 순)\n"
 
-#: lib/depends.c:2060
+#: lib/depends.c:2061
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:2089
+#: lib/depends.c:2090
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
@@ -3571,11 +3571,11 @@ msgstr "열린   db 파일    %s 모드 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "잠겨있는 데이터베이스의 %s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1131
+#: rpmdb/db1.c:562 rpmdb/db3.c:1136
 msgid "exclusive"
 msgstr "제외함(exclusive)"
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1131
+#: rpmdb/db1.c:562 rpmdb/db3.c:1136
 msgid "shared"
 msgstr "공유됨"
 
@@ -3604,17 +3604,17 @@ msgstr "닫힌   db 인덱스  %s/%s\n"
 msgid "verified db index       %s/%s\n"
 msgstr "검증된 db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:911
+#: rpmdb/db3.c:916
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "열린   db 인덱스  %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1129
+#: rpmdb/db3.c:1134
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "잠겨있는 %2$s/%3$s 의 %1$s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1135
+#: rpmdb/db3.c:1140
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠긴   db 인덱스  %s/%s\n"
