@@ -520,3 +520,4 @@ fi
 - create RFC-2440 OpenPGP API in rpmio.
 - proof-of-concept GPG/DSA verification for legacy signatures.
 - upgrade to beecrypt-2.2.0pre.
+- proof-of-concept PGP/RSA verification for legacy signatures.

@@ -518,6 +518,20 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     int res = RPMSIG_OK;
     const char *path;
     pgpVersion pgpVer;
+    int rc;
+
+    rc = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
+
+if (rc == 0 || rpmIsVerbose()) {
+
+fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
+        datafile, rc);
+    (void) pgpPrtPkts(sig, count, dig, 1);
+    printf("\t n = ");	flush(stdout); mp32println(dig->rsa_pk.n.size, dig->rsa_pk.n.modl);
+    printf("\t e = ");	flush(stdout); mp32println(dig->rsa_pk.e.size, dig->rsa_pk.e.data);
+    printf("\t c = ");	flush(stdout); mp32println(dig->c.size, dig->c.data);
+    printf("\t m = ");	flush(stdout); mp32println(dig->rsahm.size, dig->rsahm.data);
+}
 
     /* What version do we have? */
     if ((path = rpmDetectPGPVersion(&pgpVer)) == NULL) {
@@ -533,21 +547,6 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
      */
     if (pgpVer == PGP_5)
 	res = RPMSIG_BAD;
-
-#ifdef	DYING
-{   static const char * pubkey = NULL;
-    static unsigned int pklen = 0;
-
-    if (pubkey == NULL) {
-	(void) b64decode(redhatPubKeyRSA, (void **)&pubkey, &pklen);
-fprintf(stderr, "========================= Red Hat RSA Public Key\n");
-	    (void) pgpPrtPkts(pubkey, pklen, NULL, rpmIsVerbose());
-    }
-    (void) pgpPrtPkts(pubkey, pklen, dig, 0);
-fprintf(stderr, "========================= Package RSA Signature\n");
-    (void) pgpPrtPkts(sig, count, dig, 0);
-}
-#endif
 
     /* Write out the signature */
 #ifdef	DYING
@@ -665,18 +664,18 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
 		&dig->y, &dig->r, &dig->s);
 
-if (rc == 0) {
+if (rc == 0 || rpmIsVerbose()) {
 
 fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
         datafile, rc);
     (void) pgpPrtPkts(sig, count, dig, 1);
-    printf("\t p = ");	mp32println(dig->p.size, dig->p.modl);
-    printf("\t q = ");	mp32println(dig->q.size, dig->q.modl);
-    printf("\t g = ");	mp32println(dig->g.size, dig->g.data);
-    printf("\t y = ");	mp32println(dig->y.size, dig->y.data);
-    printf("\t r = ");	mp32println(dig->r.size, dig->r.data);
-    printf("\t s = ");	mp32println(dig->s.size, dig->s.data);
-    printf("\thm = ");	mp32println(dig->hm.size, dig->hm.data);
+    printf("\t p = ");	flush(stdout); mp32println(dig->p.size, dig->p.modl);
+    printf("\t q = ");	flush(stdout); mp32println(dig->q.size, dig->q.modl);
+    printf("\t g = ");	flush(stdout); mp32println(dig->g.size, dig->g.data);
+    printf("\t y = ");	flush(stdout); mp32println(dig->y.size, dig->y.data);
+    printf("\t r = ");	flush(stdout); mp32println(dig->r.size, dig->r.data);
+    printf("\t s = ");	flush(stdout); mp32println(dig->s.size, dig->s.data);
+    printf("\thm = ");	flush(stdout); mp32println(dig->hm.size, dig->hm.data);
 }
 
     /* Write out the signature */

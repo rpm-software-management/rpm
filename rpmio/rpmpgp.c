@@ -331,10 +331,25 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpSigRSA[i] == NULL) break;
+	    if (_dig &&
+	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
+	    {
+		switch (i) {
+		case 0:		/* m**d */
+		    mp32nsethex(&_dig->c, pgpMpiHex(p));
+if (_debug && _print)
+printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
+		    break;
+		default:
+		    break;
+		}
+	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpSigDSA[i] == NULL) break;
-	    if (_dig) {
+	    if (_dig &&
+	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
+	    {
 		switch (i) {
 		case 0:		/* r */
 		    pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p);
@@ -490,10 +505,25 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpSigRSA[i] == NULL) break;
+	    if (_dig &&
+	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
+	    {
+		switch (i) {
+		case 0:		/* m**d */
+		    mp32nsethex(&_dig->c, pgpMpiHex(p));
+if (_debug && _print)
+printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
+		    break;
+		default:
+		    break;
+		}
+	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpSigDSA[i] == NULL) break;
-	    if (_dig) {
+	    if (_dig &&
+	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
+	    {
 		switch (i) {
 		case 0:		/* r */
 		    pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p);
@@ -600,6 +630,22 @@ int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpPublicRSA[i] == NULL) break;
+	    if (_dig) {
+		switch (i) {
+		case 0:		/* n */
+		    mp32bsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
+if (_debug && _print)
+printf("\t     n = "),  mp32println(_dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
+		    break;
+		case 1:		/* e */
+		    mp32nsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
+if (_debug && _print)
+printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
+		    break;
+		default:
+		    break;
+		}
+	    }
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpPublicDSA[i] == NULL) break;
@@ -666,6 +712,22 @@ int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpPublicRSA[i] == NULL) break;
+	    if (_dig) {
+		switch (i) {
+		case 0:		/* n */
+		    mp32bsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
+if (_debug && _print)
+printf("\t     n = "),  mp32println(_dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
+		    break;
+		case 1:		/* e */
+		    mp32nsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
+if (_debug && _print)
+printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
+		    break;
+		default:
+		    break;
+		}
+	    }
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpPublicDSA[i] == NULL) break;

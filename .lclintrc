@@ -1,4 +1,4 @@
--I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT
+-I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./popt -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
 
 #+partial
 #+forcehints

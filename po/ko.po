@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-08 12:01-0400\n"
+"POT-Creation-Date: 2001-10-11 17:31-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3066,77 +3066,77 @@ msgstr "%s: 여는데 실패했습니다: %s\n"
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:93
+#: lib/rpmchecksig.c:97
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:99
+#: lib/rpmchecksig.c:103
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:290
+#: lib/rpmchecksig.c:145 lib/rpmchecksig.c:287
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:146
+#: lib/rpmchecksig.c:150
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: v1.0 RPM은 서명할 수 없습니다\n"
 
-#: lib/rpmchecksig.c:150
+#: lib/rpmchecksig.c:154
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 RPM은 재-서명할 수 없습니다\n"
 
-#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:306
+#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:303
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:311
+#: lib/rpmchecksig.c:167 lib/rpmchecksig.c:308
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
 
-#: lib/rpmchecksig.c:196
+#: lib/rpmchecksig.c:200
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:202
+#: lib/rpmchecksig.c:206
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:296
+#: lib/rpmchecksig.c:293
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 유효한 서명이 없습니다 (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:477
+#: lib/rpmchecksig.c:516
 msgid "NOT OK"
 msgstr "올바르지 않음"
 
-#: lib/rpmchecksig.c:478 lib/rpmchecksig.c:492
+#: lib/rpmchecksig.c:517 lib/rpmchecksig.c:531
 msgid " (MISSING KEYS:"
 msgstr " (키를 찾을 수 없음:"
 
-#: lib/rpmchecksig.c:480 lib/rpmchecksig.c:494
+#: lib/rpmchecksig.c:519 lib/rpmchecksig.c:533
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:481 lib/rpmchecksig.c:495
+#: lib/rpmchecksig.c:520 lib/rpmchecksig.c:534
 msgid " (UNTRUSTED KEYS:"
 msgstr " (키를 신뢰할 수 없음:"
 
-#: lib/rpmchecksig.c:483 lib/rpmchecksig.c:497
+#: lib/rpmchecksig.c:522 lib/rpmchecksig.c:536
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:491
+#: lib/rpmchecksig.c:530
 msgid "OK"
 msgstr "확인"
 
@@ -3392,7 +3392,7 @@ msgstr "서명을 읽을 수 없습니다\n"
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:366 lib/signature.c:787
+#: lib/signature.c:366 lib/signature.c:786
 msgid "Couldn't exec gpg\n"
 msgstr "gpg를 실행할 수 없습니다\n"
 
@@ -3424,35 +3424,35 @@ msgstr "PGP를 사용하여 서명을 생성합니다.\n"
 msgid "Generating signature using GPG.\n"
 msgstr "GPG를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:526 lib/signature.c:616
+#: lib/signature.c:540 lib/signature.c:615
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "pgp를 실행할 수 없습니다.  PGP 검사를 생략하시려면, --nopgp 옵션을 이용하십시"
 "요.\n"
 
-#: lib/signature.c:724
+#: lib/signature.c:723
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "gpg를 실행할 수 없습니다.  GPG 검사를 생략하시려면, --nogpg 옵션을 이용하십시"
 "요.\n"
 
-#: lib/signature.c:816
+#: lib/signature.c:815
 msgid "Couldn't exec pgp\n"
 msgstr "pgp를 실행할 수 없습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:820 lib/signature.c:873
+#: lib/signature.c:819 lib/signature.c:872
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일에 부적합한 %%_signature의 내용이 있습니다\n"
 
-#: lib/signature.c:853
+#: lib/signature.c:852
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_gpg_name\" 을 설정해 주셔야 합니다\n"
 
-#: lib/signature.c:865
+#: lib/signature.c:864
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_pgp_name\" 을 설정해 주셔야 합니다\n"

@@ -84,11 +84,15 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
 
-    if (dig != NULL)
+    if (dig != NULL) {
+	dig->md5ctx = rpmDigestInit(RPMDIGEST_MD5);
 	(void) fdInitSHA1(*sfdp, 0);
+    }
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
-	/* XXX calculate MD5 sum here, always (well there's --nomd5) needed. */
+	if (dig)
+	    rpmDigestUpdate(dig->md5ctx, buffer, count);
+
 	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
 	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
@@ -101,8 +105,8 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     }
 
     if (dig != NULL) {
-	dig->ctx = _free(dig->ctx);
-	dig->ctx = (*sfdp)->digest;
+	dig->sha1ctx = _free(dig->sha1ctx);
+	dig->sha1ctx = (*sfdp)->digest;
 	(*sfdp)->digest = NULL;
     }
 
@@ -258,25 +262,18 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     int_32 tag, type, count;
     const void * ptr;
     int res = 0;
+
+    const char * gpgpk = NULL;
+    unsigned int gpgpklen = 0;
+    const char * pgppk = NULL;
+    unsigned int pgppklen = 0;
+
     rpmDigest dig = alloca(sizeof(*dig));
     rpmRC rc;
 
     if (argv == NULL) return res;
 
     memset(dig, 0, sizeof(*dig));
-
-{   static const char * pubkey = NULL;
-    static unsigned int pklen = 0;
-
-    /* XXX retrieve by keyid from signature. */
-    if (pubkey == NULL) {
-	(void) b64decode(redhatPubKeyDSA, (void **)&pubkey, &pklen);
-if (rpmIsVerbose())
-fprintf(stderr, "========================= Red Hat DSA Public Key\n");
-	    (void) pgpPrtPkts(pubkey, pklen, NULL, rpmIsVerbose());
-    }
-    (void) pgpPrtPkts(pubkey, pklen, dig, 0);
-}
 
     while ((pkgfn = *argv++) != NULL) {
 
@@ -340,6 +337,42 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 if (rpmIsVerbose())
 fprintf(stderr, "========================= Package RSA Signature\n");
 		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
+	    {	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
+
+		rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+
+		/* XXX compare leading 16 bits of digest for quick check. */
+	    }
+		/* XXX retrieve by keyid from signature. */
+		if (pgppk == NULL) {
+		    (void) b64decode(redhatPubKeyRSA, (void **)&pgppk, &pgppklen);
+if (rpmIsVerbose())
+fprintf(stderr, "========================= Red Hat RSA Public Key\n");
+		    (void) pgpPrtPkts(pgppk, pgppklen, NULL, rpmIsVerbose());
+		}
+
+		(void) pgpPrtPkts(pgppk, pgppklen, dig, 0);
+
+	    {	const char * prefix = "3020300c06082a864886f70d020505000410";
+		int nbits = 1024;
+		int nb = (nbits + 7) >> 3;
+		const char * hexstr;
+		char * t;
+
+		hexstr = t = xmalloc(2 * nb + 1);
+		memset(t, 'f', (2 * nb));
+		t[0] = '0'; t[1] = '0';
+		t[2] = '0'; t[3] = '1';
+		t += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;
+		*t++ = '0'; *t++ = '0';
+		t = stpcpy(t, prefix);
+		t = stpcpy(t, dig->md5);
+		
+		mp32nzero(&dig->rsahm);	mp32nsethex(&dig->rsahm, hexstr);
+
+		hexstr = _free(hexstr);
+	    }
 		break;
 	    case RPMSIGTAG_GPG:
 		if (!(flags & CHECKSIG_GPG)) 
@@ -347,14 +380,20 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 if (rpmIsVerbose())
 fprintf(stderr, "========================= Package DSA Signature\n");
 		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
-	    {	DIGEST_CTX ctx = rpmDigestDup(dig->ctx);
-		const char * digest = NULL;
-		size_t digestlen = 0;
+	    {	DIGEST_CTX ctx = rpmDigestDup(dig->sha1ctx);
 		rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
-		rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
-		mp32nzero(&dig->hm);mp32nsethex(&dig->hm, digest);
-		digest = _free(digest);
-	    }	break;
+		rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+		mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
+	    }
+		/* XXX retrieve by keyid from signature. */
+		if (gpgpk == NULL) {
+		    (void) b64decode(redhatPubKeyDSA, (void **)&gpgpk, &gpgpklen);
+if (rpmIsVerbose())
+fprintf(stderr, "========================= Red Hat DSA Public Key\n");
+		    (void) pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsVerbose());
+		}
+		(void) pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
+		break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
@@ -505,15 +544,28 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 	    (void) unlink(sigtarget);
 	    sigtarget = _free(sigtarget);
 	}
-	dig->data = _free(dig->data);
-	dig->ctx = _free(dig->ctx);
+	dig->sha1ctx = _free(dig->sha1ctx);
+	dig->sha1 = _free(dig->sha1);
+	dig->md5ctx = _free(dig->md5ctx);
+	dig->md5 = _free(dig->md5);
+	dig->hash_data = _free(dig->hash_data);
+
 	mp32nfree(&dig->hm);
 	mp32nfree(&dig->r);
 	mp32nfree(&dig->s);
+
+	rsapkFree(&dig->rsa_pk);
+	mp32nfree(&dig->m);
+	mp32nfree(&dig->c);
+	mp32nfree(&dig->rsahm);
     }
 
-    dig->data = _free(dig->data);
-    dig->ctx = _free(dig->ctx);
+    dig->sha1ctx = _free(dig->sha1ctx);
+    dig->sha1 = _free(dig->sha1);
+    dig->md5ctx = _free(dig->md5ctx);
+    dig->md5 = _free(dig->md5);
+    dig->hash_data = _free(dig->hash_data);
+
     mp32bfree(&dig->p);
     mp32bfree(&dig->q);
     mp32nfree(&dig->g);
@@ -521,5 +573,11 @@ fprintf(stderr, "========================= Package DSA Signature\n");
     mp32nfree(&dig->hm);
     mp32nfree(&dig->r);
     mp32nfree(&dig->s);
+
+    rsapkFree(&dig->rsa_pk);
+    mp32nfree(&dig->m);
+    mp32nfree(&dig->c);
+    mp32nfree(&dig->rsahm);
+
     return res;
 }

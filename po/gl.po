@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-10-08 12:01-0400\n"
+"POT-Creation-Date: 2001-10-11 17:31-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -2991,77 +2991,77 @@ msgstr ""
 msgid "makeTempFile failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:93
+#: lib/rpmchecksig.c:97
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:99
+#: lib/rpmchecksig.c:103
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:290
+#: lib/rpmchecksig.c:145 lib/rpmchecksig.c:287
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:146
+#: lib/rpmchecksig.c:150
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:150
+#: lib/rpmchecksig.c:154
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:306
+#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:303
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:311
+#: lib/rpmchecksig.c:167 lib/rpmchecksig.c:308
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:196
+#: lib/rpmchecksig.c:200
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:202
+#: lib/rpmchecksig.c:206
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:296
+#: lib/rpmchecksig.c:293
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:477
+#: lib/rpmchecksig.c:516
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:478 lib/rpmchecksig.c:492
+#: lib/rpmchecksig.c:517 lib/rpmchecksig.c:531
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:480 lib/rpmchecksig.c:494
+#: lib/rpmchecksig.c:519 lib/rpmchecksig.c:533
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:481 lib/rpmchecksig.c:495
+#: lib/rpmchecksig.c:520 lib/rpmchecksig.c:534
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:483 lib/rpmchecksig.c:497
+#: lib/rpmchecksig.c:522 lib/rpmchecksig.c:536
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:491
+#: lib/rpmchecksig.c:530
 msgid "OK"
 msgstr ""
 
@@ -3317,7 +3317,7 @@ msgstr ""
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:366 lib/signature.c:787
+#: lib/signature.c:366 lib/signature.c:786
 msgid "Couldn't exec gpg\n"
 msgstr ""
 
@@ -3349,31 +3349,31 @@ msgstr ""
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:526 lib/signature.c:616
+#: lib/signature.c:540 lib/signature.c:615
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
-#: lib/signature.c:724
+#: lib/signature.c:723
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
-#: lib/signature.c:816
+#: lib/signature.c:815
 msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:820 lib/signature.c:873
+#: lib/signature.c:819 lib/signature.c:872
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:853
+#: lib/signature.c:852
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:865
+#: lib/signature.c:864
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""

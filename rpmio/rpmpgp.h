@@ -857,14 +857,16 @@ typedef struct pgpSig_s {
 	struct pgpPktSigV4_s v4;
     } sig;
 
-/*@only@*/ /*@null@*/ void * ctx;
+/*@only@*/ /*@null@*/ void * sha1ctx;	/*!< (dsa) sha1 hash context. */
+/*@only@*/ /*@null@*/ void * sha1;	/*!< (dsa) V3 signature hash. */
+    size_t sha1len;			/*!< (dsa) V3 signature hash length. */
 
-    int hash_datalen;
-/*@only@*/ /*@null@*/ byte *hash_data;
+/*@only@*/ /*@null@*/ void * md5ctx;	/*!< (rsa) md5 hash context. */
+/*@only@*/ /*@null@*/ void * md5;	/*!< (rsa) V3 signature hash. */
+    size_t md5len;			/*!< (rsa) V3 signature hash length. */
 
-    int size;			/*!< No. bytes in digest. */
-/*@only@*/ /*@null@*/ void * data; /*!< Digest data. */
-
+/*@only@*/ /*@null@*/ byte * hash_data;	/*!< V4 signature hash data. */
+    int hash_datalen;			/*!< V4 signature hash data length. */
 
     /* DSA parameters. */
     mp32barrett p;
@@ -879,6 +881,7 @@ typedef struct pgpSig_s {
     rsapk rsa_pk;
     mp32number m;
     mp32number c;
+    mp32number rsahm;
 } * pgpSig;
 
 /*@=typeuse =fielduse@*/
