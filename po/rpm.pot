@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-06-15 10:31-0400\n"
+"POT-Creation-Date: 1999-06-16 16:15-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,101 +23,101 @@ msgstr ""
 msgid "failed build dependencies:\n"
 msgstr ""
 
-#: ../build.c:84 ../build.c:97
+#: ../build.c:83 ../build.c:96
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr ""
 
 #. Give up
-#: ../build.c:105
+#: ../build.c:104
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: ../build.c:130
+#: ../build.c:129
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr ""
 
-#: ../build.c:168
+#: ../build.c:167
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: ../build.c:173
+#: ../build.c:172
 #, c-format
 msgid "Unable to open spec file: %s\n"
 msgstr ""
 
-#: ../build.c:181
+#: ../build.c:180
 #, c-format
 msgid "File contains non-printable characters(%c): %s\n"
 msgstr ""
 
 #. parse up the build operators
-#: ../build.c:234
+#: ../build.c:233
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: ../build.c:243
+#: ../build.c:242
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
 
-#: ../build.c:287
+#: ../build.c:286
 msgid "buildroot already specified"
 msgstr ""
 
-#: ../build.c:293
+#: ../build.c:292
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:297
+#: ../build.c:296
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:318
+#: ../build.c:317
 msgid "override build architecture"
 msgstr ""
 
-#: ../build.c:320
+#: ../build.c:319
 msgid "override build operating system"
 msgstr ""
 
-#: ../build.c:322
+#: ../build.c:321
 msgid "override build root"
 msgstr ""
 
-#: ../build.c:324 ../rpm.c:457
+#: ../build.c:323 ../rpm.c:457
 msgid "remove build tree when done"
 msgstr ""
 
-#: ../build.c:326
+#: ../build.c:325
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: ../build.c:328
+#: ../build.c:327
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: ../build.c:330
+#: ../build.c:329
 msgid "remove sources when done"
 msgstr ""
 
-#: ../build.c:332
+#: ../build.c:331
 msgid "remove specfile when done"
 msgstr ""
 
-#: ../build.c:334 ../rpm.c:455
+#: ../build.c:333 ../rpm.c:455
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: ../build.c:336
+#: ../build.c:335
 msgid "override target platform"
 msgstr ""
 
-#: ../build.c:338
+#: ../build.c:337
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -1222,8 +1222,12 @@ msgstr ""
 msgid "--timecheck may only be used during package builds"
 msgstr ""
 
-#: ../rpm.c:937 ../rpm.c:940
-msgid "unexpected query specifiers"
+#: ../rpm.c:937
+msgid "unexpected query flags"
+msgstr ""
+
+#: ../rpm.c:940
+msgid "unexpected query format"
 msgstr ""
 
 #: ../rpm.c:944
@@ -2178,16 +2182,16 @@ msgstr ""
 msgid "malformed %%include statement"
 msgstr ""
 
-#: ../build/parseSpec.c:334
+#: ../build/parseSpec.c:333
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:417
+#: ../build/parseSpec.c:416
 msgid "No buildable architectures"
 msgstr ""
 
-#: ../build/parseSpec.c:462
+#: ../build/parseSpec.c:461
 msgid "Package has no %%description: %s"
 msgstr ""
 

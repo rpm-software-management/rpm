@@ -8,6 +8,7 @@
 	- add vpkg-provides.sh (Tim Mooney).
 	- don't clobber LDFLAGS in top-level Makefile (Tim Mooney).
 	- build root from cmd line did not set macro %buildroot.
+	- resurrect "rpm -Va --nofiles" (i.e. dependencies only) (#3111)
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

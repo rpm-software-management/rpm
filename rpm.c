@@ -933,11 +933,11 @@ int main(int argc, char ** argv)
 	bigMode != MODE_RECOMPILE && bigMode != MODE_TARBUILD) 
 	argerror(_("--timecheck may only be used during package builds"));
     
-    if (bigMode != MODE_QUERY && qva->qva_flags) 
-	argerror(_("unexpected query specifiers"));
+    if (!(bigMode == MODE_QUERY || bigMode == MODE_VERIFY) && qva->qva_flags) 
+	argerror(_("unexpected query flags"));
 
     if (bigMode != MODE_QUERY && qva->qva_queryFormat) 
-	argerror(_("unexpected query specifiers"));
+	argerror(_("unexpected query format"));
 
     if (bigMode != MODE_QUERY && bigMode != MODE_VERIFY &&
 	QVSource != RPMQV_PACKAGE) 
