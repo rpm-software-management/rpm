@@ -23,11 +23,13 @@
  * \ingroup UNIT_m
  */
 
-#include <stdio.h>
+#include "system.h"
 
 #include "beecrypt.h"
 #include "dlkp.h"
 #include "dsa.h"
+
+#include "debug.h"
 
 struct vector
 {

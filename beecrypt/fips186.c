@@ -23,13 +23,11 @@
  * \ingroup PRNG_m PRNG_fips186_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "fips186.h"
 
-#include "beecrypt/fips186.h"
+#include "debug.h"
 
 /*!\addtogroup PRNG_fips186_m
  * \{

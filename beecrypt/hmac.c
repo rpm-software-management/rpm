@@ -27,14 +27,12 @@
  * \ingroup HMAC_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "hmac.h"
+#include "endianness.h"
 
-#include "beecrypt/hmac.h"
-#include "beecrypt/endianness.h"
+#include "debug.h"
 
 /*!\addtogroup HMAC_m
  * \{

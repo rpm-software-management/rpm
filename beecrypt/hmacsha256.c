@@ -23,13 +23,11 @@
  * \ingroup HMAC_m HMAC_sha256_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "hmacsha256.h"
 
-#include "beecrypt/hmacsha256.h"
+#include "debug.h"
 
 /*!\addtogroup HMAC_sha256_m
  * \{

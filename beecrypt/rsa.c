@@ -23,13 +23,11 @@
  * \ingroup IF_m IF_rsa_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "rsa.h"
 
-#include "beecrypt/rsa.h"
+#include "debug.h"
 
 int rsapub(const mpbarrett* n, const mpnumber* e,
            const mpnumber* m, mpnumber* c)

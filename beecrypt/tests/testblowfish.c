@@ -23,9 +23,11 @@
  * \ingroup UNIT_m
  */
 
-#include <stdio.h>
+#include "system.h"
 
 #include "blowfish.h"
+
+#include "debug.h"
 
 extern int fromhex(byte*, const char*);
 

@@ -23,13 +23,11 @@
  * \ingroup MP_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "mpnumber.h"
 
-#include "beecrypt/mpnumber.h"
+#include "debug.h"
 
 void mpnzero(mpnumber* n)
 {

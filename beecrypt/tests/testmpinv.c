@@ -23,10 +23,12 @@
  * \ingroup UNIT_m
  */
 
-#include <stdio.h>
+#include "system.h"
 
 #include "beecrypt.h"
 #include "mpnumber.h"
+
+#include "debug.h"
 
 struct vector
 {

@@ -32,13 +32,11 @@
  * \ingroup PRNG_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "mtprng.h"
 
-#include "beecrypt/mtprng.h"
+#include "debug.h"
 
 #define hiBit(a)		((a) & 0x80000000U)
 #define loBit(a)		((a) & 0x1U)

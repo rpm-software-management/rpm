@@ -23,15 +23,13 @@
  * \ingroup DL_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "dldp.h"
+#include "mp.h"
+#include "mpprime.h"
 
-#include "beecrypt/dldp.h"
-#include "beecrypt/mp.h"
-#include "beecrypt/mpprime.h"
+#include "debug.h"
 
 /*!\addtogroup DL_m
  * \{

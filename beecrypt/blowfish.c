@@ -23,14 +23,12 @@
  * \ingroup BC_m BC_blowfish_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "blowfish.h"
+#include "endianness.h"
 
-#include "beecrypt/blowfish.h"
-#include "beecrypt/endianness.h"
+#include "debug.h"
 
 #ifdef ASM_BLOWFISHENCRYPTECB
 extern int blowfishEncryptECB(blowfishparam*, uint32_t*, const uint32_t*, unsigned int);

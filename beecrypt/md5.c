@@ -23,14 +23,12 @@
  * \ingroup HASH_m HASH_md5_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "md5.h"
+#include "endianness.h"
 
-#include "beecrypt/md5.h"
-#include "beecrypt/endianness.h"
+#include "debug.h"
 
 /*!\addtogroup HASH_md5_m
  * \{

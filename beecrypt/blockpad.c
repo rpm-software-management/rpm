@@ -23,13 +23,11 @@
  * \ingroup BC_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "blockpad.h"
 
-#include "beecrypt/blockpad.h"
+#include "debug.h"
 
 memchunk* pkcs5Pad(size_t blockbytes, memchunk* tmp)
 {

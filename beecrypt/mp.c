@@ -23,14 +23,12 @@
  * \ingroup MP_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "mp.h"
+#include "mpopt.h"
 
-#include "beecrypt/mp.h"
-#include "beecrypt/mpopt.h"
+#include "debug.h"
 
 #ifndef ASM_MPZERO
 void mpzero(size_t size, mpw* data)

@@ -22,14 +22,10 @@
  * \ingroup ES_m ES_audio_m ES_dsp_m ES_random_m ES_urandom_m ES_tty_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
-
-#include "beecrypt/entropy.h"
-#include "beecrypt/endianness.h"
+#include "entropy.h"
+#include "endianness.h"
 
 #if WIN32
 # include <mmsystem.h>
@@ -38,20 +34,6 @@
 #else 
 # if HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
-# endif
-# if HAVE_SYS_STAT_H
-#  include <sys/types.h>
-#  include <sys/stat.h>
-# endif
-# if TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  if HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  elif HAVE_TIME_H
-#   include <time.h>
-#  endif
 # endif
 # if HAVE_SYS_AUDIOIO_H
 #   include <sys/audioio.h>
@@ -75,12 +57,8 @@
 #  include <aio.h>
 # endif
 #endif
-#if HAVE_FCNTL_H
-# include <fcntl.h>
-#endif
-#if HAVE_ERRNO_H
-# include <errno.h>
-#endif
+
+#include "debug.h"
 
 #if WIN32
 static HINSTANCE	entropy_instance = (HINSTANCE) 0;

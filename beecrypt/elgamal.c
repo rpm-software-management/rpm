@@ -22,14 +22,12 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "elgamal.h"
+#include "dldp.h"
 
-#include "beecrypt/elgamal.h"
-#include "beecrypt/dldp.h"
+#include "debug.h"
 
 int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {

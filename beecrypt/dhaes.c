@@ -23,16 +23,14 @@
  * \ingroup DL_m DL_dh_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "dhaes.h"
+#include "dlsvdp-dh.h"
+#include "blockmode.h"
+#include "blockpad.h"
 
-#include "beecrypt/dhaes.h"
-#include "beecrypt/dlsvdp-dh.h"
-#include "beecrypt/blockmode.h"
-#include "beecrypt/blockpad.h"
+#include "debug.h"
 
 /*
  * Good combinations will be:

@@ -22,14 +22,12 @@
  * \ingroup DL_m DL_dsa_m
  */
  
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "dsa.h"
+#include "dldp.h"
 
-#include "beecrypt/dsa.h"
-#include "beecrypt/dldp.h"
+#include "debug.h"
 
 int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {

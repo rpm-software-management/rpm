@@ -22,24 +22,11 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "timestamp.h"
 
-#include "beecrypt/timestamp.h"
-
-#if TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# elif HAVE_TIME_H
-#  include <time.h>
-# endif
-#endif
+#include "debug.h"
 
 javalong timestamp()
 {

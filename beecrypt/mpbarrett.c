@@ -27,16 +27,14 @@
  * \ingroup MP__m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "beecrypt.h"
+#include "mpprime.h"
+#include "mpnumber.h"
+#include "mpbarrett.h"
 
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/mpprime.h"
-#include "beecrypt/mpnumber.h"
-#include "beecrypt/mpbarrett.h"
+#include "debug.h"
 
 /*
  * mpbzero

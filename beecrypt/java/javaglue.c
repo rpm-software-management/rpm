@@ -1,24 +1,15 @@
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
-
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/blockmode.h"
-#include "beecrypt/mpnumber.h"
-#include "beecrypt/mpbarrett.h"
+#include "beecrypt.h"
+#include "blockmode.h"
+#include "mpnumber.h"
+#include "mpbarrett.h"
 
 #if JAVAGLUE
 
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_MALLOC_H
-# include <malloc.h>
-#endif
-
 #include "javaglue.h"
+
+#include "debug.h"
 
 static const char* JAVA_OUT_OF_MEMORY_ERROR = "java/lang/OutOfMemoryError";
 static const char* JAVA_PROVIDER_EXCEPTION = "java/security/ProviderException";

@@ -17,9 +17,11 @@
  *
  */
 
+#include "system.h"
+
 #include "beecrypt.h"
 
-#include <string.h>
+#include "debug.h"
 
 int fromhex(byte* data, const char* hexdata)
 {

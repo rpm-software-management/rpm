@@ -3,7 +3,8 @@
  */
 
 #define	_REENTRANT	1	/* XXX config.h collides with pyconfig.h */
-#include "config.h"
+
+#include "system.h"
 
 #include "Python.h"
 #ifdef __LCLINT__
@@ -11,9 +12,11 @@
 #define PyObject_HEAD   int _PyObjectHead;
 #endif
 
-#include "beecrypt/python/rng-py.h"
+#include "rng-py.h"
 
 #include "debug-py.c"
+
+#include "debug.h"
 
 /*@unchecked@*/
 static int _rng_debug = 0;

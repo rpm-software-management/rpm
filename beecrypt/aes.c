@@ -27,13 +27,9 @@
  * \ingroup BC_aes_m BC_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
-
-#include "beecrypt/aes.h"
+#include "aes.h"
 
 #if defined(BYTE_ORDER) && defined(BIG_ENDIAN) && defined(LITTLE_ENDIAN)
 # if (BYTE_ORDER != BIG_ENDIAN) && (BYTE_ORDER != LITTLE_ENDIAN)
@@ -42,10 +38,12 @@
 #endif
 
 #if WORDS_BIGENDIAN
-# include "beecrypt/aes_be.h"
+# include "aes_be.h"
 #else
-#  include "beecrypt/aes_le.h"
+#  include "aes_le.h"
 #endif
+
+#include "debug.h"
 
 #ifdef ASM_AESENCRYPTECB
 extern int aesEncryptECB(aesParam*, uint32_t*, const uint32_t*, unsigned int);

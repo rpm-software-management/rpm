@@ -24,10 +24,12 @@
  * \ingroup UNIT_m
  */
 
-#include <stdio.h>
+#include "system.h"
 
 #include "sha1.h"
 #include "memchunk.h"
+
+#include "debug.h"
 
 struct vector
 {

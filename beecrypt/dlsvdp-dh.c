@@ -27,13 +27,11 @@
  * \ingroup DL_m DL_dh_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "dlsvdp-dh.h"
 
-#include "beecrypt/dlsvdp-dh.h"
+#include "debug.h"
 
 /*!\addtogroup DL_dh_m
  * \{

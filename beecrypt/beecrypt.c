@@ -22,30 +22,28 @@
  * \ingroup ES_m PRNG_m HASH_m HMAC_m BC_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "beecrypt.h"
 
-#include "beecrypt/beecrypt.h"
+#include "entropy.h"
 
-#include "beecrypt/entropy.h"
+#include "fips186.h"
+#include "mtprng.h"
 
-#include "beecrypt/fips186.h"
-#include "beecrypt/mtprng.h"
+#include "md5.h"
+#include "sha1.h"
+#include "sha256.h"
 
-#include "beecrypt/md5.h"
-#include "beecrypt/sha1.h"
-#include "beecrypt/sha256.h"
+#include "hmacmd5.h"
+#include "hmacsha1.h"
+#include "hmacsha256.h"
 
-#include "beecrypt/hmacmd5.h"
-#include "beecrypt/hmacsha1.h"
-#include "beecrypt/hmacsha256.h"
+#include "aes.h"
+#include "blowfish.h"
+#include "blockmode.h"
 
-#include "beecrypt/aes.h"
-#include "beecrypt/blowfish.h"
-#include "beecrypt/blockmode.h"
+#include "debug.h"
 
 static entropySource entropySourceList[] =
 {

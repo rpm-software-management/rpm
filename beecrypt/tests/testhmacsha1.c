@@ -24,9 +24,11 @@
  * \ingroup UNIT_m
  */
 
-#include <stdio.h>
+#include "system.h"
 
 #include "hmacsha1.h"
+
+#include "debug.h"
 
 struct vector
 {

@@ -21,13 +21,11 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "memchunk.h"
 
-#include "beecrypt/memchunk.h"
+#include "debug.h"
 
 memchunk* memchunkAlloc(size_t size)
 {

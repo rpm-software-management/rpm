@@ -22,11 +22,13 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
+#include "system.h"
+
 #include "beecrypt.h"
 #include "dldp.h"
 #include "timestamp.h"
 
-#include <stdio.h>
+#include "debug.h"
 
 #define SECONDS	10
 

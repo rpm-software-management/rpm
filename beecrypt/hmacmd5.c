@@ -27,13 +27,11 @@
  * \ingroup HMAC_m HMAC_md5_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "hmacmd5.h"
 
-#include "beecrypt/hmacmd5.h"
+#include "debug.h"
 
 /*!\addtogroup HMAC_md5_m
  * \{

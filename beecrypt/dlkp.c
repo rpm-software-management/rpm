@@ -23,13 +23,11 @@
  * \ingroup DL_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "dlkp.h"
 
-#include "beecrypt/dlkp.h"
+#include "debug.h"
 
 int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
 {

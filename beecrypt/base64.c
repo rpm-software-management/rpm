@@ -22,18 +22,12 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "base64.h"
+#include "endianness.h"
 
-#include "beecrypt/base64.h"
-#include "beecrypt/endianness.h"
-
-#if HAVE_CTYPE_H
-# include <ctype.h>
-#endif
+#include "debug.h"
 
 static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 

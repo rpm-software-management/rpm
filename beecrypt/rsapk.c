@@ -23,13 +23,11 @@
  * \ingroup IF_m IF_rsa_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "rsapk.h"
 
-#include "beecrypt/rsapk.h"
+#include "debug.h"
 
 /*!\addtogroup IF_rsa_m
  * \{

@@ -4,7 +4,8 @@
 
 #define	_REENTRANT	1	/* XXX config.h collides with pyconfig.h */
 #define	_GNU_SOURCE		/* XXX pick up stpcpy et al */
-#include "config.h"
+
+#include "system.h"
 
 #include "Python.h"
 #include "longintrepr.h"
@@ -14,10 +15,12 @@
 #define PyObject_HEAD   int _PyObjectHead;
 #endif
 
-#include "beecrypt/python/mpw-py.h"
-#include "beecrypt/python/rng-py.h"
+#include "mpw-py.h"
+#include "rng-py.h"
 
 #include "debug-py.c"
+
+#include "debug.h"
 
 #define ABS(_x)		((_x) < 0 ? -(_x) : (_x))
 #if !defined(MAX)

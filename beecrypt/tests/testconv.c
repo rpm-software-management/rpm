@@ -1,4 +1,8 @@
+#include "system.h"
+
 #include "mp.h"
+
+#include "debug.h"
 
 void hexdump(byte* b, int count)
 {

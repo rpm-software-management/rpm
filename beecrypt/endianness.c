@@ -22,13 +22,11 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "endianness.h"
 
-#include "beecrypt/endianness.h"
+#include "debug.h"
 
 int16_t swap16(int16_t n)
 {

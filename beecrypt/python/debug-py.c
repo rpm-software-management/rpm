@@ -6,8 +6,10 @@ extern PyTypeObject PyDictIter_Type;
 /*@unchecked@*/
 extern PyTypeObject PyFrame_Type;
 
-#include "beecrypt/python/mpw-py.h"	/* XXX debug only */
-#include "beecrypt/python/rng-py.h"	/* XXX debug only */
+#include "mpw-py.h"	/* XXX debug only */
+#include "rng-py.h"	/* XXX debug only */
+
+#include "debug.h"
 
 /**
  */

@@ -23,13 +23,11 @@
  * \ingroup BC_m
  */
 
-#define BEECRYPT_DLL_EXPORT
+#include "system.h"
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "blockmode.h"
 
-#include "beecrypt/blockmode.h"
+#include "debug.h"
 
 int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
 {
