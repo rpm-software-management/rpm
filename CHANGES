@@ -19,6 +19,7 @@
 	- rpm.8: gpg uses GNUPGHOME, not GPGPATH (#76691).
 	- add error message on glob failure (#76012).
 	- add _javadir/_javadocdir/_javaclasspath macros.
+	- fix: bash must have functional libtermcap.so.2.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
