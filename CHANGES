@@ -1,3 +1,15 @@
+2.2.9 -> 2.2.10:
+	- changed how installArchive() handles running out of gzread()
+	  bytes while the child is still alive
+	- changed tag for Alpha's to "alpha" from "axp" <gulp>
+	- made ./configure look for --quiet support in cpio
+	- netsharedPath's were having mkdir()'s done on them and had
+	  bad interactions with rooted directories
+	- made -qp accept '-' to query the package on stdin
+	- dependency checking was broken when no database was being used
+	- don't *ever* let cpio make directories -- we do a better job
+	  (esp because we don't kill symlinks!)
+
 2.2.8 -> 2.2.9:
 	- fixed typo in default rpmrc
 	- made getBooleanVar() a bit better
