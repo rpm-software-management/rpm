@@ -47,13 +47,13 @@ int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
 	return -1;
     } else if (rc == 1) {
 	return 1;
-    } else {
-	set->recs = data.data;
-	set->recs = malloc(data.size);
-	memcpy(set->recs, data.data, data.size);
-	set->count = data.size / sizeof(dbiIndexRecord);
-	return 0;
-    }
+    } 
+
+    set->recs = data.data;
+    set->recs = malloc(data.size);
+    memcpy(set->recs, data.data, data.size);
+    set->count = data.size / sizeof(dbiIndexRecord);
+    return 0;
 }
 
 int dbiUpdateIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {

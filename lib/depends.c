@@ -14,19 +14,22 @@
 struct availablePackage {
     Header h;
     char ** provides;
+    char ** files;
     char * name, * version, * release;
-    int serial, hasSerial, providesCount;
+    int serial, hasSerial, providesCount, filesCount;
     void * key;
 } ;
+
+enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
 
 struct availableIndexEntry {
     struct availablePackage * package;
     char * entry;
-    int isProvides;
+    enum indexEntryType type;
 } ;
 
 struct availableIndex {
-    struct availableIndexEntry * index;
+    struct availableIndexEntry * index ;
     int size;
 } ;
 
@@ -61,7 +64,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 			     char * reqVersion, int reqFlags,
 			     struct availablePackage ** suggestion);
 static int checkDependentPackages(rpmDependencies rpmdep, 
-			    struct problemsSet * psp, char * requires);
+			    struct problemsSet * psp, char * key);
 static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement);
 static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
@@ -93,12 +96,14 @@ static void alFreeIndex(struct availableList * al) {
 }
 
 static void alFree(struct availableList * al) {
-     int i;
+    int i;
 
-     for (i = 0; i < al->size; i++) {
+    for (i = 0; i < al->size; i++) {
 	if (al->list[i].provides)
 	    free(al->list[i].provides);
-     }
+	if (al->list[i].files)
+	    free(al->list[i].files);
+    }
 
     if (al->alloced) free(al->list);
     alFreeIndex(al);
@@ -106,7 +111,6 @@ static void alFree(struct availableList * al) {
 
 static void alAddPackage(struct availableList * al, Header h, void * key) {
     struct availablePackage * p;
-    int i, type;
 
     if (al->size == al->alloced) {
 	al->alloced += 5;
@@ -116,15 +120,22 @@ static void alAddPackage(struct availableList * al, Header h, void * key) {
     p = al->list + al->size++;
     p->h = h;
 
-    headerGetEntry(p->h, RPMTAG_NAME, &type, (void **) &p->name, &i);
-    headerGetEntry(p->h, RPMTAG_VERSION, &type, (void **) &p->version, &i);
-    headerGetEntry(p->h, RPMTAG_RELEASE, &type, (void **) &p->release, &i);
-    p->hasSerial = headerGetEntry(h, RPMTAG_SERIAL, &type, (void **) &p->serial, &i);
+    headerGetEntry(p->h, RPMTAG_NAME, NULL, (void **) &p->name, NULL);
+    headerGetEntry(p->h, RPMTAG_VERSION, NULL, (void **) &p->version, NULL);
+    headerGetEntry(p->h, RPMTAG_RELEASE, NULL, (void **) &p->release, NULL);
+    p->hasSerial = headerGetEntry(h, RPMTAG_SERIAL, NULL, (void **) &p->serial, 
+				  NULL);
 
-    if (!headerGetEntry(h, RPMTAG_PROVIDES, &type, (void **) &p->provides,
+    if (!headerGetEntry(h, RPMTAG_PROVIDES, NULL, (void **) &p->provides,
 	&p->providesCount)) {
 	p->providesCount = 0;
 	p->provides = NULL;
+    }
+
+    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &p->files,
+	&p->filesCount)) {
+	p->filesCount = 0;
+	p->files = NULL;
     }
 
     p->key = key;
@@ -142,6 +153,9 @@ static void alMakeIndex(struct availableList * al) {
     for (i = 0; i < al->size; i++) {
 	ai->size += al->list[i].providesCount;
     }
+    for (i = 0; i < al->size; i++) {
+	ai->size += al->list[i].filesCount;
+    }
 
     if (ai->size) {
 	ai->index = malloc(sizeof(*ai->index) * ai->size);
@@ -149,13 +163,20 @@ static void alMakeIndex(struct availableList * al) {
 	for (i = 0; i < al->size; i++) {
 	    ai->index[k].package = al->list + i;
 	    ai->index[k].entry = al->list[i].name;
-	    ai->index[k].isProvides = 0;
+	    ai->index[k].type = IET_NAME;
 	    k++;
 
 	    for (j = 0; j < al->list[i].providesCount; j++) {
 		ai->index[k].package = al->list + i;
 		ai->index[k].entry = al->list[i].provides[j];
-		ai->index[k].isProvides = 1;
+		ai->index[k].type = IET_PROVIDES;
+		k++;
+	    }
+
+	    for (j = 0; j < al->list[i].filesCount; j++) {
+		ai->index[k].package = al->list + i;
+		ai->index[k].entry = al->list[i].files[j];
+		ai->index[k].type = IET_FILE;
 		k++;
 	    }
 	}
@@ -176,7 +197,7 @@ struct availablePackage * alSatisfiesDepend(struct availableList * al,
 		    sizeof(*al->index.index), (void *) indexcmp);
  
     if (!match) return NULL;
-    if (match->isProvides) return match->package;
+    if (match->type != IET_NAME) return match->package;
 
     if (headerMatchesDepFlags(match->package->h, reqVersion, reqFlags))
 	return match->package;
@@ -285,8 +306,8 @@ int rpmdepCheck(rpmDependencies rpmdep,
 		struct rpmDependencyConflict ** conflicts, int * numConflicts) {
     struct availablePackage * p;
     int i, j;
-    char ** provides;
-    int providesCount;
+    char ** provides, ** files;
+    int providesCount, fileCount;
     int type;
     char * name;
     Header h;
@@ -333,7 +354,8 @@ int rpmdepCheck(rpmDependencies rpmdep,
     for (i = 0; i < rpmdep->numRemovedPackages; i++) {
 	h = rpmdbGetRecord(rpmdep->db, rpmdep->removedPackages[i]);
 	if (!h) {
-	    rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for dependency "
+	    rpmError(RPMERR_DBCORRUPT, 
+			"cannot read header at %d for dependency "
 		  "check", rpmdep->removedPackages[i]);
 	    free(ps.problems);
 	    return 1;
@@ -347,18 +369,32 @@ int rpmdepCheck(rpmDependencies rpmdep,
 	    return 1;
 	}
 
-	if (!headerGetEntry(h, RPMTAG_PROVIDES, &type, (void **) &provides, 
+	if (headerGetEntry(h, RPMTAG_PROVIDES, NULL, (void **) &provides, 
 		 &providesCount)) {
-	    headerFree(h);
-	    continue;
+	    for (j = 0; j < providesCount; j++) {
+		if (checkDependentPackages(rpmdep, &ps, provides[j])) {
+		    free(provides);
+		    free(ps.problems);
+		    headerFree(h);
+		    return 1;
+		}
+	    }
+
+	    free(provides);
 	}
 
-	for (j = 0; j < providesCount; j++) {
-	    if (checkDependentPackages(rpmdep, &ps, provides[j])) {
-		free(ps.problems);
-		headerFree(h);
-		return 1;
+	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &files, 
+		 &fileCount)) {
+	    for (j = 0; j < fileCount; j++) {
+		if (checkDependentPackages(rpmdep, &ps, files[j])) {
+		    free(files);
+		    free(ps.problems);
+		    headerFree(h);
+		    return 1;
+		}
 	    }
+
+	    free(files);
 	}
 
 	headerFree(h);
@@ -391,34 +427,57 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 	return 0;
 
     if (rpmdep->db) {
-	if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, &matches)) {
-	    for (i = 0; i < matches.count; i++) {
-		if (bsearch(&matches.recs[i].recOffset, 
-			    rpmdep->removedPackages, 
-			    rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
-		    continue;
-		break;
-	    }
-
-	    dbiFreeIndexRecord(matches);
-	    if (i < matches.count) return 0;
-	}
-
-	if (!rpmdbFindPackage(rpmdep->db, reqName, &matches)) {
-	    for (i = 0; i < matches.count; i++) {
-		if (bsearch(&matches.recs[i].recOffset, 
-			    rpmdep->removedPackages, 
-			    rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
-		    continue;
-
-		if (dbrecMatchesDepFlags(rpmdep, matches.recs[i].recOffset, 
-					 reqVersion, reqFlags)) {
+	if (*reqName == '/') {
+	    /* reqFlags better be 0! */
+	    if (!rpmdbFindByFile(rpmdep->db, reqName, &matches)) {
+		for (i = 0; i < matches.count; i++) {
+		    if (bsearch(&matches.recs[i].recOffset, 
+				rpmdep->removedPackages, 
+				rpmdep->numRemovedPackages, 
+				sizeof(int *), 
+				intcmp)) 
+			continue;
 		    break;
 		}
+
+		dbiFreeIndexRecord(matches);
+		if (i < matches.count) return 0;
+	    }
+	} else {
+	    if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, 
+						  &matches)) {
+		for (i = 0; i < matches.count; i++) {
+		    if (bsearch(&matches.recs[i].recOffset, 
+				rpmdep->removedPackages, 
+				rpmdep->numRemovedPackages, 
+				sizeof(int *), 
+				intcmp)) 
+			continue;
+		    break;
+		}
+
+		dbiFreeIndexRecord(matches);
+		if (i < matches.count) return 0;
 	    }
 
-	    dbiFreeIndexRecord(matches);
-	    if (i < matches.count) return 0;
+	    if (!rpmdbFindPackage(rpmdep->db, reqName, &matches)) {
+		for (i = 0; i < matches.count; i++) {
+		    if (bsearch(&matches.recs[i].recOffset, 
+				rpmdep->removedPackages, 
+				rpmdep->numRemovedPackages, 
+				sizeof(int *), 
+				intcmp)) 
+			continue;
+
+		    if (dbrecMatchesDepFlags(rpmdep, matches.recs[i].recOffset, 
+					     reqVersion, reqFlags)) {
+			break;
+		    }
+		}
+
+		dbiFreeIndexRecord(matches);
+		if (i < matches.count) return 0;
+	    }
 	}
     }
 
@@ -458,15 +517,15 @@ static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp,
 }
 
 static int checkDependentPackages(rpmDependencies rpmdep, 
-			    struct problemsSet * psp, char * package) {
+			    struct problemsSet * psp, char * key) {
     dbiIndexSet matches;
     int rc;
 
-    if (rpmdbFindByRequiredBy(rpmdep->db, package, &matches))  {
+    if (rpmdbFindByRequiredBy(rpmdep->db, key, &matches))  {
 	return 0;
     }
 
-    rc = checkPackageSet(rpmdep, psp, package, &matches);
+    rc = checkPackageSet(rpmdep, psp, key, &matches);
     dbiFreeIndexRecord(matches);
 
     return rc;
@@ -506,7 +565,8 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
     } else {
 	headerGetEntry(h, RPMTAG_REQUIREFLAGS, &type, (void **) &requireFlags, 
 		 &requiresCount);
-	headerGetEntry(h, RPMTAG_REQUIREVERSION, &type, (void **) &requiresVersion, 
+	headerGetEntry(h, RPMTAG_REQUIREVERSION, &type, 
+			(void **) &requiresVersion, 
 		 &requiresCount);
     }
 
@@ -514,9 +574,10 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	     &conflictsCount)) {
 	conflictsCount = 0;
     } else {
-	headerGetEntry(h, RPMTAG_CONFLICTFLAGS, &type, (void **) &conflictsFlags, 
-		 &conflictsCount);
-	headerGetEntry(h, RPMTAG_CONFLICTVERSION, &type,(void **) &conflictsVersion, 
+	headerGetEntry(h, RPMTAG_CONFLICTFLAGS, &type, 
+			(void **) &conflictsFlags, &conflictsCount);
+	headerGetEntry(h, RPMTAG_CONFLICTVERSION, &type,
+			(void **) &conflictsVersion, 
 		 &conflictsCount);
     }
 
@@ -527,8 +588,10 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 			       requireFlags[i], &suggestion);
 	if (rc == 1) {
 	    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
-	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, 
+				&count);
+	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, 
+				&count);
 
 	    rpmMessage(RPMMESS_DEBUG, "package %s require not satisfied: %s\n",
 		    name, requires[i]);
@@ -567,8 +630,10 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	/* 1 == unsatisfied, 0 == satsisfied */
 	if (rc == 0) {
 	    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
-	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, 
+				&count);
+	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, 
+				&count);
 
 	    rpmMessage(RPMMESS_DEBUG, "package %s conflicts: %s\n",
 		    name, conflicts[i]);
