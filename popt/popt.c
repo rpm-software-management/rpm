@@ -11,6 +11,7 @@
 # include <alloca.h>
 #endif
 
+#include "findme.h"
 #include "popt.h"
 
 struct optionStackEntry {
@@ -182,20 +183,26 @@ static int handleAlias(poptContext con, char * longName, char shortName,
 
 static void execCommand(poptContext con) {
     char ** argv;
+    int pos = 0;
 
     argv = malloc(sizeof(*argv) * 
-			(4 + con->numLeftovers + con->finalArgvCount));
-    argv[0] = con->doExec->script;
-    memcpy(argv + 1, con->finalArgv, sizeof(*argv) * con->finalArgvCount);
+			(6 + con->numLeftovers + con->finalArgvCount));
+    argv[pos++] = con->doExec->script;
+
+    argv[pos] = findProgramPath(con->os->argv[0]);
+    if (argv[pos]) pos++;
+    argv[pos++] = ";";
+
+    memcpy(argv + pos, con->finalArgv, sizeof(*argv) * con->finalArgvCount);
+    pos += con->finalArgvCount;
 
     if (con->numLeftovers) {
-	argv[con->finalArgvCount + 1] = "--";
-	memcpy(argv + 2 + con->finalArgvCount, con->leftovers, 
-		    sizeof(*argv) * con->numLeftovers);
-	argv[con->numLeftovers + con->finalArgvCount + 2] = NULL;
-    } else {
-	argv[con->finalArgvCount + 1] = NULL;
+	argv[pos++] = "--";
+	memcpy(argv + pos, con->leftovers, sizeof(*argv) * con->numLeftovers);
+	pos += con->numLeftovers;
     }
+
+    argv[pos++] = NULL;
 
     setreuid(getuid(), getuid());
 
@@ -622,10 +629,8 @@ int poptReadConfigFile(poptContext con, char * fn) {
 }
 
 int poptReadDefaultConfig(poptContext con, int useEnv) {
-    char * envName, * envValue;
-    char * fn, * home, * chptr;
-    int rc, skip;
-    struct poptAlias alias;
+    char * fn, * home;
+    int rc;
 
     if (!con->appName) return 0;
 
@@ -638,55 +643,6 @@ int poptReadDefaultConfig(poptContext con, int useEnv) {
 	sprintf(fn, "%s/.popt", home);
 	rc = poptReadConfigFile(con, fn);
 	if (rc) return rc;
-    }
-
-    envName = alloca(strlen(con->appName) + 20);
-    strcpy(envName, con->appName);
-    chptr = envName;
-    while (*chptr) {
-	*chptr = toupper(*chptr);
-	chptr++;
-    }
-    strcat(envName, "_POPT_ALIASES");
-
-    if (useEnv && (envValue = getenv(envName))) {
-	envValue = strcpy(alloca(strlen(envValue) + 1), envValue);
-
-	while (envValue && *envValue) {
-	    chptr = strchr(envValue, '=');
-	    if (!chptr) {
-		envValue = strchr(envValue, '\n');
-		if (envValue) envValue++;
-		continue;
-	    }
-
-	    *chptr = '\0';
-
-	    skip = 0;
-	    if (!strncmp(envValue, "--", 2)) {
-		alias.longName = envValue + 2;
-		alias.shortName = '\0';
-	    } else if (*envValue == '-' && strlen(envValue) == 2) {
-		alias.longName = NULL;	
-		alias.shortName = envValue[1];
-	    } else {
-		skip = 1;
-	    }
-
-	    envValue = chptr + 1;
-	    chptr = strchr(envValue, '\n');
-	    if (chptr) *chptr = '\0';
-
-	    if (!skip) {
-		poptParseArgvString(envValue, &alias.argc, &alias.argv);
-		poptAddAlias(con, alias, 0);
-	    }
-
-	    if (chptr)
-		envValue = chptr + 1;
-	    else
-		envValue = NULL;
-	}
     }
 
     return 0;
