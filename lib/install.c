@@ -873,6 +873,12 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	message(MESS_DEBUG, "file %s is shared\n", 
 		secFileList[sharedList[i].secFileNumber]);
 
+	if (!strcmp(secFileMd5List[sharedList[i].secFileNumber],
+		    fileMd5List[sharedList[i].mainFileNumber])) {
+	    message(MESS_DEBUG, "shared file and new file are identical\n");
+	    continue;
+	}
+
 	intptr = notErrors;
 	while (*intptr) {
 	    if (*intptr == sharedList[i].secRecOffset) break;
