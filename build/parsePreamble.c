@@ -67,9 +67,8 @@ static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
     }
     
     if (!strcmp(tok, "-n")) {
-	if (!(tok = strtok(NULL, " \t\n"))) {
+	if (!(tok = strtok(NULL, " \t\n")))
 	    return 1;
-	}
 	*flag = PART_NAME;
     } else {
 	*flag = PART_SUBNAME;
@@ -92,14 +91,69 @@ static int parseYesNo(char *s)
     return 1;
 }
 
+struct tokenBits {
+    const char * name;
+    int bits;
+};
+
+static struct tokenBits installScriptBits[] = {
+    { "interp",		RPMSENSE_INTERP },
+    { "prereq",		RPMSENSE_PREREQ },
+    { "preun",		RPMSENSE_SCRIPT_PREUN },
+    { "pre",		RPMSENSE_SCRIPT_PRE },
+    { "postun",		RPMSENSE_SCRIPT_POSTUN },
+    { "post",		RPMSENSE_SCRIPT_POST },
+    { "rpmlib",		RPMSENSE_RPMLIB },
+    { "verify",		RPMSENSE_SCRIPT_VERIFY },
+    { NULL, 0 }
+};
+
+static struct tokenBits buildScriptBits[] = {
+    { "prep",		RPMSENSE_SCRIPT_PREP },
+    { "build",		RPMSENSE_SCRIPT_BUILD },
+    { "install",	RPMSENSE_SCRIPT_INSTALL },
+    { "clean",		RPMSENSE_SCRIPT_CLEAN },
+    { NULL, 0 }
+};
+
+static int parseBits(const char * s, struct tokenBits * tokbits, int * bp)
+{
+    struct tokenBits *tb;
+    const char *se;
+    int bits = 0;
+    int c = 0;
+
+    if (s) {
+	while (*s) {
+	    while ((c = *s) && isspace(c)) s++;
+	    se = s;
+	    while ((c = *se) && isalpha(c)) se++;
+	    if (s == se)
+		break;
+	    for (tb = tokbits; tb->name; tb++) {
+		if (strlen(tb->name) == (se-s) && !strncmp(tb->name, s, (se-s)))
+		    break;
+	    }
+	    if (tb->name == NULL)
+		break;
+	    bits |= tb->bits;
+	    while ((c = *se) && isspace(c)) se++;
+	    if (c != ',')
+		break;
+	    s = ++se;
+	}
+    }
+    if (c == 0 && *bp) *bp = bits;
+    return (c ? RPMERR_BADSPEC : 0);
+}
+
 static inline char * findLastChar(char * s)
 {
     char *res = s;
 
     while (*s) {
-	if (! isspace(*s)) {
+	if (! isspace(*s))
 	    res = s;
-	}
 	s++;
     }
 
@@ -336,7 +390,10 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     char *end;
     char **array;
     int multiToken = 0;
-    int num, rc, len;
+    int tagflags;
+    int len;
+    int num;
+    int rc;
     
     /* Find the start of the "field" and strip trailing space */
     while ((*field) && (*field != ':'))
@@ -509,15 +566,34 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	if ((rc = parseNoSource(spec, field, tag)))
 	    return rc;
 	break;
+      case RPMTAG_BUILDPREREQ:
+      case RPMTAG_BUILDREQUIRES:
+	if ((rc = parseBits(lang, buildScriptBits, &tagflags))) {
+	    rpmError(RPMERR_BADSPEC,
+		     _("line %d: Bad %s: qualifiers: %s"),
+		     spec->lineNum, tagName(tag), spec->line);
+	    return rc;
+	}
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
+	    return rc;
+	break;
+      case RPMTAG_REQUIREFLAGS:
+      case RPMTAG_PREREQ:
+	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
+	    rpmError(RPMERR_BADSPEC,
+		     _("line %d: Bad %s: qualifiers: %s"),
+		     spec->lineNum, tagName(tag), spec->line);
+	    return rc;
+	}
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
+	    return rc;
+	break;
+      case RPMTAG_BUILDCONFLICTS:
+      case RPMTAG_CONFLICTFLAGS:
       case RPMTAG_OBSOLETEFLAGS:
       case RPMTAG_PROVIDEFLAGS:
-      case RPMTAG_BUILDREQUIRES:
-      case RPMTAG_BUILDCONFLICTS:
-      case RPMTAG_BUILDPREREQ:
-      case RPMTAG_REQUIREFLAGS:
-      case RPMTAG_CONFLICTFLAGS:
-      case RPMTAG_PREREQ:
-	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, 0)))
+	tagflags = 0;
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
       case RPMTAG_EXCLUDEARCH:
@@ -583,8 +659,8 @@ static struct PreambleRec {
     {RPMTAG_EXCLUSIVEOS,	0, 0, "exclusiveos"},
     {RPMTAG_ICON,		0, 0, "icon"},
     {RPMTAG_PROVIDEFLAGS,	0, 0, "provides"},
-    {RPMTAG_REQUIREFLAGS,	0, 0, "requires"},
-    {RPMTAG_PREREQ,		0, 0, "prereq"},
+    {RPMTAG_REQUIREFLAGS,	0, 1, "requires"},
+    {RPMTAG_PREREQ,		0, 1, "prereq"},
     {RPMTAG_CONFLICTFLAGS,	0, 0, "conflicts"},
     {RPMTAG_OBSOLETEFLAGS,	0, 0, "obsoletes"},
     {RPMTAG_PREFIXES,		0, 0, "prefixes"},
@@ -593,8 +669,8 @@ static struct PreambleRec {
     {RPMTAG_BUILDARCHS,		0, 0, "buildarchitectures"},
     {RPMTAG_BUILDARCHS,		0, 0, "buildarch"},
     {RPMTAG_BUILDCONFLICTS,	0, 0, "buildconflicts"},
-    {RPMTAG_BUILDPREREQ,	0, 0, "buildprereq"},
-    {RPMTAG_BUILDREQUIRES,	0, 0, "buildrequires"},
+    {RPMTAG_BUILDPREREQ,	0, 1, "buildprereq"},
+    {RPMTAG_BUILDREQUIRES,	0, 1, "buildrequires"},
     {RPMTAG_AUTOREQPROV,	0, 0, "autoreqprov"},
     {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
@@ -621,38 +697,38 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
 	if (!strncasecmp(spec->line, p->token, p->len))
 	    break;
     }
-
     if (p->token == NULL)
 	return 1;
 
     s = spec->line + p->len;
     SKIPSPACE(s);
 
-    if (! p->multiLang) {
+    switch (p->multiLang) {
+    default:
+    case 0:
 	/* Unless this is a source or a patch, a ':' better be next */
 	if (p->tag != RPMTAG_SOURCE && p->tag != RPMTAG_PATCH) {
-	    if (*s != ':') {
-		return 1;
-	    }
+	    if (*s != ':') return 1;
 	}
 	*lang = '\0';
-    } else {
-	if (*s != ':') {
-	    if (*s != '(') return 1;
-	    s++;
-	    SKIPSPACE(s);
-	    while (! isspace(*s) && *s != ')') {
-		*lang++ = *s++;
-	    }
-	    *lang = '\0';
-	    SKIPSPACE(s);
-	    if (*s != ')') return 1;
-	    s++;
-	    SKIPSPACE(s);
-	    if (*s != ':') return 1;
-	} else {
+	break;
+    case 1:	/* Parse optional ( <token> ). */
+	if (*s == ':') {
 	    strcpy(lang, RPMBUILD_DEFAULT_LANG);
+	    break;
 	}
+	if (*s != '(') return 1;
+	s++;
+	SKIPSPACE(s);
+	while (!isspace(*s) && *s != ')')
+	    *lang++ = *s++;
+	*lang = '\0';
+	SKIPSPACE(s);
+	if (*s != ')') return 1;
+	s++;
+	SKIPSPACE(s);
+	if (*s != ':') return 1;
+	break;
     }
 
     *tag = p->tag;
@@ -693,18 +769,16 @@ int parsePreamble(Spec spec, int initialPackage)
 	    const char * mainName;
 	    headerNVR(spec->packages->header, &mainName, NULL, NULL);
 	    sprintf(fullName, "%s-%s", mainName, name);
-	} else {
+	} else
 	    strcpy(fullName, name);
-	}
 	headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else {
-	if (rc) {
+	if (rc)
 	    return rc;
-	}
 	while (! (nextPart = isPart(spec->line))) {
 	    /* Skip blank lines */
 	    linep = spec->line;
@@ -715,21 +789,18 @@ int parsePreamble(Spec spec, int initialPackage)
 			     spec->lineNum, spec->line);
 		    return RPMERR_BADSPEC;
 		}
-		if (handlePreambleTag(spec, pkg, tag, macro, lang)) {
+		if (handlePreambleTag(spec, pkg, tag, macro, lang))
 		    return RPMERR_BADSPEC;
-		}
-		if (spec->buildArchitectures && !spec->inBuildArchitectures) {
+		if (spec->buildArchitectures && !spec->inBuildArchitectures)
 		    return PART_BUILDARCHITECTURES;
-		}
 	    }
 	    if ((rc =
 		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
 	    }
-	    if (rc) {
+	    if (rc)
 		return rc;
-	    }
 	}
     }
 
@@ -741,25 +812,20 @@ int parsePreamble(Spec spec, int initialPackage)
     }
 
     /* XXX Skip valid arch check if not building binary package */
-    if (!spec->anyarch && checkForValidArchitectures(spec)) {
-	    return RPMERR_BADSPEC;
-    }
+    if (!spec->anyarch && checkForValidArchitectures(spec))
+	return RPMERR_BADSPEC;
 
-    if (pkg == spec->packages) {
+    if (pkg == spec->packages)
 	fillOutMainPackage(pkg->header);
-    }
 
-    if (checkForDuplicates(pkg->header, fullName)) {
+    if (checkForDuplicates(pkg->header, fullName))
 	return RPMERR_BADSPEC;
-    }
 
-    if (pkg != spec->packages) {
+    if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header, copyTagsDuringParse);
-    }
 
-    if (checkForRequired(pkg->header, fullName)) {
+    if (checkForRequired(pkg->header, fullName))
 	return RPMERR_BADSPEC;
-    }
 
     return nextPart;
 }

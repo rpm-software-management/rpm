@@ -45,26 +45,21 @@ static inline void initParts(struct PartRec *p)
 
 rpmParseState isPart(const char *line)
 {
-    char c;
     struct PartRec *p;
 
     if (partList[0].len == 0)
 	initParts(partList);
     
     for (p = partList; p->token != NULL; p++) {
-	if (! strncasecmp(line, p->token, p->len)) {
-	    c = *(line + p->len);
-	    if (c == '\0' || isspace(c)) {
-		break;
-	    }
-	}
+	char c;
+	if (strncasecmp(line, p->token, p->len))
+	    continue;
+	c = *(line + p->len);
+	if (c == '\0' || isspace(c))
+	    break;
     }
 
-    if (p->token) {
-	return p->part;
-    } else {
-	return PART_NONE;
-    }
+    return (p->token ? p->part : PART_NONE);
 }
 
 static int matchTok(const char *token, const char *line)
@@ -96,9 +91,8 @@ static int matchTok(const char *token, const char *line)
 void handleComments(char *s)
 {
     SKIPSPACE(s);
-    if (*s == '#') {
+    if (*s == '#')
 	*s = '\0';
-    }
 }
 
 static void forceIncludeFile(Spec spec, const char * fileName)

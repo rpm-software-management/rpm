@@ -12,15 +12,20 @@ static struct rpmlibProvides {
     int featureFlags;
     const char * featureDescription;
 } rpmlibProvides[] = {
-    { "rpmlib(VersionedDependencies)",	"3.0.3-1",	RPMSENSE_EQUAL,
+    { "rpmlib(VersionedDependencies)",	"3.0.3-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
 	"PreReq:, Provides:, and Obsoletes: dependencies support versions." },
-    { "rpmlib(CompressedFileNames)",	"3.0.4-1",	RPMSENSE_EQUAL,
+    { "rpmlib(CompressedFileNames)",	"3.0.4-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
 	"file names stored as (dirName,BaseName,dirIndex) tuple, not as path."},
-    { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",	RPMSENSE_EQUAL,
+    { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
 	"package payload compressed using bzip2." },
-    { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",	RPMSENSE_EQUAL,
+    { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
 	"package payload files have \"./\" prefix." },
-    { "rpmlib(ExplicitPackageProvide)",	"4.0-1",	RPMSENSE_EQUAL,
+    { "rpmlib(ExplicitPackageProvide)",	"4.0-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
 	"package name-version-release not implicitly provided." },
     { NULL,				NULL,	0 }
 };

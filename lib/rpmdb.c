@@ -1902,9 +1902,11 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	    int rpmtype = 0;
 	    int rpmcnt = 0;
 	    int rpmtag;
+	    int_32 * requireFlags;
 	    int i, j;
 
 	    dbi = NULL;
+	    requireFlags = NULL;
 	    rpmtag = dbiTags[dbix];
 
 	    switch (rpmtag) {
@@ -1935,9 +1937,13 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		rpmvals = baseNames;
 		rpmcnt = count;
 		break;
+	    case RPMTAG_REQUIRENAME:
+		headerGetEntry(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
+		headerGetEntry(h, RPMTAG_REQUIREFLAGS, NULL,
+			(void **)&requireFlags, NULL);
+		break;
 	    default:
-		headerGetEntry(h, rpmtag, &rpmtype,
-			(void **) &rpmvals, &rpmcnt);
+		headerGetEntry(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
 		break;
 	    }
 
@@ -1984,6 +1990,14 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		 * included the tagNum only for files.
 		 */
 		switch (dbi->dbi_rpmtag) {
+		case RPMTAG_REQUIRENAME:
+		    /* Filter out install prerequisites. */
+		    if (requireFlags && isInstallPreReq(requireFlags[i])) {
+		rpmMessage(RPMMESS_DEBUG, ("%6d %s\n"), i, rpmvals[i]);
+			continue;
+		    }
+		    rec->tagNum = i;
+		    break;
 		case RPMTAG_TRIGGERNAME:
 		    if (i) {	/* don't add duplicates */
 			for (j = 0; j < i; j++) {
@@ -1993,7 +2007,8 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 			if (j < i)
 			    continue;
 		    }
-		    /*@fallthrough@*/
+		    rec->tagNum = i;
+		    break;
 		default:
 		    rec->tagNum = i;
 		    break;

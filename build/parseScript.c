@@ -71,10 +71,11 @@ int parseScript(Spec spec, int parsePart)
     char *partname = NULL;
     int reqtag = 0;
     int tag = 0;
+    int tagflags = 0;
     int progtag = 0;
     int flag = PART_SUBNAME;
     Package pkg;
-    StringBuf sb;
+    StringBuf sb = NULL;
     int nextPart;
     int index;
     char reqargs[BUFSIZ];
@@ -91,43 +92,51 @@ int parseScript(Spec spec, int parsePart)
     switch (parsePart) {
       case PART_PRE:
 	tag = RPMTAG_PREIN;
+	tagflags = RPMSENSE_SCRIPT_PRE;
 	progtag = RPMTAG_PREINPROG;
 	partname = "%pre";
 	break;
       case PART_POST:
 	tag = RPMTAG_POSTIN;
+	tagflags = RPMSENSE_SCRIPT_POST;
 	progtag = RPMTAG_POSTINPROG;
 	partname = "%post";
 	break;
       case PART_PREUN:
 	tag = RPMTAG_PREUN;
+	tagflags = RPMSENSE_SCRIPT_PREUN;
 	progtag = RPMTAG_PREUNPROG;
 	partname = "%preun";
 	break;
       case PART_POSTUN:
 	tag = RPMTAG_POSTUN;
+	tagflags = RPMSENSE_SCRIPT_POSTUN;
 	progtag = RPMTAG_POSTUNPROG;
 	partname = "%postun";
 	break;
       case PART_VERIFYSCRIPT:
 	tag = RPMTAG_VERIFYSCRIPT;
+	tagflags = RPMSENSE_SCRIPT_VERIFY;
 	progtag = RPMTAG_VERIFYSCRIPTPROG;
 	partname = "%verifyscript";
 	break;
       case PART_TRIGGERIN:
 	tag = RPMTAG_TRIGGERSCRIPTS;
+	tagflags = 0;
 	reqtag = RPMTAG_TRIGGERIN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
 	partname = "%triggerin";
 	break;
       case PART_TRIGGERUN:
 	tag = RPMTAG_TRIGGERSCRIPTS;
+	tagflags = 0;
 	reqtag = RPMTAG_TRIGGERUN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
 	partname = "%triggerun";
 	break;
       case PART_TRIGGERPOSTUN:
 	tag = RPMTAG_TRIGGERSCRIPTS;
+	tagflags = 0;
 	reqtag = RPMTAG_TRIGGERPOSTUN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
 	partname = "%triggerpostun";
@@ -160,9 +169,8 @@ int parseScript(Spec spec, int parsePart)
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: script program must begin "
 			 "with \'/\': %s"), spec->lineNum, prog);
-		FREE(argv);
-		poptFreeContext(optCon);
-		return RPMERR_BADSPEC;
+		rc = RPMERR_BADSPEC;
+		goto exit;
 	    }
 	} else if (arg == 'n') {
 	    flag = PART_NAME;
@@ -174,9 +182,8 @@ int parseScript(Spec spec, int parsePart)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
-	FREE(argv);
-	poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
 
     if (poptPeekArg(optCon)) {
@@ -186,60 +193,54 @@ int parseScript(Spec spec, int parsePart)
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
 		     spec->lineNum,
 		     spec->line);
-	    FREE(argv);
-	    poptFreeContext(optCon);
-	    return RPMERR_BADSPEC;
+	    rc = RPMERR_BADSPEC;
+	    goto exit;
 	}
     }
     
     if (lookupPackage(spec, name, flag, &pkg)) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s"),
 		 spec->lineNum, spec->line);
-	FREE(argv);
-	poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
 
     if (tag != RPMTAG_TRIGGERSCRIPTS) {
 	if (headerIsEntry(pkg->header, progtag)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Second %s"),
 		     spec->lineNum, partname);
-	    FREE(argv);
-	    poptFreeContext(optCon);
-	    return RPMERR_BADSPEC;
+	    rc = RPMERR_BADSPEC;
+	    goto exit;
 	}
     }
 
     if ((rc = poptParseArgvString(prog, &progArgc, &progArgv))) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %s: %s"),
 		 spec->lineNum, partname, poptStrerror(rc));
-	FREE(argv);
-	poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
     
     sb = newStringBuf();
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	nextPart = PART_NONE;
     } else {
-	if (rc) {
-	    return rc;
-	}
+	if (rc)
+	    goto exit;
 	while (! (nextPart = isPart(spec->line))) {
 	    appendStringBuf(sb, spec->line);
 	    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 		nextPart = PART_NONE;
 		break;
 	    }
-	    if (rc) {
-		return rc;
-	    }
+	    if (rc)
+		goto exit;
 	}
     }
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
-    addReqProv(spec, pkg->header, RPMSENSE_PREREQ, prog, NULL, 0);
+    addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), prog, NULL, 0);
 
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */
@@ -248,18 +249,13 @@ int parseScript(Spec spec, int parsePart)
 	index = addTriggerIndex(pkg, file, p, prog);
 
 	/* Generate the trigger tags */
-	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, 0))) {
-	    freeStringBuf(sb);
-	    FREE(progArgv);
-	    FREE(argv);
-	    poptFreeContext(optCon);
-	    return rc;
-	}
+	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags)))
+	    goto exit;
     } else {
 	headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE, prog, 1);
-	if (*p) {
+	if (*p)
 	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
-	}
+
 	if (file) {
 	    switch (parsePart) {
 	      case PART_PRE:
@@ -280,11 +276,19 @@ int parseScript(Spec spec, int parsePart)
 	    }
 	}
     }
+    rc = nextPart;
     
-    freeStringBuf(sb);
-    FREE(progArgv);
-    FREE(argv);
-    poptFreeContext(optCon);
+exit:
+    if (sb)
+	freeStringBuf(sb);
+    if (progArgv) {
+	FREE(progArgv);
+    }
+    if (argv) {
+	FREE(argv);
+    }
+    if (optCon)
+	poptFreeContext(optCon);
     
-    return nextPart;
+    return rc;
 }

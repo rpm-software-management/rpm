@@ -1364,18 +1364,36 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
     return rc;
 }
 
-#if 0
+/*
+ * XXX Hack to remove known Red Hat dependency loops, will be removed
+ * Real Soon Now.
+ */
+#define	DEPENDENCY_WHITEOUT
+
+#if defined(DEPENDENCY_WHITEOUT)
 static struct badDeps_s {
     const char * pname;
     const char * qname;
 } badDeps[] = {
-#if 0
     { "libtermcap", "bash" },
     { "modutils", "vixie-cron" },
-    { "XFree86", "Mesa" },
     { "ypbind", "yp-tools" },
-    { "pango-gtkbeta", "pango-gtkbeta-devel" },
     { "ghostscript-fonts", "ghostscript" },
+    /* 7.0 only */
+    { "pango-gtkbeta-devel", "pango-gtkbeta" },
+    { "XFree86", "Mesa" },
+    { "compat-glibc", "db2" },
+    { "compat-glibc", "db1" },
+    { "pam", "initscripts" },
+    { "kernel", "initscripts" },
+    { "initscripts", "sysklogd" },
+    /* 6.2 */
+    { "egcs-c++", "libstdc++" },
+    /* 6.1 */
+    { "pilot-link-devel", "pilot-link" },
+    /* 5.2 */
+    { "pam", "pamconfig" },
+#if 0
 /* ================= */
     { "usermode", "util-linux" },
     { "chkfontpath", "SysVinit" },
@@ -1392,7 +1410,9 @@ static int ignoreDep(struct availablePackage * p, struct availablePackage * q)
 
     for (bdp = badDeps; bdp->pname != NULL; bdp++) {
 	if (!strcmp(p->name, bdp->pname) && !strcmp(q->name, bdp->qname)) {
+#if 0
 fprintf(stderr, "*** avoiding %s Requires: %s\n", p->name, q->name);
+#endif
 	    return 1;
 	}
     }
@@ -1419,13 +1439,34 @@ static void markLoop(struct tsortInfo * tsi, struct availablePackage * q)
     }
 }
 
+static inline const char * identifyDepend(int_32 f) {
+    if (isLegacyPreReq(f))
+	return "PreReq:";
+    f = _notpre(f);
+    if (f & RPMSENSE_SCRIPT_PRE)
+	return "Requires(pre):";
+    if (f & RPMSENSE_SCRIPT_POST)
+	return "Requires(post):";
+    if (f & RPMSENSE_SCRIPT_PREUN)
+	return "Requires(preun):";
+    if (f & RPMSENSE_SCRIPT_POSTUN)
+	return "Requires(postun):";
+    if (f & RPMSENSE_SCRIPT_VERIFY)
+	return "Requires(verify):";
+    if (f & RPMSENSE_FIND_REQUIRES)
+	return "Requires(auto):";
+    return "Requires:";
+}
+
 /**
- * Find (and eliminate PreReq's) "q <- p" relation in dependency loop.
+ * Find (and eliminate co-requisites) "q <- p" relation in dependency loop.
  * Search all successors of q for instance of p. Format the specific relation,
- * (e.g. p contains "Requires: q"). Unlink and free PreReq: successor node(s).
+ * (e.g. p contains "Requires: q"). Unlink and free co-requisite (i.e.
+ * pure Requires: dependencies) successor node(s).
  * @param q		sucessor (i.e. package required by p)
  * @param p		predecessor (i.e. package that "Requires: q")
- * @param zap		eliminate PreReq's ?
+ * @param zap		max. no. of co-requisites to remove (-1 is all)?
+ * @retval nzaps	address of no. of relations removed
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
 static /*@owned@*/ /*@null@*/ const char *
@@ -1447,8 +1488,7 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 	if (tsi->tsi_suc != p)
 	    continue;
 	j = tsi->tsi_reqx;
-	dp = printDepend( ((p->requireFlags[j] & RPMSENSE_PREREQ)
-			? "PreReq:" : "Requires:"),
+	dp = printDepend( identifyDepend(p->requireFlags[j]),
 		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
 
 	/*
@@ -1459,7 +1499,7 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 	 *	PreReq: /bin/sh
 	 * to fail.
 	 */
-	if (zap && (p->requireFlags[j] & RPMSENSE_PREREQ)) {
+	if (zap && !(p->requireFlags[j] & RPMSENSE_PREREQ)) {
 	    rpmMessage(RPMMESS_WARNING,
 			_("removing %s-%s-%s \"%s\" from tsort relations.\n"),
 			p->name, p->version, p->release, dp);
@@ -1470,10 +1510,61 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 	    free(tsi);
 	    if (nzaps)
 		(*nzaps)++;
+	    if (zap)
+		zap--;
 	}
 	break;
     }
     return dp;
+}
+
+/**
+ * Record next "q <- p" relation (i.e. "p" requires "q").
+ * @param rpmdep	rpm transaction set
+ * @param p		predecessor (i.e. package that "Requires: q")
+ * @param selected	boolean package selected array
+ * @param j		relation index
+ * @return		0 always
+ */
+static inline int addRelation( const rpmTransactionSet rpmdep,
+		struct availablePackage * p, unsigned char * selected, int j)
+{
+    struct availablePackage * q;
+    struct tsortInfo * tsi;
+    int matchNum;
+
+    q = alSatisfiesDepend(&rpmdep->addedPackages, NULL, NULL,
+		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
+
+    /* Ordering depends only on added package relations. */
+    if (q == NULL)
+	return 0;
+
+    /* Avoid rpmlib feature dependencies. */
+    if (!strncmp(p->requires[j], "rpmlib(", sizeof("rpmlib(")-1))
+	return 0;
+
+#if defined(DEPENDENCY_WHITEOUT)
+    /* Avoid certain dependency relations. */
+    if (ignoreDep(p, q))
+	return 0;
+#endif
+
+    /* Avoid redundant relations. */
+    /* XXX FIXME: add control bit. */
+    matchNum = q - rpmdep->addedPackages.list;
+    if (selected[matchNum])
+	return 0;
+    selected[matchNum] = 1;
+
+    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+    p->tsi.tsi_count++;
+    tsi = xmalloc(sizeof(*tsi));
+    tsi->tsi_suc = p;
+    tsi->tsi_reqx = j;
+    tsi->tsi_next = q->tsi.tsi_next;
+    q->tsi.tsi_next = tsi;
+    return 0;
 }
 
 /**
@@ -1531,42 +1622,35 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 	selected[matchNum] = 1;
 
 	/* T2. Next "q <- p" relation. */
+
+	/* First, do pre-requisites. */
 	for (j = 0; j < p->requiresCount; j++) {
 
-	    /* Avoid rpmlib feature dependencies. */
-	    if (!strncmp(p->requires[j], "rpmlib(", sizeof("rpmlib(")-1))
+	    /* Skip if not %pre/%post requires or legacy prereq. */
+
+	    if (isErasePreReq(p->requireFlags[j]) ||
+		!( isInstallPreReq(p->requireFlags[j]) ||
+		   isLegacyPreReq(p->requireFlags[j]) ))
 		continue;
-
-#if 0
-	    /* XXX FIXME: add control bit. */
-	    /* Only PreReq:'s determine order (for now). */
-	    if (!_depends_debug && !(p->requireFlags[j] & RPMSENSE_PREREQ))
-		continue;
-#endif
-
-	    /* Ordering depends only on added package relations. */
-	    q = alSatisfiesDepend(&rpmdep->addedPackages, NULL, NULL,
-			p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
-	    if (q == NULL) continue;
-
-#if 0
-	    /* Avoid certain dependency relations. */
-	    if (ignoreDep(p, q)) continue;
-#endif
-
-	    /* Avoid redundant relations. */
-	    /* XXX FIXME: add control bit. */
-	    matchNum = q - rpmdep->addedPackages.list;
-	    if (selected[matchNum]) continue;
-	    selected[matchNum] = 1;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    p->tsi.tsi_count++;
-	    tsi = xmalloc(sizeof(*tsi));
-	    tsi->tsi_suc = p;
-	    tsi->tsi_reqx = j;
-	    tsi->tsi_next = q->tsi.tsi_next;
-	    q->tsi.tsi_next = tsi;
+	    (void) addRelation(rpmdep, p, selected, j);
+
+	}
+
+	/* Then do co-requisites. */
+	for (j = 0; j < p->requiresCount; j++) {
+
+	    /* Skip if %pre/%post requires or legacy prereq. */
+
+	    if (isErasePreReq(p->requireFlags[j]) ||
+		 ( isInstallPreReq(p->requireFlags[j]) ||
+		   isLegacyPreReq(p->requireFlags[j]) ))
+		continue;
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) addRelation(rpmdep, p, selected, j);
+
 	}
     }
 
@@ -1678,7 +1762,7 @@ rescan:
 		    printed = 1;
 		}
 
-		/* Find (and destroy if PreReq:) "q <- p" relation. */
+		/* Find (and destroy if co-requisite) "q <- p" relation. */
 		dp = zapRelation(q, p, 1, &nzaps);
 
 		/* Print next member of loop. */

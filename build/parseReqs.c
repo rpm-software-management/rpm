@@ -90,7 +90,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	if (*r == '\0')
 	    break;
 
-	flags = tagflags;
+	flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
 	/* Tokens must begin with alphanumeric, _, or / */
 	if (!(isalnum(r[0]) || r[0] == '_' || r[0] == '/')) {

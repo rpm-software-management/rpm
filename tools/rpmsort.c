@@ -8,6 +8,8 @@
 
 extern int _depends_debug;
 
+static int noDeps = 0;
+
 static int
 do_tsort(const char *fileArgv[])
 {
@@ -57,7 +59,8 @@ do_tsort(const char *fileArgv[])
 
     }
 
-    {	struct rpmDependencyConflict * conflicts = NULL;
+    if (!noDeps) {
+	struct rpmDependencyConflict * conflicts = NULL;
 	int numConflicts = 0;
 
 	rc = rpmdepCheck(ts, &conflicts, &numConflicts);
@@ -126,6 +129,7 @@ exit:
 }
 
 static struct poptOption optionsTable[] = {
+ { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
  { NULL,	0, 0, 0, 0,			NULL, NULL}
 };
