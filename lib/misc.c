@@ -326,10 +326,13 @@ int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
 
     srand(time(NULL));
     ran = rand() % 100000;
+
+     /* maybe this should use link/stat? */
+
     do {
 	sprintf(fn, "%s%s/rpm-tmp.%d", prefix, tmpdir, ran++);
 	fd = open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
-    } while (fd < 0);
+    } while (fd < 0 && errno == EEXIST);
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
