@@ -257,13 +257,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jul 11 2000 Jeff Johnson <jbj@redhat.com>
+- fix: legacy requires './' payload prefix to be omitted for rpm itself.
+- fix: remove verbose database +++/--- messages to conform to doco.
+
 * Mon Jul 10 2000 Jeff Johnson <jbj@redhat.com>
 - identify package when install scriptlet fails (#12448).
 - remove build mode help from rpm.c, use rpmb instead.
 - support for rpmlib(...) internal feature dependencies.
 - fix: set multilibno on sparc per-platform config.
-- fix: legacy requires './' payload prefix to be omitted for rpm itself.
-- fix: remove verbose database +++/--- messages to conform to doco.
 
 * Sun Jul  9 2000 Jeff Johnson <jbj@redhat.com>
 - add pre-transaction syscall's to handle /etc/init.d change.
