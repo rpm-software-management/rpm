@@ -967,7 +967,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
 
 #ifdef __GLIBC__
     /*@-mods@*/
-    optind = 1;
+    optind = 0;		/* XXX but posix != glibc */
     /*@=mods@*/
 #endif
 
