@@ -256,39 +256,6 @@ void rpmdbClose (rpmdb db)
     free(db);
 }
 
-#ifdef	DYING
-int rpmdbFirstRecNum(rpmdb db) {
-    dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
-    unsigned int offset = 0;
-    void * keyp = &offset;
-    size_t keylen = sizeof(offset);
-    int rc;
-
-    /* XXX skip over instance 0 */
-    do {
-	rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
-	if (rc)
-	    return 0;
-	memcpy(&offset, keyp, sizeof(offset));
-    } while (offset == 0);
-    return offset;
-}
-
-int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
-    /* 0 at end */
-    dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
-    void * keyp = &lastOffset;
-    size_t keylen = sizeof(lastOffset);
-    int rc;
-
-    rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
-    if (rc)
-	return 0;
-    memcpy(&lastOffset, keyp, sizeof(lastOffset));
-    return lastOffset;
-}
-#endif	/* DYING */
-
 Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 {
     dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
@@ -417,6 +384,7 @@ int rpmdbFindByConflicts(rpmdb db, const char * filespec, dbiIndexSet * matches)
     return dbiSearchIndex(db->_dbi[RPMDBI_CONFLICTS], filespec, 0, matches);
 }
 
+#ifdef	DYING
 int rpmdbFindByTriggeredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_TRIGGER], filespec, 0, matches);
 }
@@ -424,6 +392,7 @@ int rpmdbFindByTriggeredBy(rpmdb db, const char * filespec, dbiIndexSet * matche
 int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_GROUP], group, 0, matches);
 }
+#endif
 
 int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, 0, matches);
@@ -471,6 +440,9 @@ struct _rpmdbMatchIterator {
 
 void rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
+    if (mi == NULL)
+	return;
+
     if (mi->mi_h) {
 	headerFree(mi->mi_h);
 	mi->mi_h = NULL;
@@ -490,20 +462,32 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 }
 
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
+    if (mi == NULL)
+	return 0;
     return mi->mi_offset;
+}
+
+int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
+    if (!(mi && mi->mi_set))
+	return 0;	/* XXX W2DO? */
+    return mi->mi_set->count;
 }
 
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
-    dbiIndex dbi = mi->mi_db->_dbi[RPMDBI_PACKAGES];
+    dbiIndex dbi;
     void * uh;
     size_t uhlen;
-    void * keyp = &mi->mi_offset;
-    size_t keylen = sizeof(mi->mi_offset);
+    void * keyp;
+    size_t keylen;
     int rc;
 
     if (mi == NULL)
 	return NULL;
+
+    dbi = mi->mi_db->_dbi[RPMDBI_PACKAGES];
+    keyp = &mi->mi_offset;
+    keylen = sizeof(mi->mi_offset);
 
     /* XXX skip over instances with 0 join key */
     do {
@@ -576,6 +560,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix, const void * key, size_
     }
     mi->mi_db = db;
     mi->mi_dbi = dbi;
+    assert(dbi->dbi_dbcursor == NULL);
     mi->mi_dbix = dbix;
     mi->mi_set = set;
     mi->mi_setx = 0;
