@@ -185,7 +185,7 @@ fi
 %{__prefix}/lib/rpm/ia64*
 %endif
 %ifarch powerpc ppc
-%{__prefix}/lib/rpm/powerpc*
+%{__prefix}/lib/rpm/ppc*
 %endif
 
 %dir %{__prefix}/src/redhat
