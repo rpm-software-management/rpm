@@ -13,7 +13,7 @@
 
 #include "intl.h"
 
-#define	MYDEBUG	1
+#define	MYDEBUG	2
 
 #ifdef	MYDEBUG
 #include <stdarg.h>
@@ -64,12 +64,14 @@ static int
 getTagVal(const char *tname)
 {
     const struct headerTagTableEntry *t;
+    int tval;
 
     for (t = rpmTagTable; t->name != NULL; t++) {
 	if (!strncmp(tname, t->name, strlen(t->name)))
 	    return t->val;
     }
-    return 0;
+    sscanf(tname, "%d", &tval);
+    return tval;
 }
 
 const struct headerTypeTableEntry {
@@ -468,9 +470,9 @@ parsepofile(const char *file, message_list_ty **mlpp, string_list_ty **flpp)
     message_ty *mp;
     KW_t *kw;
     char *lang;
-    char *buf, *s, *se, *t, *f, *fe;
+    char *buf, *s, *se, *t, *f, *fe, *g, *ge;
     size_t nb;
-    int c, rc;
+    int c, rc, tval;
     int state = 1;
     int gotmsgstr = 0;
 
@@ -514,27 +516,41 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 			case '~':	/* archival translations */
 				break;
 			case ':':	/* file cross reference */
-				f = s+2;
+			    for (f = s+2; f < se; f = ge) {
 				while (*f && strchr(" \t", *f)) f++;
 				fe = f;
-				while (*fe && !strchr("\n:", *fe)) fe++;
+				while (*fe && !strchr(": \t", *fe)) fe++;
 				if (*fe != ':') {
 					fprintf(stderr, "malformed #: xref at \"%.60s\"\n", s);
 					break;
 				}
 				*fe++ = '\0';
+				g = ge = fe;
+				while (*ge && !strchr(" \t", *ge)) ge++;
+				*ge++ = '\0';
+				tval = getTagVal(g);
 				string_list_append_unique(flp, f);
-				message_comment_filepos(mp, f, getTagVal(fe));
-				break;
+				message_comment_filepos(mp, f, tval);
+			    }	break;
 			case '.':	/* automatic comments */
+				if (*s == '#') {
+					s++;
+					if (*s == '.') s++;
+				}
+				while (*s && strchr(" \t", *s)) s++;
 				message_comment_dot_append(mp, xstrdup(s));
 				break;
 			case ',':	/* flag... */
+				if (strstr (f, "fuzzy") != NULL)
+					mp->is_fuzzy = 1;
 				mp->is_c_format = parse_c_format_description_string(f);
+				mp->do_wrap = parse_c_width_description_string(f);
 				break;
 			default:
 				/* XXX might want to fix and/or warn here */
 			case ' ':	/* flag... */
+				if (*s == '#') s++;
+				while (*s && strchr(" \t", *s)) s++;
 				message_comment_append(mp, xstrdup(s));
 				break;
 			}
@@ -627,7 +643,7 @@ DPRINTF(100, ("\n"));
 		}
 		/* XXX Peek to see if next item is comment */
 		SKIPWHITE;
-		if (*se == '#') {
+		if (*se == '#' || *se == '\0') {
 			message_list_append(mlp, mp);
 			mp = NULL;
 		}
@@ -735,29 +751,13 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
 	/* Search for the msgid */
 	e = *s;
 	if ((mp = message_list_search(mlp, e)) != NULL) {
-
-DPRINTF(1, ("injecting %s msgid\n", getTagString(*tp)));
+DPRINTF(1, ("%s\n\tmsgid\n", getTagString(*tp)));
 	    for (i = 0; i < count; i++) {
 		if ((mvp = message_variant_search(mp, langs[i])) == NULL)
 		    continue;
-
 DPRINTF(1, ("\tmsgstr(%s)\n", langs[i]));
-#if 1
 		headerAddI18NString(h, *tp, (char *)mvp->msgstr, langs[i]);
-#else
-DPRINTF(1, ("headerAddI18NString(%x,%d,%x,\"%s\")\n%s\n",
-h, *tp, mvp->msgstr, langs[i], mvp->msgstr));
-#endif
-
 	    }
-
-#if 0
-	    for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
-		expandRpmPO(buf, e);
-		fprintf(fp, "msgstr(%s) %s\n", langs[i], buf);
-	    }
-#endif
-
 	}
 
 	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
