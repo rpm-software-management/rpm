@@ -1445,8 +1445,8 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		format[currToken].u.tag.arrayCount = 0;
 
 		chptr = start;
-		while (*chptr && *chptr != '{') chptr++;
-		if (!*chptr) {
+		while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
+		if (!*chptr || *chptr == '%') {
 		    *error = _("missing { after %");
 		    freeFormat(format, numTokens);
 		    return 1;
