@@ -397,6 +397,10 @@ int process_filelist(Header header, struct PackageRec *pr,
 	while (c < count) {
 	    fest = file_entry_array[c];
 	    if (type == RPMLEAD_BINARY) {
+		x = strlen(fest->file) - 1;
+		if (x && fest->file[x] == '/') {
+		    fest->file[x] = '\0';
+		}
 		fileList[c] = fest->file;
 	    } else {
 		fileList[c] = strrchr(fest->file, '/') + 1;
@@ -440,7 +444,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	        fileFlagsList[c] |= RPMFILE_DOC;
 	    if (fest->isdoc) 
 		fileFlagsList[c] |= RPMFILE_DOC;
-	    if (fest->conf)
+	    if (fest->conf && !(fest->statbuf.st_mode & S_IFDIR))
 		fileFlagsList[c] |= fest->conf;
 	    if (fest->isspecfile)
 		fileFlagsList[c] |= RPMFILE_SPECFILE;
