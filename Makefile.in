@@ -9,7 +9,7 @@ LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
 AR = ar r
 RANLIB = ranlib
 
-VERSION=2.0j
+VERSION=2.0
 
 prefix=$(ROOT)/usr
 
@@ -27,7 +27,7 @@ ETCDIR=$(ROOT)/etc
 
 SUBDIRS = lib build tools
 OBJS = query.o install.o verify.o checksig.o ftp.o
-PROGS = rpm rpmconvert
+PROGS = rpm rpmconvert rpm2cpio
 LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
@@ -65,6 +65,7 @@ install: all
 	install -s -m 755 -o 0 -g 0 rpm $(RPMBINDIR)
 	install -s -m 755 -o 0 -g 0 rpmconvert $(BINDIR)
 	install -m 755 -o 0 -g 0 gendiff $(BINDIR)
+	install -m 755 -o 0 -g 0 rpm2cpio $(BINDIR)
 	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
 	if [ ! -f $(ETCDIR)/rpmrc ]; then \
 		install -m 644 -o 0 -g 0 rpmrc $(ETCDIR)/rpmrc; \
