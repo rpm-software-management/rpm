@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "checksig.h"
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"
