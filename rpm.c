@@ -7,6 +7,7 @@
 #include "install.h"
 #include "lib/messages.h"
 #include "query.h"
+#include "rpmlib.h"
 
 char * version = "2.0a";
 
@@ -43,7 +44,8 @@ void printUsage(void) {
     puts("usage: rpm {--help}");
     puts("       rpm {--version}");
     puts("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]");
-    puts("                          [--search] [--root <dir>] file1.rpm ... filen.rpm");
+    puts("                          [--replacepkgs] [--replacefiles] [--search]");
+    puts("                          [--root <dir>] file1.rpm ... filen.rpm");
     puts("       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]");
     puts("                          [--search] [--root <dir>] file1.rpm ... fileN.rpm");
     puts("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] ");
@@ -91,7 +93,9 @@ void printHelp(void) {
     puts("       -h");
     puts("      --hash            - print hash marks as package installs (good with -v)");
     puts("      --percent         - print percentages as package installs");
-    puts("      --force           - install despite potential conflicts");
+    puts("      --replacepkgs      - reinstall if the package is already present");
+    puts("      --replacefiles    - install even if the package replaces installed files");
+    puts("      --force           - short hand for --replacepkgs --replacefiles");
     puts("      --test            - don't install, but tell if it would work or not");
     puts("      --search          - search the paths listed in /etc/rpmrc for rpms");
     puts("      --root <dir>	- use <dir> as the top level directory");
@@ -130,11 +134,14 @@ int main(int argc, char ** argv) {
     enum modes bigMode = MODE_UNKNOWN;
     enum querysources querySource = QUERY_PACKAGE;
     int arg;
-    int force = 0;
     int queryFor = 0;
     int test = 0;
     int version = 0;
     int help = 0;
+    int force = 0;
+    int replaceFiles = 0;
+    int replacePackages = 0;
+    int installFlags;
     char * prefix = "/";
     struct option options[] = {
 	    { "query", 0, 0, 'q' },
@@ -154,6 +161,8 @@ int main(int argc, char ** argv) {
 	    { "uninstall", 0, 0, 'u' },
 	    { "verbose", 0, 0, 'v' },
 	    { "force", 0, &force, 0 },
+	    { "replacefiles", 0, &replaceFiles, 0 },
+	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "quiet", 0, 0, 0 },
 	    { "test", 0, &test, 0 },
 	    { "version", 0, &version, 0 },
@@ -292,6 +301,12 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_INSTALL && force)
 	argerror("only installation may be forced");
 
+    if (bigMode != MODE_INSTALL && replaceFiles)
+	argerror("--replacefiles may only be specified during package installation");
+
+    if (bigMode != MODE_INSTALL && replacePackages)
+	argerror("--replacepkgs may only be specified during package installation");
+
     switch (bigMode) {
       case MODE_UNKNOWN:
 	if (!version && !help) printUsage();
@@ -303,8 +318,14 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_INSTALL:
+	installFlags = 0;
+
+	if (force) installFlags |= (INSTALL_REPLACEPKG | INSTALL_REPLACEFILES);
+	if (replaceFiles) installFlags |= INSTALL_REPLACEFILES;
+	if (replacePackages) installFlags |= INSTALL_REPLACEPKG;
+
 	while (optind < argc) 
-	    doInstall(prefix, argv[optind++], test, 0);
+	    doInstall(prefix, argv[optind++], test, installFlags);
 	break;
 
       case MODE_QUERY:
