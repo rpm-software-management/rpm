@@ -16,4 +16,5 @@ rpmlead
 rpmsort
 rpmsignature
 striptofile
+tpkgid
 unstripfile

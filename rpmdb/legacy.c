@@ -5,9 +5,6 @@
 #include "system.h"
 
 #if HAVE_LIBELF_GELF_H
-#define	__LIBELF_INTERNAL__	1
-#  undef __P
-#  define __P(protos)   protos
 
 #include <gelf.h>
 

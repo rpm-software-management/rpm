@@ -10,7 +10,7 @@
 /**
  */
 /*@unchecked@*/ /*@observer@*/
-static struct fclassTokens_s fclassTokens[] = {
+static struct rpmfcTokens_s rpmfcTokens[] = {
   { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
 
   { " shared object",		RPMFC_LIBRARY },
@@ -92,12 +92,12 @@ static struct fclassTokens_s fclassTokens[] = {
 static int fcolorIgnore =
     (RPMFC_ELF32|RPMFC_ELF64|RPMFC_DIRECTORY|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_FONT|RPMFC_SCRIPT|RPMFC_IMAGE|RPMFC_WHITE);
 
-int fclassColoring(const char * fmstr)
+int rpmfcColoring(const char * fmstr)
 {
-    fclassToken fct;
+    rpmfcToken fct;
     int fcolor = RPMFC_BLACK;
 
-    for (fct = fclassTokens; fct->token != NULL; fct++) {
+    for (fct = rpmfcTokens; fct->token != NULL; fct++) {
 	if (strstr(fmstr, fct->token) == NULL)
 	    continue;
 	fcolor |= fct->colors;
@@ -107,7 +107,7 @@ int fclassColoring(const char * fmstr)
     return fcolor;
 }
 
-void fclassPrint(const char * msg, FCLASS_t fc, FILE * fp)
+void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 {
     int ac = 0;
     int fcolor;
@@ -142,7 +142,7 @@ void fclassPrint(const char * msg, FCLASS_t fc, FILE * fp)
     }
 }
 
-FCLASS_t fclassFree(FCLASS_t fc)
+rpmfc rpmfcFree(rpmfc fc)
 {
     if (fc) {
 	fc->fn = argvFree(fc->fn);
@@ -154,15 +154,25 @@ FCLASS_t fclassFree(FCLASS_t fc)
     return NULL;
 }
 
-FCLASS_t fclassNew(void)
+rpmfc rpmfcNew(void)
 {
-    FCLASS_t fc = xcalloc(1, sizeof(*fc));
+    rpmfc fc = xcalloc(1, sizeof(*fc));
     return fc;
 }
 
-int fclassClassify(FCLASS_t *fcp, ARGV_t argv)
+static int rpmfcELF(rpmfc fc)
 {
-    FCLASS_t fc;
+    return 0;
+}
+
+static int rpmfcSCRIPT(rpmfc fc)
+{
+    return 0;
+}
+
+int rpmfcClassify(rpmfc *fcp, ARGV_t argv)
+{
+    rpmfc fc;
     char buf[BUFSIZ];
     ARGV_t dav;
     const char * s, * se;
@@ -176,7 +186,7 @@ int fclassClassify(FCLASS_t *fcp, ARGV_t argv)
 	return 0;
 
     if (*fcp == NULL)
-	*fcp = fclassNew();
+	*fcp = rpmfcNew();
     fc = *fcp;
 
     /* Set up the file class dictionary. */
@@ -199,7 +209,7 @@ int fclassClassify(FCLASS_t *fcp, ARGV_t argv)
 	if (*se == '\0')
 	    return -1;
 
-	fcolor = fclassColoring(se);
+	fcolor = rpmfcColoring(se);
 	if (fcolor == RPMFC_WHITE || !(fcolor & RPMFC_INCLUDE))
 	    continue;
 
@@ -243,7 +253,14 @@ int fclassClassify(FCLASS_t *fcp, ARGV_t argv)
 	    fwhite++;
 	}
 
-	xx = argiAdd(&fc->fcolor, fc->ix, fclassColoring(se));
+	fcolor = rpmfcColoring(se);
+	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
+
+	if (fcolor & RPMFC_ELF) {
+	    xx = rpmfcELF(fc);
+	} else if (fcolor & RPMFC_SCRIPT) {
+	    xx = rpmfcSCRIPT(fc);
+	}
 
 	fc->ix++;
     }
@@ -251,7 +268,7 @@ int fclassClassify(FCLASS_t *fcp, ARGV_t argv)
 
 /*@-modfilesys@*/
 sprintf(buf, "final: files %d dict[%d] %d%%", argvCount(fc->fn), argvCount(fc->dict), ((100 * fknown)/fc->ix));
-fclassPrint(buf, fc, NULL);
+rpmfcPrint(buf, fc, NULL);
 /*@=modfilesys@*/
 
     return 0;

@@ -1,9 +1,9 @@
 #ifndef _H_RPMFC_
 #define _H_RPMFC_
 
-typedef struct fclass_s * FCLASS_t;
+typedef struct rpmfc_s * rpmfc;
 
-struct fclass_s {
+struct rpmfc_s {
     ARGV_t av;		/*!< file(1) output lines */
     int ac;		/*!< no. of lines */
     int ix;		/*!< current lineno */
@@ -18,25 +18,25 @@ enum FCOLOR_e {
     RPMFC_BLACK			= 0,
     RPMFC_ELF32			= (1 <<  0),
     RPMFC_ELF64			= (1 <<  1),
+#define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64)
 
-    RPMFC_EXECUTABLE		= (1 <<  2),
-    RPMFC_SCRIPT		= (1 <<  3),
-    RPMFC_TEXT			= (1 <<  4),
-    RPMFC_DOCUMENT		= (1 <<  5),
+    RPMFC_EXECUTABLE		= (1 <<  8),
+    RPMFC_SCRIPT		= (1 <<  9),
+    RPMFC_TEXT			= (1 << 10),
+    RPMFC_DATA			= (1 << 11),	/* XXX unused */
+    RPMFC_DOCUMENT		= (1 << 12),
+    RPMFC_STATIC		= (1 << 13),
+    RPMFC_NOTSTRIPPED		= (1 << 14),
+    RPMFC_COMPRESSED		= (1 << 15),
 
-    RPMFC_DIRECTORY		= (1 <<  8),
-    RPMFC_SYMLINK		= (1 <<  9),
-    RPMFC_DEVICE		= (1 << 10),
-
-    RPMFC_STATIC		= (1 << 16),
-    RPMFC_NOTSTRIPPED		= (1 << 17),
-    RPMFC_COMPRESSED		= (1 << 18),
-
-    RPMFC_LIBRARY		= (1 << 24),
-    RPMFC_ARCHIVE		= (1 << 25),
-    RPMFC_FONT			= (1 << 26),
-    RPMFC_IMAGE			= (1 << 27),
-    RPMFC_MANPAGE		= (1 << 28),
+    RPMFC_DIRECTORY		= (1 << 16),
+    RPMFC_SYMLINK		= (1 << 17),
+    RPMFC_DEVICE		= (1 << 18),
+    RPMFC_LIBRARY		= (1 << 19),
+    RPMFC_ARCHIVE		= (1 << 20),
+    RPMFC_FONT			= (1 << 21),
+    RPMFC_IMAGE			= (1 << 22),
+    RPMFC_MANPAGE		= (1 << 23),
 
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),
@@ -44,13 +44,13 @@ enum FCOLOR_e {
 };
 typedef	enum FCOLOR_e FCOLOR_t;
 
-struct fclassTokens_s {
+struct rpmfcTokens_s {
 /*@observer@*/
     const char * token;
     int colors;
 };
 
-typedef struct fclassTokens_s * fclassToken;
+typedef struct rpmfcTokens_s * rpmfcToken;
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,28 +58,28 @@ extern "C" {
 
 /**
  */
-int fclassColoring(const char * fmstr)
+int rpmfcColoring(const char * fmstr)
 	/*@*/;
 
 /**
  */
-void fclassPrint(const char * msg, FCLASS_t fc, FILE * fp)
+void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 /**
  */
 /*@null@*/
-FCLASS_t fclassFree(/*@only@*/ /*@null@*/ FCLASS_t fc)
+rpmfc rpmfcFree(/*@only@*/ /*@null@*/ rpmfc fc)
 	/*@modifies fc @*/;
 
 /**
  */
-FCLASS_t fclassNew(void)
+rpmfc rpmfcNew(void)
 	/*@*/;
 
 /**
  */
-int fclassClassify(/*@out@*/ FCLASS_t *fcp, ARGV_t argv)
+int rpmfcClassify(/*@out@*/ rpmfc *fcp, ARGV_t argv)
 	/*@modifies *fcp @*/;
 
 #ifdef __cplusplus

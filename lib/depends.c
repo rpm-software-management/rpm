@@ -250,17 +250,17 @@ uint_32 *mlmp, multiLibMask, oldMultiLibMask;
 
 /*@-boundsread@*/
     {	rpmdbMatchIterator mi;
-	Header h2;
+	Header oh;
 
 	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
-	while((h2 = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmVersionCompare(h, h2))
-		xx = removePackage(ts, h2, rpmdbGetIteratorOffset(mi), pkgKey);
+	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	    if (rpmVersionCompare(h, oh))
+		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	    else {
 
 		mlmp = NULL;
 		oldMultiLibMask = 0;
-		if (hge(h2, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL))
+		if (hge(oh, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL))
 		    oldMultiLibMask = *mlmp;
 		mlmp = NULL;
 		multiLibMask = 0;
@@ -291,21 +291,21 @@ uint_32 *mlmp, multiLibMask, oldMultiLibMask;
 		continue;
 
 	{   rpmdbMatchIterator mi;
-	    Header h2;
+	    Header oh;
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
 
 	    xx = rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
 
-	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
+	    while((oh = rpmdbNextIterator(mi)) != NULL) {
 		/*
 		 * Rpm prior to 3.0.3 does not have versioned obsoletes.
 		 * If no obsoletes version info is available, match all names.
 		 */
 		if (rpmdsEVR(obsoletes) == NULL
-		 || rpmdsAnyMatchesDep(h2, obsoletes, _rpmds_nopromote))
-		    xx = removePackage(ts, h2, rpmdbGetIteratorOffset(mi), pkgKey);
+		 || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
+		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	}

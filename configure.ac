@@ -51,7 +51,7 @@ AC_PROG_CXX
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_prog_gcc" = yes; then
-    CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT -Wall"
 fi
 export CFLAGS
 
@@ -367,23 +367,14 @@ WITH_LIBELF_SUBDIR=
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
 WITH_LIBELF_ARCHIVE=
-AC_CHECK_HEADER([libelf/gelf.h], [
-	AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
-	WITH_LIBELF_INCLUDE="-I/usr/include/libelf"
-	AC_CHECK_FUNC(gelf_getdyn, [],
-	    AC_CHECK_LIB(elf, gelf_getdyn)
-	)
-	WITH_LIBELF_LIB="-lelf"
-    ], [
-	if test -d libelf ; then
+	if test -d elfutils/libelf ; then
 	    AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
-	    WITH_LIBELF_SUBDIR=libelf
-	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
-	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/libelf.la"
-	    WITH_LIBELF_ARCHIVE="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/.libs/libelf.a"
+	    WITH_LIBELF_SUBDIR=elfutils/libelf
+	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}"
+	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/libelf.la"
+	    WITH_LIBELF_ARCHIVE="\${top_builddir}/${WITH_LIBELF_SUBDIR}/.libs/libelf.a"
 	fi
-])
 AC_SUBST(WITH_LIBELF_SUBDIR)
 AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
@@ -1198,7 +1189,7 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt beecrypt zlib libelf db3)
+AC_CONFIG_SUBDIRS(popt beecrypt zlib elfutils file db3)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile

@@ -23,7 +23,8 @@ recent versions of libtool/autoconf/automake.
 (echo "--- popt"; cd popt; ./autogen.sh --noconfigure "$@")
 (echo "--- zlib"; cd zlib; ./autogen.sh --noconfigure "$@")
 (echo "--- beecrypt"; cd beecrypt; ./autogen.sh --noconfigure "$@")
-(echo "--- libelf"; cd libelf; ./autogen.sh --noconfigure "$@")
+(echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
+(echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
 
 echo "--- rpm"
 libtoolize --copy --force

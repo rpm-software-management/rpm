@@ -8,6 +8,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt \
+	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
 LIBS =
