@@ -157,6 +157,8 @@ rpm	exec -V			rpmv -V
 rpm	exec -y			rpmv -y
 rpm	exec --verify		rpmv --verify
 
+rpm	alias --with		--define "_with_!#:+       --with-!#:+"
+rpm	alias --without		--define "_without_!#:+    --without-!#:+"
 #==============================================================================
 rpmb	alias --dbpath		--define '_dbpath !#:+'
 rpmb	alias --ftpport		--define '_ftpport !#:+'

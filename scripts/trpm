@@ -34,6 +34,7 @@ min0glob="
 basesystem-
 bash-[12]
 filesystem-
+glibc-common-
 glibc-2
 ldconfig-
 libtermcap-2
@@ -91,10 +92,13 @@ words-
 
 baseglob="
 $min2glob
+ash-
 console-tools-
 gmp-[23]
 initscripts-
 kernel-2
+losetup-
+mkinitrd-
 modutils-
 pam-0
 pamconfig-
@@ -104,6 +108,7 @@ util-linux-
 vixie-cron-
 rpm-[34]
 rpm-devel-[34]
+sash-
 "
 
 develglob="
@@ -162,7 +167,7 @@ do
     debug)		dbg=echo	;;
     dmalloc)		eval `dmalloc -b $dmopts`	;;
     db1)		db1="--define '%_dbapi 1'"	;;
-    5.2|6.2|7.0|7.1|7.1x)
+    5.2|6.2|7.0|7.1|7.2)
 	dist=$cmd
 	root=$top/$dist
 	rc="--rcfile $top/rpmrc-$dist $db1"

@@ -47,7 +47,7 @@ run test1 "test1 - 18" "callback: c sampledata bar arg1: 1 arg2: (none)" --arg1 
 run test1 "test1 - 19" "" --echo-args
 run test1 "test1 - 20" "--arg1" --echo-args --arg1
 run test1 "test1 - 21" "--arg2 something" -T something -e
-run test1 "test1 - 22" "--arg2 something -- more args" -T something -a more args
+run test1 "test1 - 22" "--arg2 something more args" -T something -a more args
 run test1 "test1 - 23" "--echo-args -a" --echo-args -e -a
 run test1 "test1 - 24" "arg1: 0 arg2: (none) short: 1" -shortoption
 run test1 "test1 - 25" "arg1: 0 arg2: (none) short: 1" --shortoption

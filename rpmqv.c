@@ -786,15 +786,6 @@ int main(int argc, const char ** argv)
 
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 
-#if 0
-    {	const char ** avp;
-	fprintf(stderr, "==> argv[%d]:", argc);
-	for (avp = argv; *avp; avp++)
-	    fprintf(stderr, " '%s'", *avp);
-	fprintf(stderr, "\n");
-    }
-#endif
-
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
     /*@-nullpass -temptrans@*/
