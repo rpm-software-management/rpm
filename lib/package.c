@@ -19,30 +19,36 @@ static int readOldHeader(int fd, Header * hdr, int * isSource);
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
-		  int * minor) {
-    struct rpmlead lead;
-    struct oldrpmlead * oldLead = (struct oldrpmlead *) &lead;
+static int readPackageHeaders(int fd, struct rpmlead * leadPtr, 
+			      Header * sigs, Header * hdrPtr) {
+    Header hdrBlock;
+    struct rpmlead leadBlock;
+    Header * hdr;
+    struct rpmlead * lead;
+    struct oldrpmlead * oldLead;
     int_8 arch;
+    int isSource;
 
-    if (readLead(fd, &lead)) {
+    hdr = hdrPtr ? hdrPtr : &hdrBlock;
+    lead = leadPtr ? leadPtr : &leadBlock;
+
+    oldLead = (struct oldrpmlead *) lead;
+
+    if (readLead(fd, lead)) {
 	return 2;
     }
-   
-    if (lead.magic[0] != RPMLEAD_MAGIC0 || lead.magic[1] != RPMLEAD_MAGIC1 ||
-	lead.magic[2] != RPMLEAD_MAGIC2 || lead.magic[3] != RPMLEAD_MAGIC3) {
+
+    if (lead->magic[0] != RPMLEAD_MAGIC0 || lead->magic[1] != RPMLEAD_MAGIC1 ||
+	lead->magic[2] != RPMLEAD_MAGIC2 || lead->magic[3] != RPMLEAD_MAGIC3) {
 	return 1;
     }
 
-    *isSource = lead.type == RPMLEAD_SOURCE;
-    if (major) *major = lead.major;
-    if (minor) *minor = lead.minor;
+    if (lead->major == 1) {
+	message(MESS_DEBUG, "package is a version one package!\n");
 
-    if (*isSource) {
-	message(MESS_DEBUG, "package is a source package major = %d\n", 
-		lead.major);
-
-	if (lead.major == 1) {
+	if (lead->type == RPMLEAD_SOURCE) {
+	    message(MESS_DEBUG, "old style source package -- "
+			"I'll do my best\n");
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
 	    message(MESS_DEBUG, "archive offset is %d\n", 
 			oldLead->archiveOffset);
@@ -53,42 +59,57 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
 	       NULL <gulp> */
 
 	    *hdr = NULL;
-	} else if (lead.major == 2 || lead.major == 3) {
-	    if (readSignature(fd, NULL, lead.signature_type)) {
-	       return 2;
-	    }
-	    *hdr = readHeader(fd, (lead.major >= 3) ?
-			      HEADER_MAGIC : NO_HEADER_MAGIC);
-	    if (! *hdr) return 2;
 	} else {
-	    error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 3 are"
-		    " supported by this version of RPM");
-	    return 2;
-	} 
-    } else {
-	if (lead.major == 1) {
-	    readOldHeader(fd, hdr, isSource);
-	    arch = lead.archnum;
+	    message(MESS_DEBUG, "old style binary package\n");
+	    readOldHeader(fd, hdr, &isSource);
+	    arch = lead->archnum;
 	    addEntry(*hdr, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
 	    arch = 1;		  /* old versions of RPM only supported Linux */
 	    addEntry(*hdr, RPMTAG_OS, INT8_TYPE, &arch, 1);
-	} else if (lead.major == 2 || lead.major == 3) {
-	    /* minor number differences indicate backwards compatible
-	       changes */
-
-	    if (readSignature(fd, NULL, lead.signature_type)) {
-	       return 2;
-	    }
-	    *hdr = readHeader(fd, (lead.major >= 3) ?
-			      HEADER_MAGIC : NO_HEADER_MAGIC);
-	    if (! *hdr) return 2;
-	} else {
-	    error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 2 are"
-		    " supported by this version of RPM");
+	}
+    } else if (lead->major == 2 || lead->major == 3) {
+	if (readSignature(fd, sigs, lead->signature_type)) {
+	   return 2;
+	}
+	*hdr = readHeader(fd, (lead->major >= 3) ?
+			  HEADER_MAGIC : NO_HEADER_MAGIC);
+	if (! *hdr) {
+	    if (sigs) freeHeader(*sigs);
 	    return 2;
-	} 
-    }
+	}
+    } else {
+	error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 3 are"
+		" supported by this version of RPM");
+	return 2;
+    } 
 
+    if (!hdrPtr) freeHeader(*hdr);
+    
+    return 0;
+}
+
+/* 0 = success */
+/* 1 = bad magic */
+/* 2 = error */
+int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr) {
+    return readPackageHeaders(fd, NULL, signatures, hdr);
+}
+
+/* 0 = success */
+/* 1 = bad magic */
+/* 2 = error */
+int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
+		  int * minor) {
+    int rc;
+    struct rpmlead lead;
+
+    rc = readPackageHeaders(fd, &lead, NULL, hdr);
+    if (rc) return rc;
+   
+    if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
+    if (major) *major = lead.major;
+    if (minor) *minor = lead.minor;
+   
     return 0;
 }
 
