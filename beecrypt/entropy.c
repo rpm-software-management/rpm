@@ -1366,9 +1366,9 @@ int entropy_dev_dsp(uint32 *data, int size)
 		int mask, format, samplesize, stereo, speed, swap;
 
 		mask = 0;
-		/*@-shiftsigned@*/
+		/*@-shiftimplementation@*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_GETFMTS, &mask)) < 0)
-		/*@=shiftsigned@*/
+		/*@=shiftimplementation@*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_GETFMTS failed");
@@ -1421,9 +1421,9 @@ int entropy_dev_dsp(uint32 *data, int size)
 			goto dev_dsp_end;
 		}
 
-		/*@-shiftsigned@*/
+		/*@-shiftimplementation@*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_SETFMT, &format)) < 0)
-		/*@=shiftsigned@*/
+		/*@=shiftimplementation@*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_SETFMT failed");
@@ -1435,14 +1435,14 @@ int entropy_dev_dsp(uint32 *data, int size)
 
 		/* the next two commands are not critical */
 		stereo = 1;
-		/*@-shiftsigned@*/
+		/*@-shiftimplementation@*/
 		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
-		/*@=shiftsigned@*/
+		/*@=shiftimplementation@*/
 
 		speed = 44100;
-		/*@-shiftsigned@*/
+		/*@-shiftimplementation@*/
 		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
-		/*@=shiftsigned@*/
+		/*@=shiftimplementation@*/
 
 		rc = entropy_noise_gather(dev_dsp_fd, samplesize, 2, swap, timeout_env ? atoi(timeout_env) : 1000, data, size);
 	}

@@ -790,6 +790,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
     /*@=branchstate@*/
 
     if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
+/*@-compdef@*/ /* FIX: dirName/baseName annotations ? */
 	int nb = strlen(fsm->dirName) + strlen(fsm->baseName) + sizeof(".");
 	char * t = alloca(nb);
 	*t = '\0';
@@ -797,6 +798,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	if (fsm->mapFlags & CPIO_MAP_ADDDOT)
 	    *t++ = '.';
 	t = stpcpy( stpcpy(t, fsm->dirName), fsm->baseName);
+/*@=compdef@*/
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	TFI_t fi = fsmGetFi(fsm);
 	fsm->path =
@@ -1190,6 +1192,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	if (rc) break;
 
 	/* Save last validated path. */
+/*@-compdef@*/ /* FIX: ldn/path annotations ? */
 	if (fsm->ldnalloc < (dnlen + 1)) {
 	    fsm->ldnalloc = dnlen + 100;
 	    fsm->ldn = xrealloc(fsm->ldn, fsm->ldnalloc);
@@ -1198,13 +1201,16 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	    strcpy(fsm->ldn, fsm->path);
  	    fsm->ldnlen = dnlen;
 	}
+/*@=compdef@*/
     }
     dnli = dnlFreeIterator(dnli);
     /*@=observertrans =dependenttrans@*/
 
     fsm->path = path;
     st->st_mode = st_mode;		/* XXX restore st->st_mode */
+/*@-compdef@*/ /* FIX: ldn/path annotations ? */
     return rc;
+/*@=compdef@*/
 }
 
 #ifdef	NOTYET

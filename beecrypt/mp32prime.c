@@ -1079,8 +1079,10 @@ static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGener
 
 	p->modl[0] |= (((uint32)0x80000000) >> msbclr);
 
+	/*@-shiftnegative@*/
 	if (lsbset != 0)
 		p->modl[size] |= (((uint32)0xffffffff) >> (32 - lsbset));
+	/*@=shiftnegative@*/
 }
 
 /**

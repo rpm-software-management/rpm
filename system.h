@@ -180,6 +180,28 @@ char *alloca ();
 #endif
 
 #include <ctype.h>
+#if defined (__GLIBC__) && defined(__LCLINT__)
+/*@-declundef@*/
+/*@unchecked@*/
+extern __const __int32_t *__ctype_tolower;
+/*@unchecked@*/
+extern __const __int32_t *__ctype_toupper;
+/*@=declundef@*/
+
+/*@-exportlocal@*/
+extern int isalnum(int) __THROW	/*@*/;
+extern int iscntrl(int) __THROW	/*@*/;
+extern int isgraph(int) __THROW	/*@*/;
+extern int islower(int) __THROW	/*@*/;
+extern int ispunct(int) __THROW	/*@*/;
+extern int isxdigit(int) __THROW	/*@*/;
+extern int isascii(int) __THROW	/*@*/;
+extern int toascii(int) __THROW	/*@*/;
+extern int _toupper(int) __THROW	/*@*/;
+extern int _tolower(int) __THROW	/*@*/;
+/*@=exportlocal@*/
+
+#endif
 
 #if HAVE_SYS_MMAN_H && !defined(__LCLINT__)
 #include <sys/mman.h>

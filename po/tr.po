@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-11 17:48-0500\n"
+"POT-Creation-Date: 2002-01-18 16:12-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -19,44 +19,44 @@ msgstr "iþlem durdu, önce baðýmlý paketler kurulmalý:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "%s spec dosyasý açýlamadý: %s\n"
 
-#: build.c:144 build.c:156
+#: build.c:145 build.c:157
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar veriyolu açýlamadý: %m\n"
 
 #. Give up
-#: build.c:163
+#: build.c:164
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s paketinden spec dosyasý okunamadý\n"
 
-#: build.c:191
+#: build.c:192
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s %s olarak deðiþtirilemedi: %m\n"
 
-#: build.c:230
+#: build.c:232
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "%s durum bilgileri alýnamadý: %m\n"
 
-#: build.c:235
+#: build.c:237
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s bir normal bir dosya deðil.\n"
 
-#: build.c:244
+#: build.c:246
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s bir spec dosyasý gibi görünmüyor.\n"
 
 #. parse up the build operators
-#: build.c:299
+#: build.c:301
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
 
-#: build.c:314
+#: build.c:316
 #, c-format
 msgid "Building for target %s\n"
 msgstr "%s için derleniyor\n"
@@ -1017,7 +1017,7 @@ msgstr "satýr %d: Etiket boþ: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:573 build/parseSpec.c:408
+#: build/parsePreamble.c:573 build/parseSpec.c:410
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
@@ -1219,11 +1219,11 @@ msgstr "%s:%d: %%if'siz bir %%endif alýndý\n"
 msgid "malformed %%include statement\n"
 msgstr "%%include deyimi bozuk\n"
 
-#: build/parseSpec.c:527
+#: build/parseSpec.c:529
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:585
+#: build/parseSpec.c:587
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1405,44 +1405,44 @@ msgstr "satýr %d: Hatalý no%s numarasý: %d\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "satýr %d: Hatalý %s numarasý: %s\n"
 
-#: lib/cpio.c:183
+#: lib/cpio.c:187
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(hata 0x%x)"
 
-#: lib/cpio.c:186
+#: lib/cpio.c:190
 msgid "Bad magic"
 msgstr "Magic hatalý"
 
-#: lib/cpio.c:187
+#: lib/cpio.c:191
 msgid "Bad/unreadable  header"
 msgstr "Hatalý/okunamayan baþlýk"
 
-#: lib/cpio.c:208
+#: lib/cpio.c:212
 msgid "Header size too big"
 msgstr "Baþlýk çok uzun"
 
-#: lib/cpio.c:209
+#: lib/cpio.c:213
 msgid "Unknown file type"
 msgstr "Bilinmeyen dosya türü"
 
-#: lib/cpio.c:210
+#: lib/cpio.c:214
 msgid "Missing hard link(s)"
 msgstr "Sabit bað(lar) eksik"
 
-#: lib/cpio.c:211
+#: lib/cpio.c:215
 msgid "MD5 sum mismatch"
 msgstr "MD5 toplamý çeliþkili"
 
-#: lib/cpio.c:212
+#: lib/cpio.c:216
 msgid "Internal error"
 msgstr "Ýç hata"
 
-#: lib/cpio.c:213
+#: lib/cpio.c:217
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:224
+#: lib/cpio.c:228
 msgid " failed - "
 msgstr " baþarýsýz - "
 
@@ -1569,7 +1569,7 @@ msgstr "mntctl() sonuçlanan hatalý baðlantý yerleri nedeniyle baþarýsýz: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s baþarýsýz: %s\n"
 
-#: lib/fs.c:153 rpmio/url.c:507
+#: lib/fs.c:153 rpmio/url.c:509
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -1589,37 +1589,37 @@ msgstr "========= Pakette bulunmayan dizinler:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1183
+#: lib/fsm.c:1185
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%s dizin %04o izinleriyle oluþturuldu.\n"
 
-#: lib/fsm.c:1464
+#: lib/fsm.c:1470
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1585 lib/fsm.c:1713
+#: lib/fsm.c:1591 lib/fsm.c:1719
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:1739
+#: lib/fsm.c:1745
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boþ deðil\n"
 
-#: lib/fsm.c:1745
+#: lib/fsm.c:1751
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi baþarýsýz: %s\n"
 
-#: lib/fsm.c:1755
+#: lib/fsm.c:1761
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s / %s bað kaldýrýlamadý: %s\n"
 
-#: lib/fsm.c:1774
+#: lib/fsm.c:1780
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"
@@ -1640,7 +1640,7 @@ msgstr ""
 "RPM'nin bu sürümünde sadece ilk sürüm rakamý <= 4 olan paketler "
 "destekleniyor\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:522
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead baþarýsýz\n"
@@ -1650,12 +1650,12 @@ msgstr "%s: readLead baþarýsýz\n"
 msgid "%s: bad magic\n"
 msgstr "Magic hatalý"
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:538
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature baþarýsýz\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:543
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ýmza bulundurmuyor\n"
@@ -1665,7 +1665,7 @@ msgstr "%s: Ýmza bulundurmuyor\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead baþarýsýz\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:466
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread baþarýsýz: %s\n"
@@ -2385,42 +2385,42 @@ msgstr "%s: v1.0 RPM (eski sürüm) imzalanamaz\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 RPM (eski sürüm) yeniden imzalanamaz\n"
 
-#: lib/rpmchecksig.c:227
+#: lib/rpmchecksig.c:229
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead baþarýsýz: %s\n"
 
-#: lib/rpmchecksig.c:233
+#: lib/rpmchecksig.c:235
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature baþarýsýz: %s\n"
 
-#: lib/rpmchecksig.c:526
+#: lib/rpmchecksig.c:528
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:721
+#: lib/rpmchecksig.c:725
 msgid "NOT OK"
 msgstr "TAMAM DEÐÝL"
 
-#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
+#: lib/rpmchecksig.c:726 lib/rpmchecksig.c:740
 msgid " (MISSING KEYS:"
 msgstr " (EKSÝK ANAHTARLAR:"
 
-#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:728 lib/rpmchecksig.c:742
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
+#: lib/rpmchecksig.c:729 lib/rpmchecksig.c:743
 msgid " (UNTRUSTED KEYS:"
 msgstr " (GÜVENCESÝZ ANAHTARLAR:"
 
-#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
+#: lib/rpmchecksig.c:731 lib/rpmchecksig.c:745
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:735
+#: lib/rpmchecksig.c:739
 msgid "OK"
 msgstr "Tamam"
 
@@ -2659,7 +2659,7 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
 
 #: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
-#: lib/signature.c:570
+#: lib/signature.c:569
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
@@ -2718,49 +2718,49 @@ msgstr "GPG kullanýlarak imza üretiliyor.\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:575 lib/signature.c:628
+#: lib/signature.c:574 lib/signature.c:627
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Makro dosyasýnda %%_signature spec geçersiz\n"
 
-#: lib/signature.c:608
+#: lib/signature.c:607
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Makro dosyanýzda \"%%_pgp_name\" tanýmlanmýþ olmalý\n"
 
-#: lib/signature.c:620
+#: lib/signature.c:619
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Makro dosyanýzda \"%%_pgp_name\" belirtmelisiniz\n"
 
-#: lib/signature.c:664
+#: lib/signature.c:663
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Baþlýk çok uzun"
 
-#: lib/signature.c:693
+#: lib/signature.c:692
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:733
+#: lib/signature.c:732
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "tüm MD5 imzalarýný atlar"
 
-#: lib/signature.c:823
+#: lib/signature.c:822
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Ýmza yok\n"
 
-#: lib/signature.c:887
+#: lib/signature.c:886
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:907
+#: lib/signature.c:906
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:911
+#: lib/signature.c:910
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
@@ -2856,11 +2856,11 @@ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "Veritabaný için %s kilit alýnamadý\n"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1226
+#: rpmdb/db1.c:573 rpmdb/db3.c:1228
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1226
+#: rpmdb/db1.c:573 rpmdb/db3.c:1228
 msgid "shared"
 msgstr "paylaþýmlý"
 
@@ -2879,27 +2879,27 @@ msgstr "silindi       db ortamý %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "açýlýyor      db ortamý %s/%s %s\n"
 
-#: rpmdb/db3.c:709
+#: rpmdb/db3.c:711
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kapandý      db endeks %s/%s\n"
 
-#: rpmdb/db3.c:776
+#: rpmdb/db3.c:778
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1001
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1224
+#: rpmdb/db3.c:1226
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1230
+#: rpmdb/db3.c:1232
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"
@@ -3209,77 +3209,77 @@ msgstr "%3d>%*s(boþ)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(boþ)\n"
 
-#: rpmio/macro.c:629
+#: rpmio/macro.c:633
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "%%%s makrosunun gövdesi sonlandýrýlmamýþ\n"
 
-#: rpmio/macro.c:656
+#: rpmio/macro.c:662
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "%%%s makrosunun ismi kuraldýþý (%%define)\n"
 
-#: rpmio/macro.c:662
+#: rpmio/macro.c:668
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "%%%s makrosunu seçenekleri sonlandýrýlmamýþ\n"
 
-#: rpmio/macro.c:667
+#: rpmio/macro.c:673
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "%%%s makrosu boþ\n"
 
-#: rpmio/macro.c:673
+#: rpmio/macro.c:679
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "%%%s makrosu geniþletmede baþarýsýz\n"
 
-#: rpmio/macro.c:708
+#: rpmio/macro.c:716
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "%%%s makrosunun ismi kuraldýþý (%%define)\n"
 
-#: rpmio/macro.c:820
+#: rpmio/macro.c:828
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "%%%s (%s) makrosu %d seviyenin altýnda kullanýlmadý\n"
 
-#: rpmio/macro.c:938
+#: rpmio/macro.c:948
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneði %s(%s) de anlaþýlamadý\n"
 
-#: rpmio/macro.c:1137
+#: rpmio/macro.c:1149
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliði(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1204 rpmio/macro.c:1221
+#: rpmio/macro.c:1218 rpmio/macro.c:1235
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandýrýlmamýþ: %s\n"
 
-#: rpmio/macro.c:1262
+#: rpmio/macro.c:1276
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrýþtýrýlamayan makro tarafýndan bir %% izlendi\n"
 
-#: rpmio/macro.c:1391
+#: rpmio/macro.c:1405
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadý, atlanýyor\n"
 
-#: rpmio/macro.c:1467
+#: rpmio/macro.c:1481
 msgid "Target buffer overflow\n"
 msgstr "Hedef tampon bellek taþtý\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1664 rpmio/macro.c:1670
+#: rpmio/macro.c:1680 rpmio/macro.c:1686
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyasý: %s\n"
 
-#: rpmio/macro.c:1673
+#: rpmio/macro.c:1689
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
@@ -3390,12 +3390,12 @@ msgstr "%s@%s için parola: "
 msgid "error: %sport must be a number\n"
 msgstr "hata: %sport bir sayý olmalý\n"
 
-#: rpmio/url.c:461
+#: rpmio/url.c:463
 msgid "url port must be a number\n"
 msgstr "url portu bir sayý olmalý\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:527
+#: rpmio/url.c:529
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"

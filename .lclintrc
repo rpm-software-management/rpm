@@ -1,4 +1,4 @@
--I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./popt -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
+-I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./popt -I./zlib -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
 
 #+partial
 +forcehints
@@ -17,6 +17,7 @@
 -includenest 16		# getting deep, sigh
 
 # --- not-yet at strict level
+
 -bitwisesigned		# pita
 -elseifcomplete		# 95 occurences
 -exportconst		# 839 occurences
@@ -32,6 +33,11 @@
 -numenummembers 1024	# RPMTAG has 138 members
 -numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
+
+-compdestroy
+-mustdefine
+-shiftimplementation	# <ctype.h> pain
+
 -strictops
 -strictusereleased
 -stringliterallen 4096	# redhat*PubKey's are big

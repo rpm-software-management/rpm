@@ -436,6 +436,7 @@ int urlSplit(const char * url, urlinfo *uret)
     /* Look for ...@host... */
     fe = f = s;
     while (*fe && *fe != '@') fe++;
+    /*@-branchstate@*/
     if (*fe == '@') {
 	s = fe + 1;
 	*fe = '\0';
@@ -447,6 +448,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	}
 	u->user = xstrdup(f);
     }
+    /*@=branchstate@*/
 
     /* Look for ...host:port */
     fe = f = s;

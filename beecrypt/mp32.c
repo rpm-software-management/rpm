@@ -450,7 +450,6 @@ uint32 mp32addw(register uint32 xsize, register uint32* xdata, register uint32 y
 	temp = *(--xdata);
 	temp += y;
 	*xdata = (uint32) temp;
-	/*@-shiftsigned@*/
 	while (--xsize && (carry = (uint32) (temp >> 32)))
 	{
 		temp = *(--xdata);
@@ -458,7 +457,6 @@ uint32 mp32addw(register uint32 xsize, register uint32* xdata, register uint32 y
 		*xdata = (uint32) temp;
 	}
 	return (uint32)(temp >> 32);
-	/*@=shiftsigned@*/
 }
 #endif
 
@@ -477,9 +475,7 @@ uint32 mp32add(register uint32 size, register uint32* xdata, register const uint
 		temp += *(--ydata);
 		temp += carry;
 		*xdata = (uint32) temp;
-		/*@-shiftsigned@*/
 		carry = (uint32) (temp >> 32);
-		/*@=shiftsigned@*/
 	}
 	return carry;
 }
@@ -512,17 +508,13 @@ uint32 mp32subw(register uint32 xsize, register uint32* xdata, register uint32 y
 	temp = *(--xdata);
 	temp -= y;
 	*xdata = (uint32) temp;
-	/*@-shiftsigned@*/
 	carry = (temp >> 32) ? 1 : 0;
-	/*@=shiftsigned@*/
 	while (--xsize && carry)
 	{
 		temp = *(--xdata);
 		temp -= carry;
 		*xdata = (uint32) temp;
-		/*@-shiftsigned@*/
 		carry = (temp >> 32) ? 1 : 0;
-		/*@=shiftsigned@*/
 	}
 	return carry;
 }
@@ -543,9 +535,7 @@ uint32 mp32sub(register uint32 size, register uint32* xdata, register const uint
 		temp -= *(--ydata);
 		temp -= carry;
 		*xdata = (uint32) temp;
-		/*@-shiftsigned@*/
 		carry = (temp >> 32) != 0;
-		/*@=shiftsigned@*/
 	}
 	return carry;
 }
@@ -591,9 +581,7 @@ uint32 mp32setmul(register uint32 size, register uint32* result, register const 
 		temp *= y;
 		temp += carry;
 		*(--result) = (uint32) temp;
-		/*@-shiftsigned@*/
 		carry = (uint32) (temp >> 32);
-		/*@=shiftsigned@*/
 	}
 	return carry;
 }
@@ -615,9 +603,7 @@ uint32 mp32addmul(register uint32 size, register uint32* result, register const 
 		temp += carry;
 		temp += *(--result);
 		*result = (uint32) temp;
-		/*@-shiftsigned@*/
 		carry = (uint32) (temp >> 32);
-		/*@=shiftsigned@*/
 	}
 	return carry;
 }
@@ -679,12 +665,10 @@ uint32 mp32addsqrtrc(register uint32 size, register uint32* result, register con
 		temp += carry;
 		temp += *(--result);
 		*result = (uint32) temp;
-		/*@-shiftsigned@*/
 		temp >>= 32;
 		temp += *(--result);
 		*result = (uint32) temp;
 		carry = (uint32) (temp >> 32);
-		/*@=shiftsigned@*/
 	}
 	return carry;
 }
@@ -988,9 +972,7 @@ uint32 mp32nmodw(uint32* result, uint32 xsize, const uint32* xdata, uint32 y, ui
 		/* printf("result = "); MP32println(xsize+1, result); */
 		/* get the two high words of r into temp */
 		temp = rdata[0];
-		/*@-shiftsigned@*/
 		temp <<= 32;
-		/*@=shiftsigned@*/
 		temp += rdata[1];
 		/* printf("q = %016llx / %08lx\n", temp, msw); */
 		temp /= y;
@@ -1042,9 +1024,7 @@ void mp32nmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, c
 		/* printf("result = "); mp32println(xsize+1, result); */
 		/* get the two high words of r into temp */
 		temp = rdata[0];
-		/*@-shiftsigned@*/
 		temp <<= 32;
-		/*@=shiftsigned@*/
 		temp += rdata[1];
 		/* printf("q = %016llx / %08lx\n", temp, msw); */
 		temp /= msw;
@@ -1099,9 +1079,7 @@ void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize
 		/* printf("result = "); mp32println(xsize+1, result); */
 		/* get the two high words of r into temp */
 		temp = result[0];
-		/*@-shiftsigned@*/
 		temp <<= 32;
-		/*@=shiftsigned@*/
 		temp += result[1];
 		/* printf("q = %016llx / %08lx\n", temp, msw); */
 		temp /= msw;

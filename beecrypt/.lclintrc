@@ -22,6 +22,10 @@
 -ansi-reserved-internal	# goofy
 
 -ptrarith		# 217 occurences
+
+-compdestroy		# 6 occurences
+-mustdefine		# 50 occurences
+
 -bitwisesigned		# 69 occurences
 -strictops		# 37 occurences
 -sizeoftype		# 124 occurences
@@ -42,7 +46,6 @@
 -ansi-reserved		# goofy
 
 # don't-bother-me-yet parameters
--branchstate		# 6 occurences
 
 # --- not-yet at standard level
 -boolops		# 58 occurences

@@ -115,6 +115,7 @@ static int buildForTarget(rpmTransactionSet ts, const char * arg, BTA_t ba)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
     /*@=branchstate@*/
 
+    /*@-compmempass@*/ /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
 	FILE *fp;
 	const char * specDir;
@@ -214,6 +215,7 @@ static int buildForTarget(rpmTransactionSet ts, const char * arg, BTA_t ba)
     } else {
 	specURL = arg;
     }
+    /*@=compmempass@*/
 
     specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {

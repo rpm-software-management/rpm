@@ -1,36 +1,65 @@
--I. -I./build -I./lib -I./rpmio -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
++forcehints
 
 -warnunixlib
 -warnposix
 
 +unixlib
 
-# XXX ignore doxygen markings
--unrecogcomments
+-unrecogcomments	# XXX ignore doxygen markings
 
-# don't-bother-me-yet parameters
-#-branchstate		# painful
--mustfree		# alloca is painful
++strict			# lclint level
 
-# not-yet normal parameters
--boolops		# w->n
--predboolint		# w->n
--type			#
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
 
-# -weak paramaters
-#+boolint
-#-boolops
-#+ignorequals
-#+ignoresigns
-#-mustfree
-#+longintegral
-#+matchanyintegral
-#-nullpass
-#-observertrans
-#-predboolint
-#-predboolothers
-#-retvalint
-#-retvalother
-#-shiftsigned
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned		# pita
+-elseifcomplete		# 95 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
+-forblock		# tedious
+-ifblock		# tedious
+-incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
+-matchfields		# <bits/ipc.h> heartburn
+-namechecks		# tedious ANSI compliance checks
+-numenummembers 1024	# RPMTAG has 138 members
+-numstructfields 256	# Java jni.h has 229 fields
+-ptrarith		# tedious
+
+-compdestroy
+-mustdefine
+-shiftimplementation
+#-shiftnegative
+
+-strictops
+-strictusereleased
+-stringliterallen 4096	# redhat*PubKey's are big
+-whileblock		# tedious
+
+# --- not-yet at checks level
+-ansi-reserved
++enumint
+-mustfree
+-predboolptr
+-usedef
+
+# --- not-yet at standard level
+-boolops
+-predboolint
++boolint
++charint
++ignorequals
++matchanyintegral

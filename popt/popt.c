@@ -49,6 +49,9 @@ void poptSetExecPath(poptContext con, const char * path, int allowAbsolute)
     con->execPath = _free(con->execPath);
     con->execPath = xstrdup(path);
     con->execAbsolute = allowAbsolute;
+    /*@-nullstate@*/ /* LCL: con->execPath can be NULL? */
+    return;
+    /*@=nullstate@*/
 }
 
 static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
@@ -591,6 +594,9 @@ static void poptStripArg(/*@special@*/ poptContext con, int which)
     if (con->arg_strip != NULL)		/* XXX can't happen */
     PBM_SET(which, con->arg_strip);
     /*@=sizeoftype@*/
+    /*@-compdef@*/ /* LCL: con->arg_strip udefined? */
+    return;
+    /*@=compdef@*/
 }
 
 static int poptSaveLong(const struct poptOption * opt, long aLong)
@@ -763,6 +769,7 @@ int poptGetNextOpt(poptContext con)
 	}
 
 	/* Process next short option */
+	/*@-branchstate@*/		/* FIX: W2DO? */
 	if (con->os->nextCharArg) {
 	    origOptString = con->os->nextCharArg;
 
@@ -786,11 +793,10 @@ int poptGetNextOpt(poptContext con)
 	    shorty = 1;
 
 	    origOptString++;
-	    /*@-branchstate@*/		/* FIX: W2DO? */
 	    if (*origOptString != '\0')
 		con->os->nextCharArg = origOptString;
-	    /*@=branchstate@*/
 	}
+	/*@=branchstate@*/
 
 	if (opt == NULL) return POPT_ERROR_BADOPT;	/* XXX can't happen */
 	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
@@ -962,10 +968,12 @@ int poptGetNextOpt(poptContext con)
 const char * poptGetOptArg(poptContext con)
 {
     const char * ret = NULL;
+    /*@-branchstate@*/
     if (con) {
 	ret = con->os->nextArg;
 	con->os->nextArg = NULL;
     }
+    /*@=branchstate@*/
     return ret;
 }
 
@@ -1060,6 +1068,7 @@ int poptAddAlias(poptContext con, struct poptAlias alias,
     return poptAddItem(con, item, 0);
 }
 
+/*@-mustmod@*/ /* LCL: con not modified? */
 int poptAddItem(poptContext con, poptItem newItem, int flags)
 {
     poptItem * items, item;
@@ -1102,6 +1111,7 @@ int poptAddItem(poptContext con, poptItem newItem, int flags)
 
     return 0;
 }
+/*@=mustmod@*/
 
 const char * poptBadOption(poptContext con, int flags)
 {

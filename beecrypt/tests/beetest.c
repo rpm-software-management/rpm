@@ -593,6 +593,7 @@ static void testHashFunctions(void)
 		memset(&hfc, 0, sizeof(hashFunctionContext));
 		printf("  Testing the hash functions:\n");
 
+		/*@-branchstate@*/ /* FIX: hfc.param released */
 		for (i = 0; i < hashFunctionCount(); i++)
 		{
 			const hashFunction* tmp = hashFunctionGet(i);
@@ -639,6 +640,7 @@ static void testHashFunctions(void)
 				mp32nfree(&digest);
 			}
 		}
+		/*@=branchstate@*/
 		free(data);
 	}
 }

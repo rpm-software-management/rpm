@@ -1370,6 +1370,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
 
 	/* For all files from this package that are in the database ... */
+	/*@-branchstate@*/
 	for (i = 0; i < numShared; i = nexti) {
 	    int beingRemoved;
 
@@ -1403,6 +1404,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		/*@switchbreak@*/ break;
 	    }
 	}
+	/*@=branchstate@*/
 
 	free(sharedList);
 

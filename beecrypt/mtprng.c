@@ -66,7 +66,6 @@ static void mtprngReload(mtprngParam* mp)
     register uint32* p2=p0+2, *pM = p0+M, s0, s1;
     register int j;
 
-    /*@-shiftsigned@*/
     for (s0=mp->state[0], s1=mp->state[1], j=N-M+1; --j; s0=s1, s1=*(p2++))
         *(p0++) = *(pM++) ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0);
 
@@ -74,7 +73,6 @@ static void mtprngReload(mtprngParam* mp)
         *(p0++) = *(pM++) ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0);
 
     s1 = mp->state[0], *p0 = *pM ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0);
-    /*@=shiftsigned@*/
 
     mp->left = N;
     mp->nextw = mp->state;

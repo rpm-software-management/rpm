@@ -65,9 +65,9 @@ typedef struct FileListRec_s {
 /*@only@*/ const char * fileURL;	/* filename in cpio archive */
 /*@observer@*/ const char * uname;
 /*@observer@*/ const char * gname;
-    int		flags;
+    unsigned	flags;
     specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
-    int		verifyFlags;
+    unsigned	verifyFlags;
 /*@only@*/ const char *langs;	/* XXX locales separated with | */
 } * FileListRec;
 

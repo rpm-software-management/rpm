@@ -609,7 +609,9 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
     int oc = ')';
 
     /* Copy name */
+/*@-globs@*/
     COPYNAME(ne, s, c);
+/*@=globs@*/
 
     /* Copy opts (if present) */
     oe = ne + 1;
@@ -622,7 +624,9 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 
     /* Copy body, skipping over escaped newlines */
     b = be = oe + 1;
+/*@-globs@*/
     SKIPBLANK(s, c);
+/*@=globs@*/
     if (c == '{') {	/* XXX permit silent {...} grouping */
 	if ((se = matchchar(s, c, '}')) == NULL) {
 	    rpmError(RPMERR_BADSPEC,
@@ -640,8 +644,10 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	COPYBODY(be, s, c);
 
 	/* Trim trailing blanks/newlines */
+/*@-globs@*/
 	while (--be >= b && (c = *be) && (isblank(c) || iseol(c)))
 	    {};
+/*@=globs@*/
 	*(++be) = '\0';	/* one too far */
     }
 
@@ -695,7 +701,9 @@ doUndefine(MacroContext mc, const char * se)
     char buf[BUFSIZ], *n = buf, *ne = n;
     int c;
 
+/*@-globs@*/
     COPYNAME(ne, s, c);
+/*@=globs@*/
 
     /* Move scan over body */
     while (iseol(*s))
@@ -863,10 +871,12 @@ grabArgs(MacroBuf mb, const MacroEntry me, const char * se, char lastc)
     /* Copy args into buf until lastc */
     *be++ = ' ';
     while ((c = *se++) != '\0' && c != lastc) {
+/*@-globs@*/
 	if (!isblank(c)) {
 	    *be++ = c;
 	    continue;
 	}
+/*@=globs@*/
 	/* c is blank */
 	if (be[-1] == ' ')
 	    continue;
@@ -1054,10 +1064,12 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	if (*b == '\0') b = "/";
     } else if (STREQ("uncompress", f, fn)) {
 	rpmCompressedMagic compressed = COMPRESSED_OTHER;
+/*@-globs@*/
 	for (b = buf; (c = *b) && isblank(c);)
 	    b++;
 	for (be = b; (c = *be) && !isblank(c);)
 	    be++;
+/*@=globs@*/
 	*be++ = '\0';
 #ifndef	DEBUG_MACROS
 	(void) isCompressed(b, &compressed);
@@ -1195,8 +1207,10 @@ expandMacro(MacroBuf mb)
 		}
 		fe = se;
 		/* For "%name " macros ... */
+/*@-globs@*/
 		if ((c = *fe) && isblank(c))
 			grab = '\n';
+/*@=globs@*/
 		/*@switchbreak@*/ break;
 	case '(':		/* %(...) shell escape */
 		if ((se = matchchar(s, c, ')')) == NULL) {
@@ -1603,7 +1617,9 @@ rpmInitMacros(/*@unused@*/ MacroContext mc, const char *macrofiles)
 	    char c, *n;
 
 	    n = buf;
+/*@-globs@*/
 	    SKIPBLANK(n, c);
+/*@=globs@*/
 
 	    if (c != '%')
 		/*@innercontinue@*/ continue;

@@ -179,7 +179,7 @@ void mp32nsetw(mp32number* n, uint32 val)
 }
 /*@=nullstate@*/
 
-/*@-nullstate -compdef @*/	/* n->data may be NULL */
+/*@-nullstate -compdef -usedef @*/	/* n->data may be NULL */
 void mp32nsethex(mp32number* n, const char* hex)
 {
 	uint32 length = strlen(hex);
@@ -229,5 +229,5 @@ void mp32nsethex(mp32number* n, const char* hex)
 		n->data = (uint32*)0;
 	}
 }
-/*@=nullstate =compdef @*/
+/*@=nullstate =compdef =usedef @*/
 /*@=sizeoftype@*/

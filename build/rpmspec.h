@@ -14,16 +14,16 @@ typedef struct SpecStruct *Spec;
  */
 struct TriggerFileEntry {
     int index;
-/*@only@*/ char *fileName;
-/*@only@*/ char *script;
-/*@only@*/ char *prog;
-/*@owned@*/ struct TriggerFileEntry *next;
+/*@only@*/ char * fileName;
+/*@only@*/ char * script;
+/*@only@*/ char * prog;
+/*@owned@*/ struct TriggerFileEntry * next;
 };
 
-#define RPMBUILD_ISSOURCE     1
-#define RPMBUILD_ISPATCH     (1 << 1)
-#define RPMBUILD_ISICON      (1 << 2)
-#define RPMBUILD_ISNO        (1 << 3)
+#define RPMBUILD_ISSOURCE	(1 << 0)
+#define RPMBUILD_ISPATCH	(1 << 1)
+#define RPMBUILD_ISICON		(1 << 2)
+#define RPMBUILD_ISNO		(1 << 3)
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
@@ -42,7 +42,8 @@ struct Source {
 /*@-typeuse@*/
 typedef struct ReadLevelEntry {
     int reading;
-/*@dependent@*/ struct ReadLevelEntry * next;
+/*@dependent@*/
+    struct ReadLevelEntry * next;
 } RLE_t;
 /*@=typeuse@*/
 
@@ -53,8 +54,10 @@ typedef struct OpenFileInfo {
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
-/*@dependent@*/ char *readPtr;
-/*@owned@*/ struct OpenFileInfo * next;
+/*@dependent@*/
+    char * readPtr;
+/*@owned@*/
+    struct OpenFileInfo * next;
 } OFI_t;
 
 /** \ingroup rpmbuild

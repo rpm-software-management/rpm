@@ -1217,7 +1217,9 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
 	return NULL;
 	/*@notreached@*/ break;
     }
+    /*@-dependenttrans@*/
     return opendir(path);
+    /*@=dependenttrans@*/
 }
 
 /*@+voidabstract@*/

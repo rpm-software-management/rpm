@@ -400,7 +400,8 @@ void Globfree( /*@only@*/ glob_t * pglob)
 /**
  * opendir(3) clone.
  */
-/*@null@*/ DIR * Opendir(const char * path)
+/*@null@*/
+DIR * Opendir(const char * path)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 

@@ -81,10 +81,12 @@ static void configLine(poptContext con, char * line)
     }
     /*@=modobserver@*/
 	
+    /*@-nullstate@*/ /* FIX: item->argv[] may be NULL */
     if (!strcmp(entryType, "alias"))
 	(void) poptAddItem(con, item, 0);
     else if (!strcmp(entryType, "exec"))
 	(void) poptAddItem(con, item, 1);
+    /*@=nullstate@*/
 }
 /*@=compmempass@*/
 

@@ -34,7 +34,7 @@
  * Decode white space character set (default).
  */
 /*@-exportlocal@*/
-/*@observer@*/ /*@checked@*/ /*@null@*/
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * b64decode_whitespace;
 /*@=exportlocal@*/
 #define B64DECODE_WHITESPACE	" \f\n\r\t\v"
@@ -43,7 +43,7 @@ extern const char * b64decode_whitespace;
  * Encode 72 characters per line (default).
  */
 /*@-exportlocal@*/
-/*@checked@*/
+/*@unchecked@*/
 extern int b64encode_chars_per_line;
 /*@=exportlocal@*/
 #define B64ENCODE_CHARS_PER_LINE	72
@@ -52,7 +52,7 @@ extern int b64encode_chars_per_line;
  * Encode end-of-line string (default).
  */
 /*@-exportlocal@*/
-/*@observer@*/ /*@checked@*/ /*@null@*/
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * b64encode_eolstr;
 /*@=exportlocal@*/
 #define B64ENCODE_EOLSTR	"\n"

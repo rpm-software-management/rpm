@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-12-08 11:01-0500\n"
+"POT-Creation-Date: 2002-01-18 16:12-0500\n"
 "PO-Revision-Date: 2001-01-17 01:01+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -13,48 +13,48 @@ msgstr ""
 msgid "unknown errno"
 msgstr "errno descoñecido"
 
-#: popt.c:911
+#: popt.c:917
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr "tipo de opción (%d) non implementada en popt\n"
 
-#: popt.c:1122
+#: popt.c:1132
 msgid "missing argument"
 msgstr "falta un argumento"
 
-#: popt.c:1124
+#: popt.c:1134
 msgid "unknown option"
 msgstr "opción descoñecida"
 
-#: popt.c:1126
+#: popt.c:1136
 msgid "mutually exclusive logical operations requested"
 msgstr "solicitáronse operacións lóxicas mutuamente excluíntes"
 
-#: popt.c:1128
+#: popt.c:1138
 msgid "opt->arg should not be NULL"
 msgstr ""
 
-#: popt.c:1130
+#: popt.c:1140
 msgid "aliases nested too deeply"
 msgstr "aliases aniñados a un nivel demasiado profundo"
 
-#: popt.c:1132
+#: popt.c:1142
 msgid "error in parameter quoting"
 msgstr "erro nas comiñas do parámetro"
 
-#: popt.c:1134
+#: popt.c:1144
 msgid "invalid numeric value"
 msgstr "valor numérico non válido"
 
-#: popt.c:1136
+#: popt.c:1146
 msgid "number too large or too small"
 msgstr "número demasiado grande ou pequeno"
 
-#: popt.c:1138
+#: popt.c:1148
 msgid "memory allocation failed"
 msgstr ""
 
-#: popt.c:1142
+#: popt.c:1152
 msgid "unknown error"
 msgstr "erro descoñecido"
 
@@ -103,10 +103,10 @@ msgstr "DOUBLE"
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:457
+#: popthelp.c:459
 msgid "Usage:"
 msgstr "Uso:"
 
-#: popthelp.c:479
+#: popthelp.c:481
 msgid "[OPTION...]"
 msgstr "[OPCIÓN...]"

@@ -33,6 +33,7 @@ int rpmvercmp(const char * a, const char * b)
     two = str2;
 
     /* loop through each version segment of str1 and str2 and compare them */
+    /*@-branchstate@*/
     while (*one && *two) {
 	while (*one && !xisalnum(*one)) one++;
 	while (*two && !xisalnum(*two)) two++;
@@ -92,6 +93,7 @@ int rpmvercmp(const char * a, const char * b)
 	*str2 = oldch2;
 	two = str2;
     }
+    /*@=branchstate@*/
 
     /* this catches the case where all numeric and alpha segments have */
     /* compared identically but the segment sepparating characters were */

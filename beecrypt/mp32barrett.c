@@ -269,9 +269,9 @@ void mp32brnd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result
 		(void) rc->rng->next(rc->param, result, b->size);
 		/*@=noeffectuncon@*/
 
-		/*@-shiftsigned -usedef@*/
+		/*@-shiftimplementation -usedef@*/
 		result[0] &= (0xffffffff >> msz);
-		/*@=shiftsigned =usedef@*/
+		/*@=shiftimplementation =usedef@*/
 
 		while (mp32ge(b->size, result, wksp))
 			(void) mp32sub(b->size, result, wksp);
@@ -295,9 +295,9 @@ void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* res
 		(void) rc->rng->next(rc->param, result, b->size);
 		/*@=noeffectuncon@*/
 
-		/*@-shiftsigned -usedef@*/
+		/*@-shiftimplementation -usedef@*/
 		result[0] &= (0xffffffff >> msz);
-		/*@=shiftsigned =usedef@*/
+		/*@=shiftimplementation =usedef@*/
 		mp32setlsb(b->size, result);
 
 		while (mp32ge(b->size, result, wksp))

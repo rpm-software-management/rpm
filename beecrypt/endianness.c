@@ -33,7 +33,7 @@
 
 #include <stdio.h>
 
-/*@-shiftsigned@*/
+/*@-shiftimplementation@*/
 int16 swap16(int16 n)
 {
 	return (    ((n & 0xff) << 8) |
@@ -84,7 +84,7 @@ int64 swap64(int64 n)
 				((n & 0xff00000000000000L) >> 56) );
 	#endif
 }
-/*@=shiftsigned@*/
+/*@=shiftimplementation@*/
 
 int encodeByte(javabyte b, byte *data)
 {

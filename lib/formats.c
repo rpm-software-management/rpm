@@ -621,12 +621,14 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 /*@i@*/	++_nl_msg_cat_cntr;
 
 	msgid = NULL;
+	/*@-branchstate@*/
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
 	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
 	    if (msgid != msgkey) break;
 	}
+	/*@=branchstate@*/
 
 	/* restore previous environment for msgid -> msgstr resolution */
 	if (langval)

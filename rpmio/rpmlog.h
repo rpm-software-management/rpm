@@ -133,8 +133,8 @@ CODE facilitynames[] =
 /*
  * arguments to setlogmask.
  */
-#define	RPMLOG_MASK(pri) (1 << (pri))		/*!< mask for one priority */
-#define	RPMLOG_UPTO(pri) ((1 << ((pri)+1)) - 1)	/*!< all priorities through pri */
+#define	RPMLOG_MASK(pri) (1 << ((unsigned)(pri)))	/*!< mask for one priority */
+#define	RPMLOG_UPTO(pri) ((1 << (((unsigned)(pri))+1)) - 1)	/*!< all priorities through pri */
 
 /*
  * Option flags for openlog.

@@ -236,7 +236,6 @@ static void sha1Finish(register sha1Param *p)
 	while (p->offset++ < 56)
 		*(ptr++) = 0;
 
-	/*@-shiftsigned@*/ /* p->length is uint64 */
 	#if WORDS_BIGENDIAN
 	p->data[14] = ((uint32)(p->length >> 29));
 	p->data[15] = ((uint32)((p->length << 3) & 0xffffffff));
@@ -244,7 +243,6 @@ static void sha1Finish(register sha1Param *p)
 	p->data[14] = swapu32((uint32)(p->length >> 29));
 	p->data[15] = swapu32((uint32)((p->length << 3) & 0xffffffff));
 	#endif
-	/*@=shiftsigned@*/
 
 	sha1Process(p);
 	p->offset = 0;

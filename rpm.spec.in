@@ -615,3 +615,4 @@ fi
 - permit subset installs for %lang colored hardlink file sets.
 - missing key(s) on keyring when verifying a signature is now an error.
 - remove dependency whiteout.
+- splint fiddles.

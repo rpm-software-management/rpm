@@ -210,7 +210,6 @@ static void md5Finish(md5Param* p)
 	while (p->offset++ < 56)
 		*(ptr++) = 0;
 
-	/*@-shiftsigned@*/ /* p->length is uint64 */
 	#if !WORDS_BIGENDIAN
 	p->data[14] = ((uint32)((p->length << 3) & 0xffffffff));
 	p->data[15] = ((uint32)(p->length >> 29));
@@ -218,7 +217,6 @@ static void md5Finish(md5Param* p)
 	p->data[14] = swapu32((uint32)((p->length << 3) & 0xffffffff));
 	p->data[15] = swapu32((uint32)(p->length >> 29));
 	#endif
-	/*@=shiftsigned@*/
 
 	md5Process(p);
 

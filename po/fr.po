@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-11 17:48-0500\n"
+"POT-Creation-Date: 2002-01-18 16:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,44 +24,44 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build.c:144 build.c:156
+#: build.c:145 build.c:157
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. Give up
-#: build.c:163
+#: build.c:164
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build.c:191
+#: build.c:192
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build.c:230
+#: build.c:232
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build.c:235
+#: build.c:237
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: build.c:244
+#: build.c:246
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:299
+#: build.c:301
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:314
+#: build.c:316
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -1051,7 +1051,7 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:573 build/parseSpec.c:408
+#: build/parsePreamble.c:573 build/parseSpec.c:410
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
@@ -1251,12 +1251,12 @@ msgstr ""
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:527
+#: build/parseSpec.c:529
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "%s ne peut tre construit sur cette architecture\n"
 
-#: build/parseSpec.c:585
+#: build/parseSpec.c:587
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
@@ -1449,44 +1449,44 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:183
+#: lib/cpio.c:187
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:186
+#: lib/cpio.c:190
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:187
+#: lib/cpio.c:191
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:208
+#: lib/cpio.c:212
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:209
+#: lib/cpio.c:213
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:210
+#: lib/cpio.c:214
 msgid "Missing hard link(s)"
 msgstr ""
 
-#: lib/cpio.c:211
+#: lib/cpio.c:215
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:212
+#: lib/cpio.c:216
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:213
+#: lib/cpio.c:217
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:224
+#: lib/cpio.c:228
 #, fuzzy
 msgid " failed - "
 msgstr "La construction a chou.\n"
@@ -1607,7 +1607,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fs.c:153 rpmio/url.c:507
+#: lib/fs.c:153 rpmio/url.c:509
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -1626,37 +1626,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1183
+#: lib/fsm.c:1185
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1464
+#: lib/fsm.c:1470
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1585 lib/fsm.c:1713
+#: lib/fsm.c:1591 lib/fsm.c:1719
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1739
+#: lib/fsm.c:1745
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/fsm.c:1745
+#: lib/fsm.c:1751
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1755
+#: lib/fsm.c:1761
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/fsm.c:1774
+#: lib/fsm.c:1780
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -1675,7 +1675,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:522
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -1685,12 +1685,12 @@ msgstr ""
 msgid "%s: bad magic\n"
 msgstr ""
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:538
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:543
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
@@ -1700,7 +1700,7 @@ msgstr ""
 msgid "%s: headerRead failed\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:466
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -2468,42 +2468,42 @@ msgstr ""
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:227
+#: lib/rpmchecksig.c:229
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:233
+#: lib/rpmchecksig.c:235
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:526
+#: lib/rpmchecksig.c:528
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:721
+#: lib/rpmchecksig.c:725
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
+#: lib/rpmchecksig.c:726 lib/rpmchecksig.c:740
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:728 lib/rpmchecksig.c:742
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
+#: lib/rpmchecksig.c:729 lib/rpmchecksig.c:743
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
+#: lib/rpmchecksig.c:731 lib/rpmchecksig.c:745
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:735
+#: lib/rpmchecksig.c:739
 msgid "OK"
 msgstr ""
 
@@ -2742,7 +2742,7 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 #: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
-#: lib/signature.c:570
+#: lib/signature.c:569
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -2808,47 +2808,47 @@ msgstr "      --sign            - genre une signature PGP"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:575 lib/signature.c:628
+#: lib/signature.c:574 lib/signature.c:627
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:608
+#: lib/signature.c:607
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:620
+#: lib/signature.c:619
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:664
+#: lib/signature.c:663
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:693
+#: lib/signature.c:692
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:733
+#: lib/signature.c:732
 msgid "V3 RSA/MD5 signature: "
 msgstr ""
 
-#: lib/signature.c:823
+#: lib/signature.c:822
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "      --sign            - genre une signature PGP"
 
-#: lib/signature.c:887
+#: lib/signature.c:886
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:907
+#: lib/signature.c:906
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:911
+#: lib/signature.c:910
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
@@ -2939,11 +2939,11 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1226
+#: rpmdb/db1.c:573 rpmdb/db3.c:1228
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1226
+#: rpmdb/db1.c:573 rpmdb/db3.c:1228
 msgid "shared"
 msgstr ""
 
@@ -2962,27 +2962,27 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/db3.c:709
+#: rpmdb/db3.c:711
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/db3.c:776
+#: rpmdb/db3.c:778
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1001
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/db3.c:1224
+#: rpmdb/db3.c:1226
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpmdb/db3.c:1230
+#: rpmdb/db3.c:1232
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -3288,77 +3288,77 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:629
+#: rpmio/macro.c:633
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:656
+#: rpmio/macro.c:662
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:662
+#: rpmio/macro.c:668
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:667
+#: rpmio/macro.c:673
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:673
+#: rpmio/macro.c:679
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:708
+#: rpmio/macro.c:716
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:820
+#: rpmio/macro.c:828
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:938
+#: rpmio/macro.c:948
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:1137
+#: rpmio/macro.c:1149
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1204 rpmio/macro.c:1221
+#: rpmio/macro.c:1218 rpmio/macro.c:1235
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmio/macro.c:1262
+#: rpmio/macro.c:1276
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1391
+#: rpmio/macro.c:1405
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpmio/macro.c:1467
+#: rpmio/macro.c:1481
 msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1664 rpmio/macro.c:1670
+#: rpmio/macro.c:1680 rpmio/macro.c:1686
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmio/macro.c:1673
+#: rpmio/macro.c:1689
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
@@ -3469,12 +3469,12 @@ msgstr ""
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:461
+#: rpmio/url.c:463
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/url.c:527
+#: rpmio/url.c:529
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"

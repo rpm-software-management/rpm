@@ -330,7 +330,9 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     if (helpLength) fprintf(fp, "%s\n", help);
 
 out:
+    /*@-dependenttrans@*/
     defs = _free(defs);
+    /*@=dependenttrans@*/
     left = _free(left);
 }
 

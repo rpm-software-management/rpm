@@ -39,6 +39,12 @@
 -numenummembers 1024	# RPMTAG has 138 members
 -numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
+
+-compdestroy
+-mustdefine
+-shiftimplementation
+#-shiftnegative
+
 -strictops
 -strictusereleased
 -stringliterallen 4096	# redhat*PubKey's are big

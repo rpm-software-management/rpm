@@ -26,7 +26,7 @@ _free(/*@only@*/ /*@null@*/ const void * p)
 typedef	unsigned int __pbm_bits;
 #define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
 #define	__PBM_IX(d)		((d) / __PBM_NBITS)
-#define __PBM_MASK(d)		((__pbm_bits) 1 << ((d) % __PBM_NBITS))
+#define __PBM_MASK(d)		((__pbm_bits) 1 << (((unsigned)(d)) % __PBM_NBITS))
 typedef struct {
     __pbm_bits bits[1];
 } pbm_set;

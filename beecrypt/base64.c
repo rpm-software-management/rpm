@@ -47,7 +47,7 @@ static int _debug = 0;
 
 #include <stdio.h>
 
-/*@observer@*/ /*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /* encode 64 characters per line */
@@ -110,7 +110,9 @@ char* b64enc(const memchunk* chunk)
 		*buf = '\0';
 	}
 
+	/*@-dependenttrans@*/ /* FIX: buf = string makes string dependent */
 	return string;
+	/*@=dependenttrans@*/
 }
 
 memchunk* b64dec(const char* string)
@@ -249,10 +251,8 @@ memchunk* b64dec(const char* string)
 	return rc;
 }
 
-/*@unchecked@*/
 int b64encode_chars_per_line = B64ENCODE_CHARS_PER_LINE;
 
-/*@observer@*/ /*@unchecked@*/
 const char * b64encode_eolstr = B64ENCODE_EOLSTR;
 
 /*@-internalglobs -modfilesys @*/
@@ -337,7 +337,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
     return t;
     /*@=mustfree =compdef @*/
 }
-/*@=internalglobs =modfilesys @*/
+/*@=globs =internalglobs =modfilesys @*/
 
 /*@-internalglobs -modfilesys @*/
 #define CRC24_INIT 0xb704ceL
@@ -358,9 +358,11 @@ char * b64crc (const void * data, int ns)
 	}
     }
     crc &= 0xffffff;
+    /*@-unrecog@*/ /* FIX: include endianness.h? */
     #if !WORDS_BIGENDIAN
     crc = swapu32(crc);
     #endif
+    /*@=unrecog@*/
     data = (byte *)&crc;
     data++;
     ns = 3;
@@ -368,7 +370,6 @@ char * b64crc (const void * data, int ns)
 }
 /*@=internalglobs =modfilesys @*/
 
-/*@observer@*/ /*@unchecked@*/
 const char * b64decode_whitespace = B64DECODE_WHITESPACE;
 
 /*@-internalglobs -modfilesys @*/
@@ -468,4 +469,4 @@ fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
 
     return 0;
 }
-/*@=internalglobs =modfilesys @*/
+/*@=globs =internalglobs =modfilesys @*/

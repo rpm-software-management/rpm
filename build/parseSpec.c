@@ -350,7 +350,9 @@ retry:
 	spec->line[0] = '\0';
     }
 
+    /*@-compmempass@*/ /* FIX: spec->readStack->next should be dependent */
     return 0;
+    /*@=compmempass@*/
 }
 
 void closeSpec(Spec spec)

@@ -434,8 +434,10 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 	dbcursor = dbi->dbi_rmw;
     /*@=branchstate@*/
     if (dbcursor) {
+	/*@-branchstate@*/
 	if (dbcursor == dbi->dbi_rmw)
 	    dbi->dbi_rmw = NULL;
+	/*@=branchstate@*/
 	rc = db3c_close(dbi, dbcursor);
     }
     /*@-usereleased -compdef@*/ return rc; /*@=usereleased =compdef@*/
