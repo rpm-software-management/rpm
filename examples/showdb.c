@@ -15,45 +15,54 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <rpm/rpmlib.h>
+#include <rpmlib.h>
 
+#ifndef	HEADER_DUMP_INLINE
+/**
+ * Dump a header in human readable format (for debugging).
+ * @param h		header
+ * @param flags		0 or HEADER_DUMP_INLINE
+ * @param tags		array of tag name/value pairs
+ */
+void headerDump(Header h, FILE *f, int flags,
+		const struct headerTagTableEntry_s * tags)
+	/*@globals fileSystem @*/
+	/*@modifies f, fileSystem @*/;
+#define HEADER_DUMP_INLINE   1
+#endif
 
 int main( int argc, char **argv )
 {
-	Header h;
-	int offset;
-	int_32 type, count;
-	char *name;
-	rpmdb db;
+    rpmdbMatchIterator mi;
+    Header h;
+    int_32 type, count;
+    char *name;
+    rpmdb db;
 
-	rpmReadConfigFiles( NULL, NULL );
+    rpmReadConfigFiles( NULL, NULL );
 
-	printf( "Calling rpmdbOpen\n" );
-	if( rpmdbOpen( "", &db, O_RDONLY, 0644 ) != 0 ) {
-		fprintf( stderr, "cannot open database!\n" );
-		exit( 1 );
-	}
-	printf( "rpmdbOpen done.\n" );
+    if( rpmdbOpen( "", &db, O_RDONLY, 0644 ) != 0 ) {
+	fprintf( stderr, "cannot open database!\n" );
+	exit(EXIT_FAILURE);
+    }
 
-	offset = rpmdbFirstRecNum( db );
-	while( offset ) {
-		h = rpmdbGetRecord( db, offset );
-		if( !h ) {
-			fprintf( stderr, "Header Read Failed!\n" );
-			exit( 1 );
-		}
+    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
 
-		headerGetEntry( h, RPMTAG_NAME, &type, (void**)&name, &count );
-		if( strcmp(name,argv[1]) == 0 ) {
-			headerDump( h, stdout, 1, rpmTagTable );
-		}
+	headerGetEntry( h, RPMTAG_NAME, &type, (void**)&name, &count );
+	if( strcmp(name,argv[1]) == 0 )
+	    headerDump( h, stdout, HEADER_DUMP_INLINE, rpmTagTable );
 
-		headerFree( h );
-		offset = rpmdbNextRecNum( db, offset );
-	}
+	/*
+	 * Note that the header reference is "owned" by the iterator,
+	 * so no headerFree() is necessary.
+	 */
 
-	rpmdbClose( db );
+    }
+    mi = rpmdbFreeIterator(mi);
 
-	return 0;
+    rpmdbClose( db );
+
+    return 0;
 }
 

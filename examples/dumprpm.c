@@ -10,96 +10,100 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <rpm/rpmlib.h>
+#include <rpmlib.h>
 
+#ifndef	HEADER_DUMP_INLINE
+/**
+ * Dump a header in human readable format (for debugging).
+ * @param h		header
+ * @param flags		0 or HEADER_DUMP_INLINE
+ * @param tags		array of tag name/value pairs
+ */
+void headerDump(Header h, FILE *f, int flags,
+		const struct headerTagTableEntry_s * tags)
+	/*@globals fileSystem @*/
+	/*@modifies f, fileSystem @*/;
+#define HEADER_DUMP_INLINE   1
+#endif
+
+static const struct headerTagTableEntry_s rpmSigTagTbl[] = {
+        { "RPMSIGTAG_SIZE", RPMSIGTAG_SIZE, },
+        { "RPMSIGTAG_PGP", RPMSIGTAG_PGP, },
+        { "RPMSIGTAG_MD5", RPMSIGTAG_MD5, },
+        { "RPMSIGTAG_GPG", RPMSIGTAG_GPG, },
+	{ NULL, 0 }
+};
 
 int main( int argc, char **argv )
 {
-	HeaderIterator iter;
-	Header h, sig;
-	int_32 itertag, type, count;
-	void *p = NULL;
-	char *name;
-	FD_t fd;
-	int stat;
+    HeaderIterator hi;
+    Header h, sig;
+    int_32 tag, type, count;
+    void * p = NULL;
+    char * name;
+    FD_t fd;
+    int rc;
 
-	if( argc == 1 ) {
-		fd = fdDup( STDIN_FILENO );
-	} else {
-		fd = fdOpen( argv[1], O_RDONLY, 0644 );
-	}
+    if( argc == 1 )
+	fd = Fopen("-", "r.ufdio" );
+    else
+	fd = Fopen( argv[1], "r.ufdio" );
 
-	if( !fdValid(fd) ) {
-		perror( "open" );
-		exit( 1 );
-	}
+    if( fd == NULL || Ferror(fd) ) {
+	fprintf(stderr, "cannot open %s: %s\n",
+                (argc == 1 ? "<stdin>" : argv[1]), Fstrerror(fd));
+        exit(EXIT_FAILURE);
+    }
 
-	stat = rpmReadPackageInfo( fd, &sig, &h );
-	if( stat ) {
-		fprintf( stderr, "rpmReadPackageInfo error status: %d\n%s\n",
-				stat, strerror(errno) );
-		exit( stat );
-	}
+    rc = rpmReadPackageInfo( fd, &sig, &h );
+    if ( rc ) {
+        fprintf( stderr, "rpmReadPackageInfo error status: %d\n\n", rc );
+        exit(EXIT_FAILURE);
+    }
 
-	headerGetEntry( h, RPMTAG_NAME, &type, (void**)&name, &count );
+    headerGetEntry( h, RPMTAG_NAME, &type, (void**)&name, &count );
 
-	if( headerIsEntry(h,RPMTAG_PREIN) ) {
-		printf( "There is a preinstall script for %s\n", name );
-	}
-	if( headerIsEntry(h,RPMTAG_POSTIN) ) {
-		printf( "There is a postinstall script for %s\n", name );
-	}
+    if( headerIsEntry(h,RPMTAG_PREIN) ) {
+	printf( "There is a preinstall script for %s\n", name );
+    }
+    if( headerIsEntry(h,RPMTAG_POSTIN) ) {
+	printf( "There is a postinstall script for %s\n", name );
+    }
 
 
-	/* NOTE:
-	 * This is actually rather a ridiculous thing to do, since headerDump
-	 * will incorrectly assume header types (RPMTAG_NAME, RPMTAG_RELEASE,
-     * RPMTAG_SUMMARY).  Since we're passing a signature, the correct types
-	 * would be (RPMSIGTAG_SIZE, RPMSIGTAG_PGP, and RPMSIGTAG_MD5).
-	 * TO FIX:
-     * I think rpm's tagtable.c should define an rpmSigTable global var.
-	 * This is the perfect dual to rpmTagTable and would be passed to
-	 * headerDump when appropriate.  It looks like someone intended to do
-	 * this at one time, but never finished it?
-     */
+    printf( "Dumping signatures...\n" );
+    /* Use HEADER_DUMP_INLINE to include inline dumps of header items */
+    headerDump( sig, stdout, HEADER_DUMP_INLINE, rpmSigTagTbl );
 
-	printf( "Dumping signatures...\n" );
-	/* Use HEADER_DUMP_INLINE to include inline dumps of header items */
-	headerDump( sig, stdout, HEADER_DUMP_INLINE, rpmTagTable );
+    rpmFreeSignature( sig );
 
-	rpmFreeSignature( sig );
+    printf( "Iterating through the header...\n" );
+    hi = headerInitIterator( h );
+    while( headerNextIterator( hi, &tag, &type, &p, &count ) ) {
+	/* printf( "tag=%04d, type=%08lX, p=%08lX, c=%08lX\n",
+		(int)tag, (long)type, (long)p, (long)count ); */
 
-	printf( "Iterating through the header...\n" );
-	iter = headerInitIterator( h );
-	while( headerNextIterator( iter, &itertag, &type, &p, &count ) ) {
-		/* printf( "itertag=%04d, type=%08lX, p=%08lX, c=%08lX\n",
-			(int)itertag, (long)type, (long)p, (long)count ); */
-
-		switch( itertag ) {
-		case RPMTAG_SUMMARY:
-			if( type == RPM_I18NSTRING_TYPE ) {
-				/* We'll only print out the first string if there's an array */
-				printf( "The Summary: \"%s\"\n", *(char**)p );
-			}
-			if( type == RPM_STRING_TYPE ) {
-				printf( "The Summary: \"%s\"\n", (char*)p );
-			}
-			break;
-		case RPMTAG_FILENAMES:
-			printf( "There are %d files in %s\n", count, name );
-			break;
+	switch( tag ) {
+	case RPMTAG_SUMMARY:
+		if( type == RPM_I18NSTRING_TYPE ) {
+			/* We'll only print out the first string if there's an array */
+			printf( "The Summary: \"%s\"\n", *(char**)p );
 		}
-
-		/* rpmlib allocates a buffer to return these two values... */
-		if( type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE ) {
-			free( p );
+		if( type == RPM_STRING_TYPE ) {
+			printf( "The Summary: \"%s\"\n", (char*)p );
 		}
+		break;
+	case RPMTAG_BASENAMES:
+	    printf( "There are %d files in %s\n", count, name );
+		break;
 	}
 
-	headerFreeIterator( iter );
-	headerFree( h );
+	/* rpmlib allocates a buffer to return these two values... */
+	headerFreeData(p, type);
+    }
 
-	return 0;
+    headerFreeIterator( hi );
+    headerFree( h );
+
+    return 0;
 }
-
-

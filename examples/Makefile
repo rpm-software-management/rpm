@@ -5,17 +5,33 @@
 # (or whatever database library rpm was compiled with).
 
 
+CFLAGS=	-O2 -Wall -I/usr/include/rpm
+VER =	4.0.4
+
+LDADD=	-lrpm-$(VER) -lrpmdb-$(VER) -lrpmio-$(VER) -lpopt -lz
+
+COMPILE = $(CC) $(CFLAGS)
+LINK =	$(CC)
+
 all: dumprpm showdb showdb2
 
-dumprpm: dumprpm.c
-	gcc -Wall dumprpm.c -lrpm -lintl -lgz -o dumprpm
+dumprpm: dumprpm.o
+	$(LINK) -o $@ $< $(LDADD)
 
-showdb: showdb.c
-	gcc -Wall showdb.c -lrpm -lintl -ldb1 -lgz -o showdb
+showdb: showdb.o
+	$(LINK) -o $@ $< $(LDADD)
 
-showdb2: showdb2.c
-	gcc -Wall showdb2.c -lrpm -lintl -ldb1 -lgz -o showdb2
+showdb2: showdb2.o
+	$(LINK) -o $@ $< $(LDADD)
 
 clean:
-	rm -f dumprpm showdb showdb2
+	rm -f *.o *.lo dumprpm showdb showdb2
 
+dumprpm.o: dumprpm.c
+	$(COMPILE) -o $@ -c dumprpm.c
+
+showdb.o: showdb.c
+	$(COMPILE) -o $@ -c showdb.c
+
+showdb2.o: showdb2.c
+	$(COMPILE) -o $@ -c showdb2.c
