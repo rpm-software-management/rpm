@@ -28,18 +28,36 @@ works correctly most of the time. For example, it will know that
 may or may not be correct as some programmers use letters in version numbers
 to indicate beta versions. 
 
-To work around this, you may specify a serial number for a package like this:
+To work around this, you may specify an epoch number for a package like this:
 
-	Serial: 23
+	Epoch: 23
 
-If a Requires: line should be comparing the given number with a serial number
-instead of a version number, you would do this:
+If a Requires: line needs to include an epoch in the comparison, then
+the line should be written like
 
-	Requires: somepackage =S 23
+	Requires: somepackage = 23:version
 
 You can't continue a "Requires: " line. If you have multiple
-"Requires: " lines then the package requires all pacakges mentioned on
-all lines to be installed. Max line length is probably 8K.
+"Requires: " lines then the package requires all packages mentioned on
+all of the lines to be installed. Max line length is probably 8K.
+
+The full syntax for specifying a dependency on an epoch, version and release
+is
+	[epoch:]version[-release]
+where
+	epoch	(optional) number, with assumed default of 0 if not supplied
+	version	(required) can contain any character except '-'
+	release	(optional) can contain any character except '-'
+
+Prereqs
+-------
+
+Prereqs are slightly different than requires. If multiple packages are
+given on a single command line, then RPM will rearrange the package
+order to ensure that the installation order obeys the requirements. A
+package's prereqs are guaranteed to be installed on the machine before
+the package itself is installed. Otherwise prereqs are identical to
+requires.
 
 
 Virtual Packages
@@ -60,10 +78,16 @@ package which contains:
 
 in its .spec file. No version numbers may be used with virtual packages.
 
+Virtual packages are often used to supply file dependencies such as /bin/sh
+on machines that are only partly managed by rpm. A virtual package with
+	Provides: /bin/sh
+differs from a package that has /bin/sh in the %files list in that the
+package can be safely removed without removing /bin/sh.
+
 Automatic Dependencies
 ----------------------
 
-To reduct the amount of work required by the package builder, RPM scans
+To reduce the amount of work required by the package builder, RPM scans
 the file list of a package when it is being built. Any files in the file
 list which require shared libraries to work (as determined by ldd) cause
 that package to require the shared library.
@@ -109,11 +133,15 @@ the output from find-provides is
 	Foo-0.9
 	perl(Widget)-0-1
 
-
 The per-interpreter automatic module detectors will normally be located in
 	/usr/lib/rpm/{perl,tcl}/find-{provides,requires}
 with appropriate per-interpreter hooks into
 	/usr/lib/rpm/find-{provides,requires}
+
+Notice that shell dependencies will require that all executable programs be
+tracked by the dependency processing system. Since a shell script depends on
+all the programs which it runs. In this way executables are much like shared
+libraries for shell scripts.
 
 
 Installing and Erasing Packages with Dependencies
