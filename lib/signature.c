@@ -59,6 +59,10 @@ int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
     
     switch (sig_type) {
     case RPMSIG_PGP262_1024:
+	if (! getVar(RPMVAR_PGP_NAME)) {
+	    error(RPMERR_SIGGEN, "You must set \"pgp_name:\" in /etc/rpmrc\n");
+	    return RPMERR_SIGGEN;
+	}
 	if ((res = makePGPSignature(file, ofd, passPhrase)) == -1) {
 	    /* This is the 151 byte sig hack */
 	    return makePGPSignature(file, ofd, passPhrase);
@@ -89,6 +93,12 @@ char *getPassPhrase(char *prompt)
 {
     char *pass;
 
+    if (! getVar(RPMVAR_PGP_NAME)) {
+	error(RPMERR_SIGGEN,
+	      "You must set \"pgp_name:\" in your rpmrc file");
+	return NULL;
+    }
+
     if (prompt) {
         pass = getpass(prompt);
     } else {
@@ -104,8 +114,6 @@ char *getPassPhrase(char *prompt)
 
 static int checkPassPhrase(char *passPhrase)
 {
-    char secring[1024];
-    char pubring[1024];
     char name[1024];
     int passPhrasePipe[2];
     FILE *fpipe;
@@ -113,14 +121,14 @@ static int checkPassPhrase(char *passPhrase)
     int fd;
 
     sprintf(name, "+myname=\"%s\"", getVar(RPMVAR_PGP_NAME));
-    sprintf(secring, "+secring=\"%s\"", getVar(RPMVAR_PGP_SECRING));
-    sprintf(pubring, "+pubring=\"%s\"", getVar(RPMVAR_PGP_PUBRING));
 
     pipe(passPhrasePipe);
     if (!(pid = fork())) {
 	close(0);
 	close(1);
-	close(2);
+	if (! isVerbose()) {
+	    close(2);
+	}
 	if ((fd = open("/dev/null", O_RDONLY)) != 0) {
 	    dup2(fd, 0);
 	}
@@ -129,11 +137,12 @@ static int checkPassPhrase(char *passPhrase)
 	}
 	dup2(passPhrasePipe[0], 3);
 	setenv("PGPPASSFD", "3", 1);
-	setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	if (getVar(RPMVAR_PGP_PATH)) {
+	    setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	}
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0",
-	       name, secring, pubring,
-	       "-sf",
+	       name, "-sf",
 	       NULL);
 	error(RPMERR_EXEC, "Couldn't exec pgp");
 	exit(RPMERR_EXEC);
@@ -155,8 +164,6 @@ static int checkPassPhrase(char *passPhrase)
 
 static int makePGPSignature(char *file, int ofd, char *passPhrase)
 {
-    char secring[1024];
-    char pubring[1024];
     char name[1024];
     char sigfile[1024];
     int pid, status;
@@ -166,8 +173,6 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
     struct stat statbuf;
 
     sprintf(name, "+myname=\"%s\"", getVar(RPMVAR_PGP_NAME));
-    sprintf(secring, "+secring=\"%s\"", getVar(RPMVAR_PGP_SECRING));
-    sprintf(pubring, "+pubring=\"%s\"", getVar(RPMVAR_PGP_PUBRING));
 
     sprintf(sigfile, "%s.sig", file);
 
@@ -178,12 +183,13 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
 	dup2(inpipe[0], 3);
 	close(inpipe[1]);
 	setenv("PGPPASSFD", "3", 1);
-	setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	if (getVar(RPMVAR_PGP_PATH)) {
+	    setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	}
 	/* setenv("PGPPASS", passPhrase, 1); */
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0", "+armor=off",
-	       name, secring, pubring,
-	       "-sb", file, sigfile,
+	       name, "-sb", file, sigfile,
 	       NULL);
 	error(RPMERR_EXEC, "Couldn't exec pgp");
 	exit(RPMERR_EXEC);
@@ -234,8 +240,6 @@ static int verifyPGPSignature(int fd, void *sig, char *result)
     char *datafile;
     int count, sfd, pid, status, outpipe[2];
     unsigned char buf[8192];
-    char secring[1024];
-    char pubring[1024];
     FILE *file;
 
     /* Write out the signature */
@@ -253,18 +257,17 @@ static int verifyPGPSignature(int fd, void *sig, char *result)
     close(sfd);
 
     /* Now run PGP */
-    sprintf(secring, "+secring=\"%s\"", getVar(RPMVAR_PGP_SECRING));
-    sprintf(pubring, "+pubring=\"%s\"", getVar(RPMVAR_PGP_PUBRING));
     pipe(outpipe);
 
     if (!(pid = fork())) {
 	close(1);
 	close(outpipe[0]);
 	dup2(outpipe[1], 1);
-	setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	if (getVar(RPMVAR_PGP_PATH)) {
+	    setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	}
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0",
-	       secring, pubring,
 	       sigfile, datafile,
 	       NULL);
 	printf("exec failed!\n");
