@@ -660,6 +660,7 @@ static int doReadRC(int fd, char * filename) {
 static void defaultMachine(char ** arch, char ** os) {
     static struct utsname un;
     static int gotDefaults = 0;
+    char * chptr;
 
     if (!gotDefaults) {
 	uname(&un);
@@ -668,6 +669,43 @@ static void defaultMachine(char ** arch, char ** os) {
 	} else if (!strncmp(un.sysname, "IP", 2)) {
 	    un.sysname[2] = '\0';
 	}
+
+	/* get rid of the hyphens in the sysname */
+	chptr = un.machine;
+	while (*chptr++)
+	    if (*chptr == '/') *chptr = '-';
+
+	#if defined(__hpux__) && defined(_SC_CPU_VERSION)
+	{
+	    int cpu_version = sysconf(_SC_CPU_VERSION);
+
+	    #if defined(CPU_HP_MC68020)
+		if (cpu_version == CPU_HP_MC68020)
+		    strcpy(us.machine, "m68k");
+	    #endif
+	    #if defined(CPU_HP_MC68030)
+		if (cpu_version == CPU_HP_MC68030)
+		    strcpy(us.machine, "m68k");
+	    #endif
+	    #if defined(CPU_HP_MC68040)
+		if (cpu_version == CPU_HP_MC68040)
+		    strcpy(us.machine, "m68k");
+	    #endif
+
+	    #if defined(CPU_PA_RISC1_0)
+		if (cpu_version == CPU_PA_RISC1_0)
+		    strcpy(us.machine, "parisc");
+	    #endif
+	    #if defined(CPU_PA_RISC1_1)
+		if (cpu_version == CPU_PA_RISC1_1)
+		    strcpy(us.machine, "parisc");
+	    #endif
+	    #if defined(CPU_PA_RISC1_2)
+		if (cpu_version == CPU_PA_RISC1_2)
+		    strcpy(us.machine, "parisc");
+	    #endif
+	}
+	#endif
     }
 
     if (arch) *arch = un.machine;

@@ -3,6 +3,8 @@
 	- replaced include of <malloc.h> with includes of <stdlib.h>
 	- fixed md5sum of source packages w/ a buildroot is used
 	- fixed bugs installing version 1 packages
+	- remove hyphens from uname() result (specifically for HP-UX)
+	- hacks to recognize architecture under parisc
 
 2.4.4 -> 2.4.5:
 	- call getpwnam()/endpwent() once before a chroot(), forcing name 
