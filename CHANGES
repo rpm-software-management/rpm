@@ -1,4 +1,4 @@
-2.4.100 -> 2.5
+2.4.100 -> 2.4.101
 	- handle files with spaces (put double quotes around them)
         - new rpmrc setting, buildshell, can be used to set shell
           used for build scripts (default is /bin/sh)
@@ -16,6 +16,8 @@
           haven't advertised as relocateable
 	- fix return code on failed uncompresses in %prep
 	- preliminary handling of bzip2 compressed files
+	- differentiates between big and little endian mips
+	- added support for "prefixes:" tag
 
 2.4.99 -> 2.4.100:
 	- fixed handling of --rebuild and --recompile
