@@ -917,6 +917,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	}
 
 	headerFreeIterator(hi);
+	h = headerFree(h);
 
 	Py_BEGIN_ALLOW_THREADS
 	h = headerRead(fd, HEADER_MAGIC_YES);
