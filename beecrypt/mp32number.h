@@ -98,12 +98,6 @@ BEEDLLAPI /*@unused@*/
 void mp32nsethex(mp32number* n, const char* hex)
 	/*@modifies n->size, n->data @*/;
 
-/**
- */
-BEEDLLAPI /*@unused@*/
-void mp32nswabhex(mp32number* n, const char* hex)
-	/*@modifies n->size, n->data @*/;
-
 #ifdef __cplusplus
 }
 #endif

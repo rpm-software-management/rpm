@@ -136,7 +136,7 @@ const char * b64decode_whitespace = B64DECODE_WHITESPACE;
 /*@-internalglobs -modfilesys @*/
 int b64decode (const char * s, void ** datap, int *lenp)
 {
-    unsigned char b64dec[255];
+    unsigned char b64dec[256];
     const unsigned char *t;
     unsigned char *te;
     int ns, nt;
@@ -170,6 +170,7 @@ int b64decode (const char * s, void ** datap, int *lenp)
     for (t = s; *t != '\0'; t++) {
 	switch (b64dec[ (unsigned)*t ]) {
 	case 0x80:	/* invalid chararcter */
+fprintf(stderr, "--- b64decode %c(%02x) %02x\n", *t, (*t & 0xff), b64dec[ (unsigned)*t ]);
 	    return 3;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 0x81:	/* white space */
@@ -214,7 +215,7 @@ fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
 
     if (ns != 0) {		/* XXX can't happen, just in case */
 	if (t) free((void *)t);
-	return 3;
+	return 1;
     }
     if (lenp)
 	*lenp = (te - t);
