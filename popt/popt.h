@@ -25,9 +25,10 @@ struct poptOption {
 };
 
 struct poptAlias {
-    const char * longName;
+    char * longName;		/* may be NULL */
+    char shortName;		/* may be '\0' */
     int argc;
-    char ** argv;
+    char ** argv;		/* must be free()able */
 };
 
 typedef struct poptContext_s * poptContext;
@@ -47,6 +48,7 @@ char ** poptGetArgs(poptContext con);
 /* returns the option which caused the most recent error */
 char * poptBadOption(poptContext con, int flags);
 void poptFreeContext(poptContext con);
+int poptStuffArgs(poptContext con, char ** argv);
 int poptAddAlias(poptContext con, struct poptAlias alias, int flags);
 int poptReadConfigFile(poptContext con, char * fn);
 /* like above, but reads /etc/popt and $HOME/.popt along with environment 
