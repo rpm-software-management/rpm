@@ -1,6 +1,8 @@
 /*@-bounds@*/
 #include "system.h"
 
+#include <signal.h>	/* getOutputFrom() */
+
 #include <rpmbuild.h>
 #include <argv.h>
 #include <rpmfc.h>
@@ -13,6 +15,231 @@
 
 /*@notchecked@*/
 int _rpmfc_debug;
+
+static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
+{
+    ARGV_t argv = *argvp;
+    int argc = argvCount(argv);
+    int ac = argvCount(av);
+    int i;
+
+    argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
+    for (i = 0; i < ac; i++)
+	argv[argc + i] = rpmExpand(av[i], NULL);
+    argv[argc + ac] = NULL;
+    *argvp = argv;
+    return 0;
+}
+
+
+/*@-boundswrite@*/
+/** \ingroup rpmbuild
+ * Return output from helper script.
+ * @param dir		directory to run in (or NULL)
+ * @param argv		program and arguments to run
+ * @param writePtr	bytes to feed to script on stdin (or NULL)
+ * @param writeBytesLeft no. of bytes to feed to script on stdin
+ * @param failNonZero	is script failure an error?
+ * @return		buffered stdout from script, NULL on error
+ */     
+/*@null@*/
+static StringBuf getOutputFrom(/*@null@*/ const char * dir, char * argv[],
+                        const char * writePtr, int writeBytesLeft,
+                        int failNonZero)
+        /*@globals fileSystem, internalState@*/
+        /*@modifies fileSystem, internalState@*/
+{
+    int progPID;
+    int toProg[2];
+    int fromProg[2];
+    int status;
+    void *oldhandler;
+    StringBuf readBuff;
+    int done;
+
+    /*@-type@*/ /* FIX: cast? */
+    oldhandler = signal(SIGPIPE, SIG_IGN);
+    /*@=type@*/
+
+    toProg[0] = toProg[1] = 0;
+    (void) pipe(toProg);
+    fromProg[0] = fromProg[1] = 0;
+    (void) pipe(fromProg);
+    
+    if (!(progPID = fork())) {
+	(void) close(toProg[1]);
+	(void) close(fromProg[0]);
+	
+	(void) dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
+	(void) dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
+
+	(void) close(toProg[0]);
+	(void) close(fromProg[1]);
+
+	if (dir) {
+	    (void) chdir(dir);
+	}
+	
+	unsetenv("MALLOC_CHECK_");
+	(void) execvp(argv[0], argv);
+	/* XXX this error message is probably not seen. */
+	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
+		argv[0], strerror(errno));
+	_exit(RPMERR_EXEC);
+    }
+    if (progPID < 0) {
+	rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"),
+		argv[0], strerror(errno));
+	return NULL;
+    }
+
+    (void) close(toProg[0]);
+    (void) close(fromProg[1]);
+
+    /* Do not block reading or writing from/to prog. */
+    (void) fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
+    (void) fcntl(toProg[1], F_SETFL, O_NONBLOCK);
+    
+    readBuff = newStringBuf();
+
+    do {
+	fd_set ibits, obits;
+	struct timeval tv;
+	int nfd, nbw, nbr;
+	int rc;
+
+	done = 0;
+top:
+	/* XXX the select is mainly a timer since all I/O is non-blocking */
+	FD_ZERO(&ibits);
+	FD_ZERO(&obits);
+	if (fromProg[0] >= 0) {
+	    FD_SET(fromProg[0], &ibits);
+	}
+	if (toProg[1] >= 0) {
+	    FD_SET(toProg[1], &obits);
+	}
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+	nfd = ((fromProg[0] > toProg[1]) ? fromProg[0] : toProg[1]);
+	if ((rc = select(nfd, &ibits, &obits, NULL, &tv)) < 0) {
+	    if (errno == EINTR)
+		goto top;
+	    break;
+	}
+
+	/* Write any data to program */
+	if (toProg[1] >= 0 && FD_ISSET(toProg[1], &obits)) {
+          if (writePtr && writeBytesLeft > 0) {
+	    if ((nbw = write(toProg[1], writePtr,
+		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
+	        if (errno != EAGAIN) {
+		    perror("getOutputFrom()");
+	            exit(EXIT_FAILURE);
+		}
+	        nbw = 0;
+	    }
+	    writeBytesLeft -= nbw;
+	    writePtr += nbw;
+	  } else if (toProg[1] >= 0) {	/* close write fd */
+	    (void) close(toProg[1]);
+	    toProg[1] = -1;
+	  }
+	}
+	
+	/* Read any data from prog */
+	{   char buf[BUFSIZ+1];
+	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
+		buf[nbr] = '\0';
+		appendStringBuf(readBuff, buf);
+	    }
+	}
+
+	/* terminate on (non-blocking) EOF or error */
+	done = (nbr == 0 || (nbr < 0 && errno != EAGAIN));
+
+    } while (!done);
+
+    /* Clean up */
+    if (toProg[1] >= 0)
+    	(void) close(toProg[1]);
+    if (fromProg[0] >= 0)
+	(void) close(fromProg[0]);
+    /*@-type@*/ /* FIX: cast? */
+    (void) signal(SIGPIPE, oldhandler);
+    /*@=type@*/
+
+    /* Collect status from prog */
+    (void)waitpid(progPID, &status, 0);
+    if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
+	rpmError(RPMERR_EXEC, _("%s failed\n"), argv[0]);
+	return NULL;
+    }
+    if (writeBytesLeft) {
+	rpmError(RPMERR_EXEC, _("failed to write all data to %s\n"), argv[0]);
+	return NULL;
+    }
+    return readBuff;
+}
+/*@=boundswrite@*/
+
+int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+		int failnonzero)
+{
+    const char * s = NULL;
+    ARGV_t xav = NULL;
+    ARGV_t pav = NULL;
+    int pac = 0;
+    int ec = -1;
+    StringBuf sb = NULL;
+    const char * buf_stdin = NULL;
+    int buf_stdin_len = 0;
+    int xx;
+
+    if (sb_stdoutp)
+	*sb_stdoutp = NULL;
+    if (!(av && *av))
+	goto exit;
+
+    /* Find path to executable with (possible) args. */
+    s = rpmExpand(av[0], NULL);
+    if (!(s && *s))
+	goto exit;
+
+    /* Parse args buried within expanded exacutable. */
+    pac = 0;
+    xx = poptParseArgvString(s, &pac, (const char ***)&pav);
+    if (!(xx == 0 && pac > 0 && pav != NULL))
+	goto exit;
+
+    /* Build argv, appending args to the executable args. */
+    xav = NULL;
+    xx = argvAppend(&xav, pav);
+    if (av[1])
+	xx = rpmfcExpandAppend(&xav, av + 1);
+
+    if (sb_stdin) {
+	buf_stdin = getStringBuf(sb_stdin);
+	buf_stdin_len = strlen(buf_stdin);
+    }
+
+    /* Read output from exec'd helper. */
+    sb = getOutputFrom(NULL, xav, buf_stdin, buf_stdin_len, failnonzero);
+
+    if (sb_stdoutp) {
+	*sb_stdoutp = sb;
+	sb = NULL;	/* XXX don't free */
+    }
+
+    ec = 0;
+
+exit:
+    sb = freeStringBuf(sb);
+    xav = argvFree(xav);
+    pav = _free(pav);	/* XXX popt mallocs in single blob. */
+    s = _free(s);
+    return ec;
+}
 
 /**
  */
@@ -192,6 +419,11 @@ rpmfc rpmfcFree(rpmfc fc)
 	fc->ddictx = argiFree(fc->ddictx);
 	fc->provides = argvFree(fc->provides);
 	fc->requires = argvFree(fc->requires);
+
+	fc->sb_java = freeStringBuf(fc->sb_java);
+	fc->sb_perl = freeStringBuf(fc->sb_perl);
+	fc->sb_python = freeStringBuf(fc->sb_python);
+
     }
     fc = _free(fc);
     return NULL;
@@ -205,7 +437,8 @@ rpmfc rpmfcNew(void)
 
 static int rpmfcSCRIPT(rpmfc fc)
 {
-    const char * fn = fc->fn[fc->ix];;
+    const char * fn = fc->fn[fc->ix];
+    const char * bn;
     char deptype;
     char buf[BUFSIZ];
     FILE * fp;
@@ -240,6 +473,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (!(s[0] == '#' && s[1] == '!'))
 	    continue;
 	s += 2;
+
 	while (*s && strchr(" \t\n\r", *s) != NULL)
 	    s++;
 	if (*s == '\0')
@@ -252,6 +486,21 @@ static int rpmfcSCRIPT(rpmfc fc)
 		break;
 	}
 	*se = '\0';
+
+	/* Set color based on interpreter name. */
+	bn = basename(s);
+	if (!strcmp(bn, "perl")) {
+	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
+	    if (fc->sb_perl == NULL)
+		fc->sb_perl = newStringBuf();
+	    appendLineStringBuf(fc->sb_perl, fn);
+	}
+	if (!strcmp(bn, "python")) {
+	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+	    if (fc->sb_python == NULL)
+		fc->sb_python = newStringBuf();
+	    appendLineStringBuf(fc->sb_python, fn);
+	}
 
 	/* Add to package requires. */
 	if (argvSearch(fc->requires, s, NULL) == NULL) {
@@ -273,6 +522,7 @@ static int rpmfcSCRIPT(rpmfc fc)
     }
 
     (void) fclose(fp);
+
     return 0;
 }
 
@@ -592,14 +842,6 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
 	fcolor = rpmfcColoring(se);
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
-#ifdef	DYING
-	if (fcolor & RPMFC_ELF) {
-	    xx = rpmfcELF(fc);
-	} else if (fcolor & RPMFC_SCRIPT) {
-	    xx = rpmfcSCRIPT(fc);
-	}
-#endif
-
 	fc->ix++;
     }
 
@@ -624,21 +866,93 @@ int rpmfcApply(rpmfc fc)
     ARGV_t dav, davbase;
     rpmfcApplyTbl fcat;
     char deptype;
-    int fcolor;
     int nddict;
     int previx;
     unsigned int val;
     int ix;
     int i;
     int xx;
+char buf[BUFSIZ];
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
-	fcolor = fc->fcolor->vals[fc->ix];
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
-	    if (!(fcolor & fcat->colormask))
+	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
 		continue;
 	    xx = (*fcat->func) (fc);
+	}
+    }
+
+    /* Generate perl(foo) dependencies. */
+    if (fc->sb_perl) {
+	static const char * av_perl_provides[] = { "%{?__perl_provides}", NULL };
+	static const char * av_perl_requires[] = { "%{?__perl_requires}", NULL };
+	StringBuf sb_stdout;
+	ARGV_t pav;
+	int pac;
+
+	sb_stdout = NULL;
+	xx = rpmfcExec(av_perl_provides, fc->sb_perl, &sb_stdout, 0);
+	if (xx == 0 && sb_stdout != NULL) {
+	    xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
+	    pac = argvCount(pav);
+	    if (pav)
+	    for (i = 0; i < pac; i++) {
+		se = buf;
+		*se = '\0';
+		se = stpcpy(se, pav[i]);
+		if (pav[i+1] && strchr("!=<>", *pav[i+1])) {
+		    i++;
+		    *se++ = ' ';
+		    se = stpcpy(se, pav[i]);
+		    if (pav[i+1]) {
+			i++;
+			*se++ = ' ';
+			se = stpcpy(se, pav[i]);
+		    }
+		}
+
+		/* Add to package provides. */
+		if (argvSearch(fc->provides, buf, NULL) == NULL) {
+		    xx = argvAdd(&fc->provides, buf);
+		    xx = argvSort(fc->provides, NULL);
+		}
+		/* XXX attach to per-file dependencies. */
+	    }
+	    pav = argvFree(pav);
+	    sb_stdout = freeStringBuf(sb_stdout);
+	}
+
+	sb_stdout = NULL;
+	xx = rpmfcExec(av_perl_requires, fc->sb_perl, &sb_stdout, 0);
+	if (xx == 0 && sb_stdout != NULL) {
+	    xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
+	    pac = argvCount(pav);
+	    if (pav)
+	    for (i = 0; i < pac; i++) {
+		se = buf;
+		*se = '\0';
+		se = stpcpy(se, pav[i]);
+		if (pav[i+1] && strchr("!=<>", *pav[i+1])) {
+		    i++;
+		    *se++ = ' ';
+		    se = stpcpy(se, pav[i]);
+		    if (pav[i+1]) {
+			i++;
+			*se++ = ' ';
+			se = stpcpy(se, pav[i]);
+		    }
+		}
+
+		/* Add to package requires. */
+		if (argvSearch(fc->requires, buf, NULL) == NULL) {
+		    xx = argvAdd(&fc->requires, buf);
+		    xx = argvSort(fc->requires, NULL);
+		}
+		/* XXX attach to per-file dependencies. */
+	    }
+	    pav = argvFree(pav);
+	    sb_stdout = freeStringBuf(sb_stdout);
 	}
     }
 

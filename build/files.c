@@ -9,7 +9,6 @@
 #define	MYALLPERMS	07777
 
 #include <regex.h>
-#include <signal.h>	/* getOutputFrom() */
 
 #include <rpmio_internal.h>
 #include <fts.h>
@@ -17,6 +16,9 @@
 #include <rpmbuild.h>
 
 #include "cpio.h"
+
+#include "argv.h"
+#include "rpmfc.h"
 
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
@@ -2368,147 +2370,6 @@ int processSourceFiles(Spec spec)
     return fl.processingFailed;
 }
 
-/*@-boundswrite@*/
-StringBuf getOutputFrom(const char * dir, char * argv[],
-			const char * writePtr, int writeBytesLeft,
-			int failNonZero)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies fileSystem, internalState@*/
-{
-    int progPID;
-    int toProg[2];
-    int fromProg[2];
-    int status;
-    void *oldhandler;
-    StringBuf readBuff;
-    int done;
-
-    /*@-type@*/ /* FIX: cast? */
-    oldhandler = signal(SIGPIPE, SIG_IGN);
-    /*@=type@*/
-
-    toProg[0] = toProg[1] = 0;
-    (void) pipe(toProg);
-    fromProg[0] = fromProg[1] = 0;
-    (void) pipe(fromProg);
-    
-    if (!(progPID = fork())) {
-	(void) close(toProg[1]);
-	(void) close(fromProg[0]);
-	
-	(void) dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
-	(void) dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
-
-	(void) close(toProg[0]);
-	(void) close(fromProg[1]);
-
-	if (dir) {
-	    (void) chdir(dir);
-	}
-	
-	unsetenv("MALLOC_CHECK_");
-	(void) execvp(argv[0], argv);
-	/* XXX this error message is probably not seen. */
-	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
-		argv[0], strerror(errno));
-	_exit(RPMERR_EXEC);
-    }
-    if (progPID < 0) {
-	rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"),
-		argv[0], strerror(errno));
-	return NULL;
-    }
-
-    (void) close(toProg[0]);
-    (void) close(fromProg[1]);
-
-    /* Do not block reading or writing from/to prog. */
-    (void) fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
-    (void) fcntl(toProg[1], F_SETFL, O_NONBLOCK);
-    
-    readBuff = newStringBuf();
-
-    do {
-	fd_set ibits, obits;
-	struct timeval tv;
-	int nfd, nbw, nbr;
-	int rc;
-
-	done = 0;
-top:
-	/* XXX the select is mainly a timer since all I/O is non-blocking */
-	FD_ZERO(&ibits);
-	FD_ZERO(&obits);
-	if (fromProg[0] >= 0) {
-	    FD_SET(fromProg[0], &ibits);
-	}
-	if (toProg[1] >= 0) {
-	    FD_SET(toProg[1], &obits);
-	}
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
-	nfd = ((fromProg[0] > toProg[1]) ? fromProg[0] : toProg[1]);
-	if ((rc = select(nfd, &ibits, &obits, NULL, &tv)) < 0) {
-	    if (errno == EINTR)
-		goto top;
-	    break;
-	}
-
-	/* Write any data to program */
-	if (toProg[1] >= 0 && FD_ISSET(toProg[1], &obits)) {
-          if (writePtr && writeBytesLeft > 0) {
-	    if ((nbw = write(toProg[1], writePtr,
-		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
-	        if (errno != EAGAIN) {
-		    perror("getOutputFrom()");
-	            exit(EXIT_FAILURE);
-		}
-	        nbw = 0;
-	    }
-	    writeBytesLeft -= nbw;
-	    writePtr += nbw;
-	  } else if (toProg[1] >= 0) {	/* close write fd */
-	    (void) close(toProg[1]);
-	    toProg[1] = -1;
-	  }
-	}
-	
-	/* Read any data from prog */
-	{   char buf[BUFSIZ+1];
-	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
-		buf[nbr] = '\0';
-		appendStringBuf(readBuff, buf);
-	    }
-	}
-
-	/* terminate on (non-blocking) EOF or error */
-	done = (nbr == 0 || (nbr < 0 && errno != EAGAIN));
-
-    } while (!done);
-
-    /* Clean up */
-    if (toProg[1] >= 0)
-    	(void) close(toProg[1]);
-    if (fromProg[0] >= 0)
-	(void) close(fromProg[0]);
-    /*@-type@*/ /* FIX: cast? */
-    (void) signal(SIGPIPE, oldhandler);
-    /*@=type@*/
-
-    /* Collect status from prog */
-    (void)waitpid(progPID, &status, 0);
-    if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmError(RPMERR_EXEC, _("%s failed\n"), argv[0]);
-	return NULL;
-    }
-    if (writeBytesLeft) {
-	rpmError(RPMERR_EXEC, _("failed to write all data to %s\n"), argv[0]);
-	return NULL;
-    }
-    return readBuff;
-}
-/*@=boundswrite@*/
-
 /**
  */
 typedef struct {
@@ -2526,7 +2387,7 @@ typedef struct {
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
 DepMsg_t depMsgs[] = {
-  { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
+  { "Provides",		{ "%{?__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
 	0, -1 },
   { "PreReq",		{ NULL, NULL, NULL, NULL },
@@ -2553,13 +2414,13 @@ DepMsg_t depMsgs[] = {
   { "Requires(postun)",	{ NULL, "postun", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_SCRIPT_POSTUN), 0 },
-  { "Requires",		{ "%{__find_requires}", NULL, NULL, NULL },
+  { "Requires",		{ "%{?__find_requires}", NULL, NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
 	RPMSENSE_PREREQ, RPMSENSE_PREREQ },
-  { "Conflicts",	{ "%{__find_conflicts}", NULL, NULL, NULL },
+  { "Conflicts",	{ "%{?__find_conflicts}", NULL, NULL, NULL },
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
 	0, -1 },
-  { "Obsoletes",	{ "%{__find_obsoletes}", NULL, NULL, NULL },
+  { "Obsoletes",	{ "%{?__find_obsoletes}", NULL, NULL, NULL },
 	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
 	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
@@ -2576,30 +2437,24 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibP
 		fileSystem, internalState @*/
 {
     rpmfi fi = cpioList;
-    StringBuf writeBuf;
-    int writeBytes;
-    StringBuf readBuf;
-    DepMsg_t *dm;
-    char ** myargv;
+    StringBuf sb_stdin;
+    StringBuf sb_stdout;
+    DepMsg_t * dm;
     int failnonzero = 0;
     int rc = 0;
-    int ac;
     int i;
-
-    myargv = xcalloc(5, sizeof(*myargv));
 
     if (!(fi && fi->fc > 0))
 	return 0;
 
     if (! (pkg->autoReq || pkg->autoProv))
 	return 0;
-    
-    writeBuf = newStringBuf();
 
     /*
      * Create file manifest buffer to deliver to dependency finder.
      */
-    for (i = 0, writeBytes = 0; i < fi->fc; i++) {
+    sb_stdin = newStringBuf();
+    for (i = 0; i < fi->fc; i++) {
 
 	/*
 	 * On 2nd dependency pass for multilib, skip files already processed.
@@ -2611,15 +2466,14 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibP
 	    fi->fmapflags[i] &= ~CPIO_MULTILIB;
 	}
 
-	appendStringBuf(writeBuf, fi->dnl[fi->dil[i]]);
-	writeBytes += strlen(fi->dnl[fi->dil[i]]);
-	appendLineStringBuf(writeBuf, fi->bnl[i]);
-	writeBytes += strlen(fi->bnl[i]) + 1;
+	appendStringBuf(sb_stdin, fi->dnl[fi->dil[i]]);
+	appendLineStringBuf(sb_stdin, fi->bnl[i]);
     }
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
 	int tag, tagflags;
 	char * s;
+	int xx;
 
 	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
 	tagflags = 0;
@@ -2643,62 +2497,16 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibP
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-	/* Get the script name (and possible args) to run */
-/*@-branchstate@*/
-	if (dm->argv[0] != NULL) {
-	    const char ** av;
-
-	    /*@-nullderef@*/	/* FIX: double indirection. @*/
-	    s = rpmExpand(dm->argv[0], NULL);
-	    /*@=nullderef@*/
-	    if (!(s != NULL && *s != '%' && *s != '\0')) {
-		s = _free(s);
-		continue;
-	    }
-
-	    if (!(i = poptParseArgvString(s, &ac, (const char ***)&av))
-	    && ac > 0 && av != NULL)
-	    {
-		myargv = xrealloc(myargv, (ac + 5) * sizeof(*myargv));
-		for (i = 0; i < ac; i++)
-		    myargv[i] = xstrdup(av[i]);
-	    }
-	    av = _free(av);
-	}
-/*@=branchstate@*/
-
-	if (myargv[0] == NULL)
+	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
+	if (xx == -1)
 	    continue;
 
+	s = rpmExpand(dm->argv[0], NULL);
 	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: %s\n"), dm->msg,
 		(s ? s : ""));
 	s = _free(s);
 
-#if 0
-	if (*myargv[0] != '/') {	/* XXX FIXME: stat script here */
-	    myargv[0] = _free(myargv[0]);
-	    continue;
-	}
-#endif
-
-	/* Expand rest of script arguments (if any) */
-	for (i = 1; i < 4; i++) {
-	    if (dm->argv[i] == NULL)
-		/*@innerbreak@*/ break;
-	    /*@-nullderef@*/	/* FIX: double indirection. @*/
-	    myargv[ac++] = rpmExpand(dm->argv[i], NULL);
-	    /*@=nullderef@*/
-	}
-
-	myargv[ac] = NULL;
-	readBuf = getOutputFrom(NULL, myargv,
-			getStringBuf(writeBuf), writeBytes, failnonzero);
-
-	/* Free expanded args */
-	for (i = 0; i < ac; i++)
-	    myargv[i] = _free(myargv[i]);
-
-	if (readBuf == NULL) {
+	if (sb_stdout == NULL) {
 	    rc = RPMERR_EXEC;
 	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
 	    break;
@@ -2708,8 +2516,9 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibP
 	tagflags &= ~RPMSENSE_MULTILIB;
 	if (multiLibPass > 1)
 	    tagflags |=  RPMSENSE_MULTILIB;
-	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0, tagflags);
-	readBuf = freeStringBuf(readBuf);
+
+	rc = parseRCPOT(spec, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
+	sb_stdout = freeStringBuf(sb_stdout);
 
 	if (rc) {
 	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
@@ -2717,8 +2526,7 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibP
 	}
     }
 
-    writeBuf = freeStringBuf(writeBuf);
-    myargv = _free(myargv);
+    sb_stdin = freeStringBuf(sb_stdin);
     return rc;
 }
 /*@=bounds@*/
@@ -2832,31 +2640,26 @@ static int checkFiles(StringBuf fileList, int fileListLen)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    StringBuf readBuf = NULL;
-    const char * s = NULL;
-    char ** av = NULL;
-    int ac = 0;
-    int rc = 0;
-    char *buf;
+    static const char * av_ckfile[] = { "%{?__check_files}", NULL };
+    StringBuf sb_stdout = NULL;
+    const char * s;
+    int rc;
     
-    s = rpmExpand("%{?__check_files}", NULL);
-    if (!(s && *s)) {
-	rc = -1;
+    s = rpmExpand(av_ckfile[0], NULL);
+    rc = (s && *s) ? 0 : -1;
+    if (rc != 0)
 	goto exit;
-    }    
-    if (!((rc = poptParseArgvString(s, &ac, (const char ***)&av)) == 0
-    && ac > 0 && av != NULL))
-    {
-	goto exit;
-    }
-    
+
     rpmMessage(RPMMESS_NORMAL, _("Checking for unpackaged file(s): %s\n"), s);
-		    
-    readBuf = getOutputFrom(NULL, av, getStringBuf(fileList), fileListLen, 0);
+
+    rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0);
+    if (rc < 0)
+	goto exit;
     
-    if (readBuf) {
+    if (sb_stdout) {
 	static int _unpackaged_files_terminate_build = 0;
 	static int oneshot = 0;
+	const char * t;
 
 	if (!oneshot) {
 	    _unpackaged_files_terminate_build =
@@ -2864,18 +2667,17 @@ static int checkFiles(StringBuf fileList, int fileListLen)
 	    oneshot = 1;
 	}
 	
-	buf = getStringBuf(readBuf);
-	if ((*buf != '\0') && (*buf != '\n')) {
+	t = getStringBuf(sb_stdout);
+	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
 	    rpmMessage((rc ? RPMMESS_ERROR : RPMMESS_WARNING),
-		_("Installed (but unpackaged) file(s) found:\n%s"), buf);
+		_("Installed (but unpackaged) file(s) found:\n%s"), t);
 	}
     }
     
 exit:
-    readBuf = freeStringBuf(readBuf);
+    sb_stdout = freeStringBuf(sb_stdout);
     s = _free(s);
-    av = _free(av);
     return rc;
 }
 

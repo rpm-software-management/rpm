@@ -11,6 +11,7 @@ struct rpmfc_s {
     int fknown;		/*!< no. of classified files */
     int fwhite;		/*!< no. of "white" files */
     int ix;		/*!< current file index */
+
     ARGV_t fn;		/*!< (#files) file names */
     ARGI_t fcolor;	/*!< (#files) file colors */
     ARGI_t fcdictx;	/*!< (#files) file class dictionary indices */
@@ -19,8 +20,14 @@ struct rpmfc_s {
     ARGV_t cdict;	/*!< (#classes) file class dictionary */
     ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
     ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
+
     ARGV_t provides;	/*!< (#provides) package provides */
     ARGV_t requires;	/*!< (#requires) package requires */
+
+    StringBuf sb_java;	/*!< concatenated list of java colored files. */
+    StringBuf sb_perl;	/*!< concatenated list of perl colored files. */
+    StringBuf sb_python;/*!< concatenated list of python colored files. */
+
 };
 
 enum FCOLOR_e {
@@ -70,6 +77,12 @@ typedef struct rpmfcTokens_s * rpmfcToken;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ */
+int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+		int failnonzero)
+	/*@*/;
 
 /**
  */
