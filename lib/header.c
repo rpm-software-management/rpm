@@ -288,12 +288,11 @@ Header readHeader(int fd)
     }
 
     /* Finally, read the data */
-    /* XXX need to convert the data! */
     h->data = malloc(dl);
     h->data_malloced = dl;
     h->data_used = dl;
     read(fd, h->data, dl);
-
+    /* and convert it */
     converted_data = dataNetworkToHost(h);
     free(h->data);
     h->data = converted_data;
