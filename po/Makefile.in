@@ -7,7 +7,7 @@ INSTALL= @INSTALL@
 INSTALL_PROGRAM= @INSTALL_PROGRAM@
 INSTALL_DATA= @INSTALL_DATA@
 
-CATALOGS = se.mo fr.mo
+CATALOGS = sv.mo fr.mo de.mo
 
 POTFILES  = $(srcdir)/../rpm.c
 
@@ -39,8 +39,5 @@ install:
 	    $(INSTALL) -m 644 -o 0 -g 0 $$n $(NLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
 	done
 
-fr.mo:	fr.po
-	msgfmt -o $@ $<
-
-se.mo:	se.po
+%.mo: %.po
 	msgfmt -o $@ $<
