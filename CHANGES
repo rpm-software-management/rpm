@@ -10,6 +10,7 @@
 	- permit db3 configuration using macros.
 	- create dbi from template rather than passed args.
 	- use hashed access for package headers.
+	- solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
