@@ -364,6 +364,9 @@ static int rpmImportPubkey(const rpmts ts,
 
     if (argv == NULL) return res;
 
+    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
+	return -1;
+
     /*@-branchstate@*/
 /*@-boundsread@*/
     while ((fn = *argv++) != NULL)
@@ -890,16 +893,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
-    int dbmode = (qva->qva_mode != RPMSIGN_IMPORT_PUBKEY)
-		? O_RDONLY : (O_RDWR | O_CREAT);
     int res = 0;
     int xx;
 
     if (argv == NULL) return res;
-
-    xx = rpmtsOpenDB(ts, dbmode);
-    if (xx != 0)
-	return -1;
 
     switch (qva->qva_mode) {
     case RPMSIGN_CHK_SIGNATURE:

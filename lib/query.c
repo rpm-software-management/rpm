@@ -926,18 +926,6 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
 
-    switch (qva->qva_source) {
-#ifdef	DYING
-    case RPMQV_RPM:
-#endif
-    case RPMQV_SPECFILE:
-	break;
-    default:
-	if (rpmtsOpenDB(ts, O_RDONLY))
-	    return 1;	/* XXX W2DO? */
-	break;
-    }
-
     vsflags = 0;
     if (qva->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMTS_VSF_NODIGESTS;

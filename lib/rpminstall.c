@@ -400,12 +400,6 @@ restart:
 
 	if (eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) {
 
-	    /* Make sure rpmdb is open for binary packages. */
-	    if (ts->rdb == NULL && rpmtsOpenDB(ts, O_RDONLY)) {
-		eiu->numFailed++;
-		goto exit;
-	    }
-
 	    if (eiu->relocations) {
 		const char ** paths;
 		int pft;

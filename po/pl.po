@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-04 17:08-0400\n"
+"POT-Creation-Date: 2002-07-05 10:31-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1643,7 +1643,7 @@ msgstr "nie mo¿na zapisaæ do %s"
 msgid "error creating temporary file %s\n"
 msgstr "b³±d w tworzeniu pliku tymczasowego %s"
 
-#: lib/package.c:216 lib/rpmchecksig.c:180 lib/rpmchecksig.c:605
+#: lib/package.c:216 lib/rpmchecksig.c:180 lib/rpmchecksig.c:608
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -1661,27 +1661,27 @@ msgid ""
 msgstr ""
 "tylko pakiety z numerem g³ównym <= 3 s± obs³ugiwane przez t± wersjê RPM'a"
 
-#: lib/package.c:248 lib/rpmchecksig.c:198 lib/rpmchecksig.c:621
+#: lib/package.c:248 lib/rpmchecksig.c:198 lib/rpmchecksig.c:624
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/package.c:252 lib/rpmchecksig.c:202 lib/rpmchecksig.c:626
+#: lib/package.c:252 lib/rpmchecksig.c:202 lib/rpmchecksig.c:629
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Sygnatura nie jest dostêpna\n"
 
-#: lib/package.c:298 lib/rpmchecksig.c:524
+#: lib/package.c:298 lib/rpmchecksig.c:527
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/package.c:333 lib/package.c:358 lib/package.c:388 lib/rpmchecksig.c:697
+#: lib/package.c:333 lib/package.c:358 lib/package.c:388 lib/rpmchecksig.c:700
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:400 lib/rpmchecksig.c:122 lib/rpmchecksig.c:553
+#: lib/package.c:400 lib/rpmchecksig.c:122 lib/rpmchecksig.c:556
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -2227,7 +2227,7 @@ msgstr "nie mo¿na otworzyæ %s: %s"
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê"
 
-#: lib/query.c:124 lib/rpmts.c:283
+#: lib/query.c:124 lib/rpmts.c:285
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³±d w formacie: %s\n"
@@ -2277,8 +2277,8 @@ msgstr "pakiet nie ma ani w³a¶ciciela pliku ani list id"
 msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
-#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:362 lib/rpminstall.c:499
-#: lib/rpminstall.c:881 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:362 lib/rpminstall.c:493
+#: lib/rpminstall.c:875 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê\n"
@@ -2292,7 +2292,7 @@ msgstr "odpytywanie %s nie powiod³o siê\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:609 lib/rpminstall.c:512
+#: lib/query.c:609 lib/rpminstall.c:506
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
@@ -2362,7 +2362,7 @@ msgstr "numer rekordu pakietu: %d\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:907 lib/rpminstall.c:666
+#: lib/query.c:907 lib/rpminstall.c:660
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2411,52 +2411,52 @@ msgstr "%s: readLead nie powiod³o siê\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:386
+#: lib/rpmchecksig.c:389
 #, fuzzy, c-format
 msgid "%s: import read failed.\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:391
+#: lib/rpmchecksig.c:394
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:396
+#: lib/rpmchecksig.c:399
 #, fuzzy, c-format
 msgid "%s: base64 encode failed.\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:538
+#: lib/rpmchecksig.c:541
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:611
+#: lib/rpmchecksig.c:614
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Sygnatura nie jest dostêpna (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:859
+#: lib/rpmchecksig.c:862
 msgid "NOT OK"
 msgstr "NIE DOBRZE"
 
-#: lib/rpmchecksig.c:860 lib/rpmchecksig.c:874
+#: lib/rpmchecksig.c:863 lib/rpmchecksig.c:877
 msgid " (MISSING KEYS:"
 msgstr " (BRAK KLUCZY:"
 
-#: lib/rpmchecksig.c:862 lib/rpmchecksig.c:876
+#: lib/rpmchecksig.c:865 lib/rpmchecksig.c:879
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:863 lib/rpmchecksig.c:877
+#: lib/rpmchecksig.c:866 lib/rpmchecksig.c:880
 msgid " (UNTRUSTED KEYS:"
 msgstr "(NIEWIARYGODNE KLUCZE:"
 
-#: lib/rpmchecksig.c:865 lib/rpmchecksig.c:879
+#: lib/rpmchecksig.c:868 lib/rpmchecksig.c:882
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:873
+#: lib/rpmchecksig.c:876
 msgid "OK"
 msgstr "OK"
 
@@ -2548,66 +2548,66 @@ msgstr "... jako %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:423
+#: lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:473
+#: lib/rpminstall.c:467
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "b³±d czytania z pliku %s\n"
 
-#: lib/rpminstall.c:479
+#: lib/rpminstall.c:473
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM\n"
 
-#: lib/rpminstall.c:491 lib/rpminstall.c:737 tools/rpmgraph.c:156
+#: lib/rpminstall.c:485 lib/rpminstall.c:731 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:521
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:541 lib/rpminstall.c:694 lib/rpminstall.c:1068
+#: lib/rpminstall.c:535 lib/rpminstall.c:688 lib/rpminstall.c:1062
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpminstall.c:548 tools/rpmgraph.c:208
+#: lib/rpminstall.c:542 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:578
+#: lib/rpminstall.c:572
 msgid "installing binary packages\n"
 msgstr "instalacja pakietów binarnych\n"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:593
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:663
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:724
+#: lib/rpminstall.c:718
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpminstall.c:730
+#: lib/rpminstall.c:724
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
 
-#: lib/rpminstall.c:1062
+#: lib/rpminstall.c:1056
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2821,13 +2821,13 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s."
 
-#: lib/rpmts.c:135 lib/rpmts.c:190
+#: lib/rpmts.c:135 lib/rpmts.c:192
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:581
+#: lib/rpmts.c:583
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

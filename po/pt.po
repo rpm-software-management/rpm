@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-07-04 17:08-0400\n"
+"POT-Creation-Date: 2002-07-05 10:31-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1617,7 +1617,7 @@ msgstr "não consigo escrever em %%%s %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o ficheiro temporário %s\n"
 
-#: lib/package.c:216 lib/rpmchecksig.c:180 lib/rpmchecksig.c:605
+#: lib/package.c:216 lib/rpmchecksig.c:180 lib/rpmchecksig.c:608
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ":%s: o readLead falhou\n"
@@ -1631,27 +1631,27 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
 
-#: lib/package.c:248 lib/rpmchecksig.c:198 lib/rpmchecksig.c:621
+#: lib/package.c:248 lib/rpmchecksig.c:198 lib/rpmchecksig.c:624
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/package.c:252 lib/rpmchecksig.c:202 lib/rpmchecksig.c:626
+#: lib/package.c:252 lib/rpmchecksig.c:202 lib/rpmchecksig.c:629
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
 
-#: lib/package.c:298 lib/rpmchecksig.c:524
+#: lib/package.c:298 lib/rpmchecksig.c:527
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/package.c:333 lib/package.c:358 lib/package.c:388 lib/rpmchecksig.c:697
+#: lib/package.c:333 lib/package.c:358 lib/package.c:388 lib/rpmchecksig.c:700
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:400 lib/rpmchecksig.c:122 lib/rpmchecksig.c:553
+#: lib/package.c:400 lib/rpmchecksig.c:122 lib/rpmchecksig.c:556
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -2169,7 +2169,7 @@ msgstr "%s falhou no ficheiro %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
-#: lib/query.c:124 lib/rpmts.c:283
+#: lib/query.c:124 lib/rpmts.c:285
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "formato incorrecto: %s\n"
@@ -2218,8 +2218,8 @@ msgstr "o pacote nem tem um dono do ficheiro ou as listas de IDs\n"
 msgid "can't query %s: %s\n"
 msgstr "não consigo pesquisar o %s: %s\n"
 
-#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:362 lib/rpminstall.c:499
-#: lib/rpminstall.c:881 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:362 lib/rpminstall.c:493
+#: lib/rpminstall.c:875 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
@@ -2234,7 +2234,7 @@ msgid "old format source packages cannot be queried\n"
 msgstr ""
 "os pacotes com código-fonte no formato antigo não podem ser pesquisados\n"
 
-#: lib/query.c:609 lib/rpminstall.c:512
+#: lib/query.c:609 lib/rpminstall.c:506
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "nenhum pacote coincide com %s: %s\n"
@@ -2303,7 +2303,7 @@ msgstr "número de registo do pacote: %u\n"
 msgid "record %u could not be read\n"
 msgstr "o registo %u não pôde ser lido\n"
 
-#: lib/query.c:907 lib/rpminstall.c:666
+#: lib/query.c:907 lib/rpminstall.c:660
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
@@ -2352,52 +2352,52 @@ msgstr "%s: o writeLead falhou: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: o rpmWriteSignature falhou: %s\n"
 
-#: lib/rpmchecksig.c:386
+#: lib/rpmchecksig.c:389
 #, fuzzy, c-format
 msgid "%s: import read failed.\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/rpmchecksig.c:391
+#: lib/rpmchecksig.c:394
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:396
+#: lib/rpmchecksig.c:399
 #, fuzzy, c-format
 msgid "%s: base64 encode failed.\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/rpmchecksig.c:538
+#: lib/rpmchecksig.c:541
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/rpmchecksig.c:611
+#: lib/rpmchecksig.c:614
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Nenhuma assinatura disponível (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:859
+#: lib/rpmchecksig.c:862
 msgid "NOT OK"
 msgstr "NÃO-OK"
 
-#: lib/rpmchecksig.c:860 lib/rpmchecksig.c:874
+#: lib/rpmchecksig.c:863 lib/rpmchecksig.c:877
 msgid " (MISSING KEYS:"
 msgstr " (FALTAM AS CHAVES:"
 
-#: lib/rpmchecksig.c:862 lib/rpmchecksig.c:876
+#: lib/rpmchecksig.c:865 lib/rpmchecksig.c:879
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:863 lib/rpmchecksig.c:877
+#: lib/rpmchecksig.c:866 lib/rpmchecksig.c:880
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:865 lib/rpmchecksig.c:879
+#: lib/rpmchecksig.c:868 lib/rpmchecksig.c:882
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:873
+#: lib/rpmchecksig.c:876
 msgid "OK"
 msgstr "OK"
 
@@ -2489,66 +2489,66 @@ msgstr " ... como %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "a ignorar o %s - a transferência falhou - %s\n"
 
-#: lib/rpminstall.c:423
+#: lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "o pacote %s não pode ser mudado de sítio\n"
 
-#: lib/rpminstall.c:473
+#: lib/rpminstall.c:467
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "erro ao ler do ficheiros %s\n"
 
-#: lib/rpminstall.c:479
+#: lib/rpminstall.c:473
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "o %s precisa duma versão mais recente do RPM\n"
 
-#: lib/rpminstall.c:491 lib/rpminstall.c:737 tools/rpmgraph.c:156
+#: lib/rpminstall.c:485 lib/rpminstall.c:731 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:521
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "encontrados %d pacotes com código-fonte e %d binários\n"
 
-#: lib/rpminstall.c:541 lib/rpminstall.c:694 lib/rpminstall.c:1068
+#: lib/rpminstall.c:535 lib/rpminstall.c:688 lib/rpminstall.c:1062
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "dependências falhadas:\n"
 
-#: lib/rpminstall.c:548 tools/rpmgraph.c:208
+#: lib/rpminstall.c:542 tools/rpmgraph.c:208
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:578
+#: lib/rpminstall.c:572
 msgid "installing binary packages\n"
 msgstr "a instalar os pacotes binários\n"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:593
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "não consigo aceder ao ficheiro %s: %s\n"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:663
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "o \"%s\" especifica vários pacotes\n"
 
-#: lib/rpminstall.c:724
+#: lib/rpminstall.c:718
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "não consigo aceder ao %s: %s\n"
 
-#: lib/rpminstall.c:730
+#: lib/rpminstall.c:724
 #, c-format
 msgid "Installing %s\n"
 msgstr "A instalar o %s\n"
 
-#: lib/rpminstall.c:1062
+#: lib/rpminstall.c:1056
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "a efectuar o 'rollback' (+%d,-%d) pacotes para %s"
@@ -2764,13 +2764,13 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/rpmts.c:135 lib/rpmts.c:190
+#: lib/rpmts.c:135 lib/rpmts.c:192
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "não consigo abrir a base de dados Packages em %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:581
+#: lib/rpmts.c:583
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

@@ -3,32 +3,116 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "RPMCACHE" "8" "30 June 2002" "Red Hat, Inc." "Red Hat Linux"
+.TH "RPMCACHE" "8" "05 July 2002" "Red Hat, Inc." "Red Hat Linux"
 .SH NAME
-rpmcache \- Cache RPM Package Headers for Solving Dependencies
+rpmcache \- Cache RPM Package Headers
 .SH SYNOPSIS
 .PP
 
 
-\fBrpmcache\fR \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+\fBrpmcache\fR [ \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR ]
 
 .SH "DESCRIPTION"
 .PP
 \fBrpmcache\fR walks a file tree, possibly remotely using
 \fBFTP\fR, filtering paths using
 \fBglob\fR(7) expressions, reading
-package headers. The \fIPACKAGE_NAME\fR
+rpm package headers. The latest (i.e. comparing
+package epoch/version/release for identical package
+names and using the build time as a tie breaker) package
+headers, if they are unique, are cached in an rpm database.
+The rpm database cache can be used to provide suggested
+paths to packages that resolve unknow dependencies.
+.PP
+There are no \fBrpmcache\fR specific options, only common \fBrpm\fR options.
+See the \fBrpmcache\fR usage message for what is currently implemented.
+.PP
+The file tree path to be searched is configured using rpm
+macros. The final path is the concatentaion of 5 individual
+elements. Here are the macro names used to configure \fBrpmcache\fR, in
+the same order that they will be concatenated to build the
+file tree path that will be walked:
+.PP
+.TP
+\fB%_bhpath\fR
+The "path" level contains the leading part of the file tree path
+(or URL) for the file tree to be walked.
+No \fBglob\fR(7) expressions, here, please.
+.TP
+\fB%_bhcoll\fR
+The "collection" level contains a string (or
+\fBglob\fR(7) expression) to match sub-directories of
+\fB%_bhpath\fR.
+.TP
+\fB%_bhN\fR
+The "name" level contains a string (or
+\fBglob\fR(7) expression) to match sub-directories of
+\fB%_bhcoll\fR.
+The \fIPACKAGE_NAME\fR
 arguments are used to construct a \fBglob\fR(7)
 expression that will match any of specific package names within
 the Red Hat build system, and are almost certainly not of use to
 anyone outside of Red Hat.
+.TP
+\fB%_bhVR\fR
+The "version-release" level contains a string (or
+\fBglob\fR(7) expression) to match sub-directories of
+\fB%_bhN\fR.
+.TP
+\fB%_bhA\fR
+The "arch" level contains a string (or
+\fBglob\fR(7) expression) to match sub-directories of
+\fB%_bhVR\fR.
 .PP
-There are no \fBrpmcache\fR specific options, only common \fBrpm\fR options.
-See the \fBrpmcache\fR usage message for what is currently implemented.
+The location of the cache database is also configured using
+an rpm macro:
+.TP
+\fB%_cache_dbpath\fR
+The location of the cache database. The default value is
+\fI/var/spool/up2date/cache\fR.
+.PP
+The cache database is identical in format to an rpm database,
+and can be used with \fBrpm\fR from the command line. For example,
+to use the cache database to provide suggestions for packages
+that provide dependencies needed by a package install, the following
+macro should be configured in either
+\fI/etc/rpm/macros\fR or
+\fI~/.rpmmacros\fR:
+.TP
+\fB%_sdbpath\fR
+The location of the database that is used to provide
+suggested dependency resolutions.
+.PP
+.SS "Example (minimal) configuration for a Red Hat beehive tree:"
+.PP
+.nf
+%_cache_dbpath  /var/spool/up2date/cache
+%_sdbpath       %{_cache_dbpath}
+%_bhpath        file://localhost/mnt/redhat/beehive/comps/dist
+%_bhcoll        7.3
+%_bhN           @(basesystem|bash|filesystem|glibc-common|glibc|ldconfig|libtermcap|mktemp|setup|termcap)
+%_bhVR          *
+%_bhA           @(i[3456]86|noarch)
+.fi
+.SS "Example (minimal) configuration for a Red Hat FTP tree:"
+.PP
+.nf
+%_cache_dbpath  /var/spool/up2date/cache
+%_sdbpath       %{_cache_dbpath}
+%_bhpath        ftp://localhost/mnt/dist
+%_bhcoll        @(7.3|7.2|7.1|7.0|6.2|6.1|6.0|5.2|5.1|5.0)
+%_bhN           @(%{_arch})
+%_bhVR          *
+%_bhA           @(i[3456]86|noarch)
+.fi
+.SH "BUGS"
+.PP
+Yup. Please file bug reports and RFE's against the rpm-devel package
+using bugzilla:
+http://bugzilla.redhat.com/ <URL:http://bugzilla.redhat.com/>
 .SH "SEE ALSO"
 
 \fBrpm\fR(8),
-
 \fBglob\fR(7),
 
 \fB http://www.rpm.org/ <URL:http://www.rpm.org/>

@@ -141,6 +141,8 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, int rpmtag,
 			const void * keyp, size_t keylen)
 {
+    if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
+	return NULL;
     return rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 }
 
