@@ -1322,10 +1322,10 @@ int rpmVersionCompare(Header first, Header second) {
     int rc;
 
     if (!headerGetEntry(first, RPMTAG_SERIAL, NULL, (void **) &serialOne, NULL))
-	one = NULL;
+	serialOne = NULL;
     if (!headerGetEntry(second, RPMTAG_SERIAL, NULL, (void **) &serialTwo, 
 			NULL))
-	two = NULL;
+	serialTwo = NULL;
 
     if (serialOne && !serialTwo) 
 	return 1;
