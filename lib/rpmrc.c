@@ -1203,7 +1203,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
 #	if defined(__linux__) && defined(__powerpc__)
 	{
-	    uint32 pvr;
+	    unsigned pvr;
 	    __asm__ __volatile__ ("mfspr %0, 287" : "=r" (pvr));
 
 	    pvr >>= 16;
@@ -1212,7 +1212,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    else if ( (pvr == 0x36) || (pvr == 0x37) )
 		strcpy(un.machine, "ppciseries");
 	    else
-		strcpy(un.machine, "pmac");
+		strcpy(un.machine, "ppcmac");
 	}
 #	endif
 

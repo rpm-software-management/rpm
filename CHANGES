@@ -189,6 +189,9 @@
 	- add pmac/ppciseries/ppcpseries varieties to ppc arch family.
 	- include tdigest.c tkey.c and trpmio.c to "make dist".
 	- re-enable dependency resolution source from package NVR.
+	- rename pmac to ppcmac.
+	- ia64: revert -O0 compilation.
+	- upgrade to db-3.3.11 final.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -556,8 +556,16 @@ static int db3byteswapped(dbiIndex dbi)	/*@*/
     DB * db = dbi->dbi_db;
     int rc = 0;
 
-    if (db != NULL)
+    if (db != NULL) {
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11
+	int isswapped;
+	rc = db->get_byteswapped(db, &isswapped);
+	if (rc == 0)
+	    rc = isswapped;
+#else
 	rc = db->get_byteswapped(db);
+#endif
+    }
 
     return rc;
 }
@@ -997,8 +1005,16 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		rc = db->open(db, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 
-		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN)
+		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11
+		    DBTYPE dbi_type;
+		    xx = db->get_type(db, &dbi_type);
+		    if (xx == 0)
+			dbi->dbi_type = dbi_type;
+#else
 		    dbi->dbi_type = db->get_type(db);
+#endif
+		}
 	    }
 
 	    /* XXX return rc == errno without printing */

@@ -1,7 +1,7 @@
 #/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# $Id: rpmrc.in,v 2.41 2001/07/23 16:02:27 jbj Exp $
+# $Id: rpmrc.in,v 2.42 2001/07/24 02:52:52 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -37,7 +37,7 @@ optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
 optflags: ppciseries -O2 -fsigned-char
 optflags: ppcpseries -O2 -fsigned-char
-optflags: pmac -O2 -fsigned-char
+optflags: ppcmac -O2 -fsigned-char
 
 optflags: parisc -O2 -mpa-risc-1-0
 optflags: hppa1.0 -O2 -mpa-risc-1-0
@@ -91,7 +91,7 @@ arch_canon:	mipseb:	mipseb	4
 arch_canon:	ppc:	ppc	5
 arch_canon:	ppciseries:	ppciseries	5
 arch_canon:	ppcpseries:	ppcpseries	5
-arch_canon:	pmac:	pmac	5
+arch_canon:	ppcmac:	ppcmac	5
 
 arch_canon:	m68k:	m68k	6
 arch_canon:	IP:	sgi	7
@@ -181,7 +181,7 @@ buildarchtranslate: powerpc: ppc
 buildarchtranslate: powerppc: ppc
 buildarchtranslate: ppciseries: ppc
 buildarchtranslate: ppcpseries: ppc
-buildarchtranslate: pmac: ppc
+buildarchtranslate: ppcmac: ppc
 
 buildarchtranslate: atarist: m68kmint
 buildarchtranslate: atariste: m68kmint
@@ -220,7 +220,7 @@ arch_compat: powerpc: ppc
 arch_compat: powerppc: ppc
 arch_compat: ppciseries: ppc
 arch_compat: ppcpseries: ppc
-arch_compat: pmac: ppc
+arch_compat: ppcmac: ppc
 arch_compat: ppc: rs6000
 arch_compat: rs6000: noarch
 
@@ -313,7 +313,7 @@ buildarch_compat: m68k: noarch
 
 buildarch_compat: ppciseries: noarch
 buildarch_compat: ppcpseries: noarch
-buildarch_compat: pmac: noarch
+buildarch_compat: ppcmac: noarch
 buildarch_compat: ppc: noarch
 
 buildarch_compat: mipsel: noarch
