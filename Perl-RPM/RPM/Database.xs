@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.3 2000/06/02 07:54:49 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.4 2000/06/05 08:06:09 rjray Exp $";
 
 /*
   Use this define for deriving the saved rpmdb struct, rather than coding
@@ -50,18 +50,13 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
         if (SvROK(opts) && (SvTYPE(opts) == SVt_PVHV))
         {
             /* This is a hash reference. We are concerned only with
-               the keys "root", "mode" and "perms". */
+               the key "root". "mode" and "perms" don't apply, as we are
+               going to open the database as read-only. */
             opt_hash = (HV*)SvRV(opts);
 
             svp = hv_fetch(opt_hash, "root", 4, FALSE);
             if (svp && SvPOK(*svp))
                 root = SvPV(*svp, PL_na);
-            svp = hv_fetch(opt_hash, "mode", 4, FALSE);
-            if (svp && SvIOK(*svp))
-                mode = SvIV(*svp);
-            svp = hv_fetch(opt_hash, "perms", 5, FALSE);
-            if (svp && SvIOK(*svp))
-                perms = (mode_t)SvIV(*svp);
         }
         else if (SvPOK(opts))
         {
@@ -78,7 +73,7 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
 
     /* With that all processed, attempt to open the actual RPM DB */
     if (rpmdbOpen(root, &dbstruct->dbp, mode, perms) != 0)
-	/* rpm lib will have set the error already */
+        /* rpm lib will have set the error already */
         return (Null(RPM__Database));
     else
     {
