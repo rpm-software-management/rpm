@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-15 14:15-0400\n"
+"POT-Creation-Date: 2000-07-16 20:18-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -71,50 +71,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
-
-#: convertdb.c:40
-#, fuzzy
-msgid "RPM database already exists"
-msgstr "v‰liaikainen tietokanta %s on jo olemassa"
-
-#: convertdb.c:45
-msgid "Old db is missing"
-msgstr ""
-
-#: convertdb.c:56
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr ""
-
-#: convertdb.c:62
-msgid "Old db is corrupt"
-msgstr ""
-
-#: convertdb.c:71
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr ""
-
-#: convertdb.c:205
-msgid "rpmconvert: no arguments expected"
-msgstr ""
-
-#: convertdb.c:211
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-msgstr ""
-
-#: oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr ""
-
-#: oldrpmdb.c:461
-#, fuzzy
-msgid "package not found in database"
-msgstr "paketti %s ei ole %s:ss‰"
-
-#: oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr ""
 
 #: rpm.c:178 rpmqv.c:257
 #, c-format
@@ -2450,39 +2406,39 @@ msgstr ""
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:971
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:984
+#: lib/depends.c:985
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:997
+#: lib/depends.c:998
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1072
+#: lib/depends.c:1073
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
 #. conflicts exist.
-#: lib/depends.c:1139
+#: lib/depends.c:1140
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/depends.c:1265
+#: lib/depends.c:1266
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "silmukka edellytysten ketjussa: %s"
@@ -2753,88 +2709,88 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:577
+#: lib/install.c:580
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:578
+#: lib/install.c:581
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:622
+#: lib/install.c:625
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "asenna paketti"
 
-#: lib/install.c:642
+#: lib/install.c:645
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/install.c:648 lib/install.c:678
+#: lib/install.c:651 lib/install.c:681
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/install.c:652
+#: lib/install.c:655
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:672
+#: lib/install.c:675
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/install.c:682
+#: lib/install.c:685
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/install.c:716 lib/install.c:744
+#: lib/install.c:719 lib/install.c:747
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/install.c:766
+#: lib/install.c:769
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:768 lib/install.c:1041 lib/uninstall.c:28
+#: lib/install.c:771 lib/install.c:1044 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s:n nime‰minen %s:ksi ep‰onnistui: %s"
 
-#: lib/install.c:860
+#: lib/install.c:863
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:910
+#: lib/install.c:913
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/install.c:970
+#: lib/install.c:973
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:975
+#: lib/install.c:978
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1000
+#: lib/install.c:1003
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1037
+#: lib/install.c:1040
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1125
+#: lib/install.c:1128
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2843,18 +2799,13 @@ msgstr ""
 msgid "error creating temporary file %s"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/oldheader.c:301
-#, fuzzy, c-format
-msgid "bad file state: %s"
-msgstr "en voinut avata %s: %s"
-
-#: lib/package.c:53
+#: lib/package.c:52
 #, fuzzy
-msgid "packaging version 1 is notsupported by this version of RPM"
+msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
-#: lib/package.c:113
+#: lib/package.c:112
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -4147,6 +4098,18 @@ msgstr "virhe: ftpport pit‰‰ olla luku\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti ep‰onnistui\n"
+
+#, fuzzy
+#~ msgid "RPM database already exists"
+#~ msgstr "v‰liaikainen tietokanta %s on jo olemassa"
+
+#, fuzzy
+#~ msgid "package not found in database"
+#~ msgstr "paketti %s ei ole %s:ss‰"
+
+#, fuzzy
+#~ msgid "bad file state: %s"
+#~ msgstr "en voinut avata %s: %s"
 
 #, fuzzy
 #~ msgid "line %d: Invalid tag value: %s"

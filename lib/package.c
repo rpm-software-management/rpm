@@ -12,7 +12,6 @@
 #include <rpmlib.h>
 
 #include "misc.h"
-#include "oldheader.h"
 #include "rpmlead.h"
 #include "signature.h"
 
@@ -51,7 +50,7 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
     switch (lead->major) {
     case 1:
 	rpmError(RPMERR_NEWPACKAGE, _("packaging version 1 is not"
-		"supported by this version of RPM"));
+		" supported by this version of RPM"));
 	return 2;
 	/*@notreached@*/ break;
     case 2:

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.81 2000/07/15 18:22:26 jbj Exp $
+# $Id: sl.po,v 1.82 2000/07/17 00:40:18 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-15 14:15-0400\n"
+"POT-Creation-Date: 2000-07-16 20:18-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -64,48 +64,6 @@ msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Izgradnja za ciljni sistem %s\n"
-
-#: convertdb.c:40
-msgid "RPM database already exists"
-msgstr "Podatovna zbirka RPM ¾e obstaja"
-
-#: convertdb.c:45
-msgid "Old db is missing"
-msgstr "Stara podatkovna zbirka manjka"
-
-#: convertdb.c:56
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr "podatkovne zbirke RPM /var/lib/rpm ni uspelo ustvariti"
-
-#: convertdb.c:62
-msgid "Old db is corrupt"
-msgstr "Stara podatkovna zbirka je po¹kodovana"
-
-#: convertdb.c:71
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr "oldrpmdbGetPackageInfo neuspe¹en &olddb = %p olddb.packages = %p\n"
-
-#: convertdb.c:205
-msgid "rpmconvert: no arguments expected"
-msgstr "rpmconvert: argumentov ne prièakujemo"
-
-#: convertdb.c:211
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-msgstr "rpmconvert 1.0 - pretvorba podatkovne zbirke v /var/lib/rpm\n"
-
-#: oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr "izvlaèimo %s iz podatkovne zbirke\n"
-
-#: oldrpmdb.c:461
-msgid "package not found in database"
-msgstr "paketa ni najti v podatkovni zbirki"
-
-#: oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr "ni copyrighta!\n"
 
 #: rpm.c:178 rpmqv.c:257
 #, c-format
@@ -2385,39 +2343,39 @@ msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:971
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:984
+#: lib/depends.c:985
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s zadovoljen ob ponudbi db.\n"
 
-#: lib/depends.c:997
+#: lib/depends.c:998
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1072
+#: lib/depends.c:1073
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s zahteva, a ni zadovoljeno: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1139
+#: lib/depends.c:1140
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s v sporu: %s\n"
 
-#: lib/depends.c:1265
+#: lib/depends.c:1266
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "zanka v predpogojevani verigi: %s"
@@ -2690,86 +2648,86 @@ msgstr "vrednost %%instchangelog v makrodatoteki bi morala biti ¹tevilo, pa ni"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:577
+#: lib/install.c:580
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "razpakiranje arhiva neuspe¹no%s%s: %s"
 
-#: lib/install.c:578
+#: lib/install.c:581
 msgid " on file "
 msgstr " pri datoteki "
 
-#: lib/install.c:622
+#: lib/install.c:625
 msgid "installing a source package\n"
 msgstr "name¹èanje izvornega paketa\n"
 
-#: lib/install.c:642
+#: lib/install.c:645
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "ni mo¾no ustvariti izvornega imenika %s"
 
-#: lib/install.c:648 lib/install.c:678
+#: lib/install.c:651 lib/install.c:681
 #, c-format
 msgid "cannot write to %s"
 msgstr "ni mo¾no pisanje na %s"
 
-#: lib/install.c:652
+#: lib/install.c:655
 #, c-format
 msgid "sources in: %s\n"
 msgstr "izvori v: %s\n"
 
-#: lib/install.c:672
+#: lib/install.c:675
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "ni mo¾no ustvariti imenika z doloèili spec %s"
 
-#: lib/install.c:682
+#: lib/install.c:685
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "datoteka spec v: %s\n"
 
-#: lib/install.c:716 lib/install.c:744
+#: lib/install.c:719 lib/install.c:747
 msgid "source package contains no .spec file"
 msgstr "izvorni paket ne vsebuje datoteke .spec"
 
-#: lib/install.c:766
+#: lib/install.c:769
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/install.c:768 lib/install.c:1041 lib/uninstall.c:28
+#: lib/install.c:771 lib/install.c:1044 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s v %s neuspe¹no: %s"
 
-#: lib/install.c:860
+#: lib/install.c:863
 msgid "source package expected, binary found"
 msgstr "prièakovan izvorni paket, najden binarni"
 
-#: lib/install.c:910
+#: lib/install.c:913
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/install.c:970
+#: lib/install.c:973
 msgid "stopping install as we're running --test\n"
 msgstr "ustavljamo namestitev ker teèemo kot --test\n"
 
-#: lib/install.c:975
+#: lib/install.c:978
 msgid "running preinstall script (if any)\n"
 msgstr "poganjamo prednamestitvene skripte (èe obstajajo)\n"
 
-#: lib/install.c:1000
+#: lib/install.c:1003
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/install.c:1037
+#: lib/install.c:1040
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "opozorilo: %s shranjen kot %s"
 
-#: lib/install.c:1125
+#: lib/install.c:1128
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
 
@@ -2778,17 +2736,12 @@ msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
 msgid "error creating temporary file %s"
 msgstr "napaka pri ustvarjanju zaèasne datoteke %s"
 
-#: lib/oldheader.c:301
-#, c-format
-msgid "bad file state: %s"
-msgstr "okvarjeno stanje datoteke: %s"
-
-#: lib/package.c:53
+#: lib/package.c:52
 #, fuzzy
-msgid "packaging version 1 is notsupported by this version of RPM"
+msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <= 3"
 
-#: lib/package.c:113
+#: lib/package.c:112
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -4042,6 +3995,39 @@ msgstr "vrata URL morajo biti ¹tevilka\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#~ msgid "RPM database already exists"
+#~ msgstr "Podatovna zbirka RPM ¾e obstaja"
+
+#~ msgid "Old db is missing"
+#~ msgstr "Stara podatkovna zbirka manjka"
+
+#~ msgid "failed to create RPM database /var/lib/rpm"
+#~ msgstr "podatkovne zbirke RPM /var/lib/rpm ni uspelo ustvariti"
+
+#~ msgid "Old db is corrupt"
+#~ msgstr "Stara podatkovna zbirka je po¹kodovana"
+
+#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+#~ msgstr "oldrpmdbGetPackageInfo neuspe¹en &olddb = %p olddb.packages = %p\n"
+
+#~ msgid "rpmconvert: no arguments expected"
+#~ msgstr "rpmconvert: argumentov ne prièakujemo"
+
+#~ msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+#~ msgstr "rpmconvert 1.0 - pretvorba podatkovne zbirke v /var/lib/rpm\n"
+
+#~ msgid "pulling %s from database\n"
+#~ msgstr "izvlaèimo %s iz podatkovne zbirke\n"
+
+#~ msgid "package not found in database"
+#~ msgstr "paketa ni najti v podatkovni zbirki"
+
+#~ msgid "no copyright!\n"
+#~ msgstr "ni copyrighta!\n"
+
+#~ msgid "bad file state: %s"
+#~ msgstr "okvarjeno stanje datoteke: %s"
 
 #, fuzzy
 #~ msgid "line %d: Invalid tag value: %s"

@@ -958,6 +958,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	goto exit;
     }
 
+    /* XXX only the installer does not have the database open here. */
     if (rpmdep->rpmdb != NULL) {
 	if (*keyName == '/') {
 	    /* keyFlags better be 0! */

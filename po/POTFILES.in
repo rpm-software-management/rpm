@@ -39,7 +39,6 @@ lib/install.c
 lib/md5.c
 lib/md5sum.c
 lib/misc.c
-lib/oldheader.c
 lib/package.c
 lib/poptBT.c
 lib/poptQV.c

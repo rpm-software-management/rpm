@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-15 14:15-0400\n"
+"POT-Creation-Date: 2000-07-16 20:18-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -58,50 +58,6 @@ msgstr "Целевые платформы: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для целевой платформы %s\n"
-
-#: convertdb.c:40
-msgid "RPM database already exists"
-msgstr "База данных RPM уже существует"
-
-#: convertdb.c:45
-msgid "Old db is missing"
-msgstr "Отсутствует старая база данных"
-
-#: convertdb.c:56
-#, fuzzy
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr "неудача создания базы данных RPM /var/state/rpm"
-
-#: convertdb.c:62
-msgid "Old db is corrupt"
-msgstr "Старая база данных повреждена"
-
-#: convertdb.c:71
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr "неудача oldrpmdbGetPackageInfo: &olddb = %p olddb.packages = %p\n"
-
-#: convertdb.c:205
-msgid "rpmconvert: no arguments expected"
-msgstr "rpmconvert: аргументы не нужны"
-
-#: convertdb.c:211
-#, fuzzy
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-msgstr "rpmconvert 1.0 - конвертирую базу данных в /var/state/rpm\n"
-
-#: oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr "извлекаю %s из базы данных\n"
-
-#: oldrpmdb.c:461
-msgid "package not found in database"
-msgstr "пакет не найден в базе данных"
-
-#: oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr "нет копирайта!\n"
 
 #: rpm.c:178 rpmqv.c:257
 #, c-format
@@ -2397,39 +2353,39 @@ msgstr ""
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/depends.c:971
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:984
+#: lib/depends.c:985
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:997
+#: lib/depends.c:998
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1072
+#: lib/depends.c:1073
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1139
+#: lib/depends.c:1140
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1265
+#: lib/depends.c:1266
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "замкнутый цикл в цепочке требований для установки: %s"
@@ -2698,86 +2654,86 @@ msgstr "значение %%instchangelog в макрофайле должно быть числом, а оно нет..."
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:577
+#: lib/install.c:580
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "распаковка архива не удалась%s%s: %s"
 
-#: lib/install.c:578
+#: lib/install.c:581
 msgid " on file "
 msgstr " на файле "
 
-#: lib/install.c:622
+#: lib/install.c:625
 msgid "installing a source package\n"
 msgstr "устанавливаю исходный пакет\n"
 
-#: lib/install.c:642
+#: lib/install.c:645
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "не могу создать %s"
 
-#: lib/install.c:648 lib/install.c:678
+#: lib/install.c:651 lib/install.c:681
 #, c-format
 msgid "cannot write to %s"
 msgstr "не могу писать в %s"
 
-#: lib/install.c:652
+#: lib/install.c:655
 #, c-format
 msgid "sources in: %s\n"
 msgstr "исходники в: %s\n"
 
-#: lib/install.c:672
+#: lib/install.c:675
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "не могу создать %s"
 
-#: lib/install.c:682
+#: lib/install.c:685
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: lib/install.c:716 lib/install.c:744
+#: lib/install.c:719 lib/install.c:747
 msgid "source package contains no .spec file"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: lib/install.c:766
+#: lib/install.c:769
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/install.c:768 lib/install.c:1041 lib/uninstall.c:28
+#: lib/install.c:771 lib/install.c:1044 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "ошибка переименования %s в %s: %s"
 
-#: lib/install.c:860
+#: lib/install.c:863
 msgid "source package expected, binary found"
 msgstr "ожидался исходный пакет, найден бинарный"
 
-#: lib/install.c:910
+#: lib/install.c:913
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:970
+#: lib/install.c:973
 msgid "stopping install as we're running --test\n"
 msgstr "останавливаю установку, т.к. мы исполняем --test\n"
 
-#: lib/install.c:975
+#: lib/install.c:978
 msgid "running preinstall script (if any)\n"
 msgstr "исполняю скрипт preinstall (если есть)\n"
 
-#: lib/install.c:1000
+#: lib/install.c:1003
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "предупреждение: %s создан как %s"
 
-#: lib/install.c:1037
+#: lib/install.c:1040
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "предупреждение: %s сохранен как %s"
 
-#: lib/install.c:1125
+#: lib/install.c:1128
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "исполняю скрипт postinstall (если есть)\n"
@@ -2787,17 +2743,12 @@ msgstr "исполняю скрипт postinstall (если есть)\n"
 msgid "error creating temporary file %s"
 msgstr "ошибка создания временного файла %s"
 
-#: lib/oldheader.c:301
-#, c-format
-msgid "bad file state: %s"
-msgstr "неверное состояние файла: %s"
-
-#: lib/package.c:53
+#: lib/package.c:52
 #, fuzzy
-msgid "packaging version 1 is notsupported by this version of RPM"
+msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 3"
 
-#: lib/package.c:113
+#: lib/package.c:112
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -4055,6 +4006,41 @@ msgstr "url port должен быть числом\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "не могу создать %s\n"
+
+#~ msgid "RPM database already exists"
+#~ msgstr "База данных RPM уже существует"
+
+#~ msgid "Old db is missing"
+#~ msgstr "Отсутствует старая база данных"
+
+#, fuzzy
+#~ msgid "failed to create RPM database /var/lib/rpm"
+#~ msgstr "неудача создания базы данных RPM /var/state/rpm"
+
+#~ msgid "Old db is corrupt"
+#~ msgstr "Старая база данных повреждена"
+
+#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+#~ msgstr "неудача oldrpmdbGetPackageInfo: &olddb = %p olddb.packages = %p\n"
+
+#~ msgid "rpmconvert: no arguments expected"
+#~ msgstr "rpmconvert: аргументы не нужны"
+
+#, fuzzy
+#~ msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+#~ msgstr "rpmconvert 1.0 - конвертирую базу данных в /var/state/rpm\n"
+
+#~ msgid "pulling %s from database\n"
+#~ msgstr "извлекаю %s из базы данных\n"
+
+#~ msgid "package not found in database"
+#~ msgstr "пакет не найден в базе данных"
+
+#~ msgid "no copyright!\n"
+#~ msgstr "нет копирайта!\n"
+
+#~ msgid "bad file state: %s"
+#~ msgstr "неверное состояние файла: %s"
 
 #, fuzzy
 #~ msgid "line %d: Invalid tag value: %s"

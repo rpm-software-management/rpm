@@ -1407,7 +1407,7 @@ int rpmShowRC(FILE *fp)
     fprintf(fp, "\n");
 
     fprintf(fp, "Features supported by rpmlib:\n");
-    rpmShowRpmlibProvides(stdout);
+    rpmShowRpmlibProvides(fp);
     fprintf(fp, "\n");
 
     rpmDumpMacroTable(NULL, fp);

@@ -71,27 +71,20 @@
 	- multilib patch, take 1.
 	- add pre-transaction syscall's to handle /etc/init.d change.
 	- don't bother saving '/' as fingerprint subdir.
-	- eliminate legacy RPMTAG_{OBSOLETES,PROVIDES,CAPABILITY}.
-	- eliminate unused headerGz{Read,Write}.
 	- prefix payload paths with "./", otherwise "/" can't be represented.
 	- fix: compressFilelist broke when fed '/'.
 	- fix: typo in --last popt alias (#12690).
 	- fix: clean file paths before performing -qf (#12493).
 	- remove build mode help from rpm.c, use rpmb instead.
-	- support for rpmlib(...) internal feature dependencies.
 	- fix: set multilibno on sparc per-platform config.
 	- fix: legacy requires './' payload prefix to be omitted for rpm itself.
 	- fix: remove verbose database +++/--- messages to conform to doco.
-	- compare versions if doing --freshen.
 	- add S_ISLNK pre-transaction syscall test.
 	- fix: initialize pretransaction argv (segfault).
 	- fix: check rpmlib features w/o database (and check earlier as well).
 	- rip out pre-transaction syscalls, more design is needed.
-	- display rpmlib provides when invoked with --showrc.
 	- remove (dead) dependency checks on implicitly provided package names.
 	- remove (dead) rpmdb API code in python bindings.
-	- remove (legacy) support for version 1 packaging.
-	- remove (legacy) support for converting gdbm databases.
 	- fix: make set of replaced file headers unique.
 	- fix: don't attempt dbiOpen with anything but requested dbN.
 
@@ -116,6 +109,14 @@
 	- support for bzip payloads.
 	- fix: payload compression tag not nul terminated.
 	- identify package when install scriptlet fails (#12448).
+	- remove (unused) RPMTAG_CAPABILITY.
+	- remove (legacy) use of RPMTAG_{OBSOLETES,PROVIDES} internally.
+	- remove (legacy) support for version 1 packaging.
+	- remove (legacy) support for converting gdbm databases.
+	- eliminate unused headerGz{Read,Write}.
+	- support for rpmlib(...) internal feature dependencies.
+	- display rpmlib provides when invoked with --showrc.
+	- fix: compare versions if doing --freshen.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

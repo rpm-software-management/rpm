@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-07-15 14:15-0400\n"
+"POT-Creation-Date: 2000-07-16 20:18-0400\n"
 "PO-Revision-Date: 2000-06-22 21:59+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -59,48 +59,6 @@ msgstr "Bygger målplattformene: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger for mål %s\n"
-
-#: convertdb.c:40
-msgid "RPM database already exists"
-msgstr "RPM-databasen eksisterer allerede"
-
-#: convertdb.c:45
-msgid "Old db is missing"
-msgstr "Gammel db mangler"
-
-#: convertdb.c:56
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr "feilet å opprette RPM-database i /var/lib/rpm"
-
-#: convertdb.c:62
-msgid "Old db is corrupt"
-msgstr "Gammel db er korrupt"
-
-#: convertdb.c:71
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr "oldrpmdbGetPackageInfo feilet &olddb = %p olddb.packages = %p\n"
-
-#: convertdb.c:205
-msgid "rpmconvert: no arguments expected"
-msgstr "rpmconvert: ingen argumenter forventet"
-
-#: convertdb.c:211
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-msgstr "rpmconvert 1.0 - konverterer database i /var/lib/rpm\n"
-
-#: oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr "henter %s fra databasen\n"
-
-#: oldrpmdb.c:461
-msgid "package not found in database"
-msgstr "pakke ikke funnet i databasen"
-
-#: oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr "ingen lisens!\n"
 
 #: rpm.c:178 rpmqv.c:257
 #, c-format
@@ -2273,39 +2231,39 @@ msgstr ""
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:971
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:984
+#: lib/depends.c:985
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:997
+#: lib/depends.c:998
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1019
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1072
+#: lib/depends.c:1073
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1139
+#: lib/depends.c:1140
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1265
+#: lib/depends.c:1266
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2574,86 +2532,86 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:577
+#: lib/install.c:580
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:578
+#: lib/install.c:581
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:622
+#: lib/install.c:625
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:642
+#: lib/install.c:645
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:648 lib/install.c:678
+#: lib/install.c:651 lib/install.c:681
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:652
+#: lib/install.c:655
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:672
+#: lib/install.c:675
 #, c-format
 msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:682
+#: lib/install.c:685
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:716 lib/install.c:744
+#: lib/install.c:719 lib/install.c:747
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:766
+#: lib/install.c:769
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:768 lib/install.c:1041 lib/uninstall.c:28
+#: lib/install.c:771 lib/install.c:1044 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:860
+#: lib/install.c:863
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:910
+#: lib/install.c:913
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:970
+#: lib/install.c:973
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:975
+#: lib/install.c:978
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1000
+#: lib/install.c:1003
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1037
+#: lib/install.c:1040
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1125
+#: lib/install.c:1128
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2662,16 +2620,11 @@ msgstr ""
 msgid "error creating temporary file %s"
 msgstr ""
 
-#: lib/oldheader.c:301
-#, c-format
-msgid "bad file state: %s"
+#: lib/package.c:52
+msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 
-#: lib/package.c:53
-msgid "packaging version 1 is notsupported by this version of RPM"
-msgstr ""
-
-#: lib/package.c:113
+#: lib/package.c:112
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr ""
@@ -3904,6 +3857,36 @@ msgstr ""
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""
+
+#~ msgid "RPM database already exists"
+#~ msgstr "RPM-databasen eksisterer allerede"
+
+#~ msgid "Old db is missing"
+#~ msgstr "Gammel db mangler"
+
+#~ msgid "failed to create RPM database /var/lib/rpm"
+#~ msgstr "feilet å opprette RPM-database i /var/lib/rpm"
+
+#~ msgid "Old db is corrupt"
+#~ msgstr "Gammel db er korrupt"
+
+#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+#~ msgstr "oldrpmdbGetPackageInfo feilet &olddb = %p olddb.packages = %p\n"
+
+#~ msgid "rpmconvert: no arguments expected"
+#~ msgstr "rpmconvert: ingen argumenter forventet"
+
+#~ msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+#~ msgstr "rpmconvert 1.0 - konverterer database i /var/lib/rpm\n"
+
+#~ msgid "pulling %s from database\n"
+#~ msgstr "henter %s fra databasen\n"
+
+#~ msgid "package not found in database"
+#~ msgstr "pakke ikke funnet i databasen"
+
+#~ msgid "no copyright!\n"
+#~ msgstr "ingen lisens!\n"
 
 #~ msgid ""
 #~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "

@@ -447,23 +447,26 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 	int modified;
 	int count;
 
-	headerGetEntry(h, RPMTAG_FILESTATES, NULL, (void **)&secStates, &count);
-	
 	modified = 0;
+
+	if (!headerGetEntry(h, RPMTAG_FILESTATES, NULL, (void **)&secStates, &count))
+	    continue;
+	
 	prev = rpmdbGetIteratorOffset(mi);
 	num = 0;
 	while (fileInfo->otherPkg && fileInfo->otherPkg == prev) {
 	    assert(fileInfo->otherFileNum < count);
 	    if (secStates[fileInfo->otherFileNum] != RPMFILE_STATE_REPLACED) {
 		secStates[fileInfo->otherFileNum] = RPMFILE_STATE_REPLACED;
-		modified = 1;
+		if (modified == 0) {
+		    /* Modified header will be rewritten. */
+		    modified = 1;
+		    rpmdbSetIteratorModified(mi, modified);
+		}
 		num++;
 	    }
 	    fileInfo++;
 	}
-
-	/* XXX for dbN with falloc, headers *must* be the same size */
-	rpmdbSetIteratorModified(mi, modified);
     }
     rpmdbFreeIterator(mi);
 

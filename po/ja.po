@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-07-15 14:15-0400\n"
+"POT-Creation-Date: 2000-07-16 20:18-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -66,50 +66,6 @@ msgstr "作成中ターゲットプラットフォーム: %s\n"
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
 
-#: convertdb.c:40
-#, fuzzy
-msgid "RPM database already exists"
-msgstr "RPM データベースはすでに存在しています"
-
-#: convertdb.c:45
-msgid "Old db is missing"
-msgstr "古い db が見当たりません"
-
-#: convertdb.c:56
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr "/var/lib/rpm に RPM データベースを作成するのに失敗しました"
-
-#: convertdb.c:62
-msgid "Old db is corrupt"
-msgstr "古い db が壊れています"
-
-#: convertdb.c:71
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr "oldrpmdbGetPackageInfo の失敗 &olddb = %p olddb.packages = %p\n"
-
-#: convertdb.c:205
-msgid "rpmconvert: no arguments expected"
-msgstr "rpmconvert: 引数はここに来ません"
-
-#: convertdb.c:211
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-msgstr "rpmconvert 1.0 - /var/lib/rpm 中のデータベースの変換中\n"
-
-#: oldrpmdb.c:454
-#, fuzzy, c-format
-msgid "pulling %s from database\n"
-msgstr "データベースから %s を引き出しています\n"
-
-#: oldrpmdb.c:461
-#, fuzzy
-msgid "package not found in database"
-msgstr "パッケージはデータベース中に見つかりません"
-
-#: oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr "copyright がありません!\n"
-
 # rpm-2.5.5
 # 訳語対応
 # query[問い合わせ]
@@ -127,7 +83,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.96 2000/07/15 18:22:25 jbj Exp $
+# $Id: ja.po,v 1.97 2000/07/17 00:40:17 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -2392,39 +2348,39 @@ msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:971
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:984
+#: lib/depends.c:985
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:997
+#: lib/depends.c:998
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1072
+#: lib/depends.c:1073
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1139
+#: lib/depends.c:1140
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1265
+#: lib/depends.c:1266
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "prerequisite チェーンのループ: %s"
@@ -2701,87 +2657,87 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:577
+#: lib/install.c:580
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/install.c:578
+#: lib/install.c:581
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/install.c:622
+#: lib/install.c:625
 msgid "installing a source package\n"
 msgstr "ソースパッケージをインストールしています\n"
 
-#: lib/install.c:642
+#: lib/install.c:645
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:648 lib/install.c:678
+#: lib/install.c:651 lib/install.c:681
 #, c-format
 msgid "cannot write to %s"
 msgstr "%s へ書き込めません"
 
-#: lib/install.c:652
+#: lib/install.c:655
 #, c-format
 msgid "sources in: %s\n"
 msgstr "ソースは: %s\n"
 
-#: lib/install.c:672
+#: lib/install.c:675
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:682
+#: lib/install.c:685
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec ファイルは: %s\n"
 
-#: lib/install.c:716 lib/install.c:744
+#: lib/install.c:719 lib/install.c:747
 msgid "source package contains no .spec file"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/install.c:766
+#: lib/install.c:769
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/install.c:768 lib/install.c:1041 lib/uninstall.c:28
+#: lib/install.c:771 lib/install.c:1044 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s を %s にする名前の変更に失敗: %s"
 
-#: lib/install.c:860
+#: lib/install.c:863
 msgid "source package expected, binary found"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/install.c:910
+#: lib/install.c:913
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/install.c:970
+#: lib/install.c:973
 msgid "stopping install as we're running --test\n"
 msgstr "--test を実行するようにインストールを中止しています\n"
 
-#: lib/install.c:975
+#: lib/install.c:978
 msgid "running preinstall script (if any)\n"
 msgstr "プリインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/install.c:1000
+#: lib/install.c:1003
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "警告: %s は %s として作成されます"
 
-#: lib/install.c:1037
+#: lib/install.c:1040
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/install.c:1125
+#: lib/install.c:1128
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
@@ -2791,18 +2747,13 @@ msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 msgid "error creating temporary file %s"
 msgstr "一時ファイル %s の作成エラー"
 
-#: lib/oldheader.c:301
-#, fuzzy, c-format
-msgid "bad file state: %s"
-msgstr "不正なファイルの状態: %s"
-
-#: lib/package.c:53
+#: lib/package.c:52
 #, fuzzy
-msgid "packaging version 1 is notsupported by this version of RPM"
+msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:113
+#: lib/package.c:112
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -4105,6 +4056,43 @@ msgstr "url ポートは数字でなければなりません\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#, fuzzy
+#~ msgid "RPM database already exists"
+#~ msgstr "RPM データベースはすでに存在しています"
+
+#~ msgid "Old db is missing"
+#~ msgstr "古い db が見当たりません"
+
+#~ msgid "failed to create RPM database /var/lib/rpm"
+#~ msgstr "/var/lib/rpm に RPM データベースを作成するのに失敗しました"
+
+#~ msgid "Old db is corrupt"
+#~ msgstr "古い db が壊れています"
+
+#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+#~ msgstr "oldrpmdbGetPackageInfo の失敗 &olddb = %p olddb.packages = %p\n"
+
+#~ msgid "rpmconvert: no arguments expected"
+#~ msgstr "rpmconvert: 引数はここに来ません"
+
+#~ msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+#~ msgstr "rpmconvert 1.0 - /var/lib/rpm 中のデータベースの変換中\n"
+
+#, fuzzy
+#~ msgid "pulling %s from database\n"
+#~ msgstr "データベースから %s を引き出しています\n"
+
+#, fuzzy
+#~ msgid "package not found in database"
+#~ msgstr "パッケージはデータベース中に見つかりません"
+
+#~ msgid "no copyright!\n"
+#~ msgstr "copyright がありません!\n"
+
+#, fuzzy
+#~ msgid "bad file state: %s"
+#~ msgstr "不正なファイルの状態: %s"
 
 #, fuzzy
 #~ msgid "line %d: Invalid tag value: %s"
