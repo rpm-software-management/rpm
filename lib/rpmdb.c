@@ -360,9 +360,11 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     const char * basename;
     fingerPrint fp1, fp2;
     dbiIndexSet allMatches;
-    int i, rc;
+    int i, rc, num;
     Header h;
-    char ** fileList;
+    char ** baseNames, ** dirNames;
+    int_32 * dirIndexes;
+    char * otherFile;
 
     fp1 = fpLookup(filespec, 0);
 
@@ -383,20 +385,32 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 	    continue;
 	}
 
-	headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
-				(void **) &fileList, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_COMPFILELIST, NULL, 
+				(void **) &baseNames, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_COMPFILEDIRS, NULL, 
+				(void **) &dirIndexes, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_COMPDIRLIST, NULL, 
+				(void **) &dirNames, NULL);
 
 	do {
-	    fp2 = fpLookup(fileList[allMatches.recs[i].fileNumber], 1);
+	    num = allMatches.recs[i].fileNumber;
+	    otherFile = malloc(strlen(dirNames[dirIndexes[num]]) + 
+			      strlen(baseNames[num]) + 1);
+	    strcpy(otherFile, dirNames[dirIndexes[num]]);
+	    strcat(otherFile, baseNames[num]);
+
+	    fp2 = fpLookup(otherFile, 1);
 	    if (FP_EQUAL(fp1, fp2)) 
 		dbiAppendIndexRecord(matches, allMatches.recs[i]);
 
+	    free(otherFile);
 	    i++;
 	} while ((i < allMatches.count) && 
 			((i == 0) || (allMatches.recs[i].recOffset == 
 				allMatches.recs[i - 1].recOffset)));
 
-	free(fileList);
+	free(baseNames);
+	free(dirNames);
 	headerFree(h);
     }
 
