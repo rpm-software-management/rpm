@@ -19,14 +19,14 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h \
 	ugid.h
-noinst_HEADERS = rpmio_internal.h rpmpgp.h
+noinst_HEADERS = fts.h rpmio_internal.h rpmpgp.h
 
 LIBS +=	@WITH_ZLIB_LIB@ -lrt -lpthread
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
 lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = digest.c macro.c rpmio.c rpmlog.c rpmmalloc.c \
+librpmio_la_SOURCES = digest.c fts.c macro.c rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release @VERSION@
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)

@@ -120,12 +120,12 @@ typedef struct _ftsent {
 } FTSENT;
 
 __BEGIN_DECLS
-FTSENT	*fts_children (FTS *, int) __THROW;
-int	 fts_close (FTS *) __THROW;
-FTS	*fts_open (char * const *, int,
+FTSENT	*Fts_children (FTS *, int) __THROW;
+int	 Fts_close (FTS *) __THROW;
+FTS	*Fts_open (char * const *, int,
 		   int (*)(const FTSENT **, const FTSENT **)) __THROW;
-FTSENT	*fts_read (FTS *) __THROW;
-int	 fts_set (FTS *, FTSENT *, int) __THROW;
+FTSENT	*Fts_read (FTS *) __THROW;
+int	 Fts_set (FTS *, FTSENT *, int) __THROW;
 __END_DECLS
 
 #endif /* fts.h */

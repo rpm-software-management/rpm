@@ -31,6 +31,7 @@
 static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif /* LIBC_SCCS and not lint */
 
+#if defined(_LIBC)
 #include <sys/param.h>
 #include <include/sys/stat.h>
 #include <fcntl.h>
@@ -40,6 +41,18 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#else
+#include "system.h"
+#include "fts.h"
+#   define internal_function
+#   define __set_errno(val) (*__errno_location ()) = (val)
+#   define __open	open
+#   define __close	close
+#   define __fchdir	fchdir
+#   define __opendir	opendir
+#   define __closedir	closedir
+#   define __readdir	readdir
+#endif
 
 
 /* Largest alignment size needed, minus one.
@@ -85,7 +98,7 @@ static int      fts_safe_changedir __P((FTS *, FTSENT *, int, const char *))
 #define	BREAD		3		/* fts_read */
 
 FTS *
-fts_open(argv, options, compar)
+Fts_open(argv, options, compar)
 	char * const *argv;
 	register int options;
 	int (*compar) __P((const FTSENT **, const FTSENT **));
@@ -224,7 +237,7 @@ fts_load(sp, p)
 }
 
 int
-fts_close(sp)
+Fts_close(sp)
 	FTS *sp;
 {
 	register FTSENT *freep, *p;
@@ -279,7 +292,7 @@ fts_close(sp)
 	    ? p->fts_pathlen - 1 : p->fts_pathlen)
 
 FTSENT *
-fts_read(sp)
+Fts_read(sp)
 	register FTS *sp;
 {
 	register FTSENT *p, *tmp;
@@ -473,7 +486,7 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
  */
 /* ARGSUSED */
 int
-fts_set(sp, p, instr)
+Fts_set(sp, p, instr)
 	FTS *sp;
 	FTSENT *p;
 	int instr;
@@ -488,7 +501,7 @@ fts_set(sp, p, instr)
 }
 
 FTSENT *
-fts_children(sp, instr)
+Fts_children(sp, instr)
 	register FTS *sp;
 	int instr;
 {
