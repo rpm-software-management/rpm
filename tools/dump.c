@@ -8,7 +8,7 @@
 #include "rpmlib.h"
 #include "intl.h"
 
-void main(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
     Header h;
     int fd;
@@ -33,6 +33,8 @@ void main(int argc, char ** argv)
   
     headerDump(h, stdout, 1, rpmTagTable);
     headerFree(h);
+
+    return 0;
 }
 
   

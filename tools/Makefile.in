@@ -1,5 +1,6 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
+top_srcdir = @top_srcdir@
 
 include ../Makefile.inc
 
@@ -20,10 +21,12 @@ clean:
 	rm -f *.a *.o core *~ $(PROGS)
 
 distclean: clean
-	rm -f .depend Makefile
+	rm -f Makefile
 
 depend:
-	$(CPP) $(CFLAGS) -M $(srcdir)/*.c > .depend
+	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
+	    $(CPP) $(CFLAGS) -MM $(srcdir)/*.c | \
+		sed s+$$topdir_path+$(top_srcdir)+g > .depend
 
 $(PROGS): ../lib/librpm.a
 

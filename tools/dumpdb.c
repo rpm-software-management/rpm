@@ -9,7 +9,7 @@
 #include "rpmlib.h"
 #include "intl.h"
 
-void main(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
     Header h;
     int offset;
@@ -53,6 +53,8 @@ void main(int argc, char ** argv)
     }
 
     rpmdbClose(db);
+
+    return 0;
 }
 
   
