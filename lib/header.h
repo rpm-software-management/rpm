@@ -46,6 +46,10 @@
  *	- (rpm-4.0.3) A SHA1 digest of the original header is appended
  *	  (i.e. detached digest) to the immutable header region to verify
  *	  changes to the original header.
+ *	- (rpm-4.0.3) Private methods (e.g. headerLoad(), headerUnload(), etc.)
+ *	  to permit header data to be manipulated opaquely through vectors.
+ *	- (rpm-4.0.3) Sanity checks on header data to limit #tags to 65K,
+ *	  #bytes to 16Mb, and total metadata size to 32Mb added.
  * .
  *
  * \par Development Issues
@@ -54,11 +58,9 @@
  * will be added to headers.
  *
  * - Private header methods.
- *	- Private methods (e.g. headerLoad(), headerUnload(), etc.) to
- *	  permit header data to be manipulated opaquely. Initially
- *	  the transaction element file info TFI_t will be used as
- *	  proof-of-concept, binary XML will probably be implemented
- *	  soon thereafter.
+ *	- Private methods for the transaction element file info TFI_t may
+ *	  be used as proof-of-concept, binary XML may be implemented
+ *	  as a header format representation soon thereafter.
  * - DSA signature for header metadata.
  *	- The manner in which rpm packages are signed is going to change.
  *	  The SHA1 digest in the header will be signed, equivalent to a DSA
@@ -70,6 +72,7 @@
  *	  only the name field in the cpio header is used to associate an
  *	  archive file member with the corresponding entry for the file
  *	  in header metadata.
+ * .
  */
 
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */

@@ -43,6 +43,18 @@ static unsigned char header_magic[8] = {
  */
 static size_t headerMaxbytes = (32*1024*1024);
 
+/**
+ * Sanity check on no. of tags.
+ * This check imposes a limit of 65K tags, more than enough.
+ */ 
+#define hdrchkTags(_ntags)	((_ntags) & 0xffff0000)
+
+/**
+ * Sanity check on data size and/or offset.
+ * This check imposes a limit of 16Mb, more than enough.
+ */ 
+#define hdrchkData(_nbytes)	((_nbytes) & 0xff000000)
+
 /** \ingroup header
  * Alignment needs (and sizeof scalars types) for internal rpm data types.
  */
@@ -492,6 +504,11 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
 	driplen += entry->length;
 	dl += entry->length;
     }
+
+    /* Sanity checks on header intro. */
+    if (hdrchkTags(il) || hdrchkData(dl))
+	goto errxit;
+
     len = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
 
     ei = xmalloc(len);
@@ -700,12 +717,16 @@ Header headerLoad(void * uh)
     size_t pvlen = sizeof(il) + sizeof(dl) +
                (il * sizeof(struct entryInfo)) + dl;
     void * pv = uh;
-    Header h = xcalloc(1, sizeof(*h));
+    Header h = NULL;
     entryInfo pe;
     char * dataStart;
     indexEntry entry; 
     int rdlen;
     int i;
+
+    /* Sanity checks on header intro. */
+    if (hdrchkTags(il) || hdrchkData(dl))
+	goto errxit;
 
     ei = (int_32 *) pv;
     /*@-castexpose@*/
@@ -713,6 +734,7 @@ Header headerLoad(void * uh)
     /*@=castexpose@*/
     dataStart = (char *) (pe + il);
 
+    h = xcalloc(1, sizeof(*h));
     /*@-assignexpose@*/
     h->hv = *hdrVec;		/* structure assignment */
     /*@=assignexpose@*/
@@ -763,19 +785,19 @@ Header headerLoad(void * uh)
 	    goto errxit;
 	entry->info.count = htonl(pe->count);
 
-	/* XXX imposes limit of 65K tags, more than enough. */
-	if (entry->info.count & 0xffff0000)
+	if (hdrchkTags(entry->info.count))
 	    goto errxit;
 
 	{  int off = ntohl(pe->offset);
 
-	    /* XXX imposes limit of 16Mb on metadata, more than enough. */
-	    if (off & 0xff000000)
+	    if (hdrchkData(off))
 		goto errxit;
 	   if (off) {
 		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
 		ril = rdl/sizeof(*pe);
+		if (hdrchkTags(ril) || hdrchkData(rdl))
+		    goto errxit;
 		entry->info.tag = htonl(pe->tag);
 	    } else {
 		ril = il;
@@ -857,7 +879,8 @@ Header headerCopyLoad(const void * uh)
     void * nuh = NULL;
     Header h = NULL;
 
-    if (pvlen < headerMaxbytes) {
+    /* Sanity checks on header intro. */
+    if (!(hdrchkTags(il) || hdrchkData(dl)) && pvlen < headerMaxbytes) {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
 	if ((h = headerLoad(nuh)) != NULL)
 	    h->flags |= HEADERFLAG_ALLOCATED;
@@ -900,7 +923,9 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     dl = ntohl(block[i++]);
 
     len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo)) + dl;
-    if (len > headerMaxbytes)
+
+    /* Sanity checks on header intro. */
+    if (hdrchkTags(il) || hdrchkData(dl) || len > headerMaxbytes)
 	goto exit;
 
     ei = xmalloc(len);
