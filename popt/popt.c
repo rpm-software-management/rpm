@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -75,6 +76,8 @@ int poptGetNextOpt(poptContext con) {
     char * optString, * chptr, * localOptString;
     char * longArg = NULL;
     char * origOptString;
+    long aLong;
+    char * end;
     struct poptOption * opt = NULL;
     int done = 0;
     int i;
@@ -214,6 +217,24 @@ int poptGetNextOpt(poptContext con) {
 		  case POPT_ARG_STRING:
 		    *((char **) opt->arg) = con->os->nextArg;
 		    break;
+
+		  case POPT_ARG_INT:
+		  case POPT_ARG_LONG:
+		    aLong = strtol(con->os->nextArg, &end, 0);
+		    if (*end) 
+			return POPT_ERROR_BADNUMBER;
+
+		    if (aLong == LONG_MIN || aLong == LONG_MAX)
+			return POPT_ERROR_OVERFLOW;
+		    if (opt->argInfo == POPT_ARG_LONG) {
+			*((long *) opt->arg) = aLong;
+		    } else {
+			if (aLong > INT_MAX || aLong < INT_MIN)
+			    return POPT_ERROR_OVERFLOW;
+			*((int *) opt->arg) =aLong;
+		    }
+		    break;
+
 		  default:
 		    printf("option type not implemented in popt\n");
 		    exit(1);

@@ -1,6 +1,6 @@
 LIBOBJECTS = 	popt.o
 
-DEFCFLAGS=-O2
+DEFCFLAGS=-O2 -Wall
 
 SOURCES =$(subst .o,.c,$(LIBOBJECTS))
 LIBPOPT = libpopt.a

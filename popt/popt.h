@@ -13,6 +13,8 @@
 #define POPT_ERROR_OPTSTOODEEP	-13
 #define POPT_ERROR_BADQUOTE	-15	/* only from poptParseArgString() */
 #define POPT_ERROR_ERRNO	-16	/* only from poptParseArgString() */
+#define POPT_ERROR_BADNUMBER	-17
+#define POPT_ERROR_OVERFLOW	-18
 
 #define POPT_BADOPTION_NOALIAS  (1 << 0)  /* don't go into an alias */
 
