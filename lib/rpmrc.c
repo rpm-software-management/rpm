@@ -154,7 +154,7 @@ static char *lookupInDefaultTable(char *name,
 				  int tableLen);
 static void setDefaults(void);
 static void setPathDefault(int var, char * s);
-static void rebuildCompatTables(int type);
+static void rebuildCompatTables(int type, char * name);
 
 /* compatiblity tables */
 static int machCompatCacheAdd(char * name, char * fn, int linenum,
@@ -775,14 +775,18 @@ static void rpmSetVarArch(int var, char * val, char * arch) {
 }
 
 void rpmSetTables(int archTable, int osTable) {
+    char * arch, * os;
+
+    defaultMachine(&arch, &os);
+
     if (currTables[ARCH] != archTable) {
 	currTables[ARCH] = archTable;
-	rebuildCompatTables(ARCH);
+	rebuildCompatTables(ARCH, arch);
     }
 
-    if (currTables[OS] != archTable) {
-	currTables[OS] = archTable;
-	rebuildCompatTables(OS);
+    if (currTables[OS] != osTable) {
+	currTables[OS] = osTable;
+	rebuildCompatTables(OS, os);
     }
 }
 
@@ -799,13 +803,14 @@ int rpmMachineScore(int type, char * name) {
 void rpmSetMachine(char * arch, char * os) {
     int transOs = os == NULL;
     int transArch = arch == NULL;
+    char * realArch, * realOs;
 
-    if (!arch && !os)
-	defaultMachine(&arch, &os);
-    else if (!arch)
-	defaultMachine(&arch, NULL);
-    else if (!os)
-	defaultMachine(NULL, &os);
+    defaultMachine(&realArch, &realOs);
+
+    if (!arch)
+	arch = realArch;
+    if (!os)
+	os = realOs;
 
     if (transArch && tables[currTables[ARCH]].hasTranslate)
 	arch = lookupInDefaultTable(arch,
@@ -819,20 +824,20 @@ void rpmSetMachine(char * arch, char * os) {
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	if (current[ARCH]) free(current[ARCH]);
 	current[ARCH] = strdup(arch);
-	rebuildCompatTables(ARCH);
+	rebuildCompatTables(ARCH, realArch);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
 	if (current[OS]) free(current[OS]);
 	current[OS] = strdup(os);
-	rebuildCompatTables(OS);
+	rebuildCompatTables(OS, realOs);
     }
 }
 
-static void rebuildCompatTables(int type) {
+static void rebuildCompatTables(int type, char * name) {
     machFindEquivs(&tables[currTables[type]].cache,
 		   &tables[currTables[type]].equiv,
-		    current[type]);
+		   name);
 }
 
 static void getMachineInfo(int type, char ** name, int * num) {
@@ -877,22 +882,35 @@ int rpmShowRC(FILE *f)
 
     /* the caller may set the build arch which should be printed here */
     fprintf(f, "ARCHITECTURE AND OS:\n");
-    fprintf(f, "build arch           : %s\n", current[ARCH]);
-    fprintf(f, "build os             : %s\n", current[OS]);
+    fprintf(f, "build arch            : %s\n", current[ARCH]);
+
+    fprintf(f, "compatible build archs:");
+    equivTable = &tables[RPM_MACHTABLE_BUILDARCH].equiv;
+    for (i = 0; i < equivTable->count; i++)
+	fprintf(f," %s", equivTable->list[i].name);
+    fprintf(f, "\n");
+
+    fprintf(f, "build os              : %s\n", current[OS]);
+
+    fprintf(f, "compatible build os's :");
+    equivTable = &tables[RPM_MACHTABLE_BUILDOS].equiv;
+    for (i = 0; i < equivTable->count; i++)
+	fprintf(f," %s", equivTable->list[i].name);
+    fprintf(f, "\n");
 
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetMachine(NULL, NULL);
 
-    fprintf(f, "install arch         : %s\n", current[ARCH]);
-    fprintf(f, "install os           : %s\n", current[OS]);
+    fprintf(f, "install arch          : %s\n", current[ARCH]);
+    fprintf(f, "install os            : %s\n", current[OS]);
 
-    fprintf(f, "compatible arch list :");
+    fprintf(f, "compatible archs      :");
     equivTable = &tables[RPM_MACHTABLE_INSTARCH].equiv;
     for (i = 0; i < equivTable->count; i++)
 	fprintf(f," %s", equivTable->list[i].name);
     fprintf(f, "\n");
 
-    fprintf(f, "compatible os list   :");
+    fprintf(f, "compatible os's       :");
     equivTable = &tables[RPM_MACHTABLE_INSTOS].equiv;
     for (i = 0; i < equivTable->count; i++)
 	fprintf(f," %s", equivTable->list[i].name);
@@ -902,7 +920,7 @@ int rpmShowRC(FILE *f)
     opt = optionTable;
     while (count < optionTableSize) {
 	s = rpmGetVar(opt->var);
-	fprintf(f, "%-20s : %s\n", opt->name, s ? s : "(not set)");
+	fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
 	opt++;
 	count++;
     }
