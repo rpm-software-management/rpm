@@ -6,7 +6,7 @@
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
 
-%define	__prefix	/usr
+%define	__prefix	%{?_prefix}%{!?_prefix:/usr}
 %{?!_lib: %define _lib lib}
 %{expand: %%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
 
@@ -145,11 +145,12 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 	--mandir='${prefix}%{__share}/man' \
 	$WITH_PYTHON --enable-posixmutexes --without-javaglue
 %else
+export CPPFLAGS=-I%{__prefix}/include 
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
 %endif
 
-make %{_smp_mflags}
+make %{?_smp_mflags}
 
 %install
 # XXX rpm needs functioning nptl for configure tests
