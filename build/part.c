@@ -39,13 +39,20 @@ static void initParts(void)
 
 int isPart(char *line)
 {
+    char c;
     struct PartRec *p = partList;
 
     if (p->len == 0) {
 	initParts();
     }
     
-    while (p->token && strncmp(line, p->token, p->len)) {
+    while (p->token) {
+	if (! strncmp(line, p->token, p->len)) {
+	    c = *(line + p->len);
+	    if (c == '\0' || isspace(c)) {
+		break;
+	    }
+	}
 	p++;
     }
 
