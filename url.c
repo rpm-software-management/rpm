@@ -7,12 +7,6 @@
 #include "url.h"
 #include "ftp.h"
 
-struct pwcacheEntry {
-    char * machine;
-    char * account;
-    char * pw;
-} ;
-
 static struct urlstring {
     const char *leadin;
     urltype	ret;
@@ -24,13 +18,10 @@ static struct urlstring {
     { NULL,		URL_IS_UNKNOWN }
 };
 
-#if DYING
-static char * getFtpPassword(char * machine, char * account, int mustAsk);
-static int urlFtpLogin(const char * url, char ** fileNamePtr);
-#endif
-
 void freeUrlinfo(urlinfo *u)
 {
+    if (u->ftpControl >= 0)
+	close(u->ftpControl);
     FREE(u->service);
     FREE(u->user);
     FREE(u->password);
@@ -52,97 +43,69 @@ urlinfo *newUrlinfo(void)
     return u;
 }
 
-static char * getFtpPassword(char * machine, char * account, int mustAsk)
-{
-    static /*@only@*/ struct pwcacheEntry * pwCache = NULL;
-    static int pwCount = 0;
-    int i;
-    char * prompt;
-
-    for (i = 0; i < pwCount; i++) {
-	if (!strcmp(pwCache[i].machine, machine) &&
-	    !strcmp(pwCache[i].account, account))
-		break;
-    }
-
-    if (i < pwCount && !mustAsk) {
-	return pwCache[i].pw;
-    } else if (i == pwCount) {
-	pwCount++;
-	if (pwCache)
-	    pwCache = realloc(pwCache, sizeof(*pwCache) * pwCount);
-	else
-	    pwCache = malloc(sizeof(*pwCache));
-
-	pwCache[i].machine = strdup(machine);
-	pwCache[i].account = strdup(account);
-    } else
-	free(pwCache[i].pw);
-
-    prompt = alloca(strlen(machine) + strlen(account) + 50);
-    sprintf(prompt, _("Password for %s@%s: "), account, machine);
-
-    pwCache[i].pw = strdup(getpass(prompt));
-
-    return pwCache[i].pw;
-}
-
-static int urlFtpLogin(const char * url, char ** fileNamePtr)
+static void findUrlinfo(urlinfo **uret, int mustAsk)
 {
     urlinfo *u;
-    char *proxy;
-    char *proxyport;
-    int ftpconn;
-   
-    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
+    urlinfo **empty;
+    static urlinfo **uCache = NULL;
+    static int uCount = 0;
+    int i;
 
-    if (urlSplit(url, &u))
-	return -1;
+    if (uret == NULL)
+	return;
 
-    rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
-		u->host,
-		u->user ? u->user : "ftp", 
-		u->password ? u->password : "(username)");
+    u = *uret;
 
-    if ((proxy = rpmGetVar(RPMVAR_FTPPROXY)) != NULL) {
-	u->user = realloc(u->user, (strlen(u->user) + strlen(u->host) + 2) );
-	strcat(u->user, "@");
-	strcat(u->user, u->host);
-	free(u->host);
-	u->host = strdup(proxy);
-    }
-
-    if ((proxyport = rpmGetVar(RPMVAR_FTPPORT)) != NULL) {
-	int port;
-	char *end;
-	port = strtol(proxyport, &end, 0);
-	if (*end) {
-	    fprintf(stderr, _("error: ftpport must be a number\n"));
-	    return -1;
-	}
-	u->port = port;
-    }
-
-    ftpconn = ftpOpen(u);
-
-    if (fileNamePtr && ftpconn >= 0)
-	*fileNamePtr = strdup(u->path);
-
-    freeUrlinfo(u);
-    return ftpconn;
-}
-
-urltype urlIsURL(const char * url)
-{
-    struct urlstring *us;
-
-    for (us = urlstrings; us->leadin != NULL; us++) {
-	if (strncmp(url, us->leadin, strlen(us->leadin)))
+    empty = NULL;
+    for (i = 0; i < uCount; i++) {
+	urlinfo *ou;
+	if ((ou = uCache[i]) == NULL) {
+	    if (empty == NULL)
+		empty = &uCache[i];
 	    continue;
-	return us->ret;
+	}
+	if (u->service && ou->service && strcmp(ou->service, u->service))
+	    continue;
+	if (u->host && ou->host && strcmp(ou->host, u->host))
+	    continue;
+	if (u->user && ou->user && strcmp(ou->user, u->user))
+	    continue;
+	if (u->password && ou->password && strcmp(ou->password, u->password))
+	    continue;
+	if (u->portstr && ou->portstr && strcmp(ou->portstr, u->portstr))
+	    continue;
+	break;
     }
-    
-    return URL_IS_UNKNOWN;
+
+    if (i == uCount) {
+	if (empty == NULL) {
+	    uCount++;
+	    if (uCache)
+		uCache = realloc(uCache, sizeof(*uCache) * uCount);
+	    else
+		uCache = malloc(sizeof(*uCache));
+	    empty = &uCache[i];
+	}
+	*empty = u;
+    } else {
+	const char *up = uCache[i]->path;
+	uCache[i]->path = u->path;
+	u->path = up;
+	freeUrlinfo(u);
+    }
+
+    *uret = u = uCache[i];
+
+    if (!strcmp(u->service, "ftp")) {
+	if (mustAsk || (u->user != NULL && u->password == NULL)) {
+	    char * prompt;
+	    FREE(u->password);
+	    prompt = alloca(strlen(u->host) + strlen(u->user) + 40);
+	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
+	    u->password = strdup(getpass(prompt));
+	}
+    }
+    return;
 }
 
 int urlSplit(const char * url, urlinfo **uret)
@@ -151,6 +114,8 @@ int urlSplit(const char * url, urlinfo **uret)
     char *myurl;
     char *s, *se, *f, *fe;
 
+    if (uret == NULL)
+	return -1;
     if ((u = newUrlinfo()) == NULL)
 	return -1;
 
@@ -161,6 +126,7 @@ int urlSplit(const char * url, urlinfo **uret)
     do {
 	while (*se && *se != '/') se++;
 	if (*se == '\0') {
+	    /* XXX can't find path */
 	    if (myurl) free(myurl);
 	    freeUrlinfo(u);
 	    return -1;
@@ -199,7 +165,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	    char *end;
 	    u->port = strtol(u->portstr, &end, 0);
 	    if (*end) {
-		fprintf(stderr, _("error: url port must be a number\n"));
+		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
 		if (myurl) free(myurl);
 		freeUrlinfo(u);
 		return -1;
@@ -216,31 +182,99 @@ int urlSplit(const char * url, urlinfo **uret)
 	    u->port = IPPORT_FTP;
 	else if (!strcasecmp(u->service, "http"))
 	    u->port = IPPORT_HTTP;
-
-	/* XXX move elsewhere */
-	if (!strcmp(u->service, "ftp") && u->user && u->password == NULL) {
-	    u->password = getFtpPassword(u->host, u->user, 0);
-	    if (u->password)
-		u->password = strdup(u->password);
-	}
     }
 
     if (myurl) free(myurl);
-    if (uret)
+    if (uret) {
 	*uret = u;
-    else
-	freeUrlinfo(u);
+	findUrlinfo(uret, 0);
+    }
     return 0;
 }
+
+static int urlConnect(const char * url, urlinfo ** uret)
+{
+    urlinfo *u;
+
+    if (urlSplit(url, &u) < 0)
+	return -1;
+
+    if (!strcmp(u->service, "ftp") && u->ftpControl < 0) {
+	char *proxy;
+	char *proxyport;
+
+	rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
+		u->host,
+		u->user ? u->user : "ftp",
+		u->password ? u->password : "(username)");
+
+	/* XXX FIXME: this doesn't work with urlinfo caching */
+	if ((proxy = rpmGetVar(RPMVAR_FTPPROXY)) != NULL) {
+	    char *nu = malloc(strlen(u->user) + strlen(u->host) + sizeof("@"));
+	    strcpy(nu, u->user);
+	    strcat(nu, "@");
+	    strcat(nu, u->host);
+	    free((void *)u->user);
+	    u->user = nu;
+	    free((void *)u->host);
+	    u->host = strdup(proxy);
+	}
+
+	/* XXX FIXME: this doesn't work with urlinfo caching */
+	if ((proxyport = rpmGetVar(RPMVAR_FTPPORT)) != NULL) {
+	    int port;
+	    char *end;
+	    port = strtol(proxyport, &end, 0);
+	    if (*end) {
+		fprintf(stderr, _("error: ftpport must be a number\n"));
+		return -1;
+	    }
+	    u->port = port;
+	}
+
+	u->ftpControl = ftpOpen(u);
+
+ 	if (u->ftpControl < 0)
+	    return u->ftpControl;
+
+    }
+
+    if (uret != NULL)
+	*uret = u;
+
+    return 0;
+}
+
+urltype urlIsURL(const char * url)
+{
+    struct urlstring *us;
+
+    for (us = urlstrings; us->leadin != NULL; us++) {
+	if (strncmp(url, us->leadin, strlen(us->leadin)))
+	    continue;
+	return us->ret;
+    }
+
+    return URL_IS_UNKNOWN;
+}
+
+#ifdef	NOTYET
+int urlAbort(FD_t fd)
+{
+    if (fd != NULL && fd->fd_url) {
+	urlinfo *u = (urlinfo *)fd->fd_url;
+	if (u->ftpControl >= 0)
+	    ftpAbort(fd);
+    }
+}
+#endif
 
 int ufdClose(FD_t fd)
 {
     if (fd != NULL && fd->fd_url) {
-	int fdno = ((urlinfo *)fd->fd_url)->ftpControl;
-	if (fdno >= 0)
-	    ftpClose(fdno);
-	free(fd->fd_url);
-	fd->fd_url = NULL;
+	urlinfo *u = (urlinfo *)fd->fd_url;
+	if (u->ftpControl >= 0)
+	    ftpAbort(fd);
     }
     return fdClose(fd);
 }
@@ -252,20 +286,18 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 
     switch (urlIsURL(url)) {
     case URL_IS_FTP:
+	if (urlConnect(url, &u) < 0)
+	    break;
 	if ((fd = fdNew()) == NULL)
 	    break;
-	if ((u = newUrlinfo()) == NULL)
+	fd->fd_url = u;
+	if (ftpGetFileDesc(fd) < 0)
 	    break;
-    {	char * fileName;
-	if ((u->ftpControl = urlFtpLogin(url, &fileName)) < 0)
-	    break;
-	fd->fd_fd = ftpGetFileDesc(u->ftpControl, fileName);
-	free(fileName);
-    }	break;
+	break;
     case URL_IS_HTTP:
-	if ((fd = fdNew()) == NULL)
-	    break;
 	if (urlSplit(url, &u))
+	    break;
+	if ((fd = fdNew()) == NULL)
 	    break;
 	fd->fd_url = u;
 	fd->fd_fd = httpOpen(u);
@@ -274,7 +306,6 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 	if (urlSplit(url, &u))
 	    break;
 	fd = fdOpen(u->path, flags, mode);
-	freeUrlinfo(u);
 	break;
     case URL_IS_DASH:
 	fd = fdDup(STDIN_FILENO);
@@ -292,35 +323,58 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
     return fd;
 }
 
-int urlGetFile(char * url, char * dest) {
-    char * fileName;
-    int ftpconn;
+int urlGetFile(const char * url, const char * dest) {
     int rc;
-    FD_t fd;
+    FD_t sfd = NULL;
+    FD_t tfd = NULL;
 
-    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
-
-    if ((ftpconn = urlFtpLogin(url, &fileName)) < 0) return ftpconn;
-
-    fd = fdOpen(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
-    if (fdFileno(fd) < 0) {
-	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
-	ftpClose(ftpconn);
-	free(fileName);
+    sfd = ufdOpen(url, O_RDONLY, 0);
+    if (sfd == NULL || fdFileno(sfd) < 0) {
+	rpmMessage(RPMMESS_DEBUG, _("failed to open %s\n"), url);
+	ufdClose(sfd);
 	return FTPERR_UNKNOWN;
     }
 
-    if ((rc = ftpGetFile(ftpconn, fileName, fd))) {
-	free(fileName);
-	unlink(dest);
-	fdClose(fd);
-	ftpClose(ftpconn);
-	return rc;
-    }    
+    if (sfd->fd_url != NULL && dest == NULL) {
+	const char *fileName = ((urlinfo *)sfd->fd_url)->path;
+	if ((dest = strrchr(fileName, '/')) != NULL)
+	    dest++;
+	else
+	    dest = fileName;
+    }
 
-    free(fileName);
+    tfd = fdOpen(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
+    if (fdFileno(tfd) < 0) {
+	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
+	fdClose(tfd);
+	ufdClose(sfd);
+	return FTPERR_UNKNOWN;
+    }
 
-    ftpClose(ftpconn);
+    switch (urlIsURL(url)) {
+    case URL_IS_FTP:
+	if ((rc = ftpGetFile(sfd, tfd))) {
+	    unlink(dest);
+	    ufdClose(sfd);
+	}
+	/* XXX fdClose(sfd) done by copyData */
+	break;
+    case URL_IS_HTTP:
+    case URL_IS_PATH:
+    case URL_IS_DASH:
+	if ((rc = httpGetFile(sfd, tfd))) {
+	    unlink(dest);
+	    ufdClose(sfd);
+	}
+	/* XXX fdClose(sfd) done by copyData */
+	break;
+    case URL_IS_UNKNOWN:
+    default:
+	rc = FTPERR_UNKNOWN;
+	break;
+    }
+
+    fdClose(tfd);
 
     return rc;
 }

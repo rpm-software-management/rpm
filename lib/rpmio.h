@@ -126,7 +126,6 @@ extern inline int gzdClose(/*@only@*/ FD_t fd) {
 	fd->fd_fd = -1;
 	fd->fd_bzd = NULL;
 	fd->fd_gzd = NULL;
-	fd->fd_url = NULL;
 	free(fd);
     	zerror = gzclose(gzfile);
 	return 0;
@@ -199,7 +198,6 @@ extern inline int bzdClose(/*@only@*/ FD_t fd) {
 	fd->fd_fd = -1;
 	fd->fd_bzd = NULL;
 	fd->fd_gzd = NULL;
-	fd->fd_url = NULL;
 	free(fd);
     	bzclose(bzfile);
 	return 0;

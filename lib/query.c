@@ -454,17 +454,14 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
       { FD_t fd;
 
 	fd = ufdOpen(arg, O_RDONLY, 0);
-	if (fd == NULL) {
+	if (fdFileno(fd) < 0) {
 	    fprintf(stderr, _("open of %s failed\n"), arg);
 	    ufdClose(fd);
 	    retcode = 1;
 	    break;
 	}
 
-	if (fdFileno(fd) >= 0) {
-	    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-	} else
-	    rc = 2;
+	rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 
 	ufdClose(fd);
 
@@ -576,22 +573,22 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 
       case QUERY_PATH:
 	if (*arg != '/') {
-		/* Using realpath on the arg isn't correct if the arg is a symlink,
-		 * especially if the symlink is a dangling link.  What we should
-		 * instead do is use realpath() on `.' and then append arg to
-		 * it.
-		 */
+	    /* Using realpath on the arg isn't correct if the arg is a symlink,
+	     * especially if the symlink is a dangling link.  What we should
+	     * instead do is use realpath() on `.' and then append arg to
+	     * it.
+	     */
 	    if (realpath(".", path) != NULL) {
 		if (path[strlen(path)] != '/') {
-			if (strncat(path, "/", PATH_MAX - strlen(path) - 1) == NULL) {
+		    if (strncat(path, "/", sizeof(path) - strlen(path) - 1) == NULL) {
 	    		fprintf(stderr, _("maximum path length exceeded\n"));
 	    		return 1;
-			}
+		    }
 		}
 		/* now append the original file name to the real path */
-		if (strncat(path, arg, PATH_MAX - strlen(path) - 1) == NULL) {
-	    		fprintf(stderr, _("maximum path length exceeded\n"));
-	    		return 1;
+		if (strncat(path, arg, sizeof(path) - strlen(path) - 1) == NULL) {
+	    	    fprintf(stderr, _("maximum path length exceeded\n"));
+	    	    return 1;
 		}
 		arg = path;
 	    }

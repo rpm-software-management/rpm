@@ -1,4 +1,5 @@
 2.5.6 -> 2.90
+	- permit http:// and file:// url's as well as ftp://.
 	- change --rcfile to permit colon separated file list.
 	- compile in defaults from rpmrc/macros.
 	- finish hiding rpmdb index record data ("matches").
@@ -34,6 +35,10 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- attempt ftp ABOR on query/verify url's.
+	- cache open ftp control descriptor with password.
+	- verify needed same realpath semantics as query.
+	- plug fd leak in urlGetFile().
 	- translate cpio errors using cpioStrerror.
 	- display "..?....." rather than "..5....." for unreadable files.
 	- run time (rather than compile time) host endian check.

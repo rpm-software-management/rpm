@@ -161,7 +161,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
     rpmdb db;
     dbiIndexSet matches;
     char * arg;
-    char path[255];
+    char path[PATH_MAX];
 
     ec = 0;
     if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
@@ -191,7 +191,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 
 	    rc = 0;
 	    switch (source) {
-	      case VERIFY_RPM:
+	    case VERIFY_RPM:
 	      { FD_t fd;
 
 		fd = ufdOpen(arg, O_RDONLY, 0);
@@ -217,7 +217,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		}
 	      }	break;
 
-	      case VERIFY_GRP:
+	    case VERIFY_GRP:
 		if (rpmdbFindByGroup(db, arg, &matches)) {
 		    fprintf(stderr, 
 				_("group %s does not contain any packages\n"), 
@@ -228,11 +228,29 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		}
 		break;
 
-	      case VERIFY_PATH:
-		if (*arg != '/') {
-		    if (realpath(arg, path) != NULL)
-			arg = path;
+	    case VERIFY_PATH:
+	      if (*arg != '/') {
+		/* Using realpath on the arg isn't correct if the arg is a symlink,
+		 * especially if the symlink is a dangling link.  What we should
+		 * instead do is use realpath() on `.' and then append arg to
+		 * it.
+		 */
+	       if (realpath(".", path) != NULL) {
+		if (path[strlen(path)] != '/') {
+		    if (strncat(path, "/", sizeof(path) - strlen(path) - 1) == NULL) {
+	    		fprintf(stderr, _("maximum path length exceeded\n"));
+	    		return 1;
+		    }
 		}
+		/* now append the original file name to the real path */
+		if (strncat(path, arg, sizeof(path) - strlen(path) - 1) == NULL) {
+	    	    fprintf(stderr, _("maximum path length exceeded\n"));
+	    	    return 1;
+		}
+		arg = path;
+	       }
+	      }
+
 		if (rpmdbFindByFile(db, arg, &matches)) {
 		    fprintf(stderr, _("file %s is not owned by any package\n"), 
 				arg);
@@ -242,7 +260,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		}
 		break;
 
-	      case VERIFY_PACKAGE:
+	    case VERIFY_PACKAGE:
 		rc = rpmdbFindByLabel(db, arg, &matches);
 		if (rc == 1) 
 		    fprintf(stderr, _("package %s is not installed\n"), arg);
@@ -254,8 +272,8 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		}
 		break;
 
-		case VERIFY_EVERY:
-		    ; /* nop */
+	    case VERIFY_EVERY:
+		break;
 	    }
 	    if (rc)
 		ec = rc;

@@ -5,18 +5,17 @@ typedef enum {
     URL_IS_UNKNOWN	= 0,
     URL_IS_DASH		= 1,
     URL_IS_PATH		= 2,
-    URL_IS_FILE		= 3,
-    URL_IS_FTP		= 4,
-    URL_IS_HTTP		= 5,
+    URL_IS_FTP		= 3,
+    URL_IS_HTTP		= 4,
 } urltype;
 
 typedef struct urlinfo {
-    char *service;
-    char *user;
-    char *password;
-    char *host;
-    char *portstr;
-    char *path;
+    const char *service;
+    const char *user;
+    const char *password;
+    const char *host;
+    const char *portstr;
+    const char *path;
     int	port;
     int ftpControl;
 } urlinfo;
@@ -37,7 +36,7 @@ void	freeUrlinfo(urlinfo *u);
 FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
 int	ufdClose(FD_t fd);
 
-int urlGetFile(char * url, char * dest);
+int	urlGetFile(const char * url, const char * dest);
 
 #ifdef __cplusplus
 }
