@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.8
+Release: 0.11
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -486,7 +486,7 @@ exit 0
 - fix: set fcontext from pkg when file_contexts doesn't exist (#114040).
 - fix: set fcontext for "mkdir -p" directories not in packages.
 - fix: setfiles (aka rpmsx.c) dinna handle patterns correctly.
-- establish rpm_script_t before scriptlet exec, ignore errors for now.
+- establish rpm_script_t before scriptlet exec.
 
 * Wed Feb 11 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.10
 - re-add --enable-posixmutexes to build.

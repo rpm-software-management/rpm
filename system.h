@@ -301,7 +301,12 @@ typedef	char * security_context_t;
 #define	lsetfilecon(_fn, _c)	(-1)
 #define	fsetfilecon(_fd, _c)	(-1)
 
+#define	getcon(_c)		(-1)
+#define	getexeccon(_c)		(-1)
+#define	setexeccon(_c)		(-1)
+
 #define	security_check_context(_c)	(0)
+#define security_getenforce()		(0)
 
 #define	is_selinux_enabled()	(-1)
 #endif
@@ -328,7 +333,18 @@ extern int fsetfilecon(int fd, security_context_t con)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
+extern int getcon(/*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int getexeccon(/*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int setexeccon(security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
 extern int security_check_context(security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int security_getenforce(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 

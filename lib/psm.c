@@ -524,19 +524,22 @@ static int switchIdentity(rpmpsm psm, const char * ntype)
 
     rc = setexeccon(ncon);
 
-    if (rc != 0)
-    switch (errno) {
-    case EINVAL:
 	/*
-	 * XXX HACK: rpm_script_t permitted only from sysadm_r, EINVAL returned.
-	 * Hack around that issue while "rpm_script_t" in policy is stabilizing.
+     * Policy for rpm currently permits rpm_script_t establish only from
+     * sysadm_r or system_r. If enforcing, this is hard error, otherwise
+     * warn the user and continue.
 	 */
+    if (rc != 0) {
+	if (security_getenforce() == 1) {	/* enforcing */
+	    rpmMessage(RPMMESS_ERROR,
+		_("setexeccon(%s) fails from context \"%s\": %s\n"),
+		(char *) ncon, (char *) ocon, strerror(errno));
+	} else {				/* permissive */
+	    rpmMessage(RPMMESS_WARNING,
+		_("setexeccon(%s) fails from context \"%s\": %s\nContinuing ...\n"),
+		(char *) ncon, (char *) ocon, strerror(errno));
 	rc = 0;
-	break;
-    default:
-	rpmMessage(RPMMESS_DEBUG,
-		"%s: setexeccon() rc %d: %s\n", rc, strerror(errno));
-	break;
+	}
     }
 
 exit:
