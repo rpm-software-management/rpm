@@ -27,47 +27,33 @@ noinst_HEADERS = header-py.h \
 	rpmfi-py.h rpmmi-py.h rpmrc-py.h rpmte-py.h rpmts-py.h spec-py.h
 
 mylibs= \
-	$(top_builddir)/lib/.libs/librpm.so \
-	$(top_builddir)/rpmdb/.libs/librpmdb.so \
-	$(top_builddir)/rpmio/.libs/librpmio.so \
-	$(top_builddir)/popt/.libs/libpopt.so \
-	$(top_builddir)/build/.libs/librpmbuild.so \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la \
+	$(top_builddir)/build/librpmbuild.la \
 	@WITH_LIBELF_LIB@
 
 LDADD =
 
 pythondir = $(pylibdir)/site-packages
-python_PROGRAMS = rpmmodule.so
+python_LTLIBRARIES = rpmmodule.la poptmodule.la
 
 rpmdbdir = $(pylibdir)/site-packages/rpmdb
-rpmdb_PROGRAMS = _rpmdb.so
+rpmdb_LTLIBRARIES = _rpmdb.la
 
-noinst_PROGRAMS = poptmodule.so
+rpmmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
+rpmmodule_la_LIBADD =  @WITH_BEECRYPT_LIB@
 
-rpmmodule_so_SOURCES =
-rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
-rpmmodule_so_LDADD =	@WITH_BEECRYPT_LIB@
+_rpmdb_la_SOURCES = _rpmdb.c
+_rpmdb_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
 
-_rpmdb_so_SOURCES = _rpmdb.c
-_rpmdb_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,_rpmdb.so
+poptmodule_la_SOURCES = poptmodule.c
+poptmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
 
-poptmodule_so_SOURCES = poptmodule.c
-poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
-
-noinst_LTLIBRARIES = librpmmodule.la
-librpmmodule_la_SOURCES = rpmmodule.c header-py.c \
-	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
-	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c spec-py.c
-librpmmodule_OBJECTS = $(subst .c,.o,$(librpmmodule_la_SOURCES))
-
-rpmmodule.so$(EXEEXT): librpmmodule.la
-	$(CC) -o $@ $(librpmmodule_OBJECTS) $(rpmmodule_so_LDFLAGS)
-
-_rpmdb.so$(EXEEXT): _rpmdb.o
-	$(CC) -o $@ _rpmdb.o $(_rpmdb_so_LDFLAGS)
-
-poptmodule.so$(EXEEXT): poptmodule.o
-	$(CC) -o $@ poptmodule.o $(poptmodule_so_LDFLAGS)
+rpmmodule_la_SOURCES = rpmmodule.c header-py.c \
+		       rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
+		       rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c spec-py.c
 
 # rpmmodule.c header-py.c \
 # 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
