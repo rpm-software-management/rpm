@@ -432,11 +432,15 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	} else {
 	    pgpDig dig = pgpNewDig();
 	    pgpDigParams sigp = &dig->signature;
-	    size_t nb = 80;
+	    size_t nb = 0;
+	    const char *tempstr;
 
 	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
 
-	    val = t = xmalloc(nb + 1);
+	    val = NULL;
+	again:
+	    nb += 100;
+	    val = t = xrealloc(val, nb + 1);
 
 /*@-boundswrite@*/
 	    switch (sigp->pubkey_algo) {
@@ -447,10 +451,12 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 		t = stpcpy(t, "RSA");
 		break;
 	    default:
-		sprintf(t, "%d", sigp->pubkey_algo);
+		snprintf(t, nb - (t - val), "%d", sigp->pubkey_algo);
 		t += strlen(t);
 		break;
 	    }
+	    if (t + 5 >= val + nb)
+		goto again;
 	    *t++ = '/';
 	    switch (sigp->hash_algo) {
 	    case PGPHASHALGO_MD5:
@@ -460,10 +466,12 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 		t = stpcpy(t, "SHA1");
 		break;
 	    default:
-		sprintf(t, "%d", sigp->hash_algo);
+		snprintf(t, nb - (t - val), "%d", sigp->hash_algo);
 		t += strlen(t);
 		break;
 	    }
+	    if (t + strlen (", ") + 1 >= val + nb)
+		goto again;
 
 	    t = stpcpy(t, ", ");
 
@@ -474,8 +482,13 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
  		    (void) strftime(t, (nb - (t - val)), "%c", tstruct);
 	    }
 	    t += strlen(t);
+	    if (t + strlen (", Key ID ") + 1 >= val + nb)
+		goto again;
 	    t = stpcpy(t, ", Key ID ");
-	    t = stpcpy(t, pgpHexStr(sigp->signid, sizeof(sigp->signid)));
+	    tempstr = pgpHexStr(sigp->signid, sizeof(sigp->signid));
+	    if (t + strlen (tempstr) > val + nb)
+		goto again;
+	    t = stpcpy(t, tempstr);
 /*@=boundswrite@*/
 
 	    dig = pgpFreeDig(dig);

@@ -128,7 +128,7 @@ int ne_xml_parse_v(void *userdata, const char *block, size_t len)
 
 /* Return current parse line for errors */
 int ne_xml_currentline(ne_xml_parser *p)
-	/*@*/;
+	/*@modifies p @*/;
 
 /* From a start_element callback which was passed 'attrs' using given
  * parser, return attribute of given name and namespace.  If nspace is

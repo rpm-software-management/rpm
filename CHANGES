@@ -57,6 +57,11 @@
 	- selinux: set "rpm_script_t" always, not just for /bin/sh.
 	- honor inherited SIG_IGN when establishing rpmdb signal exit (#134474).
 	- don't add time stamp to compressed man pages (#132526).
+	- python: remove ".A" from creaky ts.check() tuple return (#135008).
+	- python: fix RPMPROB_BADRELOCATE segfault return in ts.check (#137116).
+	- revert selinux patch until fc3 release.
+	- reprise file conflicts yet again, flip/flop/flip/flop ...
+	- fix: buffer overrun displaying ko_KR (#135389).
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

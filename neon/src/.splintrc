@@ -1,4 +1,4 @@
--I. -I.. -I../../expat -I../../zlib -DHAVE_CONFIG_H -D_LARGFILE_SOURCE
+-I. -I.. -I../../expat/lib -I../../zlib -DHAVE_CONFIG_H -D_LARGFILE_SOURCE
 
 +partial
 +forcehints

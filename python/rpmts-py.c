@@ -420,6 +420,10 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	    p = ps->probs + i;
 
+            /* XXX autorelocated i386 on ia64, fix system-config-packages! */
+	    if (p->type == RPMPROB_BADRELOCATE)
+		continue;
+
 	    byName = p->pkgNEVR;
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
