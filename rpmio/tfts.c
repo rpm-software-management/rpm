@@ -12,13 +12,13 @@
 static int _fts_debug = 0;
 
 #if 1
-#define HTTPPATH        "https://wellfleet.jbj.org/rawhide/test/"
+#define HTTPSPATH        "https://wellfleet.jbj.org/rawhide/test/"
 #else
-#define HTTPPATH        "https://wellfleet.jbj.org/rawhide/"
+#define HTTPSPATH        "https://wellfleet.jbj.org/rawhide/"
 #endif
 #define FTPPATH         "ftp://wellfleet.jbj.org/pub/rawhide/packages/test"
 #define DIRPATH         "/var/ftp/pub/rawhide/packages/test"
-static char * httppath = HTTPPATH;
+static char * httpspath = HTTPSPATH;
 static char * ftppath = FTPPATH;
 static char * dirpath = DIRPATH;
 
@@ -166,7 +166,7 @@ _dav_debug = -1;
 #if 0
     ftsWalk(ftppath);
 #endif
-    ftsWalk(httppath);
+    ftsWalk(httpspath);
 
 /*@i@*/ urlFreeCache();
 

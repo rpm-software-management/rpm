@@ -83,14 +83,25 @@ DIR * avOpendir(const char * path)
 /*@-globuse@*/
 /**
  * Send a http request.
- * @param data		
+ * @param ctrl		
  * @param davCmd	http command
- * @param davArg	http command argumeny
+ * @param davArg	http command argument
  * @returns		0 on success
  */
-int davReq(FD_t data, const char * davCmd, const char * davArg)
+int davReq(FD_t ctrl, const char * davCmd, const char * davArg)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies data, fileSystem, internalState @*/;
+	/*@modifies ctrl, fileSystem, internalState @*/;
+
+/**
+ * Read a http response.
+ * @param u
+ * @param cntl		
+ * @retval *str		error msg		
+ * @returns		0 on success
+ */
+int davResp(urlinfo u, FD_t ctrl, /*@out@*/ char *const * str)
+	/*@globals fileSystem @*/
+	/*@modifies ctrl, *str, fileSystem @*/;
 
 /**
  */

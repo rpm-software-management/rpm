@@ -459,7 +459,12 @@ static int fdClose( /*@only@*/ void * cookie)
     fdSetFdno(fd, -1);
 
     fdstat_enter(fd, FDSTAT_CLOSE);
-    rc = ((fdno >= 0) ? close(fdno) : -2);
+    /* HACK: flimsy wiring for davClose */
+    if (fd->req != NULL) {
+	rc = davClose(fd);
+assert(fd->req == NULL);
+    } else
+	rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
@@ -558,6 +563,10 @@ int fdReadable(FD_t fd, int secs)
     fd_set rdfds;
     FD_ZERO(&rdfds);
 #endif
+
+    /* HACK: flimsy wiring for davRead */
+    if (fd->req != NULL)
+	return 1;
 
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
@@ -1724,8 +1733,6 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
 	bytesRead = 0;
 
-	/* HACK: flimsy wiring for davRead */
-	if (fd->req == NULL) {
 	/* Is there data to read? */
 	if (fd->bytesRemain == 0) return total;	/* XXX simulate EOF */
 	rc = fdReadable(fd, fd->rd_timeoutsecs);
@@ -1737,7 +1744,6 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to read */
 	    /*@switchbreak@*/ break;
-	}
 	}
 
 /*@-boundswrite@*/
@@ -1925,6 +1931,7 @@ int ufdClose( /*@only@*/ void * cookie)
 	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
 	if (u->scheme != NULL && !strncmp(u->scheme, "http", sizeof("http")-1))
 	{
+	    /* HACK: not even close for neon. */
 	    if (fd->wr_chunked) {
 		int rc;
 	    /* XXX HTTP PUT requires terminating 0 length chunk. */
@@ -1934,7 +1941,11 @@ int ufdClose( /*@only@*/ void * cookie)
 if (_ftp_debug)
 fprintf(stderr, "-> \r\n");
 		(void) fdWrite(fd, "\r\n", sizeof("\r\n")-1);
-		rc = httpResp(u, fd, NULL);
+		/* HACK: flimsy wiring for davClose */
+		if (!strcmp(u->scheme, "https"))
+		    rc = davResp(u, fd, NULL);
+		else
+		    rc = httpResp(u, fd, NULL);
 	    }
 
 	    if (fd == u->ctrl)
@@ -1965,6 +1976,9 @@ fprintf(stderr, "-> \r\n");
 	    if (fd->persist && u->httpVersion &&
 		(fd == u->ctrl || fd == u->data) && fd->bytesRemain == 0) {
 		fd->contentLength = fd->bytesRemain = -1;
+		/* HACK: flimsy wiring for davClose */
+		if (!strcmp(u->scheme, "https"))
+		    return davClose(fd);
 		return 0;
 	    } else {
 		fd->contentLength = fd->bytesRemain = -1;

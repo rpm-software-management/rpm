@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c tglob.c tinv.c tkey.c trpmio.c
+EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c tput.c tglob.c tinv.c tkey.c trpmio.c
 
-EXTRA_PROGRAMS = tax tdigest tdir tfts tget tglob tinv tkey tring trpmio tsw dumpasn1
+EXTRA_PROGRAMS = tax tdigest tdir tfts tget tput tglob tinv tkey tring trpmio tsw dumpasn1
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -83,6 +83,11 @@ tfts_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 tget_SOURCES = tget.c
 tget_LDFLAGS = -all-static
 tget_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
+tput_SOURCES = tput.c
+tput_LDFLAGS = -all-static
+tput_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
 
 tglob_SOURCES = tglob.c
 tglob_LDFLAGS = -all-static

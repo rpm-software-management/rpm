@@ -143,6 +143,11 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 			(u->scheme ? u->scheme : ""));
 	/*@=usereleased@*/
     }
+    if (u->sess != NULL) {
+	/* HACK: neon include has prototype. */
+	ne_session_destroy(u->sess);
+	u->sess = NULL;
+    }
     u->buf = _free(u->buf);
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);

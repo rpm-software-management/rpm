@@ -18,7 +18,7 @@ static char * httppath = HTTPPATH;
 static char * ftppath = FTPPATH;
 static char * dirpath = DIRPATH;
 
-static void printFile(const char * path)
+static void readFile(const char * path)
 {
     FD_t fd;
 
@@ -27,11 +27,10 @@ fprintf(stderr, "===== %s\n", path);
     if (fd != NULL) {
 	char buf[BUFSIZ];
 	size_t len = Fread(buf, 1, sizeof(buf), fd);
-	int xx;
+	int xx = Fclose(fd);
 
 	if (len > 0)
 	    fwrite(buf, 1, len, stderr);
-	xx = Fclose(fd);
     }
 }
 
@@ -73,11 +72,12 @@ _av_debug = -1;
 _ftp_debug = -1;
 _dav_debug = -1;
 #if 0
-    printFile(dirpath);
-    printFile(ftppath);
+    readFile(dirpath);
+    readFile(ftppath);
+    readFile(httppath);
 #endif
-    printFile(httppath);
-    printFile(httpspath);
+    readFile(httpspath);
+    readFile(httpspath);
 
 /*@i@*/ urlFreeCache();
 

@@ -37,6 +37,10 @@
 /*@access FD_t @*/
 /*@access urlinfo @*/
 
+#define TIMEOUT_SECS 60
+/*@unchecked@*/
+static int httpTimeoutSecs = TIMEOUT_SECS;
+
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
@@ -66,14 +70,173 @@ static int davFree(urlinfo u)
     return 0;
 }
 
+static void davProgress(void * userdata, off_t current, off_t total)
+{
+    urlinfo u = userdata;
+    ne_session * sess;
+
+assert(u != NULL);
+    sess = u->sess;
+assert(sess != NULL);
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+    u->current = current;
+    u->total = total;
+
+if (_dav_debug)
+fprintf(stderr, "*** davProgress(%p,0x%x:0x%x) sess %p u %p\n", userdata, (unsigned int)current, (unsigned int)total, sess, u);
+}
+
+static void davNotify(void * userdata,
+		ne_conn_status connstatus, const char * info)
+{
+    urlinfo u = userdata;
+    ne_session * sess;
+    static const char * connstates[] = {
+	"namelookup",
+	"connecting",
+	"connected",
+	"secure",
+	"unknown"
+    };
+
+assert(u != NULL);
+    sess = u->sess;
+assert(sess != NULL);
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+#ifdef	REFERENCE
+typedef enum {
+    ne_conn_namelookup, /* lookup up hostname (info = hostname) */
+    ne_conn_connecting, /* connecting to host (info = hostname) */
+    ne_conn_connected, /* connected to host (info = hostname) */
+    ne_conn_secure /* connection now secure (info = crypto level) */
+} ne_conn_status;
+#endif
+
+    u->connstatus = connstatus;
+
+if (_dav_debug)
+fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, connstatus, info, sess, u, connstates[ (connstatus < 4 ? connstatus : 4)]);
+
+}
+
+static void davCreateRequest(ne_request * req, void * userdata,
+		const char * method, const char * uri)
+{
+    urlinfo u = userdata;
+    ne_session * sess;
+    void * private = NULL;;
+    const char * id = "urlinfo";
+
+assert(u != NULL);
+assert(u->sess);
+assert(req != NULL);
+    sess = ne_get_session(req);
+assert(sess == u->sess);
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+assert(sess != NULL);
+    private = ne_get_session_private(sess, id);
+assert(u == private);
+
+if (_dav_debug)
+fprintf(stderr, "*** davCreateRequest(%p,%p,%s,%s) %s:%p\n", req, userdata, method, uri, id, private);
+}
+
+static void davPreSend(ne_request * req, void * userdata, ne_buffer * buf)
+{
+    urlinfo u = userdata;
+    ne_session * sess;
+    const char * id = "fd";
+    FD_t fd = NULL;
+
+assert(u != NULL);
+assert(u->sess);
+assert(req != NULL);
+    sess = ne_get_session(req);
+assert(sess == u->sess);
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+    fd = ne_get_request_private(req, id);
+
+if (_dav_debug) {
+fprintf(stderr, "*** davPreSend(%p,%p,%p) sess %p %s %p\n", req, userdata, buf, sess, id, fd);
+fprintf(stderr, "-> %s\n", buf->data);
+}
+
+}
+
+static int davPostSend(ne_request * req, void * userdata, const ne_status * status)
+{
+    urlinfo u = userdata;
+    ne_session * sess;
+    const char * id = "fd";
+    FD_t fd = NULL;
+
+assert(u != NULL);
+assert(u->sess);
+assert(req != NULL);
+    sess = ne_get_session(req);
+assert(sess == u->sess);
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+    fd = ne_get_request_private(req, id);
+
+if (_dav_debug)
+fprintf(stderr, "*** davPostSend(%p,%p,%p) sess %p %s %p %s\n", req, userdata, status, sess, id, fd, ne_get_error(sess));
+    return NE_OK;
+}
+
+static void davDestroyRequest(ne_request * req, void * userdata)
+{
+    urlinfo u = userdata;
+    ne_session * sess;
+    const char * id = "fd";
+    FD_t fd = NULL;
+
+assert(u != NULL);
+assert(u->sess);
+assert(req != NULL);
+    sess = ne_get_session(req);
+assert(sess == u->sess);
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+    fd = ne_get_request_private(req, id);
+
+if (_dav_debug)
+fprintf(stderr, "*** davDestroyRequest(%p,%p) sess %p %s %p\n", req, userdata, sess, id, fd);
+}
+
+static void davDestroySession(void * userdata)
+{
+    urlinfo u = userdata;
+    ne_session * sess;
+    void * private = NULL;;
+    const char * id = "urlinfo";
+
+assert(u != NULL);
+assert(u->sess);
+    sess = u->sess;
+assert(u == ne_get_session_private(sess, "urlinfo"));
+
+assert(sess != NULL);
+    private = ne_get_session_private(sess, id);
+assert(u == private);
+
+if (_dav_debug)
+fprintf(stderr, "*** davDestroySession(%p) sess %p %s %p\n", userdata, sess, id, private);
+}
+
 static int
-trust_all_server_certs(/*@unused@*/ void *userdata, /*@unused@*/ int failures,
-		/*@unused@*/ const ne_ssl_certificate *cert)
+davVerifyCert(void *userdata, int failures, const ne_ssl_certificate *cert)
 	/*@*/
 {
-#if 0
     const char *hostname = userdata;
-#endif
+
+if (_dav_debug)
+fprintf(stderr, "*** davVerifyCert(%p,%d,%p) %s\n", userdata, failures, cert, hostname);
+
     return 0;	/* HACK: trust all server certificates. */
 }
 
@@ -102,14 +265,38 @@ static int davInit(const char * url, urlinfo * uret)
 	u->capabilities = capabilities = xcalloc(1, sizeof(*capabilities));
 	u->sess = ne_session_create(u->scheme, u->host, u->port);
 
-	/* XXX check that neon is ssl enabled. */
-	if (!strcasecmp(u->scheme, "https"))
-	    ne_ssl_set_verify(u->sess, trust_all_server_certs, (char *)u->host);
-                                                                                
 	u->lockstore = ne_lockstore_create();	/* XXX oneshot? */
 	ne_lockstore_register(u->lockstore, u->sess);
 
+	if (u->proxyh != NULL)
+	    ne_session_proxy(u->sess, u->proxyh, u->proxyp);
+
+#if 0
+	{   const ne_inet_addr ** addrs;
+	    unsigned int n;
+	    ne_set_addrlist(u->sess, addrs, n);
+	}
+#endif
+
+	ne_set_progress(u->sess, davProgress, u);
+	ne_set_status(u->sess, davNotify, u);
+
+	ne_set_persist(u->sess, 1);
+	ne_set_read_timeout(u->sess, httpTimeoutSecs);
 	ne_set_useragent(u->sess, PACKAGE "/" PACKAGE_VERSION);
+
+	/* XXX check that neon is ssl enabled. */
+	if (!strcasecmp(u->scheme, "https"))
+	    ne_ssl_set_verify(u->sess, davVerifyCert, (char *)u->host);
+                                                                                
+	ne_set_session_private(u->sess, "urlinfo", u);
+
+	ne_hook_destroy_session(u->sess, davDestroySession, u);
+
+	ne_hook_create_request(u->sess, davCreateRequest, u);
+	ne_hook_pre_send(u->sess, davPreSend, u);
+	ne_hook_post_send(u->sess, davPostSend, u);
+	ne_hook_destroy_request(u->sess, davDestroyRequest, u);
     }
 
     if (uret != NULL)
@@ -128,6 +315,7 @@ static int davConnect(urlinfo u)
 
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
+    /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
     rc = ne_options(u->sess, path, u->capabilities);
     switch (rc) {
     case NE_OK:
@@ -141,10 +329,18 @@ static int davConnect(urlinfo u)
     case NE_LOOKUP:
     default:
 if (_dav_debug)
-fprintf(stderr, "Connect to %s:%d failed(%d):\n%s\n",
+fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
 		   u->host, u->port, rc, ne_get_error(u->sess));
 	break;
     }
+
+    /* HACK: sensitive to error returns? */
+    u->httpVersion = (ne_version_pre_http11(u->sess) ? 0 : 1);
+
+    /* HACK: stupid error impedence matching. */
+    if (rc)
+	rc = FTPERR_FAILED_CONNECT;
+
     return rc;
 }
 
@@ -549,7 +745,8 @@ static int davNLST(struct fetch_context_s * ctx)
 	    break;
 	/*@fallthrough@*/
     default:
-fprintf(stderr, "Fetch from %s:%d failed:\n%s\n",
+if (_dav_debug)
+fprintf(stderr, "*** Fetch from %s:%d failed:\n\t%s\n",
 		   u->host, u->port, ne_get_error(u->sess));
         break;
     }
@@ -613,35 +810,48 @@ static void hexdump(unsigned char * buf, ssize_t len)
     fprintf(stderr, "\n");
 }
 
-static void davAcceptRanges(void * userdata, const char * val)
+static void davAcceptRanges(void * userdata, const char * value)
 {
     urlinfo u = userdata;
+
 if (_dav_debug)
-fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, val);
-    if (!strcmp(val, "bytes"))
+fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
+    if (!strcmp(value, "bytes"))
 	u->httpHasRange = 1;
-    if (!strcmp(val, "none"))
+    if (!strcmp(value, "none"))
 	u->httpHasRange = 0;
 }
 
-static void davContentLength(void * userdata, const char * val)
+static void davAllHeaders(void * userdata, const char * value)
 {
     FD_t ctrl = userdata;
+
 if (_dav_debug)
-fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, val);
-   ctrl->contentLength = strtoll(val, NULL, 10);
+fprintf(stderr, "<- %s\n", value);
 }
 
-static void davConnection(void * userdata, const char * val)
+static void davContentLength(void * userdata, const char * value)
 {
     FD_t ctrl = userdata;
+
 if (_dav_debug)
-fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, val);
-    if (!strcmp(val, "close"))
+fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, value);
+   ctrl->contentLength = strtoll(value, NULL, 10);
+}
+
+static void davConnection(void * userdata, const char * value)
+{
+    FD_t ctrl = userdata;
+
+if (_dav_debug)
+fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
+    if (!strcasecmp(value, "close"))
 	ctrl->persist = 0;
+    else if (!strcasecmp(value, "Keep-Alive"))
+	ctrl->persist = 1;
 }
 
-static int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ /*@out@*/ char ** str)
+int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
         /*@globals fileSystem @*/
         /*@modifies ctrl, *str, fileSystem @*/
 {
@@ -649,6 +859,8 @@ static int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ /*@out@*/ char ** str)
 
     rc = ne_begin_request(ctrl->req);
     rc = my_result("ne_begin_req(ctrl->req)", rc, NULL);
+if (_dav_debug)
+fprintf(stderr, "*** davResp(%p,%p,%p) sess %p req %p rc %d\n", u, ctrl, str, u->sess, ctrl->req, rc);
 
 #ifdef	NOTYET
 if (_ftp_debug)
@@ -687,6 +899,9 @@ assert(ctrl != NULL);
     u = ctrl->url;
     URLSANE(u);
 
+if (_dav_debug)
+fprintf(stderr, "*** davReq(%p,%s,\"%s\") entry sess %p req %p\n", ctrl, httpCmd, httpArg, u->sess, ctrl->req);
+
     /* HACK: handle proxy host and port here. */
 #ifdef	REFERENCE
     if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
@@ -702,10 +917,19 @@ assert(ctrl != NULL);
 
     /* HACK: where should server capabilities be read? */
     rc = davConnect(u);
+    if (rc)
+	goto errxit;
+    ctrl->persist = (u->httpVersion > 0 ? 1 : 0);
+    ctrl = fdLink(ctrl, "open ctrl (davReq)");
 
 assert(u->sess);
 assert(ctrl->req == NULL);
     ctrl->req = ne_request_create(u->sess, httpCmd, httpArg);
+assert(ctrl->req != NULL);
+
+    ne_set_request_private(ctrl->req, "fd", ctrl);
+
+    ne_add_response_header_catcher(ctrl->req, davAllHeaders, ctrl);
 
     ne_add_response_header_handler(ctrl->req, "Accept-Ranges",
 		davAcceptRanges, u);
@@ -723,22 +947,20 @@ fprintf(stderr, "-> %s", req);
     do {
 	rc = davResp(u, ctrl, NULL);
     } while (rc == NE_RETRY);
+    if (rc)
+	goto errxit;
 
 if (_dav_debug)
-fprintf(stderr, "*** davReq(%p,%s,\"%s\") sess %p req %p rc %d\n", ctrl, httpCmd, httpArg, u->sess, ctrl->req, rc);
+fprintf(stderr, "*** davReq(%p,%s,\"%s\") exit sess %p req %p rc %d\n", ctrl, httpCmd, httpArg, u->sess, ctrl->req, rc);
 
-    /* HACK: error path refcnts probably goofy here. */
-    if (rc == 0) {
-	ctrl = fdLink(ctrl, "open ctrl (davReq)");
-	ctrl = fdLink(ctrl, "open data (davReq)");
-    }
+    ctrl = fdLink(ctrl, "open data (davReq)");
+    return 0;
+
+errxit:
+    fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
 
     return rc;
 }
-
-#define TIMEOUT_SECS 60
-/*@unchecked@*/
-static int httpTimeoutSecs = TIMEOUT_SECS;
 
 FD_t davOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
@@ -829,21 +1051,18 @@ fprintf(stderr, "*** davSeek(%p,pos,%d)\n", cookie, whence);
 int davClose(/*@only@*/ void * cookie)
 {
     FD_t fd = cookie;
-    ne_request * req = fd->req;
-    int ret;
+    int rc;
 
-if (_dav_debug)
-fprintf(stderr, "*** davClose(%p)\n", cookie);
-    ret =  ne_end_request(req);
-    ret = my_result("ne_end_request(req)", ret, NULL);
+assert(fd->req != NULL);
+    rc = ne_end_request(fd->req);
+    rc = my_result("ne_end_request(req)", rc, NULL);
 
-    /* HACK: gotta figger NE_RETRY somehow. */
-
-    /* HACK: also needs doing in rpmio.c */
-    ne_request_destroy(req);
+    ne_request_destroy(fd->req);
     fd->req = NULL;
 
-    return ret;
+if (_dav_debug)
+fprintf(stderr, "*** davClose(%p) rc %d\n", fd, rc);
+    return rc;
 }
 
 /* =============================================================== */
