@@ -1139,9 +1139,7 @@ local void set_data_type(s)
  * method would use a table)
  * IN assertion: 1 <= len <= 15
  */
-local unsigned bi_reverse(code, len)
-    unsigned code; /* the value to invert */
-    int len;       /* its bit length */
+local unsigned bi_reverse(unsigned code, int len)
 {
     register unsigned res = 0;
     do {

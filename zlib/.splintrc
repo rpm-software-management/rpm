@@ -1,0 +1,112 @@
+-I. -DHAVE_CONFIG_H -D_GNU_SOURCE -DSTDC -DHAVE_UNISTD_H -DHAS_snprintf -DHAS_vsnprintf -DUSE_MMAP -DWITH_RSYNC_PAD
+
++partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-globs
+-infloopsuncon
+-internalglobs
+-modunconnomods
+-nullassign
+-nullstate
+-oldstyle
+-staticinittrans
+
+-abstract		# 4
+-aliasunique		# 2
+-assignexpose
+-branchstate
+-bufferoverflowhigh
+-castfcnptr		# 6
+-compdef		# 16
+-compmempass		# 37
+-evalorder		# 2
+-globstate		# 1
+-mods			# 13
+-noeffectuncon		# 10
+-nullderef		# 9
+-nullpass		# 24
+-nullptrarith		# 4
+-nullret		# 13
+-protoparammatch	# 22
+-redef			# 4
+-retalias		# 4
+-retvalint		# painful
+-sizeoftype		# 106
+-type			# 3
+-usereleased		# 38
+
+-dependenttrans		# 2
+-immediatetrans
+-kepttrans		# 8
+-observertrans
+-readonlytrans
+-statictrans
+-temptrans		# 7
+-unqualifiedtrans	# 10
+
+-casebreak
+-looploopbreak
+-looploopcontinue
+-loopswitchbreak
+-switchswitchbreak
+-whileempty
+
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
+
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned		# pita
+-elseifcomplete		# 95 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
+-forblock		# tedious
+-ifblock		# tedious
+-incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
+-matchfields		# <bits/ipc.h> heartburn
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		# tedious
+
+-compdestroy
+-mustdefine
+-shiftimplementation
+-shiftnegative
+
+-strictops
+-strictusereleased
+-stringliterallen 4096	# redhat*PubKey's are big
+-whileblock		# tedious
+
+# --- not-yet at checks level
+-ansi-reserved
++enumint
+-mustfree
+-predboolptr
+-usedef
+
+# --- not-yet at standard level
+-boolops
+-predboolint
++boolint
++charint
++ignorequals
++matchanyintegral
