@@ -170,7 +170,8 @@ dnl
 	__ID_U="%{__id} -u"
 	AC_MSG_RESULT(yes)
     else
-	__ID_U="%{__id} | %{__sed} 's/[^=]*=\([0-9][0-9]*\).*$/\1/'"
+dnl XXX Watchout for square brackets fed to m4.
+	__ID_U="%{__id} | %{__sed} 's/[[^=]]*=\\\\([[0-9]][[0-9]]*\\\\).*$/\\\\1/'"
 	AC_MSG_RESULT(no)
     fi
     AC_SUBST(__ID_U)
@@ -614,7 +615,7 @@ AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcasecmp strncasecmp strcspn)
 AC_CHECK_FUNCS(strdup strerror strtol strtoul strspn strstr)
 
-AC_CHECK_FUNCS(regcomp glob)
+AC_CHECK_FUNCS(regcomp)
 
 dnl
 dnl XXX Regex replacement isn't known to be needed yet.
