@@ -2,11 +2,12 @@
 .depend
 Makefile
 Makefile.in
-rpmlead
 dump
-rpmheader
-rpmarchive
-rpmsignature
 dumpdb
+javadeps
+rpmarchive
 rpmgettext
+rpmheader
+rpmlead
 rpmputtext
+rpmsignature
