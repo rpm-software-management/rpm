@@ -1,3 +1,13 @@
+CC = @CC@
+CPP = @CPP@
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+INSTALL= @INSTALL@
+INSTALL_PROGRAM= @INSTALL_PROGRAM@
+INSTALL_DATA= @INSTALL_DATA@
+
 CATALOGS = se.mo fr.mo
 
 POTFILES  = ../rpm.c

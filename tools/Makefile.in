@@ -1,6 +1,11 @@
-### These are variables meant to be exported
+CC = @CC@
+CPP = @CPP@
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
 
 PROGS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
+LOADLIBES = @LIBS@ @ZLIB@
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything

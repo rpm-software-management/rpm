@@ -1,6 +1,14 @@
+CC = @CC@
+CPP = @CPP@
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
 LIBOBJECTS = spec.o vspec.o build.o files.o names.o pack.o myftw.o reqprov.o
 LIBBUILD = libbuild.a
 LOADLIBES = -lrpm $(LIBEFENCE)
+AR = ar r
+RANLIB = ranlib
 
 # -----------------------------------------------------------------------
 
