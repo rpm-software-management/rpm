@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
+#include <stdio.h>
 
 #include "misc.h"
 
@@ -99,7 +100,8 @@ static void init_arch_os(void)
     }
 
     uname(&un);
-    if ((!strcmp(un.machine, "i986")) ||
+    if ((!strcmp(un.machine, "osfmach3_i386 machine")) ||
+	(!strcmp(un.machine, "i986")) ||
 	(!strcmp(un.machine, "i886")) ||
 	(!strcmp(un.machine, "i786")) ||
 	(!strcmp(un.machine, "i686")) ||
@@ -114,15 +116,25 @@ static void init_arch_os(void)
     } else if (!strcmp(un.machine, "sparc")) {
        archnum = 3;
        archname = "sparc";
+    } else if ((!strcmp(un.machine, "osfmach3_ppc")) ||
+	       (!strcmp(un.machine, "ppc"))) {
+       archnum = 5;
+       archname = "ppc";
     } else {
-	/* XXX unknown arch - how should we handle this? */
+	/* unknown arch */
+	fprintf(stderr, "Unknown arch: %s\n", un.machine);
+	fprintf(stderr, "Please contact bugs@redhat.com\n");
+	exit(1);
     }
 
     if (!strcmp(un.sysname, "Linux")) {
 	osnum = 1;
 	osname = "Linux";
     } else {
-	/* XXX unknown os - how should we handle this? */
+	/* unknown os */
+	fprintf(stderr, "Unknown OS: %s\n", un.sysname);
+	fprintf(stderr, "Please contact bugs@redhat.com\n");
+	exit(1);
     }
 }
 
