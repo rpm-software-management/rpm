@@ -550,7 +550,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 	    return;
 
 
-	cls = buf[4];
+	cls = buf[EI_CLASS];
 
 	if (cls == ELFCLASS32) {
 		Elf32_Ehdr elfhdr;
@@ -560,7 +560,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 
 		u.l = 1;
 		(void) memcpy(&elfhdr, buf, sizeof elfhdr);
-		swap = (u.c[sizeof(int32_t) - 1] + 1) != elfhdr.e_ident[5];
+		swap = (u.c[sizeof(int32_t) - 1] + 1) != elfhdr.e_ident[EI_DATA];
 
 		if (getu16(swap, elfhdr.e_type) == ET_CORE) 
 #ifdef ELFCORE
@@ -597,7 +597,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 
 		u.l = 1;
 		(void) memcpy(&elfhdr, buf, sizeof elfhdr);
-		swap = (u.c[sizeof(int32_t) - 1] + 1) != elfhdr.e_ident[5];
+		swap = (u.c[sizeof(int32_t) - 1] + 1) != elfhdr.e_ident[EI_DATA];
 
 		if (getu16(swap, elfhdr.e_type) == ET_CORE) 
 #ifdef ELFCORE

@@ -408,7 +408,8 @@ main(int argc, char **argv)
 			/*@switchbreak@*/ break;
 		case 'i':
 			iflag++;
-			if ((mime = malloc(strlen(magicfile) + 6)) != NULL) {
+			mime = malloc(strlen(magicfile) + sizeof(".mime"));
+			if (mime != NULL) {
 				(void)strcpy(mime, magicfile);
 				(void)strcat(mime, ".mime");
 				magicfile = mime;
