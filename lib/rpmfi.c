@@ -1619,7 +1619,7 @@ void rpmfiBuildREContexts(Header h,
     int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     rpmsx sx = NULL;
-    const char ** av;
+    const char ** av = NULL;
     int ac;
     size_t nb;
     char * t;
@@ -1628,7 +1628,6 @@ void rpmfiBuildREContexts(Header h,
     int * fcnb;
 
     if ((ac = rpmfiFC(fi)) <= 0) {
-	av = NULL;
 	ac = 0;
 	goto exit;
     }

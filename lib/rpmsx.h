@@ -267,7 +267,7 @@ rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
  * @return		file security context
  */
 /*@owned@*/ /*@null@*/
-const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
+const char * rpmsxFContext(/*@null@*/ rpmsx sx, const char * fn, mode_t fmode)
 	/*@modifies sx @*/;
 
 #ifdef __cplusplus

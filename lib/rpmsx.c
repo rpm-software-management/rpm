@@ -166,17 +166,18 @@ static int rpmsxAdd(rpmsx sx, const char ** bpp)
  * Find the stem of a file name.
  * Error iff a file in the root directory or a regex that is too complex.
  *
+ * @param sx		security context patterns
  * @retval *bpp		ptr to text after stem.
  * @return		stem index, -1 on error
  */
-static int rpmsxFind(const rpmsx sx, const char ** bpp)
+static int rpmsxFind(/*@null@*/ const rpmsx sx, const char ** bpp)
 	/*@modifies *bpp @*/
 {
     size_t stem_len = rpmsxsFStem(*bpp);
     rpmsxs sxs;
     int i;
 
-    if (stem_len)
+    if (sx != NULL && stem_len > 0)
     for (i = 0; i < sx->nsxs; i++) {
 	sxs = sx->sxs + i;
 	if (stem_len != sxs->len)
@@ -327,7 +328,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
 
 /*@-branchstate@*/
     if (fn == NULL)
-	fn = "/etc/security/selinux/src/policy/file_contexts/file_contexts";
+	fn = "/etc/security/selinux/file_contexts";
 /*@=branchstate@*/
 
     if ((fp = fopen(fn, "r")) == NULL) {
