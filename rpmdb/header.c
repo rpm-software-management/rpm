@@ -2825,6 +2825,7 @@ static char * formatValue(sprintfTag tag, Header h,
     }
     
     /*@-branchstate@*/
+    if (data)
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
 	strarray = (const char **)data;

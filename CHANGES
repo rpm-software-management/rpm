@@ -15,6 +15,7 @@
 	- elfutils: avoid gcc-3.2 ICE on x86_64 for now.
 	- add /usr/lib/rpm/rpmdeps.
 	- add /usr/lib/rpm/magic.
+	- fix: /dev/initctl has not MD5 segfault (#76718).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

@@ -483,6 +483,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Oct 25 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.6
+- fix: /dev/initctl has not MD5 segfault (#76718).
+
 * Thu Oct 24 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.5
 - add /usr/lib/rpm/rpmdeps.
 - add /usr/lib/rpm/magic.
