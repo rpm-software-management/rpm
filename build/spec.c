@@ -1012,9 +1012,14 @@ Spec parseSpec(FILE *f, char *specfile)
 	    appendLineStringBuf(sb, line);
 	    break;
 	  case FILES_PART:
-	    cur_package->files++;
-	    appendLineStringBuf(cur_package->filelist, line);
-	    parseForDocFiles(cur_package, line);
+	      s1 = line;
+	      while (*s1 && (*s1 == ' ' || *s1 == '\t')) s1++;
+	      /* Handle blanks lines and comments */
+	      if (*s1 && (*s1 != '#')) {
+		  cur_package->files++;
+		  appendLineStringBuf(cur_package->filelist, line);
+		  parseForDocFiles(cur_package, line);
+	      }
 	    break;
 	  default:
 	    error(RPMERR_INTERNAL, "Bad part");
