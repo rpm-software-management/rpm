@@ -36,6 +36,7 @@ int debug = MYDEBUG;
 int verbose = 0;
 char *inputdir = NULL;
 char *outputdir = NULL;
+int msgid_too = 0;
 int gottalang = 0;
 int nlangs = 0;
 char *onlylang[128];
@@ -706,10 +707,16 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
 	}
 
 	e = *s;
+
 	/* Search for the msgid ... */
 	if ((mp = message_list_search(mlp, e)) == NULL)
 		goto bottom;
-DPRINTF(1, ("%s\n\tmsgid\n", getTagString(*tp)));
+DPRINTF(1, ("%s\n\tmsgid", getTagString(*tp)));
+	if (msgid_too) {
+DPRINTF(1, (" (drilled)"));
+	    headerAddI18NString(h, *tp, e, "C");
+	}
+DPRINTF(1, ("\n"));
 
 	/* Skip fuzzy ... */
 	if (mp->is_fuzzy) {
@@ -995,7 +1002,7 @@ main(int argc, char **argv)
 
     setprogname(argv[0]);	/* Retrofit glibc __progname */
 
-    while((c = getopt(argc, argv, "degEMl:C:I:O:Tv")) != EOF)
+    while((c = getopt(argc, argv, "defgEMl:C:I:O:Tv")) != EOF)
     switch (c) {
     case 'C':
 	mastercatalogue = strdup(optarg);
@@ -1008,6 +1015,9 @@ main(int argc, char **argv)
 	break;
     case 'E':
 	message_print_style_escape(1);
+	break;
+    case 'f':
+	msgid_too++;
 	break;
     case 'l':
 	gottalang = 1;
