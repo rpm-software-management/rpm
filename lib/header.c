@@ -1294,7 +1294,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	chptr++;
 
 	if (*chptr != '{') {
-	    *error = _("{ exected after : in expression");
+	    *error = _("{ expected after : in expression");
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    return 1;
 	}
