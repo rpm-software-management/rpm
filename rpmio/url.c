@@ -1,4 +1,3 @@
-/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/url.c
  */
@@ -177,10 +176,9 @@ void urlFreeCache(void)
 static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
 	/*@*/
 {
-    if (str1 && str2)
-	/*@-nullpass@*/		/* LCL: 2nd arg claims to be NULL */
-	return strcmp(str1, str2);
-	/*@=nullpass@*/
+    if (str1)
+	if (str2)
+	    return strcmp(str1, str2);
     if (str1 != str2)
 	return -1;
     return 0;
@@ -331,7 +329,8 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
  */
 /*@observer@*/ /*@unchecked@*/
 static struct urlstring {
-/*@observer@*/ /*@null@*/ const char * leadin;
+/*@observer@*/ /*@null@*/
+    const char * leadin;
     urltype	ret;
 } urlstrings[] = {
     { "file://",	URL_IS_PATH },
@@ -471,9 +470,9 @@ int urlSplit(const char * url, urlinfo *uret)
 
     if (u->port < 0 && u->service != NULL) {
 	struct servent *serv;
-	/*@-unrecog -multithreaded -moduncon @*/
+	/*@-multithreaded -moduncon @*/
 	serv = getservbyname(u->service, "tcp");
-	/*@=unrecog =multithreaded =moduncon @*/
+	/*@=multithreaded =moduncon @*/
 	if (serv != NULL)
 	    u->port = ntohs(serv->s_port);
 	else if (u->urltype == URL_IS_FTP)
@@ -557,4 +556,3 @@ exit:
 
     return rc;
 }
-/*@=type@*/

@@ -1097,9 +1097,9 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
  * @param fp		file handle
  * @param ps		problem set
  */
-void rpmProblemSetPrint(FILE *fp, rpmProblemSet ps)
+void rpmProblemSetPrint(FILE *fp, /*@null@*/ rpmProblemSet ps)
 	/*@globals fileSystem @*/
-	/*@modifies ps, *fp, fileSystem @*/;
+	/*@modifies *fp, ps, fileSystem @*/;
 
 /**
  * Append a problem to set.
@@ -1580,7 +1580,8 @@ typedef enum rpmtransFlags_e {
 /*@-enummemuse@*/
     RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
 /*@=enummemuse@*/
-    RPMTRANS_FLAG_NOMD5		= (1 << 27)	/*!< from --nomd5 */
+    RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
+    RPMTRANS_FLAG_NOSUGGESTS	= (1 << 28)	/*!< from --nosuggests */
 } rpmtransFlags;
 
 #define	_noTransScripts		\

@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.1
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.07
+Release: 0.08
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -521,6 +521,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Apr 14 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.08
+- use build time to choose one of  multiple alternative suggestions.
+- add --nosuggests to disable suggested resolutions.
+
 * Sat Apr 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.07
 - merge conflicts into problems, handle as transaction set variable.
 

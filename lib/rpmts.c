@@ -141,19 +141,35 @@ static int rpmtsOpenSDB(rpmTransactionSet ts)
     return rc;
 }
 
+/**
+ * Compare suggested package resolutions (qsort/bsearch).
+ * @param a		1st instance address
+ * @param b		2nd instance address
+ * @return		result of comparison
+ */
+static int sugcmp(const void * a, const void * b)       /*@*/
+{
+    const char * astr = *(const char **)a;
+    const char * bstr = *(const char **)b;
+    return strcmp(astr, bstr);
+}
+
 int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
 {
     const char * errstr;
     const char * str;
     const char * qfmt;
     rpmdbMatchIterator mi;
+    Header bh;
     Header h;
+    time_t bhtime;
     int rpmtag;
     const char * keyp;
     size_t keylen;
     int rc = 1;	/* assume not found */
     int xx;
 
+    /* Make suggestions only for install Requires: */
     if (ts->goal != TSM_INSTALL)
 	return rc;
 
@@ -169,36 +185,67 @@ int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
 	if (xx) return rc;
     }
 
-    qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
-    if (qfmt == NULL || *qfmt == '\0')
-	goto exit;
-
+    /* Look for a matching Provides: in suggested universe. */
     rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
     keylen = 0;
     mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
+    bhtime = 0;
+    bh = NULL;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
+	time_t htime;
+	int_32 * ip;
 
 	if (rpmtag == RPMTAG_PROVIDENAME && !rangeMatchesDepFlags(h, ds))
 	    continue;
 
-	str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
-	if (str == NULL) {
-	    rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
-	    break;
-	}
+	htime = 0;
+	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, (void **)&ip, NULL))
+	    htime = (time_t)*ip;
 
-	ts->suggests = xrealloc(ts->suggests,
-			sizeof(*ts->suggests) * (ts->nsuggests + 2));
-	ts->suggests[ts->nsuggests] = str;
-
-	ts->nsuggests++;
-	ts->suggests[ts->nsuggests] = NULL;
-	break;		/* XXX no alternatives yet */
+	/* XXX Prefer the newest build if given alternatives. */
+	if (htime <= bhtime)
+	    continue;
+	if (bh)
+	    bh = headerFree(bh, NULL);
+	bh = headerLink(h, NULL);
+	bhtime = htime;
     }
     mi = rpmdbFreeIterator(mi);
 
-exit:
+    /* Is there a suggested resolution? */
+    if (bh == NULL)
+	goto exit;
+
+    /* Format the suggestion. */
+    qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
+    if (qfmt == NULL || *qfmt == '\0')
+	goto exit;
+    str = headerSprintf(bh, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+    bh = headerFree(bh, NULL);
     qfmt = _free(qfmt);
+    if (str == NULL) {
+	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
+	goto exit;
+    }
+
+    /* If suggestion is already present, don't bother. */
+    if (ts->suggests != NULL && ts->nsuggests > 0) {
+	if (bsearch(&str, ts->suggests, ts->nsuggests,
+			sizeof(*ts->suggests), sugcmp))
+	    goto exit;
+    }
+
+    /* Add a new (unique) suggestion. */
+    ts->suggests = xrealloc(ts->suggests,
+			sizeof(*ts->suggests) * (ts->nsuggests + 2));
+    ts->suggests[ts->nsuggests] = str;
+    ts->nsuggests++;
+    ts->suggests[ts->nsuggests] = NULL;
+
+    if (ts->nsuggests > 1)
+	qsort(ts->suggests, ts->nsuggests, sizeof(*ts->suggests), sugcmp);
+
+exit:
 /*@-nullstate@*/ /* FIX: ts->suggests[] may be NULL */
     return rc;
 /*@=nullstate@*/

@@ -68,7 +68,6 @@ AR = @AR@
 AS = @AS@
 AWK = @AWK@
 BUILD_INCLUDED_LIBINTL = @BUILD_INCLUDED_LIBINTL@
-BUILD_RPMNLSTOOLS = @BUILD_RPMNLSTOOLS@
 BZIP2BIN = @BZIP2BIN@
 CATOBJEXT = @CATOBJEXT@
 CC = @CC@
@@ -107,7 +106,6 @@ LIBMISC = @LIBMISC@
 LIBOBJS = @LIBOBJS@
 LIBRPMALIAS_FILENAME = @LIBRPMALIAS_FILENAME@
 LIBRPMRC_FILENAME = @LIBRPMRC_FILENAME@
-LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LOCALEDIR = @LOCALEDIR@
@@ -207,7 +205,8 @@ INCLUDES = \
 	@INCPATH@
 
 
-EXTRA_DIST = hash.h upgrade.h
+EXTRA_DIST = db-py.h hash.h header-py.h upgrade.h
+
 mylibs = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -222,11 +221,12 @@ python_PROGRAMS = rpmmodule.so poptmodule.so
 
 rpmmodule_so_SOURCES = 
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+
 poptmodule_so_SOURCES = poptmodule.c
 poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
-librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
+librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c header-py.c db-py.c
 subdir = python
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -235,7 +235,8 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 
 librpmmodule_la_LDFLAGS =
 librpmmodule_la_LIBADD =
-am_librpmmodule_la_OBJECTS = rpmmodule.lo hash.lo upgrade.lo
+am_librpmmodule_la_OBJECTS = rpmmodule.lo hash.lo upgrade.lo \
+	header-py.lo db-py.lo
 librpmmodule_la_OBJECTS = $(am_librpmmodule_la_OBJECTS)
 python_PROGRAMS = rpmmodule.so$(EXEEXT) poptmodule.so$(EXEEXT)
 PROGRAMS = $(python_PROGRAMS)
@@ -255,7 +256,8 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
-@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/hash.Plo $(DEPDIR)/poptmodule.Po \
+@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/db-py.Plo $(DEPDIR)/hash.Plo \
+@AMDEP_TRUE@	$(DEPDIR)/header-py.Plo $(DEPDIR)/poptmodule.Po \
 @AMDEP_TRUE@	$(DEPDIR)/rpmmodule.Plo $(DEPDIR)/upgrade.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -326,7 +328,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/db-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/hash.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/header-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/poptmodule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/rpmmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/upgrade.Plo@am__quote@

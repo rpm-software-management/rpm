@@ -671,7 +671,8 @@ int headerMatchesDepFlags(const Header h, const rpmDepSet req)
     /* Get package information from header */
     (void) headerNVR(h, &pkgN, &v, &r);
 
-    pkgEVR = t = alloca(21 + strlen(v) + 1 + strlen(r) + 1);
+    t = alloca(21 + strlen(v) + 1 + strlen(r) + 1);
+    pkgEVR = t;
     *t = '\0';
     if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(t, "%d:", *epoch);

@@ -58,26 +58,28 @@ extern "C" {
 /**
  */
 typedef ssize_t (*fdio_read_function_t) (void *cookie, char *buf, size_t nbytes)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *cookie, errno, fileSystem @*/
+	/*@requires maxSet(buf) >= (nbytes - 1) @*/
+	/*@ensures maxRead(buf) >= nbytes @*/ ;
 
 /**
  */
 typedef ssize_t (*fdio_write_function_t) (void *cookie, const char *buf, size_t nbytes)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *cookie, errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_seek_function_t) (void *cookie, _libio_pos_t pos, int whence)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *cookie, errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_close_function_t) (void *cookie)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
+	/*@globals errno, fileSystem, systemState @*/
+	/*@modifies *cookie, errno, fileSystem, systemState @*/;
 
 
 /**
@@ -113,8 +115,8 @@ typedef int (*fdio_fileno_function_t) (void * cookie)
 /**
  */
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  */
@@ -144,51 +146,51 @@ typedef int (*fdio_fflush_function_t) (FD_t fd)
 /**
  */
 typedef int (*fdio_mkdir_function_t) (const char * path, mode_t mode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_chdir_function_t) (const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_rmdir_function_t) (const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_rename_function_t) (const char * oldpath, const char * newpath)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_unlink_function_t) (const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 /*@-typeuse@*/
 
 /**
  */
 typedef int (*fdio_stat_function_t) (const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem @*/
-	/*@modifies *st, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *st, errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_lstat_function_t) (const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem @*/
-	/*@modifies *st, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *st, errno, fileSystem @*/;
 
 /**
  */
 typedef int (*fdio_access_function_t) (const char * path, int amode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 /*@=typeuse@*/
 /*@}*/
 
@@ -300,8 +302,8 @@ int Fileno(FD_t fd)
  */
 /*@unused@*/
 int Fcntl(FD_t fd, int op, void *lip)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *lip, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies fd, *lip, errno, fileSystem @*/;
 
 /*@}*/
 
@@ -314,71 +316,73 @@ int Fcntl(FD_t fd, int op, void *lip)
  * mkdir(2) clone.
  */
 int Mkdir(const char * path, mode_t mode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  * chdir(2) clone.
  */
 int Chdir(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  * rmdir(2) clone.
  */
 int Rmdir(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  * rename(2) clone.
  */
 int Rename(const char * oldpath, const char * newpath)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  * link(2) clone.
  */
 int Link(const char * oldpath, const char * newpath)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  * unlink(2) clone.
  */
 int Unlink(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  * readlink(2) clone.
  */
 int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals fileSystem @*/
-	/*@modifies *buf, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *buf, errno, fileSystem @*/
+	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
+	/*@ensures result <= bufsiz @*/;
 
 /**
  * stat(2) clone.
  */
 int Stat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem @*/
-	/*@modifies *st, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *st, errno, fileSystem @*/;
 
 /**
  * lstat(2) clone.
  */
 int Lstat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem @*/
-	/*@modifies *st, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *st, errno, fileSystem @*/;
 
 /**
  * access(2) clone.
  */
 int Access(const char * path, int amode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 
 /**
@@ -403,23 +407,23 @@ void Globfree( /*@only@*/ glob_t * pglob)
  */
 /*@null@*/
 DIR * Opendir(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  * readdir(3) clone.
  */
 /*@null@*/
 struct dirent * Readdir(DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies *dir, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *dir, errno, fileSystem @*/;
 
 /**
  * closedir(3) clone.
  */
 int Closedir(/*@only@*/ DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies *dir, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *dir, errno, fileSystem @*/;
 
 /*@}*/
 
@@ -459,29 +463,31 @@ off_t	fdSize(FD_t fd)
 /**
  */
 /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 #define	fdOpen(_path, _flags, _mode)	fdio->_open((_path), (_flags), (_mode))
 
 /**
  */
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, *buf, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *cookie, *buf, errno, fileSystem @*/
+	/*@requires maxSet(buf) >= (count - 1) @*/
+	/*@ensures maxRead(buf) >= count @*/ ;
 #define	fdRead(_fd, _buf, _count)	fdio->read((_fd), (_buf), (_count))
 
 /**
  */
 ssize_t	fdWrite(void * cookie, const char * buf, size_t count)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *cookie, errno, fileSystem @*/;
 #define	fdWrite(_fd, _buf, _count)	fdio->write((_fd), (_buf), (_count))
 
 /**
  */
 int fdClose( /*@only@*/ void * cookie)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
+	/*@globals errno, fileSystem, systemState @*/
+	/*@modifies *cookie, errno, fileSystem, systemState @*/;
 #define	fdCLose(_fd)		fdio->close(_fd)
 
 /**

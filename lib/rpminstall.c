@@ -583,7 +583,7 @@ restart:
 
 	if (rc < 0) {
 	    eiu->numFailed += eiu->numRPMS;
-	} else if (rc > 0 || ps) {
+	} else if (rc > 0) {
 	    eiu->numFailed += rc;
 	    rpmProblemSetPrint(stderr, ps);
 	}

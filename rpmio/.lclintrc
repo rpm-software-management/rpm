@@ -1,4 +1,4 @@
--I. -I.. -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 +forcehints
@@ -35,14 +35,11 @@
 -incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
 -matchfields		# <bits/ipc.h> heartburn
 -namechecks		# tedious ANSI compliance checks
--numenummembers 1024	# RPMTAG has 138 members
--numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
 
 -compdestroy
 -mustdefine
--shiftimplementation
-#-shiftnegative
+-shiftimplementation	# ctype.h pain
 
 -strictops
 -strictusereleased

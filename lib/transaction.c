@@ -208,7 +208,9 @@ static fileAction decideFileFate(const rpmTransactionSet ts,
      * possible in case something else (like the timestamp) has changed.
      */
     if (dbWhat == REG) {
+#ifdef	DYING
 	if (ofi->md5s != NULL && nfi->md5s != NULL) {
+#endif
 	    const unsigned char * omd5 = ofi->md5s + (16 * ofi->i);
 	    const unsigned char * nmd5 = nfi->md5s + (16 * nfi->i);
 	    if (domd5(fn, buffer, 0))
@@ -217,6 +219,7 @@ static fileAction decideFileFate(const rpmTransactionSet ts,
 		return FA_CREATE;	/* unmodified config file, replace. */
 	    if (!memcmp(omd5, nmd5, 16))
 		return FA_SKIP;		/* identical file, don't bother. */
+#ifdef	DYING
 	} else {
 	    const char * omd5 = ofi->fmd5s[ofi->i];
 	    const char * nmd5 = nfi->fmd5s[nfi->i];
@@ -227,6 +230,7 @@ static fileAction decideFileFate(const rpmTransactionSet ts,
 	    if (!strcmp(omd5, nmd5))
 		return FA_SKIP;		/* identical file, don't bother. */
 	}
+#endif
     } else /* dbWhat == LINK */ {
 	memset(buffer, 0, sizeof(buffer));
 	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
@@ -261,15 +265,19 @@ static int filecmp(TFI_t afi, TFI_t bfi)
 	const char * blink = bfi->flinks[bfi->i];
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
+#ifdef	DYING
 	if (afi->md5s != NULL && bfi->md5s != NULL) {
+#endif
 	    const unsigned char * amd5 = afi->md5s + (16 * afi->i);
 	    const unsigned char * bmd5 = bfi->md5s + (16 * bfi->i);
 	    return memcmp(amd5, bmd5, 16);
+#ifdef	DYING
 	} else {
 	    const char * amd5 = afi->fmd5s[afi->i];
 	    const char * bmd5 = bfi->fmd5s[bfi->i];
 	    return strcmp(amd5, bmd5);
 	}
+#endif
     }
 
     return 0;
@@ -703,12 +711,15 @@ assert(otherFi != NULL);
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char md5sum[50];
+#ifdef	DYING
 		if (fi->md5s != NULL) {
-		    const unsigned char * fmd5 = fi->md5s + (16 * i);
-		    if (!domd5(fn, md5sum, 0) && memcmp(fmd5, md5sum, 16)) {
+#endif
+		    const unsigned char * md5 = fi->md5s + (16 * i);
+		    if (!domd5(fn, md5sum, 0) && memcmp(md5, md5sum, 16)) {
 			fi->actions[i] = FA_BACKUP;
 			/*@switchbreak@*/ break;
 		    }
+#ifdef	DYING
 		} else {
 		    const char * fmd5 = fi->fmd5s[i];
 		    if (!domd5(fn, md5sum, 1) && strcmp(fmd5, md5sum)) {
@@ -716,6 +727,7 @@ assert(otherFi != NULL);
 			/*@switchbreak@*/ break;
 		    }
 		}
+#endif
 	    }
 	    fi->actions[i] = FA_ERASE;
 	    /*@switchbreak@*/ break;

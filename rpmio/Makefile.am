@@ -8,11 +8,8 @@ EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
 
 INCLUDES = \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
-	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)

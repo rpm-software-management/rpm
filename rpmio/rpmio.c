@@ -269,12 +269,6 @@ DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie,
 }
 #endif
 
-#if 0
-#undef	fdLink
-#undef	fdFree
-#undef	fdNew
-#endif
-
 /* =============================================================== */
 /*@-modfilesys@*/
 /*@-mustmod@*/ /* FIX: cookie is modified */

@@ -162,7 +162,7 @@ char *realpath(const char *path, char resolved_path []);
 
 #if defined(__LCLINT__)
 /*@-declundef -incondefs @*/ /* LCL: missing annotation */
-/*@only@*/ void * alloca (size_t __size)
+/*@only@*/ /*@out@*/ void * alloca (size_t __size)
 	/*@ensures MaxSet(result) == (__size - 1) @*/
 	/*@*/;
 /*@=declundef =incondefs @*/

@@ -152,11 +152,11 @@ struct poptOption rpmInstallPoptTable[] = {
  { "ignoresize", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
 	(RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES),
 	N_("don't check disk space before installing"), NULL},
- { "includedocs", '\0', 0, &rpmIArgs.incldocs, 0,
+ { "includedocs", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.incldocs, 0,
 	N_("install documentation"), NULL},
  { "install", '\0', POPT_BIT_SET,
 	&rpmIArgs.installInterfaceFlags, INSTALL_INSTALL,
-	N_("install package"), N_("<packagefile>+") },
+	N_("install package(s)"), N_("<packagefile>+") },
  { "justdb", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_JUSTDB,
 	N_("update the database, but do not modify the filesystem"), NULL},
  { "nodeps", '\0', 0, &rpmIArgs.noDeps, 0,
@@ -165,6 +165,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.installInterfaceFlags, INSTALL_NOORDER,
 	N_("do not reorder package installation to satisfy dependencies"),
 	NULL},
+
+ { "nosuggests", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
+	RPMTRANS_FLAG_NOSUGGESTS,
+	N_("do not suggest missing dependency resolution(s)"), NULL},
 
  { "noscripts", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
 	(_noTransScripts|_noTransTriggers),
@@ -183,9 +187,9 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("do not execute %%postun scriptlet (if any)"), NULL },
 
  { "nodigest", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_DIGEST,
-        N_("don't verify digest(s)"), NULL },
+        N_("don't verify package digest(s)"), NULL },
  { "nosignature", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify signature(s)"), NULL },
+        N_("don't verify package signature(s)"), NULL },
 
  { "notriggers", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
 	_noTransTriggers,

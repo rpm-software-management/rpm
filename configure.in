@@ -366,15 +366,27 @@ AC_CHECK_FUNC(setreuid, [], [
 ])
 
 AC_CHECK_FUNC(rand, [], [
-    AC_CHECK_LIB(rand, rand, [LIBS="$LIBS -lm"])
+    AC_CHECK_LIB(rand, rand, [])
 ])
 
 AC_CHECK_FUNC(getdomainname, [], [
-    AC_CHECK_LIB(nsl, getdomainname, [LIBS="$LIBS -lnsl"])
+    AC_CHECK_LIB(nsl, getdomainname)
 ])
 AC_CHECK_FUNC(socket, [], [
-    AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket"])
+    AC_CHECK_LIB(socket, socket)
 ])
+
+AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
+
+AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
+  dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
+  AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
+    AC_CHECK_LIB(thread, mutex_lock)
+  ])
+])
+
+AC_CHECK_HEADERS(aio.h)
+AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 
 dnl Better not use fchmod at all.
 AC_CHECK_FUNC(fchmod)
@@ -387,17 +399,6 @@ dnl can hopefully be removed soon.  Please use the default action
 dnl for this macro (not LIBS=...), otherwise the check for dbopen
 dnl will fail.
 AC_CHECK_LIB(port, writev)
-
-libthread=""
-AC_CHECK_LIB(pthread, pthread_mutex_trylock, [libthread="-lpthread"], [
-  dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
-  AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [libthread="-lpthread"])
-])
-
-if test "x$libthread" = "x"; then
-	# Try in libthread too.
-	AC_CHECK_LIB(thread, mutex_lock, [libthread="-lthread"])
-fi
 
 WITH_DB_SUBDIR=
 WITH_INTERNAL_DB=0
@@ -422,10 +423,10 @@ AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
     AC_CHECK_LIB(db-3.1, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.1"],
       AC_CHECK_LIB(db-3.0, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.0"],
         AC_CHECK_LIB(db, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb"],
-        ,$libthread)
-      ,$libthread)
-    ,$libthread)
-  ,$libthread)
+        )
+      )
+    )
+  )
 )
 
 if test X"$DBLIBSRCS" = X; then
@@ -544,17 +545,6 @@ AC_CHECK_HEADERS(pthread.h)
 
 dnl popt w float/double needs.
 AC_CHECK_HEADERS(float.h)
-
-dnl whether or not we should try to build rpmgettext/rpmputtext.
-if test X"$USE_NLS" = Xyes; then
-    BUILD_RPMNLSTOOLS="rpmgettext rpmputtext"
-    if test X"$USE_INCLUDED_LIBINTL" = Xyes; then
-	INCPATH="-I\$(top_builddir)/intl $INCPATH"
-    fi
-else
-    BUILD_RPMNLSTOOLS=
-fi
-AC_SUBST(BUILD_RPMNLSTOOLS)
 
 AC_CHECK_HEADERS(glob.h)
 
@@ -1174,8 +1164,6 @@ if test -n "$LIBOBJS"; then
     INCPATH="-I\$(top_builddir)/misc $INCPATH"
 fi
 AC_SUBST(INCPATH)
-
-AC_SUBST(LIBS)
 
 AC_SUBST(RPM)
 

@@ -21,8 +21,6 @@ INCLUDES = \
 	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@
 
-LIBS = -lrt -lpthread
-
 myLDFLAGS = @LDFLAGS_STATIC@
 
 # XXX libtool can/should generate dependent libs.

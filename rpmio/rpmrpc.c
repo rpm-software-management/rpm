@@ -1,4 +1,3 @@
-/*@-type@*/ /* LCL: function typedefs */
 /** \ingroup rpmio
  * \file rpmio/rpmrpc.c
  */
@@ -1083,6 +1082,7 @@ struct __dirstream {
 static int ftpmagicdir = 0x8440291;
 #define	ISFTPMAGIC(_dir) (!memcmp((_dir), &ftpmagicdir, sizeof(ftpmagicdir)))
 
+/*@-type@*/ /* FIX: abstract DIR */
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
 	/*@globals fileSystem @*/
@@ -1260,6 +1260,7 @@ fprintf(stderr, "*** ftpReaddir(%p) %p \"%s\"\n", (void *)dir, dp, dp->d_name);
     
     return dp;
 }
+/*@=type@*/
 
 static int ftpClosedir(/*@only@*/ DIR * dir)
 	/*@globals fileSystem @*/
@@ -1386,11 +1387,13 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 /*@=castfcnptr@*/
     switch (ut) {
     case URL_IS_FTP:
+/*@-type@*/
 	pglob->gl_closedir = Closedir;
 	pglob->gl_readdir = Readdir;
 	pglob->gl_opendir = Opendir;
 	pglob->gl_lstat = Lstat;
 	pglob->gl_stat = Stat;
+/*@=type@*/
 	flags |= GLOB_ALTDIRFUNC;
 	break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
@@ -1460,4 +1463,3 @@ fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
     return closedir(dir);
 }
 /*@=voidabstract@*/
-/*@=type@*/

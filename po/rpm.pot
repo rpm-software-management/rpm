@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-04-13 14:47-0400\n"
+"POT-Creation-Date: 2002-04-14 17:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,7 +119,7 @@ msgstr ""
 msgid "use <dir> as the top level directory"
 msgstr ""
 
-#: rpmqv.c:125 lib/poptI.c:215
+#: rpmqv.c:125 lib/poptI.c:219
 msgid "<dir>"
 msgstr ""
 
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:622 lib/psm.c:1449
+#: build/pack.c:622 lib/psm.c:1450
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -846,7 +846,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:703 lib/psm.c:1737
+#: build/pack.c:703 lib/psm.c:1738
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1410,71 +1410,71 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:152
+#: lib/depends.c:153
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:366
+#: lib/depends.c:367
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:391
+#: lib/depends.c:392
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:407
+#: lib/depends.c:408
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:428
+#: lib/depends.c:429
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:440
+#: lib/depends.c:441
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:453
+#: lib/depends.c:454
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:761
+#: lib/depends.c:762
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:881
+#: lib/depends.c:882
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1149
+#: lib/depends.c:1150
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1255
+#: lib/depends.c:1256
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1348
+#: lib/depends.c:1349
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1418
+#: lib/depends.c:1419
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1453
+#: lib/depends.c:1454
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1458
+#: lib/depends.c:1459
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1511,7 +1511,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:153 rpmio/url.c:509
+#: lib/fs.c:153 rpmio/url.c:508
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
@@ -1648,7 +1648,7 @@ msgid ""
 "<package> specified multiple packages)"
 msgstr ""
 
-#: lib/poptI.c:120 lib/poptI.c:171
+#: lib/poptI.c:120 lib/poptI.c:175
 msgid "do not execute package scriptlet(s)"
 msgstr ""
 
@@ -1688,7 +1688,7 @@ msgstr ""
 msgid "upgrade package(s) if already installed"
 msgstr ""
 
-#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:236
+#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:240
 msgid "<packagefile>+"
 msgstr ""
 
@@ -1713,7 +1713,7 @@ msgid "install documentation"
 msgstr ""
 
 #: lib/poptI.c:159
-msgid "install package"
+msgid "install package(s)"
 msgstr ""
 
 #: lib/poptI.c:161
@@ -1728,105 +1728,109 @@ msgstr ""
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 
-#: lib/poptI.c:174
+#: lib/poptI.c:171
+msgid "do not suggest missing dependency resolution(s)"
+msgstr ""
+
+#: lib/poptI.c:178
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:177
+#: lib/poptI.c:181
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:180
+#: lib/poptI.c:184
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:183
+#: lib/poptI.c:187
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
-msgid "don't verify digest(s)"
+#: lib/poptI.c:190 lib/poptQV.c:272 lib/poptQV.c:309
+msgid "don't verify package digest(s)"
 msgstr ""
 
-#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
-msgid "don't verify signature(s)"
+#: lib/poptI.c:192 lib/poptQV.c:275 lib/poptQV.c:311
+msgid "don't verify package signature(s)"
 msgstr ""
 
-#: lib/poptI.c:192
+#: lib/poptI.c:196
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
 
-#: lib/poptI.c:195
+#: lib/poptI.c:199
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:198
+#: lib/poptI.c:202
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:201
+#: lib/poptI.c:205
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:204
+#: lib/poptI.c:208
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:208
+#: lib/poptI.c:212
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 
-#: lib/poptI.c:212
+#: lib/poptI.c:216
 msgid "print percentages as package installs"
 msgstr ""
 
-#: lib/poptI.c:214
+#: lib/poptI.c:218
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 
-#: lib/poptI.c:217
+#: lib/poptI.c:221
 msgid "relocate files from path <old> to <new>"
 msgstr ""
 
-#: lib/poptI.c:218
+#: lib/poptI.c:222
 msgid "<old>=<new>"
 msgstr ""
 
-#: lib/poptI.c:221
+#: lib/poptI.c:225
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:224
+#: lib/poptI.c:228
 msgid "install even if the package replaces installed files"
 msgstr ""
 
-#: lib/poptI.c:227
+#: lib/poptI.c:231
 msgid "reinstall if the package is already present"
 msgstr ""
 
-#: lib/poptI.c:229
+#: lib/poptI.c:233
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:230
+#: lib/poptI.c:234
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:232
+#: lib/poptI.c:236
 msgid "don't install, but tell if it would work or not"
 msgstr ""
 
-#: lib/poptI.c:235
+#: lib/poptI.c:239
 msgid "upgrade package(s)"
 msgstr ""
 
@@ -1994,7 +1998,7 @@ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr ""
 
 #: lib/poptQV.c:298
-msgid "sign a packagei (identical to --resign)"
+msgid "sign package(s) (identical to --resign)"
 msgstr ""
 
 #: lib/poptQV.c:300
@@ -2006,7 +2010,7 @@ msgid "import an armored public key"
 msgstr ""
 
 #: lib/poptQV.c:304
-msgid "sign a packagei (identical to --addsign)"
+msgid "sign package(s) (identical to --addsign)"
 msgstr ""
 
 #: lib/poptQV.c:306
@@ -2097,79 +2101,79 @@ msgstr ""
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/psm.c:447
+#: lib/psm.c:448
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:453
+#: lib/psm.c:454
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:486
+#: lib/psm.c:487
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:602
+#: lib/psm.c:603
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:721
+#: lib/psm.c:722
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:887
+#: lib/psm.c:888
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:894
+#: lib/psm.c:895
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1236
+#: lib/psm.c:1237
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1356
+#: lib/psm.c:1357
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1498
+#: lib/psm.c:1499
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1507
+#: lib/psm.c:1508
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1549
+#: lib/psm.c:1550
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1550
+#: lib/psm.c:1551
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1745
+#: lib/psm.c:1746
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1748
+#: lib/psm.c:1749
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:125 lib/rpmts.c:186
+#: lib/query.c:125 lib/rpmts.c:227
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2741,12 +2745,12 @@ msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:990
+#: lib/transaction.c:1002
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:1080
+#: lib/transaction.c:1092
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -3228,59 +3232,59 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:660
+#: rpmio/rpmio.c:654
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:663
+#: rpmio/rpmio.c:657
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:660
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:663
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:666
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:675
+#: rpmio/rpmio.c:669
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:672
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:675
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:684
+#: rpmio/rpmio.c:678
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:687
+#: rpmio/rpmio.c:681
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:690
+#: rpmio/rpmio.c:684
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:687
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:691
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1369
+#: rpmio/rpmio.c:1363
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3309,37 +3313,37 @@ msgstr ""
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:119
+#: rpmio/url.c:118
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:139
+#: rpmio/url.c:138
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:167
+#: rpmio/url.c:166
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:264
+#: rpmio/url.c:262
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: rpmio/url.c:289 rpmio/url.c:315
+#: rpmio/url.c:287 rpmio/url.c:313
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:463
+#: rpmio/url.c:462
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/url.c:529
+#: rpmio/url.c:528
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""

@@ -95,7 +95,8 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
     if (ts->removedPackages != NULL) {	/* XXX can't happen. */
 	ts->removedPackages[ts->numRemovedPackages] = dboffset;
 	ts->numRemovedPackages++;
-	qsort(ts->removedPackages, ts->numRemovedPackages,
+	if (ts->numRemovedPackages > 1)
+	    qsort(ts->removedPackages, ts->numRemovedPackages,
 			sizeof(*ts->removedPackages), intcmp);
     }
 
@@ -461,9 +462,9 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
     }
 
     /*
-     * Search for an unsatisifed dependency.
+     * Search for an unsatisfied dependency.
      */
-    if (ts->solve)
+    if (!(ts->transFlags & RPMTRANS_FLAG_NOSUGGESTS) && ts->solve != NULL)
 	xx = (*ts->solve) (ts, key);
 
 unsatisfied:

@@ -269,10 +269,10 @@ struct poptOption rpmVerifyPoptTable[] = {
         N_("don't execute verify script(s)"), NULL },
  { "nodigest", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_DIGEST,
-        N_("don't verify digest(s)"), NULL },
+        N_("don't verify package digest(s)"), NULL },
  { "nosignature", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify signature(s)"), NULL },
+        N_("don't verify package signature(s)"), NULL },
 
 /** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
  { "nogpg", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
@@ -295,20 +295,20 @@ struct poptOption rpmSignPoptTable[] = {
 	rpmQVSourceArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { "addsign", '\0', 0, NULL, 'A',
-	N_("sign a packagei (identical to --resign)"), NULL },
+	N_("sign package(s) (identical to --resign)"), NULL },
  { "checksig", 'K', 0, NULL, 'K',
 	N_("verify package signature(s)"), NULL },
  { "import", '\0', 0, NULL, 'I',
 	N_("import an armored public key"), NULL },
  { "resign", '\0', 0, NULL, 'R',
-	N_("sign a packagei (identical to --addsign)"), NULL },
+	N_("sign package(s) (identical to --addsign)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
 	N_("generate signature"), NULL },
 
  { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
-        N_("don't verify digest(s)"), NULL },
+        N_("don't verify package digest(s)"), NULL },
  { "nosignature", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify signature(s)"), NULL },
+        N_("don't verify package signature(s)"), NULL },
 
    POPT_TABLEEND
 };

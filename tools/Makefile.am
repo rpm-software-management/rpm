@@ -24,10 +24,7 @@ LDADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
-	@WITH_ZLIB_LIB@ \
 	@INTLLIBS@
-
-LIBS =
 
 noinst_PROGRAMS = \
 	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature rpmsort

@@ -370,6 +370,7 @@ static int markReplacedFiles(const PSM_t psm)
 	return 0;
 
     offsets = alloca(num * sizeof(*offsets));
+    offsets[0] = 0;
     num = prev = 0;
     for (sfi = replaced; sfi->otherPkg; sfi++) {
 	if (prev && prev == sfi->otherPkg)
