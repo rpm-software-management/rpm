@@ -401,6 +401,7 @@ typedef enum rpmfileState_e {
     RPMFILE_STATE_NOTINSTALLED	= 2,
     RPMFILE_STATE_NETSHARED	= 3
 } rpmfileState;
+#define	RPMFILE_STATE_MISSING	-1	/* XXX used for unavailable data */
 
 /**
  * File Attributes.

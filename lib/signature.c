@@ -242,8 +242,10 @@ int rpmWriteSignature(FD_t fd, Header h)
     sigSize = headerSizeof(h, HEADER_MAGIC_YES);
     pad = (8 - (sigSize % 8)) % 8;
     if (pad) {
+/*@-boundswrite@*/
 	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
 	    rc = 1;
+/*@=boundswrite@*/
     }
     rpmMessage(RPMMESS_DEBUG, _("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
     return rc;

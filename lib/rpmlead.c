@@ -35,8 +35,10 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
     l.osnum = htons(l.osnum);
     l.signature_type = htons(l.signature_type);
 	
+/*@-boundswrite@*/
     if (Fwrite(&l, 1, sizeof(l), fd) != sizeof(l))
 	return 1;
+/*@=boundswrite@*/
 
     return 0;
 }

@@ -61,7 +61,7 @@ typedef ssize_t (*fdio_read_function_t) (void *cookie, char *buf, size_t nbytes)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *cookie, errno, fileSystem @*/
 	/*@requires maxSet(buf) >= (nbytes - 1) @*/
-	/*@ensures maxRead(buf) >= nbytes @*/ ;
+	/*@ensures maxRead(buf) == result @*/ ;
 
 /**
  */
@@ -235,16 +235,23 @@ struct FDIO_s {
 /**
  * fread(3) clone.
  */
+/*@-incondefs@*/
 size_t Fread(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd)
 	/*@globals fileSystem @*/
-	/*@modifies fd, *buf, fileSystem @*/;
+	/*@modifies fd, *buf, fileSystem @*/
+	/*@requires maxSet(buf) >= (nmemb - 1) @*/
+	/*@ensures maxRead(buf) == result @*/;
+/*@=incondefs@*/
 
 /**
  * fwrite(3) clone.
  */
+/*@-incondefs@*/
 size_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd)
 	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
+	/*@modifies fd, fileSystem @*/
+	/*@requires maxRead(buf) >= nmemb @*/;
+/*@=incondefs@*/
 
 /**
  * fseek(3) clone.
@@ -360,7 +367,7 @@ int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *buf, errno, fileSystem @*/
 	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
-	/*@ensures result <= bufsiz @*/;
+	/*@ensures maxRead(buf) <= bufsiz @*/;
 /*@=incondefs@*/
 
 /**
@@ -474,7 +481,7 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *cookie, *buf, errno, fileSystem @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
-	/*@ensures maxRead(buf) >= count @*/ ;
+	/*@ensures maxRead(buf) == result @*/ ;
 #define	fdRead(_fd, _buf, _count)	fdio->read((_fd), (_buf), (_count))
 /*@=incondefs@*/
 

@@ -189,7 +189,7 @@ int_16 rpmfiFMode(rpmfi fi)
 
 rpmfileState rpmfiFState(rpmfi fi)
 {
-    char fstate = 0;
+    rpmfileState fstate = RPMFILE_STATE_MISSING;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -252,6 +252,41 @@ int_16 rpmfiFRdev(rpmfi fi)
     return frdev;
 }
 
+int_32 rpmfiFInode(rpmfi fi)
+{
+    int_32 finode = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->finodes != NULL)
+	    finode = fi->finodes[fi->i];
+/*@=boundsread@*/
+    }
+    return finode;
+}
+
+int_32 rpmfiFNlink(rpmfi fi)
+{
+    int_32 nlink = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
+/*@-boundsread@*/
+	if (fi->finodes && fi->frdevs) {
+	    int_32 finode = fi->finodes[fi->i];
+	    int_16 frdev = fi->frdevs[fi->i];
+	    int j;
+
+	    for (j = 0; j < fi->fc; j++) {
+		if (fi->frdevs[j] == frdev && fi->finodes[j] == finode)
+		    nlink++;
+	    }
+	}
+/*@=boundsread@*/
+    }
+    return nlink;
+}
+
 int_32 rpmfiFMtime(rpmfi fi)
 {
     int_32 fmtime = 0;
@@ -269,6 +304,7 @@ const char * rpmfiFUser(rpmfi fi)
 {
     const char * fuser = NULL;
 
+    /* XXX add support for ancient RPMTAG_FILEUIDS? */
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
 	if (fi->fuser != NULL)
@@ -282,6 +318,7 @@ const char * rpmfiFGroup(rpmfi fi)
 {
     const char * fgroup = NULL;
 
+    /* XXX add support for ancient RPMTAG_FILEGIDS? */
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
 	if (fi->fgroup != NULL)
@@ -880,6 +917,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	    fi->vflags = _free(fi->vflags);
 	    fi->fsizes = _free(fi->fsizes);
 	    fi->frdevs = _free(fi->frdevs);
+	    fi->finodes = _free(fi->finodes);
 	    fi->dil = _free(fi->dil);
 	}
 	/*@=evalorder@*/
@@ -1047,9 +1085,10 @@ if (fi->actions == NULL)
     }
     fi->fmd5s = hfd(fi->fmd5s, -1);
 
-    /* XXX TR_REMOVED doesn;t need fmtimes or frdevs */
+    /* XXX TR_REMOVED doesn;t need fmtimes, frdevs or finodes */
     xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
     xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
+    xx = hge(h, RPMTAG_FILEINODES, NULL, (void **) &fi->finodes, NULL);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
@@ -1076,6 +1115,7 @@ if (fi->actions == NULL)
     if (!scareMem) {
 	_fdupe(fi, fmtimes);
 	_fdupe(fi, frdevs);
+	_fdupe(fi, finodes);
 	_fdupe(fi, fsizes);
 	_fdupe(fi, fflags);
 	_fdupe(fi, vflags);

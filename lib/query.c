@@ -17,6 +17,7 @@
 
 #include "rpmdb.h"
 #include "rpmps.h"
+#include "rpmfi.h"
 #include "rpmts.h"
 
 #include "manifest.h"
@@ -34,11 +35,11 @@ static void printFileInfo(char * te, const char * name,
 			  unsigned int mtime,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
-			  int uid, int gid, const char * linkto)
+			  const char * linkto)
 	/*@modifies *te @*/
 {
     char sizefield[15];
-    char ownerfield[9], groupfield[9];
+    char ownerfield[8+1], groupfield[8+1];
     char timefield[100];
     time_t when = mtime;  /* important if sizeof(int_32) ! sizeof(time_t) */
     struct tm * tm;
@@ -56,17 +57,11 @@ static void printFileInfo(char * te, const char * name,
 /*@=boundsread@*/
     }
 
-    if (owner) 
-	strncpy(ownerfield, owner, 8);
-    else
-	sprintf(ownerfield, "%-8d", uid);
-    ownerfield[8] = '\0';
+    strncpy(ownerfield, owner, sizeof(ownerfield));
+    ownerfield[sizeof(ownerfield)-1] = '\0';
 
-    if (group) 
-	strncpy(groupfield, group, 8);
-    else 
-	sprintf(groupfield, "%-8d", gid);
-    groupfield[8] = '\0';
+    strncpy(groupfield, group, sizeof(groupfield));
+    groupfield[sizeof(groupfield)-1] = '\0';
 
     /* this is normally right */
     sprintf(sizefield, "%12u", size);
@@ -130,74 +125,30 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
-/**
- */
-/*@-boundsread@*/
-static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
-		int xfile)
-	/*@*/
-{
-    int nlink = 0;
-
-    /* XXX rpm-3.3.12 has not RPMTAG_FILEINODES */
-    if (!(fileRdevList[xfile] != 0 && fileRdevList &&
-		fileInodeList[xfile] != 0 && fileInodeList && nfiles > 0))
-	return 1;
-    while (nfiles-- > 0) {
-	if (fileRdevList[nfiles] == 0)
-	    continue;
-	if (fileRdevList[nfiles] != fileRdevList[xfile])
-	    continue;
-	if (fileInodeList[nfiles] == 0)
-	    continue;
-	if (fileInodeList[nfiles] != fileInodeList[xfile])
-	    continue;
-	nlink++;
-    }
-    if (nlink == 0) nlink = 1;
-    return nlink;
-}
-/*@=boundsread@*/
-
-/*@-boundswrite@*/
 int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
+    int scareMem = 1;
+    rpmfi fi = NULL;
     char * t, * te;
-    rpmTagType type;
-    int_32 count;
     char * prefix = NULL;
-    const char ** dirNames = NULL;
-    const char ** baseNames = NULL;
-    rpmTagType bnt, dnt;
-    const char ** fileMD5List = NULL;
-    const char ** fileOwnerList = NULL;
-    const char ** fileGroupList = NULL;
-    const char ** fileLinktoList = NULL;
-    rpmTagType m5t, fot, fgt, ltt;
-    const char * fileStatesList;
-    int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
-    int_32 * fileUIDList = NULL;
-    int_32 * fileGIDList = NULL;
-    int_32 * fileInodeList = NULL;
-    uint_16 * fileModeList;
-    uint_16 * fileRdevList;
-    int_32 * dirIndexes;
     int rc = 0;		/* XXX FIXME: need real return code */
     int nonewline = 0;
     int i;
 
     te = t = xmalloc(BUFSIZ);
+/*@-boundswrite@*/
     *te = '\0';
+/*@=boundswrite@*/
 
     if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL)
     {
 	const char * name, * version, * release;
 	(void) headerNVR(h, &name, &version, &release);
+/*@-boundswrite@*/
 	te = stpcpy(te, name);
 	te = stpcpy( stpcpy(te, "-"), version);
 	te = stpcpy( stpcpy(te, "-"), release);
+/*@=boundswrite@*/
 	goto exit;
     }
 
@@ -213,9 +164,11 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 		t = xrealloc(t, BUFSIZ+sb);
 		te = t + tb;
 	    }
+/*@-boundswrite@*/
 	    /*@-usereleased@*/
 	    te = stpcpy(te, str);
 	    /*@=usereleased@*/
+/*@=boundswrite@*/
 	    str = _free(str);
 	}
 	/*@=branchstate@*/
@@ -224,171 +177,151 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
     if (!(qva->qva_flags & QUERY_FOR_LIST))
 	goto exit;
 
-    if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count)) {
+    fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    if (rpmfiFC(fi) <= 0) {
+/*@-boundswrite@*/
 	te = stpcpy(te, _("(contains no files)"));
+/*@=boundswrite@*/
 	goto exit;
     }
-    if (!hge(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, NULL))
-	fileStatesList = NULL;
-    if (!hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL))
-	dirNames = NULL;
-    if (!hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL))
-	dirIndexes = NULL;
-    if (!hge(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, NULL))
-	fileFlagsList = NULL;
-    if (!hge(h, RPMTAG_FILESIZES, &type, (void **) &fileSizeList, NULL))
-	fileSizeList = NULL;
-    if (!hge(h, RPMTAG_FILEMODES, &type, (void **) &fileModeList, NULL))
-	fileModeList = NULL;
-    if (!hge(h, RPMTAG_FILEMTIMES, &type, (void **) &fileMTimeList, NULL))
-	fileMTimeList = NULL;
-    if (!hge(h, RPMTAG_FILERDEVS, &type, (void **) &fileRdevList, NULL))
-	fileRdevList = NULL;
-    if (!hge(h, RPMTAG_FILEINODES, &type, (void **) &fileInodeList, NULL))
-	fileInodeList = NULL;
-    if (!hge(h, RPMTAG_FILELINKTOS, &ltt, (void **) &fileLinktoList, NULL))
-	fileLinktoList = NULL;
-    if (!hge(h, RPMTAG_FILEMD5S, &m5t, (void **) &fileMD5List, NULL))
-	fileMD5List = NULL;
-    if (!hge(h, RPMTAG_FILEUIDS, &type, (void **) &fileUIDList, NULL))
-	fileUIDList = NULL;
-    if (!hge(h, RPMTAG_FILEGIDS, &type, (void **) &fileGIDList, NULL))
-	fileGIDList = NULL;
-    if (!hge(h, RPMTAG_FILEUSERNAME, &fot, (void **) &fileOwnerList, NULL))
-	fileOwnerList = NULL;
-    if (!hge(h, RPMTAG_FILEGROUPNAME, &fgt, (void **) &fileGroupList, NULL))
-	fileGroupList = NULL;
 
-    for (i = 0; i < count; i++) {
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while ((i = rpmfiNext(fi)) >= 0) {
+	rpmfileAttrs fflags;
+	unsigned short fmode;
+ 	unsigned short frdev;
+	unsigned int fmtime;
+	rpmfileState fstate;
+	size_t fsize;
+	const char * fn;
+	char fmd5[32+1];
+	const char * fuser;
+	const char * fgroup;
+	const char * flink;
+	int_32 fnlink;
+
+	fflags = rpmfiFFlags(fi);
+	fmode = rpmfiFMode(fi);
+	frdev = rpmfiFRdev(fi);
+	fmtime = rpmfiFMtime(fi);
+	fstate = rpmfiFState(fi);
+	fsize = rpmfiFSize(fi);
+	fn = rpmfiFN(fi);
+/*@-bounds@*/
+	{   static char hex[] = "0123456789abcdef";
+	    const char * s = rpmfiMD5(fi);
+	    char * p = fmd5;
+	    int j;
+	    for (j = 0; j < 16; j++) {
+		unsigned k = *s++;
+		*p++ = hex[ (k >> 4) & 0xf ];
+		*p++ = hex[ (k     ) & 0xf ];
+	    }
+	    *p = '\0';
+	}
+/*@=bounds@*/
+	fuser = rpmfiFUser(fi);
+	fgroup = rpmfiFGroup(fi);
+	flink = rpmfiFLink(fi);
+	fnlink = rpmfiFNlink(fi);
 
 	/* If querying only docs, skip non-doc files. */
-	if ((qva->qva_flags & QUERY_FOR_DOCS)
-	  && !(fileFlagsList[i] & RPMFILE_DOC))
+	if ((qva->qva_flags & QUERY_FOR_DOCS) && !(fflags & RPMFILE_DOC))
 	    continue;
 
 	/* If querying only configs, skip non-config files. */
-	if ((qva->qva_flags & QUERY_FOR_CONFIG)
-	  && !(fileFlagsList[i] & RPMFILE_CONFIG))
+	if ((qva->qva_flags & QUERY_FOR_CONFIG) && !(fflags & RPMFILE_CONFIG))
 	    continue;
 
 	/* If not querying %ghost, skip ghost files. */
-	if (!(qva->qva_fflags & RPMFILE_GHOST)
-	  && (fileFlagsList[i] & RPMFILE_GHOST))
+	if (!(qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
 	    continue;
 
-	/*@-internalglobs@*/ /* FIX: shrug */
+/*@-boundswrite@*/
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
-	/*@=internalglobs@*/
 
 	if (qva->qva_flags & QUERY_FOR_STATE) {
-	    if (fileStatesList) {
-		rpmfileState fstate = fileStatesList[i];
-		switch (fstate) {
-		case RPMFILE_STATE_NORMAL:
-		    te = stpcpy(te, _("normal        "));
-		    /*@switchbreak@*/ break;
-		case RPMFILE_STATE_REPLACED:
-		    te = stpcpy(te, _("replaced      "));
-		    /*@switchbreak@*/ break;
-		case RPMFILE_STATE_NOTINSTALLED:
-		    te = stpcpy(te, _("not installed "));
-		    /*@switchbreak@*/ break;
-		case RPMFILE_STATE_NETSHARED:
-		    te = stpcpy(te, _("net shared    "));
-		    /*@switchbreak@*/ break;
-		default:
-		    sprintf(te, _("(unknown %3d) "), (int)fileStatesList[i]);
-		    te += strlen(te);
-		    /*@switchbreak@*/ break;
-		}
-	    } else {
+	    switch (fstate) {
+	    case RPMFILE_STATE_NORMAL:
+		te = stpcpy(te, _("normal        "));
+		/*@switchbreak@*/ break;
+	    case RPMFILE_STATE_REPLACED:
+		te = stpcpy(te, _("replaced      "));
+		/*@switchbreak@*/ break;
+	    case RPMFILE_STATE_NOTINSTALLED:
+		te = stpcpy(te, _("not installed "));
+		/*@switchbreak@*/ break;
+	    case RPMFILE_STATE_NETSHARED:
+		te = stpcpy(te, _("net shared    "));
+		/*@switchbreak@*/ break;
+	    case RPMFILE_STATE_MISSING:
 		te = stpcpy(te, _("(no state)    "));
+		/*@switchbreak@*/ break;
+	    default:
+		sprintf(te, _("(unknown %3d) "), fstate);
+		te += strlen(te);
+		/*@switchbreak@*/ break;
 	    }
 	}
+/*@=boundswrite@*/
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
-	    sprintf(te, "%s%s %d %d %s 0%o ", 
-				   dirNames[dirIndexes[i]], baseNames[i],
-				   fileSizeList[i], fileMTimeList[i],
-				   fileMD5List[i], (unsigned) fileModeList[i]);
+	    sprintf(te, "%s %d %d %s 0%o ", fn, fsize, fmtime, fmd5, fmode);
 	    te += strlen(te);
 
-	    if (fileOwnerList && fileGroupList) {
-		sprintf(te, "%s %s", fileOwnerList[i], fileGroupList[i]);
-		te += strlen(te);
-	    } else if (fileUIDList && fileGIDList) {
-		sprintf(te, "%d %d", fileUIDList[i], fileGIDList[i]);
+	    if (fuser && fgroup) {
+/*@-nullpass@*/
+		sprintf(te, "%s %s", fuser, fgroup);
+/*@=nullpass@*/
 		te += strlen(te);
 	    } else {
 		rpmError(RPMERR_INTERNAL,
-			_("package has neither file owner or id lists\n"));
+			_("package has not file owner/group lists\n"));
 	    }
 
 	    sprintf(te, " %s %s %u ", 
-				 fileFlagsList[i] & RPMFILE_CONFIG ? "1" : "0",
-				 fileFlagsList[i] & RPMFILE_DOC ? "1" : "0",
-				 (unsigned) fileRdevList[i]);
+				 fflags & RPMFILE_CONFIG ? "1" : "0",
+				 fflags & RPMFILE_DOC ? "1" : "0",
+				 frdev);
 	    te += strlen(te);
 
-	    if (strlen(fileLinktoList[i]))
-		sprintf(te, "%s", fileLinktoList[i]);
-	    else
-		sprintf(te, "X");
+	    sprintf(te, "%s", (flink && *flink ? flink : "X"));
 	    te += strlen(te);
 	} else
-	/*@-internalglobs@*/ /* FIX: shrug */
 	if (!rpmIsVerbose()) {
-	    te = stpcpy(te, dirNames[dirIndexes[i]]);
-	    te = stpcpy(te, baseNames[i]);
+/*@-boundswrite@*/
+	    te = stpcpy(te, fn);
+/*@=boundswrite@*/
 	}
-	/*@=internalglobs@*/
 	else {
-	    char * filespec;
-	    int nlink;
-	    size_t fileSize;
 
-	    filespec = xmalloc(strlen(dirNames[dirIndexes[i]])
-					      + strlen(baseNames[i]) + 1);
-	    strcpy(filespec, dirNames[dirIndexes[i]]);
-	    strcat(filespec, baseNames[i]);
-					
-	    fileSize = fileSizeList[i];
-	    nlink = countLinks(fileRdevList, fileInodeList, count, i);
+	    /* XXX Adjust directory link count and size for display output. */
+	    if (S_ISDIR(fmode)) {
+		fnlink++;
+		fsize = 0;
+	    }
 
-if (S_ISDIR(fileModeList[i])) {
-    nlink++;
-    fileSize = 0;
-}
-	    if (fileOwnerList && fileGroupList) {
-		printFileInfo(te, filespec, fileSize,
-					      fileModeList[i], fileMTimeList[i],
-					      fileRdevList[i], nlink,
-					      fileOwnerList[i], 
-					      fileGroupList[i], -1, 
-					      -1, fileLinktoList[i]);
-		te += strlen(te);
-	    } else if (fileUIDList && fileGIDList) {
-		printFileInfo(te, filespec, fileSize,
-					      fileModeList[i], fileMTimeList[i],
-					      fileRdevList[i], nlink,
-					      NULL, NULL, fileUIDList[i], 
-					      fileGIDList[i], 
-					      fileLinktoList[i]);
+	    if (fuser && fgroup) {
+/*@-nullpass@*/
+		printFileInfo(te, fn, fsize, fmode, fmtime, frdev, fnlink,
+					fuser, fgroup, flink);
+/*@=nullpass@*/
 		te += strlen(te);
 	    } else {
 		rpmError(RPMERR_INTERNAL,
 			_("package has neither file owner or id lists\n"));
 	    }
-
-	    filespec = _free(filespec);
 	}
 	if (te > t) {
+/*@-boundswrite@*/
 	    *te++ = '\n';
 	    *te = '\0';
 	    rpmMessage(RPMMESS_NORMAL, "%s", t);
 	    te = t;
 	    *t = '\0';
+/*@=boundswrite@*/
 	}
     }
 	    
@@ -397,21 +330,18 @@ if (S_ISDIR(fileModeList[i])) {
 exit:
     if (te > t) {
 	if (!nonewline) {
+/*@-boundswrite@*/
 	    *te++ = '\n';
 	    *te = '\0';
+/*@=boundswrite@*/
 	}
 	rpmMessage(RPMMESS_NORMAL, "%s", t);
     }
     t = _free(t);
-    dirNames = hfd(dirNames, dnt);
-    baseNames = hfd(baseNames, bnt);
-    fileLinktoList = hfd(fileLinktoList, ltt);
-    fileMD5List = hfd(fileMD5List, m5t);
-    fileOwnerList = hfd(fileOwnerList, fot);
-    fileGroupList = hfd(fileGroupList, fgt);
+
+    fi = rpmfiFree(fi, 1);
     return rc;
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -597,7 +527,7 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 /*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
 /*@=redecl@*/
 
-/*@-bounds@*/
+/*@-bounds@*/ /* LCL: segfault */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     const char ** av = NULL;
@@ -1021,11 +951,13 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
 	/*@=nullpass@*/
     } else {
+/*@-boundsread@*/
 	if (argv != NULL)
 	while ((arg = *argv++) != NULL) {
 	    ec += rpmQueryVerify(qva, ts, arg);
 	    rpmtsClean(ts);
 	}
+/*@=boundsread@*/
     }
     (void) rpmtsSetVerifySigFlags(ts, 0);
 

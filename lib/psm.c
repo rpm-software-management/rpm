@@ -48,7 +48,6 @@
 /*@access rpmte @*/	/* XXX rpmInstallSourcePackage */
 
 /*@access alKey @*/
-/*@access rpmds @*/
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -1009,18 +1008,16 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
     const char * sourceName;
     rpmRC rc = RPMRC_OK;
     int xx;
+    int i;
 
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
 
     trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger != NULL)
-    while (rpmdsNext(trigger) >= 0) {
+    while ((i = rpmdsNext(trigger)) >= 0) {
 	rpmTagType tit, tst, tpt;
 	const char * Name;
 	int_32 Flags = rpmdsFlags(trigger);
-#ifdef	LEGACY
-	int skip;
-#endif
 
 	if ((Name = rpmdsN(trigger)) == NULL)
 	    continue;   /* XXX can't happen */
@@ -1029,21 +1026,6 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
 	    continue;
 	if (!(Flags & psm->sense))
 	    continue;
-
-#ifdef	LEGACY
-	/*
-	 * For some reason, the TRIGGERVERSION stuff includes the name of
-	 * the package which the trigger is based on. We need to skip
-	 * over that here. I suspect that we'll change our minds on this
-	 * and remove that, so I'm going to just 'do the right thing'.
-	 */
-	skip = strlen(Name);
-	if (!strncmp(trigger->EVR[trigger->i], trigger->N[trigger->i], skip) &&
-	    (trigger->EVR[trigger->i][skip] == '-'))
-	    skip++;
-	else
-	    skip = 0;
-#endif
 
 	if (!headerMatchesDepFlags(sourceH, trigger))
 	    continue;
@@ -1066,7 +1048,7 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
 		rc = RPMRC_FAIL;
 	    } else {
 		arg1 += psm->countCorrection;
-		index = triggerIndices[trigger->i];
+		index = triggerIndices[i];
 		if (triggersAlreadyRun == NULL ||
 		    triggersAlreadyRun[index] == 0)
 		{

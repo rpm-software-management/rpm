@@ -542,6 +542,7 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
 		/*@out@*/ int * lengthPtr)
 	/*@modifies h, *lengthPtr @*/
 	/*@requires maxSet(lengthPtr) >= 0 @*/
+	/*@ensures maxRead(result) == (*lengthPtr) @*/
 {
     int_32 * ei = NULL;
     entryInfo pe;
@@ -1279,9 +1280,11 @@ int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
 	return 1;
     switch (magicp) {
     case HEADER_MAGIC_YES:
+/*@-boundsread@*/
 	/*@-sizeoftype@*/
 	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
 	/*@=sizeoftype@*/
+/*@=boundsread@*/
 	if (nb != sizeof(header_magic))
 	    goto exit;
 	break;

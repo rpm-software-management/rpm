@@ -63,6 +63,8 @@ struct rpmfi_s {
           uint_16 * fmodes;	/*!< File mode(s) (from header) */
 /*@only@*/ /*?null?*/
     const uint_16 * frdevs;	/*!< File rdev(s) (from header) */
+/*@only@*/ /*?null?*/
+    const uint_32 * finodes;	/*!< File inodes(s) (from header) */
 
 /*@only@*/ /*@null@*/
     const char ** fuser;	/*!< File owner(s) (from header) */
@@ -322,6 +324,22 @@ int_32 rpmfiFSize(/*@null@*/ rpmfi fi)
  * @return		current file rdev, 0 on invalid
  */
 int_16 rpmfiFRdev(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Return current file inode from file info set.
+ * @param fi		file info set
+ * @return		current file inode, 0 on invalid
+ */
+int_32 rpmfiFInode(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
+ * Return (calculated) current file nlink count from file info set.
+ * @param fi		file info set
+ * @return		current file nlink count, 0 on invalid
+ */
+int_32 rpmfiFNlink(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**

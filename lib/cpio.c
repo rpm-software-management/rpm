@@ -30,6 +30,7 @@
  */
 static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
 	/*@modifies *endptr @*/
+	/*@requires maxSet(endptr) >= 0 @*/
 {
     char * buf, * end;
     unsigned long ret;
@@ -39,18 +40,20 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     buf[num] = '\0';
 
     ret = strtoul(buf, &end, base);
-/*@-boundswrite@*/
+/*@-boundsread@*/ /* LCL: strtoul annotations */
     if (*end != '\0')
 	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
 	*endptr = ((char *)str) + strlen(buf);
-/*@=boundswrite@*/
+/*@=boundsread@*/
 
     return ret;
 }
 
 #define GET_NUM_FIELD(phys, log) \
+	/*@-boundswrite@*/ \
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
+	/*@=boundswrite@*/ \
 	if ( (end - phys) != sizeof(phys) ) return CPIOERR_BAD_HEADER;
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \

@@ -2172,7 +2172,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	rc = cpioHeaderWrite(fsm, st);		/* Write next payload header. */
 	break;
     case FSM_DREAD:
+/*@-boundswrite@*/
 	fsm->rdnb = Fread(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->wrlen, fsm->cfd);
+/*@=boundswrite@*/
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
 		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
@@ -2207,7 +2209,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		fsm->path, fsm->rfd, fsm->rdbuf);
 	break;
     case FSM_READ:
+/*@-boundswrite@*/
 	fsm->rdnb = Fread(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdlen, fsm->rfd);
+/*@=boundswrite@*/
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
 		cur, (int)fsm->rdlen, (int)fsm->rdnb);

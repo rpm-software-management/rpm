@@ -343,7 +343,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
  * @return		0 always
  */
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
-	/*@modifies ts @*/;
+	/*@globals internalState @*/
+	/*@modifies ts, h, internalState @*/;
 
 /** \ingroup rpmcli
  * Display package information.
@@ -364,14 +365,17 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
  * @todo gnorpm and python bindings prevent this from being static.
  * @param ts		transaction set
  * @param fi		file info (with linked header and current file index)
- * @retval result	address of bit(s) returned to indicate failure
+ * @retval res		address of bit(s) returned to indicate failure
  * @param omitMask	bit(s) to disable verify checks
  * @return		0 on success (or not installed), 1 on error
  */
+/*@-incondefs@*/
 int rpmVerifyFile(const rpmts ts, rpmfi fi,
-		/*@out@*/ rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
+		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
 	/*@globals fileSystem @*/
-	/*@modifies fi, *result, fileSystem @*/;
+	/*@modifies fi, *res, fileSystem @*/
+	/*@requires maxSet(res) >= 0 @*/;
+/*@=incondefs@*/
 
 /** \ingroup rpmcli
  * Display results of package verify.
@@ -392,8 +396,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
  * @param fn		package file name
  * @return		0 on success, 1 on failure
  */
-int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
-		const char * fn)
+int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies qva, ts, fd,
 		fileSystem, internalState @*/;

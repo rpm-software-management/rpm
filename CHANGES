@@ -155,6 +155,7 @@
 	- warn only once for each NOKEY/UNTRUSTED key id.
 	- factor common options into table, add rpmcliInit() and rpmcliFini().
 	- add preliminary rpmgraph(8) and rpmcache(8) executables to rpm-devel.
+	- use rpmfi in showQueryPackage(), eliminating headerGetEntry().
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -28,7 +28,7 @@
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
 int rpmVerifyFile(const rpmts ts, const rpmfi fi,
-		rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
+		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
 {
     unsigned short fmode = rpmfiFMode(fi);
     rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
@@ -59,9 +59,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 /*@=bounds@*/
 
-/*@-boundswrite@*/
-    *result = RPMVERIFY_NONE;
-/*@=boundswrite@*/
+    *res = RPMVERIFY_NONE;
 
     /*
      * Check to see if the file was installed - if not pretend all is OK.
@@ -77,9 +75,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 
     if (fn == NULL || Lstat(fn, &sb) != 0) {
-/*@-bounds@*/
-	*result |= RPMVERIFY_LSTATFAIL;
-/*@=bounds@*/
+	*res |= RPMVERIFY_LSTATFAIL;
 	return 1;
     }
 
@@ -120,7 +116,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      */
     flags &= ~(omitMask | RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL);
 
-/*@-bounds@*/
     if (flags & RPMVERIFY_MD5) {
 	unsigned char md5sum[16];
 	size_t fsize;
@@ -129,31 +124,31 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	rc = domd5(fn, md5sum, 0, &fsize);
 	sb.st_size = fsize;
 	if (rc)
-	    *result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
+	    *res |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	else {
 	    const unsigned char * md5 = rpmfiMD5(fi);
 	    if (md5 == NULL || memcmp(md5sum, md5, sizeof(md5sum)))
-		*result |= RPMVERIFY_MD5;
+		*res |= RPMVERIFY_MD5;
 	}
     } 
 
     if (flags & RPMVERIFY_LINKTO) {
-	char linkto[1024];
+	char linkto[1024+1];
 	int size = 0;
 
 	if ((size = Readlink(fn, linkto, sizeof(linkto)-1)) == -1)
-	    *result |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
+	    *res |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
 	    const char * flink = rpmfiFLink(fi);
 	    linkto[size] = '\0';
 	    if (flink == NULL || strcmp(linkto, flink))
-		*result |= RPMVERIFY_LINKTO;
+		*res |= RPMVERIFY_LINKTO;
 	}
     } 
 
     if (flags & RPMVERIFY_FILESIZE) {
 	if (sb.st_size != rpmfiFSize(fi))
-	    *result |= RPMVERIFY_FILESIZE;
+	    *res |= RPMVERIFY_FILESIZE;
     } 
 
     if (flags & RPMVERIFY_MODE) {
@@ -175,41 +170,40 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 
 	if (metamode != filemode)
-	    *result |= RPMVERIFY_MODE;
+	    *res |= RPMVERIFY_MODE;
     }
 
     if (flags & RPMVERIFY_RDEV) {
 	if (S_ISCHR(fmode) != S_ISCHR(sb.st_mode)
 	 || S_ISBLK(fmode) != S_ISBLK(sb.st_mode))
 	{
-	    *result |= RPMVERIFY_RDEV;
+	    *res |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
 	    uint_16 st_rdev = (sb.st_rdev & 0xffff);
 	    uint_16 frdev = (rpmfiFRdev(fi) & 0xffff);
 	    if (st_rdev != frdev)
-		*result |= RPMVERIFY_RDEV;
+		*res |= RPMVERIFY_RDEV;
 	} 
     }
 
     if (flags & RPMVERIFY_MTIME) {
 	if (sb.st_mtime != rpmfiFMtime(fi))
-	    *result |= RPMVERIFY_MTIME;
+	    *res |= RPMVERIFY_MTIME;
     }
 
     if (flags & RPMVERIFY_USER) {
 	const char * name = uidToUname(sb.st_uid);
 	const char * fuser = rpmfiFUser(fi);
 	if (name == NULL || fuser == NULL || strcmp(name, fuser))
-	    *result |= RPMVERIFY_USER;
+	    *res |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
 	const char * name = gidToGname(sb.st_gid);
 	const char * fgroup = rpmfiFGroup(fi);
 	if (name == NULL || fgroup == NULL || strcmp(name, fgroup))
-	    *result |= RPMVERIFY_GROUP;
+	    *res |= RPMVERIFY_GROUP;
     }
-/*@=bounds@*/
 
     return 0;
 }
@@ -273,7 +267,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
     int ec = 0;		/* assume no problems */
     int i;
 
-/*@-boundswrite@*/
     te = t = buf;
     *te = '\0';
 
@@ -291,7 +284,9 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	&& (fileAttrs & RPMFILE_GHOST))
 	    continue;
 
+/*@-boundswrite@*/
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
+/*@=boundswrite@*/
 	if (rc) {
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
 		sprintf(te, _("missing    %s"), rpmfiFN(fi));
@@ -339,6 +334,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    te += strlen(te);
 	}
 
+/*@-boundswrite@*/
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';
@@ -346,8 +342,8 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    te = t = buf;
 	    *t = '\0';
 	}
-    }
 /*@=boundswrite@*/
+    }
     fi = rpmfiUnlink(fi, "verifyHeader");
 	
     return ec;
