@@ -24,6 +24,7 @@ struct option optionTable[] = {
     { "builddir",		RPMVAR_BUILDDIR,		0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
     { "docdir",			RPMVAR_DOCDIR,			0 },
+    { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1 },
     { "pgp_name",               RPMVAR_PGP_NAME,                0 },
