@@ -26,6 +26,7 @@ Conflicts: patch < 2.5
 Prereq: gawk fileutils textutils mktemp shadow-utils
 %endif
 Requires: popt = 1.8
+Requires: libelf >= 0.8.2
 Obsoletes: rpm-perl < %{version}
 
 %if !%{with_internal_db}
@@ -62,7 +63,7 @@ the package like its version, a description, etc.
 %package devel
 Summary:  Development files for manipulating RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{rpm_version}, popt = 1.8
+Requires: rpm = %{rpm_version}
 
 %description devel
 This package contains the RPM C library and header files. These
@@ -91,7 +92,6 @@ Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{rpm_version}
 Requires: python >= %{with_python_version}
-Requires: popt = 1.8
 
 %description python
 The rpm-python package contains a module that permits applications
@@ -111,7 +111,6 @@ Provides: perl(RPM::Database) = %{rpm_version}
 Provides: perl(RPM::Header) = %{rpm_version}
 Requires: rpm = %{rpm_version}
 Requires: perl >= 0:5.00503
-Requires: popt = 1.8
 Obsoletes: perl-Perl-RPM
 
 %description perl
@@ -527,3 +526,4 @@ fi
 - db: don't return EACCES on db->close w/o environment.
 - unify cachesize configuration, with (or without) a dbenv.
 - comments regarding unsupported (yet) db-4.1.17 functionality.
+- requirement on libelf >= 0.8.2 to work around incompatible soname (#72792).

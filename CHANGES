@@ -275,6 +275,7 @@
 	- portability: carry libelf in src rpm, include signal.h.
 	- fix: segfault with --checksig, plug memory leak (#72455).
 	- rpm-4.1 release candidate.
+	- requirement on libelf >= 0.8.2 to work around incompatible soname (#72792).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
