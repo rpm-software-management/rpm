@@ -13,6 +13,12 @@ INCLUDES = \
 
 EXTRA_DIST = db3.c db1.c falloc.c
 
+EXTRA_PROGRAMS = tjfn
+
+tjfn_SOURCES = tjfn.c
+tjfn_LDFLAGS = -all-static
+tjfn_LDADD = librpmdb.la
+
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = header.h hdrinline.h rpmdb.h
 noinst_HEADERS = falloc.h fprint.h header_internal.h legacy.h rpmhash.h
