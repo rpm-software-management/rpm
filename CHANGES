@@ -46,6 +46,7 @@
 	- improved find-{requires,provides} for aix4/hpux/irix6/osf.
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 	- portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
+	- python: bind package removal (#21274).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
