@@ -53,6 +53,8 @@ static char *buildHost(void);
 static int add_file_aux(char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
 static char *getGname(gid_t gid);
+static int glob_error(const char *foo, int bar);
+static int glob_pattern_p (char *pattern);
 
 static void resetDocdir(void);
 static void addDocdir(char *dirname);
@@ -362,8 +364,7 @@ static int compare_fe(const void *ap, const void *bp)
  */
 
 /* Return nonzero if PATTERN has any special globbing chars in it.  */
-int glob_pattern_p (pattern)
-    char *pattern;
+static int glob_pattern_p (char *pattern)
 {
     register char *p = pattern;
     register char c;
@@ -389,7 +390,7 @@ int glob_pattern_p (pattern)
     return (0);
 }
 
-int glob_error(const char *foo, int bar)
+static int glob_error(const char *foo, int bar)
 {
     return 1;
 }
@@ -652,7 +653,7 @@ int packageBinaries(Spec s)
 {
     char name[1024];
     char filename[1024];
-    char *sourcerpm[1024];
+    char sourcerpm[1024];
     char *icon;
     int iconFD;
     struct stat statbuf;
@@ -796,22 +797,35 @@ int packageSource(Spec s)
     int fd;
     int size;
     int_8 os, arch;
+    char **sources;
+    char **patches;
+    int scount, pcount;
 
     tempdir = tempnam("/usr/tmp", "rpmbuild");
     mkdir(tempdir, 0700);
 
     filelist = newStringBuf();
+
+    sources = malloc(s->numSources * sizeof(char *));
+    patches = malloc(s->numPatches * sizeof(char *));
     
     /* Link in the spec file and all the sources */
     sprintf(dest, "%s%s", tempdir, strrchr(s->specfile, '/'));
     symlink(s->specfile, dest);
     appendLineStringBuf(filelist, dest);
     source = s->sources;
+    scount = 0;
+    pcount = 0;
     while (source) {
 	sprintf(src, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
 	sprintf(dest, "%s/%s", tempdir, source->source);
 	symlink(src, dest);
 	appendLineStringBuf(filelist, dest);
+	if (source->ispatch) {
+	    patches[pcount++] = source->fullSource;
+	} else {
+	    sources[scount++] = source->fullSource;
+	}
 	source = source->next;
     }
     /* ... and icons */
@@ -853,6 +867,8 @@ int packageSource(Spec s)
     addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
     addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
+    addEntry(outHeader, RPMTAG_SOURCE, STRING_ARRAY_TYPE, sources, scount);
+    addEntry(outHeader, RPMTAG_PATCH, STRING_ARRAY_TYPE, patches, pcount);
     /* XXX - need: distribution, vendor, release */
 
     if (process_filelist(outHeader, filelist, &size, RPMLEAD_SOURCE)) {
