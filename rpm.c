@@ -1053,7 +1053,7 @@ int main(int argc, char ** argv)
 	    struct stat sb;
 	    int errors = 0;
 
-	    if ((argv = poptGetArgs(optCon)) == NULL)) {
+	    if ((argv = poptGetArgs(optCon)) == NULL) {
 		fprintf(stderr, _("no files to sign\n"));
 		errors++;
 	    } else
