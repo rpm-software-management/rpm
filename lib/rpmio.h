@@ -93,13 +93,13 @@ int	Link	(const char * oldpath, const char * newpath);
 int	Unlink	(const char * path);
 int	Readlink(const char * path, char * buf, size_t bufsiz);
 
-int	Stat	(const char * path, struct stat * st);
-int	Lstat	(const char * path, struct stat * st);
+int	Stat	(const char * path, /*@out@*/ struct stat * st);
+int	Lstat	(const char * path, /*@out@*/ struct stat * st);
 int	Access	(const char * path, int amode);
 
 int	Glob	(const char * pattern, int flags,
-		int errfunc(const char * epath, int eerrno), glob_t * pglob);
-void	Globfree(glob_t * pglob);
+		int errfunc(const char * epath, int eerrno), /*@out@*/ glob_t * pglob);
+void	Globfree( /*@only@*/ glob_t * pglob);
 
 DIR *	Opendir	(const char * name);
 struct dirent *	Readdir	(DIR * dir);
@@ -124,9 +124,9 @@ int	fdGetRdTimeoutSecs(FD_t fd);
 long int fdGetCpioPos(FD_t fd);
 void	fdSetCpioPos(FD_t fd, long int cpioPos);
 
-extern /*@null@*/ FD_t fdDup(int fdno);
+/*@null@*/ FD_t fdDup(int fdno);
 #ifdef UNUSED
-extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
+/*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #endif
 
 /* XXX legacy interface used in rpm2html */

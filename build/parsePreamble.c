@@ -47,9 +47,8 @@ static void addOrAppendListEntry(Header h, int_32 tag, char *line)
     const char **argv;
 
     poptParseArgvString(line, &argc, &argv);
-    if (argc) {
+    if (argc)
 	headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
-    }
     FREE(argv);
 }
 
@@ -168,7 +167,7 @@ static int checkForValidArchitectures(Spec spec)
     return 0;
 }
 
-static int checkForRequired(Header h, char *name)
+static int checkForRequired(Header h, const char *name)
 {
     int res = 0;
     int *p;
@@ -184,7 +183,7 @@ static int checkForRequired(Header h, char *name)
     return res;
 }
 
-static int checkForDuplicates(Header h, char *name)
+static int checkForDuplicates(Header h, const char *name)
 {
     int res = 0;
     int lastTag, tag;

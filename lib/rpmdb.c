@@ -8,13 +8,14 @@
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
+#include "dbindex.h"
+/*@access dbiIndexSet@*/
+/*@access dbiIndexRecord@*/
+
 #include "falloc.h"
 #include "fprint.h"
 #include "misc.h"
 #include "rpmdb.h"
-
-/*@access dbiIndexSet@*/
-/*@access dbiIndexRecord@*/
 
 extern int _noDirTokens;
 
@@ -43,8 +44,8 @@ const char *rpmdb_filenames[] = {
 
 struct rpmdb_s {
     FD_t pkgs;
-    dbiIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
-    dbiIndex * requiredbyIndex, * conflictsIndex, * triggerIndex;
+    dbiIndex nameIndex, fileIndex, groupIndex, providesIndex;
+    dbiIndex requiredbyIndex, conflictsIndex, triggerIndex;
 };
 
 static sigset_t signalMask;
@@ -63,7 +64,7 @@ static void unblockSignals(void)
 }
 
 static int openDbFile(const char * prefix, const char * dbpath, const char * shortName, 
-	 int justCheck, int mode, int perms, dbiIndex ** db, DBTYPE type)
+	 int justCheck, int mode, int perms, dbiIndex * db, DBI_TYPE type)
 {
     int len = (prefix ? strlen(prefix) : 0) + strlen(dbpath) + strlen(shortName) + 1;
     char * filename = alloca(len);
@@ -80,10 +81,8 @@ static int openDbFile(const char * prefix, const char * dbpath, const char * sho
     strcat(filename, shortName);
 
     if (!justCheck || !rpmfileexists(filename)) {
-	*db = dbiOpenIndex(filename, mode, perms, type);
-	if (!*db) {
+	if ((*db = dbiOpenIndex(filename, mode, perms, type)) == NULL)
 	    return 1;
-	}
     }
 
     return 0;
@@ -143,7 +142,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	break;
     }
     strcat(filename, dbpath);
-    rpmCleanPath(filename);
+    (void)rpmCleanPath(filename);
 
     rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
 	mode, filename);
@@ -188,7 +187,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     }
 
     rc = openDbFile(prefix, dbpath, "nameindex.rpm", justcheck, mode, perms,
-		    &db->nameIndex, DB_HASH);
+		    &db->nameIndex, DBI_HASH);
 
     if (minimal) {
 	*rpmdbp = xmalloc(sizeof(struct rpmdb_s));
@@ -201,7 +200,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode, perms,
-			&db->fileIndex, DB_HASH);
+			&db->fileIndex, DBI_HASH);
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
@@ -220,19 +219,19 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "providesindex.rpm", justcheck, mode, perms,
-			&db->providesIndex, DB_HASH);
+			&db->providesIndex, DBI_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "requiredby.rpm", justcheck, mode, perms,
-			&db->requiredbyIndex, DB_HASH);
+			&db->requiredbyIndex, DBI_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "conflictsindex.rpm", justcheck, mode, perms,
-			&db->conflictsIndex, DB_HASH);
+			&db->conflictsIndex, DBI_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "groupindex.rpm", justcheck, mode, perms,
-			&db->groupIndex, DB_HASH);
+			&db->groupIndex, DBI_HASH);
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "triggerindex.rpm", justcheck, mode, perms,
-			&db->triggerIndex, DB_HASH);
+			&db->triggerIndex, DBI_HASH);
 
     if (rc || justcheck || rpmdbp == NULL)
 	rpmdbClose(db);
@@ -361,10 +360,11 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     const char * dirName;
     const char * baseName;
     fingerPrint fp1, fp2;
-    dbiIndexSet allMatches;
+    dbiIndexSet allMatches = NULL;
     int i, rc;
     fingerPrintCache fpc;
 
+    *matches = NULL;
     if ((baseName = strrchr(filespec, '/')) != NULL) {
     	char * t;
 	size_t len;
@@ -384,18 +384,22 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 
     rc = dbiSearchIndex(db->fileIndex, baseName, &allMatches);
     if (rc) {
+	dbiFreeIndexSet(allMatches);
+	allMatches = NULL;
 	fpCacheFree(fpc);
 	return rc;
     }
 
-    *matches = dbiCreateIndexRecord();
+    *matches = dbiCreateIndexSet();
     i = 0;
-    while (i < allMatches.count) {
+    while (i < dbiIndexSetCount(allMatches)) {
 	const char ** baseNames, ** dirNames;
 	int_32 * dirIndexes;
+	unsigned int recoff = dbiIndexRecordOffset(allMatches, i);
+	unsigned int prevoff;
 	Header h;
 
-	if ((h = rpmdbGetRecord(db, allMatches.recs[i].recOffset)) == NULL) {
+	if ((h = rpmdbGetRecord(db, recoff)) == NULL) {
 	    i++;
 	    continue;
 	}
@@ -408,28 +412,33 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 				(void **) &dirNames, NULL);
 
 	do {
-	    int num = allMatches.recs[i].fileNumber;
+	    int num = dbiIndexRecordFileNumber(allMatches, i);
 
 	    fp2 = fpLookup(fpc, dirNames[dirIndexes[num]], baseNames[num], 1);
 	    if (FP_EQUAL(fp1, fp2))
-		dbiAppendIndexRecord(matches, allMatches.recs[i]);
+		dbiAppendIndexRecord(*matches, dbiIndexRecordOffset(allMatches, i), dbiIndexRecordFileNumber(allMatches, i));
 
+	    prevoff = recoff;
 	    i++;
-	} while ((i < allMatches.count) && 
-			((i == 0) || (allMatches.recs[i].recOffset == 
-				allMatches.recs[i - 1].recOffset)));
+	    recoff = dbiIndexRecordOffset(allMatches, i);
+	} while (i < dbiIndexSetCount(allMatches) && 
+		(i == 0 || recoff == prevoff));
 
 	free(baseNames);
 	free(dirNames);
 	headerFree(h);
     }
 
-    dbiFreeIndexRecord(allMatches);
+    if (allMatches) {
+	dbiFreeIndexSet(allMatches);
+	allMatches = NULL;
+    }
 
     fpCacheFree(fpc);
 
-    if (!matches->count) {
-	dbiFreeIndexRecord(*matches);
+    if (dbiIndexSetCount(*matches) == 0) {
+	dbiFreeIndexSet(*matches);
+	*matches = NULL; 
 	return 1;
     }
 
@@ -460,24 +469,22 @@ int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
     return dbiSearchIndex(db->nameIndex, name, matches);
 }
 
-static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
-		             int tolerant, char * idxName)
+static void removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecord rec,
+		             int tolerant, const char * idxName)
 {
+    dbiIndexSet matches = NULL;
     int rc;
-    dbiIndexSet matches;
     
     rc = dbiSearchIndex(dbi, key, &matches);
     switch (rc) {
       case 0:
-	if (dbiRemoveIndexRecord(&matches, rec) && !tolerant) {
+	if (dbiRemoveIndexRecord(matches, rec) && !tolerant) {
 	    rpmError(RPMERR_DBCORRUPT, _("package %s not listed in %s"),
 		  key, idxName);
 	} else {
-	    dbiUpdateIndex(dbi, key, &matches);
+	    dbiUpdateIndex(dbi, key, matches);
 	       /* errors from above will be reported from dbindex.c */
 	}
-
-	dbiFreeIndexRecord(matches);
 	break;
       case 1:
 	if (!tolerant) 
@@ -486,6 +493,10 @@ static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
 	break;
       case 2:
 	break;   /* error message already generated from dbindex.c */
+    }
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
     }
 }
 
@@ -500,8 +511,6 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
     char ** conflictList, ** triggerList;
     int i;
 
-    /* structure assignment */
-    rec = dbiReturnIndexRecordInstance(offset, 0);
 
     h = rpmdbGetRecord(db, offset);
     if (h == NULL) {
@@ -509,6 +518,8 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	      offset);
 	return 1;
     }
+
+    rec = dbiReturnIndexRecordInstance(offset, 0);
 
     blockSignals();
 
@@ -598,30 +609,43 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 
     unblockSignals();
 
+    dbiFreeIndexRecordInstance(rec);
     headerFree(h);
 
     return 0;
 }
 
-static int addIndexEntry(dbiIndex *idx, const char *index, unsigned int offset,
+static int addIndexEntry(dbiIndex idx, const char *index, unsigned int offset,
 		         unsigned int fileNumber)
 {
-    dbiIndexSet set;
-    dbiIndexRecord irec;   
+    dbiIndexSet set = NULL;
     int rc;
 
-    irec = dbiReturnIndexRecordInstance(offset, fileNumber);
-
     rc = dbiSearchIndex(idx, index, &set);
-    if (rc == -1)  		/* error */
+    switch (rc) {
+    case -1:			/* error */
+	if (set) {
+	    dbiFreeIndexSet(set);
+	    set = NULL;
+	}
 	return 1;
+	/*@notreached@*/ break;
+    case 1:			/* new item */
+	set = dbiCreateIndexSet();
+	break;
+    default:
+	break;
+    }
 
-    if (rc == 1)  		/* new item */
-	set = dbiCreateIndexRecord();
-    dbiAppendIndexRecord(&set, irec);
-    if (dbiUpdateIndex(idx, index, &set))
-	exit(EXIT_FAILURE);
-    dbiFreeIndexRecord(set);
+    dbiAppendIndexRecord(set, offset, fileNumber);
+    if (dbiUpdateIndex(idx, index, set))
+	exit(EXIT_FAILURE);	/* XXX W2DO? return 1; */
+
+    if (set) {
+	dbiFreeIndexSet(set);
+	set = NULL;
+    }
+
     return 0;
 }
 
@@ -852,7 +876,8 @@ int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char *
 }
 
 struct intMatch {
-    dbiIndexRecord rec;
+    unsigned int recOffset;
+    unsigned int fileNumber;
     int fpNum;
 };
 
@@ -861,9 +886,9 @@ static int intMatchCmp(const void * one, const void * two)
     const struct intMatch * a = one;
     const struct intMatch * b = two;
 
-    if (a->rec.recOffset < b->rec.recOffset)
+    if (a->recOffset < b->recOffset)
 	return -1;
-    else if (a->rec.recOffset > b->rec.recOffset)
+    else if (a->recOffset > b->recOffset)
 	return 1;
 
     return 0;
@@ -891,11 +916,15 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
-	dbiIndexSet matches;
+	dbiIndexSet matches = NULL;
 	switch (dbiSearchIndex(db->fileIndex, fpList[i].baseName, &matches)) {
 	default:
 	    break;
 	case 2:
+	    if (matches) {
+		dbiFreeIndexSet(matches);
+		matches = NULL;
+	    }
 	    free(intMatches);
 	    return 1;
 	    /*@notreached@*/ break;
@@ -908,13 +937,18 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    }
 
 	    for (j = 0; j < dbiIndexSetCount(matches); j++) {
-		/* structure assignment */
-		intMatches[numIntMatches].rec = matches.recs[j];
-		intMatches[numIntMatches++].fpNum = i;
+		
+		intMatches[numIntMatches].recOffset = dbiIndexRecordOffset(matches, j);
+		intMatches[numIntMatches].fileNumber = dbiIndexRecordFileNumber(matches, j);
+		intMatches[numIntMatches].fpNum = i;
+		numIntMatches++;
 	    }
 
-	    dbiFreeIndexRecord(matches);
 	    break;
+	}
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
 	}
     }
 
@@ -922,7 +956,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     /* intMatches is now sorted by (recnum, filenum) */
 
     for (i = 0; i < numItems; i++)
-	matchList[i] = dbiCreateIndexRecord();
+	matchList[i] = dbiCreateIndexSet();
 
     fpc = fpCacheCreate(numIntMatches);
 
@@ -936,13 +970,13 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
 	/* Find the end of the set of matched files in this package. */
 	for (end = start + 1; end < numIntMatches; end++) {
-	    if (im->rec.recOffset != intMatches[end].rec.recOffset)
+	    if (im->recOffset != intMatches[end].recOffset)
 		break;
 	}
 	num = end - start;
 
 	/* Compute fingerprints for each file match in this package. */
-	h = rpmdbGetRecord(db, im->rec.recOffset);
+	h = rpmdbGetRecord(db, im->recOffset);
 	if (h == NULL) {
 	    free(intMatches);
 	    return 1;
@@ -958,8 +992,8 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
 	for (i = 0; i < num; i++) {
-	    baseNames[i] = fullBaseNames[im[i].rec.fileNumber];
-	    dirIndexes[i] = fullDirIndexes[im[i].rec.fileNumber];
+	    baseNames[i] = fullBaseNames[im[i].fileNumber];
+	    dirIndexes[i] = fullDirIndexes[im[i].fileNumber];
 	}
 
 	fps = xcalloc(num, sizeof(*fps));
@@ -974,7 +1008,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	for (i = 0; i < num; i++) {
 	    j = im[i].fpNum;
 	    if (FP_EQUAL_DIFFERENT_CACHE(fps[i], fpList[j]))
-		dbiAppendIndexRecord(&matchList[j], im[i].rec);
+		dbiAppendIndexRecord(matchList[j], im[i].recOffset, im[i].fileNumber);
 	}
 
 	headerFree(h);

@@ -1,6 +1,8 @@
 #include "system.h"
 
 #include <rpmlib.h>
+
+#include "dbindex.h"	/* XXX prototypes */
 #include "lookup.h"
 
 /* XXX used in transaction.c */
@@ -13,29 +15,36 @@ int findMatches(rpmdb db, const char * name, const char * version,
     int gotMatches;
     int rc;
     int i;
-    const char * pkgRelease, * pkgVersion;
-    int goodRelease, goodVersion;
-    Header h;
 
     if ((rc = rpmdbFindPackage(db, name, matches))) {
-	if (rc == -1) return 2; else return 1;
+	rc = ((rc == -1) ? 2 : 1);
+	goto exit;
     }
 
-    if (!version && !release) return 0;
+    if (!version && !release) {
+	rc = 0;
+	goto exit;
+    }
 
     gotMatches = 0;
 
     /* make sure the version and releases match */
-    for (i = 0; i < matches->count; i++) {
-	if (matches->recs[i].recOffset == 0)
+    for (i = 0; i < dbiIndexSetCount(*matches); i++) {
+	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
+	int goodRelease, goodVersion;
+	const char * pkgVersion;
+	const char * pkgRelease;
+	Header h;
+
+	if (recoff == 0)
 	    continue;
 
-	h = rpmdbGetRecord(db, matches->recs[i].recOffset);
+	h = rpmdbGetRecord(db, recoff);
 	if (h == NULL) {
 	    rpmError(RPMERR_DBCORRUPT,_("cannot read header at %d for lookup"), 
-		matches->recs[i].recOffset);
-	    dbiFreeIndexRecord(*matches);
-	    return 2;
+		recoff);
+	    rc = 2;
+	    goto exit;
 	}
 
 	headerNVR(h, NULL, &pkgVersion, &pkgRelease);
@@ -48,17 +57,23 @@ int findMatches(rpmdb db, const char * name, const char * version,
 	if (goodRelease && goodVersion) 
 	    gotMatches = 1;
 	else 
-	    matches->recs[i].recOffset = 0;
+	    dbiIndexRecordOffsetSave(*matches, i, 0);
 
 	headerFree(h);
     }
 
     if (!gotMatches) {
-	dbiFreeIndexRecord(*matches);
-	return 1;
+	rc = 1;
+	goto exit;
     }
-    
-    return 0;
+    rc = 0;
+
+exit:
+    if (rc && matches && *matches) {
+	dbiFreeIndexSet(*matches);
+	*matches = NULL;
+    }
+    return rc;
 }
 
 /* 0 found matches */

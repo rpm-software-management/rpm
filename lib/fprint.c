@@ -85,7 +85,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    if (end[-1] != '/')	*end++ = '/';
 	    end = stpncpy(end, cleanDirName, sizeof(dir) - (end - dir));
 	    *end = '\0';
-	    rpmCleanPath(dir);	/* XXX possible /../ from concatenation */
+	    (void)rpmCleanPath(dir); /* XXX possible /../ from concatenation */
 	    end = dir + strlen(dir);
 	    if (end[-1] != '/')	*end++ = '/';
 	    *end = '\0';
@@ -104,6 +104,8 @@ static fingerPrint doLookup(fingerPrintCache cache,
     }
 
     fp.entry = NULL;
+    fp.subDir = NULL;
+    fp.baseName = NULL;
     while (1) {
 
 	/* as we're stating paths here, we want to follow symlinks */

@@ -610,7 +610,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
     /* this is an install followed by uninstalls */
-    dbiIndexSet matches;
+    dbiIndexSet matches = NULL;
     char * name;
     int count, i, j;
     const char ** obsoletes;
@@ -658,8 +658,6 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 		removePackage(rpmdep, dbiIndexRecordOffset(matches, i), alNum);
 	    headerFree(h2);
 	}
-
-	dbiFreeIndexRecord(matches);
     }
 
     if (headerGetEntry(h, RPMTAG_OBSOLETENAME, NULL, (void **) &obsoletes, &count)) {
@@ -671,12 +669,19 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
 	for (j = 0; j < count; j++) {
 
+	    if (matches) {
+		dbiFreeIndexSet(matches);
+		matches = NULL;
+	    }
+
 	    /* XXX avoid self-obsoleting packages. */
 	    if (!strcmp(name, obsoletes[j]))
 		continue;
 
-	    if (rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))
+	    if (rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches)) {
 		continue;
+	    }
+
 	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
 		 if (bsearch(&recOffset,
@@ -695,12 +700,15 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			removePackage(rpmdep, recOffset, alNum);
 		}
 	    }
-
-	    dbiFreeIndexRecord(matches);
 	}
 
 	if (obsoletesEVR) free(obsoletesEVR);
 	free(obsoletes);
+    }
+
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
     }
 
     return 0;
@@ -855,7 +863,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	const char * keyName, const char * keyEVR, int keyFlags,
 	/*@out@*/ struct availablePackage ** suggestion)
 {
-    dbiIndexSet matches;
+    dbiIndexSet matches = NULL;
     int rc = 0;	/* assume dependency is satisfied */
     int i;
 
@@ -894,12 +902,15 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 		    break;
 		}
 
-		dbiFreeIndexRecord(matches);
 		if (i < dbiIndexSetCount(matches)) {
 		    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db file lists.\n"), keyType, keyDepend);
 		    goto exit;
 		}
 	    }
+	}
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
 	}
 
 	if (!rpmdbFindByProvides(rpmdep->db, keyName, &matches)) {
@@ -916,11 +927,14 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 		}
 	    }
 
-	    dbiFreeIndexRecord(matches);
 	    if (i < dbiIndexSetCount(matches)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db provides.\n"), keyType, keyDepend);
 		goto exit;
 	    }
+	}
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
 	}
 
 	if (!rpmdbFindPackage(rpmdep->db, keyName, &matches)) {
@@ -938,11 +952,14 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 		}
 	    }
 
-	    dbiFreeIndexRecord(matches);
 	    if (i < dbiIndexSetCount(matches)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend);
 		goto exit;
 	    }
+	}
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
 	}
 
 	/*
@@ -967,6 +984,10 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
+    }
     return rc;
 }
 
@@ -1114,13 +1135,13 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 /* Adding: check name/provides key against each conflict match. */
 /* Erasing: check name/provides/filename key against each requiredby match. */
 static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
-	const char * key, dbiIndexSet * matches)
+	const char * key, dbiIndexSet matches)
 {
     Header h;
     int i;
 
-    for (i = 0; i < matches->count; i++) {
-	unsigned int recOffset = dbiIndexRecordOffset(*matches, i);
+    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
 	if (bsearch(&recOffset, rpmdep->removedPackages,
 		    rpmdep->numRemovedPackages, sizeof(int), intcmp))
 	    continue;
@@ -1148,15 +1169,13 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 static int checkDependentPackages(rpmTransactionSet rpmdep,
 			struct problemsSet * psp, const char * key)
 {
-    dbiIndexSet matches;
-    int rc;
+    dbiIndexSet matches = NULL;
+    int rc = 0;
 
-    if (rpmdbFindByRequiredBy(rpmdep->db, key, &matches))
-	return 0;
-
-    rc = checkPackageSet(rpmdep, psp, key, &matches);
-    dbiFreeIndexRecord(matches);
-
+    if (!rpmdbFindByRequiredBy(rpmdep->db, key, &matches))
+	rc = checkPackageSet(rpmdep, psp, key, matches);
+    if (matches)
+	dbiFreeIndexSet(matches);
     return rc;
 }
 
@@ -1164,17 +1183,15 @@ static int checkDependentPackages(rpmTransactionSet rpmdep,
 static int checkDependentConflicts(rpmTransactionSet rpmdep,
 		struct problemsSet * psp, const char * key)
 {
-    dbiIndexSet matches;
-    int rc;
+    int rc = 0;
 
-    if (rpmdep->db == NULL)
-	return 0;
-
-    if (rpmdbFindByConflicts(rpmdep->db, key, &matches))
-	return 0;
-
-    rc = checkPackageSet(rpmdep, psp, key, &matches);
-    dbiFreeIndexRecord(matches);
+    if (rpmdep->db) {
+	dbiIndexSet matches = NULL;
+	if (!rpmdbFindByConflicts(rpmdep->db, key, &matches))
+	    rc = checkPackageSet(rpmdep, psp, key, matches);
+	if (matches)
+	    dbiFreeIndexSet(matches);
+    }
 
     return rc;
 }

@@ -6,13 +6,56 @@
 /* and it shouldn't need these :-( */
 
 #include <rpmio.h>
-#include <dbindex.h>
 #include <header.h>
 #include <popt.h>
+
+#if DEAD
+typedef /*@abstract@*/ struct _dbiIndexRecord * dbiIndexRecord;
+typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
+#endif
+
+typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Destroy set of index database items.
+ * @param set	set of index database items
+ */
+void dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set);
+
+/**
+ * Count items in index database set.
+ * @param set	set of index database items
+ * @return	number of items
+ */
+unsigned int dbiIndexSetCount(dbiIndexSet set);
+
+/**
+ * Return record offset of header from element in index database set.
+ * @param set	set of index database items
+ * @param recno	index of item in set
+ * @return	record offset of header
+ */
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
+
+/**
+ * Return file index from element in index database set.
+ * @param set	set of index database items
+ * @param recno	index of item in set
+ * @return	file index
+ */
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
+
+/**
+ * Change record offset of header within element in index database set.
+ * @param set	set of index database items
+ * @param recno	index of item in set
+ * @param recoff new record offset
+ */
+void dbiIndexRecordOffsetSave(dbiIndexSet set, int recno, unsigned int recoff);
 
 int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
 	/*@out@*/ Header * hdr);

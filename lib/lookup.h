@@ -7,8 +7,9 @@
 extern "C" {
 #endif
 
+/* XXX only for the benefit of runTransactions() */
 int findMatches(rpmdb db, const char * name, const char * version,
-	const char * release, /*@out@*/dbiIndexSet * matches);
+	const char * release, /*@out@*/ dbiIndexSet * matches);
 
 #ifdef __cplusplus
 }

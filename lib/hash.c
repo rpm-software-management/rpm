@@ -1,24 +1,38 @@
+/** \file lib/hash.c
+ * Hash table implemenation
+ */
+
 #include "system.h"
 
 #include <rpmlib.h>
 #include "hash.h"
 
+typedef /*@owned@*/ const void * voidptr;
+
+/** */
 struct hashBucket {
-    /*@owned@*/const void * key;
-    /*@owned@*/const void ** data;
-    int dataCount;
-    /*@dependent@*/struct hashBucket * next;
+    voidptr key;			/*!< hash key */
+/*@owned@*/ voidptr * data;		/*!< pointer to hashed data */
+    int dataCount;			/*!< length of data (0 if unknown) */
+/*@dependent@*/struct hashBucket * next;/*!< pointer to next item in bucket */
 };
 
+/** */
 struct hashTable_s {
-    int numBuckets;
-    int keySize;
-    int freeData;
-    struct hashBucket ** buckets;
-    hashFunctionType fn;
-    hashEqualityType eq;
+    int numBuckets;			/*!< number of hash buckets */
+    int keySize;			/*!< size of key (0 if unknown) */
+    int freeData;	/*!< should data be freed when table is destroyed? */
+    struct hashBucket ** buckets;	/*!< hash bucket array */
+    hashFunctionType fn;		/*!< generate hash value for key */
+    hashEqualityType eq;		/*!< compare hash keys for equality */
 };
 
+/**
+ * Find entry in hash table.
+ * @param ht            pointer to hash table
+ * @param key           pointer to key value
+ * @return pointer to hash bucket of key (or NULL)
+ */
 static /*@shared@*/ struct hashBucket * findEntry(hashTable ht, const void * key)
 {
     unsigned int hash;
@@ -142,7 +156,7 @@ int htGetEntry(hashTable ht, const void * key, const void *** data,
 	return 1;
 
     if (data)
-	*data = b->data;
+	*data = (const void **) b->data;
     if (dataCount)
 	*dataCount = b->dataCount;
     if (tableKey)

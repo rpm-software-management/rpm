@@ -728,7 +728,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, av[j]);
 	globRoot += nb;
 	*globRoot = '\0';
 if (_debug)
-fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb, av[j], globURL, globURL);
+fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
 	
 	if (argc == 0)
 	    argv = xmalloc((gl.gl_pathc+1) * sizeof(*argv));
@@ -781,6 +781,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
 	if (count > 0) {
 	    *p = fl;
 	    if (c)	*c = count;
+	    if (type)	*type = RPM_STRING_ARRAY_TYPE;
 	    return 1;
 	}
 	if (c)	*c = 0;

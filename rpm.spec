@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.0
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,5 +219,11 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Thu Mar 23 10:48:35 EST 2000
+- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
+- configure.in fiddles for BSD systems (Patrick Schoo).
+- API: change dbi to pass by reference, not value.
+- cram all of db1, db_185, and db2 interfaces into rpmlib.
+
 * Mon Mar 13 2000 Jeff Johnson <jbj@redhat.com>
 - start rpm-3.1 development.

@@ -8,7 +8,7 @@
  *  standard cpio.
  *  The implementation is pretty close, but it has some behaviors which are
  *  more to RPM's liking. I tried to document the differing behavior in cpio.c,
- *  but I may have missed some.
+ *  but I may have missed some (ewt).
  *
  */
 
@@ -52,35 +52,36 @@
 #define CPIO_MAP_GID		(1 << 3)
 #define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
 
-/** The structure used to define a cpio payload file. */
+/**
+ * Defines a single file to be included in a cpio payload.
+ */
 struct cpioFileMapping {
-/*@{*/
-    /*@owned@*/ const char * archivePath; /*!< Path to store in cpio archive. */
-    /*@owned@*/ const char * fsPath;	/*!< Location of payload file. */
+/*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
+/*@dependent@*/ const char * fsPath;      /*!< Location of payload file. */
     mode_t finalMode;		/*!< Mode of payload file (from header). */
     uid_t finalUid;		/*!< Uid of payload file (from header). */
     gid_t finalGid;		/*!< Gid of payload file (from header). */
     int mapFlags;
-/*@}*/
 };
 
-/** The structure passed as first argument during a cpio progress callback.
+/**
+ * The first argument passed in a cpio progress callback.
  *
  * Note: When building the cpio payload, only "file" is filled in.
  */
 struct cpioCallbackInfo {
-/*@{*/
-    /*@dependent@*/ const char * file;	/*!< File name being installed. */
+/*@dependent@*/ const char * file;	/*!< File name being installed. */
     long fileSize;			/*!< Total file size. */
     long fileComplete;			/*!< Amount of file unpacked. */
     long bytesProcessed;		/*!< No. bytes in archive read. */
-/*@}*/
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ */
 typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
 
 /**
@@ -103,10 +104,14 @@ int cpioBuildArchive(FD_t cfd, struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, /*@out@*/const char ** failedFile);
 
-/** This is designed to be qsort/bsearch compatible */
+/**
+ * Compare two cpio file map entries.
+ * This is designed to be qsort/bsearch compatible.
+ */
 int cpioFileMapCmp(const void * a, const void * b);
 
-/** */
+/**
+ */
 /*@observer@*/ const char *cpioStrerror(int rc);
 
 #ifdef __cplusplus

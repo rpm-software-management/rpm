@@ -4,6 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/popt @INCPATH@
 
+EXTRA_DIST = db0.[ch] db1.[ch] db2.[ch]
+
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h rpmurl.h stringbuf.h
@@ -17,14 +19,52 @@ mylibs=	-lrpm -lpopt @INTLLIBS@ @LIBMISC@
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c dbindex.c depends.c falloc.c \
+	cpio.c $(DBLIBOBJS) dbindex.c depends.c falloc.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
 	messages.c misc.c oldheader.c package.c problems.c query.c \
 	rebuilddb.c rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
 	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
+librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 #librpm_la_LIBADD = -lpopt
+
+Xdb0.o:	db0.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+	@__LD@ -r -o $@.o $@ -L/usr/lib -ldb1
+	@__OBJCOPY@ `\
+	    @__NM@ -g --defined-only $@.o | \
+	    sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
+	    grep -v '^-L $*'` $@.o $@
+	rm -f $@.o
+
+db0.lo: db0.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+	@__LD@ -r -o $*.o.o $*.o -L/usr/lib -ldb1
+	@__OBJCOPY@ `\
+	    @__NM@ -g --defined-only $*.o.o | \
+	    sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
+	    grep -v '^-L $*'` $*.o.o $*.o
+	rm -f $*.o.o
+	@__LD@ -r -o $@.o $@ -L/usr/lib -ldb1
+	@__OBJCOPY@ `\
+	    @__NM@ -g --defined-only $@.o | \
+	    sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
+	    grep -v '^-L $*'` $@.o $@
+	rm -f $@.o
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c

@@ -7,6 +7,9 @@
 
 +unixlib
 
+# XXX ignore doxygen markings
+-unrecogcomments
+
 # don't-bother-me-yet parameters
 -branchstate
 #-immediatetrans

@@ -15,10 +15,12 @@
 
 static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 
+typedef /*@owned@*/ const char * cptr_t;
+
 struct machCacheEntry {
     const char * name;
     int count;
-    const char ** equivs;
+    cptr_t * equivs;
     int visited;
 };
 
@@ -52,19 +54,20 @@ struct rpmOption {
 };
 
 struct defaultEntry {
-    char *name;
-    char *defName;
+/*@owned@*/ const char * name;
+/*@owned@*/ const char * defName;
 };
 
 struct canonEntry {
-    char *name;
-    char *short_name;
+/*@owned@*/ const char * name;
+/*@owned@*/ const char * short_name;
     short num;
 };
 
 /* tags are 'key'canon, 'key'translate, 'key'compat
-
-   for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work */
+ *
+ * for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work
+ */
 struct tableType {
     const char * const key;
     const int hasCanon;
@@ -100,13 +103,13 @@ static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 #define OS	0
 #define ARCH	1
 
-static char * current[2];
+static cptr_t current[2];
 static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 static struct rpmvarValue values[RPMVAR_NUM];
 static int defaultsInitialized = 0;
 
 /* prototypes */
-static int doReadRC(FD_t fd, const char * urlfn);
+static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn);
 static void rpmSetVarArch(int var, const char * val, const char * arch);
 static void rebuildCompatTables(int type, const char *name);
 
@@ -117,8 +120,8 @@ static int optionCompare(const void * a, const void * b) {
 
 static void rpmRebuildTargetVars(const char **target, const char ** canontarget);
 
-static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
-						  const char * key)
+static /*@observer@*/ struct machCacheEntry *
+machCacheFindEntry(struct machCache * cache, const char * key)
 {
     int i;
 
@@ -196,8 +199,8 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     return 0;
 }
 
-static struct machEquivInfo * machEquivSearch(
-		struct machEquivTable * table, const char * name)
+static /*@observer@*/ struct machEquivInfo *
+	machEquivSearch(const struct machEquivTable * table, const char * name)
 {
     int i;
 
@@ -366,9 +369,9 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     return 0;
 }
 
-static struct canonEntry *lookupInCanonTable(char *name,
-					     struct canonEntry *table,
-					     int tableLen) {
+static /*@null@*/ const struct canonEntry *lookupInCanonTable(const char *name,
+	const struct canonEntry *table, int tableLen)
+{
     while (tableLen) {
 	tableLen--;
 	if (!strcmp(name, table[tableLen].name)) {
@@ -379,8 +382,9 @@ static struct canonEntry *lookupInCanonTable(char *name,
     return NULL;
 }
 
-static const char *lookupInDefaultTable(const char *name, struct defaultEntry *table,
-				  int tableLen) {
+static /*@observer@*/ const char * lookupInDefaultTable(const char *name,
+		const struct defaultEntry *table, int tableLen)
+{
     while (tableLen) {
 	tableLen--;
 	if (!strcmp(name, table[tableLen].name)) {
@@ -800,11 +804,12 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
     return 0;
 }
 
-static void defaultMachine(const char ** arch, const char ** os) {
+static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char ** os)
+{
     static struct utsname un;
     static int gotDefaults = 0;
     char * chptr;
-    struct canonEntry * canon;
+    const struct canonEntry * canon;
 
     if (!gotDefaults) {
 	uname(&un);
@@ -977,7 +982,7 @@ static void defaultMachine(const char ** arch, const char ** os) {
     if (os) *os = un.sysname;
 }
 
-static const char * rpmGetVarArch(int var, char * arch) {
+static const char * rpmGetVarArch(int var, const char * arch) {
     struct rpmvarValue * next;
 
     if (!arch) arch = current[ARCH];
@@ -1110,14 +1115,14 @@ void rpmSetMachine(const char * arch, const char * os) {
     }
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
-	if (current[ARCH]) free(current[ARCH]);
+	if (current[ARCH]) xfree(current[ARCH]);
 	current[ARCH] = xstrdup(arch);
 	rebuildCompatTables(ARCH, host_cpu);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
-	if (current[OS]) free(current[OS]);
-	current[OS] = xstrdup(os);
+	char * t = xstrdup(os);
+	if (current[OS]) xfree(current[OS]);
 	/*
 	 * XXX Capitalizing the 'L' is needed to insure that old
 	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
@@ -1126,8 +1131,10 @@ void rpmSetMachine(const char * arch, const char * os) {
 	 * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->
 	 * XXX to verify correct arch/os from headers.
 	 */
-	if (!strcmp(current[OS], "linux"))
-	    *current[OS]= 'L';
+	if (!strcmp(t, "linux"))
+	    *t = 'L';
+	current[OS] = t;
+	
 	rebuildCompatTables(OS, host_os);
     }
 }
@@ -1138,10 +1145,10 @@ static void rebuildCompatTables(int type, const char * name) {
 		   name);
 }
 
-static void getMachineInfo(int type, /*@only@*/ /*@out@*/ const char ** name,
+static void getMachineInfo(int type, /*@out@*/ const char ** name,
 			/*@out@*/int * num)
 {
-    struct canonEntry * canon;
+    const struct canonEntry * canon;
     int which = currTables[type];
 
     /* use the normal canon tables, even if we're looking up build stuff */

@@ -375,8 +375,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 	Unlink(tmppkgURL[i]);
 	xfree(tmppkgURL[i]);
     }
-    xfree(tmppkgURL);
-    xfree(pkgURL);
+    xfree(tmppkgURL);	tmppkgURL = NULL;
+    xfree(pkgURL);	pkgURL = NULL;
 
     /* FIXME how do we close our various fd's? */
 
@@ -397,9 +397,10 @@ errxit:
 }
 
 int rpmErase(const char * rootdir, const char ** argv, int transFlags,
-		 int interfaceFlags) {
+		 int interfaceFlags)
+{
     rpmdb db;
-    dbiIndexSet matches;
+    dbiIndexSet matches = NULL;
     int i, j;
     int mode;
     int rc;
@@ -459,8 +460,11 @@ int rpmErase(const char * rootdir, const char ** argv, int transFlags,
 		}
 	    }
 
-	    dbiFreeIndexRecord(matches);
 	    break;
+	}
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
 	}
     }
 
@@ -510,8 +514,14 @@ int rpmInstallSource(const char * rootdir, const char * arg, const char ** specF
 				 cookie);
     if (rc == 1) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
-	if (specFile && *specFile) xfree(*specFile);
-	if (cookie && *cookie) free(*cookie);
+	if (specFile && *specFile) {
+	    xfree(*specFile);
+	    *specFile = NULL;
+	}
+	if (cookie && *cookie) {
+	    free(*cookie);
+	    *cookie = NULL;
+	}
     }
 
     Fclose(fd);

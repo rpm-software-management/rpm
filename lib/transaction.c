@@ -1190,7 +1190,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int rc, ourrc = 0;
     struct availablePackage * alp;
     rpmProblemSet probs;
-    dbiIndexSet dbi, * matches;
+    dbiIndexSet dbi = NULL;
     Header * hdrs;
     int fileCount;
     int totalFileCount = 0;
@@ -1280,25 +1280,49 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	if (!(ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rc = rpmdbFindPackage(ts->db, alp->name, &dbi);
-	    if (rc == 2) {
+	    switch (rc) {
+	    case 2:
+		if (dbi) {
+		    dbiFreeIndexSet(dbi);
+		    dbi = NULL;
+		}
 		return -1;
-	    } else if (!rc) {
+		/*@notreached@*/ break;
+	    case 0:
 		for (i = 0; i < dbiIndexSetCount(dbi); i++)
 		    ensureOlder(ts->db, alp->h, dbiIndexRecordOffset(dbi, i),
 				      probs, alp->key);
 
-		dbiFreeIndexRecord(dbi);
+		break;
+	    default:
+		break;
+	    }
+	    if (dbi) {
+		dbiFreeIndexSet(dbi);
+		dbi = NULL;
 	    }
 	}
 
 	rc = findMatches(ts->db, alp->name, alp->version, alp->release, &dbi);
-	if (rc == 2) {
+	switch (rc) {
+	case 2:
+	    if (dbi) {
+		dbiFreeIndexSet(dbi);
+		dbi = NULL;
+	    }
 	    return -1;
-	} else if (!rc) {
+	    /*@notreached@*/ break;
+	case 0:
 	    if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG))
 		psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL,
 			 NULL, 0);
-	    dbiFreeIndexRecord(dbi);
+	    break;
+	default:
+	    break;
+	}
+	if (dbi) {
+	    dbiFreeIndexSet(dbi);
+	    dbi = NULL;
 	}
 
 	if (headerGetEntry(alp->h, RPMTAG_BASENAMES, NULL, NULL, 
@@ -1454,13 +1478,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
      * Compute file disposition for each package in transaction set.
      */
     for (fi = flList; (fi - flList) < flEntries; fi++) {
+	dbiIndexSet * matches;
 	int knownBad;
 
 	NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 	       NULL, notifyData));
 
 	/* Extract file info for all files in this package from the database. */
-	matches = xmalloc(sizeof(*matches) * fi->fc);
+	matches = xcalloc(sizeof(*matches), fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
 	numShared = 0;
@@ -1495,11 +1520,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		shared->isRemoved = (knownBad == ro);
 		shared++;
 	    }
-	    dbiFreeIndexRecord(matches[i]);
+	    if (matches[i]) {
+		dbiFreeIndexSet(matches[i]);
+		matches[i] = NULL;
+	    }
 	}
 	numShared = shared - sharedList;
 	shared->otherPkg = -1;
-	free(matches);
+	xfree(matches);
 
 	/* Sort file info by other package index (otherPkg) */
 	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);

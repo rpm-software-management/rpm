@@ -455,7 +455,7 @@ void	(*freeSpecVec) (Spec spec) = NULL;
 int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage)
 {
-    dbiIndexSet matches;
+    dbiIndexSet matches = NULL;
     Header h;
     int offset;
     int rc;
@@ -582,7 +582,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, db, matches, showPackage);
-	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -592,7 +591,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, db, matches, showPackage);
-	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -602,7 +600,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, db, matches, showPackage);
-	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -613,7 +610,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 		retcode = 1;
 	    } else {
 		retcode = showMatches(qva, db, matches, showPackage);
-		dbiFreeIndexRecord(matches);
 	    }
 	    break;
 	}
@@ -634,7 +630,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, db, matches, showPackage);
-	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -665,11 +660,14 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    fprintf(stderr, _("error looking for package %s\n"), arg);
 	} else {
 	    retcode = showMatches(qva, db, matches, showPackage);
-	    dbiFreeIndexRecord(matches);
 	}
 	break;
     }
    
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
+    }
     return retcode;
 }
 

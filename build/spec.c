@@ -174,9 +174,8 @@ void freePackages(Spec spec)
 {
     Package p;
 
-    while (spec->packages) {
-	p = spec->packages;
-	spec->packages = spec->packages->next;
+    while ((p = spec->packages) != NULL) {
+	spec->packages = p->next;
 	p->next = NULL;
 	freePackage(p);
     }

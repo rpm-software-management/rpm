@@ -308,11 +308,23 @@ dnl for this macro (not LIBS=...), otherwise the check for dbopen
 dnl will fail.
 AC_CHECK_LIB(port, writev)
 
-AC_CHECK_FUNC(dbopen, [],
-  AC_CHECK_LIB(db1, dbopen, [LIBS="$LIBS -ldb1"],
-    AC_CHECK_LIB(db, dbopen, [LIBS="$LIBS -ldb"],
-       AC_MSG_ERROR([sorry rpm requires a db-1.85 API])))
-           )
+DBLIBOBJS=""
+dnl Check for Berkeley db2 API.
+AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
+  AC_CHECK_LIB(db, db_open, [LIBS="$LIBS -ldb"; DBLIBOBJS="$DBLIBOBJS db2.c"])
+)
+dnl Check for Berkeley db1 API retrofit to db2 database.
+AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"],
+    AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"])
+)
+dnl Check for Berkeley db1 API in glibc.
+AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db0.c"])
+
+if test X"$DBLIBOBJS" = X; then
+    AC_MSG_ERROR([sorry rpm requires libdb.a or libdb1.a (from the Berkeley db package)]) 
+fi
+dnl AC_DEFINE_UNQUOTED(DBLIBOBJS, "$DBLIBOBJS")
+AC_SUBST(DBLIBOBJS)
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
 	LIBOBJS=fakefork.o])

@@ -19,14 +19,14 @@ struct callbackInfo {
 };
 
 struct fileMemory {
-    /*@owned@*/ const char ** names;
-    /*@owned@*/ const char ** cpioNames;
-    /*@owned@*/ struct fileInfo * files;
+/*@owned@*/ const char ** names;
+/*@owned@*/ const char ** cpioNames;
+/*@owned@*/ struct fileInfo * files;
 };
 
 struct fileInfo {
-    /*@dependent@*/ const char * cpioPath;
-    /*@dependent@*/ const char * relativePath;	/* relative to root */
+/*@dependent@*/ const char * cpioPath;
+/*@dependent@*/ const char * relativePath;	/* relative to root */
     uid_t uid;
     gid_t gid;
     uint_32 flags;
@@ -51,6 +51,7 @@ static struct tagMacro {
 	{ NULL, 0 }
 };
 
+/** */
 static int rpmInstallLoadMacros(Header h)
 {
     struct tagMacro *tagm;
@@ -74,6 +75,7 @@ static int rpmInstallLoadMacros(Header h)
     return 0;
 }
 
+/** */
 static /*@only@*/ struct fileMemory *newFileMemory(void)
 {
     struct fileMemory *fileMem = xmalloc(sizeof(*fileMem));
@@ -83,6 +85,7 @@ static /*@only@*/ struct fileMemory *newFileMemory(void)
     return fileMem;
 }
 
+/** */
 static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
 {
     if (fileMem->files) free(fileMem->files);
@@ -92,6 +95,7 @@ static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
 }
 
 /* files should not be preallocated */
+/** */
 static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 	 /*@out@*/ int * fileCountPtr, /*@out@*/ struct fileInfo ** filesPtr,
 	 int stripPrefixLength, enum fileActions * actions)
@@ -146,6 +150,7 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
     return 0;
 }
 
+/** */
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
 {
     char ** fileOwners;
@@ -177,6 +182,7 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
     free(fileGroups);
 }
 
+/** */
 static void trimChangelog(Header h)
 {
     int * times;
@@ -227,6 +233,7 @@ static void trimChangelog(Header h)
     free(texts);
 }
 
+/** */
 static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList)
 {
     struct sharedFileInfo * fileInfo;
@@ -273,6 +280,7 @@ static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList)
     return 0;
 }
 
+/** */
 static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 {
     struct callbackInfo * ourInfo = data;
@@ -292,6 +300,7 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 }
 
 /* NULL files means install all files */
+/** */
 static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmCallbackFunction notify,
 			  void * notifyData, const void * pkgKey, Header h,
@@ -383,6 +392,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
+/** */
 static int installSources(Header h, const char * rootdir, FD_t fd,
 			  const char ** specFilePtr, rpmCallbackFunction notify,
 			  void * notifyData)
@@ -686,7 +696,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     char * fileStates = NULL;
     int i;
     int otherOffset = 0;
-    dbiIndexSet matches;
+    dbiIndexSet matches = NULL;
     int scriptArg;
     int stripSize = 1;		/* strip at least first / for cpio */
     struct fileMemory *fileMem = NULL;
@@ -708,16 +718,21 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	/*@notreached@*/ break;
     case 0:
 	scriptArg = dbiIndexSetCount(matches) + 1;
-	dbiFreeIndexRecord(matches);
 	break;
     default:
  	scriptArg = 1;
 	break;
     }
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
+    }
 
-    if (!rpmdbFindByHeader(db, h, &matches)) {
+    if (!rpmdbFindByHeader(db, h, &matches))
 	otherOffset = dbiIndexRecordOffset(matches, 0);
-	dbiFreeIndexRecord(matches);
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
     }
 
     if (rootdir) {
@@ -927,6 +942,10 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rc = 0;
 
 exit:
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
+    }
     if (rootdir && currDir) {
 	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
 	chdir(currDir);

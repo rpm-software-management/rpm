@@ -4,6 +4,7 @@
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
+#include "dbindex.h"	/* XXX prototypes */
 #include "depends.h"
 #include "install.h"
 #include "md5.h"
@@ -24,7 +25,7 @@ static int removeFile(const char * file, unsigned int flags, short mode,
 
       case FA_BACKUP:
 	newfile = alloca(strlen(file) + sizeof(SUFFIX_RPMSAVE));
-	stpcpy(stpcpy(newfile, file), SUFFIX_RPMSAVE);
+	(void)stpcpy(stpcpy(newfile, file), SUFFIX_RPMSAVE);
 
 	if (rename(file, newfile)) {
 	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
@@ -103,12 +104,12 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	if (rpmdbFindPackage(db, name, &matches)) {
 	    rpmError(RPMERR_DBCORRUPT, _("cannot read packages named %s for uninstall"),
 		name);
-	    dbiFreeIndexRecord(matches);
+	    dbiFreeIndexSet(matches);
 	    rc = 1;
 	    goto exit;
 	}
 	scriptArg = dbiIndexSetCount(matches) - 1;
-	dbiFreeIndexRecord(matches);
+	dbiFreeIndexSet(matches);
     }
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
@@ -170,7 +171,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 
 	if (prefixlen) {
 	    strcpy(fileName, prefix);
-	    rpmCleanPath(fileName);
+	    (void)rpmCleanPath(fileName);
 	    prefixlen = strlen(fileName);
 	} else
 	    *fileName = '\0';
@@ -186,7 +187,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	for (i = fileCount - 1; i >= 0; i--) {
 
 	    /* XXX this assumes that dirNames always starts/ends with '/' */
-	    stpcpy(stpcpy(fileName+prefixlen, dirNames[dirIndexes[i]]), baseNames[i]);
+	    (void)stpcpy(stpcpy(fileName+prefixlen, dirNames[dirIndexes[i]]), baseNames[i]);
 
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
 			fileName, fileActionString(actions[i]));
@@ -228,9 +229,8 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     rc = 0;
 
  exit:
-    if (h) {
+    if (h)
 	headerFree(h);
-    }
     return rc;
 }
 
@@ -453,7 +453,6 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
     int rc = 0;
     int i;
     int index;
-    dbiIndexSet matches;
     int skip;
 
     if (!headerGetEntry(triggeredH, RPMTAG_TRIGGERNAME, NULL, 
@@ -470,6 +469,8 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 		   (void **) &triggerEVR, NULL);
 
     for (i = 0; i < numTriggers; i++) {
+	dbiIndexSet matches;
+
 	if (!(triggerFlags[i] & sense)) continue;
 	if (strcmp(triggerNames[i], sourceName)) continue;
 
@@ -497,8 +498,9 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 
 	headerGetEntry(triggeredH, RPMTAG_NAME, NULL, 
 		       (void **) &triggerPackageName, NULL);
+
+	matches = NULL;
 	rpmdbFindPackage(db, triggerPackageName, &matches);
-	dbiFreeIndexRecord(matches);
 
 	index = triggerIndices[i];
 	if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
@@ -509,6 +511,10 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
 	}
 
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
+	}
 	free(triggerScripts);
 	free(triggerProgs);
 
@@ -526,8 +532,8 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 int runTriggers(const char * root, rpmdb db, int sense, Header h,
 		int countCorrection, FD_t scriptFd)
 {
-    char * packageName;
-    dbiIndexSet matches, otherMatches;
+    const char * packageName;
+    dbiIndexSet matches;
     Header triggeredH;
     int numPackage;
     int rc;
@@ -535,20 +541,31 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 
     headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &packageName, NULL);
 
-    if ((rc = rpmdbFindByTriggeredBy(db, packageName, &matches)) < 0)
-	return 1;
-    else if (rc)
-	return 0;
+    matches = NULL;
+    if ((rc = rpmdbFindByTriggeredBy(db, packageName, &matches)) < 0) {
+	rc = 1;
+	goto exit;
+    } else if (rc) {
+	rc = 0;
+	goto exit;
+    }
 
-    rpmdbFindPackage(db, packageName, &otherMatches);
-    numPackage = dbiIndexSetCount(otherMatches) + countCorrection;
-    dbiFreeIndexRecord(otherMatches);
+    {	dbiIndexSet otherMatches = NULL;
+	rpmdbFindPackage(db, packageName, &otherMatches);
+	if (otherMatches) {
+	    numPackage = dbiIndexSetCount(otherMatches) + countCorrection;
+	    dbiFreeIndexSet(otherMatches);
+	} else
+	    numPackage = 0;
+    }
 
     rc = 0;
     for (i = 0; i < dbiIndexSetCount(matches); i++) {
 	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-	if ((triggeredH = rpmdbGetRecord(db, recOffset)) == NULL) 
-	    return 1;
+	if ((triggeredH = rpmdbGetRecord(db, recOffset)) == NULL) {
+	    rc = 1;
+	    break;
+	}
 
 	rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
 			       NULL, scriptFd);
@@ -556,18 +573,21 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 	headerFree(triggeredH);
     }
 
-    dbiFreeIndexRecord(matches);
+exit:
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
+    }
 
     return rc;
-    
 }
 
 /** */
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection, FD_t scriptFd)
 {
-    int rc = 0;
     dbiIndexSet matches;
+    int rc = 0;
     char ** triggerNames;
     int numTriggers;
     int i, j;
@@ -583,7 +603,14 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
     triggersRun = alloca(sizeof(*triggersRun) * i);
     memset(triggersRun, 0, sizeof(*triggersRun) * i);
 
+    matches = NULL;
     for (i = 0; i < numTriggers; i++) {
+
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
+	}
+
 	if (triggersRun[triggerIndices[i]]) continue;
 	
         if ((j = rpmdbFindPackage(db, triggerNames[i], &matches))) {
@@ -593,17 +620,22 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 
 	for (j = 0; j < dbiIndexSetCount(matches); j++) {
 	    unsigned int recOffset = dbiIndexRecordOffset(matches, j);
-	    if ((sourceH = rpmdbGetRecord(db, recOffset)) == NULL) 
-		return 1;
+	    if ((sourceH = rpmdbGetRecord(db, recOffset)) == NULL) {
+		rc = 1;
+		goto exit;
+	    }
 	    rc |= handleOneTrigger(root, db, sense, sourceH, h, 
 				   countCorrection, dbiIndexSetCount(matches), 
 				   triggersRun, scriptFd);
 	    headerFree(sourceH);
 	    if (triggersRun[triggerIndices[i]]) break;
 	}
-
-	dbiFreeIndexRecord(matches);
     }
 
+exit:
+    if (matches) {
+	dbiFreeIndexSet(matches);
+	matches = NULL;
+    }
     return rc;
 }

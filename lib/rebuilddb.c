@@ -38,7 +38,7 @@ int rpmdbRebuild(const char * rootdir)
 	char *t;
 	sprintf(pidbuf, "rebuilddb.%d", (int) getpid());
 	t = xmalloc(strlen(dbpath) + strlen(pidbuf) + 1);
-	stpcpy(stpcpy(t, dbpath), pidbuf);
+	(void)stpcpy(stpcpy(t, dbpath), pidbuf);
 	if (tfn) xfree(tfn);
 	tfn = t;
 	nocleanup = 0;
@@ -92,7 +92,7 @@ int rpmdbRebuild(const char * rootdir)
 		headerIsEntry(h, RPMTAG_VERSION) &&
 		headerIsEntry(h, RPMTAG_RELEASE) &&
 		headerIsEntry(h, RPMTAG_BUILDTIME)) {
-		dbiIndexSet matches;
+		dbiIndexSet matches = NULL;
 		int skip;
 
 		/* XXX always eliminate duplicate entries */
@@ -104,9 +104,12 @@ int rpmdbRebuild(const char * rootdir)
 			_("duplicated database entry: %s-%s-%s -- skipping."),
 			name, version, release);
 		    skip = 1;
-		    dbiFreeIndexRecord(matches);
 		} else
 		    skip = 0;
+		if (matches) {
+		    dbiFreeIndexSet(matches);
+		    matches = NULL;
+		}
 
 		if (skip == 0 && rpmdbAdd(newdb, h)) {
 		    rpmError(RPMERR_INTERNAL,

@@ -41,7 +41,8 @@ void	buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr,
 			/*@out@*/ int * fileCountPtr);
 
 int myGlobPatternP (const char *patternURL);
-int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr);
+int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
+			/*@out@*/ const char *** argvPtr);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,11 @@
 #ifndef H_RPMDB
 #define H_RPMDB
 
+/** \file lib/rpmdb.h
+ */
+
 #include <rpmlib.h>
+
 #include "fprint.h"
 
 /* for RPM's internal use only */
@@ -13,14 +17,34 @@
 extern "C" {
 #endif
 
+/**
+ */
 int openDatabase(const char * prefix, const char * dbpath, /*@out@*/rpmdb *rpmdbp, int mode,
 		 int perms, int flags);
+
+/**
+ */
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
+
+/**
+ */
 int rpmdbAdd(rpmdb db, Header dbentry);
+
+/**
+ */
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
+
+/**
+ */
 void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath);
+
+/**
+ */
 int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath);
-/* matchList must be preallocated!!! */
+
+/**
+ * matchList must be preallocated!!!
+ */
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
 		    int numItems);
 
