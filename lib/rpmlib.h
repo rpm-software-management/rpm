@@ -3,6 +3,9 @@
 
 /** \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
  * \file lib/rpmlib.h
+ *
+ * In Memoriam: Steve Taylor <staylor@redhat.com> was here, now he's not.
+ *
  */
 
 #include "rpmio.h"
