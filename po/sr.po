@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-02-27 18:06-0500\n"
+"POT-Creation-Date: 2000-02-29 18:19-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1332,8 +1332,8 @@ msgid "cannot re-open payload: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: build/build.c:110 build/pack.c:312
-#, fuzzy, c-format
-msgid "Unable to open temp file %s."
+#, fuzzy
+msgid "Unable to open temp file."
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
 #: build/build.c:189

@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-02-27 18:06-0500\n"
+msgstr "POT-Creation-Date: 2000-02-29 18:19-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -1401,8 +1401,8 @@ msgstr "Não consegui abrir: %s\n"
 
 # , c-format
 #: build/build.c:110 build/pack.c:312
-#, fuzzy, c-format
-msgid "Unable to open temp file %s."
+#, fuzzy
+msgid "Unable to open temp file."
 msgstr "Não consegui abrir: %s\n"
 
 # "Project-Id-Version: rpm-2.5.3\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-02-27 18:06-0500\n"
+"POT-Creation-Date: 2000-02-29 18:19-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1308,8 +1308,8 @@ msgid "cannot re-open payload: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s\n"
 
 #: build/build.c:110 build/pack.c:312
-#, fuzzy, c-format
-msgid "Unable to open temp file %s."
+#, fuzzy
+msgid "Unable to open temp file."
 msgstr "Nie je mo¾né otvori» doèasný súbor"
 
 #: build/build.c:189
