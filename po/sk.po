@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 1999-11-30 13:24-0500\n"
+"POT-Creation-Date: 1999-12-01 15:01-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2389,78 +2389,78 @@ msgid "======================== active %d empty %d\n"
 msgstr "======================== aktívnych %d prázdnych %d\n"
 
 #. XXX just in case
-#: lib/macro.c:257
+#: lib/macro.c:258
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(prázdne)"
 
-#: lib/macro.c:292
+#: lib/macro.c:293
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prázdne)\n"
 
-#: lib/macro.c:471
+#: lib/macro.c:472
 msgid "Macro %%%s has unterminated body"
 msgstr "Makro %%%s obsahuje neukonèené telo"
 
-#: lib/macro.c:497
+#: lib/macro.c:498
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr "Makro %%%s obsahuje chybný názov (%%define)"
 
-#: lib/macro.c:503
+#: lib/macro.c:504
 msgid "Macro %%%s has unterminated opts"
 msgstr "Makro %%%s obsahuje neukonèené voµby"
 
-#: lib/macro.c:508
+#: lib/macro.c:509
 msgid "Macro %%%s has empty body"
 msgstr "Makro %%%s obsahuje prázdne telo"
 
-#: lib/macro.c:513
+#: lib/macro.c:514
 msgid "Macro %%%s failed to expand"
 msgstr "Makro %%%s sa nepodarilo expandova»"
 
-#: lib/macro.c:538
+#: lib/macro.c:539
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr "Makro %%%s obsahuje chybný názov (%%undefine)"
 
-#: lib/macro.c:615
+#: lib/macro.c:616
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 
-#: lib/macro.c:712
+#: lib/macro.c:713
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: lib/macro.c:892
+#: lib/macro.c:893
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: lib/macro.c:958 lib/macro.c:974
+#: lib/macro.c:959 lib/macro.c:975
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Neukonèené %c: %s"
 
-#: lib/macro.c:1014
+#: lib/macro.c:1015
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: lib/macro.c:1140
+#: lib/macro.c:1141
 msgid "Macro %%%.*s not found, skipping"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
-#: lib/macro.c:1221
+#: lib/macro.c:1222
 msgid "Target buffer overflow"
 msgstr "Preplnenie cieµovej vyrovnávacej pamäti"
 
 #. XXX Fstrerror
-#: lib/macro.c:1376 lib/macro.c:1381
+#: lib/macro.c:1377 lib/macro.c:1382
 #, c-format
 msgid "File %s: %s"
 msgstr "Súbor %s: %s"
 
-#: lib/macro.c:1384
+#: lib/macro.c:1385
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Súbor %s je men¹í ako %d bajtov"
@@ -3110,59 +3110,59 @@ msgstr "nie je mo¾né otvori» %s\n"
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpmio.c:750
+#: lib/rpmio.c:755
 msgid "Success"
 msgstr "Úspech"
 
-#: lib/rpmio.c:753
+#: lib/rpmio.c:758
 msgid "Bad server response"
 msgstr "Chybná odpoveï servera"
 
-#: lib/rpmio.c:756
+#: lib/rpmio.c:761
 msgid "Server IO error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: lib/rpmio.c:759
+#: lib/rpmio.c:764
 msgid "Server timeout"
 msgstr "Prekroèenie èasového limitu servera"
 
-#: lib/rpmio.c:762
+#: lib/rpmio.c:767
 msgid "Unable to lookup server host address"
 msgstr "Nie je mo¾né vyhµada» adresu servera"
 
-#: lib/rpmio.c:765
+#: lib/rpmio.c:770
 msgid "Unable to lookup server host name"
 msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#: lib/rpmio.c:768
+#: lib/rpmio.c:773
 msgid "Failed to connect to server"
 msgstr "Pripojenie k serveru zlyhalo"
 
-#: lib/rpmio.c:771
+#: lib/rpmio.c:776
 msgid "Failed to establish data connection to server"
 msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
-#: lib/rpmio.c:774
+#: lib/rpmio.c:779
 msgid "IO error to local file"
 msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
-#: lib/rpmio.c:777
+#: lib/rpmio.c:782
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:785
 msgid "File not found on server"
 msgstr "Súbor sa na serveri nenachádza"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:788
 msgid "Abort in progress"
 msgstr "Zru¹enie prebieha"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:792
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: lib/rpmio.c:1308
+#: lib/rpmio.c:1313
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prihlasuje sa na %s ako %s, heslo %s\n"

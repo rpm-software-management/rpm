@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-11-30 13:24-0500\n"
+msgstr "POT-Creation-Date: 1999-12-01 15:01-0500\n"
 
 #: build.c:25 lib/rpminstall.c:246 lib/rpminstall.c:406
 #, c-format
@@ -2463,79 +2463,79 @@ msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: lib/macro.c:257
+#: lib/macro.c:258
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: lib/macro.c:292
+#: lib/macro.c:293
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: lib/macro.c:471
+#: lib/macro.c:472
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: lib/macro.c:497
+#: lib/macro.c:498
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: lib/macro.c:503
+#: lib/macro.c:504
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: lib/macro.c:508
+#: lib/macro.c:509
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: lib/macro.c:513
+#: lib/macro.c:514
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: lib/macro.c:538
+#: lib/macro.c:539
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: lib/macro.c:615
+#: lib/macro.c:616
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: lib/macro.c:712
+#: lib/macro.c:713
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: lib/macro.c:892
+#: lib/macro.c:893
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: lib/macro.c:958 lib/macro.c:974
+#: lib/macro.c:959 lib/macro.c:975
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: lib/macro.c:1014
+#: lib/macro.c:1015
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: lib/macro.c:1140
+#: lib/macro.c:1141
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/macro.c:1221
+#: lib/macro.c:1222
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/macro.c:1376 lib/macro.c:1381
+#: lib/macro.c:1377 lib/macro.c:1382
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/macro.c:1384
+#: lib/macro.c:1385
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -3202,59 +3202,59 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:750
+#: lib/rpmio.c:755
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:753
+#: lib/rpmio.c:758
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:756
+#: lib/rpmio.c:761
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:759
+#: lib/rpmio.c:764
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:762
+#: lib/rpmio.c:767
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:765
+#: lib/rpmio.c:770
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:768
+#: lib/rpmio.c:773
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:771
+#: lib/rpmio.c:776
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:774
+#: lib/rpmio.c:779
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:777
+#: lib/rpmio.c:782
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:785
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:788
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:792
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1308
+#: lib/rpmio.c:1313
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

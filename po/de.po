@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-11-30 13:24-0500\n"
+"POT-Creation-Date: 1999-12-01 15:01-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2531,80 +2531,80 @@ msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: lib/macro.c:257
+#: lib/macro.c:258
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: lib/macro.c:292
+#: lib/macro.c:293
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: lib/macro.c:471
+#: lib/macro.c:472
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: lib/macro.c:497
+#: lib/macro.c:498
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: lib/macro.c:503
+#: lib/macro.c:504
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: lib/macro.c:508
+#: lib/macro.c:509
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: lib/macro.c:513
+#: lib/macro.c:514
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: lib/macro.c:538
+#: lib/macro.c:539
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: lib/macro.c:615
+#: lib/macro.c:616
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: lib/macro.c:712
+#: lib/macro.c:713
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: lib/macro.c:892
+#: lib/macro.c:893
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: lib/macro.c:958 lib/macro.c:974
+#: lib/macro.c:959 lib/macro.c:975
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: lib/macro.c:1014
+#: lib/macro.c:1015
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: lib/macro.c:1140
+#: lib/macro.c:1141
 #, fuzzy
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/macro.c:1221
+#: lib/macro.c:1222
 msgid "Target buffer overflow"
 msgstr ""
 
 # , c-format
 #. XXX Fstrerror
-#: lib/macro.c:1376 lib/macro.c:1381
+#: lib/macro.c:1377 lib/macro.c:1382
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/macro.c:1384
+#: lib/macro.c:1385
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -3287,67 +3287,67 @@ msgstr "Fehler: kann %s nicht öffnen\n"
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
-#: lib/rpmio.c:750
+#: lib/rpmio.c:755
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:753
+#: lib/rpmio.c:758
 #, fuzzy
 msgid "Bad server response"
 msgstr "Nicht passende Antwort des FTP-Servers"
 
-#: lib/rpmio.c:756
+#: lib/rpmio.c:761
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP IO-Fehler"
 
-#: lib/rpmio.c:759
+#: lib/rpmio.c:764
 #, fuzzy
 msgid "Server timeout"
 msgstr "Timeout des FTP-Servers"
 
-#: lib/rpmio.c:762
+#: lib/rpmio.c:767
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
 
-#: lib/rpmio.c:765
+#: lib/rpmio.c:770
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
 
-#: lib/rpmio.c:768
+#: lib/rpmio.c:773
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Verbindung zum FTP-Server fehlgeschlagen"
 
-#: lib/rpmio.c:771
+#: lib/rpmio.c:776
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
 
-#: lib/rpmio.c:774
+#: lib/rpmio.c:779
 msgid "IO error to local file"
 msgstr "IO-Fehler bei lokaler Datei"
 
-#: lib/rpmio.c:777
+#: lib/rpmio.c:782
 msgid "Error setting remote server to passive mode"
 msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:785
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:788
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:792
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: lib/rpmio.c:1308
+#: lib/rpmio.c:1313
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

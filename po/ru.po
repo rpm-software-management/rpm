@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-11-30 13:24-0500\n"
+"POT-Creation-Date: 1999-12-01 15:01-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2385,78 +2385,78 @@ msgid "======================== active %d empty %d\n"
 msgstr "======================== активн %d пуст. %d\n"
 
 #. XXX just in case
-#: lib/macro.c:257
+#: lib/macro.c:258
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(пусто)"
 
-#: lib/macro.c:292
+#: lib/macro.c:293
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(пусто)\n"
 
-#: lib/macro.c:471
+#: lib/macro.c:472
 msgid "Macro %%%s has unterminated body"
 msgstr "Макрос %%%s содержит незакрытое тело"
 
-#: lib/macro.c:497
+#: lib/macro.c:498
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr "Макрос %%%s имеет недопустимое имя (%%define)"
 
-#: lib/macro.c:503
+#: lib/macro.c:504
 msgid "Macro %%%s has unterminated opts"
 msgstr "Макрос %%%s содержит незакрытые опции"
 
-#: lib/macro.c:508
+#: lib/macro.c:509
 msgid "Macro %%%s has empty body"
 msgstr "Макрос %%%s имеет пустое тело"
 
-#: lib/macro.c:513
+#: lib/macro.c:514
 msgid "Macro %%%s failed to expand"
 msgstr "Макрос %%%s раскрыть не удалось"
 
-#: lib/macro.c:538
+#: lib/macro.c:539
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr "Макрос %%%s имеет недопустимое имя (%%undefine)"
 
-#: lib/macro.c:615
+#: lib/macro.c:616
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Макрос %%%s (%s) не был использован ниже уровня %d"
 
-#: lib/macro.c:712
+#: lib/macro.c:713
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Неизвестная опция %c в %s(%s)"
 
-#: lib/macro.c:892
+#: lib/macro.c:893
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Глубина рекурсии(%d) больше max(%d)"
 
-#: lib/macro.c:958 lib/macro.c:974
+#: lib/macro.c:959 lib/macro.c:975
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Незакрытая %c: %s"
 
-#: lib/macro.c:1014
+#: lib/macro.c:1015
 msgid "A %% is followed by an unparseable macro"
 msgstr "%% с последующим неразбираемым макросом"
 
-#: lib/macro.c:1140
+#: lib/macro.c:1141
 msgid "Macro %%%.*s not found, skipping"
 msgstr "Макрос %s не найден, пропускаю"
 
-#: lib/macro.c:1221
+#: lib/macro.c:1222
 msgid "Target buffer overflow"
 msgstr "Переполнение целевого буфера"
 
 #. XXX Fstrerror
-#: lib/macro.c:1376 lib/macro.c:1381
+#: lib/macro.c:1377 lib/macro.c:1382
 #, c-format
 msgid "File %s: %s"
 msgstr "Файл %s: %s"
 
-#: lib/macro.c:1384
+#: lib/macro.c:1385
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Файл %s меньше %d байт"
@@ -3105,59 +3105,59 @@ msgstr "не могу открыть %s\n"
 msgid "Installing %s\n"
 msgstr "Устанавливаю %s\n"
 
-#: lib/rpmio.c:750
+#: lib/rpmio.c:755
 msgid "Success"
 msgstr "Удалось"
 
-#: lib/rpmio.c:753
+#: lib/rpmio.c:758
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: lib/rpmio.c:756
+#: lib/rpmio.c:761
 msgid "Server IO error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: lib/rpmio.c:759
+#: lib/rpmio.c:764
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: lib/rpmio.c:762
+#: lib/rpmio.c:767
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти IP-адрес сервера"
 
-#: lib/rpmio.c:765
+#: lib/rpmio.c:770
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: lib/rpmio.c:768
+#: lib/rpmio.c:773
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: lib/rpmio.c:771
+#: lib/rpmio.c:776
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: lib/rpmio.c:774
+#: lib/rpmio.c:779
 msgid "IO error to local file"
 msgstr "Ошибка ввода/вывода в локальный файл"
 
-#: lib/rpmio.c:777
+#: lib/rpmio.c:782
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:785
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:788
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:792
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: lib/rpmio.c:1308
+#: lib/rpmio.c:1313
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
