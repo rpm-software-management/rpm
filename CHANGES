@@ -1,4 +1,4 @@
-2.5.5 -> 2.9
+2.5.5 -> 2.90
 	- add generalized expression handler (Tom Dyas<tdyas@remus.rutgers.edu>)
 	- use /usr/lib/rpm/mkinstalldirs if mkdir -p fails.
 	- more portable dirent handling (Hermann Lauer).
@@ -20,6 +20,7 @@
 	- add new fully recursive macro.c
 
 2.5.4 -> 2.5.5:
+	- non-linux arch/os identification (Eugene Kanter).
 	- portable mode_t/pid_t typedefs.
 	- fix check for trailing / in Prefix:
 	- remove 2 character language name assumption.

@@ -804,12 +804,74 @@ static void defaultMachine(char ** arch, char ** os) {
 
     if (!gotDefaults) {
 	uname(&un);
+
+#if !defined(__linux__)
+#ifdef SNI
+        /* USUALLY un.sysname on sinix does start with the word "SINIX"
+         * let's be absolutely sure
+         */
+        sprintf(un.sysname,"SINIX");
+#endif
 	if (!strcmp(un.sysname, "AIX")) {
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
-	} else if (!strncmp(un.sysname, "IP", 2)) {
-	    un.sysname[2] = '\0';
+            sprintf(un.sysname,"aix%s.%s",un.version,un.release);
 	}
-
+        else if (!strcmp(un.sysname, "SunOS")) {
+           if (!strncmp(un.release,"4", 1)) /* SunOS 4.x */ {
+	      int fd;
+              for (fd=0;(un.release[fd] != 0 && (fd < sizeof(un.release)));fd++)
+                 if (!isdigit(un.release[fd]) && (un.release[fd] != '.')) {
+                    un.release[fd] = 0;
+                    break;
+                 }
+              sprintf(un.sysname,"sunos%s",un.release);
+           }
+           
+           else /* Solaris 2.x: n.x.x becomes n-3.x.x */
+              sprintf(un.sysname,"solaris%1d%s",atoi(un.release)-3,un.release+1+(atoi(un.release)/10));
+        }
+        else if (!strcmp(un.sysname, "HP-UX"))
+           /*make un.sysname look like hpux9.05 for example*/
+           sprintf(un.sysname,"hpux%s",strpbrk(un.release,"123456789"));
+        else if (!strcmp(un.sysname, "OSF1"))
+           /*make un.sysname look like osf3.2 for example*/
+           sprintf(un.sysname,"osf%s",strpbrk(un.release,"123456789"));
+        else if (!strncmp(un.sysname, "IP", 2))
+           un.sysname[2] = '\0';
+        else if (!strncmp(un.sysname, "SINIX", 5)) {
+           sprintf(un.sysname, "sinix%s",un.release);
+           if (!strncmp(un.machine, "RM", 2))
+              sprintf(un.machine, "mips");
+        }
+        else if ((!strncmp(un.machine, "34", 2) || \
+                 !strncmp(un.machine, "33", 2)) && \
+                 !strncmp(un.release, "4.0", 3)) {
+           /* we are on ncr-sysv4 */
+           int fd = open("/etc/.relid", O_RDONLY, 0700);
+           if (fd >0) {
+              chptr = (char *) calloc(256,1);
+              if (chptr != NULL) {
+                 int irelid = read(fd, (void *)chptr, 256);
+                 close(fd);
+                 /* example: "112393 RELEASE 020200 Version 01 OS" */
+                 if (irelid > 0) {
+		    char *prelid;
+                    if ((prelid=strstr(chptr, "RELEASE "))){
+                       prelid += strlen("RELEASE ")+1;
+                       sprintf(un.sysname,"ncr-sysv4.%.*s",1,prelid);
+                    }
+		 }
+                 free (chptr);
+              }
+           }           
+           if (!prelid)
+              /* parsing /etc/.relid file failed */
+              strcpy(un.sysname,"ncr-sysv4");
+           /* wrong, just for now, find out how to look for i586 later*/
+           strcpy(un.machine,"i486");
+        }
+#endif
+                   
 	/* get rid of the hyphens in the sysname */
 	chptr = un.machine;
 	while (*chptr++)
@@ -823,8 +885,14 @@ static void defaultMachine(char ** arch, char ** os) {
 		strcpy(un.machine, "mipseb");
 #	endif
 
-	#if defined(__hpux) && defined(_SC_CPU_VERSION)
+#	if defined(__hpux) && defined(_SC_CPU_VERSION)
 	{
+#	    if !defined(CPU_PA_RISC1_2)
+#                define CPU_PA_RISC1_2  0x211 /* HP PA-RISC1.2 */
+#           endif
+#           if !defined(CPU_PA_RISC2_0)
+#               define CPU_PA_RISC2_0  0x214 /* HP PA-RISC2.0 */
+#           endif
 	    int cpu_version = sysconf(_SC_CPU_VERSION);
 
 #	    if defined(CPU_HP_MC68020)
@@ -842,19 +910,19 @@ static void defaultMachine(char ** arch, char ** os) {
 
 #	    if defined(CPU_PA_RISC1_0)
 		if (cpu_version == CPU_PA_RISC1_0)
-		    strcpy(un.machine, "parisc");
+		    strcpy(un.machine, "hppa1.0");
 #	    endif
 #	    if defined(CPU_PA_RISC1_1)
 		if (cpu_version == CPU_PA_RISC1_1)
-		    strcpy(un.machine, "parisc");
+		    strcpy(un.machine, "hppa1.1");
 #	    endif
 #	    if defined(CPU_PA_RISC1_2)
 		if (cpu_version == CPU_PA_RISC1_2)
-		    strcpy(un.machine, "parisc");
+		    strcpy(un.machine, "hppa1.2");
 #	    endif
 #	    if defined(CPU_PA_RISC2_0)
 		if (cpu_version == CPU_PA_RISC2_0)
-		    strcpy(un.machine, "parisc");
+		    strcpy(un.machine, "hppa2.0");
 #	    endif
 	}
 #	endif
