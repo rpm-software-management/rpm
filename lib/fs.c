@@ -33,10 +33,17 @@ static int getFilesystemList(void);
 #include <sys/mntctl.h>
 #include <sys/vmount.h>
 
+/* 
+ * There is NO mntctl prototype in any header file of AIX 3.2.5! 
+ * So we have to declare it by ourself...
+ */
+int mntctl(int command, int size, char *buffer);
+
 static int getFilesystemList(void) {
     int size;
     void * buf;
     struct vmount * vm;
+    struct stat sb;
     int num;
     int fsnameLength;
     int i;
@@ -48,39 +55,54 @@ static int getFilesystemList(void) {
 	return 1;
     }
 
+    /*
+     * Double the needed size, so that even when the user mounts a 
+     * filesystem between the previous and the next call to mntctl
+     * the buffer still is large enough.
+     */
+    size *= 2;
+
     buf = alloca(size);
     num = mntctl(MCTL_QUERY, size, buf);
+    if ( num <= 0 ) {
+        rpmError(RPMERR_MTAB, "mntctl() failed to return mount points: %s", 
+		 strerror(errno));
+	return 1;
+    }
 
     numFilesystems = num;
 
-    filesystems = malloc(sizeof(*filesystems) * numFilesystems);
-    fsnames = malloc(sizeof(*filesystems) * numFilesystems);
+    filesystems = malloc(sizeof(*filesystems) * numFilesystems + 1);
+    fsnames = malloc(sizeof(char *) * numFilesystems + 1);
     
     for (vm = buf, i = 0; i < num; i++) {
 	fsnameLength = vm->vmt_data[VMT_STUB].vmt_size;
 	fsnames[i] = malloc(fsnameLength + 1);
 	strncpy(fsnames[i],(char *)vm + vm->vmt_data[VMT_STUB].vmt_off, 
-		fsname_len);
+		fsnameLength);
 
 	filesystems[i].mntPoint = fsnames[i];
-
-	if (stat(fsnames[i], &sb)) {
+	
+	if (stat(filesystems[i].mntPoint, &sb)) {
 	    rpmError(RPMERR_STAT, "failed to stat %s: %s", fsnames[i],
 			strerror(errno));
 
 	    for (i = 0; i < num; i++)
 		free(filesystems[i].mntPoint);
 	    free(filesystems);
-	    free(fsnameS);
+	    free(fsnames);
 
 	    filesystems = NULL;
 	}
 	
-	filesystems[num].dev = sb.st_dev;
+	filesystems[i].dev = sb.st_dev;
 
 	/* goto the next vmount structure: */
 	vm = (struct vmount *)((char *)vm + vm->vmt_length);
     }
+
+    filesystems[i].mntPoint = NULL;
+    fsnames[i]              = NULL;
 
     return 0;
 }
