@@ -1024,9 +1024,11 @@ TFI_t teiGetFi(const teIterator tei)
 
     if (tei != NULL && tei->ocsave != -1) {
 	/*@-type -abstract@*/ /* FIX: transactionElement not opaque */
-	transactionElement te = tei->ts->order + tei->ocsave;
+	transactionElement te = tei->ts->order[tei->ocsave];
+	/*@-assignexpose@*/
 	if ((fi = te->fi) != NULL)
 	    fi->te = te;
+	/*@=assignexpose@*/
 	/*@=type =abstract@*/
     }
     /*@-compdef -refcounttrans -usereleased @*/

@@ -17,6 +17,21 @@ int _te_debug = 0;
 /*@access transactionElement @*/
 /*@access rpmTransactionSet @*/
 
+transactionElement teFree(transactionElement te)
+{
+    if (te != NULL) {
+	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
+	te = _free(te);
+    }
+    return NULL;
+}
+
+transactionElement teNew(void)
+{
+    transactionElement te = xcalloc(1, sizeof(*te));
+    return te;
+}
+
 rpmTransactionType teGetType(transactionElement te)
 {
     return te->type;
@@ -134,7 +149,7 @@ transactionElement teNextIterator(teIterator tei)
     tei->ocsave = oc;
     /*@-abstract @*/
     if (oc != -1)
-	te = tei->ts->order + oc;
+	te = tei->ts->order[oc];
     /*@=abstract @*/
     /*@-compdef -usereleased@*/ /* FIX: ts->order may be released */
     return te;

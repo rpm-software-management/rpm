@@ -355,17 +355,15 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
 			sizeof(*ts->removedPackages), intcmp);
     }
 
-/*@-type -abstract@*/
     if (ts->orderCount >= ts->orderAlloced) {
 	ts->orderAlloced += (ts->orderCount - ts->orderAlloced) + ts->delta;
+/*@-type +voidabstract @*/
 	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
+/*@=type =voidabstract @*/
     }
 
-    p = ts->order + ts->orderCount;
+    p = ts->order[ts->orderCount] = teNew();
     ts->orderCount++;
-
-    memset(p, 0, sizeof(*p));
-/*@=type =abstract@*/
 
     /* XXX FIXME: what should a TR_REMOVED key be ??? */
     addTE(ts, p, h, NULL, NULL);
@@ -403,9 +401,12 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
      */
     add = dsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
     pkgKey = RPMAL_NOMATCH;
-    pi = teInitIterator(ts);
-    /* XXX Only added packages need be checked for dupes. */
-    while ((p = teNext(pi, TR_ADDED)) != NULL) {
+    for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
+
+	/* XXX Only added packages need be checked for dupes. */
+	if (teGetType(p) == TR_REMOVED)
+	    continue;
+
 /*@-type@*/
 	rc = dsCompare(add, p->this);
 /*@=type@*/
@@ -425,30 +426,29 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     }
     pi = teFreeIterator(pi);
     add = dsFree(add);
-/*@-abstract@*/
-    oc = (p != NULL ? (p - ts->order) : ts->orderCount);
-/*@=abstract@*/
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
     if (p != NULL && duplicate && oc < ts->orderCount) {
     /* XXX FIXME removed transaction element side effects need to be weeded */
 	delTE(p);
+/*@-type -unqualifiedtrans@*/
+	ts->order[oc] = teFree(ts->order[oc]);
+/*@=type =unqualifiedtrans@*/
     }
 
-/*@-type@*/ /* FIX: transactionElement not opaque */
-/*@-abstract@*/
     if (oc >= ts->orderAlloced) {
 	ts->orderAlloced += (oc - ts->orderAlloced) + ts->delta;
+/*@-type +voidabstract @*/
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
+/*@=type =voidabstract @*/
     }
 
-    p = ts->order + oc;
-    memset(p, 0, sizeof(*p));		/* XXX trash and burn */
-/*@=abstract@*/
+    p = ts->order[oc] = teNew();
     
     addTE(ts, p, h, key, relocs);
 
+/*@-type@*/ /* FIX: transactionElement not opaque */
     p->type = TR_ADDED;
     pkgKey = alAddPackage(ts->addedPackages, pkgKey, p->key,
 			p->provides, p->fi);
@@ -485,6 +485,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 
     if (!duplicate) {
 	ts->numAddedPackages++;
+/* XXX FIXME: there's a chance of a memory leak with the late increment */
 	ts->orderCount++;
     }
 
@@ -501,7 +502,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	    goto exit;
     }
 
-    /* XXX WARNING: nothing below can access *p as t->order may be realloc'd */
     name = teGetN(p);
 
     {	rpmdbMatchIterator mi;
@@ -522,9 +522,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 		if (oldmultiLibMask && multiLibMask
 		 && !(oldmultiLibMask & multiLibMask))
 		{
-/*@-abstract@*/
-		    p = ts->order + oc;
-/*@=abstract@*/
 /*@-type@*/ /* FIX: transactionElement not opaque */
 		    p->multiLib = multiLibMask;
 /*@=type@*/
@@ -535,9 +532,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	mi = rpmdbFreeIterator(mi);
     }
 
-/*@-abstract@*/
-    p = ts->order + oc;
-/*@=abstract@*/
 /*@-type@*/ /* FIX: transactionElement not opaque */
     obsoletes = dsiInit(rpmdsLink(p->obsoletes, "Obsoletes"));
 /*@=type@*/
@@ -617,6 +611,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 {
     if (ts) {
 	teIterator pi; transactionElement p;
+	int oc;
 
 	(void) rpmtsUnlink(ts, "tsCreate");
 
@@ -625,18 +620,21 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	    return NULL;
 
 	pi = teInitIterator(ts);
-	while ((p = teNextIterator(pi)) != NULL) {
+	for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
 	    delTE(p);
+/*@-type -unqualifiedtrans @*/
+	    ts->order[oc] = teFree(ts->order[oc]);
+/*@=type =unqualifiedtrans @*/
 	}
 	pi = teFreeIterator(pi);
+/*@-type +voidabstract @*/
+	ts->order = _free(ts->order);
+/*@=type =voidabstract @*/
 
 	ts->addedPackages = alFree(ts->addedPackages);
 	ts->availablePackages = alFree(ts->availablePackages);
 	ts->di = _free(ts->di);
 	ts->removedPackages = _free(ts->removedPackages);
-/*@-type@*/ /* FIX: transactionElement not opaque */
-	ts->order = _free(ts->order);
-/*@=type@*/
 	if (ts->scriptFd != NULL) {
 	    ts->scriptFd =
 		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
@@ -1246,13 +1244,15 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 
 /* XXX Set q to the added package that has pkgKey == q->u.addedKey */
 /* XXX FIXME: bsearch is possible/needed here */
-    qi = teInitIterator(ts);
-    while ((q = teNext(qi, TR_ADDED)) != NULL) {
+    for (qi = teInitIterator(ts), i = 0; (q = teNextIterator(qi)) != NULL; i++) {
+	/* XXX Only added packages need be checked for matches. */
+	if (teGetType(q) == TR_REMOVED)
+	    continue;
 	if (pkgKey == teGetAddedKey(q))
 	    break;
     }
     qi = teFreeIterator(qi);
-    if (q == NULL)
+    if (q == NULL || i == ts->orderCount)
 	return 0;
 
 #if defined(DEPENDENCY_WHITEOUT)
@@ -1261,14 +1261,10 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 	return 0;
 #endif
 
-/*@-type -abstract@*/
-    i = q - ts->order;
-/*@=type =abstract@*/
-
-/*@-nullpass -nullderef -type -abstract@*/
+/*@-nullpass -nullderef -formattype@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, teGetN(q), ts->order, i, ts->orderCount);
-/*@=nullpass =nullderef =type =abstract@*/
+/*@=nullpass =nullderef =formattype@*/
 
     /* Avoid redundant relations. */
     /* XXX TODO: add control bit. */
@@ -1389,8 +1385,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;
-/*@exposed@*/
-    transactionElement newOrder;
+    transactionElement * newOrder;
     int newOrderCount = 0;
     orderListIndex orderList;
     int nrescans = 10;
@@ -1400,10 +1395,10 @@ int rpmdepOrder(rpmTransactionSet ts)
 
     alMakeIndex(ts->addedPackages);
 
-/*@-modfilesystem -nullpass -type -abstract@*/
+/*@-modfilesystem -nullpass -formattype@*/
 if (_te_debug)
 fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCount);
-/*@=modfilesystem =nullpass =type =abstract@*/
+/*@=modfilesystem =nullpass =formattype@*/
 
     /* T1. Initialize. */
     loopcheck = numAddedPackages;	/* XXX TR_ADDED only: should be ts->orderCount */
@@ -1709,9 +1704,9 @@ prtTSI(" p", teGetTSI(p));
 
     qsort(orderList, numAddedPackages, sizeof(*orderList), orderListIndexCmp);
 
-/*@-type -abstract @*/	/* FIX: transactionElement not opaque */
+/*@-type@*/
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
-/*@=type =abstract @*/
+/*@=type@*/
     /*@-branchstate@*/
     for (i = 0, newOrderCount = 0; i < orderingCount; i++)
     {
@@ -1725,42 +1720,37 @@ prtTSI(" p", teGetTSI(p));
 	if (needle == NULL) continue;
 
 	j = needle->orIndex;
-/*@-type -abstract -noeffect @*/	/* FIX: transactionElement not opaque */
-	q = ts->order + j;
-	newOrder[newOrderCount++] = *q;		/* structure assignment */
-/*@=type =abstract =noeffect @*/
+	newOrder[newOrderCount++] = q = ts->order[j];
+	ts->order[j] = NULL;
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
-/*@-type -abstract -noeffect @*/	/* FIX: transactionElement not opaque */
-	    q = ts->order + j;
+	    if ((q = ts->order[j]) == NULL)
+		/*@innerbreak@*/ break;
 	    if (teGetType(q) == TR_REMOVED
 	     && teGetDependsOnKey(q) == needle->pkgKey)
 	    {
-		newOrder[newOrderCount++] = *q;	/* structure assignment */
+		newOrder[newOrderCount++] = q;
+		ts->order[j] = NULL;
 	    } else
 		/*@innerbreak@*/ break;
-/*@=type =abstract =noeffect @*/
 	}
     }
     /*@=branchstate@*/
 
-    /*@-compmempass -usereleased@*/ /* FIX: ts->order[].{NEVR,name} released */
-    pi = teInitIterator(ts);
-    /*@=compmempass =usereleased@*/
-    while ((p = teNext(pi, TR_REMOVED)) != NULL) {
-	if (teGetDependsOnKey(p) == RPMAL_NOMATCH)
-/*@-type -abstract -noeffect @*/	/* FIX: transactionElement not opaque */
-	    newOrder[newOrderCount++] = *p;	/* structure assignment */
-/*@=type =abstract =noeffect @*/
+    for (j = 0; j < ts->orderCount; j++) {
+	if ((p = ts->order[j]) == NULL)
+	    continue;
+	assert(teGetType(p) == TR_REMOVED);
+	newOrder[newOrderCount++] = p;
+	ts->order[j] = NULL;
     }
-    pi = teFreeIterator(pi);
     assert(newOrderCount == ts->orderCount);
 
-/*@-type@*/	/* FIX: transactionElement not opaque */
+/*@+voidabstract@*/
     ts->order = _free(ts->order);
+/*@=voidabstract@*/
     ts->order = newOrder;
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
-/*@=type@*/
 
     /* Clean up after dependency checks */
     pi = teInitIterator(ts);

@@ -123,6 +123,22 @@ extern "C" {
 #endif
 
 /**
+ * Destroy a transaction element.
+ * @param te		transaction element
+ * @return		NULL always
+ */
+/*@null@*/
+transactionElement teFree(/*@only@*/ /*@null@*/ transactionElement te)
+	/*@modifies te@*/;
+/**
+ * Create a transaction element.
+ * @return		new transaction element
+ */
+/*@only@*/ /*@null@*/
+transactionElement teNew(void)
+	/*@*/;
+
+/**
  * Retrieve type of transaction element.
  * @param te		transaction element
  * @return		type

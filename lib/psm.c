@@ -501,7 +501,9 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 	goto exit;
     }
 
-    fi->te = ts->order;
+/*@-assignexpose@*/
+    fi->te = ts->order[0];
+/*@=assignexpose@*/
 /*@i@*/ fi->te->fd = fd;
     hge = fi->hge;
     hfd = fi->hfd;

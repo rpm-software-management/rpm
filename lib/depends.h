@@ -64,7 +64,7 @@ struct rpmTransactionSet_s {
     int numAvailablePackages;	/*!< No. available package instances. */
 
 /*@owned@*/
-    transactionElement order;	/*!< Packages sorted by dependencies. */
+    transactionElement * order;	/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
 
