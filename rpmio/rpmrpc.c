@@ -9,6 +9,10 @@
 #endif
 
 #include <rpmio_internal.h>
+
+#define	_RPMDAV_INTERNAL
+#include <rpmdav.h>
+
 #include "ugid.h"
 #include "debug.h"
 
@@ -1096,172 +1100,6 @@ fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
     return rc;
 }
 
-struct __dirstream {
-    int fd;			/* File descriptor.  */
-    char * data;		/* Directory block.  */
-    size_t allocation;		/* Space allocated for the block.  */
-    size_t size;		/* Total valid data in the block.  */
-    size_t offset;		/* Current offset into the block.  */
-    off_t filepos;		/* Position of next entry to read.  */
-#if defined(HAVE_PTHREAD_H)
-    pthread_mutex_t lock;	/* Mutex lock for this structure.  */
-#endif
-};
-
-#if !defined(DT_DIR)
-# define DT_UNKNOWN	0
-# define DT_FIFO	1
-# define DT_CHR		2
-# define DT_DIR		4
-# define DT_BLK		6
-# define DT_REG		8
-# define DT_LNK		10
-# define DT_SOCK	12
-# define DT_WHT		14
-typedef struct __dirstream *	AVDIR;
-#else
-typedef DIR *			AVDIR;
-#endif
-
-/*@unchecked@*/
-static int avmagicdir = 0x3607113;
-#define	ISAVMAGIC(_dir) (!memcmp((_dir), &avmagicdir, sizeof(avmagicdir)))
-
-/**
- * Close an argv directory.
- * @param dir		argv DIR
- * @return 		0 always
- */
-static int avClosedir(/*@only@*/ DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies dir, fileSystem @*/
-{
-    AVDIR avdir = (AVDIR)dir;
-
-if (_av_debug)
-fprintf(stderr, "*** avClosedir(%p)\n", avdir);
-
-#if defined(HAVE_PTHREAD_H)
-    (void) pthread_mutex_destroy(&avdir->lock);
-#endif
-
-    avdir = _free(avdir);
-    return 0;
-}
-
-/**
- * Return next entry from an argv directory.
- * @param dir		argv DIR
- * @return 		next entry
- */
-/*@dependent@*/ /*@null@*/
-static struct dirent * avReaddir(DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-    AVDIR avdir = (AVDIR)dir;
-    struct dirent * dp;
-    const char ** av;
-    unsigned char * dt;
-    int ac;
-    int i;
-
-    if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL) {
-	/* XXX TODO: EBADF errno. */
-	return NULL;
-    }
-
-    dp = (struct dirent *) avdir->data;
-    av = (const char **) (dp + 1);
-    ac = avdir->size;
-    dt = (char *) (av + (ac + 1));
-    i = avdir->offset + 1;
-
-/*@-boundsread@*/
-    if (i < 0 || i >= ac || av[i] == NULL)
-	return NULL;
-/*@=boundsread@*/
-
-    avdir->offset = i;
-
-    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
-/*@-type@*/
-    dp->d_ino = i + 1;		/* W2DO? */
-    dp->d_reclen = 0;		/* W2DO? */
-
-#if !defined(hpux) && !defined(sun)
-    dp->d_off = 0;		/* W2DO? */
-/*@-boundsread@*/
-    dp->d_type = dt[i];
-/*@=boundsread@*/
-#endif
-/*@=type@*/
-
-    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
-if (_av_debug)
-fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
-    
-    return dp;
-}
-
-/**
- * Create an argv directory from URL collection.
- * @param path		URL for collection path
- * @return 		argv DIR
- */
-/*@null@*/
-static DIR * avOpendir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    AVDIR avdir;
-    struct dirent * dp;
-    size_t nb = 0;
-    const char ** av;
-    unsigned char * dt;
-    char * t;
-    int ac;
-
-if (_av_debug)
-fprintf(stderr, "*** avOpendir(%s)\n", path);
-    nb = sizeof(".") + sizeof("..");
-    ac = 2;
-
-    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    avdir = xcalloc(1, nb);
-/*@-abstract@*/
-    dp = (struct dirent *) (avdir + 1);
-    av = (const char **) (dp + 1);
-    dt = (char *) (av + (ac + 1));
-    t = (char *) (dt + ac + 1);
-/*@=abstract@*/
-
-    avdir->fd = avmagicdir;
-/*@-usereleased@*/
-    avdir->data = (char *) dp;
-/*@=usereleased@*/
-    avdir->allocation = nb;
-    avdir->size = ac;
-    avdir->offset = -1;
-    avdir->filepos = 0;
-
-#if defined(HAVE_PTHREAD_H)
-    (void) pthread_mutex_init(&avdir->lock, NULL);
-#endif
-
-    ac = 0;
-    /*@-dependenttrans -unrecog@*/
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
-    /*@=dependenttrans =unrecog@*/
-
-    av[ac] = NULL;
-
-/*@-kepttrans@*/
-    return (DIR *) avdir;
-/*@=kepttrans@*/
-}
-
 /*@-boundswrite@*/
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
@@ -1335,7 +1173,9 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     avdir->filepos = 0;
 
 #if defined(HAVE_PTHREAD_H)
+/*@-moduncon -noeffectuncon@*/
     (void) pthread_mutex_init(&avdir->lock, NULL);
+/*@=moduncon =noeffectuncon@*/
 #endif
 
     ac = 0;
@@ -1398,66 +1238,6 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    /*@switchbreak@*/ break;
 	}
     }
-    av[ac] = NULL;
-
-/*@-kepttrans@*/
-    return (DIR *) avdir;
-/*@=kepttrans@*/
-}
-/*@=boundswrite@*/
-
-/*@-boundswrite@*/
-/*@null@*/
-static DIR * davOpendir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    AVDIR avdir;
-    struct dirent * dp;
-    size_t nb;
-    const char ** av;
-    unsigned char * dt;
-    char * t;
-    int ac;
-
-if (_dav_debug)
-fprintf(stderr, "*** davOpendir(%s)\n", path);
-
-/* XXX read dav collection. */
-
-    nb = sizeof(".") + sizeof("..");
-    ac = 2;
-
-    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    avdir = xcalloc(1, nb);
-    /*@-abstract@*/
-    dp = (struct dirent *) (avdir + 1);
-    av = (const char **) (dp + 1);
-    dt = (char *) (av + (ac + 1));
-    t = (char *) (dt + ac + 1);
-    /*@=abstract@*/
-
-    avdir->fd = avmagicdir;
-/*@-usereleased@*/
-    avdir->data = (char *) dp;
-/*@=usereleased@*/
-    avdir->allocation = nb;
-    avdir->size = ac;
-    avdir->offset = -1;
-    avdir->filepos = 0;
-
-#if defined(HAVE_PTHREAD_H)
-    (void) pthread_mutex_init(&avdir->lock, NULL);
-#endif
-
-    ac = 0;
-    /*@-dependenttrans -unrecog@*/
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
-    /*@=dependenttrans =unrecog@*/
-
-/* XXX load dav collection. */
-
     av[ac] = NULL;
 
 /*@-kepttrans@*/
