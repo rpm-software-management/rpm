@@ -23,6 +23,8 @@
 #include "misc.h"
 #include "pack.h"
 
+#include "names.h"
+
 struct Script {
     char *name;
     FILE *file;
@@ -39,6 +41,7 @@ static char *do_untar(Spec spec, int c);
 static char *do_patch(Spec spec, int c, int strip, char *dashb);
 int isCompressed(char *file);
 static void doSweep(Spec s);
+static int doRmSource(Spec s);
 
 char build_subdir[1024];
 
@@ -160,6 +163,39 @@ static void doSweep(Spec s)
         execScript(script);
         freeScript(script);
     }
+}
+
+static int doRmSource(Spec s)
+{
+    char filename[1024];
+    struct sources *source;
+    struct PackageRec *package;
+
+    /* spec file */
+    sprintf(filename, "%s%s", getVar(RPMVAR_SPECDIR),
+	    strrchr(s->specfile, '/'));
+    unlink(filename);
+
+    /* sources and patches */
+    source = s->sources;
+    while (source) {
+	sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
+	unlink(filename);
+	source = source->next;
+    }
+
+    /* icons */
+    package = s->packages;
+    while (package) {
+	if (package->icon) {
+	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR),
+		    package->icon);
+	    unlink(filename);
+	}
+	package = package->next;
+    }
+    
+    return 0;
 }
 
 static int doSetupMacro(Spec spec, StringBuf sb, char *line)
