@@ -264,6 +264,8 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 5, flEntries, NULL, notifyData));
 NOTIFY((NULL, RPMCALLBACK_TRANS_START, 6, flEntries, NULL, notifyData));
 
     for (fi = flList; (fi - flList) < flEntries; fi++) {
+NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
+       NULL, notifyData));
 	matches = malloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
