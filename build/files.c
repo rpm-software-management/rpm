@@ -95,6 +95,10 @@ typedef struct AttrRec_s {
 /*@unchecked@*/
 static int multiLib = 0;	/* MULTILIB */
 
+/* list of files */
+static StringBuf check_fileList = NULL;
+static int check_fileListLen = 0;
+
 /**
  * Package file tree walk data.
  */
@@ -1638,6 +1642,13 @@ static int addFile(FileList fl, const char * diskURL,
 	(unsigned)fileMode, fileUname, fileGname, fileURL);
 #endif
 
+    /* S_XXX macro must be consistent with type in find call at check-files script */
+    if (S_ISREG(fileMode)) {
+      appendStringBuf(check_fileList, diskURL);
+      appendStringBuf(check_fileList, "\n");
+      check_fileListLen += strlen(diskURL) + 1;
+    }
+
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
 	fl->fileListRecsAlloced += 128;
@@ -1998,6 +2009,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    static int _missing_doc_files_terminate_build = 0;
 	    static int oneshot = 0;
 	    int rc;
+
 	    if (!oneshot) {
 	        _missing_doc_files_terminate_build =
 		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
@@ -2520,9 +2532,11 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
 	int tag, tagflags;
+	char * s;
 
 	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
 	tagflags = 0;
+	s = NULL;
 
 	switch(tag) {
 	case RPMTAG_PROVIDEFLAGS:
@@ -2545,7 +2559,6 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	/* Get the script name (and possible args) to run */
 	if (dm->argv[0] != NULL) {
 	    const char ** av;
-	    char * s;
 
 	    /*@-nullderef@*/	/* FIX: double indirection. @*/
 	    s = rpmExpand(dm->argv[0], NULL);
@@ -2563,14 +2576,14 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 		    myargv[i] = xstrdup(av[i]);
 	    }
 	    av = _free(av);
-	    s = _free(s);
 	}
 
 	if (myargv[0] == NULL)
 	    continue;
 
-	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: (using %s)...\n"),
-		dm->msg, myargv[0]);
+	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: %s\n"), dm->msg,
+		(s ? s : ""));
+	s = _free(s);
 
 #if 0
 	if (*myargv[0] != '/') {	/* XXX FIXME: stat script here */
@@ -2722,10 +2735,68 @@ static void printDeps(Header h)
     versions = hfd(versions, dvt);
 }
 
+/**
+ * Check packaged file list against what's in the build root.
+ * @param fileList	packaged file list
+ * @param fileListLen	no. of packaged files
+ * @return		-1 if skipped, 0 on OK, 1 on error
+ */
+static int checkFiles(StringBuf fileList, int fileListLen)
+{
+    StringBuf readBuf = NULL;
+    const char * s = NULL;
+    char ** av = NULL;
+    int ac = 0;
+    int rc = 0;
+    char *buf;
+    
+    s = rpmExpand("%{?__check_files}", NULL);
+    if (!(s && *s)) {
+	rc = -1;
+	goto exit;
+    }    
+    if (!((rc = poptParseArgvString(s, &ac, (const char ***)&av)) == 0
+    && ac > 0 && av != NULL))
+    {
+	goto exit;
+    }
+    
+    rpmMessage(RPMMESS_NORMAL, _("Checking for unpackaged file(s): %s\n"), s);
+		    
+    readBuf = getOutputFrom(NULL, av, getStringBuf(fileList), fileListLen, 0);
+    
+    if (readBuf) {
+	static int _unpackaged_files_terminate_build = 0;
+	static int oneshot = 0;
+
+	if (!oneshot) {
+	    _unpackaged_files_terminate_build =
+		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
+	    oneshot = 1;
+	}
+	
+	buf = getStringBuf(readBuf);
+	if ((*buf != '\0') && (*buf != '\n')) {
+	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
+	    rpmMessage((rc ? RPMMESS_ERROR : RPMMESS_WARNING),
+		_("Installed (but unpackaged) file(s) found:\n%s"), buf);
+	}
+    }
+    
+exit:
+    freeStringBuf(readBuf);
+    s = _free(s);
+    av = _free(av);
+    return rc;
+}
+
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
     Package pkg;
     int res = 0;
+    
+    check_fileList = newStringBuf();
+    check_fileListLen = 0;
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	const char *n, *v, *r;
@@ -2754,5 +2825,17 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@=noeffect@*/
     }
 
+    /* Now we have in fileList list of files from all packages.
+     * We pass it to a script which do the work of finding missing
+     * and duplicated files.
+     */
+    
+    if (res == 0)  {
+	if (checkFiles(check_fileList, check_fileListLen) > 0)
+	    res = 1;
+    }
+    
+    freeStringBuf(check_fileList);
+    
     return res;
 }

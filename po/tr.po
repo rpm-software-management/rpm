@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 10:12-0400\n"
+"POT-Creation-Date: 2002-07-31 14:24-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -428,180 +428,192 @@ msgstr "&& ve || dizgelerde desteklenmez\n"
 msgid "syntax error in expression\n"
 msgstr "ifadede sözdizimi hatasý\n"
 
-#: build/files.c:282
+#: build/files.c:286
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK baþarýsýz: %s\n"
 
-#: build/files.c:346 build/files.c:546 build/files.c:742
+#: build/files.c:350 build/files.c:550 build/files.c:746
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "%s içinde '(' yok: %s\n"
 
-#: build/files.c:357 build/files.c:676 build/files.c:753
+#: build/files.c:361 build/files.c:680 build/files.c:757
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "%s içinde ')' yok: (%s\n"
 
-#: build/files.c:395 build/files.c:701
+#: build/files.c:399 build/files.c:705
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Andaç %s geçersiz: %s\n"
 
-#: build/files.c:505
+#: build/files.c:509
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s içinde '(' yok: %s\n"
 
-#: build/files.c:562
+#: build/files.c:566
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "%s() boþluksuz yazýlmýþ: %s\n"
 
-#: build/files.c:600
+#: build/files.c:604
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Sözdizimi hatasý: %s(%s)\n"
 
-#: build/files.c:610
+#: build/files.c:614
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "mode spec hatalý: %s(%s)\n"
 
-#: build/files.c:622
+#: build/files.c:626
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "dirmode spec hatalý: %s(%s)\n"
 
-#: build/files.c:780
+#: build/files.c:784
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "yerel uzunluðu hatalý: \"%.*s\" (%%lang(%s))\n"
 
 #. @innercontinue@
-#: build/files.c:791
+#: build/files.c:795
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "%.*s yereli %%lang(%s) içinde tekrarlanmýþ\n"
 
-#: build/files.c:954
+#: build/files.c:958
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "%%docdir için hit sýnýrý\n"
 
-#: build/files.c:960
+#: build/files.c:964
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir için sadece tek argüman\n"
 
 #. We already got a file -- error
-#: build/files.c:988
+#: build/files.c:992
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Bir satýrda 2 dosya: %s\n"
 
-#: build/files.c:1003
+#: build/files.c:1007
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Dosya \"/\" ile baþlamalý: %s\n"
 
-#: build/files.c:1016
+#: build/files.c:1020
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Özel %%doc ile diðer formlar karýþtýrýlamaz: %s\n"
 
-#: build/files.c:1168
+#: build/files.c:1172
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1312
+#: build/files.c:1316
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1557
+#: build/files.c:1561
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1581
+#: build/files.c:1585
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
+#: build/files.c:1628 build/files.c:2270 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:1637
+#: build/files.c:1641
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Dosya %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1747
+#: build/files.c:1758
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:1770
+#: build/files.c:1781
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1785
+#: build/files.c:1796
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 
-#: build/files.c:1849
+#: build/files.c:1860
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1860 build/pack.c:156
+#: build/files.c:1871 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2246
+#: build/files.c:2258
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2321
+#: build/files.c:2333
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: build/files.c:2326
+#: build/files.c:2338
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s ayrýlamadý: %s\n"
 
-#: build/files.c:2410
+#: build/files.c:2422
 #, c-format
 msgid "%s failed\n"
 msgstr "%s baþarýsýz\n"
 
-#: build/files.c:2414
+#: build/files.c:2426
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "tüm veri %s içine yazýlamadý\n"
 
-#: build/files.c:2572
-#, c-format
-msgid "Finding  %s: (using %s)...\n"
+#: build/files.c:2584
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
 msgstr "%s aranýyor: (%s kullanarak)...\n"
 
-#: build/files.c:2601 build/files.c:2615
+#: build/files.c:2614 build/files.c:2628
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadý:\n"
 
-#: build/files.c:2738
+#: build/files.c:2764
+#, fuzzy, c-format
+msgid "Checking for unpackaged file(s): %s\n"
+msgstr "arþiv paketi açýlýrken baþarýsýz%s%s: %s\n"
+
+#: build/files.c:2782
+#, c-format
+msgid ""
+"Installed (but unpackaged) file(s) found:\n"
+"%s"
+msgstr ""
+
+#: build/files.c:2809
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"
