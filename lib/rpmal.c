@@ -752,7 +752,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 
     if (al->list != NULL)	/* XXX always true */
     for (ret = NULL, found = 0;
-	 match <= ai->index + ai->size && indexcmp(match, needle) == 0;
+	 match < ai->index + ai->size && indexcmp(match, needle) == 0;
 	 match++)
     {
 	alp = al->list + alKey2Num(al, match->pkgKey);

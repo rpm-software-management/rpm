@@ -474,7 +474,7 @@ static pid_t psmWait(rpmpsm psm)
 
     (void) rpmsqWait(&psm->sq);
     msecs = psm->sq.op.usecs/1000;
-    (void) rpmswAdd(&ts->op_scriptlets, &psm->sq.op);
+    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), &psm->sq.op);
 
     rpmMessage(RPMMESS_DEBUG,
 	_("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
@@ -1112,7 +1112,9 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 #else
     psm->te = NULL;
 #endif
+/*@-internalglobs@*/
     psm->ts = rpmtsFree(psm->ts);
+/*@=internalglobs@*/
 
     (void) rpmpsmUnlink(psm, msg);
 
@@ -1517,11 +1519,10 @@ psm->te->h = headerLink(fi->h);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
-	    if (psm->cfd->stats != NULL) {
-		FDSTAT_t stats = psm->cfd->stats;
-		(void) rpmswAdd(&ts->op_uncompress, &stats->ops[FDSTAT_READ]);
-		(void) rpmswAdd(&ts->op_digest, &stats->ops[FDSTAT_DIGEST]);
-	    }
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
+			fdstat_op(psm->cfd, FDSTAT_READ));
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
+			fdstat_op(psm->cfd, FDSTAT_DIGEST));
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1601,11 +1602,10 @@ psm->te->h = headerLink(fi->h);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd,
 			NULL, &psm->failedFile);
-	    if (psm->cfd->stats != NULL) {
-		FDSTAT_t stats = psm->cfd->stats;
-		(void) rpmswAdd(&ts->op_uncompress, &stats->ops[FDSTAT_WRITE]);
-		(void) rpmswAdd(&ts->op_digest, &stats->ops[FDSTAT_DIGEST]);
-	    }
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
+			fdstat_op(psm->cfd, FDSTAT_WRITE));
+	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
+			fdstat_op(psm->cfd, FDSTAT_DIGEST));
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1885,21 +1885,21 @@ assert(psm->mi == NULL);
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
-	(void) rpmswEnter(&ts->op_dbadd, 0);
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
 				ts, headerCheck);
 	else
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
 				NULL, NULL);
-	(void) rpmswExit(&ts->op_dbadd, 0);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	break;
     case PSM_RPMDB_REMOVE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	(void) rpmswEnter(&ts->op_dbremove, 0);
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
 				NULL, NULL);
-	(void) rpmswExit(&ts->op_dbremove, 0);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	break;
 
     default:

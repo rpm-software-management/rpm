@@ -18,7 +18,6 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 #include "rpmte.h"
-#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 #include "rpmsq.h"
 
@@ -115,7 +114,9 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 {
     FSMI_t iter = p;
     if (iter) {
+/*@-internalglobs@*/ /* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
+/*@=internalglobs@*/
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
     }
     return _free(p);
@@ -2303,11 +2304,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->rfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
-	    if (fsm->rfd->stats != NULL) {
-		FDSTAT_t stats = fsm->rfd->stats;
-		rpmts ts = fsmGetTs(fsm);
-		(void) rpmswAdd(&ts->op_digest, &stats->ops[FDSTAT_DIGEST]);
-            }
+	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
+			fdstat_op(fsm->rfd, FDSTAT_DIGEST));
 	    (void) Fclose(fsm->rfd);
 	    errno = saveerrno;
 	}
@@ -2336,11 +2334,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->wfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
-	    if (fsm->wfd->stats != NULL) {
-		FDSTAT_t stats = fsm->wfd->stats;
-		rpmts ts = fsmGetTs(fsm);
-		(void) rpmswAdd(&ts->op_digest, &stats->ops[FDSTAT_DIGEST]);
-            }
+	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
+			fdstat_op(fsm->wfd, FDSTAT_DIGEST));
 	    (void) Fclose(fsm->wfd);
 	    errno = saveerrno;
 	}

@@ -77,7 +77,7 @@ rpmtime_t rpmswInit(void)
  * @param rc			-1 clears usec counter
  * @return			0 always
  */
-int rpmswEnter(rpmop op, ssize_t rc)
+int rpmswEnter(/*@null@*/ rpmop op, ssize_t rc)
 	/*@globals internalState @*/
 	/*@modifies *op, internalState @*/;
 
@@ -87,7 +87,7 @@ int rpmswEnter(rpmop op, ssize_t rc)
  * @param rc			per-operation data (e.g. bytes transferred)
  * @return			cumulative usecs for operation
  */
-rpmtime_t rpmswExit(rpmop op, ssize_t rc)
+rpmtime_t rpmswExit(/*@null@*/ rpmop op, ssize_t rc)
 	/*@globals internalState @*/
 	/*@modifies op, internalState @*/;
 
@@ -97,7 +97,7 @@ rpmtime_t rpmswExit(rpmop op, ssize_t rc)
  * @param from			operation statistics
  * @return			cumulative usecs for operation
  */
-rpmtime_t rpmswAdd(rpmop to, rpmop from)
+rpmtime_t rpmswAdd(/*@null@*/ rpmop to, /*@null@*/ rpmop from)
 	/*@modifies to @*/;
 
 /** \ingroup rpmio

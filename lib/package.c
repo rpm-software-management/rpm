@@ -9,7 +9,6 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
-#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
@@ -543,7 +542,7 @@ verifyinfo_exit:
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
 
-	(void) rpmswEnter(&ts->op_digest, 0);
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
 
 	b = (unsigned char *) header_magic;
@@ -565,7 +564,7 @@ verifyinfo_exit:
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
         dig->nbytes += nb;
-	(void) rpmswExit(&ts->op_digest, dig->nbytes);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
 	break;
 #endif
@@ -588,7 +587,7 @@ verifyinfo_exit:
 	ildl[1] = htonl(ildl[1]);
 /*@=boundswrite@*/
 
-	(void) rpmswEnter(&ts->op_digest, 0);
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
 	b = (unsigned char *) header_magic;
@@ -610,7 +609,7 @@ verifyinfo_exit:
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
         dig->nbytes += nb;
-	(void) rpmswExit(&ts->op_digest, dig->nbytes);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
 	break;
     default:

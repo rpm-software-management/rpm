@@ -559,8 +559,8 @@ int dbiCdup(dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
 /*@unused@*/ static inline
 int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
     int rc;
     assert(key->data != NULL && key->size > 0);
@@ -582,8 +582,8 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 /*@unused@*/ static inline
 int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, *data, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, *key, *data, fileSystem, internalState @*/
 {
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
@@ -606,8 +606,8 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 /*@unused@*/ static inline
 int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, *key, *pkey, *data, fileSystem, internalState @*/
 {
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
@@ -629,8 +629,8 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 /*@unused@*/ static inline
 int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, *key, fileSystem, internalState @*/
 {
     int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
@@ -928,8 +928,8 @@ int rpmdbOpenAll (/*@null@*/ rpmdb db)
  * @return		number of instances
  */
 int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Return header join key for current position of rpm database iterator.

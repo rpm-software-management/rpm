@@ -1536,7 +1536,7 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
  */
 static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies mi, fileSystem, internalState @*/
+	/*@modifies mi, dbi, fileSystem, internalState @*/
 {
     int rc = 0;
 
@@ -2279,8 +2279,8 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 
 /*@-bounds@*/ /* LCL: segfault */
 static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     DBC * dbcursor;
     DBT * key;

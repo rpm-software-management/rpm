@@ -179,7 +179,6 @@ static rpmtime_t rpmswCalibrate(void)
 /*@=type@*/
 #endif
 
-/*@-incondefs@*/
 rpmtime_t rpmswInit(void)
 	/*@globals rpmsw_cycles, rpmsw_initialized, rpmsw_overhead,
 		rpmsw_type @*/
@@ -228,6 +227,8 @@ rpmtime_t rpmswInit(void)
 
 	/* Compute cycles/usec */
 	rpmsw_cycles = sum_cycles/sum_usecs;
+#else
+	rpmsw_type = 0;
 #endif
 
 	/* Calculate timing overhead in usecs. */
@@ -242,11 +243,13 @@ rpmtime_t rpmswInit(void)
 
     return rpmsw_overhead;
 }
-/*@=incondefs@*/
 
 /*@-mods@*/
 int rpmswEnter(rpmop op, ssize_t rc)
 {
+    if (op == NULL)
+	return 0;
+
     op->count++;
     if (rc < 0) {
 	op->bytes = 0;
@@ -262,6 +265,9 @@ rpmtime_t rpmswExit(rpmop op, ssize_t rc)
 {
     struct rpmsw_s end;
 
+    if (op == NULL)
+	return 0;
+
 /*@-uniondef@*/
     op->usecs += rpmswDiff(rpmswNow(&end), &op->begin);
 /*@=uniondef@*/
@@ -273,22 +279,26 @@ rpmtime_t rpmswExit(rpmop op, ssize_t rc)
 
 rpmtime_t rpmswAdd(rpmop to, rpmop from)
 {
+    rpmtime_t usecs = 0;
     if (to != NULL && from != NULL) {
 	to->count += from->count;
 	to->bytes += from->bytes;
 	to->usecs += from->usecs;
+	usecs = to->usecs;
     }
-    return to->usecs;
+    return usecs;
 }
 
 rpmtime_t rpmswSub(rpmop to, rpmop from)
 {
+    rpmtime_t usecs = 0;
     if (to != NULL && from != NULL) {
 	to->count -= from->count;
 	to->bytes -= from->bytes;
 	to->usecs -= from->usecs;
+	usecs = to->usecs;
     }
-    return to->usecs;
+    return usecs;
 }
 
 /*@=mods@*/

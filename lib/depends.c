@@ -1002,8 +1002,8 @@ static inline int addRelation(rpmts ts,
 		/*@dependent@*/ rpmte p,
 		unsigned char * selected,
 		rpmds requires)
-	/*@globals fileSystem @*/
-	/*@modifies ts, p, *selected, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, p, *selected, fileSystem, internalState @*/
 {
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
@@ -1179,7 +1179,7 @@ int rpmtsOrder(rpmts ts)
     rpmalMakeIndex(ts->addedPackages);
 #endif
 
-    (void) rpmswEnter(&ts->op_order, 0);
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
     /* T1. Initialize. */
     if (oType == 0)
@@ -1582,7 +1582,7 @@ assert(newOrderCount == ts->orderCount);
 #endif
     freeBadDeps();
 
-    (void) rpmswExit(&ts->op_order, 0);
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
     return 0;
 }
@@ -1597,7 +1597,7 @@ int rpmtsCheck(rpmts ts)
     int xx;
     int rc;
 
-    (void) rpmswEnter(&ts->op_check, 0);
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     /* Do lazy, readonly, open of rpm database. */
     if (rpmtsGetRdb(ts) == NULL && ts->dbmode != -1) {
@@ -1724,7 +1724,7 @@ exit:
     mi = rpmdbFreeIterator(mi);
     pi = rpmtsiFree(pi);
 
-    rpmswExit(&ts->op_check, 0);
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     /*@-branchstate@*/
     if (closeatexit)

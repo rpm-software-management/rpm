@@ -62,6 +62,30 @@ typedef enum rpmVSFlags_e {
     RPMVSF_NODSA |		\
     RPMVSF_NORSA )
 
+/**
+ * Indices for timestamps.
+ */
+typedef	enum rpmtsOpX_e {
+    RPMTS_OP_TOTAL		=  0,
+    RPMTS_OP_CHECK		=  1,
+    RPMTS_OP_ORDER		=  2,
+    RPMTS_OP_FINGERPRINT	=  3,
+    RPMTS_OP_REPACKAGE		=  4,
+    RPMTS_OP_INSTALL		=  5,
+    RPMTS_OP_ERASE		=  6,
+    RPMTS_OP_SCRIPTLETS		=  7,
+    RPMTS_OP_COMPRESS		=  8,
+    RPMTS_OP_UNCOMPRESS		=  9,
+    RPMTS_OP_DIGEST		= 10,
+    RPMTS_OP_SIGNATURE		= 11,
+    RPMTS_OP_DBADD		= 12,
+    RPMTS_OP_DBREMOVE		= 13,
+    RPMTS_OP_DBGET		= 14,
+    RPMTS_OP_DBPUT		= 15,
+    RPMTS_OP_DBDEL		= 16,
+    RPMTS_OP_MAX		= 17
+} rpmtsOpX;
+
 #if defined(_RPMTS_INTERNAL)
 
 #include "rpmhash.h"	/* XXX hashTable */
@@ -196,23 +220,7 @@ struct rpmts_s {
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
 
-    struct rpmop_s op_total;
-    struct rpmop_s op_check;
-    struct rpmop_s op_order;
-    struct rpmop_s op_fingerprint;
-    struct rpmop_s op_repackage;
-    struct rpmop_s op_install;
-    struct rpmop_s op_erase;
-    struct rpmop_s op_scriptlets;
-    struct rpmop_s op_compress;
-    struct rpmop_s op_uncompress;
-    struct rpmop_s op_digest;
-    struct rpmop_s op_signature;
-    struct rpmop_s op_dbadd;
-    struct rpmop_s op_dbremove;
-    struct rpmop_s op_dbget;
-    struct rpmop_s op_dbput;
-    struct rpmop_s op_dbdel;
+    struct rpmop_s ops[RPMTS_OP_MAX];
 
 /*@null@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
@@ -461,16 +469,16 @@ void rpmtsCleanDig(rpmts ts)
  * @param ts		transaction set
  */
 void rpmtsClean(rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem , internalState@*/;
 
 /** \ingroup rpmts
  * Re-create an empty transaction set.
  * @param ts		transaction set
  */
 void rpmtsEmpty(rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Destroy transaction set, closing the database as well.
@@ -479,8 +487,8 @@ void rpmtsEmpty(rpmts ts)
  */
 /*@null@*/
 rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Get verify signatures flag(s).
@@ -792,6 +800,16 @@ Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
 rpmte rpmtsRelocateElement(rpmts ts)
 	/*@*/;
 
+/** \ingroup rpmts
+ * Set current relocate transaction element.
+ * @param ts		transaction set
+ * @param relocateElement new relocate transaction element
+ * @return		previous relocate transaction element
+ */
+/*@null@*/
+rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
+	/*@modifies ts @*/;
+
 /**
  * Retrieve color bits of transaction set.
  * @param ts		transaction set
@@ -809,15 +827,15 @@ uint_32 rpmtsColor(rpmts ts)
 uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
 	/*@modifies ts @*/;
 
-/** \ingroup rpmts
- * Set current relocate transaction element.
+/**
+ * Retrieve operation timestamp from a transaction set.
  * @param ts		transaction set
- * @param relocateElement new relocate transaction element
- * @return		previous relocate transaction element
+ * @param opx		operation timestamp index
+ * @return		pointer to operation timestamp.
  */
 /*@null@*/
-rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
-	/*@modifies ts @*/;
+rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
+	/*@*/;
 
 /** \ingroup rpmts
  * Set transaction notify callback function and argument.
@@ -888,8 +906,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 int rpmtsGetKeys(rpmts ts,
 		/*@null@*/ /*@out@*/ fnpyKey ** ep,
 		/*@null@*/ /*@out@*/ int * nep)
-	/*@globals fileSystem @*/
-	/*@modifies ts, ep, nep, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, ep, nep, fileSystem, internalState @*/;
 
 /**
  * Return (malloc'd) header name-version-release string.

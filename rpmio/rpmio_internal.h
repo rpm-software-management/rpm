@@ -104,14 +104,14 @@ typedef struct _FDSTACK_s {
 /** \ingroup rpmio
  * Identify per-desciptor I/O operation statistics.
  */
-enum FDSTAT_e {
+typedef enum fdOpX_e {
     FDSTAT_READ		= 0,	/*!< Read statistics index. */
     FDSTAT_WRITE	= 1,	/*!< Write statistics index. */
     FDSTAT_SEEK		= 2,	/*!< Seek statistics index. */
     FDSTAT_CLOSE	= 3,	/*!< Close statistics index */
     FDSTAT_DIGEST	= 4,	/*!< Digest statistics index. */
     FDSTAT_MAX		= 5
-};
+} fdOpX;
 
 /** \ingroup rpmio
  * Cumulative statistics for a descriptor.
@@ -346,7 +346,8 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdPop(FD_t fd)
+/*@unused@*/ static inline
+void fdPop(FD_t fd)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
@@ -359,16 +360,29 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
+/*@unused@*/ static inline /*@null@*/
+rpmop fdstat_op(/*@null@*/ FD_t fd, fdOpX opx)
+	/*@*/
+{
+    rpmop op = NULL;
+
+/*@-boundsread@*/
+    if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
+        op = fd->stats->ops + opx;
+/*@=boundsread@*/
+    return op;
+}
+
+/** \ingroup rpmio
+ */
 /*@unused@*/ static inline
 void fdstat_enter(/*@null@*/ FD_t fd, int opx)
 	/*@globals internalState @*/
-	/*@modifies fd, internalState @*/
+	/*@modifies internalState @*/
 {
     if (fd == NULL) return;
-/*@-boundswrite@*/
     if (fd->stats != NULL)
-	(void) rpmswEnter(&fd->stats->ops[opx], 0);
-/*@=boundswrite@*/
+	(void) rpmswEnter(fdstat_op(fd, opx), 0);
 }
 
 /** \ingroup rpmio
@@ -383,10 +397,8 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 	fd->syserrno = errno;
     else if (rc > 0 && fd->bytesRemain > 0)
 	fd->bytesRemain -= rc;
-/*@-boundswrite@*/
     if (fd->stats != NULL)
-	(void) rpmswExit(&fd->stats->ops[opx], rc);
-/*@=boundswrite@*/
+	(void) rpmswExit(fdstat_op(fd, opx), rc);
 }
 
 /** \ingroup rpmio
@@ -487,7 +499,8 @@ FD_t c2f(/*@null@*/ void * cookie)
  */
 /*@unused@*/ static inline
 void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
-	/*@modifies fd @*/
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
 {
     FDDIGEST_t fddig = fd->digests + fd->ndigests;
     if (fddig != (fd->digests + FDDIGEST_MAX)) {
@@ -504,7 +517,8 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
  */
 /*@unused@*/ static inline
 void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
-	/*@modifies fd @*/
+	/*@globals internalState @*/
+	/*@modifies fd, internalState @*/
 {
     int i;
 
@@ -526,7 +540,8 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 		/*@null@*/ /*@out@*/ void ** datap,
 		/*@null@*/ /*@out@*/ size_t * lenp,
 		int asAscii)
-	/*@modifies fd, *datap, *lenp @*/
+	/*@globals internalState @*/
+	/*@modifies fd, *datap, *lenp, internalState @*/
 {
     int imax = -1;
     int i;

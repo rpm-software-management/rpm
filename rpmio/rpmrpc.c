@@ -903,6 +903,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	/* XXX FIXME: realloc ftpBuf if < ~128 chars remain */
 	if ((ftpBufAlloced - bufLength) < (1024+80)) {
 	    ftpBufAlloced <<= 2;
+	    assert(ftpBufAlloced < (8*1024*1024));
 	    ftpBuf = xrealloc(ftpBuf, ftpBufAlloced);
 	}
 	s = se = ftpBuf + bufLength;

@@ -543,8 +543,10 @@ rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
 {
     /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
+/*@-internalglobs@*/
     if (tsi)
 	tsi->ts = rpmtsFree(tsi->ts);
+/*@=internalglobs@*/
 
 /*@-modfilesys@*/
 if (_rpmte_debug)
