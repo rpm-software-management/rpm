@@ -69,17 +69,26 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 		empty = &uCache[i];
 	    continue;
 	}
-	if (u->service && ou->service && strcmp(ou->service, u->service))
-	    continue;
-	if (u->host && ou->host && strcmp(ou->host, u->host))
-	    continue;
-	if (u->user && ou->user && strcmp(ou->user, u->user))
-	    continue;
-	if (u->password && ou->password && strcmp(ou->password, u->password))
-	    continue;
-	if (u->portstr && ou->portstr && strcmp(ou->portstr, u->portstr))
-	    continue;
-	break;
+	/* Check for cache-miss condition. A cache miss is
+	 *    a) both items are not NULL and don't compare.
+	 *    b) either of the items is not NULL.
+	 */
+	if ((u->service && ou->service && strcmp(u->service, ou->service)) ||
+	    (u->service != ou->service))
+		continue;
+	if ((u->host && ou->host && strcmp(u->host, ou->host)) ||
+	    (u->host != ou->host))
+		continue;
+	if ((u->user && ou->user && strcmp(u->user, ou->user)) ||
+	    (u->user != ou->user))
+		continue;
+	if ((u->password && ou->password && strcmp(u->password, ou->password))||
+	    (u->password != ou->password))
+		continue;
+	if ((u->portstr && ou->portstr && strcmp(u->portstr, ou->portstr)) ||
+	    (u->portstr != ou->portstr))
+		continue;
+	break;	/* Found item in cache */
     }
 
     if (i == uCount) {
@@ -166,6 +175,10 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
     return;
 }
 
+/*
+ * Split URL into components. The URL can look like
+ *	service://user:password@host:port/path
+ */
 int urlSplit(const char * url, urlinfo **uret)
 {
     urlinfo *u;
@@ -181,8 +194,11 @@ int urlSplit(const char * url, urlinfo **uret)
 	freeUrlinfo(u);
 	return -1;
     }
+
     u->url = strdup(url);
+
     do {
+	/* Point to end of next item */
 	while (*se && *se != '/') se++;
 	if (*se == '\0') {
 	    /* XXX can't find path */
@@ -190,23 +206,28 @@ int urlSplit(const char * url, urlinfo **uret)
 	    freeUrlinfo(u);
 	    return -1;
 	}
+	/* Item was service. Save service and go for the rest ...*/
     	if ((se != s) && se[-1] == ':' && se[0] == '/' && se[1] == '/') {
 		se[-1] = '\0';
 	    u->service = strdup(s);
-	    se += 2;
+	    se += 2;	/* skip over "//" */
 	    s = se++;
 	    continue;
 	}
-        u->path = strdup(se);
+	
+	/* Item was everything-but-path. Save path and continue parse on rest */
+	u->path = strdup(se);
 	*se = '\0';
 	break;
     } while (1);
 
+    /* Look for ...@host... */
     fe = f = s;
     while (*fe && *fe != '@') fe++;
     if (*fe == '@') {
 	s = fe + 1;
 	*fe = '\0';
+    	/* Look for user:password@host... */
 	while (fe > f && *fe != ':') fe--;
 	if (*fe == ':') {
 	    *fe++ = '\0';
@@ -215,6 +236,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	u->user = strdup(f);
     }
 
+    /* Look for ...host:port */
     fe = f = s;
     while (*fe && *fe != ':') fe++;
     if (*fe == ':') {
@@ -308,8 +330,12 @@ int ufdClose(FD_t fd)
 {
     if (fd != NULL && fd->fd_url) {
 	urlinfo *u = (urlinfo *)fd->fd_url;
-	if (u->ftpControl >= 0)
+	/* Close the ftp control channel (not strictly necessary, but ... */
+	if (u->ftpControl >= 0) {
 	    ftpAbort(fd);
+	    close(u->ftpControl);
+	    u->ftpControl = -1;
+	}
     }
     return fdClose(fd);
 }

@@ -225,7 +225,7 @@ static int ftpCommand(urlinfo *u, char * command, ...) {
 if (ftpDebug)
 fprintf(stderr, "-> %s", buf);
     if (write(u->ftpControl, buf, len) != len) {
-        return FTPERR_SERVER_IO_ERROR;
+	return FTPERR_SERVER_IO_ERROR;
     }
 
     return ftpCheckResponse(u, NULL);
@@ -273,12 +273,12 @@ static int tcpConnect(const char *host, int port)
 	break;
 
     if ((sock = socket(sin.sin_family, SOCK_STREAM, IPPROTO_IP)) < 0) {
-        rc = FTPERR_FAILED_CONNECT;
+	rc = FTPERR_FAILED_CONNECT;
 	break;
     }
 
     if (connect(sock, (struct sockaddr *) &sin, sizeof(sin))) {
-        rc = FTPERR_FAILED_CONNECT;
+	rc = FTPERR_FAILED_CONNECT;
 	break;
     }
   } while (0);
@@ -380,34 +380,29 @@ int ftpOpen(urlinfo *u)
 
     /* ftpCheckResponse() assumes the socket is nonblocking */
     if (fcntl(u->ftpControl, F_SETFL, O_NONBLOCK)) {
-	close(u->ftpControl);
-	u->ftpControl = -1;
-        return FTPERR_FAILED_CONNECT;
+	rc = FTPERR_FAILED_CONNECT;
+	goto errxit;
     }
 
     if ((rc = ftpCheckResponse(u, NULL))) {
-        return rc;     
+	return rc;     
     }
 
-    if ((rc = ftpCommand(u, "USER", user, NULL))) {
-	close(u->ftpControl);
-	u->ftpControl = -1;
-	return rc;
-    }
+    if ((rc = ftpCommand(u, "USER", user, NULL)))
+	goto errxit;
 
-    if ((rc = ftpCommand(u, "PASS", password, NULL))) {
-	close(u->ftpControl);
-	u->ftpControl = -1;
-	return rc;
-    }
+    if ((rc = ftpCommand(u, "PASS", password, NULL)))
+	goto errxit;
 
-    if ((rc = ftpCommand(u, "TYPE", "I", NULL))) {
-	close(u->ftpControl);
-	u->ftpControl = -1;
-	return rc;
-    }
+    if ((rc = ftpCommand(u, "TYPE", "I", NULL)))
+	goto errxit;
 
     return u->ftpControl;
+
+errxit:
+    close(u->ftpControl);
+    u->ftpControl = -1;
+    return rc;
 }
 
 static int copyData(FD_t sfd, FD_t tfd) {
@@ -487,7 +482,9 @@ fprintf(stderr, "-> ABOR\n");
     send(u->ftpControl, buf, 3, MSG_OOB);
     sprintf(buf, "%cABOR\r\n", DM);
     if (write(u->ftpControl, buf, 7) != 7) {
-        return FTPERR_SERVER_IO_ERROR;
+	close(u->ftpControl);
+	u->ftpControl = -1;
+	return FTPERR_SERVER_IO_ERROR;
     }
     if (fdFileno(fd) >= 0) {
 	while(read(fdFileno(fd), buf, sizeof(buf)) > 0)
@@ -538,9 +535,9 @@ int ftpGetFileDesc(FD_t fd)
 
 if (ftpDebug)
 fprintf(stderr, "-> PASV\n");
-    if (write(u->ftpControl, "PASV\r\n", 6) != 6) {
-        return FTPERR_SERVER_IO_ERROR;
-    }
+    if (write(u->ftpControl, "PASV\r\n", 6) != 6)
+	return FTPERR_SERVER_IO_ERROR;
+
     if ((rc = ftpCheckResponse(u, &passReply)))
 	return FTPERR_PASSIVE_ERROR;
 
@@ -579,7 +576,7 @@ fprintf(stderr, "-> PASV\n");
 
     fd->fd_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     if (fdFileno(fd) < 0) {
-        return FTPERR_FAILED_CONNECT;
+	return FTPERR_FAILED_CONNECT;
     }
 
     retrCommand = alloca(strlen(remotename) + 20);
@@ -591,13 +588,13 @@ fprintf(stderr, "-> PASV\n");
 	if (errno == EINTR)
 	    continue;
 	fdClose(fd);
-        return FTPERR_FAILED_DATA_CONNECT;
+	return FTPERR_FAILED_DATA_CONNECT;
     }
 
 if (ftpDebug)
 fprintf(stderr, "-> %s", retrCommand);
     if (write(u->ftpControl, retrCommand, i) != i) {
-        return FTPERR_SERVER_IO_ERROR;
+	return FTPERR_SERVER_IO_ERROR;
     }
 
     if ((rc = ftpCheckResponse(u, NULL))) {
@@ -647,41 +644,41 @@ const char *ftpStrerror(int errorNumber) {
 	return _("Success");
 
     case FTPERR_BAD_SERVER_RESPONSE:
-      return _("Bad server response");
+	return _("Bad server response");
 
     case FTPERR_SERVER_IO_ERROR:
-      return _("Server IO error");
+	return _("Server IO error");
 
     case FTPERR_SERVER_TIMEOUT:
-      return _("Server timeout");
+	return _("Server timeout");
 
     case FTPERR_BAD_HOST_ADDR:
-      return _("Unable to lookup server host address");
+	return _("Unable to lookup server host address");
 
     case FTPERR_BAD_HOSTNAME:
-      return _("Unable to lookup server host name");
+	return _("Unable to lookup server host name");
 
     case FTPERR_FAILED_CONNECT:
-      return _("Failed to connect to server");
+	return _("Failed to connect to server");
 
     case FTPERR_FAILED_DATA_CONNECT:
-      return _("Failed to establish data connection to server");
+	return _("Failed to establish data connection to server");
 
     case FTPERR_FILE_IO_ERROR:
-      return _("IO error to local file");
+	return _("IO error to local file");
 
     case FTPERR_PASSIVE_ERROR:
-      return _("Error setting remote server to passive mode");
+	return _("Error setting remote server to passive mode");
 
     case FTPERR_FILE_NOT_FOUND:
-      return _("File not found on server");
+	return _("File not found on server");
 
     case FTPERR_NIC_ABORT_IN_PROGRESS:
-      return _("Abort in progress");
+	return _("Abort in progress");
 
     case FTPERR_UNKNOWN:
     default:
-      return _("Unknown or unexpected error");
+	return _("Unknown or unexpected error");
   }
 }
 
