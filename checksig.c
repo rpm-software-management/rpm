@@ -248,7 +248,7 @@ int doCheckSig(int pgp, char **argv)
 	    if (isVerbose()) {
 		fprintf(stderr, "%s", buffer);
 	    } else {
-		fprintf(stderr, "%sNOT OK", buffer);
+		fprintf(stderr, "%sNOT OK\n", buffer);
 	    }
 	} else {
 	    if (isVerbose()) {
