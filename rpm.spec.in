@@ -369,6 +369,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/magic.mime.mgc
 %rpmattr	%{__prefix}/lib/rpm/magic.prov
 %rpmattr	%{__prefix}/lib/rpm/magic.req
+%rpmattr	%{__prefix}/lib/rpm/perldeps.pl
 %rpmattr	%{__prefix}/lib/rpm/perl.prov
 %rpmattr	%{__prefix}/lib/rpm/perl.req
 
@@ -462,6 +463,7 @@ exit 0
 * Mon Jan  6 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.52
 - portabilitly: solaris fixes.
 - for DSO's, provide the file basename if DT_SONAME not found.
+- add perldeps.pl, start to replace perl.{prov,req}.
 
 * Sun Jan  5 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.51
 - file: avoid ogg/vorbis file classification problems.

@@ -975,6 +975,7 @@ assert(s != NULL);
     if (!fc->skipProv && isDSO && !gotSONAME) {
 	depsp = &fc->provides;
 	tagN = RPMTAG_PROVIDENAME;
+	dsContext = RPMSENSE_FIND_PROVIDES;
 
 	s = strrchr(fn, '/');
 	if (s)
@@ -1092,7 +1093,14 @@ assert(se != NULL);
 	    /*@switchbreak@*/ break;
 	}
 
+/* XXX assertion incorrect while generating -debuginfo deps. */
+#if 0
 assert(dix >= 0);
+#else
+	if (dix < 0)
+	    continue;
+#endif
+
 	val = (deptype << 24) | (dix & 0x00ffffff);
 	xx = argiAdd(&fc->ddictx, -1, val);
 

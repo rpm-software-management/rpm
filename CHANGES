@@ -100,6 +100,7 @@
 	- file: avoid ogg/vorbis file classification problems.
 	- portabilitly: solaris fixes.
 	- for DSO's, provide the file basename if DT_SONAME not found.
+	- add perldeps.pl, start to replace perl.{prov,req}.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
