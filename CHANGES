@@ -1,4 +1,4 @@
-2.1.2 -> 2.1.3:
+2.1.2 -> 2.2:
 	- don't fail, and do report, if -K can't find a PGP key
 	- handle file names with quotes and spaces when passed to ldd
 	  (still can't have spaces in %files)
