@@ -544,7 +544,7 @@ Spec parseSpec(FILE *f, char *specfile)
     char buf2[LINE_BUF_SIZE];
     char *line;              /* "parsed" read buffer */
     
-    int x, tag, cur_part, t1;
+    int x, serial, tag, cur_part, t1;
     int lookupopts;
     StringBuf sb;
     char *s = NULL;
@@ -702,7 +702,6 @@ Spec parseSpec(FILE *f, char *specfile)
 		    }
 		  case RPMTAG_VERSION:
 		  case RPMTAG_RELEASE:
-		  case RPMTAG_SERIAL:
 		  case RPMTAG_SUMMARY:
 		  case RPMTAG_DISTRIBUTION:
 		  case RPMTAG_VENDOR:
@@ -711,6 +710,10 @@ Spec parseSpec(FILE *f, char *specfile)
 		  case RPMTAG_GROUP:
 		  case RPMTAG_URL:
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
+		    break;
+		  case RPMTAG_SERIAL:
+		    serial = atoi(s);
+		    addEntry(cur_package->header, tag, INT32_TYPE, &serial, 1);
 		    break;
 		  case RPMTAG_DESCRIPTION:
 		    /* Special case -- need to handle backslash */
