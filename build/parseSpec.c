@@ -47,7 +47,7 @@ int isPart(char *line)
     }
     
     while (p->token) {
-	if (! strncmp(line, p->token, p->len)) {
+	if (! strncasecmp(line, p->token, p->len)) {
 	    c = *(line + p->len);
 	    if (c == '\0' || isspace(c)) {
 		break;

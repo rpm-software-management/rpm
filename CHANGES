@@ -30,6 +30,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- strncasecmp on spec file separators (KDE has %Description).
 	- remove redundant md5 computation on uninstall.
 	- permit --rmsource --force even if sources/patches are missing.
 	- don't compute md5sum on non-file %config objects. (from Jos Vos)
