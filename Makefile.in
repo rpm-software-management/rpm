@@ -128,6 +128,21 @@ install: all
 		(cd $$d; $(MAKE) installprefix=$(installprefix) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
 	done
 
+.PHONY:                tar
+tar:
+	rm -rf /tmp/rpm-$(VERSION)
+	make installprefix=/tmp/rpm-$(VERSION)$(ROOT) install
+	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/SOURCES
+	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/SPECS
+	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/SRPMS
+	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/RPMS
+	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/BUILD
+	mkdir -p /tmp/rpm-$(VERSION)@varprefix@/lib/rpm
+	mkdir -p /tmp/rpm-$(VERSION)/var/tmp
+#	Couldn't figure de ARCH value   
+#	mkdir -p /tmp/rpm-$(VERSION)/usr/local/src/redhat/RPMS/i386
+	cd /tmp/rpm-$(VERSION) ; tar cvf /tmp/rpm-$(VERSION).tar .
+
 .PHONY:		clean
 clean:
 	for d in $(SUBDIRS); do \
@@ -153,10 +168,12 @@ depend:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 
+.PHONY noconfig
 noconfig:
 	find . -name "Makefile" -exec rm {} \; 
 	rm -f *gz *rpm config.*
 
+.PHONY archive
 archive: 
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
