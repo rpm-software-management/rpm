@@ -969,12 +969,12 @@ uint32 mp32nmodw(uint32* result, uint32 xsize, const uint32* xdata, uint32 y, ui
 
 	while (qsize--)
 	{
-		/* printf("result = "); MP32println(xsize+1, result); */
+		/* fprintf(stderr, "result = "); MP32println(stderr, xsize+1, result); */
 		/* get the two high words of r into temp */
 		temp = rdata[0];
 		temp <<= 32;
 		temp += rdata[1];
-		/* printf("q = %016llx / %08lx\n", temp, msw); */
+		/* fprintf(stderr, "q = %016llx / %08lx\n", temp, msw); */
 		temp /= y;
 		/*
 			temp *= y;
@@ -983,20 +983,20 @@ uint32 mp32nmodw(uint32* result, uint32 xsize, const uint32* xdata, uint32 y, ui
 		*/
 		q = (uint32) temp;
 
-		/* printf("q = %08x\n", q); */
+		/* fprintf(stderr, "q = %08x\n", q); */
 		/*@-evalorder@*/
 		*wksp = mp32setmul(1, wksp+1, &y, q);
 		/*@=evalorder@*/
 
-		/* printf("mplt "); mp32print(2, rdata); printf(" < "); mp32println(2, wksp); */
+		/* fprintf(stderr, "mplt "); mp32print(2, rdata); fprintf(stderr, " < "); mp32println(stderr, 2, wksp); */
 		while (mp32lt(2, rdata, wksp))
 		{
-			/* printf("mp32lt! "); mp32print(2, rdata); printf(" < "); mp32println(2, wksp); */
-			/* printf("decreasing q\n"); */
+			/* fprintf(stderr, "mp32lt! "); mp32print(2, rdata); fprintf(stderr, " < "); mp32println(stderr, 2, wksp); */
+			/* fprintf(stderr, "decreasing q\n"); */
 			(void) mp32subx(2, wksp, 1, &y);
 			/* q--; */
 		}
-		/* printf("subtracting\n"); */
+		/* fprintf(stderr, "subtracting\n"); */
 		(void) mp32sub(2, rdata, wksp);
 		rdata++;
 	}
@@ -1021,29 +1021,29 @@ void mp32nmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, c
 
 	while (qsize--)
 	{
-		/* printf("result = "); mp32println(xsize+1, result); */
+		/* fprintf(stderr, "result = "); mp32println(stderr, xsize+1, result); */
 		/* get the two high words of r into temp */
 		temp = rdata[0];
 		temp <<= 32;
 		temp += rdata[1];
-		/* printf("q = %016llx / %08lx\n", temp, msw); */
+		/* fprintf(stderr, "q = %016llx / %08lx\n", temp, msw); */
 		temp /= msw;
 		q = (uint32) temp;
 
-		/* printf("q = %08x\n", q); */
+		/* fprintf(stderr, "q = %08x\n", q); */
 		/*@-evalorder@*/
 		*wksp = mp32setmul(ysize, wksp+1, ydata, q);
 		/*@=evalorder@*/
 
-		/* printf("mp32lt "); mp32print(ysize+1, rdata); printf(" < "); mp32println(ysize+1, wksp); */
+		/* fprintf(stderr, "mp32lt "); mp32print(ysize+1, rdata); fprintf(stderr, " < "); mp32println(stderr, ysize+1, wksp); */
 		while (mp32lt(ysize+1, rdata, wksp))
 		{
-			/* printf("mp32lt! "); mp32print(ysize+1, rdata); printf(" < "); mp32println(ysize+1, wksp); */
-			/* printf("decreasing q\n"); */
+			/* fprintf(stderr, "mp32lt! "); mp32print(ysize+1, rdata); fprintf(stderr, " < "); mp32println(stderr, ysize+1, wksp); */
+			/* fprintf(stderr, "decreasing q\n"); */
 			(void) mp32subx(ysize+1, wksp, ysize, ydata);
 			q--;
 		}
-		/* printf("subtracting\n"); */
+		/* fprintf(stderr, "subtracting\n"); */
 		(void) mp32sub(ysize+1, rdata, wksp);
 		rdata++;
 	}
@@ -1065,7 +1065,7 @@ void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize
 	/*@-compdef@*/ /* LCL: result+1 undefined */
 	if (mp32ge(ysize, result+1, ydata))
 	{
-		/* printf("subtracting\n"); */
+		/* fprintf(stderr, "subtracting\n"); */
 		(void) mp32sub(ysize, result+1, ydata);
 		*(result++) = 1;
 	}
@@ -1076,30 +1076,30 @@ void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize
 	/*@-usedef@*/	/* LCL: result[0] is set */
 	while (qsize--)
 	{
-		/* printf("result = "); mp32println(xsize+1, result); */
+		/* fprintf(stderr, "result = "); mp32println(stderr, xsize+1, result); */
 		/* get the two high words of r into temp */
 		temp = result[0];
 		temp <<= 32;
 		temp += result[1];
-		/* printf("q = %016llx / %08lx\n", temp, msw); */
+		/* fprintf(stderr, "q = %016llx / %08lx\n", temp, msw); */
 		temp /= msw;
 		q = (uint32) temp;
 
-		/* printf("q = %08x\n", q); */
+		/* fprintf(stderr, "q = %08x\n", q); */
 
 		/*@-evalorder@*/
 		*wksp = mp32setmul(ysize, wksp+1, ydata, q);
 		/*@=evalorder@*/
 
-		/* printf("mp32lt "); mp32print(ysize+1, result); printf(" < "); mp32println(ysize+1, wksp); */
+		/* fprintf(stderr, "mp32lt "); mp32print(ysize+1, result); fprintf(stderr, " < "); mp32println(stderr, ysize+1, wksp); */
 		while (mp32lt(ysize+1, result, wksp))
 		{
-			/* printf("mp32lt! "); mp32print(ysize+1, result); printf(" < "); mp32println(ysize+1, wksp); */
-			/* printf("decreasing q\n"); */
+			/* fprintf(stderr, "mp32lt! "); mp32print(ysize+1, result); fprintf(stderr, " < "); mp32println(stderr, ysize+1, wksp); */
+			/* fprintf(stderr, "decreasing q\n"); */
 			(void) mp32subx(ysize+1, wksp, ysize, ydata);
 			q--;
 		}
-		/* printf("subtracting\n"); */
+		/* fprintf(stderr, "subtracting\n"); */
 		(void) mp32sub(ysize+1, result, wksp);
 		*(result++) = q;
 	}
@@ -1128,20 +1128,20 @@ void mp32unpack(uint32 size, uint8* bytes, const uint32* bits)
 */
 
 #ifndef ASM_MP32PRINT
-void mp32print(register uint32 xsize, register const uint32* xdata)
+void mp32print(register FILE * fp, register uint32 xsize, register const uint32* xdata)
 {
 	while (xsize--)
-		printf("%08x", *(xdata++));
-	(void) fflush(stdout);
+		fprintf(fp, "%08x", *(xdata++));
+	(void) fflush(fp);
 }
 #endif
 
 #ifndef ASM_MP32PRINTLN
-void mp32println(register uint32 xsize, register const uint32* xdata)
+void mp32println(register FILE * fp, register uint32 xsize, register const uint32* xdata)
 {
 	while (xsize--)
-		printf("%08x", *(xdata++));
-	printf("\n");
-	(void) fflush(stdout);
+		fprintf(fp, "%08x", *(xdata++));
+	fprintf(fp, "\n");
+	(void) fflush(fp);
 }
 #endif

@@ -828,6 +828,7 @@ verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t)
 
 	xx = rpmDigestUpdate(ctx, digp->hash, digp->hashlen);
 	xx = rpmDigestFinal(ctx, (void **)&ts->dig->sha1, &ts->dig->sha1len, 1);
+
 	mp32nzero(&ts->dig->hm);	mp32nsethex(&ts->dig->hm, ts->dig->sha1);
     }
     /*@=type@*/
@@ -837,6 +838,8 @@ verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t)
     /*@-globs -internalglobs -mods -modfilesys@*/
     if (gpgpk == NULL) {
 	const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
+	int printing = 0;	/* XXX was rpmIsDebug() */
+
 	if (pgpReadPkts(pkfn, &gpgpk, &gpgpklen) != PGPARMOR_PUBKEY) {
 	    pkfn = _free(pkfn);
 	    res = RPMSIG_NOKEY;
@@ -844,7 +847,7 @@ verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t)
 	}
 	rpmMessage(RPMMESS_DEBUG,
 		"========== GPG DSA pubkey %s\n", pkfn);
-	xx = pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsDebug());
+	xx = pgpPrtPkts(gpgpk, gpgpklen, NULL, printing);
 	pkfn = _free(pkfn);
     }
 

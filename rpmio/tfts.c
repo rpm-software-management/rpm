@@ -92,7 +92,6 @@ static void ftsWalk(const char * path)
 {
     const char * ftsSet[2];
     FTS * ftsp;
-    int ftsOpts = (FTS_NOSTAT);
     FTSENT * fts;
     int xx;
 

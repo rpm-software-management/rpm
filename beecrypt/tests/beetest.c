@@ -80,7 +80,7 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 		register int rc;
 
 		register uint32  size = keypair->param.p.size;
-		register uint32* temp = (uint32*) malloc((8*size+6) * sizeof(uint32));
+		register uint32* temp = (uint32*) malloc((13*size+11) * sizeof(uint32));
 
 		/*@-nullpass -nullptrarith @*/ /* temp may be NULL */
 		mp32brndinv_w(&keypair->param.n, &rngc, temp, temp+size, temp+2*size);
@@ -316,9 +316,9 @@ static int testVectorDHAES(const dlkp_p* keypair)
 		memset(&kp, 0, sizeof(rsakp));
 
 		(void) rsakpInit(&kp);
-		printf("making RSA CRT keypair\n");
+		fprintf(stdout, "making RSA CRT keypair\n");
 		(void) rsakpMake(&kp, &rngc, 32);
-		printf("RSA CRT keypair generated\n");
+		fprintf(stdout, "RSA CRT keypair generated\n");
 
 		mp32nzero(&digest);
 		mp32nzero(&s);
@@ -466,7 +466,7 @@ static void testBlockCiphers(void)
 {
 	int i, k;
 
-	printf("  Testing the blockciphers:\n");
+	fprintf(stdout, "  Testing the blockciphers:\n");
 
 	for (i = 0; i < blockCipherCount(); i++)
 	{
@@ -489,26 +489,26 @@ static void testBlockCiphers(void)
 			if (decrypt_param)
 				memset(decrypt_param, 0, tmp->paramsize);
 
-			printf("  %s:\n", tmp->name);
+			fprintf(stdout, "  %s:\n", tmp->name);
 
 			/*@-nullpass@*/ /* malloc can return NULL */
 			for (k = tmp->keybitsmin; k <= tmp->keybitsmax; k += tmp->keybitsinc)
 			{
-				printf("    setup encrypt (%d bits key): ", k);
+				fprintf(stdout, "    setup encrypt (%d bits key): ", k);
 				if (tmp->setup(encrypt_param, keyValue, k, ENCRYPT) < 0)
 				{
-					printf("failed\n");
+					fprintf(stdout, "failed\n");
 					/*@innercontinue@*/ continue;
 				}
-				printf("ok\n");
-				printf("    setup decrypt (%d bits key): ", k);
+				fprintf(stdout, "ok\n");
+				fprintf(stdout, "    setup decrypt (%d bits key): ", k);
 				if (tmp->setup(decrypt_param, keyValue, k, DECRYPT) < 0)
 				{
-					printf("failed\n");
+					fprintf(stdout, "failed\n");
 					/*@innercontinue@*/ continue;
 				}
-				printf("ok\n");
-				printf("    encrypt/decrypt test block: ");
+				fprintf(stdout, "ok\n");
+				fprintf(stdout, "    encrypt/decrypt test block: ");
 				testBlockInit((uint8*) src_block, tmp->blocksize >> 2);
 
 				(void) blockEncrypt(tmp, encrypt_param, CBC, 2, enc_block, src_block);
@@ -516,11 +516,11 @@ static void testBlockCiphers(void)
 
 				if (memcmp(dec_block, src_block, tmp->blocksize >> 2))
 				{
-					printf("failed\n");
+					fprintf(stdout, "failed\n");
 					/*@innercontinue@*/ continue;
 				}
-				printf("ok\n");
-				printf("    speed measurement:\n");
+				fprintf(stdout, "ok\n");
+				fprintf(stdout, "    speed measurement:\n");
 				{
 					#if HAVE_TIME_H
 					double ttime;
@@ -536,7 +536,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      ECB encrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
+					fprintf(stdout, "      ECB encrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
 					#endif
 					#if HAVE_TIME_H
 					tstart = clock();
@@ -545,7 +545,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      ECB decrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
+					fprintf(stdout, "      ECB decrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
 					#endif
 					#if HAVE_TIME_H
 					tstart = clock();
@@ -554,7 +554,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      CBC encrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
+					fprintf(stdout, "      CBC encrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
 					#endif
 					#if HAVE_TIME_H
 					tstart = clock();
@@ -563,7 +563,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-					printf("      CBC decrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
+					fprintf(stdout, "      CBC decrypts 1M blocks of %d bits in %.3f seconds (%.3f MB/s)\n", (int)(tmp->blocksize << 3), ttime, (tmp->blocksize) / ttime);
 					#endif
 				}
 			}
@@ -591,7 +591,7 @@ static void testHashFunctions(void)
 		hashFunctionContext hfc;
 
 		memset(&hfc, 0, sizeof(hashFunctionContext));
-		printf("  Testing the hash functions:\n");
+		fprintf(stdout, "  Testing the hash functions:\n");
 
 		/*@-branchstate@*/ /* FIX: hfc.param released */
 		for (i = 0; i < hashFunctionCount(); i++)
@@ -608,7 +608,7 @@ static void testHashFunctions(void)
 
 				mp32nzero(&digest);
 
-				printf("  %s:\n", tmp->name);
+				fprintf(stdout, "  %s:\n", tmp->name);
 
 				/*@-nullpass -modobserver @*/
 				if (hashFunctionContextInit(&hfc, tmp) == 0)
@@ -628,7 +628,7 @@ static void testHashFunctions(void)
 						#if HAVE_TIME_H
 						tstop = clock();
 						ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-						printf("    hashes 32 MB in %.3f seconds (%.3f MB/s)\n", ttime, 32.0 / ttime);
+						fprintf(stdout, "    hashes 32 MB in %.3f seconds (%.3f MB/s)\n", ttime, 32.0 / ttime);
 						#endif
 					}
 
@@ -681,8 +681,8 @@ static void testExpMods(void)
 		clock_t tstart, tstop;
 		#endif
 		
-		printf("Timing modular exponentiations\n");
-		printf("  (512 bits ^ 512 bits) mod 512 bits:");
+		fprintf(stdout, "Timing modular exponentiations\n");
+		fprintf(stdout, "  (512 bits ^ 512 bits) mod 512 bits:");
 		mp32nsethex(&tmp, p_512);
 		mp32bset(&p, tmp.size, tmp.data);
 		mp32nsize(&g, p.size);
@@ -697,9 +697,9 @@ static void testExpMods(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("   100x in %.3f seconds\n", ttime);
+		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
-		printf("  (768 bits ^ 768 bits) mod 768 bits:");
+		fprintf(stdout, "  (768 bits ^ 768 bits) mod 768 bits:");
 		mp32nsethex(&tmp, p_768);
 		mp32bset(&p, tmp.size, tmp.data);
 		mp32nsize(&g, p.size);
@@ -714,9 +714,9 @@ static void testExpMods(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("   100x in %.3f seconds\n", ttime);
+		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
-		printf("  (1024 bits ^ 1024 bits) mod 1024 bits:");
+		fprintf(stdout, "  (1024 bits ^ 1024 bits) mod 1024 bits:");
 		mp32nsethex(&tmp, p_1024);
 		mp32bset(&p, tmp.size, tmp.data);
 		mp32nsize(&g, p.size);
@@ -731,14 +731,14 @@ static void testExpMods(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("   100x in %.3f seconds\n", ttime);
+		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
 		/* now run a test with x having 160 bits */
 		mp32nsize(&x, 5);
 		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rngc.rng->next(rngc.param, x.data, x.size);
 		/*@=noeffectuncon@*/
-		printf("  (1024 bits ^ 160 bits) mod 1024 bits:");
+		fprintf(stdout, "  (1024 bits ^ 160 bits) mod 1024 bits:");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
@@ -747,7 +747,7 @@ static void testExpMods(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("   100x in %.3f seconds\n", ttime);
+		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
 		mp32bfree(&p);
 		mp32nfree(&g);
@@ -760,7 +760,7 @@ static void testExpMods(void)
 		/*@=modobserver@*/
 	}
 	else
-		printf("random generator setup problem\n");
+		fprintf(stdout, "random generator setup problem\n");
 }
 
 static void testDLAlgorithms(void)
@@ -793,7 +793,7 @@ static void testDLAlgorithms(void)
 		double ttime;
 		clock_t tstart, tstop;
 		#endif
-		printf("Generating P (1024 bits) Q (160 bits) G with order Q\n");
+		fprintf(stdout, "Generating P (1024 bits) Q (160 bits) G with order Q\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
@@ -801,11 +801,11 @@ static void testDLAlgorithms(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("  done in %.3f seconds\n", ttime);
+		fprintf(stdout, "  done in %.3f seconds\n", ttime);
 		#endif
 
 		(void) dlkp_pInit(&kp);
-		printf("Generating keypair\n");
+		fprintf(stdout, "Generating keypair\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
@@ -813,7 +813,7 @@ static void testDLAlgorithms(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("  done in %.3f seconds\n", ttime);
+		fprintf(stdout, "  done in %.3f seconds\n", ttime);
 		#endif
 
 		mp32nsize(&hm, 5);
@@ -821,7 +821,7 @@ static void testDLAlgorithms(void)
 		(void) rngc.rng->next(rngc.param, hm.data, hm.size);
 		/*@=noeffectuncon@*/
 		
-		printf("DSA signing (%u bits)\n", kp.param.p.size << 5);
+		fprintf(stdout, "DSA signing (%u bits)\n", kp.param.p.size << 5);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
@@ -832,10 +832,10 @@ static void testDLAlgorithms(void)
         #if HAVE_TIME_H
         tstop = clock();
         ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-        printf("  100x in %.3f seconds\n", ttime);
+        fprintf(stdout, "  100x in %.3f seconds\n", ttime);
         #endif
 
-		printf("DSA verification (%u bits)\n", kp.param.p.size << 5);
+		fprintf(stdout, "DSA verification (%u bits)\n", kp.param.p.size << 5);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
@@ -848,14 +848,14 @@ static void testDLAlgorithms(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("  100x in %.3f seconds\n", ttime);
+		fprintf(stdout, "  100x in %.3f seconds\n", ttime);
 		#endif
 		(void) dlkp_pFree(&kp);
 		memset(&kp, 0, sizeof(dlkp_p));
 		(void) dldp_pFree(&dp);
 		memset(&dp, 0, sizeof(dldp_p));
 
-		printf("Generating P (1024 bits) Q (768 bits) G with order (P-1)\n");
+		fprintf(stdout, "Generating P (1024 bits) Q (768 bits) G with order (P-1)\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
@@ -863,7 +863,7 @@ static void testDLAlgorithms(void)
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
-		printf("  done in %.3f seconds\n", ttime);
+		fprintf(stdout, "  done in %.3f seconds\n", ttime);
 		#endif
 		(void) dldp_pFree(&dp);
 		memset(&dp, 0, sizeof(dldp_p));
@@ -880,17 +880,17 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	dlkp_p keypair;
 
 	if (testVectorMD5())
-		printf("MD5 works!\n");
+		fprintf(stdout, "MD5 works!\n");
 	else
 		exit(1);
 
 	if (testVectorSHA1())
-		printf("SHA-1 works!\n");
+		fprintf(stdout, "SHA-1 works!\n");
 	else
 		exit(1);
 
 	if (testVectorSHA256())
-		printf("SHA-256 works!\n");
+		fprintf(stdout, "SHA-256 works!\n");
 	else
 		exit(1);
 
@@ -904,33 +904,33 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	mp32nsethex(&keypair.x, dsa_x);
 
 	if (testVectorInvMod(&keypair))
-		printf("InvMod works!\n");
+		fprintf(stdout, "InvMod works!\n");
 	else
 		exit(1);
 
 	if (testVectorExpMod(&keypair))
-		printf("ExpMod works!\n");
+		fprintf(stdout, "ExpMod works!\n");
 	else
 		exit(1);
 
 	if (testVectorDSA(&keypair))
-		printf("DSA works!\n");
+		fprintf(stdout, "DSA works!\n");
 	else
 		exit(1);
 
 	if (testVectorElGamalV1(&keypair))
-		printf("ElGamal v1 works!\n");
+		fprintf(stdout, "ElGamal v1 works!\n");
 	else
 		exit(1);
 
 	if (testVectorElGamalV3(&keypair))
-		printf("ElGamal v3 works!\n");
+		fprintf(stdout, "ElGamal v3 works!\n");
 	else
 		exit(1);
 
 /*
 	if (testVectorDHAES(&keypair))
-		printf("DHAES works!\n");
+		fprintf(stdout, "DHAES works!\n");
 	else
 		exit(1);
 */
@@ -938,12 +938,12 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	dlkp_pFree(&keypair);
 
 	if (testVectorRSA())
-		printf("RSA works!\n");
+		fprintf(stdout, "RSA works!\n");
 	else
 		exit(1);
 /*
 	if (testVectorDLDP())
-		printf("dldp with generator of order q works!\n");
+		fprintf(stdout, "dldp with generator of order q works!\n");
 	else
 		exit(1);
 */
@@ -959,61 +959,61 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 
 	int i, j;
 
-	printf("the beecrypt library implements:\n");
-	printf("  %d entropy source%s:\n", entropySourceCount(), entropySourceCount() == 1 ? "" : "s");
+	fprintf(stdout, "the beecrypt library implements:\n");
+	fprintf(stdout, "  %d entropy source%s:\n", entropySourceCount(), entropySourceCount() == 1 ? "" : "s");
 	for (i = 0; i < entropySourceCount(); i++)
 	{
 		const entropySource* tmp = entropySourceGet(i);
 		if (tmp)
-			printf("    %s\n", tmp->name);
+			fprintf(stdout, "    %s\n", tmp->name);
 		else
-			printf("*** error: library corrupt\n");
+			fprintf(stdout, "*** error: library corrupt\n");
 	}
-	printf("  %d random generator%s:\n", randomGeneratorCount(), randomGeneratorCount() == 1 ? "" : "s");
+	fprintf(stdout, "  %d random generator%s:\n", randomGeneratorCount(), randomGeneratorCount() == 1 ? "" : "s");
 	for (i = 0; i < randomGeneratorCount(); i++)
 	{
 		const randomGenerator* tmp = randomGeneratorGet(i);
 		if (tmp)
-			printf("    %s\n", tmp->name);
+			fprintf(stdout, "    %s\n", tmp->name);
 		else
-			printf("*** error: library corrupt\n");
+			fprintf(stdout, "*** error: library corrupt\n");
 	}
-	printf("  %d hash function%s:\n", hashFunctionCount(), hashFunctionCount() == 1 ? "" : "s");
+	fprintf(stdout, "  %d hash function%s:\n", hashFunctionCount(), hashFunctionCount() == 1 ? "" : "s");
 	for (i = 0; i < hashFunctionCount(); i++)
 	{
 		const hashFunction* tmp = hashFunctionGet(i);
 		if (tmp)
-			printf("    %s\n", tmp->name);
+			fprintf(stdout, "    %s\n", tmp->name);
 		else
-			printf("*** error: library corrupt\n");
+			fprintf(stdout, "*** error: library corrupt\n");
 	}
-	printf("  %d keyed hash function%s:\n", keyedHashFunctionCount(), keyedHashFunctionCount() == 1 ? "" : "s");
+	fprintf(stdout, "  %d keyed hash function%s:\n", keyedHashFunctionCount(), keyedHashFunctionCount() == 1 ? "" : "s");
 	for (i = 0; i < keyedHashFunctionCount(); i++)
 	{
 		const keyedHashFunction* tmp = keyedHashFunctionGet(i);
 		if (tmp)
-			printf("    %s\n", tmp->name);
+			fprintf(stdout, "    %s\n", tmp->name);
 		else
-			printf("*** error: library corrupt\n");
+			fprintf(stdout, "*** error: library corrupt\n");
 	}
-	printf("  %d blockcipher%s:\n", blockCipherCount(), blockCipherCount() == 1 ? "" : "s");
+	fprintf(stdout, "  %d blockcipher%s:\n", blockCipherCount(), blockCipherCount() == 1 ? "" : "s");
 	for (i = 0; i < blockCipherCount(); i++)
 	{
 		const blockCipher* tmp = blockCipherGet(i);
 		if (tmp)
 		{
-			printf("    %s ", tmp->name);
+			fprintf(stdout, "    %s ", tmp->name);
 			for (j = tmp->keybitsmin; j <= tmp->keybitsmax; j += tmp->keybitsinc)
 			{
-				printf("%d", j);
+				fprintf(stdout, "%d", j);
 				if (j < tmp->keybitsmax)
-					printf("/");
+					fprintf(stdout, "/");
 				else
-					printf(" bit keys\n");
+					fprintf(stdout, " bit keys\n");
 			}
 		}
 		else
-			printf("*** error: library corrupt\n");
+			fprintf(stdout, "*** error: library corrupt\n");
 	}
 	/*@-modnomods@*/ /* LCL: ??? */
 	testBlockCiphers();
@@ -1024,17 +1024,17 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	/*@=modnomods@*/
 
 	if (testVectorMD5())
-		printf("MD5 works!\n");
+		fprintf(stdout, "MD5 works!\n");
 	else
 		exit(EXIT_FAILURE);
 
 	if (testVectorSHA1())
-		printf("SHA-1 works!\n");
+		fprintf(stdout, "SHA-1 works!\n");
 	else
 		exit(EXIT_FAILURE);
 
 	if (testVectorSHA256())
-		printf("SHA-256 works!\n");
+		fprintf(stdout, "SHA-256 works!\n");
 	else
 		exit(EXIT_FAILURE);
 
@@ -1049,28 +1049,28 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	mp32nsethex(&keypair.x, dsa_x);
 
 	if (testVectorInvMod(&keypair))
-		printf("InvMod works!\n");
+		fprintf(stdout, "InvMod works!\n");
 	else
 		exit(EXIT_FAILURE);
 
 	if (testVectorExpMod(&keypair))
-		printf("ExpMod works!\n");
+		fprintf(stdout, "ExpMod works!\n");
 	else
 		exit(EXIT_FAILURE);
 
 	if (testVectorElGamalV1(&keypair))
-		printf("ElGamal v1 works!\n");
+		fprintf(stdout, "ElGamal v1 works!\n");
 	else
 		exit(EXIT_FAILURE);
 
 	if (testVectorElGamalV3(&keypair))
-		printf("ElGamal v3 works!\n");
+		fprintf(stdout, "ElGamal v3 works!\n");
 	else
 		exit(EXIT_FAILURE);
 
 #if 0
 	if (testVectorDHAES(&keypair))
-		printf("DHAES works!\n");
+		fprintf(stdout, "DHAES works!\n");
 	else
 		exit(EXIT_FAILURE);
 #endif
@@ -1078,17 +1078,17 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	(void) dlkp_pFree(&keypair);
 
 	if (testVectorRSA())
-		printf("RSA works!\n");
+		fprintf(stdout, "RSA works!\n");
 	else
 		exit(EXIT_FAILURE);
 #if 1
 	if (testVectorDLDP())
-		printf("dldp with generator of order q works!\n");
+		fprintf(stdout, "dldp with generator of order q works!\n");
 	else
 		exit(EXIT_FAILURE);
 #endif
 
-	printf("done\n");
+	fprintf(stdout, "done\n");
 
 	return 0;
 }

@@ -33,6 +33,7 @@
 #if HAVE_STRING_H
 # include <string.h>
 #endif
+#include <stdio.h>
 
 #include "mp32opt.h"
 
@@ -433,14 +434,14 @@ void mp32ndivmod(/*@out@*/ uint32* result, uint32 xsize, const uint32* xdata, ui
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32print(uint32 xsize, const uint32* xdata)
+void mp32print(FILE * fp, uint32 xsize, const uint32* xdata)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32println(uint32 xsize, const uint32* xdata)
+void mp32println(FILE * fp, uint32 xsize, const uint32* xdata)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 

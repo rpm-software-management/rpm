@@ -70,7 +70,7 @@
 int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
 {
 	register uint32  size = p->size;
-	register uint32* temp = (uint32*) malloc((8*size+6) * sizeof(*temp));
+	register uint32* temp = (uint32*) malloc((13*size+11) * sizeof(*temp));
 
 	if (temp)
 	{

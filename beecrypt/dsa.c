@@ -54,6 +54,8 @@
 # include <malloc.h>
 #endif
 
+static int _debug = 0;
+
 int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
 {
 	register uint32  psize = p->size;
@@ -148,7 +150,7 @@ int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, con
 	if (ptemp == NULL)
 		return rc;
 
-	qtemp = (uint32*) malloc((8*qsize+6) * sizeof(*qtemp));
+	qtemp = (uint32*) malloc((13*qsize+11) * sizeof(*qtemp));
 	if (qtemp == NULL) {
 		free(ptemp);
 		return rc;
@@ -158,26 +160,42 @@ int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, con
 		register uint32* pwksp = ptemp+2*psize;
 		register uint32* qwksp = qtemp+2*qsize;
 
+if (_debug)
+fprintf(stderr, "\t                q: "),  mp32println(stderr, q->size, q->modl);
 		// compute w = inv(s) mod q
 		if (mp32binv_w(q, s->size, s->data, qtemp, qwksp))
 		{
+if (_debug)
+fprintf(stderr, "\t w = inv(s) mod q: "),  mp32println(stderr, qsize, qtemp);
 			// compute u1 = h(m)*w mod q
 			mp32bmulmod_w(q, hm->size, hm->data, qsize, qtemp, qtemp+qsize, qwksp);
+if (_debug)
+fprintf(stderr, "\tu1 = h(m)*w mod q: "),  mp32println(stderr, qsize, qtemp+qsize);
 
 			// compute u2 = r*w mod q
 			mp32bmulmod_w(q, r->size, r->data, qsize, qtemp, qtemp, qwksp);
+if (_debug)
+fprintf(stderr, "\tu2 = r*w mod q   : "),  mp32println(stderr, qsize, qtemp);
 
 			// compute g^u1 mod p
 			mp32bpowmod_w(p, g->size, g->data, qsize, qtemp+qsize, ptemp, pwksp);
+if (_debug)
+fprintf(stderr, "\t       g^u1 mod p: "),  mp32println(stderr, psize, ptemp);
 
 			// compute y^u2 mod p
 			mp32bpowmod_w(p, y->size, y->data, qsize, qtemp, ptemp+psize, pwksp);
+if (_debug)
+fprintf(stderr, "\t       y^u2 mod p: "),  mp32println(stderr, psize, ptemp+psize);
 
 			// multiply mod p
 			mp32bmulmod_w(p, psize, ptemp, psize, ptemp+psize, ptemp, pwksp);
+if (_debug)
+fprintf(stderr, "\t   multiply mod p: "),  mp32println(stderr, psize, ptemp);
 
 			// modulo q
 			mp32nmod(ptemp+psize, psize, ptemp, qsize, q->modl, pwksp);
+if (_debug)
+fprintf(stderr, "\tr' mod q         : "),  mp32println(stderr, psize, ptemp+psize);
 
 			rc = mp32eqx(r->size, r->data, psize, ptemp+psize);
 		}

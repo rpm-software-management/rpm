@@ -757,6 +757,7 @@ void mp32btwopowmod_w(const mp32barrett* b, uint32 psize, const uint32* pdata, u
 	}
 }
 
+#ifdef	DYING
 /**
  *  Computes the inverse (modulo b) of x, and returns 1 if x was invertible.
  *  needs workspace of (6*size+6) words
@@ -780,13 +781,14 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 	uint32* cdata = bdata+size+1;
 	uint32* ddata = cdata+size+1;
 
-	if (mp32odd(b->size, b->modl) && mp32even(xsize, xdata))
+	mp32setx(size+1, udata, size, b->modl);
+	mp32setx(size+1, vdata, xsize, xdata);
+	mp32zero(size+1, bdata);
+	mp32setw(size+1, ddata, 1);
+
+	if (mp32odd(size, b->modl) && mp32even(xsize, xdata))
 	{
 		/* use simplified binary extended gcd algorithm */
-		mp32setx(size+1, udata, size, b->modl);
-		mp32setx(size+1, vdata, xsize, xdata);
-		mp32zero(size+1, bdata);
-		mp32setw(size+1, ddata, 1);
 
 		while (1)
 		{
@@ -840,12 +842,8 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 	else
 	{
 		/* use full binary extended gcd algorithm */
-		mp32setx(size+1, udata, size, b->modl);
-		mp32setx(size+1, vdata, xsize, xdata);
 		mp32setw(size+1, adata, 1);
-		mp32zero(size+1, bdata);
 		mp32zero(size+1, cdata);
-		mp32setw(size+1, ddata, 1);
 
 		while (1)
 		{
@@ -907,6 +905,183 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 		}
 	}
 }
+#else
+
+static int _debug = 0;
+
+/**
+ *  Computes the inverse (modulo b) of x, and returns 1 if x was invertible.
+ */
+int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
+{
+	uint32  ysize = b->size+1;
+ 	int k;
+	uint32* u1 = wksp;
+	uint32* u2 = u1+ysize;
+	uint32* u3 = u2+ysize;
+	uint32* v1 = u3+ysize;
+	uint32* v2 = v1+ysize;
+	uint32* v3 = v2+ysize;
+	uint32* t1 = v3+ysize;
+	uint32* t2 = t1+ysize;
+	uint32* t3 = t2+ysize;
+	uint32* u  = t3+ysize;
+	uint32* v  =  u+ysize;
+
+	mp32setx(ysize, u, xsize, xdata);
+	mp32setx(ysize, v, b->size, b->modl);
+
+	/* Y1. Find power of 2. */
+	for (k = 0; mp32even(ysize, u) && mp32even(ysize, v); k++) {
+		mp32divtwo(ysize, u);
+		mp32divtwo(ysize, v);
+	}
+
+if (_debug < 0)
+fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
+if (_debug < 0)
+fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
+
+	/* Y2. Initialize. */
+	mp32setw(ysize, u1, 1);
+if (_debug < 0)
+fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
+	mp32zero(ysize, u2);
+if (_debug < 0)
+fprintf(stderr, "      u2: "), mp32println(stderr, ysize, u2);
+	mp32setx(ysize, u3, ysize, u);
+if (_debug < 0)
+fprintf(stderr, "      u3: "), mp32println(stderr, ysize, u3);
+
+	mp32setx(ysize, v1, ysize, v);
+if (_debug < 0)
+fprintf(stderr, "      v1: "), mp32println(stderr, ysize, v1);
+	mp32setw(ysize, v2, 1);
+	(void) mp32sub(ysize, v2, u);
+if (_debug < 0)
+fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
+	mp32setx(ysize, v3, ysize, v);
+if (_debug < 0)
+fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
+
+	if (mp32odd(ysize, u)) {
+		mp32zero(ysize, t1);
+if (_debug < 0)
+fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
+		mp32zero(ysize, t2);
+		mp32subw(ysize, t2, 1);
+if (_debug < 0)
+fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
+		mp32zero(ysize, t3);
+		mp32sub(ysize, t3, v);
+if (_debug < 0)
+fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+		goto Y4;
+	} else {
+		mp32setw(ysize, t1, 1);
+if (_debug < 0)
+fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
+		mp32zero(ysize, t2);
+if (_debug < 0)
+fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
+		mp32setx(ysize, t3, ysize, u);
+if (_debug < 0)
+fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+	}
+
+	do {
+	    do {
+		if (mp32odd(ysize, t1) || mp32odd(ysize, t2)) {
+			mp32add(ysize, t1, v);
+			mp32sub(ysize, t2, u);
+		}
+		mp32sdivtwo(ysize, t1);
+		mp32sdivtwo(ysize, t2);
+		mp32sdivtwo(ysize, t3);
+Y4:
+if (_debug < 0)
+fprintf(stderr, "   Y4 t3: "), mp32println(stderr, ysize, t3);
+	    } while (mp32even(ysize, t3));
+
+	    /* Y5. Reset max(u3,v3). */
+	    if (!(*t3 & 0x80000000)) {
+if (_debug < 0)
+fprintf(stderr, "--> Y5 (t3 > 0)\n");
+		mp32setx(ysize, u1, ysize, t1);
+if (_debug < 0)
+fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
+		mp32setx(ysize, u2, ysize, t2);
+if (_debug < 0)
+fprintf(stderr, "      u2: "), mp32println(stderr, ysize, u2);
+		mp32setx(ysize, u3, ysize, t3);
+if (_debug < 0)
+fprintf(stderr, "      u3: "), mp32println(stderr, ysize, u3);
+	    } else {
+if (_debug < 0)
+fprintf(stderr, "--> Y5 (t3 <= 0)\n");
+		mp32setx(ysize, v1, ysize, v);
+		mp32sub(ysize, v1, t1);
+if (_debug < 0)
+fprintf(stderr, "      v1: "), mp32println(stderr, ysize, v1);
+		mp32setx(ysize, v2, ysize, u);
+		mp32neg(ysize, v2);
+		mp32sub(ysize, v2, t2);
+if (_debug < 0)
+fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
+		mp32zero(ysize, v3);
+		mp32sub(ysize, v3, t3);
+if (_debug < 0)
+fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
+	    }
+
+	    /* Y6. Subtract. */
+	    mp32setx(ysize, t1, ysize, u1);
+	    mp32sub(ysize, t1, v1);
+	    mp32setx(ysize, t2, ysize, u2);
+	    mp32sub(ysize, t2, v2);
+	    mp32setx(ysize, t3, ysize, u3);
+	    mp32sub(ysize, t3, v3);
+
+	    if (*t1 & 0x80000000) {
+		mp32add(ysize, t1, v);
+		mp32sub(ysize, t2, u);
+	    }
+
+if (_debug < 0)
+fprintf(stderr, "-->Y6 t1: "), mp32println(stderr, ysize, t1);
+if (_debug < 0)
+fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
+if (_debug < 0)
+fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+
+	} while (mp32nz(ysize, t3));
+
+	if (!(mp32isone(ysize, u3) && mp32isone(ysize, v3)))
+		return 0;
+
+	if (result) {
+		while (--k > 0)
+			mp32add(ysize, u1, u1);
+		mp32setx(b->size, result, ysize, u1);
+	}
+
+if (_debug) {
+fprintf(stderr, "=== EXIT: "), mp32println(stderr, b->size, result);
+fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
+fprintf(stderr, "      u2: "), mp32println(stderr, ysize, u2);
+fprintf(stderr, "      u3: "), mp32println(stderr, ysize, u3);
+fprintf(stderr, "      v1: "), mp32println(stderr, ysize, v1);
+fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
+fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
+fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
+fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
+fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+}
+
+	return 1;
+}
+
+#endif
 
 /**
  * needs workspace of (7*size+2) words

@@ -18,11 +18,14 @@ extern int _ftp_debug;
 /*@unchecked@*/
 extern int _rpmio_debug;
 
+static int verify_legacy = 0;
+
+static char ** ftsSet;
+static int ftsOpts = 0;
+
 const char * bhpath;
 int bhpathlen = 0;
 int bhlvl = -1;
-
-static char ** ftsSet;
 
 struct ftsglob_s {
     const char ** patterns;
@@ -97,6 +100,7 @@ static int ftsStashLatest(FTSENT * fts, rpmTransactionSet ts)
 	    if (fd) xx = Fclose(fd);
 	    return ec;	/* XXX -1 */
 	}
+
 	rc = rpmReadPackageFile(ts, fd, fts->fts_path, &h);
 	xx = Fclose(fd);
 	if (rc != RPMRC_OK)
@@ -377,7 +381,27 @@ static void initGlobs(const char ** argv)
 }
 
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+ { "debug", 'd', POPT_ARG_VAL,		&_debug, -1,		NULL, NULL },
+
+ { "verifylegacy", '\0', POPT_ARG_VAL,	&verify_legacy, -1,	NULL, NULL },
+
+ { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
+	N_("follow command line symlinks"), NULL },
+ { "logical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_LOGICAL,
+	N_("logical walk"), NULL },
+ { "nochdir", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOCHDIR,
+	N_("don't change directories"), NULL },
+ { "nostat", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOSTAT,
+	N_("don't get stat info"), NULL },
+ { "physical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_PHYSICAL,
+	N_("physical walk"), NULL },
+ { "seedot", '\0', POPT_BIT_SET,	&ftsOpts, FTS_SEEDOT,
+	N_("return dot and dot-dot"), NULL },
+ { "xdev", '\0', POPT_BIT_SET,		&ftsOpts, FTS_XDEV,
+	N_("don't cross devices"), NULL },
+ { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
+	N_("return whiteout information"), NULL },
+
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
@@ -397,7 +421,6 @@ main(int argc, const char *argv[])
     rpmdb db = NULL;
     rpmTransactionSet ts = NULL;
     FTS * ftsp;
-    int ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     FTSENT * fts;
     const char ** av;
     int rc;
@@ -423,10 +446,17 @@ main(int argc, const char *argv[])
 
     ts = rpmtransCreateSet(db, rootDir);
     (void) rpmtsOpenDB(ts, O_RDONLY);
+    if (verify_legacy) {
+	ts->dig = pgpNewDig();
+	ts->verify_legacy = 1;
+    }
 
     av = poptGetArgs(optCon);
     
     initGlobs(av);
+
+    if (ftsOpts == 0)
+	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
     ftsp = Fts_open(ftsSet, ftsOpts, NULL);
     while((fts = Fts_read(ftsp)) != NULL)

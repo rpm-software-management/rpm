@@ -2,9 +2,9 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tkey.c trpmio.c
+EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
-EXTRA_PROGRAMS = tdigest tdir tfts tglob tkey tring trpmio dumpasn1
+EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
 
 INCLUDES = \
 	-I$(top_srcdir) \
@@ -66,16 +66,20 @@ tglob_SOURCES = tglob.c
 tglob_LDFLAGS = -all-static
 tglob_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
+tinv_SOURCES = tinv.c
+tinv_LDFLAGS = -all-static
+tinv_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
 tkey_SOURCES = tkey.c
 tkey_LDFLAGS = -all-static
 tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
-trpmio_SOURCES = trpmio.c
-trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
-
 tring_SOURCES = tring.c
 tring_LDFLAGS = -all-static
 tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
+trpmio_SOURCES = trpmio.c
+trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 dumpasn1_SOURCES = dumpasn1.c
 
