@@ -11,6 +11,7 @@
 	- fail to package if absolute symlink points within build root.
 	- initial version of check-prereqs.
 	- expose enough of legacy fdio interface to compile rpmfind/rpm2html.
+	- fix: Fopen should use 0666 as default (umask will be applied later).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
