@@ -176,7 +176,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 			  "Can't mix special %%doc with other forms: %s", fp);
 		    return(RPMERR_BADSPEC);
 		}
-		sprintf(buf, "/usr/doc/%s-%s-%s", name, version, release);
+		sprintf(buf, "%s/%s-%s-%s", getVar(RPMVAR_DEFAULTDOCDIR), 
+			name, version, release);
 		filename = buf;
 		passed_special_doc = 1;
 	    }
