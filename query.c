@@ -228,7 +228,7 @@ static char * permsString(int mode) {
     else if (S_ISFIFO(mode)) 
 	perms[0] = 'p';
     else if (S_ISSOCK(mode)) 
-	perms[0] = 'l';
+	perms[0] = 's';
     else if (S_ISCHR(mode)) {
 	perms[0] = 'c';
     } else if (S_ISBLK(mode)) {
