@@ -2,10 +2,9 @@ srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = $(srcdir)
 
+LOCALEDIR=@prefix@/share/locale
+
 INSTALL= @INSTALL@
-INSTALL_PROGRAM= @INSTALL_PROGRAM@
-INSTALL_DATA= @INSTALL_DATA@
-CC = @CC@
 
 installprefix = $(DESTDIR)
 

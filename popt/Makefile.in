@@ -59,9 +59,17 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
 CC = @CC@
 CPP = @CPP@
+DLLTOOL = @DLLTOOL@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
+NM = @NM@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 TARGET = @TARGET@
@@ -70,12 +78,13 @@ VERSION = @VERSION@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = CHANGES autogen.sh findme.h popt.3 popt.spec poptint.h testit.sh 	po/*.in po/*.po po/popt.pot popt.ps
+EXTRA_DIST = CHANGES autogen.sh findme.h $(man_MANS) popt.spec poptint.h 	testit.sh po/*.in po/*.po po/popt.pot popt.ps
 
 
 SUBDIRS = po
 
-LDFLAGS = -L$(top_builddir)
+tbd = `pwd`/$(top_builddir)
+LDFLAGS = -L$(tbd)
 INCLUDES = -I$(top_srcdir)
 
 noinst_INCLUDES = findme.h poptint.h
@@ -110,8 +119,9 @@ test1_DEPENDENCIES =
 test1_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 man3dir = $(mandir)/man3
 MANS = $(man_MANS)
 
@@ -119,8 +129,8 @@ NROFF = nroff
 HEADERS =  $(include_HEADERS)
 
 DIST_COMMON =  README ./stamp-h.in COPYING Makefile.am Makefile.in \
-acconfig.h aclocal.m4 config.h.in configure configure.in install-sh \
-missing mkinstalldirs
+acconfig.h aclocal.m4 config.guess config.h.in config.sub configure \
+configure.in install-sh ltconfig ltmain.sh missing mkinstalldirs
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -134,7 +144,7 @@ OBJECTS = $(libpopt_a_OBJECTS) $(test1_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .o .s
+.SUFFIXES: .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
 
@@ -225,6 +235,22 @@ distclean-compile:
 	-rm -f *.tab.c
 
 maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
 
 libpopt.a: $(libpopt_a_OBJECTS) $(libpopt_a_DEPENDENCIES)
 	-rm -f libpopt.a
@@ -526,26 +552,29 @@ distclean-generic:
 
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-hdr mostlyclean-libLIBRARIES \
-		mostlyclean-compile mostlyclean-noinstPROGRAMS \
-		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+		mostlyclean-compile mostlyclean-libtool \
+		mostlyclean-noinstPROGRAMS mostlyclean-tags \
+		mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
 
-clean-am:  clean-hdr clean-libLIBRARIES clean-compile \
+clean-am:  clean-hdr clean-libLIBRARIES clean-compile clean-libtool \
 		clean-noinstPROGRAMS clean-tags clean-depend \
 		clean-generic mostlyclean-am
 
 clean: clean-recursive
 
 distclean-am:  distclean-hdr distclean-libLIBRARIES distclean-compile \
-		distclean-noinstPROGRAMS distclean-tags \
-		distclean-depend distclean-generic clean-am
+		distclean-libtool distclean-noinstPROGRAMS \
+		distclean-tags distclean-depend distclean-generic \
+		clean-am
+	-rm -f libtool
 
 distclean: distclean-recursive
 	-rm -f config.status
 
 maintainer-clean-am:  maintainer-clean-hdr maintainer-clean-libLIBRARIES \
-		maintainer-clean-compile \
+		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-noinstPROGRAMS maintainer-clean-tags \
 		maintainer-clean-depend maintainer-clean-generic \
 		distclean-am
@@ -559,14 +588,16 @@ maintainer-clean: maintainer-clean-recursive
 mostlyclean-libLIBRARIES distclean-libLIBRARIES clean-libLIBRARIES \
 maintainer-clean-libLIBRARIES uninstall-libLIBRARIES \
 install-libLIBRARIES mostlyclean-compile distclean-compile \
-clean-compile maintainer-clean-compile mostlyclean-noinstPROGRAMS \
-distclean-noinstPROGRAMS clean-noinstPROGRAMS \
-maintainer-clean-noinstPROGRAMS install-man3 uninstall-man3 install-man \
-uninstall-man uninstall-includeHEADERS install-includeHEADERS \
-install-data-recursive uninstall-data-recursive install-exec-recursive \
-uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
-all-recursive check-recursive installcheck-recursive info-recursive \
-dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+clean-compile maintainer-clean-compile mostlyclean-libtool \
+distclean-libtool clean-libtool maintainer-clean-libtool \
+mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
+clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS install-man3 \
+uninstall-man3 install-man uninstall-man uninstall-includeHEADERS \
+install-includeHEADERS install-data-recursive uninstall-data-recursive \
+install-exec-recursive uninstall-exec-recursive installdirs-recursive \
+uninstalldirs-recursive all-recursive check-recursive \
+installcheck-recursive info-recursive dvi-recursive \
+mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir \
 mostlyclean-depend distclean-depend clean-depend \

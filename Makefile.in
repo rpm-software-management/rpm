@@ -65,11 +65,13 @@ host_alias = @host_alias@
 host_triplet = @host@
 target_alias = @target_alias@
 target_triplet = @target@
+AS = @AS@
 AWK = @AWK@
 BZIP2BIN = @BZIP2BIN@
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@
 DATADIRNAME = @DATADIRNAME@
+DLLTOOL = @DLLTOOL@
 FIXPERMS = @FIXPERMS@
 GENCAT = @GENCAT@
 GMOFILES = @GMOFILES@
@@ -83,11 +85,13 @@ INSTOBJEXT = @INSTOBJEXT@
 INTLDEPS = @INTLDEPS@
 INTLLIBS = @INTLLIBS@
 INTLOBJS = @INTLOBJS@
+LD = @LD@
 LDFLAGS_STATIC = @LDFLAGS_STATIC@
 LIBDL = @LIBDL@
 LIBMISC = @LIBMISC@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 MISCDIR = @MISCDIR@
@@ -96,6 +100,7 @@ MKDIR = @MKDIR@
 MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
+NM = @NM@
 POFILES = @POFILES@
 POSUB = @POSUB@
 ROOT_GROUP = @ROOT_GROUP@
@@ -111,14 +116,16 @@ varprefix = @varprefix@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = CHANGES CREDITS README.amiga RPM-PGP-KEY 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh 	docs/[a-z]* gendiff groups po/*.in po/*.po po/rpm.pot 	rpm.8 rpm.8ru rpm.magic rpmpopt rpm.spec rpm2cpio.8 rpm2cpio.8ru
+EXTRA_DIST = CHANGES CREDITS README.amiga RPM-PGP-KEY 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh 	docs/[a-z]* gendiff groups $(man_MANS) po/*.in po/*.po po/rpm.pot 	rpm.magic rpmpopt rpm.spec rpm.8ru rpm2cpio.8ru
 
 
 SUBDIRS = popt build lib po intl misc tools scripts tests .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
 
-LDFLAGS = @LDFLAGS_STATIC@ -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt -L$(top_builddir)/misc
+tbd = `pwd`/$(top_builddir)
+
+LDFLAGS = -all@LDFLAGS_STATIC@ -L$(tbd)/build -L$(tbd)/lib -L$(tbd)/popt -L$(tbd)/misc
 
 rpmbindir = $(subst usr/bin,bin,$(bindir))
 rpmbin_PROGRAMS = rpm
@@ -127,7 +134,7 @@ bin_PROGRAMS = rpm2cpio
 bin_SCRIPTS = gendiff
 noinst_PROGRAMS = rpmconvert
 
-man_MANS = rpm.8 rpm2cpio.8
+man_MANS = rpm.8 rpm2cpio.8	# rpm.8ru rpm2cpio.8ru
 
 configdir = @RPMCONFIGDIR@
 config_DATA = rpmrc rpmpopt macros
@@ -135,6 +142,8 @@ config_SCRIPTS = find-provides find-requires mkinstalldirs
 
 noinst_HEADERS =  	acconfig.h	build.h		checksig.h	ftp.h		install.h	system.h	url.h		verify.h
 
+
+mylibs = ./build/librpmbuild.a ./lib/librpm.a ./popt/libpopt.a
 
 rpm_SOURCES = build.c checksig.c ftp.c install.c rpm.c url.c 			verify.c
 
@@ -191,8 +200,9 @@ SCRIPTS =  $(bin_SCRIPTS) $(config_SCRIPTS)
 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 man8dir = $(mandir)/man8
 MANS = $(man_MANS)
 
@@ -204,7 +214,7 @@ HEADERS =  $(noinst_HEADERS)
 DIST_COMMON =  README ./stamp-h.in ABOUT-NLS COPYING INSTALL Makefile.am \
 Makefile.in Makefile.inc.in TODO acconfig.h aclocal.m4 config.guess \
 config.h.in config.sub configure configure.in install-sh lib-rpmrc.in \
-macros.in missing mkinstalldirs
+ltconfig ltmain.sh macros.in missing mkinstalldirs
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -219,7 +229,7 @@ OBJECTS = $(rpm2cpio_OBJECTS) $(rpmconvert_OBJECTS) $(rpm_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .S .c .o .s
+.SUFFIXES: .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) $(srcdir)/./Makefile.inc
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
 
@@ -283,8 +293,8 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
-	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	  else :; fi; \
 	done
 
@@ -317,8 +327,8 @@ install-rpmbinPROGRAMS: $(rpmbin_PROGRAMS)
 	$(mkinstalldirs) $(DESTDIR)$(rpmbindir)
 	@list='$(rpmbin_PROGRAMS)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(rpmbindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
-	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(rpmbindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(rpmbindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(rpmbindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	  else :; fi; \
 	done
 
@@ -343,6 +353,22 @@ distclean-compile:
 	-rm -f *.tab.c
 
 maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
 
 rpm2cpio: $(rpm2cpio_OBJECTS) $(rpm2cpio_DEPENDENCIES)
 	@rm -f rpm2cpio
@@ -685,21 +711,22 @@ distclean-generic:
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-hdr mostlyclean-binPROGRAMS \
 		mostlyclean-noinstPROGRAMS mostlyclean-rpmbinPROGRAMS \
-		mostlyclean-compile mostlyclean-tags mostlyclean-depend \
-		mostlyclean-generic
+		mostlyclean-compile mostlyclean-libtool \
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
 
 clean-am:  clean-hdr clean-binPROGRAMS clean-noinstPROGRAMS \
-		clean-rpmbinPROGRAMS clean-compile clean-tags \
-		clean-depend clean-generic mostlyclean-am
+		clean-rpmbinPROGRAMS clean-compile clean-libtool \
+		clean-tags clean-depend clean-generic mostlyclean-am
 
 clean: clean-recursive
 
 distclean-am:  distclean-hdr distclean-binPROGRAMS \
 		distclean-noinstPROGRAMS distclean-rpmbinPROGRAMS \
-		distclean-compile distclean-tags distclean-depend \
-		distclean-generic clean-am
+		distclean-compile distclean-libtool distclean-tags \
+		distclean-depend distclean-generic clean-am
+	-rm -f libtool
 
 distclean: distclean-recursive
 	-rm -f config.status
@@ -707,9 +734,9 @@ distclean: distclean-recursive
 maintainer-clean-am:  maintainer-clean-hdr maintainer-clean-binPROGRAMS \
 		maintainer-clean-noinstPROGRAMS \
 		maintainer-clean-rpmbinPROGRAMS \
-		maintainer-clean-compile maintainer-clean-tags \
-		maintainer-clean-depend maintainer-clean-generic \
-		distclean-am
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
@@ -725,13 +752,15 @@ mostlyclean-rpmbinPROGRAMS distclean-rpmbinPROGRAMS \
 clean-rpmbinPROGRAMS maintainer-clean-rpmbinPROGRAMS \
 uninstall-rpmbinPROGRAMS install-rpmbinPROGRAMS mostlyclean-compile \
 distclean-compile clean-compile maintainer-clean-compile \
-uninstall-binSCRIPTS install-binSCRIPTS uninstall-configSCRIPTS \
-install-configSCRIPTS install-man8 uninstall-man8 install-man \
-uninstall-man uninstall-configDATA install-configDATA \
-install-data-recursive uninstall-data-recursive install-exec-recursive \
-uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
-all-recursive check-recursive installcheck-recursive info-recursive \
-dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool uninstall-binSCRIPTS install-binSCRIPTS \
+uninstall-configSCRIPTS install-configSCRIPTS install-man8 \
+uninstall-man8 install-man uninstall-man uninstall-configDATA \
+install-configDATA install-data-recursive uninstall-data-recursive \
+install-exec-recursive uninstall-exec-recursive installdirs-recursive \
+uninstalldirs-recursive all-recursive check-recursive \
+installcheck-recursive info-recursive dvi-recursive \
+mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir \
 mostlyclean-depend distclean-depend clean-depend \
@@ -743,7 +772,7 @@ installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
-$(PROGRAMS): ./build/librpmbuild.a ./lib/librpm.a ./popt/libpopt.a
+$(PROGRAMS): $(mylibs)
 
 .PHONY:	lclint
 lclint:

@@ -4,7 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl -I$(top_srcdir)/misc @INCPATH@
 
-LDFLAGS = -L$(top_builddir)/popt -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/misc
+tbd = `pwd`/$(top_builddir)
+LDFLAGS = -L$(tbd)/popt -L$(tbd)/build -L$(tbd)/lib -L$(tbd)/misc
 LDADD = -lrpm
 
 EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c

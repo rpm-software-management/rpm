@@ -4,14 +4,16 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = CHANGES CREDITS README.amiga RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	docs/[a-z]* gendiff groups po/*.in po/*.po po/rpm.pot \
-	rpm.8 rpm.8ru rpm.magic rpmpopt rpm.spec rpm2cpio.8 rpm2cpio.8ru
+	docs/[a-z]* gendiff groups $(man_MANS) po/*.in po/*.po po/rpm.pot \
+	rpm.magic rpmpopt rpm.spec rpm.8ru rpm2cpio.8ru
 
 SUBDIRS = popt build lib po intl misc tools scripts tests .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
 
-LDFLAGS = @LDFLAGS_STATIC@ -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt -L$(top_builddir)/misc
+tbd = `pwd`/$(top_builddir)
+
+LDFLAGS = -all@LDFLAGS_STATIC@ -L$(tbd)/build -L$(tbd)/lib -L$(tbd)/popt -L$(tbd)/misc
 
 rpmbindir = $(subst usr/bin,bin,$(bindir))
 rpmbin_PROGRAMS = rpm
@@ -20,7 +22,7 @@ bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 noinst_PROGRAMS =	rpmconvert
 
-man_MANS = rpm.8 rpm2cpio.8
+man_MANS = rpm.8 rpm2cpio.8	# rpm.8ru rpm2cpio.8ru
 
 configdir = @RPMCONFIGDIR@
 config_DATA = rpmrc rpmpopt macros
@@ -31,11 +33,13 @@ noinst_HEADERS = \
 	install.h	system.h	url.h	\
 	verify.h
 
+mylibs = ./build/librpmbuild.a ./lib/librpm.a ./popt/libpopt.a
+
 rpm_SOURCES =		build.c checksig.c ftp.c install.c rpm.c url.c \
 			verify.c
 rpm_LDADD =		-lrpmbuild -lrpm -lpopt @LIBMISC@
 
-$(PROGRAMS): ./build/librpmbuild.a ./lib/librpm.a ./popt/libpopt.a
+$(PROGRAMS): $(mylibs)
 
 include ./Makefile.inc
 
