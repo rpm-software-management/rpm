@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "misc.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
 
@@ -12,13 +13,18 @@ struct addedPackage {
     int serial, hasSerial, providesCount;
 } ;
 
+struct providesEntry {
+    struct addedPackage * package;
+    char * entry;
+} ;
+
 struct rpmDependencyCheck {
     rpmdb db;					/* may be NULL */
     int * removedPackages;
     int numRemovedPackages, allocedRemovedPackages;
     struct addedPackage * addedPackages;
     int numAddedPackages, allocedAddedPackages;
-    char ** providesTable;
+    struct providesEntry * providesTable;
     int numProvides;
 };
 
@@ -29,19 +35,22 @@ struct problemsSet {
 };
 
 static int intcmp(const void * a, const void *b);
-static int stringcmp(void * a, void *b);
-static int badDependency(rpmDependencies rpmdep, char * reqName, 
+static int providescmp(const void * a, const void *b);
+static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName, 
 			 char * reqVersion, int reqFlags);
 static int checkDependentPackages(rpmDependencies rpmdep, 
 			    struct problemsSet * psp, char * requires);
-static int checkPackage(rpmDependencies rpmdep, struct problemsSet * psp,
+static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement);
+static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
+			        char * reqVersion, int reqFlags);
+static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags);
 
-int stringcmp(void * a, void *b) {
-    const char ** aptr = a;
-    const char ** bptr = b;
+int providescmp(const void * a, const void *b) {
+    const struct providesEntry * aptr = a;
+    const struct providesEntry * bptr = b;
 
-    return strcmp(*aptr, *bptr);
+    return strcmp(aptr->entry, bptr->entry);
 }
 
 int intcmp(const void * a, const void *b) {
@@ -73,6 +82,27 @@ rpmDependencies rpmdepDependencies(rpmdb db) {
 				     rpmdep->allocedAddedPackages);
 
     return rpmdep;
+}
+
+void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
+    /* this is an install followed by uninstalls */
+    dbIndexSet matches;
+    char * name;
+    int count, type, i;
+
+    rpmdepAddPackage(rpmdep, h);
+
+    if (!rpmdep->db) return;
+
+    getEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
+
+    if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
+	for (i = 0; i < matches.count; i++) {
+	    rpmdepRemovePackage(rpmdep, matches.recs[i].recOffset);
+	}
+    }
+
+    freeDBIndexRecord(matches);
 }
 
 void rpmdepAddPackage(rpmDependencies rpmdep, Header h) {
@@ -158,26 +188,29 @@ int rpmdepCheck(rpmDependencies rpmdep,
 	}
 
 	if (rpmdep->numProvides) {
-	    rpmdep->providesTable = alloca(sizeof(char *) * 
+	    rpmdep->providesTable = alloca(sizeof(*rpmdep->providesTable) * 
 					   rpmdep->numProvides);
 	    k = 0;
 	    for (i = 0; i < rpmdep->numAddedPackages; i++) {
 		for (j = 0; j < rpmdep->addedPackages[i].providesCount; j++) {
-		    rpmdep->providesTable[k++] = 
-			    rpmdep->addedPackages[i].provides[j];
+		    rpmdep->providesTable[k].package = 
+				rpmdep->addedPackages + i;
+		    rpmdep->providesTable[k].entry = 
+				rpmdep->addedPackages[i].provides[j];
+		    k++;
 		}
 	    }
 	}
     }
 
     qsort(rpmdep->providesTable, rpmdep->numProvides, sizeof(char *), 
-	  (void *) stringcmp);
+	  (void *) providescmp);
     
     /* look at all of the added packages and make sure their dependencies
        are satisfied */
     p = rpmdep->addedPackages;
     for (i = 0; i < rpmdep->numAddedPackages; i++, p++) {
-	if (checkPackage(rpmdep, &ps, p->h, NULL)) {
+	if (checkPackageDeps(rpmdep, &ps, p->h, NULL)) {
 	    free(ps.problems);
 	    return 1;
 	}
@@ -223,26 +256,28 @@ int rpmdepCheck(rpmDependencies rpmdep,
 
 /* 2 == error */
 /* 1 == dependency not satisfied */
-static int badDependency(rpmDependencies rpmdep, char * reqName, 
+static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName, 
 			 char * reqVersion, int reqFlags) {
     dbIndexSet matches;
     int i;
+    struct providesEntry prent, * provider;
 
     message(MESS_DEBUG, "dependencies: looking for %s\n", reqName);
 
-    if (bsearch(&reqName, rpmdep->providesTable, rpmdep->numProvides,
-		sizeof(char *), (void *) stringcmp)) {
-	/* this needs to check the reqFlags! ***/
-	return 0;
+    prent.entry = reqName;
+    if ((provider = bsearch(&prent, rpmdep->providesTable, rpmdep->numProvides,
+		sizeof(char *), (void *) providescmp))) {
+ 	if (headerMatchesDepFlags(provider->package->h, reqVersion, reqFlags))
+	    return 0;
     }
 
-    if (!rpmdbFindByProvides(rpmdep->db, reqName, &matches))  {
+    if (!rpmdep->db) return 1;
+
+    if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, &matches))  {
 	for (i = 0; i < matches.count; i++) {
 	    if (bsearch(&matches.recs[i].recOffset, rpmdep->removedPackages, 
 		        rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
 		continue;
-
-	    /* this needs to check the reqFlags ! ***/
 	    break;
 	}
 
@@ -256,8 +291,10 @@ static int badDependency(rpmDependencies rpmdep, char * reqName,
 		        rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
 		continue;
 
-	    /* this needs to check the reqFlags ! ***/
-	    break;
+	    if (dbrecMatchesDepFlags(rpmdep, matches.recs[i].recOffset, 
+		                     reqVersion, reqFlags)) {
+		break;
+	    }
 	}
 
 	freeDBIndexRecord(matches);
@@ -289,29 +326,34 @@ static int checkDependentPackages(rpmDependencies rpmdep,
 	    return 1;
 	}
 
-	if (checkPackage(rpmdep, psp, h, requires))
+	if (checkPackageDeps(rpmdep, psp, h, requires))
 	    return 1;
     }
 
     return 0;
 }
 
-static int checkPackage(rpmDependencies rpmdep, struct problemsSet * psp,
+static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement) {
-    char ** requires;
+    char ** requires, ** requiresVersion;
     char * name, * version, * release;
     int requiresCount;
     int type, count;
     int i, rc;
+    int * requireFlags;
 
     if (!getEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requires, 
+	     &requiresCount)) return 0;
+    if (!getEntry(h, RPMTAG_REQUIREFLAGS, &type, (void **) &requireFlags, 
+	     &requiresCount)) return 0;
+    if (!getEntry(h, RPMTAG_REQUIREVERSION, &type, (void **) &requiresVersion, 
 	     &requiresCount)) return 0;
     if (!requiresCount) return 0;
 
     for (i = 0; i < requiresCount; i++) {
 	if (requirement && strcmp(requirement, requires[i])) continue;
 
-	rc = badDependency(rpmdep, requires[i], "", 0);
+	rc = unsatisfiedDepend(rpmdep, requires[i], "", requireFlags[i]);
 	if (rc == 1) {
 	    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
 	    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
@@ -329,18 +371,76 @@ static int checkPackage(rpmDependencies rpmdep, struct problemsSet * psp,
 	    psp->problems[psp->num].byVersion = version;
 	    psp->problems[psp->num].byRelease = release;
 	    psp->problems[psp->num].needsName = requires[i];
-	    psp->problems[psp->num].needsVersion = NULL;
-	    psp->problems[psp->num].needsFlags = 0;
+	    psp->problems[psp->num].needsVersion = requiresVersion[i];
+	    psp->problems[psp->num].needsFlags = requireFlags[i];
+	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
+
 	    psp->num++;
 	} else if (rc) {
 	    /* something went wrong! */
+	    free(requiresVersion);
 	    free(requires);
 	    return 1;
 	}
     }
 
+    free(requiresVersion);
     free(requires);
 
     return 0;
 }
 
+static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags) {
+    char * name, * version;
+    int type, count;
+    int_32 serial;
+    char buf[20];
+    int result = 0;
+    int sense;
+
+    getEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
+
+    if (!reqFlags) {
+	return 1;
+    }
+
+    if (reqFlags & REQUIRE_SERIAL) {
+	if (!getEntry(h, RPMTAG_SERIAL, &type, (void *) &serial, &count)) {
+	    freeHeader(h);
+	    return 0;
+	}
+	sprintf(buf, "%d", serial);
+	version = buf;
+    } else
+	getEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
+
+    sense = vercmp(version, reqVersion);
+
+    if ((reqFlags & REQUIRE_LESS) && sense < 0) {
+	result = 1;
+    } else if ((reqFlags & REQUIRE_EQUAL) && sense == 0) {
+	result = 1;
+    } else if ((reqFlags & REQUIRE_GREATER) && sense > 0) {
+	result = 1;
+    }
+
+    return result;
+}
+
+static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
+			        char * reqVersion, int reqFlags) {
+    Header h;
+    int rc;
+
+    h = rpmdbGetRecord(rpmdep->db, recOffset);
+    if (!h) {
+	message(MESS_DEBUG, "dbrecMatchesDepFlags() failed to read header");
+	return 0;
+    }
+
+    rc = headerMatchesDepFlags(h, reqVersion, reqFlags);
+
+    freeHeader(h);
+
+    return rc;
+}
