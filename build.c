@@ -126,7 +126,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (ba->buildMode == 't') {
 	FILE *fp;
 	const char * specDir;
-	const char * tmpSpecFile;
+	char * tmpSpecFile;
 	char * cmd, * s;
 	rpmCompressedMagic res = COMPRESSED_OTHER;
 	/*@observer@*/ static const char *zcmds[] =
@@ -134,14 +134,12 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
-	/* XXX Using mkstemp is difficult here. */
-	/* XXX FWIW, default %{_specdir} is root.root 0755 */
-	{   char tfn[64];
-	    strcpy(tfn, "rpm-spec.XXXXXX");
-	    /*@-unrecog@*/
-	    tmpSpecFile = rpmGetPath("%{_specdir}/", mktemp(tfn), NULL);
-	    /*@=unrecog@*/
-	}
+	tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+#if defined(HAVE_MKSTEMP)
+	(void) close(mkstemp(tmpSpecFile));
+#else
+	(void) mktemp(tmpSpecFile);
+#endif
 
 	(void) isCompressed(arg, &res);
 

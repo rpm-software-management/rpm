@@ -759,6 +759,8 @@ AC_CHECK_FUNCS(regcomp)
 
 AC_CHECK_FUNCS(ftok)
 
+AC_CHECK_FUNCS(mkstemp)
+
 dnl
 dnl XXX Regex replacement isn't known to be needed yet.
 dnl
