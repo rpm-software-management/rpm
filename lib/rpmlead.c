@@ -32,7 +32,9 @@ int writeLead(int fd, struct rpmlead *lead)
     l.osnum = htons(l.osnum);
     l.signature_type = htons(l.signature_type);
 	
-    write(fd, &l, sizeof(l));
+    if (write(fd, &l, sizeof(l)) < 0) {
+	return 1;
+    }
 
     return 0;
 }
