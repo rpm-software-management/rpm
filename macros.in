@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.39 1999/11/24 00:03:54 jbj Exp $
+# $Id: macros.in,v 1.40 2000/01/07 17:32:28 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -53,8 +53,8 @@
 %__ar			@AR@
 %__cc			@CC@
 %__cpp			@CPP@
-%__ld			@LD@
-%__nm			@NM@
+%__ld			@__LD@
+%__nm			@__NM@
 %__objcopy		@__OBJCOPY@
 %__objdump		@__OBJDUMP@
 %__ranlib		@RANLIB@

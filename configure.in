@@ -185,6 +185,8 @@ dnl Solaris prefers /usr/xpg4/bin/id
     AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
     AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
 
+    AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
+    AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
     AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
     AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
     AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)

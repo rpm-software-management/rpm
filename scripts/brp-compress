@@ -1,0 +1,19 @@
+#!/bin/sh
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+cd $RPM_BUILD_ROOT
+
+# Compress man pages
+COMPRESS=gzip
+
+for d in ./usr/man/man* ./usr/man/*/man* ./usr/X11R6/man/man* ./usr/lib/perl5/man/man*
+do
+    [ -d $d ] || continue
+    for f in `find $d -type f | sed -e 's/[^ ]*\.gz//' -e 's/[^ ]*\.bz2//'`
+    do
+	$COMPRESS $f
+    done
+done

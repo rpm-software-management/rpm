@@ -1,0 +1,17 @@
+#!/bin/sh
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+# Strip .comment and .note sections (the latter only if it is not allocated)
+# for already stripped elf files in the build root
+for f in `find $RPM_BUILD_ROOT -type f -a -perm +111 -exec file {} \; | \
+	sed -n -e 's/^\(.*\):[ 	]*ELF.*, stripped/\1/p'`; do
+	note="-R .note"
+	if objdump -h $f | grep '^[ 	]*[0-9]*[ 	]*.note[ 	]' -A 1 | \
+		grep ALLOC >/dev/null; then
+		note=
+	fi
+	strip -R .comment $note $f
+done

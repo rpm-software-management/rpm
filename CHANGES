@@ -35,6 +35,7 @@
 	- fix: fp.subDir was incorrectly set to NULL in sparse chroot's.
 	- fix: manageFile needs to and with O_WRONLY(=1), not O_RDONLY(=0).
 	- fix: resurrect failed glob error message during build.
+	- add several BuildRoot FTW policies.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
