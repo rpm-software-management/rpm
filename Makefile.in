@@ -33,6 +33,7 @@ NLSPACKAGE=rpm
 # -----------------------------------------------------------------------
 
 SUBDIRS = misc lib build tools @PO@
+OTHERSUBDIRS = docs find-provides
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o @GETTEXTSTUB@
 PROGS = @RPMSTATIC@ rpm.shared rpm2cpio
 LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@ @LIBINTL@ @LIBSOCKET@ @LIBDL@
@@ -82,7 +83,7 @@ make-subdirs:
 newtree:
 	rm -f RCS
 	ln -sf /usr/rhs/RCS/rpm-2.0 RCS
-	for d in $(SUBDIRS) docs; do \
+	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
 		mkdir -p $$d ;\
 		(cd $$d; rm -f RCS; ln -sf /usr/rhs/RCS/rpm-2.0/$$d RCS) \
 		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
@@ -137,7 +138,7 @@ depend:
 
 co:
 	co RCS/*,v
-	for d in $(SUBDIRS) docs; do \
+	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
 		(cd $$d; co RCS/*,v) ;\
 	done
 
@@ -147,7 +148,7 @@ noconfig:
 
 rcstag:
 	rcs -q -N$(RCSVERSION): RCS/*,v
-	for d in $(SUBDIRS) docs; do \
+	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
 		(cd $$d; rcs -q -N$(RCSVERSION): RCS/*,v) ;\
 	done
 
