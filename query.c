@@ -30,6 +30,7 @@ void printHeader(Header h, int queryFlags) {
     uint_32 * size;
     int_32 count, type;
     int_32 * pBuildDate;
+    time_t buildDate;
     char * prefix = NULL;
     char buildDateStr[100];
     struct tm * tstruct;
@@ -55,7 +56,9 @@ void printHeader(Header h, int queryFlags) {
 		size = NULL;
 	    getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, &count);
 
-	    tstruct = localtime((time_t *) pBuildDate);
+            /* this is important if sizeof(int_32) ! sizeof(time_t) */
+	    buildDate = *pBuildDate; 
+	    tstruct = localtime(&buildDate);
 	    strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", tstruct);
 	   
 	    printf("Name        : %-27s Distribution: %s\n", 
@@ -137,9 +140,12 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
     rpmdb db;
     dbIndexSet matches;
 
-    if (!rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
-	fprintf(stderr, "cannot open %s/var/lib/rpm/packages.rpm\n", prefix);
-	exit(1);
+    if (source != QUERY_SRPM && source != QUERY_RPM) {
+	if (!rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
+	    fprintf(stderr, "cannot open %s/var/lib/rpm/packages.rpm\n", 
+		    prefix);
+	    exit(1);
+	}
     }
 
     switch (source) {
@@ -208,5 +214,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	break;
     }
    
-    rpmdbClose(db);
+    if (source != QUERY_SRPM && source != QUERY_RPM) {
+	rpmdbClose(db);
+    }
 }
