@@ -5,7 +5,7 @@ use RPM::Database;
 $SIG{__WARN__} = sub { $@ = shift; };
 $SIG{__DIE__} = sub { $@ = shift; };
 
-print "1..11\n";
+print "1..12\n";
 
 tie %DB, "RPM::Database" or print "not ";
 print "ok 1\n";
@@ -23,7 +23,7 @@ print "ok 2\n";
 
 # Verify that STORE, DELETE and CLEAR operations are blocked
 # STORE
-eval { $DB{foo_package} = 'baz'; print "not " if ($DB{foo_package} == 'baz') };
+eval { $DB{foo_package} = 'baz'; print "not " if ($DB{foo_package} eq 'baz') };
 print "ok 3\n";
 
 # DELETE
@@ -66,7 +66,12 @@ for (@matches) { $_ = $_->{name} }
 print "not " unless (grep 'rpm-devel', @matches);
 print "ok 10\n";
 
-undef $rpm;
+# Try to fetch a bogus package
+$hdr = $rpm->{i_hope_no_one_makes_a_package_by_this_name};
+print "not " if $hdr;
 print "ok 11\n";
+
+undef $rpm;
+print "ok 12\n";
 
 exit 0;

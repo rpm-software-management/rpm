@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.12 2000/08/06 08:57:09 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.13 2000/08/11 08:17:42 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -203,12 +203,18 @@ static int new_from_fd(int fd, RPM_Header* new_hdr)
     return(new_from_fd_t(FD, new_hdr));
 }
 
-static int new_from_fname(const char* source, RPM_Header* new_hdr)
+static int new_from_fname(pTHX_ const char* source, RPM_Header* new_hdr)
 {
     FD_t fd;
 
     if (! (fd = Fopen(source, "r+")))
+    {
+        char errmsg[256];
+
+        snprintf(errmsg, 256, "Unable to open file %s", source);
+        rpm_error(aTHX_ RPMERR_BADFILENAME, errmsg);
         return 0;
+    }
 
     return(new_from_fd_t(fd, new_hdr));
 }
@@ -223,7 +229,7 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
 
     hdr_struct = safemalloc(sizeof(RPM_Header));
     Zero(hdr_struct, 1, RPM_Header);
-    TIEHASH = (RPM__Header)newSVsv(&PL_sv_undef);
+    TIEHASH = (RPM__Header)0;
 
     if (! source)
         hdr_struct->hdr = headerNew();
@@ -236,7 +242,7 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
         if (SvPOK(source))
         {
             fname = SvPV(source, fname_len);
-            if (! new_from_fname(fname, hdr_struct))
+            if (! new_from_fname(aTHX_ fname, hdr_struct))
             {
                 return TIEHASH;
             }

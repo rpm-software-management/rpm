@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.6 2000/08/06 08:57:09 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.7 2000/08/11 08:17:42 rjray Exp $";
 
 /*
   Use this define for deriving the saved rpmdb struct, rather than coding
@@ -74,7 +74,7 @@ RPM__Database rpmdb_TIEHASH(pTHX_ char* class, SV* opts)
     /* With that all processed, attempt to open the actual RPM DB */
     if (rpmdbOpen(root, &dbstruct->dbp, mode, perms) != 0)
         /* rpm lib will have set the error already */
-        return (Null(RPM__Database));
+        return ((RPM__Database)0);
     else
     {
         dbstruct->current_rec = 0;
@@ -99,7 +99,7 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
     RPM_Database* dbstruct;  /* This is the struct used to hold C-level data */
 
     /* Any successful operation will re-assign this */
-    FETCH = (RPM__Header)newSVsv(&PL_sv_undef);
+    FETCH = (RPM__Header)0;
 
     dbstruct_from_object_ret(svp, dbstruct, self, FETCH);
     /* De-reference key, if it is a reference */

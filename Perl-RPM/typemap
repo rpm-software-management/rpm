@@ -15,7 +15,7 @@ RPM::Transaction        O_RPM_Blessed
 
 OUTPUT
 O_RPM_Database
-        if ($var != Null(RPM__Database))
+        if ($var)
         {
             $arg = sv_bless(newRV_noinc((SV*)$var),
                             gv_stashpv("RPM::Database", TRUE));
@@ -27,7 +27,7 @@ O_RPM_Database
         }
 
 O_RPM_Header
-        if ($var != Null(RPM__Header))
+        if ($var)
         {
             $arg = sv_bless(newRV_noinc((SV*)$var),
                             gv_stashpv("RPM::Header", TRUE));

@@ -5,7 +5,7 @@ use RPM::Database;
 
 chomp($rpmstr = qx{rpm -q rpm});
 
-print "1..17\n";
+print "1..18\n";
 
 tie %DB, "RPM::Database" or die "$RPM::err";
 
@@ -113,5 +113,10 @@ while (($k, $v) = each %$hdr)
     }
 }
 print "ok 17\n";
+
+# Test an attempt to open a non-existant RPM file
+$hdr = new RPM::Header "this_file_not_here.rpm";
+print "not " if $hdr;
+print "ok 18\n";
 
 exit 0;
