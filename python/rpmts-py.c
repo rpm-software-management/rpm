@@ -749,7 +749,7 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
 	break;
 
     case RPMRC_NOKEY:
-	PyErr_SetString(pyrpmError, "public key not availaiable");
+	PyErr_SetString(pyrpmError, "public key not available");
 	break;
 
     case RPMRC_NOTTRUSTED:

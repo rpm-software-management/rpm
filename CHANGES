@@ -284,6 +284,9 @@
 	- fix: don't exit with open cursor, there be a stale lock.
 	- fix: check for signal induced exit more often (#73193).
 	- reinterpret the _unsafe_rollbacks macro as earliest rollback.
+	- fix: always do rpmalMakeIndex.
+	- fix: resurrect --triggers (#73330).
+	- python: typo in NOKEY exception string.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

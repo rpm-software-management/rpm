@@ -2678,8 +2678,6 @@ static char * formatValue(sprintfTag tag, Header h,
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
-	} else {
-	    datafree = extCache[tag->extNum].freeit;
 	}
 /*@=boundswrite@*/
     } else {

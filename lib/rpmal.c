@@ -587,30 +587,26 @@ void rpmalMakeIndex(rpmal al)
 {
     availableIndex ai;
     availablePackage alp;
-    int aisize;
     int i;
 
     if (al == NULL || al->list == NULL) return;
     ai = &al->index;
-    aisize = ai->size;
 
+    ai->size = 0;
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
 	if (alp->provides != NULL)
 	    ai->size += rpmdsCount(alp->provides);
     }
 
-    if (ai->size != aisize) {
-	ai->index = xrealloc(ai->index, ai->size * sizeof(*ai->index));
-	ai->k = 0;
+    ai->index = xrealloc(ai->index, ai->size * sizeof(*ai->index));
+    ai->k = 0;
 
-	for (i = 0; i < al->size; i++) {
-	    alp = al->list + i;
-	    rpmalAddProvides(al, (alKey)i, alp->provides);
-	}
-
-	qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
+    for (i = 0; i < al->size; i++) {
+	alp = al->list + i;
+	rpmalAddProvides(al, (alKey)i, alp->provides);
     }
+    qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
 }
 
 fnpyKey *
