@@ -1,4 +1,9 @@
-#include <alloca.h>
+#include "config.h"
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -9,7 +14,6 @@
 #include <unistd.h>
 #include <utime.h>
 
-#include "config.h"
 #include "cpio.h"
 #include "miscfn.h"
 
@@ -71,8 +75,8 @@ struct cpioHeader {
     char * path;
 };
 
-static inline loff_t ourread(struct ourfd * thefd, void * buf, size_t size) {
-    loff_t i;
+static inline off_t ourread(struct ourfd * thefd, void * buf, size_t size) {
+    off_t i;
 
     i = gzread(thefd->fd, buf, size);
     thefd->pos += i;
