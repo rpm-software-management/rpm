@@ -145,6 +145,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	return installSources(rootdir, fd, NULL);
     }
 
+    /* Do this now so we can give error messages, even though we'll just
+       do it again after relocating everything */
+    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
+    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
+    getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
+
     if (!getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *)
 			      &defaultPrefix, &fileCount)) {
 	defaultPrefix = NULL;
