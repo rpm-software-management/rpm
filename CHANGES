@@ -111,6 +111,7 @@
 	- teach rpmquery to return "owning" package(s) in spite of alternatives.
 	- duplicate package checks with arch/os checks if colored.
 	- file conflict checks with colors.
+	- fix: debugedit.c problem.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

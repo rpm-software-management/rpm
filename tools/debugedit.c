@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -417,18 +417,17 @@ has_prefix (const char  *str,
 static int
 edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 {
-  unsigned char *ptr = debug_sections[DEBUG_LINE].data;
+  unsigned char *ptr = debug_sections[DEBUG_LINE].data, *dir;
+  unsigned char **dirt;
   unsigned char *endsec = ptr + debug_sections[DEBUG_LINE].size;
   unsigned char *endcu, *endprol;
   unsigned char opcode_base;
-  uint_32 value;
-  int s;
+  uint_32 value, dirt_cnt;
+  size_t comp_dir_len = strlen (comp_dir);
 
   if (phase != 0)
     return 0;
   
-  s = 0;
-
   ptr += off;
   
   endcu = ptr + 4;
@@ -438,14 +437,14 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
       return 1;
     }
-  
+
   if (endcu > endsec)
     {
       error (0, 0, "%s: .debug_line CU does not fit into section",
 	     dso->filename);
       return 1;
     }
-  
+
   value = read_16 (ptr);
   if (value != 2)
     {
@@ -464,31 +463,68 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
     }
   
   opcode_base = ptr[4];
-  ptr = ptr + 4 + opcode_base;
+  ptr = dir = ptr + 4 + opcode_base;
   
   /* dir table: */
+  value = 1;
   while (*ptr != 0)
     {
-      ptr = strchr(ptr, 0) + 1;
+      ptr = strchr (ptr, 0) + 1;
+      ++value;
+    }
+
+  dirt = (unsigned char **) alloca (value * sizeof (unsigned char *));
+  dirt[0] = ".";
+  dirt_cnt = 1;
+  ptr = dir;
+  while (*ptr != 0)
+    {
+      dirt[dirt_cnt++] = ptr;
+      ptr = strchr (ptr, 0) + 1;
     }
   ptr++;
-  
+
   /* file table: */
   while (*ptr != 0)
     {
-      char *s;
-      if (*ptr == '/')
+      char *s, *file;
+      size_t file_len, dir_len;
+
+      file = ptr;
+      ptr = strchr (ptr, 0) + 1;
+      value = read_uleb128 (ptr);
+
+      if (value >= dirt_cnt)
 	{
-	  s = strdup (ptr);
+	  error (0, 0, "%s: Wrong directory table index %u",
+		 dso->filename, value);
+	  return 1;
+	}
+      file_len = strlen (file);
+      dir_len = strlen (dirt[value]);
+      s = malloc (comp_dir_len + 1 + file_len + 1 + dir_len + 1);
+      if (s == NULL)
+	{
+	  error (0, ENOMEM, "%s: Reading file table", dso->filename);
+	  return 1;
+	}
+      if (*file == '/')
+	memcpy (s, file, file_len + 1);
+      else if (*dirt[value] == '/')
+	{
+	  memcpy (s, dirt[value], dir_len);
+	  s[dir_len] = '/';
+	  memcpy (s + dir_len + 1, file, file_len + 1);
 	}
       else
 	{
-	  s = malloc (strlen (comp_dir) + 1 + strlen (ptr) + 1);
-	  strcpy (s, comp_dir);
-	  strcat (s, "/");
-	  strcat (s, ptr);
-	  canonicalize_path (s, s);
+	  memcpy (s, comp_dir, comp_dir_len);
+	  s[comp_dir_len] = '/';
+	  memcpy (s + comp_dir_len + 1, dirt[value], dir_len);
+	  s[comp_dir_len + 1 + dir_len] = '/';
+	  memcpy (s + comp_dir_len + 1 + dir_len + 1, file, file_len + 1);
 	}
+      canonicalize_path (s, s);
       if (base_dir == NULL ||
 	  has_prefix (s, base_dir))
 	{
@@ -517,13 +553,32 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       
       free (s);
       
-	
-      ptr = strchr(ptr, 0) + 1;
-      read_uleb128(ptr);
-      read_uleb128(ptr);
-      read_uleb128(ptr);
+      read_uleb128 (ptr);
+      read_uleb128 (ptr);
     }
   
+  if (dest_dir)
+    {
+      ptr = dir;
+      while (*ptr != 0)
+	{
+	  if (*ptr == '/' && has_prefix (ptr, base_dir))
+	    {
+	      size_t base_len = strlen (base_dir);
+	      size_t dest_len = strlen (dest_dir);
+
+	      memcpy (ptr, dest_dir, dest_len);
+	      if (dest_len < base_len)
+		{
+		  memmove (ptr + dest_len, ptr + base_len,
+			   strlen (dir + base_len) + 1);
+		}
+	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+			    ELF_C_SET, ELF_F_DIRTY);
+	    }
+	  ptr = strchr (ptr, 0) + 1;
+	}
+    }
   return 0;
 }
 
@@ -575,8 +630,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		  memcpy (dir, dest_dir, dest_len);
 		  if (dest_len < base_len)
 		    {
-		      memcpy (dir + dest_len, dir + base_len,
-			      strlen (dir + base_len) + 1);
+		      memmove (dir + dest_len, dir + base_len,
+			       strlen (dir + base_len) + 1);
 		    }
 		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
 				ELF_C_SET, ELF_F_DIRTY);
@@ -650,6 +705,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
     }
   if (found_list_offs && comp_dir)
     edit_dwarf2_line (dso, list_offs, comp_dir, phase);
+
+  free (comp_dir);
 
   return ptr;
 }
