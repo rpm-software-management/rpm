@@ -49,3 +49,28 @@ int mdfile(char *fn, unsigned char *digest) {
 
     return 0;
 }
+
+int mdbinfile(char *fn, unsigned char *bindigest) {
+    unsigned char buf[1024];
+    FILE * fp;
+    MD5_CTX ctx;
+    int n;
+
+    fp = fopen(fn, "r");
+    if (!fp) {
+	return 1;
+    }
+
+    MD5Init(&ctx);
+    while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
+	    MD5Update(&ctx, buf, n);
+    MD5Final(bindigest, &ctx);
+    if (ferror(fp)) {
+	fclose(fp);
+	return 1;
+    }
+
+    fclose(fp);
+
+    return 0;
+}
