@@ -36,6 +36,7 @@
 	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
 	- add new fully recursive macro.c
 	- there must be a { between two % in a query format (unless %% is used)
+	- make sure files to sign exist before asking for the pass phrase
 
 2.5.5 -> 2.5.6:
 	- ultrapenguin 1.1.9 sparc64 changes.

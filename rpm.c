@@ -1042,10 +1042,26 @@ int main(int argc, char ** argv) {
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD) {
+	    char ** argv;
+	    struct stat sb;
+	    int errors = 0;
+
+	    argv = poptGetArgs(optCon);
+	    while (*argv) {
+		if (stat(*argv, &sb)) {
+		    fprintf(stderr, _("cannot access file %s\n"), *argv);
+		    errors++;
+		}
+		argv++;
+	    }
+
+	    if (errors) return errors;
+
             if (poptPeekArg(optCon)) {
 		switch (rpmLookupSignatureType()) {
 		  case RPMSIGTAG_PGP:
-		    if (!(passPhrase = rpmGetPassPhrase("Enter pass phrase: "))) {
+		    if (!(passPhrase = 
+				rpmGetPassPhrase("Enter pass phrase: "))) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
 			exit(EXIT_FAILURE);
 		    } else {
