@@ -14,7 +14,7 @@
 char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
-	     MODE_BUILD, MODE_UNKNOWN };
+	     MODE_BUILD, MODE_REBUILD, MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -177,6 +177,7 @@ int main(int argc, char ** argv) {
     int version = 0;
     int help = 0;
     int force = 0;
+    int quiet = 0;
     int replaceFiles = 0;
     int replacePackages = 0;
     int showPercents = 0;
@@ -186,6 +187,7 @@ int main(int argc, char ** argv) {
     int buildAmount = 0;
     int clean = 0;
     char * prefix = "/";
+    char * specFile;
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
 	    { "build", 1, 0, 'b' },
@@ -203,7 +205,8 @@ int main(int argc, char ** argv) {
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
 	    { "query", 0, 0, 'q' },
-	    { "quiet", 0, 0, 0 },
+	    { "quiet", 0, &quiet, 0 },
+	    { "rebuild", 0, 0, 0 },
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "root", 1, 0, 'r' },
@@ -369,10 +372,16 @@ int main(int argc, char ** argv) {
 	  default:
 	    if (options[long_index].flag) 
 		*options[long_index].flag = 1;
-	    else if (!strcmp(options[long_index].name, "quiet"))
-		setVerbosity(MESS_QUIET);
+	    else if (!strcmp(options[long_index].name, "rebuild")) {
+		if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
+		    argerror("only one major mode may be specified");
+		bigMode = MODE_REBUILD;
+	    }
 	}
     }
+
+    if (quiet)
+	setVerbosity(MESS_QUIET);
 
     if (version) printVersion();
     if (help) printHelp();
@@ -414,6 +423,21 @@ int main(int argc, char ** argv) {
       case MODE_UNKNOWN:
 	if (!version && !help) printUsage();
 	exit(0);
+
+      case MODE_REBUILD:
+	if (optind == argc) 
+	    argerror("no packages files given for rebuild");
+
+	while (optind < argc) {
+	    buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL |
+			  RPMBUILD_BINARY | RPMBUILD_SWEEP | RPMBUILD_RMSOURCE;
+
+	    if (doSourceInstall("/", argv[optind++], &specFile))
+		exit(-1);
+
+	    build(specFile, buildAmount);
+	}
+	break;
 
       case MODE_BUILD:
 	if (clean)
