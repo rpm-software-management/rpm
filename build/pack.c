@@ -302,7 +302,7 @@ static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
 	return RPMERR_FORK;
     }
 
-    rc = cpioBuildArchive(fd, cpioList, cpioCount, NULL, NULL,
+    rc = cpioBuildArchive(toGzip[1], cpioList, cpioCount, NULL, NULL,
 			  archiveSize, &failedFile);
 
     close(toGzip[1]);
