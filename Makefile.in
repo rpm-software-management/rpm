@@ -9,6 +9,8 @@ LIBEFENCE = -lefence
 AR = ar r
 RANLIB = ranlib
 
+VERSION=2.0a
+
 .EXPORT_ALL_VARIABLES:
 
 ### End exported variables
@@ -16,7 +18,7 @@ RANLIB = ranlib
 
 SUBDIRS = lib build
 OBJS = query.o install.o 
-PROGS = rpm rpmlead rpmheader rpmarchive 
+PROGS = rpm rpmlead rpmheader rpmarchive rpmconvert
 LOADLIBES = -lbuild -lrpm -ldb -lgz $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
@@ -29,7 +31,13 @@ all: $(TARGET)
 
 rpm: lib/librpm.a
 
+rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
+	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -c rpm.c
+
 everything: make-subdirs $(PROGS)
+
+rpmconvert: lib/librpm.a convertdb.o
+	gcc $(DEBUG) -o rpmconvert convertdb.o lib/librpm.a -ldb -lgdbm 
 	
 make-subdirs:
 	for d in $(SUBDIRS); do \
@@ -49,6 +57,26 @@ depend:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
+
+archive: clean
+	@echo " "
+	@echo "I hope you checked everything out and made sure it builds"
+	@echo "maybe someday Erik will get around to making that automatic."
+	@sleep 5
+	@rm -rf /tmp/rpm-$(VERSION)
+	@mkdir /tmp/rpm-$(VERSION)
+	@tar cSpf - * | (cd /tmp/rpm-$(VERSION); tar xSpf -)
+	@cd /tmp/rpm-$(VERSION); \
+	    find . -name "RCS" -exec rm {} \;  ; \
+	    find . -name ".depend" -exec rm {} \;  ; \
+	    rm -f *gz *rpm
+	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
+	@rm -rf /tmp/rpm-$(VERSION)
+	@cp /tmp/rpm-$(VERSION).tar.gz .
+	@rm -f /tmp/rpm-$(VERSION).tar.gz 
+	@echo " "
+	@echo "The final archive is ./rpm-$(VERSION).tar.gz. You should run"
+	@echo "-n$(VERSION) RCS/*,v on all of the directories btw."
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
