@@ -72,7 +72,7 @@ fi
 # --- Script interpreters.
 for f in $scriptlist; do
     [ -r $f -a -x $f ] || continue
-    interp=`head -1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1`
+    interp=`head -n 1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1`
     interplist="$interplist $interp"
     case $interp in
     */perl)	perllist="$perllist $f" ;;
