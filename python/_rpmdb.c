@@ -92,7 +92,7 @@
 
 #define PY_BSDDB_VERSION "3.3.1"
 
-static char *rcs_id = "$Id: _rpmdb.c,v 1.4 2002/06/07 13:12:34 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.5 2002/08/14 21:35:35 jbj Exp $";
 
 
 #ifdef WITH_THREAD
@@ -410,6 +410,7 @@ static int makeDBError(int err)
     switch (err) {
         case 0:                     /* successful, no error */      break;
 
+#if (DBVER < 41)
         case DB_INCOMPLETE:
 #if INCOMPLETE_IS_WARNING
             strcpy(errTxt, db_strerror(err));
@@ -429,6 +430,7 @@ static int makeDBError(int err)
         errObj = DBIncompleteError;
 #endif
         break;
+#endif
 
         case DB_KEYEMPTY:           errObj = DBKeyEmptyError;       break;
         case DB_KEYEXIST:           errObj = DBKeyExistError;       break;
@@ -1025,10 +1027,17 @@ DB_associate(DBObject* self, PyObject* args, PyObject* kwargs)
 
 
     MYDB_BEGIN_ALLOW_THREADS;
+#if (DBVER >= 41)
+    err = self->db->associate(self->db, NULL,
+                              secondaryDB->db,
+                              _db_associateCallback,
+                              flags);
+#else
     err = self->db->associate(self->db,
                               secondaryDB->db,
                               _db_associateCallback,
                               flags);
+#endif
     MYDB_END_ALLOW_THREADS;
 
     if (err) {
@@ -1498,7 +1507,11 @@ DB_open(DBObject* self, PyObject* args, PyObject* kwargs)
     }
 
     MYDB_BEGIN_ALLOW_THREADS;
+#if (DBVER >= 41)
+    err = self->db->open(self->db, NULL, filename, dbname, type, flags, mode);
+#else
     err = self->db->open(self->db, filename, dbname, type, flags, mode);
+#endif
     MYDB_END_ALLOW_THREADS;
     if (makeDBError(err)) {
         self->db = NULL;
@@ -1851,7 +1864,9 @@ DB_stat(DBObject* self, PyObject* args)
         MAKE_HASH_ENTRY(nkeys);
         MAKE_HASH_ENTRY(ndata);
         MAKE_HASH_ENTRY(pagesize);
+#if (DBVER < 41)
         MAKE_HASH_ENTRY(nelem);
+#endif
         MAKE_HASH_ENTRY(ffactor);
         MAKE_HASH_ENTRY(buckets);
         MAKE_HASH_ENTRY(free);
@@ -3337,7 +3352,9 @@ DBEnv_lock_stat(DBEnvObject* self, PyObject* args)
 
 #define MAKE_ENTRY(name)  _addIntToDict(d, #name, sp->st_##name)
 
+#if (DBVER < 41)
     MAKE_ENTRY(lastid);
+#endif
     MAKE_ENTRY(nmodes);
 #if (DBVER >= 32)
     MAKE_ENTRY(maxlocks);
@@ -4116,7 +4133,9 @@ DL_EXPORT(void) init_rpmdb(void)
     ADD_INT(d, DB_APPEND);
     ADD_INT(d, DB_BEFORE);
     ADD_INT(d, DB_CACHED_COUNTS);
+#if (DBVER < 41)
     ADD_INT(d, DB_CHECKPOINT);
+#endif
 #if (DBVER >= 33)
     ADD_INT(d, DB_COMMIT);
 #endif
@@ -4124,7 +4143,9 @@ DL_EXPORT(void) init_rpmdb(void)
 #if (DBVER >= 32)
     ADD_INT(d, DB_CONSUME_WAIT);
 #endif
+#if (DBVER < 41)
     ADD_INT(d, DB_CURLSN);
+#endif
     ADD_INT(d, DB_CURRENT);
 #if (DBVER >= 33)
     ADD_INT(d, DB_FAST_STAT);
@@ -4164,7 +4185,9 @@ DL_EXPORT(void) init_rpmdb(void)
     ADD_INT(d, DB_DONOTINDEX);
 #endif
 
+#if (DBVER < 41)
     ADD_INT(d, DB_INCOMPLETE);
+#endif
     ADD_INT(d, DB_KEYEMPTY);
     ADD_INT(d, DB_KEYEXIST);
     ADD_INT(d, DB_LOCK_DEADLOCK);

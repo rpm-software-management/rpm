@@ -366,7 +366,11 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     if (db != NULL)
 	rc = db->sync(db, flags);
     /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+    _printit = _debug;
+#else
     _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
+#endif
     rc = cvtdberr(dbi, "db->sync", rc, _printit);
     return rc;
 }
@@ -599,10 +603,17 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
 {
     DB * db = dbi->dbi_db;
     DB * secondary = dbisecondary->dbi_db;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+    DB_TXN * txnid = NULL;
+#endif
     int rc;
 
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+    rc = db->associate(db, txnid, secondary, callback, flags);
+#else
     rc = db->associate(db, secondary, callback, flags);
+#endif
 /*@=moduncon@*/
     rc = cvtdberr(dbi, "db->associate", rc, _debug);
     return rc;
@@ -789,6 +800,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+    DB_TXN * txnid = NULL;
+#endif
     u_int32_t oflags;
     int _printit;
 
@@ -1124,8 +1138,13 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			? dbfullpath : dbfile;
 #endif
 
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+		rc = db->open(db, txnid, dbpath, dbsubfile,
+		    dbi->dbi_type, oflags, dbi->dbi_perms);
+#else
 		rc = db->open(db, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
+#endif
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
