@@ -56,6 +56,7 @@
 	- add sl.po from Primoz Peterlin <peterlin@biofiz.mf.uni-lj.si>.
 	- updated sv.po from <goeran@uddeborg.pp.se>.
 	- macro expansion (and absolute path) in %files -f arg (#9508,#9091).
+	- permit cli setting of build root policies.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
