@@ -94,13 +94,13 @@ typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
  * for the file type. The owner/group mappings are ignored for the nonroot
  * user. If *failedFile is non-NULL on return, it should be free()d.
  */
-int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
+int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
 		       /*@out@*/const char ** failedFile);
 /**
  * The RPM internal equivalent of the command line "cpio -o".
  */
-int cpioBuildArchive(FD_t cfd, struct cpioFileMapping * mappings,
+int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, /*@out@*/const char ** failedFile);
 

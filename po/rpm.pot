@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-05-16 14:25-0400\n"
+"POT-Creation-Date: 2000-05-17 12:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1938,51 +1938,51 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:351
+#: lib/cpio.c:359
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:357
+#: lib/cpio.c:365
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:597
+#: lib/cpio.c:609
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1047
+#: lib/cpio.c:1070
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1050
+#: lib/cpio.c:1073
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1074
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1069
+#: lib/cpio.c:1092
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1093
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1094
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1095
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1081
+#: lib/cpio.c:1104
 msgid " failed - "
 msgstr ""
 
@@ -3141,59 +3141,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:796
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:799
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:802
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:805
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:808
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:811
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:805
+#: lib/rpmio.c:814
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:808
+#: lib/rpmio.c:817
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:820
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:814
+#: lib/rpmio.c:823
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:826
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:820
+#: lib/rpmio.c:829
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:824
+#: lib/rpmio.c:833
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1357
+#: lib/rpmio.c:1366
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
