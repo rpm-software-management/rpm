@@ -57,7 +57,7 @@ static int urlStrcmp(const char *str1, const char *str2)
 	    return -1;
     return 0;
 }
-    
+
 static void findUrlinfo(urlinfo **uret, int mustAsk)
 {
     urlinfo *u;
@@ -376,8 +376,10 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 	if ((fd = fdNew()) == NULL)
 	    break;
 	fd->fd_url = u;
-	if ((u->openError = ftpGetFileDesc(fd)) < 0)
+	if ((u->openError = ftpGetFileDesc(fd)) < 0) {
+	    u->ftpControl = -1;
 	    fd = NULL;	/* XXX fd already closed */
+	}
 	break;
     case URL_IS_HTTP:
 	if (urlSplit(url, &u))

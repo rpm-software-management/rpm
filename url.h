@@ -44,6 +44,7 @@ int	ufdClose(FD_t fd);
 const char *urlStrerror(const char *url);
 
 int	urlGetFile(const char * url, const char * dest);
+void    urlInvalidateCache(const char * url);
 
 #ifdef __cplusplus
 }
