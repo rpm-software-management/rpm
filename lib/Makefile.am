@@ -20,7 +20,7 @@ librpm_a_SOURCES = \
 	messages.c misc.c oldheader.c package.c query.c \
 	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmlead.c \
 	rpmrc.c signature.c stringbuf.c tagtable.c \
-	tread.c uninstall.c verify.c transaction.c problems.c hash.c
+	tread.c uninstall.c verify.c transaction.c problems.c hash.c fprint.c
 
 include ../Makefile.inc
 
