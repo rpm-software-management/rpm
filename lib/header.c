@@ -61,13 +61,20 @@ struct entryInfo {
     int_32 count;		/*!< Number of tag elements. */
 };
 
+#define	REGION_ID(_x, _y)	(((_x) << 4) + ((_y) & 0xf))
+#define	REGION_TAG_TYPE		RPM_BIN_TYPE
+#define	REGION_TAG_COUNT	sizeof(struct entryInfo)
+
+#define	ENTRY_IS_REGION(_e)	((_e)->info.tag < HEADER_I18NTABLE)
+#define	ENTRY_IN_REGION(_e)	(((_e)->info.offset & 0xf) > 0)
+
 /**
  * A single tag from a Header.
  */
 struct indexEntry {
     struct entryInfo info;	/*!< Description of tag data. */
     void * data; 		/*!< Location of tag data. */
-    int length;			/*!< Computable, but why bother? */
+    int length;			/*!< No. bytes of data. */
 };
 
 /**
@@ -410,7 +417,7 @@ static void fprIndexEntry(const char *msg, struct indexEntry *entry, int i)
 {
     const char * val;
     fprintf(stderr, "%6d %*s %p: %p[%d]",
-	i, (3*entry->info.offset), "",
+	i, (3*(entry->info.offset & 0xf)), "",
 	entry, entry->data, entry->length);
 
     switch (entry->info.type) {
@@ -460,6 +467,7 @@ Header headerLoad(void *pv)
     struct entryInfo * pe;
     struct indexEntry * entry; 
     int prevtag = 0;
+    int rid = 0;
     int i;
 
     h->nregions = 1;
@@ -479,11 +487,11 @@ Header headerLoad(void *pv)
 
     entry = h->index;
     i = 0;
-    if (htonl(pe->tag) != HEADER_IMAGE) {
-	entry->info.type = RPM_BIN_TYPE;
+    if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
+	entry->info.type = REGION_TAG_TYPE;
 	prevtag = entry->info.tag = HEADER_IMAGE;
-	entry->info.count = 1;
-	entry->info.offset = h->nregions - 1;
+	entry->info.count = REGION_TAG_COUNT;
+	entry->info.offset = rid;
 	entry->data = h->regions[0].data;
 	entry->length = h->regions[0].len;
 	entry++;
@@ -510,23 +518,30 @@ Header headerLoad(void *pv)
 	entry->info.count = htonl(pe->count);
 	entry->info.offset = htonl(pe->offset);
 
-	if (entry->info.offset < 0) {
+	if (ENTRY_IS_REGION(entry)) {
+	    int doff;
 	    h->regions = xrealloc(h->regions,
 				(h->nregions + 1) * sizeof(*h->regions));
+
+	    {	int_32 * stei = (int_32 *) (dataStart + entry->info.offset);
+		doff = ntohl(stei[2]);
+		h->regions[h->nregions].data = dataStart + doff;
+		h->regions[h->nregions].len = ntohl(stei[3]);
+	    }
+
 	    h->regions[h->nregions].allocated = 0;
-	    h->regions[h->nregions].len = 0;	/* XXX WRONG */
-	    h->regions[h->nregions].data = dataStart + entry->info.offset;
+	    rid = REGION_ID(h->nregions, 0);
 	    h->nregions++;
 
-	    entry->info.offset = h->nregions - 1;
-	    entry->data = h->regions[entry->info.offset].data;
-	    entry->length = h->regions[entry->info.offset].len;
+	    entry->info.offset = rid;
+	    entry->data = h->regions[h->nregions - 1].data;
+	    entry->length = h->regions[h->nregions - 1].len;
 	    continue;
 	}
 
 	entry->data = t = dataStart + entry->info.offset;
 	entry->length = dataLength(entry->info.type, t, entry->info.count, 1);
-	entry->info.offset = h->nregions;
+	entry->info.offset = rid + 1;
 
 	/* Perform endian conversions. */
 	switch (entry->info.type) {
@@ -572,13 +587,6 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
     entry = h->index;
     i = 0;
 
-    if (entry->info.tag == HEADER_IMAGE) {
-	entry++;
-	i++;
-	il--;
-	dl += sizeof(struct entryInfo);
-    }
-
     ei = xmalloc(len);
     ei[0] = htonl(il);
     ei[1] = htonl(dl);
@@ -594,7 +602,23 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 
 	pe->type = htonl(entry->info.type);
 	pe->tag = htonl(entry->info.tag);
-	pe->count = htonl(entry->info.count);
+
+	if (ENTRY_IS_REGION(entry)) {
+	    
+	    pe->count = htonl(REGION_TAG_COUNT);
+	    pe->offset = htonl(te - dataStart);
+
+	    {	int_32 * stei = (int_32 *) te;
+		int_32 doff = ((char *)entry->data) - dataStart;
+		stei[0] = htonl(0);
+		stei[1] = htonl(0);
+		stei[2] = htonl(doff);
+		stei[3] = htonl(entry->length);
+		te = (char *) &stei[4];
+	    }
+	    
+	    continue;
+	}
 
 	/* Alignment */
 	type = entry->info.type;
@@ -607,6 +631,7 @@ static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	    }
 	}
 
+	pe->count = htonl(entry->info.count);
 	pe->offset = htonl(te - dataStart);
 
 	/* copy data w/ endian conversions */
@@ -1132,13 +1157,14 @@ void headerFree(Header h)
 {
     if (--h->nrefs)
 	return;
+
     if (h->index) {
 	struct indexEntry * entry = h->index;
 	int i;
 	for (i = 0; i < h->indexUsed; i++, entry++) {
-	    if (entry->info.tag < HEADER_I18NTABLE)
+	    if (ENTRY_IS_REGION(entry))
 		continue;
-	    if (entry->info.offset > 0)
+	    if (ENTRY_IN_REGION(entry))
 		continue;
 	    free(entry->data);
 	    entry->data = NULL;
@@ -1184,8 +1210,9 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
 	unsigned diff;
 	int_32 type;
 
-	if (entry->info.tag < HEADER_I18NTABLE) {
-	    size -= sizeof(struct entryInfo);
+	if (ENTRY_IS_REGION(entry)) {
+	    if (entry->info.count > 0)
+		size += entry->info.count;
 	    continue;
 	}
 
@@ -1289,10 +1316,6 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 	h->sorted = 0;
     h->indexUsed++;
 
-#ifdef DYING
-    headerSort(h);
-#endif
-
     return 1;
 }
 
@@ -1360,7 +1383,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 
     if (langNum >= table->info.count) {
 	length = strlen(lang) + 1;
-	if (table->info.offset > 0) {
+	if (ENTRY_IN_REGION(table)) {
 	    char * t = xmalloc(table->length + length);
 	    memcpy(t, table->data, table->length);
 	    table->data = t;
@@ -1383,7 +1406,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	ghosts = langNum - entry->info.count;
 	
 	length = strlen(string) + 1 + ghosts;
-	if (entry->info.offset > 0) {
+	if (ENTRY_IN_REGION(entry)) {
 	    char * t = xmalloc(entry->length + length);
 	    memcpy(t, entry->data, entry->length);
 	    entry->data = t;
@@ -1428,7 +1451,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	/* Replace I18N string array */
 	entry->length -= strlen(be) + 1;
 	entry->length += sn;
-	if (entry->info.offset > 0) {
+	if (ENTRY_IN_REGION(entry)) {
 	    entry->info.offset = 0;
 	} else
 	    free(entry->data);
@@ -1461,7 +1484,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     entry->info.type = type;
     entry->data = grabData(type, p, c, &entry->length);
 
-    if (entry->info.offset > 0) {
+    if (ENTRY_IN_REGION(entry)) {
 	entry->info.offset = 0;
     } else
 	free(oldData);
@@ -1494,7 +1517,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
 
     length = dataLength(type, p, c, 0);
 
-    if (entry->info.offset > 0) {
+    if (ENTRY_IN_REGION(entry)) {
 	char * t = xmalloc(entry->length + length);
 	memcpy(t, entry->data, entry->length);
 	entry->data = t;
@@ -1527,7 +1550,7 @@ int headerRemoveEntry(Header h, int_32 tag)
     for (first = entry; first < last; first++) {
 	if (first->info.tag != tag)
 	    break;
-	if (first->info.offset > 0)
+	if (ENTRY_IN_REGION(first))
 	    continue;
 	free(first->data);
 	first->data = NULL;
@@ -1541,32 +1564,6 @@ int headerRemoveEntry(Header h, int_32 tag)
 	    memmove(entry, first, (ne * sizeof(*entry)));
     }
     
-#if 0
-    /* We might be better off just counting the number of items off the
-       end and issuing one big memcpy, but memcpy() doesn't have to work
-       on overlapping regions thanks to ANSI <sigh>. A alloca() and two
-       memcpy() would probably still be a win (as our moving from the
-       end to the middle isn't very nice to the qsort() we'll have to
-       do to make up for this!), but I'm too lazy to implement it. Just
-       remember that this repeating this is basically nlogn thanks to this
-       dumb implementation (but n is the best we'd do anyway) */
-
-    if (entry->info.offset > 0) {
-	char * t = xmalloc(entry->length);
-	memcpy(t, entry->data, entry->length);
-	entry->data = t;
-	entry->info.offset = 0;
-    }
-
-    while (entry->info.tag == tag && entry < last) {
-	free(entry->data);
-	*(entry++) = *(--last);
-    }
-    h->indexUsed = last - h->index;
-
-    headerSort(h);
-#endif
-
     return 0;
 }
 

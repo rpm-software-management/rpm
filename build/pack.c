@@ -351,7 +351,13 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }
     
-    /* Write the header */
+    /* Reallocate the header into one contiguous region. */
+    *hdrp = h = headerReload(h);
+
+    /*
+     * Write the header+archive into a temp file so that the size of
+     * archive (after compression) can be added to the header.
+     */
     if (makeTempFile(NULL, &sigtarget, &fd)) {
 	rpmError(RPMERR_CREATE, _("Unable to open temp file."));
 	return RPMERR_CREATE;
@@ -374,13 +380,19 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     if (rc)
 	goto exit;
 
-    /* Now set the real archive size in the Header */
+    /*
+     * Set the actual archive size, and rewrite the header.
+     * This used to be done using headerModifyEntry(), but now that headers
+     * have regions, the value is scribbled directly into the header data
+     * area. Some new scheme for adding the final archive size will have
+     * to be devised if headerGetEntry() ever changes to return a pointer
+     * to memory not in the region. <shrug>
+     */
     if (Fileno(csa->cpioFdIn) < 0) {
-	headerModifyEntry(h, RPMTAG_ARCHIVESIZE,
-		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
+	int_32 * archiveSize;
+	headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL, &archiveSize, NULL);
+	*archiveSize = csa->cpioArchiveSize;
     }
-
-    *hdrp = h = headerReload(h);
 
     (void)Fseek(fd, 0,  SEEK_SET);
 

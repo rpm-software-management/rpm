@@ -262,6 +262,7 @@ void rpmProblemSetFree(rpmProblemSet probs)
     free(probs);
 }
 
+/** @todo multilib file action assignment need to be checked. */
 static Header relocateFileList(struct availablePackage * alp,
 			       rpmProblemSet probs, Header origH,
 			       enum fileActions * actions,
@@ -290,16 +291,29 @@ static Header relocateFileList(struct availablePackage * alp,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
 
-    if (!rawRelocations && !numValid && !alp->multiLib) {
-	Header oH =  headerLink(origH);
-	return oH;
+    /*
+     * If no relocations are specified (usually the case), then return the
+     * original header. If there are prefixes, however, then INSTPREFIXES
+     * should be added, but, since relocateFileList() can be called more
+     * than once for the same header, don't bother if already present.
+     */
+    if (rawRelocations == NULL) {
+
+	if (numValid && !headerIsEntry(origH, RPMTAG_INSTPREFIXES)) {
+	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
+		headerAddEntry(origH, RPMTAG_INSTPREFIXES,
+			RPM_STRING_ARRAY_TYPE, validRelocations, numValid);
+	    xfree(validRelocations);
+	}
+	/* XXX FIXME multilib file actions need to be checked. */
+	return headerLink(origH);
     }
 
     h = headerCopy(origH);
 
     if (rawRelocations) {
-	for (i = 0; rawRelocations[i].newPath || rawRelocations[i].oldPath;
-		i++) ;
+	for (i = 0; rawRelocations[i].newPath || rawRelocations[i].oldPath; i++)
+	    ;
 	numRelocations = i;
     } else {
 	numRelocations = 0;

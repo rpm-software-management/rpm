@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-07 07:55-0500\n"
+"POT-Creation-Date: 2000-11-08 11:51-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1495,7 +1495,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:111 build/pack.c:356
+#: build/build.c:111 build/pack.c:362
 msgid "Unable to open temp file."
 msgstr ""
 
@@ -1822,51 +1822,51 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:368
+#: build/pack.c:374
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:400
+#: build/pack.c:412
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:433
+#: build/pack.c:445
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:445
+#: build/pack.c:457
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:458
+#: build/pack.c:470
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:465
+#: build/pack.c:477
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr ""
 
-#: build/pack.c:471
+#: build/pack.c:483
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr ""
 
-#: build/pack.c:494
+#: build/pack.c:506
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:560
+#: build/pack.c:572
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:577
+#: build/pack.c:589
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2485,7 +2485,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2385 lib/header.c:2402 lib/header.c:2422
+#: lib/header.c:2382 lib/header.c:2399 lib/header.c:2419
 msgid "(not a number)"
 msgstr ""
 
@@ -2514,92 +2514,92 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:260
+#: lib/header.c:267
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:291 lib/header.c:872 lib/install.c:380
+#: lib/header.c:298 lib/header.c:897 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1268
+#: lib/header.c:1295
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1738
+#: lib/header.c:1735
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1768
+#: lib/header.c:1765
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1782
+#: lib/header.c:1779
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1794
+#: lib/header.c:1791
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1811
+#: lib/header.c:1808
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1838
+#: lib/header.c:1835
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1856
+#: lib/header.c:1853
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1860
+#: lib/header.c:1857
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1920
+#: lib/header.c:1917
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1929
+#: lib/header.c:1926
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1942 lib/header.c:1983
+#: lib/header.c:1939 lib/header.c:1980
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1952
+#: lib/header.c:1949
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1968
+#: lib/header.c:1965
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1993
+#: lib/header.c:1990
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2164
+#: lib/header.c:2161
 msgid "(unknown type)"
 msgstr ""
 
@@ -3697,27 +3697,27 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
-#: lib/transaction.c:423
+#: lib/transaction.c:437
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:449 lib/transaction.c:532
+#: lib/transaction.c:463 lib/transaction.c:546
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:454
+#: lib/transaction.c:468
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:525
+#: lib/transaction.c:539
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:677
+#: lib/transaction.c:691
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

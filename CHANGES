@@ -27,6 +27,8 @@
 		(Pawel A. Gajda<mis@k2.net.pl>).
 	- add support for unzip <rodrigob@conectiva.com.br>
 	- load headers as single contiguous region.
+	- add region marker as RPM_BIN_TYPE in packages and database.
+	- fix: don't headerCopy() relocateable packages if not relocating.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
