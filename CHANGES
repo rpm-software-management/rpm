@@ -36,7 +36,10 @@
 	- complain if critical rpmrc variables (cpiobin, gzipbin, etc) aren't
 	  set anywhere
 	- allow --dbpath for --rebuilddb
-	- added check for systems whose chown() follows symlinks
+	- added check for systems whose chown() follows symlinks. If configure
+	  is run as root, this should get it right, otherwise it assumes
+	  chown() does not follow symlinks. You can use --enable-broken-chown
+	  to force configure to think chown does indeed follow symlinks.
 	- added packager and url to default -qi output
 
 2.3.10 -> 2.3.11:
