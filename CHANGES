@@ -9,6 +9,7 @@
 	- made rpmEnsureOlder() internal to lib/install.c
 	- added rpmVersionCompare() to compare version/release/serial numbers
 	  for packages -- returns like strcmp()
+	- stdout/stderr were getting closed after running a verify script
 
 2.2.11 -> 2.3:
 	- replaced putenv/setenv which calls which malloc() buffer -- these
