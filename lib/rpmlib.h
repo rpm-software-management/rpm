@@ -665,6 +665,7 @@ extern int dbiTagsMax;
 /** \ingroup rpmdb
  * Unreference a database instance.
  * @param db		rpm database
+ * @param msg
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
@@ -681,6 +682,7 @@ rpmdb XrpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg,
 /** \ingroup rpmdb
  * Reference a database instance.
  * @param db		rpm database
+ * @param msg
  * @return		new rpm database reference
  */
 /*@unused@*/
@@ -1030,6 +1032,7 @@ void printDepProblems(FILE * fp, rpmProblem probs, int numProblems)
 /**
  * Unreference a problem set instance.
  * @param ps		problem set
+ * @param msg
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
@@ -1047,6 +1050,7 @@ rpmProblemSet XrpmpsUnlink (/*@killref@*/ /*@only@*/ rpmProblemSet ps,
 /**
  * Reference a problem set instance.
  * @param ps		transaction set
+ * @param msg
  * @return		new transaction set reference
  */
 /*@unused@*/
@@ -1087,7 +1091,7 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
 /**
  * Print problems to file handle.
  * @param fp		file handle
- * @param probs		problem set
+ * @param ps		problem set
  */
 void rpmProblemSetPrint(FILE *fp, rpmProblemSet ps)
 	/*@globals fileSystem @*/
@@ -1305,6 +1309,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 /** \ingroup rpmtrans
  * Unreference a transaction instance.
  * @param ts		transaction set
+ * @param msg
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
@@ -1322,6 +1327,7 @@ rpmTransactionSet XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
 /** \ingroup rpmtrans
  * Reference a transaction set instance.
  * @param ts		transaction set
+ * @param msg
  * @return		new transaction set reference
  */
 /*@unused@*/
@@ -1370,7 +1376,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
 /** \ingroup rpmtrans
  * Create an empty transaction set.
  * @param db		rpm database (may be NULL if database is not accessed)
- * @param rootdir	path to top of install tree
+ * @param rootDir	path to top of install tree
  * @return		transaction set
  */
 /*@only@*/ rpmTransactionSet rpmtransCreateSet(
@@ -1575,9 +1581,9 @@ typedef enum rpmtransFlags_e {
 
 /** \ingroup rpmtrans
  * Return copy of rpmlib internal provides.
- * @retval		address of array of rpmlib internal provide names
- * @retval		address of array of rpmlib internal provide flags
- * @retval		address of array of rpmlib internal provide versions
+ * @retval provNames	address of array of rpmlib internal provide names
+ * @retval provFlags	address of array of rpmlib internal provide flags
+ * @retval provVersions	address of array of rpmlib internal provide versions
  * @return		no. of entries
  */
 /*@unused@*/
@@ -1670,7 +1676,6 @@ int rpmtsSetNotifyCallback(rpmTransactionSet ts,
  * @param ts		transaction set
  * @param okProbs	previously known problems (or NULL)
  * @retval newProbs	address to return unfiltered problems (or NULL)
- * @param transFlags	bits to control rpmRunTransactions()
  * @param ignoreSet	bits to filter problem types
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
@@ -1697,7 +1702,7 @@ int rpmRunTransactions(rpmTransactionSet ts,
 
 /**
  * Return value of tag from name.
- * @param targstr	name of tag
+ * @param tagstr	name of tag
  * @return		tag value
  */
 int tagValue(const char *tagstr)

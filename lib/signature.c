@@ -859,6 +859,7 @@ exit:
  * Verify header immutable region SHA1 digest.
  * @param ts		transaction set
  * @retval t		verbose success/failure text
+ * @param sha1ctx
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn
@@ -1043,6 +1044,7 @@ static inline unsigned char nibble(char c)
  * Verify PGP (aka RSA/MD5) signature.
  * @param ts		transaction set
  * @retval t		verbose success/failure text
+ * @param md5ctx
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn
@@ -1151,6 +1153,7 @@ exit:
  * Verify GPG (aka DSA) signature.
  * @param ts		transaction set
  * @retval t		verbose success/failure text
+ * @param sha1ctx
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn

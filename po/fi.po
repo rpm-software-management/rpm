@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-16 13:35-0500\n"
+"POT-Creation-Date: 2002-04-08 13:10-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -114,7 +114,7 @@ msgstr ""
 msgid "use <dir> as the top level directory"
 msgstr "k‰yt‰ <hakem> ylimp‰n‰ hakemistona"
 
-#: lib/poptI.c:215 rpmqv.c:125
+#: rpmqv.c:125 lib/poptI.c:215
 msgid "<dir>"
 msgstr ""
 
@@ -179,7 +179,7 @@ msgid "Common options for all rpm modes:"
 msgstr ""
 
 #. @-modfilesys -globs @
-#: lib/poptI.c:27 rpmqv.c:220
+#: rpmqv.c:220 lib/poptI.c:27
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -321,40 +321,49 @@ msgstr "--allfiles: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
 
 #: rpmqv.c:795
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
+msgstr ""
+"--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
 
 #: rpmqv.c:800
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr "--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
+msgstr ""
+"--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
 
 #: rpmqv.c:805
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr "--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
+msgstr ""
+"--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
 
 #: rpmqv.c:809
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
-msgstr "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+msgstr ""
+"--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+"tarkistettaessa"
 
 #: rpmqv.c:814
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
-msgstr "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja k‰‰nnett‰ess‰"
+msgstr ""
+"--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja "
+"k‰‰nnett‰ess‰"
 
 #: rpmqv.c:819
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
-msgstr "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
+msgstr ""
+"--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, "
+"kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
 
 #: rpmqv.c:831
 msgid "arguments to --root (-r) must begin with a /"
@@ -524,175 +533,175 @@ msgstr "odotin '?'-merkki‰ ilmauksessa"
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:330 build/files.c:522 build/files.c:705
+#: build/files.c:333 build/files.c:529 build/files.c:718
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: build/files.c:341 build/files.c:647 build/files.c:716
+#: build/files.c:344 build/files.c:657 build/files.c:729
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "puuttuva ':', %s:%d"
 
-#: build/files.c:379 build/files.c:672
+#: build/files.c:382 build/files.c:682
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/files.c:485
+#: build/files.c:490
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: build/files.c:538
+#: build/files.c:545
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:576
+#: build/files.c:583
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:586
+#: build/files.c:593
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:598
+#: build/files.c:605
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:743
+#: build/files.c:756
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
 #. @innercontinue@
-#: build/files.c:754
+#: build/files.c:767
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:905
+#: build/files.c:924
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:911
+#: build/files.c:930
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:939
+#: build/files.c:958
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:954
+#: build/files.c:973
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/files.c:967
+#: build/files.c:986
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1110
+#: build/files.c:1137
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1254
+#: build/files.c:1281
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1491
+#: build/files.c:1523
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:1515
+#: build/files.c:1547
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei lˆytynyt palvelimelta"
 
-#: build/files.c:1558 build/files.c:2174 build/parsePrep.c:50
+#: build/files.c:1590 build/files.c:2210 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1571
+#: build/files.c:1603
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:1676
+#: build/files.c:1712
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "siirtojen pit‰‰ alkaa /-merkill‰"
 
-#: build/files.c:1699
+#: build/files.c:1735
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: build/files.c:1714
+#: build/files.c:1750
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei lˆytynyt palvelimelta"
 
-#: build/files.c:1776
+#: build/files.c:1812
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/files.c:1787 build/pack.c:146
+#: build/files.c:1823 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:2162
+#: build/files.c:2198
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2236
+#: build/files.c:2272
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "En voinut ajaa pgp:t‰"
 
-#: build/files.c:2241
+#: build/files.c:2277
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "En voinut ajaa pgp:t‰"
 
-#: build/files.c:2325
+#: build/files.c:2361
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "pgp ep‰onnistui"
 
-#: build/files.c:2329
+#: build/files.c:2365
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "%s:n luonti ep‰onnistui\n"
 
-#: build/files.c:2485
+#: build/files.c:2521
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2514 build/files.c:2528
+#: build/files.c:2550 build/files.c:2564
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s:n luonti ep‰onnistui\n"
 
-#: build/files.c:2650
+#: build/files.c:2686
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
@@ -1391,17 +1400,17 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: build/spec.c:232
+#: build/spec.c:233
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:238
+#: build/spec.c:239
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:299
+#: build/spec.c:300
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
@@ -1503,43 +1512,43 @@ msgstr ""
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:878
+#: lib/depends.c:879
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
 #. Record all relations.
-#: lib/depends.c:1146
+#: lib/depends.c:1147
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1252
+#: lib/depends.c:1253
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1345
+#: lib/depends.c:1346
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1415
+#: lib/depends.c:1416
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1450
+#: lib/depends.c:1451
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1455
+#: lib/depends.c:1456
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
+#: rpmdb/header.c:2978 rpmdb/header.c:2999 rpmdb/header.c:3021
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -1601,27 +1610,27 @@ msgstr ""
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1597 lib/fsm.c:1727
+#: lib/fsm.c:1599 lib/fsm.c:1731
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/fsm.c:1753
+#: lib/fsm.c:1757
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "en voi poistaa %s -hakemisto ei ole tyhj‰"
 
-#: lib/fsm.c:1759
+#: lib/fsm.c:1763
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s:n rmdir ep‰onnistui: %s"
 
-#: lib/fsm.c:1769
+#: lib/fsm.c:1773
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/fsm.c:1791
+#: lib/fsm.c:1795
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -1634,13 +1643,15 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 #: lib/package.c:181 lib/package.c:257
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
-msgstr "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
+msgstr ""
+"t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
 #: lib/package.c:202 lib/package.c:265
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
-msgstr "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
+msgstr ""
+"t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
 #: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:573
 #, c-format
@@ -1704,13 +1715,16 @@ msgstr ""
 
 #: lib/poptI.c:110
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "asenna kaikki tiedostot, myˆs konfiguraatiot, jotka muuten ehk‰ ohitettaisiin"
+msgstr ""
+"asenna kaikki tiedostot, myˆs konfiguraatiot, jotka muuten ehk‰ ohitettaisiin"
 
 #: lib/poptI.c:114
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr "poista kaikki paketit, joiden nime‰ vastaa  <paketti> (tavallisesti, jos  <paketti> m‰‰ritt‰‰ useita paketteja, tulee virhe)"
+msgstr ""
+"poista kaikki paketit, joiden nime‰ vastaa  <paketti> (tavallisesti, jos  "
+"<paketti> m‰‰ritt‰‰ useita paketteja, tulee virhe)"
 
 #: lib/poptI.c:120 lib/poptI.c:171
 #, fuzzy
@@ -1856,7 +1870,9 @@ msgstr "‰l‰ suorita asennusskriptej‰"
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr "p‰ivit‰ vanhempaan versioon (--force p‰ivitett‰ess‰ tekee t‰m‰n automaattisesti)"
+msgstr ""
+"p‰ivit‰ vanhempaan versioon (--force p‰ivitett‰ess‰ tekee t‰m‰n "
+"automaattisesti)"
 
 #: lib/poptI.c:212
 msgid "print percentages as package installs"
@@ -2369,52 +2385,52 @@ msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 msgid "no package triggers %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:773 lib/query.c:795 lib/query.c:813 lib/query.c:844
+#: lib/query.c:773 lib/query.c:795 lib/query.c:816 lib/query.c:851
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: lib/query.c:783 lib/query.c:801 lib/query.c:819 lib/query.c:849
+#: lib/query.c:783 lib/query.c:801 lib/query.c:826 lib/query.c:856
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:860
+#: lib/query.c:867
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mik‰‰n pakettie ei tarvitse %s:a\n"
 
-#: lib/query.c:871
+#: lib/query.c:878
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mik‰‰n paketti ei tarjoa %s:a\n"
 
-#: lib/query.c:905
+#: lib/query.c:912
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/query.c:909
+#: lib/query.c:916
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/query.c:936
+#: lib/query.c:943
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:939
+#: lib/query.c:946
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:944
+#: lib/query.c:951
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:955 lib/rpminstall.c:657
+#: lib/query.c:962 lib/rpminstall.c:657
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -2826,33 +2842,33 @@ msgstr ""
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:873
+#: lib/signature.c:874
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1059
+#: lib/signature.c:1061
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "ohita MD5-allekirjoitukset"
 
-#: lib/signature.c:1168
+#: lib/signature.c:1171
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1169
+#: lib/signature.c:1172
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/signature.c:1244
+#: lib/signature.c:1247
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1271
+#: lib/signature.c:1274
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1275
+#: lib/signature.c:1278
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
@@ -2872,17 +2888,17 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/verify.c:324
+#: lib/verify.c:323
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: lib/verify.c:419
+#: lib/verify.c:418
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s:n tyydytt‰m‰ttˆm‰t riippuvuudet:"
 
-#: lib/verify.c:459
+#: lib/verify.c:458
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3021,7 +3037,6 @@ msgstr ""
 
 #. @-observertrans -readonlytrans@
 #: rpmdb/header.c:2208
-#, c-format
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
@@ -3092,10 +3107,6 @@ msgstr "odotin '{' ':'-merkin j‰lkeen ilmauksessa "
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkki‰ ilmauksen lopussa"
 
-#: rpmdb/header.c:2695
-msgid "(unknown type)"
-msgstr "(tuntematon tyyppi)"
-
 #: rpmdb/poptDB.c:19
 msgid "initialize database"
 msgstr ""
@@ -3145,126 +3156,126 @@ msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 msgid "error(%d) removing record %s from %s\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:959
+#: rpmdb/rpmdb.c:954
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:1107
+#: rpmdb/rpmdb.c:1102
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
 
 #. error
-#: rpmdb/rpmdb.c:1372
+#: rpmdb/rpmdb.c:1367
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: rpmdb/rpmdb.c:2150 rpmdb/rpmdb.c:3502
+#: rpmdb/rpmdb.c:2146 rpmdb/rpmdb.c:3507
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:2203
+#: rpmdb/rpmdb.c:2199
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2473
+#: rpmdb/rpmdb.c:2478
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 
-#: rpmdb/rpmdb.c:2634
+#: rpmdb/rpmdb.c:2639
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2638
+#: rpmdb/rpmdb.c:2643
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2808
+#: rpmdb/rpmdb.c:2813
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: rpmdb/rpmdb.c:3003
+#: rpmdb/rpmdb.c:3008
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3007
+#: rpmdb/rpmdb.c:3012
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3388
+#: rpmdb/rpmdb.c:3393
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3421
+#: rpmdb/rpmdb.c:3426
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:3448
+#: rpmdb/rpmdb.c:3453
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3457
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: rpmdb/rpmdb.c:3458
+#: rpmdb/rpmdb.c:3463
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3460
+#: rpmdb/rpmdb.c:3465
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3467
+#: rpmdb/rpmdb.c:3472
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3478
+#: rpmdb/rpmdb.c:3483
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3542
+#: rpmdb/rpmdb.c:3547
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lis‰t‰ tietuetta %d:st‰"
 
-#: rpmdb/rpmdb.c:3560
+#: rpmdb/rpmdb.c:3565
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3568
+#: rpmdb/rpmdb.c:3573
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3570
+#: rpmdb/rpmdb.c:3575
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3580
+#: rpmdb/rpmdb.c:3585
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3582
+#: rpmdb/rpmdb.c:3587
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -3486,6 +3497,9 @@ msgstr "virhe: ftpport pit‰‰ olla luku\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti ep‰onnistui\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(tuntematon tyyppi)"
 
 #, fuzzy
 #~ msgid "rpm verify mode (legacy)"
@@ -3816,7 +3830,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #, fuzzy
 #~ msgid ""
 #~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja voidaan k‰ytt‰‰"
+#~ msgstr ""
+#~ "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja "
+#~ "voidaan k‰ytt‰‰"
 
 #, fuzzy
 #~ msgid "   of file names as well as the following options:"
@@ -3918,7 +3934,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "show all verifiable information for each file (must be used with -l, -c, "
 #~ "or -d)"
-#~ msgstr "n‰yt‰ kaikki varmistettavissa oleva tieto kustakin tiedostosta (pit‰‰ k‰ytt‰‰ -l, -c, tai -d kanssa)"
+#~ msgstr ""
+#~ "n‰yt‰ kaikki varmistettavissa oleva tieto kustakin tiedostosta (pit‰‰ "
+#~ "k‰ytt‰‰ -l, -c, tai -d kanssa)"
 
 #~ msgid "list capabilities package provides"
 #~ msgstr "luettele paketin tarjoamat ominaisuudet"
@@ -3932,7 +3950,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "verify a package installation using the same same package specification "
 #~ "options as -q"
-#~ msgstr "tarkista paketin asennus k‰ytt‰en samoja paketin m‰‰rittelyparametrej‰ kuin -q "
+#~ msgstr ""
+#~ "tarkista paketin asennus k‰ytt‰en samoja paketin m‰‰rittelyparametrej‰ "
+#~ "kuin -q "
 
 #~ msgid "do not verify file attributes"
 #~ msgstr "‰l‰ tarkista tiedostojen ominaisuuksia"
@@ -4021,7 +4041,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "install source package, build binary package and remove spec file, "
 #~ "sources, patches, and icons."
-#~ msgstr "asenna l‰hdekoodipaketti, k‰‰nn‰ bin‰‰ripaketti ja poista m‰‰rittelytiedosto, l‰hdekoodi, korjaukset ja kuvakkeet"
+#~ msgstr ""
+#~ "asenna l‰hdekoodipaketti, k‰‰nn‰ bin‰‰ripaketti ja poista "
+#~ "m‰‰rittelytiedosto, l‰hdekoodi, korjaukset ja kuvakkeet"
 
 #~ msgid "like --rebuild, but don't build any package"
 #~ msgstr "kuten --rebuild, mutta ei k‰‰nn‰ paketteja"
@@ -4051,12 +4073,16 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "set the file permissions to those in the package database using the same "
 #~ "package specification options as -q"
-#~ msgstr "aseta tiedostojen oikeudet niiksi, jotka ne ovat pakettien tietokannassa k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
+#~ msgstr ""
+#~ "aseta tiedostojen oikeudet niiksi, jotka ne ovat pakettien tietokannassa "
+#~ "k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
 
 #~ msgid ""
 #~ "set the file owner and group to those in the package database using the "
 #~ "same package specification options as -q"
-#~ msgstr "aseta tiedostojen omistaja ja ryhm‰ niiksi, jotka ne ovat pakettien tietokannassa k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
+#~ msgstr ""
+#~ "aseta tiedostojen omistaja ja ryhm‰ niiksi, jotka ne ovat pakettien "
+#~ "tietokannassa k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
 
 #~ msgid "-u and --uninstall are deprecated and no longer work.\n"
 #~ msgstr "-u ja --uninstall ovat vanhentuneet eiv‰tk‰ en‰‰ toimi.\n"
@@ -4068,7 +4094,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "script disabling options may only be specified during package "
 #~ "installation, erasure, and verification"
-#~ msgstr "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa "
+#~ "tai tarkistettaessa"
 
 #, fuzzy
 #~ msgid "--apply may only be specified during package installation"
@@ -4088,7 +4116,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "--nomd5 may only be used during signature checking and package "
 #~ "verification"
-#~ msgstr "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa ja paketteja todennettaessa"
+#~ msgstr ""
+#~ "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa ja "
+#~ "paketteja todennettaessa"
 
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
@@ -4138,7 +4168,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
 #~ "place"
-#~ msgstr "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja voidaan k‰ytt‰‰"
+#~ msgstr ""
+#~ "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja "
+#~ "voidaan k‰ytt‰‰"
 
 #, fuzzy
 #~ msgid "  of file names as well as the following options:"
@@ -4296,7 +4328,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, "
 #~ "and verification"
-#~ msgstr "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+#~ "tarkistettaessa"
 
 #, fuzzy
 #~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -4464,22 +4498,29 @@ msgstr "%s:n luonti ep‰onnistui\n"
 
 #, fuzzy
 #~ msgid "                        [--rmsource] [--rmspec] specfile"
-#~ msgstr "                        [--buildarch <arkk>] [--rmsource] m‰‰rittelytiedosto"
+#~ msgstr ""
+#~ "                        [--buildarch <arkk>] [--rmsource] "
+#~ "m‰‰rittelytiedosto"
 
 #, fuzzy
 #~ msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
-#~ msgstr "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
+#~ msgstr ""
+#~ "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
 
 #, fuzzy
 #~ msgid ""
 #~ "       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
-#~ msgstr "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #, fuzzy
 #~ msgid ""
 #~ "       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN."
 #~ "rpm\n"
-#~ msgstr "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #, fuzzy
 #~ msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
@@ -4573,16 +4614,21 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ "<kj>]"
 
 #~ msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-#~ msgstr "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
+#~ msgstr ""
+#~ "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
 
 #~ msgid ""
 #~ "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #~ msgid ""
 #~ "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN."
 #~ "rpm"
-#~ msgstr "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #, fuzzy
 #~ msgid "                        [--sign] [--nobuild] ]"
@@ -4611,10 +4657,12 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgstr "‰l‰ tarkista paketin k‰yttˆj‰rjestelm‰‰"
 
 #~ msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--build (-b) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
+#~ msgstr ""
+#~ "--build (-b) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
 
 #~ msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--tarbuild (-t) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
+#~ msgstr ""
+#~ "--tarbuild (-t) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
 
 #~ msgid "arguments to --dbpath must begin with a /"
 #~ msgstr "--dbpath:n parametrien pit‰‰ alkaa /-merkill‰"
@@ -4625,13 +4673,17 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "ftp options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa ja p‰ivitett‰ess‰"
+#~ msgstr ""
+#~ "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa "
+#~ "ja p‰ivitett‰ess‰"
 
 #, fuzzy
 #~ msgid ""
 #~ "http options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa ja p‰ivitett‰ess‰"
+#~ msgstr ""
+#~ "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa "
+#~ "ja p‰ivitett‰ess‰"
 
 #~ msgid "relocate files even though the package doesn't allow it"
 #~ msgstr "siirr‰ tiedostot toiseen hakemistoon vaikka paketti ei sit‰ sallisi"
@@ -4944,25 +4996,33 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "--noscripts may only be specified during package installation and "
 #~ "uninstallation"
-#~ msgstr "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa "
+#~ "tai tarkistettaessa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--nodeps may only be specified during package installation, "
 #~ "uninstallation, and verification"
-#~ msgstr "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+#~ "tarkistettaessa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--test may only be specified during package installation, uninstallation, "
 #~ "and building"
-#~ msgstr "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja k‰‰nnett‰ess‰"
+#~ msgstr ""
+#~ "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja "
+#~ "k‰‰nnett‰ess‰"
 
 #, fuzzy
 #~ msgid ""
 #~ "--root (-r) may only be specified during installation, uninstallation, "
 #~ "querying, and database rebuilds"
-#~ msgstr "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
+#~ msgstr ""
+#~ "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, "
+#~ "kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
 
 #, fuzzy
 #~ msgid "--clean may only be used during package building"

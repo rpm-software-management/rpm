@@ -101,7 +101,7 @@ extern "C" {
 
 /**
  * Return formatted string representation of package disposition.
- * @param a		package dispostion
+ * @param fi
  * @return		formatted string
  */
 /*@observer@*/ const char *const fiTypeString(/*@partial@*/TFI_t fi)

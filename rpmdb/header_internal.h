@@ -171,6 +171,7 @@ int headerGetRawEntry(Header h, int_32 tag,
 /** \ingroup header
  * Dump a header in human readable format (for debugging).
  * @param h		header
+ * @param f		file handle
  * @param flags		0 or HEADER_DUMP_INLINE
  * @param tags		array of tag name/value pairs
  */

@@ -155,6 +155,7 @@ __BEGIN_DECLS
 /**
  * Return list of children of the current node.
  * @param sp		file hierarchy state
+ * @param instr
  * @return		file set member
  */
 /*@unused@*/ /*@dependent@*/

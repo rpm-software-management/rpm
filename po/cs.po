@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-16 13:35-0500\n"
+"POT-Creation-Date: 2002-04-08 13:10-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -113,7 +113,7 @@ msgstr "<pøík>"
 msgid "use <dir> as the top level directory"
 msgstr "pou¾ít <adr> jako adresáø nejvy¹¹í úrovnì"
 
-#: lib/poptI.c:215 rpmqv.c:125
+#: rpmqv.c:125 lib/poptI.c:215
 msgid "<dir>"
 msgstr "<adresáø>"
 
@@ -179,7 +179,7 @@ msgid "Common options for all rpm modes:"
 msgstr "Spoleèné volby pro v¹echny módy:"
 
 #. @-modfilesys -globs @
-#: lib/poptI.c:27 rpmqv.c:220
+#: rpmqv.c:220 lib/poptI.c:27
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
@@ -521,175 +521,175 @@ msgstr "chyba syntaxe ve výrazu\n"
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK selhal: %s\n"
 
-#: build/files.c:330 build/files.c:522 build/files.c:705
+#: build/files.c:333 build/files.c:529 build/files.c:718
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Chybí '(' v %s %s\n"
 
-#: build/files.c:341 build/files.c:647 build/files.c:716
+#: build/files.c:344 build/files.c:657 build/files.c:729
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Chybí ')' v %s(%s\n"
 
-#: build/files.c:379 build/files.c:672
+#: build/files.c:382 build/files.c:682
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Neplatný %s token: %s\n"
 
-#: build/files.c:485
+#: build/files.c:490
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Chybìjící %s v %s %s\n"
 
-#: build/files.c:538
+#: build/files.c:545
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Následuje neprázdný znak %s(): %s\n"
 
-#: build/files.c:576
+#: build/files.c:583
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "©patná syntaxe: %s(%s)\n"
 
-#: build/files.c:586
+#: build/files.c:593
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "©patná práva spec: %s(%s)\n"
 
-#: build/files.c:598
+#: build/files.c:605
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "©patná práva adresáøe: %s(%s)\n"
 
-#: build/files.c:743
+#: build/files.c:756
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Neobvyklá délka locale: \"%.*s\" v %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:754
+#: build/files.c:767
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Duplicitní locale %.*s v %%lang(%s)\n"
 
-#: build/files.c:905
+#: build/files.c:924
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Dosa¾en limit pro %%docdir\n"
 
-#: build/files.c:911
+#: build/files.c:930
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Jen jeden parametr pro %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:939
+#: build/files.c:958
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dva soubory na jednom øádku: %s\n"
 
-#: build/files.c:954
+#: build/files.c:973
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Soubor musí zaèínat na \"/\": %s\n"
 
-#: build/files.c:967
+#: build/files.c:986
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nelze míchat speciální %%doc s ostatnímí formami: %s\n"
 
-#: build/files.c:1110
+#: build/files.c:1137
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Soubor uveden dvakrát: %s\n"
 
-#: build/files.c:1254
+#: build/files.c:1281
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolická linka ukazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1491
+#: build/files.c:1523
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Soubor nesouhlasí s prefixem (%s): %s\n"
 
-#: build/files.c:1515
+#: build/files.c:1547
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Soubor nenalezen: %s\n"
 
-#: build/files.c:1558 build/files.c:2174 build/parsePrep.c:50
+#: build/files.c:1590 build/files.c:2210 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "©patný vlastník/skupina: %s\n"
 
-#: build/files.c:1571
+#: build/files.c:1603
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Soubor %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1676
+#: build/files.c:1712
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 
-#: build/files.c:1699
+#: build/files.c:1735
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:1714
+#: build/files.c:1750
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
 
-#: build/files.c:1776
+#: build/files.c:1812
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nemohu otevøít %%files soubor %s: %s\n"
 
-#: build/files.c:1787 build/pack.c:146
+#: build/files.c:1823 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "øádek: %s\n"
 
-#: build/files.c:2162
+#: build/files.c:2198
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "©patný soubor: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2236
+#: build/files.c:2272
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nemohu spustit %s: %s\n"
 
-#: build/files.c:2241
+#: build/files.c:2277
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nemohu provést fork %s: %s\n"
 
-#: build/files.c:2325
+#: build/files.c:2361
 #, c-format
 msgid "%s failed\n"
 msgstr "%s selhalo\n"
 
-#: build/files.c:2329
+#: build/files.c:2365
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "Nemohu zapsat v¹echna data do %s\n"
 
-#: build/files.c:2485
+#: build/files.c:2521
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: build/files.c:2514 build/files.c:2528
+#: build/files.c:2550 build/files.c:2564
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Selhalo vyhledání %s:\n"
 
-#: build/files.c:2650
+#: build/files.c:2686
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -1377,17 +1377,17 @@ msgstr "cílová platforma pøedefinována"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "vyhledat i18N øetìzce ve specfile katalogu"
 
-#: build/spec.c:232
+#: build/spec.c:233
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "øádek %d: ©patné èíslo: %s\n"
 
-#: build/spec.c:238
+#: build/spec.c:239
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "øádek %d: ©patné èíslo %s: %d\n"
 
-#: build/spec.c:299
+#: build/spec.c:300
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "øádek %d: ©patné èíslo %s: %s\n"
@@ -1485,18 +1485,18 @@ msgstr "ANO"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:878
+#: lib/depends.c:879
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1146
+#: lib/depends.c:1147
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1252
+#: lib/depends.c:1253
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1504,26 +1504,26 @@ msgid ""
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1345
+#: lib/depends.c:1346
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1415
+#: lib/depends.c:1416
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1450
+#: lib/depends.c:1451
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1455
+#: lib/depends.c:1456
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2951 rpmdb/header.c:2972 rpmdb/header.c:2994
+#: rpmdb/header.c:2978 rpmdb/header.c:2999 rpmdb/header.c:3021
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
@@ -1586,27 +1586,27 @@ msgstr "vytvoøen adresáø %s s právy %04o.\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1597 lib/fsm.c:1727
+#: lib/fsm.c:1599 lib/fsm.c:1731
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/fsm.c:1753
+#: lib/fsm.c:1757
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s odstranìní %s selhalo: Adresáø není prázdný\n"
 
-#: lib/fsm.c:1759
+#: lib/fsm.c:1763
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
-#: lib/fsm.c:1769
+#: lib/fsm.c:1773
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s selhal: %s\n"
 
-#: lib/fsm.c:1791
+#: lib/fsm.c:1795
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s vytvoøen jako %s\n"
@@ -2319,52 +2319,52 @@ msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:773 lib/query.c:795 lib/query.c:813 lib/query.c:844
+#: lib/query.c:773 lib/query.c:795 lib/query.c:816 lib/query.c:851
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Nemohu èíst %s: %s.\n"
 
-#: lib/query.c:783 lib/query.c:801 lib/query.c:819 lib/query.c:849
+#: lib/query.c:783 lib/query.c:801 lib/query.c:826 lib/query.c:856
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:860
+#: lib/query.c:867
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: lib/query.c:871
+#: lib/query.c:878
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: lib/query.c:905
+#: lib/query.c:912
 #, c-format
 msgid "file %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/query.c:909
+#: lib/query.c:916
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "soubor %s nevlastní ¾ádný balíèek\n"
 
-#: lib/query.c:936
+#: lib/query.c:943
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/query.c:939
+#: lib/query.c:946
 #, c-format
 msgid "package record number: %u\n"
 msgstr "záznam balíèku èíslo: %u\n"
 
-#: lib/query.c:944
+#: lib/query.c:951
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:955 lib/rpminstall.c:657
+#: lib/query.c:962 lib/rpminstall.c:657
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2768,33 +2768,33 @@ msgstr "Velikost hlavièky je pøili¹ velká"
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:873
+#: lib/signature.c:874
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1059
+#: lib/signature.c:1061
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "vynechat pøípadné MD5 souèty"
 
-#: lib/signature.c:1168
+#: lib/signature.c:1171
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1169
+#: lib/signature.c:1172
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Chybí podpis\n"
 
-#: lib/signature.c:1244
+#: lib/signature.c:1247
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1271
+#: lib/signature.c:1274
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1275
+#: lib/signature.c:1278
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Podpisu: velikost(%d)+vata(%d)\n"
@@ -2814,17 +2814,17 @@ msgstr "vynechávám adresáø %s\n"
 msgid "getting list of mounted filesystems\n"
 msgstr "získávám seznam pøipojených systémù souborù\n"
 
-#: lib/verify.c:324
+#: lib/verify.c:323
 #, c-format
 msgid "missing    %s"
 msgstr "chybí      %s"
 
-#: lib/verify.c:419
+#: lib/verify.c:418
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 
-#: lib/verify.c:459
+#: lib/verify.c:458
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrola digestu v hlavièce selhala\n"
@@ -2968,7 +2968,6 @@ msgstr "Poèet dataLength() RPM_STRING_TYPE musí být 1.\n"
 
 #. @-observertrans -readonlytrans@
 #: rpmdb/header.c:2208
-#, c-format
 msgid "missing { after %"
 msgstr "chybí { po %"
 
@@ -3037,10 +3036,6 @@ msgstr "ve výrazu je po : oèekávána {"
 msgid "| expected at end of expression"
 msgstr "na konci výrazu je oèekáváno |"
 
-#: rpmdb/header.c:2695
-msgid "(unknown type)"
-msgstr "(neznámý typ)"
-
 #: rpmdb/poptDB.c:19
 msgid "initialize database"
 msgstr "inicializovat databázi"
@@ -3088,11 +3083,11 @@ msgstr "chyba(%d) pøi ukládání záznamu %s do %s\n"
 msgid "error(%d) removing record %s from %s\n"
 msgstr "chyba(%d) pøi odstraòování záznamu %s z %s\n"
 
-#: rpmdb/rpmdb.c:959
+#: rpmdb/rpmdb.c:954
 msgid "no dbpath has been set\n"
 msgstr "nebyla nastavena dbpath\n"
 
-#: rpmdb/rpmdb.c:1107
+#: rpmdb/rpmdb.c:1102
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3100,115 +3095,115 @@ msgstr ""
 "databáze je ve starém formátu; pou¾ijte --rebuilddb pro pøevod do nového\n"
 
 #. error
-#: rpmdb/rpmdb.c:1372
+#: rpmdb/rpmdb.c:1367
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "chyba(%d) pøi poèítání balíèkù\n"
 
-#: rpmdb/rpmdb.c:2150 rpmdb/rpmdb.c:3502
+#: rpmdb/rpmdb.c:2146 rpmdb/rpmdb.c:3507
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databázi je chybný -- vynechávám.\n"
 
-#: rpmdb/rpmdb.c:2203
+#: rpmdb/rpmdb.c:2199
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: poru¹ená polo¾ka hlavièky #%u, pøeskakuji.\n"
 
-#: rpmdb/rpmdb.c:2473
+#: rpmdb/rpmdb.c:2478
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nemohu èíst hlavièku na adrese 0x%x\n"
 
-#: rpmdb/rpmdb.c:2634
+#: rpmdb/rpmdb.c:2639
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
-#: rpmdb/rpmdb.c:2638
+#: rpmdb/rpmdb.c:2643
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuji %d polo¾ek z indexu %s.\n"
 
-#: rpmdb/rpmdb.c:2808
+#: rpmdb/rpmdb.c:2813
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba(%d) pøi alokaci nové instance balíèku\n"
 
-#: rpmdb/rpmdb.c:3003
+#: rpmdb/rpmdb.c:3008
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "pøidávám \"%s\" do indexu %s\n"
 
-#: rpmdb/rpmdb.c:3007
+#: rpmdb/rpmdb.c:3012
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "pøidávám %d polo¾ek do indexu %s.\n"
 
-#: rpmdb/rpmdb.c:3388
+#: rpmdb/rpmdb.c:3393
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "odstraòuji %s po úspì¹ném znovusestavení db3.\n"
 
-#: rpmdb/rpmdb.c:3421
+#: rpmdb/rpmdb.c:3426
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
-#: rpmdb/rpmdb.c:3448
+#: rpmdb/rpmdb.c:3453
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "databázi %s pøevádím do %s\n"
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3457
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáze %s ji¾ existuje\n"
 
-#: rpmdb/rpmdb.c:3458
+#: rpmdb/rpmdb.c:3463
 #, c-format
 msgid "creating directory %s\n"
 msgstr "vytváøím adresáø %s\n"
 
-#: rpmdb/rpmdb.c:3460
+#: rpmdb/rpmdb.c:3465
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytváøím adresáø %s: %s\n"
 
-#: rpmdb/rpmdb.c:3467
+#: rpmdb/rpmdb.c:3472
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otevírám starou databázi s dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3478
+#: rpmdb/rpmdb.c:3483
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otevírám novou databázi s dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3542
+#: rpmdb/rpmdb.c:3547
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nemohu pøidat záznam - pùvodnì u %d\n"
 
-#: rpmdb/rpmdb.c:3560
+#: rpmdb/rpmdb.c:3565
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "databázi nelze zvovu vytvoøit; pùvodní databáze zùstává na svém místì\n"
 
-#: rpmdb/rpmdb.c:3568
+#: rpmdb/rpmdb.c:3573
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: rpmdb/rpmdb.c:3570
+#: rpmdb/rpmdb.c:3575
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "pro obnovení nahraïte soubory v %s soubory z %s"
 
-#: rpmdb/rpmdb.c:3580
+#: rpmdb/rpmdb.c:3585
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ma¾u adresáø %s\n"
 
-#: rpmdb/rpmdb.c:3582
+#: rpmdb/rpmdb.c:3587
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"
@@ -3419,6 +3414,9 @@ msgstr "url port musí být èíslo\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
+
+#~ msgid "(unknown type)"
+#~ msgstr "(neznámý typ)"
 
 #~ msgid "rpm verify mode (legacy)"
 #~ msgstr "re¾im kontroly (zastaralý)"

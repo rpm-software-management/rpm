@@ -34,7 +34,7 @@ for f in $exelist; do
     lib64=`if file -L $f 2>/dev/null | \
 	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
     ldd $f | awk '/=>/ {
-	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) {
+	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/ && $1 !~ /libredhat-kernel.so/) {
 	    gsub(/'\''"/,"\\&",$1);
 	    printf "%s'$lib64'\n", $1
 	}
@@ -48,7 +48,7 @@ for f in $liblist; do
     lib64=`if file -L $f 2>/dev/null | \
 	grep "ELF 64-bit" >/dev/null; then echo "$mark64"; fi`
     ldd $f | awk '/=>/ {
-	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) {
+	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/ && $1 !~ /libredhat-kernel.so/) {
 	    gsub(/'\''"/,"\\&",$1);
 	    printf "%s'$lib64'\n", $1
 	}

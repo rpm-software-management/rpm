@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6\n"
-"POT-Creation-Date: 2002-03-13 12:58-0500\n"
+"POT-Creation-Date: 2002-04-08 13:11-0400\n"
 "PO-Revision-Date: 2001-09-06 20:06+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -9,15 +9,15 @@ msgstr ""
 "Content-Type: text/plain; charset=EUC-KR\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: popthelp.c:53
+#: popthelp.c:57
 msgid "Show this help message"
 msgstr "이 도움말을 보여줍니다"
 
-#: popthelp.c:54
+#: popthelp.c:58
 msgid "Display brief usage message"
 msgstr "간단한 사용법을 보여줍니다"
 
-#: popthelp.c:57
+#: popthelp.c:61
 msgid "Display option defaults in message"
 msgstr "기본적인 옵션을 보여줍니다"
 

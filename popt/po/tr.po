@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-03-13 12:58-0500\n"
+"POT-Creation-Date: 2002-04-08 13:11-0400\n"
 "PO-Revision-Date: 2000-02-11 13:01+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -9,15 +9,15 @@ msgstr ""
 "Content-Type: text/plain; charset=iso8859-9\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popthelp.c:53
+#: popthelp.c:57
 msgid "Show this help message"
 msgstr "Bu yardým iletisini gösterir"
 
-#: popthelp.c:54
+#: popthelp.c:58
 msgid "Display brief usage message"
 msgstr "Kýsa bir kullaným iletisi göster"
 
-#: popthelp.c:57
+#: popthelp.c:61
 #, fuzzy
 msgid "Display option defaults in message"
 msgstr "Kýsa bir kullaným iletisi göster"

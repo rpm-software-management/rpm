@@ -112,7 +112,7 @@ void	delMacro	(/*@null@*/ MacroContext mc, const char * n)
 /**
  * Define macro in context.
  * @param mc		macro context (NULL uses global context).
- * @param n		macro name, options, body
+ * @param macro		macro name, options, body
  * @param level		macro recursion level (0 is entry API)
  * @return		@todo Document.
  */

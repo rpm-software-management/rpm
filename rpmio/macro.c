@@ -1022,7 +1022,7 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
  */
 static void
 doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
-		const char * g, size_t glen)
+		const char * g, size_t gn)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext,
@@ -1033,8 +1033,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 
     buf[0] = '\0';
     if (g) {
-	strncpy(buf, g, glen);
-	buf[glen] = '\0';
+	strncpy(buf, g, gn);
+	buf[gn] = '\0';
 	(void) expandU(mb, buf, sizeof(buf));
     }
     if (STREQ("basename", f, fn)) {

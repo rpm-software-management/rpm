@@ -198,7 +198,6 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
  * @todo malloc/free/refcount handling is fishy here.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
- * @param h             header
  * @param fi		file info set
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success

@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-03-13 12:58-0500\n"
+"POT-Creation-Date: 2002-04-08 13:11-0400\n"
 "PO-Revision-Date: 1999-03-18 23:11+0100\n"
 "Last-Translator: Nobody yet\n"
 "Language-Team: walon <linux-wa@chanae.alphanet.ch>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popthelp.c:53
+#: popthelp.c:57
 msgid "Show this help message"
 msgstr "Mostrer ci messaedje d' aide chal"
 
-#: popthelp.c:54
+#: popthelp.c:58
 msgid "Display brief usage message"
 msgstr "Mostre on court messaedje so kmint vos è siervi"
 
-#: popthelp.c:57
+#: popthelp.c:61
 #, fuzzy
 msgid "Display option defaults in message"
 msgstr "Mostre on court messaedje so kmint vos è siervi"

@@ -89,7 +89,7 @@ void freeNames(void)
 /** \ingroup rpmbuild
  * Return cached user name from user id.
  * @todo Implement using hash.
- * @param		user id
+ * @param uid		user id
  * @return		cached user name
  */
 extern /*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
@@ -97,7 +97,7 @@ extern /*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
 /** \ingroup rpmbuild
  * Return cached user name.
  * @todo Implement using hash.
- * @param		user name
+ * @param uname		user name
  * @return		cached user name
  */
 extern /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
@@ -105,7 +105,7 @@ extern /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
 /** \ingroup rpmbuild
  * Return cached user id.
  * @todo Implement using hash.
- * @param		user name
+ * @param uname		user name
  * @return		cached uid
  */
 uid_t getUidS(const char * uname)	/*@*/;
@@ -113,7 +113,7 @@ uid_t getUidS(const char * uname)	/*@*/;
 /** \ingroup rpmbuild
  * Return cached group name from group id.
  * @todo Implement using hash.
- * @param		group id
+ * @param gid		group id
  * @return		cached group name
  */
 extern /*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
@@ -121,7 +121,7 @@ extern /*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
 /** \ingroup rpmbuild
  * Return cached group name.
  * @todo Implement using hash.
- * @param		group name
+ * @param gname		group name
  * @return		cached group name
  */
 extern /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
@@ -129,7 +129,7 @@ extern /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
 /** \ingroup rpmbuild
  * Return cached group id.
  * @todo Implement using hash.
- * @param		group name
+ * @param gname		group name
  * @return		cached gid
  */
 gid_t getGidS(const char * gname)	/*@*/;

@@ -316,7 +316,7 @@ int rpmtransRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
 /**
  * Check key for an unsatisfied dependency.
  * @todo Eliminate rpmrc provides.
- * @param al		available list
+ * @param ts		transaction set
  * @param key		dependency
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
@@ -832,6 +832,7 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * pure Requires: dependencies) successor node(s).
  * @param q		sucessor (i.e. package required by p)
  * @param p		predecessor (i.e. package that "Requires: q")
+ * @param requires	relation
  * @param zap		max. no. of co-requisites to remove (-1 is all)?
  * @retval nzaps	address of no. of relations removed
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
@@ -912,7 +913,7 @@ if (_tso_debug) {
  * @param ts		transaction set
  * @param p		predecessor (i.e. package that "Requires: q")
  * @param selected	boolean package selected array
- * @param j		relation index
+ * @param requires	relation
  * @return		0 always
  */
 /*@-mustmod@*/
@@ -1018,8 +1019,8 @@ prtTSI(NULL, teGetTSI(q));
 
 /**
  * Compare ordered list entries by index (qsort/bsearch).
- * @param a		1st ordered list entry
- * @param b		2nd ordered list entry
+ * @param one		1st ordered list entry
+ * @param two		2nd ordered list entry
  * @return		result of comparison
  */
 static int orderListIndexCmp(const void * one, const void * two)	/*@*/

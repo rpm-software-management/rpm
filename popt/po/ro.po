@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-03-13 12:58-0500\n"
+"POT-Creation-Date: 2002-04-08 13:11-0400\n"
 "PO-Revision-Date: 2000-06-14 23:23+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -9,15 +9,15 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popthelp.c:53
+#: popthelp.c:57
 msgid "Show this help message"
 msgstr "Afisare mesaj de help"
 
-#: popthelp.c:54
+#: popthelp.c:58
 msgid "Display brief usage message"
 msgstr "Afisare mesaj sintaxa sumar"
 
-#: popthelp.c:57
+#: popthelp.c:61
 #, fuzzy
 msgid "Display option defaults in message"
 msgstr "Afisare mesaj sintaxa sumar"

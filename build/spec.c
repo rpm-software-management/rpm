@@ -19,6 +19,7 @@ extern int specedit;
 /*@access TFI_t @*/	/* compared with NULL */
 
 /**
+ * @param p		trigger entry chain
  * @return		NULL always
  */
 static inline
@@ -40,7 +41,7 @@ static inline
 
 /**
  * Destroy source component chain.
- * @param		source component chain
+ * @param s		source component chain
  * @return		NULL always
  */
 static inline

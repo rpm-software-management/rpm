@@ -62,7 +62,7 @@ typedef struct _FDDIGEST_s {
 
 /** \ingroup rpmio
  * Duplicate a digest context.
- * @param ctx		existing digest context
+ * @param octx		existing digest context
  * @return		duplicated digest context
  */
 /*@only@*/
@@ -72,6 +72,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
 /** \ingroup rpmio
  * Initialize digest.
  * Set bit count to 0 and buffer to mysterious initialization constants.
+ * @param hashalgo	type of digest
  * @param flags		bit(s) to control digest operation
  * @return		digest context
  */

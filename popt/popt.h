@@ -268,6 +268,7 @@ int poptGetNextOpt(/*@null@*/poptContext con)
 /** \ingroup popt
  * Return the option which caused the most recent error.
  * @param con		context
+ * @param flags
  * @return		offending option
  */
 /*@observer@*/ const char * poptBadOption(/*@null@*/poptContext con, int flags)
@@ -307,7 +308,7 @@ int poptAddAlias(poptContext con, struct poptAlias alias, int flags)
 /** \ingroup popt
  * Add alias/exec item to context.
  * @param con		context
- * @param item		alias/exec item to add
+ * @param newItem	alias/exec item to add
  * @param flags		0 for alias, 1 for exec
  * @return		0 on success
  */

@@ -44,6 +44,7 @@ extern "C" {
 
 /** \ingroup db1
  * @param fd		file handle
+ * @param size
  * @return		0 on failure
  */
 unsigned int fadAlloc(FD_t fd, unsigned int size)
@@ -52,6 +53,7 @@ unsigned int fadAlloc(FD_t fd, unsigned int size)
 
 /** \ingroup db1
  * @param fd		file handle
+ * @param offset
  */
 void fadFree(FD_t fd, unsigned int offset)
 	/*@globals fileSystem @*/
@@ -66,6 +68,7 @@ int fadFirstOffset(FD_t fd)
 
 /** \ingroup db1
  * @param fd		file handle
+ * @param lastoff
  * @return		next offset, 0 to terminate
  */
 int fadNextOffset(FD_t fd, unsigned int lastoff)

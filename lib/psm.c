@@ -150,9 +150,9 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
 
 /**
  * Copy file data from h to newH.
+ * @param fi		transaction element file info
  * @param h		header from
  * @param newH		header to
- * @param actions	array of file dispositions
  * @return		0 on success, 1 on failure
  */
 static int mergeFiles(TFI_t fi, Header h, Header newH)

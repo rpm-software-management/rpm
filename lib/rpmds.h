@@ -39,6 +39,7 @@ extern "C" {
 /**
  * Unreference a dependency set instance.
  * @param ds		dependency set
+ * @param msg
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
@@ -58,6 +59,7 @@ rpmDepSet XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
 /**
  * Reference a dependency set instance.
  * @param ds		dependency set
+ * @param msg
  * @return		new dependency set reference
  */
 /*@unused@*/
@@ -231,7 +233,7 @@ void dsProblem(/*@null@*/ rpmProblemSet tsprobs,
 /**
  * Compare package provides dependencies from header with a single dependency.
  * @param h		header
- * @param ds		dependency set
+ * @param req		dependency set
  */
 int rangeMatchesDepFlags (Header h, const rpmDepSet req)
         /*@modifies h @*/;

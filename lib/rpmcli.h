@@ -410,7 +410,7 @@ extern int packagesTotal;
  * @param what		callback identifier
  * @param amount	per-callback progress info
  * @param total		per-callback progress info
- * @param pkgkey	opaque header key (e.g. file name or PyObject)
+ * @param key		opaque header key (e.g. file name or PyObject)
  * @param data		private data (e.g. rpmInstallInterfaceFlags)
  * @return		per-callback data (e.g. an opened FD_t)
  */
@@ -477,9 +477,8 @@ int rpmInstall(rpmTransactionSet ts, struct rpmInstallArguments_s * ia,
 /** \ingroup rpmcli
  * Erase binary rpm package.
  * @param ts		transaction set
+ * @param ia		control args/bits
  * @param argv		array of package file names (NULL terminated)
- * @param transFlags	bits to control rpmRunTransactions()
- * @param interfaceFlags bits to control rpmInstall()
  * @return		0 on success
  */
 int rpmErase(rpmTransactionSet ts, const struct rpmInstallArguments_s * ia,

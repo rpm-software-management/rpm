@@ -77,6 +77,8 @@ void expandFilelist(Header h)
 
 /**
  * @param h		header
+ * @retval fileListPtr	list of files
+ * @retval fileCountPtr	number of files
  */
 void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr)
@@ -93,6 +95,7 @@ void providePackageNVR(Header h)
 /**
  * Do all necessary retorfits for a package header.
  * @param h		header
+ * @param lead
  */
 void legacyRetrofit(Header h, const struct rpmlead * lead)
 	/*@modifies h@*/;

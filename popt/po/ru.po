@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-03-13 12:58-0500\n"
+"POT-Creation-Date: 2002-04-08 13:11-0400\n"
 "PO-Revision-Date: 2001-07-05 21:00-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -9,15 +9,15 @@ msgstr ""
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popthelp.c:53
+#: popthelp.c:57
 msgid "Show this help message"
 msgstr "Показать это сообщение"
 
-#: popthelp.c:54
+#: popthelp.c:58
 msgid "Display brief usage message"
 msgstr "Показать краткую инструкцию по использованию"
 
-#: popthelp.c:57
+#: popthelp.c:61
 msgid "Display option defaults in message"
 msgstr "Показать параметры по умолчанию"
 

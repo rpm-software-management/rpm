@@ -26,7 +26,7 @@ extern "C" {
 
 /**
  * Read rpm package components from file.
- * @param filename	file name of package (or NULL to use stdin)
+ * @param fileName	file name of package (or NULL to use stdin)
  * @retval specp	spec structure to carry package header (or NULL)
  * @retval lead		package lead
  * @retval sigs		package signature
@@ -50,7 +50,7 @@ extern "C" {
  * return a reloaded contiguous header to the caller.
  *
  * @retval hdrp		header to write (final header is returned).
- * @param filename	file name of package
+ * @param fileName	file name of package
  * @param type		RPMLEAD_SOURCE/RPMLEAD_BINARY
  * @param csa
  * @param passPhrase

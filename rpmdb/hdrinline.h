@@ -42,6 +42,9 @@ Header headerNew(void)
  * Dereference a header instance.
  * @todo Remove debugging entry from the ABI.
  * @param h		header
+ * @param msg
+ * @param fn
+ * @param ln
  * @return		NULL always
  */
 /*@unused@*/ static inline
@@ -59,6 +62,9 @@ Header headerNew(void)
  * Reference a header instance.
  * @todo Remove debugging entry from the ABI.
  * @param h		header
+ * @param msg
+ * @param fn
+ * @param ln
  * @return		new header reference
  */
 /*@unused@*/ static inline
@@ -73,6 +79,9 @@ Header XheaderLink(Header h, /*@null@*/ const char * msg,
  * Dereference a header instance.
  * @todo Remove debugging entry from the ABI.
  * @param h		header
+ * @param msg
+ * @param fn
+ * @param ln
  * @return		new header reference
  */
 /*@unused@*/ static inline

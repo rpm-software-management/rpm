@@ -101,8 +101,8 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 
 /** \ingroup payload
  * Create file info iterator.
- * @param a		transaction set
- * @param b		transaction element file info
+ * @param ts		transaction set
+ * @param fi		transaction element file info
  * @return		file info iterator
  */
 static void *

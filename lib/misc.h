@@ -47,7 +47,7 @@ void freeSplitString( /*@only@*/ char ** list)
  * Like the libc function, but malloc()'s the space needed.
  * @param name		variable name
  * @param value		variable value
- * @param overwrte	should an existing variable be changed?
+ * @param overwrite	should an existing variable be changed?
  * @return		0 on success
  */
 int dosetenv(const char * name, const char * value, int overwrite)
