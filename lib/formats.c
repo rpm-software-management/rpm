@@ -65,8 +65,7 @@ static char * triggertypeFormat(int_32 type, const void * data,
     char * val;
 
     if (type != RPM_INT32_TYPE) {
-	val = xmalloc(20);
-	strcpy(val, _("(not a number)"));
+	val = xstrdup(_("(not a number)"));
     } else if (*item & RPMSENSE_TRIGGERIN) {
 	val = xstrdup("in");
     } else {
@@ -83,8 +82,7 @@ static char * permsFormat(int_32 type, const void * data,
     char * buf;
 
     if (type != RPM_INT32_TYPE) {
-	val = xmalloc(20);
-	strcpy(val, _("(not a number)"));
+	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
@@ -104,8 +102,7 @@ static char * fflagsFormat(int_32 type, const void * data,
     int anint = *((int_32 *) data);
 
     if (type != RPM_INT32_TYPE) {
-	val = xmalloc(20);
-	strcpy(val, _("(not a number)"));
+	val = xstrdup(_("(not a number)"));
     } else {
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
@@ -137,8 +134,7 @@ static char * depflagsFormat(int_32 type, const void * data,
     int anint = *((int_32 *) data);
 
     if (type != RPM_INT32_TYPE) {
-	val = xmalloc(20);
-	strcpy(val, _("(not a number)"));
+	val = xstrdup(_("(not a number)"));
     } else {
 	buf[0] = '\0';
 
@@ -336,7 +332,8 @@ static int triggertypeTag(Header h, int_32 * type, /*@out@*/void ** data,
 }
 
 static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data, 
-			   int_32 * count, int * freeData) {
+			   int_32 * count, int * freeData)
+{
     *type = RPM_STRING_ARRAY_TYPE;
 
     rpmBuildFileList(h, (const char ***) data, count);
@@ -347,7 +344,82 @@ static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data,
     return 0; 
 }
 
+/* I18N look aside diversions */
+
+static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
+	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
+{
+#ifdef	NOTYET
+    const char * domains = "specs:powertools";
+#else
+    const char * domains = NULL;
+#endif
+
+    *type = RPM_STRING_TYPE;
+    *data = NULL;
+    *count = 0;
+    *freeData = 1;
+
+    if (domains) {
+	char * dstring, *domain, *de;
+	const char * locale;
+	char * msgkey;
+	const char * msgid;
+	const char * n;
+	const char * t = tagName(tag);
+
+	headerNVR(h, &n, NULL, NULL);
+	msgkey = alloca(strlen(n) + strlen(t) + sizeof("()"));
+	sprintf(msgkey, "%s(%s)", n, t);
+
+	msgid = NULL;
+	locale = setlocale(LC_MESSAGES, "C");
+	dstring = xstrdup(domains);
+	for (domain = dstring; domain != NULL; domain = de) {
+	    de = strchr(domain, ':');
+	    if (de) *de++ = '\0';
+	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
+	    if (msgid != msgkey) break;
+	}
+	setlocale(LC_MESSAGES, locale);
+
+	if (domain && msgid) {
+	    *data = xstrdup(/*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/);
+	    *count = 1;
+	}
+	xfree(dstring);
+	return (*data ? 0 : 1);
+    }
+
+    return headerGetEntry(h, tag, type, data, count);
+}
+
+static int summaryTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
+{
+    return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
+}
+
+static int descriptionTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
+{
+    return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
+}
+
+static int groupTag(Header h, /*@out@*/ int_32 * type,
+	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
+	/*@out@*/ int * freeData)
+{
+    return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
+}
+
 const struct headerSprintfExtension rpmHeaderFormats[] = {
+    { HEADER_EXT_TAG, "RPMTAG_GROUP", { groupTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION", { descriptionTag } },
+    { HEADER_EXT_TAG, "RPMTAG_SUMMARY", { summaryTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES", { filenamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },

@@ -49,7 +49,7 @@ struct headerToken {
     int indexAlloced;
 
     int sorted;  
-    /*@refs@*/int usageCount;
+    /*@refs@*/ int usageCount;
 };
 
 struct entryInfo {
@@ -79,8 +79,10 @@ struct sprintfTag {
 };
 
 struct extensionCache {
-    int_32 type, count;
-    int avail, freeit;
+    int_32 type;
+    int_32 count;
+    int avail;
+    int freeit;
     void * data;
 };
 
@@ -1466,7 +1468,6 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
     const struct headerTagTableEntry * entry;
     const struct headerSprintfExtension * ext;
     char * tagname;
-    int i;
 
     *tagMatch = NULL;
     *extMatch = NULL;
@@ -1479,29 +1480,30 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
 	tagname = name;
     }
 
+    /* Search extensions first to permit overriding header tags. */
+    ext = extensions;
+    while (ext->type != HEADER_EXT_LAST) {
+	if (ext->type == HEADER_EXT_TAG && !strcasecmp(ext->name, tagname))
+	    break;
+
+	if (ext->type == HEADER_EXT_MORE)
+	    ext = ext->u.more;
+	else
+	    ext++;
+    }
+
+    if (ext->type == HEADER_EXT_TAG) {
+	*extMatch = ext;
+	return;
+    }
+
+    /* Search header tags. */
     for (entry = tags; entry->name; entry++)
 	if (!strcasecmp(entry->name, tagname)) break;
 
     if (entry->name) {
 	*tagMatch = entry;
-    } else {
-	ext = extensions, i =0;
-	while (ext->type != HEADER_EXT_LAST) {
-	    if (ext->type == HEADER_EXT_TAG && 
-		!strcasecmp(ext->name, tagname)) {
-		break;
-	    }
-
-	    if (ext->type == HEADER_EXT_MORE)
-		ext = ext->u.more;
-	    else
-		ext++;
-	    i++;
-	}
-
-	if (ext->type == HEADER_EXT_TAG) {
-	    *extMatch = ext;
-	}
+	return;
     }
 }
 
@@ -1520,7 +1522,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
     struct sprintfToken * format;
     int numTokens;
     int currToken;
-    const struct headerTagTableEntry * entry;
+    const struct headerTagTableEntry * tag;
     const struct headerSprintfExtension * ext;
     int i;
     int done = 0;
@@ -1633,11 +1635,11 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		}
 
 		i = 0;
-		findTag(start, tags, extensions, &entry, &ext);
+		findTag(start, tags, extensions, &tag, &ext);
 
-		if (entry) {
+		if (tag) {
 		    format[currToken].u.tag.ext = NULL;
-		    format[currToken].u.tag.tag = entry->val;
+		    format[currToken].u.tag.tag = tag->val;
 		} else if (ext) {
 		    format[currToken].u.tag.ext = ext->u.tagFunction;
 		    format[currToken].u.tag.extNum = ext - extensions;
@@ -1968,8 +1970,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	break;
 
       default:
-	val = xmalloc(20);
-	strcpy(val, _("(unknown type)"));
+	val = xstrdup(_("(unknown type)"));
 	break;
     }
 
@@ -2059,8 +2060,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	}
 
 	if (numElements == -1) {
-	    val = xmalloc(20);
-	    strcpy(val, "(none)");	/* XXX i18n? NO!, sez; gafton */
+	    val = xstrdup("(none)");	/* XXX i18n? NO!, sez; gafton */
 	} else {
 	    alloced = numElements * token->u.array.numTokens * 20;
 	    val = xmalloc(alloced);
@@ -2185,8 +2185,7 @@ static char * octalFormat(int_32 type, const void * data,
     char * val;
 
     if (type != RPM_INT32_TYPE) {
-	val = xmalloc(20);
-	strcpy(val, _("(not a number)"));
+	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
@@ -2202,8 +2201,7 @@ static char * hexFormat(int_32 type, const void * data,
     char * val;
 
     if (type != RPM_INT32_TYPE) {
-	val = xmalloc(20);
-	strcpy(val, _("(not a number)"));
+	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
@@ -2222,8 +2220,7 @@ static char * realDateFormat(int_32 type, const void * data,
     char buf[50];
 
     if (type != RPM_INT32_TYPE) {
-	val = xmalloc(20);
-	strcpy(val, _("(not a number)"));
+	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(50 + padding);
 	strcat(formatPrefix, "s");

@@ -388,7 +388,8 @@ printNewSpecfile(Spec spec)
     }
 }
 
-void rpmDisplayQueryTags(FILE * f) {
+void rpmDisplayQueryTags(FILE * f)
+{
     const struct headerTagTableEntry * t;
     int i;
     const struct headerSprintfExtension * ext = rpmHeaderFormats;
