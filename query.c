@@ -103,7 +103,7 @@ static int queryPartial(Header h, char ** chptrptr, int * cntptr,
 	    } else if (count != -1 && !*cntptr && !emptyItem){ 
 		*cntptr = count;
 	    } else if (count != -1 && *cntptr && count != *cntptr) {
-		printf("(parallel array size mismatch)");
+		fprintf(stderr, "(parallel array size mismatch)");
 		return 1;
 	    }
 	    break;
