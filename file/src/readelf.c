@@ -103,9 +103,6 @@ getu64(const fmagic fm, uint64_t value)
 #define ph_align	(fm->cls == ELFCLASS32		\
 			 ? (ph32.p_align ? getu32(fm, ph32.p_align) : 4) \
 			 : (ph64.p_align ? getu64(fm, ph64.p_align) : 4))
-#define nh_size		(fm->cls == ELFCLASS32		\
-			 ? sizeof *nh32			\
-			 : sizeof *nh64)
 #define nh_type		(fm->cls == ELFCLASS32		\
 			 ? getu32(fm, nh32->n_type)	\
 			 : getu32(fm, nh64->n_type))
@@ -171,7 +168,10 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	char *shared_libraries = "";
 	char nbuf[BUFSIZ];
 	int bufsize;
-	size_t offset, nameoffset;
+	size_t offset, end, noff, doff;
+	size_t align = (fm->cls == ELFCLASS32 ? 4 : 8);
+#define ALIGNED_LEN(len) (((len) + align - 1) & ~(align - 1))
+	int printed;
 
 	if (size != ph_size) {
 		error(EXIT_FAILURE, 0, "corrupted program header size.\n");
@@ -212,43 +212,38 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				/*@notreached@*/
 			}
 			offset = 0;
+			printed = 0;
 			for (;;) {
-				if (offset >= bufsize)
+				end = offset + 12;
+				if (end >= bufsize)
 					/*@innerbreak@*/ break;
+
 				if (fm->cls == ELFCLASS32)
 					nh32 = (Elf32_Nhdr *)&nbuf[offset];
 				else
 					nh64 = (Elf64_Nhdr *)&nbuf[offset];
-				offset += nh_size;
-	
-				if (offset + nh_namesz >= bufsize) {
-					/*
-					 * We're past the end of the buffer.
-					 */
-					/*@innerbreak@*/ break;
-				}
 
-				nameoffset = offset;
-				offset += nh_namesz;
-				offset = ((offset+ph_align-1)/ph_align)*ph_align;
-
-				if ((nh_namesz == 0) && (nh_descsz == 0)) {
-					/*
-					 * We're out of note headers.
-					 */
+				offset = end;	/* skip note header. */
+				end = offset	+ ALIGNED_LEN (nh_namesz)
+						+ ALIGNED_LEN (nh_descsz);
+				if (end > bufsize)
 					/*@innerbreak@*/ break;
-				}
 
-				if (offset + nh_descsz >= bufsize)
-					/*@innerbreak@*/ break;
+				noff = offset;
+				doff = ALIGNED_LEN(offset + nh_namesz);
+				offset = end;
+
+				if (printed)
+					continue;
 
 				if (nh_namesz == 4 &&
-				    strcmp(&nbuf[nameoffset], "GNU") == 0 &&
+				    strcmp(&nbuf[noff], "GNU") == 0 &&
 				    nh_type == NT_GNU_VERSION &&
 				    nh_descsz == 16) {
 					uint32_t *desc =
-					    (uint32_t *)&nbuf[offset];
+					    (uint32_t *)&nbuf[doff];
 
+					if (!printed)
 					file_printf(fm, ", for GNU/");
 					switch (getu32(fm, desc[0])) {
 					case GNU_OS_LINUX:
@@ -268,10 +263,11 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					    getu32(fm, desc[1]),
 					    getu32(fm, desc[2]),
 					    getu32(fm, desc[3]));
+					printed = 1;
 				}
 
 				if (nh_namesz == 7 &&
-				    strcmp(&nbuf[nameoffset], "NetBSD") == 0 &&
+				    strcmp(&nbuf[noff], "NetBSD") == 0 &&
 				    nh_type == NT_NETBSD_VERSION &&
 				    nh_descsz == 4) {
 					file_printf(fm, ", for NetBSD");
@@ -279,14 +275,15 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					 * Version number is stuck at 199905,
 					 * and hence is basically content-free.
 					 */
+					printed = 1;
 				}
 
 				if (nh_namesz == 8 &&
-				    strcmp(&nbuf[nameoffset], "FreeBSD") == 0 &&
+				    strcmp(&nbuf[noff], "FreeBSD") == 0 &&
 				    nh_type == NT_FREEBSD_VERSION &&
 				    nh_descsz == 4) {
 					uint32_t desc = getu32(fm,
-					    *(uint32_t *)&nbuf[offset]);
+					    *(uint32_t *)&nbuf[doff]);
 					file_printf(fm, ", for FreeBSD");
 					/*
 					 * Contents is __FreeBSD_version,
@@ -303,14 +300,16 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					if (desc / 1000 % 10 > 0)
 						file_printf(fm, ".%d",
 						    desc / 1000 % 10);
+					printed = 1;
 				}
 
 				if (nh_namesz == 8 &&
-				    strcmp(&nbuf[nameoffset], "OpenBSD") == 0 &&
+				    strcmp(&nbuf[noff], "OpenBSD") == 0 &&
 				    nh_type == NT_OPENBSD_VERSION &&
 				    nh_descsz == 4) {
 					file_printf(fm, ", for OpenBSD");
 					/* Content of note is always 0 */
+					printed = 1;
 				}
 			}
 			if ((lseek(fm->fd, ph_offset + offset, SEEK_SET)) == -1) {
@@ -434,7 +433,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 				nh32 = (Elf32_Nhdr *)&nbuf[offset];
 			else
 				nh64 = (Elf64_Nhdr *)&nbuf[offset];
-			offset += nh_size;
+			offset += 12;
 
 			/*
 			 * Check whether this note has the name "CORE" or
