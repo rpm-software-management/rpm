@@ -454,6 +454,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 
     if (!group) group = "Unknown";
 
+    count = 0;
     headerGetEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	           &count);
     headerGetEntry(dbentry, RPMTAG_PROVIDES, &type, (void **) &providesList, 
