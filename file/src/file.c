@@ -246,10 +246,10 @@ main(int argc, char **argv)
 			fm->flags |= FMAGIC_FLAGS_BRIEF;
 			/*@switchbreak@*/ break;
 		case 'c':
-			action = CHECK;
+			action = FILE_CHECK;
 			/*@switchbreak@*/ break;
 		case 'C':
-			action = COMPILE;
+			action = FILE_COMPILE;
 			/*@switchbreak@*/ break;
 		case 'd':
 			fm->flags |= FMAGIC_FLAGS_DEBUG;

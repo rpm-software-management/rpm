@@ -65,7 +65,7 @@ mdump(struct magic *m)
 			       /* Note: type is unsigned */
 			       (m->in_type < SZOF(typ)) ? 
 					typ[m->in_type] : "*bad*");
-		if (m->in_op & OPINVERSE)
+		if (m->in_op & FILE_OPINVERSE)
 			(void) fputc('~', stderr);
 		(void) fprintf(stderr, "%c%d),",
 			       ((m->in_op&0x7F) < SZOF(optyp)) ? 
@@ -75,13 +75,13 @@ mdump(struct magic *m)
 	(void) fprintf(stderr, " %s%s", (m->flag & UNSIGNED) ? "u" : "",
 		       /* Note: type is unsigned */
 		       (m->type < SZOF(typ)) ? typ[m->type] : "*bad*");
-	if (m->mask_op & OPINVERSE)
+	if (m->mask_op & FILE_OPINVERSE)
 		(void) fputc('~', stderr);
 	if (m->mask) {
 		((m->mask_op&0x7F) < SZOF(optyp)) ? 
 			(void) fputc(optyp[m->mask_op&0x7F], stderr) :
 			(void) fputc('?', stderr);
-		if(STRING != m->type || PSTRING != m->type)
+		if (FILE_STRING != m->type || FILE_PSTRING != m->type)
 			(void) fprintf(stderr, "%.8x", m->mask);
 		else {
 			if (m->mask & STRING_IGNORE_LOWERCASE) 
@@ -98,28 +98,28 @@ mdump(struct magic *m)
 
 	if (m->reln != 'x') {
 		switch (m->type) {
-		case BYTE:
-		case SHORT:
-		case LONG:
-		case LESHORT:
-		case LELONG:
-		case BESHORT:
-		case BELONG:
+		case FILE_BYTE:
+		case FILE_SHORT:
+		case FILE_LONG:
+		case FILE_LESHORT:
+		case FILE_LELONG:
+		case FILE_BESHORT:
+		case FILE_BELONG:
 			(void) fprintf(stderr, "%d", m->value.l);
 			break;
-		case STRING:
-		case PSTRING:
-		case REGEX:
+		case FILE_STRING:
+		case FILE_PSTRING:
+		case FILE_REGEX:
 			showstr(stderr, m->value.s, -1);
 			break;
-		case DATE:
-		case LEDATE:
-		case BEDATE:
+		case FILE_DATE:
+		case FILE_LEDATE:
+		case FILE_BEDATE:
 			(void)fprintf(stderr, "%s,", fmttime(m->value.l, 1));
 			break;
-		case LDATE:
-		case LELDATE:
-		case BELDATE:
+		case FILE_LDATE:
+		case FILE_LELDATE:
+		case FILE_BELDATE:
 			(void)fprintf(stderr, "%s,", fmttime(m->value.l, 0));
 			break;
 		default:
