@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
 "POT-Creation-Date: 2000-08-04 15:48-0400\n"
-"PO-Revision-Date: 2000-08-02 19:41+0200\n"
+"PO-Revision-Date: 2000-08-07 16:53+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -122,15 +122,13 @@ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <värd>] [--ftpport <port>]"
 
 #: rpm.c:211 rpm.c:230 rpmqv.c:299 rpmqv.c:308 rpmqv.c:324
-#, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>]"
-msgstr "                        [--httpproxy <värd>] [--httpport <port>] "
+msgstr "                        [--httpproxy <värd>] [--httpport <port>]"
 
 #: rpm.c:212 rpmqv.c:300
-#, fuzzy
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
-msgstr "                        [--noorder] [--relocate gammalväg=nyväg]"
+msgstr "                  [--justdb] [--noorder] [--relocate gammalväg=nyväg]"
 
 #: rpm.c:213 rpmqv.c:301
 msgid ""
@@ -200,15 +198,12 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:228 rpmqv.c:322
-#, fuzzy
 msgid "                        [--triggeredby]"
-msgstr "                        [--nomd5] [mål]"
+msgstr "                        [--triggeredby]"
 
 #: rpm.c:231 rpmqv.c:325
-#, fuzzy
 msgid "                        [--provides] [--triggers] [--dump]"
-msgstr ""
-"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
+msgstr "                        [--provides] [--triggers] [--dump]"
 
 #: rpm.c:232 rpmqv.c:326
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
@@ -3925,13 +3920,3 @@ msgstr "kunde inte öppna %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
-
-#~ msgid ""
-#~ "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ftpproxy <värd>] [--ftpport <port>] [--justdb]"
-
-#~ msgid ""
-#~ "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
-#~ msgstr ""
-#~ "                        [--triggeredby] [--ftpport] [--ftpproxy <värd>]"
