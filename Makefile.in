@@ -57,7 +57,8 @@ rpm2cpio: lib/librpm.a rpm2cpio.o
 	$(CC) -o rpm2cpio $(LDFLAGS) rpm2cpio.o $(LOADLIBES) 
 
 rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
-	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" \
+	$(CC) $(CFLAGS) -DRPMNLSPACKAGE=\"$(RPMNLSPACKAGE)\" \
+		-DRPMNLSDIR=\"$(RPMNLSDIR)\" \
 		-c $(srcdir)/rpm.c
 
 # these rules should be in here, but they drive me batty
@@ -91,11 +92,13 @@ newtree:
 $(PROGS): $(OBJS)
 
 install: all
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(RPMBINDIR)
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(BINDIR)
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(MANDIR)
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(ETCDIR)
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(LIBDIR)
+	[ -d $(installprefix)/$(RPMBINDIR) ] || \
+		mkdir $(installprefix)/$(RPMBINDIR)
+	[ -d $(installprefix)/$(BINDIR) ] || mkdir -p $(installprefix)/$(BINDIR)
+	[ -d $(installprefix)/$(MANDIR) ] || mkdir -p $(installprefix)/$(MANDIR)
+	[ -d $(installprefix)/$(ETCDIR) ] || mkdir -p $(installprefix)/$(ETCDIR)
+	[ -d $(installprefix)/$(LIBDIR) ] || mkdir -p $(installprefix)/$(LIBDIR)
+	[ -d $(installprefix)/$(INCDIR) ] || mkdir -p $(installprefix)/$(INCDIR)
 	if [ -x ./rpm ]; then \
 	    $(INSTALL) -s -m 755 -o 0 -g 0 rpm $(installprefix)/$(RPMBINDIR); \
 	else \
