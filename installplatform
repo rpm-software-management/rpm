@@ -22,7 +22,7 @@ target_platform="`$RPM --eval '%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
 case "$arch" in
-  sparc*) SUBSTS="s_sparc64_sparc_ s_sparc_sparc64_" ;;
+  sparc*) SUBSTS="s_sparc64_sparc_ s_sparc[^6]_sparc64_" ;;
   *) SUBST=y___ ;;
 esac
 
