@@ -53,10 +53,14 @@
 #include "ne_string.h" /* for ne_strdup */
 #include "ne_dates.h"
 
+/*@unchecked@*/
 int ne_debug_mask = 0;
+/*@unchecked@*/
 FILE *ne_debug_stream = NULL;
 
 void ne_debug_init(FILE *stream, int mask)
+	/*@globals ne_debug_mask, ne_debug_stream @*/
+	/*@modifies ne_debug_mask, ne_debug_stream @*/
 {
     ne_debug_stream = stream;
     ne_debug_mask = mask;
@@ -82,6 +86,7 @@ void ne_debug(int ch, const char *template, ...)
 #define NE_STRINGIFY(x) # x
 #define NE_EXPAT_VER(x,y,z) NE_STRINGIFY(x) "." NE_STRINGIFY(y) "." NE_STRINGIFY(z)
 
+/*@unchecked@*/ /*@observer@*/
 static const char version_string[] = "neon " NEON_VERSION ": " 
 #ifdef NEON_IS_LIBRARY
   "Library build"

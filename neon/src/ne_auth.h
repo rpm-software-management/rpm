@@ -53,9 +53,9 @@ typedef int (*ne_auth_creds)(void *userdata, const char *realm, int attempt,
  * callback.  The callback is called *indefinitely* until either it
  * returns non-zero, or authentication is successful.  */
 void ne_set_server_auth(ne_session *sess, ne_auth_creds creds, void *userdata)
-	/*@*/;
+	/*@modifies sess @*/;
 void ne_set_proxy_auth(ne_session *sess, ne_auth_creds creds, void *userdata)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Clear any stored authentication details for the given session. */
 void ne_forget_auth(ne_session *sess)

@@ -33,7 +33,8 @@
 
 #include "ne_alloc.h"
 
-static void (*oom)(void);
+static void (*oom)(void)
+	/*@*/;
 
 void ne_oom_callback(void (*callback)(void))
 {
@@ -99,8 +100,10 @@ char *ne_strndup(const char *s, size_t n)
  * included by config.h. */
 
 /* memory allocated be ne_*alloc, but not freed. */
+/*@unchecked@*/
 size_t ne_alloc_used = 0;
 
+/*@unchecked@*/
 static struct block {
     void *ptr;
     size_t len;
@@ -119,6 +122,7 @@ void ne_alloc_dump(FILE *f)
 }
 
 static void *tracking_malloc(size_t len, const char *file, int line)
+	/*@*/
 {
     void *ptr = malloc((len));
     struct block *block;

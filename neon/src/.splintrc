@@ -22,30 +22,27 @@
 -compmempass
 -declundef
 -enummemuse
+-evalorder
 -exportlocal
 -fcnuse
 -fielduse
 -fixedformalarray
 -fullinitblock
--globs
 -globstate
+-infloops
 -infloopsuncon
 -initallelements
 -internalglobs
 -mayaliasunique
--mods
--moduncon
--modunconnomods
--modnomods
--modobserveruncon
+-modfilesys
+-modnomods		# 1
+-moduncon		# 119
 -multithreaded
 -noeffect
--noeffectuncon
--noparams
--nullpass
+-noeffectuncon		# 30
+-nullpass		# 17
 -nullret
 -nullstate
--oldstyle
 -paramuse
 -predboolptr
 -protoparammatch

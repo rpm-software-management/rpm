@@ -199,7 +199,8 @@ struct ne_request_s {
     ne_status status;
 };
 
-static int open_connection(ne_request *req);
+static int open_connection(ne_request *req)
+	/*@modifies req @*/;
 
 /* The iterative step used to produce the hash value.  This is DJB's
  * magic "*33" hash function.  Ralf Engelschall has done some amazing
@@ -215,6 +216,7 @@ static int open_connection(ne_request *req);
 /* Returns hash value for header 'name', converting it to lower-case
  * in-place. */
 static inline unsigned int hash_and_lower(char *name)
+	/*@modifies name @*/
 {
     char *pnt;
     unsigned int hash = 0;
@@ -231,6 +233,7 @@ static inline unsigned int hash_and_lower(char *name)
  * whilst doing 'doing'.  'code', if non-zero, is the socket error
  * code, NE_SOCK_*, or if zero, is ignored. */
 static int aborted(ne_request *req, const char *doing, ssize_t code)
+	/*@modifies req @*/
 {
     ne_session *sess = req->session;
     int ret = NE_ERROR;
@@ -268,6 +271,7 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
 
 static void notify_status(ne_session *sess, ne_conn_status status,
 			  const char *info)
+	/*@*/
 {
     if (sess->notify_cb) {
 	sess->notify_cb(sess->notify_ud, status, info);
@@ -287,6 +291,7 @@ void ne_handle_numeric_header(void *userdata, const char *value)
 }
 
 static void *get_private(const struct hook *hk, const char *id)
+	/*@*/
 {
     for (; hk != NULL; hk = hk->next)
 	if (strcmp(hk->id, id) == 0)
@@ -309,6 +314,7 @@ typedef void (*void_fn)(void);
 #define ADD_HOOK(hooks, fn, ud) add_hook(&(hooks), NULL, (void_fn)(fn), (ud))
 
 static void add_hook(struct hook **hooks, const char *id, void_fn fn, void *ud)
+	/*@modifies *hooks @*/
 {
     struct hook *hk = ne_malloc(sizeof (struct hook)), *pos;
 
@@ -365,6 +371,7 @@ void ne_set_request_private(ne_request *req, const char *id, void *userdata)
 }
 
 static ssize_t body_string_send(void *userdata, char *buffer, size_t count)
+	/*@modifies buffer @*/
 {
     ne_request *req = userdata;
     
@@ -385,6 +392,7 @@ static ssize_t body_string_send(void *userdata, char *buffer, size_t count)
 }    
 
 static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
+	/*@modifies buffer @*/
 {
     ne_request *req = userdata;
 
@@ -440,6 +448,7 @@ int ne__pull_request_body(ne_request *req, ne_push_fn fn, void *ud)
 }
 
 static int send_with_progress(void *userdata, const char *data, size_t n)
+	/*@*/
 {
     ne_request *req = userdata;
     int ret;
@@ -457,6 +466,7 @@ static int send_with_progress(void *userdata, const char *data, size_t n)
 /* Sends the request body down the socket.
  * Returns 0 on success, or NE_* code */
 static int send_request_body(ne_request *req)
+	/*@modifies req @*/
 {
     int ret; 
     NE_DEBUG(NE_DBG_HTTP, "Sending request body...\n");
@@ -477,6 +487,7 @@ static int send_request_body(ne_request *req)
 /* Lob the User-Agent, connection and host headers in to the request
  * headers */
 static void add_fixed_headers(ne_request *req) 
+	/*@modifies req @*/
 {
     if (req->session->user_agent) {
         ne_buffer_zappend(req->headers, req->session->user_agent);
@@ -514,6 +525,7 @@ int ne_accept_2xx(void *userdata, ne_request *req, const ne_status *st)
  * such header as implying a chunked response, per the "Protocol
  * Compliance" statement in the manual. */
 static void te_hdr_handler(void *userdata, const char *value) 
+	/*@*/
 {
     struct ne_response *resp = userdata;
 
@@ -523,6 +535,7 @@ static void te_hdr_handler(void *userdata, const char *value)
 
 /* Handler for the "Connection" response header */
 static void connection_hdr_handler(void *userdata, const char *value)
+	/*@*/
 {
     ne_request *req = userdata;
     if (strcasecmp(value, "close") == 0) {
@@ -533,6 +546,7 @@ static void connection_hdr_handler(void *userdata, const char *value)
 }
 
 static void clength_hdr_handler(void *userdata, const char *value)
+	/*@*/
 {
     struct ne_response *resp = userdata;
     ne_off_t len = ne_strtoff(value, NULL, 10);
@@ -593,6 +607,7 @@ ne_request *ne_request_create(ne_session *sess,
 
 /* Set the request body length to 'length' */
 static void set_body_length(ne_request *req, ne_off_t length)
+	/*@modifies req @*/
 {
     req->body_length = length;
     ne_print_request_header(req, "Content-Length", "%" FMT_NE_OFF_T, length);
@@ -765,6 +780,7 @@ void ne_request_destroy(ne_request *req)
  * set.  */
 static int read_response_block(ne_request *req, struct ne_response *resp, 
 			       char *buffer, size_t *buflen) 
+	/*@modifies req, resp, buffer, *buflen @*/
 {
     ne_socket *const sock = req->session->socket;
     size_t willread;
@@ -880,6 +896,7 @@ ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
 
 /* Build the request string, returning the buffer. */
 static ne_buffer *build_request(ne_request *req) 
+	/*@*/
 {
     struct hook *hk;
     ne_buffer *buf = ne_buffer_create();
@@ -909,6 +926,7 @@ static ne_buffer *build_request(ne_request *req)
 #define DEBUG_DUMP_REQUEST(x) dump_request(x)
 
 static void dump_request(const char *request)
+	/*@*/
 { 
     if (ne_debug_mask & NE_DBG_HTTPPLAIN) { 
 	/* Display everything mode */
@@ -934,6 +952,7 @@ static void dump_request(const char *request)
  * adjusted in accordance with any changes made to the string to
  * remain equal to strlen(buf). */
 static inline void strip_eol(char *buf, ssize_t *len)
+	/*@modifies *len @*/
 {
     char *pnt = &buf[*len-1];
     while (pnt >= buf && (*pnt == '\r' || *pnt == '\n')) {
@@ -960,6 +979,7 @@ static inline void strip_eol(char *buf, ssize_t *len)
 /* Read and parse response status-line into 'status'.  'retry' is non-zero
  * if an NE_RETRY should be returned if an EOF is received. */
 static int read_status_line(ne_request *req, ne_status *status, int retry)
+	/*@modifies req, status @*/
 {
     char *buffer = req->respbuf;
     ssize_t ret;
@@ -984,6 +1004,7 @@ static int read_status_line(ne_request *req, ne_status *status, int retry)
 
 /* Discard a set of message headers. */
 static int discard_headers(ne_request *req)
+	/*@modifies req @*/
 {
     do {
 	SOCK_ERR(req, ne_sock_readline(req->session->socket, req->respbuf, 
@@ -1003,6 +1024,7 @@ static int discard_headers(ne_request *req)
  * closed already.
  */
 static int send_request(ne_request *req, const ne_buffer *request)
+	/*@modifies req @*/
 {
     ne_session *sess = req->session;
     ssize_t ret = NE_OK;
@@ -1064,6 +1086,7 @@ static int send_request(ne_request *req, const ne_buffer *request)
  *   NE_ERROR: Error (session error is set).
  */
 static int read_message_header(ne_request *req, char *buf, size_t buflen)
+	/*@modifies req, buf @*/
 {
     ssize_t n;
     ne_socket *sock = req->session->socket;
@@ -1125,6 +1148,7 @@ static int read_message_header(ne_request *req, char *buf, size_t buflen)
 
 /* Read response headers.  Returns NE_* code, sets session error. */
 static int read_response_headers(ne_request *req) 
+	/*@modifies req @*/
 {
     char hdr[8192]; /* max header length */
     int ret, count = 0;
@@ -1185,6 +1209,7 @@ static int read_response_headers(ne_request *req)
 /* Perform any necessary DNS lookup for the host given by *info;
  * return NE_ code. */
 static int lookup_host(ne_session *sess, struct host_info *info)
+	/*@modifies sess, info @*/
 {
     if (sess->addrlist) return NE_OK;
 
@@ -1340,6 +1365,7 @@ ne_session *ne_get_session(const ne_request *req)
 /* Create a CONNECT tunnel through the proxy server.
  * Returns HTTP_* */
 static int proxy_tunnel(ne_session *sess)
+	/*@*/
 {
     /* Hack up an HTTP CONNECT request... */
     ne_request *req;
@@ -1371,6 +1397,7 @@ static int proxy_tunnel(ne_session *sess)
 /* Return the first resolved address for the given host. */
 static const ne_inet_addr *resolve_first(ne_session *sess, 
                                          struct host_info *host)
+	/*@modifies sess, host @*/
 {
     if (sess->addrlist) {
         sess->curaddr = 0;
@@ -1384,6 +1411,7 @@ static const ne_inet_addr *resolve_first(ne_session *sess,
  * there are no more addresses. */
 static const ne_inet_addr *resolve_next(ne_session *sess,
                                         struct host_info *host)
+	/*@modifies sess, host @*/
 {
     if (sess->addrlist) {
         if (sess->curaddr++ < sess->numaddrs)
@@ -1400,6 +1428,7 @@ static const ne_inet_addr *resolve_next(ne_session *sess,
  * succeeded, that address will be used first for the next attempt to
  * connect. */
 static int do_connect(ne_request *req, struct host_info *host, const char *err)
+	/*@modifies req, host @*/
 {
     ne_session *const sess = req->session;
     int ret;

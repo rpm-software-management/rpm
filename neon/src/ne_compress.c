@@ -105,6 +105,7 @@ struct ne_decompress_s {
  *   HDR_ERROR: invalid header, give up (session error is set).
  */
 static int parse_header(ne_decompress *ctx)
+	/*@modifies ctx @*/
 {
     struct header *h = &ctx->in.hdr;
 
@@ -144,6 +145,7 @@ static int parse_header(ne_decompress *ctx)
  * DEFLATE data. */
 static int process_footer(ne_decompress *ctx, 
 			   const unsigned char *buf, size_t len)
+	/*@modifies ctx @*/
 {
     if (len + ctx->footcount > 8) {
         ne_set_error(ctx->session, 
@@ -175,6 +177,7 @@ static int process_footer(ne_decompress *ctx,
 /* A zlib function failed with 'code'; set the session error string
  * appropriately. */
 static void set_zlib_error(ne_decompress *ctx, const char *msg, int code)
+	/*@modifies ctx @*/
 {
     if (ctx->zstr.msg)
         ne_set_error(ctx->session, _("%s: %s"), msg, ctx->zstr.msg);
@@ -194,6 +197,7 @@ static void set_zlib_error(ne_decompress *ctx, const char *msg, int code)
 
 /* Inflate response buffer 'buf' of length 'len'. */
 static int do_inflate(ne_decompress *ctx, const char *buf, size_t len)
+	/*@modifies ctx @*/
 {
     int ret;
 
@@ -242,6 +246,7 @@ static int do_inflate(ne_decompress *ctx, const char *buf, size_t len)
 
 /* Callback which is passed blocks of the response body. */
 static int gz_reader(void *ud, const char *buf, size_t len)
+	/*@modifies ud @*/
 {
     ne_decompress *ctx = ud;
     const char *zbuf;
@@ -389,6 +394,7 @@ void ne_decompress_destroy(ne_decompress *ctx)
 
 /* Wrapper for user-passed acceptor function. */
 static int gz_acceptor(void *userdata, ne_request *req, const ne_status *st)
+	/*@*/
 {
     ne_decompress *ctx = userdata;
     return ctx->acceptor(ctx->userdata, req, st);

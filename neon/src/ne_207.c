@@ -66,6 +66,7 @@ struct ne_207_parser_s {
 #define ELM_status 6
 #define ELM_propstat 7
 
+/*@unchecked@*/
 static const struct ne_xml_idmap map207[] = {
     { "DAV:", "multistatus", ELM_multistatus },
     { "DAV:", "response", ELM_response },
@@ -105,6 +106,7 @@ void *ne_207_get_current_propstat(ne_207_parser *p)
 
 /* return non-zero if (child, parent) is an interesting element */
 static int can_handle(int parent, int child) 
+	/*@*/
 {
     return (parent == 0 && child == ELM_multistatus) ||
         (parent == ELM_multistatus && child == ELM_response) ||
@@ -117,6 +119,7 @@ static int can_handle(int parent, int child)
 }
 
 static int cdata_207(void *userdata, int state, const char *buf, size_t len)
+	/*@*/
 {
     ne_207_parser *p = userdata;
 
@@ -130,6 +133,7 @@ static int cdata_207(void *userdata, int state, const char *buf, size_t len)
 static int start_element(void *userdata, int parent, 
                          const char *nspace, const char *name, 
                          const char **atts) 
+	/*@*/
 {
     ne_207_parser *p = userdata;
     int state = ne_xml_mapid(map207, NE_XML_MAPLEN(map207), nspace, name);
@@ -160,6 +164,7 @@ static int start_element(void *userdata, int parent,
 
 static int 
 end_element(void *userdata, int state, const char *nspace, const char *name)
+	/*@*/
 {
     ne_207_parser *p = userdata;
     const char *cdata = ne_shave(p->cdata->data, "\r\n\t ");
@@ -258,6 +263,7 @@ struct context {
 };
 
 static void *start_response(void *userdata, const char *href)
+	/*@*/
 {
     struct context *ctx = userdata;
     NE_FREE(ctx->href);
@@ -267,6 +273,7 @@ static void *start_response(void *userdata, const char *href)
 
 static void handle_error(struct context *ctx, const ne_status *status,
 			 const char *description)
+	/*@modifies ctx @*/
 {
     if (status && status->klass != 2 && status->code != 424) {
 	char buf[50];
@@ -285,6 +292,7 @@ static void handle_error(struct context *ctx, const ne_status *status,
 
 static void end_response(void *userdata, void *response,
 			 const ne_status *status, const char *description)
+	/*@modifies userdata @*/
 {
     struct context *ctx = userdata;
     handle_error(ctx, status, description);
@@ -293,6 +301,7 @@ static void end_response(void *userdata, void *response,
 static void 
 end_propstat(void *userdata, void *propstat,
 	     const ne_status *status, const char *description)
+	/*@modifies userdata @*/
 {
     struct context *ctx = userdata;
     handle_error(ctx, status, description);

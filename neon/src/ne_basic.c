@@ -51,7 +51,9 @@
 #include "ne_i18n.h"
 
 /* Header parser to retrieve Last-Modified date */
-static void get_lastmodified(void *userdata, const char *value) {
+static void get_lastmodified(void *userdata, const char *value)
+	/*@modifies userdata @*/
+{
     time_t *modtime = userdata;
     *modtime = ne_httpdate_parse(value);
 }
@@ -122,6 +124,7 @@ struct get_context {
 };
 
 static int get_to_fd(void *userdata, const char *block, size_t length)
+	/*@*/
 {
     struct get_context *ctx = userdata;
     ssize_t ret;
@@ -150,11 +153,13 @@ static int get_to_fd(void *userdata, const char *block, size_t length)
 }
 
 static int accept_206(void *ud, ne_request *req, const ne_status *st)
+	/*@*/
 {
     return (st->code == 206);
 }
 
 static void clength_hdr_handler(void *ud, const char *value)
+	/*@*/
 {
     struct get_context *ctx = ud;
     off_t len = strtol(value, NULL, 10);
@@ -174,6 +179,7 @@ static void clength_hdr_handler(void *ud, const char *value)
 }
 
 static void content_range_hdr_handler(void *ud, const char *value)
+	/*@*/
 {
     struct get_context *ctx = ud;
 
@@ -370,6 +376,7 @@ void ne_content_type_handler(void *userdata, const char *value)
 }
 
 static void dav_hdr_handler(void *userdata, const char *value)
+	/*@*/
 {
     char *tokens = ne_strdup(value), *pnt = tokens;
     ne_server_capabilities *caps = userdata;
@@ -434,6 +441,7 @@ void ne_add_depth_header(ne_request *req, int depth)
 
 static int copy_or_move(ne_session *sess, int is_move, int overwrite,
 			int depth, const char *src, const char *dest) 
+	/*@modifies sess @*/
 {
     ne_request *req = ne_request_create( sess, is_move?"MOVE":"COPY", src );
 

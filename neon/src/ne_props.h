@@ -161,7 +161,7 @@ typedef struct {
  * NE_*. */
 int ne_proppatch(ne_session *sess, const char *path,
 		 const ne_proppatch_operation *ops)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Retrieve property names for the resources at 'path'.  'results'
  * callback is called for each resource.  Use 'ne_propset_iterate' on
@@ -235,14 +235,14 @@ typedef void *(*ne_props_create_complex)(void *userdata,
 void ne_propfind_set_private(ne_propfind_handler *handler,
 			     ne_props_create_complex creator,
 			     void *userdata)
-	/*@*/;
+	/*@modifies handler @*/;
 
 /* Fetch all properties.
  *
  * Returns NE_*. */
 int ne_propfind_allprop(ne_propfind_handler *handler, 
 			ne_props_result result, void *userdata)
-	/*@*/;
+	/*@modifies handler @*/;
 
 /* Fetch all properties with names listed in array 'names', which is
  * terminated by a property with a NULL name field.  For each resource
@@ -253,11 +253,11 @@ int ne_propfind_allprop(ne_propfind_handler *handler,
 int ne_propfind_named(ne_propfind_handler *handler, 
 		      const ne_propname *names,
 		      ne_props_result result, void *userdata)
-	/*@*/;
+	/*@modifies handler @*/;
 
 /* Destroy a propfind handler after use. */
-void ne_propfind_destroy(ne_propfind_handler *handler)
-	/*@*/;
+void ne_propfind_destroy(/*@only@*/ ne_propfind_handler *handler)
+	/*@modifies handler @*/;
 
 END_NEON_DECLS
 

@@ -43,28 +43,28 @@ ne_session *ne_session_create(const char *scheme,
 	/*@*/;
 
 /* Finish an HTTP session */
-void ne_session_destroy(ne_session *sess)
-	/*@*/;
+void ne_session_destroy(/*@only@*/ ne_session *sess)
+	/*@modifies sess @*/;
 
 /* Prematurely force the connection to be closed for the given
  * session. */
 void ne_close_connection(ne_session *sess)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Set the proxy server to be used for the session. */
 void ne_session_proxy(ne_session *sess,
 		      const char *hostname, unsigned int port)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Disable use of persistent connection if 'flag' is non-zero, else
  * enable (the default). */
 void ne_set_persist(ne_session *sess, int flag)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Bypass the normal name resolution; force the use of specific set of
  * addresses for this session, addrs[0]...addrs[n-1]. */
 void ne_set_addrlist(ne_session *sess, const ne_inet_addr **addrs, size_t n)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Progress callback. */
 typedef void (*ne_progress)(void *userdata, off_t progress, off_t total)
@@ -73,12 +73,12 @@ typedef void (*ne_progress)(void *userdata, off_t progress, off_t total)
 /* Set a progress callback for the session. */
 void ne_set_progress(ne_session *sess, 
 		     ne_progress progress, void *userdata)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Store an opaque context for the session, 'priv' is returned by a
  * call to ne_session_get_private with the same ID. */
 void ne_set_session_private(ne_session *sess, const char *id, void *priv)
-	/*@*/;
+	/*@modifies sess @*/;
 void *ne_get_session_private(ne_session *sess, const char *id)
 	/*@*/;
 
@@ -99,7 +99,7 @@ typedef void (*ne_notify_status)(void *userdata,
  * connection status. */
 void ne_set_status(ne_session *sess,
 		   ne_notify_status status, void *userdata)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Certificate verification failures.
  * The certificate is not yet valid: */
@@ -134,12 +134,12 @@ typedef int (*ne_ssl_verify_fn)(void *userdata, int failures,
  * is required when the CA certificate is not known for the server
  * certificate, or the server cert has other verification problems. */
 void ne_ssl_set_verify(ne_session *sess, ne_ssl_verify_fn fn, void *userdata)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Use the given client certificate for the session.  The client cert
  * MUST be in the decrypted state, otherwise behaviour is undefined. */
 void ne_ssl_set_clicert(ne_session *sess, const ne_ssl_client_cert *clicert)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Indicate that the certificate 'cert' is trusted; 'cert' is
  * duplicated internally and may be destroyed at will. */
@@ -165,12 +165,12 @@ typedef void (*ne_ssl_provide_fn)(void *userdata, ne_session *sess,
  * certificate. */
 void ne_ssl_provide_clicert(ne_session *sess, 
                             ne_ssl_provide_fn fn, void *userdata)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Set the timeout (in seconds) used when reading from a socket.  The
  * timeout value must be greater than zero. */
 void ne_set_read_timeout(ne_session *sess, int timeout)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Sets the user-agent string. neon/VERSION will be appended, to make
  * the full header "User-Agent: product neon/VERSION".
@@ -180,7 +180,7 @@ void ne_set_read_timeout(ne_session *sess, int timeout)
  *       product-version = token
  * where token is any alpha-numeric-y string [a-zA-Z0-9]* */
 void ne_set_useragent(ne_session *sess, const char *product)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Returns non-zero if next-hop server does not claim compliance to
  * HTTP/1.1 or later. */
@@ -200,17 +200,17 @@ const char *ne_get_scheme(ne_session *sess)
 /* Sets the host, scheme, and port fields (and no others) of the given
  * URI structure; host and scheme are malloc-allocated. */
 void ne_fill_server_uri(ne_session *sess, ne_uri *uri)
-	/*@*/;
+	/*@modifies uri @*/;
 
 /* Set the error string for the session; takes printf-like format
  * string. */
 void ne_set_error(ne_session *sess, const char *format, ...)
     ne_attribute((format (printf, 2, 3)))
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Retrieve the error string for the session */
 const char *ne_get_error(ne_session *sess)
-	/*@*/;
+	/*@modifies sess @*/;
 
 END_NEON_DECLS
 

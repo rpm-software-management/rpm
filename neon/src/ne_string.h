@@ -38,19 +38,19 @@ BEGIN_NEON_DECLS
  * 
  * ne_qtoken may return NULL if unterminated quotes are found. */
 char *ne_token(char **str, char sep)
-	/*@*/;
+	/*@modifies *str @*/;
 char *ne_qtoken(char **str, char sep, const char *quotes)
-	/*@*/;
+	/*@modifies *str @*/;
 
 /* Return portion of 'str' with any characters in 'whitespace' shaved
  * off the beginning and end.  Modifies str. */
 char *ne_shave(char *str, const char *whitespace)
-	/*@*/;
+	/*@modifies str @*/;
 
 /* Cleanse 'str' of non-printable characters.  'str' is modified
  * in-place, and returned. */
 char *ne_strclean(char *str)
-	/*@*/;
+	/*@modifies str @*/;
 
 /* A base64 encoder: converts 'len' bytes of 'text' to base64.
  * Returns malloc-allocated buffer; caller must free(). */
@@ -61,7 +61,7 @@ char *ne_base64(const unsigned char *text, size_t len)
  * 'data', places malloc-allocated raw data in '*out', returns length,
  * or zero on decode error (in which case *out is undefined). */
 size_t ne_unbase64(const char *data, unsigned char **out)
-	/*@*/;
+	/*@modifies *out @*/;
 
 /* String buffer handling. (Strings are zero-terminated still).  A
  * string buffer ne_buffer * which grows dynamically with the
@@ -80,7 +80,7 @@ typedef struct {
  * strings must all be NUL-terminated, and MUST be followed by a NULL
  * argument marking the end of the list.  */
 void ne_buffer_concat(ne_buffer *buf, ...)
-	/*@*/;
+	/*@modifies buf @*/;
 
 /* Create a new ne_buffer. */
 ne_buffer *ne_buffer_create(void)
@@ -91,40 +91,40 @@ ne_buffer *ne_buffer_ncreate(size_t size)
 	/*@*/;
 
 /* Destroys (deallocates) a buffer */
-void ne_buffer_destroy(ne_buffer *buf)
-	/*@*/;
+void ne_buffer_destroy(/*@only@*/ ne_buffer *buf)
+	/*@modifies buf @*/;
 
 /* Append a NUL-terminated string 'str' to buf. */
 void ne_buffer_zappend(ne_buffer *buf, const char *str)
-	/*@*/;
+	/*@modifies buf @*/;
 
 /* Append 'len' bytes of 'data' to buf.  'data' does not need to be
  * NUL-terminated. The resultant string will have a NUL-terminator,
  * either way.  */
 void ne_buffer_append(ne_buffer *buf, const char *data, size_t len)
-	/*@*/;
+	/*@modifies buf @*/;
 
 /* Empties the contents of buf; makes the buffer zero-length. */
 void ne_buffer_clear(ne_buffer *buf)
-	/*@*/;
+	/*@modifies buf @*/;
 
 /* Grows the ne_buffer to a minimum size. */
 void ne_buffer_grow(ne_buffer *buf, size_t size)
-	/*@*/;
+	/*@modifies buf @*/;
 
 void ne_buffer_altered(ne_buffer *buf)
-	/*@*/;
+	/*@modifies buf @*/;
 
 /* Destroys a buffer, WITHOUT freeing the data, and returns the
  * data. */
-char *ne_buffer_finish(ne_buffer *buf)
-	/*@*/;
+char *ne_buffer_finish(/*@only@*/ ne_buffer *buf)
+	/*@modifies buf @*/;
 
 /* Thread-safe strerror() wrapper; place system error for errno value
  * 'errnum' in 'buffer', which is of length 'buflen'.  Returns
  * 'buffer'. */
 char *ne_strerror(int errnum, char *buffer, size_t buflen)
-	/*@*/;
+	/*@modifies buffer @*/;
 
 /* ne_strnzcpy copies at most 'n'-1 bytes of 'src' to 'dest', and
  * ensures that 'dest' is subsequently NUL-terminated. */
@@ -143,12 +143,12 @@ char *ne_concat(const char *str, ...)
  * returns strlen(str). */
 size_t ne_snprintf(char *str, size_t size, const char *fmt, ...)
     ne_attribute((format(printf, 3, 4)))
-	/*@*/;
+	/*@modifies str @*/;
 
 /* Wrapper for vsnprintf. */
 size_t ne_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
     ne_attribute((format(printf, 3, 0)))
-	/*@*/;
+	/*@modifies str @*/;
 
 END_NEON_DECLS
 

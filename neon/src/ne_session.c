@@ -47,6 +47,7 @@
 
 /* Destroy a a list of hooks. */
 static void destroy_hooks(struct hook *hooks)
+	/*@modifies hooks @*/
 {
     struct hook *nexthk;
 
@@ -109,6 +110,7 @@ int ne_version_pre_http11(ne_session *s)
 
 /* Stores the "hostname[:port]" segment */
 static void set_hostport(struct host_info *host, unsigned int defaultport)
+	/*@modifies host @*/
 {
     size_t len = strlen(host->hostname);
     host->hostport = ne_malloc(len + 10);
@@ -121,6 +123,7 @@ static void set_hostport(struct host_info *host, unsigned int defaultport)
  * segment correctly. */
 static void
 set_hostinfo(struct host_info *info, const char *hostname, unsigned int port)
+	/*@modifies info @*/
 {
 #ifdef NE_HAVE_IDNA
     char *ihost;

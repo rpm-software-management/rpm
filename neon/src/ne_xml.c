@@ -68,7 +68,8 @@ struct handler {
 };
 
 #ifdef HAVE_LIBXML
-static void sax_error(void *ctx, const char *msg, ...);
+static void sax_error(void *ctx, const char *msg, ...)
+	/*@*/;
 #endif
 
 struct element {
@@ -111,11 +112,15 @@ struct ne_xml_parser_s {
 };
 
 /* The callback handlers */
-static void start_element(void *userdata, const ne_xml_char *name, const ne_xml_char **atts);
-static void end_element(void *userdata, const ne_xml_char *name);
-static void char_data(void *userdata, const ne_xml_char *cdata, int len);
+static void start_element(void *userdata, const ne_xml_char *name, const ne_xml_char **atts)
+	/*@modifies userdata @*/;
+static void end_element(void *userdata, const ne_xml_char *name)
+	/*@*/;
+static void char_data(void *userdata, const ne_xml_char *cdata, int len)
+	/*@*/;
 static const char *resolve_nspace(const struct element *elm, 
-                                  const char *prefix, size_t pfxlen);
+                                  const char *prefix, size_t pfxlen)
+	/*@*/;
 
 /* Linked list of namespace scopes */
 struct namespace {
@@ -127,6 +132,7 @@ struct namespace {
 #ifdef HAVE_LIBXML
 
 /* Could be const as far as we care, but libxml doesn't want that */
+/*@unchecked@*/
 static xmlSAXHandler sax_handler = {
     NULL, /* internalSubset */
     NULL, /* isStandalone */
@@ -157,6 +163,7 @@ static xmlSAXHandler sax_handler = {
 };
 
 /* empty attributes array to mimic expat behaviour */
+/*@unchecked@*/
 static const char *empty_atts[] = {NULL, NULL};
 
 /* macro for determining the attributes array to pass */
@@ -170,6 +177,7 @@ static const char *empty_atts[] = {NULL, NULL};
 static void decl_handler(void *userdata,
 			 const XML_Char *version, const XML_Char *encoding, 
 			 int standalone)
+	/*@*/
 {
     ne_xml_parser *p = userdata;
     if (encoding) p->encoding = ne_strdup(encoding);    
@@ -213,6 +221,7 @@ const char *ne_xml_doc_encoding(const ne_xml_parser *p)
 /* Extract the namespace prefix declarations from 'atts'. */
 static int declare_nspaces(ne_xml_parser *p, struct element *elm,
                            const ne_xml_char **atts)
+	/*@modifies p, elm @*/
 {
     int n;
     
@@ -248,6 +257,7 @@ static int declare_nspaces(ne_xml_parser *p, struct element *elm,
  * as well as the local part. */
 static int expand_qname(ne_xml_parser *p, struct element *elm,
                         const ne_xml_char *qname)
+	/*@modifies p, elm @*/
 {
     const ne_xml_char *pfx;
 
@@ -330,7 +340,8 @@ static void start_element(void *userdata, const ne_xml_char *name,
 }
 
 /* Destroys an element structure. */
-static void destroy_element(struct element *elm) 
+static void destroy_element(/*@only@*/ struct element *elm) 
+	/*@modifies elm @*/
 {
     struct namespace *this_ns, *next_ns;
     ne_free(elm->name);

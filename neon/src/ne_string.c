@@ -123,6 +123,7 @@ void ne_buffer_grow(ne_buffer *buf, size_t newsize)
 }
 
 static size_t count_concat(va_list *ap)
+	/*@*/
 {
     size_t total = 0;
     char *next;
@@ -134,6 +135,7 @@ static size_t count_concat(va_list *ap)
 }
 
 static void do_concat(char *str, va_list *ap) 
+	/*@modifies str @*/
 {
     char *next;
 
@@ -236,6 +238,7 @@ void ne_buffer_altered(ne_buffer *buf)
     buf->used = strlen(buf->data) + 1;
 }
 
+/*@unchecked@*/
 static const char *b64_alphabet =  
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"

@@ -89,7 +89,7 @@ void ne_xml_push_handler(ne_xml_parser *p,
                          ne_xml_cdata_cb *cdata,
                          ne_xml_endelm_cb *endelm,
                          void *userdata)
-	/*@*/;
+	/*@modifies p @*/;
 
 /* ne_xml_failed returns non-zero if there was an error during
  * parsing, or zero if the parse completed successfully.  The return
@@ -100,7 +100,7 @@ int ne_xml_failed(ne_xml_parser *p)
 
 /* Set error string for parser: the string may be truncated. */
 void ne_xml_set_error(ne_xml_parser *p, const char *msg)
-	/*@*/;
+	/*@modifies p @*/;
 
 /* Return the error string (never NULL).  After ne_xml_failed returns
  * >0, this will describe the parse error.  Otherwise it will be a
@@ -109,8 +109,8 @@ const char *ne_xml_get_error(ne_xml_parser *p)
 	/*@*/;
 
 /* Destroy the parser object. */
-void ne_xml_destroy(ne_xml_parser *p)
-	/*@*/;
+void ne_xml_destroy(/*@only@*/ ne_xml_parser *p)
+	/*@modifies p @*/;
 
 /* Parse the given block of input of length len.  Parser must be
  * called with len=0 to signify the end of the document (for that
@@ -119,12 +119,12 @@ void ne_xml_destroy(ne_xml_parser *p)
  * returned; if parsing is aborted by a caller-supplied callback, that
  * callback's return value is returned. */
 int ne_xml_parse(ne_xml_parser *p, const char *block, size_t len)
-	/*@*/;
+	/*@modifies p @*/;
 
 /* As above, casting (ne_xml_parser *)userdata internally.
  * (This function can be passed to ne_add_response_body_reader) */
 int ne_xml_parse_v(void *userdata, const char *block, size_t len)
-	/*@*/;
+	/*@modifies userdata @*/;
 
 /* Return current parse line for errors */
 int ne_xml_currentline(ne_xml_parser *p)

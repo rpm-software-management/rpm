@@ -222,6 +222,7 @@ struct ne_sock_addr_s {
 #ifdef WIN32
 /* Print system error message to given buffer. */
 static void print_error(int errnum, char *buffer, size_t buflen)
+	/*@*/
 {
     if (FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM
                        | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -236,6 +237,7 @@ static void print_error(int errnum, char *buffer, size_t buflen)
 
 #if defined(HAVE_OPENSSL)
 static void init_ssl(void)
+	/*@*/
 {
     SSL_load_error_strings();
     SSL_library_init();
@@ -243,6 +245,7 @@ static void init_ssl(void)
 }
 #elif defined(HAVE_GNUTLS)
 static void init_ssl(void)
+	/*@*/
 {
     gnutls_global_init();
 }
@@ -251,6 +254,7 @@ static void init_ssl(void)
 #ifdef HAVE_OPENSSL
 /* Seed the SSL PRNG, if necessary; returns non-zero on failure. */
 static int seed_ssl_prng(void)
+	/*@*/
 {
     /* Check whether the PRNG has already been seeded. */
     if (RAND_status() == 1)
@@ -279,12 +283,14 @@ static int seed_ssl_prng(void)
 #endif /* HAVE_OPENSSL */
 
 #ifdef USE_CHECK_IPV6
+/*@unchecked@*/
 static int ipv6_disabled = 0;
 
 /* On Linux kernels, IPv6 is typically built as a loadable module, and
  * socket(AF_INET6, ...) will fail if this module is not loaded, so
  * the slow AAAA lookups can be avoided for this common case. */
 static void init_ipv6(void)
+	/*@*/
 {
     int fd = socket(AF_INET6, SOCK_STREAM, 0);
     
@@ -297,9 +303,12 @@ static void init_ipv6(void)
 #define ipv6_disabled (0)
 #endif
 
+/*@unchecked@*/
 static int init_result = 0;
 
 int ne_sock_init(void)
+	/*@globals init_result @*/
+	/*@modifies init_result @*/
 {
 #ifdef WIN32
     WORD wVersionRequested;
@@ -344,6 +353,8 @@ int ne_sock_init(void)
 }
 
 void ne_sock_exit(void)
+	/*@globals init_result @*/
+	/*@modifies init_result @*/
 {
 #ifdef WIN32
     WSACleanup();
@@ -426,6 +437,7 @@ ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t buflen)
 
 /* Await data on raw fd in socket. */
 static int readable_raw(ne_socket *sock, int secs)
+	/*@modifies sock @*/
 {
     int ret;
 #ifdef NE_USE_POLL
@@ -464,6 +476,7 @@ static int readable_raw(ne_socket *sock, int secs)
 }
 
 static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
+	/*@modifies sock, buffer @*/
 {
     ssize_t ret;
     
@@ -490,6 +503,7 @@ static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
                     (NE_ISRESET(e) ? NE_SOCK_RESET : NE_SOCK_ERROR))
 
 static ssize_t write_raw(ne_socket *sock, const char *data, size_t length) 
+	/*@modifies sock @*/
 {
     ssize_t ret;
     
@@ -505,11 +519,13 @@ static ssize_t write_raw(ne_socket *sock, const char *data, size_t length)
     return ret;
 }
 
+/*@unchecked@*/
 static const struct iofns iofns_raw = { read_raw, write_raw, readable_raw };
 
 #ifdef HAVE_OPENSSL
 /* OpenSSL I/O function implementations. */
 static int readable_ossl(ne_socket *sock, int secs)
+	/*@*/
 {
     if (SSL_pending(sock->ssl))
 	return 0;
@@ -518,6 +534,7 @@ static int readable_ossl(ne_socket *sock, int secs)
 
 /* SSL error handling, according to SSL_get_error(3). */
 static int error_ossl(ne_socket *sock, int sret)
+	/*@*/
 {
     int err = SSL_get_error(sock->ssl, sret), ret = NE_SOCK_ERROR;
     const char *str;
@@ -560,6 +577,7 @@ static int error_ossl(ne_socket *sock, int sret)
 #define CAST2INT(n) (((n) > INT_MAX) ? INT_MAX : (n))
 
 static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
+	/*@*/
 {
     int ret;
 
@@ -574,6 +592,7 @@ static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
 }
 
 static ssize_t write_ossl(ne_socket *sock, const char *data, size_t len)
+	/*@*/
 {
     int ret, ilen = CAST2INT(len);
     ret = SSL_write(sock->ssl, data, ilen);
@@ -585,6 +604,7 @@ static ssize_t write_ossl(ne_socket *sock, const char *data, size_t len)
     return ret;
 }
 
+/*@unchecked@*/
 static const struct iofns iofns_ssl = {
     read_ossl,
     write_ossl,
@@ -595,6 +615,7 @@ static const struct iofns iofns_ssl = {
 
 /* Return zero if an alert value can be ignored. */
 static int check_alert(ne_socket *sock, ssize_t ret)
+	/*@*/
 {
     const char *alert;
 
@@ -611,6 +632,7 @@ static int check_alert(ne_socket *sock, ssize_t ret)
 }
 
 static int readable_gnutls(ne_socket *sock, int secs)
+	/*@*/
 {
     if (gnutls_record_check_pending(sock->ssl)) {
         return 0;
@@ -619,6 +641,7 @@ static int readable_gnutls(ne_socket *sock, int secs)
 }
 
 static ssize_t error_gnutls(ne_socket *sock, ssize_t sret)
+	/*@*/
 {
     ssize_t ret;
 
@@ -645,6 +668,7 @@ static ssize_t error_gnutls(ne_socket *sock, ssize_t sret)
         || check_alert(sock, ret) == 0))
 
 static ssize_t read_gnutls(ne_socket *sock, char *buffer, size_t len)
+	/*@*/
 {
     ssize_t ret;
 
@@ -662,6 +686,7 @@ static ssize_t read_gnutls(ne_socket *sock, char *buffer, size_t len)
 }
 
 static ssize_t write_gnutls(ne_socket *sock, const char *data, size_t len)
+	/*@*/
 {
     ssize_t ret;
 
@@ -675,6 +700,7 @@ static ssize_t write_gnutls(ne_socket *sock, const char *data, size_t len)
     return ret;
 }
 
+/*@unchecked@*/
 static const struct iofns iofns_ssl = {
     read_gnutls,
     write_gnutls,
@@ -924,6 +950,8 @@ void ne_addr_destroy(ne_sock_addr *addr)
 
 /* Connect socket 'fd' to address 'addr' on given 'port': */
 static int raw_connect(int fd, const ne_inet_addr *addr, unsigned int port)
+	/*@globals errno @*/
+	/*@modifies errno @*/
 {
 #ifdef USE_GETADDRINFO
 #ifdef AF_INET6

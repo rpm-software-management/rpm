@@ -71,7 +71,7 @@ typedef u_int32_t md5_uint32;
 #endif
 
 #undef __P
-#if defined (__STDC__) && __STDC__
+#if defined(__LCLINT__) || (defined (__STDC__) && __STDC__)
 # define __P(x) x
 #else
 # define __P(x) ()
@@ -98,7 +98,7 @@ struct ne_md5_ctx
 /* Initialize structure containing state of computation.
    (RFC 1321, 3.3: Step 3)  */
 extern void ne_md5_init_ctx __P ((struct ne_md5_ctx *ctx))
-	/*@*/;
+	/*@modifies ctx @*/;
 
 /* Starting with the result of former calls of this function (or the
    initialization function update the context for the next LEN bytes
@@ -106,7 +106,7 @@ extern void ne_md5_init_ctx __P ((struct ne_md5_ctx *ctx))
    It is necessary that LEN is a multiple of 64!!! */
 extern void ne_md5_process_block __P ((const void *buffer, size_t len,
 				    struct ne_md5_ctx *ctx))
-	/*@*/;
+	/*@modifies ctx @*/;
 
 /* Starting with the result of former calls of this function (or the
    initialization function update the context for the next LEN bytes
@@ -114,7 +114,7 @@ extern void ne_md5_process_block __P ((const void *buffer, size_t len,
    It is NOT required that LEN is a multiple of 64.  */
 extern void ne_md5_process_bytes __P ((const void *buffer, size_t len,
 				       struct ne_md5_ctx *ctx))
-	/*@*/;
+	/*@modifies ctx @*/;
 
 /* Process the remaining bytes in the buffer and put result from CTX
    in first 16 bytes following RESBUF.  The result is always in little
@@ -124,7 +124,7 @@ extern void ne_md5_process_bytes __P ((const void *buffer, size_t len,
    IMPORTANT: On some systems it is required that RESBUF is correctly
    aligned for a 32 bits value.  */
 extern void *ne_md5_finish_ctx __P ((struct ne_md5_ctx *ctx, void *resbuf))
-	/*@*/;
+	/*@modifies ctx, resbuf @*/;
 
 
 /* Put result from CTX in first 16 bytes following RESBUF.  The result is
@@ -134,19 +134,19 @@ extern void *ne_md5_finish_ctx __P ((struct ne_md5_ctx *ctx, void *resbuf))
    IMPORTANT: On some systems it is required that RESBUF is correctly
    aligned for a 32 bits value.  */
 extern void *ne_md5_read_ctx __P ((const struct ne_md5_ctx *ctx, void *resbuf))
-	/*@*/;
+	/*@modifies resbuf @*/;
 
 
 /* Compute MD5 message digest for bytes read from STREAM.  The
    resulting message digest number will be written into the 16 bytes
    beginning at RESBLOCK.  */
 extern int ne_md5_stream __P ((FILE *stream, void *resblock))
-	/*@*/;
+	/*@modifies stream, resblock @*/;
 
 /* MD5 ascii->binary conversion */
 void ne_md5_to_ascii(const unsigned char md5_buf[16], char *buffer)
-	/*@*/;
+	/*@modifies buffer @*/;
 void ne_ascii_to_md5(const char *buffer, unsigned char md5_buf[16])
-	/*@*/;
+	/*@modifies md5_buf @*/;
 
 #endif /* NEON_MD5_H */

@@ -72,11 +72,11 @@ struct ne_lock *ne_lock_copy(const struct ne_lock *lock)
 /* Free a lock structure; free's any of any of the URI, token and
  * owner which are set, but not the lock object itself. */
 void ne_lock_free(struct ne_lock *lock)
-	/*@*/;
+	/*@modifies lock @*/;
 
 /* Like ne_lock_free; but free's the lock object itself too. */
-void ne_lock_destroy(struct ne_lock *lock)
-	/*@*/;
+void ne_lock_destroy(/*@only@*/ struct ne_lock *lock)
+	/*@modifies lock @*/;
 
 /* ne_lock_store: an opaque type which is used to store a set of lock
  * objects. */
@@ -90,11 +90,11 @@ ne_lock_store *ne_lockstore_create(void)
  * operations made using 'sess' which operate on a locked resource,
  * can use the locks from 'store' if needed. */
 void ne_lockstore_register(ne_lock_store *store, ne_session *sess)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Destroy a lock store, free'ing any locks remaining inside. */
-void ne_lockstore_destroy(ne_lock_store *store)
-	/*@*/;
+void ne_lockstore_destroy(/*@only@*/ ne_lock_store *store)
+	/*@modifies store @*/;
 
 /* Add a lock to the store: the store then "owns" the lock object, and
  * you must not free it. The lock MUST have all of:
@@ -103,17 +103,17 @@ void ne_lockstore_destroy(ne_lock_store *store)
  *  - a valid depth
  */
 void ne_lockstore_add(ne_lock_store *store, struct ne_lock *lock)
-	/*@*/;
+	/*@modifies store @*/;
 
 /* Remove given lock object from store: 'lock' MUST point to a lock
  * object which is known to be in the store. */
 void ne_lockstore_remove(ne_lock_store *store, struct ne_lock *lock)
-	/*@*/;
+	/*@modifies store, lock @*/;
 
 /* Returns the first lock in the lock store, or NULL if the store is
  * empty. */
 struct ne_lock *ne_lockstore_first(ne_lock_store *store)
-	/*@*/;
+	/*@modifies store @*/;
 
 /* After ne_lockstore_first has been called; returns the next lock in
  * the lock store, or NULL if there are no more locks stored.
@@ -121,7 +121,7 @@ struct ne_lock *ne_lockstore_first(ne_lock_store *store)
  * 'store' since the store was created, or the last time this function
  * returned NULL for the store.. */
 struct ne_lock *ne_lockstore_next(ne_lock_store *store)
-	/*@*/;
+	/*@modifies store @*/;
 
 /* Find a lock in the store for the given server, and with the given
  * path. */
@@ -135,7 +135,7 @@ struct ne_lock *ne_lockstore_findbyuri(ne_lock_store *store,
  * free()d by this function.  On successful return, lock->token will
  * contain the lock token. */
 int ne_lock(ne_session *sess, struct ne_lock *lock)
-	/*@*/;
+	/*@modifies sess, lock @*/;
 
 /* Issue an UNLOCK request for the given lock */
 int ne_unlock(ne_session *sess, const struct ne_lock *lock)
@@ -143,7 +143,7 @@ int ne_unlock(ne_session *sess, const struct ne_lock *lock)
 
 /* Refresh a lock. Updates lock->timeout appropriately. */
 int ne_lock_refresh(ne_session *sess, struct ne_lock *lock)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Callback for lock discovery.  If 'lock' is NULL, something went
  * wrong performing lockdiscovery for the resource, look at 'status'

@@ -93,12 +93,15 @@ struct ne_prop_result_set_s {
 
 static int 
 startelm(void *userdata, int state, const char *name, const char *nspace,
-	 const char **atts);
+	 const char **atts)
+	/*@*/;
 static int 
-endelm(void *userdata, int state, const char *name, const char *nspace);
+endelm(void *userdata, int state, const char *name, const char *nspace)
+	/*@*/;
 
 /* Handle character data; flat property value. */
 static int chardata(void *userdata, int state, const char *data, size_t len)
+	/*@*/
 {
     ne_propfind_handler *hdl = userdata;
 
@@ -120,6 +123,7 @@ ne_request *ne_propfind_get_request(ne_propfind_handler *handler)
 
 static int propfind(ne_propfind_handler *handler, 
 		    ne_props_result results, void *userdata)
+	/*@modifies handler @*/
 {
     int ret;
     ne_request *req = handler->request;
@@ -152,6 +156,7 @@ static int propfind(ne_propfind_handler *handler,
 }
 
 static void set_body(ne_propfind_handler *hdl, const ne_propname *names)
+	/*@modifies hdl @*/
 {
     ne_buffer *body = hdl->body;
     int n;
@@ -235,6 +240,7 @@ int ne_proppatch(ne_session *sess, const char *uri,
 
 /* Compare two property names. */
 static int pnamecmp(const ne_propname *pn1, const ne_propname *pn2)
+	/*@*/
 {
     if (pn1->nspace == NULL && pn2->nspace != NULL) {
 	return 1;
@@ -253,6 +259,7 @@ static int pnamecmp(const ne_propname *pn1, const ne_propname *pn2)
  * If not found, returns non-zero.  */
 static int findprop(const ne_prop_result_set *set, const ne_propname *pname,
 		    struct propstat **pstat_ret, struct prop **prop_ret)
+	/*@modifies *pstat_ret, *prop_ret @*/
 {
     
     int ps, p;
@@ -344,6 +351,7 @@ const ne_status *ne_propset_status(const ne_prop_result_set *set,
 }
 
 static void *start_response(void *userdata, const char *href)
+	/*@*/
 {
     ne_prop_result_set *set = ne_calloc(sizeof(*set));
     ne_propfind_handler *hdl = userdata;
@@ -360,6 +368,7 @@ static void *start_response(void *userdata, const char *href)
 }
 
 static void *start_propstat(void *userdata, void *response)
+	/*@*/
 {
     ne_prop_result_set *set = response;
     ne_propfind_handler *hdl = userdata;
@@ -473,6 +482,7 @@ static int endelm(void *userdata, int state,
 static void end_propstat(void *userdata, void *pstat_v, 
 			 const ne_status *status,
 			 const char *description)
+	/*@*/
 {
     struct propstat *pstat = pstat_v;
 
@@ -506,7 +516,8 @@ static void end_propstat(void *userdata, void *pstat_v,
 }
 
 /* Frees up a results set */
-static void free_propset(ne_prop_result_set *set)
+static void free_propset(/*@only@*/ ne_prop_result_set *set)
+	/*@modifies set @*/
 {
     int n;
     
@@ -536,6 +547,7 @@ static void free_propset(ne_prop_result_set *set)
 static void end_response(void *userdata, void *resource,
 			 const ne_status *status,
 			 const char *description)
+	/*@modifies resource @*/
 {
     ne_propfind_handler *handler = userdata;
     ne_prop_result_set *set = resource;

@@ -30,7 +30,7 @@ BEGIN_NEON_DECLS
  * request will fail with the NE_REDIRECT code, and the destinsation
  * of the redirect can be retrieved using ne_redirect_location(). */
 void ne_redirect_register(ne_session *sess)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Returns location of last redirect.  Will return NULL if no redirect
  * has been encountered for given session, or the last redirect

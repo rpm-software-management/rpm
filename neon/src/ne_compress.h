@@ -37,10 +37,10 @@ typedef struct ne_decompress_s ne_decompress;
  * the request will be aborted and session error string set. */
 ne_decompress *ne_decompress_reader(ne_request *req, ne_accept_response accpt,
 				    ne_block_reader rdr, void *userdata)
-	/*@*/;
+	/*@modifies req @*/;
 
 /* Destroys decompression state. */
-void ne_decompress_destroy(ne_decompress *ctx)
-	/*@*/;
+void ne_decompress_destroy(/*@only@*/ ne_decompress *ctx)
+	/*@modifies ctx @*/;
 
 #endif /* NE_COMPRESS_H */

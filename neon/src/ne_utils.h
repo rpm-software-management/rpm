@@ -39,6 +39,7 @@ BEGIN_NEON_DECLS
 /* Returns a human-readable version string like:
  * "neon 0.2.0: Library build, OpenSSL support"
  */
+/*@observer@*/
 const char *ne_version_string(void)
 	/*@*/;
 
@@ -88,7 +89,9 @@ void ne_debug_init(FILE *stream, int mask)
 
 /* The current debug mask and stream set by the last call to
  * ne_debug_init. */
+/*@unchecked@*/
 extern int ne_debug_mask;
+/*@unchecked@*/
 extern FILE *ne_debug_stream;
 
 /* Produce debug output if any of channels 'ch' is enabled for
@@ -116,7 +119,7 @@ typedef struct {
  *   -1 on parse error.
  */
 int ne_parse_statusline(const char *status_line, ne_status *s)
-	/*@*/;
+	/*@modifies s @*/;
 
 END_NEON_DECLS
 

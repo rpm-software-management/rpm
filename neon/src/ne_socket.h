@@ -74,12 +74,12 @@ int ne_addr_result(const ne_sock_addr *addr)
  * object.  Undefined behaviour if ne_addr_result returns non-zero for
  * 'addr'; otherwise, never returns NULL.  */
 const ne_inet_addr *ne_addr_first(ne_sock_addr *addr)
-	/*@*/;
+	/*@modifies addr @*/;
 
 /* Returns the next network address associated with the 'addr' object,
  * or NULL if there are no more. */
 const ne_inet_addr *ne_addr_next(ne_sock_addr *addr)
-	/*@*/;
+	/*@modifies addr @*/;
 
 /* NB: the pointers returned by ne_addr_first and ne_addr_next are
  * valid until ne_addr_destroy is called for the corresponding
@@ -88,11 +88,11 @@ const ne_inet_addr *ne_addr_next(ne_sock_addr *addr)
 /* If name resolution fails, copies the error string into 'buffer',
  * which is of size 'bufsiz'.  'buffer' is returned. */
 char *ne_addr_error(const ne_sock_addr *addr, char *buffer, size_t bufsiz)
-	/*@*/;
+	/*@modifies buffer @*/;
 
 /* Destroys an address object created by ne_addr_resolve. */
-void ne_addr_destroy(ne_sock_addr *addr)
-	/*@*/;
+void ne_addr_destroy(/*@only@*/ ne_sock_addr *addr)
+	/*@modifies addr @*/;
 
 /* Network address type; IPv4 or IPv6 */
 typedef enum {
@@ -119,11 +119,11 @@ ne_iaddr_type ne_iaddr_typeof(const ne_inet_addr *ia)
 /* Prints the string representation of network address 'ia' into the
  * 'buffer', which is of size 'bufsiz'.  Returns 'buffer'. */
 char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, size_t bufsiz)
-	/*@*/;
+	/*@modifies buffer @*/;
 
 /* Free a network address created using ne_iaddr_make. */
-void ne_iaddr_free(ne_inet_addr *addr)
-	/*@*/;
+void ne_iaddr_free(/*@only@*/ ne_inet_addr *addr)
+	/*@modifies addr @*/;
 
 /* Create a TCP socket; returns NULL on error. */
 ne_socket *ne_sock_create(void)
@@ -133,7 +133,7 @@ ne_socket *ne_sock_create(void)
  * Returns non-zero if a connection could not be established. */
 int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr, 
                     unsigned int port)
-	/*@*/;
+	/*@modifies sock @*/;
 
 /* ne_sock_read reads up to 'count' bytes into 'buffer'.
  * Returns:
@@ -141,7 +141,7 @@ int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr,
  *   >0 length of data read into buffer.
  */
 ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t count)
-	/*@*/;
+	/*@modifies sock, buffer @*/;
 
 /* ne_sock_peek reads up to 'count' bytes into 'buffer', but the data
  * will still be returned on a subsequent call to ne_sock_read or 
@@ -151,7 +151,7 @@ ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t count)
  *   >0 length of data read into buffer.
  */
 ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t count)
-	/*@*/;
+	/*@modifies sock, buffer @*/;
 
 /* Block for up to 'n' seconds until data becomes available for reading
  * on the socket. Returns:
@@ -164,7 +164,8 @@ int ne_sock_block(ne_socket *sock, int n)
 
 /* Writes 'count' bytes of 'data' to the socket.
  * Returns 0 on success, NE_SOCK_* on error. */
-int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t count); 
+int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t count)
+	/*@*/;
 
 /* Reads an LF-terminated line into 'buffer', and NUL-terminate it.
  * At most 'len' bytes are read (including the NUL terminator).
@@ -173,16 +174,16 @@ int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t count);
  * >0 number of bytes read (including NUL terminator)
  */
 ssize_t ne_sock_readline(ne_socket *sock, char *buffer, size_t len)
-	/*@*/;
+	/*@modifies sock, buffer @*/;
 
 /* Read exactly 'len' bytes into buffer; returns 0 on success, SOCK_*
  * on error. */
 ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t len)
-	/*@*/;
+	/*@modifies sock, buffer @*/;
 
 /* Accept a connection on listening socket 'fd'. */
 int ne_sock_accept(ne_socket *sock, int fd)
-	/*@*/;
+	/*@modifies sock @*/;
 
 /* Returns the file descriptor used for socket 'sock'. */
 int ne_sock_fd(const ne_socket *sock)
@@ -190,8 +191,8 @@ int ne_sock_fd(const ne_socket *sock)
 
 /* Close the socket, and destroy the socket object. Returns non-zero
  * on error. */
-int ne_sock_close(ne_socket *sock)
-	/*@*/;
+int ne_sock_close(/*@only@*/ ne_socket *sock)
+	/*@modifies sock @*/;
 
 /* Return current error string for socket. */
 const char *ne_sock_error(const ne_socket *sock)
@@ -199,7 +200,7 @@ const char *ne_sock_error(const ne_socket *sock)
 
 /* Set read timeout for socket. */
 void ne_sock_read_timeout(ne_socket *sock, int timeout)
-	/*@*/;
+	/*@modifies sock @*/;
 
 /* Returns the standard TCP port for the given service, or zero if
  * none is known. */

@@ -48,6 +48,7 @@ struct redirect {
 
 static void
 create(ne_request *req, void *session, const char *method, const char *uri)
+	/*@modifies req @*/
 {
     struct redirect *red = session;
     NE_FREE(red->location);
@@ -61,6 +62,7 @@ create(ne_request *req, void *session, const char *method, const char *uri)
 		  (n) == 307)
 
 static int post_send(ne_request *req, void *private, const ne_status *status)
+	/*@*/
 {
     struct redirect *red = private;
 
@@ -108,6 +110,7 @@ static int post_send(ne_request *req, void *private, const ne_status *status)
 }
 
 static void free_redirect(void *cookie)
+	/*@modifies cookie @*/
 {
     struct redirect *red = cookie;
     NE_FREE(red->location);

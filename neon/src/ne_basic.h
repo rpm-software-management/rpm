@@ -36,7 +36,7 @@ int ne_get(ne_session *sess, const char *path, int fd)
 /* Perform a PUT request on resource at 'path', reading the entity
  * body to submit from 'fd'. */
 int ne_put(ne_session *sess, const char *path, int fd)
-	/*@*/;
+	/*@modifies sess @*/;
 
 #define NE_DEPTH_ZERO (0)
 #define NE_DEPTH_ONE (1)
@@ -56,28 +56,28 @@ int ne_put(ne_session *sess, const char *path, int fd)
  * are to be copied.  */
 int ne_copy(ne_session *sess, int overwrite, int depth,
 	    const char *src, const char *dest)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Move resource from 'src' to dest 'path'. */
 int ne_move(ne_session *sess, int overwrite,
 	    const char *src, const char *dest)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Delete resource at 'path'. */
 int ne_delete(ne_session *sess, const char *path)
-	/*@*/;
+	/*@modifies sess @*/;
 /* Create a collection at 'path', which MUST have a trailing slash. */
 int ne_mkcol(ne_session *sess, const char *path)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Adds a Depth: header to a request */
 void ne_add_depth_header(ne_request *req, int depth)
-	/*@*/;
+	/*@modifies req @*/;
 
 /* Retrieve modification time of resource at location 'path', place in
  * *modtime.  (uses HEAD) */
 int ne_getmodtime(ne_session *sess, const char *path, time_t *modtime)
-	/*@*/;
+	/*@modifies *modtime @*/;
 
 typedef struct {
     const char *type, *subtype;
@@ -127,7 +127,7 @@ typedef struct {
  *      ne_get_range(sess, path, &range, myfile); */
 int ne_get_range(ne_session *sess, const char *path, 
 		 ne_content_range *range, int fd)
-	/*@*/;
+	/*@modifies sess @*/;
 
 /* Post using buffer as request-body: stream response into f */
 int ne_post(ne_session *sess, const char *path, int fd, const char *buffer)

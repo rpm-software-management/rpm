@@ -118,6 +118,7 @@ struct auth_challenge {
     struct auth_challenge *next;
 };
 
+/*@unchecked@*/
 static const struct auth_class {
     const char *id, *req_hdr, *resp_hdr, *resp_info_hdr, *fail_msg;
     int status_code, fail_code;
@@ -209,6 +210,7 @@ struct auth_request {
 };
 
 static void clean_session(auth_session *sess) 
+	/*@modifies sess @*/
 {
     sess->can_handle = 0;
     NE_FREE(sess->basic);
@@ -234,6 +236,7 @@ static void clean_session(auth_session *sess)
 
 /* Returns client nonce string. */
 static char *get_cnonce(void) 
+	/*@*/
 {
     char ret[33];
     unsigned char data[256], tmp[16];
@@ -285,6 +288,7 @@ static char *get_cnonce(void)
 }
 
 static int get_credentials(auth_session *sess, char *pwbuf) 
+	/*@modifies sess @*/
 {
     return sess->creds(sess->userdata, sess->realm, sess->attempt++,
 		       sess->username, pwbuf);
@@ -293,6 +297,7 @@ static int get_credentials(auth_session *sess, char *pwbuf)
 /* Examine a Basic auth challenge.
  * Returns 0 if an valid challenge, else non-zero. */
 static int basic_challenge(auth_session *sess, struct auth_challenge *parms) 
+	/*@modifies sess @*/
 {
     char *tmp, password[NE_ABUFSIZ];
 
@@ -327,6 +332,7 @@ static int basic_challenge(auth_session *sess, struct auth_challenge *parms)
 
 /* Add Basic authentication credentials to a request */
 static char *request_basic(auth_session *sess) 
+	/*@*/
 {
     return ne_concat("Basic ", sess->basic, "\r\n", NULL);
 }
@@ -334,6 +340,7 @@ static char *request_basic(auth_session *sess)
 #ifdef HAVE_GSSAPI
 /* Add GSSAPI authentication credentials to a request */
 static char *request_gssapi(auth_session *sess) 
+	/*@*/
 {
     if (sess->gssapi_token) 
         return ne_concat("Negotiate ", sess->gssapi_token, "\r\n", NULL);
@@ -344,6 +351,7 @@ static char *request_gssapi(auth_session *sess)
 /* Create an GSSAPI name for server HOSTNAME; returns non-zero on
  * error. */
 static void get_gss_name(gss_name_t *server, const char *hostname)
+	/*@modifies *server @*/
 {
     unsigned int major, minor;
     gss_buffer_desc token = GSS_C_EMPTY_BUFFER;
@@ -351,8 +359,10 @@ static void get_gss_name(gss_name_t *server, const char *hostname)
     token.value = ne_concat("HTTP@", hostname, NULL);
     token.length = strlen(token.value);
 
+/*@-globs@*/
     major = gss_import_name(&minor, &token, GSS_C_NT_HOSTBASED_SERVICE,
                             server);
+/*@=globs@*/
     ne_free(token.value);
     
     if (GSS_ERROR(major)) {
@@ -366,6 +376,7 @@ static void get_gss_name(gss_name_t *server, const char *hostname)
  * error has been appended. */
 static void make_gss_error(ne_buffer *buf, int *flag,
                            unsigned int status, int type)
+	/*@modifies buf, *flag @*/
 {
     int major, minor;
     int context = 0;
@@ -385,6 +396,7 @@ static void make_gss_error(ne_buffer *buf, int *flag,
 /* Continue a GSS-API Negotiate exchange, using input TOKEN if
  * non-NULL.  Returns non-zero on error. */
 static int continue_negotiate(auth_session *sess, const char *token)
+	/*@modifies sess @*/
 {
     unsigned int major, minor;
     gss_buffer_desc input = GSS_C_EMPTY_BUFFER;
@@ -460,6 +472,7 @@ static int continue_negotiate(auth_session *sess, const char *token)
 /* Process a Negotiate challange CHALL in session SESS; returns zero
  * if challenge is accepted. */
 static int gssapi_challenge(auth_session *sess, struct auth_challenge *chall) 
+	/*@modifies sess @*/
 {
     int ret = continue_negotiate(sess, chall->opaque);
     if (ret == 0) 
@@ -469,6 +482,7 @@ static int gssapi_challenge(auth_session *sess, struct auth_challenge *chall)
 
 /* Verify the header HDR in a Negotiate response. */
 static int verify_negotiate_response(auth_session *sess, char *hdr)
+	/*@modifies sess, hdr @*/
 {
     char *sep, *ptr = strchr(hdr, ' ');
 
@@ -497,6 +511,7 @@ static int verify_negotiate_response(auth_session *sess, char *hdr)
 /* Examine a digest challenge: return 0 if it is a valid Digest challenge,
  * else non-zero. */
 static int digest_challenge(auth_session *sess, struct auth_challenge *parms) 
+	/*@modifies sess @*/
 {
     struct ne_md5_ctx tmp;
     unsigned char tmp_md5[16];
@@ -595,6 +610,7 @@ static int digest_challenge(auth_session *sess, struct auth_challenge *parms)
 
 /* callback for ne_pull_request_body. */
 static int digest_body(void *userdata, const char *buf, size_t count)
+	/*@modifies userdata @*/
 {
     struct ne_md5_ctx *ctx = userdata;
     ne_md5_process_bytes(buf, count, ctx);
@@ -604,6 +620,7 @@ static int digest_body(void *userdata, const char *buf, size_t count)
 /* Return Digest authentication credentials header value for the given
  * session. */
 static char *request_digest(auth_session *sess, struct auth_request *req) 
+	/*@modifies sess, req @*/
 {
     struct ne_md5_ctx a2, rdig;
     unsigned char a2_md5[16], rdig_md5[16];
@@ -726,6 +743,7 @@ static char *request_digest(auth_session *sess, struct auth_request *req)
  * Otherwise, if return value is 0, *key and *value will be non-NULL.
  * If return value is non-zero, parsing has ended. */
 static int tokenize(char **hdr, char **key, char **value, int ischall)
+	/*@modifies *hdr, *key, *value @*/
 {
     char *pnt = *hdr;
     enum { BEFORE_EQ, AFTER_EQ, AFTER_EQ_QUOTED } state = BEFORE_EQ;
@@ -789,6 +807,7 @@ static int tokenize(char **hdr, char **key, char **value, int ischall)
  */
 static int verify_digest_response(struct auth_request *req, auth_session *sess,
                                   const char *value) 
+	/*@modifies req, sess @*/
 {
     char *hdr, *pnt, *key, *val;
     auth_qop qop = auth_qop_none;
@@ -934,6 +953,7 @@ static int verify_digest_response(struct auth_request *req, auth_session *sess,
  * Returns 0 if valid challenge was accepted; non-zero if no valid
  * challenge was found. */
 static int auth_challenge(auth_session *sess, const char *value) 
+	/*@modifies sess @*/
 {
     char *pnt, *key, *val, *hdr;
     struct auth_challenge *chall = NULL, *challenges = NULL;
@@ -1099,6 +1119,7 @@ static int auth_challenge(auth_session *sess, const char *value)
 
 /* The body reader callback. */
 static int auth_body_reader(void *cookie, const char *block, size_t length)
+	/*@modifies cookie @*/
 {
     struct ne_md5_ctx *ctx = cookie;
     NE_DEBUG(NE_DBG_HTTPAUTH, 
@@ -1109,6 +1130,7 @@ static int auth_body_reader(void *cookie, const char *block, size_t length)
 
 /* Collect auth challenges into an ne_buffer */
 static void ah_collect_header(void *userdata, const char *value)
+	/*@modifies userdata @*/
 {
     ne_buffer *ar = userdata;
     if (ne_buffer_size(ar)) ne_buffer_append(ar, ", ", 2);
@@ -1117,6 +1139,7 @@ static void ah_collect_header(void *userdata, const char *value)
 
 static void ah_create(ne_request *req, void *session, const char *method,
 		      const char *uri)
+	/*@modifies req @*/
 {
     auth_session *sess = session;
     int is_connect = strcmp(method, "CONNECT") == 0;
@@ -1148,6 +1171,7 @@ static void ah_create(ne_request *req, void *session, const char *method,
 
 
 static void ah_pre_send(ne_request *r, void *cookie, ne_buffer *request)
+	/*@modifies cookie, request @*/
 {
     auth_session *sess = cookie;
     struct auth_request *req = ne_get_request_private(r, sess->spec->id);
@@ -1197,6 +1221,7 @@ static void ah_pre_send(ne_request *r, void *cookie, ne_buffer *request)
 #define SAFELY(x) ((x) != NULL?(x):"null")
 
 static int ah_post_send(ne_request *req, void *cookie, const ne_status *status)
+	/*@modifies cookie @*/
 {
     auth_session *sess = cookie;
     struct auth_request *areq = ne_get_request_private(req, sess->spec->id);
@@ -1256,6 +1281,7 @@ static int ah_post_send(ne_request *req, void *cookie, const ne_status *status)
 }
 
 static void ah_destroy(ne_request *req, void *session)
+	/*@*/
 {
     auth_session *sess = session;
     struct auth_request *areq = ne_get_request_private(req, sess->spec->id);
@@ -1268,6 +1294,7 @@ static void ah_destroy(ne_request *req, void *session)
 }
 
 static void free_auth(void *cookie)
+	/*@modifies cookie @*/
 {
     auth_session *sess = cookie;
 
@@ -1285,6 +1312,7 @@ static void free_auth(void *cookie)
 static void auth_register(ne_session *sess, int isproxy,
 			  const struct auth_class *ahc, const char *id, 
 			  ne_auth_creds creds, void *userdata) 
+	/*@modifies sess @*/
 {
     auth_session *ahs = ne_calloc(sizeof *ahs);
 

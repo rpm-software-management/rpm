@@ -116,7 +116,7 @@ typedef int (*ne_push_fn)(void *userdata, const char *buf, size_t count)
 /* Pulls the request body for the given request, passing blocks to the
  * given callback. */
 int ne__pull_request_body(ne_request *req, ne_push_fn fn, void *ud)
-	/*@*/;
+	/*@modifies req @*/;
 
 /* Do the SSL negotiation. */
 int ne__negotiate_ssl(ne_request *req)

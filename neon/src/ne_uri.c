@@ -194,6 +194,7 @@ char *ne_path_unescape(const char *uri)
 #define AN 2   /* alphanum = alpha | digit                                             */
 #define RE 2   /* reserved = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | "," */
 
+/*@unchecked@*/
 static const char uri_chars[128] = {
 /*                +2      +4      +6      +8     +10     +12     +14     */
 /*   0 */ CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO,

@@ -98,6 +98,7 @@ struct lock_ctx {
 #define ELM_href (ELM_LOCK_FIRST + 12)
 #define ELM_prop (NE_207_STATE_PROP)
 
+/*@unchecked@*/
 static const struct ne_xml_idmap element_map[] = {
 #define ELM(x) { "DAV:", #x, ELM_ ## x }
     ELM(lockdiscovery), ELM(activelock), ELM(prop), ELM(lockscope),
@@ -108,6 +109,7 @@ static const struct ne_xml_idmap element_map[] = {
 #undef ELM
 };
 
+/*@unchecked@*/
 static const ne_propname lock_props[] = {
     { "DAV:", "lockdiscovery" },
     { NULL }
@@ -116,6 +118,7 @@ static const ne_propname lock_props[] = {
 /* this simply registers the accessor for the function. */
 static void lk_create(ne_request *req, void *session, 
 		       const char *method, const char *uri)
+	/*@modifies req @*/
 {
     struct lh_req_cookie *lrc = ne_malloc(sizeof *lrc);
     lrc->store = session;
@@ -124,6 +127,7 @@ static void lk_create(ne_request *req, void *session,
 }
 
 static void lk_pre_send(ne_request *r, void *userdata, ne_buffer *req)
+	/*@modifies req @*/
 {
     struct lh_req_cookie *lrc = ne_get_request_private(r, HOOK_ID);
 
@@ -144,6 +148,7 @@ static void lk_pre_send(ne_request *r, void *userdata, ne_buffer *req)
 
 /* Insert 'lock' into lock list *list. */
 static void insert_lock(struct lock_list **list, struct ne_lock *lock)
+	/*@modifies *list @*/
 {
     struct lock_list *item = ne_malloc(sizeof *item);
     if (*list != NULL) {
@@ -155,7 +160,8 @@ static void insert_lock(struct lock_list **list, struct ne_lock *lock)
     *list = item;
 }
 
-static void free_list(struct lock_list *list, int destroy)
+static void free_list(/*@only@*/ struct lock_list *list, int destroy)
+	/*@modifies list @*/
 {
     struct lock_list *next;
 
@@ -169,6 +175,7 @@ static void free_list(struct lock_list *list, int destroy)
 }
 
 static void lk_destroy(ne_request *req, void *userdata)
+	/*@*/
 {
     struct lh_req_cookie *lrc = ne_get_request_private(req, HOOK_ID);
     free_list(lrc->submit, 0);
@@ -210,6 +217,7 @@ void ne_lockstore_register(ne_lock_store *store, ne_session *sess)
 
 /* Submit the given lock for the given URI */
 static void submit_lock(struct lh_req_cookie *lrc, struct ne_lock *lock)
+	/*@modifies lrc @*/
 {
     struct lock_list *item;
 
@@ -410,6 +418,7 @@ int ne_unlock(ne_session *sess, const struct ne_lock *lock)
 }
 
 static int parse_depth(const char *depth)
+	/*@*/
 {
     if (strcasecmp(depth, "infinity") == 0) {
 	return NE_DEPTH_INFINITE;
@@ -421,6 +430,7 @@ static int parse_depth(const char *depth)
 }
 
 static long parse_timeout(const char *timeout)
+	/*@*/
 {
     if (strcasecmp(timeout, "infinite") == 0) {
 	return NE_TIMEOUT_INFINITE;
@@ -436,6 +446,7 @@ static long parse_timeout(const char *timeout)
 
 static void discover_results(void *userdata, const char *href,
 			     const ne_prop_result_set *set)
+	/*@*/
 {
     struct discover_ctx *ctx = userdata;
     struct ne_lock *lock = ne_propset_private(set);
@@ -460,6 +471,7 @@ static void discover_results(void *userdata, const char *href,
 
 static int 
 end_element_common(struct ne_lock *l, int state, const char *cdata)
+	/*@modifies l @*/
 {
     switch (state) { 
     case ELM_write:
@@ -498,6 +510,7 @@ end_element_common(struct ne_lock *l, int state, const char *cdata)
 /* End-element handler for lock discovery PROPFIND response */
 static int end_element_ldisc(void *userdata, int state, 
                              const char *nspace, const char *name)
+	/*@*/
 {
     struct ne_lock *lock = ne_propfind_current_private(userdata);
     struct discover_ctx *ctx = userdata;
@@ -506,6 +519,7 @@ static int end_element_ldisc(void *userdata, int state,
 }
 
 static inline int can_accept(int parent, int id)
+	/*@*/
 {
     return (parent == NE_XML_STATEROOT && id == ELM_prop) ||
         (parent == ELM_prop && id == ELM_lockdiscovery) ||
@@ -523,6 +537,7 @@ static inline int can_accept(int parent, int id)
 static int ld_startelm(void *userdata, int parent,
                        const char *nspace, const char *name,
 		       const char **atts)
+	/*@*/
 {
     struct discover_ctx *ctx = userdata;
     int id = ne_xml_mapid(element_map, NE_XML_MAPLEN(element_map),
@@ -540,6 +555,7 @@ static int ld_startelm(void *userdata, int parent,
 
 static int lk_cdata(void *userdata, int state,
                     const char *cdata, size_t len)
+	/*@*/
 {
     struct lock_ctx *ctx = userdata;
 
@@ -551,6 +567,7 @@ static int lk_cdata(void *userdata, int state,
 
 static int ld_cdata(void *userdata, int state,
                     const char *cdata, size_t len)
+	/*@*/
 {
     struct discover_ctx *ctx = userdata;
 
@@ -563,6 +580,7 @@ static int ld_cdata(void *userdata, int state,
 static int lk_startelm(void *userdata, int parent,
                        const char *nspace, const char *name,
 		       const char **atts)
+	/*@*/
 {
     struct lock_ctx *ctx = userdata;
     int id;
@@ -594,6 +612,7 @@ static int lk_startelm(void *userdata, int parent,
 /* End-element handler for LOCK response */
 static int lk_endelm(void *userdata, int state,
                      const char *nspace, const char *name)
+	/*@*/
 {
     struct lock_ctx *ctx = userdata;
 
@@ -613,6 +632,7 @@ static int lk_endelm(void *userdata, int state,
 }
 
 static void *ld_create(void *userdata, const char *href)
+	/*@*/
 {
     struct discover_ctx *ctx = userdata;
     struct ne_lock *lk = ne_lock_create();
@@ -657,6 +677,7 @@ int ne_lock_discover(ne_session *sess, const char *uri,
 }
 
 static void add_timeout_header(ne_request *req, long timeout)
+	/*@modifies req @*/
 {
     if (timeout == NE_TIMEOUT_INFINITE) {
 	ne_add_request_header(req, "Timeout", "Infinite");
@@ -669,6 +690,7 @@ static void add_timeout_header(ne_request *req, long timeout)
 
 /* Parse a Lock-Token response header. */
 static void get_ltoken_hdr(void *ud, const char *value)
+	/*@*/
 {
     struct lock_ctx *ctx = ud;
     

@@ -52,9 +52,11 @@
 /* asctime: Wed Jun 30 21:49:08 1993 */
 #define ASCTIME_FORMAT "%3s %3s %2d %2d:%2d:%2d %4d"
 
+/*@unchecked@*/ /*@observer@*/
 static const char *rfc1123_weekdays[7] = { 
     "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" 
 };
+/*@unchecked@*/ /*@observer@*/
 static const char *short_months[12] = { 
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
