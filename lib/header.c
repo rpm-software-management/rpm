@@ -20,6 +20,8 @@
 #define INDEX_MALLOC_SIZE 8
 #define DATA_MALLOC_SIZE 1024
 
+static unsigned char header_magic[4] = { 0x8e, 0xad, 0xe8, 0x01 };
+
 struct headerToken {
     struct indexEntry *index;
     int entries_malloced;
@@ -168,7 +170,7 @@ Header copyHeader(Header h)
 /*                                                                  */
 /********************************************************************/
 
-void writeHeader(int fd, Header h)
+void writeHeader(int fd, Header h, int magicp)
 {
     int_32 l;
     struct indexEntry *p;
@@ -180,6 +182,13 @@ void writeHeader(int fd, Header h)
     h = copyHeader(h);
 
     /* We must write using network byte order! */
+
+    /* Magic and 4 reserved bytes */
+    if (magicp) {
+	write(fd, header_magic, sizeof(header_magic));
+	l = htonl(0);
+	write(fd, &l, sizeof(l));
+    }
     
     /* First write out the length of the index (count of index entries) */
     l = htonl(h->entries_used);
@@ -266,9 +275,11 @@ static void *dataHostToNetwork(Header h)
     return data;
 }
 
-Header readHeader(int fd)
+Header readHeader(int fd, int magicp)
 {
     int_32 il, dl;
+    unsigned char magic[4];
+    int_32 reserved;
     struct indexEntry *p;
     int c;
     void *converted_data;
@@ -276,19 +287,51 @@ Header readHeader(int fd)
     struct headerToken *h = (struct headerToken *)
     malloc(sizeof(struct headerToken));
 
+    if (magicp == HEADER_MAGIC) {
+	read(fd, magic, sizeof(magic));
+	message(MESS_DEBUG, "magic: %02x %02x %02x %02x\n",
+		header_magic[0],
+		header_magic[1],
+		header_magic[2],
+		header_magic[3]);
+	message(MESS_DEBUG, "got  : %02x %02x %02x %02x\n",
+		magic[0],
+		magic[1],
+		magic[2],
+		magic[3]);
+	if (memcmp(magic, header_magic, sizeof(magic))) {
+	    free(h);
+	    return NULL;
+	}
+	read(fd, &reserved, sizeof(reserved));
+	reserved = ntohl(reserved);
+    }
+    
     /* First read the index length (count of index entries) */
-    read(fd, &il, sizeof(il));
+    if (read(fd, &il, sizeof(il)) != sizeof(il)) {
+	free(h);
+	return NULL;
+    }
     il = ntohl(il);
 
     /* Then read the data length (number of bytes) */
-    read(fd, &dl, sizeof(dl));
+    if (read(fd, &dl, sizeof(dl)) != sizeof(dl)) {
+	free(h);
+	return NULL;
+    }
     dl = ntohl(dl);
 
     /* Next read the index */
     h->index = malloc(il * sizeof(struct indexEntry));
     h->entries_malloced = il;
     h->entries_used = il;
-    read(fd, h->index, sizeof(struct indexEntry) * il);
+    if (read(fd, h->index, sizeof(struct indexEntry) * il) !=
+	sizeof(struct indexEntry) * il) {
+	if (h->index)
+	    free(h->index);
+	free(h);
+	return NULL;
+    }
 
     /* Convert the index */
     c = h->entries_used;
@@ -305,7 +348,14 @@ Header readHeader(int fd)
     h->data = malloc(dl);
     h->data_malloced = dl;
     h->data_used = dl;
-    read(fd, h->data, dl);
+    if (read(fd, h->data, dl) != dl) {
+	if (h->data)
+	    free(h->data);
+	if (h->index)
+	    free(h->index);
+	free(h);
+	return NULL;
+    }
     /* and convert it */
     converted_data = dataNetworkToHost(h);
     free(h->data);
@@ -450,7 +500,7 @@ void dumpHeader(Header h, FILE * f, int flags)
     /* Now write the index */
     p = h->index;
     fprintf(f, "\n             CT  TAG                  TYPE         "
-		"OFSET     COUNT\n");
+		"      OFSET      COUNT\n");
     for (i = 0; i < h->entries_used; i++) {
 	switch (p->type) {
 	    case NULL_TYPE:   		type = "NULL_TYPE"; 	break;
@@ -469,13 +519,13 @@ void dumpHeader(Header h, FILE * f, int flags)
 	c = 0;
 	while (c < rpmTagTableSize) {
 	    if (rpmTagTable[c].val == p->tag) {
-		tag = rpmTagTable[c].name;
+		tag = rpmTagTable[c].name + 7;
 	    }
 	    c++;
 	}
 
-	fprintf(f, "Entry      : %.3d %-20s %-18s 0x%.8x %.8d\n", i, tag, type,
-		(uint_32) p->offset, (uint_32) p->count);
+	fprintf(f, "Entry      : %.3d (%d)%-14s %-18s 0x%.8x %.8d\n", i,
+		p->tag, tag, type, (uint_32) p->offset, (uint_32) p->count);
 
 	if (flags & DUMP_INLINE) {
 	    /* Print the data inline */
@@ -485,7 +535,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 	    switch (p->type) {
 	    case INT32_TYPE:
 		while (c--) {
-		    fprintf(f, "       Data: %.3d 0x%.8x (%d)\n", ct++,
+		    fprintf(f, "       Data: %.3d 0x%08x (%d)\n", ct++,
 			    (uint_32) *((int_32 *) dp),
 			    (uint_32) *((int_32 *) dp));
 		    dp += sizeof(int_32);
@@ -494,7 +544,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 
 	    case INT16_TYPE:
 		while (c--) {
-		    fprintf(f, "       Data: %.3d 0x%.4x (%d)\n", ct++,
+		    fprintf(f, "       Data: %.3d 0x%04x (%d)\n", ct++,
 			    (short int) *((int_16 *) dp),
 			    (short int) *((int_16 *) dp));
 		    dp += sizeof(int_16);
@@ -502,13 +552,25 @@ void dumpHeader(Header h, FILE * f, int flags)
 		break;
 	    case INT8_TYPE:
 		while (c--) {
-		    fprintf(f, "       Data: %.3d 0x%.2x (%d)\n", ct++,
+		    fprintf(f, "       Data: %.3d 0x%02x (%d)\n", ct++,
 			    (char) *((int_8 *) dp),
 			    (char) *((int_8 *) dp));
 		    dp += sizeof(int_8);
 		}
 		break;
 	    case BIN_TYPE:
+	      while (c) {
+		  fprintf(f, "       Data: %.3d ", ct);
+		  while (c--) {
+		      fprintf(f, "%02x ", (unsigned char) *(int_8 *)dp);
+		      ct++;
+		      dp += sizeof(int_8);
+		      if (! (ct % 8)) {
+			  break;
+		      }
+		  }
+		  fprintf(f, "\n");
+	      }
 		break;
 	    case CHAR_TYPE:
 		while (c--) {
@@ -669,7 +731,7 @@ void freeHeader(Header h)
     free(h);
 }
 
-unsigned int sizeofHeader(Header h)
+unsigned int sizeofHeader(Header h, int magicp)
 {
     unsigned int size;
 
@@ -680,6 +742,9 @@ unsigned int sizeofHeader(Header h)
     size += sizeof(int_32);	/* length of data */
     size += sizeof(struct indexEntry) * h->entries_used;
     size += h->data_used;
+    if (magicp) {
+	size += 8;
+    }
 
     freeHeader(h);
    

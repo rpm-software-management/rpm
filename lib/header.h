@@ -31,9 +31,12 @@ typedef struct headerToken *Header;
 typedef struct headerIteratorS *HeaderIterator;
 
 /* read and write a header from a file */
-Header readHeader(int fd);
-void writeHeader(int fd, Header h);
-unsigned int sizeofHeader(Header h);
+Header readHeader(int fd, int magicp);
+void writeHeader(int fd, Header h, int magicp);
+unsigned int sizeofHeader(Header h, int magicp);
+
+#define NO_HEADER_MAGIC 0
+#define HEADER_MAGIC    1
 
 /* load and unload a header from a chunk of memory */
 Header loadHeader(void *p);
