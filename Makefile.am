@@ -92,13 +92,16 @@ noconfig:
 
 .PHONY: archive
 archive: 
-	@echo " "
-	@echo "I hope you checked everything out and made sure it builds"
-	@echo "maybe someday Erik will get around to making that automatic."
-	@echo
-	@echo "This is version $(VERSION)."
-	@sleep 5
-	@cvs -Q tag -F $(CVSTAG) .
+	@cvs -d `cat CVS/Root` diff >& /dev/null || { \
+	    echo " " ; \
+	    echo "==> Please resolve differences between the repository and" ; \
+	    echo "==> your rpm check out before tagging." ; \
+	    echo " " ; \
+	    cvs -n up ; \
+	    echo " " ; \
+	    exit 1 ; \
+	}
+	@cvs -d `cat CVS/Root` -Q tag -F $(CVSTAG) .
 	@make dist
 	@echo " "
 	@echo "The final archive is ./rpm-$(VERSION).tar.gz."
