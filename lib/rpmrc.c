@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <paths.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -91,6 +92,7 @@ struct option optionTable[] = {
     { "specdir",		RPMVAR_SPECDIR,			0 },
     { "srcrpmdir",		RPMVAR_SRPMDIR,			0 },
     { "timecheck",		RPMVAR_TIMECHECK,		0 },
+    { "tmppath",		RPMVAR_TMPPATH,			0 },
     { "topdir",			RPMVAR_TOPDIR,			0 },
     { "vendor",			RPMVAR_VENDOR,			0 },
 };
@@ -551,7 +553,6 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 }
 
 static void setDefaults(void) {
-    setVar(RPMVAR_TOPDIR, "/usr/src");
     setVar(RPMVAR_OPTFLAGS, "-O2");
     setVar(RPMVAR_SIGTYPE, "none");
     setVar(RPMVAR_PGP_PATH, NULL);
@@ -565,13 +566,13 @@ static int readConfigFilesAux(char *file, int readWhat)
     char * home;
     int rc = 0;
 
-    f = fopen("/usr/lib/rpmrc", "r");
+    f = fopen(LIBRPMRC_FILENAME, "r");
     if (f) {
-	rc = readRpmrc(f, "/usr/lib/rpmrc", readWhat);
+	rc = readRpmrc(f, LIBRPMRC_FILENAME, readWhat);
 	fclose(f);
 	if (rc) return rc;
     } else {
-	error(RPMERR_RPMRC, "Unable to read /usr/lib/rpmrc");
+	error(RPMERR_RPMRC, "Unable to read " LIBRPMRC_FILENAME);
 	return RPMERR_RPMRC;
     }
     
@@ -623,6 +624,9 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
 
     /* set default directories */
 
+    if (!getVar(RPMVAR_TMPPATH))
+	setVar(RPMVAR_TMPPATH, "/tmp");
+
     setPathDefault(RPMVAR_BUILDDIR, "BUILD");    
     setPathDefault(RPMVAR_RPMDIR, "RPMS");    
     setPathDefault(RPMVAR_SRPMDIR, "SRPMS");    
@@ -654,6 +658,8 @@ static void setPathDefault(int var, char * s) {
     if (getVar(var)) return;
 
     topdir = getVar(RPMVAR_TOPDIR);
+    if (!topdir) topdir = getVar(RPMVAR_TMPPATH);
+	
     fn = alloca(strlen(topdir) + strlen(s) + 2);
     strcpy(fn, topdir);
     if (fn[strlen(topdir) - 1] != '/')
