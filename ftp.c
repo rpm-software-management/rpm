@@ -142,7 +142,7 @@ static int getHostAddress(const char * host, struct in_addr * address) {
     struct hostent * hostinfo;
 
     if (isdigit(host[0])) {
-      if (inet_aton(host, address)) {
+      if (!inet_aton(host, address)) {
 	  return FTPERR_BAD_HOST_ADDR;
       }
     } else {
@@ -301,7 +301,6 @@ int ftpGetFile(int sock, char * remotename, int dest) {
 	if (*chptr == ',') *chptr = '.';
     }
 
-    printf("remote ip is: %s\n", passReply);
     if (!inet_aton(passReply, &dataAddress.sin_addr)) 
 	return FTPERR_PASSIVE_ERROR;
 
