@@ -42,6 +42,8 @@
 	- fix: (segfault) verify needs rpmdb while query does not.
 	- add calculated nlink field to -qlv output (like ls -al).
 	- builds against bzip2 1.0
+	- detects and builds properly against the new fopencookie API in
+          glibc 2.2
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
