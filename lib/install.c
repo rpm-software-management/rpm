@@ -114,7 +114,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
-    int_8 thisArch, * pkgArch;
+    int_8 * pkgArchNum;
+    void * pkgArch;
     int scriptArg;
 
     oldVersions = alloca(sizeof(int));
@@ -144,14 +145,27 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-    /* make sure we're trying to install this on the proper architecture */
-    thisArch = getArchNum();
-    getEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &fileCount);
-    if (thisArch != *pkgArch) {
-	error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
-	      "architecture", name, version, release);
-	freeHeader(h);
-	return 2;
+    if (!(flags & INSTALL_NOARCH)) {
+	/* make sure we're trying to install this on the proper architecture */
+	getEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &fileCount);
+	if (type == INT8_TYPE) {
+	    /* old arch handling */
+	    pkgArchNum = pkgArch;
+	    if (getArchNum() != *pkgArchNum) {
+		error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
+		      "architecture", name, version, release);
+		freeHeader(h);
+		return 2;
+	    }
+	} else {
+	    /* new arch handling */
+	    if (!rpmArchScore(pkgArch)) {
+		error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
+		      "architecture", name, version, release);
+		freeHeader(h);
+		return 2;
+	    }
+	}
     }
 
     if (labelFormat) {
