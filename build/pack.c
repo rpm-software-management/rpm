@@ -834,8 +834,8 @@ int packageSource(Spec s)
 
     filelist = newStringBuf();
 
-    sources = malloc(s->numSources * sizeof(char *));
-    patches = malloc(s->numPatches * sizeof(char *));
+    sources = malloc((s->numSources+1) * sizeof(char *));
+    patches = malloc((s->numPatches+1) * sizeof(char *));
     
     /* Link in the spec file and all the sources */
     sprintf(dest, "%s%s", tempdir, strrchr(s->specfile, '/'));
