@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.25
+Release: 0.26+nptl
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -460,6 +460,12 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Dec 15 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.26
+- disable fcntl(2) lock on Packages until glibc+nptl is fixed.
+- make cdb locks "private" for pthreads compatibility w/o NPTL.
+- add --enable-posixmutexes to use NPTL.
+- make dependency generation "opt-out" everywhere.
+
 * Sat Dec 14 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.25
 - rebuild rpm with internal dependency generation enabled.
 - fix: make sure each library has DT_NEEDED for all unresolved syms.

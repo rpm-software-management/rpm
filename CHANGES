@@ -49,6 +49,10 @@
 	- make dependency generation "opt-in" in order to build in distro.
 	- fix: make sure each library has DT_NEEDED for all unresolved syms.
 	- generate Elf provides even if file is not executable.
+	- disable fcntl(2) lock on Packages until glibc+nptl is fixed.
+	- make cdb locks "private" for pthreads compatibility w/o NPTL.
+	- add --enable-posixmutexes to use NPTL.
+	- make dependency generation "opt-out" everywhere.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
