@@ -989,7 +989,7 @@ PyObject * versionCompare (PyObject * self, PyObject * args)
 
 /**
  */
-static int label_compare_values(const char *str1, const char *str2)
+static int compare_values(const char *str1, const char *str2)
 {
     if (!str1 && !str2)
 	return 0;
@@ -1006,18 +1006,16 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     int rc;
 
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			  &e1, &v1, &r1,
-			  &e2, &v2, &r2)) return NULL;
+			&e1, &v1, &r1, &e2, &v2, &r2))
+	return NULL;
 
     rc = compare_values(e1, e2);
-    if (rc)
-	return Py_BuildValue("i", rc);
-
-    rc = compare_values(v1, v2);
-    if (rc)
-	return Py_BuildValue("i", rc);
-
-    return Py_BuildValue("i", compare_values(r1, r2));
+    if (!rc) {
+	rc = compare_values(v1, v2);
+	if (!rc)
+	    rc = compare_values(r1, r2))
+    }
+    return Py_BuildValue("i", rc);
 }
 
 /*@}*/
