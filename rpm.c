@@ -919,7 +919,8 @@ int main(int argc, char ** argv) {
 	argerror(_("--dump of queries must be used with -l, -c, or -d"));
 
     if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
-	(bigMode == MODE_QUERY && querySource == QUERY_RPM)))
+	((bigMode == MODE_QUERY && querySource == QUERY_RPM)) ||
+	((bigMode == MODE_VERIFY && querySource == VERIFY_RPM))))
 	argerror(_("ftp options can only be used during package queries, "
 		 "installs, and upgrades"));
 
