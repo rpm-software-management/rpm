@@ -21,6 +21,6 @@ uid_t gnameToGid(char * thisGname);
 
 /* Call w/ -1 to flush the cache, returns NULL if the user can't be found */
 char * uidToUname(uid_t uid);
-char * gidToUname(gid_t gid);
+char * gidToGname(gid_t gid);
 
 #endif
