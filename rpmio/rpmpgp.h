@@ -792,6 +792,13 @@ typedef struct pgpKeyV4_s {
 typedef struct pgpUidPkt_s {
     byte userid[1];
 } * pgpUidPkt;
+
+/**
+ */
+typedef struct pgpValStr_s {
+    int val;
+    const char * str;
+} * pgpValStr;
  
 #ifdef __cplusplus
 extern "C" {
