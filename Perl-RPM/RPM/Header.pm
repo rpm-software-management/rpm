@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.18 2001/03/07 19:17:25 rjray Exp $
+#   $Id: Header.pm,v 1.19 2001/03/08 06:12:32 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -38,8 +38,8 @@ use RPM;
 use RPM::Error;
 use RPM::Constants ':rpmerr';
 
-$VERSION = '0.3';
-$revision = do { my @r=(q$Revision: 1.18 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.30';
+$revision = do { my @r=(q$Revision: 1.19 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @ISA = qw(Exporter);
 @EXPORT = ();

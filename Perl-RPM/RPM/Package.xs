@@ -4,9 +4,9 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Package.xs,v 1.5 2000/11/10 08:49:24 rjray Exp $";
+static char * const rcsid = "$Id: Package.xs,v 1.6 2001/03/08 06:12:32 rjray Exp $";
 
-/* Any constants that are specific to the RPM::Header class will be exported
+/* Any constants that are specific to the RPM::Package class will be exported
    from here, via this C-level constant() routine */
 static int constant(pTHX_ char *name)
 {
@@ -24,7 +24,7 @@ static int constant(pTHX_ char *name)
         {
           case 'M':
             if (strEQ(name, "MASK"))
-#ifdef RPM_HEADER_MASK
+#ifdef RPM_PACKAGE_MASK
                 return RPM_PACKAGE_MASK;
 #else
                 goto not_found;
@@ -32,7 +32,7 @@ static int constant(pTHX_ char *name)
             break;
           case 'N':
             if (strEQ(name, "NOREAD"))
-#ifdef RPM_HEADER_NOREAD
+#ifdef RPM_PACKAGE_NOREAD
                 return RPM_PACKAGE_NOREAD;
 #else
                 goto not_found;
@@ -40,7 +40,7 @@ static int constant(pTHX_ char *name)
             break;
           case 'R':
             if (strEQ(name, "READONLY"))
-#ifdef RPM_HEADER_READONLY
+#ifdef RPM_PACKAGE_READONLY
                 return RPM_PACKAGE_READONLY;
 #else
                 goto not_found;
@@ -268,7 +268,7 @@ static void* rpmpkg_callback_handler(const Header h,
     SV* callback;           /* So that we can more easily sanity-check it */
 
     /* This is simple, but I'm planning ahead in case it gets more complex */
-    self = data;
+    self = (RPM__Package)data;
     if (! (callback = (SV *)self->callback))
         return (void *)NULL;
 
