@@ -761,15 +761,18 @@ int fsmMapAttrs(FSM_t fsm)
 	gid_t gid = fi->gid;
 
 	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("user %s does not exist - using root\n"), fi->fuser[i]);
+	    if (fsm->goal == FSM_PKGINSTALL)
+		rpmMessage(RPMMESS_WARNING,
+		    _("user %s does not exist - using root\n"), fi->fuser[i]);
 	    uid = 0;
 	    finalMode &= ~S_ISUID;      /* turn off suid bit */
 	}
 
 	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("group %s does not exist - using root\n"), fi->fgroup[i]);
+	    if (fsm->goal == FSM_PKGINSTALL)
+		rpmMessage(RPMMESS_WARNING,
+		    _("group %s does not exist - using root\n"), fi->fgroup[i]);
+	    gid = 0;
 	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
 	}
 
