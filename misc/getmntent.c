@@ -14,9 +14,10 @@
 #if HAVE_STRUCT_MNTTAB 
 our_mntent * getmntent(FILE *filep) {
     static struct mnttab entry;
-    static our_mntent item = { entry.mt_filsys };
+    static our_mntent item;
 
     if (!fread(&entry, sizeof(entry), 1, filep)) return NULL;
+    item.our_mntdir = entry.mt_filsys;
 
     return &item;
 }
