@@ -6,6 +6,7 @@
 
 #include "rpmlead.h"
 #include "signature.h"
+#include "intl.h"
 
 int main(int argc, char **argv)
 {

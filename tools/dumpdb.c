@@ -7,6 +7,7 @@
 
 #include "header.h"
 #include "rpmlib.h"
+#include "intl.h"
 
 void main(int argc, char ** argv)
 {
