@@ -1519,11 +1519,13 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	}
 	
 	execvp(argv[0], argv);
-	rpmError(RPMERR_EXEC, _("Couldn't exec %s"), argv[0]);
+	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s"),
+		argv[0], strerror(errno));
 	_exit(RPMERR_EXEC);
     }
     if (progPID < 0) {
-	rpmError(RPMERR_FORK, _("Couldn't fork %s"), argv[0]);
+	rpmError(RPMERR_FORK, _("Couldn't fork %s: %s"),
+		argv[0], strerror(errno));
 	return NULL;
     }
 
