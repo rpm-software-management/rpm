@@ -156,12 +156,12 @@ Revision history for Perl extension RPM.
 	generation of "rpmrc" and "rpmmacro" files to use in invoking rpm
 	(to force all operation into the local dir area).
 
-0.292
+0.292	Sat Nov 11 01:17:15 PST 2000
 	- ninth alpha
 
 	Some unused variables were found in several places.
 
-	Moved away from the self-tie mechanism and instead handled the data
+	Moved away from the self-tie mechanism and instead handle the data
 	opacity in a completely different fashion. This simplified some code,
 	muddled some, but ultimately led to the removal of several #define
 	macros, more unused variable removal, and (hopefully) more stable
@@ -172,3 +172,11 @@ Revision history for Perl extension RPM.
 	implicitly or explicitly freed.
 
 	Added more tests to the test suite.
+
+	Changed the names of some of the find_* routines in RPM::Database.
+	See the manual page. The old names were confusing me, despite my
+	direct familiarity with the code!
+
+	The find_* functions in RPM::Database may now take a RPM::Header
+	object as their argument, and will use the package's name for the
+	searches.

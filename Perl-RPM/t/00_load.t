@@ -2,16 +2,16 @@
 
 # Verify that the indivual modules will load
 
-@MODULES = qw(RPM RPM::Constants RPM::Database RPM::Header RPM::Error
-              RPM::Package);
+@MODULES = qw(RPM RPM::Constants RPM::Database RPM::Header RPM::Error);
 
 printf "1..%d\n", scalar(@MODULES);
 
-for $idx (0 .. $#MODULES)
+$count = 0;
+for (@MODULES)
 {
-    eval "use $MODULES[$idx]";
+    eval "use $_";
 
-    printf "%sok %d\n", ($@) ? 'not ' : '', $idx + 1;
+    printf "%sok %d\n", ($@) ? 'not ' : '', ++$count;
 }
 
 exit 0;

@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.14 2000/11/10 08:49:57 rjray Exp $
+# $Id: Makefile.PL,v 1.15 2000/11/11 09:24:32 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -214,7 +214,7 @@ Name: SPEC_DISTNAME
 Version: SPEC_VERSION
 Release: SPEC_RELEASE
 Vendor: Randy J. Ray
-Copyright: distributable
+Copyright: Artistic
 Group: Applications/CPAN
 Source: SPEC_DISTNAME-SPEC_VERSION.tar.gz
 Url: http://www.blackperl.com/SPEC_DISTNAME

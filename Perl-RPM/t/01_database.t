@@ -2,10 +2,7 @@
 
 use RPM::Database;
 
-$SIG{__WARN__} = sub { $@ = shift; };
-$SIG{__DIE__} = sub { $@ = shift; };
-
-print "1..16\n";
+print "1..19\n";
 $count = 1;
 
 #
@@ -20,9 +17,24 @@ $all_packs{$_}++ for (@all_packs);
 # With a full list of packages now known, find one to use for package existence
 # testing.
 #
-for (qw(rpm kernel bash file passwd))
+for (qw(kernel rpm inetd bash))
 {
     $test_pack = $_, last if (exists $all_packs{$_});
+}
+if ($test_pack)
+{
+    @test_requires = `rpm -q --requires $test_pack`;
+    chomp(@test_requires);
+    @test_requires = map { (split(/ /, $_))[0] } grep(! m|^/|, @test_requires);
+    @test_required_by = `rpm -q --whatrequires $test_pack`;
+    chomp(@test_required_by);
+    @test_required_by = map { @p = split('-', $_);
+                              pop(@p); pop(@p);
+                              join('-', @p); } (@test_required_by);
+}
+else
+{
+    die "Not enough testable data in your RPM database, stopped";
 }
 
 tie %DB, "RPM::Database" or print "not ";
@@ -92,19 +104,51 @@ for (keys %$rpm) { delete $tmp_packs{$_} }
 print "not " if (keys %tmp_packs);
 print "ok $count\n"; $count++;
 
-@matches = $rpm->find_by_file('/bin/rpm');
+@matches = $rpm->find_by_file('/sbin/installkernel');
 # There should be exactly one match:
 print "not " unless (@matches == 1);
 print "ok $count\n"; $count++;
 
-print "not " unless ($matches[0]->{name} eq 'rpm');
+print "not " unless ($matches[0]->{name} eq 'kernel');
 print "ok $count\n"; $count++;
 
-# There may be more than one package that depends on rpm
-@matches = $rpm->find_by_required_by('rpm');
-for (@matches) { $_ = $_->{name} }
-# As long as we see this one (it has to be present to build this package)
-print "not " unless (grep($_ eq 'rpm-devel', @matches));
+# There may be more than one package that depends on $test_pack
+@matches = $rpm->find_what_requires($test_pack);
+%test = ();
+for (@matches) { $test{$_->{name}} = 1 }
+for (@test_required_by) { delete $test{$_} }
+print "not " if (keys %test);
+print "ok $count\n"; $count++;
+
+# Check now for finding those packages that $test_pack itself requires
+for $testp (@test_requires)
+{
+    @matches = $rpm->find_what_requires($rpm->{$testp});
+    print "not ", last unless (grep($_->{name} eq $test_pack, @matches));
+}
+print "ok $count\n"; $count++;
+
+# Test the find-by-group
+# First, check that the test pack is in the return list
+@matches = $rpm->find_by_group($rpm->{$test_pack}->{group});
+print "not " unless (grep($_->{name} eq $test_pack, @matches));
+print "ok $count\n"; $count++;
+
+# Check the list of matches against what RPM thinks
+@by_group = `rpm -q --group '$rpm->{$test_pack}->{group}'`;
+%test = ();
+for (@by_group)
+{
+    @p = split '-';
+    pop(@p); pop(@p);
+    $_ = join('-', @p);
+    $test{$_}++;
+}
+for (@matches)
+{
+    delete $test{$_->{name}};
+}
+print "not " if ((! scalar(@by_group)) || (keys %test));
 print "ok $count\n"; $count++;
 
 # Try to fetch a bogus package

@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.9 2000/11/10 08:49:57 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.10 2000/11/11 09:24:32 rjray Exp $";
 
 /*
   rpmdb_TIEHASH
@@ -332,7 +332,6 @@ int rpmdb_rebuild(SV* class, const char* root)
 AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
 {
     const char* str = NULL; /* For the actual string out of (SV *)string    */
-    STRLEN len;             /* Arg for SvPV(..., len)                       */
     RPM_Database* dbstruct; /* This is the struct used to hold C-level data */
     AV* return_val;
     int result, loop;
@@ -345,11 +344,22 @@ AV* rpmdb_find_by_whatever(pTHX_ RPM__Database self, SV* string, int idx)
     return_val = newAV();
 
     struct_from_object_ret(RPM_Database, dbstruct, self, return_val);
-    /* De-reference key, if it is a reference */
-    if (SvROK(string))
-        string = SvRV(string);
-    /* Get the string */
-    str = SvPV(string, len);
+    if (sv_derived_from(string, "RPM::Header"))
+    {
+        SV* fetch_string = rpmhdr_FETCH(aTHX_ (RPM__Header)SvRV(string),
+                                        sv_2mortal(newSVpvn("NAME", 4)),
+                                        Nullch, 0, 0);
+
+        str = SvPV(fetch_string, PL_na);
+    }
+    else
+    {
+        /* De-reference key, if it is a reference */
+        if (SvROK(string))
+            string = SvRV(string);
+        /* Get the string */
+        str = SvPV(string, PL_na);
+    }
 
 #if RPM_MAJOR < 4
     /* Create an index set if we don't already have one */
@@ -563,11 +573,10 @@ rpmdb_find_by_file(self, string)
     SV* string;
     PROTOTYPE: $$
     ALIAS:
-    # These should not be hard-coded, fix in later rev
         find_by_group = RPMTAG_GROUP
-        find_by_provides = RPMTAG_PROVIDENAME
-        find_by_required_by = RPMTAG_REQUIRENAME
-        find_by_conflicts = RPMTAG_CONFLICTNAME
+        find_what_provides = RPMTAG_PROVIDENAME
+        find_what_requires = RPMTAG_REQUIRENAME
+        find_what_conflicts = RPMTAG_CONFLICTNAME
         find_by_package = RPMTAG_NAME
     PPCODE:
     {

@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.13 2000/11/10 09:55:51 rjray Exp $
+#   $Id: Database.pm,v 1.14 2000/11/11 09:24:32 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -36,7 +36,7 @@ require RPM;
 require RPM::Header;
 
 $VERSION = '0.292';
-$revision = do { my @r=(q$Revision: 1.13 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.14 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -183,17 +183,18 @@ claiming ownership of the file "file".
 Returns of a list of headers for all packages flagged as being in the
 group specified.
 
-=item find_by_provides(provides)
+=item find_what_provides(provides)
 
-Search as above, but based on which packages provide the file/object
+Search as above, but based on which package(s) provide the functionality
 specified as "provides".
 
-=item find_by_required_by(requires)
+=item find_what_requires(requires)
 
 Return a list of headers for the packages that directly depend on the
-specified package for installation and operation.
+specified package for installation and operation. The specified package should
+be just the name, no version or release information.
 
-=item find_by_conflicts(conflicts)
+=item find_what_conflicts(conflicts)
 
 List those packages that have conflicts based on the value of "conflicts".
 
@@ -204,6 +205,11 @@ used by the FETCH tied-hash method, but this differs in that if there is
 in fact more than one matching record, all are returned.
 
 =back
+
+Any of the C<find_*> routines can take an B<RPM::Header> object as an argument,
+in which case the package name will be retrieved and used for the argument. In
+some cases (such as C<find_by_file>), this is probably not what you want. But
+in other cases such as C<find_what_requires>, it may be exactly what you want.
 
 =head2 Importable Defaults
 
