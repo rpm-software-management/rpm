@@ -17,9 +17,6 @@ static const char * rpmlock_path_default = "%{?_rpmlock_path}";
 /*@unchecked@*/
 static const char * rpmlock_path = NULL;
 
-/*@observer@*/ /*@unchecked@*/
-static const char * _rpmlock_file = RPMLOCK_FILE;
-
 enum {
 	RPMLOCK_READ   = 1 << 0,
 	RPMLOCK_WRITE  = 1 << 1,
