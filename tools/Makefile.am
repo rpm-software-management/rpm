@@ -14,9 +14,10 @@ INCLUDES = -I. \
 	@WITH_LIBDWARF_INCLUDE@ \
 	-I$(top_srcdir)/file/src \
 	@INCPATH@ \
+	-I/usr/include/libxml2
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c rpmsort.c hashtab.h
+EXTRA_DIST =	rpminject.c rpmsort.c rpmxml.c hashtab.h
 
 EXTRA_PROGRAMS = convertdb1 rpminject rpmsort
 
@@ -26,7 +27,7 @@ LDADD = \
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
-noinst_PROGRAMS = rpmtool dumpdb
+noinst_PROGRAMS = rpmtool rpmxml dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps rpmfile
@@ -67,5 +68,8 @@ rpmsort_SOURCES =	rpmsort.c
 
 rpmtool_SOURCES =	rpmtool.c
 #rpmtool_LDFLAGS =	$(staticLDFLAGS)
+
+rpmxml_SOURCES =	rpmxml.c
+rpmxml_LDADD =		-lxml2
 
 $(PROGRAMS): $(LDADD)

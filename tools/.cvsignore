@@ -15,6 +15,7 @@ rpmgraph
 rpminject
 rpmsort
 rpmtool
+rpmxml
 striptofile
 tpkgid
 unstripfile
