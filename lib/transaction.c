@@ -89,8 +89,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     /* FIXME: what if the same package is included in ts twice? */
 
-    /* FIXME: we completely ignore net shared paths here! */
-
     probs = psCreate();
     *newProbs = probs;
     hdrs = alloca(sizeof(*hdrs) * al->size);
