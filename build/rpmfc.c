@@ -704,7 +704,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 	bn = basename(s);
 	if (!strcmp(bn, "perl"))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
-	else if (!strcmp(bn, "python"))
+	else if (!strncmp(bn, "python", sizeof("python")-1))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
 
 	break;

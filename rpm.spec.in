@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -495,68 +495,6 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sun Dec  5 2004 Jeff Johnson <jbj@jbj.org> 4.4-1
-- rpm-4.4 final release.
-
-* Mon Nov 29 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.9
-- detect and return errors from neon through Ferror.
-
-* Sun Nov 28 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.8
-- add support for automagic pubkey retrieval using HKP.
-
-* Thu Nov 25 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.7
-- python: bleeping keywords broke labelCompare.
-
-* Wed Nov 24 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.6
-- fix: chunked davRead returns 0 is EOF.
-
-* Mon Nov 22 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.5
-- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
-- add BuildRequires: neon-devel.
-
-* Fri Nov 19 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.4
-- remove noNeon runtime switch, http through neon only.
-- remove http put to be able to build against upstream neon.
-- bump soname into libfoo-4.4.so everywhere.
-
-* Thu Nov 11 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.3
-- neon used by default for http/https transport.
-- add --delsign to purge packages of digital signatures.
-- make peace with libtool-1.5.10 and automake-1.9.3.
-- python: add python 2.4 support.
-- selinux: use rpm_execcon, not execv, to run scriptlets (#136848).
-- fix: segfault on --verifydb (#138589).
-- upgrade to db-4.3.21 final internal.
-
-* Mon Nov  8 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.2
-- bump popt version to 1.10.
-- attempt dependency tree breadth, take 1.
-- use external libneon for http/https transport.
-
-* Wed Oct 27 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.1
-- pentium3/pentium4 arch support (pluto@PLD).
-- cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
-- rpmGlob() is now locale independent (wiget@PLD).
-- conditional build support/unification (jajcus,malekith,qboosh,wiget@PLD).
-- fix: readelf.c breakage on some non x86 arches (qboosh@PLD).
-- find-lang.sh: implemented --with-kde (finds KDE help files);
-- add --all-name option (finds every lang file); drop defattr()
-  from *.lang files (arekm,mkochano,pascalek,wiget@PLD).
-- add type to tag array.
-- add Disttag: syntax to spec file parser and header content.
-- define Suggests:/Enhances: and Priority: tag values.
-- prevent RPMSENSE_PREREQ from being set or tested.
-- python: add rpm.ps() object to carry problem set info.
-- python: permit rpm.ds() analogue to hdr.dsFromHeader() creator.
-- python: permit rpm.fi() analogue to hdr.fiFromHeader() creator.
-- silently add default %defattr(-,root,root) for all packages.
-- fix: don't set handler if SIG_IGN is already set (#134474).
-- disable expensive header+payload verifies in default config.
-- adjust digest/signature stats to count #pkgs and bytes.
-- obsolete Serial:, Copyright:, and RHNPlatform: syntax in spec files.
-- permit Obsoletes: /path/to/file.
-- permit Conflicts: /path/to/file.
-- free rpmrc when looping on --target arches (#127730).
-- port to internal file-4.10 libmagic rather than libfmagic.
-- fix: handle non-unique dirnames in rpmalAdd().
-- integrate rpmgi "generic iterator" with query/verify.
+* Sun Dec  5 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.1
+- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
+- automagically detect and emit "python(abi) = 2.4" dependencies.

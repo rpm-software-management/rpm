@@ -10,7 +10,7 @@ EXTRA_DIST = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
-	magic.prov magic.req perldeps.pl perl.prov perl.req \
+	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
@@ -31,7 +31,7 @@ config_SCRIPTS = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
-	magic.prov magic.req perldeps.pl perl.prov perl.req \
+	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \

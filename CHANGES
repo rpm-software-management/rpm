@@ -1,3 +1,7 @@
+4.4 -> 4.4.1:
+	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
+	- automagically detect and emit "python(abi) = 2.4" dependencies.
+
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).
 	- cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
@@ -47,6 +51,7 @@
 	- python: add python 2.4 support.
 	- selinux: use rpm_execcon, not execv, to run scriptlets (#136848).
 	- fix: segfault on --verifydb (#138589).
+	- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.
