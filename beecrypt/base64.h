@@ -55,7 +55,7 @@ extern "C" {
  * \param ns no. bytes of data (0 uses strlen(data))
  * \return (malloc'd) base64 string
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 char* b64encode(const void* data, size_t ns)
 	/*@*/;
 
@@ -65,7 +65,7 @@ char* b64encode(const void* data, size_t ns)
  * \param ns no. bytes of binary data
  * \return (malloc'd) base64 string
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 char* b64crc(const unsigned char* data, size_t ns)
 	/*@*/;
 
@@ -82,13 +82,13 @@ int b64decode(const char* s, void** datap, size_t* lenp)
 
 /*!
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 char*		b64enc(const memchunk*)
 	/*@*/;
 
 /*!
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk*	b64dec(const char*)
 	/*@*/;
 

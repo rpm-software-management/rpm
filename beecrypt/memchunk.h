@@ -28,6 +28,7 @@
 typedef struct
 {
 	size_t	size;
+/*@relnull@*/
 	byte*	data;
 } memchunk;
 
@@ -35,7 +36,7 @@ typedef struct
 extern "C" {
 #endif
 
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk*	memchunkAlloc(size_t size)
 	/*@*/;
 BEECRYPTAPI
@@ -44,10 +45,10 @@ void		memchunkWipe(memchunk* m)
 BEECRYPTAPI
 void		memchunkFree(memchunk* m)
 	/*@modifies m @*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk*	memchunkResize(memchunk* m, size_t size)
 	/*@modifies m @*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk*	memchunkClone(const memchunk* m)
 	/*@*/;
 

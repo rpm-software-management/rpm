@@ -40,7 +40,9 @@ struct _mpbarrett
 #endif
 {
 	size_t	size;
+/*@relnull@*/
 	mpw*	modl;	/* (size) words */
+/*@relnull@*/
 	mpw*	mu;		/* (size+1) words */
 
 #ifdef __cplusplus

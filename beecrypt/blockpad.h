@@ -32,17 +32,17 @@
 extern "C" {
 #endif
 
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk* pkcs5Pad  (size_t blockbytes, memchunk* tmp)
 	/*@modifies tmp @*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk* pkcs5Unpad(size_t blockbytes, memchunk* tmp)
 	/*@modifies tmp @*/;
 
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk* pkcs5PadCopy  (size_t blockbytes, const memchunk* src)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk* pkcs5UnpadCopy(size_t blockbytes, const memchunk* src)
 	/*@*/;
 

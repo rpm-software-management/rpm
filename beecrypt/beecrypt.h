@@ -92,7 +92,7 @@ int						entropySourceCount(void)
  * \return A pointer to an entropy source or null, if the index was out of
  *  range.
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const entropySource*	entropySourceGet(int n)
 	/*@*/;
 
@@ -101,7 +101,7 @@ const entropySource*	entropySourceGet(int n)
  * \param name Name of the requested entropy source.
  * \return A pointer to an entropy source or null, if the name wasn't found.
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const entropySource*	entropySourceFind(const char* name)
 	/*@*/;
 
@@ -110,7 +110,7 @@ const entropySource*	entropySourceFind(const char* name)
  *  can be specified by setting environment variable BEECRYPT_ENTROPY.
  * \return A pointer to an entropy source or null, in case an error occured.
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const entropySource*	entropySourceDefault(void)
 	/*@*/;
 
@@ -227,13 +227,13 @@ extern "C" {
 BEECRYPTAPI
 int						randomGeneratorCount(void)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const randomGenerator*	randomGeneratorGet(int index)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const randomGenerator*	randomGeneratorFind(const char* name)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const randomGenerator*	randomGeneratorDefault(void)
 	/*@*/;
 
@@ -253,6 +253,7 @@ struct _randomGeneratorContext
 #endif
 {
 	const randomGenerator* rng;
+/*@relnull@*/
 	randomGeneratorParam* param;
 
 	#ifdef __cplusplus
@@ -359,13 +360,13 @@ extern "C" {
 BEECRYPTAPI
 int					hashFunctionCount(void)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const hashFunction*	hashFunctionGet(int index)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const hashFunction*	hashFunctionFind(const char* name)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const hashFunction*	hashFunctionDefault(void)
 	/*@*/;
 
@@ -384,6 +385,7 @@ struct _hashFunctionContext
 #endif
 {
 	const hashFunction* algo;
+/*@relnull@*/
 	hashFunctionParam* param;
 
 	#ifdef __cplusplus
@@ -515,13 +517,13 @@ extern "C" {
 BEECRYPTAPI
 int							keyedHashFunctionCount(void)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const keyedHashFunction*	keyedHashFunctionGet(int index)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const keyedHashFunction*	keyedHashFunctionFind(const char* name)
 	/*@*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const keyedHashFunction*	keyedHashFunctionDefault(void)
 	/*@*/;
 
@@ -540,6 +542,7 @@ struct _keyedHashFunctionContext
 #endif
 {
 	const keyedHashFunction*	algo;
+/*@relnull@*/
 	keyedHashFunctionParam*		param;
 
 	#ifdef __cplusplus
@@ -765,7 +768,7 @@ int						blockCipherCount(void)
  * \return A pointer to a blockcipher or null, if the index was out of
  *  range.
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const blockCipher*		blockCipherGet(int index)
 	/*@*/;
 
@@ -774,7 +777,7 @@ const blockCipher*		blockCipherGet(int index)
  * \param name Name of the requested blockcipher.
  * \return A pointer to a blockcipher or null, if the name wasn't found.
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const blockCipher*		blockCipherFind(const char* name)
 	/*@*/;
 
@@ -783,7 +786,7 @@ const blockCipher*		blockCipherFind(const char* name)
  *  can be specified by setting environment variable BEECRYPT_CIPHER.
  * \return A pointer to a blockcipher or null, in case an error occured.
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 const blockCipher*		blockCipherDefault(void)
 	/*@*/;
 
@@ -808,6 +811,7 @@ struct _blockCipherContext
 	/*!\var param
 	 * \brief Pointer to the parameters used by algo.
 	 */
+/*@relnull@*/
 	blockCipherParam*	param;
 	/*!\var op
 	 */

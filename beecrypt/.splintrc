@@ -24,7 +24,6 @@
 -compdestroy
 -compmempass
 -evalorder
--evalorderuncon
 -globs
 -globstate
 -infloops
@@ -32,20 +31,19 @@
 -internalglobs
 -mayaliasunique
 -modfilesys
--modobserveruncon
--moduncon
+-moduncon		# 22
 -mustfreefresh
 -mustfreeonly
 -namechecks
 -noeffect
--noeffectuncon
+-noeffectuncon		# 12
 -nullderef
--nullpass
+-nullpass		# 14
 -nullptrarith
--nullret
--nullstate
+-nullret		# 2
+-nullstate		# 1
 -paramuse
--protoparammatch
+-protoparammatch	# 7
 +ptrnegate
 -retalias
 -retvalint
@@ -65,7 +63,7 @@
 -readonlytrans
 -statictrans
 -temptrans
--unqualifiedtrans
+-unqualifiedtrans	# 11
 
 -looploopbreak
 -looploopcontinue
@@ -78,7 +76,6 @@
 -exportlocal
 -fcnuse
 -typeuse
-
 
 -elseifcomplete
 -whileempty

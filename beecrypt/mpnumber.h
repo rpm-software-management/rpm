@@ -39,6 +39,7 @@ struct _mpnumber
 #endif
 {
 	size_t	size;
+/*@relnull@*/
 	mpw*	data;
 
 #ifdef __cplusplus

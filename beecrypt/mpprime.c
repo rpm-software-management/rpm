@@ -709,7 +709,7 @@ int mpptrials(size_t bits)
 /*
  * needs workspace of (size*2) words
  */
-static void mpprndbits(mpbarrett* p, size_t bits, size_t lsbset, const mpnumber* min, const mpnumber* max, randomGeneratorContext* rc, mpw* wksp)
+static void mpprndbits(mpbarrett* p, size_t bits, size_t lsbset, /*@null@*/ const mpnumber* min, /*@null@*/ const mpnumber* max, randomGeneratorContext* rc, mpw* wksp)
 	/*@modifies p, wksp @*/
 {
 	register size_t size = p->size;

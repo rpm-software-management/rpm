@@ -82,7 +82,7 @@ int dhaes_pContextFree       (dhaes_pContext* ctxt)
 BEECRYPTAPI
 memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mpnumber* ephemeralPublicKey,       mpnumber* mac, const memchunk* cleartext, randomGeneratorContext* rng)
 	/*@modifies ctxt, ephemeralPublicKey, mac @*/;
-BEECRYPTAPI
+BEECRYPTAPI /*@null@*/
 memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralPublicKey, const mpnumber* mac, const memchunk* ciphertext)
 	/*@modifies ctxt @*/;
 
