@@ -448,7 +448,7 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
     }
 }
 
-const char * rpmtsGetCurrDir(rpmts ts)
+const char * rpmtsCurrDir(rpmts ts)
 {
     const char * currDir = NULL;
     if (ts != NULL) {
@@ -466,7 +466,7 @@ void rpmtsSetCurrDir(rpmts ts, const char * currDir)
     }
 }
 
-FD_t rpmtsGetScriptFd(rpmts ts)
+FD_t rpmtsScriptFd(rpmts ts)
 {
     FD_t scriptFd = NULL;
     if (ts != NULL) {
@@ -490,7 +490,7 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
     }
 }
 
-int rpmtsGetChrootDone(rpmts ts)
+int rpmtsChrootDone(rpmts ts)
 {
     int chrootDone = 0;
     if (ts != NULL) {

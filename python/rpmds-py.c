@@ -72,6 +72,12 @@ rpmds_TagN(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsTagN(s->ds));
 }
 
+static int
+rpmds_Compare(rpmdsObject * a, rpmdsObject * b)
+{
+    return rpmdsCompare(a->ds, b->ds);
+}
+
 #if Py_TPFLAGS_HAVE_ITER
 static PyObject *
 rpmds_Next(rpmdsObject * s)
@@ -119,15 +125,6 @@ rpmds_Notify(rpmdsObject * s, PyObject * args)
 }
 
 static PyObject *
-rpmds_Compare(rpmdsObject * s, PyObject * args)
-{
-	if (!PyArg_ParseTuple(args, ""))
-		return NULL;
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-static PyObject *
 rpmds_Problem(rpmdsObject * s, PyObject * args)
 {
 	if (!PyArg_ParseTuple(args, ""))
@@ -152,7 +149,6 @@ static struct PyMethodDef rpmds_methods[] = {
 #endif
 #ifdef	NOTYET
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS,	NULL},
- {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS,	NULL},
  {"Problem",	(PyCFunction)rpmds_Problem,	METH_VARARGS,	NULL},
 #endif
  {NULL,		NULL}		/* sentinel */
@@ -225,7 +221,7 @@ PyTypeObject rpmds_Type = {
 	(printfunc)rpmds_print,		/* tp_print */
 	(getattrfunc)rpmds_getattr,	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
-	(cmpfunc)0,			/* tp_compare */
+	(cmpfunc)rpmds_Compare,		/* tp_compare */
 	(reprfunc)0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
@@ -279,11 +275,38 @@ rpmds_New(rpmds ds)
 }
 
 rpmdsObject *
+rpmds_Single(PyObject * s, PyObject * args)
+{
+    int tagN = RPMTAG_PROVIDENAME;
+    const char * N;
+    const char * EVR = NULL;
+    int Flags = 0;
+
+    if (!PyArg_ParseTuple(args, "is|si", &tagN, &N, &EVR, &Flags))
+	return NULL;
+    return rpmds_New( rpmdsSingle(tagN, N, EVR, Flags) );
+}
+
+rpmdsObject *
 hdr_dsFromHeader(PyObject * s, PyObject * args)
 {
     hdrObject * ho;
+    int tagN = RPMTAG_REQUIRENAME;
+    int scareMem = 0;
+
+    if (!PyArg_ParseTuple(args, "O!|i", &hdr_Type, &ho, &tagN))
+	return NULL;
+    return rpmds_New( rpmdsNew(hdrGetHeader(ho), tagN, scareMem) );
+}
+
+rpmdsObject *
+hdr_dsOfHeader(PyObject * s, PyObject * args)
+{
+    hdrObject * ho;
+    int tagN = RPMTAG_PROVIDENAME;
+    int Flags = RPMSENSE_EQUAL;
 
     if (!PyArg_ParseTuple(args, "O!", &hdr_Type, &ho))
 	return NULL;
-    return rpmds_New( rpmdsNew(hdrGetHeader(ho), RPMTAG_REQUIRENAME, 0) );
+    return rpmds_New( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
 }

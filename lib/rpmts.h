@@ -124,10 +124,7 @@ struct rpmts_s {
     int delta;			/*!< Delta for reallocation. */
     int_32 tid;			/*!< Transaction id. */
 
-    int verify_legacy;		/*!< Verify legacy signatures? */
-    int nodigests;		/*!< Verify digests? */
-    int nosignatures;		/*!< Verify signatures? */
-    int vsflags;		/*!< Signature verification flags. */
+    int vsflags;		/*!< Signature/digest verification flags. */
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
@@ -142,7 +139,7 @@ struct rpmts_s {
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
 
 /*@null@*/
-    struct pgpDig_s * dig;	/*!< Current signature/pubkey parametrs. */
+    struct pgpDig_s * dig;	/*!< Current signature/pubkey parameters. */
 
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 
@@ -347,7 +344,7 @@ void rpmtsSetRootDir(rpmts ts, /*@null@*/ const char * rootDir)
  * @return		transaction currDir
  */
 /*@observer@*/ /*@null@*/
-const char * rpmtsGetCurrDir(rpmts ts)
+const char * rpmtsCurrDir(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -364,7 +361,7 @@ void rpmtsSetCurrDir(rpmts ts, /*@null@*/ const char * currDir)
  * @return		transaction script file handle
  */
 /*@null@*/
-FD_t rpmtsGetScriptFd(rpmts ts)
+FD_t rpmtsScriptFd(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -380,7 +377,7 @@ void rpmtsSetScriptFd(rpmts ts, /*@null@*/ FD_t scriptFd)
  * @param ts		transaction set
  * @return		chrootDone flag
  */
-int rpmtsGetChrootDone(rpmts ts)
+int rpmtsChrootDone(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts

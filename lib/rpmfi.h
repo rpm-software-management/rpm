@@ -6,6 +6,9 @@
  * Structure(s) used for file info tag sets.
  */
 
+/*@unchecked@*/
+extern int _rpmfi_debug;
+
 #if defined(_RPMFI_INTERNAL)
 /**
  */
@@ -402,7 +405,7 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi, int freefimem)
  * @return		new file set
  */
 /*@null@*/
-rpmfi rpmfiNew(rpmts ts, /*@null@*/ rpmfi fi,
+rpmfi rpmfiNew(/*@null@*/ rpmts ts, /*@null@*/ rpmfi fi,
 		Header h, rpmTag tagN, int scareMem)
 	/*@modifies ts, fi, h @*/;
 

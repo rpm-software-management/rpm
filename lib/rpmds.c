@@ -20,13 +20,13 @@
 static int _noisy_range_comparison_debug_message = 0;
 
 /*@unchecked@*/
-static int _ds_debug = 0;
+int _rpmds_debug = 0;
 
 rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
 /*@-modfilesystem@*/
-if (_ds_debug && msg != NULL)
+if (_rpmds_debug && msg != NULL)
 fprintf(stderr, "--> ds %p -- %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     ds->nrefs--;
@@ -39,7 +39,7 @@ rpmds XrpmdsLink(rpmds ds, const char * msg, const char * fn, unsigned ln)
     ds->nrefs++;
 
 /*@-modfilesystem@*/
-if (_ds_debug && msg != NULL)
+if (_rpmds_debug && msg != NULL)
 fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
 
@@ -58,7 +58,7 @@ rpmds rpmdsFree(rpmds ds)
 	return rpmdsUnlink(ds, ds->Type);
 
 /*@-modfilesystem@*/
-if (_ds_debug < 0)
+if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
@@ -166,7 +166,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
 
 /*@-modfilesystem@*/
-if (_ds_debug < 0)
+if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
@@ -444,7 +444,7 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 	    ds->i = -1;
 
 /*@-modfilesystem @*/
-if (_ds_debug  < 0 && i != -1)
+if (_rpmds_debug  < 0 && i != -1)
 fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"), i, (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
 /*@=modfilesystem @*/
 

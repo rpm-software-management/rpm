@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-05-19 19:37-0400\n"
+"POT-Creation-Date: 2002-05-23 08:29-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -2754,80 +2754,80 @@ msgstr ""
 msgid "Unsatisifed dependencies for %s: "
 msgstr ""
 
-#: rpmdb/db3.c:85
+#: rpmdb/db3.c:156
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:88
+#: rpmdb/db3.c:159
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:114
+#: rpmdb/db3.c:185
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:132
+#: rpmdb/db3.c:203
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:172
+#: rpmdb/db3.c:243
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:605
+#: rpmdb/db3.c:678
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:672
+#: rpmdb/db3.c:745
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:894
+#: rpmdb/db3.c:967
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1110
+#: rpmdb/db3.c:1183
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1112
+#: rpmdb/db3.c:1185
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1112
+#: rpmdb/db3.c:1185
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1116
+#: rpmdb/db3.c:1189
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:390
+#: rpmdb/dbconfig.c:396
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:428
+#: rpmdb/dbconfig.c:434
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:437
+#: rpmdb/dbconfig.c:443
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:446
+#: rpmdb/dbconfig.c:452
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -2925,17 +2925,17 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:164
+#: rpmdb/rpmdb.c:166
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:236
+#: rpmdb/rpmdb.c:238
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:258
+#: rpmdb/rpmdb.c:260
 #, c-format
 msgid "cannot open %s index\n"
 msgstr ""
@@ -2944,8 +2944,8 @@ msgstr ""
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2034
-#: rpmdb/rpmdb.c:2139 rpmdb/rpmdb.c:2419 rpmdb/rpmdb.c:2820
+#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2043
+#: rpmdb/rpmdb.c:2148 rpmdb/rpmdb.c:2835
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
@@ -2955,124 +2955,134 @@ msgstr ""
 msgid "error(%d) storing record #%d into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1956
+#: rpmdb/rpmdb.c:1966
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2222
+#: rpmdb/rpmdb.c:2231
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2388
+#: rpmdb/rpmdb.c:2292
+#, c-format
+msgid "error(%d) setting header #%d record for %s removal\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:2403
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2392
+#: rpmdb/rpmdb.c:2407
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2440
+#: rpmdb/rpmdb.c:2434
+#, c-format
+msgid "error(%d) setting \"%s\" records from %s index\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:2455
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2450
+#: rpmdb/rpmdb.c:2465
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2592
+#: rpmdb/rpmdb.c:2607
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2796
+#: rpmdb/rpmdb.c:2811
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2800
+#: rpmdb/rpmdb.c:2815
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2836
+#: rpmdb/rpmdb.c:2851
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3175
+#: rpmdb/rpmdb.c:3190
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3210
+#: rpmdb/rpmdb.c:3225
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3237
+#: rpmdb/rpmdb.c:3252
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3241
+#: rpmdb/rpmdb.c:3256
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3247
+#: rpmdb/rpmdb.c:3262
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3249
+#: rpmdb/rpmdb.c:3264
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3256
+#: rpmdb/rpmdb.c:3271
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3267
+#: rpmdb/rpmdb.c:3282
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3306
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3331
+#: rpmdb/rpmdb.c:3346
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3349
+#: rpmdb/rpmdb.c:3364
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3357
+#: rpmdb/rpmdb.c:3372
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3359
+#: rpmdb/rpmdb.c:3374
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3369
+#: rpmdb/rpmdb.c:3384
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3371
+#: rpmdb/rpmdb.c:3386
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

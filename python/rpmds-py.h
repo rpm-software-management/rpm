@@ -16,6 +16,10 @@ rpmds dsFromDs(rpmdsObject * ds);
 
 rpmdsObject * rpmds_New(rpmds ds);
 
+rpmdsObject * rpmds_Single(PyObject * s, PyObject * args);
+
 rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args);
+
+rpmdsObject * hdr_dsOfHeader(PyObject * s, PyObject * args);
 
 #endif

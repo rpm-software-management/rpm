@@ -1100,7 +1100,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
     pi = rpmteiFree(pi);
 
-    if (!rpmtsGetChrootDone(ts)) {
+    if (!rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
 	xx = chdir("/");
 	/*@-superuser -noeffect @*/
@@ -1265,8 +1265,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     pi = rpmteiFree(pi);
     ps = rpmpsFree(ps);
 
-    if (rpmtsGetChrootDone(ts)) {
-	const char * currDir = rpmtsGetCurrDir(ts);
+    if (rpmtsChrootDone(ts)) {
+	const char * currDir = rpmtsCurrDir(ts);
 	/*@-superuser -noeffect @*/
 	xx = chroot(".");
 	/*@=superuser =noeffect @*/

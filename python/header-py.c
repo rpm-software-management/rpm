@@ -542,6 +542,7 @@ static struct PyMethodDef hdrMethods[] = {
 	{"rhnUnload",	(PyCFunction) rhnUnload, METH_VARARGS },
 	{"sprintf",     (PyCFunction) hdrSprintf, METH_VARARGS },
 
+ {"dsOfHeader",		(PyCFunction)hdr_dsOfHeader,	METH_VARARGS,	NULL},
  {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS,	NULL},
  {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS,	NULL},
 

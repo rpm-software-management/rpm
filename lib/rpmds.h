@@ -6,6 +6,9 @@
  * Structure(s) used for dependency tag sets.
  */
 
+/*@unchecked@*/
+extern int _rpmds_debug;
+
 #if defined(_RPMDS_INTERNAL)
 /**
  * A package dependency set.

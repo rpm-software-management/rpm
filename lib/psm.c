@@ -763,7 +763,7 @@ static int runScript(PSM_t psm, Header h,
 	FD_t fd;
 
 	/*@-branchstate@*/
-	if (makeTempFile((!rpmtsGetChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
+	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
 	    if (freePrefixes) free(prefixes);
 	    return 1;
 	}
@@ -780,7 +780,7 @@ static int runScript(PSM_t psm, Header h,
 	xx = Fclose(fd);
 
 	{   const char * sn = fn;
-	    if (!rpmtsGetChrootDone(ts) && rootDir != NULL &&
+	    if (!rpmtsChrootDone(ts) && rootDir != NULL &&
 		!(rootDir[0] == '/' && rootDir[1] == '\0'))
 	    {
 		sn += strlen(rootDir)-1;
@@ -802,7 +802,7 @@ static int runScript(PSM_t psm, Header h,
 
     argv[argc] = NULL;
 
-    scriptFd = rpmtsGetScriptFd(ts);
+    scriptFd = rpmtsScriptFd(ts);
     if (scriptFd != NULL) {
 	if (rpmIsVerbose()) {
 	    out = fdDup(Fileno(scriptFd));
@@ -879,7 +879,7 @@ static int runScript(PSM_t psm, Header h,
 	    rootDir = strchr(rootDir, '/');
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    if (!rpmtsGetChrootDone(ts) && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
+	    if (!rpmtsChrootDone(ts) && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
 		/*@-superuser -noeffect @*/
 		xx = chroot(rootDir);
 		/*@=superuser =noeffect @*/
@@ -1828,7 +1828,7 @@ psm->te->h = headerFree(psm->te->h, "psm->te->h");
     case PSM_CHROOT_IN:
     {	const char * rootDir = rpmtsRootDir(ts);
 	/* Change root directory if requested and not already done. */
-	if (rootDir != NULL && !rpmtsGetChrootDone(ts) && !psm->chrootDone) {
+	if (rootDir != NULL && !rpmtsChrootDone(ts) && !psm->chrootDone) {
 	    static int _loaded = 0;
 
 	    /*
@@ -1852,7 +1852,7 @@ psm->te->h = headerFree(psm->te->h, "psm->te->h");
     case PSM_CHROOT_OUT:
 	/* Restore root directory if changed. */
 	if (psm->chrootDone) {
-	    const char * currDir = rpmtsGetCurrDir(ts);
+	    const char * currDir = rpmtsCurrDir(ts);
 	    /*@-superuser@*/
 	    rc = chroot(".");
 	    /*@=superuser@*/

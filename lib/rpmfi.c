@@ -28,13 +28,13 @@
 /*@access rpmte @*/
 
 /*@unchecked@*/
-static int _fi_debug = 0;
+int _rpmfi_debug = 0;
 
 rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
 /*@-modfilesystem@*/
-if (_fi_debug && msg != NULL)
+if (_rpmfi_debug && msg != NULL)
 fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     fi->nrefs--;
@@ -46,7 +46,7 @@ rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
     if (fi == NULL) return NULL;
     fi->nrefs++;
 /*@-modfilesystem@*/
-if (_fi_debug && msg != NULL)
+if (_rpmfi_debug && msg != NULL)
 fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
@@ -275,7 +275,7 @@ int rpmfiNext(rpmfi fi)
 	    fi->i = -1;
 
 /*@-modfilesystem @*/
-if (_fi_debug  < 0 && i != -1)
+if (_rpmfi_debug  < 0 && i != -1)
 fprintf(stderr, "*** fi %p\t%s[%d] %s%s\n", fi, (fi->Type ? fi->Type : "?Type?"), i, (i >= 0 ? fi->dnl[fi->j] : ""), (i >= 0 ? fi->bnl[fi->i] : ""));
 /*@=modfilesystem @*/
 
@@ -313,7 +313,7 @@ int rpmfiNextD(rpmfi fi)
 	    fi->j = -1;
 
 /*@-modfilesystem @*/
-if (_fi_debug  < 0 && j != -1)
+if (_rpmfi_debug  < 0 && j != -1)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), j);
 /*@=modfilesystem @*/
 
@@ -816,7 +816,7 @@ rpmfi rpmfiFree(rpmfi fi, int freefimem)
 	return rpmfiUnlink(fi, fi->Type);
 
 /*@-modfilesystem@*/
-if (_fi_debug < 0)
+if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 /*@=modfilesystem@*/
 
@@ -1067,7 +1067,7 @@ if (fi->actions == NULL)
 
 exit:
 /*@-modfilesystem@*/
-if (_fi_debug < 0)
+if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 /*@=modfilesystem@*/
 
