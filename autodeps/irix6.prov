@@ -1,9 +1,9 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: irix6.prov,v 1.4 1999/08/04 18:07:18 jbj Exp $
+# $Id: irix6.prov,v 1.5 1999/09/30 00:22:15 jbj Exp $
 #
-# This file is distributed under the terms of the GNU General Public License
+# This file is distributed under the terms of the GNU Public License
 #
 # find-provides is part of RPM, the Red Hat Package Manager.  find-provides
 # reads a list of full pathnames (in a package) on stdin, and outputs all
@@ -68,9 +68,19 @@
 PATH=/usr/bin:/usr/sbin
 export PATH
 
-for f in `cat - | xargs /usr/bin/file | egrep 'ELF.*dynamic lib' | cut -d: -f1`
+#
+# Use `while read ...' instead of `for f in ...', because there may be too
+# many files to stuff into one shell variable.
+#
+IFS=""
+while read f
 do
-	elfdump -L $f 2>/dev/null | awk '
+	#
+	# If it's a shared library, run elfdump on it.
+	#
+	maybe_shared_lib=`file $f | egrep 'ELF.*dynamic lib'` 
+	if test X"$maybe_shared_lib" != X ; then
+		elfdump -L $f 2>/dev/null | awk '
 
 		BEGIN { 
 			FS = " ";
@@ -168,15 +178,18 @@ do
 			if ( (found_soname == 1) && (found_iversion == 1) ) {
 				print soname, soname_version_delimiter, version
 				exit
-			} else if (found_soname == 1) {
+			} else if ( (found_soname == 1) && (found_iversion == 0) ) {
 				#
-				# no library version information
+				# no library version information *BUT* any programs linked
+				# against this library will pick up a dependency on version 0
+				# of this library, so we output that.
 				#
-				print soname
+				print soname, soname_version_delimiter, 0
 			}
 			# else do nothing
 		}
 	' # end of awk
-#done | sort -u
+	fi # end of the 'if test X"$maybe_shared_lib != X ; then' clause
+done | sort -u
 #comment out the previous line and uncomment the next line when debugging
-done
+#done

@@ -1,9 +1,9 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: hpux.req,v 1.4 1999/08/04 18:07:18 jbj Exp $
+# $Id: hpux.req,v 1.5 1999/09/30 00:22:15 jbj Exp $
 #
-# This file is distributed under the terms of the GNU General Public License
+# This file is distributed under the terms of the GNU Public License
 #
 # find-requires is part of RPM, the Red Hat Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all
@@ -36,20 +36,50 @@
 PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
 export PATH
 
-#
-# TVM: it might be better to re-write this so that `file' isn't used, since
-# it can all be done with `chatr' (note the second line of chatr output tells
-# whether it's a shared executable or not), but this works.
-#
-filelist=`sed "s/['\"]/\\\&/g" | xargs file | egrep '(executable|library)' \
-	| cut -d: -f1`
-
-for f in $filelist
+IFS=""
+while read f
 do
 	# uncomment the next line if debugging
 	# echo "### processing $f"
 
-	chatr $f 2>/dev/null | awk '
+	#
+	# Only run the file command once per file:
+	#
+	file_output=`file $f`
+
+	#
+	# First, check to see if it's a script, and try figure out what
+	# intpreter it requires.  This is more work on HP-UX, since `file'
+	# doesn't tell us what interpreter the script uses, or even if it
+	# really is a script.
+	#
+	is_shell_script=`od -N 2 -t c $f 2>/dev/null | grep '0000000    #   !'`
+	if test X"$is_shell_script" != X ; then
+		#
+		# it's a shell script.  Now figure out what interpreter it needs
+		# Look at me!  I'm good with sed.  ;-)
+		interp=`head -1 $f | sed -e 's/^#! \{0,1\}\([^ 	]*\).*$/\1/'`
+		if test X"$interp" != X ; then
+			echo "$interp"
+			#
+			# We've found what we need for this file.  Skip back to the
+			# top of the loop.  This saves me an `else' and another indent
+			# level!  ;-)
+			continue
+		fi
+	fi
+	
+	#
+	# The `else' is implied here by the `continue' above
+	#
+
+	#
+	# Is it a shared library?
+	#
+	maybe_shared_lib=`echo "$file_output" | egrep '(executable|library)'`
+	if test X"$maybe_shared_lib" != X ; then
+		chatr $f 2>/dev/null \
+		| awk '
 
 		#
 		# For you non-awk-ers, no single quotes in comments -- the shell
@@ -81,7 +111,8 @@ do
 		/^ +shared library binding: *$/ {
 			exit
 		}
-	' # end of awk
+		' # end of awk
+	fi # end of shared library if.
 done | sort -u
 #comment out the previous line and uncomment the next one if debugging.
 #done

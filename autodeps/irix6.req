@@ -1,9 +1,9 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: irix6.req,v 1.4 1999/08/04 18:07:18 jbj Exp $
+# $Id: irix6.req,v 1.5 1999/09/30 00:22:15 jbj Exp $
 #
-# This file is distributed under the terms of the GNU General Public License
+# This file is distributed under the terms of the GNU Public License
 #
 # find-requires is part of RPM, the Red Hat Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all
@@ -48,22 +48,55 @@
 PATH=/usr/bin:/usr/sbin
 export PATH
 
-filelist=`cat -`
-
 #
-# Handle scripts first
+# TVM: switch to using `while read ...' instead of `for f in ...', because
+# packages with a large number of files could be too big for one shell
+# variable to hold.
 #
-for f in `echo $filelist | xargs file | grep 'script text' | cut -d: -f 2 \
-	| awk '{ print $1 }'`
+IFS=""
+while read f
 do
-	print $f
-done | sort -u
+
+	#
+	# Uncomment the next line for additional debugging:
+	#echo "read ->$f<-"
 	
+	#
+	# Only run file once per file:
+	#
+	file_output=`file $f`
 
-for f in `echo $filelist | xargs file | egrep 'executable|lib' | cut -d: -f1`
-do
-	#echo "Working on $f"
-	elfdump -Dl $f 2>/dev/null | awk '
+	#
+	# Handle scripts first
+	#
+	is_shell_script=`echo "$file_output" | grep 'script text' | \
+		cut -d: -f 2 | awk '{ print $1 }'`
+	
+	#
+	# If it's a script...
+	#
+	if test X"$is_shell_script" != X ; then
+		echo "$is_shell_script"
+		#
+		# use `continue' to skip back up to the top of the loop.  We've
+		# already done as much as we need to, and this saves me from having
+		# to have an else, and another indent level... ;-)
+		#
+		continue
+	fi
+
+	#
+	# the `else' is implied here, since we used `continue' in the test above
+	#
+
+	#
+	# It might be a shared library.
+	#
+	maybe_shared_lib=`echo "$file_output" | egrep 'executable|lib'`
+	if test X"$maybe_shared_lib" != X ; then
+
+		elfdump -Dl $f 2>/dev/null \
+		| awk '
 
 		#
 		# For you non-awk-ers, no single quotes in comments -- the shell
@@ -118,6 +151,7 @@ do
 		}
 
 	' # end of awk
+	fi
 done | sort -u
 # comment out the previous line and uncomment the next when debugging
 #done

@@ -1,9 +1,9 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: hpux.prov,v 1.4 1999/08/04 18:07:18 jbj Exp $
+# $Id: hpux.prov,v 1.5 1999/09/30 00:22:15 jbj Exp $
 #
-# This file is distributed under the terms of the GNU General Public License
+# This file is distributed under the terms of the GNU Public License
 #
 # find-provides is part of RPM, the Red Hat Package Manager.  find-provides
 # reads a list of full pathnames (in a package) on stdin, and outputs all
@@ -37,9 +37,15 @@
 PATH=/usr/bin:/usr/sbin:/usr/ccs/bin
 export PATH
 
-for f in `cat -`
+#
+# TVM: use `while read ...' instead of `for f in ...', because there may
+# be too many files to stuff into one shell variable.
+#
+IFS=""
+while read f
 do
-	chatr $f 2>/dev/null | awk '
+	chatr $f 2>/dev/null \
+	| awk '
 
 		BEGIN { 
 			FS = " ";

@@ -1,9 +1,9 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: osf.prov,v 1.2 1998/05/29 16:34:27 mooney Exp mooney $
+# $Id: osf.prov,v 1.4 1999/08/21 23:23:12 mooney Exp $
 #
-# This file is distributed under the terms of the GNU General Public License
+# This file is distributed under the terms of the GNU Public License
 #
 # find-provides is part of RPM, the Red Hat Package Manager.  find-provides
 # reads a list of full pathnames (in a package) on stdin, and outputs all
@@ -58,119 +58,132 @@
 PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
 export PATH
 
-for f in `cat - | xargs file | egrep 'COFF.*shared library' | cut -d: -f1`
+#
+# Use `while read ...' instead of a `for f in ...', because there may
+# be too many files to stuff into one shell variable.
+#
+IFS=""
+while read f
 do
-	odump -D $f 2>/dev/null | awk '
 
-		BEGIN { 
-			FS = " ";
-			RS = "\n";
-			OFS = "";
+	#
+	# if it's a shared library, run odump on it.
+	#
+	maybe_shared_lib=`file $f | egrep 'COFF.*shared library'`
+	if test X"$maybe_shared_lib" != X ; then
+		odump -D $f 2>/dev/null | awk '
 
-			found_soname = 0;
-			found_iversion = 0;
+			BEGIN { 
+				FS = " ";
+				RS = "\n";
+				OFS = "";
 
-			#
-			# what character should be used to separate the soname from any
-			# version info?  Using a . is actually a bad idea, since some
-			# free/3rd party libraries may be built so that the library
-			# soname may have version info in it too.  If we use . as the
-			# separator, it may not be possible to tell where the soname
-			# ends and the internal version info begins.  It might be
-			# better to use a - or a : here.  If you do so, be sure to
-			# change this setting in find-requires, too.
-			#
-			soname_version_delimiter=".";
-		}
+				found_soname = 0;
+				found_iversion = 0;
 
-		# Uncomment the next line for some debugging info.
-		#{ print NR , ":", $0  }
-
-		/^[	 ]+SONAME: .*[ 	]*$/ {
-			found_soname = 1;
-			numfields = split($0, internal_name)
-			if (numfields == 2) {
-				soname = $2
 				#
-				# we should probably check to see if the soname ends with
-				# a number (indicating that it contains versioning info,
-				# possibly in addition to the versioning info in the versions
-				# field) and generate a warning here.  Shared libraries should
-				# not be built with version info in the soname on Digital Unix.
+				# what character should be used to separate the soname from any
+				# version info?  Using a . is actually a bad idea, since some
+				# free/3rd party libraries may be built so that the library
+				# soname may have version info in it too.  If we use . as the
+				# separator, it may not be possible to tell where the soname
+				# ends and the internal version info begins.  It might be
+				# better to use a - or a : here.  If you do so, be sure to
+				# change this setting in find-requires, too.
 				#
-			} else {
-				#
-				# Should never be here.
-				#
-				print "Really odd looking soname:", $0 | "cat 1>&2"
-				exit
+				soname_version_delimiter=".";
 			}
-		}
 
-		/^[ 	]+IVERSION: .*[ 	]*$/ {
-			if (found_soname == 1) {
-				numfields = split($0, iversion)
+			# Uncomment the next line for some debugging info.
+			#{ print NR , ":", $0  }
+
+			/^[	 ]+SONAME: .*[ 	]*$/ {
+				found_soname = 1;
+				numfields = split($0, internal_name)
 				if (numfields == 2) {
-					version = $2
+					soname = $2
 					#
-					# handle libraries with multiple versions, like
-					# 1.1:1.2.  Since they really provide both versions,
-					# we need to generate output for each version.
+					# we should probably check to see if the soname ends with
+					# a number (indicating that it contains versioning info,
+					# possibly in addition to the versioning info in the
+					# versions field) and generate a warning here.  Shared
+					# libraries should not be built with version info in
+					# the soname on Digital Unix.
 					#
-					numfields = split(version, versions, ":")
-					if (numfields > 1) {
-						for (i = 1; i < numfields; i++) {
-							print soname, soname_version_delimiter, versions[i]
-						}
-						#
-						# let our END routine print out the *last* version
-						# provided
-						#
-						version = versions[numfields]
-					}
-					#
-					# stick a fork in us.
-					#
-					found_iversion = 1;
-					exit
 				} else {
 					#
 					# Should never be here.
 					#
-					print "Odd looking library version:", $0 | "cat 1>&2"
+					print "Really odd looking soname:", $0 | "cat 1>&2"
 					exit
 				}
-			} else {
-				#
-				# found an iversion without an soname.  Is that possible?
-				#
-				print "Found version but no soname:", $0 | "cat 1>&2"
-				exit
 			}
-		}
 
-		#
-		# we could probably watch for some other token (like RLD_VERSION)
-		# that *generally* occurs later in the input than the stuff we watch
-		# for, and exit if we see it, but it is just as easy to read all
-		# the output, even after we have seen what we are looking for.
-		#
-
-		END {
-			# Uncomment the next line for debugging info
-			#{ print "END: NR: ", NR }
-			if ( (found_soname == 1) && (found_iversion == 1) ) {
-				print soname, soname_version_delimiter, version
-				exit
-			} else if (found_soname == 1) {
-				#
-				# no library version information
-				#
-				print soname
+			/^[ 	]+IVERSION: .*[ 	]*$/ {
+				if (found_soname == 1) {
+					numfields = split($0, iversion)
+					if (numfields == 2) {
+						version = $2
+						#
+						# handle libraries with multiple versions, like
+						# 1.1:1.2.  Since they really provide both versions,
+						# we need to generate output for each version.
+						#
+						numfields = split(version, versions, ":")
+						if (numfields > 1) {
+							for (i = 1; i < numfields; i++) {
+							print soname, soname_version_delimiter, versions[i]
+							}
+							#
+							# let our END routine print out the *last* version
+							# provided
+							#
+							version = versions[numfields]
+						}
+						#
+						# stick a fork in us.
+						#
+						found_iversion = 1;
+						exit
+					} else {
+						#
+						# Should never be here.
+						#
+						print "Odd looking library version:", $0 | "cat 1>&2"
+						exit
+					}
+				} else {
+					#
+					# found an iversion without an soname.  Is that possible?
+					#
+					print "Found version but no soname:", $0 | "cat 1>&2"
+					exit
+				}
 			}
-			# else do nothing
-		}
-	' # end of awk
+
+			#
+			# we could probably watch for some other token (like RLD_VERSION)
+			# that *generally* occurs later in the input than the stuff we watch
+			# for, and exit if we see it, but it is just as easy to read all
+			# the output, even after we have seen what we are looking for.
+			#
+
+			END {
+				# Uncomment the next line for debugging info
+				#{ print "END: NR: ", NR }
+				if ( (found_soname == 1) && (found_iversion == 1) ) {
+					print soname, soname_version_delimiter, version
+					exit
+				} else if (found_soname == 1) {
+					#
+					# no library version information
+					#
+					print soname
+				}
+				# else do nothing
+			}
+		' # end of awk
+	fi
 done | sort -u
 #comment out the previous line and uncomment the next line when debugging
 #done
