@@ -67,7 +67,7 @@ struct Script *openScript(Spec spec, int builddir, char *name)
 
     fprintf(script->file, "RPM_SOURCE_DIR=\"%s\"\n", getVar(RPMVAR_SOURCEDIR));
     fprintf(script->file, "RPM_BUILD_DIR=\"%s\"\n", getVar(RPMVAR_BUILDDIR));
-    fprintf(script->file, "RPM_DOC_DIR=\"%s\"\n", getVar(RPMVAR_DOCDIR));
+    fprintf(script->file, "RPM_DOC_DIR=\"/usr/doc\"\n");
     fprintf(script->file, "RPM_OPT_FLAGS=\"%s\"\n", getVar(RPMVAR_OPTFLAGS));
     fprintf(script->file, "RPM_ARCH=\"%s\"\n", getArchName());
     fprintf(script->file, "RPM_OS=\"%s\"\n", getOsName());
