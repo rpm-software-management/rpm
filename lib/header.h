@@ -116,6 +116,8 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang);
    RPM_STRING_TYPE. Any pointers from headerGetEntry() for this entry
    are invalid after this call has been made! */
 int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c);
+int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
+			   void * p, int_32 c);
 
 /* Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements w/
    RPM_I18NSTRING_TYPE equivalent enreies are translated (if HEADER_I18NTABLE

@@ -195,8 +195,10 @@ int headerNextIterator(HeaderIterator iter,
 	return 0;
     }
     iter->next_index++;
-    
-    *tag = h->index[slot].info.tag;
+
+    if (tag) {
+	*tag = h->index[slot].info.tag;
+    }
     copyEntry(h->index + slot, type, p, c);
 
     return 1;
@@ -657,6 +659,8 @@ static void copyEntry(struct indexEntry * entry,
 	*type = entry->info.type;
     if (c) 
 	*c = entry->info.count;
+    if (!p)
+	return;
 
     /* Now look it up */
     switch (entry->info.type) {
@@ -1033,6 +1037,16 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     free(oldData);
     
     return 1;
+}
+
+int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
+			   void * p, int_32 c)
+{
+    if (findEntry(h, tag, type)) {
+	return headerAppendEntry(h, tag, type, p, c);
+    } else {
+	return headerAddEntry(h, tag, type, p, c);
+    }
 }
 
 int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c) {
