@@ -78,6 +78,8 @@ int rpmdbRebuild(const char * rootdir) {
 			_("record number %d in database is bad -- skipping it"), 
 			recnum);
 	    }
+
+	    headerFree(h);
 	}
 	recnum = rpmdbNextRecNum(olddb, recnum);
     }
