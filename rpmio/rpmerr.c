@@ -46,5 +46,8 @@ void error(int code, char *format, ...)
 
     if (errorCallback) {
 	errorCallback();
+    } else {
+	fputs(errorRec.string, stderr);
+	fputs("\n", stderr);
     }
 }
