@@ -10,7 +10,7 @@ missing
 mkinstalldirs
 apidocs
 autom4te*
-beecrypt.gnu.h
+gnu.h
 beecrypt.spec
 beecrypt-*.tar.gz
 config.h
