@@ -10,6 +10,8 @@
 
 #include "debug.h"
 
+/*@access regex_t @*/
+
 /*@unchecked@*/
 int _rpmsx_debug = 0;
 
@@ -59,12 +61,12 @@ static void rpmsxpHasMetaChars(rpmsxp sxp)
 	case '{':
 	    sxp->hasMetaChars = 1;
 	    return;
-	    break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case '\\':		/* skip the next character */
 	    s++;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 
 	}
 	s++;
@@ -79,6 +81,7 @@ static void rpmsxpHasMetaChars(rpmsxp sxp)
 static size_t rpmsxsPStem(const char * const buf)
 	/*@*/
 {
+    /*@observer@*/
     static const char * const regex_chars = ".^$?*+|[({";
     const char * tmp = strchr(buf + 1, '/');
     const char * ind;
@@ -139,7 +142,7 @@ static int rpmsxAdd(rpmsx sx, const char ** bpp)
     }
     sxs = sx->sxs + sx->nsxs;
     sxs->len = stem_len;
-    sxs->stem = strndup(*bpp, stem_len);
+/*@i@*/    sxs->stem = strndup(*bpp, stem_len);
     sx->nsxs++;
     *bpp += stem_len;
     return sx->nsxs - 1;
@@ -164,7 +167,7 @@ static int rpmsxFind(const rpmsx sx, const char ** bpp)
 	sxs = sx->sxs + i;
 	if (stem_len != sxs->len)
 	    continue;
-	if (strncmp(*bpp, sxs->stem, stem_len))
+/*@i@*/	if (strncmp(*bpp, sxs->stem, stem_len))
 	    continue;
 	*bpp += stem_len;
 	return i;
@@ -218,8 +221,8 @@ fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
 	sxp->pattern = _free(sxp->pattern);
 	sxp->type = _free(sxp->type);
 	sxp->context = _free(sxp->context);
-	regfree(sxp->preg);
-	sxp->preg = _free(sxp->preg);
+/*@i@*/	regfree(sxp->preg);
+/*@i@*/	sxp->preg = _free(sxp->preg);
     }
     sx->sxp = _free(sx->sxp);
 
@@ -233,9 +236,9 @@ fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
 
     (void) rpmsxUnlink(sx, __func__);
     /*@-refcounttrans -usereleased@*/
-/*@-bounsxwrite@*/
+/*@-boundswrite@*/
     memset(sx, 0, sizeof(*sx));		/* XXX trash and burn */
-/*@=bounsxwrite@*/
+/*@=boundswrite@*/
     sx = _free(sx);
     /*@=refcounttrans =usereleased@*/
     return NULL;
@@ -263,30 +266,31 @@ static int rpmsxpCheckNoDupes(const rpmsx sx)
 
 	    /* Check if same RE string */
 	    if (strcmp(sxpj->pattern, sxpi->pattern))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (sxpj->fmode && sxpi->fmode && sxpj->fmode != sxpi->fmode)
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /* Same RE string found */
 	    if (strcmp(sxpj->context, sxpi->context)) {
 		/* If different contexts, give warning */
+/*@-modfilesys@*/
 		fprintf(stderr,
 		"ERROR: Multiple different specifications for %s  (%s and %s).\n",
 			sxpi->pattern, sxpj->context, sxpi->context);
+/*@=modfilesys@*/
 		rc = -1;
 	    } else {
 		/* If same contexts give warning */
+/*@-modfilesys@*/
 		fprintf(stderr,
 		"WARNING: Multiple same specifications for %s.\n",
 			sxpi->pattern);
+/*@=modfilesys@*/
 	    }
 	}
     }
     return rc;
 }
-
-static int nerr;
-#define	inc_err()	nerr++
 
 int rpmsxParse(rpmsx sx, const char * fn)
 {
@@ -303,16 +307,18 @@ int rpmsxParse(rpmsx sx, const char * fn)
     int lineno;
     int pass;
     int regerr;
+    int nerr = 0;
+#define	inc_err()	nerr++
 
+/*@-branchstate@*/
     if (fn == NULL)
 	fn = "/etc/security/selinux/src/policy/file_contexts/file_contexts";
+/*@=branchstate@*/
 
     if ((fp = fopen(fn, "r")) == NULL) {
 	perror(fn);
 	return -1;
     }
-
-    nerr = 0;
 
     /* 
      * Perform two passes over the specification file.
@@ -322,6 +328,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
      * The second pass performs detailed validation of the input
      * and fills in the spec array.
      */
+/*@-branchstate@*/
     for (pass = 0; pass < 2; pass++) {
 	rpmsxp sxp;
 
@@ -336,7 +343,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
 			_("%s:  no newline on line number %d (only read %s)\n"),
 			fn, lineno, buf);
 		inc_err();
-		continue;
+		/*@innercontinue@*/ continue;
 	    }
 	    buf[len - 1] = 0;
 	    bp = buf;
@@ -344,8 +351,10 @@ int rpmsxParse(rpmsx sx, const char * fn)
 		bp++;
 	    /* Skip comment lines and empty lines. */
 	    if (*bp == '#' || *bp == 0)
-		continue;
+		/*@innercontinue@*/ continue;
+/*@-formatcode@*/
 	    items = sscanf(buf, "%as %as %as", &regex, &type, &context);
+/*@=formatcode@*/
 	    if (items < 2) {
 		fprintf(stderr,
 			_("%s:  line number %d is missing fields (only read %s)\n"),
@@ -353,7 +362,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
 		inc_err();
 		if (items == 1)
 		    free(regex);
-		continue;
+		/*@innercontinue@*/ continue;
 	    } else if (items == 2) {
 		/* The type field is optional. */
 		free(context);
@@ -373,11 +382,11 @@ int rpmsxParse(rpmsx sx, const char * fn)
 		sprintf(anchored_regex, "^%s$", reg_buf);
 
 		/* Compile the regular expression. */
-		sxp->preg = xcalloc(1, sizeof(*sxp->preg));
+/*@i@*/		sxp->preg = xcalloc(1, sizeof(*sxp->preg));
 		regerr = regcomp(sxp->preg, anchored_regex,
 			    REG_EXTENDED | REG_NOSUB);
 		if (regerr < 0) {
-		    regerror(regerr, sxp->preg, errbuf, sizeof errbuf);
+		    (void) regerror(regerr, sxp->preg, errbuf, sizeof errbuf);
 		    fprintf(stderr,
 			_("%s:  unable to compile regular expression %s on line number %d:  %s\n"),
 			fn, regex, lineno,
@@ -400,18 +409,19 @@ int rpmsxParse(rpmsx sx, const char * fn)
 		    goto skip_type;
 		}
 		switch (type[1]) {
-		case 'b':	sxp->fmode = S_IFBLK;	break;
-		case 'c':	sxp->fmode = S_IFCHR;	break;
-		case 'd':	sxp->fmode = S_IFDIR;	break;
-		case 'p':	sxp->fmode = S_IFIFO;	break;
-		case 'l':	sxp->fmode = S_IFLNK;	break;
-		case 's':	sxp->fmode = S_IFSOCK;	break;
-		case '-':	sxp->fmode = S_IFREG;	break;
+		case 'b':	sxp->fmode = S_IFBLK;	/*@switchbreak@*/ break;
+		case 'c':	sxp->fmode = S_IFCHR;	/*@switchbreak@*/ break;
+		case 'd':	sxp->fmode = S_IFDIR;	/*@switchbreak@*/ break;
+		case 'p':	sxp->fmode = S_IFIFO;	/*@switchbreak@*/ break;
+		case 'l':	sxp->fmode = S_IFLNK;	/*@switchbreak@*/ break;
+/*@i@*/		case 's':	sxp->fmode = S_IFSOCK;	/*@switchbreak@*/ break;
+		case '-':	sxp->fmode = S_IFREG;	/*@switchbreak@*/ break;
 		default:
 		    fprintf(stderr,
 			_("%s:  invalid type specifier %s on line number %d\n"),
 			fn, type, lineno);
 		    inc_err();
+		    /*@switchbreak@*/ break;
 		}
 
 	      skip_type:
@@ -435,10 +445,12 @@ int rpmsxParse(rpmsx sx, const char * fn)
 
 	    sx->Count++;
 	    if (pass == 0) {
+/*@-kepttrans@*/
 		free(regex);
 		if (type)
 		    free(type);
 		free(context);
+/*@=kepttrans@*/
 	    }
 	}
 
@@ -452,7 +464,8 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	    rewind(fp);
 	}
     }
-    fclose(fp);
+/*@=branchstate@*/
+    (void) fclose(fp);
 
     /* Sort the specifications with most general first */
     rpmsxSort(sx);
@@ -608,7 +621,9 @@ const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 {
     const char * context = NULL;
     const char * myfn = fn;
+/*@-mods@*/
     int fstem = rpmsxFind(sx, &myfn);
+/*@=mods@*/
     int i;
 
     sx = rpmsxInit(sx, 1);
@@ -635,16 +650,18 @@ const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 	switch (ret) {
 	case REG_NOMATCH:
 	    continue;
-	    /*@notreaached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 0:
 	    context = rpmsxContext(sx);
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	  { static char errbuf[255 + 1];
-	    regerror(ret, preg, errbuf, sizeof errbuf);
+	    (void) regerror(ret, preg, errbuf, sizeof errbuf);
+/*@-modfilesys -nullpass @*/
 	    fprintf(stderr, "unable to match %s against %s:  %s\n",
                 fn, rpmsxPattern(sx), errbuf);
-	  } break;
+/*@=modfilesys =nullpass @*/
+	  } /*@switchbreak@*/ break;
 	}
 	break;
     }

@@ -7,7 +7,36 @@
  */
 
 #include <regex.h>
+
 #include "selinux.h"
+
+#if defined(__LCLINT__)
+/*@-incondefs@*/
+extern void freecon(/*@only@*/ security_context_t con)
+	/*@modifies con @*/;
+
+extern int getfilecon(const char *path, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int lgetfilecon(const char *path, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int fgetfilecon(int fd, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+
+extern int setfilecon(const char *path, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int lsetfilecon(const char *path, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int fsetfilecon(int fd, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+extern int security_check_context(security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+/*@=incondefs@*/
+#endif
 
 /**
  */
@@ -23,7 +52,7 @@ extern int _rpmsx_debug;
 extern int _rpmsx_nopromote;
 /*@=exportlocal@*/
 
-typedef struct rpmsx_s * rpmsx;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmsx_s * rpmsx;
 typedef struct rpmsxp_s * rpmsxp;
 typedef struct rpmsxs_s * rpmsxs;
 
@@ -32,13 +61,13 @@ typedef struct rpmsxs_s * rpmsxs;
  * File security context regex pattern.
  */
 struct rpmsxp_s {
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * pattern;	/*!< File path regex pattern. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * type;		/*!< File type string. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * context;	/*!< Security context. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     regex_t * preg;		/*!< Compiled regex. */
     mode_t fmode;		/*!< File type. */
     int matches;
@@ -50,7 +79,7 @@ struct rpmsxp_s {
  * File/pattern stem.
  */
 struct rpmsxs_s {
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * stem;
     int len;
 };
@@ -59,10 +88,11 @@ struct rpmsxs_s {
  * File security context patterns container.
  */
 struct rpmsx_s {
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     rpmsxp sxp;			/*!< File context patterns. */
     int Count;			/*!< No. of file context patterns. */
     int i;			/*!< Current pattern index. */
+/*@only@*/ /*@relnull@*/
     rpmsxs sxs;			/*!< File stems. */
     int nsxs;			/*!< No. of file stems. */
     int maxsxs;			/*!< No. of allocated file stems. */
@@ -101,6 +131,7 @@ rpmsx XrpmsxUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx,
  * @param msg
  * @return		new security context patterns reference
  */
+/*@-exportlocal@*/
 /*@unused@*/ /*@newref@*/ /*@null@*/
 rpmsx rpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg)
 	/*@modifies sx @*/;
@@ -110,6 +141,7 @@ rpmsx rpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg)
 rpmsx XrpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies sx @*/;
+/*@=exportlocal@*/
 #define	rpmsxLink(_sx, _msg)	XrpmsxLink(_sx, _msg, __FILE__, __LINE__)
 
 /**
@@ -117,9 +149,11 @@ rpmsx XrpmsxLink (/*@null@*/ rpmsx sx, /*@null@*/ const char * msg,
  * @param sx		security context patterns
  * @return		NULL always
  */
+/*@-exportlocal@*/
 /*@null@*/
 rpmsx rpmsxFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx)
 	/*@modifies sx@*/;
+/*@=exportlocal@*/
 
 /**
  * Parse selinux file security context patterns.
@@ -127,8 +161,11 @@ rpmsx rpmsxFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx)
  * @param fn		file name to parse
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int rpmsxParse(rpmsx sx, /*@null@*/ const char *fn)
-	/*modifies sx @*/;
+	/*@globals fileSystem @*/
+	/*@modifies sx, fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Create and load security context patterns.
@@ -139,7 +176,8 @@ int rpmsxParse(rpmsx sx, /*@null@*/ const char *fn)
  */
 /*@null@*/
 rpmsx rpmsxNew(const char * fn)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /**
  * Return security context patterns count.
@@ -171,62 +209,74 @@ int rpmsxSetIx(/*@null@*/ rpmsx sx, int ix)
  * @param sx		security context patterns
  * @return		current pattern, NULL on invalid
  */
+/*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmsxPattern(/*@null@*/ const rpmsx sx)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return current type.
  * @param sx		security context patterns
  * @return		current type, NULL on invalid/missing
  */
+/*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmsxType(/*@null@*/ const rpmsx sx)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return current context.
  * @param sx		security context patterns
  * @return		current context, NULL on invalid
  */
+/*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmsxContext(/*@null@*/ const rpmsx sx)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return current regex.
  * @param sx		security context patterns
  * @return		current context, NULL on invalid
  */
+/*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern regex_t * rpmsxRE(/*@null@*/ const rpmsx sx)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return current file mode.
  * @param sx		security context patterns
  * @return		current file mode, 0 on invalid
  */
-/*@observer@*/ /*@null@*/
+/*@-exportlocal@*/
 extern mode_t rpmsxFMode(/*@null@*/ const rpmsx sx)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return current file stem.
  * @param sx		security context patterns
  * @return		current file stem, -1 on invalid
  */
-/*@observer@*/ /*@null@*/
+/*@-exportlocal@*/
 extern int rpmsxFStem(/*@null@*/ const rpmsx sx)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return next security context patterns iterator index.
  * @param sx		security context patterns
  * @return		security context patterns iterator index, -1 on termination
  */
+/*@-exportlocal@*/
 int rpmsxNext(/*@null@*/ rpmsx sx)
 	/*@modifies sx @*/;
+/*@=exportlocal@*/
 
 /**
  * Initialize security context patterns iterator.
@@ -234,9 +284,11 @@ int rpmsxNext(/*@null@*/ rpmsx sx)
  * @param reverse	iterate in reverse order?
  * @return		security context patterns
  */
+/*@-exportlocal@*/
 /*@null@*/
 rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
 	/*@modifies sx @*/;
+/*@=exportlocal@*/
 
 /**
  * Find file security context from path and type.
@@ -247,7 +299,7 @@ rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
  */
 /*@null@*/
 const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
-	/*@*/;
+	/*@modifies sx @*/;
 
 #ifdef __cplusplus
 }

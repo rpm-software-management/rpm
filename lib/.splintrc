@@ -1,4 +1,4 @@
--I. -I.. -I../build -I../rpmdb -I../rpmio -I../beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../build -I../rpmdb -I../rpmio -I../beecrypt -I../popt -I../elfutils/libelf -I/usr/include/selinux -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 +forcehints
@@ -13,7 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
-+bounds
+#+bounds
 +slovak-fcns
 -redecl
 -bufferoverflowhigh
@@ -31,7 +31,6 @@
 -varuse
 
 # --- not-yet at strict level
-+bounds			# 0
 -bitwisesigned		# 255
 -elseifcomplete		# 95 occurences
 -exportconst		# 839 occurences
