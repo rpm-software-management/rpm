@@ -90,7 +90,7 @@ void * sexpAlloc(size_t n)
 sexpSimpleString newSimpleString(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-long int simpleStringLength(sexpSimpleString ss)
+size_t simpleStringLength(sexpSimpleString ss)
 	/*@*/;
 /*@exposed@*/ /*@null@*/
 octet *simpleStringString(sexpSimpleString ss)

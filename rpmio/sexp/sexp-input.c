@@ -367,9 +367,9 @@ void scanQuotedString(sexpInputStream is, sexpSimpleString ss, long int length)
 {
   int c;
   skipChar(is,'"');
-  while (length == -1 || simpleStringLength(ss) <= length) {
+  while (length == -1L || simpleStringLength(ss) <= length) {
 	if (is->nextChar == '\"') {
-	    if (length == -1 || (simpleStringLength(ss) == length)) {
+	    if (length == -1L || simpleStringLength(ss) == length) {
 		skipChar(is,'\"');
 		return;
 	    }

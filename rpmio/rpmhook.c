@@ -41,7 +41,8 @@ rpmhookArgs rpmhookArgsNew(int argc)
 
 rpmhookArgs rpmhookArgsFree(rpmhookArgs args)
 {
-    free(args);
+    if (args != NULL)
+	free(args);
     return NULL;
 }
 
@@ -156,8 +157,8 @@ static void rpmhookTableAddItem(rpmhookTable *table, const char *name,
 }
 
 static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
-				rpmhookFunc func, void *data,
-				int matchfunc, int matchdata)
+		/*@null@*/ rpmhookFunc func, /*@null@*/ void *data,
+		int matchfunc, int matchdata)
 	/*@modifies *table @*/
 {
     int n = rpmhookTableFindBucket(table, name);

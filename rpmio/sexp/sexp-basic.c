@@ -11,12 +11,12 @@
 #include <string.h>
 #include "sexp.h"
 
-/*@access sexpIter @*/
 /*@access sexpSimpleString @*/
-
-/*@access sexpList @*/
 /*@access sexpString @*/
-/*@access sexpObject @*/
+/*@access sexpList @*/
+
+/*@access sexpObject @*/	/* XXX for casts only */
+/*@access sexpIter @*/		/* XXX for casts only */
 
 /******************/
 /* ERROR MESSAGES */
@@ -76,7 +76,8 @@ void * sexpAlloc(size_t n)
  */
 sexpSimpleString newSimpleString(void)
 {
-    sexpSimpleString ss = (sexpSimpleString) sexpAlloc(sizeof(*ss));
+    sexpSimpleString ss = sexpAlloc(sizeof(*ss));
+
     ss->length = 0;
     ss->allocatedLength = 16;
     ss->string = sexpAlloc(16);
@@ -86,7 +87,7 @@ sexpSimpleString newSimpleString(void)
 /* simpleStringLength(ss)
  * returns length of simple string
  */
-long int simpleStringLength(sexpSimpleString ss)
+size_t simpleStringLength(sexpSimpleString ss)
 {
     return ss->length;
 }
@@ -110,7 +111,7 @@ sexpSimpleString reallocateSimpleString(sexpSimpleString ss)
 	if (ss == NULL) return NULL;
     }
     if (ss->string == NULL)
-	ss->string = (octet *)sexpAlloc(16);
+	ss->string = sexpAlloc(16);
     else {
 	size_t newsize = 16 + 3*(ss->length)/2;
 	octet * newstring = sexpAlloc(newsize);

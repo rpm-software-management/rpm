@@ -21,7 +21,8 @@ typedef int (*rpmhookFunc) (rpmhookArgs args, void *data);
 /*@only@*/
 rpmhookArgs rpmhookArgsNew(int argc)
 	/*@*/;
-rpmhookArgs rpmhookArgsFree(/*@only@*/ rpmhookArgs args)
+/*@null@*/
+rpmhookArgs rpmhookArgsFree(/*@only@*/ /*@null@*/ rpmhookArgs args)
 	/*@modifies args @*/;
 
 void rpmhookRegister(const char *name, rpmhookFunc func, void *data)

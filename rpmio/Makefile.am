@@ -4,24 +4,23 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
+EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
-EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio tsw dumpasn1
+EXTRA_PROGRAMS = tax tdigest tdir tfts tglob tinv tkey tring trpmio tsw dumpasn1
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	@WITH_BEECRYPT_INCLUDE@ \
+	@WITH_LUA_INCLUDE@ \
 	-I$(top_srcdir)/popt \
-	-I$(top_srcdir)/lua/include \
-	-I$(top_srcdir)/lua/local \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	argv.h fts.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
-	rpmsq.h rpmsw.h ugid.h rpmlua.h rpmhook.h
-noinst_HEADERS = rpmio_internal.h
+	rpmsq.h rpmsw.h ugid.h
+noinst_HEADERS = rpmio_internal.h rpmlua.h rpmhook.h
 
 BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
 
@@ -31,13 +30,12 @@ usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c \
-	rpmio.c rpmlog.c rpmmalloc.c \
-	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c \
-	rpmlua.c rpmhook.c
+	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
+	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
+	@WITH_LUA_LIB@ \
 	$(top_builddir)/file/src/libfmagic.la \
-	$(top_builddir)/lua/liblua.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
@@ -67,6 +65,9 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+
+tax_SOURCES = tax.c
+tax_LDADD = librpmio.la
 
 tdigest_SOURCES = tdigest.c
 tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la -lgcrypt

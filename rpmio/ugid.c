@@ -103,11 +103,15 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	    if (grent == NULL) {
 		/* XXX The filesystem package needs group/lock w/o getgrnam. */
 		if (strcmp(thisGname, "lock") == 0) {
+/*@-boundswrite@*/
 		    *gid = lastGid = 54;
+/*@=boundswrite@*/
 		    return 0;
 		} else
 		if (strcmp(thisGname, "mail") == 0) {
+/*@-boundswrite@*/
 		    *gid = lastGid = 12;
+/*@=boundswrite@*/
 		    return 0;
 		} else
 		return -1;

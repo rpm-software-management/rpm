@@ -508,9 +508,9 @@ int fdWritable(FD_t fd, int secs)
 	    tvp->tv_usec = 0;
 	}
 	FD_SET(fdno, &wrfds);
-	/*@-compdef -nullpass@*/
+/*@-compdef -nullpass@*/
 	rc = select(fdno + 1, NULL, &wrfds, NULL, tvp);
-	/*@=compdef =nullpass@*/
+/*@=compdef =nullpass@*/
 #endif
 
 if (_rpmio_debug && !(rc == 1 && errno == 0))
@@ -2213,7 +2213,7 @@ static int gzdFlush(FD_t fd)
 /* =============================================================== */
 static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+	/*@modifies buf, fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
     gzFile gzfile;

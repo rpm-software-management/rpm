@@ -43,7 +43,10 @@ typedef	FILE * FD_t;
 #include <rpmio_internal.h>
 #include <rpmmessages.h>
 #include <rpmerr.h>
+
+#ifdef	WITH_LUA
 #include <rpmlua.h>
+#endif
 
 #endif
 
@@ -1404,6 +1407,7 @@ expandMacro(MacroBuf mb)
 		continue;
 	}
 
+#ifdef	WITH_LUA
 	if (STREQ("lua", f, fn)) {
 		rpmlua lua = NULL; /* Global state. */
 		const char *ls = s+sizeof("{lua:")-1;
@@ -1429,6 +1433,7 @@ expandMacro(MacroBuf mb)
 		s = se;
 		continue;
 	}
+#endif
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
@@ -1793,7 +1798,7 @@ exit:
     }
 /*@=branchstate@*/
 #endif
-	av = _free(av);
+    av = _free(av);
 /*@-branchstate@*/
     if (rc || argvPtr == NULL) {
 /*@-dependenttrans -unqualifiedtrans@*/

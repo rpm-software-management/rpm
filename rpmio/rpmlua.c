@@ -1,16 +1,18 @@
 /*@-bounds -realcompare -sizeoftype -protoparammatch @*/
 #include "system.h"
+
+#ifdef	WITH_LUA
 #include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmerr.h>
 #include <rpmurl.h>
 #include <rpmhook.h>
 
-#include "../lua/include/lua.h"
-#include "../lua/include/lualib.h"
-#include "../lua/include/lauxlib.h"
-#include "../lua/local/lposix.h"
-#include "../lua/local/lrexlib.h"
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+#include <lposix.h>
+#include <lrexlib.h>
 
 #include <unistd.h>
 #include <assert.h>
@@ -838,5 +840,6 @@ static int luaopen_rpm(lua_State *L)
     luaL_openlib(L, "rpm", rpmlib, 0);
     return 0;
 }
+#endif	/* WITH_LUA */
 
 /*@=bounds =realcompare =sizeoftype =protoparammatch @*/

@@ -561,16 +561,18 @@ typedef /*@concrete@*/ struct
 /*@=constuse@*/
 #endif
 
-extern int glob (const char *pattern, int flags,
-                      int (*errfunc) (const char *, int),
-                      /*@out@*/ glob_t *pglob)
+/*@-type@*/	/* XXX glob64_t */
+extern int glob (const char *__pattern, int __flags,
+                      int (*__errfunc) (const char *, int),
+                      /*@out@*/ glob_t *__pglob)
 	/*@globals errno, fileSystem @*/
-	/*@modifies *pglob, errno, fileSystem @*/;
+	/*@modifies *__pglob, errno, fileSystem @*/;
 	/* XXX only annotation is a white lie */
-extern void globfree (/*@only@*/ glob_t *pglob)
-	/*@modifies *pglob @*/;
+extern void globfree (/*@only@*/ glob_t *__pglob)
+	/*@modifies *__pglob @*/;
+/*@=type@*/
 #ifdef _GNU_SOURCE
-extern int glob_pattern_p (const char *pattern, int quote)
+extern int glob_pattern_p (const char *__pattern, int __quote)
 	/*@*/;
 #endif
 
