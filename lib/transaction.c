@@ -909,7 +909,8 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
     /* XXX LINGUAS/LANG is used by the installer so leave alone for now */
     } else if ((s = getenv("LINGUAS")) || (s = getenv("LANG")) || (s = "en")) {
 	languages = (const char **) splitString(s, strlen(s), ':');
-    }
+    } else
+	languages = NULL;
 
     for (i = 0; i < fi->fc; i++) {
 	char **nsp;
