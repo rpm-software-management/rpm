@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-27 11:31-0500\n"
+"POT-Creation-Date: 2002-02-01 10:09-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -115,7 +115,7 @@ msgstr "<команда>"
 msgid "use <dir> as the top level directory"
 msgstr "использовать <каталог> как корневой каталог"
 
-#: lib/poptI.c:200 rpmqv.c:126
+#: lib/poptI.c:210 rpmqv.c:126
 msgid "<dir>"
 msgstr "<каталог>"
 
@@ -419,8 +419,9 @@ msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
 #: rpmqv.c:1036
-msgid "no packages given for uninstall"
-msgstr "не заданы пакеты для удаления"
+#, fuzzy
+msgid "no packages given for erase"
+msgstr "не заданы пакеты для подписи"
 
 #: rpmqv.c:1047
 msgid "no packages given for install"
@@ -684,17 +685,17 @@ msgstr "%s не удалось\n"
 msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась\n"
 
-#: build/files.c:2465
+#: build/files.c:2485
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:2491 build/files.c:2505
+#: build/files.c:2514 build/files.c:2528
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:\n"
 
-#: build/files.c:2626
+#: build/files.c:2650
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -1492,18 +1493,23 @@ msgstr "НЕT"
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:1033
+#: lib/depends.c:958
+#, c-format
+msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
+msgstr ""
+
+#: lib/depends.c:1073
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1303
+#: lib/depends.c:1341
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1409
+#: lib/depends.c:1447
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1512,20 +1518,20 @@ msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:1502
+#: lib/depends.c:1540
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1572
+#: lib/depends.c:1610
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1607
+#: lib/depends.c:1645
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1612
+#: lib/depends.c:1650
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1663,33 +1669,38 @@ msgstr "%s: ошибка readLead\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
 
-#: lib/poptI.c:47
+#: lib/poptI.c:53
 msgid "exclude paths must begin with a /"
 msgstr "исключения должны начинаться с /"
 
-#: lib/poptI.c:59
+#: lib/poptI.c:65
 msgid "relocations must begin with a /"
 msgstr "перемещения должны начинаться с /"
 
-#: lib/poptI.c:61
+#: lib/poptI.c:67
 msgid "relocations must contain a ="
 msgstr "перемещения должны содержать ="
 
-#: lib/poptI.c:64
+#: lib/poptI.c:70
 msgid "relocations must have a / following the ="
 msgstr "перемещения должны иметь / после ="
 
-#: lib/poptI.c:81
-msgid "malformed rollback time"
+#: lib/poptI.c:84
+msgid "rollback takes a time/date stamp argument"
+msgstr ""
+
+#: lib/poptI.c:91
+#, fuzzy
+msgid "malformed rollback time/date stamp argument"
 msgstr "неправильный формат времени отката"
 
-#: lib/poptI.c:100
+#: lib/poptI.c:110
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "устанавливать все файлы, даже конфигурационные, которые могли бы быть "
 "пропущены"
 
-#: lib/poptI.c:104
+#: lib/poptI.c:114
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1697,131 +1708,131 @@ msgstr ""
 "удалить все пакеты, совпадающие с <пакет> (обычно, если <пакет> "
 "соответствует нескольким пакетам, генерируется ошибка)"
 
-#: lib/poptI.c:110 lib/poptI.c:161
+#: lib/poptI.c:120 lib/poptI.c:171
 msgid "do not execute package scriptlet(s)"
 msgstr "не исполнять никаких сценариев пакета(ов)"
 
-#: lib/poptI.c:114
+#: lib/poptI.c:124
 msgid "relocate files in non-relocateable package"
 msgstr "переместить файлы в неперемещаемом пакете"
 
-#: lib/poptI.c:117
+#: lib/poptI.c:127
 msgid "save erased package files by renaming into sub-directory"
 msgstr "сохранить в подкаталоге подлежащие удалению файлы пакета"
 
-#: lib/poptI.c:120
+#: lib/poptI.c:130
 msgid "erase (uninstall) package"
 msgstr "удалить (деинсталлировать) пакет"
 
-#: lib/poptI.c:120
+#: lib/poptI.c:130
 msgid "<package>+"
 msgstr "<пакет>+"
 
-#: lib/poptI.c:123
+#: lib/poptI.c:133
 msgid "do not install documentation"
 msgstr "не устанавливать документацию"
 
-#: lib/poptI.c:125
+#: lib/poptI.c:135
 msgid "skip files with leading component <path> "
 msgstr "пропустить файлы в пути <путь>"
 
-#: lib/poptI.c:126
+#: lib/poptI.c:136
 msgid "<path>"
 msgstr "<путь>"
 
-#: lib/poptI.c:129
+#: lib/poptI.c:139
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "сокращение для --replacepkgs --replacefiles"
 
-#: lib/poptI.c:132
+#: lib/poptI.c:142
 msgid "upgrade package(s) if already installed"
 msgstr "обновить пакет(ы) если уже установлен"
 
-#: lib/poptI.c:133 lib/poptI.c:149 lib/poptI.c:221
+#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:231
 msgid "<packagefile>+"
 msgstr "<файл пакета>+"
 
-#: lib/poptI.c:135
+#: lib/poptI.c:145
 msgid "print hash marks as package installs (good with -v)"
 msgstr "выводить \"#\" по мере установки пакета (хорошо с -v)"
 
-#: lib/poptI.c:138
+#: lib/poptI.c:148
 msgid "don't verify package architecture"
 msgstr "не проверять архитектуру пакета"
 
-#: lib/poptI.c:141
+#: lib/poptI.c:151
 msgid "don't verify package operating system"
 msgstr "не проверять операционную систему пакета"
 
-#: lib/poptI.c:144
+#: lib/poptI.c:154
 msgid "don't check disk space before installing"
 msgstr "не проверять дисковое пространство перед установкой"
 
-#: lib/poptI.c:146
+#: lib/poptI.c:156
 msgid "install documentation"
 msgstr "установить документацию"
 
-#: lib/poptI.c:149
+#: lib/poptI.c:159
 msgid "install package"
 msgstr "установить пакет"
 
-#: lib/poptI.c:151
+#: lib/poptI.c:161
 msgid "update the database, but do not modify the filesystem"
 msgstr "обновить базу данных, но не модифицировать файловую систему"
 
-#: lib/poptI.c:153
+#: lib/poptI.c:163
 msgid "do not verify package dependencies"
 msgstr "не проверять зависимости пакета"
 
-#: lib/poptI.c:156
+#: lib/poptI.c:166
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "не менять порядок установки пакетов для удовлетворения зависимостей"
 
-#: lib/poptI.c:164
+#: lib/poptI.c:174
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "не исполнять  %%pre сценариев (если есть)"
 
-#: lib/poptI.c:167
+#: lib/poptI.c:177
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "не исполнять %%post сценариев (если есть)"
 
-#: lib/poptI.c:170
+#: lib/poptI.c:180
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "не исполнять %%preun сценариев (если есть)"
 
-#: lib/poptI.c:173
+#: lib/poptI.c:183
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "не исполнять %%postun сценариев (если есть)"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:187
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "не исполнять триггер-сценариев, взведенных этим пакетом"
 
-#: lib/poptI.c:180
+#: lib/poptI.c:190
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "не исполнять %%triggerprein сценариев"
 
-#: lib/poptI.c:183
+#: lib/poptI.c:193
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "не исполнять %%triggerin сценариев"
 
-#: lib/poptI.c:186
+#: lib/poptI.c:196
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "не исполнять %%triggerun сценариев"
 
-#: lib/poptI.c:189
+#: lib/poptI.c:199
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "не исполнять %%triggerpostun сценариев"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:203
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1829,49 +1840,50 @@ msgstr ""
 "откат на более старую версию пакета (--force при обновлении делает это "
 "автоматически)"
 
-#: lib/poptI.c:197
+#: lib/poptI.c:207
 msgid "print percentages as package installs"
 msgstr "выводить процент готовности по мере установки пакета"
 
-#: lib/poptI.c:199
+#: lib/poptI.c:209
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "переместить пакет в <каталог>, если пакет это позволяет"
 
-#: lib/poptI.c:202
+#: lib/poptI.c:212
 msgid "relocate files from path <old> to <new>"
 msgstr "переместить файлы из пути <old> в <new>"
 
-#: lib/poptI.c:203
+#: lib/poptI.c:213
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:206
+#: lib/poptI.c:216
 msgid "save erased package files by repackaging"
 msgstr "сохранить подлежащие удалению файлы в новом пакете"
 
-#: lib/poptI.c:209
+#: lib/poptI.c:219
 msgid "install even if the package replaces installed files"
 msgstr "устанавливать, даже если пакет перепишет уже установленные файлы"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:222
 msgid "reinstall if the package is already present"
 msgstr "переустановить, если пакет уже установлен"
 
-#: lib/poptI.c:214
-msgid "deinstall new package(s), reinstall old package(s), back to date"
+#: lib/poptI.c:224
+#, fuzzy
+msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "удалить новый(е) пакет(ы), переустановить старый(е) пакет(ы), обратно на "
 "указанную дату"
 
-#: lib/poptI.c:215
+#: lib/poptI.c:225
 msgid "<date>"
 msgstr "<дата>"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:227
 msgid "don't install, but tell if it would work or not"
 msgstr "не устанавливать, а только сообщить, удастся ли установка"
 
-#: lib/poptI.c:220
+#: lib/poptI.c:230
 msgid "upgrade package(s)"
 msgstr "обновить пакет(ы)"
 
@@ -2487,7 +2499,7 @@ msgstr "%s не может быть установлен\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:521
+#: lib/rpminstall.c:521 lib/rpminstall.c:1029
 msgid "failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
@@ -2518,6 +2530,11 @@ msgstr "невозможно открыть %s: %s\n"
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
+
+#: lib/rpminstall.c:1022
+#, c-format
+msgid "rollback %d packages to %s"
+msgstr ""
 
 #: lib/rpmlead.c:50
 #, c-format
@@ -3080,110 +3097,110 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "ошибка(%d) при подсчёте пакетов\n"
 
-#: rpmdb/rpmdb.c:2096 rpmdb/rpmdb.c:3349
+#: rpmdb/rpmdb.c:2097 rpmdb/rpmdb.c:3350
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "запись номер %u в базе данных неверна, пропускается.\n"
 
-#: rpmdb/rpmdb.c:2149
+#: rpmdb/rpmdb.c:2150
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: получен поврежденный заголовок #%u, пропускается.\n"
 
-#: rpmdb/rpmdb.c:2419
+#: rpmdb/rpmdb.c:2420
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"
 
-#: rpmdb/rpmdb.c:2491
+#: rpmdb/rpmdb.c:2492
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:2500
+#: rpmdb/rpmdb.c:2501
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:2701
+#: rpmdb/rpmdb.c:2702
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
 
-#: rpmdb/rpmdb.c:2782
+#: rpmdb/rpmdb.c:2783
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: rpmdb/rpmdb.c:2793
+#: rpmdb/rpmdb.c:2794
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: rpmdb/rpmdb.c:3235
+#: rpmdb/rpmdb.c:3236
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
 
-#: rpmdb/rpmdb.c:3268
+#: rpmdb/rpmdb.c:3269
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
-#: rpmdb/rpmdb.c:3295
+#: rpmdb/rpmdb.c:3296
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: rpmdb/rpmdb.c:3299
+#: rpmdb/rpmdb.c:3300
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "временная база данных %s уже существует\n"
 
-#: rpmdb/rpmdb.c:3305
+#: rpmdb/rpmdb.c:3306
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: rpmdb/rpmdb.c:3307
+#: rpmdb/rpmdb.c:3308
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "создаётся каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3314
+#: rpmdb/rpmdb.c:3315
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3325
+#: rpmdb/rpmdb.c:3326
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3389
+#: rpmdb/rpmdb.c:3390
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "невозможно добавить запись (первоначально в %u)\n"
 
-#: rpmdb/rpmdb.c:3407
+#: rpmdb/rpmdb.c:3408
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: rpmdb/rpmdb.c:3415
+#: rpmdb/rpmdb.c:3416
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: rpmdb/rpmdb.c:3417
+#: rpmdb/rpmdb.c:3418
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: rpmdb/rpmdb.c:3427
+#: rpmdb/rpmdb.c:3428
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: rpmdb/rpmdb.c:3429
+#: rpmdb/rpmdb.c:3430
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"
@@ -3395,6 +3412,9 @@ msgstr "url порт должен быть числом\n"
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
 
+#~ msgid "no packages given for uninstall"
+#~ msgstr "не заданы пакеты для удаления"
+
 #~ msgid "Couldn't exec pgp (%s)\n"
 #~ msgstr "Нвозможно запустить pgp (%s)\n"
 
@@ -3483,9 +3503,6 @@ msgstr "невозможно создать %s: %s\n"
 
 #~ msgid "no packages given for signature check"
 #~ msgstr "не заданы пакеты для проверки подписи"
-
-#~ msgid "no packages given for signing"
-#~ msgstr "не заданы пакеты для подписи"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"

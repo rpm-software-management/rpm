@@ -10,6 +10,15 @@
 #include "header.h"
 
 /**
+ */
+typedef /*@abstract@*/ struct fprintCache_s * fingerPrintCache;
+
+/**
+ * @todo Convert to pointer and make abstract.
+ */
+typedef struct fingerPrint_s fingerPrint;
+
+/**
  * Finger print cache entry.
  * This is really a directory and symlink cache. We don't differentiate between
  * the two. We can prepopulate it, which allows us to easily conduct "fake"
@@ -25,21 +34,21 @@ struct fprintCacheEntry_s {
 /**
  * Finger print cache.
  */
-typedef /*@abstract@*/ struct fprintCache_s {
+struct fprintCache_s {
     hashTable ht;			/*!< hashed by dirName */
-} * fingerPrintCache;
+};
 
 /**
  * Associates a trailing sub-directory and final base name with an existing
  * directory finger print.
  */
-typedef struct fingerPrint_s {
+struct fingerPrint_s {
 /*! directory finger print entry (the directory path is stat(2)-able */
     const struct fprintCacheEntry_s * entry;
 /*! trailing sub-directory path (directories that are not stat(2)-able */
 /*@owned@*/ /*@null@*/ const char * subDir;
 /*@dependent@*/ const char * baseName;	/*!< file base name */
-} fingerPrint;
+};
 
 /* only if !scarceMemory */
 /** */
@@ -60,6 +69,19 @@ typedef struct fingerPrint_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \ingroup rpmdb
+ * Find fingerprint matches in database.
+ * @param db		rpm database
+ * @param fpList	fingerprint array
+ * @retval matchList	returned fingerprint matches
+ * @param numItems	number of fingerprint items
+ * @return		0 always
+ */
+int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint  * fpList,
+		/*@out@*/ dbiIndexSet * matchList, int numItems)
+	/*@globals fileSystem@*/
+	/*@modifies db, *matchList, fileSystem @*/;
 
 /* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
 

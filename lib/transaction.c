@@ -9,10 +9,10 @@
 #define _NEED_TEITERATOR	1
 #include "psm.h"
 
+#include "rpmdb.h"
 #include "fprint.h"
 #include "legacy.h"	/* XXX domd5 */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
-#include "rpmdb.h"
 
 #ifdef	DYING
 /*@-redecl -exportheadervar@*/

@@ -142,6 +142,9 @@ sub process_file {
    
       ($module =~ m/\$/) && next;
 
+      # skip if the phrase was "use of" -- shows up in gimp-perl, et al
+      next if $module eq 'of';
+
       # if the module ends in a comma we probaly caught some
       # documentation of the form 'check stuff,\n do stuff, clean
       # stuff.' there are several of these in the perl distribution

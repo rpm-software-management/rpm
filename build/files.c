@@ -2402,10 +2402,13 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
     int writeBytes;
     StringBuf readBuf;
     DepMsg_t *dm;
-    char *myargv[4];
+    char ** myargv;
     int failnonzero = 0;
     int rc = 0;
+    int ac;
     int i;
+
+    myargv = xcalloc(5, sizeof(*myargv));
 
     if (!(fi && fi->fc > 0))
 	return 0;
@@ -2452,15 +2455,32 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-	/* Get the script name to run */
-	/*@-nullderef@*/	/* FIX: double indirection. @*/
-	myargv[0] = (dm->argv[0] ? rpmExpand(dm->argv[0], NULL) : NULL);
-	/*@=nullderef@*/
+	/* Get the script name (and possible args) to run */
+	if (dm->argv[0] != NULL) {
+	    const char ** av;
+	    char * s;
 
-	if (!(myargv[0] && *myargv[0] != '%')) {
-	    myargv[0] = _free(myargv[0]);
-	    continue;
+	    /*@-nullderef@*/	/* FIX: double indirection. @*/
+	    s = rpmExpand(dm->argv[0], NULL);
+	    /*@=nullderef@*/
+	    if (!(s != NULL && *s != '%' && *s != '\0')) {
+		s = _free(s);
+		continue;
+	    }
+
+	    if (!(i = poptParseArgvString(s, &ac, (const char ***)&av))
+	    && ac > 0 && av != NULL)
+	    {
+		myargv = xrealloc(myargv, (ac + 5) * sizeof(*myargv));
+		for (i = 0; i < ac; i++)
+		    myargv[i] = xstrdup(av[i]);
+	    }
+	    av = _free(av);
+	    s = _free(s);
 	}
+
+	if (myargv[0] == NULL)
+	    continue;
 
 	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: (using %s)...\n"),
 		dm->msg, myargv[0]);
@@ -2474,16 +2494,19 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 
 	/* Expand rest of script arguments (if any) */
 	for (i = 1; i < 4; i++) {
+	    if (dm->argv[i] == NULL)
+		break;
 	    /*@-nullderef@*/	/* FIX: double indirection. @*/
-	    myargv[i] = dm->argv[i] ? rpmExpand(dm->argv[i], NULL) : NULL;
+	    myargv[ac++] = rpmExpand(dm->argv[i], NULL);
 	    /*@=nullderef@*/
 	}
 
+	myargv[ac] = NULL;
 	readBuf = getOutputFrom(NULL, myargv,
 			getStringBuf(writeBuf), writeBytes, failnonzero);
 
 	/* Free expanded args */
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < ac; i++)
 	    myargv[i] = _free(myargv[i]);
 
 	if (readBuf == NULL) {
@@ -2508,6 +2531,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
     }
 
     writeBuf = freeStringBuf(writeBuf);
+    myargv = _free(myargv);
     return rc;
 }
 

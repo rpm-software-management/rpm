@@ -623,3 +623,7 @@ fi
 - rpm-perl: force numeric comparison on rpm version (#58882).
 - fix: fancy hash fiddles if not a tty.
 - fix: handle /.../ correctly in rpmCleanPath().
+- legacy: configurable whiteout for known Red Hat dependency loops.
+- perl.req: don't mis-generate dependencies like perl(::path/to/foo.pl).
+- permit args to be hidden within %%__find_{requires,provides}.
+- a couple more perl.{prov,req} fiddles.

@@ -3,7 +3,8 @@
  */
 
 #include "system.h"
-#include <rpmlib.h>
+
+#include <rpmdb.h>
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
 
 #include "fprint.h"

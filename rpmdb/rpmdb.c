@@ -8,10 +8,6 @@
 /*@unchecked@*/
 static int _rpmdb_debug = 0;
 
-/*@unchecked@*/
-static int _debug = 0;
-#define	INLINE
-
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/signal.h>
@@ -47,6 +43,10 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access dbiIndexItem@*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
+
+/*@unchecked@*/
+static int _debug = 0;
+#define	INLINE
 
 /*@unchecked@*/
 static int _rebuildinprogress = 0;

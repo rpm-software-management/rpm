@@ -8,8 +8,6 @@
 
 #include <rpmlib.h>
 
-#include "fprint.h"
-
 /**
  */
 typedef /*@abstract@*/ struct _dbiIndexItem * dbiIndexItem;
@@ -521,14 +519,6 @@ char * db1basename(int rpmtag)
 /*@unused@*/
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
 	/*@*/;
-
-/** \ingroup rpmdb
- * @param db		rpm database
- */
-int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint * fpList,
-		/*@out@*/ dbiIndexSet * matchList, int numItems)
-	/*@globals fileSystem@*/
-	/*@modifies db, *matchList, fileSystem @*/;
 
 /** \ingroup dbi
  * Destroy set of index database items.
