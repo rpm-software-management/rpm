@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-01 10:52-0500\n"
+"POT-Creation-Date: 2001-03-01 11:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1913
+#: build/pack.c:484 lib/psm.c:1960
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1970
+#: build/pack.c:566 lib/psm.c:2030
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2894,58 +2894,58 @@ msgstr ""
 #. * was used up - if so, we should return a different error.
 #.
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/psm.c:615
+#: lib/psm.c:627
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:616
+#: lib/psm.c:628
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:659
+#: lib/psm.c:671
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/psm.c:665
+#: lib/psm.c:677
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/psm.c:687
+#: lib/psm.c:699
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/psm.c:737
+#: lib/psm.c:749
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:824
+#: lib/psm.c:836
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1094
+#: lib/psm.c:1106
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1101
+#: lib/psm.c:1113
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1462
+#: lib/psm.c:1474
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/psm.c:1536 lib/psm.c:1704
+#: lib/psm.c:1548 lib/psm.c:1722
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1605
+#: lib/psm.c:1617
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 

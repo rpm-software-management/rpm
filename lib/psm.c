@@ -553,8 +553,7 @@ static int markReplacedFiles(const rpmTransactionSet ts, const TFI_t fi)
  *
  * @todo Add endian tag so that srpm MD5 sums can be verified when installed.
  *
- * @param ts		transaction set
- * @param fi		transaction element file info (NULL means all files)
+ * @param psm		package state machine data
  * @param allFiles	install all files?
  * @return		0 on success
  */
@@ -574,6 +573,7 @@ static int installArchive(PSM_t psm, int allFiles)
     }
 
     /* Retrieve type of payload compression. */
+#ifndef	DYING
     {	const char * payload_compressor = NULL;
 	char * t;
 
@@ -587,9 +587,12 @@ static int installArchive(PSM_t psm, int allFiles)
 	if (!strcmp(payload_compressor, "bzip2"))
 	    t = stpcpy(t, ".bzdio");
     }
+#else
+    rc = psmStage(psm, PSM_RPMIO_FLAGS);
+#endif
 
+#ifdef	DYING
     {
-
 	psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
 
 	rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
@@ -605,6 +608,15 @@ static int installArchive(PSM_t psm, int allFiles)
 	    (void) fsmTeardown(fi->fsm);
 	}
     }
+#else
+    psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
+    rc = psmStage(psm, PSM_PKGINSTALL);
+    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
+    Fclose(psm->cfd);
+    psm->cfd = NULL;
+    if (!rc)
+	rc = psmStage(psm, PSM_PKGCOMMIT);
+#endif
 
     if (rc) {
 	/*
@@ -1660,8 +1672,14 @@ psm->stepName = " install";
 	    goto exit;
     }
 
+#ifdef	DYING
     if (rpmdbAdd(ts->rpmdb, ts->id, fi->h))
 	goto exit;
+#else
+    rc = psmStage(psm, PSM_RPMDB_ADD);
+    if (rc)
+	goto exit;
+#endif
 
     psm->scriptTag = RPMTAG_POSTIN;
     psm->progTag = RPMTAG_POSTINPROG;
@@ -1716,6 +1734,7 @@ assert(fi->type == TR_REMOVED);
 	goto exit;
     }
 
+#ifndef	DYING
     {	rpmdbMatchIterator mi = NULL;
 	Header h;
 
@@ -1731,6 +1750,13 @@ assert(fi->type == TR_REMOVED);
 	fi->h = headerLink(h);
 	rpmdbFreeIterator(mi);
     }
+#else
+    rc = psmStage(psm, PSM_RPMDB_LOAD);
+    if (rc) {
+	rc = 2;
+	goto exit;
+    }
+#endif
 
     psm->scriptTag = RPMTAG_PREUN;
     psm->progTag = RPMTAG_PREUNPROG;
@@ -1757,6 +1783,7 @@ assert(fi->type == TR_REMOVED);
 	goto exit;
     }
 
+#ifndef	DYING
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 	const void * pkgKey = NULL;
 
@@ -1772,6 +1799,9 @@ assert(fi->type == TR_REMOVED);
 	    (void)ts->notify(fi->h, RPMCALLBACK_UNINST_STOP, 0, fi->fc,
 			pkgKey, ts->notifyData);
     }
+#else
+    rc = psmStage(psm, PSM_PKGERASE);
+#endif
     /* XXX WTFO? erase failures are not cause for stopping. */
 
     psm->scriptTag = RPMTAG_POSTUN;
@@ -1793,8 +1823,13 @@ exit:
     /* Restore root directory if changed. */
     (void) psmStage(psm, PSM_CHROOT_OUT);
 
+#ifndef	DYING
     if (!rc && !(ts->transFlags & RPMTRANS_FLAG_TEST))
 	rpmdbRemove(ts->rpmdb, ts->id, fi->record);
+#else
+    if (!rc)
+	(void) psmStage(psm, PSM_RPMDB_REMOVE);
+#endif
 
     if (fi->h) {
 	headerFree(fi->h);
@@ -1813,7 +1848,6 @@ int repackage(PSM_t psm)
     FD_t fd = NULL;
     const char * pkgURL = NULL;
     const char * pkgfn = NULL;
-    Header h = NULL;
     Header oh = NULL;
     int saveerrno;
     int rc = 0;
@@ -1823,7 +1857,9 @@ psm->stepName = "    save";
 
 assert(fi->type == TR_REMOVED);
     /* Retrieve installed header. */
+#ifdef	DYING
     {	rpmdbMatchIterator mi = NULL;
+	Header h;
 
 	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
@@ -1834,27 +1870,34 @@ assert(fi->type == TR_REMOVED);
 	    rc = 2;
 	    goto exit;
 	}
-	h = headerLink(h);
+	fi->h = headerLink(h);
 	rpmdbFreeIterator(mi);
     }
+#else
+    rc = psmStage(psm, PSM_RPMDB_LOAD);
+    if (rc) {
+	rc = 2;
+	goto exit;
+    }
+#endif
 
     /* Regenerate original header. */
     {	void * uh = NULL;
 	int_32 uht, uhc;
 	HFD_t hfd = fi->hfd;
 
-	if (headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
+	if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
 	    oh = headerCopyLoad(uh);
 	    uh = hfd(uh, uht);
 	} else {
-	    oh = headerLink(h);
+	    oh = headerLink(fi->h);
 	}
     }
 
     /* Open output package for writing. */
     {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
 	const char * pkgbn =
-		headerSprintf(h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
+		headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
 
 	bfmt = _free(bfmt);
 	pkgURL = rpmGenPath(	"%{?_repackage_root:%{_repackage_root}}",
@@ -1870,10 +1913,11 @@ assert(fi->type == TR_REMOVED);
     }
 
     /* Retrieve type of payload compression. */
+#ifndef	DYING
     {	const char * payload_compressor = NULL;
 	char * t;
 
-	if (!hge(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
+	if (!hge(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    (void **) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
 	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
@@ -1883,6 +1927,9 @@ assert(fi->type == TR_REMOVED);
 	if (!strcmp(payload_compressor, "bzip2"))
 	    t = stpcpy(t, ".bzdio");
     }
+#else
+    rc = psmStage(psm, PSM_RPMIO_FLAGS);
+#endif
 
     /* Write the lead section into the package. */
     {	int archnum = -1;
@@ -1918,7 +1965,7 @@ assert(fi->type == TR_REMOVED);
     }
 
     /* Write the signature section into the package. */
-    {	Header sig = headerRegenSigHeader(h);
+    {	Header sig = headerRegenSigHeader(fi->h);
 	rc = rpmWriteSignature(fd, sig);
 	headerFree(sig);
 	if (rc) goto exit;
@@ -1932,6 +1979,7 @@ assert(fi->type == TR_REMOVED);
     (void) psmStage(psm, PSM_CHROOT_IN);
 
     /* Write the payload into the package. */
+#ifdef	DYING
     {
 	fileAction * actions = fi->actions;
 	fileAction action = fi->action;
@@ -1953,12 +2001,24 @@ assert(fi->type == TR_REMOVED);
 	fi->action = action;
 	fi->actions = actions;
     }
+#else
+    Fflush(fd);
+    psm->cfd = Fdopen(fdDup(Fileno(fd)), psm->rpmio_flags);
+    rc = psmStage(psm, PSM_PKGSAVE);
+    saveerrno = errno;	/* XXX FIXME: Fclose with libio destroys errno */
+    Fclose(psm->cfd);
+    errno = saveerrno;
+    psm->cfd = NULL;
+#endif
 
 exit:
     /* Restore root directory if changed. */
     (void) psmStage(psm, PSM_CHROOT_OUT);
 
-    if (h)	headerFree(h);
+    if (fi->h) {
+	headerFree(fi->h);
+	fi->h = NULL;
+    }
     if (oh)	headerFree(oh);
     if (fd) {
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
