@@ -14,12 +14,18 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
     int_32 * sizeList, * mtimeList;
     unsigned short * modeList, * rdevList;
     char * filespec;
-    int type, count;
+    int type, count, rc;
     struct stat sb;
     unsigned char md5sum[40];
     char linkto[1024];
     int size;
     int_32 * uidList, * gidList;
+    int useBrokenMd5;
+
+    if (getEntry(h, RPMTAG_RPMVERSION, NULL, NULL, NULL))
+	useBrokenMd5 = 0;
+    else
+	useBrokenMd5 = 1;
 
     getEntry(h, RPMTAG_FILEMODES, &type, (void **) &modeList, &count);
 
@@ -58,9 +64,13 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 
     if (flags & VERIFY_MD5) {
 	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &md5List, &count);
-	if (mdfile(filespec, md5sum))
-	    *result |= VERIFY_MD5;
-	else if (strcmp(md5sum, md5List[filenum]))
+	if (useBrokenMd5) {
+	    rc = mdfileBroken(filespec, md5sum);
+	} else {
+	    rc = mdfile(filespec, md5sum);
+	}
+
+	if (rc || strcmp(md5sum, md5List[filenum]))
 	    *result |= VERIFY_MD5;
 	free(md5List);
     } 
