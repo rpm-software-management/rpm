@@ -329,7 +329,7 @@ exit 0
 %ifarch ia64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/ia64*
 %endif
-%ifarch powerpc ppc ppciseries ppcpseries ppcmac
+%ifarch powerpc ppc ppciseries ppcpseries ppcmac ppc64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/ppc*
 %endif
 %ifarch s390 s390x
