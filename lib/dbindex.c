@@ -44,6 +44,7 @@ unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set->count;
 }
 
+#ifdef	DYING
 dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
     dbiIndexRecord rec = xmalloc(sizeof(*rec));
     rec->recOffset = recOffset;
@@ -54,6 +55,7 @@ dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int
 void dbiFreeIndexRecordInstance(dbiIndexRecord rec) {
     if (rec) free(rec);
 }
+#endif
 
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
     return set->recs[recno].recOffset;
@@ -169,6 +171,7 @@ int dbiCloseIndex(dbiIndex dbi) {
     return rc;
 }
 
+#ifdef	DYING
 int dbiSyncIndex(dbiIndex dbi) {
     int rc;
 
@@ -247,6 +250,7 @@ int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
 
     return 0;
 }
+#endif
 
 dbiIndexSet dbiCreateIndexSet(void) {
     dbiIndexSet set = xmalloc(sizeof(*set));
@@ -263,6 +267,7 @@ void dbiFreeIndexSet(dbiIndexSet set) {
     }
 }
 
+#ifdef	DYING
 /* returns 1 on failure */
 int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
     int from;
@@ -284,3 +289,4 @@ int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
 
     return (numCopied == num);
 }
+#endif

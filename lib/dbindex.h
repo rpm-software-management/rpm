@@ -6,7 +6,7 @@
  */
 
 typedef void DBI_t;
-typedef enum { DBI_BTREE, DBI_HASH, DBI_RECNO } DBI_TYPE;
+typedef enum { DBI_BTREE, DBI_HASH, DBI_RECNO, DBI_QUEUE, DBI_UNKNOWN } DBI_TYPE;
 
 typedef /*@abstract@*/ struct _dbiIndexRecord * dbiIndexRecord;
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
@@ -154,7 +154,7 @@ struct _dbiIndex {
     int dbi_flags;			/*<! flags to use on open */
     int dbi_perms;			/*<! file permission to use on open */
     int dbi_major;			/*<! Berkeley db version major */
-    unsigned int dbi_lastoffset;
+    unsigned int dbi_lastoffset;	/*<! db0 with falloc.c needs this */
 
     const char * dbi_file;		/*<! name of index database */
     void * dbi_db;			/*<! Berkeley db[123] handle */
@@ -186,6 +186,7 @@ extern "C" {
  */
 int dbiCloseIndex( /*@only@*/ dbiIndex dbi);
 
+#ifdef	DYING
 /**
  * Flush pending operations to disk.
  * @param dbi	index database handle
@@ -217,6 +218,7 @@ int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set);
  * @return	0 success (always)
  */
 int dbiAppendIndexRecord( /*@out@*/ dbiIndexSet set, dbiIndexRecord rec);
+#endif
 
 /**
  * Create empty set of index database items.
@@ -224,6 +226,7 @@ int dbiAppendIndexRecord( /*@out@*/ dbiIndexSet set, dbiIndexRecord rec);
  */
 /*@only@*/ dbiIndexSet dbiCreateIndexSet(void);
 
+#ifdef	DYING
 /**
  * Remove element from set of index database items.
  * @param set	set of index database items
@@ -261,6 +264,7 @@ int dbiFreeCursor(dbiIndex dbi);
  * @param rec	element of index database set.
  */
 void dbiFreeIndexRecordInstance( /*@only@*/ dbiIndexRecord rec);
+#endif
 
 #ifdef __cplusplus
 }

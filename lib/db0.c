@@ -26,6 +26,8 @@ static inline DBTYPE dbi_to_dbtype(DBI_TYPE dbitype)
     case DBI_BTREE:	return DB_BTREE;
     case DBI_HASH:	return DB_HASH;
     case DBI_RECNO:	return DB_RECNO;
+    case DBI_QUEUE:	return DB_HASH;		/* XXX W2DO? */
+    case DBI_UNKNOWN:	return DB_HASH;		/* XXX W2DO? */
     }
     /*@notreached@*/ return DB_HASH;
 }

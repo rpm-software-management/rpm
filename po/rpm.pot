@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-13 14:16-0400\n"
+"POT-Creation-Date: 2000-04-17 08:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1948,50 +1948,50 @@ msgstr ""
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:599
+#: lib/cpio.c:597
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1048
+#: lib/cpio.c:1047
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1050
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1052
+#: lib/cpio.c:1051
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1070
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1071
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1082
+#: lib/cpio.c:1081
 msgid " failed - "
 msgstr ""
 
-#: lib/dbindex.c:103
+#: lib/dbindex.c:105
 #, c-format
 msgid "bad db file %s"
 msgstr ""
 
-#: lib/dbindex.c:143
+#: lib/dbindex.c:145
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -1999,22 +1999,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:156
+#: lib/dbindex.c:158
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr ""
 
-#: lib/dbindex.c:209
+#: lib/dbindex.c:212 lib/rpmdb.c:139
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: lib/dbindex.c:223
+#: lib/dbindex.c:226 lib/rpmdb.c:160
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/dbindex.c:228
+#: lib/dbindex.c:231 lib/rpmdb.c:165
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
@@ -2714,7 +2714,7 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:220
+#: lib/rebuilddb.c:33 lib/rpmdb.c:337 lib/rpmdb.c:431
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2859,68 +2859,68 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:191
+#: lib/rpmdb.c:401
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:390
+#: lib/rpmdb.c:607
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:613
+#: lib/rpmdb.c:830
 #, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr ""
 
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:839
 #, c-format
 msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:640
+#: lib/rpmdb.c:857
 #, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:665
+#: lib/rpmdb.c:882
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:671
+#: lib/rpmdb.c:888
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:896
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:683 lib/rpmdb.c:880
+#: lib/rpmdb.c:900 lib/rpmdb.c:1097
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:1035
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:1074
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:869
+#: lib/rpmdb.c:1086
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:876
+#: lib/rpmdb.c:1093
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""

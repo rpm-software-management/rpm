@@ -3,10 +3,10 @@
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/signal.h>
+#include <assert.h>
 
 #include <rpmlib.h>
-#include <rpmurl.h>
-#include <rpmmacro.h>	/* XXX for rpmGetPath */
+#include <rpmmacro.h>	/* XXX for rpmGetPath/rpmGenPath */
 
 #include "dbindex.h"
 /*@access dbiIndexSet@*/
@@ -55,6 +55,170 @@ struct _dbiIndex rpmdbi[] = {
 #define	RPMDBI_MAX		8
 };
 
+/**
+ * Destroy element of index database set.
+ * @param rec	element of index database set.
+ */
+static void inline dbiFreeIndexRecordInstance(dbiIndexRecord rec) {
+    if (rec) free(rec);
+}
+
+/**
+ * Create and initialize element of index database set.
+ * @param recOffset	byte offset of header in db
+ * @param fileNumber	file array index
+ * @return	new element
+ */
+static dbiIndexRecord inline dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
+    dbiIndexRecord rec = xmalloc(sizeof(*rec));
+    rec->recOffset = recOffset;
+    rec->fileNumber = fileNumber;
+    return rec;
+}
+
+/**
+ * Flush pending operations to disk.
+ * @param dbi	index database handle
+ */
+static inline int dbiSyncIndex(dbiIndex dbi) {
+    int rc;
+
+    rc = (*dbi->dbi_vec->sync) (dbi, 0);
+    return rc;
+}
+
+/**
+ * Return next index database key.
+ * @param dbi	index database handle
+ * @param keyp	address of first key
+ * @param keylenp address of first key size
+ * @return	0 success - fails if rec is not found
+ */
+static inline int dbiGetNextKey(dbiIndex dbi, void ** keyp, size_t * keylenp) {
+    int rc;
+
+    if (dbi == NULL)
+	return 1;
+
+    rc = (*dbi->dbi_vec->cget) (dbi, keyp, keylenp, NULL, NULL);
+
+    return rc;
+}
+
+/**
+ * Close cursor (if any);
+ * @param dbi	index database handle
+ * @return	0 success
+ */
+static inline int dbiFreeCursor(dbiIndex dbi) {
+    int rc;
+
+    if (dbi == NULL)
+	return 1;
+
+    rc = (*dbi->dbi_vec->cclose) (dbi);
+    return rc;
+}
+
+/**
+ * Return items that match criteria.
+ * @param dbi	index database handle
+ * @param str	search key
+ * @param set	items retrieved from index database
+ * @return	-1 error, 0 success, 1 not found
+ */
+static inline int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len,
+		dbiIndexSet * set)
+{
+    int rc;
+
+    rc = (*dbi->dbi_vec->SearchIndex) (dbi, str, len, set);
+
+    switch (rc) {
+    case -1:
+	rpmError(RPMERR_DBGETINDEX, _("error getting record %s from %s"),
+		str, dbi->dbi_file);
+	break;
+    }
+    return rc;
+}
+
+/**
+ * Change/delete items that match criteria.
+ * @param dbi	index database handle
+ * @param str	update key
+ * @param set	items to update in index database
+ * @return	0 success, 1 not found
+ */
+static inline int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
+    int rc;
+
+    rc = (*dbi->dbi_vec->UpdateIndex) (dbi, str, set);
+
+    if (set->count) {
+	if (rc) {
+	    rpmError(RPMERR_DBPUTINDEX, _("error storing record %s into %s"),
+		    str, dbi->dbi_file);
+	}
+    } else {
+	if (rc) {
+	    rpmError(RPMERR_DBPUTINDEX, _("error removing record %s into %s"),
+		    str, dbi->dbi_file);
+	}
+    }
+
+    return rc;
+}
+
+/**
+ * Append element to set of index database items.
+ * @param set	set of index database items
+ * @param rec	item to append to set
+ * @return	0 success (always)
+ */
+static inline int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
+{
+    set->count++;
+
+    if (set->count == 1) {
+	set->recs = xmalloc(set->count * sizeof(*(set->recs)));
+    } else {
+	set->recs = xrealloc(set->recs, set->count * sizeof(*(set->recs)));
+    }
+    set->recs[set->count - 1].recOffset = rec->recOffset;
+    set->recs[set->count - 1].fileNumber = rec->fileNumber;
+
+    return 0;
+}
+
+/* returns 1 on failure */
+/**
+ * Remove element from set of index database items.
+ * @param set	set of index database items
+ * @param rec	item to remove from set
+ * @return	0 success, 1 failure
+ */
+int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
+    int from;
+    int to = 0;
+    int num = set->count;
+    int numCopied = 0;
+
+    for (from = 0; from < num; from++) {
+	if (rec->recOffset != set->recs[from].recOffset ||
+	    rec->fileNumber != set->recs[from].fileNumber) {
+	    /* structure assignment */
+	    if (from != to) set->recs[to] = set->recs[from];
+	    to++;
+	    numCopied++;
+	} else {
+	    set->count--;
+	}
+    }
+
+    return (numCopied == num);
+}
+
 /* XXX the signal handling in here is not thread safe */
 
 /* the requiredbyIndex isn't stricly necessary. In a perfect world, we could
@@ -67,7 +231,21 @@ struct _dbiIndex rpmdbi[] = {
    right area w/o a linear search through the database. */
 
 struct rpmdb_s {
-    dbiIndex _dbi[RPMDBI_MAX];
+    const char *	db_root;
+    const char *	db_home;
+    int			db_flags;
+    DBI_TYPE		db_type;
+    int			db_mode;
+    int			db_perms;
+    int			db_major;
+    int			db_mp_mmapsize;
+    int			db_mp_size;
+    int			db_cachesize;
+    int			db_pagesize;
+    unsigned int	db_h_ffactor;
+    unsigned int	db_h_nelem;
+    unsigned int	db_h_flags;
+    dbiIndex		_dbi[RPMDBI_MAX];
 #ifdef	DYING
 #define	nameIndex		_dbi[RPMDBI_NAME]
 #define	fileIndex		_dbi[RPMDBI_FILE]
@@ -94,45 +272,77 @@ static void unblockSignals(void)
     sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
 
-static int openDbFile(const char * prefix, const char * dbpath,
-	const dbiIndex dbi, int justCheck, int mode, dbiIndex * dbip)
+#define	_DB_ROOT	""
+#define	_DB_HOME	"%{_dbpath}"
+#define	_DB_FLAGS	0
+#define	_DB_TYPE	DBI_UNKNOWN
+#define _DB_MODE	0
+#define _DB_PERMS	0644
+#define _DB_MAJOR	-1
+#define	_DB_MP_MMAPSIZE	16 * 1024 * 1024
+#define	_DB_MP_SIZE	2 * 1024 * 1024
+#define	_DB_CACHESIZE	0
+#define	_DB_PAGESIZE	0
+#define	_DB_H_FFACTOR	0
+#define	_DB_H_NELEM	0
+#define	_DB_H_FLAGS	0
+
+static struct rpmdb_s dbTemplate = {
+    _DB_ROOT,	_DB_HOME, _DB_FLAGS,
+    _DB_TYPE,	_DB_MODE, _DB_PERMS, _DB_MAJOR,
+    _DB_MAJOR,	_DB_MP_MMAPSIZE, _DB_MP_SIZE, _DB_CACHESIZE, _DB_PAGESIZE,
+		_DB_H_FFACTOR, _DB_H_NELEM, _DB_H_FLAGS
+};
+
+void rpmdbClose (rpmdb db)
 {
-    char * filename, * fn;
-    int len;
+    int dbix;
 
-    if (dbi == NULL || dbip == NULL)
-	return 1;
-    *dbip = NULL;
-
-    len = (prefix ? strlen(prefix) : 0) +
-		strlen(dbpath) + strlen(dbi->dbi_basename) + 1;
-    fn = filename = alloca(len);
-    *fn = '\0';
-    switch (urlIsURL(dbpath)) {
-    case URL_IS_UNKNOWN:
-	if (prefix && *prefix &&
-	    !(prefix[0] == '/' && prefix[1] == '\0' && dbpath[0] == '/'))
-		fn = stpcpy(fn, prefix);
-	break;
-    default:
-	break;
+    for (dbix = RPMDBI_MAX; --dbix >= RPMDBI_MIN; ) {
+	if (db->_dbi[dbix] == NULL)
+	    continue;
+    	dbiCloseIndex(db->_dbi[dbix]);
+    	db->_dbi[dbix] = NULL;
     }
-    fn = stpcpy(fn, dbpath);
-    if (fn > filename && !(fn[-1] == '/' || dbi->dbi_basename[0] == '/'))
-	fn = stpcpy(fn, "/");
-    fn = stpcpy(fn, dbi->dbi_basename);
-
-    if (!justCheck || !rpmfileexists(filename)) {
-	if ((*dbip = dbiOpenIndex(filename, mode, dbi)) == NULL)
-	    return 1;
+    if (db->db_root) {
+	xfree(db->db_root);
+	db->db_root = NULL;
     }
-
-    return 0;
+    if (db->db_home) {
+	xfree(db->db_home);
+	db->db_home = NULL;
+    }
+    free(db);
 }
 
-static /*@only@*/ rpmdb newRpmdb(void)
+static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
+		int mode, int perms, int flags)
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
+
+    *db = dbTemplate;	/* structure assignment */
+
+    if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
+
+    db->db_root = (root ? root : ""); 	/* accept NULL as a valid prefix */
+    if (mode >= 0)	db->db_mode = mode;
+    if (perms >= 0)	db->db_perms = perms;
+    if (flags >= 0)	db->db_flags = flags;
+
+    if (db->db_root)
+	db->db_root = rpmGetPath(db->db_root, NULL);
+    if (db->db_home) {
+	db->db_home = rpmGetPath(db->db_home, NULL);
+	if (!(db->db_home && db->db_home[0] != '%')) {
+	    rpmError(RPMERR_DBOPEN, _("no dbpath has been set"));
+	   goto errxit;
+	}
+    }
+    return db;
+
+errxit:
+    if (db)
+	rpmdbClose(db);
     return db;
 }
 
@@ -141,7 +351,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 {
     rpmdb db;
     int rc;
-    int justcheck = flags & RPMDB_FLAG_JUSTCHECK;
+    int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
     int minimal = flags & RPMDB_FLAG_MINIMAL;
 
     if (dbp)
@@ -149,25 +359,25 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
     if (mode & O_WRONLY) 
 	return 1;
 
-    if (!(perms & 0600))	/* XXX sanity */
-	perms = 0644;
-
-    /* we should accept NULL as a valid prefix */
-    if (!prefix) prefix="";
-
-    db = newRpmdb();
+    db = newRpmdb(prefix, dbpath, mode, perms, flags);
 
     {	int dbix;
 
 	rc = 0;
 	for (dbix = RPMDBI_MIN; rc == 0 && dbix < RPMDBI_MAX; dbix++) {
 	    dbiIndex dbiTemplate;
+	    const char * filename;
 
 	    dbiTemplate = rpmdbi + dbix;
 
-	    rc = openDbFile(prefix, dbpath, dbiTemplate, justcheck, mode,
-			&db->_dbi[dbix]);
-	    if (rc)
+	    filename = rpmGenPath(db->db_root, db->db_home,
+		dbiTemplate->dbi_basename);
+
+	    if (!justCheck || !rpmfileexists(filename)) {
+		db->_dbi[dbix] = dbiOpenIndex(filename, db->db_mode, dbiTemplate);
+	    }
+
+	    if (db->_dbi[dbix] == NULL)
 		continue;
 
 	    switch (dbix) {
@@ -184,7 +394,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
      * XXX FIXME: db->fileindex can be NULL under pathological (e.g. mixed
      * XXX db1/db2 linkage) conditions.
      */
-		if (!justcheck && !dbiGetNextKey(db->_dbi[RPMDBI_FILE], &keyp, NULL)) {
+		if (!justCheck && !dbiGetNextKey(db->_dbi[RPMDBI_FILE], &keyp, NULL)) {
 		    const char * akey;
 		    akey = keyp;
 		    if (strchr(akey, '/')) {
@@ -202,7 +412,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
     }
 
 exit:
-    if (!(rc || justcheck || dbp == NULL))
+    if (!(rc || justCheck || dbp == NULL))
 	*dbp = db;
     else
 	rpmdbClose(db);
@@ -210,6 +420,7 @@ exit:
     return rc;
 }
 
+#ifdef	DYING
 static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * dbp,
 			int mode, int perms, int flags)
 {
@@ -224,36 +435,42 @@ static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * dbp,
     xfree(dbpath);
     return rc;
 }
+#endif
 
 /* XXX called from python/upgrade.c */
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * dbp)
 {
+#ifdef	DYING
     return doRpmdbOpen(prefix, dbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
+#else
+    return openDatabase(prefix, NULL, dbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
+#endif
 }
 
 /* XXX called from python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
+#ifdef	DYING
     return doRpmdbOpen(prefix, dbp, mode, perms, 0);
+#else
+    return openDatabase(prefix, NULL, dbp, mode, perms, 0);
+#endif
 }
 
 int rpmdbInit (const char * prefix, int perms)
 {
     rpmdb db;
+#ifdef	DYING
     return doRpmdbOpen(prefix, &db, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
-}
-
-void rpmdbClose (rpmdb db)
-{
-    int dbix;
-
-    for (dbix = RPMDBI_MAX; --dbix >= RPMDBI_MIN; ) {
-	if (db->_dbi[dbix] == NULL)
-	    continue;
-    	dbiCloseIndex(db->_dbi[dbix]);
-    	db->_dbi[dbix] = NULL;
+#else
+    int rc;
+    rc = openDatabase(prefix, NULL, &db, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
+    if (db) {
+	rpmdbClose(db);
+	db = NULL;
     }
-    free(db);
+    return rc;
+#endif
 }
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset)
