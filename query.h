@@ -5,7 +5,8 @@
 
 enum querysources { QUERY_PATH, QUERY_PACKAGE, QUERY_ALL, QUERY_SPATH,
 		    QUERY_SPACKAGE, QUERY_RPM, QUERY_SRPM, QUERY_GROUP,
-		    QUERY_SGROUP, QUERY_PROVIDES, QUERY_REQUIREDBY };
+		    QUERY_SGROUP, QUERY_WHATPROVIDES, QUERY_WHATREQUIRES,
+		    QUERY_DBOFFSET };
 
 #define QUERY_FOR_INFO 		(1 << 0)
 #define QUERY_FOR_LIST		(1 << 1)
@@ -13,8 +14,9 @@ enum querysources { QUERY_PATH, QUERY_PACKAGE, QUERY_ALL, QUERY_SPATH,
 #define QUERY_FOR_DOCS		(1 << 3)
 #define QUERY_FOR_CONFIG	(1 << 4)
 #define QUERY_FOR_SCRIPTS	(1 << 5)
-#define QUERY_BY_NUMBER         (1 << 6)
-#define QUERY_FOR_DEPS          (1 << 7)
+#define QUERY_FOR_REQUIRES      (1 << 6)
+#define QUERY_FOR_PROVIDES      (1 << 7)
+#define QUERY_FOR_DUMPFILES     (1 << 8)
 
 int doQuery(char * prefix, enum querysources source, int queryFlags, 
 	     char * arg, char * queryFormat);

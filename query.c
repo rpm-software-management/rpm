@@ -37,7 +37,6 @@ static char * defaultQueryFormat =
 	    "Install date: %-27{-INSTALLTIME}   Build Host: %{BUILDHOST}\n"
 	    "Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n"
 	    "Size        : %{SIZE}\n"
-	    "Provides    : %{PROVIDES}\n"
 	    "Description : %{DESCRIPTION}\n";
 
 static const char * queryHeader(Header h, const char * chptr, int arrayNum) {
@@ -191,15 +190,15 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
     char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
-    char ** requiresList, ** strlist;
-    char ** fileList;
+    char ** requiresList, ** strlist, ** providesList;
+    char ** fileList, ** fileMD5List;
     char * fileStatesList;
     char ** fileOwnerList, ** fileGroupList;
     char ** fileLinktoList;
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
     int_32 * fileUIDList, * fileGIDList;
-    int_16 * fileModeList;
-    int_16 * fileRdevList;
+    uint_16 * fileModeList;
+    uint_16 * fileRdevList;
     int i;
 
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
@@ -217,7 +216,20 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	    queryHeader(h, queryFormat, -1);
 	}
 
-	if (queryFlags & QUERY_FOR_DEPS) {
+	if (queryFlags & QUERY_FOR_PROVIDES) {
+	    printf("Provides    : ");
+	    if (!getEntry(h, RPMTAG_PROVIDES, &type, 
+		 (void **) &providesList, &count) || !count) {
+		puts("(nothing)");
+	    } else {
+		for (i = 0; i < count; i++) {
+		    printf("%s ", providesList[i]);
+		}
+		printf("\n");
+	    }
+	}
+
+	if (queryFlags & QUERY_FOR_REQUIRES) {
 	    printf("Requires    : ");
 	    if (!getEntry(h, RPMTAG_REQUIRENAME, &type, 
 		 (void **) &requiresList, &count) || !count) {
@@ -264,6 +276,8 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			 (void **) &fileGroupList, &count);
 		getEntry(h, RPMTAG_FILELINKTOS, &type, 
 			 (void **) &fileLinktoList, &count);
+		getEntry(h, RPMTAG_FILEMD5S, &type, 
+			 (void **) &fileMD5List, &count);
 
 		for (i = 0; i < count; i++) {
 		    if (!((queryFlags & QUERY_FOR_DOCS) || 
@@ -273,25 +287,49 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			|| ((queryFlags & QUERY_FOR_CONFIG) && 
 			    (fileFlagsList[i] & RPMFILE_CONFIG))) {
 
-			if (!isVerbose()) {
+			if (!isVerbose())
 			    prefix ? fputs(prefix, stdout) : 0;
-			    if (queryFlags & QUERY_FOR_STATE) {
-				if (fileStatesList) {
-				    switch (fileStatesList[i]) {
-				      case RPMFILE_STATE_NORMAL:
-					fputs("normal        ", stdout); break;
-				      case RPMFILE_STATE_REPLACED:
-					fputs("replaced      ", stdout); break;
-				      case RPMFILE_STATE_NOTINSTALLED:
-					fputs("not installed ", stdout); break;
-				      default:
-					fputs("(unknown)     ", stdout);
-				    }
-				} else {
-				    fputs(    "(no state)    ", stdout);
+
+			if (queryFlags & QUERY_FOR_STATE) {
+			    if (fileStatesList) {
+				switch (fileStatesList[i]) {
+				  case RPMFILE_STATE_NORMAL:
+				    fputs("normal        ", stdout); break;
+				  case RPMFILE_STATE_REPLACED:
+				    fputs("replaced      ", stdout); break;
+				  case RPMFILE_STATE_NOTINSTALLED:
+				    fputs("not installed ", stdout); break;
+				  default:
+				    fputs("(unknown)     ", stdout);
 				}
+			    } else {
+				fputs(    "(no state)    ", stdout);
 			    }
+			}
 			    
+			if (queryFlags & QUERY_FOR_DUMPFILES) {
+			    printf("%s %d %d %s 0%o ", fileList[i],
+				   fileSizeList[i], fileMTimeList[i],
+				   fileMD5List[i], fileModeList[i]);
+
+			    if (fileOwnerList)
+				printf("%s %s", fileOwnerList[i], 
+						fileGroupList[i]);
+			    else
+				printf("%d %d", fileUIDList[i], 
+						fileGIDList[i]);
+
+			    printf(" %s %s %d ", 
+				 fileFlagsList[i] & RPMFILE_CONFIG ? "1" : "0",
+				 fileFlagsList[i] & RPMFILE_DOC ? "1" : "0",
+				 fileRdevList[i]);
+
+			    if (strlen(fileLinktoList[i]))
+				printf("%s\n", fileLinktoList[i]);
+			    else
+				printf("X\n");
+
+			} else if (!isVerbose()) {
 			    puts(fileList[i]);
 			} else if (fileOwnerList) 
 			    printFileInfo(fileList[i], fileSizeList[i],
@@ -310,6 +348,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	    
 		free(fileList);
 		free(fileLinktoList);
+		free(fileMD5List);
 		if (fileOwnerList) free(fileOwnerList);
 		if (fileGroupList) free(fileGroupList);
 	    }
@@ -466,6 +505,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     dbIndexSet matches;
     int recNumber;
     int retcode = 0;
+    char *end = NULL;
 
     if (source != QUERY_SRPM && source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -530,7 +570,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_PROVIDES:
+      case QUERY_WHATPROVIDES:
 	if (rpmdbFindByProvides(db, arg, &matches)) {
 	    fprintf(stderr, "no package provides %s\n", arg);
 	    retcode = 1;
@@ -540,7 +580,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_REQUIREDBY:
+      case QUERY_WHATREQUIRES:
 	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
 	    fprintf(stderr, "no package requires %s\n", arg);
 	    retcode = 1;
@@ -566,37 +606,37 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_SPACKAGE:
-      case QUERY_PACKAGE:
-	if (queryFlags & QUERY_BY_NUMBER) {
-	    char *end = NULL;
-	    recNumber = strtoul(arg, &end, 10);
-	    if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
-		fprintf(stderr, "invalid package number: %s\n", arg);
-		return 1;
-	    }
-	    message(MESS_DEBUG, "showing package: %d\n", recNumber);
-	    h = rpmdbGetRecord(db, recNumber);
+      case QUERY_DBOFFSET:
 
-	    if (!h)  {
-		fprintf(stderr, "record %d could not be read\n", recNumber);
-		retcode = 1;
-	    } else {
-		printHeader(h, queryFlags, queryFormat);
-		freeHeader(h);
-	    }
+      case QUERY_SPACKAGE:
+	recNumber = strtoul(arg, &end, 10);
+	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
+	    fprintf(stderr, "invalid package number: %s\n", arg);
+	    return 1;
+	}
+	message(MESS_DEBUG, "showing package: %d\n", recNumber);
+	h = rpmdbGetRecord(db, recNumber);
+
+	if (!h)  {
+	    fprintf(stderr, "record %d could not be read\n", recNumber);
+	    retcode = 1;
 	} else {
-	    rc = findPackageByLabel(db, arg, &matches);
-	    if (rc == 1) {
-		retcode = 1;
-		fprintf(stderr, "package %s is not installed\n", arg);
-	    } else if (rc == 2) {
-		retcode = 1;
-		fprintf(stderr, "error looking for package %s\n", arg);
-	    } else {
-		showMatches(db, matches, queryFlags, queryFormat);
-		freeDBIndexRecord(matches);
-	    }
+	    printHeader(h, queryFlags, queryFormat);
+	    freeHeader(h);
+	}
+	break;
+
+      case QUERY_PACKAGE:
+	rc = findPackageByLabel(db, arg, &matches);
+	if (rc == 1) {
+	    retcode = 1;
+	    fprintf(stderr, "package %s is not installed\n", arg);
+	} else if (rc == 2) {
+	    retcode = 1;
+	    fprintf(stderr, "error looking for package %s\n", arg);
+	} else {
+	    showMatches(db, matches, queryFlags, queryFormat);
+	    freeDBIndexRecord(matches);
 	}
 	break;
     }

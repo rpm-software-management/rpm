@@ -62,9 +62,10 @@ void printUsage(void) {
     puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                          file1.rpm ... fileN.rpm"));
-    puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-D]"));
+    puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
-    puts(_("                        [--provides] [--deps] [--requiredby] [targets]"));
+    puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
+    puts(_("                        [--provides] [--dump] [targets]"));
     puts(_("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
@@ -99,16 +100,19 @@ void printHelp(void) {
     puts(_("        -F                - like -f, but read file names from stdin"));
     puts(_("        -p <packagefile>+ - query (uninstalled) package <packagefile>"));
     puts(_("        -P                - like -p, but read package names from stdin"));
-    puts(_("	   --provides <item>  - query packages which provide <item> capability"));
-    puts(_("	   --requiredby <item> - query packages which require <item> capability"));
+    puts(_("	   --whatprovides <i> - query packages which provide <i> capability"));
+    puts(_("	   --whatrequires <i> - query packages which require <i> capability"));
     puts(_("      Information selection options:"));
     puts(_("        -i                - display package information"));
     puts(_("        -l                - display package file list"));
     puts(_("        -s                - show file states (implies -l)"));
     puts(_("        -d                - list only documentation files (implies -l)"));
     puts(_("        -c                - list only configuration files (implies -l)"));
-    puts(_("        --deps"));
-    puts(_("        -D                - list package dependencies"));
+    puts(_("        --dump            - show all verifiable information for each file"));
+    puts(_("                            (must be used with -l, -c, or -d)"));
+    puts(_("        --provides        - list capabilbities package provides"));
+    puts(_("        --requires"));
+    puts(_("        -R                - list package dependencies"));
     puts(_("        --scripts         - print the various [un]install scripts"));
     puts(_(""));
     puts(_("    -V"));
@@ -223,7 +227,7 @@ int main(int argc, char ** argv) {
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
-    int noPgp = 0;
+    int noPgp = 0, dump = 0;
     char * rcfile = NULL;
     char * queryFormat = NULL;
     char buildChar = ' ';
@@ -239,8 +243,8 @@ int main(int argc, char ** argv) {
 	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
-	    { "deps", 0, 0, 'D' },
 	    { "docfiles", 0, 0, 'd' },
+	    { "dump", 0, &dump, 0 },
 	    { "erase", 0, 0, 'e' },
             { "excludedocs", 0, &excldocs, 0},
 	    { "file", 0, 0, 'f' },
@@ -270,7 +274,7 @@ int main(int argc, char ** argv) {
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "resign", 0, 0, 0 },
-	    { "requiredby", 0, 0, 0 },
+	    { "requires", 0, 0, 'R' },
 	    { "root", 1, 0, 'r' },
 	    { "scripts", 0, &queryScripts, 0 },
 	    { "short-circuit", 0, &shortCircuit, 0 },
@@ -286,6 +290,8 @@ int main(int argc, char ** argv) {
 	    { "verbose", 0, 0, 'v' },
 	    { "verify", 0, 0, 'V' },
 	    { "version", 0, &version, 0 },
+	    { "whatrequires", 0, 0, 0 },
+	    { "whatprovides", 0, 0, 0 },
 	    { 0, 0, 0, 0 } 
 	} ;
 
@@ -425,8 +431,8 @@ int main(int argc, char ** argv) {
 	    queryFor |= QUERY_FOR_LIST | QUERY_FOR_STATE;
 	    break;
 
-	  case 'D':
-	    queryFor |= QUERY_FOR_DEPS;
+	  case 'R':
+	    queryFor |= QUERY_FOR_REQUIRES;
 	    break;
 
 	  case 'l':
@@ -510,18 +516,20 @@ int main(int argc, char ** argv) {
 	  default:
 	    if (options[long_index].flag)
 		*options[long_index].flag = 1;
-	    else if (!strcmp(options[long_index].name, "requiredby")) {
+	    else if (!strcmp(options[long_index].name, "whatrequires")) {
 		if (querySource != QUERY_PACKAGE && 
-		    querySource != QUERY_REQUIREDBY)
+		    querySource != QUERY_WHATREQUIRES)
 		    argerror(_("one type of query/verify may be performed at a "
 				    "time"));
-		querySource = QUERY_REQUIREDBY;
+		querySource = QUERY_WHATREQUIRES;
+	    } else if (!strcmp(options[long_index].name, "whatprovides")) {
+		if (querySource != QUERY_PACKAGE && 
+		    querySource != QUERY_WHATPROVIDES)
+		    argerror(_("one type of query/verify may be performed at a "
+				    "time"));
+		querySource = QUERY_WHATPROVIDES;
 	    } else if (!strcmp(options[long_index].name, "provides")) {
-		if (querySource != QUERY_PACKAGE && 
-		    querySource != QUERY_PROVIDES)
-		    argerror(_("one type of query/verify may be performed at a "
-				    "time"));
-		querySource = QUERY_PROVIDES;
+		queryFor |= QUERY_FOR_PROVIDES;
 	    } else if (!strcmp(options[long_index].name, "rebuild")) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
 		    argerror(_("only one major mode may be specified"));
@@ -536,10 +544,10 @@ int main(int argc, char ** argv) {
 		bigMode = MODE_RESIGN;
 		signIt = 1;
 	    } else if (!strcmp(options[long_index].name, "querybynumber")) {
-		if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
-		    argerror(_("only one major mode may be specified"));
-		bigMode = MODE_QUERY;
-		queryFor |= QUERY_BY_NUMBER;
+		if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
+		    argerror(_("one type of query may be performed at a " "time"));
+		querySource = QUERY_DBOFFSET;
+		verifySource = VERIFY_RPM;
 	    } else if (!strcmp(options[long_index].name, "queryformat")) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
 		    argerror(_("only one major mode may be specified"));
@@ -636,6 +644,12 @@ int main(int argc, char ** argv) {
 
     if (oldPackage && !(installFlags & INSTALL_UPGRADE))
 	argerror(_("--oldpackage may only be used during upgrades"));
+
+    if (bigMode != MODE_QUERY && dump) 
+	argerror(_("--dump may only be used during queryies"));
+
+    if (bigMode == MODE_QUERY && dump && !(queryFor & QUERY_FOR_LIST))
+	argerror(_("--dump of queries must be used with -l, -c, or -d"));
 
     if (oldPackage || (force && (installFlags & INSTALL_UPGRADE)))
 	installFlags |= INSTALL_UPGRADETOOLD;
@@ -781,6 +795,8 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_QUERY:
+	if (dump) queryFor |= QUERY_FOR_DUMPFILES;
+
 	if (querySource == QUERY_ALL) {
 	    if (optind != argc) 
 		argerror(_("extra arguments given for query of all packages"));

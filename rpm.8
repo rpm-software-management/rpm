@@ -149,9 +149,13 @@ information selection.
 Package selection options:
 .br
 .IP "\fB\fI<package_name>\fP"
-Query pacakge named \fB\fI<package_name>\fP.
+Query package named \fB\fI<package_name>\fP.
 .IP "\fB\-a\fP"
 Query all packages
+.IP "\fB\-whatrequires \fI<capability>\fP"
+Query all packages that requires \fI<capability>\fP for proper functioning.
+.IP "\fB\-whatprovides \fI<virtual>\fP"
+Query all packages that provide the \fI<virtual>\fP capability.
 .IP "\fB\-f \fI<file>\fP"
 Query package owning \fI<file>\fP.
 .IP "\fB\-F\fP"
@@ -165,8 +169,8 @@ Information selection options:
 .br
 .IP "\fB\-i\fP"
 Display package information, including name, version, and description.
-.IP "\fB\-D\fP"
-List packages this one depends on (same as \fB--deps\fP).
+.IP "\fB\-R\fP"
+List packages this one depends on (same as \fB--requires\fP).
 .IP "\fB\-l\fP"
 List files in package.
 .IP "\fB\-s\fP"
@@ -180,6 +184,10 @@ List only configuration files (implies \fB\-l\fP).
 .IP "\fB\-\-scripts\fP"
 List the package specific shell scripts that are used as part of the 
 installation and uninstallation processes, if there are any.
+.IP "\fB\-\-dump\fP"
+Dump file information as follows: path size mtime md5sum mode
+owner group isconfig isdoc rdev symlink. This must be used with
+at least one of \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
 
 .SH VERIFY OPTIONS
 Verifying a package compares information about the installed
