@@ -207,7 +207,7 @@ static int poTags[] = {
 };
 
 static int
-gettextfile(int fd, const char *file, FILE *fp)
+gettextfile(int fd, const char *file, FILE *fp, int *poTags)
 {
     struct rpmlead lead;
     Header h;
@@ -277,6 +277,8 @@ gettextfile(int fd, const char *file, FILE *fp)
 #define	xmalloc		malloc
 #define	xrealloc	realloc
 #define	PARAMS(_x)	_x
+
+#include "fstrcmp.c"
 
 #include "str-list.c"
 
@@ -461,6 +463,74 @@ message_list_append (mlp, mp)
 }
 
 void
+message_list_delete_nth (mlp, n)
+     message_list_ty *mlp;
+     size_t n;
+{
+  size_t j;
+
+  if (n >= mlp->nitems)
+    return;
+  message_free (mlp->item[n]);
+  for (j = n + 1; j < mlp->nitems; ++j)
+    mlp->item[j - 1] = mlp->item[j];
+  mlp->nitems--;
+}
+
+message_ty *
+message_list_search (mlp, msgid)
+     message_list_ty *mlp;
+     const char *msgid;
+{
+  size_t j;
+
+  for (j = 0; j < mlp->nitems; ++j)
+    {
+      message_ty *mp;
+
+      mp = mlp->item[j];
+      if (0 == strcmp (msgid, mp->msgid))
+        return mp;
+    }
+  return 0;
+}
+
+message_ty *
+message_list_search_fuzzy (mlp, msgid)
+     message_list_ty *mlp;
+     const char *msgid;
+{
+  size_t j;
+  double best_weight;
+  message_ty *best_mp;
+
+  best_weight = 0.6;
+  best_mp = NULL;
+  for (j = 0; j < mlp->nitems; ++j)
+    {
+      size_t k;
+      double weight;
+      message_ty *mp;
+
+      mp = mlp->item[j];
+
+      for (k = 0; k < mp->variant_count; ++k)
+        if (mp->variant[k].msgstr != NULL && mp->variant[k].msgstr[0] != '\0')
+          break;
+      if (k >= mp->variant_count)
+        continue;
+
+      weight = fstrcmp (msgid, mp->msgid);
+      if (weight > best_weight)
+        {
+          best_weight = weight;
+          best_mp = mp;
+        }
+    }
+  return best_mp;
+}
+
+void
 message_list_free (mlp)
      message_list_ty *mlp;
 {
@@ -559,9 +629,10 @@ KW_t keywords[] = {
 #define	NEXTLINE  {state = 0; while ((c = *se) && c != '\n') se++; if (c == '\n') se++;}
 
 static int
-parsepofile(const char *file, message_list_ty **mlpp)
+parsepofile(const char *file, message_list_ty **mlpp, string_list_ty **flpp)
 {
     char tbuf[BUFSIZ];
+    string_list_ty *flp;
     message_list_ty *mlp;
     message_ty *mp;
     KW_t *kw;
@@ -576,6 +647,7 @@ fprintf(stderr, "================ %s\n", file);
     if ((rc = slurp(file, &buf, &nb)) != 0)
 	return rc;
 
+    flp = string_list_alloc();
     mlp = message_list_alloc();
     mp = NULL;
     s = buf;
@@ -614,6 +686,7 @@ fprintf(stderr, "%.*s\n", (int)(se-s), s);
 				}
 				*f++ = '\0';
 				message_comment_filepos(mp, s, -getTagVal(f));
+				string_list_append_unique(flp, s);
 				break;
 			case '.':
 				message_comment_dot_append(mp, xstrdup(s));
@@ -726,6 +799,11 @@ fprintf(stderr, "\n");
     else
 	message_list_free(mlp);
 
+    if (flpp)
+	*flpp = flp;
+    else
+	string_list_free(flp);
+
     FREE(buf);
     return rc;
 }
@@ -787,6 +865,48 @@ readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs, CSA_t *
     return 0;
 }
 
+/* For all poTags in h, if msgid is in msg list, then substitute msgstr's */
+static int
+headerInject(Header h, int *poTags, message_list_ty *mlp)
+{
+    message_ty *mp;
+    int *tp;
+    char **langs;
+    char buf[BUFSIZ];
+    
+    if ((langs = headerGetLangs(h)) == NULL)
+	return 1;
+
+    for (tp = poTags; *tp != 0; tp++) {
+	char **s, *e;
+	int i, type, count;
+
+	if (!headerGetRawEntry(h, *tp, &type, (void **)&s, &count))
+	    continue;
+
+	/* Search for the msgid */
+	e = *s;
+	expandRpmPO(buf, e);
+	if ((mp = message_list_search(mlp, buf)) != NULL) {
+
+#if 0
+	    for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
+		expandRpmPO(buf, e);
+		fprintf(fp, "msgstr(%s) %s\n", langs[i], buf);
+	    }
+#endif
+
+	}
+
+	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+	    FREE(s)
+    }
+
+    FREE(langs);
+
+    return 0;
+}
+
 static int
 rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
 {
@@ -803,8 +923,11 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
     csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
 
     /* Read rpm and (partially) recreate spec/pkg control structures */
-    rc = readRPM(fni, &spec, &lead, &sigs, csa);
-    if (rc)
+    if ((rc = readRPM(fni, &spec, &lead, &sigs, csa)) != 0)
+	return rc;
+
+    /* Inject new strings into header tags */
+    if ((rc = headerInject(spec->packages->header, poTags, mlp)) != 0)
 	return rc;
 
     /* Rewrite the rpm */
@@ -815,6 +938,19 @@ rewriteBinaryRPM(char *fni, char *fno, message_list_ty *mlp)
 	return writeRPM(spec->packages->header, fno, (int)lead.type,
 		csa, spec->passPhrase, NULL);
     }
+}
+
+static int
+mlptoheader(message_list_ty **mlpp, Header *newhp)
+{
+	message_list_ty *mlp;
+	Header newh;
+
+	if (mlpp)
+		*mlpp = mlp;
+	if (newhp)
+		*newhp = newh;
+	return 0;
 }
 
 /* ================================================================== */
@@ -832,7 +968,7 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 	    file = STDINFN;
 
 	if (!strcmp(file, STDINFN))
-	    return gettextfile(fd, file, ofp);
+	    return gettextfile(fd, file, ofp, poTags);
 
 	fni[0] = '\0';
 	if (inputdir && *file != '/') {
@@ -867,7 +1003,7 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 	    return 2;
 	}
 
-	if (gettextfile(fd, fni, ofp)) {
+	if (gettextfile(fd, fni, ofp, poTags)) {
 	    return 3;
 	}
 
@@ -879,30 +1015,77 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 	return 0;
 }
 
+static char *archs[] = {
+	"noarch",
+	"i386",
+	"alpha",
+	"sparc",
+	NULL
+};
+
 #define	RPMPUTTEXT	"rpmputtext"
 static int
 rpmputtext(int fd, const char *file, FILE *ofp)
 {
+	string_list_ty *flp;
 	message_list_ty *mlp;
-	char fni[BUFSIZ], fno[BUFSIZ], fnp[BUFSIZ];
-	int rc;
+	message_ty *mp;
+	lex_pos_ty *pp;
+	Header newh;
+	char fn[BUFSIZ], fni[BUFSIZ], fno[BUFSIZ];
+	int j, rc;
 
-	/* XXX use po file with same basename as rpm. */
-	strcpy(fnp, file);
-
-	if ((rc = parsepofile(file, &mlp)) != 0)
+	if ((rc = parsepofile(file, &mlp, &flp)) != 0)
 		return rc;
 
-	/* XXX hardwire dirnames for now */
-	strcpy(fni, "/mnt/redhat/comps/dist/5.2/sparc");
-	strcat(fni, "/");
-	strcat(fni, basename(file));
-	
-	strcpy(fno, "/tmp/OUT");
-	strcat(fno, "/");
-	strcat(fno, basename(file));
+	for (j = 0; j < flp->nitems && rc == 0; j++) {
+	    char *fne;
 
-	rc = rewriteBinaryRPM(fni, fno, mlp);
+	    strcpy(fn, flp->item[j]);
+
+	    /* Find the text after the name-version-release */
+	    if ((fne = strrchr(fn, '-')) == NULL ||
+		(fne = strchr(fne, '.')) == NULL) {
+		fprintf(stderr, "skipping malformed xref \"%s\"\n", fn);
+		continue;
+	    }
+	    fne++;	/* skip . */
+
+	    if ( !strcmp(fne, "src.rpm") ) {
+	    } else {
+		char **a, *arch;
+
+		for (a = archs; *a; a++) {
+		    arch = *a;
+		/* Append ".arch.rpm"
+		    *fne = '\0';
+		    strcat(fne, arch);
+		    strcat(fne, ".rpm");
+
+		/* Build input "inputdir/arch/fn" */
+		    fni[0] = '\0';
+		    if (inputdir) {
+			strcat(fni, inputdir);
+			strcat(fni, "/");
+			strcat(fni, arch);
+			strcat(fni, "/");
+		    }
+		    strcat(fni, fn);
+	
+		/* Build output "outputdir/arch/fn" */
+		    fno[0] = '\0';
+		    if (outputdir) {
+			strcat(fno, outputdir);
+			strcat(fno, "/");
+			strcat(fno, arch);
+			strcat(fno, "/");
+		    }
+		    strcat(fno, fn);
+
+		    rc = rewriteBinaryRPM(fni, fno, mlp);
+		}
+	    }
+	}
 
 	if (mlp)
 		message_list_free(mlp);
@@ -914,7 +1097,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 static int
 rpmchktext(int fd, const char *file, FILE *ofp)
 {
-	return parsepofile(file, NULL);
+	return parsepofile(file, NULL, NULL);
 }
 
 int
