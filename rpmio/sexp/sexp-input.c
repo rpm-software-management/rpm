@@ -7,6 +7,8 @@
 #include <malloc.h>
 #include "sexp.h"
 
+/*@access sexpInputStream @*/
+
 /**************************************/
 /* CHARACTER ROUTINES AND DEFINITIONS */
 /**************************************/
@@ -121,7 +123,7 @@ int isAlpha(int c)
 
 /* changeInputByteSize(is,newByteSize)
  */
-void changeInputByteSize(sexpInputStream *is, int newByteSize)
+void changeInputByteSize(sexpInputStream is, int newByteSize)
 {
   is->byteSize = newByteSize;
   is->nBits = 0;
@@ -136,7 +138,7 @@ void changeInputByteSize(sexpInputStream *is, int newByteSize)
  * The value EOF is obtained when no more input is available.
  * This code handles 4-bit/6-bit/8-bit channels.
  */
-void getChar(sexpInputStream *is)
+void getChar(sexpInputStream is)
 { int c;
   if (is->nextChar == EOF)
     { is->byteSize = 8;
@@ -190,17 +192,19 @@ void getChar(sexpInputStream *is)
  * (Prefixes stream with one blank, and initializes stream
  *  so that it reads from standard input.)
  */
-sexpInputStream *newSexpInputStream(void)
+sexpInputStream newSexpInputStream(void)
 {
-  sexpInputStream *is;
-  is = (sexpInputStream *) sexpAlloc(sizeof(*is));
+  sexpInputStream is;
+  is = (sexpInputStream) sexpAlloc(sizeof(*is));
   is->nextChar = ' ';
   is->getChar = getChar;
   is->count = -1;
   is->byteSize = 8;
   is->bits = 0;
   is->nBits = 0;
+/*@-assignexpose@*/
   is->inputFile = stdin;
+/*@=assignexpose@*/
   return is;
 }
 
@@ -211,7 +215,7 @@ sexpInputStream *newSexpInputStream(void)
 /* skipWhiteSpace(is)
  * Skip over any white space on the given sexpInputStream.
  */
-void skipWhiteSpace(sexpInputStream *is)
+void skipWhiteSpace(sexpInputStream is)
 {
   while (isWhiteSpace(is->nextChar)) is->getChar(is);
 }
@@ -220,7 +224,7 @@ void skipWhiteSpace(sexpInputStream *is)
  * Skip the following input character on input stream is, if it is
  * equal to the character c.  If it is not equal, then an error occurs.
  */
-void skipChar(sexpInputStream *is, int c)
+void skipChar(sexpInputStream is, int c)
 {
   if (is->nextChar==c)
     is->getChar(is);
@@ -233,7 +237,7 @@ void skipChar(sexpInputStream *is, int c)
 /* scanToken(is,ss)
  * scan one or more characters into simple string ss as a token.
  */
-void scanToken(sexpInputStream *is, sexpSimpleString *ss)
+void scanToken(sexpInputStream is, sexpSimpleString *ss)
 {
   skipWhiteSpace(is);
   while (isTokenChar(is->nextChar))
@@ -248,7 +252,7 @@ void scanToken(sexpInputStream *is, sexpSimpleString *ss)
  * scan one or more characters (until EOF reached)
  * return an object that is just that string
  */
-sexpObject *scanToEOF(sexpInputStream *is)
+sexpObject *scanToEOF(sexpInputStream is)
 {
   sexpSimpleString *ss = newSimpleString();
   sexpString *s = newSexpString();
@@ -265,7 +269,7 @@ sexpObject *scanToEOF(sexpInputStream *is)
 /* scanDecimal(is)
  * returns long integer that is value of decimal number
  */
-unsigned long int scanDecimal(sexpInputStream *is)
+unsigned long int scanDecimal(sexpInputStream is)
 { unsigned long int value = 0L;
   int i = 0;
   while (isDecDigit(is->nextChar))
@@ -280,7 +284,7 @@ unsigned long int scanDecimal(sexpInputStream *is)
 /* scanVerbatimString(is,ss,length)
  * Reads verbatim string of given length into simple string ss.
  */
-void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int length)
+void scanVerbatimString(sexpInputStream is, sexpSimpleString *ss, long int length)
 {
   long int i = 0L;
   skipWhiteSpace(is);
@@ -299,7 +303,7 @@ void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int leng
  * Handles ordinary C escapes.
  * If of indefinite length, length is -1.
  */
-void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length)
+void scanQuotedString(sexpInputStream is, sexpSimpleString *ss, long int length)
 {
   int c;
   skipChar(is,'"');
@@ -384,7 +388,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
  * Reads hexadecimal string into simple string ss.
  * String is of given length result, or length = -1 if indefinite length.
  */
-void scanHexString(sexpInputStream *is, sexpSimpleString *ss, long int length)
+void scanHexString(sexpInputStream is, sexpSimpleString *ss, long int length)
 { changeInputByteSize(is,4);
   skipChar(is,'#');
   while (is->nextChar != EOF && (is->nextChar != '#' || is->byteSize==4))
@@ -404,7 +408,7 @@ void scanHexString(sexpInputStream *is, sexpSimpleString *ss, long int length)
  * Reads base64 string into simple string ss.
  * String is of given length result, or length = -1 if indefinite length.
  */
-void scanBase64String(sexpInputStream *is, sexpSimpleString *ss, long int length)
+void scanBase64String(sexpInputStream is, sexpSimpleString *ss, long int length)
 { changeInputByteSize(is,6);
   skipChar(is,'|');
   while (is->nextChar != EOF && (is->nextChar != '|' || is->byteSize == 6))
@@ -425,7 +429,7 @@ void scanBase64String(sexpInputStream *is, sexpSimpleString *ss, long int length
  * Determines type of simple string from the initial character, and
  * dispatches to appropriate routine based on that.
  */
-sexpSimpleString *scanSimpleString(sexpInputStream *is)
+sexpSimpleString *scanSimpleString(sexpInputStream is)
 {
   long int length;
   sexpSimpleString *ss;
@@ -460,7 +464,7 @@ sexpSimpleString *scanSimpleString(sexpInputStream *is)
 /* scanString(is)
  * Reads and returns a string [presentationhint]string from input stream.
  */
-sexpString *scanString(sexpInputStream *is)
+sexpString *scanString(sexpInputStream is)
 {
   sexpString *s;
   sexpSimpleString *ss;
@@ -483,7 +487,7 @@ sexpString *scanString(sexpInputStream *is)
 /* scanList(is)
  * Read and return a sexpList from the input stream.
  */
-sexpList *scanList(sexpInputStream *is)
+sexpList *scanList(sexpInputStream is)
 { sexpList *list;
   sexpObject *object;
   skipChar(is,'(');
@@ -515,7 +519,7 @@ sexpList *scanList(sexpInputStream *is)
 /* scanObject(is)
  * Reads and returns a sexpObject from the given input stream.
  */
-sexpObject *scanObject(sexpInputStream *is)
+sexpObject *scanObject(sexpInputStream is)
 {
   sexpObject *object;
   skipWhiteSpace(is);
