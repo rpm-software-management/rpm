@@ -5,6 +5,11 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
+
 #include <rpmlib.h>
 
 #include "rpmdb-py.h"
@@ -12,6 +17,8 @@
 #include "header-py.h"
 
 #include "debug.h"
+
+/*@access Header @*/
 
 /** \ingroup python
  * \class Rpmdb
@@ -106,6 +113,8 @@
  */
 static rpmmiObject *
 rpmdb_Match (rpmdbObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject *TagN = NULL;
     char *key = NULL;
@@ -125,17 +134,21 @@ rpmdb_Match (rpmdbObject * s, PyObject * args)
 
 /**
  */
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmdb_methods[] = {
     {"match",	    (PyCFunction) rpmdb_Match,	METH_VARARGS,
 "db.match([TagN, [key, [len]]]) -> mi\n\
 - Create an rpm db match iterator.\n" },
     {NULL,		NULL}		/* sentinel */
 };
+/*@=fullinitblock@*/
 
 /**
  */
 static int
 rpmdb_length(rpmdbObject * s)
+	/*@modifies s @*/
 {
     rpmdbMatchIterator mi;
     int count = 0;
@@ -152,6 +165,7 @@ rpmdb_length(rpmdbObject * s)
  */
 static hdrObject *
 rpmdb_subscript(rpmdbObject * s, PyObject * key)
+	/*@modifies s @*/
 {
     int offset;
     hdrObject * ho;
@@ -180,6 +194,7 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static PyMappingMethods rpmdb_as_mapping = {
 	(inquiry) rpmdb_length,		/* mp_length */
 	(binaryfunc) rpmdb_subscript,	/* mp_subscript */
@@ -189,6 +204,7 @@ static PyMappingMethods rpmdb_as_mapping = {
 /**
  */
 static void rpmdb_dealloc(rpmdbObject * s)
+	/*@modifies s @*/
 {
     if (s->db)
 	rpmdbClose(s->db);
@@ -198,17 +214,20 @@ static void rpmdb_dealloc(rpmdbObject * s)
 /**
  */
 static PyObject * rpmdb_getattr(rpmdbObject * s, char * name)
+	/*@*/
 {
     return Py_FindMethod(rpmdb_methods, (PyObject * ) s, name);
 }
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static char rpmdb_doc[] =
 "";
 
 /**
  */
+/*@-fullinitblock@*/
 PyTypeObject rpmdb_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
@@ -254,6 +273,7 @@ PyTypeObject rpmdb_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
+/*@=fullinitblock@*/
 
 rpmdb dbFromDb(rpmdbObject * db)
 {
@@ -262,7 +282,7 @@ rpmdb dbFromDb(rpmdbObject * db)
 
 /**
  */
-rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
+rpmdbObject * rpmOpenDB(/*@unused@*/ PyObject * self, PyObject * args) {
     rpmdbObject * o;
     char * root = "";
     int forWrite = 0;
@@ -281,7 +301,9 @@ rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
 	/* PyErr_SetString should take varargs... */
 	errsize = strlen(errmsg) + *root == '\0' ? 15 /* "/var/lib/rpm" */ : strlen(root);
 	errstr = alloca(errsize);
+/*@-formatconst@*/
 	snprintf(errstr, errsize, errmsg, *root == '\0' ? "/var/lib/rpm" : root);
+/*@=formatconst@*/
 	PyErr_SetString(pyrpmError, errstr);
 	return NULL;
     }
@@ -291,7 +313,7 @@ rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
 
 /**
  */
-PyObject * rebuildDB (PyObject * self, PyObject * args)
+PyObject * rebuildDB (/*@unused@*/ PyObject * self, PyObject * args)
 {
     char * root = "";
 

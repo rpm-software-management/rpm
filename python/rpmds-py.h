@@ -16,26 +16,32 @@ typedef struct rpmdsObject_s {
 
 /**
  */
+/*@unchecked@*/
 extern PyTypeObject rpmds_Type;
 
 /**
  */
-rpmds dsFromDs(rpmdsObject * ds);
+rpmds dsFromDs(rpmdsObject * ds)
+	/*@*/;
 
 /**
  */
-rpmdsObject * rpmds_Wrap(rpmds ds);
+rpmdsObject * rpmds_Wrap(rpmds ds)
+	/*@*/;
 
 /**
  */
-rpmdsObject * rpmds_Single(PyObject * s, PyObject * args);
+rpmdsObject * rpmds_Single(PyObject * s, PyObject * args)
+	/*@*/;
 
 /**
  */
-rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args);
+rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args)
+	/*@*/;
 
 /**
  */
-rpmdsObject * hdr_dsOfHeader(PyObject * s, PyObject * args);
+rpmdsObject * hdr_dsOfHeader(PyObject * s, PyObject * args)
+	/*@*/;
 
 #endif

@@ -17,6 +17,7 @@ typedef struct rpmtsObject_s {
     rpmElementType tsiFilter;
 } rpmtsObject;
 
+/*@unchecked@*/
 extern PyTypeObject rpmts_Type;
 
 /* XXX These names/constants have been removed from the rpmlib API. */
@@ -25,6 +26,7 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
-rpmtsObject * rpmts_Create(PyObject * s, PyObject * args);
+rpmtsObject * rpmts_Create(PyObject * s, PyObject * args)
+	/*@*/;
 
 #endif

@@ -16,11 +16,17 @@ struct rpmrcObject_s {
     int state;
 } ;
 
+/*@unchecked@*/
 extern PyTypeObject rpmrc_Type;
 
-PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args);
-PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args);
+PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args)
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
+PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args)
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
 
-PyObject * rpmrc_Create(PyObject * self, PyObject * args, PyObject * kwds);
+PyObject * rpmrc_Create(PyObject * self, PyObject * args, PyObject * kwds)
+	/*@*/;
 
 #endif

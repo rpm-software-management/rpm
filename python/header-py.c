@@ -5,6 +5,11 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
+
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
@@ -92,7 +97,9 @@ struct hdrObject_s {
     unsigned short * modes;
 } ;
 
-/*@unused@*/ static inline Header headerAllocated(Header h) {
+/*@unused@*/ static inline Header headerAllocated(Header h)
+	/*@modifies h @*/
+{
     h->flags |= HEADERFLAG_ALLOCATED;
     return 0;
 }
@@ -100,6 +107,7 @@ struct hdrObject_s {
 /** \ingroup python
  */
 static PyObject * hdrKeyList(hdrObject * s, PyObject * args)
+	/*@*/
 {
     PyObject * list, *o;
     HeaderIterator hi;
@@ -132,7 +140,9 @@ static PyObject * hdrKeyList(hdrObject * s, PyObject * args)
 
 /** \ingroup python
  */
-static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) {
+static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
+	/*@*/
+{
     char * buf;
     PyObject * rc;
     int len, legacy = 0;
@@ -169,6 +179,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) 
  * It should be passed the file number to verify.
  */
 static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args)
+	/*@*/
 {
     int fileNumber;
     rpmVerifyAttrs verifyResult = 0;
@@ -393,6 +404,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args)
 /** \ingroup python
  */
 static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args)
+	/*@*/
 {
     expandFilelist (s->h);
 
@@ -403,6 +415,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args)
 /** \ingroup python
  */
 static PyObject * hdrCompressFilelist(hdrObject * s, PyObject * args)
+	/*@*/
 {
     compressFilelist (s->h);
 
@@ -414,6 +427,7 @@ static PyObject * hdrCompressFilelist(hdrObject * s, PyObject * args)
 /** \ingroup python
  */
 static void mungeFilelist(Header h)
+	/*@*/
 {
     const char ** fileNames = NULL;
     int count = 0;
@@ -438,6 +452,7 @@ static void mungeFilelist(Header h)
 /** 
  */
 static PyObject * rhnUnload(hdrObject * s, PyObject * args)
+	/*@*/
 {
     int len;
     char * uh;
@@ -499,6 +514,7 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args)
 /** \ingroup python
  */
 static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ""))
 	return NULL;
@@ -512,6 +528,7 @@ static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args)
 /** \ingroup python
  */
 static PyObject * hdrSprintf(hdrObject * s, PyObject * args)
+	/*@*/
 {
     char * fmt;
     char * r;
@@ -536,12 +553,14 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args)
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)
+	/*@*/
 {
     return rpmVersionCompare(a->h, b->h);
 }
 
 /** \ingroup python
  */
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef hdr_methods[] = {
     {"keys",		(PyCFunction) hdrKeyList,	METH_VARARGS,
 	NULL },
@@ -573,6 +592,7 @@ static struct PyMethodDef hdr_methods[] = {
 /** \ingroup python
  */
 static PyObject * hdr_getattr(hdrObject * s, char * name)
+	/*@*/
 {
     return Py_FindMethod(hdr_methods, (PyObject * ) s, name);
 }
@@ -580,6 +600,7 @@ static PyObject * hdr_getattr(hdrObject * s, char * name)
 /** \ingroup python
  */
 static void hdr_dealloc(hdrObject * s)
+	/*@*/
 {
     if (s->h) headerFree(s->h);
     s->md5list = _free(s->md5list);
@@ -609,6 +630,7 @@ long tagNumFromPyObject (PyObject *item)
 /** \ingroup python
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
+	/*@*/
 {
     int type, count, i, tag = -1;
     void * data;
@@ -766,6 +788,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
 /** \ingroup python
  */
+/*@unchecked@*/ /*@observer@*/
 static PyMappingMethods hdr_as_mapping = {
 	(inquiry) 0,			/* mp_length */
 	(binaryfunc) hdr_subscript,	/* mp_subscript */
@@ -779,6 +802,7 @@ static char hdr_doc[] =
 
 /** \ingroup python
  */
+/*@unchecked@*/ /*@observer@*/
 PyTypeObject hdr_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */

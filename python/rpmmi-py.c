@@ -5,6 +5,11 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
+
 #include <rpmlib.h>
 
 #include "rpmdb-py.h"
@@ -80,6 +85,7 @@
 #if Py_TPFLAGS_HAVE_ITER
 static PyObject *
 rpmmi_Iter(rpmmiObject * s)
+	/*@*/
 {
 assert(s->mi);
     Py_INCREF(s);
@@ -90,6 +96,8 @@ assert(s->mi);
  */
 static PyObject *
 rpmmi_Next(rpmmiObject * s)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     Header h;
     
@@ -106,6 +114,8 @@ rpmmi_Next(rpmmiObject * s)
  */
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject *TagN = NULL;
     int type;
@@ -129,6 +139,8 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
 
 /** \ingroup python
  */
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmmi_methods[] = {
 #if Py_TPFLAGS_HAVE_ITER
     {"iter",	    (PyCFunction) rpmmi_Iter,		METH_VARARGS,
@@ -142,10 +154,12 @@ static struct PyMethodDef rpmmi_methods[] = {
 - Set a secondary match pattern on tags from retrieved header.\n" },
     {NULL,		NULL}		/* sentinel */
 };
+/*@=fullinitblock@*/
 
 /** \ingroup python
  */
-static void rpmmi_dealloc(rpmmiObject * s)
+static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
+	/*@modifies s @*/
 {
     if (s) {
 	if (s->mi) s->mi = rpmdbFreeIterator(s->mi);
@@ -156,17 +170,20 @@ static void rpmmi_dealloc(rpmmiObject * s)
 /** \ingroup python
  */
 static PyObject * rpmmi_getattr (rpmdbObject *s, char *name)
+	/*@*/
 {
     return Py_FindMethod (rpmmi_methods, (PyObject *) s, name);
 }
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static char rpmmi_doc[] =
 "";
 
 /** \ingroup python
  */
+/*@-fullinitblock@*/
 PyTypeObject rpmmi_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
@@ -212,6 +229,7 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
+/*@=fullinitblock@*/
 
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
 {

@@ -14,9 +14,9 @@
 
 # --- in progress
 +bounds
-#+boundswrite
 +slovak-fcns
 -redecl
+-bufferoverflowhigh
 
 -macroparams
 -declundef

@@ -386,7 +386,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 /*@-boundswrite@*/
 	*te = '\0';
 	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
-	sprintf(te, _("Unsatisifed dependencies for %s: "), pkgNEVR);
+	sprintf(te, _("Unsatisfied dependencies for %s: "), pkgNEVR);
 	te += strlen(te);
 	for (i = 0; i < numProblems; i++) {
 	    p = ps->probs + i;

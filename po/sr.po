@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-13 15:09-0400\n"
+"POT-Creation-Date: 2002-07-14 17:19-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -2274,7 +2274,7 @@ msgid "can't query %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:361 lib/rpminstall.c:492
-#: lib/rpminstall.c:874 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/rpminstall.c:881 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
@@ -2358,7 +2358,7 @@ msgstr "pogre¹an broj paketa: %s\n"
 msgid "record %u could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:907 lib/rpminstall.c:659
+#: lib/query.c:907 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -2564,7 +2564,7 @@ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:484 lib/rpminstall.c:730 tools/rpmgraph.c:156
+#: lib/rpminstall.c:484 lib/rpminstall.c:737 tools/rpmgraph.c:156
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
@@ -2574,7 +2574,7 @@ msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/rpminstall.c:534 lib/rpminstall.c:687 lib/rpminstall.c:1061
+#: lib/rpminstall.c:534 lib/rpminstall.c:690 lib/rpminstall.c:1068
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2589,27 +2589,27 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:592
+#: lib/rpminstall.c:595
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:665
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: lib/rpminstall.c:717
+#: lib/rpminstall.c:724
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpminstall.c:723
+#: lib/rpminstall.c:730
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
 
-#: lib/rpminstall.c:1055
+#: lib/rpminstall.c:1062
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "neodstaje paket za deinstalaciju"
@@ -2997,7 +2997,7 @@ msgstr "nedostaje { posle %"
 
 #: lib/verify.c:389
 #, fuzzy, c-format
-msgid "Unsatisifed dependencies for %s: "
+msgid "Unsatisfied dependencies for %s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
 #: rpmdb/db3.c:156

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-13 15:09-0400\n"
+"POT-Creation-Date: 2002-07-14 17:19-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2283,7 +2283,7 @@ msgid "can't query %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:361 lib/rpminstall.c:492
-#: lib/rpminstall.c:874 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/rpminstall.c:881 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê: %s\n"
@@ -2367,7 +2367,7 @@ msgstr "numer rekordu pakietu: %d\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:907 lib/rpminstall.c:659
+#: lib/query.c:907 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2573,7 +2573,7 @@ msgstr "b³±d czytania z pliku %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM\n"
 
-#: lib/rpminstall.c:484 lib/rpminstall.c:730 tools/rpmgraph.c:156
+#: lib/rpminstall.c:484 lib/rpminstall.c:737 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
@@ -2583,7 +2583,7 @@ msgstr "%s nie mo¿e byæ zainstalowany\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "znaleziono %d pakietów ¼ród³owych i %d binarnych\n"
 
-#: lib/rpminstall.c:534 lib/rpminstall.c:687 lib/rpminstall.c:1061
+#: lib/rpminstall.c:534 lib/rpminstall.c:690 lib/rpminstall.c:1068
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2597,27 +2597,27 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr "instalacja pakietów binarnych\n"
 
-#: lib/rpminstall.c:592
+#: lib/rpminstall.c:595
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:665
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:717
+#: lib/rpminstall.c:724
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: lib/rpminstall.c:723
+#: lib/rpminstall.c:730
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
 
-#: lib/rpminstall.c:1055
+#: lib/rpminstall.c:1062
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -3006,7 +3006,7 @@ msgstr "brak    %s\n"
 
 #: lib/verify.c:389
 #, fuzzy, c-format
-msgid "Unsatisifed dependencies for %s: "
+msgid "Unsatisfied dependencies for %s: "
 msgstr "Niespe³nione zale¿no¶ci dla %s-%s-%s: "
 
 #: rpmdb/db3.c:156

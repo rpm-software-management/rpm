@@ -243,7 +243,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	goto exit;
 
     /* Do lazy (readonly?) open of rpm database. */
-    if (rpmtsGetRdb(ts) == NULL) {
+    if (rpmtsGetRdb(ts) == NULL && ts->dbmode != -1) {
 	if ((ec = rpmtsOpenDB(ts, ts->dbmode)) != 0)
 	    goto exit;
     }
@@ -1557,17 +1557,7 @@ assert(newOrderCount == ts->orderCount);
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
 
-#ifdef	DYING
-    /* Clean up after dependency checks */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmteCleanDS(p);
-    }
-    pi = rpmtsiFree(pi);
-
-    ts->addedPackages = rpmalFree(ts->addedPackages);
-    ts->numAddedPackages = 0;
-#else
+#ifdef	DYING	/* XXX now done at the CLI level just before rpmtsRun(). */
     rpmtsClean(ts);
 #endif
     freeBadDeps();
@@ -1585,7 +1575,7 @@ int rpmtsCheck(rpmts ts)
     int rc;
 
     /* Do lazy, readonly, open of rpm database. */
-    if (rpmtsGetRdb(ts) == NULL) {
+    if (rpmtsGetRdb(ts) == NULL && ts->dbmode != -1) {
 	if ((rc = rpmtsOpenDB(ts, ts->dbmode)) != 0)
 	    goto exit;
 	closeatexit = 1;

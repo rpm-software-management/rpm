@@ -514,6 +514,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Jul 14 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.49
+- python: sanity check fixes on rpmts/rpmte methods.
+
 * Sat Jul 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.48
 - install rpmal.h and rpmhash.h, implicit rpmps.hinclude, for now.
 - revert headerFree/headerLink/headerUnlink debugging.

@@ -170,6 +170,7 @@
 	- revert headerFree/headerLink/headerUnlink debugging.
 	- popt: mingw32 portability configure check (#67911).
 	- teach gendiff about unreadable files (#42666).
+	- python: sanity check fixes on rpmts/rpmte methods.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

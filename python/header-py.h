@@ -8,27 +8,42 @@
 /** \ingroup python
  */
 typedef struct hdrObject_s hdrObject;
+
+/*@unchecked@*/
 extern PyTypeObject hdr_Type;
 
 /** \ingroup python
  */
 PyObject * pyrpmError;
 
-hdrObject * hdr_Wrap(Header h);
+hdrObject * hdr_Wrap(Header h)
+	/*@*/;
 
-Header hdrGetHeader(hdrObject * h);
+Header hdrGetHeader(hdrObject * h)
+	/*@*/;
 
-long tagNumFromPyObject (PyObject *item);
+long tagNumFromPyObject (PyObject *item)
+	/*@*/;
 
-PyObject * labelCompare (PyObject * self, PyObject * args);
-PyObject * versionCompare (PyObject * self, PyObject * args);
-PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args);
-int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag);
-PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args);
-PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args);
-PyObject * rpmReadHeaders (FD_t fd);
-PyObject * rhnLoad(PyObject * self, PyObject * args);
-PyObject * hdrLoad(PyObject * self, PyObject * args);
-PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args);
+PyObject * labelCompare (PyObject * self, PyObject * args)
+	/*@*/;
+PyObject * versionCompare (PyObject * self, PyObject * args)
+	/*@*/;
+PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args)
+	/*@*/;
+int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
+	/*@*/;
+PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args)
+	/*@*/;
+PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args)
+	/*@*/;
+PyObject * rpmReadHeaders (FD_t fd)
+	/*@*/;
+PyObject * rhnLoad(PyObject * self, PyObject * args)
+	/*@*/;
+PyObject * hdrLoad(PyObject * self, PyObject * args)
+	/*@*/;
+PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
+	/*@*/;
 
 #endif

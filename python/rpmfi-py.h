@@ -12,12 +12,16 @@ typedef struct rpmfiObject_s {
     rpmfi fi;
 } rpmfiObject;
 
+/*@unchecked@*/
 extern PyTypeObject rpmfi_Type;
 
-rpmfi fiFromFi(rpmfiObject * fi);
+rpmfi fiFromFi(rpmfiObject * fi)
+	/*@*/;
 
-rpmfiObject * rpmfi_Wrap(rpmfi fi);
+rpmfiObject * rpmfi_Wrap(rpmfi fi)
+	/*@*/;
 
-rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args);
+rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args)
+	/*@*/;
 
 #endif

@@ -61,6 +61,14 @@ _rpmdb.so$(EXEEXT): $(_rpmdb_so_OBJECTS)
 poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
 	$(CC) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
 
+# rpmmodule.c hash.c upgrade.c header-py.c \
+# 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
+# 	rpmrc-py.c rpmte-py.c rpmts-py.c
+# rpmmodule.c header-py.c
+splint_srcs = hash.c upgrade.c \
+ 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
+	rpmrc-py.c rpmte-py.c rpmts-py.c
+
 .PHONY:	lclint
 lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpmmodule_la_SOURCES)
+	lclint $(DEFS) $(INCLUDES) $(splint_srcs)

@@ -1,36 +1,107 @@
--I. -I.. -I../lib -I../rpmdb -I../rpmio -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../build -I../lib -I../rpmdb -I../rpmio -I../beecrypt -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
++forcehints
 
 -warnunixlib
 -warnposix
 
 +unixlib
 
-# XXX ignore doxygen markings
--unrecogcomments
+-unrecogcomments	# XXX ignore doxygen markings
 
-# don't-bother-me-yet parameters
--branchstate		# ~39
--mustfree		# ~325
++strict			# lclint level
 
-# not-yet normal parameters
--boolops		# ~351 w->n
--predboolint		# ~200 w->n
--type			# ~271
+# --- in progress
+#+bounds
++slovak-fcns
+-bufferoverflowhigh
 
-# -weak paramaters
-#+boolint
-#-boolops
-#+ignorequals
-#+ignoresigns
-#-mustfree
-#+longintegral
-#+matchanyintegral
-#-nullpass
-#-observertrans
-#-predboolint
-#-predboolothers
-#-retvalint
-#-retvalother
-#-shiftsigned
+-branchstate
+-castfcnptr
+-compdef
+-evalorderuncon
+-exportheader
+-globs
+-globstate
+-incondefs		# 1
+-internalglobs
+-modfilesys
+-modnomods
+-modobserveruncon
+-moduncon
+-modunconnomods
+-noeffect
+-noeffectuncon
+-nullderef
+-nullpass
+-nullret
+-nullstate
+-predboolothers
+-protoparammatch
+-redecl
+-redef
+-retalias
+-retvalint
+-retvalother
+-sizeoftype
+-type
+-usereleased
+
+-dependenttrans
+-exposetrans
+-immediatetrans
+-kepttrans
+-newreftrans
+-observertrans
+-onlytrans
+-readonlytrans
+-refcounttrans
+-statictrans
+-temptrans
+
+-ifempty
+
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
+
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned		# 160
+-elseifcomplete		# 9
+-exportconst		# 687
+-exportfcn		# 464
+-exporttype		# 196
+-exportvar		# 55
+-fielduse		# 225 occurence <bits/sigset.h>
+-forblock		# tedious
+-ifblock		# tedious
+-namechecks		# 1679
+-ptrarith		# 201
+
+-compdestroy		# 125
+-mustdefine		# 76
+-sys-dir-errors
+
+-strictops		# 54
+-strictusereleased	# 3
+-whileblock		# 20
+
+# --- not-yet at checks level
++enumint		# 211
+-mustfree		# 219
+-predboolptr		# 107
+-usedef			# 42
+
+# --- not-yet at standard level
+-boolops		# 81
++boolint		# 18
++charint		# 74
++ignorequals		# 104
++matchanyintegral	# 90

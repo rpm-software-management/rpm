@@ -15,6 +15,7 @@
 # --- in progress
 +bounds
 +slovak-fcns
+-bufferoverflowhigh
 
 # --- +partial artifacts
 -declundef

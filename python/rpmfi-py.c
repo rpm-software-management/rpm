@@ -5,6 +5,10 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
 
 #include <rpmlib.h>
 
@@ -13,8 +17,12 @@
 
 #include "debug.h"
 
+/*@access rpmfi @*/
+
 static PyObject *
-rpmfi_Debug(rpmfiObject * s, PyObject * args)
+rpmfi_Debug(/*@unused@*/ rpmfiObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     if (!PyArg_ParseTuple(args, "i", &_rpmfi_debug)) return NULL;
     Py_INCREF(Py_None);
@@ -23,6 +31,7 @@ rpmfi_Debug(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FC(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FC")) return NULL;
     return Py_BuildValue("i", rpmfiFC(s->fi));
@@ -30,6 +39,7 @@ rpmfi_FC(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FX(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FX")) return NULL;
     return Py_BuildValue("i", rpmfiFX(s->fi));
@@ -37,6 +47,7 @@ rpmfi_FX(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_DC(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":DC")) return NULL;
     return Py_BuildValue("i", rpmfiDC(s->fi));
@@ -44,6 +55,7 @@ rpmfi_DC(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_DX(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":DX")) return NULL;
     return Py_BuildValue("i", rpmfiDX(s->fi));
@@ -51,6 +63,7 @@ rpmfi_DX(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_BN(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":BN")) return NULL;
     return Py_BuildValue("s", xstrdup(rpmfiBN(s->fi)));
@@ -58,6 +71,7 @@ rpmfi_BN(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_DN(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":DN")) return NULL;
     return Py_BuildValue("s", xstrdup(rpmfiDN(s->fi)));
@@ -65,6 +79,7 @@ rpmfi_DN(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FN(rpmfiObject * s, PyObject * args)
+	/*@modifies s @*/
 {
     if (!PyArg_ParseTuple(args, ":FN")) return NULL;
     return Py_BuildValue("s", xstrdup(rpmfiFN(s->fi)));
@@ -72,6 +87,7 @@ rpmfi_FN(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FFlags(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FFlags")) return NULL;
     return Py_BuildValue("i", rpmfiFFlags(s->fi));
@@ -79,6 +95,7 @@ rpmfi_FFlags(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_VFlags(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":VFlags")) return NULL;
     return Py_BuildValue("i", rpmfiVFlags(s->fi));
@@ -86,6 +103,7 @@ rpmfi_VFlags(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FMode(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FMode")) return NULL;
     return Py_BuildValue("i", rpmfiFMode(s->fi));
@@ -93,6 +111,7 @@ rpmfi_FMode(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FState(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FState")) return NULL;
     return Py_BuildValue("i", rpmfiFState(s->fi));
@@ -101,6 +120,7 @@ rpmfi_FState(rpmfiObject * s, PyObject * args)
 /* XXX rpmfiMD5 */
 static PyObject *
 rpmfi_MD5(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     const unsigned char * md5;
     char fmd5[33];
@@ -117,6 +137,7 @@ rpmfi_MD5(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FLink(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FLink")) return NULL;
     return Py_BuildValue("s", xstrdup(rpmfiFLink(s->fi)));
@@ -124,6 +145,7 @@ rpmfi_FLink(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FSize(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FSize")) return NULL;
     return Py_BuildValue("i", rpmfiFSize(s->fi));
@@ -131,6 +153,7 @@ rpmfi_FSize(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FRdev(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FRdev")) return NULL;
     return Py_BuildValue("i", rpmfiFRdev(s->fi));
@@ -138,6 +161,7 @@ rpmfi_FRdev(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FMtime(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FMtime")) return NULL;
     return Py_BuildValue("i", rpmfiFMtime(s->fi));
@@ -145,6 +169,7 @@ rpmfi_FMtime(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FUser(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FUser")) return NULL;
     return Py_BuildValue("s", xstrdup(rpmfiFUser(s->fi)));
@@ -152,6 +177,7 @@ rpmfi_FUser(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_FGroup(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":FGroup")) return NULL;
     return Py_BuildValue("s", xstrdup(rpmfiFGroup(s->fi)));
@@ -159,7 +185,8 @@ rpmfi_FGroup(rpmfiObject * s, PyObject * args)
 
 #if Py_TPFLAGS_HAVE_ITER
 static PyObject *
-rpmfi_Next(rpmfiObject * s, PyObject * args)
+rpmfi_Next(rpmfiObject * s, /*@unused@*/ PyObject * args)
+	/*@modifies s @*/
 {
     PyObject * result = NULL;
 
@@ -183,7 +210,8 @@ rpmfi_Next(rpmfiObject * s, PyObject * args)
 }
 
 static PyObject *
-rpmfi_Iter(rpmfiObject * s, PyObject * args)
+rpmfi_Iter(rpmfiObject * s, /*@unused@*/ PyObject * args)
+	/*@modifies s @*/
 {
     rpmfiInit(s->fi, 0);
     Py_INCREF(s);
@@ -194,6 +222,7 @@ rpmfi_Iter(rpmfiObject * s, PyObject * args)
 #ifdef	NOTYET
 static PyObject *
 rpmfi_NextD(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
 	if (!PyArg_ParseTuple(args, ":NextD"))
 		return NULL;
@@ -203,6 +232,7 @@ rpmfi_NextD(rpmfiObject * s, PyObject * args)
 
 static PyObject *
 rpmfi_InitD(rpmfiObject * s, PyObject * args)
+	/*@*/
 {
 	if (!PyArg_ParseTuple(args, ":InitD"))
 		return NULL;
@@ -211,6 +241,8 @@ rpmfi_InitD(rpmfiObject * s, PyObject * args)
 }
 #endif
 
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfi_methods[] = {
  {"Debug",	(PyCFunction)rpmfi_Debug,	METH_VARARGS,
 	NULL},
@@ -264,11 +296,13 @@ static struct PyMethodDef rpmfi_methods[] = {
 #endif
  {NULL,		NULL}		/* sentinel */
 };
+/*@=fullinitblock@*/
 
 /* ---------- */
 
 static void
-rpmfi_dealloc(rpmfiObject * s)
+rpmfi_dealloc(/*@only@*/ /*@null@*/ rpmfiObject * s)
+	/*@modifies s @*/
 {
     if (s) {
 	s->fi = rpmfiFree(s->fi, 1);
@@ -277,7 +311,9 @@ rpmfi_dealloc(rpmfiObject * s)
 }
 
 static int
-rpmfi_print(rpmfiObject * s, FILE * fp, int flags)
+rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ int flags)
+	/*@globals fileSystem @*/
+	/*@modifies s, fp, fileSystem @*/
 {
     if (!(s && s->fi))
 	return -1;
@@ -290,18 +326,21 @@ rpmfi_print(rpmfiObject * s, FILE * fp, int flags)
 
 static PyObject *
 rpmfi_getattr(rpmfiObject * s, char * name)
+	/*@*/
 {
     return Py_FindMethod(rpmfi_methods, (PyObject *)s, name);
 }
 
 static int
 rpmfi_length(rpmfiObject * s)
+	/*@*/
 {
     return rpmfiFC(s->fi);
 }
 
 static PyObject *
 rpmfi_subscript(rpmfiObject * s, PyObject * key)
+	/*@modifies s @*/
 {
     int ix;
 
@@ -315,6 +354,7 @@ rpmfi_subscript(rpmfiObject * s, PyObject * key)
     return Py_BuildValue("s", xstrdup(rpmfiFN(s->fi)));
 }
 
+/*@unchecked@*/ /*@observer@*/
 static PyMappingMethods rpmfi_as_mapping = {
         (inquiry) rpmfi_length,		/* mp_length */
         (binaryfunc) rpmfi_subscript,	/* mp_subscript */
@@ -323,9 +363,11 @@ static PyMappingMethods rpmfi_as_mapping = {
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static char rpmfi_doc[] =
 "";
 
+/*@-fullinitblock@*/
 PyTypeObject rpmfi_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -372,6 +414,7 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
+/*@=fullinitblock@*/
 
 /* ---------- */
 
@@ -391,7 +434,7 @@ rpmfi_Wrap(rpmfi fi)
 }
 
 rpmfiObject *
-hdr_fiFromHeader(PyObject * s, PyObject * args)
+hdr_fiFromHeader(/*@unused@*/ PyObject * s, PyObject * args)
 {
     hdrObject * ho;
 

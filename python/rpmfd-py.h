@@ -10,8 +10,10 @@ typedef struct rpmfdObject_s {
     FD_t	fd;
 } rpmfdObject;
 
+/*@unchecked@*/
 extern PyTypeObject rpmfd_Type;
 
-rpmfdObject * rpmfd_Wrap(FD_t fd);
+rpmfdObject * rpmfd_Wrap(FD_t fd)
+	/*@*/;
 
 #endif

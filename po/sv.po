@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-07-13 15:09-0400\n"
+"POT-Creation-Date: 2002-07-14 17:19-0400\n"
 "PO-Revision-Date: 2002-07-11 22:49+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2187,7 +2187,7 @@ msgid "can't query %s: %s\n"
 msgstr "kan inte fråga %s: %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:361 lib/rpminstall.c:492
-#: lib/rpminstall.c:874 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/rpminstall.c:881 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
@@ -2270,7 +2270,7 @@ msgstr "paketpost nummer: %u\n"
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:907 lib/rpminstall.c:659
+#: lib/query.c:907 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2474,7 +2474,7 @@ msgstr "fel vid läsning från fil %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:484 lib/rpminstall.c:730 tools/rpmgraph.c:156
+#: lib/rpminstall.c:484 lib/rpminstall.c:737 tools/rpmgraph.c:156
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
@@ -2484,7 +2484,7 @@ msgstr "%s kan inte installeras\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:534 lib/rpminstall.c:687 lib/rpminstall.c:1061
+#: lib/rpminstall.c:534 lib/rpminstall.c:690 lib/rpminstall.c:1068
 #: tools/rpmgraph.c:202
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
@@ -2497,27 +2497,27 @@ msgstr "    Föreslagna lösningar:\n"
 msgid "installing binary packages\n"
 msgstr "installerar binärpaket\n"
 
-#: lib/rpminstall.c:592
+#: lib/rpminstall.c:595
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:665
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:717
+#: lib/rpminstall.c:724
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:723
+#: lib/rpminstall.c:730
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpminstall.c:1055
+#: lib/rpminstall.c:1062
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr "återställer %d paket till %s"
@@ -2894,8 +2894,8 @@ msgid "missing    %s"
 msgstr "saknas     %s"
 
 #: lib/verify.c:389
-#, c-format
-msgid "Unsatisifed dependencies for %s: "
+#, fuzzy, c-format
+msgid "Unsatisfied dependencies for %s: "
 msgstr "Ouppfyllda beroenden för %s: "
 
 #: rpmdb/db3.c:156

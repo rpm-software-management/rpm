@@ -5,6 +5,10 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
 
 #include <rpmlib.h>
 
@@ -19,6 +23,8 @@
 #include "rpmts-py.h"
 
 #include "debug.h"
+
+/*@access alKey @*/
 
 /** \ingroup python
  * \name Class: Rpmts
@@ -146,6 +152,8 @@ static void rpmtsAddAvailableElement(rpmts ts, Header h,
  */
 static PyObject *
 rpmts_AddInstall(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     hdrObject * h;
     PyObject * key;
@@ -188,6 +196,8 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args)
  */
 static PyObject *
 rpmts_AddErase(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     char * name;
     int count;
@@ -221,6 +231,8 @@ rpmts_AddErase(rpmtsObject * s, PyObject * args)
  */
 static PyObject *
 rpmts_Check(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     rpmps ps;
     rpmProblem p;
@@ -306,6 +318,8 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
  */
 static PyObject *
 rpmts_Order(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     int xx;
 
@@ -320,7 +334,63 @@ rpmts_Order(rpmtsObject * s, PyObject * args)
 /** \ingroup python
  */
 static PyObject *
+rpmts_Clean(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    int xx;
+
+    if (!PyArg_ParseTuple(args, ":Clean")) return NULL;
+
+    rpmtsClean(s->ts);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_OpenDB(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    int xx;
+
+    if (!PyArg_ParseTuple(args, ":OpenDB")) return NULL;
+
+    if (s->ts->dbmode == -1)
+	s->ts->dbmode = O_RDONLY;
+    xx = rpmtsOpenDB(s->ts, s->ts->dbmode);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_CloseDB(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    int xx;
+
+    if (!PyArg_ParseTuple(args, ":CloseDB")) return NULL;
+
+    xx = rpmtsCloseDB(s->ts);
+    s->ts->dbmode = -1;
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
 rpmts_GetKeys(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     const void **data = NULL;
     int num, i;
@@ -358,9 +428,10 @@ struct rpmtsCallbackType_s {
 /** \ingroup python
  */
 static void *
-rpmtsCallback(const void * hd, const rpmCallbackType what,
+rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 		         const unsigned long amount, const unsigned long total,
 	                 const void * pkgKey, rpmCallbackData data)
+	/*@*/
 {
     struct rpmtsCallbackType_s * cbInfo = data;
     PyObject * args, * result;
@@ -404,6 +475,8 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 /** \ingroup python
  */
 static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     int flags, ignoreSet;
     int rc, i;
@@ -455,6 +528,8 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 #if Py_TPFLAGS_HAVE_ITER
 static PyObject *
 rpmts_Next(rpmtsObject * s)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     rpmte te;
 
@@ -474,6 +549,7 @@ rpmts_Next(rpmtsObject * s)
 
 static PyObject *
 rpmts_Iter(rpmtsObject * s)
+	/*@modifies s @*/
 {
     s->tsi = rpmtsiInit(s->ts);
     s->tsiFilter = 0;
@@ -486,6 +562,8 @@ rpmts_Iter(rpmtsObject * s)
  */
 static rpmmiObject *
 rpmts_Match (rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject *TagN = NULL;
     char *key = NULL;
@@ -514,6 +592,8 @@ rpmts_Match (rpmtsObject * s, PyObject * args)
 
 /** \ingroup python
  */
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmts_methods[] = {
     {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
@@ -522,6 +602,12 @@ static struct PyMethodDef rpmts_methods[] = {
     {"check",		(PyCFunction) rpmts_Check,	METH_VARARGS,
 	NULL },
     {"order",		(PyCFunction) rpmts_Order,	METH_VARARGS,
+	NULL },
+    {"clean",		(PyCFunction) rpmts_Clean,	METH_VARARGS,
+	NULL },
+    {"openDB",		(PyCFunction) rpmts_OpenDB,	METH_VARARGS,
+	NULL },
+    {"closeDB",		(PyCFunction) rpmts_CloseDB,	METH_VARARGS,
 	NULL },
     {"getKeys",		(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
 	NULL },
@@ -538,10 +624,12 @@ static struct PyMethodDef rpmts_methods[] = {
 #endif
     {NULL,		NULL}		/* sentinel */
 };
+/*@=fullinitblock@*/
 
 /** \ingroup python
  */
-static void rpmts_dealloc(PyObject * o)
+static void rpmts_dealloc(/*@only@*/ PyObject * o)
+	/*@modifies o @*/
 {
     rpmtsObject * trans = (void *) o;
 
@@ -560,6 +648,7 @@ static void rpmts_dealloc(PyObject * o)
 /** \ingroup python
  */
 static PyObject * rpmts_getattr(rpmtsObject * o, char * name)
+	/*@*/
 {
     return Py_FindMethod(rpmts_methods, (PyObject *) o, name);
 }
@@ -567,6 +656,7 @@ static PyObject * rpmts_getattr(rpmtsObject * o, char * name)
 /** \ingroup python
  */
 static int rpmts_setattr(rpmtsObject * o, char * name, PyObject * val)
+	/*@modifies o @*/
 {
     int i;
 
@@ -589,11 +679,13 @@ static int rpmts_setattr(rpmtsObject * o, char * name, PyObject * val)
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static char rpmts_doc[] =
 "";
 
 /** \ingroup python
  */
+/*@-fullinitblock@*/
 PyTypeObject rpmts_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
@@ -639,11 +731,12 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
+/*@=fullinitblock@*/
 
 /**
  */
 rpmtsObject *
-rpmts_Create(PyObject * self, PyObject * args)
+rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args)
 {
     rpmtsObject * o;
     rpmdbObject * db = NULL;

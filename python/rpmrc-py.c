@@ -5,7 +5,14 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
+
 #include "structmember.h"
+
+/*@unchecked@*/
 extern PyTypeObject PyDictIter_Type;
 
 #include <rpmcli.h>
@@ -23,6 +30,7 @@ extern PyTypeObject PyDictIter_Type;
 
 #include "debug.h"
 
+/*@unchecked@*/
 static int _rc_debug = 0;
 
 /** \ingroup python
@@ -38,6 +46,7 @@ static int _rc_debug = 0;
 /**
  */
 static const char * lbl(void * s)
+	/*@*/
 {
     PyObject * o = s;
 
@@ -78,7 +87,7 @@ static const char * lbl(void * s)
 
 /**
  */
-PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args)
+PyObject * rpmrc_AddMacro(/*@unused@*/ PyObject * self, PyObject * args)
 {
     char * name, * val;
 
@@ -93,7 +102,7 @@ PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args)
 
 /**
  */
-PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args)
+PyObject * rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args)
 {
     char * name;
 
@@ -110,6 +119,7 @@ PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args)
  */
 static PyObject *
 rpmrc_getstate(rpmrcObject *s, PyObject *args)
+	/*@*/
 {
     if (!PyArg_ParseTuple(args, ":getstate"))
 	return NULL;
@@ -120,6 +130,8 @@ rpmrc_getstate(rpmrcObject *s, PyObject *args)
  */
 static PyObject *
 rpmrc_setstate(rpmrcObject *s, PyObject *args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     int state;
 
@@ -133,6 +145,7 @@ rpmrc_setstate(rpmrcObject *s, PyObject *args)
 /**
  */
 static void rpmrc_dealloc(PyObject * s)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_dealloc(%p[%s])\n", s, lbl(s));
@@ -142,15 +155,19 @@ fprintf(stderr, "*** rpmrc_dealloc(%p[%s])\n", s, lbl(s));
 /**
  */
 static int rpmrc_print(PyObject * s, FILE *fp, int flags)
+	/*@*/
 {
+/*@-formattype@*/
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_print(%p[%s],%p,%x)\n", s, lbl(s), fp, flags);
+/*@=formattype@*/
     return PyDict_Type.tp_print(s, fp, flags);
 }
 
 /**
  */
 static int rpmrc_compare(PyObject * a, PyObject * b)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_compare(%p[%s],%p[%s])\n", a, lbl(a), b, lbl(b));
@@ -160,6 +177,7 @@ fprintf(stderr, "*** rpmrc_compare(%p[%s],%p[%s])\n", a, lbl(a), b, lbl(b));
 /**
  */
 static PyObject * rpmrc_repr(PyObject * s)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_repr(%p[%s])\n", s, lbl(s));
@@ -169,6 +187,7 @@ fprintf(stderr, "*** rpmrc_repr(%p[%s])\n", s, lbl(s));
 /**
  */
 static long rpmrc_hash(PyObject * s)
+	/*@*/
 {
     /* XXX dict objects are unhashable */
 if (_rc_debug)
@@ -180,6 +199,7 @@ fprintf(stderr, "*** rpmrc_hash(%p[%s])\n", s, lbl(s));
  */
 static int
 rpmrc_length(PyObject * s)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_length(%p[%s])\n", s, lbl(s));
@@ -190,6 +210,7 @@ fprintf(stderr, "*** rpmrc_length(%p[%s])\n", s, lbl(s));
  */
 static PyObject *
 rpmrc_subscript(PyObject * s, PyObject * key)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_subscript(%p[%s], %p[%s])\n", s, lbl(s), key, lbl(key));
@@ -200,12 +221,14 @@ fprintf(stderr, "*** rpmrc_subscript(%p[%s], %p[%s])\n", s, lbl(s), key, lbl(key
  */
 static int
 rpmrc_ass_subscript(PyObject * s, PyObject * key, PyObject * value)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_ass_subscript(%p[%s], %p[%s], %p[%s])\n", s, lbl(s), key, lbl(key), value, lbl(value));
     return PyDict_Type.tp_as_mapping->mp_ass_subscript(s, key, value);
 }
 
+/*@unchecked@*/ /*@observer@*/
 static PyMappingMethods rpmrc_as_mapping = {
     rpmrc_length,		/* mp_length */
     rpmrc_subscript,		/* mp_subscript */
@@ -215,6 +238,7 @@ static PyMappingMethods rpmrc_as_mapping = {
 /**
  */
 static PyObject * rpmrc_getattro (PyObject *s, PyObject *name)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_getattro(%p[%s], \"%s\")\n", s, lbl(s), PyString_AS_STRING(name));
@@ -224,6 +248,7 @@ fprintf(stderr, "*** rpmrc_getattro(%p[%s], \"%s\")\n", s, lbl(s), PyString_AS_S
 /**
  */
 static int rpmrc_setattro (PyObject *s, PyObject *name, PyObject * value)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_setattro(%p[%s], \"%s \", \"%s\")\n", s, lbl(s), PyString_AS_STRING(name), PyString_AS_STRING(value));
@@ -232,12 +257,14 @@ fprintf(stderr, "*** rpmrc_setattro(%p[%s], \"%s \", \"%s\")\n", s, lbl(s), PySt
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static char rpmrc_doc[] =
 "";
 
 /**
  */
 static int rpmrc_traverse(PyObject * s, visitproc visit, void *arg)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_traverse(%p[%s],%p,%p)\n", s, lbl(s), visit, arg);
@@ -247,6 +274,7 @@ fprintf(stderr, "*** rpmrc_traverse(%p[%s],%p,%p)\n", s, lbl(s), visit, arg);
 /**
  */
 static int rpmrc_clear(PyObject * s)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_clear(%p[%s])\n", s, lbl(s));
@@ -256,6 +284,7 @@ fprintf(stderr, "*** rpmrc_clear(%p[%s])\n", s, lbl(s));
 /**
  */
 static PyObject * rpmrc_richcompare(PyObject * v, PyObject * w, int op)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_richcompare(%p[%s],%p[%s],%x)\n", v, lbl(v), w, lbl(w), op);
@@ -265,6 +294,7 @@ fprintf(stderr, "*** rpmrc_richcompare(%p[%s],%p[%s],%x)\n", v, lbl(v), w, lbl(w
 /**
  */
 static PyObject * rpmrc_iter(PyObject * s)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_iter(%p[%s])\n", s, lbl(s));
@@ -276,6 +306,7 @@ fprintf(stderr, "*** rpmrc_iter(%p[%s])\n", s, lbl(s));
 /**
  */
 static PyObject * rpmrc_iternext(PyObject * s)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_iternext(%p[%s])\n", s, lbl(s));
@@ -287,6 +318,7 @@ fprintf(stderr, "*** rpmrc_iternext(%p[%s])\n", s, lbl(s));
 /**
  */
 static PyObject * rpmrc_next(PyObject * s, PyObject *args)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_next(%p[%s],%p)\n", s, lbl(s), args);
@@ -295,15 +327,19 @@ fprintf(stderr, "*** rpmrc_next(%p[%s],%p)\n", s, lbl(s), args);
     return NULL;
 }
 
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static PyMemberDef rpmrc_members[] = {
     {"state", T_INT, offsetof(rpmrcObject, state), READONLY,
          "an int variable for demonstration purposes"},
     {0}
 };
+/*@=fullinitblock@*/
 
 /** \ingroup python
  */
 static int rpmrc_init(PyObject * s, PyObject *args, PyObject *kwds)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_init(%p[%s],%p,%p)\n", s, lbl(s), args, kwds);
@@ -316,6 +352,7 @@ fprintf(stderr, "*** rpmrc_init(%p[%s],%p,%p)\n", s, lbl(s), args, kwds);
 /** \ingroup python
  */
 static void rpmrc_free(PyObject * s)
+	/*@*/
 {
 if (_rc_debug)
 fprintf(stderr, "*** rpmrc_free(%p[%s])\n", s, lbl(s));
@@ -325,6 +362,7 @@ fprintf(stderr, "*** rpmrc_free(%p[%s])\n", s, lbl(s));
 /** \ingroup python
  */
 static PyObject * rpmrc_alloc(PyTypeObject * subtype, int nitems)
+	/*@*/
 {
     PyObject * ns = PyType_GenericAlloc(subtype, nitems);
 
@@ -336,6 +374,7 @@ fprintf(stderr, "*** rpmrc_alloc(%p[%s},%d) ret %p[%s]\n", subtype, lbl(subtype)
 /** \ingroup python
  */
 static PyObject * rpmrc_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+	/*@*/
 {
     PyObject * ns;
 
@@ -355,6 +394,8 @@ fprintf(stderr, "*** rpmrc_new(%p[%s],%p,%p) ret %p[%s]\n", subtype, lbl(subtype
 
 /**
  */
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmrc_methods[] = {
     { "addMacro",	(PyCFunction) rpmrc_AddMacro, METH_VARARGS,
 	NULL },
@@ -368,9 +409,11 @@ static struct PyMethodDef rpmrc_methods[] = {
 	"next() -- get the next value, or raise StopIteration"},
     {NULL,		NULL}		/* sentinel */
 };
+/*@=fullinitblock@*/
 
 /** \ingroup python
  */
+/*@-fullinitblock@*/
 PyTypeObject rpmrc_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -416,8 +459,9 @@ PyTypeObject rpmrc_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
+/*@=fullinitblock@*/
 
-PyObject * rpmrc_Create(PyObject * self, PyObject *args, PyObject *kwds)
+PyObject * rpmrc_Create(/*@unused@*/ PyObject * self, PyObject *args, PyObject *kwds)
 {
     return rpmrc_new(&rpmrc_Type, args, kwds);
 }

@@ -5,6 +5,10 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
 
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
@@ -17,6 +21,8 @@
 
 #include "debug.h"
 
+/*@access FD_t @*/
+
 extern int _rpmio_debug;
 
 /** \ingroup python
@@ -26,7 +32,9 @@ extern int _rpmio_debug;
  */
 
 static PyObject *
-rpmfd_Debug(rpmfdObject * s, PyObject * args)
+rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     if (!PyArg_ParseTuple(args, "i", &_rpmio_debug)) return NULL;
     Py_INCREF(Py_None);
@@ -57,6 +65,8 @@ static FDlist *fdtail = NULL;
 /**
  */
 static int closeCallback(FILE * f)
+	/*@globals fdhead @*/
+	/*@modifies fdhead @*/
 {
     FDlist *node, *last;
 
@@ -86,7 +96,9 @@ static int closeCallback(FILE * f)
 /**
  */
 static PyObject *
-rpmfd_Fopen(PyObject * self, PyObject * args)
+rpmfd_Fopen(/*@unused@*/ PyObject * self, PyObject * args)
+	/*@globals fdhead, fdtail @*/
+	/*@modifies fdhead, fdtail @*/
 {
     char * path, * mode;
     FDlist *node;
@@ -136,6 +148,8 @@ rpmfd_Fopen(PyObject * self, PyObject * args)
 
 /** \ingroup python
  */
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfd_methods[] = {
     {"Debug",	(PyCFunction)rpmfd_Debug,	METH_VARARGS,
         NULL},
@@ -143,23 +157,27 @@ static struct PyMethodDef rpmfd_methods[] = {
         NULL},
     {NULL,		NULL}		/* sentinel */
 };
+/*@=fullinitblock@*/
 
 /* ---------- */
 
 /** \ingroup python
  */
 static PyObject * rpmfd_getattr(rpmfdObject * o, char * name)
+	/*@*/
 {
     return Py_FindMethod(rpmfd_methods, (PyObject *) o, name);
 }
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static char rpmfd_doc[] =
 "";
 
 /** \ingroup python
  */
+/*@-fullinitblock@*/
 PyTypeObject rpmfd_Type = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
@@ -205,6 +223,7 @@ PyTypeObject rpmfd_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
+/*@=fullinitblock@*/
 
 rpmfdObject * rpmfd_Wrap(FD_t fd)
 {

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-13 15:09-0400\n"
+"POT-Creation-Date: 2002-07-14 17:19-0400\n"
 
 #: build.c:40
 #, fuzzy
@@ -2412,7 +2412,7 @@ msgid "can't query %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 #: lib/query.c:565 lib/query.c:599 lib/rpminstall.c:361 lib/rpminstall.c:492
-#: lib/rpminstall.c:874 tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/rpminstall.c:881 tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -2497,7 +2497,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:907 lib/rpminstall.c:659
+#: lib/query.c:907 lib/rpminstall.c:662
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
@@ -2744,7 +2744,7 @@ msgstr ""
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:484 lib/rpminstall.c:730 tools/rpmgraph.c:156
+#: lib/rpminstall.c:484 lib/rpminstall.c:737 tools/rpmgraph.c:156
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "no foi passado pacote para instalao"
@@ -2754,7 +2754,7 @@ msgstr "no foi passado pacote para instalao"
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:534 lib/rpminstall.c:687 lib/rpminstall.c:1061
+#: lib/rpminstall.c:534 lib/rpminstall.c:690 lib/rpminstall.c:1068
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2770,28 +2770,28 @@ msgid "installing binary packages\n"
 msgstr "instale pacote"
 
 # , c-format
-#: lib/rpminstall.c:592
+#: lib/rpminstall.c:595
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:665
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
 # , c-format
-#: lib/rpminstall.c:717
+#: lib/rpminstall.c:724
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpminstall.c:723
+#: lib/rpminstall.c:730
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1055
+#: lib/rpminstall.c:1062
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "no foi passado pacote para desinstalao"
@@ -3194,7 +3194,7 @@ msgstr ""
 
 #: lib/verify.c:389
 #, fuzzy, c-format
-msgid "Unsatisifed dependencies for %s: "
+msgid "Unsatisfied dependencies for %s: "
 msgstr "lista dependncias do pacote"
 
 #: rpmdb/db3.c:156

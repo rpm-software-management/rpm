@@ -14,6 +14,7 @@
 
 # --- in progress
 +bounds
+-bufferoverflowhigh
 
 # --- not-yet at strict level
 -exportconst		# 4

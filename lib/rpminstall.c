@@ -570,6 +570,9 @@ restart:
 
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
+	/* Drop added/available package indices and dependency sets. */
+	rpmtsClean(ts);
+
 	rc = rpmtsRun(ts, NULL, probFilter);
 	ps = rpmtsProblems(ts);
 
@@ -694,6 +697,10 @@ int rpmErase(rpmts ts,
 
     if (!stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
+
+	/* Drop added/available package indices and dependency sets. */
+	rpmtsClean(ts);
+
 	numPackages = rpmtsRun(ts, NULL, 0);
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0)
@@ -1068,6 +1075,9 @@ int rpmRollback(rpmts ts,
 	rc = rpmtsOrder(ts);
 	if (rc != 0)
 	    goto exit;
+
+	/* Drop added/available package indices and dependency sets. */
+	rpmtsClean(ts);
 
 	rc = rpmtsRun(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
 	ps = rpmtsProblems(ts);

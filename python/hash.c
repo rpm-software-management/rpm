@@ -2,12 +2,11 @@
  * \file python/hash.c
  */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <string.h>
+#include "system.h"
 
 #include "hash.h"
+
+#include "debug.h"
 
 #define CHUNK 1
 

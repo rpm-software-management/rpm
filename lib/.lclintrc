@@ -16,6 +16,7 @@
 +bounds
 +slovak-fcns
 -redecl
+-bufferoverflowhigh
 
 # --- +partial artifacts
 -declundef

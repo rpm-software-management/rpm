@@ -2,11 +2,9 @@
  * \file python/upgrade.c
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "system.h"
+
 #include <fcntl.h>
-#include <string.h>
 
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
@@ -16,6 +14,8 @@
 
 #include "hash.h"
 #include "upgrade.h"
+
+#include "debug.h"
 
 #define MAXPKGS 1024
 
@@ -170,7 +170,7 @@ static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
 	    while (obsoletesCount--) {
 		if (rpmdbCountPackages(db, obsoletes[obsoletesCount]) > 0) {
 		    (*pip)->selected = 1;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 	    }
 
@@ -228,7 +228,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 		/* already have a newer version installed */
 		DEBUG (("Already have newer version\n"))
 		skipThis = 1;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -329,7 +329,7 @@ static int removeMovedFilesAlreadyHandled(struct pkgSet *psp,
 					  availFiles[i]);
 			DEBUG (("File already in %s: %s%s\n", name, 
 				availDirs[availDirIndexes[i]], availFiles[i]))
-			break;
+			/*@innerbreak@*/ break;
 		    }
 		}
 
@@ -375,7 +375,7 @@ static int findPackagesWithRelocatedFiles(struct pkgSet *psp,
 	    {
 
 		for (i = 0; i < availFileCount; i++) {
-		    if (S_ISDIR(availFileModes[i])) continue;
+		    if (S_ISDIR(availFileModes[i])) /*@innercontinue@*/ continue;
 
 		    if (htInTable(ht, availDirs[availDirIndexes[i]], 
 				    availFiles[i])) {
@@ -446,7 +446,7 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 		    /* already have a newer version installed */
 		    DEBUG (("Already have newer version\n"))
 		    (*pip)->selected = 0;
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 	    }
 	    mi = rpmdbFreeIterator(mi);

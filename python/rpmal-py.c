@@ -5,6 +5,10 @@
 #include "system.h"
 
 #include "Python.h"
+#ifdef __LCLINT__
+#undef  PyObject_HEAD
+#define PyObject_HEAD   int _PyObjectHead;
+#endif
 
 #include <rpmlib.h>
 
@@ -15,7 +19,9 @@
 #include "debug.h"
 
 static PyObject *
-rpmal_Debug(rpmalObject * s, PyObject * args)
+rpmal_Debug(/*@unused@*/ rpmalObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     if (!PyArg_ParseTuple(args, "i", &_rpmal_debug)) return NULL;
     Py_INCREF(Py_None);
@@ -24,6 +30,7 @@ rpmal_Debug(rpmalObject * s, PyObject * args)
 
 static PyObject *
 rpmal_Add(rpmalObject * s, PyObject * args)
+	/*@modifies s @*/
 {
     rpmdsObject * dso;
     rpmfiObject * fio;
@@ -41,6 +48,8 @@ rpmal_Add(rpmalObject * s, PyObject * args)
 
 static PyObject *
 rpmal_Del(rpmalObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     alKey pkgKey;
 
@@ -55,6 +64,8 @@ rpmal_Del(rpmalObject * s, PyObject * args)
 
 static PyObject *
 rpmal_AddProvides(rpmalObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     rpmdsObject * dso;
     alKey pkgKey;
@@ -70,6 +81,8 @@ rpmal_AddProvides(rpmalObject * s, PyObject * args)
 
 static PyObject *
 rpmal_MakeIndex(rpmalObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     if (!PyArg_ParseTuple(args, ":MakeIndex"))
 	return NULL;
@@ -80,6 +93,8 @@ rpmal_MakeIndex(rpmalObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmal_methods[] = {
  {"Debug",	(PyCFunction)rpmal_Debug,	METH_VARARGS,
 	NULL},
@@ -91,13 +106,15 @@ static struct PyMethodDef rpmal_methods[] = {
 	NULL},
  {"makeIndex",(PyCFunction)rpmal_MakeIndex,	METH_VARARGS,
 	NULL},
- {NULL,		NULL}		/* sentinel */
+ {NULL,		NULL }		/* sentinel */
 };
+/*@=fullinitblock@*/
 
 /* ---------- */
 
 static void
 rpmal_dealloc(rpmalObject * s)
+	/*@modifies s @*/
 {
     if (s) {
 	s->al = rpmalFree(s->al);
@@ -107,15 +124,19 @@ rpmal_dealloc(rpmalObject * s)
 
 static PyObject *
 rpmal_getattr(rpmalObject * s, char * name)
+	/*@*/
 {
     return Py_FindMethod(rpmal_methods, (PyObject *)s, name);
 }
 
 /**
  */
+/*@unchecked@*/ /*@observer@*/
 static char rpmal_doc[] =
 "";
 
+/*@-fullinitblock@*/
+/*@unchecked@*/
 PyTypeObject rpmal_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -162,6 +183,7 @@ PyTypeObject rpmal_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
+/*@=fullinitblock@*/
 
 /* ---------- */
 

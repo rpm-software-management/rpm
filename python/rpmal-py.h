@@ -12,8 +12,10 @@ typedef struct rpmalObject_s {
     rpmal	al;
 } rpmalObject;
 
+/*@unchecked@*/
 extern PyTypeObject rpmal_Type;
 
-rpmalObject * rpmal_Wrap(rpmal al);
+rpmalObject * rpmal_Wrap(rpmal al)
+	/*@*/;
 
 #endif
