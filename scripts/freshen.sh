@@ -39,7 +39,7 @@ for n in $*; do
     else
 	if rpm -q `rpm -qp $n` >/dev/null 2>&1
 	then
-	    ;
+	    :
 	else
 	    name=`rpm --qf "%{NAME}" -qp $n`
 	    $RPM -q $name >/dev/null 2>&1 && args="$args $n"
