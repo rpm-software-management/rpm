@@ -1,0 +1,11 @@
+*.lo
+*.la
+.deps
+.depend
+.depend-done
+.libs
+Makefile
+Makefile.in
+listobjs
+file
+file-*.tar.gz
