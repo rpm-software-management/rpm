@@ -1851,7 +1851,7 @@ msgstr "Не могу сгенерировать имя файла для пакета %s: %s\n"
 #: build/pack.c:581
 #, c-format
 msgid "cannot create %s: %s\n"
-msgstr "не могу создать %s"
+msgstr "невозможно создать %s: %s\n"
 
 #: build/parseBuildInstallClean.c:31
 #, c-format
