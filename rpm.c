@@ -184,9 +184,13 @@ int build(char * arg, int buildAmount, char *passPhrase) {
     s = parseSpec(f, specfile);
     fclose(f);
     if (s) {
-	if (doBuild(s, buildAmount, passPhrase)) {
-	    fprintf(stderr, _("Build failed.\n"));
+	if (verifySpec(s)) {
 	    res = 1;
+	} else {
+	    if (doBuild(s, buildAmount, passPhrase)) {
+		fprintf(stderr, _("Build failed.\n"));
+		res = 1;
+	    }
 	}
         freeSpec(s);
     } else {
