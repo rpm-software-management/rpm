@@ -45,7 +45,8 @@ O_RPM_Database
             $var = (HV*)SvRV($arg);
         else
         {
-            warn(\"${Package}::$func_name() -- $var is not a blessed HV reference\");
+            rpm_error(aTHX_ RPMERR_BADARG,
+                      \"${Package}::$func_name: not a blessed HV reference\");
             XSRETURN_UNDEF;
         }
 
@@ -54,6 +55,7 @@ O_RPM_Header
             $var = (HV*)SvRV($arg);
         else
         {
-            warn(\"${Package}::$func_name() -- $var is not a blessed HV reference\");
+            rpm_error(aTHX_ RPMERR_BADARG,
+                      \"${Package}::$func_name: not a blessed HV reference\");
             XSRETURN_UNDEF;
         }
