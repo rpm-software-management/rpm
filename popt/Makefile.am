@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.3 foreign
 
+SUBDIRS = po
+
 INCLUDES = -I$(top_srcdir)
 
 noinst_HEADERS = popt.h
