@@ -13,8 +13,11 @@ NLSPACKAGE = rpm
 
 CATALOGS = sv.mo fr.mo de.mo
 
-POTFILES  = $(topdir)/rpm.c $(topdir)/query.c $(topdir)/install.c \
-	    $(topdir)/verify.c
+POTFILES  = $(topdir)/rpm.c 		$(topdir)/query.c 		\
+	    $(topdir)/install.c 	$(topdir)/verify.c 		\
+	    $(topdir)/checksig.c 					\
+	    $(topdir)/lib/uninstall.c	$(topdir)/lib/rpmdb.c		\
+	    $(topdir)/lib/signature.c
 
 all: $(NLSPACKAGE).pot $(CATALOGS)
 
