@@ -1367,7 +1367,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
  * @param flags		bit(s) to control digest operation
  * @return		digest context
  */
-/*@only@*/
+/*@only@*/ /*@null@*/
 DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	/*@*/;
 

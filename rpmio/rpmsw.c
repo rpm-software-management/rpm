@@ -6,6 +6,13 @@
 #include <rpmsw.h>
 #include "debug.h"
 
+#if defined(__LCLINT__)
+/*@-exportheader@*/
+extern int nanosleep(const struct timespec *req, /*@out@*/ struct timespec *rem)
+	/*@modifies rem @*/;
+/*@=exportheader@*/
+#endif
+
 /*@unchecked@*/
 static rpmtime_t rpmsw_overhead = 0;
 
@@ -70,8 +77,10 @@ static int rpmsw_initialized = 0;
 
 rpmsw rpmswNow(rpmsw sw)
 {
+/*@-noeffect@*/
     if (!rpmsw_initialized)
-	rpmswInit();
+	(void) rpmswInit();
+/*@=noeffect@*/
     if (sw == NULL)
 	return NULL;
     switch (rpmsw_type) {
@@ -99,7 +108,7 @@ rpmtime_t tvsub(/*@null@*/ const struct timeval * etv,
 		/*@null@*/ const struct timeval * btv)
 	/*@*/
 {
-    rpmtime_t secs, usecs;
+    time_t secs, usecs;
     if (etv == NULL  || btv == NULL) return 0;
     secs = etv->tv_sec - btv->tv_sec;
     for (usecs = etv->tv_usec - btv->tv_usec; usecs < 0; usecs += 1000000)
@@ -133,8 +142,10 @@ rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
 }
 
 #if defined(HP_TIMING_NOW)
+/*@-type@*/
 static rpmtime_t rpmswCalibrate(void)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     struct rpmsw_s begin, end;
     rpmtime_t ticks;
@@ -146,7 +157,9 @@ static rpmtime_t rpmswCalibrate(void)
     req.tv_sec = 0;
     req.tv_nsec = 20 * 1000 * 1000;
     for (i = 0; i < 100; i++) {
+/*@-compdef@*/
 	rc = nanosleep(&req, &rem);
+/*@=compdef@*/
 	if (rc == 0)
 	    break;
 	if (rem.tv_sec == 0 && rem.tv_nsec == 0)
@@ -157,9 +170,15 @@ static rpmtime_t rpmswCalibrate(void)
 
     return ticks;
 }
+/*@=type@*/
 #endif
 
+/*@-incondefs@*/
 rpmtime_t rpmswInit(void)
+	/*@globals rpmsw_cycles, rpmsw_initialized, rpmsw_overhead,
+		rpmsw_type @*/
+	/*@modifies rpmsw_cycles, rpmsw_initialized, rpmsw_overhead,
+		rpmsw_type @*/
 {
     struct rpmsw_s begin, end;
     rpmtime_t cycles, usecs;
@@ -216,3 +235,23 @@ rpmtime_t rpmswInit(void)
 
     return rpmsw_overhead;
 }
+/*@=incondefs@*/
+
+/*@-mods@*/
+int rpmswEnter(rpmop op)
+{
+    op->count++;
+    (void) rpmswNow(&op->begin);
+    return 0;
+}
+
+int rpmswExit(rpmop op, ssize_t rc)
+{
+    struct rpmsw_s end;
+
+    op->usecs += rpmswDiff(rpmswNow(&end), &op->begin);
+    if (rc > 0)
+	op->bytes += rc;
+    return 0;
+}
+/*@=mods@*/
