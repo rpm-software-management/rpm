@@ -1,7 +1,7 @@
 #include <db.h>
 #include <errno.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "dbindex.h"
 #include "rpmlib.h"

@@ -17,7 +17,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <strings.h>
+#include <string.h>
 
 #include "md5.h"
 #include "rpmlib.h"
