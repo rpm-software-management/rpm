@@ -4,7 +4,7 @@ Name: popt
 Version: %{version}
 Release: 1
 Copyright: LGPL
-Group: Utilities/System
+Group: Libraries
 Source: ftp://ftp.redhat.com/pub/redhat/code/popt/popt-%{version}.tar.gz
 BuildRoot: /var/tmp/popt.root
 
