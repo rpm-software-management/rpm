@@ -170,6 +170,9 @@ fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
 		memset(scp->av, 0, scp->nalloc * sizeof(*scp->av));
 	    if (scp->avlen != NULL)
 		memset(scp->avlen, 0, scp->nalloc * sizeof(*scp->avlen));
+	    scp->av = _free(scp->av);
+	    scp->avlen = _free(scp->avlen);
+	    scp->nalloc = 0;
 	}
     } else
 	scp->nalloc = 0;
@@ -403,7 +406,7 @@ static int sql_initDB(dbiIndex dbi)
 
 	switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
-	    keytype = "int UNIQUE";
+	    keytype = "int UNIQUE PRIMARY KEY";
 	    valtype = "blob";
 	    break;
 	default:
@@ -821,6 +824,50 @@ fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi-
     return rc;
 }
 
+static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
+	/*@modifies scp @*/
+{
+    int rc = 0;
+
+    switch (dbi->dbi_rpmtag) {
+	case RPMDBI_PACKAGES:
+	    rc = sqlite3_bind_int(scp->pStmt, pos, *(int *)key->data);
+	    /*@innerbreak@*/ break;
+	default:
+	    switch (tagType(dbi->dbi_rpmtag)) {
+	    case RPM_NULL_TYPE:   
+	    case RPM_BIN_TYPE:
+	        rc = sqlite3_bind_blob(scp->pStmt, 2, key->data, key->size, SQLITE_TRANSIENT);
+		/*@innerbreak@*/ break;
+	    case RPM_CHAR_TYPE:
+	    case RPM_INT8_TYPE:
+	    case RPM_INT16_TYPE:   
+            case RPM_INT32_TYPE:
+/*          case RPM_INT64_TYPE: */   
+	    default:
+	        rc = sqlite3_bind_int(scp->pStmt, pos, *(int *)key->data);
+	        /*@innerbreak@*/ break;
+            case RPM_STRING_TYPE:
+            case RPM_STRING_ARRAY_TYPE:
+            case RPM_I18NSTRING_TYPE:
+		rc = sqlite3_bind_text(scp->pStmt, pos, key->data, key->size, SQLITE_TRANSIENT);
+                /*@innerbreak@*/ break;
+            }
+    }
+
+    return rc;
+}
+
+static int sql_bind_data(dbiIndex dbi, SCP_t scp, int pos, DBT * data)
+	/*@modifies scp @*/
+{
+    int rc = 0;
+
+    rc = sqlite3_bind_blob(scp->pStmt, 2, data->data, data->size, SQLITE_TRANSIENT);
+
+    return rc;
+}
+
 static int sql_step(sqlite3 *db, SCP_t scp)
 	/*@modifies scp @*/
 {
@@ -876,6 +923,14 @@ fprintf(stderr, "sqlite3_step: DONE scp %p [%d:%d] av %p avlen %p\n", scp, scp->
 	case SQLITE_ROW:
 	    if (scp->av != NULL)
 	    for (i = 0; i < scp->nc; i++) {
+	/* Expand the row array for new elements */
+    		if (scp->ac + need >= scp->nalloc) {
+		    /* XXX +4 is bogus, was +1 */
+		    scp->nalloc = 2 * scp->nalloc + need + 4;
+		    scp->av = xrealloc(scp->av, scp->nalloc * sizeof(*scp->av));
+		    scp->avlen = xrealloc(scp->avlen, scp->nalloc * sizeof(*scp->avlen));
+	        }
+
 		const char * cname = sqlite3_column_name(scp->pStmt, i);
 		const char * vtype = sqlite3_column_decltype(scp->pStmt, i);
 		size_t nb = 0;
@@ -998,9 +1053,9 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
     rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
     if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-    rc = sqlite3_bind_text(scp->pStmt, 1, key->data, key->size, SQLITE_TRANSIENT);
+    rc = sql_bind_key(dbi, scp, 1, key);
     if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) bind key %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-    rc = sqlite3_bind_text(scp->pStmt, 2, key->data, key->size, SQLITE_TRANSIENT);
+    rc = sql_bind_data(dbi, scp, 2, data);
     if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) bind data %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
     rc = sql_step(sqldb->db, scp);
@@ -1061,24 +1116,6 @@ fprintf(stderr, "\tcget(%s) scp %p\n", dbi->dbi_subfile, scp);
 
     if ( rc == 0 && key->size == 0 ) {
 	scp->all++;
-
-	/*
-	 * Scan the whole db..
-	 * We are not guarenteed a return order..
-	 * .. so get the 0x0 key first ..
-	 * (rpm expects the 0x0 key first)
-	 */
-	if ( scp->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
-static int mykeydata;
-if (_debug)
-fprintf(stderr, "\tPACKAGES #0 hack ...\n");
-	    flags=DB_SET;
-	    key->size=4;
-/*@-immediatetrans@*/
-if (key->data == NULL) key->data = &mykeydata;
-/*@=immediatetrans@*/
-	    memset(key->data, 0, 4);
-	}
     }
 
     /* New retrieval */
@@ -1096,8 +1133,15 @@ fprintf(stderr, "\tcget(%s) size 0  key 0x%x[%d] flags %d\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)key->data, key->size,
 		flags);
-	    scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
+
+	    /* Key's MUST be in order for the PACKAGES db! */
+	    if ( dbi->dbi_rpmtag == RPMDBI_PACKAGES )
+	       scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q' ORDER BY key;",
 			dbi->dbi_subfile);
+	    else
+	       scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
+			dbi->dbi_subfile);
+
 	    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
@@ -1119,7 +1163,7 @@ assert(scp->cmd != NULL);
 		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 assert(key->data != NULL);
-		rc = sqlite3_bind_text(scp->pStmt, 1, key->data, key->size, SQLITE_TRANSIENT);
+		rc = sql_bind_key(dbi, scp, 1, key);
 		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
 		rc = sql_step(sqldb->db, scp);
@@ -1190,17 +1234,6 @@ fprintf(stderr, "\tcget(%s) data av[%d] = %p[%d]\n", dbi->dbi_subfile, ix, v, nb
 	      }	break;
 	    }
 
-	/* We need to skip this entry... (we've already returned it) */
-    /* XXX FIXME: ptr alignment is fubar here. */
-	    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES &&
-		scp->all > 1 &&
-		key->size == 4 && key->data != NULL && *(long *)key->data == 0 )
-	    {
-if (_debug)
-fprintf(stderr, "\tcget(%s) skipping 0x0 record\n", dbi->dbi_subfile);
-		goto repeat;
-	    }
-
     /* XXX FIXME: ptr alignment is fubar here. */
 if (_debug)
 fprintf(stderr, "\tcget(%s) found  key 0x%x (%d)\n", dbi->dbi_subfile,
@@ -1215,10 +1248,6 @@ fprintf(stderr, "\tcget(%s) found data 0x%x (%d)\n", dbi->dbi_subfile,
 if (_debug)
 fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
     }
-
-    /* If we retrieved the 0x0 record.. clear so next pass we'll get them all.. */
-    if (scp->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES)
-	scp = scpReset(scp);	/* Free av and avlen, reset counters.*/
 
     if (cleanup)
 	/*@-temptrans@*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=temptrans@*/
@@ -1255,9 +1284,9 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 		dbi->dbi_subfile);
 	rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s) prepare %s (%d)\n",dbi->dbi_subfile,  sqlite3_errmsg(sqldb->db), rc);
-	rc = sqlite3_bind_text(scp->pStmt, 1, key->data, key->size, SQLITE_TRANSIENT);
+	rc = sql_bind_key(dbi, scp, 1, key);
 	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-	rc = sqlite3_bind_blob(scp->pStmt, 2, data->data, data->size, SQLITE_TRANSIENT);
+	rc = sql_bind_data(dbi, scp, 2, data);
 	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s) data bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
 	rc = sql_step(sqldb->db, scp);
