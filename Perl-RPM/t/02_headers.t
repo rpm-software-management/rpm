@@ -5,9 +5,9 @@ use RPM::Database;
 
 chomp($rpmstr = qx{rpm -q rpm});
 
-tie %DB, "RPM::Database";
-
 print "1..8\n";
+
+tie %DB, "RPM::Database" or die "$RPM::err";
 
 # Are we getting RPM::Header objects from the database?
 $hdr = $DB{rpm};
