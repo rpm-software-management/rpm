@@ -35,12 +35,14 @@ static void dpf(char *format, ...)
 const char *program_name = NULL;
 int debug = MYDEBUG;
 int verbose = 0;
-char *inputdir = "/mnt/redhat/comps/dist/5.2";
-char *outputdir = "/tmp/OUT";
+char *inputdir = NULL;
+char *outputdir = NULL;
+int gottalang = 0;
 int nlangs = 0;
 char *onlylang[128];
 int metamsgid = 0;
 int nogroups = 1;
+char *mastercatalogue = NULL;
 
 int gentran = 0;
 
@@ -597,8 +599,9 @@ DPRINTF(100, ("(%.*s)", (int)(se-s), s));
 			lang = s;
 			if (c)
 				se++;	/* skip ) */
-		} else
+		} else {
 			lang = "C";
+		}
 DPRINTF(100, ("\n"));
 
 		SKIPWHITE;
@@ -646,6 +649,15 @@ DPRINTF(100, ("\n"));
 		} else if (!strcmp(kw->name, "msgstr")) {
 			static lex_pos_ty pos = { __FILE__, __LINE__ };
 			message_variant_append(mp, xstrdup(lang), xstrdup(tbuf), &pos);
+			if (!gottalang) {
+				int l;
+				for (l = 0; l < nlangs; l++) {
+					if (!strcmp(onlylang[l], lang))
+						break;
+				}
+				if (l == nlangs)
+					onlylang[nlangs++] = strdup(lang);
+			}
 			lang = NULL;
 		}
 		/* XXX Peek to see if next item is comment */
@@ -850,7 +862,7 @@ static char *archs[] = {
 
 #define	RPMPUTTEXT	"rpmputtext"
 static int
-rpmputtext(FD_t fd, const char *file, FILE *ofp)
+rpmputtext(FD_t fd, const char *file, FILE *ofp, string_list_ty *drillp)
 {
 	string_list_ty *flp;
 	message_list_ty *mlp;
@@ -866,6 +878,18 @@ rpmputtext(FD_t fd, const char *file, FILE *ofp)
 	/* Read the po file, parsing out xref files */
 	if ((rc = parsepofile(file, &mlp, &flp)) != 0)
 		return rc;
+	if (drillp) {
+		string_list_free(flp);
+		flp = drillp;
+	}
+
+#if 0
+{ int l;
+  fprintf(stderr, "Drilling %d langs:", nlangs);
+  for (l = 0; l < nlangs; l++)
+    fprintf(stderr, " %s", onlylang[l]);
+}
+#endif
 
 	/* For all xref files ... */
 	for (j = 0; j < flp->nitems && rc == 0; j++) {
@@ -978,8 +1002,11 @@ main(int argc, char **argv)
 
     program_name = basename(argv[0]);
 
-    while((c = getopt(argc, argv, "degEMl:I:O:Tv")) != EOF)
+    while((c = getopt(argc, argv, "degEMl:C:I:O:Tv")) != EOF)
     switch (c) {
+    case 'C':
+	mastercatalogue = strdup(optarg);
+	break;
     case 'd':
 	debug++;
 	break;
@@ -990,6 +1017,7 @@ main(int argc, char **argv)
 	message_print_style_escape(1);
 	break;
     case 'l':
+	gottalang = 1;
 	onlylang[nlangs++] = strdup(optarg);
 	break;
     case 'I':
@@ -1035,17 +1063,22 @@ main(int argc, char **argv)
 	    }
 	}
     } else if (!strcmp(program_name, RPMPUTTEXT)) {
-	if (nlangs <= 0) {
-		fprintf(stderr, _("rpmputtext: must specify language with -l\n"));
+	if (mastercatalogue == NULL) {
+		fprintf(stderr, _("%s: must specify master PO catalogue with -C\n"),
+			program_name);
 		exit(1);
-	}
+        }
 	if (optind == argc) {
-	    rc = rpmputtext(fdi, STDINFN, stdout);
+		fprintf(stderr, _("%s: no binary rpms on cmd line\n"),
+			program_name);
+		exit(1);
 	} else {
+	    string_list_ty *drillp = string_list_alloc();
 	    for ( ; optind < argc; optind++ ) {
-		if ((rc = rpmputtext(fdi, argv[optind], stdout)) != 0)
-		    break;
+		string_list_append_unique(drillp, argv[optind]);
 	    }
+	    rc = rpmputtext(fdi, mastercatalogue, stdout, drillp);
+	    string_list_free(drillp);
 	}
     } else if (!strcmp(program_name, RPMCHKTEXT)) {
 	if (optind == argc) {
