@@ -793,17 +793,13 @@ byteswap(/*@null@*/ struct magic *m, uint32_t nmagic)
 /*
  * make a dbname
  */
+/*@only@*/
 static char *
 mkdbname(const char *fn)
 	/*@*/
 {
-	static const char ext[] = ".mgc";
-	/*@only@*/
-	static char *buf = NULL;
-
-	buf = xrealloc(buf, strlen(fn) + sizeof(ext) + 1);
-	(void)strcpy(buf, fn);
-	(void)strcat(buf, ext);
+	char * buf = xmalloc(strlen(fn) + sizeof(".mgc"));
+	(void) stpcpy( stpcpy(buf, fn), ".mgc");
 	return buf;
 }
 
