@@ -241,7 +241,7 @@ static int readIcon(Header h, const char *file)
 	goto exit;
     }
 
-    icon = malloc(statbuf.st_size);
+    icon = xmalloc(statbuf.st_size);
     *icon = '\0';
     fd = fdOpen(fn, O_RDONLY, 0);
     nb = fdRead(fd, icon, statbuf.st_size);
@@ -277,20 +277,20 @@ stashSt(Spec spec, Header h, int tag, const char *lang)
     if (st) {
 	if (st->st_ntags == st->st_nalloc) {
 	    st->st_nalloc += 10;
-	    st->st_t = realloc(st->st_t, st->st_nalloc * sizeof(*(st->st_t)));
+	    st->st_t = xrealloc(st->st_t, st->st_nalloc * sizeof(*(st->st_t)));
 	}
 	t = st->st_t + st->st_ntags++;
 	t->t_tag = tag;
 	t->t_startx = spec->lineNum - 1;
 	t->t_nlines = 1;
-	t->t_lang = strdup(lang);
+	t->t_lang = xstrdup(lang);
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    char *n;
 	    if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &n, NULL)) {
 		char buf[1024];
 		sprintf(buf, "%s(%s)", n, tagName(tag));
-		t->t_msgid = strdup(buf);
+		t->t_msgid = xstrdup(buf);
 	    }
 	}
     }
@@ -385,10 +385,10 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	if (spec->buildRoot == NULL) {
 	    const char *buildroot = rpmGetPath("%{buildroot}", NULL);
 	    if (buildroot && *buildroot != '%') {
-		spec->buildRoot = strdup(cleanFileName(buildroot));
+		spec->buildRoot = xstrdup(cleanFileName(buildroot));
 		macro = NULL;
 	    } else {
-		spec->buildRoot = strdup(cleanFileName(field));
+		spec->buildRoot = xstrdup(cleanFileName(field));
 	    }
 	    xfree(buildroot);
 	} else {

@@ -138,7 +138,7 @@ static rpmProblemSet psCreate(void)
 {
     rpmProblemSet probs;
 
-    probs = malloc(sizeof(*probs));
+    probs = xmalloc(sizeof(*probs));
     probs->numProblems = probs->numProblemsAlloced = 0;
     probs->probs = NULL;
 
@@ -154,7 +154,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 	    probs->numProblemsAlloced *= 2;
 	else
 	    probs->numProblemsAlloced = 2;
-	probs->probs = realloc(probs->probs,
+	probs->probs = xrealloc(probs->probs,
 			probs->numProblemsAlloced * sizeof(*probs->probs));
     }
 
@@ -163,13 +163,13 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
     probs->probs[probs->numProblems].h = headerLink(h);
     probs->probs[probs->numProblems].ulong1 = ulong1;
     if (str1)
-	probs->probs[probs->numProblems].str1 = strdup(str1);
+	probs->probs[probs->numProblems].str1 = xstrdup(str1);
     else
 	probs->probs[probs->numProblems].str1 = NULL;
 
-    if (altH)
+    if (altH) {
 	probs->probs[probs->numProblems].altH = headerLink(altH);
-    else
+    } else
 	probs->probs[probs->numProblems].altH = NULL;
 
     probs->probs[probs->numProblems++].ignoreProblem = 0;
@@ -228,7 +228,9 @@ void rpmProblemSetFree(rpmProblemSet probs)
     for (i = 0; i < probs->numProblems; i++) {
 	headerFree(probs->probs[i].h);
 	if (probs->probs[i].str1) free(probs->probs[i].str1);
-	if (probs->probs[i].altH) headerFree(probs->probs[i].altH);
+	if (probs->probs[i].altH) {
+	    headerFree(probs->probs[i].altH);
+	}
     }
     free(probs);
 }
@@ -252,7 +254,10 @@ static Header relocateFileList(struct availablePackage * alp,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
 
-    if (!rawRelocations && !numValid) return headerLink(origH);
+    if (!rawRelocations && !numValid) {
+	Header oH =  headerLink(origH);
+	return oH;
+    }
 
     h = headerCopy(origH);
 
@@ -314,7 +319,7 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Add relocation values to the header */
     if (numValid) {
 	const char ** actualRelocations;
-	actualRelocations = malloc(sizeof(*actualRelocations) * numValid);
+	actualRelocations = xmalloc(sizeof(*actualRelocations) * numValid);
 	for (i = 0; i < numValid; i++) {
 	    for (j = 0; j < numRelocations; j++) {
 		if (strcmp(validRelocations[i], relocations[j].oldPath))
@@ -600,7 +605,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     headerGetEntryMinMemory(h, RPMTAG_FILESIZES, NULL,
 			    (void **) &otherSizes, NULL);
 
-    fi->replaced = malloc(sizeof(*fi->replaced) * sharedCount);
+    fi->replaced = xmalloc(sizeof(*fi->replaced) * sharedCount);
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
@@ -645,7 +650,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     free(otherLinks);
     headerFree(h);
 
-    fi->replaced = realloc(fi->replaced,
+    fi->replaced = xrealloc(fi->replaced,
 			   sizeof(*fi->replaced) * (numReplaced + 1));
     fi->replaced[numReplaced].otherPkg = 0;
 
@@ -1150,7 +1155,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    }
 
 	    /* Allocate file actions (and initialize to RPMFILE_STATE_NORMAL) */
-	    fi->actions = calloc(sizeof(*fi->actions), fi->fc);
+	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 	    hdrs[i] = relocateFileList(alp, probs, alp->h, fi->actions,
 			          ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
 	    fi->h = headerLink(hdrs[i]);
@@ -1177,7 +1182,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	/* actions is initialized earlier for added packages */
 	if (fi->actions == NULL)
-	    fi->actions = calloc(sizeof(*fi->actions), fi->fc);
+	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
 	headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL,
 				(void **) &fi->fmodes, NULL);
@@ -1194,13 +1199,13 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				    (void **) &fi->fmd5s, NULL);
 	    headerGetEntry(fi->h, RPMTAG_FILELINKTOS, NULL,
 				    (void **) &fi->flinks, NULL);
-	    fi->fsizes = memcpy(malloc(fi->fc * sizeof(*fi->fsizes)),
+	    fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
 				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
-	    fi->fflags = memcpy(malloc(fi->fc * sizeof(*fi->fflags)),
+	    fi->fflags = memcpy(xmalloc(fi->fc * sizeof(*fi->fflags)),
 				fi->fflags, fi->fc * sizeof(*fi->fflags));
-	    fi->fmodes = memcpy(malloc(fi->fc * sizeof(*fi->fmodes)),
+	    fi->fmodes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmodes)),
 				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
-	    fi->fstates = memcpy(malloc(fi->fc * sizeof(*fi->fstates)),
+	    fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
 				fi->fstates, fi->fc * sizeof(*fi->fstates));
 	    headerFree(fi->h);
 	    fi->h = NULL;
@@ -1212,14 +1217,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				    (void **) &fi->flinks, NULL);
 
 	    /* 0 makes for noops */
-	    fi->replacedSizes = calloc(fi->fc, sizeof(*fi->replacedSizes));
+	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    skipFiles(fi, flags & RPMTRANS_FLAG_NODOCS);
 	    break;
 	}
 
-        fi->fps = malloc(fi->fc * sizeof(*fi->fps));
+        fi->fps = xmalloc(sizeof(*fi->fps) * fi->fc);
     }
 
     /* There are too many returns to plug this leak. Use alloca instead. */
@@ -1257,7 +1262,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	       NULL, notifyData));
 
 	/* Extract file info for all files in this package from the database. */
-	matches = malloc(sizeof(*matches) * fi->fc);
+	matches = xmalloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
 	numShared = 0;
@@ -1265,7 +1270,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
-	shared = sharedList = malloc(sizeof(*sharedList) * (numShared + 1));
+	shared = sharedList = xmalloc(sizeof(*sharedList) * (numShared + 1));
 	for (i = 0; i < fi->fc; i++) {
 	    /*
 	     * Take care not to mark files as replaced in packages that will

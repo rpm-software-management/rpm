@@ -59,13 +59,13 @@ static int getFilesystemList(void)
 
     numFilesystems = num;
 
-    filesystems = malloc(sizeof(*filesystems) * (numFilesystems + 1));
-    fsnames = malloc(sizeof(char *) * (numFilesystems + 1));
+    filesystems = xcalloc((numFilesystems + 1), sizeof(*filesystems));
+    fsnames = xcalloc((numFilesystems + 1), sizeof(char *));
     
     for (vm = buf, i = 0; i < num; i++) {
 	char *fsn;
 	fsnameLength = vm->vmt_data[VMT_STUB].vmt_size;
-	fsn = malloc(fsnameLength + 1);
+	fsn = xmalloc(fsnameLength + 1);
 	strncpy(fsn, (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, 
 		fsnameLength);
 
@@ -124,8 +124,7 @@ static int getFilesystemList(void)
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
 #   endif
 
-    filesystems = malloc(sizeof(*filesystems) * (numAlloced + 1));
-    memset(filesystems, 0, sizeof(*filesystems) * (numAlloced + 1));
+    filesystems = xcalloc((numAlloced + 1), sizeof(*filesystems));
 
     while (1) {
 #	if GETMNTENT_ONE
@@ -157,12 +156,12 @@ static int getFilesystemList(void)
 
 	if (num == numAlloced) {
 	    numAlloced += 10;
-	    filesystems = realloc(filesystems, 
+	    filesystems = xrealloc(filesystems, 
 				  sizeof(*filesystems) * (numAlloced + 1));
 	}
 
 	filesystems[num].dev = sb.st_dev;
-	filesystems[num].mntPoint = strdup(mntdir);
+	filesystems[num].mntPoint = xstrdup(mntdir);
 	num++;
     }
 
@@ -175,7 +174,7 @@ static int getFilesystemList(void)
     filesystems[num].dev = 0;
     filesystems[num].mntPoint = NULL;
 
-    fsnames = malloc(sizeof(*fsnames) * (num + 1));
+    fsnames = xcalloc((num + 1), sizeof(*fsnames));
     for (i = 0; i < num; i++)
 	fsnames[i] = filesystems[i].mntPoint;
     fsnames[num] = NULL;
@@ -216,7 +215,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	if (getFilesystemList())
 	    return 1;
 
-    usages = calloc(numFilesystems, sizeof(usages));
+    usages = xcalloc(numFilesystems, sizeof(usages));
 
     sourceDir = rpmGetPath("", "/%{_sourcedir}", NULL);
 

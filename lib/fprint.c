@@ -52,7 +52,7 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 		if (scareMemory)
 		    fp.basename = chptr1;
 		else
-		    fp.basename = strdup(chptr1);
+		    fp.basename = xstrdup(chptr1);
 		fp.ino = cache->ino;
 		fp.dev = cache->dev;
 		return fp;
@@ -96,7 +96,7 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
 	    if (scareMemory)
 		fp.basename = chptr1;
 	    else
-		fp.basename = strdup(chptr1);
+		fp.basename = xstrdup(chptr1);
 	    fp.ino = sb.st_ino;
 	    fp.dev = sb.st_dev;
 

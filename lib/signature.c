@@ -210,7 +210,8 @@ int rpmWriteSignature(FD_t fd, Header header)
 
 Header rpmNewSignature(void)
 {
-    return headerNew();
+    Header h = headerNew();
+    return h;
 }
 
 void rpmFreeSignature(Header h)
@@ -286,7 +287,7 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 
     *size = statbuf.st_size;
     rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *size);
-    *sig = malloc(*size);
+    *sig = xmalloc(*size);
     
     {	FD_t fd;
 	int rc;
@@ -363,7 +364,7 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 
     *size = statbuf.st_size;
     rpmMessage(RPMMESS_DEBUG, _("GPG sig size: %d\n"), *size);
-    *sig = malloc(*size);
+    *sig = xmalloc(*size);
     
     {	FD_t fd;
 	int rc;

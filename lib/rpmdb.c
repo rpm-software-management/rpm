@@ -135,7 +135,7 @@ static int openDbFile(const char * prefix, const char * dbpath, const char * sho
 
 static /*@only@*/ rpmdb newRpmdb(void)
 {
-    rpmdb db = malloc(sizeof(*db));
+    rpmdb db = xmalloc(sizeof(*db));
     db->pkgs = NULL;
     db->nameIndex = NULL;
     db->fileIndex = NULL;
@@ -220,9 +220,9 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 		    &db->nameIndex, DB_HASH);
 
     if (minimal) {
-	*rpmdbp = malloc(sizeof(struct rpmdb_s));
+	*rpmdbp = xmalloc(sizeof(struct rpmdb_s));
 	if (rpmdbp)
-	    *rpmdbp = db;
+	    *rpmdbp = db;	/* structure assignment */
 	else
 	    rpmdbClose(db);
 	return 0;
@@ -784,8 +784,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     /* this may be worth batching by basename, but probably not as
        basenames are quite unique as it is */
 
-    intMatches = malloc(sizeof(*intMatches) * intMatchesAlloced);
-    memset(intMatches, 0, sizeof(*intMatches) * intMatchesAlloced);
+    intMatches = xcalloc(intMatchesAlloced, sizeof(*intMatches));
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
@@ -801,7 +800,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    if ((numIntMatches + dbiIndexSetCount(matches)) >= intMatchesAlloced) {
 		intMatchesAlloced += dbiIndexSetCount(matches);
 		intMatchesAlloced += intMatchesAlloced / 5;
-		intMatches = realloc(intMatches, 
+		intMatches = xrealloc(intMatches, 
 				     sizeof(*intMatches) * intMatchesAlloced);
 	    }
 
@@ -850,13 +849,11 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
 				(void **) &fullfl, &fc);
 
-	    fl = malloc(sizeof(*fl) * num);
-	    memset(fl, 0, sizeof(*fl) * num);
+	    fl = xcalloc(num, sizeof(*fl));
 	    for (i = 0; i < num; i++)
 		fl[i] = fullfl[im[i].rec.fileNumber];
 	    free(fullfl);
-	    fps = malloc(sizeof(*fps) * num);
-	    memset(fps, 0, sizeof(*fps) * num);
+	    fps = xcalloc(num, sizeof(*fps));
 	    fpLookupList(fl, fps, num, 1);
 	    free(fl);
 	}

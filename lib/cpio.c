@@ -237,7 +237,7 @@ static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr)
 
     GET_NUM_FIELD(physHeader.namesize, nameSize);
 
-    chPtr->path = malloc(nameSize + 1);
+    chPtr->path = xmalloc(nameSize + 1);
     if (ourread(cfd, chPtr->path, nameSize) != nameSize) {
 	free(chPtr->path);
 	chPtr->path = NULL;
@@ -323,7 +323,7 @@ static int setInfo(struct cpioHeader * hdr)
 
 static int checkDirectory(char * filename)
 {
-    static char * lastDir = NULL;
+    static char * lastDir = NULL;	/* XXX memory leak */
     static int lastDirLength = 0;
     static int lastDirAlloced = 0;
     int length = strlen(filename);
@@ -347,7 +347,7 @@ static int checkDirectory(char * filename)
 
     if (lastDirAlloced < (length + 1)) {
 	lastDirAlloced = length + 100;
-	lastDir = realloc(lastDir, lastDirAlloced);
+	lastDir = xrealloc(lastDir, lastDirAlloced);
     }
 
     strcpy(lastDir, buf);
@@ -522,14 +522,14 @@ static int createLinks(struct hardLink * li, /*@out@*/const char ** failedFile)
 	if (!lstat(li->files[i], &sb)) {
 	    if (unlink(li->files[i])) {
 		if (failedFile)
-		    *failedFile = strdup(li->files[i]);
+		    *failedFile = xstrdup(li->files[i]);
 		return CPIOERR_UNLINK_FAILED;
 	    }
 	}
 
 	if (link(li->files[li->createdPath], li->files[i])) {
 	    if (failedFile)
-		*failedFile = strdup(li->files[i]);
+		*failedFile = xstrdup(li->files[i]);
 	    return CPIOERR_LINK_FAILED;
 	}
 
@@ -603,7 +603,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	    if (map) {
 		if (map->mapFlags & CPIO_MAP_PATH) {
 		    free(ch.path);
-		    ch.path = strdup(map->fsPath);
+		    ch.path = xstrdup(map->fsPath);
 		} 
 
 		if (map->mapFlags & CPIO_MAP_MODE)
@@ -623,20 +623,20 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		}
 
 		if (li == NULL) {
-		    li = malloc(sizeof(*li));
+		    li = xmalloc(sizeof(*li));
 		    li->inode = ch.inode;
 		    li->dev = ch.dev;
 		    li->nlink = ch.nlink;
 		    li->linksLeft = ch.nlink;
 		    li->createdPath = -1;
-		    li->files = calloc(sizeof(char *), li->nlink);
+		    li->files = xcalloc(li->nlink,(sizeof(*li->files)));
 		    li->next = links;
 		    links = li;
 		}
 
 		for (linkNum = 0; linkNum < li->nlink; linkNum++)
 		    if (!li->files[linkNum]) break;
-		li->files[linkNum] = strdup(ch.path);
+		li->files[linkNum] = xstrdup(ch.path);
 	    }
 		
 	    if ((ch.nlink > 1) && S_ISREG(ch.mode) && !ch.size &&
@@ -685,7 +685,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	    }
 
 	    if (rc && failedFile && *failedFile == NULL) {
-		*failedFile = strdup(ch.path);
+		*failedFile = xstrdup(ch.path);
 
 		olderr = errno;
 		unlink(ch.path);
@@ -884,7 +884,7 @@ static int writeLinkedFile(CFD_t *cfd, struct hardLink * hlink,
 	if ((rc = writeFile(cfd, hlink->sb, mappings + hlink->fileMaps[i], 
 			    &size, 0))) {
 	    if (failedFile)
-		*failedFile = strdup(mappings[hlink->fileMaps[i]].fsPath);
+		*failedFile = xstrdup(mappings[hlink->fileMaps[i]].fsPath);
 	    return rc;
 	}
 
@@ -902,7 +902,7 @@ static int writeLinkedFile(CFD_t *cfd, struct hardLink * hlink,
 	if (sizep)
 	    *sizep = total;
 	if (failedFile) 
-	    *failedFile = strdup(mappings[hlink->fileMaps[hlink->linksLeft]].fsPath);
+	    *failedFile = xstrdup(mappings[hlink->fileMaps[hlink->linksLeft]].fsPath);
 	return rc;
     }
     total += size;
@@ -943,7 +943,7 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 
 	if (rc) {
 	    if (failedFile)
-		*failedFile = strdup(mappings[i].fsPath);
+		*failedFile = xstrdup(mappings[i].fsPath);
 	    return CPIOERR_STAT_FAILED;
 	}
 
@@ -953,7 +953,7 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		   (hlink->dev != sb.st_dev || hlink->inode != sb.st_ino))
 		hlink = hlink->next;
 	    if (!hlink) {
-		hlink = malloc(sizeof(*hlink));
+		hlink = xmalloc(sizeof(*hlink));
 		hlink->next = hlinkList.next;
 		hlinkList.next = hlink;
 		hlink->sb = sb;		/* structure assignment */
@@ -961,7 +961,7 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		hlink->inode = sb.st_ino;
 		hlink->nlink = sb.st_nlink;
 		hlink->linksLeft = sb.st_nlink;
-		hlink->fileMaps = malloc(sizeof(*hlink->fileMaps) * 
+		hlink->fileMaps = xmalloc(sizeof(*hlink->fileMaps) * 
 						sb.st_nlink);
 	    }
 
@@ -984,7 +984,7 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	} else {
 	    if ((rc = writeFile(cfd, sb, mappings + i, &size, 1))) {
 		if (failedFile)
-		    *failedFile = strdup(mappings[i].fsPath);
+		    *failedFile = xstrdup(mappings[i].fsPath);
 		return rc;
 	    }
 

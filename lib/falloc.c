@@ -107,6 +107,7 @@ faFile faOpen(const char * path, int flags, int perms)
 	fas.fileSize = faLseek(&fas, 0, SEEK_CUR);
     }
 
+    /* XXX xmalloc is inappopriate here */
     if ((fa = malloc(sizeof(*fa))) != NULL) {
 	fa->fd = fas.fd;
 	fa->readOnly = fas.readOnly;

@@ -5,7 +5,8 @@
 
 #include "rpmdb.h"
 
-int rpmdbRebuild(const char * rootdir) {
+int rpmdbRebuild(const char * rootdir)
+{
     rpmdb olddb, newdb;
     const char * dbpath = NULL;
     const char * newdbpath = NULL;

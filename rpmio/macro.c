@@ -88,12 +88,13 @@ expandMacroTable(MacroContext *mc)
 {
 	if (mc->macroTable == NULL) {
 		mc->macrosAllocated = MACRO_CHUNK_SIZE;
-		mc->macroTable = (MacroEntry **)malloc(sizeof(*(mc->macroTable)) *
-				mc->macrosAllocated);
+		mc->macroTable = (MacroEntry **)
+		    xmalloc(sizeof(*(mc->macroTable)) * mc->macrosAllocated);
 		mc->firstFree = 0;
 	} else {
 		mc->macrosAllocated += MACRO_CHUNK_SIZE;
-		mc->macroTable = (MacroEntry **)realloc(mc->macroTable, sizeof(*(mc->macroTable)) *
+		mc->macroTable = (MacroEntry **)
+		    xrealloc(mc->macroTable, sizeof(*(mc->macroTable)) *
 				mc->macrosAllocated);
 	}
 	memset(&mc->macroTable[mc->firstFree], 0, MACRO_CHUNK_SIZE * sizeof(*(mc->macroTable)));
@@ -547,12 +548,12 @@ static void
 pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int level)
 {
 	MacroEntry *prev = (*mep ? *mep : NULL);
-	MacroEntry *me = (MacroEntry *) malloc(sizeof(*me));
+	MacroEntry *me = (MacroEntry *) xmalloc(sizeof(*me));
 
 	me->prev = prev;
-	me->name = (prev ? prev->name : strdup(n));
-	me->opts = (o ? strdup(o) : NULL);
-	me->body = strdup(b ? b : "");
+	me->name = (prev ? prev->name : xstrdup(n));
+	me->opts = (o ? xstrdup(o) : NULL);
+	me->body = xstrdup(b ? b : "");
 	me->used = 0;
 	me->level = level;
 	*mep = me;
@@ -1260,7 +1261,7 @@ initMacros(MacroContext *mc, const char *macrofiles)
 	if (mc == NULL)
 		mc = &globalMacroContext;
 
-	for (mfile = m = strdup(macrofiles); *mfile; mfile = me) {
+	for (mfile = m = xstrdup(macrofiles); *mfile; mfile = me) {
 		FILE *fp;
 		char buf[BUFSIZ];
 
@@ -1381,7 +1382,7 @@ rpmExpand(const char *arg, ...)
     va_list ap;
 
     if (arg == NULL)
-	return strdup("");
+	return xstrdup("");
 
     p = buf;
     strcpy(p, arg);
@@ -1396,7 +1397,7 @@ rpmExpand(const char *arg, ...)
     }
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
-    return strdup(buf);
+    return xstrdup(buf);	/* XXX build memory leaks */
 }
 
 int
@@ -1435,7 +1436,7 @@ rpmGetPath(const char *path, ...)
     va_list ap;
 
     if (path == NULL)
-	return strdup("");
+	return xstrdup("");
 
     p = buf;
     strcpy(p, path);
@@ -1455,7 +1456,7 @@ rpmGetPath(const char *path, ...)
     }
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
-    return strdup(buf);
+    return xstrdup(buf);
 }
 
 /* =============================================================== */

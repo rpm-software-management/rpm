@@ -43,7 +43,7 @@ static Value valueMakeInteger(int i)
 {
   Value v;
 
-  v = (Value) malloc(sizeof(struct _value));
+  v = (Value) xmalloc(sizeof(struct _value));
   v->type = VALUE_TYPE_INTEGER;
   v->data.i = i;
   return v;
@@ -53,9 +53,9 @@ static Value valueMakeString(const char *s)
 {
   Value v;
 
-  v = (Value) malloc(sizeof(struct _value));
+  v = (Value) xmalloc(sizeof(struct _value));
   v->type = VALUE_TYPE_STRING;
-  v->data.s = strdup(s);
+  v->data.s = xstrdup(s);
   return v;
 }
 
@@ -473,7 +473,7 @@ static Value doAddSubtract(ParseState state)
 	return NULL;
       }
 
-      copy = malloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
+      copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
       strcpy(copy, v1->data.s);
       strcat(copy, v2->data.s);
 
@@ -628,7 +628,7 @@ int parseExpressionBoolean(Spec spec, char *expr)
   DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
 
   /* Initialize the expression parser state. */
-  state.str = state.p = strdup(expr);
+  state.str = state.p = xstrdup(expr);
   state.spec = spec;
   rdToken(&state);
 
@@ -673,7 +673,7 @@ char * parseExpressionString(Spec spec, char *expr)
   DEBUG(printf("parseExprString(?, '%s')\n", expr));
 
   /* Initialize the expression parser state. */
-  state.str = state.p = strdup(expr);
+  state.str = state.p = xstrdup(expr);
   state.spec = spec;
   rdToken(&state);
 
@@ -697,10 +697,10 @@ char * parseExpressionString(Spec spec, char *expr)
   case VALUE_TYPE_INTEGER: {
     char buf[128];
     sprintf(buf, "%d", v->data.i);
-    result = strdup(buf);
+    result = xstrdup(buf);
   } break;
   case VALUE_TYPE_STRING:
-    result = strdup(v->data.s);
+    result = xstrdup(v->data.s);
     break;
   default:
     break;

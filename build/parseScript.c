@@ -18,11 +18,11 @@ static int addTriggerIndex(Package pkg, char *file, char *script, char *prog)
 	index = last->index + 1;
     }
 
-    new = malloc(sizeof(*new));
+    new = xmalloc(sizeof(*new));
 
-    new->fileName = (file) ? strdup(file) : NULL;
-    new->script = (*script) ? strdup(script) : NULL;
-    new->prog = strdup(prog);
+    new->fileName = (file) ? xstrdup(file) : NULL;
+    new->script = (*script) ? xstrdup(script) : NULL;
+    new->prog = xstrdup(prog);
     new->index = index;
     new->next = NULL;
 
@@ -259,19 +259,19 @@ int parseScript(Spec spec, int parsePart)
 	if (file) {
 	    switch (parsePart) {
 	      case PART_PRE:
-		pkg->preInFile = strdup(file);
+		pkg->preInFile = xstrdup(file);
 		break;
 	      case PART_POST:
-		pkg->postInFile = strdup(file);
+		pkg->postInFile = xstrdup(file);
 		break;
 	      case PART_PREUN:
-		pkg->preUnFile = strdup(file);
+		pkg->preUnFile = xstrdup(file);
 		break;
 	      case PART_POSTUN:
-		pkg->postUnFile = strdup(file);
+		pkg->postUnFile = xstrdup(file);
 		break;
 	      case PART_VERIFYSCRIPT:
-		pkg->verifyFile = strdup(file);
+		pkg->verifyFile = xstrdup(file);
 		break;
 	    }
 	}

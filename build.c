@@ -1,7 +1,6 @@
 #include "system.h"
 
-#include "build/rpmbuild.h"
-#include "popt/popt.h"
+#include "rpmbuild.h"
 #include "build.h"
 #include "install.h"
 
@@ -312,7 +311,7 @@ static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
 	    fprintf(stderr, _("buildroot already specified"));
 	    exit(EXIT_FAILURE);
 	}
-	data->buildRootOverride = strdup(arg);
+	data->buildRootOverride = xstrdup(arg);
 	break;
     case POPT_BUILDARCH:
 	fprintf(stderr, _("--buildarch has been obsoleted.  Use the --target option instead.\n")); 
@@ -325,10 +324,10 @@ static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
     case POPT_TARGETPLATFORM:
 	if (data->targets) {
 	    int len = strlen(data->targets) + strlen(arg) + 2;
-	    data->targets = realloc(data->targets, len);
+	    data->targets = xrealloc(data->targets, len);
 	    strcat(data->targets, ",");
 	} else {
-	    data->targets = malloc(strlen(arg) + 1);
+	    data->targets = xmalloc(strlen(arg) + 1);
 	    data->targets[0] = '\0';
 	}
 	strcat(data->targets, arg);

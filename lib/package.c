@@ -82,20 +82,19 @@ static int readOldHeader(FD_t fd, /*@out@*/Header * hdr, /*@unused@*/ /*@out@*/i
     if (spec.fileCount) {
 	/* some packages have no file lists */
 
-	fileList = malloc(sizeof(char *) * spec.fileCount);
-	fileLinktoList = malloc(sizeof(char *) * spec.fileCount);
-	fileMD5List = malloc(sizeof(char *) * spec.fileCount);
-	fileSizeList = malloc(sizeof(int_32) * spec.fileCount);
-	fileUIDList = malloc(sizeof(int_32) * spec.fileCount);
-	fileGIDList = malloc(sizeof(int_32) * spec.fileCount);
-	fileMtimesList = malloc(sizeof(int_32) * spec.fileCount);
-	fileFlagsList = malloc(sizeof(int_32) * spec.fileCount);
-	fileModesList = malloc(sizeof(int_16) * spec.fileCount);
-	fileRDevsList = malloc(sizeof(int_16) * spec.fileCount);
-	fileStatesList = malloc(sizeof(char) * spec.fileCount);
-	unames = malloc(sizeof(char *) * spec.fileCount);
-	gnames = malloc(sizeof(char *) * spec.fileCount);
-
+	fileList = xmalloc(sizeof(char *) * spec.fileCount);
+	fileLinktoList = xmalloc(sizeof(char *) * spec.fileCount);
+	fileMD5List = xmalloc(sizeof(char *) * spec.fileCount);
+	fileSizeList = xmalloc(sizeof(int_32) * spec.fileCount);
+	fileUIDList = xmalloc(sizeof(int_32) * spec.fileCount);
+	fileGIDList = xmalloc(sizeof(int_32) * spec.fileCount);
+	fileMtimesList = xmalloc(sizeof(int_32) * spec.fileCount);
+	fileFlagsList = xmalloc(sizeof(int_32) * spec.fileCount);
+	fileModesList = xmalloc(sizeof(int_16) * spec.fileCount);
+	fileRDevsList = xmalloc(sizeof(int_16) * spec.fileCount);
+	fileStatesList = xmalloc(sizeof(char) * spec.fileCount);
+	unames = xmalloc(sizeof(char *) * spec.fileCount);
+	gnames = xmalloc(sizeof(char *) * spec.fileCount);
 
 	/* We also need to contstruct a file owner/group list. We'll just
 	   hope the numbers all map to something, those that don't will
@@ -128,17 +127,17 @@ static int readOldHeader(FD_t fd, /*@out@*/Header * hdr, /*@unused@*/ /*@out@*/i
 
 	    unames[j] = uidToUname(fileUIDList[j]);
 	    if (unames[j])
-		unames[j] = strdup(unames[j]);
+		unames[j] = xstrdup(unames[j]);
 	    else {
-		unames[j] = malloc(20);
+		unames[j] = xmalloc(20);
 		sprintf(unames[j], "uid%d", fileUIDList[j]);
 	    }
 
 	    gnames[j] = gidToGname(fileGIDList[j]);
 	    if (gnames[j])
-		gnames[j] = strdup(gnames[j]);
+		gnames[j] = xstrdup(gnames[j]);
 	    else {
-		gnames[j] = malloc(20);
+		gnames[j] = xmalloc(20);
 		sprintf(gnames[j], "gid%d", fileGIDList[j]);
 	    }
 	}
@@ -268,7 +267,9 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 	*hdr = headerRead(fd, (lead->major >= 3) ?
 			  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 	if (*hdr == NULL) {
-	    if (sigs != NULL) headerFree(*sigs);
+	    if (sigs != NULL) {
+		headerFree(*sigs);
+	    }
 	    return 2;
 	}
 
@@ -300,7 +301,9 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 	/*@notreached@*/ break;
     } 
 
-    if (hdrPtr == NULL) headerFree(*hdr);
+    if (hdrPtr == NULL) {
+	headerFree(*hdr);
+    }
     
     return 0;
 }

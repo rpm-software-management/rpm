@@ -236,14 +236,14 @@ static int doSetupMacro(Spec spec, char *line)
     }
 
     if (dirName) {
-	spec->buildSubdir = strdup(dirName);
+	spec->buildSubdir = xstrdup(dirName);
     } else {
 	headerGetEntry(spec->packages->header, RPMTAG_VERSION, NULL,
 		 (void **) &version, NULL);
 	headerGetEntry(spec->packages->header, RPMTAG_NAME, NULL,
 		 (void **) &name, NULL);
 	sprintf(buf, "%s-%s", name, version);
-	spec->buildSubdir = strdup(buf);
+	spec->buildSubdir = xstrdup(buf);
     }
     
     free(argv);

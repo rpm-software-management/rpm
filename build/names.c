@@ -37,7 +37,7 @@ char *getUname(uid_t uid)
     uids[x] = uid;
     uid_used++;
     if (pw) {
-	unames[x] = strdup(pw->pw_name);
+	unames[x] = xstrdup(pw->pw_name);
     } else {
 	unames[x] = NULL;
     }
@@ -69,10 +69,10 @@ char *getUnameS(const char *uname)
     uid_used++;
     if (pw) {
         uids[x] = pw->pw_uid;
-	unames[x] = strdup(pw->pw_name);
+	unames[x] = xstrdup(pw->pw_name);
     } else {
         uids[x] = -1;
-	unames[x] = strdup(uname);
+	unames[x] = xstrdup(uname);
     }
     return unames[x];
 }
@@ -102,7 +102,7 @@ char *getGname(gid_t gid)
     gids[x] = gid;
     gid_used++;
     if (gr) {
-	gnames[x] = strdup(gr->gr_name);
+	gnames[x] = xstrdup(gr->gr_name);
     } else {
 	gnames[x] = NULL;
     }
@@ -134,10 +134,10 @@ char *getGnameS(const char *gname)
     gid_used++;
     if (gr) {
     	gids[x] = gr->gr_gid;
-	gnames[x] = strdup(gr->gr_name);
+	gnames[x] = xstrdup(gr->gr_name);
     } else {
     	gids[x] = -1;
-	gnames[x] = strdup(gname);
+	gnames[x] = xstrdup(gname);
     }
     return gnames[x];
 }

@@ -122,11 +122,11 @@ genSrpmFileName(Header h)
 
 #if 0
     if (strcmp(sourcerpm, sfn))
-	return strdup(sourcerpm);
+	return xstrdup(sourcerpm);
 
     return NULL;
 #else
-    return strdup(sourcerpm);
+    return xstrdup(sourcerpm);
 #endif
 
 }
@@ -152,10 +152,6 @@ hasLang(const char *onlylang, char **langs, char **s)
 
 /* ================================================================== */
 /* XXX stripped down gettext environment */
-
-#define	xstrdup		strdup
-#define	xmalloc		malloc
-#define	xrealloc	realloc
 
 #if !defined(PARAMS)
 #define	PARAMS(_x)	_x

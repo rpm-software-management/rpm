@@ -29,7 +29,7 @@ static inline int genSourceRpmName(Spec spec)
 	headerNVR(spec->packages->header, &name, &version, &release);
 	sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
 	    spec->noSource ? "no" : "");
-	spec->sourceRpmName = strdup(fileName);
+	spec->sourceRpmName = xstrdup(fileName);
     }
 
     return 0;
@@ -235,7 +235,7 @@ int writeRPM(Header h, const char *fileName, int type,
     /* Create and add the cookie */
     if (cookie) {
 	sprintf(buf, "%s %d", buildHost(), (int) time(NULL));
-	*cookie = strdup(buf);
+	*cookie = xstrdup(buf);
 	headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }
     

@@ -208,7 +208,9 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     rc = 0;
 
  exit:
-    if (h)	headerFree(h);
+    if (h) {
+	headerFree(h);
+    }
     return rc;
 }
 
@@ -393,7 +395,7 @@ int runInstScript(const char * root, Header h, int scriptTag, int progTag,
     }
 
     rc = runScript(h, root, programArgc, argv, script, arg, -1, err);
-    if (programType == RPM_STRING_ARRAY_TYPE) free(programArgv);
+    if (programArgv && programType == RPM_STRING_ARRAY_TYPE) free(programArgv);
     return rc;
 }
 

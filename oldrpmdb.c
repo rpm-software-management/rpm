@@ -17,10 +17,10 @@ char * oldrpmdbLabelToLabelstr(struct oldrpmdbLabel label, int withFileNum) {
     char buffer[50];
  
     if (withFileNum && label.fileNumber > -1) 
-	c = malloc(strlen(label.name) + strlen(label.version) + 
+	c = xmalloc(strlen(label.name) + strlen(label.version) + 
 		   strlen(label.release) + 10);
     else
-	c = malloc(strlen(label.name) + strlen(label.version) + 
+	c = xmalloc(strlen(label.name) + strlen(label.version) + 
 		   strlen(label.release) + 3);
 
     strcpy(c, label.name);
@@ -387,7 +387,7 @@ static char * getScript(char * which, struct oldrpmdb *oldrpmdb,
     char * labelstr, * l;
 
     labelstr = oldrpmdbLabelToLabelstr(label, 0);
-    labelstr = realloc(labelstr, strlen(labelstr) + 10);
+    labelstr = xrealloc(labelstr, strlen(labelstr) + 10);
     strcat(labelstr, ":");
     strcat(labelstr, which);
 

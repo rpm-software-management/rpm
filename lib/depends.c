@@ -39,7 +39,7 @@ static /*@only@*/ char *printDepend(const char * key, const char * keyEVR,
 	nb += strlen(keyEVR);
     }
 
-    t = tbuf = malloc(nb + 1);
+    t = tbuf = xmalloc(nb + 1);
     if (key)
 	while(*key)	*t++ = *key++;
     if (keyFlags) {
@@ -58,7 +58,7 @@ static /*@only@*/ char *printDepend(const char * key, const char * keyEVR,
 
 static /*@only@*/ char *buildEVR(int_32 *e, const char *v, const char *r)
 {
-    char *pEVR = malloc(21 + strlen(v) + 1 + strlen(r) + 1);
+    char *pEVR = xmalloc(21 + strlen(v) + 1 + strlen(r) + 1);
     *pEVR = '\0';
     if (e)
 	sprintf(pEVR, "%d:", *e);
@@ -85,13 +85,9 @@ static void alFreeIndex(struct availableList * al)
 
 static void alCreate(/*@out@*/struct availableList * al)
 {
-    size_t nb;
-
     al->alloced = 5;
     al->size = 0;
-    nb = sizeof(*al->list) * al->alloced;
-    al->list = malloc(nb);
-    memset(al->list, 0, nb);
+    al->list = xcalloc(al->alloced, sizeof(*al->list));
 
     al->index.index = NULL;
     al->index.size = 0;
@@ -137,11 +133,11 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 
     if (al->size == al->alloced) {
 	al->alloced += 5;
-	al->list = realloc(al->list, sizeof(*al->list) * al->alloced);
+	al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
     }
 
     p = al->list + al->size++;
-    p->h = headerLink(h);
+    p->h = headerLink(h);	/* XXX reference held by transaction set */
 
     headerNVR(p->h, &p->name, &p->version, &p->release);
 
@@ -182,11 +178,11 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 
     if (relocs) {
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++);
-	p->relocs = malloc(sizeof(*p->relocs) * (i + 1));
+	p->relocs = xmalloc(sizeof(*p->relocs) * (i + 1));
 
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
-	    p->relocs[i].oldPath = r->oldPath ? strdup(r->oldPath) : NULL;
-	    p->relocs[i].newPath = r->newPath ? strdup(r->newPath) : NULL;
+	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
+	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
 	}
 	p->relocs[i].oldPath = NULL;
 	p->relocs[i].newPath = NULL;
@@ -223,9 +219,7 @@ static void alMakeIndex(struct availableList * al)
     }
 
     if (ai->size) {
-	size_t nb = sizeof(*ai->index) * ai->size;
-	ai->index = malloc(nb);
-	memset(ai->index, 0, nb);
+	ai->index = xcalloc(ai->size, sizeof(*ai->index));
 
 	k = 0;
 	for (i = 0; i < al->size; i++) {
@@ -329,9 +323,9 @@ static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
     }
 
     /* Both AEVR and BEVR exist. */
-    aEVR = strdup(AEVR);
+    aEVR = xstrdup(AEVR);
     parseEVR(aEVR, &aE, &aV, &aR);
-    bEVR = strdup(BEVR);
+    bEVR = xstrdup(BEVR);
     parseEVR(bEVR, &bE, &bV, &bR);
 
     /* Compare {A,B} [epoch:]version[-release] */
@@ -468,18 +462,16 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
 {
     rpmTransactionSet rpmdep;
     int rootLength;
-    size_t nb;
 
     if (!root) root = "";
 
-    rpmdep = malloc(sizeof(*rpmdep));
+    rpmdep = xmalloc(sizeof(*rpmdep));
     rpmdep->db = db;
     rpmdep->scriptFd = NULL;
     rpmdep->numRemovedPackages = 0;
     rpmdep->allocedRemovedPackages = 5;
-    nb = sizeof(*rpmdep->removedPackages) * rpmdep->allocedRemovedPackages;
-    rpmdep->removedPackages = malloc(nb);
-    memset(rpmdep->removedPackages, 0, nb);
+    rpmdep->removedPackages = xcalloc(rpmdep->allocedRemovedPackages,
+			sizeof(*rpmdep->removedPackages));
 
     /* This canonicalizes the root */
     rootLength = strlen(root);
@@ -493,16 +485,14 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
 	root = newRootdir;
     }
 
-    rpmdep->root = strdup(root);
+    rpmdep->root = xstrdup(root);
 
     alCreate(&rpmdep->addedPackages);
     alCreate(&rpmdep->availablePackages);
 
     rpmdep->orderAlloced = 5;
     rpmdep->orderCount = 0;
-    nb = sizeof(*rpmdep->order) * rpmdep->orderAlloced;
-    rpmdep->order = malloc(nb);
-    memset(rpmdep->order, 0, nb);
+    rpmdep->order = xcalloc(rpmdep->orderAlloced, sizeof(*rpmdep->order));
 
     return rpmdep;
 }
@@ -511,7 +501,7 @@ static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends)
 {
     if (rpmdep->numRemovedPackages == rpmdep->allocedRemovedPackages) {
 	rpmdep->allocedRemovedPackages += 5;
-	rpmdep->removedPackages = realloc(rpmdep->removedPackages,
+	rpmdep->removedPackages = xrealloc(rpmdep->removedPackages,
 		sizeof(int *) * rpmdep->allocedRemovedPackages);
     }
 
@@ -519,7 +509,7 @@ static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends)
 
     if (rpmdep->orderCount == rpmdep->orderAlloced) {
 	rpmdep->orderAlloced += 5;
-	rpmdep->order = realloc(rpmdep->order,
+	rpmdep->order = xrealloc(rpmdep->order,
 		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
     }
 
@@ -557,7 +547,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
     if (rpmdep->orderCount == rpmdep->orderAlloced) {
 	rpmdep->orderAlloced += 5;
-	rpmdep->order = realloc(rpmdep->order,
+	rpmdep->order = xrealloc(rpmdep->order,
 		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
     }
     rpmdep->order[rpmdep->orderCount].type = TR_ADDED;
@@ -872,15 +862,15 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
-		psp->problems = realloc(psp->problems, sizeof(*psp->problems) *
+		psp->problems = xrealloc(psp->problems, sizeof(*psp->problems) *
 			    psp->alloced);
 	    }
 	    psp->problems[psp->num].byHeader = headerLink(h);
-	    psp->problems[psp->num].byName = strdup(name);
-	    psp->problems[psp->num].byVersion = strdup(version);
-	    psp->problems[psp->num].byRelease = strdup(release);
-	    psp->problems[psp->num].needsName = strdup(requires[i]);
-	    psp->problems[psp->num].needsVersion = strdup(requiresEVR[i]);
+	    psp->problems[psp->num].byName = xstrdup(name);
+	    psp->problems[psp->num].byVersion = xstrdup(version);
+	    psp->problems[psp->num].byRelease = xstrdup(release);
+	    psp->problems[psp->num].needsName = xstrdup(requires[i]);
+	    psp->problems[psp->num].needsVersion = xstrdup(requiresEVR[i]);
 	    psp->problems[psp->num].needsFlags = requireFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
 
@@ -934,15 +924,15 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
-		psp->problems = realloc(psp->problems, sizeof(*psp->problems) *
+		psp->problems = xrealloc(psp->problems, sizeof(*psp->problems) *
 			    psp->alloced);
 	    }
 	    psp->problems[psp->num].byHeader = headerLink(h);
-	    psp->problems[psp->num].byName = strdup(name);
-	    psp->problems[psp->num].byVersion = strdup(version);
-	    psp->problems[psp->num].byRelease = strdup(release);
-	    psp->problems[psp->num].needsName = strdup(conflicts[i]);
-	    psp->problems[psp->num].needsVersion = strdup(conflictsEVR[i]);
+	    psp->problems[psp->num].byName = xstrdup(name);
+	    psp->problems[psp->num].byVersion = xstrdup(version);
+	    psp->problems[psp->num].byRelease = xstrdup(release);
+	    psp->problems[psp->num].needsName = xstrdup(conflicts[i]);
+	    psp->problems[psp->num].needsVersion = xstrdup(conflictsEVR[i]);
 	    psp->problems[psp->num].needsFlags = conflictFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_CONFLICTS;
 	    psp->problems[psp->num].suggestedPackage = NULL;
@@ -1181,7 +1171,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
        with removes for upgrades immediately follwing the installation of
        the new package. This would be easier if we could sort the
        addedPackages array, but we store indexes into it in various places. */
-    orderList = malloc(sizeof(*orderList) * rpmdep->addedPackages.size);
+    orderList = xmalloc(sizeof(*orderList) * rpmdep->addedPackages.size);
     for (i = 0, j = 0; i < rpmdep->orderCount; i++) {
 	if (rpmdep->order[i].type == TR_ADDED) {
 	    orderList[j].alIndex = rpmdep->order[i].u.addedIndex;
@@ -1194,7 +1184,8 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     qsort(orderList, rpmdep->addedPackages.size, sizeof(*orderList),
 	  orderListIndexCmp);
 
-    newOrder = malloc(sizeof(*newOrder) * rpmdep->orderCount);
+    /* XXX memory leak */
+    newOrder = xmalloc(sizeof(*newOrder) * rpmdep->orderCount);
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
 	key.alIndex = ordering[i];
 	needle = bsearch(&key, orderList, rpmdep->addedPackages.size,
@@ -1239,13 +1230,10 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     int rc;
     Header h = NULL;
     struct problemsSet ps;
-    size_t nb;
 
     ps.alloced = 5;
     ps.num = 0;
-    nb = sizeof(struct rpmDependencyConflict) * ps.alloced;
-    ps.problems = malloc(nb);
-    memset(ps.problems, 0, nb);
+    ps.problems = xcalloc(ps.alloced, sizeof(struct rpmDependencyConflict));
 
     *conflicts = NULL;
     *numConflicts = 0;
@@ -1345,7 +1333,9 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     return 0;
 
 exit:
-    if (h)		headerFree(h);
+    if (h) {
+	headerFree(h);
+    }
     if (ps.problems)	free(ps.problems);
     return 1;
 }

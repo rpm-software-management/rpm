@@ -63,8 +63,8 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
     groupLength = htonl(lit.groupLength);
     header->iconLength = htonl(lit.iconLength);
 
-    header->spec = malloc(header->specLength);
-    header->name = malloc(strlen(lit.labelstr) + 1);
+    header->spec = xmalloc(header->specLength);
+    header->name = xmalloc(strlen(lit.labelstr) + 1);
     if (!header->spec || !header->name) {
 	if (header->spec) free(header->spec);
 	if (header->name) free(header->name);
@@ -81,7 +81,7 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
     header->version = chptr + 1;
 
     if (groupLength) {
-        header->group = malloc(groupLength + 1);
+        header->group = xmalloc(groupLength + 1);
 	if (!header->group) {
 	    free(header->spec);
 	    free(header->name);
@@ -99,7 +99,7 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
     }
 	
     if (header->iconLength) {
-	header->icon = malloc(header->iconLength);
+	header->icon = xmalloc(header->iconLength);
 	if (!header->icon) {
 	    free(header->spec);
 	    free(header->name);
@@ -232,27 +232,27 @@ char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * s
 
 	      case PREAMBLE:
 		if (!strncmp("Description: ", *strptr, 13))
-		    spec->description = strdup((*strptr) + 13);
+		    spec->description = xstrdup((*strptr) + 13);
 		else if (!strncmp("Distribution: ", *strptr, 14))
-		    spec->distribution = strdup((*strptr) + 14);
+		    spec->distribution = xstrdup((*strptr) + 14);
 		else if (!strncmp("Vendor: ", *strptr, 8))
-		    spec->vendor = strdup((*strptr) + 8);
+		    spec->vendor = xstrdup((*strptr) + 8);
 		else if (!strncmp("BuildHost: ", *strptr, 11))
-		    spec->buildHost = strdup((*strptr) + 11);
+		    spec->buildHost = xstrdup((*strptr) + 11);
 		else if (!strncmp("BuildDate: ", *strptr, 11))
 		    spec->buildTime = atoi((*strptr) + 11);
 		else if (!strncmp("Copyright: ", *strptr, 11))
-		    spec->copyright = strdup((*strptr) + 11);
+		    spec->copyright = xstrdup((*strptr) + 11);
 		break;
 
 	      case PREUN: case PREIN: case POSTIN: case POSTUN:
 		if (!*str)  {
-		    *str = malloc(strlen(*strptr) + 2);
+		    *str = xmalloc(strlen(*strptr) + 2);
 		    strlength = 0;
 		    (*str)[0] = '\0';
 		}
 		else
-		    *str = realloc(*str, strlength + strlen(*strptr) + 2);
+		    *str = xrealloc(*str, strlength + strlen(*strptr) + 2);
 		strcat(*str, *strptr);
 		strcat(*str, "\n");
 		strlength += strlen(*strptr) + 1;
@@ -261,7 +261,7 @@ char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * s
 	}
     }
 
-    spec->files = malloc(sizeof(struct oldrpmFileInfo) * spec->fileCount);
+    spec->files = xmalloc(sizeof(struct oldrpmFileInfo) * spec->fileCount);
     if (!spec->files) {
 	freeSplitString(lines);
 	return "out of memory";
@@ -274,10 +274,10 @@ char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * s
 
     freeSplitString(lines);
 
-    if (!spec->vendor) spec->vendor = strdup("");
-    if (!spec->description) spec->description = strdup("");
-    if (!spec->distribution) spec->distribution = strdup("");
-    if (!spec->copyright) spec->copyright = strdup("");
+    if (!spec->vendor) spec->vendor = xstrdup("");
+    if (!spec->description) spec->description = xstrdup("");
+    if (!spec->distribution) spec->distribution = xstrdup("");
+    if (!spec->copyright) spec->copyright = xstrdup("");
 
     return NULL;
 }
@@ -290,7 +290,7 @@ void oldrpmfileFromInfoLine(char * path, char * state, char * str,
 
     fields = splitString(str, strlen(str), ' ');
 
-    fi->path = strdup(path);
+    fi->path = xstrdup(path);
     if (!strcmp(state, "normal"))
 	fi->state = RPMFILE_STATE_NORMAL;
     else if (!strcmp(state, "replaced"))
@@ -308,7 +308,7 @@ void oldrpmfileFromSpecLine(char * str, struct oldrpmFileInfo * fi) {
 
     fields = splitString(str, strlen(str), ' ');
 
-    fi->path = strdup(fields[0]);
+    fi->path = xstrdup(fields[0]);
     fi->state = RPMFILE_STATE_NORMAL;
 
     infoFromFields(fields + 1, fi);
@@ -328,7 +328,7 @@ void infoFromFields(char ** fields, struct oldrpmFileInfo * fi) {
     fi->rdev = strtol(fields[8], NULL, 16);
    
     if (S_ISLNK(fi->mode)) {
-	fi->linkto = strdup(fields[9]);
+	fi->linkto = xstrdup(fields[9]);
     } else {
 	fi->linkto = NULL;
     }
@@ -343,9 +343,9 @@ char * oldrpmfileToInfoStr(struct oldrpmFileInfo * fi) {
     char * buf;
 
     if (fi->linkto) 
-	buf = malloc(strlen(fi->linkto) + 100);
+	buf = xmalloc(strlen(fi->linkto) + 100);
     else
-	buf = malloc(100);
+	buf = xmalloc(100);
 
     sprintf(buf, "%ld %ld %s %o %d %d %s %s %x ", (long)fi->size, (long)fi->mtime,
 		fi->md5, fi->mode, (int)fi->uid, (int)fi->gid,

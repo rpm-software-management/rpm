@@ -4,7 +4,7 @@
 
 static char * permsString(int mode)
 {
-    char * perms = malloc(11);
+    char * perms = xmalloc(11);
 
     strcpy(perms, "-----------");
    
@@ -62,12 +62,12 @@ static char * triggertypeFormat(int_32 type, const void * data,
     char * val;
 
     if (type != RPM_INT32_TYPE) {
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(not a number)"));
     } else if (*item & RPMSENSE_TRIGGERIN) {
-	val = strdup("in");
+	val = xstrdup("in");
     } else {
-	val = strdup("un");
+	val = xstrdup("un");
     }
 
     return val;
@@ -80,10 +80,10 @@ static char * permsFormat(int_32 type, const void * data,
     char * buf;
 
     if (type != RPM_INT32_TYPE) {
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(not a number)"));
     } else {
-	val = malloc(15 + padding);
+	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
 	buf = permsString(*((int_32 *) data));
 	sprintf(val, formatPrefix, buf);
@@ -101,7 +101,7 @@ static char * fflagsFormat(int_32 type, const void * data,
     int anint = *((int_32 *) data);
 
     if (type != RPM_INT32_TYPE) {
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(not a number)"));
     } else {
 	buf[0] = '\0';
@@ -118,7 +118,7 @@ static char * fflagsFormat(int_32 type, const void * data,
 	if (anint & RPMFILE_GHOST)
 	    strcat(buf, "g");
 
-	val = malloc(5 + padding);
+	val = xmalloc(5 + padding);
 	strcat(formatPrefix, "s");
 	sprintf(val, formatPrefix, buf);
     }
@@ -134,7 +134,7 @@ static char * depflagsFormat(int_32 type, const void * data,
     int anint = *((int_32 *) data);
 
     if (type != RPM_INT32_TYPE) {
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(not a number)"));
     } else {
 	buf[0] = '\0';
@@ -146,7 +146,7 @@ static char * depflagsFormat(int_32 type, const void * data,
 	if (anint & RPMSENSE_EQUAL)
 	    strcat(buf, "=");
 
-	val = malloc(5 + padding);
+	val = xmalloc(5 + padding);
 	strcat(formatPrefix, "s");
 	sprintf(val, formatPrefix, buf);
     }
@@ -181,7 +181,7 @@ static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
 	return 0;
     } else if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &array, 
 			      count)) {
-	*((char **) data) = strdup(array[0]);
+	*((char **) data) = xstrdup(array[0]);
 	*freeData = 1;
 	*type = RPM_STRING_TYPE;
 	free(array);
@@ -216,8 +216,7 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     *freeData = 1;
 
     if (filenames == NULL) {
-	usages = malloc(sizeof(usages) * (*count));
-	memset(usages, 0, sizeof(usages) * (*count));
+	usages = xcalloc((*count), sizeof(usages));
 	*data = usages;
 
 	return 0;
@@ -256,17 +255,16 @@ static int triggercondsTag(Header h, /*@out@*/int_32 * type, /*@out@*/void ** da
     free(s);
 
     *freeData = 1;
-    *data = conds = malloc(sizeof(char * ) * numScripts);
+    *data = conds = xmalloc(sizeof(char * ) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
-	chptr = malloc(1);
-	*chptr = '\0';
+	chptr = xstrdup("");
 
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i) continue;
 
-	    item = malloc(strlen(names[j]) + strlen(versions[j]) + 20);
+	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
 	    if (flags[j] & RPMSENSE_SENSEMASK) {
 		buf[0] = '%', buf[1] = '\0';
 		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf,
@@ -277,7 +275,7 @@ static int triggercondsTag(Header h, /*@out@*/int_32 * type, /*@out@*/void ** da
 		strcpy(item, names[j]);
 	    }
 
-	    chptr = realloc(chptr, strlen(chptr) + strlen(item) + 5);
+	    chptr = xrealloc(chptr, strlen(chptr) + strlen(item) + 5);
 	    if (*chptr) strcat(chptr, ", ");
 	    strcat(chptr, item);
 	    free(item);
@@ -312,7 +310,7 @@ static int triggertypeTag(Header h, int_32 * type, /*@out@*/void ** data,
     free(s);
 
     *freeData = 1;
-    *data = conds = malloc(sizeof(char * ) * numScripts);
+    *data = conds = xmalloc(sizeof(char * ) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
@@ -320,11 +318,11 @@ static int triggertypeTag(Header h, int_32 * type, /*@out@*/void ** data,
 	    if (indices[j] != i) continue;
 
 	    if (flags[j] & RPMSENSE_TRIGGERIN)
-		conds[i] = strdup("in");
+		conds[i] = xstrdup("in");
 	    else if (flags[j] & RPMSENSE_TRIGGERUN)
-		conds[i] = strdup("un");
+		conds[i] = xstrdup("un");
 	    else
-		conds[i] = strdup("postun");
+		conds[i] = xstrdup("postun");
 	    break;
 	}
     }

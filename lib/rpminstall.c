@@ -234,7 +234,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 
 		    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
 				       (void **) &paths, &c) && (c == 1)) {
-			defaultReloc->oldPath = strdup(paths[0]);
+			defaultReloc->oldPath = xstrdup(paths[0]);
 			free(paths);
 		    } else {
 			headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name,
@@ -249,15 +249,24 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		rc = rpmtransAddPackage(rpmdep, h, NULL, *filename,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
-		if (rc) {
-		    if (rc == 1)
+
+		headerFree(h);	/* XXX reference held by transaction set */
+		fdClose(fd);
+
+		switch(rc) {
+		case 0:
+			break;
+		case 1:
 			rpmMessage(RPMMESS_ERROR, 
 			    _("error reading from file %s\n"), *filename);
-		    else if (rc == 2)
+			return numPackages;
+			/*@notreached@*/ break;
+		case 2:
 			rpmMessage(RPMMESS_ERROR, 
 			    _("file %s requires a newer version of RPM\n"),
 			    *filename);
-		    return numPackages;
+			return numPackages;
+			/*@notreached@*/ break;
 		}
 
 		if (defaultReloc) {
@@ -265,7 +274,6 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		    defaultReloc->oldPath = NULL;
 		}
 
-		fdClose(fd);
 		numBinaryPackages++;
 	    }
 	    break;

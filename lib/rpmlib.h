@@ -279,6 +279,7 @@ void rpmSetTables(int archTable, int osTable);  /* only used by build code */
    pushed through a translation table (if appropriate) */
 void rpmSetMachine(const char * arch, const char * os);
 void rpmGetMachine(/*@out@*/char **arch, /*@out@*/char **os);
+void rpmFreeRpmrc(void);
 
 /** **/
 

@@ -14,7 +14,7 @@ char ** splitString(const char * str, int length, char sep) {
     int i;
     int fields;
    
-    s = malloc(length + 1);
+    s = xmalloc(length + 1);
     
     fields = 1;
     for (source = str, dest = s, i = 0; i < length; i++, source++, dest++) {
@@ -24,7 +24,7 @@ char ** splitString(const char * str, int length, char sep) {
 
     *dest = '\0';
 
-    list = malloc(sizeof(char *) * (fields + 1));
+    list = xmalloc(sizeof(char *) * (fields + 1));
 
     dest = s;
     list[0] = dest;
@@ -169,7 +169,7 @@ int doputenv(const char *str) {
     
     /* FIXME: this leaks memory! */
 
-    a = malloc(strlen(str) + 1);
+    a = xmalloc(strlen(str) + 1);
     strcpy(a, str);
 
     return putenv(a);
@@ -222,7 +222,7 @@ int unameToUid(char * thisUname, uid_t * uid) {
 	strcmp(thisUname, lastUname)) {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
-	    lastUname = realloc(lastUname, lastUnameAlloced);
+	    lastUname = xrealloc(lastUname, lastUnameAlloced);
 	}
 	strcpy(lastUname, thisUname);
 
@@ -262,7 +262,7 @@ int gnameToGid(char * thisGname, gid_t * gid) {
 	strcmp(thisGname, lastGname)) {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
-	    lastGname = realloc(lastGname, lastGnameAlloced);
+	    lastGname = xrealloc(lastGname, lastGnameAlloced);
 	}
 	strcpy(lastGname, thisGname);
 
@@ -302,7 +302,7 @@ char * uidToUname(uid_t uid) {
 	len = strlen(pwent->pw_name);
 	if (lastUnameLen < len + 1) {
 	    lastUnameLen = len + 20;
-	    lastUname = realloc(lastUname, lastUnameLen);
+	    lastUname = xrealloc(lastUname, lastUnameLen);
 	}
 	strcpy(lastUname, pwent->pw_name);
 
@@ -332,7 +332,7 @@ char * gidToGname(gid_t gid) {
 	len = strlen(grent->gr_name);
 	if (lastGnameLen < len + 1) {
 	    lastGnameLen = len + 20;
-	    lastGname = realloc(lastGname, lastGnameLen);
+	    lastGname = xrealloc(lastGname, lastGnameLen);
 	}
 	strcpy(lastGname, grent->gr_name);
 
@@ -396,10 +396,10 @@ char * currentDirectory(void) {
     char * currDir;
 
     currDirLen = 50;
-    currDir = malloc(currDirLen);
+    currDir = xmalloc(currDirLen);
     while (!getcwd(currDir, currDirLen) && errno == ERANGE) {
 	currDirLen += 50;
-	currDir = realloc(currDir, currDirLen);
+	currDir = xrealloc(currDir, currDirLen);
     }
 
     return currDir;

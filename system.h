@@ -184,13 +184,38 @@ char *alloca ();
 #include <limits.h>
 #endif
 
+#if HAVE_ERR_H
+#include <err.h>
+#endif
+
 #if HAVE_MALLOC_H
 #include <malloc.h>
 #endif
 
+/*@only@*/ void * xmalloc (size_t size);
+/*@only@*/ void * xcalloc (size_t nmemb, size_t size);
+/*@only@*/ void * xrealloc (void *ptr, size_t size);
+/*@only@*/ char * xstrdup (const char *str);
+void *vmefail(void);
+
 #if HAVE_MCHECK_H
 #include <mcheck.h>
 #endif
+
+
+#if HAVE_MCHECK_H && defined(__GNUC__)
+
+/* Memory allocation via macro defs to get meaningful locations from mtrace() */
+
+#define	xmalloc(_size) 		(malloc(_size) ? : vmefail())
+
+#define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail())
+
+#define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail())
+
+#define	xstrdup(_str)	(strcpy((malloc(strlen(_str)+1) ? : vmefail()), (_str)))
+
+#endif	/* HAVE_MCHECK_H && defined(__GNUC__) */
 
 #if HAVE_NETDB_H
 #ifndef __LCLINT__

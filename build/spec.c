@@ -94,7 +94,7 @@ Package newPackage(Spec spec)
     Package p;
     Package pp;
 
-    p = malloc(sizeof(*p));
+    p = xmalloc(sizeof(*p));
 
     p->header = headerNew();
     p->icon = NULL;
@@ -306,9 +306,9 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     }
 
     /* Create the entry and link it in */
-    p = malloc(sizeof(struct Source));
+    p = xmalloc(sizeof(struct Source));
     p->num = num;
-    p->fullSource = strdup(field);
+    p->fullSource = xstrdup(field);
     p->source = strrchr(p->fullSource, '/');
     p->flags = flag;
     if (p->source) {
@@ -347,7 +347,7 @@ static inline struct speclines * newSl(void)
     struct speclines *sl;
     if (specedit == NULL)
 	return NULL;
-    sl = malloc(sizeof(struct speclines));
+    sl = xmalloc(sizeof(struct speclines));
     sl->sl_lines = NULL;
     sl->sl_nalloc = 0;
     sl->sl_nlines = 0;
@@ -370,7 +370,7 @@ static inline struct spectags * newSt(void)
     struct spectags *st;
     if (specedit == NULL)
 	return NULL;
-    st = malloc(sizeof(struct spectags));
+    st = xmalloc(sizeof(struct spectags));
     st->st_t = NULL;
     st->st_nalloc = 0;
     st->st_ntags = 0;
@@ -395,7 +395,7 @@ Spec newSpec(void)
 {
     Spec spec;
 
-    spec = (Spec)malloc(sizeof *spec);
+    spec = (Spec)xmalloc(sizeof *spec);
     
     spec->specFile = NULL;
     spec->sourceRpmName = NULL;
@@ -409,7 +409,7 @@ Spec newSpec(void)
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
     spec->lineNum = 0;
-    spec->readStack = malloc(sizeof(struct ReadLevelEntry));
+    spec->readStack = xmalloc(sizeof(struct ReadLevelEntry));
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
 
@@ -518,7 +518,7 @@ void freeSpec(/*@only@*/ Spec spec)
 {
     struct OpenFileInfo *ofi;
 
-    ofi = malloc(sizeof(struct OpenFileInfo));
+    ofi = xmalloc(sizeof(struct OpenFileInfo));
     ofi->file = NULL;
     ofi->fileName = NULL;
     ofi->lineNum = 0;

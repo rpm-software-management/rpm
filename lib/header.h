@@ -157,6 +157,7 @@ void headerFreeIterator(/*@only@*/ HeaderIterator iter);
 Header headerCopy(Header h);
 void headerSort(Header h);
 Header headerLink(Header h);
+int headerUsageCount(Header h);
 
 void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy);
 

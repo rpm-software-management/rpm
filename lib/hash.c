@@ -61,9 +61,9 @@ hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
 {
     hashTable ht;
 
-    ht = malloc(sizeof(*ht));
+    ht = xmalloc(sizeof(*ht));
     ht->numBuckets = numBuckets;
-    ht->buckets = calloc(sizeof(*ht->buckets), numBuckets);
+    ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->keySize = keySize;
     ht->fn = fn;
     ht->eq = eq;
@@ -83,9 +83,9 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	b = b->next;
    
     if (!b) {
-	b = malloc(sizeof(*b));
+	b = xmalloc(sizeof(*b));
 	if (ht->keySize) {
-	    char *k = malloc(ht->keySize);
+	    char *k = xmalloc(ht->keySize);
 	    memcpy(k, key, ht->keySize);
 	    b->key = k;
 	} else {
@@ -97,7 +97,7 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	ht->buckets[hash] = b;
     }
 
-    b->data = realloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
+    b->data = xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
     b->data[b->dataCount++] = data;
 }
 

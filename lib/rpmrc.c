@@ -150,7 +150,6 @@ static int optionCompare(const void * a, const void * b) {
 
 static void rpmRebuildTargetVars(const char **target, const char ** canontarget);
 
-
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
 						  char * key)
 {
@@ -202,10 +201,10 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     }
 
     if (!entry) {
-	cache->cache = realloc(cache->cache,
+	cache->cache = xrealloc(cache->cache,
 			       (cache->size + 1) * sizeof(*cache->cache));
 	entry = cache->cache + cache->size++;
-	entry->name = strdup(name);
+	entry->name = xstrdup(name);
 	entry->count = 0;
 	entry->visited = 0;
     }
@@ -217,12 +216,12 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	if (chptr[0] == '\0')	/* does strtok() return "" ever?? */
 	    continue;
 	if (entry->count)
-	    entry->equivs = realloc(entry->equivs, sizeof(*entry->equivs)
+	    entry->equivs = xrealloc(entry->equivs, sizeof(*entry->equivs)
 					* (entry->count + 1));
 	else
-	    entry->equivs = malloc(sizeof(*entry->equivs));
+	    entry->equivs = xmalloc(sizeof(*entry->equivs));
 
-	entry->equivs[entry->count] = strdup(chptr);
+	entry->equivs[entry->count] = xstrdup(chptr);
 	entry->count++;
     }
 
@@ -257,12 +256,12 @@ static void machAddEquiv(struct machEquivTable * table, char * name,
     equiv = machEquivSearch(table, name);
     if (!equiv) {
 	if (table->count)
-	    table->list = realloc(table->list, (table->count + 1)
+	    table->list = xrealloc(table->list, (table->count + 1)
 				    * sizeof(*table->list));
 	else
-	    table->list = malloc(sizeof(*table->list));
+	    table->list = xmalloc(sizeof(*table->list));
 
-	table->list[table->count].name = strdup(name);
+	table->list[table->count].name = xstrdup(name);
 	table->list[table->count++].score = distance;
     }
 }
@@ -315,10 +314,10 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 
     if (! *tableLen) {
 	*tableLen = 2;
-	*table = malloc(2 * sizeof(struct canonEntry));
+	*table = xmalloc(2 * sizeof(struct canonEntry));
     } else {
 	(*tableLen) += 2;
-	*table = realloc(*table, sizeof(struct canonEntry) * (*tableLen));
+	*table = xrealloc(*table, sizeof(struct canonEntry) * (*tableLen));
     }
     t = & ((*table)[*tableLen - 2]);
 
@@ -342,13 +341,13 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 	return(RPMERR_RPMRC);
     }
 
-    t->name = strdup(t->name);
-    t->short_name = strdup(t->short_name);
+    t->name = xstrdup(t->name);
+    t->short_name = xstrdup(t->short_name);
 
     /* From A B C entry */
     /* Add  B B C entry */
-    t[1].name = strdup(t->short_name);
-    t[1].short_name = strdup(t->short_name);
+    t[1].name = xstrdup(t->short_name);
+    t[1].short_name = xstrdup(t->short_name);
     t[1].num = t->num;
 
     return 0;
@@ -361,10 +360,10 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 
     if (! *tableLen) {
 	*tableLen = 1;
-	*table = malloc(sizeof(struct defaultEntry));
+	*table = xmalloc(sizeof(struct defaultEntry));
     } else {
 	(*tableLen)++;
-	*table = realloc(*table, sizeof(struct defaultEntry) * (*tableLen));
+	*table = xrealloc(*table, sizeof(struct defaultEntry) * (*tableLen));
     }
     t = & ((*table)[*tableLen - 1]);
 
@@ -381,8 +380,8 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 	return RPMERR_RPMRC;
     }
 
-    t->name = strdup(t->name);
-    t->defName = strdup(t->defName);
+    t->name = xstrdup(t->name);
+    t->defName = xstrdup(t->defName);
 
     return 0;
 }
@@ -544,7 +543,7 @@ int rpmReadRC(const char * rcfiles)
 
     /* Read each file in rcfiles. */
     rc = 0;
-    for (r = myrcfiles = strdup(rcfiles); *r != '\0'; r = re) {
+    for (r = myrcfiles = xstrdup(rcfiles); *r != '\0'; r = re) {
 	char fn[4096];
 	FD_t fd;
 
@@ -703,7 +702,7 @@ static int doReadRC(FD_t fd, const char * filename)
 	      {	char *t;
 		s = rpmGetVar(RPMVAR_PROVIDES);
 		if (s == NULL) s = "";
-		fn = t = malloc(strlen(s) + strlen(se) + 2);
+		fn = t = xmalloc(strlen(s) + strlen(se) + 2);
 		while (*s) *t++ = *s++;
 		*t++ = ' ';
 		while (*se) *t++ = *se++;
@@ -739,7 +738,7 @@ static int doReadRC(FD_t fd, const char * filename)
 	    if (option->macroize &&
 	      (arch == NULL || !strcmp(arch, current[ARCH]))) {
 		char *n, *name;
-		n = name = malloc(strlen(option->name)+2);
+		n = name = xmalloc(strlen(option->name)+2);
 		if (option->localize)
 		    *n++ = '_';
 		strcpy(n, option->name);
@@ -849,7 +848,7 @@ static void defaultMachine(char ** arch, char ** os) {
 	   char *prelid = NULL;
            FD_t fd = fdOpen("/etc/.relid", O_RDONLY, 0700);
            if (fdFileno(fd) > 0) {
-              chptr = (char *) calloc(256,1);
+              chptr = (char *) xcalloc(1, 256);
               if (chptr != NULL) {
                  int irelid = fdRead(fd, (void *)chptr, 256);
                  fdClose(fd);
@@ -1013,7 +1012,7 @@ static void freeRpmVar(struct rpmvarValue * orig) {
 
 void rpmSetVar(int var, const char *val) {
     freeRpmVar(&values[var]);
-    values[var].value = (val ? strdup(val) : NULL);
+    values[var].value = (val ? xstrdup(val) : NULL);
 }
 
 static void rpmSetVarArch(int var, const char * val, const char * arch) {
@@ -1036,14 +1035,14 @@ static void rpmSetVarArch(int var, const char * val, const char * arch) {
 	    if (next->value) free(next->value);
 	    if (next->arch) free(next->arch);
 	} else if (next->arch || arch) {
-	    next->next = malloc(sizeof(*next->next));
+	    next->next = xmalloc(sizeof(*next->next));
 	    next = next->next;
 	    next->next = NULL;
 	}
     }
 
-    next->value = strdup(val);
-    next->arch = (arch ? strdup(arch) : NULL);
+    next->value = xstrdup(val);
+    next->arch = (arch ? xstrdup(arch) : NULL);
 }
 
 void rpmSetTables(int archTable, int osTable) {
@@ -1099,13 +1098,13 @@ void rpmSetMachine(const char * arch, const char * os) {
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	if (current[ARCH]) free(current[ARCH]);
-	current[ARCH] = strdup(arch);
+	current[ARCH] = xstrdup(arch);
 	rebuildCompatTables(ARCH, host_cpu);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
 	if (current[OS]) free(current[OS]);
-	current[OS] = strdup(os);
+	current[OS] = xstrdup(os);
 	/*
 	 * XXX Capitalizing the 'L' is needed to insure that old
 	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
@@ -1174,7 +1173,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
     if (buildtarget && *buildtarget) {
 	char *c;
 	/* Set arch and os from specified build target */
-	ca = strdup(*buildtarget);
+	ca = xstrdup(*buildtarget);
 	if ((c = strchr(ca, '-')) != NULL) {
 	    *c++ = '\0';
 	    
@@ -1188,34 +1187,34 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 		else
 		    co++;
 	    }
-	    if (co != NULL) co = strdup(co);
+	    if (co != NULL) co = xstrdup(co);
 	}
     } else {
 	/* Set build target from rpm arch and os */
 	rpmGetArchInfo(&ca,NULL);
-	if (ca)	ca = strdup(ca);
+	if (ca)	ca = xstrdup(ca);
 	rpmGetOsInfo(&co,NULL);
-	if (co)	co = strdup(co);
+	if (co)	co = xstrdup(co);
     }
 
     /* If still not set, Set target arch/os from default uname(2) values */
     if (ca == NULL) {
 	defaultMachine(&ca, NULL);
-	ca = strdup(ca);
+	ca = xstrdup(ca);
      }
     for (x = 0; ca[x]; x++)
 	ca[x] = tolower(ca[x]);
 
     if (co == NULL) {
 	defaultMachine(NULL, &co);
-	co = strdup(co);
+	co = xstrdup(co);
     }
     for (x = 0; co[x]; x++)
 	co[x] = tolower(co[x]);
 
     /* XXX For now, set canonical target to arch-os */
     if (ct == NULL) {
-	ct = malloc(strlen(ca) + sizeof("-") + strlen(co));
+	ct = xmalloc(strlen(ca) + sizeof("-") + strlen(co));
 	sprintf(ct, "%s-%s", ca, co);
     }
 
@@ -1245,6 +1244,66 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	free(ct);
     free(ca);
     free(co);
+}
+
+void rpmFreeRpmrc(void)
+{
+    int i, j, k;
+
+    for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
+	struct tableType *t;
+	t = tables + i;
+	if (t->equiv.list) {
+	    for (j = 0; j < t->equiv.count; j++) {
+		if (t->equiv.list[j].name)	xfree(t->equiv.list[j].name);
+	    }
+	    xfree(t->equiv.list);
+	}
+	if (t->cache.cache) {
+	    for (j = 0; j < t->cache.size; j++) {
+		struct machCacheEntry *e;
+		e = t->cache.cache + j;
+		if (e == NULL)	continue;
+		if (e->name)		xfree(e->name);
+		if (e->equivs) {
+		    for (k = 0; k < e->count; k++) {
+		    if (e->equivs[k])	xfree(e->equivs[k]);
+		    }
+		    xfree(e->equivs);
+		}
+	    }
+	    xfree(t->cache.cache);
+	}
+	if (t->defaults) {
+	    for (j = 0; j < t->defaultsLength; j++) {
+		if (t->defaults[j].name)	xfree(t->defaults[j].name);
+		if (t->defaults[j].defName)	xfree(t->defaults[j].defName);
+	    }
+	    xfree(t->defaults);
+	}
+	if (t->canons) {
+	    for (j = 0; j < t->canonsLength; j++) {
+		if (t->canons[j].name)		xfree(t->canons[j].name);
+		if (t->canons[j].short_name)	xfree(t->canons[j].short_name);
+	    }
+	    xfree(t->canons);
+	}
+    }
+
+    for (i = 0; i < RPMVAR_NUM; i++) {
+	struct rpmvarValue *this;
+	while ((this = values[i].next) != NULL) {
+	    values[i].next = this->next;
+	    if (this->value)	xfree(this->value);
+	    if (this->arch)	xfree(this->arch);
+	    xfree(this);
+	}
+	if (values[i].value)	xfree(values[i].value);
+	if (values[i].arch)	xfree(values[i].arch);
+    }
+    if (current[OS])	xfree(current[OS]);
+    if (current[ARCH])	xfree(current[ARCH]);
+    return;
 }
 
 int rpmShowRC(FILE *f)

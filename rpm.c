@@ -1,11 +1,10 @@
 #include "system.h"
 
-#include "build/rpmbuild.h"
+#include "rpmbuild.h"
 
 #include "build.h"
 #include "install.h"
-#include "lib/signature.h"
-#include "popt/popt.h"
+#include "signature.h"
 
 #define GETOPT_REBUILD		1003
 #define GETOPT_RECOMPILE	1004
@@ -824,7 +823,7 @@ int main(int argc, char ** argv)
 	    *errString++ = '\0';
 	    if (*errString != '/') 
 		argerror(_("relocations must have a / following the ="));
-	    relocations = realloc(relocations, 
+	    relocations = xrealloc(relocations, 
 				  sizeof(*relocations) * (numRelocations + 1));
 	    relocations[numRelocations].oldPath = optArg;
 	    relocations[numRelocations++].newPath = errString;
@@ -834,7 +833,7 @@ int main(int argc, char ** argv)
 	    if (*optArg != '/') 
 		argerror(_("exclude paths must begin with a /"));
 
-	    relocations = realloc(relocations, 
+	    relocations = xrealloc(relocations, 
 				  sizeof(*relocations) * (numRelocations + 1));
 	    relocations[numRelocations].oldPath = optArg;
 	    relocations[numRelocations++].newPath = NULL;
@@ -1089,7 +1088,7 @@ int main(int argc, char ** argv)
 			exit(EXIT_FAILURE);
 		    }
 		    fprintf(stderr, _("Pass phrase is good.\n"));
-		    passPhrase = strdup(passPhrase);
+		    passPhrase = xstrdup(passPhrase);
 		    break;
 		  default:
 		    fprintf(stderr,
@@ -1298,7 +1297,7 @@ int main(int argc, char ** argv)
 	    relocations[0].newPath = prefix;
 	    relocations[1].oldPath = relocations[1].newPath = NULL;
 	} else if (relocations) {
-	    relocations = realloc(relocations, 
+	    relocations = xrealloc(relocations, 
 				  sizeof(*relocations) * (numRelocations + 1));
 	    relocations[numRelocations].oldPath = NULL;
 	    relocations[numRelocations].newPath = NULL;
@@ -1346,6 +1345,8 @@ int main(int argc, char ** argv)
     }
 
     poptFreeContext(optCon);
+    freeMacros(NULL);
+    rpmFreeRpmrc();
 
     if (pipeChild) {
 	fclose(stdout);

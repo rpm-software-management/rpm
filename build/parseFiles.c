@@ -77,7 +77,7 @@ int parseFiles(Spec spec)
     }
 
     if (file) {
-	pkg->fileFile = strdup(file);
+	pkg->fileFile = xstrdup(file);
     }
     pkg->fileList = newStringBuf();
     

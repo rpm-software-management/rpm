@@ -96,7 +96,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
     OFI_t * ofi;
 
     ofi = newOpenFileInfo();
-    ofi->fileName = strdup(fileName);
+    ofi->fileName = xstrdup(fileName);
     ofi->next = spec->fileStack;
     spec->fileStack = ofi;
 }
@@ -206,10 +206,10 @@ retry:
 	    struct speclines *sl = spec->sl;
 	    if (sl->sl_nlines == sl->sl_nalloc) {
 		sl->sl_nalloc += 100;
-		sl->sl_lines = (char **)realloc(sl->sl_lines, 
+		sl->sl_lines = (char **) xrealloc(sl->sl_lines, 
 			sl->sl_nalloc * sizeof(*(sl->sl_lines)));
 	    }
-	    sl->sl_lines[sl->sl_nlines++] = strdup(ofi->readBuf);
+	    sl->sl_lines[sl->sl_nlines++] = xstrdup(ofi->readBuf);
 	}
     }
     
@@ -294,7 +294,7 @@ retry:
     }
 
     if (match != -1) {
-	rl = malloc(sizeof(struct ReadLevelEntry));
+	rl = xmalloc(sizeof(struct ReadLevelEntry));
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
 	spec->readStack = rl;
@@ -339,12 +339,12 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
     spec = newSpec();
 
     spec->fileStack = newOpenFileInfo();
-    spec->fileStack->fileName = strdup(specFile);
+    spec->fileStack->fileName = xstrdup(specFile);
 
-    spec->specFile = strdup(specFile);
+    spec->specFile = xstrdup(specFile);
     if (buildRoot) {
 	spec->gotBuildRoot = 1;
-	spec->buildRoot = strdup(buildRoot);
+	spec->buildRoot = xstrdup(buildRoot);
 	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
@@ -353,10 +353,10 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
     spec->force = force;
 
     if (passPhrase) {
-	spec->passPhrase = strdup(passPhrase);
+	spec->passPhrase = xstrdup(passPhrase);
     }
     if (cookie) {
-	spec->cookie = strdup(cookie);
+	spec->cookie = xstrdup(cookie);
     }
 
     {	const char *timecheck = rpmExpand("%{_timecheck}", NULL);
@@ -423,13 +423,13 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 
 	if (parsePart == PART_BUILDARCHITECTURES) {
 	    spec->buildArchitectureSpecs =
-		malloc(sizeof(Spec) * spec->buildArchitectureCount);
+		xmalloc(sizeof(Spec) * spec->buildArchitectureCount);
 	    index = 0;
 	    for (x = 0; x < spec->buildArchitectureCount; x++) {
 		if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH,
 				    spec->buildArchitectures[x])) {
 		    rpmGetMachine(&saveArch, NULL);
-		    saveArch = strdup(saveArch);
+		    saveArch = xstrdup(saveArch);
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
 				  specFile, buildRoot, 1,
@@ -484,7 +484,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
        * XXX A copy of this string is embedded in headers.
        */
       if (!strcmp(os, "linux")) {
-	os = myos = strdup(os);
+	os = myos = xstrdup(os);
 	*os = 'L';
       }
 

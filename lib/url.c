@@ -110,9 +110,9 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	if (empty == NULL) {
 	    uCount++;
 	    if (uCache)
-		uCache = realloc(uCache, sizeof(*uCache) * uCount);
+		uCache = xrealloc(uCache, sizeof(*uCache) * uCount);
 	    else
-		uCache = malloc(sizeof(*uCache));
+		uCache = xmalloc(sizeof(*uCache));
 	    empty = &uCache[i];
 	}
 	*empty = u;
@@ -142,19 +142,19 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	    FREE(u->password);
 	    prompt = alloca(strlen(u->host) + strlen(u->user) + 40);
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
-	    u->password = strdup(getpass(prompt));
+	    u->password = xstrdup(getpass(prompt));
 	}
 
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_ftpproxy}", NULL);
 	    if (proxy && *proxy != '%') {
 		const char *uu = (u->user ? u->user : "anonymous");
-		char *nu = malloc(strlen(uu) + sizeof("@") + strlen(u->host));
+		char *nu = xmalloc(strlen(uu) + sizeof("@") + strlen(u->host));
 		strcpy(nu, uu);
 		strcat(nu, "@");
 		strcat(nu, u->host);
 		u->proxyu = nu;
-		u->proxyh = strdup(proxy);
+		u->proxyh = xstrdup(proxy);
 	    }
 	    xfree(proxy);
 	}
@@ -181,7 +181,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
 	    if (proxy && *proxy != '%')
-		u->proxyh = strdup(proxy);
+		u->proxyh = xstrdup(proxy);
 	    xfree(proxy);
 	}
 
@@ -220,12 +220,12 @@ int urlSplit(const char * url, urlinfo **uret)
     if ((u = newUrlinfo()) == NULL)
 	return -1;
 
-    if ((se = s = myurl = strdup(url)) == NULL) {
+    if ((se = s = myurl = xstrdup(url)) == NULL) {
 	freeUrlinfo(u);
 	return -1;
     }
 
-    u->url = strdup(url);
+    u->url = xstrdup(url);
 
     do {
 	/* Point to end of next item */
@@ -239,14 +239,14 @@ int urlSplit(const char * url, urlinfo **uret)
 	/* Item was service. Save service and go for the rest ...*/
     	if ((se != s) && se[-1] == ':' && se[0] == '/' && se[1] == '/') {
 		se[-1] = '\0';
-	    u->service = strdup(s);
+	    u->service = xstrdup(s);
 	    se += 2;	/* skip over "//" */
 	    s = se++;
 	    continue;
 	}
 	
 	/* Item was everything-but-path. Save path and continue parse on rest */
-	u->path = strdup(se);
+	u->path = xstrdup(se);
 	*se = '\0';
 	break;
     } while (1);
@@ -261,9 +261,9 @@ int urlSplit(const char * url, urlinfo **uret)
 	while (fe > f && *fe != ':') fe--;
 	if (*fe == ':') {
 	    *fe++ = '\0';
-	    u->password = strdup(fe);
+	    u->password = xstrdup(fe);
 	}
-	u->user = strdup(f);
+	u->user = xstrdup(f);
     }
 
     /* Look for ...host:port */
@@ -271,7 +271,7 @@ int urlSplit(const char * url, urlinfo **uret)
     while (*fe && *fe != ':') fe++;
     if (*fe == ':') {
 	*fe++ = '\0';
-	u->portstr = strdup(fe);
+	u->portstr = xstrdup(fe);
 	if (u->portstr != NULL && u->portstr[0] != '\0') {
 	    char *end;
 	    u->port = strtol(u->portstr, &end, 0);
@@ -283,7 +283,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	    }
 	}
     }
-    u->host = strdup(f);
+    u->host = xstrdup(f);
 
     if (u->port < 0 && u->service != NULL) {
 	struct servent *serv;

@@ -367,7 +367,7 @@ AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
-AC_CHECK_HEADERS(mcheck.h)
+AC_CHECK_HEADERS(err.h mcheck.h)
 
 dnl whether or not we should try build rpmconvert, which is used to convert
 dnl rpm databases from rpm 1.x to rpm 2.x or later.  It requires the gdbm

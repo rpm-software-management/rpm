@@ -94,13 +94,13 @@ static void dupAttrRec(AttrRec *oar, AttrRec *nar) {
     freeAttrRec(nar);
     *nar = *oar;		/* structure assignment */
     if (nar->ar_fmodestr)
-	nar->ar_fmodestr = strdup(nar->ar_fmodestr);
+	nar->ar_fmodestr = xstrdup(nar->ar_fmodestr);
     if (nar->ar_dmodestr)
-	nar->ar_dmodestr = strdup(nar->ar_dmodestr);
+	nar->ar_dmodestr = xstrdup(nar->ar_dmodestr);
     if (nar->ar_user)
-	nar->ar_user = strdup(nar->ar_user);
+	nar->ar_user = xstrdup(nar->ar_user);
     if (nar->ar_group)
-	nar->ar_group = strdup(nar->ar_group);
+	nar->ar_group = xstrdup(nar->ar_group);
 }
 
 #if 0
@@ -564,9 +564,9 @@ static int parseForLang(char *buf, struct FileList *fl)
 
 	/* Add new locale */
 	fl->currentLangs = (const char **) ((fl->currentLangs == NULL)
-	  ? malloc(sizeof(*fl->currentLangs))
-	  : realloc(fl->currentLangs,(fl->nLangs+1)*sizeof(*fl->currentLangs)));
-	newp = malloc( np+1 );
+	  ? xmalloc(sizeof(*fl->currentLangs))
+	  : xrealloc(fl->currentLangs,((fl->nLangs+1)*sizeof(*fl->currentLangs))));
+	newp = xmalloc( np+1 );
 	strncpy(newp, p, np);
 	newp[np] = '\0';
 	fl->currentLangs[fl->nLangs++] = newp;
@@ -652,7 +652,7 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 		fl->processingFailed = 1;
 		res = 1;
 	    }
-	    fl->docDirs[fl->docDirCount++] = strdup(s);
+	    fl->docDirs[fl->docDirCount++] = xstrdup(s);
 	    if (strtokWithQuotes(NULL, " \t\n")) {
 		rpmError(RPMERR_INTERNAL, _("Only one arg for %%docdir"));
 		fl->processingFailed = 1;
@@ -785,7 +785,7 @@ static void genCpioListAndHeader(struct FileList *fl,
     }
 
     *cpioCount = 0;
-    clp = *cpioList = malloc(sizeof(**cpioList) * fl->fileListRecsUsed);
+    clp = *cpioList = xmalloc(sizeof(**cpioList) * fl->fileListRecsUsed);
 
     for (flp = fl->fileList, count = fl->fileListRecsUsed; count > 0; flp++, count--) {
 	if ((count > 1) && !strcmp(flp->fileName, flp[1].fileName)) {
@@ -795,8 +795,8 @@ static void genCpioListAndHeader(struct FileList *fl,
 	
 	/* Make the cpio list */
 	if (! (flp->flags & RPMFILE_GHOST)) {
-	    clp->fsPath = strdup(flp->diskName);
-	    clp->archivePath = strdup(flp->fileName + skipLen);
+	    clp->fsPath = xstrdup(flp->diskName);
+	    clp->archivePath = xstrdup(flp->fileName + skipLen);
 	    clp->finalMode = flp->fl_mode;
 	    clp->finalUid = flp->fl_uid;
 	    clp->finalGid = flp->fl_gid;
@@ -1022,7 +1022,7 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
 	fl->fileListRecsAlloced += 128;
-	fl->fileList = realloc(fl->fileList,
+	fl->fileList = xrealloc(fl->fileList,
 			fl->fileListRecsAlloced * sizeof(*(fl->fileList)));
     }
 	    
@@ -1033,8 +1033,8 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 	flp->fl_uid = fileUid;
 	flp->fl_gid = fileGid;
 
-	flp->fileName = strdup(fileName);
-	flp->diskName = strdup(diskName);
+	flp->fileName = xstrdup(fileName);
+	flp->diskName = xstrdup(diskName);
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
@@ -1046,7 +1046,7 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 	    for (i = 0; i < fl->nLangs; i++)
 		nl += strlen(fl->currentLangs[i]) + 1;
 
-	    flp->langs = ncl = malloc(nl);
+	    flp->langs = ncl = xmalloc(nl);
 	    for (i = 0; i < fl->nLangs; i++) {
 	        const char *ocl;
 		if (i)	*ncl++ = '|';
@@ -1055,9 +1055,9 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 		*ncl = '\0';
 	    }
 	} else if (! parseForRegexLang(fileName, &lang)) {
-	    flp->langs = strdup(lang);
+	    flp->langs = xstrdup(lang);
 	} else {
-	    flp->langs = strdup("");
+	    flp->langs = xstrdup("");
 	}
 
 	flp->flags = fl->currentFlags;
@@ -1160,7 +1160,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
 		       NULL, (void **)&fl.prefix, NULL)) {
-	fl.prefix = strdup(fl.prefix);
+	fl.prefix = xstrdup(fl.prefix);
     } else {
 	fl.prefix = NULL;
     }
@@ -1180,10 +1180,10 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.defVerifyFlags = RPMVERIFY_ALL;
 
     fl.docDirCount = 0;
-    fl.docDirs[fl.docDirCount++] = strdup("/usr/doc");
-    fl.docDirs[fl.docDirCount++] = strdup("/usr/man");
-    fl.docDirs[fl.docDirCount++] = strdup("/usr/info");
-    fl.docDirs[fl.docDirCount++] = strdup("/usr/X11R6/man");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/doc");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/man");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/info");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/X11R6/man");
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_docdir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_mandir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_infodir}", NULL);
@@ -1237,7 +1237,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
 	    FREE(specialDoc);
-	    specialDoc = strdup(fileName);
+	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, &specialDocAttrRec);
 	} else {
 	    processBinaryFile(pkg, &fl, fileName);
@@ -1421,7 +1421,7 @@ int processSourceFiles(Spec spec)
     spec->sourceCpioList = NULL;
     spec->sourceCpioCount = 0;
 
-    fl.fileList = malloc((spec->numSources + 1) * sizeof(FileListRec));
+    fl.fileList = xmalloc((spec->numSources + 1) * sizeof(FileListRec));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
     fl.totalFileSize = 0;
@@ -1447,21 +1447,21 @@ int processSourceFiles(Spec spec)
 	    flp->flags |= RPMFILE_GHOST;
 	    s++;
 	}
-	flp->diskName = strdup(s);
+	flp->diskName = xstrdup(s);
 	fn = strrchr(s, '/');
 	if (fn) {
 	    fn++;
 	} else {
 	    fn = s;
 	}
-	flp->fileName = strdup(fn);
+	flp->fileName = xstrdup(fn);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
 	stat(s, &flp->fl_st);
 
 	flp->uname = getUname(flp->fl_uid);
 	flp->gname = getGname(flp->fl_gid);
-	flp->langs = strdup("");
+	flp->langs = xstrdup("");
 	
 	fl.totalFileSize += flp->fl_size;
 	

@@ -13,13 +13,12 @@ struct StringBufRec {
 
 StringBuf newStringBuf(void)
 {
-    StringBuf sb = malloc(sizeof(struct StringBufRec));
+    StringBuf sb = xmalloc(sizeof(struct StringBufRec));
 
-    sb->buf = malloc(BUF_CHUNK * sizeof(char));
+    sb->free = sb->allocated = BUF_CHUNK;
+    sb->buf = xcalloc(sb->allocated, sizeof(*sb->buf));
     sb->buf[0] = '\0';
     sb->tail = sb->buf;
-    sb->allocated = BUF_CHUNK;
-    sb->free = BUF_CHUNK;
     
     return sb;
 }
@@ -67,7 +66,7 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
     while ((l + nl + 1) > sb->free) {
         sb->allocated += BUF_CHUNK;
 	sb->free += BUF_CHUNK;
-        sb->buf = realloc(sb->buf, sb->allocated);
+        sb->buf = xrealloc(sb->buf, sb->allocated);
 	sb->tail = sb->buf + (sb->allocated - sb->free);
     }
     

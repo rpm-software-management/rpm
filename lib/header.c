@@ -132,10 +132,10 @@ static void copyEntry(struct indexEntry * entry, /*@out@*/int_32 *type,
 	i = entry->info.count;
 	tableSize = i * sizeof(char *);
 	if (minimizeMemory) {
-	    ptrEntry = *p = malloc(tableSize);
+	    ptrEntry = *p = xmalloc(tableSize);
 	    chptr = entry->data;
 	} else {
-	    ptrEntry = *p = malloc(tableSize + entry->length);
+	    ptrEntry = *p = xmalloc(tableSize + entry->length);
 	    chptr = ((char *) *p) + tableSize;
 	    memcpy(chptr, entry->data, entry->length);
 	}
@@ -220,7 +220,7 @@ struct headerIteratorS {
 
 HeaderIterator headerInitIterator(Header h)
 {
-    HeaderIterator hi = malloc(sizeof(struct headerIteratorS));
+    HeaderIterator hi = xmalloc(sizeof(struct headerIteratorS));
 
     headerSort(h);
 
@@ -318,7 +318,7 @@ Header headerLoad(void *pv)
     const char * dataStart;
     struct entryInfo * pe;
     struct indexEntry * entry; 
-    struct headerToken *h = malloc(sizeof(struct headerToken));
+    struct headerToken *h = xmalloc(sizeof(struct headerToken));
     const char * src;
     char * dst;
     int i;
@@ -333,7 +333,7 @@ Header headerLoad(void *pv)
 
     h->indexAlloced = il;
     h->indexUsed = il;
-    h->index = malloc(il * sizeof(struct indexEntry));
+    h->index = xmalloc(sizeof(struct indexEntry) * il);
     h->usageCount = 1;
 
     /* This assumes you only headerLoad() something you headerUnload()-ed */
@@ -354,7 +354,7 @@ Header headerLoad(void *pv)
 	src = dataStart + htonl(pe->offset);
 	entry->length = dataLength(entry->info.type, src, 
 				   entry->info.count, 1);
-	entry->data = dst = malloc(entry->length);
+	entry->data = dst = xmalloc(entry->length);
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
@@ -399,7 +399,7 @@ static void *doHeaderUnload(Header h, /*@out@*/int * lengthPtr)
     headerSort(h);
 
     *lengthPtr = headerSizeof(h, 0);
-    pi = p = malloc(*lengthPtr);
+    pi = p = xmalloc(*lengthPtr);
 
     *pi++ = htonl(h->indexUsed);
 
@@ -546,7 +546,7 @@ Header headerRead(FD_t fd, int magicp)
     if (totalSize > (32*1024*1024))
 	return NULL;
 
-    dataBlock = p = malloc(totalSize);
+    dataBlock = p = xmalloc(totalSize);
     *p++ = htonl(il);
     *p++ = htonl(dl);
 
@@ -630,7 +630,7 @@ Header headerGzRead(FD_t fd, int magicp)
     totalSize = sizeof(int_32) + sizeof(int_32) + 
 		(il * sizeof(struct entryInfo)) + dl;
 
-    block = p = malloc(totalSize);
+    block = p = xmalloc(totalSize);
     *p++ = htonl(il);
     *p++ = htonl(dl);
 
@@ -991,10 +991,10 @@ int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 
 Header headerNew()
 {
-    Header h = malloc(sizeof(struct headerToken));
+    Header h = xmalloc(sizeof(struct headerToken));
 
-    h->index = malloc(INDEX_MALLOC_SIZE * sizeof(struct indexEntry));
     h->indexAlloced = INDEX_MALLOC_SIZE;
+    h->index = xcalloc(h->indexAlloced, sizeof(struct indexEntry));
     h->indexUsed = 0;
 
     h->sorted = 0;
@@ -1019,6 +1019,11 @@ Header headerLink(Header h)
 {
     h->usageCount++;
     return h;
+}
+
+int headerUsageCount(Header h)
+{
+    return h->usageCount;
 }
 
 unsigned int headerSizeof(Header h, int magicp)
@@ -1086,7 +1091,7 @@ static void * grabData(int_32 type, /*@out@*/const void * p, int_32 c, int * len
     void * data;
 
     length = dataLength(type, p, c, 0);
-    data = malloc(length);
+    data = xmalloc(length);
 
     copyData(type, data, p, c, length);
 
@@ -1115,7 +1120,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
     /* Allocate more index space if necessary */
     if (h->indexUsed == h->indexAlloced) {
 	h->indexAlloced += INDEX_MALLOC_SIZE;
-	h->index = realloc(h->index,
+	h->index = xrealloc(h->index,
 			h->indexAlloced * sizeof(struct indexEntry));
     }
 
@@ -1142,7 +1147,7 @@ headerGetLangs(Header h)
     if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (void **)&s, &count))
 	return NULL;
 
-    if ((table = (char **)calloc((count+1), sizeof(char *))) == NULL)
+    if ((table = (char **)xcalloc((count+1), sizeof(char *))) == NULL)
 	return NULL;
 
     for (i = 0, e = *s; i < count > 0; i++, e += strlen(e)+1) {
@@ -1195,7 +1200,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang)
 
     if (langNum >= table->info.count) {
 	length = strlen(lang) + 1;
-	table->data = realloc(table->data, table->length + length);
+	table->data = xrealloc(table->data, table->length + length);
 	memcpy(((char *)table->data) + table->length, lang, length);
 	table->length += length;
 	table->info.count++;
@@ -1212,7 +1217,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang)
 	ghosts = langNum - entry->info.count;
 	
 	length = strlen(string) + 1 + ghosts;
-	entry->data = realloc(entry->data, entry->length + length);
+	entry->data = xrealloc(entry->data, entry->length + length);
 
 	memset(((char *)entry->data) + entry->length, '\0', ghosts);
 	strcpy(((char *)entry->data) + entry->length + ghosts, string);
@@ -1238,7 +1243,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang)
 	sn = strlen(string) + 1;
 	en = (ee-e);
 	length = bn + sn + en;
-	t = buf = malloc(length);
+	t = buf = xmalloc(length);
 
 	/* Copy values into new storage */
 	memcpy(t, b, bn);
@@ -1315,7 +1320,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
 
     length = dataLength(type, p, c, 0);
 
-    entry->data = realloc(entry->data, entry->length + length);
+    entry->data = xrealloc(entry->data, entry->length + length);
     copyData(type, ((char *) entry->data) + entry->length, p, c, length);
 
     entry->length += length;
@@ -1462,7 +1467,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	if (*chptr == '%') numTokens++;
     numTokens = numTokens * 2 + 1;
 
-    format = calloc(sizeof(*format), numTokens);
+    format = xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
     dst = start = str;
@@ -1700,7 +1705,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
     }
 
     if (*chptr == '|') {
-	parseFormat(strdup(""), tags, extensions, &token->u.cond.elseFormat, 
+	parseFormat(xstrdup(""), tags, extensions, &token->u.cond.elseFormat, 
 			&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR, 
 			error);
     } else {
@@ -1845,7 +1850,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    strcat(buf, "s");
 
 	    len = strlen(strarray[element]) + tag->pad + 20;
-	    val = malloc(len);
+	    val = xmalloc(len);
 	    sprintf(val, buf, strarray[element]);
 	}
 
@@ -1862,7 +1867,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    strcat(buf, "s");
 
 	    len = strlen(data) + tag->pad + 20;
-	    val = malloc(len);
+	    val = xmalloc(len);
 	    sprintf(val, buf, data);
 	}
 	break;
@@ -1886,13 +1891,13 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	if (!val) {
 	    strcat(buf, "d");
 	    len = 10 + tag->pad + 20;
-	    val = malloc(len);
+	    val = xmalloc(len);
 	    sprintf(val, buf, intVal);
 	}
 	break;
 
       default:
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(unknown type)"));
 	break;
     }
@@ -1921,7 +1926,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	break;
 
       case PTOK_STRING:
-	val = malloc(token->u.string.len + 1);
+	val = xmalloc(token->u.string.len + 1);
 	strcpy(val, token->u.string.string);
 	break;
 
@@ -1941,7 +1946,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	}
 
 	alloced = condNumFormats * 20;
-	val = malloc(alloced ? alloced : 1);
+	val = xmalloc(alloced ? alloced : 1);
 	*val = '\0';
 	len = 0;
 
@@ -1951,7 +1956,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	    thisItemLen = strlen(thisItem);
 	    if ((thisItemLen + len) >= alloced) {
 		alloced = (thisItemLen + len) + 200;
-		val = realloc(val, alloced);	
+		val = xrealloc(val, alloced);	
 	    }
 	    strcat(val, thisItem);
 	    len += thisItemLen;
@@ -1983,11 +1988,11 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	}
 
 	if (numElements == -1) {
-	    val = malloc(20);
+	    val = xmalloc(20);
 	    strcpy(val, "(none)");	/* XXX i18n? NO!, sez; gafton */
 	} else {
 	    alloced = numElements * token->u.array.numTokens * 20;
-	    val = malloc(alloced);
+	    val = xmalloc(alloced);
 	    *val = '\0';
 	    len = 0;
 
@@ -1998,7 +2003,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 		    thisItemLen = strlen(thisItem);
 		    if ((thisItemLen + len) >= alloced) {
 			alloced = (thisItemLen + len) + 200;
-			val = realloc(val, alloced);	
+			val = xrealloc(val, alloced);	
 		    }
 		    strcat(val, thisItem);
 		    len += thisItemLen;
@@ -2027,7 +2032,7 @@ static struct extensionCache * allocateExtensionCache(
 	    ext++;
     }
 
-    return calloc(i, sizeof(struct extensionCache));
+    return xcalloc(i, sizeof(struct extensionCache));
 }
 
 static void freeExtensionCache(const struct headerSprintfExtension * extensions,
@@ -2065,7 +2070,7 @@ char * headerSprintf(Header h, const char * origFmt,
     struct extensionCache * extCache;
  
     /*fmtString = escapeString(origFmt);*/
-    fmtString = strdup(origFmt);
+    fmtString = xstrdup(origFmt);
    
     if (parseFormat(fmtString, tags, extensions, &format, &numTokens, 
 		    NULL, PARSER_BEGIN, error)) {
@@ -2077,7 +2082,7 @@ char * headerSprintf(Header h, const char * origFmt,
 
     answerAlloced = 1024;
     answerLength = 0;
-    answer = malloc(answerAlloced);
+    answer = xmalloc(answerAlloced);
     *answer = '\0';
 
     for (i = 0; i < numTokens; i++) {
@@ -2087,7 +2092,7 @@ char * headerSprintf(Header h, const char * origFmt,
 	    if ((answerLength + pieceLength) >= answerAlloced) {
 		while ((answerLength + pieceLength) >= answerAlloced) 
 		    answerAlloced += 1024;
-		answer = realloc(answer, answerAlloced);
+		answer = xrealloc(answer, answerAlloced);
 	    }
 
 	    strcat(answer, piece);
@@ -2109,10 +2114,10 @@ static char * octalFormat(int_32 type, const void * data,
     char * val;
 
     if (type != RPM_INT32_TYPE) {
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(not a number)"));
     } else {
-	val = malloc(20 + padding);
+	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
 	sprintf(val, formatPrefix, *((int_32 *) data));
     }
@@ -2126,10 +2131,10 @@ static char * hexFormat(int_32 type, const void * data,
     char * val;
 
     if (type != RPM_INT32_TYPE) {
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(not a number)"));
     } else {
-	val = malloc(20 + padding);
+	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
 	sprintf(val, formatPrefix, *((int_32 *) data));
     }
@@ -2146,10 +2151,10 @@ static char * realDateFormat(int_32 type, const void * data,
     char buf[50];
 
     if (type != RPM_INT32_TYPE) {
-	val = malloc(20);
+	val = xmalloc(20);
 	strcpy(val, _("(not a number)"));
     } else {
-	val = malloc(50 + padding);
+	val = xmalloc(50 + padding);
 	strcat(formatPrefix, "s");
 
 	/* this is important if sizeof(int_32) ! sizeof(time_t) */
@@ -2182,7 +2187,7 @@ static char * shescapeFormat(int_32 type, const void * data,
     char * result, * dst, * src, * buf;
 
     if (type == RPM_INT32_TYPE) {
-	result = malloc(padding + 20);
+	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
 	sprintf(result, formatPrefix, *((int_32 *) data));
     } else {
@@ -2190,7 +2195,7 @@ static char * shescapeFormat(int_32 type, const void * data,
 	strcat(formatPrefix, "s");
 	sprintf(buf, formatPrefix, data);
 
-	result = dst = malloc(strlen(buf) * 4 + 3);
+	result = dst = xmalloc(strlen(buf) * 4 + 3);
 	*dst++ = '\'';
 	for (src = buf; *src; src++) {
 	    if (*src == '\'') {

@@ -59,7 +59,7 @@ const char * rpmProblemString(rpmProblem prob)
     if (prob.altH)
 	headerNVR(prob.altH, &altName, &altVersion, &altRelease);
 
-    buf = malloc(strlen(name) + strlen(version) + strlen(release) + 400);
+    buf = xmalloc(strlen(name) + strlen(version) + strlen(release) + 400);
 
     switch (prob.type) {
       case RPMPROB_BADARCH:

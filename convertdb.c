@@ -109,17 +109,17 @@ int convertDB(void) {
 	if (package.fileCount) {
 	    /* some packages have no file lists */
 
-	    fileList = malloc(sizeof(char *) * package.fileCount);
-	    fileLinktoList = malloc(sizeof(char *) * package.fileCount);
-	    fileMD5List = malloc(sizeof(char *) * package.fileCount);
-	    fileSizeList = malloc(sizeof(int_32) * package.fileCount);
-	    fileUIDList = malloc(sizeof(int_32) * package.fileCount);
-	    fileGIDList = malloc(sizeof(int_32) * package.fileCount);
-	    fileMtimesList = malloc(sizeof(int_32) * package.fileCount);
-	    fileFlagsList = malloc(sizeof(int_32) * package.fileCount);
-	    fileModesList = malloc(sizeof(int_16) * package.fileCount);
-	    fileRDevsList = malloc(sizeof(int_16) * package.fileCount);
-	    fileStatesList = malloc(sizeof(char) * package.fileCount);
+	    fileList = xmalloc(sizeof(char *) * package.fileCount);
+	    fileLinktoList = xmalloc(sizeof(char *) * package.fileCount);
+	    fileMD5List = xmalloc(sizeof(char *) * package.fileCount);
+	    fileSizeList = xmalloc(sizeof(int_32) * package.fileCount);
+	    fileUIDList = xmalloc(sizeof(int_32) * package.fileCount);
+	    fileGIDList = xmalloc(sizeof(int_32) * package.fileCount);
+	    fileMtimesList = xmalloc(sizeof(int_32) * package.fileCount);
+	    fileFlagsList = xmalloc(sizeof(int_32) * package.fileCount);
+	    fileModesList = xmalloc(sizeof(int_16) * package.fileCount);
+	    fileRDevsList = xmalloc(sizeof(int_16) * package.fileCount);
+	    fileStatesList = xmalloc(sizeof(char) * package.fileCount);
 
 	    /* reverse the file list while we're at it */
 	    j = package.fileCount - 1;

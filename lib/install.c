@@ -75,7 +75,7 @@ static int rpmInstallLoadMacros(Header h)
 
 static /*@only@*/ struct fileMemory *newFileMemory(void)
 {
-    struct fileMemory *fileMem = malloc(sizeof(*fileMem));
+    struct fileMemory *fileMem = xmalloc(sizeof(*fileMem));
     fileMem->files = NULL;
     fileMem->names = NULL;
     fileMem->cpioNames = NULL;
@@ -118,7 +118,7 @@ static int assembleFileList(Header h, /*@out@*/struct fileMemory ** memPtr,
 
     fileCount = *fileCountPtr;
 
-    files = *filesPtr = mem->files = malloc(sizeof(*mem->files) * fileCount);
+    files = *filesPtr = mem->files = xcalloc(fileCount, sizeof(*mem->files));
     
     headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
@@ -286,7 +286,7 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
     if (ourInfo->specFilePtr) {
 	chptr = cpioInfo->file + strlen(cpioInfo->file) - 5;
 	if (!strcmp(chptr, ".spec")) 
-	    *ourInfo->specFilePtr = strdup(cpioInfo->file);
+	    *ourInfo->specFilePtr = xstrdup(cpioInfo->file);
     }
 }
 
@@ -535,10 +535,10 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	}
 
 	if (specFilePtr)
-	    *specFilePtr = strdup(correctSpecFile);
+	    *specFilePtr = xstrdup(correctSpecFile);
     } else {
 	if (specFilePtr)
-	    *specFilePtr = strdup(files[specFileIndex].relativePath);
+	    *specFilePtr = xstrdup(files[specFileIndex].relativePath);
     }
     rc = 0;
 
@@ -633,14 +633,16 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 	*cookie = NULL;
 	if (h != NULL &&
 	   headerGetEntry(h, RPMTAG_COOKIE, NULL, (void **) cookie, NULL)) {
-	    *cookie = strdup(*cookie);
+	    *cookie = xstrdup(*cookie);
 	}
     }
 
     rpmInstallLoadMacros(h);
     
     rc = installSources(h, rootdir, fd, specFile, notify, notifyData);
-    if (h != NULL) headerFree(h);
+    if (h != NULL) {
+ 	headerFree(h);
+    }
  
     return rc;
 }
@@ -831,7 +833,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	    }
 	}
 
-	fileStates = malloc(sizeof(*fileStates) * fileCount);
+	fileStates = xmalloc(sizeof(*fileStates) * fileCount);
 	for (i = 0; i < fileCount; i++)
 	    fileStates[i] = files[i].state;
 
@@ -843,7 +845,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	fileMem = NULL;
     } else if (flags & RPMTRANS_FLAG_JUSTDB) {
 	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, NULL, &fileCount)) {
-	    fileStates = malloc(sizeof(*fileStates) * fileCount);
+	    fileStates = xmalloc(sizeof(*fileStates) * fileCount);
 	    memset(fileStates, RPMFILE_STATE_NORMAL, fileCount);
 	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates, 
 			    fileCount);
@@ -908,7 +910,8 @@ exit:
 	chdir(currDir);
     }
     if (fileMem) freeFileMemory(fileMem);
-    if (rc)
+    if (rc) {
 	headerFree(h);
+    }
     return rc;
 }

@@ -25,7 +25,7 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
 dbiIndex * dbiOpenIndex(const char * filename, int flags, int perms, DBTYPE type) {
     dbiIndex * dbi;
         
-    dbi = malloc(sizeof(*dbi));
+    dbi = xmalloc(sizeof(*dbi));
     dbi->db = dbopen(filename, flags, perms, type, NULL);
     if (!dbi->db) {
 	free(dbi);
@@ -33,7 +33,7 @@ dbiIndex * dbiOpenIndex(const char * filename, int flags, int perms, DBTYPE type
 			      strerror(errno));
 	return NULL;
     }
-    dbi->indexname = strdup(filename);
+    dbi->indexname = xstrdup(filename);
     return dbi;
 }
 
@@ -61,7 +61,7 @@ int dbiGetFirstKey(dbiIndex * dbi, const char ** keyp) {
 	return 1;
     }
 
-    {	char *k = malloc(key.size + 1);
+    {	char *k = xmalloc(key.size + 1);
 	memcpy(k, key.data, key.size);
 	k[key.size] = '\0';
 	*keyp = k;
@@ -88,7 +88,7 @@ int dbiSearchIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set) {
 	return 1;
     } 
 
-    set->recs = malloc(data.size);
+    set->recs = xmalloc(data.size);
     memcpy(set->recs, data.data, data.size);
     set->count = data.size / sizeof(dbiIndexRecord);
     return 0;
@@ -128,9 +128,9 @@ int dbiAppendIndexRecord(dbiIndexSet * set, dbiIndexRecord rec) {
     set->count++;
 
     if (set->count == 1) {
-	set->recs = malloc(set->count * sizeof(dbiIndexRecord));
+	set->recs = xmalloc(set->count * sizeof(dbiIndexRecord));
     } else {
-	set->recs = realloc(set->recs, set->count * sizeof(dbiIndexRecord));
+	set->recs = xrealloc(set->recs, set->count * sizeof(dbiIndexRecord));
     }
     set->recs[set->count - 1] = rec;
 

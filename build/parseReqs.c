@@ -110,7 +110,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 
 	re = r;
 	SKIPNONWHITE(re);
-	req = malloc((re-r) + 1);
+	req = xmalloc((re-r) + 1);
 	strncpy(req, r, (re-r));
 	req[re-r] = '\0';
 
@@ -173,7 +173,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
-	    version = malloc((ve-v) + 1);
+	    version = xmalloc((ve-v) + 1);
 	    strncpy(version, v, (ve-v));
 	    version[ve-v] = '\0';
 	    re = ve;	/* ==> next token after version string starts here */

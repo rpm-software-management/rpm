@@ -4,14 +4,13 @@
 # define PATH_MAX 255
 #endif
 
-#include "build/rpmbuild.h"
-#include "popt/popt.h"
+#include "rpmbuild.h"
 #include <rpmurl.h>
 
 /* ======================================================================== */
 static char * permsString(int mode)
 {
-    char *perms = strdup("----------");
+    char *perms = xstrdup("----------");
    
     if (S_ISDIR(mode)) 
 	perms[0] = 'd';
@@ -328,9 +327,9 @@ printNewSpecfile(Spec spec)
 	    headerGetEntry(spec->packages->header, RPMTAG_NAME, NULL,
 		(void **) &n, NULL);
 	    sprintf(buf, "%s(%s)", n, tagName(t->t_tag));
-	    t->t_msgid = strdup(buf);
+	    t->t_msgid = xstrdup(buf);
 	}
-	msgstr = strdup(dgettext(specedit, t->t_msgid));
+	msgstr = xstrdup(dgettext(specedit, t->t_msgid));
 
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
@@ -342,7 +341,7 @@ printNewSpecfile(Spec spec)
 	    sprintf(buf, "%s: %s\n",
 		((t->t_tag == RPMTAG_GROUP) ? "Group" : "Summary"),
 		msgstr);
-	    sl->sl_lines[t->t_startx] = strdup(buf);
+	    sl->sl_lines[t->t_startx] = xstrdup(buf);
 	    break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
@@ -354,9 +353,9 @@ printNewSpecfile(Spec spec)
 		sl->sl_lines[t->t_startx] = NULL;
 		continue;
 	    }
-	    sl->sl_lines[t->t_startx + 1] = strdup(msgstr);
+	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
 	    if (t->t_nlines > 2)
-		sl->sl_lines[t->t_startx + 2] = strdup("\n\n");
+		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
 	    break;
 	}
     }
@@ -725,10 +724,10 @@ static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptC
       {	char *qf = (char *)qva->qva_queryFormat;
 	if (qf) {
 	    int len = strlen(qf) + strlen(arg) + 1;
-	    qf = realloc(qf, len);
+	    qf = xrealloc(qf, len);
 	    strcat(qf, arg);
 	} else {
-	    qf = malloc(strlen(arg) + 1);
+	    qf = xmalloc(strlen(arg) + 1);
 	    strcpy(qf, arg);
 	}
 	qva->qva_queryFormat = qf;
