@@ -77,6 +77,7 @@ struct _sql_db_s {
 };
 
 struct _sql_dbcursor_s {
+    DB *dbp;
 
 /*@only@*/ /*@relnull@*/
     char * cmd;			/* SQL command string */
@@ -300,7 +301,7 @@ static void * allocTempBuffer(DBC * dbcursor, size_t len)
 {
     DB * db = dbcursor->dbp;
     SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    SCP_t scp = (SCP_t)dbcursor->internal;
+    SCP_t scp = (SCP_t)dbcursor;
     SQL_MEM * item;
 
 assert(scp != NULL);
@@ -427,7 +428,7 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 {
     DB * db = dbi->dbi_db;
 /*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-    SCP_t scp = (SCP_t)dbcursor->internal;
+    SCP_t scp = (SCP_t)dbcursor;
     SCP_t prev = NULL;
     int rc = 0;
 
@@ -455,7 +456,6 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
 /*@-kepttrans@*/
     scp = scpFree(scp);
 /*@=kepttrans@*/
-    dbcursor = _free(dbcursor);
 
 #ifndef SQL_FAST_DB
     if ( flags == DB_WRITECURSOR ) {
@@ -730,14 +730,12 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 
 assert(sqldb->db != NULL);
 
-    dbcursor = xcalloc(1, sizeof(*dbcursor));
-    dbcursor->dbp = db;
-
     scp = scpNew();
 if (_debug)
 fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), scp);
 
-    dbcursor->internal = (DBC_INTERNAL *)scp;
+    dbcursor = (DBC *)scp;
+    dbcursor->dbp = db;
 
     /* If we're going to write, start a transaction (lock the DB) */
     if (flags == DB_WRITECURSOR) {
@@ -1023,8 +1021,7 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
     /* Find our version of the db3 cursor */
 assert(dbcursor != NULL);
-    scp = (SCP_t)dbcursor->internal;
-assert(scp != NULL);
+    scp = (SCP_t)dbcursor;
 if (noisy)
 fprintf(stderr, "\tcget(%s) scp %p\n", dbi->dbi_subfile, scp);
 
