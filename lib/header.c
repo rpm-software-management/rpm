@@ -86,9 +86,9 @@ int nextIterator(HeaderIterator iter,
 	    *p = h->data + ntohl(index[slot].offset);
 	} else {
 	    /* Otherwise, build up an array of char* to return */
-	    x = index[slot].count;
-	    p = malloc(x * sizeof(char *));
-	    spp = (char **) p;
+	    x = ntohl(index[slot].count);
+	    *p = malloc(x * sizeof(char *));
+	    spp = (char **) *p;
 	    sp = h->data + ntohl(index[slot].offset);
 	    while (x--) {
 		*spp++ = sp;
@@ -436,9 +436,9 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	    *p = h->data + ntohl(index->offset);
 	} else {
 	    /* Otherwise, build up an array of char* to return */
-	    x = index->count;
-	    p = malloc(x * sizeof(char *));
-	    spp = (char **) p;
+	    x = ntohl(index->count);
+	    *p = malloc(x * sizeof(char *));
+	    spp = (char **) *p;
 	    sp = h->data + ntohl(index->offset);
 	    while (x--) {
 		*spp++ = sp;
