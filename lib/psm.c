@@ -1405,6 +1405,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
+    uint_32 tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -1445,8 +1446,14 @@ assert(psm->mi == NULL);
 			rpmteV(psm->te));
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
 			rpmteR(psm->te));
+	    if (tscolor) {
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_ARCH, RPMMIRE_DEFAULT,
+			rpmteA(psm->te));
+		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_DEFAULT,
+			rpmteO(psm->te));
+	    }
 
-	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
+	    while ((psm->oh = rpmdbNextIterator(psm->mi)) != NULL) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
 		psm->oh = NULL;
 		/*@loopbreak@*/ break;

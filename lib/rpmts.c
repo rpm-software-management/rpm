@@ -84,6 +84,27 @@ char * hGetNEVR(Header h, const char ** np)
     return NVR;
 }
 
+uint_32 hGetColor(Header h)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    uint_32 hcolor = 0;
+    uint_32 * fcolors;
+    int_32 ncolors;
+    int i;
+
+    fcolors = NULL;
+    ncolors = 0;
+    if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
+     && fcolors != NULL && ncolors > 0)
+    {
+	for (i = 0; i < ncolors; i++)
+	    hcolor |= fcolors[i];
+    }
+    hcolor &= 0x0f;
+
+    return hcolor;
+}
+
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
 /*@-modfilesys@*/

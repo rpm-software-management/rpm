@@ -112,9 +112,9 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 /** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header
- * @retval np		address of name pointer (or NULL)
- * @retval vp		address of version pointer (or NULL)
- * @retval rp		address of release pointer (or NULL)
+ * @retval *np		name pointer (or NULL)
+ * @retval *vp		version pointer (or NULL)
+ * @retval *rp		release pointer (or NULL)
  * @return		0 always
  */
 int headerNVR(Header h,
@@ -122,6 +122,24 @@ int headerNVR(Header h,
 		/*@null@*/ /*@out@*/ const char ** vp,
 		/*@null@*/ /*@out@*/ const char ** rp)
 	/*@modifies *np, *vp, *rp @*/;
+
+/** \ingroup header
+ * Return name, epoch, version, release, arch strings from header.
+ * @param h		header
+ * @retval *np		name pointer (or NULL)
+ * @retval *ep		epoch pointer (or NULL)
+ * @retval *vp		version pointer (or NULL)
+ * @retval *rp		release pointer (or NULL)
+ * @retval *ap		arch pointer (or NULL)
+ * @return		0 always
+ */
+int headerNEVRA(Header h,
+		/*@null@*/ /*@out@*/ const char ** np,
+		/*@null@*/ /*@out@*/ /*@unused@*/ const char ** ep,
+		/*@null@*/ /*@out@*/ const char ** vp,
+		/*@null@*/ /*@out@*/ const char ** rp,
+		/*@null@*/ /*@out@*/ const char ** ap)
+	/*@modifies *np, *vp, *rp, *ap @*/;
 
 /** \ingroup header
  * Translate and merge legacy signature tags into header.

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2003-01-13 15:26-0500\n"
+"POT-Creation-Date: 2003-01-17 12:33-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -707,7 +707,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:632 lib/psm.c:1650
+#: build/pack.c:632 lib/psm.c:1657
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -737,7 +737,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:725 lib/psm.c:1941
+#: build/pack.c:725 lib/psm.c:1948
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1326,71 +1326,71 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:164
+#: lib/depends.c:182
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:362
+#: lib/depends.c:380
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:389
+#: lib/depends.c:407
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:406
+#: lib/depends.c:424
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:435
+#: lib/depends.c:453
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:448
+#: lib/depends.c:466
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:461
+#: lib/depends.c:479
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:815
+#: lib/depends.c:833
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:937
+#: lib/depends.c:955
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1167
+#: lib/depends.c:1185
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1267
+#: lib/depends.c:1285
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1351
+#: lib/depends.c:1369
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1421
+#: lib/depends.c:1439
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1456
+#: lib/depends.c:1474
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1461
+#: lib/depends.c:1479
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2135,177 +2135,177 @@ msgstr ""
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1420
+#: lib/psm.c:1421
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1553
+#: lib/psm.c:1560
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1662
+#: lib/psm.c:1669
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1708
+#: lib/psm.c:1715
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1717
+#: lib/psm.c:1724
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1765
+#: lib/psm.c:1772
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1766
+#: lib/psm.c:1773
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1949
+#: lib/psm.c:1956
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1952
+#: lib/psm.c:1959
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:122 lib/rpmts.c:430
+#: lib/query.c:122 lib/rpmts.c:451
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
 
 #. @-boundswrite@
-#: lib/query.c:181
+#: lib/query.c:186
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:246
+#: lib/query.c:251
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:249
+#: lib/query.c:254
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:252
+#: lib/query.c:257
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:255
+#: lib/query.c:260
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:258
+#: lib/query.c:263
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:261
+#: lib/query.c:266
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:264
+#: lib/query.c:269
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:282
+#: lib/query.c:287
 msgid "package has not file owner/group lists\n"
 msgstr ""
 
-#: lib/query.c:315
+#: lib/query.c:320
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:444 lib/query.c:491 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
+#: lib/query.c:449 lib/query.c:496 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:459
+#: lib/query.c:464
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:469
+#: lib/query.c:474
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:502 lib/rpminstall.c:608
+#: lib/query.c:507 lib/rpminstall.c:608
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr ""
 
-#: lib/query.c:531
+#: lib/query.c:536
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:551
+#: lib/query.c:556
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:560
+#: lib/query.c:565
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:573 lib/query.c:594 lib/query.c:614 lib/query.c:648
+#: lib/query.c:578 lib/query.c:599 lib/query.c:619 lib/query.c:653
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr ""
 
-#: lib/query.c:583 lib/query.c:600 lib/query.c:624 lib/query.c:653
+#: lib/query.c:588 lib/query.c:605 lib/query.c:629 lib/query.c:658
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr ""
 
-#: lib/query.c:663
+#: lib/query.c:668
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:674
+#: lib/query.c:679
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:709
+#: lib/query.c:714
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:713
+#: lib/query.c:718
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:738
+#: lib/query.c:743
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:741
+#: lib/query.c:746
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:746
+#: lib/query.c:751
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:756 lib/rpminstall.c:779
+#: lib/query.c:761 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2781,28 +2781,28 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
 
-#: lib/rpmts.c:135
+#: lib/rpmts.c:156
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:320
+#: lib/rpmts.c:341
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:462
+#: lib/rpmts.c:483
 #, c-format
 msgid "Adding: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:474
+#: lib/rpmts.c:495
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr ""
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:906
+#: lib/rpmts.c:927
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2971,7 +2971,7 @@ msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:935
+#: lib/transaction.c:956
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -2984,7 +2984,7 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1047
+#: lib/transaction.c:1068
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -2997,7 +2997,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1129
+#: lib/transaction.c:1156
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3005,7 +3005,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1206
+#: lib/transaction.c:1233
 msgid "computing file dispositions\n"
 msgstr ""
 

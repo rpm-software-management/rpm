@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.56
+Release: 0.58
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -464,6 +464,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Fri Jan 17 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.58
+- duplicate package checks with arch/os checks if colored.
+- file conflict checks with colors.
+
 * Mon Jan 13 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.57
 - teach rpmquery to return "owning" package(s) in spite of alternatives.
 

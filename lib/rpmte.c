@@ -64,6 +64,7 @@ static void delTE(rpmte p)
     p->epoch = _free(p->epoch);
     p->name = _free(p->name);
     p->NEVR = _free(p->NEVR);
+    p->NEVRA = _free(p->NEVRA);
 
     p->h = headerFree(p->h);
 
@@ -95,6 +96,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
     rpmte savep;
     int_32 * ep;
     const char * arch, * os;
+    char * t;
+    size_t nb;
     int xx;
 
     p->NEVR = hGetNEVR(h, NULL);
@@ -110,6 +113,12 @@ static void addTE(rpmts ts, rpmte p, Header h,
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
     p->os = (os != NULL ? xstrdup(os) : NULL);
+
+    nb = strlen(p->NEVR) + 1;
+    if (p->arch)
+	nb += strlen(arch) + 1;
+    p->NEVRA = t = xmalloc(nb);
+    (void) stpcpy( stpcpy( stpcpy(t, p->NEVR), "."), p->arch);
 
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
@@ -382,6 +391,11 @@ int rpmteDBOffset(rpmte te)
 const char * rpmteNEVR(rpmte te)
 {
     return (te != NULL ? te->NEVR : NULL);
+}
+
+const char * rpmteNEVRA(rpmte te)
+{
+    return (te != NULL ? te->NEVRA : NULL);
 }
 
 FD_t rpmteFd(rpmte te)

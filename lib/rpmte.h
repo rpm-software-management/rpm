@@ -63,6 +63,8 @@ struct rpmte_s {
     Header h;			/*!< Package header. */
 /*@only@*/
     const char * NEVR;		/*!< Package name-version-release. */
+/*@only@*/
+    const char * NEVRA;		/*!< Package name-version-release.arch. */
 /*@owned@*/
     const char * name;		/*!< Name: */
 /*@only@*/ /*@null@*/
@@ -406,6 +408,15 @@ int rpmteDBOffset(rpmte te)
  */
 /*@observer@*/
 extern const char * rpmteNEVR(rpmte te)
+	/*@*/;
+
+/**
+ * Retrieve name-version-release.arch string from transaction element.
+ * @param te		transaction element
+ * @return		name-version-release.arch string
+ */
+/*@observer@*/
+extern const char * rpmteNEVRA(rpmte te)
 	/*@*/;
 
 /**

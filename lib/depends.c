@@ -132,6 +132,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int isSource;
     int duplicate = 0;
     rpmtsi pi; rpmte p;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    const char * arch;
+    const char * os;
     rpmds add;
     rpmds obsoletes;
     alKey pkgKey;	/* addedPackages key */
@@ -141,17 +144,32 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int oc;
 
     /*
-     * Check for previously added versions with the same name.
+     * Check for previously added versions with the same name and arch/os.
      * FIXME: only catches previously added, older packages.
      */
     add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
+    arch = NULL;
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    os = NULL;
+    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
     pkgKey = RPMAL_NOMATCH;
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
+	const char * parch;
+	const char * pos;
 	rpmds this;
 
 	/* XXX Only added packages need be checked for dupes. */
 	if (rpmteType(p) == TR_REMOVED)
 	    continue;
+
+	if (tscolor) {
+	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
+		continue;
+	    if (os == NULL || (pos = rpmteO(p)) == NULL)
+		continue;
+	    if (strcmp(arch, parch) || strcmp(os, pos))
+		continue;
+	}
 
 	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
 	    continue;	/* XXX can't happen */

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.364 2003/01/13 20:59:04 jbj Exp $
+# $Id: sl.po,v 1.365 2003/01/17 17:43:32 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-13 15:26-0500\n"
+"POT-Creation-Date: 2003-01-17 12:33-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -738,7 +738,7 @@ msgstr "Ikone %s ni mo¾no prebrati: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/pack.c:632 lib/psm.c:1650
+#: build/pack.c:632 lib/psm.c:1657
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ni mo¾no zapisati paketa: %s"
@@ -768,7 +768,7 @@ msgstr "Ikone %s ni mo¾no prebrati: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:725 lib/psm.c:1941
+#: build/pack.c:725 lib/psm.c:1948
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1383,76 +1383,76 @@ msgstr ""
 msgid " failed - "
 msgstr " neuspe¹no - "
 
-#: lib/depends.c:164
+#: lib/depends.c:182
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:362
+#: lib/depends.c:380
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:389
+#: lib/depends.c:407
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:406
+#: lib/depends.c:424
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:435
+#: lib/depends.c:453
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:448
+#: lib/depends.c:466
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:461
+#: lib/depends.c:479
 #, fuzzy
 msgid "(db package)"
 msgstr "ni paketov\n"
 
-#: lib/depends.c:815
+#: lib/depends.c:833
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:937
+#: lib/depends.c:955
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1167
+#: lib/depends.c:1185
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1267
+#: lib/depends.c:1285
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1351
+#: lib/depends.c:1369
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1421
+#: lib/depends.c:1439
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1456
+#: lib/depends.c:1474
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1461
+#: lib/depends.c:1479
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2258,181 +2258,181 @@ msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "skript se ni uspe¹no izvedel"
 
-#: lib/psm.c:1420
+#: lib/psm.c:1421
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/psm.c:1553
+#: lib/psm.c:1560
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1662
+#: lib/psm.c:1669
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: lib/psm.c:1708
+#: lib/psm.c:1715
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "uporabnik %s ne obstaja - uporabljam root"
 
-#: lib/psm.c:1717
+#: lib/psm.c:1724
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s ne obstaja - uporabljam root"
 
-#: lib/psm.c:1765
+#: lib/psm.c:1772
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "raz¹iritev arhiva je bilo neuspe¹no%s%s: %s"
 
-#: lib/psm.c:1766
+#: lib/psm.c:1773
 msgid " on file "
 msgstr " za datoteko "
 
-#: lib/psm.c:1949
+#: lib/psm.c:1956
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
-#: lib/psm.c:1952
+#: lib/psm.c:1959
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s neuspe¹en"
 
-#: lib/query.c:122 lib/rpmts.c:430
+#: lib/query.c:122 lib/rpmts.c:451
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "napaka v obliki: %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:181
+#: lib/query.c:186
 msgid "(contains no files)"
 msgstr "(ne vsebuje datotek)"
 
-#: lib/query.c:246
+#: lib/query.c:251
 msgid "normal        "
 msgstr "normalno      "
 
-#: lib/query.c:249
+#: lib/query.c:254
 msgid "replaced      "
 msgstr "nadome¹èeno   "
 
-#: lib/query.c:252
+#: lib/query.c:257
 msgid "not installed "
 msgstr "ni name¹èeno  "
 
-#: lib/query.c:255
+#: lib/query.c:260
 msgid "net shared    "
 msgstr "omre¾ni       "
 
-#: lib/query.c:258
+#: lib/query.c:263
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:261
+#: lib/query.c:266
 msgid "(no state)    "
 msgstr "(brez stanja) "
 
-#: lib/query.c:264
+#: lib/query.c:269
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(neznano %3d) "
 
-#: lib/query.c:282
+#: lib/query.c:287
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 
-#: lib/query.c:315
+#: lib/query.c:320
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 
-#: lib/query.c:444 lib/query.c:491 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:441
+#: lib/query.c:449 lib/query.c:496 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: lib/query.c:459
+#: lib/query.c:464
 #, c-format
 msgid "query of %s failed\n"
 msgstr "poizvedba po %s je bila neuspe¹na\n"
 
-#: lib/query.c:469
+#: lib/query.c:474
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:502 lib/rpminstall.c:608
+#: lib/query.c:507 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/query.c:531
+#: lib/query.c:536
 #, fuzzy
 msgid "no packages\n"
 msgstr "ni paketov\n"
 
-#: lib/query.c:551
+#: lib/query.c:556
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s ne vsebuje nobenega paketa\n"
 
-#: lib/query.c:560
+#: lib/query.c:565
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/query.c:573 lib/query.c:594 lib/query.c:614 lib/query.c:648
+#: lib/query.c:578 lib/query.c:599 lib/query.c:619 lib/query.c:653
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Neuspe¹no branje %s: %s."
 
-#: lib/query.c:583 lib/query.c:600 lib/query.c:624 lib/query.c:653
+#: lib/query.c:588 lib/query.c:605 lib/query.c:629 lib/query.c:658
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/query.c:663
+#: lib/query.c:668
 #, c-format
 msgid "no package requires %s\n"
 msgstr "noben paket ne potrebuje %s\n"
 
-#: lib/query.c:674
+#: lib/query.c:679
 #, c-format
 msgid "no package provides %s\n"
 msgstr "noben paket ne nudi %s\n"
 
-#: lib/query.c:709
+#: lib/query.c:714
 #, c-format
 msgid "file %s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: lib/query.c:713
+#: lib/query.c:718
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ni del nobenega paketa\n"
 
-#: lib/query.c:738
+#: lib/query.c:743
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/query.c:741
+#: lib/query.c:746
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "¹tevilka zapisa paketa: %d\n"
 
-#: lib/query.c:746
+#: lib/query.c:751
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:756 lib/rpminstall.c:779
+#: lib/query.c:761 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2919,28 +2919,28 @@ msgstr "Ni mo¾no prebrati %s, HOME je prevelik."
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s ni mo¾no odpreti za branje: %s."
 
-#: lib/rpmts.c:135
+#: lib/rpmts.c:156
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/rpmts.c:320
+#: lib/rpmts.c:341
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "datoteke %s/packages.rpm ni mogo¾no odpreti\n"
 
-#: lib/rpmts.c:462
+#: lib/rpmts.c:483
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "vrstica: %s"
 
-#: lib/rpmts.c:474
+#: lib/rpmts.c:495
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "izvori v: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:906
+#: lib/rpmts.c:927
 msgid "getting list of mounted filesystems\n"
 msgstr "zbiranje seznama priklopljenih datoteènih sistemov.\n"
 
@@ -3118,7 +3118,7 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
 #. @innercontinue@
-#: lib/transaction.c:935
+#: lib/transaction.c:956
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèevanje imenika %s\n"
@@ -3131,7 +3131,7 @@ msgstr "izkljuèevanje imenika %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1047
+#: lib/transaction.c:1068
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3144,7 +3144,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1129
+#: lib/transaction.c:1156
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3152,7 +3152,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1206
+#: lib/transaction.c:1233
 msgid "computing file dispositions\n"
 msgstr ""
 

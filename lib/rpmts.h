@@ -894,6 +894,14 @@ int rpmtsGetKeys(rpmts ts,
 /*@only@*/ char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
 
+/**
+ * Return header color.
+ * @param h		header
+ * @return		header color
+ */
+uint_32 hGetColor(Header h)
+	/*@modifies h @*/;
+
 #ifdef __cplusplus
 }
 #endif

@@ -123,14 +123,17 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
-int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
+int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
+    uint_32 tscolor = rpmtsColor(ts);
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     int scareMem = 1;
     rpmfi fi = NULL;
     char * t, * te;
     char * prefix = NULL;
     int rc = 0;		/* XXX FIXME: need real return code */
     int nonewline = 0;
+    int xx;
     int i;
 
     te = t = xmalloc(BUFSIZ);
@@ -140,12 +143,14 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 
     if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL)
     {
-	const char * name, * version, * release;
-	(void) headerNVR(h, &name, &version, &release);
+	const char * n, * v, * r, * a;
+	(void) headerNEVRA(h, &n, NULL, &v, &r, &a);
 /*@-boundswrite@*/
-	te = stpcpy(te, name);
-	te = stpcpy( stpcpy(te, "-"), version);
-	te = stpcpy( stpcpy(te, "-"), release);
+	te = stpcpy(te, n);
+	te = stpcpy( stpcpy(te, "-"), v);
+	te = stpcpy( stpcpy(te, "-"), r);
+	if (tscolor)
+	    te = stpcpy( stpcpy(te, "."), a);
 /*@=boundswrite@*/
 	goto exit;
     }

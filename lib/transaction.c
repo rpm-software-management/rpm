@@ -215,6 +215,9 @@ static int handleInstInstalledFiles(const rpmts ts,
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    uint_32 tscolor = rpmtsColor(ts);
+    uint_32 otecolor, tecolor;
+    uint_32 oficolor, ficolor;
     const char * altNEVR = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
@@ -238,6 +241,18 @@ static int handleInstInstalledFiles(const rpmts ts,
     if (otherFi == NULL)
 	return 1;
 
+    /* Compute package color. */
+    tecolor = rpmteColor(p);
+    tecolor &= tscolor;
+
+    /* Compute other pkg color. */
+    otecolor = 0;
+    otherFi = rpmfiInit(otherFi, 0);
+    if (otherFi != NULL)
+    while (rpmfiNext(otherFi) >= 0)
+	otecolor |= rpmfiFColor(otherFi);
+    otecolor &= tscolor;
+
     fi->replaced = xcalloc(sharedCount, sizeof(*fi->replaced));
 
     ps = rpmtsProblems(ts);
@@ -247,9 +262,13 @@ static int handleInstInstalledFiles(const rpmts ts,
 
 	otherFileNum = shared->otherFileNum;
 	(void) rpmfiSetFX(otherFi, otherFileNum);
+	oficolor = rpmfiFColor(otherFi);
+	oficolor &= tscolor;
 
 	fileNum = shared->pkgFileNum;
 	(void) rpmfiSetFX(fi, fileNum);
+	ficolor = rpmfiFColor(fi);
+	ficolor &= tscolor;
 
 	isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
@@ -263,6 +282,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    continue;
 
 	if (filecmp(otherFi, fi)) {
+	    /* Report conflicts only for packages/files of same color. */
+	    if (tscolor == 0 || (tecolor == otecolor && ficolor == oficolor))
 	    if (reportConflicts) {
 		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVR(p), rpmteKey(p),
@@ -1086,6 +1107,12 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 				rpmteV(p));
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
 				rpmteR(p));
+	    if (tscolor) {
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT,
+				rpmteA(p));
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_DEFAULT,
+				rpmteO(p));
+	    }
 
 	    while (rpmdbNextIterator(mi) != NULL) {
 		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
