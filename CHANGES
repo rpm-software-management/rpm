@@ -19,7 +19,7 @@
 	- allow Prefix: for sub-packages
 	- allow packager: in rpmrc
 	- --arch and --os are now --buildarch and --buildos
-	- magic arch/os handling through arch_data and os_data
+	- magic arch/os handling through arch_canon and os_canon
 	  see /usr/lib/rpmrc (in short: uname short_name num)
 	- removed build_arch: from rpmrc
 	  Replacing it is buildarchtranslate: and buildostranslate:
