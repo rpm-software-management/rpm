@@ -42,7 +42,7 @@ librpm_la_LDFLAGS = -release @VERSION@
 # XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmdb -lrpmio -lpopt|" < librpm.la > .librpm.la && \
+	sed -e "s|^dependency_libs='|& -lrpmdb-@VERSION@ -lrpmio-@VERSION@ -lpopt|" < librpm.la > .librpm.la && \
 	mv .librpm.la librpm.la
 
 getdate.c: getdate.y

@@ -7,7 +7,6 @@
 
 #include "rpmio_internal.h"
 #include <rpmcli.h>
-#include "rpmpgp.h"
 
 #include "rpmdb.h"
 

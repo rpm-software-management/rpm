@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-20 15:03-0400\n"
+"POT-Creation-Date: 2002-07-20 17:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1563,24 +1563,24 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:383
+#: lib/formats.c:34 lib/formats.c:60 lib/formats.c:95 lib/formats.c:386
 #: rpmdb/header.c:3121 rpmdb/header.c:3144 rpmdb/header.c:3168
 msgid "(not a number)"
 msgstr ""
 
-#: lib/formats.c:157
+#: lib/formats.c:160
 msgid "(not base64)"
 msgstr ""
 
-#: lib/formats.c:167
+#: lib/formats.c:170
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:233 lib/formats.c:282
+#: lib/formats.c:236 lib/formats.c:285
 msgid "(not a blob)"
 msgstr ""
 
-#: lib/formats.c:307
+#: lib/formats.c:310
 #, fuzzy
 msgid "(not a OpenPGP signature"
 msgstr "      --sign            - genre une signature PGP"
@@ -1669,41 +1669,41 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:214 lib/rpmchecksig.c:211 lib/rpmchecksig.c:668
+#: lib/package.c:216 lib/rpmchecksig.c:210 lib/rpmchecksig.c:667
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/package.c:229
+#: lib/package.c:231
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:237
+#: lib/package.c:239
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:246 lib/rpmchecksig.c:229 lib/rpmchecksig.c:684
+#: lib/package.c:248 lib/rpmchecksig.c:228 lib/rpmchecksig.c:683
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/package.c:250 lib/rpmchecksig.c:233 lib/rpmchecksig.c:689
+#: lib/package.c:252 lib/rpmchecksig.c:232 lib/rpmchecksig.c:688
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:296 lib/rpmchecksig.c:587
+#: lib/package.c:298 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/package.c:331 lib/package.c:356 lib/package.c:386 lib/rpmchecksig.c:760
+#: lib/package.c:333 lib/package.c:358 lib/package.c:388 lib/rpmchecksig.c:759
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:398 lib/rpmchecksig.c:121 lib/rpmchecksig.c:616
+#: lib/package.c:400 lib/rpmchecksig.c:120 lib/rpmchecksig.c:615
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -2426,92 +2426,92 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "(added provide)"
 msgstr ""
 
-#: lib/rpmchecksig.c:59
+#: lib/rpmchecksig.c:58
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:71
+#: lib/rpmchecksig.c:70
 #, fuzzy
 msgid "makeTempFile failed\n"
 msgstr "La construction a chou.\n"
 
-#: lib/rpmchecksig.c:115
+#: lib/rpmchecksig.c:114
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:216
+#: lib/rpmchecksig.c:215
 #, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:220
+#: lib/rpmchecksig.c:219
 #, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:320
+#: lib/rpmchecksig.c:319
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:350
+#: lib/rpmchecksig.c:349
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:356
+#: lib/rpmchecksig.c:355
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:449
+#: lib/rpmchecksig.c:448
 #, fuzzy, c-format
 msgid "%s: import read failed.\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:453
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:459
+#: lib/rpmchecksig.c:458
 #, fuzzy, c-format
 msgid "%s: base64 encode failed.\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:601
+#: lib/rpmchecksig.c:600
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmchecksig.c:674
+#: lib/rpmchecksig.c:673
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:922
+#: lib/rpmchecksig.c:921
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:923 lib/rpmchecksig.c:937
+#: lib/rpmchecksig.c:922 lib/rpmchecksig.c:936
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:925 lib/rpmchecksig.c:939
+#: lib/rpmchecksig.c:924 lib/rpmchecksig.c:938
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:926 lib/rpmchecksig.c:940
+#: lib/rpmchecksig.c:925 lib/rpmchecksig.c:939
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:928 lib/rpmchecksig.c:942
+#: lib/rpmchecksig.c:927 lib/rpmchecksig.c:941
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:936
+#: lib/rpmchecksig.c:935
 msgid "OK"
 msgstr ""
 
@@ -3271,164 +3271,164 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:166
+#: rpmdb/rpmdb.c:164
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:241
+#: rpmdb/rpmdb.c:239
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:263
+#: rpmdb/rpmdb.c:261
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:738
+#: rpmdb/rpmdb.c:736
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1036 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:1219 rpmdb/rpmdb.c:2118
-#: rpmdb/rpmdb.c:2224 rpmdb/rpmdb.c:2934
+#: rpmdb/rpmdb.c:1034 rpmdb/rpmdb.c:1167 rpmdb/rpmdb.c:1217 rpmdb/rpmdb.c:2116
+#: rpmdb/rpmdb.c:2222 rpmdb/rpmdb.c:2932
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:1451
+#: rpmdb/rpmdb.c:1449
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:2038
+#: rpmdb/rpmdb.c:2036
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2307
+#: rpmdb/rpmdb.c:2305
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: rpmdb/rpmdb.c:2370
+#: rpmdb/rpmdb.c:2368
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:2485
+#: rpmdb/rpmdb.c:2483
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2489
+#: rpmdb/rpmdb.c:2487
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:2517
+#: rpmdb/rpmdb.c:2515
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:2538
+#: rpmdb/rpmdb.c:2536
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:2548
+#: rpmdb/rpmdb.c:2546
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:2695
+#: rpmdb/rpmdb.c:2693
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: rpmdb/rpmdb.c:2909
+#: rpmdb/rpmdb.c:2907
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2913
+#: rpmdb/rpmdb.c:2911
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:2953
+#: rpmdb/rpmdb.c:2951
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:3302
+#: rpmdb/rpmdb.c:3300
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3339
+#: rpmdb/rpmdb.c:3337
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3371
+#: rpmdb/rpmdb.c:3369
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:3375
+#: rpmdb/rpmdb.c:3373
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3381
+#: rpmdb/rpmdb.c:3379
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:3383
+#: rpmdb/rpmdb.c:3381
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:3390
+#: rpmdb/rpmdb.c:3388
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3403
+#: rpmdb/rpmdb.c:3401
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3429
+#: rpmdb/rpmdb.c:3427
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3469
+#: rpmdb/rpmdb.c:3467
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3487
+#: rpmdb/rpmdb.c:3485
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3495
+#: rpmdb/rpmdb.c:3493
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3497
+#: rpmdb/rpmdb.c:3495
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3507
+#: rpmdb/rpmdb.c:3505
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmdb/rpmdb.c:3509
+#: rpmdb/rpmdb.c:3507
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -3640,71 +3640,71 @@ msgstr ""
 msgid "failed to create %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: tools/rpmcache.c:519 tools/rpmgraph.c:276
+#: tools/rpmcache.c:515 tools/rpmgraph.c:276
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
-#: tools/rpmcache.c:521 tools/rpmgraph.c:278
+#: tools/rpmcache.c:517 tools/rpmgraph.c:278
 #, fuzzy
 msgid "don't verify package digest"
 msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
-#: tools/rpmcache.c:523 tools/rpmgraph.c:280
+#: tools/rpmcache.c:519 tools/rpmgraph.c:280
 #, fuzzy
 msgid "don't verify package signature"
 msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
-#: tools/rpmcache.c:526
+#: tools/rpmcache.c:522
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:530
+#: tools/rpmcache.c:526
 msgid "follow command line symlinks"
 msgstr ""
 
-#: tools/rpmcache.c:533
+#: tools/rpmcache.c:529
 msgid "logical walk"
 msgstr ""
 
-#: tools/rpmcache.c:536
+#: tools/rpmcache.c:532
 #, fuzzy
 msgid "don't change directories"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: tools/rpmcache.c:539
+#: tools/rpmcache.c:535
 msgid "don't get stat info"
 msgstr ""
 
-#: tools/rpmcache.c:542
+#: tools/rpmcache.c:538
 msgid "physical walk"
 msgstr ""
 
-#: tools/rpmcache.c:545
+#: tools/rpmcache.c:541
 msgid "return dot and dot-dot"
 msgstr ""
 
-#: tools/rpmcache.c:548
+#: tools/rpmcache.c:544
 msgid "don't cross devices"
 msgstr ""
 
-#: tools/rpmcache.c:551
+#: tools/rpmcache.c:547
 msgid "return whiteout information"
 msgstr ""
 
-#: tools/rpmcache.c:554 tools/rpmgraph.c:286
+#: tools/rpmcache.c:550 tools/rpmgraph.c:286
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
-#: tools/rpmcache.c:586
+#: tools/rpmcache.c:582
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:618
+#: tools/rpmcache.c:614
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "impossible d'ouvrir: %s\n"

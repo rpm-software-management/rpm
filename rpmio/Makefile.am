@@ -6,16 +6,17 @@ EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
 EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
 
-INCLUDES = -I. \
+INCLUDES = -I. -I.. \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h \
+	fts.h \
+	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	ugid.h
-noinst_HEADERS = fts.h rpmio_internal.h rpmpgp.h
+noinst_HEADERS = rpmio_internal.h
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 

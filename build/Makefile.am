@@ -27,7 +27,7 @@ librpmbuild_la_LDFLAGS = -release @VERSION@
 # XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpm|" < librpmbuild.la > .librpmbuild.la && \
+	sed -e "s|^dependency_libs='|& -lrpm-@VERSION@|" < librpmbuild.la > .librpmbuild.la && \
 	mv .librpmbuild.la librpmbuild.la
 
 #BUILT_SOURCES = rpmbuild.lcd

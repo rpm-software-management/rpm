@@ -10,13 +10,11 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
-#include "types.h"
-#include "base64.h"
-#include "dsa.h"
-#include "endianness.h"
-#include "mp32.h"
-#include "rsa.h"
-#include "rsapk.h"
+#if !defined(_BEECRYPT_TYPES_H)
+/*@-redef@*/
+typedef unsigned char byte;
+/*@=redef@*/
+#endif	/* _BEECRYPT_TYPES_H */
 
 /**
  */
@@ -953,70 +951,12 @@ typedef enum pgpArmorKey_e {
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpArmorKeyTbl[];
 
-/**
- * Values parsed from OpenPGP signature/pubkey packet(s).
+/** \ingroup rpmio
+ * Bit(s) to control digest operation.
  */
-struct pgpDigParams_s {
-/*@only@*/ /*@null@*/
-    const char * userid;
-/*@only@*/ /*@null@*/
-    const byte * hash;
-    const char * params[4];
-    byte tag;
-
-    byte version;		/*!< version number. */
-    byte time[4];		/*!< time that the key was created. */
-    byte pubkey_algo;		/*!< public key algorithm. */
-
-    byte hash_algo;
-    byte sigtype;
-    byte hashlen;
-    byte signhash16[2];
-    byte signid[8];
-    byte saved;
-#define	PGPDIG_SAVED_TIME	(1 << 0)
-#define	PGPDIG_SAVED_ID		(1 << 1)
-
-};
-
-/**
- * Container for values parsed from an OpenPGP signature and public key.
- */
-struct pgpDig_s {
-    struct pgpDigParams_s signature;
-    struct pgpDigParams_s pubkey;
-
-    size_t nbytes;		/*!< No. bytes of plain text. */
-
-/*@only@*/ /*@null@*/
-    DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
-/*@only@*/ /*@null@*/
-    DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
-/*@only@*/ /*@null@*/
-    void * sha1;		/*!< (dsa) V3 signature hash. */
-    size_t sha1len;		/*!< (dsa) V3 signature hash length. */
-
-/*@only@*/ /*@null@*/
-    DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
-/*@only@*/ /*@null@*/
-    void * md5;			/*!< (rsa) V3 signature hash. */
-    size_t md5len;		/*!< (rsa) V3 signature hash length. */
-
-    /* DSA parameters. */
-    mp32barrett p;
-    mp32barrett q;
-    mp32number g;
-    mp32number y;
-    mp32number hm;
-    mp32number r;
-    mp32number s;
-
-    /* RSA parameters. */
-    rsapk rsa_pk;
-    mp32number m;
-    mp32number c;
-    mp32number rsahm;
-};
+typedef enum rpmDigestFlags_e {
+    RPMDIGEST_NONE	= 0
+} rpmDigestFlags;
 
 
 /*@-fcnuse@*/
@@ -1272,7 +1212,7 @@ int pgpPrtPkt(const byte *pkt)
  * @param printing	should packets be printed?
  * @return		-1 on error, 0 on success
  */
-int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpDig_s *dig, int printing)
+int pgpPrtPkts(const byte *pkts, unsigned int plen, pgpDig dig, int printing)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
@@ -1293,14 +1233,14 @@ pgpArmor pgpReadPkts(const char * fn,
  * @return		container
  */
 /*@only@*/
-struct pgpDig_s * pgpNewDig(void)
+pgpDig pgpNewDig(void)
 	/*@*/;
 
 /**
  * Release (malloc'd) data from container.
  * @param dig		container
  */
-void pgpCleanDig(/*@null@*/ struct pgpDig_s * dig)
+void pgpCleanDig(/*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
 /**
@@ -1309,8 +1249,8 @@ void pgpCleanDig(/*@null@*/ struct pgpDig_s * dig)
  * @return		NULL always
  */
 /*@only@*/ /*@null@*/
-struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
-	/*@modifies *dig @*/;
+pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
+	/*@modifies dig @*/;
 
 /**
  * Is buffer at beginning of an OpenPGP packet?
@@ -1380,10 +1320,10 @@ int pgpIsPkt(const byte * p)
  * @return		crc of buffer
  */
 /*@unused@*/ static inline
-uint32 pgpCRC(const byte *octets, size_t len)
+unsigned int pgpCRC(const byte *octets, size_t len)
 	/*@*/
 {
-    uint32 crc = CRC24_INIT;
+    unsigned int crc = CRC24_INIT;
     int i;
 
     while (len--) {
@@ -1398,6 +1338,52 @@ uint32 pgpCRC(const byte *octets, size_t len)
     }
     return crc & 0xffffff;
 }
+
+/** \ingroup rpmio
+ * Duplicate a digest context.
+ * @param octx		existing digest context
+ * @return		duplicated digest context
+ */
+/*@only@*/
+DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
+	/*@*/;
+
+/** \ingroup rpmio
+ * Initialize digest.
+ * Set bit count to 0 and buffer to mysterious initialization constants.
+ * @param hashalgo	type of digest
+ * @param flags		bit(s) to control digest operation
+ * @return		digest context
+ */
+/*@only@*/
+DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
+	/*@*/;
+
+/** \ingroup rpmio
+ * Update context with next plain text buffer.
+ * @param ctx		digest context
+ * @param data		next data buffer
+ * @param len		no. bytes of data
+ * @return		0 on success
+ */
+int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
+	/*@modifies ctx @*/;
+
+/** \ingroup rpmio
+ * Return digest and destroy context.
+ * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * 1 0* (64-bit count of bits processed, MSB-first)
+ *
+ * @param ctx		digest context
+ * @retval datap	address of returned digest
+ * @retval lenp		address of digest length
+ * @param asAscii	return digest as ascii string?
+ * @return		0 on success
+ */
+int rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
+	/*@null@*/ /*@out@*/ void ** datap,
+	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
+		/*@modifies *datap, *lenp @*/;
 
 #ifdef __cplusplus
 }

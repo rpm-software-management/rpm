@@ -8,10 +8,6 @@
 
 #include <rpmcli.h>
 
-#ifdef	DYING
-#include <rpmpgp.h>
-#endif
-
 #include "rpmps.h"
 #include "rpmdb.h"
 #include "rpmds.h"

@@ -21,6 +21,8 @@
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
 /*@access rpmts @*/
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX stealing digests */
@@ -152,7 +154,7 @@ static int rpmtsStashKeyid(rpmts ts)
 	/*@globals nkeyids, keyids @*/
 	/*@modifies nkeyids, keyids @*/
 {
-    struct pgpDigParams_s * sigp = NULL;
+    pgpDigParams sigp = NULL;
     unsigned int keyid;
     int i;
 

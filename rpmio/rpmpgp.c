@@ -8,17 +8,20 @@
 #include "rpmio_internal.h"
 #include "debug.h"
 
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
+
 /*@unchecked@*/
 static int _debug = 0;
 
 /*@unchecked@*/
 static int _print = 0;
 
-/*@unchecked@*/
-/*@null@*/ static struct pgpDig_s * _dig = NULL;
+/*@unchecked@*/ /*@null@*/
+static pgpDig _dig = NULL;
 
-/*@unchecked@*/
-/*@null@*/ static struct pgpDigParams_s * _digp = NULL;
+/*@unchecked@*/ /*@null@*/
+static pgpDigParams _digp = NULL;
 
 #ifdef	DYING
 /* This is the unarmored RPM-GPG-KEY public key. */
@@ -1005,14 +1008,14 @@ int pgpPrtPkt(const byte *pkt)
     return (rc ? -1 : pktlen);
 }
 
-struct pgpDig_s * pgpNewDig(void)
+pgpDig pgpNewDig(void)
 {
-    struct pgpDig_s * dig = xcalloc(1, sizeof(*dig));
+    pgpDig dig = xcalloc(1, sizeof(*dig));
     return dig;
 }
 
 /*@-boundswrite@*/
-void pgpCleanDig(struct pgpDig_s * dig)
+void pgpCleanDig(pgpDig dig)
 {
     if (dig != NULL) {
 	int i;
@@ -1047,7 +1050,7 @@ void pgpCleanDig(struct pgpDig_s * dig)
 }
 /*@=boundswrite@*/
 
-struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
+pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	/*@modifies dig @*/
 {
     if (dig != NULL) {
@@ -1092,8 +1095,7 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
     return dig;
 }
 
-int pgpPrtPkts(const byte * pkts, unsigned int plen,
-		struct pgpDig_s * dig, int printing)
+int pgpPrtPkts(const byte * pkts, unsigned int plen, pgpDig dig, int printing)
 {
     unsigned int val = *pkts;
     const byte *p;

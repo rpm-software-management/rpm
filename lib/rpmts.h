@@ -143,7 +143,7 @@ struct rpmts_s {
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
 
 /*@null@*/
-    struct pgpDig_s * dig;	/*!< Current signature/pubkey parameters. */
+    pgpDig dig;			/*!< Current signature/pubkey parameters. */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */

@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef _TYPES_H
-#define _TYPES_H
+#ifndef _BEECRYPT_TYPES_H
+#define _BEECRYPT_TYPES_H
 
 #ifndef ROTL32
 # define ROTL32(x, s) (((x) << (s)) | ((x) >> (32 - (s))))
@@ -68,4 +68,4 @@ typedef @uint16_type@	javachar;
 typedef @float4_type@	javafloat;
 typedef @double8_type@	javadouble;
 
-#endif
+#endif /* _BEECRYPT_TYPES_H */

@@ -3,12 +3,15 @@
  */
 
 #include "system.h"
+#include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
-#include "rpmpgp.h"
 #include "manifest.h"
 #include "misc.h"
 #include "debug.h"
+
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
 
 /**
  * Identify type of trigger.
@@ -306,8 +309,8 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	if (pktlen == 0 || tag != PGPTAG_SIGNATURE) {
 	    val = xstrdup(_("(not a OpenPGP signature"));
 	} else {
-	    struct pgpDig_s * dig = pgpNewDig();
-	    struct pgpDigParams_s * sigp = &dig->signature;
+	    pgpDig dig = pgpNewDig();
+	    pgpDigParams sigp = &dig->signature;
 	    size_t nb = 80;
 
 	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);

@@ -49,7 +49,7 @@ dbconfig.c: db.h
 # XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmio|" < librpmdb.la > .librpmdb.la && \
+	sed -e "s|^dependency_libs='|& -lrpmio-@VERSION@|" < librpmdb.la > .librpmdb.la && \
 	mv .librpmdb.la librpmdb.la
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 

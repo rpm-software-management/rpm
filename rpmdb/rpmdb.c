@@ -33,10 +33,8 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@=declundef =exportheader @*/
 #endif
 
-#include <rpmio.h>
-#include <rpmpgp.h>
+#include <rpmio_internal.h>
 #include <rpmmacro.h>
-#include <rpmurl.h>
 
 #include "rpmdb.h"
 #include "fprint.h"

@@ -8,7 +8,82 @@
 
 #include <rpmio.h>
 #include <rpmurl.h>
+
+#include <beecrypt/types.h>
 #include <rpmpgp.h>
+
+/* Drag in the beecrypt includes. */
+#include <beecrypt/base64.h>
+#include <beecrypt/dsa.h>
+#include <beecrypt/endianness.h>
+#include <beecrypt/mp32.h>
+#include <beecrypt/rsa.h>
+#include <beecrypt/rsapk.h>
+
+/** \ingroup rpmio
+ * Values parsed from OpenPGP signature/pubkey packet(s).
+ */
+struct pgpDigParams_s {
+/*@only@*/ /*@null@*/
+    const char * userid;
+/*@only@*/ /*@null@*/
+    const byte * hash;
+    const char * params[4];
+    byte tag;
+
+    byte version;		/*!< version number. */
+    byte time[4];		/*!< time that the key was created. */
+    byte pubkey_algo;		/*!< public key algorithm. */
+
+    byte hash_algo;
+    byte sigtype;
+    byte hashlen;
+    byte signhash16[2];
+    byte signid[8];
+    byte saved;
+#define	PGPDIG_SAVED_TIME	(1 << 0)
+#define	PGPDIG_SAVED_ID		(1 << 1)
+
+};
+
+/** \ingroup rpmio
+ * Container for values parsed from an OpenPGP signature and public key.
+ */
+struct pgpDig_s {
+    struct pgpDigParams_s signature;
+    struct pgpDigParams_s pubkey;
+
+    size_t nbytes;		/*!< No. bytes of plain text. */
+
+/*@only@*/ /*@null@*/
+    DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
+/*@only@*/ /*@null@*/
+    DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
+/*@only@*/ /*@null@*/
+    void * sha1;		/*!< (dsa) V3 signature hash. */
+    size_t sha1len;		/*!< (dsa) V3 signature hash length. */
+
+/*@only@*/ /*@null@*/
+    DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
+/*@only@*/ /*@null@*/
+    void * md5;			/*!< (rsa) V3 signature hash. */
+    size_t md5len;		/*!< (rsa) V3 signature hash length. */
+
+    /* DSA parameters. */
+    mp32barrett p;
+    mp32barrett q;
+    mp32number g;
+    mp32number y;
+    mp32number hm;
+    mp32number r;
+    mp32number s;
+
+    /* RSA parameters. */
+    rsapk rsa_pk;
+    mp32number m;
+    mp32number c;
+    mp32number rsahm;
+};
 
 /** \ingroup rpmio
  */
@@ -47,64 +122,11 @@ typedef	/*@abstract@*/ struct {
 } * FDSTAT_t;
 
 /** \ingroup rpmio
- * Bit(s) to control digest operation.
- */
-typedef enum rpmDigestFlags_e {
-    RPMDIGEST_NONE	= 0
-} rpmDigestFlags;
-
-/** \ingroup rpmio
  */
 typedef struct _FDDIGEST_s {
     pgpHashAlgo		hashalgo;
     DIGEST_CTX		hashctx;
 } * FDDIGEST_t;
-
-/** \ingroup rpmio
- * Duplicate a digest context.
- * @param octx		existing digest context
- * @return		duplicated digest context
- */
-/*@only@*/
-DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
-	/*@*/;
-
-/** \ingroup rpmio
- * Initialize digest.
- * Set bit count to 0 and buffer to mysterious initialization constants.
- * @param hashalgo	type of digest
- * @param flags		bit(s) to control digest operation
- * @return		digest context
- */
-/*@only@*/
-DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
-	/*@*/;
-
-/** \ingroup rpmio
- * Update context with next plain text buffer.
- * @param ctx		digest context
- * @param data		next data buffer
- * @param len		no. bytes of data
- * @return		0 on success
- */
-int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
-	/*@modifies ctx @*/;
-
-/** \ingroup rpmio
- * Return digest and destroy context.
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
- * 1 0* (64-bit count of bits processed, MSB-first)
- *
- * @param ctx		digest context
- * @retval datap	address of returned digest
- * @retval lenp		address of digest length
- * @param asAscii	return digest as ascii string?
- * @return		0 on success
- */
-int rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
-	/*@null@*/ /*@out@*/ void ** datap,
-	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
-		/*@modifies *datap, *lenp @*/;
 
 /** \ingroup rpmio
  * The FD_t File Handle data structure.
