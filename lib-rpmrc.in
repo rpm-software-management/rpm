@@ -15,7 +15,7 @@ defaultdocdir:  @prefix@/doc
 # Values for RPM_OPT_FLAGS for various platforms
 
 optflags: i386 -O2 -m486 -fno-strength-reduce
-optflags: axp -O2
+optflags: alpha -O2
 optflags: sparc -O2
 optflags: m68k -O2 -fomit-frame-pointer
 
@@ -29,7 +29,7 @@ arch_canon:	i686:	i686	1
 arch_canon:	i586:	i586	1
 arch_canon:	i486:	i486	1
 arch_canon:	i386:	i386	1
-arch_canon:	alpha:	axp	2
+arch_canon:	alpha:	alpha	2
 arch_canon: 	sparc:	sparc	3
 arch_canon: 	sun4:	sparc	3
 arch_canon: 	sun4m:	sparc	3
@@ -86,6 +86,8 @@ buildarchtranslate: osfmach3_ppc: ppc
 
 #############################################################
 # Architecture compatibility
+
+arch_compat: alpha: axp
 
 arch_compat: i986: i886
 arch_compat: i886: i786
