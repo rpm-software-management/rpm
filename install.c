@@ -167,7 +167,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	    }
 	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir) +
 			         strlen(rpmGetVar(RPMVAR_TMPPATH)));
-	    sprintf(packages[i], "%s%s/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
+	    sprintf(packages[i], "%s%s/rpm-ftp-%d-%d.tmp", rootdir, 
 		    rpmGetVar(RPMVAR_TMPPATH), tmpnum++, (int) getpid());
 	    rpmMessage(RPMMESS_DEBUG, 
 			"getting %s as %s\n", *filename, packages[i]);
