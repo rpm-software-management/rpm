@@ -1120,16 +1120,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     fl.passedSpecialDoc = 0;
     
-    fl.cur_ar.ar_fmodestr = NULL;
-    fl.cur_ar.ar_dmodestr = NULL;
-    fl.cur_ar.ar_user = NULL;
-    fl.cur_ar.ar_group = NULL;
-    fl.def_ar.ar_fmodestr = NULL;
-    fl.def_ar.ar_dmodestr = NULL;
-    fl.def_ar.ar_user = NULL;
-    fl.def_ar.ar_group = NULL;
-    fl.def_ar.ar_fmode = 0;
-    fl.def_ar.ar_dmode = 0;
+    fl.cur_ar = empty_ar;	/* structure assignment */
+    fl.def_ar = empty_ar;	/* structure assignment */
+
     fl.currentLang = NULL;
 
     fl.defVerifyFlags = RPMVERIFY_ALL;
@@ -1164,23 +1157,11 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
-	fl.cur_ar.ar_fmode = fl.def_ar.ar_fmode;
-	fl.cur_ar.ar_dmode = fl.def_ar.ar_dmode;
 	fl.isSpecialDoc = 0;
 
-	FREE(fl.cur_ar.ar_fmodestr);
-	FREE(fl.cur_ar.ar_dmodestr);
-	FREE(fl.cur_ar.ar_user);
-	FREE(fl.cur_ar.ar_group);
+	dupAttrRec(&fl.def_ar, &fl.cur_ar);
+
 	FREE(fl.currentLang);
-	if (fl.def_ar.ar_fmodestr)
-	    fl.cur_ar.ar_fmodestr = strdup(fl.def_ar.ar_fmodestr);
-	if (fl.def_ar.ar_dmodestr)
-	    fl.cur_ar.ar_dmodestr = strdup(fl.def_ar.ar_dmodestr);
-	if (fl.def_ar.ar_user)
-	    fl.cur_ar.ar_user = strdup(fl.def_ar.ar_user);
-	if (fl.def_ar.ar_group)
-	    fl.cur_ar.ar_group = strdup(fl.def_ar.ar_group);
 
 	if (parseForVerify(buf, &fl))
 	    continue;
@@ -1248,14 +1229,10 @@ static int processPackageFiles(Spec spec, Package pkg,
     
     /* Clean up */
     FREE(fl.prefix);
-    FREE(fl.cur_ar.ar_fmodestr);
-    FREE(fl.cur_ar.ar_dmodestr);
-    FREE(fl.cur_ar.ar_user);
-    FREE(fl.cur_ar.ar_group);
-    FREE(fl.def_ar.ar_fmodestr);
-    FREE(fl.def_ar.ar_dmodestr);
-    FREE(fl.def_ar.ar_user);
-    FREE(fl.def_ar.ar_group);
+
+    freeAttrRec(&fl.cur_ar);
+    freeAttrRec(&fl.def_ar);
+
     FREE(fl.currentLang);
     freeFileList(fl.fileList, fl.fileListRecsUsed);
     while (fl.docDirCount--) {
