@@ -20,6 +20,8 @@ int doSourceInstall(const char * prefix, const char * arg, const char ** specFil
 int doUninstall(const char * rootdir, const char ** argv, int uninstallFlags, 
 		 int interfaceFlags);
 void printDepFlags(FILE * f, const char * version, int flags);
+void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
+			     int numConflicts);
 
 #endif
 

@@ -3,11 +3,56 @@
 #include "build/rpmbuild.h"
 #include "popt/popt.h"
 #include "build.h"
+#include "install.h"
 
-static int buildForTarget(const char *arg, int buildAmount, const char *passPhrase,
-	          const char *buildRoot, int fromTarball, int test, char *cookie,
-		  int force)
+
+static int checkSpec(Header h)
 {
+    char *rootdir = NULL;
+    rpmdb db = NULL;
+    int mode = O_RDONLY;
+    rpmTransactionSet ts;
+    struct rpmDependencyConflict * conflicts;
+    int numConflicts;
+    int rc;
+
+    if (!headerIsEntry(h, RPMTAG_REQUIREFLAGS))
+	return 0;
+
+    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
+	const char *dn;
+	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
+	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
+	xfree(dn);
+	exit(EXIT_FAILURE);
+    }
+    ts = rpmtransCreateSet(db, rootdir);
+
+    rc = rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
+
+    rc = rpmdepCheck(ts, &conflicts, &numConflicts);
+    if (rc == 0 && conflicts) {
+	rpmMessage(RPMMESS_ERROR, _("failed build prerequisites:\n"));
+	printDepProblems(stderr, conflicts, numConflicts);
+	rpmdepFreeConflicts(conflicts, numConflicts);
+	rc = 1;
+    }
+
+    if (ts)
+	rpmtransFree(ts);
+    if (db)
+	rpmdbClose(db);
+
+    return rc;
+}
+
+static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
+	const char *passPhrase, int fromTarball, char *cookie,
+	int force, int nodeps)
+{
+    int buildAmount = ba->buildAmount;
+    const char *buildRoot = ba->buildRootOverride;
+    int test = ba->noBuild;
 
     FILE *f;
     const char * specfile;
@@ -140,6 +185,7 @@ static int buildForTarget(const char *arg, int buildAmount, const char *passPhra
 	s++;
     }
 
+    /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (parseSpec(&spec, specfile, buildRoot, 0, passPhrase, cookie,
@@ -147,6 +193,15 @@ static int buildForTarget(const char *arg, int buildAmount, const char *passPhra
 	    return 1;
     }
 #undef	_anyarch
+
+    /* Assemble source header from parsed components */
+    initSourceHeader(spec);
+
+    /* Check build prerequisites */
+    if (!nodeps && checkSpec(spec->sourceHeader)) {
+	freeSpec(spec);
+	return 1;
+    }
 
     if (buildSpec(spec, buildAmount, test)) {
 	freeSpec(spec);
@@ -160,16 +215,17 @@ static int buildForTarget(const char *arg, int buildAmount, const char *passPhra
     return res;
 }
 
-int build(const char *arg, int buildAmount, const char *passPhrase,
-	  const char *buildRoot, int fromTarball, int test, char *cookie,
-          const char * rcfile, char *targets, int force)
+int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
+	  int fromTarball, char *cookie, const char * rcfile, int force,
+	  int nodeps)
 {
     char *t, *te;
     int rc;
+    char *targets = ba->targets;
 
     if (targets == NULL) {
-	rc =  buildForTarget(arg, buildAmount, passPhrase, buildRoot,
-		fromTarball, test, cookie, force);
+	rc =  buildForTarget(arg, ba, passPhrase, fromTarball, cookie,
+		force, nodeps);
 	return rc;
     }
 
@@ -187,8 +243,8 @@ int build(const char *arg, int buildAmount, const char *passPhrase,
 	printf("Building for target %s\n", target);
 
 	rpmReadConfigFiles(rcfile, target);
-	rc = buildForTarget(arg, buildAmount, passPhrase, buildRoot,
-	    fromTarball, test, cookie, force);
+	rc = buildForTarget(arg, ba, passPhrase, fromTarball, cookie,
+		force, nodeps);
 	if (rc)
 	    return rc;
 

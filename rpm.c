@@ -611,7 +611,7 @@ int main(int argc, char ** argv) {
 
     if (queryArgs.queryFormat) free(queryArgs.queryFormat);
     memset(&queryArgs, 0, sizeof(queryArgs));
-    if (buildArgs.buildRootOverride) free(buildArgs.buildRootOverride);
+    if (buildArgs.buildRootOverride) xfree(buildArgs.buildRootOverride);
     if (buildArgs.targets) free(buildArgs.targets);
     memset(&buildArgs, 0, sizeof(buildArgs));
     buildArgs.buildChar = ' ';
@@ -1027,9 +1027,10 @@ int main(int argc, char ** argv) {
 		   "installation, erasure, and verification"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
+	bigMode != MODE_BUILD && bigMode != MODE_TARBUILD &&
 	bigMode != MODE_VERIFY && noDeps)
 	argerror(_("--nodeps may only be specified during package "
-		   "installation, erasure, and verification"));
+		   "building, installation, erasure, and verification"));
 
     if (bigMode != MODE_VERIFY && noFiles)
 	argerror(_("--nofiles may only be specified during package "
@@ -1244,8 +1245,7 @@ int main(int argc, char ** argv) {
 	    if (doSourceInstall("/", pkg, &specFile, &cookie))
 		exit(EXIT_FAILURE);
 
-	    if (build(specFile, buildArgs.buildAmount, passPhrase, buildArgs.buildRootOverride,
-			0, buildArgs.noBuild, cookie, rcfile, buildArgs.targets, force)) {
+	    if (build(specFile, &buildArgs, passPhrase, 0, cookie, rcfile, force, noDeps)) {
 		exit(EXIT_FAILURE);
 	    }
 	    free(cookie);
@@ -1293,9 +1293,8 @@ int main(int argc, char ** argv) {
 	}
 
 	while ((pkg = poptGetArg(optCon)))
-	    if (build(pkg, buildArgs.buildAmount, passPhrase, buildArgs.buildRootOverride,
-			bigMode == MODE_TARBUILD, buildArgs.noBuild, NULL,
-                        rcfile, buildArgs.targets, force)) {
+	    if (build(pkg, &buildArgs, passPhrase, bigMode == MODE_TARBUILD,
+			NULL, rcfile, force, noDeps)) {
 		exit(EXIT_FAILURE);
 	    }
 	break;

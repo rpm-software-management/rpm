@@ -1227,21 +1227,13 @@ static int processPackageFiles(Spec spec, Package pkg,
     return fl.processingFailed;
 }
 
-int processSourceFiles(Spec spec)
+void initSourceHeader(Spec spec)
 {
-    struct Source *srcPtr;
-    StringBuf sourceFiles;
-    int x, isSpec = 1;
-    struct FileList fl;
-    char *s, **files, **fp, *fn;
     HeaderIterator hi;
     int tag, type, count;
-    Package pkg;
     void * ptr;
 
-    sourceFiles = newStringBuf();
     spec->sourceHeader = headerNew();
-
     /* Only specific tags are added to the source package header */
     hi = headerInitIterator(spec->packages->header);
     while (headerNextIterator(hi, &tag, &type, &ptr, &count)) {
@@ -1275,6 +1267,35 @@ int processSourceFiles(Spec spec)
 	}
     }
     headerFreeIterator(hi);
+
+    /* Add the build restrictions */
+    hi = headerInitIterator(spec->buildRestrictions);
+    while (headerNextIterator(hi, &tag, &type, &ptr, &count)) {
+	headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
+	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+	    FREE(ptr);
+    }
+    headerFreeIterator(hi);
+
+    if (spec->buildArchitectureCount) {
+	headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
+		       RPM_STRING_ARRAY_TYPE,
+		       spec->buildArchitectures, spec->buildArchitectureCount);
+    }
+}
+
+int processSourceFiles(Spec spec)
+{
+    struct Source *srcPtr;
+    StringBuf sourceFiles;
+    int x, isSpec = 1;
+    struct FileList fl;
+    char *s, **files, **fp, *fn;
+    Package pkg;
+
+    sourceFiles = newStringBuf();
+
+    /* XXX This is where the source header used to be initialized. */
 
     /* Construct the file list and source entries */
     appendLineStringBuf(sourceFiles, spec->specFile);

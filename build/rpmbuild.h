@@ -136,6 +136,7 @@ int addReqProv(Spec spec, Header h,
 /* from build/files.h */
 
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test);
+void initSourceHeader(Spec spec);
 int processSourceFiles(Spec spec);
 
 /* global entry points */

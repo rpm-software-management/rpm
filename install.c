@@ -7,8 +7,6 @@
 #include "ftp.h"
 
 static void printHash(const unsigned long amount, const unsigned long total);
-static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
-			     int numConflicts);
 static void * showProgress(const Header h, const rpmCallbackType what, 
 			   const unsigned long amount, 
 			   const unsigned long total,
@@ -490,7 +488,7 @@ void printDepFlags(FILE * f, const char * version, int flags) {
 	fprintf(f, " %s", version);
 }
 
-static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
+void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 			     int numConflicts) {
     int i;
 

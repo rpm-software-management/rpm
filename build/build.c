@@ -153,15 +153,13 @@ int buildSpec(Spec spec, int what, int test)
     if (!spec->inBuildArchitectures && spec->buildArchitectureCount) {
 	/* When iterating over buildArchitectures, do the source    */
 	/* packaging on the first run, and skip RMSOURCE altogether */
-	x = 0;
-	while (x < spec->buildArchitectureCount) {
+	for (x = 0; x < spec->buildArchitectureCount; x++) {
 	    if ((rc = buildSpec(spec->buildArchitectureSpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {
 		return rc;
 	    }
-	    x++;
 	}
     } else {
 	if (what & RPMBUILD_PREP) {

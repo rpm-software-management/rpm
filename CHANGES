@@ -4,6 +4,8 @@
 	- remove inconsistent use of __P((...)) throughout.
 	- non-static inline functions caused IRIX cc pain.
 	- CPIOERR_CHECK_ERRNO masking caused AIX cc warnings.
+	- solaris 2.6+ needs statvfs.
+	- check build prerequisites before building from specfile.
 
 2.93 -> 2.94
 	- fix: segfault while parsing target string.

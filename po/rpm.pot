@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-16 19:17-0400\n"
+"POT-Creation-Date: 1999-04-17 10:16-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,86 +14,95 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../build.c:39 ../build.c:52
+#: ../build.c:25 ../install.c:221 ../install.c:377
+#, c-format
+msgid "cannot open %s/packages.rpm\n"
+msgstr ""
+
+#: ../build.c:35
+msgid "failed build prerequisites:\n"
+msgstr ""
+
+#: ../build.c:84 ../build.c:97
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr ""
 
 #. Give up
-#: ../build.c:60
+#: ../build.c:105
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: ../build.c:85
+#: ../build.c:130
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr ""
 
-#: ../build.c:123
+#: ../build.c:168
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: ../build.c:128
+#: ../build.c:173
 #, c-format
 msgid "Unable to open spec file: %s\n"
 msgstr ""
 
-#: ../build.c:136
+#: ../build.c:181
 #, c-format
 msgid "File contains non-printable characters(%c): %s\n"
 msgstr ""
 
-#: ../build.c:229
+#: ../build.c:285
 msgid "buildroot already specified"
 msgstr ""
 
-#: ../build.c:235
+#: ../build.c:291
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:239
+#: ../build.c:295
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:260
+#: ../build.c:316
 msgid "override build architecture"
 msgstr ""
 
-#: ../build.c:262
+#: ../build.c:318
 msgid "override build operating system"
 msgstr ""
 
-#: ../build.c:264
+#: ../build.c:320
 msgid "override build root"
 msgstr ""
 
-#: ../build.c:266 ../rpm.c:454
+#: ../build.c:322 ../rpm.c:454
 msgid "remove build tree when done"
 msgstr ""
 
-#: ../build.c:268
+#: ../build.c:324
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: ../build.c:270
+#: ../build.c:326
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: ../build.c:272
+#: ../build.c:328
 msgid "remove sources and specfile when done"
 msgstr ""
 
-#: ../build.c:274 ../rpm.c:452
+#: ../build.c:330 ../rpm.c:452
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: ../build.c:276
+#: ../build.c:332
 msgid "override target platform"
 msgstr ""
 
-#: ../build.c:278
+#: ../build.c:334
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -130,7 +139,7 @@ msgstr ""
 msgid "Couldn't write header/archive to temp file"
 msgstr ""
 
-#: ../build/pack.c:347 ../checksig.c:91
+#: ../build/pack.c:330 ../checksig.c:91
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
@@ -263,122 +272,117 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:129
+#: ../install.c:127
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../install.c:133
+#: ../install.c:131
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../install.c:142
+#: ../install.c:140
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:153
+#: ../install.c:151
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:162
+#: ../install.c:160
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:166
+#: ../install.c:164
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:183
+#: ../install.c:181
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:192 ../install.c:329
+#: ../install.c:190 ../install.c:327
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:204 ../lib/query.c:540
+#: ../install.c:202 ../lib/query.c:540
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:208 ../install.c:466
+#: ../install.c:206 ../install.c:464
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:223 ../install.c:379
-#, c-format
-msgid "cannot open %s/packages.rpm\n"
-msgstr ""
-
-#: ../install.c:244
+#: ../install.c:242
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: ../install.c:256
+#: ../install.c:254
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: ../install.c:259
+#: ../install.c:257
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: ../install.c:274
+#: ../install.c:272
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:284
+#: ../install.c:282
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:302
+#: ../install.c:300
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:390 ../lib/query.c:685 ../verify.c:243
+#: ../install.c:388 ../lib/query.c:685 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:394
+#: ../install.c:392
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:403
+#: ../install.c:401
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:429
+#: ../install.c:427
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:456
+#: ../install.c:454
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:461
+#: ../install.c:459
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: ../install.c:505
+#: ../install.c:503
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:508
+#: ../install.c:506
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -1310,129 +1314,129 @@ msgid ""
 "verification"
 msgstr ""
 
-#: ../rpm.c:1031
+#: ../rpm.c:1032
 msgid ""
-"--nodeps may only be specified during package installation, erasure, and "
-"verification"
+"--nodeps may only be specified during package building, installation, "
+"erasure, and verification"
 msgstr ""
 
-#: ../rpm.c:1035
+#: ../rpm.c:1036
 msgid "--nofiles may only be specified during package verification"
 msgstr ""
 
-#: ../rpm.c:1040
+#: ../rpm.c:1041
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: ../rpm.c:1045
+#: ../rpm.c:1046
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: ../rpm.c:1050
+#: ../rpm.c:1051
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: ../rpm.c:1054
+#: ../rpm.c:1055
 msgid "--clean may only be used with -b and -t"
 msgstr ""
 
-#: ../rpm.c:1057
+#: ../rpm.c:1058
 msgid "--rmsource may only be used with -b and -t"
 msgstr ""
 
-#: ../rpm.c:1060
+#: ../rpm.c:1061
 msgid "--short-circuit may only be used during package building"
 msgstr ""
 
-#: ../rpm.c:1064
+#: ../rpm.c:1065
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 
-#: ../rpm.c:1070
+#: ../rpm.c:1071
 msgid "--oldpackage may only be used during upgrades"
 msgstr ""
 
-#: ../rpm.c:1075
+#: ../rpm.c:1076
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 
-#: ../rpm.c:1081
+#: ../rpm.c:1082
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
 
-#: ../rpm.c:1085
+#: ../rpm.c:1086
 msgid "--nopgp may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1088
+#: ../rpm.c:1089
 msgid "--nogpg may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1091
+#: ../rpm.c:1092
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 
-#: ../rpm.c:1117
+#: ../rpm.c:1118
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: ../rpm.c:1134
+#: ../rpm.c:1135
 msgid "pgp not found: "
 msgstr ""
 
-#: ../rpm.c:1137
+#: ../rpm.c:1138
 msgid "Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1144
+#: ../rpm.c:1145
 msgid "pgp version 5 not found: "
 msgstr ""
 
-#: ../rpm.c:1147
+#: ../rpm.c:1148
 msgid "Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1154
+#: ../rpm.c:1155
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: ../rpm.c:1157
+#: ../rpm.c:1158
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: ../rpm.c:1164
+#: ../rpm.c:1165
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1169
+#: ../rpm.c:1170
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: ../rpm.c:1186
+#: ../rpm.c:1187
 msgid "exec failed\n"
 msgstr ""
 
-#: ../rpm.c:1205
+#: ../rpm.c:1206
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: ../rpm.c:1216
+#: ../rpm.c:1217
 msgid "no packages given for signature check"
 msgstr ""
 
-#: ../rpm.c:1224
+#: ../rpm.c:1225
 msgid "no packages given for signing"
 msgstr ""
 
-#: ../rpm.c:1233
+#: ../rpm.c:1234
 msgid "no packages files given for rebuild"
 msgstr ""
 
@@ -1444,23 +1448,23 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: ../rpm.c:1305
+#: ../rpm.c:1304
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: ../rpm.c:1354
+#: ../rpm.c:1353
 msgid "no packages given for install"
 msgstr ""
 
-#: ../rpm.c:1376
+#: ../rpm.c:1375
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: ../rpm.c:1382
+#: ../rpm.c:1381
 msgid "no arguments given for query"
 msgstr ""
 
-#: ../rpm.c:1400
+#: ../rpm.c:1399
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -1550,7 +1554,7 @@ msgstr ""
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../build/build.c:81 ../build/pack.c:265
+#: ../build/build.c:81 ../build/pack.c:248
 msgid "Unable to open temp file"
 msgstr ""
 
@@ -1721,65 +1725,65 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1097 ../build/pack.c:450
+#: ../build/files.c:1097 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1365 ../build/parsePrep.c:31
+#: ../build/files.c:1386 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1419
+#: ../build/files.c:1440
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1423
+#: ../build/files.c:1444
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1473
+#: ../build/files.c:1494
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1477
+#: ../build/files.c:1498
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1511
+#: ../build/files.c:1532
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1518
+#: ../build/files.c:1539
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1537
+#: ../build/files.c:1558
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1544
+#: ../build/files.c:1565
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1578
+#: ../build/files.c:1599
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1593
+#: ../build/files.c:1614
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1605
+#: ../build/files.c:1626
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1629
+#: ../build/files.c:1650
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -1797,96 +1801,96 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: ../build/pack.c:151
+#: ../build/pack.c:134
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:184
+#: ../build/pack.c:167
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:194
+#: ../build/pack.c:177
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:214
+#: ../build/pack.c:197
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: ../build/pack.c:220
+#: ../build/pack.c:203
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: ../build/pack.c:276
+#: ../build/pack.c:259
 msgid "Bad CSA data"
 msgstr ""
 
-#: ../build/pack.c:299
+#: ../build/pack.c:282
 #, c-format
 msgid "Could not open %s\n"
 msgstr ""
 
-#: ../build/pack.c:331 ../build/pack.c:374
+#: ../build/pack.c:314 ../build/pack.c:357
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:364
+#: ../build/pack.c:347
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: ../build/pack.c:389
+#: ../build/pack.c:372
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:404
+#: ../build/pack.c:387
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:420
+#: ../build/pack.c:403
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:427
+#: ../build/pack.c:410
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:506
+#: ../build/pack.c:489
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:513
+#: ../build/pack.c:496
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:520
+#: ../build/pack.c:503
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:527
+#: ../build/pack.c:510
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:535
+#: ../build/pack.c:518
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:551
+#: ../build/pack.c:534
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""

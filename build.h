@@ -9,7 +9,7 @@ extern struct poptOption rpmBuildPoptTable[];
 
 struct rpmBuildArguments {
     int buildAmount;
-    char *buildRootOverride;
+    const char *buildRootOverride;
     char *targets;
     int useCatalog;
     int noLang;
@@ -18,9 +18,9 @@ struct rpmBuildArguments {
     char buildChar;
 };
 
-int build(const char *arg, int buildAmount, const char *passPhrase,
-	         const char *buildRoot, int fromTarball, int test, char *cookie,
-                 const char * rcfile, char * buildplatforms, int force);
+int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
+	  int fromTarball, char *cookie, const char * rcfile, int force,
+	  int nodeps);
 
 #ifdef __cplusplus
 }
