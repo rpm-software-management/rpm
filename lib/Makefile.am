@@ -11,6 +11,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
+	-I/usr/include/selinux \
 	@INCPATH@
 
 EXTRA_DIST = getdate.y
@@ -40,7 +41,8 @@ librpm_la_SOURCES = \
 librpm_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la
+	$(top_builddir)/popt/libpopt.la \
+	-lselinux
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
@@ -106,11 +108,9 @@ tthread: tthread.o librpm.la
 tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
 	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
 
-tre: tre.o
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
-	-lselinux \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la
+tre: tre.o librpm.la
+	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
+	-lselinux  librpm.la
 
 tcpu: tcpu.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
