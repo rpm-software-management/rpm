@@ -28,6 +28,7 @@ TODO:
 #include "misc.h"
 #include "reqprov.h"
 #include "trigger.h"
+#include "macro.h"
 
 #define LINE_BUF_SIZE 1024
 #define FREE(x) { if (x) free(x); }
@@ -57,6 +58,9 @@ static void free_reqprov(struct ReqProv *p);
 static int noSourcePatch(Spec s, char *line, int_32 tag);
 
 static void addListEntry(Header h, int_32 tag, char *line);
+static int finishCurrentPart(Spec spec, StringBuf sb,
+			     struct PackageRec *cur_package,
+			     int cur_part, char *triggerArgs);
 
 /**********************************************************************/
 /*                                                                    */
@@ -751,6 +755,7 @@ static int read_line(FILE *f, char *line)
 	        return 0;
 	    }
 	}
+	expandMacros(line);
 	if ((! strncmp("%ifarch", line, 7)) ||
 	    (! strncmp("%ifnarch", line, 8))) {
 	    rl = malloc(sizeof(struct read_level_entry));
@@ -973,6 +978,62 @@ static void parseForDocFiles(struct PackageRec *package, char *line)
     appendLineStringBuf(package->doc, " $DOCDIR");
 }
 
+static int finishCurrentPart(Spec spec, StringBuf sb,
+			     struct PackageRec *cur_package,
+			     int cur_part, char *triggerArgs)
+{
+    int t1 = 0;
+
+    switch (cur_part) {
+      case PREIN_PART:
+	t1 = RPMTAG_PREIN;
+	break;
+      case POSTIN_PART:
+	t1 = RPMTAG_POSTIN;
+	break;
+      case PREUN_PART:
+	t1 = RPMTAG_PREUN;
+	break; 
+      case POSTUN_PART:
+	t1 = RPMTAG_POSTUN;
+	break;
+      case VERIFYSCRIPT_PART:
+	t1 = RPMTAG_VERIFYSCRIPT;
+	break;
+      case DESCRIPTION_PART:
+	/* %description is a little special.  We need to */
+	/* strip off trailing blank lines.               */
+	t1 = RPMTAG_DESCRIPTION;
+	stripTrailingBlanksStringBuf(sb);
+	break;
+      case CHANGELOG_PART:
+	/* %changelog is a little special.  It goes in the   */
+	/* "main" package no matter where it appears, and it */
+	/* ends up in all the packages.                      */
+	if (addChangelog(spec->packages->header, sb)) {
+	    return 1;
+	}
+	break;
+      case TRIGGERON_PART:
+	if (addTrigger(cur_package, RPMSENSE_TRIGGER_ON,
+		       getStringBuf(sb), triggerArgs)) {
+	    return 1;
+	}
+	break;
+      case TRIGGEROFF_PART:
+	if (addTrigger(cur_package, RPMSENSE_TRIGGER_OFF,
+		       getStringBuf(sb), triggerArgs)) {
+	    return 1;
+	}
+	break;
+    }
+    if (t1) {
+	headerAddEntry(cur_package->header, t1,
+		       RPM_STRING_TYPE, getStringBuf(sb), 1);
+    }
+    return 0;
+}
+
 /**********************************************************************/
 /*                                                                    */
 /* Main specfile parsing routine                                      */
@@ -987,13 +1048,15 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     char triggerArgs[LINE_BUF_SIZE];
     char *line;              /* "parsed" read buffer */
     
-    int x, serial, tag, cur_part, t1;
+    int x, serial, tag, cur_part;
     int lookupopts;
     StringBuf sb;
     char *s = NULL;
     char *s1, *s2;
     int gotBuildroot = 0;
     int gotRoot = 0;
+    int versionMacroSet = 0;
+    int releaseMacroSet = 0;
 
     struct PackageRec *cur_package = NULL;
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
@@ -1025,53 +1088,9 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	s = NULL;
         if ((tag = check_part(line, &s))) {
 	    rpmMessage(RPMMESS_DEBUG, "Switching to part: %d\n", tag);
-	    t1 = 0;
-	    switch (cur_part) {
-	      case PREIN_PART:
-		t1 = RPMTAG_PREIN;
-		break;
-	      case POSTIN_PART:
-		t1 = RPMTAG_POSTIN;
-		break;
-	      case PREUN_PART:
-		t1 = RPMTAG_PREUN;
-		break; 
-	      case POSTUN_PART:
-		t1 = RPMTAG_POSTUN;
-		break;
-	      case VERIFYSCRIPT_PART:
-		t1 = RPMTAG_VERIFYSCRIPT;
-		break;
-	      case DESCRIPTION_PART:
-		/* %description is a little special.  We need to */
-		/* strip off trailing blank lines.               */
-		t1 = RPMTAG_DESCRIPTION;
-		stripTrailingBlanksStringBuf(sb);
-		break;
-	      case CHANGELOG_PART:
-		/* %changelog is a little special.  It goes in the   */
-		/* "main" package no matter where it appears, and it */
-		/* ends up in all the packages.                      */
-		if (addChangelog(spec->packages->header, sb)) {
-		    return NULL;
-		}
-		break;
-	      case TRIGGERON_PART:
-		if (addTrigger(cur_package, RPMSENSE_TRIGGER_ON,
-			       getStringBuf(sb), triggerArgs)) {
-		    return NULL;
-		}
-		break;
-	      case TRIGGEROFF_PART:
-		if (addTrigger(cur_package, RPMSENSE_TRIGGER_OFF,
-			       getStringBuf(sb), triggerArgs)) {
-		    return NULL;
-		}
-		break;
-	    }
-	    if (t1) {
-		headerAddEntry(cur_package->header, t1,
-			 RPM_STRING_TYPE, getStringBuf(sb), 1);
+	    if (finishCurrentPart(spec, sb, cur_package,
+				 cur_part, triggerArgs)) {
+		return NULL;
 	    }
 	    cur_part = tag;
 	    truncStringBuf(sb);
@@ -1266,6 +1285,17 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    s1 = s;
 		    while (*s1 && *s1 != ' ' && *s1 != '\t') s1++;
 		    *s1 = '\0';
+		    if (tag == RPMTAG_VERSION) {
+			if (! versionMacroSet) {
+			    versionMacroSet = 1;
+			    addMacro("PACKAGE_VERSION", s);
+			}
+		    } else {
+			if (! releaseMacroSet) {
+			    releaseMacroSet = 1;
+			    addMacro("PACKAGE_RELEASE", s);
+			}
+		    }
 		  case RPMTAG_SUMMARY:
 		  case RPMTAG_DISTRIBUTION:
 		  case RPMTAG_VENDOR:
@@ -1412,6 +1442,12 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	return NULL;
     }
 
+    /* finish current part */
+    if (finishCurrentPart(spec, sb, cur_package,
+			  cur_part, triggerArgs)) {
+	return NULL;
+    }
+    
     if (gotRoot && gotBuildroot) {
 	freeSpec(spec);
 	rpmError(RPMERR_BADSPEC,
@@ -1469,6 +1505,8 @@ static void reset_spec()
     read_level = malloc(sizeof(struct read_level_entry));
     read_level->next = NULL;
     read_level->reading = 1;
+
+    resetMacros();
     
     if (! done) {
         /* Put one time only things in here */
