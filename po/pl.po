@@ -10,14 +10,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-28 04:42+0200\n"
+"POT-Creation-Date: 2004-06-20 21:12+0200\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"Report-Msgid-Bugs-To: Polish <translation-team-pl@lists.sourceforge.net>\n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -929,7 +928,7 @@ msgstr "linia %d: Pusta etykieta: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:428
+#: build/parsePreamble.c:588 build/parseSpec.c:466
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot nie mo¿e byæ \"/\": %s\n"
@@ -1105,47 +1104,47 @@ msgstr "linia %d: Drugi %s\n"
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "linia %d: nieobs³ugiwany wewnêtrzny skrypt: %s\n"
 
-#: build/parseSpec.c:160
+#: build/parseSpec.c:195
 #, c-format
 msgid "line %d: %s\n"
 msgstr "linia %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:212
+#: build/parseSpec.c:247
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
 
-#: build/parseSpec.c:228
+#: build/parseSpec.c:263
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Niedomkniête %%if\n"
 
-#: build/parseSpec.c:302
+#: build/parseSpec.c:340
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean zwróci³o %d\n"
 
-#: build/parseSpec.c:311
+#: build/parseSpec.c:349
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Napotkano %%else bez %%if\n"
 
-#: build/parseSpec.c:323
+#: build/parseSpec.c:361
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Napotkano %%endif bez %%if\n"
 
-#: build/parseSpec.c:337 build/parseSpec.c:346
+#: build/parseSpec.c:375 build/parseSpec.c:384
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "b³êdnie sformu³owany wpis %%include\n"
 
-#: build/parseSpec.c:549
+#: build/parseSpec.c:587
 msgid "No compatible architectures found for build\n"
 msgstr "Nie znaleziono kompatybilnych architektur do budowania\n"
 
-#: build/parseSpec.c:610
+#: build/parseSpec.c:648
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie ma %%description: %s\n"
@@ -1453,8 +1452,8 @@ msgstr "========== kontynuowanie tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:507
+#: rpmdb/header.c:3540 rpmdb/header.c:3569 rpmdb/header.c:3593
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -1466,7 +1465,7 @@ msgstr "(nie jest base64)"
 msgid "(invalid type)"
 msgstr "(b³êdny typ)"
 
-#: lib/formats.c:206 lib/formats.c:398
+#: lib/formats.c:206 lib/formats.c:406
 msgid "(not a blob)"
 msgstr "(nie jest blobem)"
 
@@ -1474,7 +1473,7 @@ msgstr "(nie jest blobem)"
 msgid "(invalid xml type)"
 msgstr "(b³êdny typ xml)"
 
-#: lib/formats.c:423
+#: lib/formats.c:431
 msgid "(not an OpenPGP signature)"
 msgstr "(nie jest sygnatur± OpenPGP)"
 
@@ -1840,7 +1839,6 @@ msgid "do not execute package scriptlet(s)"
 msgstr "nie wykonuj ¿adnych skryptów instalacyjnych"
 
 #: lib/poptI.c:177
-#, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "przesuwanie plików w nieprzesuwalnym pakiecie"
 
@@ -2413,32 +2411,32 @@ msgstr "¿aden pakiet nie wymaga %s\n"
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:721
+#: lib/query.c:725
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:725
+#: lib/query.c:729
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:750
+#: lib/query.c:754
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:753
+#: lib/query.c:757
 #, c-format
 msgid "package record number: %u\n"
 msgstr "numer rekordu pakietu: %u\n"
 
-#: lib/query.c:758
+#: lib/query.c:762
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:768 lib/rpminstall.c:793
+#: lib/query.c:772 lib/rpminstall.c:793
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2544,15 +2542,15 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:540 lib/rpmds.c:905
+#: lib/rpmds.c:738 lib/rpmds.c:1102
 msgid "NO "
 msgstr "NIE "
 
-#: lib/rpmds.c:540 lib/rpmds.c:905
+#: lib/rpmds.c:738 lib/rpmds.c:1102
 msgid "YES"
 msgstr "TAK"
 
-#: lib/rpmds.c:870
+#: lib/rpmds.c:1068
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2561,13 +2559,13 @@ msgstr ""
 "Zale¿no¶æ \"B\" wymaga epoch (przyjêto epoch takie samo jak \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:904
+#: lib/rpmds.c:1101
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:928
+#: lib/rpmds.c:1125
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
@@ -2663,7 +2661,7 @@ msgid "\tadded source package [%d]\n"
 msgstr "\tdodano pakiet ¼ród³owy [%d]\n"
 
 #: lib/rpminstall.c:538
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
@@ -2725,6 +2723,17 @@ msgstr "Instalacja %s\n"
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Cofniêcie pakietów (+%d/-%d) do %-24.24s (0x%08x):\n"
 
+#: lib/rpminstall.c:1284 lib/transaction.c:1056
+msgid "Cleaning up repackaged packages:\n"
+msgstr "Czyszczenie przepakowanych pakietów:\n"
+
+#. @innercontinue@
+#. XXX can't happen
+#: lib/rpminstall.c:1291 lib/transaction.c:1062
+#, c-format
+msgid "\tRemoving %s:\n"
+msgstr "\tUsuwanie %s\n"
+
 #: lib/rpmlead.c:56
 #, c-format
 msgid "read failed: %s (%d)\n"
@@ -2740,7 +2749,6 @@ msgstr ""
 "nazwy plików zapisano jako (dirName,baseName,dirIndex) a nie jako ¶cie¿ki."
 
 #: lib/rpmlibprov.c:35
-#, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "dane pakietu mog± byæ skompresowane bzipem2."
 
@@ -2793,7 +2801,7 @@ msgid "package %s is already installed"
 msgstr "pakiet %s jest ju¿ zainstalowany"
 
 #: lib/rpmps.c:223
-#, fuzzy, c-format
+#, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "¶cie¿ka %s w pakiecie %s nie jest przesuwalna"
 
@@ -2847,122 +2855,122 @@ msgstr "%s jest w konflikcie z %s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wyst±pi³ nieznany b³±d %d w trakcie manipulowania pakietem %s"
 
-#: lib/rpmrc.c:197
+#: lib/rpmrc.c:198
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "brak drugiego ':' w %s:%d\n"
 
-#: lib/rpmrc.c:200
+#: lib/rpmrc.c:201
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "brak nazwy architektury w %s:%d\n"
 
-#: lib/rpmrc.c:354
+#: lib/rpmrc.c:355
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Niekompletna linia danych w %s:%d\n"
 
-#: lib/rpmrc.c:359
+#: lib/rpmrc.c:360
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii danych w %s:%d\n"
 
-#: lib/rpmrc.c:367
+#: lib/rpmrc.c:368
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "B³êdny numer architektury/systemu: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:404
+#: lib/rpmrc.c:405
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Niekompletna domy¶lna linia w %s:%d\n"
 
-#: lib/rpmrc.c:409
+#: lib/rpmrc.c:410
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Zbyt wiele argumentów w linii domy¶lnej w %s:%d\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:575
+#: lib/rpmrc.c:576
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Odczytanie %s nie powiod³o siê: %s.\n"
 
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:614
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "brak ':' (napotkano 0x%02x) w %s:%d\n"
 
-#: lib/rpmrc.c:630 lib/rpmrc.c:704
+#: lib/rpmrc.c:631 lib/rpmrc.c:705
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "brak argumentu dla %s w %s:%d\n"
 
-#: lib/rpmrc.c:647 lib/rpmrc.c:669
+#: lib/rpmrc.c:648 lib/rpmrc.c:670
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "rozwiniêcie %s: nie powiod³o siê w %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:656
+#: lib/rpmrc.c:657
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nie mo¿na otworzyæ %s w %s:%d: %s\n"
 
-#: lib/rpmrc.c:696
+#: lib/rpmrc.c:697
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "brak architektury dla %s w %s:%d\n"
 
-#: lib/rpmrc.c:763
+#: lib/rpmrc.c:764
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "b³êdna opcja '%s' w %s:%d\n"
 
-#: lib/rpmrc.c:1598
+#: lib/rpmrc.c:1568
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nieznany system: %s\n"
 
-#: lib/rpmrc.c:1599
+#: lib/rpmrc.c:1569
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Proszê skontaktowaæ siê z rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1836
+#: lib/rpmrc.c:1806
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie mo¿na rozwin±æ %s\n"
 
-#: lib/rpmrc.c:1841
+#: lib/rpmrc.c:1811
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Nie mo¿na odczytaæ %s, HOME jest zbyt du¿e.\n"
 
-#: lib/rpmrc.c:1858
+#: lib/rpmrc.c:1828
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s.\n"
 
-#: lib/rpmsx.c:357
+#: lib/rpmsx.c:359
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:374
+#: lib/rpmsx.c:376
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:405
+#: lib/rpmsx.c:407
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:420 lib/rpmsx.c:435
+#: lib/rpmsx.c:422 lib/rpmsx.c:437
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:448
+#: lib/rpmsx.c:450
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  nieprawid³owy kontekst %s w lini numer %d\n"
@@ -3244,31 +3252,31 @@ msgstr "wy³±czanie katalogu %s\n"
 
 #: lib/transaction.c:1003
 msgid "Transaction failed...rolling back\n"
-msgstr ""
+msgstr "Transakcja niepowiod³a siê... wycowujê\n"
 
 #: lib/transaction.c:1023
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1086
+#: lib/transaction.c:1113
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1111
+#: lib/transaction.c:1138
 #, c-format
 msgid "\tLooking for %s...\n"
-msgstr ""
+msgstr "\tPoszukiwanie %s...\n"
 
-#: lib/transaction.c:1115
+#: lib/transaction.c:1142
 msgid "\tMatches found.\n"
-msgstr ""
+msgstr "\tPasuj±cych znaleziono.\n"
 
-#: lib/transaction.c:1119
+#: lib/transaction.c:1146
 msgid "\tNo matches found.\n"
-msgstr ""
+msgstr "\tNie znaleziono pasuj±cych.\n"
 
-#: lib/transaction.c:1132
+#: lib/transaction.c:1159
 msgid "\tRepackaged package not found!.\n"
 msgstr "\tPrzepakowany pakiet nie znaleziony!.\n"
 
@@ -3277,77 +3285,87 @@ msgstr "\tPrzepakowany pakiet nie znaleziony!.\n"
 #. * the next one.  Perhaps I should return an error at this
 #. * point, but if this was not the correct one, at least the correct one
 #. * would be found.
-#. * XXX:  Should I be matching name and arch?
+#. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1153
+#: lib/transaction.c:1180
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1155
+#: lib/transaction.c:1182
 #, c-format
 msgid "\t\tName:  %s.\n"
-msgstr ""
+msgstr "\t\tNazwa:  %s.\n"
 
-#: lib/transaction.c:1178
+#: lib/transaction.c:1205
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\tPrzepakowany Pakiet %s...\n"
 
-#: lib/transaction.c:1222
+#: lib/transaction.c:1249
 msgid "Adding install element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1231
+#: lib/transaction.c:1258
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1244
+#: lib/transaction.c:1271
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1254
+#: lib/transaction.c:1281
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tDodano przepakowany nag³ówek pakietu: %s.\n"
 
+#: lib/transaction.c:1283 lib/transaction.c:1294
+#, c-format
+msgid "\tAdded from install element %s.\n"
+msgstr ""
+
 #. Add the header as an erase element, we did not
 #. * have a repackaged package
 #.
-#: lib/transaction.c:1263
+#: lib/transaction.c:1292
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1270
+#: lib/transaction.c:1301
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1277
+#: lib/transaction.c:1308
 msgid "Add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1286
+#: lib/transaction.c:1316
 msgid "\tFound existing upgrade element.\n"
 msgstr ""
 
-#: lib/transaction.c:1287
+#: lib/transaction.c:1317
 #, c-format
 msgid "\tNot adding erase element for %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1305
+#: lib/transaction.c:1334
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tDodano przepakowany pakiet %s.\n"
 
-#: lib/transaction.c:1310
+#: lib/transaction.c:1336
+#, c-format
+msgid "\tAdded from erase element %s.\n"
+msgstr "\tDodano usuniêty element %s.\n"
+
+#: lib/transaction.c:1341
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1316
+#: lib/transaction.c:1347
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1322
+#: lib/transaction.c:1353
 msgid "Failure reading repackaged package!\n"
 msgstr "B³ad podczas odczytu przepakowanego pakietu!\n"
 
@@ -3359,12 +3377,12 @@ msgstr "B³ad podczas odczytu przepakowanego pakietu!\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1439
+#: lib/transaction.c:1475
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "sprawdzanie poprawno¶ci %d elementów\n"
 
-#: lib/transaction.c:1524
+#: lib/transaction.c:1560
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3376,7 +3394,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1594
+#: lib/transaction.c:1630
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "obliczanie %d odcisków plików\n"
@@ -3384,37 +3402,37 @@ msgstr "obliczanie %d odcisków plików\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1675
+#: lib/transaction.c:1711
 msgid "computing file dispositions\n"
 msgstr "obliczanie dyspozycji plików\n"
 
-#: lib/transaction.c:1852
+#: lib/transaction.c:1888
 msgid "Creating auto-rollback transaction\n"
-msgstr ""
+msgstr "Tworzenie transakcji auto-wycofywania\n"
 
-#: lib/transaction.c:2006
+#: lib/transaction.c:2042
 msgid "Add failed.  Could not read package header.\n"
-msgstr ""
+msgstr "Dodanie niepowiod³o siê. Nie mo¿na przeczytaæ nag³ó³ka pakietu.\n"
 
-#: lib/transaction.c:2070
+#: lib/transaction.c:2106
 msgid "Add failed in rpmpsmStage().\n"
-msgstr ""
+msgstr "Dodanie niepowiod³o siê w rpmpsmStage().\n"
 
-#: lib/transaction.c:2114
+#: lib/transaction.c:2150
 msgid "Add failed.  Could not get file list.\n"
-msgstr ""
+msgstr "Dodanie niepowiod³o siê. Nie mo¿na uzyskaæ listy plików.\n"
 
-#: lib/transaction.c:2163
+#: lib/transaction.c:2199
 msgid "Erase failed failed in rpmpsmStage().\n"
-msgstr ""
+msgstr "Usuwanie niepowiod³o siê w rpmpsmStage().\n"
 
-#: lib/transaction.c:2221
+#: lib/transaction.c:2257
 msgid "running post-transaction scripts\n"
-msgstr ""
+msgstr "uruchamianie skryptów po-transakcyjnych\n"
 
 #: lib/verify.c:321
 #, c-format
-msgid "missing  %c %s"
+msgid "missing   %c %s"
 msgstr "brak     %c %s"
 
 #: lib/verify.c:437
@@ -3507,77 +3525,77 @@ msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
 
-#: rpmdb/header.c:2686
+#: rpmdb/header.c:2716
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/header.c:2716
+#: rpmdb/header.c:2746
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/header.c:2732
+#: rpmdb/header.c:2762
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/header.c:2744
+#: rpmdb/header.c:2774
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/header.c:2753
+#: rpmdb/header.c:2783
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/header.c:2780
+#: rpmdb/header.c:2810
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/header.c:2793
+#: rpmdb/header.c:2823
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/header.c:2806
+#: rpmdb/header.c:2836
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/header.c:2870
+#: rpmdb/header.c:2900
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/header.c:2877
+#: rpmdb/header.c:2907
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/header.c:2889 rpmdb/header.c:2929
+#: rpmdb/header.c:2919 rpmdb/header.c:2959
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/header.c:2897
+#: rpmdb/header.c:2927
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/header.c:2915
+#: rpmdb/header.c:2945
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/header.c:2937
+#: rpmdb/header.c:2967
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3038
+#: rpmdb/header.c:3068
 msgid "(index out of range)"
 msgstr "(indeks spoza zakresu)"
 
-#: rpmdb/header.c:3285
+#: rpmdb/header.c:3315
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
-#: rpmdb/header.c:3601
+#: rpmdb/header.c:3631
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3617
+#: rpmdb/header.c:3647
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
@@ -3705,74 +3723,74 @@ msgstr "dodawanie %d wpisów do indeksu %s.\n"
 msgid "error(%d) storing record %s into %s\n"
 msgstr "b³±d(%d) zapisywania rekordu %s do %s\n"
 
-#: rpmdb/rpmdb.c:3655
+#: rpmdb/rpmdb.c:3656
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "usuwanie %s po udanym przebudowaniu db3.\n"
 
-#: rpmdb/rpmdb.c:3693
+#: rpmdb/rpmdb.c:3694
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: rpmdb/rpmdb.c:3725
+#: rpmdb/rpmdb.c:3726
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "odbudowywanie bazy danych %s w %s\n"
 
-#: rpmdb/rpmdb.c:3729
+#: rpmdb/rpmdb.c:3730
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tymczasowa baza danych %s ju¿ istnieje\n"
 
-#: rpmdb/rpmdb.c:3735
+#: rpmdb/rpmdb.c:3736
 #, c-format
 msgid "creating directory %s\n"
 msgstr "tworzenie katalogu %s\n"
 
-#: rpmdb/rpmdb.c:3737
+#: rpmdb/rpmdb.c:3738
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "tworzenie katalogu %s: %s\n"
 
-#: rpmdb/rpmdb.c:3744
+#: rpmdb/rpmdb.c:3745
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otwieranie starej bazy danych przy u¿yciu dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3757
+#: rpmdb/rpmdb.c:3758
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otwieranie nowej bazy danych przy u¿yciu dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3785
+#: rpmdb/rpmdb.c:3786
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "nag³ówek #%u w bazie danych jest b³êdny -- pominiêto.\n"
 
-#: rpmdb/rpmdb.c:3825
+#: rpmdb/rpmdb.c:3826
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie mo¿na dodaæ rekordu bêd±cego oryginalnie przy %u\n"
 
-#: rpmdb/rpmdb.c:3839
+#: rpmdb/rpmdb.c:3840
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: rpmdb/rpmdb.c:3847
+#: rpmdb/rpmdb.c:3848
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: rpmdb/rpmdb.c:3849
+#: rpmdb/rpmdb.c:3850
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "aby odzyskaæ, nale¿y zast±piæ pliki w %s plikami z %s"
 
-#: rpmdb/rpmdb.c:3859
+#: rpmdb/rpmdb.c:3860
 #, c-format
 msgid "removing directory %s\n"
 msgstr "usuwanie katalogu %s\n"
 
-#: rpmdb/rpmdb.c:3861
+#: rpmdb/rpmdb.c:3862
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
@@ -3783,144 +3801,144 @@ msgid "======================== active %d empty %d\n"
 msgstr "======================== aktywny %d pusty %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:372
+#: rpmio/macro.c:392
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(pusty)"
 
-#: rpmio/macro.c:415
+#: rpmio/macro.c:435
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(pusty)\n"
 
-#: rpmio/macro.c:653
+#: rpmio/macro.c:662 rpmio/macro.c:703
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s ma nie zakoñczone cia³o\n"
 
-#: rpmio/macro.c:686
+#: rpmio/macro.c:725
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%define)\n"
 
-#: rpmio/macro.c:692
+#: rpmio/macro.c:731
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s ma nie zakoñczone opcje\n"
 
-#: rpmio/macro.c:697
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s ma puste cia³o\n"
 
-#: rpmio/macro.c:703
+#: rpmio/macro.c:742
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Rozwiniêcie makra %%%s nie powiod³o siê\n"
 
-#: rpmio/macro.c:738
+#: rpmio/macro.c:777
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)\n"
 
-#: rpmio/macro.c:856
+#: rpmio/macro.c:895
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d\n"
 
-#: rpmio/macro.c:983
+#: rpmio/macro.c:1022
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c w %s(%s)\n"
 
-#: rpmio/macro.c:1183
+#: rpmio/macro.c:1222
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ rekursji(%d) wiêksza ni¿ maksymalna(%d)\n"
 
-#: rpmio/macro.c:1254 rpmio/macro.c:1271
+#: rpmio/macro.c:1293 rpmio/macro.c:1310
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s\n"
 
-#: rpmio/macro.c:1312
+#: rpmio/macro.c:1351
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 
-#: rpmio/macro.c:1467
+#: rpmio/macro.c:1506
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête\n"
 
-#: rpmio/macro.c:1771
+#: rpmio/macro.c:1839
 msgid "Target buffer overflow\n"
 msgstr "Przepe³nienie bufora docelowego\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1977 rpmio/macro.c:1983
+#: rpmio/macro.c:2045 rpmio/macro.c:2051
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:1986
+#: rpmio/macro.c:2054
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
 
-#: rpmio/rpmio.c:632
+#: rpmio/rpmio.c:652
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:635
+#: rpmio/rpmio.c:655
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:638
+#: rpmio/rpmio.c:658
 msgid "Server I/O error"
 msgstr "B³±d we/wy serwera"
 
-#: rpmio/rpmio.c:641
+#: rpmio/rpmio.c:661
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:664
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:667
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:670
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:673
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:676
 msgid "I/O error to local file"
 msgstr "B³±d we/wy na lokalnym pliku"
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:679
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:682
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:685
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:689
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:1362
+#: rpmio/rpmio.c:1382
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"
