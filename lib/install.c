@@ -38,7 +38,7 @@ struct fileInfo {
     uint_32 size;
     mode_t mode;
     char state;
-    enum instActions action;
+    enum fileActions action;
     int install;
 } ;
 
@@ -57,11 +57,10 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int ensureOlder(rpmdb db, Header new, int dbOffset);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
-			     int stripPrefixLength, enum instActions * actions);
+			     int stripPrefixLength, enum fileActions * actions);
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount);
 static void freeFileMemory(struct fileMemory fileMem);
 static void trimChangelog(Header h);
-static const char * instActionString(enum instActions a);
 
 /* 0 success */
 /* 1 bad magic */
@@ -114,7 +113,7 @@ static void freeFileMemory(struct fileMemory fileMem) {
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
 			     int stripPrefixLength, 
-			     enum instActions * actions) {
+			     enum fileActions * actions) {
     uint_32 * fileFlags;
     uint_32 * fileSizes;
     uint_16 * fileModes;
@@ -180,7 +179,7 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	}
 
 	rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
-		    file->relativePath, instActionString(file->action));
+		    file->relativePath, fileActionString(file->action));
     }
 
     if (fileLangs) free(fileLangs);
@@ -266,9 +265,8 @@ static void trimChangelog(Header h) {
 /* 1 bad magic */
 /* 2 error */
 int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
-		         rpmRelocation * relocations,
 		         int flags, rpmNotifyFunction notify, 
-			 void * notifyData, enum instActions * actions) {
+			 void * notifyData, enum fileActions * actions) {
     int rc;
     char * name, * version, * release;
     int fileCount, type, count;
@@ -279,7 +277,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
-    int rootLength = strlen(rootdir);
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
@@ -302,17 +299,6 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"), 
 		name, version, release, flags & RPMINSTALL_TEST);
-
-    /* This canonicalizes the root */
-    if (rootdir && rootdir[rootLength] == '/') {
-	char * newRootdir;
-
-	newRootdir = alloca(rootLength + 2);
-	strcpy(newRootdir, rootdir);
-	newRootdir[rootLength++] = '/';
-	newRootdir[rootLength] = '\0';
-	rootdir = newRootdir;
-    }
 
     rc = rpmdbFindPackage(db, name, &matches);
     if (rc == -1) return 2;
@@ -429,17 +415,13 @@ int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
 		ext = NULL;
 		break;
 
-	      case KEEP:
-		installFile = 0;
-		ext = NULL;
-		break;
-
 	      case SKIP:
 		installFile = 0;
 		ext = NULL;
 		break;
 
 	      case UNKNOWN:
+	      case REMOVE:
 		break;
 	    }
 
@@ -938,15 +920,15 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset) {
     return rc;
 }
 
-static const char * instActionString(enum instActions a) {
+const char * fileActionString(enum fileActions a) {
     switch (a) {
       case UNKNOWN: return "unknown";
       case CREATE: return "create";
       case BACKUP: return "backup";
-      case KEEP: return "keep";
       case SAVE: return "save";
       case SKIP: return "skip";
       case ALTNAME: return "altname";
+      case REMOVE: return "remove";
     }
 
     return "???";
