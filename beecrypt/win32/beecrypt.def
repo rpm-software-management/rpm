@@ -1,0 +1,259 @@
+;
+; beecrypt.def
+;
+; BeeCrypt DLL exports
+;
+; Copyright (c) 2000 Virtual Unlimited B.V.
+;
+; Author: Bob Deblier <bob@virtualunlimited.com>
+;
+; This library is free software; you can redistribute it and/or
+; modify it under the terms of the GNU Lesser General Public
+; License as published by the Free Software Foundation; either
+; version 2.1 of the License, or (at your option) any later version.
+;
+; This library is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+; Lesser General Public License for more details.
+;
+; You should have received a copy of the GNU Lesser General Public
+; License along with this library; if not, write to the Free Software
+; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+;
+
+LIBRARY beecrypt
+
+EXPORTS
+ DllMain
+ b64enc
+ b64dec
+ blockCipherContextFree
+ blockCipherContextInit
+ blockCipherCount
+ blockCipherDefault
+ blockCipherFind
+ blockCipherGet
+ blockEncrypt
+ blockDecrypt
+ blowfish data
+ blowfishCBCEncrypt
+ blowfishCBCDecrypt
+ blowfishDecrypt
+ blowfishECBEncrypt
+ blowfishECBDecrypt
+ blowfishEncrypt
+ blowfishSetup
+ decodeByte
+ decodeChar
+ decodeChars
+ decodeDouble
+ decodeFloat
+ decodeInt
+ decodeInts
+ decodeLong
+ decodeShort
+ dldp_pCopy
+ dldp_pEqual
+ dldp_pFree
+ dldp_pInit
+ dldp_pPair
+ dldp_pPrivate
+ dldp_pPublic
+ dldp_pgonGenerator
+ dldp_pgonMake
+ dldp_pgonMakeSafe
+ dldp_pgonValidate
+ dldp_pgoqGenerator
+ dldp_pgoqMake
+ dldp_pgoqMakeSafe
+ dldp_pgoqValidate
+ dlkp_pCopy
+ dlkp_pFree
+ dlkp_pPair
+ dlpk_pCopy
+ dlpk_pEqual
+ dlpk_pFree
+ dlpk_pgoqValidate
+ dlpk_pgonValidate
+ dlsvdp_pDHSecret
+ ;elgv1sign
+ ;elgv1vrfy 
+ elgv3sign
+ elgv3vrfy
+ encodeByte
+ encodeChar
+ encodeChars
+ encodeDouble
+ encodeFloat
+ encodeInt
+ encodeInts
+ encodeLong
+ encodeShort
+ entropySourceCount
+ entropySourceDefault
+ entropySourceFind
+ entropySourceGet
+ fips186Cleanup
+ fips186Next
+ fips186Seed
+ fips186Setup
+ fips186prng data
+ hashFunctionContextFree
+ hashFunctionContextInit
+ hashFunctionCount
+ hashFunctionDefault
+ hashFunctionFind
+ hashFunctionGet
+ hmacDigest
+ hmacReset
+ hmacSetup
+ hmacUpdate
+ keyedHashFunctionContextFree
+ keyedHashFunctionContextInit
+ keyedHashFunctionCount
+ keyedHashFunctionDefault
+ keyedHashFunctionFind
+ keyedHashFunctionGet
+ ;mp32copy
+ ;mp32move
+ mp32zero
+ mp32fill
+ mp32odd
+ mp32even
+ mp32z
+ mp32nz
+ mp32eq
+ mp32ne
+ mp32gt
+ mp32lt
+ mp32ge
+ mp32le
+ mp32eqx
+ mp32nex
+ mp32gtx
+ mp32ltx
+ mp32gex
+ mp32lex
+ mp32isone
+ mp32leone
+ mp32eqmone
+ mp32msbset
+ mp32lsbset
+ mp32setmsb
+ mp32setlsb
+ mp32clrmsb
+ mp32clrlsb
+ mp32xor
+ mp32not
+ mp32setw
+ mp32setx
+ mp32addw
+ mp32add
+ mp32addx
+ mp32subw
+ mp32sub
+ mp32subx
+ mp32multwo
+ mp32neg
+ mp32size
+ mp32mszcnt
+ mp32lszcnt
+ mp32lshift
+ mp32rshift
+ mp32norm
+ mp32divpowtwo
+ mp32divtwo
+ mp32sdivtwo
+ mp32setmul
+ mp32addmul
+ mp32addsqrtrc
+ mp32mul
+ mp32sqr
+ mp32gcd
+ mp32nmodw
+ mp32nmod
+ mp32ndivmod
+ mp32print
+ mp32println
+ mp32bzero
+ mp32binit
+ mp32bfree
+ mp32bset
+ mp32bmu
+ mp32brnd
+ mp32brndres
+ mp32bmodsubone
+ mp32bneg
+ mp32bmod
+ mp32baddmod
+ ;mp32bsubmod
+ mp32bmulmodres
+ mp32bsqrmodres
+ mp32bmulmod
+ mp32bsqrmod
+ mp32bpowmod
+ mp32btwopowmod
+ ;mp32bsm2powmod
+ ;mp32bsm3powmod
+ mp32binv
+ mp32bpprime
+ mp32bnmulmodres
+ mp32bnsqrmodres
+ mp32bnpowmod
+ mp32bnsqrmod
+ mp32ptrials
+ mp32pmilrab
+ mp32prnd
+ mp32prndsafe
+ ;mp32prndcon
+ mp32prndconone
+ mp32nzero
+ mp32nsize
+ mp32ninit
+ mp32nfree
+ mp32nset
+ mp32nsetw
+ mp32nsethex
+ mtprng data
+ mtprngCleanup
+ mtprngNext
+ mtprngSeed
+ mtprngSetup
+ randomGeneratorCount
+ randomGeneratorGet
+ randomGeneratorFind
+ randomGeneratorDefault
+ randomGeneratorContextInit
+ randomGeneratorContextFree
+ readByte
+ readChar
+ readChars
+ readInt
+ readInts
+ readLong
+ readShort
+ sha1 data
+ sha1Process
+ sha1Reset
+ sha1Update
+ sha1Digest
+ sha1hmac data
+ sha1hmacDigest
+ sha1hmacReset
+ sha1hmacSetup
+ sha1hmacUpdate
+ swap16
+ swap32
+ swap64
+ swapu16
+ swapu32
+ ;swapu64
+ timestamp
+ writeByte
+ writeChar
+ writeChars
+ writeInt
+ writeInts
+ writeLong
+ writeShort

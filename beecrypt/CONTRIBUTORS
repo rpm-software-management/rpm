@@ -1,0 +1,12 @@
+I would like to thank the following contributors to BeeCrypt:
+
+- ARM Ltd, for donating a copy of the "ARM Architecture Reference Manual".
+- Compaq, for their testdrive program, which gave me the opportunity to test many new platforms.
+- SourceForge, for their excellent open source development platform, including their compile farm.
+- Luca Filipozzi, for packaging BeeCrypt for the Debian GNU/Linux distribution.
+
+And last but not least:
+
+- Jon Sturgeon, bug hunter extraordinaire.
+
+

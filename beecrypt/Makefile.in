@@ -1,0 +1,227 @@
+#
+# Makefile.in for the beecrypt library
+#
+# Copyright (c) 1999-2000, Virtual Unlimited B.V.
+#
+# Author: Bob Deblier <bob@virtualunlimited.com>
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+
+PRODUCT=@PRODUCT@
+VERSION=@VERSION@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+
+CC = @CC@
+CFLAGS = @CFLAGS@ @DEFS@ -I${srcdir}
+LDFLAGS = @LDFLAGS@ @LIBS@
+
+TARGET_OS = @target_os@
+TARGET_CPU = @target_cpu@
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+includedir= @includedir@
+libdir = @libdir@
+
+OBJFILES = \
+	base64.o \
+	beecrypt.o \
+	blockmode.o \
+	blowfish.o \
+	blowfishopt.o \
+	dldp.o \
+	dlkp.o \
+	dlpk.o \
+	dlsvdp-dh.o \
+	elgamal.o \
+	endianness.o \
+	entropy.o \
+	fips180.o \
+	fips180opt.o \
+	fips186.o \
+	hmac.o \
+	mp32.o \
+	mp32barrett.o \
+	mp32number.o \
+	mp32opt.o \
+	mp32prime.o \
+	mtprng.o \
+	sha1hmac.o \
+	timestamp.o
+
+DISTFILES = \
+	LICENSE README DOCUMENTATION CHANGELOG BUGS BENCHMARKS \
+	config.guess config.sub install-sh \
+	configure.in configure Makefile.in \
+	config.h \
+	base64.h base64.c \
+	beecrypt.h beecrypt.c \
+	blockmode.h blockmode.c \
+	blowfish.h blowfish.c \
+	blowfishopt.h blowfishopt.c  \
+	dldp.h dldp.c \
+	dlkp.h dlkp.c \
+	dlpk.h dlpk.c \
+	dlsvdp-dh.h dlsvdp-dh.c \
+	elgamal.h elgamal.c \
+	endianness.h endianness.c \
+	entropy.h entropy.c \
+	fips180.h fips180.c \
+	fips180opt.h fips180opt.c \
+	fips186.h fips186.c \
+	hmac.h hmac.c \
+	mp32barrett.h mp32barrett.c \
+	mp32.h mp32.c \
+	mp32number.h mp32number.c \
+	mp32opt.h mp32opt.c \
+	mp32prime.h mp32prime.c \
+	mtprng.h mtprng.c \
+	sha1hmac.h sha1hmac.c \
+	timestamp.h timestamp.c \
+	gnu/config.gnu.h.in \
+	gnu/blowfishopt.gas.i586.s gnu/fips180opt.gas.i586.s gnu/mp32opt.gas.i386.s \
+	gnu/mp32opt.gas.powerpc.s \
+	gnu/mp32opt.gas.sparcv9.s \
+	beecrypt.mcp \
+	win32/config.win.h \
+	win32/beecrypt.dll.c win32/beecrypt.rc win32/beecrypt.def \
+	win32/mwerks/blowfishopt.i586.asm win32/mwerks/fips180opt.i586.asm win32/mwerks/mp32opt.i386.asm \
+	win32/mwerks/beecrypt.pch \
+	beetest.c
+
+LIBBEECRYPT = libbeecrypt.so
+
+all: $(LIBBEECRYPT)
+
+ifeq '$(TARGET_CPU)' 'sparcv8plus'
+mp32opt.o: gnu/mp32opt.gas.sparcv9.s
+	$(AS) -Av8plus -KPIC -o $@ gnu/mp32opt.gas.sparcv9.s
+endif
+
+ifeq '$(TARGET_CPU)' 'sparcv9'
+mp32opt.o: gnu/mp32opt.gas.sparcv9.s
+	$(AS) -Av9 -KPIC -o $@ gnu/mp32opt.gas.sparcv9.s
+endif
+
+ifeq '$(TARGET_CPU)' 'i386'
+mp32opt.o: gnu/mp32opt.gas.i386.s
+	$(AS) -o $@ gnu/mp32opt.gas.i386.s
+endif
+
+ifeq '$(TARGET_CPU)' 'i486'
+mp32opt.o: gnu/mp32opt.gas.i386.s
+	$(AS) -o $@ gnu/mp32opt.gas.i386.s
+endif
+
+ifeq '$(TARGET_CPU)' 'i586'
+blowfishopt.o: gnu/blowfishopt.gas.i586.s
+	$(AS) -o $@ gnu/blowfishopt.gas.i586.s
+
+fips180opt.o: gnu/fips180opt.gas.i586.s
+	$(AS) -o $@ gnu/fips180opt.gas.i586.s
+
+mp32opt.o: gnu/mp32opt.gas.i386.s
+	$(AS) -o $@ gnu/mp32opt.gas.i386.s
+endif
+
+ifeq '$(TARGET_CPU)' 'i686' 
+blowfishopt.o: gnu/blowfishopt.gas.i586.s
+	$(AS) -o $@ gnu/blowfishopt.gas.i586.s
+
+fips180opt.o: gnu/fips180opt.gas.i586.s
+	$(AS) -o $@ gnu/fips180opt.gas.i586.s
+
+mp32opt.o: gnu/mp32opt.gas.i386.s
+	$(AS) -o $@ gnu/mp32opt.gas.i386.s
+endif
+
+ifeq '$(TARGET_CPU)' 'powerpc'
+mp32opt.o: gnu/mp32opt.gas.powerpc.s
+	$(AS) -o $@ gnu/mp32opt.gas.powerpc.s
+endif
+
+$(LIBBEECRYPT): $(OBJFILES)
+	$(LD) -G -o $@ $(OBJFILES)
+
+install: $(LIBBEECRYPT)
+	$(INSTALL) -d $(libdir)
+	$(INSTALL) $(LIBBEECRYPT) $(libdir)
+
+install-headers:
+	$(INSTALL) -d $(includedir)/beecrypt
+	$(INSTALL_DATA) base64.h $(includedir)/beecrypt
+	$(INSTALL_DATA) beecrypt.h $(includedir)/beecrypt
+	$(INSTALL_DATA) blockmode.h $(includedir)/beecrypt
+	$(INSTALL_DATA) blowfish.h $(includedir)/beecrypt
+	$(INSTALL_DATA) blowfishopt.h $(includedir)/beecrypt
+	$(INSTALL_DATA) dldp.h $(includedir)/beecrypt
+	$(INSTALL_DATA) dlkp.h $(includedir)/beecrypt
+	$(INSTALL_DATA) dlpk.h $(includedir)/beecrypt
+	$(INSTALL_DATA) dlsvdp-dh.h $(includedir)/beecrypt
+	$(INSTALL_DATA) elgamal.h $(includedir)/beecrypt
+	$(INSTALL_DATA) endianness.h $(includedir)/beecrypt
+	$(INSTALL_DATA) entropy.h $(includedir)/beecrypt
+	$(INSTALL_DATA) fips180.h $(includedir)/beecrypt
+	$(INSTALL_DATA) fips180opt.h $(includedir)/beecrypt
+	$(INSTALL_DATA) fips186.h $(includedir)/beecrypt
+	$(INSTALL_DATA) hmac.h $(includedir)/beecrypt
+	$(INSTALL_DATA) mp32.h $(includedir)/beecrypt
+	$(INSTALL_DATA) mp32barrett.h $(includedir)/beecrypt
+	$(INSTALL_DATA) mp32number.h $(includedir)/beecrypt
+	$(INSTALL_DATA) mp32opt.h $(includedir)/beecrypt
+	$(INSTALL_DATA) mp32prime.h $(includedir)/beecrypt
+	$(INSTALL_DATA) mtprng.h $(includedir)/beecrypt
+	$(INSTALL_DATA) sha1hmac.h $(includedir)/beecrypt
+	$(INSTALL_DATA) timestamp.h $(includedir)/beecrypt
+
+beetest: beetest.o
+	$(CC) -o $@ beetest.o $(LDFLAGS) -L${libdir} -lbeecrypt
+
+clean:
+	rm -f *.so *.o beetest
+
+distclean:
+	rm -f *.so *.o beetest ${srcdir}/config.log ${srcdir}/config.cache ${srcdir}/config.status conftest.c ${srcdir}/Makefile ${srcdir}/gnu/config.gnu.h
+
+dist: $(DISTFILES)
+	@rm -rf $(PRODUCT)-$(VERSION)
+	@mkdir $(PRODUCT)-$(VERSION)
+	@chmod 777 $(PRODUCT)-$(VERSION)
+	@tar cf - $(DISTFILES) | (cd $(PRODUCT)-$(VERSION) && tar xf - )
+	@chmod -R a+r $(PRODUCT)-$(VERSION)
+	@tar chozf $(PRODUCT)-$(VERSION).tar.gz $(PRODUCT)-$(VERSION)
+	@rm -rf $(PRODUCT)-$(VERSION)
+
+depend:
+	makedepend -I${srcdir} *.c
+
+${srcdir}/configure: ${srcdir}/configure.in
+	cd ${top_srcdir} && autoconf
+
+${srcdir}/config.gnu.h: ${srcdir}/config.gnu.h.in
+	${srcdir}/config.status
+
+${srcdir}/Makefile: ${srcdir}/Makefile.in
+	${srcdir}/config.status
+
+${srcdir}/config.status: ${srcdir}/configure
+	${srcdir}/config.status --recheck
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.

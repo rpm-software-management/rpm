@@ -1,0 +1,50 @@
+NOTE: The documentation is incomplete, but will be improved in the near future.
+
+So okay, you've got the BeeCrypt source code. Now in which way can you use it to protect your data and shield it from prying eyes? You'll have to develop your own programs to do that, or you can use this library with Virtual Unlimited's Beeyond Beehive.
+
+A word of caution: before you attempt to write your own applications, make sure you familiarize yourself with the concepts of cryptography, read the books recommended in the 'README' file, figure out the math, find information on the internet, in newsgroups, web pages, etc. In other words: study.
+Cryptography is not necessarily difficult, but an application is only as strong as its weakest part. More often then not there are unintentional security holes in applications, which result in a dramatically lower level of security than claimed and intended by the author(s).
+
+To start, there's an example program included called 'beetest.c', which will test and benchmark some of the library's routines after it's been installed.
+
+Each .h file should contain enough information on how the use the structs and functions it contains. Each .c file should contain comment to explain the tricky parts, and references to textbooks.
+
+Furthermore, I'll explain briefly what can be found in each file, and how to use it:
+
+beecrypt.h, beecrypt.c: the definitions and generic functions for accessing pseudo-random generators, hash functions, keyed hash functions, and block ciphers.
+
+mp32.h, mp32.c: the multiprecision integer basic routines.
+
+mp32opt.h mp32opt.gas.<platform>.s: the platform-specific assembler optimized routines for multipreceision integer operations.
+
+mp32barrett.h, mp32barrett.c: the routines for Barrett Modular Reduction of multiprecision integers.
+
+mp32prime.h, mp32prime.c: the routines for probabilistic primality testing and generation of multiprecision integers.
+
+dldp.h, dldp.c: the definitions of Discrete Logarithm Domain Parameters (only prime field variant at this time), plus functions to generate and test them. Generators can be determined over the whole field, or over a prime subfield.
+
+dlpk.h, dlpk.c: the definitions of Discrete Logarithm Public Keys (only prime field variant at this time), plus functions to initialize and test them.
+
+dlkp.h, dlkp.c: the definitions of Discrete Logarithm Key Pairs (only prime field variant at this time), plus functions to initialize and generate them.
+
+dlsvdp-dh.h, dlsvdp-dh.c: the definitions of Diffie-Hellman key agreement (only prime field variant at this time)
+
+elgamal.h, elgamal.c: the ElGamal signature scheme (two variants) (only prime field variant at this time)
+
+blockmode.h, blockmode.c: implementation of the different modes block ciphers can operate in (ECB, CBC, etc.)
+
+blowfish.h, blowfish.c: the blowfish blockciper, plus the stub for hooking it into the beecrypt library.
+
+blowfishopt.h, blowfishopt.gas.<platform>.s: the platform-specific assembler optimized routines for blowfish encryption/decryption.
+
+entropy.h, entropy.c: the entropy gathering system; don't use directly - only use these routines through the beecrypt generics stubs; you can modify this file if you want to add custom entropy provider(s) to the library.
+
+fips180.h, fips180.c: the SHA-1 hash algorithm, plus the stub for hooking it into the beecrypt library.
+
+fips186.h, fips186.c: the NIST FIPS-186 pseudo-random number generator, plus the stub for hooking it into the beecrypt library; in the future, the rest of FIPS-186 (the DSA algorithm) will be added.
+
+hmac.h, hmac.c: the base for the HMAC algorithm; combined with a hash function, it can be used as a keyed hash function.
+
+mtprng.h, mtprng.c: the Mersenne Twister pseudo-random number generator; it has a very high period, but needs more analysis on whether it's cryptographically strong enough.
+
+sha1hmac.h, sha1hmac.c: the implementation of the SHA-1/HMAC keyed hash function; uses routines from fips186 and hmac.

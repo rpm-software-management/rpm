@@ -1,0 +1,6 @@
+#include <Win32Headers.mch>
+
+#pragma precompile_target "beecrypt.mch"
+
+#define HAVE_CONFIG_H
+#define JAVAGLUE 1

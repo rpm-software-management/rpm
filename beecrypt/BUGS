@@ -1,0 +1,2 @@
+1.0.0:
+	- On Windows 2000, the entropy system gets error WAVERR_BADFORMAT in waveInOpen; So far I've been unable to determine why the system does this for format WAVE_FORMAT_PCM. Suggestions to fix this problem are more than welcome.

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+<TITLE>Installing the BeeCrypt Cryptography Library</TITLE>
+</HEAD>
+<BODY>
+<H2>Installing the BeeCrypt Cryptography Library</H2>
+<P>When it comes to installing BeeCrypt you basically have the following
+alternatives:
+<OL TYPE="a">
+<LI><B>Installing from the source code - aka roll your own</B></LI>
+<UL TYPE="disc">
+<LI>Getting the source code</LI>
+<P>The primary download location for the source tarball is through
+<A HREF="http://www.virtualunlimited.com/download/index.html#beecrypt">
+Virtual Unlimited's download page</A>. Alternatively you can download from
+<A HREF="http://sourceforge.net/projects/beecrypt">SourceForge</A>.
+<LI>Unpacking</LI>
+<P>Once you have the source tarball, unpack it with <ACRONYM>GNU</ACRONYM>
+tar (if you have it); on Windows you can use
+<A HREF="http://www.rarsoft.com/">WinRAR</A>.
+<LI>Configuring, building and installing</LI>
+<P>The library can be built on a variety of platforms, and we will illustrate
+the two most common ways:
+<P><B>Using the <ACRONYM>GNU</ACRONYM> toolchain</B>
+<P>The source tarball contains a configure script produced with
+<ACRONYM>GNU</ACRONYM> autoconf;
+on most platforms you will want to use this.
+<P>As with most configure scripts, there are a few options you can use:
+<DL COMPACT>
+<DT><CODE>--prefix</CODE></DT>
+<DD>Use this option to indicate where you want the shared library and header
+files installed. By default this is set to <CODE>/usr/local</CODE>. Another
+suggested location is the <CODE>/usr</CODE> directory.</DD>
+<DT><CODE>--target</CODE></DT>
+<DD>Use this option to indicate that you want the library built for a
+processor other than the one which is normally detected. Some examples of
+useful combinations are:
+<DL COMPACT>
+<DT><CODE>--target=sparcv8plus-sun-solaris2.8</CODE></DT>
+<DT><CODE>--target=i686-pc-freebsd4.3</CODE></DT>
+</DL>
+<DT><CODE>--enable-debug</CODE></DT>
+<DD>will build the library with debug symbols, and without assembler
+optimization, and instead just use plain C code.
+<DT><CODE>--disable-optimized</CODE></DT>
+<DD>will build the library without any processor-specific assembler
+optimization, and instead just use plain C code.</DD>
+<DT><CODE>--without-javaglue</CODE></DT>
+<DD>will build the library without code which allows BeeCrypt for Java
+to employ the native code in the library (automatic if you don't
+have a JDK installed).</DD>
+<DT><CODE>--disable-threads</CODE></DT>
+<DD>will build the library without thread-safe code; useful on platforms
+such as NetBSD (automatic if configure can't find threads).</DD>
+<DT><CODE>--disable-aio</CODE></DT>
+<DD>will build the library without asynchronous I/O on entropy devices
+(automatic if configure can't find POSIX-compliant asynchronous I/O
+routines).</DD>
+<DT><CODE>--with-mtmalloc</CODE></DT>
+<DD>will build the library with multi-thread optimized malloc routines
+(available on Solaris 8). There is a tradeoff in speed versus the amount
+of memory allocated.</DD>
+</DL>
+<P>To build, run: <XMP>make</XMP>
+<P>To install, run: <XMP>make install</XMP>
+</DL>
+<P><B>Using Visual C++ for Win32</B>
+<P>Microsoft Visual C++ is currently the preferred platform for compiling
+the library, as it seems faster and more stable than other platforms.
+<P>The prerequisites for compiling are:
+<DL COMPACT>
+<DT>Visual C++ 6.0</DT>
+<DD>At the time of writing, it is recommended to install the latest service
+pack for Visual Studio. You can find it through Microsoft's
+<A HREF="http://www.microsoft.com/downloads">download page</A>.</DD>
+<DT>Visual C++ Processor Pack</DT>
+<DD>You will need this package to support compilation of the assembler source 
+code. You can download it
+<A HREF="http://msdn.microsoft.com/vstudio/downloads/ppack/default.asp">
+here</A>.</DD>
+</DT>
+<P>Before going on, make sure the following Visual C++ tools are found on
+your PATH: cl.exe, (the compiler), ml.exe (the assembler), link.exe (the
+linker) and nmake.exe (the make utility).
+<P>For the Win32 platform, there is a Makefile.mak for Visual C++ included;
+if you have a Pentium class processor, you won't have to configure the source
+tree.
+<P>This Makefile.mak is set up to compile Java support into the library. If
+you don't have JDK 1.2 or later installed, you'll need to edit this file.
+<P>To build, run: <XMP>nmake /f Makefile.mak</XMP>
+<P><B>Using Metrowerks CodeWarrior for Win32</B>
+<P>The prerequisites for compiling are:
+<DL COMPACT>
+<DT>CodeWarrior Pro</DT>
+<DD>Use version 5 or later.</DD>
+<DT>CodeWarrior Pro Assembler Plugin</DT>
+<DD>This tool isn't officially support by MetroWerks, but it functions fine
+in conjunction with the project file included in the library.</DD>
+</DL>
+<P>To build, start the CodeWarrior IDE, open project file 'beecrypt.mcp'
+and make the BeeCrypt DLL by pressing the <CODE>[F7]</CODE> key.
+<P><B>Installing the BeeCrypt DLL</B>
+<P>To install, either copy file 'beecrypt.dll' to your Windows System
+directory (on Windows 95/98/Millenium), or to your Windows System 32
+directory (on Windows NT/2000).
+<P>If you don't need the BeeCrypt DLL globallly available, copy it into the same
+directory as the application which is going to use it. If you intend to develop
+software with BeeCrypt, you'll need file 'beecrypt.lib'. Either copy it into
+project directory, or point your Makefile or project to it.
+</DL>
+</UL>
+<BR>
+<LI><B>Installing precompiled versions</B></LI>
+<P>Several different flavors of precompiled versions exist.
+<DL COMPACT>
+<DT>Win32 BeeCrypt DLLs</DT>
+<DD>Virtual Unlimited makes precompiled BeeCrypt DLL and LIB files, usable on
+Pentium class processors. If you want to develop your own software with these
+files, you will also need the header files from the source tarball. See
+'Getting the source code'.</DD>
+<DT>RedHat RPMS</DT>
+<DD>Virtual Unlimited makes BeeCrypt RPM packages for every release for at
+least the following platforms: i386, i586, i686, powerpc. As we get access to
+more platforms, we will try to make more RPMS available; until then it
+shouldn't be too hard to get the BeeCrypt SRPM file, install it and compile
+your own RPMS from it. Note that RPM packages originating at Virtual
+Unlimited will contain a signature, which you can verify with
+<A HREF="http://www.virtualunlimited.com/support/beecrypt/gnupg-sigkey.html">
+this key</A>.</DD>
+<DT>Debian Packages</DT>
+<DD>Thanks to Luca Filipozzi there are Debian packages available for BeeCrypt.
+You can find these packages on various Debian mirror sites.</DD>
+</DL>
+<P>
+</OL>
+</BODY>
+</HTML>

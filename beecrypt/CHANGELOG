@@ -1,0 +1,28 @@
+1.0.0:
+	- Added Win32 support; compiled as DLL with MetroWerks CodeWarrior Pro 5, it runs fine on Windows 95, 98, NT 4.0 (if you have a soundcard with a microphone port). Note that there is a know issue on Windows 2000, see BUGS.
+	- Global code overhaul to support Win32
+	- Added more assembler routines, including SHA-1 for Pentium Pro (60% faster)
+	- Added cleanup function to randomGenerator
+	- Added missing functions in endianness.c
+	- Fixed bug in entropy.c where devices might stay open
+	- Eliminated mutex.h include file; it was more clear to do everything conditionally than to expand the macros in this file to encompass the Win32 API calls.
+
+0.9.5:
+	- Added PowerPC assembler optimization for multiprecision integers, 80% faster on our PowerMac 7200/90
+	- Fixed /dev/random entropy provider
+	- Changed name SHA1 to SHA-1 in fips180 for consistency
+
+0.9.4a:
+	- Added missing file 'blowfishopt.o'
+
+0.9.4:
+	- Changes to configure script, to distinguish between different processors of the x86 family
+	- Changes to blowfish code, 586/686 assembler optimization added, 30% faster on Pentium/PentiumPro
+	- Changes to blowfish code, eliminated static blowfishSetupEncrypt; incorporated into regular encrypt
+	- Changes to Makefile to selectively use blowfish assember code, depending on cpu type
+	- Added missing routines 'mp32bzero' and 'mp32bnpowmod' to mp32barrett.c
+	- Fixed 'const register' to 'register const' in mp32.c
+	- Minor fixes in included header files
+
+0.9.3:
+	- Initial public release

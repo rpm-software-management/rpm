@@ -1,0 +1,325 @@
+;
+; beecrypt.def
+;
+; BeeCrypt DLL exports
+;
+; Copyright (c) 2000, 2001 Virtual Unlimited B.V.
+;
+; Author: Bob Deblier <bob@virtualunlimited.com>
+;
+; This library is free software; you can redistribute it and/or
+; modify it under the terms of the GNU Lesser General Public
+; License as published by the Free Software Foundation; either
+; version 2.1 of the License, or (at your option) any later version.
+;
+; This library is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+; Lesser General Public License for more details.
+;
+; You should have received a copy of the GNU Lesser General Public
+; License along with this library; if not, write to the Free Software
+; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+;
+
+LIBRARY beecrypt
+
+EXPORTS
+ DllMain
+ b64enc
+ b64dec
+ blockCipherContextFree
+ blockCipherContextInit
+ blockCipherContextSetup
+ blockCipherContextSetIV
+ blockCipherCount
+ blockCipherDefault
+ blockCipherFind
+ blockCipherGet
+ blockEncrypt
+ blockDecrypt
+ blowfish data
+ blowfishCBCEncrypt
+ blowfishCBCDecrypt
+ blowfishDecrypt
+ blowfishECBEncrypt
+ blowfishECBDecrypt
+ blowfishEncrypt
+ blowfishSetup
+ decodeByte
+ decodeChar
+ decodeChars
+ decodeDouble
+ decodeFloat
+ decodeInt
+ decodeInts
+ decodeLong
+ decodeShort
+ dhaes_pContextDecrypt
+ dhaes_pContextEncrypt
+ dhaes_pContextFree
+ dhaes_pContextInit
+ dhaes_pContextInitDecrypt
+ dhaes_pContextInitEncrypt
+ dhaes_pUsable
+ dldp_pCopy
+ dldp_pEqual
+ dldp_pFree
+ dldp_pInit
+ dldp_pPair
+ dldp_pPrivate
+ dldp_pPublic
+ dldp_pgonGenerator
+ dldp_pgonMake
+ dldp_pgonMakeSafe
+ dldp_pgonValidate
+ dldp_pgoqGenerator
+ dldp_pgoqMake
+ dldp_pgoqMakeSafe
+ dldp_pgoqValidate
+ dlkp_pCopy
+ dlkp_pFree
+ dlkp_pInit
+ dlkp_pPair
+ dlpk_pCopy
+ dlpk_pEqual
+ dlpk_pFree
+ dlpk_pInit
+ dlpk_pgoqValidate
+ dlpk_pgonValidate
+ dlsvdp_pDHSecret
+ elgv1sign
+ elgv1vrfy 
+ elgv3sign
+ elgv3vrfy
+ encodeByte
+ encodeChar
+ encodeChars
+ encodeDouble
+ encodeFloat
+ encodeInt
+ encodeInts
+ encodeIntsPartial
+ encodeLong
+ encodeShort
+ entropyGatherNext
+ entropySourceCount
+ entropySourceDefault
+ entropySourceFind
+ entropySourceGet
+ fips186Cleanup
+ fips186Next
+ fips186Seed
+ fips186Setup
+ fips186prng data
+ hashFunctionContextDigest
+ hashFunctionContextDigestMatch
+ hashFunctionContextFree
+ hashFunctionContextInit
+ hashFunctionContextUpdate
+ hashFunctionContextUpdateMC
+ hashFunctionContextUpdateMP32
+ hashFunctionCount
+ hashFunctionDefault
+ hashFunctionFind
+ hashFunctionGet
+ hmacDigest
+ hmacReset
+ hmacSetup
+ hmacUpdate
+ hmacmd5 data
+ hmacmd5Digest
+ hmacmd5Reset
+ hmacmd5Setup
+ hmacmd5Update
+ hmacsha1 data
+ hmacsha1Digest
+ hmacsha1Reset
+ hmacsha1Setup
+ hmacsha1Update
+ hmacsha256 data
+ hmacsha256Digest
+ hmacsha256Reset
+ hmacsha256Setup
+ hmacsha256Update
+ keyedHashFunctionContextDigest
+ keyedHashFunctionContextDigestMatch
+ keyedHashFunctionContextFree
+ keyedHashFunctionContextInit
+ keyedHashFunctionContextSetup
+ keyedHashFunctionContextUpdate
+ keyedHashFunctionContextUpdateMC
+ keyedHashFunctionContextUpdateMP32
+ keyedHashFunctionCount
+ keyedHashFunctionDefault
+ keyedHashFunctionFind
+ keyedHashFunctionGet
+ md5 data
+ md5Process
+ md5Reset
+ md5Update
+ md5Digest
+ memchunkAlloc
+ memchunkFree
+ memchunkResize
+ ;mp32copy
+ ;mp32move
+ mp32zero
+ mp32fill
+ mp32odd
+ mp32even
+ mp32z
+ mp32nz
+ mp32eq
+ mp32ne
+ mp32gt
+ mp32lt
+ mp32ge
+ mp32le
+ mp32eqx
+ mp32nex
+ mp32gtx
+ mp32ltx
+ mp32gex
+ mp32lex
+ mp32isone
+ mp32leone
+ mp32eqmone
+ mp32msbset
+ mp32lsbset
+ mp32setmsb
+ mp32setlsb
+ mp32clrmsb
+ mp32clrlsb
+ mp32xor
+ mp32not
+ mp32setw
+ mp32setx
+ mp32addw
+ mp32add
+ mp32addx
+ mp32subw
+ mp32sub
+ mp32subx
+ mp32multwo
+ mp32neg
+ mp32size
+ mp32mszcnt
+ mp32lszcnt
+ mp32lshift
+ mp32rshift
+ mp32norm
+ mp32divpowtwo
+ mp32divtwo
+ mp32sdivtwo
+ mp32setmul
+ mp32addmul
+ mp32addsqrtrc
+ mp32mul
+ mp32sqr
+ mp32gcd_w
+ mp32nmodw
+ mp32nmod
+ mp32ndivmod
+ mp32print
+ mp32println
+ mp32bzero
+ mp32binit
+ mp32bfree
+ mp32bcopy
+ mp32bset
+ mp32bsethex
+ mp32bsubone
+ mp32bneg
+ mp32bmu_w
+ mp32brnd_w
+ mp32brndinv_w
+ mp32bmod_w
+ mp32baddmod_w
+ ;mp32bsubmod_w
+ mp32bmulmod_w
+ mp32bsqrmod_w
+ mp32bpowmod_w
+ mp32bpowmodsld_w
+ mp32btwopowmod_w
+ ;mp32bsm2powmod
+ ;mp32bsm3powmod
+ mp32binv_w
+ mp32bnrnd
+ mp32bnmulmod
+ mp32bnsqrmod
+ mp32bnpowmod
+ mp32bnpowmodsld
+ mp32bnsqrmod
+ mp32ptrials
+ mp32pmilrab_w
+ mp32bpprime_w
+ mp32prnd_w
+ ;mp32prndcon
+ mp32prndconone_w
+ mp32prndsafe_w
+ mp32nzero
+ mp32nsize
+ mp32ninit
+ mp32nfree
+ mp32ncopy
+ mp32nset
+ mp32nsetw
+ mp32nsethex
+ mp32nwipe
+ mtprng data
+ mtprngCleanup
+ mtprngNext
+ mtprngSeed
+ mtprngSetup
+ pkcs5Pad
+ pkcs5PadCopy
+ pkcs5Unpad
+ pkcs5UnpadCopy
+ randomGeneratorCount
+ randomGeneratorGet
+ randomGeneratorFind
+ randomGeneratorDefault
+ randomGeneratorContextInit
+ randomGeneratorContextFree
+ rsapri
+ rsapricrt
+ rsavrfy
+ rsakpMake
+ rsakpInit
+ rsakpFree
+ rsakpCopy
+ rsapkInit
+ rsapkFree
+ rsapkCopy
+ readByte
+ readChar
+ readChars
+ readInt
+ readInts
+ readLong
+ readShort
+ sha1 data
+ sha1Process
+ sha1Reset
+ sha1Update
+ sha1Digest
+ sha256 data
+ sha256Process
+ sha256Reset
+ sha256Update
+ sha256Digest
+ swap16
+ swap32
+ swap64
+ swapu16
+ swapu32
+ ;swapu64
+ timestamp
+ writeByte
+ writeChar
+ writeChars
+ writeInt
+ writeInts
+ writeLong
+ writeShort
