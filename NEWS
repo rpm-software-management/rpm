@@ -15,16 +15,38 @@ New in RPM 2.0 (or previously undocumented):
 
 *** Verify
 
+*** PGP Signatures
+
+RPM now supports optional PGP signatures embedded in RPM packages.
+Only 1024 bit keys are supported, and the signature "covers" the
+header and archive sections of the package.  The "lead", which 
+makes up the first 96 bytes of every package is not covered by
+the signature.  This should not be cause for alarm as the lead
+is only used by file(1), and by RPM to determine the package type
+(either source or binary) and architecture.
+
 *** Spec file (RPM building)
 
 . Summary: ...
-  A one (short) line description of the package
+  A one (short) line description of the package.  This field
+  takes over what Description used to do, but is limited to
+  a single line.  For an interim period, if the Summary is
+  not defined the description will be used instead.
+
+. Description: ...
+  An optional mulit-line description of the package.
 
 . Packager: ...
   Name and email address of the person who "maintains" the RPM
 
 . URL: ...
   A place to put a URL for more info on the package (http://...)
+
+. Serial: ...
+  This number should be monotonically increasing with each new
+  release of the package.  If present, it will be used by RPM
+  to define an ordering.  If not present RPM tries to determine
+  the ordering from the Version field.
 
 . %package -n foo
   Builds "subpackage" with name foo-Version-Release
@@ -40,6 +62,6 @@ New in RPM 2.0 (or previously undocumented):
   Exclusive: <arch>+
 
 . %clean
-  executed after all packaging is finished
+  Executed after all packaging is finished
 
 . %changelog
