@@ -251,3 +251,13 @@ int vercmp(char * one, char * two) {
 
     if (!*one) return -1; else return 1;
 }
+
+void stripTrailingSlashes(char * str) {
+    char * chptr;
+
+    chptr = str + strlen(str) - 1;
+    while (*chptr == '/' && chptr >= str) {
+	*chptr = '\0';
+	chptr--;
+    }
+}
