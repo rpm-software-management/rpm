@@ -16,6 +16,8 @@
 #include "messages.h"
 #include "rpmlib.h"
 
+#define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
+
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
 			                 "/usr/X11R6/bin\nexport PATH\n";
 
@@ -104,30 +106,42 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 		*result |= RPMVERIFY_LINKTO;
 	free(linktoList);
     } 
+
     if (flags & RPMVERIFY_FILESIZE) {
 	headerGetEntry(h, RPMTAG_FILESIZES, &type, (void **) &sizeList, &count);
 	if (sizeList[filenum] != sb.st_size)
 	    *result |= RPMVERIFY_FILESIZE;
     } 
+
     if (flags & RPMVERIFY_MODE) {
 	if (modeList[filenum] != sb.st_mode)
 	    *result |= RPMVERIFY_MODE;
     }
+
     if (flags & RPMVERIFY_RDEV) {
-	headerGetEntry(h, RPMTAG_FILERDEVS, &type, (void **) &rdevList, &count);
-	if (rdevList[filenum] != sb.st_rdev)
+	if (S_ISCHR(modeList[filenum]) != S_ISCHR(sb.st_mode) ||
+	    S_ISBLK(modeList[filenum]) != S_ISBLK(sb.st_mode)) {
 	    *result |= RPMVERIFY_RDEV;
+	} else if (S_ISDEV(modeList[filenum]) && S_ISDEV(sb.st_mode)) {
+	    headerGetEntry(h, RPMTAG_FILERDEVS, NULL, (void **) &rdevList, 
+			   NULL);
+	    if (rdevList[filenum] != sb.st_rdev)
+		*result |= RPMVERIFY_RDEV;
+	} 
     }
+
     if (flags & RPMVERIFY_MTIME) {
-	headerGetEntry(h, RPMTAG_FILEMTIMES, &type, (void **) &mtimeList, &count);
+	headerGetEntry(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtimeList, NULL);
 	if (mtimeList[filenum] != sb.st_mtime)
 	    *result |= RPMVERIFY_MTIME;
     }
+
     if (flags & RPMVERIFY_USER) {
 	headerGetEntry(h, RPMTAG_FILEUIDS, &type, (void **) &uidList, &count);
 	if (uidList[filenum] != sb.st_uid)
 	    *result |= RPMVERIFY_USER;
     }
+
     if (flags & RPMVERIFY_GROUP) {
 	headerGetEntry(h, RPMTAG_FILEGIDS, &type, (void **) &gidList, &count);
 	if (gidList[filenum] != sb.st_gid)
