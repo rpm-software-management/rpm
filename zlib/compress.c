@@ -1,4 +1,4 @@
-/* @(#) $Id: compress.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
+/* @(#) $Id: compress.c,v 1.3 2001/12/27 21:00:17 jbj Exp $ */
 /*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -10,6 +10,9 @@
  */
 
 #include "zlib.h"
+#include "zutil.h"	/* XXX for zmemzero() */
+
+/*@access z_streamp@*/
 
 /* ========================================================================= */
 /**
@@ -28,6 +31,7 @@ int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong 
     z_stream stream;
     int err;
 
+    zmemzero(&stream, sizeof(stream));
     stream.next_in = (Bytef*)source;
     stream.avail_in = (uInt)sourceLen;
 #ifdef MAXSEG_64K
@@ -38,9 +42,9 @@ int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong 
     stream.avail_out = (uInt)*destLen;
     if ((uLong)stream.avail_out != *destLen) return Z_BUF_ERROR;
 
-    stream.zalloc = (alloc_func)0;
-    stream.zfree = (free_func)0;
-    stream.opaque = (voidpf)0;
+    stream.zalloc = (alloc_func)NULL;
+    stream.zfree = (free_func)NULL;
+    stream.opaque = (voidpf)NULL;
 
     err = deflateInit(&stream, level);
     if (err != Z_OK) return err;

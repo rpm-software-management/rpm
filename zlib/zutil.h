@@ -1,4 +1,4 @@
-/* @(#) $Id: zutil.h,v 1.3 2001/11/22 21:12:46 jbj Exp $ */
+/* @(#) $Id: zutil.h,v 1.4.2.1 2002/01/25 19:18:55 jbj Exp $ */
 /*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
@@ -40,6 +40,7 @@ typedef unsigned short ush;
 typedef ush FAR ushf;
 typedef unsigned long  ulg;
 
+/*@observer@*/ /*@unchecked@*/
 extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 
@@ -217,6 +218,7 @@ extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 typedef uLong (ZEXPORT *check_func) OF((uLong check, const Bytef *buf,
 				       uInt len))
 	/*@*/;
+/*@only@*/ /*@null@*/
 voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size))
 	/*@*/;
 void   zcfree  OF((voidpf opaque, /*@only@*/ voidpf ptr))
@@ -253,7 +255,8 @@ __asm__ __volatile__( \
 static __inline__ void quickmemcpy(void *_to, const void *_from, long n)
 	/*@*/
 {
-	char *to = _to, *from = _from;
+	const char *from = _from;
+	char *to = _to;
 	while (n-- > 0)
 		*to++ = *from++;
 }

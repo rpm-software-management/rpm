@@ -16,28 +16,29 @@
 struct inflate_blocks_state;
 typedef struct inflate_blocks_state FAR inflate_blocks_statef;
 
+/*@null@*/
 extern inflate_blocks_statef * inflate_blocks_new OF((
     z_streamp z,
-    check_func c,               /* check function */
+    /*@null@*/ check_func c,    /* check function */
     uInt w))                    /* window size */
-	/*@*/;
+	/*@modifies z @*/;
 
 extern int inflate_blocks OF((
     inflate_blocks_statef *s,
     z_streamp z,
     int r))                       /* initial return code */
-	/*@modifies s @*/;
+	/*@modifies s, z @*/;
 
 extern void inflate_blocks_reset OF((
     inflate_blocks_statef *s,
     z_streamp z,
-    uLongf *c))                   /* check value on output */
-	/*@modifies s, *c @*/;
+    /*@null@*/ uLongf *c))                   /* check value on output */
+	/*@modifies s, *c, z @*/;
 
 extern int inflate_blocks_free OF((
-    inflate_blocks_statef *s,
+    /*@only@*/ inflate_blocks_statef *s,
     z_streamp z)) 
-	/*@modifies s @*/;
+	/*@modifies s, z @*/;
 
 extern void inflate_set_dictionary OF((
     inflate_blocks_statef *s,

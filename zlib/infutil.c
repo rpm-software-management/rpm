@@ -17,6 +17,8 @@
 
 #include "crc32.h"
 
+/*@access z_streamp@*/
+
 /* And'ing with mask[n] masks the lower n bits */
 uInt inflate_mask[17] = {
     0x0000,
@@ -49,6 +51,7 @@ int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
 
   /* update check information */
 /*@-moduncon@*/
+#if defined(__i386__)
   if (s->checkfn == Z_NULL)
     z->crc = partial_crc32_copy(z->crc, q, n, p);
   else if (s->checkfn != Z_NULL) {
@@ -58,6 +61,13 @@ int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
     /* copy as far as end of window */
     zmemcpy(p, q, n);
   }
+#else
+  if (s->checkfn != Z_NULL)
+    z->adler = s->check = (*s->checkfn)(s->check, q, n);
+
+  /* copy as far as end of window */
+  zmemcpy(p, q, n);
+#endif
 
   p += n;
   q += n;
@@ -80,18 +90,28 @@ int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
     z->total_out += n;
 
     /* update check information */
+#if defined(__i386__)
 /*@-moduncon@*/
     if (!s->checkfn)
 	z->crc = partial_crc32_copy(z->crc, q, n, p);
     else if (s->checkfn != Z_NULL) {
       z->adler = s->check = (*s->checkfn)(s->check, q, n);
 /*@=moduncon@*/
-
       /* copy */
 /*@-aliasunique@*/
       zmemcpy(p, q, n);
 /*@=aliasunique@*/
     }
+#else
+    if (s->checkfn != Z_NULL)
+      z->adler = s->check = (*s->checkfn)(s->check, q, n);
+
+    /* copy */
+/*@-aliasunique@*/
+    zmemcpy(p, q, n);
+/*@=aliasunique@*/
+#endif
+
     p += n;
     q += n;
   }

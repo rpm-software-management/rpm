@@ -10,7 +10,7 @@
 #include "zutil.h"
 #include "infblock.h"
 
-struct inflate_blocks_state {int dummy;}; /* for buggy compilers */
+/*@access z_streamp@*/
 
 typedef enum {
       METHOD,	/*!< waiting for method byte */
@@ -30,6 +30,7 @@ typedef enum {
 } inflate_mode;
 
 /** inflate private state */
+/*@-redef@*/ /* FIX: deflate.h has duplicate */
 struct internal_state {
 
   /* mode */
@@ -52,6 +53,7 @@ struct internal_state {
     *blocks;            /*!< current inflate_blocks state */
 
 };
+/*@=redef@*/
 
 
 int ZEXPORT inflateReset(z_streamp z)
@@ -71,8 +73,12 @@ int ZEXPORT inflateEnd(z_streamp z)
 {
   if (z == Z_NULL || z->state == Z_NULL || z->zfree == Z_NULL)
     return Z_STREAM_ERROR;
+/*@-usereleased@*/
+/*@-compdef@*/ /* FIX: z->state->blocks may be undefined */
   if (z->state->blocks != Z_NULL)
     inflate_blocks_free(z->state->blocks, z);
+/*@=compdef@*/
+/*@=usereleased@*/
   ZFREE(z, z->state);
   z->state = Z_NULL;
   Tracev((stderr, "inflate: end\n"));
@@ -118,6 +124,7 @@ int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_si
   z->state->wbits = (uInt)w;
 
   /* create inflate_blocks state */
+/*@-evalorder -type@*/
   if ((z->state->blocks =
       inflate_blocks_new(z, z->state->nowrap ? Z_NULL : adler32, (uInt)1 << w))
       == Z_NULL)
@@ -125,6 +132,7 @@ int ZEXPORT inflateInit2_(z_streamp z, int w, const char *version, int stream_si
     inflateEnd(z);
     return Z_MEM_ERROR;
   }
+/*@=evalorder =type@*/
   Tracev((stderr, "inflate: allocated\n"));
 
   /* reset state */
@@ -159,14 +167,14 @@ int ZEXPORT inflate(z_streamp z, int f)
       if (((z->state->sub.method = NEXTBYTE) & 0xf) != Z_DEFLATED)
       {
         z->state->mode = BAD;
-        z->msg = (char*)"unknown compression method";
+        z->msg = "unknown compression method";
         z->state->sub.marker = 5;       /* can't try inflateSync */
         /*@switchbreak@*/ break;
       }
       if ((z->state->sub.method >> 4) + 8 > z->state->wbits)
       {
         z->state->mode = BAD;
-        z->msg = (char*)"invalid window size";
+        z->msg = "invalid window size";
         z->state->sub.marker = 5;       /* can't try inflateSync */
         /*@switchbreak@*/ break;
       }
@@ -178,7 +186,7 @@ int ZEXPORT inflate(z_streamp z, int f)
       if (((z->state->sub.method << 8) + b) % 31)
       {
         z->state->mode = BAD;
-        z->msg = (char*)"incorrect header check";
+        z->msg = "incorrect header check";
         z->state->sub.marker = 5;       /* can't try inflateSync */
         /*@switchbreak@*/ break;
       }
@@ -213,7 +221,7 @@ int ZEXPORT inflate(z_streamp z, int f)
       return Z_NEED_DICT;
     case DICT0:
       z->state->mode = BAD;
-      z->msg = (char*)"need dictionary";
+      z->msg = "need dictionary";
       z->state->sub.marker = 0;       /* can try inflateSync */
       return Z_STREAM_ERROR;
     case BLOCKS:
@@ -259,7 +267,7 @@ int ZEXPORT inflate(z_streamp z, int f)
       if (z->state->sub.check.was != z->state->sub.check.need)
       {
         z->state->mode = BAD;
-        z->msg = (char*)"incorrect data check";
+        z->msg = "incorrect data check";
         z->state->sub.marker = 5;       /* can't try inflateSync */
         /*@switchbreak@*/ break;
       }
@@ -303,6 +311,7 @@ int ZEXPORT inflateSetDictionary(z_streamp z, const Bytef *dictionary, uInt dict
 }
 
 
+/*@-compmempass@*/
 int ZEXPORT inflateSync(z_streamp z)
 {
   uInt n;       /* number of bytes to look at */
@@ -351,6 +360,7 @@ int ZEXPORT inflateSync(z_streamp z)
   z->state->mode = BLOCKS;
   return Z_OK;
 }
+/*@=compmempass@*/
 
 
 /**

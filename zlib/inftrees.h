@@ -44,7 +44,7 @@ extern int inflate_trees_bits OF((
     inflate_huft * FAR *tb,	/* bits tree result */
     inflate_huft *hp,		/* space for trees */
     z_streamp z))		/* for messages */
-	/*@modifies *bb, *tb, *hp @*/;
+	/*@modifies *bb, *tb, *hp, z @*/;
 
 extern int inflate_trees_dynamic OF((
     uInt nl,			/* number of literal/length codes */
@@ -52,16 +52,22 @@ extern int inflate_trees_dynamic OF((
     uIntf *c,			/* that many (total) code lengths */
     uIntf *bl,			/* literal desired/actual bit depth */
     uIntf *bd,			/* distance desired/actual bit depth */
+/*@out@*/
     inflate_huft * FAR *tl,	/* literal/length tree result */
+/*@out@*/
     inflate_huft * FAR *td,	/* distance tree result */
     inflate_huft *hp,		/* space for trees */
     z_streamp z))		/* for messages */
-	/*@modifies *bl, *bd, *tl, *td, *hp @*/;
+	/*@modifies *bl, *bd, *tl, *td, *hp, z @*/;
 
 extern int inflate_trees_fixed OF((
+/*@out@*/
     uIntf *bl,			/* literal desired/actual bit depth */
+/*@out@*/
     uIntf *bd,			/* distance desired/actual bit depth */
+/*@out@*/
     inflate_huft * FAR *tl,	/* literal/length tree result */
+/*@out@*/
     inflate_huft * FAR *td,	/* distance tree result */
     z_streamp z))		/* for memory allocation */
-	/*@modifies *bl, *bd, *tl, *td @*/;
+	/*@modifies *bl, *bd, *tl, *td, z @*/;

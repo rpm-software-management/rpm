@@ -1,4 +1,4 @@
-/* @(#) $Id: trees.c,v 1.4 2001/12/08 17:12:13 jbj Exp $ */
+/* @(#) $Id: trees.c,v 1.5 2001/12/27 21:00:18 jbj Exp $ */
 /*
  * Copyright (C) 1995-1998 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -61,15 +61,19 @@
 #define REPZ_11_138  18
 /*!< repeat a zero length 11-138 times  (7 bits of repeat count) */
 
+/*@observer@*/ /*@unchecked@*/
 local const int extra_lbits[LENGTH_CODES] /* extra bits for each length code */
    = {0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0};
 
+/*@observer@*/ /*@unchecked@*/
 local const int extra_dbits[D_CODES] /* extra bits for each distance code */
    = {0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13};
 
+/*@observer@*/ /*@unchecked@*/
 local const int extra_blbits[BL_CODES]/* extra bits for each bit length code */
    = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7};
 
+/*@observer@*/ /*@unchecked@*/
 local const uch bl_order[BL_CODES]
    = {16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15};
 /*!< The lengths of the bit length codes are sent in order of decreasing
@@ -111,9 +115,11 @@ uch _dist_code[DIST_CODE_LEN];
 uch _length_code[MAX_MATCH-MIN_MATCH+1];
 /*!< length code for each normalized match length (0 == MIN_MATCH) */
 
+/*@unchecked@*/
 local int base_length[LENGTH_CODES];
 /*!< First normalized length for each code (0 = MIN_MATCH) */
 
+/*@unchecked@*/
 local int base_dist[D_CODES];
 /*!< First normalized distance for each code (0 = distance of 1) */
 
@@ -122,21 +128,24 @@ local int base_dist[D_CODES];
 #endif /* GEN_TREES_H */
 
 struct static_tree_desc_s {
-/*@null@*/
+/*@observer@*/ /*@null@*/
     const ct_data *static_tree;  /*!< static tree or NULL */
-/*@null@*/
+/*@observer@*/ /*@null@*/
     const intf *extra_bits;      /*!< extra bits for each code or NULL */
     int     extra_base;          /*!< base index for extra_bits */
     int     elems;               /*!< max number of elements in the tree */
     int     max_length;          /*!< max bit length for the codes */
 };
 
+/*@observer@*/ /*@unchecked@*/
 local static_tree_desc  static_l_desc =
 {static_ltree, extra_lbits, LITERALS+1, L_CODES, MAX_BITS};
 
+/*@observer@*/ /*@unchecked@*/
 local static_tree_desc  static_d_desc =
 {static_dtree, extra_dbits, 0,          D_CODES, MAX_BITS};
 
+/*@observer@*/ /*@unchecked@*/
 local static_tree_desc  static_bl_desc =
 {(const ct_data *)0, extra_blbits, 0,   BL_CODES, MAX_BL_BITS};
 
@@ -176,8 +185,8 @@ local void bi_windup      OF((deflate_state *s))
 	/*@modifies *s @*/;
 local void bi_flush       OF((deflate_state *s))
 	/*@modifies *s @*/;
-local void copy_block     OF((deflate_state *s, charf *buf, unsigned len,
-                              int header))
+local void copy_block     OF((deflate_state *s, /*@null@*/ charf *buf,
+				unsigned len, int header))
 	/*@modifies *s @*/;
 
 #ifdef GEN_TREES_H
@@ -408,10 +417,14 @@ void gen_trees_header()
 /**
  * Initialize the tree data structures for a new zlib stream.
  */
+/*@-compmempass@*/
 void _tr_init(deflate_state *s)
 {
+/*@-noeffect@*/
     tr_static_init();
+/*@=noeffect@*/
 
+/*@-immediatetrans@*/
     s->l_desc.dyn_tree = s->dyn_ltree;
     s->l_desc.stat_desc = &static_l_desc;
 
@@ -420,6 +433,7 @@ void _tr_init(deflate_state *s)
 
     s->bl_desc.dyn_tree = s->bl_tree;
     s->bl_desc.stat_desc = &static_bl_desc;
+/*@=immediatetrans@*/
 
     s->bi_buf = 0;
     s->bi_valid = 0;
@@ -432,11 +446,13 @@ void _tr_init(deflate_state *s)
     /* Initialize the first block of the first file: */
     init_block(s);
 }
+/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
  * Initialize a new block.
  */
+/*@-compmempass@*/
 local void init_block(deflate_state *s)
 {
     int n; /* iterates over tree elements */
@@ -450,6 +466,7 @@ local void init_block(deflate_state *s)
     s->opt_len = s->static_len = 0L;
     s->last_lit = s->matches = 0;
 }
+/*@=compmempass@*/
 
 #define SMALLEST 1
 /* Index within the heap array of least frequent node in the Huffman tree */
@@ -554,7 +571,9 @@ local void gen_bitlen(deflate_state *s, tree_desc *desc)
 
         s->bl_count[bits]++;
         xbits = 0;
+/*@-nullderef@*/ /* FIX: extra may be NULL */
         if (n >= base) xbits = extra[n-base];
+/*@=nullderef@*/
         f = tree[n].Freq;
         s->opt_len += (ulg)f * (bits + xbits);
         if (stree) s->static_len += (ulg)f * (stree[n].Len + xbits);
@@ -743,6 +762,7 @@ local void build_tree(deflate_state *s, tree_desc *desc)
  * @param tree		the tree to be scanned
  * @param max_code	and its largest code of non zero frequency
  */
+/*@-compmempass@*/
 local void scan_tree (deflate_state *s, ct_data *tree, int max_code)
 {
     int n;                     /* iterates over all tree elements */
@@ -780,6 +800,7 @@ local void scan_tree (deflate_state *s, ct_data *tree, int max_code)
         }
     }
 }
+/*@=compmempass@*/
 
 /**
  * Send a literal or distance tree in compressed form, using the codes in
@@ -1074,6 +1095,7 @@ void _tr_flush_block(deflate_state *s, charf *buf, ulg stored_len,
  * @param dist		distance of matched string
  * @param lc		match length-MIN_MATCH or unmatched char (if dist == 0)
  */
+/*@-compmempass@*/
 int _tr_tally (deflate_state *s, unsigned dist, unsigned lc)
 {
     s->d_buf[s->last_lit] = (ush)dist;
@@ -1117,6 +1139,7 @@ int _tr_tally (deflate_state *s, unsigned dist, unsigned lc)
      * 64K-1 bytes.
      */
 }
+/*@=compmempass@*/
 
 /**
  * Send the block data compressed using the given Huffman trees
@@ -1267,6 +1290,7 @@ local void copy_block(deflate_state *s, charf *buf, unsigned len, int header)
 #ifdef DEBUG
     s->bits_sent += (ulg)len<<3;
 #endif
+    if (buf != NULL)
     while (len--) {
         put_byte(s, *buf++);
     }

@@ -41,42 +41,49 @@
 #include "zutil.h"
 #include "inftrees.h"
 
+/*@access z_streamp@*/
+
 #if !defined(BUILDFIXED) && !defined(STDC)
 #  define BUILDFIXED   /* non ANSI compilers may not accept inffixed.h */
 #endif
 
-/*@observer@*/
+/**
+ * If you use the zlib library in a product, an acknowledgment is welcome
+ * in the documentation of your product. If for some reason you cannot
+ * include such an acknowledgment, I would appreciate that you keep this
+ * copyright string in the executable of your product.
+ */
+/*@-exportheadervar@*/
+/*@unused@*/ /*@observer@*/
 const char inflate_copyright[] =
    " inflate 1.1.3 Copyright 1995-1998 Mark Adler ";
-/*
-  If you use the zlib library in a product, an acknowledgment is welcome
-  in the documentation of your product. If for some reason you cannot
-  include such an acknowledgment, I would appreciate that you keep this
-  copyright string in the executable of your product.
- */
-struct internal_state  {int dummy;}; /* for buggy compilers */
+/*@=exportheadervar@*/
 
 /* simplify the use of the inflate_huft type with some defines */
 #define exop word.what.Exop
 #define bits word.what.Bits
 
-local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
-		const uIntf *e, inflate_huft * FAR *t, uIntf *m,
-		inflate_huft *hp, uInt *hn, uIntf *v)
+local int huft_build(uIntf *b, uInt n, uInt s, /*@null@*/ const uIntf *d,
+		/*@null@*/ const uIntf *e, /*@out@*/ inflate_huft * FAR *t,
+		uIntf *m, inflate_huft *hp, uInt *hn, uIntf *v)
 	/*@modifies *t, *m, *hp, *hn, *v @*/;
 
 /* Tables for deflate from PKZIP's appnote.txt. */
+/*@observer@*/ /*@unchecked@*/
 local const uInt cplens[31] = { /* Copy lengths for literal codes 257..285 */
         3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
         35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
         /* see note #13 above about 258 */
+/*@observer@*/ /*@unchecked@*/
 local const uInt cplext[31] = { /* Extra bits for literal codes 257..285 */
         0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
         3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 112, 112}; /* 112==invalid */
+/*@observer@*/ /*@unchecked@*/
 local const uInt cpdist[30] = { /* Copy offsets for distance codes 0..29 */
         1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
         257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
         8193, 12289, 16385, 24577};
+/*@observer@*/ /*@unchecked@*/
 local const uInt cpdext[30] = { /* Extra bits for distance codes */
         0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
         7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
@@ -166,11 +173,13 @@ local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
 
 
   /* Adjust last length count to fill out codes, if needed */
+/*@-unsignedcompare@*/
   for (y = 1 << j; j < i; j++, y <<= 1)
     if ((y -= c[j]) < 0)
       return Z_DATA_ERROR;
   if ((y -= c[i]) < 0)
     return Z_DATA_ERROR;
+/*@=unsignedcompare@*/
   c[i] += y;
 
 
@@ -261,14 +270,20 @@ local int huft_build(uIntf *b, uInt n, uInt s, const uIntf *d,
       }
       else
       {
+/*@-nullderef@*/ /* FIX: d and e might be NULL */
         r.exop = (Byte)(e[*p - s] + 16 + 64);/* non-simple--look up in lists */
         r.base = d[*p++ - s];
+/*@=nullderef@*/
       }
 
       /* fill code-like entries with r */
       f = 1 << (k - w);
+/*@-nullderef@*/ /* FIX: q might be NULL */
+/*@-compdef@*/ /* FIX: r.base may be undefined */
       for (j = i >> w; j < z; j += f)
         q[j] = r;
+/*@=compdef@*/
+/*@=nullderef@*/
 
       /* backwards increment the k-bit code i */
       for (j = 1 << (k - 1); i & j; j >>= 1)
@@ -311,10 +326,10 @@ int inflate_trees_bits( uIntf *c, uIntf *bb, inflate_huft * FAR *tb,
   r = huft_build(c, 19, 19, (uIntf*)Z_NULL, (uIntf*)Z_NULL,
                  tb, bb, hp, &hn, v);
   if (r == Z_DATA_ERROR)
-    z->msg = (char*)"oversubscribed dynamic bit lengths tree";
+    z->msg = "oversubscribed dynamic bit lengths tree";
   else if (r == Z_BUF_ERROR || *bb == 0)
   {
-    z->msg = (char*)"incomplete dynamic bit lengths tree";
+    z->msg = "incomplete dynamic bit lengths tree";
     r = Z_DATA_ERROR;
   }
   ZFREE(z, v);
@@ -350,10 +365,10 @@ int inflate_trees_dynamic( uInt nl, uInt nd, uIntf *c, uIntf *bl,
   if (r != Z_OK || *bl == 0)
   {
     if (r == Z_DATA_ERROR)
-      z->msg = (char*)"oversubscribed literal/length tree";
+      z->msg = "oversubscribed literal/length tree";
     else if (r != Z_MEM_ERROR)
     {
-      z->msg = (char*)"incomplete literal/length tree";
+      z->msg = "incomplete literal/length tree";
       r = Z_DATA_ERROR;
     }
     ZFREE(z, v);
@@ -365,18 +380,18 @@ int inflate_trees_dynamic( uInt nl, uInt nd, uIntf *c, uIntf *bl,
   if (r != Z_OK || (*bd == 0 && nl > 257))
   {
     if (r == Z_DATA_ERROR)
-      z->msg = (char*)"oversubscribed distance tree";
+      z->msg = "oversubscribed distance tree";
     else if (r == Z_BUF_ERROR) {
 #ifdef PKZIP_BUG_WORKAROUND
       r = Z_OK;
     }
 #else
-      z->msg = (char*)"incomplete distance tree";
+      z->msg = "incomplete distance tree";
       r = Z_DATA_ERROR;
     }
     else if (r != Z_MEM_ERROR)
     {
-      z->msg = (char*)"empty distance tree with lengths";
+      z->msg = "empty distance tree with lengths";
       r = Z_DATA_ERROR;
     }
     ZFREE(z, v);

@@ -15,4 +15,4 @@
 extern int inflate_fast OF((
     inflate_blocks_statef * s,
     z_streamp z))  // __attribute__((regparm(3)));
-	/*@modifies s @*/;
+	/*@modifies s, z @*/;

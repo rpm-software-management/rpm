@@ -1,4 +1,5 @@
-/* @(#) $Id: crc32.c,v 1.4 2001/11/22 21:12:46 jbj Exp $ */
+/* @(#) $Id: crc32.c,v 1.5.2.1 2002/01/25 19:18:55 jbj Exp $ */
+/*@-globs@*/
 /*
  * Copyright (C) 1995-1998 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -17,8 +18,11 @@
 
 #ifdef DYNAMIC_CRC_TABLE
 
+/*@unchecked@*/
 local int crc_table_empty = 1;
+/*@unchecked@*/
 local uLongf crc_table[256];
+
 local void make_crc_table OF((void))
 	/*@*/;
 
@@ -139,6 +143,8 @@ const uLongf * ZEXPORT get_crc_table(void)
   return (const uLongf *)crc_table;
 }
 
+#if defined(__i386__)
+
 uLong partial_crc32_copy(uLong crc, const Bytef *buf, uInt len, Bytef *dst)
 {
 /*@-sysunrecog@*/
@@ -162,3 +168,33 @@ uLong ZEXPORT crc32(uLong crc, const Bytef *buf, uInt len)
 	return 0L;
 }
 
+#else	/* !__i386__ */
+
+/* ========================================================================= */
+#define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
+#define DO2(buf)  DO1(buf); DO1(buf);
+#define DO4(buf)  DO2(buf); DO2(buf);
+#define DO8(buf)  DO4(buf); DO4(buf);
+ 
+/* ========================================================================= */
+uLong ZEXPORT crc32(uLong crc, const Bytef * buf, uInt len)
+{
+    if (buf == Z_NULL) return 0L;
+#ifdef DYNAMIC_CRC_TABLE
+    if (crc_table_empty)
+      make_crc_table();
+#endif
+    crc = crc ^ 0xffffffffL;
+    while (len >= 8)
+    {
+      DO8(buf);
+      len -= 8;
+    }
+    if (len) do {
+      DO1(buf);
+    } while (--len);
+    return crc ^ 0xffffffffL;
+ }
+
+#endif	/* !__i386__ */
+/*@=globs@*/

@@ -1,4 +1,4 @@
-/* @(#) $Id: deflate.c,v 1.3 2001/12/08 17:12:13 jbj Exp $ */
+/* @(#) $Id: deflate.c,v 1.4.2.1 2002/01/25 19:18:55 jbj Exp $ */
 /*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -55,9 +55,12 @@
 
 #include "deflate.h"
 
-/*@observer@*/
+/*@-exportheadervar@*/
+/*@unused@*/ /*@observer@*/
 const char deflate_copyright[] =
    " deflate 1.1.3 Copyright 1995-1998 Jean-loup Gailly ";
+/*@=exportheadervar@*/
+
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -133,6 +136,7 @@ local  void check_match OF((deflate_state *s, IPos start, IPos match,
  */
 
 #if defined(WITH_RSYNC_PAD)
+/*@unchecked@*/
 local int rsync = 0;
 /* Perform rsync padding? */
 
@@ -159,6 +163,7 @@ typedef struct config_s {
    compress_func func;
 } config;
 
+/*@observer@*/ /*@unchecked@*/
 local const config configuration_table[10] = {
 /*      good lazy nice chain */
 /* 0 */ {0,    0,  0,    0, deflate_stored},  /* store only */
@@ -180,8 +185,6 @@ local const config configuration_table[10] = {
 
 #define EQUAL 0
 /* result of memcmp for equal strings */
-
-struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
 
 /* ========================================================================= */
 /**
@@ -338,7 +341,9 @@ int ZEXPORT deflateSetDictionary (z_streamp strm, const Bytef *dictionary, uInt 
 	dictionary += dictLength - length; /* use the tail of the dictionary */
 #endif
     }
+/*@-mayaliasunique@*/ /* FIX: dictionary may alias s->window */
     zmemcpy(s->window, dictionary, length);
+/*@=mayaliasunique@*/
     s->strstart = length;
     s->block_start = (long)length;
 
@@ -385,6 +390,7 @@ int ZEXPORT deflateReset (z_streamp strm)
 }
 
 /* ========================================================================= */
+/*@-compmempass@*/
 int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
 {
     deflate_state *s;
@@ -416,6 +422,7 @@ int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
     s->strategy = strategy;
     return err;
 }
+/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -455,6 +462,7 @@ local void flush_pending(z_streamp strm)
 }
 
 /* ========================================================================= */
+/*@-compmempass@*/
 int ZEXPORT deflate (z_streamp strm, int flush)
 {
     int old_flush; /* value of flush param for previous deflate call */
@@ -469,9 +477,15 @@ int ZEXPORT deflate (z_streamp strm, int flush)
     if (strm->next_out == Z_NULL ||
         (strm->next_in == Z_NULL && strm->avail_in != 0) ||
 	(s->status == FINISH_STATE && flush != Z_FINISH)) {
+/*@-assignexpose@*/
         ERR_RETURN(strm, Z_STREAM_ERROR);
+/*@=assignexpose@*/
     }
+/*@-mods@*/
+/*@-assignexpose@*/
     if (strm->avail_out == 0) ERR_RETURN(strm, Z_BUF_ERROR);
+/*@=assignexpose@*/
+/*@=mods@*/
 
     s->strm = strm; /* just in case */
     old_flush = s->last_flush;
@@ -519,12 +533,20 @@ int ZEXPORT deflate (z_streamp strm, int flush)
      */
     } else if (strm->avail_in == 0 && flush <= old_flush &&
 	       flush != Z_FINISH) {
+/*@-mods@*/
+/*@-assignexpose@*/
         ERR_RETURN(strm, Z_BUF_ERROR);
+/*@=assignexpose@*/
+/*@=mods@*/
     }
 
     /* User must not provide more input after the first FINISH: */
     if (s->status == FINISH_STATE && strm->avail_in != 0) {
+/*@-mods@*/
+/*@-assignexpose@*/
         ERR_RETURN(strm, Z_BUF_ERROR);
+/*@=assignexpose@*/
+/*@=mods@*/
     }
 
     /* Start a new block or continue the current one.
@@ -585,6 +607,7 @@ int ZEXPORT deflate (z_streamp strm, int flush)
     s->noheader = -1; /* write the trailer only once! */
     return s->pending != 0 ? Z_OK : Z_STREAM_END;
 }
+/*@=compmempass@*/
 
 /* ========================================================================= */
 int ZEXPORT deflateEnd (z_streamp strm)
@@ -617,6 +640,7 @@ int ZEXPORT deflateEnd (z_streamp strm)
  * To simplify the source, this is not supported for 16-bit MSDOS (which
  * doesn't have enough memory anyway to duplicate compression states).
  */
+/*@-compmempass@*/
 int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
 {
 #ifdef MAXSEG_64K
@@ -633,12 +657,18 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
 
     ss = source->state;
 
-    *dest = *source;
+/*@-assignexpose@*/
+    *dest = *source;	/* structure assignment */
+/*@=assignexpose@*/
 
     ds = (deflate_state *) ZALLOC(dest, 1, sizeof(deflate_state));
+/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
     if (ds == Z_NULL) return Z_MEM_ERROR;
+/*@=usereleased =compdef@*/
     dest->state = (struct internal_state FAR *) ds;
-    *ds = *ss;
+/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
+    *ds = *ss;		/* structure assignment */
+/*@=usereleased =compdef@*/
     ds->strm = dest;
 
     ds->window = (Bytef *) ZALLOC(dest, ds->w_size, 2*sizeof(Byte));
@@ -650,7 +680,9 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
     if (ds->window == Z_NULL || ds->prev == Z_NULL || ds->head == Z_NULL ||
         ds->pending_buf == Z_NULL) {
         deflateEnd (dest);
+/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
         return Z_MEM_ERROR;
+/*@=usereleased =compdef@*/
     }
     /* following zmemcpy do not work for 16-bit MSDOS */
     zmemcpy(ds->window, ss->window, ds->w_size * 2 * sizeof(Byte));
@@ -666,9 +698,12 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
     ds->d_desc.dyn_tree = ds->dyn_dtree;
     ds->bl_desc.dyn_tree = ds->bl_tree;
 
+/*@-usereleased -compdef@*/ /* FIX: structure copy above? @*/
     return Z_OK;
+/*@=usereleased =compdef@*/
 #endif
 }
+/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -701,6 +736,7 @@ local int read_buf(z_streamp strm, Bytef *buf, unsigned size)
 /**
  * Initialize the "longest match" routines for a new zlib stream
  */
+/*@-compmempass@*/
 local void lm_init (deflate_state *s)
 {
     s->window_size = (ulg)2L*s->w_size;
@@ -731,6 +767,7 @@ local void lm_init (deflate_state *s)
     s->rsync_win = RSYNC_WIN;
 #endif
 }
+/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -1075,6 +1112,7 @@ local void fill_window(deflate_state *s)
 
 #if defined(WITH_RSYNC_PAD)
 local void rsync_roll(deflate_state *s, unsigned num)
+	/*@modifies *s @*/
 {
     unsigned start = s->strstart;
     unsigned i;
@@ -1206,10 +1244,11 @@ local block_state deflate_stored(deflate_state *s, int flush)
  * new strings in the dictionary only for unmatched strings or for short
  * matches. It is used only for the fast compression options.
  */
+/*@-compmempass@*/
 local block_state deflate_fast(deflate_state *s, int flush)
 {
     IPos hash_head = NIL; /* head of the hash chain */
-    int bflush;           /* set if current block must be flushed */
+    int bflush = 0;	/* set if current block must be flushed */
 
     for (;;) {
         /* Make sure that we always have enough lookahead, except
@@ -1302,6 +1341,7 @@ local block_state deflate_fast(deflate_state *s, int flush)
     FLUSH_BLOCK(s, flush == Z_FINISH);
     return flush == Z_FINISH ? finish_done : block_done;
 }
+/*@=compmempass@*/
 
 /* ========================================================================= */
 /**
@@ -1309,10 +1349,11 @@ local block_state deflate_fast(deflate_state *s, int flush)
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
+/*@-compmempass@*/
 local block_state deflate_slow(deflate_state *s, int flush)
 {
     IPos hash_head = NIL;    /* head of hash chain */
-    int bflush;              /* set if current block must be flushed */
+    int bflush = 0;	/* set if current block must be flushed */
 
     /* Process the input block. */
     for (;;) {
@@ -1446,3 +1487,4 @@ local block_state deflate_slow(deflate_state *s, int flush)
     FLUSH_BLOCK(s, flush == Z_FINISH);
     return flush == Z_FINISH ? finish_done : block_done;
 }
+/*@=compmempass@*/

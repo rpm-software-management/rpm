@@ -16,6 +16,8 @@
 #include "inffast.h"
 #include "crc32.h"
 
+/*@access z_streamp@*/
+
 /* simplify the use of the inflate_huft type with some defines */
 #define exop word.what.Exop
 #define bits word.what.Bits
@@ -55,10 +57,12 @@ int ret;
   /* load input, output, bit values */
   LOAD
 
+#if defined(__i386__)
 /*@-unrecog@*/
   PREFETCH(p);
   PREFETCH(p+32);
 /*@=unrecog@*/
+#endif
   /* initialize masks */
   ml = inflate_mask[bl];
   md = inflate_mask[bd];
@@ -66,9 +70,11 @@ int ret;
   /* do until not enough input or output space for fast loop */
   do {                          /* assume called with m >= 258 && n >= 10 */
     /* get literal/length code */
+#if defined(__i386__)
 /*@-unrecog@*/
     PREFETCH(p+64);
 /*@=unrecog@*/
+#endif
     GRABBITS(20)                /* max bits for literal/length code */
     if ((e = (t = tl + ((uInt)b & ml))->exop) == 0)
     {
@@ -198,7 +204,7 @@ ungrab:
 
 data_error:
       {
-        z->msg = (char*)"invalid literal/length code";
+        z->msg = "invalid literal/length code";
         ret = Z_DATA_ERROR;
 	goto ungrab;
       }
@@ -212,7 +218,7 @@ stream_end:
 
 inv_dist_code:
           {
-            z->msg = (char*)"invalid distance code";
+            z->msg = "invalid distance code";
             ret = Z_DATA_ERROR;
 	    goto ungrab;
           }

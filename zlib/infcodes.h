@@ -35,6 +35,7 @@ struct inflate_codes_state {
   uInt len;
   union {
     struct {
+/*@dependent@*/
       inflate_huft *tree;       /*!< pointer into tree */
       uInt need;                /*!< bits needed */
     } code;             /*!< if LEN or DIST, where in tree */
@@ -48,16 +49,19 @@ struct inflate_codes_state {
   /* mode independent information */
   Byte lbits;           /*!< ltree bits decoded per branch */
   Byte dbits;           /*!< dtree bits decoder per branch */
+/*@dependent@*/
   inflate_huft *ltree;          /*!< literal/length/eob tree */
+/*@dependent@*/
   inflate_huft *dtree;          /*!< distance tree */
 
 };
 
 typedef struct inflate_codes_state FAR inflate_codes_statef;
 
+/*@null@*/
 extern inflate_codes_statef *inflate_codes_new OF((
     uInt bl, uInt bd,
-    inflate_huft *tl, inflate_huft *td,
+    /*@dependent@*/ inflate_huft *tl, /*@dependent@*/ inflate_huft *td,
     z_streamp z))
 	/*@*/;
 
@@ -65,10 +69,10 @@ extern int inflate_codes OF((
     inflate_blocks_statef *s,
     z_streamp z,
     int r))
-	/*@modifies s @*/;
+	/*@modifies s, z @*/;
 
 extern void inflate_codes_free OF((
-    inflate_codes_statef *s,
+    /*@only@*/ inflate_codes_statef *s,
     z_streamp z))
-	/*@modifies s @*/;
+	/*@*/;
 

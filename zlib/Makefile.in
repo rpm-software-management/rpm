@@ -439,6 +439,14 @@ mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
+.PHONY: sources
+sources:
+	@echo $(libz_la_SOURCES:%=zlib/%)
+
+.PHONY: lclint
+lclint:
+	lclint $(DEFS) $(INCLUDES) $(libz_la_SOURCES)
+
 .PHONY: doxygen
 doxygen apidocs: Doxyfile
 	rm -rf $@

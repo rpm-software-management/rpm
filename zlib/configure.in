@@ -8,6 +8,7 @@ AC_PROG_CC
 AM_DISABLE_SHARED
 AC_PROG_LIBTOOL
 
+CFLAGS="-DHAS_snprintf -DHAS_snprintf"
 if test "$ac_cv_prog_gcc" = yes; then
     CFLAGS="-DWITH_RSYNC_PAD -O3 -fomit-frame-pointer -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
 fi

@@ -2,10 +2,11 @@
  * \file crc32.h
  */
 
+#if defined(__i386__)	/* { */
+
 #define partial_crc32		__z_partial_crc32
 #define partial_crc32_copy	__z_partial_crc32_copy
 
-#ifdef __i386__	/* { */
 struct __crc32_fool_gcc {
 	char	x[32768];
 };
@@ -38,6 +39,7 @@ static inline uLong get_crc_from_partial(uLong *crcp)
 	return *crcp ^ 0xffffffffL;
 }
 
+/*@observer@*/ /*@unchecked@*/
 extern const uLongf crc_table[256];
 
 #define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);

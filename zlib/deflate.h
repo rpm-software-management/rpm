@@ -1,4 +1,4 @@
-/* @(#) $Id: deflate.h,v 1.3 2001/12/08 17:12:13 jbj Exp $ */
+/* @(#) $Id: deflate.h,v 1.4 2001/12/27 21:00:17 jbj Exp $ */
 /*
  * Copyright (C) 1995-1998 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -84,10 +84,13 @@ typedef unsigned IPos;
  */
 
 typedef struct internal_state {
+/*@dependent@*/
     z_streamp strm;      /*!< pointer back to this zlib stream */
     int   status;        /*!< as the name implies */
+/*@owned@*/
     Bytef *pending_buf;  /*!< output still pending */
     ulg   pending_buf_size; /*!< size of pending_buf */
+/*@dependent@*/
     Bytef *pending_out;  /*!< next pending byte to output to the stream */
     int   pending;       /*!< nb of bytes in the pending buffer */
     int   noheader;      /*!< suppress zlib header and adler32 */
@@ -101,6 +104,7 @@ typedef struct internal_state {
     uInt  w_bits;        /*!< log2(w_size)  (8..16) */
     uInt  w_mask;        /*!< w_size - 1 */
 
+/*@owned@*/
     Bytef *window;
     /*!< Sliding window. Input bytes are read into the second half of the
      * window, and move to the first half later to keep a dictionary of at
@@ -116,12 +120,14 @@ typedef struct internal_state {
      * is directly used as sliding window.
      */
 
+/*@owned@*/
     Posf *prev;
     /*!< Link to older string with same hash index. To limit the size of this
      * array to 64K, this link is maintained only for the last 32K strings.
      * An index in this array is thus a window index modulo 32K.
      */
 
+/*@owned@*/
     Posf *head; /*!< Heads of the hash chains or NIL. */
 
     uInt  ins_h;          /*!< hash index of string to be inserted */
@@ -180,8 +186,11 @@ typedef struct internal_state {
 
                 /* used by trees.c: */
     /* Didn't use ct_data typedef below to supress compiler warning */
+/*@only@*/
     struct ct_data_s dyn_ltree[HEAP_SIZE];   /*!< literal and length tree */
+/*@only@*/
     struct ct_data_s dyn_dtree[2*D_CODES+1]; /*!< distance tree */
+/*@only@*/
     struct ct_data_s bl_tree[2*BL_CODES+1];  /*!< Huffman tree for bit lengths */
 
     struct tree_desc_s l_desc;               /*!< desc. for literal tree */
@@ -202,6 +211,7 @@ typedef struct internal_state {
     /*!< Depth of each subtree used as tie breaker for trees of equal frequency
      */
 
+/*@dependent@*/
     uchf *l_buf;          /*!< buffer for literals or lengths */
 
     uInt  lit_bufsize;
@@ -287,8 +297,8 @@ void _tr_flush_block  OF((deflate_state *s, charf *buf, ulg stored_len,
 	/*@modifies *s @*/;
 void _tr_align        OF((deflate_state *s))
 	/*@modifies *s @*/;
-void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
-                          int eof))
+void _tr_stored_block OF((deflate_state *s, /*@null@*/ charf *buf,
+			  ulg stored_len, int eof))
 	/*@modifies *s @*/;
 
 #define d_code(dist) \
@@ -302,10 +312,14 @@ void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
 /* Inline versions of _tr_tally for speed: */
 
 #if defined(GEN_TREES_H) || !defined(STDC)
+/*@unchecked@*/
   extern uch _length_code[];
+/*@unchecked@*/
   extern uch _dist_code[];
 #else
+/*@unchecked@*/
   extern const uch _length_code[];
+/*@unchecked@*/
   extern const uch _dist_code[];
 #endif
 

@@ -17,15 +17,14 @@
 //#include "infutil.c"
 #include "inffast.h"
 
-#if 0
-struct inflate_codes_state {int dummy;}; /* for buggy compilers */
-#endif
+/*@access z_streamp@*/
 
 /* simplify the use of the inflate_huft type with some defines */
 #define exop word.what.Exop
 #define bits word.what.Bits
 
 /* Table for deflate from PKZIP's appnote.txt. */
+/*@observer@*/ /*@unchecked@*/
 local const uInt border[] = { /* Order of the bit length code lengths */
         16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
 
@@ -81,8 +80,12 @@ void inflate_blocks_reset(inflate_blocks_statef *s, z_streamp z, uLongf *c)
     *c = s->check;
   if (s->mode == BTREE || s->mode == DTREE)
     ZFREE(z, s->sub.trees.blens);
-  if (s->mode == CODES)
+  if (s->mode == CODES) {
+/*@-noeffect@*/
     inflate_codes_free(s->sub.decode.codes, z);
+/*@=noeffect@*/
+    s->sub.decode.codes = NULL;
+  }
   s->mode = TYPE;
   s->bitk = 0;
   s->bitb = 0;
@@ -121,6 +124,7 @@ inflate_blocks_statef *inflate_blocks_new(z_streamp z, check_func c, uInt w)
 }
 
 
+/*@-compmempass@*/
 int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
 {
   uInt t;               /* temporary storage */
@@ -177,8 +181,10 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
           /*@innerbreak@*/ break;
         case 3:                         /* illegal */
           DUMPBITS(3)
+/*@-type@*/
           s->mode = BAD;
-          z->msg = (char*)"invalid block type";
+/*@=type@*/
+          z->msg = "invalid block type";
           r = Z_DATA_ERROR;
           goto leave;
       }
@@ -187,8 +193,10 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
       NEEDBITS(32)
       if ((((~b) >> 16) & 0xffff) != (b & 0xffff))
       {
+/*@-type@*/
         s->mode = BAD;
-        z->msg = (char*)"invalid stored block lengths";
+/*@=type@*/
+        z->msg = "invalid stored block lengths";
         r = Z_DATA_ERROR;
         goto leave;
       }
@@ -220,8 +228,10 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
 #ifndef PKZIP_BUG_WORKAROUND
       if ((t & 0x1f) > 29 || ((t >> 5) & 0x1f) > 29)
       {
+/*@-type@*/
         s->mode = BAD;
-        z->msg = (char*)"too many length or distance symbols";
+/*@=type@*/
+        z->msg = "too many length or distance symbols";
         r = Z_DATA_ERROR;
         goto leave;
       }
@@ -254,7 +264,9 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
         r = t;
         if (r == Z_DATA_ERROR) {
 	  ZFREE(z, s->sub.trees.blens);
+/*@-type@*/
           s->mode = BAD;
+/*@=type@*/
 	}
         goto leave;
       }
@@ -293,8 +305,10 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
               (c == 16 && i < 1))
           {
             ZFREE(z, s->sub.trees.blens);
+/*@-type@*/
             s->mode = BAD;
-            z->msg = (char*)"invalid bit length repeat";
+/*@=type@*/
+            z->msg = "invalid bit length repeat";
             r = Z_DATA_ERROR;
             goto leave;
           }
@@ -321,7 +335,9 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
         {
           if (t == (uInt)Z_DATA_ERROR) {
 	    ZFREE(z, s->sub.trees.blens);
+/*@-type@*/
             s->mode = BAD;
+/*@=type@*/
 	  }
           r = t;
           goto leave;
@@ -342,7 +358,10 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
       if ((r = inflate_codes(s, z, r)) != Z_STREAM_END)
         return inflate_flush(s, z, r);
       r = Z_OK;
+/*@-noeffect@*/
       inflate_codes_free(s->sub.decode.codes, z);
+/*@=noeffect@*/
+      s->sub.decode.codes = NULL;
       LOAD
       Tracev((stderr, "inflate:       codes end, %lu total out\n",
               z->total_out + (q >= s->read ? q - s->read :
@@ -358,7 +377,9 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
       FLUSH
       if (s->read != s->write)
         goto leave;
+/*@-type@*/
       s->mode = DONE;
+/*@=type@*/
       /*@fallthrough@*/
     case DONE:
       r = Z_STREAM_END;
@@ -374,6 +395,7 @@ int inflate_blocks(inflate_blocks_statef *s, z_streamp z, int r)
 leave:
 	LEAVE
 }
+/*@=compmempass@*/
 
 
 int inflate_blocks_free(inflate_blocks_statef *s, z_streamp z)
@@ -389,7 +411,9 @@ int inflate_blocks_free(inflate_blocks_statef *s, z_streamp z)
 
 void inflate_set_dictionary(inflate_blocks_statef *s, const Bytef *d, uInt n)
 {
+/*@-mayaliasunique@*/ /* FIX: d may alias s->window */
   zmemcpy(s->window, d, n);
+/*@=mayaliasunique@*/
   s->read = s->write = s->window + n;
 }
 
@@ -434,6 +458,7 @@ inflate_codes_statef *inflate_codes_new(uInt bl, uInt bd, inflate_huft *tl, infl
 }
 
 
+/*@-compmempass@*/
 int inflate_codes(inflate_blocks_statef *s, z_streamp z, int r)
 {
   uInt j;               /* temporary storage */
@@ -456,6 +481,7 @@ int inflate_codes(inflate_blocks_statef *s, z_streamp z, int r)
   {             /* waiting for "i:"=input, "o:"=output, "x:"=nothing */
     case START:         /* x: set up for LEN */
 #ifndef SLOW
+/*@-branchstate@*/
       if (m >= 258 && n >= 10)
       {
         UPDATE
@@ -467,6 +493,7 @@ int inflate_codes(inflate_blocks_statef *s, z_streamp z, int r)
           /*@switchbreak@*/ break;
         }
       }
+/*@=branchstate@*/
 #endif /* !SLOW */
       c->sub.code.need = c->lbits;
       c->sub.code.tree = c->ltree;
@@ -507,7 +534,7 @@ int inflate_codes(inflate_blocks_statef *s, z_streamp z, int r)
         /*@switchbreak@*/ break;
       }
       c->mode = BADCODE;        /* invalid code */
-      z->msg = (char*)"invalid literal/length code";
+      z->msg = "invalid literal/length code";
       r = Z_DATA_ERROR;
       goto leave;
     case LENEXT:        /* i: getting length extra (have base) */
@@ -540,7 +567,7 @@ int inflate_codes(inflate_blocks_statef *s, z_streamp z, int r)
         /*@switchbreak@*/ break;
       }
       c->mode = BADCODE;        /* invalid code */
-      z->msg = (char*)"invalid distance code";
+      z->msg = "invalid distance code";
       r = Z_DATA_ERROR;
       goto leave;
     case DISTEXT:       /* i: getting distance extra */
@@ -606,6 +633,7 @@ int inflate_codes(inflate_blocks_statef *s, z_streamp z, int r)
 leave:
 	LEAVE
 }
+/*@=compmempass@*/
 
 
 void inflate_codes_free(inflate_codes_statef *c, z_streamp z)

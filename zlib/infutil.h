@@ -25,8 +25,10 @@ typedef enum {
       DTREE,	/*!< get length, distance trees for a dynamic block */
       CODES,	/*!< processing fixed or dynamic block */
       DRY,	/*!< output remaining window bytes */
+/*@-redef@*/ /* FIX: inflate .c has duplicates */
       DONE,	/*!< finished last block, done */
       BAD	/*!< got a data error--stuck here */
+/*@=redef@*/
 } inflate_block_mode;
 
 /* inflate blocks semi-private state */
@@ -55,11 +57,17 @@ struct inflate_blocks_state {
   /* mode independent information */
   uInt bitk;            /*!< bits in bit buffer */
   uLong bitb;           /*!< bit buffer */
+/*@only@*/
   inflate_huft *hufts;  /*!< single malloc for tree space */
+/*@owned@*/
   Bytef *window;        /*!< sliding window */
+/*@dependent@*/
   Bytef *end;           /*!< one byte after sliding window */
+/*@dependent@*/
   Bytef *read;          /*!< window read pointer */
+/*@dependent@*/
   Bytef *write;         /*!< window write pointer */
+/*@null@*/
   check_func checkfn;   /*!< check function */
   uLong check;          /*!< check on output */
 
@@ -95,15 +103,17 @@ struct inflate_blocks_state {
 #define LOAD {LOADIN LOADOUT}
 
 /* masks for lower bits (size given to avoid silly warnings with Visual C++) */
+/*@unchecked@*/
 extern uInt inflate_mask[17];
 
 /* copy as much as possible from the sliding window to the output area */
 int inflate_flush OF((
     inflate_blocks_statef *s,
     z_streamp z,
-    int r)) __attribute__((regparm(3)))
-	/*@modifies s @*/;
-
-struct internal_state      {int dummy;}; /* for buggy compilers */
+    int r))
+#if defined(__i386__)
+      __attribute__((regparm(3)))
+#endif
+	/*@modifies s, z @*/;
 
 #endif

@@ -1,4 +1,4 @@
-/* @(#) $Id: uncompr.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
+/* @(#) $Id: uncompr.c,v 1.3 2001/12/27 21:00:18 jbj Exp $ */
 /*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -10,6 +10,9 @@
  */
 
 #include "zlib.h"
+#include "zutil.h"	/* XXX for zmemzero() */
+
+/*@access z_streamp@*/
 
 /* ========================================================================= */
 /**
@@ -32,6 +35,7 @@ int ZEXPORT uncompress (Bytef *dest, uLongf *destLen, const Bytef *source, uLong
     z_stream stream;
     int err;
 
+    zmemzero(&stream, sizeof(stream));
     stream.next_in = (Bytef*)source;
     stream.avail_in = (uInt)sourceLen;
     /* Check for source > 64K on 16-bit machine: */
@@ -41,8 +45,8 @@ int ZEXPORT uncompress (Bytef *dest, uLongf *destLen, const Bytef *source, uLong
     stream.avail_out = (uInt)*destLen;
     if ((uLong)stream.avail_out != *destLen) return Z_BUF_ERROR;
 
-    stream.zalloc = (alloc_func)0;
-    stream.zfree = (free_func)0;
+    stream.zalloc = (alloc_func)NULL;
+    stream.zfree = (free_func)NULL;
 
     err = inflateInit(&stream);
     if (err != Z_OK) return err;

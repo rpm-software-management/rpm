@@ -1,4 +1,4 @@
-/* @(#) $Id: zutil.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
+/* @(#) $Id: zutil.c,v 1.3 2001/12/27 21:00:18 jbj Exp $ */
 /*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
@@ -10,8 +10,6 @@
  */
 
 #include "zutil.h"
-
-struct internal_state      {int dummy;}; /* for buggy compilers */
 
 #ifndef STDC
 extern void exit OF((int));
@@ -53,10 +51,12 @@ void z_error (char *m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
+/*@-compmempass@*/
 const char * ZEXPORT zError(int err)
 {
     return ERR_MSG(err);
 }
+/*@=compmempass@*/
 
 
 #ifndef HAVE_MEMCPY

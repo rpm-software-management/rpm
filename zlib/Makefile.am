@@ -24,6 +24,14 @@ example_LDFLAGS = -L. -lz
 minigzip_SOURCES = minigzip.c
 minigzip_LDFLAGS = -L. -lz
 
+.PHONY: sources
+sources:
+	@echo $(libz_la_SOURCES:%=zlib/%)
+
+.PHONY: lclint
+lclint:
+	lclint $(DEFS) $(INCLUDES) $(libz_la_SOURCES)
+
 .PHONY: doxygen
 doxygen apidocs: Doxyfile
 	rm -rf $@
