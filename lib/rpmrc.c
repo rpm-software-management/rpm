@@ -39,14 +39,14 @@ struct machEquivTable {
 struct rpmvarValue {
     char * value;
     /* eventually, this arch will be replaced with a generic condition */
-    char * arch;		
+    char * arch;
     struct rpmvarValue * next;
 };
 
 struct rpmOption {
     char * name;
     int var;
-    int archSpecific, required;
+    int archSpecific, required, macroize, localize;
     struct rpmOptionValue * value;
 };
 
@@ -61,7 +61,7 @@ struct canonEntry {
     short num;
 };
 
-/* tags are 'key'canon, 'key'translate, 'key'compat 
+/* tags are 'key'canon, 'key'translate, 'key'compat
 
    for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work */
 struct tableType {
@@ -84,46 +84,46 @@ static struct tableType tables[RPM_MACHTABLE_COUNT] = {
 
 /* this *must* be kept in alphabetical order */
 static struct rpmOption optionTable[] = {
-    { "arch",			RPMVAR_ARCH,			0, 1 },
-    { "builddir",		RPMVAR_BUILDDIR,		0, 0 },
-    { "buildplatform",		RPMVAR_BUILDPLATFORM,           0, 1 },
-    { "buildroot",              RPMVAR_BUILDROOT,               0, 0 },
-    { "buildshell",             RPMVAR_BUILDSHELL,              0, 0 },
-    { "bzip2bin",		RPMVAR_BZIP2BIN,		0, 1 },
-    { "dbpath",			RPMVAR_DBPATH,			0, 1 },
-    { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0, 0 },
-    { "distribution",		RPMVAR_DISTRIBUTION,		0, 0 },
-    { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0, 0 },
-    { "fixperms",		RPMVAR_FIXPERMS,		0, 1 },
-    { "ftpport",		RPMVAR_FTPPORT,			0, 0 },
-    { "ftpproxy",		RPMVAR_FTPPROXY,		0, 0 },
-    { "gzipbin",		RPMVAR_GZIPBIN,			0, 1 },
-    { "include",		RPMVAR_INCLUDE,			0, 1 },
-    { "instchangelog",		RPMVAR_INSTCHANGELOG,		0, 0 },
-    { "langpatt",               RPMVAR_LANGPATT,                0, 0 },
-    { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0 },
-    { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0 },
-    { "optflags",		RPMVAR_OPTFLAGS,		1, 0 },
-    { "os",			RPMVAR_OS,                      0, 1 },
-    { "packager",               RPMVAR_PACKAGER,                0, 0 },
-    { "pgp_name",               RPMVAR_PGP_NAME,                0, 0 },
-    { "pgp_path",               RPMVAR_PGP_PATH,                0, 0 },
-    { "provides",               RPMVAR_PROVIDES,                0, 0 },
-    { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0, 0 },
-    { "require_icon",		RPMVAR_REQUIREICON,		0, 0 },
-    { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0 },
+    { "arch",			RPMVAR_ARCH,			0, 1,	1, 2 },
+    { "builddir",		RPMVAR_BUILDDIR,		0, 0,	1, 1 },
+    { "buildplatform",		RPMVAR_BUILDPLATFORM,           0, 1,	1, 2 },
+    { "buildroot",              RPMVAR_BUILDROOT,               0, 0,	1, 0 },
+    { "buildshell",             RPMVAR_BUILDSHELL,              0, 0,	1, 0 },
+    { "bzip2bin",		RPMVAR_BZIP2BIN,		0, 1,	1, 2 },
+    { "dbpath",			RPMVAR_DBPATH,			0, 1,	1, 2 },
+    { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0, 0,	1, 1 },
+    { "distribution",		RPMVAR_DISTRIBUTION,		0, 0,	1, 0 },
+    { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0, 0,	1, 0 },
+    { "fixperms",		RPMVAR_FIXPERMS,		0, 1,	1, 2 },
+    { "ftpport",		RPMVAR_FTPPORT,			0, 0,	1, 0 },
+    { "ftpproxy",		RPMVAR_FTPPROXY,		0, 0,	1, 0 },
+    { "gzipbin",		RPMVAR_GZIPBIN,			0, 1,	1, 2 },
+    { "include",		RPMVAR_INCLUDE,			0, 1,	1, 2 },
+    { "instchangelog",		RPMVAR_INSTCHANGELOG,		0, 0,	0, 0 },
+    { "langpatt",               RPMVAR_LANGPATT,                0, 0,	1, 0 },
+    { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0,	1, 0 },
+    { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0,	1, 0 },
+    { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
+    { "os",			RPMVAR_OS,                      0, 1,	1, 2 },
+    { "packager",               RPMVAR_PACKAGER,                0, 0,	1, 0 },
+    { "pgp_name",               RPMVAR_PGP_NAME,                0, 0,	1, 0 },
+    { "pgp_path",               RPMVAR_PGP_PATH,                0, 0,	1, 0 },
+    { "provides",               RPMVAR_PROVIDES,                0, 0,	1, 0 },
+    { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0, 0,	1, 0 },
+    { "require_icon",		RPMVAR_REQUIREICON,		0, 0,	1, 0 },
+    { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0,	1, 0 },
 /* root is obsolete - use buildroot instead                             */
-/*    { "root",			RPMVAR_ROOT,			0, 0 }, */
-    { "rpmdir",			RPMVAR_RPMDIR,			0, 0 },
-    { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1 },
-    { "signature",		RPMVAR_SIGTYPE,			0, 0 },
-    { "sourcedir",		RPMVAR_SOURCEDIR,		0, 0 },
-    { "specdir",		RPMVAR_SPECDIR,			0, 0 },
-    { "srcrpmdir",		RPMVAR_SRPMDIR,			0, 0 },
-    { "timecheck",		RPMVAR_TIMECHECK,		0, 0 },
-    { "tmppath",		RPMVAR_TMPPATH,			0, 1 },
-    { "topdir",			RPMVAR_TOPDIR,			0, 0 },
-    { "vendor",			RPMVAR_VENDOR,			0, 0 },
+/*    { "root",			RPMVAR_ROOT,			0, 0,	1, 0 }, */
+    { "rpmdir",			RPMVAR_RPMDIR,			0, 0,	1, 1 },
+    { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1,	1, 2 },
+    { "signature",		RPMVAR_SIGTYPE,			0, 0,	1, 0 },
+    { "sourcedir",		RPMVAR_SOURCEDIR,		0, 0,	1, 1 },
+    { "specdir",		RPMVAR_SPECDIR,			0, 0,	1, 1 },
+    { "srcrpmdir",		RPMVAR_SRPMDIR,			0, 0,	1, 1 },
+    { "timecheck",		RPMVAR_TIMECHECK,		0, 0,	1, 0 },
+    { "tmppath",		RPMVAR_TMPPATH,			0, 1,	1, 2 },
+    { "topdir",			RPMVAR_TOPDIR,			0, 0,	1, 1 },
+    { "vendor",			RPMVAR_VENDOR,			0, 0,	1, 1 },
 };
 static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 
@@ -151,23 +151,23 @@ static char *lookupInDefaultTable(char *name,
 				  struct defaultEntry *table,
 				  int tableLen);
 static void setDefaults(void);
-static void setPathDefault(int var, char * s);
+static void setPathDefault(int var, char * macroname, char * subdir);
 static void rebuildCompatTables(int type, char * name);
 
 /* compatiblity tables */
 static int machCompatCacheAdd(char * name, char * fn, int linenum,
 				struct machCache * cache);
-static struct machCacheEntry * machCacheFindEntry(struct machCache * cache, 
+static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
 						  char * key);
 static struct machEquivInfo * machEquivSearch(
 		struct machEquivTable * table, char * name);
 static void machAddEquiv(struct machEquivTable * table, char * name,
 			   int distance);
-static void machCacheEntryVisit(struct machCache * cache, 
-				  struct machEquivTable * table, 
+static void machCacheEntryVisit(struct machCache * cache,
+				  struct machEquivTable * table,
 				  char * name,
 	  			  int distance);
-static void machFindEquivs(struct machCache * cache, 
+static void machFindEquivs(struct machCache * cache,
 			     struct machEquivTable * table,
 			     char * key);
 
@@ -178,7 +178,7 @@ static int optionCompare(const void * a, const void * b) {
 
 
 
-static struct machCacheEntry * machCacheFindEntry(struct machCache * cache, 
+static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
 						  char * key) {
     int i;
 
@@ -196,14 +196,14 @@ static int machCompatCacheAdd(char * name, char * fn, int linenum,
     struct machCacheEntry * entry = NULL;
 
     while (*name && isspace(*name)) name++;
-  
+
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
     if (!*chptr) {
 	rpmError(RPMERR_RPMRC, _("missing second ':' at %s:%d"), fn, linenum);
 	return 1;
     } else if (chptr == name) {
-	rpmError(RPMERR_RPMRC, _("missing architecture name at %s:%d"), fn, 
+	rpmError(RPMERR_RPMRC, _("missing architecture name at %s:%d"), fn,
 			     linenum);
 	return 1;
     }
@@ -227,7 +227,7 @@ static int machCompatCacheAdd(char * name, char * fn, int linenum,
     }
 
     if (!entry) {
-	cache->cache = realloc(cache->cache, 
+	cache->cache = realloc(cache->cache,
 			       (cache->size + 1) * sizeof(*cache->cache));
 	entry = cache->cache + cache->size++;
 	entry->name = strdup(name);
@@ -236,12 +236,12 @@ static int machCompatCacheAdd(char * name, char * fn, int linenum,
     }
 
     if (delEntry) return 0;
-	
+
     chptr = strtok(equivs, " ");
     while (chptr) {
 	if (strlen(chptr)) {		/* does strtok() return "" ever?? */
 	    if (entry->count)
-		entry->equivs = realloc(entry->equivs, sizeof(*entry->equivs) 
+		entry->equivs = realloc(entry->equivs, sizeof(*entry->equivs)
 					* (entry->count + 1));
 	    else
 		entry->equivs = malloc(sizeof(*entry->equivs));
@@ -261,7 +261,7 @@ static struct machEquivInfo * machEquivSearch(
     int i;
 
     for (i = 0; i < table->count; i++)
-	if (!strcmp(table->list[i].name, name)) 
+	if (!strcmp(table->list[i].name, name))
 	    return table->list + i;
 
     return NULL;
@@ -278,14 +278,14 @@ static void machAddEquiv(struct machEquivTable * table, char * name,
 				    * sizeof(*table->list));
 	else
 	    table->list = malloc(sizeof(*table->list));
-    
+
 	table->list[table->count].name = strdup(name);
 	table->list[table->count++].score = distance;
     }
 }
 
-static void machCacheEntryVisit(struct machCache * cache, 
-				  struct machEquivTable * table, 
+static void machCacheEntryVisit(struct machCache * cache,
+				  struct machEquivTable * table,
 				  char * name,
 	  			  int distance) {
     struct machCacheEntry * entry;
@@ -305,7 +305,7 @@ static void machCacheEntryVisit(struct machCache * cache,
     }
 }
 
-static void machFindEquivs(struct machCache * cache, 
+static void machFindEquivs(struct machCache * cache,
 			     struct machEquivTable * table,
 			     char * key) {
     int i;
@@ -326,7 +326,7 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 		    char *fn, int lineNum) {
     struct canonEntry *t;
     char *s, *s1;
-    
+
     if (! *tableLen) {
 	*tableLen = 2;
 	*table = malloc(2 * sizeof(struct canonEntry));
@@ -371,7 +371,7 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 		      char *fn, int lineNum) {
     struct defaultEntry *t;
-    
+
     if (! *tableLen) {
 	*tableLen = 1;
 	*table = malloc(sizeof(struct defaultEntry));
@@ -384,7 +384,7 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     t->name = strtok(line, ": \t");
     t->defName = strtok(NULL, " \t");
     if (! (t->name && t->defName)) {
-	rpmError(RPMERR_RPMRC, _("Incomplete default line at %s:%d"), 
+	rpmError(RPMERR_RPMRC, _("Incomplete default line at %s:%d"),
 		 fn, lineNum);
 	return RPMERR_RPMRC;
     }
@@ -434,12 +434,33 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building) {
     if (building)
 	rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
+    /* XXX WTFO?: Presumably, this is *the* place to set arch/os ??? */
     rpmSetMachine(arch, os);
+  {	char *canonarch, *canonos;
+	char buf[BUFSIZ];
+	int x;
+	rpmGetArchInfo(&canonarch, NULL);
+	addMacro(&globalMacroContext, "_buildarch", NULL, canonarch, -1);
+
+	/* XXX is this necessary? */
+	for (x = 0; canonarch[x]; x++)
+		buf[x] = tolower(canonarch[x]);
+	addMacro(&globalMacroContext, "_buildarch_lc", NULL, buf, -1);
+
+	rpmGetOsInfo(&canonos, NULL);
+	addMacro(&globalMacroContext, "_buildos", NULL, canonos, -1);
+
+	/* XXX is this necessary? */
+	for (x = 0; canonos[x]; x++)
+		buf[x] = tolower(canonos[x]);
+	addMacro(&globalMacroContext, "_buildos_lc", NULL, buf, -1);
+
+  }
 
     return 0;
 }
 
-static void setPathDefault(int var, char * s) {
+static void setPathDefault(int var, char *macroname, char *subdir) {
     char * topdir;
     char * fn;
 
@@ -447,14 +468,23 @@ static void setPathDefault(int var, char * s) {
 
     topdir = rpmGetVar(RPMVAR_TOPDIR);
     if (!topdir) topdir = rpmGetVar(RPMVAR_TMPPATH);
-	
-    fn = alloca(strlen(topdir) + strlen(s) + 2);
+
+    fn = alloca(strlen(topdir) + strlen(subdir) + 2);
     strcpy(fn, topdir);
     if (fn[strlen(topdir) - 1] != '/')
 	strcat(fn, "/");
-    strcat(fn, s);
-   
+    strcat(fn, subdir);
+
     rpmSetVar(var, fn);
+
+    if (macroname != NULL) {
+#define	_TOPDIRMACRO	"%{_topdir}/"
+	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir) + 2);
+	strcpy(body, _TOPDIRMACRO);
+	strcat(body, subdir);
+	addMacro(&globalMacroContext, macroname, NULL, body, -1);
+#undef _TOPDIRMACRO
+    }
 }
 
 static void setDefaults(void) {
@@ -492,12 +522,12 @@ int rpmReadRC(char * file) {
 	close(fd);
 	if (rc) return rc;
     } else {
-	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."), 
+	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
 		 LIBRPMRC_FILENAME, strerror(errno));
 	return 1;
     }
-    
-    if (file) 
+
+    if (file)
 	fn = file;
     else
 	fn = "/etc/rpmrc";
@@ -528,20 +558,19 @@ int rpmReadRC(char * file) {
 	}
     }
 
-    rpmSetMachine(NULL, NULL);
+    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
-    setPathDefault(RPMVAR_BUILDDIR, "BUILD");    
-    setPathDefault(RPMVAR_RPMDIR, "RPMS");    
-    setPathDefault(RPMVAR_SRPMDIR, "SRPMS");    
-    setPathDefault(RPMVAR_SOURCEDIR, "SOURCES");    
-    setPathDefault(RPMVAR_SPECDIR, "SPECS");
+    setPathDefault(RPMVAR_BUILDDIR, "_builddir", "BUILD");
+    setPathDefault(RPMVAR_RPMDIR, "_rpmdir", "RPMS");
+    setPathDefault(RPMVAR_SRPMDIR, "_srcrpmdir", "SRPMS");
+    setPathDefault(RPMVAR_SOURCEDIR, "_sourcedir", "SOURCES");
+    setPathDefault(RPMVAR_SPECDIR, "_specdir", "SPECS");
 
     return 0;
 }
 
 static int doReadRC(int fd, char * filename) {
-    struct stat sb;
-    char * buf;
+    char buf[BUFSIZ];
     char * start, * chptr, * next, * rest;
     int linenum = 0;
     struct rpmOption searchOption, * option;
@@ -549,15 +578,17 @@ static int doReadRC(int fd, char * filename) {
     int gotit;
     int rc;
 
+  { struct stat sb;
     fstat(fd, &sb);
-    next = buf = alloca(sb.st_size + 2);
-    if (read(fd, buf, sb.st_size) != sb.st_size) {
+    next = alloca(sb.st_size + 2);
+    if (read(fd, next, sb.st_size) != sb.st_size) {
 	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
 		 strerror(errno));
 	return 1;
     }
-    buf[sb.st_size] = '\n';
-    buf[sb.st_size + 1] = '\0';
+    next[sb.st_size] = '\n';
+    next[sb.st_size + 1] = '\0';
+  }
 
     while (*next) {
 	linenum++;
@@ -582,7 +613,7 @@ static int doReadRC(int fd, char * filename) {
 	}
 
 	if (*chptr != ':') {
-	    rpmError(RPMERR_RPMRC, _("missing ':' at %s:%d"), 
+	    rpmError(RPMERR_RPMRC, _("missing ':' at %s:%d"),
 		     filename, linenum);
 	    return 1;
 	}
@@ -598,15 +629,14 @@ static int doReadRC(int fd, char * filename) {
 	    while (isspace(*start) && *start) start++;
 
 	    if (! *start) {
-		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d"), 
+		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d"),
 		      option->name, filename, linenum);
 		return 1;
 	    }
 
 	    switch (option->var) {
 	    case RPMVAR_INCLUDE:
-	      {	char buf[BUFSIZ];
-		int fdinc;
+	      {	int fdinc;
 
 		strcpy(buf, start);
 		if (expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
@@ -628,13 +658,13 @@ static int doReadRC(int fd, char * filename) {
 		break;
 	    }
 
+	    chptr = start;
 	    if (option->archSpecific) {
-		chptr = start;
 		while (!isspace(*chptr) && *chptr) chptr++;
 
 		if (!*chptr) {
-		    rpmError(RPMERR_RPMRC, 
-				_("missing architecture for %s at %s:%d"), 
+		    rpmError(RPMERR_RPMRC,
+				_("missing architecture for %s at %s:%d"),
 			  	option->name, filename, linenum);
 		    return 1;
 		}
@@ -643,16 +673,32 @@ static int doReadRC(int fd, char * filename) {
 
 		while (isspace(*chptr) && *chptr) chptr++;
 		if (!*chptr) {
-		    rpmError(RPMERR_RPMRC, 
-				_("missing argument for %s at %s:%d"), 
+		    rpmError(RPMERR_RPMRC,
+				_("missing argument for %s at %s:%d"),
 			  	option->name, filename, linenum);
 		    return 1;
 		}
-		
-		rpmSetVarArch(option->var, chptr, start);
+		if (option->macroize && strcmp(start, current[ARCH])) {
+		    char *s = buf;
+		    *s++ = '_';
+		    if (option->localize)
+			*s++ = '_';
+		    strcpy(s, option->name);
+		    addMacro(&globalMacroContext, buf, NULL, chptr, -1);
+		}
 	    } else {
-		rpmSetVarArch(option->var, start, NULL);
+		start = NULL;	/* no arch */
+		/* XXX for now only non-arch values can get macroized */
+		if (option->macroize) {
+		    char *s = buf;
+		    *s++ = '_';
+		    if (option->localize)
+			*s++ = '_';
+		    strcpy(s, option->name);
+		    addMacro(&globalMacroContext, buf, NULL, chptr, -1);
+		}
 	    }
+	    rpmSetVarArch(option->var, chptr, start);
 	} else {
 	    gotit = 0;
 
@@ -666,13 +712,13 @@ static int doReadRC(int fd, char * filename) {
 		if (*rest == '_') rest++;
 
 		if (!strcmp(rest, "compat")) {
-		    if (machCompatCacheAdd(chptr, filename, linenum, 
+		    if (machCompatCacheAdd(chptr, filename, linenum,
 						&tables[i].cache))
 			return 1;
 		    gotit = 1;
 		} else if (tables[i].hasTranslate &&
 			   !strcmp(rest, "translate")) {
-		    if (addDefault(&tables[i].defaults, 
+		    if (addDefault(&tables[i].defaults,
 				   &tables[i].defaultsLength,
 				   chptr, filename, linenum))
 			return 1;
@@ -687,7 +733,7 @@ static int doReadRC(int fd, char * filename) {
 	    }
 
 	    if (!gotit) {
-		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d"), 
+		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d"),
 			    start, filename, linenum);
 	    }
 	}
@@ -817,11 +863,11 @@ int rpmGetBooleanVar(int var) {
 
 void rpmSetVar(int var, char *val) {
     freeRpmVar(&values[var]);
-   
+
     values[var].arch = NULL;
     values[var].next = NULL;
 
-    if (val) 
+    if (val)
 	values[var].value = strdup(val);
     else
 	values[var].value = NULL;
@@ -894,7 +940,7 @@ int rpmMachineScore(int type, char * name) {
     struct machEquivInfo * info;
 
     info = machEquivSearch(&tables[type].equiv, name);
-    if (info) 
+    if (info)
 	return info->score;
     else
 	return 0;
@@ -958,7 +1004,7 @@ static void getMachineInfo(int type, char ** name, int * num) {
     /* use the normal canon tables, even if we're looking up build stuff */
     if (which >= 2) which -= 2;
 
-    canon = lookupInCanonTable(current[type], 
+    canon = lookupInCanonTable(current[type],
 			       tables[which].canons,
 			       tables[which].canonsLength);
 
@@ -1011,7 +1057,7 @@ int rpmShowRC(FILE *f)
     fprintf(f, "\n");
 
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-    rpmSetMachine(NULL, NULL);
+    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
     fprintf(f, "install arch          : %s\n", current[ARCH]);
     fprintf(f, "install os            : %s\n", current[OS]);
@@ -1036,6 +1082,6 @@ int rpmShowRC(FILE *f)
 	opt++;
 	count++;
     }
-    
+
     return 0;
 }

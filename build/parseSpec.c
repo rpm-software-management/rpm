@@ -2,6 +2,7 @@
 
 #include "rpmbuild.h"
 
+#ifdef	DEAD
 #ifdef	DYING
 static void setStandardMacros(Spec spec, char *arch, char *os);
 #endif
@@ -32,6 +33,7 @@ static void setStandardMacros(Spec spec, char *arch, char *os)
     buf[x] = '\0';
     addMacro(spec->macros, "buildos_lc", NULL, buf, -1);
 }
+#endif	/* DEAD */
 
 static struct PartRec {
     int part;
@@ -284,7 +286,9 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
     /* Add some standard macros */
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
+#ifdef	DEAD
     setStandardMacros(spec, arch, os);
+#endif
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
