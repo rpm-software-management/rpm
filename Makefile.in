@@ -148,6 +148,8 @@ rpm_SOURCES =		build.c checksig.c ftp.c install.c query.c rpm.c url.c \
 			verify.c
 rpm_LDADD =		-lrpmbuild -lpopt -lrpm @LIBMISC@
 
+CVSTAG = r$(subst .,-,$(VERSION))
+
 rpm2cpio_SOURCES =	rpm2cpio.c
 rpm2cpio_LDADD =	-lrpmbuild -lpopt -lrpm
 

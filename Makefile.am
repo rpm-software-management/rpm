@@ -41,6 +41,8 @@ rpm.o:
 
 include ./Makefile.inc
 
+CVSTAG = r$(subst .,-,$(VERSION))
+
 rpm2cpio_SOURCES =	rpm2cpio.c
 rpm2cpio_LDADD =	-lrpmbuild -lpopt -lrpm
 
