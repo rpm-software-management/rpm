@@ -5,20 +5,18 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "ftp.h"
 #include "install.h"
 #include "lib/rpmlib.h"
 #include "messages.h"
 #include "query.h"
+#include "url.h"
 
 static int hashesPrinted = 0;
 
 static void printHash(const unsigned long amount, const unsigned long total);
 static void printPercent(const unsigned long amount, const unsigned long total);
-static int getFtpURL(char * hostAndFile, char * dest);
 static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 			     int numConflicts);
-static char * getFtpPassword(char * machine, char * account, int mustAsk);
 
 static void printHash(const unsigned long amount, const unsigned long total) {
     int hashesNeeded;
@@ -154,7 +152,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	
     message(MESS_DEBUG, "looking for packages to download\n");
     for (filename = argv, i = 0; *filename; filename++) {
-	if (!strncmp(*filename, "ftp://", 6)) {
+	if (urlIsURL(*filename)) {
 	    if (isVerbose()) {
 		printf("Retrieving %s\n", *filename);
 	    }
@@ -162,9 +160,9 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
 		    tmpnum++, (int) getpid());
 	    message(MESS_DEBUG, "getting %s as %s\n", *filename, packages[i]);
-	    fd = getFtpURL(*filename + 6, packages[i]);
+	    fd = urlGetFile(*filename, packages[i]);
 	    if (fd < 0) {
-		fprintf(stderr, "error: skipping %s - ftp failed - %s\n", 
+		fprintf(stderr, "error: skipping %s - transfer failed - %s\n", 
 			*filename, ftpStrerror(fd));
 		numFailed++;
 	    } else {
@@ -382,120 +380,6 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
     close(fd);
 
     return rc;
-}
-
-struct pwcacheEntry {
-    char * machine;
-    char * account;
-    char * pw;
-} ;
-
-static char * getFtpPassword(char * machine, char * account, int mustAsk) {
-    static struct pwcacheEntry * pwCache = NULL;
-    static int pwCount = 0;
-    int i;
-    char * prompt;
-
-    for (i = 0; i < pwCount; i++) {
-	if (!strcmp(pwCache[i].machine, machine) &&
-	    !strcmp(pwCache[i].account, account))
-		break;
-    }
-
-    if (i < pwCount && !mustAsk) {
-	return pwCache[i].pw;
-    } else if (i == pwCount) {
-	pwCount++;
-	if (pwCache)
-	    pwCache = realloc(pwCache, sizeof(*pwCache) * pwCount);
-	else
-	    pwCache = malloc(sizeof(*pwCache));
-
-	pwCache[i].machine = strdup(machine);
-	pwCache[i].account = strdup(account);
-    } else
-	free(pwCache[i].pw);
-
-    prompt = alloca(strlen(machine) + strlen(account) + 50);
-    sprintf(prompt, "Password for %s@%s: ", account, machine);
-
-    pwCache[i].pw = strdup(getpass(prompt));
-
-    return pwCache[i].pw;
-}
-
-static int getFtpURL(char * hostAndFile, char * dest) {
-    char * buf;
-    char * chptr, * machineName, * fileName;
-    char * userName = NULL;
-    char * password = NULL;
-    char * proxy;
-    int ftpconn;
-    int fd;
-    int rc;
-   
-    message(MESS_DEBUG, "getting %s via anonymous ftp\n", hostAndFile);
-
-    buf = alloca(strlen(hostAndFile) + 1);
-    strcpy(buf, hostAndFile);
-
-    chptr = buf;
-    while (*chptr && (*chptr != '/')) chptr++;
-    if (!*chptr) return -1;
-
-    machineName = buf;		/* could still have user:pass@ though */
-    fileName = chptr;
-    *fileName = '\0';
-
-    chptr = fileName;
-    while (chptr > buf && *chptr != '@') chptr--;
-    if (chptr > buf) {		/* we have a username */
-	*chptr = '\0';
-	userName = machineName;
-	machineName = chptr + 1;
-	
-	chptr = userName;
-	while (*chptr && *chptr != ':') chptr++;
-	if (*chptr) {		/* we have a password */
-	    *chptr = '\0';
-	    password = chptr + 1;
-	}
-    }
-	
-    if (userName && !password) {
-	password = getFtpPassword(machineName, userName, 0);
-    }
-
-    message(MESS_DEBUG, "logging into %s as %s, pw %s\n", machineName,
-		userName ? userName : "ftp", 
-		password ? password : "(username)");
-
-    proxy = getVar(RPMVAR_FTPPROXY);
-
-    ftpconn = ftpOpen(machineName, userName, password, proxy);
-    if (ftpconn < 0) return ftpconn;
-
-    fd = creat(dest, 0600);
-
-    if (fd < 0) {
-	message(MESS_DEBUG, "failed to create %s\n", dest);
-	unlink(dest);
-	ftpClose(ftpconn);
-	return FTPERR_UNKNOWN;
-    }
-
-    *fileName = '/';
-    
-    if ((rc = ftpGetFile(ftpconn, fileName, fd))) {
-	unlink(dest);
-	close(fd);
-	ftpClose(ftpconn);
-	return rc;
-    }    
-
-    ftpClose(ftpconn);
-
-    return fd;
 }
 
 void printDepFlags(FILE * f, char * version, int flags) {
