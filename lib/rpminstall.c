@@ -306,7 +306,7 @@ int rpmInstall(rpmts ts,
 	vsflags |= _RPMVSF_NOSIGNATURES;
     if (ia->qva_flags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
-    ovsflags = rpmtsSetVSFlags(ts, vsflags);
+    ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
 
     {	int notifyFlags;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
