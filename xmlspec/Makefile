@@ -8,7 +8,7 @@ CPPSRCS = XMLAttrs.cpp XMLChangelog.cpp XMLFiles.cpp XMLMacro.cpp \
           XMLMirror.cpp XMLParser.cpp XMLPackage.cpp XMLRequires.cpp \
           XMLScript.cpp XMLSource.cpp XMLSpec.cpp xml2spec.cpp
 CPPOBJS = $(CPPSRCS:.cpp=.o)
-INCS    = -I. -I.. -I../build -I../lib -I../rpmio
+INCS    = -I. -I.. -I../build -I../lib -I../rpmdb -I../rpmio -I../popt
 LIBDIR  = #-L../build/.libs
 LIBS    = -lexpat -lrpm -lrpmbuild -lrpmdb -lrpmio -lpopt
 
