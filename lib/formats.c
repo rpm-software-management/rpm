@@ -346,6 +346,7 @@ static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data,
 
 /* I18N look aside diversions */
 
+#define	ENABLE_I18N_LOOKASIDE
 #ifdef	ENABLE_I18N_LOOKASIDE
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
@@ -389,7 +390,9 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	if (domain && msgid) {
 	    *data = xstrdup(/*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/);
 	    *count = 1;
+#ifdef HACK	/* XXX WTFO? */
 	    *freeData = 1;
+#endif
 	}
 	xfree(dstring);
 	return (*data ? 0 : 1);
