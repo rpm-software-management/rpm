@@ -25,12 +25,7 @@ build/parseSpec.c
 build/reqprov.c
 build/spec.c
 lib/cpio.c
-lib/db1.c
-lib/db2.c
-lib/db3.c
-lib/dbconfig.c
 lib/depends.c
-lib/falloc.c
 lib/formats.c
 lib/fprint.c
 lib/fs.c
@@ -48,7 +43,6 @@ lib/problems.c
 lib/psm.c
 lib/query.c
 lib/rpmchecksig.c
-lib/rpmdb.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmrc.c
@@ -56,6 +50,12 @@ lib/signature.c
 lib/stringbuf.c
 lib/transaction.c
 lib/verify.c
+rpmdb/db1.c
+rpmdb/db2.c
+rpmdb/db3.c
+rpmdb/dbconfig.c
+rpmdb/falloc.c
+rpmdb/rpmdb.c
 rpmio/base64.c
 rpmio/digest.c
 rpmio/macro.c

@@ -46,7 +46,8 @@
 	- fix: debugging message displays header keys (#38454).
 	- fix: specfile queries with BuildArch: (#27589).
 	- use internal db-3.2.9 sources to build by default.
-	- don't build db1 by default.
+	- don't build db1 support by default.
+	- create rpmdb.la so that linkage against rpm's db-3.2.9 is possible.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

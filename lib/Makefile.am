@@ -2,45 +2,46 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/popt @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/rpmdb \
+	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/popt \
+	@INCPATH@
 
-EXTRA_DIST = db3.c db2.c db1.c falloc.c getdate.y
+EXTRA_DIST = getdate.y
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	header.h misc.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h depends.h falloc.h fprint.h fsm.h hash.h \
+	cpio.h depends.h fprint.h fsm.h hash.h \
 	manifest.h md5.h psm.h \
-	rpmdb.h rpmlead.h signature.h
+	rpmlead.h signature.h
 
-mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \
-		-L$(top_builddir)/popt/.libs
-mylibs =	-lrpm -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibpaths = \
+	-L$(top_builddir)/lib/.libs \
+	-L$(top_builddir)/rpmdb/.libs \
+	-L$(top_builddir)/rpmio/.libs \
+	-L$(top_builddir)/popt/.libs
+
+mylibs = -lrpm -lrpmdb -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
 LIBS =
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c $(DBLIBSRCS) dbconfig.c depends.c \
-	formats.c fprint.c fs.c fsm.c getdate.c hash.c header.c \
-	manifest.c md5.c md5sum.c misc.c package.c problems.c \
-	poptBT.c poptQV.c psm.c query.c \
-	rpmchecksig.c rpmdb.c rpminstall.c \
-	rpmlead.c rpmlibprov.c rpmrc.c signature.c stringbuf.c \
-	tagName.c tagtable.c transaction.c verify.c
-librpm_la_LDFLAGS = @libdb3@ @libdb2@ @libdb1@
-librpm_la_LIBADD = $(DBLIBOBJS)
-librpm_la_DEPENDENCIES = $(DBLIBOBJS)
+	cpio.c depends.c formats.c fprint.c fs.c fsm.c getdate.c \
+	hash.c header.c manifest.c md5.c md5sum.c misc.c package.c \
+	problems.c poptBT.c poptQV.c psm.c query.c rpmchecksig.c \
+	rpminstall.c rpmlead.c rpmlibprov.c rpmrc.c signature.c \
+	stringbuf.c tagName.c tagtable.c transaction.c verify.c
 
 # XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmio|" < librpm.la > .librpm.la && \
+	sed -e "s|^dependency_libs='|& -lrpmdb -lrpmio|" < librpm.la > .librpm.la && \
 	mv .librpm.la librpm.la
-
-falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c

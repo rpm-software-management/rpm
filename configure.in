@@ -25,6 +25,7 @@ AC_PROG_CC
 if test "$ac_cv_prog_gcc" = yes; then
     CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
 fi
+export CFLAGS
 
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
@@ -1117,26 +1118,14 @@ dnl export LIBS INCPATH CONFIG_SITE
 AC_CONFIG_SUBDIRS(popt $WITH_DB_SUBDIR)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
-	rpmio/Makefile lib/Makefile build/Makefile tools/Makefile
-	scripts/Makefile scripts/brp-redhat
+	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
+	scripts/Makefile scripts/brp-redhat tools/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
 	doc/Makefile doc/manual/Makefile
 	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
 	python/Makefile perl/Makefile perl/Makefile.PL ],
-  [
-dnl	rm -f db/build_unix/configure
-dnl	echo "set -x ; exec ../dist/configure \$(echo \$* | sed -e 's% --srcdir=\[^ \]*% --srcdir=../dist%')" > db/build_unix/configure
-dnl	chmod +x db/build_unix/configure
-dnl	if test -n "$WITH_DB_SUBDIR"; then
-dnl	  ( cd $WITH_DB_SUBDIR
-dnl	    CFLAGS="$CFLAGS" ../dist/configure --prefix="$prefix" --enable-shared --enable-static
- dnl	  )
-dnl	fi
-	echo timestamp > popt/stamp-h.in
+  [	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
   ]
 )
-dnl	touch Makefile.in
-dnl	sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
-

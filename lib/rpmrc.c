@@ -1209,7 +1209,7 @@ const char * rpmGetVarArch(int var, /*@null@*/ const char * arch)
     return next ? next->value : NULL;
 }
 
-/*@observer@*/ /*@null@*/ const char *rpmGetVar(int var)
+const char *rpmGetVar(int var)
 {
     return rpmGetVarArch(var, NULL);
 }

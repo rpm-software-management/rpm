@@ -105,7 +105,7 @@ static inline int snprintf(char * buf, int nb, const char * fmt, ...)
 }
 #endif
 
-const char * rpmProblemString(rpmProblem prob) /*@*/
+const char * rpmProblemString(rpmProblem prob)
 {
 /*@observer@*/ const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "");
 /*@observer@*/ const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "");

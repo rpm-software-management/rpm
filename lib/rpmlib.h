@@ -442,7 +442,7 @@ typedef	enum rpmsenseFlags_e {
  * @deprecated Use rpmExpand() with appropriate macro expression.
  * @todo Eliminate from API.
  */
-/*@observer@*/ /*@null@*/ const char * rpmGetVar(int var)	/*@*/;
+/*@observer@*/ /*@null@*/ extern const char * rpmGetVar(int var)	/*@*/;
 
 /** \ingroup rpmrc
  * Set value of an rpmrc variable.
@@ -842,7 +842,8 @@ struct rpmDependencyConflict {
 /**
  */
 void printDepProblems(FILE *fp, struct rpmDependencyConflict *conflicts,
-	int numConflicts)	/*@modifies *fp @*/;
+	int numConflicts)
+		/*@modifies *fp @*/;
 
 /**
  * Return formatted string representation of problem.
@@ -850,7 +851,8 @@ void printDepProblems(FILE *fp, struct rpmDependencyConflict *conflicts,
  * @param prob		rpm problem
  * @return		formatted string
  */
-/*@only@*/ const char * rpmProblemString(rpmProblem prob) /*@modifies prob @*/;
+/*@only@*/ extern const char * rpmProblemString(rpmProblem prob)
+		/*@modifies prob @*/;
 
 /**
  * Output formatted string representation of problem to file handle.
@@ -1236,7 +1238,8 @@ int rpmRunTransactions(rpmTransactionSet ts,
  * @param tag		tag value
  * @return		name of tag
  */
-/*@observer@*/ const char *const tagName(int tag)	/*@*/;
+/*@observer@*/ extern const char *const tagName(int tag)
+		/*@*/;
 
 /**
  * Return value of tag from name.

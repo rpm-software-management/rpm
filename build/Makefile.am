@@ -2,8 +2,12 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/popt @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/popt \
+	@INCPATH@
 
 LIBS =
 
@@ -31,8 +35,3 @@ sources:
 .PHONY:	lclint
 lclint:
 	lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}
-
-.PHONY:	genhtml
-genhtml:
-	doc++ -d html -f -H -S build.c expression.c
-#	doc++ -A -d html -f -H -S ${pkginc_HEADERS} ${librpmbuild_la_SOURCES}

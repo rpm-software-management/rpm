@@ -1,8 +1,8 @@
 #!/bin/sh
 #set -x 
 db_dist="../db/dist"
-$db_dist/configure \
-	$(echo $* | sed -e "s% --srcdir=[^ ]*% --srcdir=$db_dist%")
+CFLAGS="$CFLAGS" $db_dist/configure \
+	$(echo $* | sed -e "s% --srcdir=[^ ]*% --enable-shared --enable-static --srcdir=$db_dist%")
 
 mv Makefile Makefile.orig
 cat Makefile.orig | sed -e '/^install:/c\

@@ -136,8 +136,8 @@ rpm	exec --rmspec		rpmb --rmspec
 rpm	exec --target		rpmb --target
 rpm	exec --short-circuit	rpmb --short-circuit
 
-rpm	exec --initdb		rpmdb --initdb
-rpm	exec --rebuilddb	rpmdb --rebuilddb
+rpm	exec --initdb		rpmd --initdb
+rpm	exec --rebuilddb	rpmd --rebuilddb
 
 #rpm	exec -e			rpme -e
 #rpm	exec --erase		rpme --erase
@@ -175,11 +175,11 @@ rpmbuild	alias --timecheck	--define '_timecheck !#:+'
 rpmbuild	alias --with		--define "_with_!#:+     --with-!#:+"
 rpmbuild	alias --without		--define "_without_!#:+  --without-!#:+"
 ==============================================================================
-rpmdb	alias --dbpath		--define '_dbpath !#:+'
-rpmdb	alias --ftpport		--define '_ftpport !#:+'
-rpmdb	alias --ftpproxy	--define '_ftpproxy !#:+'
-rpmdb	alias --httpport	--define '_httpport !#:+'
-rpmdb	alias --httpproxy	--define '_httpproxy !#:+'
+rpmd	alias --dbpath		--define '_dbpath !#:+'
+rpmd	alias --ftpport		--define '_ftpport !#:+'
+rpmd	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmd	alias --httpport	--define '_httpport !#:+'
+rpmd	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
 rpme	alias --dbpath		--define '_dbpath !#:+'
 rpme	alias --ftpport		--define '_ftpport !#:+'

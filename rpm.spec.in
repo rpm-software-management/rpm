@@ -206,6 +206,7 @@ fi
 %{__prefix}/bin/rpmquery
 %{__prefix}/bin/rpmverify
 %{__prefix}/lib/librpm.so.*
+%{__prefix}/lib/librpmdb.so.*
 %{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
 
@@ -214,8 +215,7 @@ fi
 %{__prefix}/lib/rpm/convertrpmrc.sh
 %{__prefix}/lib/rpm/macros
 %{__prefix}/lib/rpm/mkinstalldirs
-%{__prefix}/lib/rpm/rpmdb
-%{__prefix}/lib/rpm/rpm[eiukqv]
+%{__prefix}/lib/rpm/rpm[deiukqv]
 %{__prefix}/lib/rpm/rpmpopt*
 %{__prefix}/lib/rpm/rpmrc
 
@@ -312,6 +312,9 @@ fi
 %{__prefix}/lib/librpm.a
 %{__prefix}/lib/librpm.la
 %{__prefix}/lib/librpm.so
+%{__prefix}/lib/librpmdb.a
+%{__prefix}/lib/librpmdb.la
+%{__prefix}/lib/librpmdb.so
 %{__prefix}/lib/librpmio.a
 %{__prefix}/lib/librpmio.la
 %{__prefix}/lib/librpmio.so

@@ -353,14 +353,8 @@ INPUT                  = \
 	./doc/manual/tsort \
 	./lib/cpio.c \
 	./lib/cpio.h \
-	./lib/db1.c \
-	./lib/db2.c \
-	./lib/db3.c \
-	./lib/dbconfig.c \
 	./lib/depends.c \
 	./lib/depends.h \
-	./lib/falloc.c \
-	./lib/falloc.h \
 	./lib/formats.c \
 	./lib/fprint.c \
 	./lib/fprint.h \
@@ -386,8 +380,6 @@ INPUT                  = \
 	./lib/psm.h \
 	./lib/query.c \
 	./lib/rpmchecksig.c \
-	./lib/rpmdb.c \
-	./lib/rpmdb.h \
 	./lib/rpminstall.c \
 	./lib/rpmlead.c \
 	./lib/rpmlead.h \
@@ -402,6 +394,14 @@ INPUT                  = \
 	./lib/tagtable.c \
 	./lib/transaction.c \
 	./lib/verify.c \
+	./rpmdb/db1.c \
+	./rpmdb/db2.c \
+	./rpmdb/db3.c \
+	./rpmdb/dbconfig.c \
+	./rpmdb/falloc.c \
+	./rpmdb/falloc.h \
+	./rpmdb/rpmdb.c \
+	./rpmdb/rpmdb.h \
 	./rpmio/base64.c \
 	./rpmio/base64.h \
 	./rpmio/digest.c \

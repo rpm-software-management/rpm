@@ -10,10 +10,15 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c
 
 # XXX TODO: perl
-SUBDIRS = intl po @WITH_DB_SUBDIR@ popt rpmio lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = intl po @WITH_DB_SUBDIR@ popt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
-INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/popt @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/rpmdb \
+	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/popt \
+	@INCPATH@
 
 LIBS =
 
@@ -23,9 +28,10 @@ myLDFLAGS = # -L$(top_builddir)/build/.libs -L$(top_builddir)/lib/.libs \
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
 # XXX top_builddir ldpaths are wrong building in tree
-myLDADD = $(top_builddir)/build/librpmbuild.la \
+myLDADD = \
+	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
-	@libdb3a@ \
+	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
 	@INTLLIBS@ @LIBMISC@
@@ -37,7 +43,7 @@ bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 
 pkglibdir =		@RPMCONFIGDIR@
-pkglib_PROGRAMS =	rpmb rpmdb rpmi rpmk rpmq
+pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
 pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
@@ -58,10 +64,10 @@ rpmb_LDADD =		rpmb.o $(myLDADD)
 rpmb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c rpmqv.c
 
-rpmdb_SOURCES =
-rpmdb_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
-rpmdb_LDADD =		rpmdb.o $(myLDADD)
-rpmdb.o:	rpmqv.c
+rpmd_SOURCES =
+rpmd_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
+rpmd_LDADD =		rpmd.o $(myLDADD)
+rpmd.o:			rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c rpmqv.c
 
 rpmi_SOURCES =
@@ -93,6 +99,7 @@ lclint:
 	lclint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
 		`make -s sources -C build` \
 		`make -s sources -C lib` \
+		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` \
 		`make -s sources -C popt`
 
@@ -122,7 +129,9 @@ install-data-local:
 	@LN_S@ ../lib/rpm/rpmv $(DESTDIR)$(bindir)/rpmverify
 	rm -f $(DESTDIR)$(bindir)/rpmsign
 	@LN_S@ ../lib/rpm/rpmk $(DESTDIR)$(bindir)/rpmsign
-	for bf in db e i u ; do \
+	rm -f $(DESTDIR)$(bindir)/rpmdb ; \
+	@LN_S@ ../lib/rpm/rpmd $(DESTDIR)$(bindir)/rpmdb ; \
+	for bf in e i u ; do \
 	    rm -f $(DESTDIR)$(bindir)/rpm$$bf ; \
 	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)$(bindir)/rpm$$bf ; \
 	done
