@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-11 08:57-0500\n"
+"POT-Creation-Date: 2001-01-12 16:42-0500\n"
 "PO-Revision-Date: 2000-08-02 13:00+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -2410,30 +2410,30 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1522
+#: lib/depends.c:2061
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:2199
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:2253
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1754
-msgid "========== successors only (presentation order\n"
+#: lib/depends.c:2316
+msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1812
+#: lib/depends.c:2395
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1843
+#: lib/depends.c:2426
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

@@ -102,6 +102,7 @@
 	- fix: find-requires.perl needed update (#23450).
 	- fix: don't hang on build error.
 	- fix: remove "error: " prefix from signature verification message.
+	- hack: permit installer to determine package ordering using 1000003 tag.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
