@@ -1,0 +1,10 @@
+ELFUTILS_1.0 {
+  global:
+    sh_backend_name;
+    sh_destr;
+    sh_init;
+    sh_reloc_type_name;
+
+  local:
+    *;
+};

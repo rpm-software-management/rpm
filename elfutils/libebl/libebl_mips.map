@@ -1,0 +1,14 @@
+ELFUTILS_1.0 {
+  global:
+    mips_backend_name;
+    mips_destr;
+    mips_dynamic_tag_name;
+    mips_init;
+    mips_machine_flag_name;
+    mips_reloc_type_name;
+    mips_section_type_name;
+    mips_segment_type_name;
+
+  local:
+    *;
+};
