@@ -31,7 +31,7 @@ CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS) -I$(srcdir) -I$(srcdir)/lib \
 LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L../lib -L../build -L../misc
 AR = ar r
 RANLIB = ranlib
-VERSION = 2.2.5
+VERSION = 2.2.6
 
 BINDIR=$(prefix)/bin
 RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))
