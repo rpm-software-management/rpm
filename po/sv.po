@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.63 $
+# $Revision: 1.64 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-02-21 12:02-0500\n"
+"POT-Creation-Date: 2000-02-21 20:45-0500\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1354,168 +1354,168 @@ msgstr "&& och || stöds inte för strängar"
 msgid "syntax error in expression"
 msgstr "syntaxfel i uttryck"
 
-#: build/files.c:204
+#: build/files.c:202
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fel: %s\n"
 
-#: build/files.c:249 build/files.c:331 build/files.c:494
+#: build/files.c:247 build/files.c:329 build/files.c:492
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr "Saknad \"(\" i %s %s"
 
-#: build/files.c:260 build/files.c:448 build/files.c:505
+#: build/files.c:258 build/files.c:446 build/files.c:503
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "Saknad \")\" i %s(%s"
 
-#: build/files.c:298 build/files.c:473
+#: build/files.c:296 build/files.c:471
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "Ogiltig %s token: %s"
 
-#: build/files.c:347
+#: build/files.c:345
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr "Annat än blanktecken följer på %s(): %s"
 
-#: build/files.c:385
+#: build/files.c:383
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Felaktig syntax: %s(%s)"
 
-#: build/files.c:395
+#: build/files.c:393
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Felaktig rättighetsspecifikation: %s(%s)"
 
-#: build/files.c:407
+#: build/files.c:405
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "Felaktig specifikation av katalogrättigheter: %s(%s)"
 
-#: build/files.c:531
+#: build/files.c:529
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "Ovanlig lokallängd: \"%.*s\" i %%langg(%s)"
 
-#: build/files.c:541
+#: build/files.c:539
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr "Duplicerad lokal %.*s i %%lang(%s)"
 
-#: build/files.c:637
+#: build/files.c:635
 msgid "Hit limit for %%docdir"
 msgstr "Slog i gränsen för %%docdir"
 
-#: build/files.c:643
+#: build/files.c:641
 msgid "Only one arg for %%docdir"
 msgstr "Endast ett argument till %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:668
+#: build/files.c:666
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "Två filer på en rad: %s"
 
-#: build/files.c:681
+#: build/files.c:679
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Filnamn måste börja med \"/\": %s"
 
-#: build/files.c:693
+#: build/files.c:691
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Kan inte blanda special %%doc med andra former: %s"
 
-#: build/files.c:779
+#: build/files.c:777
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Filen uppräknad två gånger: %s"
 
-#: build/files.c:872
+#: build/files.c:870
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s"
 
-#: build/files.c:952
+#: build/files.c:948
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Filen matchar inte prefixet (%s): %s"
 
-#: build/files.c:962
+#: build/files.c:958
 #, c-format
 msgid "File not found: %s"
 msgstr "Filen hittades inte: %s"
 
-#: build/files.c:1005
+#: build/files.c:1001
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:1019
+#: build/files.c:1015
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1093
+#: build/files.c:1084
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Filen behöver inledande \"/\": %s"
 
-#: build/files.c:1122
+#: build/files.c:1113
 #, c-format
 msgid "File not found by glob: %s"
 msgstr "Ingen file hittades vid matchningen: %s"
 
-#: build/files.c:1169
+#: build/files.c:1160
 msgid "Could not open %%files file %s: %s"
 msgstr "Kunde inte öppna %%files-fil %s: %s"
 
-#: build/files.c:1176 build/pack.c:99
+#: build/files.c:1167 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "rad: %s"
 
-#: build/files.c:1504
+#: build/files.c:1493
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "fil %s: %s\n"
 
-#: build/files.c:1516 build/parsePrep.c:34
+#: build/files.c:1505 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Felaktig ägare/grupp: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1571
+#: build/files.c:1560
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Kunde inte köra %s: %s"
 
-#: build/files.c:1576
+#: build/files.c:1565
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Kunde inte grena %s: %s"
 
-#: build/files.c:1658
+#: build/files.c:1647
 #, c-format
 msgid "%s failed"
 msgstr "%s misslyckades"
 
-#: build/files.c:1662
+#: build/files.c:1651
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "kunde inte skriva all data till %s"
 
-#: build/files.c:1752
+#: build/files.c:1741
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Letar upp %s: (använder %s)...\n"
 
-#: build/files.c:1780 build/files.c:1789
+#: build/files.c:1769 build/files.c:1778
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Misslyckades hitta %s:"
 
-#: build/files.c:1896
+#: build/files.c:1885
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"

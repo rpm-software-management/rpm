@@ -344,21 +344,30 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Add relocation values to the header */
     if (numValid) {
 	const char ** actualRelocations;
+	int numActual;
 
 	actualRelocations = xmalloc(sizeof(*actualRelocations) * numValid);
+	numActual = 0;
 	for (i = 0; i < numValid; i++) {
 	    for (j = 0; j < numRelocations; j++) {
 		if (strcmp(validRelocations[i], relocations[j].oldPath))
 		    continue;
-		actualRelocations[i] = relocations[j].newPath;
+		/* On install, a relocate to NULL means skip the path. */
+		if (relocations[j].newPath) {
+		    actualRelocations[numActual] = relocations[j].newPath;
+		    numActual++;
+		}
 		break;
 	    }
-	    if (j == numRelocations)
-		actualRelocations[i] = validRelocations[i];
+	    if (j == numRelocations) {
+		actualRelocations[numActual] = validRelocations[i];
+		numActual++;
+	    }
 	}
 
-	headerAddEntry(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
-		       (void **) actualRelocations, numValid);
+	if (numActual)
+	    headerAddEntry(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
+		       (void **) actualRelocations, numActual);
 
 	xfree(actualRelocations);
 	xfree(validRelocations);
@@ -366,7 +375,8 @@ static Header relocateFileList(struct availablePackage * alp,
 
     /* For all relocations, we go through sorted file and relocation lists 
      * backwards so that /usr/local relocations take precedence over /usr 
-     * ones. */
+     * ones.
+     */
 
     headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, 
 		   &fileCount);
@@ -383,7 +393,8 @@ static Header relocateFileList(struct availablePackage * alp,
 
     for (i = fileCount - 1; i >= 0; i--) {
 	/* If we're skipping the directory this file is part of, skip this
-	   file as well. */
+	 * file as well.
+	 */
 	if (skipDirList[dirIndexes[i]]) {
 	    actions[i] = FA_SKIPNSTATE;
 	    rpmMessage(RPMMESS_DEBUG, _("excluding file %s%s\n"), 
@@ -392,9 +403,10 @@ static Header relocateFileList(struct availablePackage * alp,
 	} 
 
 	/* See if this file needs relocating (which will only occur if the
-	   full file path we have exactly matches a path in the relocation
-	   list. XXX FIXME: Would a bsearch of the (already sorted) 
-	   relocation list be a good idea? */
+	 * full file path we have exactly matches a path in the relocation
+	 * list. XXX FIXME: Would a bsearch of the (already sorted) 
+	 * relocation list be a good idea?
+	 */
 
 	len = strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
 	if (len >= fileAlloced) {
@@ -409,8 +421,8 @@ static Header relocateFileList(struct availablePackage * alp,
 
 	if (j < 0) continue;
 
-	if (actions && !relocations[j].newPath) {
-	    /* On install, a relocate to NULL means skip the file */
+	if (actions && relocations[j].newPath == NULL) {
+	    /* On install, a relocate to NULL means skip the path. */
 	    skipDirList[i] = 1;
 	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
 		       dirNames[i]);
@@ -542,12 +554,13 @@ static Header relocateFileList(struct availablePackage * alp,
 static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 {
     /* As the problem sets are generated in an order solely dependent
-       on the ordering of the packages in the transaction, and that
-       ordering can't be changed, the problem sets must be parallel to
-       one another. Additionally, the filter set must be a subset of the
-       target set, given the operations available on transaction set.
-       This is good, as it lets us perform this trim in linear time, rather
-       then logarithmic or quadratic. */
+     * on the ordering of the packages in the transaction, and that
+     * ordering can't be changed, the problem sets must be parallel to
+     * one another. Additionally, the filter set must be a subset of the
+     * target set, given the operations available on transaction set.
+     * This is good, as it lets us perform this trim in linear time, rather
+     * then logarithmic or quadratic.
+     */
     rpmProblem * f, * t;
     int gotProblems = 0;
 

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.3 2000/02/22 03:09:55 jbj Exp $
+# $Id: sl.po,v 1.4 2000/02/22 12:05:14 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-02-21 12:02-0500\n"
+"POT-Creation-Date: 2000-02-21 20:45-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1363,168 +1363,168 @@ msgstr "&& in || nista podprta na nizih"
 msgid "syntax error in expression"
 msgstr "napaka v sklanji v izrazu"
 
-#: build/files.c:204
+#: build/files.c:202
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK neuspe¹en: %s\n"
 
-#: build/files.c:249 build/files.c:331 build/files.c:494
+#: build/files.c:247 build/files.c:329 build/files.c:492
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/files.c:260 build/files.c:448 build/files.c:505
+#: build/files.c:258 build/files.c:446 build/files.c:503
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "Manjkajoèi ,)` v %s(%s"
 
-#: build/files.c:298 build/files.c:473
+#: build/files.c:296 build/files.c:471
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "Neveljaven ¾eton %s: %s"
 
-#: build/files.c:347
+#: build/files.c:345
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr "Neprazen znak sledi %s(): %s"
 
-#: build/files.c:385
+#: build/files.c:383
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Okvarjena skladnja: %s(%s)"
 
-#: build/files.c:395
+#: build/files.c:393
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Okvarjeno doloèilo naèina: %s(%s)"
 
-#: build/files.c:407
+#: build/files.c:405
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "Okvarjeno doloèilo naèina imenika: %s(%s)"
 
-#: build/files.c:531
+#: build/files.c:529
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "Nenavadna dol¾ina za locale: \"%.s\" pri %%lang(%s)"
 
-#: build/files.c:541
+#: build/files.c:539
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr "Podvojeni locale %.*s za %%lang(%s)"
 
-#: build/files.c:637
+#: build/files.c:635
 msgid "Hit limit for %%docdir"
 msgstr "Dosegli smo omejitev za %%docdir"
 
-#: build/files.c:643
+#: build/files.c:641
 msgid "Only one arg for %%docdir"
 msgstr "Samo en argument za %%docdir je podan"
 
 #. We already got a file -- error
-#: build/files.c:668
+#: build/files.c:666
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "Dve datoteki v eni vrstici: %s"
 
-#: build/files.c:681
+#: build/files.c:679
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Ime datoteke se mora zaèeti z \"/\": %s"
 
-#: build/files.c:693
+#: build/files.c:691
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Posebnih %%doc ni mo¾no me¹ati z ostalimi oblikami: %s"
 
-#: build/files.c:779
+#: build/files.c:777
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Datoteka je navedena dvakrat: %s"
 
-#: build/files.c:872
+#: build/files.c:870
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:952
+#: build/files.c:948
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Datoteka se ne ujema s predpono (%s): %s"
 
-#: build/files.c:962
+#: build/files.c:958
 #, c-format
 msgid "File not found: %s"
 msgstr "Datoteke ni najti: %s"
 
-#: build/files.c:1005
+#: build/files.c:1001
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Okvarjen lastnik/skupina: %s\n"
 
-#: build/files.c:1019
+#: build/files.c:1015
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Datoteka: %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1093
+#: build/files.c:1084
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1122
+#: build/files.c:1113
 #, c-format
 msgid "File not found by glob: %s"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1169
+#: build/files.c:1160
 msgid "Could not open %%files file %s: %s"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1176 build/pack.c:99
+#: build/files.c:1167 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "vrstica: %s"
 
-#: build/files.c:1504
+#: build/files.c:1493
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Okvarjena datoteka: %s: %s"
 
-#: build/files.c:1516 build/parsePrep.c:34
+#: build/files.c:1505 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Okvarjen lastnik/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1571
+#: build/files.c:1560
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:1576
+#: build/files.c:1565
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:1658
+#: build/files.c:1647
 #, c-format
 msgid "%s failed"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:1662
+#: build/files.c:1651
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "pisanje podatkov na %s neuspe¹no"
 
-#: build/files.c:1752
+#: build/files.c:1741
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "I¹èemo  %s: (z uporabo %s)...\n"
 
-#: build/files.c:1780 build/files.c:1789
+#: build/files.c:1769 build/files.c:1778
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:1896
+#: build/files.c:1885
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdelujemo datoteke: %s-%s-%s\n"
