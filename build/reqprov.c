@@ -327,7 +327,7 @@ int processReqProv(Header h, struct PackageRec *p)
 
     if (p->numObsoletes) {
 	rd = p->reqprov;
-	nameArray = namePtr = malloc(p->numProv * sizeof(*nameArray));
+	nameArray = namePtr = malloc(p->numObsoletes * sizeof(*nameArray));
 	rpmMessage(RPMMESS_VERBOSE, "Obsoletes (%d):", p->numObsoletes);
 	while (rd) {
 	    if (rd->flags & RPMSENSE_OBSOLETES) {
