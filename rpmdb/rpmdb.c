@@ -653,9 +653,9 @@ struct _rpmdbMatchIterator {
     int			mi_sorted;
     int			mi_cflags;
     int			mi_modified;
-    unsigned int	mi_prevoffset;
-    unsigned int	mi_offset;
-    unsigned int	mi_filenum;
+    unsigned int	mi_prevoffset;	/* header instance (native endian) */
+    unsigned int	mi_offset;	/* header instance (native endian) */
+    unsigned int	mi_filenum;	/* tag element (native endian) */
     int			mi_nre;
 /*@only@*/ /*@null@*/
     miRE		mi_re;
@@ -2067,7 +2067,7 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
     int rc = 0;
     if (mi == NULL)
 	return 0;
-/*@-assignexpose -newreftrans @*/
+/*@-assignexpose -newreftrans @*/ /* XXX forward linkage prevents rpmtsLink */
 /*@i@*/ mi->mi_ts = ts;
     mi->mi_hdrchk = hdrchk;
 /*@=assignexpose =newreftrans @*/
@@ -2116,14 +2116,19 @@ top:
     uhlen = 0;
 
     do {
+union _dbswap mi_offset;
+
   	/*@-branchstate -compmempass @*/
 	if (mi->mi_set) {
 	    if (!(mi->mi_setx < mi->mi_set->count))
 		return NULL;
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
-	    keyp = &mi->mi_offset;
-	    keylen = sizeof(mi->mi_offset);
+mi_offset.ui = mi->mi_offset;
+if (dbiByteSwapped(dbi) == 1)
+    _DBSWAP(mi_offset);
+	    keyp = &mi_offset;
+	    keylen = sizeof(mi_offset.ui);
 	} else {
 
 	    key->data = keyp = (void *)mi->mi_keyp;
@@ -2149,8 +2154,12 @@ top:
 	     * skipped.
 	     */
 /*@-boundswrite@*/
-	    if (keyp && mi->mi_setx && rc == 0)
-		memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
+	    if (keyp && mi->mi_setx && rc == 0) {
+		memcpy(&mi_offset, keyp, sizeof(mi_offset.ui));
+if (dbiByteSwapped(dbi) == 1)
+    _DBSWAP(mi_offset);
+		mi->mi_offset = mi_offset.ui;
+	    }
 /*@=boundswrite@*/
 
 	    /* Terminate on error or end of keys */
@@ -2201,14 +2210,10 @@ top:
 	/* Don't bother re-checking a previously read header. */
 	if (mi->mi_db->db_bits) {
 	    pbm_set * set;
-union _dbswap mi_offset;
 
-memcpy(&mi_offset.ui, &mi->mi_offset, sizeof(mi_offset.ui));
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
 	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi_offset.ui);
-	    if (PBM_ISSET(mi_offset.ui, set))
+			&mi->mi_db->db_nbits, mi->mi_offset);
+	    if (PBM_ISSET(mi->mi_offset, set))
 		rpmrc = RPMRC_OK;
 	}
 
@@ -2227,14 +2232,10 @@ if (dbiByteSwapped(dbi) == 1)
 	    /* Mark header checked. */
 	    if (mi->mi_db && mi->mi_db->db_bits && rpmrc == RPMRC_OK) {
 		pbm_set * set;
-union _dbswap mi_offset;
 
-memcpy(&mi_offset.ui, &mi->mi_offset, sizeof(mi_offset.ui));
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
 		set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi_offset.ui);
-		PBM_SET(mi_offset.ui, set);
+			&mi->mi_db->db_nbits, mi->mi_offset);
+		PBM_SET(mi->mi_offset, set);
 	    }
 
 	    /* Skip damaged and inconsistent headers. */
@@ -2416,6 +2417,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     if (dbi == NULL)
 	return NULL;
 
+    /* Chain cursors for teardown on abnormal exit. */
     mi = xcalloc(1, sizeof(*mi));
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
@@ -2423,6 +2425,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     key = &mi->mi_key;
     data = &mi->mi_data;
 
+    /*
+     * Handle label and file name special cases.
+     * Otherwise, retrieve join keys for secondary lookup.
+     */
 /*@-branchstate@*/
     if (rpmtag != RPMDBI_PACKAGES && keyp) {
 	DBC * dbcursor = NULL;
@@ -2430,7 +2436,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	int xx;
 
 	if (isLabel) {
-	    /* XXX HACK to get rpmdbFindByLabel out of the API */
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 	    rc = dbiFindByLabel(dbi, dbcursor, key, data, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
@@ -2456,8 +2461,9 @@ if (key->data && key->size == 0) key->size++;	/* XXX "/" fixup. */
 			rc, (key->data ? key->data : "???"), tagName(dbi->dbi_rpmtag));
 	    }
 
-if (rc == 0)
-(void) dbt2set(dbi, data, &set);
+	    /* Join keys need to be native endian internally. */
+	    if (rc == 0)
+		(void) dbt2set(dbi, data, &set);
 
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
@@ -2472,17 +2478,31 @@ if (rc == 0)
     }
 /*@=branchstate@*/
 
+    /* Copy the retrieval key, byte swapping header instance if necessary. */
     if (keyp) {
-	char * k;
+	switch (rpmtag) {
+	case RPMDBI_PACKAGES:
+	  { union _dbswap *k;
 
-	if (rpmtag != RPMDBI_PACKAGES && keylen == 0)
-	    keylen = strlen(keyp);
-	k = xmalloc(keylen + 1);
+assert(keylen == sizeof(k->ui));		/* xxx programmer error */
+	    k = xmalloc(sizeof(*k));
+	    memcpy(k, keyp, keylen);
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(*k);
+	    mi_keyp = k;
+	  } break;
+	default:
+	  { char * k;
+	    if (keylen == 0)
+		keylen = strlen(keyp);
+	    k = xmalloc(keylen + 1);
 /*@-boundsread@*/
-	memcpy(k, keyp, keylen);
+	    memcpy(k, keyp, keylen);
 /*@=boundsread@*/
-	k[keylen] = '\0';	/* XXX for strings */
-	mi_keyp = k;
+	    k[keylen] = '\0';	/* XXX assumes strings */
+	    mi_keyp = k;
+	  } break;
+	}
     }
 
     mi->mi_keyp = mi_keyp;

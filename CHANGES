@@ -34,6 +34,7 @@
 	- fix: increase file context regex parse buffer to BUFSIZ.
 	- fix: handle elf64 note sections correctly.
 	- fix: grrr, skip notes on non-i386 entirely.
+	- endian neutral rpmdb join keys (finally).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
