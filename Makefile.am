@@ -5,6 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	docs/[a-z]* gendiff $(man_MANS) po/*.in po/*.po po/rpm.pot \
+	python/*.am python/*.in python/*.c python/testit \
 	rpm.magic rpmpopt rpm.spec rpm.8ru rpm2cpio.8ru
 
 EXTRA_PROGRAMS = rpmconvert

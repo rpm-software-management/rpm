@@ -22,7 +22,7 @@ capabilities.
 
 %prep
 %setup -q
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr --disable-shared
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
 
 %build
 make
