@@ -18,7 +18,7 @@ typedef unsigned int uint_32;
 #else
 
 typedef long long int int_64;
-typedef long int int_32;
+typedef int int_32;
 typedef short int int_16;
 typedef char int_8;
 
@@ -26,6 +26,7 @@ typedef unsigned int uint_32;
 #endif
 
 typedef struct headerToken *Header;
+typedef struct headerIteratorS *HeaderIterator;
 
 /* read and write a header from a file */
 Header readHeader(int fd);
@@ -48,6 +49,10 @@ void dumpHeader(Header h, FILE *f, int flags);
 
 int getEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
 int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+
+HeaderIterator initIterator(Header h);
+int nextIterator(HeaderIterator iter,
+		 int_32 *tag, int_32 *type, void **p, int_32 *c);
 
 /* Entry Types */
 

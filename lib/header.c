@@ -38,6 +38,73 @@ struct indexEntry {
     int_32 count;
 };
 
+struct headerIteratorS {
+    Header h;
+    int next_index;
+};
+
+HeaderIterator initIterator(Header h)
+{
+    HeaderIterator hi = malloc(sizeof(struct headerIteratorS));
+    hi->h = h;
+    hi->next_index = 0;
+    return hi;
+}
+
+int nextIterator(HeaderIterator iter,
+		 int_32 *tag, int_32 *type, void **p, int_32 *c)
+{
+    struct headerToken *h = iter->h;
+    struct indexEntry *index = h->index;
+    int x = h->entries_used;
+    int slot = iter->next_index;
+    char **spp;
+    char *sp;
+
+    if (slot == h->entries_used) {
+	return 0;
+    }
+    iter->next_index++;
+    
+    *tag = ntohl(index[slot].tag);
+    *type = ntohl(index[slot].type);
+    *c = ntohl(index[slot].count);
+
+    /* Now look it up */
+    switch (*type) {
+    case INT64_TYPE:
+    case INT32_TYPE:
+    case INT16_TYPE:
+    case INT8_TYPE:
+    case BIN_TYPE:
+    case CHAR_TYPE:
+	*p = h->data + ntohl(index[slot].offset);
+	break;
+    case STRING_TYPE:
+	if (*c == 1) {
+	    /* Special case -- just return a pointer to the string */
+	    *p = h->data + ntohl(index[slot].offset);
+	} else {
+	    /* Otherwise, build up an array of char* to return */
+	    x = index[slot].count;
+	    p = malloc(x * sizeof(char *));
+	    spp = (char **) p;
+	    sp = h->data + ntohl(index[slot].offset);
+	    while (x--) {
+		*spp++ = sp;
+		sp = strchr(sp, 0);
+		sp++;
+	    }
+	}
+	break;
+    default:
+	fprintf(stderr, "Data type %d not supprted\n", (int) *type);
+	exit(1);
+    }
+
+    return 1;
+}
+
 /********************************************************************/
 
 unsigned int sizeofHeader(Header h)
