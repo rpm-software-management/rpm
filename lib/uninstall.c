@@ -216,9 +216,6 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	rmmess = "would remove";
     } else {
 	rmmess = "removing";
-	if (isVerbose()) {
-	    printf("Removing %s-%s-%s\n", name, version, release);
-	}
     }
 
     message(MESS_DEBUG, "running preuninstall script (if any)\n");
