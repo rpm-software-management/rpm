@@ -14,7 +14,7 @@ for f in $exelist; do
     if [ -x $f ]; then
 	ldd $f | awk '/=>/ { print $1 }'
     fi
-done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | grep -v '4[um]lib.so' | sort -u
+done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | grep -v 'libNoVersion.so' | grep -v '4[um]lib.so' | sort -u
 
 for f in $liblist; do
     ldd $f | awk '/=>/ { print $1 }'
