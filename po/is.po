@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 1.36\n"
+"Project-Id-Version: rpm 1.37\n"
 "POT-Creation-Date: 2000-07-31 08:48-0400\n"
-"PO-Revision-Date: 2000-08-02 12:52+0000\n"
+"PO-Revision-Date: 2000-08-02 13:00+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
 "MIME-Version: 1.0\n"
@@ -419,7 +419,7 @@ msgstr "        -f <skrá>+        "
 
 #: rpm.c:328
 msgid "query package owning <file>"
-msgstr ""
+msgstr "fyrirspurn á pakkann sem á <skrá>"
 
 #: rpm.c:329
 msgid "        -p <packagefile>+ "
@@ -427,11 +427,11 @@ msgstr "        -p <pakkaskrá>+ "
 
 #: rpm.c:330
 msgid "query (uninstalled) package <packagefile>"
-msgstr ""
+msgstr "fyrirspurn á (fjarlægðann) package <pakkaskrá>"
 
 #: rpm.c:331
 msgid "        --triggeredby <pkg>"
-msgstr ""
+msgstr "        --triggeredby <pakki>"
 
 #: rpm.c:332
 msgid "query packages triggered by <pkg>"
@@ -439,19 +439,19 @@ msgstr ""
 
 #: rpm.c:333
 msgid "        --whatprovides <cap>"
-msgstr ""
+msgstr "        --whatprovides <cap>"
 
 #: rpm.c:334
 msgid "query packages which provide <cap> capability"
-msgstr ""
+msgstr "fyrirspurn á pakkana sem veita <cap> eiginleika"
 
 #: rpm.c:335
 msgid "        --whatrequires <cap>"
-msgstr ""
+msgstr "        --whatrequires <cap>"
 
 #: rpm.c:336
 msgid "query packages which require <cap> capability"
-msgstr ""
+msgstr "fyrirspurn á pakkana sem þarfnast <cap> eiginleika"
 
 #: rpm.c:337
 msgid "      Information selection options:"
@@ -3702,7 +3702,7 @@ msgstr ""
 
 #: rpmio/rpmio.c:566
 msgid "Unknown or unexpected error"
-msgstr ""
+msgstr "Óþekkt eða óvænt villa"
 
 #: rpmio/rpmio.c:1161
 #, c-format
@@ -3712,7 +3712,7 @@ msgstr ""
 #: rpmio/macro.c:161
 #, c-format
 msgid "======================== active %d empty %d\n"
-msgstr ""
+msgstr "======================== virkt %d tómt %d\n"
 
 #. XXX just in case
 #: rpmio/macro.c:256
@@ -3756,7 +3756,7 @@ msgstr ""
 #: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)"
-msgstr ""
+msgstr "+Oþekkt viðfang %c í %s(%s)"
 
 #: rpmio/macro.c:854
 #, c-format
@@ -3774,7 +3774,7 @@ msgstr ""
 
 #: rpmio/macro.c:1102
 msgid "Macro %%%.*s not found, skipping"
-msgstr ""
+msgstr "Fjölvi %%%.*s fanmst ekki. Sleppi"
 
 #: rpmio/macro.c:1183
 msgid "Target buffer overflow"
@@ -3784,70 +3784,70 @@ msgstr ""
 #: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, c-format
 msgid "File %s: %s"
-msgstr ""
+msgstr "Skrá %s: %s"
 
 #: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
-msgstr ""
+msgstr "Skráin %s er minni en %d bæti"
 
 #: rpmio/messages.c:55
 msgid "warning: "
-msgstr ""
+msgstr "aðvörun: "
 
 #: rpmio/messages.c:64
 msgid "error: "
-msgstr ""
+msgstr "villa: "
 
 #: rpmio/messages.c:73
 msgid "fatal error: "
-msgstr ""
+msgstr "banvæn villa: "
 
 #: rpmio/messages.c:82
 msgid "internal error (rpm bug?): "
-msgstr ""
+msgstr "innvær villa (í rpm?): "
 
 #: rpmio/rpmmalloc.c:9
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
-msgstr ""
+msgstr "minnisfrátekt (%u bæta) skilaði NULL.\n"
 
 #: rpmio/url.c:88
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr ""
+msgstr "aðvörun: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
 #: rpmio/url.c:105
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr ""
+msgstr "aðvörun: u %p data %p nrefs != 0 (%s %s)\n"
 
 #: rpmio/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr ""
+msgstr "aðvörun: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
 #: rpmio/url.c:218
 #, c-format
 msgid "Password for %s@%s: "
-msgstr ""
+msgstr "Lykilorð fyrir %s@%s: "
 
 #: rpmio/url.c:243 rpmio/url.c:269
 #, c-format
 msgid "error: %sport must be a number\n"
-msgstr ""
+msgstr "villa: %sport verður að vera tala\n"
 
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
-msgstr ""
+msgstr "gátt slóðar verður að vera tala\n"
 
 #: rpmio/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
-msgstr ""
+msgstr "gat ekki opnað %s: %s\n"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462
 #, c-format
 msgid "failed to create %s: %s\n"
-msgstr ""
+msgstr "gat ekki búið til %s: %s\n"
