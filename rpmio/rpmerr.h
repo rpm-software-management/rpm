@@ -128,9 +128,9 @@ typedef enum rpmerrCode_e {
     RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */
     RPMERR_SIGVFY	= _nm(202), /*!< */
 
-    RPMWARN_UNLINK	= _wm(512u+16),  /*!< unlink(2) failed */
-    RPMWARN_RMDIR	= _wm(512u+17),  /*!< rmdir(2) failed */
-    RPMWARN_FLOCK	= _wm(512u+27)   /*!< locking the database failed */
+    RPMDEBUG_UNLINK	= _dm(512u+16),	/*!< unlink(2) failed */
+    RPMDEBUG_RMDIR	= _dm(512u+17),	/*!< rmdir(2) failed */
+    RPMWARN_FLOCK	= _wm(512u+27)	/*!< locking the database failed */
 } rpmerrCode;
 /*@=typeuse @*/
 

@@ -6,7 +6,7 @@
 
 #define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.4 2001/07/21 19:44:22 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.5 2001/08/27 18:39:17 jbj Exp $";
 
 static char *module_doc = "Python bindings for the popt library\n\
 \n\
@@ -622,8 +622,8 @@ static PyObject * _strerror(PyObject *self, PyObject *args)
 
 /* Methods for the popt module */
 static struct PyMethodDef poptModuleMethods[] = {
-    {"getContext", (PyCFunction)getContext},
-    {"strerror", (PyCFunction)_strerror},
+    {"getContext", (PyCFunction)getContext, METH_VARARGS, NULL},
+    {"strerror", (PyCFunction)_strerror, METH_VARARGS, NULL},
     {NULL, NULL}
 };
 

@@ -355,6 +355,7 @@ typedef enum rpmTag_e {
     RPMTAG_MULTILIBS		= 1127,
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
+    RPMTAG_SHA1RHN		= 1130, /*!< internal */
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/

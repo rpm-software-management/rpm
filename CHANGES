@@ -222,6 +222,10 @@
 	- verify perms (but not mode) on %ghost files.
 	- headers without RPMTAG_NAME are skipped when retrieved.
 	- within a region, entries sort by address; added drips sort by tag.
+	- fix: error message on failed package installs resurrected.
+	- python: memory leaks in headerLoad/headerunload bindings.
+	- python: retrofit sha1 digest using RPMTAG_SHA1RHN.
+	- python: change rhnUnload bindings.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -456,7 +456,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		unsigned int * archiveSize, const char ** failedFile)
 {
     size_t pos = 0;
-    int rc;
+    int rc, ec = 0;
 
     fsm->goal = goal;
     if (cfd) {
@@ -488,15 +488,17 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	    sprintf(fsm->sufbuf, ";%08x", (unsigned)ts->id);
     }
 
-    rc = fsm->rc = 0;
+    ec = fsm->rc = 0;
     rc = fsmStage(fsm, FSM_CREATE);
+    if (rc && !ec) ec = rc;
 
     rc = fsmStage(fsm, fsm->goal);
+    if (rc && !ec) ec = rc;
 
-    if (fsm->archiveSize && rc == 0)
+    if (fsm->archiveSize && ec == 0)
 	*fsm->archiveSize = (fdGetCpioPos(fsm->cfd) - pos);
 
-   return rc;
+   return ec;
 }
 
 int fsmTeardown(FSM_t fsm) {
@@ -1255,8 +1257,10 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    /* Notify on success. */
 	    (void) fsmStage(fsm, FSM_NOTIFY);
 
-	    if (fsmStage(fsm, FSM_FINI))
+	    rc = fsmStage(fsm, FSM_FINI);
+	    if (rc) {
 		/*@loopbreak@*/ break;
+	    }
 	}
 	break;
     case FSM_PKGERASE:
@@ -1669,13 +1673,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 
 			/* XXX common error message. */
 			rpmError(
-			    (strict_erasures ? RPMERR_RMDIR : RPMWARN_RMDIR),
+			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
 				fiTypeString(fi), fsm->path);
 			break;
 		    default:
 			rpmError(
-			    (strict_erasures ? RPMERR_RMDIR : RPMWARN_RMDIR),
+			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 				_("%s rmdir of %s failed: %s\n"),
 				fiTypeString(fi), fsm->path, strerror(errno));
 			break;
@@ -1685,7 +1689,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    if (!rc) break;
 		    if (!(errno == ENOENT && (fsm->fflags & RPMFILE_MISSINGOK)))
 			rpmError(
-			    (strict_erasures ? RPMERR_UNLINK : RPMWARN_UNLINK),
+			    (strict_erasures ? RPMERR_UNLINK : RPMDEBUG_UNLINK),
 				_("%s unlink of %s failed: %s\n"),
 				fiTypeString(fi), fsm->path, strerror(errno));
 		}
@@ -1732,6 +1736,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 
 	/* Notify on success. */
 	if (!rc)		rc = fsmStage(fsm, FSM_NOTIFY);
+	else if (fsm->failedFile && *fsm->failedFile == NULL) {
+	    *fsm->failedFile = fsm->path;
+	    fsm->path = NULL;
+	}
 	break;
     case FSM_DESTROY:
 	fsm->path = _free(fsm->path);

@@ -450,7 +450,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
-	rpmError(RPMERR_NOSPACE, _("Unable to write %s header\n"), "temp");
+	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
 	    rc = cpio_doio(fd, h, csa, rpmio_flags);
@@ -493,7 +493,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     fdInitSHA1(fd, 0);
     if (headerWrite(fd, h, HEADER_MAGIC_NO)) {
 	rc = RPMERR_NOSPACE;
-	rpmError(RPMERR_NOSPACE, _("Unable to write %s header\n"), "final");
+	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }
     (void) Fflush(fd);
     fdFiniSHA1(fd, (void **)&sha1, NULL, 1);
@@ -524,7 +524,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
     if (sig == NULL) {	/* XXX can't happen */
 	rc = RPMERR_RELOAD;
-	rpmError(RPMERR_RELOAD, _("Unable to reload %s header.\n"), "signature");
+	rpmError(RPMERR_RELOAD, _("Unable to reload signature header.\n"));
 	goto exit;
     }
 

@@ -18,9 +18,15 @@
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 #include "misc.h"
 #include "rpmio_internal.h"
+#include "header_internal.h"
 #include "upgrade.h"
 
 extern int _rpmio_debug;
+
+/*@unused@*/ static inline Header headerAllocated(Header h) {
+    h->flags |= HEADERFLAG_ALLOCATED;
+    return 0;
+}
 
 #ifdef __LCLINT__
 #undef	PyObject_HEAD
@@ -439,6 +445,59 @@ static void mungeFilelist(Header h)
     free((void *)fileNames);
 }
 
+/** 
+ */
+static PyObject * rhnUnload(PyObject * self, PyObject * args) {
+    int len;
+    char * uh;
+    PyObject * rc;
+    hdrObject *s;
+    Header h;
+
+    if (!PyArg_ParseTuple(args, ""))
+        return NULL;
+
+    h = headerLink(s->h);
+
+    /* Legacy headers are forced into immutable region. */
+    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+	/* XXX Another unload/load cycle to "seal" the immutable region. */
+	uh = headerUnload(nh);
+	headerFree(nh);
+	h = headerLoad(uh);
+	headerAllocated(h);
+    }
+
+    /* All headers have SHA1 digest, compute and add if necessary. */
+    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)) {
+	int_32 uht, uhc;
+	const char * digest;
+        size_t digestlen;
+        DIGEST_CTX ctx;
+
+	headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, (void **)&uh, &uhc);
+
+	ctx = rpmDigestInit(RPMDIGEST_SHA1);
+        rpmDigestUpdate(ctx, uh, uhc);
+        rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
+
+	headerAddEntry(h, RPMTAG_SHA1RHN, RPM_STRING_TYPE, digest, 1);
+
+	uh = headerFreeData(uh, uht);
+	digest = _free(digest);
+    }
+
+    len = headerSizeof(h, 0);
+    uh = headerUnload(h);
+    headerFree(h);
+
+    rc = PyString_FromStringAndSize(uh, len);
+    free(uh);
+
+    return rc;
+}
+
 /** \ingroup python
  */
 static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args) {
@@ -457,6 +516,7 @@ static struct PyMethodDef hdrMethods[] = {
 	{"expandFilelist",	(PyCFunction) hdrExpandFilelist,	1 },
 	{"compressFilelist",	(PyCFunction) hdrCompressFilelist,	1 },
 	{"fullFilelist",	(PyCFunction) hdrFullFilelist,	1 },
+	{"rhnUnload",	(PyCFunction) rhnUnload, 1 },
 	{NULL,		NULL}		/* sentinel */
 };
 
@@ -1804,6 +1864,7 @@ static PyObject * hdrLoad(PyObject * self, PyObject * args) {
 	PyErr_SetString(pyrpmError, "bad header");
 	return NULL;
     }
+    headerAllocated(hdr);
     compressFilelist (hdr);
     providePackageNVR (hdr);
 
@@ -1840,6 +1901,7 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
 	PyErr_SetString(pyrpmError, "bad header");
 	return NULL;
     }
+    headerAllocated(hdr);
 
     if (!headerIsEntry(hdr, RPMTAG_HEADERIMMUTABLE)) {
 	PyErr_SetString(pyrpmError, "bad header, not immutable");
@@ -1867,57 +1929,6 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
     h->modes = h->rdevs = NULL;
 
     return (PyObject *) h;
-}
-
-/** 
- */
-static PyObject * rhnUnload(PyObject * self, PyObject * args) {
-    int len;
-    char * uh;
-    PyObject * rc;
-    hdrObject *s;
-    Header h;
-    if (!PyArg_ParseTuple(args, "O!", &hdrType, &s))
-        return NULL;
-
-    h = headerLink(s->h);
-
-    /* Legacy headers are forced into immutable region. */
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
-	/* XXX Another unload/load cycle to "seal" the immutable region. */
-	uh = headerUnload(nh);
-	headerFree(nh);
-	h = headerLoad(uh);
-    }
-
-    /* All headers have SHA1 digest, compute and add if necessary. */
-    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)) {
-	int_32 uht, uhc;
-	const char * digest;
-        size_t digestlen;
-        DIGEST_CTX ctx;
-
-	headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, (void **)&uh, &uhc);
-
-	ctx = rpmDigestInit(RPMDIGEST_SHA1);
-        rpmDigestUpdate(ctx, uh, uhc);
-        rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
-
-	headerAddEntry(h, RPMTAG_SHA1HEADER, RPM_STRING_TYPE, digest, 1);
-
-	uh = headerFreeData(uh, uht);
-	digest = _free(digest);
-    }
-
-    len = headerSizeof(h, 0);
-    uh = headerUnload(h);
-    headerFree(h);
-
-    rc = PyString_FromStringAndSize(uh, len);
-    free(uh);
-
-    return rc;
 }
 
 /**
@@ -2415,7 +2426,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
     { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
-    { "rhnUnload", (PyCFunction) rhnUnload, METH_VARARGS, NULL },
     { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS, NULL },
     { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS, NULL },
     { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },

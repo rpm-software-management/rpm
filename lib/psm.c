@@ -1779,15 +1779,17 @@ assert(psm->mi == NULL);
 	    if (!rc) {
 		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"),
 			(psm->pkgURL ? psm->pkgURL : "???"));
-	    } else {
-		if (psm->failedFile)
-		    rpmError(RPMERR_CPIO,
-			_("create archive failed on file %s: %s\n"),
-			psm->failedFile, cpioStrerror(rc));
-		else
-		    rpmError(RPMERR_CPIO, _("create archive failed: %s\n"),
-			cpioStrerror(rc));
 	    }
+	}
+
+	if (rc) {
+	    if (psm->failedFile)
+		rpmError(RPMERR_CPIO,
+			_("%s failed on file %s: %s\n"),
+			psm->stepName, psm->failedFile, cpioStrerror(rc));
+	    else
+		rpmError(RPMERR_CPIO, _("%s failed: %s\n"),
+			psm->stepName, cpioStrerror(rc));
 	}
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE))
@@ -1803,7 +1805,6 @@ assert(psm->mi == NULL);
 	fi->fuser = hfd(fi->fuser, -1);
 	fi->apath = _free(fi->apath);
 	fi->fstates = _free(fi->fstates);
-
 	break;
 
     case PSM_PKGINSTALL:
