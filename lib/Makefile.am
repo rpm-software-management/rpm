@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt @INCPATH@
 
-EXTRA_DIST = falloc.c db1.c db2.c db3.c
+EXTRA_DIST = db3.c db2.c db1.c falloc.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -15,8 +15,10 @@ noinst_HEADERS = \
 	md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
 	rpmdb.h rpmlead.h signature.h
 
-mylibpaths =	-L$(top_builddir)/lib -L$(top_builddir)/popt
-mylibs =	-lrpm -lrpmio -lpopt @INTLLIBS@ @LIBMISC@
+mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \
+		-L$(top_builddir)/popt/.libs
+mylibs =	-lrpm -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
+LIBS=
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
@@ -26,50 +28,50 @@ librpm_la_SOURCES = \
 	poptBT.c poptQV.c query.c rpmchecksig.c rpmdb.c rpminstall.c \
 	rpmlead.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c verify.c
-librpm_la_LDFLAGS = -L$(top_builddir)/rpmio/.libs -lrpmio
+librpm_la_LDFLAGS = @libdb3@ @libdb2@ @libdb1@
 librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 
-# XXX Drill out -L ldflags remnants until libtool-1.4 appears
+# XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|-L$(top_builddir)/rpmio/.libs ||" < librpm.la > .librpm.la && \
+	sed -e "s|^dependency_libs='|& -lrpmio|" < librpm.la > .librpm.la && \
 	mv .librpm.la librpm.la
 
 falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
-db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} @libdb3@ ; \
-	    @__OBJCOPY@ `\
-		@__NM@ -g --defined-only $${F}.o | \
-		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-		grep -v '^-L $*'` $${F}.o $${F} ; \
-	    rm -f $${F}.o ; \
-	done
+#db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
+#	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+#	for F in $*.o $*.lo ; do \
+#	    @__LD@ -r -o $${F}.o $${F} @libdb3@ ; \
+#	    @__OBJCOPY@ `\
+#		@__NM@ -g --defined-only $${F}.o | \
+#		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
+#		grep -v '^-L $*'` $${F}.o $${F} ; \
+#	    rm -f $${F}.o ; \
+#	done
 
-db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} @libdb2@ ; \
-	    @__OBJCOPY@ `\
-		@__NM@ -g --defined-only $${F}.o | \
-		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-		grep -v '^-L $*'` $${F}.o $${F} ; \
-	    rm -f $${F}.o ; \
-	done
+#db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
+#	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+#	for F in $*.o $*.lo ; do \
+#	    @__LD@ -r -o $${F}.o $${F} @libdb2@ ; \
+#	    @__OBJCOPY@ `\
+#		@__NM@ -g --defined-only $${F}.o | \
+#		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
+#		grep -v '^-L $*'` $${F}.o $${F} ; \
+#	    rm -f $${F}.o ; \
+#	done
 
-db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} falloc.lo @libdb1@ ; \
-	    @__OBJCOPY@ `\
-		@__NM@ -g --defined-only $${F}.o | \
-		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
-		grep -v '^-L $*' | grep -v '^-L fadio'` $${F}.o $${F} ; \
-	    rm -f $${F}.o ; \
-	done
+#db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
+#	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+#	for F in $*.o $*.lo ; do \
+#	    @__LD@ -r -o $${F}.o $${F} falloc.lo @libdb1@ ; \
+#	    @__OBJCOPY@ `\
+#		@__NM@ -g --defined-only $${F}.o | \
+#		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
+#		grep -v '^-L $*' | grep -v '^-L fadio'` $${F}.o $${F} ; \
+#	    rm -f $${F}.o ; \
+#	done
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c

@@ -19,6 +19,7 @@ myLDADD = $(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/popt/libpopt.la \
 	@INTLLIBS@
 
+LIBS =
 #LDFLAGS = $(myLDFLAGS)
 LDADD = $(myLDADD)
 

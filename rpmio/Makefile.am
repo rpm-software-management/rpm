@@ -12,14 +12,11 @@ noinst_HEADERS = rpmio_internal.h ugid.h
 lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = rpmrpc.c rpmio.c url.c macro.c \
 	ugid.c rpmmalloc.c rpmerr.c messages.c
-librpmio_la_LDFLAGS = -L$(top_builddir)/popt/.libs -lpopt
-# XXX solaris2.5.1 likes not
-#librpmio_la_LIBADD = @LIBMISC@
 
-# XXX Drill out -L ldflags remnants until libtool-1.4 appears
+# XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|-L$(top_builddir)/popt/.libs ||" < librpmio.la > .librpmio.la && \
+	sed -e "s|^dependency_libs='|& -lpopt|" < librpmio.la > .librpmio.la && \
 	mv .librpmio.la librpmio.la
 
 .PHONY:	lclint

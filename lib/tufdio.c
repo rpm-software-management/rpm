@@ -64,7 +64,7 @@ static int doFIO(const char *ofn, const char *rfmode, const char *wfmode)
 	warn("Compare: write(%s) \"%s\" != read(%s) \"%s\" for %s\n", wfmode, ofn, rfmode, buf, ofn);
     else
 	rc = 0;
-    if (ufdio->unlink(ofn) != 0)
+    if (ufdio->_unlink(ofn) != 0)
 	warn("Unlink: write(%s) read(%s) for %s\n", wfmode, rfmode, ofn);
     return rc;
 }
@@ -91,44 +91,44 @@ static int doDir(const char *url)
     const char * ndn = xstrconcat(url, tmpdir, mktemp(DIO_XXXXXX), NULL);
 
 fprintf(stderr, "*** Rename #1 %s -> %s fail\n", ndn, odn);
-    if (!ufdio->rename(ndn, odn))
+    if (!ufdio->_rename(ndn, odn))
 	err(1, "Rename: dir !exists %s !exists %s fail\n", ndn, odn);
 fprintf(stderr, "*** Chdir #1 %s fail\n", odn);
-    if (!ufdio->chdir(odn))		err(1, "Chdir: !exists %s fail\n", odn);
+    if (!ufdio->_chdir(odn))		err(1, "Chdir: !exists %s fail\n", odn);
 
 fprintf(stderr, "*** Mkdir #1 %s\n", odn);
-    if (ufdio->mkdir(odn, 0755))	err(1, "Mkdir: !exists %s\n", odn);
+    if (ufdio->_mkdir(odn, 0755))	err(1, "Mkdir: !exists %s\n", odn);
 fprintf(stderr, "*** Mkdir %s fail\n", odn);
-    if (!ufdio->mkdir(odn, 0755))	err(1, "Mkdir: exists %s fail\n", odn);
+    if (!ufdio->_mkdir(odn, 0755))	err(1, "Mkdir: exists %s fail\n", odn);
 
 fprintf(stderr, "*** Chdir #2 %s\n", odn);
-    if (ufdio->chdir(odn))		err(1, "Chdir: exists %s\n", odn);
+    if (ufdio->_chdir(odn))		err(1, "Chdir: exists %s\n", odn);
 
 fprintf(stderr, "*** Rename #2 %s -> %s fail\n", ndn, odn);
-    if (!ufdio->rename(ndn, odn))
+    if (!ufdio->_rename(ndn, odn))
 	err(1, "Rename: dir !exists %s exists %s fail\n", ndn, odn);
 fprintf(stderr, "*** Rename #3 %s -> %s\n", odn, ndn);
-    if (ufdio->rename(odn, ndn))
+    if (ufdio->_rename(odn, ndn))
 	err(1, "Rename: dir exists %s !exists %s\n", odn, ndn);
 
 fprintf(stderr, "*** Mkdir #2 %s\n", ndn);
-    if (ufdio->mkdir(odn, 0755))	err(1, "Mkdir: #2 !exists %s\n", odn);
+    if (ufdio->_mkdir(odn, 0755))	err(1, "Mkdir: #2 !exists %s\n", odn);
 
 fprintf(stderr, "*** Rename #4 %s -> %s fail\n", odn, ndn);
-    if (!ufdio->rename(odn, ndn))
+    if (!ufdio->_rename(odn, ndn))
 	err(1, "Rename: dir exists %s exists %s fail\n", odn, ndn);
 
     doFile(url, odn, ndn);
 
 fprintf(stderr, "*** Rmdir #1 %s\n", odn);
-    if (ufdio->rmdir(odn))		err(1, "Rmdir: exists %s\n", odn);
+    if (ufdio->_rmdir(odn))		err(1, "Rmdir: exists %s\n", odn);
 fprintf(stderr, "*** Rmdir #1 %s fail\n", odn);
-    if (!ufdio->rmdir(odn))		err(1, "Rmdir: !exists %s fail\n", odn);
+    if (!ufdio->_rmdir(odn))		err(1, "Rmdir: !exists %s fail\n", odn);
 
 fprintf(stderr, "*** Rmdir #3 %s\n", ndn);
-    if (ufdio->rmdir(ndn))		err(1, "Rmdir: exists %s\n", ndn);
+    if (ufdio->_rmdir(ndn))		err(1, "Rmdir: exists %s\n", ndn);
 fprintf(stderr, "*** Rmdir #4 %s fail\n", ndn);
-    if (!ufdio->rmdir(ndn))		err(1, "Rmdir: !exists %s fail\n", ndn);
+    if (!ufdio->_rmdir(ndn))		err(1, "Rmdir: !exists %s fail\n", ndn);
 
     return 0;
 }

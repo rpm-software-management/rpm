@@ -5,6 +5,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt @INCPATH@
 
+LIBS =
+
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h myftw.h
@@ -15,13 +17,12 @@ librpmbuild_la_SOURCES = \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c reqprov.c spec.c
-librpmbuild_la_LIBADD = -L$(top_builddir)/lib/.libs -lrpm
 
-# XXX Drill out -L ldflags remnants until libtool-1.4 appears
+# XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|-L$(top_builddir)/lib/.libs ||" < librpmbuild.la > .librpmbuild.la && \
-	mv .librpmbuild.la librpmio.la
+	sed -e "s|^dependency_libs='|& -lrpm|" < librpmbuild.la > .librpmbuild.la && \
+	mv .librpmbuild.la librpmbuild.la
 
 
 .PHONY:	lclint
