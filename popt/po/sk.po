@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-08-26 12:38-0400\n"
+"POT-Creation-Date: 2002-10-15 15:04-0400\n"
 "PO-Revision-Date: 1999-08-04 21:40+0200\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"

@@ -9,7 +9,6 @@ build/build.c
 build/expression.c
 build/files.c
 build/misc.c
-build/myftw.c
 build/names.c
 build/pack.c
 build/parseBuildInstallClean.c

@@ -5,6 +5,10 @@
 	- comments regarding unsupported (yet) db-4.1.17 functionality.
 	- update to db-4.1.24 final.
 	- eliminate myftw, use Fts(3) instead.
+	- dump libelf, gulp elfutils, for now.
+	- python: permit headers to be hashed.
+	- use %%{_lib} for libraries.
+	- include file-3.39 (with homebrewed) libfmagic, for now.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

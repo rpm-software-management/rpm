@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-06-29 01:40-0700\n"
+"POT-Creation-Date: 2002-10-16 13:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -377,13 +377,8 @@ msgid "  Entry point address:               "
 msgstr ""
 
 #: src/readelf.c:553
-msgid "  Start of program headers:          %"
-msgstr ""
-
-#: src/readelf.c:553 src/readelf.c:556 src/readelf.c:562 src/readelf.c:565
-#: src/readelf.c:571
 #, c-format
-msgid " %s\n"
+msgid "  Start of program headers:          %<PRId64> %s\n"
 msgstr ""
 
 #: src/readelf.c:554 src/readelf.c:557
@@ -391,7 +386,8 @@ msgid "(bytes into file)"
 msgstr ""
 
 #: src/readelf.c:556
-msgid "  Start of section headers:          %"
+#, c-format
+msgid "  Start of section headers:          %<PRId64> %s\n"
 msgstr ""
 
 #: src/readelf.c:559
@@ -400,7 +396,8 @@ msgid "  Flags:                             %s\n"
 msgstr ""
 
 #: src/readelf.c:562
-msgid "  Size of this header:               %"
+#, c-format
+msgid "  Size of this header:               %<PRId16> %s\n"
 msgstr ""
 
 #: src/readelf.c:563 src/readelf.c:566 src/readelf.c:572
@@ -408,31 +405,28 @@ msgid "(bytes)"
 msgstr ""
 
 #: src/readelf.c:565
-msgid "  Size of program header entries:    %"
+#, c-format
+msgid "  Size of program header entries:    %<PRId16> %s\n"
 msgstr ""
 
 #: src/readelf.c:568
-msgid "  Number of program headers entries: %"
-msgstr ""
-
-#: src/readelf.c:568 src/readelf.c:2869
-msgid "\n"
+#, c-format
+msgid "  Number of program headers entries: %<PRId16>\n"
 msgstr ""
 
 #: src/readelf.c:571
-msgid "  Size of section header entries:    %"
+#, c-format
+msgid "  Size of section header entries:    %<PRId16> %s\n"
 msgstr ""
 
 #: src/readelf.c:574
-msgid "  Number of section headers entries: %"
-msgstr ""
-
-#: src/readelf.c:583 src/readelf.c:598
-msgid " (%"
+#, c-format
+msgid "  Number of section headers entries: %<PRId16>"
 msgstr ""
 
 #: src/readelf.c:583
-msgid " in [0].sh_size)"
+#, c-format
+msgid " (%<PRIu32> in [0].sh_size)"
 msgstr ""
 
 #: src/readelf.c:586 src/readelf.c:602
@@ -440,7 +434,8 @@ msgid " ([0] not available)"
 msgstr ""
 
 #: src/readelf.c:598
-msgid " in [0].sh_link)"
+#, c-format
+msgid " (%<PRIu32> in [0].sh_link)"
 msgstr ""
 
 #: src/readelf.c:606
@@ -451,22 +446,16 @@ msgid ""
 msgstr ""
 
 #: src/readelf.c:610
-msgid "  Section header string table index: %"
-msgstr ""
-
-#: src/readelf.c:610
+#, c-format
 msgid ""
-"\n"
+"  Section header string table index: %<PRId16>\n"
 "\n"
 msgstr ""
 
 #: src/readelf.c:642
-msgid "There are %d section headers, starting at offset %#"
-msgstr ""
-
-#: src/readelf.c:643
+#, c-format
 msgid ""
-":\n"
+"There are %d section headers, starting at offset %#<PRIx64>:\n"
 "\n"
 msgstr ""
 
@@ -611,11 +600,8 @@ msgid "Library runpath: [%s]\n"
 msgstr ""
 
 #: src/readelf.c:1126
-msgid "%"
-msgstr ""
-
-#: src/readelf.c:1126
-msgid " (bytes)\n"
+#, c-format
+msgid "%<PRId64> (bytes)\n"
 msgstr ""
 
 #: src/readelf.c:1245 src/readelf.c:1396
@@ -832,21 +818,15 @@ msgid "unknown user attribute %hx"
 msgstr ""
 
 #: src/readelf.c:2735
-msgid "unknown form %"
+#, c-format
+msgid "unknown form %<PRIx64>"
 msgstr ""
 
-#: src/readelf.c:2748 src/readelf.c:2850 src/readelf.c:2891 src/readelf.c:2901
-#: src/readelf.c:2911 src/readelf.c:2935 src/readelf.c:2974
+#: src/readelf.c:2748
+#, c-format
 msgid ""
 "\n"
-"DWARF section '%s' at offset %#"
-msgid_plural " contains %"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/readelf.c:2748
-msgid ""
-":\n"
+"DWARF section '%s' at offset %#<PRIx64>:\n"
 " [ Code]\n"
 msgstr ""
 
@@ -870,18 +850,9 @@ msgstr ""
 msgid " *** error while reading abbreviation children flag: %s\n"
 msgstr ""
 
-#: src/readelf.c:2803 src/readelf.c:2865 src/readelf.c:2867 src/readelf.c:2950
-#: src/readelf.c:2952
-msgid " [%5"
-msgstr ""
-
 #: src/readelf.c:2803
-msgid "] offset: %"
-msgstr ""
-
-#: src/readelf.c:2804
 #, c-format
-msgid ", children: %s, tag: %s\n"
+msgid " [%5<PRId64>] offset: %<PRId64>, children: %s, tag: %s\n"
 msgstr ""
 
 #: src/readelf.c:2806
@@ -902,40 +873,34 @@ msgstr ""
 msgid "cannot get .debug_aranges content: %s"
 msgstr ""
 
-#: src/readelf.c:2851 src/readelf.c:2936
-msgid " entry:\n"
+#: src/readelf.c:2850 src/readelf.c:2935
+#, c-format
+msgid ""
+"\n"
+"DWARF section '%s' at offset %#<PRIx64> contains %<PRId64> entry:\n"
 msgid_plural ""
 "\n"
-"DWARF section '%s' at offset %#"
+"DWARF section '%s' at offset %#<PRIx64> contains %<PRId64> entries:\n"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/readelf.c:2853 src/readelf.c:2938
-msgid " contains %"
-msgstr ""
-
-#: src/readelf.c:2853 src/readelf.c:2938
-msgid " entries:\n"
-msgstr ""
-
 #: src/readelf.c:2865 src/readelf.c:2950
-msgid "] ???\n"
+#, c-format
+msgid " [%5<PRId64>] ???\n"
 msgstr ""
 
 #: src/readelf.c:2867
-msgid "] start: %0#*"
+#, c-format
+msgid ""
+" [%5<PRId64>] start: %0#*<PRIx64>, length: %5<PRIu64>, CU DIE offset: %"
+"6<PRId64>\n"
 msgstr ""
 
-#: src/readelf.c:2868
-msgid ", length: %5"
-msgstr ""
-
-#: src/readelf.c:2868 src/readelf.c:2953
-msgid ", CU DIE offset: %6"
-msgstr ""
-
-#: src/readelf.c:2892 src/readelf.c:2902 src/readelf.c:2912
-msgid ":\n"
+#: src/readelf.c:2891 src/readelf.c:2901 src/readelf.c:2911
+#, c-format
+msgid ""
+"\n"
+"DWARF section '%s' at offset %#<PRIx64>:\n"
 msgstr ""
 
 #: src/readelf.c:2930
@@ -944,17 +909,16 @@ msgid "cannot get .debug_pubnames content: %s"
 msgstr ""
 
 #: src/readelf.c:2952
-msgid "] DIE offset: %6"
-msgstr ""
-
-#: src/readelf.c:2953
 #, c-format
-msgid ", name: %s\n"
+msgid ""
+" [%5<PRId64>] DIE offset: %6<PRId64>, CU DIE offset: %6<PRId64>, name: %s\n"
 msgstr ""
 
 #: src/readelf.c:2974
+#, c-format
 msgid ""
-":\n"
+"\n"
+"DWARF section '%s' at offset %#<PRIx64>:\n"
 " [Offset]  String\n"
 msgstr ""
 
@@ -1430,29 +1394,18 @@ msgid "Warning: type of `%s' changed from %s in %s to %s in %s"
 msgstr ""
 
 #: src/ldgeneric.c:509
-msgid "Warning: size of `%s' changed from %"
-msgstr ""
-
-#: src/ldgeneric.c:510
-msgid " in %s to %"
-msgstr ""
-
-#: src/ldgeneric.c:510
 #, c-format
-msgid " in %s"
-msgstr ""
-
-#: src/ldgeneric.c:604 src/ldgeneric.c:634
-msgid "(%s+%#"
+msgid "Warning: size of `%s' changed from %<PRIu64> in %s to %<PRIu64> in %s"
 msgstr ""
 
 #: src/ldgeneric.c:604
 #, c-format
-msgid "): multiple definition of %s `%s'\n"
+msgid "(%s+%#<PRIx64>): multiple definition of %s `%s'\n"
 msgstr ""
 
 #: src/ldgeneric.c:634
-msgid "): first defined here\n"
+#, c-format
+msgid "(%s+%#<PRIx64>): first defined here\n"
 msgstr ""
 
 #: src/ldgeneric.c:723
@@ -1565,19 +1518,20 @@ msgid "address computation expression contains variable '%s'"
 msgstr ""
 
 #: src/ldgeneric.c:3161
-msgid "argument '%"
-msgstr ""
-
-#: src/ldgeneric.c:3161
-msgid "' of ALIGN in address computation expression is no power of two"
+#, c-format
+msgid ""
+"argument '%<PRIuMAX>' of ALIGN in address computation expression is no power "
+"of two"
 msgstr ""
 
 #: src/ldgeneric.c:3336
-msgid "cannot find entry symbol \"%s\": defaulting to %#0*"
+#, c-format
+msgid "cannot find entry symbol \"%s\": defaulting to %#0*<PRIx64>"
 msgstr ""
 
 #: src/ldgeneric.c:3342
-msgid "no entry symbol specified: defaulting to %#0*"
+#, c-format
+msgid "no entry symbol specified: defaulting to %#0*<PRIx64>"
 msgstr ""
 
 #: src/ldgeneric.c:3421 src/ldgeneric.c:3442 src/ldgeneric.c:3471

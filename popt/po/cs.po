@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-08-26 12:38-0400\n"
+"POT-Creation-Date: 2002-10-15 15:04-0400\n"
 "PO-Revision-Date: 2001-07-24 00:03+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
