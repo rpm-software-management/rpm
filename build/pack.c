@@ -104,7 +104,10 @@ int generateRPM(char *name,       /* name-version-release         */
 
     /* Write the archive to a temp file so we can get the size */
     archiveTemp = tempnam("/var/tmp", "rpmbuild");
-    fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    if ((fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
+	fprintf(stderr, "Could not open %s\n", archiveTemp);
+	return 1;
+    }
     if (cpio_gzip(header, fd, stempdir, &archiveSize)) {
 	close(fd);
 	unlink(archiveTemp);
@@ -117,7 +120,11 @@ int generateRPM(char *name,       /* name-version-release         */
     
     /* Now write the header and append the archive */
     sigtarget = tempnam("/var/tmp", "rpmbuild");
-    fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    if ((fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
+	fprintf(stderr, "Could not open %s\n", sigtarget);
+	unlink(archiveTemp);
+	return 1;
+    }
     writeHeader(fd, header);
     ifd = open(archiveTemp, O_RDONLY, 0644);
     while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
@@ -143,7 +150,12 @@ int generateRPM(char *name,       /* name-version-release         */
     unlink(archiveTemp);
 
     /* Now write the lead */
-    fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    if ((fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
+	fprintf(stderr, "Could not open %s\n", filename);
+	unlink(sigtarget);
+	unlink(filename);
+	return 1;
+    }
     if (writeMagic(fd, name, type, sigtype)) {
 	close(fd);
 	unlink(sigtarget);
