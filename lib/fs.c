@@ -204,9 +204,9 @@ static int getFilesystemList(void)
     }
 
 #   if GETMNTENT_ONE || GETMNTENT_TWO
-	fclose(mtab);
+	(void) fclose(mtab);
 #   elif HAVE_GETMNTINFO_R
-	free(mounts);
+	mounts = _free(mounts);
 #   endif
 
     filesystems[numFilesystems].dev = 0;

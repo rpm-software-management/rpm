@@ -75,7 +75,7 @@ static int matchTok(const char *token, const char *line)
     size_t toklen = strlen(token);
     int rc = 0;
 
-    while ( *(b = be) ) {
+    while ( *(b = be) != '\0' ) {
 	SKIPSPACE(b);
 	be = b;
 	SKIPNONSPACE(be);
@@ -152,7 +152,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     }
 
     /* Save 1st char of next line in order to terminate current line. */
-    if (*spec->nextline) {
+    if (*spec->nextline != '\0') {
 	spec->nextpeekc = *spec->nextline;
 	*spec->nextline = '\0';
     }
@@ -202,7 +202,7 @@ retry:
 
 	    /* remove this file from the stack */
 	    spec->fileStack = ofi->next;
-	    Fclose(ofi->fd);
+	    (void) Fclose(ofi->fd);
 	    ofi->fileName = _free(ofi->fileName);
 	    ofi = _free(ofi);
 
@@ -345,7 +345,7 @@ void closeSpec(Spec spec)
     while (spec->fileStack) {
 	ofi = spec->fileStack;
 	spec->fileStack = spec->fileStack->next;
-	if (ofi->fd) Fclose(ofi->fd);
+	if (ofi->fd) (void) Fclose(ofi->fd);
 	ofi->fileName = _free(ofi->fileName);
 	ofi = _free(ofi);
     }
@@ -546,15 +546,15 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
       for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    const char * name;
-	    headerNVR(pkg->header, &name, NULL, NULL);
+	    (void) headerNVR(pkg->header, &name, NULL, NULL);
 	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s\n"),
 			name);
 	    freeSpec(spec);
 	    return RPMERR_BADSPEC;
 	}
 
-	headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
-	headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
+	(void) headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
+	(void) headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
       }
 #ifdef	DYING
     myos = _free(myos);

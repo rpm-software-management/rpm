@@ -228,18 +228,19 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 {
-    int fileCount;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     const char ** baseNames, ** dirNames;
+    int bnt, dnt;
     int_32 * dirIndexes;
+    int fileCount;
 
-    if (!headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-			(const void **) &baseNames, &fileCount)) return;
+    if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &fileCount))
+	return;
 
-    headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
-			(const void **) &dirNames, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
-			(const void **) &dirIndexes, NULL);
+    (void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+    (void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
     fpLookupList(cache, dirNames, baseNames, dirIndexes, fileCount, fpList);
-    free(dirNames);
-    free(baseNames);
+    dirNames = hfd(dirNames, dnt);
+    baseNames = hfd(baseNames, bnt);
 }

@@ -645,7 +645,7 @@ int parseExpressionBoolean(Spec spec, const char *expr)
   state.spec = spec;
   state.nextToken = 0;
   state.tokenValue = NULL;
-  rdToken(&state);
+  (void) rdToken(&state);
 
   /* Parse the expression. */
   v = doLogical(&state);
@@ -692,7 +692,7 @@ char * parseExpressionString(Spec spec, const char *expr)
   state.spec = spec;
   state.nextToken = 0;
   state.tokenValue = NULL;
-  rdToken(&state);
+  (void) rdToken(&state);
 
   /* Parse the expression. */
   v = doLogical(&state);

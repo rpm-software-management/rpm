@@ -78,11 +78,11 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	void * fp = fdGetFp(u->ctrl);
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
-	    Fclose(u->ctrl);
+	    (void) Fclose(u->ctrl);
 	} else if (fdio->_fileno(u->ctrl) >= 0)
 	    fdio->close(u->ctrl);
 #else
-	Fclose(u->ctrl);
+	(void) Fclose(u->ctrl);
 #endif
 
 	u->ctrl = fdio->_fdderef(u->ctrl, "persist ctrl (urlFree)", file, line);
@@ -97,11 +97,11 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	void * fp = fdGetFp(u->data);
 	if (fp) {
 	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
-	    Fclose(u->data);
+	    (void) Fclose(u->data);
 	} else if (fdio->_fileno(u->data) >= 0)
 	    fdio->close(u->data);
 #else
-	Fclose(u->ctrl);
+	(void) Fclose(u->ctrl);
 #endif
 
 	u->data = fdio->_fdderef(u->data, "persist data (urlFree)", file, line);
@@ -209,11 +209,16 @@ static void urlFind(urlinfo *uret, int mustAsk)
 
     u = urlLink(uCache[ucx], "uCache");
     *uret = u;
+    /*@-usereleased@*/
     u = urlFree(u, "uCache (urlFind)");
+    /*@=usereleased@*/
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
-    if (u->proxyh)	free((void *)u->proxyh);
+    if (u->proxyh) {
+	free((void *)u->proxyh);
+	u->proxyh = NULL;
+    }
 
     /* Perform one-time FTP initialization */
     if (u->urltype == URL_IS_FTP) {
@@ -478,9 +483,9 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
     case URL_IS_DASH:
     case URL_IS_UNKNOWN:
 	if ((rc = ufdGetFile(sfd, tfd))) {
-	    Unlink(dest);
+	    (void) Unlink(dest);
 	    /* XXX FIXME: sfd possibly closed by copyData */
-	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
+	    /*@-usereleased@*/ (void) Fclose(sfd) /*@=usereleased@*/ ;
 	}
 	sfd = NULL;	/* XXX Fclose(sfd) done by ufdGetFile */
 	break;
@@ -491,9 +496,9 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
 
 exit:
     if (tfd)
-	Fclose(tfd);
+	(void) Fclose(tfd);
     if (sfd)
-	Fclose(sfd);
+	(void) Fclose(sfd);
 
     return rc;
 }

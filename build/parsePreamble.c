@@ -50,9 +50,9 @@ static void addOrAppendListEntry(Header h, int_32 tag, char *line)
     int argc;
     const char **argv;
 
-    poptParseArgvString(line, &argc, &argv);
+    (void) poptParseArgvString(line, &argc, &argv);
     if (argc)
-	headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
+	(void) headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
     argv = _free(argv);
 }
 
@@ -139,7 +139,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
     int c = 0;
 
     if (s) {
-	while (*s) {
+	while (*s != '\0') {
 	    while ((c = *s) && xisspace(c)) s++;
 	    se = s;
 	    while ((c = *se) && xisalpha(c)) se++;
@@ -158,7 +158,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	    s = ++se;
 	}
     }
-    if (c == 0 && *bp) *bp = bits;
+    if (c == 0 && bp) *bp = bits;
     return (c ? RPMERR_BADSPEC : 0);
 }
 
@@ -168,13 +168,15 @@ static inline char * findLastChar(char * s)
 {
     char *res = s;
 
-    while (*s) {
+    while (*s != '\0') {
 	if (! xisspace(*s))
 	    res = s;
 	s++;
     }
 
+    /*@-temptrans@*/
     return res;
+    /*@=temptrans@*/
 }
 
 /**
@@ -304,7 +306,7 @@ static void fillOutMainPackage(Header h)
 	if (!headerIsEntry(h, ot->ot_tag)) {
 	    const char *val = rpmExpand(ot->ot_mac, NULL);
 	    if (val && *val != '%')
-		headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
+		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
 	    val = _free(val);
 	}
     }
@@ -334,7 +336,7 @@ static int readIcon(Header h, const char *file)
     size = fdSize(fd);
     iconsize = (size >= 0 ? size : (8 * BUFSIZ));
     if (iconsize == 0) {
-	Fclose(fd);
+	(void) Fclose(fd);
 	rc = 0;
 	goto exit;
     }
@@ -348,14 +350,14 @@ static int readIcon(Header h, const char *file)
 		fn, Fstrerror(fd));
 	rc = RPMERR_BADSPEC;
     }
-    Fclose(fd);
+    (void) Fclose(fd);
     if (rc)
 	goto exit;
 
     if (! strncmp(icon, "GIF", sizeof("GIF")-1)) {
-	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, iconsize);
+	(void) headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, iconsize);
     } else if (! strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
-	headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, iconsize);
+	(void) headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, iconsize);
     } else {
 	rpmError(RPMERR_BADSPEC, _("Unknown icon type: %s\n"), file);
 	rc = RPMERR_BADSPEC;
@@ -395,7 +397,9 @@ stashSt(Spec spec, Header h, int tag, const char *lang)
 	    }
 	}
     }
+    /*@-usereleased -compdef@*/
     return t;
+    /*@=usereleased =compdef@*/
 }
 
 #define SINGLE_TOKEN_ONLY \
@@ -446,7 +450,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     /* See if this is multi-token */
     end = field;
     SKIPNONSPACE(end);
-    if (*end)
+    if (*end != '\0')
 	multiToken = 1;
 
     switch (tag) {
@@ -471,7 +475,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	    }
 	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
 	}
-	headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+	(void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
 	break;
       case RPMTAG_GROUP:
       case RPMTAG_SUMMARY:
@@ -482,9 +486,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
       case RPMTAG_LICENSE:
       case RPMTAG_PACKAGER:
 	if (!*lang)
-	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
 	else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
-	    headerAddI18NString(pkg->header, tag, field, lang);
+	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
@@ -530,7 +534,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
       }	break;
       case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
-	hge(pkg->header, tag, &type, (void **)&array, &num);
+	(void) hge(pkg->header, tag, &type, (void **)&array, &num);
 	while (num--) {
 	    len = strlen(array[num]);
 	    if (array[num][len - 1] == '/' && len > 1) {
@@ -563,7 +567,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
+	(void) headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
 	break;
       case RPMTAG_AUTOREQPROV:
 	pkg->autoReq = parseYesNo(field);
@@ -768,7 +772,9 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
 
     *tag = p->tag;
     if (macro)
+	/*@-onlytrans@*/
 	*macro = p->token;
+	/*@=onlytrans@*/
     return 0;
 }
 
@@ -803,11 +809,11 @@ int parsePreamble(Spec spec, int initialPackage)
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
 	    const char * mainName;
-	    headerNVR(spec->packages->header, &mainName, NULL, NULL);
+	    (void) headerNVR(spec->packages->header, &mainName, NULL, NULL);
 	    sprintf(fullName, "%s-%s", mainName, name);
 	} else
 	    strcpy(fullName, name);
-	headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
+	(void) headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
@@ -819,7 +825,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	    /* Skip blank lines */
 	    linep = spec->line;
 	    SKIPSPACE(linep);
-	    if (*linep) {
+	    if (*linep != '\0') {
 		if (findPreambleTag(spec, &tag, &macro, lang)) {
 		    rpmError(RPMERR_BADSPEC, _("line %d: Unknown tag: %s\n"),
 				spec->lineNum, spec->line);

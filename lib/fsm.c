@@ -648,7 +648,7 @@ static int expandRegular(FSM_t fsm)
     if (st->st_size > 0 && fmd5sum) {
 	const char * md5sum = NULL;
 
-	Fflush(fsm->wfd);
+	(void) Fflush(fsm->wfd);
 	fdFiniMD5(fsm->wfd, (void **)&md5sum, NULL, 1);
 
 	if (md5sum == NULL) {
@@ -761,7 +761,7 @@ static int writeFile(FSM_t fsm, int writeData)
 
 #if HAVE_MMAP
 	if (mapped != (void *)-1) {
-	    /*@-noeffect@*/ munmap(mapped, nmapped) /*@=noeffect@*/;
+	    /*@-noeffect@*/ (void) munmap(mapped, nmapped) /*@=noeffect@*/;
 	    fsm->rdbuf = rdbuf;
 	}
 #endif

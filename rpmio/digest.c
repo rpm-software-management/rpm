@@ -453,14 +453,18 @@ rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 
     /* Process data in ctx->datalen chunks */
     for (; len >= ctx->datalen; buf += ctx->datalen, len -= ctx->datalen) {
+	/*@-mayaliasunique@*/
 	memcpy(ctx->in, buf, ctx->datalen);
+	/*@=mayaliasunique@*/
 	if (ctx->doByteReverse)
 	    byteReverse(ctx->in, ctx->datalen);
 	ctx->transform(ctx);
     }
 
     /* Handle any remaining bytes of data. */
+    /*@-mayaliasunique@*/
     memcpy(ctx->in, buf, len);
+    /*@=mayaliasunique@*/
 }
 
 void

@@ -136,6 +136,8 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 
 int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     char * t, * te;
     
     int queryFlags = qva->qva_flags;
@@ -145,6 +147,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
     char * prefix = NULL;
     const char ** dirNames = NULL;
     const char ** baseNames = NULL;
+    int bnt, dnt;
     const char ** fileMD5List = NULL;
     const char ** fileOwnerList = NULL;
     const char ** fileGroupList = NULL;
@@ -166,7 +169,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 
     if (!queryFormat && !queryFlags) {
 	const char * name, * version, * release;
-	headerNVR(h, &name, &version, &release);
+	(void) headerNVR(h, &name, &version, &release);
 	te = stpcpy(te, name);
 	te = stpcpy( stpcpy(te, "-"), version);
 	te = stpcpy( stpcpy(te, "-"), release);
@@ -194,39 +197,35 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
     if (!(queryFlags & QUERY_FOR_LIST))
 	goto exit;
 
-    if (!headerGetEntry(h, RPMTAG_BASENAMES, &type, 
-				(void **) &baseNames, &count)) {
+    if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count)) {
 	te = stpcpy(te, _("(contains no files)"));
 	goto exit;
     }
-    if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
-			 (void **) &fileStatesList, &count)) {
+    if (!hge(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, &count)) {
 	fileStatesList = NULL;
     }
-    headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, NULL);
-    headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    headerGetEntry(h, RPMTAG_FILEFLAGS, &type, (void **)&fileFlagsList, &count);
-    headerGetEntry(h, RPMTAG_FILESIZES, &type, (void **) &fileSizeList, &count);
-    headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModeList, &count);
-    headerGetEntry(h, RPMTAG_FILEMTIMES, &type, (void **)&fileMTimeList,&count);
-    headerGetEntry(h, RPMTAG_FILERDEVS, &type, (void **) &fileRdevList, &count);
-    headerGetEntry(h, RPMTAG_FILEINODES, &type, (void **)&fileInodeList,&count);
-    headerGetEntry(h, RPMTAG_FILELINKTOS,&type,(void **)&fileLinktoList,&count);
-    headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMD5List, &count);
+    (void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+    (void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    (void) hge(h, RPMTAG_FILEFLAGS, &type, (void **)&fileFlagsList, &count);
+    (void) hge(h, RPMTAG_FILESIZES, &type, (void **) &fileSizeList, &count);
+    (void) hge(h, RPMTAG_FILEMODES, &type, (void **) &fileModeList, &count);
+    (void) hge(h, RPMTAG_FILEMTIMES, &type, (void **)&fileMTimeList,&count);
+    (void) hge(h, RPMTAG_FILERDEVS, &type, (void **) &fileRdevList, &count);
+    (void) hge(h, RPMTAG_FILEINODES, &type, (void **)&fileInodeList,&count);
+    (void) hge(h, RPMTAG_FILELINKTOS,&type,(void **)&fileLinktoList,&count);
+    (void) hge(h, RPMTAG_FILEMD5S, &type, (void **) &fileMD5List, &count);
 
-    if (!headerGetEntry(h, RPMTAG_FILEUIDS, &type, 
-			 (void **) &fileUIDList, &count)) {
+    if (!hge(h, RPMTAG_FILEUIDS, &type, (void **) &fileUIDList, &count)) {
 	fileUIDList = NULL;
-    } else if (!headerGetEntry(h, RPMTAG_FILEGIDS, &type, 
+    } else if (!hge(h, RPMTAG_FILEGIDS, &type, 
 			     (void **) &fileGIDList, &count)) {
 	fileGIDList = NULL;
     }
 
-    if (!headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, 
-			 (void **) &fileOwnerList, &count)) {
+    if (!hge(h, RPMTAG_FILEUSERNAME, &type, (void **) &fileOwnerList, &count)) {
 	fileOwnerList = NULL;
-    } else if (!headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, 
-			     (void **) &fileGroupList, &count)) {
+    } else
+    if (!hge(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroupList, &count)) {
 	fileGroupList = NULL;
     }
 
@@ -349,12 +348,12 @@ exit:
 	rpmMessage(RPMMESS_NORMAL, "%s", t);
     }
     t = _free(t);
-    dirNames = headerFreeData(dirNames, -1);
-    baseNames = headerFreeData(baseNames, -1);
-    fileLinktoList = headerFreeData(fileLinktoList, -1);
-    fileMD5List = headerFreeData(fileMD5List, -1);
-    fileOwnerList = headerFreeData(fileOwnerList, -1);
-    fileGroupList = headerFreeData(fileGroupList, -1);
+    dirNames = hfd(dirNames, dnt);
+    baseNames = hfd(baseNames, bnt);
+    fileLinktoList = hfd(fileLinktoList, -1);
+    fileMD5List = hfd(fileMD5List, -1);
+    fileOwnerList = hfd(fileOwnerList, -1);
+    fileGroupList = hfd(fileGroupList, -1);
     return rc;
 }
 
@@ -511,13 +510,13 @@ restart:
 	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
-		if (fd) Fclose(fd);
+		if (fd) (void) Fclose(fd);
 		retcode = 1;
 		break;
 	    }
 
 	    rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-	    Fclose(fd);
+	    (void) Fclose(fd);
 
 	    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADMAGIC)) {
 		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
@@ -543,7 +542,7 @@ restart:
 	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
-		if (fd) Fclose(fd);
+		if (fd) (void) Fclose(fd);
 		retcode = 1;
 		break;
 	    }
@@ -555,7 +554,7 @@ restart:
 			fileURL, Fstrerror(fd));
 		retcode = 1;
 	    }
-	    Fclose(fd);
+	    (void) Fclose(fd);
 
 	    /* If successful, restart the query loop. */
 	    if (retcode == 0)
@@ -608,7 +607,7 @@ restart:
 	}
 
 	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	    showPackage(qva, NULL, pkg->header);
+	    (void) showPackage(qva, NULL, pkg->header);
 	}
 	freeSpecVec(spec);
       }	break;
@@ -768,7 +767,7 @@ int rpmQuery(QVA_t *qva, rpmQVSources source, const char * arg)
     rc = rpmQueryVerify(qva, source, arg, rpmdb, showQueryPackage);
 
     if (rpmdb != NULL)
-	rpmdbClose(rpmdb);
+	(void) rpmdbClose(rpmdb);
 
     return rc;
 }

@@ -1,3 +1,4 @@
+/*@-globstate -retvalint -unqualifiedtrans -usedef -varuse@*/
 #ifndef lint
 static char const 
 yyrcsid[] = "$FreeBSD: src/usr.bin/yacc/skeleton.c,v 1.28 2000/01/17 02:04:06 bde Exp $";
@@ -123,15 +124,20 @@ struct timeb {
    unportable getdate.c's), but that seems to cause as many problems
    as it solves.  */
 
+#if 0
 extern struct tm	*gmtime();
 extern struct tm	*localtime();
+#endif
+
+extern time_t get_date(char * p, struct timeb * now);
 
 #define yyparse getdate_yyparse
 #define yylex getdate_yylex
 #define yyerror getdate_yyerror
 
-static int yylex ();
-static int yyerror ();
+static int yyparse (void);
+static int yylex (void);
+static int yyerror(const char * s);
 
 #define EPOCH		1970
 #define HOUR(x)		((time_t)(x) * 60)
@@ -189,12 +195,12 @@ static MERIDIAN	yyMeridian;
 static time_t	yyRelMonth;
 static time_t	yyRelSeconds;
 
-#line 179 "./getdate.y"
+#line 184 "./getdate.y"
 typedef union {
     time_t		Number;
     enum _MERIDIAN	Meridian;
 } YYSTYPE;
-#line 198 "y.tab.c"
+#line 203 "y.tab.c"
 #define YYERRCODE 256
 #define tAGO 257
 #define tDAY 258
@@ -412,7 +418,7 @@ short *yyss;
 short *yysslim;
 YYSTYPE *yyvs;
 int yystacksize;
-#line 398 "./getdate.y"
+#line 403 "./getdate.y"
 
 /* Month and day table. */
 static TABLE const MonthDayTable[] = {
@@ -440,7 +446,7 @@ static TABLE const MonthDayTable[] = {
     { "thurs",		tDAY, 4 },
     { "friday",		tDAY, 5 },
     { "saturday",	tDAY, 6 },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 /* Time units table. */
@@ -455,7 +461,7 @@ static TABLE const UnitsTable[] = {
     { "min",		tMINUTE_UNIT,	1 },
     { "second",		tSEC_UNIT,	1 },
     { "sec",		tSEC_UNIT,	1 },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 /* Assorted relative-time words. */
@@ -480,7 +486,7 @@ static TABLE const OtherTable[] = {
     { "eleventh",	tUNUMBER,	11 },
     { "twelfth",	tUNUMBER,	12 },
     { "ago",		tAGO,	1 },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 /* The timezone table. */
@@ -565,7 +571,7 @@ static TABLE const TimezoneTable[] = {
     { "nzst",	tZONE,     -HOUR(12) },	/* New Zealand Standard */
     { "nzdt",	tDAYZONE,  -HOUR(12) },	/* New Zealand Daylight */
     { "idle",	tZONE,     -HOUR(12) },	/* International Date Line East */
-    {  NULL  }
+    {  NULL, 0, 0  }
 };
 
 /* Military timezone table. */
@@ -595,7 +601,7 @@ static TABLE const MilitaryTable[] = {
     { "x",	tZONE,	HOUR(-11) },
     { "y",	tZONE,	HOUR(-12) },
     { "z",	tZONE,	HOUR(  0) },
-    { NULL }
+    { NULL, 0, 0 }
 };
 
 
@@ -603,19 +609,14 @@ static TABLE const MilitaryTable[] = {
 
 /* ARGSUSED */
 static int
-yyerror(s)
-    char	*s;
+yyerror(const char * s)
 {
   return 0;
 }
 
 
 static time_t
-ToSeconds(Hours, Minutes, Seconds, Meridian)
-    time_t	Hours;
-    time_t	Minutes;
-    time_t	Seconds;
-    MERIDIAN	Meridian;
+ToSeconds(time_t Hours, time_t Minutes, time_t Seconds, MERIDIAN Meridian)
 {
     if (Minutes < 0 || Minutes > 59 || Seconds < 0 || Seconds > 59)
 	return -1;
@@ -648,15 +649,9 @@ ToSeconds(Hours, Minutes, Seconds, Meridian)
    * A number from 0 to 99, which means a year from 1900 to 1999, or
    * The actual year (>=100).  */
 static time_t
-Convert(Month, Day, Year, Hours, Minutes, Seconds, Meridian, DSTmode)
-    time_t	Month;
-    time_t	Day;
-    time_t	Year;
-    time_t	Hours;
-    time_t	Minutes;
-    time_t	Seconds;
-    MERIDIAN	Meridian;
-    DSTMODE	DSTmode;
+Convert(time_t Month, time_t Day, time_t Year,
+	time_t Hours, time_t Minutes, time_t Seconds,
+	MERIDIAN Meridian, DSTMODE DSTmode)
 {
     static int DaysInMonth[12] = {
 	31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
@@ -698,9 +693,7 @@ Convert(Month, Day, Year, Hours, Minutes, Seconds, Meridian, DSTmode)
 
 
 static time_t
-DSTcorrect(Start, Future)
-    time_t	Start;
-    time_t	Future;
+DSTcorrect(time_t Start, time_t Future)
 {
     time_t	StartDay;
     time_t	FutureDay;
@@ -712,10 +705,7 @@ DSTcorrect(Start, Future)
 
 
 static time_t
-RelativeDate(Start, DayOrdinal, DayNumber)
-    time_t	Start;
-    time_t	DayOrdinal;
-    time_t	DayNumber;
+RelativeDate(time_t Start, time_t DayOrdinal, time_t DayNumber)
 {
     struct tm	*tm;
     time_t	now;
@@ -729,9 +719,7 @@ RelativeDate(Start, DayOrdinal, DayNumber)
 
 
 static time_t
-RelativeMonth(Start, RelMonth)
-    time_t	Start;
-    time_t	RelMonth;
+RelativeMonth(time_t Start, time_t RelMonth)
 {
     struct tm	*tm;
     time_t	Month;
@@ -751,8 +739,7 @@ RelativeMonth(Start, RelMonth)
 
 
 static int
-LookupWord(buff)
-    char		*buff;
+LookupWord(char * buff)
 {
     register char	*p;
     register char	*q;
@@ -761,7 +748,7 @@ LookupWord(buff)
     int			abbrev;
 
     /* Make it lowercase. */
-    for (p = buff; *p; p++)
+    for (p = buff; *p != '\0'; p++)
 	if (isupper(*p))
 	    *p = tolower(*p);
 
@@ -840,7 +827,7 @@ LookupWord(buff)
     }
 
     /* Drop out any periods and try the timezone table again. */
-    for (i = 0, p = q = buff; *q; q++)
+    for (i = 0, p = q = buff; *q != '\0'; q++)
 	if (*q != '.')
 	    *p++ = *q;
 	else
@@ -858,7 +845,7 @@ LookupWord(buff)
 
 
 static int
-yylex()
+yylex(void)
 {
     register char	c;
     register char	*p;
@@ -907,17 +894,18 @@ yylex()
 		Count--;
 	} while (Count > 0);
     }
+    /*@notreached@*/
+    return 0;
 }
 
 #define TM_YEAR_ORIGIN 1900
 
 /* Yield A - B, measured in seconds.  */
 static long
-difftm (a, b)
-     struct tm *a, *b;
+difftm (const struct tm * a, const struct tm * b)
 {
-  int ay = a->tm_year + (TM_YEAR_ORIGIN - 1);
-  int by = b->tm_year + (TM_YEAR_ORIGIN - 1);
+  unsigned ay = a->tm_year + (TM_YEAR_ORIGIN - 1);
+  unsigned by = b->tm_year + (TM_YEAR_ORIGIN - 1);
   int days = (
 	      /* difference in day of year */
 	      a->tm_yday - b->tm_yday
@@ -934,9 +922,7 @@ difftm (a, b)
 }
 
 time_t
-get_date(p, now)
-    char		*p;
-    struct timeb	*now;
+get_date(char * p, struct timeb * now)
 {
     struct tm		*tm, gmt;
     struct timeb	ftz;
@@ -945,6 +931,7 @@ get_date(p, now)
     time_t nowtime;
 
     yyInput = p;
+    memset(&gmt, 0, sizeof(gmt));
     if (now == NULL) {
 	struct tm *gmt_ptr;
 
@@ -965,7 +952,9 @@ get_date(p, now)
 	    return -1;
 
 	if (gmt_ptr != NULL)
+	    /*@-observertrans -dependenttrans@*/
 	    ftz.timezone = difftm (&gmt, tm) / 60;
+	    /*@=observertrans =dependenttrans@*/
 	else
 	    /* We are on a system like VMS, where the system clock is
 	       in local time and the system has no concept of timezones.
@@ -1000,9 +989,11 @@ get_date(p, now)
     yyHaveTime = 0;
     yyHaveZone = 0;
 
+    /*@-unrecog@*/
     if (yyparse()
      || yyHaveTime > 1 || yyHaveZone > 1 || yyHaveDate > 1 || yyHaveDay > 1)
 	return -1;
+    /*@=unrecog@*/
 
     if (yyHaveDate || yyHaveTime || yyHaveDay) {
 	Start = Convert(yyMonth, yyDay, yyYear, yyHour, yyMinutes, yySeconds,
@@ -1056,7 +1047,7 @@ main(ac, av)
     /* NOTREACHED */
 }
 #endif	/* defined(TEST) */
-#line 1060 "y.tab.c"
+#line 1050 "y.tab.c"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack()
 {
@@ -1252,37 +1243,37 @@ yyreduce:
     switch (yyn)
     {
 case 3:
-#line 197 "./getdate.y"
+#line 202 "./getdate.y"
 {
 	    yyHaveTime++;
 	}
 break;
 case 4:
-#line 200 "./getdate.y"
+#line 205 "./getdate.y"
 {
 	    yyHaveZone++;
 	}
 break;
 case 5:
-#line 203 "./getdate.y"
+#line 208 "./getdate.y"
 {
 	    yyHaveDate++;
 	}
 break;
 case 6:
-#line 206 "./getdate.y"
+#line 211 "./getdate.y"
 {
 	    yyHaveDay++;
 	}
 break;
 case 7:
-#line 209 "./getdate.y"
+#line 214 "./getdate.y"
 {
 	    yyHaveRel++;
 	}
 break;
 case 9:
-#line 215 "./getdate.y"
+#line 220 "./getdate.y"
 {
 	    yyHour = yyvsp[-1].Number;
 	    yyMinutes = 0;
@@ -1291,7 +1282,7 @@ case 9:
 	}
 break;
 case 10:
-#line 221 "./getdate.y"
+#line 226 "./getdate.y"
 {
 	    yyHour = yyvsp[-3].Number;
 	    yyMinutes = yyvsp[-1].Number;
@@ -1300,7 +1291,7 @@ case 10:
 	}
 break;
 case 11:
-#line 227 "./getdate.y"
+#line 232 "./getdate.y"
 {
 	    yyHour = yyvsp[-3].Number;
 	    yyMinutes = yyvsp[-1].Number;
@@ -1310,7 +1301,7 @@ case 11:
 	}
 break;
 case 12:
-#line 234 "./getdate.y"
+#line 239 "./getdate.y"
 {
 	    yyHour = yyvsp[-5].Number;
 	    yyMinutes = yyvsp[-3].Number;
@@ -1319,7 +1310,7 @@ case 12:
 	}
 break;
 case 13:
-#line 240 "./getdate.y"
+#line 245 "./getdate.y"
 {
 	    yyHour = yyvsp[-5].Number;
 	    yyMinutes = yyvsp[-3].Number;
@@ -1330,56 +1321,56 @@ case 13:
 	}
 break;
 case 14:
-#line 250 "./getdate.y"
+#line 255 "./getdate.y"
 {
 	    yyTimezone = yyvsp[0].Number;
 	    yyDSTmode = DSToff;
 	}
 break;
 case 15:
-#line 254 "./getdate.y"
+#line 259 "./getdate.y"
 {
 	    yyTimezone = yyvsp[0].Number;
 	    yyDSTmode = DSTon;
 	}
 break;
 case 16:
-#line 259 "./getdate.y"
+#line 264 "./getdate.y"
 {
 	    yyTimezone = yyvsp[-1].Number;
 	    yyDSTmode = DSTon;
 	}
 break;
 case 17:
-#line 265 "./getdate.y"
+#line 270 "./getdate.y"
 {
 	    yyDayOrdinal = 1;
 	    yyDayNumber = yyvsp[0].Number;
 	}
 break;
 case 18:
-#line 269 "./getdate.y"
+#line 274 "./getdate.y"
 {
 	    yyDayOrdinal = 1;
 	    yyDayNumber = yyvsp[-1].Number;
 	}
 break;
 case 19:
-#line 273 "./getdate.y"
+#line 278 "./getdate.y"
 {
 	    yyDayOrdinal = yyvsp[-1].Number;
 	    yyDayNumber = yyvsp[0].Number;
 	}
 break;
 case 20:
-#line 279 "./getdate.y"
+#line 284 "./getdate.y"
 {
 	    yyMonth = yyvsp[-2].Number;
 	    yyDay = yyvsp[0].Number;
 	}
 break;
 case 21:
-#line 283 "./getdate.y"
+#line 288 "./getdate.y"
 {
 	    if (yyvsp[-4].Number >= 100) {
 		yyYear = yyvsp[-4].Number;
@@ -1393,7 +1384,7 @@ case 21:
 	}
 break;
 case 22:
-#line 294 "./getdate.y"
+#line 299 "./getdate.y"
 {
 	    /* ISO 8601 format.  yyyy-mm-dd.  */
 	    yyYear = yyvsp[-2].Number;
@@ -1402,7 +1393,7 @@ case 22:
 	}
 break;
 case 23:
-#line 300 "./getdate.y"
+#line 305 "./getdate.y"
 {
 	    /* e.g. 17-JUN-1992.  */
 	    yyDay = yyvsp[-2].Number;
@@ -1411,14 +1402,14 @@ case 23:
 	}
 break;
 case 24:
-#line 306 "./getdate.y"
+#line 311 "./getdate.y"
 {
 	    yyMonth = yyvsp[-1].Number;
 	    yyDay = yyvsp[0].Number;
 	}
 break;
 case 25:
-#line 310 "./getdate.y"
+#line 315 "./getdate.y"
 {
 	    yyMonth = yyvsp[-3].Number;
 	    yyDay = yyvsp[-2].Number;
@@ -1426,14 +1417,14 @@ case 25:
 	}
 break;
 case 26:
-#line 315 "./getdate.y"
+#line 320 "./getdate.y"
 {
 	    yyMonth = yyvsp[0].Number;
 	    yyDay = yyvsp[-1].Number;
 	}
 break;
 case 27:
-#line 319 "./getdate.y"
+#line 324 "./getdate.y"
 {
 	    yyMonth = yyvsp[-1].Number;
 	    yyDay = yyvsp[-2].Number;
@@ -1441,68 +1432,68 @@ case 27:
 	}
 break;
 case 28:
-#line 326 "./getdate.y"
+#line 331 "./getdate.y"
 {
 	    yyRelSeconds = -yyRelSeconds;
 	    yyRelMonth = -yyRelMonth;
 	}
 break;
 case 30:
-#line 333 "./getdate.y"
+#line 338 "./getdate.y"
 {
 	    yyRelSeconds += yyvsp[-1].Number * yyvsp[0].Number * 60L;
 	}
 break;
 case 31:
-#line 336 "./getdate.y"
+#line 341 "./getdate.y"
 {
 	    yyRelSeconds += yyvsp[-1].Number * yyvsp[0].Number * 60L;
 	}
 break;
 case 32:
-#line 339 "./getdate.y"
+#line 344 "./getdate.y"
 {
 	    yyRelSeconds += yyvsp[0].Number * 60L;
 	}
 break;
 case 33:
-#line 342 "./getdate.y"
+#line 347 "./getdate.y"
 {
 	    yyRelSeconds += yyvsp[-1].Number;
 	}
 break;
 case 34:
-#line 345 "./getdate.y"
+#line 350 "./getdate.y"
 {
 	    yyRelSeconds += yyvsp[-1].Number;
 	}
 break;
 case 35:
-#line 348 "./getdate.y"
+#line 353 "./getdate.y"
 {
 	    yyRelSeconds++;
 	}
 break;
 case 36:
-#line 351 "./getdate.y"
+#line 356 "./getdate.y"
 {
 	    yyRelMonth += yyvsp[-1].Number * yyvsp[0].Number;
 	}
 break;
 case 37:
-#line 354 "./getdate.y"
+#line 359 "./getdate.y"
 {
 	    yyRelMonth += yyvsp[-1].Number * yyvsp[0].Number;
 	}
 break;
 case 38:
-#line 357 "./getdate.y"
+#line 362 "./getdate.y"
 {
 	    yyRelMonth += yyvsp[0].Number;
 	}
 break;
 case 39:
-#line 362 "./getdate.y"
+#line 367 "./getdate.y"
 {
 	    if (yyHaveTime && yyHaveDate && !yyHaveRel)
 		yyYear = yyvsp[0].Number;
@@ -1530,18 +1521,18 @@ case 39:
 	}
 break;
 case 40:
-#line 389 "./getdate.y"
+#line 394 "./getdate.y"
 {
 	    yyval.Meridian = MER24;
 	}
 break;
 case 41:
-#line 392 "./getdate.y"
+#line 397 "./getdate.y"
 {
 	    yyval.Meridian = yyvsp[0].Meridian;
 	}
 break;
-#line 1545 "y.tab.c"
+#line 1535 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;
@@ -1598,3 +1589,4 @@ yyabort:
 yyaccept:
     return (0);
 }
+/*@=globstate =retvalint =unqualifiedtrans =usedef =varuse@*/

@@ -48,32 +48,32 @@ static void printHash(const unsigned long amount, const unsigned long total)
 #ifdef FANCY_HASH
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
-		for (i = 0; i < hashesPrinted; i++) putchar ('#');
-		for (; i < hashesTotal; i++) putchar (' ');
+		for (i = 0; i < hashesPrinted; i++) (void) putchar ('#');
+		for (; i < hashesTotal; i++) (void) putchar (' ');
 		printf ("(%3d%%)",
 			(int)(100 * (total ? (((float) amount) / total) : 1)));
-		for (i = 0; i < (hashesTotal + 6); i++) putchar ('\b');
+		for (i = 0; i < (hashesTotal + 6); i++) (void) putchar ('\b');
 	    } else
 #endif
 	    fprintf(stdout, "#");
 
 	    hashesPrinted++;
 	}
-	fflush(stdout);
+	(void) fflush(stdout);
 	hashesPrinted = hashesNeeded;
 
 	if (hashesPrinted == hashesTotal) {
 #ifdef FANCY_HASH
 	    int i;
 	    progressCurrent++;
-	    for (i = 1; i < hashesPrinted; i++) putchar ('#');
+	    for (i = 1; i < hashesPrinted; i++) (void) putchar ('#');
 	    printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
 			(((float) progressCurrent) / progressTotal) : 1)));
 #else
 	    fprintf (stdout, "\n");
 #endif
 	}
-	fflush(stdout);
+	(void) fflush(stdout);
     }
 }
 
@@ -102,7 +102,7 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
     case RPMCALLBACK_INST_CLOSE_FILE:
 	fd = fdFree(fd, "persist (showProgress)");
 	if (fd) {
-	    Fclose(fd);
+	    (void) Fclose(fd);
 	    fd = NULL;
 	}
 	break;
@@ -120,12 +120,12 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 #else
 		fprintf(stdout, "%-28s", s);
 #endif
-	    fflush(stdout);
+	    (void) fflush(stdout);
 	} else {
 	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}",
 				  rpmTagTable, rpmHeaderFormats, NULL);
 	    fprintf(stdout, "%s\n", s);
-	    fflush(stdout);
+	    (void) fflush(stdout);
 	}
 	s = _free(s);
 	break;
@@ -138,7 +138,7 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 				: 100.0));
 	else if (flags & INSTALL_HASH)
 	    printHash(amount, total);
-	fflush(stdout);
+	(void) fflush(stdout);
 	break;
 
     case RPMCALLBACK_TRANS_START:
@@ -153,7 +153,7 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	    fprintf(stdout, "%-28s", _("Preparing..."));
 	else
 	    printf("%s\n", _("Preparing packages for installation..."));
-	fflush(stdout);
+	(void) fflush(stdout);
 	break;
 
     case RPMCALLBACK_TRANS_STOP:
@@ -312,13 +312,13 @@ restart:
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
 			Fstrerror(fd));
-	    if (fd) Fclose(fd);
+	    if (fd) (void) Fclose(fd);
 	    numFailed++; *fnp = NULL;
 	    continue;
 	}
 
 	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-	Fclose(fd);
+	(void) Fclose(fd);
 
 	if (rpmrc == RPMRC_FAIL || rpmrc == RPMRC_SHORTREAD) {
 	    numFailed++; *fnp = NULL;
@@ -367,7 +367,7 @@ restart:
 		    paths = headerFreeData(paths, pft);
 		} else {
 		    const char * name;
-		    headerNVR(h, &name, NULL, NULL);
+		    (void) headerNVR(h, &name, NULL, NULL);
 		    rpmMessage(RPMMESS_ERROR,
 			       _("package %s is not relocateable\n"), name);
 		    numFailed++;
@@ -383,7 +383,7 @@ restart:
 		Header oldH;
 		int count;
 
-		headerNVR(h, &name, NULL, NULL);
+		(void) headerNVR(h, &name, NULL, NULL);
 		mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 		count = rpmdbGetIteratorCount(mi);
 		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
@@ -443,7 +443,7 @@ restart:
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
 			Fstrerror(fd));
-	    if (fd) Fclose(fd);
+	    if (fd) (void) Fclose(fd);
 	    numFailed++; *fnp = NULL;
 	    break;
 	}
@@ -453,7 +453,7 @@ restart:
 	if (rc)
 	    rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
 			fileURL, Fstrerror(fd));
-	Fclose(fd);
+	(void) Fclose(fd);
 
 	/* If successful, restart the query loop. */
 	if (rc == 0) {
@@ -521,7 +521,7 @@ restart:
 	    if (fd == NULL || Ferror(fd)) {
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
 			   sourceURL[i], Fstrerror(fd));
-		if (fd) Fclose(fd);
+		if (fd) (void) Fclose(fd);
 		continue;
 	    }
 
@@ -531,7 +531,7 @@ restart:
 		if (rpmrc != RPMRC_OK) numFailed++;
 	    }
 
-	    Fclose(fd);
+	    (void) Fclose(fd);
 	}
     }
 
@@ -539,13 +539,13 @@ exit:
     if (ts) rpmtransFree(ts);
     for (i = 0; i < numPkgs; i++) {
 	if (pkgState[i] == 1)
-	    Unlink(pkgURL[i]);
+	    (void) Unlink(pkgURL[i]);
 	pkgURL[i] = _free(pkgURL[i]);
     }
     pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
     argv = _free(argv);
-    if (dbIsOpen) rpmdbClose(db);
+    if (dbIsOpen) (void) rpmdbClose(db);
     return numFailed;
 }
 
@@ -628,7 +628,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     }
 
     rpmtransFree(ts);
-    rpmdbClose(db);
+    (void) rpmdbClose(db);
 
     return numFailed;
 }
@@ -642,7 +642,7 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
-	if (fd) Fclose(fd);
+	if (fd) (void) Fclose(fd);
 	return 1;
     }
 
@@ -663,7 +663,7 @@ int rpmInstallSource(const char * rootdir, const char * arg,
 	/*@=unqualifiedtrans@*/
     }
 
-    Fclose(fd);
+    (void) Fclose(fd);
 
     return rc;
 }

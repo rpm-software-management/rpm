@@ -247,8 +247,8 @@ static void timeCheck(int tc, Header h)
     int count, x;
     time_t currentTime = time(NULL);
 
-    hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
-    hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
+    (void) hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
+    (void) hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
     
     for (x = 0; x < count; x++) {
 	if ((currentTime - mtime[x]) > tc)
@@ -331,13 +331,13 @@ static int parseForVerify(char *buf, FileList fl)
     not = 0;
     verifyFlags = RPMVERIFY_NONE;
 
-    for (p = q; *p; p = pe) {
+    for (p = q; *p != '\0'; p = pe) {
 	SKIPWHITE(p);
 	if (*p == '\0')
 	    break;
 	pe = p;
 	SKIPNONWHITE(pe);
-	if (*pe)
+	if (*pe != '\0')
 	    *pe++ = '\0';
 
 	{   VFA_t *vfa;
@@ -409,7 +409,7 @@ static int parseForAttr(char *buf, FileList fl)
 	q = pe;
 	q++;
 	SKIPSPACE(q);
-	if (*q) {
+	if (*q != '\0') {
 	    rpmError(RPMERR_BADSPEC,
 		     _("Non-white space follows %s(): %s\n"), name, q);
 	    fl->processingFailed = 1;
@@ -427,23 +427,23 @@ static int parseForAttr(char *buf, FileList fl)
     nullAttrRec(ar);
 
     p = q; SKIPWHITE(p);
-    if (*p) {
-	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+    if (*p != '\0') {
+	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
 	ar->ar_fmodestr = p;
 	p = pe; SKIPWHITE(p);
     }
-    if (*p) {
-	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+    if (*p != '\0') {
+	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
 	ar->ar_user = p;
 	p = pe; SKIPWHITE(p);
     }
-    if (*p) {
-	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+    if (*p != '\0') {
+	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
 	ar->ar_group = p;
 	p = pe; SKIPWHITE(p);
     }
-    if (*p && ret_ar == &(fl->def_ar)) {	/* %defattr */
-	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+    if (*p != '\0' && ret_ar == &(fl->def_ar)) {	/* %defattr */
+	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
 	ar->ar_dmodestr = p;
 	p = pe; SKIPWHITE(p);
     }
@@ -530,13 +530,13 @@ static int parseForConfig(char *buf, FileList fl)
     while (p <= pe)
 	*p++ = ' ';
 
-    for (p = q; *p; p = pe) {
+    for (p = q; *p != '\0'; p = pe) {
 	SKIPWHITE(p);
 	if (*p == '\0')
 	    break;
 	pe = p;
 	SKIPNONWHITE(pe);
-	if (*pe)
+	if (*pe != '\0')
 	    *pe++ = '\0';
 	if (!strcmp(p, "missingok")) {
 	    fl->currentFlags |= RPMFILE_MISSINGOK;
@@ -597,7 +597,7 @@ static int parseForLang(char *buf, FileList fl)
 	*p++ = ' ';
 
     /* Parse multiple arguments from %lang */
-    for (p = q; *p; p = pe) {
+    for (p = q; *p != '\0'; p = pe) {
 	char *newp;
 	size_t np;
 	int i;
@@ -828,7 +828,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 	/* XXX WATCHOUT: buf is an arg */
 	    {	const char *ddir, *n, *v;
 
-		headerNVR(pkg->header, &n, &v, NULL);
+		(void) headerNVR(pkg->header, &n, &v, NULL);
 
 		ddir = rpmGetPath("%{_docdir}/", n, "-", v, NULL);
 		strcpy(buf, ddir);
@@ -1058,65 +1058,65 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	 * compressed file list write before we write the actual package to
 	 * disk.
 	 */
-	headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileURL), 1);
 
       if (sizeof(flp->fl_size) != sizeof(uint_32)) {
 	uint_32 psize = (uint_32)flp->fl_size;
-	headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
 			       &(psize), 1);
       } else {
-	headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
 			       &(flp->fl_size), 1);
       }
-	headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->uname), 1);
-	headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->gname), 1);
-	headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(flp->fl_mtime), 1);
       if (sizeof(flp->fl_mode) != sizeof(uint_16)) {
 	uint_16 pmode = (uint_16)flp->fl_mode;
-	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(pmode), 1);
       } else {
-	headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(flp->fl_mode), 1);
       }
       if (sizeof(flp->fl_rdev) != sizeof(uint_16)) {
 	uint_16 prdev = (uint_16)flp->fl_rdev;
-	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(prdev), 1);
       } else {
-	headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(flp->fl_rdev), 1);
       }
       if (sizeof(flp->fl_dev) != sizeof(uint_32)) {
 	uint_32 pdevice = (uint_32)flp->fl_dev;
-	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(pdevice), 1);
       } else {
-	headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(flp->fl_dev), 1);
       }
-	headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 			       &(flp->fl_ino), 1);
 
-	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
 			       &(flp->langs),  1);
 	
 	/* We used to add these, but they should not be needed */
-	/* headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
+	/* (void) headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
 	 *		   RPM_INT32_TYPE, &(flp->fl_uid), 1);
-	 * headerAddOrAppendEntry(h, RPMTAG_FILEGIDS,
+	 * (void) headerAddOrAppendEntry(h, RPMTAG_FILEGIDS,
 	 *		   RPM_INT32_TYPE, &(flp->fl_gid), 1);
 	 */
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    mdfile(flp->diskURL, buf);
+	    (void) mdfile(flp->diskURL, buf);
 	s = buf;
-	headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
 	
 	buf[0] = '\0';
@@ -1136,14 +1136,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    }
 	}
 	s = buf;
-	headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
 	
 	if (flp->flags & RPMFILE_GHOST) {
 	    flp->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
-	headerAddOrAppendEntry(h, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
 			       &(flp->verifyFlags), 1);
 	
 	if (!isSrc && isDoc(fl, flp->fileURL))
@@ -1152,11 +1152,11 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
 
-	headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
 			       &(flp->flags), 1);
 
     }
-    headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
+    (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
 
     /* XXX This should be added always so that packages look alike.
@@ -1164,11 +1164,11 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
      * XXX existence (rather than value) that will need to change as well.
      */
     if (multiLibMask)
-	headerAddEntry(h, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+	(void) headerAddEntry(h, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 		       &multiLibMask, 1);
 
     if (_addDotSlash)
-	rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
+	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 
     /* Choose how filenames are represented. */
     if (_noDirTokens)
@@ -1176,7 +1176,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     else {
 	compressFilelist(h);
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
+	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
   { TFI_t fi = xcalloc(sizeof(*fi), 1);
@@ -1336,7 +1336,7 @@ static int addFile(FileList fl, const char * diskURL, struct stat *statp)
 	
 	fl->inFtw = 1;  /* Flag to indicate file has buildRootURL prefixed */
 	fl->isDir = 1;  /* Keep it from following myftw() again         */
-	myftw(diskURL, 16, (myftwFunc) addFile, fl);
+	(void) myftw(diskURL, 16, (myftwFunc) addFile, fl);
 	fl->isDir = 0;
 	fl->inFtw = 0;
 	return 0;
@@ -1379,7 +1379,7 @@ static int addFile(FileList fl, const char * diskURL, struct stat *statp)
 #endif
     
     rpmMessage(RPMMESS_DEBUG, _("File %4d: %07o %s.%s\t %s\n"), fl->fileCount,
-	fileMode, fileUname, fileGname, fileURL);
+	(unsigned)fileMode, fileUname, fileGname, fileURL);
 
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
@@ -1412,7 +1412,7 @@ static int addFile(FileList fl, const char * diskURL, struct stat *statp)
 	    for (i = 0; i < fl->nLangs; i++) {
 	        const char *ocl;
 		if (i)	*ncl++ = '|';
-		for (ocl = fl->currentLangs[i]; *ocl; ocl++)
+		for (ocl = fl->currentLangs[i]; *ocl != '\0'; ocl++)
 			*ncl++ = *ocl;
 		*ncl = '\0';
 	    }
@@ -1557,7 +1557,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    }
 	    appendStringBuf(pkg->fileList, buf);
 	}
-	Fclose(fd);
+	(void) Fclose(fd);
     }
     
     /* Init the file list structure */
@@ -1632,7 +1632,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.currentLangs) {
 	    int i;
 	    for (i = 0; i < fl.nLangs; i++)
+		/*@-unqualifiedtrans@*/
 		fl.currentLangs[i] = _free(fl.currentLangs[i]);
+		/*@=unqualifiedtrans@*/
 	    fl.currentLangs = _free(fl.currentLangs);
 	}
   	fl.nLangs = 0;
@@ -1658,14 +1660,14 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else {
-	    processBinaryFile(pkg, &fl, fileName);
+	    (void) processBinaryFile(pkg, &fl, fileName);
 	}
     }
 
     /* Now process special doc, if there is one */
     if (specialDoc) {
 	if (installSpecialDoc) {
-	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
+	    (void) doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
 	}
 
 	/* Reset for %doc */
@@ -1678,7 +1680,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.currentLangs) {
 	    int i;
 	    for (i = 0; i < fl.nLangs; i++)
+		/*@-unqualifiedtrans@*/
 		fl.currentLangs[i] = _free(fl.currentLangs[i]);
+		/*@=unqualifiedtrans@*/
 	    fl.currentLangs = _free(fl.currentLangs);
 	}
   	fl.nLangs = 0;
@@ -1686,7 +1690,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	dupAttrRec(specialDocAttrRec, &fl.cur_ar);
 	freeAttrRec(specialDocAttrRec);
 
-	processBinaryFile(pkg, &fl, specialDoc);
+	(void) processBinaryFile(pkg, &fl, specialDoc);
 
 	specialDoc = _free(specialDoc);
     }
@@ -1714,7 +1718,9 @@ exit:
     if (fl.currentLangs) {
 	int i;
 	for (i = 0; i < fl.nLangs; i++)
+	    /*@-unqualifiedtrans@*/
 	    fl.currentLangs[i] = _free(fl.currentLangs[i]);
+	    /*@=unqualifiedtrans@*/
 	fl.currentLangs = _free(fl.currentLangs);
     }
 
@@ -1756,7 +1762,7 @@ void initSourceHeader(Spec spec)
 	case RPMTAG_CHANGELOGTEXT:
 	case RPMTAG_URL:
 	case HEADER_I18NTABLE:
-	    headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
+	    (void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
 	    break;
 	default:
 	    /* do not copy */
@@ -1770,12 +1776,12 @@ void initSourceHeader(Spec spec)
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
     {
-	headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
+	(void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
     }
     headerFreeIterator(hi);
 
     if (spec->buildArchitectureCount) {
-	headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
+	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		       RPM_STRING_ARRAY_TYPE,
 		       spec->buildArchitectures, spec->buildArchitectureCount);
     }
@@ -1803,18 +1809,18 @@ int processSourceFiles(Spec spec)
     appendLineStringBuf(sourceFiles, spec->specFile);
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
 	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
-	    headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
+	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
 				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOSOURCE,
+		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOSOURCE,
 				       RPM_INT32_TYPE, &srcPtr->num, 1);
 	    }
 	}
 	if (srcPtr->flags & RPMBUILD_ISPATCH) {
-	    headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_PATCH,
+	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_PATCH,
 				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
+		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
 				       RPM_INT32_TYPE, &srcPtr->num, 1);
 	    }
 	}
@@ -1929,25 +1935,25 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     oldhandler = signal(SIGPIPE, SIG_IGN);
 
     toProg[0] = toProg[1] = 0;
-    pipe(toProg);
+    (void) pipe(toProg);
     fromProg[0] = fromProg[1] = 0;
-    pipe(fromProg);
+    (void) pipe(fromProg);
     
     if (!(progPID = fork())) {
-	close(toProg[1]);
-	close(fromProg[0]);
+	(void) close(toProg[1]);
+	(void) close(fromProg[0]);
 	
-	dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
-	dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
+	(void) dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
+	(void) dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
 
-	close(toProg[0]);
-	close(fromProg[1]);
+	(void) close(toProg[0]);
+	(void) close(fromProg[1]);
 
 	if (dir) {
-	    chdir(dir);
+	    (void) chdir(dir);
 	}
 	
-	execvp(argv[0], argv);
+	(void) execvp(argv[0], argv);
 	/* XXX this error message is probably not seen. */
 	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
@@ -1959,12 +1965,12 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	return NULL;
     }
 
-    close(toProg[0]);
-    close(fromProg[1]);
+    (void) close(toProg[0]);
+    (void) close(fromProg[1]);
 
     /* Do not block reading or writing from/to prog. */
-    fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
-    fcntl(toProg[1], F_SETFL, O_NONBLOCK);
+    (void) fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
+    (void) fcntl(toProg[1], F_SETFL, O_NONBLOCK);
     
     readBuff = newStringBuf();
 
@@ -2008,7 +2014,7 @@ top:
 	    writeBytesLeft -= nbw;
 	    writePtr += nbw;
 	  } else if (toProg[1] >= 0) {	/* close write fd */
-	    close(toProg[1]);
+	    (void) close(toProg[1]);
 	    toProg[1] = -1;
 	  }
 	}
@@ -2028,10 +2034,10 @@ top:
 
     /* Clean up */
     if (toProg[1] >= 0)
-    	close(toProg[1]);
+    	(void) close(toProg[1]);
     if (fromProg[0] >= 0)
-	close(fromProg[0]);
-    (void)signal(SIGPIPE, oldhandler);
+	(void) close(fromProg[0]);
+    (void) signal(SIGPIPE, oldhandler);
 
     /* Collect status from prog */
     (void)waitpid(progPID, &status, 0);
@@ -2290,7 +2296,7 @@ static void printDeps(Header h)
 	    break;
 	default:
 	    versions = hfd(versions, dvt);
-	    hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
+	    (void) hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
 	    break;
 	}
 	switch (dm->ftag) {
@@ -2300,7 +2306,7 @@ static void printDeps(Header h)
 	case -1:
 	    break;
 	default:
-	    hge(h, dm->ftag, NULL, (void **) &flags, NULL);
+	    (void) hge(h, dm->ftag, NULL, (void **) &flags, NULL);
 	    break;
 	}
 	printDepMsg(dm, count, names, versions, flags);
@@ -2321,7 +2327,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if (pkg->fileList == NULL)
 	    continue;
 
-	headerNVR(pkg->header, &n, &v, &r);
+	(void) headerNVR(pkg->header, &n, &v, &r);
 	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s-%s-%s\n"), n, v, r);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
@@ -2332,10 +2338,10 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
      * XXX existence (rather than value) that will need to change as well.
      */
 	if (headerIsEntry(pkg->header, RPMTAG_MULTILIBS)) {
-	    generateDepends(spec, pkg, pkg->cpioList, 1);
-	    generateDepends(spec, pkg, pkg->cpioList, 2);
+	    (void) generateDepends(spec, pkg, pkg->cpioList, 1);
+	    (void) generateDepends(spec, pkg, pkg->cpioList, 2);
 	} else
-	    generateDepends(spec, pkg, pkg->cpioList, 0);
+	    (void) generateDepends(spec, pkg, pkg->cpioList, 0);
 	printDeps(pkg->header);
     }
 

@@ -13,9 +13,12 @@
 
 /*@access FD_t@*/
 
+/*@-redef@*/
+int fdFileno(void * cookie);	/* Yet Another Prototype. */
 int fdFileno(void * cookie) {
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
     return fd->fps[0].fdno;
 }
+/*@=redef@*/

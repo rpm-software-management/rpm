@@ -29,7 +29,7 @@ static inline int genSourceRpmName(Spec spec)
 	const char *name, *version, *release;
 	char fileName[BUFSIZ];
 
-	headerNVR(spec->packages->header, &name, &version, &release);
+	(void) headerNVR(spec->packages->header, &name, &version, &release);
 	sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
 	    spec->noSource ? "no" : "");
 	spec->sourceRpmName = xstrdup(fileName);
@@ -60,7 +60,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t * csa,
 
     rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
-    Fclose(cfd);
+    (void) Fclose(cfd);
     (void) fsmTeardown(fi->fsm);
 
     if (rc) {
@@ -101,10 +101,12 @@ static int cpio_copy(FD_t fdo, CSA_t *csa)
 
 /**
  */
-static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
+static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
+		const char * file, /*@only@*/ StringBuf sb)
 {
     char buf[BUFSIZ];
-    const char *fn = buf;
+    const char * fn = buf;
+    FILE * f;
     FD_t fd;
 
     /* XXX use rpmGenPath(rootdir, "%{_buildir}/%{_buildsubdir}/", file) */
@@ -116,15 +118,18 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
 	freeStringBuf(sb);
 	return NULL;
     }
-    while (fgets(buf, sizeof(buf), (FILE *)fdGetFp(fd))) {
+    f = fdGetFp(fd);
+    while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmError(RPMERR_BADSPEC, _("line: %s\n"), buf);
-	    return NULL;
+	    freeStringBuf(sb);
+	    sb = NULL;
+	    break;
 	}
 	appendStringBuf(sb, buf);
     }
-    Fclose(fd);
+    (void) Fclose(fd);
 
     return sb;
 }
@@ -139,13 +144,13 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 
     if (hge(h, tag, NULL, (void **)&s, NULL)) {
 	appendLineStringBuf(sb, s);
-	headerRemoveEntry(h, tag);
+	(void) headerRemoveEntry(h, tag);
     }
 
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
     
-    headerAddEntry(h, tag, RPM_STRING_TYPE, getStringBuf(sb), 1);
+    (void) headerAddEntry(h, tag, RPM_STRING_TYPE, getStringBuf(sb), 1);
 
     freeStringBuf(sb);
     return 0;
@@ -162,7 +167,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 	return 1;
 
     s = getStringBuf(sb);
-    headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, &s, 1);
+    (void) headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, &s, 1);
 
     freeStringBuf(sb);
     return 0;
@@ -212,10 +217,10 @@ static int processScriptFiles(Spec spec, Package pkg)
     }
 
     for (p = pkg->triggerFiles; p != NULL; p = p->next) {
-	headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTPROG,
+	(void) headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTPROG,
 			       RPM_STRING_ARRAY_TYPE, &(p->prog), 1);
 	if (p->script) {
-	    headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
+	    (void) headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
 				   RPM_STRING_ARRAY_TYPE, &(p->script), 1);
 	} else if (p->fileName) {
 	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
@@ -229,7 +234,7 @@ static int processScriptFiles(Spec spec, Package pkg)
 	    /* This is dumb.  When the header supports NULL string */
 	    /* this will go away.                                  */
 	    char *bull = "";
-	    headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
+	    (void) headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
 				   RPM_STRING_ARRAY_TYPE, &bull, 1);
 	}
     }
@@ -301,7 +306,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     if (csa)
 	csa->cpioFdIn = fdi;
     else
-	Fclose(fdi);
+	(void) Fclose(fdi);
 
     return 0;
 }
@@ -322,7 +327,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
 	/* Add a bogus archive size to the Header */
-	headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
+	(void) headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
 		&csa->cpioArchiveSize, 1);
     }
 
@@ -357,26 +362,26 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
     s = strchr(rpmio_flags, '.');
     if (s) {
-	headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE, "cpio", 1);
+	(void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE, "cpio", 1);
 	if (s[1] == 'g' && s[2] == 'z')
-	    headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
+	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"gzip", 1);
 	if (s[1] == 'b' && s[2] == 'z') {
-	    headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
+	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"bzip2", 1);
 	    /* Add prereq on rpm version that understands bzip2 payloads */
-	    rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
+	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
 	}
 	strcpy(buf, rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
-	headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf+1, 1);
+	(void) headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf+1, 1);
     }
 
     /* Create and add the cookie */
     if (cookie) {
 	sprintf(buf, "%s %d", buildHost(), (int) time(NULL));
 	*cookie = xstrdup(buf);
-	headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
+	(void) headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }
     
     /* Reallocate the header into one contiguous region. */
@@ -428,21 +433,21 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	rc = RPMERR_NOSPACE;
 
-    Fclose(fd);
+    (void) Fclose(fd);
     fd = NULL;
-    Unlink(fileName);
+    (void) Unlink(fileName);
 
     if (rc)
 	goto exit;
 
     /* Generate the signature */
-    fflush(stdout);
+    (void) fflush(stdout);
     sig = rpmNewSignature();
-    rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
-    rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
+    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
     if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
-	rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+	(void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }
 
     /* Reallocate the signature into one contiguous region. */
@@ -482,7 +487,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
 	{   const char *name, *version, *release;
-	    headerNVR(h, &name, &version, &release);
+	    (void) headerNVR(h, &name, &version, &release);
 	    sprintf(buf, "%s-%s-%s", name, version, release);
 	    strncpy(lead.name, buf, sizeof(lead.name));
 	}
@@ -520,7 +525,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	}
 
 #ifdef	NOTYET
-	headerMergeLegacySigs(nh, sig);
+	(void) headerMergeLegacySigs(nh, sig);
 #endif
 
 	rc = headerWrite(fd, nh, HEADER_MAGIC_YES);
@@ -557,22 +562,22 @@ exit:
 	sig = NULL;
     }
     if (ifd) {
-	Fclose(ifd);
+	(void) Fclose(ifd);
 	ifd = NULL;
     }
     if (fd) {
-	Fclose(fd);
+	(void) Fclose(fd);
 	fd = NULL;
     }
     if (sigtarget) {
-	Unlink(sigtarget);
+	(void) Unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
 
     if (rc == 0)
 	rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
     else
-	Unlink(fileName);
+	(void) Unlink(fileName);
 
     return rc;
 }
@@ -601,30 +606,30 @@ int packageBinaries(Spec spec)
 	    return rc;
 	
 	if (spec->cookie) {
-	    headerAddEntry(pkg->header, RPMTAG_COOKIE,
+	    (void) headerAddEntry(pkg->header, RPMTAG_COOKIE,
 			   RPM_STRING_TYPE, spec->cookie, 1);
 	}
 
 	/* Copy changelog from src rpm */
 	headerCopyTags(spec->packages->header, pkg->header, copyTags);
 	
-	headerAddEntry(pkg->header, RPMTAG_RPMVERSION,
+	(void) headerAddEntry(pkg->header, RPMTAG_RPMVERSION,
 		       RPM_STRING_TYPE, VERSION, 1);
-	headerAddEntry(pkg->header, RPMTAG_BUILDHOST,
+	(void) headerAddEntry(pkg->header, RPMTAG_BUILDHOST,
 		       RPM_STRING_TYPE, buildHost(), 1);
-	headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
+	(void) headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
 
 	providePackageNVR(pkg->header);
 
     {	const char * optflags = rpmExpand("%{optflags}", NULL);
-	headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
+	(void) headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
 			optflags, 1);
 	optflags = _free(optflags);
     }
 
-	genSourceRpmName(spec);
-	headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
+	(void) genSourceRpmName(spec);
+	(void) headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
 		       spec->sourceRpmName, 1);
 	
 	{   const char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
@@ -634,7 +639,7 @@ int packageBinaries(Spec spec)
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
 		const char *name;
-		headerNVR(pkg->header, &name, NULL, NULL);
+		(void) headerNVR(pkg->header, &name, NULL, NULL);
 		rpmError(RPMERR_BADFILENAME, _("Could not generate output "
 		     "filename for package %s: %s\n"), name, errorString);
 		return RPMERR_BADFILENAME;
@@ -684,14 +689,14 @@ int packageSources(Spec spec)
     int rc;
 
     /* Add some cruft */
-    headerAddEntry(spec->sourceHeader, RPMTAG_RPMVERSION,
+    (void) headerAddEntry(spec->sourceHeader, RPMTAG_RPMVERSION,
 		   RPM_STRING_TYPE, VERSION, 1);
-    headerAddEntry(spec->sourceHeader, RPMTAG_BUILDHOST,
+    (void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDHOST,
 		   RPM_STRING_TYPE, buildHost(), 1);
-    headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
+    (void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
 		   RPM_INT32_TYPE, getBuildTime(), 1);
 
-    genSourceRpmName(spec);
+    (void) genSourceRpmName(spec);
 
     spec->cookie = _free(spec->cookie);
     

@@ -280,10 +280,10 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 	return 0;
     }
 
-    hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
-    hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
-    hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    (void) hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
+    (void) hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    (void) hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
+    (void) hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
@@ -348,8 +348,8 @@ static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
 	return 1;
     }
 
-    hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    (void) hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    (void) hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
@@ -435,7 +435,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	{   const char * tn = tagName(tag);
 	    const char * n;
 	    char * mk;
-	    headerNVR(h, &n, NULL, NULL);
+	    (void) headerNVR(h, &n, NULL, NULL);
 	    mk = alloca(strlen(n) + strlen(tn) + sizeof("()"));
 	    sprintf(mk, "%s(%s)", n, tn);
 	    msgkey = mk;
@@ -443,7 +443,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 
 	/* change to en_US for msgkey -> msgid resolution */
 	langval = getenv(language);
-	setenv(language, "en_US", 1);
+	(void) setenv(language, "en_US", 1);
 	++_nl_msg_cat_cntr;
 
 	msgid = NULL;
@@ -456,7 +456,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 
 	/* restore previous environment for msgid -> msgstr resolution */
 	if (langval)
-	    setenv(language, langval, 1);
+	    (void) setenv(language, langval, 1);
 	else
 	    unsetenv(language);
 	++_nl_msg_cat_cntr;

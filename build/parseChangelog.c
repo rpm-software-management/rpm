@@ -12,18 +12,18 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
 {
     int_32 mytime = time;	/* XXX convert to header representation */
     if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
-	headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
+	(void) headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
 			  &mytime, 1);
-	headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
+	(void) headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
 			  &name, 1);
-	headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
+	(void) headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
 			 &text, 1);
     } else {
-	headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
+	(void) headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
 		       &mytime, 1);
-	headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
 		       &name, 1);
-	headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
 		       &text, 1);
     }
 }
@@ -52,7 +52,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     /* day of week */
     p = pe; SKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
+    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = days; *idx && strcmp(*idx, p); idx++)
 	;
     if (*idx == NULL) return -1;
@@ -60,7 +60,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     /* month */
     p = pe; SKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
+    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = months; *idx && strcmp(*idx, p); idx++)
 	;
     if (*idx == NULL) return -1;
@@ -69,7 +69,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     /* day */
     p = pe; SKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
+    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
 
     /* make this noon so the day is always right (as we make this UTC) */
     time.tm_hour = 12;
@@ -81,7 +81,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     /* year */
     p = pe; SKIPSPACE(p);
     if (*p == '\0') return -1;
-    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
+    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     time.tm_year = strtol(p, &q, 10);
     if (!(q && *q == '\0')) return -1;
     if (time.tm_year < 1997 || time.tm_year >= 3000) return -1;
@@ -115,7 +115,7 @@ static int addChangelog(Header h, StringBuf sb)
     /* skip space */
     SKIPSPACE(s);
 
-    while (*s) {
+    while (*s != '\0') {
 	if (*s != '*') {
 	    rpmError(RPMERR_BADSPEC,
 			_("%%changelog entries must start with *\n"));
@@ -129,7 +129,9 @@ static int addChangelog(Header h, StringBuf sb)
 	    rpmError(RPMERR_BADSPEC, _("incomplete %%changelog entry\n"));
 	    return RPMERR_BADSPEC;
 	}
+	/*@-modobserver@*/
 	*s = '\0';
+	/*@=modobserver@*/
 	text = s + 1;
 	
 	/* 4 fields of date */
@@ -160,7 +162,7 @@ static int addChangelog(Header h, StringBuf sb)
 
 	/* name */
 	name = s;
-	while (*s) s++;
+	while (*s != '\0') s++;
 	while (s > name && xisspace(*s)) {
 	    *s-- = '\0';
 	}

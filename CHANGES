@@ -39,6 +39,7 @@
 	- transaction iterator(s) need to run in reverse order on pure erasures.
 	- erasures not yet strict, warn & chug on unlink(2)/rmdir(2) failure.
 	- more boring lclint annotations and fiddles.
+	- yet more boring lclint annotations and fiddles.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

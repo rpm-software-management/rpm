@@ -612,7 +612,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
   { off_t size = fdSize(fd);
     size_t nb = (size >= 0 ? size : (8*BUFSIZ - 2));
     if (nb == 0) {
-	Fclose(fd);
+	(void) Fclose(fd);
 	return 0;
     }
     next = alloca(nb + 2);
@@ -624,7 +624,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	rc = 1;
     } else
 	rc = 0;
-    Fclose(fd);
+    (void) Fclose(fd);
     if (rc) return rc;
     next[nb] = '\n';
     next[nb + 1] = '\0';
@@ -962,7 +962,7 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
     const struct canonEntry * canon;
 
     if (!gotDefaults) {
-	uname(&un);
+	(void) uname(&un);
 
 #if !defined(__linux__)
 #ifdef SNI
@@ -1017,7 +1017,7 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 	    if (!Ferror(fd)) {
 		chptr = xcalloc(1, 256);
 		{   int irelid = Fread(chptr, sizeof(*chptr), 256, fd);
-		    Fclose(fd);
+		    (void) Fclose(fd);
 		    /* example: "112393 RELEASE 020200 Version 01 OS" */
 		    if (irelid > 0) {
 			if ((prelid = strstr(chptr, "RELEASE "))){

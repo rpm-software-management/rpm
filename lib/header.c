@@ -481,7 +481,7 @@ Header headerCopy(Header h)
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData((void *)ptr, type))
     {
-	headerAddEntry(nh, tag, type, ptr, count);
+	(void) headerAddEntry(nh, tag, type, ptr, count);
     }
     headerFreeIterator(hi);
 
@@ -595,9 +595,9 @@ assert(rdlen == dl);
 	    /* Dribble entries replace duplicate region entries. */
 	    h->indexUsed -= ne;
 	    for (j = 0; j < ne; j++, newEntry++) {
-		headerRemoveEntry(h, newEntry->info.tag);
+		(void) headerRemoveEntry(h, newEntry->info.tag);
 		if (newEntry->info.tag == HEADER_BASENAMES)
-		    headerRemoveEntry(h, HEADER_OLDFILENAMES);
+		    (void) headerRemoveEntry(h, HEADER_OLDFILENAMES);
 	    }
 
 	    /* If any duplicate entries were replaced, move new entries down. */
@@ -2214,7 +2214,8 @@ static int parseExpression(struct sprintfToken * token, char * str,
     }
 
     if (*chptr == '|') {
-	parseFormat(xstrdup(""), tags, extensions, &token->u.cond.elseFormat, 
+	(void) parseFormat(xstrdup(""), tags, extensions,
+			&token->u.cond.elseFormat, 
 			&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR, 
 			errmsg);
     } else {
@@ -2768,7 +2769,7 @@ void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
 	if (!headerGetEntryMinMemory(headerFrom, *p, &type,
 				(const void **) &s, &count))
 	    continue;
-	headerAddEntry(headerTo, *p, type, s, count);
+	(void) headerAddEntry(headerTo, *p, type, s, count);
 	s = headerFreeData(s, type);
     }
 }

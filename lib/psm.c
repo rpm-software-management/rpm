@@ -48,15 +48,15 @@ int rpmVersionCompare(Header first, Header second)
 	    return 1;
     }
 
-    headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
-    headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &two, NULL);
+    (void) headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
+    (void) headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &two, NULL);
 
     rc = rpmvercmp(one, two);
     if (rc)
 	return rc;
 
-    headerGetEntry(first, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
-    headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &two, NULL);
+    (void) headerGetEntry(first, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
+    (void) headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &two, NULL);
 
     return rpmvercmp(one, two);
 }
@@ -83,11 +83,11 @@ void loadFi(Header h, TFI_t fi)
     if (h && fi->h == NULL)	fi->h = headerLink(h);
 
     /* Duplicate name-version-release so that headers can be free'd. */
-    hge(fi->h, RPMTAG_NAME, NULL, (void **) &fi->name, NULL);
+    rc = hge(fi->h, RPMTAG_NAME, NULL, (void **) &fi->name, NULL);
     fi->name = xstrdup(fi->name);
-    hge(fi->h, RPMTAG_VERSION, NULL, (void **) &fi->version, NULL);
+    rc = hge(fi->h, RPMTAG_VERSION, NULL, (void **) &fi->version, NULL);
     fi->version = xstrdup(fi->version);
-    hge(fi->h, RPMTAG_RELEASE, NULL, (void **) &fi->release, NULL);
+    rc = hge(fi->h, RPMTAG_RELEASE, NULL, (void **) &fi->release, NULL);
     fi->release = xstrdup(fi->release);
 
     /* -1 means not found */
@@ -103,12 +103,12 @@ void loadFi(Header h, TFI_t fi)
 	return;
     }
 
-    hge(fi->h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
-    hge(fi->h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
-    hge(fi->h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
-    hge(fi->h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
-    hge(fi->h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
-    hge(fi->h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
+    rc = hge(fi->h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
+    rc = hge(fi->h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
+    rc = hge(fi->h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
+    rc = hge(fi->h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
+    rc = hge(fi->h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
+    rc = hge(fi->h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
 
     fi->action = FA_UNKNOWN;
     fi->flags = 0;
@@ -120,10 +120,10 @@ void loadFi(Header h, TFI_t fi)
     switch (fi->type) {
     case TR_ADDED:
 	fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-	hge(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
-	hge(fi->h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
+	rc = hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
+	rc = hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
+	rc = hge(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
+	rc = hge(fi->h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
 
 	/* 0 makes for noops */
 	fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
@@ -131,8 +131,8 @@ void loadFi(Header h, TFI_t fi)
 	break;
     case TR_REMOVED:
 	fi->mapflags = CPIO_MAP_ABSOLUTE | CPIO_MAP_ADDDOT | CPIO_MAP_PATH | CPIO_MAP_MODE;
-	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
+	rc = hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
+	rc = hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
 	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
 				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
 	fi->fflags = memcpy(xmalloc(fi->fc * sizeof(*fi->fflags)),
@@ -317,15 +317,15 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS
     };
 
-    hge(h, RPMTAG_SIZE, NULL, (void **) &fileSizes, NULL);
+    (void) hge(h, RPMTAG_SIZE, NULL, (void **) &fileSizes, NULL);
     fileSize = *fileSizes;
-    hge(newH, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, &count);
+    (void) hge(newH, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, &count);
     for (i = 0, fc = 0; i < count; i++)
 	if (actions[i] != FA_SKIPMULTILIB) {
 	    fc++;
 	    fileSize += fileSizes[i];
 	}
-    headerModifyEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
+    (void) headerModifyEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
 
     for (i = 0; mergeTags[i]; i++) {
         if (!hge(newH, mergeTags[i], &type, (void **) &data, &count))
@@ -337,7 +337,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 			((int_8 *) newdata)[k++] = ((int_8 *) data)[j];
-	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
+	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
 	    break;
 	case RPM_INT16_TYPE:
@@ -345,7 +345,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 		    ((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
-	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
+	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
 	    break;
 	case RPM_INT32_TYPE:
@@ -353,7 +353,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 		    ((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
-	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
+	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
 	    break;
 	case RPM_STRING_ARRAY_TYPE:
@@ -361,7 +361,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    for (j = 0, k = 0; j < count; j++)
 		if (actions[j] != FA_SKIPMULTILIB)
 		    ((char **) newdata)[k++] = ((char **) data)[j];
-	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
+	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
 	    break;
 	default:
@@ -372,10 +372,10 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	}
 	data = hfd(data, type);
     }
-    hge(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes, &count);
-    hge(newH, RPMTAG_DIRNAMES, NULL, (void **) &newDirNames, NULL);
-    hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    hge(h, RPMTAG_DIRNAMES, NULL, (void **) &data, &dirNamesCount);
+    (void) hge(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes, &count);
+    (void) hge(newH, RPMTAG_DIRNAMES, NULL, (void **) &newDirNames, NULL);
+    (void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    (void) hge(h, RPMTAG_DIRNAMES, NULL, (void **) &data, &dirNamesCount);
 
     dirNames = xcalloc(dirNamesCount + fc, sizeof(char *));
     for (i = 0; i < dirNamesCount; i++)
@@ -392,9 +392,9 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    dirNames[dirCount++] = newDirNames[newDirIndexes[i]];
 	((int_32 *) newdata)[k++] = j;
     }
-    headerAddOrAppendEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, newdata, fc);
+    (void) headerAddOrAppendEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, newdata, fc);
     if (dirCount > dirNamesCount)
-	headerAddOrAppendEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			       dirNames + dirNamesCount,
 			       dirCount - dirNamesCount);
     data = hfd(data, -1);
@@ -411,12 +411,12 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	if (!hge(newH, requireTags[i], &nnt, (void **) &newNames, &newCount))
 	    continue;
 
-	hge(newH, requireTags[i+1], &nvt, (void **) &newEVR, NULL);
-	hge(newH, requireTags[i+2], NULL, (void **) &newFlags, NULL);
+	(void) hge(newH, requireTags[i+1], &nvt, (void **) &newEVR, NULL);
+	(void) hge(newH, requireTags[i+2], NULL, (void **) &newFlags, NULL);
 	if (hge(h, requireTags[i], &rnt, (void **) &Names, &Count))
 	{
-	    hge(h, requireTags[i+1], NULL, (void **) &EVR, NULL);
-	    hge(h, requireTags[i+2], NULL, (void **) &Flags, NULL);
+	    (void) hge(h, requireTags[i+1], NULL, (void **) &EVR, NULL);
+	    (void) hge(h, requireTags[i+2], NULL, (void **) &Flags, NULL);
 	    for (j = 0; j < newCount; j++)
 		for (k = 0; k < Count; k++)
 		    if (!strcmp (newNames[j], Names[k])
@@ -439,11 +439,11 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    k++;
 	}
 	if (k) {
-	    headerAddOrAppendEntry(h, requireTags[i],
+	    (void) headerAddOrAppendEntry(h, requireTags[i],
 				       RPM_STRING_ARRAY_TYPE, newNames, k);
-	    headerAddOrAppendEntry(h, requireTags[i+1],
+	    (void) headerAddOrAppendEntry(h, requireTags[i+1],
 				       RPM_STRING_ARRAY_TYPE, newEVR, k);
-	    headerAddOrAppendEntry(h, requireTags[i+2], RPM_INT32_TYPE,
+	    (void) headerAddOrAppendEntry(h, requireTags[i+2], RPM_INT32_TYPE,
 				       newFlags, k);
 	}
 	newNames = hfd(newNames, nnt);
@@ -494,7 +494,7 @@ static int markReplacedFiles(PSM_t psm)
     }
 
     mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
-    rpmdbAppendIterator(mi, offsets, num);
+    (void) rpmdbAppendIterator(mi, offsets, num);
 
     sfi = replaced;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -516,7 +516,7 @@ static int markReplacedFiles(PSM_t psm)
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;
-		    rpmdbSetIteratorModified(mi, modified);
+		    (void) rpmdbSetIteratorModified(mi, modified);
 		}
 		num++;
 	    }
@@ -610,7 +610,7 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     headerFree(h);	/* XXX reference held by transaction set */
     h = NULL;
 
-    rpmInstallLoadMacros(fi, fi->h);
+    (void) rpmInstallLoadMacros(fi, fi->h);
 
     memset(psm, 0, sizeof(*psm));
     psm->ts = ts;
@@ -812,7 +812,7 @@ static int runScript(PSM_t psm, Header h,
 	argc = progArgc;
     }
 
-    headerNVR(h, &n, &v, &r);
+    (void) headerNVR(h, &n, &v, &r);
     if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &prefixes, &numPrefixes)) {
 	freePrefixes = 1;
     } else if (hge(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &oldPrefix, NULL)) {
@@ -838,10 +838,10 @@ static int runScript(PSM_t psm, Header h,
 
 	if (rpmIsDebug() &&
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
-	    (void)Fwrite("set -x\n", sizeof(char), 7, fd);
+	    (void) Fwrite("set -x\n", sizeof(char), 7, fd);
 
-	(void)Fwrite(script, sizeof(script[0]), strlen(script), fd);
-	Fclose(fd);
+	(void) Fwrite(script, sizeof(script[0]), strlen(script), fd);
+	(void) Fclose(fd);
 
 	{   const char * sn = fn;
 	    if (!ts->chrootDone &&
@@ -886,22 +886,22 @@ static int runScript(PSM_t psm, Header h,
 
 	pipes[0] = pipes[1] = 0;
 	/* make stdin inaccessible */
-	pipe(pipes);
-	close(pipes[1]);
-	dup2(pipes[0], STDIN_FILENO);
-	close(pipes[0]);
+	(void) pipe(pipes);
+	(void) close(pipes[1]);
+	(void) dup2(pipes[0], STDIN_FILENO);
+	(void) close(pipes[0]);
 
 	if (ts->scriptFd != NULL) {
 	    if (Fileno(ts->scriptFd) != STDERR_FILENO)
-		dup2(Fileno(ts->scriptFd), STDERR_FILENO);
+		(void) dup2(Fileno(ts->scriptFd), STDERR_FILENO);
 	    if (Fileno(out) != STDOUT_FILENO)
-		dup2(Fileno(out), STDOUT_FILENO);
+		(void) dup2(Fileno(out), STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
 	    if (Fileno(out) > STDERR_FILENO && Fileno(out) != Fileno(ts->scriptFd)) {
-		Fclose (out);
+		(void) Fclose (out);
 	    }
 	    if (Fileno(ts->scriptFd) > STDERR_FILENO) {
-		Fclose (ts->scriptFd);
+		(void) Fclose (ts->scriptFd);
 	    }
 	}
 
@@ -910,18 +910,18 @@ static int runScript(PSM_t psm, Header h,
 
 	    if (ipath && ipath[5] != '%')
 		path = ipath;
-	    doputenv(path);
+	    (void) doputenv(path);
 	    ipath = _free(ipath);
 	}
 
 	for (i = 0; i < numPrefixes; i++) {
 	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
-	    doputenv(prefixBuf);
+	    (void) doputenv(prefixBuf);
 
 	    /* backwards compatibility */
 	    if (i == 0) {
 		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
-		doputenv(prefixBuf);
+		(void) doputenv(prefixBuf);
 	    }
 	}
 
@@ -935,8 +935,8 @@ static int runScript(PSM_t psm, Header h,
 	    if (!ts->chrootDone && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
 		/*@-unrecog@*/ chroot(rootDir); /*@=unrecog@*/
 	    }
-	    chdir("/");
-	    execv(argv[0], (char *const *)argv);
+	    (void) chdir("/");
+	    (void) execv(argv[0], (char *const *)argv);
 	    break;
 	default:
 	    break;
@@ -963,10 +963,11 @@ static int runScript(PSM_t psm, Header h,
 
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
 
-    Fclose(out);	/* XXX dup'd STDOUT_FILENO */
+    (void) Fclose(out);	/* XXX dup'd STDOUT_FILENO */
     
     if (script) {
-	if (!rpmIsDebug()) unlink(fn);
+	if (!rpmIsDebug())
+	    (void) unlink(fn);
 	fn = _free(fn);
     }
 
@@ -994,8 +995,8 @@ static rpmRC runInstScript(PSM_t psm)
      * headerGetEntry() sets the data pointer to NULL if the entry does
      * not exist.
      */
-    hge(fi->h, psm->progTag, &ptt, (void **) &programArgv, &programArgc);
-    hge(fi->h, psm->scriptTag, &stt, (void **) &script, NULL);
+    (void) hge(fi->h, psm->progTag, &ptt, (void **) &programArgv, &programArgc);
+    (void) hge(fi->h, psm->scriptTag, &stt, (void **) &script, NULL);
 
     if (programArgv && ptt == RPM_STRING_TYPE) {
 	argv = alloca(sizeof(char *));
@@ -1045,10 +1046,10 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 			(void **) &triggerNames, &numTriggers))
 	return 0;
 
-    headerNVR(sourceH, &sourceName, NULL, NULL);
+    (void) headerNVR(sourceH, &sourceName, NULL, NULL);
 
-    hge(triggeredH, RPMTAG_TRIGGERFLAGS, &tft, (void **) &triggerFlags, NULL);
-    hge(triggeredH, RPMTAG_TRIGGERVERSION, &tvt, (void **) &triggerEVR, NULL);
+    (void) hge(triggeredH, RPMTAG_TRIGGERFLAGS, &tft, (void **) &triggerFlags, NULL);
+    (void) hge(triggeredH, RPMTAG_TRIGGERVERSION, &tvt, (void **) &triggerEVR, NULL);
 
     for (i = 0; i < numTriggers; i++) {
 	int_32 tit, tst, tpt;
@@ -1073,14 +1074,14 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 		triggerEVR[i] + skip, triggerFlags[i]))
 	    continue;
 
-	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
+	(void) hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
 		       (void **) &triggerIndices, NULL);
-	hge(triggeredH, RPMTAG_TRIGGERSCRIPTS, &tst,
+	(void) hge(triggeredH, RPMTAG_TRIGGERSCRIPTS, &tst,
 		       (void **) &triggerScripts, NULL);
-	hge(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, &tpt,
+	(void) hge(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, &tpt,
 		       (void **) &triggerProgs, NULL);
 
-	headerNVR(triggeredH, &triggerPackageName, NULL, NULL);
+	(void) headerNVR(triggeredH, &triggerPackageName, NULL, NULL);
 
 	{   int arg1;
 	    int index;
@@ -1178,7 +1179,7 @@ static int runImmedTriggers(PSM_t psm)
 			(void **) &triggerNames, &numTriggers))
 	return 0;
 
-    hge(fi->h, RPMTAG_TRIGGERINDEX, &tit, (void **) &triggerIndices, 
+    (void) hge(fi->h, RPMTAG_TRIGGERINDEX, &tit, (void **) &triggerIndices, 
 		   &numTriggerIndices);
     triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
     memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
@@ -1321,10 +1322,10 @@ assert(psm->mi == NULL);
 		rpmBuildFileList(fi->h, &fi->apath, NULL);
 	
 	    if (fi->fuser == NULL)
-		hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
+		(void) hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
 				(void **) &fi->fuser, NULL);
 	    if (fi->fgroup == NULL)
-		hge(fi->h, RPMTAG_FILEGROUPNAME, NULL,
+		(void) hge(fi->h, RPMTAG_FILEGROUPNAME, NULL,
 				(void **) &fi->fgroup, NULL);
 	    if (fi->fuids == NULL)
 		fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
@@ -1511,7 +1512,7 @@ assert(psm->mi == NULL);
 	    (void) fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	    Fclose(psm->cfd);
+	    (void) Fclose(psm->cfd);
 	    psm->cfd = NULL;
 	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 
@@ -1560,7 +1561,7 @@ assert(psm->mi == NULL);
 	    fi->action = FA_COPYOUT;
 	    fi->actions = NULL;
 
-	    Fflush(psm->fd);
+	    (void) Fflush(psm->fd);
 	    psm->cfd = Fdopen(fdDup(Fileno(psm->fd)), psm->rpmio_flags);
 
 	    /* XXX failedFile? */
@@ -1568,7 +1569,7 @@ assert(psm->mi == NULL);
 	    (void) fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	    Fclose(psm->cfd);
+	    (void) Fclose(psm->cfd);
 	    psm->cfd = NULL;
 	    errno = saveerrno;
 
@@ -1583,20 +1584,21 @@ assert(psm->mi == NULL);
 	    int_32 installTime = time(NULL);
 
 	    if (fi->fc > 0 && fi->fstates)
-		headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
+		(void) headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
 				fi->fstates, fi->fc);
 
-	    headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
+	    (void) headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
 
 	    if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
 		uint_32 multiLib, * newMultiLib, * p;
 
 		if (hge(fi->h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib, NULL) &&
-		    hge(psm->oh, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL)) {
+		    hge(psm->oh, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
+		{
 		    multiLib = *p;
 		    multiLib |= *newMultiLib;
-		    headerModifyEntry(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+		    (void) headerModifyEntry(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 				      &multiLib, 1);
 		}
 		rc = mergeFiles(fi, psm->oh, fi->h);
@@ -1674,7 +1676,7 @@ assert(psm->mi == NULL);
 
 	if (psm->fd) {
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	    Fclose(psm->fd);
+	    (void) Fclose(psm->fd);
 	    psm->fd = NULL;
 	    errno = saveerrno;
 	}
@@ -1754,7 +1756,7 @@ assert(psm->mi == NULL);
 		_loaded++;
 	    }
 
-	    chdir("/");
+	    (void) chdir("/");
 	    /*@-unrecog@*/
 	    rc = chroot(ts->rootDir);
 	    /*@=unrecog@*/
@@ -1768,7 +1770,7 @@ assert(psm->mi == NULL);
 	    rc = chroot(".");
 	    /*@=unrecog@*/
 	    psm->chrootDone = ts->chrootDone = 0;
-	    chdir(ts->currDir);
+	    (void) chdir(ts->currDir);
 	}
 	break;
     case PSM_SCRIPT:

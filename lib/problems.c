@@ -115,38 +115,42 @@ const char * rpmProblemString(rpmProblem prob) /*@*/
 
     switch (prob->type) {
     case RPMPROB_BADARCH:
-	snprintf(buf, nb, _("package %s is for a different architecture"),
+	(void) snprintf(buf, nb,
+		_("package %s is for a different architecture"),
 		prob->pkgNEVR);
 	break;
     case RPMPROB_BADOS:
-	snprintf(buf, nb, _("package %s is for a different operating system"),
+	(void) snprintf(buf, nb,
+		_("package %s is for a different operating system"),
 		prob->pkgNEVR);
 	break;
     case RPMPROB_PKG_INSTALLED:
-	snprintf(buf, nb, _("package %s is already installed"),
+	(void) snprintf(buf, nb,
+		_("package %s is already installed"),
 		prob->pkgNEVR);
 	break;
     case RPMPROB_BADRELOCATE:
-	snprintf(buf, nb, _("path %s in package %s is not relocateable"),
+	(void) snprintf(buf, nb,
+		_("path %s in package %s is not relocateable"),
 		prob->str1, prob->pkgNEVR);
 	break;
     case RPMPROB_NEW_FILE_CONFLICT:
-	snprintf(buf, nb,
+	(void) snprintf(buf, nb,
 		_("file %s conflicts between attempted installs of %s and %s"),
 		prob->str1, prob->pkgNEVR, prob->altNEVR);
 	break;
     case RPMPROB_FILE_CONFLICT:
-	snprintf(buf, nb,
+	(void) snprintf(buf, nb,
 	    _("file %s from install of %s conflicts with file from package %s"),
 		prob->str1, prob->pkgNEVR, prob->altNEVR);
 	break;
     case RPMPROB_OLDPACKAGE:
-	snprintf(buf, nb,
+	(void) snprintf(buf, nb,
 		_("package %s (which is newer than %s) is already installed"),
 		prob->altNEVR, prob->pkgNEVR);
 	break;
     case RPMPROB_DISKSPACE:
-	snprintf(buf, nb,
+	(void) snprintf(buf, nb,
 	    _("installing package %s needs %ld%cb on the %s filesystem"),
 		prob->pkgNEVR,
 		prob->ulong1 > (1024*1024)
@@ -156,19 +160,19 @@ const char * rpmProblemString(rpmProblem prob) /*@*/
 		prob->str1);
 	break;
     case RPMPROB_DISKNODES:
-	snprintf(buf, nb,
+	(void) snprintf(buf, nb,
 	    _("installing package %s needs %ld inodes on the %s filesystem"),
 		prob->pkgNEVR, (long)prob->ulong1, prob->str1);
 	break;
     case RPMPROB_BADPRETRANS:
-	snprintf(buf, nb,
+	(void) snprintf(buf, nb,
 		_("package %s pre-transaction syscall(s): %s failed: %s"),
 		prob->pkgNEVR, prob->str1, strerror(prob->ulong1));
 	break;
     case RPMPROB_REQUIRES:
     case RPMPROB_CONFLICT:
     default:
-	snprintf(buf, nb,
+	(void) snprintf(buf, nb,
 		_("unknown error %d encountered while manipulating package %s"),
 		prob->type, prob->pkgNEVR);
 	break;

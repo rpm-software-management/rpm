@@ -13,6 +13,7 @@
 static int _build_debug = 0;
 
 /*@access StringBuf @*/
+/*@access urlinfo @*/		/* XXX compared with NULL */
 /*@access FD_t @*/
 
 /**
@@ -29,7 +30,7 @@ static void doRmSource(Spec spec)
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	    Unlink(fn);
+	    (void) Unlink(fn);
 	    fn = _free(fn);
 	}
     }
@@ -38,7 +39,7 @@ static void doRmSource(Spec spec)
 	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-		Unlink(fn);
+		(void) Unlink(fn);
 		fn = _free(fn);
 	    }
 	}
@@ -147,7 +148,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     buildTemplate = rpmExpand(mTemplate, NULL);
     buildPost = rpmExpand(mPost, NULL);
 
-    fputs(buildTemplate, fp);
+    (void) fputs(buildTemplate, fp);
 
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
 	fprintf(fp, "cd %s\n", spec->buildSubdir);
@@ -158,9 +159,9 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     } else
 	fprintf(fp, "%s", getStringBuf(sb));
 
-    fputs(buildPost, fp);
+    (void) fputs(buildPost, fp);
     
-    Fclose(xfd);
+    (void) Fclose(xfd);
 
     if (test) {
 	rc = 0;
@@ -174,7 +175,7 @@ fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
-    if (u) {
+    if (u != NULL) {
 	switch (u->urltype) {
 	case URL_IS_FTP:
 if (_build_debug)
@@ -191,13 +192,13 @@ fprintf(stderr, "*** addMacros\n");
     }
 
     buildCmd = rpmExpand("%{___build_cmd}", " ", buildScript, NULL);
-    poptParseArgvString(buildCmd, &argc, &argv);
+    (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmMessage(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
 	errno = 0;
-	execvp(argv[0], (char *const *)argv);
+	(void) execvp(argv[0], (char *const *)argv);
 
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
@@ -217,10 +218,10 @@ fprintf(stderr, "*** addMacros\n");
 exit:
     if (scriptName) {
 	if (!rc)
-	    Unlink(scriptName);
+	    (void) Unlink(scriptName);
 	scriptName = _free(scriptName);
     }
-    if (u) {
+    if (u != NULL) {
 	switch (u->urltype) {
 	case URL_IS_FTP:
 	case URL_IS_HTTP:
@@ -303,7 +304,7 @@ int buildSpec(Spec spec, int what, int test)
 	doRmSource(spec);
 
     if (what & RPMBUILD_RMSPEC)
-	Unlink(spec->specFile);
+	(void) Unlink(spec->specFile);
 
 exit:
     if (rc && rpmlogGetNrecs() > 0) {

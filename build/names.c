@@ -126,7 +126,7 @@ const char *const buildHost(void)
     struct hostent *hbn;
 
     if (! gotit) {
-        gethostname(hostname, sizeof(hostname));
+        (void) gethostname(hostname, sizeof(hostname));
 	if ((hbn = /*@-unrecog@*/ gethostbyname(hostname) /*@=unrecog@*/ ))
 	    strcpy(hostname, hbn->h_name);
 	else

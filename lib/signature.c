@@ -162,7 +162,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	if (timedRead(fd, buf, 256) != 256)
 	    break;
 	h = headerNew();
-	headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
+	(void) headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
 	rc = RPMRC_OK;
 	break;
     case RPMSIGTYPE_MD5:
@@ -248,7 +248,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     (void) stpcpy( stpcpy(sigfile, file), ".sig");
 
     inpipe[0] = inpipe[1] = 0;
-    pipe(inpipe);
+    (void) pipe(inpipe);
     
     if (!(pid = fork())) {
 	const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
@@ -256,24 +256,24 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 	const char *path;
 	pgpVersion pgpVer;
 
-	close(STDIN_FILENO);
-	dup2(inpipe[0], 3);
-	close(inpipe[1]);
+	(void) close(STDIN_FILENO);
+	(void) dup2(inpipe[0], 3);
+	(void) close(inpipe[1]);
 
-	dosetenv("PGPPASSFD", "3", 1);
+	(void) dosetenv("PGPPASSFD", "3", 1);
 	if (pgp_path && *pgp_path != '%')
-	    dosetenv("PGPPATH", pgp_path, 1);
+	    (void) dosetenv("PGPPATH", pgp_path, 1);
 
 	/* dosetenv("PGPPASS", passPhrase, 1); */
 
 	if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 	    switch(pgpVer) {
 	    case PGP_2:
-		execlp(path, "pgp", "+batchmode=on", "+verbose=0", "+armor=off",
+		(void) execlp(path, "pgp", "+batchmode=on", "+verbose=0", "+armor=off",
 		    name, "-sb", file, sigfile, NULL);
 		break;
 	    case PGP_5:
-		execlp(path,"pgps", "+batchmode=on", "+verbose=0", "+armor=off",
+		(void) execlp(path,"pgps", "+batchmode=on", "+verbose=0", "+armor=off",
 		    name, "-b", file, "-o", sigfile, NULL);
 		break;
 	    case PGP_UNKNOWN:
@@ -285,10 +285,10 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 	_exit(RPMERR_EXEC);
     }
 
-    close(inpipe[0]);
-    (void)write(inpipe[1], passPhrase, strlen(passPhrase));
-    (void)write(inpipe[1], "\n", 1);
-    close(inpipe[1]);
+    (void) close(inpipe[0]);
+    (void) write(inpipe[1], passPhrase, strlen(passPhrase));
+    (void) write(inpipe[1], "\n", 1);
+    (void) close(inpipe[1]);
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
@@ -298,7 +298,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 
     if (stat(sigfile, &st)) {
 	/* PGP failed to write signature */
-	unlink(sigfile);  /* Just in case */
+	(void) unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
 	return 1;
     }
@@ -311,10 +311,10 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 	int rc;
 	fd = Fopen(sigfile, "r.fdio");
 	rc = timedRead(fd, *sig, *size);
-	unlink(sigfile);
-	Fclose(fd);
+	(void) unlink(sigfile);
+	(void) Fclose(fd);
 	if (rc != *size) {
-	    free(*sig);
+	    *sig = _free(*sig);
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
@@ -342,19 +342,19 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     (void) stpcpy( stpcpy(sigfile, file), ".sig");
 
     inpipe[0] = inpipe[1] = 0;
-    pipe(inpipe);
+    (void) pipe(inpipe);
     
     if (!(pid = fork())) {
 	const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
 	const char *name = rpmExpand("%{_gpg_name}", NULL);
 
-	close(STDIN_FILENO);
-	dup2(inpipe[0], 3);
-	close(inpipe[1]);
+	(void) close(STDIN_FILENO);
+	(void) dup2(inpipe[0], 3);
+	(void) close(inpipe[1]);
 
 	if (gpg_path && *gpg_path != '%')
-	    dosetenv("GNUPGHOME", gpg_path, 1);
-	execlp("gpg", "gpg",
+	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
+	(void) execlp("gpg", "gpg",
 	       "--batch", "--no-verbose", "--no-armor", "--passphrase-fd", "3",
 	       "-u", name, "-sbo", sigfile, file,
 	       NULL);
@@ -363,9 +363,9 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     }
 
     fpipe = fdopen(inpipe[1], "w");
-    close(inpipe[0]);
+    (void) close(inpipe[0]);
     fprintf(fpipe, "%s\n", passPhrase);
-    fclose(fpipe);
+    (void) fclose(fpipe);
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
@@ -375,7 +375,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 
     if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
-	unlink(sigfile);  /* Just in case */
+	(void) unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
 	return 1;
     }
@@ -388,10 +388,10 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 	int rc;
 	fd = Fopen(sigfile, "r.fdio");
 	rc = timedRead(fd, *sig, *size);
-	unlink(sigfile);
-	Fclose(fd);
+	(void) unlink(sigfile);
+	(void) Fclose(fd);
 	if (rc != *size) {
-	    free(*sig);
+	    *sig = _free(*sig);
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
@@ -413,28 +413,28 @@ int rpmAddSignature(Header header, const char * file, int_32 sigTag,
     
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
-	stat(file, &st);
+	(void) stat(file, &st);
 	size = st.st_size;
 	ret = 0;
-	headerAddEntry(header, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
+	(void) headerAddEntry(header, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
 	break;
     case RPMSIGTAG_MD5:
 	ret = mdbinfile(file, buf);
 	if (ret == 0)
-	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, buf, 16);
+	    (void) headerAddEntry(header, sigTag, RPM_BIN_TYPE, buf, 16);
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	rpmMessage(RPMMESS_VERBOSE, _("Generating signature using PGP.\n"));
 	ret = makePGPSignature(file, &sig, &size, passPhrase);
 	if (ret == 0)
-	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
+	    (void) headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
     case RPMSIGTAG_GPG:
 	rpmMessage(RPMMESS_VERBOSE, _("Generating signature using GPG.\n"));
         ret = makeGPGSignature(file, &sig, &size, passPhrase);
 	if (ret == 0)
-	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
+	    (void) headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
     }
 
@@ -446,7 +446,7 @@ verifySizeSignature(const char * datafile, int_32 size, char * result)
 {
     struct stat st;
 
-    stat(datafile, &st);
+    (void) stat(datafile, &st);
     if (size != st.st_size) {
 	sprintf(result, "Header+Archive size mismatch.\n"
 		"Expected %d, saw %d.\n",
@@ -466,7 +466,7 @@ verifyMD5Signature(const char * datafile, const byte * sig,
 {
     byte md5sum[16];
 
-    fn(datafile, md5sum);
+    (void) fn(datafile, md5sum);
     if (memcmp(md5sum, sig, 16)) {
 	sprintf(result, "MD5 sum mismatch\n"
 		"Expected: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
@@ -529,21 +529,21 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
   }
     sfd = Fopen(sigfile, "w.fdio");
     (void)Fwrite(sig, sizeof(char), count, sfd);
-    Fclose(sfd);
+    (void) Fclose(sfd);
 
     /* Now run PGP */
     outpipe[0] = outpipe[1] = 0;
-    pipe(outpipe);
+    (void) pipe(outpipe);
 
     if (!(pid = fork())) {
 	const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
 
-	close(outpipe[0]);
-	close(STDOUT_FILENO);	/* XXX unnecessary */
-	dup2(outpipe[1], STDOUT_FILENO);
+	(void) close(outpipe[0]);
+	(void) close(STDOUT_FILENO);	/* XXX unnecessary */
+	(void) dup2(outpipe[1], STDOUT_FILENO);
 
 	if (pgp_path && *pgp_path != '%')
-	    dosetenv("PGPPATH", pgp_path, 1);
+	    (void) dosetenv("PGPPATH", pgp_path, 1);
 
 	switch (pgpVer) {
 	case PGP_5:
@@ -551,19 +551,19 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 	    /* another message") is _always_ written to stderr; we   */
 	    /* want to catch that output, so dup stdout to stderr:   */
 	{   int save_stderr = dup(2);
-	    dup2(1, 2);
-	    execlp(path, "pgpv", "+batchmode=on", "+verbose=0",
+	    (void) dup2(1, 2);
+	    (void) execlp(path, "pgpv", "+batchmode=on", "+verbose=0",
 		   /* Write "Good signature..." to stdout: */
 		   "+OutputInformationFD=1",
 		   /* Write "WARNING: ... is not trusted to... to stdout: */
 		   "+OutputWarningFD=1",
 		   sigfile, "-o", datafile, NULL);
 	    /* Restore stderr so we can print the error message below. */
-	    dup2(save_stderr, 2);
-	    close(save_stderr);
+	    (void) dup2(save_stderr, 2);
+	    (void) close(save_stderr);
 	}   break;
 	case PGP_2:
-	    execlp(path, "pgp", "+batchmode=on", "+verbose=0",
+	    (void) execlp(path, "pgp", "+batchmode=on", "+verbose=0",
 		   sigfile, datafile, NULL);
 	    break;
 	case PGP_UNKNOWN:
@@ -576,7 +576,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 	_exit(RPMERR_EXEC);
     }
 
-    close(outpipe[1]);
+    (void) close(outpipe[1]);
     file = fdopen(outpipe[0], "r");
     result[0] = '\0';
     while (fgets(buf, 1024, file)) {
@@ -595,10 +595,10 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 	else if (!strncmp("Good signature", buf, 14))
 	    res = RPMSIG_OK;
     }
-    fclose(file);
+    (void) fclose(file);
 
-    (void)waitpid(pid, &status, 0);
-    unlink(sigfile);
+    (void) waitpid(pid, &status, 0);
+    (void) unlink(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
@@ -623,24 +623,24 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     tmppath = _free(tmppath);
   }
     sfd = Fopen(sigfile, "w.fdio");
-    (void)Fwrite(sig, sizeof(char), count, sfd);
-    Fclose(sfd);
+    (void) Fwrite(sig, sizeof(char), count, sfd);
+    (void) Fclose(sfd);
 
     /* Now run GPG */
     outpipe[0] = outpipe[1] = 0;
-    pipe(outpipe);
+    (void) pipe(outpipe);
 
     if (!(pid = fork())) {
 	const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
 
-	close(outpipe[0]);
+	(void) close(outpipe[0]);
 	/* gpg version 0.9 sends its output to stderr. */
-	dup2(outpipe[1], STDERR_FILENO);
+	(void) dup2(outpipe[1], STDERR_FILENO);
 
 	if (gpg_path && *gpg_path != '%')
-	    dosetenv("GNUPGHOME", gpg_path, 1);
+	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
 
-	execlp("gpg", "gpg",
+	(void) execlp("gpg", "gpg",
 	       "--batch", "--no-verbose", 
 	       "--verify", sigfile, datafile,
 	       NULL);
@@ -649,7 +649,7 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
 	_exit(RPMERR_EXEC);
     }
 
-    close(outpipe[1]);
+    (void) close(outpipe[1]);
     file = fdopen(outpipe[0], "r");
     result[0] = '\0';
     while (fgets(buf, 1024, file)) {
@@ -658,10 +658,10 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
 	    res = RPMSIG_NOKEY;
 	}
     }
-    fclose(file);
+    (void) fclose(file);
   
-    (void)waitpid(pid, &status, 0);
-    unlink(sigfile);
+    (void) waitpid(pid, &status, 0);
+    (void) unlink(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
@@ -676,31 +676,31 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
     int fd;
 
     passPhrasePipe[0] = passPhrasePipe[1] = 0;
-    pipe(passPhrasePipe);
+    (void) pipe(passPhrasePipe);
     if (!(pid = fork())) {
-	close(STDIN_FILENO);
-	close(STDOUT_FILENO);
-	close(passPhrasePipe[1]);
+	(void) close(STDIN_FILENO);
+	(void) close(STDOUT_FILENO);
+	(void) close(passPhrasePipe[1]);
 	if (! rpmIsVerbose()) {
-	    close(STDERR_FILENO);
+	    (void) close(STDERR_FILENO);
 	}
 	if ((fd = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
-	    dup2(fd, STDIN_FILENO);
-	    close(fd);
+	    (void) dup2(fd, STDIN_FILENO);
+	    (void) close(fd);
 	}
 	if ((fd = open("/dev/null", O_WRONLY)) != STDOUT_FILENO) {
-	    dup2(fd, STDOUT_FILENO);
-	    close(fd);
+	    (void) dup2(fd, STDOUT_FILENO);
+	    (void) close(fd);
 	}
-	dup2(passPhrasePipe[0], 3);
+	(void) dup2(passPhrasePipe[0], 3);
 
 	switch (sigTag) {
 	case RPMSIGTAG_GPG:
 	{   const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
 	    const char *name = rpmExpand("%{_gpg_name}", NULL);
 	    if (gpg_path && *gpg_path != '%')
-		dosetenv("GNUPGHOME", gpg_path, 1);
-	    execlp("gpg", "gpg",
+		(void) dosetenv("GNUPGHOME", gpg_path, 1);
+	    (void) execlp("gpg", "gpg",
 	           "--batch", "--no-verbose", "--passphrase-fd", "3",
 	           "-u", name, "-so", "-",
 	           NULL);
@@ -714,18 +714,18 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	    const char *path;
 	    pgpVersion pgpVer;
 
-	    dosetenv("PGPPASSFD", "3", 1);
+	    (void) dosetenv("PGPPASSFD", "3", 1);
 	    if (pgp_path && *pgp_path != '%')
-		dosetenv("PGPPATH", pgp_path, 1);
+		(void) dosetenv("PGPPATH", pgp_path, 1);
 
 	    if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 		switch(pgpVer) {
 		case PGP_2:
-		    execlp(path, "pgp", "+batchmode=on", "+verbose=0",
+		    (void) execlp(path, "pgp", "+batchmode=on", "+verbose=0",
 			name, "-sf", NULL);
 		    break;
 		case PGP_5:	/* XXX legacy */
-		    execlp(path,"pgps", "+batchmode=on", "+verbose=0",
+		    (void) execlp(path,"pgps", "+batchmode=on", "+verbose=0",
 			name, "-f", NULL);
 		    break;
 		case PGP_UNKNOWN:
@@ -743,10 +743,10 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	}
     }
 
-    close(passPhrasePipe[0]);
-    (void)write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
-    (void)write(passPhrasePipe[1], "\n", 1);
-    close(passPhrasePipe[1]);
+    (void) close(passPhrasePipe[0]);
+    (void) write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
+    (void) write(passPhrasePipe[1], "\n", 1);
+    (void) close(passPhrasePipe[1]);
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {

@@ -16,8 +16,8 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #endif
 #endif
 
-#define	DB_VERSION_MAJOR	0
-#define	DB_VERSION_MINOR	0
+#define	DB_VERSION_MAJOR	1
+#define	DB_VERSION_MINOR	85
 #define	DB_VERSION_PATCH	0
 
 #define	_mymemset(_a, _b, _c)
@@ -145,6 +145,16 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 
     h = headerRead(pkgs, HEADER_MAGIC_NO);
 
+    /* let's sanity check this record a bit, otherwise just skip it */
+    if (!(headerIsEntry(h, RPMTAG_NAME) &&
+	headerIsEntry(h, RPMTAG_VERSION) &&
+	headerIsEntry(h, RPMTAG_RELEASE) &&
+	headerIsEntry(h, RPMTAG_BUILDTIME)))
+    {
+	headerFree(h);
+	h = NULL;
+    }
+
     if (h == NULL)
 	goto exit;
 
@@ -184,7 +194,7 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 
 	free(fileNames);
 
-	headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
+	(void) headerModifyEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, 
 			  newFileNames, fileCount);
     }
 
@@ -269,8 +279,11 @@ static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
 	} else {		/* XXX simulated retrieval */
 	    data.data = doGetRecord(pkgs, offset);
 	    data.size = 0;	/* XXX WRONG */
-	    if (data.data == NULL)
+	    if (data.data == NULL) {
+if (keyp)	*keyp = key.data;
+if (keylen)	*keylen = key.size;
 		rc = EFAULT;
+	    }
 	}
     } else {
 	DB * db;
@@ -484,7 +497,7 @@ exit:
 	dbi->dbi_vec = &db1vec;
 	*dbip = dbi;
     } else
-	db1close(dbi, 0);
+	(void) db1close(dbi, 0);
 
     base = _free(base);
     urlfn = _free(urlfn);

@@ -277,79 +277,83 @@ static int
 is_dos_date(char *str)
 {
     if (strlen(str) == 8 && str[2] == str[5] && strchr("\\-/", (int)str[2]) != NULL)
-	return (1);
+	return 1;
 
-    return (0);
+    return 0;
 }
 
 static int
-is_week (char *str, struct tm *tim)
+is_week (const char * str, /*@out@*/ struct tm * tim)
 {
-    static char *week = "SunMonTueWedThuFriSat";
-    char *pos;
+/*@observer@*/ static const char * week = "SunMonTueWedThuFriSat";
+    const char * pos;
 
-    if((pos=strstr(week, str)) != NULL){
-        if(tim != NULL)
+    /*@-observertrans -mayaliasunique@*/
+    if ((pos=strstr(week, str)) != NULL) {
+    /*@=observertrans =mayaliasunique@*/
+        if (tim != NULL)
 	    tim->tm_wday = (pos - week)/3;
-	return (1);
+	return 1;
     }
-    return (0);    
+    return 0;    
 }
 
 static int
-is_month (char *str, struct tm *tim)
+is_month (const char * str, /*@out@*/ struct tm * tim)
 {
-    static char *month = "JanFebMarAprMayJunJulAugSepOctNovDec";
-    char *pos;
+/*@observer@*/ static const char * month = "JanFebMarAprMayJunJulAugSepOctNovDec";
+    const char * pos;
     
-    if((pos=strstr(month, str)) != NULL){
-        if(tim != NULL)
+    /*@-observertrans -mayaliasunique@*/
+    if ((pos=strstr(month, str)) != NULL) {
+    /*@=observertrans -mayaliasunique@*/
+        if (tim != NULL)
 	    tim->tm_mon = (pos - month)/3;
-	return (1);
+	return 1;
     }
-    return (0);
+    return 0;
 }
 
 static int
-is_time (char *str, struct tm *tim)
+is_time (const char * str, /*@out@*/ struct tm * tim)
 {
-    char *p, *p2;
+    const char * p, * p2;
 
     if ((p=strchr(str, ':')) && (p2=strrchr(str, ':'))) {
 	if (p != p2) {
     	    if (sscanf (str, "%2d:%2d:%2d", &tim->tm_hour, &tim->tm_min, &tim->tm_sec) != 3)
-		return (0);
+		return 0;
 	}
 	else {
 	    if (sscanf (str, "%2d:%2d", &tim->tm_hour, &tim->tm_min) != 2)
-		return (0);
+		return 0;
 	}
     }
     else 
-        return (0);
+        return 0;
     
-    return (1);
+    return 1;
 }
 
-static int is_year(char *str, struct tm *tim)
+static int is_year(const char * str, /*@out@*/ struct tm * tim)
 {
     long year;
 
     if (strchr(str,':'))
-        return (0);
+        return 0;
 
     if (strlen(str)!=4)
-        return (0);
+        return 0;
 
     if (sscanf(str, "%ld", &year) != 1)
-        return (0);
+        return 0;
 
     if (year < 1900 || year > 3000)
-        return (0);
+        return 0;
 
     tim->tm_year = (int) (year - 1900);
 
-    return (1);
+    return 1;
 }
 
 /*
@@ -361,7 +365,7 @@ static int is_year(char *str, struct tm *tim)
 static int
 vfs_parse_filetype (char c)
 {
-    switch (c){
+    switch (c) {
         case 'd': return S_IFDIR; 
         case 'b': return S_IFBLK;
         case 'c': return S_IFCHR;
@@ -377,37 +381,37 @@ vfs_parse_filetype (char c)
     }
 }
 
-static int vfs_parse_filemode (char *p)
+static int vfs_parse_filemode (const char *p)
 {	/* converts rw-rw-rw- into 0666 */
     int res = 0;
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'r': res |= 0400; break;
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'w': res |= 0200; break;
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'x': res |= 0100; break;
 	case 's': res |= 0100 | S_ISUID; break;
 	case 'S': res |= S_ISUID; break;
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'r': res |= 0040; break;
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'w': res |= 0020; break;
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'x': res |= 0010; break;
 	case 's': res |= 0010 | S_ISGID; break;
         case 'l': /* Solaris produces these */
@@ -415,17 +419,17 @@ static int vfs_parse_filemode (char *p)
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'r': res |= 0004; break;
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'w': res |= 0002; break;
 	case '-': break;
 	default: return -1;
     }
-    switch (*(p++)){
+    switch (*(p++)) {
 	case 'x': res |= 0001; break;
 	case 't': res |= 0001 | S_ISVTX; break;
 	case 'T': res |= S_ISVTX; break;
@@ -482,7 +486,8 @@ static int vfs_parse_filedate(int idx, time_t *t)
         if (is_dos_date(p)){
             p[2] = p[5] = '-';
 	    
-	    if(sscanf(p, "%2d-%2d-%2d", &d[0], &d[1], &d[2]) == 3){
+	    memset(d, 0, sizeof(d));
+	    if (sscanf(p, "%2d-%2d-%2d", &d[0], &d[1], &d[2]) == 3){
 	    /*  We expect to get:
 		1. MM-DD-YY
 		2. DD-MM-YY
@@ -540,7 +545,9 @@ static int vfs_parse_filedate(int idx, time_t *t)
 }
 
 static int
-vfs_parse_ls_lga (char *p, struct stat *st, char **filename, char **linkname)
+vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
+		/*@out@*/ const char ** filename,
+		/*@out@*/ const char ** linkname)
 {
     int idx, idx2, num_cols;
     int i;
@@ -563,11 +570,13 @@ vfs_parse_ls_lga (char *p, struct stat *st, char **filename, char **linkname)
 	if (strlen (p) <= 8 || p [8] != ']')
 	    goto error;
 	/* Should parse here the Notwell permissions :) */
+	/*@-unrecog@*/
 	if (S_ISDIR (st->st_mode))
 	    st->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IXUSR | S_IXGRP | S_IXOTH);
 	else
 	    st->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR);
 	p += 9;
+	/*@=unrecog@*/
     } else {
 	if ((i = vfs_parse_filemode(p)) == -1)
 	    goto error;
@@ -591,7 +600,7 @@ vfs_parse_ls_lga (char *p, struct stat *st, char **filename, char **linkname)
 #ifdef	HACK
 	st->st_uid = finduid (columns [1]);
 #else
-	unameToUid (columns [1], &st->st_uid);
+	(void) unameToUid (columns [1], &st->st_uid);
 #endif
     else
         st->st_uid = (uid_t) atol (columns [1]);
@@ -615,7 +624,7 @@ vfs_parse_ls_lga (char *p, struct stat *st, char **filename, char **linkname)
 #ifdef	HACK
 	    st->st_gid = findgid (columns [2]);
 #else
-	    gnameToGid (columns [1], &st->st_gid);
+	    (void) gnameToGid (columns [1], &st->st_gid);
 #endif
 	idx2 = 3;
     }
@@ -731,7 +740,9 @@ error:
     }
 #endif
 
+    /*@-usereleased@*/
     if (p_copy != p)		/* Carefull! */
+    /*@=usereleased@*/
 	g_free (p_copy);
     return 0;
 }
@@ -749,7 +760,7 @@ static /*@only@*/ char * ftpBuf = NULL;
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
-	struct stat * st, char * rlbuf, size_t rlbufsiz)
+	/*@out@*/ struct stat * st, char * rlbuf, size_t rlbufsiz)
 {
     FD_t fd;
     const char * path;
@@ -916,16 +927,16 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
     }
 
 exit:
-    ufdClose(fd);
+    (void) ufdClose(fd);
     return rc;
 }
 
-static int ftpStat(const char * path, struct stat *st)
+static int ftpStat(const char * path, /*@out@*/ struct stat *st)
 {
     return ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
 }
 
-static int ftpLstat(const char * path, struct stat *st) {
+static int ftpLstat(const char * path, /*@out@*/ struct stat *st) {
     int rc;
     rc = ftpNLST(path, DO_FTP_LSTAT, st, NULL, 0);
 if (_rpmio_debug)
@@ -938,15 +949,18 @@ static int ftpReadlink(const char * path, char * buf, size_t bufsiz) {
 }
 
 static int ftpGlob(const char * path, int flags,
-		int errfunc(const char * epath, int eerno), glob_t * pglob)
+		int errfunc(const char * epath, int eerno),
+		/*@out@*/ glob_t * pglob)
 {
     int rc;
 
     if (pglob == NULL)
 	return -2;
     rc = ftpNLST(path, DO_FTP_GLOB, NULL, NULL, 0);
+/*@-castfcnptr@*/
 if (_rpmio_debug)
-fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, (unsigned)flags, errfunc, pglob, rc);
+fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, (unsigned)flags, (void *)errfunc, pglob, rc);
+/*@=castfcnptr@*/
     if (rc)
 	return rc;
     rc = poptParseArgvString(ftpBuf, &pglob->gl_pathc, (const char ***)&pglob->gl_pathv);
@@ -957,8 +971,10 @@ fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, (unsigned)fl
 static void ftpGlobfree(glob_t * pglob) {
 if (_rpmio_debug)
 fprintf(stderr, "*** ftpGlobfree(%p)\n", pglob);
-    if (pglob->gl_offs == -1)	/* XXX HACK HACK HACK */
+    if (pglob->gl_offs == -1) {	/* XXX HACK HACK HACK */
 	free((void *)pglob->gl_pathv);
+	pglob->gl_pathv = NULL;
+    }
 }
 
 int Stat(const char * path, struct stat * st) {
@@ -1059,8 +1075,10 @@ int Glob(const char *path, int flags,
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
+/*@-castfcnptr@*/
 if (_rpmio_debug)
-fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", path, (unsigned)flags, errfunc, pglob);
+fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", path, (unsigned)flags, (void *)errfunc, pglob);
+/*@=castfcnptr@*/
     switch (ut) {
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
 	return ftpGlob(path, flags, errfunc, pglob);
@@ -1112,16 +1130,18 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
     return opendir(path);
 }
 
+/*@+voidabstract@*/
 struct dirent * Readdir(DIR * dir)
 {
 if (_rpmio_debug)
-fprintf(stderr, "*** Readdir(%p)\n", dir);
+fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
     return readdir(dir);
 }
 
 int Closedir(DIR * dir)
 {
 if (_rpmio_debug)
-fprintf(stderr, "*** Closedir(%p)\n", dir);
+fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
     return closedir(dir);
 }
+/*@=voidabstract@*/

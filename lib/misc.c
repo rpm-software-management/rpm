@@ -358,7 +358,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 errxit:
     tempfn = _free(tempfn);
     /*@-usereleased@*/
-    if (fd) Fclose(fd);
+    if (fd) (void) Fclose(fd);
     /*@=usereleased@*/
     return 1;
 }
@@ -389,6 +389,7 @@ static int dncmp(const void * a, const void * b)
 
 void compressFilelist(Header h)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char ** fileNames;
     const char ** dirNames;
     const char ** baseNames;
@@ -405,12 +406,11 @@ void compressFilelist(Header h)
      */
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
+	(void) headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
 	return;		/* Already converted. */
     }
 
-    if (!headerGetEntry(h, RPMTAG_OLDFILENAMES, &fnt,
-			(void **) &fileNames, &count))
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
 	return;		/* no file list */
 
     dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
@@ -452,16 +452,16 @@ void compressFilelist(Header h)
     }
 
 exit:
-    headerAddEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
+    (void) headerAddEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			dirIndexes, count);
-    headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+    (void) headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
-    headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+    (void) headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			dirNames, dirIndex + 1);
 
     fileNames = headerFreeData(fileNames, fnt);
 
-    headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
+    (void) headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
 }
 
 /*
@@ -472,6 +472,8 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 			    /*@out@*/ int * fileCountPtr, int baseNameTag,
 			    int dirNameTag, int dirIndexesTag)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     const char ** baseNames;
     const char ** dirNames;
     int * dirIndexes;
@@ -482,14 +484,14 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     char * data;
     int i;
 
-    if (!headerGetEntry(h, baseNameTag, &bnt, (void **) &baseNames, &count)) {
+    if (!hge(h, baseNameTag, &bnt, (void **) &baseNames, &count)) {
 	if (fileListPtr) *fileListPtr = NULL;
 	if (fileCountPtr) *fileCountPtr = 0;
 	return;		/* no file list */
     }
 
-    headerGetEntry(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
-    headerGetEntry(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
+    (void) hge(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
+    (void) hge(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
 
     size = sizeof(*fileNames) * count;
     for (i = 0; i < count; i++)
@@ -502,8 +504,8 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 	data = stpcpy( stpcpy(data, dirNames[dirIndexes[i]]), baseNames[i]);
 	*data++ = '\0';
     }
-    baseNames = headerFreeData(baseNames, bnt);
-    dirNames = headerFreeData(dirNames, dnt);
+    baseNames = hfd(baseNames, bnt);
+    dirNames = hfd(dirNames, dnt);
 
     if (fileListPtr)
 	*fileListPtr = fileNames;
@@ -522,14 +524,14 @@ void expandFilelist(Header h)
 			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
 	if (fileNames == NULL || count <= 0)
 	    return;
-	headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
 	fileNames = _free(fileNames);
     }
 
-    headerRemoveEntry(h, RPMTAG_DIRNAMES);
-    headerRemoveEntry(h, RPMTAG_BASENAMES);
-    headerRemoveEntry(h, RPMTAG_DIRINDEXES);
+    (void) headerRemoveEntry(h, RPMTAG_DIRNAMES);
+    (void) headerRemoveEntry(h, RPMTAG_BASENAMES);
+    (void) headerRemoveEntry(h, RPMTAG_DIRINDEXES);
 }
 
 
@@ -779,6 +781,8 @@ int rpmPackageGetEntry( /*@unused@*/ void *leadp, Header sigs, Header h,
  */
 void providePackageNVR(Header h)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     const char *name, *version, *release;
     int_32 * epoch;
     const char *pEVR;
@@ -786,18 +790,19 @@ void providePackageNVR(Header h)
     int_32 pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
+    int pnt, pvt;
     int_32 * provideFlags = NULL;
     int providesCount;
     int i;
     int bingo = 1;
 
     /* Generate provides for this package name-version-release. */
-    headerNVR(h, &name, &version, &release);
+    (void) headerNVR(h, &name, &version, &release);
     if (!(name && version && release))
 	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
     *p = '\0';
-    if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
 	while (*p != '\0')
 	    p++;
@@ -808,29 +813,25 @@ void providePackageNVR(Header h)
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides at all are available, we can just add.
      */
-    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, NULL,
-		(void **) &provides, &providesCount)) {
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
 	goto exit;
-    }
 
     /*
      * Otherwise, fill in entries on legacy packages.
      */
-    if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION, NULL,
-		(void **) &providesEVR, NULL)) {
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
 	    int_32 fdummy = RPMSENSE_ANY;
-	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+	    (void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			&vdummy, 1);
-	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+	    (void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 			&fdummy, 1);
 	}
 	goto exit;
     }
 
-    headerGetEntry(h, RPMTAG_PROVIDEFLAGS, NULL,
-	(void **) &provideFlags, NULL);
+    (void) hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
 
     for (i = 0; i < providesCount; i++) {
 	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
@@ -841,15 +842,15 @@ void providePackageNVR(Header h)
     }
 
 exit:
-    provides = headerFreeData(provides, -1);
-    providesEVR = headerFreeData(providesEVR, -1);
+    provides = hfd(provides, pnt);
+    providesEVR = hfd(providesEVR, pvt);
 
     if (bingo) {
-	headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
 		&name, 1);
-	headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 		&pFlags, 1);
-	headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 		&pEVR, 1);
     }
 }

@@ -1557,7 +1557,9 @@ int main(int argc, const char ** argv)
 
     }
 
+#if defined(IAM_RPMBT) || defined(IAM_RPMK)
 exit:
+#endif	/* IAM_RPMBT || IAM_RPMK */
     poptFreeContext(optCon);
     rpmFreeMacros(NULL);
     rpmFreeMacros(&rpmCLIMacroContext);

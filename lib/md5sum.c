@@ -46,7 +46,7 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
 	    rpmMD5Update(&ctx, buf, rc);
     rpmMD5Final(bindigest, &ctx);
     if (ferror(fp)) {
-	fclose(fp);
+	(void) fclose(fp);
 	return 1;
     }
 
@@ -73,7 +73,7 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
 		(unsigned)bindigest[15]);
 
     }
-    fclose(fp);
+    (void) fclose(fp);
     rc = 0;
 #else
     FD_t fd = Fopen(fn, "r.ufdio");

@@ -43,7 +43,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	    /*@notreached@*/ break;
 	}
 	if (!headerIsEntry(h, tag))
-	    headerAddEntry(h, tag, type, ptr, count);
+	    (void) headerAddEntry(h, tag, type, ptr, count);
     }
     headerFreeIterator(hi);
 }
@@ -72,7 +72,7 @@ Header headerRegenSigHeader(const Header h)
 	    /*@notreached@*/ break;
 	}
 	if (!headerIsEntry(sig, stag))
-	    headerAddEntry(sig, stag, type, ptr, count);
+	    (void) headerAddEntry(sig, stag, type, ptr, count);
     }
     headerFreeIterator(hi);
     return sig;
@@ -103,7 +103,8 @@ static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
     hdr = hdrPtr ? hdrPtr : &hdrBlock;
     lead = leadPtr ? leadPtr : &leadBlock;
 
-    fstat(Fileno(fd), &sb);
+    memset(&sb, 0, sizeof(sb));
+    (void) fstat(Fileno(fd), &sb);
     /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
     if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
 
@@ -141,9 +142,9 @@ static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 	 * anyone.
 	 */
 	if (headerIsEntry(*hdr, RPMTAG_FILEUSERNAME))
-	    headerRemoveEntry(*hdr, RPMTAG_FILEUIDS);
+	    (void) headerRemoveEntry(*hdr, RPMTAG_FILEUIDS);
 	if (headerIsEntry(*hdr, RPMTAG_FILEGROUPNAME))
-	    headerRemoveEntry(*hdr, RPMTAG_FILEGIDS);
+	    (void) headerRemoveEntry(*hdr, RPMTAG_FILEGIDS);
 
 	/*
 	 * We switched the way we do relocateable packages. We fix some of
@@ -155,7 +156,7 @@ static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 			   (void **) &defaultPrefix, NULL)) {
 	    defaultPrefix =
 		stripTrailingChar(alloca_strdup(defaultPrefix), '/');
-	    headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
+	    (void) headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 			   &defaultPrefix, 1); 
 	}
 
@@ -171,7 +172,7 @@ static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
         if (lead->type == RPMLEAD_SOURCE) {
 	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
-	    	headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
+	    	(void)headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
 				&true, 1);
 	} else if (lead->major < 4) {
 	    /* Retrofit "Provide: name = EVR" for binary packages. */

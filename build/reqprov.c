@@ -62,17 +62,17 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     /* Check for duplicate dependencies. */
     if (hge(h, nametag, &dnt, (void **) &names, &len)) {
 	const char ** versions = NULL;
-	int dvt;
+	int dvt = RPM_STRING_ARRAY_TYPE;
 	int *flags = NULL;
 	int *indexes = NULL;
 	int duplicate = 0;
 
 	if (flagtag) {
-	    hge(h, versiontag, &dvt, (void **) &versions, NULL);
-	    hge(h, flagtag, NULL, (void **) &flags, NULL);
+	    (void) hge(h, versiontag, &dvt, (void **) &versions, NULL);
+	    (void) hge(h, flagtag, NULL, (void **) &flags, NULL);
 	}
 	if (indextag)
-	    hge(h, indextag, NULL, (void **) &indexes, NULL);
+	    (void) hge(h, indextag, NULL, (void **) &indexes, NULL);
 
 	while (len > 0) {
 	    len--;
@@ -101,15 +101,15 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     }
 
     /* Add this dependency. */
-    headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &depName, 1);
+    (void) headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &depName, 1);
     if (flagtag) {
-	headerAddOrAppendEntry(h, versiontag,
+	(void) headerAddOrAppendEntry(h, versiontag,
 			       RPM_STRING_ARRAY_TYPE, &depEVR, 1);
-	headerAddOrAppendEntry(h, flagtag,
+	(void) headerAddOrAppendEntry(h, flagtag,
 			       RPM_INT32_TYPE, &depFlags, 1);
     }
     if (indextag)
-	headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
+	(void) headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
 
     return 0;
 }

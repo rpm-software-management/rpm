@@ -11,22 +11,16 @@
 -unrecogcomments
 
 # don't-bother-me-yet parameters
--branchstate		# ~142 occurences, painful
-#-immediatetrans
--mustfree		# ~529 alloca is painful
-#-observertrans
-#-statictrans
+-branchstate		# ~140 painful
+-mustfree		# ~588 alloca is painful
 
 # not-yet normal parameters
--boolops		# w->n
-#-fixedformalarray	# md5 whines
--null
--predboolint		# w->n
-#-predboolothers		# w->n
--retvalint		# w->n
--type
+-boolops		# ~831 w->n
+#-null			# ~267
+-predboolint		# ~576 w->n
+-type			# ~872
 
-# not-yet -weak paramaters
+# -weak paramaters
 #+boolint
 #-boolops
 #+ignorequals

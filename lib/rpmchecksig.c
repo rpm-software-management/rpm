@@ -27,7 +27,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 
     /* close and reset *fdp to NULL */
     if (*fdp && (fnp == NULL || *fnp == NULL)) {
-	Fclose(*fdp);
+	(void) Fclose(*fdp);
 	*fdp = NULL;
 	return 0;
     }
@@ -94,8 +94,8 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     rc = 0;
 
 exit:
-    if (*sfdp)	manageFile(sfdp, NULL, 0, rc);
-    if (*tfdp)	manageFile(tfdp, NULL, 0, rc);
+    if (*sfdp)	(void) manageFile(sfdp, NULL, 0, rc);
+    if (*tfdp)	(void) manageFile(tfdp, NULL, 0, rc);
     return rc;
 }
 
@@ -159,12 +159,12 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 	if (add != RESIGN_ADD_SIGNATURE) {
 	    rpmFreeSignature(sig);
 	    sig = rpmNewSignature();
-	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
-	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 	}
 
 	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0)
-	    rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+	    (void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
@@ -196,30 +196,31 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Clean up intermediate target */
-	unlink(sigtarget);
+	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);
 
 	/* Move final target into place. */
-	unlink(rpm);
-	rename(trpm, rpm);	tmprpm[0] = '\0';
+	(void) unlink(rpm);
+	(void) rename(trpm, rpm);
+	tmprpm[0] = '\0';
     }
 
     res = 0;
 
 exit:
-    if (fd)	manageFile(&fd, NULL, 0, res);
-    if (ofd)	manageFile(&ofd, NULL, 0, res);
+    if (fd)	(void) manageFile(&fd, NULL, 0, res);
+    if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
 
     if (sig) {
 	rpmFreeSignature(sig);
 	sig = NULL;
     }
     if (sigtarget) {
-	unlink(sigtarget);
+	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
     if (tmprpm[0] != '\0') {
-	unlink(tmprpm);
+	(void) unlink(tmprpm);
 	tmprpm[0] = '\0';
     }
 
@@ -422,7 +423,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 	}
 	headerFreeIterator(hi);
 	res += res2;
-	unlink(sigtarget);
+	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);
 
 	if (res2) {
@@ -455,10 +456,10 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 	}
 
     bottom:
-	if (fd)		manageFile(&fd, NULL, 0, 0);
-	if (ofd)	manageFile(&ofd, NULL, 0, 0);
+	if (fd)		(void) manageFile(&fd, NULL, 0, 0);
+	if (ofd)	(void) manageFile(&ofd, NULL, 0, 0);
 	if (sigtarget) {
-	    unlink(sigtarget);
+	    (void) unlink(sigtarget);
 	    sigtarget = _free(sigtarget);
 	}
     }

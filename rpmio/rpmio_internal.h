@@ -235,7 +235,7 @@ int ufdClose( /*@only@*/ void * cookie);
 {
     if (fd->stats == NULL) return;
     fd->stats->ops[opx].count++;
-    gettimeofday(&fd->stats->begin, NULL);
+    (void) gettimeofday(&fd->stats->begin, NULL);
 }
 
 /** \ingroup rpmio
@@ -259,7 +259,7 @@ int ufdClose( /*@only@*/ void * cookie);
     struct timeval end;
     if (rc == -1) fd->syserrno = errno;
     if (fd->stats == NULL) return;
-    gettimeofday(&end, NULL);
+    (void) gettimeofday(&end, NULL);
     if (rc >= 0) {
 	switch(opx) {
 	case FDSTAT_SEEK:

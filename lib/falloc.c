@@ -76,7 +76,7 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
 	newHdr.magic = FA_MAGIC;
 	newHdr.firstFree = 0;
 	if (Fwrite(&newHdr, sizeof(char), sizeof(newHdr), fd) != sizeof(newHdr)) {
-	    Fclose(fd);
+	    (void) Fclose(fd);
 	    return NULL;
 	}
 	fadSetFirstFree(fd, 0);
@@ -84,18 +84,18 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
     } else {
 	memset(&newHdr, 0, sizeof(newHdr));
 	if (Pread(fd, &newHdr, sizeof(newHdr), 0) != sizeof(newHdr)) {
-	    Fclose(fd);
+	    (void) Fclose(fd);
 	    return NULL;
 	}
 	if (newHdr.magic != FA_MAGIC) {
-	    Fclose(fd);
+	    (void) Fclose(fd);
 	    return NULL;
 	}
 	fadSetFirstFree(fd, newHdr.firstFree);
 	fadSetFileSize(fd, Fseek(fd, 0, SEEK_END));
 
 	if (fadGetFileSize(fd) < 0) {
-	    Fclose(fd);
+	    (void) Fclose(fd);
 	    return NULL;
 	}
     }

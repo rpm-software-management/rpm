@@ -118,7 +118,7 @@ int parseDescription(Spec spec)
     
     stripTrailingBlanksStringBuf(sb);
     if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
-	headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
+	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
 			getStringBuf(sb), lang);
     }
     

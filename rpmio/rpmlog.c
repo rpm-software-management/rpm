@@ -179,10 +179,10 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     }
 
     if (rpmlogMsgPrefix[pri] && *rpmlogMsgPrefix[pri])
-	fputs(_(rpmlogMsgPrefix[pri]), msgout);
+	(void) fputs(_(rpmlogMsgPrefix[pri]), msgout);
 
-    fputs(msg, msgout);
-    fflush(msgout);
+    (void) fputs(msg, msgout);
+    (void) fflush(msgout);
     if (freeMsgbuf)
 	free(msgbuf);
     if (pri <= RPMLOG_CRIT)

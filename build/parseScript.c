@@ -8,6 +8,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
+/*@access StringBuf@*/	/* XXX compared with NULL */
+
 /**
  */
 static int addTriggerIndex(Package pkg, const char *file, const char *script, const char *prog)
@@ -29,7 +31,7 @@ static int addTriggerIndex(Package pkg, const char *file, const char *script, co
     new = xmalloc(sizeof(*new));
 
     new->fileName = (file) ? xstrdup(file) : NULL;
-    new->script = (*script) ? xstrdup(script) : NULL;
+    new->script = (script && *script != '\0') ? xstrdup(script) : NULL;
     new->prog = xstrdup(prog);
     new->index = index;
     new->next = NULL;
@@ -246,7 +248,7 @@ int parseScript(Spec spec, int parsePart)
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
-    addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), progArgv[0], NULL, 0);
+    (void) addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), progArgv[0], NULL, 0);
 
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */
@@ -259,14 +261,14 @@ int parseScript(Spec spec, int parsePart)
 	    goto exit;
     } else {
 	if (progArgc == 1)
-	    headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE,
+	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE,
 			*progArgv, progArgc);
 	else
-	    headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
+	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
 			progArgv, progArgc);
 
-	if (*p)
-	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
+	if (*p != '\0')
+	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
 
 	if (file) {
 	    switch (parsePart) {
@@ -291,7 +293,7 @@ int parseScript(Spec spec, int parsePart)
     rc = nextPart;
     
 exit:
-    if (sb)
+    if (sb != NULL)
 	freeStringBuf(sb);
     progArgv = _free(progArgv);
     argv = _free(argv);

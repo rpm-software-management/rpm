@@ -63,26 +63,30 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     /* Construct package name */
   { char *n;
     if (flag == PART_SUBNAME) {
-	headerNVR(spec->packages->header, &pname, NULL, NULL);
+	(void) headerNVR(spec->packages->header, &pname, NULL, NULL);
 	fullName = n = alloca(strlen(pname) + 1 + strlen(name) + 1);
-	while (*pname) *n++ = *pname++;
+	while (*pname != '\0') *n++ = *pname++;
 	*n++ = '-';
     } else {
 	fullName = n = alloca(strlen(name)+1);
     }
+    /*@-mayaliasunique@*/
     strcpy(n, name);
+    /*@=mayaliasunique@*/
   }
 
     /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
-	headerNVR(p->header, &pname, NULL, NULL);
+	(void) headerNVR(p->header, &pname, NULL, NULL);
 	if (pname && (! strcmp(fullName, pname))) {
 	    break;
 	}
     }
 
     if (pkg)
+	/*@-dependenttrans@*/
 	*pkg = p;
+	/*@=dependenttrans@*/
     return ((p == NULL) ? 1 : 0);
 }
 
@@ -168,7 +172,9 @@ void freePackages(Spec spec)
     Package p;
 
     while ((p = spec->packages) != NULL) {
+	/*@-dependenttrans@*/
 	spec->packages = p->next;
+	/*@=dependenttrans@*/
 	p->next = NULL;
 	freePackage(p);
     }
@@ -204,7 +210,7 @@ int parseNoSource(Spec spec, const char *field, int tag)
     }
     
     fe = field;
-    for (f = fe; *f; f = fe) {
+    for (f = fe; *f != '\0'; f = fe) {
         struct Source *p;
 
 	SKIPWHITE(f);
@@ -212,7 +218,7 @@ int parseNoSource(Spec spec, const char *field, int tag)
 	    break;
 	fe = f;
 	SKIPNONWHITE(fe);
-	if (*fe) fe++;
+	if (*fe != '\0') fe++;
 
 	if (parseNum(f, &num)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s\n"),
@@ -345,7 +351,9 @@ static inline void freeSl(/*@only@*/struct speclines *sl)
     if (sl == NULL)
 	return;
     for (i = 0; i < sl->sl_nlines; i++)
+	/*@-unqualifiedtrans@*/
 	sl->sl_lines[i] = _free(sl->sl_lines[i]);
+	/*@=unqualifiedtrans@*/
     sl->sl_lines = _free(sl->sl_lines);
     sl = _free(sl);
 }
@@ -466,7 +474,9 @@ void freeSpec(/*@only@*/ Spec spec)
 
     while (spec->readStack) {
 	rl = spec->readStack;
+	/*@-dependenttrans@*/
 	spec->readStack = rl->next;
+	/*@=dependenttrans@*/
 	rl->next = NULL;
 	rl = _free(rl);
     }
@@ -488,10 +498,14 @@ void freeSpec(/*@only@*/ Spec spec)
 
     if (!spec->inBuildArchitectures) {
 	while (spec->buildArchitectureCount--) {
+	    /*@-unqualifiedtrans@*/
 	    freeSpec(
 		spec->buildArchitectureSpecs[spec->buildArchitectureCount]);
+	    /*@=unqualifiedtrans@*/
 	}
+	/*@-compdef@*/
 	spec->buildArchitectureSpecs = _free(spec->buildArchitectureSpecs);
+	/*@=compdef@*/
     }
     spec->buildArchitectures = _free(spec->buildArchitectures);
 

@@ -295,8 +295,8 @@ static int doSetupMacro(Spec spec, char *line)
 	/* We only parse -a and -b here */
 
 	if (parseNum(optArg, &num)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup %c: %s\n"),
-		     spec->lineNum, num, optArg);
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup: %s\n"),
+		     spec->lineNum, optArg);
 	    freeStringBuf(before);
 	    freeStringBuf(after);
 	    poptFreeContext(optCon);
@@ -328,7 +328,7 @@ static int doSetupMacro(Spec spec, char *line)
 	spec->buildSubdir = xstrdup(dirName);
     } else {
 	const char *name, *version;
-	headerNVR(spec->packages->header, &name, &version, NULL);
+	(void) headerNVR(spec->packages->header, &name, &version, NULL);
 	sprintf(buf, "%s-%s", name, version);
 	spec->buildSubdir = xstrdup(buf);
     }
@@ -548,6 +548,7 @@ int parsePrep(Spec spec)
     }
 
     saveLines = splitString(getStringBuf(buf), strlen(getStringBuf(buf)), '\n');
+    /*@-usereleased@*/
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
 	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
@@ -563,6 +564,7 @@ int parsePrep(Spec spec)
 	    return res;
 	}
     }
+    /*@=usereleased@*/
 
     freeSplitString(saveLines);
     freeStringBuf(buf);

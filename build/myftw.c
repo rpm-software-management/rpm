@@ -107,7 +107,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	  newlev = (level + 1) % descriptors;
 
 	  if (dirs[newlev] != NULL)
-	    Closedir (dirs[newlev]);
+	    (void) Closedir (dirs[newlev]);
 
 	  dirs[newlev] = Opendir (dir);
 	  if (dirs[newlev] != NULL)
@@ -134,7 +134,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	      int save;
 
 	      save = errno;
-	      Closedir (dirs[newlev]);
+	      (void) Closedir (dirs[newlev]);
 	      errno = save;
 	      dirs[newlev] = NULL;
 	    }
@@ -228,7 +228,7 @@ int myftw (const char *dir,
 	  int save;
 
 	  save = errno;
-	  Closedir (dirs[0]);
+	  (void) Closedir (dirs[0]);
 	  errno = save;
 	}
     }

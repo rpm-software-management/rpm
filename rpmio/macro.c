@@ -214,7 +214,9 @@ findEntry(MacroContext *mc, const char *name, size_t namelen)
     
 	key = &keybuf;
 	memset(key, 0, sizeof(*key));
+	/*@-temptrans@*/
 	key->name = (char *)name;
+	/*@=temptrans@*/
 	ret = (MacroEntry **)bsearch(&key, mc->macroTable, mc->firstFree,
 			sizeof(*(mc->macroTable)), compareMacroName);
 	/* XXX TODO: find 1st empty slot and return that */
@@ -466,7 +468,9 @@ expandU(MacroBuf *mb, char *u, size_t ulen)
 	tbuf = alloca(ulen + 1);
 	memset(tbuf, 0, (ulen + 1));
 
+	/*@-temptrans@*/
 	mb->s = u;
+	/*@=temptrans@*/
 	mb->t = tbuf;
 	mb->nb = ulen;
 	rc = expandMacro(mb);
@@ -507,7 +511,7 @@ doShellEscape(MacroBuf *mb, const char *cmd, size_t clen)
 		return 1;
 	while(mb->nb > 0 && (c = fgetc(shf)) != EOF)
 		SAVECHAR(mb, c);
-	pclose(shf);
+	(void) pclose(shf);
 
 	/* XXX delete trailing \r \n */
 	while (iseol(mb->t[-1])) {
@@ -686,11 +690,13 @@ popMacro(MacroEntry **mep)
 
 	if (me) {
 		/* XXX cast to workaround const */
+		/*@-onlytrans@*/
 		if ((*mep = me->prev) == NULL)
 			FREE(me->name);
 		FREE(me->opts);
 		FREE(me->body);
 		FREE(me);
+		/*@=onlytrans@*/
 	}
 }
 
@@ -817,7 +823,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
     while((c = getopt(argc, (char **)argv, opts)) != -1) {
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
 	    rpmError(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)\n"),
-			c, me->name, opts);
+			(char)c, me->name, opts);
 	    return se;
 	}
 	*be++ = '-';
@@ -869,7 +875,7 @@ doOutput(MacroBuf *mb, int waserror, const char *msg, size_t msglen)
 
 	strncpy(buf, msg, msglen);
 	buf[msglen] = '\0';
-	expandU(mb, buf, sizeof(buf));
+	(void) expandU(mb, buf, sizeof(buf));
 	if (waserror)
 		rpmError(RPMERR_BADSPEC, "%s\n", buf);
 	else
@@ -895,7 +901,7 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 	if (g) {
 		strncpy(buf, g, glen);
 		buf[glen] = '\0';
-		expandU(mb, buf, sizeof(buf));
+		(void) expandU(mb, buf, sizeof(buf));
 	}
 	if (STREQ("basename", f, fn)) {
 		if ((b = strrchr(buf, '/')) == NULL)
@@ -928,7 +934,7 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 			be++;
 		*be++ = '\0';
 #ifndef	DEBUG_MACROS
-		isCompressed(b, &compressed);
+		(void) isCompressed(b, &compressed);
 #endif
 		switch(compressed) {
 		default:
@@ -968,7 +974,7 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 	}
 
 	if (b) {
-		expandT(mb, b, strlen(b));
+		(void) expandT(mb, b, strlen(b));
 	}
 }
 
@@ -1063,7 +1069,7 @@ expandMacro(MacroBuf *mb)
 	case '(':		/* %(...) shell escape */
 		if ((se = matchchar(s, c, ')')) == NULL) {
 			rpmError(RPMERR_BADSPEC,
-				_("Unterminated %c: %s\n"), c, s);
+				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
 			continue;
 		}
@@ -1080,7 +1086,7 @@ expandMacro(MacroBuf *mb)
 	case '{':		/* %{...}/%{...:...} substitution */
 		if ((se = matchchar(s, c, '}')) == NULL) {
 			rpmError(RPMERR_BADSPEC,
-				_("Unterminated %c: %s\n"), c, s);
+				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
 			continue;
 		}
@@ -1268,7 +1274,9 @@ expandMacro(MacroBuf *mb)
 
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
+		/*@-onlytrans@*/
 		mb->s = me->body;
+		/*@=onlytrans@*/
 		rc = expandMacro(mb);
 		if (rc == 0)
 			me->used++;	/* Mark macro as used */
@@ -1306,15 +1314,19 @@ expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 	tbuf = alloca(slen + 1);
 	memset(tbuf, 0, (slen + 1));
 
+	/*@-temptrans@*/
 	mb->s = s;
+	/*@=temptrans@*/
 	mb->t = tbuf;
 	mb->nb = slen;
 	mb->depth = 0;
 	mb->macro_trace = print_macro_trace;
 	mb->expand_trace = print_expand_trace;
 
+	/*@-temptrans@*/
 	mb->spec = spec;	/* (future) %file expansion info */
 	mb->mc = mc;
+	/*@=temptrans@*/
 
 	rc = expandMacro(mb);
 
@@ -1373,7 +1385,9 @@ rpmDefineMacro(MacroContext *mc, const char *macro, int level)
 
 	memset(mb, 0, sizeof(*mb));
 	/* XXX just enough to get by */
+	/*@-temptrans@*/
 	mb->mc = (mc ? mc : &rpmGlobalMacroContext);
+	/*@=temptrans@*/
 	(void)doDefine(mb, macro, level, 0);
 	return 0;
 }
@@ -1436,7 +1450,7 @@ rpmInitMacros(MacroContext *mc, const char *macrofiles)
 
 		fd = Fopen(buf, "r.fpio");
 		if (fd == NULL || Ferror(fd)) {
-			if (fd) Fclose(fd);
+			if (fd) (void) Fclose(fd);
 			continue;
 		}
 
@@ -1454,15 +1468,18 @@ rpmInitMacros(MacroContext *mc, const char *macrofiles)
 			n++;	/* skip % */
 			(void)rpmDefineMacro(NULL, n, RMIL_MACROFILES);
 		}
-		Fclose(fd);
+		(void) Fclose(fd);
 	}
-	if (m)
+	if (m) {
 		free(m);
+		m = NULL;
+	}
 
 	/* Reload cmdline macros */
 	rpmLoadMacros(&rpmCLIMacroContext, RMIL_CMDLINE);
 }
 
+/*@-globstate@*/
 void
 rpmFreeMacros(MacroContext *mc)
 {
@@ -1475,8 +1492,10 @@ rpmFreeMacros(MacroContext *mc)
 		MacroEntry *me;
 		while ((me = mc->macroTable[i]) != NULL) {
 			/* XXX cast to workaround const */
+			/*@-onlytrans@*/
 			if ((mc->macroTable[i] = me->prev) == NULL)
 				FREE(me->name);
+			/*@=onlytrans@*/
 			FREE(me->opts);
 			FREE(me->body);
 			FREE(me);
@@ -1485,6 +1504,7 @@ rpmFreeMacros(MacroContext *mc)
 	FREE(mc->macroTable);
 	memset(mc, 0, sizeof(*mc));
 }
+/*@=globstate@*/
 
 /* =============================================================== */
 int isCompressed(const char *file, rpmCompressedMagic *compressed)
@@ -1500,7 +1520,7 @@ int isCompressed(const char *file, rpmCompressedMagic *compressed)
     if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmError(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));
-	if (fd) Fclose(fd);
+	if (fd) (void) Fclose(fd);
 	return 1;
     }
     nb = Fread(magic, sizeof(char), sizeof(magic), fd);
@@ -1512,7 +1532,7 @@ int isCompressed(const char *file, rpmCompressedMagic *compressed)
 		file, (unsigned)sizeof(magic));
 	rc = 0;
     }
-    Fclose(fd);
+    (void) Fclose(fd);
     if (rc >= 0)
 	return rc;
 
@@ -1555,7 +1575,7 @@ rpmExpand(const char *arg, ...)
     while ((s = va_arg(ap, const char *)) != NULL)
 	pe = stpcpy(pe, s);
     va_end(ap);
-    expandMacros(NULL, NULL, buf, sizeof(buf));
+    (void) expandMacros(NULL, NULL, buf, sizeof(buf));
     return xstrdup(buf);
 }
 
@@ -1661,7 +1681,7 @@ char *rpmCleanPath(char * path)
     *t = '\0';
 
 /*fprintf(stderr, "\t%s\n", path); */
-    return path;
+    /*@-temptrans@*/ return path; /*@=temptrans@*/
 }
 
 /* Return concatenated and expanded canonical path. */
@@ -1688,7 +1708,7 @@ rpmGetPath(const char *path, ...)
 	*te = '\0';
     }
     va_end(ap);
-    expandMacros(NULL, NULL, buf, sizeof(buf));
+    (void) expandMacros(NULL, NULL, buf, sizeof(buf));
 
     (void) rpmCleanPath(buf);
     return xstrdup(buf);	/* XXX xstrdup has side effects. */
