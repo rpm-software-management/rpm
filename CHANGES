@@ -1,3 +1,6 @@
+2.5 -> 2.5.1:
+	- fail if sources are not regular files
+
 2.4.109 -> 2.5:
 	- fixed return code bug in build code
 	- do macro expansion before %if processing

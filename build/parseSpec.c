@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "header.h"
 #include "rpmlib.h"
@@ -11,6 +12,7 @@
 #include "read.h"
 #include "misc.h"
 
+static int checkSources(Spec spec);
 static void setStandardMacros(Spec spec, char *arch, char *os);
 
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
@@ -158,7 +160,50 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 
     closeSpec(spec);
     *specp = spec;
+
+    if (checkSources(spec)) {
+	freeSpec(spec);
+	return 1;
+    }
+
     return 0;
+}
+
+static int checkSources(Spec spec)
+{
+    struct Source *p;
+    Package pkg;
+    char buf[BUFSIZ];
+    struct stat sb;
+    int res = 0;
+    
+    p = spec->sources;
+    while (p) {
+	sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+	lstat(buf, &sb);
+	if (! S_ISREG(sb.st_mode)) {
+	    rpmError(RPMERR_BADSPEC, "Source file not regular: %s", buf);
+	    res = 1;
+	}
+	p = p->next;
+    }
+
+    pkg = spec->packages;
+    while (pkg) {
+	p = pkg->icon;
+	while (p) {
+	    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+	    lstat(buf, &sb);
+	    if (! S_ISREG(sb.st_mode)) {
+		rpmError(RPMERR_BADSPEC, "Source file not regular: %s", buf);
+		res = 1;
+	    }
+	    p = p->next;
+	}
+	pkg = pkg->next;
+    }
+
+    return res;
 }
 
 static void setStandardMacros(Spec spec, char *arch, char *os)
