@@ -188,7 +188,7 @@ if test "$cross_compiling" != "yes"; then
 	    AC_MSG_RESULT(no)
 	    AC_MSG_WARN(Can't find gzip, assuming $GZIPBIN)
     else
-	    AC_MSG_RESULT(yes)
+	    AC_MSG_RESULT($GZIPBIN)
     fi
 
     AC_MSG_CHECKING(for bzip2 location)
@@ -209,7 +209,7 @@ if test "$cross_compiling" != "yes"; then
 	    AC_MSG_RESULT(no)
 	    AC_MSG_WARN(Can't find bzip2, assuming $BZIP2BIN)
     else
-	    AC_MSG_RESULT(yes)
+	    AC_MSG_RESULT($BZIP2BIN)
     fi
 
     AC_MSG_CHECKING(old version of patch)
@@ -222,9 +222,6 @@ if test "$cross_compiling" != "yes"; then
 	AC_MSG_RESULT(patch later then 2.2 found)
     fi
 fi
-
-topdir=`pwd`
-topsrcdir=`cd ${srcdir}; pwd`
 
 addlib() {
   l=$1
@@ -591,8 +588,6 @@ AC_SUBST(INCPATH)
 
 AC_SUBST(varprefix)
 AC_SUBST(tmpdir)
-AC_SUBST(topdir)
-AC_SUBST(topsrcdir)
 
 AC_SUBST(LIBS)
 AC_SUBST(LIBDL)

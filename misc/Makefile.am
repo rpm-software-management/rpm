@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.3 foreign
 
+INCLUDES = -I$(top_srcdir) @INCPATH@
+
 EXTRA_DIST = \
 	alloca.c	error.c		fakefork.c	fnmatch.c	\
 	getcwd.c	getmntent.c	getwd.c		glob.c		\
@@ -12,7 +14,7 @@ EXTRA_DIST = \
 	strtol.c	strtoul.c
 
 noinst_HEADERS = \
-	error.h		fnmatch.h	glob.h		inet_aton.h	\
+	error.h		fnmatch.h	glob.h				\
 	libgettext.h	message.h	po-lex.h	str-list.h	\
 	fstrcmp.h
 

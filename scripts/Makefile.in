@@ -109,8 +109,6 @@ USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 l = @l@
 tmpdir = @tmpdir@
-topdir = @topdir@
-topsrcdir = @topsrcdir@
 varprefix = @varprefix@
 
 AUTOMAKE_OPTIONS = 1.2 foreign

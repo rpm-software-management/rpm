@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.3 foreign
 
-INCLUDES = -I../build @INCPATH@
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build @INCPATH@
 
 rpmincdir = $(includedir)/rpm
 rpminc_HEADERS = dbindex.h header.h misc.h rpmlib.h rpmmacro.h stringbuf.h

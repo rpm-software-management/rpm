@@ -27,7 +27,9 @@ extern int h_errno;
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 
-#include "inet_aton.h"		/* for systems too stupid to provide this */
+#if !defined(HAVE_INET_ATON)
+int inet_aton(const char *cp, struct in_addr *inp);
+#endif
 
 #define TIMEOUT_SECS 60
 #define BUFFER_SIZE 4096

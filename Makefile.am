@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.3 foreign
 
 SUBDIRS = popt build lib po intl misc tools scripts
 
-INCLUDES = -I./build -I./lib -I./intl @INCPATH@
+INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
 
-LDFLAGS = @LDFLAGS_STATIC@ -L./popt -L./build -L./lib -L./misc
+LDFLAGS = @LDFLAGS_STATIC@ -L$(top_builddir)/popt -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/misc
 
 rpmbindir = $(subst usr/bin,bin,$(bindir))
 rpmbin_PROGRAMS = rpm
@@ -30,12 +30,12 @@ rpm_SOURCES =		build.c checksig.c ftp.c install.c query.c rpm.c url.c \
 			verify.c
 rpm_LDADD =		-lrpmbuild -lpopt -lrpm @LIBMISC@
 
-rpm.o:
+rpm.o:	rpm.c
 	$(COMPILE) \
 		-DLOCALEDIR=\"$(LOCALEDIR)\" \
 		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
 		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
-		-c rpm.c
+		-c $<
 
 include ./Makefile.inc
 

@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.3 foreign
 
-INCLUDES = -I..
+INCLUDES = -I$(top_srcdir)
 
 noinst_HEADERS = popt.h
 noinst_LIBRARIES = libpopt.a
