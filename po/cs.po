@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-28 19:46-0400\n"
+"POT-Creation-Date: 2002-06-28 23:17-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2193,8 +2193,8 @@ msgstr "balíèek nemá vlastníka souboru ani seznamy id\n"
 msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:503
-#: lib/rpminstall.c:891
+#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:497
+#: lib/rpminstall.c:885
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
@@ -2208,7 +2208,7 @@ msgstr "dotaz na %s se nezdaøil\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "nelze provést dotaz na zdrojové balíèky starého formátu\n"
 
-#: lib/query.c:679 lib/rpminstall.c:516
+#: lib/query.c:679 lib/rpminstall.c:510
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
@@ -2277,7 +2277,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:977 lib/rpminstall.c:676
+#: lib/query.c:977 lib/rpminstall.c:670
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2431,66 +2431,66 @@ msgstr "%s ulo¾eno jako %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:427
+#: lib/rpminstall.c:421
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:471
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/rpminstall.c:483
+#: lib/rpminstall.c:477
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:747
+#: lib/rpminstall.c:489 lib/rpminstall.c:741
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "neinstalován  "
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:525
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "vytvoøení zdrojového a binárního balíèku z <tar_soubor>"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:704 lib/rpminstall.c:1078
+#: lib/rpminstall.c:539 lib/rpminstall.c:698 lib/rpminstall.c:1072
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:546
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:576
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "nainstalovat balíèek"
 
-#: lib/rpminstall.c:603
+#: lib/rpminstall.c:597
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:673
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
-#: lib/rpminstall.c:734
+#: lib/rpminstall.c:728
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:740
+#: lib/rpminstall.c:734
 #, fuzzy, c-format
 msgid "Installing %s\n"
 msgstr "øádek: %s\n"
 
-#: lib/rpminstall.c:1072
+#: lib/rpminstall.c:1066
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""

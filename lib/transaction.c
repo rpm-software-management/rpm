@@ -978,6 +978,15 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     ts->probs = rpmpsFree(ts->probs);
     ts->probs = rpmpsCreate();
 
+    /* XXX Make sure the database is open RDWR for package install/erase. */
+    {	int dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
+		? O_RDONLY : (O_RDWR|O_CREAT);
+
+	/* Open database RDWR for installing packages. */
+	if (rpmtsOpenDB(ts, dbmode))
+	    return -1;	/* XXX W2DO? */
+    }
+
     ts->ignoreSet = ignoreSet;
     {	const char * currDir = currentDirectory();
 	rpmtsSetCurrDir(ts, currDir);

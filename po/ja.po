@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-28 19:46-0400\n"
+"POT-Creation-Date: 2002-06-28 23:17-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2292,8 +2292,8 @@ msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:503
-#: lib/rpminstall.c:891
+#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:497
+#: lib/rpminstall.c:885
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -2307,7 +2307,7 @@ msgstr "%s への問い合わせに失敗しました\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:679 lib/rpminstall.c:516
+#: lib/query.c:679 lib/rpminstall.c:510
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
@@ -2377,7 +2377,7 @@ msgstr "パッケージレコード番号 %d\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:977 lib/rpminstall.c:676
+#: lib/query.c:977 lib/rpminstall.c:670
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -2532,65 +2532,65 @@ msgstr "%s として...\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/rpminstall.c:427
+#: lib/rpminstall.c:421
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:471
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s からの読み込みエラー "
 
-#: lib/rpminstall.c:483
+#: lib/rpminstall.c:477
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:747
+#: lib/rpminstall.c:489 lib/rpminstall.c:741
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:525
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:704 lib/rpminstall.c:1078
+#: lib/rpminstall.c:539 lib/rpminstall.c:698 lib/rpminstall.c:1072
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:546
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:576
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:603
+#: lib/rpminstall.c:597
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:673
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:734
+#: lib/rpminstall.c:728
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:740
+#: lib/rpminstall.c:734
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpminstall.c:1072
+#: lib/rpminstall.c:1066
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.267 2002/06/28 23:59:17 jbj Exp $
+# $Id: sl.po,v 1.268 2002/06/29 03:17:48 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-28 19:46-0400\n"
+"POT-Creation-Date: 2002-06-28 23:17-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2253,8 +2253,8 @@ msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 msgid "can't query %s: %s\n"
 msgstr "ni mo¾no poizvedeti o %s: %s\n"
 
-#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:503
-#: lib/rpminstall.c:891
+#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:497
+#: lib/rpminstall.c:885
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
@@ -2268,7 +2268,7 @@ msgstr "poizvedba po %s je bila neuspe¹na\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:679 lib/rpminstall.c:516
+#: lib/query.c:679 lib/rpminstall.c:510
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "noben paket ne pro¾i %s\n"
@@ -2338,7 +2338,7 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:977 lib/rpminstall.c:676
+#: lib/query.c:977 lib/rpminstall.c:670
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2492,65 +2492,65 @@ msgstr " ... kot %s\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:427
+#: lib/rpminstall.c:421
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:471
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:483
+#: lib/rpminstall.c:477
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:747
+#: lib/rpminstall.c:489 lib/rpminstall.c:741
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:525
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:704 lib/rpminstall.c:1078
+#: lib/rpminstall.c:539 lib/rpminstall.c:698 lib/rpminstall.c:1072
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:546
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:576
 msgid "installing binary packages\n"
 msgstr "name¹èanje binarnih paketov\n"
 
-#: lib/rpminstall.c:603
+#: lib/rpminstall.c:597
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:673
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:734
+#: lib/rpminstall.c:728
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:740
+#: lib/rpminstall.c:734
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:1072
+#: lib/rpminstall.c:1066
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-06-28 19:46-0400\n"
+"POT-Creation-Date: 2002-06-28 23:17-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2182,8 +2182,8 @@ msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
-#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:503
-#: lib/rpminstall.c:891
+#: lib/query.c:635 lib/query.c:669 lib/rpminstall.c:366 lib/rpminstall.c:497
+#: lib/rpminstall.c:885
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
@@ -2197,7 +2197,7 @@ msgstr "%s(을)를 질의하는데 실패했습니다\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "이전 형식의 소스 패키지는 질의할 수 없습니다\n"
 
-#: lib/query.c:679 lib/rpminstall.c:516
+#: lib/query.c:679 lib/rpminstall.c:510
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
@@ -2267,7 +2267,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:977 lib/rpminstall.c:676
+#: lib/query.c:977 lib/rpminstall.c:670
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2419,65 +2419,65 @@ msgstr " ... %s(으)로\n"
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s(을)를 생략합니다 - 전송(transfer)에 실패함 - %s\n"
 
-#: lib/rpminstall.c:427
+#: lib/rpminstall.c:421
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:471
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/rpminstall.c:483
+#: lib/rpminstall.c:477
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일은 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:495 lib/rpminstall.c:747
+#: lib/rpminstall.c:489 lib/rpminstall.c:741
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:525
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d의 소스와 %d의 바이너리 패키지가 검색되었습니다\n"
 
-#: lib/rpminstall.c:545 lib/rpminstall.c:704 lib/rpminstall.c:1078
+#: lib/rpminstall.c:539 lib/rpminstall.c:698 lib/rpminstall.c:1072
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:546
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:576
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:603
+#: lib/rpminstall.c:597
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:679
+#: lib/rpminstall.c:673
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:734
+#: lib/rpminstall.c:728
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:740
+#: lib/rpminstall.c:734
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1072
+#: lib/rpminstall.c:1066
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "(+%d,-%d) 패키지를 %s으로 롤백(rollback)합니다"

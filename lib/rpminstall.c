@@ -251,8 +251,8 @@ int rpmInstall(rpmts ts,
 	vsflags |= _RPMTS_VSF_NOSIGNATURES;
     vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
 
-    ts->dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
-		? O_RDONLY : (O_RDWR|O_CREAT);
+    /* Open database RDONLY initiallly, reopen RDWR in rpmtsRun(). */
+    ts->dbmode = O_RDONLY;
 
     {	int notifyFlags;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -403,12 +403,6 @@ restart:
 	}
 
 	if (eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) {
-
-	    /* Open database RDWR for binary packages. */
-	    if (rpmtsOpenDB(ts, ts->dbmode)) {
-		eiu->numFailed++;
-		goto exit;
-	    }
 
 	    if (eiu->relocations) {
 		const char ** paths;
