@@ -293,7 +293,7 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 	    }
 	    if (rc->token) {
 		/* read a version */
-		flags = rc->flags;
+		flags |= rc->flags;
 		version = strtok(NULL, " ,\t\n");
 	    }
 	}
@@ -302,10 +302,11 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 	    return RPMERR_BADSPEC;
 	}
 
-	addReqProv(p, flags, req, version);
+	addReqProv(p, flags, req,
+		   (flags & RPMSENSE_SENSEMASK) ? version : NULL);
 
 	req = NULL;
-	if (! flags) {
+	if (! (flags & RPMSENSE_SENSEMASK)) {
 	    /* No version -- we just read a name */
 	    req = version;
 	}
