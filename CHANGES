@@ -6,6 +6,7 @@
 	- change use of "export" to work with non-bash shells
 	- compress the archives.  oops.
 	- fixed bug when there is no %setup
+	- added -L$(topdir)/popt to Makefile.inc
 
 2.4.11 -> 2.4.99:
 	- added many more i18n strings
