@@ -244,6 +244,7 @@ static int doSetupMacro(Spec spec, StringBuf sb, char *line)
 	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0 },
 	    { NULL, 'T', 0, &skipDefaultAction, 0 },
 	    { NULL, 'q', 0, &quietly, 0 },
+	    { 0, 0, 0, 0, 0 }
     };
 
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
