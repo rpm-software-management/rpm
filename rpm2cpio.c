@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    rc = pkgReadHeader(fd, &hd, &isSource);
+    rc = pkgReadHeader(fd, &hd, &isSource, NULL, NULL);
     if (rc == 1) {
 	fprintf(stderr, "argument is not an RPM package\n");
 	exit(1);

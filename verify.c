@@ -170,7 +170,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		    fprintf(stderr, "open of %s failed: %s\n", arg, 
 			    strerror(errno));
 		} else {
-		    rc = pkgReadHeader(fd, &h, &isSource);
+		    rc = pkgReadHeader(fd, &h, &isSource, NULL, NULL);
 		    close(fd);
 		    switch (rc) {
 			case 0:
