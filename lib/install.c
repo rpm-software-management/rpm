@@ -1160,6 +1160,8 @@ static int installSources(Header h, char * rootdir, int fd,
     char * chptr;
     char * currDir;
     int currDirLen;
+    uid_t currUid = getuid();
+    gid_t currGid = getgid();
 
     rpmMessage(RPMMESS_DEBUG, "installing a source package\n");
 
@@ -1193,8 +1195,11 @@ static int installSources(Header h, char * rootdir, int fd,
 	/* we can't remap v1 packages */
 	assembleFileList(h, &fileMem, &fileCount, &files, 0);
 
-	for (i = 0; i < fileCount; i++)
+	for (i = 0; i < fileCount; i++) {
 	    files[i].relativePath = files[i].relativePath;
+	    files[i].uid = currUid;
+	    files[i].gid = currGid;
+	}
 
 	if (headerIsEntry(h, RPMTAG_COOKIE))
 	    for (i = 0; i < fileCount; i++)

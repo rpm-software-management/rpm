@@ -1,3 +1,8 @@
+2.4.9 -> 2.4.10:
+	- obsolete entries could cause segv's during upgrades
+	- sources now installed with uid/gid of process rather then
+	  the ids used when the src rpm was created
+
 2.4.8 -> 2.4.9:
 	- fix for verification on systems where a single group id
 	  maps to mulitiple group names (Benedict Lofstedt)
