@@ -604,15 +604,14 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	if (rc || spec == NULL) {
 	    
 	    fprintf(stderr, _("query of specfile %s failed, can't parse\n"), arg);
-	    if (spec != NULL && freeSpecVec != NULL) freeSpecVec(spec);
+	    if (spec != NULL) freeSpecVec(spec);
 	    retcode = 1;
 	    break;
 	}
 
 	if (specedit != NULL) {
 	    printNewSpecfile(spec);
-	    if (freeSpecVec)
-		freeSpecVec(spec);
+	    freeSpecVec(spec);
 	    retcode = 0;
 	    break;
 	}
@@ -629,8 +628,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 #endif
 	    showPackage(qva, NULL, pkg->header);
 	}
-	if (freeSpecVec)
-		freeSpecVec(spec);
+	freeSpecVec(spec);
       }	break;
 
       case RPMQV_ALL:
