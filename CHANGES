@@ -19,6 +19,7 @@
 	- rpmFindByFile() removes trailing and duplicate /'s
 	- made many string in rpm program (though not yet in the various
 	  libraries) translatable
+	- eight character user names could break -qlv
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
