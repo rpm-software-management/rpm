@@ -37,6 +37,29 @@ struct headerTagTableEntry {
     int val;
 };
 
+enum headerSprintfExtenstionType { HEADER_EXT_TAG, HEADER_EXT_FORMAT,
+				   HEADER_EXT_MORE, HEADER_EXT_LAST = 0};
+
+/* This will only ever be passed RPM_TYPE_INT32 or RPM_TYPE_STRING to
+   help keep things simple */
+typedef char * (*headerTagFormatFunction)(int_32 type, const void * data, 
+					  char * formatPrefix,
+					  int padding, int element);
+
+struct headerSprintfExtension {
+    enum headerSprintfExtenstionType type;
+    char * name;
+    union {
+	void * generic;
+	headerTagFormatFunction formatFunction;
+	struct headerSprintfExtension * more;
+    } u;
+};
+
+/* This defines some basic conversions all header users would probably like
+   to have */
+extern const struct headerSprintfExtension headerDefaultFormats[];
+
 /* read and write a header from a file */
 Header headerRead(int fd, int magicp);
 void headerWrite(int fd, Header h, int magicp);
@@ -55,6 +78,12 @@ void headerFree(Header h);
 /* dump a header to a file, in human readable format */
 void headerDump(Header h, FILE *f, int flags, 
 		const struct headerTagTableEntry * tags);
+
+/* the returned string must be free()d */
+char * headerSprintf(Header h, const char * fmt, 
+		     const struct headerTagTableEntry * tags,
+		     const struct headerSprintfExtension * extentions,
+		     char ** error);
 
 #define HEADER_DUMP_INLINE   1
 

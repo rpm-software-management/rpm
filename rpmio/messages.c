@@ -38,26 +38,31 @@ void rpmMessage(int level, char * format, ...) {
 	  case RPMMESS_VERBOSE:
 	  case RPMMESS_NORMAL:
 	    vfprintf(stdout, format, args);
+	    fflush(stdout);
 	    break;
 	    
 	  case RPMMESS_DEBUG:
 	    fprintf(stdout, "D: ");
 	    vfprintf(stdout, format, args);
+	    fflush(stdout);
 	    break;
 
 	  case RPMMESS_WARNING:
 	    fprintf(stderr, "warning: ");
 	    vfprintf(stderr, format, args);
+	    fflush(stderr);
 	    break;
 
 	  case RPMMESS_ERROR:
 	    fprintf(stderr, "error: ");
 	    vfprintf(stderr, format, args);
+	    fflush(stderr);
 	    break;
 
 	  case RPMMESS_FATALERROR:
 	    fprintf(stderr, "fatal error: ");
 	    vfprintf(stderr, format, args);
+	    fflush(stderr);
 	    exit(1);
 	    break;
 	}

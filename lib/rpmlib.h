@@ -19,6 +19,9 @@ int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
 extern const struct headerTagTableEntry rpmTagTable[];
 extern const int rpmTagTableSize;
 
+/* this chains to headerDefaultFormats[] */
+extern const struct headerSprintfExtension rpmHeaderFormats[];
+
 /* these tags are for both the database and packages */
 /* none of these can be 0 !!                         */
 
