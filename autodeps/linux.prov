@@ -11,8 +11,8 @@ for f in $filelist; do
     if [ "$soname" != "" ]; then
         if [ "$soname" != "_end" ]; then
             echo $soname
-        else
-    fi
+	fi
+    else
 	echo ${f##*/}
     fi
 done | sort -u
