@@ -687,10 +687,13 @@ int main(int argc, const char ** argv)
 #ifdef	IAM_RPMBT
     if (!strcmp(__progname, "rpmb"))	bigMode = MODE_BUILD;
     if (!strcmp(__progname, "rpmt"))	bigMode = MODE_TARBUILD;
+    if (!strcmp(__progname, "rpmbuild"))	bigMode = MODE_BUILD;
 #endif
 #ifdef	IAM_RPMQV
     if (!strcmp(__progname, "rpmq"))	bigMode = MODE_QUERY;
     if (!strcmp(__progname, "rpmv"))	bigMode = MODE_VERIFY;
+    if (!strcmp(__progname, "rpmquery"))	bigMode = MODE_QUERY;
+    if (!strcmp(__progname, "rpmverify"))	bigMode = MODE_VERIFY;
 #endif
 #ifdef	RPMEIU
     if (!strcmp(__progname, "rpme"))	bigMode = MODE_UNINSTALL;

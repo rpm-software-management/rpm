@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.57
+Release: 0.58
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -155,6 +155,9 @@ fi
 %{__prefix}/bin/gendiff
 %{__prefix}/bin/rpmdb
 %{__prefix}/bin/rpm[eiukqv]
+%{__prefix}/bin/rpmsign
+%{__prefix}/bin/rpmquery
+%{__prefix}/bin/rpmverify
 %{__prefix}/lib/librpm.so.*
 %{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
@@ -200,6 +203,7 @@ fi
 %files build
 %defattr(-,root,root)
 %{__prefix}/bin/rpm[bt]
+%{__prefix}/bin/rpmbuild
 %{__prefix}/lib/rpm/brp-*
 %{__prefix}/lib/rpm/check-prereqs
 %{__prefix}/lib/rpm/cpanflute
@@ -258,6 +262,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jul 25 2000 Jeff Johnson <jbj@redhat.com>
+- create rpmbuild/rpmquery/rpmverify/rpmsign symlinks.
+
+* Mon Jul 24 2000 Jeff Johnson <jbj@redhat.com>
+- rebuild with python binding fix.
+
 * Tue Jul 18 2000 Jeff Johnson <jbj@redhat.com>
 - rebuild against glibc-2.1.91-14.
 - add /usr/kerberos/man to brp-compress.

@@ -106,7 +106,15 @@ install-data-local:
 	@@LN_S@ rpmi $(DESTDIR)/$(libdir)/rpm/rpmu
 	@rm -f $(DESTDIR)/$(libdir)/rpm/rpmv
 	@@LN_S@ rpmq $(DESTDIR)/$(libdir)/rpm/rpmv
-	for bf in b db e i k q t u v ; do \
+	rm -f $(DESTDIR)/$(bindir)/rpmbuild
+	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)/$(bindir)/rpmbuild
+	rm -f $(DESTDIR)/$(bindir)/rpmquery
+	@LN_S@ ../lib/rpm/rpmq $(DESTDIR)/$(bindir)/rpmquery
+	rm -f $(DESTDIR)/$(bindir)/rpmverify
+	@LN_S@ ../lib/rpm/rpmv $(DESTDIR)/$(bindir)/rpmverify
+	rm -f $(DESTDIR)/$(bindir)/rpmsign
+	@LN_S@ ../lib/rpm/rpmk $(DESTDIR)/$(bindir)/rpmsign
+	for bf in db e i u ; do \
 	    rm -f $(DESTDIR)/$(bindir)/rpm$$bf ; \
 	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)/$(bindir)/rpm$$bf ; \
 	done
