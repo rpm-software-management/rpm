@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: log.h,v 11.35 2001/10/09 18:13:26 ubell Exp 
+ * $Id: log.h,v 11.38 2001/11/16 10:57:49 krinsky Exp $
  */
 
 #ifndef _LOG_H_
@@ -150,7 +150,6 @@ struct __log {
 	 */
 	DB_LSN	ready_lsn;
 
-
 	roff_t	  buffer_off;		/* Log buffer offset in the region. */
 	u_int32_t buffer_size;		/* Log buffer size. */
 
@@ -159,6 +158,9 @@ struct __log {
 	DB_LSN	  t_lsn;		/* LSN of first commit */
 	SH_TAILQ_HEAD(__commit) commits;/* list of txns waiting to commit. */
 	SH_TAILQ_HEAD(__free) free_commits;/* free list of commit structs. */
+
+#define	LOG_NEWFILE	0x01
+	u_int32_t flags;		/* Environment-wide flag values. */
 
 #ifdef MUTEX_SYSTEM_RESOURCES
 #define	LG_MAINT_SIZE	(sizeof(roff_t) * DB_MAX_HANDLES)
@@ -226,13 +228,6 @@ typedef enum {
 	DB_LV_OLD_READABLE,
 	DB_LV_OLD_UNREADABLE
 } logfile_validity;
-
-/*
- * Boolean macro that returns whether or not a specified log_put flags
- * value indicates that the log should be sync'ed to disk.
- */
-#define	FLUSH_ON_FLAG(flags)						\
-    ((flags) == DB_COMMIT || (flags) == DB_FLUSH || (flags) == DB_CHECKPOINT)
 
 #include "log_auto.h"
 #include "log_ext.h"

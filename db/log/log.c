@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: log.c,v 11.69 2001/10/02 01:33:40 bostic Exp ";
+static const char revid[] = "$Id: log.c,v 11.73 2001/11/16 16:29:33 bostic Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -146,14 +146,16 @@ __log_init(dbenv, dblp)
 	SH_TAILQ_INIT(&region->fq);
 
 	/* Initialize LOG LSNs. */
-	region->lsn.file = 1;
-	region->lsn.offset = 0;
-	region->waiting_lsn.file = 1;
-	region->waiting_lsn.offset = 0;
-	region->ready_lsn.file = 1;
-	region->ready_lsn.offset = 0;
-	region->t_lsn.file = 1;
-	region->t_lsn.offset = 0;
+	INIT_LSN(region->lsn);
+	INIT_LSN(region->ready_lsn);
+	INIT_LSN(region->t_lsn);
+
+	/*
+	 * It's possible to be waiting for an LSN of [1][0], if a replication
+	 * client gets the first log record out of order.  An LSN of [0][0]
+	 * signifies that we're not waiting.
+	 */
+	ZERO_LSN(region->waiting_lsn);
 
 #ifdef  MUTEX_SYSTEM_RESOURCES
 	/* Allocate room for the txn maintenance info and initialize it. */
@@ -590,11 +592,9 @@ __log_dbenv_refresh(dbenv)
 	DB_ENV *dbenv;
 {
 	DB_LOG *dblp;
-	u_int32_t buffer_size;
 	int ret, t_ret;
 
 	dblp = dbenv->lg_handle;
-	buffer_size = ((LOG *)dblp->reginfo.primary)->buffer_size;
 
 	/* We may have opened files as part of XA; if so, close them. */
 	F_SET(dblp, DBLOG_RECOVER);

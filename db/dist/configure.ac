@@ -1,4 +1,4 @@
-# Id: configure.ac,v 11.116 2001/10/11 20:29:35 bostic Exp 
+# $Id: configure.ac,v 11.125 2001/11/12 14:29:59 bostic Exp $
 # Process this file with autoconf to produce a configure script.
 
 PACKAGE=db
@@ -46,11 +46,12 @@ AC_SUBST(LIBSO_LIBS)
 AC_SUBST(LIBTOOL)
 AC_SUBST(LIBTSO_LIBS)
 AC_SUBST(LIBXSO_LIBS)
+AC_SUBST(LOAD_LIBS)
 AC_SUBST(MAKEFILE_CC)
 AC_SUBST(MAKEFILE_CCLINK)
-AC_SUBST(MAKEFILE_SOLINK)
 AC_SUBST(MAKEFILE_CXX)
 AC_SUBST(MAKEFILE_CXXLINK)
+AC_SUBST(MAKEFILE_SOLINK)
 AC_SUBST(MAKEFILE_XSOLINK)
 AC_SUBST(POSTLINK)
 AC_SUBST(RPC_CLIENT_OBJS)
@@ -58,7 +59,6 @@ AC_SUBST(RPM_POST_INSTALL)
 AC_SUBST(RPM_POST_UNINSTALL)
 AC_SUBST(SOFLAGS)
 AC_SUBST(SOSUFFIX)
-AC_SUBST(TEST_LIBS)
 AC_SUBST(db_cv_path_embedix_install)
 AC_SUBST(db_cv_path_rpm_archive)
 AC_SUBST(o)
@@ -146,17 +146,15 @@ fi
 # Don't override anything if it's already set from the environment.
 optimize_def="-O"
 case "$host_os" in
-aix4.3.[12])
+aix4.3.1*|aix4.3.2*)
+	optimize_def="-O2"
+	CC=${CC-"xlc_r"}
+	CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE";;
+aix4.3.3*)
 	optimize_def="-O2"
 	CC=${CC-"xlc_r"}
 	CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE"
-	LIBTSO_LIBS="\$(LIBS)";;
-aix4.3.3)
-	optimize_def="-O2"
-	CC=${CC-"xlc_r"}
-	CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE"
-	LDFLAGS="$LDFLAGS -pthread"
-	LIBTSO_LIBS="\$(LIBS)";;
+	LDFLAGS="$LDFLAGS -pthread";;
 bsdi3*)	optimize_def="-O2"
 	CC=${CC-"shlicc2"}
 	LIBS="$LIBS -lipc";;
@@ -238,6 +236,7 @@ if test "$db_cv_cxx" = "yes"; then
 		esac
 	fi
 	AC_PROG_CXX
+	AC_CXX_HAVE_STDHEADERS
 	MAKEFILE_CXX="${CXX}"
 	MAKEFILE_CXXLINK="${CXX}"
 fi
@@ -413,28 +412,27 @@ if test "$db_cv_exit_defines" = yes; then
 	    Define if you have EXIT_SUCCESS/EXIT_FAILURE #defines.])
 fi
 
-# Test for sched_yield, the test programs use it.
-# We do this here because it changes $LIBS.
-AC_MSG_CHECKING([for sched_yield in current configuration])
-AC_TRY_LINK([#include <sched.h>],(void)sched_yield();,
-    AC_MSG_RESULT(yes), [
-	AC_MSG_RESULT(no)
-	AC_MSG_CHECKING([for sched_yield in -lrt])
-	saved_libs=$LIBS
-	LIBS="$LIBS -lrt"
-	AC_TRY_LINK([#include <sched.h>],(void)sched_yield();,
-	    AC_MSG_RESULT(yes), LIBS="$saved_libs"; AC_MSG_RESULT(no))])
+# Test for various functions/libraries that the test and example programs use:
+#	sched_yield function
+#	pthreads, socket and math libraries
+AC_CHECK_FUNC(sched_yield,,
+    AC_SEARCH_LIBS(sched_yield, rt, LOAD_LIBS="$LOAD_LIBS -lrt"))
 
-# Test for a pthreads library, the test programs use it.
-# We do this here because it changes $LIBS.
-#
 # XXX
-# We can't do checking similar to the above because the Solaris C library
-# includes pthread interfaces which are not thread-safe.  For that reason
-# we always add -lpthread if we can find a pthread library.  Also we can't
-# depend on any specific call existing (pthread_create, for example), as
-# it may be #defined in an include file -- OSF/1 (Tru64) has this problem.
-AC_CHECK_LIB(pthread, main, TEST_LIBS="$TEST_LIBS -lpthread")
+# We can't check for pthreads in the same way we did the test for sched_yield
+# because the Solaris C library includes pthread interfaces which are not
+# thread-safe.  For that reason we always add -lpthread if we find a pthread
+# library.  Also we can't depend on any specific call existing (pthread_create,
+# for example), as it may be #defined in an include file -- OSF/1 (Tru64) has
+# this problem.
+AC_HAVE_LIBRARY(pthread, LOAD_LIBS="$LOAD_LIBS -lpthread")
+
+# XXX
+# We could be more exact about whether these libraries are needed, but we don't
+# bother -- if they exist, we load them.
+AC_HAVE_LIBRARY(m, LOAD_LIBS="$LOAD_LIBS -lm")
+AC_HAVE_LIBRARY(socket, LOAD_LIBS="$LOAD_LIBS -lsocket")
+AC_HAVE_LIBRARY(nsl, LOAD_LIBS="$LOAD_LIBS -lnsl")
 
 # Check for mutexes.
 # We do this here because it changes $LIBS.
@@ -565,6 +563,7 @@ fi
 # Initial output file list.
 CREATE_LIST="Makefile
     include.tcl:$srcdir/../test/include.tcl
+    db_cxx.h:$srcdir/../include/db_cxx.in
     db_int.h:$srcdir/../include/db_int.in"
 
 # Create the db.h file -- append the global function prototypes to the

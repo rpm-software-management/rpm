@@ -36,7 +36,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: log_rec.c,v 11.67 2001/10/10 02:57:41 margo Exp ";
+static const char revid[] = "$Id: log_rec.c,v 11.69 2001/11/02 16:04:02 margo Exp $";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -107,7 +107,7 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 		 * underlying log_register know, so that it can postpone
 		 * opening the file until it actually exists.
 		 */
-		if (op == DB_TXN_APPLY)
+		if (F_ISSET(dbenv, DB_ENV_REP_CLIENT))
 			flags = DB_APPLY_LOGREG;
 		ret = __log_open_file(dbenv, logp, argp, flags);
 		F_CLR(logp, DBLOG_FORCE_OPEN);
@@ -671,10 +671,14 @@ __log_lid_to_fname(dblp, lid, fnamep)
 	int32_t lid;
 	FNAME **fnamep;
 {
+	DB_ENV *dbenv;
 	FNAME *fnp;
 	LOG *lp;
 
+	dbenv = dblp->dbenv;
 	lp = dblp->reginfo.primary;
+
+	R_LOCK(dbenv, &dblp->reginfo);
 
 	for (fnp = SH_TAILQ_FIRST(&lp->fq, __fname);
 	    fnp != NULL; fnp = SH_TAILQ_NEXT(fnp, q, __fname)) {
@@ -682,8 +686,11 @@ __log_lid_to_fname(dblp, lid, fnamep)
 			continue;
 		if (fnp->id == lid) {
 			*fnamep = fnp;
+			R_UNLOCK(dbenv, &dblp->reginfo);
 			return (0);
 		}
 	}
+
+	R_UNLOCK(dbenv, &dblp->reginfo);
 	return (-1);
 }
