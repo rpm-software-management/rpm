@@ -96,6 +96,7 @@ extern const int rpmTagTableSize;
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
 #define RPMFILE_STATE_NOTINSTALLED	2
+#define RPMFILE_STATE_NETSHARED		3
 
 /* these can be ORed together */
 #define RPMFILE_CONFIG			1
@@ -169,7 +170,8 @@ extern const int rpmTagTableSize;
 #define RPMVAR_TMPPATH                  30
 #define RPMVAR_CPIOBIN                  31
 #define RPMVAR_FTPPORT			32
-#define RPMVAR_LASTVAR	                33 /* IMPORTANT to keep right! */
+#define RPMVAR_NETSHAREDPATH		33
+#define RPMVAR_LASTVAR	                34 /* IMPORTANT to keep right! */
 
 char *getVar(int var);
 int getBooleanVar(int var);
@@ -211,7 +213,8 @@ int rpmOsScore(char * arch);
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile,
 			    notifyFunction notify, char * labelFormat);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
-		     int flags, notifyFunction notify, char * labelFormat);
+		      int flags, notifyFunction notify, char * labelFormat,
+		      char * netsharedPath);
 int rpmEnsureOlder(rpmdb db, char * name, char * newVersion, 
 		char * newRelease, int dbOffset);
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
