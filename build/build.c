@@ -646,13 +646,13 @@ int doBuild(Spec s, int flags, char *passPhrase)
 
     strcpy(build_subdir, ".");
 
-    if (flags & RPMBUILD_LIST)
-	return verifyList(s);
-
     /* We always need to parse the %prep section */
     if (execPrep(s, (flags & RPMBUILD_PREP))) {
 	return 1;
     }
+
+    if (flags & RPMBUILD_LIST)
+	return verifyList(s);
 
     if (flags & RPMBUILD_BUILD) {
 	if (execBuild(s)) {
