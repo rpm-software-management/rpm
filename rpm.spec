@@ -1,8 +1,11 @@
+%define	__prefix	/usr
+%{expand:%%define __share %(if [ -d %{__prefix}/share/man ]; then echo /share ; else echo %%{nil} ; fi)}
+
 Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.25
+Release: 0.26
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -86,9 +89,16 @@ capabilities.
 %prep
 %setup -q
 
+
 %build
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+%ifos linux
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
+%else
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
+%endif
+
 make
+
 %ifos linux
 make -C python
 %endif
@@ -104,8 +114,8 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
-  strip ./usr/bin/rpm2cpio
-  strip ./usr/lib/rpm/rpmputtext ./usr/lib/rpm/rpmgettext
+  strip .%{__prefix}/bin/rpm2cpio
+  strip .%{__prefix}/lib/rpm/rpmputtext .%{__prefix}/lib/rpm/rpmgettext
 }
 
 %clean
@@ -113,9 +123,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 %ifos linux
-if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f /usr/lib/rpm/convertrpmrc.sh ] 
+if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f %{__prefix}/lib/rpm/convertrpmrc.sh ] 
 then
-	sh /usr/lib/rpm/convertrpmrc.sh > /dev/null 2>&1
+	sh %{__prefix}/lib/rpm/convertrpmrc.sh > /dev/null 2>&1
 fi
 %else
 /bin/rpm --initdb
@@ -139,107 +149,107 @@ fi
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/*
 /bin/rpm
 %dir /etc/rpm
-/usr/bin/rpm2cpio
-/usr/bin/gendiff
-/usr/bin/rpmdb
-/usr/bin/rpm[eiukqv]
-/usr/lib/librpm.so.*
-/usr/lib/librpmbuild.so.*
+%{__prefix}/bin/rpm2cpio
+%{__prefix}/bin/gendiff
+%{__prefix}/bin/rpmdb
+%{__prefix}/bin/rpm[eiukqv]
+%{__prefix}/lib/librpm.so.*
+%{__prefix}/lib/librpmbuild.so.*
 
-/usr/lib/rpm/brp-*
-/usr/lib/rpm/config.guess
-/usr/lib/rpm/config.sub
-/usr/lib/rpm/convertrpmrc.sh
-/usr/lib/rpm/find-prov.pl
-/usr/lib/rpm/find-provides
-/usr/lib/rpm/find-req.pl
-/usr/lib/rpm/find-requires
-/usr/lib/rpm/freshen.sh
-/usr/lib/rpm/macros
-/usr/lib/rpm/mkinstalldirs
-/usr/lib/rpm/rpmdb
-/usr/lib/rpm/rpm[eiukqv]
-/usr/lib/rpm/rpmpopt
-/usr/lib/rpm/rpmrc
-/usr/lib/rpm/vpkg-provides.sh
-/usr/lib/rpm/vpkg-provides2.sh
+%{__prefix}/lib/rpm/brp-*
+%{__prefix}/lib/rpm/config.guess
+%{__prefix}/lib/rpm/config.sub
+%{__prefix}/lib/rpm/convertrpmrc.sh
+%{__prefix}/lib/rpm/find-prov.pl
+%{__prefix}/lib/rpm/find-provides
+%{__prefix}/lib/rpm/find-req.pl
+%{__prefix}/lib/rpm/find-requires
+%{__prefix}/lib/rpm/freshen.sh
+%{__prefix}/lib/rpm/macros
+%{__prefix}/lib/rpm/mkinstalldirs
+%{__prefix}/lib/rpm/rpmdb
+%{__prefix}/lib/rpm/rpm[eiukqv]
+%{__prefix}/lib/rpm/rpmpopt
+%{__prefix}/lib/rpm/rpmrc
+%{__prefix}/lib/rpm/vpkg-provides.sh
+%{__prefix}/lib/rpm/vpkg-provides2.sh
 %ifarch i386 i486 i586 i686
-/usr/lib/rpm/i[3456]86*
+%{__prefix}/lib/rpm/i[3456]86*
 %endif
 %ifarch alpha
-/usr/lib/rpm/alpha*
+%{__prefix}/lib/rpm/alpha*
 %endif
 %ifarch sparc sparc64
-/usr/lib/rpm/sparc*
+%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
-/usr/lib/rpm/ia64*
+%{__prefix}/lib/rpm/ia64*
 %endif
 %ifarch powerpc ppc
-/usr/lib/rpm/powerpc*
+%{__prefix}/lib/rpm/powerpc*
 %endif
 
-%dir /usr/src/redhat
-%dir /usr/src/redhat/BUILD
-%dir /usr/src/redhat/SPECS
-%dir /usr/src/redhat/SOURCES
-%dir /usr/src/redhat/SRPMS
-%dir /usr/src/redhat/RPMS
-/usr/src/redhat/RPMS/*
-/usr/*/locale/*/LC_MESSAGES/rpm.mo
-/usr/man/man[18]/*.[18]*
-%lang(pl) /usr/man/pl/man[18]/*.[18]*
-%lang(ru) /usr/man/ru/man[18]/*.[18]*
+%dir %{__prefix}/src/redhat
+%dir %{__prefix}/src/redhat/BUILD
+%dir %{__prefix}/src/redhat/SPECS
+%dir %{__prefix}/src/redhat/SOURCES
+%dir %{__prefix}/src/redhat/SRPMS
+%dir %{__prefix}/src/redhat/RPMS
+%{__prefix}/src/redhat/RPMS/*
+%{__prefix}/*/locale/*/LC_MESSAGES/rpm.mo
+%{__prefix}%{__share}/man/man[18]/*.[18]*
+%lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
+%lang(ru) %{__prefix}%{__share}/man/ru/man[18]/*.[18]*
 
 %files build
 %defattr(-,root,root)
-/usr/bin/rpm[bt]
-/usr/lib/rpm/check-prereqs
-/usr/lib/rpm/cpanflute
-/usr/lib/rpm/find-lang.sh
-/usr/lib/rpm/find-provides.perl
-/usr/lib/rpm/find-requires.perl
-/usr/lib/rpm/get_magic.pl
-/usr/lib/rpm/getpo.sh
-/usr/lib/rpm/http.req
-/usr/lib/rpm/magic.prov
-/usr/lib/rpm/magic.req
-/usr/lib/rpm/perl.prov
-/usr/lib/rpm/perl.req
-/usr/lib/rpm/rpm[bt]
-/usr/lib/rpm/rpmdiff
-/usr/lib/rpm/rpmdiff.cgi
-/usr/lib/rpm/rpmgettext
-/usr/lib/rpm/rpmputtext
-/usr/lib/rpm/u_pkg.sh
+%{__prefix}/bin/rpm[bt]
+%{__prefix}/lib/rpm/check-prereqs
+%{__prefix}/lib/rpm/cpanflute
+%{__prefix}/lib/rpm/find-lang.sh
+%{__prefix}/lib/rpm/find-provides.perl
+%{__prefix}/lib/rpm/find-requires.perl
+%{__prefix}/lib/rpm/get_magic.pl
+%{__prefix}/lib/rpm/getpo.sh
+%{__prefix}/lib/rpm/http.req
+%{__prefix}/lib/rpm/magic.prov
+%{__prefix}/lib/rpm/magic.req
+%{__prefix}/lib/rpm/perl.prov
+%{__prefix}/lib/rpm/perl.req
+%{__prefix}/lib/rpm/rpm[bt]
+%{__prefix}/lib/rpm/rpmdiff
+%{__prefix}/lib/rpm/rpmdiff.cgi
+%{__prefix}/lib/rpm/rpmgettext
+%{__prefix}/lib/rpm/rpmputtext
+%{__prefix}/lib/rpm/u_pkg.sh
 
 %ifos linux
 %files python
 %defattr(-,root,root)
-/usr/lib/python1.5/site-packages/rpmmodule.so
+%{__prefix}/lib/python1.5/site-packages/rpmmodule.so
 %endif
 
 %files devel
 %defattr(-,root,root)
-/usr/include/rpm
-/usr/lib/librpm.a
-/usr/lib/librpm.la
-/usr/lib/librpm.so
-/usr/lib/librpmbuild.a
-/usr/lib/librpmbuild.la
-/usr/lib/librpmbuild.so
+%{__prefix}/include/rpm
+%{__prefix}/lib/librpm.a
+%{__prefix}/lib/librpm.la
+%{__prefix}/lib/librpm.so
+%{__prefix}/lib/librpmbuild.a
+%{__prefix}/lib/librpmbuild.la
+%{__prefix}/lib/librpmbuild.so
 
 %files -n popt
 %defattr(-,root,root)
-/usr/lib/libpopt.so.*
-/usr/*/locale/*/LC_MESSAGES/popt.mo
-/usr/man/man3/popt.3*
+%{__prefix}/lib/libpopt.so.*
+%{__prefix}/*/locale/*/LC_MESSAGES/popt.mo
+%{__prefix}%{__share}/man/man3/popt.3*
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
-/usr/lib/libpopt.a
-/usr/lib/libpopt.la
-/usr/lib/libpopt.so
-/usr/include/popt.h
+%{__prefix}/lib/libpopt.a
+%{__prefix}/lib/libpopt.la
+%{__prefix}/lib/libpopt.so
+%{__prefix}/include/popt.h
 
 %changelog
 * Tue May 30 2000 Matt Wilson <msw@redhat.com>

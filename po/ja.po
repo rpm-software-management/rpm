@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-05-30 19:00-0400\n"
+"POT-Creation-Date: 2000-05-31 07:50-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -242,7 +242,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.61 2000/05/30 23:04:09 jbj Exp $
+# $Id: ja.po,v 1.62 2000/05/31 13:19:38 jbj Exp $
 #: rpm.c:182 rpmqv.c:277
 #, c-format
 msgid "rpm: %s\n"
@@ -1746,7 +1746,7 @@ msgstr "作成のための spec ファイルがありません"
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: build/build.c:110 build/pack.c:312
+#: build/build.c:110 build/pack.c:314
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "一時ファイルをオープンできません"
@@ -2068,51 +2068,51 @@ msgstr "readRPM: %s は RPM パッケージではありません\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からのヘッダの読み込み\n"
 
-#: build/pack.c:324
+#: build/pack.c:326
 msgid "Bad CSA data"
 msgstr "不正な CSA データ"
 
-#: build/pack.c:359
+#: build/pack.c:361
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:391
+#: build/pack.c:393
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:406
+#: build/pack.c:408
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
-#: build/pack.c:422
+#: build/pack.c:424
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:432
+#: build/pack.c:434
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:442
+#: build/pack.c:444
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:457
+#: build/pack.c:459
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:520
+#: build/pack.c:522
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:537
+#: build/pack.c:539
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"

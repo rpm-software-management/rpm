@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.46 2000/05/30 23:04:10 jbj Exp $
+# $Id: sl.po,v 1.47 2000/05/31 13:19:39 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-05-30 19:00-0400\n"
+"POT-Creation-Date: 2000-05-31 07:50-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1751,7 +1751,7 @@ msgstr "datoteka spec za izgradnjo manjka"
 msgid "no tar files given for build"
 msgstr "arhiv tar za izgradnjo manjka"
 
-#: build/build.c:110 build/pack.c:312
+#: build/build.c:110 build/pack.c:314
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Zaèasne datoteke ni mo¾no odpreti"
@@ -2068,51 +2068,51 @@ msgstr "readRPM: %s ni paket tipa RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: branje glave %s\n"
 
-#: build/pack.c:324
+#: build/pack.c:326
 msgid "Bad CSA data"
 msgstr "Okvarjeni podatki CSA"
 
-#: build/pack.c:359
+#: build/pack.c:361
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/pack.c:391
+#: build/pack.c:393
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Ni mo¾no zapisati paketa: %s"
 
-#: build/pack.c:406
+#: build/pack.c:408
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Izdelujemo podpis: %d\n"
 
-#: build/pack.c:422
+#: build/pack.c:424
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Ciljnega podpisa %s ni mo¾no odpreti: %s"
 
-#: build/pack.c:432
+#: build/pack.c:434
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Ciljni podpis %s ni berljiv: %s"
 
-#: build/pack.c:442
+#: build/pack.c:444
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:457
+#: build/pack.c:459
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:520
+#: build/pack.c:522
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Neuspe¹no ustvarjanje izhodne datoteke za paket %s: %s\n"
 
-#: build/pack.c:537
+#: build/pack.c:539
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ni mo¾no ustvariti %s: %s\n"

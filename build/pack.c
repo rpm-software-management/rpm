@@ -300,6 +300,8 @@ int writeRPM(Header h, const char *fileName, int type,
     else
     	compressFilelist(h);
 
+    providePackageNVR(h);
+
     /* Create and add the cookie */
     if (cookie) {
 	sprintf(buf, "%s %d", buildHost(), (int) time(NULL));

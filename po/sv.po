@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.106 $
+# $Revision: 1.107 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-05-30 19:00-0400\n"
+"POT-Creation-Date: 2000-05-31 07:50-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1737,7 +1737,7 @@ msgstr "ingen spec-filer angivna för tillverkning"
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för tillverkning"
 
-#: build/build.c:110 build/pack.c:312
+#: build/build.c:110 build/pack.c:314
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Kan inte öppna temporär fil"
@@ -2054,51 +2054,51 @@ msgstr "readRPM: %s är inte ett RPM-paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: läser huvud från %s\n"
 
-#: build/pack.c:324
+#: build/pack.c:326
 msgid "Bad CSA data"
 msgstr "Felaktig CSA-data"
 
-#: build/pack.c:359
+#: build/pack.c:361
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:391
+#: build/pack.c:393
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Kunde inte skriva paket: %s"
 
-#: build/pack.c:406
+#: build/pack.c:408
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererar signatur: %d\n"
 
-#: build/pack.c:422
+#: build/pack.c:424
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Kan inte läsa signaturen %s: %s"
 
-#: build/pack.c:432
+#: build/pack.c:434
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Kan inte läsa signaturen %s: %s"
 
-#: build/pack.c:442
+#: build/pack.c:444
 #, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Kan inte skriva paket %s: %s"
 
-#: build/pack.c:457
+#: build/pack.c:459
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:520
+#: build/pack.c:522
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:537
+#: build/pack.c:539
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"

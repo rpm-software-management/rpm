@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-05-30 19:00-0400\n"
+"POT-Creation-Date: 2000-05-31 07:50-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1762,7 +1762,7 @@ msgstr "не задан spec-файл для сборки пакета"
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: build/build.c:110 build/pack.c:312
+#: build/build.c:110 build/pack.c:314
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Не могу открыть временный файл"
@@ -2083,51 +2083,51 @@ msgstr "readRPM: %s - не пакет RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читаю хедер из %s\n"
 
-#: build/pack.c:324
+#: build/pack.c:326
 msgid "Bad CSA data"
 msgstr "Неверные данные CSA"
 
-#: build/pack.c:359
+#: build/pack.c:361
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Не могу открыть %s\n"
 
-#: build/pack.c:391
+#: build/pack.c:393
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Не могу записать пакет: %s"
 
-#: build/pack.c:406
+#: build/pack.c:408
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Генерирую подпись: %d\n"
 
-#: build/pack.c:422
+#: build/pack.c:424
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Не могу прочитать цель подписи: %s"
 
-#: build/pack.c:432
+#: build/pack.c:434
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Не могу прочитать цель подписи: %s"
 
-#: build/pack.c:442
+#: build/pack.c:444
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Не могу записать пакет: %s"
 
-#: build/pack.c:457
+#: build/pack.c:459
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
 
-#: build/pack.c:520
+#: build/pack.c:522
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Не могу сгенерировать имя файла для пакета %s: %s\n"
 
-#: build/pack.c:537
+#: build/pack.c:539
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "не могу создать %s"

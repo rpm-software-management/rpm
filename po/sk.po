@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-05-30 19:00-0400\n"
+"POT-Creation-Date: 2000-05-31 07:50-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1767,7 +1767,7 @@ msgstr "neboli zadané ¾iadne spec-súbory pre zostavenie"
 msgid "no tar files given for build"
 msgstr "neboli zadané ¾iadne tar-súbory pre zostavenie"
 
-#: build/build.c:110 build/pack.c:312
+#: build/build.c:110 build/pack.c:314
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Nie je mo¾né otvori» doèasný súbor"
@@ -2089,51 +2089,51 @@ msgstr "readRPM: %s nie je RPM balík\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: èítanie hlavièky %s\n"
 
-#: build/pack.c:324
+#: build/pack.c:326
 msgid "Bad CSA data"
 msgstr "Chybné CSA dáta"
 
-#: build/pack.c:359
+#: build/pack.c:361
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:391
+#: build/pack.c:393
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:406
+#: build/pack.c:408
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: build/pack.c:422
+#: build/pack.c:424
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: build/pack.c:432
+#: build/pack.c:434
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: build/pack.c:442
+#: build/pack.c:444
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:457
+#: build/pack.c:459
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: build/pack.c:520
+#: build/pack.c:522
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
 
-#: build/pack.c:537
+#: build/pack.c:539
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "

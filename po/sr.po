@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-05-30 19:00-0400\n"
+"POT-Creation-Date: 2000-05-31 07:50-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1767,7 +1767,7 @@ msgstr "nedostaje specifikacije za kreiranje"
 msgid "no tar files given for build"
 msgstr "nedostaju 'tar' datoteke za kreiranje"
 
-#: build/build.c:110 build/pack.c:312
+#: build/build.c:110 build/pack.c:314
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
@@ -2090,51 +2090,51 @@ msgstr "gre¹ka: èini se da %s nije RPM paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "gre¹ka kod uzimanja sloga %s iz %s"
 
-#: build/pack.c:324
+#: build/pack.c:326
 msgid "Bad CSA data"
 msgstr ""
 
-#: build/pack.c:359
+#: build/pack.c:361
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "neuspelo otvaranje %s\n"
 
-#: build/pack.c:391
+#: build/pack.c:393
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:406
+#: build/pack.c:408
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "napravi PGP potpis"
 
-#: build/pack.c:422
+#: build/pack.c:424
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:432
+#: build/pack.c:434
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:442
+#: build/pack.c:444
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:457
+#: build/pack.c:459
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:520
+#: build/pack.c:522
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:537
+#: build/pack.c:539
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
