@@ -10,7 +10,7 @@ pkginc_HEADERS = rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h
 noinst_HEADERS = rpmio_internal.h ugid.h
 
 lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
+librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c md5.c \
 	ugid.c rpmmalloc.c rpmlog.c
 
 # XXX Add internal libtool dependence

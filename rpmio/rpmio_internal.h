@@ -48,6 +48,18 @@ typedef	struct {
 } FDSTAT_t;
 
 /** \ingroup rpmio
+ */
+typedef struct {
+    void * private;
+    void * (*Init) (int flags);
+    void (*Update) (void * private, const void * data, size_t len);
+    void (*Final) (/*@only@*/ void * private, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp, int asAscii);
+    void (*Transform) (void * private);
+} FDHASH_t;
+
+extern FDHASH_t rpmio_md5hash;
+
+/** \ingroup rpmio
  * The FD_t File Handle data structure.
  */
 struct _FD_s {
@@ -72,6 +84,7 @@ struct _FD_s {
 /*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
 	FDSTAT_t	*stats;		/* I/O statistics */
+	FDHASH_t	*hash;		/* Hash vectors */
 
 	int		ftpFileDoneNeeded; /* ufdio: (FTP) */
 	unsigned int	firstFree;	/* fadio: */
@@ -297,6 +310,28 @@ int ufdClose( /*@only@*/ void * cookie);
     FD_t fd = (FD_t) cookie;
     FDSANE(fd);
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline void fdInitMD5(FD_t fd) {
+    fd->hash = xcalloc(1, sizeof(*fd->hash));
+    *fd->hash = rpmio_md5hash;	/* structure assignment */
+    fd->hash->private = (*fd->hash->Init) (0);
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline void fdFiniMD5(FD_t fd, void **datap, size_t *lenp, int asAscii) {
+    if (fd->hash == NULL) {
+	*datap = NULL;
+	*lenp = 0;
+	return;
+    }
+    (*fd->hash->Final) (fd->hash->private, datap, lenp, asAscii);
+    fd->hash->private = NULL;
+    free(fd->hash);
+    fd->hash = NULL;
 }
 
 /*@-shadow@*/

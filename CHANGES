@@ -15,6 +15,7 @@
 	- detect (still need to test) rdonly linux file systems.
 	- check available inodes as well as blocks on mounted file systems.
 	- pass rpmTransactionSet, not elements, to installBinaryPackage et al.
+	- verify MD5 sums of payload files when unpacking archive.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

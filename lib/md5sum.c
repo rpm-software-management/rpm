@@ -14,6 +14,14 @@
 
 #include "md5.h"
 
+/**
+ * Calculate MD5 sum for file.
+ * @param fn		file name
+ * @retval digest	address of md5sum
+ * @param asAscii	return md5sum as ascii string?
+ * @param brokenEndian	calculate broken MD5 sum?
+ * @return		0 on success, 1 on error
+ */
 static int domd5(const char * fn, unsigned char * digest, int asAscii,
 		 int brokenEndian) {
     unsigned char buf[1024];

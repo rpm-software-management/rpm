@@ -14,6 +14,8 @@
  * MD5Context structure, pass it to rpmMD5Init, call rpmMD5Update as
  * needed on buffers full of bytes, and then call rpmMD5Final, which
  * will fill a supplied 16-byte array with the digest.
+ *
+ * @todo Eliminate, use rpmio version instead.
  */
 
 #include "system.h"

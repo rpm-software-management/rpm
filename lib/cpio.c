@@ -78,7 +78,13 @@ static void prtli(const char *msg, struct hardLink * li)
 }
 #endif
 
-/** */
+/**
+ * Read data from payload.
+ * @param cfd		payload file handle
+ * @retval vbuf		data from read
+ * @param amount	no. bytes to read
+ * @return		no. bytes read
+ */
 static inline off_t saferead(FD_t cfd, /*@out@*/void * vbuf, size_t amount)
 	/*@modifies cfd, *vbuf @*/
 {
@@ -100,7 +106,13 @@ static inline off_t saferead(FD_t cfd, /*@out@*/void * vbuf, size_t amount)
     return rc;
 }
 
-/** */
+/**
+ * Read data from payload and update number of bytes read.
+ * @param cfd		payload file handle
+ * @retval buf		data from read
+ * @param size		no. bytes to read
+ * @return		no. bytes read
+ */
 static inline off_t ourread(FD_t cfd, /*@out@*/void * buf, size_t size)
 	/*@modifies cfd, *buf @*/
 {
@@ -110,7 +122,11 @@ static inline off_t ourread(FD_t cfd, /*@out@*/void * buf, size_t size)
     return i;
 }
 
-/** */
+/**
+ * Align input payload handle, skipping input bytes.
+ * @param cfd		payload file handle
+ * @param modulo	data alignment
+ */
 static inline void padinfd(FD_t cfd, int modulo)
 	/*@modifies cfd @*/
 {
@@ -121,7 +137,13 @@ static inline void padinfd(FD_t cfd, int modulo)
     (void)ourread(cfd, buf, amount);
 }
 
-/** */
+/**
+ * Write data to payload.
+ * @param cfd		payload file handle
+ * @param vbuf		data to write
+ * @param amount	no. bytes to write
+ * @return		no. bytes written
+ */
 static inline off_t safewrite(FD_t cfd, const void * vbuf, size_t amount)
 	/*@modifies cfd @*/
 {
@@ -144,7 +166,12 @@ static inline off_t safewrite(FD_t cfd, const void * vbuf, size_t amount)
     return rc;
 }
 
-/** */
+/**
+ * Align output payload handle, padding with zeroes.
+ * @param cfd		payload file handle
+ * @param modulo	data alignment
+ * @return		0 on success, CPIOERR_WRITE_FAILED
+ */
 static inline int padoutfd(FD_t cfd, size_t * where, int modulo)
 	/*@modifies cfd, *where @*/
 {
@@ -159,7 +186,14 @@ static inline int padoutfd(FD_t cfd, size_t * where, int modulo)
     return 0;
 }
 
-/** */
+/**
+ * Convert string to unsigned integer (with buffer size check).
+ * @param		input string
+ * @retval		address of 1st character not processed
+ * @param base		numerical conversion base
+ * @param num		max no. of bytes to read
+ * @return		converted integer
+ */
 static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
 	/*@modifies *endptr @*/
 {
@@ -176,7 +210,7 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     else
 	*endptr = ((char *)str) + strlen(str);
 
-    return strtoul(buf, endptr, base);
+    return ret;
 }
 
 #define GET_NUM_FIELD(phys, log) \
@@ -186,7 +220,12 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	memcpy(phys, space, 8);
 
-/** */
+/**
+ * Process next cpio heasder.
+ * @param cfd		payload file handle
+ * @retval hdr		file name and stat info
+ * @return		0 on success
+ */
 static int getNextHeader(FD_t cfd, struct cpioHeader * hdr)
 	/*@modifies cfd, hdr->path, hdr->sb  @*/
 {
@@ -250,7 +289,11 @@ int cpioFileMapCmp(const void * a, const void * b)
 }
 
 /* This could trash files in the path! I'm not sure that's a good thing */
-/** */
+/**
+ * @param path		directory path
+ * @param perms		directory permissions
+ * @return		0 on success
+ */
 static int createDirectory(const char * path, mode_t perms)
 	/*@modifies fileSystem @*/
 {
@@ -288,7 +331,11 @@ static int createDirectory(const char * path, mode_t perms)
     return 0;
 }
 
-/** */
+/**
+ * Set owner, group, and modify/access times.
+ * @param hdr		file name and stat info
+ * @return		0 on success
+ */
 static int setInfo(struct cpioHeader * hdr)
 	/*@modifies fileSystem @*/
 {
@@ -316,7 +363,11 @@ static int setInfo(struct cpioHeader * hdr)
     return rc;
 }
 
-/** */
+/**
+ * Create directories in file path (like "mkdir -p").
+ * @param filename	file path
+ * @return		0 on success
+ */
 static int inline checkDirectory(const char * filename)	/*@*/
 {
     /*@only@*/ static char * lastDir = NULL;	/* XXX memory leak */
@@ -362,9 +413,17 @@ static int inline checkDirectory(const char * filename)	/*@*/
     return rc;
 }
 
-/** */
+/**
+ * Create file from payload stream.
+ * @param cfd		payload file handle
+ * @param hdr		file name and stat info
+ * @param filemd5	file md5 sum
+ * @param cb		callback function
+ * @param cbData	callback private data
+ * @return		0 on success
+ */
 static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
-			 cpioCallback cb, void * cbData)
+			 const char * filemd5, cpioCallback cb, void * cbData)
 		/*@modifies fileSystem, cfd @*/
 {
     FD_t ofd;
@@ -399,6 +458,9 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
     if (ofd == NULL || Ferror(ofd))
 	return CPIOERR_OPEN_FAILED;
 
+    if (filemd5)
+	fdInitMD5(ofd);
+
     cbInfo.file = hdr->path;
     cbInfo.fileSize = st->st_size;
 
@@ -424,12 +486,30 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 	}
     }
 
+    if (filemd5) {
+	const char * md5sum;
+
+	Fflush(ofd);
+	fdFiniMD5(ofd, (void **)&md5sum, NULL, 1);
+
+	if (strcmp(md5sum, filemd5))
+	    rc = CPIOERR_MD5SUM_MISMATCH;
+
+	if (md5sum)
+	    xfree(md5sum);
+    }
+
     Fclose(ofd);
 
     return rc;
 }
 
-/** */
+/**
+ * Create symlink from payload stream.
+ * @param cfd		payload file handle
+ * @param hdr		file name and stat info
+ * @return		0 on success
+ */
 static int expandSymlink(FD_t cfd, const struct cpioHeader * hdr)
 		/*@modifies fileSystem, cfd @*/
 {
@@ -465,7 +545,12 @@ static int expandSymlink(FD_t cfd, const struct cpioHeader * hdr)
     return 0;
 }
 
-/** */
+/**
+ * Create fifo from payload stream.
+ * @param cfd		payload file handle
+ * @param hdr		file name and stat info
+ * @return		0 on success
+ */
 static int expandFifo( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
 		/*@modifies fileSystem @*/
 {
@@ -484,7 +569,12 @@ static int expandFifo( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
     return 0;
 }
 
-/** */
+/**
+ * Create fifo from payload stream.
+ * @param cfd		payload file handle
+ * @param hdr		file name and stat info
+ * @return		0 on success
+ */
 static int expandDevice( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
 		/*@modifies fileSystem @*/
 {
@@ -505,7 +595,12 @@ static int expandDevice( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
     return 0;
 }
 
-/** */
+/**
+ * Create and initialize set of hard links.
+ * @param st		link stat info
+ * @param hltype	type of hard link set to create
+ * @return		pointer to set of hard links
+ */
 static /*@only@*/ struct hardLink * newHardLink(const struct stat * st,
 				enum hardLinkType hltype)	/*@*/
 {
@@ -537,7 +632,10 @@ static /*@only@*/ struct hardLink * newHardLink(const struct stat * st,
     return li;
 }
 
-/** */
+/**
+ * Destroy set of hard links.
+ * @param li		set of hard links
+ */
 static void freeHardLink( /*@only@*/ struct hardLink * li)
 {
 
@@ -558,7 +656,12 @@ static void freeHardLink( /*@only@*/ struct hardLink * li)
     free(li);
 }
 
-/** */
+/**
+ * Create hard links to existing file.
+ * @param li		set of hard links
+ * @retval failedFile	on error, file name that failed
+ * @return		0 on success
+ */
 static int createLinks(struct hardLink * li, /*@out@*/ const char ** failedFile)
 	/*@modifies fileSystem, *failedFile, li->files, li->linksLeft @*/
 {
@@ -591,7 +694,12 @@ static int createLinks(struct hardLink * li, /*@out@*/ const char ** failedFile)
     return 0;
 }
 
-/** */
+/**
+ * Skip amount bytes on input payload stream.
+ * @param cfd		payload file handle
+ * @param amount	no. bytes to skip
+ * @return		0 on success
+ */
 static int eatBytes(FD_t cfd, int amount)
 	/*@modifies cfd @*/
 {
@@ -608,6 +716,7 @@ static int eatBytes(FD_t cfd, int amount)
     return 0;
 }
 
+/** @todo Verify payload MD5 sum. */
 int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
 		       const char ** failedFile)
@@ -619,6 +728,12 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
     struct hardLink * links = NULL;
     struct hardLink * li = NULL;
     int rc = 0;
+
+#ifdef	NOTYET
+    char * md5sum = NULL;
+
+    fdInitMD5(cfd);
+#endif
 
     fdSetCpioPos(cfd, 0);
     if (failedFile)
@@ -702,7 +817,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 
 		if (!rc) {
 		    if (S_ISREG(st->st_mode))
-			rc = expandRegular(cfd, hdr, cb, cbData);
+			rc = expandRegular(cfd, hdr, map->md5sum, cb, cbData);
 		    else if (S_ISDIR(st->st_mode))
 			rc = createDirectory(hdr->path, 000);
 		    else if (S_ISLNK(st->st_mode))
@@ -770,10 +885,25 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 	freeHardLink(li);
     }
 
+#ifdef	NOTYET
+    fdFiniMD5(cfd, (void **)&md5sum, NULL, 1);
+
+    if (md5sum)
+	free(md5sum);
+#endif
+
     return rc;
 }
 
-/** */
+/**
+ * Write next item to payload stream.
+ * @param cfd		payload file handle
+ * @param st		stat info for item
+ * @param map		mapping name and flags for item
+ * @retval sizep	address of no. bytes written
+ * @param writeData	should data be written?
+ * @return		0 on success
+ */
 static int writeFile(FD_t cfd, const struct stat * st,
 	const struct cpioFileMapping * map, /*@out@*/ size_t * sizep,
 	int writeData)
@@ -917,7 +1047,17 @@ static int writeFile(FD_t cfd, const struct stat * st,
     return 0;
 }
 
-/** */
+/**
+ * Write set of linked files to payload stream.
+ * @param cfd		payload file handle
+ * @param hlink		set of linked files
+ * @param mappings	mapping name and flags for linked files
+ * @param cb		callback function
+ * @param cbData	callback private data
+ * @retval sizep	address of no. bytes written
+ * @retval failedFile	on error, file name that failed
+ * @return		0 on success
+ */
 static int writeLinkedFile(FD_t cfd, const struct hardLink * hlink,
 			   const struct cpioFileMapping * mappings,
 			   cpioCallback cb, void * cbData,
@@ -1121,6 +1261,7 @@ const char * cpioStrerror(int rc)
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
     case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link");	break;
+    case CPIOERR_MD5SUM_MISMATCH: s = _("MD5 sum mismatch");	break;
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     }
 

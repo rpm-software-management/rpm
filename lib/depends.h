@@ -122,7 +122,7 @@ struct transactionElement {
 struct rpmTransactionSet_s {
     rpmtransFlags transFlags;		/*!< Bit(s) to control operation. */
     rpmCallbackFunction notify;		/*!< Callback function. */
-    rpmCallbackData notifyData;		/*!< Callback data. */
+    rpmCallbackData notifyData;		/*!< Callback private data. */
     rpmProblemSet probs;		/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;	/*!< Bits to filter current problems. */
 /*@owned@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */

@@ -243,6 +243,10 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	if (--fd->nrefs > 0)
 	    /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 	if (fd->stats) free(fd->stats);
+	if (fd->hash) {
+	    if (fd->hash->private) free(fd->hash->private);
+	    free(fd->hash);
+	}
 	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
     }
     return NULL;
@@ -271,6 +275,7 @@ static inline /*@null@*/ FD_t XfdNew(const char *msg, const char *file, unsigned
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = calloc(1, sizeof(FDSTAT_t));
+    fd->hash = NULL;
     gettimeofday(&fd->stats->create, NULL);
     fd->stats->begin = fd->stats->create;	/* structure assignment */
 
@@ -292,6 +297,8 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
+    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
@@ -303,6 +310,9 @@ ssize_t fdWrite(void * cookie, const char * buf, size_t count) {
     ssize_t rc;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+
+    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+
     if (fd->wr_chunked) {
 	char chunksize[20];
 	sprintf(chunksize, "%x\r\n", (unsigned)count);
@@ -1918,6 +1928,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
+	if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
     }
     return rc;
 }
@@ -1928,6 +1939,9 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count) {
     ssize_t rc;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+
+    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+
     gzfile = gzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
     rc = gzwrite(gzfile, (void *)buf, count);
@@ -2099,6 +2113,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
 	fd->errcookie = bzerror(bzfile, &zerror);
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
+	if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
     }
     return rc;
 }
@@ -2109,6 +2124,9 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count) {
     ssize_t rc;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+
+    if (fd->hash) fd->hash->Update(fd->hash->private, buf, count);
+
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
     rc = bzwrite(bzfile, (void *)buf, count);

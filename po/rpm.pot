@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-10-20 15:49-0400\n"
+"POT-Creation-Date: 2000-10-24 09:32-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2209,51 +2209,55 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:384
+#: lib/cpio.c:443
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:390
+#: lib/cpio.c:449
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:638
+#: lib/cpio.c:753
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1099
+#: lib/cpio.c:1239
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1102
+#: lib/cpio.c:1242
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1103
+#: lib/cpio.c:1243
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1121
+#: lib/cpio.c:1261
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1122
+#: lib/cpio.c:1262
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1123
+#: lib/cpio.c:1263
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1124
+#: lib/cpio.c:1264
+msgid "MD5 sum mismatch"
+msgstr ""
+
+#: lib/cpio.c:1265
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1133
+#: lib/cpio.c:1274
 msgid " failed - "
 msgstr ""
 
@@ -2518,7 +2522,7 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:275 lib/header.c:745 lib/install.c:352
+#: lib/header.c:275 lib/header.c:745 lib/install.c:378
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2589,108 +2593,108 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:169 lib/uninstall.c:191
+#: lib/install.c:188 lib/uninstall.c:191
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: lib/install.c:190
+#: lib/install.c:212
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: lib/install.c:198
+#: lib/install.c:220
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: lib/install.c:231
+#: lib/install.c:253
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:613
+#: lib/install.c:655
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:614
+#: lib/install.c:656
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:658
+#: lib/install.c:705
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:678
+#: lib/install.c:725
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:684 lib/install.c:714
+#: lib/install.c:731 lib/install.c:761
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:688
+#: lib/install.c:735
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:708
+#: lib/install.c:755
 #, c-format
 msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:718
+#: lib/install.c:765
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:750 lib/install.c:778
+#: lib/install.c:797 lib/install.c:825
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:796
+#: lib/install.c:843
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:798 lib/install.c:1070 lib/uninstall.c:40
+#: lib/install.c:845 lib/install.c:1117 lib/uninstall.c:40
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:888
+#: lib/install.c:935
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:933
+#: lib/install.c:980
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:993
+#: lib/install.c:1040
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:998
+#: lib/install.c:1045
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1030
+#: lib/install.c:1077
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1066
+#: lib/install.c:1113
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1155
+#: lib/install.c:1202
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3751,59 +3755,59 @@ msgstr ""
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: rpmio/rpmio.c:533
+#: rpmio/rpmio.c:543
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:536
+#: rpmio/rpmio.c:546
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:539
+#: rpmio/rpmio.c:549
 msgid "Server IO error"
 msgstr ""
 
-#: rpmio/rpmio.c:542
+#: rpmio/rpmio.c:552
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:545
+#: rpmio/rpmio.c:555
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:548
+#: rpmio/rpmio.c:558
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:551
+#: rpmio/rpmio.c:561
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:554
+#: rpmio/rpmio.c:564
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:557
+#: rpmio/rpmio.c:567
 msgid "IO error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:560
+#: rpmio/rpmio.c:570
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:563
+#: rpmio/rpmio.c:573
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:566
+#: rpmio/rpmio.c:576
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:570
+#: rpmio/rpmio.c:580
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1165
+#: rpmio/rpmio.c:1175
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

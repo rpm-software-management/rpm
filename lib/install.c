@@ -26,15 +26,20 @@ struct callbackInfo {
     const void * pkgKey;
 };
 
+/**
+ * Keeps track of memory allocated while accessing header tags.
+ */
 struct fileMemory {
 /*@owned@*/ const char ** names;
 /*@owned@*/ const char ** cpioNames;
+/*@owned@*/ const char ** md5sums;
 /*@owned@*/ struct fileInfo * files;
 };
 
 struct fileInfo {
 /*@dependent@*/ const char * cpioPath;
 /*@dependent@*/ const char * relativePath;	/* relative to root */
+/*@dependent@*/ const char * md5sum;
     uid_t uid;
     gid_t gid;
     uint_32 flags;
@@ -94,6 +99,8 @@ static int rpmInstallLoadMacros(Header h)
 }
 
 /**
+ * Create memory used to access header.
+ * @return		pointer to memory
  */
 static /*@only@*/ struct fileMemory *newFileMemory(void)
 {
@@ -101,23 +108,33 @@ static /*@only@*/ struct fileMemory *newFileMemory(void)
     fileMem->files = NULL;
     fileMem->names = NULL;
     fileMem->cpioNames = NULL;
+    fileMem->md5sums = NULL;
     return fileMem;
 }
 
 /**
+ * Destroy memory used to access header.
+ * @param fileMem	pointer to memory
  */
 static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
 {
     if (fileMem->files) free(fileMem->files);
     if (fileMem->names) free(fileMem->names);
     if (fileMem->cpioNames) free(fileMem->cpioNames);
+    if (fileMem->md5sums) free(fileMem->md5sums);
     free(fileMem);
 }
 
 /* files should not be preallocated */
 /**
+ * Build file information array.
  * @param h		header
- * @retval		0 always
+ * @retval memPtr	address of allocated memory from header access
+ * @retval fileCountPtr	address of install file count
+ * @retval files	address of install file information
+ * @param stripPrefixLength no. bytes of file prefix to skip
+ * @param actions	array of file dispositions
+ * @return		0 always
  */
 static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 	 /*@out@*/ int * fileCountPtr, /*@out@*/ struct fileInfo ** filesPtr,
@@ -148,6 +165,7 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
     files = *filesPtr = mem->files = xcalloc(fileCount, sizeof(*mem->files));
 
+    headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &mem->md5sums, NULL);
     headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
@@ -162,6 +180,7 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
 	file->relativePath = mem->names[i];
 	file->cpioPath = mem->cpioNames[i] + stripPrefixLength;
+	file->md5sum = mem->md5sums[i];
 	file->mode = fileModes[i];
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
@@ -174,7 +193,10 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 }
 
 /**
+ * Localize user/group id's.
  * @param h		header
+ * @param files		install file information
+ * @param fileCount	install file count
  */
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
 {
@@ -263,7 +285,11 @@ static void trimChangelog(Header h)
 }
 
 /**
- * @param h		header
+ * Copy file data from h to newH.
+ * @param h		header from
+ * @param newH		header to
+ * @param actions	array of file dispositions
+ * @return		0 always
  */
 static int mergeFiles(Header h, Header newH, enum fileActions * actions)
 {
@@ -437,8 +463,13 @@ static int mergeFiles(Header h, Header newH, enum fileActions * actions)
     return 0;
 }
 
-/** */
-static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
+/**
+ * Mark files in database shared with current package as "replaced".
+ * @param db		rpm database
+ * @param replist	shared file list
+ * @return		0 always
+ */
+static int markReplacedFiles(rpmdb rpmdb, const struct sharedFileInfo * replList)
 {
     const struct sharedFileInfo * fileInfo;
     rpmdbMatchIterator mi;
@@ -466,7 +497,7 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 	offsets[num++] = fileInfo->otherPkg;
     }
 
-    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
+    mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, NULL, 0);
     rpmdbAppendIterator(mi, offsets, num);
 
     fileInfo = replList;
@@ -501,7 +532,8 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
     return 0;
 }
 
-/** */
+/**
+ */
 static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 {
     struct callbackInfo * ourInfo = data;
@@ -520,9 +552,18 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
     }
 }
 
-/* NULL files means install all files */
 /**
+ * Setup payload map and install payload archive.
+ * @param fd		file handle of package (positioned at payload)
+ * @param files		files to install (NULL means "all files")
+ * @param fileCount	no. files to install
+ * @param notify	callback function
+ * @param notifyData	callback private data
+ * @param pkgKey	package private data (e.g. file name)
  * @param h		header
+ * @retval specFile	address of spec file name
+ * @param archiveSize	@todo Document.
+ * @return		0 on success
  */
 static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
@@ -567,6 +608,7 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
 #else
 	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
 #endif
+	    map[mappedFiles].md5sum = files[i].md5sum;
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;
@@ -633,6 +675,11 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
 
 /**
  * @param h		header
+ * @param rootDir	path to top of install tree
+ * @param fd		file handle of package (positioned at payload)
+ * @retval specFilePtr	address of spec file name
+ * @param notify	callback function
+ * @param notifyData	callback private data
  * @return		0 on success, 1 on bad magic, 2 on error
  */
 static int installSources(Header h, const char * rootDir, FD_t fd,

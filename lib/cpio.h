@@ -47,7 +47,8 @@ enum cpioErrorReturns {
 	CPIOERR_HDR_SIZE	= (20			),
 	CPIOERR_UNKNOWN_FILETYPE = (21			),
 	CPIOERR_MISSING_HARDLINK = (22			),
-	CPIOERR_INTERNAL	= (23			)
+	CPIOERR_MD5SUM_MISMATCH	= (23			),
+	CPIOERR_INTERNAL	= (24			)
 };
 
 /** \ingroup payload
@@ -67,6 +68,7 @@ enum cpioMapFlags {
 struct cpioFileMapping {
 /*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
 /*@dependent@*/ const char * fsPath;      /*!< Location of payload file. */
+/*@dependent@*/ const char * md5sum;      /*!< File MD5 sum (NULL disables). */
     mode_t finalMode;		/*!< Mode of payload file (from header). */
     uid_t finalUid;		/*!< Uid of payload file (from header). */
     gid_t finalGid;		/*!< Gid of payload file (from header). */
