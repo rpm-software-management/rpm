@@ -12,10 +12,10 @@ osname=`uname -s`
 
 # programs we run
 
-#find_provides=/usr/local/lib/rpm/find-provides
-#find_requires=/usr/local/lib/rpm/find-requires
-find_provides=/devel/kestes/vendorc/tools/solaris.prov
-find_requires=/devel/kestes/vendorc/tools/solaris.req
+find_provides=/usr/lib/rpm/find-provides
+find_requires=/usr/lib/rpm/find-requires
+#find_provides=/devel/kestes/vendorc/tools/solaris.prov
+#find_requires=/devel/kestes/vendorc/tools/solaris.req
 u_pkg=/devel/kestes/vendorc/rpm/scripts/u-pkg.sh 
 
 # where we write output

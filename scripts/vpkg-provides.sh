@@ -65,9 +65,9 @@ export PATH
 #
 # The (OS independent) default values.
 #
-spec_header='/usr/local/lib/rpm/os-base-header.spec';
+spec_header='/usr/lib/rpm/os-base-header.spec';
 interps="sh:csh:ksh:dtksh:wish:tclsh:perl:awk:gawk:nawk:oawk"
-find_provides='/usr/local/lib/rpm/find-provides';
+find_provides='/usr/lib/rpm/find-provides';
 ignore_dirs="."
 
 
