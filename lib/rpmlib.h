@@ -204,6 +204,7 @@ int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches);
 int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches);
 int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches);
 int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
+int rpmdbFindByConflicts(rpmdb db, char * filespec, dbIndexSet * matches);
 
 int rpmArchScore(char * arch);
 int rpmOsScore(char * arch);
@@ -221,9 +222,11 @@ typedef struct rpmDependencyCheck * rpmDependencies;
 
 struct rpmDependencyConflict {
     char * byName, * byVersion, * byRelease;
+    /* these needs fields are misnamed -- they are used for the package
+       which isn't needed as well */
     char * needsName, * needsVersion;
     int needsFlags;
-    void * suggestedPackage;
+    void * suggestedPackage;			/* NULL if none */
     enum { RPMDEP_SENSE_REQUIRES, RPMDEP_SENSE_CONFLICTS } sense;
 } ;
 
