@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# note this works for both a.out and ELF executables
+# it also auto-generates requirment lines for shell scripts
+
+ulimit -c 0
+
+filelist=`sed "s/['\"]/\\\&/g"`
+exelist=`if test "x$filelist" != x; then echo $filelist | xargs file | grep ":.*executable" | cut -d: -f1; fi`
+scriptlist=`if test "x$filelist" != x; then echo $filelist | xargs file | egrep ":.* (commands|script) " | cut -d: -f1; fi`
+liblist=`if test "x$filelist" != x; then echo $filelist | xargs file | grep ":.*shared object" | cut -d : -f1; fi`
+
+LDDLIST=`for f in $exelist; do
+    if [ -x $f ]; then
+	ldd $f | awk '/=>/ { print $1 }'
+    fi
+done | sort -u | sed "s/['\"]/\\\&/g"`
+if test "x$LDDLIST" != x; then
+    echo $LDDLIST | xargs -n 1 basename | grep -v 'libNoVersion.so' | sort -u
+fi
+
+LDDLIST=`for f in $liblist; do
+    ldd $f | awk '/=>/ { print $1 }'
+done | sort -u | sed "s/['\"]/\\\&/g"`
+if test "x$LDDLIST" != x; then
+    echo $LDDLIST | xargs -n 1 basename | grep -v 'libNoVersion.so' | sort -u
+fi
+
+for f in $scriptlist; do
+    if [ -x $f ]; then
+	head -1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1
+    fi
+done | sort -u
+
+for f in $liblist $exelist ; do
+    objdump -p $f | awk '
+	BEGIN { START=0; LIBNAME=""; }
+	/Version References:/ { START=1; }
+	/required from/ && (START==1) {
+	    sub(/:/, "", $3);
+	    LIBNAME=$3;
+	}
+	(START==1) && (LIBNAME!="") && ($4~/^GLIBC_*/) { print LIBNAME "(" $4 ")"; }
+	/^$/ { START=0; }
+    '
+done | sort -u
