@@ -1,11 +1,11 @@
 #/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# $Id: rpmrc.in,v 2.35 2001/04/10 12:36:45 jbj Exp $
+# $Id: rpmrc.in,v 2.36 2001/05/11 17:18:16 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
-# should be added to /etc/rpm/rpmrc, while per-user configuration should
+# should be added to /etc/rpmrc, while per-user configuration should
 # be added to ~/.rpmrc.
 #
 #############################################################
