@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.8 2000/08/06 08:57:09 rjray Exp $
+ * $Id: RPM.h,v 1.9 2000/08/18 08:23:25 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -90,6 +90,9 @@ typedef struct {
     /* Keep a per-header iterator for things like FIRSTKEY and NEXTKEY */
     HeaderIterator iterator;
     int read_only;
+    /* Since we close the files after reading, store the filename here in case
+       we have to re-open it later */
+    char* source_name;
 } RPM_Header;
 
 typedef HV* RPM__Header;
