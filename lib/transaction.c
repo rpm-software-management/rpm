@@ -9,15 +9,11 @@
 #include "misc.h"
 #include "rpmdb.h"
 
-struct fileFate {
-    enum fileFate_e { CREATE, REMOVE } action;
-    Header winner;			/* only set for CREATE actions */
-};
-
 struct fileInfo {
     Header h;
-    enum fileInfo_e { ADDED, REMOVED } action;
-    char ** fl, ** fmd5s;
+    enum fileInfo_e { ADDED, REMOVED } type;
+    enum instActions * actions;
+    char ** fl, ** fmd5s, ** flinks;
     fingerPrint * fps;
     int fc;
 };
@@ -45,7 +41,7 @@ static int sharedCmp(const void * one, const void * two);
 int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
 		       rpmProblemSet * newProbs, int flags) {
-    int i, j, numPackages, pkgNum, fileNum;
+    int i, j, numPackages;
     struct availableList * al = &ts->addedPackages;
     int rc, ourrc = 0;
     int instFlags = 0, rmFlags = 0;
@@ -56,18 +52,17 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     Header * hdrs;
     int fileCount;
     int totalFileCount = 0;
-    hashTable ht, fates;
-    struct fileInfo * flList, * fi, * winner = NULL; /* init keeps gcc quiet */
-    int winnerFileNum = 0;			     /* see above */
-    struct fileFate * fateList;
-    int numFates;
+    hashTable ht;
+    struct fileInfo * flList, * fi;
     struct fileInfo ** recs;
     int numRecs;
     char ** othermd5s;
     Header h;
-    int32_t * otherstates;
+    char * otherstates;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
+    int pkgNum, otherPkgNum;
+    int otherFileNum;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -117,13 +112,18 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    continue;
 	headerGetEntryMinMemory(alp->h, RPMTAG_FILEMD5S, NULL, 
 				(void *) &fi->fmd5s, NULL);
+	headerGetEntryMinMemory(alp->h, RPMTAG_FILELINKTOS, NULL, 
+				(void *) &fi->flinks, NULL);
 
 	fi->h = alp->h;
-	fi->action = ADDED;
+	fi->type = ADDED;
+	fi->actions = malloc(sizeof(*fi->actions) * fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
 	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
-	for (i = 0; i < fi->fc; i++)
+	for (i = 0; i < fi->fc; i++) {
 	     htAddEntry(ht, fi->fps + i, fi);
+	     fi->actions[i] = UNKNOWN;
+	}
     }
 
 /* FIXME 
@@ -149,45 +149,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     }
 #endif
 
-    fateList = alloca(totalFileCount * sizeof(*fateList));
-    fates = htCreate(totalFileCount * 2, sizeof(fingerPrint), fpHashFunction, 
-		     fpEqual);
-    numFates = 0;
     numPackages = 0;
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (alp->h != flList[numPackages].h) continue;
 	fi = flList + numPackages;
-
-	for (i = 0; i < fi->fc; i++) {
-	    if (htHasEntry(fates, &fi->fps[i])) continue;
-
-	    htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
-	    /* note that &recs[0] must equal fi! */
-	    for (j = numRecs - 1; j > 0 && (recs[j]->action != ADDED); j--);
-	    winner = recs[j];
-
-	    for (winnerFileNum = 0; winnerFileNum < winner->fc; 
-			winnerFileNum++)
-	    	if (FP_EQUAL(fi->fps[i], recs[j]->fps[winnerFileNum])) break;
-
-	    for (j = 0; recs[j] != winner; j++) {
-		/* FIXME: there are more efficient searches in the world... */
-		for (fileNum = 0; fileNum < recs[j]->fc; fileNum++)
-		    if (FP_EQUAL(fi->fps[i], recs[j]->fps[fileNum])) break;
-
-		if (strcmp(winner->fmd5s[winnerFileNum], 
-			   recs[j]->fmd5s[fileNum])) {
-		    /* FIXME: we need to pass the conflicting header */
-		    psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, alp->key, 
-			     alp->h, fi->fl[i]);
-		}
-	    }
-
-	    fateList[numFates].action = CREATE;
-	    fateList[numFates].winner = alp->h;
-	    htAddEntry(fates, fi->fps + i, fateList + numFates);
-	    numFates++;
-	}
 
 	matches = malloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
@@ -218,22 +183,27 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 		continue;
 	    }
 
-	    /* FIXME: This is not a proper file comparison. */
 	    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL,
 				    (void **) &othermd5s, NULL);
 	    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-				    (void **) &otherstates, NULL);
+				    (void **) &otherstates, &j);
 
 	    j = i;
 	    shared = sharedList + i;
 	    while (sharedList[i].otherPkg == shared->otherPkg) {
-		if ((otherstates[shared->otherFileNum] == 
-			    RPMFILE_STATE_NORMAL) &&
-		    strcmp(winner->fmd5s[winnerFileNum], 
-			   othermd5s[shared->otherFileNum])) {
-		    /* FIXME: we need to pass the conflicting header */
-		    psAppend(probs, RPMPROB_FILE_CONFLICT, alp->key, 
-			     alp->h, fi->fl[shared->pkgFileNum]);
+		if (otherstates[shared->otherFileNum] == 
+			    RPMFILE_STATE_NORMAL) {
+		    /* FIXME: This is not a proper file comparison. */
+		    if (strcmp(othermd5s[shared->otherFileNum],
+			       fi->fmd5s[shared->pkgFileNum])) {
+			/* FIXME: we need to pass the conflicting header */
+			psAppend(probs, RPMPROB_FILE_CONFLICT, alp->key, 
+				 alp->h, fi->fl[shared->pkgFileNum]);
+		    }
+
+		    /* FIXME: we should set a default action here, based on
+		       config files, etc */
+		    /*fi->actions[shared->pkgFileNum] = CREATE;*/
 		}
 
 		shared++;
@@ -247,29 +217,72 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
 	free(sharedList);
 
+	for (i = 0; i < fi->fc; i++) {
+	    htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
+
+	    /* We need to figure out the current fate of this file. So,
+	       work backwards from this file and look for a final action
+	       we can work against. */
+	    for (pkgNum = 0; recs[pkgNum] != fi; pkgNum++);
+
+	    otherPkgNum = 0;
+	    otherFileNum = -1;			/* keep gcc quiet */
+	    while (otherPkgNum >= 0) {
+		if (recs[otherPkgNum]->type != ADDED) continue;
+
+		/* FIXME: there are more efficient searches in the world... */
+		for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc; 
+		     otherFileNum++)
+		    if (FP_EQUAL(fi->fps[i], 
+				 recs[otherPkgNum]->fps[otherFileNum])) 
+			break;
+		if ((otherFileNum > 0) && 
+		    (recs[otherPkgNum]->actions[otherFileNum] == CREATE))
+		    break;
+		otherPkgNum--;
+	    }
+
+	    if (otherPkgNum < 0) {
+		/* If it isn't in the database, install it. 
+		   FIXME: check for config files here for .rpmorig purporses! */
+		if (recs[pkgNum]->actions[i] == UNKNOWN)
+		    recs[pkgNum]->actions[i] = CREATE;
+	    } else {
+		/* FIXME: do a proper file comparison here */
+		if (strcmp(recs[pkgNum]->fmd5s[i],
+			   recs[otherPkgNum]->fmd5s[otherFileNum])) {
+		    psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, alp->key, 
+			     alp->h, fi->fl[i]);
+		}
+		recs[pkgNum]->actions[i] = 
+			recs[otherPkgNum]->actions[otherFileNum];
+		recs[otherPkgNum]->actions[otherFileNum] = SKIP;
+	    }
+	}
+
 	numPackages++;
     }
 
     htFree(ht);
 
+    numPackages = 0;
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (alp->h != flList[numPackages].h) continue;
 	fi = flList + numPackages;
-#if 0
 	free(fi->fl);
 	free(fi->fmd5s);
-#endif
+	free(fi->flinks);
+	free(fi->actions);
+
+	numPackages++;
     }
 
     if (probs->numProblems && (!okProbs || psTrim(okProbs, probs))) {
-	htFree(fates);
 	*newProbs = probs;
 	for (i = 0; i < al->size; i++)
 	    headerFree(hdrs[i]);
 	return al->size + ts->numRemovedPackages;
     }
-
-    htFree(fates);
 
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (installBinaryPackage(ts->root, ts->db, al->list[pkgNum].fd, 
@@ -312,7 +325,10 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key,
     probs->probs[probs->numProblems].type = type;
     probs->probs[probs->numProblems].key = key;
     probs->probs[probs->numProblems].h = headerLink(h);
-    probs->probs[probs->numProblems].str1 = strdup(str1);
+    if (str1)
+	probs->probs[probs->numProblems].str1 = strdup(str1);
+    else
+	probs->probs[probs->numProblems].str1 = NULL;
     probs->probs[probs->numProblems++].ignoreProblem = 0;
 }
 
