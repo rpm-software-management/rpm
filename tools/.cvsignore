@@ -7,9 +7,8 @@ dump
 dumpdb
 javadeps
 rpmarchive
-rpmgettext
 rpmheader
 rpminject
 rpmlead
-rpmputtext
+rpmsort
 rpmsignature
