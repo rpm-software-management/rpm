@@ -41,7 +41,7 @@ static void printPercent(const unsigned long amount, const unsigned long total)
     fflush(stdout);
 }
 
-void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) {
+int doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) {
     rpmdb db;
     int fd;
     int mode, rc;
@@ -79,14 +79,14 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 	if (fd < 0) {
 	    fprintf(stderr, "error: ftp of %s failed - %s\n", arg,
 			ftpStrerror(fd));
-	    return;
+	    return 1;
 	}
     } else {
 	fd = open(arg, O_RDONLY);
 	if (fd < 0) {
 	    rpmdbClose(db);
 	    fprintf(stderr, "error: cannot open %s\n", arg);
-	    return;
+	    return 1;
 	}
     }
 
@@ -110,6 +110,8 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 
     close(fd);
     rpmdbClose(db);
+
+    return rc;
 }
 
 void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
