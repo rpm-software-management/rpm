@@ -1407,13 +1407,19 @@ assert(psm->mi == NULL);
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->progTag = RPMTAG_PREINPROG;
 
-	    rc = psmStage(psm, PSM_SCRIPT);
-	    if (rc) {
-		rpmError(RPMERR_SCRIPT,
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
+		/* XXX FIXME: implement %triggerprein. */
+	    }
+
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOPRE)) {
+		rc = psmStage(psm, PSM_SCRIPT);
+		if (rc) {
+		    rpmError(RPMERR_SCRIPT,
 			_("%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"),
 			psm->stepName, tag2sln(psm->scriptTag), rc,
 			fi->name, fi->version, fi->release);
-		break;
+		    break;
+		}
 	    }
 	}
 
@@ -1423,15 +1429,18 @@ assert(psm->mi == NULL);
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
 
-	    /* Run triggers in other package(s) this package sets off. */
-	    rc = psmStage(psm, PSM_TRIGGERS);
-	    if (rc) break;
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERUN)) {
+		/* Run triggers in other package(s) this package sets off. */
+		rc = psmStage(psm, PSM_TRIGGERS);
+		if (rc) break;
 
-	    /* Run triggers in this package other package(s) set off. */
-	    rc = psmStage(psm, PSM_IMMED_TRIGGERS);
-	    if (rc) break;
+		/* Run triggers in this package other package(s) set off. */
+		rc = psmStage(psm, PSM_IMMED_TRIGGERS);
+		if (rc) break;
+	    }
 
-	    rc = psmStage(psm, PSM_SCRIPT);
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOPREUN))
+		rc = psmStage(psm, PSM_SCRIPT);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Regenerate original header. */
@@ -1540,6 +1549,7 @@ assert(psm->mi == NULL);
 
 	    if (fi->fc <= 0)				break;
 	    if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
+	    if (ts->transFlags & RPMTRANS_FLAG_APPLYONLY)	break;
 
 	    psm->what = RPMCALLBACK_UNINST_START;
 	    psm->amount = fi->fc;	/* XXX W2DO? looks wrong. */
@@ -1592,15 +1602,6 @@ assert(psm->mi == NULL);
 	    headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
 
-	    /*
-	     * If this package has already been installed, remove it from
-	     * the database before adding the new one.
-	     */
-	    if (fi->record) {
-		rc = psmStage(psm, PSM_RPMDB_REMOVE);
-		if (rc) break;
-	    }
-
 	    if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
 		uint_32 multiLib, * newMultiLib, * p;
 
@@ -1615,42 +1616,62 @@ assert(psm->mi == NULL);
 		if (rc) break;
 	    }
 
+
+	    /*
+	     * If this package has already been installed, remove it from
+	     * the database before adding the new one.
+	     */
+	    if (fi->record && !(ts->transFlags & RPMTRANS_FLAG_APPLYONLY)) {
+		rc = psmStage(psm, PSM_RPMDB_REMOVE);
+		if (rc) break;
+	    }
+
+	    rc = psmStage(psm, PSM_RPMDB_ADD);
+	    if (rc) break;
+
 	    psm->scriptTag = RPMTAG_POSTIN;
 	    psm->progTag = RPMTAG_POSTINPROG;
 	    psm->sense = RPMSENSE_TRIGGERIN;
 	    psm->countCorrection = 0;
 
-	    rc = psmStage(psm, PSM_RPMDB_ADD);
-	    if (rc) break;
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOPOST)) {
+		rc = psmStage(psm, PSM_SCRIPT);
+		if (rc) break;
+	    }
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERIN)) {
+		/* Run triggers in other package(s) this package sets off. */
+		rc = psmStage(psm, PSM_TRIGGERS);
+		if (rc) break;
 
-	    rc = psmStage(psm, PSM_SCRIPT);
-	    if (rc) break;
+		/* Run triggers in this package other package(s) set off. */
+		rc = psmStage(psm, PSM_IMMED_TRIGGERS);
+		if (rc) break;
+	    }
 
-	    /* Run triggers in other package(s) this package sets off. */
-	    rc = psmStage(psm, PSM_TRIGGERS);
-	    if (rc) break;
-
-	    /* Run triggers in this package other package(s) set off. */
-	    rc = psmStage(psm, PSM_IMMED_TRIGGERS);
-	    if (rc) break;
-
-	    rc = markReplacedFiles(psm);
+	    if (!(ts->transFlags & RPMTRANS_FLAG_APPLYONLY))
+		rc = markReplacedFiles(psm);
 
 	}
 	if (psm->goal == PSM_PKGERASE) {
+
 	    psm->scriptTag = RPMTAG_POSTUN;
 	    psm->progTag = RPMTAG_POSTUNPROG;
 	    psm->sense = RPMSENSE_TRIGGERPOSTUN;
 	    psm->countCorrection = -1;
 
-	    rc = psmStage(psm, PSM_SCRIPT);
-	    /* XXX WTFO? postun failures are not cause for erasure failure. */
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOPOSTUN)) {
+		rc = psmStage(psm, PSM_SCRIPT);
+		/* XXX WTFO? postun failures don't cause erasure failure. */
+	    }
 
-	    /* Run triggers in other package(s) this package sets off. */
-	    rc = psmStage(psm, PSM_TRIGGERS);
-	    if (rc) break;
+	    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
+		/* Run triggers in other package(s) this package sets off. */
+		rc = psmStage(psm, PSM_TRIGGERS);
+		if (rc) break;
+	    }
 
-	    rc = psmStage(psm, PSM_RPMDB_REMOVE);
+	    if (!(ts->transFlags & RPMTRANS_FLAG_APPLYONLY))
+		rc = psmStage(psm, PSM_RPMDB_REMOVE);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	}
@@ -1724,6 +1745,8 @@ assert(psm->mi == NULL);
 	break;
     case PSM_COMMIT:
 	if (!(ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT)) break;
+	if (ts->transFlags & RPMTRANS_FLAG_APPLYONLY) break;
+
 	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
 			NULL, NULL, &psm->failedFile);
 	(void) fsmTeardown(fi->fsm);
@@ -1762,18 +1785,15 @@ assert(psm->mi == NULL);
 	}
 	break;
     case PSM_SCRIPT:
-	if (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS)	break;
 	rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
 		psm->stepName, tag2sln(psm->scriptTag));
 	rc = runInstScript(psm);
 	break;
     case PSM_TRIGGERS:
-	if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)	break;
 	/* Run triggers in other package(s) this package sets off. */
 	rc = runTriggers(psm);
 	break;
     case PSM_IMMED_TRIGGERS:
-	if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)	break;
 	/* Run triggers in this package other package(s) set off. */
 	rc = runImmedTriggers(psm);
 	break;

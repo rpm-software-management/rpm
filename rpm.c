@@ -50,6 +50,7 @@ enum modes {
 /* the flags for the various options */
 static int allFiles;
 static int allMatches;
+static int applyOnly;
 static int badReloc;
 static int dirStash;
 static int excldocs;
@@ -70,8 +71,19 @@ extern int noLibio;
 static int noMd5;
 static int noOrder;
 static int noPgp;
+
 static int noScripts;
+static int noPre;
+static int noPost;
+static int noPreun;
+static int noPostun;
+
 static int noTriggers;
+static int noTPrein;
+static int noTIn;
+static int noTUn;
+static int noTPostun;
+
 static int noUsageMsg;
 static int oldPackage;
 static char * pipeOutput;
@@ -111,6 +123,7 @@ static struct poptOption optionsTable[] = {
  { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,	NULL, NULL},
  { "allfiles", '\0', 0, &allFiles, 0,		NULL, NULL},
  { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
+ { "apply", '\0', 0, &applyOnly, 0,		NULL, NULL},
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
  { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
@@ -145,8 +158,19 @@ static struct poptOption optionsTable[] = {
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
  { "nopgp", '\0', 0, &noPgp, 0,			NULL, NULL},
+
  { "noscripts", '\0', 0, &noScripts, 0,		NULL, NULL},
+ { "nopre", '\0', 0, &noPre, 0,			NULL, NULL},
+ { "nopost", '\0', 0, &noPost, 0,		NULL, NULL},
+ { "nopreun", '\0', 0, &noPreun, 0,		NULL, NULL},
+ { "nopostun", '\0', 0, &noPostun, 0,		NULL, NULL},
+
  { "notriggers", '\0', 0, &noTriggers, 0,	NULL, NULL},
+ { "notriggerprein", '\0', 0, &noTPrein, 0,	NULL, NULL},
+ { "notriggerin", '\0', 0, &noTIn, 0,		NULL, NULL},
+ { "notriggerun", '\0', 0, &noTUn, 0,		NULL, NULL},
+ { "notriggerpostun", '\0', 0, &noTPostun, 0,	NULL, NULL},
+
  { "oldpackage", '\0', 0, &oldPackage, 0,	NULL, NULL},
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
@@ -585,6 +609,7 @@ int main(int argc, const char ** argv)
     /* set the defaults for the various command line options */
     allFiles = 0;
     allMatches = 0;
+    applyOnly = 0;
     badReloc = 0;
     excldocs = 0;
     force = 0;
@@ -607,8 +632,19 @@ int main(int argc, const char ** argv)
     noMd5 = 0;
     noOrder = 0;
     noPgp = 0;
+
     noScripts = 0;
+    noPre = 0;
+    noPost = 0;
+    noPreun = 0;
+    noPostun = 0;
+
     noTriggers = 0;
+    noTPrein = 0;
+    noTIn = 0;
+    noTUn = 0;
+    noTPostun = 0;
+
     noUsageMsg = 0;
     oldPackage = 0;
     showPercents = 0;
@@ -926,13 +962,20 @@ int main(int argc, const char ** argv)
 		   "installation and erasure"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_VERIFY && noScripts)
-	argerror(_("--noscripts may only be specified during package "
+	bigMode != MODE_VERIFY &&
+	(noScripts | noPre | noPost | noPreun | noPostun |
+	 noTriggers | noTPrein | noTIn | noTUn | noTPostun))
+	argerror(_("script disabling options may only be specified during package "
 		   "installation, erasure, and verification"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noTriggers)
-	argerror(_("--notriggers may only be specified during package "
-		   "installation, erasure, and verification"));
+    if (bigMode != MODE_INSTALL && applyOnly)
+	argerror(_("--apply may only be specified during package "
+		   "installation"));
+
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
+	(noTriggers | noTPrein | noTIn | noTUn | noTPostun))
+	argerror(_("trigger disabling options may only be specified during package "
+		   "installation and erasure"));
 
     if (noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "
@@ -1096,8 +1139,18 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for uninstall"));
 
-	if (noScripts) transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
-	if (noTriggers) transFlags |= RPMTRANS_FLAG_NOTRIGGERS;
+	if (noScripts) transFlags |= (_noTransScripts | _noTransTriggers);
+	if (noPre) transFlags |= RPMTRANS_FLAG_NOPRE;
+	if (noPost) transFlags |= RPMTRANS_FLAG_NOPOST;
+	if (noPreun) transFlags |= RPMTRANS_FLAG_NOPREUN;
+	if (noPostun) transFlags |= RPMTRANS_FLAG_NOPOSTUN;
+
+	if (noTriggers) transFlags |= _noTransTriggers;
+	if (noTPrein) transFlags |= RPMTRANS_FLAG_NOTRIGGERPREIN;
+	if (noTIn) transFlags |= RPMTRANS_FLAG_NOTRIGGERIN;
+	if (noTUn) transFlags |= RPMTRANS_FLAG_NOTRIGGERUN;
+	if (noTPostun) transFlags |= RPMTRANS_FLAG_NOTRIGGERPOSTUN;
+
 	if (test) transFlags |= RPMTRANS_FLAG_TEST;
 	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
 	if (dirStash) transFlags |= RPMTRANS_FLAG_DIRSTASH;
@@ -1130,11 +1183,26 @@ int main(int argc, const char ** argv)
 	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
 	if (ignoreSize) probFilter |= RPMPROB_FILTER_DISKSPACE;
 
+	if (applyOnly)
+	    transFlags = (_noTransScripts | _noTransTriggers |
+		RPMTRANS_FLAG_APPLYONLY | RPMTRANS_FLAG_PKGCOMMIT);
+
 	if (test) transFlags |= RPMTRANS_FLAG_TEST;
 	/* RPMTRANS_FLAG_BUILD_PROBS */
-	if (noScripts) transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
-	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
+
+	if (noScripts) transFlags |= (_noTransScripts | _noTransTriggers);
+	if (noPre) transFlags |= RPMTRANS_FLAG_NOPRE;
+	if (noPost) transFlags |= RPMTRANS_FLAG_NOPOST;
+	if (noPreun) transFlags |= RPMTRANS_FLAG_NOPREUN;
+	if (noPostun) transFlags |= RPMTRANS_FLAG_NOPOSTUN;
+
 	if (noTriggers) transFlags |= RPMTRANS_FLAG_NOTRIGGERS;
+	if (noTPrein) transFlags |= RPMTRANS_FLAG_NOTRIGGERPREIN;
+	if (noTIn) transFlags |= RPMTRANS_FLAG_NOTRIGGERIN;
+	if (noTUn) transFlags |= RPMTRANS_FLAG_NOTRIGGERUN;
+	if (noTPostun) transFlags |= RPMTRANS_FLAG_NOTRIGGERPOSTUN;
+
+	if (justdb) transFlags |= RPMTRANS_FLAG_JUSTDB;
 	if (!incldocs) {
 	    if (excldocs)
 		transFlags |= RPMTRANS_FLAG_NODOCS;

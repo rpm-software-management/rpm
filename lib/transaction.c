@@ -1385,10 +1385,14 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* FIXME: what if the same package is included in ts twice? */
 
     ts->transFlags = transFlags;
+    if (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS)
+	ts->transFlags |= (_noTransScripts | _noTransTriggers);
+    if (ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)
+	ts->transFlags |= _noTransTriggers;
 
     /* XXX MULTILIB is broken, as packages can and do execute /sbin/ldconfig. */
     if (ts->transFlags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
-	ts->transFlags |= (RPMTRANS_FLAG_NOSCRIPTS|RPMTRANS_FLAG_NOTRIGGERS);
+	ts->transFlags |= (_noTransScripts | _noTransTriggers);
 
     ts->notify = notify;
     ts->notifyData = notifyData;

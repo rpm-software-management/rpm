@@ -226,6 +226,12 @@ static struct poptOption rpmInstallPoptTable[] = {
  { "allmatches", '\0', _POPT_SET_BIT, &eraseInterfaceFlags, UNINSTALL_ALLMATCHES,
 	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
 	NULL},
+
+ { "apply", '\0', _POPT_SET_BIT, &transFlags,
+	(_noTransScripts|_noTransTriggers|
+		RPMTRANS_FLAG_APPLYONLY|RPMTRANS_FLAG_PKGCOMMIT),
+	N_("do not execute package scriptlet(s)"), NULL },
+
  { "badreloc", '\0', _POPT_SET_BIT, &probFilter, RPMPROB_FILTER_FORCERELOCATE,
 	N_("relocate files in non-relocateable package"), NULL},
  { "dirstash", '\0', _POPT_SET_BIT, &transFlags, RPMTRANS_FLAG_DIRSTASH,
@@ -263,10 +269,39 @@ static struct poptOption rpmInstallPoptTable[] = {
  { "noorder", '\0', _POPT_SET_BIT, &installInterfaceFlags, INSTALL_NOORDER,
 	N_("do not reorder package installation to satisfy dependencies"),
 	NULL},
- { "noscripts", '\0', _POPT_SET_BIT, &transFlags, RPMTRANS_FLAG_NOSCRIPTS,
-	N_("do not execute scripts (if any)"), NULL },
- { "notriggers", '\0', _POPT_SET_BIT, &transFlags, RPMTRANS_FLAG_NOTRIGGERS,
-	N_("don't execute any scriptlets triggered by this package"), NULL},
+
+ { "noscripts", '\0', _POPT_SET_BIT, &transFlags,
+	(_noTransScripts|_noTransTriggers),
+	N_("do not execute package scriptlet(s)"), NULL },
+ { "nopre", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOPRE,
+	N_("do not execute %%pre scriptlet (if any)"), NULL },
+ { "nopost", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOPOST,
+	N_("do not execute %%post scriptlet (if any)"), NULL },
+ { "nopreun", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOPREUN,
+	N_("do not execute %%preun scriptlet (if any)"), NULL },
+ { "nopostun", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOPOSTUN,
+	N_("do not execute %%postun scriptlet (if any)"), NULL },
+
+ { "notriggers", '\0', _POPT_SET_BIT, &transFlags,
+	_noTransTriggers,
+	N_("do not execute any scriptlet(s) triggered by this package"), NULL},
+ { "notriggerprein", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOTRIGGERPREIN,
+	N_("do not execute any %%triggerprein scriptlet(s)"), NULL},
+ { "notriggerin", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOTRIGGERIN,
+	N_("do not execute any %%triggerin scriptlet(s)"), NULL},
+ { "notriggerun", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOTRIGGERUN,
+	N_("do not execute any %%triggerun scriptlet(s)"), NULL},
+ { "notriggerpostun", '\0', _POPT_SET_BIT|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
+	RPMTRANS_FLAG_NOTRIGGERPOSTUN,
+	N_("do not execute any %%triggerpostun scriptlet(s)"), NULL},
+
  { "oldpackage", '\0', _POPT_SET_BIT, &probFilter, RPMPROB_FILTER_OLDPACKAGE,
 	N_("upgrade to an old version of the package (--force on upgrades does this automatically)"),
 	NULL},
@@ -1082,9 +1117,14 @@ int main(int argc, const char ** argv)
 
 #if defined(IAM_RPMEIU)
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
-	(transFlags & RPMTRANS_FLAG_NOTRIGGERS))
-	argerror(_("--notriggers may only be specified during package "
-		   "installation and erasure"));
+	(transFlags & (RPMTRANS_FLAG_NOSCRIPTS | _noTransScripts | _noTransTriggers)))
+	argerror(_("script disabling options may only be specified during "
+		   "package installation and erasure"));
+
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
+	(transFlags & (RPMTRANS_FLAG_NOTRIGGERS | _noTransTriggers)))
+	argerror(_("trigger disabling options may only be specified during "
+		   "package installation and erasure"));
 
     if (noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "

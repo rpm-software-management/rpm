@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.71 2001/02/11 22:02:29 jbj Exp $
+# $Id: macros.in,v 1.72 2001/03/04 15:34:53 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -299,13 +299,19 @@
 %{nil}
 
 # The list of tags for which indices will be built.
-%_dbi_tags	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Depends
+%_dbi_tags	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Removetid:Depends
 
 # "Packages" needs fcntl shared/exclusive lock.
 %_dbi_config_Packages	%{_dbi_config}:lockdbfd
 
 # "Depends" is a per-transaction cache of known dependency resolutions.
 %_dbi_config_Depends	%{_dbi_config}:temporary
+
+%_dbi_config_Dirnames		btree bt_dup bt_dupsort usecursors perms=0644
+%_dbi_config_Requireversion	btree bt_dup bt_dupsort usecursors perms=0644
+%_dbi_config_Provideversion	btree bt_dup bt_dupsort usecursors perms=0644
+%_dbi_config_Installtid		btree bt_dup bt_dupsort usecursors perms=0644
+%_dbi_config_Removetid		btree bt_dup bt_dupsort usecursors perms=0644
 
 #==============================================================================
 # ---- transaction macros.

@@ -1078,12 +1078,38 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_MULTILIB	= (1 <<  8),	/*!< @todo Document. */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
+
     RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),
     RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
     RPMTRANS_FLAG_COMMIT	= (1 << 13),
     RPMTRANS_FLAG_UNDO		= (1 << 14),
     RPMTRANS_FLAG_REVERSE	= (1 << 15),
+
+    RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),
+    RPMTRANS_FLAG_NOPRE		= (1 << 17),
+    RPMTRANS_FLAG_NOPOST	= (1 << 18),
+    RPMTRANS_FLAG_NOTRIGGERIN	= (1 << 19),
+    RPMTRANS_FLAG_NOTRIGGERUN	= (1 << 20),
+    RPMTRANS_FLAG_NOPREUN	= (1 << 21),
+    RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),
+    RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),
+    RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
+    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 } rpmtransFlags;
+
+#define	_noTransScripts		\
+  ( RPMTRANS_FLAG_NOPRE |	\
+    RPMTRANS_FLAG_NOPOST |	\
+    RPMTRANS_FLAG_NOPREUN |	\
+    RPMTRANS_FLAG_NOPOSTUN	\
+  )
+
+#define	_noTransTriggers	\
+  ( RPMTRANS_FLAG_NOTRIGGERPREIN | \
+    RPMTRANS_FLAG_NOTRIGGERIN |	\
+    RPMTRANS_FLAG_NOTRIGGERUN |	\
+    RPMTRANS_FLAG_NOTRIGGERPOSTUN \
+  )
 
 /** \ingroup rpmtrans
  * Return copy of rpmlib internal provides.
