@@ -27,6 +27,8 @@ depend:
 
 $(PROGS): ../lib/librpm.a
 
+rpmgettext: rpmgettext.c ../lib/librpm.a
+
 ifeq (.depend,$(wildcard .depend))
 include .depend
 endif
