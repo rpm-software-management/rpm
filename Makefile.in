@@ -27,6 +27,8 @@ endif
 
 all: $(TARGET)
 
+rpm: lib/librpm.a
+
 everything: make-subdirs $(PROGS)
 	
 make-subdirs:
