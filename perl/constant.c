@@ -1,3 +1,10 @@
+/*
+ * This file contains the constant() function that is used
+ * by perl AutoLoader when looking up exported constant symbols
+ *
+ * $Id: constant.c,v 1.2 1999/07/14 18:23:16 gafton Exp $
+ */
+
 #include "EXTERN.h" 
 #include "perl.h" 
 #include "XSUB.h" 
