@@ -198,7 +198,7 @@ int readConfigFiles(void) {
     setPathDefault(RPMVAR_RPMDIR, "RPMS");    
     setPathDefault(RPMVAR_SRPMDIR, "SRPMS");    
     setPathDefault(RPMVAR_SOURCEDIR, "SOURCES");    
-    setPathDefault(RPMVAR_SPECDIR, "SPEC");    
+    setPathDefault(RPMVAR_SPECDIR, "SPECS");    
 
     return 0;
 }
