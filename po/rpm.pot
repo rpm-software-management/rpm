@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-20 17:02-0400\n"
+"POT-Creation-Date: 1999-08-21 19:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2016,8 +2016,8 @@ msgid ""
 msgstr ""
 
 #: ../lib/formats.c:65 ../lib/formats.c:83 ../lib/formats.c:104
-#: ../lib/formats.c:137 ../lib/header.c:2076 ../lib/header.c:2093
-#: ../lib/header.c:2113
+#: ../lib/formats.c:137 ../lib/header.c:2105 ../lib/header.c:2122
+#: ../lib/header.c:2142
 msgid "(not a number)"
 msgstr ""
 
@@ -2108,69 +2108,69 @@ msgstr ""
 msgid "Data type %d not supprted\n"
 msgstr ""
 
-#: ../lib/header.c:1076
+#: ../lib/header.c:1105
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1476
+#: ../lib/header.c:1505
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1504
+#: ../lib/header.c:1533
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1516
+#: ../lib/header.c:1545
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1526
+#: ../lib/header.c:1555
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1541
+#: ../lib/header.c:1570
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1567
+#: ../lib/header.c:1596
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1583
+#: ../lib/header.c:1612
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1585
+#: ../lib/header.c:1614
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1637
+#: ../lib/header.c:1666
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1644
+#: ../lib/header.c:1673
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1654 ../lib/header.c:1686
+#: ../lib/header.c:1683 ../lib/header.c:1715
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1661
+#: ../lib/header.c:1690
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1674
+#: ../lib/header.c:1703
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1693
+#: ../lib/header.c:1722
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1860
+#: ../lib/header.c:1889
 msgid "(unknown type)"
 msgstr ""
 

@@ -799,9 +799,36 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
      *    dddd	(optional) dialect.
      */
 
-    /* First try a complete match. */
-    if (!strncmp(td, l, (le - l)))
-	return 1;
+#if 0
+    /* Copy the buffer and parse out components on the fly. */
+    lbuf = alloca(le - l + 1);
+    for (s = l, ll = t = lbuf; *s; s++, t++) {
+	switch (*s) {
+	case '_':
+	    *t = '\0';
+	    CC = t + 1;
+	    break;
+	case '.':
+	    *t = '\0';
+	    EE = t + 1;
+	    break;
+	case '@':
+	    *t = '\0';
+	    dd = t + 1;
+	    break;
+	default:
+	    *t = *s;
+	    break;
+	}
+    }
+
+    if (ll)	/* ISO language should be lower case */
+	for (t = ll; *t; t++)	*t = tolower(*t);
+    if (CC)	/* ISO country code should be upper case */
+	for (t = CC; *t; t++)	*t = toupper(*t);
+
+    /* There are a total of 16 cases to attempt to match. */
+#endif
 
     /* Next, try stripping optional dialect and matching.  */
     for (fe = l; fe < le && *fe != '@'; fe++)
@@ -829,8 +856,10 @@ static char *headerFindI18NString(Header h, struct indexEntry *entry)
     const char *lang, *l, *le;
     struct indexEntry * table;
 
-    if (((lang = getenv("LANGUAGE")) == NULL &&
-	 (lang = getenv("LANG")) == NULL))
+    if ((lang = getenv("LC_ALL")) == NULL &&
+        (lang = getenv("LANGUAGE")) == NULL &&
+        (lang = getenv("LC_MESSAGES")) == NULL &&
+	(lang = getenv("LANG")) == NULL)
 	    return entry->data;
     
     if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
