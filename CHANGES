@@ -1,3 +1,11 @@
+2.3.8 -> 2.3.9:
+	- reworked %setup to allow multiple -a and -b options, which
+	  should noticeably ease the task of unapcking multiple tar files
+	- md5 sum's were calculated incorrectly on big endian machines
+	  from 2.3.2 through 2.3.8 -- this was fixed and some hacks were
+	  done to keep verification working
+	- updated README
+	
 2.3.7 -> 2.3.8:
 	- added -t? options to build packages from tarballs which contain
 	  .spec files instead of from the .spec files directly
