@@ -41,7 +41,7 @@ struct file_entry {
 
 static int add_file(struct file_entry **festack, const char *name,
 		    int isdoc, int isconf, int isdir, int verify_flags,
-		    char *Pmode, char *Uname, char *Gname);
+		    char *Pmode, char *Uname, char *Gname, char *prefix);
 static int compare_fe(const void *ap, const void *bp);
 static int add_file_aux(const char *file, struct stat *sb, int flag);
 static int glob_error(const char *foo, int bar);
@@ -56,7 +56,7 @@ static int isDoc(char *filename);
 
 int process_filelist(Header header, struct PackageRec *pr,
 		     StringBuf sb, int *size, char *name,
-		     char *version, char *release, int type)
+		     char *version, char *release, int type, char *prefix)
 {
     char buf[1024];
     char **files, **fp;
@@ -203,13 +203,14 @@ int process_filelist(Header header, struct PackageRec *pr,
 		    int offset = strlen(getVar(RPMVAR_ROOT) ? : "");
 		    c += add_file(&fes, &(glob_result.gl_pathv[x][offset]),
 				  isdoc, isconf, isdir, verify_flags,
-				  currPmode, currUname, currGname);
+				  currPmode, currUname, currGname, prefix);
 		    x++;
 		}
 		globfree(&glob_result);
 	    } else {
 	        c = add_file(&fes, filename, isdoc, isconf, isdir,
-			     verify_flags, currPmode, currUname, currGname);
+			     verify_flags, currPmode, currUname,
+			     currGname, prefix);
 	    }
 	} else {
 	    /* Source package are the simple case */
@@ -464,13 +465,15 @@ static char *GPmode;
 static char *GUname;
 static char *GGname;
 static struct file_entry **Gfestack;
+static char *Gprefix;
 
 static int add_file(struct file_entry **festack, const char *name,
 		    int isdoc, int isconf, int isdir, int verify_flags,
-		    char *Pmode, char *Uname, char *Gname)
+		    char *Pmode, char *Uname, char *Gname, char *prefix)
 {
     struct file_entry *p;
     char *copyTo, copied;
+    const char *prefixTest, *prefixPtr;
     const char *copyFrom;
     char fullname[1024];
     int mode;
@@ -483,6 +486,7 @@ static int add_file(struct file_entry **festack, const char *name,
     GPmode = Pmode;
     GUname = Uname;
     GGname = Gname;
+    Gprefix = prefix;
 
     p = malloc(sizeof(struct file_entry));
 
@@ -505,6 +509,25 @@ static int add_file(struct file_entry **festack, const char *name,
     } else {
 	strcpy(fullname, name);
     }
+
+    /* If we are using a prefix, validate the file */
+    if (prefix) {
+	prefixTest = name;
+	prefixPtr = prefix;
+	while (*prefixTest == '/') {
+	    prefixTest++;  /* Skip leading "/" */
+	}
+	while (*prefixPtr && (*prefixTest == *prefixPtr)) {
+	    prefixPtr++;
+	    prefixTest++;
+	}
+	if (*prefixPtr) {
+	    error(RPMERR_BADSPEC, "File doesn't match prefix: %s", name);
+	    return 0;
+	}
+    }
+
+    /* OK, finally stat() the file */
     if (lstat(fullname, &p->statbuf)) {
 	return 0;
     }
@@ -565,7 +588,7 @@ static int add_file_aux(const char *file, struct stat *sb, int flag)
     /* The 1 will cause add_file() to *not* descend */
     /* directories -- ftw() is already doing it!    */
     Gcount += add_file(Gfestack, name, Gisdoc, Gisconf, 1, Gverify_flags,
-			GPmode, GUname, GGname);
+			GPmode, GUname, GGname, Gprefix);
 
     return 0; /* for ftw() */
 }

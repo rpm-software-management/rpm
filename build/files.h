@@ -7,6 +7,6 @@
 
 int process_filelist(Header header, struct PackageRec *pr, StringBuf sb,
 		     int *size, char *name, char *version,
-		     char *release, int type);
+		     char *release, int type, char *prefix);
 
 #endif _FILES_H_

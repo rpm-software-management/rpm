@@ -39,6 +39,8 @@ struct SpecRec {
     StringBuf doc;
     StringBuf clean;
 
+    char *prefix;
+    
     struct PackageRec *packages;
     /* The first package record is the "main" package and contains
      * the bulk of the preamble information.  Subsequent package

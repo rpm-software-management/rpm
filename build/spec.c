@@ -372,6 +372,7 @@ void freeSpec(Spec s)
     FREE(s->specfile);
     FREE(s->noSource);
     FREE(s->noPatch);
+    FREE(s->prefix);
     freeSources(s);
     freeStringBuf(s->prep);
     freeStringBuf(s->build);
@@ -644,6 +645,7 @@ struct preamble_line {
     {RPMTAG_PROVIDES,      0, "provides"},
     {RPMTAG_REQUIREFLAGS,  0, "requires"},
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
+    {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
     {0, 0, 0}
 };
 
@@ -795,6 +797,7 @@ Spec parseSpec(FILE *f, char *specfile)
     spec->noPatch = NULL;
     spec->numNoSource = 0;
     spec->numNoPatch = 0;
+    spec->prefix = NULL;
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
@@ -993,6 +996,10 @@ Spec parseSpec(FILE *f, char *specfile)
 		  case RPMTAG_PACKAGER:
 		  case RPMTAG_GROUP:
 		  case RPMTAG_URL:
+		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
+		    break;
+		  case RPMTAG_DEFAULTPREFIX:
+		    spec->prefix = strdup(s);
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
 		    break;
 		  case RPMTAG_SERIAL:

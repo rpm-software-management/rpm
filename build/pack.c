@@ -26,14 +26,16 @@
 #include "reqprov.h"
 
 static int writeMagic(int fd, char *name, unsigned short type);
-static int cpio_gzip(int fd, char *tempdir, char *writePtr, int *archiveSize);
+static int cpio_gzip(int fd, char *tempdir, char *writePtr,
+		     int *archiveSize, char *prefix);
 static int generateRPM(char *name,       /* name-version-release         */
 		       char *filename,   /* output filename              */
 		       int type,         /* source or binary             */
 		       Header header,    /* the header                   */
 		       char *stempdir,   /* directory containing sources */
 		       char *fileList,   /* list of files for cpio       */
-		       char *passPhrase);
+		       char *passPhrase, /* PGP passphrase               */
+		       char *prefix);
 
 
 static int generateRPM(char *name,       /* name-version-release         */
@@ -42,7 +44,8 @@ static int generateRPM(char *name,       /* name-version-release         */
 		       Header header,    /* the header                   */
 		       char *stempdir,   /* directory containing sources */
 		       char *fileList,   /* list of files for cpio       */
-		       char *passPhrase)
+		       char *passPhrase,
+		       char *prefix)
 {
     int_32 sigtype;
     char *sigtarget, *archiveTemp;
@@ -56,7 +59,7 @@ static int generateRPM(char *name,       /* name-version-release         */
 	fprintf(stderr, "Could not open %s\n", archiveTemp);
 	return 1;
     }
-    if (cpio_gzip(fd, stempdir, fileList, &archiveSize)) {
+    if (cpio_gzip(fd, stempdir, fileList, &archiveSize, prefix)) {
 	close(fd);
 	unlink(archiveTemp);
 	return 1;
@@ -178,7 +181,8 @@ static int writeMagic(int fd, char *name,
     return 0;
 }
 
-static int cpio_gzip(int fd, char *tempdir, char *writePtr, int *archiveSize)
+static int cpio_gzip(int fd, char *tempdir, char *writePtr,
+		     int *archiveSize, char *prefix)
 {
     int cpioPID, gzipPID;
     int cpioDead, gzipDead;
@@ -223,6 +227,12 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr, int *archiveSize)
 	} else {
 	    /* This is important! */
 	    chdir("/");
+	}
+	if (prefix) {
+	    if (chdir(prefix)) {
+		error(RPMERR_EXEC, "Couldn't chdir to %s", prefix);
+		exit(RPMERR_EXEC);
+	    }
 	}
 
 	execlp("cpio", "cpio",
@@ -360,6 +370,8 @@ int packageBinaries(Spec s, char *passPhrase)
     char *vendor;
     char *dist;
     char *packageVersion, *packageRelease;
+    char *prefix;
+    int prefixLen;
     int size;
     StringBuf cpioFileList;
     char **farray, *file;
@@ -388,6 +400,17 @@ int packageBinaries(Spec s, char *passPhrase)
 	dist = getVar(RPMVAR_DISTRIBUTION);
     }
 
+    if (s->prefix) {
+	prefix = s->prefix;
+	while (*prefix && (*prefix == '/')) {
+	    prefix++;
+	}
+	if (! *prefix) {
+	    prefix = NULL;
+	}
+	prefixLen = strlen(prefix);
+    }
+    
     /* Look through for each package */
     pr = s->packages;
     while (pr) {
@@ -475,7 +498,8 @@ int packageBinaries(Spec s, char *passPhrase)
 	/**** Process the file list ****/
 	
 	if (process_filelist(outHeader, pr, pr->filelist, &size, nametmp,
-			     packageVersion, packageRelease, RPMLEAD_BINARY)) {
+			     packageVersion, packageRelease, RPMLEAD_BINARY,
+			     prefix)) {
 	    return 1;
 	}
 
@@ -490,6 +514,14 @@ int packageBinaries(Spec s, char *passPhrase)
 	    file = *farray++;
 	    while (*file == '/') {
 		file++;  /* Skip leading "/" */
+	    }
+	    if (prefix) {
+		if (strncmp(prefix, file, prefixLen)) {
+		    error(RPMERR_BADSPEC, "File doesn't match prefix: %s",
+			  file);
+		    return 1;
+		}
+		file += prefixLen + 1; /* 1 for "/" */
 	    }
 	    appendLineStringBuf(cpioFileList, file);
 	}
@@ -510,7 +542,7 @@ int packageBinaries(Spec s, char *passPhrase)
 		name, getArchName());
 
 	if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
-			getStringBuf(cpioFileList), passPhrase)) {
+			getStringBuf(cpioFileList), passPhrase, prefix)) {
 	    /* Build failed */
 	    return 1;
 	}
@@ -653,7 +685,8 @@ int packageSource(Spec s, char *passPhrase)
 
     /* Process the file list */
     if (process_filelist(outHeader, NULL, filelist, &size,
-			 s->name, version, release, RPMLEAD_SOURCE)) {
+			 s->name, version, release, RPMLEAD_SOURCE,
+			 NULL)) {
 	return 1;
     }
 
@@ -668,7 +701,7 @@ int packageSource(Spec s, char *passPhrase)
     message(MESS_VERBOSE, "Source Packaging: %s\n", fullname);
 
     if (generateRPM(fullname, filename, RPMLEAD_SOURCE, outHeader,
-		    tempdir, getStringBuf(cpioFileList), passPhrase)) {
+		    tempdir, getStringBuf(cpioFileList), passPhrase, NULL)) {
 	return 1;
     }
     
