@@ -10,13 +10,14 @@
 #include "lib/signature.h"
 #include "query.h"
 #include "verify.h"
+#include "checksig.h"
 #include "rpmlib.h"
 #include "build/build.h"
 
 char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
-	     MODE_BUILD, MODE_REBUILD, MODE_UNKNOWN };
+	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -58,9 +59,10 @@ void printUsage(void) {
     puts("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]");
     puts("       rpm {--uninstall -u] [--root <dir>] package1 package2 ... packageN");
     puts("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]");
-    puts("                        [--test] [--time-check <s>] specfile");
+    puts("                        [--sign] [--test] [--time-check <s>] specfile");
     puts("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm");
     puts("       rpm {--where} package1 package2 ... packageN");
+    puts("       rpm {--check-sig} package1 package2 ... packageN");
 }
 
 void printHelp(void) {
@@ -121,6 +123,7 @@ void printHelp(void) {
     puts("			  a - bin/src package (prep, compile, install, package)");
     puts("      --short-circuit   - skip straight to specified stage (only for c,i)");
     puts("      --clean           - remove build tree when done");
+    puts("      --sign            - generate PGP signature");
     puts("      --keep-temps      - do not delete scripts (or any temp files) in /tmp");
     puts("      --test            - do not execute any stages, implies --keep-temps");
     puts("			  in /tmp - useful for testing");
@@ -132,6 +135,8 @@ void printHelp(void) {
     puts("    --rebuild <source_package>");
     puts("                        - install source package, build binary package,");
     puts("                          and remove spec file, sources, patches, and icons.");
+    puts("    -K");
+    puts("    --check-sig <pkg>+  - verify PGP signature");
 }
 
 void build(char * arg, int buildAmount, char *passPhrase) {
@@ -195,6 +200,7 @@ int main(int argc, char ** argv) {
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
 	    { "build", 1, 0, 'b' },
+	    { "check-sig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
 	    { "docfiles", 0, 0, 'd' },
@@ -233,11 +239,17 @@ int main(int argc, char ** argv) {
 	exit(-1);
 
     while (1) {
-	arg = getopt_long(argc, argv, "QqVyUYhpvPfFilsagGducr:b:", options, 
+	arg = getopt_long(argc, argv, "QqVyUYhpvKPfFilsagGducr:b:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
 	switch (arg) {
+	  case 'K':
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_CHECKSIG)
+		argerror("only one major mode may be specified");
+	    bigMode = MODE_CHECKSIG;
+	    break;
+	    
 	  case 'Q':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SPACKAGE)
 		argerror("only one type of query may be performed at a time");
@@ -475,6 +487,11 @@ int main(int argc, char ** argv) {
 	if (!version && !help) printUsage();
 	exit(0);
 
+      case MODE_CHECKSIG:
+	if (optind == argc) 
+	    argerror("no packages given for signature check");
+	exit(doCheckSig(argv + optind));
+	
       case MODE_REBUILD:
         if (getVerbosity() == MESS_NORMAL)
 	    setVerbosity(MESS_VERBOSE);
