@@ -500,8 +500,8 @@ int main(int argc, char ** argv) {
     /* set up the correct locale */
     setlocale(LC_ALL, "" );
 
-    bindtextdomain(NLSPACKAGE, NLSDIR);
-    textdomain(NLSPACKAGE);
+    bindtextdomain(RPMNLSPACKAGE, RPMNLSDIR);
+    textdomain(RPMNLSPACKAGE);
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* as well as --arch and --os.  We need to handle that before    */

@@ -9,8 +9,8 @@ RANLIB = @RANLIB@
 OPTS = @DEFS@
 LIBRPMRC_FILENAME=$(libdir)/rpmrc
 LIBRPMALIAS_FILENAME=$(libdir)/rpmpopt
-NLSDIR=$(prefix)/share/locale
-NLSPACKAGE=rpm
+RPMNLSDIR=$(prefix)/share/locale
+RPMNLSPACKAGE=rpm
 CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-I$(topdir)/lib -I$(topdir)/misc -Wall -Wstrict-prototypes \
 	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" \
