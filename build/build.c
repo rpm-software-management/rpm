@@ -107,7 +107,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     }
     
     if (makeTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
+	rpmError(RPMERR_SCRIPT, _("Unable to open temp file %s."), scriptName);
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }

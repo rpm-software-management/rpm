@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-24 13:14-0500\n"
+"POT-Creation-Date: 2000-02-25 15:49-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,7 +94,7 @@ msgstr "paketin ait olduðu iþletim sistemini doðrulamaz"
 msgid "override build root"
 msgstr "paket yaratýlýrken <dizin> baþlangýç dizini olarak kullanýlýr"
 
-#: build.c:387 rpm.c:495
+#: build.c:387 rpm.c:497
 msgid "remove build tree when done"
 msgstr "iþlem sonunda paket yaratma yapýsýný siler"
 
@@ -117,7 +117,7 @@ msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 msgid "remove specfile when done"
 msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 
-#: build.c:397 rpm.c:493
+#: build.c:397 rpm.c:495
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "doðrudan belirtilen adýma atlar (sadece c ve i için)"
 
@@ -173,7 +173,7 @@ msgstr "%s pakedi %s içerisinde bulunamadý"
 msgid "no copyright!\n"
 msgstr ""
 
-#: rpm.c:197
+#: rpm.c:199
 #, c-format
 msgid "rpm: %s\n"
 msgstr ""
@@ -191,142 +191,142 @@ msgstr ""
 # May 5, 1998 
 #
 # , c-format
-#: rpm.c:208
+#: rpm.c:210
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Sürüm %s\n"
 
-#: rpm.c:212
+#: rpm.c:214
 msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr "Copyright (C) 1998 - Red Hat Software"
 
-#: rpm.c:213
+#: rpm.c:215
 msgid "This may be freely redistributed under the terms of the GNU GPL"
 msgstr "Bu ðrogram GNU GPL uyarýnca serbestçe daðýtýlabilir."
 
-#: rpm.c:221
+#: rpm.c:223
 msgid "usage: rpm {--help}"
 msgstr "Kullaným: rpm {--help}"
 
-#: rpm.c:222
+#: rpm.c:224
 msgid "       rpm {--version}"
 msgstr "       rpm {--version}"
 
-#: rpm.c:223
+#: rpm.c:225
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr "       rpm {--initdb}   [--dbpath <dizin>]"
 
-#: rpm.c:224
+#: rpm.c:226
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpm.c:225
+#: rpm.c:227
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
 "                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
 
-#: rpm.c:226
+#: rpm.c:228
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
-#: rpm.c:227
+#: rpm.c:229
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 "                        [--rcfile <dosya>] [--ignorearch] [--dbpath <dizin>]"
 
-#: rpm.c:228
+#: rpm.c:230
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
 "                        [--prefix <dizin>] [--ignoreos] [--nodeps] "
 "[--allfiles]"
 
-#: rpm.c:229
+#: rpm.c:231
 msgid ""
 "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 msgstr ""
 "                        [--ftpproxy <sunucu>] [--ftpport <port>] [--justdb]"
 
-#: rpm.c:230 rpm.c:239 rpm.c:248
+#: rpm.c:232 rpm.c:241 rpm.c:250
 #, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>] "
 msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>]"
 
-#: rpm.c:231 rpm.c:241
+#: rpm.c:233 rpm.c:243
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
 msgstr "                        [--noorder] [--relocate eskidizin=yenidizin]"
 
-#: rpm.c:232
+#: rpm.c:234
 #, fuzzy
 msgid ""
 "                        [--badreloc] [--notriggers] [--excludepath <path>]"
 msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 
-#: rpm.c:233
+#: rpm.c:235
 #, fuzzy
 msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
 msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 
-#: rpm.c:234
+#: rpm.c:236
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpm.c:235
+#: rpm.c:237
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <dizin>] [--noscripts]"
 
-#: rpm.c:236
+#: rpm.c:238
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
 
-#: rpm.c:237
+#: rpm.c:239
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
 "                        [--ignorearch]  [--dbpath <dizin>] [--prefix "
 "<dizin>] "
 
-#: rpm.c:238
+#: rpm.c:240
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>]"
 
-#: rpm.c:240
+#: rpm.c:242
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
 "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
-#: rpm.c:242
+#: rpm.c:244
 #, fuzzy
 msgid ""
 "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
 msgstr "                        [--nomd5] [targets]"
 
-#: rpm.c:243
+#: rpm.c:245
 #, fuzzy
 msgid "                        file1.rpm ... fileN.rpm"
 msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 
-#: rpm.c:244
+#: rpm.c:246
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
-#: rpm.c:245
+#: rpm.c:247
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 "                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
 
-#: rpm.c:246
+#: rpm.c:248
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
-#: rpm.c:247
+#: rpm.c:249
 #, fuzzy
 msgid ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
@@ -334,7 +334,7 @@ msgstr ""
 "                        [--ftpuseport] [--ftpproxy <sunucu>] [--ftpport "
 "<port>]"
 
-#: rpm.c:249
+#: rpm.c:251
 #, fuzzy
 msgid ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
@@ -342,314 +342,314 @@ msgstr ""
 "                        [--dbpath <dizin>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
-#: rpm.c:250
+#: rpm.c:252
 #, fuzzy
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
 msgstr "                        [--nomd5] [targets]"
 
-#: rpm.c:251
+#: rpm.c:253
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 "       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
 
-#: rpm.c:252
+#: rpm.c:254
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
 "                        [--dbpath <dizin>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
-#: rpm.c:253
+#: rpm.c:255
 msgid "                        [--nomd5] [targets]"
 msgstr "                        [--nomd5] [targets]"
 
-#: rpm.c:254
+#: rpm.c:256
 msgid "       rpm {--setperms} [-afpg] [target]"
 msgstr "       rpm {--setperms} [-afpg] [target]"
 
-#: rpm.c:255
+#: rpm.c:257
 msgid "       rpm {--setugids} [-afpg] [target]"
 msgstr "       rpm {--setugids} [-afpg] [target]"
 
-#: rpm.c:256
+#: rpm.c:258
 #, fuzzy
 msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
 msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 
-#: rpm.c:257
+#: rpm.c:259
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
 "       rpm {--erase -e] [--root <dizin>] [--noscripts] [--rcfile <dosya>]"
 
-#: rpm.c:258
+#: rpm.c:260
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <dizin>] [--nodeps] [--allmatches]"
 
-#: rpm.c:259
+#: rpm.c:261
 #, fuzzy
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
 msgstr "                        [--justdb] paket1 ... paketN"
 
-#: rpm.c:260
+#: rpm.c:262
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<dosya>]"
 
-#: rpm.c:261
+#: rpm.c:263
 #, fuzzy
 msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 msgstr ""
 "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 
-#: rpm.c:262
+#: rpm.c:264
 #, fuzzy
 msgid "                        [--target=platform1[,platform2...]]"
 msgstr "                        [targets]"
 
-#: rpm.c:263
+#: rpm.c:265
 #, fuzzy
 msgid "                        [--rmsource] [--rmspec] specfile"
 msgstr ""
 "                        [--buildarch <mimari>] [--rmsource] specdosyasý"
 
-#: rpm.c:264
+#: rpm.c:266
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
 msgstr "       rpm {--rmsource} [--rcfile <dosya>] [-v] specdosyasý"
 
-#: rpm.c:265
+#: rpm.c:267
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--rebuild} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
 
-#: rpm.c:266
+#: rpm.c:268
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--recompile} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
 
-#: rpm.c:267
+#: rpm.c:269
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--resign} [--rcfile <dosya>] paket1 paket2 ... paketN"
 
-#: rpm.c:268
+#: rpm.c:270
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--addsign} [--rcfile <dosya>] paket1 paket2 ... paketN"
 
-#: rpm.c:269
+#: rpm.c:271
 #, fuzzy
 msgid ""
 "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
 msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <dosya>]"
 
-#: rpm.c:270
+#: rpm.c:272
 msgid "                           package1 ... packageN"
 msgstr "                           paket1 ... paketN"
 
-#: rpm.c:271
+#: rpm.c:273
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
 
-#: rpm.c:272
+#: rpm.c:274
 msgid "       rpm {--querytags}"
 msgstr "       rpm {--querytags}"
 
-#: rpm.c:306
+#: rpm.c:308
 msgid "usage:"
 msgstr "Kullaným:"
 
-#: rpm.c:308
+#: rpm.c:310
 msgid "print this message"
 msgstr "Bu bilgiyi verir"
 
-#: rpm.c:310
+#: rpm.c:312
 msgid "print the version of rpm being used"
 msgstr "Kullanýlan RPM sürümünü verir"
 
-#: rpm.c:311
+#: rpm.c:313
 msgid "   all modes support the following arguments:"
 msgstr "   tüm kipler aþaðýdaki argümanlarý kabul ederler:"
 
-#: rpm.c:312
+#: rpm.c:314
 msgid "      --rcfile <file>     "
 msgstr ""
 
-#: rpm.c:313
+#: rpm.c:315
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanýn"
 
-#: rpm.c:315
+#: rpm.c:317
 msgid "be a little more verbose"
 msgstr "daha çok açýklama verir"
 
-#: rpm.c:317
+#: rpm.c:319
 msgid "be incredibly verbose (for debugging)"
 msgstr "çok fazla açýklama verir (hata ayýklama için)"
 
-#: rpm.c:319
+#: rpm.c:321
 msgid "query mode"
 msgstr "Sorgulama kipi"
 
-#: rpm.c:320 rpm.c:382 rpm.c:446 rpm.c:474
+#: rpm.c:322 rpm.c:384 rpm.c:448 rpm.c:476
 msgid "      --root <dir>        "
 msgstr ""
 
-#: rpm.c:321 rpm.c:383 rpm.c:447 rpm.c:475 rpm.c:537
+#: rpm.c:323 rpm.c:385 rpm.c:449 rpm.c:477 rpm.c:539
 msgid "use <dir> as the top level directory"
 msgstr "kök (baþlangýç) dizini olarak <dizin> kullanýlýr"
 
-#: rpm.c:322 rpm.c:380 rpm.c:410 rpm.c:462 rpm.c:534
+#: rpm.c:324 rpm.c:382 rpm.c:412 rpm.c:464 rpm.c:536
 #, fuzzy
 msgid "      --dbpath <dir>      "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:323 rpm.c:381 rpm.c:411 rpm.c:463 rpm.c:535
+#: rpm.c:325 rpm.c:383 rpm.c:413 rpm.c:465 rpm.c:537
 msgid "use <dir> as the directory for the database"
 msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
 
-#: rpm.c:324
+#: rpm.c:326
 msgid "      --queryformat <qfmt>"
 msgstr ""
 
-#: rpm.c:325
+#: rpm.c:327
 #, fuzzy
 msgid "use <qfmt> as the header format (implies -i)"
 msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
 
-#: rpm.c:326
+#: rpm.c:328
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
 "   yükleme, güncelleme ve sorgulama (-p ile) iþlemlerimde dosya isimleri "
 
-#: rpm.c:327
+#: rpm.c:329
 #, fuzzy
 msgid "   of file names as well as the following options:"
 msgstr "   yerine FTP adreslerini aþaðýdaki seçeneklerle kabul eder:\n"
 
-#: rpm.c:328
+#: rpm.c:330
 msgid "      --ftpproxy <host>   "
 msgstr ""
 
-#: rpm.c:329
+#: rpm.c:331
 msgid "hostname or IP of ftp proxy"
 msgstr "Makina ismi veya FTP-Proxy'nin IP numarasý"
 
-#: rpm.c:330
+#: rpm.c:332
 msgid "      --ftpport <port>    "
 msgstr ""
 
-#: rpm.c:331
+#: rpm.c:333
 msgid "port number of ftp server (or proxy)"
 msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
 
-#: rpm.c:332
+#: rpm.c:334
 #, fuzzy
 msgid "      --httpproxy <host>   "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:333
+#: rpm.c:335
 #, fuzzy
 msgid "hostname or IP of http proxy"
 msgstr "Makina ismi veya FTP-Proxy'nin IP numarasý"
 
-#: rpm.c:334
+#: rpm.c:336
 #, fuzzy
 msgid "      --httpport <port>    "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:335
+#: rpm.c:337
 #, fuzzy
 msgid "port number of http server (or proxy)"
 msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
 
-#: rpm.c:336
+#: rpm.c:338
 msgid "      Package specification options:"
 msgstr "      Paket seçim seçenekleri:"
 
-#: rpm.c:338
+#: rpm.c:340
 msgid "query all packages"
 msgstr "Tüm paketleri sorgulama"
 
-#: rpm.c:339
+#: rpm.c:341
 msgid "        -f <file>+        "
 msgstr ""
 
-#: rpm.c:340
+#: rpm.c:342
 msgid "query package owning <file>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: rpm.c:341
+#: rpm.c:343
 msgid "        -p <packagefile>+ "
 msgstr ""
 
-#: rpm.c:342
+#: rpm.c:344
 msgid "query (uninstalled) package <packagefile>"
 msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
 
-#: rpm.c:343
+#: rpm.c:345
 #, fuzzy
 msgid "        --triggeredby <pkg>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: rpm.c:344
+#: rpm.c:346
 #, fuzzy
 msgid "query packages triggered by <pkg>"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: rpm.c:345
+#: rpm.c:347
 #, fuzzy
 msgid "        --whatprovides <cap>"
 msgstr "        --requires"
 
-#: rpm.c:346
+#: rpm.c:348
 #, fuzzy
 msgid "query packages which provide <cap> capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
-#: rpm.c:347
+#: rpm.c:349
 #, fuzzy
 msgid "        --whatrequires <cap>"
 msgstr "        --requires"
 
-#: rpm.c:348
+#: rpm.c:350
 #, fuzzy
 msgid "query packages which require <cap> capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
 
-#: rpm.c:349
+#: rpm.c:351
 msgid "      Information selection options:"
 msgstr "      Bilgilendirme seçenekleri:"
 
-#: rpm.c:351
+#: rpm.c:353
 msgid "display package information"
 msgstr "Paket bilgisini gösterme"
 
-#: rpm.c:353
+#: rpm.c:355
 msgid "display the package's change log"
 msgstr "Paketin 'Change Log' (deðiþiklik) bilgisini gösterme"
 
-#: rpm.c:355
+#: rpm.c:357
 msgid "display package file list"
 msgstr "Paketin içerdiði dosyalarý gösterme"
 
-#: rpm.c:357
+#: rpm.c:359
 msgid "show file states (implies -l)"
 msgstr "dosyalarýn durumunu gösterir (-l gerektirir)"
 
-#: rpm.c:359
+#: rpm.c:361
 msgid "list only documentation files (implies -l)"
 msgstr "sadece belge dosyalarýný gösterir (-l gerektirir)"
 
-#: rpm.c:361
+#: rpm.c:363
 msgid "list only configuration files (implies -l)"
 msgstr ""
 "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
 
-#: rpm.c:363
+#: rpm.c:365
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
@@ -657,54 +657,54 @@ msgstr ""
 "her dosya için doðrulanabilir bilgileri göster (-l, -c veya -d ile "
 "kullanýlmalý)"
 
-#: rpm.c:365
+#: rpm.c:367
 msgid "list capabilities package provides"
 msgstr "paketin saðladýðý yetenekleri sýralar"
 
-#: rpm.c:366
+#: rpm.c:368
 msgid "        --requires"
 msgstr "        --requires"
 
-#: rpm.c:368
+#: rpm.c:370
 msgid "list package dependencies"
 msgstr "paketin baðýmlýlýklarýný (gerektirdiði paketleri) gösterir"
 
-#: rpm.c:370
+#: rpm.c:372
 msgid "print the various [un]install scripts"
 msgstr "paketin çeþitli yükleme, silme betiklerini (scripts) gösterir"
 
-#: rpm.c:372
+#: rpm.c:374
 msgid "show the trigger scripts contained in the package"
 msgstr ""
 
-#: rpm.c:376
+#: rpm.c:378
 #, fuzzy
 msgid "    --pipe <cmd>          "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:377
+#: rpm.c:379
 msgid "send stdout to <cmd>"
 msgstr "standart çýktýyý <KOMUT>'a gönderir"
 
-#: rpm.c:379
+#: rpm.c:381
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr "paketi -q ile belirtilen paket parametrelerini kullanarak doðrula"
 
-#: rpm.c:385 rpm.c:433 rpm.c:467
+#: rpm.c:387 rpm.c:435 rpm.c:469
 msgid "do not verify package dependencies"
 msgstr "paket baðýmlýlýklarýný doðrulamaz"
 
-#: rpm.c:387
+#: rpm.c:389
 msgid "do not verify file md5 checksums"
 msgstr "dosyalarýn 'md5-checksum' larýný doðrulamaz"
 
-#: rpm.c:389
+#: rpm.c:391
 msgid "do not verify file attributes"
 msgstr "dosya özelliklerini doðrulamaz"
 
-#: rpm.c:392
+#: rpm.c:394
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -712,7 +712,7 @@ msgstr ""
 "dosya eriþim haklarýný veri tabanýnda yer alanlarla -q ile belirtilen paket "
 "parametrelerini kullanarak güncelle"
 
-#: rpm.c:395
+#: rpm.c:397
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -720,144 +720,144 @@ msgstr ""
 "dosya kullanýcý ve grup bilgilerini veri tabanýnda yer alanlarla -q ile "
 "belirtilen paket parametrelerini kullanarak güncelle"
 
-#: rpm.c:399
+#: rpm.c:401
 #, fuzzy
 msgid "    --install <packagefile>"
 msgstr "paket yüklemek"
 
-#: rpm.c:400
+#: rpm.c:402
 #, fuzzy
 msgid "    -i <packagefile>      "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:401
+#: rpm.c:403
 msgid "install package"
 msgstr "paket yüklemek"
 
-#: rpm.c:402
+#: rpm.c:404
 #, fuzzy
 msgid "      --excludepath <path>"
 msgstr "dosyalarý <eskidizin> den <yenidizin> e relocate et"
 
-#: rpm.c:403
+#: rpm.c:405
 msgid "skip files in path <path>"
 msgstr ""
 
-#: rpm.c:404
+#: rpm.c:406
 #, fuzzy
 msgid "      --relocate <oldpath>=<newpath>"
 msgstr "dosyalarý <eskidizin> den <yenidizin> e relocate et"
 
-#: rpm.c:405
+#: rpm.c:407
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr "dosyalarý <eskidizin> den <yenidizin> e relocate et"
 
-#: rpm.c:407
+#: rpm.c:409
 msgid "relocate files even though the package doesn't allow it"
 msgstr "paket desteklemese bile dosyalarý relocate et"
 
-#: rpm.c:408
+#: rpm.c:410
 msgid "      --prefix <dir>      "
 msgstr ""
 
-#: rpm.c:409
+#: rpm.c:411
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "paketin yerini (eðer deðitirilebiliyorsa) <dizin>'e deðiþtirir"
 
-#: rpm.c:413
+#: rpm.c:415
 msgid "do not install documentation"
 msgstr "yazýlýmýn belgelerini yüklemez"
 
-#: rpm.c:415
+#: rpm.c:417
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs --replacefiles'ýn kýsaltmasý"
 
-#: rpm.c:418
+#: rpm.c:420
 msgid "print hash marks as package installs (good with -v)"
 msgstr "yükleme sýrasýnda bir gösterge çýkarýr (-v seçeneði ile iyi)"
 
-#: rpm.c:420
+#: rpm.c:422
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "tüm dosyalarý, hatta normal olarak atlanabilecek yapýlandýrmalarý bile,yükler"
 
-#: rpm.c:423
+#: rpm.c:425
 msgid "don't verify package architecture"
 msgstr "paket mimarisini doðrulamaz"
 
-#: rpm.c:425
+#: rpm.c:427
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: rpm.c:427
+#: rpm.c:429
 msgid "don't verify package operating system"
 msgstr "paketin ait olduðu iþletim sistemini doðrulamaz"
 
-#: rpm.c:429
+#: rpm.c:431
 msgid "install documentation"
 msgstr "paket ile gelen belgeleri de yükler"
 
-#: rpm.c:431 rpm.c:465
+#: rpm.c:433 rpm.c:467
 msgid "update the database, but do not modify the filesystem"
 msgstr "veri tabanýný günceller, ama dosya sistemini deðiþtirmez"
 
-#: rpm.c:435 rpm.c:469
+#: rpm.c:437 rpm.c:471
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "paket yükleme sýrasýný baðýmlýlýklara göre düzenleme"
 
-#: rpm.c:437
+#: rpm.c:439
 msgid "don't execute any installation scripts"
 msgstr "yükleme betiklerini (scripts) çalýþtýrmaz."
 
-#: rpm.c:439 rpm.c:473
+#: rpm.c:441 rpm.c:475
 msgid "don't execute any scripts triggered by this package"
 msgstr ""
 
-#: rpm.c:441
+#: rpm.c:443
 msgid "print percentages as package installs"
 msgstr "yükleme sýrasýnda geliþme yüzde olarak gösterilir"
 
-#: rpm.c:443
+#: rpm.c:445
 msgid "install even if the package replaces installed files"
 msgstr "paket mevcut dosyalarý silse bile paketi yükler"
 
-#: rpm.c:445
+#: rpm.c:447
 msgid "reinstall if the package is already present"
 msgstr "paket mevcutsa yeniden yükler"
 
-#: rpm.c:449
+#: rpm.c:451
 msgid "don't install, but tell if it would work or not"
 msgstr "yükleme yapmaz, sadece çalýþýp çalýþmayacaðýný belirtir"
 
-#: rpm.c:451
+#: rpm.c:453
 msgid "    --upgrade <packagefile>"
 msgstr ""
 
-#: rpm.c:452
+#: rpm.c:454
 #, fuzzy
 msgid "    -U <packagefile>      "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:453
+#: rpm.c:455
 msgid "upgrade package (same options as --install, plus)"
 msgstr "Paketi günceller (seçenekler --install ile ayný, ek olarak)"
 
-#: rpm.c:455
+#: rpm.c:457
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 "pakedin eski bir sürüme güncellenmesini saðlar (--force ayný iþi görür)"
 
-#: rpm.c:457
+#: rpm.c:459
 msgid "    --erase <package>"
 msgstr ""
 
-#: rpm.c:459
+#: rpm.c:461
 msgid "erase (uninstall) package"
 msgstr "paketi siler (uninstall)"
 
-#: rpm.c:461
+#: rpm.c:463
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -865,97 +865,97 @@ msgstr ""
 "<paket> ile eþlenen tüm paketleri siler (birden fazla paket eþlenirse bir "
 "hata mesajý çýkmasý gerekir)"
 
-#: rpm.c:471
+#: rpm.c:473
 msgid "do not execute any package specific scripts"
 msgstr "pakete ait hiçbir betik (Script) çalýþtýrýlmaz"
 
-#: rpm.c:477
+#: rpm.c:479
 msgid "    -b<stage> <spec>      "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:478
+#: rpm.c:480
 #, fuzzy
 msgid "    -t<stage> <tarball>   "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:479
+#: rpm.c:481
 msgid "build package, where <stage> is one of:"
 msgstr "paket yaratýr, <adým> aþaðýdaki harflerden biridir:"
 
-#: rpm.c:481
+#: rpm.c:483
 msgid "prep (unpack sources and apply patches)"
 msgstr "hazýrlama (kaynaklar açýlýr ve yamalar uygulanýr)"
 
 # , c-format
-#: rpm.c:483
+#: rpm.c:485
 #, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr "kontrol ( %files üstünkörü bir kontrol edilir)"
 
-#: rpm.c:485
+#: rpm.c:487
 msgid "compile (prep and compile)"
 msgstr "derleme (hazýrlama ve derleme)"
 
-#: rpm.c:487
+#: rpm.c:489
 msgid "install (prep, compile, install)"
 msgstr "yükleme (hazýrlama, derleme, yükleme)"
 
-#: rpm.c:489
+#: rpm.c:491
 msgid "binary package (prep, compile, install, package)"
 msgstr ""
 "çalýþtýrýlabilir paket yaratma (hazýrlama, derleme, yükleme, paketleme)"
 
-#: rpm.c:491
+#: rpm.c:493
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
 "çalýþtýrýlabilir ve Kaynak paket yaratmak (hazýrlama, derleme, yükleme "
 "vepaketleme)"
 
-#: rpm.c:497
+#: rpm.c:499
 msgid "remove sources and spec file when done"
 msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 
-#: rpm.c:499
+#: rpm.c:501
 #, fuzzy
 msgid "generate PGP/GPG signature"
 msgstr "PGP-imzasý yaratýr"
 
-#: rpm.c:500
+#: rpm.c:502
 #, fuzzy
 msgid "      --buildroot <dir>   "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:501
+#: rpm.c:503
 msgid "use <dir> as the build root"
 msgstr "paket yaratýlýrken <dizin> baþlangýç dizini olarak kullanýlýr"
 
-#: rpm.c:502
+#: rpm.c:504
 msgid "      --target=<platform>+"
 msgstr ""
 
-#: rpm.c:503
+#: rpm.c:505
 msgid "build the packages for the build targets platform1...platformN."
 msgstr ""
 
-#: rpm.c:505
+#: rpm.c:507
 msgid "do not execute any stages"
 msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
-#: rpm.c:506
+#: rpm.c:508
 #, fuzzy
 msgid "      --timecheck <secs>  "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:507
+#: rpm.c:509
 #, fuzzy
 msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "zaman kontrolünü S saniyeye ayarlar (0 ile tümüyle kaldýrýr)"
 
-#: rpm.c:509
+#: rpm.c:511
 msgid "    --rebuild <src_pkg>   "
 msgstr ""
 
-#: rpm.c:510
+#: rpm.c:512
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
@@ -963,239 +963,239 @@ msgstr ""
 "kaynak paketini yükler, çalýþýr paketi oluþturur ve spec dosyasý, kaynaklar "
 "ile yamalarý siler"
 
-#: rpm.c:511
+#: rpm.c:513
 #, fuzzy
 msgid "    --rmsource <spec>     "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:512
+#: rpm.c:514
 msgid "remove sources and spec file"
 msgstr "kaynak dosyalarýný ve spec dosyasýný siler"
 
-#: rpm.c:513
+#: rpm.c:515
 msgid "    --recompile <src_pkg> "
 msgstr ""
 
-#: rpm.c:514
+#: rpm.c:516
 msgid "like --rebuild, but don't build any package"
 msgstr "--rebuild gibi, ama paket yaratmaz"
 
-#: rpm.c:515
+#: rpm.c:517
 #, fuzzy
 msgid "    --resign <pkg>+       "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:516
+#: rpm.c:518
 msgid "sign a package (discard current signature)"
 msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
 
-#: rpm.c:517
+#: rpm.c:519
 #, fuzzy
 msgid "    --addsign <pkg>+      "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:518
+#: rpm.c:520
 msgid "add a signature to a package"
 msgstr "pakete bir imza ekler"
 
-#: rpm.c:520
+#: rpm.c:522
 #, fuzzy
 msgid "    --checksig <pkg>+     "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:521
+#: rpm.c:523
 msgid "verify package signature"
 msgstr "paket imzasýný doðrular"
 
-#: rpm.c:523
+#: rpm.c:525
 msgid "skip any PGP signatures"
 msgstr "tüm PGP imzalarýný atlar"
 
-#: rpm.c:525
+#: rpm.c:527
 #, fuzzy
 msgid "skip any GPG signatures"
 msgstr "tüm PGP imzalarýný atlar"
 
-#: rpm.c:527
+#: rpm.c:529
 msgid "skip any MD5 signatures"
 msgstr "tüm MD5 imzalarýný atlar"
 
-#: rpm.c:529
+#: rpm.c:531
 msgid "list the tags that can be used in a query format"
 msgstr "sorgulama sýrasýnda kullanýlabilecek 'Tag'leri sýralar"
 
-#: rpm.c:531
+#: rpm.c:533
 msgid "make sure a valid database exists"
 msgstr "geçerli bir veri tabaný olmasýný saðlar"
 
-#: rpm.c:533
+#: rpm.c:535
 msgid "rebuild database from existing database"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: rpm.c:682 rpm.c:688 rpm.c:695 rpm.c:701 rpm.c:710 rpm.c:717 rpm.c:764
-#: rpm.c:770 rpm.c:804 rpm.c:810 rpm.c:816 rpm.c:824 rpm.c:868 rpm.c:923
-#: rpm.c:930
+#: rpm.c:688 rpm.c:694 rpm.c:701 rpm.c:707 rpm.c:716 rpm.c:723 rpm.c:770
+#: rpm.c:776 rpm.c:810 rpm.c:816 rpm.c:822 rpm.c:830 rpm.c:874 rpm.c:929
+#: rpm.c:936
 msgid "only one major mode may be specified"
 msgstr "sadece bir ana kip (major mode) belirtilebilir"
 
-#: rpm.c:703
+#: rpm.c:709
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
 
-#: rpm.c:705
+#: rpm.c:711
 msgid "Use -e or --erase instead.\n"
 msgstr "Yerine  -e veya --erase komutunu kullanýn\n"
 
-#: rpm.c:721
+#: rpm.c:727
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--build (-b) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
 
-#: rpm.c:725
+#: rpm.c:731
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--tarbuild (-t) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
 
-#: rpm.c:777 rpm.c:783 rpm.c:790 rpm.c:797 rpm.c:937
+#: rpm.c:783 rpm.c:789 rpm.c:796 rpm.c:803 rpm.c:943
 msgid "one type of query/verify may be performed at a time"
 msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
 
-#: rpm.c:834
+#: rpm.c:840
 msgid "arguments to --dbpath must begin with a /"
 msgstr "--dbpath için verilen argümanlar '/' ile baþlamalý"
 
-#: rpm.c:874
+#: rpm.c:880
 msgid "relocations must begin with a /"
 msgstr "relocate iþlemi / ile baþlamalý"
 
-#: rpm.c:876
+#: rpm.c:882
 msgid "relocations must contain a ="
 msgstr "relocate satýrýnda = bulunmalý"
 
-#: rpm.c:879
+#: rpm.c:885
 msgid "relocations must have a / following the ="
 msgstr "relocate için = den sonra bir / gerekir"
 
-#: rpm.c:888
+#: rpm.c:894
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "relocate iþlemi / ile baþlamalý"
 
-#: rpm.c:897
+#: rpm.c:903
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpm.c:948
+#: rpm.c:954
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath veritabaný kullanýlmayan bir iþlemde belirtildi"
 
-#: rpm.c:952
+#: rpm.c:958
 msgid "--timecheck may only be used during package builds"
 msgstr "--timecheck sadece paket oluþturulurken kullanýlabilir"
 
-#: rpm.c:955
+#: rpm.c:961
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "beklenmeyen sorgulama kaynaðý girildi"
 
-#: rpm.c:958
+#: rpm.c:964
 #, fuzzy
 msgid "unexpected query format"
 msgstr "beklenmeyen sorgulama kaynaðý girildi"
 
-#: rpm.c:961
+#: rpm.c:967
 msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynaðý girildi"
 
-#: rpm.c:967
+#: rpm.c:973
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "sadece yükleme ve güncelleme zorlanabilir (force edilebilir)"
 
-#: rpm.c:970
+#: rpm.c:976
 msgid "files may only be relocated during package installation"
 msgstr "dosyalar sadece paket yüklemesi sýrasýnda relocate edilebilir"
 
-#: rpm.c:973
+#: rpm.c:979
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
 
-#: rpm.c:976
+#: rpm.c:982
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate sadece yeni paketler yüklenirken kullanýlýr"
 
-#: rpm.c:979
+#: rpm.c:985
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:982
+#: rpm.c:988
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix komutunun argümanlarý '/' ile baþlamalý"
 
-#: rpm.c:985
+#: rpm.c:991
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:989
+#: rpm.c:995
 msgid "--percent may only be specified during package installation"
 msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:993
+#: rpm.c:999
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:997
+#: rpm.c:1003
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1001
+#: rpm.c:1007
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1005
+#: rpm.c:1011
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1009
+#: rpm.c:1015
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "--excludedocs ve --includedocs bir arada kullanýlamaz (bi daha olmasýn)"
 
-#: rpm.c:1013
+#: rpm.c:1019
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1017
+#: rpm.c:1023
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1021
+#: rpm.c:1027
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1025
+#: rpm.c:1031
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches sadece paket silinmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1029
+#: rpm.c:1035
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
 
-#: rpm.c:1033
+#: rpm.c:1039
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb sadece paket yükleme ve silmelerinde kullanýlýr"
 
-#: rpm.c:1038
+#: rpm.c:1044
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr "--noscripts sadece paket yükleme, silme ve doðrulamalarýnda kullanýlýr"
 
-#: rpm.c:1042
+#: rpm.c:1048
 #, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
@@ -1203,7 +1203,7 @@ msgid ""
 msgstr ""
 "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
 
-#: rpm.c:1046
+#: rpm.c:1052
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1211,13 +1211,13 @@ msgid ""
 msgstr ""
 "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
 
-#: rpm.c:1051
+#: rpm.c:1057
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
 
-#: rpm.c:1055
+#: rpm.c:1061
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1225,126 +1225,126 @@ msgstr ""
 "--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde "
 "kullanýlýr"
 
-#: rpm.c:1067
+#: rpm.c:1073
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) komutun argümanlarý '/' ile baþlamalý"
 
-#: rpm.c:1073
+#: rpm.c:1079
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
 
-#: rpm.c:1078
+#: rpm.c:1084
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
 
-#: rpm.c:1084
+#: rpm.c:1090
 #, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
 
-#: rpm.c:1088
+#: rpm.c:1094
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp sadece Ýmza kontrolü sýrasýnda kullanýlabilir"
 
-#: rpm.c:1091
+#: rpm.c:1097
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nopgp sadece Ýmza kontrolü sýrasýnda kullanýlabilir"
 
-#: rpm.c:1094
+#: rpm.c:1100
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlýr"
 
-#: rpm.c:1122
+#: rpm.c:1128
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1127
+#: rpm.c:1133
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: rpm.c:1142
+#: rpm.c:1148
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpm.c:1146
+#: rpm.c:1152
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1148
+#: rpm.c:1154
 msgid "Pass phrase check failed\n"
 msgstr "Parola kontrolü baþarýsýzlýkla sonuçlandý\n"
 
-#: rpm.c:1151
+#: rpm.c:1157
 msgid "Pass phrase is good.\n"
 msgstr "Parola doðru.\n"
 
-#: rpm.c:1156
+#: rpm.c:1162
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1162
+#: rpm.c:1168
 msgid "--sign may only be used during package building"
 msgstr "--sign sadece paket olusturulurken kullanýlabilir"
 
-#: rpm.c:1177
+#: rpm.c:1183
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Eriþilemedi\n"
 
-#: rpm.c:1196
+#: rpm.c:1202
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags için beklenmeyen argümanlar"
 
-#: rpm.c:1207
+#: rpm.c:1213
 msgid "no packages given for signature check"
 msgstr "imzasý kontrol edilecek paketler belirtilmedi"
 
-#: rpm.c:1218
+#: rpm.c:1224
 msgid "no packages given for signing"
 msgstr "imzalanacak paketler belirtilmedi"
 
-#: rpm.c:1230
+#: rpm.c:1236
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluþturmak için paket dosyalarý belirtilmedi"
 
-#: rpm.c:1293
+#: rpm.c:1299
 msgid "no spec files given for build"
 msgstr "oluþturma için gerekli spec dosyasý belirtilmedi"
 
-#: rpm.c:1295
+#: rpm.c:1301
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirttilmedi"
 
-#: rpm.c:1311
+#: rpm.c:1317
 msgid "no packages given for uninstall"
 msgstr "sistemden silinecek paketler belirtilmedi"
 
-#: rpm.c:1361
+#: rpm.c:1367
 msgid "no packages given for install"
 msgstr "yüklenecek paketler belirtilmedi"
 
-#: rpm.c:1384
+#: rpm.c:1390
 msgid "extra arguments given for query of all packages"
 msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
 
-#: rpm.c:1389
+#: rpm.c:1395
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: rpm.c:1406
+#: rpm.c:1412
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
 
-#: rpm.c:1410
+#: rpm.c:1416
 msgid "no arguments given for verify"
 msgstr "doðrulama için hiç argüman belirtilmedi"
 
@@ -1368,8 +1368,8 @@ msgid "cannot re-open payload: %s\n"
 msgstr "%s dosyasý açýlamýyor: "
 
 #: build/build.c:110 build/pack.c:312
-#, fuzzy
-msgid "Unable to open temp file"
+#, fuzzy, c-format
+msgid "Unable to open temp file %s."
 msgstr "%s okuma eriþimi için açýlamadý:%s."
 
 #: build/build.c:189
@@ -3234,67 +3234,67 @@ msgstr "hata: %s eriþilemiyor\n"
 msgid "Installing %s\n"
 msgstr "%s yükleniyor\n"
 
-#: lib/rpmio.c:774
+#: lib/rpmio.c:778
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:777
+#: lib/rpmio.c:781
 #, fuzzy
 msgid "Bad server response"
 msgstr "FTP sunucusundan kötü yanýt"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:784
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP I/O hatasý"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:787
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP sunucusu zaman aþýmý"
 
-#: lib/rpmio.c:786
+#: lib/rpmio.c:790
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
 
-#: lib/rpmio.c:789
+#: lib/rpmio.c:793
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:796
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "FTP sunucusuna baðlanýlamadý"
 
-#: lib/rpmio.c:795
+#: lib/rpmio.c:799
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
 
-#: lib/rpmio.c:798
+#: lib/rpmio.c:802
 msgid "IO error to local file"
 msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
 
-#: lib/rpmio.c:801
+#: lib/rpmio.c:805
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
 
-#: lib/rpmio.c:804
+#: lib/rpmio.c:808
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: lib/rpmio.c:807
+#: lib/rpmio.c:811
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:811
+#: lib/rpmio.c:815
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP bilinmeyen ya da beklenmeyen hata"
 
-#: lib/rpmio.c:1344
+#: lib/rpmio.c:1348
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

@@ -13,24 +13,29 @@ include:	$RPMRC
 macrofiles:	$MACROS
 E_O_F
 
-RPM="rpm --rcfile $TEMPRC"
+RPM="./rpm --rcfile $TEMPRC"
 
-ARCH="$($RPM --eval '%{_arch}')"
-VENDOR="$($RPM --eval '%{_vendor}')"
-OS="$($RPM --eval '%{_os}')"
-TARGET="$($RPM --eval '%{_target}')"
+ARCH="`$RPM --eval '%{_arch}'`"
+VENDOR="`$RPM --eval '%{_vendor}'`"
+OS="`$RPM --eval '%{_os}'`"
+TARGET_PLATFORM="`$RPM --eval '%{_target_platform}'`"
+TARGET="`$RPM --eval '%{_target}'`"
 
 PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${VENDOR}-${OS}"
 
 [ -d $PPD ] || mkdir $PPD
 
-RPMRC_OPTFLAGS="$($RPM --eval '%{optflags}')"
-RPMRC_OPTFLAGS="$(echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g')"
+RPMRC_OPTFLAGS="`$RPM --eval '%{optflags}'`"
+RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
 
-cat $PLATFORM |
-    sed	-e s,\\\$\{,\%\{_, \
-	-e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," > ${PPD}/macros
 
-ln -sf ${PPD} ${TARGET}
+cat $PLATFORM | \
+  sed -e s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS, -e 's,\${,%{_,' \
+> ${PPD}/macros
+
+#
+# Better try to create these too until the smoke clears. Yuck.
+[ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
+[ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
 
 rm $TEMPRC

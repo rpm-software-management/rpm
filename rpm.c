@@ -142,7 +142,9 @@ static struct poptOption optionsTable[] = {
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,	NULL, NULL},
  { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
- { "nolibio", '\0', 0, &noLibio, 0,		NULL, NULL},
+#if HAVE_LIBIO_H
+ { "nolibio", '\0', POPT_ARG_VAL, &noLibio, 1,		NULL, NULL},
+#endif
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
  { "nopgp", '\0', 0, &noPgp, 0,			NULL, NULL},
@@ -595,7 +597,11 @@ int main(int argc, const char ** argv)
     justdb = 0;
     noDeps = 0;
     noGpg = 0;
+#if HAVE_LIBIO_H
     noLibio = 0;
+#else
+    noLibio = 1;
+#endif
     noMd5 = 0;
     noOrder = 0;
     noPgp = 0;

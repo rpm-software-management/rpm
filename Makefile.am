@@ -78,6 +78,8 @@ install-data-local:
 	esac
 	@case "@build_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/m68kmint ;;\
+	linux*) DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ; \
+	   $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
 	*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
 	esac
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
@@ -85,7 +87,6 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
-	./installplatform ./rpmrc ./macros ./platform
 
 .PHONY: tar
 tar:

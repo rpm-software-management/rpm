@@ -309,7 +309,7 @@ int writeRPM(Header h, const char *fileName, int type,
     
     /* Write the header */
     if (makeTempFile(NULL, &sigtarget, &fd)) {
-	rpmError(RPMERR_CREATE, _("Unable to open temp file"));
+	rpmError(RPMERR_CREATE, _("Unable to open temp file %s."), sigtarget);
 	return RPMERR_CREATE;
     }
 
