@@ -126,10 +126,19 @@ rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
  * @param gi		generalized iterator
  * @returns		next element
  */
-/*@observer@*/
+/*@only@*/
 const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
         /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
+
+/**
+ * Return current iteration header.
+ * @param gi		generalized iterator
+ * @returns		next element
+ */
+/*@null@*/
+Header rpmgiHeader(/*@null@*/ rpmgi gi)
+        /*@*/;
 
 /**
  * Return iterator query format.
