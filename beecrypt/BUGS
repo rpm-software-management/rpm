@@ -6,6 +6,9 @@ Legend:
 	- Intel icc can't cope with gcj headers; there's also a problem in
       combination with aio.h. Solution should be to not test gcj when using
       this compiler. As a workaround, you can specify --without-javaglue.
+	- GCC 3.3 produces faster output for Blowfish than the included assembler
+	  source; try coding two Blowfish rounds (without swap) in C and compile
+	  to assembler to see how GCC accomplishes this.
 
 2.3.0pre:
 	* bug in certain instances of computing modular inverse.

@@ -132,9 +132,6 @@ typedef unsigned __int64	uint64_t;
 
 #endif
 
-#define MP_WBITS	32
-
-typedef float	float4;
-typedef double	double8;
+#define MP_WBITS	32U
 
 #endif

@@ -1,5 +1,30 @@
 /*! \mainpage BeeCrypt API Documentation.
 
+BeeCrypt started its life when the need for a portable and fast cryptography
+library arose at Virtual Unlimited in 1997. I'm still trying to make it
+faster, easier to use and more portable, in addition to providing better
+documentation.
+
+BeeCrypt is released under the following license:
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Legal disclaimer: note that depending on where you are, the use of
+cryptography may be limited or forbidden by law. Before using this library,
+make sure you are legally entitled to do so.
+
 Included in the library are:
     - entropy sources for initializing pseudo-random generators
     - pseudo-random generators
@@ -17,20 +42,19 @@ Included in the library are:
         - HMAC-SHA-1
         - HMAC-SHA-256
     - multi-precision integer library, with assembler-optimized routines
-      for several processors
+      for a range of processors; optimized to perform well on both 32-bit
+      and 64-bit machines
     - probabilistic primality testing, with optimized small prime trial
       division
     - discrete logarithm parameter generation over a prime field
     - Diffie-Hellman key agreement
+    - DHAES encryption scheme
     - DSA signature scheme
     - ElGamal signature scheme (two variants)
     - RSA keypair generation with chinese remainder theorem variables
     - RSA public & private key operations
-    - DHAES encryption scheme
 
 Planned for the near future are:
-    - mp64 library for operation on 64-bit computers (and possibly also
-      on certain 32-bit platforms)
     - compliance with and compliance statements for IEEE P1363
     - more blockciphers (Twofish, ... )
     - more hash functions (RIPEMD-160, SHA-384, SHA-512, HAVAL, Tiger)
@@ -39,30 +63,20 @@ Planned for the near future are:
     - more blockcipher modes (OFB, ... )
 
 The library has been tested on the following platforms:
-    - FreeBSD 4.0 alpha
-    - FreeBSD 4.0, 4.2 x86
-        - includes assembler optimization (tuned for Pentium and higher)
-    - HP-UX 11a PA-RISC
     - Linux glibc 2.x alpha
     - Linux glibc 2.x arm
-        - includes assembler optimization
+    - Linux glibc 2.x ia64
+    - Linux glibc 2.x m68k
     - Linux glibc 2.x ppc
-        - includes assembler optimization for 32-bit PowerPC
-     - Linux glibc 2.x sparc
-        - includes assembler optimization for Sparc v8
+    - Linux glibc 2.x s390x
+    - Linux glibc 2.x sparc
     - Linux glibc 2.x x86
-        - includes assembler optimization (tuned for Pentium and higher)
-    - Solaris 2.[6789] sparc (with Forte or gnu compilers)
-        - includes assembler optimization for Sparc v8, v8plus and v9
-    - Solaris 2.[78] x86 (with Forte or gnu compilers)
-        - includes assembler optimization (tuned for Pentium and higher)
+    - Solaris 2.[6789] sparc (with Forte or GNU compilers)
+    - Solaris 2.[78] x86 (with Forte or GNU compilers)
     - Tru64 Unix alpha
-    - Win32 (Windows 95, 98, NT 4.0, 2000)
-        - includes assembler optimization (tuned for Pentium and higher)
-
-The library is currently in the process of being ported to:
-    - Darwin (apparently Apple has decided to change the PPC assembler format;
-      this will need a fix)
+    - Win32 (Windows 95, 98, NT 4.0, 2000, XP)
+    - AIX (shared libraries don't seem to work in 64-bit mode)
+    - Darwin (javaglue doesn't compile yet)
     - Cygwin (the DLL builds now, but needs to be tested)
 
 The structures in the library are geared towards exchange with Java

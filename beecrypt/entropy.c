@@ -526,7 +526,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 						temp <<= 1;
 						temp |= samples[i];
 						randombits--;
-						if (!(randombits & 0x1f))
+						if (!(randombits & 0x7))
 							*(data++) = temp;
 					}
 				}

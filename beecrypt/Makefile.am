@@ -36,7 +36,7 @@ AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
 LINT = splint
 
-SUBDIRS = . docs gas masm python tests $(MAYBE_OPT)
+SUBDIRS = . docs gas masm tests $(MAYBE_OPT)
 
 SUFFIXES = .s
 

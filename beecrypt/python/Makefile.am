@@ -26,14 +26,14 @@ LDADD =
 pythondir = $(pylibdir)/site-packages
 python_PROGRAMS = _bc.so
 
-_bc_so_SOURCES = _bc-py.c
+_bc_so_SOURCES =
 _bc_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,_bc.so
 
 noinst_LTLIBRARIES = libbc.la
-libbc_la_SOURCES = mpw-py.c rng-py.c
+libbc_la_SOURCES = _bc-py.c mpw-py.c rng-py.c
 
-_bc.so$(EXEEXT): $(_bc_so_OBJECTS) $(libbc_la_OBJECTS)
-	$(CC) -o $@ $(_bc_so_OBJECTS) $(libbc_la_OBJECTS) $(_bc_so_LDFLAGS)
+_bc.so$(EXEEXT): $(libbc_la_OBJECTS)
+	$(CC) -o $@ $(libbc_la_OBJECTS) $(_bc_so_LDFLAGS)
 
 splint_srcs = _bc-py.c $(libbc_la_sources)
 

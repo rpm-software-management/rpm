@@ -38,7 +38,7 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
 	mandir=/usr/man
 	infodir=/usr/info
     fi
-    CPPFLAGS="-Wall -g" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} --enable-static "$@"
+    CPPFLAGS="-Wall -g" ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} --enable-static --with-python "$@"
 else
     ./configure "$@"
 fi

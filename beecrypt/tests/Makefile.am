@@ -73,3 +73,4 @@ bench: benchme benchhf benchbc
 	./benchbc AES 128
 	./benchbc Blowfish 128
 	./benchbc Blowfish 128
+

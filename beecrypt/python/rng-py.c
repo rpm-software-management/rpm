@@ -3,7 +3,7 @@
  */
 
 #define	_REENTRANT	1	/* XXX config.h collides with pyconfig.h */
-#include "system.h"
+#include "config.h"
 
 #include "Python.h"
 #ifdef __LCLINT__
@@ -14,8 +14,6 @@
 #include "rng-py.h"
 
 #include "debug-py.c"
-
-#include "debug.h"
 
 /*@unchecked@*/
 static int _rng_debug = 0;

@@ -395,19 +395,19 @@ void mpand(size_t size, mpw* xdata, const mpw* ydata)
 }
 #endif
 
-#ifndef ASM_MPXOR
-void mpxor(size_t size, mpw* xdata, const mpw* ydata)
-{
-	while (size--)
-		xdata[size] ^= ydata[size];
-}
-#endif
-
 #ifndef ASM_MPOR
 void mpor(size_t size, mpw* xdata, const mpw* ydata)
 {
 	while (size--)
 		xdata[size] |= ydata[size];
+}
+#endif
+
+#ifndef ASM_MPXOR
+void mpxor(size_t size, mpw* xdata, const mpw* ydata)
+{
+	while (size--)
+		xdata[size] ^= ydata[size];
 }
 #endif
 
@@ -1016,7 +1016,6 @@ void mprshift(size_t size, mpw* data, size_t count)
 #endif
 
 #ifndef ASM_MPRSHIFTLSZ
-/* x must be != 0 */
 size_t mprshiftlsz(size_t size, mpw* data)
 {
 	register mpw* slide = data+size-1;

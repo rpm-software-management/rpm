@@ -134,14 +134,13 @@ void mpbset(mpbarrett* b, size_t size, const mpw* data)
 		{
 			mpw* temp = (mpw*) malloc((6*size+4) * sizeof(*temp));
 
+			assert(temp != NULL);
 			b->size = size;
 			b->mu = b->modl+size;
 			mpcopy(size, b->modl, data);
-			/*@-nullpass@*/		/* temp may be NULL */
 			mpbmu_w(b, temp);
 
 			free(temp);
-			/*@=nullpass@*/
 		}
 		else
 		{
@@ -340,6 +339,7 @@ void mpbmod_w(const mpbarrett* b, const mpw* data, mpw* result, mpw* wksp)
 
 	while (mpgex(b->size+1, wksp, b->size, b->modl))
 		(void) mpsubx(b->size+1, wksp, b->size, b->modl);
+
 	mpcopy(b->size, result, wksp+1);
 }
 

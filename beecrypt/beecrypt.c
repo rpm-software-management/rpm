@@ -48,8 +48,8 @@ static entropySource entropySourceList[] =
 {
 #if WIN32
 	{ "wincrypt", entropy_wincrypt },
-	{ "wavein", entropy_wavein },
 	{ "console", entropy_console },
+	{ "wavein", entropy_wavein },
 #else
 # if HAVE_DEV_URANDOM
 	{ "urandom", entropy_dev_urandom },
@@ -394,7 +394,6 @@ int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
 		if (tmp == (byte*) 0)
 			return -1;
 
-		/*@-nullpass -nullderef -nullptrarith @*/ /* FIX: temp may be NULL */
 		if (mpmsbset(n->size, n->data))
 		{
 			tmp[0] = 0;
@@ -407,7 +406,6 @@ int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
 			rc = ctxt->algo->update(ctxt->param, tmp, MP_WORDS_TO_BYTES(n->size));
 		}
 		free(tmp);
-		/*@=nullpass =nullderef =nullptrarith @*/
 
 		return rc;
 	}
@@ -656,8 +654,9 @@ int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnum
 	{
 		register int rc;
 		register byte* temp = (byte*) malloc(MP_WORDS_TO_BYTES(n->size)+1);
+		if (temp == (byte*) 0)
+			return -1;
 
-		/*@-nullpass -nullderef -nullptrarith @*/ /* FIX: temp may be NULL */
 		if (mpmsbset(n->size, n->data))
 		{
 			temp[0] = 0;
@@ -670,7 +669,6 @@ int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnum
 			rc = ctxt->algo->update(ctxt->param, temp, MP_WORDS_TO_BYTES(n->size));
 		}
 		free(temp);
-		/*@=nullpass =nullderef =nullptrarith @*/
 
 		return rc;
 	}

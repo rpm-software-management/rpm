@@ -85,6 +85,9 @@ AC_ARG_WITH(arch,[  --with-arch             optimize for specific architecture (
     i[[3456]]86 | \
     pentium | pentium-mmx | pentiumpro | pentium[[234]] | \
     athlon | athlon-tbird | athlon-4 | athlon-xp | athlon-mp)
+      if test "$ac_with_cpu" != yes; then
+        bc_target_cpu=$withval
+      fi
       ;;
     esac
     ;;
@@ -373,8 +376,8 @@ if test "$ac_enable_threads" = yes; then
   if test "$ac_cv_header_thread_h" = yes -a "$ac_cv_header_synch_h" = yes; then
     AC_SEARCH_LIBS([mutex_lock],[thread],[
       AC_DEFINE([ENABLE_THREADS],1)
-      bc_include_synch_h="#include <sync.h>"
-      bc_typedef_bc_lock_t="typedef pthread_mutex_t bc_lock_t;"
+      bc_include_synch_h="#include <synch.h>"
+      bc_typedef_bc_lock_t="typedef mutex_t bc_lock_t;"
       ])
   elif test "$ac_cv_header_pthread_h" = yes; then
     AC_SEARCH_LIBS([pthread_mutex_lock],[pthread],[
@@ -489,7 +492,7 @@ EOF
           *)
 	    java_include="$java_home"/../include ;;
           esac
-	  if test -d "$java_include" -a -f "$java_include/jni.h"; then
+	  if test -d "$java_include"; then
             ac_cv_java_headers=yes
               ac_cv_java_include="-I$java_include"
               case $target_os in
@@ -718,7 +721,6 @@ AC_CONFIG_FILES([Makefile
                  gas/Makefile
                  java/Makefile
                  masm/Makefile
-                 mwerks/Makefile
                  python/Makefile
                  python/test/Makefile
                  tests/Makefile])

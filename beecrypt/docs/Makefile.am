@@ -21,5 +21,3 @@
 #
 
 AUTOMAKE_OPTIONS = gnu no-dependencies
-
-EXTRA_DIST = index.html installing.html using.html developing.html api.html manual.css
