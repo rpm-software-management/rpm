@@ -388,7 +388,7 @@ exit:
 static void
 printNewSpecfile(Spec spec)
 {
-    Header h = spec->packages->header;
+    Header h;
     speclines sl = spec->sl;
     spectags st = spec->st;
     const char * msgstr = NULL;
@@ -401,11 +401,38 @@ printNewSpecfile(Spec spec)
 	spectag t = st->st_t + i;
 	const char * tn = tagName(t->t_tag);
 	const char * errstr;
-	char fmt[128];
+	char fmt[1024];
 
 	fmt[0] = '\0';
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}\n");
+	if (t->t_msgid == NULL)
+	    h = spec->packages->header;
+	else {
+	    Package pkg;
+	    char *fe;
+
+	    strcpy(fmt, t->t_msgid);
+	    for (fe = fmt; *fe && *fe != '('; fe++)
+		{} ;
+	    if (*fe == '(') *fe = '\0';
+	    h = NULL;
+	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+		const char *pkgname;
+		h = pkg->header;
+		headerNVR(h, &pkgname, NULL, NULL);
+		if (!strcmp(pkgname, fmt))
+		    break;
+	    }
+	    if (pkg == NULL || h == NULL)
+		h = spec->packages->header;
+	}
+
+	if (h == NULL)
+	    continue;
+
+	fmt[0] = '\0';
+	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
 	msgstr = _free(msgstr);
+
 	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
 	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
@@ -427,6 +454,8 @@ printNewSpecfile(Spec spec)
 	    break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
+		if (*sl->sl_lines[t->t_startx + j] == '%')
+		    continue;
 		/*@-unqualifiedtrans@*/
 		sl->sl_lines[t->t_startx + j] =
 			_free(sl->sl_lines[t->t_startx + j]);
@@ -445,9 +474,12 @@ printNewSpecfile(Spec spec)
     msgstr = _free(msgstr);
 
     for (i = 0; i < sl->sl_nlines; i++) {
-	if (sl->sl_lines[i] == NULL)
+	const char * s = sl->sl_lines[i];
+	if (s == NULL)
 	    continue;
-	printf("%s", sl->sl_lines[i]);
+	printf("%s", s);
+	if (strchr(s, '\n') == NULL && s[strlen(s)-1] != '\n')
+	    printf("\n");
     }
 }
 
