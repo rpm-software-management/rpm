@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 2.92
 Version: %{version}
-Release: 12
+Release: 13
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -49,6 +49,11 @@ mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/${RPM_ARCH}
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/noarch
 
 make DESTDIR="$RPM_BUILD_ROOT" install
+
+{ cd $RPM_BUILD_ROOT
+  strip ./bin/rpm
+  strip ./usr/bin/rpm2cpio
+}
 
 %clean
 rm -rf $RPM_BUILD_ROOT

@@ -5,7 +5,7 @@ ACV="Autoconf version 2.13"
 AMV="automake (GNU automake) 1.4"
 USAGE="
 You need to install:
-	libtool-1.2d
+	libtool-1.2f
 	autoconf-2.13
 	automake-1.4
 "

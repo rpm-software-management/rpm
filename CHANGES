@@ -1,4 +1,5 @@
 2.91 -> 2.92
+	- update with libtool-2.4f.
 	- DU 4.0D fiddles (Shing-Gene Yung<shing@cz3.nus.edu.sg>)
 	- change support@redhat.com to rpm-list@redhat.com.
 	- fix: with --target=i686, pass macro %_arch=i386.
