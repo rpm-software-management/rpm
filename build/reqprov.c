@@ -102,7 +102,10 @@ static void parseFileForProv(char *f, struct PackageRec *p)
     s++;
     
     if (strstr(s, ".so.")) {
-	sprintf(command, "objdump --raw %s --section=.dynstr 2> /dev/null | tr '\\0' '\\n' | tail -1", f);
+	sprintf(command,
+		"objdump --raw %s%s --section=.dynstr 2> /dev/null |"
+		"tr '\\0' '\\n' | tail -1",
+		getVar(RPMVAR_ROOT) ? getVar(RPMVAR_ROOT) : "" ,f);
 	pipe = popen(command, "r");
 	soname[0] = '\0';
 	fgets(soname, sizeof(soname)-1, pipe);
