@@ -117,6 +117,8 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
     (size % 64) ? size += (64 - (size % 64)) : 0;
 
     /* find a block via first fit - see Knuth vol 1 for why */
+    /* XXX this could be optimized a bit still */
+
     nextFreeBlock =  fa->firstFree;
     newBlockOffset = 0;
 
@@ -125,7 +127,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) return 0;
 
 	if (!header.isFree) {
-	    fprintf(stderr, "free list corrupt");
+	    fprintf(stderr, "free list corrupt - contact support@redhat.com");
 	    exit(1);
 	}
 
@@ -137,9 +139,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
     }
 
     if (newBlockOffset) {
-	if (lseek(fa->fd, newBlockOffset, SEEK_SET) < 0) return 0;
-	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) 
-	    return 0;
+	/* header should still be good from the search */
 	origHeader = header;
 
 	footerOffset = newBlockOffset + header.size - sizeof(footer);
@@ -150,7 +150,6 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	origFooter = footer;
 
 	/* should we split this block into two? */
-
 	/* XXX implement fragment creation here */
 
 	footer.isFree = header.isFree = 0;
@@ -159,6 +158,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (newBlockOffset == fa->firstFree) {
 	    faHeader.magic = FA_MAGIC;
 	    faHeader.firstFree = header.freeNext;
+	    updateHeader = 1;
 	} else {
 	    if (lseek(fa->fd, header.freePrev, SEEK_SET) < 0) return 0;
 	    if (read(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) !=
@@ -296,13 +296,39 @@ void faFree(faFile fa, unsigned int offset) {
     struct faHeader header;
     struct faFooter footer;
     int footerOffset;
+    int prevFreeOffset, nextFreeOffset;
+    struct faHeader prevFreeHeader, nextFreeHeader;
+    struct faFileHeader faHeader;
 
     /* any errors cause this to die, and thus result in lost space in the
        database. which is at least better then corruption */
 
     offset -= sizeof(header);
 
-    /* for now, just add it to the free list */
+    /* find out where in the (sorted) free list to put this */
+    prevFreeOffset = fa->firstFree;
+
+    while (prevFreeOffset) {
+	if (lseek(fa->fd, prevFreeOffset, SEEK_SET) < 0) return;
+	if (read(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) != 
+		sizeof(prevFreeHeader)) return;
+
+	if (prevFreeHeader.freeNext > offset || !prevFreeHeader.freeNext)
+	    break;
+	else
+	    prevFreeOffset = prevFreeHeader.freeNext;
+    }
+
+    if (prevFreeOffset)
+	nextFreeOffset = prevFreeHeader.freeNext;
+    else
+	nextFreeOffset = fa->firstFree;
+
+    if (nextFreeOffset) {
+	if (lseek(fa->fd, nextFreeOffset, SEEK_SET) < 0) return;
+	if (read(fa->fd, &nextFreeHeader, sizeof(nextFreeHeader)) != 
+		sizeof(nextFreeHeader)) return;
+    }
 
     if (lseek(fa->fd, offset, SEEK_SET) < 0)
 	return;
@@ -313,10 +339,12 @@ void faFree(faFile fa, unsigned int offset) {
 
     if (lseek(fa->fd, footerOffset, SEEK_SET) < 0)
 	return;
-    if (read(fa->fd, &header, sizeof(header)) != sizeof(header))
+    if (read(fa->fd, &footer, sizeof(footer)) != sizeof(footer))
 	return;
 
     header.isFree = 1;
+    header.freeNext = nextFreeOffset;
+    header.freePrev = prevFreeOffset;
     footer.isFree = 1;
 
     lseek(fa->fd, offset, SEEK_SET);
@@ -325,7 +353,26 @@ void faFree(faFile fa, unsigned int offset) {
     lseek(fa->fd, footerOffset, SEEK_SET);
     write(fa->fd, &footer, sizeof(footer));
 
-    return;
+    if (nextFreeOffset) {
+	nextFreeHeader.freePrev = offset;
+	if (lseek(fa->fd, nextFreeOffset, SEEK_SET) < 0) return;
+	if (write(fa->fd, &nextFreeHeader, sizeof(nextFreeHeader)) != 
+		sizeof(nextFreeHeader)) return;
+    }
+
+    if (prevFreeOffset) {
+	prevFreeHeader.freeNext = offset;
+	if (lseek(fa->fd, prevFreeOffset, SEEK_SET) < 0) return;
+	write(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader));
+    } else {
+	fa->firstFree = offset;
+
+	faHeader.magic = FA_MAGIC;
+	faHeader.firstFree = fa->firstFree;
+
+	if (lseek(fa->fd, 0, SEEK_SET) < 0) return;
+	write(fa->fd, &faHeader, sizeof(faHeader));
+    }
 }
 
 void faClose(faFile fa) {
