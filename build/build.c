@@ -39,7 +39,7 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line);
 static char *do_untar(Spec spec, int c);
 static char *do_patch(Spec spec, int c, int strip, char *dashb);
 int isCompressed(char *file);
-void doSweep(Spec s);
+static void doSweep(Spec s);
 
 static char build_subdir[1024];
 
