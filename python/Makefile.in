@@ -198,6 +198,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER = @WITH_PYTHON_VERSION@
 
+SUBDIRS = rpmdb
+
 INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
@@ -224,10 +226,18 @@ mylibs = \
 LDADD = 
 
 pythondir = $(prefix)/lib/python${PYVER}/site-packages
-python_PROGRAMS = rpmmodule.so poptmodule.so
+python_PROGRAMS = rpmmodule.so
+
+rpmdbdir = $(prefix)/lib/python${PYVER}/site-packages/rpmdb
+rpmdb_PROGRAMS = _rpmdb.so
+
+noinst_PROGRAMS = poptmodule.so
 
 rpmmodule_so_SOURCES = 
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+
+_rpmdb_so_SOURCES = _rpmdb.c
+_rpmdb_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,_rpmdb.so
 
 poptmodule_so_SOURCES = poptmodule.c
 poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
@@ -249,9 +259,15 @@ am_librpmmodule_la_OBJECTS = rpmmodule.lo hash.lo upgrade.lo \
 	header-py.lo rpmal-py.lo rpmds-py.lo rpmdb-py.lo rpmfd-py.lo \
 	rpmfi-py.lo rpmmi-py.lo rpmrc-py.lo rpmte-py.lo rpmts-py.lo
 librpmmodule_la_OBJECTS = $(am_librpmmodule_la_OBJECTS)
-python_PROGRAMS = rpmmodule.so$(EXEEXT) poptmodule.so$(EXEEXT)
-PROGRAMS = $(python_PROGRAMS)
+noinst_PROGRAMS = poptmodule.so$(EXEEXT)
+python_PROGRAMS = rpmmodule.so$(EXEEXT)
+rpmdb_PROGRAMS = _rpmdb.so$(EXEEXT)
+PROGRAMS = $(noinst_PROGRAMS) $(python_PROGRAMS) $(rpmdb_PROGRAMS)
 
+am__rpmdb_so_OBJECTS = _rpmdb.$(OBJEXT)
+_rpmdb_so_OBJECTS = $(am__rpmdb_so_OBJECTS)
+_rpmdb_so_LDADD = $(LDADD)
+_rpmdb_so_DEPENDENCIES =
 am_poptmodule_so_OBJECTS = poptmodule.$(OBJEXT)
 poptmodule_so_OBJECTS = $(am_poptmodule_so_OBJECTS)
 poptmodule_so_LDADD = $(LDADD)
@@ -268,13 +284,14 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hash.Plo ./$(DEPDIR)/header-py.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/poptmodule.Po ./$(DEPDIR)/rpmal-py.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/rpmdb-py.Plo ./$(DEPDIR)/rpmds-py.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/rpmfd-py.Plo ./$(DEPDIR)/rpmfi-py.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/rpmmi-py.Plo ./$(DEPDIR)/rpmmodule.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/rpmrc-py.Plo ./$(DEPDIR)/rpmte-py.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/rpmts-py.Plo ./$(DEPDIR)/upgrade.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/_rpmdb.Po ./$(DEPDIR)/hash.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/header-py.Plo ./$(DEPDIR)/poptmodule.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/rpmal-py.Plo ./$(DEPDIR)/rpmdb-py.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/rpmds-py.Plo ./$(DEPDIR)/rpmfd-py.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/rpmfi-py.Plo ./$(DEPDIR)/rpmmi-py.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/rpmmodule.Plo ./$(DEPDIR)/rpmrc-py.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/rpmte-py.Plo ./$(DEPDIR)/rpmts-py.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/upgrade.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -283,14 +300,20 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = $(librpmmodule_la_SOURCES) $(poptmodule_so_SOURCES) \
-	$(rpmmodule_so_SOURCES)
+DIST_SOURCES = $(librpmmodule_la_SOURCES) $(_rpmdb_so_SOURCES) \
+	$(poptmodule_so_SOURCES) $(rpmmodule_so_SOURCES)
 HEADERS = $(noinst_HEADERS)
 
-DIST_COMMON = $(noinst_HEADERS) ChangeLog Makefile.am Makefile.in
-SOURCES = $(librpmmodule_la_SOURCES) $(poptmodule_so_SOURCES) $(rpmmodule_so_SOURCES)
 
-all: all-am
+RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
+	uninstall-info-recursive all-recursive install-data-recursive \
+	install-exec-recursive installdirs-recursive install-recursive \
+	uninstall-recursive check-recursive installcheck-recursive
+DIST_COMMON = $(noinst_HEADERS) ChangeLog Makefile.am Makefile.in
+DIST_SUBDIRS = $(SUBDIRS)
+SOURCES = $(librpmmodule_la_SOURCES) $(_rpmdb_so_SOURCES) $(poptmodule_so_SOURCES) $(rpmmodule_so_SOURCES)
+
+all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -304,6 +327,9 @@ clean-noinstLTLIBRARIES:
 	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
 librpmmodule.la: $(librpmmodule_la_OBJECTS) $(librpmmodule_la_DEPENDENCIES) 
 	$(LINK)  $(librpmmodule_la_LDFLAGS) $(librpmmodule_la_OBJECTS) $(librpmmodule_la_LIBADD) $(LIBS)
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
 pythonPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 install-pythonPROGRAMS: $(python_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -331,6 +357,33 @@ uninstall-pythonPROGRAMS:
 
 clean-pythonPROGRAMS:
 	-test -z "$(python_PROGRAMS)" || rm -f $(python_PROGRAMS)
+rpmdbPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+install-rpmdbPROGRAMS: $(rpmdb_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(rpmdbdir)
+	@list='$(rpmdb_PROGRAMS)'; for p in $$list; do \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	     || test -f $$p1 \
+	  ; then \
+	    p1=`echo "$$p1" | sed -e 's,^.*/,,'`; \
+	    f=`echo $$p1|sed '$(transform);s/$$/$(EXEEXT)/'`; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(rpmdbPROGRAMS_INSTALL) $$p $(DESTDIR)$(rpmdbdir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(rpmdbPROGRAMS_INSTALL) $$p $(DESTDIR)$(rpmdbdir)/$$f; \
+	  else :; fi; \
+	done
+
+uninstall-rpmdbPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(rpmdb_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  f=`echo "$$f" | sed -e 's,^.*/,,'`; \
+	  echo " rm -f $(DESTDIR)$(rpmdbdir)/$$f"; \
+	  rm -f $(DESTDIR)$(rpmdbdir)/$$f; \
+	done
+
+clean-rpmdbPROGRAMS:
+	-test -z "$(rpmdb_PROGRAMS)" || rm -f $(rpmdb_PROGRAMS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -338,6 +391,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_rpmdb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hash.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/header-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/poptmodule.Po@am__quote@
@@ -385,6 +439,61 @@ distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
 
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+
 ETAGS = etags
 ETAGSFLAGS =
 
@@ -399,10 +508,15 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	       END { for (i in files) print i; }'`; \
 	mkid -fID $$unique
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -446,22 +560,35 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    (cd $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$(top_distdir)" \
+	        distdir=../$(distdir)/$$subdir \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
 check-am: all-am
-check: check-am
+check: check-recursive
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS)
+installdirs: installdirs-recursive
+installdirs-am:
+	$(mkinstalldirs) $(DESTDIR)$(pythondir) $(DESTDIR)$(rpmdbdir)
 
-installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(pythondir)
-
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-am
+installcheck: installcheck-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  INSTALL_STRIP_FLAG=-s \
@@ -477,60 +604,75 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
+clean: clean-recursive
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
-	clean-pythonPROGRAMS mostlyclean-am
+	clean-noinstPROGRAMS clean-pythonPROGRAMS clean-rpmdbPROGRAMS \
+	mostlyclean-am
 
-distclean: distclean-am
+distclean: distclean-recursive
 
 distclean-am: clean-am distclean-compile distclean-depend \
 	distclean-generic distclean-libtool distclean-tags
 
-dvi: dvi-am
+dvi: dvi-recursive
 
 dvi-am:
 
-info: info-am
+info: info-recursive
 
 info-am:
 
-install-data-am: install-pythonPROGRAMS
+install-data-am: install-pythonPROGRAMS install-rpmdbPROGRAMS
 
 install-exec-am:
 
-install-info: install-info-am
+install-info: install-info-recursive
 
 install-man:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-am
+maintainer-clean: maintainer-clean-recursive
 
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-am
+mostlyclean: mostlyclean-recursive
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-uninstall-am: uninstall-info-am uninstall-pythonPROGRAMS
+uninstall-am: uninstall-info-am uninstall-pythonPROGRAMS \
+	uninstall-rpmdbPROGRAMS
 
-.PHONY: GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLTLIBRARIES clean-pythonPROGRAMS \
-	distclean distclean-compile distclean-depend distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am info \
-	info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-pythonPROGRAMS install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool tags uninstall \
-	uninstall-am uninstall-info-am uninstall-pythonPROGRAMS
+uninstall-info: uninstall-info-recursive
+
+.PHONY: $(RECURSIVE_TARGETS) GTAGS all all-am check check-am clean \
+	clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	clean-noinstPROGRAMS clean-pythonPROGRAMS clean-recursive \
+	clean-rpmdbPROGRAMS distclean distclean-compile \
+	distclean-depend distclean-generic distclean-libtool \
+	distclean-recursive distclean-tags distdir dvi dvi-am \
+	dvi-recursive info info-am info-recursive install install-am \
+	install-data install-data-am install-data-recursive \
+	install-exec install-exec-am install-exec-recursive \
+	install-info install-info-am install-info-recursive install-man \
+	install-pythonPROGRAMS install-recursive install-rpmdbPROGRAMS \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am installdirs-recursive maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-recursive tags tags-recursive uninstall \
+	uninstall-am uninstall-info-am uninstall-info-recursive \
+	uninstall-pythonPROGRAMS uninstall-recursive \
+	uninstall-rpmdbPROGRAMS
 
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
+
+_rpmdb.so$(EXEEXT): $(_rpmdb_so_OBJECTS)
+	$(CC) -o $@ $(_rpmdb_so_OBJECTS) $(_rpmdb_so_LDFLAGS)
 
 poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
 	$(CC) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)

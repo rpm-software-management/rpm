@@ -4,6 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER= @WITH_PYTHON_VERSION@
 
+SUBDIRS = rpmdb
+
 INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
@@ -27,10 +29,18 @@ mylibs= \
 LDADD =
 
 pythondir = $(prefix)/lib/python${PYVER}/site-packages
-python_PROGRAMS = rpmmodule.so poptmodule.so
+python_PROGRAMS = rpmmodule.so
+
+rpmdbdir = $(prefix)/lib/python${PYVER}/site-packages/rpmdb
+rpmdb_PROGRAMS = _rpmdb.so
+
+noinst_PROGRAMS = poptmodule.so
 
 rpmmodule_so_SOURCES =
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+
+_rpmdb_so_SOURCES = _rpmdb.c
+_rpmdb_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,_rpmdb.so
 
 poptmodule_so_SOURCES = poptmodule.c
 poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
@@ -42,6 +52,9 @@ librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c header-py.c \
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
+
+_rpmdb.so$(EXEEXT): $(_rpmdb_so_OBJECTS)
+	$(CC) -o $@ $(_rpmdb_so_OBJECTS) $(_rpmdb_so_LDFLAGS)
 
 poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
 	$(CC) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
