@@ -206,7 +206,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 DIST_COMMON = README $(noinst_HEADERS) $(pkginclude_HEADERS) AUTHORS \
 	COPYING COPYING.LIB ChangeLog Doxyfile.in INSTALL Makefile.am \
 	Makefile.in NEWS acconfig.h aclocal.m4 beecrypt.spec.in \
-	config.guess config.h.in config.sub configure configure.in \
+	config.guess config.h.in config.sub configure configure.ac \
 	depcomp install-sh ltconfig ltmain.sh missing mkinstalldirs \
 	types.h.in
 DIST_SUBDIRS = $(SUBDIRS)
@@ -217,7 +217,7 @@ all: config.h
 
 .SUFFIXES:
 .SUFFIXES: .S .c .lo .o .obj
-$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
+$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
@@ -225,10 +225,10 @@ Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 
 $(top_builddir)/config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
-$(srcdir)/configure:  $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+$(srcdir)/configure:  $(srcdir)/configure.ac $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
 	cd $(srcdir) && $(AUTOCONF)
 
-$(ACLOCAL_M4):  configure.in 
+$(ACLOCAL_M4):  configure.ac 
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 
 config.h: stamp-h1
@@ -241,7 +241,7 @@ stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
 
-$(srcdir)/config.h.in:  $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/acconfig.h
+$(srcdir)/config.h.in:  $(top_srcdir)/configure.ac $(ACLOCAL_M4) $(top_srcdir)/acconfig.h
 	cd $(top_srcdir) && $(AUTOHEADER)
 	touch $(srcdir)/config.h.in
 
