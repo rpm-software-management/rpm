@@ -1,3 +1,4 @@
+#ifdef	DYING
 #include <alloca.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -6,6 +7,9 @@
 #include <unistd.h>
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
+#else
+#include "system.h"
+#endif
 
 #include "Python.h"
 #include "rpmlib.h"

@@ -1,3 +1,4 @@
+#ifdef	DYING
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,6 +7,9 @@
 
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
+#else
+#include "system.h"
+#endif
 
 #include <rpmlib.h>
 
