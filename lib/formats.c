@@ -162,7 +162,6 @@ static char * depflagsFormat(int_32 type, const void * data,
 static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
 		      int * freeData) {
     char ** list;
-    int i;
 
     if (rpmGetFilesystemList(&list, count)) {
 	return 1;
@@ -182,7 +181,6 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     int_32 * filesizes;
     uint_32 * usages;
     int numFiles;
-    int i;
 
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles);
