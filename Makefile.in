@@ -57,7 +57,7 @@ rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
 everything: make-subdirs $(PROGS)
 
 rpmconvert: lib/librpm.a convertdb.o
-	gcc $(DEBUG) -o rpmconvert convertdb.o lib/librpm.a -ldb -lgdbm 
+	gcc $(DEBUG) $(LDFLAGS) -o rpmconvert convertdb.o lib/librpm.a -ldb -lgdbm 
 	
 make-subdirs:
 	for d in $(SUBDIRS); do \
