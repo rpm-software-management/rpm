@@ -574,7 +574,7 @@ fprintf(stderr, "*** tsi %p ++ %s:%d\n", tsi, fn, ln);
  * @param tsi		transaction element iterator
  * @return		transaction element, NULL on termination
  */
-static /*@dependent@*/ /*@null@*/
+static /*@null@*/ /*@dependent@*/
 rpmte rpmtsiNextElement(rpmtsi tsi)
 	/*@modifies tsi @*/
 {

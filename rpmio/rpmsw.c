@@ -8,8 +8,10 @@
 
 #if defined(__LCLINT__)
 /*@-exportheader@*/
-extern int nanosleep(const struct timespec *req, /*@out@*/ struct timespec *rem)
-	/*@modifies rem @*/;
+extern int nanosleep(const struct timespec *__requested_time,
+		/*@out@*/ /*@null@*/ struct timespec *__remaining)
+	/*@globals errno @*/
+	/*@modifies *__remaining, errno @*/;
 /*@=exportheader@*/
 #endif
 
@@ -153,7 +155,9 @@ static rpmtime_t rpmswCalibrate(void)
     int rc;
     int i;
 
+/*@-uniondef@*/
     (void) rpmswNow(&begin);
+/*@=uniondef@*/
     req.tv_sec = 0;
     req.tv_nsec = 20 * 1000 * 1000;
     for (i = 0; i < 100; i++) {
@@ -166,7 +170,9 @@ static rpmtime_t rpmswCalibrate(void)
 	    break;
 	req = rem;	/* structure assignment */
     }
+/*@-uniondef@*/
     ticks = rpmswDiff(rpmswNow(&end), &begin);
+/*@=uniondef@*/
 
     return ticks;
 }
@@ -199,7 +205,9 @@ rpmtime_t rpmswInit(void)
 
 	/* Start wall clock. */
 	rpmsw_type = 0;
+/*@-uniondef@*/
 	(void) rpmswNow(&begin);
+/*@=uniondef@*/
 
 	/* Get no. of cycles in 20ms nanosleep */
 	rpmsw_type = 1;
@@ -209,7 +217,9 @@ rpmtime_t rpmswInit(void)
 
 	/* Compute wall clock delta in usecs. */
 	rpmsw_type = 0;
+/*@-uniondef@*/
 	usecs = rpmswDiff(rpmswNow(&end), &begin);
+/*@=uniondef@*/
 
 	rpmsw_type = 1;
 
@@ -224,8 +234,10 @@ rpmtime_t rpmswInit(void)
 #endif
 
 	/* Calculate timing overhead in usecs. */
+/*@-uniondef@*/
 	(void) rpmswNow(&begin);
 	usecs = rpmswDiff(rpmswNow(&end), &begin);
+/*@=uniondef@*/
 
 	rpmsw_overhead *= i;
 	rpmsw_overhead += usecs;
@@ -241,7 +253,9 @@ rpmtime_t rpmswInit(void)
 int rpmswEnter(rpmop op)
 {
     op->count++;
+/*@-uniondef@*/
     (void) rpmswNow(&op->begin);
+/*@=uniondef@*/
     return 0;
 }
 
@@ -249,7 +263,9 @@ int rpmswExit(rpmop op, ssize_t rc)
 {
     struct rpmsw_s end;
 
+/*@-uniondef@*/
     op->usecs += rpmswDiff(rpmswNow(&end), &op->begin);
+/*@=uniondef@*/
     if (rc > 0)
 	op->bytes += rc;
     return 0;

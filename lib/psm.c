@@ -58,11 +58,11 @@ int rpmVersionCompare(Header first, Header second)
 			NULL))
 	epochTwo = NULL;
 
-    if (epochOne && !epochTwo)
+    if (epochOne != NULL && epochTwo == NULL)
 	return 1;
-    else if (!epochOne && epochTwo)
+    else if (epochOne == NULL && epochTwo != NULL)
 	return -1;
-    else if (epochOne && epochTwo) {
+    else if (epochOne != NULL && epochTwo != NULL) {
 /*@-boundsread@*/
 	if (*epochOne < *epochTwo)
 	    return -1;
@@ -285,6 +285,11 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 /*@-onlytrans@*/	/* FIX: te reference */
     fi->te = rpmtsElement(ts, 0);
 /*@=onlytrans@*/
+    if (fi->te == NULL) {	/* XXX can't happen */
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+
 /*@-nullpass@*/		/* FIX fi->h may be null */
     fi->te->h = headerLink(fi->h);
 /*@=nullpass@*/
@@ -585,6 +590,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
 
     maxPrefixLength = 0;
+    if (prefixes != NULL)
     for (i = 0; i < numPrefixes; i++) {
 	len = strlen(prefixes[i]);
 	if (len > maxPrefixLength) maxPrefixLength = len;
@@ -597,7 +603,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
 	/*@-branchstate@*/
 	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
-	    if (freePrefixes) free(prefixes);
+	    if (prefixes != NULL && freePrefixes) free(prefixes);
 	    return RPMRC_FAIL;
 	}
 	/*@=branchstate@*/
@@ -694,6 +700,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /*@=modobserver@*/
 	}
 
+	if (prefixes != NULL)
 	for (i = 0; i < numPrefixes; i++) {
 	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
 	    xx = doputenv(prefixBuf);
@@ -725,7 +732,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 			psm->stepName, sln, n, v, r,
 			argv[0], (unsigned)getpid());
 	    unsetenv("MALLOC_CHECK_");
+/*@-nullstate@*/
 	    xx = execv(argv[0], (char *const *)argv);
+/*@=nullstate@*/
 	    break;
 	default:
 	    break;
@@ -944,7 +953,7 @@ static rpmRC runTriggers(rpmpsm psm)
     if (numPackage < 0)
 	return RPMRC_NOTFOUND;
 
-    if (fi->h != NULL)	/* XXX can't happen */
+    if (fi != NULL && fi->h != NULL)	/* XXX can't happen */
     {	Header triggeredH;
 	rpmdbMatchIterator mi;
 	int countCorrection = psm->countCorrection;
@@ -1133,14 +1142,18 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 }
 
 static void * rpmpsmThread(void * arg)
-	/*@modifies psm @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies arg, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmpsm psm = arg;
+/*@-unqualifiedtrans@*/
     return ((void *) rpmpsmStage(psm, psm->nstage));
+/*@=unqualifiedtrans@*/
 }
 
 static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
-	/*@modifies psm @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     psm->nstage = nstage;
     if (_psm_threads)

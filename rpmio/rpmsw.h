@@ -61,9 +61,11 @@ rpmtime_t rpmswDiff(/*@null@*/ rpmsw end, /*@null@*/ rpmsw begin)
 /** Return benchmark time stamp overhead.
  * @return		overhead in micro-seconds
  */
+/*@-exportlocal@*/
 rpmtime_t rpmswInit(void)
 	/*@globals internalState @*/
 	/*@modifes internalState @*/;
+/*@=exportlocal@*/
 
 /** \ingroup rpmio
  * Enter timed operation.

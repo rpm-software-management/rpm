@@ -68,9 +68,11 @@ struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
 /*@dependent@*/ /*@null@*/
     rpmte te;			/*!< current transaction element */
-/*@refcounted@*/
+/*@refcounted@*/ /*@relnull@*/
     rpmfi fi;			/*!< transaction element file info */
+/*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */
+/*@relnull@*/
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage header. */
 /*@null@*/
@@ -136,13 +138,13 @@ rpmpsm XrpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
  * @param msg
  * @return		new package state machine reference
  */
-/*@unused@*/ /*@newref@*/
+/*@unused@*/ /*@newref@*/ /*@null@*/
 rpmpsm rpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg)
 	/*@modifies psm @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@-exportlocal@*/
-/*@newref@*/
+/*@newref@*/ /*@null@*/
 rpmpsm XrpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies psm @*/;
@@ -166,6 +168,7 @@ rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm)
  * @param fi		file info set
  * @return		new package state machine
  */
+/*@null@*/
 rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
 	/*@modifies ts, fi @*/;
 

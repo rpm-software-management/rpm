@@ -28,7 +28,7 @@ const char * macrofiles = MACROFILES;
 
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
-/*@only@*/ /*@relnul@*/ /*@unchecked@*/
+/*@only@*/ /*@relnull@*/ /*@unchecked@*/
 static const char ** platpat = NULL;
 /*@unchecked@*/
 static int nplatpat = 0;

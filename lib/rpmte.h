@@ -59,7 +59,7 @@ struct tsortInfo_s {
 struct rpmte_s {
     rpmElementType type;	/*!< Package disposition (installed/removed). */
 
-/*@refcounted@*/ /*@null@*/
+/*@refcounted@*/ /*@relnull@*/
     Header h;			/*!< Package header. */
 /*@only@*/
     const char * NEVR;		/*!< Package name-version-release. */
@@ -324,6 +324,7 @@ rpmte rpmteParent(rpmte te)
  * @param pte		new parent transaction element
  * @return		previous parent transaction element
  */
+/*@null@*/
 rpmte rpmteSetParent(rpmte te, rpmte pte)
 	/*@modifies te @*/;
 

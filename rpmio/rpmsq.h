@@ -6,18 +6,23 @@
  *
  */
 
-#include <pthread.h>
-#include <signal.h>
-#include <sys/signal.h>
-#include <search.h>		/* XXX insque(3)/remque(3) protos. */
-
 #include <rpmsw.h>
 
+/**
+ */
 typedef struct rpmsig_s * rpmsig;
 
+/**
+ */
 typedef struct rpmsqElem * rpmsq;
 
-typedef void (*rpmsqAction_t) (int signum, siginfo_t *info, void *context)
+/**
+ * Default signal handler prototype.
+ * @param signum	signal number
+ * @param info		(siginfo_t) signal info
+ * @param context	signal context
+ */
+typedef void (*rpmsqAction_t) (int signum, void * info, void * context)
 	/*@*/;
 
 /*@-redecl@*/
@@ -44,8 +49,10 @@ struct rpmsqElem {
     pthread_cond_t cond;
 };
 
+/*@-exportlocal@*/
 /*@unchecked@*/
 extern rpmsq rpmsqQueue;
+/*@=exportlocal@*/
 
 /*@unchecked@*/
 extern sigset_t rpmsqCaught;
@@ -55,21 +62,38 @@ extern sigset_t rpmsqCaught;
 #endif
 
 /**
+ * Insert node into from queue.
+ * @param elem		node to link
+ * @param prev		previous node from queue
+ * @return		0 on success
  */
+/*@-exportlocal@*/
 int rpmsqInsert(/*@null@*/ void * elem, /*@null@*/ void * prev)
-	/*@globals rpmsqQueue @*/
-	/*@modifies elem, rpmsqQueue @*/;
-
-/**
- */
-int rpmsqRemove(/*@null@*/ void * elem)
 	/*@modifies elem @*/;
+/*@=exportlocal@*/
 
 /**
+ * Remove node from queue.
+ * @param elem		node to link
+ * @return		0 on success
  */
-void rpmsqAction(int signum, siginfo_t * info, void * context)
-	/*@globals rpmsqCaught, fileSystem @*/
-	/*@modifies rpmsqCaught, fileSystem @*/;
+/*@-exportlocal@*/
+int rpmsqRemove(/*@null@*/ void * elem)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies elem, fileSystem, internalState @*/;
+/*@=exportlocal@*/
+
+/**
+ * Default signal handler.
+ * @param signum	signal number
+ * @param info		(siginfo_t) signal info
+ * @param context	signal context
+ */
+/*@-exportlocal@*/
+void rpmsqAction(int signum, void * info, void * context)
+	/*@globals rpmsqCaught, errno, fileSystem @*/
+	/*@modifies rpmsqCaught, errno, fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Enable or disable a signal handler.
@@ -106,14 +130,15 @@ pid_t rpmsqWait(rpmsq sq)
  * @return		0 on success
  */
 int rpmsqThread(void * (*start) (void * arg), void * arg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /**
  * Execute a command, returning its status.
  */
 int rpmsqExecve (const char ** argv)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

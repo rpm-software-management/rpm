@@ -85,12 +85,12 @@ rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
  * @param msg
  * @return		new dependency set reference
  */
-/*@unused@*/ /*@newref@*/
+/*@unused@*/ /*@newref@*/ /*@null@*/
 rpmds rpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-/*@newref@*/
+/*@newref@*/ /*@null@*/
 rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies ds @*/;

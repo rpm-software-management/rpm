@@ -244,7 +244,10 @@ static size_t xmlstrlen(const char * s)
     size_t len = 0;
     int c;
 
-    while ((c = *s++) != '\0') {
+/*@-boundsread@*/
+    while ((c = *s++) != '\0')
+/*@=boundsread@*/
+    {
 	switch (c) {
 	case '<': case '>':	len += 4;	/*@switchbreak@*/ break;
 	case '&':		len += 5;	/*@switchbreak@*/ break;
@@ -262,6 +265,7 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
     char * te = t;
     int c;
 
+/*@-bounds@*/
     while ((c = *s++) != '\0') {
 	switch (c) {
 	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
@@ -271,6 +275,7 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 	}
     }
     *te = '\0';
+/*@=bounds@*/
     return t;
 }
 
@@ -283,6 +288,7 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
  * @param element	(unused)
  * @return		formatted string
  */
+/*@-bounds@*/
 static /*@only@*/ char * xmlFormat(int_32 type, const void * data, 
 		char * formatPrefix, int padding,
 		/*@unused@*/ int element)
@@ -294,7 +300,9 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     const char * s = NULL;
     char * t, * te;
     unsigned long anint = 0;
+    int xx;
 
+/*@-branchstate@*/
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
@@ -303,9 +311,15 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	break;
     case RPM_BIN_TYPE:
     {	int cpl = b64encode_chars_per_line;
+/*@-mods@*/
 	b64encode_chars_per_line = 0;
+/*@=mods@*/
+/*@-formatconst@*/
 	s = base64Format(type, data, formatPrefix, padding, element);
+/*@=formatconst@*/
+/*@-mods@*/
 	b64encode_chars_per_line = cpl;
+/*@=mods@*/
 	xtag = "base64";
     }	break;
     case RPM_CHAR_TYPE:
@@ -324,14 +338,17 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	return xstrdup(_("(invalid xml type)"));
 	/*@notreached@*/ break;
     }
+/*@=branchstate@*/
 
+/*@-branchstate@*/
     if (s == NULL) {
 	int tlen = 32;
 	t = memset(alloca(tlen+1), 0, tlen+1);
-	snprintf(t, tlen, "%lu", anint);
+	xx = snprintf(t, tlen, "%lu", anint);
 	s = t;
 	xtag = "integer";
     }
+/*@=branchstate@*/
 
     nb = 2 * strlen(xtag) + sizeof("\t<></>") + xmlstrlen(s);
     te = t = alloca(nb);
@@ -341,19 +358,24 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
 
     /* XXX s was malloc'd */
+/*@-branchstate@*/
     if (!strcmp(xtag, "base64"))
 	s = _free(s);
+/*@=branchstate@*/
 
     nb += padding;
     val = xmalloc(nb+1);
 /*@-boundswrite@*/
     strcat(formatPrefix, "s");
 /*@=boundswrite@*/
-    snprintf(val, nb, formatPrefix, t);
+/*@-formatconst@*/
+    xx = snprintf(val, nb, formatPrefix, t);
+/*@=formatconst@*/
     val[nb] = '\0';
 
     return val;
 }
+/*@=bounds@*/
 
 /**
  * Display signature fingerprint and time.

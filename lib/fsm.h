@@ -93,9 +93,12 @@ typedef enum fileStage_e {
  * Keeps track of the set of all hard links to a file in an archive.
  */
 struct hardLink_s {
-/*@owned@*/ struct hardLink_s * next;
-/*@owned@*/ const char ** nsuffix;
-/*@owned@*/ int * filex;
+/*@owned@*/ /*@relnull@*/
+    struct hardLink_s * next;
+/*@owned@*/
+    const char ** nsuffix;
+/*@owned@*/
+    int * filex;
     struct stat sb;
     int nlink;
     int linksLeft;
@@ -118,23 +121,25 @@ struct fsmIterator_s {
  * File name and stat information.
  */
 struct fsm_s {
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
     const char * path;		/*!< Current file name. */
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
     const char * opath;		/*!< Original file name. */
+/*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */
+/*@relnull@*/
     FD_t rfd;			/*!<  read: File handle. */
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     char * rdbuf;		/*!<  read: Buffer. */
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
     char * rdb;			/*!<  read: Buffer allocated. */
     size_t rdsize;		/*!<  read: Buffer allocated size. */
     size_t rdlen;		/*!<  read: Number of bytes requested.*/
     size_t rdnb;		/*!<  read: Number of bytes returned. */
     FD_t wfd;			/*!< write: File handle. */
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     char * wrbuf;		/*!< write: Buffer. */
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
     char * wrb;			/*!< write: Buffer allocated. */
     size_t wrsize;		/*!< write: Buffer allocated size. */
     size_t wrlen;		/*!< write: Number of bytes requested.*/
@@ -142,23 +147,23 @@ struct fsm_s {
 /*@only@*/ /*@null@*/
     FSMI_t iter;		/*!< File iterator. */
     int ix;			/*!< Current file iterator index. */
-/*@only@*/
+/*@only@*/ /*@relnull@*/
     struct hardLink_s * links;	/*!< Pending hard linked file(s). */
-/*@only@*/
+/*@only@*/ /*@relnull@*/
     struct hardLink_s * li;	/*!< Current hard linked file(s). */
 /*@kept@*/ /*@null@*/
     unsigned int * archiveSize;	/*!< Pointer to archive size. */
 /*@kept@*/ /*@null@*/
     const char ** failedFile;	/*!< First file name that failed. */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
     const char * subdir;	/*!< Current file sub-directory. */
 /*@unused@*/
     char subbuf[64];	/* XXX eliminate */
-/*@observer@*/
+/*@observer@*/ /*@relnull@*/
     const char * osuffix;	/*!< Old, preserved, file suffix. */
-/*@observer@*/
+/*@observer@*/ /*@relnull@*/
     const char * nsuffix;	/*!< New, created, file suffix. */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
     const char * suffix;	/*!< Current file suffix. */
     char sufbuf[64];	/* XXX eliminate */
 /*@only@*/ /*@null@*/
@@ -175,13 +180,13 @@ struct fsm_s {
     int rc;			/*!< External file stage return code. */
     int commit;			/*!< Commit synchronously? */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
     const char * dirName;	/*!< File directory name. */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
     const char * baseName;	/*!< File base name. */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
     const char * fmd5sum;	/*!< Hex MD5 sum (NULL disables). */
-/*@shared@*/
+/*@shared@*/ /*@relnull@*/
     const char * md5sum;	/*!< Binary MD5 sum (NULL disables). */
     
     unsigned fflags;		/*!< File flags. */
@@ -215,14 +220,14 @@ extern "C" {
 
 /**
  * Create file state machine instance.
- * @return		file state machine data
+ * @return		file state machine
  */
 /*@only@*/ FSM_t newFSM(void)
 	/*@*/;
 
 /**
  * Destroy file state machine instance.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  * @return		always NULL
  */
 /*@null@*/ FSM_t freeFSM(/*@only@*/ /*@null@*/ FSM_t fsm)
@@ -231,7 +236,7 @@ extern "C" {
 
 /**
  * Load external data into file state machine.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  * @param goal
  * @param ts		transaction set
  * @param fi		transaction element file info
@@ -252,7 +257,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
 /**
  * Clean file state machine.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  * @return		0 on success
  */
 int fsmTeardown(FSM_t fsm)
@@ -262,7 +267,7 @@ int fsmTeardown(FSM_t fsm)
 /*@-exportlocal@*/
 /**
  * Retrieve transaction set from file state machine iterator.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  * @return		transaction set
  */
 rpmts fsmGetTs(const FSM_t fsm)
@@ -270,7 +275,7 @@ rpmts fsmGetTs(const FSM_t fsm)
 
 /**
  * Retrieve transaction element file info from file state machine iterator.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  * @return		transaction element file info
  */
 rpmfi fsmGetFi(/*@partial@*/ const FSM_t fsm)
@@ -278,32 +283,40 @@ rpmfi fsmGetFi(/*@partial@*/ const FSM_t fsm)
 
 /**
  * Map next file path and action.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  */
 int fsmMapPath(FSM_t fsm)
 	/*@modifies fsm @*/;
 
 /**
  * Map file stat(2) info.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  */
 int fsmMapAttrs(FSM_t fsm)
 	/*@modifies fsm @*/;
 /*@=exportlocal@*/
 
+/**
+ * File state machine driver.
+ * @param fsm		file state machine
+ * @param nstage		next stage
+ * @return		0 on success
+ */
 int fsmNext(FSM_t fsm, fileStage nstage)
-	/*@modifies fsm @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies fsm, errno, fileSystem, internalState @*/;
 
 /**
  * File state machine driver.
- * @param fsm		file state machine data
+ * @param fsm		file state machine
  * @param stage		next stage
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies fsm, errno, fileSystem, internalState @*/;
-#define	fsmUNSAFE	fsmStage
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }

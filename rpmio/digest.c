@@ -35,7 +35,8 @@ struct DIGEST_CTX_s {
 DIGEST_CTX
 rpmDigestDup(DIGEST_CTX octx)
 {
-    DIGEST_CTX nctx = memcpy(xcalloc(1, sizeof(*nctx)), octx, sizeof(*nctx));
+    DIGEST_CTX nctx;
+    nctx = memcpy(xcalloc(1, sizeof(*nctx)), octx, sizeof(*nctx));
     nctx->param = memcpy(xcalloc(1, nctx->paramlen), octx->param, nctx->paramlen);
     return nctx;
 }
@@ -98,6 +99,9 @@ DPRINTF((stderr, "*** Init(%x) ctx %p param %p\n", flags, ctx, ctx->param));
 int
 rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {
+    if (ctx == NULL)
+	return -1;
+
 DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->param, ((char *)data)));
 /*@-boundsread@*/
     return (*ctx->Update) (ctx->param, data, len);
@@ -119,12 +123,15 @@ static union _dendian {
 
 /*@-boundswrite@*/
 int
-rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
-	/*@out@*/ size_t *lenp, int asAscii)
+rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 {
-    uint32 * digest = xmalloc(ctx->digestlen);
+    uint32 * digest;
     char * t;
     int i;
+
+    if (ctx == NULL)
+	return -1;
+    digest = xmalloc(ctx->digestlen);
 
 DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp, asAscii, ctx->param, digest));
     /*@-noeffectuncon@*/ /* FIX: check rc */

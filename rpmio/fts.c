@@ -299,6 +299,9 @@ Fts_close(FTS * sp)
 	register FTSENT *freep, *p;
 	int saved_errno;
 
+	if (sp == NULL)
+		return 0;
+
 	/*
 	 * This still works if we haven't read anything -- the dummy structure
 	 * points to the root list, so we step through to the end of the root
@@ -361,7 +364,7 @@ Fts_read(FTS * sp)
 	int saved_errno;
 
 	/* If finished or unrecoverable error, return NULL. */
-	if (sp->fts_cur == NULL || ISSET(FTS_STOP))
+	if (sp == NULL || sp->fts_cur == NULL || ISSET(FTS_STOP))
 		return (NULL);
 
 	/* Set current node pointer. */

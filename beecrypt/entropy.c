@@ -63,7 +63,7 @@
 	extern int
 nanosleep (const struct timespec *__requested_time,
                       /*@out@*/ /*@null@*/ struct timespec *__remaining)
-	/*@modifies errno @*/;
+	/*@modifies *__remaining, errno @*/;
 
 	extern void
 aio_init (const struct aioinit *__init)

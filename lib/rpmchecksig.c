@@ -27,8 +27,9 @@ static int _print_pkts = 0;
 /**
  */
 /*@-boundsread@*/
-static int manageFile(FD_t *fdp, const char **fnp, int flags,
-		/*@unused@*/ int rc)
+static int manageFile(/*@out@*/ FD_t *fdp,
+		/*@null@*/ /*@out@*/ const char **fnp,
+		int flags, /*@unused@*/ int rc)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies *fdp, *fnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -36,9 +37,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
     const char *fn;
     FD_t fd;
 
-    if (fdp == NULL) {	/* programmer error */
+    if (fdp == NULL)	/* programmer error */
 	return 1;
-    }
 
 /*@-boundswrite@*/
     /* close and reset *fdp to NULL */
@@ -49,7 +49,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
     }
 
     /* open a file and set *fdp */
-    if (*fdp == NULL && fnp && *fnp) {
+    if (*fdp == NULL && fnp != NULL && *fnp != NULL) {
 	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
@@ -67,7 +67,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 	    rpmError(RPMERR_MAKETEMP, _("makeTempFile failed\n"));
 	    return 1;
 	}
-	if (fnp)
+	if (fnp != NULL)
 	    *fnp = fn;
 	*fdp = fdLink(fd, "manageFile return");
 	fd = fdFree(fd, "manageFile return");
@@ -76,9 +76,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 /*@=boundswrite@*/
 
     /* no operation */
-    if (*fdp && fnp && *fnp) {
+    if (*fdp != NULL && fnp != NULL && *fnp != NULL)
 	return 0;
-    }
 
     /* XXX never reached */
     return 1;

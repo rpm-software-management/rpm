@@ -29,6 +29,8 @@ extern int _fps_debug;
 
 /*@unchecked@*/
 extern int _fsm_debug;
+
+/*@unchecked@*/
 extern int _fsm_threads;
 
 /*@unchecked@*/
@@ -36,6 +38,8 @@ extern int _hdr_debug;
 
 /*@unchecked@*/
 extern int _psm_debug;
+
+/*@unchecked@*/
 extern int _psm_threads;
 
 /*@unchecked@*/

@@ -224,6 +224,9 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
     rpmpsm psm = rpmpsmNew(ts, NULL, fi);
     int rc = 0;
 
+    if (psm == NULL)	/* XXX can't happen */
+	return rc;
+
     if (scriptFd != NULL)
 	rpmtsSetScriptFd(psm->ts, scriptFd);
 

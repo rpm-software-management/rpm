@@ -734,6 +734,9 @@ assert(p != NULL);
 	    fn = xrealloc(fn, fileAlloced);
 	}
 	/*@=branchstate@*/
+
+	if (fn == NULL)		/* XXX can't happen */
+	    continue;
 	*fn = '\0';
 	fnlen = stpcpy( stpcpy(fn, dirNames[dirIndexes[i]]), baseNames[i]) - fn;
 
@@ -766,7 +769,9 @@ assert(p != NULL);
 	}
 	if (j < 0) continue;
 
+/*@-nullderef@*/ /* FIX: fModes may be NULL */
 	ft = whatis(fModes[i]);
+/*@=nullderef@*/
 
 	/* On install, a relocate to NULL means skip the path. */
 	if (relocations[j].newPath == NULL) {
@@ -928,7 +933,9 @@ assert(p != NULL);
 
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
     dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
+/*@-dependenttrans@*/
     fn = _free(fn);
+/*@=dependenttrans@*/
 
     return h;
 }

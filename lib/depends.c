@@ -376,7 +376,9 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 		memset(data, 0, sizeof(*data));
 		data->data = datap;
 		data->size = datalen;
+/*@-nullstate@*/ /* FIX: data->data may be NULL */
 		xx = dbiGet(dbi, dbcursor, key, data, DB_SET);
+/*@=nullstate@*/
 		DNEVR = key->data;
 		DNEVRlen = key->size;
 		datap = data->data;

@@ -10,15 +10,18 @@
 /*@-usereleased -onlytrans@*/
 
 struct fsinfo {
-/*@only@*/ const char * mntPoint;	/*!< path to mount point. */
-    dev_t dev;				/*!< devno for mount point. */
-    int rdonly;				/*!< is mount point read only? */
+/*@only@*/ /*@relnull@*/
+    const char * mntPoint;	/*!< path to mount point. */
+    dev_t dev;			/*!< devno for mount point. */
+    int rdonly;			/*!< is mount point read only? */
 };
 
 /*@unchecked@*/
-/*@only@*/ /*@null@*/ static struct fsinfo * filesystems = NULL;
+/*@only@*/ /*@null@*/
+static struct fsinfo * filesystems = NULL;
 /*@unchecked@*/
-/*@only@*/ /*@null@*/ static const char ** fsnames = NULL;
+/*@only@*/ /*@null@*/
+static const char ** fsnames = NULL;
 /*@unchecked@*/
 static int numFilesystems = 0;
 
@@ -236,7 +239,9 @@ static int getFilesystemList(void)
     fsnames[numFilesystems] = NULL;
 /*@=boundswrite@*/
 
+/*@-nullstate@*/ /* FIX: fsnames[] may be NULL */
     return 0; 
+/*@=nullstate@*/
 }
 #endif	/* HAVE_MNTCTL */
 

@@ -864,7 +864,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*
 	 * Skip i18n language specific files.
 	 */
-	if (fi->flangs && languages && *fi->flangs[i]) {
+	if (languages != NULL && fi->flangs != NULL && *fi->flangs[i]) {
 	    const char **lang, *l, *le;
 	    for (lang = languages; *lang != NULL; lang++) {
 		if (!strcmp(*lang, "all"))
@@ -957,11 +957,13 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	}
     }
 
+/*@-dependenttrans@*/
     if (netsharedPaths) freeSplitString(netsharedPaths);
 #ifdef	DYING	/* XXX freeFi will deal with this later. */
     fi->flangs = _free(fi->flangs);
 #endif
     if (languages) freeSplitString((char **)languages);
+/*@=dependenttrans@*/
 }
 /*@=bounds@*/
 /*@=mustmod@*/
@@ -1464,6 +1466,7 @@ ts->ms_repackage += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
 	    continue;	/* XXX can't happen */
 	
 	psm = rpmpsmNew(ts, p, fi);
+assert(psm != NULL);
 	psm->unorderedSuccessor =
 		(rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
 
@@ -1524,7 +1527,9 @@ ts->ms_repackage += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;
+/*@-nullstate@*/ /* FIX: fi->actions is NULL */
 		    fi = rpmfiFree(fi);
+/*@=nullstate@*/
 
 		    savep = rpmtsSetRelocateElement(ts, p);
 		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);

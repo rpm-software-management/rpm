@@ -115,6 +115,7 @@ struct rpmts_s {
 /*@null@*/
     int (*solve) (rpmts ts, rpmds key, const void * data)
 	/*@modifies ts @*/;	/*!< Search for NEVRA key. */
+/*@relnull@*/
     const void * solveData;	/*!< Solve callback data */
     int nsuggests;		/*!< No. of depCheck suggestions. */
 /*@only@*/ /*@null@*/
@@ -722,8 +723,9 @@ int rpmtsNElements(rpmts ts)
  * Return (ordered) transaction set element.
  * @param ts		transaction set
  * @param ix		transaction element index
- * @return		transaction element
+ * @return		transaction element (or NULL)
  */
+/*@null@*/ /*@dependent@*/
 rpmte rpmtsElement(rpmts ts, int ix)
 	/*@*/;
 
@@ -829,8 +831,8 @@ int rpmtsSetNotifyCallback(rpmts ts,
  */
 /*@newref@*/
 rpmts rpmtsCreate(void)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup rpmts
  * Add package to be installed to transaction set.

@@ -356,6 +356,7 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
+/*@-uniondef@*/
 /*@unused@*/ static inline
 void fdstat_enter(/*@null@*/ FD_t fd, int opx)
 	/*@globals internalState @*/
@@ -396,6 +397,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
     fd->stats->begin = end;	/* structure assignment */
 /*@=boundswrite@*/
 }
+/*@=uniondef@*/
 
 /** \ingroup rpmio
  */

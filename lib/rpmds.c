@@ -605,10 +605,13 @@ assert(argv[ac] != NULL);
 	t = stpcpy(t, argv[ac]) + 1;
     }
     av[ac] = NULL;
+/*@-nullret@*/
     return av;
+/*@=nullret@*/
 }
 /*@=bounds@*/
 
+/*@null@*/
 static rpmds rpmdsDup(const rpmds ods)
 	/*@modifies ods @*/
 {
@@ -707,6 +710,8 @@ int save;
     }
 /*@=branchstate@*/
     ds = *dsp;
+    if (ds == NULL)
+	return -1;
 
     /*
      * Add new entries.

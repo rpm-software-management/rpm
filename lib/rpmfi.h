@@ -44,9 +44,9 @@ struct rpmfi_s {
 /*@only@*/ /*?null?*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
-/*@only@*/ /*?null?*/
+/*@only@*/ /*@relnull@*/
     const char ** flinks;	/*!< File link(s) (from header) */
 /*@only@*/ /*@null@*/
     const char ** flangs;	/*!< File lang(s) (from header) */
@@ -102,7 +102,7 @@ struct rpmfi_s {
     int_32 fc;			/*!< No. of files. */
 
 /*=============================*/
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
     rpmte te;
 
     HGE_t hge;			/*!< Vector to headerGetEntry() */
@@ -115,7 +115,7 @@ struct rpmfi_s {
     gid_t gid;			/*!< File gid (default). */
     uint_32 flags;		/*!< File flags (default). */
     fileAction action;		/*!< File disposition (default). */
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
     fileAction * actions;	/*!< File disposition(s). */
 /*@owned@*/
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
@@ -126,7 +126,7 @@ struct rpmfi_s {
 /*@unused@*/
     int_32 * odil;		/*!< Original dirindex(s) (from header) */
 
-/*@only@*/
+/*@only@*/ /*@relnull@*/
     unsigned char * md5s;	/*!< File md5 sums in binary. */
 
 /*@only@*/ /*@null@*/
@@ -197,7 +197,7 @@ rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
  * @param msg
  * @return		new file info set reference
  */
-/*@unused@*/
+/*@unused@*/ /*@null@*/
 rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 
@@ -208,6 +208,7 @@ rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
  * @param ln
  * @return		NULL always
  */
+/*@null@*/
 rpmfi XrpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies fi @*/;

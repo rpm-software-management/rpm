@@ -19,6 +19,8 @@
 -redecl
 -bufferoverflowhigh
 
+-nullpass
+
 # --- +partial artifacts
 -declundef
 -exportheadervar

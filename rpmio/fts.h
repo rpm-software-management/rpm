@@ -185,7 +185,7 @@ FTSENT	*Fts_children (FTS * sp, int instr) __THROW
  * @param sp		file hierarchy state
  * @return		0 on sucess, -1 on error
  */
-int	 Fts_close (/*@only@*/ FTS * sp) __THROW
+int	 Fts_close (/*@only@*/ /*@null@*/ FTS * sp) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
 
@@ -208,7 +208,7 @@ FTS	*Fts_open (char * const * argv, int options,
  * @return		file set member
  */
 /*@null@*/
-FTSENT	*Fts_read (FTS * sp) __THROW
+FTSENT	*Fts_read (/*@null@*/ FTS * sp) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
 

@@ -1,12 +1,31 @@
+/*@-unrecog@*/
 /** \ingroup rpmio
  * \file rpmio/rpmsq.c
  */
 
 #include "system.h"
-                                                                                
+
+#if defined(__LCLINT__)
+struct qelem;
+/*@-exportheader@*/
+extern	void insque(struct qelem * __elem, struct qelem * __prev)
+	/*@modifies  __elem, prev @*/;
+extern	void remque(struct qelem * __elem)
+	/*@modifies  __elem @*/;
+/*@=exportheader@*/
+#endif
+
+#include <signal.h>
+#include <sys/signal.h>
+#include <sys/wait.h>
+#include <search.h>
+
 #if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
 
 #include <pthread.h>
+
+/*@unchecked@*/
+static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #define	DO_LOCK()	pthread_mutex_lock(&rpmsigTbl_lock);
 #define	DO_UNLOCK()	pthread_mutex_unlock(&rpmsigTbl_lock);
@@ -36,14 +55,14 @@
 #define	DO_LOCK()
 #define	DO_UNLOCK()
 #define	INIT_LOCK()
-#define	ADD_REF(__tbl)
-#define	SUB_REF(__tbl)
+#define	ADD_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
+#define	SUB_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
 #define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr)
 #define	CLEANUP_RESET(__execute, __oldtype)
 
 #define	SAME_THREAD(_a, _b)	(42)
 
-#define	ME()	(((void *))getpid())
+#define	ME()	(((void *)getpid()))
 
 #endif	/* HAVE_PTHREAD_H */
 
@@ -57,10 +76,14 @@ int _rpmsq_debug = _RPMSQ_DEBUG;
 
 /*@unchecked@*/
 static struct rpmsqElem rpmsqRock;
+
+/*@-compmempass@*/
 /*@unchecked@*/
 rpmsq rpmsqQueue = &rpmsqRock;
+/*@=compmempass@*/
 
-int rpmsqInsert(void * elem, void * prev)
+/*@-mustmod@*/
+int rpmsqInsert(void * elem, /*@unused@*/ void * prev)
 {
     rpmsq sq = (rpmsq) elem;
     int ret = -1;
@@ -78,17 +101,24 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->reaped = 0;
 	    sq->status = 0;
 	    sq->reaper = 1;
+/*@-bounds@*/
 	    sq->pipes[0] = sq->pipes[1] = -1;
+/*@=bounds@*/
 
+/*@-unqualifiedtrans@*/
 	    sq->id = ME();
+/*@=unqualifiedtrans@*/
 	    ret = pthread_mutex_init(&sq->mutex, NULL);
 	    ret = pthread_cond_init(&sq->cond, NULL);
+#if !defined(__LCLINT__)	/* XXX FIXME */
 	    insque(elem, (prev ? prev : rpmsqQueue));
+#endif
 	    ret = sigrelse(SIGCHLD);
 	}
     }
     return ret;
 }
+/*@=mustmod@*/
 
 int rpmsqRemove(void * elem)
 {
@@ -109,9 +139,11 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 	    ret = pthread_cond_destroy(&sq->cond);
 	    ret = pthread_mutex_destroy(&sq->mutex);
 	    sq->id = NULL;
-	    if (sq->pipes[1])	close(sq->pipes[1]);
-	    if (sq->pipes[0])	close(sq->pipes[0]);
+/*@-bounds@*/
+	    if (sq->pipes[1])	ret = close(sq->pipes[1]);
+	    if (sq->pipes[0])	ret = close(sq->pipes[0]);
 	    sq->pipes[0] = sq->pipes[1] = -1;
+/*@=bounds@*/
 #ifdef	NOTYET	/* rpmpsmWait debugging message needs */
 	    sq->reaper = 1;
 	    sq->status = 0;
@@ -128,13 +160,10 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 sigset_t rpmsqCaught;
 
 /*@unchecked@*/
-static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-
-/*@unchecked@*/
 /*@-fullinitblock@*/
 static struct rpmsig_s {
     int signum;
-    void (*handler) (int signum, siginfo_t * info, void * context);
+    void (*handler) (int signum, void * info, void * context);
     int active;
     struct sigaction oact;
 } rpmsigTbl[] = {
@@ -155,7 +184,10 @@ static struct rpmsig_s {
 /*@=fullinitblock@*/
 
 /*@-incondefs@*/
-void rpmsqAction(int signum, siginfo_t * info, void * context)
+void rpmsqAction(int signum,
+		/*@unused@*/ void * info, /*@unused@*/ void * context)
+	/*@globals rpmsqQueue @*/
+	/*@modifies rpmsqQueue @*/
 {
     int save = errno;
     rpmsig tbl;
@@ -186,7 +218,9 @@ void rpmsqAction(int signum, siginfo_t * info, void * context)
 			/*@innercontinue@*/ continue;
 		    sq->reaped = reaped;
 		    sq->status = status;
+#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
 		    (void) pthread_cond_signal(&sq->cond);
+#endif
 		    /*@innerbreak@*/ break;
 		}
 	    }
@@ -201,6 +235,8 @@ void rpmsqAction(int signum, siginfo_t * info, void * context)
 /*@=incondefs@*/
 
 int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
+	/*@globals rpmsigTbl @*/
+	/*@modifies rpmsigTbl @*/
 {
     int tblsignum = (signum >= 0 ? signum : -signum);
     struct sigaction sa;
@@ -208,8 +244,10 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
     int ret = -1;
 
     DO_LOCK ();
+#if !defined(__LCLINT__)
     if (rpmsqQueue->id == NULL)
 	rpmsqQueue->id = ME();
+#endif
     for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
 	if (tblsignum != tbl->signum)
 	    continue;
@@ -217,13 +255,15 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 	if (signum >= 0) {			/* Enable. */
 	    if (ADD_REF(tbl) <= 0) {
 		(void) sigdelset(&rpmsqCaught, tbl->signum);
-		sigemptyset (&sa.sa_mask);
+		(void) sigemptyset (&sa.sa_mask);
+/*@-compdef -type @*/
 		sa.sa_flags = SA_SIGINFO;
 		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
 		    SUB_REF(tbl);
 		    break;
 		}
+/*@=compdef =type @*/
 		tbl->active = 1;		/* XXX just in case */
 		if (handler != NULL)
 		    tbl->handler = handler;
@@ -265,18 +305,22 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 
     pid = fork();
     if (pid < (pid_t) 0) {		/* fork failed.  */
+/*@-bounds@*/
 	xx = close(sq->pipes[0]);
 	xx = close(sq->pipes[1]);
 	sq->pipes[0] = sq->pipes[1] = -1;
+/*@=bounds@*/
 	goto out;
     } else if (pid == (pid_t) 0) {	/* Child. */
 	int yy;
 
 	/* Block to permit parent to wait. */
+/*@-bounds@*/
 	xx = close(sq->pipes[1]);
 	xx = read(sq->pipes[0], &yy, sizeof(yy));
 	xx = close(sq->pipes[0]);
 	sq->pipes[0] = sq->pipes[1] = -1;
+/*@=bounds@*/
 
 #ifdef _RPMSQ_DEBUG
 /*@-modfilesys@*/
@@ -297,10 +341,12 @@ fprintf(stderr, "    Parent(%p): %p child %d\n", ME(), sq, sq->child);
 #endif
 
 #ifdef	DYING
+/*@-bounds@*/
 	/* Unblock child. */
 	xx = close(sq->pipes[0]);
 	xx = close(sq->pipes[1]);
 	sq->pipes[0] = sq->pipes[1] = -1;
+/*@=bounds@*/
 #endif
 
     }
@@ -317,7 +363,7 @@ out:
  */
 static int rpmsqWaitUnregister(rpmsq sq)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@modifies sq, fileSystem, internalState @*/
 {
     struct rpmsw_s end;
     int same_thread = 0;
@@ -330,11 +376,13 @@ static int rpmsqWaitUnregister(rpmsq sq)
 	ret = pthread_mutex_lock(&sq->mutex);
 
     /* Start the child. */
+/*@-bounds@*/
     if (sq->pipes[0] >= 0)
 	xx = close(sq->pipes[0]);
     if (sq->pipes[1] >= 0)
 	xx = close(sq->pipes[1]);
     sq->pipes[0] = sq->pipes[1] = -1;
+/*@=bounds@*/
 
     (void) rpmswNow(&sq->begin);
 
@@ -347,7 +395,9 @@ static int rpmsqWaitUnregister(rpmsq sq)
     }
     /*@=infloops@*/
 
+/*@-uniondef@*/
     sq->msecs = rpmswDiff(rpmswNow(&end), &sq->begin)/1000;
+/*@=uniondef@*/
     sq->script_msecs += sq->msecs;
 
     if (same_thread)
@@ -432,6 +482,8 @@ fprintf(stderr, "    Thread(%p): %p\n", ME(), pth);
  */
 static void
 sigchld_cancel (void *arg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     pid_t child = *(pid_t *) arg;
     pid_t result;
@@ -453,6 +505,7 @@ sigchld_cancel (void *arg)
 /**
  * Execute a command, returning its status.
  */
+/*@-bounds@*/
 int
 rpmsqExecve (const char ** argv)
 {
@@ -476,8 +529,8 @@ rpmsqExecve (const char ** argv)
     }
     DO_UNLOCK ();
 
-    sigemptyset (&newMask);
-    sigaddset (&newMask, SIGCHLD);
+    (void) sigemptyset (&newMask);
+    (void) sigaddset (&newMask, SIGCHLD);
     if (sigprocmask (SIG_BLOCK, &newMask, &oldMask) < 0) {
 	DO_LOCK ();
 	if (SUB_REF (rpmsigTbl_sigchld) == 0)
@@ -529,3 +582,5 @@ out:
     DO_UNLOCK ();
     return status;
 }
+/*@=bounds@*/
+/*@=unrecog@*/
