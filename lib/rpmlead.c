@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <asm/byteorder.h>
+
 #include "rpmlead.h"
 
 int writeLead(int fd, struct rpmlead *lead)
