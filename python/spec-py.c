@@ -49,12 +49,15 @@ spec_print(specObject * s)
     return 0;
 }
 
+/* XXX TODO return something sensible if spec exists but component (eg %clean)
+ * does not. Possibly "" or None */
+
 static PyObject * 
 spec_get_buildroot(specObject * s) 
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec->buildRootURL) {
+    if (spec != NULL && spec->buildRootURL) {
         return Py_BuildValue("s", spec->buildRootURL);
     }
     else {
@@ -67,14 +70,14 @@ spec_get_prep(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec->prep) {
+    if (spec != NULL && spec->prep) {
         StringBuf sb = newStringBuf();
         sb=spec->prep;
         return Py_BuildValue("s",getStringBuf(sb));
     }
-    else {
-        return NULL;
-    }
+     else {
+         return NULL;
+     }
 }
 
 static PyObject * 
@@ -82,14 +85,14 @@ spec_get_build(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec->build) {
+    if (spec != NULL && spec->build) {
         StringBuf sb = newStringBuf();
         sb=spec->build;
         return Py_BuildValue("s",getStringBuf(sb));
     }
-    else {
-        return NULL;
-    }
+     else {
+         return NULL;
+     }
 }
 
 static PyObject * 
@@ -97,14 +100,14 @@ spec_get_install(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec->install) {
+    if (spec != NULL && spec->install) {
         StringBuf sb = newStringBuf();
         sb=spec->install;
         return Py_BuildValue("s",getStringBuf(sb));
     }
-    else {
-        return NULL;
-    }
+     else {
+         return NULL;
+     }
 }
 
 static PyObject * 
@@ -112,14 +115,14 @@ spec_get_clean(specObject * s)
     /*@*/
 {
     Spec spec = specFromSpec(s);
-    if (spec->clean) {
+    if (spec != NULL && spec->clean) {
         StringBuf sb = newStringBuf();
         sb=spec->clean;
         return Py_BuildValue("s",getStringBuf(sb));
     }
-    else {
-        return NULL;
-    }
+     else {
+         return NULL;
+     }
 }
 
 static PyObject *
@@ -129,18 +132,25 @@ spec_get_sources(specObject *s)
     struct Source * source;
     PyObject *sourceList, *srcUrl;
     Spec spec;
+    char * fullSource;
 
     sourceList = PyList_New(0);
     spec = specFromSpec(s);
-    source = spec->sources;
+    if ( spec != NULL) {
+        source = spec->sources;
 
-     while (source != NULL) {
-        srcUrl = Py_BuildValue("(sii)", source->fullSource, source->num, source->flags);
-        PyList_Append(sourceList, srcUrl);
-        source=source->next;
-    } 
+         while (source != NULL) {
+            fullSource = source->fullSource;
+            srcUrl = Py_BuildValue("(sii)", fullSource, source->num, source->flags);
+            PyList_Append(sourceList, srcUrl);
+            source=source->next;
+        } 
 
-    return PyList_AsTuple(sourceList);
+        return PyList_AsTuple(sourceList);
+    }
+    else {
+        return NULL;
+    }
 
 }
 
