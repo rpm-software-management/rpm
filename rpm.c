@@ -93,7 +93,7 @@ static void printUsage(void) {
     puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afFpP] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
-    puts(_("                        [targets]"));
+    puts(_("                        [--nomd5] [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] package1 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
@@ -102,7 +102,8 @@ static void printUsage(void) {
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"));
-    puts(_("       rpm {--checksig -K} [--nopgp] [--rcfile <file>] package1 ... packageN"));
+    puts(_("       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"));
+    puts(_("                           package1 ... packageN"));
     puts(_("       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"));
     puts(_("       rpm {--querytags}"));
 }
@@ -212,6 +213,8 @@ static void printHelp(void) {
 		  _("use <dir> as the top level directory"));
     printHelpLine("      --nodeps            ",
 		  _("do not verify package dependencies"));
+    printHelpLine("      --nomd5             ",
+		  _("do not verify file md5 checksums"));
     printHelpLine("      --nofiles           ",
 		  _("do not verify file attributes"));
     puts("");
@@ -307,7 +310,9 @@ static void printHelp(void) {
     printHelpLine("    --checksig <pkg>+     ",
 		  _("verify package signature"));
     printHelpLine("      --nopgp             ",
-		  _("skip any PGP signatures (MD5 only)"));
+		  _("skip any PGP signatures"));
+    printHelpLine("      --nomd5             ",
+		  _("skip any MD5 signatures"));
     printHelpLine("    --querytags           ",
 		  _("list the tags that can be used in a query format"));
     printHelpLine("    --initdb              ",
@@ -389,6 +394,8 @@ int main(int argc, char ** argv) {
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
+    int noMd5 = 0;
+    int checksigFlags = 0;
     char *tce;
     int timeCheck = 0;
     int addSign = NEW_SIGNATURE;
@@ -443,6 +450,7 @@ int main(int argc, char ** argv) {
 	    { "list", 'l', 0, 0, 'l' },
 	    { "nodeps", '\0', 0, &noDeps, 0 },
 	    { "nofiles", '\0', 0, &noFiles, 0 },
+	    { "nomd5", '\0', 0, &noMd5, 0 },
 	    { "nopgp", '\0', 0, &noPgp, 0 },
 	    { "noscripts", '\0', 0, &noScripts, 0 },
 	    { "oldpackage", '\0', 0, &oldPackage, 0 },
@@ -959,6 +967,13 @@ int main(int argc, char ** argv) {
     if (oldPackage || (force && (installFlags & RPMINSTALL_UPGRADE)))
 	installFlags |= RPMINSTALL_UPGRADETOOLD;
 
+    if (noPgp && bigMode != MODE_CHECKSIG)
+	argerror(_("--nopgp may only be used during signature checking"));
+
+    if (noMd5 && bigMode != MODE_CHECKSIG && bigMode != MODE_VERIFY)
+	argerror(_("--nopgp may only be used during signature checking and "
+		   "package verification"));
+
     if (ftpProxy) rpmSetVar(RPMVAR_FTPPROXY, ftpProxy);
     if (ftpPort) rpmSetVar(RPMVAR_FTPPORT, ftpPort);
 
@@ -1030,7 +1045,9 @@ int main(int argc, char ** argv) {
       case MODE_CHECKSIG:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signature check"));
-	exit(doCheckSig(1-noPgp, poptGetArgs(optCon)));
+	if (!noPgp) checksigFlags |= CHECKSIG_PGP;
+	if (!noMd5) checksigFlags |= CHECKSIG_MD5;
+	exit(doCheckSig(checksigFlags, poptGetArgs(optCon)));
 
       case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
@@ -1178,6 +1195,7 @@ int main(int argc, char ** argv) {
 	if (!noFiles) verifyFlags |= VERIFY_FILES;
 	if (!noDeps) verifyFlags |= VERIFY_DEPS;
 	if (!noScripts) verifyFlags |= VERIFY_SCRIPT;
+	if (!noMd5) verifyFlags |= VERIFY_MD5;
 
 	if (verifySource == VERIFY_EVERY) {
 	    doVerify(rootdir, VERIFY_EVERY, NULL, verifyFlags);
