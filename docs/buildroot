@@ -1,0 +1,66 @@
+BUILD PREFIX
+============
+
+The build prefix is very similar to Root: (which will be depricated
+soon).  By using Buildprefix: in your spec file you are indicating
+that your package can be built (installed into and packaged from)
+a user-definable directory.  This helps package building by normal
+users.
+
+The Spec File
+-------------
+
+Simply use
+
+  Buildprefix: <dir>
+
+in your spec file.  The acutal buildprefix used by RPM during the
+build will be available to you (and your %prep, %build, and %install
+sections) as the environment variable RPM_BUILDPREFIX.  You must
+make sure that the files for the package are installed into the
+proper buildprefix.  As with Root:, the files listed in the %files
+section should *not* contain the buildprefix.  For example, the
+following hypothetical spec file:
+
+  Name: foo
+  ...
+  Root: /tmp
+  
+  %prep
+  ...
+  
+  %build
+  ...
+  
+  %install
+  install -m755 fooprog /tmp/usr/bin/fooprog
+  
+  %files
+  /usr/bin/fooprog
+
+would be changed to:
+
+  Name: foo
+  ...
+  Buildprefix: /tmp
+  
+  %prep
+  ...
+  
+  %build
+  ...
+  
+  %install
+  install -m755 fooprog $RPM_BUILDPREFIX/usr/bin/fooprog
+  
+  %files
+  /usr/bin/fooprog
+
+Building With a Build Prefix
+----------------------------
+
+RPM will use the buildprefix listed in the spec file as the default
+buildprefix.  There are two ways to override this.  First, you can
+have "buildprefix: <dir>" in your rpmrc.  Second, you can override
+the default, and any entry in an rpmrc by using "--buildprefix <dir>"
+on the RPM command line.
