@@ -527,9 +527,6 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 	AC_DEFINE(NEED_STRINGS_H)
 	AC_DEFINE(NEED_MYREALLOC)
 	LIBOBJS="$LIBOBJS myrealloc.o"
-elif echo "$build_os" | grep hpux > /dev/null; then
-	LIBDL=-ldld
-	echo "hacking things up for hpux"
 fi
 
 #
@@ -545,40 +542,40 @@ build_os_major=`echo "${build_os}" | sed 's/\..*$//'`
 build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 
-rm -f ./find-provides.sh
+rm -f ./find-provides
 if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ; then
 	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ./find-provides.sh
+    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ./find-provides
 elif test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
 	echo "using ${srcdir}/autodeps/${build_os_exact}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides.sh
+    ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides
 elif test -f ${srcdir}/autodeps/${build_os_major}.prov ; then
 	echo "using ${srcdir}/autodeps/${build_os_major}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_os_major}.prov ./find-provides.sh
+    ln -s ${srcdir}/autodeps/${build_os_major}.prov ./find-provides
 elif test -f ${srcdir}/autodeps/${build_os_noversion}.prov ; then
 	echo "using ${srcdir}/autodeps/${build_os_noversion}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_os_noversion}.prov ./find-provides.sh
+    ln -s ${srcdir}/autodeps/${build_os_noversion}.prov ./find-provides
 else
     echo "*** no default provides information is available for ${build_os_noversion}"
-    ln -s ${srcdir}/autodeps/none ./find-provides.sh
+    ln -s ${srcdir}/autodeps/none ./find-provides
 fi
 
-rm -f ./find-requires.sh
+rm -f ./find-requires
 if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ; then
 	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ./find-requires.sh
+    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ./find-requires
 elif test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires.sh
+    ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires
 elif test -f ${srcdir}/autodeps/${build_os_major}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_major}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-requires.sh
+    ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-requires
 elif test -f ${srcdir}/autodeps/${build_os_noversion}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_noversion}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-requires.sh
+    ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-requires
 else
     echo "*** no default requires information is available for ${build_os_noversion}"
-    ln -s ${srcdir}/autodeps/none ./find-requires.sh
+    ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
 if test -n "$LIBOBJS" ; then
@@ -588,22 +585,22 @@ fi
 LOCALEDIR="`echo ${prefix}/share/locale`"
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR")
 AC_SUBST(LOCALEDIR)
-RPMCONFIGDIR="`echo ${prefix}/lib/rpm`"
+RPMCONFIGDIR="`echo ${pkglibdir}`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR")
 AC_SUBST(RPMCONFIGDIR)
-LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
+LIBRPMRC_FILENAME="${pkglibdir}/rpmrc"
 AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME")
 AC_SUBST(LIBRPMRC_FILENAME)
-LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt"
+LIBRPMALIAS_FILENAME="${pkglibdir}/rpmpopt"
 AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME")
 AC_SUBST(LIBRPMALIAS_FILENAME)
-FINDREQUIRES="${RPMCONFIGDIR}/find-requires"
+FINDREQUIRES="${pkglibdir}/find-requires"
 AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES")
 AC_SUBST(FINDREQUIRES)
-FINDPROVIDES="${RPMCONFIGDIR}/find-provides"
+FINDPROVIDES="${pkglibdir}/find-provides"
 AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES")
 AC_SUBST(FINDPROVIDES)
-MACROFILES="${RPMCONFIGDIR}/macros"
+MACROFILES="${pkglibdir}/macros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES")
 AC_SUBST(MACROFILES)
 
@@ -618,7 +615,6 @@ AC_SUBST(varprefix)
 AC_SUBST(tmpdir)
 
 AC_SUBST(LIBS)
-AC_SUBST(LIBDL)
 
 AC_SUBST(RPM)
 AC_SUBST(GZIPBIN)
@@ -632,7 +628,7 @@ AC_SUBST(LDFLAGS_STATIC)
 export LIBS INCPATH
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT([Makefile lib-rpmrc macros lib/Makefile
+AC_OUTPUT([Makefile rpmrc macros lib/Makefile
 	build/Makefile tools/Makefile scripts/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile],

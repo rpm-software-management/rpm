@@ -1,6 +1,7 @@
 .deps
 .depend
 Makefile
+Makefile.in
 rpmlead
 dump
 rpmheader

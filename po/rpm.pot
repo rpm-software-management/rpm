@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-22 10:28-0500\n"
+"POT-Creation-Date: 1999-01-26 12:34-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1934,52 +1934,57 @@ msgstr ""
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:389
+#: ../build/parsePreamble.c:361 ../build/parsePreamble.c:368
+#, c-format
+msgid "line %d: Illegal char '-' in %s: %s"
+msgstr ""
+
+#: ../build/parsePreamble.c:399
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:402
+#: ../build/parsePreamble.c:412
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:414
+#: ../build/parsePreamble.c:424
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:425
+#: ../build/parsePreamble.c:435
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:489
+#: ../build/parsePreamble.c:499
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:499
+#: ../build/parsePreamble.c:509
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:643
+#: ../build/parsePreamble.c:653
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:649
+#: ../build/parsePreamble.c:659
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:676
+#: ../build/parsePreamble.c:686
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:701
+#: ../build/parsePreamble.c:711
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 

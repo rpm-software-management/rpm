@@ -4,8 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/lib @INCPATH@
 
-rpmincdir = $(includedir)/rpm
-rpminc_HEADERS = rpmbuild.h rpmspec.h
+pkgincdir = $(pkgincludedir)
+pkginc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h myftw.h
 
 lib_LTLIBRARIES = librpmbuild.la

@@ -2,12 +2,12 @@
 .depend
 .depend-done
 Makefile
-Makefile.inc
+Makefile.in
 rpm
 rpm.shared
 rpm2cpio
 rpmconvert
-lib-rpmrc
+rpmrc
 macros
 config.h.in
 config.h

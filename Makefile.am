@@ -26,9 +26,10 @@ noinst_PROGRAMS =	rpmconvert
 
 man_MANS = rpm.8 rpm2cpio.8	# rpm.8ru rpm2cpio.8ru
 
-configdir = @RPMCONFIGDIR@
-config_DATA = rpmrc rpmpopt macros
-config_SCRIPTS = find-provides find-requires mkinstalldirs
+pkglibdir = @RPMCONFIGDIR@
+pkglib_DATA = rpmrc rpmpopt macros
+pkglib_SCRIPTS = find-provides find-requires mkinstalldirs \
+	config.guess config.sub
 
 noinst_HEADERS = \
 	acconfig.h	build.h		checksig.h	ftp.h	\
@@ -68,14 +69,6 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
-# FIXME: these should be generated in configure.in
-find-requires: find-requires.sh
-	cp $< $@
-find-provides: find-provides.sh
-	cp $< $@
-rpmrc: lib-rpmrc
-	cp $< $@
-
 # FIXME: these should be checked
 .PHONY:                tar
 tar:
@@ -106,16 +99,6 @@ archive:
 	@echo "This is version $(VERSION)."
 	@sleep 5
 	@cvs -Q tag -F $(CVSTAG) .
-	@rm -rf /tmp/rpm-$(VERSION) /tmp/rpm
-	@cd /tmp; cvs -Q -d $(CVSROOT) export -r$(CVSTAG) rpm || :
-	@mv /tmp/rpm /tmp/rpm-$(VERSION)
-	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
-	@cd /tmp/rpm-$(VERSION); ./autogen.sh
-	@make -C /tmp/rpm-$(VERSION) distclean
-	@cd /tmp/rpm-$(VERSION); ./autogen.sh --noconfigure
-	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
-	@rm -rf /tmp/rpm-$(VERSION)
-	@cp /tmp/rpm-$(VERSION).tar.gz .
-	@rm -f /tmp/rpm-$(VERSION).tar.gz 
+	@make dist
 	@echo " "
 	@echo "The final archive is ./rpm-$(VERSION).tar.gz."

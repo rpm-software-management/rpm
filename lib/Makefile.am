@@ -4,8 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build @INCPATH@
 
-rpmincdir = $(includedir)/rpm
-rpminc_HEADERS = \
+pkgincdir = $(pkgincludedir)
+pkginc_HEADERS = \
 	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
