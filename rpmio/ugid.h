@@ -1,6 +1,10 @@
 #ifndef H_UGID
 #define H_UGID
 
+/** \ingroup rpmio
+ * \file rpmio/ugid.h
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,6 +1,10 @@
 #ifndef H_RPMERR
 #define H_RPMERR
 
+/** \ingroup rpmio
+ * \file rpmio/rpmerr.h
+ */
+
 #define	RPMERR_GDBMOPEN		-2      /* gdbm open failed */
 #define	RPMERR_GDBMREAD		-3	/* gdbm read failed */
 #define	RPMERR_GDBMWRITE	-4	/* gdbm write failed */

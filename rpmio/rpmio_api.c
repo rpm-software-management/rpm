@@ -1,3 +1,7 @@
+/** \ingroup rpmio
+ * \file rpmio/rpmio_api.c
+ */
+
 #include "system.h"
 
 /* XXX rename the static inline version of fdFileno */

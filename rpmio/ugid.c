@@ -1,3 +1,7 @@
+/** \ingroup rpmio
+ * \file rpmio/ugid.c
+ */
+
 #include "system.h"
 
 #include "ugid.h"

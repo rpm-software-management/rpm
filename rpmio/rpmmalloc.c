@@ -1,3 +1,7 @@
+/** \ingroup rpmio
+ * \file rpmio/rpmmalloc.c
+ */
+
 #include "system.h"
 
 #if !defined(EXIT_FAILURE)

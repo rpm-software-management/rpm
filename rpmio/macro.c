@@ -1,5 +1,10 @@
 #include "system.h"
 
+/** \ingroup rpmrc rpmio
+ * \file rpmio/macro.c
+ *
+ */
+
 static int _debug = 0;
 
 #include <assert.h>

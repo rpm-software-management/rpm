@@ -1,6 +1,10 @@
 #ifndef H_RPMMESSAGES
 #define H_RPMMESSAGES
 
+/** \ingroup rpmio
+ * \file rpmio/rpmmessages.h
+ */
+
 #define	RPMMESS_DEBUG      1
 #define	RPMMESS_VERBOSE    2
 #define	RPMMESS_NORMAL     3

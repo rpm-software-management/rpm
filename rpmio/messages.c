@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup rpmio
+ * \file rpmio/messages.c
+ */
+
 #include <stdarg.h>
 
 #include <rpmmessages.h>

@@ -1,3 +1,7 @@
+/** \ingroup rpmio
+ * \file rpmio/rpmrpc.c
+ */
+
 #include "system.h"
 
 #include <rpmio_internal.h>

@@ -1,6 +1,10 @@
 #ifndef _H_MACRO_
 #define	_H_MACRO_
 
+/** \ingroup rpmio
+ * \file rpmio/rpmmacro.h
+ */
+
 /*! The structure used to store a macro. */
 typedef /*@abstract@*/ struct MacroEntry {
 	struct MacroEntry *prev;/*!< Macro entry stack. */

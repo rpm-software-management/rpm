@@ -1,3 +1,7 @@
+/** \ingroup rpmio
+ * \file rpmio/url.c
+ */
+
 #include "system.h"
 
 #ifdef	__LCLINT__
@@ -306,7 +310,7 @@ urltype urlIsURL(const char * url) {
 }
 
 /* Return path portion of url (or pointer to NUL if url == NULL) */
-int urlPath(const char * url, const char ** pathp)
+urltype urlPath(const char * url, const char ** pathp)
 {
     const char *path;
     int urltype;

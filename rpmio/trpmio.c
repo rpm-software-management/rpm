@@ -1,3 +1,7 @@
+/** \ingroup rpmio
+ * \file rpmio/trpmio.c
+ */
+
 #include <stdio.h>
  
 #include "rpmio.h"

@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup rpmio
+ * \file rpmio/rpmerr.c
+ */
+
 #include <stdarg.h>
 
 #include <rpmerr.h>

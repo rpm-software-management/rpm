@@ -1,6 +1,11 @@
 #ifndef	H_RPMIO
 #define	H_RPMIO
 
+/** \ingroup rpmio
+ * \file rpmio/rpmio.h
+ *
+ */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>

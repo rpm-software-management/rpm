@@ -1,6 +1,10 @@
 #ifndef	H_RPMIO_INTERNAL
 #define	H_RPMIO_INTERNAL
 
+/** \ingroup rpmio
+ * \file rpmio/rpmio_internal.h
+ */
+
 static inline int fdFileno(void * cookie);
 
 #include <rpmio.h>

@@ -1,5 +1,9 @@
 #include "system.h"
 
+/** \ingroup rpmio
+ * \file rpmio/rpmio.c
+ */
+
 #include <stdarg.h>
 
 #ifdef	__LCLINT__
