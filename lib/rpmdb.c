@@ -65,6 +65,7 @@ struct _dbiIndex rpmdbi[] = {
 
 struct rpmdb_s {
     FD_t pkgs;
+#ifdef	DYING
     dbiIndex nameIndex;
     dbiIndex fileIndex;
     dbiIndex groupIndex;
@@ -72,6 +73,16 @@ struct rpmdb_s {
     dbiIndex requiredbyIndex;
     dbiIndex conflictsIndex;
     dbiIndex triggerIndex;
+#else
+    dbiIndex _dbi[RPMDBI_MAX];
+#define	nameIndex		_dbi[1]
+#define	fileIndex		_dbi[2]
+#define	groupIndex		_dbi[3]
+#define	providesIndex		_dbi[4]
+#define	requiredbyIndex		_dbi[5]
+#define	conflictsIndex		_dbi[6]
+#define	triggerIndex		_dbi[7]
+#endif
 };
 
 static sigset_t signalMask;
@@ -131,7 +142,8 @@ static int openDbFile(const char * prefix, const char * dbpath, int dbix,
 
 static /*@only@*/ rpmdb newRpmdb(void)
 {
-    rpmdb db = xmalloc(sizeof(*db));
+    rpmdb db = xcalloc(sizeof(*db), 1);
+#ifdef	DYING
     db->pkgs = NULL;
     db->nameIndex = NULL;
     db->fileIndex = NULL;
@@ -140,6 +152,7 @@ static /*@only@*/ rpmdb newRpmdb(void)
     db->requiredbyIndex = NULL;
     db->conflictsIndex = NULL;
     db->triggerIndex = NULL;
+#endif
     return db;
 }
 
@@ -227,6 +240,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	}
     }
 
+#ifdef	DYING
     rc = openDbFile(prefix, dbpath, RPMDBI_NAME, justcheck, mode,
 		    &db->nameIndex);
 
@@ -273,6 +287,49 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     if (!rc)
 	rc = openDbFile(prefix, dbpath, RPMDBI_TRIGGER, justcheck, mode,
 			&db->triggerIndex);
+#else
+    {	int dbix;
+
+	rc = 0;
+	for (dbix = 1; rc == 0 && dbix < RPMDBI_MAX; dbix++) {
+	    rc = openDbFile(prefix, dbpath, dbix, justcheck, mode,
+			&db->_dbi[dbix]);
+	    if (rc)
+		continue;
+
+	    switch (dbix) {
+	    case 1:
+		if (minimal) {
+		    *rpmdbp = xmalloc(sizeof(struct rpmdb_s));
+		    if (rpmdbp)
+			*rpmdbp = db;	/* structure assignment */
+		    else
+			rpmdbClose(db);
+		    return 0;
+		}
+		break;
+	    case 2:
+
+    /* We used to store the fileindexes as complete paths, rather then
+       plain basenames. Let's see which version we are... */
+    /*
+     * XXX FIXME: db->fileindex can be NULL under pathological (e.g. mixed
+     * XXX db1/db2 linkage) conditions.
+     */
+		if (!justcheck && !dbiGetFirstKey(db->fileIndex, &akey)) {
+		    if (strchr(akey, '/')) {
+			rpmError(RPMERR_OLDDB, _("old format database is present; "
+				"use --rebuilddb to generate a new format database"));
+			rc |= 1;
+		    }
+		    xfree(akey);
+		}
+	    default:
+		break;
+	    }
+	}
+    }
+#endif	/* DYING */
 
     if (rc || justcheck || rpmdbp == NULL)
 	rpmdbClose(db);
@@ -297,11 +354,13 @@ static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * rpmdbp,
     return rc;
 }
 
+/* XXX called from python/upgrade.c */
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
 {
     return doRpmdbOpen(prefix, rpmdbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
 }
 
+/* XXX called from python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms)
 {
     return doRpmdbOpen(prefix, rpmdbp, mode, perms, 0);
@@ -315,6 +374,7 @@ int rpmdbInit (const char * prefix, int perms)
 
 void rpmdbClose (rpmdb db)
 {
+#ifdef	DYING
     if (db->pkgs != NULL) Fclose(db->pkgs);
     if (db->fileIndex) dbiCloseIndex(db->fileIndex);
     if (db->groupIndex) dbiCloseIndex(db->groupIndex);
@@ -323,6 +383,17 @@ void rpmdbClose (rpmdb db)
     if (db->requiredbyIndex) dbiCloseIndex(db->requiredbyIndex);
     if (db->conflictsIndex) dbiCloseIndex(db->conflictsIndex);
     if (db->triggerIndex) dbiCloseIndex(db->triggerIndex);
+#else
+    int dbix;
+
+    if (db->pkgs != NULL) Fclose(db->pkgs);
+    for (dbix = 1; dbix < RPMDBI_MAX; dbix++) {
+	if (db->_dbi[dbix] == NULL)
+	    continue;
+    	dbiCloseIndex(db->_dbi[dbix]);
+    	db->_dbi[dbix] = NULL;
+    }
+#endif
     free(db);
 }
 
