@@ -13,8 +13,9 @@ enum querysources { QUERY_PATH, QUERY_PACKAGE, QUERY_ALL, QUERY_SPATH,
 #define QUERY_FOR_DOCS 8
 #define QUERY_FOR_CONFIG 16
 
-void doQuery(char * prefix, enum querysources source, int queryFlags, 
+int doQuery(char * prefix, enum querysources source, int queryFlags, 
 	     char * arg, char * queryFormat);
+void queryPrintTags(void);
 
 /* 0 found matches */
 /* 1 no matches */
