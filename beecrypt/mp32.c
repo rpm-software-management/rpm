@@ -726,11 +726,10 @@ uint32 mp32norm(register uint32 xsize, register uint32* xdata)
 #endif
 
 #ifndef ASM_MP32DIVPOWTWO
+/* need to eliminate this function, as it is not aptly named */
 uint32 mp32divpowtwo(register uint32 xsize, register uint32* xdata)
 {
-	register uint32 shift = mp32lszcnt(xsize, xdata);
-	mp32rshift(xsize, xdata, shift);
-	return shift;
+	return mp32rshiftlsz(xsize, xdata);
 }
 #endif
 
@@ -894,6 +893,63 @@ void mp32rshift(register uint32 xsize, register uint32* xdata, uint32 count)
 }
 #endif
 
+#ifndef ASM_MP32RSHIFTLSZ
+/* x must be != 0 */
+uint32 mp32rshiftlsz(register uint32 xsize, register uint32* xdata)
+{
+	register uint32* slide = xdata+xsize-1;
+	register uint32  zwords = 0; /* counter for 'all zero bit' words */
+	register uint32  lbits, rbits = 0; /* counter for 'least significant zero' bits */
+	register uint32  temp, carry = 0;
+
+	xdata = slide;
+
+	/* count 'all zero' words and move src pointer */
+	while (xsize--)
+	{
+		/* test if we a non-zero word */
+		if ((carry = *(slide--)))
+		{
+			/* count 'least signification zero bits and set zbits counter */
+			while (!(carry & 0x1))
+			{
+				carry >>= 1;
+				rbits++;
+			}
+			break;
+		}
+		zwords++;
+	}
+
+	/* shouldn't happen, but let's test anyway */
+	if (xsize == 0)
+		return 0;
+
+	/* prepare right-shifting of data */
+	lbits = 32-rbits;
+
+	/* shift data */
+	while (xsize--)
+	{
+		temp = *(slide--);
+		*(xdata--) = (temp << lbits) | carry;
+		carry = (temp >> rbits);
+	}
+
+	/* store the final carry */
+	*(xdata--) = carry;
+
+	/* store the return value in temp */
+	temp = (zwords << 5) + rbits;
+
+	/* zero the (zwords) most significant words */
+	while (zwords--)
+		*(xdata--) = 0;
+
+	return temp;
+}
+#endif
+
 /* try an alternate version here, with descending sizes */
 /* also integrate lszcnt and rshift properly into one function */
 #ifndef ASM_MP32GCD_W
@@ -917,33 +973,41 @@ void mp32gcd_w(uint32 size, const uint32* xdata, const uint32* ydata, uint32* re
 		mp32copy(size, result, xdata);
 	}
 		
-	/* start with doing mp32divpowtwo on both workspace and result, and store the returned values */
 	/* get the smallest returned values, and set shift to that */
 
-	if ((temp = mp32lszcnt(size, wksp)))
-		mp32rshift(size, wksp, temp);
+	shift = mp32rshiftlsz(size, wksp);
 
-	shift = temp;
-
-	if ((temp = mp32lszcnt(size, result)))
-		mp32rshift(size, result, temp);
+	temp = mp32rshiftlsz(size, result);
 
 	if (shift > temp)
 		shift = temp;
 
 	while (mp32nz(size, wksp))
 	{
-		if ((temp = mp32lszcnt(size, wksp)))
-			mp32rshift(size, wksp, temp);
-
-		if ((temp = mp32lszcnt(size, result)))
-			mp32rshift(size, result, temp);
+		mp32rshiftlsz(size, wksp);
+		mp32rshiftlsz(size, result);
 
 		if (mp32ge(size, wksp, result))
 			(void) mp32sub(size, wksp, result);
 		else
 			(void) mp32sub(size, result, wksp);
+
+		/* slide past zero words in both operands by increasing pointers and decreasing size */
+		if ((*wksp == 0) && (*result == 0))
+		{
+			size--;
+			wksp++;
+			result++;
+		}
 	}
+
+	/* figure out if we need to slide the result pointer back */
+	if ((temp = shift >> 5))
+	{
+		size += temp;
+		result -= temp;
+	}
+
 	mp32lshift(size, result, shift);
 }
 #endif

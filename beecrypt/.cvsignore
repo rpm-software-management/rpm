@@ -6,6 +6,7 @@ Doxyfile
 Makefile
 Makefile.in
 apidocs
+autom4te-*.cache
 beecrypt.spec
 beecrypt-*.tar.gz
 config.h

@@ -22,4 +22,4 @@
 
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
-EXTRA_DIST = beecrypt.pch blowfishopt.i586.asm fips180opt.i586.asm mp32opt.i386.asm
+EXTRA_DIST = beecrypt.pch blowfishopt.i586.asm mp32opt.i386.asm sha1opt.i586.asm

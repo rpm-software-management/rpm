@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -29,15 +29,14 @@
 #define _HMACSHA1_H
 
 #include "hmac.h"
-#include "fips180.h"
+#include "sha1.h"
 
 /** \ingroup HMAC_sha1_m
  */
 typedef struct
 {
-/*@unused@*/	byte kxi[64];
-/*@unused@*/	byte kxo[64];
-	sha1Param param;
+	hmacParam hparam;
+	sha1Param sparam;
 } hmacsha1Param;
 
 #ifdef __cplusplus

@@ -5,8 +5,9 @@ I would like to thank the following contributors to BeeCrypt:
 - SourceForge, for their excellent open source development platform, including their compile farm.
 - Luca Filipozzi, for packaging BeeCrypt for the Debian GNU/Linux distribution.
 
+Active developers on SourceForge:
+- Jan-Rudolph Bührmann
+
 And last but not least:
-
 - Jon Sturgeon, bug hunter extraordinaire.
-
-
+- Jeff Johnson, author of the RedHat Package Manager.

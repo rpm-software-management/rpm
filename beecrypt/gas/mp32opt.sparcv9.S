@@ -25,13 +25,14 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 	.file "mp32opt.sparcv9.S"
 
 	.text
 
 C_FUNCTION_BEGIN(mp32addw)
+LABEL(mp32addw)
 
 	.register %g2,#scratch
 
@@ -41,22 +42,22 @@ C_FUNCTION_BEGIN(mp32addw)
 	lduw [%o1+%g1],%g2
 	addcc %g2,%o2,%g2
 	stw %g2,[%o1+%g1]
-	brz,pn %g1,.Lmp32addw_skip
+	brz,pn %g1,LOCAL(mp32addw_skip)
 	dec 4,%g1
-.Lmp32addw_loop:
+LOCAL(mp32addw_loop):
 	lduw [%o1+%g1],%g2
 	addccc %g2,%g0,%g2
 	stw %g2,[%o1+%g1]
-	brnz,pt %g1,.Lmp32addw_loop
+	brnz,pt %g1,LOCAL(mp32addw_loop)
 	dec 4,%g1
-.Lmp32addw_skip:
+LOCAL(mp32addw_skip):
 	retl
 	movcs %icc,1,%o0
-.Lend_addw:
-C_FUNCTION_END(mp32addw, .Lmp32addw_size)
+C_FUNCTION_END(mp32addw, LOCAL(mp32addw_size))
 
 
 C_FUNCTION_BEGIN(mp32subw)
+LABEL(mp32subw)
 
 	.register %g2,#scratch
 
@@ -66,21 +67,22 @@ C_FUNCTION_BEGIN(mp32subw)
 	lduw [%o1+%g1],%g2
 	subcc %g2,%o2,%g2
 	stw %g2,[%o1+%g1]
-	brz,pn %g1,.Lmp32subw_skip
+	brz,pn %g1,LOCAL(mp32subw_skip)
 	dec 4,%g1
-.Lmp32subw_loop:
+LOCAL(mp32subw_loop):
 	lduw [%o1+%g1],%g2
 	subccc %g2,%g0,%g2
 	stw %g2,[%o1+%g1]
-	brnz,pt %g1,.Lmp32subw_loop
+	brnz,pt %g1,LOCAL(mp32subw_loop)
 	dec 4,%g1
-.Lmp32subw_skip:
+LOCAL(mp32subw_skip):
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mp32subw, .Lmp32subw_size)
+C_FUNCTION_END(mp32subw, LOCAL(mp32subw_size))
 
 
 C_FUNCTION_BEGIN(mp32add)
+LABEL(mp32add)
 
 	.register %g2,#scratch
 	.register %g3,#scratch
@@ -88,19 +90,20 @@ C_FUNCTION_BEGIN(mp32add)
 	sll %o0,2,%g1
 	dec 4,%g1
 	addcc %g0,%g0,%o0
-.Lmp32add_loop:
+LOCAL(mp32add_loop):
 	lduw [%o1+%g1],%g2
 	lduw [%o2+%g1],%g3
 	addccc %g2,%g3,%g4
 	stw %g4,[%o1+%g1]
-	brnz,pt %g1,.Lmp32add_loop
+	brnz,pt %g1,LOCAL(mp32add_loop)
 	dec 4,%g1
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mp32add, .Lmp32add_size)
+C_FUNCTION_END(mp32add, LOCAL(mp32add_size))
 
 
 C_FUNCTION_BEGIN(mp32sub)
+LABEL(mp32sub)
 
 	.register %g2,#scratch
 	.register %g3,#scratch
@@ -108,19 +111,20 @@ C_FUNCTION_BEGIN(mp32sub)
 	sll %o0,2,%g1
 	dec 4,%g1
 	addcc %g0,%g0,%o0
-.Lmp32sub_loop:
+LOCAL(mp32sub_loop):
 	lduw [%o1+%g1],%g2
 	lduw [%o2+%g1],%g3
 	subccc %g2,%g3,%g4
 	stw %g4,[%o1+%g1]
-	brnz,pt %g1,.Lmp32sub_loop
+	brnz,pt %g1,LOCAL(mp32sub_loop)
 	dec 4,%g1
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mp32sub, .Lmp32sub_size)
+C_FUNCTION_END(mp32sub, LOCAL(mp32sub_size))
 
 
 C_FUNCTION_BEGIN(mp32multwo)
+LABEL(mp32multwo)
 
 	.register %g2,#scratch
 	.register %g3,#scratch
@@ -128,18 +132,19 @@ C_FUNCTION_BEGIN(mp32multwo)
 	sll %o0,2,%g1
 	dec 4,%g1
 	addcc %g0,%g0,%o0
-.Lmp32multwo_loop:
+LOCAL(mp32multwo_loop):
 	lduw [%o1+%g1],%g2
 	addccc %g2,%g2,%g3
 	stw %g3,[%o1+%g1]
-	brnz,pt %g1,.Lmp32multwo_loop
+	brnz,pt %g1,LOCAL(mp32multwo_loop)
 	dec 4,%g1
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mp32multwo, .Lmp32multwo_size)
+C_FUNCTION_END(mp32multwo, LOCAL(mp32multwo_size))
 
 
 C_FUNCTION_BEGIN(mp32setmul)
+LABEL(mp32setmul)
 
 	.register %g2,#scratch
 	.register %g3,#scratch
@@ -147,20 +152,21 @@ C_FUNCTION_BEGIN(mp32setmul)
 	sll %o0,2,%g1
 	dec 4,%g1
 	clr %o0
-.Lmp32setmul_loop:
+LOCAL(mp32setmul_loop):
 	lduw [%o2+%g1],%g2
 	srlx %o0,32,%o0
 	mulx %o3,%g2,%g3
 	add %o0,%g3,%o0
 	stw %o0,[%o1+%g1]
-	brnz,pt %g1,.Lmp32setmul_loop
+	brnz,pt %g1,LOCAL(mp32setmul_loop)
 	dec 4,%g1
 	retl
 	srlx %o0,32,%o0
-C_FUNCTION_END(mp32setmul, .Lmp32setmul_size)
+C_FUNCTION_END(mp32setmul, LOCAL(mp32setmul_size))
 
 
 C_FUNCTION_BEGIN(mp32addmul)
+LABEL(mp32addmul)
 
 	.register %g2,#scratch
 	.register %g3,#scratch
@@ -168,7 +174,7 @@ C_FUNCTION_BEGIN(mp32addmul)
 	sll %o0,2,%g1
 	dec 4,%g1
 	clr %o0
-.Lmp32addmul_loop:
+LOCAL(mp32addmul_loop):
 	lduw [%o2+%g1],%g2
 	lduw [%o1+%g1],%g4
 	srlx %o0,32,%o0
@@ -176,14 +182,15 @@ C_FUNCTION_BEGIN(mp32addmul)
 	add %o0,%g3,%o0
 	add %o0,%g4,%o0
 	stw %o0,[%o1+%g1]
-	brnz,pt %g1,.Lmp32addmul_loop
+	brnz,pt %g1,LOCAL(mp32addmul_loop)
 	dec 4,%g1
 	retl
 	srlx %o0,32,%o0
-C_FUNCTION_END(mp32addmul, .Lmp32addmul_size)
+C_FUNCTION_END(mp32addmul, LOCAL(mp32addmul_size))
 
 
 C_FUNCTION_BEGIN(mp32addsqrtrc)
+LABEL(mp32addsqrtrc)
 
 	.register %g2,#scratch
 	.register %g3,#scratch
@@ -193,7 +200,7 @@ C_FUNCTION_BEGIN(mp32addsqrtrc)
 	add %o1,%g1,%o1
 	add %o1,%g1,%o1
 	clr %o0
-.Lmp32addsqrtrc_loop:
+LOCAL(mp32addsqrtrc_loop):
 	/* load from o1 into g4 as xuint; simulate xuint carry by doing an xuint comparison; carry if result smaller than initial value */
 	lduw [%o2+%g1],%g2
 	ldx [%o1],%g4
@@ -205,8 +212,8 @@ C_FUNCTION_BEGIN(mp32addsqrtrc)
 	movgu %xcc,1,%o0
 	stx %g3,[%o1]
 	sub %o1,8,%o1
-	brnz,pt %g1,.Lmp32addsqrtrc_loop
+	brnz,pt %g1,LOCAL(mp32addsqrtrc_loop)
 	dec 4,%g1
 	retl
 	nop
-C_FUNCTION_END(mp32addsqrtrc, .Lmp32addsqrtrc_size)
+C_FUNCTION_END(mp32addsqrtrc, LOCAL(mp32addsqrtrc_size))

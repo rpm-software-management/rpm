@@ -187,6 +187,12 @@ int encodeIntsPartial(const javaint* i, /*@out@*/ byte* data, int bytecount)
 /**
  */
 BEECRYPTAPI /*@unused@*/
+int encodeIntsPartialPad(const javaint* i, byte* data, int bytecount, byte padvalue)
+	/*@modifies data */;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
 int encodeChars(const javachar* c, /*@out@*/ byte* data, int count)
 	/*@modifies data */;
 

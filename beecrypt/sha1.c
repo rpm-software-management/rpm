@@ -1,5 +1,5 @@
 /** \ingroup HASH_sha1_m HASH_m
- * \file fips180.c
+ * \file sha1.c
  *
  * SHA-1 hash function, code.
  *
@@ -29,7 +29,7 @@
  */
  
 #include "system.h"
-#include "fips180.h"
+#include "sha1.h"
 #include "mp32.h"
 #include "endianness.h"
 #include "debug.h"

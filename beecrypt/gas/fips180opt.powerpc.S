@@ -27,7 +27,7 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 	.file "fips180opt.powerpc.S"
 

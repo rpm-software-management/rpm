@@ -35,7 +35,7 @@
 #  include <windows.h>
 #  include <winbase.h>
 # else
-#  if HAVE_SYNCH_H
+#  if HAVE_THREAD_H && HAVE_SYNCH_H
 #   include <synch.h>
 #  elif HAVE_PTHREAD_H
 #   include <pthread.h>
@@ -46,7 +46,7 @@
 #endif
 
 #include "beecrypt.h"
-#include "fips180.h"
+#include "sha1.h"
 
 #define FIPS186_STATE_SIZE	16
 
@@ -58,7 +58,7 @@ typedef struct
 	# if WIN32
 	HANDLE			lock;
 	# else
-	#  if HAVE_SYNCH_H
+	#  if HAVE_THREAD_H && HAVE_SYNCH_H
 	mutex_t			lock;
 	#  elif HAVE_PTHREAD_H
 	pthread_mutex_t	lock;

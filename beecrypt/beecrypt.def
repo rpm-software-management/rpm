@@ -3,7 +3,7 @@
 ;
 ; BeeCrypt DLL exports
 ;
-; Copyright (c) 2000, 2001 Virtual Unlimited B.V.
+; Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
 ;
 ; Author: Bob Deblier <bob@virtualunlimited.com>
 ;
@@ -26,6 +26,14 @@ LIBRARY beecrypt
 
 EXPORTS
  DllMain
+ aes data
+ aesCBCDecrypt
+ aesCBCEncrypt
+ aesDecrypt
+ aesECBDecrypt
+ aesECBEncrypt
+ aesEncrypt
+ aesSetup
  b64enc
  b64dec
  blockCipherContextFree
@@ -39,11 +47,11 @@ EXPORTS
  blockEncrypt
  blockDecrypt
  blowfish data
- blowfishCBCEncrypt
  blowfishCBCDecrypt
+ blowfishCBCEncrypt
  blowfishDecrypt
- blowfishECBEncrypt
  blowfishECBDecrypt
+ blowfishECBEncrypt
  blowfishEncrypt
  blowfishSetup
  decodeByte
@@ -88,6 +96,8 @@ EXPORTS
  dlpk_pgoqValidate
  dlpk_pgonValidate
  dlsvdp_pDHSecret
+ dsasign
+ dsavrfy
  elgv1sign
  elgv1vrfy 
  elgv3sign
@@ -282,6 +292,7 @@ EXPORTS
  randomGeneratorDefault
  randomGeneratorContextInit
  randomGeneratorContextFree
+ randomGeneratorContextNext
  rsapri
  rsapricrt
  rsavrfy

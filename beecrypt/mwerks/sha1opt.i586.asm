@@ -1,5 +1,5 @@
 #
-# fips180opt.i586.asm
+# sha1opt.i586.asm
 #
 # Assembler optimized SHA-1 routines for Intel Pentium processors
 #

@@ -1,7 +1,7 @@
 #
 # Makefile.am's purpose is to add the GNU Assembler sources to the dist
 #
-# Copyright (c) 2001 Virtual Unlimited B.V.
+# Copyright (c) 2001, 2002 Virtual Unlimited B.V.
 #
 # Author: Bob Deblier <bob@virtualunlimited.com>
 #
@@ -22,4 +22,4 @@
 
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
-SOURCES = blowfishopt.i586.S fips180opt.i586.S mp32opt.arm.S mp32opt.i386.S mp32opt.ia64.S mp32opt.powerpc.S mp32opt.sparcv8.S mp32opt.sparcv9.S mp64opt.ia64.S
+EXTRA_DIST = aesopt.i586.S aesopt.powerpc.S blowfishopt.i586.S blowfishopt.powerpc.S sha1opt.i586.S mp32opt.arm.S mp32opt.i386.S mp32opt.ia64.S mp32opt.powerpc.S mp32opt.sparcv8.S mp32opt.sparcv9.S mp64opt.ia64.S

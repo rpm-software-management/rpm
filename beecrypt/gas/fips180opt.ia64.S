@@ -27,7 +27,7 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 #define saved_pfs	r14
 #define saved_lc	r15

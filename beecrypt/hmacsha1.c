@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -36,21 +36,21 @@ const keyedHashFunction hmacsha1 = { "HMAC-SHA-1", sizeof(hmacsha1Param), 64, 5 
 /*@-type@*/
 int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)
 {
-	return hmacSetup((hmacParam*) sp, &sha1, &sp->param, key, keybits);
+	return hmacSetup(&sp->hparam, &sha1, &sp->sparam, key, keybits);
 }
 
 int hmacsha1Reset (hmacsha1Param* sp)
 {
-	return hmacReset((hmacParam*) sp, &sha1, &sp->param);
+	return hmacReset(&sp->hparam, &sha1, &sp->sparam);
 }
 
 int hmacsha1Update(hmacsha1Param* sp, const byte* data, int size)
 {
-	return hmacUpdate((hmacParam*) sp, &sha1, &sp->param, data, size);
+	return hmacUpdate(&sp->hparam, &sha1, &sp->sparam, data, size);
 }
 
 int hmacsha1Digest(hmacsha1Param* sp, uint32* data)
 {
-	return hmacDigest((hmacParam*) sp, &sha1, &sp->param, data);
+	return hmacDigest(&sp->hparam, &sha1, &sp->sparam, data);
 }
 /*@=type@*/

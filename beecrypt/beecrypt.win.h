@@ -61,7 +61,6 @@
 #define HAVE_TIME_H				1
 
 #define HAVE_SYS_TYPES_H		0
-#define HAVE_SYS_STAT_H			0
 #define HAVE_SYS_TIME_H			0
 
 #define HAVE_THREAD_H			0
@@ -92,6 +91,8 @@
 #define HAVE_UNISTD_H			1
 #define HAVE_MALLOC_H			1
 
+#define HAVE_SYS_STAT_H			0
+
 #define HAVE_LONG_LONG			1
 
 #define INT8_TYPE		char
@@ -108,6 +109,8 @@
 #elif defined(_MSC_VER)
 #define HAVE_UNISTD_H			0
 #define HAVE_MALLOC_H			1
+
+#define HAVE_SYS_STAT_H			1
 
 #define HAVE_LONG_LONG			0
 

@@ -47,60 +47,61 @@ int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
 	return -1;
 }
 
-/*@-nullpass -nullptrarith @*/ /* temp may be NULL */
-/* this routine doesn't work yet: needs debugging! */
+
 int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 {
 	register uint32  nsize = kp->n.size;
 	register uint32  psize = kp->p.size;
 	register uint32  qsize = kp->q.size;
-	register uint32* temp = (uint32*) malloc((psize+qsize+(5*nsize+6))*sizeof(*temp));
-	register uint32* wksp = temp+psize+qsize+nsize;
 
-	/* compute j1 = m^d1 mod p */
-	if (mp32gex(psize, kp->p.modl, m->size, m->data))
+	register uint32* ptemp;
+	register uint32* qtemp;
+
+	ptemp = (uint32*) malloc((6*psize+2)*sizeof(uint32));
+	if (ptemp == (uint32*) 0)
+		return -1;
+
+	qtemp = (uint32*) malloc((6*qsize+2)*sizeof(uint32));
+	if (qtemp == (uint32*) 0)
 	{
-		mp32setx(nsize, temp+psize+qsize, m->size, m->data);
-		/*@-compdef@*/ /* LCL: temp+psize+qsize */
-		mp32bmod_w(&kp->p, temp+psize+qsize, temp, wksp);
-		/*@=compdef@*/
+		free(ptemp);
+		return -1;
 	}
-	else
-		mp32setx(psize, temp, m->size, m->data);
 
-	mp32bpowmod_w(&kp->p, psize, temp, kp->d1.size, kp->d1.data, temp, wksp);
-	
-	/* compute j2 = m^d2 mod q */
-	if (mp32gex(qsize, kp->q.modl, m->size, m->data))
-	{
-		mp32setx(nsize, temp+psize+qsize, m->size, m->data);
-		/*@-compdef@*/ /* LCL: temp+psize+qsize */
-		mp32bmod_w(&kp->q, temp+psize+qsize, temp+psize, wksp);
-		/*@=compdef@*/
-	}
-	else
-		mp32setx(qsize, temp+psize, m->size, m->data);
+	/* m must be small enough to be exponentiated modulo p and q */
+	if (m->size > psize || m->size > qsize)
+		return -1;
 
-	mp32bpowmod_w(&kp->q, qsize, temp+psize, kp->d2.size, kp->d2.data, temp+psize, wksp);
+	/* resize m for powmod p */
+	mp32setx(psize, ptemp+psize, m->size, m->data);
 
-	/* compute j1-j2 */
-	(void) mp32subx(psize, temp, qsize, temp+psize);
+	/* compute j1 = m^d1 mod p, store @ ptemp */
+	mp32bpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
 
-	/* compute h = c*(j1-j2) mod p */
-	mp32bmulmod_w(&kp->p, psize, temp, psize, kp->c.data, temp, wksp);
+	/* resize m for powmod p */
+	mp32setx(qsize, qtemp+psize, m->size, m->data);
+
+	/* compute j2 = m^d2 mod q, store @ qtemp */
+	mp32bpowmod_w(&kp->q, qsize, qtemp+psize, kp->d2.size, kp->d2.data, qtemp, qtemp+2*qsize);
+
+	/* compute j1-j2 mod p, store @ ptemp */
+	mp32bsubmod_w(&kp->p, psize, ptemp, qsize, qtemp, ptemp, ptemp+2*psize);
+
+	/* compute h = c*(j1-j2) mod p, store @ ptemp */
+	mp32bmulmod_w(&kp->p, psize, ptemp, psize, kp->c.data, ptemp, ptemp+2*psize);
 
 	/* make sure the signature gets the proper size */
 	mp32nsize(c, nsize);
 
 	/* compute s = h*q + j2 */
-	mp32mul(c->data, psize, temp, qsize, kp->q.modl);
-	(void) mp32addx(nsize, c->data, qsize, temp+psize);
+	mp32mul(c->data, psize, ptemp, qsize, kp->q.modl);
+	mp32addx(nsize, c->data, qsize, qtemp);
 
-	free(temp);
+	free(ptemp);
+	free(qtemp);
 
-	return -1;
+	return 0;
 }
-/*@=nullpass =nullptrarith @*/
 
 /**
  * @return	1 if signature verifies, 0 otherwise (can also indicate errors)

@@ -15,9 +15,9 @@
 @SET_MAKE@
 
 #
-# Makefile.am's purpose is to build the beetest test program.
+# Makefile.am's purpose is to build the beetest_ test_ program.
 #
-# Copyright (c) 2001 Virtual Unlimited B.V.
+# Copyright (c) 2001, 2002 Virtual Unlimited B.V.
 #
 # Author: Bob Deblier <bob@virtualunlimited.com>
 #
@@ -130,26 +130,75 @@ AUTOMAKE_OPTIONS = gnu no-dependencies
 INCLUDES = -I$(top_srcdir)
 LDADD = $(top_builddir)/libbeecrypt.la
 
-EXTRA_PROGRAMS = beetest openpgp
+TESTS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testdldp testdsa 
+
+check_PROGRAMS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testdldp testdsa  
+
+testmd5_SOURCES = testmd5.c
+
+testsha1_SOURCES = testsha1.c
+
+testsha256_SOURCES = testsha256.c
+
+testhmacmd5_SOURCES = testhmacmd5.c
+
+testhmacsha1_SOURCES = testhmacsha1.c
+
+testdldp_SOURCES = testdldp.c
+
+testdsa_SOURCES = testdsa.c
+
+EXTRA_PROGRAMS = beetest
 
 beetest_SOURCES = beetest.c
-beetest_LDFLAGS = -all-static
-
-openpgp_SOURCES = openpgp.c
 subdir = tests
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-EXTRA_PROGRAMS = beetest$(EXEEXT) openpgp$(EXEEXT)
+EXTRA_PROGRAMS = beetest$(EXEEXT)
+check_PROGRAMS = testmd5$(EXEEXT) testsha1$(EXEEXT) testsha256$(EXEEXT) \
+	testhmacmd5$(EXEEXT) testhmacsha1$(EXEEXT) testdldp$(EXEEXT) \
+	testdsa$(EXEEXT)
 am_beetest_OBJECTS = beetest.$(OBJEXT)
 beetest_OBJECTS = $(am_beetest_OBJECTS)
 beetest_LDADD = $(LDADD)
 beetest_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
-am_openpgp_OBJECTS = openpgp.$(OBJEXT)
-openpgp_OBJECTS = $(am_openpgp_OBJECTS)
-openpgp_LDADD = $(LDADD)
-openpgp_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
-openpgp_LDFLAGS =
+beetest_LDFLAGS =
+am_testdldp_OBJECTS = testdldp.$(OBJEXT)
+testdldp_OBJECTS = $(am_testdldp_OBJECTS)
+testdldp_LDADD = $(LDADD)
+testdldp_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
+testdldp_LDFLAGS =
+am_testdsa_OBJECTS = testdsa.$(OBJEXT)
+testdsa_OBJECTS = $(am_testdsa_OBJECTS)
+testdsa_LDADD = $(LDADD)
+testdsa_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
+testdsa_LDFLAGS =
+am_testhmacmd5_OBJECTS = testhmacmd5.$(OBJEXT)
+testhmacmd5_OBJECTS = $(am_testhmacmd5_OBJECTS)
+testhmacmd5_LDADD = $(LDADD)
+testhmacmd5_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
+testhmacmd5_LDFLAGS =
+am_testhmacsha1_OBJECTS = testhmacsha1.$(OBJEXT)
+testhmacsha1_OBJECTS = $(am_testhmacsha1_OBJECTS)
+testhmacsha1_LDADD = $(LDADD)
+testhmacsha1_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
+testhmacsha1_LDFLAGS =
+am_testmd5_OBJECTS = testmd5.$(OBJEXT)
+testmd5_OBJECTS = $(am_testmd5_OBJECTS)
+testmd5_LDADD = $(LDADD)
+testmd5_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
+testmd5_LDFLAGS =
+am_testsha1_OBJECTS = testsha1.$(OBJEXT)
+testsha1_OBJECTS = $(am_testsha1_OBJECTS)
+testsha1_LDADD = $(LDADD)
+testsha1_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
+testsha1_LDFLAGS =
+am_testsha256_OBJECTS = testsha256.$(OBJEXT)
+testsha256_OBJECTS = $(am_testsha256_OBJECTS)
+testsha256_LDADD = $(LDADD)
+testsha256_DEPENDENCIES = $(top_builddir)/libbeecrypt.la
+testsha256_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -166,9 +215,11 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = $(beetest_SOURCES) $(openpgp_SOURCES)
+DIST_SOURCES = $(beetest_SOURCES) $(testdldp_SOURCES) $(testdsa_SOURCES) \
+	$(testhmacmd5_SOURCES) $(testhmacsha1_SOURCES) \
+	$(testmd5_SOURCES) $(testsha1_SOURCES) $(testsha256_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(beetest_SOURCES) $(openpgp_SOURCES)
+SOURCES = $(beetest_SOURCES) $(testdldp_SOURCES) $(testdsa_SOURCES) $(testhmacmd5_SOURCES) $(testhmacsha1_SOURCES) $(testmd5_SOURCES) $(testsha1_SOURCES) $(testsha256_SOURCES)
 
 all: all-am
 
@@ -179,12 +230,33 @@ $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	  $(AUTOMAKE) --gnu  tests/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
+
+clean-checkPROGRAMS:
+	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 beetest$(EXEEXT): $(beetest_OBJECTS) $(beetest_DEPENDENCIES) 
 	@rm -f beetest$(EXEEXT)
 	$(LINK) $(beetest_LDFLAGS) $(beetest_OBJECTS) $(beetest_LDADD) $(LIBS)
-openpgp$(EXEEXT): $(openpgp_OBJECTS) $(openpgp_DEPENDENCIES) 
-	@rm -f openpgp$(EXEEXT)
-	$(LINK) $(openpgp_LDFLAGS) $(openpgp_OBJECTS) $(openpgp_LDADD) $(LIBS)
+testdldp$(EXEEXT): $(testdldp_OBJECTS) $(testdldp_DEPENDENCIES) 
+	@rm -f testdldp$(EXEEXT)
+	$(LINK) $(testdldp_LDFLAGS) $(testdldp_OBJECTS) $(testdldp_LDADD) $(LIBS)
+testdsa$(EXEEXT): $(testdsa_OBJECTS) $(testdsa_DEPENDENCIES) 
+	@rm -f testdsa$(EXEEXT)
+	$(LINK) $(testdsa_LDFLAGS) $(testdsa_OBJECTS) $(testdsa_LDADD) $(LIBS)
+testhmacmd5$(EXEEXT): $(testhmacmd5_OBJECTS) $(testhmacmd5_DEPENDENCIES) 
+	@rm -f testhmacmd5$(EXEEXT)
+	$(LINK) $(testhmacmd5_LDFLAGS) $(testhmacmd5_OBJECTS) $(testhmacmd5_LDADD) $(LIBS)
+testhmacsha1$(EXEEXT): $(testhmacsha1_OBJECTS) $(testhmacsha1_DEPENDENCIES) 
+	@rm -f testhmacsha1$(EXEEXT)
+	$(LINK) $(testhmacsha1_LDFLAGS) $(testhmacsha1_OBJECTS) $(testhmacsha1_LDADD) $(LIBS)
+testmd5$(EXEEXT): $(testmd5_OBJECTS) $(testmd5_DEPENDENCIES) 
+	@rm -f testmd5$(EXEEXT)
+	$(LINK) $(testmd5_LDFLAGS) $(testmd5_OBJECTS) $(testmd5_LDADD) $(LIBS)
+testsha1$(EXEEXT): $(testsha1_OBJECTS) $(testsha1_DEPENDENCIES) 
+	@rm -f testsha1$(EXEEXT)
+	$(LINK) $(testsha1_LDFLAGS) $(testsha1_OBJECTS) $(testsha1_LDADD) $(LIBS)
+testsha256$(EXEEXT): $(testsha256_OBJECTS) $(testsha256_DEPENDENCIES) 
+	@rm -f testsha256$(EXEEXT)
+	$(LINK) $(testsha256_LDFLAGS) $(testsha256_OBJECTS) $(testsha256_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -246,6 +318,61 @@ GTAGS:
 
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH
+
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list='$(TESTS)'; \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+	        xpass=`expr $$xpass + 1`; \
+	        failed=`expr $$failed + 1`; \
+	        echo "XPASS: $$tst"; \
+	      ;; \
+	      *) \
+	        echo "PASS: $$tst"; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+	        xfail=`expr $$xfail + 1`; \
+	        echo "XFAIL: $$tst"; \
+	      ;; \
+	      *) \
+	        failed=`expr $$failed + 1`; \
+	        echo "FAIL: $$tst"; \
+	      ;; \
+	      esac; \
+	    fi; \
+	  done; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="All $$all tests passed"; \
+	    else \
+	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all tests failed"; \
+	    else \
+	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
+	    fi; \
+	  fi; \
+	  dashes=`echo "$$banner" | sed s/./=/g`; \
+	  echo "$$dashes"; \
+	  echo "$$banner"; \
+	  echo "$$dashes"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
 top_distdir = ..
@@ -273,6 +400,8 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile
 
@@ -304,7 +433,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 
@@ -340,16 +469,16 @@ mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 
 uninstall-am: uninstall-info-am
 
-.PHONY: GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am info \
-	info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool tags uninstall uninstall-am \
-	uninstall-info-am
+.PHONY: GTAGS all all-am check check-TESTS check-am clean \
+	clean-checkPROGRAMS clean-generic clean-libtool distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am info info-am install \
+	install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	tags uninstall uninstall-am uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -25,27 +25,15 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 	.file "mp32opt.powerpc.S"
 
 	.text
 
-#if !DARWIN
-# define r0	%r0
-# define r3	%r3
-# define r4	%r4
-# define r5	%r5
-# define r6	%r6
-# define r7	%r7
-# define r8	%r8
-# define r9	%r9
-# define r10	%r10
-# define r11	%r11
-# define r12	%r12
-#endif
 
 C_FUNCTION_BEGIN(mp32addw)
+LABEL(mp32addw)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -53,20 +41,21 @@ C_FUNCTION_BEGIN(mp32addw)
 	lwzu r6,-4(r4)
 	addc r6,r6,r5
 	stw r6,0(r4)
-	bdz .Lmp32addw_skip
-.Lmp32addw_loop:
+	bdz LOCAL(mp32addw_skip)
+LOCAL(mp32addw_loop):
 	lwzu r6,-4(r4)
 	adde r6,r0,r6
 	stw r6,0(r4)
-	bdnz .Lmp32addw_loop
-.Lmp32addw_skip:
+	bdnz LOCAL(mp32addw_loop)
+LOCAL(mp32addw_skip):
 	/* return the carry */
 	addze r3,r0
 	blr
-C_FUNCTION_END(mp32addw, .Lmp32addw_size)
+C_FUNCTION_END(mp32addw, LOCAL(mp32addw_size))
 
 
 C_FUNCTION_BEGIN(mp32subw)
+LABEL(mp32subw)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -74,21 +63,22 @@ C_FUNCTION_BEGIN(mp32subw)
 	lwz r6,-4(r4)
 	subfc r6,r5,r6
 	stwu r6,-4(r4)
-	bdz .Lmp32subw_skip
-.Lmp32subw_loop:
+	bdz LOCAL(mp32subw_skip)
+LOCAL(mp32subw_loop):
 	lwz r6,-4(r4)
 	subfe r6,r0,r6
 	stwu r6, -4(r4)
-	bdnz .Lmp32subw_loop
-.Lmp32subw_skip:
+	bdnz LOCAL(mp32subw_loop)
+LOCAL(mp32subw_skip):
 	/* return the carry */
 	subfe r3,r0,r0
 	neg r3,r3
 	blr
-C_FUNCTION_END(mp32subw, .Lmp32subw_size)
+C_FUNCTION_END(mp32subw, LOCAL(mp32subw_size))
 
 
 C_FUNCTION_BEGIN(mp32add)
+LABEL(mp32add)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -98,21 +88,22 @@ C_FUNCTION_BEGIN(mp32add)
 	lwzu r7,-4(r5)
 	addc r6,r7,r6
 	stwu r6,-4(r4)
-	bdz .Lmp32add_skip
-.Lmp32add_loop:
+	bdz LOCAL(mp32add_skip)
+LOCAL(mp32add_loop):
 	lwz r6,-4(r4)
 	lwzu r7,-4(r5)
 	adde r6,r7,r6
 	stwu r6,-4(r4)
-	bdnz .Lmp32add_loop
-.Lmp32add_skip:
+	bdnz LOCAL(mp32add_loop)
+LOCAL(mp32add_skip):
 	/* return the carry */
 	addze r3,r0
 	blr
-C_FUNCTION_END(mp32add, .Lmp32add_size)
+C_FUNCTION_END(mp32add, LOCAL(mp32add_size))
 
 
 C_FUNCTION_BEGIN(mp32sub)
+LABEL(mp32sub)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -122,22 +113,23 @@ C_FUNCTION_BEGIN(mp32sub)
 	lwzu r7,-4(r5)
 	subfc r6,r7,r6
 	stwu r6,-4(r4)
-	bdz .Lmp32sub_skip
-.Lmp32sub_loop:
+	bdz LOCAL(mp32sub_skip)
+LOCAL(mp32sub_loop):
 	lwz r6,-4(r4)
 	lwzu r7,-4(r5)
 	subfe r6,r7,r6
 	stwu r6,-4(r4)
-	bdnz .Lmp32sub_loop
-.Lmp32sub_skip:
+	bdnz LOCAL(mp32sub_loop)
+LOCAL(mp32sub_skip):
 	/* return the carry */
 	subfe r3,r0,r0
 	neg r3,r3
 	blr
-C_FUNCTION_END(mp32sub, .Lmp32sub_size)
+C_FUNCTION_END(mp32sub, LOCAL(mp32sub_size))
 
 
 C_FUNCTION_BEGIN(mp32multwo)
+LABEL(mp32multwo)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -145,44 +137,46 @@ C_FUNCTION_BEGIN(mp32multwo)
 	lwz r6,-4(r4)
 	addc r6,r6,r6
 	stwu r6,-4(r4)
-	bdz .Lmp32multwo_skip
-.Lmp32multwo_loop:
+	bdz LOCAL(mp32multwo_skip)
+LOCAL(mp32multwo_loop):
 	lwz r6,-4(r4)
 	adde r6,r6,r6
 	stwu r6,-4(r4)
-	bdnz .Lmp32multwo_loop
-.Lmp32multwo_skip:
+	bdnz LOCAL(mp32multwo_loop)
+LOCAL(mp32multwo_skip):
 	/* return the carry */
 	addze r3,r0
 	blr
-C_FUNCTION_END(mp32multwo, .Lmp32multwo_size)
+C_FUNCTION_END(mp32multwo, LOCAL(mp32multwo_size))
 
 
 C_FUNCTION_BEGIN(mp32setmul)
+LABEL(mp32setmul)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
 	add r5,r5,r0
 	li r3,0
-.Lmp32setmul_loop:
+LOCAL(mp32setmul_loop):
 	lwzu r7,-4(r5)
 	mullw r8,r7,r6
 	addc r8,r8,r3
 	mulhwu r9,r7,r6
 	addze r3,r9
 	stwu r8,-4(r4)
-	bdnz .Lmp32setmul_loop
+	bdnz LOCAL(mp32setmul_loop)
 	blr
-C_FUNCTION_END(mp32setmul, .Lmp32setmul_size)
+C_FUNCTION_END(mp32setmul, LOCAL(mp32setmul_size))
 
 
 C_FUNCTION_BEGIN(mp32addmul)
+LABEL(mp32addmul)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
 	add r5,r5,r0
 	li r3,0
-.Lmp32addmul_loop:
+LOCAL(mp32addmul_loop):
 	lwzu r8,-4(r5)
 	lwzu r7,-4(r4)
 	mullw r9,r8,r6
@@ -192,19 +186,20 @@ C_FUNCTION_BEGIN(mp32addmul)
 	addc r9,r9,r7
 	addze r3,r3
 	stw r9,0(r4)
-	bdnz .Lmp32addmul_loop
+	bdnz LOCAL(mp32addmul_loop)
 	blr
-C_FUNCTION_END(mp32addmul, .Lmp32addmul_size)
+C_FUNCTION_END(mp32addmul, LOCAL(mp32addmul_size))
 
 
 C_FUNCTION_BEGIN(mp32addsqrtrc)
+LABEL(mp32addsqrtrc)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
 	add r5,r5,r0
 	add r4,r4,r0
 	li r3,0
-.Lmp32addsqrtrc_loop:
+LOCAL(mp32addsqrtrc_loop):
 	lwzu r0,-4(r5)
 	lwz r6,-8(r4)
 	lwz r7,-4(r4)
@@ -218,6 +213,6 @@ C_FUNCTION_BEGIN(mp32addsqrtrc)
 	addze r3,r3
 	stw r7,-4(r4)
 	stwu r6,-8(r4)
-	bdnz .Lmp32addsqrtrc_loop
+	bdnz LOCAL(mp32addsqrtrc_loop)
 	blr
-C_FUNCTION_END(mp32addsqrtrc, .Lmp32addsqrtrc_size)
+C_FUNCTION_END(mp32addsqrtrc, LOCAL(mp32addsqrtrc_size))

@@ -736,9 +736,10 @@ case $target_os in
 esac
 
 dnl Generate the assembler optimizations
+rm -f $srcdir/aesopt.c $srcdir/aesopt.S
 rm -f $srcdir/blowfishopt.c $srcdir/blowfishopt.S
-rm -f $srcdir/fips180opt.c $srcdir/fips180opt.S
 rm -f $srcdir/mp32opt.c $srcdir/mp32opt.S
+rm -f $srcdir/sha1opt.c $srcdir/sha1opt.S
 if test "$ac_enable_optimized" = yes; then
   case $target_cpu in
     arm*)
@@ -752,14 +753,17 @@ EOF
 EOF
       ;;
     i[[56]]86)
+      cat > $srcdir/aesopt.S << EOF
+#include "gas/aesopt.i586.S"
+EOF
       cat > $srcdir/blowfishopt.S << EOF
 #include "gas/blowfishopt.i586.S"
 EOF
-      cat > $srcdir/fips180opt.S << EOF
-#include "gas/fips180opt.i586.S"
-EOF
       cat > $srcdir/mp32opt.S << EOF
 #include "gas/mp32opt.i386.S"
+EOF
+      cat > $srcdir/sha1opt.S << EOF
+#include "gas/sha1opt.i586.S"
 EOF
       ;;
     ia64)
@@ -768,11 +772,17 @@ EOF
 EOF
       ;;
     powerpc)
+      cat > $srcdir/aesopt.S << EOF
+#include "gas/aesopt.powerpc.S"
+EOF
+      cat > $srcdir/blowfishopt.S << EOF
+#include "gas/blowfishopt.powerpc.S"
+EOF
       cat > $srcdir/mp32opt.S << EOF
 #include "gas/mp32opt.powerpc.S"
 EOF
       ;;
-    sparcv8) 
+    sparcv8)
       cat > $srcdir/mp32opt.S << EOF
 #include "gas/mp32opt.sparcv8.S"
 EOF
@@ -784,16 +794,20 @@ EOF
       ;;
   esac
 fi
+if test ! -r $srcdir/aesopt.S; then
+  cat > $srcdir/aesopt.c << EOF
+EOF
+fi
 if test ! -r $srcdir/blowfishopt.S; then
   cat > $srcdir/blowfishopt.c << EOF
 EOF
 fi
-if test ! -r $srcdir/fips180opt.S; then
-  cat > $srcdir/fips180opt.c << EOF
-EOF
-fi
 if test ! -r $srcdir/mp32opt.S; then
   cat > $srcdir/mp32opt.c << EOF
+EOF
+fi
+if test ! -r $srcdir/sha1opt.S; then
+  cat > $srcdir/sha1opt.c << EOF
 EOF
 fi
 

@@ -1,6 +1,6 @@
 Welcome to the BeeCrypt crypto library!
 
-Copyright (c) 1997-2000 Virtual Unlimited B.V.
+Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
 
 Author: Bob Deblier <bob@virtualunlimited.com>
 
@@ -18,26 +18,37 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For the specifics of this license, see file 'LICENSE', included in this
-distribution.
+For the specifics of this license, see file 'COPYING.LIB', included in
+this distribution.
+
+
+
+Welcome to version 2.2.0 of BeeCrypt:
+
+AES support has been added, and the library has been thoroughly debugged,
+with the addition of unit tests. Once you've built the library, you can
+verify the correct functioning with 'make check'.
+
+As usual, your comments are welcome.
 
 
 
 About BeeCrypt:
 
-This library is an ongoing project of Virtual Unlimited B.V. Its goal is to
-provide strong and fast cryptography for use by our products, but we're
-not limiting the use to that. We're releasing it under the LGPL license,
-because we feel that cryptography should be open to inspection by everybody,
-and available for use by everybody to safeguard privacy.
+This library is an ongoing project of Virtual Unlimited B.V. Its goal is
+to provide strong and fast cryptography for use by our products, but
+we're not limiting the use to that. We're releasing it under the LGPL
+license, because we feel that cryptography should be open to inspection
+by everybody, and available for use by everybody to safeguard privacy.
 
-Note that depending on where you are, the use of cryptography may be limited
-or forbidden by law. Before using this library, make sure you are legally
-entitled to do so.
+Note that depending on where you are, the use of cryptography may be
+limited or forbidden by law. Before using this library, make sure you
+are legally entitled to do so.
 
-For more on Virtual Unlimited B.V. and our products please consult our website:
 
-http://www.virtualunlimited.com
+For more on Virtual Unlimited B.V. and our products please consult our
+website: http://www.virtualunlimited.com/
+
 
 <plug>
 Most of the algorithms are implemented from reliable sources such as:
@@ -50,60 +61,82 @@ Most of the algorithms are implemented from reliable sources such as:
  Bruce Schneier
  Wiley
 
+
 For crypto enthusiasts these books are invaluable background material.
 
-IEEE P1363 "Standard Specifications for Public Key Cryptography" is a very
-interesting draft standard, which we will try to comply with.
+IEEE P1363 "Standard Specifications for Public Key Cryptography" is a
+very interesting draft standard, which we will try to comply with.
 </plug>
 
 The structures in the library are geared towards exchange with Java
-and its security and cryptography classes. We already have quite a number
-of cryptographic classes developed in Java, which will be released in the
-future in another open source project.
+and its security and cryptography classes. This library can also be
+accessed from Java by installing BeeCrypt for Java, a JCE 1.2 crypto
+provider and the counterpart of this library.
+
 
 Included in the library are:
     - entropy sources for initializing pseudo-random generators
     - pseudo-random generators: FIPS-186, Mersenne Twister
-    - block ciphers: Blowfish
-    - hash functions: SHA-1
-    - keyed hash functions: SHA-1/HMAC
+    - block ciphers: AES, Blowfish
+    - hash functions: MD5, SHA-1, SHA-256
+    - keyed hash functions: HMAC-MD5, HMAC-SHA-1, HMAC-SHA-256
     - multi-precision integer library, with assembler-optimized routines
-    - probabilistic primality testing, with optimized small prime trial division
+      for several processors
+    - probabilistic primality testing, with optimized small prime trial
+      division
     - discrete logarithm parameter generation over a prime field
     - Diffie-Hellman key agreement
+    - DSA signature scheme
     - ElGamal signature scheme (two variants)
+    - RSA keypair generation with chinese remainder theorem variables
+    - RSA public & private key operations
+    - DHAES encryption scheme
 
 Planned for the near future are:
+    - mp64 library for operation on 64-bit computers (and possibly also
+      on certain 32-bit platforms)
     - compliance with and compliance statements for IEEE P1363
-	- DHAES
-    - DSA (i.e. the rest of FIPS-186)
-    - more blockciphers (Twofish, Rijndael, ... )
-	- more hash functions (RIPEMD-160, HAVAL, ... )
+    - more blockciphers (Twofish, ... )
+	- more hash functions (RIPEMD-160, SHA-384, SHA-512, HAVAL, Tiger)
+	- RSA signatures as specified by RFC-2440.
 	- Elliptic Curves (ECDSA, ... )
+    - more blockcipher modes (OFB, ... )
 
 The library has been tested on the following platforms:
-    - Solaris 2.6 Sparc, Solaris 2.7 Sparc
-        - includes assembler optimization for ultrasparc
-    - Linux glibc 2.x x86
-        - includes assembler optimization (tuned for Pentium Pro and higher)
+    - FreeBSD 4.0 alpha
+    - FreeBSD 4.0, 4.2 x86
+        - includes assembler optimization (tuned for Pentium and higher)
+    - Linux glibc 2.x alpha
+    - Linux glibc 2.x arm
+        - includes assembler optimization
     - Linux glibc 2.x ppc
-        - includes assembler optimization (generic 32-bit PowerPC)
-    - Win32 (Windows 95, 98, NT 4.0)
-        - includes assembler optimization (tuned for Pentium Pro and higher)
-        - once the entropy provider bug is fixed (see BUGS), the library should
-		  work fine on Windows 2000.
-Planned platforms for the near future are:
-    - Solaris Intel
-    - FreeBSD x86
+        - includes assembler optimization for 32-bit PowerPC
+     - Linux glibc 2.x sparc
+        - includes assembler optimization for Sparc v8
+    - Linux glibc 2.x x86
+        - includes assembler optimization (tuned for Pentium and higher)
+    - Solaris 2.6/2.7/2.8 sparc (with Forte or gnu compilers)
+        - includes assembler optimization for Sparc v8, v8plus and v9
+    - Solaris 2.7/2.8 x86 (with Forte or gnu compilers)
+        - includes assembler optimization (tuned for Pentium and higher)
+    - Tru64 Unix alpha
+    - Win32 (Windows 95, 98, NT 4.0, 2000)
+        - includes assembler optimization (tuned for Pentium and higher)
 
-Consult file 'DOCUMENTATION' on how to use the library. There is also a program
-called 'beetest.c' included which gives an example of how to use the API. You
-can also use it to test whether your compiled library works.
+The library is currently in the process of being ported to:
+    - Darwin (apparently Apple has decided to change the PPC assembler format;
+      this will need a fix)
+    - Cygwin (Can't seem to get the DLL to build properly with the current version of the autotools)
+
+For more information, refer to the HTML documentation in the docs directory.
 
 If you want to report bugs, make suggestions, contribute fixes or
-enhancements, please see our website: http://beecrypt.virtualunlimited.com
-or contact me at beecrypt@virtualunlimited.com
+enhancements, please see the beecrypt-specific website:
 
-Sincerely
+http://beecrypt.virtualunlimited.com/
+
+or contact me at mailto:beecrypt@virtualunlimited.com
+
+Sincerely,
 
 Bob Deblier

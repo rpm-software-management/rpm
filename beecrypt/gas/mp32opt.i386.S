@@ -25,7 +25,7 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 	.file "mp32opt.i386.S"
 

@@ -1,7 +1,7 @@
 #
 # Makefile.am's purpose is to add the Microsoft assembler files to the dist
 #
-# Copyright (c) 2001 Virtual Unlimited B.V.
+# Copyright (c) 2001, 2002 Virtual Unlimited B.V.
 #
 # Author: Bob Deblier <bob@virtualunlimited.com>
 #
@@ -22,4 +22,4 @@
 
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
-EXTRA_DIST = blowfishopt.i586.asm fips180opt.i586.asm mp32opt.i386.asm
+EXTRA_DIST = aesopt.i586.asm blowfishopt.i586.asm mp32opt.i386.asm sha1opt.i586.asm

@@ -184,6 +184,30 @@ int encodeIntsPartial(const javaint* i, byte* data, int bytecount)
 	return rc;
 }
 
+int encodeIntsPartialPad(const javaint* i, byte* data, int bytecount, byte padvalue)
+{
+	register int rc = bytecount;
+
+	#if (WORDS_BIGENDIAN)
+	memcpy(data, i, rc);
+	if (rc & 0x3)
+		memset(data+rc, padvalue, 4 -(rc & 0x3));
+	#else
+	javaint tmp;
+
+	while (bytecount > 0)
+	{
+		tmp = swap32(*(i++));
+		memcpy(data, &tmp, (bytecount > 4) ? 4 : bytecount);
+		data += 4;
+		bytecount -= 4;
+	}
+	if (bytecount)
+		memset(data+bytecount, padvalue, -bytecount);
+	#endif
+	return rc;
+}
+
 int encodeChars(const javachar* c, byte* data, int count)
 {
 	register int rc = ((uint32)count) << 1;

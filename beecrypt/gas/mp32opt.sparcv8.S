@@ -25,37 +25,45 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 	.file "mp32opt.sparcv8.S"
 
 	.text
 
 C_FUNCTION_BEGIN(mp32setmul)
+LABEL(mp32setmul)
+
+	.register %g2,#scratch
+
 	sll %o0,2,%g1
 	dec 4,%o2
 	clr %o0
-.Lmp32setmul_loop:
+LOCAL(mp32setmul_loop):
 	ld [%o2+%g1],%g2
 	umul %o3,%g2,%g2
 	rd %y,%g3
 	addcc %o0,%g2,%g2
 	addx %g0,%g3,%o0
 	deccc 4,%g1
-	bnz .Lmp32setmul_loop
+	bnz LOCAL(mp32setmul_loop)
 	st %g2,[%o1+%g1]
 	retl
 	nop
-C_FUNCTION_END(mp32setmul, .Lmp32setmul_size)
+C_FUNCTION_END(mp32setmul, LOCAL(mp32setmul_size))
 
 
 C_FUNCTION_BEGIN(mp32addmul)
+LABEL(mp32addmul)
+
+	.register %g2,#scratch
+
 	sll %o0,2,%g1
 	mov %o1,%o4
 	dec 4,%o1
 	dec 4,%o2
 	clr %o0
-.Lmp32addmul_loop:
+LOCAL(mp32addmul_loop):
 	ld [%o2+%g1],%g2
 	ld [%o1+%g1],%g3
 	umul %o3,%g2,%g2
@@ -65,29 +73,42 @@ C_FUNCTION_BEGIN(mp32addmul)
 	addcc %g2,%g3,%g2
 	addx %g0,%g4,%o0
 	deccc 4,%g1
-	bnz .Lmp32addmul_loop
+	bnz LOCAL(mp32addmul_loop)
 	st %g2,[%o4+%g1]
 	retl
 	nop
-C_FUNCTION_END(mp32addmul, .Lmp32addmul_size)
+C_FUNCTION_END(mp32addmul, LOCAL(mp32addmul_size))
 
 
-#if 0
 C_FUNCTION_BEGIN(mp32addsqrtrc)
-	sll %o0,2,%g1
-	dec 4,%o1
-	dec 4,%o2
-	sub %o3,%o2,4
-	clr %o0
-.Lmp32addsqrtrc_loop:
-	ld [%o2+%g1],%g2
-	ld [%o1+%g1],%g3
-	ld [%o3+%g1],%g4
-	umul %g2,%g2,%g2
-	rd %y,%o4
-	addcc %g3,%g2,%g3
-	addx %g4,%o4,%g4
-	/* carry from first addition */
-	addx %g0,%g0,%o4
-C_FUNCTION_END(mp32addsqrtrc, .Lmp32addsqrtrc_size)
-#endif
+LABEL(mp32addsqrtrc)
+
+        .register %g2,#scratch
+        .register %g3,#scratch
+
+        sll %o0,2,%g1
+        add %o1,%g1,%o1
+		dec 4,%o2
+        add %o1,%g1,%o1
+		dec 8,%o1
+        clr %o0
+LOCAL(mp32addsqrtrc_loop):
+        ld [%o2+%g1],%g2
+        ldd [%o1],%o4
+        umul %g2,%g2,%g3
+        rd %y,%g2
+		/* first addition */
+        addcc %o5,%g3,%o5
+        addxcc %o4,%g2,%o4
+        addx %g0,%g0,%o3
+		/* second addition */
+        addcc %o5,%o0,%o5
+        addxcc %o4,%g0,%o4
+        addx %o3,%g0,%o0
+        std %o4,[%o1]
+        deccc 4,%g1
+        bnz LOCAL(mp32addsqrtrc_loop)
+        sub %o1,8,%o1
+        retl
+        nop
+C_FUNCTION_END(mp32addsqrtrc, LOCAL(mp32addsqrtrc_size))

@@ -25,7 +25,7 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 	.file "blowfishopt.i586.S"
 
@@ -86,6 +86,7 @@
 	.endm
 
 C_FUNCTION_BEGIN(blowfishEncrypt)
+LABEL(blowfishEncrypt)
 	/* parameter one is the blowfish parameters; need to extract bp and set it up in esi */
 	pushl %edi
 	pushl %esi
@@ -127,10 +128,11 @@ C_FUNCTION_BEGIN(blowfishEncrypt)
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(blowfishEncrypt, .LblowfishEncrypt_size)
+C_FUNCTION_END(blowfishEncrypt, LOCAL(blowfishEncrypt_size))
 
 
 C_FUNCTION_BEGIN(blowfishDecrypt)
+LABEL(blowfishDecrypt)
 	/* parameter one is the blowfish parameters; need to extract bp and set it up in ebp */
 	pushl %edi
 	pushl %esi
@@ -173,4 +175,4 @@ C_FUNCTION_BEGIN(blowfishDecrypt)
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(blowfishDecrypt, .LblowfishDecrypt_size)
+C_FUNCTION_END(blowfishDecrypt, LOCAL(blowfishDecrypt_size))

@@ -36,21 +36,21 @@ const keyedHashFunction hmacmd5 = { "HMAC-MD5", sizeof(hmacmd5Param), 64, 4 * si
 /*@-type@*/
 int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
 {
-	return hmacSetup((hmacParam*) sp, &md5, &sp->param, key, keybits);
+	return hmacSetup(&sp->hparam, &md5, &sp->mparam, key, keybits);
 }
 
 int hmacmd5Reset (hmacmd5Param* sp)
 {
-	return hmacReset((hmacParam*) sp, &md5, &sp->param);
+	return hmacReset(&sp->hparam, &md5, &sp->mparam);
 }
 
 int hmacmd5Update(hmacmd5Param* sp, const byte* data, int size)
 {
-	return hmacUpdate((hmacParam*) sp, &md5, &sp->param, data, size);
+	return hmacUpdate(&sp->hparam, &md5, &sp->mparam, data, size);
 }
 
 int hmacmd5Digest(hmacmd5Param* sp, uint32* data)
 {
-	return hmacDigest((hmacParam*) sp, &md5, &sp->param, data);
+	return hmacDigest(&sp->hparam, &md5, &sp->mparam, data);
 }
 /*@=type@*/

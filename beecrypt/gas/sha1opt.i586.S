@@ -25,7 +25,7 @@
  *
  */
 
-#include "config.gas.h"
+#include "beecrypt.gas.h"
 
 	.file "fips180opt.i586.S"
 
@@ -105,6 +105,7 @@
 	.endm
 
 C_FUNCTION_BEGIN(sha1Process)
+LABEL(sha1Process)
 	pushl %edi
 	pushl %esi
 	pushl %ebx
@@ -116,28 +117,28 @@ C_FUNCTION_BEGIN(sha1Process)
 	movl %esp,%ebp
 
 	movl $4,%ecx
-.L0:
+LOCAL(0):
 	movl (%esi,%ecx,4),%edx
 	movl %edx,(%ebp,%ecx,4)
 	decl %ecx
-	jns .L0
+	jns LOCAL(0)
 
 	movl $15,%ecx
 	xorl %eax,%eax
 
 	.p2align 2
-.L1:
+LOCAL(1):
 	movl (%edi,%ecx,4),%edx
 	bswap %edx
 	mov %edx,(%edi,%ecx,4)
 	decl %ecx
-	jns .L1
+	jns LOCAL(1)
 
 	leal PARAM_DATA(%esi),%edi
 	movl $16,%ecx
 
 	.p2align 2
-.L2:
+LOCAL(2):
 	movl 52(%edi),%eax
 	movl 56(%edi),%ebx
 	xorl 32(%edi),%eax
@@ -164,12 +165,12 @@ C_FUNCTION_BEGIN(sha1Process)
 	movl %ebx,76(%edi)
 	addl $16,%edi
 	decl %ecx
-	jnz .L2
+	jnz LOCAL(2)
 
 	movl $PARAM_DATA,%edi
 
 	movl (%ebp),%eax
-.L01_20:
+LOCAL(01_20):
 	subround1  4(%ebp), 8(%ebp), 12(%ebp), 16(%ebp), 0
 	subround1   (%ebp),   %ebx ,  8(%ebp), 12(%ebp), 4
 	subround1 16(%ebp),   %ebx ,  4(%ebp),  8(%ebp), 8
@@ -195,7 +196,7 @@ C_FUNCTION_BEGIN(sha1Process)
 	subround1  8(%ebp),   %ebx , 16(%ebp),   (%ebp), 16
 	addl $20,%edi
 
-.L21_40:
+LOCAL(21_40):
 	subround2  4(%ebp),   %ebx , 12(%ebp), 16(%ebp), 0
 	subround2   (%ebp),   %ebx ,  8(%ebp), 12(%ebp), 4
 	subround2 16(%ebp),   %ebx ,  4(%ebp),  8(%ebp), 8
@@ -221,7 +222,7 @@ C_FUNCTION_BEGIN(sha1Process)
 	subround2  8(%ebp),   %ebx , 16(%ebp),   (%ebp), 16
 	addl $20,%edi
 
-.L41_60:
+LOCAL(41_60):
 	subround3  4(%ebp),   %ebx , 12(%ebp), 16(%ebp), 0
 	subround3   (%ebp),   %ebx ,  8(%ebp), 12(%ebp), 4
 	subround3 16(%ebp),   %ebx ,  4(%ebp),  8(%ebp), 8
@@ -247,7 +248,7 @@ C_FUNCTION_BEGIN(sha1Process)
 	subround3  8(%ebp),   %ebx , 16(%ebp),   (%ebp), 16
 	addl $20,%edi
 
-.L61_80:
+LOCAL(61_80):
 	subround4  4(%ebp),   %ebx , 12(%ebp), 16(%ebp), 0
 	subround4   (%ebp),   %ebx ,  8(%ebp), 12(%ebp), 4
 	subround4 16(%ebp),   %ebx ,  4(%ebp),  8(%ebp), 8
@@ -276,11 +277,11 @@ C_FUNCTION_BEGIN(sha1Process)
 	movl $4,%ecx
 
 	.p2align 2
-.L3:
+LOCAL(3):
 	movl (%ebp,%ecx,4),%eax
 	addl %eax,(%esi,%ecx,4)
 	decl %ecx
-	jns .L3
+	jns LOCAL(3)
 
 	addl $20,%esp
 	popl %ebp
@@ -288,4 +289,4 @@ C_FUNCTION_BEGIN(sha1Process)
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(sha1Process, .Lsha1Process_size)
+C_FUNCTION_END(sha1Process, LOCAL(sha1Process_size))

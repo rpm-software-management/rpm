@@ -3,7 +3,7 @@
  *
  * BeeCrypt test and benchmark application
  *
- * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -23,35 +23,25 @@
  *
  */
 
+#include "system.h"
+
 #include "beecrypt.h"
 #include "blockmode.h"
+#include "aes.h"
 #include "blowfish.h"
 #include "mp32barrett.h"
 #include "dhaes.h"
 #include "dlkp.h"
 #include "dsa.h"
 #include "elgamal.h"
-#include "fips180.h"
 #include "hmacmd5.h"
 #include "md5.h"
 #include "rsa.h"
+#include "sha1.h"
 #include "sha256.h"
 #include "mp32.h"
 
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#if HAVE_ERRNO_H
-# include <errno.h>
-#endif
-#if HAVE_TIME_H
-# include <time.h>
-#endif
-
-#include <stdio.h>
+#include "debug.h"
 
 /*@unused@*/ /*@observer@*/
 static const char* dsa_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
@@ -682,7 +672,7 @@ static void testExpMods(void)
 		#endif
 		
 		fprintf(stdout, "Timing modular exponentiations\n");
-		fprintf(stdout, "  (512 bits ^ 512 bits) mod 512 bits:");
+		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 512, 512, 512);
 		mp32nsethex(&tmp, p_512);
 		mp32bset(&p, tmp.size, tmp.data);
 		mp32nsize(&g, p.size);
@@ -699,7 +689,7 @@ static void testExpMods(void)
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
-		fprintf(stdout, "  (768 bits ^ 768 bits) mod 768 bits:");
+		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 768, 768, 768);
 		mp32nsethex(&tmp, p_768);
 		mp32bset(&p, tmp.size, tmp.data);
 		mp32nsize(&g, p.size);
@@ -716,7 +706,7 @@ static void testExpMods(void)
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
 		#endif
-		fprintf(stdout, "  (1024 bits ^ 1024 bits) mod 1024 bits:");
+		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 1024, 1024, 1024);
 		mp32nsethex(&tmp, p_1024);
 		mp32bset(&p, tmp.size, tmp.data);
 		mp32nsize(&g, p.size);
@@ -738,7 +728,7 @@ static void testExpMods(void)
 		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rngc.rng->next(rngc.param, x.data, x.size);
 		/*@=noeffectuncon@*/
-		fprintf(stdout, "  (1024 bits ^ 160 bits) mod 1024 bits:");
+		fprintf(stdout, "  (%4d bits ^ %4d bits) mod %4d bits:", 1024, 160, 1024);
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
@@ -763,6 +753,83 @@ static void testExpMods(void)
 		fprintf(stdout, "random generator setup problem\n");
 }
 
+#ifdef	NOTYET
+static void testRSA(void)
+	/*@globals fileSystem, internalState */
+	/*@modifies fileSystem, internalState */
+{
+	randomGeneratorContext rngc;
+	mp32number hm, s;
+	rsakp kp;
+
+	memset(&rngc, 0, sizeof(randomGeneratorContext));
+	mp32nzero(&hm);
+	mp32nzero(&s);
+
+	fprintf(stdout, "Timing RSA:\n");
+
+	rsakpInit(&kp);
+
+	/*@-nullpass -modobserver @*/
+	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=nullpass =modobserver @*/
+	{
+		int i;
+
+		#if HAVE_TIME_H
+		double ttime;
+		clock_t tstart, tstop;
+		#endif
+
+		fprintf(stdout, "  generating 1024 bit crt keypair\n");
+
+		#if HAVE_TIME_H
+		tstart = clock();
+		#endif
+		rsakpMake(&kp, &rngc, (1024 >> 5));
+		#if HAVE_TIME_H
+		tstop = clock();
+		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
+		fprintf(stdout, "    done in %.3f seconds\n", ttime);
+		#endif
+
+		mp32nsize(&hm, 4);
+		rngc.rng->next(rngc.param, hm.data, hm.size);
+
+		fprintf(stdout, "  RSA sign:");
+		#if HAVE_TIME_H
+		tstart = clock();
+		#endif
+		for (i = 0; i < 100; i++)
+		{
+			rsapricrt(&kp, &hm, &s);
+		}
+		#if HAVE_TIME_H
+		tstop = clock();
+		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
+		fprintf(stdout, "   100x in %.3f seconds\n", ttime);
+		#endif
+
+		fprintf(stdout, "  RSA verify:");
+		#if HAVE_TIME_H
+		tstart = clock();
+		#endif
+		for (i = 0; i < 1000; i++)
+		{
+			rsavrfy((rsapk*) &kp, &hm, &s);
+		}
+		#if HAVE_TIME_H
+		tstop = clock();
+		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
+		fprintf(stdout, " 1000x in %.3f seconds\n", ttime);
+		#endif
+
+		rsakpFree(&kp);
+		randomGeneratorContextFree(&rngc);
+	}
+}
+#endif	/* NOTYET */
+
 static void testDLAlgorithms(void)
 	/*@globals fileSystem, internalState */
 	/*@modifies fileSystem, internalState */
@@ -782,6 +849,8 @@ static void testDLAlgorithms(void)
 
 	(void) dldp_pInit(&dp);
 	(void) dlkp_pInit(&kp);
+
+	fprintf(stdout, "Timing Discrete Logarithm algorithms:\n");
 
 	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
@@ -972,7 +1041,7 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	fprintf(stdout, "  %d random generator%s:\n", randomGeneratorCount(), randomGeneratorCount() == 1 ? "" : "s");
 	for (i = 0; i < randomGeneratorCount(); i++)
 	{
-		const randomGenerator* tmp = randomGeneratorGet(i);
+		 const randomGenerator* tmp = randomGeneratorGet(i);
 		if (tmp)
 			fprintf(stdout, "    %s\n", tmp->name);
 		else
@@ -1019,6 +1088,9 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	testBlockCiphers();
 	testHashFunctions();
 	testExpMods();
+#ifdef	NOTYET
+	testRSA();
+#endif
 	testDLAlgorithms();
 
 	/*@=modnomods@*/

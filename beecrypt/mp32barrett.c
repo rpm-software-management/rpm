@@ -777,7 +777,7 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 	mp32zero(size+1, bdata);
 	mp32setw(size+1, ddata, 1);
 
-	if (mp32odd(size, b->modl) && mp32even(xsize, xdata))
+	if (mp32odd(size, b->modl))
 	{
 		/* use simplified binary extended gcd algorithm */
 
@@ -821,7 +821,10 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 						mp32setx(size, result, size+1, ddata);
 						/*@-usedef@*/
 						if (*ddata & 0x80000000)
-							(void) mp32add(size, result, b->modl);
+						{
+							/* keep adding the modulus until we get a carry */
+							while (!mp32add(size, result, b->modl));
+						}
 						/*@=usedef@*/
 					}
 					return 1;
@@ -886,7 +889,10 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 						mp32setx(size, result, size+1, ddata);
 						/*@-usedef@*/
 						if (*ddata & 0x80000000)
-							(void) mp32add(size, result, b->modl);
+						{
+							/* keep adding the modulus until we get a carry */
+							while (!mp32add(size, result, b->modl));
+						}
 						/*@=usedef@*/
 					}
 					return 1;

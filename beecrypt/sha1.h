@@ -1,5 +1,5 @@
 /** \ingroup HASH_sha1_m HASH_m
- * \file fips180.h
+ * \file sha1.h
  *
  * SHA-1 hash function, header.
  */
@@ -25,11 +25,11 @@
  *
  */
 
-#ifndef _FIPS180_H
-#define _FIPS180_H
+#ifndef _SHA1_H
+#define _SHA1_H
 
 #include "beecrypt.h"
-#include "fips180opt.h"
+#include "sha1opt.h"
 
 /** \ingroup HASH_sha1_m
  */

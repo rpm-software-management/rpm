@@ -1,13 +1,9 @@
-/** \ingroup HASH_sha1_m HASH_m
- * \file fips180opt.h
- *
- * SHA-1 assembler-optimized routines, header.
- */
-
 /*
- * Copyright (c) 2000 Virtual Unlimited B.V.
+ * aes.h
  *
- * Author: Bob Deblier <bob@virtualunlimited.com>
+ * AES block cipher, header
+ *
+ * Copyright (c) 2002 Bob Deblier
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,35 +21,43 @@
  *
  */
 
-#ifndef _FIPS180OPT_H
-#define _FIPS180OPT_H
+#ifndef _AES_H
+#define _AES_H
 
 #include "beecrypt.h"
-#include "fips180.h"
+#include "aesopt.h"
+
+typedef struct
+{
+	uint32 k[64];
+	uint32 nr;
+	uint32 fdback[4];
+} aesParam;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if WIN32
-# if defined(_MSC_VER) && defined(_M_IX86)
-#  define ASM_SHA1PROCESS
-# elif __INTEL__ && __MWERKS__
-#  define ASM_SHA1PROCESS
-# endif
-#endif
+extern const BEECRYPTAPI blockCipher aes;
 
-#ifdef __GNUC__
-# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
-#  define ASM_SHA1PROCESS
-# endif
-#endif
+BEECRYPTAPI
+int aesSetup  (aesParam*, const uint32*, int, cipherOperation);
+BEECRYPTAPI
+int aesSetIV  (aesParam*, const uint32*);
+BEECRYPTAPI
+int aesEncrypt(aesParam*, uint32*, const uint32*);
+BEECRYPTAPI
+int aesDecrypt(aesParam*, uint32*, const uint32*);
 
-#if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
-# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
-#  define ASM_SHA1PROCESS
-# endif
-#endif
+BEECRYPTAPI
+int aesECBEncrypt(aesParam*, int, uint32*, const uint32*);
+BEECRYPTAPI
+int aesECBDecrypt(aesParam*, int, uint32*, const uint32*);
+
+BEECRYPTAPI
+int aesCBCEncrypt(aesParam*, int, uint32*, const uint32*);
+BEECRYPTAPI
+int aesCBCDecrypt(aesParam*, int, uint32*, const uint32*);
 
 #ifdef __cplusplus
 }

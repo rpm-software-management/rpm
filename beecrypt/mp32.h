@@ -48,9 +48,9 @@ void mp32copy(uint32 size, /*@out@*/ uint32* dst, const uint32* src)
 	/*@modifies dst @*/;
 #ifndef ASM_MP32COPY
 #ifdef	__LCLINT__
-#define mp32copy(size, dst, src) memmove(dst, src, ((unsigned)(size)) << 2)
+# define mp32copy(size, dst, src) memmove(dst, src, ((unsigned)(size)) << 2)
 #else
-#define mp32copy(size, dst, src) memcpy(dst, src, (size) << 2)
+# define mp32copy(size, dst, src) memcpy(dst, src, (size) << 2)
 #endif
 #endif
 
@@ -61,9 +61,9 @@ void mp32move(uint32 size, /*@out@*/ uint32* dst, const uint32* src)
 	/*@modifies dst @*/;
 #ifndef ASM_MP32MOVE
 #ifdef	__LCLINT__
-#define mp32move(size, dst, src) memmove(dst, src, ((unsigned)(size)) << 2)
+# define mp32move(size, dst, src) memmove(dst, src, ((unsigned)(size)) << 2)
 #else
-#define mp32move(size, dst, src) memmove(dst, src, (size) << 2)
+# define mp32move(size, dst, src) memmove(dst, src, (size) << 2)
 #endif
 #endif
 
@@ -349,6 +349,12 @@ void mp32lshift(uint32 xsize, uint32* xdata, uint32 count)
  */
 BEECRYPTAPI
 void mp32rshift(uint32 xsize, uint32* xdata, uint32 count)
+	/*@modifies xdata @*/;
+
+/**
+ */
+BEECRYPTAPI
+uint32 mp32rshiftlsz(uint32 xsize, uint32* xdata)
 	/*@modifies xdata @*/;
 
 /**

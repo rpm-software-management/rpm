@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
+ * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -35,9 +35,8 @@
  */
 typedef struct
 {
-/*@unused@*/	byte kxi[64];
-/*@unused@*/	byte kxo[64];
-	md5Param param;
+	hmacParam hparam;
+	md5Param mparam;
 } hmacmd5Param;
 
 #ifdef __cplusplus

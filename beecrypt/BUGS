@@ -1,2 +1,34 @@
+Legend:
+	- = open bug
+	* = fixed bug
+
+2.2.0:
+	* bug in certain instances of computing modular inverse.
+	* incorrectly translated intel-style assembler version of x86 mp32odd and mp32even routines into gnu assembler format.
+	* base64 decoding of '+' and '/' characters is wrong.
+	* incorrect testing of the result of the gcd operation in mp32prndconone.
+	* Chinese Remainer Theorem for RSA private key operation doesn't work
+
+2.1.0:
+	* Entropy gathering from /dev/dsp contained error; size in words of entropy data to gather was overwritten with audio sample size - which resulted in much less entropy.
+
+2.0.0:
+	- Chinese Remainder Theorem for RSA private key operation doesn't work; it needs fixing.
+
+1.1.2:
+	* SHA-1 i586 assembler code uses local variables below the current stack frame.
+	
+1.1.1:
+	* discrete logarithm domain parameter generator calculations contains bugs - was detected in this release but present since the first release.
+
+1.1.0:
+	* The javaglue produces a NullPointerException when initializing with a null IV; this should be treated correctly, i.e. as an all zero IV.
+
+1.0.2:
+
+1.0.1:
+	* The Windows 2000 bug is still around
+
 1.0.0:
-	- On Windows 2000, the entropy system gets error WAVERR_BADFORMAT in waveInOpen; So far I've been unable to determine why the system does this for format WAVE_FORMAT_PCM. Suggestions to fix this problem are more than welcome.
+	* On Windows 2000, the entropy system gets error WAVERR_BADFORMAT in waveInOpen; So far I've been unable to determine why the system does this for format WAVE_FORMAT_PCM. Suggestions to fix this problem are more than welcome.
+	* The assembler code for SHA-1 in gnu/fips180opt.gas.i586.s contains bugs.

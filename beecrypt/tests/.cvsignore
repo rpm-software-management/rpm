@@ -20,3 +20,10 @@ stamp-h.in
 beetest
 base64bug
 openpgp
+testdldp
+testdsa
+testhmacmd5
+testhmacsha1
+testmd5
+testsha1
+testsha256

@@ -1,3 +1,31 @@
+2.2.0:
+	- Modified the header files so that the library now uses self-contained autoconf-generated configuration files; a program employing BeeCrypt can now use the symbols already tested and defined instead of having to regenerate them (thus also eliminating the risk of inconsistencies).
+        - Added the AES algorithm, with assembler routines for i586 and powerpc.
+	- Added the DSA signature algorithm.
+	- Added powerpc assembler routines for blowfish.
+	- Fixed the RSA CRT algorithm.
+	- Fixed the gas/i386 mp32even and mp32odd routines.
+	- Fixed a bug in modular inverse computation; thanks to Jeff Johnson of RedHat for pointing this out.
+	- Fixed a bug in testing the result of a gcd operation in the mp32prndconone routine.
+	- Fixed an ugly bug in base64 decoding.
+	- Fixed compatibility with the latest automake & autoconf versions.
+
+2.1.0:
+	- Added support for automake, autoheader and libtool, which should make compiling the library even easier.
+	- Changed DHAES API to conform to IEEE P.1363 submission and to allow for uneven key splitting.
+	- Improved PKCS#5 padding routines.
+	- Added a hash reset to the hashFunctionContextInit function. This was pointed out by Marko Kreen.
+	- Fixed problem with configuring on i486-pc-linux-gnu. This was pointed out Steve O'Neill.
+	- Fixed problem in the C version of mp32sub where carry would sometimes be missed. This was pointed out by Jon Sturgeon.
+	- Revised entropy gathering system to do timeouts & asynchronous I/O where possible, to avoid hangs in case there's no noise on the audio device (i.e. digital silence), or when no data is available on devices such as /dev/random.
+	- Changed mp32opt i386 assembler routines for slight performance improvement.
+	- Changed mp32opt powerpc assembler routines for slight performance improvement.
+	- Changed mp32opt sparcv9 assembler routines for slight performance improvement.
+	- Added sparcv8 assembler routines for multi-precision integer multiplication.
+	- Added arm assembler routines for multi-precision integer multiplication.
+	- Added prototype 64-bit ia64 assembler routines for multi-precision integer operations.
+	- Started writing the long-awaited documentation.
+
 2.0.0:
 	- Changed mp32barrett struct and operations to be multithread-safe; this required a change in API.
 	- Changed hashFunction struct to incorporate internal block size parameter.
@@ -9,7 +37,7 @@
 	- Added RSA keypair generation.
 	- Added RSA private & public key operations.
 	- Added SHA-256 hash function.
-	- Added HMAC/MD5 and HMAC/SHA-256 keyed hash functions.
+	- Added HMAC-MD5 and HMAC-SHA-256 keyed hash functions.
 	- Added PKCS#5 padding.
 	- Added DHAES encryption scheme.
 	- Added Microsoft Visual C support, added Makefile.mak for this purpose.
@@ -28,7 +56,7 @@
 1.1.1:
 	- Changed autoconfig script for easier porting.
 	- Changed sources for easier compilation on Microsoft Visual C++; no assembler-optimization on this platform yet.
-	_ Fixed bug in javaglue when passing null IV to blockcipher.
+	- Fixed bug in javaglue when passing null IV to blockcipher.
 	- Shared library is now linked dynamically, with shared object name and version.
 	- Tested on Alpha Linux.
 	- Tested on Alpha FreeBSD.
