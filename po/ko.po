@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 15:59-0500\n"
+"POT-Creation-Date: 2001-11-02 18:15-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1423,134 +1423,113 @@ msgstr "헤더에 아카이브 파일이 없습니다"
 msgid " failed - "
 msgstr " 실패함 - "
 
-#. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:136
-#, c-format
-msgid ""
-"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
-"\tA %s\tB %s\n"
-msgstr ""
-"\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
-"\tA %s\tB %s\n"
-
-#: lib/depends.c:165
-#, c-format
-msgid "  %s    A %s\tB %s\n"
-msgstr "  %s    A %s\tB %s\n"
-
-#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
-msgid "YES"
-msgstr "예"
-
-#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
-msgid "NO "
-msgstr "아니오"
-
-#: lib/depends.c:314
+#: lib/depends.c:102
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/depends.c:547
+#: lib/depends.c:335
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:552
+#: lib/depends.c:340
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:557
+#: lib/depends.c:345
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:792
-#, fuzzy, c-format
-msgid "%9s: %-45s %-s (cached)\n"
-msgstr "%s: %-45s %-s (캐시됨)\n"
+#: lib/depends.c:591
+msgid "(cached)"
+msgstr ""
 
-#: lib/depends.c:828
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (rpmrc provides)\n"
+#: lib/depends.c:627
+#, fuzzy
+msgid "(rpmrc provides)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:845
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (rpmlib provides)\n"
+#: lib/depends.c:643
+#, fuzzy
+msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:868
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db files)\n"
-msgstr "%s: %-45s 예 (db 파일)\n"
+#: lib/depends.c:665
+#, fuzzy
+msgid "(db files)"
+msgstr "잘못된 db 파일    %s\n"
 
-#: lib/depends.c:881
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db provides)\n"
+#: lib/depends.c:677
+#, fuzzy
+msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:895
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db package)\n"
-msgstr "%s: %-45s 예 (db 패키지)\n"
+#: lib/depends.c:690
+#, fuzzy
+msgid "(db package)"
+msgstr "패키지가 없습니다\n"
 
-#: lib/depends.c:916
-#, fuzzy, c-format
-msgid "%9s: %-45s NO\n"
-msgstr "%s: %-45s 아니오\n"
-
-#: lib/depends.c:943
+#: lib/depends.c:736
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
 
+#: lib/depends.c:738
+msgid "NO "
+msgstr "아니오"
+
+#: lib/depends.c:738
+msgid "YES"
+msgstr "예"
+
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:995
+#: lib/depends.c:795
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1059
+#: lib/depends.c:863
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "패키지 %s (이)가 충돌함: %s\n"
 
-#: lib/depends.c:1312
+#: lib/depends.c:1121
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\" (을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1556
+#: lib/depends.c:1364
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1629
+#: lib/depends.c:1442
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 깊이[depth])\n"
 
-#: lib/depends.c:1704
+#: lib/depends.c:1517
 msgid "========== successors only (presentation order)\n"
 msgstr "========== 후임자 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1765
+#: lib/depends.c:1578
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1800
+#: lib/depends.c:1613
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1805
+#: lib/depends.c:1618
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -3428,6 +3407,33 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s (을)를 생성하는데 실패함: %s\n"
+
+#~ msgid ""
+#~ "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
+#~ "\tA %s\tB %s\n"
+#~ msgstr ""
+#~ "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니"
+#~ "다)\n"
+#~ "\tA %s\tB %s\n"
+
+#~ msgid "  %s    A %s\tB %s\n"
+#~ msgstr "  %s    A %s\tB %s\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s %-s (cached)\n"
+#~ msgstr "%s: %-45s %-s (캐시됨)\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s YES (db files)\n"
+#~ msgstr "%s: %-45s 예 (db 파일)\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s YES (db package)\n"
+#~ msgstr "%s: %-45s 예 (db 패키지)\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s NO\n"
+#~ msgstr "%s: %-45s 아니오\n"
 
 #~ msgid "%s: %-45s YES (added files)\n"
 #~ msgstr "%s: %-45s 예 (파일이 추가됨)\n"

@@ -1589,15 +1589,6 @@ int rpmvercmp(const char * a, const char * b)
 	/*@*/;
 
 /** \ingroup rpmtrans
- * Compare two versioned dependency ranges, looking for overlap.
- * @param A		1st dependency
- * @param B		2nd dependency
- * @return		1 if dependencies overlap, 0 otherwise
- */
-int rpmRangesOverlap(const rpmDepSet A, const rpmDepSet B)
-	/*@*/;
-
-/** \ingroup rpmtrans
  * Check dependency against internal rpmlib feature provides.
  * @param key		dependency
  * @return		1 if dependency overlaps, 0 otherwise

@@ -551,3 +551,4 @@ fi
 - invent some toy transactionElement iterators.
 - create rpmDepSet constructors/destructors.
 - create toy rpmDepSet iterators.
+- rpmRangesOverlap renamed to dsCompare, add dsNotify method as well.

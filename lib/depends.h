@@ -450,6 +450,82 @@ char * dsDNEVR(const char * depend, const rpmDepSet key)
     *t = '\0';
     return tbuf;
 }
+
+/**
+ * Return current dependency name.
+ * @param ds		dependency set
+ * @return		current dependency name, NULL on invalid
+ */
+/*@unused@*/ static inline /*@null@*/
+const char * dsiGetN(/*@null@*/ rpmDepSet ds)
+	/*@*/
+{
+    const char * N = NULL;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+	if (ds->N != NULL)
+	    N = ds->N[ds->i];
+    }
+    return N;
+}
+
+/**
+ * Return current dependency epoch-version-release.
+ * @param ds		dependency set
+ * @return		current dependency EVR, NULL on invalid
+ */
+/*@unused@*/ static inline /*@null@*/
+const char * dsiGetEVR(/*@null@*/ rpmDepSet ds)
+	/*@*/
+{
+    const char * EVR = NULL;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+	if (ds->EVR != NULL)
+	    EVR = ds->EVR[ds->i];
+    }
+    return EVR;
+}
+
+/**
+ * Return current dependency Flags.
+ * @param ds		dependency set
+ * @return		current dependency EVR, 0 on invalid
+ */
+/*@unused@*/ static inline
+int_32 dsiGetFlags(/*@null@*/ rpmDepSet ds)
+	/*@*/
+{
+    int_32 Flags = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+	if (ds->Flags != NULL)
+	    Flags = ds->Flags[ds->i];
+    }
+    return Flags;
+}
+
+/**
+ * Notify of results of dependency match;
+ * @param ds		dependency set
+ * @param where		where dependency was resolved (or NULL)
+ * @param rc		0 == YES, otherwise NO
+ */
+/*@unused@*/ static inline
+void dsiNotify(/*@null@*/ rpmDepSet ds, /*@null@*/ const char * where, int rc)
+	/*@*/
+{
+    if (!(ds != NULL && ds->i >= 0 && ds->i < ds->Count))
+	return;
+    if (ds->Type == NULL ||ds->DNEVR == NULL)
+	return;
+
+    rpmMessage(RPMMESS_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
+		(!strcmp(ds->DNEVR, "cached") ? ds->DNEVR : ds->DNEVR+2),
+		(rc ? _("NO ") : _("YES")),
+		(where != NULL ? where : ""));
+}
+
 /**
  * Return next dependency set iterator index.
  * @param ds		dependency set
@@ -476,8 +552,6 @@ fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, ds->Type, ds->DNEVR);
 #endif
 	}
     }
-    if (i >= 0) {
-    }
     return i;
 }
 
@@ -496,13 +570,181 @@ rpmDepSet dsiInit(/*@returned@*/ /*@null@*/ rpmDepSet ds)
 }
 
 /**
- * Return (malloc'd) header name-version-release string.
- * @param h		header
- * @retval np		name tag value
- * @return		name-version-release string
+ * Split EVR into epoch, version, and release components.
+ * @param evr		[epoch:]version[-release] string
+ * @retval *ep		pointer to epoch
+ * @retval *vp		pointer to version
+ * @retval *rp		pointer to release
  */
-/*@only@*/ char * hGetNVR(Header h, /*@out@*/ const char ** np )
-	/*@modifies *np @*/;
+/*@unused@*/ static inline
+void parseEVR(char * evr,
+		/*@exposed@*/ /*@out@*/ const char ** ep,
+		/*@exposed@*/ /*@out@*/ const char ** vp,
+		/*@exposed@*/ /*@out@*/ const char ** rp)
+	/*@modifies *ep, *vp, *rp @*/
+{
+    const char *epoch;
+    const char *version;		/* assume only version is present */
+    const char *release;
+    char *s, *se;
+
+    s = evr;
+    while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
+    se = strrchr(s, '-');		/* se points to version terminator */
+
+    if (*s == ':') {
+	epoch = evr;
+	*s++ = '\0';
+	version = s;
+	/*@-branchstate@*/
+	if (*epoch == '\0') epoch = "0";
+	/*@=branchstate@*/
+    } else {
+	epoch = NULL;	/* XXX disable epoch compare if missing */
+	version = evr;
+    }
+    if (se) {
+	*se++ = '\0';
+	release = se;
+    } else {
+	release = NULL;
+    }
+
+    if (ep) *ep = epoch;
+    if (vp) *vp = version;
+    if (rp) *rp = release;
+}
+
+/**
+ * Compare two versioned dependency ranges, looking for overlap.
+ * @param A		1st dependency
+ * @param B		2nd dependency
+ * @return		1 if dependencies overlap, 0 otherwise
+ */
+/*@unused@*/ static inline
+int dsCompare(const rpmDepSet A, const rpmDepSet B)
+	/*@*/
+{
+    const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
+    const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
+    char *aEVR, *bEVR;
+    const char *aE, *aV, *aR, *bE, *bV, *bR;
+    int result;
+    int sense;
+
+    /* Different names don't overlap. */
+    if (strcmp(A->N[A->i], B->N[B->i])) {
+	result = 0;
+	goto exit;
+    }
+
+    /* Same name. If either A or B is an existence test, always overlap. */
+    if (!((A->Flags[A->i] & RPMSENSE_SENSEMASK) && (B->Flags[B->i] & RPMSENSE_SENSEMASK))) {
+	result = 1;
+	goto exit;
+    }
+
+    /* If either EVR is non-existent or empty, always overlap. */
+    if (!(A->EVR[A->i] && *A->EVR[A->i] && B->EVR[B->i] && *B->EVR[B->i])) {
+	result = 1;
+	goto exit;
+    }
+
+    /* Both AEVR and BEVR exist. */
+    aEVR = xstrdup(A->EVR[A->i]);
+    parseEVR(aEVR, &aE, &aV, &aR);
+    bEVR = xstrdup(B->EVR[B->i]);
+    parseEVR(bEVR, &bE, &bV, &bR);
+
+    /* Compare {A,B} [epoch:]version[-release] */
+    sense = 0;
+    if (aE && *aE && bE && *bE)
+	sense = rpmvercmp(aE, bE);
+    else if (aE && *aE && atol(aE) > 0) {
+	/* XXX legacy epoch-less requires/conflicts compatibility */
+	rpmMessage(RPMMESS_DEBUG, _("the \"B\" dependency needs an epoch (assuming same as \"A\")\n\tA %s\tB %s\n"),
+		aDepend, bDepend);
+	sense = 0;
+    } else if (bE && *bE && atol(bE) > 0)
+	sense = -1;
+
+    if (sense == 0) {
+	sense = rpmvercmp(aV, bV);
+	if (sense == 0 && aR && *aR && bR && *bR) {
+	    sense = rpmvercmp(aR, bR);
+	}
+    }
+    aEVR = _free(aEVR);
+    bEVR = _free(bEVR);
+
+    /* Detect overlap of {A,B} range. */
+    result = 0;
+    if (sense < 0 && ((A->Flags[A->i] & RPMSENSE_GREATER) || (B->Flags[B->i] & RPMSENSE_LESS))) {
+	result = 1;
+    } else if (sense > 0 && ((A->Flags[A->i] & RPMSENSE_LESS) || (B->Flags[B->i] & RPMSENSE_GREATER))) {
+	result = 1;
+    } else if (sense == 0 &&
+	(((A->Flags[A->i] & RPMSENSE_EQUAL) && (B->Flags[B->i] & RPMSENSE_EQUAL)) ||
+	 ((A->Flags[A->i] & RPMSENSE_LESS) && (B->Flags[B->i] & RPMSENSE_LESS)) ||
+	 ((A->Flags[A->i] & RPMSENSE_GREATER) && (B->Flags[B->i] & RPMSENSE_GREATER)))) {
+	result = 1;
+    }
+
+exit:
+    rpmMessage(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
+	(result ? _("YES") : _("NO ")), aDepend, bDepend);
+    aDepend = _free(aDepend);
+    bDepend = _free(bDepend);
+    return result;
+}
+
+/**
+ */
+/*@unused@*/ static inline
+int rangeMatchesDepFlags (Header h, const rpmDepSet req)
+	/*@modifies h @*/
+{
+    int scareMem = 1;
+    rpmDepSet provides = NULL;
+    int result = 0;
+
+    if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
+	return 1;
+
+    /* Get provides information from header */
+    /*
+     * Rpm prior to 3.0.3 does not have versioned provides.
+     * If no provides version info is available, match any requires.
+     */
+    provides = dsiInit(dsNew(h, RPMTAG_PROVIDENAME, scareMem));
+    if (provides == NULL)
+	goto exit;	/* XXX should never happen */
+
+    if (provides->EVR == NULL) {
+	result = 1;
+	goto exit;
+    }
+
+    result = 0;
+    if (provides != NULL)
+    while (dsiNext(provides) >= 0) {
+
+	/* Filter out provides that came along for the ride. */
+	if (strcmp(provides->N[provides->i], req->N[req->i]))
+	    continue;
+
+	result = dsCompare(provides, req);
+
+	/* If this provide matches the require, we're done. */
+	if (result)
+	    break;
+    }
+
+exit:
+    provides = dsFree(provides);
+
+    return result;
+}
 
 /** \ingroup rpmdep
  * Compare package name-version-release from header with dependency, looking
@@ -512,8 +754,63 @@ rpmDepSet dsiInit(/*@returned@*/ /*@null@*/ rpmDepSet ds)
  * @param req		dependency
  * @return		1 if dependency overlaps, 0 otherwise
  */
+/*@unused@*/ static inline
 int headerMatchesDepFlags(Header h, const rpmDepSet req)
-		/*@*/;
+	/*@*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    const char *name, *version, *release;
+    int_32 * epoch;
+    const char * pkgEVR;
+    char * p;
+    int_32 pkgFlags = RPMSENSE_EQUAL;
+    rpmDepSet pkg = memset(alloca(sizeof(*pkg)), 0, sizeof(*pkg));
+    int rc;
+
+    if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
+	return 1;
+
+    /* Get package information from header */
+    (void) headerNVR(h, &name, &version, &release);
+
+    pkgEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *p = '\0';
+    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+	sprintf(p, "%d:", *epoch);
+	while (*p != '\0')
+	    p++;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+
+    /*@-compmempass@*/ /* FIX: move pkg immediate variables from stack */
+    pkg->i = -1;
+    pkg->Type = "Provides";
+    pkg->tagN = RPMTAG_PROVIDENAME;
+    pkg->DNEVR = NULL;
+    /*@-immediatetrans@*/
+    pkg->N = &name;
+    pkg->EVR = &pkgEVR;
+    pkg->Flags = &pkgFlags;
+    /*@=immediatetrans@*/
+    pkg->Count = 1;
+    (void) dsiNext(dsiInit(pkg));
+
+    rc = dsCompare(pkg, req);
+
+    pkg->DNEVR = _free(pkg->DNEVR);
+    /*@=compmempass@*/
+
+    return rc;
+}
+
+/**
+ * Return (malloc'd) header name-version-release string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+/*@only@*/ char * hGetNVR(Header h, /*@out@*/ const char ** np )
+	/*@modifies *np @*/;
 
 #ifdef __cplusplus
 }

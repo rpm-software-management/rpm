@@ -722,6 +722,7 @@ alAllFileSatisfiesDepend(const availableList al, const char * keyType,
 	        /*@innercontinue@*/ continue;
 #endif
 
+	    /* XXX FIXME: use dsiNotify */
 	    if (keyType)
 		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (added files)\n"),
 			keyType, fileName);
@@ -816,15 +817,12 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet key)
 		if (strcmp(p->provides->N[p->provides->i], key->N[key->i]))
 		    /*@innercontinue@*/ continue;
 
-		rc = rpmRangesOverlap(p->provides, key);
+		rc = dsCompare(p->provides, key);
 		if (rc)
 		    /*@innerbreak@*/ break;
 	    }
 	    if (key->Type && rc)
-		if (key->DNEVR)
-		    rpmMessage(RPMMESS_DEBUG,
-			_("%9s: %-45s YES (added provide)\n"),
-				key->Type, key->DNEVR+2);
+		dsiNotify(key, _("(added provide)"), 0);
 	    /*@switchbreak@*/ break;
 	}
 

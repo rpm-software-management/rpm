@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 15:59-0500\n"
+"POT-Creation-Date: 2001-11-02 18:15-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1465,132 +1465,113 @@ msgstr ""
 msgid " failed - "
 msgstr " nie powiod³o siê -"
 
-#. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:136
-#, c-format
-msgid ""
-"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
-"\tA %s\tB %s\n"
-msgstr ""
-
-#: lib/depends.c:165
-#, c-format
-msgid "  %s    A %s\tB %s\n"
-msgstr ""
-
-#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
-msgid "YES"
-msgstr ""
-
-#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
-#, fuzzy
-msgid "NO "
-msgstr "NIE DOBRZE"
-
-#: lib/depends.c:314
+#: lib/depends.c:102
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/depends.c:547
+#: lib/depends.c:335
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:552
+#: lib/depends.c:340
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "pakiet %s-%s-%s jest ju¿ zainstalowany"
 
-#: lib/depends.c:557
+#: lib/depends.c:345
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:792
-#, fuzzy, c-format
-msgid "%9s: %-45s %-s (cached)\n"
+#: lib/depends.c:591
+msgid "(cached)"
+msgstr ""
+
+#: lib/depends.c:627
+#, fuzzy
+msgid "(rpmrc provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:828
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (rpmrc provides)\n"
+#: lib/depends.c:643
+#, fuzzy
+msgid "(rpmlib provides)"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:845
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (rpmlib provides)\n"
-msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+#: lib/depends.c:665
+#, fuzzy
+msgid "(db files)"
+msgstr "b³êdny status pliku: %s"
 
-#: lib/depends.c:868
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db files)\n"
-msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+#: lib/depends.c:677
+#, fuzzy
+msgid "(db provides)"
+msgstr "Udostêpniane zasoby:"
 
-#: lib/depends.c:881
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db provides)\n"
-msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+#: lib/depends.c:690
+#, fuzzy
+msgid "(db package)"
+msgstr "znaleziono %d pakietów\n"
 
-#: lib/depends.c:895
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db package)\n"
-msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
-
-#: lib/depends.c:916
-#, fuzzy, c-format
-msgid "%9s: %-45s NO\n"
-msgstr "plik %s: %s\n"
-
-#: lib/depends.c:943
+#: lib/depends.c:736
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
+#: lib/depends.c:738
+#, fuzzy
+msgid "NO "
+msgstr "NIE DOBRZE"
+
+#: lib/depends.c:738
+msgid "YES"
+msgstr ""
+
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:995
+#: lib/depends.c:795
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1059
+#: lib/depends.c:863
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakiet %s jest w konflikcie: %s\n"
 
-#: lib/depends.c:1312
+#: lib/depends.c:1121
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie indeksu grupy\n"
 
 #. Record all relations.
-#: lib/depends.c:1556
+#: lib/depends.c:1364
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1629
+#: lib/depends.c:1442
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1704
+#: lib/depends.c:1517
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1765
+#: lib/depends.c:1578
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1800
+#: lib/depends.c:1613
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1805
+#: lib/depends.c:1618
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -3506,6 +3487,26 @@ msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"
 
 #, fuzzy
+#~ msgid "%9s: %-45s %-s (cached)\n"
+#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s YES (db files)\n"
+#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s YES (db provides)\n"
+#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s YES (db package)\n"
+#~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s NO\n"
+#~ msgstr "plik %s: %s\n"
+
+#, fuzzy
 #~ msgid "cannot open rpm database in %s\n"
 #~ msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
@@ -4950,9 +4951,6 @@ msgstr "utworzenie %s nie powiod³o siê\n"
 
 #~ msgid "Failed to find requires"
 #~ msgstr "Wyszukiwanie nie powiod³o siê"
-
-#~ msgid "Provides:"
-#~ msgstr "Udostêpniane zasoby:"
 
 #~ msgid "Prereqs:"
 #~ msgstr "Prerekwizyty:"

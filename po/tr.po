@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 15:59-0500\n"
+"POT-Creation-Date: 2001-11-02 18:15-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1446,134 +1446,113 @@ msgstr ""
 msgid " failed - "
 msgstr " baþarýsýz - "
 
-#. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:136
-#, fuzzy, c-format
-msgid ""
-"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
-"\tA %s\tB %s\n"
-msgstr ""
-"\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
-"\tA %s\tB %s\n"
-
-#: lib/depends.c:165
-#, c-format
-msgid "  %s    A %s\tB %s\n"
-msgstr "  %s    A %s\tB %s\n"
-
-#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
-msgid "YES"
-msgstr "EVET"
-
-#: lib/depends.c:166 lib/depends.c:794 lib/depends.c:945
-msgid "NO "
-msgstr "HAYIR "
-
-#: lib/depends.c:314
+#: lib/depends.c:102
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
-#: lib/depends.c:547
+#: lib/depends.c:335
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:552
+#: lib/depends.c:340
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "%s zaten kurulu"
 
-#: lib/depends.c:557
+#: lib/depends.c:345
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:792
-#, fuzzy, c-format
-msgid "%9s: %-45s %-s (cached)\n"
-msgstr "%s: %-45s %-s (arabellekli)\n"
+#: lib/depends.c:591
+msgid "(cached)"
+msgstr ""
 
-#: lib/depends.c:828
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (rpmrc provides)\n"
+#: lib/depends.c:627
+#, fuzzy
+msgid "(rpmrc provides)"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:845
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (rpmlib provides)\n"
+#: lib/depends.c:643
+#, fuzzy
+msgid "(rpmlib provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:868
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db files)\n"
-msgstr "%s: %-45s EVET (db dosyalarý)\n"
+#: lib/depends.c:665
+#, fuzzy
+msgid "(db files)"
+msgstr "db dosyasý %s hatalý\n"
 
-#: lib/depends.c:881
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db provides)\n"
+#: lib/depends.c:677
+#, fuzzy
+msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:895
-#, fuzzy, c-format
-msgid "%9s: %-45s YES (db package)\n"
-msgstr "%s: %-45s EVET (db paketi)\n"
+#: lib/depends.c:690
+#, fuzzy
+msgid "(db package)"
+msgstr "paket yok\n"
 
-#: lib/depends.c:916
-#, fuzzy, c-format
-msgid "%9s: %-45s NO\n"
-msgstr "%s: %-45s HAYIR\n"
-
-#: lib/depends.c:943
+#: lib/depends.c:736
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
 
+#: lib/depends.c:738
+msgid "NO "
+msgstr "HAYIR "
+
+#: lib/depends.c:738
+msgid "YES"
+msgstr "EVET"
+
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:995
+#: lib/depends.c:795
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1059
+#: lib/depends.c:863
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi çeliþiyor: %s\n"
 
-#: lib/depends.c:1312
+#: lib/depends.c:1121
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1556
+#: lib/depends.c:1364
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1629
+#: lib/depends.c:1442
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1704
+#: lib/depends.c:1517
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1765
+#: lib/depends.c:1578
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1800
+#: lib/depends.c:1613
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1805
+#: lib/depends.c:1618
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -3437,6 +3416,33 @@ msgstr "url portu bir sayý olmalý\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
+#~ "\tA %s\tB %s\n"
+#~ msgstr ""
+#~ "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
+#~ "\tA %s\tB %s\n"
+
+#~ msgid "  %s    A %s\tB %s\n"
+#~ msgstr "  %s    A %s\tB %s\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s %-s (cached)\n"
+#~ msgstr "%s: %-45s %-s (arabellekli)\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s YES (db files)\n"
+#~ msgstr "%s: %-45s EVET (db dosyalarý)\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s YES (db package)\n"
+#~ msgstr "%s: %-45s EVET (db paketi)\n"
+
+#, fuzzy
+#~ msgid "%9s: %-45s NO\n"
+#~ msgstr "%s: %-45s HAYIR\n"
 
 #~ msgid "%s: %-45s YES (added files)\n"
 #~ msgstr "%s: %-45s EVET (dosyalar eklendi)\n"
