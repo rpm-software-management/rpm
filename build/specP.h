@@ -16,6 +16,8 @@ typedef struct sources {
 struct SpecRec {
     char *name;      /* package base name */
     char *specfile;
+    int numSources;
+    int numPatches;
     Sources sources;
     StringBuf prep;
     StringBuf build;
