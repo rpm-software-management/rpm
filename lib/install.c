@@ -17,21 +17,40 @@
 #include <utime.h>
 #include <zlib.h>
 
+#include "cpio.h"
 #include "header.h"
 #include "install.h"
 #include "md5.h"
+#include "messages.h"
 #include "misc.h"
 #include "miscfn.h"
 #include "rpmdb.h"
 #include "rpmlib.h"
-#include "messages.h"
 
-enum instActions { CREATE, BACKUP, KEEP, SAVE, SKIP };
+enum instActions { UNKNOWN, CREATE, BACKUP, KEEP, SAVE, SKIP };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
-struct fileToInstall {
-    char * fileName;
-    int size;
+struct fileMemory {
+    char ** md5s;
+    char ** links;
+    char ** names;
+    struct fileInfo * files;
+};
+
+struct fileInfo {
+    char * cpioPath;
+    char * relativePath;		/* relative to root */
+    char * rootedPath;			/* absolute relative to / */
+    char * md5;
+    char * link;
+    uid_t uid;
+    gid_t gid;
+    uint_32 flags;
+    uint_32 size;
+    mode_t mode;
+    char state;
+    enum instActions action;
+    int install;
 } ;
 
 struct replacedFile {
@@ -44,27 +63,15 @@ static int filecmp(short mode1, char * md51, char * link1,
 static enum instActions decideFileFate(char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int brokenMd5);
-static int installArchive(char * prefix, int fd, struct fileToInstall * files,
-			  int fileCount, rpmNotifyFunction notify,
-			  char ** installArchive, char * tmpPath,
-			  int archiveSize);
+static int installArchive(char * prefix, int fd, struct fileInfo * files,
+			  int fileCount, rpmNotifyFunction notify, 
+			  char ** specFile, int archiveSize);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
 				   char * release, int * recOffset, int flags);
-static int setFileOwnerships(char * rootdir, char ** fileList, 
-			     char ** fileOwners, char ** fileGroups, 
-			     int_16 * fileModes, 
-			     enum instActions * instActions, int fileCount);
-static int setFileOwner(char * file, char * owner, char * group, int_16 mode);
-static int createDirectories(char ** fileList, uint_32 * modesList, 
-			     uint_32 * mtimesList, int fileCount);
-static int mkdirIfNone(char * directory, mode_t perms, uint_32 stamp);
-static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
-			         char ** fileMd5List, int_16 * fileModeList,
-				 char ** fileLinkList, uint_32 * fileFlagsList,
-				 int fileCount, enum instActions * instActions, 
-			 	 char ** prootdirootdir, int * notErrors,
+static int instHandleSharedFiles(rpmdb db, int ignoreOffset, 
+				 struct fileInfo * files,
+				 int fileCount, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
-static int fileCompare(const void * one, const void * two);
 static int installSources(Header h, char * rootdir, int fd, 
 			  char ** specFilePtr, rpmNotifyFunction notify,
 			  char * labelFormat);
@@ -75,8 +82,11 @@ static int archOkay(Header h);
 static int osOkay(Header h);
 static int moveFile(char * sourceName, char * destName);
 static int copyFile(char * sourceName, char * destName);
-static void unglobFilename(char * dptr, char * sptr);
 static int ensureOlder(rpmdb db, Header new, int dbOffset);
+static void assembleFileList(Header h, struct fileMemory * mem, 
+			     int * fileCountPtr, struct fileInfo ** files, 
+			     int stripPrefixLength);
+static void freeFileMemory(struct fileMemory fileMem);
 
 /* 0 success */
 /* 1 bad magic */
@@ -107,6 +117,78 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
     return rc;
 }
 
+static void freeFileMemory(struct fileMemory fileMem) {
+    free(fileMem.files);
+    free(fileMem.md5s);
+    free(fileMem.links);
+    free(fileMem.names);
+}
+
+/* files should not be preallocated */
+static void assembleFileList(Header h, struct fileMemory * mem, 
+			     int * fileCountPtr, struct fileInfo ** filesPtr, 
+			     int stripPrefixLength) {
+    char ** fileOwners;
+    char ** fileGroups;
+    uint_32 * fileFlags;
+    uint_32 * fileSizes;
+    uint_16 * fileModes;
+    struct fileInfo * files;
+    struct fileInfo * file;
+    int fileCount;
+    int i;
+
+    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
+		   fileCountPtr);
+    fileCount = *fileCountPtr;
+    files = *filesPtr = mem->files = malloc(sizeof(*mem->files) * fileCount);
+    
+    headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &mem->md5s, NULL);
+    headerGetEntry(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fileOwners, NULL);
+    headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fileGroups, NULL);
+    headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
+    headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
+    headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
+    headerGetEntry(h, RPMTAG_FILELINKTOS, NULL, (void **) &mem->links, NULL);
+
+    for (i = 0, file = files; i < fileCount; i++, file++) {
+	/* It would be nice to take care of assembling the rooted 
+	   path here, but making the caller do it lets us use alloca()
+	   and makes the memory management easier. */
+	file->rootedPath = NULL;
+	file->state = RPMFILE_STATE_NORMAL;
+	file->action = UNKNOWN;
+	file->install = 1;
+
+	file->relativePath = mem->names[i];
+	file->cpioPath = mem->names[i] + stripPrefixLength;
+	file->mode = fileModes[i];
+	file->md5 = mem->md5s[i];
+	file->link = mem->links[i];
+	file->size = fileSizes[i];
+	file->flags = fileFlags[i];
+
+	if (unameToUid(fileOwners[i], &files[i].uid)) {
+	    rpmError(RPMERR_NOUSER, "user %s does not exist - using root", 
+			fileOwners[i]);
+	    files[i].uid = 0;
+	    /* turn off the suid bit */
+	    files[i].mode &= ~S_ISUID;
+	}
+
+	if (gnameToGid(fileGroups[i], &files[i].gid)) {
+	    rpmError(RPMERR_NOGROUP, "user %s does not exist - using root", 
+			fileGroups[i]);
+	    files[i].gid = 0;
+	    /* turn off the sgid bit */
+	    files[i].mode &= ~S_ISGID;
+	}
+    }
+
+    free(fileOwners);
+    free(fileGroups);
+}
+
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
@@ -117,26 +199,14 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     char * name, * version, * release;
     Header h;
     int fileCount, type, count;
-    char ** fileList;
-    char ** fileOwners, ** fileGroups, ** fileMd5s, ** fileLinkList;
-    uint_32 * fileFlagsList;
-    uint_32 * fileSizesList, * fileMtimesList;
-    int_16 * fileModesList;
+    struct fileInfo * files;
     int_32 installTime;
-    char * fileStatesList = NULL;
-    struct fileToInstall * files;
-    enum instActions * instActions = NULL;
+    char * fileStates;
     int i;
-    int archiveFileCount = 0;
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
     int rootLength = strlen(rootdir);
-    char ** rootedFileList = NULL;
-    char ** finalFileList = NULL;
-    char ** mkdirFileList = NULL;
-    int mkdirFileCount = 0;
-    uint_32 * mkdirModesList, * mkdirMtimesList;
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
@@ -147,6 +217,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     int hasOthers = 0;
     int relocationSize = 1;		/* strip at least first / for cpio */
     uint_32 * archiveSizePtr;
+    struct fileMemory fileMem;
+    int freeFileMem = 0;
 
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
@@ -156,7 +228,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     if (isSource) {
 	if (flags & RPMINSTALL_TEST) {
-	    rpmMessage(RPMMESS_DEBUG, "stopping install as we're running --test\n");
+	    rpmMessage(RPMMESS_DEBUG, 
+			"stopping install as we're running --test\n");
 	    return 0;
 	}
 
@@ -172,8 +245,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	return rc;
     }
 
-    /* Do this now so we can give error messages, even though we'll just
-       do it again after relocating everything */
     headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
@@ -286,11 +357,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (hasOthers) 
 	dbiFreeIndexRecord(matches);
 
-    fileList = NULL;
-    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
-		 &fileCount)) {
+    if (headerIsEntry(h, RPMTAG_FILENAMES)) {
 	char ** netsharedPaths;
 	char ** nsp;
+
+	freeFileMem = 1;
+	assembleFileList(h, &fileMem, &fileCount, &files, relocationSize);
 
 	if (netsharedPath) 
 	    netsharedPaths = splitString(netsharedPath, 
@@ -298,101 +370,78 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	else
 	    netsharedPaths = NULL;
 
-	instActions = alloca(sizeof(enum instActions) * fileCount);
-	rootedFileList = alloca(sizeof(char *) * fileCount);
-	fileStatesList = alloca(sizeof(*fileStatesList) * fileCount);
-
-	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
-	headerGetEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
-		 &fileCount);
-	headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
-		 &fileCount);
-	headerGetEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &fileLinkList, 
-		 &fileCount);
-
 	/* check for any config files that already exist. If they do, plan
 	   on making a backup copy. If that's not the right thing to do
 	   instHandleSharedFiles() below will take care of the problem */
 	for (i = 0; i < fileCount; i++) {
 	    if (rootLength > 1) {
-		rootedFileList[i] = alloca(strlen(fileList[i]) + 
+		files[i].rootedPath = alloca(strlen(files[i].relativePath) + 
 				rootLength + 3);
-		strcpy(rootedFileList[i], rootdir);
-		strcat(rootedFileList[i], fileList[i]);
+		strcpy(files[i].rootedPath, rootdir);
+		strcat(files[i].rootedPath, files[i].relativePath);
 	    } else 
-		rootedFileList[i] = fileList[i];
+		files[i].rootedPath = files[i].relativePath;
 
 	    /* netsharedPaths are not relative to the current root (though 
 	       they do need to take the package prefix into account */
 	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) 
-		if (!strncmp(fileList[i], *nsp, strlen(*nsp))) break;
+		if (!strncmp(files[i].relativePath, *nsp, strlen(*nsp))) 
+		    break;
 
 	    if (nsp && *nsp) {
 		rpmMessage(RPMMESS_DEBUG, "file %s in netshared path\n", 
-			rootedFileList[i]);
-		instActions[i] = SKIP;
-		fileStatesList[i] = RPMFILE_STATE_NETSHARED;
-	    } else if ((fileFlagsList[i] & RPMFILE_DOC) && 
+				files[i].rootedPath);
+		files[i].action = SKIP;
+		files[i].state = RPMFILE_STATE_NETSHARED;
+	    } else if ((files[i].flags & RPMFILE_DOC) && 
 			(flags & RPMINSTALL_NODOCS)) {
-		instActions[i] = SKIP;
-		fileStatesList[i] = RPMFILE_STATE_NOTINSTALLED;
+		files[i].action = SKIP;
+		files[i].state = RPMFILE_STATE_NOTINSTALLED;
 	    } else {
-		fileStatesList[i] = RPMFILE_STATE_NORMAL;
+		files[i].state = RPMFILE_STATE_NORMAL;
 
-		instActions[i] = CREATE;
-		if ((fileFlagsList[i] & RPMFILE_CONFIG) &&
-		    !S_ISDIR(fileModesList[i])) {
-		    if (exists(rootedFileList[i])) {
+		files[i].action = CREATE;
+		if ((files[i].flags & RPMFILE_CONFIG) &&
+		    !S_ISDIR(files[i].mode)) {
+		    if (exists(files[i].rootedPath)) {
 			rpmMessage(RPMMESS_DEBUG, "%s exists - backing up\n", 
-				    rootedFileList[i]);
-			instActions[i] = BACKUP;
+				    files[i].rootedPath);
+			files[i].action = BACKUP;
 		    }
 		}
 	    }
 	}
 
-	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileModesList,
-				   fileLinkList, fileFlagsList, fileCount, 
-				   instActions, rootedFileList, oldVersions, 
-				   &replacedList, flags);
+	rc = instHandleSharedFiles(db, otherOffset, files, fileCount, 
+				   oldVersions, &replacedList, flags);
 
-	free(fileMd5s);
-	free(fileLinkList);
 	if (rc) {
 	    if (replacedList) free(replacedList);
-	    free(fileList);
+	    if (freeFileMem) freeFileMemory(fileMem);
 	    return 2;
 	}
+    } else {
+	files = NULL;
     }
     
     if (flags & RPMINSTALL_TEST) {
 	rpmMessage(RPMMESS_DEBUG, "stopping install as we're running --test\n");
-	free(fileList);
 	if (replacedList) free(replacedList);
+	if (freeFileMem) freeFileMemory(fileMem);
 	return 0;
     }
 
     rpmMessage(RPMMESS_DEBUG, "running preinstall script (if any)\n");
     if (runScript(rootdir, h, RPMTAG_PREIN, scriptArg, 
 		  flags & RPMINSTALL_NOSCRIPTS)) {
-	free(fileList);
 	if (replacedList) free(replacedList);
+	if (freeFileMem) freeFileMemory(fileMem);
 	return 2;
     }
 
-    if (fileList) {
-	headerGetEntry(h, RPMTAG_FILESIZES, &type, (void **) &fileSizesList, 
-		 &fileCount);
-	headerGetEntry(h, RPMTAG_FILEMTIMES, &type, (void **) &fileMtimesList, 
-		 &fileCount);
-
-	files = alloca(sizeof(struct fileToInstall) * fileCount);
-	finalFileList = alloca(sizeof(char *) * fileCount);
-	mkdirFileList = alloca(sizeof(char *) * fileCount);
-	mkdirModesList = alloca(sizeof(*mkdirModesList) * fileCount);
-	mkdirMtimesList = alloca(sizeof(*mkdirMtimesList) * fileCount);
+    if (files) {
 	for (i = 0; i < fileCount; i++) {
-	    switch (instActions[i]) {
+	    switch (files[i].action) {
 	      case BACKUP:
 		ext = ".rpmorig";
 		installFile = 1;
@@ -417,54 +466,29 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		installFile = 0;
 		ext = NULL;
 		break;
+
+	      case UNKNOWN:
+		break;
 	    }
 
 	    if (ext) {
-		newpath = alloca(strlen(rootedFileList[i]) + 20);
-		strcpy(newpath, rootedFileList[i]);
+		newpath = alloca(strlen(files[i].rootedPath) + 20);
+		strcpy(newpath, files[i].rootedPath);
 		strcat(newpath, ext);
 		rpmError(RPMMESS_BACKUP, "warning: %s saved as %s", 
-			rootedFileList[i], newpath);
+			files[i].rootedPath, newpath);
 
-		if (rename(rootedFileList[i], newpath)) {
+		if (rename(files[i].rootedPath, newpath)) {
 		    rpmError(RPMERR_RENAME, "rename of %s to %s failed: %s",
-			  rootedFileList[i], newpath, strerror(errno));
+			  files[i].rootedPath, newpath, strerror(errno));
 		    if (replacedList) free(replacedList);
+		    if (freeFileMem) freeFileMemory(fileMem);
 		    return 2;
 		}
 	    }
 
-	    if (installFile) {
-		/* if we are using a relocateable package, we need to strip
-		   off whatever part of the (already relocated!) filelist
-
-		   we also need to strip globbing characters, as cpio
-		   globs the patterns we pass to it against the filenames
-		   in the archive */
-
-		files[archiveFileCount].fileName = 
-			alloca((strlen(fileList[i]) * 2) + 1);
-
-		unglobFilename(files[archiveFileCount].fileName, 
-				fileList[i] + relocationSize);
-		files[archiveFileCount].size = fileSizesList[i];
-
-
-		/* both of these list what files need to be installed and 
-		   where they end up *after* any relocations have been done 
-		   the mkdir list includes direcories though, while the final
-		   list does *not -- we don't let cpio expand directories as
-		   it has a bad habit of replacing symlinks with directories
-		   when we'd rather it didn't */
-		mkdirFileList[mkdirFileCount] = rootedFileList[i];
-		mkdirModesList[mkdirFileCount] = fileModesList[i];
-		mkdirMtimesList[mkdirFileCount] = fileMtimesList[i];
-		mkdirFileCount++;
-
-		if (!S_ISDIR(fileModesList[i])) {
-		    finalFileList[archiveFileCount] = rootedFileList[i];
-		    archiveFileCount++;
-		}
+	    if (!installFile) {
+		files[i].install = 0;
 	    }
 	}
 
@@ -476,17 +500,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	} else
 	    tmpPath = rpmGetVar(RPMVAR_TMPPATH);
 
-	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
-		      &count))
+	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, 
+				(void *) &archiveSizePtr, &count))
 	    archiveSizePtr = NULL;
-
-	if (createDirectories(mkdirFileList, mkdirModesList, mkdirMtimesList,
-			      mkdirFileCount)) {
-	    headerFree(h);
-	    free(fileList);
-	    if (replacedList) free(replacedList);
-	    return 2;
-	}
 
 	if (labelFormat) {
 	    printf(labelFormat, name, version, release);
@@ -494,35 +510,25 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(archivePrefix, fd, files, archiveFileCount, notify, 
-			   NULL, tmpPath, 
-			   archiveSizePtr ? *archiveSizePtr : 0)) {
+	if (installArchive(archivePrefix, fd, files, fileCount, notify, 
+			   NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
 	    headerFree(h);
-	    free(fileList);
 	    if (replacedList) free(replacedList);
+	    if (freeFileMem) freeFileMemory(fileMem);
 	    return 2;
 	}
 
-	if (headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, (void **) &fileOwners, 
-		     &fileCount)) {
-	    if (headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroups, 
-			 &fileCount)) {
-		if (setFileOwnerships(rootdir, fileList, fileOwners, fileGroups, 
-				fileModesList, instActions, fileCount)) {
-		    free(fileOwners);
-		    free(fileGroups);
-		    free(fileList);
-		    if (replacedList) free(replacedList);
+	if (files) {
+	    fileStates = malloc(sizeof(*fileStates) * fileCount);
+	    for (i = 0; i < fileCount; i++)
+		fileStates[i] = files[i].state;
 
-		    return 2;
-		}
-		free(fileGroups);
-	    }
-	    free(fileOwners);
+	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates, 
+			    fileCount);
+
+	    free(fileStates);
+	    if (freeFileMem) freeFileMemory(fileMem);
 	}
-	free(fileList);
-
-	headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStatesList, fileCount);
 
 	installTime = time(NULL);
 	headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
@@ -569,244 +575,54 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 #define BLOCKSIZE 1024
 
-/* -1 fileCount means install all files */
-static int installArchive(char * prefix, int fd, struct fileToInstall * files,
+/* NULL files means install all files */
+static int installArchive(char * prefix, int fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
-			  char ** specFile, char * tmpPath, int archiveSize) {
+			  char ** specFile, int archiveSize) {
     gzFile stream;
-    char buf[BLOCKSIZE];
-    pid_t child;
-    int p[2];
-    int statusPipe[2];
-    int bytesRead;
-    int bytes;
-    int status;
-    int cpioFailed = 0;
-    void * oldhandler;
-    int needSecondPipe;
-    char line[1024];
-    int j;
-    int i = 0;
-    int childGotStatus = 0;
-    unsigned long totalSize = 0;
-    unsigned long sizeInstalled = 0;
-    struct fileToInstall fileInstalled;
-    struct fileToInstall * file;
-    char * chptr, * filelist;
-    char ** args;
-    FILE * f;
-    int len;
-    int childDead = 0;
+    int rc, i;
+    struct cpioFileMapping * map;
+    char * failedFile;
 
-    /* no files to install */
-    if (!fileCount) return 0;
-
-    /* install all files, so don't pass a filelist to cpio */
-    if (fileCount == -1) fileCount = 0;
-
-    /* fd should be a gzipped cpio archive */
-
-    rpmMessage(RPMMESS_DEBUG, "installing archive into %s\n", prefix);
-
-    needSecondPipe = (notify != NULL && !archiveSize) || specFile;
+    if (!files) {
+	/* install all files */
+	fileCount = 0;
+    } else if (!fileCount) {
+	/* no files to install */
+	return 0;
+    }
 
     if (specFile) *specFile = NULL;
-    
-    args = alloca(sizeof(char *) * (fileCount + 10));
 
-    args[i++] = rpmGetVar(RPMVAR_CPIOBIN);
-    args[i++] = "--extract";
-    args[i++] = "--unconditional";
-    args[i++] = "--preserve-modification-time";
-    args[i++] = "--make-directories";
-    args[i++] = "--quiet";
-
-    if (!args[0]) args[0] = "cpio";
-
-    if (needSecondPipe)
-	args[i++] = "--verbose";
-
-    /* note - if fileCount == 0, all files get installed */
-    /* if fileCount > 500, we use a temporary file to pass the file
-       list to cpio rather then args because we're in danger of passing
-       too much argv/env stuff */
-
-    if (fileCount > 500) {
-	filelist = alloca(strlen(tmpPath) + 40);
-
-	rpmMessage(RPMMESS_DEBUG, "using a %s filelist\n", tmpPath);
-	sprintf(filelist, "%s/rpm-cpiofilelist.%d.tmp", tmpPath, 
-		(int) getpid());
-	f = fopen(filelist, "w");
-	if (!f) {
-	    rpmError(RPMERR_CREATE, "failed to create %s: %s", filelist,
-		  strerror(errno));
-	    return 1;
-	}
-	
-	for (j = 0; j < fileCount; j++) {
-	    if ((fputs(files[j].fileName, f) == EOF) || 
-		(fputs("\n", f) == EOF)) {
-		if (errno == ENOSPC) {
-		    rpmError(RPMERR_NOSPACE, "out of space on device");
-		} else {
-		    rpmError(RPMERR_CREATE, "failed to create %s: %s", filelist,
-			  strerror(errno));
-		}
-
-		fclose(f);
-		unlink(filelist);
-		return 1;
-	    }
-	}
-
-	fclose(f);
-
-	args[i++] = "--pattern-file";
-	args[i++] = filelist;
-    } else {
-	filelist = NULL;
-	for (j = 0; j < fileCount; j++)
-	    args[i++] = files[j].fileName;
+    map = alloca(sizeof(*map) * fileCount);
+    for (i = 0; i < fileCount; i++) {
+	map[i].archivePath = files[i].cpioPath;
+	map[i].finalPath = files[i].rootedPath;
+	map[i].finalMode = files[i].mode;
+	map[i].finalUid = files[i].uid;
+	map[i].finalGid = files[i].gid;
+	map[i].mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID |
+			  CPIO_MAP_GID;
     }
 
-    args[i++] = NULL;
-    
+    if (notify)
+	notify(0, archiveSize);
+
+    qsort(map, fileCount, sizeof(*map), cpioFileMapCmp);
+
     stream = gzdopen(fd, "r");
-    pipe(p);
+    rc = cpioInstallArchive(stream, map, fileCount, NULL, &failedFile);
 
-    if (needSecondPipe) {
-	pipe(statusPipe);
-	for (i = 0; i < fileCount; i++)
-	    totalSize += files[i].size;
-	qsort(files, fileCount, sizeof(struct fileToInstall), fileCompare);
-    }
-
-    oldhandler = signal(SIGPIPE, SIG_IGN);
-
-    child = fork();
-    if (!child) {
-	chdir(prefix);
-
-	close(p[1]);   /* we don't need to write to it */
-	close(0);      /* stdin will come from the pipe instead */
-	dup2(p[0], 0);
-	close(p[0]);
-
-	if (needSecondPipe) {
-	    close(statusPipe[0]);   /* we don't need to read from it*/
-	    close(2);      	    /* stderr will go to a pipe instead */
-	    dup2(statusPipe[1], 2);
-	    close(statusPipe[1]);
-	}
-
-	execvp(args[0], args);
-
-	_exit(-1);
-    }
-
-    close(p[0]);
-    if (needSecondPipe) {
-	close(statusPipe[1]);
-	fcntl(statusPipe[0], F_SETFL, O_NONBLOCK);
-    }
-
-    do {
-	if (waitpid(child, &status, WNOHANG)) childDead = 1;
-	
-	bytesRead = gzread(stream, buf, sizeof(buf));
-	if (bytesRead < 0) {
-	     cpioFailed = 1;
-	     childDead = 1;
-	     kill(child, SIGTERM);
-	} else if (bytesRead == 0) {
-	     /* if it's not dead yet, it will be when we close the pipe */
-	     waitpid(child, &status, 0);
-	     childDead = 1;
-	     childGotStatus = 1;
-	} else if (bytesRead && write(p[1], buf, bytesRead) != bytesRead) {
-	     cpioFailed = 1;
-	     childDead = 1;
-	     kill(child, SIGTERM);
-	}
-
-	if (needSecondPipe) {
-	    bytes = read(statusPipe[0], line, sizeof(line));
-
-	    while (bytes > 0) {
-		/* the sooner we erase this, the better. less chance
-		   of leaving it sitting around after a SIGINT
-		   (or SIGSEGV!) */
-		if (filelist) {
-		    unlink(filelist);
-		    filelist = NULL;
-		}
-
-		fileInstalled.fileName = line;
-
-		while ((chptr = (strchr(fileInstalled.fileName, '\n')))) {
-		    *chptr = '\0';
-
-		    rpmMessage(RPMMESS_DEBUG, "file \"%s\" complete\n", 
-				fileInstalled.fileName);
-
-		    if (notify && !archiveSize) {
-			file = bsearch(&fileInstalled, files, fileCount, 
-				       sizeof(struct fileToInstall), 
-				       fileCompare);
-			if (file) {
-			    sizeInstalled += file->size;
-			    notify(sizeInstalled, totalSize);
-			}
-		    }
-
-		    if (specFile) {
-			len = strlen(fileInstalled.fileName);
-			if (fileInstalled.fileName[len - 1] == 'c' &&
-			    fileInstalled.fileName[len - 2] == 'e' &&
-			    fileInstalled.fileName[len - 3] == 'p' &&
-			    fileInstalled.fileName[len - 4] == 's' &&
-			    fileInstalled.fileName[len - 5] == '.') {
-
-			    if (*specFile) free(*specFile);
-			    *specFile = strdup(fileInstalled.fileName);
-			}
-		    }
-		 
-		    fileInstalled.fileName = chptr + 1;
-		}
-
-		bytes = read(statusPipe[0], line, sizeof(line));
-	    }
-	} 
-
-	if (notify && archiveSize) {
-	    sizeInstalled += bytesRead;
-	    notify(sizeInstalled, archiveSize);
-	}
-    } while (!childDead);
-
-    gzclose(stream);
-    close(p[1]);
-    if (needSecondPipe) close(statusPipe[0]);
-    signal(SIGPIPE, oldhandler);
-
-    if (!childGotStatus)
-	waitpid(child, &status, 0);
-
-    if (filelist) {
-	unlink(filelist);
-    }
-
-    if (cpioFailed || !WIFEXITED(status) || WEXITSTATUS(status)) {
+    if (rc) {
 	/* this would probably be a good place to check if disk space
 	   was used up - if so, we should return a different error */
-	rpmError(RPMERR_CPIO, "unpacking of archive failed");
+	rpmError(RPMERR_CPIO, "unpacking of archive failed on file %s: %d", 
+		 failedFile, rc);
 	return 1;
     }
 
     if (notify)
-	notify(totalSize, totalSize);
+	notify(archiveSize, archiveSize);
 
     return 0;
 }
@@ -849,212 +665,6 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
     }
 
     return 0;
-}
-
-static int setFileOwnerships(char * rootdir, char ** fileList, 
-			     char ** fileOwners, char ** fileGroups, 
-			     int_16 * fileModesList,
-			     enum instActions * instActions, int fileCount) {
-    int i;
-    char * chptr;
-    int doFork = 0;
-    pid_t child;
-    int status;
-
-    rpmMessage(RPMMESS_DEBUG, "setting file owners and groups by name (not id)\n");
-
-    chptr = rootdir;
-    while (*chptr && *chptr == '/') 
-	chptr++;
-
-    if (*chptr) {
-	rpmMessage(RPMMESS_DEBUG, "forking child to setid's in chroot() "
-		"environment\n");
-	doFork = 1;
-
-	if ((child = fork())) {
-	    waitpid(child, &status, 0);
-	    return 0;
-	} else {
-	    chroot(rootdir);
-	}
-    }
-
-    for (i = 0; i < fileCount; i++) {
-	if (instActions[i] != SKIP) {
-	    /* ignore errors here - setFileOwner handles them reasonable
-	       and we want to keep running */
-	    setFileOwner(fileList[i], fileOwners[i], fileGroups[i],
-			 fileModesList[i]);
-	}
-    }
-
-    if (doFork)
-	_exit(0);
-
-    return 0;
-}
-
-/* setFileOwner() is really poorly implemented. It really ought to use 
-   hash tables. I just made the guess that most files would be owned by 
-   root or the same person/group who owned the last file. Those two values 
-   are cached, everything else is looked up via getpw() and getgr() functions. 
-   If this performs too poorly I'll have to implement it properly :-( */
-
-static int setFileOwner(char * file, char * owner, char * group, 
-			int_16 mode ) {
-    uid_t uid;
-    gid_t gid;
-
-    if ((uid = unameToUid(owner)) == -1) {
-	rpmError(RPMERR_NOUSER, "user %s does not exist - using root", owner);
-	uid = 0;
-	/* turn off the suid bit */
-	mode &= ~S_ISUID;
-    } 
-	
-    if ((gid = gnameToGid(group)) == -1) {
-	rpmError(RPMERR_NOUSER, "group %s does not exist - using root", group);
-	gid = 0;
-	/* turn off the sgid bit */
-	mode &= ~S_ISGID;
-    } 
-
-    rpmMessage(RPMMESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
-		file, owner, uid, group, gid, mode & 07777);
-    if (chown(file, uid, gid)) {
-	rpmError(RPMERR_CHOWN, "cannot set owner and group for %s - %s",
-		file, strerror(errno));
-	/* screw with the permissions so it's not SUID and 0.0 */
-	chmod(file, mode & ~S_ISUID & ~S_ISGID);
-	return 1;
-    }
-    /* Also set the mode according to what is stored in the header */
-    if (! S_ISLNK(mode)) {
-	if (chmod(file, mode & 07777)) {
-	    rpmError(RPMERR_CHOWN, "cannot change mode for %s - %s",
-		  file, strerror(errno));
-	    /* try to screw with the permissions so it's not SUID and 0.0 */
-	    chmod(file, mode & ~S_ISUID & ~S_ISGID);
-	    return 1;
-	}
-    }
-
-    return 0;
-}
-
-/* This could be more efficient. A brute force tokenization and mkdir's
-   seems like horrible overkill. I did make it know better then trying to 
-   create the same directory string twice in a row though. That should make it 
-   perform adequatally thanks to the sorted filelist.
-
-   This could create directories that should be symlinks :-( RPM building
-   should probably resolve symlinks in paths. 
-
-   This creates directories which are always 0755, despite the current umask */
-
-static int createDirectories(char ** fileList, uint_32 * modesList, 
-			     uint_32 * fileMtimesList, int fileCount) {
-    int i;
-    char * lastDirectory;
-    char * buffer;
-    int bufferLength;
-    int neededLength;
-    char * chptr;
-
-    lastDirectory = malloc(1);
-    lastDirectory[0] = '\0';
-
-    bufferLength = 1000;		/* should be more then adequate */
-    buffer = malloc(bufferLength);
-
-    for (i = 0; i < fileCount; i++) {
-	neededLength = strlen(fileList[i]) + 1;
-	if (neededLength > bufferLength) { 
-	    free(buffer);
-	    bufferLength = neededLength * 2;
-	    buffer = malloc(bufferLength);
-	}
-	strcpy(buffer, fileList[i]);
-	
-	for (chptr = buffer + strlen(buffer) - 1; *chptr; chptr--) {
-	    if (*chptr == '/') break;
-	}
-
-	if (! *chptr) continue;		/* no path, just filename */
-	if (chptr == buffer) continue;  /* /filename - no directories */
-
-	*chptr = '\0';			/* buffer is now just directories */
-
-	if (strcmp(buffer, lastDirectory)) {
-	    for (chptr = buffer + 1; *chptr; chptr++) {
-		if (*chptr == '/') {
-		    if (*(chptr -1) != '/') {
-			*chptr = '\0';
-			if (mkdirIfNone(buffer, 0755, 0)) {
-			    free(lastDirectory);
-			    free(buffer);
-			    return 1;
-			}
-			*chptr = '/';
-		    }
-		}
-	    }
-
-	    if (mkdirIfNone(buffer, 0755, 0)) {
-		free(lastDirectory);
-		free(buffer);
-		return 1;
-	    }
-
-	    free(lastDirectory);
-	    lastDirectory = strdup(buffer);
-	}
-
-	if (S_ISDIR(modesList[i])) {
-	    if (mkdirIfNone(fileList[i], 0755, fileMtimesList[i])) {
-		free(lastDirectory);
-		free(buffer);
-		return 1;
-	    }
-	}
-    }
-
-    free(lastDirectory);
-    free(buffer);
-
-    return 0;
-}
-
-static int mkdirIfNone(char * directory, mode_t perms, uint_32 mtime) {
-    int rc;
-    char * chptr;
-    struct utimbuf stamp;
-
-    for (chptr = directory; *chptr; chptr++)
-	if (*chptr != '/') break;
-    if (!*chptr) return 0;
-
-    if (exists(directory)) {
-	return 0;
-    }
-
-    rpmMessage(RPMMESS_DEBUG, "trying to make %s\n", directory);
-
-    rc = mkdir(directory, perms);
-    if (!rc) {
-	if (mtime) {
-	    stamp.actime = mtime;
-	    stamp.modtime = mtime;
-	    utime(directory, &stamp);
-	}
-	return 0;
-    }
-
-    rpmError(RPMERR_MKDIR, "failed to create %s - %s", directory, 
-	  strerror(errno));
-
-    return errno;
 }
 
 static int filecmp(short mode1, char * md51, char * link1, 
@@ -1167,11 +777,9 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 /* return 0: okay, continue install */
 /* return 1: problem, halt install */
 
-static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
-			         char ** fileMd5List, int_16 * fileModesList,
-				 char ** fileLinkList, uint_32 * fileFlagsList,
-				 int fileCount, enum instActions * instActions, 
-			 	 char ** prefixedFileList, int * notErrors,
+static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
+				 struct fileInfo * files,
+				 int fileCount, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags) {
     struct sharedFile * sharedList;
     int secNum, mainNum;
@@ -1190,19 +798,24 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
     struct replacedFile * replacedList;
     int numReplacedFiles, numReplacedAlloced;
     char state;
+    char ** fileList;
+
+    fileList = malloc(sizeof(*fileList) * fileCount);
+    for (i = 0; i < fileCount; i++)
+	fileList[i] = files[i].rootedPath;
 
     if (findSharedFiles(db, 0, fileList, fileCount, &sharedList, 
 			&sharedCount)) {
+	free(fileList);
 	return 1;
     }
+    free(fileList);
     
     numReplacedAlloced = 10;
     numReplacedFiles = 0;
     replacedList = malloc(sizeof(*replacedList) * numReplacedAlloced);
 
     for (i = 0; i < sharedCount; i++) {
-	if (sharedList[i].secRecOffset == ignoreOffset) continue;
-
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
 		headerFree(sech);
@@ -1273,13 +886,14 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	    continue;
 	}
 
-	if (filecmp(fileModesList[mainNum], fileMd5List[mainNum], 
-		    fileLinkList[mainNum], secFileModesList[secNum],
+	if (filecmp(files[mainNum].mode, files[mainNum].md5, 
+		    files[mainNum].link, secFileModesList[secNum],
 		    secFileMd5List[secNum], secFileLinksList[secNum])) {
 	    if (!(flags & RPMINSTALL_REPLACEFILES) && !(*intptr)) {
 		rpmError(RPMERR_PKGINSTALLED, "%s conflicts with file from "
-		      "%s-%s-%s", fileList[sharedList[i].mainFileNumber],
-		      name, version, release);
+		         "%s-%s-%s", 
+			 files[sharedList[i].mainFileNumber].relativePath,
+		         name, version, release);
 		rc = 1;
 	    } else {
 		if (numReplacedFiles == numReplacedAlloced) {
@@ -1296,20 +910,20 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 		numReplacedFiles++;
 
 		rpmMessage(RPMMESS_DEBUG, "%s from %s-%s-%s will be replaced\n", 
-			fileList[sharedList[i].mainFileNumber],
+			files[sharedList[i].mainFileNumber].relativePath,
 			name, version, release);
 	    }
 	}
 
 	/* if this is a config file, we need to be carefull here */
-	if (fileFlagsList[sharedList[i].mainFileNumber] & RPMFILE_CONFIG ||
+	if (files[sharedList[i].mainFileNumber].flags & RPMFILE_CONFIG ||
 	    secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
-	    instActions[sharedList[i].mainFileNumber] = 
-		decideFileFate(prefixedFileList[mainNum], 
+	    files[sharedList[i].mainFileNumber].action = 
+		decideFileFate(files[mainNum].rootedPath, 
 			       secFileModesList[secNum],
 			       secFileMd5List[secNum], secFileLinksList[secNum],
-			       fileModesList[mainNum], fileMd5List[mainNum],
-			       fileLinkList[mainNum], 
+			       files[mainNum].mode, files[mainNum].md5,
+			       files[mainNum].link, 
 			       !headerIsEntry(sech, RPMTAG_RPMVERSION));
 	}
     }
@@ -1331,11 +945,6 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
     }
 
     return rc;
-}
-
-static int fileCompare(const void * one, const void * two) {
-    return strcmp(((struct fileToInstall *) one)->fileName,
-		  ((struct fileToInstall *) two)->fileName);
 }
 
 /* 0 success */
@@ -1392,17 +1001,21 @@ static int installSources(Header h, char * rootdir, int fd,
 	headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
 	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
 	headerGetEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
-	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
-		      &count))
+	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, 
+				(void *) &archiveSizePtr, &count))
 	    archiveSizePtr = NULL;
 	printf(labelFormat, name, version, release);
 	fflush(stdout);
     }
 
+/*
+    FIXME
+
     if (installArchive(realSourceDir, fd, NULL, -1, notify, &specFile, 
 		       tmpPath, archiveSizePtr ? *archiveSizePtr : 0)) {
 	return 2;
     }
+*/
 
     if (!specFile) {
 	rpmError(RPMERR_NOSPEC, "source package contains no .spec file");
@@ -1421,7 +1034,8 @@ static int installSources(Header h, char * rootdir, int fd,
     strcat(correctSpecFile, "/");
     strcat(correctSpecFile, specFile);
 
-    rpmMessage(RPMMESS_DEBUG, "renaming %s to %s\n", instSpecFile, correctSpecFile);
+    rpmMessage(RPMMESS_DEBUG, 
+		"renaming %s to %s\n", instSpecFile, correctSpecFile);
     if (rename(instSpecFile, correctSpecFile)) {
 	/* try copying the file */
 	if (moveFile(instSpecFile, correctSpecFile))
@@ -1460,8 +1074,8 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 		headerFree(sh);
 	    }
 
-	    headerGetEntry(secHeader, RPMTAG_FILESTATES, &type, (void **) &secStates, 
-		     &count);
+	    headerGetEntry(secHeader, RPMTAG_FILESTATES, &type, 
+			   (void **) &secStates, &count);
 	}
 
 	/* by now, secHeader is the right header to modify, secStates is
@@ -1717,17 +1331,4 @@ static int copyFile(char * sourceName, char * destName) {
 	return 1;
 
     return 0;
-}
-
-static void unglobFilename(char * dptr, char * sptr) {
-    while (*sptr) {
-	switch (*sptr) {
-	  case '*': case '[': case ']': case '?': case '\\':
-	    *dptr++ = '\\';
-	    /*fallthrough*/
-	  default:
-	    *dptr++ = *sptr++;
-	}
-    }
-    *dptr++ = *sptr;
 }

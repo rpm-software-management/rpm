@@ -1,11 +1,15 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
 
-LIBOBJECTS = header.o misc.o messages.o rpmerr.o falloc.o \
-	     var.o md5.o md5sum.o dbindex.o rpmrc.o depends.o \
-	     rpmdb.o stringbuf.o rpmlead.o package.o uninstall.o \
-	     oldheader.o install.o signature.o verify.o rebuilddb.o \
-	     tread.o
+LIBOBJECTS = 	header.o 	misc.o		messages.o 	\
+		rpmerr.o 	falloc.o 	var.o		\
+		md5.o		md5sum.o	dbindex.o	\
+		rpmrc.o		depends.o	rpmdb.o		\
+		stringbuf.o	rpmlead.o	package.o	\
+		uninstall.o	oldheader.o	install.o	\
+		signature.o	verify.o	rebuilddb.o	\
+		tread.o 	cpio.o
+
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS))) 
 TAGTABLE = tagtable.o
 LIBRPM = librpm.a
@@ -45,10 +49,10 @@ tagtable.c: rpmlib.h
 	echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
 
 install:
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmlib.h $(INCDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/dbindex.h $(INCDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/header.h $(INCDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 librpm.a $(LIBDIR)
+	$(INSTALL) -m 644 $(srcdir)/rpmlib.h $(INCDIR)
+	$(INSTALL) -m 644 $(srcdir)/dbindex.h $(INCDIR)
+	$(INSTALL) -m 644 $(srcdir)/header.h $(INCDIR)
+	$(INSTALL) -m 644 librpm.a $(LIBDIR)
 
 distclean: clean
 	rm -f .depend Makefile	

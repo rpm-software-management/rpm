@@ -50,4 +50,10 @@
 /* Define as one if we need to include <strings.h> (along with <string.h>) */
 #define NEED_STRINGS_H 0
 
+/* Define as one if major, minor, and makedev macros are in <sys/sysmacros.h> */
+#define MAJOR_IN_SYSMACROS 0
+
+/* Define as one if major, minor, and makedev macros are in <sys/mkdev.h> */
+#define MAJOR_IN_MKDEV 0
+
 #endif

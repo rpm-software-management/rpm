@@ -179,7 +179,7 @@ int dosetenv(const char *name, const char *value, int overwrite) {
    is looked up via getpw() and getgr() functions.  If this performs
    too poorly I'll have to implement it properly :-( */
 
-uid_t unameToUid(char * thisUname) {
+int unameToUid(char * thisUname, uid_t * uid) {
     static char * lastUname = NULL;
     static int lastUnameLen = 0;
     static int lastUnameAlloced;
@@ -203,17 +203,18 @@ uid_t unameToUid(char * thisUname) {
 
 	pwent = getpwnam(thisUname);
 	if (!pwent) {
-	    lastUnameLen = 0;
-	    lastUid = -1;
+	    return -1;
 	} else {
 	    lastUid = pwent->pw_uid;
 	}
     }
 
-    return lastUid;
+    *uid = lastUid;
+
+    return 0;
 }
 
-uid_t gnameToGid(char * thisGname) {
+int gnameToGid(char * thisGname, gid_t * gid) {
     static char * lastGname = NULL;
     static int lastGnameLen = 0;
     static int lastGnameAlloced;
@@ -237,14 +238,15 @@ uid_t gnameToGid(char * thisGname) {
 
 	grent = getgrnam(thisGname);
 	if (!grent) {
-	    lastGnameLen = 0;
-	    lastGid = -1;
+	    return -1;
 	} else {
 	    lastGid = grent->gr_gid;
 	}
     }
 
-    return lastGid;
+    *gid = lastGid;
+
+    return 0;
 }
 
 char * uidToUname(uid_t uid) {
