@@ -185,8 +185,10 @@ static struct poptOption optionsTable[] = {
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
 #endif
 
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
+#endif
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
  { "noscripts", '\0', 0, &noScripts, 0,		NULL, NULL},
 #endif
 

@@ -130,6 +130,9 @@ rpm	exec --tb		rpmb -tb
 rpm	exec --ts		rpmb -ts
 rpm	exec --rebuild		rpmb --rebuild
 rpm	exec --recompile	rpmb --recompile
+rpm	exec --clean		rpmb --clean
+rpm	exec --rmsource		rpmb --rmsource
+rpm	exec --rmspec		rpmb --rmspec
 
 rpm	exec --initdb		rpmdb --initdb
 rpm	exec --rebuilddb	rpmdb --rebuilddb
