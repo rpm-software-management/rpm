@@ -1847,6 +1847,9 @@ assert(psm->mi == NULL);
 	fi->h = rpmdbNextIterator(psm->mi);
 	if (fi->h)
 	    fi->h = headerLink(fi->h);
+else {
+fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
+}
 	psm->mi = rpmdbFreeIterator(psm->mi);
 	rc = (fi->h ? RPMRC_OK : RPMRC_FAIL);
 	break;

@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.75 2001/05/09 22:58:56 jbj Exp $
+# $Id: macros.in,v 1.76 2001/05/13 17:55:58 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -278,41 +278,70 @@
 %_dbapi_rebuild		3
 
 #
-#   token		Berkeley db flag or value
-# =================================================
+#   token	works?	Berkeley db flag or value
+#==================================================
+#---------------------- DBENV->open flags:
+#   create		DB_CREATE
+#   joinenv		DB_JOIN_ENV
+#   mpool		DB_INIT_MPOOL
+#   cdb		~~~	DB_INIT_CDB
+#   txn		???	DB_INIT_TXN
+#   log		???	DB_INIT_LOG
+#   lock	???	DB_INIT_LOCK
+#   recover	???	DB_RECOVER
+#   recover_fatal ???	DB_RECOVER_FATAL
+#   private	~~~	DB_PRIVATE
+#   lockdown	???	DB_LOCKDOWN
+#   shared	~~~	DB_INIT_SYSTEM_MEM
+#   thread	???	DB_THREAD	(useless w/o posix mutexes on linux)
+#---------------------- DB->open flags:
+#   excl	???	DB_EXCL
+#   nommap	???	DB_NOMMAP
+#   rdonly		DB_RDONLY
+#---------------------- DB->open types:
+#   btree	~~~	DB_BTREE
 #   hash		DB_HASH
-#   btree		DB_BTREE
-#   unknown		DB_UNKNOWN
+#   recno	???	DB_RECNO
+#   queue	???	DB_QUEUE
+#   unknown	~~~	DB_UNKNOWN
 #
 # See the db3-devel package, or http://www.sleepycat.com for Berkeley db-3.x
 # documentation.
 #
 # Always on in rpm configuration:
-#   usecursors	Should DB3 cursors be used in get/put/del ?
-#   lockdbfd	Should the file be locked using fcntl shared/exclusive locks?
+#   usecursors	(always on) Should DB3 cursors be used in get/put/del ?
+#   lockdbfd	(always on Packages) Should fcnt;(2) locking be used ?
 #
 # Other tokens:
 #   nofsync	Should fsync(2) be done after every write?
 #   temporaray	Remove index when closing rpm database.
 #
-# XXX This is what's coming down the pike ...
-#%__dbi_other			usedbenv create joinenv cdb mpool shared \
+# XXX Use a CDB model database for concurrent access (under development,
+# cursor teardown with signals needs work, and much more.)
+#%__dbi_other			usedbenv create joinenv cdb mpool \
 #				mp_mmapsize=8Mb mp_size=512Kb usecursors
 
+# XXX Use transactions and logs for rpmdb durability (no clue yet):
+#%__dbi_other			usedbenv create joinenv mpool txn log \
+#				mp_mmapsize=8Mb mp_size=512Kb usecursors
+
+# XXX The "traditional" rpmdb shared/exclusive fcntl(2) lock on Packages:
 %__dbi_other			usecursors
 
+# Note: adding nofsync here speeds up --rebuilddb a lot.
 %__dbi_rebuild			nofsync !log !txn !cdb
 %__dbi_transient		%{__dbi_rebuild} temporary
 %__dbi_perms			perms=0644
 
+# This is a colon (or white space) separated list of tokens for Berkeley
+# dbi configuration. The configuration is conditioned on an internal
+# %{_rpmdb_rebuild} switch to permit rebuilding with a different configuration.
+#
+
+#
+#--- Hash database configuration
 %__dbi_htconfig	\
   hash		\
-  %{__dbi_other}\
-  %{__dbi_perms}\
-%{nil}
-
-%__dbi_btconfig	\
-  btree bt_dup bt_dupsort\
   %{__dbi_other}\
   %{__dbi_perms}\
 %{nil}
@@ -320,17 +349,21 @@
 %__dbi_htconfig_current		%{__dbi_htconfig}
 %__dbi_htconfig_rebuild		%{__dbi_htconfig} %{__dbi_rebuild}
 
-%__dbi_btconfig_current		%{__dbi_btconfig}
-%__dbi_btconfig_rebuild		%{__dbi_btconfig} %{__dbi_rebuild}
-
-# This is a colon (or white space) separated list of tokens for Berkeley
-# dbi configuration. The configuration is conditioned on an internal
-# %{_rpmdb_rebuild} switch to permit rebuilding with a different configuration.
-#
 %_dbi_htconfig		\
   %{?_rpmdb_rebuild:%{__dbi_htconfig_rebuild}}\
   %{!?_rpmdb_rebuild:%{__dbi_htconfig_current}}\
 %{nil}
+
+#
+#--- Btree database configuration
+%__dbi_btconfig	\
+  btree bt_dup bt_dupsort\
+  %{__dbi_other}\
+  %{__dbi_perms}\
+%{nil}
+
+%__dbi_btconfig_current		%{__dbi_btconfig}
+%__dbi_btconfig_rebuild		%{__dbi_btconfig} %{__dbi_rebuild}
 
 %_dbi_btconfig		\
   %{?_rpmdb_rebuild:%{__dbi_btconfig_rebuild}}\
@@ -343,7 +376,7 @@
 # The list of tags for which indices will be built.
 %_dbi_tags	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Removetid:Depends
 
-# "Packages" needs fcntl shared/exclusive lock.
+# "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
 %_dbi_config_Packages		%{_dbi_htconfig} lockdbfd
 
 # "Depends" is a per-transaction cache of known dependency resolutions.

@@ -55,6 +55,7 @@
 	- add DBI_WRITECURSOR to map to db3 flags with CDB database model.
 	- add rpmdbSetIteratorRewrite to warn of pending lazy (re-)writes.
 	- harden rpmdb iterators from damaged header instance segfaults.
+	- add cron/logrotate scripts to save installed package filenames.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

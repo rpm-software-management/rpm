@@ -26,7 +26,7 @@ static int _debug = 0;
 
 extern int _noDirTokens;
 static int _rebuildinprogress = 0;
-static int _db_filter_dups = 0;
+static int _db_filter_dups = 1;
 
 /*@-exportlocal@*/
 int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
@@ -1073,6 +1073,13 @@ int rpmdbCountPackages(rpmdb rpmdb, const char * name)
     dbiIndexSet matches = NULL;
     int rc = -1;
     int xx;
+
+    /* XXX
+     * There's a segfault here with CDB access, let's treat the symptom
+     * while diagnosing the disease.
+     */
+    if (name == NULL || *name == '\0')
+	return 0;
 
     dbi = dbiOpen(rpmdb, RPMTAG_NAME, 0);
     if (dbi) {

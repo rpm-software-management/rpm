@@ -131,10 +131,21 @@ rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 
+%ifos linux
+
+# Save list of packages through cron
+mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
+install -m 755 scripts/rpm.daily ${RPM_BUILD_ROOT}/etc/cron.daily/rpm
+
+mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
+install -m 755 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
+
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
+
+%endif
 
 %if %{with_apidocs}
 gzip -9n apidocs/man/man*/* || :
@@ -208,8 +219,14 @@ fi
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
+
+%ifos linux
+%config(missingok)	/etc/cron.daily/rpm
+%config(missingok)	/etc/logrotate.d/rpm
 %dir			/etc/rpm
 %config(missingok)	/etc/rpm/macros.db1
+%endif
+
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpm2cpio
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/gendiff
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmdb
@@ -228,6 +245,7 @@ fi
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/convertrpmrc.sh
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/mkinstalldirs
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm.*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc

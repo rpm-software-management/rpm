@@ -9,6 +9,7 @@ EXTRA_DIST = \
 	find-prov.pl find-req.pl cpanflute find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perl.prov perl.req rpmdiff rpmdiff.cgi \
+	rpm.daily rpm.log rpm.xinetd \
 	sql.prov sql.req tcl.req trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh
 
@@ -24,5 +25,6 @@ config_SCRIPTS = \
 	find-prov.pl find-req.pl cpanflute find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perl.prov perl.req rpmdiff rpmdiff.cgi \
+	rpm.daily rpm.log rpm.xinetd \
 	sql.prov sql.req tcl.req u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh

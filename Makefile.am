@@ -166,14 +166,14 @@ install-data-local:
 setperms:
 	@for f in $(rpmbin_PROGRAMS) ; do\
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmbindir)/$$f ;\
-	    $(__CHMOD) u+s $(DESTDIR)$(rpmbindir)/$$f ;\
+	    $(__CHMOD) g+s $(DESTDIR)$(rpmbindir)/$$f ;\
 	done
 	@for f in $(bin_PROGRAMS) ; do\
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(bindir)/$$f ;\
 	done
 	@for f in $(pkglib_PROGRAMS) ; do\
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
-	    $(__CHMOD) u+s $(DESTDIR)$(pkglibdir)/$$f ;\
+	    $(__CHMOD) g+s $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
 	@for f in $(pkglib_SCRIPTS) ; do\
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
@@ -185,13 +185,13 @@ setperms:
 	-@$(__CHMOD) 0755 $(DESTDIR)$(varprefix)/lib/rpm/Desktop
 	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/__db.*
 
-.PHONY:	unsetuid
-unsetuid:
+.PHONY:	unsetgid
+unsetgid:
 	@for f in $(rpmbin_PROGRAMS) ; do\
-	    $(__CHMOD) u-s $(DESTDIR)$(rpmbindir)/$$f ;\
+	    $(__CHMOD) g-s $(DESTDIR)$(rpmbindir)/$$f ;\
 	done
 	@for f in $(pkglib_PROGRAMS) ; do\
-	    $(__CHMOD) u-s $(DESTDIR)$(pkglibdir)/$$f ;\
+	    $(__CHMOD) g-s $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
 
 .PHONY: tar

@@ -5,6 +5,7 @@ Makefile.in
 .libs
 *.la
 *.lo
+config.cache
 config.log
 db_config.h
 libtool
@@ -12,6 +13,7 @@ config.status
 include.tcl
 db.h
 db_int.h
+berkeley_db_svc
 db_archive
 db_checkpoint
 db_deadlock
@@ -22,3 +24,4 @@ db_recover
 db_stat
 db_upgrade
 db_verify
+db_lib_objs
