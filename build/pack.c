@@ -196,7 +196,7 @@ static int add_file(struct file_entry **festack,
 	/* This means we need to decend with ftw() */
 	Gcount = 0;
 
-	ftw(fullname, add_file_aux, 3);
+	ftw(fullname, add_file_aux, 16);
 	
 	free(p);
 
