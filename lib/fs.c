@@ -231,6 +231,7 @@ int rpmGetFilesystemUsage(char ** fileList, int_32 * fssizes, int numFiles,
     dirName = alloca(maxLen + 1);
     *lastDir = '\0';
 
+    /* cut off last filename */
     for (i = 0; i < numFiles; i++) {
 	strcpy(buf, fileList[i]);
 	chptr = buf + strlen(buf) - 1;
@@ -251,8 +252,14 @@ int rpmGetFilesystemUsage(char ** fileList, int_32 * fssizes, int numFiles,
 		    return 1;
 		}
 
+		/* cut off last directory part, because it was not found. */
 		while (*chptr != '/') chptr--;
-		*chptr-- = '\0';
+		    *chptr-- = '\0';
+
+		if (chptr == dirName)
+		    dirName[1] = '\0';
+		else
+		    *chptr-- = '\0';
 	    }
 
 	    if (lastDev != sb.st_dev) {
