@@ -28,6 +28,8 @@ int updateDBIndex(dbIndex * dbi, char * str, dbIndexSet * set);
    /* 0 on success */
 int appendDBIndexRecord(dbIndexSet * set, dbIndexRecord rec);
    /* 0 on success - should never fail */
+int removeDBIndexRecord(dbIndexSet * set, dbIndexRecord rec);
+   /* 0 on success - fails if rec is not found */
 dbIndexSet createDBIndexRecord(void);
 void freeDBIndexRecord(dbIndexSet set);
 

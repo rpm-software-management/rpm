@@ -58,14 +58,23 @@ int updateDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
     key.data = str;
     key.size = strlen(str);
 
-    data.data = set->recs;
-    data.size = set->count * sizeof(dbIndexRecord);
+    if (set->count) {
+	data.data = set->recs;
+	data.size = set->count * sizeof(dbIndexRecord);
 
-    rc = dbi->db->put(dbi->db, &key, &data, 0);
-    if (rc) {
-	error(RPMERR_DBPUTINDEX, "error storing record %s into %s",
-		str, dbi->indexname);
-	return 1;
+	rc = dbi->db->put(dbi->db, &key, &data, 0);
+	if (rc) {
+	    error(RPMERR_DBPUTINDEX, "error storing record %s into %s",
+		    str, dbi->indexname);
+	    return 1;
+	}
+    } else {
+	rc = dbi->db->del(dbi->db, &key, 0);
+	if (rc) {
+	    error(RPMERR_DBPUTINDEX, "error removing record %s into %s",
+		    str, dbi->indexname);
+	    return 1;
+	}
     }
 
     return 0;
@@ -93,4 +102,24 @@ dbIndexSet createDBIndexRecord(void) {
     
 void freeDBIndexRecord(dbIndexSet set) {
     free(set.recs);
+}
+
+int removeDBIndexRecord(dbIndexSet * set, dbIndexRecord rec) {
+    int from;
+    int to = 0;
+    int num = set->count;
+    int numCopied = 0;
+  
+    for (from = 0; from < num; from++) {
+	if (rec.recOffset != set->recs[from].recOffset ||
+	    rec.fileNumber != set->recs[from].fileNumber) {
+	    if (from != to) set->recs[to] = set->recs[from];
+	    to++;
+	    numCopied++;
+	} else {
+	    set->count--;
+	}
+    }
+
+    return (numCopied == num);
 }
