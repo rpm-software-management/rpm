@@ -9,10 +9,14 @@
 
 static int _debug = 0;
 
-#define	FTPPATH		"ftp://porkchop/mnt/redhat/beehive/comps/dist/[78]*/rpm*"
-#define	DIRPATH		"/mnt/redhat/beehive/comps/dist/[78]*/rpm*"
+#define	HTTPSPATH	"https://localhost/rawhide/test/*.rpm"
+#define	HTTPPATH	"http://localhost/rawhide/test/*.rpm"
+#define	FTPPATH		"ftp://localhost/pub/rawhide/packages/test/*.rpm"
+#define	DIRPATH		"/var/ftp/pub/rawhide/packages/test"
 static char * dirpath = DIRPATH;
 static char * ftppath = FTPPATH;
+static char * httppath = HTTPPATH;
+static char * httpspath = HTTPSPATH;
 
 static int Glob_error(const char *epath, int eerrno)
 {
@@ -72,8 +76,13 @@ main(int argc, const char *argv[])
 	rpmIncreaseVerbosity();
     }
 
+_av_debug = -1;
+_ftp_debug = -1;
+_dav_debug = -1;
     printGlob(dirpath);
     printGlob(ftppath);
+    printGlob(httppath);
+    printGlob(httpspath);
 
     return 0;
 }
