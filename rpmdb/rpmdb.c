@@ -869,6 +869,19 @@ static int openDatabase(/*@null@*/ const char * prefix,
     int minimal = flags & RPMDB_FLAG_MINIMAL;
 
     if (!_initialized || dbiTagsMax == 0) {
+	char * filename;
+	int i;
+
+	i = sizeof("//__db.000");
+	if (prefix) i += strlen(prefix);
+	if (dbpath) i += strlen(dbpath);
+	filename = alloca(i);
+	for (i = 0; i < 16; i++) {
+	    sprintf(filename, "%s/%s/__db.%03d",
+		(prefix ? prefix : ""), (dbpath ? dbpath : ""),  i);
+	    (void) rpmCleanPath(filename);
+	    (void) unlink(filename);
+	}
 	dbiTagsInit();
 	_initialized++;
     }

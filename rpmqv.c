@@ -510,7 +510,6 @@ int main(int argc, const char ** argv)
     }
 
 #ifdef	IAM_RPMBT
-  if (bigMode == MODE_UNKNOWN) {
     switch (ba->buildMode) {
     case 'b':	bigMode = MODE_BUILD;		break;
     case 't':	bigMode = MODE_TARBUILD;	break;
@@ -528,7 +527,6 @@ int main(int argc, const char ** argv)
 	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
 	argerror("--buildroot may only be used during package builds");
     }
-  }
 #endif	/* IAM_RPMBT */
     
 #ifdef	IAM_RPMDB

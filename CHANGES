@@ -158,6 +158,7 @@
 	- package version now configureable, default v3.
 	- rename rpm libraries to have version with libtool -release.
 	- fix: -i CLI context broken Yet Again.
+	- unlink all __db.nnn files before 1st db open.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
