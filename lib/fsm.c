@@ -495,7 +495,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
-		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+			rpmfiGetKey(fi->ap), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	    /*@=type@*/
 	}
@@ -867,7 +867,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS, size, size,
-			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+			rpmfiGetKey(fi->ap), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	    /*@=type@*/
 	}
@@ -1650,7 +1650,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
 			fdGetCpioPos(fsm->cfd), fi->archiveSize,
-			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+			rpmfiGetKey(fi->ap), ts->notifyData);
 		/*@=noeffectuncon @*/
 		/*@=type@*/
 	    }

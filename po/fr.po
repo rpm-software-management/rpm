@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-28 17:05-0500\n"
+"POT-Creation-Date: 2001-10-29 15:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -870,7 +870,7 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:603 lib/psm.c:2180
+#: build/pack.c:603 lib/psm.c:2113
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
@@ -900,7 +900,7 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2446
+#: build/pack.c:683 lib/psm.c:2379
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1492,92 +1492,82 @@ msgid " failed - "
 msgstr "La construction a chou.\n"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:687
+#: lib/depends.c:206
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:716
+#: lib/depends.c:235
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
+#: lib/depends.c:236 lib/depends.c:835 lib/depends.c:968
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
+#: lib/depends.c:236 lib/depends.c:835 lib/depends.c:968
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:856
+#: lib/depends.c:375
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/depends.c:1038
+#: lib/depends.c:556
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:1043
+#: lib/depends.c:561
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/depends.c:1048
+#: lib/depends.c:566
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:1307
-#, c-format
-msgid "%s: %-45s YES (added files)\n"
-msgstr ""
-
-#: lib/depends.c:1423
-#, c-format
-msgid "%s: %-45s YES (added provide)\n"
-msgstr ""
-
-#: lib/depends.c:1517
+#: lib/depends.c:834
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1546
+#: lib/depends.c:863
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1563
+#: lib/depends.c:880
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1587
+#: lib/depends.c:904
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1600
+#: lib/depends.c:917
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1614
+#: lib/depends.c:931
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1630
+#: lib/depends.c:947
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1651
+#: lib/depends.c:968
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
@@ -1585,42 +1575,42 @@ msgstr ""
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1724
+#: lib/depends.c:1041
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
 #. conflicts exist.
-#: lib/depends.c:1803
+#: lib/depends.c:1120
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: lib/depends.c:2058
+#: lib/depends.c:1374
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:2212
+#: lib/depends.c:1530
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2272
+#: lib/depends.c:1590
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2322
+#: lib/depends.c:1640
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2375
+#: lib/depends.c:1693
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2405
+#: lib/depends.c:1723
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -1721,7 +1711,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:997
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:930
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2293,175 +2283,175 @@ msgstr ""
 msgid "generate signature"
 msgstr "      --sign            - genre une signature PGP"
 
-#: lib/problems.c:83
+#: lib/problems.c:224
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:86
+#: lib/problems.c:227
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:126
+#: lib/problems.c:267
 #, fuzzy, c-format
 msgid "package %s is for a different architecture"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:131
+#: lib/problems.c:272
 #, fuzzy, c-format
 msgid "package %s is for a different operating system"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:136
+#: lib/problems.c:277
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:141
+#: lib/problems.c:282
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:146
+#: lib/problems.c:287
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:151
+#: lib/problems.c:292
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/problems.c:156
+#: lib/problems.c:297
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/problems.c:161
+#: lib/problems.c:302
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:171
+#: lib/problems.c:312
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:176
+#: lib/problems.c:317
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:183
+#: lib/problems.c:324
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:320
+#: lib/psm.c:246
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:324
+#: lib/psm.c:250
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/psm.c:327
+#: lib/psm.c:253
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/psm.c:397
+#: lib/psm.c:323
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/psm.c:463
+#: lib/psm.c:389
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/psm.c:473
+#: lib/psm.c:399
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:552
+#: lib/psm.c:478
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/psm.c:1194
+#: lib/psm.c:1127
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/psm.c:1200
+#: lib/psm.c:1133
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/psm.c:1240
+#: lib/psm.c:1173
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1353
+#: lib/psm.c:1286
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr ""
 "        -f <file>+        - interroge le package  qui appartient <file>"
 
-#: lib/psm.c:1463
+#: lib/psm.c:1396
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1631
+#: lib/psm.c:1564
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1638
+#: lib/psm.c:1571
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1985
+#: lib/psm.c:1918
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/psm.c:2102
+#: lib/psm.c:2035
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2217
+#: lib/psm.c:2150
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2226
+#: lib/psm.c:2159
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2267
+#: lib/psm.c:2200
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "La construction a chou.\n"
 
-#: lib/psm.c:2268
+#: lib/psm.c:2201
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2454
+#: lib/psm.c:2387
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/psm.c:2457
+#: lib/psm.c:2390
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "La construction a chou.\n"
@@ -2991,13 +2981,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:311
+#: lib/transaction.c:244
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:937
+#: lib/transaction.c:867
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

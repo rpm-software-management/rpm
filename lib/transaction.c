@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "psm.h"
+#include "rpmal.h"
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "fprint.h"
@@ -56,6 +57,8 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access PSM_t@*/
 
 /*@access availablePackage@*/
+/*@access availableList@*/
+/*@access transactionElement@*/
 
 /**
  */
@@ -116,9 +119,9 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 	for (oc = 0; oc < ts->orderCount; oc++, e++) {
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
-		if (ts->addedPackages.list) {
+		if (ts->addedPackages->list) {
 		    availablePackage alp;
-		    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+		    alp = ts->addedPackages->list + ts->order[oc].u.addedIndex;
 		    *e = alp->key;
 		    /*@switchbreak@*/ break;
 		}
@@ -913,8 +916,8 @@ static /*@dependent@*/ availablePackage tsGetAlp(void * a)
     if (oc != -1) {
 	rpmTransactionSet ts = iter->ts;
 	TFI_t fi = ts->flList + oc;
-	if (ts->addedPackages.list && fi->type == TR_ADDED)
-	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+	if (ts->addedPackages->list && fi->type == TR_ADDED)
+	    alp = ts->addedPackages->list + ts->order[oc].u.addedIndex;
     }
     /*@=branchstate@*/
     return alp;
@@ -1093,9 +1096,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * - count files.
      */
     /* The ordering doesn't matter here */
-    if (ts->addedPackages.list != NULL)
-    for (alp = ts->addedPackages.list;
-	(alp - ts->addedPackages.list) < ts->addedPackages.size;
+    if (ts->addedPackages->list != NULL)
+    for (alp = ts->addedPackages->list;
+	(alp - ts->addedPackages->list) < ts->addedPackages->size;
 	alp++)
     {
 	if (!archOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
@@ -1155,7 +1158,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     /* ===============================================
      * Initialize file list:
      */
-    ts->flEntries = ts->addedPackages.size + ts->numRemovedPackages;
+    ts->flEntries = ts->addedPackages->size + ts->numRemovedPackages;
     ts->flList = xcalloc(ts->flEntries, sizeof(*ts->flList));
 
     /*
@@ -1471,7 +1474,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	case TR_ADDED:
 	    alp = tsGetAlp(tsi);
 assert(alp == fi->ap);
-	    i = alp - ts->addedPackages.list;
+	    i = alp - ts->addedPackages->list;
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s-%s-%s\n",
 			fi->name, fi->version, fi->release);

@@ -9,116 +9,15 @@
 #include <header.h>
 #include <rpmhash.h>
 
-typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
-typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
-typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
-typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
 typedef /*@abstract@*/ struct availableList_s *		availableList;
 typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
 typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
+typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
 
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _ts_debug;
 /*@=exportlocal@*/
-
-/** \ingroup rpmdep
- * Dependncy ordering information.
- */
-/*@-fielduse@*/	/* LCL: confused by union? */
-struct tsortInfo {
-    union {
-	int	count;
-	/*@kept@*/ /*@null@*/ availablePackage suc;
-    } tsi_u;
-#define	tsi_count	tsi_u.count
-#define	tsi_suc		tsi_u.suc
-/*@owned@*/ /*@null@*/ struct tsortInfo * tsi_next;
-/*@kept@*/ /*@null@*/ availablePackage tsi_pkg;
-    int		tsi_reqx;
-    int		tsi_qcnt;
-} ;
-/*@=fielduse@*/
-
-/** \ingroup rpmdep
- * Info about a single package to be installed.
- */
-struct availablePackage_s {
-    Header h;				/*!< Package header. */
-/*@dependent@*/ const char * name;	/*!< Header name. */
-/*@dependent@*/ const char * version;	/*!< Header version. */
-/*@dependent@*/ const char * release;	/*!< Header release. */
-/*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
-/*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
-/*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
-/*@owned@*//*@null@*/ const char ** requires;	/*!< Requires: name strings. */
-/*@owned@*//*@null@*/ const char ** requiresEVR;/*!< Requires: [epoch:]version[-release] strings. */
-/*@dependent@*//*@null@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
-/*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
-/*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
-    int providesCount;			/*!< No. of Provide:'s in header. */
-    int requiresCount;			/*!< No. of Require:'s in header. */
-    int filesCount;			/*!< No. of files in header. */
-    int npreds;				/*!< No. of predecessors. */
-    int depth;				/*!< Max. depth in dependency tree. */
-    struct tsortInfo tsi;		/*!< Dependency tsort data. */
-    uint_32 multiLib;	/* MULTILIB */
-/*@kept@*//*@null@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
-/*@null@*/ rpmRelocation * relocs;
-/*@null@*/ FD_t fd;
-} ;
-
-/** \ingroup rpmdep
- * A single available item (e.g. a Provides: dependency).
- */
-struct availableIndexEntry_s {
-/*@dependent@*/ availablePackage package; /*!< Containing package. */
-/*@dependent@*/ const char * entry;	/*!< Available item name. */
-    size_t entryLen;			/*!< No. of bytes in name. */
-    enum indexEntryType {
-	IET_PROVIDES=1		/*!< A Provides: dependency. */
-    } type;				/*!< Type of available item. */
-} ;
-
-/** \ingroup rpmdep
- * Index of all available items.
- */
-struct availableIndex_s {
-/*@null@*/ availableIndexEntry index;	/*!< Array of available items. */
-    int size;				/*!< No. of available items. */
-} ;
-
-/** \ingroup rpmdep
- * A file to be installed/removed.
- */
-struct fileIndexEntry_s {
-    int pkgNum;				/*!< Containing package number. */
-    int fileFlags;	/* MULTILIB */
-/*@dependent@*/ /*@null@*/ const char * baseName;	/*!< File basename. */
-} ;
-
-/** \ingroup rpmdep
- * A directory to be installed/removed.
- */
-struct dirInfo_s {
-/*@owned@*/ const char * dirName;	/*!< Directory path (+ trailing '/'). */
-    int dirNameLen;			/*!< No. bytes in directory path. */
-/*@owned@*/ fileIndexEntry files;	/*!< Array of files in directory. */
-    int numFiles;			/*!< No. files in directory. */
-} ;
-
-/** \ingroup rpmdep
- * Set of available packages, items, and directories.
- */
-struct availableList_s {
-/*@owned@*/ /*@null@*/ availablePackage list;	/*!< Set of packages. */
-    struct availableIndex_s index;	/*!< Set of available items. */
-    int delta;				/*!< Delta for pkg list reallocation. */
-    int size;				/*!< No. of pkgs in list. */
-    int alloced;			/*!< No. of pkgs allocated for list. */
-    int numDirs;			/*!< No. of directories. */
-/*@owned@*/ /*@null@*/ dirInfo dirs;	/*!< Set of directories. */
-} ;
 
 struct orderListIndex_s {
     int alIndex;
@@ -130,7 +29,7 @@ struct orderListIndex_s {
  * A single package instance to be installed/removed atomically.
  */
 /*@-fielduse@*/	/* LCL: confused by union? */
-struct transactionElement {
+struct transactionElement_s {
     enum rpmTransactionType {
 	TR_ADDED,	/*!< Package will be installed. */
 	TR_REMOVED	/*!< Package will be removed. */
@@ -171,12 +70,13 @@ struct rpmTransactionSet_s {
     int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;	/*!< No. removed rpmdb instances. */
     int allocedRemovedPackages;	/*!< Size of removed packages array. */
-    struct availableList_s addedPackages;
-				/*!< Set of packages being installed. */
-    struct availableList_s availablePackages;
+/*@only@*/
+    availableList addedPackages;/*!< Set of packages being installed. */
+/*@only@*/
+    availableList availablePackages;
 				/*!< Universe of possible packages. */
-/*@only@*/ struct transactionElement * order;
-				/*!< Packages sorted by dependencies. */
+/*@only@*/
+    transactionElement order;	/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
 /*@only@*/ TFI_t flList;	/*!< Transaction element(s) file info. */

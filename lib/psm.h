@@ -215,6 +215,14 @@ void freeFi(TFI_t fi)
 	/*@modifies fi @*/;
 
 /**
+ * Retrieve key from transaction element file info
+ * @param fi		transaction element file info
+ * @return		transaction element file info key
+ */
+/*@null@*/ const void * rpmfiGetKey(TFI_t fi)
+	/*@*/;
+
+/**
  * Return formatted string representation of package disposition.
  * @param a		package dispostion
  * @return		formatted string

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-10-29 11:11-0500\n"
+"POT-Creation-Date: 2001-10-29 15:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:2181
+#: build/pack.c:603 lib/psm.c:2113
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -846,7 +846,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:683 lib/psm.c:2447
+#: build/pack.c:683 lib/psm.c:2379
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1411,92 +1411,82 @@ msgid " failed - "
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:687
+#: lib/depends.c:206
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:716
+#: lib/depends.c:235
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
+#: lib/depends.c:236 lib/depends.c:835 lib/depends.c:968
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
+#: lib/depends.c:236 lib/depends.c:835 lib/depends.c:968
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:856
+#: lib/depends.c:375
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:1038
+#: lib/depends.c:556
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:1043
+#: lib/depends.c:561
 #, c-format
 msgid "package %s already added, ignoring\n"
 msgstr ""
 
-#: lib/depends.c:1048
+#: lib/depends.c:566
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:1307
-#, c-format
-msgid "%s: %-45s YES (added files)\n"
-msgstr ""
-
-#: lib/depends.c:1423
-#, c-format
-msgid "%s: %-45s YES (added provide)\n"
-msgstr ""
-
-#: lib/depends.c:1517
+#: lib/depends.c:834
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1546
+#: lib/depends.c:863
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1563
+#: lib/depends.c:880
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1587
+#: lib/depends.c:904
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1600
+#: lib/depends.c:917
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1614
+#: lib/depends.c:931
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1630
+#: lib/depends.c:947
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1651
+#: lib/depends.c:968
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
@@ -1504,42 +1494,42 @@ msgstr ""
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1724
+#: lib/depends.c:1041
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1803
+#: lib/depends.c:1120
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:2058
+#: lib/depends.c:1374
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:2212
+#: lib/depends.c:1530
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2272
+#: lib/depends.c:1590
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2322
+#: lib/depends.c:1640
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2375
+#: lib/depends.c:1693
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2405
+#: lib/depends.c:1723
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -1640,7 +1630,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:998
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:930
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2147,173 +2137,173 @@ msgstr ""
 msgid "generate signature"
 msgstr ""
 
-#: lib/problems.c:223
+#: lib/problems.c:224
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:226
+#: lib/problems.c:227
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:266
+#: lib/problems.c:267
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr ""
 
-#: lib/problems.c:271
+#: lib/problems.c:272
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr ""
 
-#: lib/problems.c:276
+#: lib/problems.c:277
 #, c-format
 msgid "package %s is already installed"
 msgstr ""
 
-#: lib/problems.c:281
+#: lib/problems.c:282
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr ""
 
-#: lib/problems.c:286
+#: lib/problems.c:287
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:291
+#: lib/problems.c:292
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/problems.c:296
+#: lib/problems.c:297
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/problems.c:301
+#: lib/problems.c:302
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:311
+#: lib/problems.c:312
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:316
+#: lib/problems.c:317
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:323
+#: lib/problems.c:324
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:321
+#: lib/psm.c:246
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:325
+#: lib/psm.c:250
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/psm.c:328
+#: lib/psm.c:253
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/psm.c:398
+#: lib/psm.c:323
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/psm.c:464
+#: lib/psm.c:389
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/psm.c:474
+#: lib/psm.c:399
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:553
+#: lib/psm.c:478
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:1195
+#: lib/psm.c:1127
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:1201
+#: lib/psm.c:1133
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:1241
+#: lib/psm.c:1173
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1354
+#: lib/psm.c:1286
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:1464
+#: lib/psm.c:1396
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1632
+#: lib/psm.c:1564
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1639
+#: lib/psm.c:1571
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1986
+#: lib/psm.c:1918
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:2103
+#: lib/psm.c:2035
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2218
+#: lib/psm.c:2150
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2227
+#: lib/psm.c:2159
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2268
+#: lib/psm.c:2200
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2269
+#: lib/psm.c:2201
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2455
+#: lib/psm.c:2387
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2458
+#: lib/psm.c:2390
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2827,13 +2817,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:314
+#: lib/transaction.c:244
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:937
+#: lib/transaction.c:867
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

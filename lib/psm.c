@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "psm.h"
+#include "rpmal.h"
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
@@ -31,6 +32,7 @@ int _fi_debug = 0;
 /*@access PSM_t @*/
 
 /*@access availablePackage@*/
+/*@access availableList@*/
 
 /*@-redecl -declundef -exportheadervar@*/
 /*@unchecked@*/
@@ -521,6 +523,13 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     fn = _free(fn);
 
     return h;
+}
+
+const void * rpmfiGetKey(TFI_t fi)
+{
+    /*@-kepttrans -retexpose -usereleased@*/
+/*@i@*/	return (fi->ap != NULL ? fi->ap->key : NULL);
+    /*@=kepttrans =retexpose =usereleased@*/
 }
 
 TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
@@ -1167,13 +1176,13 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     }
 
     (void) rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
-    if (ts->addedPackages.list == NULL) {	/* XXX can't happen */
+    if (ts->addedPackages->list == NULL) {	/* XXX can't happen */
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     fi->type = TR_ADDED;
-    fi->ap = ts->addedPackages.list;
+    fi->ap = ts->addedPackages->list;
     loadFi(ts, fi, h, 1);
     hge = fi->hge;
     hfd = (fi->hfd ? fi->hfd : headerFreeData);
