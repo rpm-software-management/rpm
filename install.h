@@ -7,10 +7,10 @@
 
 #define RPMUNINSTALL_NODEPS		(1 << 0)
 
-int doInstall(char * prefix, char ** argv, int installFlags, 
+int doInstall(char * rootdir, char ** argv, char * prefix, int installFlags, 
 	      int interfaceFlags);
 int doSourceInstall(char * prefix, char * arg, char ** specFile);
-int doUninstall(char * prefix, char ** argv, int uninstallFlags, 
+int doUninstall(char * rootdir, char ** argv, int uninstallFlags, 
 		 int interfaceFlags);
 
 #endif

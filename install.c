@@ -42,7 +42,7 @@ static void printPercent(const unsigned long amount, const unsigned long total)
     fflush(stdout);
 }
 
-static int installPackages(char * prefix, char ** packages, 
+static int installPackages(char * rootdir, char ** packages, char * location,
 			    int numPackages, int installFlags, 
 			    int interfaceFlags, rpmdb db) {
     int i, fd;
@@ -84,7 +84,7 @@ static int installPackages(char * prefix, char ** packages,
 	    printf("Installing %s\n", *filename);
 
 	if (db) {
-	    rc = rpmInstallPackage(prefix, db, fd, installFlags, fn, 
+	    rc = rpmInstallPackage(rootdir, db, fd, location, installFlags, fn, 
 				   printFormat);
 	} else {
 	    if (installFlags &= INSTALL_TEST) {
@@ -92,7 +92,7 @@ static int installPackages(char * prefix, char ** packages,
 			"just testing\n");
 		rc = 0;
 	    } else
-		rc = rpmInstallSourcePackage(prefix, fd, NULL);
+		rc = rpmInstallSourcePackage(rootdir, fd, NULL);
 	} 
 
 	if (rc == 1) {
@@ -111,7 +111,7 @@ static int installPackages(char * prefix, char ** packages,
     return numFailed;
 }
 
-int doInstall(char * prefix, char ** argv, int installFlags, 
+int doInstall(char * rootdir, char ** argv, char * location, int installFlags, 
 	      int interfaceFlags) {
     rpmdb db;
     int fd, i;
@@ -150,8 +150,8 @@ int doInstall(char * prefix, char ** argv, int installFlags,
 	    if (isVerbose()) {
 		printf("Retrieving %s\n", *filename);
 	    }
-	    packages[i] = alloca(strlen(*filename) + 30 + strlen(prefix));
-	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", prefix, 
+	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir));
+	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
 		    tmpnum++, getpid());
 	    message(MESS_DEBUG, "getting %s as %s\n", *filename, packages[i]);
 	    fd = getFtpURL(*filename + 6, packages[i]);
@@ -205,9 +205,9 @@ int doInstall(char * prefix, char ** argv, int installFlags,
 
     if (numBinaryPackages) {
 	message(MESS_DEBUG, "opening database mode: 0%o\n", mode);
-	if (rpmdbOpen(prefix, &db, mode, 0644)) {
+	if (rpmdbOpen(rootdir, &db, mode, 0644)) {
 	    fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
-			prefix);
+			rootdir);
 	    exit(1);
 	}
 
@@ -241,7 +241,7 @@ int doInstall(char * prefix, char ** argv, int installFlags,
     if (!stopInstall) {
 	hashesPrinted = 0;
 	message(MESS_DEBUG, "installing binary packages\n");
-	numFailed += installPackages(prefix, packages, numPackages, 
+	numFailed += installPackages(rootdir, packages, location, numPackages, 
 				     installFlags, interfaceFlags, db);
     }
 
@@ -253,7 +253,7 @@ int doInstall(char * prefix, char ** argv, int installFlags,
     return numFailed;
 }
 
-int doUninstall(char * prefix, char ** argv, int uninstallFlags,
+int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 		 int interfaceFlags) {
     rpmdb db;
     dbIndexSet matches;
@@ -282,8 +282,8 @@ int doUninstall(char * prefix, char ** argv, int uninstallFlags,
     else
 	mode = O_RDWR | O_EXCL;
 	
-    if (rpmdbOpen(prefix, &db, mode, 0644)) {
-	fprintf(stderr, "cannot open %s/var/lib/rpm/packages.rpm\n", prefix);
+    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
+	fprintf(stderr, "cannot open %s/var/lib/rpm/packages.rpm\n", rootdir);
 	exit(1);
     }
 
@@ -346,7 +346,7 @@ int doUninstall(char * prefix, char ** argv, int uninstallFlags,
 	for (i = 0; i < numPackages; i++) {
 	    message(MESS_DEBUG, "uninstalling record number %d\n",
 			packageOffsets[i]);
-	    rpmRemovePackage(prefix, db, packageOffsets[i], uninstallFlags);
+	    rpmRemovePackage(rootdir, db, packageOffsets[i], uninstallFlags);
 	}
     }
 
@@ -355,7 +355,7 @@ int doUninstall(char * prefix, char ** argv, int uninstallFlags,
     return numFailed;
 }
 
-int doSourceInstall(char * prefix, char * arg, char ** specFile) {
+int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
     int fd;
     int rc;
 
@@ -368,7 +368,7 @@ int doSourceInstall(char * prefix, char * arg, char ** specFile) {
     if (isVerbose())
 	printf("Installing %s\n", arg);
 
-    rc = rpmInstallSourcePackage(prefix, fd, specFile);
+    rc = rpmInstallSourcePackage(rootdir, fd, specFile);
     if (rc == 1) {
 	fprintf(stderr, "error: %s cannot be installed\n", arg);
     }
