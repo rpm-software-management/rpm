@@ -84,11 +84,13 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
  * @param p		file info iterator
  * @retval		NULL always
  */
+/*@-mustmod@*/ /* LCL: *p is modified */
 static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * p)
 	/*@modifies *p @*/
 {
     return _free((void *)p);
 }
+/*@=mustmod@*/
 
 /** \ingroup payload
  * Create file info iterator.
@@ -120,6 +122,7 @@ mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
  * @param a		file info iterator
  * @return		next index, -1 on termination
  */
+/*@-mustmod@*/ /* LCL: *a is modified */
 static int mapNextIterator(void * a)
 	/*@modifies *a @*/
 {
@@ -135,6 +138,7 @@ static int mapNextIterator(void * a)
     iter->isave = i;
     return i;
 }
+/*@=mustmod@*/
 
 /** \ingroup payload
  */
@@ -268,14 +272,18 @@ static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		const char * dnl;
 		int jlen;
 
-		if (!dnli->active[j] || j == dil) continue;
+		if (!dnli->active[j] || j == dil)
+		    /*@innercontinue@*/ continue;
 		dnl = fi->dnl[j];
 		jlen = strlen(dnl);
-		if (jlen != (dnlen+bnlen+1)) continue;
-		if (strncmp(dnl, fi->dnl[dil], dnlen)) continue;
-		if (strncmp(dnl+dnlen, fi->bnl[i], bnlen)) continue;
+		if (jlen != (dnlen+bnlen+1))
+		    /*@innercontinue@*/ continue;
+		if (strncmp(dnl, fi->dnl[dil], dnlen))
+		    /*@innercontinue@*/ continue;
+		if (strncmp(dnl+dnlen, fi->bnl[i], bnlen))
+		    /*@innercontinue@*/ continue;
 		if (dnl[dnlen+bnlen] != '/' || dnl[dnlen+bnlen+1] != '\0')
-		    continue;
+		    /*@innercontinue@*/ continue;
 		/* This directory is included in the package. */
 		dnli->active[j] = 0;
 		/*@innerbreak@*/ break;
@@ -1094,7 +1102,8 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 
 	/* Assume '/' directory exists, "mkdir -p" for others if non-existent */
 	for (i = 1, te = dn + 1; *te != '\0'; te++, i++) {
-	    if (*te != '/') continue;
+	    if (*te != '/')
+		/*@innercontinue@*/ continue;
 
 	    *te = '\0';
 
@@ -1107,7 +1116,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 		*te = '/';
 		/* Move pre-existing path marker forward. */
 		fsm->dnlx[dc] = (te - dn);
-		continue;
+		/*@innercontinue@*/ continue;
 	    }
 	    /*@=usedef =compdef =nullpass =nullderef@*/
 
@@ -1317,7 +1326,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 		/* Re-calculate link count for archive header. */
 		for (j = -1, nlink = 0, i = 0; i < fsm->li->nlink; i++) {
-		    if (fsm->li->filex[i] < 0) continue;
+		    if (fsm->li->filex[i] < 0)
+			/*@innercontinue@*/ continue;
 		    nlink++;
 		    if (j == -1) j = i;
 		}
@@ -1751,7 +1761,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			fsm->commit && fsm->li->linksLeft)
 	    {
 		for (i = 0 ; i < fsm->li->linksLeft; i++) {
-		    if (fsm->li->filex[i] < 0) continue;
+		    if (fsm->li->filex[i] < 0)
+			/*@innercontinue@*/ continue;
 		    rc = CPIOERR_MISSING_HARDLINK;
 		    if (fsm->failedFile && *fsm->failedFile == NULL) {
 			fsm->ix = fsm->li->filex[i];

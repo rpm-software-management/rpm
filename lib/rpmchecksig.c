@@ -149,13 +149,13 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 	case 1:
 	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't sign v1.0 RPM\n"), rpm);
 	    goto exit;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 2:
 	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
 	    goto exit;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	rc = rpmReadSignature(fd, &sig, l->signature_type);
@@ -293,9 +293,9 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), pkgfn);
 	    res++;
 	    goto bottom;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	rc = rpmReadSignature(fd, &sig, l->signature_type);
@@ -328,12 +328,13 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    headerNextIterator(hi, &tag, &type, &ptr, &count);
 	    ptr = headerFreeData(ptr, type))
 	{
-	    if (ptr == NULL) continue;	/* XXX can't happen */
+	    if (ptr == NULL) /* XXX can't happen */
+		/*@innercontinue@*/ continue;
 	    switch (tag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
 		if (!(flags & CHECKSIG_PGP)) 
-		     continue;
+		     /*@innercontinue@*/ continue;
 if (rpmIsVerbose())
 fprintf(stderr, "========================= Package RSA Signature\n");
 		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
@@ -373,10 +374,10 @@ fprintf(stderr, "========================= Red Hat RSA Public Key\n");
 
 		hexstr = _free(hexstr);
 	    }
-		break;
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
 		if (!(flags & CHECKSIG_GPG)) 
-		     continue;
+		     /*@innercontinue@*/ continue;
 if (rpmIsVerbose())
 fprintf(stderr, "========================= Package DSA Signature\n");
 		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
@@ -393,18 +394,19 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 		    (void) pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsVerbose());
 		}
 		(void) pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
-		break;
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
 		if (!(flags & CHECKSIG_MD5)) 
-		     continue;
-		break;
+		     /*@innercontinue@*/ continue;
+		/*@switchbreak@*/ break;
 	    default:
-		continue;
-		/*@notreached@*/ break;
+		/*@innercontinue@*/ continue;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
-	    if (ptr == NULL) continue;	/* XXX can't happen */
+	    if (ptr == NULL) /* XXX can't happen */
+		/*@innercontinue@*/ continue;
 
 	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, 
 					   dig, result))) {
@@ -417,13 +419,13 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 		      case RPMSIGTAG_SIZE:
 			strcat(buffer, "SIZE ");
 			res2 = 1;
-			break;
+			/*@switchbreak@*/ break;
 		      case RPMSIGTAG_LEMD5_2:
 		      case RPMSIGTAG_LEMD5_1:
 		      case RPMSIGTAG_MD5:
 			strcat(buffer, "MD5 ");
 			res2 = 1;
-			break;
+			/*@switchbreak@*/ break;
 		      case RPMSIGTAG_PGP5:	/* XXX legacy */
 		      case RPMSIGTAG_PGP:
 			switch (res3) {
@@ -452,7 +454,7 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 			    res2 = 1;
 			    /*@innerbreak@*/ break;
 			}
-			break;
+			/*@switchbreak@*/ break;
 		      case RPMSIGTAG_GPG:
 			/* Do not consider this a failure */
 			switch (res3) {
@@ -468,11 +470,11 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 			    res2 = 1;
 			    /*@innerbreak@*/ break;
 			}
-			break;
+			/*@switchbreak@*/ break;
 		      default:
 			strcat(buffer, "?UnknownSignatureType? ");
 			res2 = 1;
-			break;
+			/*@switchbreak@*/ break;
 		    }
 		}
 	    } else {
@@ -482,22 +484,22 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 		    switch (tag) {
 		    case RPMSIGTAG_SIZE:
 			strcat(buffer, "size ");
-			break;
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_LEMD5_2:
 		    case RPMSIGTAG_LEMD5_1:
 		    case RPMSIGTAG_MD5:
 			strcat(buffer, "md5 ");
-			break;
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			strcat(buffer, "pgp ");
-			break;
+			/*@switchbreak@*/ break;
 		    case RPMSIGTAG_GPG:
 			strcat(buffer, "gpg ");
-			break;
+			/*@switchbreak@*/ break;
 		    default:
 			strcat(buffer, "??? ");
-			break;
+			/*@switchbreak@*/ break;
 		    }
 		}
 	    }

@@ -134,7 +134,7 @@ static int optionCompare(const void * a, const void * b)
 }
 
 static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
-	/*@modifies *target, *canontarget @*/;
+	/*@modifies *canontarget @*/;
 
 static /*@observer@*/ /*@null@*/ machCacheEntry
 machCacheFindEntry(const machCache cache, const char * key)
@@ -733,7 +733,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		fn = _free(fn);
 		if (rc) return rc;
 		continue;	/* XXX don't save include value as var/macro */
-	      }	/*@notreached@*/ break;
+	      }	/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMVAR_MACROFILES:
 		fn = rpmGetPath(se, NULL);
 		if (fn == NULL || *fn == '\0') {
@@ -743,7 +743,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		    return 1;
 		}
 		se = (char *)fn;
-		break;
+		/*@switchbreak@*/ break;
 	    case RPMVAR_PROVIDES:
 	      {	char *t;
 		s = rpmGetVar(RPMVAR_PROVIDES);
@@ -754,9 +754,9 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		while (*se != '\0') *t++ = *se++;
 		*t++ = '\0';
 		se = (char *)fn;
-	      }	break;
+	      }	/*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    if (option->archSpecific) {
@@ -1553,7 +1553,8 @@ void rpmFreeRpmrc(void)
 	    for (j = 0; j < t->cache.size; j++) {
 		machCacheEntry e;
 		e = t->cache.cache + j;
-		if (e == NULL)	continue;
+		if (e == NULL)
+		    /*@innercontinue@*/ continue;
 		e->name = _free(e->name);
 		if (e->equivs) {
 		    for (k = 0; k < e->count; k++)

@@ -947,9 +947,9 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    dbi = dbiOpen(db, rpmtag, 0);
@@ -966,12 +966,12 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		if (db->db_api == 3)
 #endif
 		    goto exit;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMTAG_NAME:
 		if (dbi == NULL) rc |= 1;
 		if (minimal)
 		    goto exit;
-		break;
+		/*@switchbreak@*/ break;
 	    case RPMTAG_BASENAMES:
 	    {	void * keyp = NULL;
 		DBC * dbcursor;
@@ -984,7 +984,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
      * XXX db1/db2 linkage) conditions.
      */
 		if (justCheck)
-		    break;
+		    /*@switchbreak@*/ break;
 		dbcursor = NULL;
 		xx = dbiCopen(dbi, &dbcursor, 0);
 		xx = dbiGet(dbi, dbcursor, &keyp, NULL, NULL, NULL, gflags);
@@ -998,9 +998,9 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		}
 		xx = dbiCclose(dbi, dbcursor, 0);
 		dbcursor = NULL;
-	    }	break;
+	    }	/*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
     }
@@ -1366,8 +1366,12 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
     brackets = 0;
     for (s -= 1; s > localarg; s--) {
 	switch (*s) {
-	case '[':	brackets = 1;			break;
-	case ']':	if (c != '[') brackets = 0;	break;
+	case '[':
+	    brackets = 1;
+	    /*@switchbreak@*/ break;
+	case ']':
+	    if (c != '[') brackets = 0;
+	    /*@switchbreak@*/ break;
 	}
 	c = *s;
 	if (!brackets && *s == '-')
@@ -1393,8 +1397,12 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor,
     brackets = 0;
     for (; s > localarg; s--) {
 	switch (*s) {
-	case '[':	brackets = 1;			break;
-	case ']':	if (c != '[') brackets = 0;	break;
+	case '[':
+	    brackets = 1;
+	    /*@switchbreak@*/ break;
+	case ']':
+	    if (c != '[') brackets = 0;
+	    /*@switchbreak@*/ break;
 	}
 	c = *s;
 	if (!brackets && *s == '-')
@@ -1639,10 +1647,18 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 	for (s = pattern; *s != '\0'; s++) {
 	    switch (*s) {
 	    case '.':
-	    case '*':	if (!brackets) nb++;		break;
-	    case '\\':	s++;				break;
-	    case '[':	brackets = 1;			break;
-	    case ']':	if (c != '[') brackets = 0;	break;
+	    case '*':
+		if (!brackets) nb++;
+		/*@switchbreak@*/ break;
+	    case '\\':
+		s++;
+		/*@switchbreak@*/ break;
+	    case '[':
+		brackets = 1;
+		/*@switchbreak@*/ break;
+	    case ']':
+		if (c != '[') brackets = 0;
+		/*@switchbreak@*/ break;
 	    }
 	    c = *s;
 	}
@@ -1656,11 +1672,21 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 	brackets = 0;
 	for (s = pattern; *s != '\0'; s++, t++) {
 	    switch (*s) {
-	    case '.':	if (!brackets) *t++ = '\\';	break;
-	    case '*':	if (!brackets) *t++ = '.';	break;
-	    case '\\':	*t++ = *s++;			break;
-	    case '[':	brackets = 1;			break;
-	    case ']':	if (c != '[') brackets = 0;	break;
+	    case '.':
+		if (!brackets) *t++ = '\\';
+		/*@switchbreak@*/ break;
+	    case '*':
+		if (!brackets) *t++ = '.';
+		/*@switchbreak@*/ break;
+	    case '\\':
+		*t++ = *s++;
+		/*@switchbreak@*/ break;
+	    case '[':
+		brackets = 1;
+		/*@switchbreak@*/ break;
+	    case ']':
+		if (c != '[') brackets = 0;
+		/*@switchbreak@*/ break;
 	    }
 	    c = *t = *s;
 	}
@@ -1828,24 +1854,24 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		rc = miregexec(mire, numbuf);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
-		break;
+		/*@switchbreak@*/ break;
 	    case RPM_INT16_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i16p);
 		rc = miregexec(mire, numbuf);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
-		break;
+		/*@switchbreak@*/ break;
 	    case RPM_INT32_TYPE:
 		sprintf(numbuf, "%d", (int) *u.i32p);
 		rc = miregexec(mire, numbuf);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
-		break;
+		/*@switchbreak@*/ break;
 	    case RPM_STRING_TYPE:
 		rc = miregexec(mire, u.str);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
-		break;
+		/*@switchbreak@*/ break;
 	    case RPM_I18NSTRING_TYPE:
 	    case RPM_STRING_ARRAY_TYPE:
 		for (j = 0; j < c; j++) {
@@ -1855,16 +1881,16 @@ static int mireSkip (const rpmdbMatchIterator mi)
 			/*@innerbreak@*/ break;
 		    }
 		}
-		break;
+		/*@switchbreak@*/ break;
 	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    if ((i+1) < mi->mi_nre && mire[0].tag == mire[1].tag) {
 		i++;
 		mire++;
-		continue;
+		/*@innercontinue@*/ continue;
 	    }
 	    /*@innerbreak@*/ break;
 	}
@@ -2321,7 +2347,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
 	      dbi = dbiOpen(rpmdb, rpmtag, 0);
 	      if (dbi != NULL) {
@@ -2333,7 +2359,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 		    xx = dbiSync(dbi, 0);
 	      }
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	
 	    if (!hge(h, rpmtag, &rpmtype, (void **) &rpmvals, &rpmcnt))
@@ -2369,20 +2395,20 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 		case RPM_INT8_TYPE:
 		    vallen = sizeof(RPM_CHAR_TYPE);
 		    valp = rpmvals + i;
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_INT16_TYPE:
 		    vallen = sizeof(int_16);
 		    valp = rpmvals + i;
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_INT32_TYPE:
 		    vallen = sizeof(int_32);
 		    valp = rpmvals + i;
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_BIN_TYPE:
 		    vallen = rpmcnt;
 		    valp = rpmvals;
 		    rpmcnt = 1;		/* XXX break out of loop. */
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_STRING_TYPE:
 		case RPM_I18NSTRING_TYPE:
 		    rpmcnt = 1;		/* XXX break out of loop. */
@@ -2391,7 +2417,7 @@ int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 		default:
 		    vallen = strlen(rpmvals[i]);
 		    valp = rpmvals[i];
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 
 		/*
@@ -2580,7 +2606,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
 	      dbi = dbiOpen(rpmdb, rpmtag, 0);
 	      if (dbi != NULL) {
@@ -2596,20 +2622,20 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		}
 	      }
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    /* XXX preserve legacy behavior */
 	    case RPMTAG_BASENAMES:
 		rpmtype = bnt;
 		rpmvals = baseNames;
 		rpmcnt = count;
-		break;
+		/*@switchbreak@*/ break;
 	    case RPMTAG_REQUIRENAME:
 		(void) hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
 		(void) hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **)&requireFlags, NULL);
-		break;
+		/*@switchbreak@*/ break;
 	    default:
 		(void) hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    if (rpmcnt <= 0) {
@@ -2655,9 +2681,9 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		case RPMTAG_REQUIRENAME:
 		    /* Filter out install prerequisites. */
 		    if (requireFlags && isInstallPreReq(requireFlags[i]))
-			continue;
+			/*@innercontinue@*/ continue;
 		    rec->tagNum = i;
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPMTAG_TRIGGERNAME:
 		    if (i) {	/* don't add duplicates */
 			for (j = 0; j < i; j++) {
@@ -2665,13 +2691,13 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 				/*@innerbreak@*/ break;
 			}
 			if (j < i)
-			    continue;
+			    /*@innercontinue@*/ continue;
 		    }
 		    rec->tagNum = i;
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
 		    rec->tagNum = i;
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 
 		/* Identify value pointer and length. */
@@ -2680,20 +2706,20 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		case RPM_INT8_TYPE:
 		    vallen = sizeof(int_8);
 		    valp = rpmvals + i;
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_INT16_TYPE:
 		    vallen = sizeof(int_16);
 		    valp = rpmvals + i;
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_INT32_TYPE:
 		    vallen = sizeof(int_32);
 		    valp = rpmvals + i;
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_BIN_TYPE:
 		    vallen = rpmcnt;
 		    valp = rpmvals;
 		    rpmcnt = 1;		/* XXX break out of loop. */
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_STRING_TYPE:
 		case RPM_I18NSTRING_TYPE:
 		    rpmcnt = 1;		/* XXX break out of loop. */
@@ -2702,7 +2728,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		default:
 		    valp = rpmvals[i];
 		    vallen = strlen(rpmvals[i]);
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 
 		rc += addIndexEntry(dbi, dbcursor, valp, vallen, rec);
@@ -2955,9 +2981,9 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    base = tagName(rpmtag);
@@ -3001,9 +3027,9 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	    case RPMDBI_REMOVED:
 	    case RPMDBI_DEPENDS:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    base = db1basename(rpmtag);

@@ -32,17 +32,31 @@ void headerMergeLegacySigs(Header h, const Header sig)
         ptr = hfd(ptr, type))
     {
 	switch (tag) {
-	case RPMSIGTAG_SIZE:	tag = RPMTAG_SIGSIZE;	break;
-	case RPMSIGTAG_LEMD5_1:	tag = RPMTAG_SIGLEMD5_1;break;
-	case RPMSIGTAG_PGP:	tag = RPMTAG_SIGPGP;	break;
-	case RPMSIGTAG_LEMD5_2:	tag = RPMTAG_SIGLEMD5_2;break;
-	case RPMSIGTAG_MD5:	tag = RPMTAG_SIGMD5;	break;
-	case RPMSIGTAG_GPG:	tag = RPMTAG_SIGGPG;	break;
-	case RPMSIGTAG_PGP5:	tag = RPMTAG_SIGPGP5;	break;
+	case RPMSIGTAG_SIZE:
+	    tag = RPMTAG_SIGSIZE;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_LEMD5_1:
+	    tag = RPMTAG_SIGLEMD5_1;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_PGP:
+	    tag = RPMTAG_SIGPGP;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_LEMD5_2:
+	    tag = RPMTAG_SIGLEMD5_2;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_MD5:
+	    tag = RPMTAG_SIGMD5;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_GPG:
+	    tag = RPMTAG_SIGGPG;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_PGP5:
+	    tag = RPMTAG_SIGPGP5;
+	    /*@switchbreak@*/ break;
 	default:
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(h, tag))
@@ -66,18 +80,32 @@ Header headerRegenSigHeader(const Header h)
         ptr = hfd(ptr, type))
     {
 	switch (tag) {
-	case RPMTAG_SIGSIZE:	stag = RPMSIGTAG_SIZE;	break;
-	case RPMTAG_SIGLEMD5_1:	stag = RPMSIGTAG_LEMD5_1;break;
-	case RPMTAG_SIGPGP:	stag = RPMSIGTAG_PGP;	break;
-	case RPMTAG_SIGLEMD5_2:	stag = RPMSIGTAG_LEMD5_2;break;
-	case RPMTAG_SIGMD5:	stag = RPMSIGTAG_MD5;	break;
-	case RPMTAG_SIGGPG:	stag = RPMSIGTAG_GPG;	break;
-	case RPMTAG_SIGPGP5:	stag = RPMSIGTAG_PGP5;	break;
+	case RPMTAG_SIGSIZE:
+	    stag = RPMSIGTAG_SIZE;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGLEMD5_1:
+	    stag = RPMSIGTAG_LEMD5_1;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGPGP:
+	    stag = RPMSIGTAG_PGP;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGLEMD5_2:
+	    stag = RPMSIGTAG_LEMD5_2;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGMD5:
+	    stag = RPMSIGTAG_MD5;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGGPG:
+	    stag = RPMSIGTAG_GPG;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGPGP5:
+	    stag = RPMSIGTAG_PGP5;
+	    /*@switchbreak@*/ break;
 	default:
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;
 	    stag = tag;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(sig, stag))

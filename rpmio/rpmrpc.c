@@ -890,35 +890,38 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@innerbreak@*/ break;
 	    *se++ = '\0';
 
-	    if (!strncmp(s, "total ", sizeof("total ")-1)) continue;
+	    if (!strncmp(s, "total ", sizeof("total ")-1))
+		/*@innercontinue@*/ continue;
 
 	    o = NULL;
 	    for (bingo = 0, n = se; n >= s; n--) {
 		switch (*n) {
 		case '\0':
 		    oe = ne = n;
-		    break;
+		    /*@switchbreak@*/ break;
 		case ' ':
 		    if (o || !(n[-3] == ' ' && n[-2] == '-' && n[-1] == '>')) {
 			while (*(++n) == ' ')
 			    {};
 			bingo++;
-			break;
+			/*@switchbreak@*/ break;
 		    }
 		    for (o = n + 1; *o == ' '; o++)
 			{};
 		    n -= 3;
 		    ne = n;
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 		if (bingo)
 		    /*@innerbreak@*/ break;
 	    }
 
-	    if (nbn != (ne - n))	continue;	/* Same name length? */
-	    if (strncmp(n, bn, nbn))	continue;	/* Same name? */
+	    if (nbn != (ne - n))	/* Same name length? */
+		/*@innercontinue@*/ continue;
+	    if (strncmp(n, bn, nbn))	/* Same name? */
+		/*@innercontinue@*/ continue;
 
 	    moretodo = 0;
 	    /*@innerbreak@*/ break;

@@ -541,24 +541,24 @@ static Value doRelational(ParseState state)
       switch (op) {
       case TOK_EQ:
 	r = (i1 == i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_NEQ:
 	r = (i1 != i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LT:
 	r = (i1 < i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LE:
 	r = (i1 <= i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GT:
 	r = (i1 > i2);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GE:
 	r = (i1 >= i2);
-	break;
+	/*@switchbreak@*/ break;
       default:
-	break;
+	/*@switchbreak@*/ break;
       }
       valueFree(v1);
       v1 = valueMakeInteger(r);
@@ -569,24 +569,24 @@ static Value doRelational(ParseState state)
       switch (op) {
       case TOK_EQ:
 	r = (strcmp(s1,s2) == 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_NEQ:
 	r = (strcmp(s1,s2) != 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LT:
 	r = (strcmp(s1,s2) < 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_LE:
 	r = (strcmp(s1,s2) <= 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GT:
 	r = (strcmp(s1,s2) > 0);
-	break;
+	/*@switchbreak@*/ break;
       case TOK_GE:
 	r = (strcmp(s1,s2) >= 0);
-	break;
+	/*@switchbreak@*/ break;
       default:
-	break;
+	/*@switchbreak@*/ break;
       }
       valueFree(v1);
       v1 = valueMakeInteger(r);

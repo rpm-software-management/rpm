@@ -425,21 +425,21 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	case PART_PREP:
 	    parsePart = parsePrep(spec);
-	    break;
+	    /*@switchbreak@*/ break;
 	case PART_BUILD:
 	case PART_INSTALL:
 	case PART_CLEAN:
 	    parsePart = parseBuildInstallClean(spec, parsePart);
-	    break;
+	    /*@switchbreak@*/ break;
 	case PART_CHANGELOG:
 	    parsePart = parseChangelog(spec);
-	    break;
+	    /*@switchbreak@*/ break;
 	case PART_DESCRIPTION:
 	    parsePart = parseDescription(spec);
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case PART_PRE:
 	case PART_POST:
@@ -450,16 +450,16 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	case PART_TRIGGERUN:
 	case PART_TRIGGERPOSTUN:
 	    parsePart = parseScript(spec, parsePart);
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case PART_FILES:
 	    parsePart = parseFiles(spec);
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case PART_NONE:		/* XXX avoid gcc whining */
 	case PART_LAST:
 	case PART_BUILDARCHITECTURES:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	if (parsePart >= PART_LAST) {
@@ -480,7 +480,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 
 		/* Skip if not arch is not compatible. */
 		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
-		    continue;
+		    /*@innercontinue@*/ continue;
 #ifdef	DYING
 		rpmGetMachine(&saveArch, NULL);
 		saveArch = xstrdup(saveArch);

@@ -270,17 +270,21 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 		rpmfileState fstate = fileStatesList[i];
 		switch (fstate) {
 		case RPMFILE_STATE_NORMAL:
-		    te = stpcpy(te, _("normal        ")); break;
+		    te = stpcpy(te, _("normal        "));
+		    /*@switchbreak@*/ break;
 		case RPMFILE_STATE_REPLACED:
-		    te = stpcpy(te, _("replaced      ")); break;
+		    te = stpcpy(te, _("replaced      "));
+		    /*@switchbreak@*/ break;
 		case RPMFILE_STATE_NOTINSTALLED:
-		    te = stpcpy(te, _("not installed ")); break;
+		    te = stpcpy(te, _("not installed "));
+		    /*@switchbreak@*/ break;
 		case RPMFILE_STATE_NETSHARED:
-		    te = stpcpy(te, _("net shared    ")); break;
+		    te = stpcpy(te, _("net shared    "));
+		    /*@switchbreak@*/ break;
 		default:
 		    sprintf(te, _("(unknown %3d) "), (int)fileStatesList[i]);
 		    te += strlen(te);
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    } else {
 		te = stpcpy(te, _("(no state)    "));
@@ -457,11 +461,11 @@ printNewSpecfile(Spec spec)
 		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
 		sl->sl_lines[t->t_startx] = buf;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
 		if (*sl->sl_lines[t->t_startx + j] == '%')
-		    continue;
+		    /*@innercontinue@*/ continue;
 		/*@-unqualifiedtrans@*/
 		sl->sl_lines[t->t_startx + j] =
 			_free(sl->sl_lines[t->t_startx + j]);
@@ -474,7 +478,7 @@ printNewSpecfile(Spec spec)
 	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
 	    if (t->t_nlines > 2)
 		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     msgstr = _free(msgstr);
@@ -506,7 +510,7 @@ void rpmDisplayQueryTags(FILE * fp)
 	/* XXX don't print query tags twice. */
 	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	    if (t->name == NULL)	/* XXX programmer error. */
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (!strcmp(t->name, ext->name))
 	    	/*@innerbreak@*/ break;
 	}

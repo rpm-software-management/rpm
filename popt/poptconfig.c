@@ -126,7 +126,7 @@ int poptReadConfigFile(poptContext con, const char * fn)
 	    if (*dst && *dst != '#')
 		configLine(con, dst);
 	    chptr++;
-	    break;
+	    /*@switchbreak@*/ break;
 	  case '\\':
 	    *dst++ = *chptr++;
 	    if (chptr < end) {
@@ -136,10 +136,10 @@ int poptReadConfigFile(poptContext con, const char * fn)
 		else
 		    *dst++ = *chptr++;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	  default:
 	    *dst++ = *chptr++;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     /*@=infloops@*/

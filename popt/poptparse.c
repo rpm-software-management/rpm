@@ -90,7 +90,7 @@ int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
 	  case '"':
 	  case '\'':
 	    quote = *src;
-	    break;
+	    /*@switchbreak@*/ break;
 	  case '\\':
 	    src++;
 	    if (!*src) {
@@ -100,7 +100,7 @@ int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
 	    /*@fallthrough@*/
 	  default:
 	    *buf++ = *src;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
 

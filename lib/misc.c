@@ -174,9 +174,9 @@ static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 	    switch(errno) {
 	    default:
 		return errno;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case ENOENT:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    rc = mkdir(d, mode);
 	    if (rc)
@@ -243,9 +243,9 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	case URL_IS_HTTP:
 	case URL_IS_DASH:
 	    goto errxit;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	fd = Fopen(tempfn, "w+x.ufdio");
@@ -414,7 +414,7 @@ exit:
 static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 			    /*@out@*/ int * fileCountPtr, rpmTag baseNameTag,
 			    rpmTag dirNameTag, rpmTag dirIndexesTag)
-	/*@modifies h @*/
+	/*@modifies *fileListPtr, *fileCountPtr @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -587,9 +587,9 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	case URL_IS_PATH:
 	case URL_IS_DASH:
 	    strncpy(globRoot, av[j], nb);
-	    break;
+	    /*@switchbreak@*/ break;
 	case URL_IS_UNKNOWN:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	globRoot += nb;
 	*globRoot = '\0';

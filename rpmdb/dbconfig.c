@@ -383,7 +383,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    /* Find key in option table. */
 	    for (opt = rdbOptions; opt->longName != NULL; opt++) {
 		if (strcmp(tok, opt->longName))
-		    continue;
+		    /*@innercontinue@*/ continue;
 		/*@innerbreak@*/ break;
 	    }
 	    if (opt->longName == NULL) {
@@ -402,17 +402,17 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
 	    case POPT_ARG_NONE:
 		(void) dbSaveInt(opt, argInfo, 1L);
-		break;
+		/*@switchbreak@*/ break;
 	    case POPT_ARG_VAL:
 		(void) dbSaveInt(opt, argInfo, (long)opt->val);
-	    	break;
+	    	/*@switchbreak@*/ break;
 	    case POPT_ARG_STRING:
 	    {	const char ** t = opt->arg;
 		if (t) {
 		    *t = _free(*t);
 		    *t = xstrdup( (p ? p : "") );
 		}
-	    }	break;
+	    }	/*@switchbreak@*/ break;
 
 	    case POPT_ARG_INT:
 	    case POPT_ARG_LONG:
@@ -438,7 +438,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 			continue;
 		    }
 		    (void) dbSaveLong(opt, argInfo, aLong);
-		    break;
+		    /*@switchbreak@*/ break;
 		} else {
 		    if (aLong > INT_MAX || aLong < INT_MIN) {
 			rpmError(RPMERR_DBCONFIG,
@@ -448,9 +448,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 		    }
 		    (void) dbSaveInt(opt, argInfo, aLong);
 		}
-	      }	break;
+	      }	/*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
     }

@@ -505,9 +505,12 @@ static const char * findNextArg(/*@special@*/ poptContext con,
 	if (os->next == os->argc && os == con->optionStack) break;
 	if (os->argv != NULL)
 	for (i = os->next; i < os->argc; i++) {
-	    if (os->argb && PBM_ISSET(i, os->argb)) continue;
-	    if (*os->argv[i] == '-') continue;
-	    if (--argx > 0) continue;
+	    if (os->argb && PBM_ISSET(i, os->argb))
+		/*@innercontinue@*/ continue;
+	    if (*os->argv[i] == '-')
+		/*@innercontinue@*/ continue;
+	    if (--argx > 0)
+		/*@innercontinue@*/ continue;
 	    arg = os->argv[i];
 	    if (delete_arg) {
 		if (os->argb == NULL) os->argb = PBM_ALLOC(os->argc);
@@ -540,14 +543,15 @@ expandNextArg(/*@special@*/ poptContext con, const char * s)
 #if 0	/* XXX can't do this */
 	case '\\':	/* escape */
 	    c = *s++;
-	    break;
+	    /*@switchbreak@*/ break;
 #endif
 	case '!':
 	    if (!(s[0] == '#' && s[1] == ':' && s[2] == '+'))
-		break;
+		/*@switchbreak@*/ break;
 	    /* XXX Make sure that findNextArg deletes only next arg. */
 	    if (a == NULL) {
-		if ((a = findNextArg(con, 1, 1)) == NULL) break;
+		if ((a = findNextArg(con, 1, 1)) == NULL)
+		    /*@switchbreak@*/ break;
 	    }
 	    s += 3;
 
@@ -558,9 +562,9 @@ expandNextArg(/*@special@*/ poptContext con, const char * s)
 	    te = t + strlen(t);
 	    strncpy(te, a, alen); te += alen;
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	*te++ = c;
     }
@@ -834,7 +838,7 @@ int poptGetNextOpt(poptContext con)
 		    /* XXX memory leak, hard to plug */
 		    *((const char **) opt->arg) = (con->os->nextArg)
 			? xstrdup(con->os->nextArg) : NULL;
-		    break;
+		    /*@switchbreak@*/ break;
 
 		case POPT_ARG_INT:
 		case POPT_ARG_LONG:
@@ -858,7 +862,7 @@ int poptGetNextOpt(poptContext con)
 			if (poptSaveInt(opt, aLong))
 			    return POPT_ERROR_BADOPERATION;
 		    }
-		}   break;
+		}   /*@switchbreak@*/ break;
 
 		case POPT_ARG_FLOAT:
 		case POPT_ARG_DOUBLE:
@@ -886,12 +890,13 @@ int poptGetNextOpt(poptContext con)
 			    return POPT_ERROR_OVERFLOW;
 			*((float *) opt->arg) = aDouble;
 		    }
-		}   break;
+		}   /*@switchbreak@*/ break;
 		default:
 		    fprintf(stdout,
 			POPT_("option type (%d) not implemented in popt\n"),
 			(opt->argInfo & POPT_ARG_MASK));
 		    exit(EXIT_FAILURE);
+		    /*@notreached@*/ /*@switchbreak@*/ break;
 		}
 	    }
 	}

@@ -729,12 +729,12 @@ int packageBinaries(Spec spec)
 		    switch(errno) {
 		    case  ENOENT:
 			if (Mkdir(dn, 0755) == 0)
-			    break;
+			    /*@switchbreak@*/ break;
 			/*@fallthrough@*/
 		    default:
 			rpmError(RPMERR_BADFILENAME,_("cannot create %s: %s\n"),
 			    dn, strerror(errno));
-			break;
+			/*@switchbreak@*/ break;
 		    }
 		}
 		dn = _free(dn);

@@ -387,16 +387,16 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    for (; ie.info.count > 0; ie.info.count--, it += 1)
 		*it = htonl(*it);
 	    t = (char *) it;
-	}   break;
+	}   /*@switchbreak@*/ break;
 	case RPM_INT16_TYPE:
 	{   int_16 * it = (int_16 *) t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1)
 		*it = htons(*it);
 	    t = (char *) it;
-	}   break;
+	}   /*@switchbreak@*/ break;
 	default:
 	    t += ie.length;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	dl += ie.length;
@@ -487,7 +487,7 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
 	    /* Skip rest of entries in region, but account for dribbles. */
 	    for (; i < h->indexUsed && entry->info.offset <= rid+1; i++, entry++) {
 		if (entry->info.offset <= rid)
-		    continue;
+		    /*@innercontinue@*/ continue;
 
 		/* Alignment */
 		type = entry->info.type;
@@ -650,7 +650,7 @@ t = te;
 		te += sizeof(int_32);
 		src += sizeof(int_32);
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case RPM_INT16_TYPE:
 	    count = entry->info.count;
@@ -660,12 +660,12 @@ t = te;
 		te += sizeof(int_16);
 		src += sizeof(int_16);
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 
 	default:
 	    memcpy(te, entry->data, entry->length);
 	    te += entry->length;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	pe++;
     }
@@ -1772,7 +1772,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 	    format[i].u.array.format =
 		freeFormat(format[i].u.array.format,
 			format[i].u.array.numTokens);
-	    break;
+	    /*@switchbreak@*/ break;
 	case PTOK_COND:
 	    format[i].u.cond.ifFormat =
 		freeFormat(format[i].u.cond.ifFormat, 
@@ -1780,12 +1780,12 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 	    format[i].u.cond.elseFormat =
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
-	    break;
+	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
 	case PTOK_TAG:
 	case PTOK_STRING:
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     format = _free(format);
@@ -1898,7 +1898,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
 
 		*dst++ = *start++;
 
-		break; /* out of switch */
+		/*@switchbreak@*/ break;
 	    } 
 
 	    currToken++;
@@ -1916,7 +1916,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
 		    return 1;
 		}
 		start = newEnd;
-		break; /* out of switch */
+		/*@switchbreak@*/ break;
 	    }
 
 	    /*@-assignexpose@*/
@@ -2015,7 +2015,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
 
 	    start = next;
 
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case '[':
 	    *dst++ = '\0';
@@ -2042,7 +2042,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
 
 	    format[currToken].type = PTOK_ARRAY;
 
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case ']':
 	case '}':
@@ -2063,7 +2063,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
 	    *start++ = '\0';
 	    if (endPtr) *endPtr = start;
 	    done = 1;
-	    break;
+	    /*@switchbreak@*/ break;
 
 	default:
 	    if (currToken < 0 || format[currToken].type != PTOK_STRING) {
@@ -2080,7 +2080,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
 	    } else {
 		*dst++ = *start++;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	if (done)
 	    break;

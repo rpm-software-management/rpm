@@ -362,7 +362,7 @@ static int parseForVerify(char * buf, FileList fl)
 	{   VFA_t *vfa;
 	    for (vfa = verifyAttrs; vfa->attribute != NULL; vfa++) {
 		if (strcmp(p, vfa->attribute))
-		    continue;
+		    /*@innercontinue@*/ continue;
 		verifyFlags |= vfa->flag;
 		/*@innerbreak@*/ break;
 	    }
@@ -747,7 +747,7 @@ static int parseForLang(char * buf, FileList fl)
 	if (fl->currentLangs != NULL)
 	for (i = 0; i < fl->nLangs; i++) {
 	    if (strncmp(fl->currentLangs[i], p, np))
-		continue;
+		/*@innercontinue@*/ continue;
 	    rpmError(RPMERR_BADSPEC, _("Duplicate locale %.*s in %%lang(%s)\n"),
 		(int)np, p, q);
 	    fl->processingFailed = 1;
@@ -911,7 +911,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
     {	VFA_t *vfa;
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
 	    if (strcmp(s, vfa->attribute))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (!vfa->flag) {
 		if (!strcmp(s, "%dir"))
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
@@ -1045,16 +1045,16 @@ static void checkHardLinks(FileList fl)
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
 	    if (!S_ISREG(jlp->fl_mode))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_nlink != jlp->fl_nlink)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_ino != jlp->fl_ino)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (!strcmp(ilp->langs, jlp->langs)) {
 		jlp->flags |= RPMFILE_SPECFILE;
-		continue;
+		/*@innercontinue@*/ continue;
 	    }
 	    if (te == nlangs)
 		te = stpcpy(te, ilp->langs);
@@ -1071,13 +1071,13 @@ static void checkHardLinks(FileList fl)
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
 	    if (!S_ISREG(jlp->fl_mode))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_nlink != jlp->fl_nlink)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_ino != jlp->fl_ino)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (ilp->fl_dev != jlp->fl_dev)
-		continue;
+		/*@innercontinue@*/ continue;
 	    jlp->flags |= RPMFILE_SPECFILE;
 	    jlp->langs = _free(jlp->langs);
 	    jlp->langs = xstrdup(nlangs);
@@ -1985,10 +1985,10 @@ void initSourceHeader(Spec spec)
 	case HEADER_I18NTABLE:
 	    if (ptr)
 		(void)headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    /* do not copy */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     hi = headerFreeIterator(hi);
@@ -2384,16 +2384,16 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 		continue;
 	    failnonzero = 1;
 	    tagflags = RPMSENSE_FIND_PROVIDES;
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPMTAG_REQUIREFLAGS:
 	    if (!pkg->autoReq)
 		continue;
 	    failnonzero = 0;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
 	/* Get the script name to run */
@@ -2516,35 +2516,35 @@ static void printDeps(Header h)
 	switch (dm->ntag) {
 	case 0:
 	    names = hfd(names, dnt);
-	    break;
+	    /*@switchbreak@*/ break;
 	case -1:
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    names = hfd(names, dnt);
 	    if (!hge(h, dm->ntag, &dnt, (void **) &names, &count))
 		continue;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	switch (dm->vtag) {
 	case 0:
 	    versions = hfd(versions, dvt);
-	    break;
+	    /*@switchbreak@*/ break;
 	case -1:
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    versions = hfd(versions, dvt);
 	    (void) hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	switch (dm->ftag) {
 	case 0:
 	    flags = NULL;
-	    break;
+	    /*@switchbreak@*/ break;
 	case -1:
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    (void) hge(h, dm->ftag, NULL, (void **) &flags, NULL);
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	printDepMsg(dm, count, names, versions, flags);
     }

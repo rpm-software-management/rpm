@@ -383,9 +383,9 @@ int main(int argc, const char ** argv)
 	switch(arg) {
 	case 'v':
 	    rpmIncreaseVerbosity();	/* XXX silly use by showrc */
-	    break;
+	    /*@switchbreak@*/ break;
         default:
-	    break;
+	    /*@switchbreak@*/ break;
       }
     }
 
@@ -444,7 +444,7 @@ int main(int argc, const char ** argv)
 	    
 	case 'v':
 	    rpmIncreaseVerbosity();
-	    break;
+	    /*@switchbreak@*/ break;
 
 /* XXX options used in multiple rpm modes */
 #if defined(IAM_RPMQV) || defined(IAM_RPMK)
@@ -460,7 +460,7 @@ int main(int argc, const char ** argv)
 	    else
 #endif
 		/*@-ifempty@*/ ;
-	    break;
+	    /*@switchbreak@*/ break;
 #endif	/* IAM_RPMQV || IAM_RPMK */
 
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
@@ -483,7 +483,7 @@ int main(int argc, const char ** argv)
 	    else
 #endif
 		/*@-ifempty@*/ ;
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case POPT_FORCE:
 #ifdef	IAM_RPMEIU
@@ -503,7 +503,7 @@ int main(int argc, const char ** argv)
 	    else
 #endif
 		/*@-ifempty@*/ ;
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case 'i':
 #ifdef	IAM_RPMQV
@@ -527,7 +527,7 @@ int main(int argc, const char ** argv)
 	    } else
 #endif
 		/*@-ifempty@*/ ;
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case POPT_NOSCRIPTS:
 #ifdef	IAM_RPMQV
@@ -543,7 +543,7 @@ int main(int argc, const char ** argv)
 	    else
 #endif
 		/*@-ifempty@*/ ;
-	    break;
+	    /*@switchbreak@*/ break;
 
 #endif	/* IAM_RPMQV || IAM_RPMEIU || IAM_RPMBT */
 
@@ -553,7 +553,7 @@ int main(int argc, const char ** argv)
 		(void) rpmDefineMacro(&rpmCLIMacroContext, optArg,RMIL_CMDLINE);
 	    }
 	    noUsageMsg = 1;
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case GETOPT_EVALMACRO:
 	    if (optArg) {
@@ -562,7 +562,7 @@ int main(int argc, const char ** argv)
 		val = _free(val);
 	    }
 	    noUsageMsg = 1;
-	    break;
+	    /*@switchbreak@*/ break;
 
 #if defined(GETOPT_RCFILE)
 	case GETOPT_RCFILE:

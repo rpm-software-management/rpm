@@ -283,10 +283,10 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
 	case RPM_INT32_TYPE:
 	    sprintf(numbuf, "%d", *body.i32p);
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
 	    addMacro(NULL, tagm->macroname, NULL, body.str, -1);
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPM_NULL_TYPE:
 	case RPM_CHAR_TYPE:
 	case RPM_INT8_TYPE:
@@ -295,7 +295,7 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     return 0;
@@ -370,7 +370,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 			((int_8 *) newdata)[k++] = ((int_8 *) data)[j];
 	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPM_INT16_TYPE:
 	    newdata = xcalloc(fc, sizeof(int_16));
 	    for (j = 0, k = 0; j < count; j++)
@@ -378,7 +378,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 		    ((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
 	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPM_INT32_TYPE:
 	    newdata = xcalloc(fc, sizeof(int_32));
 	    for (j = 0, k = 0; j < count; j++)
@@ -386,7 +386,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 		    ((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
 	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
-	    break;
+	    /*@switchbreak@*/ break;
 	case RPM_STRING_ARRAY_TYPE:
 	    newdata = xcalloc(fc, sizeof(char *));
 	    for (j = 0, k = 0; j < count; j++)
@@ -394,12 +394,12 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 		    ((char **) newdata)[k++] = ((char **) data)[j];
 	    (void) headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    rpmError(RPMERR_DATATYPE, _("Data type %d not supported\n"),
 			(int) type);
 	    return 1;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 	data = hfd(data, type);
     }
@@ -461,7 +461,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	}
 	for (j = 0, k = 0; j < newCount; j++) {
 	    if (!newNames[j] || !isDependsMULTILIB(newFlags[j]))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (j != k) {
 		newNames[k] = newNames[j];
 		newEVR[k] = newEVR[j];

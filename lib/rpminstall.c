@@ -275,18 +275,18 @@ restart:
 		eiu->numFailed++;
 		eiu->pkgURL[eiu->pkgx] = NULL;
 		tfn = _free(tfn);
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    eiu->pkgState[eiu->pkgx] = 1;
 	    eiu->pkgURL[eiu->pkgx] = tfn;
 	    eiu->pkgx++;
-	}   break;
+	}   /*@switchbreak@*/ break;
 	case URL_IS_PATH:
 	default:
 	    eiu->pkgURL[eiu->pkgx] = fileURL;
 	    fileURL = NULL;
 	    eiu->pkgx++;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     fileURL = _free(fileURL);
@@ -396,7 +396,7 @@ restart:
 		count = rpmdbGetIteratorCount(mi);
 		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 		    if (rpmVersionCompare(oldH, eiu->h) < 0)
-			continue;
+			/*@innercontinue@*/ continue;
 		    /* same or newer package already installed */
 		    count = 0;
 		    /*@innerbreak@*/ break;
@@ -421,20 +421,20 @@ restart:
 	    case 0:
 		rpmMessage(RPMMESS_DEBUG, "\tadded binary package [%d]\n",
 			eiu->numRPMS);
-		break;
+		/*@switchbreak@*/ break;
 	    case 1:
 		rpmMessage(RPMMESS_ERROR,
 			    _("error reading from file %s\n"), *eiu->fnp);
 		eiu->numFailed++;
 		goto exit;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case 2:
 		rpmMessage(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
 			    *eiu->fnp);
 		eiu->numFailed++;
 		goto exit;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 
 	    eiu->numRPMS++;

@@ -1,7 +1,7 @@
 -I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./popt -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
 
 #+partial
-#+forcehints
++forcehints
 
 -warnunixlib
 -warnposix
@@ -28,27 +28,23 @@
 -globstate
 -ifblock		# tedious
 -incondefs		# <sys/{select,mman}.h> tedium
--internalglobs		# 38 occurences
--looploopcontinue	# 86 occurences
--loopswitchbreak	# 286 occurences
+-internalglobs		# lots of global annotations needed
 -matchfields		# <bits/ipc.h> heartburn
 -modfilesys		# 153 occurences
 -modnomods		# 927 occurences
 -modobserveruncon	# 192 occurences
 -mods			# 281 occurences, errno will be a pita
--mustmod		# <sys/select.h> heartburn
--mutrep			# <sys/select.h> heartburn
--namechecks		# tedious ANSI compliance wrto db3
--noeffectuncon		# 228 occurences
+-namechecks		# tedious ANSI compliance checks
+-noeffectuncon		# 228 occurences, HGE_t needs special annotations
 -numenummembers 1024	# RPMTAG has 138 members
 -numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
--sizeoftype		# <sys/select.h> tedium
+-sizeoftype		# ~240 occurences, <sys/select.h> tedium, more
 -strictops
 -strictusereleased
 -stringliterallen 4096	# redhat*PubKey's are big
--usedef			# 303 occurences, HGE_t needs special annotatitions
--warnmissingglobs
+-usedef			# 303 occurences, HGE_t needs special annotations
+-warnmissingglobs	# lots of global annotations needed
 -whileblock		# tedious
 
 # --- random anal-retentive parameters

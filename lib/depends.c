@@ -462,7 +462,7 @@ static void alMakeIndex(availableList al)
 		if (al->list[i].multiLib &&
 		    !isDependsMULTILIB(al->list[i].provideFlags[j])) {
 			ai->size--;
-			continue;
+			/*@innercontinue@*/ continue;
 		}
 
 		ai->index[k].package = al->list + i;
@@ -1001,7 +1001,7 @@ alAllFileSatisfiesDepend(const availableList al,
 	for (i = 0; i < dirMatch->numFiles; i++) {
 	    if (dirMatch->files[i].baseName == NULL ||
 			strcmp(dirMatch->files[i].baseName, baseName))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /*
 	     * If a file dependency would be satisfied by a file
@@ -1009,7 +1009,7 @@ alAllFileSatisfiesDepend(const availableList al,
 	     */
 	    if (al->list[dirMatch->files[i].pkgNum].multiLib &&
 			!isFileMULTILIB(dirMatch->files[i].fileFlags))
-	        continue;
+	        /*@innercontinue@*/ continue;
 
 	    if (keyType)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added files)\n"),
@@ -1113,7 +1113,7 @@ alAllSatisfiesDepend(const availableList al,
 
 		/* Filter out provides that came along for the ride. */
 		if (strcmp(p->provides[i], keyName))
-		    continue;
+		    /*@innercontinue@*/ continue;
 
 		proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
 		proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
@@ -1125,7 +1125,7 @@ alAllSatisfiesDepend(const availableList al,
 	    if (keyType && keyDepend && rc)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),
 				keyType, keyDepend+2);
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	if (rc) {
@@ -1418,7 +1418,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
-	    break;
+	    /*@switchbreak@*/ break;
 	case 1:		/* requirements are not satisfied. */
 	    rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s require not satisfied: %s\n"),
 		    name, version, release, keyDepend+2);
@@ -1454,11 +1454,11 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    }
 
 	    psp->num++;
-	    break;
+	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
 	default:
 	    ourrc = 1;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	keyDepend = _free(keyDepend);
     }
@@ -1521,13 +1521,13 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	    }
 
 	    psp->num++;
-	    break;
+	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
-	    break;
+	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
 	default:
 	    ourrc = 1;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	keyDepend = _free(keyDepend);
     }
@@ -1914,14 +1914,15 @@ int rpmdepOrder(rpmTransactionSet ts)
 	/* First, do pre-requisites. */
 	for (j = 0; j < p->requiresCount; j++) {
 
-	    if (p->requireFlags == NULL) continue;	/* XXX can't happen */
+	    if (p->requireFlags == NULL) /* XXX can't happen */
+		/*@innercontinue@*/ continue;
 
 	    /* Skip if not %pre/%post requires or legacy prereq. */
 
 	    if (isErasePreReq(p->requireFlags[j]) ||
 		!( isInstallPreReq(p->requireFlags[j]) ||
 		   isLegacyPreReq(p->requireFlags[j]) ))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, p, selected, j);
@@ -1931,14 +1932,15 @@ int rpmdepOrder(rpmTransactionSet ts)
 	/* Then do co-requisites. */
 	for (j = 0; j < p->requiresCount; j++) {
 
-	    if (p->requireFlags == NULL) continue;	/* XXX can't happen */
+	    if (p->requireFlags == NULL) /* XXX can't happen */
+		/*@innercontinue@*/ continue;
 
 	    /* Skip if %pre/%post requires or legacy prereq. */
 
 	    if (isErasePreReq(p->requireFlags[j]) ||
 		 ( isInstallPreReq(p->requireFlags[j]) ||
 		   isLegacyPreReq(p->requireFlags[j]) ))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, p, selected, j);
@@ -2226,7 +2228,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	for (j = 0; j < p->providesCount; j++) {
 	    /* Adding: check provides key against conflicts matches. */
 	    if (!checkDependentConflicts(ts, ps, p->provides[j]))
-		continue;
+		/*@innercontinue@*/ continue;
 	    rc = 1;
 	    /*@innerbreak@*/ break;
 	}
@@ -2265,7 +2267,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		for (j = 0; j < providesCount; j++) {
 		    /* Erasing: check provides against requiredby matches. */
 		    if (!checkDependentPackages(ts, ps, provides[j]))
-			continue;
+			/*@innercontinue@*/ continue;
 		    rc = 1;
 		    /*@innerbreak@*/ break;
 		}
@@ -2300,7 +2302,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    (void) stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
 		    /* Erasing: check filename against requiredby matches. */
 		    if (!checkDependentPackages(ts, ps, fileName))
-			continue;
+			/*@innercontinue@*/ continue;
 		    rc = 1;
 		    /*@innerbreak@*/ break;
 		}

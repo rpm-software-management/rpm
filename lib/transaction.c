@@ -115,7 +115,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 		    struct availablePackage * alp;
 		    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 		    *e = alp->key;
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 		/*@fallthrough@*/
 	    default:
@@ -123,7 +123,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 		/*@-mods@*/	/* FIX: double indirection. */
 		*e = NULL;
 		/*@=mods@*/
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
     }
@@ -451,7 +451,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
 		relocations[j    ].oldPath == NULL || /* XXX can't happen */
 	strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
-		continue;
+		/*@innercontinue@*/ continue;
 	    /*@-usereleased@*/ /* LCL: ??? */
 	    tmpReloc = relocations[j - 1];
 	    relocations[j - 1] = relocations[j];
@@ -487,7 +487,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	    for (j = 0; j < numRelocations; j++) {
 		if (relocations[j].oldPath == NULL || /* XXX can't happen */
 		    strcmp(validRelocations[i], relocations[j].oldPath))
-		    continue;
+		    /*@innercontinue@*/ continue;
 		/* On install, a relocate to NULL means skip the path. */
 		if (relocations[j].newPath) {
 		    actualRelocations[numActual] = relocations[j].newPath;
@@ -564,22 +564,23 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	 * relocation list be a good idea?
 	 */
 	for (j = numRelocations - 1; j >= 0; j--) {
-	    if (relocations[j].oldPath == NULL) continue; /* XXX can't happen */
+	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
+		/*@innercontinue@*/ continue;
 	    len = strcmp(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
 
 	    if (fnlen < len)
-		continue;
+		/*@innercontinue@*/ continue;
 	    /*
 	     * Only subdirectories or complete file paths may be relocated. We
 	     * don't check for '\0' as our directory names all end in '/'.
 	     */
 	    if (!(fn[len] == '/' || fnlen == len))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    if (strncmp(relocations[j].oldPath, fn, len))
-		continue;
+		/*@innercontinue@*/ continue;
 	    /*@innerbreak@*/ break;
 	}
 	if (j < 0) continue;
@@ -594,9 +595,9 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		    len = strlen(dirNames[j]) - 1;
 		    while (len > 0 && dirNames[j][len-1] == '/') len--;
 		    if (fnlen != len)
-			continue;
+			/*@innercontinue@*/ continue;
 		    if (strncmp(fn, dirNames[j], fnlen))
-			continue;
+			/*@innercontinue@*/ continue;
 		    /*@innerbreak@*/ break;
 		}
 		if (j < dirCount)
@@ -635,9 +636,9 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	/* Does this directory already exist in the directory list? */
 	for (j = 0; j < dirCount; j++) {
 	    if (fnlen != strlen(dirNames[j]))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (strncmp(fn, dirNames[j], fnlen))
-		continue;
+		/*@innercontinue@*/ continue;
 	    /*@innerbreak@*/ break;
 	}
 	
@@ -670,20 +671,21 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
 
-	    if (relocations[j].oldPath == NULL) continue; /* XXX can't happen */
+	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
+		/*@innercontinue@*/ continue;
 	    len = strcmp(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
 
 	    if (len && strncmp(relocations[j].oldPath, dirNames[i], len))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /*
 	     * Only subdirectories or complete file paths may be relocated. We
 	     * don't check for '\0' as our directory names all end in '/'.
 	     */
 	    if (dirNames[i][len] != '/')
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char * s = relocations[j].newPath;
@@ -1135,7 +1137,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
 	    /* Added packages need only look at other added packages. */
 	    if (fi->type == TR_ADDED && recs[otherPkgNum]->type != TR_ADDED)
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /* TESTME: there are more efficient searches in the world... */
 	    for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc;
@@ -1163,7 +1165,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	    if (otherPkgNum < 0) {
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
-		    break;
+		    /*@switchbreak@*/ break;
 		if ((fi->fflags[i] & RPMFILE_CONFIG) && 
 			!lstat(filespec, &sb)) {
 		    /* Here is a non-overlapped pre-existing config file. */
@@ -1172,7 +1174,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 		} else {
 		    fi->actions[i] = FA_CREATE;
 		}
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    /* Mark added overlapped non-identical files as a conflict. */
@@ -1196,36 +1198,36 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	    } else {
 		fi->actions[i] = FA_CREATE;
 	    }
-	  } break;
+	  } /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
 		/* Here is an overlapped added file we don't want to nuke. */
 		if (recs[otherPkgNum]->actions[otherFileNum] != FA_ERASE) {
 		    /* On updates, don't remove files. */
 		    fi->actions[i] = FA_SKIP;
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 		/* Here is an overlapped removed file: skip in previous. */
 		recs[otherPkgNum]->actions[otherFileNum] = FA_SKIP;
 	    }
 	    if (XFA_SKIPPING(fi->actions[i]))
-		break;
+		/*@switchbreak@*/ break;
 	    if (fi->fstates && fi->fstates[i] != RPMFILE_STATE_NORMAL)
-		break;
+		/*@switchbreak@*/ break;
 	    if (!(S_ISREG(fi->fmodes[i]) && (fi->fflags[i] & RPMFILE_CONFIG))) {
 		fi->actions[i] = FA_ERASE;
-		break;
+		/*@switchbreak@*/ break;
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char mdsum[50];
 		if (!mdfile(filespec, mdsum) && strcmp(fi->fmd5s[i], mdsum)) {
 		    fi->actions[i] = FA_BACKUP;
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    fi->actions[i] = FA_ERASE;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	if (ds) {
@@ -1237,7 +1239,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	      case FA_ALTNAME:
 		ds->ineeded++;
 		ds->bneeded += s;
-		break;
+		/*@switchbreak@*/ break;
 
 	    /*
 	     * FIXME: If two packages share a file (same md5sum), and
@@ -1247,15 +1249,15 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	      case FA_CREATE:
 		ds->bneeded += s;
 		ds->bneeded -= BLOCK_ROUND(fi->replacedSizes[i], ds->bsize);
-		break;
+		/*@switchbreak@*/ break;
 
 	      case FA_ERASE:
 		ds->ineeded--;
 		ds->bneeded -= s;
-		break;
+		/*@switchbreak@*/ break;
 
 	      default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    ds->bneeded -= BLOCK_ROUND(fixupSize, ds->bsize);
@@ -1351,16 +1353,22 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 
 	    len = strlen(*nsp);
 	    if (dnlen >= len) {
-		if (strncmp(dn, *nsp, len)) continue;
+		if (strncmp(dn, *nsp, len))
+		    /*@innercontinue@*/ continue;
 		/* Only directories or complete file paths can be net shared */
-		if (!(dn[len] == '/' || dn[len] == '\0')) continue;
+		if (!(dn[len] == '/' || dn[len] == '\0'))
+		    /*@innercontinue@*/ continue;
 	    } else {
-		if (len < (dnlen + bnlen)) continue;
-		if (strncmp(dn, *nsp, dnlen)) continue;
-		if (strncmp(bn, (*nsp) + dnlen, bnlen)) continue;
+		if (len < (dnlen + bnlen))
+		    /*@innercontinue@*/ continue;
+		if (strncmp(dn, *nsp, dnlen))
+		    /*@innercontinue@*/ continue;
+		if (strncmp(bn, (*nsp) + dnlen, bnlen))
+		    /*@innercontinue@*/ continue;
 		len = dnlen + bnlen;
 		/* Only directories or complete file paths can be net shared */
-		if (!((*nsp)[len] == '/' || (*nsp)[len] == '\0')) continue;
+		if (!((*nsp)[len] == '/' || (*nsp)[len] == '\0'))
+		    /*@innercontinue@*/ continue;
 	    }
 
 	    /*@innerbreak@*/ break;
@@ -1427,18 +1435,18 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	    const char * dir;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (whatis(fi->fmodes[i]) != XDIR)
-		continue;
+		/*@innercontinue@*/ continue;
 	    dir = fi->dnl[fi->dil[i]];
 	    if (strlen(dir) != dnlen)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (strncmp(dir, dn, dnlen))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (strlen(fi->bnl[i]) != bnlen)
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (strncmp(fi->bnl[i], bn, bnlen))
-		continue;
+		/*@innercontinue@*/ continue;
 	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), dn);
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    /*@innerbreak@*/ break;
@@ -1758,7 +1766,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    skipFiles(ts, fi);
-	    break;
+	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    fi->ap = NULL;
 	    fi->record = ts->order[oc].u.removed.dboffset;
@@ -1776,7 +1784,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    }
 	    /* XXX header arg unused. */
 	    loadFi(fi->h, fi);
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	if (fi->fc)
@@ -1807,7 +1815,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 	for (i = 0; i < fi->fc; i++) {
 	    if (XFA_SKIPPING(fi->actions[i]))
-		continue;
+		/*@innercontinue@*/ continue;
 	    /*@-dependenttrans@*/
 	    htAddEntry(ht, fi->fps + i, fi);
 	    /*@=dependenttrans@*/
@@ -1856,9 +1864,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		    case TR_REMOVED:
 			if (ts->order[k].u.removed.dboffset == ro)
 			    knownBad = ro;
-			break;
+			/*@switchbreak@*/ break;
 		    case TR_ADDED:
-			break;
+			/*@switchbreak@*/ break;
 		    }
 		}
 
@@ -1893,7 +1901,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    beingRemoved = 0;
 	    for (j = 0; j < ts->numRemovedPackages; j++) {
 		if (ts->removedPackages[j] != shared->otherPkg)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		beingRemoved = 1;
 		/*@innerbreak@*/ break;
 	    }
@@ -1904,11 +1912,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		(void) handleInstInstalledFiles(fi, ts->rpmdb, shared, nexti - i,
 		!(beingRemoved || (ts->ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)),
 			 ts->probs, ts->transFlags);
-		break;
+		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
 		if (!beingRemoved)
 		    (void) handleRmvdInstalledFiles(fi, ts->rpmdb, shared, nexti - i);
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
 
@@ -1923,14 +1931,14 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	switch (fi->type) {
 	case TR_ADDED:
 	    if (!(ts->di && fi->fc))
-		break;
+		/*@switchbreak@*/ break;
 	    for (i = 0; i < ts->filesystemCount; i++) {
 
 		dip = ts->di + i;
 
 		/* XXX Avoid FAT and other file systems that have not inodes. */
 		if (dip->iavail <= 0)
-		    continue;
+		    /*@innercontinue@*/ continue;
 
 		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
 		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap,
@@ -1942,9 +1950,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 				ts->filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     tsi = tsFreeIterator(tsi);
@@ -2002,11 +2010,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    psm->fi = fi;
 	    switch (fi->type) {
 	    case TR_ADDED:
-		break;
+		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
 		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
 		    (void) psmStage(psm, PSM_PKGSAVE);
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}
 	tsi = tsFreeIterator(tsi);
@@ -2024,8 +2032,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	gotfd = 0;
 	psm->fi = fi;
-	switch (fi->type)
-	{
+	switch (fi->type) {
 	case TR_ADDED:
 	    alp = tsGetAlp(tsi);
 assert(alp == fi->ap);
@@ -2091,17 +2098,17 @@ assert(alp == fi->ap);
 			alp->key, ts->notifyData);
 		alp->fd = NULL;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    oc = tsGetOc(tsi);
 	    /* If install failed, then we shouldn't erase. */
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
-		break;
+		/*@switchbreak@*/ break;
 
 	    if (psmStage(psm, PSM_PKGERASE))
 		ourrc++;
 
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	(void) rpmdbSync(ts->rpmdb);
     }

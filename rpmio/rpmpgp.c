@@ -339,9 +339,9 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
 		    mp32nsethex(&_dig->c, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
@@ -353,12 +353,12 @@ printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
 		switch (i) {
 		case 0:		/* r */
 		    pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 1:		/* s */
 		    pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpSigDSA[i]);
@@ -390,22 +390,22 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpSymkeyTbl, p[i]);
 	    pgpPrtNL();
-	    break;
+	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_PREFER_HASH:	/* preferred hash algorithms */
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpHashTbl, p[i]);
 	    pgpPrtNL();
-	    break;
+	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_PREFER_COMPRESS:/* preferred compression algorithms */
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpCompressionTbl, p[i]);
 	    pgpPrtNL();
-	    break;
+	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_KEYSERVER_PREFERS:/* key server preferences */
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
 	    pgpPrtNL();
-	    break;
+	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
 	case PGPSUBTYPE_SIG_EXPIRE_TIME:
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:
@@ -416,7 +416,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 	    } else
 		pgpPrtHex("", p+1, plen-1);
 	    pgpPrtNL();
-	    break;
+	    /*@switchbreak@*/ break;
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 	case PGPSUBTYPE_EXPORTABLE_CERT:
@@ -446,7 +446,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 	default:
 	    pgpPrtHex("", p+1, plen-1);
 	    pgpPrtNL();
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	p += plen;
 	hlen -= plen;
@@ -513,9 +513,9 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 		    mp32nsethex(&_dig->c, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
@@ -527,12 +527,12 @@ printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
 		switch (i) {
 		case 0:		/* r */
 		    pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 1:		/* s */
 		    pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpSigDSA[i]);
@@ -636,14 +636,14 @@ int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
 		    mp32bsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     n = "),  mp32println(_dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 1:		/* e */
 		    mp32nsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpPublicRSA[i]);
@@ -655,24 +655,24 @@ printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    mp32bsethex(&_dig->p, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     p = "),  mp32println(_dig->p.size, _dig->p.modl);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 1:		/* q */
 		    mp32bsethex(&_dig->q, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     q = "),  mp32println(_dig->q.size, _dig->q.modl);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 2:		/* g */
 		    mp32nsethex(&_dig->g, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     g = "),  mp32println(_dig->g.size, _dig->g.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 3:		/* y */
 		    mp32nsethex(&_dig->y, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpPublicDSA[i]);
@@ -718,14 +718,14 @@ int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
 		    mp32bsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     n = "),  mp32println(_dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 1:		/* e */
 		    mp32nsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpPublicRSA[i]);
@@ -737,24 +737,24 @@ printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    mp32bsethex(&_dig->p, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     p = "),  mp32println(_dig->p.size, _dig->p.modl);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 1:		/* q */
 		    mp32bsethex(&_dig->q, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     q = "),  mp32println(_dig->q.size, _dig->q.modl);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 2:		/* g */
 		    mp32nsethex(&_dig->g, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     g = "),  mp32println(_dig->g.size, _dig->g.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		case 3:		/* y */
 		    mp32nsethex(&_dig->y, pgpMpiHex(p));
 if (_debug && _print)
 printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
-		    break;
+		    /*@switchbreak@*/ break;
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    pgpPrtStr("", pgpPublicDSA[i]);

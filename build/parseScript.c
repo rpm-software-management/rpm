@@ -180,10 +180,10 @@ int parseScript(Spec spec, int parsePart)
 		rc = RPMERR_BADSPEC;
 		goto exit;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	case 'n':
 	    flag = PART_NAME;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     

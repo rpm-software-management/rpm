@@ -367,17 +367,17 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%03d secs\n",
 		ops->count, (long)ops->bytes,
 		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
-	    break;
+	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%03d secs\n",
 		ops->count, (long)ops->bytes,
 		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
-	    break;
+	    /*@switchbreak@*/ break;
 	case FDSTAT_SEEK:
-	    break;
+	    /*@switchbreak@*/ break;
 	case FDSTAT_CLOSE:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
 }

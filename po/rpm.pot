@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-10-13 15:29-0400\n"
+"POT-Creation-Date: 2001-10-13 17:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1349,6 +1349,7 @@ msgstr ""
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
+#. @innercontinue@
 #: build/files.c:751
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
@@ -2128,6 +2129,8 @@ msgstr ""
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
+#. requirements are satisfied.
+#. @switchbreak@
 #. requirements are not satisfied.
 #: lib/depends.c:1423
 #, c-format
@@ -2151,20 +2154,20 @@ msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1956
+#: lib/depends.c:1958
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2006
+#: lib/depends.c:2008
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2058
+#: lib/depends.c:2060
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2087
+#: lib/depends.c:2089
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2206,46 +2209,46 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:293
+#: lib/fsm.c:301
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:295
+#: lib/fsm.c:303
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1129
+#: lib/fsm.c:1138
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1406
+#: lib/fsm.c:1416
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1525 lib/fsm.c:1650
+#: lib/fsm.c:1535 lib/fsm.c:1660
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1676
+#: lib/fsm.c:1686
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1682
+#: lib/fsm.c:1692
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1692
+#: lib/fsm.c:1702
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1711
+#: lib/fsm.c:1721
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2255,7 +2258,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:399
+#: lib/header.c:296 lib/header_internal.c:159 lib/psm.c:399
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2340,11 +2343,11 @@ msgstr ""
 msgid "error creating temporary file %s\n"
 msgstr ""
 
-#: lib/package.c:131
+#: lib/package.c:159
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:195
+#: lib/package.c:223
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
@@ -2878,111 +2881,111 @@ msgstr ""
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:275
+#: lib/query.c:276
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:277
+#: lib/query.c:279
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:279
+#: lib/query.c:282
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:281
+#: lib/query.c:285
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:286
+#: lib/query.c:290
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:305 lib/query.c:357
+#: lib/query.c:309 lib/query.c:361
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:444
+#: lib/query.c:448
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:580 lib/query.c:614 lib/rpminstall.c:309 lib/rpminstall.c:453
+#: lib/query.c:584 lib/query.c:618 lib/rpminstall.c:309 lib/rpminstall.c:453
 #: lib/rpminstall.c:824
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:593
+#: lib/query.c:597
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:599
+#: lib/query.c:603
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:624 lib/rpminstall.c:466
+#: lib/query.c:628 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
 
-#: lib/query.c:666
+#: lib/query.c:670
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:688
+#: lib/query.c:692
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:707
+#: lib/query.c:711
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:717
+#: lib/query.c:721
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:727
+#: lib/query.c:731
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:738
+#: lib/query.c:742
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:775
+#: lib/query.c:779
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:779
+#: lib/query.c:783
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:805
+#: lib/query.c:809
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:808
+#: lib/query.c:812
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:813
+#: lib/query.c:817
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:824 lib/rpminstall.c:615
+#: lib/query.c:828 lib/rpminstall.c:615
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3046,27 +3049,27 @@ msgstr ""
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:516
+#: lib/rpmchecksig.c:518
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:517 lib/rpmchecksig.c:531
+#: lib/rpmchecksig.c:519 lib/rpmchecksig.c:533
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:519 lib/rpmchecksig.c:533
+#: lib/rpmchecksig.c:521 lib/rpmchecksig.c:535
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:520 lib/rpmchecksig.c:534
+#: lib/rpmchecksig.c:522 lib/rpmchecksig.c:536
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:522 lib/rpmchecksig.c:536
+#: lib/rpmchecksig.c:524 lib/rpmchecksig.c:538
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:530
+#: lib/rpmchecksig.c:532
 msgid "OK"
 msgstr ""
 
@@ -3402,27 +3405,28 @@ msgstr ""
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:607
+#: lib/transaction.c:608
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:617
+#: lib/transaction.c:618
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:695
+#: lib/transaction.c:697
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:838
+#: lib/transaction.c:840
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1442
+#. @innercontinue@
+#: lib/transaction.c:1450
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -3633,109 +3637,109 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1963 rpmdb/rpmdb.c:3145
+#: rpmdb/rpmdb.c:1989 rpmdb/rpmdb.c:3171
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2014
+#: rpmdb/rpmdb.c:2040
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2279
+#: rpmdb/rpmdb.c:2305
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2348
+#: rpmdb/rpmdb.c:2374
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2357
+#: rpmdb/rpmdb.c:2383
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2552
+#: rpmdb/rpmdb.c:2578
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2630
+#: rpmdb/rpmdb.c:2656
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2641
+#: rpmdb/rpmdb.c:2667
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3034
+#: rpmdb/rpmdb.c:3060
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3064
+#: rpmdb/rpmdb.c:3090
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3091
+#: rpmdb/rpmdb.c:3117
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3095
+#: rpmdb/rpmdb.c:3121
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3101
+#: rpmdb/rpmdb.c:3127
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3103
+#: rpmdb/rpmdb.c:3129
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3110
+#: rpmdb/rpmdb.c:3136
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3121
+#: rpmdb/rpmdb.c:3147
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3185
+#: rpmdb/rpmdb.c:3211
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3203
+#: rpmdb/rpmdb.c:3229
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3211
+#: rpmdb/rpmdb.c:3237
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3213
+#: rpmdb/rpmdb.c:3239
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3223
+#: rpmdb/rpmdb.c:3249
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3225
+#: rpmdb/rpmdb.c:3251
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

@@ -467,10 +467,10 @@ fprintf(stderr, "*** fdWritable fdno %d rc %d %s\n", fdno, rc, strerror(errno));
 	    switch (errno) {
 	    case EINTR:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
 		return rc;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	}
 	return rc;
@@ -505,10 +505,10 @@ int fdReadable(FD_t fd, int secs)
 	    switch (errno) {
 	    case EINTR:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
 		return rc;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	}
 	return rc;
@@ -537,13 +537,13 @@ int fdFgets(FD_t fd, char * buf, size_t len)
 	case -1:	/* error */
 	    ec = -1;
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case  0:	/* timeout */
 	    ec = -1;
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to read */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	errno = 0;
@@ -557,9 +557,9 @@ int fdFgets(FD_t fd, char * buf, size_t len)
 	    switch (errno) {
 	    case EWOULDBLOCK:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 if (_rpmio_debug)
 fprintf(stderr, "*** read: fd %p rc %d errno %d %s \"%s\"\n", fd, rc, errno, strerror(errno), buf);
@@ -814,7 +814,7 @@ fprintf(stderr, "<- %s\n", s);
 			    strncpy(errorCode, e, 3);
 			errorCode[3] = '\0';
 		    }
-		    continue;
+		    /*@innercontinue@*/ continue;
 		}
 
 		/* HTTP: look for "token: ..." */
@@ -860,7 +860,7 @@ fprintf(stderr, "<- %s\n", s);
 		    if (!strncmp(s, "Allow:", ne)) {
 		    }
 #endif
-		    continue;
+		    /*@innercontinue@*/ continue;
 		}
 
 		/* HTTP: look for "<TITLE>501 ... </TITLE>" */
@@ -1564,9 +1564,9 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	case -1:	/* error */
 	case  0:	/* timeout */
 	    return total;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to read */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	rc = fdRead(fd, buf + total, count - total);
@@ -1575,9 +1575,9 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	    switch (errno) {
 	    case EWOULDBLOCK:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 if (_rpmio_debug)
 fprintf(stderr, "*** read: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errno), buf);
@@ -1628,9 +1628,9 @@ fprintf(stderr, "*** ufdWrite fd %p WRITE PAST END OF CONTENT\n", fd);
 	case -1:	/* error */
 	case  0:	/* timeout */
 	    return total;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to write */
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	rc = fdWrite(fd, buf + total, count - total);
@@ -1639,9 +1639,9 @@ fprintf(stderr, "*** ufdWrite fd %p WRITE PAST END OF CONTENT\n", fd);
 	    switch (errno) {
 	    case EWOULDBLOCK:
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 if (_rpmio_debug)
 fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errno), buf);
@@ -2577,22 +2577,26 @@ static inline void cvtfmode (const char *m,
     while ((c = *m++) != '\0') {
 	switch (c) {
 	case '.':
-	    break;
+	    /*@switchbreak@*/ break;
 	case '+':
 	    flags &= ~(O_RDONLY|O_WRONLY);
 	    flags |= O_RDWR;
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 'b':
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 'x':
 	    flags |= O_EXCL;
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
 	    if (--nother > 0) *other++ = c;
 	    continue;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 	break;
     }

@@ -333,7 +333,8 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 	chptr = xstrdup("");
 
 	for (j = 0; j < numNames; j++) {
-	    if (indices[j] != i) continue;
+	    if (indices[j] != i)
+		/*@innercontinue@*/ continue;
 
 	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
 	    if (flags[j] & RPMSENSE_SENSEMASK) {
@@ -397,7 +398,8 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
-	    if (indices[j] != i) continue;
+	    if (indices[j] != i)
+		/*@innercontinue@*/ continue;
 
 	    if (flags[j] & RPMSENSE_TRIGGERIN)
 		conds[i] = xstrdup("in");

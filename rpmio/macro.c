@@ -1093,13 +1093,13 @@ expandMacro(MacroBuf mb)
 	switch(c) {
 	case '%':
 		if (*s != '%')
-			break;
+			/*@switchbreak@*/ break;
 		s++;	/* skip first % in %% */
 		/*@fallthrough@*/
 	default:
 		SAVECHAR(mb, c);
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
 	/* Expand next macro */
@@ -1116,10 +1116,10 @@ expandMacro(MacroBuf mb)
 			switch(*s++) {
 			case '!':
 				negate = ((negate + 1) % 2);
-				break;
+				/*@switchbreak@*/ break;
 			case '?':
 				chkexist++;
-				break;
+				/*@switchbreak@*/ break;
 			}
 		}
 		f = se = s;
@@ -1143,7 +1143,7 @@ expandMacro(MacroBuf mb)
 		/* For "%name " macros ... */
 		if ((c = *fe) && isblank(c))
 			grab = '\n';
-		break;
+		/*@switchbreak@*/ break;
 	case '(':		/* %(...) shell escape */
 		if ((se = matchchar(s, c, ')')) == NULL) {
 			rpmError(RPMERR_BADSPEC,
@@ -1160,7 +1160,7 @@ expandMacro(MacroBuf mb)
 
 		s = se;
 		continue;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	case '{':		/* %{...}/%{...:...} substitution */
 		if ((se = matchchar(s, c, '}')) == NULL) {
 			rpmError(RPMERR_BADSPEC,
@@ -1174,10 +1174,10 @@ expandMacro(MacroBuf mb)
 			switch(*f++) {
 			case '!':
 				negate = ((negate + 1) % 2);
-				break;
+				/*@switchbreak@*/ break;
 			case '?':
 				chkexist++;
-				break;
+				/*@switchbreak@*/ break;
 			}
 		}
 		for (fe = f; (c = *fe) && !strchr(" :}", c);)
@@ -1193,7 +1193,7 @@ expandMacro(MacroBuf mb)
 		default:
 			/*@innerbreak@*/ break;
 		}
-		break;
+		/*@switchbreak@*/ break;
 	}
 
 	/* XXX Everything below expects fe > f */
@@ -1544,7 +1544,7 @@ rpmInitMacros(MacroContext mc, const char *macrofiles)
 	    SKIPBLANK(n, c);
 
 	    if (c != '%')
-		continue;
+		/*@innercontinue@*/ continue;
 	    n++;	/* skip % */
 	    (void)rpmDefineMacro(NULL, n, RMIL_MACROFILES);
 	}
@@ -1703,10 +1703,10 @@ char *rpmCleanPath(char * path)
 	    if (s[1] == '/' && s[2] == '/') {
 		*t++ = *s++;
 		*t++ = *s++;
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    begin=1;
-	    break;
+	    /*@switchbreak@*/ break;
 	case '/':
 	    /* Move parent dir forward */
 	    for (se = te + 1; se < t && *se != '/'; se++)
@@ -1719,17 +1719,17 @@ char *rpmCleanPath(char * path)
 		s++;
 	    while (t > path && t[-1] == '/')
 		t--;
-	    break;
+	    /*@switchbreak@*/ break;
 	case '.':
 	    /* Leading .. is special */
 	    if (begin && s[1] == '.') {
 /*fprintf(stderr, "    leading \"..\"\n"); */
 		*t++ = *s++;
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    /* Single . is special */
 	    if (begin && s[1] == '\0') {
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    /* Trim embedded ./ , trailing /. */
 	    if ((t[-1] == '/' && s[1] == '\0') || (t != path && s[1] == '/')) {
@@ -1748,10 +1748,10 @@ char *rpmCleanPath(char * path)
 		s++;
 		continue;
 	    }
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    begin = 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	*t++ = *s++;
     }

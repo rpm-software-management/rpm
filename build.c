@@ -87,13 +87,13 @@ static int isSpecFile(const char * specfile)
 	case '\r':
 	case '\n':
 	    checking = 1;
-	    break;
+	    /*@switchbreak@*/ break;
 	case ':':
 	    checking = 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
 	    if (checking && !(isprint(*s) || isspace(*s))) return 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     return 1;

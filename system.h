@@ -495,7 +495,7 @@ extern void unsetenv(const char *name);
 #include <sys/socket.h>
 #endif
 
-#if HAVE_SYS_SELECT_H
+#if HAVE_SYS_SELECT_H && !defined(__LCLINT__)
 #include <sys/select.h>
 #endif
 
