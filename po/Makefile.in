@@ -13,6 +13,9 @@ $(NLSPACKAGE).pot: $(POTFILES)
 	    mv $(NLSPACKAGE).po $(NLSPACKAGE).pot; \
 	fi
 
+clean:
+	rm -f *mo
+
 install:
 	install -m 755 -o 0 -g 0 -d $(NLSDIR)
 	for n in $(CATALOGS); do \
