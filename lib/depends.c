@@ -84,7 +84,7 @@ static int addOrderedPack(rpmDependencies rpmdep,
 			struct availablePackage * package,
 			void ** ordering, int * orderNumPtr, 
 			enum selectionStatus * selected, 
-			int satisfyDepends);
+			int satisfyDepends, char ** errorStack);
 
 static void alCreate(struct availableList * al) {
     al->list = malloc(sizeof(*al->list) * 5);
@@ -754,16 +754,36 @@ static int addOrderedPack(rpmDependencies rpmdep,
 			struct availablePackage * package,
 			void ** ordering, int * orderNumPtr, 
 			enum selectionStatus * selected, 
-			int satisfyDepends) {
+			int satisfyDepends, char ** errorStack) {
     char ** requires, ** requiresVersion;
     int_32 * requireFlags;
     int requiresCount;
     int packageNum = package - rpmdep->addedPackages.list;
     int i;
     struct availablePackage * match;
+    char * errorString;
+    char ** stack;
+
+    *errorStack++ = package->name;
 
     if (selected[packageNum] == INPROCESS) {
-	rpmError(RPMMESS_PREREQLOOP, "loop in prerequisite chain");
+	i = 0;
+	stack = errorStack - 1;
+	while (*(--stack)) {
+	    i += strlen(*stack) + 1;
+	}
+
+	errorString = alloca(i + 2);
+	*errorString = '\0';
+	
+	while ((++stack) < errorStack) {
+	    strcat(errorString, *stack);
+	    strcat(errorString, " ");
+	}
+	
+	rpmError(RPMMESS_PREREQLOOP, "loop in prerequisite chain: %s",
+		 errorString);
+
 	return 1;
     }
 
@@ -792,7 +812,7 @@ static int addOrderedPack(rpmDependencies rpmdep,
 		    continue;
 
 		if (addOrderedPack(rpmdep, match, ordering, orderNumPtr,
-				   selected, 1)) return 1;
+				   selected, 1, errorStack)) return 1;
 	    }
 	}
     }
@@ -809,6 +829,7 @@ int rpmdepOrder(rpmDependencies rpmdep, void *** keysListPtr) {
     enum selectionStatus * selected;
     void ** order;
     int orderNum;
+    char ** errorStack;
 
     alMakeIndex(&rpmdep->addedPackages);
     alMakeIndex(&rpmdep->availablePackages);
@@ -816,13 +837,16 @@ int rpmdepOrder(rpmDependencies rpmdep, void *** keysListPtr) {
     selected = alloca(sizeof(*selected) * rpmdep->addedPackages.size);
     memset(selected, 0, sizeof(*selected) * rpmdep->addedPackages.size);
 
+    errorStack = alloca(sizeof(*errorStack) * (rpmdep->addedPackages.size + 1));
+    *errorStack++ = NULL;
+
     order = malloc(sizeof(*order) * (rpmdep->addedPackages.size + 1));
     orderNum = 0;
 
     for (i = 0; i < rpmdep->addedPackages.size; i++) {
 	if (selected[i] == UNSELECTED) {
 	    if (addOrderedPack(rpmdep, rpmdep->addedPackages.list + i,
-			       order, &orderNum, selected, 0)) {
+			       order, &orderNum, selected, 0, errorStack)) {
 		free(order);
 		return 1;
 	    }
