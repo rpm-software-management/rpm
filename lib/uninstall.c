@@ -353,7 +353,14 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	    }
 	}
 
-	doputenv(SCRIPT_PATH);
+	{   const char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
+	    const char *path = SCRIPT_PATH;
+
+	    if (ipath && ipath[5] != '%')
+		path = ipath;
+	    doputenv(path);
+	    if (ipath)	xfree(ipath);
+	}
 
 	for (i = 0; i < numPrefixes; i++) {
 	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);

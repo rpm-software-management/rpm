@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.40 2000/01/07 17:32:28 jbj Exp $
+# $Id: macros.in,v 1.41 2000/01/11 15:22:35 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -72,7 +72,7 @@
 # ---- Required rpmrc macros.
 #	Macros that used to be initialized as a side effect of rpmrc parsing.
 #	These are the default values that can be overridden by other
-#	(e.g. per-platform, per-system, per-packager) macro files.
+#	(e.g. per-platform, per-system, per-packager, per-package) macros.
 #
 %_builddir		%{_topdir}/BUILD
 %_buildshell		/bin/sh
@@ -104,30 +104,85 @@
 %_srcrpmdir		%{_topdir}/SRPMS
 %_tmppath		%{_var}/tmp
 %_topdir		%{_usrsrc}/redhat
-#
+
 #==============================================================================
 # ---- Optional rpmrc macros.
 #	Macros that are initialized as a side effect of rpmrc and/or spec
 #	file parsing.
 #
+#	Configurable build root path, same as BuildRoot: in a specfile.
+#	(Note: the configured macro value will override the spec file value).
+#
 #%buildroot
+
+#	The sub-directory (relative to %{_builddir}) where sources are compiled.
+#
 #%buildsubdir
+
+#	Configurable distribution information, same as Distribution: in a
+#	specfile.
+#
 #%distribution
+
+#	Boolean (i.e. 1 == "yes", 0 == "no") that controls whether files
+#	marked as %doc should be installed.
 #%_excludedocs
+
+#	The port and machine name of a FTP proxy host running TIS firewall.
+#
 #%_ftpport
 #%_ftpproxy
+
+#	The signature to use and the location of configuration files for
+#	signing packages with GNU gpg.
+#
 #%_gpg_name
 #%_gpg_path
+
+#	The port and machine name of an HTTP proxy host.
+#
 #%_httpport
 #%_httpproxy
+
+#	The PATH put into the environment before running %pre/%post et al.
+#
+%_install_script_path	/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
+
+#	A colon separated list of desired locales to be installed;
+#	"all" means install all locale specific files.
+#	
 #%_install_langs
+
+#
+#	Deprecated.
 #%_langpatt
+
+#	A colon separated list of paths where files should *not* be installed.
+#	Usually, these are network file system mount points.
+#
 #%_netsharedpath
+
+#	Configurable packager information, same as Packager: in a specfile.
+#
 #%packager
+
+#	The signature to use and the location of configuration files for
+#	signing packages with PGP.
+#
 #%_pgp_name
 #%_pgp_path
+
+#	Configurable virtual provides (unimplemented, use Provides: ...
+#	in an rpmrc file).
+#
 #%_provides
+
+#	Deprecated.
+#
 #%_timecheck
+
+#	Configurable vendor information, same as Vendor: in a specfile.
+#
 #%vendor
 
 #==============================================================================
@@ -145,9 +200,9 @@
 
 #==============================================================================
 # ---- Scriptlet template templates.
-#	Global defaults for building scriptlet templates.
+#	Global defaults used for building scriptlet templates.
 #
-# XXX legacy configuration.
+# XXX legacy configuration, this will be eliminated after rpm-3.0.4.
 %_preScriptEnvironment	\
 RPM_SOURCE_DIR=\"%{_sourcedir}\"\
 RPM_BUILD_DIR=\"%{_builddir}\"\
@@ -306,10 +361,7 @@ cd %{u2p:%{_builddir}}\
 
 #==============================================================================
 # ---- configure macros.
-#	Macro(s) slavishly copied from config.status.
-#	CAVEAT: Only _prefix is currently used (read: supported). Please
-#	don't expect or rely on these macros keeping their current values
-#	(or even being defined) in future versions of rpm.
+#	Macro(s) slavishly copied from autoconf's config.status.
 #
 %_prefix		@prefix@
 %_exec_prefix		%{_prefix}

@@ -1091,9 +1091,11 @@ static void skipFiles(TFI_t * fi, int noDocs)
     if (s) {
 	languages = (const char **) splitString(s, strlen(s), ':');
 	xfree(s);
+#ifdef	DYING
     /* XXX LINGUAS/LANG is used by the installer so leave alone for now */
     } else if ((s = getenv("LINGUAS")) || (s = getenv("LANG")) || (s = "en")) {
 	languages = (const char **) splitString(s, strlen(s), ':');
+#endif
     } else
 	languages = NULL;
 

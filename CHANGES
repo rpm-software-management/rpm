@@ -38,6 +38,8 @@
 	- add several BuildRoot FTW policies.
 	- add manpage for gendiff (pbrown@redhat.com).
 	- updated sv.po (goeran@uddeborg.pp.se) (#8349).
+	- configurable PATH for install %pre/%post et al scriptlets.
+	- use only %_install_langs, not LINGUAS/LANG when deciding to install.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
