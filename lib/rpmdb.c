@@ -292,6 +292,8 @@ static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
 	    dbiUpdateIndex(dbi, key, &matches);
 	       /* errors from above will be reported from dbindex.c */
 	}
+
+	dbiFreeIndexRecord(matches);
 	break;
       case 1:
 	if (!tolerant) 
@@ -300,8 +302,6 @@ static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
       case 2:
 	break;   /* error message already generated from dbindex.c */
     }
-
-    dbiFreeIndexRecord(matches);
 }
 
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
