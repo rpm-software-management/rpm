@@ -23,7 +23,7 @@ void main(int argc, char ** argv)
 	exit(1);
     }
 
-    if (!rpmdbOpen("", &db, O_RDONLY, 0644)) {
+    if (rpmdbOpen("", &db, O_RDONLY, 0644) != 0) {
 	fprintf(stderr, "cannot open /var/lib/rpm/packages.rpm\n");
 	exit(1);
     }
