@@ -11,7 +11,6 @@ static int add_assoc = 1;
 /*
  * Command-line options.
  */
-static int debug = 0;
 static int change = 1;
 static int quiet = 0;
 #define QPRINTF(args...) do { if (!quiet) printf(args); } while (0)
@@ -22,7 +21,7 @@ static char *rootpath = NULL;
 static int rootpathlen = 0;
 
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL, &debug, 1,
+ { "debug", 'd', POPT_ARG_VAL, &_rpmsx_debug, -1,
         N_("show what specification matched each file"), NULL },
  { "nochange", 'n', POPT_ARG_VAL, &change, 0,
         N_("do not change any file labels"), NULL },
@@ -45,6 +44,7 @@ int main(int argc, char **argv)
 {
     poptContext optCon;
     const char ** av;
+    const char * arg;
     rpmsx sx;
     int ec = EXIT_FAILURE;	/* assume failure. */
     int rc;
@@ -100,20 +100,28 @@ int main(int argc, char **argv)
 
     av = poptGetArgs(optCon);
 
-    _rpmsx_debug = -1;
     /* Parse the specification file. */
     sx = rpmsxNew(NULL);
 
-    sx = rpmsxInit(sx, 1);
-    if (sx != NULL)
-    while ((i = rpmsxNext(sx)) >= 0) {
-	const char * pattern = rpmsxPattern(sx);
-	const char * type = rpmsxType(sx);
-	const char * context = rpmsxContext(sx);
+    if (_rpmsx_debug) {
+	sx = rpmsxInit(sx, 1);
+	if (sx != NULL)
+	while ((i = rpmsxNext(sx)) >= 0) {
+	    const char * pattern = rpmsxPattern(sx);
+	    const char * type = rpmsxType(sx);
+	    const char * context = rpmsxContext(sx);
 
-	fprintf(stderr, "%5d: %s\t%s\t%s\n", i,
+	    fprintf(stderr, "%5d: %s\t%s\t%s\n", i,
 		pattern, (type ? type : ""), context);
+	}
     }
+
+    if (av != NULL)
+    while ((arg = *av++) != NULL) {
+	const char * context = rpmsxFContext(sx, arg, S_IFREG);
+	fprintf(stderr, "%s: %s\n", arg, context);
+    }
+
     sx = rpmsxFree(sx);
 
     /*
