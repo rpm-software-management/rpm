@@ -22,6 +22,7 @@
 	- eight character user names could break -qlv
 	- requirements which begin with a leading / require files (in
 	  the database!) instead of packages
+	- clean up conflictsindex during --rebuilddb
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output

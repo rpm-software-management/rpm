@@ -611,6 +611,9 @@ void rpmdbRemoveDatabase(char * rootdir, char * dbpath) {
 
     sprintf(filename, "%s/%s/providesindex.rpm", rootdir, dbpath);
     unlink(filename);
+
+    sprintf(filename, "%s/%s/conflictsindex.rpm", rootdir, dbpath);
+    unlink(filename);
 }
 
 int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath) {
@@ -661,6 +664,10 @@ int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath) {
 
     sprintf(ofilename, "%s/%s/providesindex.rpm", rootdir, olddbpath);
     sprintf(nfilename, "%s/%s/providesindex.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
+    sprintf(ofilename, "%s/%s/conflictsindex.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/conflictsindex.rpm", rootdir, newdbpath);
     if (rename(ofilename, nfilename)) rc = 1;
 
     return rc;
