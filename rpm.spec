@@ -1,9 +1,9 @@
 Summary: Red Hat Package Manager
 Name: rpm
-Version: 2.4
+Version: 2.4.1
 Release: 1
 Group: Utilities/System
-Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.4.x/rpm-2.4.tar.gz
+Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.4.x/rpm-2.4.1.tar.gz
 Copyright: GPL
 BuildRoot: /tmp/rpm
 Requires: cpio
