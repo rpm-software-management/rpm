@@ -88,6 +88,7 @@ int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	  case PART_VERIFYSCRIPT:
 	  case PART_TRIGGERIN:
 	  case PART_TRIGGERUN:
+	  case PART_TRIGGERPOSTUN:
 	    parsePart = parseScript(spec, parsePart);
 	    break;
 

@@ -39,17 +39,30 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	sprintf(tmpSpecFile, "%s/rpm-spec-file-%d", specDir, (int) getpid());
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
-	sprintf(cmd, "gunzip < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
+	sprintf(cmd, "gunzip < %s | tar xOvf - Specfile 2>&1 > %s", arg,
 			tmpSpecFile);
 	if (!(f = popen(cmd, "r"))) {
 	    fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
 	    return 1;
 	}
-	if (!fgets(buf, sizeof(buf) - 1, f)) {
-	    fprintf(stderr, _("Failed to read spec file from %s\n"), arg);
-	    unlink(tmpSpecFile);
-	    return 1;
+	if ((!fgets(buf, sizeof(buf) - 1, f)) || !strchr(buf, '/')) {
+	    /* Try again */
+	    pclose(f);
+
+	    sprintf(cmd, "gunzip < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
+		    tmpSpecFile);
+	    if (!(f = popen(cmd, "r"))) {
+		fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
+			strerror(errno));
+		return 1;
+	    }
+	    if (!fgets(buf, sizeof(buf) - 1, f)) {
+		/* Give up */
+		fprintf(stderr, _("Failed to read spec file from %s\n"), arg);
+		unlink(tmpSpecFile);
+		return 1;
+	    }
 	}
 	pclose(f);
 
@@ -109,7 +122,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
 	return 1;
     }
-    count = read(fd, buf, sizeof(buf));
+    count = read(fd, buf, sizeof(buf) < 128 ? sizeof(buf) : 128);
     close(fd);
     s = buf;
     while(count--) {

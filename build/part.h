@@ -18,6 +18,7 @@
 #define PART_TRIGGERUN          14
 #define PART_VERIFYSCRIPT       15
 #define PART_BUILDARCHITECTURES 16
+#define PART_TRIGGERPOSTUN      17
 
 int isPart(char *line);
 

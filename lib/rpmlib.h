@@ -122,6 +122,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_INSTPREFIXES             1099
 #define RPMTAG_TRIGGERIN                1100 /* internal */
 #define RPMTAG_TRIGGERUN                1101 /* internal */
+#define RPMTAG_TRIGGERPOSTUN            1102 /* internal */
     
 #define RPMTAG_EXTERNAL_TAG		1000000
 
@@ -182,7 +183,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 
 #define RPMSENSE_TRIGGERIN       (1 << 16)
 #define RPMSENSE_TRIGGERUN       (1 << 17)
-#define RPMSENSE_TRIGGER         (RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN)
+#define RPMSENSE_TRIGGERPOSTUN   (1 << 18)
+#define RPMSENSE_TRIGGER         (RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | \
+                                  RPMSENSE_TRIGGERPOSTUN)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 

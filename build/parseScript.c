@@ -89,12 +89,19 @@ int parseScript(Spec spec, int parsePart)
 	tag = RPMTAG_TRIGGERSCRIPTS;
 	reqtag = RPMTAG_TRIGGERIN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	partname = "%triggerin";
 	break;
       case PART_TRIGGERUN:
 	tag = RPMTAG_TRIGGERSCRIPTS;
 	reqtag = RPMTAG_TRIGGERUN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
 	partname = "%triggerun";
+	break;
+      case PART_TRIGGERPOSTUN:
+	tag = RPMTAG_TRIGGERSCRIPTS;
+	reqtag = RPMTAG_TRIGGERPOSTUN;
+	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	partname = "%triggerpostun";
 	break;
     }
 
