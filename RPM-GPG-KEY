@@ -1,6 +1,6 @@
 The following public key can be used to verify RPM packages built and
 signed by Red Hat Software using `rpm -K' using the GNU GPG package. 
-Questions about this key should be sent to ewt@redhat.com.
+Questions about this key should be sent to security@redhat.com.
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.0.0 (GNU/Linux)
