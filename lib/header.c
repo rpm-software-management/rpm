@@ -20,33 +20,52 @@
 #include "tread.h"
 
 #define INDEX_MALLOC_SIZE 8
-#define DATA_MALLOC_SIZE 1024
 
 static unsigned char header_magic[4] = { 0x8e, 0xad, 0xe8, 0x01 };
 
+/* handy -- this tells us alignments for defined elements as well */
+static int typeSizes[] =  { 
+	/* RPM_NULL_TYPE */		-1,
+	/* RPM_CHAR_TYPE */		1,
+	/* RPM_INT8_TYPE */		1,
+	/* RPM_INT16_TYPE */		2,
+	/* RPM_INT32_TYPE */		4,
+	/* RPM_INT64_TYPE */		-1,
+	/* RPM_STRING_TYPE */		-1,
+	/* RPM_BIN_TYPE */		1,
+	/* RPM_STRING_ARRAY_TYPE */	-1,
+	/* RPM_I18NSTRING_TYPE */	-1 };
+
 struct headerToken {
     struct indexEntry *index;
-    int entries_malloced;
-    int entries_used;
+    int indexUsed;
+    int indexAlloced;
 
-    char *data;
-    int data_malloced;
-    int data_used;
-
-    int fully_sorted;  /* This means the index and the data! */
+    int sorted;  
 };
 
-struct indexEntry {
+struct entryInfo {
     int_32 tag;
     int_32 type;
-    int_32 offset;		/* Offset from beginning of data segment */
+    int_32 offset;		/* Offset from beginning of data segment,
+				   only defined on disk */
     int_32 count;
 };
 
-static int indexSort(const void *ap, const void *bp);
-static struct indexEntry *findEntry(Header h, int_32 tag);
-static void *dataHostToNetwork(Header h);
-static void *dataNetworkToHost(Header h);
+struct indexEntry {
+    struct entryInfo info;
+    void * data; 
+    int length;			/* Computable, but why bother */
+};
+
+static void indexSort(Header h);
+static int indexCmp(const void *ap, const void *bp);
+static void *doHeaderUnload(Header h, int * lengthPtr);
+static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type);
+static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr);
+static int dataLength(int_32 type, void * p, int_32 count, int onDisk);
+static void copyEntry(struct indexEntry * entry, 
+			int_32 *type, void **p, int_32 *c);
 
 /********************************************************************/
 /*                                                                  */
@@ -62,6 +81,9 @@ struct headerIteratorS {
 HeaderIterator headerInitIterator(Header h)
 {
     HeaderIterator hi = malloc(sizeof(struct headerIteratorS));
+
+    indexSort(h);
+
     hi->h = h;
     hi->next_index = 0;
     return hi;
@@ -75,67 +97,26 @@ void headerFreeIterator(HeaderIterator iter)
 int headerNextIterator(HeaderIterator iter,
 		 int_32 *tag, int_32 *type, void **p, int_32 *c)
 {
-    struct headerToken *h = iter->h;
-    struct indexEntry *index = h->index;
-    int x = h->entries_used;
+    Header h = iter->h;
     int slot = iter->next_index;
-    char **spp;
-    char *sp;
 
-    if (slot == h->entries_used) {
+    if (slot == h->indexUsed) {
 	return 0;
     }
     iter->next_index++;
     
-    *tag = index[slot].tag;
-    *type = index[slot].type;
-    *c = index[slot].count;
-
-    /* Now look it up */
-    switch (*type) {
-    case RPM_INT64_TYPE:
-    case RPM_INT32_TYPE:
-    case RPM_INT16_TYPE:
-    case RPM_INT8_TYPE:
-    case RPM_BIN_TYPE:
-    case RPM_CHAR_TYPE:
-	*p = h->data + index[slot].offset;
-	break;
-    case RPM_STRING_TYPE:
-	if (*c == 1) {
-	    /* Special case -- just return a pointer to the string */
-	    *p = h->data + index[slot].offset;
-	    break;
-	}
-	/* Fall through to RPM_STRING_ARRAY_TYPE */
-    case RPM_STRING_ARRAY_TYPE:
-        /* Correction! */
-        *type = RPM_STRING_ARRAY_TYPE;
-	/* Otherwise, build up an array of char* to return */
-	x = index[slot].count;
-	*p = malloc(x * sizeof(char *));
-	spp = (char **) *p;
-	sp = h->data + index[slot].offset;
-	while (x--) {
-	    *spp++ = sp;
-	    sp = strchr(sp, 0);
-	    sp++;
-	}
-	break;
-    default:
-	fprintf(stderr, "Data type %d not supported\n", (int) *type);
-	exit(1);
-    }
+    *tag = h->index[slot].info.tag;
+    copyEntry(h->index + slot, type, p, c);
 
     return 1;
 }
 
-static int indexSort(const void *ap, const void *bp)
+static int indexCmp(const void *ap, const void *bp)
 {
     int_32 a, b;
 
-    a = ((struct indexEntry *)ap)->tag;
-    b = ((struct indexEntry *)bp)->tag;
+    a = ((struct indexEntry *)ap)->info.tag;
+    b = ((struct indexEntry *)bp)->info.tag;
     
     if (a > b) {
 	return 1;
@@ -146,6 +127,13 @@ static int indexSort(const void *ap, const void *bp)
     }
 }
 
+static void indexSort(Header h) {
+    if (!h->sorted) {
+	qsort(h->index, h->indexUsed, sizeof(struct indexEntry), indexCmp);
+	h->sorted = 1;
+    }
+}
+
 Header headerCopy(Header h)
 {
     int_32 tag, type, count;
@@ -153,18 +141,17 @@ Header headerCopy(Header h)
     HeaderIterator headerIter;
     Header res = headerNew();
    
-    /* Sort the index */
-    qsort(h->index, h->entries_used, sizeof(struct indexEntry), indexSort);
+    /* Sort the index -- not really necessary but some old apps may depend
+       on this and it certainly won't hurt anything */
+    indexSort(h);
     headerIter = headerInitIterator(h);
 
-    /* The result here is that the data is also sorted */
     while (headerNextIterator(headerIter, &tag, &type, &ptr, &count)) {
 	headerAddEntry(res, tag, type, ptr, count);
-
 	if (type == RPM_STRING_ARRAY_TYPE) free(ptr);
     }
 
-    res->fully_sorted = 1;
+    res->sorted = 1;
 
     headerFreeIterator(headerIter);
 
@@ -179,248 +166,72 @@ Header headerCopy(Header h)
 
 void headerWrite(int fd, Header h, int magicp)
 {
+    void * p;
+    int length;
     int_32 l;
-    struct indexEntry *p;
-    struct indexEntry *copyIndex;
-    int c;
-    void *converted_data;
 
-    /* This magic actually sorts the data */
-    h = headerCopy(h);
+    p = doHeaderUnload(h, &length);
 
-    /* We must write using network byte order! */
-
-    /* Magic and 4 reserved bytes */
     if (magicp) {
 	write(fd, header_magic, sizeof(header_magic));
 	l = htonl(0);
 	write(fd, &l, sizeof(l));
     }
     
-    /* First write out the length of the index (count of index entries) */
-    l = htonl(h->entries_used);
-    write(fd, &l, sizeof(l));
+    write(fd, p, length);
 
-    /* Then write the length of the data (number of bytes) */
-    l = htonl(h->data_used);
-    write(fd, &l, sizeof(l));
-
-    /* Make a copy of the index for htonl()  */
-    copyIndex = malloc(sizeof(struct indexEntry) * h->entries_used);
-    memcpy(copyIndex, h->index, sizeof(struct indexEntry) * h->entries_used);
-
-    /* Convert the index */
-    c = h->entries_used;
-    p = copyIndex;
-    while (c--) {
-	p->tag = htonl(p->tag);
-	p->type = htonl(p->type);
-	p->offset = htonl(p->offset);
-	p->count = htonl(p->count);
-	p++;
-    }
-
-    /* Write the index */
-    write(fd, copyIndex, sizeof(struct indexEntry) * h->entries_used);
-    free(copyIndex);
-
-    /* Finally convert and write the data */
-    converted_data = dataHostToNetwork(h);
-    write(fd, converted_data, h->data_used);
-    free(converted_data);
-
-    headerFree(h);
-}
-
-static void *dataHostToNetwork(Header h)
-{
-    char *data, *p;
-    struct indexEntry *index = h->index;
-    int entries = h->entries_used;
-    int count;
-
-    data = malloc(h->data_used);
-    memcpy(data, h->data, h->data_used);
-
-    while (entries--) {
-	p = data + index->offset;
-	count = index->count;
-	switch (index->type) {
-	case RPM_INT64_TYPE:
-	    while (count--) {
-		*((int_64 *)p) = htonl(*((int_64 *)p));
-		p += sizeof(int_64);
-	    }
-	    break;
-	case RPM_INT32_TYPE:
-	    while (count--) {
-		*((int_32 *)p) = htonl(*((int_32 *)p));
-		p += sizeof(int_32);
-	    }
-	    break;
-	case RPM_INT16_TYPE:
-	    while (count--) {
-		*((int_16 *)p) = htons(*((int_16 *)p));
-		p += sizeof(int_16);
-	    }
-	    break;
-	case RPM_INT8_TYPE:
-	case RPM_BIN_TYPE:
-	case RPM_CHAR_TYPE:
-	case RPM_STRING_TYPE:
-	case RPM_STRING_ARRAY_TYPE:
-	    /* No conversion necessary */
-	    break;
-	default:
-	    fprintf(stderr, "Data type %d not supprted\n", (int) index->type);
-	    exit(1);
-	}
-	
-	index++;
-    }
-    
-    return data;
+    free(p);
 }
 
 Header headerRead(int fd, int magicp)
 {
-    int_32 il, dl;
-    unsigned char magic[4];
     int_32 reserved;
-    struct indexEntry *p;
-    int c;
-    void *converted_data;
-
-    struct headerToken *h = (struct headerToken *)
-    malloc(sizeof(struct headerToken));
+    int_32 * p;
+    int_32 il, dl;
+    int_32 magic;
+    Header h;
+    void * block;
+    int totalSize;
 
     if (magicp == HEADER_MAGIC_YES) {
-	c = timedRead(fd, magic, sizeof(magic));
-	rpmMessage(RPMMESS_DEBUG, "magic: %02x %02x %02x %02x\n",
-		header_magic[0],
-		header_magic[1],
-		header_magic[2],
-		header_magic[3]);
-	rpmMessage(RPMMESS_DEBUG, "got  : %02x %02x %02x %02x\n",
-		magic[0],
-		magic[1],
-		magic[2],
-		magic[3]);
-	if (memcmp(magic, header_magic, sizeof(magic))) {
-	    free(h);
+	if (timedRead(fd, &magic, sizeof(magic)) != sizeof(magic))
+	    return NULL;
+	if (memcmp(&magic, header_magic, sizeof(magic))) {
 	    return NULL;
 	}
-	timedRead(fd, &reserved, sizeof(reserved));
-	reserved = ntohl(reserved);
+
+	if (timedRead(fd, &reserved, sizeof(reserved)) != sizeof(reserved))
+	    return NULL;
     }
     
     /* First read the index length (count of index entries) */
-    if (timedRead(fd, &il, sizeof(il)) != sizeof(il)) {
-	free(h);
+    if (timedRead(fd, &il, sizeof(il)) != sizeof(il)) 
 	return NULL;
-    }
+
     il = ntohl(il);
 
     /* Then read the data length (number of bytes) */
-    if (timedRead(fd, &dl, sizeof(dl)) != sizeof(dl)) {
-	free(h);
+    if (timedRead(fd, &dl, sizeof(dl)) != sizeof(dl)) 
 	return NULL;
-    }
+
     dl = ntohl(dl);
 
-    /* Next read the index */
-    h->index = malloc(il * sizeof(struct indexEntry));
-    h->entries_malloced = il;
-    h->entries_used = il;
-    if (timedRead(fd, h->index, sizeof(struct indexEntry) * il) !=
-	sizeof(struct indexEntry) * il) {
-	if (h->index)
-	    free(h->index);
-	free(h);
+    totalSize = sizeof(int_32) + sizeof(int_32) + 
+		(il * sizeof(struct entryInfo)) + dl;
+
+    block = p = malloc(totalSize);
+    *p++ = htonl(il);
+    *p++ = htonl(dl);
+
+    totalSize -= sizeof(int_32) + sizeof(int_32);
+    if (timedRead(fd, p, totalSize) != totalSize)
 	return NULL;
-    }
+    
+    h = headerLoad(block);
 
-    /* Convert the index */
-    c = h->entries_used;
-    p = h->index;
-    while (c--) {
-	p->tag = ntohl(p->tag);
-	p->type = ntohl(p->type);
-	p->offset = ntohl(p->offset);
-	p->count = ntohl(p->count);
-	p++;
-    }
-
-    /* Finally, read the data */
-    h->data = malloc(dl);
-    h->data_malloced = dl;
-    h->data_used = dl;
-    if (timedRead(fd, h->data, dl) != dl) {
-	if (h->data)
-	    free(h->data);
-	if (h->index)
-	    free(h->index);
-	free(h);
-	return NULL;
-    }
-    /* and convert it */
-    converted_data = dataNetworkToHost(h);
-    free(h->data);
-    h->data = converted_data;
-
-    h->fully_sorted = 1;
+    free(block);
 
     return h;
-}
-
-static void *dataNetworkToHost(Header h)
-{
-    char *data, *p;
-    struct indexEntry *index = h->index;
-    int entries = h->entries_used;
-    int count;
-
-    data = malloc(h->data_used);
-    memcpy(data, h->data, h->data_used);
-
-    while (entries--) {
-	p = data + index->offset;
-	count = index->count;
-	switch (index->type) {
-	case RPM_INT64_TYPE:
-	    while (count--) {
-		*((int_64 *)p) = ntohl(*((int_64 *)p));
-		p += sizeof(int_64);
-	    }
-	    break;
-	case RPM_INT32_TYPE:
-	    while (count--) {
-		*((int_32 *)p) = ntohl(*((int_32 *)p));
-		p += sizeof(int_32);
-	    }
-	    break;
-	case RPM_INT16_TYPE:
-	    while (count--) {
-		*((int_16 *)p) = ntohs(*((int_16 *)p));
-		p += sizeof(int_16);
-	    }
-	    break;
-	case RPM_INT8_TYPE:
-	case RPM_BIN_TYPE:
-	case RPM_CHAR_TYPE:
-	case RPM_STRING_TYPE:
-	case RPM_STRING_ARRAY_TYPE:
-	    /* No conversion necessary */
-	    break;
-	default:
-	    fprintf(stderr, "Data type %d not supprted\n", (int) index->type);
-	    exit(1);
-	}
-	
-	index++;
-    }
-    
-    return data;
 }
 
 /********************************************************************/
@@ -431,57 +242,149 @@ static void *dataNetworkToHost(Header h)
 
 Header headerLoad(void *pv)
 {
-    int_32 il, dl;		/* index length, data length */
+    int_32 il;			/* index length, data length */
     char *p = pv;
+    char * dataStart;
+    struct entryInfo * pe;
+    struct indexEntry * entry; 
     struct headerToken *h = malloc(sizeof(struct headerToken));
+    char * src, * dst;
+    int i;
+    int count;
 
-    il = *((int_32 *) p);
-    p += sizeof(int_32);
-    dl = *((int_32 *) p);
+    il = ntohl(*((int_32 *) p));
     p += sizeof(int_32);
 
-    h->entries_malloced = il;
-    h->entries_used = il;
+    /* we can skip the data length -- we only store this to allow reading
+       from disk */
+    p += sizeof(int_32);
+
+    h->indexAlloced = il;
+    h->indexUsed = il;
     h->index = malloc(il * sizeof(struct indexEntry));
-    memcpy(h->index, p, il * sizeof(struct indexEntry));
-    p += il * sizeof(struct indexEntry);
-
-    h->data_malloced = dl;
-    h->data_used = dl;
-    h->data = malloc(dl);
-    memcpy(h->data, p, dl);
 
     /* This assumes you only headerLoad() something you headerUnload()-ed */
-    h->fully_sorted = 1;
+    h->sorted = 1;
+
+    pe = (struct entryInfo *) p;
+    dataStart = (char *) (pe + h->indexUsed);
+
+    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++, pe++) {
+	entry->info.type = htonl(pe->type);
+	entry->info.tag = htonl(pe->tag);
+	entry->info.count = htonl(pe->count);
+	entry->info.offset = -1;
+
+	src = dataStart + htonl(pe->offset);
+	entry->length = dataLength(entry->info.type, src, 
+				   entry->info.count, 1);
+	entry->data = dst = malloc(entry->length);
+
+	/* copy data w/ endian conversions */
+	switch (entry->info.type) {
+	  case RPM_INT32_TYPE:
+	    count = entry->info.count;
+	    while (count--) {
+		*((int_32 *)dst) = htonl(*((int_32 *)src));
+		src += sizeof(int_32);
+		dst += sizeof(int_32);
+	    }
+	    break;
+
+	  case RPM_INT16_TYPE:
+	    count = entry->info.count;
+	    while (count--) {
+		*((int_16 *)dst) = htons(*((int_16 *)src));
+		src += sizeof(int_16);
+		dst += sizeof(int_16);
+	    }
+	    break;
+
+	  default:
+	    memcpy(dst, src, entry->length);
+	}
+    }
 
     return h;
 }
 
-void *headerUnload(Header h)
+static void *doHeaderUnload(Header h, int * lengthPtr)
 {
+    int i;
+    int type, diff;
     void *p;
     int_32 *pi;
-    char * chptr;
+    struct entryInfo * pe;
+    struct indexEntry * entry; 
+    char * chptr, * src, * dataStart;
+    int count;
 
-    /* This magic actually sorts the data */
-    h = headerCopy(h);
+    indexSort(h);
 
-    pi = p = malloc(2 * sizeof(int_32) +
-		    h->entries_used * sizeof(struct indexEntry) +
-		    h->data_used);
+    *lengthPtr = headerSizeof(h, 0);
+    pi = p = malloc(*lengthPtr);
 
-    *pi++ = h->entries_used;
-    *pi++ = h->data_used;
+    *pi++ = htonl(h->indexUsed);
 
-    chptr = (char *) pi;
+    /* data length */
+    *pi++ = htonl(*lengthPtr - sizeof(int_32) - sizeof(int_32) -
+		(sizeof(struct entryInfo) * h->indexUsed));
 
-    memcpy(chptr, h->index, h->entries_used * sizeof(struct indexEntry));
-    chptr += h->entries_used * sizeof(struct indexEntry);
-    memcpy(chptr, h->data, h->data_used);
+    pe = (struct entryInfo *) pi;
+    dataStart = chptr = (char *) (pe + h->indexUsed);
 
-    headerFree(h);
+    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++, pe++) {
+	pe->type = htonl(entry->info.type);
+	pe->tag = htonl(entry->info.tag);
+	pe->count = htonl(entry->info.count);
+
+	/* Alignment */
+	type = entry->info.type;
+	if (typeSizes[type] > 1) {
+	    diff = typeSizes[type] - ((chptr - dataStart) % typeSizes[type]);
+	    if (diff != typeSizes[type]) {
+		memset(chptr, 0, diff);
+		chptr += diff;
+	    }
+	}
+
+	pe->offset = htonl(chptr - dataStart);
+
+	/* copy data w/ endian conversions */
+	switch (entry->info.type) {
+	  case RPM_INT32_TYPE:
+	    count = entry->info.count;
+	    src = entry->data;
+	    while (count--) {
+		*((int_32 *)chptr) = htonl(*((int_32 *)src));
+		chptr += sizeof(int_32);
+		src += sizeof(int_32);
+	    }
+	    break;
+
+	  case RPM_INT16_TYPE:
+	    count = entry->info.count;
+	    src = entry->data;
+	    while (count--) {
+		*((int_16 *)chptr) = htons(*((int_16 *)src));
+		chptr += sizeof(int_16);
+		src += sizeof(int_16);
+	    }
+	    break;
+
+	  default:
+	    memcpy(chptr, entry->data, entry->length);
+	    chptr += entry->length;
+	}
+    }
    
     return p;
+}
+
+void *headerUnload(Header h) {
+    int length;
+
+    return doHeaderUnload(h, &length);
 }
 
 /********************************************************************/
@@ -499,24 +402,21 @@ void headerDump(Header h, FILE * f, int flags)
     char *type, *tag;
 
     /* First write out the length of the index (count of index entries) */
-    fprintf(f, "Entry count: %d\n", h->entries_used);
-
-    /* And the length of the data (number of bytes) */
-    fprintf(f, "Data count : %d\n", h->data_used);
+    fprintf(f, "Entry count: %d\n", h->indexUsed);
 
     /* Now write the index */
     p = h->index;
     fprintf(f, "\n             CT  TAG                  TYPE         "
 		"      OFSET      COUNT\n");
-    for (i = 0; i < h->entries_used; i++) {
-	switch (p->type) {
+    for (i = 0; i < h->indexUsed; i++) {
+	switch (p->info.type) {
 	    case RPM_NULL_TYPE:   		type = "NULL_TYPE"; 	break;
 	    case RPM_CHAR_TYPE:   		type = "CHAR_TYPE"; 	break;
 	    case RPM_BIN_TYPE:   		type = "BIN_TYPE"; 	break;
 	    case RPM_INT8_TYPE:   		type = "INT8_TYPE"; 	break;
 	    case RPM_INT16_TYPE:  		type = "INT16_TYPE"; 	break;
 	    case RPM_INT32_TYPE:  		type = "INT32_TYPE"; 	break;
-	    case RPM_INT64_TYPE:  		type = "INT64_TYPE"; 	break;
+	    /*case RPM_INT64_TYPE:  		type = "INT64_TYPE"; 	break;*/
 	    case RPM_STRING_TYPE: 	    	type = "STRING_TYPE"; 	break;
 	    case RPM_STRING_ARRAY_TYPE: 	type = "STRING_ARRAY_TYPE"; break;
 	    default:		    	type = "(unknown)";	break;
@@ -525,21 +425,22 @@ void headerDump(Header h, FILE * f, int flags)
 	tag = "(unknown)";
 	c = 0;
 	while (c < rpmTagTableSize) {
-	    if (rpmTagTable[c].val == p->tag) {
+	    if (rpmTagTable[c].val == p->info.tag) {
 		tag = rpmTagTable[c].name + 7;
 	    }
 	    c++;
 	}
 
 	fprintf(f, "Entry      : %.3d (%d)%-14s %-18s 0x%.8x %.8d\n", i,
-		p->tag, tag, type, (uint_32) p->offset, (uint_32) p->count);
+		p->info.tag, tag, type, (uint_32) p->info.offset, (uint_32) 
+		p->info.count);
 
 	if (flags & HEADER_DUMP_INLINE) {
 	    /* Print the data inline */
-	    dp = h->data + p->offset;
-	    c = p->count;
+	    dp = p->data;
+	    c = p->info.count;
 	    ct = 0;
-	    switch (p->type) {
+	    switch (p->info.type) {
 	    case RPM_INT32_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%08x (%d)\n", ct++,
@@ -598,7 +499,8 @@ void headerDump(Header h, FILE * f, int flags)
 		}
 		break;
 	    default:
-		fprintf(stderr, "Data type %d not supprted\n", (int) p->type);
+		fprintf(stderr, "Data type %d not supprted\n", 
+			(int) p->info.type);
 		exit(1);
 	    }
 	}
@@ -612,101 +514,108 @@ void headerDump(Header h, FILE * f, int flags)
 /*                                                                  */
 /********************************************************************/
 
-static int tagCompare(const void *key, const void *member)
+static struct indexEntry *findEntry(Header h, int_32 tag, int_32 type)
 {
-    if (*((int_32 *)key) > ((struct indexEntry *)member)->tag) {
-	return 1;
-    } else if (*((int_32 *)key) < ((struct indexEntry *)member)->tag) {
-	return -1;
-    } else {
-	return 0;
-    }
-}
+    struct indexEntry * entry, * entry2, * last;
+    struct indexEntry key;
 
-static struct indexEntry *findEntry(Header h, int_32 tag)
-{
-    struct indexEntry *index = h->index;
-    int x = h->entries_used;
+    if (!h->sorted) indexSort(h);
 
-    if (h->fully_sorted) {
-	return bsearch(&tag, index, x, sizeof(struct indexEntry), tagCompare);
-    } else {
-	while (x && (tag != index->tag)) {
-	    index++;
-	    x--;
-	}
-	return (x ? index : NULL);
-    }
+    key.info.tag = tag;
+
+    entry2 = entry = 
+	bsearch(&key, h->index, h->indexUsed, sizeof(struct indexEntry), 
+		indexCmp);
+    if (!entry) return NULL;
+
+    if (type == RPM_NULL_TYPE) return entry;
+
+    /* look backwards */
+    while (entry->info.tag == tag && entry->info.type != type &&
+	   entry > h->index) entry--;
+
+    if (entry->info.tag == tag && entry->info.type == type)
+	return entry;
+
+    last = h->index + h->indexUsed;
+    while (entry2->info.tag == tag && entry2->info.type != type &&
+	   entry2 < last) entry2++;
+
+    if (entry->info.tag == tag && entry->info.type == type)
+	return entry;
+
+    return NULL;
 }
 
 int headerIsEntry(Header h, int_32 tag)
 {
-    return (findEntry(h, tag) ? 1 : 0);
+    return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
 }
 
-int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
-{
-    struct indexEntry *index;
-    char **spp;
-    char *sp;
-    int x;
+static void copyEntry(struct indexEntry * entry, 
+			int_32 *type, void **p, int_32 *c) {
+    int i, tableSize;
+    char ** ptrEntry;
+    char * chptr;
+
+    if (type) 
+	*type = entry->info.type;
+    if (c) 
+	*c = entry->info.count;
+
+    /* Now look it up */
+    switch (entry->info.type) {
+      case RPM_STRING_TYPE:
+	if (entry->info.count == 1) {
+	    *p = entry->data;
+	    break;
+	}
+	/* fallthrough */
+      case RPM_STRING_ARRAY_TYPE:
+	*type = RPM_STRING_ARRAY_TYPE;
+	i = entry->info.count;
+	tableSize = i * sizeof(char *);
+	ptrEntry = *p = malloc(tableSize + entry->length);
+	chptr = ((char *) *p) + tableSize;
+	memcpy(chptr, entry->data, entry->length);
+	while (i--) {
+	    *ptrEntry++ = chptr;
+	    chptr = strchr(chptr, 0);
+	    chptr++;
+	}
+	break;
+
+      default:
+	*p = entry->data;
+    }
+}
+
+int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c) {
+    struct indexEntry * entry;
 
     if (!p) return headerIsEntry(h, tag);
 
     /* First find the tag */
-    index = findEntry(h, tag);
-    if (! index) {
+    entry = findEntry(h, tag, RPM_NULL_TYPE);
+    if (!entry) {
 	*p = NULL;
 	return 0;
     }
 
-    if (type) {
-	*type = (int) index->type;
-    }
-    if (c) {
-	*c = index->count;
-    }
-
-    /* Now look it up */
-    switch (index->type) {
-    case RPM_INT64_TYPE:
-    case RPM_INT32_TYPE:
-    case RPM_INT16_TYPE:
-    case RPM_INT8_TYPE:
-    case RPM_BIN_TYPE:
-    case RPM_CHAR_TYPE:
-	*p = h->data + index->offset;
-	break;
-    case RPM_STRING_TYPE:
-	if (index->count == 1) {
-	    /* Special case -- just return a pointer to the string */
-	    *p = h->data + index->offset;
-	    break;
-	}
-	/* Fall through to RPM_STRING_ARRAY_TYPE */
-    case RPM_STRING_ARRAY_TYPE:
-        /* Correction! */
-        if (type) {
-	    *type = RPM_STRING_ARRAY_TYPE;
-	}
-	/* Otherwise, build up an array of char* to return */
-	x = index->count;
-	*p = malloc(x * sizeof(char *));
-	spp = (char **) *p;
-	sp = h->data + index->offset;
-	while (x--) {
-	    *spp++ = sp;
-	    sp = strchr(sp, 0);
-	    sp++;
-	}
-	break;
-    default:
-	fprintf(stderr, "Data type %d not supprted\n",
-		(int) index->type);
-	exit(1);
-    }
+    copyEntry(entry, type, p, c);
 
     return 1;
+}
+
+int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
+{
+    int_32 t = RPM_NULL_TYPE;
+    int rc;
+
+    rc = headerGetRawEntry(h, tag, &t, p, c);
+    if (rc && type) *type = t;
+
+    return rc;
 }
 
 /********************************************************************/
@@ -717,47 +626,137 @@ int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 
 Header headerNew()
 {
-    struct headerToken *h = (struct headerToken *)
-    malloc(sizeof(struct headerToken));
-
-    h->data = malloc(DATA_MALLOC_SIZE);
-    h->data_malloced = DATA_MALLOC_SIZE;
-    h->data_used = 0;
+    Header h = malloc(sizeof(struct headerToken));
 
     h->index = malloc(INDEX_MALLOC_SIZE * sizeof(struct indexEntry));
-    h->entries_malloced = INDEX_MALLOC_SIZE;
-    h->entries_used = 0;
+    h->indexAlloced = INDEX_MALLOC_SIZE;
+    h->indexUsed = 0;
 
-    h->fully_sorted = 0;
+    h->sorted = 0;
 
     return (Header) h;
 }
 
 void headerFree(Header h)
 {
+    int i;
+
+    for (i = 0; i < h->indexUsed; i++)
+	free(h->index[i].data);
+
     free(h->index);
-    free(h->data);
     free(h);
 }
 
 unsigned int headerSizeof(Header h, int magicp)
 {
     unsigned int size;
+    int i, diff;
+    int_32 type;
 
-    /* Do some real magic to determine the ON-DISK size */
-    h = headerCopy(h);
-   
+    indexSort(h);
+
     size = sizeof(int_32);	/* count of index entries */
     size += sizeof(int_32);	/* length of data */
-    size += sizeof(struct indexEntry) * h->entries_used;
-    size += h->data_used;
+    size += sizeof(struct entryInfo) * h->indexUsed;
     if (magicp) {
 	size += 8;
     }
 
-    headerFree(h);
+    for (i = 0; i < h->indexUsed; i++) {
+	/* Alignment */
+	type = h->index[i].info.type;
+	if (typeSizes[type] > 1) {
+	    diff = typeSizes[type] - (size % typeSizes[type]);
+	    if (diff != typeSizes[type]) {
+		size += diff;
+	    }
+	}
+
+	size += h->index[i].length;
+    }
    
     return size;
+}
+
+static int dataLength(int_32 type, void * p, int_32 count, int onDisk) {
+    int thisLen, length, i;
+    char ** src, * chptr;
+
+    switch (type) {
+      case RPM_STRING_TYPE:
+	if (count == 1) {
+	    /* Special case -- p is just the string */
+	    length = strlen(p) + 1;
+	    break;
+	}
+        /* This should not be allowed */
+	fprintf(stderr, "grabData() RPM_STRING_TYPE count must be 1.\n");
+	exit(1);
+
+      case RPM_STRING_ARRAY_TYPE:
+	/* This is like RPM_STRING_TYPE, except it's *always* an array */
+	/* Compute sum of length of all strings, including null terminators */
+	i = count;
+	length = 0;
+
+	if (onDisk) {
+	    chptr = (char *) p;
+	    while (i--) {
+		thisLen = strlen(chptr) + 1;
+		length += thisLen;
+		chptr += thisLen;
+	    }
+	} else {
+	    src = (char **) p;
+	    while (i--) {
+		/* add one for null termination */
+		length += strlen(*src++) + 1;
+	    }
+	}
+	break;
+
+      default:
+	if (typeSizes[type] != -1)
+	    length = typeSizes[type] * count;
+	else {
+	    fprintf(stderr, "Data type %d not supported\n", (int) type);
+	    exit(1);
+	}
+    }
+
+    return length;
+}
+
+static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr) {
+    int length;
+    char ** src, * dst;
+    void * data;
+    int i, len;
+
+    length = dataLength(type, p, c, 0);
+    data = malloc(length);
+
+    switch (type) {
+      case RPM_STRING_ARRAY_TYPE:
+	/* Otherwise, p is char** */
+	i = c;
+	src = (char **) p;
+	dst = (char *) data;
+	while (i--) {
+	    len = strlen(*src) + 1;
+	    memcpy(dst, *src, len);
+	    dst += len;
+	    src++;
+	}
+	break;
+
+      default:
+	memcpy(data, p, length);
+    }
+
+    *lengthPtr = length;
+    return data;
 }
 
 /********************************************************************/
@@ -769,11 +768,8 @@ unsigned int headerSizeof(Header h, int magicp)
 int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 {
     struct indexEntry *entry;
-    void *ptr;
-    char **spp;
-    char *sp;
-    int i, length;
-    int pad;
+
+    h->sorted = 0;
 
     if (c <= 0) {
 	fprintf(stderr, "Bad count for headerAddEntry(): %d\n", (int) c);
@@ -781,161 +777,72 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     }
 
     /* Allocate more index space if necessary */
-    if (h->entries_used == h->entries_malloced) {
-	h->entries_malloced += INDEX_MALLOC_SIZE;
+    if (h->indexUsed == h->indexAlloced) {
+	h->indexAlloced += INDEX_MALLOC_SIZE;
 	h->index = realloc(h->index,
-			h->entries_malloced * sizeof(struct indexEntry));
+			h->indexAlloced * sizeof(struct indexEntry));
     }
 
     /* Fill in the index */
-    i = h->entries_used++;
-    entry = &((h->index)[i]);
-    entry->tag = tag;
-    entry->type = type;
-    entry->count = c;
+    entry = h->index + h->indexUsed++;
+    entry->info.tag = tag;
+    entry->info.type = type;
+    entry->info.count = c;
+    entry->info.offset = -1;
 
-    /* Compute length of data to add */
-    pad = 0;
-    switch (type) {
-    case RPM_INT64_TYPE:
-	length = sizeof(int_64) * c;
-	pad = 8;
-	break;
-    case RPM_INT32_TYPE:
-	length = sizeof(int_32) * c;
-	pad = 4;
-	break;
-    case RPM_INT16_TYPE:
-	length = sizeof(int_16) * c;
-	pad = 2;
-	break;
-    case RPM_INT8_TYPE:
-	length = sizeof(int_8) * c;
-	break;
-    case RPM_BIN_TYPE:
-    case RPM_CHAR_TYPE:
-	length = sizeof(char) * c;
-	break;
-    case RPM_STRING_TYPE:
-	if (c == 1) {
-	    /* Special case -- p is just the string */
-	    length = strlen(p) + 1;
-	    break;
-	}
-	/* Otherwise fall through to RPM_STRING_ARRAY_TYPE */
-        /* This should not be allowed */
-	fprintf(stderr, "headerAddEntry() RPM_STRING_TYPE count must be 1.\n");
-	exit(1);
-    case RPM_STRING_ARRAY_TYPE:
-	/* This is like RPM_STRING_TYPE, except it's *always* an array */
-	/* Compute sum of length of all strings, including null terminators */
-	i = c;
-	spp = p;
-	length = 0;
-	while (i--) {
-	    /* add one for null termination */
-	    length += strlen(*spp++) + 1;
-	}
-	break;
-    default:
-	fprintf(stderr, "Data type %d not supprted\n", (int) type);
-	exit(1);
-    }
+    entry->data = grabData(type, p, c, &entry->length);
 
-    if (pad) {
-	pad = (pad - (h->data_used % pad)) % pad;
-    }
-    
-    /* Allocate more data space if necessary */
-    while ((length + pad + h->data_used) > h->data_malloced) {
-	h->data_malloced += DATA_MALLOC_SIZE;
-	h->data = realloc(h->data, h->data_malloced);
-    }
-
-    /* Fill in the data */
-    entry->offset = h->data_used + pad;
-    ptr = h->data + h->data_used + pad;
-    switch (type) {
-      case RPM_INT32_TYPE:
-      case RPM_INT16_TYPE:
-      case RPM_INT8_TYPE:
-      case RPM_BIN_TYPE:
-      case RPM_CHAR_TYPE:
-	memcpy(ptr, p, length);
-	break;
-      case RPM_STRING_TYPE:
-	if (c == 1) {
-	    /* Special case -- p is just the string */
-	    strcpy(ptr, p);
-	    break;
-	}
-	/* Fall through to RPM_STRING_ARRAY_TYPE */
-        /* This should not be allowed */
-	fprintf(stderr, "headerAddEntry() internal error!.\n");
-	exit(1);
-      case RPM_STRING_ARRAY_TYPE:
-	  /* Otherwise, p is char** */
-	  i = c;
-	  spp = p;
-	  sp = (char *) ptr;
-	  while (i--) {
-	      strcpy(sp, *spp);
-	      sp += strlen(*spp++) + 1;
-	  }
-	break;
-      default:
-	fprintf(stderr, "Data type %d not supprted\n", (int) type);
-	exit(1);
-    }
-
-    h->data_used += length + pad;
-    h->fully_sorted = 0;
+    h->sorted = 0;
 
     return 1;
 }
 
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 {
-    struct indexEntry *index;
+    struct indexEntry *entry;
+    void * oldData;
 
     /* First find the tag */
-    index = findEntry(h, tag);
-    if (! index) {
+    entry = findEntry(h, tag, type);
+    if (! entry) {
 	return 0;
     }
 
-    if (type != index->type) {
-	return 0;
-    }
+    /* free after we've grabbed the new data in case the two are intertwined 
+       -- that's a bad idea but at least we won't break */
+    oldData = entry->data;
 
-    if (c != 1) {
-	return 0;
-    }
+    entry->info.count = c;
+    entry->info.type = type;
+    entry->data = grabData(type, p, c, &entry->length);
 
-    if (index->count != 1) {
-	return 0;
-    }
+    free(oldData);
     
-    switch (index->type) {
-    case RPM_INT64_TYPE:
-	*((int_64 *)(h->data + index->offset)) = *((int_64 *)p);
-	break;
-    case RPM_INT32_TYPE:
-	*((int_32 *)(h->data + index->offset)) = *((int_32 *)p);
-	break;
-    case RPM_INT16_TYPE:
-	*((int_16 *)(h->data + index->offset)) = *((int_16 *)p);
-	break;
-    case RPM_INT8_TYPE:
-	*((int_8 *)(h->data + index->offset)) = *((int_8 *)p);
-	break;
-    case RPM_BIN_TYPE:
-    case RPM_CHAR_TYPE:
-	*((char *)(h->data + index->offset)) = *((char *)p);
-	break;
-    default:
+    return 1;
+}
+
+int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c) {
+    struct indexEntry *entry;
+    int length;
+
+    /* First find the tag */
+    entry = findEntry(h, tag, type);
+    if (!entry) {
 	return 0;
     }
 
-    return 1;
+    if (type == RPM_STRING_TYPE || type == RPM_I18NSTRING_TYPE) {
+	/* we can't do this */
+	return 0;
+    }
+
+    length = dataLength(type, p, c, 0);
+
+    entry->data = realloc(entry->data, entry->length + length);
+    memcpy(((char *) entry->data) + entry->length, p, length);
+
+    grabData(type, entry->data + entry->length, c, &length);
+    entry->length += length;
+
+    return 0;
 }
