@@ -1,35 +1,72 @@
-#!/bin/sh
+#!/bin/bash
 
-# note this works for both a.out and ELF executables
-# it also auto-generates requirment lines for shell scripts
+#
+# Auto-generate requirements for executables (both ELF and a.out) and library
+# sonames, script interpreters, and perl modules.
+#
 
 ulimit -c 0
 
 filelist=`sed "s/['\"]/\\\&/g"`
-exelist=`echo $filelist | xargs -r file | grep ":.*executable" | cut -d: -f1 `
-scriptlist=`echo $filelist | xargs -r file | egrep ":.* (commands|script) " | cut -d: -f1 `
-liblist=`echo $filelist | xargs -r file | grep ":.*shared object" | cut -d : -f1 `
+exelist=`echo $filelist | xargs -r file | egrep -v ":.* (commands|script) " | \
+	grep ":.*executable" | cut -d: -f1`
+scriptlist=`echo $filelist | xargs -r file | \
+	egrep ":.* (commands|script) " | cut -d: -f1`
+liblist=`echo $filelist | xargs -r file | \
+	grep ":.*shared object" | cut -d : -f1`
 
+interplist=
+perllist=
+pythonlist=
+tcllist=
+
+#
+# --- Executable sonames.
 for f in $exelist; do
-    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
-    if [ -x $f ]; then
-	ldd $f | awk '/=>/ { if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) { gsub(/'\''"/,"\\&",$1); printf "%s'$lib64'\n", $1 } }'
-    fi
+    [ -r $f -a -x $f ] || continue
+    lib64=`if file -L $f 2>/dev/null | \
+	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+    ldd $f | awk '/=>/ {
+	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) {
+	    gsub(/'\''"/,"\\&",$1);
+	    printf "%s'$lib64'\n", $1
+	}
+    }'
 done | xargs -r -n 1 basename | sort -u
 
+#
+# --- Library sonames.
 for f in $liblist; do
-    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
-    ldd $f | awk '/=>/ { if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) { gsub(/'\''"/,"\\&",$1); printf "%s'$lib64'\n", $1 } }'
+    [ -r $f ] || continue
+    lib64=`if file -L $f 2>/dev/null | \
+	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+    ldd $f | awk '/=>/ {
+	if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) {
+	    gsub(/'\''"/,"\\&",$1);
+	    printf "%s'$lib64'\n", $1
+	}
+    }'
 done | xargs -r -n 1 basename | sort -u
 
+#
+# --- Script interpreters.
 for f in $scriptlist; do
-    if [ -x $f ]; then
-	head -1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1
-    fi
-done | sort -u
+    [ -r $f -a -x $f ] || continue
+    interp=`head -1 $f | sed -e 's/^\#\![ 	]*//' | cut -d" " -f1`
+    interplist="$interplist $interp"
+    case $interp in
+    */perl)	perllist="$perllist $f" ;;
+    *)		[ "${f%.pm} != "${f}" ] && perllist="$perllist $f" ;;
+    esac
+done
+[ -n "$interplist" ] && { echo "$interplist" | sort -u ; }
 
+#
+# --- Weak symbol versions (from glibc).
 for f in $liblist $exelist ; do
-    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "(64bit)"; fi`
+    [ -r $f ] || continue
+    lib64=`if file -L $f 2>/dev/null | \
+	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
     objdump -p $f | awk '
 	BEGIN { START=0; LIBNAME=""; }
 	/Version References:/ { START=1; }
@@ -37,7 +74,24 @@ for f in $liblist $exelist ; do
 	    sub(/:/, "", $3);
 	    LIBNAME=$3;
 	}
-	(START==1) && (LIBNAME!="") && ($4!="") { print LIBNAME "(" $4 ")'$lib64'"; }
+	(START==1) && (LIBNAME!="") && ($4~/^GLIBC_*/) {
+	    print LIBNAME "(" $4 ")'$lib64'";
+	}
 	/^$/ { START=0; }
     '
 done | sort -u
+
+#
+# --- Perl modules.
+[ -x /usr/lib/rpm/perl.req -a -n "$perllist" ] && \
+    echo $perllist | tr [:blank:] \\n | /usr/lib/rpm/perl.req | sort -u
+
+#
+# --- Python modules.
+[ -x /usr/lib/rpm/python.req -a -n "$pythonlist" ] && \
+    echo $pythonlist | tr [:blank:] \\n | /usr/lib/rpm/python.req | sort -u
+
+#
+# --- Tcl modules.
+[ -x /usr/lib/rpm/tcl.req -a -n "$tcllist" ] && \
+    echo $tcllist | tr [:blank:] \\n | /usr/lib/rpm/tcl.req | sort -u

@@ -76,8 +76,7 @@ sub process_file {
   my ($file) = @_;
   chomp $file;
   
-  open(FILE, "<$file")||
-    die("$0: Could not open file: '$file' : $!\n");
+  open(FILE, "<$file") || return;
   
   while (<FILE>) {
     
@@ -192,7 +191,7 @@ sub process_file {
     
   }
 
-  close(FILE)||
+  close(FILE) ||
     die("$0: Could not close file: '$file' : $!\n");
   
   return ; 

@@ -67,7 +67,7 @@ foreach $module (sort keys %require) {
 
     # I am not using rpm3.0 so I do not want spaces arround my
     # operators. Also I will need to change the processing of the
-    # $RPM_* vairable when I upgrade.
+    # $RPM_* variable when I upgrade.
 
     print "perl($module) = $require{$module}\n";
   }
@@ -82,8 +82,7 @@ sub process_file {
   my ($file) = @_;
   chomp $file;
   
-  open(FILE, "<$file")||
-    die("$0: Could not open file: '$file' : $!\n");
+  open(FILE, "<$file") || return;
 
   my ($package, $version) = ();
 
@@ -124,9 +123,9 @@ sub process_file {
 
     # here are examples of VERSION lines from the perl distribution
 
-    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/);
-    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.3 $, 10;
-    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.3 $)[1];
+    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/);
+    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.4 $, 10;
+    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.4 $)[1];
     #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
 
     if ( 
@@ -161,7 +160,7 @@ sub process_file {
 
   }
 
-  close(FILE)||
+  close(FILE) ||
     die("$0: Could not close file: '$file' : $!\n");
 
   return ;

@@ -74,6 +74,8 @@
 	- return multiple suggested packages
 		(Pawel Kolodziej <pawelk@pld.org.pl>).
 	- fix: return suggested packages when using Depends cache.
+	- merge sparc64/ia64 fiddles back into linux.{req,prov}.
+	- automagically generate perl module dependencies always.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -3,12 +3,21 @@
 # This script reads filenames from STDIN and outputs any relevant provides
 # information that needs to be included in the package.
 
-filelist=$(grep "\\.so" | grep -v "^/lib/ld.so" | xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1)
+filelist=`sed "s/['\"]/\\\&/g"`
 
-for f in $filelist; do
+solist=$(echo $filelist | grep "\\.so" | grep -v "^/lib/ld.so" | \
+	xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1)
+perllist=$(echo $filelist | grep "\\.pm")
+pythonlist=
+tcllist=
+
+#
+# --- Library sonames and weak symbol versions (from glibc).
+for f in $solist; do
     soname=$(objdump -p $f | awk '/SONAME/ {print $2}')
 
-    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+    lib64=`if file -L $f 2>/dev/null | \
+	grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
     if [ "$soname" != "" ]; then
 	if [ ! -L $f ]; then
 	    echo $soname$lib64
@@ -27,3 +36,18 @@ for f in $filelist; do
 	echo ${f##*/}$lib64
     fi
 done | sort -u
+
+#
+# --- Perl modules.
+[ -x /usr/lib/rpm/perl.prov -a -n "$perllist" ] &&
+    echo $perllist | tr [:blank:] \\n | /usr/lib/rpm/perl.prov | sort -u
+
+#
+# --- Python modules.
+[ -x /usr/lib/rpm/python.prov -a -n "$pythonlist" ] &&
+    echo $pythonlist | tr [:blank:] \\n | /usr/lib/rpm/python.prov | sort -u
+
+#
+# --- Tcl modules.
+[ -x /usr/lib/rpm/tcl.prov -a -n "$tcllist" ] &&
+    echo $tcllist | tr [:blank:] \\n | /usr/lib/rpm/tcl.prov | sort -u
