@@ -1,6 +1,6 @@
 /*
 64.xlatetof.c - implementation of the elf64_xlateto[fm](3) functions.
-Copyright (C) 1995 - 1998 Michael Riepe <michael@stud.uni-hannover.de>
+Copyright (C) 1995 - 2002 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -21,61 +21,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <ext_types.h>
 #include <byteswap.h>
 
+#if __LIBELF64
+
 #ifndef lint
-static const char rcsid[] = "@(#) Id: 64.xlatetof.c,v 1.3 1998/08/25 15:22:24 michael Exp ";
+static const char rcsid[] = "@(#) Id: 64.xlatetof.c,v 1.14 2002/06/11 18:53:22 michael Exp ";
 #endif /* lint */
-
-static __libelf_u64_t
-__load_u64L(const unsigned char *from) {
-    return ((__libelf_u64_t)__load_u32L(from + 4) << 32) | (__libelf_u64_t)__load_u32L(from);
-}
-
-static __libelf_u64_t
-__load_u64M(const unsigned char *from) {
-    return ((__libelf_u64_t)__load_u32M(from) << 32) | (__libelf_u64_t)__load_u32M(from + 4);
-}
-
-static __libelf_i64_t
-__load_i64L(const unsigned char *from) {
-    return ((__libelf_i64_t)__load_i32L(from + 4) << 32) | (__libelf_u64_t)__load_u32L(from);
-}
-
-static __libelf_i64_t
-__load_i64M(const unsigned char *from) {
-    return ((__libelf_u64_t)__load_u32M(from) << 32) | (__libelf_i64_t)__load_i32M(from + 4);
-}
-
-static void
-__store_u64L(unsigned char *to, __libelf_u64_t v) {
-    __store_u32L(to, (unsigned long)v);
-    v >>= 32;
-    __store_u32L(to + 4, (unsigned long)v);
-}
-
-static void
-__store_u64M(unsigned char *to, __libelf_u64_t v) {
-    __store_u32M(to + 4, (unsigned long)v);
-    v >>= 32;
-    __store_u32M(to, (unsigned long)v);
-}
-
-static void
-__store_i64L(unsigned char *to, __libelf_u64_t v) {
-    __store_u32L(to, (unsigned long)v);
-    v >>= 32;
-    __store_i32L(to + 4, (unsigned long)v);
-}
-
-static void
-__store_i64M(unsigned char *to, __libelf_u64_t v) {
-    __store_u32M(to + 4, (unsigned long)v);
-    v >>= 32;
-    __store_i32M(to, (unsigned long)v);
-}
 
 /*
  * Ugly, ugly
  */
+#if defined(__LCLINT__)
+# define Cat2(a,b)a##b
+# define Cat3(a,b,c)a##b##c
+# define Ex1(m1,m2,a,b)m1##m2(a##b)
+# define Ex2(m1,m2,a,b,c)m1##m2(a,b##c)
+#else
 #define x
 #if defined/**/x
 # define Cat2(a,b)a##b
@@ -89,6 +49,7 @@ __store_i64M(unsigned char *to, __libelf_u64_t v) {
 # define Ex2(m1,m2,a,b,c)m1/**/m2(a,b/**/c)
 #endif
 #undef x
+#endif
 
 /*
  * auxiliary macros for execution order reversal
@@ -100,27 +61,37 @@ __store_i64M(unsigned char *to, __libelf_u64_t v) {
  * function instantiator
  */
 #define copy_type_e_io(name,e,io,tfrom,tto,copy)		\
-    static void							\
-    Cat3(name,_,io)(unsigned char *dst, const unsigned char *src, size_t n) {	\
-	const tfrom *from = (const tfrom*)src;			\
-	tto *to = (tto*)dst;					\
-	if (sizeof(tfrom) < sizeof(tto)) {			\
-	    from += n;						\
-	    to += n;						\
-	    while (n-- > 0) {					\
-		--from;						\
-		--to;						\
-		copy(e,io,seq_back)				\
+    /*@-mustmod@*/						\
+    static size_t						\
+    Cat3(name,_,io)(unsigned char *dst, const unsigned char *src, size_t n) \
+    	/*@modifies *dst @*/					\
+    {								\
+	n /= sizeof(tfrom);					\
+	if (n && dst) {						\
+	    const tfrom *from = (const tfrom*)src;		\
+	    tto *to = (tto*)dst;				\
+	    size_t i;						\
+								\
+	    if (sizeof(tfrom) < sizeof(tto)) {			\
+		from += n;					\
+		to += n;					\
+		for (i = 0; i < n; i++) {			\
+		    --from;					\
+		    --to;					\
+		    copy(e,io,seq_back)				\
+		}						\
+	    }							\
+	    else {						\
+		for (i = 0; i < n; i++) {			\
+		    copy(e,io,seq_forw)				\
+		    from++;					\
+		    to++;					\
+		}						\
 	    }							\
 	}							\
-	else {							\
-	    while (n-- > 0) {					\
-		copy(e,io,seq_forw)				\
-		from++;						\
-		to++;						\
-	    }							\
-	}							\
-    }
+	return n * sizeof(tto);					\
+    }								\
+    /*@=mustmod@*/
 
 #define copy_type_e(name,e,type,copy)				\
     copy_type_e_io(name,e,tom,Cat2(__ext_,type),type,copy)	\
@@ -153,8 +124,8 @@ __store_i64M(unsigned char *to, __libelf_u64_t v) {
 #define copy_half(e,io,mb)	Ex2(copy_,io,mb,u16,e)
 #define copy_off(e,io,mb)	Ex2(copy_,io,mb,u64,e)
 #define copy_sword(e,io,mb)	Ex2(copy_,io,mb,i32,e)
-#define copy_sxword(e,io,mb)	Ex2(copy_,io,mb,i64,e)
 #define copy_word(e,io,mb)	Ex2(copy_,io,mb,u32,e)
+#define copy_sxword(e,io,mb)	Ex2(copy_,io,mb,i64,e)
 #define copy_xword(e,io,mb)	Ex2(copy_,io,mb,u64,e)
 #define copy_arr(e,io,mb)	\
     array_copy(to->mb, sizeof(to->mb), from->mb, sizeof(from->mb));
@@ -167,8 +138,8 @@ __store_i64M(unsigned char *to, __libelf_u64_t v) {
 #define copy_half_11(e,io,seq)	Ex1(copy_scalar_,io,u16,e)
 #define copy_off_11(e,io,seq)	Ex1(copy_scalar_,io,u64,e)
 #define copy_sword_11(e,io,seq)	Ex1(copy_scalar_,io,i32,e)
-#define copy_sxword_11(e,io,seq)Ex1(copy_scalar_,io,i64,e)
 #define copy_word_11(e,io,seq)	Ex1(copy_scalar_,io,u32,e)
+#define copy_sxword_11(e,io,seq)Ex1(copy_scalar_,io,i64,e)
 #define copy_xword_11(e,io,seq)	Ex1(copy_scalar_,io,u64,e)
 
 /*
@@ -255,32 +226,39 @@ __store_i64M(unsigned char *to, __libelf_u64_t v) {
     seq(copy_xword(e,io,st_size),	\
     /**/))))))
 
-static void
-byte_copy(unsigned char *dst, const unsigned char *src, size_t n) {
-    if (dst == src || !n) {
-	return;
-    }
+static size_t
+byte_copy(unsigned char *dst, const unsigned char *src, size_t n)
+	/*@modifies *dst @*/
+{
+    if (n && dst && dst != src) {
 #if HAVE_BROKEN_MEMMOVE
-    while (dst > src && dst < &src[n]) {
-	if (n <= 16) {
-	    /* copy `manually' */
-	    while (n--) {
-		dst[n] = src[n];
-	    }
-	    return;
+	size_t i;
+
+	if (dst >= src + n || dst + n <= src) {
+	    memcpy(dst, src, n);
 	}
-	/* copy upper half */
-	byte_copy(&dst[n / 2], &src[n / 2], n - n / 2);
-	/* continue with lower half */
-	n /= 2;
+	else if (dst < src) {
+	    for (i = 0; i < n; i++) {
+		dst[i] = src[i];
+	    }
+	}
+	else {
+	    for (i = n; --i; ) {
+		dst[i] = src[i];
+	    }
+	}
+#else /* HAVE_BROKEN_MEMMOVE */
+	memmove(dst, src, n);
+#endif /* HAVE_BROKEN_MEMMOVE */
     }
-#endif
-    memmove(dst, src, n);
+    return n;
 }
 
 static void
-array_copy(unsigned char *dst, size_t dlen, const unsigned char *src, size_t slen) {
-    byte_copy(dst, src, dlen < slen ? dlen : slen);
+array_copy(unsigned char *dst, size_t dlen, const unsigned char *src, size_t slen)
+	/*@modifies *dst @*/
+{
+    (void) byte_copy(dst, src, dlen < slen ? dlen : slen);
     if (dlen > slen) {
 	memset(dst + slen, 0, dlen - slen);
     }
@@ -293,8 +271,8 @@ copy_type(addr_64,_,Elf64_Addr,copy_addr_11)
 copy_type(half_64,_,Elf64_Half,copy_half_11)
 copy_type(off_64,_,Elf64_Off,copy_off_11)
 copy_type(sword_64,_,Elf64_Sword,copy_sword_11)
-copy_type(sxword_64,_,Elf64_Sxword,copy_sxword_11)
 copy_type(word_64,_,Elf64_Word,copy_word_11)
+copy_type(sxword_64,_,Elf64_Sxword,copy_sxword_11)
 copy_type(xword_64,_,Elf64_Xword,copy_xword_11)
 copy_type(dyn_64,11,Elf64_Dyn,copy_dyn_11)
 copy_type(ehdr_64,11,Elf64_Ehdr,copy_ehdr_11)
@@ -304,21 +282,28 @@ copy_type(rel_64,11,Elf64_Rel,copy_rel_11)
 copy_type(shdr_64,11,Elf64_Shdr,copy_shdr_11)
 copy_type(sym_64,11,Elf64_Sym,copy_sym_11)
 
-typedef void (*xlator)(unsigned char*, const unsigned char*, size_t);
+typedef size_t (*xlator)(unsigned char* dst, const unsigned char* src, size_t n)
+	/*@modifies *dst @*/;
 typedef xlator xltab[ELF_T_NUM][2];
 
 /*
  * translation table (64-bit, version 1 -> version 1)
  */
+/*@-initsize@*/
+/*@unchecked@*/ /*@observer@*/
+#if PIC
+static xltab
+#else /* PIC */
 static const xltab
+#endif /* PIC */
 xlate64_11[/*encoding*/] = {
     {
-	{ byte_copy,	    byte_copy	    },
+	{ byte_copy,        byte_copy       },
 	{ addr_64L__tom,    addr_64L__tof   },
 	{ dyn_64L11_tom,    dyn_64L11_tof   },
 	{ ehdr_64L11_tom,   ehdr_64L11_tof  },
 	{ half_64L__tom,    half_64L__tof   },
-	{ off_64L__tom,	    off_64L__tof    },
+	{ off_64L__tom,     off_64L__tof    },
 	{ phdr_64L11_tom,   phdr_64L11_tof  },
 	{ rela_64L11_tom,   rela_64L11_tof  },
 	{ rel_64L11_tom,    rel_64L11_tof   },
@@ -328,14 +313,21 @@ xlate64_11[/*encoding*/] = {
 	{ word_64L__tom,    word_64L__tof   },
 	{ sxword_64L__tom,  sxword_64L__tof },
 	{ xword_64L__tom,   xword_64L__tof  },
+#if __LIBELF_SYMBOL_VERSIONS
+	{ _elf_verdef_64L11_tom,  _elf_verdef_64L11_tof  },
+	{ _elf_verneed_64L11_tom, _elf_verneed_64L11_tof },
+#else /* __LIBELF_SYMBOL_VERSIONS */
+	{ NULL,             NULL            },
+	{ NULL,             NULL            },
+#endif /* __LIBELF_SYMBOL_VERSIONS */
     },
     {
-	{ byte_copy,	    byte_copy	    },
+	{ byte_copy,        byte_copy       },
 	{ addr_64M__tom,    addr_64M__tof   },
 	{ dyn_64M11_tom,    dyn_64M11_tof   },
 	{ ehdr_64M11_tom,   ehdr_64M11_tof  },
 	{ half_64M__tom,    half_64M__tof   },
-	{ off_64M__tom,	    off_64M__tof    },
+	{ off_64M__tom,     off_64M__tof    },
 	{ phdr_64M11_tom,   phdr_64M11_tof  },
 	{ rela_64M11_tom,   rela_64M11_tof  },
 	{ rel_64M11_tom,    rel_64M11_tof   },
@@ -345,13 +337,26 @@ xlate64_11[/*encoding*/] = {
 	{ word_64M__tom,    word_64M__tof   },
 	{ sxword_64M__tom,  sxword_64M__tof },
 	{ xword_64M__tom,   xword_64M__tof  },
+#if __LIBELF_SYMBOL_VERSIONS
+	{ _elf_verdef_64M11_tom,  _elf_verdef_64M11_tof  },
+	{ _elf_verneed_64M11_tom, _elf_verneed_64M11_tof },
+#else /* __LIBELF_SYMBOL_VERSIONS */
+	{ NULL,             NULL            },
+	{ NULL,             NULL            },
+#endif /* __LIBELF_SYMBOL_VERSIONS */
     },
 };
+/*@=initsize@*/
 
 /*
  * main translation table (64-bit)
  */
+/*@unchecked@*/ /*@observer@*/
+#if PIC
+static xltab*
+#else /* PIC */
 static const xltab *const
+#endif /* PIC */
 xlate64[EV_CURRENT - EV_NONE][EV_CURRENT - EV_NONE] = {
     { xlate64_11, },
 };
@@ -364,13 +369,54 @@ xlate64[EV_CURRENT - EV_NONE][EV_CURRENT - EV_NONE] = {
 	    [d])
 
 /*
+ * destination buffer size
+ */
+size_t
+_elf64_xltsize(const Elf_Data *src, unsigned dv, unsigned encode, int tof) {
+    Elf_Type type = src->d_type;
+    unsigned sv = src->d_version;
+    xlator op;
+
+    if (!valid_version(sv) || !valid_version(dv)) {
+	seterr(ERROR_UNKNOWN_VERSION);
+	return (size_t)-1;
+    }
+    if (tof) {
+	/*
+	 * Encoding doesn't really matter (the translator only looks at
+	 * the source, which resides in memory), but we need a proper
+	 * encoding to select a translator...
+	 */
+	encode = ELFDATA2LSB;
+    }
+    else if (!valid_encoding(encode)) {
+	seterr(ERROR_UNKNOWN_ENCODING);
+	return (size_t)-1;
+    }
+    if (!valid_type(type)) {
+	seterr(ERROR_UNKNOWN_TYPE);
+	return (size_t)-1;
+    }
+    if (!(op = translator(sv, dv, encode, type, tof))) {
+	seterr(ERROR_UNKNOWN_TYPE);
+	return (size_t)-1;
+    }
+    return (*op)(NULL, src->d_buf, src->d_size);
+}
+
+/*
  * direction-independent translation
  */
+/*@null@*/
 static Elf_Data*
-elf64_xlate(Elf_Data *dst, const Elf_Data *src, unsigned encode, int tof) {
-    size_t ssize, dsize, count;
+elf64_xlate(/*@returned@*/ Elf_Data *dst, const Elf_Data *src, unsigned encode, int tof)
+	/*@modifies *dst @*/
+{
     Elf_Type type;
-    int sv, dv;
+    int dv;
+    int sv;
+    size_t dsize;
+    size_t tmp;
     xlator op;
 
     if (!src || !dst) {
@@ -395,22 +441,21 @@ elf64_xlate(Elf_Data *dst, const Elf_Data *src, unsigned encode, int tof) {
 	seterr(ERROR_UNKNOWN_TYPE);
 	return NULL;
     }
-    ssize = _fmsize(ELFCLASS64, sv, type, 1 - tof);
-    dsize = _fmsize(ELFCLASS64, dv, type, tof);
     op = translator(sv, dv, encode, type, tof);
-    if (!ssize || !dsize || !op) {
+    if (!op) {
 	seterr(ERROR_UNKNOWN_TYPE);
 	return NULL;
     }
-    count = src->d_size / ssize;
-    if (dst->d_size < count * dsize) {
+    dsize = (*op)(NULL, src->d_buf, src->d_size);
+    if (dst->d_size < dsize) {
 	seterr(ERROR_DST2SMALL);
 	return NULL;
     }
-    if (count) {
-	(*op)(dst->d_buf, src->d_buf, count);
+    if (dsize) {
+	tmp = (*op)(dst->d_buf, src->d_buf, src->d_size);
+	elf_assert(tmp == dsize);
     }
-    dst->d_size = count * dsize;
+    dst->d_size = dsize;
     dst->d_type = type;
     return dst;
 }
@@ -428,3 +473,48 @@ elf64_xlatetof(Elf_Data *dst, const Elf_Data *src, unsigned encode) {
     return elf64_xlate(dst, src, encode, 1);
 }
 
+Elf_Data*
+gelf_xlatetom(Elf *elf, Elf_Data *dst, const Elf_Data *src, unsigned encode) {
+    if (elf) {
+	if (elf->e_kind != ELF_K_ELF) {
+	    seterr(ERROR_NOTELF);
+	}
+	else if (elf->e_class == ELFCLASS32) {
+	    return elf32_xlatetom(dst, src, encode);
+	}
+	else if (elf->e_class == ELFCLASS64) {
+	    return elf64_xlatetom(dst, src, encode);
+	}
+	else if (valid_class(elf->e_class)) {
+	    seterr(ERROR_UNIMPLEMENTED);
+	}
+	else {
+	    seterr(ERROR_UNKNOWN_CLASS);
+	}
+    }
+    return NULL;
+}
+
+Elf_Data*
+gelf_xlatetof(Elf *elf, Elf_Data *dst, const Elf_Data *src, unsigned encode) {
+    if (elf) {
+	if (elf->e_kind != ELF_K_ELF) {
+	    seterr(ERROR_NOTELF);
+	}
+	else if (elf->e_class == ELFCLASS32) {
+	    return elf32_xlatetof(dst, src, encode);
+	}
+	else if (elf->e_class == ELFCLASS64) {
+	    return elf64_xlatetof(dst, src, encode);
+	}
+	else if (valid_class(elf->e_class)) {
+	    seterr(ERROR_UNIMPLEMENTED);
+	}
+	else {
+	    seterr(ERROR_UNKNOWN_CLASS);
+	}
+    }
+    return NULL;
+}
+
+#endif /* __LIBELF64__ */

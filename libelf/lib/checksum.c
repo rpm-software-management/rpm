@@ -40,7 +40,10 @@ static const char rcsid[] = "@(#) Id: checksum.c,v 1.2 2001/10/01 22:30:10 micha
  */
 
 static int
-skip_section(Elf_Scn *scn, unsigned cls) {
+skip_section(Elf_Scn *scn, unsigned cls)
+	/*@globals _elf_errno @*/
+	/*@modifies _elf_errno @*/
+{
     if (cls == ELFCLASS32) {
 	Elf32_Shdr *shdr = &scn->s_shdr32;
 
@@ -80,7 +83,9 @@ skip_section(Elf_Scn *scn, unsigned cls) {
 }
 
 static long
-add_bytes(unsigned char *ptr, size_t len) {
+add_bytes(unsigned char *ptr, size_t len)
+	/*@*/
+{
     long csum = 0;
 
     while (len--) {
@@ -90,7 +95,10 @@ add_bytes(unsigned char *ptr, size_t len) {
 }
 
 static long
-_elf_csum(Elf *elf) {
+_elf_csum(Elf *elf)
+	/*@globals _elf_errno @*/
+	/*@modifies *elf, _elf_errno @*/
+{
     long csum = 0;
     Elf_Data *data;
     Elf_Scn *scn;

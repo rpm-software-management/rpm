@@ -1,6 +1,6 @@
 /*
 newscn.c - implementation of the elf_newscn(3) function.
-Copyright (C) 1995, 1996 Michael Riepe <michael@stud.uni-hannover.de>
+Copyright (C) 1995 - 1998 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -19,8 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <private.h>
 
+#ifndef lint
+static const char rcsid[] = "@(#) Id: newscn.c,v 1.5 1998/06/12 19:42:32 michael Exp ";
+#endif /* lint */
+
+/*@null@*/
 static Elf_Scn*
-_buildscn(Elf *elf) {
+_buildscn(Elf *elf)
+	/*@globals _elf_errno, _elf_scn_init @*/
+	/*@modifies *elf, _elf_errno, _elf_scn_init @*/
+{
     Elf_Scn *scn;
 
     elf_assert(elf);
@@ -46,7 +54,10 @@ _buildscn(Elf *elf) {
 }
 
 Elf_Scn*
-elf_newscn(Elf *elf) {
+elf_newscn(Elf *elf)
+	/*@globals _elf_errno, _elf_scn_init @*/
+	/*@modifies _elf_errno, _elf_scn_init @*/
+{
     Elf_Scn *scn;
 
     if (!elf) {
@@ -70,6 +81,16 @@ elf_newscn(Elf *elf) {
 	elf->e_ehdr_flags |= ELF_F_DIRTY;
 	return scn;
     }
+#if __LIBELF64
+    else if (elf->e_class == ELFCLASS64) {
+	if (!(scn = _buildscn(elf))) {
+	    return NULL;
+	}
+	((Elf64_Ehdr*)elf->e_ehdr)->e_shnum = scn->s_index + 1;
+	elf->e_ehdr_flags |= ELF_F_DIRTY;
+	return scn;
+    }
+#endif /* __LIBELF64 */
     else if (valid_class(elf->e_class)) {
 	seterr(ERROR_UNIMPLEMENTED);
     }

@@ -97,52 +97,89 @@ typedef Elf64_Syminfo GElf_Syminfo;
 /*
  * Function declarations
  */
-extern int             gelf_getclass __P((Elf *__elf));
+extern int             gelf_getclass __P((Elf *elf))
+	/*@*/;
 
-extern size_t             gelf_fsize __P((Elf *__elf, Elf_Type __type, size_t __count, unsigned __ver));
+extern size_t             gelf_fsize __P((Elf *elf, Elf_Type type, size_t count, unsigned ver))
+	/*@*/;
 
-extern Elf_Data       *gelf_xlatetof __P((Elf *__elf, Elf_Data *__dst, const Elf_Data *__src, unsigned __encode));
-extern Elf_Data       *gelf_xlatetom __P((Elf *__elf, Elf_Data *__dst, const Elf_Data *__src, unsigned __encode));
+/*@null@*/
+extern Elf_Data       *gelf_xlatetof __P((Elf *elf, Elf_Data *dst, const Elf_Data *src, unsigned encode))
+	/*@modifies *dst @*/;
+/*@null@*/
+extern Elf_Data       *gelf_xlatetom __P((Elf *elf, Elf_Data *dst, const Elf_Data *src, unsigned encode))
+	/*@modifies *dst @*/;
 
-extern GElf_Ehdr       *gelf_getehdr __P((Elf *__elf, GElf_Ehdr *__dst));
-extern int          gelf_update_ehdr __P((Elf *__elf, GElf_Ehdr *__src));
-extern unsigned long    gelf_newehdr __P((Elf *__elf, int __elfclass));
+/*@null@*/
+extern GElf_Ehdr       *gelf_getehdr __P((Elf *elf, /*@returned@*/ GElf_Ehdr *dst))
+	/*@modifies *elf, dst @*/;
+extern int          gelf_update_ehdr __P((Elf *elf, GElf_Ehdr *src))
+	/*@modifies *elf @*/;
+extern unsigned long    gelf_newehdr __P((Elf *elf, int cls))
+	/*@modifies *elf @*/;
 
-extern GElf_Phdr       *gelf_getphdr __P((Elf *__elf, int ndx, GElf_Phdr *__dst));
-extern int          gelf_update_phdr __P((Elf *__elf, int ndx, GElf_Phdr *__src));
-extern unsigned long    gelf_newphdr __P((Elf *__elf, size_t __phnum));
+/*@null@*/
+extern GElf_Phdr       *gelf_getphdr __P((Elf *elf, int ndx, /*@returned@*/ GElf_Phdr *dst))
+	/*@modifies *elf, dst @*/;
+extern int          gelf_update_phdr __P((Elf *elf, int ndx, GElf_Phdr *src))
+	/*@modifies *elf @*/;
+extern unsigned long    gelf_newphdr __P((Elf *elf, size_t phnum))
+	/*@modifies *elf @*/;
 
-extern GElf_Shdr       *gelf_getshdr __P((Elf_Scn *__scn, GElf_Shdr *__dst));
-extern int          gelf_update_shdr __P((Elf_Scn *__scn, GElf_Shdr *__src));
+/*@null@*/
+extern GElf_Shdr       *gelf_getshdr __P((Elf_Scn *scn, /*@returned@*/ GElf_Shdr *dst))
+	/*@modifies dst @*/;
+extern int          gelf_update_shdr __P((Elf_Scn *scn, GElf_Shdr *src))
+	/*@modifies scn @*/;
 
-extern GElf_Dyn         *gelf_getdyn __P((Elf_Data *__src, int __ndx, GElf_Dyn *__dst));
-extern int           gelf_update_dyn __P((Elf_Data *__dst, int __ndx, GElf_Dyn *__src));
+/*@null@*/
+extern GElf_Dyn         *gelf_getdyn __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Dyn *dst))
+	/*@modifies *dst @*/;
+extern int           gelf_update_dyn __P((Elf_Data *dst, int ndx, GElf_Dyn *src))
+	/*@modifies *dst @*/;
 
-extern GElf_Rel         *gelf_getrel __P((Elf_Data *__src, int __ndx, GElf_Rel *__dst));
-extern int           gelf_update_rel __P((Elf_Data *__dst, int __ndx, GElf_Rel *__src));
+/*@null@*/
+extern GElf_Rel         *gelf_getrel __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Rel *dst))
+	/*@modifies *dst @*/;
+extern int           gelf_update_rel __P((Elf_Data *dst, int ndx, GElf_Rel *src))
+	/*@modifies *dst @*/;
 
-extern GElf_Rela       *gelf_getrela __P((Elf_Data *__src, int __ndx, GElf_Rela *__dst));
-extern int          gelf_update_rela __P((Elf_Data *__dst, int __ndx, GElf_Rela *__src));
+/*@null@*/
+extern GElf_Rela       *gelf_getrela __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Rela *dst))
+	/*@modifies *dst @*/;
+extern int          gelf_update_rela __P((Elf_Data *dst, int ndx, GElf_Rela *src))
+	/*@modifies *dst @*/;
 
-extern GElf_Sym         *gelf_getsym __P((Elf_Data *__src, int __ndx, GElf_Sym *__dst));
-extern int           gelf_update_sym __P((Elf_Data *__dst, int __ndx, GElf_Sym *__src));
+/*@null@*/
+extern GElf_Sym         *gelf_getsym __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Sym *dst))
+	/*@modifies *dst @*/;
+extern int           gelf_update_sym __P((Elf_Data *dst, int ndx, GElf_Sym *src))
+	/*@modifies *dst @*/;
 
-extern long            gelf_checksum __P((Elf *__elf));
+extern long            gelf_checksum __P((Elf *elf))
+	/*@modifies *elf @*/;
 
 /*
  * These functions aren't implemented (yet)
  *
-extern GElf_Move       *gelf_getmove __P((Elf_Data *__src, int __ndx, GElf_Move *__src));
-extern int          gelf_update_move __P((Elf_Data *__dst, int __ndx, GElf_Move *__src));
- *
-extern GElf_Syminfo* gelf_getsyminfo __P((Elf_Data *__src, int __ndx, GElf_Syminfo *__dst));
-extern int       gelf_update_syminfo __P((Elf_Data *__dst, int __ndx, GElf_Syminfo *__src));
  */
+#if 0
+extern GElf_Move       *gelf_getmove __P((Elf_Data *src, int ndx, GElf_Move *src))
+	/*@*/;
+extern int          gelf_update_move __P((Elf_Data *dst, int ndx, GElf_Move *src))
+	/*@modifies *dst @*/;
+
+extern GElf_Syminfo* gelf_getsyminfo __P((Elf_Data *src, int ndx, GElf_Syminfo *dst))
+	/*@modifies *dst @*/;
+extern int       gelf_update_syminfo __P((Elf_Data *dst, int ndx, GElf_Syminfo *src))
+	/*@modifies *dst @*/;
+#endif
 
 /*
  * Extensions (not available in other versions of libelf)
  */
-extern size_t             gelf_msize __P((Elf *__elf, Elf_Type __type, size_t __count, unsigned __ver));
+extern size_t             gelf_msize __P((Elf *elf, Elf_Type type, size_t count, unsigned ver))
+	/*@*/;
 
 #endif /* __LIBELF64 */
 

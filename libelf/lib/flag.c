@@ -1,6 +1,6 @@
 /*
 flag.c - implementation of the elf_flag*(3) functions.
-Copyright (C) 1995, 1996 Michael Riepe <michael@stud.uni-hannover.de>
+Copyright (C) 1995 - 1998 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -19,8 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <private.h>
 
+#ifndef lint
+static const char rcsid[] = "@(#) Id: flag.c,v 1.3 1998/06/12 19:42:23 michael Exp ";
+#endif /* lint */
+
 static unsigned
-_elf_flag(unsigned *f, Elf_Cmd cmd, unsigned flags) {
+_elf_flag(unsigned *f, Elf_Cmd cmd, unsigned flags)
+	/*@globals _elf_errno @*/
+	/*@modifies *f, _elf_errno @*/
+{
     if (cmd == ELF_C_SET) {
 	return *f |= flags;
     }

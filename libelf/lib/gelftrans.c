@@ -56,8 +56,12 @@ static const char rcsid[] = "@(#) Id: gelftrans.c,v 1.6 2001/10/07 19:33:03 mich
 # define ELF64_R_INFO(s,t)	(((Elf64_Xword)(s)<<32)+((t)&0xffffffffL))
 #endif /* !defined(...) */
 
+/*@dependent@*/ /*@null@*/
 static char*
-get_addr_and_class(const Elf_Data *data, int ndx, Elf_Type type, unsigned *cls) {
+get_addr_and_class(const Elf_Data *data, int ndx, Elf_Type type, unsigned *cls)
+	/*@globals _elf_errno @*/
+	/*@modifies *cls, _elf_errno @*/
+{
     Scn_Data *sd = (Scn_Data*)data;
     Elf_Scn *scn;
     Elf *elf;

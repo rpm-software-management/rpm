@@ -25,9 +25,11 @@ static const char rcsid[] = "@(#) Id: assert.c,v 1.1 1999/11/04 19:16:36 michael
 
 #include <stdio.h>
 
+/*@-internalglobs@*/
 void
 __elf_assert(const char *file, unsigned line, const char *cond) {
     fprintf(stderr, "%s:%u: libelf assertion failure: %s\n",
 	    file, line, cond);
     abort();
 }
+/*@=internalglobs@*/

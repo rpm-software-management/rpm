@@ -1,0 +1,81 @@
+-DHAVE_CONFIG_H -I.. -I.
+
++partial
++forcehints
+
+-warnunixlib
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+#+bounds		# 675
+#+boundswrite		# 94
+
+-branchstate		# 77
+-compdef		# 85
+-compmempass		# 79
+-globstate		# 93
+-incondefs		# 4
+-matchfields		# 24
+-mods			# 259
+-nullderef		# 10
+-redef			# 42
+-retalias		# 21
+-retvalint		# 9
+-shadow			# 9
+-shiftimplementation	# 35
+-sizeoftype		# 325
+-unsignedcompare	# 11
+-usereleased		# 50
+
+-immediatetrans		# 19
+-kepttrans		# 15
+-temptrans		# 15
+
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
+
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned
+-elseifcomplete
+-exportconst
+-exportfcn
+-exporttype
+-exportvar
+-fielduse
+-forblock		# tedious
+-ifblock		# tedious
+-namechecks		# tedious ANSI compliance checks
+-ptrarith
+
+-compdestroy
+-mustdefine
+-sys-dir-errors
+
+-strictops
+-whileblock		# tedious
+
+# --- not-yet at checks level
++enumint
+-mustfree
+-predboolptr
+-usedef
+
+# --- not-yet at standard level
+-boolops
++boolint
++charint
++ignorequals
++matchanyintegral

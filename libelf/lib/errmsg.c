@@ -1,6 +1,6 @@
 /*
 errmsg.c - implementation of the elf_errmsg(3) function.
-Copyright (C) 1995, 1996 Michael Riepe <michael@stud.uni-hannover.de>
+Copyright (C) 1995 - 1999 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -19,28 +19,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <private.h>
 
+#ifndef lint
+static const char rcsid[] = "@(#) Id: errmsg.c,v 1.6 2000/03/31 18:02:55 michael Exp ";
+#endif /* lint */
+
 #if HAVE_GETTEXT
 # undef HAVE_CATGETS
 # include <libintl.h>
-#else
+#else /* HAVE_GETTEXT */
 # define dgettext(dom, str) str
-#endif
+#endif /* HAVE_GETTEXT */
 
 #if HAVE_CATGETS
 # include <nl_types.h>
+/*@unchecked@*/
 static nl_catd _libelf_cat = (nl_catd)0;
-#endif
+#endif /* HAVE_CATGETS */
 
 #if HAVE_GETTEXT || HAVE_CATGETS
+/*@unchecked@*/ /*@observer@*/
 static const char domain[] = "libelf";
-#endif
+#endif /* HAVE_GETTEXT || HAVE_CATGETS */
 
+/*@unchecked@*/ /*@observer@*/
+#if PIC
+static const char *_messages[] = {
+#else /* PIC */
 static const char *const _messages[] = {
+#endif /* PIC */
 #define __err__(a,b)	b,
 #include <errors.h>		/* include string tables from errors.h */
 #undef __err__
 };
 
+/*@-moduncon@*/
 const char*
 elf_errmsg(int err) {
     if (err == 0) {
@@ -64,6 +76,9 @@ elf_errmsg(int err) {
     if (_libelf_cat != (nl_catd)-1) {
 	return catgets(_libelf_cat, 1, err + 1, _messages[err]);
     }
-#endif
+#endif /* HAVE_CATGETS */
+/*@-nullpass@*/
     return dgettext(domain, _messages[err]);
+/*@=nullpass@*/
 }
+/*@=moduncon@*/

@@ -1,6 +1,6 @@
 /*
-32.newehdr.c - implementation of the elf32_newehdr(3) function.
-Copyright (C) 1995, 1996 Michael Riepe <michael@stud.uni-hannover.de>
+32.newehdr.c - implementation of the elf{32,64}_newehdr(3) functions.
+Copyright (C) 1995 - 2000 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -19,9 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <private.h>
 
-Elf32_Ehdr*
-elf32_newehdr(Elf *elf) {
-    Elf32_Ehdr *ehdr;
+#ifndef lint
+static const char rcsid[] = "@(#) Id: 32.newehdr.c,v 1.9 2000/03/31 12:42:32 michael Exp ";
+#endif /* lint */
+
+/*@null@*/
+static char*
+_elf_newehdr(Elf *elf, unsigned cls)
+	/*@globals _elf_errno @*/
+	/*@modifies *elf, _elf_errno @*/
+{
     size_t size;
 
     if (!elf) {
@@ -29,28 +36,53 @@ elf32_newehdr(Elf *elf) {
     }
     elf_assert(elf->e_magic == ELF_MAGIC);
     if (elf->e_readable) {
-	return elf32_getehdr(elf);
+	return _elf_getehdr(elf, cls);
     }
     else if (!elf->e_ehdr) {
-	size = _msize32(_elf_version, ELF_T_EHDR);
+	size = _msize(cls, _elf_version, ELF_T_EHDR);
 	elf_assert(size);
-	if ((ehdr = (Elf32_Ehdr*)malloc(size))) {
-	    memset(ehdr, 0, size);
-	    elf->e_ehdr = (char*)ehdr;
+	if ((elf->e_ehdr = (char*)malloc(size))) {
+	    memset(elf->e_ehdr, 0, size);
 	    elf->e_free_ehdr = 1;
 	    elf->e_ehdr_flags |= ELF_F_DIRTY;
 	    elf->e_kind = ELF_K_ELF;
-	    elf->e_class = ELFCLASS32;
-	    return ehdr;
+	    elf->e_class = cls;
+	    return elf->e_ehdr;
 	}
 	seterr(ERROR_MEM_EHDR);
     }
-    else if (elf->e_class != ELFCLASS32) {
+    else if (elf->e_class != cls) {
 	seterr(ERROR_CLASSMISMATCH);
     }
     else {
 	elf_assert(elf->e_kind == ELF_K_ELF);
-	return (Elf32_Ehdr*)elf->e_ehdr;
+	return elf->e_ehdr;
     }
     return NULL;
 }
+
+Elf32_Ehdr*
+elf32_newehdr(Elf *elf) {
+    return (Elf32_Ehdr*)_elf_newehdr(elf, ELFCLASS32);
+}
+
+#if __LIBELF64
+
+Elf64_Ehdr*
+elf64_newehdr(Elf *elf) {
+    return (Elf64_Ehdr*)_elf_newehdr(elf, ELFCLASS64);
+}
+
+unsigned long
+gelf_newehdr(Elf *elf, int cls) {
+    if (!valid_class(cls) || !_msize(cls, _elf_version, ELF_T_EHDR)) {
+	seterr(ERROR_UNKNOWN_CLASS);
+	return 0;
+    }
+    if (!_elf_newehdr(elf, cls)) {
+	return 0;
+    }
+    return 1;	/* really? */
+}
+
+#endif /* __LIBELF64 */

@@ -1,6 +1,6 @@
 /*
 private.h - private definitions for libelf.
-Copyright (C) 1995, 1996 Michael Riepe <michael@stud.uni-hannover.de>
+Copyright (C) 1995 - 2001 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -17,6 +17,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+/* @(#) Id: private.h,v 1.23 2001/10/15 21:39:02 michael Exp  */
+
 #ifndef _PRIVATE_H
 #define _PRIVATE_H
 
@@ -24,58 +26,72 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #if HAVE_CONFIG_H
 # include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
 
 #if STDC_HEADERS
 # include <stdlib.h>
 # include <string.h>
-#else
-extern char *malloc();
-extern void free(), bcopy(), bzero();
+#else /* STDC_HEADERS */
+extern void *malloc(), *realloc();
+extern void free(), bcopy(), abort();
 extern int strcmp(), strncmp(), memcmp();
 extern void *memcpy(), *memmove(), *memset();
-#endif
+#endif /* STDC_HEADERS */
 
 #if HAVE_UNISTD_H
 # include <unistd.h>
-#else
-extern int read(), write();
+#else /* HAVE_UNISTD_H */
+extern int read(), write(), close();
 extern off_t lseek();
-#endif
+#if HAVE_FTRUNCATE
+extern int ftruncate();
+#endif /* HAVE_FTRUNCATE */
+#endif /* HAVE_UNISTD_H */
+
+#ifndef SEEK_SET
+#define SEEK_SET	0
+#endif /* SEEK_SET */
+#ifndef SEEK_CUR
+#define SEEK_CUR	1
+#endif /* SEEK_CUR */
+#ifndef SEEK_END
+#define SEEK_END	2
+#endif /* SEEK_END */
 
 #if !HAVE_MEMCMP
 # define memcmp	strncmp
-#endif
+#endif /* !HAVE_MEMCMP */
 #if !HAVE_MEMCPY
 # define memcpy(d,s,n)	bcopy(s,d,n)
-#endif
+#endif /* !HAVE_MEMCPY */
 #if !HAVE_MEMMOVE
 # define memmove(d,s,n)	bcopy(s,d,n)
-#endif
+#endif /* !HAVE_MEMMOVE */
 
-/*
- * if c is 0, replace slow memset() substitute with bzero().
- */
 #if !HAVE_MEMSET
-# define memset(d,c,n)	((char)(c)?(void)__memset(d,c,n):bzero(d,n))
-extern void *__memset();
-#endif
+# define memset _elf_memset
+extern void *_elf_memset();
+#endif /* !HAVE_MEMSET */
 
 #if HAVE_STRUCT_NLIST_DECLARATION
 # define nlist __override_nlist_declaration
-#endif
+#endif /* HAVE_STRUCT_NLIST_DECLARATION */
 
-#if NEED_LINK_H
+#if __LIBELF_NEED_LINK_H
 # include <link.h>
-#endif
+#endif /* __LIBELF_NEED_LINK_H */
 
 #include <libelf.h>
 
 #if HAVE_STRUCT_NLIST_DECLARATION
 # undef nlist
-#endif
+#endif /* HAVE_STRUCT_NLIST_DECLARATION */
+
+#if __LIBELF64
+#include <gelf.h>
+#endif /* __LIBELF64 */
 
 typedef struct Scn_Data Scn_Data;
 
@@ -87,32 +103,44 @@ struct Elf {
     size_t	e_size;			/* file/member size */
     size_t	e_dsize;		/* size of memory image */
     Elf_Kind	e_kind;			/* kind of file */
+/*@owned@*/ /*@relnull@*/
     char*	e_data;			/* file/member data */
+/*@owned@*/ /*@relnull@*/
     char*	e_rawdata;		/* file/member raw data */
     size_t	e_idlen;		/* identifier size */
     int		e_fd;			/* file descriptor */
     unsigned	e_count;		/* activation count */
     /* archive members (still common) */
+/*@null@*/
     Elf*	e_parent;		/* NULL if not an archive member */
     size_t	e_next;			/* 0 if not an archive member */
     size_t	e_base;			/* 0 if not an archive member */
+/*@null@*/
     Elf*	e_link;			/* next archive member or NULL */
+/*@null@*/
     Elf_Arhdr*	e_arhdr;		/* archive member header or NULL */
     /* archives */
     size_t	e_off;			/* current member offset (for elf_begin) */
+/*@null@*/
     Elf*	e_members;		/* linked list of active archive members */
+/*@owned@*/ /*@null@*/
     char*	e_symtab;		/* archive symbol table */
     size_t	e_symlen;		/* length of archive symbol table */
+/*@null@*/
     char*	e_strtab;		/* archive string table */
     size_t	e_strlen;		/* length of archive string table */
     /* ELF files */
     unsigned	e_class;		/* ELF class */
     unsigned	e_encoding;		/* ELF data encoding */
     unsigned	e_version;		/* ELF version */
+/*@relnull@*/
     char*	e_ehdr;			/* ELF header */
+/*@relnull@*/
     char*	e_phdr;			/* ELF program header table */
     size_t	e_phnum;		/* size of program header table */
+/*@relnull@*/
     Elf_Scn*	e_scn_1;		/* first section */
+/*@relnull@*/
     Elf_Scn*	e_scn_n;		/* last section */
     unsigned	e_elf_flags;		/* elf flags (ELF_F_*) */
     unsigned	e_ehdr_flags;		/* ehdr flags (ELF_F_*) */
@@ -126,6 +154,7 @@ struct Elf {
     unsigned	e_free_ehdr : 1;	/* e_ehdr is malloc'ed */
     unsigned	e_free_phdr : 1;	/* e_phdr is malloc'ed */
     unsigned	e_unmap_data : 1;	/* e_data is mmap'ed */
+    unsigned	e_memory : 1;		/* created by elf_memory() */
     /* magic number for debugging */
     long	e_magic;
 };
@@ -171,6 +200,7 @@ struct Elf {
     /* e_free_ehdr */	0,\
     /* e_free_phdr */	0,\
     /* e_unmap_data */	0,\
+    /* e_memory */	0,\
     /* e_magic */	ELF_MAGIC\
 }
 
@@ -178,13 +208,18 @@ struct Elf {
  * Section descriptor
  */
 struct Elf_Scn {
+/*@relnull@*/
     Elf_Scn*	s_link;			/* pointer to next Elf_Scn */
+/*@null@*/
     Elf*	s_elf;			/* pointer to elf descriptor */
     size_t	s_index;		/* number of this section */
     unsigned	s_scn_flags;		/* section flags (ELF_F_*) */
     unsigned	s_shdr_flags;		/* shdr flags (ELF_F_*) */
+/*@null@*/
     Scn_Data*	s_data_1;		/* first data buffer */
+/*@null@*/
     Scn_Data*	s_data_n;		/* last data buffer */
+/*@null@*/
     Scn_Data*	s_rawdata;		/* raw data buffer */
     /* data copied from shdr */
     unsigned	s_type;			/* section type */
@@ -194,12 +229,16 @@ struct Elf_Scn {
     unsigned	s_freeme : 1;		/* this Elf_Scn was malloc'ed */
     /* section header */
     union {
+#if __LIBELF64
+	Elf64_Shdr	u_shdr64;
+#endif /* __LIBELF64 */
 	Elf32_Shdr	u_shdr32;
     }		s_uhdr;
     /* magic number for debugging */
     long	s_magic;
 };
 #define s_shdr32	s_uhdr.u_shdr32
+#define s_shdr64	s_uhdr.u_shdr64
 
 #define SCN_MAGIC	0x012c747d
 
@@ -225,8 +264,11 @@ struct Elf_Scn {
  */
 struct Scn_Data {
     Elf_Data	sd_data;		/* must be first! */
+/*@null@*/
     Scn_Data*	sd_link;		/* pointer to next Scn_Data */
+/*@null@*/
     Elf_Scn*	sd_scn;			/* pointer to section */
+/*@relnull@*/
     char*	sd_memdata;		/* memory image of section */
     unsigned	sd_data_flags;		/* data flags (ELF_F_*) */
     /* misc flags */
@@ -259,31 +301,99 @@ struct Scn_Data {
 /*
  * Private status variables
  */
+/*@unchecked@*/
 extern unsigned _elf_version;
+/*@unchecked@*/
 extern int _elf_errno;
+/*@unchecked@*/
 extern int _elf_fill;
 
 /*
  * Private functions
  */
-extern void *_elf_read __P((Elf*, void*, size_t, size_t));
-extern void *_elf_mmap __P((Elf*));
-extern int _elf_cook __P((Elf*));
+/*@null@*/
+extern void *_elf_read __P((Elf* elf, /*@returned@*/ /*@null@*/ void* buffer, size_t off, size_t len))
+	/*@globals _elf_errno @*/
+	/*@modifies *buffer, _elf_errno @*/;
+/*@null@*/
+extern void *_elf_mmap __P((Elf* elf))
+	/*@globals _elf_errno @*/
+	/*@modifies _elf_errno @*/;
+extern int _elf_cook __P((Elf* elf))
+	/*@globals _elf_errno @*/
+	/*@modifies *elf, _elf_errno @*/;
+/*@null@*/
+extern char *_elf_getehdr __P((Elf* elf, unsigned cls))
+	/*@globals _elf_errno @*/
+	/*@modifies *elf, _elf_errno @*/;
+/*@null@*/
+extern char *_elf_getphdr __P((Elf* elf, unsigned cls))
+	/*@globals _elf_errno @*/
+	/*@modifies *elf, _elf_errno @*/;
+/*@null@*/
+extern Elf_Data *_elf_xlatetom __P((const Elf* elf, Elf_Data* dst, const Elf_Data* src))
+	/*@globals _elf_errno @*/
+	/*@modifies *dst, _elf_errno @*/;
+extern Elf_Type _elf_scn_type __P((unsigned t))
+	/*@*/;
+extern size_t _elf32_xltsize __P((const Elf_Data *src, unsigned dv, unsigned encode, int tof))
+	/*@*/;
+extern size_t _elf64_xltsize __P((const Elf_Data *src, unsigned dv, unsigned encode, int tof))
+	/*@*/;
+
+/*
+ * Special translators
+ */
+extern size_t _elf_verdef_32L11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verdef_32L11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verdef_32M11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verdef_32M11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verdef_64L11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verdef_64L11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verdef_64M11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verdef_64M11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_32L11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_32L11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_32M11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_32M11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_64L11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_64L11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_64M11_tof __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
+extern size_t _elf_verneed_64M11_tom __P((unsigned char *dst, const unsigned char *src, size_t n))
+	/*@modifies *dst @*/;
 
 /*
  * Private data
  */
+/*@unchecked@*/
 extern const Elf_Scn _elf_scn_init;
+/*@unchecked@*/
 extern const Scn_Data _elf_data_init;
-extern const Elf_Type _elf_scn_types[SHT_NUM];
-extern const size_t _elf32_fmsize[EV_CURRENT - EV_NONE][ELF_T_NUM][2];
+/*@unchecked@*/
+extern const size_t _elf_fmsize[2][EV_CURRENT - EV_NONE][ELF_T_NUM][2];
 
 /*
- * Access macros for _elf32_fmsize
+ * Access macros for _elf_fmsize[]
  */
-#define _fmsize32(v,t,w)	(_elf32_fmsize[(v)-EV_NONE-1][(t)-ELF_T_BYTE][(w)])
-#define _fsize32(v,t)		_fmsize32((v),(t),1)
-#define _msize32(v,t)		_fmsize32((v),(t),0)
+#define _fmsize(c,v,t,w)	\
+	(_elf_fmsize[(c)-ELFCLASS32][(v)-EV_NONE-1][(t)-ELF_T_BYTE][(w)])
+#define _fsize(c,v,t)		_fmsize((c),(v),(t),1)
+#define _msize(c,v,t)		_fmsize((c),(v),(t),0)
 
 /*
  * Various checks
@@ -292,7 +402,6 @@ extern const size_t _elf32_fmsize[EV_CURRENT - EV_NONE][ELF_T_NUM][2];
 #define valid_encoding(e)	((e) >= ELFDATA2LSB && (e) <= ELFDATA2MSB)
 #define valid_version(v)	((v) > EV_NONE && (v) <= EV_CURRENT)
 #define valid_type(t)		((t) >= ELF_T_BYTE && (t) < ELF_T_NUM)
-#define valid_scntype(s)	((s) >= SHT_NULL && (s) < SHT_NUM)
 
 /*
  * Error codes
@@ -308,32 +417,39 @@ ERROR_NUM
 
 /*
  * Sizes of data types (external representation)
- */
-#ifndef ELF32_FSZ_ADDR
-/*
  * These definitions should be in <elf.h>, but...
  */
+#ifndef ELF32_FSZ_ADDR
 # define ELF32_FSZ_ADDR		4
 # define ELF32_FSZ_HALF		2
 # define ELF32_FSZ_OFF		4
 # define ELF32_FSZ_SWORD	4
 # define ELF32_FSZ_WORD		4
-#endif
+#endif /* ELF32_FSZ_ADDR */
+#ifndef ELF64_FSZ_ADDR
+# define ELF64_FSZ_ADDR		8
+# define ELF64_FSZ_HALF		2
+# define ELF64_FSZ_OFF		8
+# define ELF64_FSZ_SWORD	4
+# define ELF64_FSZ_SXWORD	8
+# define ELF64_FSZ_WORD		4
+# define ELF64_FSZ_XWORD	8
+#endif /* ELF64_FSZ_ADDR */
 
 /*
  * Debugging
  */
-#if ENABLE_DEBUG
-# include <stdio.h>
+#if ENABLE_DEBUG || defined(__LCLINT__)
+/*@exits@*/
+extern void __elf_assert __P((const char*, unsigned, const char*))
+	/*@*/;
 # if __STDC__
-#  define elf_assert(x)	((void)((x)||__elf_assert(__FILE__,__LINE__,#x)))
-# else
-#  define elf_assert(x)	((void)((x)||__elf_assert(__FILE__,__LINE__,"x")))
-# endif
-# define __elf_assert(f,l,x)	(fprintf(stderr,\
-	"%s:%u: libelf assertion failure: %s\n",(f),(l),(x)),abort(),0)
-#else
-# define elf_assert(x)	((void)0)
-#endif
+#  define elf_assert(x)	do{if(!(x))__elf_assert(__FILE__,__LINE__,#x);}while(0)
+# else /* __STDC__ */
+#  define elf_assert(x)	do{if(!(x))__elf_assert(__FILE__,__LINE__,"x");}while(0)
+# endif /* __STDC__ */
+#else /* ENABLE_DEBUG */
+# define elf_assert(x)	do{}while(0)
+#endif /* ENABLE_DEBUG */
 
 #endif /* _PRIVATE_H */

@@ -28,7 +28,9 @@ static const char verneed_h_rcsid[] = "@(#) Id: verneed.h,v 1.1 2001/10/07 20:03
 #if TOFILE
 
 static void
-__store_vernaux(vernaux_ftype *dst, const vernaux_mtype *src, unsigned enc) {
+__store_vernaux(vernaux_ftype *dst, const vernaux_mtype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	__store_u32L(dst->vna_hash,  src->vna_hash);
 	__store_u16L(dst->vna_flags, src->vna_flags);
@@ -46,7 +48,9 @@ __store_vernaux(vernaux_ftype *dst, const vernaux_mtype *src, unsigned enc) {
 }
 
 static void
-__store_verneed(verneed_ftype *dst, const verneed_mtype *src, unsigned enc) {
+__store_verneed(verneed_ftype *dst, const verneed_mtype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	__store_u16L(dst->vn_version, src->vn_version);
 	__store_u16L(dst->vn_cnt,     src->vn_cnt);
@@ -79,7 +83,9 @@ typedef align_mtype		verneed_atype;
 #else /* TOFILE */
 
 static void
-__load_vernaux(vernaux_mtype *dst, const vernaux_ftype *src, unsigned enc) {
+__load_vernaux(vernaux_mtype *dst, const vernaux_ftype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	dst->vna_hash  = __load_u32L(src->vna_hash);
 	dst->vna_flags = __load_u16L(src->vna_flags);
@@ -97,7 +103,9 @@ __load_vernaux(vernaux_mtype *dst, const vernaux_ftype *src, unsigned enc) {
 }
 
 static void
-__load_verneed(verneed_mtype *dst, const verneed_ftype *src, unsigned enc) {
+__load_verneed(verneed_mtype *dst, const verneed_ftype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	dst->vn_version = __load_u16L(src->vn_version);
 	dst->vn_cnt     = __load_u16L(src->vn_cnt);
@@ -135,7 +143,10 @@ typedef align_ftype		verneed_atype;
 #define translator(x,e)	xlt3(xltprefix(_elf_##x),e,translator_suffix)
 
 static size_t
-xlt_verneed(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc) {
+xlt_verneed(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc)
+	/*@globals _elf_errno @*/
+	/*@modifies *dst, _elf_errno @*/
+{
     size_t doff;
     size_t soff;
 
@@ -233,7 +244,7 @@ xlt_verneed(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc
 	     * end check
 	     */
 	    if (vna.vna_next == 0) {
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
 	/*
@@ -263,11 +274,15 @@ xlt_verneed(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc
 }
 
 size_t
-translator(verneed,L)(unsigned char *dst, const unsigned char *src, size_t n) {
+translator(verneed,L)(unsigned char *dst, const unsigned char *src, size_t n)
+	/*@modifies *dst @*/
+{
     return xlt_verneed(dst, src, n, ELFDATA2LSB);
 }
 
 size_t
-translator(verneed,M)(unsigned char *dst, const unsigned char *src, size_t n) {
+translator(verneed,M)(unsigned char *dst, const unsigned char *src, size_t n)
+	/*@modifies *dst @*/
+{
     return xlt_verneed(dst, src, n, ELFDATA2MSB);
 }

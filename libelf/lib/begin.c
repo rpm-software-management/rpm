@@ -1,6 +1,6 @@
 /*
-begin.c - implementation of the elf_begin(3) function.
-Copyright (C) 1995, 1996 Michael Riepe <michael@stud.uni-hannover.de>
+begin.c - implementation of the elf_begin(3) and elf_memory(3) functions.
+Copyright (C) 1995 - 2001 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -18,13 +18,41 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #include <private.h>
-#include <ar.h>
 
+#ifndef lint
+static const char rcsid[] = "@(#) Id: begin.c,v 1.12 2001/10/15 21:38:29 michael Exp ";
+#endif /* lint */
+
+#if HAVE_AR_H
+#include <ar.h>
+#else /* HAVE_AR_H */
+
+#define ARMAG	"!<arch>\n"
+#define SARMAG	8
+
+struct ar_hdr {
+    char    ar_name[16];
+    char    ar_date[12];
+    char    ar_uid[6];
+    char    ar_gid[6];
+    char    ar_mode[8];
+    char    ar_size[10];
+    char    ar_fmag[2];
+};
+
+#define ARFMAG	"`\n"
+
+#endif /* HAVE_AR_H */
+
+/*@unchecked@*/
 static const Elf _elf_init = INIT_ELF;
+/*@unchecked@*/ /*@observer@*/
 static const char fmag[] = ARFMAG;
 
 static unsigned long
-getnum(const char *str, size_t len, int base, int *err) {
+getnum(const char *str, size_t len, int base, int *err)
+	/*@modifies *err @*/
+{
     unsigned long result = 0;
 
     while (len && *str == ' ') {
@@ -43,7 +71,9 @@ getnum(const char *str, size_t len, int base, int *err) {
 }
 
 static void
-_elf_init_ar(Elf *elf) {
+_elf_init_ar(Elf *elf)
+	/*@modifies *elf @*/
+{
     struct ar_hdr *hdr;
     size_t offset;
     size_t size;
@@ -52,7 +82,6 @@ _elf_init_ar(Elf *elf) {
     elf->e_kind = ELF_K_AR;
     elf->e_idlen = SARMAG;
     elf->e_off = SARMAG;
-    elf->e_cooked = 1;	    /* do not freeze archives! */
 
     /* process special members */
     offset = SARMAG;
@@ -86,8 +115,12 @@ _elf_init_ar(Elf *elf) {
     }
 }
 
+/*@null@*/
 static Elf_Arhdr*
-_elf_arhdr(Elf *arf) {
+_elf_arhdr(Elf *arf)
+	/*@globals _elf_errno @*/
+	/*@modifies _elf_errno @*/
+{
     struct ar_hdr *hdr;
     Elf_Arhdr *arhdr;
     size_t namelen;
@@ -155,9 +188,11 @@ _elf_arhdr(Elf *arf) {
     else if (namelen > 0 && name[namelen - 1] == '/') {
 	namelen--;
     }
+    /* XXX some broken software omits the trailing slash
     else {
 	namelen = 0;
     }
+    */
 
     if (!(arhdr = (Elf_Arhdr*)malloc(sizeof(*arhdr) +
 		     sizeof(hdr->ar_name) + namelen + 2))) {
@@ -177,6 +212,11 @@ _elf_arhdr(Elf *arf) {
 	seterr(ERROR_ARHDR);
 	return NULL;
     }
+    if (arf->e_off + sizeof(struct ar_hdr) + arhdr->ar_size > arf->e_size) {
+	free(arhdr);
+	seterr(ERROR_TRUNC_MEMBER);
+	return NULL;
+    }
 
     memcpy(arhdr->ar_rawname, hdr->ar_name, sizeof(hdr->ar_name));
     arhdr->ar_rawname[sizeof(hdr->ar_name)] = '\0';
@@ -188,6 +228,23 @@ _elf_arhdr(Elf *arf) {
     }
 
     return arhdr;
+}
+
+static void
+_elf_check_type(Elf *elf, size_t size)
+	/*@modifies *elf @*/
+{
+    elf->e_idlen = size;
+    if (size >= EI_NIDENT && !memcmp(elf->e_data, ELFMAG, SELFMAG)) {
+	elf->e_kind = ELF_K_ELF;
+	elf->e_idlen = EI_NIDENT;
+	elf->e_class = elf->e_data[EI_CLASS];
+	elf->e_encoding = elf->e_data[EI_DATA];
+	elf->e_version = elf->e_data[EI_VERSION];
+    }
+    else if (size >= SARMAG && !memcmp(elf->e_data, ARMAG, SARMAG)) {
+	_elf_init_ar(elf);
+    }
 }
 
 Elf*
@@ -225,7 +282,10 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	    seterr(ERROR_MEMBERWRITE);
 	    return NULL;
 	}
-	if (fd != ref->e_fd) {
+	if (ref->e_memory) {
+	    fd = ref->e_fd;
+	}
+	else if (fd != ref->e_fd) {
 	    seterr(ERROR_FDMISMATCH);
 	    return NULL;
 	}
@@ -234,7 +294,7 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	}
 	size = arhdr->ar_size;
     }
-    else if ((size = lseek(fd, 0L, 2)) == (size_t)-1L) {
+    else if ((off_t)(size = lseek(fd, (off_t)0, SEEK_END)) == (off_t)-1) {
 	seterr(ERROR_IO_GETSIZE);
 	return NULL;
     }
@@ -276,31 +336,47 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	for (xelf = ref->e_members; xelf; xelf = xelf->e_link) {
 	    elf_assert(xelf->e_parent == ref);
 	    if (xelf->e_base == elf->e_base) {
+/*@-nullpass@*/
 		free(arhdr);
+/*@=nullpass@*/
 		free(elf);
 		xelf->e_count++;
 		return xelf;
 	    }
 	}
-	/*
-	 * The member's memory image may have been modified if
-	 * the member has been processed before. Since we need the
-	 * original image, we have to re-read the archive file.
-	 * Will fail if the archive's file descriptor is disabled.
-	 */
-	if (size) {
-	    elf->e_data = _elf_read(ref, ref->e_data + offset, offset, size);
-	    if (!elf->e_data) {
+	if (size == 0) {
+	    elf->e_data = NULL;
+	}
+	else if (ref->e_data == ref->e_rawdata) {
+	    elf_assert(!ref->e_cooked);
+	    /*
+	     * archive is frozen - freeze member, too
+	     */
+	    elf->e_data = elf->e_rawdata = ref->e_data + offset;
+	}
+	else {
+	    elf_assert(!ref->e_memory);
+	    elf->e_data = ref->e_data + offset;
+	    /*
+	     * The member's memory image may have been modified if
+	     * the member has been processed before. Since we need the
+	     * original image, we have to re-read the archive file.
+	     * Will fail if the archive's file descriptor is disabled.
+	     */
+	    if (!ref->e_cooked) {
+		ref->e_cooked = 1;
+	    }
+	    else if (!_elf_read(ref, elf->e_data, offset, size)) {
+/*@-nullpass@*/
 		free(arhdr);
+/*@=nullpass@*/
 		free(elf);
 		return NULL;
 	    }
 	}
-	else {
-	    elf->e_data = NULL;
-	}
 	elf->e_next = offset + size + (size & 1);
 	elf->e_disabled = ref->e_disabled;
+	elf->e_memory = ref->e_memory;
 	/* parent/child linking */
 	elf->e_link = ref->e_members;
 	ref->e_members = elf;
@@ -317,24 +393,54 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	    elf->e_unmap_data = 1;
 	}
 	else
-#endif
+#endif /* HAVE_MMAP */
 	if (!(elf->e_data = _elf_read(elf, NULL, 0, size))) {
 	    free(elf);
 	    return NULL;
 	}
     }
 
-    elf->e_idlen = size;
-    if (size >= EI_NIDENT && !memcmp(elf->e_data, ELFMAG, SELFMAG)) {
-	elf->e_kind = ELF_K_ELF;
-	elf->e_idlen = EI_NIDENT;
-	elf->e_class = elf->e_data[EI_CLASS];
-	elf->e_encoding = elf->e_data[EI_DATA];
-	elf->e_version = elf->e_data[EI_VERSION];
-    }
-    else if (size >= SARMAG && !memcmp(elf->e_data, ARMAG, SARMAG)) {
-	_elf_init_ar(elf);
-    }
-
+    _elf_check_type(elf, size);
     return elf;
 }
+
+Elf*
+elf_memory(char *image, size_t size) {
+    Elf *elf;
+
+    elf_assert(_elf_init.e_magic == ELF_MAGIC);
+    if (_elf_version == EV_NONE) {
+	seterr(ERROR_VERSION_UNSET);
+	return NULL;
+    }
+    else if (size == 0 || image == NULL) {
+	/* TODO: set error code? */
+	return NULL;
+    }
+
+    if (!(elf = (Elf*)malloc(sizeof(Elf)))) {
+	seterr(ERROR_MEM_ELF);
+	return NULL;
+    }
+    *elf = _elf_init;
+    elf->e_size = elf->e_dsize = size;
+    elf->e_data = elf->e_rawdata = image;
+    elf->e_readable = 1;
+    elf->e_disabled = 1;
+    elf->e_memory = 1;
+
+    _elf_check_type(elf, size);
+    return elf;
+}
+
+#if __LIBELF64
+
+int
+gelf_getclass(Elf *elf) {
+    if (elf && elf->e_kind == ELF_K_ELF && valid_class(elf->e_class)) {
+	return elf->e_class;
+    }
+    return ELFCLASSNONE;
+}
+
+#endif /* __LIBELF64 */

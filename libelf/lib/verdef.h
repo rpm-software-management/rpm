@@ -28,7 +28,9 @@ static const char verdef_h_rcsid[] = "@(#) Id: verdef.h,v 1.1 2001/10/07 20:03:0
 #if TOFILE
 
 static void
-__store_verdaux(verdaux_ftype *dst, const verdaux_mtype *src, unsigned enc) {
+__store_verdaux(verdaux_ftype *dst, const verdaux_mtype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	__store_u32L(dst->vda_name, src->vda_name);
 	__store_u32L(dst->vda_next, src->vda_next);
@@ -40,7 +42,9 @@ __store_verdaux(verdaux_ftype *dst, const verdaux_mtype *src, unsigned enc) {
 }
 
 static void
-__store_verdef(verdef_ftype *dst, const verdef_mtype *src, unsigned enc) {
+__store_verdef(verdef_ftype *dst, const verdef_mtype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	__store_u16L(dst->vd_version, src->vd_version);
 	__store_u16L(dst->vd_flags,   src->vd_flags);
@@ -77,7 +81,9 @@ typedef align_mtype		verdef_atype;
 #else /* TOFILE */
 
 static void
-__load_verdaux(verdaux_mtype *dst, const verdaux_ftype *src, unsigned enc) {
+__load_verdaux(verdaux_mtype *dst, const verdaux_ftype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	dst->vda_name = __load_u32L(src->vda_name);
 	dst->vda_next = __load_u32L(src->vda_next);
@@ -89,7 +95,9 @@ __load_verdaux(verdaux_mtype *dst, const verdaux_ftype *src, unsigned enc) {
 }
 
 static void
-__load_verdef(verdef_mtype *dst, const verdef_ftype *src, unsigned enc) {
+__load_verdef(verdef_mtype *dst, const verdef_ftype *src, unsigned enc)
+	/*@modifies *dst @*/
+{
     if (enc == ELFDATA2LSB) {
 	dst->vd_version = __load_u16L(src->vd_version);
 	dst->vd_flags   = __load_u16L(src->vd_flags);
@@ -131,7 +139,10 @@ typedef align_ftype		verdef_atype;
 #define translator(x,e)	xlt3(xltprefix(_elf_##x),e,translator_suffix)
 
 static size_t
-xlt_verdef(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc) {
+xlt_verdef(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc)
+	/*@globals _elf_errno @*/
+	/*@modifies *dst, _elf_errno @*/
+{
     size_t doff;
     size_t soff;
 
@@ -229,7 +240,7 @@ xlt_verdef(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc)
 	     * end check
 	     */
 	    if (vda.vda_next == 0) {
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
 	/*
@@ -259,11 +270,15 @@ xlt_verdef(unsigned char *dst, const unsigned char *src, size_t n, unsigned enc)
 }
 
 size_t
-translator(verdef,L)(unsigned char *dst, const unsigned char *src, size_t n) {
+translator(verdef,L)(unsigned char *dst, const unsigned char *src, size_t n)
+	/*@modifies *dst @*/
+{
     return xlt_verdef(dst, src, n, ELFDATA2LSB);
 }
 
 size_t
-translator(verdef,M)(unsigned char *dst, const unsigned char *src, size_t n) {
+translator(verdef,M)(unsigned char *dst, const unsigned char *src, size_t n)
+	/*@modifies *dst @*/
+{
     return xlt_verdef(dst, src, n, ELFDATA2MSB);
 }

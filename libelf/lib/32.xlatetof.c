@@ -1,6 +1,6 @@
 /*
 32.xlatetof.c - implementation of the elf32_xlateto[fm](3) functions.
-Copyright (C) 1995, 1996 Michael Riepe <michael@stud.uni-hannover.de>
+Copyright (C) 1995 - 2002 Michael Riepe <michael@stud.uni-hannover.de>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -21,22 +21,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <ext_types.h>
 #include <byteswap.h>
 
+#ifndef lint
+static const char rcsid[] = "@(#) Id: 32.xlatetof.c,v 1.14 2002/06/11 18:53:22 michael Exp ";
+#endif /* lint */
+
 /*
  * Ugly, ugly
  */
+#if defined(__LCLINT__)
+# define Cat2(a,b)a##b
+# define Cat3(a,b,c)a##b##c
+# define Ex1(m1,m2,a,b)m1##m2(a##b)
+# define Ex2(m1,m2,a,b,c)m1##m2(a,b##c)
+#else
 #define x
 #if defined/**/x
 # define Cat2(a,b)a##b
 # define Cat3(a,b,c)a##b##c
-# define Exn(m1,m2,args)m1##m2##args
 # define Ex1(m1,m2,a,b)m1##m2(a##b)
 # define Ex2(m1,m2,a,b,c)m1##m2(a,b##c)
 #else
 # define Cat2(a,b)a/**/b
 # define Cat3(a,b,c)a/**/b/**/c
-# define Exn(m1,m2,args)m1/**/m2/**/args
 # define Ex1(m1,m2,a,b)m1/**/m2(a/**/b)
 # define Ex2(m1,m2,a,b,c)m1/**/m2(a,b/**/c)
+#endif
 #endif
 #undef x
 
@@ -50,27 +59,37 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * function instantiator
  */
 #define copy_type_e_io(name,e,io,tfrom,tto,copy)		\
-    static void							\
-    Cat3(name,_,io)(unsigned char *dst, const unsigned char *src, size_t n) {	\
-	const tfrom *from = (const tfrom*)src;			\
-	tto *to = (tto*)dst;					\
-	if (sizeof(tfrom) < sizeof(tto)) {			\
-	    from += n;						\
-	    to += n;						\
-	    while (n-- > 0) {					\
-		--from;						\
-		--to;						\
-		copy(e,io,seq_back)				\
+    /*@-mustmod@*/						\
+    static size_t						\
+    Cat3(name,_,io)(unsigned char *dst, const unsigned char *src, size_t n) \
+	/*@modifies *dst @*/					\
+    {								\
+	n /= sizeof(tfrom);					\
+	if (n && dst) {						\
+	    const tfrom *from = (const tfrom*)src;		\
+	    tto *to = (tto*)dst;				\
+	    size_t i;						\
+								\
+	    if (sizeof(tfrom) < sizeof(tto)) {			\
+		from += n;					\
+		to += n;					\
+		for (i = 0; i < n; i++) {			\
+		    --from;					\
+		    --to;					\
+		    copy(e,io,seq_back)				\
+		}						\
+	    }							\
+	    else {						\
+		for (i = 0; i < n; i++) {			\
+		    copy(e,io,seq_forw)				\
+		    from++;					\
+		    to++;					\
+		}						\
 	    }							\
 	}							\
-	else {							\
-	    while (n-- > 0) {					\
-		copy(e,io,seq_forw)				\
-		from++;						\
-		to++;						\
-	    }							\
-	}							\
-    }
+	return n * sizeof(tto);					\
+    }								\
+    /*@=mustmod@*/
 
 #define copy_type_e(name,e,type,copy)				\
     copy_type_e_io(name,e,tom,Cat2(__ext_,type),type,copy)	\
@@ -86,14 +105,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 /*
  * scalar copying
  */
-#define copy_scalar_tom(type)	*to = Exn(__load_,type,(*from));
-#define copy_scalar_tof(type)	Exn(__store_,type,(*to, *from));
+#define copy_scalar_tom(type)	*to = Cat2(__load_,type)(*from);
+#define copy_scalar_tof(type)	Cat2(__store_,type)(*to, *from);
 
 /*
  * structure member copying
  */
-#define copy_tom(mb,type)	to->mb = Exn(__load_,type,(from->mb));
-#define copy_tof(mb,type)	Exn(__store_,type,(to->mb, from->mb));
+#define copy_tom(mb,type)	to->mb = Cat2(__load_,type)(from->mb);
+#define copy_tof(mb,type)	Cat2(__store_,type)(to->mb, from->mb);
 
 /*
  * structure member copying (direction independent)
@@ -181,32 +200,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
     seq(copy_half(e,io,st_shndx),	\
     /**/))))))
 
-static void
-byte_copy(unsigned char *dst, const unsigned char *src, size_t n) {
-    if (dst == src || !n) {
-	return;
-    }
+static size_t
+byte_copy(unsigned char *dst, const unsigned char *src, size_t n)
+	/*@modifies *dst @*/
+{
+    if (n && dst && dst != src) {
 #if HAVE_BROKEN_MEMMOVE
-    while (dst > src && dst < &src[n]) {
-	if (n <= 16) {
-	    /* copy `manually' */
-	    while (n--) {
-		dst[n] = src[n];
-	    }
-	    return;
+	size_t i;
+
+	if (dst >= src + n || dst + n <= src) {
+	    memcpy(dst, src, n);
 	}
-	/* copy upper half */
-	byte_copy(&dst[n / 2], &src[n / 2], n - n / 2);
-	/* continue with lower half */
-	n /= 2;
+	else if (dst < src) {
+	    for (i = 0; i < n; i++) {
+		dst[i] = src[i];
+	    }
+	}
+	else {
+	    for (i = n; --i; ) {
+		dst[i] = src[i];
+	    }
+	}
+#else /* HAVE_BROKEN_MEMMOVE */
+	memmove(dst, src, n);
+#endif /* HAVE_BROKEN_MEMMOVE */
     }
-#endif
-    memmove(dst, src, n);
+    return n;
 }
 
 static void
-array_copy(unsigned char *dst, size_t dlen, const unsigned char *src, size_t slen) {
-    byte_copy(dst, src, dlen < slen ? dlen : slen);
+array_copy(unsigned char *dst, size_t dlen, const unsigned char *src, size_t slen)
+	/*@modifies *dst @*/
+{
+    (void) byte_copy(dst, src, dlen < slen ? dlen : slen);
     if (dlen > slen) {
 	memset(dst + slen, 0, dlen - slen);
     }
@@ -215,11 +241,11 @@ array_copy(unsigned char *dst, size_t dlen, const unsigned char *src, size_t sle
 /*
  * instantiate copy functions
  */
-copy_type(addr_32,,Elf32_Addr,copy_addr_11)
-copy_type(half_32,,Elf32_Half,copy_half_11)
-copy_type(off_32,,Elf32_Off,copy_off_11)
-copy_type(sword_32,,Elf32_Sword,copy_sword_11)
-copy_type(word_32,,Elf32_Word,copy_word_11)
+copy_type(addr_32,_,Elf32_Addr,copy_addr_11)
+copy_type(half_32,_,Elf32_Half,copy_half_11)
+copy_type(off_32,_,Elf32_Off,copy_off_11)
+copy_type(sword_32,_,Elf32_Sword,copy_sword_11)
+copy_type(word_32,_,Elf32_Word,copy_word_11)
 copy_type(dyn_32,11,Elf32_Dyn,copy_dyn_11)
 copy_type(ehdr_32,11,Elf32_Ehdr,copy_ehdr_11)
 copy_type(phdr_32,11,Elf32_Phdr,copy_phdr_11)
@@ -228,50 +254,81 @@ copy_type(rel_32,11,Elf32_Rel,copy_rel_11)
 copy_type(shdr_32,11,Elf32_Shdr,copy_shdr_11)
 copy_type(sym_32,11,Elf32_Sym,copy_sym_11)
 
-typedef void (*xlator)(unsigned char*, const unsigned char*, size_t);
+typedef size_t (*xlator)(unsigned char* dst, const unsigned char* src, size_t n)
+	/*@modifies *dst @*/;
 typedef xlator xltab[ELF_T_NUM][2];
 
 /*
  * translation table (32-bit, version 1 -> version 1)
  */
+/*@-initsize -nullassign @*/
+/*@unchecked@*/ /*@observer@*/
+#if PIC
+static xltab
+#else /* PIC */
 static const xltab
+#endif /* PIC */
 xlate32_11[/*encoding*/] = {
     {
-	{ byte_copy,	    byte_copy	    },
-	{ addr_32L_tom,	    addr_32L_tof    },
+	{ byte_copy,        byte_copy       },
+	{ addr_32L__tom,    addr_32L__tof   },
 	{ dyn_32L11_tom,    dyn_32L11_tof   },
 	{ ehdr_32L11_tom,   ehdr_32L11_tof  },
-	{ half_32L_tom,	    half_32L_tof    },
-	{ off_32L_tom,	    off_32L_tof	    },
+	{ half_32L__tom,    half_32L__tof   },
+	{ off_32L__tom,	    off_32L__tof    },
 	{ phdr_32L11_tom,   phdr_32L11_tof  },
 	{ rela_32L11_tom,   rela_32L11_tof  },
 	{ rel_32L11_tom,    rel_32L11_tof   },
 	{ shdr_32L11_tom,   shdr_32L11_tof  },
-	{ sword_32L_tom,    sword_32L_tof   },
+	{ sword_32L__tom,   sword_32L__tof  },
 	{ sym_32L11_tom,    sym_32L11_tof   },
-	{ word_32L_tom,	    word_32L_tof    },
+	{ word_32L__tom,    word_32L__tof   },
+	{ NULL,             NULL            },	/* there is no Sxword */
+	{ NULL,             NULL            },	/* there is no Xword */
+#if __LIBELF_SYMBOL_VERSIONS
+	{ _elf_verdef_32L11_tom,  _elf_verdef_32L11_tof  },
+	{ _elf_verneed_32L11_tom, _elf_verneed_32L11_tof },
+#else /* __LIBELF_SYMBOL_VERSIONS */
+	{ NULL,             NULL            },
+	{ NULL,             NULL            },
+#endif /* __LIBELF_SYMBOL_VERSIONS */
     },
     {
-	{ byte_copy,	    byte_copy	    },
-	{ addr_32M_tom,	    addr_32M_tof    },
+	{ byte_copy,        byte_copy       },
+	{ addr_32M__tom,    addr_32M__tof   },
 	{ dyn_32M11_tom,    dyn_32M11_tof   },
 	{ ehdr_32M11_tom,   ehdr_32M11_tof  },
-	{ half_32M_tom,	    half_32M_tof    },
-	{ off_32M_tom,	    off_32M_tof	    },
+	{ half_32M__tom,    half_32M__tof   },
+	{ off_32M__tom,	    off_32M__tof    },
 	{ phdr_32M11_tom,   phdr_32M11_tof  },
 	{ rela_32M11_tom,   rela_32M11_tof  },
 	{ rel_32M11_tom,    rel_32M11_tof   },
 	{ shdr_32M11_tom,   shdr_32M11_tof  },
-	{ sword_32M_tom,    sword_32M_tof   },
+	{ sword_32M__tom,   sword_32M__tof  },
 	{ sym_32M11_tom,    sym_32M11_tof   },
-	{ word_32M_tom,	    word_32M_tof    },
+	{ word_32M__tom,    word_32M__tof   },
+	{ NULL,             NULL            },	/* there is no Sxword */
+	{ NULL,             NULL            },	/* there is no Xword */
+#if __LIBELF_SYMBOL_VERSIONS
+	{ _elf_verdef_32M11_tom,  _elf_verdef_32M11_tof  },
+	{ _elf_verneed_32M11_tom, _elf_verneed_32M11_tof },
+#else /* __LIBELF_SYMBOL_VERSIONS */
+	{ NULL,             NULL            },
+	{ NULL,             NULL            },
+#endif /* __LIBELF_SYMBOL_VERSIONS */
     },
 };
+/*@=initsize =nullassign @*/
 
 /*
  * main translation table (32-bit)
  */
+/*@unchecked@*/ /*@observer@*/
+#if PIC
+static xltab*
+#else /* PIC */
 static const xltab *const
+#endif /* PIC */
 xlate32[EV_CURRENT - EV_NONE][EV_CURRENT - EV_NONE] = {
     { xlate32_11, },
 };
@@ -284,13 +341,54 @@ xlate32[EV_CURRENT - EV_NONE][EV_CURRENT - EV_NONE] = {
 	    [d])
 
 /*
+ * destination buffer size
+ */
+size_t
+_elf32_xltsize(const Elf_Data *src, unsigned dv, unsigned encode, int tof) {
+    Elf_Type type = src->d_type;
+    unsigned sv = src->d_version;
+    xlator op;
+
+    if (!valid_version(sv) || !valid_version(dv)) {
+	seterr(ERROR_UNKNOWN_VERSION);
+	return (size_t)-1;
+    }
+    if (tof) {
+	/*
+	 * Encoding doesn't really matter (the translator only looks at
+	 * the source, which resides in memory), but we need a proper
+	 * encoding to select a translator...
+	 */
+	encode = ELFDATA2LSB;
+    }
+    else if (!valid_encoding(encode)) {
+	seterr(ERROR_UNKNOWN_ENCODING);
+	return (size_t)-1;
+    }
+    if (!valid_type(type)) {
+	seterr(ERROR_UNKNOWN_TYPE);
+	return (size_t)-1;
+    }
+    if (!(op = translator(sv, dv, encode, type, tof))) {
+	seterr(ERROR_UNKNOWN_TYPE);
+	return (size_t)-1;
+    }
+    return (*op)(NULL, src->d_buf, src->d_size);
+}
+
+/*
  * direction-independent translation
  */
+/*@null@*/
 static Elf_Data*
-elf32_xlate(Elf_Data *dst, const Elf_Data *src, unsigned encode, int tof) {
-    size_t ssize, dsize, count;
+elf32_xlate(/*@returned@*/ Elf_Data *dst, const Elf_Data *src, unsigned encode, int tof)
+	/*@modifies *dst @*/
+{
     Elf_Type type;
-    int sv, dv;
+    int dv;
+    int sv;
+    size_t dsize;
+    size_t tmp;
     xlator op;
 
     if (!src || !dst) {
@@ -315,22 +413,21 @@ elf32_xlate(Elf_Data *dst, const Elf_Data *src, unsigned encode, int tof) {
 	seterr(ERROR_UNKNOWN_TYPE);
 	return NULL;
     }
-    ssize = _fmsize32(sv, type, 1 - tof);
-    dsize = _fmsize32(dv, type, tof);
     op = translator(sv, dv, encode, type, tof);
-    if (!ssize || !dsize || !op) {
+    if (!op) {
 	seterr(ERROR_UNKNOWN_TYPE);
 	return NULL;
     }
-    count = src->d_size / ssize;
-    if (dst->d_size < count * dsize) {
+    dsize = (*op)(NULL, src->d_buf, src->d_size);
+    if (dst->d_size < dsize) {
 	seterr(ERROR_DST2SMALL);
 	return NULL;
     }
-    if (count) {
-	(*op)(dst->d_buf, src->d_buf, count);
+    if (dsize) {
+	tmp = (*op)(dst->d_buf, src->d_buf, src->d_size);
+	elf_assert(tmp == dsize);
     }
-    dst->d_size = count * dsize;
+    dst->d_size = dsize;
     dst->d_type = type;
     return dst;
 }
