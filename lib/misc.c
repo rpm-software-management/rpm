@@ -342,8 +342,8 @@ int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
 
     fn = malloc(strlen(prefix) + 25 + strlen(tmpdir));
 
-    srandom(time(NULL));
-    ran = random() % 100000;
+    srand(time(NULL));
+    ran = rand() % 100000;
     do {
 	sprintf(fn, "%s%s/rpm-tmp.%d", prefix, tmpdir, ran++);
     } while (!access(fn, X_OK));

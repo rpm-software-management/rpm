@@ -4,6 +4,7 @@
 	  the ids used when the src rpm was created
 	- don't give an error if missingok files don't exist during remove
 	- touched ftp code to make it coexist w/ Red Hat install better
+	- use rand/srand rather then random/srandom
 
 2.4.8 -> 2.4.9:
 	- fix for verification on systems where a single group id

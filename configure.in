@@ -131,12 +131,8 @@ AC_CHECK_FUNC(strcasecmp, [], [
     AC_CHECK_LIB(ucb, strcasecmp, [LIBS="$LIBS -lucb" USEUCB=y])
 ])
 
-AC_CHECK_FUNC(random, [], [
-    AC_CHECK_LIB(random, random, [LIBS="$LIBS -lm"], [
-	if test -z "$USEUCB"; then
-	    AC_CHECK_LIB(ucb, random, [LIBS="$LIBS -lucb" USEUCB=y])
-	fi
-    ])
+AC_CHECK_FUNC(rand, [], [
+    AC_CHECK_LIB(rand, rand, [LIBS="$LIBS -lm"])
 ])
 
 dnl
@@ -404,4 +400,10 @@ AC_SUBST(RPM)
 AC_SUBST(GZIPBIN)
 AC_SUBST(FIXPERMS)
 
-AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile newbuild/Makefile tools/Makefile po/Makefile misc/Makefile)
+if [ -d newbuild ]; then
+   NBMAKEFILE=newbuild/Makefile
+else
+   NBMAKEFILE=
+fi
+
+AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile $NBMAKEFILE tools/Makefile po/Makefile misc/Makefile)
