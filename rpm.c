@@ -110,8 +110,8 @@ static void printUsage(void) {
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        package1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
-    puts(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>"));
-    puts(_("                        [--buildarch <arch] specfile"));
+    puts(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"));
+    puts(_("                        [--buildarch <arch>] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
