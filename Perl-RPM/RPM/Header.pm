@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.3 2000/06/10 22:27:30 rjray Exp $
+#   $Id: Header.pm,v 1.4 2000/06/14 09:28:38 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -30,10 +30,12 @@ use strict;
 use vars qw($VERSION $revision);
 use subs qw(new);
 
-require RPM;
+use RPM;
+use RPM::Error;
+use RPM::Constants ':rpmerr';
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -44,6 +46,61 @@ sub new
 
     tie %hash, $class, @_;
     return (tied %hash);
+}
+
+###############################################################################
+#
+#   Sub Name:       cmpver
+#
+#   Description:    Try to reasonably compare two headers by examining their
+#                   version and release fields.
+#
+#   Arguments:      NAME      IN/OUT  TYPE      DESCRIPTION
+#                   $self     in      ref       Object of this class
+#                   $cmp_to   in      ref       Another object of this class
+#
+#   Globals:        None.
+#
+#   Environment:    None.
+#
+#   Returns:        Perl-style comparison operation
+#
+###############################################################################
+sub cmpver
+{
+    my ($self, $cmp_to) = @_;
+
+    # First off, arg 2 must be of or derived from this class
+    unless ($cmp_to->isa('RPM::Header'))
+    {
+        rpm_error(RPMERR_BADARG,
+                  "RPM::Header::cmpver: Argument 2 of wrong type");
+        return 0;
+    }
+    my @self = $self->NVR;
+    my @cmp_to = $cmp_to->NVR;
+    # Secondly, comparison is meaningless if these are not the same package
+    return 0 unless ($self[0] eq $cmp_to[0]);
+
+    # Now it gets more complicated
+    my @self_ver = split('.', $self[1]);
+    my @self_rel = split('.', $self[2]);
+    my @cmpto_ver = split('.', $cmp_to[1]);
+    my @cmpto_rel = split('.', $cmp_to[2]);
+
+    # If they do not have the same number of elements, pad the shorter one
+    if (@self_ver < @cmpto_ver)
+    {
+        push(@self_ver, 0) for (1 .. (@cmpto_ver - @self_ver));
+    }
+    elsif (@self_ver > @cmpto_ver)
+    {
+        push(@cmpto_ver, 0) for (1 .. (@self_ver - @cmpto_ver));
+    }
+    for (0 .. $#self_ver)
+    {
+        return;
+    }
 }
 
 __END__
