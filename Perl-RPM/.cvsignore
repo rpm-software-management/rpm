@@ -9,3 +9,4 @@ rpmrc
 rpmmacro
 Perl-RPM.spec
 Perl-RPM-*
+.gdbinit
