@@ -60,13 +60,9 @@ rm -rf $RPM_BUILD_ROOT
 /bin/rpm
 /usr/bin/rpm2cpio
 /usr/bin/gendiff
-/usr/bin/find-provides
-/usr/bin/find-requires
 /usr/man/man8/rpm.8
 /usr/man/man8/rpm2cpio.8
 /usr/lib/rpm
-/usr/lib/rpmrc
-/usr/lib/rpmpopt
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS
