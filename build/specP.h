@@ -20,6 +20,22 @@ struct ReqProv {
     struct ReqProv *next;
 };
 
+struct TriggerEntry {
+    int flags;
+    char *name;
+    char *version;
+    int index;
+    struct TriggerEntry *next;
+};
+
+struct TriggerStruct {
+    char **triggerScripts;
+    int alloced;
+    int used;
+    int triggerCount;
+    struct TriggerEntry *trigger;
+};
+
 struct SpecRec {
     char *name;      /* package base name */
     char *specfile;
@@ -65,6 +81,14 @@ struct PackageRec {
     int numConflict;
     struct ReqProv *reqprov;
     struct PackageRec *next;
+    struct TriggerStruct trigger;
 };
+
+struct ReqComp {
+    char *token;
+    int flags;
+};
+
+extern struct ReqComp ReqComparisons[];
 
 #endif _SPECP_H_

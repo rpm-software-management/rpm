@@ -24,6 +24,7 @@
 #include "names.h"
 #include "files.h"
 #include "reqprov.h"
+#include "trigger.h"
 
 static int writeMagic(int fd, char *name, unsigned short type);
 static int cpio_gzip(int fd, char *tempdir, char *writePtr,
@@ -565,6 +566,9 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	    generateAutoReqProv(outHeader, pr);
 	}
 	processReqProv(outHeader, pr);
+
+	/* Generate the any trigger entries */
+	generateTriggerEntries(outHeader, pr);
 	
 	/* And add the final Header entry */
 	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
