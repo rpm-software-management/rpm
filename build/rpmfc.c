@@ -389,7 +389,20 @@ assert(EVR != NULL);
 	    }
 /*@=branchstate@*/
 
+
+	    /* Add tracking dependency for versioned Provides: */
+	    if (!fc->tracked && deptype == 'P' && *EVR != '\0') {
+		this = rpmdsSingle(RPMTAG_REQUIRENAME,
+			"rpmlib(VersionedDependencies)", "3.0.3-1",
+			RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL));
+		xx = rpmdsMerge(&fc->requires, this);
+		this = rpmdsFree(this);
+		fc->tracked = 1;
+	    }
+
 	    this = rpmdsSingle(tagN, N, EVR, Flags);
+
+	    /* Add to package dependencies. */
 	    xx = rpmdsMerge(depsp, this);
 
 	    /* Add to file dependencies. */
@@ -1355,6 +1368,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     fc = rpmfcNew();
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
+    fc->tracked = 0;
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {

@@ -2,6 +2,7 @@
 
 #include <rpmbuild.h>
 #include <argv.h>
+#include <rpmds.h>
 #include <rpmfc.h>
 
 #include "debug.h"
@@ -53,7 +54,6 @@ main(int argc, char *const argv[])
     int ec = 1;
     int xx;
 char buf[BUFSIZ];
-int i;
 
 /*@-modobserver@*/
     if ((progname = strrchr(argv[0], '/')) != NULL)
