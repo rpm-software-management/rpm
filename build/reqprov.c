@@ -81,7 +81,7 @@ int addReqProv(struct PackageRec *p, int flags,
 	p->numPreReq++;
     } else if (flags & RPMSENSE_OBSOLETES) {
 	rpmMessage(RPMMESS_DEBUG, "Adding obsoletes: %s\n", name);
-	p->numPreReq++;
+	p->numObsoletes++;
     } else {	
 	rpmMessage(RPMMESS_DEBUG, "Adding require: %s\n", name);
 	p->numReq++;
@@ -325,6 +325,23 @@ int processReqProv(Header h, struct PackageRec *p)
 	free(nameArray);
     }
 
+    if (p->numObsoletes) {
+	rd = p->reqprov;
+	nameArray = namePtr = malloc(p->numProv * sizeof(*nameArray));
+	rpmMessage(RPMMESS_VERBOSE, "Obsoletes (%d):", p->numObsoletes);
+	while (rd) {
+	    if (rd->flags & RPMSENSE_OBSOLETES) {
+		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
+		*namePtr++ = rd->name;
+	    }
+	    rd = rd->next;
+	}
+	rpmMessage(RPMMESS_VERBOSE, "\n");
+
+	headerAddEntry(h, RPMTAG_OBSOLETES, RPM_STRING_ARRAY_TYPE, nameArray, p->numObsoletes);
+	free(nameArray);
+    }
+
     if (p->numConflict) {
 	rd = p->reqprov;
 	nameArray = namePtr = malloc(p->numConflict * sizeof(*nameArray));
@@ -364,6 +381,7 @@ int processReqProv(Header h, struct PackageRec *p)
 	rpmMessage(RPMMESS_VERBOSE, "[Pre]Requires (%d):", x);
 	while (rd) {
 	    if (! ((rd->flags & RPMSENSE_PROVIDES) ||
+		   (rd->flags & RPMSENSE_OBSOLETES) ||
 		   (rd->flags & RPMSENSE_CONFLICTS))) {
 		if (rd->flags & RPMSENSE_PREREQ) {
 		    rpmMessage(RPMMESS_VERBOSE, " [%s]", rd->name);
@@ -373,8 +391,7 @@ int processReqProv(Header h, struct PackageRec *p)
 		*namePtr++ = rd->name;
 		*versionPtr++ = rd->version ? rd->version : "";
 		*flagPtr++ = (rd->flags & RPMSENSE_SENSEMASK) |
-		    (rd->flags & RPMSENSE_PREREQ) |
-		    (rd->flags & RPMSENSE_OBSOLETES);
+		    (rd->flags & RPMSENSE_PREREQ);
 	    }
 	    rd = rd->next;
 	}

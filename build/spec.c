@@ -56,7 +56,7 @@ static int dateToTimet(const char * datestr, time_t * secs);
 static void addChangelogEntry(Header h, int time, char *name, char *text);
 static int addChangelog(Header h, StringBuf sb);
 
-static int parseProvides(struct PackageRec *p, char *line);
+static int parseProvides(struct PackageRec *p, char *line, int tag);
 static int parseRequiresConflicts(struct PackageRec *p, char *line,
 				  int flag);
 static void free_reqprov(struct ReqProv *p);
@@ -310,9 +310,6 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 	  case RPMTAG_PREREQ:
 	    flags = RPMSENSE_PREREQ;
 	    break;
-	  case RPMTAG_OBSOLETES:
-	    flags = RPMSENSE_OBSOLETES;
-	    break;
 	  default:
 	    flags = RPMSENSE_ANY;
 	    break;
@@ -320,11 +317,6 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 	if (flag == RPMTAG_CONFLICTFLAGS && req[0] == '/') {
 	    rpmError(RPMERR_BADSPEC,
 		     "No file names in Conflicts: %s", req);
-	    return RPMERR_BADSPEC;
-	}
-	if (flag == RPMTAG_OBSOLETES && req[0] == '/') {
-	    rpmError(RPMERR_BADSPEC,
-		     "No file names in Obsoletes: %s", req);
 	    return RPMERR_BADSPEC;
 	}
 	if ((version = strtok(NULL, " ,\t\n"))) {
@@ -341,11 +333,6 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 		if (flag == RPMTAG_PREREQ) {
 		    rpmError(RPMERR_BADSPEC,
 			     "No versions in PreReq: %s", req);
-		    return RPMERR_BADSPEC;
-		}
-		if (flag == RPMTAG_OBSOLETES) {
-		    rpmError(RPMERR_BADSPEC,
-			     "No versions in Obsoletes: %s", req);
 		    return RPMERR_BADSPEC;
 		}
 		/* read a version */
@@ -372,15 +359,19 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
     return 0;
 }
 
-static int parseProvides(struct PackageRec *p, char *line)
+static int parseProvides(struct PackageRec *p, char *line, int tag)
 {
     char *prov;
-    int flags = RPMSENSE_PROVIDES;
+    int flags;
+
+    flags = (tag == RPMTAG_PROVIDES) ? RPMSENSE_PROVIDES : RPMSENSE_OBSOLETES;
     
     while ((prov = strtok(line, " ,\t\n"))) {
 	if (prov[0] == '/') {
 	    rpmError(RPMERR_BADSPEC,
-		     "No file names in provides: %s", prov);
+		     "No file names in %s: %s",
+		     (tag == RPMTAG_PROVIDES) ? "provides" : "obsoletes",
+		     prov);
 	    return RPMERR_BADSPEC;
 	}
 	addReqProv(p, flags, prov, NULL);
@@ -412,6 +403,7 @@ static struct PackageRec *new_packagerec(void)
     p->numProv = 0;
     p->numConflict = 0;
     p->numPreReq = 0;
+    p->numObsoletes = 0;
     p->trigger.alloced = 0;
     p->trigger.used = 0;
     p->trigger.triggerScripts = NULL;
@@ -1531,15 +1523,15 @@ Spec parseSpecAux(FILE *f, char *specfile, char *buildRootOverride,
 			  return NULL;
 		      }
 		      break;
+		  case RPMTAG_OBSOLETES:
 		  case RPMTAG_PROVIDES:
-		      if (parseProvides(cur_package, s)) {
+		      if (parseProvides(cur_package, s, tag)) {
 			  return NULL;
 		      }
 		      break;
 		  case RPMTAG_REQUIREFLAGS:
 		  case RPMTAG_CONFLICTFLAGS:
 		  case RPMTAG_PREREQ:
-		  case RPMTAG_OBSOLETES:
 		      if (parseRequiresConflicts(cur_package, s, tag)) {
 			  return NULL;
 		      }

@@ -81,6 +81,7 @@ struct PackageRec {
     int numPreReq;
     int numProv;
     int numConflict;
+    int numObsoletes;
     struct ReqProv *reqprov;
     struct PackageRec *next;
     struct TriggerStruct trigger;
