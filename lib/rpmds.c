@@ -517,6 +517,159 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
     /*@=refcounttrans@*/
 }
 
+static const char ** rpmdsDupArgv(const char ** argv, int argc)
+	/*@*/
+{
+    const char ** av;
+    size_t nb = 0;
+    int ac = 0;
+    char * t;
+
+    for (ac = 0; ac < argc; ac++) {
+assert(argv[ac] != NULL);
+	nb += strlen(argv[ac]) + 1;
+    }
+    nb += (ac + 1) * sizeof(*av);
+
+    av = xmalloc(nb);
+    t = (char *) (av + ac + 1);
+    for (ac = 0; ac < argc; ac++) {
+	av[ac] = t;
+	t = stpcpy(t, argv[ac]) + 1;
+    }
+    av[ac] = NULL;
+    return av;
+}
+
+static rpmds rpmdsDup(const rpmds this)
+	/*@*/
+{
+    rpmds ds = xcalloc(1, sizeof(*ds));
+    size_t nb;
+
+    ds->h = (this->h ? headerLink(this->h) : NULL);
+    ds->Type = this->Type;
+    ds->tagN = this->tagN;
+    ds->Count = this->Count;
+    ds->i = this->i;
+    ds->l = this->l;
+    ds->u = this->u;
+
+    nb = (ds->Count+1) * sizeof(*ds->N);
+    ds->N = (ds->h
+	? memcpy(xmalloc(nb), this->N, nb)
+	: rpmdsDupArgv(this->N, this->Count) );
+    ds->Nt = this->Nt;
+
+    nb = (ds->Count+1) * sizeof(*ds->EVR);
+    ds->EVR = (ds->h
+	? memcpy(xmalloc(nb), this->EVR, nb)
+	: rpmdsDupArgv(this->EVR, this->Count) );
+    ds->EVRt = this->EVRt;
+
+    nb = (ds->Count * sizeof(*ds->Flags));
+    ds->Flags = (ds->h
+	? this->Flags
+	: memcpy(xmalloc(nb), this->Flags, nb) );
+    ds->Ft = this->Ft;
+
+    return rpmdsLink(ds, (ds ? ds->Type : NULL));
+
+}
+
+int rpmdsFind(rpmds ds, rpmds this)
+{
+    int comparison;
+
+    ds->l = 0;
+    ds->u = ds->Count;
+    while (ds->l < ds->u) {
+	ds->i = (ds->l + ds->u) / 2;
+
+	comparison = strcmp(this->N[this->i], ds->N[ds->i]);
+	if (comparison == 0)
+	    comparison = strcmp(this->EVR[this->i], ds->EVR[ds->i]);
+	if (comparison == 0)
+	    comparison = (this->Flags[this->i] - ds->Flags[ds->i]);
+
+	if (comparison < 0)
+	    ds->u = ds->i;
+	else if (comparison > 0)
+	    ds->l = ds->i + 1;
+	else {
+	    return ds->i;
+	}
+    }
+    return -1;
+}
+
+int rpmdsMerge(rpmds * dsp, rpmds this)
+{
+    rpmds ds;
+    const char ** N;
+    const char ** EVR;
+    int_32 * Flags;
+    int j;
+int save;
+
+    if (dsp == NULL || this == NULL)
+	return -1;
+
+    /* If not initialized yet, dup the 1st entry. */
+    if (*dsp == NULL) {
+	save = this->Count;
+	this->Count = 1;
+	*dsp = rpmdsDup(this);
+	this->Count = save;
+    }
+    ds = *dsp;
+
+    /*
+     * Add new entries.
+     */
+save = this->i;
+    this = rpmdsInit(this);
+    while (rpmdsNext(this) >= 0) {
+	/*
+	 * If this entry is already present, don't bother.
+	 */
+	if (rpmdsFind(ds, this) >= 0)
+	    continue;
+
+	/*
+	 * Insert new entry.
+	 */
+	for (j = ds->Count; j > ds->u; j--)
+	    ds->N[j] = ds->N[j-1];
+	ds->N[ds->u] = this->N[this->i];
+	N = rpmdsDupArgv(ds->N, ds->Count+1);
+	ds->N = _free(ds->N);
+	ds->N = N;
+	
+	for (j = ds->Count; j > ds->u; j--)
+	    ds->EVR[j] = ds->EVR[j-1];
+	ds->EVR[ds->u] = this->EVR[this->i];
+	EVR = rpmdsDupArgv(ds->EVR, ds->Count+1);
+	ds->EVR = _free(ds->EVR);
+	ds->EVR = EVR;
+
+	Flags = xmalloc((ds->Count+1) * sizeof(*Flags));
+	if (ds->u > 0)
+	    memcpy(Flags, ds->Flags, ds->u * sizeof(*Flags));
+	if (ds->u < ds->Count)
+	    memcpy(Flags + ds->u + 1, ds->Flags + ds->u, (ds->Count - ds->u) * sizeof(*Flags));
+	Flags[ds->u] = this->Flags[this->i];
+	ds->Flags = _free(ds->Flags);
+	ds->Flags = Flags;
+
+	ds->i = ds->Count;
+	ds->Count++;
+
+    }
+this->i = save;
+    return 0;
+}
+
 /**
  * Split EVR into epoch, version, and release components.
  * @param evr		[epoch:]version[-release] string

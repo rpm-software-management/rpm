@@ -29,8 +29,8 @@ struct rpmfc_s {
     ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
     ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
 
-    ARGV_t provides;	/*!< (#provides) package provides */
-    ARGV_t requires;	/*!< (#requires) package requires */
+    rpmds provides;	/*!< (#provides) package provides */
+    rpmds requires;	/*!< (#requires) package requires */
 
     StringBuf sb_java;	/*!< concatenated list of java colored files. */
     StringBuf sb_perl;	/*!< concatenated list of perl colored files. */

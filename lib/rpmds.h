@@ -27,25 +27,24 @@ extern int _rpmds_nopromote;
  * A package dependency set.
  */
 struct rpmds_s {
-    int i;			/*!< Element index. */
-
 /*@observer@*/
     const char * Type;		/*!< Tag name. */
 /*@only@*/ /*@null@*/
     const char * DNEVR;		/*!< Formatted dependency string. */
-
-    rpmTag tagN;		/*!< Header tag. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
-
 /*@only@*/
     const char ** N;		/*!< Name. */
 /*@only@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
 /*@only@*/
     int_32 * Flags;		/*!< Flags identifying context/comparison. */
+    rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
+    int i;			/*!< Element index. */
+    unsigned l;			/*!< Low element (bsearch). */
+    unsigned u;			/*!< High element (bsearch). */
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -266,6 +265,26 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 /*@null@*/
 rpmds rpmdsInit(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
+
+/**
+ * Find a dependency set element using binary search.
+ * @param ds		dependency set to search
+ * @param this		dependency set element to find.
+ * @return		dependency index (or -1 if not found)
+ */
+/*@null@*/
+int rpmdsFind(rpmds ds, rpmds this)
+	/*@*/;
+
+/**
+ * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
+ * @retval *dsp		(merged) dependency set
+ * @param this		dependency set to merge
+ * @return		(merged) dependency index
+ */
+/*@null@*/
+int rpmdsMerge(/*@out@*/ rpmds * dsp, rpmds this)
+	/*@*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.
