@@ -372,11 +372,14 @@ int rpmtsOrder(rpmts ts)
  * Process all package elements in a transaction set.  Before calling
  * rpmtsRun be sure to have:
  *
- *    - setup the rpm root dir via rpmtsRoot().
+ *    - setup the rpm root dir via rpmtsSetRoot().
  *    - setup the rpm notify callback via rpmtsSetNotifyCallback().
  *    - setup the rpm transaction flags via rpmtsSetFlags().
- *    - setup the rpm verify signature flags via rpmtsSetVSFlags().
+ * 
+ * Additionally, though not required you may want to:
  *
+ *    - setup the rpm verify signature flags via rpmtsSetVSFlags().
+ *       
  * @param ts		transaction set
  * @param okProbs	previously known problems (or NULL)
  * @param ignoreSet	bits to filter problem types
