@@ -1,20 +1,33 @@
 #ifndef _H_RPMLEAD
 #define _H_RPMLEAD
 
-/** \file lib/rpmlead.h
+/** \ingroup lead
+ * \file lib/rpmlead.h
  *
  */
 
 #include <rpmlib.h>
 
-/* Other definitions went to rpmlib.h */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/** \ingroup lead
+ * Write lead to file handle.
+ * @param fd		file handle
+ * @param lead		data address
+ * @return		0 on success, 1 on error
+ */
 int writeLead(FD_t fd, struct rpmlead *lead);
-int readLead(FD_t fd, /*@out@*/struct rpmlead *lead);
+
+/** \ingroup lead
+ * Read lead from file handle.
+ * @param fd		file handle
+ * @retval lead		data address
+ * @return		0 on success, 1 on error
+ */
+int readLead(FD_t fd, /*@out@*/ struct rpmlead *lead)
+	/*@modifies fd, *lead @*/;
 
 #ifdef __cplusplus
 }

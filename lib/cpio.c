@@ -32,11 +32,16 @@ struct hardLink {
     const struct stat sb;
 };
 
-enum hardLinkType { HARDLINK_INSTALL=1, HARDLINK_BUILD };
+/** \ingroup payload
+ */
+enum hardLinkType {
+	HARDLINK_INSTALL=1,
+	HARDLINK_BUILD
+};
 
 /** \ingroup payload
  * Cpio archive header information.
- * @todo add support for tar (soon) and ar (eventually) archive formats.
+ * @todo Add support for tar (soon) and ar (eventually) archive formats.
  */
 struct cpioCrcPhysicalHeader {
     char magic[6];
@@ -55,7 +60,7 @@ struct cpioCrcPhysicalHeader {
     char checksum[8];			/* ignored !! */
 };
 
-#define	PHYS_HDR_SIZE	110		/* don't depend on sizeof(struct) */
+#define	PHYS_HDR_SIZE	110		/*!< Don't depend on sizeof(struct) */
 
 /** \ingroup payload
  * File name and stat information.

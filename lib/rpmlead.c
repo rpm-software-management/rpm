@@ -63,4 +63,3 @@ int readLead(FD_t fd, struct rpmlead *lead)
 
     return 0;
 }
-

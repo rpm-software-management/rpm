@@ -38,7 +38,12 @@ typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 #endif
 
+/** !ingroup header
+ */
 typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken *Header;
+
+/** !ingroup header
+ */
 typedef /*@abstract@*/ struct headerIteratorS *HeaderIterator;
 
 /** \ingroup header
@@ -107,35 +112,45 @@ struct headerSprintfExtension {
 extern const struct headerSprintfExtension headerDefaultFormats[];
 
 /** \ingroup header
+ * Include calculation for 8 bytes of (magic, 0)?
+ */
+enum hMagic {
+	HEADER_MAGIC_NO		= 0,
+	HEADER_MAGIC_YES	= 1
+};
+
+/** \ingroup header
  * Read (and load) header from file handle.
  * @param fd		file handle
- * @param magicp
- * @return		header
+ * @param magicp	read (and verify) 8 bytes of (magic, 0)?
+ * @return		header (or NULL on error)
  */
-Header headerRead(FD_t fd, int magicp)	/*@modifies fd @*/;
+Header headerRead(FD_t fd, enum hMagic magicp)
+	/*@modifies fd @*/;
 
 /** \ingroup header
  * Write (with unload) header to file handle.
  * @param fd		file handle
  * @param h		header
- * @param magicp
- * @return
+ * @param magicp	prefix write with 8 bytes of (magic, 0)?
+ * @return		0 on success, 1 on error
  */
-int headerWrite(FD_t fd, Header h, int magicp)	/*@modifies fd, h @*/;
+int headerWrite(FD_t fd, Header h, enum hMagic magicp)
+	/*@modifies fd, h @*/;
 
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
+ * @param h		header
+ * @param magicp	include size of 8 bytes for (magic, 0)?
+ * @return		size of on-disk header
  */
-unsigned int headerSizeof(Header h, int magicp)
+unsigned int headerSizeof(Header h, enum hMagic magicp)
 	/*@modifies h @*/;
-
-#define HEADER_MAGIC_NO   0
-#define HEADER_MAGIC_YES  1
 
 /** \ingroup header
  * Convert header to in-memory representation.
  * @param p		on-disk header (with offsets)
- * @return		header (with pointers)
+ * @return		header
  */
 Header headerLoad(void *p)	/*@*/;
 
@@ -234,23 +249,24 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 
 /** \ingroup header
  * Return array of locales found in header.
+ * The array is terminated with a NULL sentinel.
  * @param h		header
- * @return		array of locales
+ * @return		array of locales (or NULL on error)
  */
 char ** headerGetLangs(Header h)
 	/*@modifies h @*/;
 
 /** \ingroup header
  * Add locale specific tag to header.
- * A NULL lang is interpreted as the C locale.  Here are the rules:
- *
- *	1) If the tag isn't in the Header, it's added with the passed string
+ * A NULL lang is interpreted as the C locale. Here are the rules:
+ * \verbatim
+ *	- If the tag isn't in the Header, it's added with the passed string
  *	   as a version.
- *	2) If the tag occurs multiple times in entry, which tag is affected
+ *	- If the tag occurs multiple times in entry, which tag is affected
  *	   by the operation is undefined.
- *	2) If the tag is in the header w/ this language, the entry is
+ *	- If the tag is in the header w/ this language, the entry is
  *	   *replaced* (like headerModifyEntry()).
- *
+ * \endverbatim
  * This function is intended to just "do the right thing". If you need
  * more fine grained control use headerAddEntry() and headerModifyEntry().
  *
@@ -345,6 +361,7 @@ int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 /** \ingroup header
  * Check if tag is in header.
  * @param h		header
+ * @param tag		tag
  * @return		1 on success, 0 on failure
  */
 int headerIsEntry(Header h, int_32 tag)
@@ -356,6 +373,7 @@ int headerIsEntry(Header h, int_32 tag)
  * found.
  *
  * @param h		header
+ * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 int headerRemoveEntry(Header h, int_32 tag)
@@ -416,16 +434,20 @@ void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy)
 /* Entry Types */
 
 #define	RPM_MIN_TYPE		0
-#define RPM_NULL_TYPE		0
-#define RPM_CHAR_TYPE		1
-#define RPM_INT8_TYPE		2
-#define RPM_INT16_TYPE		3
-#define RPM_INT32_TYPE		4
-/* #define RPM_INT64_TYPE	5   ---- These aren't supported (yet) */
-#define RPM_STRING_TYPE		6
-#define RPM_BIN_TYPE		7
-#define RPM_STRING_ARRAY_TYPE	8
-#define RPM_I18NSTRING_TYPE	9
+
+enum tagTypes {
+	RPM_NULL_TYPE		= 0,
+	RPM_CHAR_TYPE		= 1,
+	RPM_INT8_TYPE		= 2,
+	RPM_INT16_TYPE		= 3,
+	RPM_INT32_TYPE		= 4,
+/*	RPM_INT64_TYPE	= 5,   ---- These aren't supported (yet) */
+	RPM_STRING_TYPE		= 6,
+	RPM_BIN_TYPE		= 7,
+	RPM_STRING_ARRAY_TYPE	= 8,
+	RPM_I18NSTRING_TYPE	= 9
+};
+
 #define	RPM_MAX_TYPE		9
 
 /* Tags -- general use tags should start at 1000 (RPM's tag space starts

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-08-27 17:01-0400\n"
+"POT-Creation-Date: 2000-08-27 20:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2123,51 +2123,51 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:378
+#: lib/cpio.c:384
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:384
+#: lib/cpio.c:390
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:632
+#: lib/cpio.c:638
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1099
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1096
+#: lib/cpio.c:1102
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1097
+#: lib/cpio.c:1103
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1115
+#: lib/cpio.c:1121
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1116
+#: lib/cpio.c:1122
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1117
+#: lib/cpio.c:1123
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1118
+#: lib/cpio.c:1124
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1127
+#: lib/cpio.c:1133
 msgid " failed - "
 msgstr ""
 
@@ -2381,7 +2381,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2114 lib/header.c:2131 lib/header.c:2151
+#: lib/header.c:2133 lib/header.c:2150 lib/header.c:2170
 msgid "(not a number)"
 msgstr ""
 
@@ -2410,78 +2410,78 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:223
+#: lib/header.c:244
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:254 lib/header.c:726 lib/install.c:351
+#: lib/header.c:275 lib/header.c:745 lib/install.c:351
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1089
+#: lib/header.c:1108
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1499
+#: lib/header.c:1518
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: lib/header.c:1527
+#: lib/header.c:1546
 msgid "missing } after %{"
 msgstr ""
 
-#: lib/header.c:1539
+#: lib/header.c:1558
 msgid "empty tag format"
 msgstr ""
 
-#: lib/header.c:1549
+#: lib/header.c:1568
 msgid "empty tag name"
 msgstr ""
 
-#: lib/header.c:1564
+#: lib/header.c:1583
 msgid "unknown tag"
 msgstr ""
 
-#: lib/header.c:1589
+#: lib/header.c:1608
 msgid "] expected at end of array"
 msgstr ""
 
-#: lib/header.c:1605
+#: lib/header.c:1624
 msgid "unexpected ]"
 msgstr ""
 
-#: lib/header.c:1607
+#: lib/header.c:1626
 msgid "unexpected }"
 msgstr ""
 
-#: lib/header.c:1665
+#: lib/header.c:1684
 msgid "? expected in expression"
 msgstr ""
 
-#: lib/header.c:1672
+#: lib/header.c:1691
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: lib/header.c:1683 lib/header.c:1718
+#: lib/header.c:1702 lib/header.c:1737
 msgid "} expected in expression"
 msgstr ""
 
-#: lib/header.c:1691
+#: lib/header.c:1710
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: lib/header.c:1705
+#: lib/header.c:1724
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: lib/header.c:1726
+#: lib/header.c:1745
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:1893
+#: lib/header.c:1912
 msgid "(unknown type)"
 msgstr ""
 
@@ -3353,121 +3353,121 @@ msgstr ""
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: lib/signature.c:139
+#: lib/signature.c:135
 msgid "No signature\n"
 msgstr ""
 
-#: lib/signature.c:142
+#: lib/signature.c:138
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: lib/signature.c:154
+#: lib/signature.c:150
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 
-#: lib/signature.c:158
+#: lib/signature.c:154
 msgid "New Header signature\n"
 msgstr ""
 
 #. 8-byte pad
-#: lib/signature.c:165 lib/signature.c:207
+#: lib/signature.c:161 lib/signature.c:203
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: lib/signature.c:166 lib/signature.c:208
+#: lib/signature.c:162 lib/signature.c:204
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: lib/signature.c:271
+#: lib/signature.c:267
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr ""
 
-#: lib/signature.c:282
+#: lib/signature.c:278
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:289
+#: lib/signature.c:285
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: lib/signature.c:294
+#: lib/signature.c:290
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:305 lib/signature.c:382
+#: lib/signature.c:301 lib/signature.c:378
 msgid "unable to read the signature"
 msgstr ""
 
-#: lib/signature.c:310
+#: lib/signature.c:306
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:348 lib/signature.c:693
+#: lib/signature.c:344 lib/signature.c:689
 msgid "Couldn't exec gpg"
 msgstr ""
 
-#: lib/signature.c:359
+#: lib/signature.c:355
 msgid "gpg failed"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:366
+#: lib/signature.c:362
 msgid "gpg failed to write signature"
 msgstr ""
 
-#: lib/signature.c:371
+#: lib/signature.c:367
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:387
+#: lib/signature.c:383
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:414
+#: lib/signature.c:410
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:420
+#: lib/signature.c:416
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:499 lib/signature.c:561
+#: lib/signature.c:495 lib/signature.c:557
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: lib/signature.c:559 lib/signature.c:632
+#: lib/signature.c:555 lib/signature.c:628
 msgid "exec failed!\n"
 msgstr ""
 
-#: lib/signature.c:634
+#: lib/signature.c:630
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: lib/signature.c:722
+#: lib/signature.c:718
 msgid "Couldn't exec pgp"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:726 lib/signature.c:779
+#: lib/signature.c:722 lib/signature.c:775
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: lib/signature.c:759
+#: lib/signature.c:755
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: lib/signature.c:771
+#: lib/signature.c:767
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 

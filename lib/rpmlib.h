@@ -361,6 +361,7 @@ void rpmSetVar(int var, const char *val);
 
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
+ * @todo Eliminate.
  */
 enum rpm_machtable_e {
 	RPM_MACHTABLE_INSTARCH		= 0,
@@ -387,6 +388,7 @@ int rpmReadRC(const char * file);
 
 /** \ingroup rpmrc
  * Return current arch name and/or number.
+ * @todo Generalize to extract arch component from target_platform macro.
  * @retval name		address of arch name (or NULL)
  * @retval num		address of arch number (or NULL)
  */
@@ -394,6 +396,7 @@ void rpmGetArchInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
 
 /** \ingroup rpmrc
  * Return current os name and/or number.
+ * @todo Generalize to extract os component from target_platform macro.
  * @retval name		address of os name (or NULL)
  * @retval num		address of os number (or NULL)
  */
@@ -406,6 +409,7 @@ void rpmGetOsInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
  * on an i686 platform is (usually) 1. The arch score is used to select
  * one of several otherwise identical packages based on the arch/os hints
  * in the header of the intended platform.
+ * @todo Rewrite to use RE's against config.guess target platform output.
  *
  * @param type		any of the RPM_MACHTABLE_* constants
  * @param name		name
@@ -421,6 +425,7 @@ int rpmMachineScore(int type, const char * name);
 int rpmShowRC(FILE *f);
 
 /** \ingroup rpmrc
+ * @todo Eliminate, use _target_* macros.
  * @param archTable
  * @param osTable
  */
@@ -430,6 +435,7 @@ void rpmSetTables(int archTable, int osTable);  /* only used by build code */
  * Set current arch/os names.
  * NULL as argument is set to the default value (munged uname())
  * pushed through a translation table (if appropriate).
+ * @todo Eliminate, use _target_* macros.
  *
  * @param arch		arch name (or NULL)
  * @param os		os name (or NULL)
@@ -438,6 +444,7 @@ void rpmSetMachine(const char * arch, const char * os);
 
 /** \ingroup rpmrc
  * Return current arch/os names.
+ * @todo Eliminate, use _target_* macros.
  * @retval arch		address of arch name (or NULL)
  * @retval os		address of os name (or NULL)
  */
@@ -452,7 +459,12 @@ void rpmFreeRpmrc(void);
 /* ==================================================================== */
 /** \name RPMDB */
 /*@{*/
+/** \ingroup rpmdb
+ */
 typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
+
+/** \ingroup rpmdb
+ */
 typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 
 /** \ingroup rpmdb

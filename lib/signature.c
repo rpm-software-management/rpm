@@ -119,10 +119,6 @@ static int checkSize(FD_t fd, int size, int sigsize)
     }
 }
 
-/* rpmReadSignature() emulates the new style signatures if it finds an */
-/* old-style one.  It also immediately verifies the header+archive  */
-/* size and returns an error if it doesn't match.                   */
-
 int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 {
     unsigned char buf[2048];

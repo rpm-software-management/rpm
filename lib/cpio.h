@@ -5,8 +5,7 @@
  * \file lib/cpio.h
  *  Structures used to handle cpio payloads within rpm packages.
  *
- *  Warning: Don't think that rpm's cpio implementation behaves just like
- *  standard cpio.
+ *  @warning Rpm's cpio implementation may be different than standard cpio.
  *  The implementation is pretty close, but it has some behaviors which are
  *  more to RPM's liking. I tried to document the differing behavior in cpio.c,
  *  but I may have missed some (ewt).

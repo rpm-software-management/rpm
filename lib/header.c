@@ -30,43 +30,54 @@
 
 static unsigned char header_magic[4] = { 0x8e, 0xad, 0xe8, 0x01 };
 
-/* handy -- this tells us alignments for defined elements as well */
+/** \ingroup header
+ * Alignment needs (and sizeof scalars types) for internal rpm data types.
+ */
 static int typeSizes[] =  { 
-	/* RPM_NULL_TYPE */		-1,
-	/* RPM_CHAR_TYPE */		1,
-	/* RPM_INT8_TYPE */		1,
-	/* RPM_INT16_TYPE */		2,
-	/* RPM_INT32_TYPE */		4,
-	/* RPM_INT64_TYPE */		-1,
-	/* RPM_STRING_TYPE */		-1,
-	/* RPM_BIN_TYPE */		1,
-	/* RPM_STRING_ARRAY_TYPE */	-1,
-	/* RPM_I18NSTRING_TYPE */	-1
+	-1,	/*!< RPM_NULL_TYPE */
+	1,	/*!< RPM_CHAR_TYPE */
+	1,	/*!< RPM_INT8_TYPE */
+	2,	/*!< RPM_INT16_TYPE */
+	4,	/*!< RPM_INT32_TYPE */
+	-1,	/*!< RPM_INT64_TYPE */
+	-1,	/*!< RPM_STRING_TYPE */
+	1,	/*!< RPM_BIN_TYPE */
+	-1,	/*!< RPM_STRING_ARRAY_TYPE */
+	-1	/*!< RPM_I18NSTRING_TYPE */
 };
 
-struct headerToken {
-    struct indexEntry *index;
-    int indexUsed;
-    int indexAlloced;
-
-    int sorted;  
-/*@refs@*/ int usageCount;
-};
-
+/**
+ * Description of tag data.
+ */
 struct entryInfo {
-    int_32 tag;
-    int_32 type;
-    int_32 offset;		/* Offset from beginning of data segment,
-				   only defined on disk */
-    int_32 count;
+    int_32 tag;			/*!< Tag identifier. */
+    int_32 type;		/*!< Tag data type. */
+    int_32 offset;		/*!< Offset into data segment (ondisk only). */
+    int_32 count;		/*!< Number of tag elements. */
 };
 
+/**
+ * A single tag from a Header.
+ */
 struct indexEntry {
-    struct entryInfo info;
-/*@owned@*/ void * data; 
-    int length;			/* Computable, but why bother? */
+    struct entryInfo info;	/*!< Description of tag data. */
+/*@owned@*/ void * data; 	/*!< Location of tag data. */
+    int length;			/*!< Computable, but why bother? */
 };
 
+/**
+ * The Header data structure.
+ */
+struct headerToken {
+    struct indexEntry *index;	/*!< Array of tags. */
+    int indexUsed;		/*!< Current size of tag array. */
+    int indexAlloced;		/*!< Allocated size of tag array. */
+    int sorted;  		/*!< Header is sorted by tag value? */
+/*@refs@*/ int usageCount;	/*!< Reference count. */
+};
+
+/**
+ */
 struct sprintfTag {
     /* if NULL tag element is invalid */
     headerTagTagFunction ext;   
@@ -79,6 +90,8 @@ struct sprintfTag {
     int pad;
 };
 
+/**
+ */
 struct extensionCache {
     int_32 type;
     int_32 count;
@@ -87,8 +100,16 @@ struct extensionCache {
 /*@owned@*/ const void * data;
 };
 
+/**
+ */
 struct sprintfToken {
-    enum { PTOK_NONE = 0, PTOK_TAG, PTOK_ARRAY, PTOK_STRING, PTOK_COND } type;
+    enum {
+	PTOK_NONE = 0,
+	PTOK_TAG,
+	PTOK_ARRAY,
+	PTOK_STRING,
+	PTOK_COND
+    } type;
     union {
 	struct {
 	    /*@only@*/ struct sprintfToken * format;
@@ -267,9 +288,12 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 /*                                                                  */
 /********************************************************************/
 
+/**
+ * Header tag iterator data structure.
+ */
 struct headerIteratorS {
-    Header h;
-    int next_index;
+    Header h;		/*!< Header being iterated. */
+    int next_index;	/*!< Next tag index. */
 };
 
 HeaderIterator headerInitIterator(Header h)
@@ -330,11 +354,6 @@ Header headerCopy(Header h)
     HeaderIterator headerIter;
     Header res = headerNew();
    
-#if 0	/* XXX harmless, but headerInitIterator() does this anyways */
-    /* Sort the index -- not really necessary but some old apps may depend
-       on this and it certainly won't hurt anything */
-    headerSort(h);
-#endif
     headerIter = headerInitIterator(h);
 
     while (headerNextIterator(headerIter, &tag, &type, &ptr, &count)) {
@@ -520,7 +539,7 @@ void *headerUnload(Header h)
 /*                                                                  */
 /********************************************************************/
 
-int headerWrite(FD_t fd, Header h, int magicp)
+int headerWrite(FD_t fd, Header h, enum hMagic magicp)
 {
     void * p;
     int length;
@@ -553,7 +572,7 @@ int headerWrite(FD_t fd, Header h, int magicp)
     return 0;
 }
 
-Header headerRead(FD_t fd, int magicp)
+Header headerRead(FD_t fd, enum hMagic magicp)
 {
     int_32 block[40];
     int_32 reserved;
@@ -999,7 +1018,7 @@ int headerUsageCount(Header h)
     return h->usageCount;
 }
 
-unsigned int headerSizeof(Header h, int magicp)
+unsigned int headerSizeof(Header h, enum hMagic magicp)
 {
     unsigned int size;
     int i, diff;
