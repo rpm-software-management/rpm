@@ -92,8 +92,8 @@ int rpmLookupSignatureType(int action)
  *  Return path to pgp executable of given type, or NULL when not found.
  */
 /*@null@*/ const char * rpmDetectPGPVersion(
-			/*@null@*/ /*@out@*/ pgpVersion *pgpVersion)
-	/*@modifies *pgpVersion, fileSystem @*/;
+			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
+	/*@modifies *pgpVer, fileSystem @*/;
 
 #ifdef __cplusplus
 }

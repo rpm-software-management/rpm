@@ -6,8 +6,10 @@
 #include "rpmio_internal.h"
 #include "debug.h"
 
+/*@-redef@*/
 typedef unsigned int uint32;
 typedef unsigned char byte;
+/*@=redef@*/
 
 /*@access DIGEST_CTX@*/
 
@@ -358,7 +360,9 @@ MD5Transform(DIGEST_CTX ctx)
 }
 
 static int _ie = 0x44332211;
+/*@-redef@*/
 static union _mendian { int i; char b[4]; } *_endian = (union _mendian *)&_ie;
+/*@=redef@*/
 #define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
 #define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
 
@@ -367,6 +371,7 @@ static union _mendian { int i; char b[4]; } *_endian = (union _mendian *)&_ie;
  * @param buf		data buffer (uint32 aligned address)
  * @param nbytes	no. bytes of data (multiple of sizeof(uint32))
  */
+/*@-shadow@*/
 static void
 byteReverse(byte *buf, unsigned nbytes)
 {
@@ -379,6 +384,7 @@ byteReverse(byte *buf, unsigned nbytes)
 	buf += 4;
     } while (--nlongs);
 }
+/*@=shadow@*/
 
 DIGEST_CTX
 rpmDigestInit(rpmDigestFlags flags)

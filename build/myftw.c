@@ -30,6 +30,7 @@ Cambridge, MA 02139, USA.  */
 #define NAMLEN(a) strlen((a)->d_name)
 #endif
 
+#if !defined(__LCLINT__)
 #ifndef PATH_MAX
 #ifdef _POSIX_VERSION
 #define PATH_MAX _POSIX_PATH_MAX
@@ -41,6 +42,7 @@ Cambridge, MA 02139, USA.  */
 #endif
 #endif
 #endif
+#endif	/* !__LCLINT */
 
 #include "myftw.h"
 #include "debug.h"

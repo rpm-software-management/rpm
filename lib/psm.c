@@ -1427,7 +1427,9 @@ assert(psm->mi == NULL);
 	    }
 
 	    /* Retrieve type of payload compression. */
+	    /*@-nullstate@*/	/* FIX: psm->oh may be NULL */
 	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
+	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
 	    {	int archnum = -1;
@@ -1613,8 +1615,10 @@ assert(psm->mi == NULL);
 	    int_32 installTime = time(NULL);
 
 	    if (fi->fc > 0 && fi->fstates)
+		/*@-nullpass@*/		/* LCL: fi->fstates != NULL */
 		(void) headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
 				fi->fstates, fi->fc);
+		/*@=nullpass@*/
 
 	    (void) headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
@@ -1712,7 +1716,8 @@ assert(psm->mi == NULL);
 
 	if (psm->goal == PSM_PKGSAVE) {
 	    if (!rc)
-		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"), psm->pkgURL);
+		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"),
+			(psm->pkgURL ? psm->pkgURL : "???"));
 	}
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE)) {
@@ -1857,5 +1862,7 @@ assert(psm->mi == NULL);
 	break;
     }
 
+    /*@-nullstate@*/	/* FIX: psm->oh and psm->fi->h may be NULL. */
     return rc;
+    /*@=nullstate@*/
 }

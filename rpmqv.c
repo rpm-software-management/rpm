@@ -49,7 +49,9 @@ static int noPgp = 0;
 #define GETOPT_SHOWRC		1018
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
+#ifdef	NOTYET
 #define	GETOPT_RCFILE		1022
+#endif
 
 enum modes {
 
@@ -146,7 +148,7 @@ static struct poptOption rpmAllPoptTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <file:...> instead of default macro file(s)"),
 	N_("<file:...>") },
-#ifndef	DYING
+#if !defined(GETOPT_RCFILE)
  { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,
 	N_("read <file:...> instead of default rpmrc file(s)"),
 	N_("<file:...>") },
@@ -897,28 +899,36 @@ int main(int argc, const char ** argv)
 #endif
 
 	  case GETOPT_EXCLUDEPATH:
-	    if (*optArg != '/') 
+	    /*@-nullderef@*/	/* LCL: optarg != NULL */
+	    if (optarg == NULL || *optArg != '/') 
 		argerror(_("exclude paths must begin with a /"));
+	    /*@=nullderef@*/
 
 	    relocations = xrealloc(relocations, 
 				  sizeof(*relocations) * (numRelocations + 1));
+	    /*@-observertrans -dependenttrans@*/	/* FIX: W2DO? */
 	    relocations[numRelocations].oldPath = optArg;
 	    relocations[numRelocations++].newPath = NULL;
+	    /*@=observertrans =dependenttrans@*/
 	    break;
 
 	  case GETOPT_RELOCATE:
-	  { char * errString = NULL;
-	    if (*optArg != '/') 
+	  { char * newPath = NULL;
+	    /*@-nullderef -nullpass@*/	/* LCL: optarg != NULL */
+	    if (optarg == NULL || *optArg != '/') 
 		argerror(_("relocations must begin with a /"));
-	    if (!(errString = strchr(optArg, '=')))
+	    if (!(newPath = strchr(optArg, '=')))
 		argerror(_("relocations must contain a ="));
-	    *errString++ = '\0';
-	    if (*errString != '/') 
+	    /*@=nullderef =nullpass@*/
+	    *newPath++ = '\0';
+	    if (*newPath != '/') 
 		argerror(_("relocations must have a / following the ="));
 	    relocations = xrealloc(relocations, 
 				  sizeof(*relocations) * (numRelocations + 1));
+	    /*@-observertrans -kepttrans@*/	/* FIX: W2DO? */
 	    relocations[numRelocations].oldPath = optArg;
-	    relocations[numRelocations++].newPath = errString;
+	    relocations[numRelocations++].newPath = newPath;
+	    /*@=observertrans =kepttrans@*/
 	  } break;
 #endif	/* IAM_RPMEIU */
 
@@ -955,23 +965,29 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMK */
 
 	  case GETOPT_DEFINEMACRO:
+	    /*@-nullderef -nullpass@*/	/* LCL: optarg != NULL */
+	    if (optarg == NULL)	break;	/* XXX can't happen. */
 	    (void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 	    (void) rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
+	    /*@=nullderef =nullpass@*/
 	    noUsageMsg = 1;
 	    break;
 
 	  case GETOPT_EVALMACRO:
+	    if (optarg == NULL)	break;	/* XXX can't happen. */
 	  { const char *val = rpmExpand(optArg, NULL);
 	    fprintf(stdout, "%s\n", val);
 	    free((void *)val);
 	    noUsageMsg = 1;
 	  } break;
 
+#if defined(GETOPT_RCFILE)
 	  case GETOPT_RCFILE:
 	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
 	    fprintf(stderr, _("Use \"--macros <file:...>\" instead.\n"));
 	    exit(EXIT_FAILURE);
 	    /*@notreached@*/ break;
+#endif
 
 	  default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
@@ -1568,7 +1584,7 @@ int main(int argc, const char ** argv)
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
 exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
     rpmFreeMacros(&rpmCLIMacroContext);
     rpmFreeRpmrc();

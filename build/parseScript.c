@@ -9,6 +9,7 @@
 #include "debug.h"
 
 /*@access StringBuf@*/	/* XXX compared with NULL */
+/*@access poptContext @*/	/* compared with NULL */
 
 /**
  */
@@ -293,12 +294,10 @@ int parseScript(Spec spec, int parsePart)
     rc = nextPart;
     
 exit:
-    if (sb != NULL)
-	freeStringBuf(sb);
+    sb = freeStringBuf(sb);
     progArgv = _free(progArgv);
     argv = _free(argv);
-    if (optCon)
-	poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
     
     return rc;
 }

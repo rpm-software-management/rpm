@@ -19,7 +19,7 @@ extern "C" {
 
 /**
  */
-void freeStringBuf( /*@only@*/ StringBuf sb);
+/*@null@*/ StringBuf freeStringBuf( /*@only@*/ /*@null@*/ StringBuf sb);
 
 /**
  */

@@ -54,7 +54,7 @@ int parseDescription(Spec spec)
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
 	argv = _free(argv);
-	poptFreeContext(optCon);
+	optCon = poptFreeContext(optCon);
 	return RPMERR_BADSPEC;
     }
 
@@ -66,7 +66,7 @@ int parseDescription(Spec spec)
 		     spec->lineNum,
 		     spec->line);
 	    argv = _free(argv);
-	    poptFreeContext(optCon);
+	    optCon = poptFreeContext(optCon);
 	    return RPMERR_BADSPEC;
 	}
     }
@@ -75,7 +75,7 @@ int parseDescription(Spec spec)
 	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
 	argv = _free(argv);
-	poptFreeContext(optCon);
+	optCon = poptFreeContext(optCon);
 	return RPMERR_BADSPEC;
     }
 
@@ -87,7 +87,7 @@ int parseDescription(Spec spec)
 	rpmError(RPMERR_BADSPEC, _("line %d: Second description\n"),
 		spec->lineNum);
 	argv = _free(argv);
-	poptFreeContext(optCon);
+	optCon = poptFreeContext(optCon);
 	return RPMERR_BADSPEC;
     }
 #endif
@@ -122,10 +122,10 @@ int parseDescription(Spec spec)
 			getStringBuf(sb), lang);
     }
     
-    freeStringBuf(sb);
+    sb = freeStringBuf(sb);
      
     argv = _free(argv);
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
     
     return nextPart;
 }

@@ -297,9 +297,9 @@ static int doSetupMacro(Spec spec, char *line)
 	if (parseNum(optArg, &num)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup: %s\n"),
 		     spec->lineNum, (optArg ? optArg : "???"));
-	    freeStringBuf(before);
-	    freeStringBuf(after);
-	    poptFreeContext(optCon);
+	    before = freeStringBuf(before);
+	    after = freeStringBuf(after);
+	    optCon = poptFreeContext(optCon);
 	    argv = _free(argv);
 	    return RPMERR_BADSPEC;
 	}
@@ -317,9 +317,9 @@ static int doSetupMacro(Spec spec, char *line)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 poptStrerror(arg));
-	freeStringBuf(before);
-	freeStringBuf(after);
-	poptFreeContext(optCon);
+	before = freeStringBuf(before);
+	after = freeStringBuf(after);
+	optCon = poptFreeContext(optCon);
 	argv = _free(argv);
 	return RPMERR_BADSPEC;
     }
@@ -334,7 +334,7 @@ static int doSetupMacro(Spec spec, char *line)
     }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
     argv = _free(argv);
 
     /* cd to the build dir */
@@ -369,7 +369,7 @@ static int doSetupMacro(Spec spec, char *line)
     }
 
     appendStringBuf(spec->prep, getStringBuf(before));
-    freeStringBuf(before);
+    before = freeStringBuf(before);
 
     if (!createDir) {
 	sprintf(buf, "cd %s", spec->buildSubdir);
@@ -384,7 +384,7 @@ static int doSetupMacro(Spec spec, char *line)
     }
     
     appendStringBuf(spec->prep, getStringBuf(after));
-    freeStringBuf(after);
+    after = freeStringBuf(after);
 
     /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
     /* Fix the owner, group, and permissions of the setup build tree */
@@ -516,7 +516,7 @@ static int doPatchMacro(Spec spec, char *line)
 int parsePrep(Spec spec)
 {
     int nextPart, res, rc;
-    StringBuf buf;
+    StringBuf sb;
     char **lines, **saveLines;
 
     if (spec->prep != NULL) {
@@ -533,12 +533,12 @@ int parsePrep(Spec spec)
     if (rc)
 	return rc;
     
-    buf = newStringBuf();
+    sb = newStringBuf();
     
     while (! (nextPart = isPart(spec->line))) {
 	/* Need to expand the macros inline.  That way we  */
 	/* can give good line number information on error. */
-	appendStringBuf(buf, spec->line);
+	appendStringBuf(sb, spec->line);
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
@@ -547,7 +547,7 @@ int parsePrep(Spec spec)
 	    return rc;
     }
 
-    saveLines = splitString(getStringBuf(buf), strlen(getStringBuf(buf)), '\n');
+    saveLines = splitString(getStringBuf(sb), strlen(getStringBuf(sb)), '\n');
     /*@-usereleased@*/
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
@@ -560,14 +560,14 @@ int parsePrep(Spec spec)
 	}
 	if (res && !spec->force) {
 	    freeSplitString(saveLines);
-	    freeStringBuf(buf);
+	    sb = freeStringBuf(sb);
 	    return res;
 	}
     }
     /*@=usereleased@*/
 
     freeSplitString(saveLines);
-    freeStringBuf(buf);
+    sb = freeStringBuf(sb);
 
     return nextPart;
 }

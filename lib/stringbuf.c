@@ -9,6 +9,13 @@
 
 #define BUF_CHUNK 1024
 
+struct StringBufRec {
+    /*@owned@*/ char *buf;
+    /*@dependent@*/ char *tail;     /* Points to first "free" char */
+    int allocated;
+    int free;
+};
+
 /**
  * Locale insensitive isspace(3).
  */
@@ -16,12 +23,15 @@
     return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
-struct StringBufRec {
-    /*@owned@*/ char *buf;
-    /*@dependent@*/ char *tail;     /* Points to first "free" char */
-    int allocated;
-    int free;
-};
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this != NULL)	free((void *)this);
+    return NULL;
+}
 
 StringBuf newStringBuf(void)
 {
@@ -35,14 +45,13 @@ StringBuf newStringBuf(void)
     return sb;
 }
 
-void freeStringBuf(StringBuf sb)
+StringBuf freeStringBuf(StringBuf sb)
 {
-    if (! sb) {
-	return;
+    if (sb) {
+	sb->buf = _free(sb->buf);
+	sb = _free(sb);
     }
-    
-    free(sb->buf);
-    free(sb);
+    return sb;
 }
 
 void truncStringBuf(StringBuf sb)
@@ -64,7 +73,7 @@ void stripTrailingBlanksStringBuf(StringBuf sb)
     sb->tail[0] = '\0';
 }
 
-char *getStringBuf(StringBuf sb)
+char * getStringBuf(StringBuf sb)
 {
     return sb->buf;
 }

@@ -277,6 +277,7 @@ enum rpmdbFlags {
 extern "C" {
 #endif
 
+/*@-exportlocal@*/
 /** \ingroup db3
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
@@ -392,6 +393,7 @@ int dbiByteSwapped(dbiIndex dbi);
  * @return		base file name of db1 database
  */
 char * db1basename(int rpmtag);
+/*@=exportlocal@*/
 
 /** \ingroup rpmdb
  */

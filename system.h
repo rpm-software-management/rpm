@@ -90,7 +90,9 @@ extern int errno;
 #endif
 
 #ifdef STDC_HEADERS
+/*@-macrounrecog -incondefs -globuse@*/	/* FIX: shrug */
 #define getopt system_getopt
+/*@=macrounrecog =incondefs =globuse@*/
 /*@-skipansiheaders@*/
 #include <stdlib.h>
 /*@=skipansiheaders@*/

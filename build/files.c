@@ -22,9 +22,9 @@
 #include "debug.h"
 
 /*@access Header @*/
-/*@access StringBuf @*/
 /*@access TFI_t @*/
 /*@access FD_t @*/
+/*@access StringBuf @*/		/* compared with NULL */
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -271,6 +271,7 @@ typedef struct VFA {
 
 /**
  */
+/*@-exportlocal@*/
 VFA_t verifyAttrs[] = {
 	{ "md5",	RPMVERIFY_MD5 },
 	{ "size",	RPMVERIFY_FILESIZE },
@@ -282,6 +283,7 @@ VFA_t verifyAttrs[] = {
 	{ "rdev",	RPMVERIFY_RDEV },
 	{ NULL, 0 }
 };
+/*@=exportlocal@*/
 
 /**
  * @param fl		package file tree walk data
@@ -737,6 +739,7 @@ static int parseForRegexMultiLib(const char *fileName)	/*@*/
 
 /**
  */
+/*@-exportlocal@*/
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	RPMFILE_DOC },
@@ -756,6 +759,7 @@ VFA_t virtualFileAttributes[] = {
 
 	{ NULL, 0 }
 };
+/*@=exportlocal@*/
 
 /**
  * @param fl		package file tree walk data
@@ -1253,7 +1257,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	d += 2;		/* skip both dirname and basename NUL's */
 
 	/* Create archive path, normally adding "./" */
+	/*@-dependenttrans@*/	/* FIX: xstrdup? nah ... */
 	fi->apath[i] = a;
+ 	/*@=dependenttrans@*/
 	if (_addDotSlash) a = stpcpy(a, "./");
 	a = stpcpy(a, (flp->fileURL + skipLen));
 	a++;		/* skip apath NUL */
@@ -1539,7 +1545,8 @@ exit:
  */
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
-	/*@modifies pkg->cpioList, pkg->specialDoc, pkg->header */
+	/*@modifies spec->macros,
+		pkg->cpioList, pkg->specialDoc, pkg->header */
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct FileList_s fl;
@@ -1964,7 +1971,7 @@ int processSourceFiles(Spec spec)
 			spec->sourceHeader, 1);
     }
 
-    freeStringBuf(sourceFiles);
+    sourceFiles = freeStringBuf(sourceFiles);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     return fl.processingFailed;
 }
@@ -2118,6 +2125,7 @@ typedef struct {
 
 /**
  */
+/*@-exportlocal@*/
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -2157,6 +2165,7 @@ DepMsg_t depMsgs[] = {
 	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
+/*@=exportlocal@*/
 
 /**
  */
@@ -2261,7 +2270,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 	else
 	    tagflags &= ~RPMSENSE_MULTILIB;
 	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0, tagflags);
-	freeStringBuf(readBuf);
+	readBuf = freeStringBuf(readBuf);
 
 	if (rc) {
 	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
@@ -2269,7 +2278,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 	}
     }
 
-    freeStringBuf(writeBuf);
+    writeBuf = freeStringBuf(writeBuf);
     return rc;
 }
 

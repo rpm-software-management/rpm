@@ -19,7 +19,9 @@
 #if DB_VERSION_MAJOR == 3
 #define	__USE_DB3	1
 
+/*@-exportlocal@*/
 struct _dbiIndex db3dbi;
+/*@=exportlocal@*/
 
 /** \ingroup db3
  *  Analogue to struct poptOption
@@ -33,7 +35,7 @@ struct dbOption {
 
 #define	_POPT_SET_BIT	(POPT_ARG_VAL|POPT_ARGFLAG_OR)
 
-/*@-immediatetrans@*/
+/*@-immediatetrans -exportlocal@*/
 /** \ingroup db3
  */
 struct dbOption rdbOptions[] = {
@@ -142,7 +144,7 @@ struct dbOption rdbOptions[] = {
 
  { NULL, 0, NULL, 0 }
 };
-/*@=immediatetrans@*/
+/*@=immediatetrans =exportlocal@*/
 
 static int dbSaveLong(const struct dbOption * opt, long aLong) {
     if (opt->argInfo & POPT_ARGFLAG_NOT)

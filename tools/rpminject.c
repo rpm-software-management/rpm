@@ -610,6 +610,6 @@ main(int argc, char *argv[])
 
     ec = do_inject(cmds, ncmds, poptGetArgs(optCon));
 
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
     return ec;
 }

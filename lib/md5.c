@@ -27,7 +27,9 @@ static union _mendian { int i; char b[4]; } *_endian = (union _mendian *)&_ie;
 #define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
 #define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
 
+/*@-exportlocal@*/
 void byteReverse(unsigned char *buf, unsigned longs);
+/*@=exportlocal@*/
 
 /*
  * Note: this code is harmless on little-endian machines.

@@ -331,7 +331,7 @@ static int verifyHeader(QVA_t qva, Header h)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char buf[BUFSIZ];
     char * t, * te;
-
+    const char * prefix = (qva->qva_prefix ? qva->qva_prefix : "");
     const char ** fileNames = NULL;
     int count;
     int_32 * fileFlagsList = NULL;
@@ -355,7 +355,7 @@ static int verifyHeader(QVA_t qva, Header h)
     for (i = 0; i < count; i++) {
 	int rc;
 
-	rc = rpmVerifyFile(qva->qva_prefix, h, i, &verifyResult, omitMask);
+	rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask);
 	if (rc) {
 	    sprintf(te, _("missing    %s"), fileNames[i]);
 	    te += strlen(te);
@@ -469,6 +469,7 @@ static int verifyDependencies(rpmdb rpmdb, Header h)
 
 int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
 {
+    const char * prefix = (qva->qva_prefix ? qva->qva_prefix : "");
     FD_t fdo;
     int ec = 0;
     int rc;
@@ -481,7 +482,7 @@ int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
 	    ec = rc;;
     fdo = fdDup(STDOUT_FILENO);
     if ((qva->qva_flags & VERIFY_SCRIPT) &&
-	(rc = rpmVerifyScript(qva->qva_prefix, h, fdo)) != 0)
+	(rc = rpmVerifyScript(prefix, h, fdo)) != 0)
 	    ec = rc;
     if (fdo)
 	rc = Fclose(fdo);

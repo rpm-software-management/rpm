@@ -9,6 +9,16 @@
 #ifndef H_POPTINT
 #define H_POPTINT
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this != NULL)	free((void *)this);
+    return NULL;
+}
+
 /* Bit mask macros. */
 typedef	unsigned int __pbm_bits;
 #define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
@@ -20,50 +30,50 @@ typedef struct {
 #define	__PBM_BITS(set)	((set)->bits)
 
 #define	PBM_ALLOC(d)	calloc(__PBM_IX (d) + 1, sizeof(__pbm_bits))
-#define	PBM_FREE(s)	free(s);
+#define	PBM_FREE(s)	_free(s);
 #define PBM_SET(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] |= __PBM_MASK (d))
 #define PBM_CLR(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] &= ~__PBM_MASK (d))
 #define PBM_ISSET(d, s) ((__PBM_BITS (s)[__PBM_IX (d)] & __PBM_MASK (d)) != 0)
 
 struct optionStackEntry {
     int argc;
-/*@only@*/ const char ** argv;
-/*@only@*/ pbm_set * argb;
+/*@only@*/ /*@null@*/ const char ** argv;
+/*@only@*/ /*@null@*/ pbm_set * argb;
     int next;
-/*@only@*/ const char * nextArg;
-/*@keep@*/ const char * nextCharArg;
-/*@dependent@*/ struct poptAlias * currAlias;
+/*@only@*/ /*@null@*/ const char * nextArg;
+/*@keep@*/ /*@null@*/ const char * nextCharArg;
+/*@dependent@*/ /*@null@*/ struct poptAlias * currAlias;
     int stuffed;
 };
 
 struct execEntry {
-    const char * longName;
+/*@owned@*/ /*@null@*/ const char * longName;
     char shortName;
-    const char * script;
+/*@only@*/ /*@null@*/ const char * script;
 };
 
 struct poptContext_s {
     struct optionStackEntry optionStack[POPT_OPTION_DEPTH];
 /*@dependent@*/ struct optionStackEntry * os;
-/*@owned@*/ const char ** leftovers;
+/*@owned@*/ /*@null@*/ const char ** leftovers;
     int numLeftovers;
     int nextLeftover;
 /*@keep@*/ const struct poptOption * options;
     int restLeftover;
-/*@only@*/ const char * appName;
-/*@only@*/ struct poptAlias * aliases;
+/*@only@*/ /*@null@*/ const char * appName;
+/*@only@*/ /*@null@*/ struct poptAlias * aliases;
     int numAliases;
     int flags;
-    struct execEntry * execs;
+/*@owned@*/ /*@null@*/ struct execEntry * execs;
     int numExecs;
-/*@only@*/ const char ** finalArgv;
+/*@only@*/ /*@null@*/ const char ** finalArgv;
     int finalArgvCount;
     int finalArgvAlloced;
-/*@dependent@*/ struct execEntry * doExec;
+/*@dependent@*/ /*@null@*/ struct execEntry * doExec;
 /*@only@*/ const char * execPath;
     int execAbsolute;
 /*@only@*/ const char * otherHelp;
-    pbm_set * arg_strip;
+/*@null@*/ pbm_set * arg_strip;
 };
 
 #ifdef HAVE_LIBINTL_H

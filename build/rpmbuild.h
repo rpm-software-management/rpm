@@ -371,6 +371,7 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
  */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@modifies spec->packages->cpioList, spec->packages->specialDoc,
+		spec->macros,
 		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
@@ -408,7 +409,7 @@ int processSourceFiles(Spec spec)
  * @return
  */
 int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
-		const char * rootdir,
+		/*@null@*/ const char * rootdir,
 		/*@null@*/ const char * buildRoot,
 		int inBuildArch,
 		/*@null@*/ const char * passPhrase,

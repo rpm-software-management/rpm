@@ -9,30 +9,33 @@
 #include "system.h"
 #include "poptint.h"
 
-static void configLine(poptContext con, char * line) {
+static void configLine(poptContext con, char * line)
+	/*@modifies *line,
+		con->execs, con->numExecs @*/
+{
     int nameLength = strlen(con->appName);
-    char * opt;
+    const char * opt;
     struct poptAlias alias;
-    char * entryType;
-    char * longName = NULL;
+    const char * entryType;
+    const char * longName = NULL;
     char shortName = '\0';
     
     if (strncmp(line, con->appName, nameLength)) return;
     line += nameLength;
-    if (!*line || !isspace(*line)) return;
-    while (*line && isspace(*line)) line++;
+    if (*line == '\0' || !isspace(*line)) return;
+    while (*line != '\0' && isspace(*line)) line++;
     entryType = line;
 
-    while (!*line || !isspace(*line)) line++;
+    while (*line == '\0' || !isspace(*line)) line++;
     *line++ = '\0';
-    while (*line && isspace(*line)) line++;
-    if (!*line) return;
+    while (*line != '\0' && isspace(*line)) line++;
+    if (*line == '\0') return;
     opt = line;
 
-    while (!*line || !isspace(*line)) line++;
+    while (*line == '\0' || !isspace(*line)) line++;
     *line++ = '\0';
-    while (*line && isspace(*line)) line++;
-    if (!*line) return;
+    while (*line != '\0' && isspace(*line)) line++;
+    if (*line == '\0') return;
 
     if (opt[0] == '-' && opt[1] == '-')
 	longName = opt + 2;
@@ -42,10 +45,11 @@ static void configLine(poptContext con, char * line) {
     if (!strcmp(entryType, "alias")) {
 	if (poptParseArgvString(line, &alias.argc, &alias.argv)) return;
 	alias.longName = longName, alias.shortName = shortName;
-	poptAddAlias(con, alias, 0);
+	(void) poptAddAlias(con, alias, 0);
     } else if (!strcmp(entryType, "exec")) {
 	con->execs = realloc(con->execs,
 				sizeof(*con->execs) * (con->numExecs + 1));
+	if (con->execs == NULL) return;	/* XXX can't happen */
 	if (longName)
 	    con->execs[con->numExecs].longName = xstrdup(longName);
 	else
@@ -54,13 +58,17 @@ static void configLine(poptContext con, char * line) {
 	con->execs[con->numExecs].shortName = shortName;
 	con->execs[con->numExecs].script = xstrdup(line);
 	
+	/*@-noeffect@*/		/* LCL: broken? */
 	con->numExecs++;
+	/*@=noeffect@*/
     }
 }
 
-int poptReadConfigFile(poptContext con, const char * fn) {
-    char * file, * chptr, * end;
-    char * buf, * dst;
+int poptReadConfigFile(poptContext con, const char * fn)
+{
+    const char * file, * chptr, * end;
+    char * buf;
+/*@dependent@*/ char * dst;
     int fd, rc;
     int fileLength;
 
@@ -76,27 +84,27 @@ int poptReadConfigFile(poptContext con, const char * fn) {
     (void) lseek(fd, 0, 0);
 
     file = alloca(fileLength + 1);
-    if (read(fd, file, fileLength) != fileLength) {
+    if (read(fd, (char *)file, fileLength) != fileLength) {
 	rc = errno;
-	close(fd);
+	(void) close(fd);
 	errno = rc;
 	return POPT_ERROR_ERRNO;
     }
-    close(fd);
+    (void) close(fd);
 
     dst = buf = alloca(fileLength + 1);
 
     chptr = file;
     end = (file + fileLength);
+    /*@-infloops@*/	/* LCL: can't detect chptr++ */
     while (chptr < end) {
 	switch (*chptr) {
 	  case '\n':
 	    *dst = '\0';
 	    dst = buf;
 	    while (*dst && isspace(*dst)) dst++;
-	    if (*dst && *dst != '#') {
+	    if (*dst && *dst != '#')
 		configLine(con, dst);
-	    }
 	    chptr++;
 	    break;
 	  case '\\':
@@ -114,6 +122,7 @@ int poptReadConfigFile(poptContext con, const char * fn) {
 	    break;
 	}
     }
+    /*@=infloops@*/
 
     return 0;
 }
@@ -138,4 +147,3 @@ int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv) {
 
     return 0;
 }
-

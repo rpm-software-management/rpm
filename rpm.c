@@ -1281,7 +1281,7 @@ int main(int argc, const char ** argv)
 	break;
     }
 
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
     rpmFreeMacros(&rpmCLIMacroContext);
     rpmFreeRpmrc();

@@ -153,7 +153,7 @@ exit:
 	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
 	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
     }
-    freeStringBuf(sb);
+    sb = freeStringBuf(sb);
     /*@-nullstate@*/
     return rc;
     /*@=nullstate@*/

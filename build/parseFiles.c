@@ -9,6 +9,7 @@
 #include "debug.h"
 
 /*@access StringBuf @*/		/* compared with NULL */
+/*@access poptContext @*/	/* compared with NULL */
 
 /* These have to be global scope to make up for *stupid* compilers */
     /*@observer@*/ /*@null@*/ static const char *name = NULL;
@@ -25,7 +26,7 @@ int parseFiles(Spec spec)
     Package pkg;
     int rc, argc;
     int arg;
-    const char **argv = NULL;
+    const char ** argv = NULL;
     int flag = PART_SUBNAME;
     poptContext optCon = NULL;
 
@@ -106,8 +107,7 @@ int parseFiles(Spec spec)
 
 exit:
     argv = _free(argv);
-    if (optCon)
-	poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
 	
     return rc;
 }

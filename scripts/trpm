@@ -19,7 +19,7 @@ rpmdb=/usr/bin/rpmdb
 
 dist=7.0
 type=min
-arch=`$rpmq --eval '%{_arch}'`
+arch=`$rpm --eval '%{_arch}'`
 
 top=`pwd`
 root=$top/$dist

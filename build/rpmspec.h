@@ -207,7 +207,7 @@ struct spectag * stashSt(Spec spec, Header h, int tag, const char * lang)
  */
 int addSource(Spec spec, Package pkg, const char * field, int tag)
 	/*@modifies spec->sources, spec->numSources,
-		spec->st,
+		spec->st, spec->macros,
 		pkg->icon @*/;
 
 /** \ingroup rpmbuild

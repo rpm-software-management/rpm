@@ -57,9 +57,9 @@ getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
 	$(YACC) $(srcdir)/getdate.y
 	-@if test -f y.tab.c; then \
-	 { echo "/*@-globstate -retvalint -unqualifiedtrans -usedef -varuse -nullderef@*/";\
+	 { echo "/*@-globstate -retvalint -unqualifiedtrans -usedef -varuse -nullderef -exportlocal @*/";\
 	   cat y.tab.c ;\
-	   echo "/*@=globstate =retvalint =unqualifiedtrans =usedef =varuse =nullderef@*/";\
+	   echo "/*@=globstate =retvalint =unqualifiedtrans =usedef =varuse =nullderef =exportlocal @*/";\
 	 } > getdate.c ;\
 	   rm -f y.tab.c; \
 	else \

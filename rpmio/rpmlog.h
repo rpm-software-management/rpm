@@ -168,21 +168,6 @@ extern "C" {
 int rpmlogGetNrecs(void);
 
 /**
- * Return text of last rpmError() message.
- * @return		text of last message
- */
-/*@observer@*/ /*@null@*/ const char * rpmlogMessage(void);
-
-/**
- * Return error code from last rpmError() message.
- * @deprecated Perl-RPM needs, what's really needed is predictable, non-i18n
- *	encumbered, error text that can be retrieved through rpmlogMessage()
- *	and parsed IMHO.
- * @return		code from last message
- */
-int rpmlogCode(void);
-
-/**
  * Print all rpmError() messages.
  * @param f		file handle (NULL uses stderr)
  */
@@ -210,10 +195,27 @@ int rpmlogSetMask (int mask);
  */
 /*@mayexit@*/ /*@printflike@*/ void rpmlog (int pri, const char *fmt, ...);
 
+/*@-exportlocal@*/
+/**
+ * Return text of last rpmError() message.
+ * @return		text of last message
+ */
+/*@observer@*/ /*@null@*/ const char * rpmlogMessage(void);
+
+/**
+ * Return error code from last rpmError() message.
+ * @deprecated Perl-RPM needs, what's really needed is predictable, non-i18n
+ *	encumbered, error text that can be retrieved through rpmlogMessage()
+ *	and parsed IMHO.
+ * @return		code from last message
+ */
+int rpmlogCode(void);
+
 /**
  * Set rpmlog callback function.
  */
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
+/*@=exportlocal@*/
 
 /**
  * Set rpmlog callback function.

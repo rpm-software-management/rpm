@@ -401,7 +401,9 @@ static struct FDIO_s fdio_s = {
 };
 FDIO_t fdio = /*@-compmempass@*/ &fdio_s /*@=compmempass@*/ ;
 
+/*@-redef@*/	/* see lib/falloc.c */
 FDIO_t fadio;	/* XXX usually NULL, filled in when linked with rpm */
+/*@=redef@*/
 
 int fdWritable(FD_t fd, int secs)
 {
@@ -1473,6 +1475,7 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     int bytesRead;
     int total;
 
+    *buf = '\0';	/* LCL: insistent bugger. */
     /* XXX preserve timedRead() behavior */
     if (fdGetIo(fd) == fdio) {
 	struct stat sb;
@@ -1608,6 +1611,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence) {
     return fdSeek(cookie, pos, whence);
 }
 
+/*@-usereleased@*/	/* LCL: fd handling is tricky here. */
 int ufdClose( /*@only@*/ void * cookie)
 {
     FD_t fd = c2f(cookie);
@@ -1720,7 +1724,9 @@ fprintf(stderr, "-> \r\n");
     }
     return fdClose(fd);
 }
+/*@=usereleased@*/
 
+/*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
 {
@@ -1755,7 +1761,9 @@ exit:
 	*uret = u;
     return fd;
 }
+/*@=nullstate@*/
 
+/*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
 {
@@ -1795,6 +1803,7 @@ exit:
 	*uret = u;
     return fd;
 }
+/*@=nullstate@*/
 
 static /*@null@*/ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 {

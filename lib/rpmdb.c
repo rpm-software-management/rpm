@@ -28,7 +28,9 @@ extern int _noDirTokens;
 static int _rebuildinprogress = 0;
 static int _db_filter_dups = 0;
 
+/*@-exportlocal@*/
 int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
+/*@=exportlocal@*/
 
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
@@ -723,7 +725,7 @@ int rpmdbSync(rpmdb rpmdb)
 }
 
 static /*@only@*/ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
-		/*@kept@*/ const char * home,
+		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
 {
     rpmdb rpmdb = xcalloc(sizeof(*rpmdb), 1);

@@ -413,6 +413,7 @@ int rpmReadConfigFiles(const char * file, const char * target)
 {
 
     /* Preset target macros */
+    /*@-nullstate@*/	/* FIX: target can be NULL */
     rpmRebuildTargetVars(&target, NULL);
 
     /* Read the files */
@@ -420,6 +421,7 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
     /* Reset target macros */
     rpmRebuildTargetVars(&target, NULL);
+    /*@=nullstate@*/
 
     /* Finally set target platform */
     {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
@@ -611,6 +613,7 @@ int rpmReadRC(const char * rcfiles)
     return rc;
 }
 
+/*@-usedef@*/	/*@ FIX: se usage inconsistent, W2DO? */
 static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 {
     const char *s;
@@ -825,6 +828,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 
     return 0;
 }
+/*@=usedef@*/
 
 #	if defined(__linux__) && defined(__i386__)
 #include <setjmp.h>
@@ -1385,7 +1389,7 @@ void rpmGetOsInfo(const char ** name, int * num) {
     getMachineInfo(OS, name, num);
 }
 
-void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
+void rpmRebuildTargetVars(const char ** buildtarget, const char ** canontarget)
 {
 
     char *ca = NULL, *co = NULL, *ct = NULL;

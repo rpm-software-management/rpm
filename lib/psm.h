@@ -56,7 +56,7 @@ struct transactionFileInfo_s {
 /*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
 /* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
     uint_16 * fmodes;		/*!< File mode(s) (from header) */
-/*@owned@*/ char * fstates;	/*!< File state(s) (from header) */
+/*@only@*/ /*@null@*/ char * fstates;	/*!< File state(s) (from header) */
 /*@owned@*/ const char ** fuser;	/*!< File owner(s) */
 /*@owned@*/ const char ** fgroup;	/*!< File group(s) */
 /*@owned@*/ const char ** flangs;	/*!< File lang(s) */
@@ -69,7 +69,7 @@ struct transactionFileInfo_s {
     unsigned int archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
-/*@owned@*/ const char ** apath;
+/*@only@*/ /*@null@*/ const char ** apath;
     int mapflags;
 /*@owned@*/ int * fmapflags;
     uid_t uid;
@@ -142,11 +142,11 @@ struct psm_s {
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage/multilib header. */
-    rpmdbMatchIterator mi;
+/*@null@*/ rpmdbMatchIterator mi;
 /*@observer@*/ const char * stepName;
-/*@owned@*/ const char * rpmio_flags;
-/*@owned@*/ const char * failedFile;
-/*@owned@*/ const char * pkgURL;	/*!< Repackage URL. */
+/*@only@*/ /*@null@*/ const char * rpmio_flags;
+/*@only@*/ /*@null@*/ const char * failedFile;
+/*@only@*/ /*@null@*/ const char * pkgURL;	/*!< Repackage URL. */
 /*@dependent@*/ const char * pkgfn;	/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
@@ -187,7 +187,8 @@ void freeFi(TFI_t fi)
  * @param a		package dispostion
  * @return		formatted string
  */
-/*@observer@*/ const char *const fiTypeString(/*@partial@*/TFI_t fi);
+/*@observer@*/ const char *const fiTypeString(/*@partial@*/TFI_t fi)
+	/*@*/;
 
 /**
  * Package state machine driver.
@@ -195,7 +196,7 @@ void freeFi(TFI_t fi)
  * @param stage		next stage
  * @return		0 on success
  */
-int psmStage(/*@partial@*/ PSM_t psm, pkgStage stage)
+int psmStage(PSM_t psm, pkgStage stage)
 	/*@modifies psm @*/;
 
 #ifdef __cplusplus

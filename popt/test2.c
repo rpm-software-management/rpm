@@ -133,7 +133,7 @@ main(int argc, const char ** argv) {
     /* although there are no options to be parsed, check for --help */
     poptGetNextOpt(optCon);
 
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
 
     printf( "dbusername %s\tdbpassword %s\n"
             "txhost %s\ttxsslport %d\ttxstoreid %d\tpathofkeyfile %s\n"

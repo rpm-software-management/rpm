@@ -431,9 +431,11 @@ int headerGetEntryMinMemory(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * @retval c		address of number of values
  * @return		1 on success, 0 on failure
  */
+/*@-exportlocal@*/
 int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 	/*@out@*/ const void **p, /*@out@*/ int_32 *c)
 		/*@modifies *type, *p, *c @*/;
+/*@=exportlocal@*/
 
 /** \ingroup header
  * Check if tag is in header.
@@ -495,6 +497,7 @@ void headerFreeIterator( /*@only@*/ HeaderIterator iter);
  * Sort tags in header.
  * @param h		header
  */
+/*@-exportlocal@*/
 void headerSort(Header h)
 	/*@modifies h @*/;
 
@@ -504,6 +507,7 @@ void headerSort(Header h)
  */
 void headerUnsort(Header h)
 	/*@modifies h @*/;
+/*@=exportlocal@*/
 
 /** \ingroup header
  * Duplicate tag values from one header into another.

@@ -147,7 +147,7 @@ void freePackage(/*@only@*/ Package p)
     p->verifyFile = _free(p->verifyFile);
 
     headerFree(p->header);
-    freeStringBuf(p->fileList);
+    p->fileList = freeStringBuf(p->fileList);
     p->fileFile = _free(p->fileFile);
     if (p->cpioList) {
 	TFI_t fi = p->cpioList;
@@ -156,7 +156,7 @@ void freePackage(/*@only@*/ Package p)
 	fi = _free(fi);
     }
 
-    freeStringBuf(p->specialDoc);
+    p->specialDoc = freeStringBuf(p->specialDoc);
 
     freeSources(p->icon);
 
@@ -454,10 +454,10 @@ void freeSpec(/*@only@*/ Spec spec)
     freeSl(spec->sl);	spec->sl = NULL;
     freeSt(spec->st);	spec->st = NULL;
 
-    freeStringBuf(spec->prep);	spec->prep = NULL;
-    freeStringBuf(spec->build);	spec->build = NULL;
-    freeStringBuf(spec->install); spec->install = NULL;
-    freeStringBuf(spec->clean);	spec->clean = NULL;
+    spec->prep = freeStringBuf(spec->prep);
+    spec->build = freeStringBuf(spec->build);
+    spec->install = freeStringBuf(spec->install);
+    spec->clean = freeStringBuf(spec->clean);
 
     spec->buildRootURL = _free(spec->buildRootURL);
     spec->buildSubdir = _free(spec->buildSubdir);

@@ -484,7 +484,7 @@ int rpmReadConfigFiles(/*@null@*/ const char * file,
  * @param file		colon separated files to read (NULL uses default)
  * @return		0 on succes
  */
-int rpmReadRC(const char * file);
+int rpmReadRC(/*@null@*/ const char * file);
 
 /** \ingroup rpmrc
  * Return current arch name and/or number.
@@ -912,7 +912,7 @@ typedef struct rpmRelocation_s {
  * @retval cooke	address of cookie pointer
  * @return		rpmRC return code
  */
-rpmRC rpmInstallSourcePackage(const char * root, FD_t fd,
+rpmRC rpmInstallSourcePackage(/*@null@*/ const char * root, FD_t fd,
 			/*@out@*/ const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
 			/*@out@*/ char ** cookie)

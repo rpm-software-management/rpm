@@ -84,6 +84,8 @@ extern "C" {
 #define POPT_ERROR_BADNUMBER	-17	/*!< invalid numeric value */
 #define POPT_ERROR_OVERFLOW	-18	/*!< number too large or too small */
 #define	POPT_ERROR_BADOPERATION	-19	/*!< mutually exclusive logical operations requested */
+#define	POPT_ERROR_NULLARG	-20	/*!< opt->arg should not be NULL */
+#define	POPT_ERROR_MALLOC	-21	/*!< memory allocation failed */
 /*@}*/
 
 /** \ingroup popt
@@ -110,8 +112,8 @@ struct poptOption {
     int argInfo;
 /*@shared@*/ /*@null@*/ void * arg;	/*!< depends on argInfo */
     int val;			/*!< 0 means don't return, just update flag */
-/*@shared@*/ /*@null@*/ const char * descrip;	/*!< description for autohelp -- may be NULL */
-/*@shared@*/ /*@null@*/ const char * argDescrip; /*!< argument description for autohelp */
+/*@observer@*/ /*@null@*/ const char * descrip;	/*!< description for autohelp -- may be NULL */
+/*@observer@*/ /*@null@*/ const char * argDescrip; /*!< argument description for autohelp */
 };
 
 /** \ingroup popt
@@ -135,7 +137,7 @@ extern struct poptOption poptHelpOptions[];
 
 /** \ingroup popt
  */
-typedef struct poptContext_s * poptContext;
+typedef /*@abstract@*/ struct poptContext_s * poptContext;
 
 /** \ingroup popt
  */
@@ -156,9 +158,10 @@ enum poptCallbackReason { POPT_CALLBACK_REASON_PRE,
  * @param data		@todo Document.
  */
 typedef void (*poptCallbackType) (poptContext con, 
-				 enum poptCallbackReason reason,
-			         const struct poptOption * opt,
-				 const char * arg, const void * data);
+		enum poptCallbackReason reason,
+		/*@null@*/ const struct poptOption * opt,
+		/*@null@*/ const char * arg,
+		/*@null@*/ const void * data);
 
 /** \ingroup popt
  * Initialize popt context.
@@ -169,7 +172,7 @@ typedef void (*poptCallbackType) (poptContext con,
  * @param flags		or'd POPT_CONTEXT_* bits
  * @return		initialized popt context
  */
-/*@only@*/ poptContext poptGetContext(
+/*@only@*/ /*@null@*/ poptContext poptGetContext(
 		/*@dependent@*/ /*@keep@*/ const char * name,
 		int argc, /*@dependent@*/ /*@keep@*/ const char ** argv,
 		/*@dependent@*/ /*@keep@*/ const struct poptOption * options,
@@ -179,54 +182,55 @@ typedef void (*poptCallbackType) (poptContext con,
  * Reinitialize popt context.
  * @param con		context
  */
-void poptResetContext(poptContext con);
+void poptResetContext(/*@null@*/poptContext con);
 
 /** \ingroup popt
  * Return value of next option found.
  * @param con		context
  * @return		next option val, -1 on last item, POPT_ERROR_* on error
  */
-int poptGetNextOpt(poptContext con);
+int poptGetNextOpt(/*@null@*/poptContext con);
 /* returns NULL if no argument is available */
 
 /** \ingroup popt
  * @param con		context
  */
-/*@observer@*/ /*@null@*/ const char * poptGetOptArg(poptContext con);
+/*@observer@*/ /*@null@*/ const char * poptGetOptArg(/*@null@*/poptContext con);
 
 /** \ingroup popt
  * Return current option's argument.
  * @param con		context
  * @return		option argument, NULL if no more options are available
  */
-/*@observer@*/ /*@null@*/ const char * poptGetArg(poptContext con);
+/*@observer@*/ /*@null@*/ const char * poptGetArg(/*@null@*/poptContext con);
 
 /** \ingroup popt
  * Peek at  current option's argument.
  * @param con		context
  * @return		option argument
  */
-/*@observer@*/ /*@null@*/ const char * poptPeekArg(poptContext con);
+/*@observer@*/ /*@null@*/ const char * poptPeekArg(/*@null@*/poptContext con);
 
 /** \ingroup popt
  * Return remaining arguments.
  * @param con		context
  * @return		argument array, terminated with NULL
  */
-/*@observer@*/ /*@null@*/ const char ** poptGetArgs(poptContext con);
+/*@observer@*/ /*@null@*/ const char ** poptGetArgs(/*@null@*/poptContext con);
 
 /** \ingroup popt
  * Return the option which caused the most recent error.
  * @param con		context
  * @return		offending option
  */
-/*@observer@*/ const char * poptBadOption(poptContext con, int flags);
+/*@observer@*/ const char * poptBadOption(/*@null@*/poptContext con, int flags);
 
 /** \ingroup popt
  * Destroy context.
  * @param con		context
+ * @return		NULL
  */
-void poptFreeContext( /*@only@*/ poptContext con);
+/*@null@*/ poptContext poptFreeContext( /*@only@*/ /*@null@*/ poptContext con);
 
 /** \ingroup popt
  * Add arguments to context.
@@ -252,7 +256,9 @@ int poptAddAlias(poptContext con, struct poptAlias alias, int flags);
  * @param fn		file name to read
  * @return		0 on success, POPT_ERROR_ERRNO on failure
  */
-int poptReadConfigFile(poptContext con, const char * fn);
+int poptReadConfigFile(poptContext con, const char * fn)
+	/*@modifies fileSystem,
+		con->execs, con->numExecs @*/;
 
 /** \ingroup popt
  * Read default configuration from /etc/popt and $HOME/.popt.
@@ -260,7 +266,9 @@ int poptReadConfigFile(poptContext con, const char * fn);
  * @param useEnv	(unused)
  * @return		0 on success, POPT_ERROR_ERRNO on failure
  */
-int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv);
+int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv)
+	/*@modifies fileSystem,
+		con->execs, con->numExecs @*/;
 
 /** \ingroup popt
  * Duplicate an argument array.
@@ -273,8 +281,10 @@ int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv);
  * @retval argvPtr	address of returned argument array
  * @return		0 on success, POPT_ERROR_NOARG on failure
  */
-int poptDupArgv(int argc, const char **argv,
-		/*@out@*/ int * argcPtr, /*@out@*/ const char *** argvPtr);
+int poptDupArgv(int argc, /*@null@*/ const char **argv,
+		/*@null@*/ /*@out@*/ int * argcPtr,
+		/*@null@*/ /*@out@*/ const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/;
 
 /** \ingroup popt
  * Parse a string into an argument array.
@@ -288,14 +298,16 @@ int poptDupArgv(int argc, const char **argv,
  * @retval argvPtr	address of returned argument array
  */
 int poptParseArgvString(const char * s,
-		/*@out@*/ int * argcPtr, /*@out@*/ const char *** argvPtr);
+		/*@out@*/ int * argcPtr, /*@out@*/ const char *** argvPtr)
+	/*@modifies *argcPtr, *argvPtr @*/;
 
 /** \ingroup popt
  * Return formatted error string for popt failure.
  * @param error		popt error
  * @return		error string
  */
-/*@observer@*/ const char *const poptStrerror(const int error);
+/*@observer@*/ const char *const poptStrerror(const int error)
+	/*@*/;
 
 /** \ingroup popt
  * Limit search for executables.
@@ -339,7 +351,7 @@ void poptSetOtherOptionHelp(poptContext con, const char * text);
  * @param con		context
  * @return		new argc
  */
-int poptStrippedArgv(poptContext con, int argc, char **argv);
+int poptStrippedArgv(poptContext con, int argc, char ** argv);
 
 #ifdef  __cplusplus
 }

@@ -1142,7 +1142,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	    }
 	    if (XFA_SKIPPING(fi->actions[i]))
 		break;
-	    if (fi->fstates[i] != RPMFILE_STATE_NORMAL)
+	    if (fi->fstates && fi->fstates[i] != RPMFILE_STATE_NORMAL)
 		break;
 	    if (!(S_ISREG(fi->fmodes[i]) && (fi->fflags[i] & RPMFILE_CONFIG))) {
 		fi->actions[i] = FA_ERASE;

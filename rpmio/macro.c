@@ -62,13 +62,13 @@ struct MacroContext_s rpmCLIMacroContext;
  * Macro expansion state.
  */
 typedef struct MacroBuf {
-/*@shared@*/ const char *s;		/*!< Text to expand. */
-/*@shared@*/ char *t;		/*!< Expansion buffer. */
+/*@shared@*/ const char * s;		/*!< Text to expand. */
+/*@shared@*/ char * t;			/*!< Expansion buffer. */
 	size_t nb;		/*!< No. bytes remaining in expansion buffer. */
-	int depth;		/*!< Current expansion depth. */
-	int macro_trace;	/*!< Pre-print macro to expand? */
-	int expand_trace;	/*!< Post-print macro expansion? */
-/*@shared@*/ void *spec;	/*!< (future) %file expansion info. */
+	int depth;			/*!< Current expansion depth. */
+	int macro_trace;		/*!< Pre-print macro to expand? */
+	int expand_trace;		/*!< Post-print macro expansion? */
+/*@shared@*/ /*@null@*/ void * spec;	/*!< (future) %file expansion info?. */
 /*@dependent@*/ MacroContext mc;
 } MacroBuf;
 
@@ -76,6 +76,7 @@ typedef struct MacroBuf {
 
 static int expandMacro(MacroBuf *mb);
 
+/*@-exportlocal@*/
 #define	MAX_MACRO_DEPTH	16
 int max_macro_depth = MAX_MACRO_DEPTH;
 
@@ -86,6 +87,7 @@ int print_expand_trace = 0;
 int print_macro_trace = 0;
 int print_expand_trace = 0;
 #endif
+/*@=exportlocal@*/
 
 #define	MACRO_CHUNK_SIZE	16
 

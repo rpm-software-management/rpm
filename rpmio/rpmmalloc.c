@@ -17,7 +17,7 @@
     return NULL;
 }
 
-#if !(HAVE_MCHECK_H && defined(__GNUC__))
+#if !(HAVE_MCHECK_H && defined(__GNUC__)) && !defined(__LCLINT__)
 
 /*@only@*/ void * xmalloc (size_t size)
 {

@@ -120,28 +120,28 @@ struct fsm_s {
 /*@dependent@*/ char * rdbuf;		/*!<  read: Buffer. */
 /*@owned@*/ char * rdb;			/*!<  read: Buffer allocated. */
     size_t rdsize;			/*!<  read: Buffer allocated size. */
-    size_t rdlen;			/*!<  read: Number of bytes requested. */
+    size_t rdlen;			/*!<  read: Number of bytes requested.*/
     size_t rdnb;			/*!<  read: Number of bytes returned. */
     FD_t wfd;				/*!< write: File handle. */
 /*@dependent@*/ char * wrbuf;		/*!< write: Buffer. */
 /*@owned@*/ char * wrb;			/*!< write: Buffer allocated. */
     size_t wrsize;			/*!< write: Buffer allocated size. */
-    size_t wrlen;			/*!< write: Number of bytes requested. */
+    size_t wrlen;			/*!< write: Number of bytes requested.*/
     size_t wrnb;			/*!< write: Number of bytes returned. */
 /*@only@*/ FSMI_t iter;			/*!< File iterator. */
     int ix;				/*!< Current file iterator index. */
 /*@only@*/ struct hardLink * links;	/*!< Pending hard linked file(s). */
 /*@only@*/ struct hardLink * li;	/*!< Current hard linked file(s). */
-/*@kept@*/ unsigned int * archiveSize;	/*!< Pointer to archive size. */
-/*@kept@*/ const char ** failedFile;	/*!< First file name that failed. */
+/*@kept@*/ /*@null@*/ unsigned int * archiveSize;	/*!< Pointer to archive size. */
+/*@kept@*/ /*@null@*/ const char ** failedFile;	/*!< First file name that failed. */
 /*@shared@*/ const char * subdir;	/*!< Current file sub-directory. */
     char subbuf[64];	/* XXX eliminate */
 /*@observer@*/ const char * osuffix;	/*!< Old, preserved, file suffix. */
 /*@observer@*/ const char * nsuffix;	/*!< New, created, file suffix. */
 /*@shared@*/ const char * suffix;	/*!< Current file suffix. */
     char sufbuf[64];	/* XXX eliminate */
-/*@only@*/ short * dnlx;		/*!< Last dirpath verified indexes. */
-/*@only@*/ char * ldn;			/*!< Last dirpath verified. */
+/*@only@*/ /*@null@*/ short * dnlx;	/*!< Last dirpath verified indexes. */
+/*@only@*/ /*@null@*/ char * ldn;	/*!< Last dirpath verified. */
     int ldnlen;				/*!< Last dirpath current length. */
     int ldnalloc;			/*!< Last dirpath allocated length. */
     int postpone;			/*!< Skip remaining stages? */
@@ -167,6 +167,7 @@ struct fsm_s {
 extern "C" {
 #endif
 
+/*@-exportlocal@*/
 /**
  * Return formatted string representation of file stages.
  * @param a		file stage
@@ -180,6 +181,7 @@ extern "C" {
  * @return		formatted string
  */
 /*@observer@*/ const char *const fileActionString(fileAction a);
+/*@=exportlocal@*/
 
 /**
  * Create file state machine instance.
@@ -205,12 +207,12 @@ extern "C" {
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
-	/*@kept@*/ const rpmTransactionSet ts,
-	/*@kept@*/ const TFI_t fi,
-	FD_t cfd,
-	/*@out@*/ unsigned int * archiveSize,
-	/*@out@*/ const char ** failedFile)
-		/*@modifies fsm, *archiveSize, *failedFile  @*/;
+		/*@kept@*/ const rpmTransactionSet ts,
+		/*@kept@*/ const TFI_t fi,
+		FD_t cfd,
+		/*@out@*/ unsigned int * archiveSize,
+		/*@out@*/ const char ** failedFile)
+	/*@modifies fsm, *archiveSize, *failedFile  @*/;
 
 /**
  * Clean file state machine.
@@ -218,35 +220,39 @@ int fsmSetup(FSM_t fsm, fileStage goal,
  * @return		0 on success
  */
 int fsmTeardown(FSM_t fsm)
-		/*@modifies fsm @*/;
+	/*@modifies fsm @*/;
 
+/*@-exportlocal@*/
 /**
  * Retrieve transaction set from file state machine iterator.
  * @param fsm		file state machine data
  * @return		transaction set
  */
-/*@kept@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm)	/*@*/;
+/*@kept@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm)
+	/*@*/;
 
 /**
  * Retrieve transaction element file info from file state machine iterator.
  * @param fsm		file state machine data
  * @return		transaction element file info
  */
-/*@kept@*/ TFI_t fsmGetFi(const FSM_t fsm)	/*@*/;
+/*@kept@*/ TFI_t fsmGetFi(/*@partial@*/const FSM_t fsm)
+	/*@*/;
 
 /**
  * Map next file path and action.
  * @param fsm		file state machine data
  */
 int fsmMapPath(FSM_t fsm)
-		/*@modifies fsm @*/;
+	/*@modifies fsm @*/;
 
 /**
  * Map file stat(2) info.
  * @param fsm		file state machine data
  */
 int fsmMapAttrs(FSM_t fsm)
-		/*@modifies fsm @*/;
+	/*@modifies fsm @*/;
+/*@=exportlocal@*/
 
 /**
  * File state machine driver.
@@ -255,7 +261,7 @@ int fsmMapAttrs(FSM_t fsm)
  * @return		0 on success
  */
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
-		/*@modifies fsm @*/;
+	/*@modifies fsm @*/;
 
 #ifdef __cplusplus
 }

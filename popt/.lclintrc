@@ -1,4 +1,4 @@
--I. -I.. -DHAVE_CONFIG_H
+-I. -I./build -I./lib -I./rpmio -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 
@@ -7,16 +7,17 @@
 
 +unixlib
 
+# XXX ignore doxygen markings
+-unrecogcomments
+
 # don't-bother-me-yet parameters
-#-branchstate
--mustfree
+#-branchstate		# painful
+-mustfree		# alloca is painful
 
 # not-yet normal parameters
 -boolops		# w->n
-#-null
 -predboolint		# w->n
--type
-
+-type			#
 
 # -weak paramaters
 #+boolint

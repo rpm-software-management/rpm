@@ -203,13 +203,11 @@ static int addChangelog(Header h, StringBuf sb)
 int parseChangelog(Spec spec)
 {
     int nextPart, res, rc;
-    StringBuf sb;
-
-    sb = newStringBuf();
+    StringBuf sb = newStringBuf();
     
     /* There are no options to %changelog */
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	freeStringBuf(sb);
+	sb = freeStringBuf(sb);
 	return PART_NONE;
     }
     if (rc)
@@ -226,7 +224,7 @@ int parseChangelog(Spec spec)
     }
 
     res = addChangelog(spec->packages->header, sb);
-    freeStringBuf(sb);
+    sb = freeStringBuf(sb);
 
     return (res) ? res : nextPart;
 }

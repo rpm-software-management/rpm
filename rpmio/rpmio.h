@@ -331,6 +331,7 @@ int	fdFileno(void * cookie);
 /*@=shadow@*/
 
 
+/*@-exportlocal@*/
 /** \ingroup rpmio
  */
 /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode);
@@ -360,6 +361,7 @@ int	fdWritable(FD_t fd, int secs);
 /** \ingroup rpmio
  */
 int	fdReadable(FD_t fd, int secs);
+/*@=exportlocal@*/
 
 /** \ingroup rpmio
  * FTP and HTTP error codes.
@@ -393,7 +395,9 @@ typedef enum ftperrCode_e {
 
 /** \ingroup rpmio
  */
+/*@-exportlocal@*/
 int	ufdCopy(FD_t sfd, FD_t tfd);
+/*@=exportlocal@*/
 
 /** \ingroup rpmio
  */
@@ -405,6 +409,7 @@ int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 #define	timedRead	ufdio->read
 
 
+/*@-exportlocal@*/
 /** \ingroup rpmio
  */
 /*@observer@*/ extern FDIO_t fdio;
@@ -428,6 +433,7 @@ int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 /** \ingroup rpmio
  */
 /*@observer@*/ extern FDIO_t fadio;
+/*@=exportlocal@*/
 /*@}*/
 
 /*@unused@*/ static inline int xislower(int c) {return (c >= 'a' && c <= 'z');}

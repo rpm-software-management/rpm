@@ -322,7 +322,7 @@ main(int argc, const char *argv[])
 
     ec = do_tsort(poptGetArgs(optCon));
 
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
 
     return ec;
 }

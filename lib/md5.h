@@ -64,9 +64,9 @@ void rpmMD5Final(unsigned char digest[16], struct MD5Context *context);
  * @param buf		current MD5 variables
  * @param in		next block of data to add
  */
-/*@-fixedformalarray@*/
+/*@-fixedformalarray -exportlocal@*/
 void rpmMD5Transform(uint32 buf[4], uint32 const in[16]);
-/*@=fixedformalarray@*/
+/*@=fixedformalarray =exportlocal@*/
 
 /**
  * Return MD5 sum of file as ASCII string.

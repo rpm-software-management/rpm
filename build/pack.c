@@ -124,7 +124,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
     fd = Fopen(fn, "r.ufdio");
     if (fn != buf) fn = _free(fn);
     if (fd == NULL || Ferror(fd)) {
-	freeStringBuf(sb);
+	sb = freeStringBuf(sb);
 	return NULL;
     }
     if ((f = fdGetFp(fd)) != NULL)
@@ -132,8 +132,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmError(RPMERR_BADSPEC, _("line: %s\n"), buf);
-	    freeStringBuf(sb);
-	    sb = NULL;
+	    sb = freeStringBuf(sb);
 	    break;
 	}
 	appendStringBuf(sb, buf);
@@ -162,7 +161,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
     
     (void) headerAddEntry(h, tag, RPM_STRING_TYPE, getStringBuf(sb), 1);
 
-    freeStringBuf(sb);
+    sb = freeStringBuf(sb);
     return 0;
 }
 
@@ -180,7 +179,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
     s = getStringBuf(sb);
     (void) headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, &s, 1);
 
-    freeStringBuf(sb);
+    sb = freeStringBuf(sb);
     return 0;
 }
 

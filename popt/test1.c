@@ -149,7 +149,7 @@ int main(int argc, const char ** argv) {
     fprintf(stdout, "\n");
 
 exit:
-    poptFreeContext(optCon);
+    optCon = poptFreeContext(optCon);
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 #endif
