@@ -14,7 +14,9 @@
 	- misc fixes to compile with glibc
 	- use PGPPATH if set (and no pgp_path: in rpmrc)
 	- remove pgp_pubring, pgp_secring stuff
-	- new signature types (internal)
+	- new extensible signature
+	- signature section supports multiple signatures
+	- --addsign to add a signature to a package
 	- PGP key no longer limited to 1024 bits
 	- always do at least an MD5 "signature"
 	  as a result, -K will always tell you something
