@@ -39,7 +39,7 @@ extern const int rpmTagTableSize;
 #define RPMTAG_COPYRIGHT                1014
 #define RPMTAG_PACKAGER                 1015
 #define RPMTAG_GROUP                    1016
-#define RPMTAG_CHANGELOG                1017
+#define RPMTAG_CHANGELOG                1017 /* internal */
 #define RPMTAG_SOURCE                   1018
 #define RPMTAG_PATCH                    1019
 #define RPMTAG_URL                      1020
@@ -53,8 +53,8 @@ extern const int rpmTagTableSize;
 #define RPMTAG_FILESIZES		1028
 #define RPMTAG_FILESTATES		1029
 #define RPMTAG_FILEMODES		1030
-#define RPMTAG_FILEUIDS			1031
-#define RPMTAG_FILEGIDS			1032
+#define RPMTAG_FILEUIDS			1031 /* internal */
+#define RPMTAG_FILEGIDS			1032 /* internal */
 #define RPMTAG_FILERDEVS		1033
 #define RPMTAG_FILEMTIMES		1034
 #define RPMTAG_FILEMD5S			1035
@@ -63,8 +63,8 @@ extern const int rpmTagTableSize;
 #define RPMTAG_ROOT                     1038
 #define RPMTAG_FILEUSERNAME             1039
 #define RPMTAG_FILEGROUPNAME            1040
-#define RPMTAG_EXCLUDE                  1041 /* not used */
-#define RPMTAG_EXCLUSIVE                1042 /* not used */
+#define RPMTAG_EXCLUDE                  1041 /* not used - internal */
+#define RPMTAG_EXCLUSIVE                1042 /* not used - internal */
 #define RPMTAG_ICON                     1043
 #define RPMTAG_SOURCERPM                1044
 #define RPMTAG_FILEVERIFYFLAGS          1045
@@ -73,8 +73,8 @@ extern const int rpmTagTableSize;
 #define RPMTAG_REQUIREFLAGS             1048
 #define RPMTAG_REQUIRENAME              1049
 #define RPMTAG_REQUIREVERSION           1050
-#define RPMTAG_NOSOURCE                 1051
-#define RPMTAG_NOPATCH                  1052
+#define RPMTAG_NOSOURCE                 1051 /* internal */
+#define RPMTAG_NOPATCH                  1052 /* internal */
 #define RPMTAG_CONFLICTFLAGS            1053
 #define RPMTAG_CONFLICTNAME             1054
 #define RPMTAG_CONFLICTVERSION          1055
@@ -85,13 +85,13 @@ extern const int rpmTagTableSize;
 #define RPMTAG_EXCLUDEOS                1060
 #define RPMTAG_EXCLUSIVEARCH            1061
 #define RPMTAG_EXCLUSIVEOS              1062
-#define RPMTAG_AUTOREQPROV              1063 /* used internally by builds */
+#define RPMTAG_AUTOREQPROV              1063 /* internal */
 #define RPMTAG_RPMVERSION		1064
-#define RPMTAG_TRIGGERSCRIPTS           1065
-#define RPMTAG_TRIGGERNAME              1066
-#define RPMTAG_TRIGGERVERSION           1067
-#define RPMTAG_TRIGGERFLAGS             1068
-#define RPMTAG_TRIGGERINDEX             1069
+#define RPMTAG_TRIGGERSCRIPTS           1065 /* internal */
+#define RPMTAG_TRIGGERNAME              1066 /* internal */
+#define RPMTAG_TRIGGERVERSION           1067 /* internal */
+#define RPMTAG_TRIGGERFLAGS             1068 /* internal */
+#define RPMTAG_TRIGGERINDEX             1069 /* internal */
 #define RPMTAG_VERIFYSCRIPT             1079
 #define RPMTAG_CHANGELOGTIME            1080
 #define RPMTAG_CHANGELOGNAME            1081
