@@ -464,6 +464,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	      case RPMTAG_POSTIN:
 	      case RPMTAG_PREUN:
 	      case RPMTAG_POSTUN:
+	      case RPMTAG_VERIFYSCRIPT:
 		  continue;
 		  break;  /* Shouldn't need this */
 	      default:
@@ -533,7 +534,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	
 	if (process_filelist(outHeader, pr, pr->filelist, &size, nametmp,
 			     packageVersion, packageRelease, RPMLEAD_BINARY,
-			     prefix)) {
+			     prefix, NULL)) {
 	    return 1;
 	}
 
@@ -617,6 +618,7 @@ int packageSource(Spec s, char *passPhrase)
     char *vendor;
     char *dist;
     char *p;
+    char *specFile;
     Header outHeader;
     StringBuf filelist;
     StringBuf cpioFileList;
@@ -640,10 +642,11 @@ int packageSource(Spec s, char *passPhrase)
     
     /* Link in the spec file and all the sources */
     p = strrchr(s->specfile, '/');
+    specFile = p+1;
     sprintf(dest, "%s%s", tempdir, p);
     symlink(s->specfile, dest);
     appendLineStringBuf(filelist, dest);
-    appendLineStringBuf(cpioFileList, p+1);
+    appendLineStringBuf(cpioFileList, specFile);
     source = s->sources;
     scount = 0;
     pcount = 0;
@@ -736,7 +739,7 @@ int packageSource(Spec s, char *passPhrase)
     /* Process the file list */
     if (process_filelist(outHeader, NULL, filelist, &size,
 			 s->name, version, release, RPMLEAD_SOURCE,
-			 NULL)) {
+			 NULL, specFile)) {
 	return 1;
     }
 

@@ -686,20 +686,21 @@ static int find_preamble_line(char *line, char **s)
 }
 
 /* None of these can be 0 !! */
-#define PREAMBLE_PART     1
-#define PREP_PART         2
-#define BUILD_PART        3
-#define INSTALL_PART      4
-#define CLEAN_PART        5
-#define PREIN_PART        6
-#define POSTIN_PART       7
-#define PREUN_PART        8
-#define POSTUN_PART       9
-#define FILES_PART       10
-#define CHANGELOG_PART   11
-#define DESCRIPTION_PART 12
-#define TRIGGERON_PART   13
-#define TRIGGEROFF_PART  14
+#define PREAMBLE_PART       1
+#define PREP_PART           2
+#define BUILD_PART          3
+#define INSTALL_PART        4
+#define CLEAN_PART          5
+#define PREIN_PART          6
+#define POSTIN_PART         7
+#define PREUN_PART          8
+#define POSTUN_PART         9
+#define FILES_PART         10
+#define CHANGELOG_PART     11
+#define DESCRIPTION_PART   12
+#define TRIGGERON_PART     13
+#define TRIGGEROFF_PART    14
+#define VERIFYSCRIPT_PART  15
 
 static struct part_rec {
     int part;
@@ -720,6 +721,7 @@ static struct part_rec {
     {DESCRIPTION_PART, 0, "%description"},
     {TRIGGERON_PART,   0, "%triggeron"},
     {TRIGGEROFF_PART,  0, "%triggeroff"},
+    {VERIFYSCRIPT_PART, 0, "%verifyscript"},
     {0, 0, 0}
 };
 
@@ -864,6 +866,9 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		break; 
 	      case POSTUN_PART:
 		t1 = RPMTAG_POSTUN;
+		break;
+	      case VERIFYSCRIPT_PART:
+		t1 = RPMTAG_VERIFYSCRIPT;
 		break;
 	      case DESCRIPTION_PART:
 		/* %description is a little special.  We need to */
@@ -1207,6 +1212,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	  case POSTIN_PART:
 	  case PREUN_PART:
 	  case POSTUN_PART:
+	  case VERIFYSCRIPT_PART:
 	    appendLineStringBuf(sb, line);
 	    break;
 	  case TRIGGERON_PART:
