@@ -9,6 +9,7 @@
 #include <rpmbuild.h>
 
 #include "build.h"
+#include "legacy.h"	/* XXX _noDirTokens */
 #include "debug.h"
 
 /*@unchecked@*/
@@ -45,9 +46,6 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_TS			0x7473
 
 /*@-redecl@*/
-/*@unchecked@*/
-extern int _noDirTokens;
-
 /*@unchecked@*/
 extern int _fsm_debug;
 /*@=redecl@*/

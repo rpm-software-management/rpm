@@ -11,7 +11,9 @@
 
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
-#include "misc.h"
+#include "legacy.h"		/* XXX buildOrigFileList() */
+#include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
+#include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 

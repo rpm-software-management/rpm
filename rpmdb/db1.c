@@ -15,8 +15,7 @@
 #include <rpmurl.h>	/* XXX urlGetPath */
 
 #include "falloc.h"
-#include "misc.h"
-
+#include "legacy.h"	/* XXX providePackageNVR() and compressFileList() */
 #include "rpmdb.h"
 
 /* XXX must follow rpmdb.h */

@@ -37,7 +37,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 
 #include "rpmdb.h"
 #include "fprint.h"
-#include "misc.h"
+#include "legacy.h"
 #include "debug.h"
 
 /*@access dbiIndexSet@*/
@@ -45,10 +45,6 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _noDirTokens;
-/*@=redecl@*/
 /*@unchecked@*/
 static int _rebuildinprogress = 0;
 /*@unchecked@*/
@@ -2967,6 +2963,44 @@ char * db1basename (int rpmtag)
     }
     /*@=branchstate@*/
     return xstrdup(base);
+}
+
+/**
+ * Check if file esists using stat(2).
+ * @param urlfn		file name (may be URL)
+ * @return		1 if file exists, 0 if not
+ */
+static int rpmioFileExists(const char * urlfn)
+        /*@globals fileSystem @*/
+        /*@modifies fileSystem @*/
+{
+    const char *fn;
+    int urltype = urlPath(urlfn, &fn);
+    struct stat buf;
+
+    /*@-branchstate@*/
+    if (*fn == '\0') fn = "/";
+    /*@=branchstate@*/
+    switch (urltype) {
+    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	if (Stat(fn, &buf)) {
+	    switch(errno) {
+	    case ENOENT:
+	    case EINVAL:
+		return 0;
+	    }
+	}
+	break;
+    case URL_IS_DASH:
+    default:
+	return 0;
+	/*@notreached@*/ break;
+    }
+
+    return 1;
 }
 
 static int rpmdbRemoveDatabase(const char * prefix,

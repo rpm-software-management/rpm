@@ -12,7 +12,7 @@ static int _debug = 0;
 /*@unchecked@*/
 static int _print = 0;
 /*@unchecked@*/
-/*@null@*/ static struct pgpSig_s * _dig = NULL;
+/*@null@*/ static struct pgpDig_s * _dig = NULL;
 
 #ifdef	DYING
 /* This is the unarmored RPM-GPG-KEY public key. */
@@ -191,29 +191,29 @@ struct pgpValTbl_s pgpSubTypeTbl[] = {
     { -1,			"Unknown signature subkey type" },
 };
 
-struct pgpValTbl_s pgpPktTbl[] = {
-    { PGPPKT_PUBLIC_SESSION_KEY,"Public-Key Encrypted Session Key" },
-    { PGPPKT_SIGNATURE,		"Signature" },
-    { PGPPKT_SYMMETRIC_SESSION_KEY,"Symmetric-Key Encrypted Session Key" },
-    { PGPPKT_ONEPASS_SIGNATURE,	"One-Pass Signature" },
-    { PGPPKT_SECRET_KEY,	"Secret Key" },
-    { PGPPKT_PUBLIC_KEY,	"Public Key" },
-    { PGPPKT_SECRET_SUBKEY,	"Secret Subkey" },
-    { PGPPKT_COMPRESSED_DATA,	"Compressed Data" },
-    { PGPPKT_SYMMETRIC_DATA,	"Symmetrically Encrypted Data" },
-    { PGPPKT_MARKER,		"Marker" },
-    { PGPPKT_LITERAL_DATA,	"Literal Data" },
-    { PGPPKT_TRUST,		"Trust" },
-    { PGPPKT_USER_ID,		"User ID" },
-    { PGPPKT_PUBLIC_SUBKEY,	"Public Subkey" },
-    { PGPPKT_COMMENT_OLD,	"Comment (from OpenPGP draft)" },
-    { PGPPKT_PHOTOID,		"PGP's photo ID" },
-    { PGPPKT_ENCRYPTED_MDC,	"Integrity protected encrypted data" },
-    { PGPPKT_MDC,		"Manipulaion detection code packet" },
-    { PGPPKT_PRIVATE_60,	"Private #60" },
-    { PGPPKT_COMMENT,		"Comment" },
-    { PGPPKT_PRIVATE_62,	"Private #62" },
-    { PGPPKT_CONTROL,		"Control (GPG)" },
+struct pgpValTbl_s pgpTagTbl[] = {
+    { PGPTAG_PUBLIC_SESSION_KEY,"Public-Key Encrypted Session Key" },
+    { PGPTAG_SIGNATURE,		"Signature" },
+    { PGPTAG_SYMMETRIC_SESSION_KEY,"Symmetric-Key Encrypted Session Key" },
+    { PGPTAG_ONEPASS_SIGNATURE,	"One-Pass Signature" },
+    { PGPTAG_SECRET_KEY,	"Secret Key" },
+    { PGPTAG_PUBLIC_KEY,	"Public Key" },
+    { PGPTAG_SECRET_SUBKEY,	"Secret Subkey" },
+    { PGPTAG_COMPRESSED_DATA,	"Compressed Data" },
+    { PGPTAG_SYMMETRIC_DATA,	"Symmetrically Encrypted Data" },
+    { PGPTAG_MARKER,		"Marker" },
+    { PGPTAG_LITERAL_DATA,	"Literal Data" },
+    { PGPTAG_TRUST,		"Trust" },
+    { PGPTAG_USER_ID,		"User ID" },
+    { PGPTAG_PUBLIC_SUBKEY,	"Public Subkey" },
+    { PGPTAG_COMMENT_OLD,	"Comment (from OpenPGP draft)" },
+    { PGPTAG_PHOTOID,		"PGP's photo ID" },
+    { PGPTAG_ENCRYPTED_MDC,	"Integrity protected encrypted data" },
+    { PGPTAG_MDC,		"Manipulaion detection code packet" },
+    { PGPTAG_PRIVATE_60,	"Private #60" },
+    { PGPTAG_COMMENT,		"Comment" },
+    { PGPTAG_PRIVATE_62,	"Private #62" },
+    { PGPTAG_CONTROL,		"Control (GPG)" },
     { -1,			"Unknown packet tag" },
 };
 
@@ -336,7 +336,7 @@ static const char * pgpSigDSA[] = {
 };
 /*@=varuse =readonlytrans @*/
 
-int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtSigV3(pgpTag tag, const byte *h, unsigned int hlen)
 {
     pgpPktSigV3 v = (pgpPktSigV3)h;
     byte *p;
@@ -344,22 +344,18 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     time_t t;
     int i;
 
-    if (v->version != 3) {
-	fprintf(stderr, " version(%u) != 3\n", (unsigned)v->version);
-	return 1;
-    }
     if (v->hashlen != 5) {
 	fprintf(stderr, " hashlen(%u) != 5\n", (unsigned)v->hashlen);
 	return 1;
     }
 
     /*@-mods@*/
-    if (_dig && pkt == PGPPKT_SIGNATURE &&
+    if (_dig && tag == PGPTAG_SIGNATURE &&
 	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
 	_dig->signature.v3 = memcpy(xmalloc(hlen), h, hlen);
     /*@=mods@*/
 
-    pgpPrtVal("V3 ", pgpPktTbl, pkt);
+    pgpPrtVal("V3 ", pgpTagTbl, tag);
 
     pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
     pgpPrtVal(" ", pgpHashTbl, v->hash_algo);
@@ -371,7 +367,7 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     if (_print)
 	fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
     pgpPrtNL();
-    pgpPrtHex(" signer keyid", v->signer, sizeof(v->signer));
+    pgpPrtHex(" signer keyid", v->signid, sizeof(v->signid));
     plen = pgpGrab(v->signhash16, sizeof(v->signhash16));
     pgpPrtHex(" signhash16", v->signhash16, sizeof(v->signhash16));
     pgpPrtNL();
@@ -507,25 +503,20 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
     return 0;
 }
 
-int pgpPrtPktSigV4(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtSigV4(pgpTag tag, const byte *h, unsigned int hlen)
 {
     pgpPktSigV4 v = (pgpPktSigV4)h;
     byte * p;
     unsigned plen;
     int i;
 
-    if (v->version != 4) {
-	fprintf(stderr, " version(%u) != 4\n", (unsigned)v->version);
-	return 1;
-    }
-
     /*@-mods@*/
-    if (_dig && pkt == PGPPKT_SIGNATURE &&
+    if (_dig && tag == PGPTAG_SIGNATURE &&
 	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
 	_dig->signature.v4 = memcpy(xmalloc(hlen), h, hlen);
     /*@=mods@*/
 
-    pgpPrtVal("V4 ", pgpPktTbl, pkt);
+    pgpPrtVal("V4 ", pgpTagTbl, tag);
     pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
     pgpPrtVal(" ", pgpHashTbl, v->hash_algo);
 
@@ -610,18 +601,21 @@ printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
     return 0;
 }
 
-int pgpPrtPktSig(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 {
-    byte version = *h;
+    byte version = h[0];
+    int rc;
     switch (version) {
     case 3:
-	(void) pgpPrtPktSigV3(pkt, h, hlen);
+	rc = pgpPrtSigV3(tag, h, hlen);
 	break;
     case 4:
-	(void) pgpPrtPktSigV4(pkt, h, hlen);
+	rc = pgpPrtSigV4(tag, h, hlen);
 	break;
+    default:
+	rc = 1;
     }
-    return 0;
+    return rc;
 }
 
 /*@-varuse =readonlytrans @*/
@@ -671,7 +665,7 @@ static const char * pgpSecretELGAMAL[] = {
 };
 /*@=varuse =readonlytrans @*/
 
-int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtKeyV3(pgpTag tag, const byte *h, unsigned int hlen)
 {
     pgpPktKeyV3 v = (pgpPktKeyV3)h;
     byte * p;
@@ -679,17 +673,12 @@ int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     time_t t;
     int i;
 
-    if (v->version != 3) {
-	fprintf(stderr, " version(%u) != 3\n", (unsigned)v->version);
-	return 1;
-    }
-
     /*@-mods@*/
-    if (_dig && pkt == PGPPKT_PUBLIC_KEY)
+    if (_dig && tag == PGPTAG_PUBLIC_KEY)
 	_dig->pubkey.v3 = memcpy(xmalloc(hlen), h, hlen);
     /*@=mods@*/
 
-    pgpPrtVal("V3 ", pgpPktTbl, pkt);
+    pgpPrtVal("V3 ", pgpTagTbl, tag);
     pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
     t = pgpGrab(v->time, sizeof(v->time));
     if (_print)
@@ -770,24 +759,19 @@ printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
     return 0;
 }
 
-int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtKeyV4(pgpTag tag, const byte *h, unsigned int hlen)
 {
     pgpPktKeyV4 v = (pgpPktKeyV4)h;
     byte * p;
     time_t t;
     int i;
 
-    if (v->version != 4) {
-	fprintf(stderr, " version(%u) != 4\n", (unsigned)v->version);
-	return 1;
-    }
-
     /*@-mods@*/
-    if (_dig && pkt == PGPPKT_PUBLIC_KEY)
+    if (_dig && tag == PGPTAG_PUBLIC_KEY)
 	_dig->pubkey.v4 = memcpy(xmalloc(hlen), h, hlen);
     /*@=mods@*/
 
-    pgpPrtVal("V4 ", pgpPktTbl, pkt);
+    pgpPrtVal("V4 ", pgpTagTbl, tag);
     pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
     t = pgpGrab(v->time, sizeof(v->time));
     if (_print)
@@ -860,7 +844,7 @@ printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
 	pgpPrtNL();
     }
 
-    if (pkt == PGPPKT_PUBLIC_KEY || pkt == PGPPKT_PUBLIC_SUBKEY)
+    if (tag == PGPTAG_PUBLIC_KEY || tag == PGPTAG_PUBLIC_SUBKEY)
 	return 0;
 
     switch (*p) {
@@ -930,34 +914,34 @@ printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
     return 0;
 }
 
-int pgpPrtKey(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
 {
     byte version = *h;
     switch (version) {
     case 3:
-	(void) pgpPrtKeyV3(pkt, h, hlen);
+	(void) pgpPrtKeyV3(tag, h, hlen);
 	break;
     case 4:
-	(void) pgpPrtKeyV4(pkt, h, hlen);
+	(void) pgpPrtKeyV4(tag, h, hlen);
 	break;
     }
     return 0;
 }
 
-int pgpPrtUserID(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
 {
-    pgpPrtVal("", pgpPktTbl, pkt);
+    pgpPrtVal("", pgpTagTbl, tag);
     if (_print)
 	fprintf(stderr, " \"%.*s\"", (int)hlen, (const char *)h);
     pgpPrtNL();
     return 0;
 }
 
-int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
+int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 {
     int i = hlen;
 
-    pgpPrtVal("", pgpPktTbl, pkt);
+    pgpPrtVal("", pgpTagTbl, tag);
     if (_print)
 	fprintf(stderr, " ");
     while (i > 0) {
@@ -982,7 +966,7 @@ int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
 int pgpPrtPkt(const byte *p)
 {
     unsigned int val = *p++;
-    pgpPkt pkt;
+    pgpTag tag;
     unsigned int plen;
     const byte *h;
     unsigned int hlen = 0;
@@ -992,51 +976,51 @@ int pgpPrtPkt(const byte *p)
 	return -1;
 
     if (val & 0x40) {
-	pkt = (val & 0x3f);
+	tag = (val & 0x3f);
 	plen = pgpLen(p, &hlen);
     } else {
-	pkt = (val >> 2) & 0xf;
+	tag = (val >> 2) & 0xf;
 	plen = (1 << (val & 0x3));
 	hlen = pgpGrab(p, plen);
     }
 
     h = p + plen;
-    switch (pkt) {
-    case PGPPKT_SIGNATURE:
-	(void) pgpPrtPktSig(pkt, h, hlen);
+    switch (tag) {
+    case PGPTAG_SIGNATURE:
+	(void) pgpPrtSig(tag, h, hlen);
 	break;
-    case PGPPKT_PUBLIC_KEY:
-    case PGPPKT_PUBLIC_SUBKEY:
-    case PGPPKT_SECRET_KEY:
-    case PGPPKT_SECRET_SUBKEY:
-	(void) pgpPrtKey(pkt, h, hlen);
+    case PGPTAG_PUBLIC_KEY:
+    case PGPTAG_PUBLIC_SUBKEY:
+	(void) pgpPrtKey(tag, h, hlen);
 	break;
-    case PGPPKT_USER_ID:
-#ifndef	DYING
-	(void) pgpPrtUserID(pkt, h, hlen);
+    case PGPTAG_SECRET_KEY:
+    case PGPTAG_SECRET_SUBKEY:
+	(void) pgpPrtKey(tag, h, hlen);
 	break;
-#endif
-    case PGPPKT_COMMENT:
-    case PGPPKT_COMMENT_OLD:
-	(void) pgpPrtComment(pkt, h, hlen);
+    case PGPTAG_USER_ID:
+	(void) pgpPrtUserID(tag, h, hlen);
+	break;
+    case PGPTAG_COMMENT:
+    case PGPTAG_COMMENT_OLD:
+	(void) pgpPrtComment(tag, h, hlen);
 	break;
 
-    case PGPPKT_RESERVED:
-    case PGPPKT_PUBLIC_SESSION_KEY:
-    case PGPPKT_SYMMETRIC_SESSION_KEY:
-    case PGPPKT_COMPRESSED_DATA:
-    case PGPPKT_SYMMETRIC_DATA:
-    case PGPPKT_MARKER:
-    case PGPPKT_LITERAL_DATA:
-    case PGPPKT_TRUST:
-    case PGPPKT_PHOTOID:
-    case PGPPKT_ENCRYPTED_MDC:
-    case PGPPKT_MDC:
-    case PGPPKT_PRIVATE_60:
-    case PGPPKT_PRIVATE_62:
-    case PGPPKT_CONTROL:
+    case PGPTAG_RESERVED:
+    case PGPTAG_PUBLIC_SESSION_KEY:
+    case PGPTAG_SYMMETRIC_SESSION_KEY:
+    case PGPTAG_COMPRESSED_DATA:
+    case PGPTAG_SYMMETRIC_DATA:
+    case PGPTAG_MARKER:
+    case PGPTAG_LITERAL_DATA:
+    case PGPTAG_TRUST:
+    case PGPTAG_PHOTOID:
+    case PGPTAG_ENCRYPTED_MDC:
+    case PGPTAG_MDC:
+    case PGPTAG_PRIVATE_60:
+    case PGPTAG_PRIVATE_62:
+    case PGPTAG_CONTROL:
     default:
-	pgpPrtVal("", pgpPktTbl, pkt);
+	pgpPrtVal("", pgpTagTbl, tag);
 	if (_print)
 	    fprintf(stderr, " plen %02x hlen %x", plen, hlen);
 	pgpPrtHex("", h, hlen);
@@ -1047,13 +1031,13 @@ int pgpPrtPkt(const byte *p)
     return plen+hlen+1;
 }
 
-struct pgpSig_s * pgpNewDig(void)
+struct pgpDig_s * pgpNewDig(void)
 {
-    struct pgpSig_s * dig = xcalloc(1, sizeof(*dig));
+    struct pgpDig_s * dig = xcalloc(1, sizeof(*dig));
     return dig;
 }
 
-struct pgpSig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpSig_s * dig)
+struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	/*@modifies dig @*/
 {
     if (dig != NULL) {
@@ -1086,7 +1070,8 @@ struct pgpSig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpSig_s * dig)
     return dig;
 }
 
-int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s * dig, int printing)
+int pgpPrtPkts(const byte * pkts, unsigned int plen,
+		struct pgpDig_s * dig, int printing)
 {
     const byte *p;
     int len;

@@ -6,14 +6,11 @@
 #include "system.h"
 
 #include <rpmcli.h>
+#include "legacy.h"	/* XXX _noDirTokens */
 
 #include "debug.h"
 
 struct rpmDatabaseArguments_s rpmDBArgs;
-
-/*@-redecl@*/
-extern int _noDirTokens;
-/*@=redecl@*/
 
 /**
  */

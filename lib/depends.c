@@ -29,29 +29,6 @@ static int _depends_debug = 0;
 /*@unchecked@*/
 static int _cacheDependsRC = 1;
 
-int headerNVR(Header h, const char **np, const char **vp, const char **rp)
-{
-    int type;
-    int count;
-
-    if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*np = NULL;
-    }
-    if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*vp = NULL;
-    }
-    if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*rp = NULL;
-    }
-    return 0;
-}
-
 /**
  * Return formatted dependency string.
  * @param depend	type of dependency ("R" == Requires, "C" == Conflcts)

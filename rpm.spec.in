@@ -528,3 +528,4 @@ fi
 - add :base64 and :armor format extensions, dump binary tags in hex.
 - proof-of-concept pubkey retrieval from RPM-{PGP,GPG}-KEY.
 - stupid macros to configure public key file paths.
+- all symbols but hdrVec are now forward references in linkage.

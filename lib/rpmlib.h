@@ -166,7 +166,7 @@ int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
  */
 /*@-redecl@*/
 /*@observer@*/ /*@unchecked@*/
-extern const struct headerTagTableEntry_s rpmTagTable[];
+extern const struct headerTagTableEntry_s * rpmTagTable;
 /*@=redecl@*/
 
 /**
@@ -1734,12 +1734,13 @@ typedef enum rpmVerifySignatureReturn_e {
  * @param sigTag	type of signature
  * @param sig		signature itself
  * @param siglen	no. of bytes in signature
+ * @param dig		signature parameters
  * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
 rpmVerifySignatureReturn rpmVerifySignature(const char * fn,
 		int_32 sigTag, const void * sig, int siglen,
-		const rpmDigest dig, /*@out@*/ char * result)
+		const pgpDig dig, /*@out@*/ char * result)
 	/*@modifies *result @*/;
 
 /** \ingroup signature

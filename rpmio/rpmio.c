@@ -3128,37 +3128,6 @@ exit:
     return rc;
 }
 
-int rpmioFileExists(const char * urlfn)
-{
-    const char *fn;
-    int urltype = urlPath(urlfn, &fn);
-    struct stat buf;
-
-    /*@-branchstate@*/
-    if (*fn == '\0') fn = "/";
-    /*@=branchstate@*/
-    switch (urltype) {
-    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	if (Stat(fn, &buf)) {
-	    switch(errno) {
-	    case ENOENT:
-	    case EINVAL:
-		return 0;
-	    }
-	}
-	break;
-    case URL_IS_DASH:
-    default:
-	return 0;
-	/*@notreached@*/ break;
-    }
-
-    return 1;
-}
-
 static struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink

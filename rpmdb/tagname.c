@@ -1,5 +1,5 @@
 /**
- * \file lib/tagName.c
+ * \file rpmdb/tagname.c
  */
 
 #include "system.h"

@@ -18,6 +18,7 @@
 #include "buildio.h"
 
 #include "myftw.h"
+#include "legacy.h"	/* XXX mdfile, expandFileList, compressFileList */
 #include "misc.h"
 #include "debug.h"
 
@@ -30,11 +31,6 @@
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
 #define MAXDOCDIR 1024
-
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _noDirTokens;
-/*@=redecl@*/
 
 /**
  */

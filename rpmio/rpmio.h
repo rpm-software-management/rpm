@@ -18,7 +18,7 @@
 
 /**
  */
-typedef /*@abstract@*/ struct pgpSig_s * rpmDigest;
+typedef /*@abstract@*/ struct pgpDig_s * pgpDig;
 
 /** \ingroup rpmio
  * Hide libio API lossage.

@@ -8,7 +8,8 @@
 
 #include <rpmlib.h>
 
-#include "misc.h"
+#include "misc.h"	/* XXX stripTrailingChar() */
+#include "legacy.h"	/* XXX providePackageNVR() and compressFileList() */
 #include "rpmlead.h"
 #include "signature.h"
 #include "debug.h"

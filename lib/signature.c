@@ -9,13 +9,14 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
+#include "legacy.h"	/* XXX for mdbinfile() */
 #include "rpmlead.h"
 #include "signature.h"
 #include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
-/*@access rpmDigest@*/
+/*@access pgpDig@*/
 
 /*@-mustmod@*/ /* FIX: internalState not modified? */
 int rpmLookupSignatureType(int action)
@@ -601,7 +602,7 @@ static rpmVerifySignatureReturn
 verifySizeSignature(/*@unused@*/ const char * fn,
 		const byte * sig,
 		/*@unused@*/ int siglen,
-		const rpmDigest dig, /*@out@*/ char * result)
+		const pgpDig dig, /*@out@*/ char * result)
 	/*@modifies *result @*/
 {
     char * t = result;
@@ -626,7 +627,7 @@ verifySizeSignature(/*@unused@*/ const char * fn,
 
 static rpmVerifySignatureReturn
 verifyMD5Signature(/*@unused@*/ const char * fn, const byte * sig, int siglen,
-		const rpmDigest dig, /*@out@*/ char * result)
+		const pgpDig dig, /*@out@*/ char * result)
 	/*@modifies *result @*/
 {
     char * t = result;
@@ -665,7 +666,7 @@ static rpmVerifySignatureReturn
 verifyPGPSignature(/*@unused@*/ const char * fn,
 		/*@unused@*/ const byte * sig,
 		/*@unused@*/ int siglen,
-		const rpmDigest dig, /*@out@*/ char * result)
+		const pgpDig dig, /*@out@*/ char * result)
 	/*@modifies *result */
 {
     /*@unchecked@*/ static const byte * pgppk = NULL;
@@ -729,7 +730,7 @@ static rpmVerifySignatureReturn
 verifyGPGSignature(/*@unused@*/ const char * fn,
 		/*@unused@*/ const byte * sig,
 		/*@unused@*/ int siglen,
-		const rpmDigest dig, /*@out@*/ char * result)
+		const pgpDig dig, /*@out@*/ char * result)
 	/*@modifies *result @*/
 {
     /*@unchecked@*/ static const byte * gpgpk = NULL;
@@ -791,7 +792,7 @@ verifyGPGSignature(/*@unused@*/ const char * fn,
 
 rpmVerifySignatureReturn
 rpmVerifySignature(const char * fn, int_32 sigTag, const void * sig,
-		int siglen, const rpmDigest dig, char * result)
+		int siglen, const pgpDig dig, char * result)
 {
     int res;
     switch (sigTag) {

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-20 18:27-0400\n"
+"POT-Creation-Date: 2001-10-21 17:21-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -721,15 +721,15 @@ msgstr "pacote binário (prep, compile, install, package)"
 msgid "bin/src package (prep, compile, install, package)"
 msgstr "pacote bin/fonte (prep, compile, install, package)"
 
-#: lib/poptBT.c:222 rpm.c:523
+#: lib/poptBT.c:220 rpm.c:523
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "saltar directamente para a etapa indicada (só para c,i)"
 
-#: lib/poptBT.c:201 rpm.c:525
+#: lib/poptBT.c:199 rpm.c:525
 msgid "remove build tree when done"
 msgstr "apagar as directorias de criação quando acabar"
 
-#: lib/poptBT.c:218 rpm.c:527
+#: lib/poptBT.c:216 rpm.c:527
 msgid "remove sources when done"
 msgstr "apagar o código-fonte quando acabar"
 
@@ -737,7 +737,7 @@ msgstr "apagar o código-fonte quando acabar"
 msgid "remove spec file when done"
 msgstr "apagar o ficheiro spec quando acabar"
 
-#: lib/poptBT.c:224 rpm.c:531
+#: lib/poptBT.c:222 rpm.c:531
 msgid "generate PGP/GPG signature"
 msgstr "gerar a assinatura PGP/GPG"
 
@@ -827,7 +827,7 @@ msgstr "verificar se existe uma base de dados válida"
 msgid "rebuild database from existing database"
 msgstr "reconstruir a base de dados a partir da existente"
 
-#: rpm.c:565 rpmdb/poptDB.c:27
+#: rpm.c:565 rpmdb/poptDB.c:24
 #, fuzzy
 msgid "verify database files"
 msgstr "pesquisar um ficheiro spec"
@@ -1248,7 +1248,7 @@ msgstr "não foram indicados ficheiros spec para a criação"
 msgid "no tar files given for build"
 msgstr "não foram indicados ficheiros tar para a criação"
 
-#: build/build.c:125 build/pack.c:471
+#: build/build.c:125 build/pack.c:466
 msgid "Unable to open temp file.\n"
 msgstr "Não consegui abrir um ficheiro temporário.\n"
 
@@ -1326,181 +1326,181 @@ msgstr "&& e || não suportados em cadeias de caracteres\n"
 msgid "syntax error in expression\n"
 msgstr "erro de sintaxe na expressão\n"
 
-#: build/files.c:274
+#: build/files.c:270
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "Falha no TIMECHECK: %s\n"
 
-#: build/files.c:333 build/files.c:525 build/files.c:708
+#: build/files.c:329 build/files.c:521 build/files.c:704
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Falta um '(' em %s %s\n"
 
-#: build/files.c:344 build/files.c:650 build/files.c:719
+#: build/files.c:340 build/files.c:646 build/files.c:715
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Falta um ')' em %s(%s\n"
 
-#: build/files.c:382 build/files.c:675
+#: build/files.c:378 build/files.c:671
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Elemento %s inválido: %s\n"
 
-#: build/files.c:488
+#: build/files.c:484
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Falta um '(' em %s %s\n"
 
-#: build/files.c:541
+#: build/files.c:537
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Carácter sem ser espaço a seguir a %s(): %s\n"
 
-#: build/files.c:579
+#: build/files.c:575
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Sintaxe inválida: %s(%s)\n"
 
-#: build/files.c:589
+#: build/files.c:585
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Spec de modo inválido: %s(%s)\n"
 
-#: build/files.c:601
+#: build/files.c:597
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Spec de dirmode inválido: %s(%s)\n"
 
-#: build/files.c:746
+#: build/files.c:742
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Tamanho anormal do locale: \"%.*s\" no %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:757
+#: build/files.c:753
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Locale %.*s duplicado no %%lang(%s)\n"
 
-#: build/files.c:908
+#: build/files.c:904
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Limite atingido para o %%docdir\n"
 
-#: build/files.c:914
+#: build/files.c:910
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Só um argumento no %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:942
+#: build/files.c:938
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dois ficheiros na mesma linha: %s\n"
 
-#: build/files.c:957
+#: build/files.c:953
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "O ficheiro tem de começar por \"/\": %s\n"
 
-#: build/files.c:970
+#: build/files.c:966
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Não é possível misturar o %%doc especial com outras formas: %s\n"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1147
+#: build/files.c:1143
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Ficheiro listado duas vezes: %s\n"
 
-#: build/files.c:1282
+#: build/files.c:1278
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "A 'symlink' aponta para a BuildRoot: %s -> %s\n"
 
-#: build/files.c:1488
+#: build/files.c:1484
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "O ficheiro não corresponde ao prefixo (%s): %s\n"
 
-#: build/files.c:1512
+#: build/files.c:1508
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Ficheiro não encontrado: %s\n"
 
-#: build/files.c:1555 build/files.c:2167 build/parsePrep.c:50
+#: build/files.c:1551 build/files.c:2163 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Dono/grupo inválido: %s\n"
 
-#: build/files.c:1567
+#: build/files.c:1563
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Ficheiro: %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1671
+#: build/files.c:1667
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O ficheiro precisa de começar por \"/\": %s\n"
 
-#: build/files.c:1694
+#: build/files.c:1690
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linha %d: Nome do ficheiro não permitido: %s\n"
 
-#: build/files.c:1709
+#: build/files.c:1705
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Ficheiro não encontrado pelo glob: %s\n"
 
-#: build/files.c:1771
+#: build/files.c:1767
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Não consegui abrir o ficheiro do %%files %s: %s\n"
 
-#: build/files.c:1782 build/pack.c:150
+#: build/files.c:1778 build/pack.c:145
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
 
-#: build/files.c:2155
+#: build/files.c:2151
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ficheiro inválido: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2229
+#: build/files.c:2225
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Não consegui executar o %s: %S\n"
 
-#: build/files.c:2234
+#: build/files.c:2230
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Não consegui executar à parte o %s: &s\n"
 
-#: build/files.c:2318
+#: build/files.c:2314
 #, c-format
 msgid "%s failed\n"
 msgstr "O %s falhou\n"
 
-#: build/files.c:2322
+#: build/files.c:2318
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "não consegui escrever todos os dados em %s\n"
 
-#: build/files.c:2458
+#: build/files.c:2454
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "A procurar o %s: (usando o %s)...\n"
 
-#: build/files.c:2484 build/files.c:2498
+#: build/files.c:2480 build/files.c:2494
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Não consegui encontrar o %s:\n"
 
-#: build/files.c:2619
+#: build/files.c:2615
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "A processar os ficheiros: %s-%s-%s\n"
@@ -1536,156 +1536,156 @@ msgstr "getGnameS: demasiados gid's\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Não consegui canonizar o nome da máquina: %s\n"
 
-#: build/pack.c:83
+#: build/pack.c:78
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "a criação do pacote falhou no ficheiro %s: %s\n"
 
-#: build/pack.c:86
+#: build/pack.c:81
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "a criação do pacote falhou no ficheiro %s: %s\n"
 
-#: build/pack.c:108
+#: build/pack.c:103
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "a escrita do cpio_copy falhou: %s\n"
 
-#: build/pack.c:115
+#: build/pack.c:110
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "a leitura do cpio_copy falhou: %s\n"
 
-#: build/pack.c:218
+#: build/pack.c:213
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PreIn: %s\n"
 
-#: build/pack.c:225
+#: build/pack.c:220
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PreUn: %s\n"
 
-#: build/pack.c:232
+#: build/pack.c:227
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PostIn: %s\n"
 
-#: build/pack.c:239
+#: build/pack.c:234
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Não consegui abrir o ficheiro PostUn: %s\n"
 
-#: build/pack.c:247
+#: build/pack.c:242
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Não consegui abrir o ficheiro VerifyScript: %s\n"
 
-#: build/pack.c:262
+#: build/pack.c:257
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Não consegui aceder ao 'script' Trigger: %s\n"
 
-#: build/pack.c:290
+#: build/pack.c:285
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: aceder ao %s: %s\n"
 
-#: build/pack.c:300
+#: build/pack.c:295
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: ler o %s: %s\n"
 
-#: build/pack.c:309 build/pack.c:513
+#: build/pack.c:304 build/pack.c:508
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
-#: build/pack.c:325
+#: build/pack.c:320
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: o %s não é um pacote RPM\n"
 
-#: build/pack.c:334
+#: build/pack.c:329
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: a ler o cabeçalho do %s\n"
 
-#: build/pack.c:459
+#: build/pack.c:454
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:477
+#: build/pack.c:472
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:485
+#: build/pack.c:480
 msgid "Bad CSA data\n"
 msgstr "Dados de CSA inválidos\n"
 
-#: build/pack.c:520
+#: build/pack.c:515
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:538
+#: build/pack.c:533
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "A gerar a assinatura: %d\n"
 
-#: build/pack.c:551
+#: build/pack.c:546
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:559
+#: build/pack.c:554
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Não consigo aceder ao %s: %s\n"
 
-#: build/pack.c:595 lib/psm.c:2147
+#: build/pack.c:590 lib/psm.c:2149
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não consegui gravar o pacote: %s\n"
 
-#: build/pack.c:610
+#: build/pack.c:605
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Não consegui abrir o sigtarget %s: %s\n"
 
-#: build/pack.c:620
+#: build/pack.c:615
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:634
+#: build/pack.c:629
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:644
+#: build/pack.c:639
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Não consegui ler o conteúdo de %s: %s\n"
 
-#: build/pack.c:650
+#: build/pack.c:645
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não consegui escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:675 lib/psm.c:2413
+#: build/pack.c:670 lib/psm.c:2415
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
 
-#: build/pack.c:742
+#: build/pack.c:737
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Não consigo gerar o ficheiro de saída para o pacote %s: %s\n"
 
-#: build/pack.c:759
+#: build/pack.c:754
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "não consigo criar o %s: %s\n"
@@ -2094,7 +2094,7 @@ msgid " failed - "
 msgstr " falhou - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:582
+#: lib/depends.c:559
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2103,66 +2103,66 @@ msgstr ""
 "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
 "\t %s\tB %s\n"
 
-#: lib/depends.c:611
+#: lib/depends.c:588
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
 
-#: lib/depends.c:612 lib/depends.c:1248 lib/depends.c:1381
+#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:612 lib/depends.c:1248 lib/depends.c:1381
+#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
 #, fuzzy
 msgid "NO "
 msgstr "NÃO-OK"
 
-#: lib/depends.c:1042
+#: lib/depends.c:1019
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s SIM (ficheiros adicionados)\n"
 
-#: lib/depends.c:1153
+#: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:1247
+#: lib/depends.c:1224
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (em cache)\n"
 
-#: lib/depends.c:1276
+#: lib/depends.c:1253
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:1293
+#: lib/depends.c:1270
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:1317
+#: lib/depends.c:1294
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s SIM (ficheiros db)\n"
 
-#: lib/depends.c:1330
+#: lib/depends.c:1307
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:1344
+#: lib/depends.c:1321
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s SIM (pacote db)\n"
 
-#: lib/depends.c:1360
+#: lib/depends.c:1337
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NÃO\n"
 
-#: lib/depends.c:1381
+#: lib/depends.c:1358
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
@@ -2170,42 +2170,42 @@ msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1454
+#: lib/depends.c:1431
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1533
+#: lib/depends.c:1510
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "o pacote %s está em conflito: %s\n"
 
-#: lib/depends.c:1786
+#: lib/depends.c:1763
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1936
+#: lib/depends.c:1913
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1996
+#: lib/depends.c:1973
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2046
+#: lib/depends.c:2023
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:2099
+#: lib/depends.c:2076
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:2129
+#: lib/depends.c:2106
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
@@ -2299,7 +2299,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "o valor RPM_STRING_TYPE do dataLength() tem de ser 1.\n"
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:971
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:973
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "O tipo de dados %d não é suportado\n"
@@ -2379,150 +2379,150 @@ msgstr "esperado um | no fim da expressão"
 msgid "(unknown type)"
 msgstr "(tipo desconhecido)"
 
-#: lib/misc.c:241 lib/misc.c:246 lib/misc.c:252
+#: lib/misc.c:243 lib/misc.c:248 lib/misc.c:254
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o ficheiro temporário %s\n"
 
-#: lib/package.c:162
+#: lib/package.c:163
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "a versão 1 dos pacotes não é suportada por esta versão do RPM\n"
 
-#: lib/package.c:228
+#: lib/package.c:229
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
 
-#: lib/poptBT.c:118
+#: lib/poptBT.c:116
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "O buildroot já foi especificado, a ignorar o %s\n"
 
-#: lib/poptBT.c:148
+#: lib/poptBT.c:146
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "criar através do %prep (desempacotar o código e aplicar patches) do <fichspec>"
 
-#: lib/poptBT.c:149 lib/poptBT.c:152 lib/poptBT.c:155 lib/poptBT.c:158
-#: lib/poptBT.c:161 lib/poptBT.c:164 lib/poptBT.c:167
+#: lib/poptBT.c:147 lib/poptBT.c:150 lib/poptBT.c:153 lib/poptBT.c:156
+#: lib/poptBT.c:159 lib/poptBT.c:162 lib/poptBT.c:165
 msgid "<specfile>"
 msgstr "<fichspec>"
 
-#: lib/poptBT.c:151
+#: lib/poptBT.c:149
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "criar através do %build (%prep e depois compilar) do <fichspec>"
 
-#: lib/poptBT.c:154
+#: lib/poptBT.c:152
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "criar através do %install (%prep, %build e depois instalar) do <fichspec>"
 
-#: lib/poptBT.c:157
+#: lib/poptBT.c:155
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "verificar a secção %files do <fichspec>"
 
-#: lib/poptBT.c:160
+#: lib/poptBT.c:158
 msgid "build source and binary packages from <specfile>"
 msgstr "criar os pacotes binários e de código a partir do <fichspec>"
 
-#: lib/poptBT.c:163
+#: lib/poptBT.c:161
 msgid "build binary package only from <specfile>"
 msgstr "criar só o pacote binário a partir do <fichspec>"
 
-#: lib/poptBT.c:166
+#: lib/poptBT.c:164
 msgid "build source package only from <specfile>"
 msgstr "criar só o pacote com código-fonte a partir do <fichspec>"
 
-#: lib/poptBT.c:170
+#: lib/poptBT.c:168
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "criar através do %prep (desempacotar o código e aplicar patches) do <fichtar>"
 
-#: lib/poptBT.c:171 lib/poptBT.c:174 lib/poptBT.c:177 lib/poptBT.c:180
-#: lib/poptBT.c:183 lib/poptBT.c:186 lib/poptBT.c:189
+#: lib/poptBT.c:169 lib/poptBT.c:172 lib/poptBT.c:175 lib/poptBT.c:178
+#: lib/poptBT.c:181 lib/poptBT.c:184 lib/poptBT.c:187
 msgid "<tarball>"
 msgstr "<fichtar>"
 
-#: lib/poptBT.c:173
+#: lib/poptBT.c:171
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "criar através do %build (%prep e depois compilar) do <fichtar>"
 
-#: lib/poptBT.c:176
+#: lib/poptBT.c:174
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "criar através do %install (%prep, %build e depois instalar) do <fichtar>"
 
-#: lib/poptBT.c:179
+#: lib/poptBT.c:177
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "verificar a secção %files do <fichtar>"
 
-#: lib/poptBT.c:182
+#: lib/poptBT.c:180
 msgid "build source and binary packages from <tarball>"
 msgstr "criar os pacotes binários e de código a partir do <fichtar>"
 
-#: lib/poptBT.c:185
+#: lib/poptBT.c:183
 msgid "build binary package only from <tarball>"
 msgstr "criar só o pacote binário a partir do <fichtar>"
 
-#: lib/poptBT.c:188
+#: lib/poptBT.c:186
 msgid "build source package only from <tarball>"
 msgstr "criar só o pacote com código-fonte a partir do <fichtar>"
 
-#: lib/poptBT.c:192
+#: lib/poptBT.c:190
 msgid "build binary package from <source package>"
 msgstr "criar o pacote binário a partir do <pacote de código>"
 
-#: lib/poptBT.c:193 lib/poptBT.c:196
+#: lib/poptBT.c:191 lib/poptBT.c:194
 msgid "<source package>"
 msgstr "<pacote de código>"
 
-#: lib/poptBT.c:195
+#: lib/poptBT.c:193
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "criar através do %install (%prep, %build e depois instalar) do <pacote de código>"
 
-#: lib/poptBT.c:199
+#: lib/poptBT.c:197
 msgid "override build root"
 msgstr "ignorar a raiz de criação"
 
-#: lib/poptBT.c:203 rpmdb/poptDB.c:32
+#: lib/poptBT.c:201 rpmdb/poptDB.c:29
 msgid "generate headers compatible with rpm4 packaging"
 msgstr "gerar os cabeçalhos compatíveis com o formato do rpm4"
 
-#: lib/poptBT.c:205
+#: lib/poptBT.c:203
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "ignorar as directivas ExcludeArch: do ficheiro spec"
 
-#: lib/poptBT.c:207
+#: lib/poptBT.c:205
 msgid "debug file state machine"
 msgstr ""
 
-#: lib/poptBT.c:209
+#: lib/poptBT.c:207
 msgid "do not execute any stages of the build"
 msgstr "não executar nenhuma etapa da criação"
 
-#: lib/poptBT.c:211
+#: lib/poptBT.c:209
 #, fuzzy
 msgid "do not verify build dependencies"
 msgstr "não verifica as dependências do pacote"
 
-#: lib/poptBT.c:213
+#: lib/poptBT.c:211
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "gerar um cabeçalho do pacote compatível com os pacotes do rpm[23]"
 
-#: lib/poptBT.c:216
+#: lib/poptBT.c:214
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "não aceitar as mensagens de i18N do ficheiro spec"
 
-#: lib/poptBT.c:220
+#: lib/poptBT.c:218
 msgid "remove specfile when done"
 msgstr "apagar o ficheiro spec quando acabar"
 
-#: lib/poptBT.c:226
+#: lib/poptBT.c:224
 msgid "override target platform"
 msgstr "ignorar a plataforma-alvo"
 
-#: lib/poptBT.c:228
+#: lib/poptBT.c:226
 msgid "lookup i18N strings in specfile catalog"
 msgstr "procurar as mensagens de i18N no catálogo do ficheiro spec"
 
@@ -2855,108 +2855,108 @@ msgstr "a(s) chamada(s) de pré-transacção do pacote %s: %s falhou: %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "encontrado o erro desconhecido %d ao manipular o pacote %s"
 
-#: lib/psm.c:313
+#: lib/psm.c:315
 msgid "========== relocations\n"
 msgstr "========== mudanças de local\n"
 
-#: lib/psm.c:317
+#: lib/psm.c:319
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d excluir o %s\n"
 
-#: lib/psm.c:320
+#: lib/psm.c:322
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d mudar de local %s -> %s\n"
 
-#: lib/psm.c:390
+#: lib/psm.c:392
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "a exclur a directoria 'multilib' %s%s\n"
 
-#: lib/psm.c:456
+#: lib/psm.c:458
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "a excluir o %s %s\n"
 
-#: lib/psm.c:466
+#: lib/psm.c:468
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "a mudar o %s para %s\n"
 
-#: lib/psm.c:545
+#: lib/psm.c:547
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "a mudar a directoria %s para %s\n"
 
-#: lib/psm.c:1168
+#: lib/psm.c:1170
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "não consigo criar o %s: %s\n"
 
-#: lib/psm.c:1174
+#: lib/psm.c:1176
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "não consigo escrever em %s\n"
 
-#: lib/psm.c:1212
+#: lib/psm.c:1214
 msgid "source package expected, binary found\n"
 msgstr "esperava-se um pacote com código-fonte, foi encontrado um pacote binário\n"
 
-#: lib/psm.c:1323
+#: lib/psm.c:1325
 msgid "source package contains no .spec file\n"
 msgstr "o pacote de código-fonte não contem um ficheiro .spec\n"
 
-#: lib/psm.c:1430
+#: lib/psm.c:1432
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "a correr os programas de pós-instalação (se existirem)\n"
 
-#: lib/psm.c:1598
+#: lib/psm.c:1600
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
 
-#: lib/psm.c:1605
+#: lib/psm.c:1607
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
 
-#: lib/psm.c:1952
+#: lib/psm.c:1954
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "pacote: teste dos ficheiros do %s-%s-%s = %d\n"
 
-#: lib/psm.c:2069
+#: lib/psm.c:2071
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2184
+#: lib/psm.c:2186
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "o utilizador %s não existe - a usar o root\n"
 
-#: lib/psm.c:2193
+#: lib/psm.c:2195
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "o grupo %s não existe - a usar o root\n"
 
-#: lib/psm.c:2234
+#: lib/psm.c:2236
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "a abertura do pacote falhou%s%s: %s\n"
 
-#: lib/psm.c:2235
+#: lib/psm.c:2237
 msgid " on file "
 msgstr " no ficheiro "
 
-#: lib/psm.c:2421
+#: lib/psm.c:2423
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "falhei ao aceder ao %s: %s\n"
 
-#: lib/psm.c:2424
+#: lib/psm.c:2426
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "O %s falhou\n"
@@ -3358,206 +3358,206 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/signature.c:114
+#: lib/signature.c:115
 msgid "file is not regular -- skipping size check\n"
 msgstr "o ficheiro não é normal -- a ignorar a verificação do tamanho\n"
 
-#: lib/signature.c:123
+#: lib/signature.c:124
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "Esperado um tamanho: %12d = início(%d)+assin.(%d)+'pad'(%d)+dados(%d)\n"
 
-#: lib/signature.c:128
+#: lib/signature.c:129
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Tamanho real: %12d\n"
 
-#: lib/signature.c:148
+#: lib/signature.c:149
 msgid "No signature\n"
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:152
+#: lib/signature.c:153
 msgid "Old PGP signature\n"
 msgstr "Assinatura PGP antiga\n"
 
-#: lib/signature.c:165
+#: lib/signature.c:166
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 
-#: lib/signature.c:221
+#: lib/signature.c:222
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Tamanho da assinatura: %d\n"
 
-#: lib/signature.c:284
+#: lib/signature.c:285
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Não consigo executar o pgp (%s)\n"
 
-#: lib/signature.c:297
+#: lib/signature.c:298
 msgid "pgp failed\n"
 msgstr "o pgp falhou\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:304
+#: lib/signature.c:305
 msgid "pgp failed to write signature\n"
 msgstr "o pgp não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:309
+#: lib/signature.c:310
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "tamanho da assinatura do PGP: %d\n"
 
-#: lib/signature.c:324 lib/signature.c:411
+#: lib/signature.c:325 lib/signature.c:412
 msgid "unable to read the signature\n"
 msgstr "incapaz de ler a assinatura\n"
 
-#: lib/signature.c:329
+#: lib/signature.c:330
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:371 lib/signature.c:501
+#: lib/signature.c:372 lib/signature.c:502
 msgid "Couldn't exec gpg\n"
 msgstr "Não consegui executar o gpg\n"
 
-#: lib/signature.c:384
+#: lib/signature.c:385
 msgid "gpg failed\n"
 msgstr "o gpg falhou\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:391
+#: lib/signature.c:392
 msgid "gpg failed to write signature\n"
 msgstr "o gpg não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:396
+#: lib/signature.c:397
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Tamanho da assinatura do GPG: %d\n"
 
-#: lib/signature.c:416
+#: lib/signature.c:417
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Obtive %d bytes da assinatura do GPG\n"
 
-#: lib/signature.c:444
+#: lib/signature.c:445
 msgid "Generating signature using PGP.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:450
+#: lib/signature.c:451
 msgid "Generating signature using GPG.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:530
+#: lib/signature.c:531
 msgid "Couldn't exec pgp\n"
 msgstr "Não consegui executar o pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:534 lib/signature.c:587
+#: lib/signature.c:535 lib/signature.c:588
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:567
+#: lib/signature.c:568
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:579
+#: lib/signature.c:580
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
 
-#: lib/transaction.c:308
+#: lib/transaction.c:309
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido à opção missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:936
+#: lib/transaction.c:937
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "a excluir a directoria %s\n"
 
-#: lib/verify.c:240
+#: lib/verify.c:242
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr "o pacote não tem o nome de utilizador nem as listas de IDs (nunca deve ocorrer)\n"
 
-#: lib/verify.c:261
+#: lib/verify.c:263
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr "o pacote não tem o nome do grupo nem as listas de IDs (nunca deve ocorrer)\n"
 
-#: lib/verify.c:398
+#: lib/verify.c:400
 #, c-format
 msgid "missing    %s"
 msgstr "falta     %s"
 
-#: lib/verify.c:495
+#: lib/verify.c:497
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
 
-#: lib/verify.c:537
+#: lib/verify.c:539
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:100
+#: rpmdb/db1.c:100 rpmdb/db3.c:100
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "erro do db%d (%d) do %s: %s\n"
 
-#: rpmdb/db1.c:104 rpmdb/db3.c:103
+#: rpmdb/db1.c:103 rpmdb/db3.c:103
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "erro do db%d (%d): %s\n"
 
-#: rpmdb/db1.c:171
+#: rpmdb/db1.c:170
 #, c-format
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
 msgstr ""
 
-#: rpmdb/db1.c:183
+#: rpmdb/db1.c:182
 #, c-format
 msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
 msgstr ""
 
 #. @=branchstate@
-#: rpmdb/db1.c:509
+#: rpmdb/db1.c:508
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "fechei o ficheiro do db %s\n"
 
-#: rpmdb/db1.c:512
+#: rpmdb/db1.c:511
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "removi o ficheiro do db %s\n"
 
-#: rpmdb/db1.c:547
+#: rpmdb/db1.c:546
 #, c-format
 msgid "bad db file %s\n"
 msgstr "ficheiro db inválido %s\n"
 
-#: rpmdb/db1.c:552
+#: rpmdb/db1.c:551
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "a aceder ao ficheiro db %s modo 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:575
+#: rpmdb/db1.c:574
 #, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "não consegui adquirir exclusivamente o %s na base de dados\n"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1213
+#: rpmdb/db1.c:575 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1213
+#: rpmdb/db1.c:575 rpmdb/db3.c:1213
 msgid "shared"
 msgstr "partilhado"
 
@@ -3636,168 +3636,168 @@ msgstr ""
 "'mailing list' rpm-list@redhat.com\n"
 "se o \"rpm --rebuild\" não conseguir corrigir o problema.\n"
 
-#: rpmdb/poptDB.c:22
+#: rpmdb/poptDB.c:19
 msgid "initialize database"
 msgstr "inicializar a base de dados"
 
-#: rpmdb/poptDB.c:24
+#: rpmdb/poptDB.c:21
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "reconstruir as listas invertidas da base dados com os cabeçalhos dos pacotes instalados"
 
-#: rpmdb/poptDB.c:29
+#: rpmdb/poptDB.c:26
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "gerar os cabeçalhos compatíveis com o formato do rpm[23]"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:130
+#: rpmdb/rpmdb.c:126
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nome de opção não reconhecido: \"%s\" ignorado\n"
 
-#: rpmdb/rpmdb.c:384
+#: rpmdb/rpmdb.c:380
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "não consigo abrir o índice de %s usando o db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:406
+#: rpmdb/rpmdb.c:402
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "não consigo abrir o índice do %s\n"
 
-#: rpmdb/rpmdb.c:498
+#: rpmdb/rpmdb.c:494
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:629
+#: rpmdb/rpmdb.c:625
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:639
+#: rpmdb/rpmdb.c:635
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "erro(%d) ao remover o registo %s do %s\n"
 
-#: rpmdb/rpmdb.c:893
+#: rpmdb/rpmdb.c:889
 msgid "no dbpath has been set\n"
 msgstr "não foi definido o dbpath\n"
 
-#: rpmdb/rpmdb.c:1032
+#: rpmdb/rpmdb.c:1028
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr "está presente uma base de dados antiga; use o --rebuildb para gerar uma base de dados no novo formato\n"
 
 #. error
-#: rpmdb/rpmdb.c:1277
+#: rpmdb/rpmdb.c:1273
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "erro(%d) ao contar os pacotes\n"
 
-#: rpmdb/rpmdb.c:2061 rpmdb/rpmdb.c:3276
+#: rpmdb/rpmdb.c:2057 rpmdb/rpmdb.c:3310
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "o número do registo %d na base de dados está errado -- a ignorar.\n"
 
-#: rpmdb/rpmdb.c:2114
+#: rpmdb/rpmdb.c:2110
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2384
+#: rpmdb/rpmdb.c:2380
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"
 
-#: rpmdb/rpmdb.c:2456
+#: rpmdb/rpmdb.c:2452
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "a remover o \"%s\" do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2461
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "a remover %d registos do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2666
+#: rpmdb/rpmdb.c:2662
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erro(%d) ao criar uma nova instância do pacote\n"
 
-#: rpmdb/rpmdb.c:2747
+#: rpmdb/rpmdb.c:2743
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "a adicionar o \"%s\" ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:2758
+#: rpmdb/rpmdb.c:2754
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "a adicionar %d registos ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:3162
+#: rpmdb/rpmdb.c:3196
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "a remover o %s depois duma reconstrução bem sucedida do db3.\n"
 
-#: rpmdb/rpmdb.c:3195
+#: rpmdb/rpmdb.c:3229
 msgid "no dbpath has been set"
 msgstr "não foi definido o dbpath"
 
-#: rpmdb/rpmdb.c:3222
+#: rpmdb/rpmdb.c:3256
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "a reconstruir a base de dados %s em %s\n"
 
-#: rpmdb/rpmdb.c:3226
+#: rpmdb/rpmdb.c:3260
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "A base de dados temporária %s já existe\n"
 
-#: rpmdb/rpmdb.c:3232
+#: rpmdb/rpmdb.c:3266
 #, c-format
 msgid "creating directory %s\n"
 msgstr "a criar a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3234
+#: rpmdb/rpmdb.c:3268
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "a criar a directoria %s: %s\n"
 
-#: rpmdb/rpmdb.c:3241
+#: rpmdb/rpmdb.c:3275
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "a abrir a base de dados antiga com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3286
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "a abrir a base de dados nova com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3316
+#: rpmdb/rpmdb.c:3350
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não consigo adicionar o registo originalmente em %d\n"
 
-#: rpmdb/rpmdb.c:3334
+#: rpmdb/rpmdb.c:3368
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "falhou a reconstrução da base de dados: a base de dados original mantém-se\n"
 
-#: rpmdb/rpmdb.c:3342
+#: rpmdb/rpmdb.c:3376
 msgid "failed to replace old database with new database!\n"
 msgstr "falhou a substituição da base de dados antiga pela nova!\n"
 
-#: rpmdb/rpmdb.c:3344
+#: rpmdb/rpmdb.c:3378
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir os ficheiros em %s por ficheiros de %s a recuperar"
 
-#: rpmdb/rpmdb.c:3354
+#: rpmdb/rpmdb.c:3388
 #, c-format
 msgid "removing directory %s\n"
 msgstr "a remover a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3356
+#: rpmdb/rpmdb.c:3390
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falhou a remoção da directoria %s: %s\n"

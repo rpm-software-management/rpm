@@ -9,15 +9,10 @@
 #include <rpmbuild.h>
 #include "buildio.h"
 
-#include "misc.h"
+#include "legacy.h"	/* XXX providePackageNVR */
 #include "signature.h"
 #include "rpmlead.h"
 #include "debug.h"
-
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _noDirTokens;
-/*@=redecl@*/
 
 /*@access StringBuf @*/	/* compared with NULL */
 /*@access TFI_t @*/	/* compared with NULL */

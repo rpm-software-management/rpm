@@ -8,6 +8,7 @@
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "fprint.h"
+#include "legacy.h"	/* XXX mdfile */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 #include "rpmdb.h"
 

@@ -17,7 +17,7 @@
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX compared with NULL */
 /*@access DIGEST_CTX @*/	/* XXX compared with NULL */
-/*@access rpmDigest @*/
+/*@access pgpDig @*/
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
@@ -247,7 +247,7 @@ exit:
 
 /**
  */
-static int readFile(FD_t *sfdp, const char **sfnp, rpmDigest dig)
+static int readFile(FD_t *sfdp, const char **sfnp, pgpDig dig)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies *sfdp, *sfnp, *dig, rpmGlobalMacroContext,
@@ -327,7 +327,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     const void * ptr;
     int res = 0;
     int xx;
-    rpmDigest dig = NULL;
+    pgpDig dig = NULL;
     rpmRC rc;
 
     if (argv == NULL) return res;

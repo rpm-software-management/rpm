@@ -20,7 +20,6 @@
  */
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
 
-/*@-typeuse -fielduse@*/
 /**
  */
 typedef const struct pgpValTbl_s {
@@ -35,36 +34,36 @@ typedef const struct pgpValTbl_s {
  * old format headers can only have tags less than 16, whereas new
  * format headers can have tags as great as 63.
  */
-typedef enum pgpPkt_e {
-    PGPPKT_RESERVED		=  0, /*!< Reserved/Invalid */
-    PGPPKT_PUBLIC_SESSION_KEY	=  1, /*!< Public-Key Encrypted Session Key */
-    PGPPKT_SIGNATURE		=  2, /*!< Signature */
-    PGPPKT_SYMMETRIC_SESSION_KEY=  3, /*!< Symmetric-Key Encrypted Session Key*/
-    PGPPKT_ONEPASS_SIGNATURE	=  4, /*!< One-Pass Signature */
-    PGPPKT_SECRET_KEY		=  5, /*!< Secret Key */
-    PGPPKT_PUBLIC_KEY		=  6, /*!< Public Key */
-    PGPPKT_SECRET_SUBKEY	=  7, /*!< Secret Subkey */
-    PGPPKT_COMPRESSED_DATA	=  8, /*!< Compressed Data */
-    PGPPKT_SYMMETRIC_DATA	=  9, /*!< Symmetrically Encrypted Data */
-    PGPPKT_MARKER		= 10, /*!< Marker */
-    PGPPKT_LITERAL_DATA		= 11, /*!< Literal Data */
-    PGPPKT_TRUST		= 12, /*!< Trust */
-    PGPPKT_USER_ID		= 13, /*!< User ID */
-    PGPPKT_PUBLIC_SUBKEY	= 14, /*!< Public Subkey */
-    PGPPKT_COMMENT_OLD		= 16, /*!< Comment (from OpenPGP draft) */
-    PGPPKT_PHOTOID		= 17, /*!< PGP's photo ID */
-    PGPPKT_ENCRYPTED_MDC	= 18, /*!< Integrity protected encrypted data */
-    PGPPKT_MDC			= 19, /*!< Manipulaion detection code packet */
-    PGPPKT_PRIVATE_60		= 60, /*!< Private or Experimental Values */
-    PGPPKT_COMMENT		= 61, /*!< Comment */
-    PGPPKT_PRIVATE_62		= 62, /*!< Private or Experimental Values */
-    PGPPKT_CONTROL		= 63, /*!< Control (GPG) */
-} pgpPkt;
+typedef enum pgpTag_e {
+    PGPTAG_RESERVED		=  0, /*!< Reserved/Invalid */
+    PGPTAG_PUBLIC_SESSION_KEY	=  1, /*!< Public-Key Encrypted Session Key */
+    PGPTAG_SIGNATURE		=  2, /*!< Signature */
+    PGPTAG_SYMMETRIC_SESSION_KEY=  3, /*!< Symmetric-Key Encrypted Session Key*/
+    PGPTAG_ONEPASS_SIGNATURE	=  4, /*!< One-Pass Signature */
+    PGPTAG_SECRET_KEY		=  5, /*!< Secret Key */
+    PGPTAG_PUBLIC_KEY		=  6, /*!< Public Key */
+    PGPTAG_SECRET_SUBKEY	=  7, /*!< Secret Subkey */
+    PGPTAG_COMPRESSED_DATA	=  8, /*!< Compressed Data */
+    PGPTAG_SYMMETRIC_DATA	=  9, /*!< Symmetrically Encrypted Data */
+    PGPTAG_MARKER		= 10, /*!< Marker */
+    PGPTAG_LITERAL_DATA		= 11, /*!< Literal Data */
+    PGPTAG_TRUST		= 12, /*!< Trust */
+    PGPTAG_USER_ID		= 13, /*!< User ID */
+    PGPTAG_PUBLIC_SUBKEY	= 14, /*!< Public Subkey */
+    PGPTAG_COMMENT_OLD		= 16, /*!< Comment (from OpenPGP draft) */
+    PGPTAG_PHOTOID		= 17, /*!< PGP's photo ID */
+    PGPTAG_ENCRYPTED_MDC	= 18, /*!< Integrity protected encrypted data */
+    PGPTAG_MDC			= 19, /*!< Manipulaion detection code packet */
+    PGPTAG_PRIVATE_60		= 60, /*!< Private or Experimental Values */
+    PGPTAG_COMMENT		= 61, /*!< Comment */
+    PGPTAG_PRIVATE_62		= 62, /*!< Private or Experimental Values */
+    PGPTAG_CONTROL		= 63, /*!< Control (GPG) */
+} pgpTag;
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
-extern struct pgpValTbl_s pgpPktTbl[];
+extern struct pgpValTbl_s pgpTagTbl[];
 
 /**
  * 5.1. Public-Key Encrypted Session Key Packets (Tag 1)
@@ -100,11 +99,11 @@ extern struct pgpValTbl_s pgpPktTbl[];
  *   - MPI of Elgamal (Diffie-Hellman) value g**k mod p.
  *   - MPI of Elgamal (Diffie-Hellman) value m * y**k mod p.
  */
-typedef struct pgpPubkeySession_s {
+typedef struct pgpPktPubkey_s {
     byte version;	/*!< version number (generate 3, accept 2). */
     byte keyid[8];	/*!< key ID of the public key for session key. */
     byte algo;		/*!< public key algorithm used. */
-} * pgpPubkeySession;
+} pgpPktPubkey;
 
 
 /**
@@ -113,6 +112,7 @@ typedef struct pgpPubkeySession_s {
  * There are a number of possible meanings for a signature, which are
  * specified in a signature type octet in any given signature.
  */
+/*@-typeuse@*/
 typedef enum pgpSigType_e {
     PGPSIGTYPE_BINARY		 = 0x00, /*!< Binary document */
     PGPSIGTYPE_TEXT		 = 0x01, /*!< Canonical text document */
@@ -132,6 +132,7 @@ typedef enum pgpSigType_e {
     PGPSIGTYPE_CERT_REVOKE	 = 0x30, /*!< Certification revocation */
     PGPSIGTYPE_TIMESTAMP	 = 0x40  /*!< Timestamp */
 } pgpSigType;
+/*@=typeuse@*/
 
 /**
  */
@@ -161,6 +162,7 @@ extern struct pgpValTbl_s pgpSigTypeTbl[];
  * encryption. Implementations SHOULD implement RSA keys.
  * Implementations MAY implement any other algorithm.
  */
+/*@-typeuse@*/
 typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_RSA		=  1,	/*!< RSA */
     PGPPUBKEYALGO_RSA_ENCRYPT	=  2,	/*!< RSA(Encrypt-Only) */
@@ -172,6 +174,7 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
     PGPPUBKEYALGO_DH		= 21,	/*!< Diffie-Hellman (X9.42) */
 } pgpPubkeyAlgo;
+/*@=typeuse@*/
 
 /**
  */
@@ -202,6 +205,7 @@ extern struct pgpValTbl_s pgpPubkeyTbl[];
  * implement IDEA and CAST5. Implementations MAY implement any other
  * algorithm.
  */
+/*@-typeuse@*/
 typedef enum pgpSymkeyAlgo_e {
     PGPSYMKEYALGO_PLAINTEXT	=  0,	/*!< Plaintext */
     PGPSYMKEYALGO_IDEA		=  1,	/*!< IDEA */
@@ -215,6 +219,7 @@ typedef enum pgpSymkeyAlgo_e {
     PGPSYMKEYALGO_AES_256	=  9,	/*!< AES(256-bit key) */
     PGPSYMKEYALGO_TWOFISH	= 10	/*!< TWOFISH */
 } pgpSymkeyAlgo;
+/*@=typeuse@*/
 
 /**
  */
@@ -236,11 +241,13 @@ extern struct pgpValTbl_s pgpSymkeyTbl[];
  * Implementations MUST implement uncompressed data. Implementations
  * SHOULD implement ZIP. Implementations MAY implement ZLIB.
  */
+/*@-typeuse@*/
 typedef enum pgpCompressAlgo_e {
     PGPCOMPRESSALGO_NONE	=  0,	/*!< Uncompressed */
     PGPCOMPRESSALGO_ZIP		=  1,	/*!< ZIP */
     PGPCOMPRESSALGO_ZLIB	=  2	/*!< ZLIB */
 } pgpCompressAlgo;
+/*@=typeuse@*/
 
 /**
  */
@@ -308,7 +315,7 @@ typedef struct pgpPktSigV3_s {
     byte hashlen;	/*!< length of following hashed material. MUST be 5. */
     byte sigtype;	/*!< signature type. */
     byte time[4];	/*!< 4 byte creation time. */
-    byte signer[8];	/*!< key ID of signer. */
+    byte signid[8];	/*!< key ID of signer. */
     byte pubkey_algo;	/*!< public key algorithm. */
     byte hash_algo;	/*!< hash algorithm. */
     byte signhash16[2];	/*!< left 16 bits of signed hash value. */
@@ -409,6 +416,7 @@ typedef struct pgpPktSigV4_s {
  * marked critical but is unknown to the evaluating software, the
  * evaluator SHOULD consider the signature to be in error.
  */
+/*@-typeuse@*/
 typedef enum pgpSubType_e {
     PGPSUBTYPE_SIG_CREATE_TIME	=   2, /*!< signature creation time */
     PGPSUBTYPE_SIG_EXPIRE_TIME	=   3, /*!< signature expiration time */
@@ -443,6 +451,7 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_INTERNAL_109	= 109, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_110	= 110, /*!< internal or user-defined */
 } pgpSubType;
+/*@=typeuse@*/
 
 /**
  */
@@ -504,7 +513,9 @@ typedef union pgpPktSig_u {
  */
 typedef struct pgpPktSymkey_s {
     byte version;	/*!< version number (4). */
-} * pgpPktSymkey;
+    byte symkey_algo;
+    byte s2k[1];
+} pgpPktSymkey;
 
 /**
  * 5.4. One-Pass Signature Packets (Tag 4)
@@ -537,6 +548,11 @@ typedef struct pgpPktSymkey_s {
  */
 typedef struct pgpPktOnepass_s {
     byte version;	/*!< version number (3). */
+    byte sigtype;	/*!< signature type. */
+    byte hash_algo;	/*!< hash algorithm. */
+    byte pubkey_algo;	/*!< public key algorithm. */
+    byte signid[8];	/*!< key ID of signer. */
+    byte nested;
 } * pgpPktOnepass;
 
 /**
@@ -718,6 +734,13 @@ typedef struct pgpPktKeyV4_s {
  * encrypted like the algorithm-specific data.  This value is used to
  * check that the passphrase was correct.
  *
+ */
+typedef union pgpPktKey_u {
+    struct pgpPktKeyV3_s v3;
+    struct pgpPktKeyV4_s v4;
+} pgpPktKey;
+
+/*
  * 5.6. Compressed Data Packet (Tag 8)
  *
  * The Compressed Data packet contains compressed data. Typically, this
@@ -740,7 +763,13 @@ typedef struct pgpPktKeyV4_s {
  *
  * ZLIB-compressed packets are compressed with RFC 1950 ZLIB-style
  * blocks.
- *
+ */
+typedef struct pgpPktCdata_s {
+    byte compressalgo;
+    byte data[1];
+} pgpPktCdata;
+
+/*
  * 5.7. Symmetrically Encrypted Data Packet (Tag 9)
  *
  * The Symmetrically Encrypted Data packet contains data encrypted with
@@ -773,7 +802,12 @@ typedef struct pgpPktKeyV4_s {
  * The repetition of 16 bits in the 80 bits of random data prefixed to
  * the message allows the receiver to immediately check whether the
  * session key is incorrect.
- *
+ */
+typedef struct pgpPktEdata_s {
+    byte data[1];
+} pgpPktEdata;
+
+/*
  * 5.8. Marker Packet (Obsolete Literal Packet) (Tag 10)
  *
  * An experimental version of PGP used this packet as the Literal
@@ -788,7 +822,8 @@ typedef struct pgpPktKeyV4_s {
  * beginning of a message that uses features not available in PGP 2.6.x
  * in order to cause that version to report that newer software is
  * necessary to process the message.
- *
+ */
+/*
  * 5.9. Literal Data Packet (Tag 11)
  *
  * A Literal Data packet contains the body of a message; data that is
@@ -818,7 +853,14 @@ typedef struct pgpPktKeyV4_s {
  * Text data is stored with <CR><LF> text endings (i.e. network-normal
  * line endings).  These should be converted to native line endings by
  * the receiving software.
- *
+ */
+typedef struct pgpPktLdata_s {
+    byte format;
+    byte filenamelen;
+    byte filename[1];
+} pgpPktLdata;
+
+/*
  * 5.10. Trust Packet (Tag 12)
  *
  * The Trust packet is used only within keyrings and is not normally
@@ -830,7 +872,12 @@ typedef struct pgpPktKeyV4_s {
  * Trust packets SHOULD NOT be emitted to output streams that are
  * transferred to other users, and they SHOULD be ignored on any input
  * other than local keyring files.
- *
+ */
+typedef struct pgpPktTrust_s {
+    byte flag;
+} pgpPktTrust;
+
+/*
  * 5.11. User ID Packet (Tag 13)
  *
  * A User ID packet consists of data that is intended to represent the
@@ -842,10 +889,27 @@ typedef struct pgpPktKeyV4_s {
  */
 typedef struct pgpPktUid_s {
     byte userid[1];
-} * pgpPktUid;
+} pgpPktUid;
 
 /**
  */
+union pgpPktPre_u {
+    pgpPktPubkey pubkey;	/*!< 5.1. Public-Key Encrypted Session Key */
+    pgpPktSig sig;		/*!< 5.2. Signature */
+    pgpPktSymkey symkey;	/*!< 5.3. Symmetric-Key Encrypted Session-Key */
+    pgpPktOnepass onepass;	/*!< 5.4. One-Pass Signature */
+    pgpPktKey key;		/*!< 5.5. Key Material */
+    pgpPktCdata cdata;		/*!< 5.6. Compressed Data */
+    pgpPktEdata edata;		/*!< 5.7. Symmetrically Encrypted Data */
+				/*!< 5.8. Marker (obsolete) */
+    pgpPktLdata ldata;		/*!< 5.9. Literal Data */
+    pgpPktTrust tdata;		/*!< 5.10. Trust */
+    pgpPktUid uid;		/*!< 5.11. User ID */
+};
+
+/**
+ */
+/*@-typeuse@*/
 typedef enum pgpArmor_e {
     PGPARMOR_MESSAGE		= 1, /*!< MESSAGE */
     PGPARMOR_PUBKEY		= 2, /*!< PUBLIC KEY BLOCK */
@@ -855,6 +919,7 @@ typedef enum pgpArmor_e {
     PGPARMOR_PRIVKEY		= 6, /*!< PRIVATE KEY BLOCK */
     PGPARMOR_SECKEY		= 7, /*!< SECRET KEY BLOCK */
 } pgpArmor;
+/*@=typeuse@*/
 
 /**
  */
@@ -863,6 +928,7 @@ extern struct pgpValTbl_s pgpArmorTbl[];
 
 /**
  */
+/*@-typeuse@*/
 typedef enum pgpArmorKey_e {
     PGPARMORKEY_VERSION		= 1, /*!< Version: */
     PGPARMORKEY_COMMENT		= 2, /*!< Comment: */
@@ -870,27 +936,16 @@ typedef enum pgpArmorKey_e {
     PGPARMORKEY_HASH		= 4, /*!< Hash: */
     PGPARMORKEY_CHARSET		= 5, /*!< Charset: */
 } pgpArmorKey;
+/*@=typeuse@*/
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpArmorKeyTbl[];
 
-#ifdef	DYING
 /**
  */
-/*@observer@*/ /*@unchecked@*/ /*@unused@*/
-extern const char * redhatPubKeyDSA;
-
-/**
- */
-/*@observer@*/ /*@unchecked@*/ /*@unused@*/
-extern const char * redhatPubKeyRSA;
-#endif	/* DYING */
-
-/**
- */
-typedef struct pgpSig_s {
+struct pgpDig_s {
     union {
 	struct pgpPktSigV3_s * v3;
 	struct pgpPktSigV4_s * v4;
@@ -928,9 +983,8 @@ typedef struct pgpSig_s {
     mp32number m;
     mp32number c;
     mp32number rsahm;
-} * pgpSig;
+};
 
-/*@=typeuse =fielduse@*/
 
 /*@-fcnuse@*/
 #ifdef __cplusplus
@@ -1072,74 +1126,74 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 /**
  */
 void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtSigV3(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtSubType(const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtPktSigV4(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtSigV4(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtPktSig(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtKeyV3(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtKeyV4(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtKey(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtUserID(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
-	/*@globals fileSystem@*/
+int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 int pgpPrtPkt(const byte *p)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
  */
-int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s *dig, int printing)
-	/*@globals fileSystem@*/
+int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpDig_s *dig, int printing)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
@@ -1152,13 +1206,13 @@ int pgpReadPkts(const char * fn,
 /**
  */
 /*@only@*/
-struct pgpSig_s * pgpNewDig(void)
+struct pgpDig_s * pgpNewDig(void)
 	/*@*/;
 
 /**
  */
 /*@only@*/ /*@null@*/
-struct pgpSig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpSig_s * dig)
+struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	/*@modifies dig @*/;
 
 /**
@@ -1168,7 +1222,7 @@ int pgpIsPkt(const byte * p)
 	/*@*/
 {
     unsigned int val = *p++;
-    pgpPkt pkt;
+    pgpTag tag;
     int rc;
 
     /* XXX can't deal with these. */
@@ -1176,36 +1230,36 @@ int pgpIsPkt(const byte * p)
 	return 0;
 
     if (val & 0x40)
-	pkt = (val & 0x3f);
+	tag = (val & 0x3f);
     else
-	pkt = (val >> 2) & 0xf;
+	tag = (val >> 2) & 0xf;
 
-    switch (pkt) {
-    case PGPPKT_MARKER:
-    case PGPPKT_SYMMETRIC_SESSION_KEY:
-    case PGPPKT_ONEPASS_SIGNATURE:
-    case PGPPKT_PUBLIC_KEY:
-    case PGPPKT_SECRET_KEY:
-    case PGPPKT_PUBLIC_SESSION_KEY:
-    case PGPPKT_SIGNATURE:
-    case PGPPKT_COMMENT:
-    case PGPPKT_COMMENT_OLD:
-    case PGPPKT_LITERAL_DATA:
-    case PGPPKT_COMPRESSED_DATA:
-    case PGPPKT_SYMMETRIC_DATA:
+    switch (tag) {
+    case PGPTAG_MARKER:
+    case PGPTAG_SYMMETRIC_SESSION_KEY:
+    case PGPTAG_ONEPASS_SIGNATURE:
+    case PGPTAG_PUBLIC_KEY:
+    case PGPTAG_SECRET_KEY:
+    case PGPTAG_PUBLIC_SESSION_KEY:
+    case PGPTAG_SIGNATURE:
+    case PGPTAG_COMMENT:
+    case PGPTAG_COMMENT_OLD:
+    case PGPTAG_LITERAL_DATA:
+    case PGPTAG_COMPRESSED_DATA:
+    case PGPTAG_SYMMETRIC_DATA:
 	rc = 1;
 	break;
-    case PGPPKT_PUBLIC_SUBKEY:
-    case PGPPKT_SECRET_SUBKEY:
-    case PGPPKT_USER_ID:
-    case PGPPKT_RESERVED:
-    case PGPPKT_TRUST:
-    case PGPPKT_PHOTOID:
-    case PGPPKT_ENCRYPTED_MDC:
-    case PGPPKT_MDC:
-    case PGPPKT_PRIVATE_60:
-    case PGPPKT_PRIVATE_62:
-    case PGPPKT_CONTROL:
+    case PGPTAG_PUBLIC_SUBKEY:
+    case PGPTAG_SECRET_SUBKEY:
+    case PGPTAG_USER_ID:
+    case PGPTAG_RESERVED:
+    case PGPTAG_TRUST:
+    case PGPTAG_PHOTOID:
+    case PGPTAG_ENCRYPTED_MDC:
+    case PGPTAG_MDC:
+    case PGPTAG_PRIVATE_60:
+    case PGPTAG_PRIVATE_62:
+    case PGPTAG_CONTROL:
     default:
 	rc = 0;
 	break;

@@ -3,7 +3,6 @@
 # Package source files
 
 build.c
-rpm.c
 rpm2cpio.c
 rpmqv.c
 build/build.c
@@ -55,9 +54,12 @@ rpmdb/db3.c
 rpmdb/dbconfig.c
 rpmdb/falloc.c
 rpmdb/fprint.c
+rpmdb/hdrNVR.c
+rpmdb/legacy.c
 rpmdb/poptDB.c
 rpmdb/rpmhash.c
 rpmdb/rpmdb.c
+rpmdb/tagname.c
 rpmio/digest.c
 rpmio/macro.c
 rpmio/rpmio.c
