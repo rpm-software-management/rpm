@@ -731,23 +731,31 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     QVA_t *qva = (QVA_t *) data;
 
     switch (opt->val) {
-      case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;
-      case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
-      case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
-      case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
-      case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
+    case 'q':
+    case 'Q':
+    case 'V':
+	if (qva->qva_mode == ' ') {
+	    qva->qva_mode = opt->val;
+	    qva->qva_char = ' ';
+	}
+	break;
+    case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;
+    case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
+    case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
+    case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
+    case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
 			      qva->qva_sourceCount++; break;
-      case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
+    case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
 			      qva->qva_sourceCount++; break;
-      case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
+    case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
 			      qva->qva_sourceCount++; break;
 
 /* XXX SPECFILE is not verify sources */
-      case POPT_SPECFILE:
+    case POPT_SPECFILE:
 	qva->qva_source |= RPMQV_SPECFILE;
 	qva->qva_sourceCount++;
 	break;
-      case POPT_QUERYBYNUMBER:
+    case POPT_QUERYBYNUMBER:
 	qva->qva_source |= RPMQV_DBOFFSET; 
 	qva->qva_sourceCount++;
 	break;
@@ -763,12 +771,20 @@ struct poptOption rpmQVSourcePoptTable[] = {
 		N_("query packages in group"), "GROUP" },
 	{ "package", 'p', 0, 0, 'p',
 		N_("query a package file"), NULL },
+	{ "query", 'q', 0, NULL, 'q',
+		N_("rpm query mode"), NULL },
 	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
 		POPT_QUERYBYNUMBER, NULL, NULL },
+	{ "querytags", '\0', 0, 0, 'Q',
+		N_("display known query tags"), NULL },
 	{ "specfile", '\0', 0, 0, POPT_SPECFILE,
 		N_("query a spec file"), NULL },
 	{ "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
 		N_("query the pacakges triggered by the package"), "PACKAGE" },
+	{ "verify", 'V', 0, NULL, 'V',
+		N_("rpm verify mode"), NULL },
+	{ NULL, 'y',  POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
+		N_("rpm verify mode (legacy)"), NULL },
 	{ "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 		N_("query the packages which require a capability"), "CAPABILITY" },
 	{ "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
@@ -785,14 +801,15 @@ static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptC
     QVA_t *qva = (QVA_t *) data;
 
     switch (opt->val) {
-      case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
-      case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
-      case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
-      case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST; break;
-      case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
-      case 'v': rpmIncreaseVerbosity();	 break;
+    case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
+    case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
+    case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
+    case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST;
+	break;
+    case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
+    case 'v': rpmIncreaseVerbosity();	 break;
 
-      case POPT_QUERYFORMAT:
+    case POPT_QUERYFORMAT:
       {	char *qf = (char *)qva->qva_queryFormat;
 	if (qf) {
 	    int len = strlen(qf) + strlen(arg) + 1;

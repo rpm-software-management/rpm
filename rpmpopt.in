@@ -111,12 +111,25 @@ rpm	alias --httpproxy	--define '_httpproxy !#:+'
 rpm	alias --timecheck	--define '_timecheck !#:+'
 
 #==============================================================================
-#rpm	exec -b			rpmb -b
-#rpm	exec --build		rpmb --build
-#rpm	exec --rebuild		rpmb --rebuild
-#rpm	exec --recompile	rpmb --recompile
-#rpm	exec -t			rpmt -t
-#rpm	exec --tarbuild		rpmt --tarbuild
+# Popt glue to preserve legacy CLI behavior.
+#
+# XXX popt exec parsing doesn't honor POPT_ARGFLAG_ONEDASH
+rpm	exec --bp		rpmb -bp
+rpm	exec --bc		rpmb -bc
+rpm	exec --bi		rpmb -bi
+rpm	exec --bl		rpmb -bl
+rpm	exec --ba		rpmb -ba
+rpm	exec --bb		rpmb -bb
+rpm	exec --bs		rpmb -bs
+rpm	exec --tp		rpmb -tp
+rpm	exec --tc		rpmb -tc
+rpm	exec --ti		rpmb -ti
+rpm	exec --tl		rpmb -tl
+rpm	exec --ta		rpmb -ta
+rpm	exec --tb		rpmb -tb
+rpm	exec --ts		rpmb -ts
+rpm	exec --rebuild		rpmb --rebuild
+rpm	exec --recompile	rpmb --recompile
 
 rpm	exec --initdb		rpmdb --initdb
 rpm	exec --rebuilddb	rpmdb --rebuilddb

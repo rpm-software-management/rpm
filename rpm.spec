@@ -159,7 +159,6 @@ fi
 /usr/lib/rpm/mkinstalldirs
 /usr/lib/rpm/rpmdb
 /usr/lib/rpm/rpm[eiukqv]
-/usr/lib/rpm/rpme
 /usr/lib/rpm/rpmpopt
 /usr/lib/rpm/rpmrc
 /usr/lib/rpm/vpkg-provides.sh

@@ -15,6 +15,7 @@ struct rpmBuildArguments {
     int noLang;
     int noBuild;
     int shortCircuit;
+    char buildMode;
     char buildChar;
     /*@dependent@*/ const char *rootdir;
 };

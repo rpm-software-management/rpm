@@ -863,6 +863,8 @@ struct rpmQVArguments {
     int		qva_verbose;
     const char *qva_queryFormat;
     const char *qva_prefix;
+    char	qva_mode;
+    char	qva_char;
 };
 typedef	struct rpmQVArguments QVA_t;
 

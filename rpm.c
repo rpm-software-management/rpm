@@ -7,14 +7,9 @@
 #include "install.h"
 #include "signature.h"
 
-#define GETOPT_REBUILD		1003
-#define GETOPT_RECOMPILE	1004
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
 #define GETOPT_DBPATH		1010
-#ifdef	DYING
-#define GETOPT_TIMECHECK        1012
-#endif
 #define GETOPT_REBUILDDB        1013
 #define GETOPT_INSTALL		1014
 #define GETOPT_RELOCATE		1016
@@ -58,12 +53,6 @@ static int badReloc;
 static int excldocs;
 static int force;
 extern int _ftp_debug;
-#ifdef	DYING
-static char * ftpPort;
-static char * ftpProxy;
-static char * httpPort;
-static char * httpProxy;
-#endif
 static int showHash;
 static int help;
 static int ignoreArch;
@@ -84,7 +73,6 @@ static int noUsageMsg;
 static int oldPackage;
 static char * pipeOutput;
 static char * prefix;
-static int queryTags;
 static int quiet;
 static char * rcfile;
 static int replaceFiles;
@@ -107,7 +95,6 @@ extern int rpmFLAGS;
 extern MacroContext rpmCLIMacroContext;
 
 static struct rpmQVArguments rpmQVArgs;
-static struct rpmBuildArguments rpmBArgs;
 
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
@@ -117,11 +104,7 @@ static struct poptOption optionsTable[] = {
  { "allfiles", '\0', 0, &allFiles, 0,		NULL, NULL},
  { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
- { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
-#ifdef	DYING
- { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
-#endif
  { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
  { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
@@ -130,16 +113,8 @@ static struct poptOption optionsTable[] = {
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
-#ifdef	DYING
- { "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0,	NULL, NULL},
- { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0,	NULL, NULL},
-#endif
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
  { "help", '\0', 0, &help, 0,			NULL, NULL},
-#ifdef	DYING
- { "httpport", '\0', POPT_ARG_STRING, &httpPort, 0,	NULL, NULL},
- { "httpproxy", '\0', POPT_ARG_STRING, &httpProxy, 0,	NULL, NULL},
-#endif
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
  { "ignorearch", '\0', 0, &ignoreArch, 0,	NULL, NULL},
  { "ignoreos", '\0', 0, &ignoreOs, 0,		NULL, NULL},
@@ -164,13 +139,13 @@ static struct poptOption optionsTable[] = {
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
  { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
+#ifdef	DYING
  { "query", 'q', 0, NULL, 'q',			NULL, NULL},
  { "querytags", '\0', 0, &queryTags, 0,		NULL, NULL},
+#endif
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
  { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
- { "rebuild", '\0', 0, 0, GETOPT_REBUILD,	NULL, NULL},
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
- { "recompile", '\0', 0, 0, GETOPT_RECOMPILE,	NULL, NULL},
  { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,	NULL, NULL},
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
  { "replacepkgs", '\0', 0, &replacePackages, 0,	NULL, NULL},
@@ -179,17 +154,15 @@ static struct poptOption optionsTable[] = {
  { "rpmiodebug", '\0', POPT_ARG_VAL, &_rpmio_debug, -1,		NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
- { "tarbuild", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
-#ifdef	DYING
- { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},
-#endif
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL, &_url_debug, -1,		NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
+#ifdef	DYING
  { "verify", 'V', 0, 0, 'V',			NULL, NULL},
  {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
+#endif
  { "version", '\0', 0, &showVersion, 0,		NULL, NULL},
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
@@ -197,8 +170,6 @@ static struct poptOption optionsTable[] = {
 		rpmQueryPoptTable, 0,		(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmVerifyPoptTable, 0,		(void *) &rpmQVArgs, NULL },
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmBuildPoptTable, 0,		(void *) &rpmBArgs, NULL },
  { 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
@@ -207,7 +178,7 @@ static struct poptOption optionsTable[] = {
 long _stksize = 64 * 1024L;
 #endif
 
-static void argerror(char * desc) {
+static void argerror(const char * desc) {
     fprintf(stderr, _("rpm: %s\n"), desc);
     exit(EXIT_FAILURE);
 }
@@ -271,7 +242,7 @@ static void printUsage(void) {
     puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
-    puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
+    puts(_("       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--nobuild] [--timecheck <s>] ]"));
     puts(_("                        [--target=platform1[,platform2...]]"));
     puts(_("                        [--rmsource] [--rmspec] specfile"));
@@ -571,26 +542,18 @@ int main(int argc, const char ** argv)
 {
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
-    struct rpmBuildArguments *ba = &rpmBArgs;
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
-#ifdef	DYING
-    int gotDbpath = 0;
-#endif
     int verifyFlags;
     int checksigFlags = 0;
     int addSign = NEW_SIGNATURE;
-    const char * specFile;
     char * passPhrase = "";
-    char * cookie = NULL;
     const char * optArg;
     pid_t pipeChild = 0;
     const char * pkg;
     char * errString = NULL;
     poptContext optCon;
-    const char * infoCommand[] = { "--info", NULL };
-    const char * installCommand[] = { "--install", NULL };
     int ec = 0;
     int status;
     int p[2];
@@ -612,12 +575,6 @@ int main(int argc, const char ** argv)
     excldocs = 0;
     force = 0;
     _ftp_debug = 0;
-#ifdef	DYING
-    ftpProxy = NULL;
-    ftpPort = NULL;
-    httpProxy = NULL;
-    httpPort = NULL;
-#endif
     showHash = 0;
     help = 0;
     ignoreArch = 0;
@@ -643,7 +600,6 @@ int main(int argc, const char ** argv)
     showPercents = 0;
     pipeOutput = NULL;
     prefix = NULL;
-    queryTags = 0;
     quiet = 0;
     _rpmio_debug = 0;
     replaceFiles = 0;
@@ -705,10 +661,8 @@ int main(int argc, const char ** argv)
 
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
-    if (ba->buildRootOverride) xfree(ba->buildRootOverride);
-    if (ba->targets) free(ba->targets);
-    memset(ba, 0, sizeof(*ba));
-    ba->buildChar = ' ';
+    qva->qva_mode = ' ';
+    qva->qva_char = ' ';
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
@@ -748,52 +702,20 @@ int main(int argc, const char ** argv)
 	    bigMode = MODE_UNINSTALL;
 	    break;
 	
-	  case 'b':
-	  case 't':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD)
-		argerror(_("only one major mode may be specified"));
-
-	    if (arg == 'b') {
-		bigMode = MODE_BUILD;
-		errString = _("--build (-b) requires one of a,b,i,c,p,l as "
-				"its sole argument");
-	    } else {
-		bigMode = MODE_TARBUILD;
-		errString = _("--tarbuild (-t) requires one of a,b,i,c,p,l as "
-			      "its sole argument");
-	    }
-
-	    if (strlen(optArg) > 1) 
-		argerror(errString);
-
-	    ba->buildChar = optArg[0];
-	    switch (ba->buildChar) {
-	      case 'a':
-	      case 'b':
-	      case 'i':
-	      case 'c':
-	      case 'p':
-	      case 'l':
-	      case 's':
-		break;
-	      default:
-		argerror(errString);
-		break;
-	    }
-
-	    break;
-	
 	  case 'v':
 	    rpmIncreaseVerbosity();
 	    break;
 
 	  case 'i':
-	    if (bigMode == MODE_QUERY)
+	    if (bigMode == MODE_QUERY) {
+		const char * infoCommand[] = { "--info", NULL };
 		poptStuffArgs(optCon, infoCommand);
-	    else if (bigMode == MODE_INSTALL)
+	    } else if (bigMode == MODE_INSTALL)
 		/*@-ifempty@*/ ;
-	    else if (bigMode == MODE_UNKNOWN)
+	    else if (bigMode == MODE_UNKNOWN) {
+		const char * installCommand[] = { "--install", NULL };
 		poptStuffArgs(optCon, installCommand);
+	    }
 	    break;
 
 	  case GETOPT_INSTALL:
@@ -836,18 +758,6 @@ int main(int argc, const char ** argv)
 	    QVSource = RPMQV_ALL;
 	    break;
 
-	  case GETOPT_REBUILD:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_REBUILD;
-	    break;
-
-	  case GETOPT_RECOMPILE:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_RECOMPILE;
-	    break;
-
 	  case GETOPT_RESIGN:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
 		argerror(_("only one major mode may be specified"));
@@ -864,22 +774,6 @@ int main(int argc, const char ** argv)
 	    signIt = 1;
 	    break;
 
-#ifdef	DYING
-	  case GETOPT_DBPATH:
-	    switch (urlIsURL(optArg)) {
-	    case URL_IS_UNKNOWN:
-		if (optArg[0] != '/')
-		    argerror(_("arguments to --dbpath must begin with a /"));
-		break;
-	    default:
-		break;
-	    }
-	    addMacro(NULL, "_dbpath", NULL, optArg, RMIL_CMDLINE);
-	    addMacro(&rpmCLIMacroContext, "_dbpath", NULL, optArg, RMIL_CMDLINE);
-	    gotDbpath = 1;
-	    break;
-#endif	/* DYING */
-
 	  case GETOPT_DEFINEMACRO:
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 	    rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
@@ -892,20 +786,6 @@ int main(int argc, const char ** argv)
 	    xfree(val);
 	    noUsageMsg = 1;
 	  } break;
-
-#ifdef	DYING
-	  case GETOPT_TIMECHECK:
-	  { char * tce = NULL;
-	    unsigned long int timeCheck = 0L;
-	    timeCheck = strtoul(optArg, &tce, 10);
-	    if ((*tce) || (tce == optArg) || (timeCheck == ULONG_MAX)) {
-		argerror("Argument to --timecheck must be integer");
-	    }
-	    addMacro(NULL, "_timecheck", NULL, optArg, RMIL_CMDLINE);
-	    addMacro(&rpmCLIMacroContext, "_timecheck", NULL, optArg, RMIL_CMDLINE);
-	    timeCheck = 1;
-	  } break;
-#endif
 
 	  case GETOPT_REBUILDDB:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILDDB)
@@ -956,12 +836,14 @@ int main(int argc, const char ** argv)
 	exit(EXIT_FAILURE);
     }
 
-    if ((ba->buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
-	bigMode = MODE_BUILD;
+    if (bigMode == MODE_UNKNOWN && qva->qva_mode != ' ') {
+	switch (qva->qva_mode) {
+	case 'q':	bigMode = MODE_QUERY;		break;
+	case 'V':	bigMode = MODE_VERIFY;		break;
+	case 'Q':	bigMode = MODE_QUERYTAGS;	break;
+	}
+    }
 
-    if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
-	bigMode = MODE_BUILD;
-    
     if (initdb) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
@@ -969,12 +851,14 @@ int main(int argc, const char ** argv)
 	    bigMode = MODE_INITDB;
     }
 
+#ifdef	DYING
     if (queryTags) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
 	else
 	    bigMode = MODE_QUERYTAGS;
     }
+#endif
 
     if (qva->qva_sourceCount) {
 	if (QVSource != RPMQV_PACKAGE || qva->qva_sourceCount > 1)
@@ -983,20 +867,6 @@ int main(int argc, const char ** argv)
 	QVSource = qva->qva_source;
     }
 
-    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
-	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
-	argerror("--buildroot may only be used during package builds");
-    }
-
-#ifdef	DYING
-    if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
-	argerror(_("--dbpath given for operation that does not use a "
-			"database"));
-
-    if (timeCheck && (bigMode & ~MODES_BT))
-	argerror(_("--timecheck may only be used during package builds"));
-#endif
-    
     if (qva->qva_flags && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query flags"));
 
@@ -1006,10 +876,7 @@ int main(int argc, const char ** argv)
     if (QVSource != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query source"));
 
-    if (!(bigMode == MODE_INSTALL ||
-	 (bigMode==MODE_BUILD && (ba->buildAmount & RPMBUILD_RMSOURCE))||
-	 (bigMode==MODE_BUILD && (ba->buildAmount & RPMBUILD_RMSPEC))) 
-	&& force)
+    if (!(bigMode == MODE_INSTALL) && force)
 	argerror(_("only installation, upgrading, rmsource and rmspec may be forced"));
 
     if (bigMode != MODE_INSTALL && badReloc)
@@ -1118,20 +985,6 @@ int main(int argc, const char ** argv)
     if (oldPackage && !upgrade)
 	argerror(_("--oldpackage may only be used during upgrades"));
 
-#ifdef	DYING
-    if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
-	((bigMode == MODE_QUERY && QVSource == RPMQV_RPM)) ||
-	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))))
-	argerror(_("ftp options can only be used during package queries, "
-		 "installs, and upgrades"));
-
-    if ((httpProxy || httpPort) && !(bigMode == MODE_INSTALL ||
-	((bigMode == MODE_QUERY && QVSource == RPMQV_RPM)) ||
-	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))))
-	argerror(_("http options can only be used during package queries, "
-		 "installs, and upgrades"));
-#endif	/* DYING */
-
     if (noPgp && bigMode != MODE_CHECKSIG)
 	argerror(_("--nopgp may only be used during signature checking"));
 
@@ -1141,25 +994,6 @@ int main(int argc, const char ** argv)
     if (noMd5 && bigMode != MODE_CHECKSIG && bigMode != MODE_VERIFY)
 	argerror(_("--nomd5 may only be used during signature checking and "
 		   "package verification"));
-
-#ifdef	DYING
-    if (ftpProxy) {
-	addMacro(NULL, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
-    }
-    if (ftpPort) {
-	addMacro(NULL, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
-    }
-    if (httpProxy) {
-	addMacro(NULL, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
-    }
-    if (httpPort) {
-	addMacro(NULL, "_httpport", NULL, httpPort, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_httpport", NULL, httpPort, RMIL_CMDLINE);
-    }
-#endif
 
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
@@ -1273,87 +1107,10 @@ int main(int argc, const char ** argv)
 	
       case MODE_REBUILD:
       case MODE_RECOMPILE:
-        if (rpmGetVerbosity() == RPMMESS_NORMAL)
-	    rpmSetVerbosity(RPMMESS_VERBOSE);
-
-	if (!poptPeekArg(optCon))
-	    argerror(_("no packages files given for rebuild"));
-
-	ba->buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
-	if (bigMode == MODE_REBUILD) {
-	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    ba->buildAmount |= RPMBUILD_RMSOURCE;
-	    ba->buildAmount |= RPMBUILD_RMSPEC;
-	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    ba->buildAmount |= RPMBUILD_RMBUILD;
-	}
-
-	while ((pkg = poptGetArg(optCon))) {
-	    ec = rpmInstallSource("", pkg, &specFile, &cookie);
-	    if (ec)
-		break;
-
-	    ba->rootdir = rootdir;
-	    ec = build(specFile, ba, passPhrase, 0, cookie, rcfile, force, noDeps);
-	    if (ec)
-		break;
-	    free(cookie);
-	    xfree(specFile);
-	}
 	break;
 
       case MODE_BUILD:
       case MODE_TARBUILD:
-        if (rpmGetVerbosity() == RPMMESS_NORMAL)
-	    rpmSetVerbosity(RPMMESS_VERBOSE);
-       
-	switch (ba->buildChar) {
-	  /* these fallthroughs are intentional */
-	  case 'a':
-	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
-	    /*@fallthrough@*/
-	  case 'b':
-	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    /*@fallthrough@*/
-	  case 'i':
-	    ba->buildAmount |= RPMBUILD_INSTALL;
-	    if ((ba->buildChar == 'i') && ba->shortCircuit)
-		break;
-	    /*@fallthrough@*/
-	  case 'c':
-	    ba->buildAmount |= RPMBUILD_BUILD;
-	    if ((ba->buildChar == 'c') && ba->shortCircuit)
-		break;
-	    /*@fallthrough@*/
-	  case 'p':
-	    ba->buildAmount |= RPMBUILD_PREP;
-	    break;
-	    
-	  case 'l':
-	    ba->buildAmount |= RPMBUILD_FILECHECK;
-	    break;
-	  case 's':
-	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
-	    break;
-	}
-
-	if (!poptPeekArg(optCon)) {
-	    if (bigMode == MODE_BUILD)
-		argerror(_("no spec files given for build"));
-	    else
-		argerror(_("no tar files given for build"));
-	}
-
-	while ((pkg = poptGetArg(optCon))) {
-	    ba->rootdir = rootdir;
-	    ec = build(pkg, ba, passPhrase, bigMode == MODE_TARBUILD,
-			NULL, rcfile, force, noDeps);
-	    if (ec)
-		break;
-	    rpmFreeMacros(NULL);
-	    rpmReadConfigFiles(rcfile, NULL);
-	}
 	break;
 
       case MODE_UNINSTALL:
@@ -1479,8 +1236,6 @@ int main(int argc, const char ** argv)
     freeFilesystems();
     urlFreeCache();
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
-    if (ba->buildRootOverride) xfree(ba->buildRootOverride);
-    if (ba->targets) free(ba->targets);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */

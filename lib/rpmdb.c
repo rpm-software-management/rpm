@@ -246,7 +246,9 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
     }
 
     if (_dbapi <= 0) {		/* failed to open with any dbapi */
-	rpmError(RPMERR_DBOPEN, _("dbiOpen: cannot open %s index"),
+	static int _printed[32];
+	if (!_printed[dbix & 0x1f]++)
+	    rpmError(RPMERR_DBOPEN, _("dbiOpen: cannot open %s index"),
 		tagName(rpmtag));
 	rc = 1;
     } else			/* suggest possible conversion */

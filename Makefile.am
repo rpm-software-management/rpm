@@ -47,7 +47,7 @@ pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 noinst_HEADERS = \
 	acconfig.h	build.h		system.h
 
-rpm_SOURCES =		build.c rpm.c
+rpm_SOURCES =		rpm.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpm_LDADD =		$(myLDADD)
 

@@ -1,11 +1,11 @@
 #include "system.h"
 
-#if 0
+#if defined(IAM_RPM)
 #define	IAM_RPMBT
-#undef	IAM_RPMDB
-#undef	IAM_RPMEIU
-#undef	IAM_RPMQV
-#undef	IAM_RPMK
+#define	IAM_RPMDB
+#define	IAM_RPMEIU
+#define	IAM_RPMQV
+#define	IAM_RPMK
 #endif
 
 #include <rpmbuild.h>
@@ -56,7 +56,6 @@ static int noPgp = 0;
 
 #ifdef	IAM_RPMQV
 static struct rpmQVArguments rpmQVArgs;
-static int queryTags = 0;
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
@@ -114,12 +113,6 @@ extern int rpmFLAGS;
 extern MacroContext rpmCLIMacroContext;
 
 /* options for all executables */
-#ifdef	DYING
-static char * ftpPort = NULL;
-static char * ftpProxy = NULL;
-static char * httpPort = NULL;
-static char * httpProxy = NULL;
-#endif
 
 static int help = 0;
 static int noUsageMsg = 0;
@@ -176,16 +169,12 @@ static struct poptOption optionsTable[] = {
  { "test", '\0', 0, &test, 0,			NULL, NULL},
 #endif
 
+ /* XXX colliding options */
  { "all", 'a', 0, 0, 'a',			NULL, NULL},
-
-#ifdef	DYING
- { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
- { "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0,	NULL, NULL},
- { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0,	NULL, NULL},
- { "httpport", '\0', POPT_ARG_STRING, &httpPort, 0,	NULL, NULL},
- { "httpproxy", '\0', POPT_ARG_STRING, &httpProxy, 0,	NULL, NULL},
-#endif	/* DYING */
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
+#endif
+
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
 
@@ -213,12 +202,14 @@ static struct poptOption optionsTable[] = {
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
+#ifdef	DYING
 #ifdef	IAM_RPMBT
  { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
  { "rebuild", '\0', 0, 0, GETOPT_REBUILD,	NULL, NULL},
  { "recompile", '\0', 0, 0, GETOPT_RECOMPILE,	NULL, NULL},
  { "tarbuild", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
 #endif	/* IAM_RPMBT */
+#endif	/* DYING */
 
 #ifdef	IAM_RPMDB
  { "initdb", '\0', 0, &initdb, 0,		NULL, NULL},
@@ -253,10 +244,12 @@ static struct poptOption optionsTable[] = {
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
- { "query", 'q', 0, NULL, 'q',			NULL, NULL},
+#ifdef	DYING
+ { "query", 'q', 0, 0, 'q',			NULL, NULL},
  { "verify", 'V', 0, 0, 'V',			NULL, NULL},
  {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
- { "querytags", '\0', 0, &queryTags, 0,		NULL, NULL},
+ { "querytags", '\0', 0, 0, 0,			NULL, NULL},
+#endif
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
@@ -357,7 +350,7 @@ static void printUsage(void) {
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMBT
-    fprintf(fp, _("       %s {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]\n"), __progname);
+    fprintf(fp, _("       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  <file>]\n"), __progname);
     puts(_("                        [--sign] [--nobuild] ]"));
     puts(_("                        [--target=platform1[,platform2...]]"));
     puts(_("                        [--rmsource] [--rmspec] specfile"));
@@ -664,7 +657,6 @@ int main(int argc, const char ** argv)
 #ifdef	IAM_RPMQV
     QVA_t *qva = &rpmQVArgs;
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
-    const char * infoCommand[] = { "--info", NULL };
 #endif
 
 #ifdef	IAM_RPMBT
@@ -675,7 +667,6 @@ int main(int argc, const char ** argv)
     rpmRelocation * relocations = NULL;
     int numRelocations = 0;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
-    const char * installCommand[] = { "--install", NULL };
     int probFilter = 0;
     int upgrade = 0;
 #endif
@@ -787,12 +778,15 @@ int main(int argc, const char ** argv)
 #ifdef	IAM_RPMQV
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
+    qva->qva_mode = ' ';
+    qva->qva_char = ' ';
 #endif
 
 #ifdef	IAM_RPMBT
     if (ba->buildRootOverride) xfree(ba->buildRootOverride);
     if (ba->targets) free(ba->targets);
     memset(ba, 0, sizeof(*ba));
+    ba->buildMode = ' ';
     ba->buildChar = ' ';
 #endif
 
@@ -805,62 +799,27 @@ int main(int argc, const char ** argv)
 	    rpmIncreaseVerbosity();
 	    break;
 
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
 	  case 'i':
 #ifdef	IAM_RPMQV
-	    if (bigMode == MODE_QUERY)
+	    if (bigMode == MODE_QUERY) {
+		const char * infoCommand[] = { "--info", NULL };
 		poptStuffArgs(optCon, infoCommand);
+	    }
 #endif
 #ifdef	IAM_RPMEIU
 	    if (bigMode == MODE_INSTALL)
 		/*@-ifempty@*/ ;
-	    if (bigMode == MODE_UNKNOWN)
+	    if (bigMode == MODE_UNKNOWN) {
+		const char * installCommand[] = { "--install", NULL };
 		poptStuffArgs(optCon, installCommand);
-#endif
-#ifdef	IAM_RPMBT
-	    ba->buildChar = 'i';
+	    }
 #endif
 	    break;
+#endif	/* IAM_RPMQV || IAM_RPMEIU || IAM_RPMBT */
 
+#ifdef	DYING
 #ifdef	IAM_RPMBT
-	  case 'b':
-	  case 't':
-	  { const char * errString = NULL;
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD)
-		argerror(_("only one major mode may be specified"));
-
-	    if (arg == 'b') {
-		bigMode = MODE_BUILD;
-		errString = _("--build (-b) requires one of a,b,i,c,p,l as "
-				"its sole argument");
-	    } else {
-		bigMode = MODE_TARBUILD;
-		errString = _("--tarbuild (-t) requires one of a,b,i,c,p,l as "
-			      "its sole argument");
-	    }
-
-	    if (strlen(optArg) > 1) 
-		argerror(errString);
-
-	    ba->buildChar = optArg[0];
-	    switch (ba->buildChar) {
-	      case 'a':
-	      case 'b':
-	      case 'i':
-	      case 'c':
-	      case 'p':
-	      case 'l':
-	      case 's':
-		break;
-	      default:
-		argerror(errString);
-		break;
-	    }
-	  } break;
-
-	  case 'a':
-	    ba->buildChar = 'a';
-	    break;
-
 	  case GETOPT_REBUILD:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
 		argerror(_("only one major mode may be specified"));
@@ -873,6 +832,7 @@ int main(int argc, const char ** argv)
 	    bigMode = MODE_RECOMPILE;
 	    break;
 #endif	/* IAM_RPMBT */
+#endif	/* DYING */
 	
 #ifdef	IAM_RPMEIU
 	  case 'u':
@@ -1003,20 +963,6 @@ int main(int argc, const char ** argv)
 	    break;
 #endif	/* IAM_RPMK */
 
-	  case GETOPT_DBPATH:
-	    switch (urlIsURL(optArg)) {
-	    case URL_IS_UNKNOWN:
-		if (optArg[0] != '/')
-		    argerror(_("arguments to --dbpath must begin with a /"));
-		break;
-	    default:
-		break;
-	    }
-	    addMacro(NULL, "_dbpath", NULL, optArg, RMIL_CMDLINE);
-	    addMacro(&rpmCLIMacroContext, "_dbpath", NULL, optArg, RMIL_CMDLINE);
-	    gotDbpath = 1;
-	    break;
-
 	  case GETOPT_DEFINEMACRO:
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 	    rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
@@ -1050,11 +996,19 @@ int main(int argc, const char ** argv)
     }
 
 #ifdef	IAM_RPMBT
+    switch (ba->buildMode) {
+    case 'b':	bigMode = MODE_BUILD;		break;
+    case 't':	bigMode = MODE_TARBUILD;	break;
+    case 'B':	bigMode = MODE_REBUILD;		break;
+    case 'C':	bigMode = MODE_RECOMPILE;	break;
+    }
+
     if ((ba->buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
 
     if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
+
 #endif	/* IAM_RPMBT */
     
 #ifdef	IAM_RPMDB
@@ -1067,12 +1021,20 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMQV
+    switch (qva->qva_mode) {
+    case 'q':	bigMode = MODE_QUERY;		break;
+    case 'V':	bigMode = MODE_VERIFY;		break;
+    case 'Q':	bigMode = MODE_QUERYTAGS;	break;
+    }
+
+#ifdef	DYING
     if (queryTags) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
 	else
 	    bigMode = MODE_QUERYTAGS;
     }
+#endif
 
     if (qva->qva_sourceCount) {
 	if (QVSource != RPMQV_PACKAGE || qva->qva_sourceCount > 1)
@@ -1236,36 +1198,6 @@ int main(int argc, const char ** argv)
 	argerror(_("--oldpackage may only be used during upgrades"));
 #endif
 
-#ifdef	DYING
-    if ((ftpProxy || ftpPort) && !(
-#ifdef	IAM_RPMEIU
-	bigMode == MODE_INSTALL ||
-#endif
-#ifdef	IAM_RPMQV
-	((bigMode == MODE_QUERY && QVSource == RPMQV_RPM)) ||
-	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))
-#else
-	0
-#endif
-	))
-	argerror(_("ftp options can only be used during package queries, "
-		 "installs, and upgrades"));
-
-    if ((httpProxy || httpPort) && !(
-#ifdef	IAM_RPMEIU
-	bigMode == MODE_INSTALL ||
-#endif
-#ifdef	IAM_RPMQV
-	((bigMode == MODE_QUERY && QVSource == RPMQV_RPM)) ||
-	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))
-#else
-	0
-#endif
-	))
-	argerror(_("http options can only be used during package queries, "
-		 "installs, and upgrades"));
-#endif	/* DYING */
-
 #ifdef	IAM_RPMK
     if (noPgp && bigMode != MODE_CHECKSIG)
 	argerror(_("--nopgp may only be used during signature checking"));
@@ -1279,25 +1211,6 @@ int main(int argc, const char ** argv)
 	argerror(_("--nomd5 may only be used during signature checking and "
 		   "package verification"));
 #endif
-
-#ifdef	DYING
-    if (ftpProxy) {
-	addMacro(NULL, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
-    }
-    if (ftpPort) {
-	addMacro(NULL, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
-    }
-    if (httpProxy) {
-	addMacro(NULL, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
-    }
-    if (httpPort) {
-	addMacro(NULL, "_httpport", NULL, httpPort, RMIL_CMDLINE);
-	addMacro(&rpmCLIMacroContext, "_httpport", NULL, httpPort, RMIL_CMDLINE);
-    }
-#endif	/* DYING */
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
     if (signIt) {
