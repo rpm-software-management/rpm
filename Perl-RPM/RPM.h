@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.7 2000/08/02 08:44:23 rjray Exp $
+ * $Id: RPM.h,v 1.8 2000/08/06 08:57:09 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -166,8 +166,8 @@ extern void rpm_error(pTHX_ int, const char *);
 /* RPM/Header.xs: */
 extern const char* sv2key(pTHX_ SV *);
 extern RPM__Header rpmhdr_TIEHASH(pTHX_ SV *, SV *, int);
-extern AV* rpmhdr_FETCH(pTHX_ RPM__Header, SV *, const char *, int, int);
-extern int rpmhdr_STORE(pTHX_ RPM__Header, SV *, AV *);
+extern SV* rpmhdr_FETCH(pTHX_ RPM__Header, SV *, const char *, int, int);
+extern int rpmhdr_STORE(pTHX_ RPM__Header, SV *, SV *);
 extern int rpmhdr_DELETE(pTHX_ RPM__Header, SV *);
 extern int rpmhdr_EXISTS(pTHX_ RPM__Header, SV *);
 extern unsigned int rpmhdr_size(pTHX_ RPM__Header);
@@ -175,6 +175,7 @@ extern int rpmhdr_tagtype(pTHX_ RPM__Header, SV *);
 extern int rpmhdr_write(pTHX_ RPM__Header, SV *, int);
 extern int rpmhdr_is_source(pTHX_ RPM__Header);
 extern int rpmhdr_cmpver(pTHX_ RPM__Header, RPM__Header);
+extern int rpmhdr_scalar_tag(pTHX_ SV*, int);
 
 /* RPM/Database.xs: */
 extern RPM__Database rpmdb_TIEHASH(pTHX_ char *, SV *);
