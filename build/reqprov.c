@@ -260,19 +260,8 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 
     /*** Do Requires ***/
     
-    /* Separate args by null for xargs (forget why) */
-    s = writePtr;
-    while (*s) {
-	if (*s == '\n') {
-	    *s = '\0';
-	}
-	s++;
-    }
-
-    argv[0] = "xargs";
-    argv[1] = "-0";
-    argv[2] = "ldd";
-    argv[3] = NULL;
+    argv[0] = "find-requires";
+    argv[1] = NULL;
     readBuff = getOutputFrom(dir, argv, writePtr, writeBytes, 0);
     if (!readBuff) {
 	rpmError(RPMERR_EXEC, "Failed to find requires");
@@ -283,22 +272,9 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     f = fsave = splitString(s, strlen(s), '\n');
     freeStringBuf(readBuff);
     while (*f) {
-	s = *f;
-	if (isspace(*s) && strstr(s, "=>")) {
-	    while (isspace(*s)) {
-		s++;
-	    }
-	    tok = s;
-	    while (! isspace(*s)) {
-		s++;
-	    }
-	    *s = '\0';
-	    if ((s = strrchr(tok, '/'))) {
-		tok = s + 1;
-	    }
-	    addReqProv(p, RPMSENSE_ANY, tok, NULL);
+	if (**f) {
+	    addReqProv(p, RPMSENSE_ANY, *f, NULL);
 	}
-
 	f++;
     }
     free(fsave);
