@@ -107,7 +107,7 @@ int generateAutoReqProv(Spec spec, Package pkg,
     char *argv[2];
     char **f, **fsave;
 
-    if (!cpioCount) {
+    if (!cpioCount || !spec->autoReqProv) {
 	return 0;
     }
 
