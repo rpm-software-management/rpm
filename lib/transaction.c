@@ -146,6 +146,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				     (void *) NULL, &fi->fc)) {
 	    fi->fc = 0;
 	    fi->h = alp->h;
+	    hdrs[alp - al->list] = headerLink(fi->h);
 	    continue;
 	}
 
