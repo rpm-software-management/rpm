@@ -198,7 +198,7 @@ char *rpmGetOsName(void);
 char *rpmGetArchName(void);
 int rpmShowRC(FILE *f);
 int rpmArchScore(char * arch);
-int rpmOsScore(char * arch);
+int rpmOsScore(char * os);
 
 /** **/
 
@@ -207,9 +207,9 @@ typedef struct rpmdb * rpmdb;
 typedef void (*rpmNotifyFunction)(const unsigned long amount,
 			       const unsigned long total);
 
-int rpmdbOpen (char * prefix, rpmdb * dbp, int mode, int perms);
+int rpmdbOpen (char * root, rpmdb * dbp, int mode, int perms);
     /* 0 on error */
-int rpmdbInit(char * prefix, int perms);
+int rpmdbInit(char * root, int perms);
     /* nonzero on error */
 void rpmdbClose (rpmdb db);
 
@@ -221,20 +221,20 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset);
 int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches);
 int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches);
 int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches);
-int rpmdbFindByProvides(rpmdb db, char * filespec, dbiIndexSet * matches);
-int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbiIndexSet * matches);
-int rpmdbFindByConflicts(rpmdb db, char * filespec, dbiIndexSet * matches);
+int rpmdbFindByProvides(rpmdb db, char * provides, dbiIndexSet * matches);
+int rpmdbFindByRequiredBy(rpmdb db, char * requires, dbiIndexSet * matches);
+int rpmdbFindByConflicts(rpmdb db, char * conflicts, dbiIndexSet * matches);
 
-int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile,
+int rpmInstallSourcePackage(char * root, int fd, char ** specFile,
 			    rpmNotifyFunction notify, char * labelFormat);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
 		      int flags, rpmNotifyFunction notify, char * labelFormat,
 		      char * netsharedPath);
 int rpmVersionCompare(Header first, Header second);
-int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
-int rpmdbRebuild(char * prefix);
+int rpmRemovePackage(char * root, rpmdb db, unsigned int offset, int flags);
+int rpmdbRebuild(char * root);
 
-int rpmVerifyFile(char * prefix, Header h, int filenum, int * result, 
+int rpmVerifyFile(char * root, Header h, int filenum, int * result, 
 		  int omitMask);
 int rpmVerifyScript(char * root, Header h, int err);
 
