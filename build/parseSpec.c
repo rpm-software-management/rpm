@@ -118,8 +118,10 @@ static void forceIncludeFile(Spec spec, const char * fileName)
  */
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies spec->nextline, fileSystem @*/
+		fileSystem @*/
+	/*@modifies spec->nextline, spec->nextpeekc, spec->lbuf, spec->line,
+		ofi->readPtr,
+		rpmGlobalMacroContext, fileSystem @*/
 {
     char *last;
     char ch;

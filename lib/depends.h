@@ -131,8 +131,8 @@ struct transactionElement {
 struct rpmTransactionSet_s {
     rpmtransFlags transFlags;		/*!< Bit(s) to control operation. */
 /*@null@*/ rpmCallbackFunction notify;	/*!< Callback function. */
-/*@observer@*/ /*@null@*/ rpmCallbackData notifyData;
-					/*!< Callback private data. */
+/*@observer@*/ /*@null@*/
+    rpmCallbackData notifyData;		/*!< Callback private data. */
 /*@dependent@*/ rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;	/*!< Bits to filter current problems. */
     int filesystemCount;		/*!< No. of mounted filesystems. */
@@ -176,7 +176,7 @@ extern "C" {
 /** \ingroup rpmdep
  * Compare package name-version-release from header with dependency, looking
  * for overlap.
- * @deprecated Remove from API when obsoletes is correctly eliminated.
+ * @deprecated Remove from API when obsoletes is correctly implemented.
  * @param h		header
  * @param reqName	dependency name
  * @param reqEVR	dependency [epoch:]version[-release]

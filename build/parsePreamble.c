@@ -322,7 +322,7 @@ static struct optionalTag {
  */
 static void fillOutMainPackage(Header h)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies h @*/
+	/*@modifies h, rpmGlobalMacroContext @*/
 {
     struct optionalTag *ot;
 
@@ -341,7 +341,7 @@ static void fillOutMainPackage(Header h)
 static int readIcon(Header h, const char * file)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies h, fileSystem @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
 {
     const char *fn = NULL;
     char *icon;
@@ -450,7 +450,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 		spec->buildRestrictions, spec->BANames, spec->BACount,
 		spec->line, spec->gotBuildRootURL,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;

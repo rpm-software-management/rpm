@@ -103,7 +103,9 @@ int poptReadConfigFile(poptContext con, const char * fn)
     if (fileLength == -1 || lseek(fd, 0, 0) == -1) {
 	rc = errno;
 	(void) close(fd);
+	/*@-mods@*/
 	errno = rc;
+	/*@=mods@*/
 	return POPT_ERROR_ERRNO;
     }
 
@@ -111,7 +113,9 @@ int poptReadConfigFile(poptContext con, const char * fn)
     if (read(fd, (char *)file, fileLength) != fileLength) {
 	rc = errno;
 	(void) close(fd);
+	/*@-mods@*/
 	errno = rc;
+	/*@=mods@*/
 	return POPT_ERROR_ERRNO;
     }
     if (close(fd) == -1)

@@ -31,8 +31,8 @@ static int progressCurrent = 0;
 /**
  */
 static void printHash(const unsigned long amount, const unsigned long total)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals hashesPrinted, progressCurrent, fileSystem @*/
+	/*@modifies hashesPrinted, progressCurrent, fileSystem @*/
 {
     int hashesNeeded;
     int hashesTotal = 50;
@@ -75,8 +75,10 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 			const unsigned long total,
 			/*@null@*/ const void * pkgKey,
 			/*@null@*/ void * data)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals hashesPrinted, progressCurrent, progressTotal,
+		fileSystem @*/
+	/*@modifies hashesPrinted, progressCurrent, progressTotal,
+		fileSystem @*/
 {
     /*@-castexpose@*/
     Header h = (Header) arg;
@@ -558,8 +560,10 @@ restart:
 	    }
 
 	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
+#if !defined(__LCLINT__) /* LCL: segfault */
 		eiu->rpmrc = rpmInstallSourcePackage(rootdir, eiu->fd, NULL,
 			rpmShowProgress, (void *) ((long)notifyFlags), NULL);
+#endif
 		if (eiu->rpmrc != RPMRC_OK) eiu->numFailed++;
 	    }
 

@@ -96,18 +96,20 @@ int rpmLookupSignatureType(int action)
  *  Read a pass phrase from the user.
  */
 /*@null@*/ char * rpmGetPassPhrase(const char *prompt, const int sigTag)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem@*/
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem @*/;
 
 /** \ingroup signature
  *  Return path to pgp executable of given type, or NULL when not found.
  */
-/*@-redecl@*/
+/*@-exportlocal -redecl@*/
 /*@null@*/ const char * rpmDetectPGPVersion(
 			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *pgpVer @*/;
-/*@=redecl@*/
+/*@=exportlocal =redecl@*/
 
 #ifdef __cplusplus
 }

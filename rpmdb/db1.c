@@ -476,7 +476,7 @@ static int db1stat(/*@unused@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
+	/*@modifies dbi, rpmGlobalMacroContext, fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * base = db1basename(dbi->dbi_rpmtag);
@@ -523,7 +523,7 @@ static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag,
 		/*@out@*/ dbiIndex * dbip)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
-	/*@modifies *dbip, fileSystem @*/
+	/*@modifies *dbip, rpmGlobalMacroContext, fileSystem @*/
 {
     /*@-nestedextern@*/
     extern struct _dbiVec db1vec;

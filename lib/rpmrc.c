@@ -1,3 +1,4 @@
+/*@-mods@*/
 #include "system.h"
 
 #include <stdarg.h>
@@ -438,33 +439,6 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
-int rpmReadConfigFiles(const char * file, const char * target)
-{
-
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
-    /* Preset target macros */
-    /*@-nullstate@*/	/* FIX: target can be NULL */
-    rpmRebuildTargetVars(&target, NULL);
-
-    /* Read the files */
-    if (rpmReadRC(file)) return -1;
-
-    /* Reset target macros */
-    rpmRebuildTargetVars(&target, NULL);
-    /*@=nullstate@*/
-
-    /* Finally set target platform */
-    {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
-	const char *os = rpmExpand("%{_target_os}", NULL);
-	rpmSetMachine(cpu, os);
-	cpu = _free(cpu);
-	os = _free(os);
-    }
-/*@=globs@*/
-
-    return 0;
-}
-
 static void setVarDefault(int var, const char * macroname, const char * val,
 		/*@null@*/ const char * body)
 	/*@globals rpmGlobalMacroContext,
@@ -568,102 +542,6 @@ static void setDefaults(void)
     setPathDefault(-1,			"_sourcedir",	"SOURCES");
     setPathDefault(-1,			"_specdir",	"SPECS");
 
-}
-
-int rpmReadRC(const char * rcfiles)
-	/*@globals rpmGlobalMacroContext,
-		internalState @*/
-	/*@modifies internalState @*/
-{
-    char *myrcfiles, *r, *re;
-    int rc;
-
-    if (!defaultsInitialized) {
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
-	setDefaults();
-/*@=globs@*/
-	defaultsInitialized = 1;
-    }
-
-    if (rcfiles == NULL)
-	rcfiles = defrcfiles;
-
-    /* Read each file in rcfiles. */
-    rc = 0;
-    for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
-	char fn[4096];
-	FD_t fd;
-
-	/* Get pointer to rest of files */
-	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
-	    if (!(re[1] == '/' && re[2] == '/'))
-		/*@innerbreak@*/ break;
-	}
-	if (re && *re == ':')
-	    *re++ = '\0';
-	else
-	    re = r + strlen(r);
-
-	/* Expand ~/ to $HOME/ */
-	fn[0] = '\0';
-	if (r[0] == '~' && r[1] == '/') {
-	    const char * home = getenv("HOME");
-	    if (home == NULL) {
-	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-		if (rcfiles == defrcfiles && myrcfiles != r)
-		    continue;
-		rpmError(RPMERR_RPMRC, _("Cannot expand %s\n"), r);
-		rc = 1;
-		break;
-	    }
-	    if (strlen(home) > (sizeof(fn) - strlen(r))) {
-		rpmError(RPMERR_RPMRC, _("Cannot read %s, HOME is too large.\n"),
-				r);
-		rc = 1;
-		break;
-	    }
-	    strcpy(fn, home);
-	    r++;
-	}
-	strncat(fn, r, sizeof(fn) - (strlen(fn) + 1));
-	fn[sizeof(fn)-1] = '\0';
-
-	/* Read another rcfile */
-	fd = Fopen(fn, "r.fpio");
-	if (fd == NULL || Ferror(fd)) {
-	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-	    if (rcfiles == defrcfiles && myrcfiles != r)
-		continue;
-	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s.\n"),
-		 fn, Fstrerror(fd));
-	    rc = 1;
-	    break;
-	} else {
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
-	    rc = doReadRC(fd, fn);
-/*@=globs@*/
-	}
- 	if (rc) break;
-    }
-    myrcfiles = _free(myrcfiles);
-    if (rc)
-	return rc;
-
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
-
-    {	const char *mfpath;
-	/*@-branchstate@*/
-	if ((mfpath = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
-	    mfpath = xstrdup(mfpath);
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
-	    rpmInitMacros(NULL, mfpath);
-/*@=globs@*/
-	    mfpath = _free(mfpath);
-	}
-	/*@=branchstate@*/
-    }
-
-    return rc;
 }
 
 /*@-usedef@*/	/*@ FIX: se usage inconsistent, W2DO? */
@@ -1661,6 +1539,127 @@ void rpmFreeRpmrc(void)
 /*@=nullstate@*/
 }
 
+/** \ingroup rpmrc
+ * Read rpmrc (and macro) configuration file(s).
+ * @param rcfiles	colon separated files to read (NULL uses default)
+ * @return		0 on succes
+ */
+static int rpmReadRC(/*@null@*/ const char * rcfiles)
+	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    char *myrcfiles, *r, *re;
+    int rc;
+
+    if (!defaultsInitialized) {
+	setDefaults();
+	defaultsInitialized = 1;
+    }
+
+    if (rcfiles == NULL)
+	rcfiles = defrcfiles;
+
+    /* Read each file in rcfiles. */
+    rc = 0;
+    for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
+	char fn[4096];
+	FD_t fd;
+
+	/* Get pointer to rest of files */
+	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
+	    if (!(re[1] == '/' && re[2] == '/'))
+		/*@innerbreak@*/ break;
+	}
+	if (re && *re == ':')
+	    *re++ = '\0';
+	else
+	    re = r + strlen(r);
+
+	/* Expand ~/ to $HOME/ */
+	fn[0] = '\0';
+	if (r[0] == '~' && r[1] == '/') {
+	    const char * home = getenv("HOME");
+	    if (home == NULL) {
+	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
+		if (rcfiles == defrcfiles && myrcfiles != r)
+		    continue;
+		rpmError(RPMERR_RPMRC, _("Cannot expand %s\n"), r);
+		rc = 1;
+		break;
+	    }
+	    if (strlen(home) > (sizeof(fn) - strlen(r))) {
+		rpmError(RPMERR_RPMRC, _("Cannot read %s, HOME is too large.\n"),
+				r);
+		rc = 1;
+		break;
+	    }
+	    strcpy(fn, home);
+	    r++;
+	}
+	strncat(fn, r, sizeof(fn) - (strlen(fn) + 1));
+	fn[sizeof(fn)-1] = '\0';
+
+	/* Read another rcfile */
+	fd = Fopen(fn, "r.fpio");
+	if (fd == NULL || Ferror(fd)) {
+	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
+	    if (rcfiles == defrcfiles && myrcfiles != r)
+		continue;
+	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s.\n"),
+		 fn, Fstrerror(fd));
+	    rc = 1;
+	    break;
+	} else {
+	    rc = doReadRC(fd, fn);
+	}
+ 	if (rc) break;
+    }
+    myrcfiles = _free(myrcfiles);
+    if (rc)
+	return rc;
+
+    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+
+    {	const char *mfpath;
+	/*@-branchstate@*/
+	if ((mfpath = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
+	    mfpath = xstrdup(mfpath);
+	    rpmInitMacros(NULL, mfpath);
+	    mfpath = _free(mfpath);
+	}
+	/*@=branchstate@*/
+    }
+
+    return rc;
+}
+
+int rpmReadConfigFiles(const char * file, const char * target)
+{
+
+    /* Preset target macros */
+    /*@-nullstate@*/	/* FIX: target can be NULL */
+    rpmRebuildTargetVars(&target, NULL);
+
+    /* Read the files */
+    if (rpmReadRC(file)) return -1;
+
+    /* Reset target macros */
+    rpmRebuildTargetVars(&target, NULL);
+    /*@=nullstate@*/
+
+    /* Finally set target platform */
+    {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
+	const char *os = rpmExpand("%{_target_os}", NULL);
+	rpmSetMachine(cpu, os);
+	cpu = _free(cpu);
+	os = _free(os);
+    }
+
+    return 0;
+}
+
 int rpmShowRC(FILE * fp)
 {
     struct rpmOption *opt;
@@ -1715,9 +1714,8 @@ int rpmShowRC(FILE * fp)
     rpmShowRpmlibProvides(fp);
     fprintf(fp, "\n");
 
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     rpmDumpMacroTable(NULL, fp);
-/*@=globs@*/
 
     return 0;
 }
+/*@=mods@*/

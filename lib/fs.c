@@ -1,3 +1,4 @@
+/*@-mods@*/
 /**
  * \file lib/fs.c
  */
@@ -262,9 +263,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
     usages = xcalloc(numFilesystems, sizeof(usages));
 
-    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     sourceDir = rpmGetPath("%{_sourcedir}", NULL);
-    /*@=globs@*/
 
     maxLen = strlen(sourceDir);
     for (i = 0; i < numFiles; i++) {
@@ -347,3 +346,4 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     return 0;
 }
 /*@=usereleased =onlytrans@*/
+/*@=mods@*/

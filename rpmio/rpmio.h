@@ -506,13 +506,14 @@ int fdClose( /*@only@*/ void * cookie)
 /**
  */
 int fdWritable(FD_t fd, int secs)
-	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies fd, errno, fileSystem @*/;
 
 /**
  */
 int fdReadable(FD_t fd, int secs)
-	/*@modifies fd @*/;
+	/*@globals errno @*/
+	/*@modifies fd, errno @*/;
 /*@=exportlocal@*/
 
 /**

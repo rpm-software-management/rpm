@@ -883,12 +883,14 @@ int poptGetNextOpt(poptContext con)
 		    char *end;
 
 		    if (con->os->nextArg) {
+			/*@-mods@*/
 			int saveerrno = errno;
 			errno = 0;
 			aDouble = strtod(con->os->nextArg, &end);
 			if (errno == ERANGE)
 			    return POPT_ERROR_OVERFLOW;
 			errno = saveerrno;
+			/*@=mods@*/
 			if (*end != '\0')
 			    return POPT_ERROR_BADNUMBER;
 		    }

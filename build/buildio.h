@@ -41,7 +41,7 @@ extern "C" {
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn,
-		fileSystem, internalState @*/;
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Write rpm package to file.
@@ -66,7 +66,7 @@ int writeRPM(Header * hdrp,
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies *hdrp, *cookie, csa, csa->cpioArchiveSize,
-		fileSystem, internalState @*/;
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

@@ -50,7 +50,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * fmodeMacro)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies fdo, csa, fileSystem @*/
+	/*@modifies fdo, csa, rpmGlobalMacroContext, fileSystem @*/
 {
     const char * rootDir = "/";
     rpmdb rpmdb = NULL;
@@ -125,7 +125,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 		const char * file, /*@only@*/ StringBuf sb)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/
 {
     char buf[BUFSIZ];
     const char * fn = buf;
@@ -163,7 +163,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies h, fileSystem @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
@@ -188,7 +188,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies h, fileSystem @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -208,7 +208,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 static int processScriptFiles(Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies pkg->header, fileSystem @*/
+	/*@modifies pkg->header, rpmGlobalMacroContext, fileSystem @*/
 {
     struct TriggerFileEntry *p;
     
@@ -363,8 +363,8 @@ static unsigned char header_magic[8] = {
 static int rpmpkg_version = -1;
 
 static int rpmLeadVersion(void)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/
+	/*@globals rpmpkg_version, rpmGlobalMacroContext @*/
+	/*@modifies rpmpkg_version, rpmGlobalMacroContext @*/
 {
     int rpmlead_version;
 

@@ -81,8 +81,6 @@ extern int _ftp_debug;
 extern int noLibio;
 /*@unchecked@*/
 extern int _rpmio_debug;
-/*@unchecked@*/
-extern int _url_debug;
 
 /*@-varuse@*/
 /*@unchecked@*/
@@ -295,6 +293,7 @@ static void printUsage(void)
 
 }
 
+/*@-mods@*/ /* FIX: shrug */
 int main(int argc, const char ** argv)
 	/*@globals __assert_program_name,
 		rpmGlobalMacroContext, rpmCLIMacroContext,
@@ -380,7 +379,6 @@ int main(int argc, const char ** argv)
     noLibio = 1;
 #endif
     _rpmio_debug = 0;
-    _url_debug = 0;
 
     /* XXX Eliminate query linkage loop */
     specedit = 0;
@@ -583,7 +581,7 @@ int main(int argc, const char ** argv)
 	case GETOPT_DEFINEMACRO:
 	    if (optArg) {
 		(void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
-		(void) rpmDefineMacro(rpmCLIMacroContext, optArg,RMIL_CMDLINE);
+/*@i@*/		(void) rpmDefineMacro(rpmCLIMacroContext, optArg,RMIL_CMDLINE);
 	    }
 	    noUsageMsg = 1;
 	    /*@switchbreak@*/ break;
@@ -1200,7 +1198,7 @@ exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
     optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
-    rpmFreeMacros(rpmCLIMacroContext);
+/*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
 
     if (pipeChild) {
@@ -1211,7 +1209,7 @@ exit:
     /* keeps memory leak checkers quiet */
     freeNames();
     freeFilesystems();
-    urlFreeCache();
+/*@i@*/	urlFreeCache();
     rpmlogClose();
     dbiTags = _free(dbiTags);
 
@@ -1237,3 +1235,4 @@ exit:
     return ec;
     /*@=globstate@*/
 }
+/*@=mods@*/

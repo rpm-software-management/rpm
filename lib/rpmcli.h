@@ -12,7 +12,9 @@
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
  */
+/*@-redecl@*/
 extern int _noDirTokens;
+/*@=redecl@*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -169,7 +171,8 @@ int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
 		rpmdb db, QVF_t showPackage)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies db, fileSystem, internalState @*/;
+	/*@modifies db, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Display results of package query.
@@ -193,7 +196,8 @@ int showQueryPackage(QVA_t qva, rpmdb db, Header h)
 int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Display results of package verify.
@@ -203,8 +207,10 @@ int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
  * @return		result of last non-zero verify return
  */
 int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb db, Header h)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies db, h, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies db, h, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Check original header digest.
@@ -225,7 +231,8 @@ int rpmVerifyDigest(Header h)
 int rpmVerify(QVA_t qva, rpmQVSources source, const char *arg)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Describe query/verify command line request.
@@ -273,6 +280,31 @@ extern struct poptOption rpmVerifyPoptTable[];
 /*@{*/
 /* --- install/upgrade/erase modes */
 
+/*@unchecked@*/
+extern int packagesTotal;
+
+/** \ingroup rpmcli
+ * The rpm CLI generic transaction callback.
+ * @deprecated Transaction callback arguments need to change, so don't rely on
+ * this routine in the rpmcli API.
+ *
+ * @param arg		per-callback private data (e.g. an rpm header)
+ * @param what		callback identifier
+ * @param amount	per-callback progress info
+ * @param total		per-callback progress info
+ * @param pkgkey	opaque header key (e.g. file name or PyObject)
+ * @param data		private data (e.g. rpmInstallInterfaceFlags)
+ * @return		per-callback data (e.g. an opened FD_t)
+ */
+/*@null@*/ void * rpmShowProgress(/*@null@*/ const void * arg,
+		const rpmCallbackType what,
+		const unsigned long amount,
+		const unsigned long total,
+		/*@null@*/ const void * pkgKey,
+		/*@null@*/ void * data)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
 /** \ingroup rpmcli
  * Install/upgrade/freshen binary rpm package.
  * @param rootdir	path to top of install tree
@@ -289,9 +321,10 @@ int rpmInstall(/*@null@*/ const char * rootdir,
 		rpmInstallInterfaceFlags interfaceFlags,
 		rpmprobFilterFlags probFilter,
 		/*@null@*/ rpmRelocation * relocations)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals packagesTotal, rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies *relocations, fileSystem, internalState @*/;
+	/*@modifies *relocations, packagesTotal, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Install source rpm package.
@@ -304,8 +337,10 @@ int rpmInstall(/*@null@*/ const char * rootdir,
 int rpmInstallSource(const char * rootdir, const char * arg,
 		/*@null@*/ /*@out@*/ const char ** specFile,
 		/*@null@*/ /*@out@*/ char ** cookie)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies *specFile, *cookie, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies *specFile, *cookie, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Erase binary rpm package.
@@ -320,7 +355,8 @@ int rpmErase(/*@null@*/ const char * rootdir, /*@null@*/ const char ** argv,
 		rpmEraseInterfaceFlags interfaceFlags)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Describe database command line requests.
@@ -417,31 +453,6 @@ typedef /*@abstract@*/ struct IDTindex_s {
 	/*@modifies fileSystem @*/;
 
 
-/**
- * The rpm CLI generic transaction callback.
- * @deprecated Transaction callback arguments need to change, so don't rely on
- * this routine in the rpmcli API.
- *
- * @param arg		per-callback private data (e.g. an rpm header)
- * @param what		callback identifier
- * @param amount	per-callback progress info
- * @param total		per-callback progress info
- * @param pkgkey	opaque header key (e.g. file name or PyObject)
- * @param data		private data (e.g. rpmInstallInterfaceFlags)
- * @return		per-callback data (e.g. an opened FD_t)
- */
-/*@null@*/ void * rpmShowProgress(/*@null@*/ const void * arg,
-		const rpmCallbackType what,
-		const unsigned long amount,
-		const unsigned long total,
-		/*@null@*/ const void * pkgKey,
-		/*@null@*/ void * data)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
-
-/*@unchecked@*/
-extern int packagesTotal;
-
 /** \ingroup rpmcli
  * Rollback transactions, erasing new, reinstalling old, package(s).
  * @return		0 on success
@@ -450,7 +461,8 @@ int rpmRollback(struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies fileSystem @*/;
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem @*/;
 
 /** \ingroup rpmcli
  */
@@ -512,8 +524,10 @@ typedef enum rpmCheckSigFlags_e {
  * @return		0 on success
  */
 int rpmCheckSig(rpmCheckSigFlags flags, /*@null@*/ const char ** argv)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmReSign() operation.
@@ -536,7 +550,8 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase,
 		/*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState  @*/;
+	/*@modifies rpmGlobalMacroContext,
+		fileSystem, internalState  @*/;
 
 /** \ingroup rpmcli
  * Describe signature command line request.

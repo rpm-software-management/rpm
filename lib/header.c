@@ -1,4 +1,3 @@
-/*@-sizeoftype@*/
 /** \ingroup header
  * \file lib/header.c
  */
@@ -1418,8 +1417,10 @@ headerFindI18NString(Header h, indexEntry entry)
 	(lang = getenv("LANG")) == NULL)
 	    return entry->data;
     
+    /*@-mods@*/
     if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
 	return entry->data;
+    /*@=mods@*/
 
     for (l = lang; *l != '\0'; l = le) {
 	const char *td;
@@ -2831,7 +2832,7 @@ char * headerSprintf(Header h, const char * fmt,
 	const char * piece;
 	int pieceLength;
 
-	/*@=mods@*/
+	/*@-mods@*/
 	piece = singleSprintf(h, format + i, exts, extCache, 0);
 	/*@=mods@*/
 	if (piece) {
@@ -3178,4 +3179,3 @@ static struct HV_s hdrVec1 = {
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec = &hdrVec1;
 /*@=compmempass =redef@*/
-/*@=sizeoftype@*/

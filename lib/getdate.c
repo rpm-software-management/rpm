@@ -2,6 +2,7 @@
 /*@-retvalint -usedef -varuse -nullderef -nullassign @*/
 /*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/
 /*@-globs -evalorderuncon -modobserveruncon -modnomods @*/
+/*@unused@*/
 #ifndef lint
 static char const 
 yyrcsid[] = "$FreeBSD: src/usr.bin/yacc/skeleton.c,v 1.28 2000/01/17 02:04:06 bde Exp $";

@@ -528,12 +528,16 @@ static void parseEVR(char * evr,
     if (rp) *rp = release;
 }
 
+/*@-exportheadervar@*/
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
+
 /*@observer@*/ /*@unchecked@*/
 const char *rpmEVR = VERSION;
+
 /*@unchecked@*/
 int rpmFLAGS = RPMSENSE_EQUAL;
+/*@=exportheadervar@*/
 
 int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
 	const char * BName, const char * BEVR, int BFlags)
@@ -1047,7 +1051,7 @@ alAllFileSatisfiesDepend(const availableList al,
 
 exit:
     dirName = _free(dirName);
-    /*@-mods@*/		/* FIX: al->list might be modified. */
+    /*@-mods@*/		/* AOK: al->list not modified through ret alias. */
     if (ret)
 	ret[found] = NULL;
     /*@=mods@*/
@@ -1211,8 +1215,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 		const char * keyType, const char * keyDepend,
 		const char * keyName, const char * keyEVR, int keyFlags,
 		/*@null@*/ /*@out@*/ struct availablePackage *** suggestion)
-	/*@globals fileSystem @*/
-	/*@modifies ts, *suggestion, fileSystem @*/
+	/*@globals _cacheDependsRC, fileSystem @*/
+	/*@modifies ts, *suggestion, _cacheDependsRC, fileSystem @*/
 {
     rpmdbMatchIterator mi;
     Header h;
@@ -1254,7 +1258,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	}
     }
 
-#ifdef	DYING
+#if defined(DYING) || defined(__LCLINT__)
   { static /*@observer@*/ const char noProvidesString[] = "nada";
     static /*@observer@*/ const char * rcProvidesString = noProvidesString;
     const char * start;

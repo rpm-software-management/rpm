@@ -8,6 +8,11 @@
 
 #include "cpio.h"
 
+/*@-exportlocal@*/
+/*@unchecked@*/
+extern int _fsm_debug;
+/*@=exportlocal@*/
+
 /**
  */
 #define	FSM_VERBOSE	0x8000
@@ -100,8 +105,8 @@ struct hardLink {
  * Iterator across package file info, forward on install, backward on erase.
  */
 struct fsmIterator_s {
-/*@kept@*/ rpmTransactionSet ts;	/*!< transaction set. */
-/*@kept@*/ TFI_t fi;			/*!< transaction element file info. */
+/*@kept@*/ /*@exposed@*/ rpmTransactionSet ts;	/*!< transaction set. */
+/*@kept@*/ /*@exposed@*/ TFI_t fi;	/*!< transaction element file info. */
     int reverse;			/*!< reversed traversal? */
     int isave;				/*!< last returned iterator index. */
     int i;				/*!< iterator index. */
@@ -126,7 +131,7 @@ struct fsm_s {
     size_t wrsize;			/*!< write: Buffer allocated size. */
     size_t wrlen;			/*!< write: Number of bytes requested.*/
     size_t wrnb;			/*!< write: Number of bytes returned. */
-/*@only@*/ FSMI_t iter;			/*!< File iterator. */
+/*@only@*/ /*@null@*/ FSMI_t iter;	/*!< File iterator. */
     int ix;				/*!< Current file iterator index. */
 /*@only@*/ struct hardLink * links;	/*!< Pending hard linked file(s). */
 /*@only@*/ struct hardLink * li;	/*!< Current hard linked file(s). */
@@ -221,7 +226,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
  * @return		0 on success
  */
 int fsmTeardown(FSM_t fsm)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fsm, fileSystem @*/;
 
 /*@-exportlocal@*/
@@ -230,7 +235,7 @@ int fsmTeardown(FSM_t fsm)
  * @param fsm		file state machine data
  * @return		transaction set
  */
-/*@kept@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm)
+/*@kept@*/ /*@exposed@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm)
 	/*@*/;
 
 /**
@@ -238,7 +243,7 @@ int fsmTeardown(FSM_t fsm)
  * @param fsm		file state machine data
  * @return		transaction element file info
  */
-/*@kept@*/ TFI_t fsmGetFi(/*@partial@*/const FSM_t fsm)
+/*@kept@*/ /*@exposed@*/ TFI_t fsmGetFi(/*@partial@*/const FSM_t fsm)
 	/*@*/;
 
 /**

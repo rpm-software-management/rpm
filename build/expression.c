@@ -183,7 +183,8 @@ static const char *prToken(int val)
  */
 static int rdToken(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies state->nextToken @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   int token;
   Value v = NULL;
@@ -319,14 +320,16 @@ static int rdToken(ParseState state)
 
 static Value doLogical(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies state->nextToken @*/;
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/;
 
 /**
  * @param state		expression parser state
  */
 static Value doPrimary(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies state->nextToken @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v;
 
@@ -406,7 +409,8 @@ static Value doPrimary(ParseState state)
  */
 static Value doMultiplyDivide(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies state->nextToken @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 
@@ -459,7 +463,8 @@ static Value doMultiplyDivide(ParseState state)
  */
 static Value doAddSubtract(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies state->nextToken @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 
@@ -521,7 +526,8 @@ static Value doAddSubtract(ParseState state)
  */
 static Value doRelational(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies state->nextToken @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 
@@ -616,7 +622,8 @@ static Value doRelational(ParseState state)
  */
 static Value doLogical(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies state->nextToken, rpmGlobalMacroContext @*/
+	/*@modifies state->nextToken, state->p, state->tokenValue,
+		rpmGlobalMacroContext @*/
 {
   Value v1, v2 = NULL;
 

@@ -715,7 +715,8 @@ static int mygethostbyname(const char * host,
 
 /*@-compdef@*/	/* FIX: address->s_addr undefined. */
 static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
-	/*@modifies *address @*/
+	/*@globals errno @*/
+	/*@modifies *address, errno @*/
 {
     if (xisdigit(host[0])) {
 	/*@-unrecog -moduncon @*/
@@ -804,7 +805,7 @@ static int checkResponse(void * uu, FD_t ctrl,
  
     URLSANE(u);
     if (u->bufAlloced == 0 || u->buf == NULL) {
-	u->bufAlloced = url_iobuf_size;
+	u->bufAlloced = _url_iobuf_size;
 	u->buf = xcalloc(u->bufAlloced, sizeof(u->buf[0]));
     }
     buf = u->buf;

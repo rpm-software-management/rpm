@@ -1,4 +1,4 @@
-/*@-sizeoftype@*/
+/*@-sizeoftype @*/
 /** \ingroup rpmdb dbi
  * \file rpmdb/rpmdb.c
  */
@@ -86,7 +86,7 @@ static int dbiTagToDbix(int rpmtag)
  */
 static void dbiTagsInit(void)
 	/*@globals rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
-	/*@modifies dbiTags, dbiTagsMax @*/
+	/*@modifies rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
 {
 /*@observer@*/ static const char * const _dbiTagStr_default =
 	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Removetid";
@@ -359,9 +359,9 @@ dbiIndex dbiOpen(rpmdb db, int rpmtag, /*@unused@*/ unsigned int flags)
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
+/*@-globs -mods @*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
-/*@=globs@*/
+/*@=globs =mods @*/
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 3)
 	_dbapi_rebuild = 3;
     _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api);
@@ -372,7 +372,9 @@ dbiIndex dbiOpen(rpmdb db, int rpmtag, /*@unused@*/ unsigned int flags)
 	if (_dbapi < 0 || _dbapi >= 4 || mydbvecs[_dbapi] == NULL) {
 	    return NULL;
 	}
+	/*@-mods@*/
 	errno = 0;
+	/*@=mods@*/
 	dbi = NULL;
 	rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
 	if (rc) {
@@ -390,7 +392,9 @@ dbiIndex dbiOpen(rpmdb db, int rpmtag, /*@unused@*/ unsigned int flags)
 	while (_dbapi-- > 1) {
 	    if (mydbvecs[_dbapi] == NULL)
 		continue;
+	    /*@-mods@*/
 	    errno = 0;
+	    /*@=mods@*/
 	    dbi = NULL;
 	    rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
 	    if (rc == 0 && dbi)
@@ -853,13 +857,14 @@ int rpmdbSync(rpmdb db)
     return rc;
 }
 
+/*@-mods@*/
 static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
 	/*@globals _db_filter_dups, rpmGlobalMacroContext,
 		fileSystem @*/
-	/*@modifies _db_filter_dups, fileSystem @*/
+	/*@modifies _db_filter_dups, rpmGlobalMacroContext, fileSystem @*/
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
     const char * epfx = _DB_ERRPFX;
@@ -898,6 +903,7 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     /*@-globstate@*/ return db; /*@=globstate@*/
 }
+/*@=mods@*/
 
 static int openDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
@@ -920,8 +926,10 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	static int _enable_cdb = -1;
 
 	/* XXX hack in suoport for CDB, otherwise nuke the state. */
+	/*@-mods@*/
 	if (_enable_cdb < 0)
 	    _enable_cdb = rpmExpandNumeric("%{?__dbi_cdb:1}");
+	/*@=mods@*/
 
 	if (!_enable_cdb) {
 	    char * filename;
@@ -939,7 +947,9 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	    }
 	}
 #endif
+	/*@-mods@*/
 	dbiTagsInit();
+	/*@=mods@*/
 	_initialized++;
     }
 
@@ -954,7 +964,9 @@ static int openDatabase(/*@null@*/ const char * prefix,
     if (mode & O_WRONLY) 
 	return 1;
 
+    /*@-mods@*/
     db = newRpmdb(prefix, dbpath, mode, perms, flags);
+    /*@=mods@*/
     if (db == NULL)
 	return 1;
     db->db_api = _dbapi;
@@ -1044,14 +1056,18 @@ exit:
 /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
+    /*@-mods@*/
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    /*@=mods@*/
     return openDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
 }
 
 int rpmdbInit (const char * prefix, int perms)
 {
     rpmdb db = NULL;
+    /*@-mods@*/
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    /*@=mods@*/
     int rc;
 
     rc = openDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR),
@@ -1070,7 +1086,9 @@ int rpmdbInit (const char * prefix, int perms)
 int rpmdbVerify(const char * prefix)
 {
     rpmdb db = NULL;
+    /*@-mods@*/
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    /*@=mods@*/
     int rc = 0;
 
     rc = openDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
@@ -1760,7 +1778,9 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
     int rc = 0;
 
     if (defmode == (rpmMireMode)-1) {
+	/*@-mods@*/
 	const char *t = rpmExpand("%{?_query_selector_match}", NULL);
+	/*@=mods@*/
 	if (*t == '\0' || !strcmp(t, "default"))
 	    defmode = RPMMIRE_DEFAULT;
 	else if (!strcmp(t, "strcmp"))
@@ -2332,6 +2352,7 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
     return rc;
 }
 
+/*@-mods@*/
 /* XXX install.c uninstall.c */
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 {
@@ -3329,4 +3350,5 @@ exit:
     return rc;
 }
 /*@=globs@*/
-/*@=sizeoftype@*/
+/*@=mods@*/
+/*@=sizeoftype @*/

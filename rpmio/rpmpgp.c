@@ -318,7 +318,9 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
 	return 1;
     }
 
+    /*@-mods@*/
     if (_dig) memcpy(&_dig->sig.v3, v, sizeof(_dig->sig.v3));
+    /*@=mods@*/
 
     pgpPrtVal("V3 ", pgpPktTbl, pkt);
 
@@ -341,6 +343,7 @@ int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpSigRSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig &&
 	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -354,9 +357,11 @@ printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpSigDSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig &&
 	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -371,6 +376,7 @@ printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpSigDSA[i]);
 	} else {
 	    if (_print)
@@ -476,7 +482,9 @@ int pgpPrtPktSigV4(pgpPkt pkt, const byte *h, unsigned int hlen)
 	return 1;
     }
 
+    /*@-mods@*/
     if (_dig) memcpy(&_dig->sig.v4, v, sizeof(_dig->sig.v4));
+    /*@=mods@*/
 
     pgpPrtVal("V4 ", pgpPktTbl, pkt);
     pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
@@ -491,11 +499,13 @@ int pgpPrtPktSigV4(pgpPkt pkt, const byte *h, unsigned int hlen)
 
 if (_debug && _print)
 fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
+    /*@-mods@*/
     if (_dig) {
 	_dig->hash_datalen = plen;
 	_dig->hash_data = xmalloc(_dig->hash_datalen);
 	memcpy(_dig->hash_data, p, plen);
     }
+    /*@=mods@*/
     (void) pgpPrtSubType(p, plen);
     p += plen;
 
@@ -515,6 +525,7 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpSigRSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig &&
 	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -528,9 +539,11 @@ printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpSigDSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig &&
 	(v->sigtype == PGPSIGTYPE_BINARY || v->sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -545,6 +558,7 @@ printf("\t  m**d = "),  mp32println(_dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpSigDSA[i]);
 	} else {
 	    if (_print)
@@ -646,6 +660,7 @@ int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpPublicRSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* n */
@@ -662,9 +677,11 @@ printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpPublicDSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* p */
@@ -691,6 +708,7 @@ printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpPublicDSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
 	    if (pgpPublicELGAMAL[i] == NULL) break;
@@ -699,6 +717,7 @@ printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
 	    if (_print)
 		fprintf(stderr, "%7d", i);
 	}
+    /*@=mods@*/
 	pgpPrtStr("", pgpMpiStr(p));
 	pgpPrtNL();
     }
@@ -728,6 +747,7 @@ int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (v->pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpPublicRSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* n */
@@ -744,9 +764,11 @@ printf("\t     e = "),  mp32println(_dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (pgpPublicDSA[i] == NULL) break;
+	    /*@-mods@*/
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* p */
@@ -773,6 +795,7 @@ printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
 		    /*@switchbreak@*/ break;
 		}
 	    }
+	    /*@=mods@*/
 	    pgpPrtStr("", pgpPublicDSA[i]);
 	} else if (v->pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
 	    if (pgpPublicELGAMAL[i] == NULL) break;
@@ -978,8 +1001,10 @@ int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s * dig, int p
     const byte *p;
     int len;
 
+/*@-mods@*/
 _print = printing;
 _dig = dig;
+/*@=mods@*/
 
     for (p = pkts; p < (pkts + plen); p += len) {
 	len = pgpPrtPkt(p);

@@ -47,19 +47,28 @@ struct rpmBuildArguments_s         rpmBTArgs;
 /*@-redecl@*/
 /*@unchecked@*/
 extern int _noDirTokens;
+
 /*@unchecked@*/
 extern int _fsm_debug;
 /*@=redecl@*/
+
 /*@unchecked@*/
 static int force = 0;
+
+/*@-exportlocal@*/
 /*@unchecked@*/
 int noLang = 0;
+/*@=exportlocal@*/
+
 /*@unchecked@*/
 static int noBuild = 0;
+
 /*@unchecked@*/
 static int noDeps = 0;
+
 /*@unchecked@*/
 static int signIt = 0;
+
 /*@unchecked@*/
 static int useCatalog = 0;
 

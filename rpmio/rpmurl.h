@@ -10,7 +10,7 @@
 /**
  * Supported URL types.
  */
-typedef enum {
+typedef enum urltype_e {
     URL_IS_UNKNOWN	= 0,	/*!< unknown (aka a file) */
     URL_IS_DASH		= 1,	/*!< stdin/stdout */
     URL_IS_PATH		= 2,	/*!< file://... */
@@ -24,37 +24,49 @@ typedef enum {
 /**
  * URL control structure.
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
+typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s {
 /*@refs@*/ int nrefs;		/*!< no. of references */
-/*@owned@*//*@null@*/ const char * url;		/*!< copy of original url */
-/*@owned@*//*@null@*/ const char * service;
-/*@owned@*//*@null@*/ const char * user;
-/*@owned@*//*@null@*/ const char * password;
-/*@owned@*//*@null@*/ const char * host;
-/*@owned@*//*@null@*/ const char * portstr;
-/*@owned@*//*@null@*/ const char * proxyu;	/*!< FTP: proxy user */
-/*@owned@*//*@null@*/ const char * proxyh;	/*!< FTP/HTTP: proxy host */
+/*@owned@*/ /*@null@*/ const char * url;	/*!< copy of original url */
+/*@owned@*/ /*@null@*/ const char * service;
+/*@owned@*/ /*@null@*/ const char * user;
+/*@owned@*/ /*@null@*/ const char * password;
+/*@owned@*/ /*@null@*/ const char * host;
+/*@owned@*/ /*@null@*/ const char * portstr;
+/*@owned@*/ /*@null@*/ const char * proxyu;	/*!< FTP: proxy user */
+/*@owned@*/ /*@null@*/ const char * proxyh;	/*!< FTP/HTTP: proxy host */
     int proxyp;			/*!< FTP/HTTP: proxy port */
     int	port;
     int urltype;
     FD_t ctrl;			/*!< control channel */
     FD_t data;			/*!< per-xfer data channel */
     int bufAlloced;		/*!< sizeof I/O buffer */
-/*@owned@*/ char *buf;		/*!< I/O buffer */
+/*@owned@*/ char * buf;		/*!< I/O buffer */
     int openError;		/*!< Type of open failure */
     int httpVersion;
     int httpHasRange;
     int magic;
-} *urlinfo;
+} * urlinfo;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
+/*@checked@*/
+extern int _url_count;		/*!< No. of cached URL's. */
+
+/*@checked@*/
+/*@only@*/ /*@null@*/
+extern urlinfo * _url_cache;	/*!< URL cache. */
+
 /*@unchecked@*/
-extern int url_iobuf_size;
+extern int _url_iobuf_size;	/*!< Initial size of URL I/O buffer. */
+#define RPMURL_IOBUF_SIZE	4096
+
+/*@unchecked@*/
+extern int _url_debug;		/*!< URL debugging? */
+#define RPMURL_DEBUG_IO		0x40000000
+#define RPMURL_DEBUG_REFS	0x20000000
+
 
 /**
  * Create a URL control structure instance.
@@ -101,8 +113,8 @@ urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
  * Free cached URL control structures.
  */
 void urlFreeCache(void)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
+	/*@globals _url_cache, _url_count, fileSystem @*/
+	/*@modifies _url_cache, _url_count, fileSystem @*/;
 
 /**
  * Return type of URL.
@@ -119,7 +131,7 @@ urltype	urlIsURL(const char * url)
  * @return		type of url
  */
 urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
-	/*@modifies *pathp@*/;
+	/*@modifies *pathp @*/;
 
 /**
  * Parse URL string into a control structure.
@@ -137,7 +149,7 @@ int urlSplit(const char * url, /*@out@*/ urlinfo * uret)
  * @return		0 on success, otherwise FTPERR_* code
  */
 int urlGetFile(const char * url, /*@null@*/ const char * dest)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus

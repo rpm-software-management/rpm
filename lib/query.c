@@ -405,7 +405,7 @@ exit:
 static void
 printNewSpecfile(Spec spec)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies spec->sl->sl_lines[], fileSystem @*/
 {
     Header h;
     speclines sl = spec->sl;
@@ -675,8 +675,10 @@ restart:
 	int anyarch = 1;
 	int force = 1;
 
+	/*@-mods@*/
 	rc = parseSpecVec(&spec, arg, "/", buildRoot, recursing, passPhrase,
 		cookie, anyarch, force);
+	/*@=mods@*/
 	if (rc || spec == NULL) {
 	    rpmError(RPMERR_QUERY,
 	    		_("query of specfile %s failed, can't parse\n"), arg);

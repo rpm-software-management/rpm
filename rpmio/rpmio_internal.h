@@ -159,8 +159,8 @@ extern "C" {
 /** \ingroup rpmio
  */
 int fdFgets(FD_t fd, char * buf, size_t len)
-	/*@globals fileSystem @*/
-	/*@modifies *buf, fd, fileSystem @*/;
+	/*@globals errno, fileSystem @*/
+	/*@modifies *buf, fd, errno, fileSystem @*/;
 
 /** \ingroup rpmio
  */

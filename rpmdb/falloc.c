@@ -67,10 +67,10 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
 	/* XXX Fstrerror */
 	return NULL;
 
-    /*@-modobserver -observertrans@*/
+    /*@-modobserver -observertrans -mods @*/
     memcpy(fadio, fdio, sizeof(*fadio));
     fadio->_open = fadOpen;
-    /*@=modobserver =observertrans@*/
+    /*@=modobserver =observertrans =mods @*/
 
     fdSetIo(fd, fadio);
     fadSetFirstFree(fd, 0);

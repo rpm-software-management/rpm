@@ -24,11 +24,6 @@
 /*@access FD_t @*/		/* compared with NULL */
 /*@access rpmdb @*/		/* compared with NULL */
 
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _fsm_debug;
-/*@=redecl@*/
-
 /*@-redecl -declundef -exportheadervar@*/
 /*@unchecked@*/
 extern const char * chroot_prefix;
@@ -662,9 +657,7 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     hfd = (fi->hfd ? fi->hfd : headerFreeData);
     h = headerFree(h);	/* XXX reference held by transaction set */
 
-    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     (void) rpmInstallLoadMacros(fi, fi->h);
-    /*@=globs@*/
 
     memset(psm, 0, sizeof(*psm));
     psm->ts = ts;
@@ -715,18 +708,14 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 	}
     }
 
-    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _sourcedir = rpmGenPath(ts->rootDir, "%{_sourcedir}", "");
-    /*@=globs@*/
     rc = chkdir(_sourcedir, "sourcedir");
     if (rc) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
-    /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _specdir = rpmGenPath(ts->rootDir, "%{_specdir}", "");
-    /*@=globs@*/
     rc = chkdir(_specdir, "specdir");
     if (rc) {
 	rc = RPMRC_FAIL;
@@ -765,11 +754,9 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     psm->goal = PSM_PKGINSTALL;
 
     /*@-compmempass@*/	/* FIX: psm->fi->dnl should be owned. */
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     rc = psmStage(psm, PSM_PROCESS);
 
     (void) psmStage(psm, PSM_FINI);
-/*@=globs@*/
     /*@=compmempass@*/
 
     if (rc) rc = RPMRC_FAIL;
@@ -839,7 +826,7 @@ static int runScript(PSM_t psm, Header h,
 		const char * script, int arg1, int arg2)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies psm, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1066,8 +1053,9 @@ static int runScript(PSM_t psm, Header h,
  */
 static rpmRC runInstScript(PSM_t psm)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies psm, fileSystem, internalState @*/
+		fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
@@ -1116,7 +1104,8 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies psm, *triggersAlreadyRun, fileSystem, internalState @*/
+	/*@modifies psm, *triggersAlreadyRun, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1229,7 +1218,8 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 static int runTriggers(PSM_t psm)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies psm, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1265,7 +1255,8 @@ static int runTriggers(PSM_t psm)
 static int runImmedTriggers(PSM_t psm)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies psm, fileSystem, internalState @*/
+	/*@modifies psm, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1646,7 +1637,9 @@ assert(psm->mi == NULL);
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    xx = Fclose(psm->cfd);
 	    psm->cfd = NULL;
+	    /*@-mods@*/
 	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
+	    /*@=mods@*/
 
 	    if (!rc)
 		rc = psmStage(psm, PSM_COMMIT);
@@ -1713,7 +1706,9 @@ assert(psm->mi == NULL);
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    xx = Fclose(psm->cfd);
 	    psm->cfd = NULL;
+	    /*@-mods@*/
 	    errno = saveerrno;
+	    /*@=mods@*/
 
 	    fi->action = action;
 	    fi->actions = actions;
@@ -1822,7 +1817,9 @@ assert(psm->mi == NULL);
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    xx = Fclose(psm->fd);
 	    psm->fd = NULL;
+	    /*@-mods@*/
 	    errno = saveerrno;
+	    /*@=mods@*/
 	}
 
 	if (psm->goal == PSM_PKGSAVE) {
@@ -1916,7 +1913,9 @@ assert(psm->mi == NULL);
 	    psm->chrootDone = ts->chrootDone = 1;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
 	    /*@-onlytrans@*/
+	    /*@-mods@*/
 	    chroot_prefix = ts->rootDir;
+	    /*@=mods@*/
 	    /*@=onlytrans@*/
 	}
 	break;
@@ -1928,7 +1927,9 @@ assert(psm->mi == NULL);
 	    /*@=superuser@*/
 	    psm->chrootDone = ts->chrootDone = 0;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 0;
+	    /*@-mods@*/
 	    chroot_prefix = NULL;
+	    /*@=mods@*/
 	    xx = chdir(ts->currDir);
 	}
 	break;

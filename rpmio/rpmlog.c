@@ -76,6 +76,8 @@ void rpmlogPrint(FILE *f)
 /*@=modfilesys@*/
 
 void rpmlogClose (void)
+	/*@globals recs, nrecs @*/
+	/*@modifies recs, nrecs @*/
 {
     int i;
 
@@ -95,10 +97,13 @@ void rpmlogOpen (/*@unused@*/ const char *ident, /*@unused@*/ int option,
 
 /*@unchecked@*/
 static int rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
+
 /*@unchecked@*/
 static /*@unused@*/ int rpmlogFacility = RPMLOG_USER;
 
 int rpmlogSetMask (int mask)
+	/*@globals rpmlogMask @*/
+	/*@modifies rpmlogMask @*/
 {
     int omask = rpmlogMask;
     if (mask)
@@ -110,6 +115,8 @@ int rpmlogSetMask (int mask)
 static /*@null@*/ rpmlogCallback _rpmlogCallback = NULL;
 
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
+	/*@globals _rpmlogCallback @*/
+	/*@modifies _rpmlogCallback @*/
 {
     rpmlogCallback ocb = _rpmlogCallback;
     _rpmlogCallback = cb;
@@ -142,8 +149,8 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 /*@-compmempass@*/ /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /*@-nullstate@*/ /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
+	/*@globals nrecs, recs, internalState @*/
+	/*@modifies nrecs, recs, internalState @*/
 {
     int pri = RPMLOG_PRI(code);
     int mask = RPMLOG_MASK(pri);

@@ -68,7 +68,7 @@ static int checkOwners(const char * urlfn)
 		     int reverse, int removeEmpties)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -161,7 +161,7 @@ static int checkOwners(const char * urlfn)
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -280,7 +280,7 @@ static int doSetupMacro(Spec spec, char *line)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
 	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 {
     char buf[BUFSIZ];
     StringBuf before;
@@ -293,9 +293,11 @@ static int doSetupMacro(Spec spec, char *line)
     int rc;
     int num;
 
+    /*@-mods@*/
     leaveDirs = skipDefaultAction = 0;
     createDir = quietly = 0;
     dirName = NULL;
+    /*@=mods@*/
 
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, _("Error parsing %%setup: %s\n"),
@@ -433,7 +435,7 @@ static int doSetupMacro(Spec spec, char *line)
 static int doPatchMacro(Spec spec, char *line)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies spec->prep, fileSystem @*/
+	/*@modifies spec->prep, rpmGlobalMacroContext, fileSystem @*/
 {
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E;

@@ -3,12 +3,7 @@
 
 /** \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
  * \file lib/rpmlib.h
- *
  */
-
-/* This is the *only* module users of rpmlib should need to include */
-
-/* and it shouldn't need these :-( */
 
 #include "rpmio.h"
 #include "rpmmessages.h"
@@ -26,6 +21,14 @@ typedef	enum rpmRC_e {
     RPMRC_BADSIZE	= 3,
     RPMRC_SHORTREAD	= 4,
 } rpmRC;
+
+/*@-redecl@*/
+/*@checked@*/
+extern struct MacroContext_s * rpmGlobalMacroContext;
+
+/*@checked@*/
+extern struct MacroContext_s * rpmCLIMacroContext;
+/*@=redecl@*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -162,7 +165,7 @@ int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
  * Automatically generated table of tag name/value pairs.
  */
 /*@-redecl@*/
-/*@unchecked@*/
+/*@observer@*/ /*@unchecked@*/
 extern const struct headerTagTableEntry_s rpmTagTable[];
 /*@=redecl@*/
 
@@ -514,16 +517,6 @@ void rpmSetVar(int var, const char * val)
 	/*@modifies internalState @*/;
 
 /** \ingroup rpmrc
- * List of macro files to read when configuring rpm.
- * This is a colon separated list of files. URI's are permitted as well,
- * identified by the token '://', so file paths must not begin with '//'.
- */
-/*@-redecl@*/
-/*@unchecked@*/
-/*@observer@*/ extern const char * macrofiles;
-/*@=redecl@*/
-
-/** \ingroup rpmrc
  * Build and install arch/os table identifiers.
  * @todo Eliminate from API.
  */
@@ -543,17 +536,10 @@ enum rpm_machtable_e {
  */
 int rpmReadConfigFiles(/*@null@*/ const char * file,
 		/*@null@*/ const char * target)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
-
-/** \ingroup rpmrc
- * Read rpmrc (and macro) configuration file(s).
- * @param rcfiles	colon separated files to read (NULL uses default)
- * @return		0 on succes
- */
-int rpmReadRC(/*@null@*/ const char * rcfiles)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState  @*/;
+	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, rpmCLIMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
  * Return current arch name and/or number.
@@ -597,8 +583,10 @@ int rpmMachineScore(int type, const char * name)
  * @return		0 always
  */
 int rpmShowRC(FILE * fp)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *fp, fileSystem, internalState  @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *fp, rpmGlobalMacroContext,
+		fileSystem, internalState  @*/;
 
 /** \ingroup rpmrc
  * @deprecated Use addMacro to set _target_* macros.
@@ -1153,8 +1141,10 @@ rpmRC rpmInstallSourcePackage(/*@null@*/ const char * rootDir, FD_t fd,
 			/*@null@*/ rpmCallbackFunction notify,
 			/*@null@*/ rpmCallbackData notifyData,
 			/*@null@*/ /*@out@*/ char ** cookie)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, *specFilePtr, *cookie, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Compare headers to determine which header is "newer".
@@ -1432,7 +1422,7 @@ typedef enum rpmtransFlags_e {
 int rpmGetRpmlibProvides(/*@null@*/ /*@out@*/ const char *** provNames,
 			/*@null@*/ /*@out@*/ int ** provFlags,
 			/*@null@*/ /*@out@*/ const char *** provVersions)
-	/*@ modifies *provNames, *provFlags, *provVersions @*/;
+	/*@modifies *provNames, *provFlags, *provVersions @*/;
 
 /** \ingroup rpmtrans
  * Segmented string compare for version and/or release.
@@ -1510,8 +1500,10 @@ int rpmRunTransactions(rpmTransactionSet ts,
 			/*@out@*/ rpmProblemSet * newProbs,
 			rpmtransFlags transFlags,
 			rpmprobFilterFlags ignoreSet)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies ts, *newProbs, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies ts, *newProbs, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /*@}*/
 
@@ -1590,8 +1582,10 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 		int numFiles, /*@null@*/ /*@out@*/ uint_32 ** usagesPtr,
 		int flags)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *usagesPtr, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *usagesPtr, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /* ==================================================================== */
 /** \name RPMQV */
@@ -1655,7 +1649,7 @@ typedef enum rpmVerifyAttrs_e {
  */
 int rpmVerifyFile(const char * root, Header h, int filenum,
 		/*@out@*/ rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies h, *result, fileSystem @*/;
 
 /**
@@ -1667,8 +1661,10 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
  * @return		0 on success
  */
 int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies h, scriptFd, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies h, scriptFd, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /*@}*/
 /* ==================================================================== */
@@ -1767,8 +1763,10 @@ typedef enum rpmVerifySignatureReturn_e {
 rpmVerifySignatureReturn rpmVerifySignature(const char *file,
 		int_32 sigTag, const void * sig, int count,
 		const rpmDigest dig, /*@out@*/ char * result)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *result, fileSystem, internalState  @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *result,
+		fileSystem, internalState  @*/;
 
 /** \ingroup signature
  * Destroy signature header from package.

@@ -33,7 +33,10 @@ int parseFiles(Spec spec)
     int flag = PART_SUBNAME;
     poptContext optCon = NULL;
 
-    name = file = NULL;
+    /*@-mods@*/
+    name = NULL;
+    file = NULL;
+    /*@=mods@*/
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%files: %s\n"),
@@ -59,8 +62,10 @@ int parseFiles(Spec spec)
     }
 
     if (poptPeekArg(optCon)) {
+	/*@-mods@*/
 	if (name == NULL)
 	    name = poptGetArg(optCon);
+	/*@=mods@*/
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,

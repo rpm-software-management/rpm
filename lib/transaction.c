@@ -1312,7 +1312,7 @@ static int ensureOlder(struct availablePackage * alp, Header old,
  */
 static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies fi @*/
+	/*@modifies fi, rpmGlobalMacroContext @*/
 {
     int noDocs = (ts->transFlags & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
@@ -1795,9 +1795,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    }
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	    skipFiles(ts, fi);
-/*@=globs@*/
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    fi->ap = NULL;
@@ -1833,7 +1831,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	ts->chrootDone = 1;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
 	/*@-onlytrans@*/
+	/*@-mods@*/
 	chroot_prefix = ts->rootDir;
+	/*@=mods@*/
 	/*@=onlytrans@*/
     }
 
@@ -2000,7 +2000,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@=superuser =noeffect @*/
 	ts->chrootDone = 0;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
+	/*@-mods@*/
 	chroot_prefix = NULL;
+	/*@=mods@*/
 	xx = chdir(ts->currDir);
     }
 
@@ -2051,10 +2053,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
 		    xx = psmStage(psm, PSM_PKGSAVE);
-/*@=globs@*/
 		/*@switchbreak@*/ break;
 	    }
 	}
@@ -2122,12 +2122,10 @@ assert(alp == fi->ap);
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
 assert(alp == fi->ap);
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 		if (psmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
 		    lastFailed = i;
 		}
-/*@=globs@*/
 		fi->h = headerFree(fi->h);
 		if (hsave) {
 		    fi->h = headerLink(hsave);
@@ -2154,10 +2152,8 @@ assert(alp == fi->ap);
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		/*@switchbreak@*/ break;
 
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	    if (psmStage(psm, PSM_PKGERASE))
 		ourrc++;
-/*@=globs@*/
 
 	    /*@switchbreak@*/ break;
 	}

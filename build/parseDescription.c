@@ -38,8 +38,10 @@ int parseDescription(Spec spec)
     poptContext optCon = NULL;
     spectag t = NULL;
 
+    /*@-mods@*/
     name = NULL;
     lang = RPMBUILD_DEFAULT_LANG;
+    /*@=mods@*/
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%description: %s\n"),
@@ -65,8 +67,10 @@ int parseDescription(Spec spec)
     }
 
     if (poptPeekArg(optCon)) {
+	/*@-mods@*/
 	if (name == NULL)
 	    name = poptGetArg(optCon);
+	/*@=mods@*/
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,

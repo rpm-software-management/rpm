@@ -22,7 +22,7 @@ static int _build_debug = 0;
 static void doRmSource(Spec spec)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/
 {
     struct Source *p;
     Package pkg;
@@ -211,7 +211,9 @@ fprintf(stderr, "*** addMacros\n");
     rpmMessage(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
+	/*@-mods@*/
 	errno = 0;
+	/*@=mods@*/
 	(void) execvp(argv[0], (char *const *)argv);
 
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s\n"),

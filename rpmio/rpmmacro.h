@@ -18,17 +18,27 @@ typedef /*@abstract@*/ struct MacroEntry_s {
 /*! The structure used to store the set of macros in a context. */
 typedef /*@abstract@*/ struct MacroContext_s {
 /*@owned@*//*@null@*/ MacroEntry *macroTable;	/*!< Macro entry table for context. */
-    int		macrosAllocated;/*!< No. of allocated macros. */
-    int		firstFree;	/*!< No. of macros. */
+    int	macrosAllocated;/*!< No. of allocated macros. */
+    int	firstFree;	/*!< No. of macros. */
 } * MacroContext;
 
-/**
- */
+/*@-redecl@*/
+/*@checked@*/
 extern MacroContext rpmGlobalMacroContext;
 
-/**
- */
+/*@checked@*/
 extern MacroContext rpmCLIMacroContext;
+/*@=redecl@*/
+
+/** \ingroup rpmrc
+ * List of macro files to read when configuring rpm.
+ * This is a colon separated list of files. URI's are permitted as well,
+ * identified by the token '://', so file paths must not begin with '//'.
+ */
+/*@-redecl@*/
+/*@observer@*/ /*@checked@*/
+extern const char * macrofiles;
+/*@=redecl@*/
 
 /**
  * Markers for sources of macros added throughout rpm.
@@ -161,7 +171,7 @@ int	isCompressed	(const char * file,
  * @param arg		macro(s) to expand (NULL terminates list)
  * @return		macro expansion (malloc'ed)
  */
-char *	rpmExpand	(/*@null@*/ const char * arg, ...)
+char * rpmExpand	(/*@null@*/ const char * arg, ...)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
@@ -178,7 +188,7 @@ char *	rpmExpand	(/*@null@*/ const char * arg, ...)
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
-/*@-redecl@*/
+/*@-redecl@*/ /* LCL: shrug */
 const char * rpmGetPath	(/*@null@*/ const char * path, ...)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
@@ -194,7 +204,7 @@ const char * rpmGetPath	(/*@null@*/ const char * path, ...)
  * @param urlfile	file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
-/*@-redecl@*/
+/*@-redecl@*/ /* LCL: shrug */
 const char * rpmGenPath	(/*@null@*/ const char * urlroot,
 			/*@null@*/ const char * urlmdir,
 			/*@null@*/ const char * urlfile)

@@ -96,9 +96,11 @@ int parseScript(Spec spec, int parsePart)
     poptContext optCon = NULL;
     
     reqargs[0] = '\0';
+    /*@-mods@*/
     name = NULL;
     prog = "/bin/sh";
     file = NULL;
+    /*@=mods@*/
     
     /*@-branchstate@*/
     switch (parsePart) {
@@ -203,8 +205,10 @@ int parseScript(Spec spec, int parsePart)
     }
 
     if (poptPeekArg(optCon)) {
+	/*@-mods@*/
 	if (name == NULL)
 	    name = poptGetArg(optCon);
+	/*@=mods@*/
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,

@@ -144,8 +144,10 @@ int doputenv(const char * str)
 int makeTempFile(/*@null@*/ const char * prefix,
 		/*@null@*/ /*@out@*/ const char ** fnptr,
 		/*@out@*/ FD_t * fdptr)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies *fnptr, *fdptr, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *fnptr, *fdptr, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Return (malloc'd) current working directory.
@@ -177,7 +179,9 @@ void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr,
 
 /**
  */
+/*@-exportlocal@*/
 int myGlobPatternP (const char *patternURL)	/*@*/;
+/*@=exportlocal@*/
 
 /**
  */

@@ -524,7 +524,9 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 
 	/* Here just this special case with MM-DD-YY */
         if (is_dos_date(p)){
+	    /*@-mods@*/
             p[2] = p[5] = '-';
+	    /*@=mods@*/
 	    
 	    memset(d, 0, sizeof(d));
 	    if (sscanf(p, "%2d-%2d-%2d", &d[0], &d[1], &d[2]) == 3){
@@ -808,6 +810,7 @@ static /*@only@*/ char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
+/*@-mods@*/
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
 		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
@@ -876,7 +879,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
     }
 
     if (ftpBufAlloced == 0 || ftpBuf == NULL) {
-        ftpBufAlloced = url_iobuf_size;
+        ftpBufAlloced = _url_iobuf_size;
         ftpBuf = xcalloc(ftpBufAlloced, sizeof(ftpBuf[0]));
     }
     *ftpBuf = '\0';
@@ -886,7 +889,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 
     do {
 
-	/* XXX FIXME: realloc ftpBuf is < ~128 chars remain */
+	/* XXX FIXME: realloc ftpBuf if < ~128 chars remain */
 	if ((ftpBufAlloced - bufLength) < (1024+80)) {
 	    ftpBufAlloced <<= 2;
 	    ftpBuf = xrealloc(ftpBuf, ftpBufAlloced);
@@ -996,6 +999,7 @@ exit:
     (void) ufdClose(fd);
     return rc;
 }
+/*@=mods@*/
 
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals fileSystem @*/

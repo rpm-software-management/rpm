@@ -69,6 +69,7 @@ getdate.c: getdate.y
 	   echo "/*@-retvalint -usedef -varuse -nullderef -nullassign @*/";\
 	   echo "/*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/";\
 	   echo "/*@-globs -evalorderuncon -modobserveruncon -modnomods @*/";\
+	   echo "/*@unused@*/";\
 	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
 		-e 's,^YYSTYPE ,static &,' \
 		-e 's,^short ,static &,' \

@@ -423,10 +423,12 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    	/*@switchbreak@*/ break;
 	    case POPT_ARG_STRING:
 	    {	const char ** t = opt->arg;
+		/*@-mods@*/
 		if (t) {
 		    *t = _free(*t);
 		    *t = xstrdup( (p ? p : "") );
 		}
+		/*@=mods@*/
 	    }	/*@switchbreak@*/ break;
 
 	    case POPT_ARG_INT:

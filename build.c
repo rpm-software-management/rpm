@@ -18,7 +18,7 @@
  */
 static int checkSpec(Header h)
 	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies h, fileSystem @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
 {
     const char * rootdir = NULL;
     rpmdb db = NULL;
@@ -109,7 +109,7 @@ static int buildForTarget(const char * arg, BTA_t ba,
 		const char * passPhrase, char * cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int buildAmount = ba->buildAmount;
     const char * buildRootURL = NULL;

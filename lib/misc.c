@@ -221,9 +221,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     /*@-branchstate@*/
     if (!_initialized) {
 	_initialized = 1;
-	/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	tempfn = rpmGenPath(prefix, tpmacro, NULL);
-	/*@=globs@*/
 	if (rpmMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
 	    goto errxit;
     }
@@ -237,7 +235,6 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 
     do {
 	char tfnbuf[64];
-	/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 #ifndef	NOTYET
 	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
 	tempfn = _free(tempfn);
@@ -247,7 +244,6 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	tempfn = _free(tempfn);
 	tempfn = rpmGenPath(prefix, tpmacro, mktemp(tfnbuf));
 #endif
-	/*@=globs@*/
 
 	temput = urlPath(tempfn, &tfn);
 	if (*tfn == '\0') goto errxit;
@@ -326,8 +322,10 @@ char * currentDirectory(void)
     return currDir;
 }
 
+/*@-exportheadervar@*/
 /*@unchecked@*/
 int _noDirTokens = 0;
+/*@=exportheadervar@*/
 
 static int dncmp(const void * a, const void * b)
 {

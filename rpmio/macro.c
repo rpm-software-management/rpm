@@ -82,11 +82,6 @@ typedef /*@abstract@*/ struct MacroBuf_s {
 
 #define SAVECHAR(_mb, _c) { *(_mb)->t = (_c), (_mb)->t++, (_mb)->nb--; }
 
-static int expandMacro(MacroBuf mb)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
-	/*@modifies mb, fileSystem @*/;
-
 /*@-exportlocal -exportheadervar@*/
 
 #define	MAX_MACRO_DEPTH	16
@@ -107,6 +102,15 @@ int print_expand_trace = 0;
 /*@=exportlocal =exportheadervar@*/
 
 #define	MACRO_CHUNK_SIZE	16
+
+/* forward ref */
+static int expandMacro(MacroBuf mb)
+	/*@globals rpmGlobalMacroContext,
+		print_macro_trace, print_expand_trace,
+		fileSystem @*/
+	/*@modifies mb, rpmGlobalMacroContext,
+		print_macro_trace, print_expand_trace,
+		fileSystem @*/;
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
@@ -459,7 +463,7 @@ static int
 expandT(MacroBuf mb, const char * f, size_t flen)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies mb, fileSystem @*/
+	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
     char *sbuf;
     const char *s = mb->s;
@@ -488,7 +492,7 @@ static int
 expandS(MacroBuf mb, char * tbuf, size_t tbuflen)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies mb, *tbuf, fileSystem @*/
+	/*@modifies mb, *tbuf, rpmGlobalMacroContext, fileSystem @*/
 {
     const char *t = mb->t;
     size_t nb = mb->nb;
@@ -514,7 +518,7 @@ static int
 expandU(MacroBuf mb, char * u, size_t ulen)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies mb, *u, fileSystem @*/
+	/*@modifies mb, *u, rpmGlobalMacroContext, fileSystem @*/
 {
     const char *s = mb->s;
     char *t = mb->t;
@@ -554,7 +558,8 @@ static int
 doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
-	/*@modifies mb, fileSystem @*/
+	/*@modifies mb, rpmGlobalMacroContext,
+		fileSystem @*/
 {
     char pcmd[BUFSIZ];
     FILE *shf;
@@ -592,7 +597,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 /*@dependent@*/ static const char *
 doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies mb @*/
+	/*@modifies mb, rpmGlobalMacroContext @*/
 {
     const char *s = se;
     char buf[BUFSIZ], *n = buf, *ne = n;
@@ -682,7 +687,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 /*@dependent@*/ static const char *
 doUndefine(MacroContext mc, const char * se)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies mc @*/
+	/*@modifies mc, rpmGlobalMacroContext @*/
 {
     const char *s = se;
     char buf[BUFSIZ], *n = buf, *ne = n;
@@ -836,7 +841,7 @@ freeArgs(MacroBuf mb)
 /*@dependent@*/ static const char *
 grabArgs(MacroBuf mb, const MacroEntry me, const char * se, char lastc)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies mb @*/
+	/*@modifies mb, rpmGlobalMacroContext @*/
 {
     char buf[BUFSIZ], *b, *be;
     char aname[16];
@@ -918,7 +923,9 @@ grabArgs(MacroBuf mb, const MacroEntry me, const char * se, char lastc)
     /* 1003.2 says this must be 1 before any call.  */
 
 #ifdef __GLIBC__
+    /*@-mods@*/
     optind = 1;
+    /*@=mods@*/
 #endif
 
     opts = me->opts;
@@ -980,7 +987,8 @@ static void
 doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
-	/*@modifies mb, fileSystem @*/
+	/*@modifies mb, rpmGlobalMacroContext,
+		fileSystem @*/
 {
     char buf[BUFSIZ];
 
@@ -1007,7 +1015,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 		const char * g, size_t glen)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies mb, fileSystem, internalState @*/
+	/*@modifies mb, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     char buf[BUFSIZ], *b = NULL, *be;
     int c;
@@ -1102,8 +1111,11 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 static int
 expandMacro(MacroBuf mb)
 	/*@globals rpmGlobalMacroContext,
+		print_macro_trace, print_expand_trace,
 		fileSystem @*/
-	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies mb, rpmGlobalMacroContext,
+		print_macro_trace, print_expand_trace,
+		fileSystem @*/
 {
     MacroEntry *mep;
     MacroEntry me;
@@ -1577,7 +1589,9 @@ rpmInitMacros(MacroContext mc, const char *macrofiles)
 	}
 
 	/* XXX Assume new fangled macro expansion */
+	/*@-mods@*/
 	max_macro_depth = 16;
+	/*@=mods@*/
 
 	while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
 	    char c, *n;
@@ -1595,7 +1609,9 @@ rpmInitMacros(MacroContext mc, const char *macrofiles)
     m = _free(m);
 
     /* Reload cmdline macros */
+    /*@-mods@*/
     rpmLoadMacros(rpmCLIMacroContext, RMIL_CMDLINE);
+    /*@=mods@*/
 }
 
 /*@-globstate@*/

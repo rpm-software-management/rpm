@@ -296,9 +296,7 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
     psm->stepName = "verify";
     psm->scriptTag = RPMTAG_VERIFYSCRIPT;
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     rc = psmStage(psm, PSM_SCRIPT);
-/*@=globs@*/
     freeFi(fi);
     fi = _free(fi);
     ts = rpmtransFree(ts);

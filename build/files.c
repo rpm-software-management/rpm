@@ -782,7 +782,7 @@ static int parseForLang(char * buf, FileList fl)
  */
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies *lang @*/
+	/*@modifies *lang, rpmGlobalMacroContext @*/
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -889,7 +889,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
 		fl->passedSpecialDoc, fl->isSpecialDoc,
-		pkg->specialDoc @*/
+		pkg->specialDoc, rpmGlobalMacroContext @*/
 {
     char *s, *t;
     int res, specialDoc = 0;
@@ -1113,7 +1113,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
 	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     uint_32 multiLibMask = 0;
@@ -1436,7 +1436,7 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 static int addFile(FileList fl, const char * diskURL, struct stat * statp)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies *statp, fl->processingFailed,
+	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
 		rpmGlobalMacroContext, fileSystem @*/
@@ -1652,10 +1652,10 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
-	/*@modifies fl->processingFailed,
+	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
-		fileSystem @*/
+		rpmGlobalMacroContext, fileSystem @*/
 {
     int doGlob;
     const char *diskURL = NULL;
@@ -1729,7 +1729,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 		fileSystem, internalState@*/
 	/*@modifies spec->macros,
 		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
-		fileSystem, internalState @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct FileList_s fl;
@@ -2386,7 +2386,8 @@ DepMsg_t depMsgs[] = {
 static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies cpioList, fileSystem, internalState @*/
+	/*@modifies cpioList, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     TFI_t fi = cpioList;
     StringBuf writeBuf;

@@ -220,7 +220,8 @@ int addSource(Spec spec, Package pkg, const char * field, int tag)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
-		pkg->icon @*/;
+		pkg->icon,
+		rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure

@@ -268,7 +268,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
 	if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
 	    root = NULL;
+	/*@-mods@*/
 	tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	/*@=mods@*/
 	xx = dbenv->set_tmp_dir(dbenv, tmpdir);
 	xx = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
 	tmpdir = _free(tmpdir);
@@ -678,7 +680,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
      * Either the root or directory components may be a URL. Concatenate,
      * convert the URL to a path, and add the name of the file.
      */
+    /*@-mods@*/
     urlfn = rpmGenPath(root, home, NULL);
+    /*@=mods@*/
     (void) urlPath(urlfn, &dbhome);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
@@ -739,7 +743,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
+	    /*@-mods@*/
 	    const char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	    /*@=mods@*/
 	    rc = dbenv->set_tmp_dir(dbenv, tmpdir);
 	    rc = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
 	    tmpdir = _free(tmpdir);
@@ -757,7 +763,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
 	if (db != NULL) {
+		/*@-mods@*/
 		const char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
+		/*@=mods@*/
 
 		rc = db->verify(db, dbf, NULL, NULL, flags);
 		rc = cvtdberr(dbi, "db->verify", rc, _debug);
@@ -819,10 +827,12 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     /*
      * Parse db configuration parameters.
      */
+    /*@-mods@*/
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	/*@-nullstate@*/
 	return 1;
 	/*@=nullstate@*/
+    /*@=mods@*/
     dbi->dbi_api = DB_VERSION_MAJOR;
 
     /*
@@ -837,7 +847,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
      * Either the root or directory components may be a URL. Concatenate,
      * convert the URL to a path, and add the name of the file.
      */
+    /*@-mods@*/
     urlfn = rpmGenPath(root, home, NULL);
+    /*@=mods@*/
     (void) urlPath(urlfn, &dbhome);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
@@ -911,7 +923,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    }
 
 	} else {	/* dbhome is writable, check for persistent dbenv. */
+	    /*@-mods@*/
 	    const char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
+	    /*@=mods@*/
 
 	    if (access(dbf, F_OK) == -1) {
 		/* ... non-existent (or unwritable) DBENV, will create ... */
@@ -937,7 +951,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
 	/* dbhome is writable, and DB->open flags may conflict. */
 	const char * dbfn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
+	/*@-mods@*/
 	const char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
+	/*@=mods@*/
 
 	if (access(dbf, F_OK) == -1) {
 	    /* File does not exist, DB->open might create ... */

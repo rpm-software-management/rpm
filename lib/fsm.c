@@ -28,17 +28,13 @@ int strict_erasures = 0;
 
 rpmTransactionSet fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
-    /*@-retexpose@*/
     return (iter ? iter->ts : NULL);
-    /*@=retexpose@*/
 }
 
 TFI_t fsmGetFi(const FSM_t fsm)
 {
     const FSMI_t iter = fsm->iter;
-    /*@-retexpose@*/
     return (iter ? iter->fi : NULL);
-    /*@=retexpose@*/
 }
 
 #define	SUFFIX_RPMORIG	".rpmorig"
@@ -90,7 +86,7 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
 static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * p)
 	/*@modifies *p @*/
 {
-    return _free((void *)p);
+    return _free(p);
 }
 /*@=mustmod@*/
 
@@ -109,10 +105,8 @@ mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    /*@-assignexpose@*/
     iter->ts = ts;
     iter->fi = fi;
-    /*@=assignexpose@*/
     iter->reverse = (fi->type == TR_REMOVED && fi->action != FA_COPYOUT);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
@@ -125,19 +119,21 @@ mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
  * @return		next index, -1 on termination
  */
 /*@-mustmod@*/ /* LCL: *a is modified */
-static int mapNextIterator(void * a)
+static int mapNextIterator(/*@null@*/ void * a)
 	/*@modifies *a @*/
 {
     FSMI_t iter = a;
-    const TFI_t fi = iter->fi;
     int i = -1;
 
-    if (iter->reverse) {
-	if (iter->i >= 0)	i = iter->i--;
-    } else {
-    	if (iter->i < fi->fc)	i = iter->i++;
+    if (iter) {
+	const TFI_t fi = iter->fi;
+	if (iter->reverse) {
+	    if (iter->i >= 0)	i = iter->i--;
+	} else {
+    	    if (iter->i < fi->fc)	i = iter->i++;
+	}
+	iter->isave = i;
     }
-    iter->isave = i;
     return i;
 }
 /*@=mustmod@*/
@@ -167,22 +163,24 @@ static int cpioStrCmp(const void * a, const void * b)
  * @param fsmPath	archive path
  * @return		index into file info, -1 if archive path was not found
  */
-static int mapFind(void * a, const char * fsmPath)
-	/*@*/
+static int mapFind(/*@null@*/ void * a, const char * fsmPath)
+	/*@modifies *a @*/
 {
     FSMI_t iter = a;
-    const TFI_t fi = iter->fi;
     int ix = -1;
 
-    if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
-	const char ** p = NULL;
+    if (iter) {
+	const TFI_t fi = iter->fi;
+	if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
+	    const char ** p = NULL;
 
-	if (fi->apath != NULL)
-	    p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath),
+	    if (fi->apath != NULL)
+		p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath),
 			cpioStrCmp);
-	if (p) {
-	    iter->i = p - fi->apath;
-	    ix = mapNextIterator(iter);
+	    if (p) {
+		iter->i = p - fi->apath;
+		ix = mapNextIterator(iter);
+	    }
 	}
     }
     return ix;
@@ -426,9 +424,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
     fsm->path = _free(fsm->path);
     fsm->ix = ix;
     rc = fsmStage(fsm, FSM_MAP);
-    /*@-nullstate@*/	/* FIX: fsm->path null annotation? */
     return rc;
-    /*@=nullstate@*/
 }
 
 /** \ingroup payload
@@ -525,7 +521,8 @@ int fsmSetup(FSM_t fsm, fileStage goal,
    return ec;
 }
 
-int fsmTeardown(FSM_t fsm) {
+int fsmTeardown(FSM_t fsm)
+{
     int rc = fsm->rc;
 
     if (!rc)
@@ -539,9 +536,7 @@ int fsmTeardown(FSM_t fsm) {
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;
-    /*@-nullstate@*/	/* FIX: fsm->iter null annotation? */
     return rc;
-    /*@=nullstate@*/
 }
 
 int fsmMapPath(FSM_t fsm)
@@ -630,10 +625,8 @@ assert(fi->type == TR_ADDED);
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    const struct stat * st = &fsm->sb;
 	    fsm->path = _free(fsm->path);
-	    /*@-nullstate@*/	/* FIX: fsm->path null annotation? */
 	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
-	    /*@=nullstate@*/
 	}
     }
     return rc;
@@ -1412,7 +1405,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ix = -1;
 	fsm->links = NULL;
 	fsm->li = NULL;
+	/*@-mods@*/
 	errno = 0;	/* XXX get rid of EBADF */
+	/*@=mods@*/
 
 	/* Detect and create directories not explicitly in package. */
 	if (fsm->goal == FSM_PKGINSTALL) {
@@ -1476,7 +1471,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
 	    if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
+		/*@-mods@*/
 		errno = saveerrno;
+		/*@=mods@*/
 		rc = 0;
 		fsm->exists = 0;
 	    } else if (rc == 0) {
@@ -1662,7 +1659,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (fsm->dnlx)
 		(void) fsmStage(fsm, FSM_RMDIRS);
 #endif
+	    /*@-mods@*/
 	    errno = saveerrno;
+	    /*@=mods@*/
 	}
 	if (fsm->failedFile && *fsm->failedFile == NULL)
 	    *fsm->failedFile = xstrdup(fsm->path);
@@ -1687,12 +1686,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->diskchecked && fsm->exists && fsm->osuffix) {
 	    const char * opath = fsm->opath;
 	    const char * path = fsm->path;
-	    /*@-nullstate@*/	/* FIX: fsm->opath null annotation? */
 	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);
-	    /*@=nullstate@*/
-	    /*@-nullstate@*/	/* FIX: fsm->path null annotation? */
 	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-	    /*@=nullstate@*/
 	    rc = fsmStage(fsm, FSM_RENAME);
 	    if (!rc) {
 		rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"),
@@ -1853,14 +1848,18 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmStage(fsm, FSM_STAT);
 		if (rc == CPIOERR_STAT_FAILED && errno == ENOENT) rc = 0;
 		if (rc) break;
+		/*@-mods@*/
 		errno = saveerrno;
+		/*@=mods@*/
 		if (S_ISDIR(ost->st_mode))	return 0;
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
 	    if (S_ISLNK(ost->st_mode)) {
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
 		rc = fsmStage(fsm, FSM_READLINK);
+		/*@-mods@*/
 		errno = saveerrno;
+		/*@=mods@*/
 		if (rc) break;
 		if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
 	    }
@@ -2102,7 +2101,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
 	    (void) Fclose(fsm->rfd);
+	    /*@-mods@*/
 	    errno = saveerrno;
+	    /*@=mods@*/
 	}
 	fsm->rfd = NULL;
 	break;
@@ -2130,7 +2131,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
 	    (void) Fclose(fsm->wfd);
+	    /*@-mods@*/
 	    errno = saveerrno;
+	    /*@=mods@*/
 	}
 	fsm->wfd = NULL;
 	break;

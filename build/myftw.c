@@ -57,8 +57,8 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
 	   myftwFunc func,
 	   void *fl)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem@*/
+	/*@globals errno, fileSystem @*/
+	/*@modifies *dirs, *dir, errno, fileSystem @*/
 {
   int got;
   struct dirent *entry;
@@ -237,7 +237,9 @@ int myftw (const char *dir,
 
 	  save = errno;
 	  (void) Closedir (dirs[0]);
+	  /*@-mods@*/
 	  errno = save;
+	  /*@=mods@*/
 	}
     }
 

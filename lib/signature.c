@@ -1,3 +1,4 @@
+/*@-mods@*/
 /** \ingroup signature
  * \file lib/signature.c
  */
@@ -871,7 +872,6 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
     return 0;
 }
 
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 {
     char *pass;
@@ -917,9 +917,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 
     return pass;
 }
-/*@=globs@*/
 
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 rpmVerifySignatureReturn
 rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
 		int count, const rpmDigest dig, char * result)
@@ -947,4 +945,4 @@ rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
     /*@notreached@*/
     return RPMSIG_OK;
 }
-/*@=globs@*/
+/*@=mods@*/

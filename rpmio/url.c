@@ -23,14 +23,16 @@
 #define	IPPORT_HTTP	80
 #endif
 
-#define	URL_IOBUF_SIZE	4096
-int url_iobuf_size = URL_IOBUF_SIZE;
+/**
+ */
+/*@unchecked@*/
+int _url_iobuf_size = RPMURL_IOBUF_SIZE;
 
-#define	RPMURL_DEBUG_IO		0x40000000
-#define	RPMURL_DEBUG_REFS	0x20000000
-
+/**
+ */
 /*@unchecked@*/
 int _url_debug = 0;
+
 #define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
 
 #define URLDBGIO(_f, _x)	URLDBG((_f), RPMURL_DEBUG_IO, _x)
@@ -38,13 +40,14 @@ int _url_debug = 0;
 
 /**
  */
-/*@only@*/ /*@null@*/ /*@unchecked@*/
-static urlinfo *uCache = NULL;
+/*@unchecked@*/
+/*@only@*/ /*@null@*/
+urlinfo *_url_cache = NULL;
 
 /**
  */
 /*@unchecked@*/
-static int uCount = 0;
+int _url_count = 0;
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
@@ -152,21 +155,21 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 
 void urlFreeCache(void)
 {
-    if (uCache) {
+    if (_url_cache) {
 	int i;
-	for (i = 0; i < uCount; i++) {
-	    if (uCache[i] == NULL) continue;
-	    uCache[i] = urlFree(uCache[i], "uCache");
-	    if (uCache[i])
+	for (i = 0; i < _url_count; i++) {
+	    if (_url_cache[i] == NULL) continue;
+	    _url_cache[i] = urlFree(_url_cache[i], "_url_cache");
+	    if (_url_cache[i])
 		fprintf(stderr,
-			_("warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
-			i, uCache[i], uCache[i]->nrefs,
-			(uCache[i]->host ? uCache[i]->host : ""),
-			(uCache[i]->service ? uCache[i]->service : ""));
+			_("warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
+			i, _url_cache[i], _url_cache[i]->nrefs,
+			(_url_cache[i]->host ? _url_cache[i]->host : ""),
+			(_url_cache[i]->service ? _url_cache[i]->service : ""));
 	}
     }
-    uCache = _free(uCache);
-    uCount = 0;
+    _url_cache = _free(_url_cache);
+    _url_count = 0;
 }
 
 static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
@@ -181,6 +184,7 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
     return 0;
 }
 
+/*@-mods@*/
 static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
@@ -198,9 +202,9 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     URLSANE(u);
 
     ucx = -1;
-    for (i = 0; i < uCount; i++) {
+    for (i = 0; i < _url_count; i++) {
 	urlinfo ou = NULL;
-	if (uCache == NULL || (ou = uCache[i]) == NULL) {
+	if (_url_cache == NULL || (ou = _url_cache[i]) == NULL) {
 	    if (ucx < 0)
 		ucx = i;
 	    continue;
@@ -221,13 +225,13 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	break;	/* Found item in cache */
     }
 
-    if (i == uCount) {
+    if (i == _url_count) {
 	if (ucx < 0) {
-	    ucx = uCount++;
-	    uCache = xrealloc(uCache, sizeof(*uCache) * uCount);
+	    ucx = _url_count++;
+	    _url_cache = xrealloc(_url_cache, sizeof(*_url_cache) * _url_count);
 	}
-	if (uCache)		/* XXX always true */
-	    uCache[ucx] = urlLink(u, "uCache (miss)");
+	if (_url_cache)		/* XXX always true */
+	    _url_cache[ucx] = urlLink(u, "_url_cache (miss)");
 	u = urlFree(u, "urlSplit (urlFind miss)");
     } else {
 	ucx = i;
@@ -236,11 +240,11 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 
     /* This URL is now cached. */
 
-    if (uCache)		/* XXX always true */
-	u = urlLink(uCache[ucx], "uCache");
+    if (_url_cache)		/* XXX always true */
+	u = urlLink(_url_cache[ucx], "_url_cache");
     *uret = u;
     /*@-usereleased@*/
-    u = urlFree(u, "uCache (urlFind)");
+    u = urlFree(u, "_url_cache (urlFind)");
     /*@=usereleased@*/
 
     /* Zap proxy host and port in case they have been reset */
@@ -319,6 +323,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 
     return;
 }
+/*@=mods@*/
 
 /**
  */
@@ -476,9 +481,9 @@ int urlSplit(const char * url, urlinfo *uret)
     myurl = _free(myurl);
     if (uret) {
 	*uret = u;
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
+/*@-globs -mods @*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	urlFind(uret, 0);
-/*@=globs@*/
+/*@=globs =mods @*/
     }
     return 0;
 }

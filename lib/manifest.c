@@ -24,14 +24,17 @@ char * rpmPermsString(int mode)
 	perms[0] = 'l';
     else if (S_ISFIFO(mode)) 
 	perms[0] = 'p';
+    /*@-unrecog@*/
     else if (S_ISSOCK(mode)) 
 	perms[0] = 's';
+    /*@=unrecog@*/
     else if (S_ISCHR(mode))
 	perms[0] = 'c';
     else if (S_ISBLK(mode))
 	perms[0] = 'b';
+    else
+	perms[0] = '?';
 
-    /*@-unrecog@*/
     if (mode & S_IRUSR) perms[1] = 'r';
     if (mode & S_IWUSR) perms[2] = 'w';
     if (mode & S_IXUSR) perms[3] = 'x';
@@ -52,7 +55,6 @@ char * rpmPermsString(int mode)
 
     if (mode & S_ISVTX)
 	perms[9] = ((mode & S_IXOTH) ? 't' : 'T');
-    /*@=unrecog@*/
 
     return perms;
 }
@@ -161,7 +163,7 @@ exit:
     }
     /*@=branchstate@*/
     sb = freeStringBuf(sb);
-    /*@-nullstate@*/
+    /*@-nullstate@*/ /* FIX: *argvPtr may be NULL. */
     return rc;
     /*@=nullstate@*/
 }

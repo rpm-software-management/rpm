@@ -251,8 +251,9 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *type, *data, *count, *freeData,
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -467,7 +468,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies *type, *data, *count, *freeData @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
@@ -496,7 +497,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	/* change to en_US for msgkey -> msgid resolution */
 	langval = getenv(language);
 	(void) setenv(language, "en_US", 1);
-	++_nl_msg_cat_cntr;
+/*@i@*/	++_nl_msg_cat_cntr;
 
 	msgid = NULL;
 	for (domain = dstring; domain != NULL; domain = de) {
@@ -511,7 +512,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    (void) setenv(language, langval, 1);
 	else
 	    unsetenv(language);
-	++_nl_msg_cat_cntr;
+/*@i@*/	++_nl_msg_cat_cntr;
 
 	if (domain && msgid) {
 	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
@@ -552,7 +553,7 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies *type, *data, *count, *freeData @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
@@ -569,7 +570,7 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies *type, *data, *count, *freeData @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
@@ -586,7 +587,7 @@ static int groupTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies *type, *data, *count, *freeData @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }

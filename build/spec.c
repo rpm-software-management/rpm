@@ -454,7 +454,7 @@ Spec newSpec(void)
     spec->force = 0;
     spec->anyarch = 0;
 
-    spec->macros = rpmGlobalMacroContext;
+/*@i@*/	spec->macros = rpmGlobalMacroContext;
     
     return spec;
 }
