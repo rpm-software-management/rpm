@@ -108,7 +108,7 @@ main (void)
 	  sym = gelf_getsym (elf_getdata (scn, NULL), cnt, &sym_mem);
 	  if (sym == NULL)
 	    {
-	      printf ("cannot get symbol %Zd: %s\n", cnt, elf_errmsg (-1));
+	      printf ("cannot get symbol %zu: %s\n", cnt, elf_errmsg (-1));
 	      result = 1;
 	    }
 	  else

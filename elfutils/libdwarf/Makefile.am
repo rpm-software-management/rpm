@@ -1,13 +1,29 @@
 ## Process this file with automake to create Makefile.in
-
-AUTOMAKE_OPTIONS = 1.4 gnits
-
+## Configure input file for elfutils.
+##
+## Copyright (C) 2000, 2001, 2002 Red Hat, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License version 2 as
+## published by the Free Software Foundation.
+##
+## his program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software Foundation,
+## Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DDWARF_DEBUG
 AM_CFLAGS = -Wall -Werror
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
 
-#lib_LTLIBRARIES = libdwarf.la
-noinst_LTLIBRARIES = libdwarf.la
+lib_LTLIBRARIES = libdwarf.la
+
+euincludedir = ${includedir}/elfutils
+euinclude_HEADERS = dwarf.h libdwarf.h
 
 libdwarf_la_SOURCES = dwarf_init.c dwarf_elf_init.c dwarf_get_elf.c \
 		      dwarf_finish.c \
@@ -49,13 +65,10 @@ libdwarf_la_SOURCES = dwarf_init.c dwarf_elf_init.c dwarf_get_elf.c \
 		      dwarf_seterrhand.c dwarf_seterrarg.c \
 		      dwarf_dealloc.c
 
-noinst_HEADERS = libdwarfP.h memory-access.h dwarf_abbrev_hash.h \
-		dwarf.h libdwarf.h
+noinst_HEADERS = libdwarfP.h memory-access.h dwarf_abbrev_hash.h
 
-#include_HEADERS = dwarf.h libdwarf.h
+EXTRA_DIST = AVAILABLE libdwarf.map
 
-EXTRA_DIST = AVAILABLE libdwarf.sym
-
-libdwarf_la_LDFLAGS = -export-symbols $(srcdir)/libdwarf.sym
-## libdwarf_la_LIBADD = ../libelf/libelf.la
-libdwarf_la_DEPENDENCIES = $(libdwarf_la_LIBADD) libdwarf.sym
+libdwarf_la_LDFLAGS = -Wl,--version-script,$(srcdir)/libdwarf.map
+libdwarf_la_LIBADD = ../lib/libeu.la ../libelf/libelf.la
+libdwarf_la_DEPENDENCIES = $(libdwarf_la_LIBADD) libdwarf.map

@@ -42,12 +42,6 @@ elfw2(LIBELFBITS,getshdr) (scn)
   if (scn == NULL)
     return NULL;
 
-  if (unlikely (scn->elf->kind != ELF_K_ELF))
-    {
-      __libelf_seterrno (ELF_E_INVALID_HANDLE);
-      return NULL;
-    }
-
   if (unlikely (scn->elf->state.elf.ehdr == NULL))
     {
       __libelf_seterrno (ELF_E_WRONG_ORDER_EHDR);

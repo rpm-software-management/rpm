@@ -96,7 +96,7 @@ elf_getshstrndx (elf, dst)
 		      || (((size_t) ((char *) elf->map_address + offset))
 			  & (__alignof__ (Elf32_Shdr) - 1)) == 0))
 		/* We can directly access the memory.  */
-		num = ((Elf32_Shdr *) (elf->map_address + offset))->sh_size;
+		num = ((Elf32_Shdr *) (elf->map_address + offset))->sh_link;
 	      else
 		{
 		  /* We avoid reading in all the section headers.  Just read
@@ -113,8 +113,8 @@ elf_getshstrndx (elf, dst)
 		    }
 
 		  if (elf->state.elf32.ehdr->e_ident[EI_DATA] != MY_ELFDATA)
-		    CONVERT (shdr_mem.sh_size);
-		  num = shdr_mem.sh_size;
+		    CONVERT (shdr_mem.sh_link);
+		  num = shdr_mem.sh_link;
 		}
 	    }
 	  else
@@ -135,7 +135,7 @@ elf_getshstrndx (elf, dst)
 		      || (((size_t) ((char *) elf->map_address + offset))
 			  & (__alignof__ (Elf64_Shdr) - 1)) == 0))
 		/* We can directly access the memory.  */
-		num = ((Elf64_Shdr *) (elf->map_address + offset))->sh_size;
+		num = ((Elf64_Shdr *) (elf->map_address + offset))->sh_link;
 	      else
 		{
 		  /* We avoid reading in all the section headers.  Just read
@@ -152,8 +152,8 @@ elf_getshstrndx (elf, dst)
 		    }
 
 		  if (elf->state.elf64.ehdr->e_ident[EI_DATA] != MY_ELFDATA)
-		    CONVERT (shdr_mem.sh_size);
-		  num = shdr_mem.sh_size;
+		    CONVERT (shdr_mem.sh_link);
+		  num = shdr_mem.sh_link;
 		}
 	    }
 	}

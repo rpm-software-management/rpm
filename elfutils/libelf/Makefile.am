@@ -1,7 +1,21 @@
 ## Process this file with automake to create Makefile.in
-
-AUTOMAKE_OPTIONS = 1.4 gnits
-
+## Configure input file for elfutils.
+##
+## Copyright (C) 1996-2001, 2002 Red Hat, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License version 2 as
+## published by the Free Software Foundation.
+##
+## his program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software Foundation,
+## Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 AM_CFLAGS = -Wall -Werror
 INCLUDES = -I. -I$(srcdir) -I.. -I$(top_srcdir)/lib
@@ -9,8 +23,10 @@ GCC_INCLUDE = -I$(shell $(CC) -print-file-name=include)
 
 LINT = splint
 
-#lib_LTLIBRARIES = libelf.la
-noinst_LTLIBRARIES = libelf.la
+lib_LTLIBRARIES = libelf.la
+
+euincludedir = ${includedir}/elfutils
+euinclude_HEADERS = libelf.h gelf.h nlist.h
 
 libelf_la_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		    elf_begin.c elf_next.c elf_rand.c elf_end.c elf_kind.c \
@@ -49,18 +65,20 @@ libelf_la_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		    gelf_update_vernaux.c gelf_update_verdef.c \
 		    gelf_update_verdaux.c \
 		    elf_getshnum.c elf_getshstrndx.c \
-		    gelf_checksum.c elf32_checksum.c elf64_checksum.c crc32.c
-libelf_la_LIBADD = ../lib/libbu.la
-libelf_la_LDFLAGS = -export-symbols $(srcdir)/libelf.sym
-libelf_la_DEPENDENCIES = $(libelf_la_LIBADD) libelf.sym
+		    gelf_checksum.c elf32_checksum.c elf64_checksum.c crc32.c \
+		    gelf_rawchunk.c gelf_freechunk.c
+libelf_la_LIBADD = ../lib/libeu.la
+## XXX We might remove the -version-info parameter if all binary compatibility
+## XXX issues with the old libelf can be resolved.
+libelf_la_LDFLAGS = -Wl,--version-script,$(srcdir)/libelf.map \
+		    -version-info 1:0:0
+libelf_la_DEPENDENCIES = $(libelf_la_LIBADD) libelf.map
 
 noinst_HEADERS = elf.h abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
 		 version_xlate.h dl-hash.h \
-		libelf.h gelf.h nlist.h \
 		elf-knowledge.h
-#include_HEADERS = libelf.h gelf.h nlist.h
 
-EXTRA_DIST = libelf.sym
+EXTRA_DIST = libelf.map
 
 .PSEUDO: lint
 lint:
