@@ -45,6 +45,7 @@
 	- link libbz2.a statically to avoid rpm->bzip2 dependence for now.
 	- Tru64: avoid find-requires variable size limit (Tim Mooney).
 	- Solaris: use getpassphrase rather than getpass if available.
+	- pgp and pgp5 have compatible RSA signature (#4780).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

@@ -2,157 +2,226 @@
 
 #include "system.h"
 
-#ifdef	DYING
-#include "build/rpmbuild.h"
-#endif
 #include <rpmlib.h>
 
 #include "rpmlead.h"
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
 
+static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
+{
+    const char *fn;
+    FD_t fd;
+
+    if (fdp == NULL) {	/* programmer error */
+	return 1;
+    }
+
+    /* close and reset *fdp to NULL */
+    if (*fdp && (fnp == NULL || *fnp == NULL)) {
+	fdClose(*fdp);
+	*fdp = NULL;
+	return 0;
+    }
+
+    /* open a file and set *fdp */
+    if (*fdp == NULL && fnp && *fnp) {
+	mode_t mode = (flags & O_CREAT) ? 0644 : 0;
+	if (fdFileno(fd = fdOpen(*fnp, flags, mode)) < 0) {
+	    fprintf(stderr, _("%s: fdOpen failed: %s\n"), *fnp,
+		strerror(errno));
+	    return 1;
+	}
+	*fdp = fd;
+	return 0;
+    }
+
+    /* open a temp file */
+    if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
+	if (makeTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
+	    fprintf(stderr, _("%s: makeTempFile failed\n"));
+	    return 1;
+	}
+	if (fnp)
+		*fnp = fn;
+	*fdp = fd;
+	return 0;
+    }
+
+    /* no operation */
+    if (*fdp && fnp && *fnp) {
+	return 0;
+    }
+
+    /* XXX never reached */
+    return 1;
+}
+
+static int copyFile(FD_t *sfdp, const char **sfnp,
+	FD_t *tfdp, const char **tfnp)
+{
+    unsigned char buffer[8192];
+    ssize_t count;
+    int rc = 1;
+
+    if (manageFile(sfdp, sfnp, O_RDONLY, 0))
+	goto exit;
+    if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
+	goto exit;
+
+    while ((count = fdRead(*sfdp, buffer, sizeof(buffer))) > 0) {
+	if (fdWrite(*tfdp, buffer, count) < 0) {
+	    fprintf(stderr, _("%s: fdWrite failed: %s\n"), *tfnp,
+		strerror(errno));
+	    goto exit;
+	}
+    }
+    if (count < 0) {
+	fprintf(stderr, _("%s: fdRead failed: %s\n"), *sfnp, strerror(errno));
+	goto exit;
+    }
+
+    rc = 0;
+
+exit:
+    if (*sfdp)	manageFile(sfdp, NULL, 0, rc);
+    if (*tfdp)	manageFile(tfdp, NULL, 0, rc);
+    return rc;
+}
+
 int rpmReSign(int add, char *passPhrase, const char **argv)
 {
-    FD_t fd, ofd;
-    int count;
+    FD_t fd = NULL;
+    FD_t ofd = NULL;
     struct rpmlead lead;
     unsigned short sigtype;
-    const char *rpm;
-    const char *sigtarget;
-    char tmprpm[1024];
-    unsigned char buffer[8192];
-    Header sig;
+    const char *rpm, *trpm;
+    const char *sigtarget = NULL;
+    char tmprpm[1024+1];
+    Header sig = NULL;
+    int rc = EXIT_FAILURE;
     
-    while (*argv) {
-	rpm = *argv++;
+    tmprpm[0] = '\0';
+    while ((rpm = *argv++) != NULL) {
+
 	fprintf(stdout, "%s:\n", rpm);
-	if (fdFileno(fd = fdOpen(rpm, O_RDONLY, 0644)) < 0) {
-	    fprintf(stderr, _("%s: Open failed\n"), rpm);
-	    exit(EXIT_FAILURE);
-	}
+
+	if (manageFile(&fd, &rpm, O_RDONLY, 0))
+	    goto exit;
+
 	if (readLead(fd, &lead)) {
 	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
-	    exit(EXIT_FAILURE);
+	    goto exit;
 	}
-	if (lead.major == 1) {
+	switch (lead.major) {
+	case 1:
 	    fprintf(stderr, _("%s: Can't sign v1.0 RPM\n"), rpm);
-	    exit(EXIT_FAILURE);
-	}
-	if (lead.major == 2) {
+	    goto exit;
+	    break;
+	case 2:
 	    fprintf(stderr, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
-	    exit(EXIT_FAILURE);
+	    goto exit;
+	    break;
+	default:
+	    break;
 	}
+
 	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
-	    exit(EXIT_FAILURE);
+	    goto exit;
 	}
+	if (sig == NULL) {
+	    fprintf(stderr, _("%s: No signature available\n"), rpm);
+	    goto exit;
+	}
+
+	/* Write the header and archive to a temp file */
+	/* ASSERT: ofd == NULL && sigtarget == NULL */
+	if (copyFile(&fd, &rpm, &ofd, &sigtarget))
+	    goto exit;
+	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
+	/* ASSERT: fd == NULL && ofd == NULL */
+
+	/* Generate the new signatures */
 	if (add != ADD_SIGNATURE) {
 	    rpmFreeSignature(sig);
-	}
-
-	/* Write the rest to a temp file */
-	if (makeTempFile(NULL, &sigtarget, &ofd))
-	    exit(EXIT_FAILURE);
-
-	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
-	    if (count == -1) {
-		perror(_("Couldn't read the header/archive"));
-		fdClose(ofd);
-		unlink(sigtarget);
-		xfree(sigtarget);
-		exit(EXIT_FAILURE);
-	    }
-	    if (fdWrite(ofd, buffer, count) < 0) {
-		perror(_("Couldn't write header/archive to temp file"));
-		fdClose(ofd);
-		unlink(sigtarget);
-		xfree(sigtarget);
-		exit(EXIT_FAILURE);
-	    }
-	}
-	fdClose(fd);
-	fdClose(ofd);
-
-	/* Start writing the new RPM */
-	strcpy(tmprpm, rpm);
-	strcat(tmprpm, ".XXXXXX");
-	mktemp(tmprpm);
-
-	ofd = fdOpen(tmprpm, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-	lead.signature_type = RPMSIG_HEADERSIG;
-	if (writeLead(ofd, &lead)) {
-	    perror("writeLead()");
-	    fdClose(ofd);
-	    unlink(sigtarget);
-	    unlink(tmprpm);
-	    xfree(sigtarget);
-	    exit(EXIT_FAILURE);
-	}
-
-	/* Generate the signature */
-	sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
-	rpmMessage(RPMMESS_VERBOSE, _("Generating signature: %d\n"), sigtype);
-	if (add != ADD_SIGNATURE) {
 	    sig = rpmNewSignature();
 	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
 	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 	}
-	if (sigtype>0) {
+
+	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0)
 	    rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+
+	/* Write the lead/signature of the output rpm */
+	strcpy(tmprpm, rpm);
+	strcat(tmprpm, ".XXXXXX");
+	mktemp(tmprpm);
+	trpm = tmprpm;
+
+	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
+	    goto exit;
+
+	lead.signature_type = RPMSIG_HEADERSIG;
+	if (writeLead(ofd, &lead)) {
+	    fprintf(stderr, _("%s: writeLead failed: %s\n"), trpm,
+		strerror(errno));
+	    goto exit;
 	}
+
 	if (rpmWriteSignature(ofd, sig)) {
-	    fdClose(ofd);
-	    unlink(sigtarget);
-	    unlink(tmprpm);
-	    xfree(sigtarget);
-	    rpmFreeSignature(sig);
-	    exit(EXIT_FAILURE);
+	    fprintf(stderr, _("%s: rpmWriteSignature failed\n"), trpm);
+	    goto exit;
 	}
-	rpmFreeSignature(sig);
 
-	/* Append the header and archive */
-	fd = fdOpen(sigtarget, O_RDONLY, 0);
-	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
-	    if (count == -1) {
-		perror(_("Couldn't read sigtarget"));
-		fdClose(ofd);
-		fdClose(fd);
-		unlink(sigtarget);
-		unlink(tmprpm);
-		xfree(sigtarget);
-		exit(EXIT_FAILURE);
-	    }
-	    if (fdWrite(ofd, buffer, count) < 0) {
-		perror(_("Couldn't write package"));
-		fdClose(ofd);
-		fdClose(fd);
-		unlink(sigtarget);
-		unlink(tmprpm);
-		xfree(sigtarget);
-		exit(EXIT_FAILURE);
-	    }
-	}
-	fdClose(fd);
-	fdClose(ofd);
+	/* Append the header and archive from the temp file */
+	/* ASSERT: fd == NULL && ofd != NULL */
+	if (copyFile(&fd, &sigtarget, &ofd, &trpm))
+	    goto exit;
+	/* Both fd and ofd are now closed. */
+	/* ASSERT: fd == NULL && ofd == NULL */
+
+	/* Clean up intermediate target */
 	unlink(sigtarget);
-	xfree(sigtarget);
+	xfree(sigtarget);	sigtarget = NULL;
 
-	/* Move it in to place */
+	/* Move final target into place. */
 	unlink(rpm);
-	rename(tmprpm, rpm);
+	rename(trpm, rpm);	tmprpm[0] = '\0';
     }
 
-    return 0;
+    rc = 0;
+
+exit:
+    if (fd)	manageFile(&fd, NULL, 0, rc);
+    if (ofd)	manageFile(&ofd, NULL, 0, rc);
+
+    if (sig) {
+	rpmFreeSignature(sig);
+	sig = NULL;
+    }
+    if (sigtarget) {
+	unlink(sigtarget);
+	xfree(sigtarget);
+	sigtarget = NULL;
+    }
+    if (tmprpm[0] != '\0') {
+	unlink(tmprpm);
+	tmprpm[0] = '\0';
+    }
+
+    return rc;
 }
 
 int rpmCheckSig(int flags, const char **argv)
 {
-    FD_t fd, ofd;
-    int res, res2, res3;
+    FD_t fd = NULL;
+    FD_t ofd = NULL;
+    int res2, res3;
     struct rpmlead lead;
-    const char *rpm;
+    const char *rpm = NULL;
     char result[1024];
-    const char * sigtarget;
+    const char * sigtarget = NULL;
     unsigned char buffer[8192];
     unsigned char missingKeys[7164];
     unsigned char untrustedKeys[7164];
@@ -160,57 +229,47 @@ int rpmCheckSig(int flags, const char **argv)
     HeaderIterator sigIter;
     int_32 tag, type, count;
     void *ptr;
+    int res = 0;
 
-    res = 0;
-    while (*argv) {
-	rpm = *argv++;
-	if (fdFileno(fd = fdOpen(rpm, O_RDONLY, 0644)) < 0) {
-	    fprintf(stderr, _("%s: Open failed\n"), rpm);
+    while ((rpm = *argv++) != NULL) {
+
+	if (manageFile(&fd, &rpm, O_RDONLY, 0)) {
 	    res++;
-	    continue;
+	    goto bottom;
 	}
+
 	if (readLead(fd, &lead)) {
 	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
 	    res++;
-	    continue;
+	    goto bottom;
 	}
-	if (lead.major == 1) {
+	switch (lead.major) {
+	case 1:
 	    fprintf(stderr, _("%s: No signature available (v1.0 RPM)\n"), rpm);
 	    res++;
-	    continue;
+	    goto bottom;
+	    break;
+	default:
+	    break;
 	}
 	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
-	    continue;
+	    goto bottom;
 	}
 	if (sig == NULL) {
 	    fprintf(stderr, _("%s: No signature available\n"), rpm);
 	    res++;
-	    continue;
+	    goto bottom;
 	}
-	/* Write the rest to a temp file */
-	if (makeTempFile(NULL, &sigtarget, &ofd))
-	    exit(EXIT_FAILURE);
-	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
-	    if (count == -1) {
-		perror(_("Couldn't read the header/archive"));
-		fdClose(ofd);
-		unlink(sigtarget);
-		xfree(sigtarget);
-		exit(EXIT_FAILURE);
-	    }
-	    if (fdWrite(ofd, buffer, count) < 0) {
-		fprintf(stderr, _("Unable to write %s"), sigtarget);
-		perror("");
-		fdClose(ofd);
-		unlink(sigtarget);
-		xfree(sigtarget);
-		exit(EXIT_FAILURE);
-	    }
+	/* Write the header and archive to a temp file */
+	/* ASSERT: ofd == NULL && sigtarget == NULL */
+	if (copyFile(&fd, &rpm, &ofd, &sigtarget)) {
+	    res++;
+	    goto bottom;
 	}
-	fdClose(fd);
-	fdClose(ofd);
+	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
+	/* ASSERT: fd == NULL && ofd == NULL */
 
 	res2 = 0;
 	missingKeys[0] = '\0';
@@ -219,16 +278,26 @@ int rpmCheckSig(int flags, const char **argv)
 
 	sigIter = headerInitIterator(sig);
 	while (headerNextIterator(sigIter, &tag, &type, &ptr, &count)) {
-	    if ((tag == RPMSIGTAG_PGP || tag == RPMSIGTAG_PGP5)
-	    	    && !(flags & CHECKSIG_PGP)) 
+	    switch (tag) {
+	    case RPMSIGTAG_PGP5:	/* XXX legacy */
+	    case RPMSIGTAG_PGP:
+		if (!(flags & CHECKSIG_PGP)) 
+		     continue;
+		break;
+	    case RPMSIGTAG_GPG:
+		if (!(flags & CHECKSIG_GPG)) 
+		     continue;
+		break;
+	    case RPMSIGTAG_LEMD5_2:
+	    case RPMSIGTAG_LEMD5_1:
+	    case RPMSIGTAG_MD5:
+		if (!(flags & CHECKSIG_MD5)) 
+		     continue;
+		break;
+	    default:
 		continue;
-	    if ((tag == RPMSIGTAG_GPG) && !(flags & CHECKSIG_GPG))
-		continue;
-	    if ((tag == RPMSIGTAG_MD5 || 
-		      tag == RPMSIGTAG_LEMD5_2 ||
-		      tag == RPMSIGTAG_LEMD5_1) 
-		      && !(flags & CHECKSIG_MD5)) 
-		continue;
+		break;
+	    }
 
 	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, 
 					   result))) {
@@ -242,17 +311,19 @@ int rpmCheckSig(int flags, const char **argv)
 			strcat(buffer, "SIZE ");
 			res2 = 1;
 			break;
-		      case RPMSIGTAG_MD5:
-		      case RPMSIGTAG_LEMD5_1:
 		      case RPMSIGTAG_LEMD5_2:
+		      case RPMSIGTAG_LEMD5_1:
+		      case RPMSIGTAG_MD5:
 			strcat(buffer, "MD5 ");
 			res2 = 1;
 			break;
+		      case RPMSIGTAG_PGP5:	/* XXX legacy */
 		      case RPMSIGTAG_PGP:
-		      case RPMSIGTAG_PGP5:
-			if (res3 == RPMSIG_NOKEY || res3 == RPMSIG_NOTTRUSTED) {
-			    /* Do not consider these a failure */
-			    int offset = 7;
+			switch (res3) {
+			/* Do not consider these a failure */
+			case RPMSIG_NOKEY:
+			case RPMSIG_NOTTRUSTED:
+			{   int offset = 7;
 			    strcat(buffer, "(PGP) ");
 			    tempKey = strstr(result, "Key ID");
 			    if (tempKey == NULL) {
@@ -268,27 +339,33 @@ int rpmCheckSig(int flags, const char **argv)
 				strncat(untrustedKeys, tempKey + offset, 8);
 			      }
 			    }
-			} else {
+			}   break;
+			default:
 			    strcat(buffer, "PGP ");
 			    res2 = 1;
+			    break;
 			}
 			break;
 		      case RPMSIGTAG_GPG:
-			if (res3 == RPMSIG_NOKEY) {
-			    /* Do not consider this a failure */
+			/* Do not consider this a failure */
+			switch (res3) {
+			case RPMSIG_NOKEY:
 			    strcat(buffer, "(GPG) ");
 			    strcat(missingKeys, " GPG#");
 			    tempKey = strstr(result, "key ID");
 			    if (tempKey)
 				strncat(missingKeys, tempKey+7, 8);
-			} else {
+			    break;
+			default:
 			    strcat(buffer, "GPG ");
 			    res2 = 1;
+			    break;
 			}
 			break;
 		      default:
 			strcat(buffer, "?UnknownSignatureType? ");
 			res2 = 1;
+			break;
 		    }
 		}
 	    } else {
@@ -296,23 +373,24 @@ int rpmCheckSig(int flags, const char **argv)
 		    strcat(buffer, result);
 		} else {
 		    switch (tag) {
-		      case RPMSIGTAG_SIZE:
+		    case RPMSIGTAG_SIZE:
 			strcat(buffer, "size ");
 			break;
-		      case RPMSIGTAG_MD5:
-		      case RPMSIGTAG_LEMD5_1:
-		      case RPMSIGTAG_LEMD5_2:
+		    case RPMSIGTAG_LEMD5_2:
+		    case RPMSIGTAG_LEMD5_1:
+		    case RPMSIGTAG_MD5:
 			strcat(buffer, "md5 ");
 			break;
-		      case RPMSIGTAG_PGP:
-		      case RPMSIGTAG_PGP5:
+		    case RPMSIGTAG_PGP5:	/* XXX legacy */
+		    case RPMSIGTAG_PGP:
 			strcat(buffer, "pgp ");
 			break;
-		      case RPMSIGTAG_GPG:
+		    case RPMSIGTAG_GPG:
 			strcat(buffer, "gpg ");
 			break;
-		      default:
+		    default:
 			strcat(buffer, "??? ");
+			break;
 		    }
 		}
 	    }
@@ -320,7 +398,7 @@ int rpmCheckSig(int flags, const char **argv)
 	headerFreeIterator(sigIter);
 	res += res2;
 	unlink(sigtarget);
-	xfree(sigtarget);
+	xfree(sigtarget);	sigtarget = NULL;
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
@@ -349,6 +427,14 @@ int rpmCheckSig(int flags, const char **argv)
 			(char *)untrustedKeys,
 			(untrustedKeys[0] != '\0') ? _(")") : "");
 	    }
+	}
+
+    bottom:
+	if (fd)		manageFile(&fd, NULL, 0, 0);
+	if (ofd)	manageFile(&ofd, NULL, 0, 0);
+	if (sigtarget) {
+	    unlink(sigtarget);
+	    xfree(sigtarget);	sigtarget = NULL;
 	}
     }
 

@@ -587,7 +587,28 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define	RPMSIGTAG_LEMD5_2		1003
 #define	RPMSIGTAG_MD5		        1004
 #define	RPMSIGTAG_GPG		        1005
-#define	RPMSIGTAG_PGP5		        1006
+#define	RPMSIGTAG_PGP5		        1006	/* XXX legacy use only */
+
+/* Signature tags by Public Key Algorithm (RFC 2440) */
+/* N.B.: These tags are tenative, the values may change */
+#define	RPMTAG_PK_BASE			2048
+#define	RPMTAG_PK_RSA_ES		RPMTAG_PK_BASE+1
+#define	RPMTAG_PK_RSA_E			RPMTAG_PK_BASE+2
+#define	RPMTAG_PK_RSA_S			RPMTAG_PK_BASE+3
+#define	RPMTAG_PK_ELGAMAL_E		RPMTAG_PK_BASE+16
+#define	RPMTAG_PK_DSA			RPMTAG_PK_BASE+17
+#define	RPMTAG_PK_ELLIPTIC		RPMTAG_PK_BASE+18
+#define	RPMTAG_PK_ECDSA			RPMTAG_PK_BASE+19
+#define	RPMTAG_PK_ELGAMAL_ES		RPMTAG_PK_BASE+20
+#define	RPMTAG_PK_DH			RPMTAG_PK_BASE+21
+
+#define	RPMTAG_HASH_BASE		2048+64
+#define	RPMTAG_HASH_MD5			RPMTAG_HASH_BASE+1
+#define	RPMTAG_HASH_SHA1		RPMTAG_HASH_BASE+2
+#define	RPMTAG_HASH_RIPEMD160		RPMTAG_HASH_BASE+3
+#define	RPMTAG_HASH_MD2			RPMTAG_HASH_BASE+5
+#define	RPMTAG_HASH_TIGER192		RPMTAG_HASH_BASE+6
+#define	RPMTAG_HASH_HAVAL_5_160		RPMTAG_HASH_BASE+7
 
 /**************************************************/
 /*                                                */

@@ -321,12 +321,11 @@ int writeRPM(Header h, const char *fileName, int type,
     }
 
     /* Generate the signature */
-    sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
     fflush(stdout);
     sig = rpmNewSignature();
     rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
     rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
-    if (sigtype > 0) {
+    if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
 	rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }

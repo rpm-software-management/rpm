@@ -1072,51 +1072,32 @@ int main(int argc, char ** argv)
 		switch (sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) {
 		  case 0:
 		    break;
-		  case RPMSIGTAG_GPG:
 		  case RPMSIGTAG_PGP:
-		  case RPMSIGTAG_PGP5:
-		    if (sigTag == RPMSIGTAG_PGP
-		            && !rpmDetectPGPVersion(RPMSIGTAG_PGP)) {
+		    if ((sigTag == RPMSIGTAG_PGP || sigTag == RPMSIGTAG_PGP5) &&
+		        !rpmDetectPGPVersion(NULL)) {
 		        fprintf(stderr, _("pgp not found: "));
-			if (rpmDetectPGPVersion(RPMSIGTAG_PGP5)) {
-			    fprintf(stderr,
-  _("Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"));
-			    exit(EXIT_FAILURE);
-		        }
-			/* Fall through to default: */
-		    }
-		    else if (sigTag == RPMSIGTAG_PGP5
-		    	    && !rpmDetectPGPVersion(RPMSIGTAG_PGP5)) {
-		        fprintf(stderr, _("pgp version 5 not found: "));
-			if (rpmDetectPGPVersion(RPMSIGTAG_PGP)) {
-			    fprintf(stderr,
-  _("Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"));
-			    exit(EXIT_FAILURE);
-		        }
-			/* Fall through to default: */
-		    }
-		    else if (!(passPhrase = 
-			    rpmGetPassPhrase(_("Enter pass phrase: "), sigTag))) {
+			exit(EXIT_FAILURE);
+		    }	/* fall through */
+		  case RPMSIGTAG_GPG:
+		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
+		    if (passPhrase == NULL) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
 			exit(EXIT_FAILURE);
-		    } else {
-			fprintf(stderr, _("Pass phrase is good.\n"));
-			passPhrase = strdup(passPhrase);
-			break;
 		    }
-		    /* Fall through */
+		    fprintf(stderr, _("Pass phrase is good.\n"));
+		    passPhrase = strdup(passPhrase);
+		    break;
 		  default:
 		    fprintf(stderr,
 		            _("Invalid %%_signature spec in macro file.\n"));
 		    exit(EXIT_FAILURE);
+		    break;
 		}
 	    }
 	} else {
 	    argerror(_("--sign may only be used during package building"));
 	}
-    }
-    else
-    {
+    } else {
     	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
         rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }

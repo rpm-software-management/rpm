@@ -5,8 +5,10 @@
 
 struct availablePackage {
     Header h;
-    char ** provides;
-    char ** files;
+    const char ** provides;
+    const char ** providesEVR;	/* unused */
+    int * providesFlags;		/* unused */
+    const char ** files;
     const char * name, * version, * release;
     int epoch, hasEpoch, providesCount, filesCount;
     const void * key;
