@@ -783,6 +783,10 @@ static int addOrderedPack(rpmDependencies rpmdep,
 					  requireFlags[i]);
 		/* broken dependencies don't concern us */
 		if (!match) continue;
+		
+		/* let this package satisfy its own predependencies */
+		if (match == package) continue;
+
 		if (addOrderedPack(rpmdep, match, ordering, orderNumPtr,
 				   selected, 1)) return 1;
 	    }
