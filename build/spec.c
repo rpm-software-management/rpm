@@ -552,7 +552,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
 				NULL };
     static char * months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 			     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
-    static char lengths[] = { 31, 29, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30 };
+    static char lengths[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
     memset(&time, 0, sizeof(time));
 
