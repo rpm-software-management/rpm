@@ -431,6 +431,272 @@ rpmbc_format(rpmbcObject * z, uint32 zbase, int withname)
     return (PyObject *)so;
 }
 
+/**
+ *  Precomputes the sliding window table for computing powers of x.
+ *
+ * Sliding Window Exponentiation, Algorithm 14.85 in "Handbook of Applied Cryptography".
+ *
+ * First of all, the table with the powers of g can be reduced by
+ * about half; the even powers don't need to be accessed or stored.
+ *
+ * Get up to K bits starting with a one, if we have that many still available.
+ *
+ * Do the number of squarings of A in the first column, then multiply by
+ * the value in column two, and finally do the number of squarings in
+ * column three.
+ *
+ * This table can be used for K=2,3,4 and can be extended.
+ *  
+ *
+\verbatim
+	   0 : - | -       | -
+	   1 : 1 |  g1 @ 0 | 0
+	  10 : 1 |  g1 @ 0 | 1
+	  11 : 2 |  g3 @ 1 | 0
+	 100 : 1 |  g1 @ 0 | 2
+	 101 : 3 |  g5 @ 2 | 0
+	 110 : 2 |  g3 @ 1 | 1
+	 111 : 3 |  g7 @ 3 | 0
+	1000 : 1 |  g1 @ 0 | 3
+	1001 : 4 |  g9 @ 4 | 0
+	1010 : 3 |  g5 @ 2 | 1
+	1011 : 4 | g11 @ 5 | 0
+	1100 : 2 |  g3 @ 1 | 2
+	1101 : 4 | g13 @ 6 | 0
+	1110 : 3 |  g7 @ 3 | 1
+	1111 : 4 | g15 @ 7 | 0
+\endverbatim
+ *
+ */
+static void mp32nslide(const mp32number* n, uint32 xsize, const uint32* xdata,
+		uint32 size, /*@out@*/ uint32* slide)
+	/*@modifies slide @*/
+{
+    uint32 rsize = (xsize > size ? xsize : size);
+    uint32 * result = alloca(2 * rsize * sizeof(*result));
+
+    mp32sqr(result, xsize, xdata);			/* x^2 temp */
+    mp32setx(size, slide, xsize+xsize, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t  x^2:\t"), mp32println(stderr, size, slide);
+    mp32mul(result,   xsize, xdata, size, slide);	/* x^3 */
+    mp32setx(size, slide+size, xsize+size, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t  x^3:\t"), mp32println(stderr, size, slide+size);
+    mp32mul(result,  size, slide, size, slide+size);	/* x^5 */
+    mp32setx(size, slide+2*size, size+size, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t  x^5:\t"), mp32println(stderr, size, slide+2*size);
+    mp32mul(result,  size, slide, size, slide+2*size);	/* x^7 */
+    mp32setx(size, slide+3*size, size+size, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t  x^7:\t"), mp32println(stderr, size, slide+3*size);
+    mp32mul(result,  size, slide, size, slide+3*size);	/* x^9 */
+    mp32setx(size, slide+4*size, size+size, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t  x^9:\t"), mp32println(stderr, size, slide+4*size);
+    mp32mul(result,  size, slide, size, slide+4*size);	/* x^11 */
+    mp32setx(size, slide+5*size, size+size, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t x^11:\t"), mp32println(stderr, size, slide+5*size);
+    mp32mul(result,  size, slide, size, slide+5*size);	/* x^13 */
+    mp32setx(size, slide+6*size, size+size, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t x^13:\t"), mp32println(stderr, size, slide+6*size);
+    mp32mul(result,  size, slide, size, slide+6*size);	/* x^15 */
+    mp32setx(size, slide+7*size, size+size, result);
+if (_bc_debug < 0)
+fprintf(stderr, "\t x^15:\t"), mp32println(stderr, size, slide+7*size);
+    mp32setx(size, slide, xsize, xdata);		/* x^1 */
+if (_bc_debug < 0)
+fprintf(stderr, "\t  x^1:\t"), mp32println(stderr, size, slide);
+}
+
+/*@observer@*/ /*@unchecked@*/
+static byte mp32nslide_presq[16] = 
+{ 0, 1, 1, 2, 1, 3, 2, 3, 1, 4, 3, 4, 2, 4, 3, 4 };
+
+/*@observer@*/ /*@unchecked@*/
+static byte mp32nslide_mulg[16] =
+{ 0, 0, 0, 1, 0, 2, 1, 3, 0, 4, 2, 5, 1, 6, 3, 7 };
+
+/*@observer@*/ /*@unchecked@*/
+static byte mp32nslide_postsq[16] =
+{ 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0 };
+
+/**
+ * Exponentiation with precomputed sliding window table.
+ */
+/*@-boundsread@*/
+static void mp32npowsld_w(mp32number* n, uint32 size, const uint32* slide,
+		uint32 psize, const uint32* pdata)
+{
+    uint32 rsize = (n->size > size ? n->size : size);
+    uint32 * rdata = alloca(2 * rsize * sizeof(*rdata));
+    uint32 lbits = 0;
+    uint32 kbits = 0;
+    uint32 s;
+    uint32 temp;
+    uint32 count;
+
+if (_bc_debug)
+fprintf(stderr, "npowsld: p\t"), mp32println(stderr, psize, pdata);
+    /* 2. A = 1, i = t. */
+    mp32zero(n->size, n->data);
+    n->data[n->size-1] = 1;
+if (_bc_debug)
+fprintf(stderr, "npowsld: n\t"), mp32println(stderr, n->size, n->data);
+
+    /* Find first bit set in exponent. */
+    temp = *pdata;
+    count = 8 * sizeof(temp);
+    while (count != 0) {
+	if (temp & 0x80000000)
+	    break;
+	temp <<= 1;
+	count--;
+    }
+
+    while (psize) {
+	while (count != 0) {
+
+	    /* Shift next bit of exponent into sliding window. */
+	    kbits <<= 1;
+	    if (temp & 0x80000000)
+		kbits++;
+
+	    /* On 1st non-zero in window, try to collect K bits. */
+	    if (kbits != 0) {
+		if (lbits != 0)
+		    lbits++;
+		else if (temp & 0x80000000)
+		    lbits = 1;
+		else
+		    {};
+
+		/* If window is full, then compute and clear window. */
+		if (lbits == 4) {
+if (_bc_debug)
+fprintf(stderr, "*** #1 lbits %d kbits %d\n", lbits, kbits);
+		    for (s = mp32nslide_presq[kbits]; s > 0; s--) {
+			mp32sqr(rdata, n->size, n->data);
+			mp32setx(n->size, n->data, 2*n->size, rdata);
+if (_bc_debug)
+fprintf(stderr, "\t pre1:\t"), mp32println(stderr, n->size, n->data);
+		    }
+
+		    mp32mul(rdata, n->size, n->data,
+				size, slide+mp32nslide_mulg[kbits]*size);
+		    mp32setx(n->size, n->data, n->size+size, rdata);
+if (_bc_debug)
+fprintf(stderr, "\t mul1:\t"), mp32println(stderr, n->size, n->data);
+
+		    for (s = mp32nslide_postsq[kbits]; s > 0; s--) {
+			mp32sqr(rdata, n->size, n->data);
+			mp32setx(n->size, n->data, 2*n->size, rdata);
+if (_bc_debug)
+fprintf(stderr, "\tpost1:\t"), mp32println(stderr, n->size, n->data);
+		    }
+
+		    lbits = kbits = 0;
+		}
+	    } else {
+		mp32sqr(rdata, n->size, n->data);
+		mp32setx(n->size, n->data, 2*n->size, rdata);
+if (_bc_debug)
+fprintf(stderr, "\t  sqr:\t"), mp32println(stderr, n->size, n->data);
+	    }
+
+	    temp <<= 1;
+	    count--;
+	}
+	if (--psize) {
+	    count = 8 * sizeof(temp);
+	    temp = *(pdata++);
+	}
+    }
+
+    if (kbits != 0) {
+if (_bc_debug)
+fprintf(stderr, "*** #1 lbits %d kbits %d\n", lbits, kbits);
+	for (s = mp32nslide_presq[kbits]; s > 0; s--) {
+	    mp32sqr(rdata, n->size, n->data);
+	    mp32setx(n->size, n->data, 2*n->size, rdata);
+if (_bc_debug)
+fprintf(stderr, "\t pre2:\t"), mp32println(stderr, n->size, n->data);
+	}
+
+	mp32mul(rdata, n->size, n->data,
+			size, slide+mp32nslide_mulg[kbits]*size);
+	mp32setx(n->size, n->data, n->size+size, rdata);
+if (_bc_debug)
+fprintf(stderr, "\t mul2:\t"), mp32println(stderr, n->size, n->data);
+
+	for (s = mp32nslide_postsq[kbits]; s > 0; s--) {
+	    mp32sqr(rdata, n->size, n->data);
+	    mp32setx(n->size, n->data, 2*n->size, rdata);
+if (_bc_debug)
+fprintf(stderr, "\tpost2:\t"), mp32println(stderr, n->size, n->data);
+	}
+    }
+}
+/*@=boundsread@*/
+
+/**
+ * mp32npow_w
+ *
+ * Uses sliding window exponentiation; needs extra storage:
+ *	if K=3, needs 4*size, if K=4, needs 8*size
+ */
+/*@-boundsread@*/
+static void mp32npow_w(mp32number* n, uint32 xsize, const uint32* xdata,
+		uint32 psize, const uint32* pdata)
+{
+    uint32 xbits = mp32bitcnt(xsize, xdata);
+    uint32 pbits = mp32bitcnt(psize, pdata);
+    uint32 *slide;
+    uint32 nsize;
+    uint32 size;
+
+    assert(pbits < 16);
+
+    /* Special case X**0 */
+    if (pbits == 0) {
+	mp32nsetw(n, 1);
+	return;
+    }
+
+    /* Other special cases, like X**1 */
+
+if (_bc_debug)
+fprintf(stderr, "*** before %p[%d]\n", pdata, psize);
+    /* Normalize (to uint32 boundary) exponent. */
+    pdata += psize - ((pbits+31)/32);
+    psize -= (pbits/32);
+if (_bc_debug)
+fprintf(stderr, "*** after %p[%d]\n", pdata, psize);
+
+    /* Calculate size of result. */
+    if (xbits == 0) xbits = 1;
+    nsize = (((*pdata) * xbits)+31)/32;
+    size = ((15 * xbits)+31)/32;
+
+if (_bc_debug)
+fprintf(stderr, "*** pbits %d xbits %d nsize %d size %d\n", pbits, xbits, nsize, size);
+    mp32nsize(n, nsize);
+
+    /* 1. Precompute odd powers of x (up to 2**K). */
+    slide = (uint32*) alloca( (8*size) * sizeof(uint32));
+
+    mp32nslide(n, xsize, xdata, size, slide);
+
+    /*@-internalglobs -mods@*/ /* noisy */
+    mp32npowsld_w(n, size, slide, psize, pdata);
+    /*@=internalglobs =mods@*/
+
+}
+/*@=boundsread@*/
+
 /* ---------- */
 
 static void
@@ -887,7 +1153,8 @@ rpmbc_power(rpmbcObject * a, rpmbcObject * b, rpmbcObject * c)
     rpmbcObject * z;
 
     if ((z = rpmbc_New()) != NULL) {
-	mp32ninit(&z->n, a->n.size, a->n.data);
+
+	mp32npow_w(&z->n, a->n.size, a->n.data, b->n.size, b->n.data);
 
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_power(%p,%p,%p):\t", a, b, c), mp32println(stderr, z->n.size, z->n.data);
