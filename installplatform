@@ -22,6 +22,7 @@ target_platform="`$RPM --eval '%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
 ln -sf ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
+ln -sf ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${OS}
 
 case "$arch" in
   i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_' ;;
