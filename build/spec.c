@@ -61,7 +61,7 @@ static struct PackageRec *new_packagerec(void)
     p->newname = NULL;
     p->header = newHeader();
     p->filelist = newStringBuf();
-    p->files = 0;
+    p->files = -1;  /* -1 means no %files, thus no package */
     p->next = NULL;
 
     return p;
@@ -416,6 +416,11 @@ Spec parseSpec(FILE *f)
 	    }
 
 	    printf("Switched to package: %s\n", s);
+
+	    if (cur_part == FILES_PART) {
+		cur_package->files = 0;
+	    }
+	    
 	    continue;
         }
 
