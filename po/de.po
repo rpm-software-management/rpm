@@ -1,19 +1,23 @@
 # German messages for RPM
 # Revised by Karl Eichwalder <ke@ke.Central.DE>, 1997.
 #
+# Verbesserungen willkommen!
+#
 # Status:
+# 1997-05-08 20:34:01 MET DST
+# Neue Strings von 2.4BETA1 üs; die alten sollten überprüft werden ;-)
+# -ke-
+#
 # 1997-05-01 11:23:20 MET DST
 # Neue Strings von 2.4.Alpha2 übersetzt; die alten müssen noch überprüft werden.
 # -ke-
 #
-# Verbesserungen willkommen!
-#
 # ### sollte »query« nicht besser mit Abfrage üs werden (statt Anfrage)? -ke-
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm-2.4ALPHA\n"
-"POT-Creation-Date: 1997-05-01 10:54+0200\n"
-"PO-Revision-Date: 1997-05-01 11:41 MET DST\n"
+"Project-Id-Version: rpm-2.4BETA1\n"
+"POT-Creation-Date: 1997-05-08 19:51+0200\n"
+"PO-Revision-Date: 1997-05-08 20:35 MET DST\n"
 "Last-Translator: Karl Eichwalder <ke@ke.Central.DE>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -264,7 +268,8 @@ msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
 #: /usr/src/add/rpm-2.4/rpm.c:166
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
-msgstr "   Installieren, Aktualisieren und Anfragen (mit -p) erlauben es, ftp-URLs"
+msgstr ""
+"   Installieren, Aktualisieren und Anfragen (mit -p) erlauben es, ftp-URLs"
 
 #: /usr/src/add/rpm-2.4/rpm.c:167
 msgid "   of file names as well as the following options:\n"
@@ -336,7 +341,7 @@ msgstr ""
 "benutzen!)"
 
 #: /usr/src/add/rpm-2.4/rpm.c:197
-msgid "list capabilbities package provides"
+msgid "list capabilities package provides"
 msgstr "Fähigkeiten des Pakets auflisten"
 
 #: /usr/src/add/rpm-2.4/rpm.c:198
@@ -415,7 +420,7 @@ msgid "print hash marks as package installs (good with -v)"
 msgstr "Fortschrittsanzeige bei der Paketinstallation (gut zusammen mit -v)"
 
 #: /usr/src/add/rpm-2.4/rpm.c:244
-msgid "don't verify package architecure"
+msgid "don't verify package architecture"
 msgstr "Paket-Architektur nicht überprüfen"
 
 #: /usr/src/add/rpm-2.4/rpm.c:246
@@ -780,7 +785,7 @@ msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage darf nur während Aktualisierungen benutzt werden"
 
 #: /usr/src/add/rpm-2.4/rpm.c:999
-msgid "--dump may only be used during queryies"
+msgid "--dump may only be used during queries"
 msgstr "--dump darf nur während Anfragen benutzt werden"
 
 #: /usr/src/add/rpm-2.4/rpm.c:1002
@@ -916,14 +921,14 @@ msgstr "Anfrage von %s fehlgeschlagen\n"
 msgid "could not read database record!\n"
 msgstr "kann Datenbank-Eintrag nicht lesen!\n"
 
-#: /usr/src/add/rpm-2.4/query.c:709
+#: /usr/src/add/rpm-2.4/query.c:709 /usr/src/add/rpm-2.4/verify.c:209
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
 # oder besser: ... listet %s auf? -ke-
 #: /usr/src/add/rpm-2.4/query.c:719
-#, c-format, fuzzy
+#, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
@@ -1001,8 +1006,8 @@ msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
 #: /usr/src/add/rpm-2.4/install.c:312
 #, c-format
-msgid "cannot open %s/var/lib/rpm/packages.rpm\n"
-msgstr "kann %s/var/lib/rpm/packages.rpm nicht öffnen\n"
+msgid "cannot open %s%s/packages.rpm\n"
+msgstr "kann %s%s/packages.rpm nicht öffnen\n"
 
 #: /usr/src/add/rpm-2.4/install.c:325
 #, c-format
@@ -1016,7 +1021,6 @@ msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
 #: /usr/src/add/rpm-2.4/install.c:370
-#, fuzzy
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
@@ -1040,7 +1044,177 @@ msgstr " steht im Konflikt mit %s-%s-%s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 
-#: /usr/src/add/rpm-2.4/verify.c:209
+#: /usr/src/add/rpm-2.4/checksig.c:30 /usr/src/add/rpm-2.4/checksig.c:153
 #, c-format
-msgid "group %s does not contain any pacakges\n"
-msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
+msgid "%s: Open failed\n"
+msgstr "%s: Öffnen fehlgeschlagen\n"
+
+#: /usr/src/add/rpm-2.4/checksig.c:34 /usr/src/add/rpm-2.4/checksig.c:158
+#, c-format
+msgid "%s: readLead failed\n"
+msgstr "%s: »readLead« fehlgeschlagen\n"
+
+#: /usr/src/add/rpm-2.4/checksig.c:38
+#, c-format
+msgid "%s: Can't sign v1.0 RPM\n"
+msgstr "%s: Kann v1.0-RPM nicht signieren\n"
+
+#: /usr/src/add/rpm-2.4/checksig.c:42
+#, c-format
+msgid "%s: Can't re-sign v2.0 RPM\n"
+msgstr "%s: Kann v2.0-RPM nicht erneuert signieren\n"
+
+#: /usr/src/add/rpm-2.4/checksig.c:46 /usr/src/add/rpm-2.4/checksig.c:168
+#, c-format
+msgid "%s: rpmReadSignature failed\n"
+msgstr "%s: »rpmReadSignature« fehlgeschlagen\n"
+
+#: /usr/src/add/rpm-2.4/checksig.c:58 /usr/src/add/rpm-2.4/checksig.c:182
+msgid "Couldn't read the header/archive"
+msgstr "Konnte Kopfzeilen/Archiv nicht lesen"
+
+#: /usr/src/add/rpm-2.4/checksig.c:64
+msgid "Couldn't write header/archive to temp file"
+msgstr "Konnte Kopfzeilen/Archiv nicht in eine temporäre Datei schreiben"
+
+#: /usr/src/add/rpm-2.4/checksig.c:109
+msgid "Couldn't read sigtarget"
+msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
+
+#: /usr/src/add/rpm-2.4/checksig.c:117
+msgid "Couldn't write package"
+msgstr "Konnte Paket nicht schreiben"
+
+#: /usr/src/add/rpm-2.4/checksig.c:163
+#, c-format
+msgid "%s: No signature available (v1.0 RPM)\n"
+msgstr "%s: Keine Signatur verfügbar (v1.0 RPM)\n"
+
+#: /usr/src/add/rpm-2.4/checksig.c:173
+#, c-format
+msgid "%s: No signature available\n"
+msgstr "%s: Keine Signatur verfügbar\n"
+
+# , c-format
+#: /usr/src/add/rpm-2.4/checksig.c:188
+#, c-format
+msgid "Unable to write %s"
+msgstr "Nicht möglich %s zu schreiben"
+
+#: /usr/src/add/rpm-2.4/checksig.c:278 /usr/src/add/rpm-2.4/checksig.c:285
+msgid " (MISSING KEYS)"
+msgstr " (FEHLENDE SCHLüSSEL)"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:345
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:128
+#, c-format
+msgid "cannot read header at %d for uninstall"
+msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
+
+# FIXME shared, besser: "mit anderen geteilte ..."
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:141
+#, c-format
+msgid "package %s-%s-%s contain shared files\n"
+msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
+
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:342
+msgid "error creating file for (un)install script"
+msgstr "Fehler beim Anlegen der Datei für das (De-)Installations-Skript"
+
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:376
+msgid "execution of script failed"
+msgstr "Ausführung des Skripts fehlgeschlagen"
+
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:432
+#, c-format
+msgid "rename of %s to %s failed: %s"
+msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
+
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:446
+#, c-format
+msgid "cannot remove %s - directory not empty"
+msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
+
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:449
+#, c-format
+msgid "rmdir of %s failed: %s"
+msgstr "Entfernen von %s fehlgeschlagen: %s"
+
+#: /usr/src/add/rpm-2.4/lib/uninstall.c:457
+#, c-format
+msgid "removal of %s failed: %s"
+msgstr "öffnen von %s fehlgeschlagen: %s"
+
+# , c-format
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:108
+#, c-format
+msgid "failed to open %s\n"
+msgstr "Öffnen von %s fehlgeschlagen\n"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:121 /usr/src/add/rpm-2.4/lib/rpmdb.c:128
+#, c-format
+msgid "cannot get %s lock on database"
+msgstr "kann %s lock für die Datenbank nicht bekommen"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:122
+msgid "exclusive"
+msgstr "exklusiv"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:129
+msgid "shared"
+msgstr "geteilt"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:311
+#, c-format
+msgid "package %s not listed in %s"
+msgstr "Paket %s wird nicht in %s aufgeführt"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:322
+#, c-format
+msgid "package %s not found in %s"
+msgstr "Paket %s in %s nicht gefunden"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:353
+msgid "package has no name"
+msgstr "Paket hat keinen Namen"
+
+# reservieren???
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:488
+msgid "cannot allocate space for database"
+msgstr "kann keinen Platz für die Datenbank bekommen"
+
+#: /usr/src/add/rpm-2.4/lib/rpmdb.c:546
+#, c-format
+msgid "cannot read header at %d for update"
+msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
+
+#: /usr/src/add/rpm-2.4/lib/signature.c:96
+msgid "Old (internal-only) signature!  How did you get that!?"
+msgstr "Alte Signatur (nur intern)!  Wie bist du daran gekommen!?"
+
+#: /usr/src/add/rpm-2.4/lib/signature.c:219
+#: /usr/src/add/rpm-2.4/lib/signature.c:476
+msgid "Couldn't exec pgp"
+msgstr "Konnte pgp nicht durchführen"
+
+#: /usr/src/add/rpm-2.4/lib/signature.c:230
+msgid "pgp failed"
+msgstr "pgp fehlgeschlagen"
+
+#. PGP failed to write signature
+#. Just in case
+#: /usr/src/add/rpm-2.4/lib/signature.c:237
+msgid "pgp failed to write signature"
+msgstr "pgp fehlgeschlagen bei Schreiben der Signatur"
+
+#: /usr/src/add/rpm-2.4/lib/signature.c:250
+msgid "unable to read the signature"
+msgstr "nicht möglich, die Signatur zu lesen"
+
+#: /usr/src/add/rpm-2.4/lib/signature.c:393
+msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
+msgstr "Konnte pgp nicht aufrufen.  Benutz --nopgp, um die PGP-Checks zu überspringen."
+
+#: /usr/src/add/rpm-2.4/lib/signature.c:427
+msgid "You must set \"pgp_name:\" in your rpmrc file"
+msgstr "Du musst \"pgp_name:\" in deiner rpmrc-Datei setzen"
