@@ -1,0 +1,14 @@
+Makefile
+Makefile.in
+aclocal.m4
+autom4te*
+config.cache
+expat_config.h
+expat_config.h.in
+config.log
+config.status
+configure
+libtool
+listobjs
+stamp-h*
+expat-*.tar.gz

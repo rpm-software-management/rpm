@@ -1,0 +1,117 @@
+dnl   configuration script for expat
+dnl   Process this file with autoconf to produce a configure script.
+dnl
+dnl   Copyright 2000 Clark Cooper
+dnl
+dnl   This file is part of EXPAT.
+dnl
+dnl   EXPAT is free software; you can redistribute it and/or modify it
+dnl   under the terms of the License (based on the MIT/X license) contained
+dnl   in the file COPYING that comes with this distribution.
+dnl
+
+
+AC_PREREQ(2.52)
+AC_INIT(expat, 1.95.6, expat-bugs@mail.libexpat.org)
+AC_CONFIG_SRCDIR(Makefile.in)
+AC_CONFIG_AUX_DIR(conftools)
+AM_CONFIG_HEADER(expat_config.h)
+
+AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE
+
+AC_LIBTOOL_WIN32_DLL
+
+dnl
+dnl Increment LIBREVISION if source code has changed at all
+dnl
+dnl If the API has changed, increment LIBCURRENT and set LIBREVISION to 0
+dnl
+dnl If the API changes compatibly (i.e. simply adding a new function
+dnl without changing or removing earlier interfaces), then increment LIBAGE.
+dnl 
+dnl If the API changes incompatibly set LIBAGE back to 0
+dnl
+
+LIBCURRENT=4
+LIBREVISION=0
+LIBAGE=4
+
+sinclude(conftools/libtool.m4)
+sinclude(conftools/ac_c_bigendian_cross.m4)
+
+AC_SUBST(LIBCURRENT)
+AC_SUBST(LIBREVISION)
+AC_SUBST(LIBAGE)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LIBTOOL
+AC_SYS_LARGEFILE
+
+if test "$GCC" = yes ; then
+    dnl
+    dnl Be careful about adding the -fexceptions option; some versions of
+    dnl GCC don't support it and it causes extra warnings that are only
+    dnl distracting; avoid.
+    dnl
+    OLDCFLAGS="$CFLAGS -Wall -Wmissing-prototypes -Wstrict-prototypes"
+    CFLAGS="$OLDCFLAGS -fexceptions"
+    AC_MSG_CHECKING(whether gcc accepts -fexceptions)
+    AC_TRY_COMPILE(,(void)1,
+                   AC_MSG_RESULT(yes),
+                   AC_MSG_RESULT(no); CFLAGS="$OLDCFLAGS")
+fi
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+dnl Note: Avoid using AC_C_BIGENDIAN because it does not
+dnl work in a cross compile.
+AC_C_BIGENDIAN_CROSS
+
+AC_C_CONST
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+
+AC_FUNC_MEMCMP
+AC_FUNC_MMAP
+
+if test "$ac_cv_func_mmap_fixed_mapped" = "yes"; then
+    FILEMAP=unixfilemap
+else
+    FILEMAP=readfilemap
+fi
+AC_SUBST(FILEMAP)
+
+AC_CHECK_FUNCS(memmove bcopy)
+
+dnl some basic configuration
+AC_DEFINE([XML_NS], 1,
+          [Define to make XML Namespaces functionality available.])
+AC_DEFINE([XML_DTD], 1,
+          [Define to make parameter entity parsing functionality available.])
+AC_DEFINE([XML_CONTEXT_BYTES], 1024,
+          [Define to specify how much context to retain around the current parse point.])
+
+dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)      MARK64=64 ;;
+esac
+AC_SUBST(MARK64)
+
+AC_CONFIG_FILES(Makefile lib/Makefile xmlwf/Makefile doc/Makefile tests/Makefile examples/Makefile)
+AC_OUTPUT
+
+abs_srcdir="`cd $srcdir && pwd`"
+abs_builddir="`pwd`"
+if test "$abs_srcdir" != "$abs_builddir"; then
+  make mkdir-init
+fi
