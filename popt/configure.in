@@ -73,7 +73,7 @@ then
   AC_MSG_RESULT(yes)
 fi
 
-AC_CHECK_FUNCS(strerror mtrace)
+AC_CHECK_FUNCS(strerror mtrace getuid geteuid)
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])

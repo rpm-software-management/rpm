@@ -168,6 +168,7 @@
 	- skip signing packages already signed with same key (#62118).
 	- install rpmal.h and rpmhash.h, implicit rpmps.hinclude, for now.
 	- revert headerFree/headerLink/headerUnlink debugging.
+	- popt: mingw32 portability configure check (#67911).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -163,7 +163,8 @@ int poptReadConfigFile(poptContext con, const char * fn)
     return 0;
 }
 
-int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv) {
+int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv)
+{
     char * fn, * home;
     int rc;
 
@@ -173,7 +174,9 @@ int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv) {
 
     rc = poptReadConfigFile(con, "/etc/popt");
     if (rc) return rc;
+#if defined(HAVE_GETUID) && defined(HAVE_GETEUID)
     if (getuid() != geteuid()) return 0;
+#endif
 
     if ((home = getenv("HOME"))) {
 	fn = alloca(strlen(home) + 20);
