@@ -493,15 +493,15 @@ be built and signed.
 
 For example, to be able to use PGP to sign packages as the user
 \fp"John Doe <jdoe@foo.com>"\fP from the key rings located in
-\fB/etc/rpm/.pgp\fP you would include
+\fB/etc/rpm/.pgp\fP using the executable \fB/usr/bin/pgp\fP you would include
 
-.IP "\fB%_signature\fP"
-\fBpgp\fP
-.IP "\fB%_pgp_name\fP"
-\fB/etc/rpm/.pgp\fP
-.IP "\fB%_pgp_name\fP"
-\fBJohn Doe <jdoe@foo.com>"
-.PP
+.I "\fB%_signature pgp\fP"
+
+.I "\fB%_pgp_name /etc/rpm/.pgp\fP"
+
+.I "\fB%_pgp_name John Doe <jdoe@foo.com>\fP"
+
+.I "\fB%_pgpbin /usr/bin/pgp\fP"
 
 in a macro configuration file. Use \fB/etc/rpm/macros\fP for per-system
 configuration and \fB~/.rpmmacros\fP for per-user configuration.
@@ -578,9 +578,17 @@ This option may also be specified by configuring the macro \fB_httpport\fP.
 /usr/lib/rpm/rpmrc
 /etc/rpmrc
 ~/.rpmrc
-/var/lib/rpm/packages
-/var/lib/rpm/pathidx
-/var/lib/rpm/nameidx
+/usr/lib/rpm/macros
+/etc/rpm/macros
+~/.rpmmacros
+/var/lib/rpm/conflictsindex.rpm
+/var/lib/rpm/fileindex.rpm
+/var/lib/rpm/groupindex.rpm
+/var/lib/rpm/nameindex.rpm
+/var/lib/rpm/packages.rpm
+/var/lib/rpm/providesindex.rpm
+/var/lib/rpm/requiredby.rpm
+/var/lib/rpm/triggerindex.rpm
 /tmp/rpm*
 .fi
 .El

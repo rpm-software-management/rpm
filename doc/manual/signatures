@@ -17,16 +17,19 @@ Whereas previously you needed many rpmrc entries to clue in
 RPM about keyring locations and such, RPM now behaves as PGP
 users would expect.  The PGPPATH environment variable can be
 used to specify keyring locations.  You can also use a
-"pgp_path:" line in your rpmrc to specify a different value
+"%_pgpbin" line in your macros file to specify a different value
 for RPM to use for PGPPATH.  If neither of these are used PGP
 uses its default ($HOME/.pgp).
 
-If you just want to verify packages, you do not need any entries
-in your rpmrc (except possibly "pgp_path:").  The minimal rpmrc
-entries to use PGP for package building are:
+If you just want to verify packages, you need to supply values
+for the macros
+	%_pgpbin	the path to the pgp executable
+	%_signature	the type of signature to use
 
-signature: pgp
-pgp_name: <name to uniquely select the key to use for signing>
+In order to be able to sign packages, you may also have to
+supply values for
+	%_pgp_name	the pgp signature to use for signing
+	%_pgp_path	the path to the key ring
 
 Signature Creation
 ------------------
