@@ -5,16 +5,16 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 INCLUDES = -I$(top_srcdir) @INCPATH@
 
 EXTRA_DIST = \
-	alloca.c	basename.c	error.c		fakefork.c	\
-	fnmatch.c	getcwd.c	getmntent.c	getwd.c		\
-	glob.c		inet_aton.c	memcmp.c	mktime.c	\
-	myrealloc.c	putenv.c	realpath.c	stpcpy.c	\
-	stpncpy.c	strcasecmp.c	strncasecmp.c	strcspn.c	\
-	strdup.c	strerror.c	strftime.c	strcspn.c	\
-	strstr.c	strtol.c	strtoul.c
+	alloca.c	basename.c	err.c		error.c		\
+	fakefork.c	fnmatch.c	getcwd.c	getmntent.c	\
+	getwd.c		glob.c		inet_aton.c	memcmp.c	\
+	mktime.c	myrealloc.c	putenv.c	realpath.c	\
+	stpcpy.c	stpncpy.c	strcasecmp.c	strncasecmp.c	\
+	strcspn.c	strdup.c	strerror.c	strftime.c	\
+	strcspn.c	strstr.c	strtol.c	strtoul.c
 
 noinst_HEADERS = \
-	error.h		fnmatch.h	glob.h				\
+	err.h		error.h		fnmatch.h	glob.h		\
 	libgettext.h	message.h	po-lex.h	str-list.h	\
 	fstrcmp.h
 
