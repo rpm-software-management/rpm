@@ -26,16 +26,6 @@
 #include "system.h"
 #include "beecrypt.h"
 
-#if defined(__LCLINT__)
-/* XXX from /usr/include/bits/sigest.h in glibc-2.2.4 */
-# define _SIGSET_NWORDS (1024 / (8 * sizeof (unsigned long int)))
-typedef struct
-  {
-    unsigned long int __val[_SIGSET_NWORDS];
-  } __sigset_t;
-#endif
-
-#include "endianness.h"
 #include "entropy.h"
 #include "fips186.h"
 #include "hmacmd5.h"
@@ -193,9 +183,9 @@ const randomGenerator* randomGeneratorDefault()
 	if (selection)
 		return randomGeneratorFind(selection);
 	else
-		/*@-globs -compmempass @*/
+		/*@-compmempass @*/
 		return &fips186prng;
-		/*@=globs =compmempass @*/
+		/*@=compmempass @*/
 }
 
 int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerator* rng)
@@ -270,9 +260,9 @@ const hashFunction* hashFunctionDefault()
 	if (selection)
 		return hashFunctionFind(selection);
 	else
-		/*@-globs -compmempass @*/
+		/*@-compmempass @*/
 		return &sha1;
-		/*@=globs =compmempass @*/
+		/*@=compmempass @*/
 }
 
 const hashFunction* hashFunctionGet(int index)
@@ -516,9 +506,9 @@ const keyedHashFunction* keyedHashFunctionDefault()
 	if (selection)
 		return keyedHashFunctionFind(selection);
 	else
-		/*@-globs -compmempass @*/
+		/*@-compmempass @*/
 		return &hmacsha1;
-		/*@=globs =compmempass @*/
+		/*@=compmempass @*/
 }
 
 const keyedHashFunction* keyedHashFunctionGet(int index)
@@ -665,19 +655,19 @@ int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnum
 	if (n != (mpnumber*) 0)
 	{
 		register int rc;
-		register byte* temp = (byte*) malloc((n->size << 2) + 1);
+		register byte* temp = (byte*) malloc(MP_WORDS_TO_BYTES(n->size)+1);
 
 		/*@-nullpass -nullderef -nullptrarith @*/ /* FIX: temp may be NULL */
 		if (mpmsbset(n->size, n->data))
 		{
 			temp[0] = 0;
-			(void) encodeInts((javaint*) n->data, temp+1, n->size);
-			rc = ctxt->algo->update(ctxt->param, temp, (n->size << 2) + 1);
+			(void) i2osp(temp+1, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
+			 rc = ctxt->algo->update(ctxt->param, temp, MP_WORDS_TO_BYTES(n->size)+1);
 		}
 		else
 		{
-			(void) encodeInts((javaint*) n->data, temp, n->size);
-			rc = ctxt->algo->update(ctxt->param, temp, n->size << 2);
+			(void) i2osp(temp, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
+			rc = ctxt->algo->update(ctxt->param, temp, MP_WORDS_TO_BYTES(n->size));
 		}
 		free(temp);
 		/*@=nullpass =nullderef =nullptrarith @*/
@@ -778,9 +768,9 @@ const blockCipher* blockCipherDefault()
 	if (selection)
 		return blockCipherFind(selection);
 	else
-		/*@-globs -compmempass @*/
+		/*@-compmempass @*/
 		return &aes;
-		/*@=globs =compmempass @*/
+		/*@=compmempass @*/
 }
 
 const blockCipher* blockCipherGet(int index)

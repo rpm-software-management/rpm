@@ -49,11 +49,14 @@ extern "C" {
 #endif
 
 /** \ingroup HASH_md5_m
+ * Holds the full API description of the MD5 algorithm.
  */
 /*@observer@*/ /*@checked@*/
 extern BEECRYPTAPI const hashFunction md5;
 
 /** \ingroup HASH_md5_m
+ * This function performs the MD5 hash algorithm on 64 byte blocks of data.
+ * @param mp		hash parameter block
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
@@ -62,6 +65,9 @@ void md5Process(md5Param* mp)
 /*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
+ * This function resets the parameter block so that it's ready for a new hash.
+ * @param mp		hash parameter block
+ * @return		0 on success.
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
@@ -70,6 +76,11 @@ int md5Reset   (md5Param* mp)
 /*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
+ * This function should be used to pass successive blocks of data to be hashed.
+ * @param mp		hash parameter block
+ * @param *data		bytes to hash
+ * @param size		no. of bytes to hash
+ * @return		0 on success
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
@@ -78,11 +89,16 @@ int md5Update  (md5Param* mp, const byte* data, size_t size)
 /*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
+ * This function finishes the current hash computation, returning the digest
+ * value in \a digest.
+ * @param sp		hash parameter block
+ * @retval *digest	16 byte MD5 digest
+ * @return		0 on success.
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int md5Digest  (md5Param* mp, /*@out@*/ byte* data)
-	/*@modifies mp, data @*/;
+int md5Digest  (md5Param* mp, /*@out@*/ byte* digest)
+	/*@modifies mp, digest @*/;
 /*@=exportlocal@*/
 
 #ifdef __cplusplus

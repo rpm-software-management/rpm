@@ -1105,18 +1105,14 @@ int mpbpprime_w(const mpbarrett* b, randomGeneratorContext* r, int t, mpw* wksp)
 
 		if (size > SMALL_PRIMES_PRODUCT_MAX)
 		{
-			/*@-globs@*/
 			mpsetx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mpspprod[SMALL_PRIMES_PRODUCT_MAX-1]);
-			/*@=globs@*/
 			/*@-compdef@*/ /* LCL: wksp+size */
 			mpgcd_w(size, b->modl, wksp+size, wksp, wksp+2*size);
 			/*@=compdef@*/
 		}
 		else
 		{
-			/*@-globs@*/
 			mpgcd_w(size, b->modl, mpspprod[size-1], wksp, wksp+2*size);
-			/*@=globs@*/
 		}
 
 		if (mpisone(size, wksp))

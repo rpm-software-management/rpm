@@ -113,18 +113,27 @@ LOCAL(0):
 	jns LOCAL(0)
 
 	movl `$'15,%ecx
-	xorl %eax,%eax
 
 	.align 4
 LOCAL(1):
 	movl (%edi,%ecx,4),%edx
+ifdef(`USE_BSWAP',`
 	bswap %edx
+',`
+	movl %edx,%eax
+	andl `$'0xff00ff,%edx
+	rol `$'8,%eax
+	andl `$'0xff00ff,%eax
+	ror `$'8,%edx
+	or %eax,%edx
+')
 	mov %edx,(%edi,%ecx,4)
 	decl %ecx
 	jns LOCAL(1)
 
 	leal PARAM_DATA(%esi),%edi
 	movl `$'16,%ecx
+	xorl %eax,%eax
 
 	.align 4
 LOCAL(2):

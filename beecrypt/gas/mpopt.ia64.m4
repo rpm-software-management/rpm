@@ -21,7 +21,7 @@ dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 include(config.m4)
 include(ASM_SRCDIR/ia64.m4)
 
-define(`size',`r16')
+define(`sze',`r16')
 define(`dst',`r17')
 define(`src',`r18')
 define(`alt',`r19')
@@ -30,15 +30,15 @@ define(`alt',`r19')
 C_FUNCTION_BEGIN(mpadd)
 	alloc saved_pfs = ar.pfs,3,5,0,8
 	mov saved_lc = ar.lc
-	sub size = in0,r0,1;;
+	sub sze = in0,r0,1;;
 
 dnl	adjust addresses
-	shladd dst = size,3,in1
-	shladd src = size,3,in2
-	shladd alt = size,3,in1
+	shladd dst = sze,3,in1
+	shladd src = sze,3,in2
+	shladd alt = sze,3,in1
 
 dnl	prepare modulo-scheduled loop
-	mov ar.lc = size
+	mov ar.lc = sze
 	mov ar.ec = 2 
 	mov pr.rot = ((1 << 16) | (1 << 19));;
 
@@ -69,15 +69,15 @@ C_FUNCTION_END(mpadd)
 C_FUNCTION_BEGIN(mpsub)
 	alloc saved_pfs = ar.pfs,3,5,0,8
 	mov saved_lc = ar.lc
-	sub size = in0,r0,1;;
+	sub sze = in0,r0,1;;
 
 dnl	adjust addresses
-	shladd dst = size,3,in1
-	shladd src = size,3,in2
-	shladd alt = size,3,in1
+	shladd dst = sze,3,in1
+	shladd src = sze,3,in2
+	shladd alt = sze,3,in1
 
 dnl	prepare modulo-scheduled loop
-	mov ar.lc = size
+	mov ar.lc = sze
 	mov ar.ec = 2 
 	mov pr.rot = ((1 << 16) | (1 << 19));;
 
@@ -111,14 +111,14 @@ C_FUNCTION_BEGIN(mpsetmul)
 
 	setf.sig f6 = in3
 	setf.sig f7 = r0
-	sub size = in0,r0,1;;
+	sub sze = in0,r0,1;;
 
 dnl	adjust addresses
-	shladd dst = size,3,in1
-	shladd src = size,3,in2
+	shladd dst = sze,3,in1
+	shladd src = sze,3,in2
 
 dnl	prepare modulo-scheduled loop
-	mov ar.lc = size
+	mov ar.lc = sze
 	mov ar.ec = 3
 	mov pr.rot = (1 << 16);;
 
@@ -143,18 +143,18 @@ C_FUNCTION_BEGIN(mpaddmul)
 	mov saved_lc = ar.lc
 
 	setf.sig f6 = in3
-	sub size = in0,r0,1;;
+	sub sze = in0,r0,1;;
 
 dnl	adjust addresses
-	shladd dst = size,3,in1
-	shladd src = size,3,in2
-	shladd alt = size,3,in1;;
+	shladd dst = sze,3,in1
+	shladd src = sze,3,in2
+	shladd alt = sze,3,in1;;
 
 dnl	prepare the rotate-in carry
-	mov r32 = r0		
+	mov r32 = r0
 
 dnl	prepare modulo-scheduled loop
-	mov ar.lc = size
+	mov ar.lc = sze
 	mov ar.ec = 4
 	mov pr.rot = ((1 << 16) | (1 << 21));
 
@@ -185,3 +185,56 @@ dnl	return carry
 	mov ar.pfs = saved_pfs
 	br.ret.sptk b0
 C_FUNCTION_END(mpaddmul)
+
+
+divert(-1)
+C_FUNCTION_BEGIN(mpaddsqrtrc)
+	alloc saved_pfs = ar.pfs,4,4,0,8
+	mov saved_lc = ar.lc
+
+	setf.sig f6 = in3
+	sub sze = in0,r0,1;;
+
+dnl	adjust addresses
+	shladd dst = sze,4,in1
+	shladd src = sze,3,in2
+	shladd alt = sze,4,in1;;
+
+dnl	prepare the rotate-in carry
+	mov r32 = r0
+
+dnl	prepare modulo-scheduled loop
+	mov ar.lc = sze
+	mov ar.ec = 5
+	mov pr.rot = ((1 << 16) | (1 << 21));
+
+LOCAL(mpaddsqrtrc_loop):
+	(p16) ldf8 f32 = [src],-8
+	(p16) ldf8 f36 = [alt],-8
+	(p17) xma.lu f34 = f33,f33,f37
+	(p17) xma.hu f38 = f33,f33,f37
+	(p18) getf.sig r37 = f35
+	(p18) getf.sig r33 = f39
+	(p?)   add lo to carry
+	(p?+?) add lo to carry+1
+	(p?)   cmpleu lo
+	(p?+?) cmpltu lo
+	(p?)   add hi to carry
+	(p?+?) add hi to carry+1
+	(p16) ld8  r?? = [alt],-8
+	(p20) st8 lo
+	(p?)   cmpleu hi
+	(p?+?) cmpltu hi
+	(p21) st8 hi
+	;;
+	br.ctop.dptk LOCAL(mpaddsqrtrc_loop);;
+
+dnl	loop epilogue: final store
+	(p21) st8 [dst] = r36,-8
+
+dnl	return carry
+	(p24) add ret0 = r35,r0
+	(p26) add ret0 = r35,r0,1
+
+C_FUNCTION_END(mpaddsqrtrc)
+divert(0)

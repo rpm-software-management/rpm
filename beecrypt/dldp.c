@@ -183,14 +183,10 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 	if (temp)
 	{
 		/* first generate q */
-		/*@-globs@*/
 		mpprnd_w(&dp->q, rgc, qbits, mpptrials(qbits), (const mpnumber*) 0, temp);
-		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
-		/*@-globs@*/
 		mpprndconone_w(&dp->p, rgc, pbits, mpptrials(pbits), &dp->q, (const mpnumber*) 0, &dp->r, cofactor, temp);
-		/*@=globs@*/
 
 		/* clear n */
 		mpbzero(&dp->n);
@@ -221,9 +217,7 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t bits)
 	if (temp)
 	{
 		/* generate p */
-		/*@-globs@*/
 		mpprndsafe_w(&dp->p, rgc, bits, mpptrials(bits), temp);
-		/*@=globs@*/
 
 		/* set q */
 		mpcopy(size, temp, dp->p.modl);
@@ -316,14 +310,10 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 	if (temp)
 	{
 		/* generate q */
-		/*@-globs@*/
 		mpprnd_w(&dp->q, rgc, qbits, mpptrials(qbits), (const mpnumber*) 0, temp);
-		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
-		/*@-globs@*/
 		mpprndconone_w(&dp->p, rgc, pbits, mpptrials(pbits), &dp->q, (const mpnumber*) 0, &dp->r, 2, temp);
-		/*@=globs@*/
 
 		/* set n */
 		mpbsubone(&dp->p, temp);
@@ -350,7 +340,6 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
 	if (temp)
 	{
 		/* generate safe p */
-		/*@-globs@*/
 		mpprndsafe_w(&dp->p, rgc, pbits, mpptrials(pbits), temp);
 		/*@=globs@*/
 

@@ -44,7 +44,7 @@ extern "C" {
 
 /** \ingroup HMAC_md5_m
  */
-/*@observer@*/ /*@checked@*/
+/*@observer@*/ /*@unchecked@*/
 extern BEECRYPTAPI const keyedHashFunction hmacmd5;
 
 /** \ingroup HMAC_md5_m

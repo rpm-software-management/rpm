@@ -43,17 +43,10 @@ inline uint16_t swapu16(uint16_t n)
 
 inline int32_t swap32(int32_t n)
 {
-	#if (SIZEOF_LONG == 4)
 	return (    ((n & 0xff) << 24) |
 				((n & 0xff00) << 8) |
 				((n & 0xff0000) >> 8) |
 				((n & 0xff000000) >> 24) );
-	#else
-	return (    ((n & 0xffL) << 24) |
-				((n & 0xff00L) << 8) |
-				((n & 0xff0000L) >> 8) |
-				((n & 0xff000000L) >> 24) );
-	#endif
 }
 
 inline uint32_t swapu32(uint32_t n)
@@ -73,31 +66,20 @@ inline uint32_t swapu32(uint32_t n)
 
 inline int64_t swap64(int64_t n)
 {
-	#if HAVE_LONG_LONG
-	return (    ((n & 0xffLL) << 56) |
-				((n & 0xff00LL) << 40) |
-				((n & 0xff0000LL) << 24) |
-				((n & 0xff000000LL) << 8) |
-				((n & 0xff00000000LL) >> 8) |
-				((n & 0xff0000000000LL) >> 24) |
-				((n & 0xff000000000000LL) >> 40) |
-				((n & 0xff00000000000000LL) >> 56) );
-	#else
-	return (    ((n & 0xffL) << 56) |
-				((n & 0xff00L) << 40) |
-				((n & 0xff0000L) << 24) |
-				((n & 0xff000000L) << 8) |
-				((n & 0xff00000000L) >> 8) |
-				((n & 0xff0000000000L) >> 24) |
-				((n & 0xff000000000000L) >> 40) |
-				((n & 0xff00000000000000L) >> 56) );
-	#endif
+	return (    ((n & ((int64_t) 0xff)      ) << 56) |
+				((n & ((int64_t) 0xff) <<  8) << 40) |
+				((n & ((int64_t) 0xff) << 16) << 24) |
+				((n & ((int64_t) 0xff) << 24) <<  8) |
+				((n & ((int64_t) 0xff) << 32) >>  8) |
+				((n & ((int64_t) 0xff) << 40) >> 24) |
+				((n & ((int64_t) 0xff) << 48) >> 40) |
+				((n & ((int64_t) 0xff) << 56) >> 56) );
 }
 #else
 /*@-exportlocal@*/
-
 /**
  */
+/*@unused@*/
  int16_t swap16 (int16_t n)
 	/*@*/;
 
@@ -108,6 +90,7 @@ uint16_t swapu16(uint16_t n)
 
 /**
  */
+/*@unused@*/
  int32_t swap32 (int32_t n)
 	/*@*/;
 
@@ -118,222 +101,10 @@ uint32_t swapu32(uint32_t n)
 
 /**
  */
+/*@unused@*/
  int64_t swap64 (int64_t n)
 	/*@*/;
 /*@=exportlocal@*/
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeByte(javabyte b, /*@out@*/ byte* data)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeShort(javashort s, /*@out@*/ byte* data)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeInt(javaint i, /*@out@*/ byte* data)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeLong(javalong l, /*@out@*/ byte* data)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeChar(javachar c, /*@out@*/ byte* data)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI
-int encodeInts(const javaint* i, /*@out@*/ byte* data, int count)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeIntsPartial(const javaint* i, /*@out@*/ byte* data, int bytecount)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeIntsPartialPad(const javaint* i, byte* data, int bytecount, byte padvalue)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeChars(const javachar* c, /*@out@*/ byte* data, int count)
-	/*@modifies data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeByte(/*@out@*/ javabyte* b, const byte* data)
-	/*@modifies b @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeShort(/*@out@*/ javashort* s, const byte* data)
-	/*@modifies s @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeInt(/*@out@*/ javaint* i, const byte* data)
-	/*@modifies i @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeLong(/*@out@*/ javalong* l, const byte* data)
-	/*@modifies l @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeChar(/*@out@*/ javachar* c, const byte* data)
-	/*@modifies c @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeInts(/*@out@*/ javaint* i, const byte* data, int count)
-	/*@modifies i @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeIntsPartial(/*@out@*/ javaint* i, const byte* data, int bytecount)
-	/*@modifies i @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeChars(/*@out@*/ javachar* c, const byte* data, int count)
-	/*@modifies c @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int writeByte(javabyte b, FILE* ofp)
-	/*@globals fileSystem @*/
-	/*@modifies ofp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int writeShort(javashort s, FILE* ofp)
-	/*@globals fileSystem @*/
-	/*@modifies ofp, fileSystem @*/;
-
-/**
- */
-/*@-exportlocal@*/
-BEECRYPTAPI
-int writeInt(javaint i, FILE* ofp)
-	/*@globals fileSystem @*/
-	/*@modifies ofp, fileSystem @*/;
-/*@=exportlocal@*/
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int writeLong(javalong l, FILE* ofp)
-	/*@globals fileSystem @*/
-	/*@modifies ofp, fileSystem @*/;
-
-/**
- */
-/*@-exportlocal@*/
-BEECRYPTAPI
-int writeChar(javachar c, FILE* ofp)
-	/*@globals fileSystem @*/
-	/*@modifies ofp, fileSystem @*/;
-/*@=exportlocal@*/
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int writeInts(const javaint* i, FILE* ofp, int count)
-	/*@globals fileSystem @*/
-	/*@modifies ofp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int writeChars(const javachar* c, FILE* ofp, int count)
-	/*@globals fileSystem @*/
-	/*@modifies ofp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int readByte(/*@out@*/ javabyte* b, FILE* ifp)
-	/*@globals fileSystem @*/
-	/*@modifies b, ifp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int readShort(/*@out@*/ javashort* s, FILE* ifp)
-	/*@globals fileSystem @*/
-	/*@modifies s, ifp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int readInt(/*@out@*/ javaint* i, FILE* ifp)
-	/*@globals fileSystem @*/
-	/*@modifies i, ifp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int readLong(/*@out@*/ javalong* l, FILE* ifp)
-	/*@globals fileSystem @*/
-	/*@modifies l, ifp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int readChar(/*@out@*/ javachar* c, FILE* ifp)
-	/*@globals fileSystem @*/
-	/*@modifies c, ifp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int readInts(/*@out@*/ javaint* i, FILE* ifp, int count)
-	/*@globals fileSystem @*/
-	/*@modifies i, ifp, fileSystem @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int readChars(/*@out@*/ javachar* c, FILE* ifp, int count)
-	/*@globals fileSystem @*/
-	/*@modifies c, ifp, fileSystem @*/;
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

@@ -19,6 +19,17 @@
 # endif
 #endif
 
+#if defined(__LCLINT__)
+/* XXX from /usr/include/bits/sigest.h in glibc-2.2.4 */
+/*@-sizeoftype@*/
+# define _SIGSET_NWORDS (1024 / (8 * sizeof (unsigned long int)))
+typedef struct
+  {
+    unsigned long int __val[_SIGSET_NWORDS];
+  } __sigset_t;
+/*@=sizeoftype@*/
+#endif
+
 #include "types.h"
 
 #if HAVE_SYS_STAT_H

@@ -41,14 +41,6 @@
 # define BEECRYPTAPI
 #endif
 
-#if HAVE_INTTYPES_H
-# include <inttypes.h>
-#else
-# if HAVE_STDINT_H
-# include <stdint.h>
-# endif
-#endif
-
 /* Starting from GCC 3.2, the compiler seems smart enough to figure
  * out that we're trying to do a rotate without having to specify it.
  */
@@ -56,22 +48,24 @@
 # if defined(__i386__)
 static inline uint32_t _rotl32(uint32_t x, const unsigned char n)
 {
-	__asm__("roll %[n],%[x]"
-		:	[x] "=r" (x)
-		:	"0" (x), [n] "I" (n));
+	__asm__("roll %2,%0"
+		:	"=r" (x)
+		:	"0" (x), "I" (n));
 
 	return x;
 }
+
 #define ROTL32(x, n) _rotl32(x, n)
 
 static inline uint32_t _rotr32(uint32_t x, const unsigned char n)
 {
-	__asm__("rorl %[n],%[x]"
-		:	[x] "=r" (x)
-		:	"0" (x), [n] "I" (n));
+	__asm__("rorl %2,%0"
+		:	"=r" (x)
+		:	"0" (x), "I" (n));
 
 	return x;
 }
+
 #define ROTR32(x, n) _rotr32(x, n)
 
 # endif

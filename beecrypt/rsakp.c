@@ -53,10 +53,8 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 		mpnsetw(&kp->e, 65535);
 
 		/* generate a random prime p and q */
-		/*@-globs@*/
 		mpprnd_w(&kp->p, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
 		mpprnd_w(&kp->q, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
-		/*@=globs@*/
 
 		/* if p <= q, perform a swap to make p larger than q */
 		if (mple(pqsize, kp->p.modl, kp->q.modl))
@@ -80,9 +78,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 
 			/* product of p and q doesn't have the required size (one bit short) */
 
-			/*@-globs@*/
 			mpprnd_w(&r, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
-			/*@=globs@*/
 
 			/*@-usedef -branchstate @*/ /* r is set */
 			if (mple(pqsize, kp->p.modl, r.modl))

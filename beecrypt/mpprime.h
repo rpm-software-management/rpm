@@ -33,6 +33,7 @@
 /**
  */
 /*@-exportlocal@*/
+/*@unchecked@*/
 extern mpw* mpspprod[SMALL_PRIMES_PRODUCT_MAX];
 /*@=exportlocal@*/
 

@@ -60,7 +60,7 @@ extern "C" {
 
 /**
  */
-/*@observer@*/ /*@checked@*/
+/*@observer@*/ /*@unchecked@*/
 extern BEECRYPTAPI const randomGenerator fips186prng;
 
 /**

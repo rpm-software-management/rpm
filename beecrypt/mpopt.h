@@ -31,8 +31,8 @@
 # elif defined(_MSC_VER) && defined(_M_IX86)
 #  define ASM_MPZERO
 #  define ASM_MPFILL
-#  define ASM_MPODD
 #  define ASM_MPEVEN
+#  define ASM_MPODD
 #  define ASM_MPADDW
 #  define ASM_MPSUBW
 #  define ASM_MPADD
@@ -69,8 +69,8 @@
 # elif defined(OPTIMIZE_I386) || defined(OPTIMIZE_I486) || defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #  define ASM_MPZERO
 #  define ASM_MPFILL
-#  define ASM_MPODD
 #  define ASM_MPEVEN
+#  define ASM_MPODD
 #  define ASM_MPADDW
 #  define ASM_MPSUBW
 #  define ASM_MPADD
@@ -114,6 +114,13 @@
 #  define ASM_MPSETMUL
 #  define ASM_MPADDMUL
 #  define ASM_MPADDSQRTRC
+# elif defined(OPTIMIZE_X86_64)
+#  define ASM_MPZERO
+#  define ASM_MPFILL
+#  define ASM_MPEVEN
+#  define ASM_MPODD
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
 # endif
 #endif
 
@@ -134,8 +141,8 @@
 # if defined(OPTIMIZE_I386) || defined(OPTIMIZE_I486) || defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #  define ASM_MPZERO
 #  define ASM_MPFILL
-#  define ASM_MPODD
 #  define ASM_MPEVEN
+#  define ASM_MPODD
 #  define ASM_MPADDW
 #  define ASM_MPSUBW
 #  define ASM_MPADD

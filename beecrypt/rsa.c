@@ -104,7 +104,7 @@ int rsapricrt(const rsakp* kp, const mpnumber* c, mpnumber* m)
 	/* compute j1 = c^d1 mod p, store @ ptemp */
 	mpbpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
 
-	/* resize c for powmod p */
+	/* resize c for powmod q */
 	mpsetx(qsize*2, qtemp, c->size, c->data);
 
 	/* reduce modulo q before we powmod */

@@ -41,7 +41,7 @@ extern "C" {
 
 /** \ingroup BC_aes_m
  */
-/*@observer@*/ /*@checked@*/
+/*@observer@*/ /*@unchecked@*/
 extern const BEECRYPTAPI blockCipher aes;
 
 /** \ingroup BC_aes_m

@@ -331,9 +331,9 @@ LOCAL(mpaddmul_loop):
 	movl (%esi,%ecx,4),%eax
 	mull %ebp
 	addl %ebx,%eax
-	adcl $0,%edx
+	adcl `$'0,%edx
 	addl (%edi,%ecx,4),%eax
-	adcl $0,%edx
+	adcl `$'0,%edx
 	movl %eax,(%edi,%ecx,4)
 	decl %ecx
 	jns LOCAL(mpaddmul_loop)
@@ -393,7 +393,7 @@ LOCAL(mpaddsqrtrc_loop):
 	movl (%esi,%ecx,4),%eax
 	mull %eax
 	addl %ebx,%eax
-	adcl $0,%edx
+	adcl `$'0,%edx
 	addl %eax,4(%edi,%ecx,8)
 	adcl %edx,(%edi,%ecx,8)
 	sbbl %ebx,%ebx

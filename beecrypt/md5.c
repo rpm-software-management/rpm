@@ -260,27 +260,27 @@ static void md5Finish(md5Param* mp)
 	mp->offset = 0;
 }
 
-int md5Digest(md5Param* mp, byte* data)
+int md5Digest(md5Param* mp, byte* digest)
 {
 	md5Finish(mp);
 
 	/* encode 4 integers little-endian style */
-	data[ 0] = (byte)(mp->h[0]      );
-	data[ 1] = (byte)(mp->h[0] >>  8);
-	data[ 2] = (byte)(mp->h[0] >> 16);
-	data[ 3] = (byte)(mp->h[0] >> 24);
-	data[ 4] = (byte)(mp->h[1]      );
-	data[ 5] = (byte)(mp->h[1] >>  8);
-	data[ 6] = (byte)(mp->h[1] >> 16);
-	data[ 7] = (byte)(mp->h[1] >> 24);
-	data[ 8] = (byte)(mp->h[2]      );
-	data[ 9] = (byte)(mp->h[2] >>  8);
-	data[10] = (byte)(mp->h[2] >> 16);
-	data[11] = (byte)(mp->h[2] >> 24);
-	data[12] = (byte)(mp->h[3]      );
-	data[13] = (byte)(mp->h[3] >>  8);
-	data[14] = (byte)(mp->h[3] >> 16);
-	data[15] = (byte)(mp->h[3] >> 24);
+	digest[ 0] = (byte)(mp->h[0]      );
+	digest[ 1] = (byte)(mp->h[0] >>  8);
+	digest[ 2] = (byte)(mp->h[0] >> 16);
+	digest[ 3] = (byte)(mp->h[0] >> 24);
+	digest[ 4] = (byte)(mp->h[1]      );
+	digest[ 5] = (byte)(mp->h[1] >>  8);
+	digest[ 6] = (byte)(mp->h[1] >> 16);
+	digest[ 7] = (byte)(mp->h[1] >> 24);
+	digest[ 8] = (byte)(mp->h[2]      );
+	digest[ 9] = (byte)(mp->h[2] >>  8);
+	digest[10] = (byte)(mp->h[2] >> 16);
+	digest[11] = (byte)(mp->h[2] >> 24);
+	digest[12] = (byte)(mp->h[3]      );
+	digest[13] = (byte)(mp->h[3] >>  8);
+	digest[14] = (byte)(mp->h[3] >> 16);
+	digest[15] = (byte)(mp->h[3] >> 24);
 
 	(void) md5Reset(mp);
 	return 0;

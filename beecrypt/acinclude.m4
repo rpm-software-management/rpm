@@ -107,14 +107,12 @@ dnl  BEECRYPT_WORKING_AIO
 AC_DEFUN(BEECRYPT_WORKING_AIO,[
   AC_CHECK_HEADERS(aio.h)
   if test "$ac_cv_header_aio_h" = yes; then
-    AC_SEARCH_LIBS([aio_read],[c rt aio posix4],,[
-      AC_MSG_ERROR([no library containing aio routines found])
-      ])
-    AC_CACHE_CHECK([whether aio works],bc_cv_working_aio,[
-      cat > conftest.aio << EOF
+    AC_SEARCH_LIBS([aio_read],[c rt aio posix4],[
+      AC_CACHE_CHECK([whether aio works],bc_cv_working_aio,[
+        cat > conftest.aio << EOF
 The quick brown fox jumps over the lazy dog.
 EOF
-      AC_RUN_IFELSE([AC_LANG_SOURCE([[
+        AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #if HAVE_ERRNO_H
 # include <errno.h>
 #endif
@@ -191,13 +189,16 @@ main()
 
   exit(0);
 }
-        ]])],[bc_cv_working_aio=yes],[bc_cv_working_aio=no],[
-          case $target_os in
-            linux* | solaris*)
-              bc_cv_working_aio=yes ;;
-            *)
-              bc_cv_working_aio=no ;;
-          esac
+          ]])],[bc_cv_working_aio=yes],[bc_cv_working_aio=no],[
+            case $target_os in
+              linux* | solaris*)
+                bc_cv_working_aio=yes ;;
+             *)
+                bc_cv_working_aio=no ;;
+            esac
+          ])
+        ],[
+        bc_cv_working_aio=no
         ])
       ])
     rm -fr conftest.aio
@@ -241,6 +242,7 @@ AC_DEFUN(BEECRYPT_GNU_CC,[
     case $target_os in
     aix*)
       CC="$CC -maix64"
+      LDFLAGS="$LDFLAGS -b64"
       ;;
     esac
     ;;
@@ -323,12 +325,13 @@ AC_DEFUN(BEECRYPT_COMPAQ_CC,[
       #endif
       ],bc_cv_prog_COMPAQ_CC=yes,bc_cv_prog_COMPAQ_CC=no)
     ])
-  if test "$bc_cv_COMPAQ_CC" = yes; then
+  if test "$bc_cv_prog_COMPAQ_CC" = yes; then
     if test "$ac_enable_threads" = yes; then
       CFLAGS="$CFLAGS -pthread"
       CPPFLAGS="$CPPFLAGS -pthread"
     fi
     if test "$ac_enable_debug" != yes; then
+      BEECRYPT_CFLAGS_REM([-g])
       CFLAGS="$CFLAGS -fast"
     fi
   fi
@@ -592,6 +595,11 @@ AC_DEFUN(BEECRYPT_ASM_SOURCES,[
   sparcv8plus)
     AC_CONFIG_COMMANDS([mpopt.sparcv8plus],[
       m4 $srcdir/gas/mpopt.sparcv8plus.m4 > mpopt.s
+      ])
+    ;;
+  x86_64)
+    AC_CONFIG_COMMANDS([mpopt.x86_m4],[
+      m4 $srcdir/gas/mpopt.x86_m4.m4 > mpopt.s
       ])
     ;;
   esac
