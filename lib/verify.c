@@ -471,7 +471,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
         qva->qva_showPackage = showVerifyPackage;
 
     /* XXX verify flags are inverted from query. */
-    vsflags = rpmExpandNumeric("%{_vsflags_verify}");
+    vsflags = rpmExpandNumeric("%{?_vsflags_verify}");
     if (!(qva->qva_flags & VERIFY_DIGEST))
 	vsflags |= _RPMTS_VSF_NODIGESTS;
     if (!(qva->qva_flags & VERIFY_SIGNATURE))

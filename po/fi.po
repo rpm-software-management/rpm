@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-02 12:45-0400\n"
+"POT-Creation-Date: 2002-08-02 17:50-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -3259,160 +3259,149 @@ msgstr "virhe: en voi avata %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2405
-#: rpmdb/rpmdb.c:2513 rpmdb/rpmdb.c:3230
+#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2410
+#: rpmdb/rpmdb.c:2518 rpmdb/rpmdb.c:3247
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:1686
+#: rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2303 rpmdb/rpmdb.c:3050
+msgid "rpmdb: skipping"
+msgstr ""
+
+#: rpmdb/rpmdb.c:1690
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2289
-#, c-format
-msgid "h#%7u: already checked.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2298
-#, fuzzy, c-format
-msgid "h#%7u: %s"
-msgstr "en voinut avata %s: %s"
-
-#: rpmdb/rpmdb.c:2304
-#, c-format
-msgid "rpmdb: header #%u: %s -- skipping.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2325
+#: rpmdb/rpmdb.c:2330
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2601
+#: rpmdb/rpmdb.c:2606
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 
-#: rpmdb/rpmdb.c:2664
+#: rpmdb/rpmdb.c:2669
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2779
+#: rpmdb/rpmdb.c:2784
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2783
+#: rpmdb/rpmdb.c:2788
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2816
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2832
+#: rpmdb/rpmdb.c:2837
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2842
+#: rpmdb/rpmdb.c:2847
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2991
+#: rpmdb/rpmdb.c:2996
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3222
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3209
+#: rpmdb/rpmdb.c:3226
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3249
+#: rpmdb/rpmdb.c:3266
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:3610
+#: rpmdb/rpmdb.c:3627
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3648
+#: rpmdb/rpmdb.c:3665
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:3680
+#: rpmdb/rpmdb.c:3697
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3684
+#: rpmdb/rpmdb.c:3701
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: rpmdb/rpmdb.c:3690
+#: rpmdb/rpmdb.c:3707
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3692
+#: rpmdb/rpmdb.c:3709
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3699
+#: rpmdb/rpmdb.c:3716
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3712
+#: rpmdb/rpmdb.c:3729
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3741
+#: rpmdb/rpmdb.c:3758
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:3781
+#: rpmdb/rpmdb.c:3798
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lis‰t‰ tietuetta %d:st‰"
 
-#: rpmdb/rpmdb.c:3799
+#: rpmdb/rpmdb.c:3816
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3807
+#: rpmdb/rpmdb.c:3824
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3826
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3819
+#: rpmdb/rpmdb.c:3836
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3838
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -3695,6 +3684,10 @@ msgstr "%s: avaus ei onnistunut\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead  ep‰onnistui\n"
+
+#, fuzzy
+#~ msgid "h#%7u: %s"
+#~ msgstr "en voinut avata %s: %s"
 
 #~ msgid "unexpected arguments to --querytags "
 #~ msgstr "--querytags: odottamattomia parametrej‰"

@@ -926,7 +926,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
 
-    vsflags = rpmExpandNumeric("%{_vsflags_query}");
+    vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (qva->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMTS_VSF_NODIGESTS;
     if (qva->qva_flags & VERIFY_SIGNATURE)

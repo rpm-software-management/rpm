@@ -1661,6 +1661,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	DBT * key = &mi->mi_key;
 	DBT * data = &mi->mi_data;
 	sigset_t signalMask;
+	rpmRC rpmrc = RPMRC_NOTFOUND;
 	int xx;
 
 /*@i@*/	key->data = (void *) &mi->mi_prevoffset;
@@ -1668,17 +1669,20 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	data->data = headerUnload(mi->mi_h);
 	data->size = headerSizeof(mi->mi_h, HEADER_MAGIC_NO);
 
-#ifdef	NOTYET
-	/* Check header digest/signature (if requested). */
-	if (mi->mi_ts && mi->mi_hdrchk) {
+	/* Check header digest/signature on blob export (if requested). */
+	if (mi->mi_hdrchk && mi->mi_ts) {
 	    const char * msg = NULL;
-	    rpmRC rpmrc;
+	    int lvl;
+
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
+	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
+	    rpmMessage(lvl, "%s h#%8u %s",
+		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : "write"),
+			mi->mi_prevoffset, (msg ? msg : "\n"));
 	    msg = _free(msg);
 	}
-#endif
 
-	if (data->data != NULL) {
+	if (data->data != NULL && rpmrc != RPMRC_FAIL) {
 	    (void) blockSignals(dbi->dbi_rpmdb, &signalMask);
 	    rc = dbiPut(dbi, mi->mi_dbc, key, data, DB_KEYLAST);
 	    if (rc) {
@@ -2277,36 +2281,37 @@ top:
     /* Check header digest/signature once (if requested). */
 /*@-boundsread -branchstate -sizeoftype @*/
     if (mi->mi_hdrchk && mi->mi_ts) {
-	const char * msg = NULL;
-	pbm_set * set = NULL;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
+	pbm_set * set = NULL;
 
+	/* Don't bother re-checking a previously read header. */
 	if (mi->mi_db->db_bits) {
 	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
 			&mi->mi_db->db_nbits, mi->mi_offset);
-	    if (PBM_ISSET(mi->mi_offset, set)) {
-#ifdef	NOISY
-		rpmMessage(RPMMESS_DEBUG, _("h#%7u: already checked.\n"),
-			mi->mi_offset);
-#endif
+	    if (PBM_ISSET(mi->mi_offset, set))
 		rpmrc = RPMRC_OK;
-	    }
 	}
-	if (rpmrc == RPMRC_NOTFOUND) {
+
+	/* If blob is unchecked, check blob import consistency now. */
+	if (rpmrc != RPMRC_OK) {
+	    const char * msg = NULL;
+	    int lvl;
+
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
-	    if (msg)
-		rpmMessage(RPMMESS_DEBUG, _("h#%7u: %s"),
-			mi->mi_offset, msg);
+	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
+	    rpmMessage(lvl, "%s h#%8u %s",
+		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : " read"),
+			mi->mi_offset, (msg ? msg : "\n"));
+	    msg = _free(msg);
+
+	    /* Mark header checked. */
 	    if (set && rpmrc == RPMRC_OK)
 		PBM_SET(mi->mi_offset, set);
+
+	    /* Skip damaged and inconsistent headers. */
+	    if (rpmrc == RPMRC_FAIL)
+		goto top;
 	}
-	if (rpmrc == RPMRC_FAIL) {
-	    rpmError(RPMERR_BADHEADER, _("rpmdb: header #%u: %s -- skipping.\n"),
-			mi->mi_offset, (msg ? msg : ""));
-	    msg = _free(msg);
-	    goto top;
-	}
-	msg = _free(msg);
     }
 /*@=boundsread =branchstate =sizeoftype @*/
 
@@ -2613,7 +2618,7 @@ memset(data, 0, sizeof(*data));
 
     {	const char *n, *v, *r;
 	(void) headerNVR(h, &n, &v, &r);
-	rpmMessage(RPMMESS_DEBUG, "  --- %10u %s-%s-%s\n", hdrNum, n, v, r);
+	rpmMessage(RPMMESS_DEBUG, "  --- h#%8u %s-%s-%s\n", hdrNum, n, v, r);
     }
 
     (void) blockSignals(db, &signalMask);
@@ -3005,8 +3010,10 @@ memset(data, 0, sizeof(*data));
 	    int rpmcnt = 0;
 	    int rpmtag;
 	    int_32 * requireFlags;
+	    rpmRC rpmrc;
 	    int i, j;
 
+	    rpmrc = RPMRC_NOTFOUND;
 	    dbi = NULL;
 	    requireFlags = NULL;
 /*@-boundsread@*/
@@ -3026,30 +3033,40 @@ memset(data, 0, sizeof(*data));
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+
 key->data = (void *) &hdrNum;
 key->size = sizeof(hdrNum);
 data->data = headerUnload(h);
 data->size = headerSizeof(h, HEADER_MAGIC_NO);
-    if (data->data != NULL) {
+
+		/* Check header digest/signature on blob export. */
+		if (hdrchk && ts) {
+		    const char * msg = NULL;
+		    int lvl;
+
+		    rpmrc = (*hdrchk) (ts, data->data, data->size, &msg);
+		    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
+		    rpmMessage(lvl, "%s h#%8u %s",
+			(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : "  +++"),
+				hdrNum, (msg ? msg : "\n"));
+		    msg = _free(msg);
+		}
+
+		if (data->data != NULL && rpmrc != RPMRC_FAIL) {
 /*@-compmempass@*/
-	xx = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
+		    xx = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 /*@=compmempass@*/
-	xx = dbiSync(dbi, 0);
-    }
+		    xx = dbiSync(dbi, 0);
+		}
 data->data = _free(data->data);
 data->size = 0;
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
-		{   const char *n, *v, *r;
-		    xx = headerNVR(h, &n, &v, &r);
-		    rpmMessage(RPMMESS_DEBUG, "  +++ %10u %s-%s-%s\n", hdrNum, n, v, r);
-		}
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
-	    /* XXX preserve legacy behavior */
-	    case RPMTAG_BASENAMES:
+	    case RPMTAG_BASENAMES:	/* XXX preserve legacy behavior */
 		rpmtype = bnt;
 		rpmvals = baseNames;
 		rpmcnt = count;

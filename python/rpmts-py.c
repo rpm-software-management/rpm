@@ -37,8 +37,14 @@ static int _rpmts_debug = 0;
  * installation and upgrade of packages.  The rpm.ts object is
  * instantiated by the TransactionSet function in the rpm module.
  *
- * The TransactionSet function takes a single optional argument. The first
- * argument is the root path.
+ * The TransactionSet function takes two optional arguments. The first
+ * argument is the root path. The second is the verify signature flags,
+ * the sum of the following flags:
+ *
+ * -    1  --nodigest      if set, don't check digest.
+ * -    2  --nosignature   if set, don't check signature.
+ * -    4  --nolegacy      if set, check header+payload (if possible).
+ * -    8  --nohdrchk      if set, don't check rpmdb headers.
  *
  * A rpm.ts object has the following methods:
  *
@@ -992,14 +998,16 @@ rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args)
 {
     rpmtsObject * o;
     char * rootDir = "/";
+    int vsflags = rpmExpandNumeric("%{?_vsflags_up2date}");
 
-    if (!PyArg_ParseTuple(args, "|s:Create", &rootDir))
+    if (!PyArg_ParseTuple(args, "|si:Create", &rootDir, &vsflags))
 	return NULL;
 
     o = (void *) PyObject_NEW(rpmtsObject, &rpmts_Type);
 
     o->ts = rpmtsCreate();
     (void) rpmtsSetRootDir(o->ts, rootDir);
+    (void) rpmtsSetVerifySigFlags(o->ts, vsflags);
 
     o->keyList = PyList_New(0);
     o->scriptFd = NULL;

@@ -1399,7 +1399,7 @@ rpmMessage(RPMMESS_DEBUG, _("install/erase %d elements\n"), rpmtsNElements(ts));
 		    rpmRC rpmrc;
 
 		    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-				"rpmtsRun", &p->h);
+				rpmteNEVR(p), &p->h);
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon@*/ /* FIX: notify annotations */

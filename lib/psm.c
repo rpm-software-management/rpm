@@ -1850,20 +1850,24 @@ assert(psm->mi == NULL);
 	fi->h = rpmdbNextIterator(psm->mi);
 	if (fi->h)
 	    fi->h = headerLink(fi->h);
-else {
-fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
-}
+
 	psm->mi = rpmdbFreeIterator(psm->mi);
 	rc = (fi->h ? RPMRC_OK : RPMRC_FAIL);
 	break;
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	if (fi->h != NULL)	/* XXX can't happen */
-	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h, NULL, NULL);
+	if (fi->h == NULL)	break;	/* XXX can't happen */
+	if (!(rpmtsVerifySigFlags(ts) & _RPMTS_VSF_NOHDRCHK))
+	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
+				ts, headerCheck);
+	else
+	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
+				NULL, NULL);
 	break;
     case PSM_RPMDB_REMOVE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL, NULL);
+	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
+				NULL, NULL);
 	break;
 
     default:

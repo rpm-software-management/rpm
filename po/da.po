@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-02 12:45-0400\n"
+"POT-Creation-Date: 2002-08-02 17:50-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3211,164 +3211,153 @@ msgstr "kan ikke åbne '%s'-indeks\n"
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2405
-#: rpmdb/rpmdb.c:2513 rpmdb/rpmdb.c:3230
+#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2410
+#: rpmdb/rpmdb.c:2518 rpmdb/rpmdb.c:3247
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:1686
+#: rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2303 rpmdb/rpmdb.c:3050
+msgid "rpmdb: skipping"
+msgstr ""
+
+#: rpmdb/rpmdb.c:1690
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:2289
-#, c-format
-msgid "h#%7u: already checked.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2298
-#, fuzzy, c-format
-msgid "h#%7u: %s"
-msgstr "fil %s: %s\n"
-
-#: rpmdb/rpmdb.c:2304
-#, c-format
-msgid "rpmdb: header #%u: %s -- skipping.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2325
+#: rpmdb/rpmdb.c:2330
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2601
+#: rpmdb/rpmdb.c:2606
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2664
+#: rpmdb/rpmdb.c:2669
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2779
+#: rpmdb/rpmdb.c:2784
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2783
+#: rpmdb/rpmdb.c:2788
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2816
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2832
+#: rpmdb/rpmdb.c:2837
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:2842
+#: rpmdb/rpmdb.c:2847
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:2991
+#: rpmdb/rpmdb.c:2996
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3222
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3209
+#: rpmdb/rpmdb.c:3226
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:3249
+#: rpmdb/rpmdb.c:3266
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:3610
+#: rpmdb/rpmdb.c:3627
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3648
+#: rpmdb/rpmdb.c:3665
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3680
+#: rpmdb/rpmdb.c:3697
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3684
+#: rpmdb/rpmdb.c:3701
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3690
+#: rpmdb/rpmdb.c:3707
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3692
+#: rpmdb/rpmdb.c:3709
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3699
+#: rpmdb/rpmdb.c:3716
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3712
+#: rpmdb/rpmdb.c:3729
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3741
+#: rpmdb/rpmdb.c:3758
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:3781
+#: rpmdb/rpmdb.c:3798
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3799
+#: rpmdb/rpmdb.c:3816
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3807
+#: rpmdb/rpmdb.c:3824
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3826
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3819
+#: rpmdb/rpmdb.c:3836
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3838
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
@@ -3643,6 +3632,10 @@ msgstr "%s: åbning mislykkedes: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
+
+#, fuzzy
+#~ msgid "h#%7u: %s"
+#~ msgstr "fil %s: %s\n"
 
 #~ msgid "unexpected arguments to --querytags "
 #~ msgstr "uventede parametre til --querytags "

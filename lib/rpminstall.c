@@ -244,9 +244,9 @@ int rpmInstall(rpmts ts,
     ts->goal = TSM_INSTALL;
 
     if (ia->installInterfaceFlags & INSTALL_UPGRADE)
-	vsflags = rpmExpandNumeric("%{_vsflags_erase}");
+	vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
     else
-	vsflags = rpmExpandNumeric("%{_vsflags_install}");
+	vsflags = rpmExpandNumeric("%{?_vsflags_install}");
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMTS_VSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)
@@ -648,7 +648,7 @@ int rpmErase(rpmts ts,
 
     if (argv == NULL) return 0;
 
-    vsflags = rpmExpandNumeric("%{_vsflags_erase}");
+    vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMTS_VSF_NODIGESTS;
     if (ia->qva_flags & VERIFY_SIGNATURE)

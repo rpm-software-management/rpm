@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.66
+Release: 0.67
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -517,11 +517,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Aug  2 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.66
+* Fri Aug  2 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.67
 - fix: identify athlon with 3DNOWEXT as "athlon", not "i786" (#70539).
 - fix: repair --root with --verify (#70527).
 - fix: signed pubkeys were imported incorrectly (#68291).
 - include tgpg script to verify signatures using only gpg.
+- check header blobs on export (i.e. rpmdbAdd())..
+- enable iterator header blob checks for install/erase modes.
+- python: _vsflags_up2date macro to configure verify signature flags.
+
 
 * Thu Aug  1 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.63
 - add check-files to rpm-build manifest.

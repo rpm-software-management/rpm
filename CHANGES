@@ -206,6 +206,9 @@
 	- fix: repair --root with --verify (#70527).
 	- fix: signed pubkeys were imported incorrectly (#68291).
 	- include tgpg script to verify signatures using only gpg.
+	- check header blobs on export (i.e. rpmdbAdd()).
+	- enable iterator header blob checks for install/erase modes.
+	- python: _vsflags_up2date macro to configure verify signature flags.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

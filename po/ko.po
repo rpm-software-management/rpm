@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-08-02 12:45-0400\n"
+"POT-Creation-Date: 2002-08-02 17:50-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3190,164 +3190,153 @@ msgstr "%s 인덱스를 열 수 없습니다\n"
 msgid "no dbpath has been set\n"
 msgstr "db경로가 설정되어 있지 않습니다\n"
 
-#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2405
-#: rpmdb/rpmdb.c:2513 rpmdb/rpmdb.c:3230
+#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2410
+#: rpmdb/rpmdb.c:2518 rpmdb/rpmdb.c:3247
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:1686
+#: rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2303 rpmdb/rpmdb.c:3050
+msgid "rpmdb: skipping"
+msgstr ""
+
+#: rpmdb/rpmdb.c:1690
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2289
-#, c-format
-msgid "h#%7u: already checked.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2298
-#, fuzzy, c-format
-msgid "h#%7u: %s"
-msgstr "%s: %s\n"
-
-#: rpmdb/rpmdb.c:2304
-#, fuzzy, c-format
-msgid "rpmdb: header #%u: %s -- skipping.\n"
-msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
-
-#: rpmdb/rpmdb.c:2325
+#: rpmdb/rpmdb.c:2330
 #, fuzzy, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2601
+#: rpmdb/rpmdb.c:2606
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2664
+#: rpmdb/rpmdb.c:2669
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2779
+#: rpmdb/rpmdb.c:2784
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\"(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2783
+#: rpmdb/rpmdb.c:2788
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2816
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2832
+#: rpmdb/rpmdb.c:2837
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2842
+#: rpmdb/rpmdb.c:2847
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "%3$s에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2991
+#: rpmdb/rpmdb.c:2996
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3222
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\"(을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3209
+#: rpmdb/rpmdb.c:3226
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3249
+#: rpmdb/rpmdb.c:3266
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:3610
+#: rpmdb/rpmdb.c:3627
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축한 후에 %s(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3648
+#: rpmdb/rpmdb.c:3665
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3680
+#: rpmdb/rpmdb.c:3697
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s에 %1$s 데이터베이스를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3684
+#: rpmdb/rpmdb.c:3701
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s(이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3690
+#: rpmdb/rpmdb.c:3707
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3692
+#: rpmdb/rpmdb.c:3709
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3699
+#: rpmdb/rpmdb.c:3716
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d로 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3712
+#: rpmdb/rpmdb.c:3729
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d로 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3741
+#: rpmdb/rpmdb.c:3758
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u(이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:3781
+#: rpmdb/rpmdb.c:3798
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u에 처음부터 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3799
+#: rpmdb/rpmdb.c:3816
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3807
+#: rpmdb/rpmdb.c:3824
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3826
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 %2$s의 파일을 %1$s의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3819
+#: rpmdb/rpmdb.c:3836
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3838
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
@@ -3621,6 +3610,15 @@ msgstr "%s: 여는데 실패했습니다: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 읽는데 실패했습니다: %s\n"
+
+#, fuzzy
+#~ msgid "h#%7u: %s"
+#~ msgstr "%s: %s\n"
+
+#, fuzzy
+#~ msgid "rpmdb: header #%u: %s -- skipping.\n"
+#~ msgstr ""
+#~ "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
 #~ msgid "unexpected arguments to --querytags "
 #~ msgstr "--querytags 옵션에 부적절한 인수가 지정되었습니다 "

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-02 12:45-0400\n"
+"POT-Creation-Date: 2002-08-02 17:50-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3257,161 +3257,150 @@ msgstr "nie je mo¾né otvori» %s\n"
 msgid "no dbpath has been set\n"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2405
-#: rpmdb/rpmdb.c:2513 rpmdb/rpmdb.c:3230
+#: rpmdb/rpmdb.c:1254 rpmdb/rpmdb.c:1387 rpmdb/rpmdb.c:1437 rpmdb/rpmdb.c:2410
+#: rpmdb/rpmdb.c:2518 rpmdb/rpmdb.c:3247
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: rpmdb/rpmdb.c:1686
+#: rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2303 rpmdb/rpmdb.c:3050
+msgid "rpmdb: skipping"
+msgstr ""
+
+#: rpmdb/rpmdb.c:1690
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: rpmdb/rpmdb.c:2289
-#, c-format
-msgid "h#%7u: already checked.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2298
-#, fuzzy, c-format
-msgid "h#%7u: %s"
-msgstr "súbor %s: %s\n"
-
-#: rpmdb/rpmdb.c:2304
-#, c-format
-msgid "rpmdb: header #%u: %s -- skipping.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2325
+#: rpmdb/rpmdb.c:2330
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2601
+#: rpmdb/rpmdb.c:2606
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: rpmdb/rpmdb.c:2664
+#: rpmdb/rpmdb.c:2669
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: rpmdb/rpmdb.c:2779
+#: rpmdb/rpmdb.c:2784
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: rpmdb/rpmdb.c:2783
+#: rpmdb/rpmdb.c:2788
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2816
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: rpmdb/rpmdb.c:2832
+#: rpmdb/rpmdb.c:2837
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: rpmdb/rpmdb.c:2842
+#: rpmdb/rpmdb.c:2847
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: rpmdb/rpmdb.c:2991
+#: rpmdb/rpmdb.c:2996
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: rpmdb/rpmdb.c:3205
+#: rpmdb/rpmdb.c:3222
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: rpmdb/rpmdb.c:3209
+#: rpmdb/rpmdb.c:3226
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: rpmdb/rpmdb.c:3249
+#: rpmdb/rpmdb.c:3266
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: rpmdb/rpmdb.c:3610
+#: rpmdb/rpmdb.c:3627
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3648
+#: rpmdb/rpmdb.c:3665
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: rpmdb/rpmdb.c:3680
+#: rpmdb/rpmdb.c:3697
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: rpmdb/rpmdb.c:3684
+#: rpmdb/rpmdb.c:3701
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: rpmdb/rpmdb.c:3690
+#: rpmdb/rpmdb.c:3707
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3692
+#: rpmdb/rpmdb.c:3709
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3699
+#: rpmdb/rpmdb.c:3716
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: rpmdb/rpmdb.c:3712
+#: rpmdb/rpmdb.c:3729
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: rpmdb/rpmdb.c:3741
+#: rpmdb/rpmdb.c:3758
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: rpmdb/rpmdb.c:3781
+#: rpmdb/rpmdb.c:3798
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: rpmdb/rpmdb.c:3799
+#: rpmdb/rpmdb.c:3816
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: rpmdb/rpmdb.c:3807
+#: rpmdb/rpmdb.c:3824
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3826
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: rpmdb/rpmdb.c:3819
+#: rpmdb/rpmdb.c:3836
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3838
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
@@ -3687,6 +3676,10 @@ msgstr "%s: otvorenie zlyhalo\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
+
+#, fuzzy
+#~ msgid "h#%7u: %s"
+#~ msgstr "súbor %s: %s\n"
 
 #~ msgid "unexpected arguments to --querytags "
 #~ msgstr "neoèakávané argumenty pre --querytags"
