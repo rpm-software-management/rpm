@@ -78,6 +78,7 @@
 	- fix: use glibc 2.1 glob/fnmatch everywhere.
 	- fix: noLibio = 0 on Red Hat 4.x and 5.x.
 	- fix: typo in autodeps/linux.req.
+	- configure noarch compatibility in rpmrc for ia64.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
