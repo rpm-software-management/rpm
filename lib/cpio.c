@@ -323,7 +323,7 @@ static int expandSymlink(struct ourfd * fd, struct cpioHeader * hdr) {
 
     buf[hdr->size] = '\0';
 
-    if (symlink(buf, hdr->path))
+    if (symlink(buf, hdr->path) < 0)
 	return CPIO_SYMLINK_FAILED;
 
     return 0;
