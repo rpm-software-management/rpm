@@ -37,6 +37,8 @@ OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o @GETTEXTSTUB@
 PROGS = @RPM@ rpm2cpio
 LOADLIBES = -lbuild -lrpm -lmisc @LIBS@ @ZLIB@ @LIBINTL@ @LIBSOCKET@ @LIBDL@
 
+SOURCES = $(subst .o,.c,$(OBJS))
+
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
 else
@@ -138,7 +140,7 @@ distclean:
 
 .PHONY:		depend
 depend:
-	$(CPP) $(CFLAGS) -M $(srcdir)/*.c > .depend
+	$(CPP) $(CFLAGS) -M $(srcdir)/$(SOURCES) > .depend
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
