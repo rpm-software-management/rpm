@@ -1,8 +1,17 @@
 2.0.6 -> 2.0.7:
         - builds now set umask 022 for all scripts
+	- queries relative paths correctly (thanks to Johnie Stafford)
+	- fixed error codes for failed installs
+	- don't add NULL entry to group index for packages that don't
+	  have group information, add it to the "Unknown" group instead
+	- added --scripts query option
+	- added --noscripts for installing and uninstall without using 
+	  the pre/post scripts
+	- "rpm -qd" and "rpm -qc" work properly now (they didn't imply
+	   -l before)
 
 2.0.5 -> 2.0.6:
-
+	- internal changes to error messages
 
 2.0.4 -> 2.0.5:
 	- added support for generic querying
