@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-07-29 16:29-0400\n"
+"POT-Creation-Date: 2000-07-31 10:51-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -2763,63 +2763,63 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/problems.c:43
+#: lib/problems.c:76
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:46
+#: lib/problems.c:79
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:66
+#: lib/problems.c:99
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr ""
 
-#: lib/problems.c:71
+#: lib/problems.c:104
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr ""
 
-#: lib/problems.c:76
+#: lib/problems.c:109
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr ""
 
-#: lib/problems.c:81
+#: lib/problems.c:114
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr ""
 
-#: lib/problems.c:86
+#: lib/problems.c:119
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 
-#: lib/problems.c:92
+#: lib/problems.c:125
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
 
-#: lib/problems.c:98
+#: lib/problems.c:131
 #, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr ""
 
-#: lib/problems.c:104
+#: lib/problems.c:137
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:114
+#: lib/problems.c:147
 #, c-format
 msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:122
+#: lib/problems.c:155
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""

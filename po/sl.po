@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.89 2000/07/29 20:31:58 jbj Exp $
+# $Id: sl.po,v 1.90 2000/07/31 15:04:22 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-29 16:29-0400\n"
+"POT-Creation-Date: 2000-07-31 10:51-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2925,64 +2925,64 @@ msgstr "izpis stanja seznama datotek"
 msgid "display a verbose file listing"
 msgstr "izpis ob¹irnega seznama datotek"
 
-#: lib/problems.c:43
+#: lib/problems.c:76
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " potrebuje %s-%s-%s\n"
 
-#: lib/problems.c:46
+#: lib/problems.c:79
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " v sporu z %s-%s-%s\n"
 
-#: lib/problems.c:66
+#: lib/problems.c:99
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr "paket %s-%s-%s je za drug tip arhitekture"
 
-#: lib/problems.c:71
+#: lib/problems.c:104
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr "paket %s-%s-%s je za drug operacijski sistem"
 
-#: lib/problems.c:76
+#: lib/problems.c:109
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/problems.c:81
+#: lib/problems.c:114
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr "poti %s ni mo¾no premakniti za paket %s-%s-%s"
 
-#: lib/problems.c:86
+#: lib/problems.c:119
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr "datoteka %s v sporu med poskusom namestitve %s-%s-%s in %s-%s-%s"
 
-#: lib/problems.c:92
+#: lib/problems.c:125
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
 "datoteka %s name¹èena z %s-%s-%s je v sporu z datoteko iz paketa %s-%s-%s"
 
-#: lib/problems.c:98
+#: lib/problems.c:131
 #, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "paket %s-%s-%s (ki je novej¹i kot %s-%s-%s) je ¾e name¹èen"
 
-#: lib/problems.c:104
+#: lib/problems.c:137
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr "namestitev paketa %s-%s-%s zahteva %ld%cb na datoteènem sistemu %s"
 
-#: lib/problems.c:114
+#: lib/problems.c:147
 #, c-format
 msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:122
+#: lib/problems.c:155
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "neznana napaka %d ob rokovanju s paketom %s-%s-%s"

@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-07-29 16:29-0400\n"
+msgstr "POT-Creation-Date: 2000-07-31 10:51-0400\n"
 
 #: build.c:25 lib/rpminstall.c:451
 #, c-format
@@ -3065,63 +3065,63 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "mostre a lista de arquivos do pacote"
 
-#: lib/problems.c:43
+#: lib/problems.c:76
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:46
+#: lib/problems.c:79
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: lib/problems.c:66
+#: lib/problems.c:99
 #, fuzzy, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/problems.c:71
+#: lib/problems.c:104
 #, fuzzy, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/problems.c:76
+#: lib/problems.c:109
 #, fuzzy, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/problems.c:81
+#: lib/problems.c:114
 #, fuzzy, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/problems.c:86
+#: lib/problems.c:119
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 
-#: lib/problems.c:92
+#: lib/problems.c:125
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
 
-#: lib/problems.c:98
+#: lib/problems.c:131
 #, fuzzy, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/problems.c:104
+#: lib/problems.c:137
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:114
+#: lib/problems.c:147
 #, c-format
 msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:122
+#: lib/problems.c:155
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""

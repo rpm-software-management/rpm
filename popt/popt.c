@@ -26,27 +26,72 @@ void poptSetExecPath(poptContext con, const char * path, int allowAbsolute) {
     con->execAbsolute = allowAbsolute;
 }
 
-static void invokeCallbacks(poptContext con, const struct poptOption * table,
-			    int post) {
-    const struct poptOption * opt = table;
-    poptCallbackType cb;
-
-    while (opt->longName || opt->shortName || opt->arg) {
+static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
+{
+    for (; opt->longName || opt->shortName || opt->arg; opt++) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
-	    invokeCallbacks(con, opt->arg, post);
-	} else if (((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK) &&
-		   ((!post && (opt->argInfo & POPT_CBFLAG_PRE)) ||
-		    ( post && (opt->argInfo & POPT_CBFLAG_POST)))) {
-	    cb = (poptCallbackType)opt->arg;
-	    cb(con, post ? POPT_CALLBACK_REASON_POST : POPT_CALLBACK_REASON_PRE,
-	       NULL, NULL, opt->descrip);
+	    /* Recurse on included sub-tables. */
+	    invokeCallbacksPRE(con, opt->arg);
+	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK &&
+		   (opt->argInfo & POPT_CBFLAG_PRE))
+	{   poptCallbackType cb = (poptCallbackType)opt->arg;
+	    /* Perform callback. */
+	    cb(con, POPT_CALLBACK_REASON_PRE, NULL, NULL, opt->descrip);
 	}
-	opt++;
+    }
+}
+
+static void invokeCallbacksPOST(poptContext con, const struct poptOption * opt)
+{
+    for (; opt->longName || opt->shortName || opt->arg; opt++) {
+	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
+	    /* Recurse on included sub-tables. */
+	    invokeCallbacksPRE(con, opt->arg);
+	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK &&
+		   (opt->argInfo & POPT_CBFLAG_POST))
+	{   poptCallbackType cb = (poptCallbackType)opt->arg;
+	    /* Perform callback. */
+	    cb(con, POPT_CALLBACK_REASON_POST, NULL, NULL, opt->descrip);
+	}
+    }
+}
+
+static void invokeCallbacksOPTION(poptContext con,
+				  const struct poptOption * opt,
+				  const struct poptOption * myOpt,
+				  const void * myData, int shorty)
+{
+    const struct poptOption * cbopt = NULL;
+
+    for (; opt->longName || opt->shortName || opt->arg; opt++) {
+	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
+	    /* Recurse on included sub-tables. */
+	    invokeCallbacksOPTION(con, opt->arg, myOpt, myData, shorty);
+	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK &&
+		  !(opt->argInfo & POPT_CBFLAG_SKIPOPTION)) {
+	    /* Save callback info. */
+	    cbopt = opt;
+	} else if (cbopt != NULL &&
+		   ((myOpt->shortName && opt->shortName && shorty &&
+			myOpt->shortName == opt->shortName) ||
+		    (myOpt->longName && opt->longName &&
+			!strcmp(myOpt->longName, opt->longName)))
+		   )
+	{   poptCallbackType cb = (poptCallbackType)cbopt->arg;
+	    const void * cbData = (cbopt->descrip ? cbopt->descrip : myData);
+	    /* Perform callback. */
+	    cb(con, POPT_CALLBACK_REASON_OPTION, myOpt,
+			con->os->nextArg, cbData);
+	    /* Terminate (unless explcitly continuing). */
+	    if (!(cbopt->argInfo & POPT_CBFLAG_CONTINUE))
+		return;
+	}
     }
 }
 
 poptContext poptGetContext(const char * name, int argc, const char ** argv,
-			   const struct poptOption * options, int flags) {
+			   const struct poptOption * options, int flags)
+{
     poptContext con = malloc(sizeof(*con));
 
     memset(con, 0, sizeof(*con));
@@ -77,7 +122,7 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
     if (name)
 	con->appName = strcpy(malloc(strlen(name) + 1), name);
 
-    invokeCallbacks(con, con->options, 0);
+    invokeCallbacksPRE(con, con->options);
 
     return con;
 }
@@ -290,25 +335,27 @@ static void execCommand(poptContext con) {
 }
 
 /*@observer@*/ static const struct poptOption *
-findOption(const struct poptOption * table, const char * longName,
+findOption(const struct poptOption * opt, const char * longName,
     char shortName,
     /*@out@*/ poptCallbackType * callback, /*@out@*/ const void ** callbackData,
     int singleDash)
 {
-    const struct poptOption * opt = table;
-    const struct poptOption * opt2;
     const struct poptOption * cb = NULL;
 
     /* This happens when a single - is given */
     if (singleDash && !shortName && !*longName)
 	shortName = '-';
 
-    while (opt->longName || opt->shortName || opt->arg) {
+    for (; opt->longName || opt->shortName || opt->arg; opt++) {
+
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
+	    const struct poptOption * opt2;
+	    /* Recurse on included sub-tables. */
 	    opt2 = findOption(opt->arg, longName, shortName, callback,
 			      callbackData, singleDash);
 	    if (opt2) {
-		if (*callback && !*callbackData)
+		/* Sub-table data will be inheirited if no data yet. */
+		if (*callback && *callbackData == NULL)
 		    *callbackData = opt->descrip;
 		return opt2;
 	    }
@@ -321,10 +368,10 @@ findOption(const struct poptOption * table, const char * longName,
 	} else if (shortName && shortName == opt->shortName) {
 	    break;
 	}
-	opt++;
     }
 
-    if (!opt->longName && !opt->shortName) return NULL;
+    if (!opt->longName && !opt->shortName)
+	return NULL;
     *callbackData = NULL;
     *callback = NULL;
     if (cb) {
@@ -482,13 +529,14 @@ int poptGetNextOpt(poptContext con)
 	const void * cbData = NULL;
 	const char * longArg = NULL;
 	int canstrip = 0;
+	int shorty = 0;
 
 	while (!con->os->nextCharArg && con->os->next == con->os->argc
 		&& con->os > con->optionStack) {
 	    cleanOSE(con->os--);
 	}
 	if (!con->os->nextCharArg && con->os->next == con->os->argc) {
-	    invokeCallbacks(con, con->options, 1);
+	    invokeCallbacksPOST(con, con->options);
 	    if (con->doExec) execCommand(con);
 	    return -1;
 	}
@@ -562,6 +610,7 @@ int poptGetNextOpt(poptContext con)
 		    canstrip = 1;
 		    poptStripArg(con, thisopt);
 		}
+		shorty = 0;
 	    }
 	}
 
@@ -586,6 +635,7 @@ int poptGetNextOpt(poptContext con)
 			     &cbData, 0);
 	    if (!opt)
 		return POPT_ERROR_BADOPT;
+	    shorty = 1;
 
 	    origOptString++;
 	    if (*origOptString) con->os->nextCharArg = origOptString;
@@ -666,7 +716,7 @@ int poptGetNextOpt(poptContext con)
 	}
 
 	if (cb)
-	    cb(con, POPT_CALLBACK_REASON_OPTION, opt, con->os->nextArg, cbData);
+	    invokeCallbacksOPTION(con, con->options, opt, cbData, shorty);
 	else if (opt->val && ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL))
 	    done = 1;
 

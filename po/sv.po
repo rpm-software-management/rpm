@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-29 16:29-0400\n"
+"POT-Creation-Date: 2000-07-31 10:51-0400\n"
 "PO-Revision-Date: 2000-07-24 22:14+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2819,43 +2819,43 @@ msgstr "visa tillstånd för de listade filerna"
 msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 
-#: lib/problems.c:43
+#: lib/problems.c:76
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " behövs av %s-%s-%s\n"
 
-#: lib/problems.c:46
+#: lib/problems.c:79
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " står i konflikt med %s-%s-%s\n"
 
-#: lib/problems.c:66
+#: lib/problems.c:99
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr "paket %s-%s-%s är för en annan arkitektur"
 
-#: lib/problems.c:71
+#: lib/problems.c:104
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr "paket %s-%s-%s är för ett annat operativsystem"
 
-#: lib/problems.c:76
+#: lib/problems.c:109
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr "paket %s-%s-%s är redan installerat"
 
-#: lib/problems.c:81
+#: lib/problems.c:114
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr "sökväg %s är inte relokerbar för paket %s-%s-%s"
 
-#: lib/problems.c:86
+#: lib/problems.c:119
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 "filen %s är en konflikt mellan installationsförsök av %s-%s-%s och %s-%s-%s"
 
-#: lib/problems.c:92
+#: lib/problems.c:125
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
@@ -2863,22 +2863,22 @@ msgstr ""
 "filen %s från installation av %s-%s-%s står i konflikt med filen från paket "
 "%s-%s-%s"
 
-#: lib/problems.c:98
+#: lib/problems.c:131
 #, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "paket %s-%s-%s (som är nyare än %s-%s-%s) är redan installerat"
 
-#: lib/problems.c:104
+#: lib/problems.c:137
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr "installation av paket %s-%s-%s kräver %ld%cb på filsystem %s"
 
-#: lib/problems.c:114
+#: lib/problems.c:147
 #, c-format
 msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
 msgstr "paket %s-%s-%s systemanrop före transaktion: %s misslyckades: %s"
 
-#: lib/problems.c:122
+#: lib/problems.c:155
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "okänt fel %d uppträdde under manipulation av paket %s-%s-%s"

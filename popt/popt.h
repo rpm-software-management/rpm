@@ -46,6 +46,8 @@ extern "C" {
 #define POPT_CBFLAG_POST	0x40000000  /* call the callback after parse */
 #define POPT_CBFLAG_INC_DATA	0x20000000  /* use data from the include line,
 					       not the subtable */
+#define POPT_CBFLAG_SKIPOPTION	0x10000000  /* don't callback with option */
+#define POPT_CBFLAG_CONTINUE	0x08000000  /* continue callbacks with option */
 
 #define POPT_ERROR_NOARG	-10
 #define POPT_ERROR_BADOPT	-11

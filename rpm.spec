@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.62
+Release: 0.63
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -261,6 +261,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jul 31 2000 Jeff Johnson <jbj@redhat.com>
+- fix: uniqify dependency problems when printing (#14034).
+- popt: add ability to perform callbacks for every, not just first, match.
+
 * Sat Jul 29 2000 Jeff Johnson <jbj@redhat.com>
 - bail on firstkey/nextkey, there's a better way.
 - link rpm2cpio dynamically since cpio is linked dynamically.

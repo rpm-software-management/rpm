@@ -26,6 +26,30 @@ void printDepFlags(FILE * fp, const char * version, int flags)
 	fprintf(fp, " %s", version);
 }
 
+static int sameProblem(struct rpmDependencyConflict * ap,
+		       struct rpmDependencyConflict * bp)
+{
+
+    if (ap->sense != bp->sense)
+	return 1;
+
+    if (ap->byName && bp->byName && strcmp(ap->byName, bp->byName))
+	return 1;
+    if (ap->byVersion && bp->byVersion && strcmp(ap->byVersion, bp->byVersion))
+	return 1;
+    if (ap->byRelease && bp->byRelease && strcmp(ap->byRelease, bp->byRelease))
+	return 1;
+
+    if (ap->needsName && bp->needsName && strcmp(ap->needsName, bp->needsName))
+	return 1;
+    if (ap->needsVersion && bp->needsVersion && strcmp(ap->needsVersion, bp->needsVersion))
+	return 1;
+    if (ap->needsFlags && bp->needsFlags && ap->needsFlags != bp->needsFlags)
+	return 1;
+
+    return 0;
+}
+
 /* XXX FIXME: merge into problems */
 void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
 			     int numConflicts)
@@ -33,11 +57,20 @@ void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
     int i;
 
     for (i = 0; i < numConflicts; i++) {
+	int j;
+
+	/* Filter already displayed problems. */
+	for (j = 0; j < i; j++) {
+	    if (!sameProblem(conflicts + i, conflicts + j))
+		break;
+	}
+	if (j < i)
+	    continue;
+
 	fprintf(fp, "\t%s", conflicts[i].needsName);
-	if (conflicts[i].needsFlags) {
+	if (conflicts[i].needsFlags)
 	    printDepFlags(fp, conflicts[i].needsVersion, 
 			  conflicts[i].needsFlags);
-	}
 
 	if (conflicts[i].sense == RPMDEP_SENSE_REQUIRES) 
 	    fprintf(fp, _(" is needed by %s-%s-%s\n"), conflicts[i].byName, 

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-29 16:29-0400\n"
+"POT-Creation-Date: 2000-07-31 10:51-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2932,63 +2932,63 @@ msgstr "показать состояние показанных файлов"
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
-#: lib/problems.c:43
+#: lib/problems.c:76
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " нужен для %s-%s-%s\n"
 
-#: lib/problems.c:46
+#: lib/problems.c:79
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " конфликтует с %s-%s-%s\n"
 
-#: lib/problems.c:66
+#: lib/problems.c:99
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr "пакет %s-%s-%s - для другой архитектуры"
 
-#: lib/problems.c:71
+#: lib/problems.c:104
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr "пакет %s-%s-%s - для другой ОС"
 
-#: lib/problems.c:76
+#: lib/problems.c:109
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr "пакет %s-%s-%s уже установлен"
 
-#: lib/problems.c:81
+#: lib/problems.c:114
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr "путь %s - не перемещаемый для пакета %s-%s-%s"
 
-#: lib/problems.c:86
+#: lib/problems.c:119
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr "конфликт файла %s при попытках установки %s-%s-%s и %s-%s-%s"
 
-#: lib/problems.c:92
+#: lib/problems.c:125
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr "файл %s из пакета %s-%s-%s конфликтует с файлом из пакета %s-%s-%s"
 
-#: lib/problems.c:98
+#: lib/problems.c:131
 #, fuzzy, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "пакет %s-%s-%s (который новее, чем %s-%s-%s) уже установлен"
 
-#: lib/problems.c:104
+#: lib/problems.c:137
 #, fuzzy, c-format
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr "для установки пакета %s-%s-%s нужно %ld%c на файловой системе %s"
 
-#: lib/problems.c:114
+#: lib/problems.c:147
 #, c-format
 msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:122
+#: lib/problems.c:155
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s-%s-%s"
