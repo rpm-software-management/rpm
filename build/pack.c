@@ -590,6 +590,7 @@ static int parseForVerify(char *buf, int *verify_flags)
     }
 
     strncpy(ourbuf, p, end-p);
+    ourbuf[end-p] = '\0';
     while (start <= end) {
 	*start++ = ' ';
     }
