@@ -6,6 +6,7 @@ fi
 
 # Strip ELF binaries
 for f in `find $RPM_BUILD_ROOT -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
+        grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
 	grep -v ' shared object,' | \
 	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
 	strip -g $f || :

@@ -15,7 +15,7 @@ INCLUDES = -I. \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h hashtab.h
+EXTRA_DIST =	rpminject.c rpmsort.c hashtab.h
 
 EXTRA_PROGRAMS = rpminject rpmsort
 
@@ -32,7 +32,7 @@ noinst_PROGRAMS = \
 	convertdb1 dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps striptofile unstripfile
+pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps
 
 bin_PROGRAMS =	rpmgraph
 
@@ -55,9 +55,5 @@ rpminject_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmsort_SOURCES =	rpmsort.c
 rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
-
-striptofile_SOURCES =	striptofile.c sections.c utils.c
-
-unstripfile_SOURCES =	unstripfile.c sections.c utils.c
 
 $(PROGRAMS): $(LDADD)

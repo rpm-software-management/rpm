@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-11-08 14:27-0500\n"
+"POT-Creation-Date: 2002-11-13 13:20-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -751,7 +751,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:629 lib/psm.c:1825
+#: build/pack.c:629 lib/psm.c:1830
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -781,7 +781,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:710 lib/psm.c:2130
+#: build/pack.c:710 lib/psm.c:2135
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -2260,72 +2260,72 @@ msgstr "ソースパッケージは .spec ファイルを含んでいません"
 msgid "%s: waitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/psm.c:996
+#: lib/psm.c:1001
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:1004
+#: lib/psm.c:1009
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:1167
+#: lib/psm.c:1172
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:1190
+#: lib/psm.c:1195
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/psm.c:1196
+#: lib/psm.c:1201
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1603
+#: lib/psm.c:1608
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1728
+#: lib/psm.c:1733
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1837
+#: lib/psm.c:1842
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: lib/psm.c:1883
+#: lib/psm.c:1888
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1892
+#: lib/psm.c:1897
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1940
+#: lib/psm.c:1945
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1941
+#: lib/psm.c:1946
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:2138
+#: lib/psm.c:2143
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:2141
+#: lib/psm.c:2146
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2381,7 +2381,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
 #: lib/query.c:569 lib/query.c:616 lib/rpminstall.c:123 lib/rpminstall.c:458
-#: lib/rpminstall.c:589 lib/rpminstall.c:997 lib/rpmts.c:441
+#: lib/rpminstall.c:589 lib/rpminstall.c:1002 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2717,7 +2717,7 @@ msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1217
+#: lib/rpminstall.c:631 lib/rpminstall.c:801 lib/rpminstall.c:1227
 #: tools/rpmgraph.c:202
 #, fuzzy
 msgid "Failed dependencies:\n"
@@ -2751,7 +2751,7 @@ msgstr "%s をオープンできません\n"
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpminstall.c:1211
+#: lib/rpminstall.c:1221
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""

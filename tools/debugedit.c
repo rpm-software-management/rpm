@@ -113,7 +113,7 @@ strptr (DSO *dso, int sec, off_t offset)
   if (offset >= 0 && offset < dso->shdr[sec].sh_size)
     {
       data = NULL;
-      while ((data = elf_getdata (scn, data)) != NULL)
+      while ((data = elf_rawdata (scn, data)) != NULL)
 	{
 	  if (data->d_buf
 	      && offset >= data->d_off
@@ -578,8 +578,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		      memcpy (dir + dest_len, dir + base_len,
 			      strlen (dir + base_len) + 1);
 		    }
-		  elf_flagdata (debug_sections[DEBUG_STR].elf_data, ELF_C_SET,
-			       ELF_F_DIRTY);
+		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+				ELF_C_SET, ELF_F_DIRTY);
 		}
 	    }
 	  
@@ -689,9 +689,9 @@ edit_dwarf2 (DSO *dso, int n)
 		    }
 
 		  scn = dso->scn[i]; 
-		  data = elf_getdata (scn, NULL);
+		  data = elf_rawdata (scn, NULL);
 		  assert (data != NULL && data->d_buf != NULL);
-		  assert (elf_getdata (scn, data) == NULL);
+		  assert (elf_rawdata (scn, data) == NULL);
 		  assert (data->d_off == 0);
 		  assert (data->d_size == dso->shdr[i].sh_size);
 		  debug_sections[j].data = data->d_buf;
@@ -827,7 +827,6 @@ edit_dwarf2 (DSO *dso, int n)
 	}
     }
   
-  elf_flagscn (dso->scn[n], ELF_C_SET, ELF_F_DIRTY);
   return 0;
 }
 
@@ -850,21 +849,7 @@ fdopen_dso (int fd, const char *name)
   int i;
   DSO *dso = NULL;
 
-  static int section_cmp (const void *A, const void *B)
-    {
-      int *a = (int *) A;
-      int *b = (int *) B;
-
-      if (dso->shdr[*a].sh_offset < dso->shdr[*b].sh_offset)
-	return -1;
-      if (dso->shdr[*a].sh_offset > dso->shdr[*b].sh_offset)
-	return 1;
-      if (*a < *b)
-	return -1;
-      return *a > *b;
-    }
-
-  elf = elf_begin (fd, ELF_C_RDWR, NULL);
+  elf = elf_begin (fd, ELF_C_RDWR_MMAP, NULL);
   if (elf == NULL)
     {
       error (0, 0, "cannot open ELF file: %s", elf_errmsg (-1));
@@ -944,6 +929,7 @@ main (int argc, char *argv[])
   poptContext optCon;   /* context for parsing command-line options */
   int nextopt;
   const char **args;
+  struct stat stat_buf;
   char *p;
   
   optCon = poptGetContext("debugedit", argc, (const char **)argv,
@@ -1013,6 +999,15 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  if (stat(file, &stat_buf) < 0)
+    {
+      fprintf (stderr, "Failed to open input file '%s': %s\n", file, strerror(errno));
+      exit (1);
+    }
+
+  /* Make sure we can read and write */
+  chmod (file, stat_buf.st_mode | S_IRUSR | S_IWUSR);
+
   fd = open (file, O_RDWR);
   if (fd < 0)
     {
@@ -1044,9 +1039,20 @@ main (int argc, char *argv[])
 	}
     }
 
-  elf_update (dso->elf, ELF_C_WRITE);
-  elf_end (dso->elf);
+  if (elf_update (dso->elf, ELF_C_WRITE) < 0)
+    {
+      fprintf (stderr, "Failed to write file: %s\n", elf_errmsg (elf_errno()));
+      exit (1);
+    }
+  if (elf_end (dso->elf) < 0)
+    {
+      fprintf (stderr, "elf_end failed: %s\n", elf_errmsg (elf_errno()));
+      exit (1);
+    }
   close (fd);
+
+  /* Restore old access rights */
+  chmod (file, stat_buf.st_mode);
   
   poptFreeContext (optCon);
 

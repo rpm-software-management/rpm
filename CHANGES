@@ -20,6 +20,8 @@
 	- add error message on glob failure (#76012).
 	- add _javadir/_javadocdir/_javaclasspath macros.
 	- fix: bash must have functional libtermcap.so.2.
+	- update to elfutils-0.56.
+	- have debug sub-subpackage use external, not internal, elfutils.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

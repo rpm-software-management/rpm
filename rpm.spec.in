@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.8
+Release: 0.9
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -87,6 +87,7 @@ Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{rpm_version}
 Requires: python >= %{with_python_version}
+Requires: elfutils >= 0.55
 
 %description python
 The rpm-python package contains a module that permits applications
@@ -401,10 +402,8 @@ exit 0
 
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
 %rpmattr	%{__prefix}/lib/rpm/rpmdeps
-%rpmattr	%{__prefix}/lib/rpm/striptofile
 %rpmattr	%{__prefix}/lib/rpm/trpm
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
-%rpmattr	%{__prefix}/lib/rpm/unstripfile
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
@@ -482,6 +481,10 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Nov 15 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.9
+- update to elfutils-0.56.
+- have debug sub-subpackage use external, not internal, elfutils.
+
 * Wed Nov 13 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.8
 - fix: bash must have functional libtermcap.so.2.
 
