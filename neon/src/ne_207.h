@@ -1,6 +1,6 @@
 /* 
    WebDAV 207 multi-status response handling
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -23,76 +23,74 @@
 #define DAV207_H
 
 #include "ne_xml.h"
-#include "ne_request.h" /* for http_req */
+#include "ne_request.h" /* for ne_request */
 
 BEGIN_NEON_DECLS
 
-#define NE_ELM_207_first (NE_ELM_UNUSED)
+/* The defined state integer for the '{DAV:}prop' element. */
+#define NE_207_STATE_PROP (50)
+/* This interface reserves the state integers 'x' where 0 < x < 100 */
+#define NE_207_STATE_TOP (100)
 
-#define NE_ELM_multistatus (NE_ELM_207_first)
-#define NE_ELM_response (NE_ELM_207_first + 1)
-#define NE_ELM_responsedescription (NE_ELM_207_first + 2)
-#define NE_ELM_href (NE_ELM_207_first + 3)
-#define NE_ELM_propstat (NE_ELM_207_first + 4)
-#define NE_ELM_prop (NE_ELM_207_first + 5)
-#define NE_ELM_status (NE_ELM_207_first + 6)
+/* Handling of 207 multistatus XML documents.  A "multistatus"
+ * document is made up of a set of responses, each concerned with a
+ * particular resource.  Each response may have an associated result
+ * status and failure description.  A response is made up of a set of
+ * propstats, each of which again may have an associated result status
+ * and failure description. */
 
-#define NE_ELM_207_UNUSED (NE_ELM_UNUSED + 100)
+/* Start and end response callbacks trigger at the start and end of
+ * each "response" within the multistatus body. 'href' gives the URI
+ * of the resource which is subject of this response.  The return
+ * value of a 'start_response' callback is passed as the 'response'
+ * parameter to the corresponding 'end_response' parameter. */
+typedef void *ne_207_start_response(void *userdata, const char *href);
+typedef void ne_207_end_response(void *userdata, void *response,
+                                 const ne_status *status,
+                                 const char *description);
 
-struct ne_207_parser_s;
+/* Similarly, start and end callbacks for each propstat within the
+ * response.  The return value of the 'start_response' callback for
+ * the response in which this propstat is contains is passed as the
+ * 'response' parameter.  The return value of each 'start_propstat' is
+ * passed as the 'propstat' parameter' to the corresponding
+ * 'end_propstat' callback. */
+typedef void *ne_207_start_propstat(void *userdata, void *response);
+typedef void ne_207_end_propstat(void *userdata, void *propstat,
+                                 const ne_status *status,
+                                 const char *description);
+
 typedef struct ne_207_parser_s ne_207_parser;
 
-/* The name of a WebDAV property. */
-typedef struct {
-    const char *nspace, *name;
-} ne_propname;
-
-/* The handler structure: you provide a set of callbacks.
- * They are called in the order they are listed... start/end_prop
- * multiple times before end_prop, start/end_propstat multiple times
- * before an end_response, start/end_response multiple times.
- */
-
-/* TODO: do we need to pass userdata to ALL of these? We could get away with
- * only passing the userdata to the start_'s and relying on the caller
- * to send it through as the _start return value if they need it. */
-
-typedef void *(*ne_207_start_response)(void *userdata, const char *href);
-typedef void (*ne_207_end_response)(
-    void *userdata, void *response, const char *status_line,
-    const ne_status *status, const char *description);
-
-typedef void *(*ne_207_start_propstat)(void *userdata, void *response);
-typedef void (*ne_207_end_propstat)(
-    void *userdata, void *propstat, const char *status_line, 
-    const ne_status *status, const char *description);
-
-/* Create a 207 parser */
-
+/* Create 207 parser an add the handlers the the given parser's
+ * handler stack. */
 ne_207_parser *ne_207_create(ne_xml_parser *parser, void *userdata);
 
-/* Set the callbacks for the parser */
+/* Register response handling callbacks. */
+void ne_207_set_response_handlers(ne_207_parser *p,
+                                  ne_207_start_response *start,
+                                  ne_207_end_response *end);
 
-void ne_207_set_response_handlers(
-    ne_207_parser *p, ne_207_start_response start, ne_207_end_response end);
+/* Register propstat handling callbacks. */
+void ne_207_set_propstat_handlers(ne_207_parser *p, 
+                                  ne_207_start_propstat *start,
+                                  ne_207_end_propstat *end);
 
-void ne_207_set_propstat_handlers(
-    ne_207_parser *p, ne_207_start_propstat start, ne_207_end_propstat end);
-
+/* Destroy the parser */
 void ne_207_destroy(ne_207_parser *p);
 
 /* An acceptance function which only accepts 207 responses */
-int ne_accept_207(void *userdata, ne_request *req, ne_status *status);
+int ne_accept_207(void *userdata, ne_request *req, const ne_status *status);
 
 void *ne_207_get_current_propstat(ne_207_parser *p);
 void *ne_207_get_current_response(ne_207_parser *p);
 
-/* Call this as the LAST thing before beginning parsing, to install a
- * catch-all handler which means all unknown XML returned in the 207
- * response is ignored gracefully.  */
-void ne_207_ignore_unknown(ne_207_parser *p);
-
-/* Dispatch a DAV request and handle a 207 error response appropriately */
+/* Dispatch request 'req', returning:
+ *  NE_ERROR: for a dispatch error, or a non-2xx response, or a
+ *            207 response which contained a non-2xx propstat
+ *  NE_OK: for a 2xx response or a 207 response which contained
+ *            only 2xx-class propstats.
+ * The request object is destroyed in both cases. */
 int ne_simple_request(ne_session *sess, ne_request *req);
 
 END_NEON_DECLS

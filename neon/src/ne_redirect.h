@@ -1,6 +1,6 @@
 /* 
    HTTP-redirect support
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -26,48 +26,15 @@
 
 BEGIN_NEON_DECLS
 
-/* The redirect code does not handle redirects to a different server.
- * For a redirect to a different server, the request fails and returns
- * HTTP_REDIRECT.  You can then retrieve the redirect location using the
- * call http_redirect_location.
- *
- * (you must have called http_redirect_register for this to happen).
- * */
+/* Register redirect handling: if a redirection response is given, the
+ * request will fail with the NE_REDIRECT code, and the destinsation
+ * of the redirect can be retrieved using ne_redirect_location(). */
+void ne_redirect_register(ne_session *sess);
 
-/* Get confirmation from the user that a redirect from
- * URI 'src' to URI 'dest' is acceptable. Should return:
- *   Non-Zero to FOLLOW the redirect
- *   Zero to NOT follow the redirect
- */
-typedef int (*ne_redirect_confirm)(void *userdata,
-				   const char *src, const char *dest);
-
-/* Notify the user that a redirect has been automatically 
- * followed from URI 'src' to URI 'dest' */
-typedef void (*ne_redirect_notify)(void *userdata,
-				   const char *src, const char *dest);
-
-/* Register redirect handling for the given session.
- * Some redirect responses will be automatically followed.
- * If the redirect is automatically followed, the 'notify' callback
- * is called.
- * For redirects which are NOT automatically followed, the
- * 'confirm' callback is called: if this returns zero, the redirect
- * is ignored.
- * 
- * 'confirm' may be passed as NULL: in this case, only automatic
- * redirects are followed.  'notify' may also be passed as NULL,
- * automatic redirects are still followed.
- *
- * 'userdata' is passed as the first argument to the confirm and
- * notify callbacks.  */
-void ne_redirect_register(ne_session *sess,
-			  ne_redirect_confirm confirm,
-			  ne_redirect_notify notify,
-			  void *userdata);
-
-/* Return location of last redirect. */
-const char *ne_redirect_location(ne_session *sess);
+/* Returns location of last redirect.  Will return NULL if no redirect
+ * has been encountered for given session, or the last redirect
+ * encountered could not be parsed. */
+const ne_uri *ne_redirect_location(ne_session *sess);
 
 END_NEON_DECLS
 

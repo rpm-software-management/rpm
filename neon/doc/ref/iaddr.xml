@@ -1,0 +1,124 @@
+<refentry id="refiaddr">
+
+  <refmeta>
+    <refentrytitle>ne_iaddr_make</refentrytitle>
+    <manvolnum>3</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname id="ne_iaddr_make">ne_iaddr_make</refname>
+    <refname id="ne_iaddr_cmp">ne_iaddr_cmp</refname>
+    <refname id="ne_iaddr_print">ne_iaddr_print</refname>
+    <refname id="ne_iaddr_free">ne_iaddr_free</refname>
+    <refpurpose>functions to manipulate and compare network addresses</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+
+    <funcsynopsis>
+
+      <funcsynopsisinfo>#include &lt;ne_socket.h&gt;
+
+typedef enum {
+    ne_iaddr_ipv4 = 0,
+    ne_iaddr_ipv6
+} <type>ne_iaddr_type</type>;</funcsynopsisinfo>
+
+      <funcprototype>
+        <funcdef>ne_inet_addr *<function>ne_iaddr_make</function></funcdef>
+        <paramdef>ne_iaddr_type <parameter>type</parameter></paramdef>
+        <paramdef>const unsigned char *<parameter>raw</parameter></paramdef>
+      </funcprototype>
+
+      <funcprototype>
+        <funcdef>int <function>ne_iaddr_cmp</function></funcdef>
+        <paramdef>const ne_inet_addr *<parameter>i1</parameter></paramdef>
+        <paramdef>const ne_inet_addr *<parameter>i2</parameter></paramdef>
+      </funcprototype>
+
+      <funcprototype>
+        <funcdef>char *<function>ne_iaddr_print</function></funcdef>
+        <paramdef>const ne_inet_addr *<parameter>ia</parameter></paramdef>
+        <paramdef>char *<parameter>buffer</parameter></paramdef>
+        <paramdef>size_t <parameter>bufsiz</parameter></paramdef>
+      </funcprototype>
+
+      <funcprototype>
+        <funcdef>void <function>ne_iaddr_free</function></funcdef>
+        <paramdef>const ne_inet_addr *<parameter>addr</parameter></paramdef>
+      </funcprototype>
+
+    </funcsynopsis>
+
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para><function>ne_iaddr_make</function> creates an
+    <type>ne_inet_addr</type> object from a raw binary network
+    address; for instance the four bytes <literal>0x7f 0x00 0x00
+    0x01</literal> represent the IPv4 address
+    <literal>127.0.0.1</literal>.  The object returned is suitable for
+    passing to <function>ne_sock_connect</function>.  A binary IPv4
+    address contains four bytes; a binary IPv6 address contains
+    sixteen bytes; addresses passed must be in network byte
+    order.</para>
+
+    <para><function>ne_iaddr_cmp</function> can be used to compare two
+    network addresses; returning zero only if they are identical.  The
+    addresses need not be of the same address type; if the addresses
+    are not of the same type, the return value is guaranteed to be
+    non-zero.</para>
+
+    <para><function>ne_iaddr_print</function> can be used to print the
+    human-readable string representation of a network address into a
+    buffer, for instance the string
+    <literal>"127.0.0.1"</literal>.</para>
+
+    <para><function>ne_iaddr_free</function> releases the memory
+    associated with a network address object.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Return value</title>
+
+    <para><function>ne_iaddr_make</function> returns &null; if the
+    address type passed is not supported (for instance on a platform
+    which does not support IPv6).</para>
+
+
+    <para><function>ne_iaddr_print</function> returns the
+    <parameter>buffer</parameter> pointer, and never &null;.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Examples</title>
+
+    <para>The following example connects a socket to port 80 at the
+    address <literal>127.0.0.1</literal>.</para>
+ 
+    <programlisting>unsigned char addr[] = "\0x7f\0x00\0x00\0x01";
+ne_inet_addr *ia;
+
+ia = ne_iaddr_make(ne_iaddr_ipv4, addr);
+if (ia != NULL) {
+    ne_socket *sock = ne_sock_connect(ia, 80);
+    ne_iaddr_free(ia);
+    /* ... */
+} else {
+    /* ... */
+}</programlisting>
+
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para><xref linkend="ne_addr_resolve"/></para>
+  </refsect1>
+
+</refentry>
+

@@ -1,12 +1,7 @@
 /* 
    socket handling routines
-   Copyright (C) 1998-2001, Joe Orton <joe@light.plus.com>, 
-   except where otherwise indicated.
-
-   Portions are:
+   Copyright (C) 1998-2004, Joe Orton <joe@manyfish.co.uk>, 
    Copyright (C) 1999-2000 Tommi Komulainen <Tommi.Komulainen@iki.fi>
-   Originally under GPL in Mutt, http://www.mutt.org/
-   Relicensed under LGPL for neon, http://www.webdav.org/neon/
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,903 +17,1027 @@
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA
+*/
 
-   The sock_readline() function is:
-
-   Copyright (c) 1999 Eric S. Raymond
-
-   Permission is hereby granted, free of charge, to any person
-   obtaining a copy of this software and associated documentation
-   files (the "Software"), to deal in the Software without
-   restriction, including without limitation the rights to use, copy,
-   modify, merge, publish, distribute, sublicense, and/or sell copies
-   of the Software, and to permit persons to whom the Software is
-   furnished to do so, subject to the following conditions:
-
-   The above copyright notice and this permission notice shall be
-   included in all copies or substantial portions of the Software.
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-   HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
-
+/*
+  portions were originally under GPL in Mutt, http://www.mutt.org/
+  Relicensed under LGPL for neon, http://www.webdav.org/neon/
 */
 
 #include "config.h"
+
+#ifdef __hpux
+/* pick up hstrerror */
+#define _XOPEN_SOURCE_EXTENDED 1
+/* don't use the broken getaddrinfo shipped in HP-UX 11.11 */
+#ifdef USE_GETADDRINFO
+#undef USE_GETADDRINFO
+#endif
+#endif
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-
-#ifdef WIN32
-#include <WinSock2.h>
-#else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#endif /* WIN32 */
-
-#ifdef HAVE_ARPA_INET_H
-#include <arpa/inet.h>
-#endif
-
 #include <sys/stat.h>
-
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
 
-#include <errno.h>
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#ifdef HAVE_NETINET_TCP_H
+#include <netinet/tcp.h>
+#endif
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif
+#ifdef HAVE_NETDB_H
+#include <netdb.h>
+#endif
 
-#include <fcntl.h>
+#ifdef WIN32
+#include <winsock2.h>
+#include <stddef.h>
+#endif
+
+#if defined(NEON_SSL) && defined(HAVE_LIMITS_H)
+#include <limits.h> /* for INT_MAX */
+#endif
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif /* HAVE_UNISTD_H */
+#endif
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 
-/* SOCKS support. */
 #ifdef HAVE_SOCKS_H
 #include <socks.h>
+#endif
+
+#ifdef NEON_SSL
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/pkcs12.h> /* for PKCS12_PBE_add */
+#include <openssl/rand.h>
+
+#include "ne_privssl.h"
 #endif
 
 #include "ne_i18n.h"
 #include "ne_utils.h"
 #include "ne_string.h"
+
+#define NE_INET_ADDR_DEFINED
+/* A slightly ugly hack: change the ne_inet_addr definition to be the
+ * real address type used.  The API only exposes ne_inet_addr as a
+ * pointer to an opaque object, so this should be well-defined
+ * behaviour.  It avoids the hassle of a real wrapper ne_inet_addr
+ * structure, or losing type-safety by using void *. */
+#ifdef USE_GETADDRINFO
+typedef struct addrinfo ne_inet_addr;
+
+/* To avoid doing AAAA queries unless absolutely necessary, either use
+ * AI_ADDRCONFIG where available, or a run-time check for working IPv6
+ * support; the latter is only known to work on Linux. */
+#if !defined(USE_GAI_ADDRCONFIG) && defined(__linux__)
+#define USE_CHECK_IPV6
+#endif
+
+#else
+typedef struct in_addr ne_inet_addr;
+#endif
+
 #include "ne_socket.h"
 #include "ne_alloc.h"
 
-#if defined(BEOS_PRE_BONE)
-#define NEON_WRITE(a,b,c) send(a,b,c,0)
-#define NEON_READ(a,b,c) recv(a,b,c,0)
-#define NEON_CLOSE(s) closesocket(s)
+#if defined(__BEOS__) && !defined(BONE_VERSION)
+/* pre-BONE */
+#define ne_write(a,b,c) send(a,b,c,0)
+#define ne_read(a,b,c) recv(a,b,c,0)
+#define ne_close(s) closesocket(s)
+#define ne_errno errno
 #elif defined(WIN32)
-#define NEON_WRITE(a,b,c) send(a,b,c,0)
-#define NEON_READ(a,b,c) recv(a,b,c,0)
-#define NEON_CLOSE(s) closesocket(s)
+#define ne_write(a,b,c) send(a,b,c,0)
+#define ne_read(a,b,c) recv(a,b,c,0)
+#define ne_close(s) closesocket(s)
+#define ne_errno WSAGetLastError()
 #else /* really Unix! */
-#define NEON_WRITE(a,b,c) write(a,b,c)
-#define NEON_READ(a,b,c) read(a,b,c)
-#define NEON_CLOSE(s) close(s)
+#define ne_write(a,b,c) write(a,b,c)
+#define ne_read(a,b,c) read(a,b,c)
+#define ne_close(s) close(s)
+#define ne_errno errno
 #endif
 
-#ifdef ENABLE_SSL
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-
-/* Whilst the OpenSSL interface *looks* like it is not thread-safe, it
- * appears to do horrible gymnastics to maintain per-thread global
- * variables for error reporting. UGH! */
-#define ERROR_SSL_STRING (ERR_reason_error_string(ERR_get_error()))
-
+#ifdef WIN32
+#define NE_ISRESET(e) ((e) == WSAECONNABORTED || (e) == WSAETIMEDOUT || \
+                       (e) == WSAECONNRESET || (e) == WSAENETRESET)
+#define NE_ISCLOSED(e) ((e) == WSAESHUTDOWN || (e) == WSAENOTCONN)
+#define NE_ISINTR(e) (0)
+#else /* Unix */
+#define NE_ISRESET(e) ((e) == ECONNRESET)
+#define NE_ISCLOSED(e) ((e) == EPIPE)
+#define NE_ISINTR(e) ((e) == EINTR)
 #endif
 
-/* BeOS doesn't have fd==sockets on anything pre-bone, so see if
- * we need to drop back to our old ways... 
- */
-#ifdef __BEOS__
-  #ifndef BONE_VERSION /* if we have BONE this isn't an issue... */
-    #define BEOS_PRE_BONE
-  #endif
-#endif
+/* Socket read timeout */
+#define SOCKET_READ_TIMEOUT 120
 
-struct nsocket_s {
+/* Critical I/O functions on a socket: useful abstraction for easily
+ * handling SSL I/O alongside raw socket I/O. */
+struct iofns {
+    /* Read up to 'len' bytes into 'buf' from socket.  Return <0 on
+     * error or EOF, or >0; number of bytes read. */
+    ssize_t (*read)(ne_socket *s, char *buf, size_t len);
+    /* Write exactly 'len' bytes from 'buf' to socket.  Return zero on
+     * success, <0 on error. */
+    ssize_t (*write)(ne_socket *s, const char *buf, size_t len);
+    /* Wait up to 'n' seconds for socket to become readable.  Returns
+     * 0 when readable, otherwise NE_SOCK_TIMEOUT or NE_SOCK_ERROR. */
+    int (*readable)(ne_socket *s, int n);
+};
+
+struct ne_socket_s {
     int fd;
-    const char *error; /* Store error string here */
-    sock_progress progress_cb;
+    char error[200];
     void *progress_ud;
-#ifdef ENABLE_SSL
-    SSL *ssl;
-    SSL_CTX *default_ctx;
+    int rdtimeout; /* read timeout. */
+    const struct iofns *ops;
+#ifdef NEON_SSL
+    ne_ssl_socket ssl;
 #endif
-#ifdef BEOS_PRE_BONE
-#define MAX_PEEK_BUFFER 1024
-    char peeked_bytes[MAX_PEEK_BUFFER];
-    char *peeked_bytes_curpos;
-    int peeked_bytes_avail;
-#endif
+    /* The read buffer: ->buffer stores byte which have been read; as
+     * these are consumed and passed back to the caller, bufpos
+     * advances through ->buffer.  ->bufavail gives the number of
+     * bytes which remain to be consumed in ->buffer (from ->bufpos),
+     * and is hence always <= RDBUFSIZ. */
+#define RDBUFSIZ 4096
+    char buffer[RDBUFSIZ];
+    char *bufpos;
+    size_t bufavail;
 };
 
-struct nssl_context_s {
-#ifdef ENABLE_SSL
-    SSL_CTX *ctx;
+/* ne_sock_addr represents an Internet address. */
+struct ne_sock_addr_s {
+#ifdef USE_GETADDRINFO
+    struct addrinfo *result, *cursor;
+#else
+    struct in_addr *addrs;
+    size_t cursor, count;
 #endif
-    nssl_accept cert_accept;
-    void *accept_ud; /* userdata for callback */
-
-    /* private key prompt callback */
-    nssl_key_prompt key_prompt;
-    void *key_userdata;
-    const char *key_file;
+    int errnum;
 };
-    
-void sock_register_progress(nsocket *sock, sock_progress cb, void *userdata)
+
+/* set_error: set socket error string to 'str'. */
+#define set_error(s, str) ne_strnzcpy((s)->error, (str), sizeof (s)->error)
+
+/* set_strerror: set socket error to system error string for 'errnum' */
+#ifdef WIN32
+/* Print system error message to given buffer. */
+static void print_error(int errnum, char *buffer, size_t buflen)
 {
-    sock->progress_cb = cb;
-    sock->progress_ud = userdata;
+    if (FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM
+                       | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, (DWORD) errnum, 0, 
+                       buffer, buflen, NULL) == 0)
+        ne_snprintf(buffer, buflen, "Socket error %d", errnum);
+}
+#define set_strerror(s, e) print_error((e), (s)->error, sizeof (s)->error)
+#else /* not WIN32 */
+#define set_strerror(s, e) ne_strerror((e), (s)->error, sizeof (s)->error)
+#endif
+
+#ifdef NEON_SSL
+
+/* Initialize SSL library. */
+static void init_ssl(void)
+{
+    SSL_load_error_strings();
+    SSL_library_init();
+    PKCS12_PBE_add();  /* ### not sure why this is needed. */
 }
 
-void sock_call_progress(nsocket *sock, off_t progress, off_t total)
+/* Seed the SSL PRNG, if necessary; returns non-zero on failure. */
+static int seed_ssl_prng(void)
 {
-    if (sock->progress_cb) {
-	sock->progress_cb(sock->progress_ud, progress, total);
+    /* Check whether the PRNG has already been seeded. */
+    if (RAND_status() == 1)
+	return 0;
+
+#ifdef EGD_PATH
+    NE_DEBUG(NE_DBG_SOCKET, "Seeding PRNG from " EGD_PATH "...\n");
+    if (RAND_egd(EGD_PATH) != -1)
+	return 0;
+#elif defined(ENABLE_EGD)
+    {
+	static const char *paths[] = { "/var/run/egd-pool", "/dev/egd-pool",
+				       "/etc/egd-pool", "/etc/entropy" };
+	size_t n;
+	for (n = 0; n < sizeof(paths) / sizeof(char *); n++) {
+	    NE_DEBUG(NE_DBG_SOCKET, "Seeding PRNG from %s...\n", paths[n]);
+	    if (RAND_egd(paths[n]) != -1)
+		return 0;
+	}
     }
-}
+#endif /* EGD_PATH */
 
-int sock_init(void)
+    NE_DEBUG(NE_DBG_SOCKET, "No entropy source found; could not seed PRNG.\n");
+    return -1;
+}
+#endif /* NEON_SSL */
+
+#ifdef USE_CHECK_IPV6
+static int ipv6_disabled = 0;
+
+/* On Linux kernels, IPv6 is typically built as a loadable module, and
+ * socket(AF_INET6, ...) will fail if this module is not loaded, so
+ * the slow AAAA lookups can be avoided for this common case. */
+static void init_ipv6(void)
+{
+    int fd = socket(AF_INET6, SOCK_STREAM, 0);
+    
+    if (fd < 0)
+        ipv6_disabled = 1;
+    else
+        close(fd);
+}
+#else
+#define ipv6_disabled (0)
+#endif
+
+static int init_result = 0;
+
+int ne_sock_init(void)
 {
 #ifdef WIN32
     WORD wVersionRequested;
     WSADATA wsaData;
     int err;
-    
+#endif
+
+    if (init_result > 0) 
+	return 0;
+    else if (init_result < 0)
+	return -1;
+
+#ifdef WIN32    
     wVersionRequested = MAKEWORD(2, 2);
     
     err = WSAStartup(wVersionRequested, &wsaData);
-    if (err != 0)
+    if (err != 0) {
+	init_result = -1;
 	return -1;
+    }
 
 #endif
 
-#ifdef ENABLE_SSL
-    SSL_load_error_strings();
-    SSL_library_init();
-
-    NE_DEBUG(NE_DBG_SOCKET, "Initialized SSL.\n");
+#ifdef NEON_SOCKS
+    SOCKSinit("neon");
 #endif
 
+#if defined(HAVE_SIGNAL) && defined(SIGPIPE)
+    (void) signal(SIGPIPE, SIG_IGN);
+#endif
+
+#ifdef USE_CHECK_IPV6
+    init_ipv6();
+#endif
+
+#ifdef NEON_SSL
+    init_ssl();
+#endif
+
+    init_result = 1;
     return 0;
 }
 
-void sock_exit(void)
+void ne_sock_exit(void)
 {
 #ifdef WIN32
     WSACleanup();
-#endif	
+#endif
+    init_result = 0;
 }
 
-/* sock_read is read() with a timeout of SOCKET_READ_TIMEOUT. */
-int sock_read(nsocket *sock, char *buffer, size_t count) 
+int ne_sock_block(ne_socket *sock, int n)
 {
-    int ret;
-
-    if (count == 0) {
-	NE_DEBUG(NE_DBG_SOCKET, "Passing 0 to sock_read is probably bad.\n");
-	/* But follow normal read() semantics anyway... */
+    if (sock->bufavail)
 	return 0;
-    }
-
-    ret = sock_block(sock, SOCKET_READ_TIMEOUT);
-    if (ret == 0) {
-	/* Got data */
-	do {
-#ifdef ENABLE_SSL
-	    if (sock->ssl) {
-		ret = SSL_read(sock->ssl, buffer, count);
-	    } else {
-#endif
-#ifndef BEOS_PRE_BONE
-		ret = NEON_READ(sock->fd, buffer, count);
-#else
-		if (sock->peeked_bytes_avail > 0) {
-		    /* simply return the peeked bytes.... */
-		    if (count >= sock->peeked_bytes_avail){
-			/* we have room */
-			strncpy(buffer, sock->peeked_bytes_curpos, 
-				sock->peeked_bytes_avail);
-			ret = sock->peeked_bytes_avail;
-			sock->peeked_bytes_avail = 0;
-		    } else {
-			strncpy(buffer, sock->peeked_bytes_curpos, count);
-			sock->peeked_bytes_curpos += count;
-			sock->peeked_bytes_avail -= count;
-			ret = count;
-		    }
-		} else {
-		    ret = recv(sock->fd, buffer, count, 0);
-		}
-#endif
-#ifdef ENABLE_SSL
-	    }
-#endif
-	} while (ret == -1 && errno == EINTR);
-	if (ret < 0) {
-	    sock->error = strerror(errno);
-	    ret = SOCK_ERROR;
-	} else if (ret == 0) {
-	    /* This might not or might not be an error depending on
-               the context. */
-	    sock->error = _("Connection was closed by server");
-	    NE_DEBUG(NE_DBG_SOCKET, "read returned zero.\n");
-	    ret = SOCK_CLOSED;
-	}
-    }
-    return ret;
+    return sock->ops->readable(sock, n);
 }
 
-/* sock_peek is recv(...,MSG_PEEK) with a timeout of SOCKET_TIMEOUT.
- * Returns length of data read or SOCK_* on error */
-int sock_peek(nsocket *sock, char *buffer, size_t count) 
+/* Cast address object AD to type 'sockaddr_TY' */ 
+#define SACAST(ty, ad) ((struct sockaddr_##ty *)(ad))
+
+#define SOCK_ERR(x) do { ssize_t _sock_err = (x); \
+if (_sock_err < 0) return _sock_err; } while(0)
+
+ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t buflen)
 {
-    int ret;
-    ret = sock_block(sock, SOCKET_READ_TIMEOUT);
-    if (ret < 0) {
-	return ret;
-    }
-    /* Got data */
-#ifdef ENABLE_SSL
-    if (sock->ssl) {
-	ret = SSL_peek(sock->ssl, buffer, count);
-	/* TODO: This is the fetchmail fix as in sock_readline.
-	 * Do we really need it? */
-	if (ret == 0) {
-	    if (sock->ssl->shutdown) {
-		return SOCK_CLOSED;
-	    }
-	    if (0 != ERR_get_error()) {
-		sock->error = ERROR_SSL_STRING;
-		return SOCK_ERROR;
-	    }
-	}
+    ssize_t bytes;
+
+#if 0
+    NE_DEBUG(NE_DBG_SOCKET, "buf: at %d, %d avail [%s]\n", 
+	     sock->bufpos - sock->buffer, sock->bufavail, sock->bufpos);
+#endif
+
+    if (sock->bufavail > 0) {
+	/* Deliver buffered data. */
+	if (buflen > sock->bufavail)
+	    buflen = sock->bufavail;
+	memcpy(buffer, sock->bufpos, buflen);
+	sock->bufpos += buflen;
+	sock->bufavail -= buflen;
+	return buflen;
+    } else if (buflen >= sizeof sock->buffer) {
+	/* No need for read buffer. */
+	return sock->ops->read(sock, buffer, buflen);
     } else {
-#endif
-    do {
-#ifndef BEOS_PRE_BONE
-	ret = recv(sock->fd, buffer, count, MSG_PEEK);
-#else /* we're on BeOS pre-BONE so we need to use the buffer... */
-	if (sock->peeked_bytes_avail > 0) {
-	    /* we've got some from last time!!! */
-	    if (count >= sock->peeked_bytes_avail) {
-		strncpy(buffer, sock->peeked_bytes_curpos, sock->peeked_bytes_avail);
-		ret = sock->peeked_bytes_avail;
-	    } else {
-		strncpy(buffer, sock->peeked_bytes_curpos, count);
-		ret = count;
-	    }
-	} else {
-	    if (count > MAX_PEEK_BUFFER)
-		count = MAX_PEEK_BUFFER;
-	    ret = recv(sock->fd, buffer, count, 0);
-	    sock->peeked_bytes_avail = ret;
-	    strncpy(sock->peeked_bytes, buffer, ret);
-	    sock->peeked_bytes_curpos = sock->peeked_bytes;
-	}
-#endif
-    } while (ret == -1 && errno == EINTR);
-#ifdef ENABLE_SSL
+	/* Fill read buffer. */
+	bytes = sock->ops->read(sock, sock->buffer, sizeof sock->buffer);
+	if (bytes <= 0)
+	    return bytes;
+
+	if (buflen > (size_t)bytes)
+	    buflen = bytes;
+	memcpy(buffer, sock->buffer, buflen);
+	sock->bufpos = sock->buffer + buflen;
+	sock->bufavail = bytes - buflen;
+	return buflen; 
     }
-#endif
-    /* According to the Single Unix Spec, recv() will return
-     * zero if the socket has been closed the other end. */
-    if (ret == 0) {
-	ret = SOCK_CLOSED;
-    } else if (ret < 0) {
-	sock->error = strerror(errno);
-	ret = SOCK_ERROR;
-    } 
-    return ret;
 }
 
-/* Blocks waiting for read input on the given socket for the given time.
- * Returns:
- *    0 if data arrived
- *    SOCK_TIMEOUT if data did not arrive before timeout
- *    SOCK_ERROR on error
- */
-int sock_block(nsocket *sock, int timeout) 
+ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t buflen)
 {
-    struct timeval tv;
-    fd_set fds;
-    int ret;
+    ssize_t bytes;
+    
+    if (sock->bufavail) {
+	/* just return buffered data. */
+	bytes = sock->bufavail;
+    } else {
+	/* fill the buffer. */
+	bytes = sock->ops->read(sock, sock->buffer, sizeof sock->buffer);
+	if (bytes <= 0)
+	    return bytes;
 
-#ifdef ENABLE_SSL
-    if (sock->ssl) {
-	/* There may be data already available in the 
-	 * SSL buffers */
-	if (SSL_pending(sock->ssl)) {
-	    return 0;
-	}
-	/* Otherwise, we should be able to select on
-	 * the socket as per normal. Probably? */
+	sock->bufpos = sock->buffer;
+	sock->bufavail = bytes;
     }
-#endif
-#ifdef BEOS_PRE_BONE
-    if (sock->peeked_bytes_avail > 0) {
-        return 0;
-    }
-#endif
+
+    if (buflen > (size_t)bytes)
+	buflen = bytes;
+
+    memcpy(buffer, sock->bufpos, buflen);
+
+    return buflen;
+}
+
+/* Await data on raw fd in socket. */
+static int readable_raw(ne_socket *sock, int secs)
+{
+    int fdno = sock->fd, ret;
+    fd_set rdfds;
+    struct timeval timeout, *tvp = (secs >= 0 ? &timeout : NULL);
 
     /* Init the fd set */
-    FD_ZERO(&fds);
-    FD_SET(sock->fd, &fds);
-    /* Set the timeout */
-    tv.tv_sec = timeout;
-    tv.tv_usec = 0;
+    FD_ZERO(&rdfds);
     do {
-	ret = select(sock->fd+1, &fds, NULL, NULL, &tv);
-    } while (ret == -1 && errno == EINTR);
-
-    switch(ret) {
-    case 0:
-	return SOCK_TIMEOUT;
-    case -1:
-	sock->error = strerror(errno);
-	return SOCK_ERROR;
-    default:
-	return 0;
+	FD_SET(fdno, &rdfds);
+	if (tvp) {
+	    tvp->tv_sec = secs;
+	    tvp->tv_usec = 0;
+	}
+	ret = select(fdno + 1, &rdfds, NULL, NULL, tvp);
+    } while (ret < 0 && NE_ISINTR(ne_errno));
+    if (ret < 0) {
+	set_strerror(sock, ne_errno);
+	return NE_SOCK_ERROR;
     }
+    return (ret == 0) ? NE_SOCK_TIMEOUT : 0;
 }
 
-/* Send the given line down the socket with CRLF appended. 
- * Returns 0 on success or SOCK_* on failure. */
-int sock_sendline(nsocket *sock, const char *line) 
+static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
 {
-    char *buffer;
-    int ret;
-    CONCAT2(buffer, line, "\r\n");
-    ret = sock_send_string(sock, buffer);
-    free(buffer);
+    ssize_t ret;
+    
+    ret = readable_raw(sock, sock->rdtimeout);
+    if (ret) return ret;
+
+    do {
+	ret = ne_read(sock->fd, buffer, len);
+    } while (ret == -1 && NE_ISINTR(ne_errno));
+
+    if (ret == 0) {
+	set_error(sock, _("Connection closed"));
+	ret = NE_SOCK_CLOSED;
+    } else if (ret < 0) {
+	int errnum = ne_errno;
+	ret = NE_ISRESET(errnum) ? NE_SOCK_RESET : NE_SOCK_ERROR;
+	set_strerror(sock, errnum);
+    }
+
     return ret;
 }
 
-int sock_readfile_blocked(nsocket *sock, off_t length,
-			  sock_block_reader reader, void *userdata) 
-{
-    char buffer[BUFSIZ];
-    int ret;
-    off_t done = 0;
-    do {
-	ret = sock_read(sock, buffer, BUFSIZ);
-	if (ret < 0) {
-	    if (length == -1 && ret == SOCK_CLOSED) {
-		/* Not an error condition. */
-		return 0;
-	    }
-	    return ret;
-	} 
-	done += ret;
-	sock_call_progress(sock, done, length);
-	(*reader)(userdata, buffer, ret);
-    } while ((length == -1) || (done < length));
-    return 0;
-}
+#define MAP_ERR(e) (NE_ISCLOSED(e) ? NE_SOCK_CLOSED : \
+                    (NE_ISRESET(e) ? NE_SOCK_RESET : NE_SOCK_ERROR))
 
-
-/* Send a block of data down the given fd.
- * Returns 0 on success or SOCK_* on failure */
-int sock_fullwrite(nsocket *sock, const char *data, size_t length) 
+static ssize_t write_raw(ne_socket *sock, const char *data, size_t length) 
 {
     ssize_t wrote;
+    
+    do {
+	wrote = ne_write(sock->fd, data, length);
+        if (wrote > 0) {
+            data += wrote;
+            length -= wrote;
+        }
+    } while ((wrote > 0 || NE_ISINTR(ne_errno)) && length > 0);
 
-#ifdef ENABLE_SSL
-    if (sock->ssl) {
-	/* joe: ssl.h says SSL_MODE_ENABLE_PARTIAL_WRITE must 
-	 * be enabled to have SSL_write return < length... 
-	 * so, SSL_write should never return < length. */
-	wrote = SSL_write(sock->ssl, data, length);
-	if (wrote >= 0 && (size_t)wrote < length) {
-	    NE_DEBUG(NE_DBG_SOCKET, "SSL_write returned less than length!\n");
-	    sock->error = ERROR_SSL_STRING;
-	    return SOCK_ERROR;
-	}
-    } else {
-#endif
-	const char *pnt = data;
-	size_t sent = 0;
-
-	while (sent < length) {
-	    wrote = NEON_WRITE(sock->fd, pnt, length-sent);
-	    if (wrote < 0) {
-		if (errno == EINTR) {
-		    continue;
-		} else if (errno == EPIPE) {
-		    return SOCK_CLOSED;
-		} else {
-		    sock->error = strerror(errno);
-		    return SOCK_ERROR;
-		}
-	    }
-	    sent += wrote;
-	    pnt += wrote;
-#ifdef ENABLE_SSL
-	}
-#endif
+    if (wrote < 0) {
+	int errnum = ne_errno;
+	set_strerror(sock, errnum);
+	return MAP_ERR(errnum);
     }
+
     return 0;
 }
 
-/* Sends the given string down the given socket.
- * Returns 0 on success or -1 on failure. */
-int sock_send_string(nsocket *sock, const char *data) 
+static const struct iofns iofns_raw = { read_raw, write_raw, readable_raw };
+
+#ifdef NEON_SSL
+/* OpenSSL I/O function implementations. */
+static int readable_ossl(ne_socket *sock, int secs)
 {
-    return sock_fullwrite(sock, data, strlen(data));
+    /* If there is buffered SSL data, then don't block on the socket.
+     * FIXME: make sure that SSL_read *really* won't block if
+     * SSL_pending returns non-zero.  Possibly need to do
+     * SSL_read(ssl, buf, SSL_pending(ssl)) */
+
+    if (SSL_pending(sock->ssl.ssl))
+	return 0;
+
+    return readable_raw(sock, secs);
 }
 
-/* This is from from Eric Raymond's fetchmail (SockRead() in socket.c)
- * since I wouldn't have a clue how to do it properly.
- * This function is Copyright 1999 (C) Eric Raymond.
- * Modifications Copyright 2000 (C) Joe Orton
- */
-int sock_readline(nsocket *sock, char *buf, int len)
+/* SSL error handling, according to SSL_get_error(3). */
+static int error_ossl(ne_socket *sock, int sret)
 {
-    char *newline, *bp = buf;
-    int n;
-
-    do {
-	/* 
-	 * The reason for these gymnastics is that we want two things:
-	 * (1) to read \n-terminated lines,
-	 * (2) to return the true length of data read, even if the
-	 *     data coming in has embedded NULS.
-	 */
-#ifdef	ENABLE_SSL
-
-	if (sock->ssl) {
-	    /* Hack alert! */
-	    /* OK...  SSL_peek works a little different from MSG_PEEK
-	       Problem is that SSL_peek can return 0 if there is no
-	       data currently available.  If, on the other hand, we
-	       loose the socket, we also get a zero, but the SSL_read
-	       then SEGFAULTS!  To deal with this, we'll check the
-	       error code any time we get a return of zero from
-	       SSL_peek.  If we have an error, we bail.  If we don't,
-	       we read one character in SSL_read and loop.  This
-	       should continue to work even if they later change the
-	       behavior of SSL_peek to "fix" this problem...  :-(*/
-	    NE_DEBUG(NE_DBG_SOCKET, "SSL readline... \n");
-	    if ((n = SSL_peek(sock->ssl, bp, len)) < 0) {
-		sock->error = ERROR_SSL_STRING;
-		return(-1);
-	    }
-	    if (0 == n) {
-		/* SSL_peek says no data...  Does he mean no data
-		   or did the connection blow up?  If we got an error
-		   then bail! */
-		NE_DEBUG(NE_DBG_SOCKET, "SSL_Peek says no data!\n");
-		/* Check properly to see if the connection has closed */
-		if (sock->ssl->shutdown) {
-		    NE_DEBUG(NE_DBG_SOCKET, "SSL says shutdown.");
-		    return SOCK_CLOSED;
-		} else if (0 != (n = ERR_get_error())) {
-		    NE_DEBUG(NE_DBG_SOCKET, "SSL error occured.\n");
-		    sock->error = ERROR_SSL_STRING;
-		    return -1;
-		}
-		    
-		/* We didn't get an error so read at least one
-		   character at this point and loop */
-		n = 1;
-		/* Make sure newline start out NULL!  We don't have a
-		 * string to pass through the strchr at this point yet
-		 * */
-		newline = NULL;
-	    } else if ((newline = memchr(bp, '\n', n)) != NULL)
-		n = newline - bp + 1;
-	    n = SSL_read(sock->ssl, bp, n);
-	    NE_DEBUG(NE_DBG_SOCKET, "SSL_read returned %d\n", n);
-	    if (n == -1) {
-		sock->error = ERROR_SSL_STRING;
-		return(-1);
-	    }
-	    /* Check for case where our single character turned out to
-	     * be a newline...  (It wasn't going to get caught by
-	     * the strchr above if it came from the hack...). */
-	    if (NULL == newline && 1 == n && '\n' == *bp) {
-		/* Got our newline - this will break
-				out of the loop now */
-		newline = bp;
+    int err = SSL_get_error(sock->ssl.ssl, sret), ret = NE_SOCK_ERROR;
+    
+    switch (err) {
+    case SSL_ERROR_ZERO_RETURN:
+	ret = NE_SOCK_CLOSED;
+	set_error(sock, _("Connection closed"));
+	break;
+    case SSL_ERROR_SYSCALL:
+	err = ERR_get_error();
+	if (err == 0) {
+	    if (sret == 0) {
+		/* EOF without close_notify, possible truncation */
+		set_error(sock, _("Secure connection truncated"));
+		ret = NE_SOCK_TRUNC;
+	    } else {
+		/* Other socket error. */
+		err = ne_errno;
+		set_strerror(sock, err);
+		ret = MAP_ERR(err);
 	    }
 	} else {
-#endif
-	    if ((n = sock_peek(sock, bp, len)) <= 0)
-		return n;
-	    if ((newline = memchr(bp, '\n', n)) != NULL)
-		n = newline - bp + 1;
-	    if ((n = sock_read(sock, bp, n)) < 0)
-		return n;
-#ifdef ENABLE_SSL
+	    ne_snprintf(sock->error, sizeof sock->error, 
+			_("SSL error: %s"), ERR_reason_error_string(err));
 	}
-#endif
-	bp += n;
-	len -= n;
-	if (len < 1) {
-	    sock->error = _("Line too long");
-	    return SOCK_FULL;
-	}
-    } while (!newline && len);
-    *bp = '\0';
-    return bp - buf;
+	break;
+    default:
+	ne_snprintf(sock->error, sizeof sock->error, _("SSL error: %s"), 
+		    ERR_reason_error_string(ERR_get_error()));
+	break;
+    }
+    return ret;
 }
 
-/*** End of ESR-copyrighted section ***/
+/* Work around OpenSSL's use of 'int' rather than 'size_t', to prevent
+ * accidentally passing a negative number, etc. */
+#define CAST2INT(n) (((n) > INT_MAX) ? INT_MAX : (n))
 
-/* Reads readlen bytes from fd and write to sock.
- * If readlen == -1, then it reads from srcfd until EOF.
- * Returns number of bytes written to destfd, or -1 on error.
- */
-int sock_transfer(int fd, nsocket *sock, off_t readlen) 
+static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
 {
-    char buffer[BUFSIZ];
-    size_t curlen; /* total bytes yet to read from srcfd */
-    off_t sumwrlen; /* total bytes written to destfd */
+    int ret;
 
-    if (readlen == -1) {
-	curlen = BUFSIZ; /* so the buffer size test works */
-    } else {
-	curlen = readlen; /* everything to do */
-    }
-    sumwrlen = 0; /* nowt done yet */
+    ret = readable_ossl(sock, sock->rdtimeout);
+    if (ret) return ret;
+    
+    ret = SSL_read(sock->ssl.ssl, buffer, CAST2INT(len));
+    if (ret <= 0)
+	ret = error_ossl(sock, ret);
 
-    while (curlen > 0) {
-	int rdlen, wrlen;
+    return ret;
+}
 
-	/* Get a chunk... if the number of bytes that are left to read
-	 * is less than the buffer size, only read that many bytes. */
-	rdlen = read(fd, buffer, (readlen==-1)?BUFSIZ:(min(BUFSIZ, curlen)));
-	sock_call_progress(sock, sumwrlen, readlen);
-	if (rdlen < 0) { 
-	    if (errno == EPIPE) {
-		return SOCK_CLOSED;
-	    } else {
-		sock->error = strerror(errno);
-		return SOCK_ERROR;
-	    }
-	} else if (rdlen == 0) { 
-	    /* End of file... get out of here */
-	    break;
-	}
-	if (readlen != -1)
-	    curlen -= rdlen;
+static ssize_t write_ossl(ne_socket *sock, const char *data, size_t len)
+{
+    int ret, ilen = CAST2INT(len);
+    ret = SSL_write(sock->ssl.ssl, data, ilen);
+    /* ssl.h says SSL_MODE_ENABLE_PARTIAL_WRITE must be enabled to
+     * have SSL_write return < length...  so, SSL_write should never
+     * return < length. */
+    if (ret != ilen)
+	return error_ossl(sock, ret);
+    return 0;
+}
 
-	/* Otherwise, we have bytes!  Write them to destfd */
+static const struct iofns iofns_ossl = {
+    read_ossl,
+    write_ossl,
+    readable_ossl
+};
+
+#endif /* NEON_SSL */
+
+int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t len)
+{
+    return sock->ops->write(sock, data, len);
+}
+
+ssize_t ne_sock_readline(ne_socket *sock, char *buf, size_t buflen)
+{
+    char *lf;
+    size_t len;
+    
+    if ((lf = memchr(sock->bufpos, '\n', sock->bufavail)) == NULL
+	&& sock->bufavail < RDBUFSIZ) {
+	/* The buffered data does not contain a complete line: move it
+	 * to the beginning of the buffer. */
+	if (sock->bufavail)
+	    memmove(sock->buffer, sock->bufpos, sock->bufavail);
+	sock->bufpos = sock->buffer;
 	
-	wrlen = sock_fullwrite(sock, buffer, rdlen);
-	if (wrlen < 0) { 
-	    return wrlen;
-	}
-
-	sumwrlen += rdlen;
+	/* Loop filling the buffer whilst no newline is found in the data
+	 * buffered so far, and there is still buffer space available */ 
+	do {
+	    /* Read more data onto end of buffer. */
+	    ssize_t ret = sock->ops->read(sock, sock->buffer + sock->bufavail,
+					  RDBUFSIZ - sock->bufavail);
+	    if (ret < 0) return ret;
+	    sock->bufavail += ret;
+	} while ((lf = memchr(sock->buffer, '\n', sock->bufavail)) == NULL
+		 && sock->bufavail < RDBUFSIZ);
     }
-    sock_call_progress(sock, sumwrlen, readlen);
-    return sumwrlen;
+
+    if (lf)
+	len = lf - sock->bufpos + 1;
+    else
+	len = buflen; /* fall into "line too long" error... */
+
+    if ((len + 1) > buflen) {
+	set_error(sock, _("Line too long"));
+	return NE_SOCK_ERROR;
+    }
+
+    memcpy(buf, sock->bufpos, len);
+    buf[len] = '\0';
+    /* consume the line from buffer: */
+    sock->bufavail -= len;
+    sock->bufpos += len;
+    return len;
 }
 
-/* Reads buflen bytes into buffer until it's full.
- * Returns 0 on success, -1 on error */
-int sock_fullread(nsocket *sock, char *buffer, int buflen) 
+ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t buflen) 
 {
-    char *pnt; /* current position within buffer */
-    int len;
-    pnt = buffer;
+    ssize_t len;
+
     while (buflen > 0) {
-	len = sock_read(sock, pnt, buflen);
+	len = ne_sock_read(sock, buffer, buflen);
 	if (len < 0) return len;
 	buflen -= len;
-	pnt += len;
+	buffer += len;
     }
+
     return 0;
 }
 
-/* Do a name lookup on given hostname, writes the address into
- * given address buffer. Return -1 on failure.
- */
-int sock_name_lookup(const char *hostname, struct in_addr *addr) 
+#ifndef INADDR_NONE
+#define INADDR_NONE ((unsigned long) -1)
+#endif
+
+#if !defined(USE_GETADDRINFO) && !defined(HAVE_DECL_H_ERRNO) && !defined(WIN32)
+/* Ancient versions of netdb.h don't export h_errno. */
+extern int h_errno;
+#endif
+
+/* This implemementation does not attempt to support IPv6 using
+ * gethostbyname2 et al.  */
+ne_sock_addr *ne_addr_resolve(const char *hostname, int flags)
 {
-    struct hostent *hp;
+    ne_sock_addr *addr = ne_calloc(sizeof *addr);
+#ifdef USE_GETADDRINFO
+    struct addrinfo hints = {0};
+    char *pnt;
+    hints.ai_socktype = SOCK_STREAM;
+    if (hostname[0] == '[' && ((pnt = strchr(hostname, ']')) != NULL)) {
+	char *hn = ne_strdup(hostname + 1);
+	hn[pnt - hostname - 1] = '\0';
+#ifdef AI_NUMERICHOST /* added in the RFC2553 API */
+	hints.ai_flags = AI_NUMERICHOST;
+#endif
+        hints.ai_family = AF_INET6;
+	addr->errnum = getaddrinfo(hn, NULL, &hints, &addr->result);
+	ne_free(hn);
+    } else {
+#ifdef USE_GAI_ADDRCONFIG /* added in the RFC3493 API */
+        hints.ai_flags = AI_ADDRCONFIG;
+        hints.ai_family = AF_UNSPEC;
+        addr->errnum = getaddrinfo(hostname, NULL, &hints, &addr->result);
+#else
+        hints.ai_family = ipv6_disabled ? AF_INET : AF_UNSPEC;
+	addr->errnum = getaddrinfo(hostname, NULL, &hints, &addr->result);
+#endif
+    }
+#else /* Use gethostbyname() */
     unsigned long laddr;
+    struct hostent *hp;
     
-    /* TODO?: a possible problem here, is that if we are passed an
-     * invalid IP address e.g. "500.500.500.500", then this gets
-     * passed to gethostbyname and returned as "Host not found".
-     * Arguably wrong, but maybe difficult to detect correctly what is
-     * an invalid IP address and what is a hostname... can hostnames
-     * begin with a numeric character? */
-    laddr = (unsigned long)inet_addr(hostname);
-    if ((int)laddr == -1) {
-	/* inet_addr failed. */
+    laddr = inet_addr(hostname);
+    if (laddr == INADDR_NONE) {
 	hp = gethostbyname(hostname);
 	if (hp == NULL) {
-#if 0
-	    /* Need to get this back somehow, but we don't have 
-	     * an nsocket * yet... */
-	    switch(h_errno) {
-	    case HOST_NOT_FOUND:
-		sock->error = _("Host not found");
-		break;
-	    case TRY_AGAIN:
-		sock->error = _("Host not found (try again later?)");
-		break;
-	    case NO_ADDRESS:
-		sock->error = _("Host exists but has no address.");
-		break;
-	    case NO_RECOVERY:
-	    default:
-		sock->error = _("Non-recoverable error in resolver library.");
-		break;
-	    }
+#ifdef WIN32
+	    addr->errnum = WSAGetLastError();
+#else
+            addr->errnum = h_errno;
 #endif
-	    return SOCK_ERROR;
+	} else if (hp->h_length != sizeof(struct in_addr)) {
+	    /* fail gracefully if somebody set RES_USE_INET6 */
+	    addr->errnum = NO_RECOVERY;
+	} else {
+	    size_t n;
+	    /* count addresses */
+	    for (n = 0; hp->h_addr_list[n] != NULL; n++)
+		/* noop */;
+
+	    addr->count = n;
+	    addr->addrs = ne_malloc(n * sizeof *addr->addrs);
+
+	    for (n = 0; n < addr->count; n++)
+		memcpy(&addr->addrs[n], hp->h_addr_list[n], hp->h_length);
 	}
-	memcpy(addr, hp->h_addr, hp->h_length);
     } else {
-	addr->s_addr = laddr;
+	addr->addrs = ne_malloc(sizeof *addr->addrs);
+	addr->count = 1;
+	memcpy(addr->addrs, &laddr, sizeof *addr->addrs);
     }
-    return 0;
+#endif
+    return addr;
 }
 
-static nsocket *create_sock(int fd)
+int ne_addr_result(const ne_sock_addr *addr)
 {
-    nsocket *sock = ne_calloc(sizeof *sock);
-#ifdef ENABLE_SSL
-    sock->default_ctx = SSL_CTX_new(SSLv23_client_method());
+    return addr->errnum;
+}
+
+const ne_inet_addr *ne_addr_first(ne_sock_addr *addr)
+{
+#ifdef USE_GETADDRINFO
+    addr->cursor = addr->result->ai_next;
+    return addr->result;
+#else
+    addr->cursor = 0;
+    return &addr->addrs[0];
 #endif
-    sock->fd = fd;
+}
+
+const ne_inet_addr *ne_addr_next(ne_sock_addr *addr)
+{
+#ifdef USE_GETADDRINFO
+    struct addrinfo *ret = addr->cursor;
+    if (addr->cursor) addr->cursor = addr->cursor->ai_next;
+#else
+    struct in_addr *ret;
+    if (++addr->cursor < addr->count)
+	ret = &addr->addrs[addr->cursor];
+    else
+	ret = NULL;
+#endif
+    return ret;
+}
+
+char *ne_addr_error(const ne_sock_addr *addr, char *buf, size_t bufsiz)
+{
+#ifdef WIN32
+    print_error(addr->errnum, buf, bufsiz);
+#else
+    const char *err;
+#ifdef USE_GETADDRINFO
+    /* override horrible generic "Name or service not known" error. */
+    if (addr->errnum == EAI_NONAME)
+	err = _("Host not found");
+    else
+	err = gai_strerror(addr->errnum);
+#elif defined(HAVE_HSTRERROR)
+    err = hstrerror(addr->errnum);
+#else
+    err = _("Host not found");
+#endif
+    ne_strnzcpy(buf, err, bufsiz);
+#endif /* WIN32 */
+    return buf;
+}
+
+char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, size_t bufsiz)
+{
+#ifdef USE_GETADDRINFO /* implies inet_ntop */
+    const char *ret;
+#ifdef AF_INET6
+    if (ia->ai_family == AF_INET6) {
+	struct sockaddr_in6 *in6 = SACAST(in6, ia->ai_addr);
+	ret = inet_ntop(AF_INET6, &in6->sin6_addr, buf, bufsiz);
+    } else
+#endif
+    if (ia->ai_family == AF_INET) {
+	struct sockaddr_in *in = SACAST(in, ia->ai_addr);
+	ret = inet_ntop(AF_INET, &in->sin_addr, buf, bufsiz);
+    } else
+	ret = NULL;
+    if (ret == NULL)
+	ne_strnzcpy(buf, "[IP address]", bufsiz);
+#else
+    ne_strnzcpy(buf, inet_ntoa(*ia), bufsiz);
+#endif
+    return buf;
+}
+
+void ne_addr_destroy(ne_sock_addr *addr)
+{
+#ifdef USE_GETADDRINFO
+    if (addr->result)
+	freeaddrinfo(addr->result);
+#else
+    if (addr->addrs)
+	ne_free(addr->addrs);
+#endif
+    ne_free(addr);
+}
+
+/* Connect socket 'fd' to address 'addr' on given 'port': */
+static int raw_connect(int fd, const ne_inet_addr *addr, unsigned int port)
+{
+#ifdef USE_GETADDRINFO
+#ifdef AF_INET6
+    /* fill in the _family field for AIX 4.3, which forgets to do so. */
+    if (addr->ai_family == AF_INET6) {
+	struct sockaddr_in6 in6;
+	memcpy(&in6, addr->ai_addr, sizeof in6);
+	in6.sin6_port = port;
+        in6.sin6_family = AF_INET6;
+	return connect(fd, (struct sockaddr *)&in6, sizeof in6);
+    } else
+#endif
+    if (addr->ai_family == AF_INET) {
+	struct sockaddr_in in;
+	memcpy(&in, addr->ai_addr, sizeof in);
+	in.sin_port = port;
+        in.sin_family = AF_INET;
+	return connect(fd, (struct sockaddr *)&in, sizeof in);
+    } else {
+	errno = EINVAL;
+	return -1;
+    }
+#else
+    struct sockaddr_in sa = {0};
+    sa.sin_family = AF_INET;
+    sa.sin_port = port;
+    sa.sin_addr = *addr;
+    return connect(fd, (struct sockaddr *)&sa, sizeof sa);
+#endif
+}
+
+ne_socket *ne_sock_create(void)
+{
+    ne_socket *sock = ne_calloc(sizeof *sock);
+    sock->rdtimeout = SOCKET_READ_TIMEOUT;
+    sock->bufpos = sock->buffer;
+    sock->ops = &iofns_raw;
+    sock->fd = -1;
     return sock;
 }
 
-/* Opens a socket to the given port at the given address.
- * Returns -1 on failure, or the socket on success. 
- * portnum must be in HOST byte order */
-nsocket *sock_connect(const struct in_addr addr, 
-		      unsigned short int portnum)
+int ne_sock_connect(ne_socket *sock,
+                    const ne_inet_addr *addr, unsigned int port)
 {
-    struct sockaddr_in sa;
     int fd;
 
-    /* Create the socket */
+#ifdef USE_GETADDRINFO
+    /* use SOCK_STREAM rather than ai_socktype: some getaddrinfo
+     * implementations do not set ai_socktype, e.g. RHL6.2. */
+    fd = socket(addr->ai_family, SOCK_STREAM, addr->ai_protocol);
+#else
     fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd < 0)
-	return NULL;
-    /* Connect the nsocket */
-    sa.sin_family = AF_INET;
-    sa.sin_port = htons(portnum); /* host -> net byte orders */
-    sa.sin_addr = addr;
-    if (connect(fd, (struct sockaddr *)&sa, sizeof(struct sockaddr_in)) < 0) {
-	(void) NEON_CLOSE(fd);
-	return NULL;
+#endif
+    if (fd < 0) {
+        set_strerror(sock, ne_errno);
+	return -1;
     }
-    /* Success - return the nsocket */
-    return create_sock(fd);
+    
+#if defined(TCP_NODELAY) && defined(HAVE_SETSOCKOPT) && defined(IPPROTO_TCP)
+    { /* Disable the Nagle algorithm; better to add write buffering
+       * instead of doing this. */
+        int flag = 1;
+        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof flag);
+    }
+#endif
+
+    if (raw_connect(fd, addr, ntohs(port))) {
+        set_strerror(sock, ne_errno);
+	ne_close(fd);
+	return -1;
+    }
+
+    sock->fd = fd;
+    return 0;
 }
 
-nsocket *sock_accept(int listener) 
+ne_inet_addr *ne_iaddr_make(ne_iaddr_type type, const unsigned char *raw)
+{
+    ne_inet_addr *ia;
+#if !defined(AF_INET6) || !defined(USE_GETADDRINFO)
+    /* fail if IPv6 address is given if IPv6 is not supported. */
+    if (type == ne_iaddr_ipv6)
+	return NULL;
+#endif
+    ia = ne_calloc(sizeof *ia);
+#ifdef USE_GETADDRINFO
+    /* ai_protocol and ai_socktype aren't used by raw_connect so
+     * ignore them here. (for now) */
+    if (type == ne_iaddr_ipv4) {
+	struct sockaddr_in *in4 = ne_calloc(sizeof *in4);
+	ia->ai_family = AF_INET;
+	ia->ai_addr = (struct sockaddr *)in4;
+	ia->ai_addrlen = sizeof *in4;
+	in4->sin_family = AF_INET;
+	memcpy(&in4->sin_addr.s_addr, raw, sizeof in4->sin_addr.s_addr);
+    }
+#ifdef AF_INET6
+    else {
+	struct sockaddr_in6 *in6 = ne_calloc(sizeof *in6);
+	ia->ai_family = AF_INET6;
+	ia->ai_addr = (struct sockaddr *)in6;
+	ia->ai_addrlen = sizeof *in6;
+	in6->sin6_family = AF_INET6;
+	memcpy(&in6->sin6_addr, raw, sizeof in6->sin6_addr.s6_addr);
+    }
+#endif
+#else /* !USE_GETADDRINFO */
+    memcpy(&ia->s_addr, raw, sizeof ia->s_addr);
+#endif    
+    return ia;
+}
+
+int ne_iaddr_cmp(const ne_inet_addr *i1, const ne_inet_addr *i2)
+{
+#ifdef USE_GETADDRINFO
+    if (i1->ai_family != i2->ai_family)
+	return i2->ai_family - i1->ai_family;
+    if (i1->ai_family == AF_INET) {
+	struct sockaddr_in *in1 = SACAST(in, i1->ai_addr), 
+	    *in2 = SACAST(in, i2->ai_addr);
+	return memcmp(&in1->sin_addr.s_addr, &in2->sin_addr.s_addr, 
+		      sizeof in1->sin_addr.s_addr);
+    } else if (i1->ai_family == AF_INET6) {
+	struct sockaddr_in6 *in1 = SACAST(in6, i1->ai_addr), 
+	    *in2 = SACAST(in6, i2->ai_addr);
+	return memcmp(in1->sin6_addr.s6_addr, in2->sin6_addr.s6_addr,
+		      sizeof in1->sin6_addr.s6_addr);
+    } else
+	return -1;
+#else
+    return memcmp(&i1->s_addr, &i2->s_addr, sizeof i1->s_addr);
+#endif
+}
+
+void ne_iaddr_free(ne_inet_addr *addr)
+{
+#ifdef USE_GETADDRINFO
+    ne_free(addr->ai_addr);
+#endif
+    ne_free(addr);
+}
+
+int ne_sock_accept(ne_socket *sock, int listener) 
 {
     int fd = accept(listener, NULL, NULL);
-    if (fd > 0) {
-	return create_sock(fd);
-    } else {
-	return NULL;
-    }
+
+    if (fd < 0)
+        return -1;
+
+    sock->fd = fd;
+    return 0;
 }
 
-int sock_get_fd(nsocket *sock)
+int ne_sock_fd(const ne_socket *sock)
 {
     return sock->fd;
 }
 
-nssl_context *sock_create_ssl_context(void)
+void ne_sock_read_timeout(ne_socket *sock, int timeout)
 {
-    nssl_context *ctx = ne_calloc(sizeof *ctx);
-#ifdef ENABLE_SSL
-    ctx->ctx = SSL_CTX_new(SSLv23_client_method());
-#endif
-    return ctx;
+    sock->rdtimeout = timeout;
 }
 
-void sock_destroy_ssl_context(nssl_context *ctx)
+#ifdef NEON_SSL
+
+void ne_sock_switch_ssl(ne_socket *sock, void *ssl)
 {
-#ifdef ENABLE_SSL
-    SSL_CTX_free(ctx->ctx);
-#endif
-    free(ctx);
+    sock->ssl.ssl = ssl;
+    sock->ops = &iofns_ossl;
 }
 
-#ifdef ENABLE_SSL
-void sock_disable_tlsv1(nssl_context *c)
+int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx)
 {
-    SSL_CTX_set_options(c->ctx, SSL_OP_NO_TLSv1);
-}
-void sock_disable_sslv2(nssl_context *c)
-{
-    SSL_CTX_set_options(c->ctx, SSL_OP_NO_SSLv2);
-
-}
-void sock_disable_sslv3(nssl_context *c)
-{
-    SSL_CTX_set_options(c->ctx, SSL_OP_NO_SSLv3);
-}
-
-/* The callback neon installs with OpenSSL for giving the private key
- * prompt.  FIXME: WTH is 'rwflag'? */
-static int key_prompt_cb(char *buf, int len, int rwflag, void *userdata)
-{
-    nssl_context *ctx = userdata;
+    SSL *ssl;
     int ret;
-    ret = ctx->key_prompt(ctx->key_userdata, ctx->key_file, buf, len);
-    if (ret)
-	return -1;
-    /* Obscurely OpenSSL requires the callback to return the length of
-     * the password, this seems a bit weird so we don't expose this in
-     * the neon API. */
-    return strlen(buf);
-}
 
-void sock_set_key_prompt(nssl_context *ctx, 
-			 nssl_key_prompt prompt, void *userdata)
-{
-    SSL_CTX_set_default_passwd_cb(ctx->ctx, key_prompt_cb);
-    SSL_CTX_set_default_passwd_cb_userdata(ctx->ctx, ctx);
-    ctx->key_prompt = prompt;
-    ctx->key_userdata = userdata;
-}
-
-#else
-void sock_disable_tlsv1(nssl_context *c) {}
-void sock_disable_sslv2(nssl_context *c) {}
-void sock_disable_sslv3(nssl_context *c) {}
-void sock_set_key_prompt(nssl_context *c, nssl_key_prompt p, void *u) {}
-#endif
-
-int sock_make_secure(nsocket *sock, nssl_context *ctx)
-{
-#ifdef ENABLE_SSL
-    int ret;
-    SSL_CTX *ssl_ctx;
-
-    if (ctx) {
-	ssl_ctx = ctx->ctx;
-    } else {
-	ssl_ctx = sock->default_ctx;
+    if (seed_ssl_prng()) {
+	set_error(sock, _("SSL disabled due to lack of entropy"));
+	return NE_SOCK_ERROR;
     }
 
-    sock->ssl = SSL_new(ssl_ctx);
-    if (!sock->ssl) {
-	sock->error = ERROR_SSL_STRING;
-	/* Usually goes wrong because: */
-	fprintf(stderr, "Have you called sock_init()!?\n");
-	return SOCK_ERROR;
+    sock->ssl.ssl = ssl = SSL_new(ctx->ctx);
+    if (!ssl) {
+	set_error(sock, _("Could not create SSL structure"));
+	return NE_SOCK_ERROR;
     }
     
-#ifdef SSL_MODE_AUTO_RETRY
-    /* OpenSSL 0.9.6 and later... */
-    (void) SSL_set_mode(sock->ssl, SSL_MODE_AUTO_RETRY);
-#endif
-
-    SSL_set_fd(sock->ssl, sock->fd);
+    SSL_set_app_data(ssl, ctx);
+    SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
+    SSL_set_fd(ssl, sock->fd);
+    sock->ops = &iofns_ossl;
     
-    ret = SSL_connect(sock->ssl);
-    if (ret == -1) {
-	sock->error = ERROR_SSL_STRING;
-	SSL_free(sock->ssl);
-	sock->ssl = NULL;
-	return SOCK_ERROR;
+    if (ctx->sess)
+	SSL_set_session(ssl, ctx->sess);
+
+    ret = SSL_connect(ssl);
+    if (ret != 1) {
+	error_ossl(sock, ret);
+	SSL_free(ssl);
+	sock->ssl.ssl = NULL;
+	return NE_SOCK_ERROR;
     }
 
-#if 0
-    /* Tommi Komulainen <Tommi.Komulainen@iki.fi> has donated his SSL
-     * cert verification from the mutt IMAP/SSL code under the
-     * LGPL... it will plug in here */
-    ret = sock_check_certicate(sock);
-    if (ret) {
-	SSL_shutdown(sock->ssl);
-	SSL_free(sock->ssl);
-	sock->ssl = NULL;
-	return ret;
-    }
-#endif
-
-    NE_DEBUG(NE_DBG_SOCKET, "SSL connected: version %s\n", 
-	   SSL_get_version(sock->ssl));
     return 0;
-#else
-    sock->error = _("This application does not have SSL support.");
-    return SOCK_ERROR;
-#endif
 }
 
-const char *sock_get_version(nsocket *sock)
+ne_ssl_socket *ne_sock_sslsock(ne_socket *sock)
 {
-#ifdef ENABLE_SSL
-    return SSL_get_version(sock->ssl);
-#else
-    return NULL;
-#endif
+    return &sock->ssl;
 }
 
-const char *sock_get_error(nsocket *sock)
+#endif
+
+const char *ne_sock_error(const ne_socket *sock)
 {
     return sock->error;
 }
 
-/* Closes given nsocket */
-int sock_close(nsocket *sock) {
+/* Closes given ne_socket */
+int ne_sock_close(ne_socket *sock)
+{
     int ret;
-#ifdef ENABLE_SSL
-    if (sock->ssl) {
-	SSL_shutdown(sock->ssl);
-	SSL_free(sock->ssl);
+#ifdef NEON_SSL
+    if (sock->ssl.ssl) {
+	SSL_shutdown(sock->ssl.ssl);
+	SSL_free(sock->ssl.ssl);
     }
-    SSL_CTX_free(sock->default_ctx);
 #endif
-    ret = NEON_CLOSE(sock->fd);
-    free(sock);
+    if (sock->fd < 0)
+        ret = 0;
+    else
+        ret = ne_close(sock->fd);
+    ne_free(sock);
     return ret;
 }
 
-/* FIXME: get error messages back to the caller. */   
-int sock_set_client_cert(nssl_context *ctx, const char *cert, const char *key)
-{
-#ifdef ENABLE_SSL
-    if (SSL_CTX_use_certificate_file(ctx->ctx, cert, SSL_FILETYPE_PEM) <= 0) {
-	NE_DEBUG(NE_DBG_SOCKET, "Could not load cert file.\n");
-	return -1;
-    }
-    
-    /* The cert file can contain the private key too, apparently. Not
-     * sure under what circumstances this is sensible, but hey. */
-    if (key == NULL)
-	key = cert;
-    
-    /* Set this so the callback can tell the user what's going on. */
-    ctx->key_file = key;
-    
-    if (SSL_CTX_use_PrivateKey_file(ctx->ctx, key, SSL_FILETYPE_PEM) <= 0) {
-	NE_DEBUG(NE_DBG_SOCKET, "Could not load private key file.\n");
-	return -1;
-    }
-
-    /* Sanity check. */
-    if (!SSL_CTX_check_private_key(ctx->ctx)) {
-	NE_DEBUG(NE_DBG_SOCKET, "Private key does not match certificate.\n");
-	return -1;
-    }
-
-    return 0;
-#else
-    return -1;
-#endif
-}
-
 /* Returns HOST byte order port of given name */
-int sock_service_lookup(const char *name) {
+int ne_service_lookup(const char *name)
+{
     struct servent *ent;
     ent = getservbyname(name, "tcp");
-    if (ent == NULL) {
-	return 0;
-    } else {
+    if (ent)
 	return ntohs(ent->s_port);
-    }
+    return 0;
 }

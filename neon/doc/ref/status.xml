@@ -12,13 +12,13 @@
       
       <refsynopsisdiv>
 	
-	<programlisting>#include &lt;ne_utils.h&gt;
+	<funcsynopsis><funcsynopsisinfo>#include &lt;ne_utils.h&gt;
 
 typedef struct {
     int major_version, minor_version;
     int code, klass;
     const char *reason_phrase;
-} <type>ne_status</type>;</programlisting>
+} <type>ne_status</type>;</funcsynopsisinfo></funcsynopsis>
 	
       </refsynopsisdiv>
 
@@ -32,8 +32,12 @@ The <structfield>major_version</structfield> and
 supported by the server issuing the response.  The
 <structfield>code</structfield> field gives the status code of the
 result (lying between 100 and 999 inclusive), and the
-<structfield>klass</structfield> field gives the class, which is equal
-to the most significant digit of the status.</para>
+<structfield>klass</structfield> field gives the
+class<footnote><para>the field is named <quote>klass</quote> not
+<quote>class</quote> so that the header can be used from a C++
+program, in which <quote>class</quote> is a reserved
+word)</para></footnote>, which is equal to the most significant digit
+of the status.</para>
 
 	<para>There are five classes of HTTP status code defined by
 	RFC2616:</para>
@@ -41,35 +45,34 @@ to the most significant digit of the status.</para>
 	<variablelist>
 	  <varlistentry>
 	    <term><literal>1xx</literal></term>
-	    <listitem><para>Informational response.</para></listitem>
+	    <listitem><simpara>Informational response.</simpara></listitem>
 	  </varlistentry>
 
 	  <varlistentry>
 	    <term><literal>2xx</literal></term>
-	    <listitem><para>Success: the operation was successful</para></listitem>
+	    <listitem><simpara>Success: the operation was successful</simpara></listitem>
 	  </varlistentry>
 
 	  <varlistentry>
 	    <term><literal>3xx</literal></term>
-	    <listitem><para>Redirection</para></listitem>
+	    <listitem><simpara>Redirection</simpara></listitem>
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><literal>4xx</literal></term> <listitem><para>Client
+	    <term><literal>4xx</literal></term> <listitem><simpara>Client
 	    error: the request made was incorrect in some
-	    manner.</para></listitem>
+	    manner.</simpara></listitem>
 	  </varlistentry>
 
 	  <varlistentry>
 	    <term><literal>5xx</literal></term>
-	    <listitem><para>Server error</para></listitem>
+	    <listitem><simpara>Server error</simpara></listitem>
 	  </varlistentry>
 	</variablelist>
 
       </refsect1>
 
       <refsect1> <title>See also</title> <para><xref
-linkend="ne_get_status"/>, <xref
-linkend="ne_parse_status_line"/></para> </refsect1>
+linkend="ne_get_status"/>.</para> </refsect1>
 
     </refentry>

@@ -1,0 +1,35 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>ne_set_useragent</title><link rel="stylesheet" href="../manual.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="neon HTTP/WebDAV client library"><link rel="up" href="ref.html" title="neon API reference"><link rel="previous" href="refsess.html" title="ne_session_create"><link rel="next" href="refreqbody.html" title="ne_set_request_body_buffer"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">ne_set_useragent</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="refsess.html">Prev</a> </td><th width="60%" align="center">neon API reference</th><td width="20%" align="right"> <a accesskey="n" href="refreqbody.html">Next</a></td></tr></table><hr></div><div class="refentry" lang="en"><a name="refopts"></a><div class="titlepage"><div></div><div></div></div><div class="refnamediv"><h2>Name</h2><p>ne_set_useragent, ne_set_persist, ne_set_read_timeout, ne_set_expect100 &#8212; common settings for HTTP sessions</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;ne_session.h&gt;</pre><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="funcprototype"><code><code xmlns="" class="funcdef">void <b class="fsfunc">ne_set_useragent</b>(</code>ne_session *<var xmlns="" class="pdparam">session</var>, const char *<var xmlns="" class="pdparam">product</var><code xmlns="">)</code>;</code></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="funcprototype"><code><code xmlns="" class="funcdef">void <b class="fsfunc">ne_set_persist</b>(</code>ne_session *<var xmlns="" class="pdparam">session</var>, int <var xmlns="" class="pdparam">flag</var><code xmlns="">)</code>;</code></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="funcprototype"><code><code xmlns="" class="funcdef">void <b class="fsfunc">ne_set_read_timeout</b>(</code>ne_session *<var xmlns="" class="pdparam">session</var>, int <var xmlns="" class="pdparam">timeout</var><code xmlns="">)</code>;</code></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="funcprototype"><code><code xmlns="" class="funcdef">void <b class="fsfunc">ne_set_expect100</b>(</code>ne_session *<var xmlns="" class="pdparam">session</var>, int <var xmlns="" class="pdparam">flag</var><code xmlns="">)</code>;</code></div></div></div><div class="refsect1" lang="en"><a name="id3029476"></a><h2>Description</h2><p>The <tt class="literal">User-Agent</tt> request header is used
+to identify the software which generated the request for statistical
+or debugging purposes.  neon does not send a
+<tt class="literal">User-Agent</tt> header unless a call is made to the
+<tt class="function">ne_set_useragent</tt>.
+<tt class="function">ne_set_useragent</tt> must be passed a product string
+conforming to RFC2616's product token grammar; of the form
+<tt class="literal">"Product/Version"</tt>.</p><p>By default neon will use a persistent connection
+whenever possible.  For specific applications, or for debugging
+purposes, it is sometimes useful to disable persistent connections.
+The <tt class="function">ne_set_persist</tt> function will disable
+persistent connections if passed a <tt class="parameter">flag</tt>
+parameter of <tt class="literal">0</tt>, and will enable them
+otherwise.</p><p>When neon reads from a socket, by default the read
+operation will time out after 60 seconds, and the request will fail
+giving an <span class="errorcode">NE_TIMEOUT</span> error.  To configure this
+timeout interval, call <tt class="function">ne_set_read_timeout</tt> giving
+the desired number of seconds as the <tt class="parameter">timeout</tt>
+parameter.</p><p>An extension introduced in the HTTP/1.1 specification
+was the use of the <tt class="literal">Expect: 100-continue</tt> header.
+This header allows an HTTP client to be informed of the expected
+response status before the request message body is sent: a useful
+optimisation for situations where a large message body is to be sent.
+The <tt class="function">ne_set_expect100</tt> function can be used to
+enable this feature by passing the <tt class="parameter">flag</tt>
+parameter as any non-zero integer.</p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p>Unfortunately, if this header is sent to a server which
+is not fully compliant with the HTTP/1.1 specification, a deadlock
+occurs resulting in a temporarily "hung" connection.  neon will
+recover gracefully from this situation, but only after a 15 second
+timeout.  It is highly recommended that this option is not enabled
+unless it is known that the server in use correctly implements
+<tt class="literal">Expect: 100-continue</tt> support.</p></div></div><div class="refsect1" lang="en"><a name="id3029626"></a><h2>Examples</h2><p>Set a user-agent string:</p><pre class="programlisting">ne_session *sess = ne_session_create(...);
+ne_set_useragent(sess, "MyApplication/2.1");</pre><p>Disable use of persistent connections:</p><pre class="programlisting">ne_session *sess = ne_session_create(...);
+ne_set_persist(sess, 0);</pre><p>Set a 30 second read timeout:</p><pre class="programlisting">ne_session *sess = ne_session_create(...);
+ne_set_read_timeout(sess, 30);</pre></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="refsess.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ref.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="refreqbody.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">ne_session_create </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> ne_set_request_body_buffer</td></tr></table></div></body></html>

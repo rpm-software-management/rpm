@@ -1,6 +1,6 @@
 /* 
    String utility functions
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -19,9 +19,7 @@
 
 */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -33,51 +31,54 @@
 #include <unistd.h>
 #endif
 
+#include <ctype.h> /* for isprint() etc in ne_strclean() */
+
 #include "ne_alloc.h"
 #include "ne_string.h"
 
-char *ne_token(char **str, char separator, const char *quotes)
+char *ne_token(char **str, char separator)
+{
+    char *ret = *str, *pnt = strchr(*str, separator);
+
+    if (pnt) {
+	*pnt = '\0';
+	*str = pnt + 1;
+    } else {
+	/* no separator found: return end of string. */
+	*str = NULL;
+    }
+    
+    return ret;
+}
+
+char *ne_qtoken(char **str, char separator, const char *quotes)
 {
     char *pnt, *ret = NULL;
 
-    if (quotes) {
-
-	for (pnt = *str; *pnt != '\0'; pnt++) {
-	    char *quot = strchr(quotes, *pnt);
+    for (pnt = *str; *pnt != '\0'; pnt++) {
+	char *quot = strchr(quotes, *pnt);
+	
+	if (quot) {
+	    char *qclose = strchr(pnt+1, *quot);
 	    
-	    if (quot) {
-		char *qclose = strchr(pnt+1, *quot);
-		
-		if (!qclose) {
-		    /* no closing quote: invalid string. */
-		    return NULL;
-		}
-		
-		pnt = qclose;
-	    } else if (*pnt == separator) {
-		/* found end of token. */
-		*pnt = '\0';
-		ret = *str;
-		*str = pnt + 1;
-		break;
+	    if (!qclose) {
+		/* no closing quote: invalid string. */
+		return NULL;
 	    }
-	}
-
-    } else {
-	pnt = strchr(*str, separator);
-	if (pnt != NULL) {
+	    
+	    pnt = qclose;
+	} else if (*pnt == separator) {
+	    /* found end of token. */
 	    *pnt = '\0';
 	    ret = *str;
 	    *str = pnt + 1;
+	    return ret;
 	}
     }
 
-    if (ret == NULL) {
-	/* no separator found: return end of string. */
-	ret = *str;
-	*str = NULL;
-    }
-
+    /* no separator found: return end of string. */
+    ret = *str;
+    *str = NULL;
     return ret;
 }
 
@@ -85,7 +86,7 @@ char *ne_shave(char *str, const char *whitespace)
 {
     char *pnt, *ret = str;
 
-    while (strchr(whitespace, *ret) != NULL) {
+    while (*ret != '\0' && strchr(whitespace, *ret) != NULL) {
 	ret++;
     }
 
@@ -242,7 +243,7 @@ char **pair_string(const char *str, const char compsep, const char kvsep,
 	pairs[2*n][length] = '\0';
 	pairs[2*n+1] = split?(split + 1):NULL;
     }
-    free(comps);
+    ne_free(comps);
     pairs[2*count] = pairs[2*count+1] = NULL;    
     return pairs;
 }
@@ -251,50 +252,19 @@ void split_string_free(char **components)
 {
     char **pnt = components;
     while (*pnt != NULL) {
-	free(*pnt);
+	ne_free(*pnt);
 	pnt++;
     }
-    free(components);
+    ne_free(components);
 }
 
 void pair_string_free(char **pairs) 
 {
     int n;
     for (n = 0; pairs[n] != NULL; n+=2) {
-	free(pairs[n]);
+	ne_free(pairs[n]);
     }
-    free(pairs);
-}
-
-char *shave_string(const char *str, const char ch) 
-{
-    size_t len = strlen(str);
-    char *ret;
-    if (str[len-1] == ch) {
-	len--;
-    }
-    if (str[0] == ch) {
-	len--;
-	str++;
-    }
-    ret = ne_malloc(len + 1);
-    memcpy(ret, str, len);
-    ret[len] = '\0';
-    return ret;
-}
-
-char *ne_concat(const char *str, ...)
-{
-    va_list ap;
-    ne_buffer *tmp = ne_buffer_create();
-
-    ne_buffer_zappend(tmp, str);
-
-    va_start(ap, str);
-    ne_buffer_concat(tmp, ap);
-    va_end(ap);
-    
-    return ne_buffer_finish(tmp);
+    ne_free(pairs);
 }
 
 void ne_buffer_clear(ne_buffer *buf) 
@@ -304,96 +274,109 @@ void ne_buffer_clear(ne_buffer *buf)
 }  
 
 /* Grows for given size, returns 0 on success, -1 on error. */
-int ne_buffer_grow(ne_buffer *buf, size_t newsize) 
+void ne_buffer_grow(ne_buffer *buf, size_t newsize) 
 {
-    size_t newlen, oldbuflen;
-
 #define NE_BUFFER_GROWTH 512
-
-    if (newsize <= buf->length) return 0; /* big enough already */
-    /* FIXME: ah, can't remember my maths... better way to do this? */
-    newlen = ((newsize / NE_BUFFER_GROWTH) + 1) * NE_BUFFER_GROWTH;
-    
-    oldbuflen = buf->length;
-    /* Reallocate bigger buffer */
-    buf->data = realloc(buf->data, newlen);
-    if (buf->data == NULL) return -1;
-    buf->length = newlen;
-    /* Zero-out the new bit of buffer */
-    memset(buf->data+oldbuflen, 0, newlen-oldbuflen);
-
-    return 0;
+    if (newsize > buf->length) {
+	/* If it's not big enough already... */
+	buf->length = ((newsize / NE_BUFFER_GROWTH) + 1) * NE_BUFFER_GROWTH;
+	
+	/* Reallocate bigger buffer */
+	buf->data = ne_realloc(buf->data, buf->length);
+    }
 }
 
-int ne_buffer_concat(ne_buffer *buf, ...) 
+static size_t count_concat(va_list *ap)
+{
+    size_t total = 0;
+    char *next;
+
+    while ((next = va_arg(*ap, char *)) != NULL)
+	total += strlen(next);
+
+    return total;
+}
+
+static void do_concat(char *str, va_list *ap) 
+{
+    char *next;
+
+    while ((next = va_arg(*ap, char *)) != NULL) {
+#ifdef HAVE_STPCPY
+        str = stpcpy(str, next);
+#else
+	size_t len = strlen(next);
+	memcpy(str, next, len);
+	str += len;
+#endif
+    }
+}
+
+void ne_buffer_concat(ne_buffer *buf, ...)
 {
     va_list ap;
-    char *next;
-    size_t totallen = buf->used; 
+    ssize_t total;
 
-    /* Find out how much space we need for all the args */
     va_start(ap, buf);
-    do {
-	next = va_arg(ap, char *);
-	if (next != NULL) {
-	    totallen += strlen(next);
-	}
-    } while (next != NULL);
-    va_end(ap);
-    
+    total = buf->used + count_concat(&ap);
+    va_end(ap);    
+
     /* Grow the buffer */
-    if (ne_buffer_grow(buf, totallen))
-	return -1;
+    ne_buffer_grow(buf, total);
     
-    /* Now append the arguments to the buffer */
-    va_start(ap, buf);
-    do {
-	next = va_arg(ap, char *);
-	if (next != NULL) {
-	    /* TODO: use stpcpy */
-	    strcat(buf->data, next);
-	}
-    } while (next != NULL);
+    va_start(ap, buf);    
+    do_concat(buf->data + buf->used - 1, &ap);
+    va_end(ap);    
+
+    buf->used = total;
+    buf->data[total - 1] = '\0';
+}
+
+char *ne_concat(const char *str, ...)
+{
+    va_list ap;
+    size_t total, slen = strlen(str);
+    char *ret;
+
+    va_start(ap, str);
+    total = slen + count_concat(&ap);
     va_end(ap);
-    
-    buf->used = totallen;
-    return 0;
+
+    ret = memcpy(ne_malloc(total + 1), str, slen);
+
+    va_start(ap, str);
+    do_concat(ret + slen, &ap);
+    va_end(ap);
+
+    ret[total] = '\0';
+    return ret;    
 }
 
 /* Append zero-terminated string... returns 0 on success or -1 on
  * realloc failure. */
-int ne_buffer_zappend(ne_buffer *buf, const char *str) 
+void ne_buffer_zappend(ne_buffer *buf, const char *str) 
 {
-    size_t len = strlen(str);
-
-    if (ne_buffer_grow(buf, buf->used + len)) {
-	return -1;
-    }
-    strcat(buf->data, str);
-    buf->used += len;
-    return 0;
+    ne_buffer_append(buf, str, strlen(str));
 }
 
-int ne_buffer_append(ne_buffer *buf, const char *data, size_t len) 
+void ne_buffer_append(ne_buffer *buf, const char *data, size_t len) 
 {
-    if (ne_buffer_grow(buf, buf->used + len)) {
-	return -1;
-    }
+    ne_buffer_grow(buf, buf->used + len);
     memcpy(buf->data + buf->used - 1, data, len);
     buf->used += len;
     buf->data[buf->used - 1] = '\0';
-    return 0;
 }
 
 ne_buffer *ne_buffer_create(void) 
 {
-    return ne_buffer_create_sized(512);
+    return ne_buffer_ncreate(512);
 }
 
-ne_buffer *ne_buffer_create_sized(size_t s) 
+ne_buffer *ne_buffer_ncreate(size_t s) 
 {
-    ne_buffer *buf = ne_malloc(sizeof(struct ne_buffer_s));
-    buf->data = ne_calloc(s);
+    ne_buffer *buf = ne_malloc(sizeof(*buf));
+    buf->data = ne_malloc(s);
+    buf->data[0] = '\0';
     buf->length = s;
     buf->used = 1;
     return buf;
@@ -401,16 +384,14 @@ ne_buffer *ne_buffer_create_sized(size_t s)
 
 void ne_buffer_destroy(ne_buffer *buf) 
 {
-    if (buf->data) {
-	free(buf->data);
-    }
-    free(buf);
+    ne_free(buf->data);
+    ne_free(buf);
 }
 
 char *ne_buffer_finish(ne_buffer *buf)
 {
     char *ret = buf->data;
-    free(buf);
+    ne_free(buf);
     return ret;
 }
 
@@ -419,51 +400,120 @@ void ne_buffer_altered(ne_buffer *buf)
     buf->used = strlen(buf->data) + 1;
 }
 
-char *ne_utf8_encode(const char *str)
+static const char *b64_alphabet =  
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789+/=";
+    
+char *ne_base64(const unsigned char *text, size_t inlen)
 {
-    char *buffer = ne_malloc(strlen(str) * 2 + 1);
-    int in, len = strlen(str);
-    char *out;
+    /* The tricky thing about this is doing the padding at the end,
+     * doing the bit manipulation requires a bit of concentration only */
+    char *buffer, *point;
+    size_t outlen;
+    
+    /* Use 'buffer' to store the output. Work out how big it should be...
+     * This must be a multiple of 4 bytes */
 
-    for (in = 0, out = buffer; in < len; in++, out++) {
-	if ((unsigned char)str[in] <= 0x7D) {
-	    *out = str[in];
-	} else {
-	    *out++ = 0xC0 | ((str[in] & 0xFC) >> 6);
-	    *out = str[in] & 0xBF;
-	}
+    outlen = (inlen*4)/3;
+    if ((inlen % 3) > 0) /* got to pad */
+	outlen += 4 - (inlen % 3);
+    
+    buffer = ne_malloc(outlen + 1); /* +1 for the \0 */
+    
+    /* now do the main stage of conversion, 3 bytes at a time,
+     * leave the trailing bytes (if there are any) for later */
+
+    for (point=buffer; inlen>=3; inlen-=3, text+=3) {
+	*(point++) = b64_alphabet[ (*text)>>2 ]; 
+	*(point++) = b64_alphabet[ ((*text)<<4 & 0x30) | (*(text+1))>>4 ]; 
+	*(point++) = b64_alphabet[ ((*(text+1))<<2 & 0x3c) | (*(text+2))>>6 ];
+	*(point++) = b64_alphabet[ (*(text+2)) & 0x3f ];
     }
 
-    /* nul-terminate */
-    *out = '\0';
+    /* Now deal with the trailing bytes */
+    if (inlen > 0) {
+	/* We always have one trailing byte */
+	*(point++) = b64_alphabet[ (*text)>>2 ];
+	*(point++) = b64_alphabet[ (((*text)<<4 & 0x30) |
+				     (inlen==2?(*(text+1))>>4:0)) ]; 
+	*(point++) = (inlen==1?'=':b64_alphabet[ (*(text+1))<<2 & 0x3c ]);
+	*(point++) = '=';
+    }
+
+    /* Null-terminate */
+    *point = '\0';
+
     return buffer;
 }
 
-/* Single byte range 0x00 -> 0x7F */
-#define SINGLEBYTE_UTF8(ch) (((unsigned char) (ch)) < 0x80)
+/* VALID_B64: fail if 'ch' is not a valid base64 character */
+#define VALID_B64(ch) (((ch) >= 'A' && (ch) <= 'Z') || \
+                       ((ch) >= 'a' && (ch) <= 'z') || \
+                       ((ch) >= '0' && (ch) <= '9') || \
+                       (ch) == '/' || (ch) == '+' || (ch) == '=')
 
-char *ne_utf8_decode(const char *str)
+/* DECODE_B64: decodes a valid base64 character. */
+#define DECODE_B64(ch) ((ch) >= 'a' ? ((ch) + 26 - 'a') : \
+                        ((ch) >= 'A' ? ((ch) - 'A') : \
+                         ((ch) >= '0' ? ((ch) + 52 - '0') : \
+                          ((ch) == '+' ? 62 : 63))))
+
+size_t ne_unbase64(const char *data, unsigned char **out)
 {
-    int n, m, len = strlen(str);
-    char *dest = ne_malloc(len + 1);
+    size_t inlen = strlen(data);
+    unsigned char *outp;
+    const unsigned char *in;
+
+    if (inlen == 0 || (inlen % 4) != 0) return 0;
     
-    for (n = 0, m = 0; n < len; n++, m++) {
-	if (SINGLEBYTE_UTF8(str[n])) {
-	    dest[m] = str[n];
-	} else {
-	    /* We only deal with 8-bit data, which will be encoded as
-	     * two bytes of UTF-8 */
-	    if ((len - n < 2) || (str[n] & 0xFC) != 0xC0) {
-		free(dest);
-		return NULL;
-	    } else {
-		/* see hip_xml.c for comments. */
-		dest[m] = ((str[n] & 0x03) << 6) | (str[n+1] & 0x3F);
-		n++;
-	    }
-	}
+    outp = *out = ne_malloc(inlen * 3 / 4);
+
+    for (in = (const unsigned char *)data; *in; in += 4) {
+        unsigned int tmp;
+        if (!VALID_B64(in[0]) || !VALID_B64(in[1]) || !VALID_B64(in[2]) ||
+            !VALID_B64(in[3]) || in[0] == '=' || in[1] == '=' ||
+            (in[2] == '=' && in[3] != '=')) {
+            ne_free(*out);
+            return 0;
+        }
+        tmp = (DECODE_B64(in[0]) & 0x3f) << 18 |
+            (DECODE_B64(in[1]) & 0x3f) << 12;
+        *outp++ = (tmp >> 16) & 0xff;
+        if (in[2] != '=') {
+            tmp |= (DECODE_B64(in[2]) & 0x3f) << 6;
+            *outp++ = (tmp >> 8) & 0xff;
+            if (in[3] != '=') {
+                tmp |= DECODE_B64(in[3]) & 0x3f;
+                *outp++ = tmp & 0xff;
+            }
+        }
     }
-    
-    dest[m] = '\0';
-    return dest;
+
+    return outp - *out;
+}
+
+char *ne_strclean(char *str)
+{
+    char *pnt;
+    for (pnt = str; *pnt; pnt++)
+        if (iscntrl(*pnt) || !isprint(*pnt)) *pnt = ' ';
+    return str;
+}
+
+char *ne_strerror(int errnum, char *buf, size_t buflen)
+{
+#ifdef HAVE_STRERROR_R
+#ifdef STRERROR_R_CHAR_P
+    /* glibc-style strerror_r which may-or-may-not use provided buffer. */
+    char *ret = strerror_r(errnum, buf, buflen);
+    if (ret != buf)
+	ne_strnzcpy(buf, ret, buflen);
+#else /* POSIX-style strerror_r: */
+    strerror_r(errnum, buf, buflen);
+#endif
+#else /* no strerror_r: */
+    ne_strnzcpy(buf, strerror(errnum), buflen);
+#endif
+    return buf;
 }

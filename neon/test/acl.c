@@ -1,6 +1,6 @@
 /* 
    Dummy ACL tests
-   Copyright (C) 2001, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2003, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,27 +24,39 @@
 #include "child.h"
 #include "utils.h"
 
+#ifdef NEON_NODAV
+
+static int skip(void)
+{ 
+    t_context("built without WebDAV support");
+    return SKIP;
+}
+
+ne_test tests[] = { T(skip), T(NULL) };
+
+#else
+
 /**** DUMMY TESTS: just makes sure the stuff doesn't dump core. */
 
 static int test_acl(const char *uri, ne_acl_entry *es, int nume)
 {
-    ne_session *sess = ne_session_create();
+    ne_session *sess;
 
-    ne_session_server(sess, "localhost", 7777);
-    ON(spawn_server(7777, single_serve_string, 
-		    "HTTP/1.1 200 OK\r\n"
-		    "Connection: close\r\n\r\n"));
+    CALL(make_session(&sess, single_serve_string, 
+		      "HTTP/1.1 200 OK\r\n"
+		      "Connection: close\r\n\r\n"));
     
     ON(ne_acl_set(sess, uri, es, nume));
     
     CALL(await_server());
+    ne_session_destroy(sess);
     
     return OK;
 }
 
 static int grant_all(void)
 {
-    ne_acl_entry e;
+    ne_acl_entry e = {0};
 
     e.apply = ne_acl_all;
     e.type = ne_acl_grant;
@@ -56,7 +68,7 @@ static int grant_all(void)
 
 static int deny_all(void)
 {
-    ne_acl_entry e;
+    ne_acl_entry e = {0};
 
     e.apply = ne_acl_all;
     e.type = ne_acl_deny;
@@ -68,7 +80,7 @@ static int deny_all(void)
 
 static int deny_one(void)
 {
-    ne_acl_entry e;
+    ne_acl_entry e = {0};
 
     e.apply = ne_acl_href;
     e.type = ne_acl_deny;
@@ -81,7 +93,7 @@ static int deny_one(void)
 
 static int deny_byprop(void)
 {
-    ne_acl_entry e;
+    ne_acl_entry e = {0};
 
     e.apply = ne_acl_property;
     e.type = ne_acl_deny;
@@ -99,3 +111,5 @@ ne_test tests[] = {
     T(deny_byprop),
     T(NULL)
 };
+
+#endif /* NEON_NODAV */

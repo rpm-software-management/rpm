@@ -29,16 +29,19 @@
 	<title>Description</title>
 
 	<para>The <function>ne_get_status</function> function returns
-a pointer to the HTTP status object giving the result of a request
-(once dispatched).  The object persists until the associated request
-is destroyed.</para>
+a pointer to the HTTP status object giving the result of a request.
+The object returned only becomes valid once the request has been
+<emphasis>successfully</emphasis> dispatched (the return value of
+<function>ne_request_dispatch</function> or
+<function>ne_begin_request</function> was zero).  The object remains
+valid until the associated request object is destroyed.</para>
 
       </refsect1>
 
       <refsect1>
 	<title>See also</title>
 
-	<para><xref linkend="ne_get_status"/>, <xref
+	<para><xref linkend="ne_status"/>, <xref
 	linkend="ne_request_create"/></para>
 
       </refsect1>

@@ -1,6 +1,6 @@
 /* 
    HTTP authentication routines
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,28 +22,37 @@
 #ifndef NE_AUTH_H
 #define NE_AUTH_H
 
-#include "ne_session.h" /* for http_session */
+#include "ne_session.h" /* for ne_session */
 
 BEGIN_NEON_DECLS
 
-/* The callback used to request the username and password in the given
- * realm. The username and password must be placed in malloc()-allocated
- * memory.
- * Must return:
- *   0 on success: *username and *password must be non-NULL, and will
- *                 be free'd by the HTTP layer when necessary
- *  -1 to cancel (*username and *password are ignored.)
- */
-typedef int (*ne_request_auth)(
-    void *userdata, const char *realm,
-    char **username, char **password);
+/* Size of username/password buffers passed to ne_auth_creds
+ * callback. */
+#define NE_ABUFSIZ (256)
 
-/* Set callbacks to handle server and proxy authentication.
- * userdata is passed as the first argument to the callback. */
-void ne_set_server_auth(ne_session *sess, ne_request_auth callback, 
-			void *userdata);
-void ne_set_proxy_auth(ne_session *sess, ne_request_auth callback, 
-		       void *userdata);
+/* The callback used to request the username and password in the given
+ * realm. The username and password must be copied into the buffers
+ * which are both of size NE_ABUFSIZ.  The 'attempt' parameter is zero
+ * on the first call to the callback, and increases by one each time
+ * an attempt to authenticate fails.
+ *
+ * The callback must return zero to indicate that authentication
+ * should be attempted with the username/password, or non-zero to
+ * cancel the request. (if non-zero, username and password are
+ * ignored.)  */
+typedef int (*ne_auth_creds)(void *userdata, const char *realm, int attempt,
+			     char *username, char *password);
+
+/* TOP TIP: if you just wish to try authenticating once (even if the
+ * user gets the username/password wrong), have your implementation of
+ * the callback return the 'attempt' value.  */
+
+/* Set callbacks to provide credentials for server and proxy
+ * authentication.  userdata is passed as the first argument to the
+ * callback.  The callback is called *indefinitely* until either it
+ * returns non-zero, or authentication is successful.  */
+void ne_set_server_auth(ne_session *sess, ne_auth_creds creds, void *userdata);
+void ne_set_proxy_auth(ne_session *sess, ne_auth_creds creds, void *userdata);
 
 /* Clear any stored authentication details for the given session. */
 void ne_forget_auth(ne_session *sess);

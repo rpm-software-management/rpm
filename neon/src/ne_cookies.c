@@ -1,6 +1,6 @@
 /* 
    Basic cookie support for neon
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -41,9 +41,11 @@
 #include "ne_string.h"
 #include "ne_alloc.h"
 
+#define COOKIE_ID "http://www.webdav.org/neon/hooks/cookies"
+
 static void set_cookie_hdl(void *userdata, const char *value)
 {
-    char **pairs = pair_string(value, ';', '=', HTTP_QUOTES, HTTP_WHITESPACE);
+    char **pairs = pair_string(value, ';', '=', "\"'", " \r\n\t");
     ne_cookie *cook;
     ne_cookie_cache *cache = userdata;
     int n;
@@ -66,29 +68,28 @@ static void set_cookie_hdl(void *userdata, const char *value)
     
     if (cook == NULL) {
 	NE_DEBUG(NE_DBG_HTTP, "New cookie.\n");
-	cook = ne_malloc(sizeof(ne_cookie));
-	memset(cook, 0, sizeof(ne_cookie));
-	cook->name = pairs[0];
+	cook = ne_malloc(sizeof *cook);
+	memset(cook, 0, sizeof *cook);
+	cook->name = ne_strdup(ne_shave(pairs[0], " \t\r\n"));
 	cook->next = cache->cookies;
 	cache->cookies = cook;
     } else {
 	/* Free the old value */
-	free(cook->value);
+	ne_free(cook->value);
     }
 
-    cook->value = pairs[1];
+    cook->value = ne_strdup(ne_shave(pairs[1], " \t\r\n"));
 
     for (n = 2; pairs[n] != NULL; n+=2) {
+        if (!pairs[n+1]) continue;
 	NE_DEBUG(NE_DBG_HTTP, "Cookie parm %s=%s\n", pairs[n], pairs[n+1]);
 	if (strcasecmp(pairs[n], "path") == 0) {
-	    cook->path = pairs[n+1];
-	    pairs[n+1] = NULL;
+	    cook->path = ne_strdup(pairs[n+1]);
 	} else if (strcasecmp(pairs[n], "max-age") == 0) {
 	    int t = atoi(pairs[n+1]);
 	    cook->expiry = time(NULL) + (time_t)t;
 	} else if (strcasecmp(pairs[n], "domain") == 0) {
-	    cook->domain = pairs[n+1];
-	    pairs[n+1] = NULL;
+	    cook->domain = ne_strdup(pairs[n+1]);
 	}
     }
 
@@ -97,17 +98,17 @@ static void set_cookie_hdl(void *userdata, const char *value)
     pair_string_free(pairs);
 }
 
-static void *create(void *session, ne_request *req, const char *method, const char *uri)
+static void create(ne_request *req, void *session,
+		   const char *method, const char *uri)
 {
     ne_cookie_cache *cache = session;
     ne_add_response_header_handler(req, "Set-Cookie", set_cookie_hdl, cache);
-    return cache;
 }
 
 /* Just before sending the request: let them add headers if they want */
-static void pre_send(void *private, ne_buffer *request)
+static void pre_send(ne_request *req, void *session, ne_buffer *request)
 {
-    ne_cookie_cache *cache = private;
+    ne_cookie_cache *cache = session;
     ne_cookie *cook;
     
     if (cache->cookies == NULL) {
@@ -123,20 +124,13 @@ static void pre_send(void *private, ne_buffer *request)
 	}
     }
     
-    ne_buffer_zappend(request, EOL);
-    
+    ne_buffer_zappend(request, "\r\n");
 }
 
-static void destroy(void *private)
+/* Register cookie handling for given session using given cache. */
+void ne_cookie_register(ne_session *sess, ne_cookie_cache *cache)
 {
-    /* FIXME */
-    return;
+    ne_hook_create_request(sess, create, cache);
+    ne_hook_pre_send(sess, pre_send, cache);
 }
 
-ne_request_hooks ne_cookie_hooks = {
-    "http://www.webdav.org/neon/hooks/cookies",
-    create,
-    pre_send,
-    NULL,
-    destroy
-};

@@ -1,0 +1,32 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>neon-config</title><link rel="stylesheet" href="../manual.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="neon HTTP/WebDAV client library"><link rel="up" href="ref.html" title="neon API reference"><link rel="previous" href="refneon.html" title="neon"><link rel="next" href="refreqhdr.html" title="ne_add_request_header"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">neon-config</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="refneon.html">Prev</a> </td><th width="60%" align="center">neon API reference</th><td width="20%" align="right"> <a accesskey="n" href="refreqhdr.html">Next</a></td></tr></table><hr></div><div class="refentry" lang="en"><a name="refconfig"></a><div class="titlepage"><div></div><div></div></div><div class="refnamediv"><h2>Name</h2><p>neon-config &#8212; script providing information about installed copy
+	of neon library</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><div class="cmdsynopsis"><p><tt class="command">neon-config</tt>  [<tt class="option">--prefix</tt>] [[<tt class="option">--cflags</tt>] |  [<tt class="option">--libs</tt>] |  [<tt class="option">--la-file</tt>] |  [<tt class="option">--support</tt> <i class="replaceable"><tt>feature</tt></i>] |  [<tt class="option">--help</tt>] |  [<tt class="option">--version</tt>]]</p></div></div><div class="refsect1" lang="en"><a name="id3020952"></a><h2>Description</h2><p>The <span><b class="command">neon-config</b></span> script provides
+information about an installed copy of the neon library.  The
+<tt class="option">--cflags</tt> and <tt class="option">--libs</tt> options instruct
+how to compile and link an application against the library; the
+<tt class="option">--version</tt> and <tt class="option">--support</tt> options can
+help determine whether the library meets the applications
+requirements.</p></div><div class="refsect1" lang="en"><a name="id3020986"></a><h2>Options</h2><div class="variablelist"><table border="0"><col align="left" valign="top"><tbody><tr><td><span class="term"><tt class="option">--cflags</tt></span></td><td>Print the flags which should be passed to
+the C compiler when compiling object files, when the object files use
+neon header files.</td></tr><tr><td><span class="term"><tt class="option">--libs</tt></span></td><td>Print the flags which should be passed to
+the linker when linking an application which uses the neon
+library</td></tr><tr><td><span class="term"><tt class="option">--la-file</tt></span></td><td>Print the location of the libtool library
+script, <tt class="filename">libneon.la</tt>, which can be used to link against
+neon by applications using libtool.</td></tr><tr><td><span class="term"><tt class="option">--version</tt></span></td><td>Print the version of the library</td></tr><tr><td><span class="term"><tt class="option">--prefix</tt> <i class="replaceable"><tt>dir</tt></i></span></td><td>If <i class="replaceable"><tt>dir</tt></i> is given; relocate output of
+<tt class="option">--cflags</tt> and <tt class="option">--libs</tt> as if neon was
+installed in given prefix directory.  Otherwise, print the
+installation prefix of the library.</td></tr><tr><td><span class="term"><tt class="option">--support</tt> <i class="replaceable"><tt>feature</tt></i></span></td><td>The script exits with success if
+<i class="replaceable"><tt>feature</tt></i> is supported by the
+library.</td></tr><tr><td><span class="term"><tt class="option">--help</tt></span></td><td>Print help message; includes list of known
+	    features and whether they are supported or not.</td></tr></tbody></table></div></div><div class="refsect1" lang="en"><a name="example"></a><h2>Example</h2><p>Below is a Makefile fragment which could be used to
+build an application against an installed neon library, when the
+<span><b class="command">neon-config</b></span> script can be found in
+<tt class="envar">$PATH</tt>.</p><pre class="programlisting">CFLAGS = `neon-config --cflags`
+LIBS = `neon-config --libs`
+OBJECTS = myapp.o
+TARGET = myapp
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
+
+myapp.o: myapp.c
+	$(CC) $(CFLAGS) -c myapp.c -o myapp.o</pre></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="refneon.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ref.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="refreqhdr.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">neon </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> ne_add_request_header</td></tr></table></div></body></html>

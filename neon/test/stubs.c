@@ -1,6 +1,6 @@
 /* 
    neon test suite
-   Copyright (C) 2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2002-2003, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -94,13 +94,58 @@ static int stub_decompress(void)
 static int stub_ssl(void)
 {
     ne_session *sess = ne_session_create("https", "localhost", 7777);
-    
+    ne_ssl_certificate *cert;
+    ne_ssl_client_cert *cc;
+
     /* these should all fail when SSL is not supported. */
-    ONN("load default CA succeeded", ne_ssl_load_default_ca(sess) == 0);
-    ONN("load CA succeeded", ne_ssl_load_ca(sess, "Makefile") == 0);
-    ONN("load PKCS12 succeeded", ne_ssl_load_pkcs12(sess, "Makefile") == 0);
-    ONN("load PEM succeeded", ne_ssl_load_pem(sess, "Makefile", NULL) == 0);
-    
+    cert = ne_ssl_cert_read("Makefile");
+    if (cert) {
+        char *dn, digest[60], date[NE_SSL_VDATELEN];
+        const ne_ssl_certificate *issuer;
+
+        /* This branch should never be executed, but lets pretend it
+         * will to prevent the compiler optimising this code away if
+         * it's placed after the cert != NULL test.  And all that
+         * needs to be tested is that these functions link OK. */
+        dn = ne_ssl_readable_dname(ne_ssl_cert_subject(cert));
+        ONN("this code shouldn't run", dn != NULL);
+        dn = ne_ssl_readable_dname(ne_ssl_cert_issuer(cert));
+        ONN("this code shouldn't run", dn != NULL);
+        issuer = ne_ssl_cert_signedby(cert);
+        ONN("this code shouldn't run", issuer != NULL);
+        ONN("this code shouldn't run", ne_ssl_cert_digest(cert, digest));
+        ne_ssl_cert_validity(cert, date, date);
+        ONN("this code shouldn't run",
+            ne_ssl_dname_cmp(ne_ssl_cert_subject(cert),
+                             ne_ssl_cert_issuer(cert)));
+        ONN("this code shouldn't run", ne_ssl_cert_identity(issuer) != NULL);
+        ONN("this code shouldn't run", ne_ssl_cert_export(cert) != NULL);
+    }
+
+    ONN("this code shouldn't run", ne_ssl_cert_import("foo") != NULL);
+    ONN("this code shouldn't run", ne_ssl_cert_read("Makefile") != NULL);
+    ONN("this code shouldn't succeed", ne_ssl_cert_cmp(NULL, NULL) == 0);
+
+    ONN("certificate load succeeded", cert != NULL);
+    ne_ssl_cert_free(cert);
+
+    cc = ne_ssl_clicert_read("Makefile");
+    if (cc) {
+        const char *name;
+        /* dead branch as above. */
+        cert = (void *)ne_ssl_clicert_owner(cc);
+        ONN("this code shouldn't run", cert != NULL);
+        name = ne_ssl_clicert_name(cc);
+        ONN("this code shouldn't run", name != NULL);
+        ONN("this code shouldn't run", ne_ssl_clicert_decrypt(cc, "fubar"));
+        ne_ssl_set_clicert(sess, cc);
+    }
+
+    ONN("client certificate load succeeded", cc != NULL);
+    ne_ssl_clicert_free(cc);
+
+    ne_ssl_trust_default_ca(sess);
+
     ne_session_destroy(sess);
     return OK;
 }

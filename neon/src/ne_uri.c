@@ -1,6 +1,6 @@
 /* 
    HTTP URI handling
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,6 +24,9 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -34,71 +37,58 @@
 #include <ctype.h>
 
 #include "ne_utils.h" /* for 'min' */
-#include "ne_string.h" /* for CONCAT3 */
+#include "ne_string.h" /* for ne_buffer */
 #include "ne_alloc.h"
 #include "ne_uri.h"
 
-char *uri_parent(const char *uri) 
+char *ne_path_parent(const char *uri) 
 {
-    const char *pnt;
-    char *ret;
-    pnt = uri+strlen(uri)-1;
-    while (*(--pnt) != '/' && pnt >= uri) /* noop */;
-    if (pnt < uri) {
-	/* not a valid absPath */
+    size_t len = strlen(uri);
+    const char *pnt = uri + len - 1;
+    /* skip trailing slash (parent of "/foo/" is "/") */
+    if (pnt >= uri && *pnt == '/')
+	pnt--;
+    /* find previous slash */
+    while (pnt > uri && *pnt != '/')
+	pnt--;
+    if (pnt < uri || (pnt == uri && *pnt != '/'))
 	return NULL;
-    }
-    /*  uri    
-     *   V
-     *   |---|
-     *   /foo/bar/
-     */
-    ret = ne_malloc((pnt - uri) + 2);
-    memcpy(ret, uri, (pnt - uri) + 1);
-    ret[1+(pnt-uri)] = '\0';
-    pnt++;
-    return ret;
+    return ne_strndup(uri, pnt - uri + 1);
 }
 
-int uri_has_trailing_slash(const char *uri) 
+int ne_path_has_trailing_slash(const char *uri) 
 {
     size_t len = strlen(uri);
     return ((len > 0) &&
 	    (uri[len-1] == '/'));
 }
 
-const char *uri_abspath(const char *uri) 
+unsigned int ne_uri_defaultport(const char *scheme)
 {
-    const char *ret;
-    /* Look for the scheme: */
-    ret = strstr(uri, "://");
-    if (ret == NULL) {
-	/* No scheme */
-	ret = uri;
-    } else {
-	/* Look for the abs_path */
-	ret = strchr(ret+3, '/');
-	if (ret == NULL) {
-	    /* Uh-oh */
-	    ret = uri;
-	}
-    }
-    return ret;
+    /* RFC2616/3.2.3 says use case-insensitive comparisons here. */
+    if (strcasecmp(scheme, "http") == 0)
+	return 80;
+    else if (strcasecmp(scheme, "https") == 0)
+	return 443;
+    else
+	return 0;
 }
 
+/* TODO: Also, maybe stop malloc'ing here, take a "char *" uri, modify
+ * it in-place, and have fields point inside passed uri.  More work
+ * for the caller then though. */
 /* TODO: not a proper URI parser */
-int uri_parse(const char *uri, struct uri *parsed, 
-	      const struct uri *defaults)
+int ne_uri_parse(const char *uri, ne_uri *parsed)
 {
-    const char *pnt, *slash, *colon, *atsign;
+    const char *pnt, *slash, *colon, *atsign, *openbk;
 
-    parsed->port = -1;
+    parsed->port = 0;
     parsed->host = NULL;
     parsed->path = NULL;
     parsed->scheme = NULL;
     parsed->authinfo = NULL;
 
-    if (strlen(uri) == 0) {
+    if (uri[0] == '\0') {
 	return -1;
     }
 
@@ -108,26 +98,30 @@ int uri_parse(const char *uri, struct uri *parsed,
 	pnt += 3; /* start of hostport segment */
     } else {
 	pnt = uri;
-	if (defaults && defaults->scheme != NULL) {
-	    parsed->scheme = ne_strdup(defaults->scheme);
-	}
     }
     
     atsign = strchr(pnt, '@');
     slash = strchr(pnt, '/');
+    openbk = strchr(pnt, '[');
 
     /* Check for an authinfo segment in the hostport segment. */
     if (atsign != NULL && (slash == NULL || atsign < slash)) {
 	parsed->authinfo = ne_strndup(pnt, atsign - pnt);
 	pnt = atsign + 1;
     }
-
-    colon = strchr(pnt, ':');
+    
+    if (openbk && (!slash || openbk < slash)) {
+	const char *closebk = strchr(openbk, ']');
+	if (closebk == NULL)
+	    return -1;
+	colon = strchr(closebk + 1, ':');
+    } else {
+	colon = strchr(pnt, ':');
+    }
 
     if (slash == NULL) {
 	parsed->path = ne_strdup("/");
 	if (colon == NULL) {
-	    if (defaults) parsed->port = defaults->port;
 	    parsed->host = ne_strdup(pnt);
 	} else {
 	    parsed->port = atoi(colon+1);
@@ -136,7 +130,6 @@ int uri_parse(const char *uri, struct uri *parsed,
     } else {
 	if (colon == NULL || colon > slash) {
 	    /* No port segment */
-	    if (defaults) parsed->port = defaults->port;
 	    if (slash != uri) {
 		parsed->host = ne_strndup(pnt, slash - pnt);
 	    } else {
@@ -153,32 +146,16 @@ int uri_parse(const char *uri, struct uri *parsed,
     return 0;
 }
 
-void uri_free(struct uri *uri)
+void ne_uri_free(ne_uri *u)
 {
-    NE_FREE(uri->host);
-    NE_FREE(uri->path);
-    NE_FREE(uri->scheme);
-    NE_FREE(uri->authinfo);
+    if (u->host) ne_free(u->host);
+    if (u->path) ne_free(u->path);
+    if (u->scheme) ne_free(u->scheme);
+    if (u->authinfo) ne_free(u->authinfo);
+    memset(u, 0, sizeof *u);
 }
 
-/* Returns an absoluteURI */
-char *uri_absolute(const char *uri, const char *scheme, 
-		   const char *hostport) 
-{
-    char *ret;
-    /* Is it absolute already? */
-    if (strncmp(uri, scheme, strlen(scheme)) == 0)  {
-	/* Yes it is */
-	ret = ne_strdup(uri);
-    } else {
-	/* Oh no it isn't */
-	CONCAT3(ret, scheme, hostport, uri);
-    }
-    return ret;
-}
-
-/* Un-escapes a URI. Returns ne_malloc-allocated URI */
-char *uri_unescape(const char *uri) 
+char *ne_path_unescape(const char *uri) 
 {
     const char *pnt;
     char *ret, *retpos, buf[5] = { "0x00\0" };
@@ -188,6 +165,7 @@ char *uri_unescape(const char *uri)
 	    if (!isxdigit((unsigned char) pnt[1]) || 
 		!isxdigit((unsigned char) pnt[2])) {
 		/* Invalid URI */
+                ne_free(ret);
 		return NULL;
 	    }
 	    buf[2] = *++pnt; buf[3] = *++pnt; /* bit faster than memcpy */
@@ -238,10 +216,7 @@ static const char uri_chars[128] = {
 #undef AN
 #undef RE
 
-/* Escapes the abspath segment of a URI.
- * Returns ne_malloc-allocated string.
- */
-char *uri_abspath_escape(const char *abs_path) 
+char *ne_path_escape(const char *abs_path) 
 {
     const char *pnt;
     char *ret, *retpos;
@@ -273,16 +248,45 @@ char *uri_abspath_escape(const char *abs_path)
 
 #undef ESCAPE
 
+#define CASECMP(field) do { \
+n = strcasecmp(u1->field, u2->field); if (n) return n; } while(0)
+
+#define CMP(field) do { \
+n = strcmp(u1->field, u2->field); if (n) return n; } while(0)
+
+/* As specified by RFC 2616, section 3.2.3. */
+int ne_uri_cmp(const ne_uri *u1, const ne_uri *u2)
+{
+    int n;
+    
+    if (u1->path[0] == '\0' && strcmp(u2->path, "/") == 0)
+	return 0;
+    if (u2->path[0] == '\0' && strcmp(u1->path, "/") == 0)
+	return 0;
+
+    CMP(path);
+    CASECMP(host);
+    CASECMP(scheme);
+    if (u1->port > u2->port)
+	return 1;
+    else if (u1->port < u2->port)
+	return -1;
+    return 0;
+}
+
+#undef CMP
+#undef CASECMP
+
 /* TODO: implement properly */
-int uri_compare(const char *a, const char *b) 
+int ne_path_compare(const char *a, const char *b) 
 {
     int ret = strcasecmp(a, b);
     if (ret) {
 	/* This logic says: "If the lengths of the two URIs differ by
 	 * exactly one, and the LONGER of the two URIs has a trailing
 	 * slash and the SHORTER one DOESN'T, then..." */
-	int traila = uri_has_trailing_slash(a),
-	    trailb = uri_has_trailing_slash(b),
+	int traila = ne_path_has_trailing_slash(a),
+	    trailb = ne_path_has_trailing_slash(b),
 	    lena = strlen(a), lenb = strlen(b);
 	if (traila != trailb && abs(lena - lenb) == 1 &&
 	    ((traila && lena > lenb) || (trailb && lenb > lena))) {
@@ -295,9 +299,26 @@ int uri_compare(const char *a, const char *b)
     return ret;
 }
 
+char *ne_uri_unparse(const ne_uri *uri)
+{
+    ne_buffer *buf = ne_buffer_create();
+
+    ne_buffer_concat(buf, uri->scheme, "://", uri->host, NULL);
+
+    if (uri->port > 0 && ne_uri_defaultport(uri->scheme) != uri->port) {
+	char str[20];
+	ne_snprintf(str, 20, ":%d", uri->port);
+	ne_buffer_zappend(buf, str);
+    }
+
+    ne_buffer_zappend(buf, uri->path);
+
+    return ne_buffer_finish(buf);
+}
+
 /* Give it a path segment, it returns non-zero if child is 
  * a child of parent. */
-int uri_childof(const char *parent, const char *child) 
+int ne_path_childof(const char *parent, const char *child) 
 {
     char *root = ne_strdup(child);
     int ret;
@@ -306,8 +327,8 @@ int uri_childof(const char *parent, const char *child)
     } else {
 	/* root is the first of child, equal to length of parent */
 	root[strlen(parent)] = '\0';
-	ret = (uri_compare(parent, root) == 0);
+	ret = (ne_path_compare(parent, root) == 0);
     }
-    free(root);
+    ne_free(root);
     return ret;
 }

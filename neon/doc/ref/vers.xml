@@ -38,7 +38,9 @@
     <para>The <function>ne_version_match</function> function returns
     non-zero if the library version is not of major version
     <parameter>major</parameter>, or the minor version is less than
-    <parameter>minor</parameter>.</para>
+    <parameter>minor</parameter>.  For &neon; versions 0.x, every
+    minor version is assumed to be incompatible with every other minor
+    version.</para>  <!-- TODO: remove that for 1.0 -->
 
     <para>The <function>ne_version_string</function> function returns
     a string giving the library version.</para>

@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: neon
+Description: HTTP/WebDAV client library
+Version: @NEON_VERSION@
+Libs: -L${libdir} -lneon @NEON_LIBS@
+Cflags: -I${includedir}/neon @NEON_CFLAGS@

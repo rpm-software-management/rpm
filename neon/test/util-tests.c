@@ -1,6 +1,6 @@
 /* 
    utils tests
-   Copyright (C) 2001, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2004, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,9 +27,12 @@
 #include <string.h>
 #endif
 
-#include "http_utils.h"
-#include "neon_md5.h"
-#include "base64.h"
+#include "ne_utils.h"
+#include "ne_md5.h"
+#include "ne_alloc.h"
+#include "ne_dates.h"
+#include "ne_string.h"
+
 #include "tests.h"
 
 static const struct {
@@ -44,8 +47,12 @@ static const struct {
     { "HTTP/00001.1 200 OK", 1, 1, 200, "OK" },
     { "HTTP/1.00001 200 OK", 1, 1, 200, "OK" },
     { "HTTP/99.99 999 99999", 99, 99, 999, "99999" },
+    { "HTTP/1.1 100 ", 1, 1, 100, "" },
+
     /* these aren't really valid but we should be able to parse them. */
+    { "HTTP/1.1 100", 1, 1, 100, "" },
     { "HTTP/1.1   200   OK", 1, 1, 200, "OK" },
+    { "HTTP/1.1   200 \t  OK", 1, 1, 200, "OK" },
     { "   HTTP/1.1 200 OK", 1, 1, 200, "OK" },
     { "Norman is a dog HTTP/1.1 200 OK", 1, 1, 200, "OK" },
     { NULL }
@@ -55,85 +62,214 @@ static const char *bad_sl[] = {
     "",
     "HTTP/1.1 1000 OK",
     "HTTP/1.1 1000",
-    "HTTP/1.1 100",
+    "HTTP/-1.1 100 OK",
+    "HTTP/1.1 -100 OK",
     "HTTP/ 200 OK",
+    "HTTP/",
+    "HTTP/1.1A 100 OK",
+    "HTTP/1.",
+    "HTTP/1.1 1",
+    "Fish/1.1 100 OK",
+    "HTTP/1.1 10",
+    "HTTP",
+    "H\0TP/1.1 100 OK",
     NULL
 };  
 
 static int status_lines(void)
 {
-    http_status s;
+    ne_status s;
     int n;
-    char buf[50], *pnt;
 
     for (n = 0; accept_sl[n].status != NULL; n++) {
-	sprintf(buf, "valid %d: ", n);
-	pnt = buf + strlen(buf);
-	strcpy(pnt, "parse");
-	ONN(buf, http_parse_statusline(accept_sl[n].status, &s));
-	strcpy(pnt, "major");
-	ONN(buf, accept_sl[n].major != s.major_version);
-	strcpy(pnt, "minor");
-	ONN(buf, accept_sl[n].minor != s.minor_version);
-	strcpy(pnt, "code");
-	ONN(buf, accept_sl[n].code != s.code);
-	strcpy(pnt, "reason-phrase");
-	ONN(buf, strcmp(accept_sl[n].rp, s.reason_phrase));
+	ONV(ne_parse_statusline(accept_sl[n].status, &s),
+	    ("valid #%d: parse", n));
+	ONV(accept_sl[n].major != s.major_version, ("valid #%d: major", n));
+	ONV(accept_sl[n].minor != s.minor_version, ("valid #%d: minor", n));
+	ONV(accept_sl[n].code != s.code, ("valid #%d: code", n));
+	ONV(strcmp(accept_sl[n].rp, s.reason_phrase), 
+	    ("valid #%d: reason phrase", n));
+        ne_free(s.reason_phrase);
     }
     
     for (n = 0; bad_sl[n] != NULL; n++) {
-	sprintf(buf, "invalid %d", n);
-	ONN(buf, http_parse_statusline(bad_sl[n], &s) == 0);
+	ONV(ne_parse_statusline(bad_sl[n], &s) == 0, 
+	    ("invalid #%d", n));
     }
 
     return OK;
+}
+
+/* Write MD5 of 'len' bytes of 'str' to 'digest' */
+static unsigned char *digest_md5(const char *data, size_t len, unsigned char digest[16])
+{
+    struct ne_md5_ctx ctx;
+
+#define CHUNK 100
+    ne_md5_init_ctx(&ctx);
+    /* exercise the buffering interface */
+    while (len > CHUNK) {
+        ne_md5_process_bytes(data, CHUNK, &ctx);
+        len -= CHUNK;
+        data += CHUNK;
+    }
+    ne_md5_process_bytes(data, len, &ctx);
+    ne_md5_finish_ctx(&ctx, digest);
+    
+    return digest;
 }
 
 static int md5(void)
 {
     unsigned char buf[17] = {0}, buf2[17] = {0};
     char ascii[33] = {0};
+    char zzzs[500];
 
-    ne_md5_to_ascii(ne_md5_buffer("", 0, buf), ascii);
+    ne_md5_to_ascii(digest_md5("", 0, buf), ascii);
     ONN("MD5(null)", strcmp(ascii, "d41d8cd98f00b204e9800998ecf8427e"));
     
-    ne_md5_to_ascii(ne_md5_buffer("foobar", 7, buf), ascii);
+    ne_md5_to_ascii(digest_md5("foobar", 7, buf), ascii);
     ONN("MD5(foobar)", strcmp(ascii, "b4258860eea29e875e2ee4019763b2bb"));
 
+    /* $ perl -e 'printf "z"x500' | md5sum
+     * 8b9323bd72250ea7f1b2b3fb5046391a  - */
+    memset(zzzs, 'z', sizeof zzzs);
+    ne_md5_to_ascii(digest_md5(zzzs, sizeof zzzs, buf), ascii);
+    ONN("MD5(\"z\"x512)", strcmp(ascii, "8b9323bd72250ea7f1b2b3fb5046391a"));
+
     ne_ascii_to_md5(ascii, buf2);
-
     ON(memcmp(buf, buf2, 16));
-
-    return 0;
-}
-
-static int base64(void)
-{
-#define B64(x, y) \
-do { char *_b = ne_base64(x); ON(strcmp(_b, y)); free(_b); } while (0)
-
-    /* invent these with 
-     *  $ printf "string" | uuencode -m blah
-     */
-    B64("a", "YQ==");
-    B64("bb", "YmI=");
-    B64("ccc", "Y2Nj");
-    B64("Hello, world", "SGVsbG8sIHdvcmxk");
-    B64("I once saw a dog called norman.\n", 
-	"SSBvbmNlIHNhdyBhIGRvZyBjYWxsZWQgbm9ybWFuLgo=");
-#if 0
-    /* duh, base64() doesn't handle binary data. which moron wrote
-     * that then? add a length argument. */
-    B64("\0\0\0\0\0", "AAAAAAAK");
-#endif
-
-#undef B64
+    
     return OK;
 }
 
-test_func tests[] = {
-    status_lines,
-    md5,
-    base64,
-    NULL
+static int md5_alignment(void)
+{
+    char *bb = ne_malloc(66);
+    struct ne_md5_ctx ctx;
+
+    /* regression test for a bug in md5.c in <0.15.0 on SPARC, where
+     * the process_bytes function would SIGBUS if the buffer argument
+     * isn't 32-bit aligned. Won't trigger on x86 though. */
+    ne_md5_init_ctx(&ctx);
+    ne_md5_process_bytes(bb + 1, 65, &ctx);
+    ne_free(bb);
+
+    return OK;
+}
+
+static const struct {
+    const char *str;
+    time_t time;
+    enum { d_rfc1123, d_iso8601, d_rfc1036 } type;
+} good_dates[] = {
+    { "Fri, 08 Jun 2001 22:59:46 GMT", 992041186, d_rfc1123 },
+    { "Friday, 08-Jun-01 22:59:46 GMT", 992041186, d_rfc1036 },
+    { "Wednesday, 06-Jun-01 22:59:46 GMT", 991868386, d_rfc1036 },
+    /* some different types of ISO8601 dates. */
+    { "2001-06-08T22:59:46Z", 992041186, d_iso8601 },
+    { "2001-06-08T22:59:46.9Z", 992041186, d_iso8601 },
+    { "2001-06-08T26:00:46+03:01", 992041186, d_iso8601 },
+    { "2001-06-08T20:58:46-02:01", 992041186, d_iso8601 },
+    { NULL }
+};
+
+static int parse_dates(void)
+{
+    int n;
+
+    for (n = 0; good_dates[n].str != NULL; n++) {
+	time_t res;
+	const char *str = good_dates[n].str;
+
+	switch (good_dates[n].type) {
+	case d_rfc1036: res = ne_rfc1036_parse(str); break;
+	case d_iso8601: res = ne_iso8601_parse(str); break;
+	case d_rfc1123: res = ne_rfc1123_parse(str); break;
+	default: res = -1; break;
+	}
+	
+	ONV(res == -1, ("date %d parse", n));
+	
+#define FT "%" NE_FMT_TIME_T
+	ONV(res != good_dates[n].time, (
+	    "date %d incorrect (" FT " not " FT ")", n,
+	    res, good_dates[n].time));
+    }
+
+    return OK;
+}
+
+/* trigger segfaults in ne_rfc1036_parse() in <=0.24.5. */
+static int regress_dates(void)
+{
+    static const char *dates[] = {
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    };
+    size_t n;
+    
+    for (n = 0; n < sizeof(dates)/sizeof(dates[0]); n++) {
+        ne_rfc1036_parse(dates[n]);
+        ne_iso8601_parse(dates[n]);
+        ne_rfc1123_parse(dates[n]);
+    }
+
+    return OK;
+}
+
+static int versioning(void)
+{
+#define GOOD(n,m,msg) ONV(ne_version_match(n,m), \
+("match of " msg " failed (%d.%d)", n, m))
+#define BAD(n,m,msg) ONV(ne_version_match(n,m) == 0, \
+("match of " msg " succeeded (%d.%d)", n, m))
+    GOOD(NEON_VERSION_MAJOR, NEON_VERSION_MINOR, "current version");
+    BAD(NEON_VERSION_MAJOR, NEON_VERSION_MINOR + 1, "later minor");
+    BAD(NEON_VERSION_MAJOR + 1, 0, "later major");
+#if NEON_VERSION_MINOR > 0
+    GOOD(NEON_VERSION_MAJOR, NEON_VERSION_MINOR - 1, "earlier minor");
+#endif
+#if NEON_VERSION_MAJOR > 0
+    BAD(NEON_VERSION_MAJOR - 1, 0, "earlier major");
+#endif
+#undef GOOD
+#undef BAD
+    return OK;
+}
+
+/* basic ne_version_string() sanity tests */
+static int version_string(void)
+{
+    char buf[1024];
+    
+    ne_snprintf(buf, sizeof buf, "%s", ne_version_string());
+    
+    NE_DEBUG(NE_DBG_HTTP, "Version string: %s\n", buf);
+
+    ONN("version string too long", strlen(buf) > 200);
+    ONN("version string contained newline", strchr(buf, '\n') != NULL);
+
+    return OK;    
+}
+
+static int support(void)
+{
+#ifdef NEON_SSL
+    ONN("SSL support not advertised", !ne_supports_ssl());
+#else
+    ONN("SSL support advertised", ne_supports_ssl());
+#endif
+    return OK;
+}
+
+ne_test tests[] = {
+    T(status_lines),
+    T(md5),
+    T(md5_alignment),
+    T(parse_dates),
+    T(regress_dates),
+    T(versioning),
+    T(version_string),
+    T(support),
+    T(NULL)
 };

@@ -20,9 +20,7 @@
 
 /* Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.  */
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include "config.h"
 
 #include <sys/types.h>
 
@@ -41,6 +39,7 @@
 #include <ctype.h> /* for tolower */
 
 #include "ne_md5.h"
+#include "ne_string.h" /* for NE_ASC2HEX */
 
 #ifdef _LIBC
 # include <endian.h>
@@ -55,7 +54,6 @@
 #define md5_finish_ctx ne_md5_finish_ctx
 #define md5_read_ctx ne_md5_read_ctx
 #define md5_stream ne_md5_stream
-#define md5_buffer ne_md5_buffer
 #define md5_ctx ne_md5_ctx
 
 #ifdef WORDS_BIGENDIAN
@@ -192,29 +190,6 @@ md5_stream (stream, resblock)
   md5_finish_ctx (&ctx, resblock);
   return 0;
 }
-
-/* Compute MD5 message digest for LEN bytes beginning at BUFFER.  The
-   result is always in little endian byte order, so that a byte-wise
-   output yields to the wanted ASCII representation of the message
-   digest.  */
-void *
-md5_buffer (buffer, len, resblock)
-     const char *buffer;
-     size_t len;
-     void *resblock;
-{
-  struct md5_ctx ctx;
-
-  /* Initialize the computation context.  */
-  md5_init_ctx (&ctx);
-
-  /* Process whole buffer but last len % 64 bytes.  */
-  md5_process_bytes (buffer, len, &ctx);
-
-  /* Put result in desired memory area.  */
-  return md5_finish_ctx (&ctx, resblock);
-}
-
 
 void
 md5_process_bytes (buffer, len, ctx)
@@ -433,17 +408,14 @@ md5_process_block (buffer, len, ctx)
   ctx->D = D;
 }
 
-#define ASC2HEX(x) (((x) <= '9') ? ((x) - '0') : (tolower((x)) + 10 - 'a'))
-#define HEX2ASC(x) ((x) > 9 ? ((x) - 10 + 'a') : ((x) + '0'))
-
 /* Writes the ASCII representation of the MD5 digest into the
  * given buffer, which must be at least 33 characters long. */
 void ne_md5_to_ascii(const unsigned char md5_buf[16], char *buffer) 
 {
     int count;
     for (count = 0; count<16; count++) {
-	buffer[count*2] = HEX2ASC(md5_buf[count] >> 4);
-	buffer[count*2+1] = HEX2ASC(md5_buf[count] & 0x0f);
+	buffer[count*2] = NE_HEX2ASC(md5_buf[count] >> 4);
+	buffer[count*2+1] = NE_HEX2ASC(md5_buf[count] & 0x0f);
     }
     buffer[32] = '\0';
 }
@@ -454,7 +426,7 @@ void ne_ascii_to_md5(const char *buffer, unsigned char md5_buf[16])
 {
     int count;
     for (count = 0; count<16; count++) {
-	md5_buf[count] = ((ASC2HEX(buffer[count*2])) << 4) |
-	    ASC2HEX(buffer[count*2+1]);
+	md5_buf[count] = ((NE_ASC2HEX(buffer[count*2])) << 4) |
+	    NE_ASC2HEX(buffer[count*2+1]);
     }
 }

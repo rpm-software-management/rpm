@@ -137,13 +137,6 @@ extern void *ne_md5_read_ctx __P ((const struct ne_md5_ctx *ctx, void *resbuf));
    beginning at RESBLOCK.  */
 extern int ne_md5_stream __P ((FILE *stream, void *resblock));
 
-/* Compute MD5 message digest for LEN bytes beginning at BUFFER.  The
-   result is always in little endian byte order, so that a byte-wise
-   output yields to the wanted ASCII representation of the message
-   digest.  */
-extern void *ne_md5_buffer __P ((const char *buffer, size_t len,
-				 void *resblock));
-
 /* MD5 ascii->binary conversion */
 void ne_md5_to_ascii(const unsigned char md5_buf[16], char *buffer);
 void ne_ascii_to_md5(const char *buffer, unsigned char md5_buf[16]);

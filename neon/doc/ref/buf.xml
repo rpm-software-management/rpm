@@ -11,14 +11,14 @@
       </refnamediv>
       
       <refsynopsisdiv>
-	
-	<programlisting>#include &lt;ne_string.h&gt;
+
+	<funcsynopsis><funcsynopsisinfo>#include &lt;ne_string.h&gt;
 
 typedef struct {
     char *data;
     size_t used;
     size_t length;
-} <type>ne_buffer</type>;</programlisting>
+} <type>ne_buffer</type>;</funcsynopsisinfo></funcsynopsis>
 
       </refsynopsisdiv>
 

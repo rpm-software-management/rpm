@@ -10,7 +10,6 @@
     <refname id="ne_addr_result">ne_addr_result</refname>
     <refname id="ne_addr_first">ne_addr_first</refname>
     <refname id="ne_addr_next">ne_addr_next</refname>
-    <refname id="ne_addr_print">ne_addr_print</refname>
     <refname id="ne_addr_error">ne_addr_error</refname>
     <refname id="ne_addr_destroy">ne_addr_destroy</refname>
     <refpurpose>functions to resolve hostnames to addresses</refpurpose>
@@ -34,20 +33,13 @@
       </funcprototype>
 
       <funcprototype>
-        <funcdef>ne_inet_addr *<function>ne_addr_first</function></funcdef>
+        <funcdef>const ne_inet_addr *<function>ne_addr_first</function></funcdef>
         <paramdef>ne_sock_addr *<parameter>addr</parameter></paramdef>
       </funcprototype>
 
       <funcprototype>
-        <funcdef>ne_inet_addr *<function>ne_addr_next</function></funcdef>
+        <funcdef>const ne_inet_addr *<function>ne_addr_next</function></funcdef>
         <paramdef>ne_sock_addr *<parameter>addr</parameter></paramdef>
-      </funcprototype>
-
-      <funcprototype>
-        <funcdef>char *<function>ne_addr_print</function></funcdef>
-        <paramdef>const ne_inet_addr *<parameter>iaddr</parameter></paramdef>
-        <paramdef>char *<parameter>buffer</parameter></paramdef>
-        <paramdef>size_t <parameter>bufsiz</parameter></paramdef>
       </funcprototype>
 
       <funcprototype>
@@ -74,14 +66,14 @@
     <type>ne_sock_addr</type> object representing the address (or
     addresses) associated with the hostname.  The
     <parameter>flags</parameter> parameter is currently unused, and
-    should be passed as 0.</para>
+    must be passed as 0.</para>
 
     <para>The <parameter>hostname</parameter> passed to
     <function>ne_addr_resolve</function> can be a DNS hostname
-    (e.g. <literal>www.example.com</literal>) or an IPv4 dotted quad
-    (e.g. <literal>192.0.34.72</literal>); or, on systems which
+    (e.g. <literal>"www.example.com"</literal>) or an IPv4 dotted quad
+    (e.g. <literal>"192.0.34.72"</literal>); or, on systems which
     support IPv6, an IPv6 hex address, which may be enclosed in
-    brackets, e.g. <literal>[::1]</literal>.</para>
+    brackets, e.g. <literal>"[::1]"</literal>.</para>
 
     <para>To determine whether the hostname was successfully resolved,
     the <function>ne_addr_result</function> function is used, which
@@ -89,7 +81,7 @@
     <function>ne_addr_error</function> function can be used, which
     will copy the error string into a given
     <parameter>buffer</parameter> (of size
-    <parameter>bufsiz</parameter>.</para>
+    <parameter>bufsiz</parameter>).</para>
 
     <para>The functions <function>ne_addr_first</function> and
     <function>ne_addr_next</function> are used to retrieve the
@@ -103,10 +95,6 @@
     these functions can be passed to
     <function>ne_sock_connect</function> to connect a socket.</para>
 
-    <para>To return the string representation of a particular network
-    address, the <function>ne_addr_print</function> function can be 
-    used.</para>
-
     <para>After the address object has been used, it should be
     destroyed using <function>ne_addr_destroy</function>.</para>
 
@@ -117,8 +105,7 @@
 
     <para><function>ne_addr_resolve</function> returns a pointer to an
     address object, and never &null;.
-    <function>ne_addr_error</function> and
-    <function>ne_addr_print</function> both return the
+    <function>ne_addr_error</function> returns the
     <parameter>buffer</parameter> parameter .</para>
 
   </refsect1>
@@ -137,10 +124,10 @@ if (ne_addr_result(addr)) {
     printf("Could not resolve www.google.com: %s\n",
            ne_addr_error(addr, buf, sizeof buf));
 } else {
-    ne_inet_addr *ia;
+    const ne_inet_addr *ia;
     printf("www.google.com:");
     for (ia = ne_addr_first(addr); ia != NULL; ia = ne_addr_next(addr)) {
-        printf(" %s", ne_addr_print(ia, buf, sizeof buf));
+        printf(" %s", ne_iaddr_print(ia, buf, sizeof buf));
     }
     putchar('\n');
 }
@@ -148,13 +135,11 @@ ne_addr_destroy(addr);
 </programlisting>
   </refsect1>
 
-<!--
   <refsect1>
     <title>See also</title>
 
-    <para><xref linkend="ne_sock_connect"/></para>
+    <para><xref linkend="ne_iaddr_print"/></para>
   </refsect1>
--->
 
 </refentry>
 

@@ -1,66 +1,111 @@
-    <refentry id="refsslcert">
+<refentry id="refcert">
 
-      <refmeta>
-	<refentrytitle>ne_ssl_certificate</refentrytitle>
-	<manvolnum>3</manvolnum>
-      </refmeta>
+  <refmeta>
+    <refentrytitle>ne_ssl_cert_identity</refentrytitle>
+    <manvolnum>3</manvolnum>
+  </refmeta>
 
-      <refnamediv>
-	<refname id="ne_ssl_certificate">ne_ssl_certificate</refname>
-	<refname id="ne_ssl_dname">ne_ssl_dname</refname>
-	<refpurpose>structures representing SSL certificates</refpurpose>
-      </refnamediv>
-      
-      <refsynopsisdiv>
+  <refnamediv>
+    <refname id="ne_ssl_cert_identity">ne_ssl_cert_identity</refname>
+    <refname id="ne_ssl_cert_signedby">ne_ssl_cert_signedby</refname>
+    <refname id="ne_ssl_cert_issuer">ne_ssl_cert_issuer</refname>
+    <refname id="ne_ssl_cert_subject">ne_ssl_cert_subject</refname>
+    <refpurpose>functions to access certificate properties</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
 
-	<programlisting>#include &lt;ne_session.h&gt;
+    <funcsynopsis>
 
-/* A simplified X.509 distinguished name. */
-typedef struct {
-    const char *country, *state, *locality, *organization;
-    const char *organizationalUnit;
-    const char *commonName;
-} <type>ne_ssl_dname</type>;
+      <funcsynopsisinfo>#include &lt;ne_ssl.h&gt;</funcsynopsisinfo>
 
-/* A simplified SSL certificate. */
-typedef struct {
-    const <type>ne_ssl_dname</type> *subject, *issuer;
-    const char *from, *until;
-} <type>ne_ssl_certificate</type>;
+      <funcprototype>
+        <funcdef>const char *<function>ne_ssl_cert_identity</function></funcdef>
+        <paramdef>const ne_ssl_certificate *<parameter>cert</parameter></paramdef>
+      </funcprototype>
 
-</programlisting>
+      <funcprototype>
+        <funcdef>const ne_ssl_certificate *<function>ne_ssl_cert_signedby</function></funcdef>
+        <paramdef>const ne_ssl_certificate *<parameter>cert</parameter></paramdef>
+      </funcprototype>
 
-      </refsynopsisdiv>
+      <funcprototype>
+        <funcdef>const ne_ssl_dname *<function>ne_ssl_cert_subject</function></funcdef>
+        <paramdef>const ne_ssl_certificate *<parameter>cert</parameter></paramdef>
+      </funcprototype>
 
-      <refsect1>
-	<title>Description</title>
-	
-	<para>The <type>ne_ssl_dname</type> structure is used to
-represent a simplified X.509 distinguished name, as used in SSL
-certificates; a distinguished name is used to uniquely identify an
-entity.  Along with the fields giving the geographical and
-organizational location of the entity, the
-<structfield>commonName</structfield> field will be assigned the DNS
-hostname of the entity.  The
-<function>ne_ssl_readable_dname</function> function can be used to
-create a single-line string out of an <type>ne_ssl_dname</type>
-structure.</para>
+      <funcprototype>
+        <funcdef>const ne_ssl_dname *<function>ne_ssl_cert_issuer</function></funcdef>
+        <paramdef>const ne_ssl_certificate *<parameter>cert</parameter></paramdef>
+      </funcprototype>
 
-	<para>The <type>ne_ssl_certificate</type> structure is used to
-represent a simplified SSL certificate; containing the distinguished
-names of the <firstterm>issuer</firstterm> and
-<firstterm>subject</firstterm> of the certificate.  The issuer is the
-entity which has digitally signed the certificate to guarantee its
-authenticity; the subject is the owner of the certificate.  A
-certificate is only valid for a certain period of time: the
-<structfield>from</structfield> and <structfield>until</structfield>
-contain strings giving the validity period.</para>
+    </funcsynopsis>
 
-      </refsect1>
+  </refsynopsisdiv>
 
-      <refsect1>
-	<title>See Also</title>
-	<para><xref linkend="ne_ssl_dname"/>, <xref linkend="ne_ssl_set_verify"/></para>
-      </refsect1>
+  <refsect1>
+    <title>Description</title>
 
-    </refentry>
+    <para>The function <function>ne_ssl_cert_identity</function>
+    retrieves the <quote>identity</quote> of a certificate; for an
+    SSL server certificate, this will be the hostname for which the
+    certificate was issued.  In PKI parlance, the identity is the
+    <emphasis>common name</emphasis> attribute of the distinguished name of
+    the certificate subject.</para>
+
+    <para>The functions <function>ne_ssl_cert_subject</function> and
+    <function>ne_ssl_cert_issuer</function> can be used to access the
+    objects representing the distinguished name of the subject and of
+    the issuer of a certificate, respectively.</para>
+
+    <para>If a certificate object is part of a certificate chain, then
+    <function>ne_ssl_cert_signedby</function> can be used to find the
+    certificate which signed a particular certificate. For a
+    self-signed certificate or a certificate for which the full chain
+    is not available, this function will return &null;.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Return value</title>
+
+    <para><function>ne_ssl_cert_issuer</function> and
+    <function>ne_ssl_cert_subject</function> are guaranteed to never
+    return &null;. <function>ne_ssl_cert_identity</function> may
+    return &null; if the certificate has no specific
+    <quote>identity</quote>. <function>ne_ssl_cert_signedby</function>
+    may return &null; as covered above.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Examples</title>
+
+    <para>The following function could be used to display information
+    about a given certificate:</para>
+
+    <programlisting>void dump_cert(const ne_ssl_certificate *cert) {
+  const char *id = ne_ssl_cert_identity(cert);
+  char *dn;
+
+  if (id) 
+    printf("Certificate was issued for '%s'.\n", id);
+
+  dn = ne_ssl_readable_dname(ne_ssl_cert_subject(cert));
+  printf("Subject: %s\n", dn);
+  free(dn);
+
+  dn = ne_ssl_readable_dname(ne_ssl_cert_issuer(cert));
+  printf("Issuer: %s\n", dn);
+  free(dn);
+}</programlisting>
+
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para><xref linkend="ne_ssl_cert_cmp"/>, <xref linkend="ne_ssl_readable_dname"/></para>
+  </refsect1>
+
+</refentry>
+

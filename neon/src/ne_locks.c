@@ -1,6 +1,6 @@
 /* 
    WebDAV Class 2 locking operations
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -48,79 +48,64 @@
 
 #define HOOK_ID "http://webdav.org/neon/hooks/webdav-locking"
 
-/* The list of locks to submit in an If header 
- * for the current requests */
-struct submit_locks {
-    const struct ne_lock *lock;
-    const char *uri;
-    struct submit_locks *next;
+/* A list of lock objects. */
+struct lock_list {
+    struct ne_lock *lock;
+    struct lock_list *next, *prev;
 };
 
-struct ne_lock_session_s {
-    struct ne_lock *locks;
+struct ne_lock_store_s {
+    struct lock_list *locks;
+    struct lock_list *cursor; /* current position in 'locks' */
 };
 
-/* Per-request lock structure */
-struct request_locks {
-    struct submit_locks *locks; /* for the If header */
-    ne_lock_session *session;
+struct lh_req_cookie {
+    const ne_lock_store *store;
+    struct lock_list *submit;
 };
 
 /* Context for PROPFIND/lockdiscovery callbacks */
 struct discover_ctx {
+    ne_session *session;
     ne_lock_result results;
     void *userdata;
+    ne_buffer *cdata;
 };
 
-/* Hook callbacks */
-static void *create(void *session, ne_request *req, 
-		    const char *method, const char *uri);
-static void pre_send(void *private, ne_buffer *req);
-static void destroy(void *private);
-
-/* The hooks are needed for construction of the If header */
-static ne_request_hooks lock_hooks = {
-    HOOK_ID, /* unique id for the locking hooks */
-    create,
-    pre_send,
-    NULL, /* post_send not needed */
-    destroy
+/* Context for handling LOCK response */
+struct lock_ctx {
+    struct ne_lock active; /* activelock */
+    char *token; /* the token we're after. */
+    int found;
+    ne_buffer *cdata;
 };
 
-/* Element ID's start at HIP_ELM_UNUSED and work upwards */
+/* use the "application" state space. */
+#define ELM_LOCK_FIRST (NE_PROPS_STATE_TOP + 66)
 
-#define NE_ELM_LOCK_FIRST (NE_ELM_207_UNUSED)
+#define ELM_lockdiscovery (ELM_LOCK_FIRST)
+#define ELM_activelock (ELM_LOCK_FIRST + 1)
+#define ELM_lockscope (ELM_LOCK_FIRST + 2)
+#define ELM_locktype (ELM_LOCK_FIRST + 3)
+#define ELM_depth (ELM_LOCK_FIRST + 4)
+#define ELM_owner (ELM_LOCK_FIRST + 5)
+#define ELM_timeout (ELM_LOCK_FIRST + 6)
+#define ELM_locktoken (ELM_LOCK_FIRST + 7)
+#define ELM_lockinfo (ELM_LOCK_FIRST + 8)
+#define ELM_write (ELM_LOCK_FIRST + 9)
+#define ELM_exclusive (ELM_LOCK_FIRST + 10)
+#define ELM_shared (ELM_LOCK_FIRST + 11)
+#define ELM_href (ELM_LOCK_FIRST + 12)
+#define ELM_prop (NE_207_STATE_PROP)
 
-#define NE_ELM_lockdiscovery (NE_ELM_LOCK_FIRST)
-#define NE_ELM_activelock (NE_ELM_LOCK_FIRST + 1)
-#define NE_ELM_lockscope (NE_ELM_LOCK_FIRST + 2)
-#define NE_ELM_locktype (NE_ELM_LOCK_FIRST + 3)
-#define NE_ELM_depth (NE_ELM_LOCK_FIRST + 4)
-#define NE_ELM_owner (NE_ELM_LOCK_FIRST + 5)
-#define NE_ELM_timeout (NE_ELM_LOCK_FIRST + 6)
-#define NE_ELM_locktoken (NE_ELM_LOCK_FIRST + 7)
-#define NE_ELM_lockinfo (NE_ELM_LOCK_FIRST + 8)
-#define NE_ELM_write (NE_ELM_LOCK_FIRST + 9)
-#define NE_ELM_exclusive (NE_ELM_LOCK_FIRST + 10)
-#define NE_ELM_shared (NE_ELM_LOCK_FIRST + 11)
-
-static const struct ne_xml_elm lock_elms[] = {
-#define A(x) { "DAV:", #x, NE_ELM_ ## x, NE_XML_COLLECT } /* ANY */
-#define D(x) { "DAV:", #x, NE_ELM_ ## x, 0 }               /* normal */
-#define C(x) { "DAV:", #x, NE_ELM_ ## x, NE_XML_CDATA }   /* (#PCDATA) */
-#define E(x) { "DAV:", #x, NE_ELM_ ## x, 0 /* LEAF */ }    /* EMPTY */
-    D(lockdiscovery), D(activelock),
-    D(prop),
-    D(lockscope), D(locktype), C(depth), A(owner), C(timeout), D(locktoken),
-    /* no lockentry */
-    D(lockinfo), D(lockscope), D(locktype),
-    E(write), E(exclusive), E(shared),
-    C(href),
-#undef A
-#undef D
-#undef C
-#undef E
-    { NULL, 0, 0 }
+static const struct ne_xml_idmap element_map[] = {
+#define ELM(x) { "DAV:", #x, ELM_ ## x }
+    ELM(lockdiscovery), ELM(activelock), ELM(prop), ELM(lockscope),
+    ELM(locktype), ELM(depth), ELM(owner), ELM(timeout), ELM(locktoken),
+    ELM(lockinfo), ELM(lockscope), ELM(locktype), ELM(write), ELM(exclusive),
+    ELM(shared), ELM(href)
+    /* no "lockentry" */
+#undef ELM
 };
 
 static const ne_propname lock_props[] = {
@@ -128,237 +113,288 @@ static const ne_propname lock_props[] = {
     { NULL }
 };
 
-static void *create(void *session, ne_request *req, 
-		    const char *method, const char *uri)
+/* this simply registers the accessor for the function. */
+static void lk_create(ne_request *req, void *session, 
+		       const char *method, const char *uri)
 {
-    struct request_locks *rl = ne_calloc(sizeof *rl);
-    rl->session = session;
-    return rl;
+    struct lh_req_cookie *lrc = ne_malloc(sizeof *lrc);
+    lrc->store = session;
+    lrc->submit = NULL;
+    ne_set_request_private(req, HOOK_ID, lrc);
 }
 
-static void pre_send(void *private, ne_buffer *req)
+static void lk_pre_send(ne_request *r, void *userdata, ne_buffer *req)
 {
-    struct request_locks *rl = private;
-    
-    if (rl->locks != NULL) {
-	struct submit_locks *item;
+    struct lh_req_cookie *lrc = ne_get_request_private(r, HOOK_ID);
+
+    if (lrc->submit != NULL) {
+	struct lock_list *item;
 
 	/* Add in the If header */
 	ne_buffer_zappend(req, "If:");
-	for (item = rl->locks; item != NULL; item = item->next) {
-	    ne_buffer_concat(req, " <", item->lock->uri, "> (<",
-			   item->lock->token, ">)", NULL);
+	for (item = lrc->submit; item != NULL; item = item->next) {
+	    char *uri = ne_uri_unparse(&item->lock->uri);
+	    ne_buffer_concat(req, " <", uri, "> (<",
+			     item->lock->token, ">)", NULL);
+	    ne_free(uri);
 	}
 	ne_buffer_zappend(req, EOL);
     }
 }
 
-static void destroy(void *priv)
+/* Insert 'lock' into lock list *list. */
+static void insert_lock(struct lock_list **list, struct ne_lock *lock)
 {
-    struct request_locks *rl = priv;
-    struct submit_locks *lock, *next;
-    
-    for (lock = rl->locks; lock != NULL; lock = next) {
-	next = lock->next;
-	free(lock);
+    struct lock_list *item = ne_malloc(sizeof *item);
+    if (*list != NULL) {
+	(*list)->prev = item;
     }
-    
-    free(rl);
+    item->prev = NULL;
+    item->next = *list;
+    item->lock = lock;
+    *list = item;
 }
 
-static void free_locks(void *session)
+static void free_list(struct lock_list *list, int destroy)
 {
-    ne_lock_session *sess = session;
-    struct ne_lock *lk = sess->locks;
+    struct lock_list *next;
 
-    while (lk) {
-	struct ne_lock *nextlk = lk->next;
-	ne_lock_free(lk);
-	lk = nextlk;
-    }	
-
-    free(sess);
+    while (list != NULL) {
+	next = list->next;
+	if (destroy)
+	    ne_lock_destroy(list->lock);
+	ne_free(list);
+	list = next;
+    }
 }
 
-ne_lock_session *ne_lock_register(ne_session *sess)
+static void lk_destroy(ne_request *req, void *userdata)
 {
-    ne_lock_session *locksess = ne_calloc(sizeof *locksess);
+    struct lh_req_cookie *lrc = ne_get_request_private(req, HOOK_ID);
+    free_list(lrc->submit, 0);
+    ne_free(lrc);
+}
 
+void ne_lockstore_destroy(ne_lock_store *store)
+{
+    free_list(store->locks, 1);
+    ne_free(store);
+}
+
+ne_lock_store *ne_lockstore_create(void)
+{
+    return ne_calloc(sizeof(ne_lock_store));
+}
+
+#define CURSOR_RET(s) ((s)->cursor?(s)->cursor->lock:NULL)
+
+struct ne_lock *ne_lockstore_first(ne_lock_store *store)
+{
+    store->cursor = store->locks;
+    return CURSOR_RET(store);
+}
+
+struct ne_lock *ne_lockstore_next(ne_lock_store *store)
+{
+    store->cursor = store->cursor->next;
+    return CURSOR_RET(store);
+}
+
+void ne_lockstore_register(ne_lock_store *store, ne_session *sess)
+{
     /* Register the hooks */
-    ne_add_hooks(sess, &lock_hooks, locksess, free_locks);
-    
-    return locksess;
+    ne_hook_create_request(sess, lk_create, store);
+    ne_hook_pre_send(sess, lk_pre_send, store);
+    ne_hook_destroy_request(sess, lk_destroy, store);
 }
 
 /* Submit the given lock for the given URI */
-static void submit_lock(struct request_locks *rl, struct ne_lock *lock, 
-			const char *uri)
+static void submit_lock(struct lh_req_cookie *lrc, struct ne_lock *lock)
 {
-    struct submit_locks *slock;
+    struct lock_list *item;
 
     /* Check for dups */
-    for (slock = rl->locks; slock != NULL; slock = slock->next) {
-	if (strcasecmp(slock->lock->token, lock->token) == 0)
+    for (item = lrc->submit; item != NULL; item = item->next) {
+	if (strcasecmp(item->lock->token, lock->token) == 0)
 	    return;
     }
 
-    slock = ne_calloc(sizeof *slock);
-    slock->lock = lock;
-    slock->uri = uri;
-    slock->next = rl->locks;
-    rl->locks = slock;
+    insert_lock(&lrc->submit, lock);
 }
 
-struct ne_lock *ne_lock_find(ne_lock_session *sess, const char *uri)
+struct ne_lock *ne_lockstore_findbyuri(ne_lock_store *store,
+				       const ne_uri *uri)
 {
-    struct ne_lock *cur;
-    for (cur = sess->locks; cur != NULL; cur = cur->next) {
-	if (uri_compare(uri, cur->uri) == 0) 
-	    return cur;
+    struct lock_list *cur;
+
+    for (cur = store->locks; cur != NULL; cur = cur->next) {
+	if (ne_uri_cmp(&cur->lock->uri, uri) == 0) {
+	    return cur->lock;
+	}
     }
+
     return NULL;
 }
 
-void ne_lock_using_parent(ne_request *req, const char *uri)
+void ne_lock_using_parent(ne_request *req, const char *path)
 {
-    struct request_locks *rl = ne_request_hook_private(req, HOOK_ID);
+    struct lh_req_cookie *lrc = ne_get_request_private(req, HOOK_ID);
+    ne_uri u;
+    struct lock_list *item;
     char *parent;
 
-    if (rl == NULL)
-	return;	
-
-    parent = uri_parent(uri);
-
-    if (parent != NULL) {
-	struct ne_lock *lock;
-	/* Find any locks on the parent resource.
-	 * FIXME: should check for depth-infinity locks too. */
-	lock = ne_lock_find(rl->session, parent);
-	if (lock) {
-	    NE_DEBUG(NE_DBG_LOCKS, "Locked parent, %s on %s\n", lock->token, 
-		  lock->uri);
-	    submit_lock(rl, lock, uri);
-	}
-	free(parent);
-    }
-}
-
-int ne_lock_iterate(ne_lock_session *sess, 
-		     ne_lock_walkfunc func, void *userdata)
-{
-    struct ne_lock *lock;
-    int count = 0;
-
-    for (lock = sess->locks; lock != NULL; lock = lock->next) {
-	if (func != NULL) {
-	    (*func)(lock, userdata);
-	}
-	count++;
-    }
+    if (lrc == NULL)
+	return;
     
-    return count;
+    parent = ne_path_parent(path);
+    if (parent == NULL)
+	return;
+    
+    u.authinfo = NULL;
+    ne_fill_server_uri(ne_get_session(req), &u);
+
+    for (item = lrc->store->locks; item != NULL; item = item->next) {
+
+	/* Only care about locks which are on this server. */
+	u.path = item->lock->uri.path;
+	if (ne_uri_cmp(&u, &item->lock->uri))
+	    continue;
+	
+	/* This lock is needed if it is an infinite depth lock which
+	 * covers the parent, or a lock on the parent itself. */
+	if ((item->lock->depth == NE_DEPTH_INFINITE && 
+	     ne_path_childof(item->lock->uri.path, parent)) ||
+	    ne_path_compare(item->lock->uri.path, parent) == 0) {
+	    NE_DEBUG(NE_DBG_LOCKS, "Locked parent, %s on %s\n",
+		     item->lock->token, item->lock->uri.path);
+	    submit_lock(lrc, item->lock);
+	}
+    }
+
+    u.path = parent; /* handy: makes u.path valid and ne_free(parent). */
+    ne_uri_free(&u);
 }
 
 void ne_lock_using_resource(ne_request *req, const char *uri, int depth)
 {
-    /* Grab the private cookie for this request */
-    struct request_locks *rl = ne_request_hook_private(req, HOOK_ID);
-    struct ne_lock *lock; /* all the known locks */
+    struct lh_req_cookie *lrc = ne_get_request_private(req, HOOK_ID);
+    struct lock_list *item;
     int match;
 
-    if (rl == NULL)
+    if (lrc == NULL)
 	return;	
 
-    /* Iterate over the list of session locks to see if any of
-     * them apply to this resource */
-    for (lock = rl->session->locks; lock != NULL; lock = lock->next) {
+    /* Iterate over the list of stored locks to see if any of them
+     * apply to this resource */
+    for (item = lrc->store->locks; item != NULL; item = item->next) {
 	
 	match = 0;
 	
-	if (depth == NE_DEPTH_INFINITE && uri_childof(uri, lock->uri)) {
+	if (depth == NE_DEPTH_INFINITE &&
+	    ne_path_childof(uri, item->lock->uri.path)) {
 	    /* Case 1: this is a depth-infinity request which will 
 	     * modify a lock somewhere inside the collection. */
-	    NE_DEBUG(NE_DBG_LOCKS, "Has child: %s\n", lock->token);
+	    NE_DEBUG(NE_DBG_LOCKS, "Has child: %s\n", item->lock->token);
 	    match = 1;
 	} 
-	else if (uri_compare(uri, lock->uri) == 0) {
+	else if (ne_path_compare(uri, item->lock->uri.path) == 0) {
 	    /* Case 2: this request is directly on a locked resource */
-	    NE_DEBUG(NE_DBG_LOCKS, "Has direct lock: %s\n", lock->token);
+	    NE_DEBUG(NE_DBG_LOCKS, "Has direct lock: %s\n", item->lock->token);
 	    match = 1;
 	}
-	else if (lock->depth == NE_DEPTH_INFINITE && 
-		 uri_childof(lock->uri, uri)) {
+	else if (item->lock->depth == NE_DEPTH_INFINITE && 
+		 ne_path_childof(item->lock->uri.path, uri)) {
 	    /* Case 3: there is a higher-up infinite-depth lock which
 	     * covers the resource that this request will modify. */
-	    NE_DEBUG(NE_DBG_LOCKS, "Is child of: %s\n", lock->token);
+	    NE_DEBUG(NE_DBG_LOCKS, "Is child of: %s\n", item->lock->token);
 	    match = 1;
 	}
 	
 	if (match) {
-	    submit_lock(rl, lock, uri);
+	    submit_lock(lrc, item->lock);
 	}
     }
 
 }
 
-void ne_lock_add(ne_lock_session *sess, struct ne_lock *lock)
+void ne_lockstore_add(ne_lock_store *store, struct ne_lock *lock)
 {
-    if (sess->locks != NULL) {
-	sess->locks->prev = lock;
-    }
-    lock->prev = NULL;
-    lock->next = sess->locks;
-    sess->locks = lock;
+    insert_lock(&store->locks, lock);
 }
 
-void ne_lock_remove(ne_lock_session *sess, struct ne_lock *lock)
+void ne_lockstore_remove(ne_lock_store *store, struct ne_lock *lock)
 {
-    if (lock->prev != NULL) {
-	lock->prev->next = lock->next;
+    struct lock_list *item;
+
+    /* Find the lock */
+    for (item = store->locks; item != NULL; item = item->next)
+	if (item->lock == lock)
+	    break;
+    
+    if (item->prev != NULL) {
+	item->prev->next = item->next;
     } else {
-	sess->locks = lock->next;
+	store->locks = item->next;
     }
-    if (lock->next != NULL) {
-	lock->next->prev = lock->prev;
+    if (item->next != NULL) {
+	item->next->prev = item->prev;
     }
+    ne_free(item);
 }
 
 struct ne_lock *ne_lock_copy(const struct ne_lock *lock)
 {
     struct ne_lock *ret = ne_calloc(sizeof *ret);
 
-    /* TODO: check whether uri or token are NULL? Or, maybe, might as
-     * well crash now if they are, since something else will later
-     * on. */
-    ret->uri = ne_strdup(lock->uri);
+    ret->uri.path = ne_strdup(lock->uri.path);
+    ret->uri.host = ne_strdup(lock->uri.host);
+    ret->uri.scheme = ne_strdup(lock->uri.scheme);
+    ret->uri.port = lock->uri.port;
+    ret->token = ne_strdup(lock->token);
     ret->depth = lock->depth;
     ret->type = lock->type;
     ret->scope = lock->scope;
-    ret->token = ne_strdup(lock->token);
     if (lock->owner) ret->owner = ne_strdup(lock->owner);
     ret->timeout = lock->timeout;
 
     return ret;
 }
 
-void ne_lock_free(struct ne_lock *lock)
+struct ne_lock *ne_lock_create(void)
 {
-    NE_FREE(lock->uri);
-    NE_FREE(lock->owner);
-    NE_FREE(lock->token);
-    free(lock);
+    struct ne_lock *lock = ne_calloc(sizeof *lock);
+    lock->depth = NE_DEPTH_ZERO;
+    lock->type = ne_locktype_write;
+    lock->scope = ne_lockscope_exclusive;
+    lock->timeout = NE_TIMEOUT_INVALID;
+    return lock;
 }
 
-int ne_unlock(ne_session *sess, struct ne_lock *lock)
+void ne_lock_free(struct ne_lock *lock)
 {
-    ne_request *req = ne_request_create(sess, "UNLOCK", lock->uri);
+    ne_uri_free(&lock->uri);
+    NE_FREE(lock->owner);
+    NE_FREE(lock->token);
+}
+
+void ne_lock_destroy(struct ne_lock *lock)
+{
+    ne_lock_free(lock);
+    ne_free(lock);
+}
+
+int ne_unlock(ne_session *sess, const struct ne_lock *lock)
+{
+    ne_request *req = ne_request_create(sess, "UNLOCK", lock->uri.path);
     int ret;
     
     ne_print_request_header(req, "Lock-Token", "<%s>", lock->token);
     
-    /* TODO: need this or not?
-     * it definitely goes away if lock-null resources go away */
-    ne_lock_using_parent(req, lock->uri);
+    /* UNLOCK of a lock-null resource removes the resource from the
+     * parent collection; so an UNLOCK may modify the parent
+     * collection. (somewhat counter-intuitive, and not easily derived
+     * from 2518.) */
+    ne_lock_using_parent(req, lock->uri.path);
 
     ret = ne_request_dispatch(req);
     
@@ -373,58 +409,8 @@ int ne_unlock(ne_session *sess, struct ne_lock *lock)
     return ret;
 }
 
-static int check_context(ne_xml_elmid parent, ne_xml_elmid child) {
-    NE_DEBUG(NE_DBG_XML, "ne_locks: check_context %d in %d\n", child, parent);
-    switch (parent) {
-    case NE_ELM_root:
-	/* TODO: for LOCK requests only...
-	 * shouldn't allow this for PROPFIND really */
-	if (child == NE_ELM_prop)
-	    return NE_XML_VALID;
-	break;	    
-    case NE_ELM_prop:
-	if (child == NE_ELM_lockdiscovery)
-	    return NE_XML_VALID;
-	break;
-    case NE_ELM_lockdiscovery:
-	if (child == NE_ELM_activelock)
-	    return NE_XML_VALID;
-	break;
-    case NE_ELM_activelock:
-	switch (child) {
-	case NE_ELM_lockscope:
-	case NE_ELM_locktype:
-	case NE_ELM_depth:
-	case NE_ELM_owner:
-	case NE_ELM_timeout:
-	case NE_ELM_locktoken:
-	    return NE_XML_VALID;
-	default:
-	    break;
-	}
-	break;
-    case NE_ELM_lockscope:
-	switch (child) {
-	case NE_ELM_exclusive:
-	case NE_ELM_shared:
-	    return NE_XML_VALID;
-	default:
-	    break;
-	}
-    case NE_ELM_locktype:
-	if (child == NE_ELM_write)
-	    return NE_XML_VALID;
-	break;
-	/* ... depth is PCDATA, owner is COLLECT, timeout is PCDATA */
-    case NE_ELM_locktoken:
-	if (child == NE_ELM_href)
-	    return NE_XML_VALID;
-	break;
-    }
-    return NE_XML_DECLINE;
-}
-
-static int parse_depth(const char *depth) {
+static int parse_depth(const char *depth)
+{
     if (strcasecmp(depth, "infinity") == 0) {
 	return NE_DEPTH_INFINITE;
     } else if (isdigit(depth[0])) {
@@ -434,11 +420,12 @@ static int parse_depth(const char *depth) {
     }
 }
 
-static long parse_timeout(const char *timeout) {
+static long parse_timeout(const char *timeout)
+{
     if (strcasecmp(timeout, "infinite") == 0) {
 	return NE_TIMEOUT_INFINITE;
     } else if (strncasecmp(timeout, "Second-", 7) == 0) {
-	long to = strtol(timeout, NULL, 10);
+	long to = strtol(timeout+7, NULL, 10);
 	if (to == LONG_MIN || to == LONG_MAX)
 	    return NE_TIMEOUT_INVALID;
 	return to;
@@ -452,53 +439,56 @@ static void discover_results(void *userdata, const char *href,
 {
     struct discover_ctx *ctx = userdata;
     struct ne_lock *lock = ne_propset_private(set);
+    const ne_status *status = ne_propset_status(set, &lock_props[0]);
 
-    if (lock == NULL)
-	return;
-
-    lock->uri = ne_strdup(href);
-
-    ctx->results(ctx->userdata, lock, 
-		 href, ne_propset_status(set, &lock_props[0]));
-
-    
-    ne_lock_free(lock);
+    /* Require at least that the lock has a token. */
+    if (lock->token) {
+	if (status && status->klass != 2) {
+	    ctx->results(ctx->userdata, NULL, lock->uri.path, status);
+	} else {
+	    ctx->results(ctx->userdata, lock, lock->uri.path, NULL);
+	}
+    }
+    else if (status) {
+	ctx->results(ctx->userdata, NULL, href, status);
+    }
+	
+    ne_lock_destroy(lock);
 
     NE_DEBUG(NE_DBG_LOCKS, "End of response for %s\n", href);
 }
 
 static int 
-end_element_common(struct ne_lock *l, const struct ne_xml_elm *elm,
-		   const char *cdata)
+end_element_common(struct ne_lock *l, int state, const char *cdata)
 {
-    switch (elm->id){ 
-    case NE_ELM_write:
+    switch (state) { 
+    case ELM_write:
 	l->type = ne_locktype_write;
 	break;
-    case NE_ELM_exclusive:
+    case ELM_exclusive:
 	l->scope = ne_lockscope_exclusive;
 	break;
-    case NE_ELM_shared:
+    case ELM_shared:
 	l->scope = ne_lockscope_shared;
 	break;
-    case NE_ELM_depth:
+    case ELM_depth:
 	NE_DEBUG(NE_DBG_LOCKS, "Got depth: %s\n", cdata);
 	l->depth = parse_depth(cdata);
 	if (l->depth == -1) {
 	    return -1;
 	}
 	break;
-    case NE_ELM_timeout:
+    case ELM_timeout:
 	NE_DEBUG(NE_DBG_LOCKS, "Got timeout: %s\n", cdata);
 	l->timeout = parse_timeout(cdata);
 	if (l->timeout == NE_TIMEOUT_INVALID) {
 	    return -1;
 	}
 	break;
-    case NE_ELM_owner:
+    case ELM_owner:
 	l->owner = strdup(cdata);
 	break;
-    case NE_ELM_href:
+    case ELM_href:
 	l->token = strdup(cdata);
 	break;
     }
@@ -506,32 +496,141 @@ end_element_common(struct ne_lock *l, const struct ne_xml_elm *elm,
 }
 
 /* End-element handler for lock discovery PROPFIND response */
-static int 
-end_element_ldisc(void *userdata, const struct ne_xml_elm *elm, 
-		  const char *cdata) 
+static int end_element_ldisc(void *userdata, int state, 
+                             const char *nspace, const char *name)
 {
     struct ne_lock *lock = ne_propfind_current_private(userdata);
+    struct discover_ctx *ctx = userdata;
 
-    return end_element_common(lock, elm, cdata);
+    return end_element_common(lock, state, ctx->cdata->data);
+}
+
+static inline int can_accept(int parent, int id)
+{
+    return (parent == NE_XML_STATEROOT && id == ELM_prop) ||
+        (parent == ELM_prop && id == ELM_lockdiscovery) ||
+        (parent == ELM_lockdiscovery && id == ELM_activelock) ||
+        (parent == ELM_activelock && 
+         (id == ELM_lockscope || id == ELM_locktype ||
+          id == ELM_depth || id == ELM_owner ||
+          id == ELM_timeout || id == ELM_locktoken)) ||
+        (parent == ELM_lockscope &&
+         (id == ELM_exclusive || id == ELM_shared)) ||
+        (parent == ELM_locktype && id == ELM_write) ||
+        (parent == ELM_locktoken && id == ELM_href);
+}
+
+static int ld_startelm(void *userdata, int parent,
+                       const char *nspace, const char *name,
+		       const char **atts)
+{
+    struct discover_ctx *ctx = userdata;
+    int id = ne_xml_mapid(element_map, NE_XML_MAPLEN(element_map),
+                          nspace, name);
+    
+    ne_buffer_clear(ctx->cdata);
+    
+    if (can_accept(parent, id))
+        return id;
+    else
+        return NE_XML_DECLINE;
+}    
+
+#define MAX_CDATA (256)
+
+static int lk_cdata(void *userdata, int state,
+                    const char *cdata, size_t len)
+{
+    struct lock_ctx *ctx = userdata;
+
+    if (ctx->cdata->used + len < MAX_CDATA)
+        ne_buffer_append(ctx->cdata, cdata, len);
+    
+    return 0;
+}
+
+static int ld_cdata(void *userdata, int state,
+                    const char *cdata, size_t len)
+{
+    struct discover_ctx *ctx = userdata;
+
+    if (ctx->cdata->used + len < MAX_CDATA)
+        ne_buffer_append(ctx->cdata, cdata, len);
+    
+    return 0;
+}
+
+static int lk_startelm(void *userdata, int parent,
+                       const char *nspace, const char *name,
+		       const char **atts)
+{
+    struct lock_ctx *ctx = userdata;
+    int id;
+
+    id = ne_xml_mapid(element_map, NE_XML_MAPLEN(element_map), nspace, name);
+
+    NE_DEBUG(NE_DBG_LOCKS, "lk_startelm: %s => %d\n", name, id);
+
+    /* Lock-Token header is a MUST requirement: if the token
+     * is not known, bail out. */
+    if (id == 0 || ctx->token == NULL)
+	return NE_XML_DECLINE;
+
+    /* TODO: only accept 'prop' as root for LOCK response */
+    if (!can_accept(parent, id))
+        return NE_XML_DECLINE;
+
+    if (id == ELM_activelock && !ctx->found) {
+	/* a new activelock */
+	ne_lock_free(&ctx->active);
+	memset(&ctx->active, 0, sizeof ctx->active);
+    }
+
+    ne_buffer_clear(ctx->cdata);
+
+    return id;
 }
 
 /* End-element handler for LOCK response */
-static int
-end_element_lock(void *userdata, const struct ne_xml_elm *elm, 
-		 const char *cdata)
+static int lk_endelm(void *userdata, int state,
+                     const char *nspace, const char *name)
 {
-    struct ne_lock *lock = userdata;
-    return end_element_common(lock, elm, cdata);
+    struct lock_ctx *ctx = userdata;
+
+    if (ctx->found)
+	return 0;
+
+    if (end_element_common(&ctx->active, state, ctx->cdata->data))
+	return -1;
+
+    if (state == ELM_activelock) {
+	if (ctx->active.token && strcmp(ctx->active.token, ctx->token) == 0) {
+	    ctx->found = 1;
+	}
+    }
+
+    return 0;
 }
 
-static void *create_private(void *userdata, const char *uri)
+static void *ld_create(void *userdata, const char *href)
 {
-    return ne_calloc(sizeof(struct ne_lock));
+    struct discover_ctx *ctx = userdata;
+    struct ne_lock *lk = ne_lock_create();
+
+    if (ne_uri_parse(href, &lk->uri) != 0) {
+	ne_lock_destroy(lk);
+	return NULL;
+    }
+    
+    if (!lk->uri.host)
+	ne_fill_server_uri(ctx->session, &lk->uri);
+
+    return lk;
 }
 
 /* Discover all locks on URI */
 int ne_lock_discover(ne_session *sess, const char *uri, 
-		      ne_lock_result callback, void *userdata)
+		     ne_lock_result callback, void *userdata)
 {
     ne_propfind_handler *handler;
     struct discover_ctx ctx = {0};
@@ -539,30 +638,57 @@ int ne_lock_discover(ne_session *sess, const char *uri,
     
     ctx.results = callback;
     ctx.userdata = userdata;
+    ctx.session = sess;
+    ctx.cdata = ne_buffer_create();
 
     handler = ne_propfind_create(sess, uri, NE_DEPTH_ZERO);
 
-    ne_propfind_set_private(handler, create_private, NULL);
+    ne_propfind_set_private(handler, ld_create, &ctx);
     
-    ne_xml_push_handler(ne_propfind_get_parser(handler), lock_elms, 
-			 check_context, NULL, end_element_ldisc, handler);
+    ne_xml_push_handler(ne_propfind_get_parser(handler), 
+                        ld_startelm, ld_cdata, end_element_ldisc, handler);
     
     ret = ne_propfind_named(handler, lock_props, discover_results, &ctx);
     
+    ne_buffer_destroy(ctx.cdata);
     ne_propfind_destroy(handler);
 
     return ret;
 }
 
+static void add_timeout_header(ne_request *req, long timeout)
+{
+    if (timeout == NE_TIMEOUT_INFINITE) {
+	ne_add_request_header(req, "Timeout", "Infinite");
+    } 
+    else if (timeout != NE_TIMEOUT_INVALID && timeout > 0) {
+	ne_print_request_header(req, "Timeout", "Second-%ld", timeout);
+    }
+    /* just ignore it if timeout == 0 or invalid. */
+}
+
+/* Parse a Lock-Token response header. */
+static void get_ltoken_hdr(void *ud, const char *value)
+{
+    struct lock_ctx *ctx = ud;
+    
+    if (value[0] == '<') value++;
+    ctx->token = ne_strdup(value);
+    ne_shave(ctx->token, ">");
+}
+
 int ne_lock(ne_session *sess, struct ne_lock *lock) 
 {
-    ne_request *req = ne_request_create(sess, "LOCK", lock->uri);
+    ne_request *req = ne_request_create(sess, "LOCK", lock->uri.path);
     ne_buffer *body = ne_buffer_create();
     ne_xml_parser *parser = ne_xml_create();
     int ret, parse_failed;
+    struct lock_ctx ctx;
 
-    ne_xml_push_handler(parser, lock_elms, check_context, 
-			 NULL, end_element_lock, lock);
+    memset(&ctx, 0, sizeof ctx);
+    ctx.cdata = ne_buffer_create();    
+
+    ne_xml_push_handler(parser, lk_startelm, lk_cdata, lk_endelm, &ctx);
     
     /* Create the body */
     ne_buffer_concat(body, "<?xml version=\"1.0\" encoding=\"utf-8\"?>" EOL
@@ -579,28 +705,104 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
 
     ne_set_request_body_buffer(req, body->data, ne_buffer_size(body));
     ne_add_response_body_reader(req, ne_accept_2xx, 
-				  ne_xml_parse_v, parser);
-    ne_add_request_header(req, "Content-Type", "text/xml");
+				ne_xml_parse_v, parser);
+    ne_add_request_header(req, "Content-Type", NE_XML_MEDIA_TYPE);
     ne_add_depth_header(req, lock->depth);
+    add_timeout_header(req, lock->timeout);
+    
+    ne_add_response_header_handler(req, "Lock-Token", get_ltoken_hdr, &ctx);
 
     /* TODO: 
      * By 2518, we need this only if we are creating a lock-null resource.
      * Since we don't KNOW whether the lock we're given is a lock-null
      * or not, we cover our bases.
      */
-    ne_lock_using_parent(req, lock->uri);
+    ne_lock_using_parent(req, lock->uri.path);
     /* This one is clearer from 2518 sec 8.10.4. */
-    ne_lock_using_resource(req, lock->uri, lock->depth);
+    ne_lock_using_resource(req, lock->uri.path, lock->depth);
 
     ret = ne_request_dispatch(req);
 
     ne_buffer_destroy(body);
+    ne_buffer_destroy(ctx.cdata);
+    parse_failed = !ne_xml_valid(parser);
+    
+    if (ret == NE_OK && ne_get_status(req)->klass == 2) {
+	if (ctx.token == NULL) {
+	    ret = NE_ERROR;
+	    ne_set_error(sess, _("No Lock-Token header given"));
+	}
+	else if (parse_failed) {
+	    ret = NE_ERROR;
+	    ne_set_error(sess, "%s", ne_xml_get_error(parser));
+	}
+	else if (ne_get_status(req)->code == 207) {
+	    ret = NE_ERROR;
+	    /* TODO: set the error string appropriately */
+	}
+	else if (ctx.found) {
+	    /* it worked: copy over real lock details if given. */
+	    NE_FREE(lock->token);
+	    lock->token = ctx.token;
+	    ctx.token = NULL;
+	    if (ctx.active.timeout != NE_TIMEOUT_INVALID)
+		lock->timeout = ctx.active.timeout;
+	    lock->scope = ctx.active.scope;
+	    lock->type = ctx.active.type;
+	    if (ctx.active.depth >= 0)
+		lock->depth = ctx.active.depth;
+	    if (ctx.active.owner) {
+		NE_FREE(lock->owner);
+		lock->owner = ctx.active.owner;
+		ctx.active.owner = NULL;
+	    }
+	} else {
+	    ret = NE_ERROR;
+	    ne_set_error(sess, _("Response missing activelock for %s"), 
+			 ctx.token);
+	}
+    } else {
+	ret = NE_ERROR;
+    }
+
+    if (ctx.token)
+	ne_free(ctx.token);
+    ne_lock_free(&ctx.active);
+
+    ne_request_destroy(req);
+    ne_xml_destroy(parser);
+
+    return ret;
+}
+
+int ne_lock_refresh(ne_session *sess, struct ne_lock *lock)
+{
+    ne_request *req = ne_request_create(sess, "LOCK", lock->uri.path);
+    ne_xml_parser *parser = ne_xml_create();
+    int ret, parse_failed;
+
+    /* Handle the response and update *lock appropriately. */
+    ne_xml_push_handler(parser, lk_startelm, NULL, lk_endelm, lock);
+    
+    ne_add_response_body_reader(req, ne_accept_2xx, 
+				ne_xml_parse_v, parser);
+
+    /* Probably don't need to submit any other lock-tokens for this
+     * resource? If it's an exclusive lock, then there can be no other
+     * locks covering the resource. If it's a shared lock, then this
+     * lock (which is being refreshed) is sufficient to modify the
+     * resource state? */
+    ne_print_request_header(req, "If", "(<%s>)", lock->token);
+    add_timeout_header(req, lock->timeout);
+
+    ret = ne_request_dispatch(req);
+
     parse_failed = !ne_xml_valid(parser);
     
     if (ret == NE_OK && ne_get_status(req)->klass == 2) {
 	if (parse_failed) {
 	    ret = NE_ERROR;
-	    ne_set_error(sess, ne_xml_get_error(parser));
+	    ne_set_error(sess, "%s", ne_xml_get_error(parser));
 	}
 	else if (ne_get_status(req)->code == 207) {
 	    ret = NE_ERROR;
@@ -613,6 +815,5 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
     ne_request_destroy(req);
     ne_xml_destroy(parser);
 
-    /* TODO: free the list */
     return ret;
 }

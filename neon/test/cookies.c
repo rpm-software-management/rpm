@@ -1,6 +1,6 @@
 /* 
    Test for cookies interface (ne_cookies.h)
-   Copyright (C) 2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2002-2003, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -75,9 +75,13 @@ static int parsing(void)
 	const char *hdr, *name, *value;
     } cookies[] = {
 	{ "Set-Cookie: alpha=bar", "alpha", "bar" },
+#if 0
 	{ "Set-Cookie2: alpha=bar", "alpha", "bar" },
+#endif
 	{ "Set-Cookie: beta = bar", "beta", "bar" },
 	{ "Set-Cookie: delta = bar; norman=fish", "delta", "bar" },
+        /* parsing bug in <0.24.1 */
+        { "Set-Cookie: alpha=beta; path", "alpha", "beta" },
 	{ NULL, NULL, NULL }
     };
     int n;

@@ -1,6 +1,6 @@
 /* 
    Authentication tests
-   Copyright (C) 2001, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2003, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 #include "child.h"
 #include "utils.h"
 
-char username[BUFSIZ], password[BUFSIZ];
+static const char username[] = "Aladdin", password[] = "open sesame";
 static int auth_failed;
 
 static const char www_wally[] = "WWW-Authenticate: Basic realm=WallyWorld";
@@ -53,9 +53,9 @@ static int auth_cb(void *userdata, const char *realm, int tries,
 static void auth_hdr(char *value)
 {
 #define B "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
-    NE_DEBUG(NE_DBG_HTTP, "Got auth header: [%s]\n", value);
-    NE_DEBUG(NE_DBG_HTTP, "Wanted header:   [%s]\n", B);
     auth_failed = strcmp(value, B);
+    NE_DEBUG(NE_DBG_HTTP, "Got auth header: [%s]\nWanted header:   [%s]\n"
+	     "Result: %d\n", value, B, auth_failed);
 #undef B
 }
 
@@ -63,7 +63,7 @@ static void auth_hdr(char *value)
  * sends that header string too (appending an EOL).  If eoc is
  * non-zero, request must be last sent down a connection; otherwise,
  * clength 0 is sent to maintain a persistent connection. */
-static int send_response(nsocket *sock, const char *hdr, int code, int eoc)
+static int send_response(ne_socket *sock, const char *hdr, int code, int eoc)
 {
     char buffer[BUFSIZ];
     
@@ -80,12 +80,14 @@ static int send_response(nsocket *sock, const char *hdr, int code, int eoc)
 	strcat(buffer, "Content-Length: 0" EOL EOL);
     }
 	
-    return sock_send_string(sock, buffer);
+    return SEND_STRING(sock, buffer);
 }
 
-static int auth_serve(nsocket *sock, void *userdata)
+/* Server function which sends two responses: first requires auth,
+ * second doesn't. */
+static int auth_serve(ne_socket *sock, void *userdata)
 {
-    auth_failed = 0;
+    auth_failed = 1;
 
     /* Register globals for discard_request. */
     got_header = auth_hdr;
@@ -102,29 +104,19 @@ static int auth_serve(nsocket *sock, void *userdata)
 
 static int basic(void)
 {
-    int ret;
-    ne_session *sess = ne_session_create();
+    ne_session *sess;
 
-    ne_session_server(sess, "localhost", 7777);
-
+    CALL(make_session(&sess, auth_serve, NULL));
     ne_set_server_auth(sess, auth_cb, NULL);
 
-    strcpy(username, "Aladdin");
-    strcpy(password, "open sesame");
-
-    CALL(spawn_server(7777, auth_serve, NULL));
-    
-    ret = any_request(sess, "/norman");
+    CALL(any_2xx_request(sess, "/norman"));
 
     ne_session_destroy(sess);
-
     CALL(await_server());
-
-    ONREQ(ret);
     return OK;
 }
 
-static int retry_serve(nsocket *sock, void *ud)
+static int retry_serve(ne_socket *sock, void *ud)
 {
     discard_request(sock);
     send_response(sock, www_wally, 401, 0);
@@ -146,6 +138,18 @@ static int retry_serve(nsocket *sock, void *ud)
 
     discard_request(sock);
     send_response(sock, NULL, 200, 0);
+
+    discard_request(sock);
+    send_response(sock, www_wally, 401, 0);
+
+    discard_request(sock);
+    send_response(sock, NULL, 200, 0);
+
+    discard_request(sock);
+    send_response(sock, www_wally, 401, 0);
+
+    discard_request(sock);
+    send_response(sock, www_wally, 401, 0);
 
     discard_request(sock);
     send_response(sock, www_wally, 401, 0);
@@ -191,6 +195,14 @@ static int retry_cb(void *userdata, const char *realm, int tries,
 	    return 1;
 	}
 	break;
+    case 4:
+    case 5:
+	if (tries > 1) {
+	    t_context("Attempt counter reached #%d", tries);
+	    *count = -1;
+	    return 1;
+	}
+	return tries;
     default:
 	t_context("Count reached %d!?", *count);
 	*count = -1;
@@ -201,13 +213,12 @@ static int retry_cb(void *userdata, const char *realm, int tries,
 /* Test that auth retries are working correctly. */
 static int retries(void)
 {
-    ne_session *sess = ne_session_create();
+    ne_session *sess;
     int count = 0;
     
-    ne_session_server(sess, "localhost", 7777);
-    ne_set_server_auth(sess, retry_cb, &count);
+    CALL(make_session(&sess, retry_serve, NULL));
 
-    CALL(spawn_server(7777, retry_serve, NULL));
+    ne_set_server_auth(sess, retry_cb, &count);
 
     /* This request will be 401'ed twice, then succeed. */
     ONREQ(any_request(sess, "/foo"));
@@ -231,10 +242,53 @@ static int retries(void)
     /* auth_cb will have set up context. */
     CALL(count != 4);
 
+    /* First request is 401'ed by the server at both attempts. */
+    ONV(any_request(sess, "/foo") != NE_AUTH,
+	("auth succeeded, should have failed: %s", ne_get_error(sess)));
+
+    count++;
+
+    /* Second request is 401'ed first time, then will succeed if
+     * retried.  0.18.0 didn't reset the attempt counter though so 
+     * this didn't work. */
+    ONV(any_request(sess, "/foo") == NE_AUTH,
+	("auth failed on second try, should have succeeded: %s", ne_get_error(sess)));
+
     ne_session_destroy(sess);
 
     CALL(await_server());
 
+    return OK;
+}
+
+/* crashes with neon <0.22 */
+static int forget_regress(void)
+{
+    ne_session *sess = ne_session_create("http", "localhost", 7777);
+    ne_forget_auth(sess);
+    ne_session_destroy(sess);
+    return OK;    
+}
+
+static int fail_auth_cb(void *ud, const char *realm, int attempt, 
+			char *un, char *pw)
+{
+    return 1;
+}
+
+/* this may trigger a segfault in neon 0.21.x and earlier. */
+static int tunnel_regress(void)
+{
+    ne_session *sess = ne_session_create("https", "localhost", 443);
+    ne_session_proxy(sess, "localhost", 7777);
+    ne_set_server_auth(sess, fail_auth_cb, NULL);
+    CALL(spawn_server(7777, single_serve_string,
+		      "HTTP/1.1 401 Auth failed.\r\n"
+		      "WWW-Authenticate: Basic realm=asda\r\n"
+		      "Content-Length: 0\r\n\r\n"));
+    any_request(sess, "/foo");
+    ne_session_destroy(sess);
+    CALL(await_server());
     return OK;
 }
 
@@ -252,7 +306,10 @@ static int retries(void)
 /* proxy auth, proxy AND origin */
 
 ne_test tests[] = {
+    T(lookup_localhost),
     T(basic),
     T(retries),
+    T(forget_regress),
+    T(tunnel_regress),
     T(NULL)
 };

@@ -1,6 +1,6 @@
 /* 
    String utility functions
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,141 +29,85 @@
 
 BEGIN_NEON_DECLS
 
-/* Returns an ne_malloc-allocated UTF-8 encoded copy of 'str'. */
-char *ne_utf8_encode(const char *str);
-
-/* Returns an ne_malloc-allocated UTF-8 decode copy of 'str'.
- * Returns NULL if any of the characters in 'str' are non-8-bit.
- */
-char *ne_utf8_decode(const char *str);
-
-/* Simple string tokenizer.
- *
- * Returns the next token in *str between *str and 'separator'
- * or NUL terminator, skipping over any parts quoted using
- * a pair of any character found in 'quotes'.  After returning,
- * *str will point to the next character after the separator,
- * or NULL if no more separator characters were found. 
- *
- * quotes may be NULL.
- *
- * Returns NULL if unbalanced quotes are found. (this will not
- * happen if quotes == NULL).
- */
-char *ne_token(char **str, char separator, const char *quotes);
+/* ne_token and ne_qtoken return the next token in *str between *str
+ * and separator character 'sep' or the NUL terminator. ne_qtoken
+ * skips over any parts quoted using a pair of any one of the
+ * characters given in 'quotes'.  After returning, *str will point to
+ * the next character after the separator, or NULL if no more
+ * separator characters were found.
+ * 
+ * ne_qtoken may return NULL if unterminated quotes are found. */
+char *ne_token(char **str, char sep);
+char *ne_qtoken(char **str, char sep, const char *quotes);
 
 /* Return portion of 'str' with any characters in 'whitespace' shaved
  * off the beginning and end.  Modifies str. */
 char *ne_shave(char *str, const char *whitespace);
 
-/* Splits str into component parts using given seperator,
- * skipping given whitespace around separators and at the 
- * beginning and end of str. Separators are ignored within
- * any pair of characters specified as being quotes.
- * Returns array of components followed by a NULL pointer. The
- * components are taken from dynamically allocated memory, and
- * the entire array can be easily freed using split_string_free.
- *
- * aka: What strtok should have been.
- */
+/* Cleanse 'str' of non-printable characters.  'str' is modified
+ * in-place, and returned. */
+char *ne_strclean(char *str);
+
+/* A base64 encoder: converts 'len' bytes of 'text' to base64.
+ * Returns malloc-allocated buffer; caller must free(). */
+char *ne_base64(const unsigned char *text, size_t len);
+
+/* Base64 decoder; decodes NUL-terminated base64-encoded string
+ * 'data', places malloc-allocated raw data in '*out', returns length,
+ * or zero on decode error (in which case *out is undefined). */
+size_t ne_unbase64(const char *data, unsigned char **out);
+
+/*** OBSOLETE INTERFACES ***/
 char **split_string(const char *str, const char seperator,
 		    const char *quotes, const char *whitespace);
-
-/* As above, but returns count of items as well */
 char **split_string_c(const char *str, const char seperator,
 		      const char *quotes, const char *whitespace, int *count);
-
-/* A bit like split_string, except each component is split into a pair.
- * Each pair is returned consecutively in the return array.
- *  e.g.:
- *     strpairs("aa=bb,cc=dd", ',', '=', NULL, NULL)
- *  =>   "aa", "bb", "cc", "dd", NULL, NULL
- * Note, that if a component is *missing* it's key/value separator,
- * then the 'value' in the array will be a NULL pointer. But, if the
- * value is zero-length (i.e., the component separator follows directly
- * after the key/value separator, or with only whitespace inbetween),
- * then the value in the array will be a zero-length string.
- *  e.g.:
- *     pair_string("aaaa,bb=cc,dd=,ee=ff", ',', '=', NULL, NULL)
- *  =>   "aaaa", NULL, "bb", "cc", "dd", "", "ee", "ff"
- * A NULL key indicates the end of the array (the value will also 
- * be NULL, for convenience).
- */
 char **pair_string(const char *str, const char compsep, const char kvsep, 
 		   const char *quotes, const char *whitespace);
-
-/* Frees the array returned by split_string */
 void split_string_free(char **components);
-
-/* Frees the array returned by pair_string */
 void pair_string_free(char **pairs);
+/*** END OF OBSOLETE INTERFACES */
 
-/* Returns a string which is str with ch stripped from
- * beggining and end, if present in either. The string returned
- * is dynamically allocated using malloc().
- *
- * e.g.  shave_string("abbba", 'a')  => "bbb". */
-char *shave_string(const char *str, const char ch);
+/* String buffer handling. (Strings are zero-terminated still).  A
+ * string buffer ne_buffer * which grows dynamically with the
+ * string. */
 
-#define EOL "\r\n"
-
-#define STRIP_EOL(str)				\
-do {							\
-   char *p;						\
-   if ((p = strrchr(str, '\r')) != NULL) *p = '\0';	\
-   if ((p = strrchr(str, '\n')) != NULL) *p = '\0';	\
-} while (0)
-
-/* Return concatenation of all given strings. */
-char *ne_concat(const char *str, ...);
-
-/* String buffer handling. (Strings are zero-terminated still).
- * A string buffer sbuffer * which grows dynamically with the string. */
-
-struct ne_buffer_s {
+typedef struct {
     char *data; /* contents: null-terminated string. */
     size_t used; /* used bytes in buffer */
     size_t length; /* length of buffer */
-};
-
-typedef struct ne_buffer_s ne_buffer;
+} ne_buffer;
 
 /* Returns size of data in buffer, equiv to strlen(ne_buffer_data(buf)) */
 #define ne_buffer_size(buf) ((buf)->used - 1)
 
-/* Concatenate all given strings onto the end of the buffer.
- * The strings must be null-terminated, and MUST be followed by a
- * NULL argument marking the end of the list.
- * Returns:
- *   0 on success
- *   non-zero on error
- */
-int ne_buffer_concat(ne_buffer *buf, ...);
+/* Concatenate all given strings onto the end of the buffer.  The
+ * strings must all be NUL-terminated, and MUST be followed by a NULL
+ * argument marking the end of the list.  */
+void ne_buffer_concat(ne_buffer *buf, ...);
 
-/* Create a new ne_buffer. Returns NULL on error */
+/* Create a new ne_buffer. */
 ne_buffer *ne_buffer_create(void);
 
-/* Create a new ne_buffer of given minimum size. Returns NULL on error */
-ne_buffer *ne_buffer_create_sized(size_t size);
+/* Create a new ne_buffer of given minimum size. */
+ne_buffer *ne_buffer_ncreate(size_t size);
 
 /* Destroys (deallocates) a buffer */
 void ne_buffer_destroy(ne_buffer *buf);
 
-/* Append a zero-terminated string 'str' to buf.
- * Returns 0 on success, non-zero on error. */
-int ne_buffer_zappend(ne_buffer *buf, const char *str);
+/* Append a NUL-terminated string 'str' to buf. */
+void ne_buffer_zappend(ne_buffer *buf, const char *str);
 
 /* Append 'len' bytes of 'data' to buf.  'data' does not need to be
- * zero-terminated. The resultant string will have a zero-terminator,
- * either way. Returns 0 on success, non-zero on error.  */
-int ne_buffer_append(ne_buffer *buf, const char *data, size_t len);
+ * NUL-terminated. The resultant string will have a NUL-terminator,
+ * either way.  */
+void ne_buffer_append(ne_buffer *buf, const char *data, size_t len);
 
 /* Empties the contents of buf; makes the buffer zero-length. */
 void ne_buffer_clear(ne_buffer *buf);
 
-/* Grows the ne_buffer to a minimum size.
- * Returns 0 on success, non-zero on error */
-int ne_buffer_grow(ne_buffer *buf, size_t size);
+/* Grows the ne_buffer to a minimum size. */
+void ne_buffer_grow(ne_buffer *buf, size_t size);
 
 void ne_buffer_altered(ne_buffer *buf);
 
@@ -171,41 +115,22 @@ void ne_buffer_altered(ne_buffer *buf);
  * data. */
 char *ne_buffer_finish(ne_buffer *buf);
 
-/* TODO: do these with stpcpy instead... more efficient, but means 
- * bloat on non-GNU platforms. */
+/* Thread-safe strerror() wrapper; place system error for errno value
+ * 'errnum' in 'buffer', which is of length 'buflen'.  Returns
+ * 'buffer'. */
+char *ne_strerror(int errnum, char *buffer, size_t buflen);
 
-/* TODO: could replace with glib equiv's where available, too */
+/* ne_strnzcpy copies at most 'n'-1 bytes of 'src' to 'dest', and
+ * ensures that 'dest' is subsequently NUL-terminated. */
+#define ne_strnzcpy(dest, src, n) do { \
+strncpy(dest, src, n-1); dest[n-1] = '\0'; } while (0)
 
-/* NOTES:
- *  - These abort() on malloc() returning NULL
- *  - You will need to #include <string.h> / <strings.h> YOURSELF to
- *    prototype strlen and strcat.
- */
+/* Return malloc-allocated concatenation of all NUL-terminated string
+ * arguments, up to a terminating NULL. */
+char *ne_concat(const char *str, ...);
 
-#define CONCAT2(out, str1, str2)			\
-do {							\
-    out = ne_malloc(strlen(str1) + strlen(str2) + 1);	\
-    strcpy(out, str1);					\
-    strcat(out, str2);					\
-} while (0)
-
-#define CONCAT3(out, str1, str2, str3)					\
-do {									\
-    out = ne_malloc(strlen(str1) + strlen(str2) + strlen(str3) + 1);	\
-    strcpy(out, str1);							\
-    strcat(out, str2);							\
-    strcat(out, str3);							\
-} while (0)
-
-#define CONCAT4(out, str1, str2, str3, str4)		\
-do {							\
-    out = ne_malloc(strlen(str1) + strlen(str2)		\
-		    + strlen(str3) + strlen(str4) + 1);	\
-    strcpy(out, str1);					\
-    strcat(out, str2);					\
-    strcat(out, str3);					\
-    strcat(out, str4);					\
-} while (0)
+#define NE_ASC2HEX(x) (((x) <= '9') ? ((x) - '0') : (tolower((x)) + 10 - 'a'))
+#define NE_HEX2ASC(x) ((char) ((x) > 9 ? ((x) - 10 + 'a') : ((x) + '0')))
 
 END_NEON_DECLS
 

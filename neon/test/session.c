@@ -1,6 +1,6 @@
 /* 
    Tests for session handling
-   Copyright (C) 2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2002-2003, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ static int match_hostport(const char *scheme, const char *hostname, int port,
 
 static int hostports(void)
 {
-    const static struct {
+    static const struct {
 	const char *scheme, *hostname;
 	int port;
 	const char *hostport;
@@ -106,10 +106,53 @@ static int errors(void)
     return OK;    
 }
 
+#define ID1 "foo"
+#define ID2 "bar"
+
+static int privates(void)
+{
+    ne_session *sess = ne_session_create("http", "localhost", 80);
+    char *v1 = "hello", *v2 = "world";
+
+    ne_set_session_private(sess, ID1, v1);
+    ne_set_session_private(sess, ID2, v2);
+
+#define PRIV(msg, id, val) \
+ONN(msg, ne_get_session_private(sess, id) != val)
+
+    PRIV("private #1 wrong", ID1, v1);
+    PRIV("private #2 wrong", ID2, v2);
+    PRIV("unknown id wrong", "no such ID", NULL);
+
+    ne_session_destroy(sess);
+    return OK;    
+}
+
+/* test that ne_session_create doesn't really care what scheme you
+ * give it, and that ne_get_scheme() works. */
+static int get_scheme(void)
+{
+    static const char *schemes[] = {
+        "http", "https", "ftp", "ldap", "foobar", NULL
+    };
+    int n;
+
+    for (n = 0; schemes[n]; n++) {
+        ne_session *sess = ne_session_create(schemes[n], "localhost", 80);
+        ONV(strcmp(ne_get_scheme(sess), schemes[n]),
+            ("scheme was `%s' not `%s'!", ne_get_scheme(sess), schemes[n]));
+        ne_session_destroy(sess);
+    }
+    
+    return OK;
+}
+
 ne_test tests[] = {
     T(fill_uri),
     T(hostports),
     T(errors),
-    T(NULL) 
+    T(privates),
+    T(get_scheme),
+    T(NULL)
 };
 

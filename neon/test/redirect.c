@@ -1,6 +1,6 @@
 /* 
    Tests for 3xx redirect interface (ne_redirect.h)
-   Copyright (C) 2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2002-2003, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 struct redir_args {
     int code;
     const char *dest;
+    const char *path;
 };
 
 static int serve_redir(ne_socket *sock, void *ud)
@@ -58,52 +59,76 @@ static int serve_redir(ne_socket *sock, void *ud)
     return OK;
 }
 
+/* Run a request to 'path' and retrieve the redirect destination to
+ * *redir. */
+static int process_redir(ne_session *sess, const char *path,
+                         const ne_uri **redir)
+{
+    ONN("did not get NE_REDIRECT", any_request(sess, path) != NE_REDIRECT);
+    *redir = ne_redirect_location(sess);
+    return OK;
+}
+
 static int check_redir(struct redir_args *args, const char *expect)
 {
     ne_session *sess;
-    int ret;
     const ne_uri *loc;
+    char *unp;
     
     CALL(make_session(&sess, serve_redir, args));
-
     ne_redirect_register(sess);
     
-    ret = any_request(sess, "/redir/me");
-
-    ONN("did not get NE_REDIRECT", ret != NE_REDIRECT);
-
-    loc = ne_redirect_location(sess);
-    
+    CALL(process_redir(sess, args->path, &loc));
     ONN("redirect location was NULL", loc == NULL);
 
-    ONV(strcmp(ne_uri_unparse(loc), expect),
-	("redirected to `%s' not `%s'", ne_uri_unparse(loc), expect));
+    unp = ne_uri_unparse(loc);
+    ONV(strcmp(unp, expect), ("redirected to `%s' not `%s'", unp, expect));
+    ne_free(unp);
 
     ne_session_destroy(sess);
+    CALL(await_server());
 
     return OK;
 }
 
 #define DEST "http://foo.com/blah/blah/bar"
+#define PATH "/redir/me"
 
 static int simple(void)
 {
-    struct redir_args args = {302, DEST};
-    return check_redir(&args, DEST);
-}
+    struct redir_args args[] = {
+        {301, DEST, PATH},
+        {302, DEST, PATH},
+        {303, DEST, PATH},
+        {307, DEST, PATH},
+        {0, NULL, NULL}
+    };
+    int n;
+    
+    for (n = 0; args[n].code; n++)
+        CALL(check_redir(&args[n], DEST));
 
-static int redir_303(void)
-{
-    struct redir_args args = {303, DEST};
-    return check_redir(&args, DEST);
+    return OK;
 }
 
 /* check that a non-absoluteURI is qualified properly */
 static int non_absolute(void)
 {
-    struct redir_args args = {302, "/foo/bar/blah"};
+    struct redir_args args = {302, "/foo/bar/blah", PATH};
     return check_redir(&args, "http://localhost:7777/foo/bar/blah");
 }
+
+static int relative_1(void)
+{
+    struct redir_args args = {302, "norman", "/foo/bar"};
+    return check_redir(&args, "http://localhost:7777/foo/norman");
+}
+    
+static int relative_2(void)
+{
+    struct redir_args args = {302, "wishbone", "/foo/bar/"};
+    return check_redir(&args, "http://localhost:7777/foo/bar/wishbone");
+}    
 
 #if 0
 /* could implement failure on self-referential redirects, but
@@ -125,11 +150,40 @@ static int fail_loop(void)
 }
 #endif
 
+/* ensure that ne_redirect_location returns NULL when no redirect has
+ * been encountered, or redirect hooks aren't registered. */
+static int no_redirect(void)
+{
+    ne_session *sess = ne_session_create("http", "localhost", 7777);
+    const ne_uri *loc;
+
+    ONN("redirect non-NULL before register", ne_redirect_location(sess));
+    ne_redirect_register(sess);
+    ONN("initial redirect non-NULL", ne_redirect_location(sess));
+
+    CALL(spawn_server(7777, single_serve_string, 
+                      "HTTP/1.0 200 OK\r\n\r\n\r\n"));
+    ONREQ(any_request(sess, "/noredir"));
+    CALL(await_server());
+
+    ONN("redirect non-NULL after non-redir req", ne_redirect_location(sess));
+
+    CALL(spawn_server(7777, single_serve_string, "HTTP/1.0 302 Get Ye Away\r\n"
+                      "Location: /blah\r\n" "\r\n"));
+    CALL(process_redir(sess, "/foo", &loc));
+    CALL(await_server());
+
+    ne_session_destroy(sess);
+    return OK;
+}
+
 ne_test tests[] = {
     T(lookup_localhost),
     T(simple),
-    T(redir_303),
     T(non_absolute),
+    T(relative_1),
+    T(relative_2),
+    T(no_redirect),
     T(NULL) 
 };
 

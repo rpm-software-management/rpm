@@ -1,6 +1,6 @@
 /* 
    HTTP utility functions
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,6 +29,11 @@
 
 #include "ne_defs.h"
 
+#ifdef NEON_TRIO
+/* no HAVE_TRIO_H check so this works from outside neon build tree. */
+#include <trio.h>
+#endif
+
 BEGIN_NEON_DECLS
 
 /* Returns a human-readable version string like:
@@ -36,55 +41,36 @@ BEGIN_NEON_DECLS
  */
 const char *ne_version_string(void);
 
-/* Returns non-zero if the neon API compiled in is less than
- * major.minor. i.e.
- *   I am: 1.2 -  neon_version_check(1, 3) => -1
- *   I am: 0.10 -  neon_version_check(0, 9) => 0
- */
-int ne_version_minimum(int major, int minor);
+/* Returns non-zero if library version is not of major version
+ * 'major', or if minor version is not greater than or equal to
+ * 'minor'. */
+int ne_version_match(int major, int minor);
 
-#define HTTP_QUOTES "\"'"
-#define HTTP_WHITESPACE " \r\n\t"
+/* Returns non-zero if neon has support for SSL. */
+int ne_supports_ssl(void);
+
+/* Use replacement snprintf's if trio is being used. */
+#ifdef NEON_TRIO
+#define ne_snprintf trio_snprintf
+#define ne_vsnprintf trio_vsnprintf
+#else
+#define ne_snprintf snprintf
+#define ne_vsnprintf vsnprintf
+#endif
 
 #ifndef WIN32
 #undef min
 #define min(a,b) ((a)<(b)?(a):(b))
 #endif
 
-#ifdef WIN32
-/* some of the API uses ssize_t so we need to define it. */
-#define ssize_t int
-#endif
-
 /* CONSIDER: mutt has a nicer way of way of doing debugging output... maybe
  * switch to like that. */
-
-#ifdef __GNUC__
-/* really, we want to do this if we have any C99-capable compiler, so
- * what's a better test? */
-
-#ifndef NE_DEBUGGING
-#define NE_DEBUG(x, fmt, args...)
-#else
-#define NE_DEBUG(x, fmt, args...) do {		\
- if (((x)&ne_debug_mask) == (x)) {			\
-  fflush(stdout);				\
-  fprintf(ne_debug_stream, fmt, ##args);	\
-  if (((x) & NE_DBG_FLUSH) == NE_DBG_FLUSH)	\
-   fflush(ne_debug_stream);			\
- }						\
-} while (0)
-#endif   
-
-#else /* !__GNUC__ */
 
 #ifndef NE_DEBUGGING
 #define NE_DEBUG if (0) ne_debug
 #else /* DEBUGGING */
 #define NE_DEBUG ne_debug
 #endif /* DEBUGGING */
-
-#endif
 
 #define NE_DBG_SOCKET (1<<0)
 #define NE_DBG_HTTP (1<<1)
@@ -94,34 +80,38 @@ int ne_version_minimum(int major, int minor);
 #define NE_DBG_LOCKS (1<<5)
 #define NE_DBG_XMLPARSE (1<<6)
 #define NE_DBG_HTTPBODY (1<<7)
-#define NE_DBG_HTTPBASIC (1<<8)
+#define NE_DBG_SSL (1<<8)
 #define NE_DBG_FLUSH (1<<30)
 
+/* Send debugging output to 'stream', for all of the given debug
+ * channels.  To disable debugging, pass 'stream' as NULL and 'mask'
+ * as 0. */
 void ne_debug_init(FILE *stream, int mask);
+
+/* The current debug mask and stream set by the last call to
+ * ne_debug_init. */
 extern int ne_debug_mask;
 extern FILE *ne_debug_stream;
 
-void ne_debug(int ch, const char *, ...)
-#ifdef __GNUC__
-                __attribute__ ((format (printf, 2, 3)))
-#endif /* __GNUC__ */
-;
+/* Produce debug output if any of channels 'ch' is enabled for
+ * debugging. */
+void ne_debug(int ch, const char *, ...) ne_attribute((format(printf, 2, 3)));
 
 /* Storing an HTTP status result */
 typedef struct {
     int major_version;
     int minor_version;
     int code; /* Status-Code value */
-    /* We can't use 'class' as the member name since this crashes
-     * with the C++ reserved keyword 'class', annoyingly.
-     * This was '_class' previously, but that was even MORE annoying.
-     * So know it is klass. */
     int klass; /* Class of Status-Code (1-5) */
-    const char *reason_phrase;
+    char *reason_phrase;
 } ne_status;
 
+/* NB: couldn't use 'class' in ne_status because it would clash with
+ * the C++ reserved word. */
+
 /* Parser for strings which follow the Status-Line grammar from 
- * RFC2616.
+ * RFC2616.  s->reason_phrase is malloc-allocated if non-NULL, and
+ * must be free'd by the caller.
  *  Returns:
  *    0 on success, *s will be filled in.
  *   -1 on parse error.

@@ -1,6 +1,6 @@
 /* 
    Replacement memory allocation handling etc.
-   Copyright (C) 1999-2000, Joe Orton <joe@orton.demon.co.uk>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,13 +22,37 @@
 #ifndef NE_ALLOC_H
 #define NE_ALLOC_H
 
+#ifdef WIN32
+#include <stdlib.h>
+#else
 #include <sys/types.h>
+#endif
 
-void *ne_malloc(size_t len);
-void *ne_calloc(size_t len);
+#include "ne_defs.h"
 
+BEGIN_NEON_DECLS
+
+/* Set callback which is called if malloc() returns NULL. */
+void ne_oom_callback(void (*callback)(void));
+
+#ifndef NEON_MEMLEAK
+/* Replacements for standard C library memory allocation functions,
+ * which never return NULL. If the C library malloc() returns NULL,
+ * neon will abort(); calling an OOM callback beforehand if one is
+ * registered.  The C library will only ever return NULL if the
+ * operating system does not use optimistic memory allocation. */
+void *ne_malloc(size_t size);
+void *ne_calloc(size_t size);
+void *ne_realloc(void *ptr, size_t s);
 char *ne_strdup(const char *s);
-
 char *ne_strndup(const char *s, size_t n);
+#define ne_free free
+#endif
+
+/* Handy macro to free things: takes an lvalue, and sets to NULL
+ * afterwards. */
+#define NE_FREE(x) do { if ((x) != NULL) ne_free((x)); (x) = NULL; } while (0)
+
+END_NEON_DECLS
 
 #endif /* NE_ALLOC_H */

@@ -1,6 +1,6 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,65 +22,32 @@
 #ifndef NE_SESSION_H
 #define NE_SESSION_H 1
 
-#include "ne_socket.h" /* for nssl_context */
+#include <sys/types.h>
+
+#include "ne_ssl.h"
+#include "ne_uri.h" /* for ne_uri */
 #include "ne_defs.h"
 
 BEGIN_NEON_DECLS
 
 typedef struct ne_session_s ne_session;
 
-/* 
- * Session handling:
- *  Call order:
- *  0.   sock_init             MANDATORY
- *  1.   ne_session_create   MANDATORY
- *  2.   ne_session_proxy    OPTIONAL
- *  3.   ne_session_server   MANDATORY
- *  4.   ne_set_*            OPTIONAL
- *  ...  --- Any HTTP request method ---
- *  n.   ne_session_destroy  MANDATORY
- */
- 
-/* Create a new HTTP session */
-ne_session *ne_session_create(void);
+/* Create a session to the given server, using the given scheme.  If
+ * "https" is passed as the scheme, SSL will be used to connect to the
+ * server. */
+ne_session *ne_session_create(const char *scheme,
+			      const char *hostname, unsigned int port);
 
 /* Finish an HTTP session */
-int ne_session_destroy(ne_session *sess);
+void ne_session_destroy(ne_session *sess);
 
 /* Prematurely force the connection to be closed for the given
- * session.  */
-int ne_close_connection(ne_session *sess);
+ * session. */
+void ne_close_connection(ne_session *sess);
 
-/* Set the server or proxy server to be used for the session.
- * Returns:
- *   NE_LOOKUP if the DNS lookup for hostname failed.
- *   NE_OK otherwise.
- *
- * Note that if a proxy is being used, ne_session_proxy should be
- * called BEFORE ne_session_server, so the DNS lookup can be skipped
- * on the server. */
-int ne_session_server(ne_session *sess, const char *hostname, int port);
-int ne_session_proxy(ne_session *sess, const char *hostname, int port);
-
-/* Callback to determine whether the proxy server should be used or
- * not for a request to the given hostname using the given scheme.
- * Scheme will be "http" or "https" etc.
- * Must return:
- *   Zero to indicate the proxy should NOT be used
- *   Non-zero to indicate the proxy SHOULD be used.
- */
-typedef int (*ne_use_proxy)(void *userdata,
-			    const char *scheme, const char *hostname);
-
-/* Register the callback for determining whether the proxy server
- * should be used or not here.  'userdata' will be passed as the first
- * argument to the callback. The callback is only called if a proxy
- * server has been set up using ne_session_proxy. 
- *
- * This function MUST be called before calling ne_session_server.
- */
-void ne_session_decide_proxy(ne_session *sess, ne_use_proxy use_proxy,
-			     void *userdata);
+/* Set the proxy server to be used for the session. */
+void ne_session_proxy(ne_session *sess,
+		      const char *hostname, unsigned int port);
 
 /* Set protocol options for session:
  *   expect100: Defaults to OFF
@@ -95,9 +62,17 @@ void ne_session_decide_proxy(ne_session *sess, ne_use_proxy use_proxy,
 void ne_set_expect100(ne_session *sess, int use_expect100);
 void ne_set_persist(ne_session *sess, int persist);
 
+/* Progress callback. */
+typedef void (*ne_progress)(void *userdata, off_t progress, off_t total);
+
 /* Set a progress callback for the session. */
 void ne_set_progress(ne_session *sess, 
-		     sock_progress progress, void *userdata);
+		     ne_progress progress, void *userdata);
+
+/* Store an opaque context for the session, 'priv' is returned by a
+ * call to ne_session_get_private with the same ID. */
+void ne_set_session_private(ne_session *sess, const char *id, void *priv);
+void *ne_get_session_private(ne_session *sess, const char *id);
 
 typedef enum {
     ne_conn_namelookup, /* lookup up hostname (info = hostname) */
@@ -110,49 +85,74 @@ typedef void (*ne_notify_status)(void *userdata,
 				 ne_conn_status status,
 				 const char *info);
 
+
 /* Set a status notification callback for the session, to report
  * connection status. */
 void ne_set_status(ne_session *sess,
 		   ne_notify_status status, void *userdata);
 
-/* Using SSL/TLS connections:
- *
- * Session settings:
- *   secure:                 Defaults to OFF
- *   secure_context:         No callbacks, any protocol allowed.
- *   request_secure_upgrade: Defaults to OFF
- *   accept_secure_ugprade:  Defaults to OFF
- *
- * secure_context: When set, specifies the settings to use for secure
- * connections, and any callbacks (see nsocket.h).  The lifetime of
- * the context object must be >= to the lifetime of the session
- * object.
- *
- * secure: When set, use a secure (SSL/TLS) connection to the origin
- * server. This will tunnel (using CONNECT) through the proxy server
- * if one is being used.
- *
- * NB: ne_set_scure will return -1 if SSL is not supported by the
- * library (i.e., it was not built against OpenSSL), or 0 if it is.
- * */
-void ne_set_secure_context(ne_session *sess, nssl_context *ctx);
-int ne_set_secure(ne_session *sess, int secure);
+/* Certificate verification failures.
+ * The certificate is not yet valid: */
+#define NE_SSL_NOTYETVALID (0x01)
+/* The certificate has expired: */
+#define NE_SSL_EXPIRED (0x02)
+/* The hostname for which the certificate was issued does not
+ * match the hostname of the server; this could mean that the
+ * connection is being intercepted: */
+#define NE_SSL_IDMISMATCH (0x04)
+/* The certificate authority which signed the server certificate is
+ * not trusted: there is no indicatation the server is who they claim
+ * to be: */
+#define NE_SSL_UNTRUSTED (0x08)
 
-/*
- * NOTE: don't bother using the two _secure_update functions yet.
- * "secure upgrades" (RFC2817) are not currently supported by any HTTP
- * servers.
- * 
- * request_secure_upgrade: When set, notify the server with each
- * request made that an upgrade to a secure connection is desired, if
- * available.
- *
- * accept_secure_upgrade: When set, allow a server-requested upgrade
- * to a secure connection. 
- *
- * These return as per ne_set_secure.  */
-int ne_set_request_secure_upgrade(ne_session *sess, int req_upgrade);
-int ne_set_accept_secure_upgrade(ne_session *sess, int acc_upgrade);
+/* The bitmask of known failure bits: if (failures & ~NE_SSL_FAILMASK)
+ * is non-zero, an unrecognized failure is given, and the verification
+ * should be failed. */
+#define NE_SSL_FAILMASK (0x0f)
+
+/* A callback which is used when server certificate verification is
+ * needed.  The reasons for verification failure are given in the
+ * 'failures' parameter, which is a binary OR of one or more of the
+ * above NE_SSL_* values. failures is guaranteed to be non-zero.  The
+ * callback must return zero to accept the certificate: a non-zero
+ * return value will fail the SSL negotiation. */
+typedef int (*ne_ssl_verify_fn)(void *userdata, int failures,
+				const ne_ssl_certificate *cert);
+
+/* Install a callback to handle server certificate verification.  This
+ * is required when the CA certificate is not known for the server
+ * certificate, or the server cert has other verification problems. */
+void ne_ssl_set_verify(ne_session *sess, ne_ssl_verify_fn fn, void *userdata);
+
+/* Use the given client certificate for the session.  The client cert
+ * MUST be in the decrypted state, otherwise behaviour is undefined. */
+void ne_ssl_set_clicert(ne_session *sess, const ne_ssl_client_cert *clicert);
+
+/* Indicate that the certificate 'cert' is trusted; 'cert' is
+ * duplicated internally and may be destroyed at will. */
+void ne_ssl_trust_cert(ne_session *sess, const ne_ssl_certificate *cert);
+
+/* If the SSL library provided a default set of CA certificates, trust
+ * this set of CAs. */
+void ne_ssl_trust_default_ca(ne_session *sess);
+
+/* Callback used to load a client certificate on demand.  If dncount
+ * is > 0, the 'dnames' array dnames[0] through dnames[dncount-1]
+ * gives the list of CA names which the server indicated were
+ * acceptable.  The callback should load an appropriate client
+ * certificate and then pass it to 'ne_ssl_set_clicert'. */
+typedef void (*ne_ssl_provide_fn)(void *userdata, ne_session *sess,
+				  const ne_ssl_dname *const *dnames,
+                                  int dncount);
+
+/* Register a function to be called when the server requests a client
+ * certificate. */
+void ne_ssl_provide_clicert(ne_session *sess, 
+                            ne_ssl_provide_fn fn, void *userdata);
+
+/* Set the timeout (in seconds) used when reading from a socket.  The
+ * timeout value must be greater than zero. */
+void ne_set_read_timeout(ne_session *sess, int timeout);
 
 /* Sets the user-agent string. neon/VERSION will be appended, to make
  * the full header "User-Agent: product neon/VERSION".
@@ -160,32 +160,30 @@ int ne_set_accept_secure_upgrade(ne_session *sess, int acc_upgrade);
  * The product string must follow the RFC2616 format, i.e.
  *       product         = token ["/" product-version]
  *       product-version = token
- * where token is any alpha-numeric-y string [a-zA-Z0-9]*
- */
+ * where token is any alpha-numeric-y string [a-zA-Z0-9]* */
 void ne_set_useragent(ne_session *sess, const char *product);
 
-/* Determine if next-hop server claims HTTP/1.1 compliance. Returns:
- *   0 if next-hop server does NOT claim HTTP/1.1 compliance
- *   non-zero if next-hop server DOES claim HTTP/1.1 compliance
- * Not that the "next-hop" server is the proxy server if one is being
- * used, otherwise, the origin server.
- */
+/* Returns non-zero if next-hop server does not claim compliance to
+ * HTTP/1.1 or later. */
 int ne_version_pre_http11(ne_session *sess);
 
 /* Returns the 'hostport' URI segment for the end-server, e.g.
- *    "my.server.com:8080"    or    "www.server.com" 
- *  (port segment is ommitted if == 80) 
- */
+ * "my.server.com:8080". */
 const char *ne_get_server_hostport(ne_session *sess);
 
-/* Returns the URL scheme being used for the current session.
- * Does NOT include a trailing ':'. 
- * Example returns: "http" or "https".
- */
+/* Returns the URL scheme being used for the current session, omitting
+ * the trailing ':'; e.g. "http" or "https". */
 const char *ne_get_scheme(ne_session *sess);
 
-/* Set the error string for the session */
-void ne_set_error(ne_session *sess, const char *errstring);
+/* Sets the host, scheme, and port fields (and no others) of the given
+ * URI structure; host and scheme are malloc-allocated. */
+void ne_fill_server_uri(ne_session *sess, ne_uri *uri);
+
+/* Set the error string for the session; takes printf-like format
+ * string. */
+void ne_set_error(ne_session *sess, const char *format, ...)
+    ne_attribute((format (printf, 2, 3)));
+
 /* Retrieve the error string for the session */
 const char *ne_get_error(ne_session *sess);
 

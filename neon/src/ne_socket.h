@@ -1,6 +1,6 @@
 /* 
    socket handling interface
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,206 +22,170 @@
 #ifndef NE_SOCKET_H
 #define NE_SOCKET_H
 
-#ifdef WIN32
-#include <WinSock2.h>
-#include <stddef.h>
-#else
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
 
 #include "ne_defs.h"
+#include "ne_ssl.h" /* for ne_ssl_context */
 
 BEGIN_NEON_DECLS
 
-#define SOCK_ERROR -1
+#define NE_SOCK_ERROR (-1)
 /* Read/Write timed out */
-#define SOCK_TIMEOUT -2
-/* Passed buffer was full */
-#define SOCK_FULL -3
+#define NE_SOCK_TIMEOUT (-2)
 /* Socket was closed */
-#define SOCK_CLOSED -4
+#define NE_SOCK_CLOSED (-3)
+/* Connection was reset (e.g. server crashed) */
+#define NE_SOCK_RESET (-4)
+/* Secure connection was subject to possible truncation attack. */
+#define NE_SOCK_TRUNC (-5)
 
-/* Socket read timeout */
-#define SOCKET_READ_TIMEOUT 120
+/* ne_socket represents a TCP socket. */
+typedef struct ne_socket_s ne_socket;
 
-struct nsocket_s;
-typedef struct nsocket_s nsocket;
+/* ne_sock_addr represents an address object. */
+typedef struct ne_sock_addr_s ne_sock_addr;
 
-typedef void (*sock_block_reader) (
-    void *userdata, const char *buf, size_t len);
+#ifndef NE_INET_ADDR_DEFINED
+typedef struct ne_inet_addr_s ne_inet_addr;
+#endif
 
-typedef void (*sock_progress)(void *userdata, off_t progress, off_t total);
+/* While neon itself doesn't require per-process global
+ * initialization, some platforms do, and so does the OpenSSL
+ * library. */
+int ne_sock_init(void);
 
-void sock_register_progress(nsocket *sock, sock_progress cb, void *userdata);
+/* Shutdown any underlying libraries. */
+void ne_sock_exit(void);
 
-void sock_call_progress(nsocket *sock, off_t progress, off_t total);
+/* Resolve the given hostname.  'flags' are currently ignored.  Hex
+ * string IPv6 addresses (e.g. `::1') may be enclosed in brackets
+ * (e.g. `[::1]'). */
+ne_sock_addr *ne_addr_resolve(const char *hostname, int flags);
 
-/* Initialize the socket library. If you don't do this, SSL WILL NOT WORK.
- * Returns 0 on success, or non-zero on screwed up SSL library. */
-int sock_init(void);
+/* Returns zero if name resolution was successful, non-zero on
+ * error. */
+int ne_addr_result(const ne_sock_addr *addr);
 
-/* Shutdown the socket library. */
-void sock_exit(void);
+/* Returns the first network address associated with the 'addr'
+ * object.  Undefined behaviour if ne_addr_result returns non-zero for
+ * 'addr'; otherwise, never returns NULL.  */
+const ne_inet_addr *ne_addr_first(ne_sock_addr *addr);
 
-/* sock_read is read() with a timeout of SOCKET_TIMEOUT.
+/* Returns the next network address associated with the 'addr' object,
+ * or NULL if there are no more. */
+const ne_inet_addr *ne_addr_next(ne_sock_addr *addr);
+
+/* NB: the pointers returned by ne_addr_first and ne_addr_next are
+ * valid until ne_addr_destroy is called for the corresponding
+ * ne_sock_addr object.  They must not be passed to ne_iaddr_free. */
+
+/* If name resolution fails, copies the error string into 'buffer',
+ * which is of size 'bufsiz'.  'buffer' is returned. */
+char *ne_addr_error(const ne_sock_addr *addr, char *buffer, size_t bufsiz);
+
+/* Destroys an address object created by ne_addr_resolve. */
+void ne_addr_destroy(ne_sock_addr *addr);
+
+/* Network address type; IPv4 or IPv6 */
+typedef enum {
+    ne_iaddr_ipv4 = 0,
+    ne_iaddr_ipv6
+} ne_iaddr_type;
+
+/* Create a network address from raw byte representation (in network
+ * byte order) of given type.  'raw' must be four bytes for an IPv4
+ * address, 16 bytes for an IPv6 address.  May return NULL if address
+ * type is not supported. */
+ne_inet_addr *ne_iaddr_make(ne_iaddr_type type, const unsigned char *raw);
+
+/* Compare two network addresses i1 and i2; return non-zero if they
+ * are not equal. */
+int ne_iaddr_cmp(const ne_inet_addr *i1, const ne_inet_addr *i2);
+
+/* Prints the string representation of network address 'ia' into the
+ * 'buffer', which is of size 'bufsiz'.  Returns 'buffer'. */
+char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, size_t bufsiz);
+
+/* Free a network address created using ne_iaddr_make. */
+void ne_iaddr_free(ne_inet_addr *addr);
+
+/* Create a TCP socket; returns NULL on error. */
+ne_socket *ne_sock_create(void);
+
+/* Connect the socket to server at address 'addr' on port 'port'.
+ * Returns non-zero if a connection could not be established. */
+int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr, 
+                    unsigned int port);
+
+/* ne_sock_read reads up to 'count' bytes into 'buffer'.
  * Returns:
- *   SOCK_* on error,
- *    0 on no data to read (due to EOF),
+ *   NE_SOCK_* on error,
  *   >0 length of data read into buffer.
  */
-int sock_read(nsocket *sock, char *buffer, size_t count);
+ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t count);
 
-/* sock_peek is recv() with a timeout of SOCKET_TIMEOUT.
+/* ne_sock_peek reads up to 'count' bytes into 'buffer', but the data
+ * will still be returned on a subsequent call to ne_sock_read or 
+ * ne_sock_peek.
  * Returns:
- *   SOCK_* on error,
- *    0 on no data to read (due to EOF),
+ *   NE_SOCK_* on error,
  *   >0 length of data read into buffer.
  */
-int sock_peek(nsocket *sock, char *buffer, size_t count);
+ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t count);
 
-/* Blocks waiting for data on the given socket for the given time.
- * Returns:
- *  SOCK_* on error,
- *  SOCK_TIMEOUT on no data within timeout,
+/* Block for up to 'n' seconds until data becomes available for reading
+ * on the socket. Returns:
+ *  NE_SOCK_* on error,
+ *  NE_SOCK_TIMEOUT if no data arrives in 'n' seconds.
  *  0 if data arrived on the socket.
  */
-int sock_block(nsocket *sock, int timeout);
+int ne_sock_block(ne_socket *sock, int n);
 
-/* Reads readlen bytes from fd and writes to socket.
- * (Not all in one go, obviously).
- * If readlen == -1, then it reads from srcfd until EOF.
- * Returns number of bytes written to destfd, or SOCK_* on error.
- */
-int sock_transfer(int fd, nsocket *sock, off_t readlen);
+/* Writes 'count' bytes of 'data' to the socket.
+ * Returns 0 on success, NE_SOCK_* on error. */
+int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t count); 
 
-/* Sends the given line to given socket, CRLF appended */
-int sock_sendline(nsocket *sock, const char *line); 
-/* Sends the given block of data down the nsocket */
-int sock_fullwrite(nsocket *sock, const char *data, size_t length); 
-/* Sends the null-terminated string down the given nsocket */
-int sock_send_string(nsocket *sock, const char *string); 
-
-/* Reads a line from given nsocket */
-int sock_readline(nsocket *sock, char *line, int len); 
-/* Reads a chunk of data. */
-int sock_fullread(nsocket *sock, char *buffer, int buflen);
-
-/* Creates and connects a nsocket */
-nsocket *sock_connect(const struct in_addr host, 
-		      unsigned short int portnum);
-
-/* Not as good as accept(2), missing parms 2+3.
- * Addings parms 2+3 would probably mean passing socklen_t as an
- * int then casting internally, since we don't really want to
- * autogenerate the header file to be correct for the build platform.
- */
-nsocket *sock_accept(int listener);
-
-/* Returns the file descriptor used for the socket */
-int sock_get_fd(nsocket *sock);
-
-/* Closes the socket and frees the nsocket object. */
-int sock_close(nsocket *sock);
-
-const char *sock_get_version(nsocket *sock);
-
-const char *sock_get_error(nsocket *sock);
-
-/* Do a name lookup on given hostname, writes the address into
- * given address buffer. Return -1 on failure. */
-int sock_name_lookup(const char *hostname, struct in_addr *addr);
-
-/* Returns the standard TCP port for the given service */
-int sock_service_lookup(const char *name);
-
-/* Read from socket, passing each block read to reader callback.
- * Pass userdata as first argument to reader callback.
- *
- * If length is -1, keep going till EOF is returned. SOCK_CLOSED
- * is never returned in this case.
- *
- * Otherwise, read exactly 'length' bytes. If EOF is encountered
- * before length bytes have been read, and SOCK_CLOSED will be
- * returned.
- *
+/* Reads an LF-terminated line into 'buffer', and NUL-terminate it.
+ * At most 'len' bytes are read (including the NUL terminator).
  * Returns:
- *   0 on success,
- *   SOCK_* on error (SOCK_CLOSED is a special case, as above)
+ * NE_SOCK_* on error,
+ * >0 number of bytes read (including NUL terminator)
  */
-int sock_readfile_blocked(nsocket *sock, off_t length,
-			  sock_block_reader reader, void *userdata);
+ssize_t ne_sock_readline(ne_socket *sock, char *buffer, size_t len);
 
-/* Auxiliary for use with SSL. */
-struct nssl_context_s;
-typedef struct nssl_context_s nssl_context;
+/* Read exactly 'len' bytes into buffer; returns 0 on success, SOCK_*
+ * on error. */
+ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t len);
 
-/* Netscape's prompts on getting a certificate which it doesn't
- * recognize the CA for:
- *   1. Hey, I don't recognize the CA for this cert.
- *   2. Here is the certificate: for foo signed by BLAH,
- *      using encryption level BLEE
- *   3. Allow: accept for this session only, 
- *             don't accept
- *             accept forever
- */
-nssl_context *sock_create_ssl_context(void);
+/* Accept a connection on listening socket 'fd'. */
+int ne_sock_accept(ne_socket *sock, int fd);
 
-void sock_destroy_ssl_context(nssl_context *ctx);
+/* Returns the file descriptor used for socket 'sock'. */
+int ne_sock_fd(const ne_socket *sock);
 
-/* Callback to decide whether the user will accept the
- * given certificate or not */
-typedef struct {
-    char *owner; /* Multi-line string describing owner of
-		  * certificate */
-    char *issuer; /* As above for issuer of certificate */
-    /* Strings the certificate is valid between */
-    char *valid_from, *valid_till;
-    /* Certificate fingerprint */
-    char *fingerprint;
-} nssl_certificate;
+/* Close the socket, and destroy the socket object. Returns non-zero
+ * on error. */
+int ne_sock_close(ne_socket *sock);
 
-/* Returns:
- *   0 -> User accepts the certificate
- *   non-zero -> user does NOT accept the certificate.
- */
-typedef int (*nssl_accept)(void *userdata, const nssl_certificate *info);
+/* Return current error string for socket. */
+const char *ne_sock_error(const ne_socket *sock);
 
-void sock_set_cert_accept(nssl_context *c, 
-			  nssl_accept accepter, void *userdata);
+/* Set read timeout for socket. */
+void ne_sock_read_timeout(ne_socket *sock, int timeout);
 
-/* Callback for retrieving the private key password.
- * Filename will be the filename of the private key file.
- * Must return:
- *    0 on success.  buf must be filled in with the password.
- *  non-zero if the user cancelled the prompt.
- *
- * FIXME: this is inconsistent with the HTTP authentication callbacks.  */
-typedef int (*nssl_key_prompt)(void *userdata, const char *filename,
-			       char *buf, int buflen);
+/* Returns the standard TCP port for the given service, or zero if
+ * none is known. */
+int ne_service_lookup(const char *name);
 
-void sock_set_key_prompt(nssl_context *c, 
-			 nssl_key_prompt prompt, void *userdata);
+/* Enable SSL with an already-negotiated SSL socket. */
+void ne_sock_switch_ssl(ne_socket *sock, void *ssl);
 
-/* For PEM-encoded client certificates: use the given client
- * certificate and private key file. 
- * Returns: 0 if certificate is read okay,
- * non-zero otherwise.
+/* Perform an SSL negotiation on 'sock', using given context. */
+int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx);
 
- * For decoding the private key file, the callback above will be used
- * to prompt for the password.  If no callback has been set, then the
- * OpenSSL default will be used: the prompt appears on the terminal.
- * */
-int sock_set_client_cert(nssl_context *ctx, const char *certfile,
-			 const char *keyfile);
-
-void sock_disable_tlsv1(nssl_context *c);
-void sock_disable_sslv2(nssl_context *c);
-void sock_disable_sslv3(nssl_context *c);
-
-/* Ctx is OPTIONAL. If it is NULL, defaults are used. */
-int sock_make_secure(nsocket *sock, nssl_context *ctx);
+/* Return SSL socket object in use for 'sock'. */
+typedef struct ne_ssl_socket_s ne_ssl_socket;
+ne_ssl_socket *ne_sock_sslsock(ne_socket *sock);
 
 END_NEON_DECLS
 

@@ -1,48 +1,65 @@
 #
-# TODO: document properly.
-#
-# You need to AC_SUBST:
-#  - NEONOBJS
-#  - NEON_TARGET (to libneon.la or libneon.a)
-#  - NEON_INTERFACE_VERSION (if necessary, which it's probably not for you)
-#  - OBJ_EXT (to .lo or .o)
+# neon source directory Makefile
+# 
+# Use the NEON_NORMAL_BUILD or NEON_LIBTOOL_BUILD autoconf 
+# macros to set up this Makefile correctly.
 #
 
 SHELL = @SHELL@
 
-CFLAGS = @CFLAGS@
-LDFLAGS = @LDFLAGS@
-DEFS = @DEFS@
-INCLUDES = -I.. -I.
-top_builddir = @top_builddir@
-CC = @CC@
-CCLD = $(CC)
-AR = @AR@
-RANLIB = @RANLIB@
-
-LIBS = @LIBS@
-
-VPATH = @srcdir@
-
+# Installation paths
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 libdir = @libdir@
 
+# Build paths
+VPATH = @srcdir@
+top_builddir = ..
+top_srcdir = @top_srcdir@
+
+# Toolchain settings.
+CC = @CC@
+AR = @AR@
+RANLIB = @RANLIB@
 LIBTOOL = @LIBTOOL@
-LINK = $(LIBTOOL) --quiet --mode=link $(CCLD) $(LDFLAGS)
-COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CFLAGS)
-NEON_INTERFACE_VERSION = @NEON_INTERFACE_VERSION@
 
-OBJECTS = @NEONOBJS@
+# Flags
+CPPFLAGS = @DEFS@ @CPPFLAGS@
+CFLAGS = @CFLAGS@ @NEON_CFLAGS@
+LDFLAGS = @LDFLAGS@
+NEON_LINK_FLAGS = @NEON_LINK_FLAGS@
+# Note: don't substitute @LIBS@ in here; during a bundled
+# build of this directory, @LIBS@ may include -lneon.
+LIBS = @NEON_LIBS@ @NEON_LTLIBS@
 
-obj_ext = @OBJ_EXT@
+COMPILE = $(CC) $(CPPFLAGS) $(CFLAGS)
+LINK = $(LIBTOOL) --quiet --mode=link $(CC) $(LDFLAGS)
+
+NEON_BASEOBJS = ne_request.@NEON_OBJEXT@ ne_session.@NEON_OBJEXT@ 	    \
+	ne_basic.@NEON_OBJEXT@  ne_string.@NEON_OBJEXT@ 		    \
+	ne_uri.@NEON_OBJEXT@ ne_dates.@NEON_OBJEXT@ ne_alloc.@NEON_OBJEXT@  \
+	ne_md5.@NEON_OBJEXT@ ne_utils.@NEON_OBJEXT@    \
+	ne_socket.@NEON_OBJEXT@ ne_auth.@NEON_OBJEXT@ 			    \
+	ne_cookies.@NEON_OBJEXT@ ne_redirect.@NEON_OBJEXT@		    \
+	ne_compress.@NEON_OBJEXT@
+
+NEON_DAVOBJS = $(NEON_BASEOBJS) \
+	ne_207.@NEON_OBJEXT@ ne_xml.@NEON_OBJEXT@ \
+	ne_props.@NEON_OBJEXT@ ne_locks.@NEON_OBJEXT@
+
+OBJECTS = @NEONOBJS@ @NEON_EXTRAOBJS@
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o
 
 NEON_TARGET = @NEON_TARGET@
 
-all: $(NEON_TARGET)
+# Thanks to gettext for this neat trick.
+all: all-@NEON_BUILD_BUNDLED@
+
+all-yes: $(NEON_TARGET)
+all-no:
+	@echo "Bundled neon build not being used."
 
 .c.lo:
 	$(LIBTOOL) --quiet --mode=compile $(COMPILE) -c $< -o $@
@@ -50,60 +67,81 @@ all: $(NEON_TARGET)
 	$(COMPILE) -c $< -o $@
 
 libneon.la: $(OBJECTS)
-	$(LINK) -rpath $(libdir) -version-info $(NEON_INTERFACE_VERSION) -o $@ $(LDFLAGS) $(OBJECTS) $(LIBS)
+	$(LINK) -rpath $(libdir) $(NEON_LINK_FLAGS) -o $@ $(OBJECTS) $(LIBS)
 
 libneon.a: $(OBJECTS)
 	$(AR) cru $@ $(OBJECTS)
 	$(RANLIB) $@
 
 clean:
-	rm -f @NEONOBJS@ $(NEON_TARGET)
+	rm -f $(NEON_TARGET) *.o *.lo
+	rm -rf .libs
 
-neonreq = http_request.h http_utils.h string_utils.h nsocket.h \
-	ne_alloc.h $(top_builddir)/config.h
+c++.c:
+	find . -name ne_\*.h -print | sed 's/.*/#include "&"/;/ne_private/d' > $@
+	echo "int main(void) {}" >> $@
 
-http_request.$(obj_ext): http_request.c neon_config.h $(neonreq) \
-	neon_i18n.h http_private.h
+check-c++: c++.c
+	c++ -I. c++.c
 
-socket.$(obj_ext): socket.c nsocket.h $(top_builddir)/config.h string_utils.h
+check-incl:
+	@for f in ne_*.h; do \
+	 echo Checking $$f...; \
+	 echo "#include \"$$f\"" > checkincl.c; \
+	 $(COMPILE) -c checkincl.c -o checkincl.o || exit 1; done
 
-http_auth.$(obj_ext): http_auth.c http_auth.h string_utils.h \
-	$(top_builddir)/config.h dates.h base64.h neon_md5.h
+neonreq = ne_request.h ne_session.h ne_utils.h ne_string.h ne_socket.h \
+	ne_alloc.h $(top_builddir)/config.h ne_private.h
 
-dav_basic.$(obj_ext): dav_basic.c $(neonreq) dav_207.h hip_xml.$(obj_ext)
+ne_request.@NEON_OBJEXT@: ne_request.c $(neonreq) ne_i18n.h ne_private.h \
+	ne_uri.h
 
-http_basic.$(obj_ext): http_basic.c http_basic.h $(neonreq)
+ne_session.@NEON_OBJEXT@: ne_session.c ne_session.h ne_alloc.h \
+	ne_utils.h ne_private.h $(top_builddir)/config.h
 
-http_utils.$(obj_ext): http_utils.c $(top_builddir)/config.h \
-	http_utils.h dates.h neon_config.h
+ne_openssl.@NEON_OBJEXT@: ne_openssl.c ne_session.h ne_ssl.h ne_privssl.h \
+	ne_private.h $(top_builddir)/config.h
 
-hip_xml.$(obj_ext): hip_xml.c hip_xml.h string_utils.h http_utils.h \
+ne_socket.@NEON_OBJEXT@: ne_socket.c ne_socket.h $(top_builddir)/config.h \
+	ne_privssl.h ne_string.h
+
+ne_auth.@NEON_OBJEXT@: ne_auth.c ne_auth.h $(neonreq) \
+	ne_dates.h ne_md5.h ne_uri.h 
+
+ne_basic.@NEON_OBJEXT@: ne_basic.c ne_basic.h $(neonreq)
+
+ne_utils.@NEON_OBJEXT@: ne_utils.c $(top_builddir)/config.h \
+	ne_utils.h ne_dates.h
+
+ne_xml.@NEON_OBJEXT@: ne_xml.c ne_xml.h ne_string.h ne_utils.h \
 	$(top_builddir)/config.h
 
-dav_207.$(obj_ext): dav_207.c dav_207.h hip_xml.h \
-	$(top_builddir)/config.h http_utils.h neon_i18n.h
+ne_207.@NEON_OBJEXT@: ne_207.c ne_207.h ne_xml.h \
+	$(top_builddir)/config.h ne_utils.h ne_i18n.h
 
-string_utils.$(obj_ext): string_utils.c string_utils.h ne_alloc.h \
+ne_string.@NEON_OBJEXT@: ne_string.c ne_string.h ne_alloc.h \
 	$(top_builddir)/config.h
 
-ne_alloc.$(obj_ext): ne_alloc.c ne_alloc.h $(top_builddir)/config.h
+ne_alloc.@NEON_OBJEXT@: ne_alloc.c ne_alloc.h $(top_builddir)/config.h
 
-dates.$(obj_ext): dates.c dates.h $(top_builddir)/config.h
+ne_dates.@NEON_OBJEXT@: ne_dates.c ne_dates.h $(top_builddir)/config.h
 
-base64.$(obj_ext): base64.c base64.h $(top_builddir)/config.h
-
-uri.$(obj_ext): uri.c uri.h http_utils.h string_utils.h ne_alloc.h \
+ne_uri.@NEON_OBJEXT@: ne_uri.c ne_uri.h ne_utils.h ne_string.h ne_alloc.h \
 	$(top_builddir)/config.h
 
-md5.$(obj_ext): md5.c neon_md5.h $(top_builddir)/config.h
+ne_md5.@NEON_OBJEXT@: ne_md5.c ne_md5.h $(top_builddir)/config.h
 
-dav_props.$(obj_ext): dav_props.c $(top_builddir)/config.h \
-	dav_props.h dav_207.h hip_xml.h
+ne_props.@NEON_OBJEXT@: ne_props.c $(top_builddir)/config.h \
+	ne_props.h ne_207.h ne_xml.h $(neonreq)
 
-dav_locks.$(obj_ext): dav_locks.c $(neonreq) dav_locks.h dav_207.h hip_xml.h
+ne_locks.@NEON_OBJEXT@: ne_locks.c $(neonreq) ne_locks.h ne_207.h ne_xml.h
 
-http_redirect.$(obj_ext): http_redirect.c $(neonreq) http_redirect.h \
-	uri.h http_private.h
+ne_redirect.@NEON_OBJEXT@: ne_redirect.c $(neonreq) ne_redirect.h \
+	ne_uri.h ne_private.h
 
-http_cookies.$(obj_ext): http_cookies.c $(neonreq) http_cookies.h uri.h \
-	http_private.h
+ne_cookies.@NEON_OBJEXT@: ne_cookies.c $(neonreq) ne_cookies.h ne_uri.h \
+	ne_private.h
+
+ne_compress.@NEON_OBJEXT@: ne_compress.c $(neonreq) ne_compress.h
+
+ne_acl.@NEON_OBJEXT@: ne_acl.c ne_acl.h $(neonreq)

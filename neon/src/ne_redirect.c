@@ -1,6 +1,6 @@
 /* 
    HTTP-redirect support
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -34,161 +34,109 @@
 #include "ne_uri.h"
 #include "ne_redirect.h"
 #include "ne_i18n.h"
-
-/* TODO: should remove this. */
-#include "ne_private.h"
+#include "ne_string.h"
 
 #define REDIRECT_ID "http://www.webdav.org/neon/hooks/http-redirect"
 
 struct redirect {
-    /* per-request stuff. */
     char *location;
-    ne_request *req;
-    const char *method, *request_uri;
-
-    /* per-session stuff. */
-    ne_session *session;
-    ne_redirect_confirm confirm;
-    ne_redirect_notify notify;
-    void *userdata;
+    char *requri;
+    int valid; /* non-zero if .uri contains a redirect */
+    ne_uri uri;
+    ne_session *sess;
 };
 
-static void *create(void *session, ne_request *req, 
-		    const char *method, const char *uri);
-static int post_send(void *private, const ne_status *status);
-
-static const ne_request_hooks redirect_hooks = {
-    REDIRECT_ID,
-    create,
-    NULL,
-    post_send,
-    NULL
-};
-
-static void *
-create(void *session, ne_request *req, const char *method, const char *uri)
+static void
+create(ne_request *req, void *session, const char *method, const char *uri)
 {
     struct redirect *red = session;
-    
-    /* Free up the location. */
     NE_FREE(red->location);
-
-    /* for handling 3xx redirects */
-    ne_add_response_header_handler(req, "Location",
-				     ne_duplicate_header, &red->location);
-
-    red->req = req;
-    red->method = method;
-    red->request_uri = uri;
-
-    return red;
+    NE_FREE(red->requri);
+    red->requri = ne_strdup(uri);
+    ne_add_response_header_handler(req, "Location", ne_duplicate_header,
+				   &red->location);
 }
 
-/* 2616 says we can't auto-redirect if the method is not GET or HEAD.
- * We extend this to PROPFIND and OPTIONS, which violates a 2616 MUST,
- * but is following the spirit of the spec, I think.
- *
- * In fact Roy Fielding said as much in a new-httpd posting
- * <20010224232203.G799@waka.ebuilt.net>: the spec should allow
- * auto-redirects of any read-only method.  
- *
- * We have no interface for saying "this method is read-only",
- * although this might be useful.
- */
-static int auto_redirect(struct redirect *red)
-{
-    return (strcasecmp(red->method, "HEAD") == 0 ||
-	    strcasecmp(red->method, "GET") == 0 || 
-	    strcasecmp(red->method, "PROPFIND") == 0 ||
-	    strcasecmp(red->method, "OPTIONS") == 0);
-}
+#define REDIR(n) ((n) == 301 || (n) == 302 || (n) == 303 || \
+		  (n) == 307)
 
-static int post_send(void *private, const ne_status *status)
+static int post_send(ne_request *req, void *private, const ne_status *status)
 {
     struct redirect *red = private;
-    struct uri uri;
-    int ret = NE_OK;
 
-    if ((status->code != 302 && status->code != 301) ||
-	red->location == NULL) {
-	/* Nothing to do. */
+    /* Don't do anything for non-redirect status or no Location header. */
+    if (!REDIR(status->code) || red->location == NULL)
 	return NE_OK;
+
+    if (strstr(red->location, "://") == NULL && red->location[0] != '/') {
+	/* FIXME: remove this relative URI resolution hack. */
+	ne_buffer *path = ne_buffer_create();
+	char *pnt;
+	
+	ne_buffer_zappend(path, red->requri);
+	pnt = strrchr(path->data, '/');
+
+	if (pnt && *(pnt+1) != '\0') {
+	    /* Chop off last path segment. */
+	    *(pnt+1) = '\0';
+	    ne_buffer_altered(path);
+	}
+	ne_buffer_zappend(path, red->location);
+	ne_free(red->location);
+	red->location = ne_buffer_finish(path);
     }
+
+    /* free last uri. */
+    ne_uri_free(&red->uri);
     
-    if (uri_parse(red->location, &uri, NULL)) {
-	/* Couldn't parse the URI */
-	ne_set_error(red->session, _("Could not parse redirect location."));
+    /* Parse the Location header */
+    if (ne_uri_parse(red->location, &red->uri) || red->uri.path == NULL) {
+        red->valid = 0;
+	ne_set_error(red->sess, _("Could not parse redirect location."));
 	return NE_ERROR;
     }
+
+    /* got a valid redirect. */
+    red->valid = 1;
     
-    if ((uri.host != NULL && 
-	 strcasecmp(uri.host, red->session->server.hostname) != 0) ||
-	(uri.port != -1 &&
-	 uri.port != red->session->server.port) ||
-	(uri.scheme != NULL &&
-	 strcasecmp(uri.scheme, ne_get_scheme(red->session)) != 0)) {
-	/* Cannot redirect to another server. Throw this back to the caller
-	 * to have them start a new session. */
-	NE_DEBUG(NE_DBG_HTTP, 
-	      "Redirected to different host/port/scheme:\n"
-	      "From %s://%s:%d to %s//%s:%d\n",
-	      ne_get_scheme(red->session),
-	      red->session->server.hostname,
-	      red->session->server.port,
-	      uri.scheme, uri.host, uri.port);
-	ret = NE_REDIRECT;
-	ne_set_error(red->session, _("Redirected to a different server.\n"));
-    } else {
-
-	/* Same-server redirect. Can we auto-redirect? */
-
-	if (!auto_redirect(red) && 
-	    (red->confirm == NULL ||
-	     !(*red->confirm)(red->userdata, red->request_uri, uri.path))) {
-	    /* No auto-redirect or confirm failed. */
-	    ret = NE_ERROR;
-	} else {
-	    /* Okay, follow it: set the new URI and retry the request. */
-	    ne_set_request_uri(red->req, uri.path);
-	    ret = NE_RETRY;
-	    /* Notify them that we're following the redirect. */
-	    if (red->notify != NULL) {
-		red->notify(red->userdata, red->request_uri, uri.path);
-	    }
-	}
+    if (!red->uri.host) {
+	/* Not an absoluteURI: breaks 2616 but everybody does it. */
+	ne_fill_server_uri(red->sess, &red->uri);
     }
 
-    /* Free up the URI. */
-    uri_free(&uri);
-
-    return ret;
+    return NE_REDIRECT;
 }
 
 static void free_redirect(void *cookie)
 {
     struct redirect *red = cookie;
     NE_FREE(red->location);
-    free(red);
+    ne_uri_free(&red->uri);
+    if (red->requri)
+        ne_free(red->requri);
+    ne_free(red);
 }
 
-void ne_redirect_register(ne_session *sess, 
-			  ne_redirect_confirm confirm,
-			  ne_redirect_notify notify,
-			  void *userdata)
+void ne_redirect_register(ne_session *sess)
 {
     struct redirect *red = ne_calloc(sizeof *red);
     
-    red->confirm = confirm;
-    red->notify = notify;
-    red->userdata = userdata;
-    red->session = sess;
+    red->sess = sess;
 
-    ne_add_hooks(sess, &redirect_hooks, red, free_redirect);
+    ne_hook_create_request(sess, create, red);
+    ne_hook_post_send(sess, post_send, red);
+    ne_hook_destroy_session(sess, free_redirect, red);
+
+    ne_set_session_private(sess, REDIRECT_ID, red);
 }
 
-const char *ne_redirect_location(ne_session *sess)
+const ne_uri *ne_redirect_location(ne_session *sess)
 {
-    struct redirect *red = ne_session_hook_private(sess, REDIRECT_ID);
-    return red->location;
+    struct redirect *red = ne_get_session_private(sess, REDIRECT_ID);
+
+    if (red && red->valid)
+        return &red->uri;
+    else
+        return NULL;
 }
 

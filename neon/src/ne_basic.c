@@ -1,6 +1,6 @@
 /* 
    Basic HTTP and WebDAV methods
-   Copyright (C) 1999-2001, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -130,7 +130,7 @@ ne_put_if_unmodified(ne_session *sess, const char *uri, int fd,
     date = ne_rfc1123_date(since);
     /* Add in the conditionals */
     ne_add_request_header(req, "If-Unmodified-Since", date);
-    free(date);
+    ne_free(date);
     
 #ifdef USE_DAV_LOCKS
     ne_lock_using_resource(req, uri, 0);
@@ -157,32 +157,11 @@ ne_put_if_unmodified(ne_session *sess, const char *uri, int fd,
 
 struct get_context {
     int error;
-    size_t total, progress;
+    ne_session *session;
+    off_t total;
     int fd; /* used in get_to_fd */
     ne_content_range *range;
 };
-
-int ne_read_file(ne_session *sess, const char *uri, 
-		   ne_block_reader reader, void *userdata) {
-    struct get_context ctx;
-    ne_request *req = ne_request_create(sess, "GET", uri);
-    int ret;
-
-    /* Read the value of the Content-Length header into ctx.total */
-    ne_add_response_header_handler(req, "Content-Length",
-				   ne_handle_numeric_header, &ctx.total);
-    
-    ne_add_response_body_reader(req, ne_accept_2xx, reader, userdata);
-
-    ret = ne_request_dispatch(req);
-
-    if (ret == NE_OK && ne_get_status(req)->klass != 2)
-	ret = NE_ERROR;
-
-    ne_request_destroy(req);
-
-    return ret;
-}
 
 static void get_to_fd(void *userdata, const char *block, size_t length)
 {
@@ -193,16 +172,21 @@ static void get_to_fd(void *userdata, const char *block, size_t length)
 	while (length > 0) {
 	    ret = write(ctx->fd, block, length);
 	    if (ret < 0) {
-		ctx->error = errno;
+		char err[200];
+		ctx->error = 1;
+		ne_strerror(errno, err, sizeof err);
+		ne_set_error(ctx->session, _("Could not write to file: %s"),
+			     err);
 		break;
 	    } else {
 		length -= ret;
+		block += ret;
 	    }
 	}
     }
 }
 
-static int accept_206(void *ud, ne_request *req, ne_status *st)
+static int accept_206(void *ud, ne_request *req, const ne_status *st)
 {
     return (st->code == 206);
 }
@@ -216,10 +200,12 @@ static void clength_hdr_handler(void *ud, const char *value)
 	ctx->range->end = ctx->range->start + len - 1;
 	ctx->range->total = len;
     }
-    else if (len != ctx->range->total) {
+    else if (len != ctx->total) {
 	NE_DEBUG(NE_DBG_HTTP, 
-		 "Expecting %ld bytes, got entity of length %ld\n", 
-		 (long int) ctx->range->total, (long int) len);
+		 "Expecting %" NE_FMT_OFF_T " bytes, "
+		 "got entity of length %" NE_FMT_OFF_T "\n", 
+		 ctx->total, len);
+	ne_set_error(ctx->session, _("Response not of expected length"));
 	ctx->error = 1;
     }
 }
@@ -229,6 +215,7 @@ static void content_range_hdr_handler(void *ud, const char *value)
     struct get_context *ctx = ud;
 
     if (strncmp(value, "bytes ", 6) != 0) {
+	ne_set_error(ctx->session, ("Response range using unrecognized unit"));
 	ctx->error = 1;
     }
 
@@ -240,6 +227,7 @@ int ne_get_range(ne_session *sess, const char *uri,
 {
     ne_request *req = ne_request_create(sess, "GET", uri);
     struct get_context ctx;
+    const ne_status *status;
     int ret;
 
     if (range->end == -1) {
@@ -249,9 +237,12 @@ int ne_get_range(ne_session *sess, const char *uri,
 	ctx.total = (range->end - range->start) + 1;
     }
 
+    NE_DEBUG(NE_DBG_HTTP, "Range total: %" NE_FMT_OFF_T "\n", ctx.total);
+
     ctx.fd = fd;
     ctx.error = 0;
     ctx.range = range;
+    ctx.session = sess;
 
     ne_add_response_header_handler(req, "Content-Length",
 				     clength_hdr_handler, &ctx);
@@ -261,28 +252,38 @@ int ne_get_range(ne_session *sess, const char *uri,
 
     ne_add_response_body_reader(req, accept_206, get_to_fd, &ctx);
 
-    /* icky casts to long int, which should be at least as large as the
-     * off_t's */
     if (range->end == -1) {
-	ne_print_request_header(req, "Range", "bytes=%ld-", 
-				  (long int) range->start);
+	ne_print_request_header(req, "Range", "bytes=%" NE_FMT_OFF_T "-", 
+				range->start);
     }
     else {
-	ne_print_request_header(req, "Range", "bytes=%ld-%ld",
-				  (long int) range->start, 
-				  (long int)range->end);
+	ne_print_request_header(req, "Range", 
+				"bytes=%" NE_FMT_OFF_T "-%" NE_FMT_OFF_T,
+				range->start, range->end);
     }
     ne_add_request_header(req, "Accept-Ranges", "bytes");
 
     ret = ne_request_dispatch(req);
-    
-    if (ret == NE_OK && ne_get_status(req)->klass != 2) {
+
+    status = ne_get_status(req);
+
+    if (ctx.error) {
+	ret = NE_ERROR;
+    } else if (status && status->code == 416) {
+	/* connection is terminated too early with Apache/1.3, so we check
+	 * this even if ret == NE_ERROR... */
+	ne_set_error(sess, _("Range is not satisfiable"));
 	ret = NE_ERROR;
     }
-    else if (ne_get_status(req)->code != 206) {
-	ne_set_error(sess, _("Server does not allow partial GETs."));
-	ret = NE_ERROR;
-    }
+    else if (ret == NE_OK) {
+	if (status->klass == 2 && status->code != 206) {
+	    ne_set_error(sess, _("Resource does not support ranged GETs."));
+	    ret = NE_ERROR;
+	}
+	else if (status->klass != 2) {
+	    ret = NE_ERROR;
+	}
+    } 
     
     ne_request_destroy(req);
 
@@ -298,9 +299,9 @@ int ne_get(ne_session *sess, const char *uri, int fd)
     int ret;
 
     ctx.total = -1;
-    ctx.progress = 0;
     ctx.fd = fd;
     ctx.error = 0;
+    ctx.session = sess;
 
     /* Read the value of the Content-Length header into ctx.total */
     ne_add_response_header_handler(req, "Content-Length",
@@ -312,14 +313,8 @@ int ne_get(ne_session *sess, const char *uri, int fd)
     ret = ne_request_dispatch(req);
     
     if (ctx.error) {
-	char buf[BUFSIZ];
-	snprintf(buf, BUFSIZ, 
-		  _("Could not write to file: %s"), strerror(ctx.error));
-	ne_set_error(sess, buf);
 	ret = NE_ERROR;
-    }
-
-    if (ret == NE_OK && ne_get_status(req)->klass != 2) {
+    } else if (ret == NE_OK && ne_get_status(req)->klass != 2) {
 	ret = NE_ERROR;
     }
 
@@ -339,6 +334,7 @@ int ne_post(ne_session *sess, const char *uri, int fd, const char *buffer)
     ctx.total = -1;
     ctx.fd = fd;
     ctx.error = 0;
+    ctx.session = sess;
 
     /* Read the value of the Content-Length header into ctx.total */
     ne_add_response_header_handler(req, "Content-Length",
@@ -351,14 +347,9 @@ int ne_post(ne_session *sess, const char *uri, int fd, const char *buffer)
     ret = ne_request_dispatch(req);
     
     if (ctx.error) {
-	char buf[BUFSIZ];
-	snprintf(buf, BUFSIZ, 
-		 _("Could not write to file: %s"), strerror(ctx.error));
-	ne_set_error(sess, buf);
 	ret = NE_ERROR;
     }
-
-    if (ret == NE_OK && ne_get_status(req)->klass != 2) {
+    else if (ret == NE_OK && ne_get_status(req)->klass != 2) {
 	ret = NE_ERROR;
     }
 
@@ -367,74 +358,70 @@ int ne_post(ne_session *sess, const char *uri, int fd, const char *buffer)
     return ret;
 }
 
-static void server_hdr_handler(void *userdata, const char *value)
-{
-    char **tokens = split_string(value, ' ', "\"'", NULL);
-    ne_server_capabilities *caps = userdata;
-    int n;
-
-    for (n = 0; tokens[n] != NULL; n++) {
-	if (strncasecmp(tokens[n], "Apache/", 7) == 0 && 
-	    strlen(tokens[n]) > 11) { /* 12 == "Apache/1.3.0" */
-	    const char *ver = tokens[n] + 7;
-	    int count;
-	    char **vers;
-	    vers = split_string_c(ver, '.', NULL, NULL, &count);
-	    /* Apache/1.3.6 and before have broken Expect: 100 support */
-	    if (count > 1 && atoi(vers[0]) < 2 && 
-		atoi(vers[1]) < 4 && atoi(vers[2]) < 7) {
-		caps->broken_expect100 = 1;
-	    }
-	    split_string_free(vers);
-	}
-    }    
-    
-    split_string_free(tokens);
-}
-
 void ne_content_type_handler(void *userdata, const char *value)
 {
     ne_content_type *ct = userdata;
-    char *sep, *parms;
+    char *sep, *stype;
 
     ct->value = ne_strdup(value);
     
-    sep = strchr(ct->value, '/');
-    if (!sep) {
+    stype = strchr(ct->value, '/');
+    if (!stype) {
 	NE_FREE(ct->value);
 	return;
     }
 
-    *++sep = '\0';
+    *stype++ = '\0';
     ct->type = ct->value;
-    ct->subtype = sep;
     
-    parms = strchr(ct->value, ';');
+    sep = strchr(stype, ';');
 
-    if (parms) {
-	*parms = '\0';
-	/* TODO: handle charset. */
+    if (sep) {
+	char *tok;
+	/* look for the charset parameter. TODO; probably better to
+	 * hand-carve a parser than use ne_token/strstr/shave here. */
+	*sep++ = '\0';
+	do {
+	    tok = ne_qtoken(&sep, ';', "\"\'");
+	    if (tok) {
+		tok = strstr(tok, "charset=");
+		if (tok)
+		    ct->charset = ne_shave(tok+8, "\"\'");
+	    } else {
+		break;
+	    }
+	} while (sep != NULL);
     }
+
+    /* set subtype, losing any trailing whitespace */
+    ct->subtype = ne_shave(stype, " \t");
+    
+    /* 2616#3.7.1: subtypes of text/ default to charset ISO-8859-1. */
+    if (ct->charset == NULL && strcasecmp(ct->type, "text") == 0)
+	ct->charset = "ISO-8859-1";
 }
 
 static void dav_hdr_handler(void *userdata, const char *value)
 {
-    char **classes, **class;
+    char *tokens = ne_strdup(value), *pnt = tokens;
     ne_server_capabilities *caps = userdata;
     
-    classes = split_string(value, ',', "\"'", " \r\t\n");
-    for (class = classes; *class!=NULL; class++) {
+    do {
+	char *tok = ne_qtoken(&pnt, ',',  "\"'");
+	if (!tok) break;
+	
+	tok = ne_shave(tok, " \r\t\n");
 
-	if (strcmp(*class, "1") == 0) {
+	if (strcmp(tok, "1") == 0) {
 	    caps->dav_class1 = 1;
-	} else if (strcmp(*class, "2") == 0) {
+	} else if (strcmp(tok, "2") == 0) {
 	    caps->dav_class2 = 1;
-	} else if (strcmp(*class, "<http://apache.org/dav/propset/fs/1>") == 0) {
+	} else if (strcmp(tok, "<http://apache.org/dav/propset/fs/1>") == 0) {
 	    caps->dav_executable = 1;
 	}
-    }
+    } while (pnt != NULL);
     
-    split_string_free(classes);
+    ne_free(tokens);
 
 }
 
@@ -445,7 +432,6 @@ int ne_options(ne_session *sess, const char *uri,
     
     int ret;
 
-    ne_add_response_header_handler(req, "Server", server_hdr_handler, caps);
     ne_add_response_header_handler(req, "DAV", dav_hdr_handler, caps);
 
     ret = ne_request_dispatch(req);
@@ -479,9 +465,14 @@ void ne_add_depth_header(ne_request *req, int depth)
 }
 
 static int copy_or_move(ne_session *sess, int is_move, int overwrite,
-			const char *src, const char *dest ) 
+			int depth, const char *src, const char *dest) 
 {
     ne_request *req = ne_request_create( sess, is_move?"MOVE":"COPY", src );
+
+    /* 2518 S8.9.2 says only use Depth: infinity with MOVE. */
+    if (!is_move) {
+	ne_add_depth_header(req, depth);
+    }
 
 #ifdef USE_DAV_LOCKS
     if (is_move) {
@@ -501,16 +492,16 @@ static int copy_or_move(ne_session *sess, int is_move, int overwrite,
     return ne_simple_request(sess, req);
 }
 
-int ne_copy(ne_session *sess, int overwrite, 
+int ne_copy(ne_session *sess, int overwrite, int depth,
 	     const char *src, const char *dest) 
 {
-    return copy_or_move(sess, 0, overwrite, src, dest);
+    return copy_or_move(sess, 0, overwrite, depth, src, dest);
 }
 
 int ne_move(ne_session *sess, int overwrite,
 	     const char *src, const char *dest) 
 {
-    return copy_or_move(sess, 1, overwrite, src, dest);
+    return copy_or_move(sess, 1, overwrite, 0, src, dest);
 }
 
 /* Deletes the specified resource. (and in only two lines of code!) */
@@ -540,10 +531,10 @@ int ne_mkcol(ne_session *sess, const char *uri)
     char *real_uri;
     int ret;
 
-    if (uri_has_trailing_slash(uri)) {
+    if (ne_path_has_trailing_slash(uri)) {
 	real_uri = ne_strdup(uri);
     } else {
-	CONCAT2(real_uri, uri, "/");
+	real_uri = ne_concat(uri, "/", NULL);
     }
 
     req = ne_request_create(sess, "MKCOL", real_uri);
@@ -555,7 +546,7 @@ int ne_mkcol(ne_session *sess, const char *uri)
     
     ret = ne_simple_request(sess, req);
 
-    free(real_uri);
+    ne_free(real_uri);
 
     return ret;
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2001 Joe Orton <joe@manyfish.co.uk>
+# Copyright (C) 2001-2002 Joe Orton <joe@manyfish.co.uk>    -*- autoconf -*-
 #
 # This file is free software; you may copy and/or distribute it with
 # or without modifications, as long as this notice is preserved.
@@ -19,6 +19,25 @@
 
 AC_DEFUN([NEON_TEST], [
 
-AC_CHECK_FUNCS(pipe)
+AC_REQUIRE([NEON_COMMON_CHECKS])
+
+AC_REQUIRE([AC_TYPE_PID_T])
+AC_REQUIRE([AC_HEADER_TIME])
+
+dnl NEON_XML_PARSER may add things (e.g. -I/usr/local/include) to 
+dnl CPPFLAGS which make "gcc -Werror" fail in NEON_FORMAT; suggest
+dnl this macro is used first.
+AC_BEFORE([$0], [NEON_XML_PARSER])
+
+AC_CHECK_HEADERS(sys/time.h)
+
+AC_CHECK_FUNCS(pipe isatty usleep shutdown)
+
+AC_REQUIRE([NE_FIND_AR])
+
+NEON_FORMAT(time_t, [
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif])
 
 ])

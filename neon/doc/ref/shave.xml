@@ -7,7 +7,7 @@
 
       <refnamediv>
 	<refname>ne_shave</refname>
-	<refpurpose>whitespace trimmer</refpurpose>
+	<refpurpose>trim whitespace from a string</refpurpose>
       </refnamediv>
       
       <refsynopsisdiv>
@@ -32,7 +32,8 @@
 	<para><function>ne_shave</function> returns a portion of
 <parameter>str</parameter> with any leading or trailing characters in
 the <parameter>whitespace</parameter> array removed.
-<parameter>str</parameter> may be modified.</para>
+<parameter>str</parameter> may be modified.  Note that the return
+value may not be equal to <parameter>str</parameter>.</para>
 
       </refsect1>
 

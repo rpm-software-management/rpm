@@ -1,6 +1,6 @@
 /* 
    WebDAV Properties manipulation
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -52,6 +52,10 @@ BEGIN_NEON_DECLS
  *   - the properties results set (const ne_prop_result_set *results)
  * */
 
+/* The name of a WebDAV property. 'nspace' may be NULL. */
+typedef struct {
+    const char *nspace, *name;
+} ne_propname;
 
 typedef struct ne_prop_result_set_s ne_prop_result_set;
 
@@ -119,33 +123,43 @@ typedef void (*ne_props_result)(void *userdata, const char *href,
  * the request.
  *
  * Returns NE_*.  */
-int ne_simple_propfind(ne_session *sess, const char *uri, int depth,
+int ne_simple_propfind(ne_session *sess, const char *path, int depth,
 			const ne_propname *props,
 			ne_props_result results, void *userdata);
 
-/* A PROPPATCH request may include any number of operations. Pass an
- * array of these operations to ne_proppatch, with the last item
- * having the name element being NULL.  If the type is propset, the
- * property of the given name is set to the new value.  If the type is
- * propremove, the property of the given name is deleted, and the
- * value is ignored.  */
+/* The properties of a resource can be manipulated using ne_proppatch.
+ * A single proppatch request may include any number of individual
+ * "set" and "remove" operations, and is defined to have
+ * "all-or-nothing" semantics, so either all the operations succeed,
+ * or none do. */
+
+/* A proppatch operation may either set a property to have a new
+ * value, in which case 'type' must be ne_propset, and 'value' must be
+ * non-NULL; or it can remove a property; in which case 'type' must be
+ * ne_propremove, and 'value' is ignored.  In both cases, 'name' must
+ * be set to the name of the property to alter. */
+enum ne_proppatch_optype {
+    ne_propset,
+    ne_propremove
+};
 typedef struct {
     const ne_propname *name;
-    enum {
-	ne_propset,
-	ne_propremove
-    } type;
+    enum ne_proppatch_optype type;
     const char *value;
 } ne_proppatch_operation;
 
-int ne_proppatch(ne_session *sess, const char *uri,
-		  const ne_proppatch_operation *items);
+/* Execute a set of property operations 'ops' on 'path'. 'ops' is an
+ * array terminated by an operation with a NULL 'name' field. Returns
+ * NE_*. */
+int ne_proppatch(ne_session *sess, const char *path,
+		 const ne_proppatch_operation *ops);
 
-/* Retrieve property names for the resources at 'href'.  'results'
+/* Retrieve property names for the resources at 'path'.  'results'
  * callback is called for each resource.  Use 'ne_propset_iterate' on
- * the passed results object to retrieve the list of property names.  */
-int ne_propnames(ne_session *sess, const char *href, int depth,
-		  ne_props_result results, void *userdata);
+ * the passed results object to retrieve the list of property names.
+ * */
+int ne_propnames(ne_session *sess, const char *path, int depth,
+		 ne_props_result results, void *userdata);
 
 /* The complex, you-do-all-the-work, property fetch interface:
  */
@@ -164,16 +178,21 @@ void *ne_propfind_current_private(ne_propfind_handler *handler);
  *
  * Depth must be one of NE_DEPTH_*. */
 ne_propfind_handler *
-ne_propfind_create(ne_session *sess, const char *uri, int depth);
+ne_propfind_create(ne_session *sess, const char *path, int depth);
 
 /* Return the XML parser for the given handler (only need if you want
  * to handle complex properties). */
 ne_xml_parser *ne_propfind_get_parser(ne_propfind_handler *handler);
 
+/* This interface reserves the state integer range 'x' where 0 < x
+ * and x < NE_PROPS_STATE_TOP. */
+#define NE_PROPS_STATE_TOP (NE_207_STATE_TOP + 100)
+
 /* Return the request object for the given handler.  You MUST NOT use
  * ne_set_request_body_* on this request object.  (this call is only
  * needed if for instance, you want to add extra headers to the
- * PROPFIND request).  */
+ * PROPFIND request).  The result of using the request pointer after
+ * ne_propfind_destroy(handler) has been called is undefined. */
 ne_request *ne_propfind_get_request(ne_propfind_handler *handler);
 
 /* A "complex property" has a value which is structured XML. To handle
@@ -196,25 +215,27 @@ ne_request *ne_propfind_get_request(ne_propfind_handler *handler);
  * results callback, simply call 'ne_propset_private'.
  * */
 typedef void *(*ne_props_create_complex)(void *userdata,
-					  const char *uri);
+					 const char *href);
 
 void ne_propfind_set_private(ne_propfind_handler *handler,
-			      ne_props_create_complex creator,
-			      void *userdata);
+			     ne_props_create_complex creator,
+			     void *userdata);
 
-/* Find all properties.
+/* Fetch all properties.
  *
  * Returns NE_*. */
 int ne_propfind_allprop(ne_propfind_handler *handler, 
-			 ne_props_result result, void *userdata);
+			ne_props_result result, void *userdata);
 
-/* Find properties named in a call to ne_propfind_set_flat and/or
- * ne_propfind_set_complex.
+/* Fetch all properties with names listed in array 'names', which is
+ * terminated by a property with a NULL name field.  For each resource
+ * encountered, the result callback will be invoked, passing in
+ * 'userdata' as the first argument.
  *
  * Returns NE_*. */
 int ne_propfind_named(ne_propfind_handler *handler, 
-		       const ne_propname *prop,
-		       ne_props_result result, void *userdata);
+		      const ne_propname *names,
+		      ne_props_result result, void *userdata);
 
 /* Destroy a propfind handler after use. */
 void ne_propfind_destroy(ne_propfind_handler *handler);

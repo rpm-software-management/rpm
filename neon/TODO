@@ -1,104 +1,118 @@
 
 To Do List for neon                                      -*- text -*-
--------------------     Id: TODO,v 1.3 2000/05/13 20:52:43 joe Exp 
+===================
 
 Please submit feature requests to <mailto:neon@webdav.org>
+
+For one-point-oh
+----------------
+
+23. Mechanism for aborting a request mid-response; e.g., when a GET
+    fails due to out of disk space, abort the download.
+
+31. Make it threadsafe:
+    socket.c: getservbyname -> getservbyname_r.
+
+38. Replace all use of split_string/pair_string with ne_token.
+
+40. XML body acceptance callback should check Content-Type. Should
+    also pass encoding to expat if one is given (how about libxml?).
+    Recent mod_dav's return XML bodies in 424 responses which need
+    displaying properly.
+
+44. Finer-grained connection status feedback, i.e., "Sent Request",
+    "Got response status-line"... "Reading response body"
+
+58. 2616 is quite strict about when to retry non-idempotent requests
+    and when not to.  neon may not be compliant here.
+
+61. Make everything namespace-safe:
+       remove split_string/pair_string.
+
+62. Select which auth mechanisms are allowed, e.g. JUST SAY NO to
+    basic might very well be useful to some apps.
+
+63. Unconditionally turn off Nagle algorithm.
+
+Longer term
+-----------
+
 
 1. Support for HTTP-extended authoring methods ala WebRFM etc; using
    New-URI header etc.  Also support the BROWSE and INDEX methods.  The
    protocol is documented at:
    http://www.ics.uci.edu/pub/ietf/webdav/ns_dav.html
+   DON'T do this inside ne_basic.c, do it separately in
+   ne_author.c or something. 
 
 2. Add proper domain support to authentication code. (requires full
    URI parsing support). Need to tell the auth layer the server
    details.
 
-3. Add a callback to determine whether a specific request should go
-   through the proxy server or not... based on URI, maybe method too
-   since lots of HTTP/1.0 proxies break on DAV requests?
-
-4. Better cnonce generation for authentication: use /dev/random or
-   whatever like mod_auth_digest.
-
-5. Add request hooks to remove all authentication code from
-   http_request.c.
-
-6. PUT/GET with ranges... http_get_range
-
-7. hip_xml/dav_207/dav_prop might need a revamp.
-
-   hip_xml: use an expat-esque interface; i.e. make hip_xml_parser
-   opaque and add API to set handlers rather than initialize
-   structures directly. Two problems need to be solved more elegantly:
-
-   1) Allowing "sub-handler" for allowing parsing property element
-   contents independantly of the overally 207 response parse.
-
-   2) Allow "mixed-mode" parsing of XML which mixes cdata + elements.
-
-   Probably, make hip_xml more of a "utility" layer rather than a
-   "driving" layer; abstract out expat/libxml, namespace lookups,
-   element name -> id mapping, easy CDATA handling...
-
-8. WebDAV class 2 locking. Problems: this requires parsing the XML
-   within a property element. This could be achieved by doing a
-   completely new XML parse of the property value returned by end_prop
-   from the 207 code, but this is a bit noddy. Options:
-
-   a) Ideally: extend hip_xml and the 207 layer to allow doing a
-   proper start/end_element/cdata parse of the XML *within* a
-   property. This is tricky since it means extending hip_xml to
-   *dynamically* determine whether to be in "collect" mode or not. Add
-   another callback for this?
+6. PUT with ranges... ne_put_range
 
 9. DeltaV support (http://www.webdav.org/deltav/). See also the
-   inversion project (http://inversion.tigris.org/) who might build a
-   versioning system over DAV.
+   subversion project (http://subversion.tigris.org/) who might build
+   a versioning system over DAV.
 
 10. ACL support (http://www.webdav.org/acl/)
 
 11. DASL support (http://www.webdav.org/dasl/). Xythos have server
-    support for this (www.sharemation.com).
+    support for this (www.sharemation.com). The UI is probably the
+    hardest problem here.
+      => Jim Whitehead's UCI postgrad team is working on this and
+    has written a DASL implementation.
 
-12. SSL/TLS support... make it pluggable so we don't have to export
-    crypto-related code at ALL?
-
-13. Should we really be abort()'ing on out-of-memory? It makes a lot
-    of code MUCH simpler (esp. sbuffer_* usage).
-
-14. Nicer request-header manipulation... some kind of indexed data
-    structure, so we're sure we don't add the same header to the
-    request twice (e.g. Cache-Control). Must be at least as flexible
-    as sbuffer usage, though.
-
-16. Socket status notification (socket.c:sock_register_*) is awful.
+14. Improved request-header manipulation... some kind of indexed table
+    (a la Apache, libghttp, so we're sure we don't add the same header
+    to the request twice.  Better control over adding Cache-Control
+    headers would be good too.
 
 17. Should we really be i18n'izing the low-level error messages in
-    http_request.c, dav_207.c ? It seems nice and clever to, so the
-    user REALLY know what is going wrong with the server (probably),
-    but it is maybe a bit frightening.
-    
-18. PROPFIND/propnames support.
+    ne_request.c, ne_207.c ? It seems nice and clever to, so the user
+    REALLY know what is going wrong with the server (probably), but it
+    is maybe a bit frightening.
 
-19. libtool support, for proper shared libraries.
-
-20. Add full URI parser + handling. Or stop pretending we are doing
-    "URI" parsing, and just handle HTTP URL's.
+20. Add decent and proper URI parser + handling. Or stop pretending we
+    are doing "URI" parsing, and just handle HTTP URL's.
 
 21. Storing multiple authentication "sessions" within an actual
-    http_auth_session, so I log into e.g. /foo/ and /bar/ (which
-    are not in the same authentication domain)
-    switch between them without having to re-enter passwords all the
-    time.
+    auth_session, so I can log into e.g. /foo/ and /bar/ (which are
+    not in the same authentication domain) and switch between them
+    without having to re-enter passwords all the time.
 
-22. Handle PROPFIND property error responses properly.
+28. Support response caching?
 
-23. Mechanism for aborting a request mid-response; e.g., when a GET
-    fails due to out of disk space, abort the download.
+35. Allow i18n'ization if building a shared library, iff gettext
+    support is on the system (and hence add -lintl or whatever to
+    NEON_LIBS). If system has no gettext support, then it's probably
+    impossible to support i18n in the library (although *applications*
+    can support it by bundling gettext themselves). Take a look at how
+    other libraries handle this.
 
-24. In a PROPFIND response, if a property were to include e.g., a
-    DAV:multistatus element, this would not be handled correctly.
+46. Asynchronous request-dispatching? Makes integration into GUI loop
+    easy... any other reasons?  Must leave existing request_dispatch
+    interface intact.
 
-25. A BSD C library has an MD5 implementation in the C Library...
-    support this. (someone who runs a BSD will need to do this)
+47. Indexed table-based response-header access? Might simplify things
+    like response body acceptance callbacks (i.e., can get access to
+    Content-Type header for XML).
+
+48. Possibly, store the time of last interaction over the TCP socket,
+    call it 't'.  If the next request is made after t+20, presume the
+    persistent connection is dead, so re-connect automatically.  If we
+    don't do this, then we have two wasted write() calls making the
+    request, then failing, then re-connecting.  It's really only worth
+    doing this if this actually saves any packets on the wire, which
+    it probably doesn't. strace / tcpdump might help here.
+
+50. opendir/readdir/closedir-esque interface for PROPFIND depth 1, 
+    a la EZDAV. (cadaver has it already)
+
+53. "ne_session" concept is hazy.  Abstract out a "connection" concept
+    too, and allow >1 connection per-session in multi-threaded use,
+    somehow.
+
+57. Add function to map of status-code values to i18n-ized reason
+    phrase.
 

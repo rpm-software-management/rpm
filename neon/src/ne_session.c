@@ -1,6 +1,8 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   Portions are:
+   Copyright (C) 1999-2000 Tommi Komulainen <Tommi.Komulainen@iki.fi>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,178 +29,149 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 
 #include "ne_session.h"
 #include "ne_alloc.h"
 #include "ne_utils.h"
+#include "ne_i18n.h"
+#include "ne_string.h"
 
 #include "ne_private.h"
 
-#define NEON_USERAGENT "neon/" NEON_VERSION;
-
-/* Initializes an HTTP session */
-ne_session *ne_session_create(void) 
+/* Destroy a a list of hooks. */
+static void destroy_hooks(struct hook *hooks)
 {
-    ne_session *sess = ne_calloc(sizeof *sess);
+    struct hook *nexthk;
 
-    NE_DEBUG(NE_DBG_HTTP, "HTTP session begins.\n");
-    strcpy(sess->error, "Unknown error.");
-    sess->version_major = -1;
-    sess->version_minor = -1;
-    /* Default expect-100 to OFF. */
-    sess->expect100_works = -1;
-    return sess;
+    while (hooks) {
+	nexthk = hooks->next;
+	ne_free(hooks);
+	hooks = nexthk;
+    }
 }
 
-int ne_session_destroy(ne_session *sess) 
+void ne_session_destroy(ne_session *sess) 
 {
     struct hook *hk;
 
     NE_DEBUG(NE_DBG_HTTP, "ne_session_destroy called.\n");
 
-    /* Clear the hooks. */
-    hk = sess->hooks;
-    while (hk) {
-	struct hook *nexthk = hk->next;
-	if (hk->free) {
-	    hk->free(hk->private);
-	}
-	free(hk);
-	hk = nexthk;
+    /* Run the destroy hooks. */
+    for (hk = sess->destroy_sess_hooks; hk != NULL; hk = hk->next) {
+	ne_destroy_sess_fn fn = (ne_destroy_sess_fn)hk->fn;
+	fn(hk->userdata);
     }
+    
+    destroy_hooks(sess->create_req_hooks);
+    destroy_hooks(sess->pre_send_hooks);
+    destroy_hooks(sess->post_send_hooks);
+    destroy_hooks(sess->destroy_req_hooks);
+    destroy_hooks(sess->destroy_sess_hooks);
+    destroy_hooks(sess->private);
 
-    NE_FREE(sess->server.hostname);
-    NE_FREE(sess->server.hostport);
-    NE_FREE(sess->proxy.hostport);
-    NE_FREE(sess->user_agent);
+    ne_free(sess->scheme);
+    ne_free(sess->server.hostname);
+    ne_free(sess->server.hostport);
+    if (sess->server.address) ne_addr_destroy(sess->server.address);
+    if (sess->proxy.address) ne_addr_destroy(sess->proxy.address);
+    if (sess->proxy.hostname) ne_free(sess->proxy.hostname);
+    if (sess->user_agent) ne_free(sess->user_agent);
 
     if (sess->connected) {
 	ne_close_connection(sess);
     }
 
-    free(sess);
-    return NE_OK;
+#ifdef NEON_SSL
+    if (sess->ssl_context)
+        ne_ssl_context_destroy(sess->ssl_context);
+
+    if (sess->server_cert)
+        ne_ssl_cert_free(sess->server_cert);
+    
+    if (sess->client_cert)
+        ne_ssl_clicert_free(sess->client_cert);
+#endif
+
+    ne_free(sess);
 }
 
 int ne_version_pre_http11(ne_session *s)
 {
-    return (s->version_major<1 || (s->version_major==1 && s->version_minor<1));
+    return !s->is_http11;
 }
 
-static char *get_hostport(struct host_info *host) 
+/* Stores the "hostname[:port]" segment */
+static void set_hostport(struct host_info *host, unsigned int defaultport)
 {
     size_t len = strlen(host->hostname);
-    char *ret = ne_malloc(len + 10);
-    strcpy(ret, host->hostname);
-    if (host->port != 80) {
-	snprintf(ret + len, 9, ":%d", host->port);
-    }
-    return ret;
+    host->hostport = ne_malloc(len + 10);
+    strcpy(host->hostport, host->hostname);
+    if (host->port != defaultport)
+	ne_snprintf(host->hostport + len, 9, ":%u", host->port);
 }
 
+/* Stores the hostname/port in *info, setting up the "hostport"
+ * segment correctly. */
 static void
-set_hostinfo(struct host_info *info, const char *hostname, int port)
+set_hostinfo(struct host_info *info, const char *hostname, unsigned int port)
 {
-    NE_FREE(info->hostport);
-    NE_FREE(info->hostname);
-    info->hostname= ne_strdup(hostname);
+    info->hostname = ne_strdup(hostname);
     info->port = port;
-    info->hostport = get_hostport(info);
 }
 
-static int lookup_host(ne_session *sess, struct host_info *info)
+ne_session *ne_session_create(const char *scheme,
+			      const char *hostname, unsigned int port)
 {
-    if (sess->notify_cb) {
-	sess->notify_cb(sess->notify_ud, ne_conn_namelookup, info->hostname);
-    }
-    if (sock_name_lookup(info->hostname, &info->addr)) {
-	return NE_LOOKUP;
-    } else {
-	return NE_OK;
-    }
-}
+    ne_session *sess = ne_calloc(sizeof *sess);
 
-int ne_session_server(ne_session *sess, const char *hostname, int port)
-{
-    if (sess->connected && !sess->have_proxy) {
-	/* Force reconnect */
-	ne_close_connection(sess);
-    }
+    NE_DEBUG(NE_DBG_HTTP, "HTTP session to %s://%s:%d begins.\n",
+	     scheme, hostname, port);
+
+    strcpy(sess->error, "Unknown error.");
+
+    /* use SSL if scheme is https */
+    sess->use_ssl = !strcmp(scheme, "https");
+    
+    /* set the hostname/port */
     set_hostinfo(&sess->server, hostname, port);
-    /* We do a name lookup on the origin server if either:
-     *  1) we do not have a proxy server
-     *  2) we *might not* have a proxy server (since we have a 'proxy decider' function).
-     */
-    if (!sess->have_proxy || sess->proxy_decider) {
-	return lookup_host(sess, &sess->server);
-    } else {
-	return NE_OK;
+    set_hostport(&sess->server, sess->use_ssl?443:80);
+
+#ifdef NEON_SSL
+    if (sess->use_ssl) {
+        sess->ssl_context = ne_ssl_context_create();
     }
-}
-
-void ne_set_secure_context(ne_session *sess, nssl_context *ctx)
-{
-    sess->ssl_context = ctx;
-}
-
-int ne_set_request_secure_upgrade(ne_session *sess, int req_upgrade)
-{
-#ifdef ENABLE_SSL
-    sess->request_secure_upgrade = req_upgrade;
-    return 0;
-#else
-    return -1;
 #endif
+
+    sess->scheme = ne_strdup(scheme);
+
+    /* Default expect-100 to OFF. */
+    sess->expect100_works = -1;
+    return sess;
 }
 
-int ne_set_accept_secure_upgrade(ne_session *sess, int acc_upgrade)
+void ne_session_proxy(ne_session *sess, const char *hostname,
+		      unsigned int port)
 {
-#ifdef ENABLE_SSL
-    sess->accept_secure_upgrade = acc_upgrade;
-    return 0;
-#else
-    return -1;
-#endif
-}
-
-int ne_set_secure(ne_session *sess, int use_secure)
-{
-#ifdef ENABLE_SSL
-    sess->use_secure = use_secure;
-    return 0;
-#else
-    return -1;
-#endif
-}
-
-void ne_session_decide_proxy(ne_session *sess, ne_use_proxy use_proxy,
-			       void *userdata)
-{
-    sess->proxy_decider = use_proxy;
-    sess->proxy_decider_udata = userdata;
-}
-
-int ne_session_proxy(ne_session *sess, const char *hostname, int port)
-{
-    if (sess->connected) {
-	/* Force reconnect */
-	ne_close_connection(sess);
-    }
-    sess->have_proxy = 1;
+    sess->use_proxy = 1;
+    if (sess->proxy.hostname) ne_free(sess->proxy.hostname);
     set_hostinfo(&sess->proxy, hostname, port);
-    return lookup_host(sess, &sess->proxy);
 }
 
-void ne_set_error(ne_session *sess, const char *errstring)
+void ne_set_error(ne_session *sess, const char *format, ...)
 {
-    strncpy(sess->error, errstring, BUFSIZ);
-    sess->error[BUFSIZ-1] = '\0';
-    STRIP_EOL(sess->error);
+    va_list params;
+
+    va_start(params, format);
+    ne_vsnprintf(sess->error, sizeof sess->error, format, params);
+    va_end(params);
 }
 
 
 void ne_set_progress(ne_session *sess, 
-		       sock_progress progress, void *userdata)
+		     ne_progress progress, void *userdata)
 {
     sess->progress_cb = progress;
     sess->progress_ud = userdata;
@@ -225,40 +198,80 @@ void ne_set_persist(ne_session *sess, int persist)
     sess->no_persist = !persist;
 }
 
-void ne_set_useragent(ne_session *sess, const char *token)
+void ne_set_read_timeout(ne_session *sess, int timeout)
 {
-    static const char *fixed = " " NEON_USERAGENT;
-    NE_FREE(sess->user_agent);
-    CONCAT2(sess->user_agent, token, fixed);
+    sess->rdtimeout = timeout;
 }
 
-const char *ne_get_server_hostport(ne_session *sess) {
+#define UAHDR "User-Agent: "
+#define AGENT " neon/" NEON_VERSION "\r\n"
+
+void ne_set_useragent(ne_session *sess, const char *token)
+{
+    if (sess->user_agent) ne_free(sess->user_agent);
+    sess->user_agent = ne_malloc(strlen(UAHDR) + strlen(AGENT) + 
+                                 strlen(token) + 1);
+#ifdef HAVE_STPCPY
+    strcpy(stpcpy(stpcpy(sess->user_agent, UAHDR), token), AGENT);
+#else
+    strcat(strcat(strcpy(sess->user_agent, UAHDR), token), AGENT);
+#endif
+}
+
+const char *ne_get_server_hostport(ne_session *sess)
+{
     return sess->server.hostport;
 }
 
 const char *ne_get_scheme(ne_session *sess)
 {
-    if (sess->use_secure) {
-	return "https";
-    } else {
-	return "http";
-    }
+    return sess->scheme;
 }
 
-
-const char *ne_get_error(ne_session *sess) {
-    return sess->error;
-}
-
-int ne_close_connection(ne_session *sess)
+void ne_fill_server_uri(ne_session *sess, ne_uri *uri)
 {
-    NE_DEBUG(NE_DBG_SOCKET, "Closing connection.\n");
-    if (sess->connected > 0) {
-	sock_close(sess->socket);
+    uri->host = ne_strdup(sess->server.hostname);
+    uri->port = sess->server.port;
+    uri->scheme = ne_strdup(sess->scheme);
+}
+
+const char *ne_get_error(ne_session *sess)
+{
+    return ne_strclean(sess->error);
+}
+
+void ne_close_connection(ne_session *sess)
+{
+    if (sess->connected) {
+	NE_DEBUG(NE_DBG_SOCKET, "Closing connection.\n");
+	ne_sock_close(sess->socket);
 	sess->socket = NULL;
+	NE_DEBUG(NE_DBG_SOCKET, "Connection closed.\n");
+    } else {
+	NE_DEBUG(NE_DBG_SOCKET, "(Not closing closed connection!).\n");
     }
     sess->connected = 0;
-    NE_DEBUG(NE_DBG_SOCKET, "Connection closed.\n");
-    return 0;
 }
+
+void ne_ssl_set_verify(ne_session *sess, ne_ssl_verify_fn fn, void *userdata)
+{
+    sess->ssl_verify_fn = fn;
+    sess->ssl_verify_ud = userdata;
+}
+
+void ne_ssl_provide_clicert(ne_session *sess, 
+			  ne_ssl_provide_fn fn, void *userdata)
+{
+    sess->ssl_provide_fn = fn;
+    sess->ssl_provide_ud = userdata;
+}
+
+void ne_ssl_trust_cert(ne_session *sess, const ne_ssl_certificate *cert)
+{
+#ifdef NEON_SSL
+    ne_ssl_ctx_trustcert(sess->ssl_context, cert);
+#endif
+}
+
+
 

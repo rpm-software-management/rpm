@@ -1,6 +1,6 @@
 /* 
-   Higher Level Interface to XML Parsers.
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   neon XML parser interface
+   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,162 +22,122 @@
 #ifndef NE_XML_H
 #define NE_XML_H
 
+#include <sys/types.h> /* for size_t */
+
+#include "ne_defs.h"
+
 BEGIN_NEON_DECLS
 
-/* Generic XML parsing interface...
-   
-   Definitions:
-   
-   * A handler knows how to parse a certain set of XML elements.
-   * The handler stack
+/* The neon XML interface filters a streamed XML tree through a stack
+ * of SAX "handlers".  A handler is made up of three callbacks
+ * (start-element, char-data, end-element).  Each start-element event
+ * is passed to each handler in the stack in turn until one until one
+ * accepts the element.  This handler then receives subsequent
+ * char-data and end-element events for the element.
+ *
+ * For each new start-element event, the search up the handler stack
+ * begins with the handler for the parent element (for the root
+ * element, at the base of the stack).
+ *
+ * For each accepted element, a "state" integer is stored, which is
+ * passed to the corresponding char-data and end-element callbacks for
+ * the element.  This integer is also passed to the start-element
+ * callback of child elements so they can determine context.
+ *
+ * If no handler in the stack accepts a particular element, it (and
+ * its children, if any) is ignored. */
 
-   * 
-   
+#define NE_XML_DECLINE (0)
+#define NE_XML_ABORT (-1)
 
-   Basic principle is that you provide these things:
-     1) a list of elements which you wish to handle 
-     2) a validation callback which tells the parser whether you
-     want to handle this element.
-     3) a callback function which is called when a complete element
-     has been parsed (provided you are handling the element).
-    
-   This code then deals with the boring stuff like:
-     - Dealing with XML namespaces   
-     - Collecting CDATA
+/* A start-element callback for element with given namespace/name.
+ * The callback may return:
+ *   <0  =>  abort the parse (NE_XML_ABORT)
+ *    0  =>  decline this element (NE_XML_DECLINE)
+ *   >0  =>  accept this element; value is state for this element.
+ *
+ * The 'parent' integer is the state returned by the handler of the 
+ * parent element.   The attributes array gives name/value pairs
+ * in atts[n] and atts[n+1] from n=0 up to atts[n]==NULL. */
+typedef int ne_xml_startelm_cb(void *userdata, int parent,
+                               const char *nspace, const char *name,
+                               const char **atts);
 
-   The element list is stored in a 'ne_xml_elm' array.  For each
-   element, you specify the element name, an element id, and some
-   flags for that element.
+/* state for the root element */
+#define NE_XML_STATEROOT (0)
 
-const static struct ne_xml_elm[] = {
-   { "DAV:", "resourcetype", ELM_resourcetype, 0 },
-   { "DAV:", "collection", ELM_collection, NE_ELM_CDATA },
-   { NULL }
-};
+/* Character data callback; may return non-zero to abort the parse. */
+typedef int ne_xml_cdata_cb(void *userdata, int state,
+                            const char *cdata, size_t len);
+/* End element callback; may return non-zero to abort the parse. */
+typedef int ne_xml_endelm_cb(void *userdata, int state, 
+                             const char *nspace, const char *name);
 
-   This list contains two elements, resourcetype and collection, both in 
-   the "DAV:" namespace.  The collection element can contain cdata.
-   
-*/
-
-/* Reserved element id's */
-#define NE_ELM_unknown -1
-#define NE_ELM_root 0
-
-#define NE_ELM_UNUSED (100)
-
-typedef int ne_xml_elmid;
-
-struct ne_xml_elm;
-
-/* An element */
-struct ne_xml_elm {
-    const char *nspace, *name;
-    ne_xml_elmid id;
-    unsigned int flags;
-};
-
-/* Function to check element context... 
-   This callback must return:
-     NE_XML_VALID ->
-	Yes, this is valid XML, and I want to handle this element.
-     NE_XML_INVALID ->
-	No, this is NOT valid XML, and parsing should stop.
-     NE_XML_DECLINE ->
-	I don't know anything about this element, someone else
-	can handle it.
-*/
-
-
-#define NE_XML_VALID (0)
-#define NE_XML_INVALID (-1)
-#define NE_XML_DECLINE (-2)
-
-/* Validate a new child element. */
-typedef int (*ne_xml_validate_cb)
-    (ne_xml_elmid parent, ne_xml_elmid child);
-
-typedef int (*ne_xml_startelm_cb)
-    (void *userdata, const struct ne_xml_elm *elm, const char **atts);
-
-/* Called when a complete element is parsed */
-typedef int (*ne_xml_endelm_cb)
-    (void *userdata, const struct ne_xml_elm *s, const char *cdata);
-
-typedef void (*ne_xml_cdata_cb)
-    (void *userdata, const struct ne_xml_elm *s, 
-     const char *cdata, int len);
-
-struct ne_xml_parser_s;
 typedef struct ne_xml_parser_s ne_xml_parser;
 
-/* Flags */
-/* This element has no children */
-#define NE_XML_CDATA (1<<1)
-/* Collect complete contents of this node as cdata */
-#define NE_XML_COLLECT ((1<<2) | NE_XML_CDATA)
-/* Decode UTF-8 data in cdata. */
-#define NE_XML_UTF8DECODE (1<<3)
-/* This element uses MIXED mode */
-#define NE_XML_MIXED (1<<4)
-
-/* Initialise the parser */
+/* Create an XML parser. */
 ne_xml_parser *ne_xml_create(void);
 
-/* Push a handler onto the handler stack for the given list of elements.
- * elements must be an array, with the last element .nspace being NULL.
- * Callbacks are called in order:
- *   1. validate_cb
- *   2. startelm_cb
- *   3. endelm_cb
- * (then back to the beginning again).
- * If any of the callbacks ever return non-zero, the parse will STOP.
- * userdata is passed as the first argument to startelm_cb and endelm_cb.
- */
+/* Push a new handler on the stack of parser 'p'. 'cdata' and/or
+ * 'endelm' may be NULL; startelm must be non-NULL. */
 void ne_xml_push_handler(ne_xml_parser *p,
-			  const struct ne_xml_elm *elements, 
-			  ne_xml_validate_cb validate_cb, 
-			  ne_xml_startelm_cb startelm_cb, 
-			  ne_xml_endelm_cb endelm_cb,
-			  void *userdata);
-
-/* Add a handler which uses a mixed-mode cdata callback */
-void ne_xml_push_mixed_handler(ne_xml_parser *p,
-				const struct ne_xml_elm *elements,
-				ne_xml_validate_cb validate_cb,
-				ne_xml_startelm_cb startelm_cb,
-				ne_xml_cdata_cb cdata_cb,
-				ne_xml_endelm_cb endelm_cb,
-				void *userdata);
+                         ne_xml_startelm_cb *startelm, 
+                         ne_xml_cdata_cb *cdata,
+                         ne_xml_endelm_cb *endelm,
+                         void *userdata);
 
 /* Returns non-zero if the parse was valid, zero if it failed (e.g.,
- * any of the callbacks return non-zero, the XML was not well-formed,
- * etc).  Use ne_xml_get_error to retrieve the error message if it
- * failed. */
+ * any of the callbacks failed, the XML was not well-formed, etc).
+ * Use ne_xml_get_error to retrieve the error message if it failed. */
 int ne_xml_valid(ne_xml_parser *p);
 
-/* Destroys the parser. Any operations on it then have 
- * undefined results. */
+/* Destroy the parser object. */
 void ne_xml_destroy(ne_xml_parser *p);
 
-/* Parse the given block of input of length len. Block does 
- * not need to be NULL-terminated. */
+/* Parse the given block of input of length len. Block does not need
+ * to be NUL-terminated. */
 void ne_xml_parse(ne_xml_parser *p, const char *block, size_t len);
 
 /* As above, casting (ne_xml_parser *)userdata internally.
- * (This function can be passed to http_add_response_body_reader) */
+ * (This function can be passed to ne_add_response_body_reader) */
 void ne_xml_parse_v(void *userdata, const char *block, size_t len);
 
 /* Return current parse line for errors */
 int ne_xml_currentline(ne_xml_parser *p);
 
-/* Set error message for parser */
+/* Set error string for parser. */
 void ne_xml_set_error(ne_xml_parser *p, const char *msg);
 
+/* Return the error string for the parser and never NULL. */
 const char *ne_xml_get_error(ne_xml_parser *p);
 
-/* Get attribute of given name. TODO: doesn't consider namespaces. */
-const char *ne_xml_get_attr(const char **attrs, const char *name);
+/* From a start_element callback which was passed 'attrs' using given
+ * parser, return attribute of given name and namespace.  If nspace is
+ * NULL, no namespace resolution is performed. */
+const char *ne_xml_get_attr(ne_xml_parser *parser,
+			    const char **attrs, const char *nspace, 
+			    const char *name);
+
+/* Return the encoding of the document being parsed.  May return NULL
+ * if no encoding is defined or if the XML declaration has not yet
+ * been parsed. */
+const char *ne_xml_doc_encoding(const ne_xml_parser *p);
+
+/* A utility interface for mapping {nspace, name} onto an integer. */
+struct ne_xml_idmap {
+    const char *nspace, *name;
+    int id;
+};
+
+/* Return the size of an idmap array */
+#define NE_XML_MAPLEN(map) (sizeof(map) / sizeof(struct ne_xml_idmap))
+
+/* Return the 'id' corresponding to {nspace, name}, or zero. */
+int ne_xml_mapid(const struct ne_xml_idmap map[], size_t maplen,
+                 const char *nspace, const char *name);
+
+/* media type, appropriate for adding to a Content-Type header */
+#define NE_XML_MEDIA_TYPE "application/xml"
 
 END_NEON_DECLS
 

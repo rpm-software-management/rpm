@@ -1,7 +1,28 @@
 
-Known problems/bugs in neon                                        -*- text -*-
----------------------------      Id: BUGS,v 1.2 2000/07/27 20:59:19 joe Exp 
+Known problems/bugs in neon                                      -*- text -*-
+---------------------------
 
-1.  Each new SSL request is opening a new connection to the server.
-    VERY slow.
+* 2818 requires that a on rejection of the SSL server cert, a "bad certificate"
+ message should be sent - this is not being done currently (and can probably
+ only be done with OpenSSL by actually doing cert verification in the verify
+ callback)
 
+* ne_lock_discover does not handle multiple (shared) locks on
+  a single resource.
+
+* SSL session caching issues; only cache for clean shutdowns, and
+ only cache on shutdown, since the SSL_SESSION may change during
+ an ne_session.
+
+* what is passed as 'path' to req create hook: auth needs Request-URI;
+  how does that interact with proxies?  also they will be passed NULL
+  for a CONNECT request, or "*" possibly as well.
+
+* expect100 support is broken.
+
+* It would be nice to fail with a friendly error message if a client
+cert is requested by the srever but one is not provided.  Currently,
+returning -1 from the provide_client_cert function would allow that
+(as it forces the SSL handshake to fail), but that would prevent
+opportunistic use of client certificates, of the "SSLVerifyClient
+optional" variety.
