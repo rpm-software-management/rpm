@@ -1,8 +1,8 @@
 #include "system.h"
 
 #include <elf.h>
-#include <libelf/libelf.h>
-#include <libelf/gelf.h>
+#include <libelf.h>
+#include <gelf.h>
 
 #include "sections.h"
 #include "utils.h"
