@@ -1,8 +1,7 @@
-CC = @CC@
-CPP = @CPP@
-
 srcdir = @srcdir@
 VPATH = $(srcdir)
+
+include $(srcdir)/../Makefile.inc
 
 PROGS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
 LOADLIBES = @LIBS@ @ZLIB@
@@ -20,8 +19,11 @@ everything: $(PROGS)
 clean:
 	rm -f *.a *.o core *~ $(PROGS)
 
+distclean: clean
+	rm -f .depend Makefile
+
 depend:
-	$(CPP) $(CFLAGS) -M *.c > .depend
+	$(CPP) $(CFLAGS) -M $(srcdir)/*.c > .depend
 
 $(PROGS): ../lib/librpm.a
 
