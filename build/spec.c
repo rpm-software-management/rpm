@@ -65,7 +65,8 @@ static int noSourcePatch(Spec s, char *line, int_32 tag);
 static void addListEntry(Header h, int_32 tag, char *line);
 static int finishCurrentPart(Spec spec, StringBuf sb,
 			     struct PackageRec *cur_package,
-			     int cur_part, char *triggerArgs);
+			     int cur_part, char *triggerArgs,
+			     char *scriptProg);
 
 /**********************************************************************/
 /*                                                                    */
@@ -305,7 +306,6 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 	    break;
 	  case RPMTAG_PREREQ:
 	    flags = RPMSENSE_PREREQ;
-	    addReqProv(p, RPMSENSE_ANY, "/bin/sh", NULL);
 	    break;
 	  default:
 	    flags = RPMSENSE_ANY;
@@ -983,9 +983,11 @@ static void addListEntry(Header h, int_32 tag, char *line)
 
 static int finishCurrentPart(Spec spec, StringBuf sb,
 			     struct PackageRec *cur_package,
-			     int cur_part, char *triggerArgs)
+			     int cur_part, char *triggerArgs,
+			     char *scriptProg)
 {
     int t1 = 0;
+    int t2 = 0;
 
     stripTrailingBlanksStringBuf(sb);
     if (*(getStringBuf(sb)) == '\0') {
@@ -995,15 +997,19 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
     switch (cur_part) {
       case PREIN_PART:
 	t1 = RPMTAG_PREIN;
+	t2 = RPMTAG_PREINPROG;
 	break;
       case POSTIN_PART:
 	t1 = RPMTAG_POSTIN;
+	t2 = RPMTAG_POSTINPROG;
 	break;
       case PREUN_PART:
 	t1 = RPMTAG_PREUN;
+	t2 = RPMTAG_PREUNPROG;
 	break; 
       case POSTUN_PART:
 	t1 = RPMTAG_POSTUN;
+	t2 = RPMTAG_POSTUNPROG;
 	break;
       case VERIFYSCRIPT_PART:
 	t1 = RPMTAG_VERIFYSCRIPT;
@@ -1035,6 +1041,11 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
     if (t1) {
 	headerAddEntry(cur_package->header, t1,
 		       RPM_STRING_TYPE, getStringBuf(sb), 1);
+	if (t2) {
+            addReqProv(cur_package, RPMSENSE_PREREQ, scriptProg, NULL);
+	    headerAddEntry(cur_package->header, t2,
+			   RPM_STRING_TYPE, scriptProg, 1);
+	}
     }
     return 0;
 }
@@ -1088,6 +1099,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
 
+    scriptProg[0] = '\0';
     cur_part = PREAMBLE_PART;
     while ((x = read_line(f, buf)) > 0) {
 	line = buf;
@@ -1095,7 +1107,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
         if ((tag = check_part(line, &s))) {
 	    rpmMessage(RPMMESS_DEBUG, "Switching to part: %d\n", tag);
 	    if (finishCurrentPart(spec, sb, cur_package,
-				 cur_part, triggerArgs)) {
+				 cur_part, triggerArgs, scriptProg)) {
 		return NULL;
 	    }
 	    cur_part = tag;
@@ -1129,10 +1141,10 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		}
 		s1[0] = ' '; s1[1] = ' '; s1[2] = ' ';
 		s1 += 3;
-
 		while (isspace(*s1)) {
 		    s1++;
 		}
+
 		s2 = fileFile;
 		while (*s1 && !isspace(*s1)) {
 		    *s2 = *s1;
@@ -1165,44 +1177,58 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		}
 	    }
 
-	    scriptProg[0] = '\0';
+	    /* find possible -p <prog> */
 	    if ((tag == PREIN_PART) ||
 		(tag == POSTIN_PART) ||
 		(tag == PREUN_PART) ||
 		(tag == POSTUN_PART)) {
-		/* find possible -p <prog> */
+
+		scriptProg[0] = '\0';
 		s1 = NULL;
+
 		if (s &&
 		    ((s1 = strstr(s, " -p ")) ||
 		     (!strncmp(s, "-p ", 3)))) {
-		}
+		    
+		    if (s1) {
+			s1[0] = ' ';
+			s1++;
+		    } else {
+			s1 = s;
+		    }
+		    s1[0] = ' '; s1[1] = ' '; s1[2] = ' ';
+		    s1 += 3;
+		    while (isspace(*s1)) {
+			s1++;
+		    }
+		    
+		    s2 = scriptProg;
+		    while (*s1 && !isspace(*s1)) {
+			*s2 = *s1;
+			*s1 = ' ';
+			s1++;
+			s2++;
+		    }
 
-		if (s1) {
-		    s1[0] = ' ';
-		    s1++;
-		} else {
-		    s1 = s;
-		}
-		s1[0] = ' '; s1[1] = ' '; s1[2] = ' ';
-		s1 += 3;
-		while (isspace(*s1)) {
-		    s1++;
+		    *s2 = '\0';
+		    while (isspace(*s)) {
+			s++;
+		    }
+		    if (! *s) {
+			s = NULL;
+		    }
 		}
 		
-		s2 = scriptProg;
-		while (*s1 && !isspace(*s1)) {
-		    *s2 = *s1;
-		    *s1 = ' ';
-		    s1++;
-		    s2++;
+		/* defaults to /bin/sh */
+		if (! scriptProg[0]) {
+		    strcpy(scriptProg, "/bin/sh");
+		} else {
+		    if (scriptProg[0] != '/') {
+			rpmError(RPMERR_BADSPEC, "pre/post -p arg must begin with \'/\': %s", scriptProg);
+			return NULL;
+		    }
 		}
-		*s2 = '\0';
-		while (isspace(*s)) {
-		    s++;
-		}
-		if (! *s) {
-		    s = NULL;
-		}
+		rpmMessage(RPMMESS_DEBUG, "scriptProg = %s\n", scriptProg);
 	    }
 	    
 	    /* At this point s is the remaining args, which can only */
@@ -1261,27 +1287,6 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		}
 	    }
 
-	    if (scriptProg[0]) {
-		switch (tag) {
-		  case PREIN_PART:
-		    headerAddEntry(cur_package->header, RPMTAG_PREINPROG,
-				   RPM_STRING_TYPE, scriptProg, 1);
-		    break;
-		  case POSTIN_PART:
-		    headerAddEntry(cur_package->header, RPMTAG_POSTINPROG,
-				   RPM_STRING_TYPE, scriptProg, 1);
-		    break;
-		  case PREUN_PART:
-		    headerAddEntry(cur_package->header, RPMTAG_PREUNPROG,
-				   RPM_STRING_TYPE, scriptProg, 1);
-		    break;
-		  case POSTUN_PART:
-		    headerAddEntry(cur_package->header, RPMTAG_POSTUNPROG,
-				   RPM_STRING_TYPE, scriptProg, 1);
-		    break;
-		}
-	    }
-	    
 	    /* This line has no content -- it was just a control line */
 	    continue;
         }
@@ -1521,7 +1526,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 
     /* finish current part */
     if (finishCurrentPart(spec, sb, cur_package,
-			  cur_part, triggerArgs)) {
+			  cur_part, triggerArgs,
+			  scriptProg)) {
 	return NULL;
     }
     
