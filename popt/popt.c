@@ -134,7 +134,7 @@ int poptGetNextOpt(poptContext con) {
 		chptr = optString;
 		while (*chptr && *chptr != '=') chptr++;
 		if (*chptr == '=') {
-		    longArg = origOptString + (chptr - localOptString);
+		    longArg = origOptString + (chptr - localOptString) + 1;
 		    *chptr = '\0';
 		}
 

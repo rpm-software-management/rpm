@@ -31,6 +31,7 @@
 	- include <strings.h> on SCO
 	- don't use cpio when installing packages <gulp>
 	- fixed bug which affected dependencies on the Alpha
+	- made '=' work for long arguments (the switch to popt broke this)
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
