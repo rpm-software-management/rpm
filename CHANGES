@@ -28,6 +28,7 @@
 	- use dbpath for error messages with include database path in 
 	  their text
 	- don't owner/group if binaries installed by "make install"
+	- include <strings.h> on SCO
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
