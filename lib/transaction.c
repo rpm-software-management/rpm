@@ -821,6 +821,9 @@ static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
 				    rpmProblemSet probs,
 				    rpmtransFlags transFlags)
 {
+    HGE_t hge = fi->hge;
+    HFD_t hfd = fi->hfd;
+    int oltype, omtype;
     Header h;
     int i;
     const char ** otherMd5s;
@@ -840,18 +843,12 @@ static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
 	return 1;
     }
 
-    headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
-			    (const void **) &otherMd5s, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_FILELINKTOS, NULL,
-			    (const void **) &otherLinks, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-			    (const void **) &otherStates, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
-			    (const void **) &otherModes, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
-			    (const void **) &otherFlags, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_FILESIZES, NULL,
-			    (const void **) &otherSizes, NULL);
+    hge(h, RPMTAG_FILEMD5S, &omtype, (void **) &otherMd5s, NULL);
+    hge(h, RPMTAG_FILELINKTOS, &oltype, (void **) &otherLinks, NULL);
+    hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
+    hge(h, RPMTAG_FILEMODES, NULL, (void **) &otherModes, NULL);
+    hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &otherFlags, NULL);
+    hge(h, RPMTAG_FILESIZES, NULL, (void **) &otherSizes, NULL);
 
     fi->replaced = xmalloc(sizeof(*fi->replaced) * sharedCount);
 
@@ -901,8 +898,8 @@ static int handleInstInstalledFiles(TFI_t fi, rpmdb db,
 	fi->replacedSizes[fileNum] = otherSizes[otherFileNum];
     }
 
-    free(otherMd5s);
-    free(otherLinks);
+    otherMd5s = hfd(otherMd5s, omtype);
+    otherLinks = hfd(otherLinks, oltype);
     rpmdbFreeIterator(mi);
 
     fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
@@ -916,21 +913,22 @@ static int handleRmvdInstalledFiles(TFI_t fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount)
 {
+    HGE_t hge = fi->hge;
     Header h;
     const char * otherStates;
     int i;
    
     rpmdbMatchIterator mi;
 
-    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
+    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES,
+			&shared->otherPkg, sizeof(shared->otherPkg));
     h = rpmdbNextIterator(mi);
     if (h == NULL) {
 	rpmdbFreeIterator(mi);
 	return 1;
     }
 
-    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-			    (const void **) &otherStates, NULL);
+    hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;

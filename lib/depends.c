@@ -19,6 +19,11 @@ int _depends_debug = 0;
 /*@access rpmdb@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
 
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
+
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
     int type, count;
@@ -120,9 +125,7 @@ static void alFreeIndex(struct availableList * al)
 	/*@modifies al->index @*/
 {
     if (al->index.size) {
-	if (al->index.index)
-		free(al->index.index);
-	al->index.index = NULL;
+	al->index.index = _free(al->index.index);
 	al->index.size = 0;
     }
 }
@@ -151,6 +154,7 @@ static void alCreate(struct availableList * al)
  */
 static void alFree(struct availableList * al)
 {
+    HFD_t hfd = headerFreeData;
     struct availablePackage * p;
     rpmRelocation * r;
     int i;
@@ -161,40 +165,37 @@ static void alFree(struct availableList * al)
 	    while ((tsi = p->tsi.tsi_next) != NULL) {
 		p->tsi.tsi_next = tsi->tsi_next;
 		tsi->tsi_next = NULL;
-		free(tsi);
+		tsi = _free(tsi);
 	    }
 	}
 
-	if (p->provides)	free(p->provides);
-	if (p->providesEVR)	free(p->providesEVR);
-	if (p->requires)	free(p->requires);
-	if (p->requiresEVR)	free(p->requiresEVR);
-	if (p->baseNames)	free(p->baseNames);
+	p->provides = hfd(p->provides, -1);
+	p->providesEVR = hfd(p->providesEVR, -1);
+	p->requires = hfd(p->requires, -1);
+	p->requiresEVR = hfd(p->requiresEVR, -1);
+	p->baseNames = hfd(p->baseNames, -1);
 	if (p->h)		headerFree(p->h);
 
 	if (p->relocs) {
 	    for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-		if (r->oldPath) free((void *)r->oldPath);
-		if (r->newPath) free((void *)r->newPath);
+		r->oldPath = _free(r->oldPath);
+		r->newPath = _free(r->newPath);
 	    }
-	    free(p->relocs);
+	    p->relocs = _free(p->relocs);
 	}
 	if (p->fd)
 	    p->fd = fdFree(p->fd, "alAddPackage (alFree)");
     }
 
     for (i = 0; i < al->numDirs; i++) {
-	free((void *)al->dirs[i].dirName);
-	free(al->dirs[i].files);
+	al->dirs[i].dirName = _free(al->dirs[i].dirName);
+	al->dirs[i].files = _free(al->dirs[i].files);
     }
 
-    if (al->numDirs)
-	free(al->dirs);
-    al->dirs = NULL;
-
+    if (al->numDirs && al->dirs)
+	al->dirs = _free(al->dirs);
     if (al->alloced && al->list)
-	free(al->list);
-    al->list = NULL;
+	al->list = _free(al->list);
     alFreeIndex(al);
 }
 
@@ -230,6 +231,9 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 		Header h, /*@dependent@*/ const void * key,
 		FD_t fd, rpmRelocation * relocs)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int dnt, bnt;
     struct availablePackage * p;
     rpmRelocation * r;
     int i;
@@ -263,13 +267,13 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
      * XXX However, there is logic in files.c/depends.c that checks for
      * XXX existence (rather than value) that will need to change as well.
      */
-    if (headerGetEntry(p->h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
+    if (hge(p->h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
 	multiLibMask = *pp;
 
     if (multiLibMask) {
 	for (i = 0; i < pkgNum - 1; i++) {
 	    if (!strcmp (p->name, al->list[i].name)
-		&& headerGetEntry(al->list[i].h, RPMTAG_MULTILIBS, NULL,
+		&& hge(al->list[i].h, RPMTAG_MULTILIBS, NULL,
 				  (void **) &pp, NULL)
 		&& !rpmVersionCompare(p->h, al->list[i].h)
 		&& *pp && !(*pp & multiLibMask))
@@ -277,54 +281,51 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	}
     }
 
-    if (!headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, NULL))
+    if (!hge(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, NULL))
 	p->epoch = NULL;
 
-    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides,
+    if (!hge(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides,
 	&p->providesCount)) {
 	p->providesCount = 0;
 	p->provides = NULL;
 	p->providesEVR = NULL;
 	p->provideFlags = NULL;
     } else {
-	if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION,
+	if (!hge(h, RPMTAG_PROVIDEVERSION,
 			NULL, (void **) &p->providesEVR, NULL))
 	    p->providesEVR = NULL;
-	if (!headerGetEntry(h, RPMTAG_PROVIDEFLAGS,
+	if (!hge(h, RPMTAG_PROVIDEFLAGS,
 			NULL, (void **) &p->provideFlags, NULL))
 	    p->provideFlags = NULL;
     }
 
-    if (!headerGetEntry(h, RPMTAG_REQUIRENAME, NULL, (void **) &p->requires,
+    if (!hge(h, RPMTAG_REQUIRENAME, NULL, (void **) &p->requires,
 	&p->requiresCount)) {
 	p->requiresCount = 0;
 	p->requires = NULL;
 	p->requiresEVR = NULL;
 	p->requireFlags = NULL;
     } else {
-	if (!headerGetEntry(h, RPMTAG_REQUIREVERSION,
+	if (!hge(h, RPMTAG_REQUIREVERSION,
 			NULL, (void **) &p->requiresEVR, NULL))
 	    p->requiresEVR = NULL;
-	if (!headerGetEntry(h, RPMTAG_REQUIREFLAGS,
+	if (!hge(h, RPMTAG_REQUIREFLAGS,
 			NULL, (void **) &p->requireFlags, NULL))
 	    p->requireFlags = NULL;
     }
 
-    if (!headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
-				(const void **) &p->baseNames, &p->filesCount))
+    if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &p->baseNames, &p->filesCount))
     {
 	p->filesCount = 0;
 	p->baseNames = NULL;
     } else {
-        headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
-				(const void **) &dirNames, &numDirs);
-        headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
-				(const void **) &dirIndexes, NULL);
-	headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
+	hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
+	hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+	hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-        dirMapping = alloca(sizeof(*dirMapping) * numDirs);
+	dirMapping = alloca(sizeof(*dirMapping) * numDirs);
 
 	/* allocated enough space for all the directories we could possible
 	   need to add */
@@ -349,7 +350,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	    }
 	}
 
-	free(dirNames);
+	dirNames = hfd(dirNames, dnt);
 
 	first = 0;
 	while (first < p->filesCount) {
@@ -601,6 +602,9 @@ typedef int (*dbrecMatch_t) (Header h, const char *reqName, const char * reqEVR,
 
 static int rangeMatchesDepFlags (Header h, const char *reqName, const char * reqEVR, int reqFlags)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int pnt, pvt;
     const char ** provides;
     const char ** providesEVR;
     int_32 * provideFlags;
@@ -617,16 +621,15 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides version info is available, match any requires.
      */
-    if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION, &type,
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt,
 		(void **) &providesEVR, &providesCount))
 	return 1;
 
-    headerGetEntry(h, RPMTAG_PROVIDEFLAGS, &type,
-	(void **) &provideFlags, &providesCount);
+    hge(h, RPMTAG_PROVIDEFLAGS, &type, (void **) &provideFlags, &providesCount);
 
-    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, &type,
-		(void **) &provides, &providesCount)) {
-	if (providesEVR) free((void *)providesEVR);
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+    {
+	providesEVR = hfd(providesEVR, pvt);
 	return 0;	/* XXX should never happen */
     }
 
@@ -645,8 +648,8 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 	    break;
     }
 
-    if (provides) free((void *)provides);
-    if (providesEVR) free((void *)providesEVR);
+    provides = hfd(provides, pnt);
+    providesEVR = hfd(providesEVR, pvt);
 
     return result;
 }
@@ -654,6 +657,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 int headerMatchesDepFlags(Header h,
 	const char * reqName, const char * reqEVR, int reqFlags)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char *name, *version, *release;
     int_32 * epoch;
     const char *pkgEVR;
@@ -668,7 +672,7 @@ int headerMatchesDepFlags(Header h,
 
     pkgEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
     *p = '\0';
-    if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
 	while (*p)
 	    p++;
@@ -756,6 +760,9 @@ static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int ont, ovt;
     /* this is an install followed by uninstalls */
     const char * name;
     int count;
@@ -796,9 +803,9 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	    else {
 		uint_32 *p, multiLibMask = 0, oldmultiLibMask = 0;
 
-		if (headerGetEntry(h2, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
+		if (hge(h2, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
 		    oldmultiLibMask = *p;
-		if (headerGetEntry(h, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
+		if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
 		    multiLibMask = *p;
 		if (oldmultiLibMask && multiLibMask
 		    && !(oldmultiLibMask & multiLibMask)) {
@@ -809,13 +816,13 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	rpmdbFreeIterator(mi);
     }
 
-    if (headerGetEntry(h, RPMTAG_OBSOLETENAME, NULL, (void **) &obsoletes, &count)) {
+    if (hge(h, RPMTAG_OBSOLETENAME, &ont, (void **) &obsoletes, &count)) {
 	const char **obsoletesEVR;
 	int_32 *obsoletesFlags;
 	int j;
 
-	headerGetEntry(h, RPMTAG_OBSOLETEVERSION, NULL, (void **) &obsoletesEVR, NULL);
-	headerGetEntry(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags, NULL);
+	hge(h, RPMTAG_OBSOLETEVERSION, &ovt, (void **) &obsoletesEVR, NULL);
+	hge(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags, NULL);
 
 	for (j = 0; j < count; j++) {
 
@@ -847,8 +854,8 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	  }
 	}
 
-	if (obsoletesEVR) free(obsoletesEVR);
-	free(obsoletes);
+	obsoletesEVR = hfd(obsoletesEVR, ovt);
+	obsoletes = hfd(obsoletes, ont);
     }
 
     return 0;
@@ -1097,7 +1104,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-     if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
+    if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
 	if (rpmCheckRpmlibProvides(keyName, keyEVR, keyFlags)) {
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
 			keyType, keyDepend+2);
@@ -1196,6 +1203,10 @@ exit:
 static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 		Header h, const char * keyName, uint_32 multiLib)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int rnt, rvt;
+    int cnt, cvt;
     const char * name, * version, * release;
     const char ** requires;
     const char ** requiresEVR = NULL;
@@ -1212,13 +1223,12 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 
     headerNVR(h, &name, &version, &release);
 
-    if (!headerGetEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requires,
-	     &requiresCount)) {
+    if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires, &requiresCount)) {
 	requiresCount = 0;
     } else {
-	headerGetEntry(h, RPMTAG_REQUIREFLAGS, &type, (void **) &requireFlags,
+	hge(h, RPMTAG_REQUIREFLAGS, &type, (void **) &requireFlags,
 		 &requiresCount);
-	headerGetEntry(h, RPMTAG_REQUIREVERSION, &type,
+	hge(h, RPMTAG_REQUIREVERSION, &rvt,
 		(void **) &requiresEVR, &requiresCount);
     }
 
@@ -1276,17 +1286,17 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
     }
 
     if (requiresCount) {
-	free(requiresEVR);
-	free(requires);
+	requiresEVR = hfd(requiresEVR, rvt);
+	requires = hfd(requires, rnt);
     }
 
-    if (!headerGetEntry(h, RPMTAG_CONFLICTNAME, &type, (void **) &conflicts,
-	     &conflictsCount)) {
+    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts, &conflictsCount))
+    {
 	conflictsCount = 0;
     } else {
-	headerGetEntry(h, RPMTAG_CONFLICTFLAGS, &type,
+	hge(h, RPMTAG_CONFLICTFLAGS, &type,
 		(void **) &conflictFlags, &conflictsCount);
-	headerGetEntry(h, RPMTAG_CONFLICTVERSION, &type,
+	hge(h, RPMTAG_CONFLICTVERSION, &cvt,
 		(void **) &conflictsEVR, &conflictsCount);
     }
 
@@ -1315,8 +1325,8 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
-		psp->problems = xrealloc(psp->problems, sizeof(*psp->problems) *
-			    psp->alloced);
+		psp->problems = xrealloc(psp->problems,
+					sizeof(*psp->problems) * psp->alloced);
 	    }
 	    psp->problems[psp->num].byHeader = headerLink(h);
 	    psp->problems[psp->num].byName = xstrdup(name);
@@ -1341,8 +1351,8 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
     }
 
     if (conflictsCount) {
-	free(conflictsEVR);
-	free(conflicts);
+	conflictsEVR = hfd(conflictsEVR, cvt);
+	conflicts = hfd(conflicts, cnt);
     }
 
     return ourrc;
@@ -1899,6 +1909,8 @@ rescan:
 int rpmdepCheck(rpmTransactionSet ts,
 		struct rpmDependencyConflict ** conflicts, int * numConflicts)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     int npkgs = ts->addedPackages.size;
     struct availablePackage * p;
     int i, j;
@@ -1919,7 +1931,8 @@ int rpmdepCheck(rpmTransactionSet ts,
     alMakeIndex(&ts->addedPackages);
     alMakeIndex(&ts->availablePackages);
 
-    /* Look at all of the added packages and make sure their dependencies
+    /*
+     * Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
     for (i = 0, p = ts->addedPackages.list; i < npkgs; i++, p++)
@@ -1940,16 +1953,18 @@ int rpmdepCheck(rpmTransactionSet ts,
 	rc = 0;
 	for (j = 0; j < p->providesCount; j++) {
 	    /* Adding: check provides key against conflicts matches. */
-	    if (checkDependentConflicts(ts, &ps, p->provides[j])) {
-		rc = 1;
-		break;
-	    }
+	    if (!checkDependentConflicts(ts, &ps, p->provides[j]))
+		continue;
+	    rc = 1;
+	    break;
 	}
 	if (rc)
 	    goto exit;
     }
 
-    /* now look at the removed packages and make sure they aren't critical */
+    /*
+     * Look at the removed packages and make sure they aren't critical.
+     */
     if (ts->numRemovedPackages > 0) {
       mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
       rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
@@ -1966,36 +1981,36 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 	{   const char ** provides;
 	    int providesCount;
+	    int pnt;
 
-	    if (headerGetEntry(h, RPMTAG_PROVIDENAME, NULL, (void **) &provides,
-				&providesCount)) {
+	    if (hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides,
+				&providesCount))
+	    {
 		rc = 0;
 		for (j = 0; j < providesCount; j++) {
 		    /* Erasing: check provides against requiredby matches. */
-		    if (checkDependentPackages(ts, &ps, provides[j])) {
+		    if (!checkDependentPackages(ts, &ps, provides[j]))
+			continue;
 		    rc = 1;
 		    break;
-		    }
 		}
-		free((void *)provides);
+		provides = hfd(provides, pnt);
 		if (rc)
 		    goto exit;
 	    }
 	}
 
 	{   const char ** baseNames, ** dirNames;
-	    int_32 * dirIndexes;
+	    int_32 * dirIndexes, dnt, bnt;
 	    int fileCount;
 	    char * fileName = NULL;
 	    int fileAlloced = 0;
 	    int len;
 
-	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, 
-			   (void **) &baseNames, &fileCount)) {
-		headerGetEntry(h, RPMTAG_DIRNAMES, NULL, 
-			    (void **) &dirNames, NULL);
-		headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, 
-			    (void **) &dirIndexes, NULL);
+	    if (hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &fileCount))
+	    {
+		hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+		hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
 		rc = 0;
 		for (j = 0; j < fileCount; j++) {
 		    len = strlen(baseNames[j]) + 1 + 
@@ -2007,15 +2022,15 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    *fileName = '\0';
 		    (void) stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
 		    /* Erasing: check filename against requiredby matches. */
-		    if (checkDependentPackages(ts, &ps, fileName)) {
-			rc = 1;
-			break;
-		    }
+		    if (!checkDependentPackages(ts, &ps, fileName))
+			continue;
+		    rc = 1;
+		    break;
 		}
 
 		free(fileName);
-		free(baseNames);
-		free(dirNames);
+		baseNames = hfd(baseNames, bnt);
+		dirNames = hfd(dirNames, dnt);
 		if (rc)
 		    goto exit;
 	    }

@@ -10,7 +10,10 @@
 
 #include "debug.h"
 
-/*@access h@*/		/* compared with NULL */
+/*@access Header @*/		/* compared with NULL */
+/*@access rpmTransactionSet @*/	/* compared with NULL */
+/*@access TFI_t @*/		/* compared with NULL */
+
 static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
     if (this)   free((void *)this);
     return NULL;

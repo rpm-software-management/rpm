@@ -12,7 +12,8 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@access Header@*/		/* XXX compared with NULL */
+/*@access Header @*/		/* XXX compared with NULL */
+/*@access rpmTransactionSet @*/	/* XXX compared with NULL */
 
 /**
  * Macros to be defined from per-header tag values.
@@ -664,11 +665,12 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     }
 
     rc = rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
-    headerFree(h);	/* XXX reference held by transaction set */
 
     fi->type = TR_ADDED;
     fi->ap = ts->addedPackages.list;
     loadFi(h, fi);
+    headerFree(h);	/* XXX reference held by transaction set */
+
     if (fi->fmd5s) {		/* DYING */
 	free((void **)fi->fmd5s); fi->fmd5s = NULL;
     }

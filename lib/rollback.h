@@ -127,19 +127,6 @@ enum fileTypes {
 };
 
 /**
- * Prototype for headerFreeData() vector.
- */
-typedef /*@null@*/
-    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type);
-
-/**
- * Prototype for headerGetEntry() vector.
- */
-typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
-			/*@out@*/ void ** p, /*@out@*/int_32 * c)
-				/*@modifies *type, *p, *c @*/;
-
-/**
  */
 struct transactionFileInfo_s {
   /* for all packages */
@@ -283,41 +270,48 @@ int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a);
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
-	const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
-	unsigned int * archiveSize, const char ** failedFile);
+	/*@kept@*/ const rpmTransactionSet ts,
+	/*@kept@*/ const TFI_t fi,
+	FD_t cfd,
+	/*@out@*/ unsigned int * archiveSize,
+	/*@out@*/ const char ** failedFile)
+		/*@modifies fsm, *archiveSize, *failedFile  @*/;
 
 /**
  * Clean file state machine.
  * @param fsm		file state machine data
  * @return		0 on success
  */
-int fsmTeardown(FSM_t fsm);
+int fsmTeardown(FSM_t fsm)
+		/*@modifies fsm @*/;
 
 /**
  * Retrieve transaction set from file state machine iterator.
  * @param fsm		file state machine data
  * @return		transaction set
  */
-/*@dependent@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm);
+/*@kept@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm)	/*@*/;
 
 /**
  * Retrieve transaction element file info from file state machine iterator.
  * @param fsm		file state machine data
  * @return		transaction element file info
  */
-/*@dependent@*/ TFI_t fsmGetFi(const FSM_t fsm);
+/*@kept@*/ TFI_t fsmGetFi(const FSM_t fsm)	/*@*/;
 
 /**
  * Map next file path and action.
  * @param fsm		file state machine data
  */
-int fsmMapPath(FSM_t fsm);
+int fsmMapPath(FSM_t fsm)
+		/*@modifies fsm @*/;
 
 /**
  * Map file stat(2) info.
  * @param fsm		file state machine data
  */
-int fsmMapAttrs(FSM_t fsm);
+int fsmMapAttrs(FSM_t fsm)
+		/*@modifies fsm @*/;
 
 /**
  * File state machine driver.
@@ -325,7 +319,8 @@ int fsmMapAttrs(FSM_t fsm);
  * @param stage		next stage
  * @return		0 on success
  */
-int fsmStage(FSM_t fsm, fileStage stage);
+int fsmStage(FSM_t fsm, fileStage stage)
+		/*@modifies fsm @*/;
 
 #ifdef __cplusplus
 }

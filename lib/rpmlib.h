@@ -825,6 +825,19 @@ void rpmProblemSetFree( /*@only@*/ rpmProblemSet probs);
 /* ==================================================================== */
 /** \name RPMTS */
 /*@{*/
+/**
+ * Prototype for headerFreeData() vector.
+ */
+typedef /*@null@*/
+    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type);
+
+/**
+ * Prototype for headerGetEntry() vector.
+ */
+typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
+			/*@out@*/ void ** p, /*@out@*/int_32 * c)
+				/*@modifies *type, *p, *c @*/;
+
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
     const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
@@ -844,7 +857,8 @@ typedef struct rpmRelocation_s {
 int rpmInstallSourcePackage(const char * root, FD_t fd,
 			/*@out@*/ const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
-			/*@out@*/ char ** cookie);
+			/*@out@*/ char ** cookie)
+	/*@modifies *specFile, *cookie @*/;
 
 /**
  * Compare headers to determine which header is "newer".
