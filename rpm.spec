@@ -609,7 +609,7 @@ fi
 - 1st crack at making zlib rsync friendly.
 - lclint-3.0.0.19 fiddles.
 - solaris: translate i86pc to i386 (#57182).
-- fix: %GNUconfigure breaks with single quotes (#57264).
+- fix: %%GNUconfigure breaks with single quotes (#57264).
 - simple automake wrapper for zlib.
 - add buildarch lines for hppa (#57728).
 - sparc: make dbenv per-rpmdb, not per-dbi.
@@ -620,13 +620,13 @@ fi
 - permit gpg/pgp/pgp5 execs to be reconfigured.
 - fix: signing multiple times dinna work, discard immutable region.
 - remove poptmodule.so for separate packaging.
-- permit subset installs for %lang colored hardlink file sets.
+- permit subset installs for %%lang colored hardlink file sets.
 - missing key(s) on keyring when verifying a signature is now an error.
 - remove dependency whiteout.
 - splint fiddles.
 - ppc64 arch added (#58634,#58636).
 - turn on auto-generated perl requirements (#58519, #58536, #58537).
-- fix: %exclude functional (again).
+- fix: %%exclude functional (again).
 - trap SIGILL for ppc64 inline asm voodoo fix from cross-dressed ppc32.
 - rpm-perl: force numeric comparison on rpm version (#58882).
 - fix: fancy hash fiddles if not a tty.
@@ -635,9 +635,9 @@ fi
 - perl.req: don't mis-generate dependencies like perl(::path/to/foo.pl).
 - permit args to be hidden within %%__find_{requires,provides}.
 - a couple more perl.{prov,req} fiddles.
-- macro for %files, always include %defattr(), redhat config only.
+- macro for %%files, always include %%defattr(), redhat config only.
 - fix: drop header region when writing repackaged legacy header.
-- bail on %files macro.
+- bail on %%files macro.
 - transaction rollbacks are functional.
 - generate index for pkgid (aka Sigmd5) tag, query/verify by pkgid.
 - generate index for hdrid (aka Sha1header) tag, query/verify by hdrid.
