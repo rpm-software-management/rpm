@@ -341,9 +341,8 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-/*@mayexit@*/
 static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
-		hPTR_t pend)
+		/*@null@*/ hPTR_t pend)
 	/*@*/
 {
     const unsigned char * s = p;
@@ -1884,6 +1883,8 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
 	return 0;
 
     length = dataLength(type, p, c, 0, NULL);
+    if (length < 0)
+	return 0;
 
     if (ENTRY_IN_REGION(entry)) {
 	char * t = xmalloc(entry->length + length);

@@ -779,9 +779,31 @@ fprintf(stderr, "   Disable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms
 }
 
 /**
- * Register a child reaper.
+ * Fork a new process.
+ * @param psm		package state machine data
+ * @return		fork(2) pid
  */
-static int psmRegister(rpmpsm psm, pid_t child)
+static pid_t psmFork(rpmpsm psm)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
+{
+    pid_t pid;
+
+    if ((pid = fork()) != 0) {
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, pid);
+/*@=modfilesys@*/
+    }
+    return pid;
+}
+
+/**
+ * Register a child reaper, then fork a child.
+ * @param psm		package state machine data
+ * @return		fork(2) pid
+ */
+static pid_t psmRegisterFork(rpmpsm psm)
 	/*@globals psmtbl, fileSystem @*/
 	/*@modifies psm, psmtbl, fileSystem @*/
 {
@@ -810,17 +832,18 @@ static int psmRegister(rpmpsm psm, pid_t child)
 	}
 	empty = psmtbl.npsms++;
     }
-    psm->child = child;
     psm->reaped = 0;
     if (psmtbl.psms)	/* XXX can't happen */
 	psmtbl.psms[empty] = rpmpsmLink(psm, "psmRegister");
 /*@-modfilesys@*/
 if (_psm_debug)
-fprintf(stderr, "  Register: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, empty, psmtbl.npsms, psmtbl.nalloced, psm, child);
+fprintf(stderr, "  Register: %p[%d:%d:%d] = %p\n", psmtbl.psms, empty, psmtbl.npsms, psmtbl.nalloced, psm);
 /*@=modfilesys@*/
 
     (void) enableSignal(SIGCHLD);
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
+
+    return psmFork(psm);
 }
 
 /**
@@ -864,33 +887,6 @@ fprintf(stderr, "Unregister: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmt
     }
 
     return sigprocmask(SIG_SETMASK, &oldMask, NULL);
-}
-
-/**
- * Register a new child process with the reaper.
- * @param psm		package state machine data
- * @return		
- */
-static pid_t psmFork(rpmpsm psm)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies psm, fileSystem, internalState @*/
-{
-    pid_t child;
-
-    /* Fork and Register parent's signal handler. */
-    if ((child = fork()) != 0) {
-	if (!psm->reaper) {
-	    psm->child = child;
-	    psm->reaped = 0;
-	} else {
-	    (void) psmRegister(psm, child);
-	}
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, child);
-/*@=modfilesys@*/
-    }
-    return child;
 }
 
 /**
@@ -1117,7 +1113,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     
     /*@-branchstate@*/
-    if (!psmFork(psm)) {
+    if ((psm->child = psmRegisterFork(psm)) == 0) {
 	const char * rootDir;
 	int pipes[2];
 
