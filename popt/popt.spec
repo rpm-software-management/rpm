@@ -1,6 +1,6 @@
 Summary: C library for parsing command line parameters
 Name: popt
-Version: 1.2.1
+Version: 1.2.2
 Release: 1
 Copyright: LGPL
 Group: Libraries
@@ -35,6 +35,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0644, root, root) /usr/man/man3/popt.3
 
 %changelog
+* Thu Dec 10 1998 Michael Johnson <johnsonm@redhat.com>
+- released 1.2.2; see CHANGES
+
 * Tue Nov 17 1998 Michael K. Johnson <johnsonm@redhat.com>
 - added man page to default install
 
