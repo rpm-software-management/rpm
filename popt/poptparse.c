@@ -3,7 +3,6 @@
    ftp://ftp.redhat.com/pub/code/popt */
 
 #include "system.h"
-#include "poptint.h"
 
 #define POPT_ARGV_ARRAY_GROW_DELTA 5
 
@@ -92,25 +91,7 @@ int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
 	argc++, buf++;
     }
 
-#if 0
-    {	char * dst = malloc((argc + 1) * sizeof(*argv) + (buf - argv[0]));
-	const char ** argv2 = (void *) dst;
-	int i;
-
-	dst += (argc + 1) * sizeof(*argv);
-	memcpy(argv2, argv, argc * sizeof(*argv));
-	argv2[argc] = NULL;
-	memcpy(dst, argv[0], buf - argv[0]);
-
-	for (i = 0; i < argc; i++)
-	    argv2[i] = dst + (argv[i] - argv[0]);
-
-	*argvPtr = argv2;
-	*argcPtr = argc;
-    }
-#else
     (void) poptDupArgv(argc, argv, argcPtr, argvPtr);
-#endif
 
     free(argv);
 
