@@ -251,10 +251,18 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     int count, i, j;
     char ** obsoletes;
     int alNum;
+    int * caps;
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	return 1;
+
+    /* Make sure we've implemented all of the capabilities we need */
+    if (headerGetEntry(h, RPMTAG_CAPABILITY, NULL, &caps, &count)) {
+	if (count != 1 || *caps) {
+	    return 2;
+	}
+    }
 
     /* FIXME: handling upgrades like this is *almost* okay. It doesn't
        check to make sure we're upgrading to a newer version, and it
