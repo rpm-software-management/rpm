@@ -84,11 +84,13 @@ struct _sql_dbcursor_s {
     int nc;			/* no. of columns */
 
     int all;			/* sequential iteration cursor */
-    int * keys;			/* array of package keys */
+    DBT ** keys;		/* array of package keys */
     int nkeys;
 
     SQL_MEM * memory;
     int count;
+
+    int used;
 };
 
 struct _sql_mem_s {
@@ -137,7 +139,27 @@ if (!_debug) return;
 }
 
 /*@only@*/ 
-static SCP_t scpReset(/*@only@*/ SCP_t scp)
+static SCP_t scpResetKeys(/*@only@*/ SCP_t scp)
+	/*@modifies scp @*/
+{
+    int ix;
+
+if (_debug)
+fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+dbg_scp(scp);
+
+    for ( ix =0 ; ix < scp->nkeys ; ix++ ) {
+      scp->keys[ix]->data = _free(scp->keys[ix]->data);
+      scp->keys[ix] = _free(scp->keys[ix]);
+    }
+    scp->keys = _free(scp->keys);
+    scp->nkeys = 0;
+
+    return scp;
+}
+
+/*@only@*/ 
+static SCP_t scpResetAv(/*@only@*/ SCP_t scp)
 	/*@modifies scp @*/
 {
     int xx;
@@ -145,17 +167,7 @@ static SCP_t scpReset(/*@only@*/ SCP_t scp)
 if (_debug)
 fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
 dbg_scp(scp);
-    if (scp->cmd) {
-	sqlite3_free(scp->cmd);
-	scp->cmd = NULL;
-    }
-    if (scp->pStmt) {
-	xx = sqlite3_reset(scp->pStmt);
-	if (xx) rpmMessage(RPMMESS_WARNING, "reset %d\n", xx);
-	xx = sqlite3_finalize(scp->pStmt);
-	if (xx) rpmMessage(RPMMESS_WARNING, "finalize %d\n", xx);
-	scp->pStmt = NULL;
-    }
+
     if (scp->av) {
 	if (scp->nalloc <= 0) {
 	    /* Clean up SCP_t used by sqlite3_get_table(). */
@@ -179,6 +191,34 @@ dbg_scp(scp);
     scp->ac = 0;
     scp->nr = 0;
     scp->nc = 0;
+
+    return scp;
+}
+
+/*@only@*/ 
+static SCP_t scpReset(/*@only@*/ SCP_t scp)
+	/*@modifies scp @*/
+{
+    int xx;
+
+if (_debug)
+fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+dbg_scp(scp);
+
+    if (scp->cmd) {
+	sqlite3_free(scp->cmd);
+	scp->cmd = NULL;
+    }
+    if (scp->pStmt) {
+	xx = sqlite3_reset(scp->pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "reset %d\n", xx);
+	xx = sqlite3_finalize(scp->pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "finalize %d\n", xx);
+	scp->pStmt = NULL;
+    }
+
+    scp = scpResetAv(scp);
+
     scp->rx = 0;
     return scp;
 }
@@ -188,9 +228,10 @@ static SCP_t scpFree(/*@only@*/ SCP_t scp)
 	/*@modifies scp @*/
 {
     scp = scpReset(scp);
+    scp = scpResetKeys(scp);
     scp->av = _free(scp->av);
     scp->avlen = _free(scp->avlen);
-    scp->keys = _free(scp->keys);
+
 if (_debug)
 fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
     scp = _free(scp);
@@ -202,6 +243,9 @@ static SCP_t scpNew(DB * dbp)
 {
     SCP_t scp = xcalloc(1, sizeof(*scp));
     scp->dbp = dbp;
+
+    scp->used = 0;
+
 if (_debug)
 fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
     return scp;
@@ -413,21 +457,6 @@ static int sql_bind_data(dbiIndex dbi, SCP_t scp, int pos, DBT * data)
 
 assert(data->data != NULL);
     rc = sqlite3_bind_blob(scp->pStmt, pos, data->data, data->size, SQLITE_STATIC);
-
-    return rc;
-}
-
-static int scpExec(SCP_t scp)
-	/*@modifies scp @*/
-{
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *) scp->dbp;
-    int rc;
-
-    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-    if (rc) rpmMessage(RPMMESS_WARNING, "%s: prepare rc %d\n", __FUNCTION__, rc);
-
-    rc = sql_step(scp);
-    if (rc) rpmMessage(RPMMESS_WARNING, "%s: sql_step rc %d\n", rc);
 
     return rc;
 }
@@ -934,135 +963,138 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 /*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = (SCP_t)dbcursor;
     int rc = 0;
-    int i;
+    int ix;
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
     /*
-     * First determine if we have a key, or if we're going to
-     * scan the whole DB
+     * First determine if this is a new scan or existing scan
      */
-    if (key->size == 0)
-	scp->all++;
 
-    /* New retrieval */
-    if (flags == DB_SET  || scp->av == NULL) {
 if (_debug)
 fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 		dbi->dbi_subfile, scp, rc, flags, scp->av);
+    if ( flags == DB_SET || scp->used == 0 ) {
+        scp->used = 1; /* Signal this scp as now in use... */
+        scp = scpReset(scp);	/* Free av and avlen, reset counters.*/
 
-	scp = scpReset(scp);	/* Free av and avlen, reset counters.*/
+/* XXX: Should we also reset the key table here?  Can you re-use a cursor? */
 
-	switch (key->size) {
-	case 0:
+        /*
+         * If we're scanning everything, load the iterator key table
+         */
+        if ( key->size == 0) {
+	    scp->all = 1;
+
+/* 
+ * The only condition not dealt with is if there are multiple identical keys.  This can lead
+ * to later iteration confusion.  (It may return the same value for the multiple keys.)
+ */
+
+/* Only RPMDBI_PACKAGES is supposed to be iterating, and this is guarenteed to be unique */
 assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
+
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMDBI_PACKAGES:
-		scp->cmd = sqlite3_mprintf("SELECT key FROM '%q' ORDER BY key;",
-			dbi->dbi_subfile);
-		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-
-		rc = sql_step(scp);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
-		scp->nkeys = scp->nr;
-		scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
-		for (i = 0; i < scp->nkeys; i++) {
-		    memcpy(scp->keys+i, scp->av[i+1], sizeof(*scp->keys));
-fprintf(stderr, "\tkeys[%d] %d\n", i, scp->keys[i]);
-		}
-		scp = scpReset(scp);	/* Free av and avlen, reset counters.*/
-/*==============*/
-		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q' ORDER BY key;",
-			dbi->dbi_subfile);
-		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-
-		rc = sql_step(scp);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
-/*==============*/
-		/*@innerbreak@*/ break;
+	        scp->cmd = sqlite3_mprintf("SELECT key FROM '%q' ORDER BY key;",
+		    dbi->dbi_subfile);
+	        /*@innerbreak@*/ break;
 	    default:
-		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
-			dbi->dbi_subfile);
-		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-
-		rc = sql_step(scp);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
-		/*@innerbreak@*/ break;
+	        scp->cmd = sqlite3_mprintf("SELECT key FROM '%q';",
+		    dbi->dbi_subfile);
+	        /*@innerbreak@*/ break;
 	    }
-	    break;
-	default:
-	    switch (dbi->dbi_rpmtag) {
-	    default:
-		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q' WHERE key=?;",
-			dbi->dbi_subfile);
-		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-		rc = sql_bind_key(dbi, scp, 1, key);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+	    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-		rc = sql_step(scp);
-		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
+	    rc = sql_step(scp);
+	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
 
-		/*@innerbreak@*/ break;
+	    scp = scpResetKeys(scp);
+	    scp->nkeys = scp->nr;
+	    scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
+	    for (ix = 0; ix < scp->nkeys; ix++) {
+		scp->keys[ix] = xmalloc(sizeof(DBT));
+		scp->keys[ix]->size = scp->avlen[ix+1];
+		scp->keys[ix]->data = xmalloc(scp->keys[ix]->size);
+		memcpy(scp->keys[ix]->data, scp->av[ix+1], scp->avlen[ix+1]);
 	    }
-	    break;
+        } else {
+	    /*
+	     * We're only scanning ONE element
+	     */
+	    scp = scpResetKeys(scp);
+	    scp->nkeys = 1;
+	    scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
+	    scp->keys[0] = xmalloc(sizeof(DBT));
+	    scp->keys[0]->size = key->size;
+	    scp->keys[0]->data = xmalloc(scp->keys[0]->size);
+	    memcpy(scp->keys[0]->data, key->data, key->size);
 	}
+
+	scp = scpReset(scp);	/* reset */
+
+        /* Prepare SQL statement to retrieve the value for the current key */
+        scp->cmd = sqlite3_mprintf("SELECT value FROM '%q' WHERE key=?;", dbi->dbi_subfile);
+        rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+
+        if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
     }
 
-    if (rc == 0 && scp->av == NULL)
-	rc = DB_NOTFOUND;
-    if (++scp->rx > scp->nr )
+    scp = scpResetAv(scp);	/* Free av and avlen, reset counters.*/
+
+    /* Now continue with a normal retrive based on key */
+    if ((scp->rx + 1) > scp->nkeys )
 	rc = DB_NOTFOUND; /* At the end of the list */
+
+    if (rc != 0)
+	goto exit;
+
+    /* Bind key to prepared statement */
+    rc = sql_bind_key(dbi, scp, 1, scp->keys[scp->rx]);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+
+    rc = sql_step(scp);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
+
+    rc = sqlite3_reset(scp->pStmt);
+    if (rc) rpmMessage(RPMMESS_WARNING, "reset %d\n", rc);
+
+/* 1 key should return 0 or 1 row/value */
+assert(scp->nr < 2);
+
+    if (scp->nr == 0 && scp->all == 0)
+        rc = DB_NOTFOUND; /* No data for that key found! */
+
     if (rc != 0)
 	goto exit;
 
     /* If we're looking at the whole db, return the key */
     if (scp->all) {
-	int ix = (2 * scp->rx) + 0;
-	void * v;
-	int nb;
 
-assert(ix < scp->ac);
-assert(scp->av != NULL);
-	v = scp->av[ix];
-assert(scp->avlen != NULL);
-	nb = scp->avlen[ix];
-if (_debug)
-fprintf(stderr, "\tcget(%s)  key av[%d] = %p[%d]\n", dbi->dbi_subfile, ix, v, nb);
+/* To get this far there has to be _1_ key returned! (protect against dup keys) */
+assert(scp->nr == 1);
 
-	key->size = nb;
+	key->size = scp->keys[scp->rx]->size;
 	if (key->flags & DB_DBT_MALLOC)
 	    key->data = xmalloc(key->size);
 	else
 	    key->data = allocTempBuffer(dbcursor, key->size);
-	(void) memcpy(key->data, v, key->size);
+	(void) memcpy(key->data, scp->keys[scp->rx]->data, key->size);
     }
 
+    /* Construct and return the data element (element 0 is "value", 1 is _THE_ value)*/
     switch (dbi->dbi_rpmtag) {
     default:
-      { int ix = (2 * scp->rx) + 1;
-	void * v;
-	int nb;
-
-assert(ix < scp->ac);
-assert(scp->av != NULL);
-	v = scp->av[ix];
-assert(scp->avlen != NULL);
-	nb = scp->avlen[ix];
-if (_debug)
-fprintf(stderr, "\tcget(%s) data av[%d] = %p[%d]\n", dbi->dbi_subfile, ix, v, nb);
-
-	data->size = nb;
+	data->size = scp->avlen[1];
 	if (data->flags & DB_DBT_MALLOC)
 	    data->data = xmalloc(data->size);
 	else
 	    data->data = allocTempBuffer(dbcursor, data->size);
-	(void) memcpy(data->data, v, data->size);
-      }	break;
+	(void) memcpy(data->data, scp->av[1], data->size);
     }
+
+    scp->rx++;
 
     /* XXX FIXME: ptr alignment is fubar here. */
 if (_debug)
