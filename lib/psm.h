@@ -72,7 +72,6 @@ struct transactionFileInfo_s {
     int dnlmax;			/*!< Length (in bytes) of longest dir name. */
     int astriplen;
     int striplen;
-    int scriptArg;
     int chrootDone;
     unsigned int archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
@@ -101,8 +100,13 @@ struct transactionFileInfo_s {
 struct psm_s {
     rpmTransactionSet ts;
     TFI_t fi;
-    int rc;				/*!< External file stage return code. */
-    fileStage stage;			/*!< External package stage. */
+    int scriptTag;		/*!< Scriptlet tag. */
+    int progTag;		/*!< Scriptlet interpreter tag. */
+    int scriptArg;		/*!< No. of installed instances. */
+    int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
+    int countCorrection;	/*!< 0 if installing, -1 if removing. */
+    int rc;
+    fileStage stage;
 };
 
 #ifdef __cplusplus

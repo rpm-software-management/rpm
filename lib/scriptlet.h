@@ -12,34 +12,27 @@ extern "C" {
 
 /**
  * Retrieve and run scriptlet from header.
- * @param ts		transaction set
- * @param h		header
- * @param scriptTag	scriptlet tag
- * @param progTag	scriptlet interpreter tag
- * @param arg		no. instances of package installed after scriptlet exec
- * @param norunScripts	should scriptlet be executed?
+ * @param psm		package state machine data
  * @return		0 on success
  */
-int runInstScript(const rpmTransactionSet ts, Header h,
-		int scriptTag, int progTag, int arg, int norunScripts);
+int runInstScript(PSM_t psm)
+	/*@modifies psm @*/;
 
 /**
  * Run trigger scripts in the database that are fired by this header.
  * @param psm		package state machine data
- * @param sense		one of RPMSENSE_TRIGGER{IN,UN,POSTUN}
- * @param countCorrection 0 if installing, -1 if removing, package
  * @return		0 on success, 1 on error
  */
-int runTriggers(PSM_t psm, int sense, int countCorrection);
+int runTriggers(PSM_t psm)
+	/*@modifies psm @*/;
 
 /**
  * Run triggers from this header that are fired by headers in the database.
  * @param psm		package state machine data
- * @param sense		one of RPMSENSE_TRIGGER{IN,UN,POSTUN}
- * @param countCorrection 0 if installing, -1 if removing, package
  * @return		0 on success, 1 on error
  */
-int runImmedTriggers(PSM_t psm, int sense, int countCorrection);
+int runImmedTriggers(PSM_t psm)
+	/*@modifies psm @*/;
 
 #ifdef __cplusplus
 }

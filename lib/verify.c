@@ -65,6 +65,16 @@ struct poptOption rpmVerifyPoptTable[] = {
     POPT_TABLEEND
 };
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)	free((void *)this);
+    return NULL;
+}
+
 /* ======================================================================== */
 int rpmVerifyFile(const char * prefix, Header h, int filenum,
 		int * result, int omitMask)
@@ -275,12 +285,23 @@ int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd)
 {
     rpmdb rpmdb = NULL;
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    TFI_t fi = xcalloc(1, sizeof(*fi));
+    struct psm_s psmbuf;
+    PSM_t psm = &psmbuf;
     int rc;
 
     if (scriptFd)
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
-    rc = runInstScript(ts, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
-		     0, 0);
+    fi->magic = TFIMAGIC;
+    loadFi(h, fi);
+    memset(psm, 0, sizeof(*psm));
+    psm->ts = ts;
+    psm->fi = fi;
+    psm->scriptTag = RPMTAG_VERIFYSCRIPT;
+    psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
+    rc = runInstScript(psm);
+    freeFi(fi);
+    fi = _free(fi);
     rpmtransFree(ts);
     return rc;
 }

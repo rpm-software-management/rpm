@@ -43,7 +43,7 @@ static /*@observer@*/ const char * const tag2sln(int tag)
  * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
  * the header will be ignored, passing instead arg1 and arg2.
  * 
- * @param ts		transaction set
+ * @param psm		package state machine data
  * @param h		header
  * @param sln		name of scriptlet section
  * @param progArgc	no. of args from header
@@ -54,15 +54,20 @@ static /*@observer@*/ const char * const tag2sln(int tag)
  * @param arg2		ditto, but for the target package
  * @return		0 on success, 1 on error
  */
-static int runScript(const rpmTransactionSet ts, Header h,
+static int runScript(PSM_t psm, Header h,
 		const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
+    HGE_t hge = fi->hge;
+    HFD_t hfd = fi->hfd;
     const char ** argv = NULL;
     int argc = 0;
     const char ** prefixes = NULL;
     int numPrefixes;
+    int_32 ipt;
     const char * oldPrefix;
     int maxPrefixLength;
     int len;
@@ -90,12 +95,9 @@ static int runScript(const rpmTransactionSet ts, Header h,
     }
 
     headerNVR(h, &n, &v, &r);
-    if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &prefixes,
-		       &numPrefixes)) {
+    if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &prefixes, &numPrefixes)) {
 	freePrefixes = 1;
-    } else if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, 
-			(void **) &oldPrefix, NULL))
-    {
+    } else if (hge(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &oldPrefix, NULL)) {
 	prefixes = &oldPrefix;
 	numPrefixes = 1;
     } else {
@@ -241,7 +243,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	}
     }
 
-    if (freePrefixes) free(prefixes);
+    if (freePrefixes) prefixes = hfd(prefixes, ipt);
 
     Fclose(out);	/* XXX dup'd STDOUT_FILENO */
     
@@ -253,58 +255,65 @@ static int runScript(const rpmTransactionSet ts, Header h,
     return rc;
 }
 
-int runInstScript(const rpmTransactionSet ts, Header h,
-		int scriptTag, int progTag, int arg, int norunScripts)
+int runInstScript(PSM_t psm)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
+    HGE_t hge = fi->hge;
+    HFD_t hfd = fi->hfd;
     void ** programArgv;
     int programArgc;
     const char ** argv;
-    int programType;
-    char * script;
+    int_32 ptt, stt;
+    const char * script;
     int rc;
 
-    if (norunScripts) return 0;
+    if (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS)
+	return 0;
 
-    /* headerGetEntry() sets the data pointer to NULL if the entry does
-       not exist */
-    headerGetEntry(h, progTag, &programType, (void **) &programArgv,
-		   &programArgc);
-    headerGetEntry(h, scriptTag, NULL, (void **) &script, NULL);
+    /*
+     * headerGetEntry() sets the data pointer to NULL if the entry does
+     * not exist.
+     */
+    hge(fi->h, psm->progTag, &ptt, (void **) &programArgv, &programArgc);
+    hge(fi->h, psm->scriptTag, &stt, (void **) &script, NULL);
 
-    if (programArgv && programType == RPM_STRING_TYPE) {
+    if (programArgv && ptt == RPM_STRING_TYPE) {
 	argv = alloca(sizeof(char *));
 	*argv = (const char *) programArgv;
     } else {
 	argv = (const char **) programArgv;
     }
 
-    rc = runScript(ts, h, tag2sln(scriptTag), programArgc, argv, script,
-		arg, -1);
-    programArgv = headerFreeData(programArgv, programType);
+    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), programArgc, argv,
+		script, psm->scriptArg, -1);
+    programArgv = hfd(programArgv, ptt);
+    script = hfd(script, stt);
     return rc;
 }
 
 /**
- * @param ts		transaction set
- * @param sense
+ * @param psm		package state machine data
  * @param sourceH
  * @param triggeredH
- * @param arg1correction
  * @param arg2
  * @param triggersAlreadyRun
  * @return
  */
-static int handleOneTrigger(const rpmTransactionSet ts, int sense,
-			Header sourceH, Header triggeredH,
-			int arg1correction, int arg2,
-			char * triggersAlreadyRun)
+static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
+			int arg2, char * triggersAlreadyRun)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
+    HGE_t hge = fi->hge;
+    HFD_t hfd = fi->hfd;
     const char ** triggerNames;
     const char ** triggerEVR;
     const char ** triggerScripts;
     const char ** triggerProgs;
     int_32 * triggerFlags;
     int_32 * triggerIndices;
+    int_32 tnt, tvt, tft;
     const char * triggerPackageName;
     const char * sourceName;
     int numTriggers;
@@ -312,21 +321,19 @@ static int handleOneTrigger(const rpmTransactionSet ts, int sense,
     int i;
     int skip;
 
-    if (!headerGetEntry(triggeredH, RPMTAG_TRIGGERNAME, NULL, 
-			(void **) &triggerNames, &numTriggers)) {
+    if (!hge(triggeredH, RPMTAG_TRIGGERNAME, &tnt, 
+			(void **) &triggerNames, &numTriggers))
 	return 0;
-    }
 
     headerNVR(sourceH, &sourceName, NULL, NULL);
 
-    headerGetEntry(triggeredH, RPMTAG_TRIGGERFLAGS, NULL, 
-		   (void **) &triggerFlags, NULL);
-    headerGetEntry(triggeredH, RPMTAG_TRIGGERVERSION, NULL, 
-		   (void **) &triggerEVR, NULL);
+    hge(triggeredH, RPMTAG_TRIGGERFLAGS, &tft, (void **) &triggerFlags, NULL);
+    hge(triggeredH, RPMTAG_TRIGGERVERSION, &tvt, (void **) &triggerEVR, NULL);
 
     for (i = 0; i < numTriggers; i++) {
+	int_32 tit, tst, tpt;
 
-	if (!(triggerFlags[i] & sense)) continue;
+	if (!(triggerFlags[i] & psm->sense)) continue;
 	if (strcmp(triggerNames[i], sourceName)) continue;
 
 	/*
@@ -346,11 +353,11 @@ static int handleOneTrigger(const rpmTransactionSet ts, int sense,
 		triggerEVR[i] + skip, triggerFlags[i]))
 	    continue;
 
-	headerGetEntry(triggeredH, RPMTAG_TRIGGERINDEX, NULL,
+	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
 		       (void **) &triggerIndices, NULL);
-	headerGetEntry(triggeredH, RPMTAG_TRIGGERSCRIPTS, NULL,
+	hge(triggeredH, RPMTAG_TRIGGERSCRIPTS, &tst,
 		       (void **) &triggerScripts, NULL);
-	headerGetEntry(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, NULL,
+	hge(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, &tpt,
 		       (void **) &triggerProgs, NULL);
 
 	headerNVR(triggeredH, &triggerPackageName, NULL, NULL);
@@ -358,13 +365,14 @@ static int handleOneTrigger(const rpmTransactionSet ts, int sense,
 	{   int arg1;
 	    int index;
 
-	    if ((arg1 = rpmdbCountPackages(ts->rpmdb, triggerPackageName)) < 0) {
+	    arg1 = rpmdbCountPackages(ts->rpmdb, triggerPackageName);
+	    if (arg1 < 0) {
 		rc = 1;	/* XXX W2DO? same as "execution of script failed" */
 	    } else {
-		arg1 += arg1correction;
+		arg1 += psm->countCorrection;
 		index = triggerIndices[i];
 		if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
-		    rc = runScript(ts, triggeredH, "%trigger", 1,
+		    rc = runScript(psm, triggeredH, "%trigger", 1,
 			    triggerProgs + index, triggerScripts[index], 
 			    arg1, arg2);
 		    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
@@ -372,60 +380,71 @@ static int handleOneTrigger(const rpmTransactionSet ts, int sense,
 	    }
 	}
 
-	free(triggerScripts);
-	free(triggerProgs);
+	triggerIndices = hfd(triggerIndices, tit);
+	triggerScripts = hfd(triggerScripts, tst);
+	triggerProgs = hfd(triggerProgs, tpt);
 
-	/* each target/source header pair can only result in a single
-	   script being run */
+	/*
+	 * Each target/source header pair can only result in a single
+	 * script being run.
+	 */
 	break;
     }
 
-    free(triggerNames);
+    triggerNames = hfd(triggerNames, tnt);
+    triggerFlags = hfd(triggerFlags, tft);
+    triggerEVR = hfd(triggerEVR, tvt);
 
     return rc;
 }
 
-int runTriggers(PSM_t psm, int sense, int countCorrection)
+int runTriggers(PSM_t psm)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     int numPackage;
     int rc = 0;
 
-    numPackage = rpmdbCountPackages(ts->rpmdb, fi->name) + countCorrection;
+    numPackage = rpmdbCountPackages(ts->rpmdb, fi->name) + psm->countCorrection;
     if (numPackage < 0)
 	return 1;
 
     {	Header triggeredH;
 	rpmdbMatchIterator mi;
+	int countCorrection = psm->countCorrection;
 
+	psm->countCorrection = 0;
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_TRIGGERNAME, fi->name, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    rc |= handleOneTrigger(ts, sense, fi->h, triggeredH, 0, numPackage, 
-			       NULL);
+	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
 	}
 
 	rpmdbFreeIterator(mi);
+	psm->countCorrection = countCorrection;
     }
 
     return rc;
 }
 
-int runImmedTriggers(PSM_t psm, int sense, int countCorrection)
+int runImmedTriggers(PSM_t psm)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
+    HGE_t hge = fi->hge;
+    HFD_t hfd = fi->hfd;
     const char ** triggerNames;
     int numTriggers;
     int_32 * triggerIndices;
+    int_32 tnt, tit;
     int numTriggerIndices;
     char * triggersRun;
     int rc = 0;
 
-    if (!headerGetEntry(fi->h, RPMTAG_TRIGGERNAME, NULL,
+    if (!hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
 			(void **) &triggerNames, &numTriggers))
 	return 0;
-    headerGetEntry(fi->h, RPMTAG_TRIGGERINDEX, NULL, (void **) &triggerIndices, 
+
+    hge(fi->h, RPMTAG_TRIGGERINDEX, &tit, (void **) &triggerIndices, 
 		   &numTriggerIndices);
     triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
     memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
@@ -435,20 +454,21 @@ int runImmedTriggers(PSM_t psm, int sense, int countCorrection)
 
 	for (i = 0; i < numTriggers; i++) {
 	    rpmdbMatchIterator mi;
-	    const char * name = triggerNames[i];
 
 	    if (triggersRun[triggerIndices[i]]) continue;
 	
-	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
+	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, triggerNames[i], 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		rc |= handleOneTrigger(ts, sense, sourceH, fi->h, 
-				   countCorrection, rpmdbGetIteratorCount(mi),
-				   triggersRun);
+		rc |= handleOneTrigger(psm, sourceH, fi->h, 
+				rpmdbGetIteratorCount(mi),
+				triggersRun);
 	    }
 
 	    rpmdbFreeIterator(mi);
 	}
     }
+    triggerIndices = hfd(triggerNames, tit);
+    triggerNames = hfd(triggerNames, tnt);
     return rc;
 }

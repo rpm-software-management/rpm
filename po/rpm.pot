@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-27 17:55-0500\n"
+"POT-Creation-Date: 2001-02-28 08:53-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1405
+#: build/pack.c:484 lib/psm.c:1421
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1461
+#: build/pack.c:566 lib/psm.c:1477
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2481,27 +2481,27 @@ msgstr ""
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1344 lib/fsm.c:1461
+#: lib/fsm.c:1345 lib/fsm.c:1462
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1486
+#: lib/fsm.c:1487
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1491
+#: lib/fsm.c:1492
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1500
+#: lib/fsm.c:1501
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1517
+#: lib/fsm.c:1518
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2925,18 +2925,18 @@ msgstr ""
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1019 lib/psm.c:1194
+#: lib/psm.c:1021 lib/psm.c:1202
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
 #. XXX WTFO? erase failures are not cause for stopping.
-#: lib/psm.c:1083 lib/psm.c:1151 lib/psm.c:1245 lib/psm.c:1270
+#: lib/psm.c:1085 lib/psm.c:1154 lib/psm.c:1257 lib/psm.c:1283
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/psm.c:1090
+#: lib/psm.c:1093
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
@@ -3508,12 +3508,12 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/scriptlet.c:231
+#: lib/scriptlet.c:233
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/scriptlet.c:238
+#: lib/scriptlet.c:240
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
@@ -3688,20 +3688,20 @@ msgstr ""
 msgid "do not execute %verifyscript (if any)"
 msgstr ""
 
-#: lib/verify.c:239
+#: lib/verify.c:249
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:257
+#: lib/verify.c:267
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:319
+#: lib/verify.c:340
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:400
+#: lib/verify.c:421
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
