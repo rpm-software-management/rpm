@@ -13,6 +13,13 @@
 
 static int escape = 1;	/* use octal escape sequence for !isprint(c)? */
 
+static inline char *
+basename(const char *file)
+{
+	char *fn = strrchr(file, '/');
+	return fn ? fn+1 : (char *)file;
+}
+
 static const char *
 getTagString(int tval)
 {
@@ -309,6 +316,178 @@ rewriteBinaryRPM(char *fni, char *fno)
 
 /* ================================================================== */
 
+static int
+slurp(const char *file, char **ibufp, size_t *nbp)
+{
+    struct stat sb;
+    char *ibuf;
+    size_t nb;
+    int fd;
+
+    if (ibufp)
+	*ibufp = NULL;
+    if (nbp)
+	*nbp = 0;
+
+    if (stat(file, &sb) < 0) {
+	perror(file);
+	fprintf(stderr, "stat(%s): %s\n", file, strerror(errno));
+	return 1;
+    }
+
+    nb = sb.st_size + 1;
+    if ((ibuf = (char *)malloc(nb)) == NULL) {
+	fprintf(stderr, "malloc(%d)\n", nb);
+	return 2;
+    }
+
+    if ((fd = open(file, O_RDONLY)) < 0) {
+	fprintf(stderr, "open(%s): %s\n", file, strerror(errno));
+	return 3;
+    }
+    if ((nb = read(fd, ibuf, nb)) != sb.st_size) {
+	fprintf(stderr, "read(%s): %s\n", file, strerror(errno));
+	return 4;
+    }
+    close(fd);
+    ibuf[nb] = '\0';
+
+    if (ibufp)
+	*ibufp = ibuf;
+    if (nbp)
+	*nbp = nb;
+
+    return 0;
+}
+
+typedef struct {
+	char *name;
+	int len;
+} KW_t;
+
+KW_t keywords[] = {
+	{ "domain", 6 },
+	{ "msgid", 5 },
+	{ "msgstr", 6 },
+	NULL
+};
+
+#define	SKIPWHITE {while ((c = *se) && strchr("\b\f\n\r\t ", c)) se++;}
+#define	NEXTLINE  {state = 0; if (!(se = strchr(se, '\n'))) se = s + strlen(s);}
+
+static char *
+matchchar(const char *p, char pl, char pr)
+{
+	int lvl = 0;
+	char c;
+
+	while ((c = *p++) != '\0') {
+		if (c == '\\') {	/* escaped chars */
+			p++;
+			continue;
+		}
+		if (pl == pr && c == pl && *p == pr) {	/* doubled quotes */
+			p++;
+			continue;
+		}
+		if (c == pr) {
+			if (--lvl <= 0) return (char *)--p;
+		} else if (c == pl)
+			lvl++;
+	}
+	return NULL;
+}
+
+static int
+parsepofile(const char *file)
+{
+    KW_t *kw;
+    char *buf, *s, *se;
+    size_t nb;
+    int c, rc;
+    int state = 0;
+
+fprintf(stderr, "================ %s\n", file);
+    if ((rc = slurp(file, &buf, &nb)) != 0)
+	return rc;
+
+    s = buf;
+    while ((c = *s) != '\0') {
+	se = s;
+	switch (state) {
+	case 0:		/* free wheeling */
+		SKIPWHITE;
+		if (c) state = 1;
+		break;
+	case 1:		/* comment "domain" "msgid" "msgstr" */
+		SKIPWHITE;
+		if (!isalpha(c)) {
+			if (c != '#')
+				fprintf(stderr, "non-alpha char at \"%.20s\"\n", se);
+			NEXTLINE;
+			break;
+		}
+		for (kw = keywords; kw->name; kw++) {
+			if (!strncmp(s, kw->name, kw->len)) {
+				se += kw->len;
+				break;
+			}
+		}
+		if (kw == NULL || kw->name == NULL) {
+			fprintf(stderr, "unknown keyword at \"%.20s\"\n", se);
+			NEXTLINE;
+			break;
+		}
+
+		SKIPWHITE;
+		s = se;
+		if (*se == '(') {
+			if ((se = strchr(se, ')')) == NULL) {
+				fprintf(stderr, "unclosed paren at \"%.20s\"\n", s);
+				se = s;
+				NEXTLINE;
+				break;
+			}
+			se++;	/* skip ) */
+		}
+		SKIPWHITE;
+		s = se;
+		if (*se != '"') {
+			fprintf(stderr, "missing string at \"%.20s\"\n", s);
+			se = s;
+			NEXTLINE;
+			break;
+		}
+		state = 2;
+		break;
+	case 2:		/* "...." */
+		if (c != '"') {
+			fprintf(stderr, "not a string at \"%.20s\"\n", s);
+			NEXTLINE;
+			break;
+		}
+		s++;	/* skip open quote */
+		if ((se = matchchar(s, c, c)) == NULL) {
+			fprintf(stderr, "missing close %c at \"%.20s\"\n", c, s);
+			NEXTLINE;
+			break;
+		}
+		se++;	/* skip close quote */
+		SKIPWHITE;
+		if (c != '"')
+			state = 0;
+		break;
+	}
+	s = se;
+    }
+
+    FREE(buf);
+    return rc;
+}
+
+/* ================================================================== */
+
+const char *progname = NULL;
 int debug = 0;
 int verbose = 0;
 char *inputdir = NULL;
@@ -317,10 +496,12 @@ int gentran = 0;
 
 #define	STDINFN	"<stdin>"
 
+#define	RPMGETTEXT	"rpmgettext"
 static int
 rpmgettext(int fd, const char *file, FILE *ofp)
 {
 	char fni[BUFSIZ], fno[BUFSIZ];
+	const char *fn;
 
 	if (file == NULL)
 	    file = STDINFN;
@@ -338,11 +519,13 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 	if (gentran) {
 	    char *op;
 	    fno[0] = '\0';
-	    if (outputdir && *file != '/') {
+	    fn = file;
+	    if (outputdir) {
 		strcpy(fno, outputdir);
 		strcat(fno, "/");
+		fn = basename(file);
 	    }
-	    strcat(fno, file);
+	    strcat(fno, fn);
 
 	    if ((op = strrchr(fno, '-')) != NULL &&
 		(op = strchr(op, '.')) != NULL)
@@ -371,8 +554,9 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 	return 0;
 }
 
+#define	RPMPUTTEXT	"rpmputtext"
 static int
-rpmputtext(const char *file)
+rpmputtext(int fd, const char *file, FILE *ofp)
 {
 	char fni[BUFSIZ], fno[BUFSIZ];
 
@@ -384,17 +568,23 @@ rpmputtext(const char *file)
 	strcat(fni, file);
 
 	fno[0] = '\0';
-	if (outputdir && *file != '/') {
+	if (outputdir) {
 	    strcpy(fno, outputdir);
 	    strcat(fno, "/");
-	    strcat(fno, file);
+	    strcat(fno, basename(file));
 	} else {
 	    strcat(fno, file);
 	    strcat(fno, ".out");
 	}
 
 	return rewriteBinaryRPM(fni, fno);
+}
 
+#define	RPMCHKTEXT	"rpmchktext"
+static int
+rpmchktext(int fd, const char *file, FILE *ofp)
+{
+	return parsepofile(file);
 }
 
 int
@@ -405,6 +595,8 @@ main(int argc, char **argv)
     extern char *optarg;
     extern int optind;
     int errflg = 0;
+
+    progname = basename(argv[0]);
 
     while((c = getopt(argc, argv, "deI:O:Tv")) != EOF)
     switch (c) {
@@ -438,14 +630,29 @@ main(int argc, char **argv)
     /* XXX I don't want to read rpmrc yet */
     rpmSetVar(RPMVAR_TMPPATH, "/tmp");
 
-    if (optind == argc) {
-	rc = rpmgettext(0, STDINFN, stdout);
-    } else {
-	for ( ; optind < argc; optind++ ) {
-	    if ((rc = rpmgettext(0, argv[optind], stdout)) != 0)
-		break;
+    if (!strcmp(progname, RPMGETTEXT)) {
+	if (optind == argc) {
+	    rc = rpmgettext(0, STDINFN, stdout);
+	} else {
+	    for ( ; optind < argc; optind++ ) {
+		if ((rc = rpmgettext(0, argv[optind], stdout)) != 0)
+		    break;
+	    }
 	}
-    }
+    } else if (!strcmp(progname, RPMPUTTEXT)) {
+	rc = 0;
+    } else if (!strcmp(progname, RPMCHKTEXT)) {
+	if (optind == argc) {
+	    rc = rpmchktext(0, STDINFN, stdout);
+	} else {
+	    for ( ; optind < argc; optind++ ) {
+		if ((rc = rpmchktext(0, argv[optind], stdout)) != 0)
+		    break;
+	    }
+	}
+    } else {
+	rc = 1;
+    } 
 
     return rc;
 }
