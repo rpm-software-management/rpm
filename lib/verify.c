@@ -14,6 +14,7 @@
 
 #include "md5.h"
 #include "misc.h"
+#include "miscfn.h"
 #include "messages.h"
 #include "rpmlib.h"
 
