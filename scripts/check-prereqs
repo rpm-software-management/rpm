@@ -1,6 +1,6 @@
-#!/bin/bash2
+#!/bin/bash
 
-bashit="/bin/bash2 --rpm-requires"
+bashit="/bin/bash --rpm-requires"
 
 # Make sure that this bash has the rpm-requires hack
 $bashit < /dev/null 2>&1 > /dev/null || exit $?
