@@ -39,46 +39,75 @@ struct rpmluav_s {
 
 #endif /* _RPMLUA_INTERNAL */
 
-typedef struct rpmlua_s * rpmlua;
-typedef struct rpmluav_s * rpmluav;
+typedef /*@abstract@*/ struct rpmlua_s * rpmlua;
+typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 
-rpmlua rpmluaNew(void);
-void *rpmluaFree(rpmlua lua);
+/*@only@*/
+rpmlua rpmluaNew(void)
+	/*@*/;
+void *rpmluaFree(/*@only@*/ rpmlua lua)
+	/*@modifies lua @*/;
 
-int rpmluaCheckScript(rpmlua lua, const char *script, const char *name);
-int rpmluaRunScript(rpmlua lua, const char *script, const char *name);
-void rpmluaInteractive(rpmlua lua);
+int rpmluaCheckScript(rpmlua lua, const char *script, const char *name)
+	/*@modifies lua @*/;
+int rpmluaRunScript(rpmlua lua, const char *script, const char *name)
+	/*@modifies lua @*/;
+void rpmluaInteractive(rpmlua lua)
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
 
-void rpmluaSetData(rpmlua lua, const char *key, const void *data);
-void *rpmluaGetData(rpmlua lua, const char *key);
+void rpmluaSetData(rpmlua lua, const char *key, const void *data)
+	/*@modifies lua @*/;
+void *rpmluaGetData(rpmlua lua, const char *key)
+	/*@modifies lua @*/;
 
-void rpmluaSetPrintBuffer(rpmlua lua, int flag);
-const char *rpmluaGetPrintBuffer(rpmlua lua);
+void rpmluaSetPrintBuffer(rpmlua lua, int flag)
+	/*@modifies lua @*/;
+/*@exposed@*/
+const char *rpmluaGetPrintBuffer(rpmlua lua)
+	/*@modifies lua @*/;
 
-void rpmluaSetVar(rpmlua lua, rpmluav var);
-void rpmluaGetVar(rpmlua lua, rpmluav var);
-void rpmluaDelVar(rpmlua lua, const char *key, ...);
-int rpmluaVarExists(rpmlua lua, const char *key, ...);
-void rpmluaPushTable(rpmlua lua, const char *key, ...);
-void rpmluaPop(rpmlua lua);
+void rpmluaSetVar(rpmlua lua, rpmluav var)
+	/*@modifies lua, var @*/;
+void rpmluaGetVar(rpmlua lua, rpmluav var)
+	/*@modifies lua, var @*/;
+void rpmluaDelVar(rpmlua lua, const char *key, ...)
+	/*@modifies lua @*/;
+int rpmluaVarExists(rpmlua lua, const char *key, ...)
+	/*@modifies lua @*/;
+void rpmluaPushTable(rpmlua lua, const char *key, ...)
+	/*@modifies lua @*/;
+void rpmluaPop(rpmlua lua)
+	/*@modifies lua @*/;
 
-rpmluav rpmluavNew(void);
-void *rpmluavFree(rpmluav var);
-void rpmluavSetListMode(rpmluav var, int flag);
-void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value);
-void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value);
-void rpmluavGetKey(rpmluav var, rpmluavType *type, void **value);
-void rpmluavGetValue(rpmluav var, rpmluavType *type, void **value);
+/*@only@*/
+rpmluav rpmluavNew(void)
+	/*@*/;
+void *rpmluavFree(/*@only@*/ rpmluav var)
+	/*@modifes var @*/;
+void rpmluavSetListMode(rpmluav var, int flag)
+	/*@modifies var @*/;
+void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value)
+	/*@modifies var @*/;
+void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value)
+	/*@modifies var @*/;
+void rpmluavGetKey(rpmluav var, /*@out@*/ rpmluavType *type, /*@out@*/ void **value)
+	/*@modifies *type, *value @*/;
+void rpmluavGetValue(rpmluav var, /*@out@*/ rpmluavType *type, /*@out@*/ void **value)
+	/*@modifies *type, *value @*/;
 
 /* Optional helpers for numbers. */
-void rpmluavSetKeyNum(rpmluav var, double value);
-void rpmluavSetValueNum(rpmluav var, double value);
-double rpmluavGetKeyNum(rpmluav var);
-double rpmluavGetValueNum(rpmluav var);
-int rpmluavKeyIsNum(rpmluav var);
-int rpmluavValueIsNum(rpmluav var);
+void rpmluavSetKeyNum(rpmluav var, double value)
+	/*@modifies var @*/;
+void rpmluavSetValueNum(rpmluav var, double value)
+	/*@modifies var @*/;
+double rpmluavGetKeyNum(rpmluav var)
+	/*@*/;
+double rpmluavGetValueNum(rpmluav var)
+	/*@*/;
+int rpmluavKeyIsNum(rpmluav var)
+	/*@*/;
+int rpmluavValueIsNum(rpmluav var)
+	/*@*/;
 
 #endif /* RPMLUA_H */
-
-/* vim:sts=4:sw=4
-*/

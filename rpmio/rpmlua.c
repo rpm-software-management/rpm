@@ -1,3 +1,4 @@
+/*@-bounds@*/
 #include "system.h"
 #include <rpmio.h>
 #include <rpmmacro.h>
@@ -16,6 +17,8 @@
 #define _RPMLUA_INTERNAL
 #include "rpmlua.h"
 
+#include "debug.h"
+
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 			    const char * fmt, va_list ap)
@@ -24,15 +27,19 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 }
 #endif
 
-static int luaopen_rpm(lua_State *L);
-static int rpm_print(lua_State *L);
+static int luaopen_rpm(lua_State *L)
+	/*@modifies L @*/;
+static int rpm_print(lua_State *L)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/;
 
 rpmlua rpmluaNew()
 {
-    rpmlua lua = (rpmlua) xcalloc(1, sizeof(struct rpmlua_s));
+    rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
     lua_State *L = lua_open();
-    lua->L = L;
-    const luaL_reg lualibs[] = {
+    /*@-readonlytrans@*/
+    /*@observer@*/ /*@unchecked@*/
+    static const luaL_reg lualibs[] = {
 	{"base", luaopen_base},
 	{"table", luaopen_table},
 	{"io", luaopen_io},
@@ -44,7 +51,11 @@ rpmlua rpmluaNew()
 	{"rpm", luaopen_rpm},
 	{NULL, NULL},
     };
-    const luaL_reg *lib = lualibs;
+    /*@observer@*/ /*@unchecked@*/
+    static const luaL_reg *lib = lualibs;
+    /*@=readonlytrans@*/
+
+    lua->L = L;
     for (; lib->name; lib++) {
 	lib->func(L);
 	lua_settop(L, 0);
@@ -83,6 +94,7 @@ void rpmluaSetData(rpmlua lua, const char *key, const void *data)
 }
 
 static void *getdata(lua_State *L, const char *key)
+	/*@modifies L @*/
 {
     void *ret = NULL;
     lua_pushliteral(L, "rpm_");
@@ -114,6 +126,7 @@ const char *rpmluaGetPrintBuffer(rpmlua lua)
 }
 
 static int pushvar(lua_State *L, rpmluavType type, void *value)
+	/*@modifies L @*/
 {
     int ret = 0;
     switch (type) {
@@ -158,20 +171,21 @@ void rpmluaSetVar(rpmlua lua, rpmluav var)
 }
 
 static void popvar(lua_State *L, rpmluavType *type, void *value)
+	/*@modifies L, *type, *value @*/
 {
     switch (lua_type(L, -1)) {
-	case LUA_TSTRING:
-	    *type = RPMLUAV_STRING;
-	    *((const char **)value) = lua_tostring(L, -1);
-	    break;
-	case LUA_TNUMBER:
-	    *type = RPMLUAV_NUMBER;
-	    *((double *)value) = lua_tonumber(L, -1);
-	    break;
-	default:
-	    *type = RPMLUAV_NIL;
-	    *((void **)value) = NULL;
-	    break;
+    case LUA_TSTRING:
+	*type = RPMLUAV_STRING;
+	*((const char **)value) = lua_tostring(L, -1);
+	break;
+    case LUA_TNUMBER:
+	*type = RPMLUAV_NUMBER;
+	*((double *)value) = lua_tonumber(L, -1);
+	break;
+    default:
+	*type = RPMLUAV_NIL;
+	*((void **)value) = NULL;
+	break;
     }
     lua_pop(L, 1);
 }
@@ -199,6 +213,7 @@ void rpmluaGetVar(rpmlua lua, rpmluav var)
 #define FINDKEY_CREATE 1
 #define FINDKEY_REMOVE 2
 static int findkey(lua_State *L, int oper, const char *key, va_list va)
+	/*@modifies L @*/
 {
     char buf[BUFSIZ];
     const char *s, *e;
@@ -211,29 +226,29 @@ static int findkey(lua_State *L, int oper, const char *key, va_list va)
 	    if (e != s) {
 		lua_pushlstring(L, s, e-s);
 		switch (oper) {
-		    case FINDKEY_REMOVE:
-			if (*e == '\0') {
-			    lua_pushnil(L);
-			    lua_rawset(L, -3);
-			    lua_pop(L, 1);
-			    break;
-			}
-			/* @fallthrough@ */
-		    case FINDKEY_RETURN:
-			lua_rawget(L, -2);
-			lua_remove(L, -2);
-			break;
-		    case FINDKEY_CREATE:
-			lua_rawget(L, -2);
-			if (!lua_istable(L, -1)) {
-			    lua_pop(L, 1);
-			    lua_newtable(L);
-			    lua_pushlstring(L, s, e-s);
-			    lua_pushvalue(L, -2);
-			    lua_rawset(L, -4);
-			}
-			lua_remove(L, -2);
-			break;
+		case FINDKEY_REMOVE:
+		    if (*e == '\0') {
+			lua_pushnil(L);
+			lua_rawset(L, -3);
+			lua_pop(L, 1);
+			/*@switchbreak@*/ break;
+		    }
+		    /*@fallthrough@*/
+		case FINDKEY_RETURN:
+		    lua_rawget(L, -2);
+		    lua_remove(L, -2);
+		    /*@switchbreak@*/ break;
+		case FINDKEY_CREATE:
+		    lua_rawget(L, -2);
+		    if (!lua_istable(L, -1)) {
+			lua_pop(L, 1);
+			lua_newtable(L);
+			lua_pushlstring(L, s, e-s);
+			lua_pushvalue(L, -2);
+			lua_rawset(L, -4);
+		    }
+		    lua_remove(L, -2);
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	    if (*e == '\0')
@@ -291,7 +306,7 @@ void rpmluaPop(rpmlua lua)
 
 rpmluav rpmluavNew(void)
 {
-    rpmluav var = (rpmluav) xcalloc(1, sizeof(struct rpmluav_s));
+    rpmluav var = (rpmluav) xcalloc(1, sizeof(*var));
     return var;
 }
 
@@ -444,7 +459,10 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name)
 }
 
 /* From lua.c */
-static int rpmluaReadline(lua_State *l, const char *prompt) {
+static int rpmluaReadline(lua_State *L, const char *prompt)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/
+{
    static char buffer[1024];
    if (prompt) {
       fputs(prompt, stdout);
@@ -453,36 +471,39 @@ static int rpmluaReadline(lua_State *l, const char *prompt) {
    if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
       return 0;  /* read fails */
    } else {
-      lua_pushstring(l, buffer);
+      lua_pushstring(L, buffer);
       return 1;
    }
 }
 
 /* Based on lua.c */
 static void _rpmluaInteractive(lua_State *L)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/
 {
    fputs("\n", stdout);
    printf("RPM Interactive %s Interpreter\n", LUA_VERSION);
    for (;;) {
+      int rc = 0;
+
       if (rpmluaReadline(L, "> ") == 0)
 	 break;
       if (lua_tostring(L, -1)[0] == '=') {
 	 lua_pushfstring(L, "print(%s)", lua_tostring(L, -1)+1);
 	 lua_remove(L, -2);
       }
-      int rc = 0;
       for (;;) {
 	 rc = luaL_loadbuffer(L, lua_tostring(L, -1),
 			      lua_strlen(L, -1), "<lua>");
 	 if (rc == LUA_ERRSYNTAX &&
 	     strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
 	    if (rpmluaReadline(L, ">> ") == 0)
-	       break;
-	    lua_remove(L, -2); // Remove error
+	       /*@innerbreak@*/ break;
+	    lua_remove(L, -2); /* Remove error */
 	    lua_concat(L, 2);
-	    continue;
+	    /*@innercontinue@*/ continue;
 	 }
-	 break;
+	 /*@innerbreak@*/ break;
       }
       if (rc == 0)
 	 rc = lua_pcall(L, 0, 0, 0);
@@ -490,7 +511,7 @@ static void _rpmluaInteractive(lua_State *L)
 	 fprintf(stderr, "%s\n", lua_tostring(L, -1));
 	 lua_pop(L, 1);
       }
-      lua_pop(L, 1); // Remove line
+      lua_pop(L, 1); /* Remove line */
    }
    fputs("\n", stdout);
 }
@@ -504,6 +525,8 @@ void rpmluaInteractive(rpmlua lua)
 /* Lua API */
 
 static int rpm_expand(lua_State *L)
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies L, rpmGlobalMacroContext @*/
 {
     const char *str = luaL_checkstring(L, 1);
     lua_pushstring(L, rpmExpand(str, NULL));
@@ -511,6 +534,8 @@ static int rpm_expand(lua_State *L)
 }
 
 static int rpm_define(lua_State *L)
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies L, rpmGlobalMacroContext @*/
 {
     const char *str = luaL_checkstring(L, 1);
     rpmDefineMacro(NULL, str, 0);
@@ -518,6 +543,8 @@ static int rpm_define(lua_State *L)
 }
 
 static int rpm_interactive(lua_State *L)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/
 {
     _rpmluaInteractive(L);
     return 0;
@@ -525,8 +552,10 @@ static int rpm_interactive(lua_State *L)
 
 /* Based on luaB_print. */
 static int rpm_print (lua_State *L)
+	/*@globals fileSystem @*/
+	/*@modifies L, fileSystem @*/
 {
-    rpmlua lua = (rpmlua)getdata(L, "lua");;
+    rpmlua lua = (rpmlua)getdata(L, "lua");
     int n = lua_gettop(L);  /* number of arguments */
     int i;
     if (!lua) return 0;
@@ -570,19 +599,21 @@ static int rpm_print (lua_State *L)
     return 0;
 }
 
+/*@-readonlytrans@*/
+/*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
     {"expand", rpm_expand},
     {"define", rpm_define},
     {"interactive", rpm_interactive},
     {NULL, NULL}
 };
+/*@=readonlytrans@*/
 
 static int luaopen_rpm(lua_State *L)
+	/*@modifies L @*/
 {
     lua_pushvalue(L, LUA_GLOBALSINDEX);
     luaL_openlib(L, "rpm", rpmlib, 0);
     return 0;
 }
-
-/* vim:sts=4:sw=4
-*/
+/*@=bounds@*/
