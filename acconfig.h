@@ -87,9 +87,6 @@
    directory and all necessary parent directories, ala `mkdir -p'        */
 #undef MKDIR_P
 
-/* Define this to be whatever root's primary group is, in double quotes */
-#undef ROOT_GROUP
-
 /* Full path to rpm locale directory (usually /usr/share/locale) */
 #undef LOCALEDIR
 

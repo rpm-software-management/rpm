@@ -31,23 +31,6 @@ AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 
 dnl
-dnl if CC is gcc, we can rebuild the dependencies (since the depend rule
-dnl requires gcc).  If it's not, don't rebuild dependencies -- use what was
-dnl shipped with RPM.
-dnl
-if test X"$GCC" = Xyes ; then
-	TARGET="depend everything"
-else
-	TARGET="everything"
-	#
-	# let the top level Makefile know that we're done with `depend'
-	#
-	echo > .depend-done
-fi
-AC_SUBST(TARGET)
-
-
-dnl
 dnl This now uses libtool. Put
 dnl	LDFLAGS_STATIC="-all"
 dnl to attempt static executables using libtool. Otherwise
@@ -87,7 +70,11 @@ else
 fi
 LDFLAGS_STATIC="${LDFLAGS_STATIC}-static"	# libtool format
 AC_MSG_RESULT($LDFLAGS_STATIC)
+AC_SUBST(LDFLAGS_STATIC)
 
+dnl
+dnl look for POSIX chmod attributes
+dnl
 AC_MSG_CHECKING(POSIX chmod)
 touch foo.chmodtest
 chmod 744 foo.chmodtest
@@ -101,6 +88,7 @@ else
     AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
     FIXPERMS=a+r,g-w,o-w 
 fi
+AC_SUBST(FIXPERMS)
 
 dnl
 dnl see if we have a mkdir that supports `-p'.
@@ -137,8 +125,7 @@ dnl
 dnl substitute this into config.h, so the C source picks it up.
 dnl
 AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}")
-
-
+AC_SUBST(MKDIR_P)
 
 AC_AIX
 AC_MINIX
@@ -159,12 +146,30 @@ AM_PROG_LIBTOOL
 AC_CHECK_TOOL(AR, ar, :)
 
 if test "$cross_compiling" != "yes"; then
+dnl
+dnl Set search path for common programs
+dnl
     MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/opt/gnu/bin"
 
-    AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
+dnl
+dnl Find some common programs
+dnl
     AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
-    AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
 
+    AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
+    AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
+    AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
+    AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
+    AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
+    AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
+
+    AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
+    AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
+    AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
+    AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
+    AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
+
+    AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
     AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
 
@@ -174,6 +179,10 @@ if test "$cross_compiling" != "yes"; then
     else
 	AC_MSG_RESULT(patch later then 2.2 found)
     fi
+
+    AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+    AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
+    AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
 fi
 
 addlib() {
@@ -597,7 +606,6 @@ int main()
 }], ROOT_GROUP=`cat conftest_rootg`,
 	ROOT_GROUP="root",ROOT_GROUP="root"
 )
-AC_DEFINE_UNQUOTED(ROOT_GROUP, "$ROOT_GROUP")
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
 
@@ -605,6 +613,7 @@ if test "x$varprefix" = "x"; then
     varprefix=`echo $prefix | sed 's/usr/var/'`
     test "x$prefix" = xNONE && varprefix=`echo $ac_default_prefix | sed 's/usr/var/'`
 fi
+AC_SUBST(varprefix)
 
 if test "x$tmpdir" = "x"; then
     if test -d $varprefix/tmp; then
@@ -617,6 +626,7 @@ if test "x$tmpdir" = "x"; then
 	fi
     fi
 fi
+AC_SUBST(tmpdir)
 
 if echo "$build_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
@@ -702,6 +712,8 @@ AC_SUBST(RPMCANONOS)
 if test -n "$LIBOBJS" ; then
     LIBMISC='$(top_builddir)/misc/libmisc.a'
 fi
+AC_SUBST(LIBOBJS)
+AC_SUBST(LIBMISC)
 
 LOCALEDIR="`echo ${prefix}/share/locale`"
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR")
@@ -732,19 +744,11 @@ testdir="`pwd`/tests"
 dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
 AC_SUBST(testdir)
 
-AC_SUBST(LIBOBJS)
 AC_SUBST(INCPATH)
-
-AC_SUBST(varprefix)
-AC_SUBST(tmpdir)
 
 AC_SUBST(LIBS)
 
 AC_SUBST(RPM)
-AC_SUBST(FIXPERMS)
-AC_SUBST(LIBMISC)
-AC_SUBST(MKDIR_P)
-AC_SUBST(LDFLAGS_STATIC)
 
 # XXX Propagate -lucb to popt ...
 export LIBS INCPATH

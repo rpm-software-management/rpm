@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.21 1999/04/01 22:26:47 jbj Exp $
+# $Id: macros.in,v 1.22 1999/04/16 05:44:38 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -18,23 +18,26 @@
 
 #==============================================================================
 # ---- path macros
-#	XXX The use of which here is overly simple.
+#	XXX The use of which here is overly simple (read: dumb).
 #
-%__bzip2		%(which bzip2)
-%__cat			%(which cat)
-%__chgrp		%(which chgrp)
-%__chmod		%(which chmod)
-%__chown		%(which chown)
-%__cpio			%(which cpio)
-%__gzip			%(which gzip)
+%__bzip2		%{_bzip2bin}
+%__cat			@__CAT@
+%__chgrp		@__CHGRP@
+%__chmod		@__CHMOD@
+%__chown		@__CHOWN@
+%__cp			@__CP@
+%__cpio			@__CPIO@
+%__gzip			%{_gzipbin}
+%__id			@__ID@
 %__install		%(which install)
-%__make			%(which make)
-%__mkdir		%(which mkdir)
-%__patch		%(which patch)
+%__make			@__MAKE@
+%__mkdir		@__MKDIR@
+%__mv			@__MV@
+%__patch		@__PATCH@
 %__ranlib		%(which ranlib)
-%__rm			%(which rm)
+%__rm			@__RM@
 %__strip		%(which strip)
-%__tar			%(which tar)
+%__tar			@__TAR@
 
 # XXX avoid weird failures from which if tools are not installed
 %__libtoolize		libtoolize
@@ -56,9 +59,9 @@
 %_defaultdocdir		%{_usr}/doc
 #
 # XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-%_fixowner		[ `id -u` = '0' ] && chown -R root
-%_fixgroup		[ `id -u` = '0' ] && chgrp -R @ROOT_GROUP@
-%_fixperms		chmod -R @FIXPERMS@
+%_fixowner		[ `%{__id} -u` = '0' ] && %{__chown} -Rf root
+%_fixgroup		[ `%{__id} -u` = '0' ] && %{__chgrp} -Rf @ROOT_GROUP@
+%_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
 %_gzipbin		@GZIPBIN@
 %_instchangelog		5
