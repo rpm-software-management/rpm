@@ -62,7 +62,9 @@ int readLine(Spec spec, int strip)
 	*last = '\0';
     }
 
-    expandMacros(&spec->macros, spec->line);
+    if (spec->readStack->reading) {
+	expandMacros(&spec->macros, spec->line);
+    }
     
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
