@@ -97,8 +97,8 @@ char * headerSprintf(Header h, const char * fmt,
 int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
-/* For the C locale, lang should be *NULL*. Here are the rules:
-
+/* A NULL lang is interpreted as the C locale.  Here are the rules:
+   
 	1) If the tag isn't in the Header, it's added with the passed string
 	   as a version.
 	2) If the tag occurs multiple times in entry, which tag is affected

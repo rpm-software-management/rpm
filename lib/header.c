@@ -946,7 +946,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
     }
 
     if (!table && !entry) {
-	if (!lang) {
+	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
 	    charArray[0] = "C";
 	    if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
 				&charArray, 1)) return 0;
@@ -976,7 +976,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
     }
 
     if (!entry) {
-	strArray = alloca(sizeof(*strArray) * langNum);
+	strArray = alloca(sizeof(*strArray) * (langNum + 1));
 	for (i = 0; i < langNum; i++)
 	    strArray[i] = "";
 	strArray[langNum] = string;
