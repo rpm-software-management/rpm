@@ -105,6 +105,11 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     char *last;
     char ch;
 
+    /* Restore 1st char in (possible) next line */
+    if (spec->nextpeekc) {
+	*spec->nextline = spec->nextpeekc;
+	spec->nextpeekc = '\0';
+    }
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
 	char *from, *to;
@@ -125,14 +130,14 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 
     /* Find next line in expanded line buffer */
     spec->line = last = spec->nextline;
-    if (spec->line != spec->lbuf)
-	*spec->line = spec->nextpeekc;
     ch = ' ';
     while (*spec->nextline && ch != '\n') {
 	ch = *spec->nextline++;
 	if (!isspace(ch))
 	    last = spec->nextline;
     }
+
+    /* Save 1st char of next line in order to terminate current line. */
     if (*spec->nextline) {
 	spec->nextpeekc = *spec->nextline;
 	*spec->nextline = '\0';
