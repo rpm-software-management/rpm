@@ -49,47 +49,31 @@
 # endif
 #endif
 
-#if defined(__GNUC__)
+/* Starting from GCC 3.2, the compiler seems smart enough to figure
+ * out that we're trying to do a rotate without having to specify it.
+ */
+#if defined(__GNUC__) && (__GNUC__ < 3 || __GNUC_MINOR__ < 2)
 # if defined(__i386__)
-static inline uint32_t ROTL32(uint32_t x, const unsigned char n)
+static inline uint32_t _rotl32(uint32_t x, const unsigned char n)
 {
-	__asm__("roll %1,%0"
-		:	"=r" (x)
-		:	"0" (x), "I" (n));
+	__asm__("roll %[n],%[x]"
+		:	[x] "=r" (x)
+		:	"0" (x), [n] "I" (n));
 
 	return x;
 }
+#define ROTL32(x, n) _rotl32(x, n)
 
-static inline uint32_t ROTR32(uint32_t x, const unsigned char n)
+static inline uint32_t _rotr32(uint32_t x, const unsigned char n)
 {
-	__asm__("rorl %1,%0"
-		:	"=r" (x)
-		:	"0" (x), "I" (n));
+	__asm__("rorl %[n],%[x]"
+		:	[x] "=r" (x)
+		:	"0" (x), [n] "I" (n));
 
 	return x;
 }
-# elif defined(__powerpc__)
-static inline uint32_t ROTL32(uint32_t x, const unsigned char n)
-{
-	register uint32_t r;
+#define ROTR32(x, n) _rotr32(x, n)
 
-	__asm__("rotlwi %0,%1,%2"
-		:	"=r" (r)
-		:	"r" (x), "I" (n));
-
-	return r;
-}
-
-static inline uint32_t ROTR32(uint32_t x, const unsigned char n)
-{
-	register uint32_t r;
-
-	__asm__("rotrwi %0,%1,%2"
-		:	"=r" (r)
-		:	"r" (x), "I" (n));
-
-	return r;
-}
 # endif
 #endif
 
@@ -108,5 +92,19 @@ typedef int32_t		javaint;
 typedef int64_t		javalong;
 
 typedef uint16_t	javachar;
+
+#if (MP_WBITS == 64)
+typedef uint64_t	mpw;
+typedef uint32_t	mphw;
+#elif (MP_WBITS == 32)
+# if HAVE_UINT64_T
+#  define HAVE_MPDW 1
+typedef uint64_t	mpdw;
+# endif
+typedef uint32_t	mpw;
+typedef uint16_t	mphw;
+#else
+# error
+#endif
 
 #endif
