@@ -193,7 +193,6 @@ AC_CHECK_HEADERS(machine/types.h string.h)
 AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
 AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
 
-
 if test "$PO" = po; then
     AC_CHECK_HEADERS(libintl.h)
 fi
@@ -207,6 +206,23 @@ AC_TRY_LINK([#include <netdb.h>],printf("%d",h_errno),PROVIDES_ERRNO=yes)
 AC_MSG_RESULT($PROVIDES_ERRNO)
 if test $PROVIDES_ERRNO = yes; then
 	AC_DEFINE(HAVE_HERRNO)
+fi
+
+dnl Some Unix's are missing S_ISLNK, S_ISSOCK
+AC_MSG_CHECKING(checking if <sys/stat.h> defines S_ISLNK...)
+AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISLNK(0755)),
+	HAS_S_ISLNK=yes,HAS_S_ISLNK=no)
+AC_MSG_RESULT($HAS_S_ISLNK)
+if test $HAS_S_ISLNK=yes; then
+	AC_DEFINE(HAVE_S_ISLNK)
+fi
+
+AC_MSG_CHECKING(checking if <sys/stat.h> defines S_ISSOCK...)
+AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISSOCK(0755)),
+	HAS_S_ISSOCK=yes,HAS_S_ISSOCK=no)
+AC_MSG_RESULT($HAS_S_ISSOCK)
+if test $HAS_S_ISSOCK=yes; then
+	AC_DEFINE(HAVE_S_ISSOCK)
 fi
 
 dnl Checks for library functions.
