@@ -128,3 +128,26 @@ void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
 
     rpmdbClose(db);
 }
+
+int doSourceInstall(char * prefix, char * arg, char ** specFile) {
+    int fd;
+    int rc;
+
+    fd = open(arg, O_RDONLY);
+    if (fd < 0) {
+	fprintf(stderr, "error: cannot open %s\n", arg);
+	return 1;
+    }
+
+    if (isVerbose())
+	printf("Installing %s\n", arg);
+
+    rc = rpmInstallSourcePackage(prefix, fd, specFile);
+    if (rc == 1) {
+	fprintf(stderr, "error: %s cannot be installed\n", arg);
+    }
+
+    close(fd);
+
+    return rc;
+}

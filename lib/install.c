@@ -45,7 +45,25 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 				 enum instActions * instActions, 
 				 char ** prefixedFileList, int flags);
 static int fileCompare(const void * one, const void * two);
-static int installSources(char * prefix, int fd);
+static int installSources(char * prefix, int fd, char ** specFilePtr);
+
+/* 0 success */
+/* 1 bad magic */
+/* 2 error */
+int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile) {
+    int rc, isSource;
+    Header h;
+
+    rc = pkgReadHeader(fd, &h, &isSource);
+    if (rc) return rc;
+
+    if (!isSource) {
+	error(RPMERR_NOTSRPM, "source package expected, binary found");
+	return 2;
+    }
+
+    return installSources(prefix, fd, specFile);
+}
 
 /* 0 success */
 /* 1 bad magic */
@@ -81,14 +99,12 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	   is the easiest way. It's to bad the notify stuff doesn't work
 	   though  */
 
-	message(MESS_DEBUG, "installing a source package\n");
-
 	if (flags & INSTALL_TEST) {
 	    message(MESS_DEBUG, "stopping install as we're running --test\n");
 	    return 0;
 	}
 
-	return installSources(prefix, fd);
+	return installSources(prefix, fd, NULL);
     }
 
     /* we make a copy of the header here so we have one which we can add
@@ -816,11 +832,13 @@ static int fileCompare(const void * one, const void * two) {
 }
 
 
-static int installSources(char * prefix, int fd) {
+static int installSources(char * prefix, int fd, char ** specFilePtr) {
     char * specFile;
     char * sourceDir, * specDir;
     char * realSourceDir, * realSpecDir;
     char * instSpecFile, * correctSpecFile;
+
+    message(MESS_DEBUG, "installing a source package\n");
 
     sourceDir = getVar(RPMVAR_SOURCEDIR);
     specDir = getVar(RPMVAR_SPECDIR);
@@ -865,6 +883,9 @@ static int installSources(char * prefix, int fd) {
 		instSpecFile, correctSpecFile, strerror(errno));
 	return 1;
     }
+
+    if (specFilePtr)
+	*specFilePtr = strdup(correctSpecFile);
 
     return 0;
 }
