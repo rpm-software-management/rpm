@@ -355,11 +355,15 @@ rpmbc_format(rpmbcObject * z, uint32 zbase, int withname)
     char * te;
     char prefix[5];
     char * tcp = prefix;
+    uint32 zsign;
 
     if (z == NULL || !is_rpmbc(z)) {
 	PyErr_BadInternalCall();
 	return NULL;
     }
+
+if (_bc_debug)
+fprintf(stderr, "*** rpmbc_format(%p,%d,%d):\t", z, zbase, withname), mp32println(stderr, z->n.size, z->n.data);
 
     assert(zbase >= 2 && zbase <= 36);
 
@@ -368,18 +372,25 @@ rpmbc_format(rpmbcObject * z, uint32 zbase, int withname)
     else
 	i = 0;
 
-    /* XXX FIXME: mp32bitcnt normalize with signed values. */
-    nt = mp32mszcnt(z->n.size, z->n.data)/32;
-    zsize = z->n.size - nt;
-    zdata = z->n.data + nt;
-
-    if (mp32z(zsize, zdata))
+    zsign = mp32msbset(z->n.size, z->n.data);
+    nt = mp32bitcnt(z->n.size, z->n.data);
+    if (nt == 0) {
 	zbase = 10;	/* '0' in every base, right */
-    else if (mp32msbset(zsize, zdata)) {
+	nt = 1;
+	zsize = 1;
+	zdata = &zsign;
+    } else if (zsign) {
 	*tcp++ = '-';
 	i += 1;		/* space to hold '-' */
+	zsize = (nt + 31)/32;
+	zdata = alloca(zsize * sizeof(*zdata));
+	mp32setx(zsize, zdata, zsize, z->n.data + (z->n.size - zsize));
+	mp32neg(zsize, zdata);
+    } else {
+	zsize = (nt + 31)/32;
+	zdata = z->n.data + (z->n.size - zsize);
     }
-
+    
     nt = mp32sizeinbase(zsize, zdata, zbase);
     i += nt;
 
@@ -678,7 +689,7 @@ fprintf(stderr, "*** after %p[%d]\n", pdata, psize);
 
     /* Calculate size of result. */
     if (xbits == 0) xbits = 1;
-    nsize = (((*pdata) * xbits)+31)/32;
+    nsize = (((*pdata) * xbits) + 31)/32 + 1;	/* 1 word for sign bit */
     size = ((15 * xbits)+31)/32;
 
 if (_bc_debug)
