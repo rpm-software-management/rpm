@@ -63,6 +63,8 @@ static int ensureOlder(rpmdb db, char * name, char * newVersion,
 		       char * newRelease, int dbOffset);
 static int relocateFilelist(Header * hp, char * defaultPrefix, 
 			char * newPrefix, int * relocationSize);
+static int archOkay(Header h);
+static int osOkay(Header h);
 
 /* 0 success */
 /* 1 bad magic */
@@ -116,8 +118,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
-    int_8 * pkgArchNum;
-    void * pkgArch;
     char * archivePrefix;
     int scriptArg;
     int relocationSize = 1;		/* strip at least first / for cpio */
@@ -179,27 +179,16 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-    if (!(flags & INSTALL_NOARCH)) {
-	/* make sure we're trying to install this on the proper architecture */
-	getEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &fileCount);
-	if (type == INT8_TYPE) {
-	    /* old arch handling */
-	    pkgArchNum = pkgArch;
-	    if (getArchNum() != *pkgArchNum) {
-		error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
-		      "architecture", name, version, release);
-		freeHeader(h);
-		return 2;
-	    }
-	} else {
-	    /* new arch handling */
-	    if (!rpmArchScore(pkgArch)) {
-		error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
-		      "architecture (%s)", name, version, release, pkgArch);
-		freeHeader(h);
-		return 2;
-	    }
-	}
+    if (!(flags & INSTALL_NOARCH) && !archOkay(h)) {
+	error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
+	      "architecture", name, version, release);
+	freeHeader(h);
+    }
+
+    if (!(flags & INSTALL_NOOS) && !osOkay(h)) {
+	error(RPMERR_BADOS, "package %s-%s-%s is for a different "
+	      "architecture", name, version, release);
+	freeHeader(h);
     }
 
     if (labelFormat) {
@@ -628,6 +617,12 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	if (waitpid(child, &status, WNOHANG)) childDead = 1;
 	
 	bytesRead = gzread(stream, buf, sizeof(buf));
+	if (bytesRead < 1) {
+	     cpioFailed = 1;
+	     childDead = 1;
+	     kill(SIGTERM, child);
+	}
+
 	if (write(p[1], buf, bytesRead) != bytesRead) {
 	     cpioFailed = 1;
 	     childDead = 1;
@@ -1462,4 +1457,50 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
     *hp = newh;
 
     return 0;
+}
+
+static int archOkay(Header h) {
+    int_8 * pkgArchNum;
+    void * pkgArch;
+    int type, count;
+
+    /* make sure we're trying to install this on the proper architecture */
+    getEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
+    if (type == INT8_TYPE) {
+	/* old arch handling */
+	pkgArchNum = pkgArch;
+	if (getArchNum() != *pkgArchNum) {
+	    return 0;
+	}
+    } else {
+	/* new arch handling */
+	if (!rpmArchScore(pkgArch)) {
+	    return 0;
+	}
+    }
+
+    return 1;
+}
+
+static int osOkay(Header h) {
+    int_8 * pkgOsNum;
+    void * pkgOs;
+    int type, count;
+
+    /* make sure we're trying to install this on the proper os */
+    getEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
+    if (type == INT8_TYPE) {
+	/* old os handling */
+	pkgOsNum = pkgOs;
+	if (getOsNum() != *pkgOsNum) {
+	    return 0;
+	}
+    } else {
+	/* new os handling */
+	if (!rpmOsScore(pkgOs)) {
+	    return 0;
+	}
+    }
+
+    return 1;
 }
