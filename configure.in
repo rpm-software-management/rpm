@@ -184,10 +184,19 @@ fi
 topdir=`pwd`
 topsrcdir=`cd ${srcdir}; pwd`
 
+addlib() {
+  l=$1
+  shift
+  case "$target" in 
+    *-*-solaris*)	LIBS="$LIBS -L$l -R $l $*";;
+    *)		LIBS="$LIBS -L$l *$";;
+  esac
+}
+
 if test $prefix != "/usr" -a $prefix != "/usr/local"; then
 	AC_MSG_CHECKING("$prefix/lib... $ac_c")
 	if test -d $prefix/lib ; then
-		LIBS="$LIBS -L$prefix/lib"
+		addlib $prefix/lib
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_RESULT(no)
@@ -204,7 +213,7 @@ fi
 
 AC_MSG_CHECKING(/usr/local/lib...)
 if test -d /usr/local/lib ; then
-	LIBS="$LIBS -L/usr/local/lib"
+	addlib /usr/local/lib
 	
 	AC_MSG_RESULT(yes)
 else
@@ -222,10 +231,10 @@ fi
 AC_MSG_CHECKING(/usr/ucblib...)
 if test -d /usr/ucblib ; then
 	if test "$build" = "mips-sni-sysv4" ; then
-		LIBS="$LIBS -L/usr/ccs/lib -lc"
+		addlib /usr/ccs/lib -lc
 	fi
 
-	LIBS="$LIBS -L/usr/ucblib"
+	addlib /usr/ucblib
 	
 	AC_MSG_RESULT(yes)
 else
@@ -369,6 +378,7 @@ fi
 AC_MSG_CHECKING(if timezone is defined...)
 AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
       HAS_TIMEZONE=yes,HAS_TIMEZONE=no)
+AC_MSG_RESULT($HAS_TIMEZONE)
 
 dnl Checks for library functions.
 AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
@@ -391,7 +401,7 @@ if test "$LCHOWN" = no; then
     AC_MSG_CHECKING(whether chown() follows symlinks...)
     AC_ARG_ENABLE([broken-chown],
     [  --enable-broken-chown  this system's chown follows symbolic links], 
-	    result=yes, result=unknown)
+	    result=$enableval, result=unknown)
     if echo "$build" | egrep "(aix)|(hpux)|(linux)" > /dev/null ; then
 	result=yes
     elif echo "$build" | egrep "(nextstep)" > /dev/null ; then
@@ -476,14 +486,11 @@ if test "x$tmpdir" = "x"; then
     fi
 fi
 
-RPM=rpm
-# Solaris needs -ldl to use -lnsl, and it can't build static
-# binaries if you use -ldl
-if echo "$build_os" | grep solaris >/dev/null; then
-	echo "hacking things up for solaris"
-	RPM=rpm.shared
-	LIBDL=-ldl
-elif echo "$build_os" | grep sco > /dev/null; then
+#This test will obviate a special case for at least Solaris;
+#possibly others also.
+AC_CHECK_FUNC(dlopen,RPM=rpm,RPM=rpm.shared)
+
+if echo "$build_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
 	RPM=rpm.shared
 	AC_DEFINE(NEED_STRINGS_H)
@@ -514,9 +521,11 @@ if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
 fi
 
+changequote(<, >)
 build_os_exact="${build_os}"
 build_os_major=`echo "${build_os}" | sed 's/\..*$//'`
 build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
+changequote([, ])
 
 rm -f ./find-provides.sh
 if test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
@@ -536,13 +545,13 @@ fi
 rm -f ./find-requires.sh
 if test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-provides.sh
+    ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires.sh
 elif test -f ${srcdir}/autodeps/${build_os_major}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_major}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-provides.sh
+    ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-requires.sh
 elif test -f ${srcdir}/autodeps/${build_os_noversion}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_noversion}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-provides.sh
+    ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-requires.sh
 else
     echo "*** no default requires information is available for ${build_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-requires.sh
