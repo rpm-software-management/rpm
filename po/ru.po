@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-29 09:30-0500\n"
+"POT-Creation-Date: 2004-12-05 14:08-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2585,8 +2585,8 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
 #: lib/rpmchecksig.c:596
-#, c-format
-msgid "%s: import read failed.\n"
+#, fuzzy, c-format
+msgid "%s: import read failed(%d).\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
 #: lib/rpmchecksig.c:608

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-29 09:30-0500\n"
+"POT-Creation-Date: 2004-12-05 14:08-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -2548,7 +2548,7 @@ msgstr ""
 
 #: lib/rpmchecksig.c:596
 #, fuzzy, c-format
-msgid "%s: import read failed.\n"
+msgid "%s: import read failed(%d).\n"
 msgstr "%s: Fseek brást: %s\n"
 
 #: lib/rpmchecksig.c:608

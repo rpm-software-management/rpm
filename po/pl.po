@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-29 09:30-0500\n"
+"POT-Creation-Date: 2004-12-05 14:08-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -2573,8 +2573,8 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature nie powiod³o siê: %s\n"
 
 #: lib/rpmchecksig.c:596
-#, c-format
-msgid "%s: import read failed.\n"
+#, fuzzy, c-format
+msgid "%s: import read failed(%d).\n"
 msgstr "%s: read przy imporcie nie powiod³o siê.\n"
 
 #: lib/rpmchecksig.c:608

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-29 09:30-0500\n"
+"POT-Creation-Date: 2004-12-05 14:08-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2573,8 +2573,8 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
 #: lib/rpmchecksig.c:596
-#, c-format
-msgid "%s: import read failed.\n"
+#, fuzzy, c-format
+msgid "%s: import read failed(%d).\n"
 msgstr "%s: importläsning misslyckades.\n"
 
 #: lib/rpmchecksig.c:608

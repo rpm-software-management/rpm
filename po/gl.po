@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-29 09:30-0500\n"
+"POT-Creation-Date: 2004-12-05 14:08-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -2517,7 +2517,7 @@ msgstr ""
 
 #: lib/rpmchecksig.c:596
 #, c-format
-msgid "%s: import read failed.\n"
+msgid "%s: import read failed(%d).\n"
 msgstr ""
 
 #: lib/rpmchecksig.c:608

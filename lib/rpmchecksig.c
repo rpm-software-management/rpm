@@ -593,7 +593,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
 
 	/* Read pgp packet. */
 	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
-	    rpmError(RPMERR_IMPORT, _("%s: import read failed.\n"), fn);
+	    rpmError(RPMERR_IMPORT, _("%s: import read failed(%d).\n"), fn, rc);
 	    res++;
 	    continue;
 	}

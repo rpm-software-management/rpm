@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-29 09:30-0500\n"
+"POT-Creation-Date: 2004-12-05 14:08-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -2654,7 +2654,7 @@ msgstr "%s: Neuspelo 'rpmReadSignature'\n"
 
 #: lib/rpmchecksig.c:596
 #, fuzzy, c-format
-msgid "%s: import read failed.\n"
+msgid "%s: import read failed(%d).\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
 #: lib/rpmchecksig.c:608
