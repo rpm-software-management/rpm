@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.5 2000/08/07 08:46:05 rjray Exp $
+#   $Id: Database.pm,v 1.6 2000/08/07 09:17:37 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -38,7 +38,7 @@ require RPM;
 require RPM::Header;
 
 $VERSION = '0.27';
-$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -81,8 +81,13 @@ sub import
 
     # We only currently support one export: %RPM
     my $arg = $args[0];
-    warn "$class: Unknown exports requested (@args)", return
-        unless ($arg eq '%RPM');
+    return unless $arg;
+
+    unless ($arg eq '%RPM')
+    {
+	warn "$class: Unknown exports requested (@args)";
+	return;
+    }
 
     my $callpkg = caller(0);
 
