@@ -35,13 +35,35 @@ $CLEAN .= ' pod2html-* */pod2html-* *.html */*.html RPM/typemap';
 # Check for non-Perl dependancies:
 #
 print "Checking for required software components...\n";
-chomp($rpm_devel = qx(rpm -q rpm-devel 2>/dev/null));
-chomp($popt = qx(rpm -q popt 2>/dev/null));
-unless ($rpm_devel and $popt)
+$rpm_binary = '';
+for (split(':', $ENV{PATH}))
 {
-    die "The Perl-RPM package relies on both the popt and rpm-devel packages
-being installed. Stopped";
+    $rpm_binary = "$_/rpm", last
+        if (-e "$_/rpm" && -x _ && ! -d _);
 }
+die "Executable 'rpm' not found. This is needed for fetching configuration
+information, stopped"
+    unless $rpm_binary;
+
+chomp($rpm_version = qx($rpm_binary --version));
+$rpm_version = (reverse split(/ /, $rpm_version))[0];
+$rpm_version = join('', map { sprintf "%03d", $_ } split(/\./, $rpm_version));
+$rpm_version =~ s/^0*//;
+die "RPM version must be at least 3.0.4, due to I/O features not available
+prior to that version. Stopped"
+    unless ($rpm_version >= 3000004);
+
+# Check for needed header files
+$rpm_libdir = '';
+for (qw(/usr/include /usr/local/include /opt/include /opt/rpm/include))
+{
+    next unless -d $_ and -d "$_/rpm";
+    $rpm_libdir = "$_/rpm", last if (-d "$_/rpm" && -e "$_/rpm/rpmlib.h");
+}
+die "Header file 'rpmlib.h' not found. This is needed for compiling the XS glue
+code. If this is present, edit $0 and add the correct directory to the search
+list at line 58. Stopped"
+    unless $rpm_libdir;
 
 WriteMakefile(
               NAME         => 'RPM',
@@ -54,7 +76,7 @@ WriteMakefile(
               PL_FILES     => \%PL_SCRIPTS,
               EXE_FILES    => [ @SAMPLES ],
               OBJECT       => $OBJECT,
-              INC          => '-I/usr/include/rpm',
+              INC          => "-I$rpm_libdir",
               DIR          => [],
               dist         => { COMPRESS => 'gzip -9f' },
               clean        => { FILES => $CLEAN },
