@@ -176,11 +176,11 @@ case $basic_machine in
 		os=-sysv
 		;;
 	amiga | amiga-*)
-		basic_machine=m68k-cbm
+		basic_machine=m68k-unknown
 		;;
-	amigados)
-		basic_machine=m68k-cbm
-		os=-amigados
+	amigaos)
+		basic_machine=m68k-unknown
+		os=-amigaos
 		;;
 	amigaunix | amix)
 		basic_machine=m68k-cbm
@@ -635,7 +635,7 @@ case $os in
 	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
 	      | -vms* | -sco* | -esix* | -isc* | -aix* | -sunos | -sunos[345]* \
 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -solaris* | -sym* \
-	      | -amigados* | -msdos* | -newsos* | -unicos* | -aos* \
+	      | -amigaos* | -msdos* | -newsos* | -unicos* | -aos* \
 	      | -nindy* | -vxworks* | -ebmon* | -hms* | -mvs* | -clix* \
 	      | -riscos* | -linux* | -uniplus* | -iris* | -rtu* | -xenix* \
 	      | -hiux* | -386bsd* | -netbsd* | -freebsd* | -riscix* \
@@ -761,7 +761,7 @@ case $basic_machine in
 		os=-sysv
 		;;
 	*-cbm)
-		os=-amigados
+		os=-amigaos
 		;;
 	*-dg)
 		os=-dgux
