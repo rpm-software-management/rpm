@@ -22,6 +22,7 @@ int main(int argc, char ** argv) {
     int inc = 0;
     int help = 0;
     int usage = 0;
+    int shortopt = 0;
     struct poptOption callbackArgs[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK, option_callback, 0, "sampledata" },
 	{ "cb", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
@@ -38,6 +39,8 @@ int main(int argc, char ** argv) {
 	    " wrapping somehow, right?", NULL },
 	{ "arg2", '2', POPT_ARG_STRING, &arg2, 0, "Another argument", "ARG" },
 	{ "arg3", '3', POPT_ARG_INT, &arg3, 0, "A third argument", "ANARG" },
+	{ "shortoption", '\0', POPT_ARGFLAG_ONEDASH, &shortopt, 0,
+		"Needs a single -", NULL },
 	{ "unused", '\0', POPT_ARG_STRING, NULL, 0, 
 	    "Unused option for help testing", "UNUSED" },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0, NULL },
@@ -70,6 +73,8 @@ int main(int argc, char ** argv) {
 	fprintf(stdout, " arg3: %d", arg3);
     if (inc)
 	fprintf(stdout, " inc: %d", inc);
+    if (shortopt)
+	fprintf(stdout, " short: %d", shortopt);
 
     rest = poptGetArgs(optCon);
     if (rest) {

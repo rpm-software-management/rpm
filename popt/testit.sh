@@ -39,6 +39,8 @@ run test1 "test1 - 20" "./test1 ; --arg1" --echo-args --arg1
 run test1 "test1 - 21" "./test1 ; --arg2 something" -T something -e
 run test1 "test1 - 22" "./test1 ; --arg2 something -- more args" -T something -a more args
 run test1 "test1 - 23" "./test1 ; --echo-args -a" --echo-args -e -a
+run test1 "test1 - 24" "arg1: 0 arg2: (none) short: 1" -shortoption
+run test1 "test1 - 25" "arg1: 0 arg2: (none) short: 1" --shortoption
 
 echo ""
 echo "Passed."

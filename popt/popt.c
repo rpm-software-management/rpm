@@ -211,7 +211,8 @@ static const struct poptOption * findOption(const struct poptOption * table,
 					    const char * longName,
 					    const char shortName,
 					    poptCallbackType * callback,
-					    void ** callbackData) {
+					    void ** callbackData,
+					    int singleDash) {
     const struct poptOption * opt = table;
     const struct poptOption * opt2;
     const struct poptOption * cb = NULL;
@@ -219,11 +220,12 @@ static const struct poptOption * findOption(const struct poptOption * table,
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    opt2 = findOption(opt->arg, longName, shortName, callback, 
-			      callbackData);
+			      callbackData, singleDash);
 	    if (opt2) return opt2;
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_CALLBACK) {
 	    cb = opt;
 	} else if (longName && opt->longName && 
+		   (!singleDash || (opt->argInfo & POPT_ARGFLAG_ONEDASH)) &&
 		   !strcmp(longName, opt->longName)) {
 	    break;
 	} else if (shortName && shortName == opt->shortName) {
@@ -255,6 +257,7 @@ int poptGetNextOpt(poptContext con) {
     int i;
     poptCallbackType cb;
     void * cbData;
+    int singleDash;
 
     while (!done) {
 	while (!con->os->nextCharArg && con->os->next == con->os->argc 
@@ -287,8 +290,12 @@ int poptGetNextOpt(poptContext con) {
 	    if (optString[1] == '-' && !optString[2]) {
 		con->restLeftover = 1;
 		continue;
-	    } else if (optString[1] == '-') {
-		optString += 2;
+	    } else {
+		optString++;
+		if (*optString == '-')
+		    singleDash = 0, optString++;
+		else
+		    singleDash = 1;
 
 		if (handleAlias(con, optString, '\0', NULL))
 		    continue;
@@ -302,9 +309,12 @@ int poptGetNextOpt(poptContext con) {
 		    *chptr = '\0';
 		}
 
-		opt = findOption(con->options, optString, '\0', &cb, &cbData);
-		if (!opt) return POPT_ERROR_BADOPT;
-	    } else 
+		opt = findOption(con->options, optString, '\0', &cb, &cbData,
+				 singleDash);
+		if (!opt && !singleDash) return POPT_ERROR_BADOPT;
+	    }
+
+	    if (!opt)
 		con->os->nextCharArg = origOptString + 1;
 	}
 
@@ -321,7 +331,8 @@ int poptGetNextOpt(poptContext con) {
 	    if (handleExec(con, NULL, *origOptString))
 		continue;
 
-	    opt = findOption(con->options, NULL, *origOptString, &cb, &cbData);
+	    opt = findOption(con->options, NULL, *origOptString, &cb, 
+			     &cbData, 0);
 	    if (!opt) return POPT_ERROR_BADOPT;
 
 	    origOptString++;

@@ -19,7 +19,7 @@
 					   to callback, descrip points to 
 					   callback data to pass */
 #define POPT_ARG_MASK		0x0000FFFF
-#define POPT_ARGFLAG_MULTIPLE	0x80000000
+#define POPT_ARGFLAG_ONEDASH	0x80000000  /* allow -longoption */
 
 #define POPT_ERROR_NOARG	-10
 #define POPT_ERROR_BADOPT	-11
