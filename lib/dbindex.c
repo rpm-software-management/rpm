@@ -13,6 +13,7 @@ static int _debug = 0;
 #include "db0.h"
 #include "db1.h"
 #include "db2.h"
+#include "db3.h"
 
 unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set->count;
@@ -61,18 +62,26 @@ int _useDbiMajor = -1;
 typedef int (*_dbopen) (dbiIndex dbi);
 
 static _dbopen mydbopens[] = {
+
 #if HAVE_DB1_DB_H
     db0open,
 #else
     NULL,
 #endif
+
 #if HAVE_DB_185_H
     db1open,
 #else
     NULL,
 #endif
+
     db2open,
+
+#if HAVE_DB3_DB_H
+    db3open,
+#else
     NULL,
+#endif
     NULL
 };
 
@@ -144,6 +153,9 @@ int dbiCloseIndex(dbiIndex dbi) {
     int rc;
 
     switch (dbi->dbi_major) {
+    case 3:
+	rc = db3close(dbi, 0);
+	break;
     case 2:
 	rc = db2close(dbi, 0);
 	break;
@@ -163,6 +175,9 @@ int dbiSyncIndex(dbiIndex dbi) {
     int rc;
 
     switch (dbi->dbi_major) {
+    case 3:
+	rc = db3sync(dbi, 0);
+	break;
     case 2:
 	rc = db2sync(dbi, 0);
 	break;
@@ -184,6 +199,9 @@ int dbiGetFirstKey(dbiIndex dbi, const char ** keyp) {
 	return 1;
 
     switch (dbi->dbi_major) {
+    case 3:
+	rc = db3GetFirstKey(dbi, keyp);
+	break;
     case 2:
 	rc = db2GetFirstKey(dbi, keyp);
 	break;
@@ -202,6 +220,9 @@ int dbiSearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
     int rc;
 
     switch (dbi->dbi_major) {
+    case 3:
+	rc = db3SearchIndex(dbi, str, set);
+	break;
     case 2:
 	rc = db2SearchIndex(dbi, str, set);
 	break;
@@ -227,13 +248,16 @@ int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     int rc;
 
     switch (dbi->dbi_major) {
-    default:
+    case 3:
+	rc = db3UpdateIndex(dbi, str, set);
+	break;
     case 2:
 	rc = db2UpdateIndex(dbi, str, set);
 	break;
     case 1:
 	rc = db1UpdateIndex(dbi, str, set);
 	break;
+    default:
     case 0:
 	rc = db0UpdateIndex(dbi, str, set);
 	break;

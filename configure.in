@@ -309,6 +309,11 @@ dnl will fail.
 AC_CHECK_LIB(port, writev)
 
 DBLIBOBJS=""
+dnl Check for Berkeley db3 API.
+AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
+  AC_CHECK_LIB(db, db_create, [LIBS="$LIBS -ldb"; DBLIBOBJS="$DBLIBOBJS db3.c"],
+    AC_CHECK_LIB(db-3.0, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"]))
+)
 dnl Check for Berkeley db2 API.
 AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
   AC_CHECK_LIB(db, db_open, [LIBS="$LIBS -ldb"; DBLIBOBJS="$DBLIBOBJS db2.c"])
@@ -383,7 +388,7 @@ AC_HEADER_MAJOR
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 
-AC_CHECK_HEADERS(db_185.h db1/db.h)
+AC_CHECK_HEADERS(db_185.h db1/db.h db3/db.h)
 AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
 AC_CHECK_HEADERS(sys/socket.h sys/select.h)

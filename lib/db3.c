@@ -2,7 +2,7 @@
 
 static int _debug = 1;
 
-#include <db.h>
+#include <db3/db.h>
 
 #include <rpmlib.h>
 
@@ -10,10 +10,14 @@ static int _debug = 1;
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
-#include "db2.h"
+#include "db3.h"
 
-#if DB_VERSION_MAJOR == 2
-#define	__USE_DB2	1
+static const char * dberrpfx = "rpmdb";
+static int dbcachesize = 1024 * 1024;
+static int dbpagesize = 32 * 1024;			/* 0 - 64K */
+
+#if DB_VERSION_MAJOR == 3
+#define	__USE_DB3	1
 #define	_mymemset(_a, _b, _c)	memset((_a), (_b), (_c))
 
 static inline DBTYPE dbi_to_dbtype(DBI_TYPE dbitype)
@@ -116,9 +120,6 @@ static int db_init(dbiIndex dbi, const char *home, int dbflags,
 {
     DB_ENV *dbenv = NULL;
     FILE * dberrfile = stderr;
-    const char * dberrpfx = "rpmdb";
-    int dbcachesize = 1024 * 1024;
-    int dbpagesize = 32 * 1024;			/* 0 - 64K */
     int rc;
 
     if (dbenvp == NULL || dbinfop == NULL)
@@ -132,10 +133,8 @@ static int db_init(dbiIndex dbi, const char *home, int dbflags,
 #if defined(__USE_DB3)
   { int xx;
  /* dbenv->set_errcall(???) */
-    xx = dbenv->set_errfile(dberrfile);
-    xx = cvtdberr(dbi, "dbenv->set_errfile", xx, _debug);
-    xx = dbenv->set_errpfx(dberrpfx);
-    xx = cvtdberr(dbi, "dbenv->set_errpfx", xx, _debug);
+    dbenv->set_errfile(dbenv, dberrfile);
+    dbenv->set_errpfx(dbenv, dberrpfx);
  /* dbenv->set_paniccall(???) */
  /* dbenv->set_verbose(???) */
  /* dbenv->set_lg_max(???) */
@@ -143,7 +142,7 @@ static int db_init(dbiIndex dbi, const char *home, int dbflags,
  /* dbenv->set_lk_detect(???) */
  /* dbenv->set_lk_max(???) */
  /* dbenv->set_mp_mmapsize(???) */
-    xx = dbenv->set_cachesize(dbcachesize);
+    xx = dbenv->set_cachesize(dbenv, 0, dbcachesize, 0);
     xx = cvtdberr(dbi, "dbenv->set_cachesize", xx, _debug);
  /* dbenv->set_tx_max(???) */
  /* dbenv->set_tx_recover(???) */
@@ -161,8 +160,6 @@ static int db_init(dbiIndex dbi, const char *home, int dbflags,
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
-    xx = db->set_pagesize(db, dbpagesize)
-    xx = cvtdberr(dbi, "db->set_pagesize", xx, _debug);
     *dbinfop = NULL;
 #else
     rc = db_appinit(home, NULL, dbenv, (dbflags & _DBFMASK));
@@ -184,7 +181,8 @@ errxit:
 
 #if defined(__USE_DB3)
     if (dbenv) {
-	xx = dbenv->close(dbenv);
+	int xx;
+	xx = dbenv->close(dbenv, 0);
 	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
     }
 #else
@@ -194,7 +192,7 @@ errxit:
 }
 #endif	/* __USE_DB2 || __USE_DB3 */
 
-int db2open(dbiIndex dbi)
+int db3open(dbiIndex dbi)
 {
     int rc = 0;
 
@@ -215,9 +213,12 @@ int db2open(dbiIndex dbi)
 	rc = db_create(&db, dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0) {
+	    int xx;
 	    rc = db->open(db, dbi->dbi_file, NULL, dbi_to_dbtype(dbi->dbi_type),
 			dbflags, dbi->dbi_perms);
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
+	    xx = db->set_pagesize(db, dbpagesize);
+	    xx = cvtdberr(dbi, "db->set_pagesize", xx, _debug);
 	}
 #else
 	rc = db_open(dbi->dbi_file, dbi_to_dbtype(dbi->dbi_type), dbflags,
@@ -246,7 +247,7 @@ int db2open(dbiIndex dbi)
     return rc;
 }
 
-int db2close(dbiIndex dbi, unsigned int flags) {
+int db3close(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
     int rc = 0, xx;
 
@@ -272,7 +273,7 @@ int db2close(dbiIndex dbi, unsigned int flags) {
     if (dbi->dbi_dbenv) {
 	DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
 #if defined(__USE_DB3)
-	xx = dbenv->close(dbenv);
+	xx = dbenv->close(dbenv, 0);
 	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
 #else
 	xx = db_appexit(dbenv);
@@ -288,7 +289,7 @@ int db2close(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-int db2sync(dbiIndex dbi, unsigned int flags) {
+int db3sync(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
     int rc;
 
@@ -302,7 +303,7 @@ int db2sync(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-int db2GetFirstKey(dbiIndex dbi, const char ** keyp) {
+int db3GetFirstKey(dbiIndex dbi, const char ** keyp) {
     DBT key, data;
     DB * db;
     int rc, xx;
@@ -319,7 +320,11 @@ int db2GetFirstKey(dbiIndex dbi, const char ** keyp) {
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
     {	DBC * dbcursor = NULL;
+#if defined(__USE_DB3)
+	rc = db->cursor(db, NULL, &dbcursor, 0);
+#else
 	rc = db->cursor(db, NULL, &dbcursor);
+#endif
 	rc = cvtdberr(dbi, "db->cursor", rc, _debug);
 	if (rc == 0) {
 	    rc = dbcursor->c_get(dbcursor, &key, &data, DB_FIRST);
@@ -344,7 +349,7 @@ int db2GetFirstKey(dbiIndex dbi, const char ** keyp) {
     return rc;
 }
 
-int db2SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
+int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
     DBT key, data;
     DB * db = GetDB(dbi);
     int rc;
@@ -375,7 +380,7 @@ int db2SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
 }
 
 /*@-compmempass@*/
-int db2UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
+int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     DBT key;
     DB * db = GetDB(dbi);
     int rc;
@@ -412,4 +417,4 @@ int db2UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     return rc;
 }
 /*@=compmempass@*/
-#endif	/* DB_VERSION_MAJOR == 2 */
+#endif	/* DB_VERSION_MAJOR == 3 */

@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/popt @INCPATH@
 
-EXTRA_DIST = db0.[ch] db1.[ch] db2.[ch]
+EXTRA_DIST = db0.[ch] db1.[ch] db2.[ch] db2.[ch]
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -28,6 +28,17 @@ librpm_la_SOURCES = \
 	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
 librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 #librpm_la_LIBADD = -lpopt
+
+db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h dbindex.h db3.h
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+	for F in $*.o $*.lo ; do \
+	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb-3.0 ; \
+	    @__OBJCOPY@ `\
+		@__NM@ -g --defined-only $${F}.o | \
+		sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
+		grep -v '^-L $*'` $${F}.o $${F} ; \
+	    rm -f $${F}.o ; \
+	done
 
 db0.lo: db0.c $(top_srcdir)/system.h rpmlib.h dbindex.h db0.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<

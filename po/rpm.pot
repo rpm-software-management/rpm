@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-03-25 10:18-0500\n"
+"POT-Creation-Date: 2000-03-26 19:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1986,12 +1986,12 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/dbindex.c:86
+#: lib/dbindex.c:95
 #, c-format
 msgid "bad db file %s"
 msgstr ""
 
-#: lib/dbindex.c:121
+#: lib/dbindex.c:130
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -1999,22 +1999,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:136
+#: lib/dbindex.c:145
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr ""
 
-#: lib/dbindex.c:219
+#: lib/dbindex.c:240
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: lib/dbindex.c:244
+#: lib/dbindex.c:268
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/dbindex.c:249
+#: lib/dbindex.c:273
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
