@@ -1,11 +1,11 @@
 ARCHITECTURE AND OS:
-build arch            : sparc
-compatible build archs: sparc noarch
+build arch            : i386
+compatible build archs: i386 noarch
 build os              : Linux
 compatible build os's : linux
-install arch          : sparc
+install arch          : i386
 install os            : Linux
-compatible archs      : sparc noarch
+compatible archs      : i386 noarch
 compatible os's       : linux
 
 RPMRC VALUES:
@@ -18,7 +18,7 @@ fixperms              : a+rX,g-w,o-w
 gzipbin               : /bin/gzip
 instchangelog         : 5
 macrofiles            : /usr/lib/rpm/macros
-optflags              : -O2
+optflags              : -O2 -m486 -fno-strength-reduce
 rpmdir                : /usr/src/redhat/RPMS
 rpmfilename           : %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
 signature             : none

@@ -53,7 +53,7 @@ install-data-local:
 	@rm -f $(DESTDIR)/$(libdir)/rpmpopt && ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/`uname -m`
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS

@@ -1,0 +1,8 @@
+Entry count: 2
+
+             CT  TAG                  TYPE               OFSET      COUNT
+Entry      : 000 (1000)RPMTAG_NAME    INT32_TYPE         0xffffffff 00000001
+       Data: 000 0x00003178 (12664)
+Entry      : 001 (1004)RPMTAG_SUMMARY BIN_TYPE           0xffffffff 00000016
+       Data: 000 4f a6 f0 cc 7c b3 27 61 
+       Data: 008 09 35 67 1d e1 77 8b 68 
