@@ -146,7 +146,8 @@ E_O_F
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Providename \
-	Provideversion Removetid Requirename Requireversion Triggername
+	Provideversion Removetid Requirename Requireversion Triggername \
+	Packages __db.001 __db.002 __db.003 __db.004
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
@@ -222,7 +223,7 @@ fi
 %endif
 
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
-%define	rpmdbattr	%rpmattr %verify(not md5 size mtime) %ghost
+%define	rpmdbattr	%rpmattr %ghost %config(missingok)
 
 %files
 %defattr(-,root,root)
@@ -237,12 +238,13 @@ fi
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 %rpmdbattr	/var/lib/rpm/Basenames
 %rpmdbattr	/var/lib/rpm/Conflictname
-#%rpmdbattr	/var/lib/rpm/__db.001
+%rpmdbattr	/var/lib/rpm/__db.001
+%rpmdbattr	/var/lib/rpm/__db.002
 %rpmdbattr	/var/lib/rpm/Dirnames
 %rpmdbattr	/var/lib/rpm/Group
 %rpmdbattr	/var/lib/rpm/Installtid
 %rpmdbattr	/var/lib/rpm/Name
-#%rpmdbattr	/var/lib/rpm/Packages
+%rpmdbattr	/var/lib/rpm/Packages
 %rpmdbattr	/var/lib/rpm/Providename
 %rpmdbattr	/var/lib/rpm/Provideversion
 %rpmdbattr	/var/lib/rpm/Removetid
@@ -254,7 +256,7 @@ fi
 %rpmattr	%{__prefix}/bin/rpm2cpio
 %rpmattr	%{__prefix}/bin/gendiff
 %rpmattr	%{__prefix}/bin/rpmdb
-%rpmattr	%{__prefix}/bin/rpm[eiukqv]
+#%rpmattr	%{__prefix}/bin/rpm[eiu]
 %rpmattr	%{__prefix}/bin/rpmsign
 %rpmattr	%{__prefix}/bin/rpmquery
 %rpmattr	%{__prefix}/bin/rpmverify
@@ -295,6 +297,7 @@ fi
 %ifarch armv3l armv4l
 %attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/armv[34][lb]*
 %endif
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/noarch*
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
