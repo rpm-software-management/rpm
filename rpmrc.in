@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.8 1999/04/16 22:26:17 jbj Exp $
+# $Id: rpmrc.in,v 2.9 1999/05/23 18:33:00 ewt Exp $
 
 #############################################################
 
@@ -46,6 +46,7 @@ arch_canon:	ppc:	ppc	5
 arch_canon:	m68k:	m68k	6
 arch_canon:	IP:	sgi	7
 arch_canon:     rs6000:	rs6000  8
+arch_canon:     ia64:	ia64  9
 
 arch_canon:	sparc64:sparc64 10
 arch_canon:	sun4u:	sparc64 10
