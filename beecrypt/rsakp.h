@@ -47,13 +47,17 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int rsakpMake(rsakp*, randomGeneratorContext*, int);
+int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
+	/*@modifies kp, rgc @*/;
 BEEDLLAPI
-int rsakpInit(rsakp*);
+int rsakpInit(rsakp* kp)
+	/*@modifies kp @*/;
 BEEDLLAPI
-int rsakpFree(rsakp*);
+int rsakpFree(rsakp* kp)
+	/*@modifies kp @*/;
 BEEDLLAPI
-int rsakpCopy(rsakp*, const rsakp*);
+int rsakpCopy(rsakp* dst, const rsakp* src)
+	/*@modifies dst @*/;
 
 #ifdef __cplusplus
 }

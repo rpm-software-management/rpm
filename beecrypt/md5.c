@@ -31,7 +31,7 @@
 
 static uint32 md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 
-const hashFunction md5 = { "MD5", sizeof(md5Param), 4 * sizeof(uint32), (hashFunctionReset) md5Reset, (hashFunctionUpdate) md5Update, (hashFunctionDigest) md5Digest };
+const hashFunction md5 = { "MD5", sizeof(md5Param), 64, 4 * sizeof(uint32), (hashFunctionReset) md5Reset, (hashFunctionUpdate) md5Update, (hashFunctionDigest) md5Digest };
 
 int md5Reset(register md5Param* p)
 {
@@ -42,26 +42,24 @@ int md5Reset(register md5Param* p)
 	return 0;
 }
 
-#define ROL(x, s) (((x) << (s)) | ((x) >> (32 - (s))))
-
 #define FF(a, b, c, d, w, s, t)	\
 	a += ((b&(c^d))^d) + w + t;	\
-	a = ROL(a, s);	\
+	a = ROTL32(a, s);	\
 	a += b;
 
 #define GG(a, b, c, d, w, s, t)	\
 	a += ((d&(b^c))^c) + w + t;	\
-	a = ROL(a, s);	\
+	a = ROTL32(a, s);	\
 	a += b;
 
 #define HH(a, b, c, d, w, s, t)	\
 	a += (b^c^d) + w + t;	\
-	a = ROL(a, s);	\
+	a = ROTL32(a, s);	\
 	a += b;
 
 #define II(a, b, c, d, w, s, t)	\
 	a += (c^(b|~d)) + w + t;	\
-	a = ROL(a, s);	\
+	a = ROTL32(a, s);	\
 	a += b;
 
 #ifndef ASM_MD5PROCESS
@@ -154,10 +152,10 @@ void md5Process(md5Param* p)
 	II(c, d, a, b, w[ 2], 15, 0x2ad7d2bb);
 	II(b, c, d, a, w[ 9], 21, 0xeb86d391);
 
-    p->h[0] += a;
-    p->h[1] += b;
-    p->h[2] += c;
-    p->h[3] += d;
+	p->h[0] += a;
+	p->h[1] += b;
+	p->h[2] += c;
+	p->h[3] += d;
 }
 #endif
 
@@ -169,7 +167,7 @@ int md5Update(md5Param* p, const byte* data, int size)
 	while (size > 0)
 	{
 		proclength = ((p->offset + size) > 64) ? (64 - p->offset) : size;
-		memcpy(((byte *) p->data) + p->offset, data, proclength);
+		memmove(((byte *) p->data) + p->offset, data, proclength);
 		size -= proclength;
 		data += proclength;
 		p->offset += proclength;
@@ -225,6 +223,6 @@ int md5Digest(md5Param* p, uint32* data)
 {
 	md5Finish(p);
 	mp32copy(4, data, p->h);
-	md5Reset(p);
+	(void) md5Reset(p);
 	return 0;
 }

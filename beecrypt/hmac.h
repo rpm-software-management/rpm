@@ -3,7 +3,7 @@
  *
  * HMAC message authentication code, header
  *
- * Copyright (c) 1999-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -41,13 +41,17 @@ extern "C" {
 /* not used directly as keyed hash function, but instead used as generic methods */
 
 BEEDLLAPI
-int hmacSetup (hmacParam*, const hashFunction*, hashFunctionParam*, const uint32*, int);
+int hmacSetup (hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const uint32* key, int keybits)
+	/*@modifies hp */;
 BEEDLLAPI
-int hmacReset (hmacParam*, const hashFunction*, hashFunctionParam*);
+int hmacReset (hmacParam* hp, const hashFunction* hash, hashFunctionParam* param)
+	/*@modifies hp */;
 BEEDLLAPI
-int hmacUpdate(hmacParam*, const hashFunction*, hashFunctionParam*, const byte*, int);
+int hmacUpdate(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const byte* data, int size)
+	/*@modifies hp */;
 BEEDLLAPI
-int hmacDigest(hmacParam*, const hashFunction*, hashFunctionParam*, uint32*);
+int hmacDigest(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, /*@out@*/ uint32* data)
+	/*@modifies hp, data */;
 
 #ifdef __cplusplus
 }

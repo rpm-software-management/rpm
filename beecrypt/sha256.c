@@ -84,16 +84,16 @@ void sha256Process(register sha256Param *p)
 	t = 16;
 	while (t--)
 	{
-		register uint32 temp = swapu32(*w);
-		*(w++) = temp;
+		register uint32 ttemp = swapu32(*w);
+		*(w++) = ttemp;
 	}
 	#endif
 
 	t = 48;
 	while (t--)
 	{
-		register uint32 temp = sig1(w[-2]) + w[-7] + sig0(w[-15]) + w[-16];
-		*(w++) = temp;
+		register uint32 ttemp = sig1(w[-2]) + w[-7] + sig0(w[-15]) + w[-16];
+		*(w++) = ttemp;
 	}
 
 	w = p->data;
@@ -185,7 +185,7 @@ int sha256Update(register sha256Param *p, const byte *data, int size)
 	while (size > 0)
 	{
 		proclength = ((p->offset + size) > 64) ? (64 - p->offset) : size;
-		memcpy(((byte *) p->data) + p->offset, data, proclength);
+		memmove(((byte *) p->data) + p->offset, data, proclength);
 		size -= proclength;
 		data += proclength;
 		p->offset += proclength;
@@ -234,6 +234,6 @@ int sha256Digest(register sha256Param *p, uint32 *data)
 {
 	sha256Finish(p);
 	mp32copy(8, data, p->h);
-	sha256Reset(p);
+	(void) sha256Reset(p);
 	return 0;
 }

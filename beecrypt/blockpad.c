@@ -30,117 +30,98 @@
 #if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
+#if HAVE_MALLOC_H
+# include <malloc.h>
+#endif
+#if HAVE_STRING_H
+# include <string.h>
+#endif
 
-int pkcs5PadInline(int blockbytes, memchunk* src)
+memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 {
-	if (src != (memchunk*) 0)
+	if (tmp)
 	{
-		byte padvalue = blockbytes - (src->size % blockbytes);
+		byte padvalue = blockbytes - (tmp->size % blockbytes);
 
-		src->size += padvalue;
-		src->data = (byte*) realloc(src->data, src->size);
-		memset(src->data - padvalue, padvalue, padvalue);
+		tmp = memchunkResize(tmp, tmp->size + padvalue);
 
-		return 0;
+		if (tmp)
+			memset(tmp->data - padvalue, padvalue, padvalue);
 	}
 
-	return -1;
+	return tmp;
 }
 
-int pkcs5UnpadInline(int blockbytes, memchunk* src)
+memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 {
-	if (src != (memchunk*) 0)
+	if (tmp)
 	{
-		byte padvalue = src->data[src->size - 1];
-
+		byte padvalue;
 		int i;
 
+		if (tmp->data == (memchunk*) 0)
+			return (memchunk*) 0;
+		padvalue = tmp->data[tmp->size - 1];
 		if (padvalue > blockbytes)
-			return -1;
+			return (memchunk*) 0;
 
-		for (i = (src->size - padvalue); i < (src->size - 1); i++)
+		for (i = (tmp->size - padvalue); i < (tmp->size - 1); i++)
 		{
-			if (src->data[i] != padvalue)
-				return -1;
-		}
-
-		src->size -= padvalue;
-/*		src->data = (byte*) realloc(src->data, src->size; */
-
-		return 0;
-	}
-
-	return -1;
-}
-
-memchunk* pkcs5Pad(int blockbytes, const memchunk* src)
-{
-	memchunk* dst;
-
-	if (src == (memchunk*) 0)
-		return (memchunk*) 0;
-
-	dst = (memchunk*) calloc(1, sizeof(memchunk));
-
-	if (dst != (memchunk*) 0)
-	{
-		byte padvalue = blockbytes - (src->size % blockbytes);
-
-		dst->size = src->size + padvalue;
-
-		dst->data = (byte*) malloc(dst->size);
-
-		if (dst->data == (byte*) 0)
-		{
-			free(dst);
-			dst = (memchunk*) 0;
-		}
-		else
-		{
-			memcpy(dst->data, src->data, src->size);
-			memset(dst->data+src->size, padvalue, padvalue);
-		}
-	}
-
-	return dst;
-}
-
-memchunk* pkcs5Unpad(int blockbytes, const memchunk* src)
-{
-	memchunk* dst;
-
-	if (src == (memchunk*) 0)
-		return (memchunk*) 0;
-
-	dst = (memchunk*) calloc(1, sizeof(memchunk));
-
-	if (dst != (memchunk*) 0)
-	{
-		byte padvalue = src->data[src->size - 1];
-		int i;
-
-		for (i = (src->size - padvalue); i < (src->size - 1); i++)
-		{
-			if (src->data[i] != padvalue)
-			{
-				free(dst);
+			if (tmp->data[i] != padvalue)
 				return (memchunk*) 0;
-			}
 		}
 
-		dst->size = src->size - padvalue;
-		dst->data = (byte*) malloc(dst->size);
-
-		if (dst->data == (byte*) 0)
-		{
-			free(dst);
-			dst = (memchunk*) 0;
-		}
-		else
-		{
-			memcpy(dst->data, src->data, dst->size);
-		}
+		tmp->size -= padvalue;
+/*		tmp->data = (byte*) realloc(tmp->data, tmp->size; */
 	}
 
-	return dst;
+	/*@-temptrans@*/
+	return tmp;
+	/*@=temptrans@*/
+}
+
+memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)
+{
+	memchunk* tmp;
+	byte padvalue = blockbytes - (src->size % blockbytes);
+
+	if (src == (memchunk*) 0)
+		return (memchunk*) 0;
+
+	tmp = memchunkAlloc(src->size + padvalue);
+
+	if (tmp)
+	{
+		memcpy(tmp->data, src->data, src->size);
+		memset(tmp->data+src->size, padvalue, padvalue);
+	}
+
+	return tmp;
+}
+
+memchunk* pkcs5UnpadCopy(/*@unused@*/ int blockbytes, const memchunk* src)
+{
+	memchunk* tmp;
+	byte padvalue;
+	int i;
+
+	if (src == (memchunk*) 0)
+		return (memchunk*) 0;
+	if (src->data == (memchunk*) 0)
+		return (memchunk*) 0;
+
+	padvalue = src->data[src->size - 1];
+
+	for (i = (src->size - padvalue); i < (src->size - 1); i++)
+	{
+		if (src->data[i] != padvalue)
+			return (memchunk*) 0;
+	}
+
+	tmp = memchunkAlloc(src->size - padvalue);
+
+	if (tmp)
+		memcpy(tmp->data, src->data, tmp->size);
+
+	return tmp;
 }

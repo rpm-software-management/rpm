@@ -31,8 +31,8 @@
 
 typedef struct
 {
-	byte kxi[64];
-	byte kxo[64];
+/*@unused@*/	byte kxi[64];
+/*@unused@*/	byte kxo[64];
 	sha256Param param;
 } hmacsha256Param;
 
@@ -43,13 +43,17 @@ extern "C" {
 extern BEEDLLAPI const keyedHashFunction hmacsha256;
 
 BEEDLLAPI
-int hmacsha256Setup (hmacsha256Param*, const uint32*, int);
+int hmacsha256Setup (hmacsha256Param* sp, const uint32* key, int keybits)
+	/*@modifies sp @*/;
 BEEDLLAPI
-int hmacsha256Reset (hmacsha256Param*);
+int hmacsha256Reset (hmacsha256Param* sp)
+	/*@modifies sp @*/;
 BEEDLLAPI
-int hmacsha256Update(hmacsha256Param*, const byte*, int);
+int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
+	/*@modifies sp @*/;
 BEEDLLAPI
-int hmacsha256Digest(hmacsha256Param*, uint32*);
+int hmacsha256Digest(hmacsha256Param* sp, uint32* data)
+	/*@modifies sp, data @*/;
 
 #ifdef __cplusplus
 }

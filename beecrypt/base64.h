@@ -32,10 +32,12 @@
 extern "C" {
 #endif
 
-BEEDLLAPI
-char*		b64enc(const memchunk*);
-BEEDLLAPI
-memchunk*	b64dec(const char*);
+BEEDLLAPI /*@only@*/ /*@null@*/
+char*		b64enc(const memchunk*)
+	/*@*/;
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk*	b64dec(const char*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -27,7 +27,6 @@
 #define _MD5_H
 
 #include "beecrypt.h"
-/*#include "md5opt.h"*/
 
 typedef struct
 {
@@ -44,13 +43,17 @@ extern "C" {
 extern BEEDLLAPI const hashFunction md5;
 
 BEEDLLAPI
-void md5Process(md5Param*);
+void md5Process(md5Param* p)
+	/*@modifies p @*/;
 BEEDLLAPI
-int md5Reset   (md5Param*);
+int md5Reset   (md5Param* p)
+	/*@modifies p @*/;
 BEEDLLAPI
-int md5Update  (md5Param*, const byte*, int);
+int md5Update  (md5Param* p, const byte* data, int size)
+	/*@modifies p @*/;
 BEEDLLAPI
-int md5Digest  (md5Param*, uint32*);
+int md5Digest  (md5Param* p, uint32* data)
+	/*@modifies p, data @*/;
 
 #ifdef __cplusplus
 }

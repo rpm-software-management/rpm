@@ -10,7 +10,7 @@
  *
  * Also see: http://www.counterpane.com/blowfish.html
  *
- * Copyright (c) 1999-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -313,64 +313,94 @@ static const blockMode blowfishModes[2] =
 	{ /* CBC */ (blockModeEncrypt) blowfishCBCEncrypt, (blockModeDecrypt) blowfishCBCDecrypt }
 };
 
-const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 64, 448, 32, 64, (const blockCipherSetup) blowfishSetup, (const blockCipherEncrypt) blowfishEncrypt, (const blockCipherDecrypt) blowfishDecrypt, blowfishModes };
+const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8, 64, 448, 32, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, blowfishModes };
 
-int blowfishSetup(blowfishParam* bp, const uint32* key, int keybits, cipherOperation op)
+int blowfishSetup(blowfishParam* bp, const uint32* key, int keybits, /*@unused@*/ cipherOperation op)
 {
-	uint32 work[2];
-
-	register int keywords = (keybits >> 5); /* i.e. in 32 bit words */
-	register uint32* p = bp->p;
-	register uint32* s = bp->s;
-	register int i;
-
-	if ((keywords < 2) || (keywords > 14))
-		return -1;
-
-	memcpy(p, _bf_p, BLOWFISHPSIZE * sizeof(uint32));
-	memcpy(s, _bf_s, 1024 * sizeof(uint32));
-
-	for (i = 0; i < BLOWFISHPSIZE; i++)
+	if (((keybits & 7) == 0) && (keybits >= 64) && (keybits <= 448))
 	{
-		/* key is stored in 32 bit words in host-endian format; no swap necessary */
-		p[i] ^= key[i % keywords];
-	}
+		register uint32* p = bp->p;
+		register uint32* s = bp->s;
+		register int i;
 
-	work[0] = work[1] = 0;
+		uint32 work[2];
 
-	for (i = 0; i < BLOWFISHPSIZE; i += 2, p += 2)
-	{
-		blowfishEncrypt(bp, work);
-		#if WORDS_BIGENDIAN
-		p[0] = work[0];
-		p[1] = work[1];
-		#else
-		p[0] = swapu32(work[0]);
-		p[1] = swapu32(work[1]);
-		#endif
-	}
+		memcpy(p, _bf_p, BLOWFISHPSIZE * sizeof(uint32));
+		memcpy(s, _bf_s, 1024 * sizeof(uint32));
 
-	for (i = 0; i < 1024; i += 2, s += 2)
-	{
-		blowfishEncrypt(bp, work);
-		#if WORDS_BIGENDIAN
-		s[0] = work[0];
-		s[1] = work[1];
-		#else
-		s[0] = swapu32(work[0]);
-		s[1] = swapu32(work[1]);
-		#endif
+		if ((keybits & 31) == 0)
+		{
+			register int keywords = (keybits >> 5); /* i.e. in 32 bit words */
+
+			for (i = 0; i < BLOWFISHPSIZE; i++)
+			{
+				/* key is stored in 32 bit words in host-endian format; no swap necessary */
+				p[i] ^= key[i % keywords];
+			}
+		}
+		else
+			return -1;
+
+		work[0] = work[1] = 0;
+
+		for (i = 0; i < BLOWFISHPSIZE; i += 2, p += 2)
+		{
+			(void) blowfishEncrypt(bp, work, work);
+			#if WORDS_BIGENDIAN
+			p[0] = work[0];
+			p[1] = work[1];
+			#else
+			p[0] = swapu32(work[0]);
+			p[1] = swapu32(work[1]);
+			#endif
+		}
+
+		for (i = 0; i < 1024; i += 2, s += 2)
+		{
+			(void) blowfishEncrypt(bp, work, work);
+			#if WORDS_BIGENDIAN
+			s[0] = work[0];
+			s[1] = work[1];
+			#else
+			s[0] = swapu32(work[0]);
+			s[1] = swapu32(work[1]);
+			#endif
+		}
+
+		/* clear fdback/iv */
+		bp->fdback[0] = 0;
+		bp->fdback[1] = 0;
+
+		return 0;
 	}
-	return 0;
+	return -1;
 }
 
+#ifndef ASM_BLOWFISHSETIV
+int blowfishSetIV(blowfishParam* bp, const uint32* iv)
+{
+	if (iv)
+	{
+		bp->fdback[0] = iv[0];
+		bp->fdback[1] = iv[1];
+	}
+	else
+	{
+		bp->fdback[0] = 0;
+		bp->fdback[1] = 0;
+	}
+
+	return 0;
+}
+#endif
+
 #ifndef ASM_BLOWFISHENCRYPT
-int blowfishEncrypt(blowfishParam* bp, uint32* bl)
+int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 {
 	#if WORDS_BIGENDIAN
-	register uint32 xl = bl[0], xr = bl[1];
+	register uint32 xl = src[0], xr = src[1];
 	#else
-	register uint32 xl = swapu32(bl[0]), xr = swapu32(bl[1]);
+	register uint32 xl = swapu32(src[0]), xr = swapu32(src[1]);
 	#endif
 	register uint32* p = bp->p;
 	register uint32* s = bp->s;
@@ -385,11 +415,11 @@ int blowfishEncrypt(blowfishParam* bp, uint32* bl)
 	EROUND(xl, xr); EROUND(xr, xl);
 
 	#if WORDS_BIGENDIAN
-	bl[1] = xl ^ *(p++);
-	bl[0] = xr ^ *(p++);
+	dst[1] = xl ^ *(p++);
+	dst[0] = xr ^ *(p++);
 	#else
-	bl[1] = swapu32(xl ^ *(p++));
-	bl[0] = swapu32(xr ^ *(p++));
+	dst[1] = swapu32(xl ^ *(p++));
+	dst[0] = swapu32(xr ^ *(p++));
 	#endif
 
 	return 0;
@@ -397,12 +427,12 @@ int blowfishEncrypt(blowfishParam* bp, uint32* bl)
 #endif
 
 #ifndef ASM_BLOWFISHDECRYPT
-int blowfishDecrypt(blowfishParam* bp, uint32* bl)
+int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 {
 	#if WORDS_BIGENDIAN
-	register uint32 xl = bl[0], xr = bl[1];
+	register uint32 xl = src[0], xr = src[1];
 	#else
-	register uint32 xl = swapu32(bl[0]), xr = swapu32(bl[1]);
+	register uint32 xl = swapu32(src[0]), xr = swapu32(src[1]);
 	#endif
 	register uint32* p = bp->p+BLOWFISHPSIZE-1;
 	register uint32* s = bp->s;
@@ -417,11 +447,11 @@ int blowfishDecrypt(blowfishParam* bp, uint32* bl)
 	DROUND(xl, xr); DROUND(xr, xl);
 
 	#if WORDS_BIGENDIAN
-	bl[1] = xl ^ *(p--);
-	bl[0] = xr ^ *(p--);
+	dst[1] = xl ^ *(p--);
+	dst[0] = xr ^ *(p--);
 	#else
-	bl[1] = swapu32(xl ^ *(p--));
-	bl[0] = swapu32(xr ^ *(p--));
+	dst[1] = swapu32(xl ^ *(p--));
+	dst[0] = swapu32(xr ^ *(p--));
 	#endif
 
 	return 0;
@@ -433,10 +463,7 @@ int blowfishECBEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 {
 	while (count > 0)
 	{
-		dst[0] = src[0];
-		dst[1] = src[1];
-
-		blowfishEncrypt(bp, dst);
+		(void) blowfishEncrypt(bp, dst, src);
 
 		dst += 2;
 		src += 2;
@@ -452,10 +479,7 @@ int blowfishECBDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 {
 	while (count > 0)
 	{
-		dst[0] = src[0];
-		dst[1] = src[1];
-
-		blowfishDecrypt(bp, dst);
+		(void) blowfishDecrypt(bp, dst, src);
 
 		dst += 2;
 		src += 2;
@@ -467,22 +491,14 @@ int blowfishECBDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 #endif
 
 #ifndef ASM_BLOWFISHCBCENCRYPT
-int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src, const uint32* iv)
+int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 {
 	if (count > 0)
 	{
-		if (iv)
-		{
-			dst[0] = src[0] ^ iv[0];
-			dst[1] = src[1] ^ iv[1];
-		}
-		else
-		{
-			dst[0] = src[0];
-			dst[1] = src[1];
-		}
+		dst[0] = src[0] ^ bp->fdback[0];
+		dst[1] = src[1] ^ bp->fdback[1];
 
-		blowfishEncrypt(bp, dst);
+		(void) blowfishEncrypt(bp, dst, dst);
 
 		dst += 2;
 		src += 2;
@@ -494,53 +510,90 @@ int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 			dst[0] = src[0] ^ dst[-2];
 			dst[1] = src[1] ^ dst[-1];
 
-			blowfishEncrypt(bp, dst);
+			(void) blowfishEncrypt(bp, dst, dst);
 
 			dst += 2;
 			src += 2;
 
 			count--;
 		}
+
+		bp->fdback[0] = dst[-2];
+		bp->fdback[1] = dst[-1];
 	}
 	return 0;
 }
 #endif
 
 #ifndef ASM_BLOWFISHCBCDECRYPT
-int blowfishCBCDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src, const uint32* iv)
+int blowfishCBCDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 {
 	if (count > 0)
 	{
-		dst[0] = src[0];
-		dst[1] = src[1];
-
-		blowfishDecrypt(bp, dst);
-
-		if (iv)
+		if (src == dst)
 		{
-			dst[0] ^= iv[0];
-			dst[1] ^= iv[1];
-		}
+			register uint32 fb0 = src[0];
+			register uint32 fb1 = src[1];
 
-		dst += 2;
-		src += 2;
+			(void) blowfishDecrypt(bp, dst, src);
 
-		count--;
-
-		while (count > 0)
-		{
-			dst[0] = src[0];
-			dst[1] = src[1];
-
-			blowfishDecrypt(bp, dst);
-
-			dst[0] ^= src[-2];
-			dst[1] ^= src[-1];
+			dst[0] ^= bp->fdback[0];
+			dst[1] ^= bp->fdback[1];
 
 			dst += 2;
 			src += 2;
 
 			count--;
+
+			while (count > 0)
+			{
+				register int src0 = src[0];
+				register int src1 = src[1];
+
+				(void) blowfishDecrypt(bp, dst, src);
+
+				dst[0] ^= fb0;
+				dst[1] ^= fb1;
+
+				fb0 = src0;
+				fb1 = src1;
+
+				dst += 2;
+				src += 2;
+
+				count--;
+			}
+
+			bp->fdback[0] = fb0;
+			bp->fdback[1] = fb1;
+		}
+		else
+		{
+			(void) blowfishDecrypt(bp, dst, src);
+
+			dst[0] ^= bp->fdback[0];
+			dst[1] ^= bp->fdback[1];
+
+			dst += 2;
+			src += 2;
+
+			count--;
+
+			while (count > 0)
+			{
+				(void) blowfishDecrypt(bp, dst, src);
+
+				dst[0] ^= src[-2];
+				dst[1] ^= src[-1];
+
+				dst += 2;
+				src += 2;
+
+				count--;
+			}
+
+			bp->fdback[0] = src[-2];
+			bp->fdback[1] = src[-1];
 		}
 	}
 	return 0;

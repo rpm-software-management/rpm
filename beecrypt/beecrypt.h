@@ -1,9 +1,9 @@
 /*
  * beecrypt.h
  *
- * Beecrypt library hooks & stubs, header
+ * BeeCrypt library hooks & stubs, header
  *
- * Copyright (c) 1999-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -20,6 +20,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 
 #ifndef _BEECRYPT_H
@@ -29,11 +30,8 @@
 # include "config.h"
 #endif
 
-typedef struct
-{
-	int		size;
-	byte*	data;
-} memchunk;
+#include "memchunk.h"
+#include "mp32number.h"
 
 /*
  * Entropy Sources
@@ -57,8 +55,8 @@ typedef int (*entropyNext)(uint32*, int);
 
 typedef struct
 {
-	const char*			name;
-	const entropyNext	next;
+/*@unused@*/	const char*		name;
+/*@unused@*/	const entropyNext	next;
 } entropySource;
 
 /*
@@ -80,13 +78,26 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int						entropySourceCount();
+int						entropySourceCount(void)
+	/*@*/;
 BEEDLLAPI
-const entropySource*	entropySourceGet(int);
+const entropySource*	entropySourceGet(int)
+	/*@*/;
 BEEDLLAPI
-const entropySource*	entropySourceFind(const char*);
+const entropySource*	entropySourceFind(const char*)
+	/*@*/;
 BEEDLLAPI
-const entropySource*	entropySourceDefault();
+const entropySource*	entropySourceDefault(void)
+	/*@*/;
+
+/*
+ * The following function can try multiple entropy sources for gathering
+ * the requested amount. It will only try multiple sources if variable
+ * BEECRYPT_ENTROPY is not set.
+ */
+BEEDLLAPI
+int						entropyGatherNext(uint32*, int)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -98,10 +109,14 @@ const entropySource*	entropySourceDefault();
 
 typedef void randomGeneratorParam;
 
-typedef int (*randomGeneratorSetup  )(randomGeneratorParam*);
-typedef int (*randomGeneratorSeed   )(randomGeneratorParam*, const uint32*, int);
-typedef int (*randomGeneratorNext   )(randomGeneratorParam*, uint32*, int);
-typedef int (*randomGeneratorCleanup)(randomGeneratorParam*);
+typedef int (*randomGeneratorSetup  )(randomGeneratorParam*)
+	/*@*/;
+typedef int (*randomGeneratorSeed   )(randomGeneratorParam*, const uint32*, int)
+	/*@*/;
+typedef int (*randomGeneratorNext   )(randomGeneratorParam*, uint32*, int)
+	/*@*/;
+typedef int (*randomGeneratorCleanup)(randomGeneratorParam*)
+	/*@*/;
 
 /*
  * The struct 'randomGenerator' holds information and pointers to code specific
@@ -145,7 +160,7 @@ typedef int (*randomGeneratorCleanup)(randomGeneratorParam*);
 typedef struct
 {
 	const char*						name;
-	const int						paramsize;
+	const unsigned int				paramsize;
 	const randomGeneratorSetup		setup;
 	const randomGeneratorSeed		seed;
 	const randomGeneratorNext		next;
@@ -171,13 +186,17 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int						randomGeneratorCount();
+int						randomGeneratorCount(void)
+	/*@*/;
 BEEDLLAPI
-const randomGenerator*	randomGeneratorGet(int);
+const randomGenerator*	randomGeneratorGet(int)
+	/*@*/;
 BEEDLLAPI
-const randomGenerator*	randomGeneratorFind(const char*);
+const randomGenerator*	randomGeneratorFind(const char*)
+	/*@*/;
 BEEDLLAPI
-const randomGenerator*	randomGeneratorDefault();
+const randomGenerator*	randomGeneratorDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -205,9 +224,11 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void randomGeneratorContextInit(randomGeneratorContext*, const randomGenerator*);
+int randomGeneratorContextInit(randomGeneratorContext*, const randomGenerator*)
+	/*@*/;
 BEEDLLAPI
-void randomGeneratorContextFree(randomGeneratorContext*);
+int randomGeneratorContextFree(randomGeneratorContext*)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -219,9 +240,12 @@ void randomGeneratorContextFree(randomGeneratorContext*);
 
 typedef void hashFunctionParam;
 
-typedef int (*hashFunctionReset )(hashFunctionParam*);
-typedef int (*hashFunctionUpdate)(hashFunctionParam*, const byte*, int);
-typedef int (*hashFunctionDigest)(hashFunctionParam*, uint32*);
+typedef int (*hashFunctionReset )(hashFunctionParam*)
+	/*@*/;
+typedef int (*hashFunctionUpdate)(hashFunctionParam*, const byte*, int)
+	/*@*/;
+typedef int (*hashFunctionDigest)(hashFunctionParam*, uint32*)
+	/*@*/;
 
 /*
  * The struct 'hashFunction' holds information and pointers to code specific
@@ -245,7 +269,7 @@ typedef int (*hashFunctionDigest)(hashFunctionParam*, uint32*);
  * This function computes the digest of all the data passed to the hash
  * function, and stores the result in data.
  * Return value is 0 on success, or -1 on failure.
- * NOTE: data must be at least have a bytesize of 'digestsize' as described
+ * NOTE: data MUST have a size (in bytes) of at least 'digestsize' as described
  * in the hashFunction struct.
  * NOTE: for safety reasons, after calling digest, each specific implementation
  * MUST reset itself so that previous values in the parameters are erased.
@@ -254,8 +278,9 @@ typedef int (*hashFunctionDigest)(hashFunctionParam*, uint32*);
 typedef struct
 {
 	const char*					name;
-	const int					paramsize;	/* in bytes */
-	const int					digestsize;	/* in bytes */
+	const unsigned int			paramsize;	/* in bytes */
+	const unsigned int			blocksize;	/* in bytes */
+	const unsigned int			digestsize;	/* in bytes */
 	const hashFunctionReset		reset;
 	const hashFunctionUpdate	update;
 	const hashFunctionDigest	digest;
@@ -280,13 +305,17 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int					hashFunctionCount();
+int					hashFunctionCount(void)
+	/*@*/;
 BEEDLLAPI
-const hashFunction*	hashFunctionGet(int);
+const hashFunction*	hashFunctionGet(int)
+	/*@*/;
 BEEDLLAPI
-const hashFunction*	hashFunctionFind(const char*);
+const hashFunction*	hashFunctionFind(const char*)
+	/*@*/;
 BEEDLLAPI
-const hashFunction*	hashFunctionDefault();
+const hashFunction*	hashFunctionDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -299,8 +328,8 @@ const hashFunction*	hashFunctionDefault();
 
 typedef struct
 {
-	const hashFunction* hash;
-	hashFunctionParam* param;
+/*@unused@*/	const hashFunction* algo;
+/*@unused@*/	hashFunctionParam* param;
 } hashFunctionContext;
 
 /*
@@ -314,9 +343,29 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void hashFunctionContextInit(hashFunctionContext*, const hashFunction*);
+int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction*)
+	/*@modifies ctxt */;
 BEEDLLAPI
-void hashFunctionContextFree(hashFunctionContext*);
+int hashFunctionContextFree(hashFunctionContext* ctxt)
+	/*@modifies ctxt */;
+BEEDLLAPI
+int hashFunctionContextReset(hashFunctionContext* ctxt)
+	/*@modifies ctxt */;
+BEEDLLAPI
+int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte*, int)
+	/*@modifies ctxt */;
+BEEDLLAPI
+int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk*)
+	/*@modifies ctxt */;
+BEEDLLAPI
+int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number*)
+	/*@modifies ctxt */;
+BEEDLLAPI
+int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number*)
+	/*@modifies ctxt */;
+BEEDLLAPI
+int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number*)
+	/*@modifies ctxt */;
 
 #ifdef __cplusplus
 }
@@ -328,10 +377,14 @@ void hashFunctionContextFree(hashFunctionContext*);
 
 typedef void keyedHashFunctionParam;
 
-typedef int (*keyedHashFunctionSetup  )(keyedHashFunctionParam*, const uint32*, int);
-typedef int (*keyedHashFunctionReset  )(keyedHashFunctionParam*);
-typedef int (*keyedHashFunctionUpdate )(keyedHashFunctionParam*, const byte*, int);
-typedef int (*keyedHashFunctionDigest )(keyedHashFunctionParam*, uint32*);
+typedef int (*keyedHashFunctionSetup  )(keyedHashFunctionParam*, const uint32*, int)
+	/*@*/;
+typedef int (*keyedHashFunctionReset  )(keyedHashFunctionParam*)
+	/*@*/;
+typedef int (*keyedHashFunctionUpdate )(keyedHashFunctionParam*, const byte*, int)
+	/*@*/;
+typedef int (*keyedHashFunctionDigest )(keyedHashFunctionParam*, uint32*)
+	/*@*/;
 
 /*
  * The struct 'keyedHashFunction' holds information and pointers to code
@@ -376,11 +429,12 @@ typedef int (*keyedHashFunctionDigest )(keyedHashFunctionParam*, uint32*);
 typedef struct
 {
 	const char*						name;
-	const int						paramsize;	/* in bytes */
-	const int						digestsize;	/* in bytes */
-	const int						keybitsmin;	/* in bits */
-	const int						keybitsmax;	/* in bits */
-	const int						keybitsinc;	/* in bits */
+	const unsigned int				paramsize;	/* in bytes */
+	const unsigned int				blocksize;	/* in bytes */
+	const unsigned int				digestsize;	/* in bytes */
+	const unsigned int				keybitsmin;	/* in bits */
+	const unsigned int				keybitsmax;	/* in bits */
+	const unsigned int				keybitsinc;	/* in bits */
 	const keyedHashFunctionSetup	setup;
 	const keyedHashFunctionReset	reset;
 	const keyedHashFunctionUpdate	update;
@@ -393,7 +447,7 @@ typedef struct
  *
  * keyedHashFunctionCount returns the number of keyed hash functions available.
  *
- * keyedHashFunctionGet returns the random generator with a given index
+ * keyedHashFunctionGet returns the keyed hash function with a given index
  * (starting at zero, up to keyedHashFunctionCount() - 1), or NULL if the index
  * was out of bounds.
  *
@@ -406,13 +460,17 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int							keyedHashFunctionCount();
+int							keyedHashFunctionCount(void)
+	/*@*/;
 BEEDLLAPI
-const keyedHashFunction*	keyedHashFunctionGet(int);
+const keyedHashFunction*	keyedHashFunctionGet(int)
+	/*@*/;
 BEEDLLAPI
-const keyedHashFunction*	keyedHashFunctionFind(const char*);
+const keyedHashFunction*	keyedHashFunctionFind(const char*)
+	/*@*/;
 BEEDLLAPI
-const keyedHashFunction*	keyedHashFunctionDefault();
+const keyedHashFunction*	keyedHashFunctionDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -425,8 +483,8 @@ const keyedHashFunction*	keyedHashFunctionDefault();
 
 typedef struct
 {
-	const keyedHashFunction*	hash;
-	keyedHashFunctionParam*		param;
+/*@unused@*/	const keyedHashFunction*	algo;
+/*@unused@*/	keyedHashFunctionParam*		param;
 } keyedHashFunctionContext;
 
 /*
@@ -440,9 +498,32 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void keyedHashFunctionContextInit(keyedHashFunctionContext*, const keyedHashFunction*);
+int keyedHashFunctionContextInit(keyedHashFunctionContext*, const keyedHashFunction*)
+	/*@*/;
 BEEDLLAPI
-void keyedHashFunctionContextFree(keyedHashFunctionContext*);
+int keyedHashFunctionContextFree(keyedHashFunctionContext*)
+	/*@*/;
+BEEDLLAPI
+int keyedHashFunctionContextSetup(keyedHashFunctionContext*, const uint32*, int)
+	/*@*/;
+BEEDLLAPI
+int keyedHashFunctionContextReset(keyedHashFunctionContext*)
+	/*@*/;
+BEEDLLAPI
+int keyedHashFunctionContextUpdate(keyedHashFunctionContext*, const byte*, int)
+	/*@*/;
+BEEDLLAPI
+int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext*, const memchunk*)
+	/*@*/;
+BEEDLLAPI
+int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext*, const mp32number*)
+	/*@*/;
+BEEDLLAPI
+int keyedHashFunctionContextDigest(keyedHashFunctionContext*, mp32number*)
+	/*@*/;
+BEEDLLAPI
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext*, const mp32number*)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -460,14 +541,18 @@ typedef enum
 
 typedef enum
 {
+	/*@-enummemuse@*/
 	ECB,
+	/*@=enummemuse@*/
 	CBC
 } cipherMode;
 
 typedef void blockCipherParam;
 
-typedef int (*blockModeEncrypt)(blockCipherParam*, int, uint32*, const uint32*, const uint32*);
-typedef int (*blockModeDecrypt)(blockCipherParam*, int, uint32*, const uint32*, const uint32*);
+typedef int (*blockModeEncrypt)(blockCipherParam*, int, uint32*, const uint32*)
+	/*@*/;
+typedef int (*blockModeDecrypt)(blockCipherParam*, int, uint32*, const uint32*)
+	/*@*/;
 
 typedef struct
 {
@@ -475,9 +560,14 @@ typedef struct
 	const blockModeDecrypt	decrypt;
 } blockMode;
 
-typedef int (*blockCipherSetup  )(blockCipherParam*, const uint32*, int, cipherOperation);
-typedef int (*blockCipherEncrypt)(blockCipherParam*, uint32 *);
-typedef int (*blockCipherDecrypt)(blockCipherParam*, uint32 *);
+typedef int (*blockCipherSetup  )(blockCipherParam*, const uint32*, int, cipherOperation)
+	/*@*/;
+typedef int (*blockCipherSetIV  )(blockCipherParam*, const uint32*)
+	/*@*/;
+typedef int (*blockCipherEncrypt)(blockCipherParam*, uint32*, const uint32*)
+	/*@*/;
+typedef int (*blockCipherDecrypt)(blockCipherParam*, uint32*, const uint32*)
+	/*@*/;
 
 /*
  * The struct 'blockCipher' holds information and pointers to code specific
@@ -516,12 +606,13 @@ typedef int (*blockCipherDecrypt)(blockCipherParam*, uint32 *);
 typedef struct
 {
 	const char*					name;
-	const int					paramsize;	/* in bytes */
-	const int					keybitsmin;	/* in bits */
-	const int					keybitsmax;	/* in bits */
-	const int					keybitsinc;	/* in bits */
-	const int					blockbits;	/* in bits */
+	const unsigned int			paramsize;	/* in bytes */
+	const unsigned int			blocksize;	/* in bytes */
+	const unsigned int			keybitsmin;	/* in bits */
+	const unsigned int			keybitsmax;	/* in bits */
+	const unsigned int			keybitsinc;	/* in bits */
 	const blockCipherSetup		setup;
+	const blockCipherSetIV		setiv;
 	const blockCipherEncrypt	encrypt;
 	const blockCipherDecrypt	decrypt;
 	const blockMode*			mode;
@@ -546,13 +637,17 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int						blockCipherCount();
+int						blockCipherCount(void)
+	/*@*/;
 BEEDLLAPI
-const blockCipher*		blockCipherGet(int);
+const blockCipher*		blockCipherGet(int)
+	/*@*/;
 BEEDLLAPI
-const blockCipher*		blockCipherFind(const char*);
+const blockCipher*		blockCipherFind(const char*)
+	/*@*/;
 BEEDLLAPI
-const blockCipher*		blockCipherDefault();
+const blockCipher*		blockCipherDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -565,7 +660,7 @@ const blockCipher*		blockCipherDefault();
 
 typedef struct
 {
-	const blockCipher* ciph;
+	const blockCipher* algo;
 	blockCipherParam* param;
 } blockCipherContext;
 
@@ -580,9 +675,17 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void blockCipherContextInit(blockCipherContext*, const blockCipher*);
+int blockCipherContextInit(blockCipherContext*, const blockCipher*)
+	/*@*/;
 BEEDLLAPI
-void blockCipherContextFree(blockCipherContext*);
+int blockCipherContextSetup(blockCipherContext*, const uint32*, int, cipherOperation)
+	/*@*/;
+BEEDLLAPI
+int blockCipherContextSetIV(blockCipherContext*, const uint32*)
+	/*@*/;
+BEEDLLAPI
+int blockCipherContextFree(blockCipherContext*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

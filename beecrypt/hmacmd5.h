@@ -31,8 +31,8 @@
 
 typedef struct
 {
-	byte kxi[64];
-	byte kxo[64];
+/*@unused@*/	byte kxi[64];
+/*@unused@*/	byte kxo[64];
 	md5Param param;
 } hmacmd5Param;
 
@@ -43,13 +43,17 @@ extern "C" {
 extern BEEDLLAPI const keyedHashFunction hmacmd5;
 
 BEEDLLAPI
-int hmacmd5Setup (hmacmd5Param*, const uint32*, int);
+int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
+	/*@modifies sp @*/;
 BEEDLLAPI
-int hmacmd5Reset (hmacmd5Param*);
+int hmacmd5Reset (hmacmd5Param* sp)
+	/*@modifies sp @*/;
 BEEDLLAPI
-int hmacmd5Update(hmacmd5Param*, const byte*, int);
+int hmacmd5Update(hmacmd5Param* sp, const byte* data, int size)
+	/*@modifies sp @*/;
 BEEDLLAPI
-int hmacmd5Digest(hmacmd5Param*, uint32*);
+int hmacmd5Digest(hmacmd5Param* sp, uint32* data)
+	/*@modifies sp, data @*/;
 
 #ifdef __cplusplus
 }

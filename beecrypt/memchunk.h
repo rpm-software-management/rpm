@@ -32,19 +32,22 @@
 typedef struct
 {
 	int		size;
-	byte*	data;
+/*@only@*/ byte*	data;
 } memchunk;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk*	memchunkAlloc(int size)
+	/*@*/;
 BEEDLLAPI
-memchunk*	memchunkAlloc(int);
-BEEDLLAPI
-void		memchunkFree(memchunk*);
-BEEDLLAPI
-memchunk*	memchunkResize(memchunk*, int);
+void		memchunkFree(/*@only@*/ /*@null@*/memchunk* m)
+	/*@*/;
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk*	memchunkResize(/*@only@*/ /*@null@*/memchunk* m, int size)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -39,92 +39,154 @@
 #if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
+#if HAVE_MALLOC_H
+# include <malloc.h>
+#endif
 
 /**
- *
  * Good combinations will be:
  *
  * For 64-bit encryption:
- *	DHAES(Blowfish, MD5/HMAC, MD5)
- *	DHAES(Blowfish, SHA-1/HMAC, MD5)
- *  DHAES(Blowfish, SHA-256/HMAC, MD5)
+ *	DHAES(MD5, Blowfish, HMAC-MD5) <- best candidate
+ *	DHAES(MD5, Blowfish, HMAC-SHA-1)
+ *  DHAES(MD5, Blowfish, HMAC-SHA-256)
+ *
+ * For 96-bit encryption with 64-bit mac:
+ *  DHAES(SHA-1, Blowfish, HMAC-MD5, 96)
+ *  DHAES(SHA-1, Blowfish, HMAC-SHA-1, 96) <- best candidate
+ *  DHAES(SHA-1, Blowfish, HMAC-SHA-256, 96) <- best candidate
  *
  * For 128-bit encryption:
- *	DHAES(Blowfish, MD5/HMAC, SHA-256)
- *	DHAES(Blowfish, SHA-1/HMAC, SHA-256)
- *  DHAES(Blowfish, SHA-256/HMAC, SHA-256)
- *
+ *	DHAES(SHA-256, Blowfish, HMAC-MD5)
+ *	DHAES(SHA-256, Blowfish, HMAC-SHA-1)
+ *  DHAES(SHA-256, Blowfish, HMAC-SHA-256)
  */
 
-int dhaes_usable(const blockCipher* cipher, const keyedHashFunction* mac, const hashFunction* hash)
+int dhaes_pUsable(const dhaes_pParameters* params)
 {
-	int keybits = hash->digestsize << 4;
+	int keybits = (params->hash->digestsize << 3); /* digestsize in bytes times 8 bits */
+	int cipherkeybits = params->cipherkeybits;
+	int mackeybits = params->mackeybits;
 
 	/* test if keybits is a multiple of 32 */
 	if ((keybits & 31) != 0)
 		return 0;
 
-	/* test if keybits length is appropriate for cipher */
-	if ((keybits < cipher->keybitsmin) || (keybits > cipher->keybitsmax))
+	/* test if cipherkeybits + mackeybits < keybits */
+	if ((cipherkeybits + mackeybits) > keybits)
 		return 0;
 
-	if (((keybits - cipher->keybitsmin) % cipher->keybitsinc) != 0)
+	if (mackeybits == 0)
+	{
+		if (cipherkeybits == 0)
+			cipherkeybits = mackeybits = (keybits >> 1);
+		else
+			mackeybits = keybits - cipherkeybits;
+	}
+
+	/* test if keybits length is appropriate for cipher */
+	if ((cipherkeybits < params->cipher->keybitsmin) ||
+			(cipherkeybits > params->cipher->keybitsmax))
+		return 0;
+
+	if (((cipherkeybits - params->cipher->keybitsmin) % params->cipher->keybitsinc) != 0)
 		return 0;
 
 	/* test if keybits length is appropriate for mac */
-	if ((keybits < mac->keybitsmin) || (keybits > mac->keybitsmax))
+	if ((mackeybits < params->mac->keybitsmin) ||
+			(params->mackeybits > params->mac->keybitsmax))
 		return 0;
 
-	if (((keybits - mac->keybitsmin) % mac->keybitsinc) != 0)
+	if (((mackeybits - params->mac->keybitsmin) % params->mac->keybitsinc) != 0)
 		return 0;
 
 	return 1;
 }
 
-int dhaes_pInit(dhaes_p* p, const dldp_p* param, const blockCipher* cipher, const keyedHashFunction* mac, const hashFunction* hash, const randomGenerator* rng)
+int dhaes_pContextInit(dhaes_pContext* ctxt, const dhaes_pParameters* params)
 {
-	if (dhaes_usable(cipher, mac, hash))
-	{
-		dldp_pInit(&p->param);
-		dldp_pCopy(&p->param, param);
+	if (ctxt == (dhaes_pContext*) 0)
+		return -1;
 
-		if (blockCipherContextInit(&p->cipher, cipher))
-			return -1;
+	if (params == (dhaes_pParameters*) 0)
+		return -1;
 
-		if (keyedHashFunctionContextInit(&p->mac, mac))
-			return -1;
+	if (params->param == (dldp_p*) 0)
+		return -1;
 
-		if (hashFunctionContextInit(&p->hash, hash))
-			return -1;
+	if (params->hash == (hashFunction*) 0)
+		return -1;
 
-		if (randomGeneratorContextInit(&p->rng, rng))
-			return -1;
+	if (params->cipher == (blockCipher*) 0)
+		return -1;
 
-		return 0;
-	}
-	return -1;
+	if (params->mac == (keyedHashFunction*) 0)
+		return -1;
+
+	if (!dhaes_pUsable(params))
+		return -1;
+
+	(void) dldp_pInit(&ctxt->param);
+	(void) dldp_pCopy(&ctxt->param, params->param);
+
+	mp32nzero(&ctxt->pub);
+	mp32nzero(&ctxt->pri);
+
+	if (hashFunctionContextInit(&ctxt->hash, params->hash))
+		return -1;
+
+	if (blockCipherContextInit(&ctxt->cipher, params->cipher))
+		return -1;
+
+	if (keyedHashFunctionContextInit(&ctxt->mac, params->mac))
+		return -1;
+
+	ctxt->cipherkeybits = params->cipherkeybits;
+	ctxt->mackeybits = params->mackeybits;
+
+	return 0;
 }
 
-int dhaes_pFree(dhaes_p* p)
+int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pri)
 {
-	dldp_pFree(&p->param);
-
-	if (blockCipherContextFree(&p->cipher))
+	if (dhaes_pContextInit(ctxt, params))
 		return -1;
 
-	if (hashFunctionContextFree(&p->hash))
+	mp32ncopy(&ctxt->pri, pri);
+
+	return 0;
+}
+
+int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pub)
+{
+	if (dhaes_pContextInit(ctxt, params))
 		return -1;
 
-	if (keyedHashFunctionContextFree(&p->mac))
+	mp32ncopy(&ctxt->pub, pub);
+
+	return 0;
+}
+
+int dhaes_pContextFree(dhaes_pContext* ctxt)
+{
+	(void) dldp_pFree(&ctxt->param);
+
+	mp32nfree(&ctxt->pub);
+	mp32nfree(&ctxt->pri);
+
+	if (hashFunctionContextFree(&ctxt->hash))
 		return -1;
 
-	if (randomGeneratorContextFree(&p->rng))
+	if (blockCipherContextFree(&ctxt->cipher))
+		return -1;
+
+	if (keyedHashFunctionContextFree(&ctxt->mac))
 		return -1;
 
 	return 0;
 }
 
-static int dhaes_pSetup(dhaes_p* p, const mp32number* private, const mp32number* public, const mp32number* message, cipherOperation op)
+static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* private, const mp32number* public, const mp32number* message, cipherOperation op)
 {
 	register int rc;
 
@@ -133,14 +195,15 @@ static int dhaes_pSetup(dhaes_p* p, const mp32number* private, const mp32number*
 
 	/* compute the shared secret, Diffie-Hellman style */
 	mp32nzero(&secret);
-	dlsvdp_pDHSecret(&p->param, private, public, &secret);
+	if (dlsvdp_pDHSecret(&ctxt->param, private, public, &secret))
+		return -1;
 
 	/* compute the hash of the message (ephemeral public) key and the shared secret */
 	mp32nzero(&digest);
-	hashFunctionContextReset     (&p->hash);
-	hashFunctionContextUpdateMP32(&p->hash, message);
-	hashFunctionContextUpdateMP32(&p->hash, &secret);
-	hashFunctionContextDigest    (&p->hash, &digest);
+	(void) hashFunctionContextReset     (&ctxt->hash);
+	(void) hashFunctionContextUpdateMP32(&ctxt->hash, message);
+	(void) hashFunctionContextUpdateMP32(&ctxt->hash, &secret);
+	(void) hashFunctionContextDigest    (&ctxt->hash, &digest);
 
 	/* we don't need the secret anymore */
 	mp32nwipe(&secret);
@@ -156,16 +219,16 @@ static int dhaes_pSetup(dhaes_p* p, const mp32number* private, const mp32number*
 	 * and pad with zero bits or truncate if necessary to meet algorithm key
 	 * size requirements.
 	 */
-	
-	if ((digest.size & 1) == 0)
-	{	/* digest contains an even number of 32 bit words */
-		int keysize = digest.size >> 1;
-		int keybits = digest.size << 4;
 
-		if ((rc = keyedHashFunctionContextSetup(&p->mac, digest.data, keybits)))
+	if (digest.size > 0)
+	{
+		uint32* mackey = digest.data;
+		uint32* cipherkey = digest.data + ((ctxt->mackeybits + 31) >> 5);
+
+		if ((rc = keyedHashFunctionContextSetup(&ctxt->mac, mackey, ctxt->mackeybits)))
 			goto setup_end;
 
-		if ((rc = blockCipherContextSetup(&p->cipher, digest.data+keysize, keybits, op)))
+		if ((rc = blockCipherContextSetup(&ctxt->cipher, cipherkey, ctxt->cipherkeybits, op)))
 			goto setup_end;
 
 		rc = 0;
@@ -180,7 +243,7 @@ setup_end:
 	return rc;
 }
 
-memchunk* dhaes_pEncrypt(dhaes_p* p, const mp32number* publicKey, mp32number* ephemeralPublicKey, mp32number* mac, const memchunk* cleartext)
+memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mp32number* ephemeralPublicKey, mp32number* mac, const memchunk* cleartext, randomGeneratorContext* rng)
 {
 	memchunk* ciphertext = (memchunk*) 0;
 	memchunk* paddedtext;
@@ -189,17 +252,19 @@ memchunk* dhaes_pEncrypt(dhaes_p* p, const mp32number* publicKey, mp32number* ep
 
 	/* make the ephemeral keypair */
 	mp32nzero(&ephemeralPrivateKey);
-	dldp_pPair(&p->param, &p->rng, &ephemeralPrivateKey, ephemeralPublicKey);
+	(void) dldp_pPair(&ctxt->param, rng, &ephemeralPrivateKey, ephemeralPublicKey);
 
 	/* Setup the key and initialize the mac and the blockcipher */
-	if (dhaes_pSetup(p, &ephemeralPrivateKey, publicKey, ephemeralPublicKey, ENCRYPT))
+	if (dhaes_pContextSetup(ctxt, &ephemeralPrivateKey, &ctxt->pub, ephemeralPublicKey, ENCRYPT))
 		goto encrypt_end;
 
 	/* add pkcs-5 padding */
-	paddedtext = pkcs5Pad(p->cipher.ciph->blocksize, cleartext);
+	paddedtext = pkcs5PadCopy(ctxt->cipher.algo->blocksize, cleartext);
+	if (paddedtext == (memchunk*) 0)
+		goto encrypt_end;
 
 	/* encrypt the memchunk in CBC mode */
-	if (blockEncrypt(p->cipher.ciph, p->cipher.param, CBC, paddedtext->size / p->cipher.ciph->blocksize, (uint32*) paddedtext->data, (const uint32*) paddedtext->data))
+	if (blockEncrypt(ctxt->cipher.algo, ctxt->cipher.param, CBC, paddedtext->size / ctxt->cipher.algo->blocksize, (uint32*) paddedtext->data, (const uint32*) paddedtext->data))
 	{
 		free(paddedtext->data);
 		free(paddedtext);
@@ -207,14 +272,14 @@ memchunk* dhaes_pEncrypt(dhaes_p* p, const mp32number* publicKey, mp32number* ep
 	}
 
 	/* Compute the mac */
-	if (keyedHashFunctionContextUpdateMC(&p->mac, paddedtext))
+	if (keyedHashFunctionContextUpdateMC(&ctxt->mac, paddedtext))
 	{
 		free(paddedtext->data);
 		free(paddedtext);
 		goto encrypt_end;
 	}
 
-	if (keyedHashFunctionContextDigest(&p->mac, mac))
+	if (keyedHashFunctionContextDigest(&ctxt->mac, mac))
 	{
 		free(paddedtext->data);
 		free(paddedtext);
@@ -230,20 +295,20 @@ encrypt_end:
 	return ciphertext;
 }
 
-memchunk* dhaes_pDecrypt(dhaes_p* p, const mp32number* privateKey, const mp32number* ephemeralPublicKey, const mp32number* mac, const memchunk* ciphertext)
+memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemeralPublicKey, const mp32number* mac, const memchunk* ciphertext)
 {
 	memchunk* cleartext = (memchunk*) 0;
 	memchunk* paddedtext;
 
 	/* Setup the key and initialize the mac and the blockcipher */
-	if (dhaes_pSetup(p, privateKey, ephemeralPublicKey, ephemeralPublicKey, DECRYPT))
+	if (dhaes_pContextSetup(ctxt, &ctxt->pri, ephemeralPublicKey, ephemeralPublicKey, DECRYPT))
 		goto decrypt_end;
 
 	/* Verify the mac */
-	if (keyedHashFunctionContextUpdateMC(&p->mac, ciphertext))
+	if (keyedHashFunctionContextUpdateMC(&ctxt->mac, ciphertext))
 		goto decrypt_end;
 
-	if (keyedHashFunctionContextDigestMatch(&p->mac, mac) == 0)
+	if (keyedHashFunctionContextDigestMatch(&ctxt->mac, mac) == 0)
 		goto decrypt_end;
 
 	/* decrypt the memchunk with CBC mode */
@@ -261,7 +326,7 @@ memchunk* dhaes_pDecrypt(dhaes_p* p, const mp32number* privateKey, const mp32num
 		goto decrypt_end;
 	}
 
-	if (blockDecrypt(p->cipher.ciph, p->cipher.param, CBC, paddedtext->size / p->cipher.ciph->blocksize, (uint32*) paddedtext->data, (const uint32*) ciphertext->data))
+	if (blockDecrypt(ctxt->cipher.algo, ctxt->cipher.param, CBC, paddedtext->size / ctxt->cipher.algo->blocksize, (uint32*) paddedtext->data, (const uint32*) ciphertext->data))
 	{
 		free(paddedtext->data);
 		free(paddedtext);
@@ -269,14 +334,13 @@ memchunk* dhaes_pDecrypt(dhaes_p* p, const mp32number* privateKey, const mp32num
 	}
 
 	/* remove pkcs-5 padding */
-	if (pkcs5UnpadInline(p->cipher.ciph->blocksize, paddedtext))
+	cleartext = pkcs5Unpad(ctxt->cipher.algo->blocksize, paddedtext);
+
+	if (cleartext == (memchunk*) 0)
 	{
 		free(paddedtext->data);
 		free(paddedtext);
-		goto decrypt_end;
 	}
-
-	cleartext = paddedtext;
 
 decrypt_end:
 

@@ -32,15 +32,19 @@
 extern "C" {
 #endif
 
-BEEDLLAPI
-int pkcs5PadInline  (int, memchunk*);
-BEEDLLAPI
-int pkcs5UnpadInline(int, memchunk*);
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk* pkcs5Pad  (int, /*@only@*/ /*@null@*/ memchunk* tmp)
+	/*@modifies tmp */;
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk* pkcs5Unpad(int, /*@null@*/ memchunk* tmp)
+	/*@modifies tmp */;
 
-BEEDLLAPI
-memchunk* pkcs5Pad  (int, const memchunk*);
-BEEDLLAPI
-memchunk* pkcs5Unpad(int, const memchunk*);
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk* pkcs5PadCopy  (int, const memchunk* tmp)
+	/*@*/;
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk* pkcs5UnpadCopy(int, const memchunk* tmp)
+	/*@*/;
 
 #ifdef __cplusplus
 }

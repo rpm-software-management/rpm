@@ -3,7 +3,7 @@
  *
  * Java-compatible 64 bit timestamp, header
  *
- * Copyright (c) 1999-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -28,17 +28,26 @@
 
 #include "beecrypt.h"
 
-#define ONE_SECOND	1000LL
-#define ONE_MINUTE	60000LL
-#define ONE_HOUR	3600000LL
-#define ONE_DAY		86400000LL
+#if HAVE_LONG_LONG
+# define ONE_SECOND	1000LL
+# define ONE_MINUTE	60000LL
+# define ONE_HOUR	3600000LL
+# define ONE_DAY	86400000LL
+# define ONE_WEEK	604800000LL
+#else
+# define ONE_SECOND	1000L
+# define ONE_MINUTE	60000L
+# define ONE_HOUR	3600000L
+# define ONE_DAY	86400000L
+# define ONE_WEEK	604800000L
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 BEEDLLAPI
-javalong timestamp();
+javalong timestamp(void);
 
 #ifdef __cplusplus
 }

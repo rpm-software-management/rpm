@@ -39,11 +39,14 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int rsapkInit(rsapk*);
+int rsapkInit(rsapk* pk)
+	/*@modifies pk @*/;
 BEEDLLAPI
-int rsapkFree(rsapk*);
+int rsapkFree(rsapk* pk)
+	/*@modifies pk @*/;
 BEEDLLAPI
-int rsapkCopy(rsapk*, const rsapk*);
+int rsapkCopy(rsapk* dst, const rsapk* src)
+	/*@modifies dst @*/;
 
 #ifdef __cplusplus
 }

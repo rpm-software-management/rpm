@@ -3,7 +3,7 @@
  *
  * FIPS186 pseudo-random generator, with SHA-1 as H function, header
  *
- * Copyright (c) 1998-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -30,7 +30,8 @@
 
 #ifdef _REENTRANT
 # if WIN32
-#  include <Winbase.h>
+#  include <windows.h>
+#  include <winbase.h>
 # else
 #  if HAVE_SYNCH_H
 #   include <synch.h>
@@ -74,13 +75,17 @@ extern "C" {
 extern BEEDLLAPI const randomGenerator fips186prng;
 
 BEEDLLAPI
-int fips186Setup  (fips186Param*);
+int fips186Setup  (fips186Param* fp)
+	/*@modifies fp */;
 BEEDLLAPI
-int fips186Seed   (fips186Param*, const uint32*, int);
+int fips186Seed   (fips186Param* fp, const uint32* data, int size)
+	/*@modifies fp */;
 BEEDLLAPI
-int fips186Next   (fips186Param*, uint32*, int);
+int fips186Next   (fips186Param* fp, uint32* data, int size)
+	/*@modifies fp, data */;
 BEEDLLAPI
-int fips186Cleanup(fips186Param*);
+int fips186Cleanup(fips186Param* fp)
+	/*@modifies fp */;
 
 #ifdef __cplusplus
 }

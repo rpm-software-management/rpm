@@ -3,7 +3,7 @@
  *
  * Java compatible 64-bit timestamp, code
  *
- * Copyright (c) 1999-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -36,15 +36,22 @@
 
 javalong timestamp()
 {
+	javalong tmp;
 	#if HAVE_SYS_TIME_H
 	# if HAVE_GETTIMEOFDAY
 	struct timeval now;
-	gettimeofday(&now, 0);
-	return (now.tv_sec * 1000LL) + (now.tv_usec / 1000);
+
+	(void) gettimeofday(&now, 0);
+
+	tmp = ((javalong) now.tv_sec) * 1000 + (now.tv_usec / 1000);
+	# else
+	#  error
 	# endif
 	#elif HAVE_TIME_H
-	return time(0) * 1000LL;
+	tmp = ((javalong) time(0)) * 1000;
 	#else
 	# error implement other time function
 	#endif
+
+	return tmp;
 }

@@ -33,7 +33,8 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void dlsvdp_pDHSecret(const dldp_p*, const mp32number*, const mp32number*, mp32number*);
+int dlsvdp_pDHSecret(const dldp_p* dp, const mp32number*, const mp32number*, mp32number* s)
+	/*@modifies s */;
 
 #ifdef __cplusplus
 }

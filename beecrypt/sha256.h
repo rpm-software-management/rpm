@@ -43,13 +43,17 @@ extern "C" {
 extern BEEDLLAPI const hashFunction sha256;
 
 BEEDLLAPI
-void sha256Process(sha256Param*);
+void sha256Process(sha256Param* p)
+	/*@modifies p @*/;
 BEEDLLAPI
-int  sha256Reset  (sha256Param*);
+int  sha256Reset  (sha256Param* p)
+	/*@modifies p @*/;
 BEEDLLAPI
-int  sha256Update (sha256Param*, const byte*, int);
+int  sha256Update (sha256Param* p, const byte* data, int size)
+	/*@modifies p @*/;
 BEEDLLAPI
-int  sha256Digest (sha256Param*, uint32*);
+int  sha256Digest (sha256Param* p, uint32* data)
+	/*@modifies p, data @*/;
 
 #ifdef __cplusplus
 }

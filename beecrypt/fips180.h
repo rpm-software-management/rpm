@@ -3,7 +3,7 @@
  *
  * SHA-1 hash function, header
  *
- * Copyright (c) 1997-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -44,13 +44,17 @@ extern "C" {
 extern BEEDLLAPI const hashFunction sha1;
 
 BEEDLLAPI
-void sha1Process(sha1Param*);
+void sha1Process(sha1Param* p)
+	/*@modifies p */;
 BEEDLLAPI
-int  sha1Reset  (sha1Param*);
+int  sha1Reset  (sha1Param* p)
+	/*@modifies p */;
 BEEDLLAPI
-int  sha1Update (sha1Param*, const byte*, int);
+int  sha1Update (sha1Param* p, const byte* data, int size)
+	/*@modifies p */;
 BEEDLLAPI
-int  sha1Digest (sha1Param*, uint32*);
+int  sha1Digest (sha1Param* p, /*@out@*/ uint32* data)
+	/*@modifies p, data */;
 
 #ifdef __cplusplus
 }

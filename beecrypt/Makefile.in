@@ -1,7 +1,19 @@
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
 #
-# Makefile.in for the beecrypt library
+# Makefile.am contains the top-level automake definitions
 #
-# Copyright (c) 1999-2000, Virtual Unlimited B.V.
+# Copyright (c) 2001 Virtual Unlimited B.V.
 #
 # Author: Bob Deblier <bob@virtualunlimited.com>
 #
@@ -14,214 +26,537 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-# 
+#
 
-PRODUCT=@PRODUCT@
-VERSION=@VERSION@
+#
+# 1. No interfaces changes (good): Increment REVISION
+#
+# 2. Interfaces added, none removed (good): Increment CURRENT, increment AGE and REVISION to 0.
+#
+# 3. Interfaces removed (bad): Increment CURRENT, set AGE and REVISION to 0.
+#
 
-INSTALL = @INSTALL@
-INSTALL_DATA = @INSTALL_DATA@
 
-CC = @CC@
-CFLAGS = @CFLAGS@ @DEFS@ -I${srcdir}
-LDFLAGS = @LDFLAGS@ @LIBS@
-
-TARGET_OS = @target_os@
-TARGET_CPU = @target_cpu@
+SHELL = @SHELL@
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
+VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-includedir= @includedir@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
 libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
 
-OBJFILES = \
-	base64.o \
-	beecrypt.o \
-	blockmode.o \
-	blowfish.o \
-	blowfishopt.o \
-	dldp.o \
-	dlkp.o \
-	dlpk.o \
-	dlsvdp-dh.o \
-	elgamal.o \
-	endianness.o \
-	entropy.o \
-	fips180.o \
-	fips180opt.o \
-	fips186.o \
-	hmac.o \
-	mp32.o \
-	mp32barrett.o \
-	mp32number.o \
-	mp32opt.o \
-	mp32prime.o \
-	mtprng.o \
-	sha1hmac.o \
-	timestamp.o
+DESTDIR =
 
-DISTFILES = \
-	LICENSE README DOCUMENTATION CHANGELOG BUGS BENCHMARKS \
-	config.guess config.sub install-sh \
-	configure.in configure Makefile.in \
-	config.h \
-	base64.h base64.c \
-	beecrypt.h beecrypt.c \
-	blockmode.h blockmode.c \
-	blowfish.h blowfish.c \
-	blowfishopt.h blowfishopt.c  \
-	dldp.h dldp.c \
-	dlkp.h dlkp.c \
-	dlpk.h dlpk.c \
-	dlsvdp-dh.h dlsvdp-dh.c \
-	elgamal.h elgamal.c \
-	endianness.h endianness.c \
-	entropy.h entropy.c \
-	fips180.h fips180.c \
-	fips180opt.h fips180opt.c \
-	fips186.h fips186.c \
-	hmac.h hmac.c \
-	mp32barrett.h mp32barrett.c \
-	mp32.h mp32.c \
-	mp32number.h mp32number.c \
-	mp32opt.h mp32opt.c \
-	mp32prime.h mp32prime.c \
-	mtprng.h mtprng.c \
-	sha1hmac.h sha1hmac.c \
-	timestamp.h timestamp.c \
-	gnu/config.gnu.h.in \
-	gnu/blowfishopt.gas.i586.s gnu/fips180opt.gas.i586.s gnu/mp32opt.gas.i386.s \
-	gnu/mp32opt.gas.powerpc.s \
-	gnu/mp32opt.gas.sparcv9.s \
-	beecrypt.mcp \
-	win32/config.win.h \
-	win32/beecrypt.dll.c win32/beecrypt.rc win32/beecrypt.def \
-	win32/mwerks/blowfishopt.i586.asm win32/mwerks/fips180opt.i586.asm win32/mwerks/mp32opt.i386.asm \
-	win32/mwerks/beecrypt.pch \
-	beetest.c
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
 
-LIBBEECRYPT = libbeecrypt.so
+top_builddir = .
 
-all: $(LIBBEECRYPT)
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-ifeq '$(TARGET_CPU)' 'sparcv8plus'
-mp32opt.o: gnu/mp32opt.gas.sparcv9.s
-	$(AS) -Av8plus -KPIC -o $@ gnu/mp32opt.gas.sparcv9.s
-endif
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
 
-ifeq '$(TARGET_CPU)' 'sparcv9'
-mp32opt.o: gnu/mp32opt.gas.sparcv9.s
-	$(AS) -Av9 -KPIC -o $@ gnu/mp32opt.gas.sparcv9.s
-endif
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+AS = @AS@
+CC = @CC@
+CPP = @CPP@
+DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+STRIP = @STRIP@
+VERSION = @VERSION@
+ac_cv_have_java = @ac_cv_have_java@
+ac_cv_have_javac = @ac_cv_have_javac@
 
-ifeq '$(TARGET_CPU)' 'i386'
-mp32opt.o: gnu/mp32opt.gas.i386.s
-	$(AS) -o $@ gnu/mp32opt.gas.i386.s
-endif
+LIBBEECRYPT_LT_CURRENT = 3
+LIBBEECRYPT_LT_AGE = 1
+LIBBEECRYPT_LT_REVISION = 0
 
-ifeq '$(TARGET_CPU)' 'i486'
-mp32opt.o: gnu/mp32opt.gas.i386.s
-	$(AS) -o $@ gnu/mp32opt.gas.i386.s
-endif
+AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
-ifeq '$(TARGET_CPU)' 'i586'
-blowfishopt.o: gnu/blowfishopt.gas.i586.s
-	$(AS) -o $@ gnu/blowfishopt.gas.i586.s
+SUBDIRS = docs gas masm mwerks tests
 
-fips180opt.o: gnu/fips180opt.gas.i586.s
-	$(AS) -o $@ gnu/fips180opt.gas.i586.s
+BEECRYPT_OBJECTS = base64.lo beecrypt.lo blockmode.lo blockpad.lo blowfish.lo blowfishopt.lo dhaes.lo dldp.lo dlkp.lo dlpk.lo dlsvdp-dh.lo elgamal.lo endianness.lo entropy.lo fips180.lo fips180opt.lo fips186.lo hmac.lo hmacmd5.lo hmacsha1.lo hmacsha256.lo md5.lo memchunk.lo mp32.lo mp32barrett.lo mp32number.lo mp32opt.lo mp32prime.lo mtprng.lo rsa.lo rsakp.lo rsapk.lo sha256.lo timestamp.lo
 
-mp32opt.o: gnu/mp32opt.gas.i386.s
-	$(AS) -o $@ gnu/mp32opt.gas.i386.s
-endif
+BEECRYPT_JAVA_OBJECTS = javaglue.lo
 
-ifeq '$(TARGET_CPU)' 'i686' 
-blowfishopt.o: gnu/blowfishopt.gas.i586.s
-	$(AS) -o $@ gnu/blowfishopt.gas.i586.s
+lib_LTLIBRARIES = libbeecrypt.la
 
-fips180opt.o: gnu/fips180opt.gas.i586.s
-	$(AS) -o $@ gnu/fips180opt.gas.i586.s
+libbeecrypt_la_SOURCES = base64.c beecrypt.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c elgamal.c endianness.c entropy.c fips180.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c javaglue.c md5.c memchunk.c mp32.c mp32barrett.c mp32number.c mp32prime.c mtprng.c rsa.c rsakp.c rsapk.c sha256.c timestamp.c
 
-mp32opt.o: gnu/mp32opt.gas.i386.s
-	$(AS) -o $@ gnu/mp32opt.gas.i386.s
-endif
+libbeecrypt_la_DEPENDENCIES = $(BEECRYPT_OBJECTS) $(BEECRYPT_JAVA_OBJECTS)
 
-ifeq '$(TARGET_CPU)' 'powerpc'
-mp32opt.o: gnu/mp32opt.gas.powerpc.s
-	$(AS) -o $@ gnu/mp32opt.gas.powerpc.s
-endif
+libbeecrypt_la_LIBADD = blowfishopt.lo fips180opt.lo mp32opt.lo
 
-$(LIBBEECRYPT): $(OBJFILES)
-	$(LD) -G -o $@ $(OBJFILES)
+libbeecrypt_la_LDFLAGS = -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_LT_REVISION):$(LIBBEECRYPT_LT_AGE)
 
-install: $(LIBBEECRYPT)
-	$(INSTALL) -d $(libdir)
-	$(INSTALL) $(LIBBEECRYPT) $(libdir)
+pkginclude_HEADERS = base64.h beecrypt.h blockmode.h blockpad.h blowfish.h blowfishopt.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h elgamal.h endianness.h entropy.h fips180.h fips180opt.h fips186.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp32.h mp32barrett.h mp32number.h mp32opt.h mp32prime.h mtprng.h rsa.h rsakp.h rsapk.h sha256.h timestamp.h
 
-install-headers:
-	$(INSTALL) -d $(includedir)/beecrypt
-	$(INSTALL_DATA) base64.h $(includedir)/beecrypt
-	$(INSTALL_DATA) beecrypt.h $(includedir)/beecrypt
-	$(INSTALL_DATA) blockmode.h $(includedir)/beecrypt
-	$(INSTALL_DATA) blowfish.h $(includedir)/beecrypt
-	$(INSTALL_DATA) blowfishopt.h $(includedir)/beecrypt
-	$(INSTALL_DATA) dldp.h $(includedir)/beecrypt
-	$(INSTALL_DATA) dlkp.h $(includedir)/beecrypt
-	$(INSTALL_DATA) dlpk.h $(includedir)/beecrypt
-	$(INSTALL_DATA) dlsvdp-dh.h $(includedir)/beecrypt
-	$(INSTALL_DATA) elgamal.h $(includedir)/beecrypt
-	$(INSTALL_DATA) endianness.h $(includedir)/beecrypt
-	$(INSTALL_DATA) entropy.h $(includedir)/beecrypt
-	$(INSTALL_DATA) fips180.h $(includedir)/beecrypt
-	$(INSTALL_DATA) fips180opt.h $(includedir)/beecrypt
-	$(INSTALL_DATA) fips186.h $(includedir)/beecrypt
-	$(INSTALL_DATA) hmac.h $(includedir)/beecrypt
-	$(INSTALL_DATA) mp32.h $(includedir)/beecrypt
-	$(INSTALL_DATA) mp32barrett.h $(includedir)/beecrypt
-	$(INSTALL_DATA) mp32number.h $(includedir)/beecrypt
-	$(INSTALL_DATA) mp32opt.h $(includedir)/beecrypt
-	$(INSTALL_DATA) mp32prime.h $(includedir)/beecrypt
-	$(INSTALL_DATA) mtprng.h $(includedir)/beecrypt
-	$(INSTALL_DATA) sha1hmac.h $(includedir)/beecrypt
-	$(INSTALL_DATA) timestamp.h $(includedir)/beecrypt
+EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc config.h config.gas.h config.win.h javaglue.h
 
-beetest: beetest.o
-	$(CC) -o $@ beetest.o $(LDFLAGS) -L${libdir} -lbeecrypt
+# beecrypt.c entropy.c javaglue.c mtprng.c
+lclintfiles = base64.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c elgamal.c endianness.c fips180.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c md5.c memchunk.c mp32.c mp32barrett.c mp32number.c mp32prime.c rsa.c rsakp.c rsapk.c sha256.c timestamp.c
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = config.gnu.h
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(lib_LTLIBRARIES)
 
-clean:
-	rm -f *.so *.o beetest
 
-distclean:
-	rm -f *.so *.o beetest ${srcdir}/config.log ${srcdir}/config.cache ${srcdir}/config.status conftest.c ${srcdir}/Makefile ${srcdir}/gnu/config.gnu.h
+DEFS = @DEFS@ -I. -I$(srcdir) -I.
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+libbeecrypt_la_OBJECTS =  base64.lo beecrypt.lo blockmode.lo blockpad.lo \
+blowfish.lo dhaes.lo dldp.lo dlkp.lo dlpk.lo dlsvdp-dh.lo elgamal.lo \
+endianness.lo entropy.lo fips180.lo fips186.lo hmac.lo hmacmd5.lo \
+hmacsha1.lo hmacsha256.lo javaglue.lo md5.lo memchunk.lo mp32.lo \
+mp32barrett.lo mp32number.lo mp32prime.lo mtprng.lo rsa.lo rsakp.lo \
+rsapk.lo sha256.lo timestamp.lo
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(pkginclude_HEADERS)
 
-dist: $(DISTFILES)
-	@rm -rf $(PRODUCT)-$(VERSION)
-	@mkdir $(PRODUCT)-$(VERSION)
-	@chmod 777 $(PRODUCT)-$(VERSION)
-	@tar cf - $(DISTFILES) | (cd $(PRODUCT)-$(VERSION) && tar xf - )
-	@chmod -R a+r $(PRODUCT)-$(VERSION)
-	@tar chozf $(PRODUCT)-$(VERSION).tar.gz $(PRODUCT)-$(VERSION)
-	@rm -rf $(PRODUCT)-$(VERSION)
+DIST_COMMON =  README ./stamp-h.in AUTHORS COPYING COPYING.LIB ChangeLog \
+INSTALL Makefile.am Makefile.in NEWS acconfig.h aclocal.m4 \
+config.gnu.h.in config.guess config.sub configure configure.in \
+install-sh ltconfig ltmain.sh missing mkinstalldirs
 
-depend:
-	makedepend -I${srcdir} *.c
 
-${srcdir}/configure: ${srcdir}/configure.in
-	cd ${top_srcdir} && autoconf
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-${srcdir}/config.gnu.h: ${srcdir}/config.gnu.h.in
-	${srcdir}/config.status
+TAR = gtar
+GZIP_ENV = --best
+SOURCES = $(libbeecrypt_la_SOURCES)
+OBJECTS = $(libbeecrypt_la_OBJECTS)
 
-${srcdir}/Makefile: ${srcdir}/Makefile.in
-	${srcdir}/config.status
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .obj .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile
 
-${srcdir}/config.status: ${srcdir}/configure
-	${srcdir}/config.status --recheck
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+$(ACLOCAL_M4):  configure.in 
+	cd $(srcdir) && $(ACLOCAL)
+
+config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+$(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+	cd $(srcdir) && $(AUTOCONF)
+
+config.gnu.h: stamp-h
+	@if test ! -f $@; then \
+		rm -f stamp-h; \
+		$(MAKE) stamp-h; \
+	else :; fi
+stamp-h: $(srcdir)/config.gnu.h.in $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES= CONFIG_HEADERS=config.gnu.h \
+	     $(SHELL) ./config.status
+	@echo timestamp > stamp-h 2> /dev/null
+$(srcdir)/config.gnu.h.in: $(srcdir)/stamp-h.in
+	@if test ! -f $@; then \
+		rm -f $(srcdir)/stamp-h.in; \
+		$(MAKE) $(srcdir)/stamp-h.in; \
+	else :; fi
+$(srcdir)/stamp-h.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) acconfig.h
+	cd $(top_srcdir) && $(AUTOHEADER)
+	@echo timestamp > $(srcdir)/stamp-h.in 2> /dev/null
+
+mostlyclean-hdr:
+
+clean-hdr:
+
+distclean-hdr:
+	-rm -f config.gnu.h
+
+maintainer-clean-hdr:
+
+mostlyclean-libLTLIBRARIES:
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+
+distclean-libLTLIBRARIES:
+
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	done
+
+.c.o:
+	$(COMPILE) -c $<
+
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.c.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libbeecrypt.la: $(libbeecrypt_la_OBJECTS) $(libbeecrypt_la_DEPENDENCIES)
+	$(LINK) -rpath $(libdir) $(libbeecrypt_la_LDFLAGS) $(libbeecrypt_la_OBJECTS) $(libbeecrypt_la_LIBADD) $(LIBS)
+
+install-pkgincludeHEADERS: $(pkginclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(pkgincludedir)
+	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgincludedir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgincludedir)/$$p; \
+	done
+
+uninstall-pkgincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(pkgincludedir)/$$p; \
+	done
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+
+@SET_MAKE@
+
+all-recursive install-data-recursive install-exec-recursive \
+installdirs-recursive install-recursive uninstall-recursive  \
+check-recursive installcheck-recursive info-recursive dvi-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
+	  rev="$$subdir $$rev"; \
+	  test "$$subdir" != "." || dot_seen=yes; \
+	done; \
+	test "$$dot_seen" = "no" && rev=". $$rev"; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.gnu.h.in $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+   if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+   fi; \
+	done; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)config.gnu.h.in$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags config.gnu.h.in $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(PACKAGE)-$(VERSION)
+top_distdir = $(distdir)
+
+# This target untars the dist file and tries a VPATH configuration.  Then
+# it guarantees that the distribution is self-contained by making another
+# tarfile.
+distcheck: dist
+	-rm -rf $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) zxf $(distdir).tar.gz
+	mkdir $(distdir)/=build
+	mkdir $(distdir)/=inst
+	dc_install_base=`cd $(distdir)/=inst && pwd`; \
+	cd $(distdir)/=build \
+	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
+	  && $(MAKE) $(AM_MAKEFLAGS) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
+	  && $(MAKE) $(AM_MAKEFLAGS) check \
+	  && $(MAKE) $(AM_MAKEFLAGS) install \
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	  && $(MAKE) $(AM_MAKEFLAGS) dist
+	-rm -rf $(distdir)
+	@banner="$(distdir).tar.gz is ready for distribution"; \
+	dashes=`echo "$$banner" | sed s/./=/g`; \
+	echo "$$dashes"; \
+	echo "$$banner"; \
+	echo "$$dashes"
+dist: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+dist-all: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+distdir: $(DISTFILES)
+	@if sed 15q $(srcdir)/NEWS | fgrep -e "$(VERSION)" > /dev/null; then :; else \
+	  echo "NEWS not updated; not releasing" 1>&2; \
+	  exit 1; \
+	fi
+	-rm -rf $(distdir)
+	mkdir $(distdir)
+	-chmod 777 $(distdir)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+	for subdir in $(SUBDIRS); do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    chmod 777 $(distdir)/$$subdir; \
+	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(distdir) distdir=../$(distdir)/$$subdir distdir) \
+	      || exit 1; \
+	  fi; \
+	done
+info-am:
+info: info-recursive
+dvi-am:
+dvi: dvi-recursive
+check-am: all-am
+check: check-recursive
+installcheck-am:
+installcheck: installcheck-recursive
+all-recursive-am: config.gnu.h
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+
+install-exec-am: install-libLTLIBRARIES
+install-exec: install-exec-recursive
+
+install-data-am: install-pkgincludeHEADERS
+install-data: install-data-recursive
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-recursive
+uninstall-am: uninstall-libLTLIBRARIES uninstall-pkgincludeHEADERS
+uninstall: uninstall-recursive
+all-am: Makefile $(LTLIBRARIES) $(HEADERS) config.gnu.h
+all-redirect: all-recursive-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs: installdirs-recursive
+installdirs-am:
+	$(mkinstalldirs)  $(DESTDIR)$(libdir) $(DESTDIR)$(pkgincludedir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-hdr mostlyclean-libLTLIBRARIES \
+		mostlyclean-compile mostlyclean-libtool \
+		mostlyclean-tags mostlyclean-generic
+
+mostlyclean: mostlyclean-recursive
+
+clean-am:  clean-hdr clean-libLTLIBRARIES clean-compile clean-libtool \
+		clean-tags clean-generic mostlyclean-am
+
+clean: clean-recursive
+
+distclean-am:  distclean-hdr distclean-libLTLIBRARIES distclean-compile \
+		distclean-libtool distclean-tags distclean-generic \
+		clean-am
+	-rm -f libtool
+
+distclean: distclean-recursive
+	-rm -f config.status
+
+maintainer-clean-am:  maintainer-clean-hdr \
+		maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-generic \
+		distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-recursive
+	-rm -f config.status
+
+.PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
+mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool uninstall-pkgincludeHEADERS \
+install-pkgincludeHEADERS install-data-recursive \
+uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
+dvi-am dvi check check-am installcheck-am installcheck all-recursive-am \
+install-exec-am install-exec install-data-am install-data install-am \
+install uninstall-am uninstall all-redirect all-am all installdirs-am \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+.PHONY: lclint
+lclint:
+	lclint $(DEFS) $(INCLUDES) ${lclintfiles}
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

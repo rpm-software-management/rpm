@@ -3,7 +3,7 @@
  *
  * Multi-precision primes, code
  *
- * Copyright (c) 2000 Virtual Unlimited B.V.
+ * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -30,7 +30,10 @@
 #include "mp32barrett.h"
 
 #if HAVE_STDLIB_H
-#include <stdlib.h>
+# include <stdlib.h>
+#endif
+#if HAVE_MALLOC_H
+# include <malloc.h>
 #endif
 
 #include <stdio.h>
@@ -863,81 +866,101 @@ int mp32ptrials(uint32 bits)
 }
 
 static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGeneratorContext* rc)
+	/*@modifies p->modl, *rc @*/
 {
-	register uint32 size = p->size;
+	register uint32 size;
 
-    rc->rng->next(rc->param, p->modl, size);
+	if (p == (mp32barrett*) 0 || p->modl == (uint32*) 0)
+		return;
 
-	if (msbclr)
+	size = p->size;
+	(void) rc->rng->next(rc->param, p->modl, size);
+
+	if (msbclr != 0)
 		p->modl[0] &= (0xffffffff >> msbclr);
 
 	p->modl[0] |= (0x80000000 >> msbclr);
 
-	if (lsbset)
+	if (lsbset != 0)
 		p->modl[size] |= (0xffffffff >> (32 - lsbset));
 }
 
-int mp32psppdiv(const mp32barrett* p)
+/**
+ * mp32psppdiv_w
+ *  needs workspace of (3*size) words
+ */
+int mp32psppdiv_w(const mp32barrett* p, uint32* wksp)
 {
 	/* small prime product trial division test */
 	register uint32 size = p->size;
 
 	if (size > SMALL_PRIMES_PRODUCT_MAX)
 	{
-		mp32setx(size, p->wksp+size, SMALL_PRIMES_PRODUCT_MAX, mp32spprod[SMALL_PRIMES_PRODUCT_MAX-1]);
-		mp32gcd(p->data, size, p->modl, p->wksp+size, p->wksp);
+		mp32setx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mp32spprod[SMALL_PRIMES_PRODUCT_MAX-1]);
+		mp32gcd_w(size, p->modl, wksp+size, wksp, wksp+2*size);
 	}
 	else
 	{
-		mp32gcd(p->data, size, p->modl, mp32spprod[size-1], p->wksp);
+		mp32gcd_w(size, p->modl, mp32spprod[size-1], wksp, wksp+2*size);
 	}
 
-	return mp32isone(size, p->data);
+	return mp32isone(size, wksp);
 }
 
-int mp32pmilrabtwo(const mp32barrett* p, uint32 s, const uint32* rdata, const uint32* ndata)
+/**
+ * needs workspace of (5*size+2)
+ */
+int mp32pmilrabtwo_w(const mp32barrett* p, uint32 s, const uint32* rdata, const uint32* ndata, uint32* wksp)
 {
+	register uint32 size = p->size;
 	register uint32 j = 0;
 
-	mp32btwopowmod(p, p->size, rdata);
+	mp32btwopowmod_w(p, size, rdata, wksp, wksp+size);
 
 	while (1)
 	{
-		if (mp32isone(p->size, p->data))
+		if (mp32isone(size, wksp))
 			return (j == 0);
 
-		if (mp32eq(p->size, p->data, ndata))
+		if (mp32eq(size, wksp, ndata))
 			return 1;
 
 		if (++j < s)
-			mp32bnsqrmodres(p, p->data, (mp32number*) p);
+			mp32bsqrmod_w(p, size, wksp, wksp, wksp+size);
 		else
 			return 0;
 	}
 }
 
-int mp32pmilraba(const mp32barrett* p, const uint32* adata, uint32 s, const uint32* rdata, const uint32* ndata)
+/**
+ * needs workspace of (5*size+2) words
+ */
+int mp32pmilraba_w(const mp32barrett* p, const uint32* adata, uint32 s, const uint32* rdata, const uint32* ndata, uint32* wksp)
 {
+	register uint32 size = p->size;
 	register uint32 j = 0;
 
-	mp32bpowmod(p, p->size, adata, p->size, rdata);
+	mp32bpowmod_w(p, size, adata, size, rdata, wksp, wksp+size);
 
 	while (1)
 	{
-		if (mp32isone(p->size, p->data))
+		if (mp32isone(size, wksp))
 			return (j == 0);
 
-		if (mp32eq(p->size, p->data, ndata))
+		if (mp32eq(size, wksp, ndata))
 			return 1;
 
 		if (++j < s)
-			mp32bnsqrmodres(p, p->data, (mp32number*) p);
+			mp32bsqrmod_w(p, size, wksp, wksp, wksp+size);
 		else
 			return 0;
 	}
 }
 
-int mp32pmilrab(const mp32barrett* p, randomGeneratorContext* rc, int t)
+/**
+ * needs workspace of (8*size+2) words
+ */
+int mp32pmilrab_w(const mp32barrett* p, randomGeneratorContext* rc, int t, uint32* wksp)
 {
 	/*
 	 * Miller-Rabin probabilistic primality test, with modification
@@ -953,16 +976,18 @@ int mp32pmilrab(const mp32barrett* p, randomGeneratorContext* rc, int t)
 	/* this routine uses (size*3) storage, and calls mp32bpowmod, which needs (size*4+2) */
 	/* (size) for a, (size) for r, (size) for n-1 */
 
-	register uint32* ndata = p->wksp+p->size*4+2;
-	register uint32* rdata = ndata+p->size;
-	register uint32* adata = rdata+p->size;
+	register uint32  size  = p->size;
+	register uint32* ndata = wksp;
+	register uint32* rdata = ndata+size;
+	register uint32* adata = rdata+size;
+
 	uint32 s;
 
-	mp32copy(p->size, ndata, p->modl);
-	mp32subw(p->size, ndata, 1);
-	mp32copy(p->size, rdata, ndata);
+	mp32copy(size, ndata, p->modl);
+	(void) mp32subw(size, ndata, 1);
+	mp32copy(size, rdata, ndata);
 
-	s = mp32divpowtwo(p->size, rdata); /* we've split p-1 into (2^s)*r */
+	s = mp32divpowtwo(size, rdata); /* we've split p-1 into (2^s)*r */
 
 	/* should do an assert that s != 0 */
 
@@ -970,46 +995,37 @@ int mp32pmilrab(const mp32barrett* p, randomGeneratorContext* rc, int t)
 	if (t == 0)
 		t++;
 
-	if (!mp32pmilrabtwo(p, s, rdata, ndata))
+	if (!mp32pmilrabtwo_w(p, s, rdata, ndata, wksp+3*size))
 		return 0;
 
 	while (t-- > 0)
 	{
 		/* generate a random 'a' into b->data */
-		mp32brndres(p, adata, rc);
+		mp32brnd_w(p, rc, adata, wksp);
 
-		if (!mp32pmilraba(p, adata, s, rdata, ndata))
+		if (!mp32pmilraba_w(p, adata, s, rdata, ndata, wksp+3*size))
 			return 0;
 	}
 
     return 1;
 }
 
-void mp32prnd(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32number* f)
+/**
+ * needs workspace of (7*size+2) words
+ */
+void mp32prnd_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32number* f, uint32* wksp)
 {
 	/*
-	 * Generate a prime p with (size*32) bits
+	 * Generate a prime into p with (size*32) bits
 	 *
 	 * Conditions: size(f) <= size(p)
 	 *
 	 * Optional input f: if f is not null, then search p so that GCD(p-1,f) = 1
 	 */
 
-	p->size = size;
-	p->data = (uint32*) calloc(size*10+4, sizeof(uint32));
+	mp32binit(p, size);
 
-	if (p->data)
-	{
-		p->modl = p->data+size+0;
-		p->mu   = p->modl+size+1;
-		p->wksp = p->mu  +size+1;
-	}
-	else
-	{
-		p->modl = p->mu = p->wksp = (uint32*) 0;
-	}
-
-	if (p->data)
+	if (p->modl != (uint32*) 0)
 	{
 		while (1)
 		{
@@ -1021,133 +1037,135 @@ void mp32prnd(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, co
 			mp32prndbits(p, 0, 1, rc);
 
 			/* do a small prime product trial division test on p */
-			if (!mp32psppdiv(p))
+			if (!mp32psppdiv_w(p, wksp))
 				continue;
 
 			/* if we have an f, do the congruence test */
-			if (f)
+			if (f != (mp32number*) 0)
 			{
-				mp32copy(size, p->data, p->modl);
-				mp32subw(size, p->data, 1);
-				mp32setx(size, p->wksp, f->size, f->data);
-				mp32gcd(p->wksp+2*size, size, p->data, p->wksp, p->wksp+size);
-				if (!mp32isone(size, p->wksp+2*size))
+				mp32copy(size, wksp, p->modl);
+				(void) mp32subw(size, wksp, 1);
+				mp32setx(size, wksp+size, f->size, f->data);
+				mp32gcd_w(size, wksp, wksp+size, wksp+2*size, wksp+3*size);
+
+				if (!mp32isone(size, wksp+2*size))
 					continue;
 			}
 
 			/* candidate has passed so far, now we do the probabilistic test */
-			mp32bmu(p);
+			mp32bmu_w(p, wksp);
 
-			if (mp32pmilrab(p, rc, t))
+			if (mp32pmilrab_w(p, rc, t, wksp))
 				return;
 		}
 	}
 }
 
-void mp32prndconone(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, const mp32number* f, mp32number* rr, int cofactor)
+/**
+ * needs workspace of (7*size+2) words
+ */
+void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, const mp32number* f, mp32number* r, int cofactor, uint32* wksp)
 {
 	/*
-	 * Generate a prime p with n bits such that p mod q = 1, and p = 2qr+1; k = 2r
+	 * Generate a prime p with n bits such that p mod q = 1, and p = qr+1; r = 2s
 	 *
 	 * Conditions: q > 2 and size(q) < size(p) and size(f) <= size(p)
 	 *
-	 * Conditions: k must be chosen so that k is even, otherwise p will be even!
+	 * Conditions: r must be chosen so that r is even, otherwise p will be even!
 	 *
-	 * if cofactor == 0, then r will be chosen randomly
-	 * if cofactor == 1, then make sure that q does not divide k, i.e.:
-	 *    q cannot be equal to k, since k is even, and q > 2; hence if q <= r make sure that GCD(q,r) == 1
-	 * if cofactor == 2, then make sure that r is prime
+	 * if cofactor == 0, then s will be chosen randomly
+	 * if cofactor == 1, then make sure that q does not divide r, i.e.:
+	 *    q cannot be equal to r, since r is even, and q > 2; hence if q <= r make sure that GCD(q,r) == 1
+	 * if cofactor == 2, then make sure that s is prime
 	 * 
 	 * Optional input f: if f is not null, then search p so that GCD(p-1,f) = 1
 	 */
 
 	mp32binit(p, size);
 
-	if (p->data)
+	if (p->modl != (uint32*) 0)
 	{
-		mp32barrett r;
+		mp32barrett s;
 
-		memset(&r, 0, sizeof(mp32barrett));
-
-		mp32binit(&r, p->size - q->size);
+		mp32bzero(&s);
+		mp32binit(&s, p->size - q->size);
 
 		while (1)
 		{
-			mp32prndbits(&r, 1, 0, rc);
+			mp32prndbits(&s, 1, 0, rc);
 
 			if (cofactor == 1)
 			{
-				r.modl[r.size-1] |= 0x1;
+				mp32setlsb(s.size, s.modl);
 
-				/* if (q <= r) check if GCD(q,r) != 1 */
-				if (mp32lex(q->size, q->modl, r.size, r.modl))
+				/* if (q <= s) check if GCD(q,s) != 1 */
+				if (mp32lex(q->size, q->modl, s.size, s.modl))
 				{
-					/* we can find adequate storage for computing the gcd in r->wksp */
-					mp32setx(r.size, r.wksp+r.size, q->size, q->modl);
-					mp32gcd(r.data, r.size, r.modl, r.wksp+r.size, r.wksp);
+					/* we can find adequate storage for computing the gcd in s->wksp */
+					mp32setx(s.size, wksp, q->size, q->modl);
+					mp32gcd_w(s.size, s.modl, wksp, wksp+s.size, wksp+2*s.size);
 
-					if (!mp32isone(r.size, r.data))
+					if (!mp32isone(s.size, wksp))
 						continue;
 				}
 			}
 			else if (cofactor == 2)
 			{
-				r.modl[r.size-1] |= 0x1;
+				mp32setlsb(s.size, s.modl);
 			}
-
-			/* should do an assert that k is even */
 
 			if (cofactor == 2)
 			{
 				/* do a small prime product trial division test on r */
-				if (!mp32psppdiv(&r))
+				if (!mp32psppdiv_w(&s, wksp))
 					continue;
 			}
 
-			/* multiply q*r into p, multiply by two, then add 1 */
-			mp32mul(p->modl, r.size, r.modl, q->size, q->modl);
-			mp32multwo(p->size, p->modl);
-			mp32addw(p->size, p->modl, 1);
+			/* multiply q*s into p, multiply by two, then add 1 */
+			mp32mul(p->modl, s.size, s.modl, q->size, q->modl);
+			(void) mp32multwo(p->size, p->modl);
+			(void) mp32addw(p->size, p->modl, 1);
 
 			/* do a small prime product trial division test on p */
-			if (!mp32psppdiv(p))
+			if (!mp32psppdiv_w(p, wksp))
 				continue;
 
 			/* if we have an f, do the congruence test */
-			if (f)
+			if (f != (mp32number*) 0)
 			{
-				mp32copy(size, p->data, p->modl);
-				mp32subw(size, p->data, 1);
-				mp32setx(size, p->wksp, f->size, f->data);
-				mp32gcd(p->wksp+2*size, size, p->data, p->wksp, p->wksp+size);
-				if (!mp32isone(size, p->wksp+2*size))
+				mp32copy(size, wksp, p->modl);
+				(void) mp32subw(size, wksp, 1);
+				mp32setx(size, wksp, f->size, f->data);
+				mp32gcd_w(size, wksp, wksp+size, wksp+2*size, wksp+3*size);
+				if (!mp32isone(size, wksp+2*size))
 					continue;
 			}
 
-			/* if cofactor is two, test if r is prime */
+			/* if cofactor is two, test if s is prime */
 			if (cofactor == 2)
 			{
-				mp32bmu(&r);
+				mp32bmu_w(&s, wksp);
 
-				if (!mp32pmilrab(&r, rc, mp32ptrials(r.size << 5)))
+				if (!mp32pmilrab_w(&s, rc, mp32ptrials(s.size << 5), wksp))
 					continue;
 			}
 
 			/* candidate has passed so far, now we do the probabilistic test on p */
-			mp32bmu(p);
+			mp32bmu_w(p, wksp);
 
-			if (!mp32pmilrab(p, rc, t))
+			if (!mp32pmilrab_w(p, rc, t, wksp))
 				continue;
 
-			mp32nset(rr, r.size, r.modl);
-			mp32bfree(&r);
+			mp32nset(r, s.size, s.modl);
+			(void) mp32multwo(r->size, r->data);
+			mp32bfree(&s);
 
 			return;
 		}
 	}
 }
 
-void mp32prndsafe(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t)
+void mp32prndsafe_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, uint32* wksp)
 {
 	/*
 	 * Initialize with a probable safe prime of 'size' words, with probability factor t
@@ -1156,26 +1174,13 @@ void mp32prndsafe(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t
 	 * Use for ElGamal type schemes, where a generator of order (p-1) is required
 	 */
 
-	p->size = size;
-	p->data = (uint32*) calloc(size*10+4, sizeof(uint32));
+	mp32binit(p, size);
 
-	if (p->data)
-	{
-		p->modl = p->data+size+0;
-		p->mu   = p->modl+size+1;
-		p->wksp = p->mu  +size+1;
-	}
-	else
-	{
-		p->modl = p->mu = p->wksp = (uint32*) 0;
-	}
-
-	if (p->data)
+	if (p->modl != (uint32*) 0)
 	{
 		mp32barrett q;
 
-		memset(&q, 0, sizeof(mp32barrett));
-
+		mp32bzero(&q);
 		mp32binit(&q, size);
 
 		while (1)
@@ -1191,22 +1196,22 @@ void mp32prndsafe(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t
 			mp32divtwo(size, q.modl);
 
 			/* do a small prime product trial division on q */
-			if (!mp32psppdiv(&q))
+			if (!mp32psppdiv_w(&q, wksp))
 				continue;
 
 			/* do a small prime product trial division on p */
-			if (!mp32psppdiv(p))
+			if (!mp32psppdiv_w(p, wksp))
 				continue;
 
 			/* candidate prime has passed small prime division test for p and q */
-			mp32bmu(&q);
+			mp32bmu_w(&q, wksp);
 
-			if (!mp32pmilrab(&q, rc, t))
+			if (!mp32pmilrab_w(&q, rc, t, wksp))
                 continue;
 
-            mp32bmu(p);
+            mp32bmu_w(p, wksp);
 
-            if (!mp32pmilrab(p, rc, t))
+            if (!mp32pmilrab_w(p, rc, t, wksp))
 				continue;
 
 			mp32bfree(&q);

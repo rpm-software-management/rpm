@@ -3,7 +3,7 @@
  *
  * Mersenne twister pseudo-random number generator, header
  *
- * Copyright (c) 1998-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1998, 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -29,7 +29,8 @@
 #include "beecrypt.h"
 
 #if WIN32
-# include <Winbase.h>
+# include <windows.h>
+# include <winbase.h>
 #else
 # if HAVE_SYNCH_H
 #  include <synch.h>
@@ -73,13 +74,17 @@ extern "C" {
 extern BEEDLLAPI const randomGenerator mtprng;
 
 BEEDLLAPI
-int mtprngSetup  (mtprngParam*);
+int mtprngSetup  (mtprngParam* mp)
+	/*@modifies mp @*/;
 BEEDLLAPI
-int mtprngSeed   (mtprngParam*, const uint32*, int);
+int mtprngSeed   (mtprngParam* mp, const uint32* data, int size)
+	/*@modifies mp @*/;
 BEEDLLAPI
-int mtprngNext   (mtprngParam*, uint32*, int);
+int mtprngNext   (mtprngParam* mp, uint32* data, int size)
+	/*@modifies mp, data @*/;
 BEEDLLAPI
-int mtprngCleanup(mtprngParam*);
+int mtprngCleanup(mtprngParam* mp)
+	/*@modifies mp @*/;
 
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@
  *
  * Blowfish block cipher, header
  *
- * Copyright (c) 1999-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -36,6 +36,7 @@ typedef struct
 {
 	uint32 p[BLOWFISHPSIZE];
 	uint32 s[1024];
+	uint32 fdback[2];
 } blowfishParam;
 
 #ifdef __cplusplus
@@ -45,21 +46,31 @@ extern "C" {
 extern const BEEDLLAPI blockCipher blowfish;
 
 BEEDLLAPI
-int blowfishSetup  (blowfishParam*, const uint32*, int, cipherOperation);
+int blowfishSetup  (blowfishParam* bp, const uint32*, int, cipherOperation)
+	/*@modifies bp */;
 BEEDLLAPI
-int blowfishEncrypt(blowfishParam*, uint32*);
+int blowfishSetIV  (blowfishParam* bp, const uint32*)
+	/*@modifies bp */;
 BEEDLLAPI
-int blowfishDecrypt(blowfishParam*, uint32*);
+int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32*)
+	/*@modifies bp, dst */;
+BEEDLLAPI
+int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32*)
+	/*@modifies bp, dst */;
 
 BEEDLLAPI
-int blowfishECBEncrypt(blowfishParam*, int, uint32*, const uint32*);
+int blowfishECBEncrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
+	/*@modifies bp, dst */;
 BEEDLLAPI
-int blowfishECBDecrypt(blowfishParam*, int, uint32*, const uint32*);
+int blowfishECBDecrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
+	/*@modifies bp, dst */;
 
 BEEDLLAPI
-int blowfishCBCEncrypt(blowfishParam*, int, uint32*, const uint32*, const uint32*);
+int blowfishCBCEncrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
+	/*@modifies bp, dst */;
 BEEDLLAPI
-int blowfishCBCDecrypt(blowfishParam*, int, uint32*, const uint32*, const uint32*);
+int blowfishCBCDecrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
+	/*@modifies bp, dst */;
 
 #ifdef __cplusplus
 }

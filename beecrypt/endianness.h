@@ -3,7 +3,7 @@
  *
  * Endian-dependant encoding/decoding, header
  *
- * Copyright (c) 1998-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -75,7 +75,7 @@ inline uint32 swapu32(uint32 n)
 
 inline int64 swap64(int64 n)
 {
-	#if (SIZEOF_LONG == 4)
+	#if HAVE_LONG_LONG
 	return (    ((n & 0xffLL) << 56) |
 				((n & 0xff00LL) << 40) |
 				((n & 0xff0000LL) << 24) |
@@ -96,11 +96,16 @@ inline int64 swap64(int64 n)
 	#endif
 }
 #else
- int16 swap16 (int16);
-uint16 swapu16(uint16);
- int32 swap32 (int32);
-uint32 swapu32(uint32);
- int64 swap64 (int64);
+ int16 swap16 (int16 n)
+	/*@*/;
+uint16 swapu16(uint16 n)
+	/*@*/;
+ int32 swap32 (int32 n)
+	/*@*/;
+uint32 swapu32(uint32 n)
+	/*@*/;
+ int64 swap64 (int64 n)
+	/*@*/;
 #endif
 
 #ifdef __cplusplus
@@ -108,77 +113,115 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int encodeByte(javabyte, byte*);
+int encodeByte(javabyte b, byte* data)
+	/*@modifies data */;
 BEEDLLAPI
-int encodeShort(javashort, byte*);
+int encodeShort(javashort s, byte* data)
+	/*@modifies data */;
 BEEDLLAPI
-int encodeInt(javaint, byte*);
+int encodeInt(javaint i, byte* data)
+	/*@modifies data */;
 
 BEEDLLAPI
-int encodeLong(javalong, byte*);
+int encodeLong(javalong l, byte* data)
+	/*@modifies data */;
 BEEDLLAPI
-int encodeChar(javachar, byte*);
+int encodeChar(javachar c, byte* data)
+	/*@modifies data */;
 BEEDLLAPI
-int encodeFloat(javafloat, byte*);
+int encodeFloat(javafloat f, byte* data)
+	/*@modifies data */;
 BEEDLLAPI
-int encodeDouble(javadouble, byte*);
+int encodeDouble(javadouble d, byte* data)
+	/*@modifies data */;
 
 BEEDLLAPI
-int encodeInts(const javaint*, byte*, int);
+int encodeInts(const javaint* i, byte* data, int count)
+	/*@modifies data */;
 BEEDLLAPI
-int encodeChars(const javachar*, byte*, int);
+int encodeIntsPartial(const javaint* i, byte* data, int bytecount)
+	/*@modifies data */;
+BEEDLLAPI
+int encodeChars(const javachar* c, byte* data, int count)
+	/*@modifies data */;
 
 BEEDLLAPI
-int decodeByte(javabyte*, const byte*);
+int decodeByte(javabyte* b, const byte* data)
+	/*@modifies b */;
 BEEDLLAPI
-int decodeShort(javashort*, const byte*);
+int decodeShort(javashort* s, const byte* data)
+	/*@modifies s */;
 BEEDLLAPI
-int decodeInt(javaint*, const byte*);
+int decodeInt(javaint* i, const byte* data)
+	/*@modifies i */;
 BEEDLLAPI
-int decodeLong(javalong*, const byte*);
+int decodeLong(javalong* l, const byte* data)
+	/*@modifies l */;
 BEEDLLAPI
-int decodeChar(javachar*, const byte*);
+int decodeChar(javachar* c, const byte* data)
+	/*@modifies c */;
 BEEDLLAPI
-int decodeFloat(javafloat*, const byte*);
+int decodeFloat(javafloat* f, const byte* data)
+	/*@modifies f */;
 BEEDLLAPI
-int decodeDouble(javadouble*, const byte*);
+int decodeDouble(javadouble* d, const byte* data)
+	/*@modifies d */;
 
 BEEDLLAPI
-int decodeInts(javaint*, const byte*, int);
+int decodeInts(javaint* i, const byte* data, int count)
+	/*@modifies i */;
 BEEDLLAPI
-int decodeChars(javachar*, const byte*, int);
+int decodeIntsPartial(javaint* i, const byte* data, int bytecount)
+	/*@modifies i */;
+BEEDLLAPI
+int decodeChars(javachar* c, const byte* data, int count)
+	/*@modifies c */;
 
 BEEDLLAPI
-int writeByte(javabyte, FILE*);
+int writeByte(javabyte b, FILE* ofp)
+	/*@modifies ofp, fileSystem */;
 BEEDLLAPI
-int writeShort(javashort, FILE*);
+int writeShort(javashort s, FILE* ofp)
+	/*@modifies ofp, fileSystem */;
 BEEDLLAPI
-int writeInt(javaint, FILE*);
+int writeInt(javaint i, FILE* ofp)
+	/*@modifies ofp, fileSystem */;
 BEEDLLAPI
-int writeLong(javalong, FILE*);
+int writeLong(javalong l, FILE* ofp)
+	/*@modifies ofp, fileSystem */;
 BEEDLLAPI
-int writeChar(javachar, FILE*);
+int writeChar(javachar c, FILE* ofp)
+	/*@modifies ofp, fileSystem */;
 
 BEEDLLAPI
-int writeInts(const javaint*, FILE*, int);
+int writeInts(const javaint* i, FILE* ofp, int count)
+	/*@modifies ofp, fileSystem */;
 BEEDLLAPI
-int writeChars(const javachar*, FILE*, int);
+int writeChars(const javachar* c, FILE* ofp, int count)
+	/*@modifies ofp, fileSystem */;
 
 BEEDLLAPI
-int readByte(javabyte*, FILE*);
+int readByte(javabyte* b, FILE* ifp)
+	/*@modifies b, ifp, fileSystem */;
 BEEDLLAPI
-int readShort(javashort*, FILE*);
+int readShort(javashort* s, FILE* ifp)
+	/*@modifies s, ifp, fileSystem */;
 BEEDLLAPI
-int readInt(javaint*, FILE*);
+int readInt(javaint* i, FILE* ifp)
+	/*@modifies i, ifp, fileSystem */;
 BEEDLLAPI
-int readLong(javalong*, FILE*);
+int readLong(javalong* l, FILE* ifp)
+	/*@modifies l, ifp, fileSystem */;
 BEEDLLAPI
-int readChar(javachar*, FILE*);
+int readChar(javachar* c, FILE* ifp)
+	/*@modifies c, ifp, fileSystem */;
 
 BEEDLLAPI
-int readInts(javaint*, FILE*, int);
+int readInts(javaint* i, FILE* ifp, int count)
+	/*@modifies i, ifp, fileSystem */;
 BEEDLLAPI
-int readChars(javachar*, FILE*, int);
+int readChars(javachar* c, FILE* ifp, int count)
+	/*@modifies c, ifp, fileSystem */;
 
 #ifdef __cplusplus
 }

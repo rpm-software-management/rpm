@@ -39,17 +39,25 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void dlpk_pFree(dlpk_p*);
+int dlpk_pInit(dlpk_p* pk)
+	/*@modifies pk */;
 BEEDLLAPI
-void dlpk_pCopy(dlpk_p*, const dlpk_p*);
+int dlpk_pFree(dlpk_p* pk)
+	/*@modifies pk */;
+BEEDLLAPI
+int dlpk_pCopy(dlpk_p* pk, const dlpk_p*)
+	/*@modifies pk */;
 
 BEEDLLAPI
-int  dlpk_pEqual(const dlpk_p*, const dlpk_p*);
+int  dlpk_pEqual(const dlpk_p* pk, const dlpk_p*)
+	/*@*/;
 
 BEEDLLAPI
-int  dlpk_pgoqValidate(const dlpk_p*, randomGeneratorContext*, int cofactor);
+int  dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
+	/*@*/;
 BEEDLLAPI
-int  dlpk_pgonValidate(const dlpk_p*, randomGeneratorContext*);
+int  dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
+	/*@*/;
 
 #ifdef __cplusplus
 }

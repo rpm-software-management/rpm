@@ -29,8 +29,12 @@
 #include "mp32.h"
 
 #if HAVE_STDLIB_H
-# include "stdlib.h"
+# include <stdlib.h>
 #endif
+#if HAVE_MALLOC_H
+# include <malloc.h>
+#endif
+
 int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
 {
 	register uint32  size = kp->n.size;
@@ -48,6 +52,7 @@ int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
 	return -1;
 }
 
+/*@-nullpass@*/
 /* this routine doesn't work yet: needs debugging! */
 int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 {
@@ -80,7 +85,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	mp32bpowmod_w(&kp->q, qsize, temp+psize, kp->d2.size, kp->d2.data, temp+psize, wksp);
 
 	/* compute j1-j2 */
-	mp32subx(psize, temp, qsize, temp+psize);
+	(void) mp32subx(psize, temp, qsize, temp+psize);
 
 	/* compute h = c*(j1-j2) mod p */
 	mp32bmulmod_w(&kp->p, psize, temp, psize, kp->c.data, temp, wksp);
@@ -90,16 +95,17 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 
 	/* compute s = h*q + j2 */
 	mp32mul(c->data, psize, temp, qsize, kp->q.modl);
-	mp32addx(nsize, c->data, qsize, temp+psize);
+	(void) mp32addx(nsize, c->data, qsize, temp+psize);
 
 	free(temp);
 
 	return -1;
 }
+/*@=nullpass@*/
 
 /**
- * returns: 0 if signature verifies
- *          -1 otherwise, can also indicate errors
+ * returns: 1 if signature verifies
+ *          0 otherwise, can also indicate errors
  */
 int rsavrfy(const rsapk* pk, const mp32number* m, const mp32number* c)
 {

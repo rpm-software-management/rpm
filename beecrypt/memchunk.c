@@ -83,8 +83,12 @@ memchunk* memchunkResize(memchunk* m, int size)
 			m = (memchunk*) 0;
 		}
 		else
+			/*@-nullderef@*/
 			m->size = size;
+			/*@=nullderef@*/
 	}
 
+	/*@-nullret@*/	/* LCL: m->data might ve NULL */
 	return m;
+	/*@=nullret@*/
 }

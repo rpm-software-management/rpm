@@ -3,7 +3,7 @@
  *
  * Barrett modular reduction, header
  *
- * Copyright (c) 1997-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -32,10 +32,8 @@
 typedef struct
 {
 	uint32	size;
-	uint32*	data;	/* (size) words / allocated on one block of 9*size+5 words and set the other pointers appropriately */
-	uint32* modl;	/* (size+1) words */
-	uint32* mu;		/* (size+1) words */
-	uint32* wksp;	/* (6*size+4) words */
+/*@owned@*/ uint32* modl;	/* (size) words */
+/*@dependent@*/ uint32* mu;	/* (size+1) words */
 } mp32barrett;
 
 #ifdef __cplusplus
@@ -43,73 +41,109 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void mp32bzero	   (mp32barrett*);
+void mp32bzero(mp32barrett* b)
+	/*@modifies b @*/;
 BEEDLLAPI
-void mp32binit     (mp32barrett*, uint32);
+void mp32binit(mp32barrett* b, uint32 size)
+	/*@modifies b @*/;
 BEEDLLAPI
-void mp32bfree     (mp32barrett*);
+void mp32bfree(mp32barrett* b)
+	/*@modifies b @*/;
 BEEDLLAPI
-void mp32bset      (mp32barrett*, uint32, const uint32*);
+void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
+	/*@modifies b @*/;
 
 BEEDLLAPI
-void mp32bmu       (mp32barrett*);
+void mp32bset(mp32barrett* b, uint32 size, const uint32* data)
+	/*@modifies b @*/;
+BEEDLLAPI
+void mp32bsethex(mp32barrett* b, const char* hex)
+	/*@modifies b @*/;
 
 BEEDLLAPI
-void mp32brnd      (const mp32barrett*, randomGeneratorContext*);
-BEEDLLAPI
-void mp32brndres   (const mp32barrett*, uint32*, randomGeneratorContext*);
+void mp32bsubone(const mp32barrett* b, /*@out@*/ uint32* result)
+	/*@modifies result @*/;
 
 BEEDLLAPI
-void mp32bmodsubone(const mp32barrett*);
-BEEDLLAPI
-void mp32bneg      (const mp32barrett*);
+void mp32bmu_w(mp32barrett* b, /*@out@*/ uint32* wksp)
+	/*@modifies b, wksp @*/;
 
 BEEDLLAPI
-void mp32bmod      (const mp32barrett*, uint32, const uint32*);
+void mp32brnd_w   (const mp32barrett* b, randomGeneratorContext* rc, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
 BEEDLLAPI
-void mp32baddmod   (const mp32barrett*, uint32, const uint32*, uint32, const uint32*);
+void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
 BEEDLLAPI
-void mp32bsubmod   (const mp32barrett*, uint32, const uint32*, uint32, const uint32*);
+void mp32brndinv_w(const mp32barrett* b, randomGeneratorContext* rc, /*@out@*/ uint32* result, uint32* inverse, /*@out@*/ uint32* wksp)
+	/*@modifies result, inverse, wksp @*/;
 
 BEEDLLAPI
-void mp32bmulmodres(const mp32barrett*, uint32*, uint32, const uint32*, uint32, const uint32*);
+void mp32bneg_w(const mp32barrett* b, const uint32* xdata, uint32* result)
+	/*@modifies result @*/;
 BEEDLLAPI
-void mp32bsqrmodres(const mp32barrett*, uint32*, uint32, const uint32*);
+void mp32bmod_w(const mp32barrett* b, const uint32* xdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
 
 BEEDLLAPI
-void mp32bmulmod   (const mp32barrett*, uint32, const uint32*, uint32, const uint32*);
+void mp32baddmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
 BEEDLLAPI
-void mp32bsqrmod   (const mp32barrett*, uint32, const uint32*);
+void mp32bsubmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
+BEEDLLAPI
+void mp32bmulmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
+BEEDLLAPI
+void mp32bsqrmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
+BEEDLLAPI
+void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 psize, const uint32* pdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
+BEEDLLAPI
+void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, const uint32* pdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
+BEEDLLAPI
+void mp32btwopowmod_w(const mp32barrett* b, uint32 psize, const uint32* pdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
 
 BEEDLLAPI
-void mp32bpowmod   (const mp32barrett*, uint32, const uint32*, uint32, const uint32*);
-BEEDLLAPI
-void mp32btwopowmod(const mp32barrett*, uint32, const uint32*);
+int  mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@modifies result, wksp @*/;
 
-/* simultaneous multiple exponentiation, for use in dsa and elgamal signature verification */
+
+/* To be added:
+ * simultaneous multiple exponentiation, for use in dsa and elgamal signature verification
+ */
+BEEDLLAPI
+void mp32bsm2powmod(const mp32barrett* b, const uint32*, const uint32*, const uint32*, const uint32*);
+BEEDLLAPI
+void mp32bsm3powmod(const mp32barrett* b, const uint32*, const uint32*, const uint32*, const uint32*, const uint32*, const uint32*);
+
 
 BEEDLLAPI
-void mp32bsm2powmod(const mp32barrett*, const uint32*, const uint32*, const uint32*, const uint32*);
-BEEDLLAPI
-void mp32bsm3powmod(const mp32barrett*, const uint32*, const uint32*, const uint32*, const uint32*, const uint32*, const uint32*);
-
-BEEDLLAPI
-int  mp32binv      (const mp32barrett*, uint32, const uint32*);
-
-BEEDLLAPI
-int  mp32bpprime   (const mp32barrett*, randomGeneratorContext*, int);
+int  mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, /*@out@*/ uint32* wksp)
+	/*@modifies wksp @*/;
 
 /* the next routines take mp32numbers as parameters */
 
 BEEDLLAPI
-void mp32bnmulmodres(const mp32barrett*, uint32*, const mp32number*, const mp32number*);
-BEEDLLAPI
-void mp32bnsqrmodres(const mp32barrett*, uint32*, const mp32number*);
+void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, /*@out@*/ mp32number* result)
+	/*@modifies result @*/;
 
 BEEDLLAPI
-void mp32bnpowmod   (const mp32barrett*, const mp32number*, const mp32number*);
+void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y, /*@out@*/ mp32number* result)
+	/*@modifies result @*/;
 BEEDLLAPI
-void mp32bnsqrmod   (const mp32barrett*, const mp32number*);
+void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, /*@out@*/ mp32number* result)
+	/*@modifies result @*/;
+
+BEEDLLAPI
+void mp32bnpowmod   (const mp32barrett* b, const mp32number* x, const mp32number* pow, mp32number* y)
+	/*@modifies y @*/;
+BEEDLLAPI
+void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mp32number* pow, mp32number* y)
+	/*@modifies y @*/;
 
 #ifdef __cplusplus
 }

@@ -34,6 +34,12 @@
 #if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
+#if HAVE_MALLOC_H
+# include <malloc.h>
+#endif
+#if HAVE_STRING_H
+# include <string.h>
+#endif
 
 int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 {
@@ -120,7 +126,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 		/* compute d = inv(e) mod phi */
 		mp32nsize(&kp->d, nsize);
-		mp32binv_w(&phi, kp->e.size, kp->e.data, kp->d.data, temp);
+		(void) mp32binv_w(&phi, kp->e.size, kp->e.data, kp->d.data, temp);
 
 		/* compute d1 = d mod (p-1) */
 		mp32nsize(&kp->d1, pqsize);
@@ -132,7 +138,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 		/* compute c = inv(q) mod p */
 		mp32nsize(&kp->c, pqsize);
-		mp32binv_w(&kp->p, pqsize, kp->q.modl, kp->c.data, temp);
+		(void) mp32binv_w(&kp->p, pqsize, kp->q.modl, kp->c.data, temp);
 
 		free(temp);
 

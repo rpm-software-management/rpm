@@ -28,13 +28,13 @@
 #include "base64.h"
 
 #if HAVE_STDLIB_H
-#include <stdlib.h>
+# include <stdlib.h>
 #endif
 #if HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #endif
 #if HAVE_CTYPE_H
-#include <ctype.h>
+# include <ctype.h>
 #endif
 
 static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -58,6 +58,7 @@ char* b64enc(const memchunk* chunk)
 
 		chars = 0;
 
+		/*@+charindex@*/
 		while (div > 0)
 		{
 			buf[0] = to_b64[ (data[0] >> 2) & 0x3f];
@@ -94,8 +95,9 @@ char* b64enc(const memchunk* chunk)
 			chars += 4;
 			break;
 		}
+		/*@=charindex@*/
 
-		*(buf++) = '\n';
+	/* 	*(buf++) = '\n'; This would result in a buffer overrun */
 		*buf = '\0';
 	}
 
@@ -161,78 +163,65 @@ memchunk* b64dec(const char* string)
 				}
 			}
 
-			rc = (memchunk*) malloc(sizeof(memchunk));
+			rc = memchunkAlloc((count / 4) * 3 + (rem ? (rem - 1) : 0));
 
 			if (rc)
 			{
-				rc->size = (count / 4) * 3 + (rem ? (rem - 1) : 0);
 				if (count > 0)
 				{
-					rc->data = (byte*) malloc(rc->size);
+					register int i, qw = 0, tw = 0;
+					register byte* data = rc->data;
 
-					if (rc->data)
+					length = strlen(tmp = string);
+
+					for (i = 0; i < length; i++)
 					{
-						register int i, qw = 0, tw = 0;
-						register byte* data = rc->data;
+						register char ch = string[i];
+						register byte bits;
 
-						length = strlen(tmp = string);
+						if (isspace(ch))
+							continue;
 
-						for (i = 0; i < length; i++)
+						if ((ch >= 'A') && (ch <= 'Z'))
 						{
-							register char ch = string[i];
-							register byte bits;
+							bits = (byte) (ch - 'A');
+						}
+						else if ((ch >= 'a') && (ch <= 'z'))
+						{
+							bits = (byte) (ch - 'a' + 26);
+						}
+						else if ((ch >= '0') && (ch <= '9'))
+						{
+							bits = (byte) (ch - '0' + 52);
+						}
+						else if (ch == '=')
+							break;
 
-							if (isspace(ch))
-								continue;
+						switch (qw++)
+						{
+						case 0:
+							data[tw+0] = (bits << 2) & 0xfc;
+							break;
+						case 1:
+							data[tw+0] |= (bits >> 4) & 0x03;
+							data[tw+1] = (bits << 4) & 0xf0;
+							break;
+						case 2:
+							data[tw+1] |= (bits >> 2) & 0x0f;
+							data[tw+2] = (bits << 6) & 0xc0;
+							break;
+						case 3:
+							data[tw+2] |= bits & 0x3f;
+							break;
+						}
 
-							if ((ch >= 'A') && (ch <= 'Z'))
-							{
-								bits = (byte) (ch - 'A');
-							}
-							else if ((ch >= 'a') && (ch <= 'z'))
-							{
-								bits = (byte) (ch - 'a' + 26);
-							}
-							else if ((ch >= '0') && (ch <= '9'))
-							{
-								bits = (byte) (ch - '0' + 52);
-							}
-							else if (ch == '=')
-								break;
-
-							switch (qw++)
-							{
-							case 0:
-								data[tw+0] = (bits << 2) & 0xfc;
-								break;
-							case 1:
-								data[tw+0] |= (bits >> 4) & 0x03;
-								data[tw+1] = (bits << 4) & 0xf0;
-								break;
-							case 2:
-								data[tw+1] |= (bits >> 2) & 0x0f;
-								data[tw+2] = (bits << 6) & 0xc0;
-								break;
-							case 3:
-								data[tw+2] |= bits & 0x3f;
-								break;
-							}
-
-							if (qw == 4)
-							{
-								qw = 0;
-								tw += 3;
-							}
+						if (qw == 4)
+						{
+							qw = 0;
+							tw += 3;
 						}
 					}
-					else
-					{
-						free(rc);
-						rc = (memchunk*) 0;
-					}
 				}
-				else
-					rc->data = (byte*) 0;
 			}
 		}
 	}

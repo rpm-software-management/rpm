@@ -33,9 +33,11 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-int blockEncrypt(const blockCipher*, blockCipherParam*, cipherMode, int, uint32*, const uint32*, const uint32*);
+int blockEncrypt(const blockCipher*, blockCipherParam*, cipherMode, int, uint32*, const uint32*)
+	/*@*/;
 BEEDLLAPI
-int blockDecrypt(const blockCipher*, blockCipherParam*, cipherMode, int, uint32*, const uint32*, const uint32*);
+int blockDecrypt(const blockCipher*, blockCipherParam*, cipherMode, int, uint32*, const uint32*)
+	/*@*/;
 
 #ifdef __cplusplus
 }
