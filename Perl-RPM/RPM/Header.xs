@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.18 2000/10/08 10:06:58 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.19 2000/10/12 05:09:16 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -22,6 +22,39 @@ static int scalar_tag(pTHX_ SV *, int);
     hv_fetch_nomg((s_ptr), (object), STRUCT_KEY, STRUCT_KEY_LEN, FALSE); \
     (header) = ((s_ptr) && SvOK(*(s_ptr))) ? (RPM_Header *)SvIV(*(s_ptr)) : NULL;
 
+
+/* Any constants that are specific to the RPM::Header class will be exported
+   from here, via this C-level constant() routine */
+static int constant(pTHX_ char *name)
+{
+    errno = 0;
+
+    if (strncmp((const char *)name, "RPM_HEADER_", 11))
+    {
+        errno = ENOENT;
+        return 0;
+    }
+    else
+    {
+        name += 11;
+        switch (*name)
+        {
+          case 'M':
+            if (strEQ(name, "MASK"))
+#ifdef RPM_HEADER_MASK
+                return RPM_HEADER_MASK;
+#endif
+          case 'R':
+            if (strEQ(name, "READONLY"))
+#ifdef RPM_HEADER_READONLY
+                return RPM_HEADER_READONLY;
+#endif
+          default:
+            errno = EINVAL;
+            return 0;
+        }
+    }
+}
 
 /* Some simple functions to manage key-to-SV* transactions, since these
    gets used frequently. */
@@ -434,7 +467,7 @@ int rpmhdr_STORE(pTHX_ RPM__Header self, SV* key, SV* value)
         rpm_error(aTHX_ RPMERR_BADARG, errmsg);
         return 0;
     }
-    is_scalar = scalar_tag(Nullsv, num_ent);
+    is_scalar = scalar_tag(aTHX_ Nullsv, num_ent);
     if (SvROK(value))
     {
         /*
@@ -1367,5 +1400,14 @@ rpmhdr_source_name(self)
     PROTOTYPE: $
     CODE:
     RETVAL = rpmhdr_source_name(self);
+    OUTPUT:
+    RETVAL
+
+int
+constant(name)
+    char* name;
+    PROTOTYPE: $
+    CODE:
+    RETVAL = constant(aTHX_ name);
     OUTPUT:
     RETVAL
