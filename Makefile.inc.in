@@ -17,6 +17,6 @@ CFLAGS = -I$(topdir) -I$(topsrcdir) @CFLAGS@ @INCPATH@ $(OPTS) \
 	  -I$(topsrcdir)/lib -I$(topsrcdir)/misc
 LDFLAGS = @LDFLAGS@ -L$(topdir)/lib -L$(topdir)/build -L$(topdir)/misc \
 	  -L$(topdir)/popt
-VERSION = 2.5.1
+VERSION = 2.5.2
 CC = @CC@
 
