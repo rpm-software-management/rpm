@@ -242,7 +242,7 @@ fi
 /usr/include/popt.h
 
 %changelog
-* Wed May 24 2000 Jeff Johnson <jbj@redhat.com>
+* Wed May 26 2000 Jeff Johnson <jbj@redhat.com>
 - change popt exec alias in oreder to exec rpm children.
 - split rpm into 5 pieces along major mode fault lines with popt glue.
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-05-26 14:39-0400\n"
+"POT-Creation-Date: 2000-05-26 14:53-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,107 +65,107 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr ""
 
-#: build.c:386
+#: build.c:385
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:412
+#: build.c:411
 msgid "build through %%prep stage from spec file"
 msgstr ""
 
-#: build.c:414
+#: build.c:413
 msgid "build through %%build stage from spec file"
 msgstr ""
 
-#: build.c:416
+#: build.c:415
 msgid "build through %%install stage from spec file"
 msgstr ""
 
-#: build.c:418
+#: build.c:417
 msgid "verify %%files section from spec file"
 msgstr ""
 
-#: build.c:420
+#: build.c:419
 msgid "build source and binary package from spec file"
 msgstr ""
 
-#: build.c:422
+#: build.c:421
 msgid "build binary package from spec file"
 msgstr ""
 
-#: build.c:424
+#: build.c:423
 msgid "build source package from spec file"
 msgstr ""
 
-#: build.c:427
+#: build.c:426
 msgid "build through %%prep stage from tar ball"
 msgstr ""
 
-#: build.c:429
+#: build.c:428
 msgid "build through %%build stage from tar ball"
 msgstr ""
 
-#: build.c:431
+#: build.c:430
 msgid "build through %%install stage from tar ball"
 msgstr ""
 
-#: build.c:433
+#: build.c:432
 msgid "verify %%files section from tar ball"
 msgstr ""
 
-#: build.c:435
+#: build.c:434
 msgid "build source and binary package from tar ball"
 msgstr ""
 
-#: build.c:437
+#: build.c:436
 msgid "build binary package from tar ball"
 msgstr ""
 
-#: build.c:439
+#: build.c:438
 msgid "build source package from tar ball"
 msgstr ""
 
-#: build.c:442
+#: build.c:441
 msgid "build binary package from source package"
 msgstr ""
 
-#: build.c:444
+#: build.c:443
 msgid "build through %%install stage from source package"
 msgstr ""
 
-#: build.c:447
+#: build.c:446
 msgid "override build root"
 msgstr ""
 
-#: build.c:449 rpm.c:485
+#: build.c:448 rpm.c:485
 msgid "remove build tree when done"
 msgstr ""
 
-#: build.c:451
+#: build.c:450
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: build.c:453
+#: build.c:452
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:455 rpm.c:487
+#: build.c:454 rpm.c:487
 msgid "remove sources when done"
 msgstr ""
 
-#: build.c:457
+#: build.c:456
 msgid "remove specfile when done"
 msgstr ""
 
-#: build.c:459 rpm.c:483
+#: build.c:458 rpm.c:483
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build.c:461
+#: build.c:460
 msgid "override target platform"
 msgstr ""
 
-#: build.c:463
+#: build.c:462
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -2738,79 +2738,79 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/query.c:770
+#: lib/query.c:769
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:772
+#: lib/query.c:771
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:774
+#: lib/query.c:773
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:776
+#: lib/query.c:775
 msgid "rpm query mode"
 msgstr ""
 
-#: lib/query.c:780
+#: lib/query.c:779
 msgid "display known query tags"
 msgstr ""
 
-#: lib/query.c:782
+#: lib/query.c:781
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:784
+#: lib/query.c:783
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:786
+#: lib/query.c:785
 msgid "rpm verify mode"
 msgstr ""
 
-#: lib/query.c:788
+#: lib/query.c:787
 msgid "rpm verify mode (legacy)"
 msgstr ""
 
-#: lib/query.c:790
+#: lib/query.c:789
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:792
+#: lib/query.c:791
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:833
+#: lib/query.c:831
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:835
+#: lib/query.c:833
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:837
+#: lib/query.c:835
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:839
+#: lib/query.c:837
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:843
+#: lib/query.c:841
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:845
+#: lib/query.c:843
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/query.c:847
+#: lib/query.c:845
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:849
+#: lib/query.c:847
 msgid "display a verbose file listing"
 msgstr ""
 
