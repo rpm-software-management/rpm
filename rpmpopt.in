@@ -111,12 +111,12 @@ rpm	alias --httpproxy	--define '_httpproxy !#:+'
 rpm	alias --timecheck	--define '_timecheck !#:+'
 
 #==============================================================================
-rpm	exec -b			rpmb -b
-rpm	exec --build		rpmb --build
-rpm	exec --rebuild		rpmb --rebuild
-rpm	exec --recompile	rpmb --recompile
-rpm	exec -t			rpmt -t
-rpm	exec --tarbuild		rpmt --tarbuild
+#rpm	exec -b			rpmb -b
+#rpm	exec --build		rpmb --build
+#rpm	exec --rebuild		rpmb --rebuild
+#rpm	exec --recompile	rpmb --recompile
+#rpm	exec -t			rpmt -t
+#rpm	exec --tarbuild		rpmt --tarbuild
 
 rpm	exec --initdb		rpmdb --initdb
 rpm	exec --rebuilddb	rpmdb --rebuilddb
