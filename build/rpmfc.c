@@ -45,7 +45,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
  * @return		buffered stdout from script, NULL on error
  */     
 /*@null@*/
-static StringBuf getOutputFrom(/*@null@*/ const char * dir, char * argv[],
+static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
                         const char * writePtr, int writeBytesLeft,
                         int failNonZero)
         /*@globals fileSystem, internalState@*/
@@ -83,7 +83,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, char * argv[],
 	}
 	
 	unsetenv("MALLOC_CHECK_");
-	(void) execvp(argv[0], argv);
+	(void) execvp(argv[0], (char *const *)argv);
 	/* XXX this error message is probably not seen. */
 	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
@@ -705,8 +705,6 @@ static int rpmfcELF(rpmfc fc)
 			    auxoffset += aux->vda_next;
 			    /*@innercontinue@*/ continue;
 			}
-assert(soname != NULL);
-
 			buf[0] = '\0';
 			t = buf;
 			sprintf(t, "%08d%c ", fc->ix, deptype);

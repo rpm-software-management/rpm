@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-26 10:25-0400\n"
+"POT-Creation-Date: 2002-11-08 14:27-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -448,166 +448,166 @@ msgstr "&& と || は文字列用にサポートされていません"
 msgid "syntax error in expression\n"
 msgstr "式中で文法エラー"
 
-#: build/files.c:296
+#: build/files.c:294
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK 失敗: %s\n"
 
-#: build/files.c:361 build/files.c:561 build/files.c:756
+#: build/files.c:359 build/files.c:559 build/files.c:754
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "%s %s で '('が見つかりません"
 
-#: build/files.c:372 build/files.c:690 build/files.c:767
+#: build/files.c:370 build/files.c:688 build/files.c:765
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "')' がありません %s(%s "
 
-#: build/files.c:410 build/files.c:715
+#: build/files.c:408 build/files.c:713
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "無効な %s のトークン: %s"
 
-#: build/files.c:520
+#: build/files.c:518
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s %s で '('が見つかりません"
 
-#: build/files.c:577
+#: build/files.c:575
 #, fuzzy, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "%s() に続く空白がありません: %s"
 
-#: build/files.c:615
+#: build/files.c:613
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "不正な文法: %s(%s)"
 
-#: build/files.c:625
+#: build/files.c:623
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "不正なモードスペック: %s(%s)"
 
-#: build/files.c:637
+#: build/files.c:635
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "不正なディレクトリモードスペック: %s(%s)"
 
-#: build/files.c:794
+#: build/files.c:792
 #, fuzzy, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "異常なロカール長: \"%.*s\"  %%lang(%s)"
 
 #. @innercontinue@
-#: build/files.c:805
+#: build/files.c:803
 #, fuzzy, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "複数のロカール %.*s %%lang(%s)"
 
-#: build/files.c:975
+#: build/files.c:931
 #, fuzzy, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "%%docdir の限界に達しました"
 
-#: build/files.c:981
+#: build/files.c:937
 #, fuzzy, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir の引数は1つのみです"
 
 #. We already got a file -- error
-#: build/files.c:1016
+#: build/files.c:968
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "1行に2つのファイル: %s"
 
-#: build/files.c:1031
+#: build/files.c:983
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "ファイルは \"/\" から始まらなければなりません: %s"
 
-#: build/files.c:1044
+#: build/files.c:996
 #, fuzzy, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 
-#: build/files.c:1198
+#: build/files.c:1147
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:1349
+#: build/files.c:1286
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1613
+#: build/files.c:1535
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1637
+#: build/files.c:1559
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1847
+#: build/files.c:1759
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1871
+#: build/files.c:1783
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "%d 行目: バージョンは許可されていません: %s"
 
-#: build/files.c:1888 lib/rpminstall.c:343
+#: build/files.c:1800 lib/rpminstall.c:343
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1948
+#: build/files.c:1860
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1959 build/pack.c:156
+#: build/files.c:1871 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "行目: %s"
 
-#: build/files.c:2346
+#: build/files.c:2258
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:2358 build/parsePrep.c:50
+#: build/files.c:2270 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2513
+#: build/files.c:2410
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:2519 build/files.c:2534
+#: build/files.c:2416 build/files.c:2427
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:2665
+#: build/files.c:2556
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "パッケージ %s の探索中\n"
 
-#: build/files.c:2686
+#: build/files.c:2577
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2727
+#: build/files.c:2605
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -1771,7 +1771,7 @@ msgid "debug URL cache handling"
 msgstr ""
 
 #. @-nullpass@
-#: lib/poptALL.c:366
+#: lib/poptALL.c:362
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""

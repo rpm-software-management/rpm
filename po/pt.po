@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-10-26 10:25-0400\n"
+"POT-Creation-Date: 2002-11-08 14:27-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -425,166 +425,166 @@ msgstr "&& e || não suportados em cadeias de caracteres\n"
 msgid "syntax error in expression\n"
 msgstr "erro de sintaxe na expressão\n"
 
-#: build/files.c:296
+#: build/files.c:294
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "Falha no TIMECHECK: %s\n"
 
-#: build/files.c:361 build/files.c:561 build/files.c:756
+#: build/files.c:359 build/files.c:559 build/files.c:754
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Falta um '(' em %s %s\n"
 
-#: build/files.c:372 build/files.c:690 build/files.c:767
+#: build/files.c:370 build/files.c:688 build/files.c:765
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Falta um ')' em %s(%s\n"
 
-#: build/files.c:410 build/files.c:715
+#: build/files.c:408 build/files.c:713
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Elemento %s inválido: %s\n"
 
-#: build/files.c:520
+#: build/files.c:518
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Falta um %s em %s %s\n"
 
-#: build/files.c:577
+#: build/files.c:575
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Carácter sem ser espaço a seguir a %s(): %s\n"
 
-#: build/files.c:615
+#: build/files.c:613
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Sintaxe inválida: %s(%s)\n"
 
-#: build/files.c:625
+#: build/files.c:623
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Spec de modo inválido: %s(%s)\n"
 
-#: build/files.c:637
+#: build/files.c:635
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Spec de dirmode inválido: %s(%s)\n"
 
-#: build/files.c:794
+#: build/files.c:792
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Tamanho anormal do locale: \"%.*s\" no %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:805
+#: build/files.c:803
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Locale %.*s duplicado no %%lang(%s)\n"
 
-#: build/files.c:975
+#: build/files.c:931
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Limite atingido para o %%docdir\n"
 
-#: build/files.c:981
+#: build/files.c:937
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Só um argumento no %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:1016
+#: build/files.c:968
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dois ficheiros na mesma linha: %s\n"
 
-#: build/files.c:1031
+#: build/files.c:983
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "O ficheiro tem de começar por \"/\": %s\n"
 
-#: build/files.c:1044
+#: build/files.c:996
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Não é possível misturar o %%doc especial com outras formas: %s\n"
 
-#: build/files.c:1198
+#: build/files.c:1147
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Ficheiro listado duas vezes: %s\n"
 
-#: build/files.c:1349
+#: build/files.c:1286
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "A 'symlink' aponta para a BuildRoot: %s -> %s\n"
 
-#: build/files.c:1613
+#: build/files.c:1535
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "O ficheiro não corresponde ao prefixo (%s): %s\n"
 
-#: build/files.c:1637
+#: build/files.c:1559
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Ficheiro não encontrado: %s\n"
 
-#: build/files.c:1847
+#: build/files.c:1759
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O ficheiro precisa de começar por \"/\": %s\n"
 
-#: build/files.c:1871
+#: build/files.c:1783
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob não permitido: %s\n"
 
-#: build/files.c:1888 lib/rpminstall.c:343
+#: build/files.c:1800 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Ficheiro não encontrado pelo glob: %s\n"
 
-#: build/files.c:1948
+#: build/files.c:1860
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Não consegui abrir o ficheiro do %%files %s: %s\n"
 
-#: build/files.c:1959 build/pack.c:156
+#: build/files.c:1871 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
 
-#: build/files.c:2346
+#: build/files.c:2258
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ficheiro inválido: %s: %s\n"
 
-#: build/files.c:2358 build/parsePrep.c:50
+#: build/files.c:2270 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Dono/grupo inválido: %s\n"
 
-#: build/files.c:2513
+#: build/files.c:2410
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "A procurar o %s: (usando o %s)...\n"
 
-#: build/files.c:2519 build/files.c:2534
+#: build/files.c:2416 build/files.c:2427
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Não consegui encontrar o %s:\n"
 
-#: build/files.c:2665
+#: build/files.c:2556
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "a abertura do pacote falhou%s%s: %s\n"
 
-#: build/files.c:2686
+#: build/files.c:2577
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2727
+#: build/files.c:2605
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "A processar os ficheiros: %s-%s-%s\n"
@@ -1726,7 +1726,7 @@ msgid "debug URL cache handling"
 msgstr "depurar a gestão da 'cache' de URLs"
 
 #. @-nullpass@
-#: lib/poptALL.c:366
+#: lib/poptALL.c:362
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""

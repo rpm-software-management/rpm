@@ -1,7 +1,7 @@
 #ifndef SECTIONS_H
 #define SECTIONS_H
 
-#include <libelf/gelf.h>
+#include <gelf.h>
 
 typedef struct {
   GElf_Word debug_section; /* Section index in debug file. */

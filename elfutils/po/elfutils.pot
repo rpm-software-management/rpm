@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-10-26 10:26-0400\n"
+"POT-Creation-Date: 2002-11-08 14:27-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,7 +108,7 @@ msgid "%s: INTERNAL ERROR: %s"
 msgstr ""
 
 #: src/nm.c:215 src/readelf.c:351 src/size.c:186 src/strip.c:158 src/ld.c:789
-#: src/elflint.c:213
+#: src/elflint.c:214
 #, c-format
 msgid ""
 "Copyright (C) %s Red Hat, Inc.\n"
@@ -117,13 +117,13 @@ msgid ""
 msgstr ""
 
 #: src/nm.c:220 src/readelf.c:356 src/size.c:191 src/strip.c:163 src/ld.c:794
-#: src/elflint.c:218
+#: src/elflint.c:219
 #, c-format
 msgid "Written by %s.\n"
 msgstr ""
 
 #: src/nm.c:311 src/readelf.c:338 src/size.c:263 src/strip.c:199
-#: src/elflint.c:200
+#: src/elflint.c:201
 msgid "Report bugs to <drepper@redhat.com>.\n"
 msgstr ""
 
@@ -142,15 +142,15 @@ msgstr ""
 msgid "%s%s%s: file format not recognized"
 msgstr ""
 
-#: src/nm.c:702 src/nm.c:1048 src/readelf.c:664 src/readelf.c:794
+#: src/nm.c:717 src/nm.c:1067 src/readelf.c:664 src/readelf.c:794
 #: src/readelf.c:878 src/readelf.c:1062 src/readelf.c:1282 src/readelf.c:1434
 #: src/readelf.c:1608 src/readelf.c:1865 src/readelf.c:1941 src/readelf.c:2029
 #: src/readelf.c:2309 src/readelf.c:3726 src/size.c:404 src/size.c:478
-#: src/strip.c:344
+#: src/strip.c:345
 msgid "cannot get section header string table index"
 msgstr ""
 
-#: src/nm.c:720
+#: src/nm.c:735
 #, c-format
 msgid ""
 "\n"
@@ -159,7 +159,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/nm.c:722
+#: src/nm.c:737
 #, c-format
 msgid ""
 "\n"
@@ -168,29 +168,29 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/nm.c:725
+#: src/nm.c:740
 #, c-format
 msgid ""
 "%*s%-*s %-*s Class  Type     %-*s Line          Section\n"
 "\n"
 msgstr ""
 
-#: src/nm.c:1058
+#: src/nm.c:1077
 #, c-format
 msgid "%s: entry size in section `%s' is not what we expect"
 msgstr ""
 
-#: src/nm.c:1062
+#: src/nm.c:1081
 #, c-format
 msgid "%s: size of section `%s' is not multiple of entry size"
 msgstr ""
 
-#: src/nm.c:1161
+#: src/nm.c:1180
 #, c-format
 msgid "%s%s%s%s: Invalid operation"
 msgstr ""
 
-#: src/nm.c:1219
+#: src/nm.c:1238
 #, c-format
 msgid "%s%s%s: no symbols"
 msgstr ""
@@ -249,25 +249,25 @@ msgstr ""
 msgid "Print information from ELF file in human-readable form."
 msgstr ""
 
-#: src/readelf.c:78 src/elflint.c:62
+#: src/readelf.c:78 src/elflint.c:63
 msgid "FILE..."
 msgstr ""
 
-#: src/readelf.c:216 src/elflint.c:133
+#: src/readelf.c:216 src/elflint.c:134
 msgid "cannot open input file"
 msgstr ""
 
-#: src/readelf.c:223 src/elflint.c:140
+#: src/readelf.c:223 src/elflint.c:141
 #, c-format
 msgid "cannot generate Elf descriptor: %s\n"
 msgstr ""
 
-#: src/readelf.c:231 src/elflint.c:150
+#: src/readelf.c:231 src/elflint.c:151
 #, c-format
 msgid "error while closing Elf descriptor: %s"
 msgstr ""
 
-#: src/readelf.c:411 src/elflint.c:272
+#: src/readelf.c:411 src/elflint.c:273
 #, c-format
 msgid " error while freeing sub-ELF descriptor: %s\n"
 msgstr ""
@@ -280,11 +280,11 @@ msgstr ""
 msgid "input file is empty"
 msgstr ""
 
-#: src/readelf.c:424 src/elflint.c:280
+#: src/readelf.c:424 src/elflint.c:281
 msgid "Not an ELF file - it has the wrong magic bytes at the start"
 msgstr ""
 
-#: src/readelf.c:451 src/elflint.c:1826
+#: src/readelf.c:451 src/elflint.c:1935
 #, c-format
 msgid "cannot read ELF header: %s"
 msgstr ""
@@ -293,7 +293,7 @@ msgstr ""
 msgid "cannot create EBL handle"
 msgstr ""
 
-#: src/readelf.c:465 src/strip.c:374 src/ldgeneric.c:587 src/ldgeneric.c:978
+#: src/readelf.c:465 src/strip.c:375 src/ldgeneric.c:587 src/ldgeneric.c:978
 #, c-format
 msgid "cannot determine number of sections: %s"
 msgstr ""
@@ -1131,52 +1131,52 @@ msgstr ""
 msgid "cannot set access and modification date of \"%s\""
 msgstr ""
 
-#: src/strip.c:331
+#: src/strip.c:332
 #, c-format
 msgid "cannot open `%s'"
 msgstr ""
 
-#: src/strip.c:353
+#: src/strip.c:354
 #, c-format
 msgid "cannot create new file `%s': %s"
 msgstr ""
 
-#: src/strip.c:412
+#: src/strip.c:413
 #, c-format
 msgid "illformed file `%s'"
 msgstr ""
 
-#: src/strip.c:643
+#: src/strip.c:651
 #, c-format
 msgid "while preparing output for `%s'"
 msgstr ""
 
-#: src/strip.c:655
+#: src/strip.c:663
 #, c-format
 msgid "while generating output file: %s"
 msgstr ""
 
-#: src/strip.c:692
+#: src/strip.c:700
 #, c-format
 msgid "while create section header section: %s"
 msgstr ""
 
-#: src/strip.c:837
+#: src/strip.c:880
 #, c-format
 msgid "%s: error while creating ELF header: %s"
 msgstr ""
 
-#: src/strip.c:845
+#: src/strip.c:888
 #, c-format
 msgid "%s: error while reading the file: %s"
 msgstr ""
 
-#: src/strip.c:853
+#: src/strip.c:896
 #, c-format
 msgid "while writing `%s': %s"
 msgstr ""
 
-#: src/strip.c:867
+#: src/strip.c:910
 #, c-format
 msgid "error while finishing `%s': %s"
 msgstr ""
@@ -1756,643 +1756,655 @@ msgstr ""
 msgid "default visibility set as local and global"
 msgstr ""
 
-#: src/elflint.c:52
+#: src/elflint.c:53
 msgid "Be extremely strict, flag level 2 features."
 msgstr ""
 
-#: src/elflint.c:53
+#: src/elflint.c:54
 msgid "Do not print anything if successful"
 msgstr ""
 
-#: src/elflint.c:58
+#: src/elflint.c:59
 msgid "Pedantic checking of ELF files compliance with gABI/psABI spec."
 msgstr ""
 
-#: src/elflint.c:154
+#: src/elflint.c:155
 msgid "No errors"
 msgstr ""
 
-#: src/elflint.c:329 src/elflint.c:331 src/elflint.c:333 src/elflint.c:335
+#: src/elflint.c:330 src/elflint.c:332 src/elflint.c:334 src/elflint.c:336
 #, c-format
 msgid "e_ident[%d] != '%c'"
 msgstr ""
 
-#: src/elflint.c:339
+#: src/elflint.c:340
 #, c-format
 msgid "e_ident[%d] == %d is no known class"
 msgstr ""
 
-#: src/elflint.c:344
+#: src/elflint.c:345
 #, c-format
 msgid "e_ident[%d] == %d is no known data encoding"
 msgstr ""
 
-#: src/elflint.c:349
+#: src/elflint.c:350
 #, c-format
 msgid "unknown ELF header version number e_ident[%d] == %d"
 msgstr ""
 
-#: src/elflint.c:354
+#: src/elflint.c:355
 #, c-format
 msgid "unsupported OS ABI e_ident[%d] == \"%s\""
 msgstr ""
 
-#: src/elflint.c:360
+#: src/elflint.c:361
 #, c-format
 msgid "unsupport ABI version e_ident[%d] == %d"
 msgstr ""
 
-#: src/elflint.c:365
+#: src/elflint.c:366
 #, c-format
 msgid "e_ident[%d] is not zero"
 msgstr ""
 
-#: src/elflint.c:370
+#: src/elflint.c:371
 #, c-format
 msgid "unknown object file type %d"
 msgstr ""
 
-#: src/elflint.c:377
+#: src/elflint.c:378
 #, c-format
 msgid "unknown machine type %d"
 msgstr ""
 
-#: src/elflint.c:381
+#: src/elflint.c:382
 msgid "unknown object file version"
 msgstr ""
 
-#: src/elflint.c:387
+#: src/elflint.c:388
 msgid "invalid program header offset"
 msgstr ""
 
-#: src/elflint.c:389
+#: src/elflint.c:390
 msgid "executables and DSOs cannot have zero program header offset"
 msgstr ""
 
-#: src/elflint.c:393
+#: src/elflint.c:394
 msgid "invalid number of program header entries"
 msgstr ""
 
-#: src/elflint.c:401
+#: src/elflint.c:402
 msgid "invalid section header table offset"
 msgstr ""
 
-#: src/elflint.c:404
+#: src/elflint.c:405
 msgid "section header table must be present"
 msgstr ""
 
-#: src/elflint.c:420
+#: src/elflint.c:421
 msgid "invalid number of section header table entries"
 msgstr ""
 
-#: src/elflint.c:439 src/elflint.c:445
+#: src/elflint.c:440 src/elflint.c:446
 msgid "invalid section header index"
 msgstr ""
 
-#: src/elflint.c:450
+#: src/elflint.c:451
 #, c-format
 msgid "invalid machine flags: %s"
 msgstr ""
 
-#: src/elflint.c:457 src/elflint.c:470
+#: src/elflint.c:458 src/elflint.c:471
 #, c-format
 msgid "invalid ELF header size: %hd"
 msgstr ""
 
-#: src/elflint.c:460 src/elflint.c:473
+#: src/elflint.c:461 src/elflint.c:474
 #, c-format
 msgid "invalid program header size: %hd"
 msgstr ""
 
-#: src/elflint.c:464 src/elflint.c:477
+#: src/elflint.c:465 src/elflint.c:478
 #, c-format
 msgid "invalid section header size: %hd"
 msgstr ""
 
-#: src/elflint.c:527
+#: src/elflint.c:528
 #, c-format
 msgid ""
 "section [%2d] '%s': section with SHF_GROUP flag set not part of a section "
 "group"
 msgstr ""
 
-#: src/elflint.c:531
+#: src/elflint.c:532
 #, c-format
 msgid ""
 "section [%2d] '%s': section group [%2d] '%s' does not preceed group member"
 msgstr ""
 
-#: src/elflint.c:566 src/elflint.c:754 src/elflint.c:839 src/elflint.c:975
-#: src/elflint.c:1214
+#: src/elflint.c:567 src/elflint.c:754 src/elflint.c:840 src/elflint.c:977
+#: src/elflint.c:1216
 #, c-format
 msgid "section [%2d] '%s': cannot get section data"
 msgstr ""
 
-#: src/elflint.c:572 src/elflint.c:982
+#: src/elflint.c:573 src/elflint.c:984
 #, c-format
 msgid ""
 "section [%2d] '%s': referenced as string table for section [%2d] '%s' but "
 "type is not SHT_STRTAB"
 msgstr ""
 
-#: src/elflint.c:600
+#: src/elflint.c:601
 #, c-format
 msgid "section [%2d] '%s': entry size is does not match ElfXX_Sym"
 msgstr ""
 
-#: src/elflint.c:607 src/elflint.c:647
+#: src/elflint.c:608 src/elflint.c:648
 #, c-format
 msgid "section [%2d] '%s': cannot get symbol %d: %s"
 msgstr ""
 
-#: src/elflint.c:613 src/elflint.c:617 src/elflint.c:621 src/elflint.c:625
-#: src/elflint.c:629 src/elflint.c:633
+#: src/elflint.c:614 src/elflint.c:618 src/elflint.c:622 src/elflint.c:626
+#: src/elflint.c:630 src/elflint.c:634
 #, c-format
 msgid "section [%2d] '%s': '%s' in zeroth entry not zero"
 msgstr ""
 
-#: src/elflint.c:636
+#: src/elflint.c:637
 #, c-format
 msgid "section [%2d] '%s': XINDEX for zeroth entry not zero"
 msgstr ""
 
-#: src/elflint.c:654
+#: src/elflint.c:655
 #, c-format
 msgid "section [%2d] '%s': symbol %d: invalid name value"
 msgstr ""
 
-#: src/elflint.c:661
+#: src/elflint.c:662
 #, c-format
 msgid ""
 "section [%2d] '%s': symbol %d: too large section index but no extended "
 "section index section"
 msgstr ""
 
-#: src/elflint.c:666
+#: src/elflint.c:667
 #, c-format
 msgid ""
 "section [%2d] '%s': symbol %d: XINDEX used for index which would fit in "
 "st_shndx (%<PRIu32>)"
 msgstr ""
 
-#: src/elflint.c:678
+#: src/elflint.c:679
 #, c-format
 msgid "section [%2d] '%s': symbol %d: invalid section index"
 msgstr ""
 
-#: src/elflint.c:685
+#: src/elflint.c:686
 #, c-format
 msgid "section [%2d] '%s': symbol %d: unknown type"
 msgstr ""
 
-#: src/elflint.c:689
+#: src/elflint.c:690
 #, c-format
 msgid "section [%2d] '%s': symbol %d: unknow symbol binding"
 msgstr ""
 
-#: src/elflint.c:701
+#: src/elflint.c:702
 #, c-format
 msgid "section [%2d] '%s': symbol %d: st_value out of bounds"
 msgstr ""
 
-#: src/elflint.c:709
-#, c-format
-msgid ""
-"section [%2d] '%s': symbol %d: dynamic symbol table contain local symbol"
-msgstr ""
-
-#: src/elflint.c:713
+#: src/elflint.c:710
 #, c-format
 msgid ""
 "section [%2d] '%s': symbol %d: local symbol outside range described in "
 "sh_info"
 msgstr ""
 
-#: src/elflint.c:720
+#: src/elflint.c:717
 #, c-format
 msgid ""
 "section [%2d] '%s': symbol %d: non-local symbol outside range described in "
 "sh_info"
 msgstr ""
 
-#: src/elflint.c:727
+#: src/elflint.c:724
 #, c-format
 msgid "section [%2d] '%s': symbol %d: non-local section symbol"
 msgstr ""
 
-#: src/elflint.c:762 src/elflint.c:847
+#: src/elflint.c:762 src/elflint.c:848
 #, c-format
 msgid "section [%2d] '%s': invalid destination section index"
 msgstr ""
 
-#: src/elflint.c:771 src/elflint.c:856
+#: src/elflint.c:772 src/elflint.c:858
 #, c-format
 msgid "section [%2d] '%s': invalid destination section type"
 msgstr ""
 
-#: src/elflint.c:777
+#: src/elflint.c:778
 #, c-format
 msgid "section [%2d] '%s': section entry size does not match ElfXX_Rela"
 msgstr ""
 
-#: src/elflint.c:792 src/elflint.c:877
+#: src/elflint.c:793 src/elflint.c:879
 #, c-format
 msgid "section [%2d] '%s': cannot get relocation %d: %s"
 msgstr ""
 
-#: src/elflint.c:799 src/elflint.c:884
+#: src/elflint.c:800 src/elflint.c:886
 #, c-format
 msgid "section [%2d] '%s': relocation %d: invalid type"
 msgstr ""
 
-#: src/elflint.c:806 src/elflint.c:891
+#: src/elflint.c:807 src/elflint.c:893
 #, c-format
 msgid "section [%2d] '%s': relocation %d: invalid symbol index"
 msgstr ""
 
-#: src/elflint.c:812 src/elflint.c:898
+#: src/elflint.c:813 src/elflint.c:900
 #, c-format
 msgid "section [%2d] '%s': relocation %d: offset out of bounds"
 msgstr ""
 
-#: src/elflint.c:862
+#: src/elflint.c:864
 #, c-format
 msgid "section [%2d] '%s': section entry size does not match ElfXX_Rel"
 msgstr ""
 
-#: src/elflint.c:965
+#: src/elflint.c:967
 msgid "more than one dynamic section present"
 msgstr ""
 
-#: src/elflint.c:988
+#: src/elflint.c:990
 #, c-format
 msgid "section [%2d] '%s': section entry size does not match ElfXX_Dyn"
 msgstr ""
 
-#: src/elflint.c:993 src/elflint.c:1147
+#: src/elflint.c:995 src/elflint.c:1149
 #, c-format
 msgid "section [%2d] '%s': sh_info not zero"
 msgstr ""
 
-#: src/elflint.c:1004
+#: src/elflint.c:1006
 #, c-format
 msgid "section [%2d] '%s': cannot get dynamic section entry %d: %s"
 msgstr ""
 
-#: src/elflint.c:1011
+#: src/elflint.c:1013
 #, c-format
 msgid "section [%2d] '%s': entry %d: unknown tag"
 msgstr ""
 
-#: src/elflint.c:1022
+#: src/elflint.c:1024
 #, c-format
 msgid "section [%2d] '%s': entry %d: more than one entry with tag %s"
 msgstr ""
 
-#: src/elflint.c:1032
+#: src/elflint.c:1034
 #, c-format
 msgid "section [%2d] '%s': entry %d: level 2 tag %s used"
 msgstr ""
 
-#: src/elflint.c:1044
+#: src/elflint.c:1046
 #, c-format
 msgid "section [%2d] '%s': entry %d: DT_PLTREL value must be DT_REL or DT_RELA"
 msgstr ""
 
-#: src/elflint.c:1069
+#: src/elflint.c:1071
 #, c-format
 msgid "section [%2d] '%s': contains %s entry but not %s"
 msgstr ""
 
-#: src/elflint.c:1081
+#: src/elflint.c:1083
 #, c-format
 msgid "section [%2d] '%s': mandatory tag %s not present"
 msgstr ""
 
-#: src/elflint.c:1091 src/elflint.c:1098
+#: src/elflint.c:1093 src/elflint.c:1100
 #, c-format
 msgid "section [%2d] '%s': not all of %s, %s, and %s are present"
 msgstr ""
 
-#: src/elflint.c:1127
+#: src/elflint.c:1129
 #, c-format
 msgid "section [%2d] '%s': extended section index section not for symbol table"
 msgstr ""
 
-#: src/elflint.c:1132
+#: src/elflint.c:1134
 msgid "cannot get data for symbol section"
 msgstr ""
 
-#: src/elflint.c:1136 src/elflint.c:1226
+#: src/elflint.c:1138 src/elflint.c:1228
 #, c-format
 msgid "section [%2d] '%s': entry size does not match Elf32_Word"
 msgstr ""
 
-#: src/elflint.c:1142
+#: src/elflint.c:1144
 #, c-format
 msgid "section [%2d] '%s': extended index table too small for symbol table"
 msgstr ""
 
-#: src/elflint.c:1159
+#: src/elflint.c:1161
 #, c-format
 msgid ""
 "section [%2d] '%s': extended section index in section [%2d] '%s' refers to "
 "same symbol table"
 msgstr ""
 
-#: src/elflint.c:1170
+#: src/elflint.c:1172
 msgid "symbol 0 should have zero extended section index"
 msgstr ""
 
-#: src/elflint.c:1182
+#: src/elflint.c:1184
 #, c-format
 msgid "cannot get data for symbol %d"
 msgstr ""
 
-#: src/elflint.c:1187
+#: src/elflint.c:1189
 #, c-format
 msgid "extended section index is %<PRIu32> but symbol index is not XINDEX"
 msgstr ""
 
-#: src/elflint.c:1221
+#: src/elflint.c:1223
 #, c-format
 msgid "section [%2d] '%s': hash table not for dynamic symbol table"
 msgstr ""
 
-#: src/elflint.c:1231
+#: src/elflint.c:1233
 #, c-format
 msgid "section [%2d] '%s': not marked to be allocated"
 msgstr ""
 
-#: src/elflint.c:1236
+#: src/elflint.c:1238
 #, c-format
 msgid "section [%2d] '%s': hash table has not even room for nbucket and nchain"
 msgstr ""
 
-#: src/elflint.c:1246
+#: src/elflint.c:1248
 #, c-format
 msgid ""
 "section [%2d] '%s': hash table section is too small (is %ld, expected %ld)"
 msgstr ""
 
-#: src/elflint.c:1258
+#: src/elflint.c:1260
 #, c-format
 msgid "section [%2d] '%s': chain array not large enough"
 msgstr ""
 
-#: src/elflint.c:1263
+#: src/elflint.c:1265
 #, c-format
 msgid "section [%2d] '%s': hash bucket reference %d out of bounds"
 msgstr ""
 
-#: src/elflint.c:1269
+#: src/elflint.c:1271
 #, c-format
 msgid "section [%2d] '%s': hash chain reference %d out of bounds"
 msgstr ""
 
-#: src/elflint.c:1282
+#: src/elflint.c:1284
 #, c-format
 msgid "section [%2d] '%s': nonzero sh_%s for NULL section"
 msgstr ""
 
-#: src/elflint.c:1307
+#: src/elflint.c:1309
 #, c-format
 msgid "section [%2d] '%s': cannot get symbol table: %s"
 msgstr ""
 
-#: src/elflint.c:1312
+#: src/elflint.c:1314
 #, c-format
 msgid "section [%2d] '%s': section reference in sh_link is no symbol table"
 msgstr ""
 
-#: src/elflint.c:1318
+#: src/elflint.c:1320
 #, c-format
 msgid "section [%2d] '%s': invalid symbol index in sh_info"
 msgstr ""
 
-#: src/elflint.c:1323
+#: src/elflint.c:1325
 #, c-format
 msgid "section [%2d] '%s': sh_flags not zero"
 msgstr ""
 
-#: src/elflint.c:1329
+#: src/elflint.c:1331
 #, c-format
 msgid "section [%2d] '%s': sh_flags not set correctly"
 msgstr ""
 
-#: src/elflint.c:1335
+#: src/elflint.c:1337
 #, c-format
 msgid "section [%2d] '%s': cannot get data: %s"
 msgstr ""
 
-#: src/elflint.c:1344
+#: src/elflint.c:1346
 #, c-format
 msgid "section [%2d] '%s': section size not multiple of sizeof(Elf32_Word)"
 msgstr ""
 
-#: src/elflint.c:1349
+#: src/elflint.c:1351
 #, c-format
 msgid "section [%2d] '%s': section group without flags word"
 msgstr ""
 
-#: src/elflint.c:1355
+#: src/elflint.c:1357
 #, c-format
 msgid "section [%2d] '%s': section group without member"
 msgstr ""
 
-#: src/elflint.c:1359
+#: src/elflint.c:1361
 #, c-format
 msgid "section [%2d] '%s': section group with only one member"
 msgstr ""
 
-#: src/elflint.c:1371
+#: src/elflint.c:1373
 #, c-format
 msgid "section [%2d] '%s': unknown section group flags"
 msgstr ""
 
-#: src/elflint.c:1383
+#: src/elflint.c:1385
 #, c-format
 msgid "section [%2d] '%s': section index %Zu out of range"
 msgstr ""
 
-#: src/elflint.c:1394
+#: src/elflint.c:1396
 #, c-format
 msgid "section [%2d] '%s': cannot get section header for element %Zu: %s"
 msgstr ""
 
-#: src/elflint.c:1401
+#: src/elflint.c:1403
 #, c-format
 msgid "section [%2d] '%s': section group contains another group [%2d] '%s'"
 msgstr ""
 
-#: src/elflint.c:1407
+#: src/elflint.c:1409
 #, c-format
 msgid ""
 "section [%2d] '%s': element %Zu references section [%2d] '%s' without "
 "SHF_GROUP flag set"
 msgstr ""
 
-#: src/elflint.c:1414
+#: src/elflint.c:1416
 #, c-format
 msgid "section [%2d] '%s' is contained in more than one section group"
 msgstr ""
 
-#: src/elflint.c:1492
+#: src/elflint.c:1547
 msgid "cannot get section header of zeroth section"
 msgstr ""
 
-#: src/elflint.c:1496
+#: src/elflint.c:1551
 msgid "zeroth section has nonzero name"
 msgstr ""
 
-#: src/elflint.c:1498
+#: src/elflint.c:1553
 msgid "zeroth section has nonzero type"
 msgstr ""
 
-#: src/elflint.c:1500
+#: src/elflint.c:1555
 msgid "zeroth section has nonzero flags"
 msgstr ""
 
-#: src/elflint.c:1502
+#: src/elflint.c:1557
 msgid "zeroth section has nonzero address"
 msgstr ""
 
-#: src/elflint.c:1504
+#: src/elflint.c:1559
 msgid "zeroth section has nonzero offset"
 msgstr ""
 
-#: src/elflint.c:1506
+#: src/elflint.c:1561
 msgid "zeroth section has nonzero info field"
 msgstr ""
 
-#: src/elflint.c:1508
+#: src/elflint.c:1563
 msgid "zeroth section has nonzero align value"
 msgstr ""
 
-#: src/elflint.c:1510
+#: src/elflint.c:1565
 msgid "zeroth section has nonzero entry size value"
 msgstr ""
 
-#: src/elflint.c:1513
+#: src/elflint.c:1568
 msgid ""
 "zeroth section has nonzero size value while ELF header has nonzero shnum "
 "value"
 msgstr ""
 
-#: src/elflint.c:1516
+#: src/elflint.c:1571
 msgid ""
 "zeroth section has nonzero link value while ELF header does not signal "
 "overflow in shstrndx"
 msgstr ""
 
-#: src/elflint.c:1527
+#: src/elflint.c:1582
 #, c-format
 msgid "cannot get section header for section [%2d] '%s': %s"
 msgstr ""
 
-#: src/elflint.c:1550
+#: src/elflint.c:1602
 #, c-format
 msgid "section [%2d] '%s' has wrong type: expected %s, is %s"
 msgstr ""
 
-#: src/elflint.c:1563
+#: src/elflint.c:1616
+#, c-format
+msgid "section [%2d] '%s' has wrong flags: expected %s, is %s"
+msgstr ""
+
+#: src/elflint.c:1633
+#, c-format
+msgid "section [%2d] '%s' has wrong flags: expected %s and possibly %s, is %s"
+msgstr ""
+
+#: src/elflint.c:1661
+#, c-format
+msgid ""
+"section [%2d] '%s' has SHF_ALLOC flag set but there is no loadable segment"
+msgstr ""
+
+#: src/elflint.c:1666
+#, c-format
+msgid ""
+"section [%2d] '%s' has SHF_ALLOC flag not set but there are loadable segments"
+msgstr ""
+
+#: src/elflint.c:1675
 #, c-format
 msgid "section [%2d] '%s': size not multiple of entry size"
 msgstr ""
 
-#: src/elflint.c:1568
+#: src/elflint.c:1680
 msgid "cannot get section header"
 msgstr ""
 
-#: src/elflint.c:1576
+#: src/elflint.c:1688
 #, c-format
 msgid "unsupported section type %d"
 msgstr ""
 
-#: src/elflint.c:1582
+#: src/elflint.c:1694
 #, c-format
 msgid "section [%2d] '%s' contain unknown flag"
 msgstr ""
 
-#: src/elflint.c:1585
+#: src/elflint.c:1697
 #, c-format
 msgid "section [%2d] '%s': thread-local data sections not yet supported"
 msgstr ""
 
-#: src/elflint.c:1590
+#: src/elflint.c:1702
 #, c-format
 msgid "section [%2d] '%s': invalid section reference in link value"
 msgstr ""
 
-#: src/elflint.c:1595
+#: src/elflint.c:1707
 #, c-format
 msgid "section [%2d] '%s': invalid section reference in info value"
 msgstr ""
 
-#: src/elflint.c:1602
+#: src/elflint.c:1714
 #, c-format
 msgid "section [%2d] '%s': strings flag set without merge flag"
 msgstr ""
 
-#: src/elflint.c:1607
+#: src/elflint.c:1719
 #, c-format
 msgid "section [%2d] '%s': merge flag set but entry size is zero"
 msgstr ""
 
-#: src/elflint.c:1615
+#: src/elflint.c:1727
 #, c-format
 msgid ""
 "section [%2d] '%s': ELF header says this is the section header string table "
 "but type is not SHT_TYPE"
 msgstr ""
 
-#: src/elflint.c:1667
+#: src/elflint.c:1773
+msgid "INTERP program header entry but no .interp section"
+msgstr ""
+
+#: src/elflint.c:1783
 #, c-format
 msgid "phdr[%d]: no note entries defined for the type of file"
 msgstr ""
 
-#: src/elflint.c:1690
+#: src/elflint.c:1806
 #, c-format
 msgid "phdr[%d]: extra %zu bytes after last note"
 msgstr ""
 
-#: src/elflint.c:1719
+#: src/elflint.c:1835
 #, c-format
 msgid "phdr[%d]: unknown core file note type %<PRIu32> at offset %zd"
 msgstr ""
 
-#: src/elflint.c:1727
+#: src/elflint.c:1843
 #, c-format
 msgid "phdr[%d]: unknown object file note type %<PRIu32> at offset %zd"
 msgstr ""
 
-#: src/elflint.c:1754
-msgid ".interp section present but no program header"
-msgstr ""
-
-#: src/elflint.c:1761
+#: src/elflint.c:1870
 msgid ""
 "only executables, shared objects, and core files can have program headers"
 msgstr ""
 
-#: src/elflint.c:1772
+#: src/elflint.c:1881
 #, c-format
 msgid "cannot get program header entry %d: %s"
 msgstr ""
 
-#: src/elflint.c:1778
+#: src/elflint.c:1887
 #, c-format
 msgid "program header entry %d: unknown program header entry type"
 msgstr ""
 
-#: src/elflint.c:1787
+#: src/elflint.c:1898
 msgid "more than one INTERP entry in program header"
 msgstr ""
 
-#: src/elflint.c:1791
-msgid "INTERP program header entry but no .interp section"
-msgstr ""
-
-#: src/elflint.c:1798
+#: src/elflint.c:1907
 msgid "more than one TLS entry in program header"
 msgstr ""

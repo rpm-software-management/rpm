@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.5
+Release: 0.6
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -25,7 +25,6 @@ Conflicts: patch < 2.5
 Prereq: gawk fileutils textutils mktemp shadow-utils
 %endif
 Requires: popt = 1.8
-Requires: libelf >= 0.8.2
 Obsoletes: rpm-perl < %{version}
 
 %if !%{with_internal_db}
@@ -483,12 +482,13 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Oct 25 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.6
+* Fri Nov  8 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.6
 - fix: /dev/initctl has not MD5 segfault (#76718).
 - rpm.8: gpg uses GNUPGHOME, not GPGPATH (#76691).
 - use %%{_lib} for libraries.
 - fix: permit build with --disable-nls (#76258).
 - add error message on glob failure (#76012).
+- remove dependency on libelf.
 
 * Thu Oct 24 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.5
 - add /usr/lib/rpm/rpmdeps.
