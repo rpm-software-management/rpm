@@ -4,6 +4,7 @@
 	- added Obsoletes: tag, an upgrade removes packages which
 	  have been obsoleted
 	- updated rpmdepUpgradePackage() to deal with obsoletes tag
+	- moved popt into a separate library
 
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing

@@ -23,7 +23,7 @@
 #include "intl.h"
 #include "lib/messages.h"
 #include "lib/signature.h"
-#include "misc/popt.h"
+#include "popt/popt.h"
 #include "miscfn.h"
 #include "query.h"
 #include "rpmlib.h"
