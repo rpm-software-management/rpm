@@ -1,8 +1,8 @@
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 3.0.4
+%define version 3.1
 Version: %{version}
-Release: 0.49
+Release: 0.0
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,40 +219,5 @@ fi
 /usr/include/popt.h
 
 %changelog
-* Thu Mar  9 2000 Jeff Johnson <jbj@redhat.com>
-- portability: skip bzip2 if not available.
-- portability: skip gzseek if not available (zlib-1.0.4).
-- portability: skip personality if not available (linux).
-- portability: always include arpa/inet.h (HP-UX).
-- portability: don't use id -u (Brandon Allbery).
-- portability: don't chown/chgrp -h w/o lchown.
-- portability: splats in rpm.spec to find /usr/{share,local}/locale/*
-
-* Thu Mar  2 2000 Jeff Johnson <jbj@redhat.com>
-- simpler hpux.prov script (Tim Mooney).
-
-* Wed Mar  1 2000 Jeff Johnson <jbj@redhat.com>
-- fix rpmmodule.so python bindings.
-
-* Sun Feb 27 2000 Jeff Johnson <jbj@redhat.com>
-- rpm-3.0.4 release candidate.
-
-* Fri Feb 25 2000 Jeff Johnson <jbj@redhat.com>
-- fix: filter excluded paths before adding install prefixes (#8709).
-- add i18n lookaside to PO catalogue(s) for i18n strings.
-- try for /etc/rpm/macros.specspo so that specspo autoconfigures rpm.
-- per-platform configuration factored into /usr/lib/rpm subdir.
-
-* Tue Feb 15 2000 Jeff Johnson <jbj@redhat.com>
-- new rpm-build package to isolate rpm dependencies on perl/bash2.
-- always remove duplicate identical package entries on --rebuilddb.
-- add scripts for autogenerating CPAN dependencies.
-
-* Wed Feb  9 2000 Jeff Johnson <jbj@redhat.com>
-- brp-compress deals with hard links correctly.
-
-* Mon Feb  7 2000 Jeff Johnson <jbj@redhat.com>
-- brp-compress deals with symlinks correctly.
-
-* Mon Jan 24 2000 Jeff Johnson <jbj@redhat.com>
-- explicitly expand file lists in writeRPM for rpmputtext.
+* Mon Mar 13 2000 Jeff Johnson <jbj@redhat.com>
+- start rpm-3.1 development.
