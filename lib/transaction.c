@@ -476,8 +476,9 @@ static enum fileActions decideFileFate(const char * filespec, short dbMode,
 	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
 			filespec);
 	    return FA_SKIP;
-	} else
+	} else {
 	    return FA_CREATE;
+	}
     }
 
     diskWhat = whatis(sb.st_mode);
@@ -486,8 +487,9 @@ static enum fileActions decideFileFate(const char * filespec, short dbMode,
 
     /* RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
        them in older packages as well */
-    if (newWhat == XDIR)
+    if (newWhat == XDIR) {
 	return FA_CREATE;
+    }
 
     if (diskWhat != newWhat) {
 	return save;
@@ -723,18 +725,20 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	}
 
 	switch (fi->type) {
+	struct stat sb;
 	case TR_ADDED:
 	    if (otherPkgNum < 0) {
-		struct stat sb;
 		if (fi->actions[i] != FA_UNKNOWN)
 		    break;
-		if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb))
+		if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb)) {
 		    fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
-		else
+		} else {
 		    fi->actions[i] = FA_CREATE;
+		}
 		break;
 	    }
+
 	    if (probs && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
 			recs[otherPkgNum]->fmd5s[otherFileNum],
 			recs[otherPkgNum]->flinks[otherFileNum],
@@ -750,7 +754,12 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	    /* FIXME: is this right??? it locks us into the config
 	       file handling choice we already made, which may very
 	       well be exactly right. What about noreplace files?? */
-	    fi->actions[i] = FA_CREATE;
+	    if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb)) {
+		fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
+			? FA_ALTNAME : FA_SKIP;
+	    } else {
+		fi->actions[i] = FA_CREATE;
+	    }
 	    break;
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
@@ -759,9 +768,11 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		break;
 #else
 		if (recs[otherPkgNum]->actions[otherFileNum] != FA_REMOVE) {
+		    /* On updates, don't remove files. */
 		    fi->actions[i] = FA_SKIP;
 		    break;
 		}
+		/* Remove file on last occurrence. Other package should skip. */
 		recs[otherPkgNum]->actions[otherFileNum] = FA_SKIP;
 #endif
 	    }

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-16 14:44-0400\n"
+"POT-Creation-Date: 1999-08-16 18:09-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2284,77 +2284,77 @@ msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: ../lib/macro.c:243
+#: ../lib/macro.c:242
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: ../lib/macro.c:278
+#: ../lib/macro.c:277
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: ../lib/macro.c:457
+#: ../lib/macro.c:456
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: ../lib/macro.c:483
+#: ../lib/macro.c:482
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: ../lib/macro.c:489
+#: ../lib/macro.c:488
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: ../lib/macro.c:494
+#: ../lib/macro.c:493
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: ../lib/macro.c:499
+#: ../lib/macro.c:498
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: ../lib/macro.c:524
+#: ../lib/macro.c:523
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: ../lib/macro.c:601
+#: ../lib/macro.c:600
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: ../lib/macro.c:698
+#: ../lib/macro.c:697
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: ../lib/macro.c:870
+#: ../lib/macro.c:869
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: ../lib/macro.c:936 ../lib/macro.c:952
+#: ../lib/macro.c:935 ../lib/macro.c:951
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: ../lib/macro.c:992
+#: ../lib/macro.c:991
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: ../lib/macro.c:1115
+#: ../lib/macro.c:1114
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: ../lib/macro.c:1196
+#: ../lib/macro.c:1195
 msgid "Target buffer overflow"
 msgstr ""
 
-#: ../lib/macro.c:1343 ../lib/macro.c:1351
+#: ../lib/macro.c:1342 ../lib/macro.c:1350
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: ../lib/macro.c:1354
+#: ../lib/macro.c:1353
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
