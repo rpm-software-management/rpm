@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <ftw.h>
 #include <glob.h>
 #include <time.h>
 
