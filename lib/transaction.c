@@ -614,6 +614,7 @@ void rpmProblemSetFree(rpmProblemSet probs) {
     for (i = 0; i < probs->numProblems; i++) {
 	headerFree(probs->probs[i].h);
 	if (probs->probs[i].str1) free(probs->probs[i].str1);
+	if (probs->probs[i].altH) headerFree(probs->probs[i].altH);
     }
     free(probs);
 }
