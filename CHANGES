@@ -43,6 +43,7 @@
 	- add --freshen to usage message (#4823).
 	- suggested changes to docs from Ken Estes (#4451).
 	- link libbz2.a statically to avoid rpm->bzip2 dependence for now.
+	- Tru64: avoid find-requires variable size limit (Tim Mooney).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

@@ -1,9 +1,9 @@
-#!/bin/sh
+#! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: osf.req,v 1.5 1999/08/04 18:07:18 jbj Exp $
+# $Id: osf.req,v 1.6 1999/09/07 19:53:10 jbj Exp $
 #
-# This file is distributed under the terms of the GNU General Public License
+# This file is distributed under the terms of the GNU Public License
 #
 # find-requires is part of RPM, the Red Hat Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all
@@ -35,87 +35,110 @@
 PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
 export PATH
 
-filelist=`cat -`
-
 #
-# Handle shell scripts first
+# TVM: switch to using `while read ...' instead of `for f in ...', because
+# packages with a large number of files could be too big for one shell variable
+# to hold.
 #
-for f in `echo $filelist | xargs file | grep 'shell script' | cut -d: -f 2 \
-	| awk '{ print $1 }'`
+IFS=""
+while read f
 do
-    echo $f
-done | sort -u
 
-#
-# TVM: it might be better to re-write this so that `file' isn't used, since
-# it could all be done with `odump', but this works.
-#
+	#
+	# Uncomment the next line for addtional debugging:
+	# echo "read ->$f<-"
 
-for f in `echo $filelist | xargs file | grep executable | cut -d: -f1`
-do
-	odump -Dl $f 2>/dev/null | awk '
+	#
+	# Only run file once per file:
+	#
+	file_output=`file $f`
+
+	#
+	# handle shell scripts first
+	#
+	is_shell_script=`echo "$file_output" | grep 'shell script' | \
+		cut -d: -f 2 | awk '{ print $1 }'`
+
+	#
+	# it's a script
+	#
+	if test X"$is_shell_script" != X ; then
+		echo $is_shell_script
+
+	else
 
 		#
-		# For you non-awk-ers, no single quotes in comments -- the shell
-		# sees them and things get hosed.
+		# it might be a shared library.
 		#
 
-		BEGIN { 
-			found_program_name = 0;
-			FS = " ";
-			RS = "\n";
-			OFS="";
+		maybe_shared_lib=`echo "$file_output" | grep 'executable'`
+		if test X"$maybe_shared_lib" != X ; then
+
+			odump -Dl $f 2>/dev/null | awk '
+
 			#
-			# what character should be used to separate the soname from any
-			# version info?  Using a . is actually a bad idea, since some
-			# free/3rd party libraries may be built so that the library
-			# soname may have version info in it too.  If we use . as the
-			# separator, it may not be possible to tell where the soname
-			# ends and the internal version info begins.  It might be
-			# better to use a - or a : here.  If you do so, be sure to
-			# change this setting in find-provides, too.
+			# For you non-awk-ers, no single quotes in comments -- the shell
+			# sees them and things get hosed.
 			#
-			soname_version_delimiter=".";
-		}
 
-		# uncomment the next line for debugging information
-		#{ print "Saw input:", $0 }
-
-		found_program_name == 1 && $0 !~ /^$/ {
-
-			# uncomment for debugging information
-			#print "found shared library: $0"
-		
-			# get the library name (field 1) and the library version (field 8)
-			# if present.
-			numfields = split($0,fields)
-			if (numfields == 7) {
-				print fields[1]
-			} else if (numfields == 8) {
+			BEGIN { 
+				found_program_name = 0;
+				FS = " ";
+				RS = "\n";
+				OFS="";
 				#
-				# Note that if a library contains a number as the last
-				# part of the soname *and* it contains version information,
-				# we have a problem because it is impossible to tell where
-				# the soname ends and the version info begins.  Digital Unix
-				# shared libraries should *not* be built with any version info
-				# in the soname.  That info should be in the version field
-				# only.
+				# what character should be used to separate the soname from any
+				# version info?  Using a . is actually a bad idea, since some
+				# free/3rd party libraries may be built so that the library
+				# soname may have version info in it too.  If we use . as the
+				# separator, it may not be possible to tell where the soname
+				# ends and the internal version info begins.  It might be
+				# better to use a - or a : here.  If you do so, be sure to
+				# change this setting in find-provides, too.
 				#
-				# If we used a separator character of a - or something else,
-				# instead of a ., we would not have this problem.
-				#
-				print fields[1], soname_version_delimiter, fields[8]
+				soname_version_delimiter=".";
 			}
-		}
 
-		/^.*: *$/ {
-			found_program_name = 1
-			#
 			# uncomment the next line for debugging information
-			#print "found the program name: ", $1
-		}
+			#{ print "Saw input:", $0 }
 
-	' # end of awk
+			found_program_name == 1 && $0 !~ /^$/ {
+
+				# uncomment for debugging information
+				#print "found shared library: $0"
+
+				# get the library name (field 1) and the library version
+				# (field 8) if present.
+				numfields = split($0,fields)
+				if (numfields == 7) {
+					print fields[1]
+				} else if (numfields == 8) {
+					#
+					# Note that if a library contains a number as the last
+					# part of the soname *and* it contains version information,
+					# we have a problem because it is impossible to tell where
+					# the soname ends and the version info begins.  Digital
+					# Unix shared libraries should *not* be built with any
+					# version info in the soname.  That info should be in
+					# the version field only.
+					#
+					# If we used a separator character of a - or something else,
+					# instead of a ., we would not have this problem.
+					#
+					print fields[1], soname_version_delimiter, fields[8]
+				}
+			}
+
+			/^.*: *$/ {
+				found_program_name = 1
+				#
+				# uncomment the next line for debugging information
+				#print "found the program name: ", $1
+			}
+
+			' # end of awk
+		fi
+	fi
 done | sort -u
 # comment out the previous line and uncomment the next when debugging
 # done
