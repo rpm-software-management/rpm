@@ -183,12 +183,14 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
 	      "architecture", name, version, release);
 	freeHeader(h);
+	return 2;
     }
 
     if (!(flags & INSTALL_NOOS) && !osOkay(h)) {
 	error(RPMERR_BADOS, "package %s-%s-%s is for a different "
-	      "architecture", name, version, release);
+	      "operating system", name, version, release);
 	freeHeader(h);
+	return 2;
     }
 
     if (labelFormat) {
@@ -617,7 +619,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	if (waitpid(child, &status, WNOHANG)) childDead = 1;
 	
 	bytesRead = gzread(stream, buf, sizeof(buf));
-	if (bytesRead < 1) {
+	if (bytesRead < 0) {
 	     cpioFailed = 1;
 	     childDead = 1;
 	     kill(SIGTERM, child);
