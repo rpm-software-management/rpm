@@ -857,20 +857,6 @@ mpw_FromLong(long ival)
 }
 
 static mpwObject *
-mpw_FromUnsignedLong(unsigned long ival)
-	/*@*/
-{
-    mpwObject * z = mpw_New(1);
-
-    if (z == NULL)
-	return NULL;
-
-    z->data[0] = (mpw) ival;
-
-    return z;
-}
-
-static mpwObject *
 mpw_FromDouble(double dval)
 {
     mpwObject * z = mpw_New(1);
@@ -882,6 +868,96 @@ mpw_FromDouble(double dval)
 
     return z;
 }
+
+#ifdef	NOTYET
+static mpwObject *
+mpw_FromString(const char * str, char ** sep, int base)
+	/*@*/
+{
+    const char * s = str, * se;
+    mpwObject * z = NULL;
+    mpw zbase, zval;
+    int sign = 1;
+    int ndigits;
+
+    if ((base != 0 && base < 2) || base > 36) {
+	PyErr_SetString(PyExc_ValueError, "mpw() arg 2 must be >= 2 and <= 36");
+	return NULL;
+    }
+    while (*s != '\0' && isspace(Py_CHARMASK(*s)))
+	s++;
+    if (*s == '+')
+	++s;
+    else if (*s == '-') {
+	++s;
+	sign = -1;
+    }
+    while (*s != '\0' && isspace(Py_CHARMASK(*s)))
+	s++;
+    if (base == 0) {
+	if (s[0] != '0')
+	    base = 10;
+	else if (s[1] == 'x' || s[1] == 'X')
+	    base = 16;
+	else
+	    base = 8;
+    }
+    if (base == 16 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+	s += 2;
+
+    /* Validate characters as digits of base. */
+    for (se = s; *se != '\0'; se++) {
+	int k;
+
+	if (*se <= '9')
+	    k = *se - '0';
+	else if (*se >= 'a')
+	    k = *se - 'a' + 10;
+	else if (*se >= 'A')
+	    k = *se - 'A' + 10;
+	else
+	    k = -1;
+	if (k < 0 || k >= base)
+	    break;
+    }
+    if (se == s)
+	goto onError;
+
+    ndigits = (se - s);
+
+    if (*se == 'L' || *se == 'l')
+	se++; 
+    while (*se && isspace(Py_CHARMASK(*se)))
+	se++;
+    if (sep)
+	*sep = se;
+    if (*se != '\0')
+	goto onError;
+
+    /* Allocate mpw. */
+
+    /* Convert digit string. */
+    zbase = base;
+    for (se = s; *se != '\0'; se++) {
+	if (*se <= '9')
+	    zval = *se - '0';
+	else if (*se >= 'a')
+	    zval = *se - 'a' + 10;
+	else if (*se >= 'A')
+	    zval = *se - 'A' + 10;
+    }
+
+    if (sign < 0 && z != NULL && z->ob_size != 0)
+	z->ob_size = -(z->ob_size);
+
+    return z;
+
+onError:
+    PyErr_Format(PyExc_ValueError, "invalid literal for mpw(): %.200s", str);
+    Py_XDECREF(z);
+    return NULL;
+}
+#endif
 
 static mpwObject *
 mpw_FromHEX(const char * hex)
