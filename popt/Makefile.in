@@ -40,7 +40,9 @@ allprogs: $(LIBPOPT) testcases
 
 testcases: $(TESTCASES)
 
+# XXX SINIX ld is stupid: needs explicit rule with libs at end
 $(TESTCASES): $(LIBPOPT)
+	$(CC) $(TESTCASES).c $< -o $@ $(LDFLAGS) $(LIBPOPT)
 
 $(LIBPOPT): $(LIBPOPT)($(LIBOBJECTS))
 	$(RANLIB) $@
