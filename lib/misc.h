@@ -5,6 +5,7 @@
 #include <sys/types.h>
 
 #include "header.h"
+#include "ugid.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,6 +24,7 @@ int	rpmvercmp(const char * one, const char * two);
 int	dosetenv(const char *name, const char *value, int overwrite);
 int	doputenv(const char * str);
 
+#ifdef	DYING
 /* These may be called w/ a NULL argument to flush the cache -- they return
    -1 if the user can't be found */
 int	unameToUid(const char * thisUname, /*@out@*/ uid_t * uid);
@@ -31,6 +33,7 @@ int	gnameToGid(const char * thisGname, /*@out@*/ gid_t * gid);
 /* Call w/ -1 to flush the cache, returns NULL if the user can't be found */
 /*@observer@*/ /*@null@*/ char * uidToUname(uid_t uid);
 /*@observer@*/ /*@null@*/ char * gidToGname(gid_t gid);
+#endif	/* DYING */
 
 int	makeTempFile(const char * prefix, /*@out@*/ const char ** fnptr,
 			/*@out@*/ FD_t * fdptr);

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-06-07 14:46-0400\n"
+"POT-Creation-Date: 2000-06-09 10:40-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.69 2000/06/07 23:25:42 jbj Exp $
+# $Id: ja.po,v 1.70 2000/06/09 18:57:24 jbj Exp $
 #: rpm.c:179 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -1644,7 +1644,7 @@ msgstr "作成のための spec ファイルがありません"
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: build/build.c:110 build/pack.c:314
+#: build/build.c:110 build/pack.c:315
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "一時ファイルをオープンできません"
@@ -1837,7 +1837,7 @@ msgstr "ファイルが見つかりません(by glob): %s"
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1167 build/pack.c:99
+#: build/files.c:1167 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
@@ -1901,116 +1901,116 @@ msgstr "RPMERR_INTERNAL: getGname() の限界に達しました\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"
 
-#: build/pack.c:47
+#: build/pack.c:48
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
 
-#: build/pack.c:67
+#: build/pack.c:68
 #, fuzzy, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "cpio_copy で書き込み失敗: %s"
 
-#: build/pack.c:74
+#: build/pack.c:75
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "cpio_copy で読み込み失敗: %s"
 
-#: build/pack.c:154
+#: build/pack.c:155
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "PreIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:161
+#: build/pack.c:162
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "PreUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:168
+#: build/pack.c:169
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "PostIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:175
+#: build/pack.c:176
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "PostUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:183
+#: build/pack.c:184
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:198
+#: build/pack.c:199
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "トリガースクリプトファイルをオープンできませんでした: %s"
 
-#: build/pack.c:225
+#: build/pack.c:226
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: %s のオープン: %s\n"
 
-#: build/pack.c:235
+#: build/pack.c:236
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:256
+#: build/pack.c:257
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s は RPM パッケージではありません\n"
 
-#: build/pack.c:262
+#: build/pack.c:263
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からのヘッダの読み込み\n"
 
-#: build/pack.c:326
+#: build/pack.c:327
 msgid "Bad CSA data"
 msgstr "不正な CSA データ"
 
-#: build/pack.c:361
+#: build/pack.c:362
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:393
+#: build/pack.c:394
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:408
+#: build/pack.c:409
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
-#: build/pack.c:424
+#: build/pack.c:425
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:434
+#: build/pack.c:435
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:444
+#: build/pack.c:445
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:459
+#: build/pack.c:460
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:522
+#: build/pack.c:523
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:539
+#: build/pack.c:540
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -2530,7 +2530,7 @@ msgstr "不正なファイルの状態: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/db1.c:430 rpmio/url.c:445
+#: lib/db1.c:430 rpmio/url.c:444
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
@@ -2857,106 +2857,7 @@ msgstr "警告: %s は %s として保存されます"
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/macro.c:161
-#, c-format
-msgid "======================== active %d empty %d\n"
-msgstr "======================== アクティブ %d エンプティ %d\n"
-
-#. XXX just in case
-#: lib/macro.c:256
-#, c-format
-msgid "%3d>%*s(empty)"
-msgstr ""
-
-#: lib/macro.c:291
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr ""
-
-#: lib/macro.c:470
-msgid "Macro %%%s has unterminated body"
-msgstr "マクロ %%%s はボディが終端されていません"
-
-#: lib/macro.c:496
-msgid "Macro %%%s has illegal name (%%define)"
-msgstr "マクロ %%%s は違法な名前です(%%define)"
-
-#: lib/macro.c:502
-msgid "Macro %%%s has unterminated opts"
-msgstr "マクロ %%%s は opts が終端されていません"
-
-#: lib/macro.c:507
-msgid "Macro %%%s has empty body"
-msgstr "マクロ %%%s は空のボディです"
-
-#: lib/macro.c:512
-msgid "Macro %%%s failed to expand"
-msgstr "マクロ %%%s は伸長に失敗しました"
-
-#: lib/macro.c:537
-msgid "Macro %%%s has illegal name (%%undefine)"
-msgstr "マクロ %%%s は違法な名前です(%%undefine)"
-
-#: lib/macro.c:614
-msgid "Macro %%%s (%s) was not used below level %d"
-msgstr "マクロ %%%s (%s) はレベル %d 以下で使用されませんでした"
-
-#: lib/macro.c:711
-#, fuzzy, c-format
-msgid "Unknown option %c in %s(%s)"
-msgstr "不明なオプション %c (%s(%s)中に)"
-
-#: lib/macro.c:891
-#, c-format
-msgid "Recursion depth(%d) greater than max(%d)"
-msgstr "再帰の深さ(%d)が最大値(%d)よりも大きい"
-
-#: lib/macro.c:957 lib/macro.c:973
-#, fuzzy, c-format
-msgid "Unterminated %c: %s"
-msgstr "終端されていない %c: %s"
-
-#: lib/macro.c:1013
-msgid "A %% is followed by an unparseable macro"
-msgstr "A %% は構文解析できないマクロが続いています"
-
-#: lib/macro.c:1139
-#, fuzzy
-msgid "Macro %%%.*s not found, skipping"
-msgstr "マクロ %%%.*s は見つかりません、スキップします"
-
-#: lib/macro.c:1220
-msgid "Target buffer overflow"
-msgstr "ターゲットバッファオーバーフロー"
-
-#. XXX Fstrerror
-#: lib/macro.c:1400 lib/macro.c:1406
-#, c-format
-msgid "File %s: %s"
-msgstr "ファイル %s: %s"
-
-#: lib/macro.c:1409
-#, c-format
-msgid "File %s is smaller than %d bytes"
-msgstr "ファイル %s: は %d バイトより小さいです"
-
-#: lib/messages.c:55
-msgid "warning: "
-msgstr "警告: "
-
-#: lib/messages.c:64
-msgid "error: "
-msgstr "エラー: "
-
-#: lib/messages.c:73
-msgid "fatal error: "
-msgstr "致命的なエラー: "
-
-#: lib/messages.c:82
-msgid "internal error (rpm bug?): "
-msgstr "内部的なエラー (rpm のバグ?)"
-
-#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
+#: lib/misc.c:425 lib/misc.c:430 lib/misc.c:436
 #, c-format
 msgid "error creating temporary file %s"
 msgstr "一時ファイル %s の作成エラー"
@@ -4060,103 +3961,207 @@ msgstr "%s が見つかりません\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: rpmio/rpmio.c:796
+#: rpmio/rpmio.c:808
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:799
+#: rpmio/rpmio.c:811
 #, fuzzy
 msgid "Bad server response"
 msgstr "サーバから正常な応答がありません"
 
-#: rpmio/rpmio.c:802
+#: rpmio/rpmio.c:814
 #, fuzzy
 msgid "Server IO error"
 msgstr "サーバ IO エラー"
 
-#: rpmio/rpmio.c:805
+#: rpmio/rpmio.c:817
 #, fuzzy
 msgid "Server timeout"
 msgstr "サーバタイムアウト"
 
-#: rpmio/rpmio.c:808
+#: rpmio/rpmio.c:820
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません"
 
-#: rpmio/rpmio.c:811
+#: rpmio/rpmio.c:823
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません"
 
-#: rpmio/rpmio.c:814
+#: rpmio/rpmio.c:826
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "サーバへの接続に失敗しました"
 
-#: rpmio/rpmio.c:817
+#: rpmio/rpmio.c:829
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータコネクションの確立に失敗しました"
 
-#: rpmio/rpmio.c:820
+#: rpmio/rpmio.c:832
 msgid "IO error to local file"
 msgstr "ローカルファイルの IO エラー"
 
-#: rpmio/rpmio.c:823
+#: rpmio/rpmio.c:835
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバのパッシブモード設定エラー"
 
-#: rpmio/rpmio.c:826
+#: rpmio/rpmio.c:838
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません"
 
-#: rpmio/rpmio.c:829
+#: rpmio/rpmio.c:841
 msgid "Abort in progress"
 msgstr "処理中のアボート"
 
-#: rpmio/rpmio.c:833
+#: rpmio/rpmio.c:845
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "不明もしくは予期せぬエラー"
 
-#: rpmio/rpmio.c:1366
+#: rpmio/rpmio.c:1378
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s へ %s pw %s としてログイン中\n"
 
-#: rpmio/url.c:88
+#: rpmio/macro.c:160
+#, c-format
+msgid "======================== active %d empty %d\n"
+msgstr "======================== アクティブ %d エンプティ %d\n"
+
+#. XXX just in case
+#: rpmio/macro.c:255
+#, c-format
+msgid "%3d>%*s(empty)"
+msgstr ""
+
+#: rpmio/macro.c:290
+#, c-format
+msgid "%3d<%*s(empty)\n"
+msgstr ""
+
+#: rpmio/macro.c:469
+msgid "Macro %%%s has unterminated body"
+msgstr "マクロ %%%s はボディが終端されていません"
+
+#: rpmio/macro.c:495
+msgid "Macro %%%s has illegal name (%%define)"
+msgstr "マクロ %%%s は違法な名前です(%%define)"
+
+#: rpmio/macro.c:501
+msgid "Macro %%%s has unterminated opts"
+msgstr "マクロ %%%s は opts が終端されていません"
+
+#: rpmio/macro.c:506
+msgid "Macro %%%s has empty body"
+msgstr "マクロ %%%s は空のボディです"
+
+#: rpmio/macro.c:511
+msgid "Macro %%%s failed to expand"
+msgstr "マクロ %%%s は伸長に失敗しました"
+
+#: rpmio/macro.c:536
+msgid "Macro %%%s has illegal name (%%undefine)"
+msgstr "マクロ %%%s は違法な名前です(%%undefine)"
+
+#: rpmio/macro.c:613
+msgid "Macro %%%s (%s) was not used below level %d"
+msgstr "マクロ %%%s (%s) はレベル %d 以下で使用されませんでした"
+
+#: rpmio/macro.c:710
+#, fuzzy, c-format
+msgid "Unknown option %c in %s(%s)"
+msgstr "不明なオプション %c (%s(%s)中に)"
+
+#: rpmio/macro.c:890
+#, c-format
+msgid "Recursion depth(%d) greater than max(%d)"
+msgstr "再帰の深さ(%d)が最大値(%d)よりも大きい"
+
+#: rpmio/macro.c:956 rpmio/macro.c:972
+#, fuzzy, c-format
+msgid "Unterminated %c: %s"
+msgstr "終端されていない %c: %s"
+
+#: rpmio/macro.c:1012
+msgid "A %% is followed by an unparseable macro"
+msgstr "A %% は構文解析できないマクロが続いています"
+
+#: rpmio/macro.c:1138
+#, fuzzy
+msgid "Macro %%%.*s not found, skipping"
+msgstr "マクロ %%%.*s は見つかりません、スキップします"
+
+#: rpmio/macro.c:1219
+msgid "Target buffer overflow"
+msgstr "ターゲットバッファオーバーフロー"
+
+#. XXX Fstrerror
+#: rpmio/macro.c:1399 rpmio/macro.c:1405
+#, c-format
+msgid "File %s: %s"
+msgstr "ファイル %s: %s"
+
+#: rpmio/macro.c:1408
+#, c-format
+msgid "File %s is smaller than %d bytes"
+msgstr "ファイル %s: は %d バイトより小さいです"
+
+#: rpmio/messages.c:55
+msgid "warning: "
+msgstr "警告: "
+
+#: rpmio/messages.c:64
+msgid "error: "
+msgstr "エラー: "
+
+#: rpmio/messages.c:73
+msgid "fatal error: "
+msgstr "致命的なエラー: "
+
+#: rpmio/messages.c:82
+msgid "internal error (rpm bug?): "
+msgstr "内部的なエラー (rpm のバグ?)"
+
+#: rpmio/rpmmalloc.c:9
+#, c-format
+msgid "memory alloc (%u bytes) returned NULL.\n"
+msgstr ""
+
+#: rpmio/url.c:87
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:105
+#: rpmio/url.c:104
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:132
+#: rpmio/url.c:131
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:218
+#: rpmio/url.c:217
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s@%s のパスワード:"
 
-#: rpmio/url.c:243 rpmio/url.c:269
+#: rpmio/url.c:242 rpmio/url.c:268
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "エラー: %sポートは数字でなければなりません\n"
 
-#: rpmio/url.c:405
+#: rpmio/url.c:404
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "url ポートは数字でなければなりません\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:462
+#: rpmio/url.c:461
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-06-07 14:46-0400\n"
+"POT-Creation-Date: 2000-06-09 10:40-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1744,7 +1744,7 @@ msgid "no tar files given for build"
 msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 
 # , c-format
-#: build/build.c:110 build/pack.c:314
+#: build/build.c:110 build/pack.c:315
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
@@ -1945,7 +1945,7 @@ msgstr "Datei auf dem Server nicht gefunden"
 msgid "Could not open %%files file %s: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/files.c:1167 build/pack.c:99
+#: build/files.c:1167 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -2014,123 +2014,123 @@ msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
 # , c-format
-#: build/pack.c:47
+#: build/pack.c:48
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/pack.c:67
+#: build/pack.c:68
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:74
+#: build/pack.c:75
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "lesen fehlgeschlagen: %s (%d)"
 
-#: build/pack.c:154
+#: build/pack.c:155
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:161
+#: build/pack.c:162
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:168
+#: build/pack.c:169
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:175
+#: build/pack.c:176
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/pack.c:183
+#: build/pack.c:184
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:198
+#: build/pack.c:199
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
 
 # , c-format
-#: build/pack.c:225
+#: build/pack.c:226
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/pack.c:235
+#: build/pack.c:236
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/pack.c:256
+#: build/pack.c:257
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "Fehler: %s scheint zu keinem RPM-Paket zu gehören\n"
 
-#: build/pack.c:262
+#: build/pack.c:263
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: build/pack.c:326
+#: build/pack.c:327
 msgid "Bad CSA data"
 msgstr ""
 
 # , c-format
-#: build/pack.c:361
+#: build/pack.c:362
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/pack.c:393
+#: build/pack.c:394
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:408
+#: build/pack.c:409
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "PGP-Signatur generieren"
 
 # , c-format
-#: build/pack.c:424
+#: build/pack.c:425
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:434
+#: build/pack.c:435
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Nicht möglich %s zu schreiben"
 
 # , c-format
-#: build/pack.c:444
+#: build/pack.c:445
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:459
+#: build/pack.c:460
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:522
+#: build/pack.c:523
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:539
+#: build/pack.c:540
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
@@ -2659,7 +2659,7 @@ msgid "opening db file        %s mode 0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 # , c-format
-#: lib/db1.c:430 rpmio/url.c:445
+#: lib/db1.c:430 rpmio/url.c:444
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -2986,107 +2986,7 @@ msgstr ""
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/macro.c:161
-#, c-format
-msgid "======================== active %d empty %d\n"
-msgstr ""
-
-#. XXX just in case
-#: lib/macro.c:256
-#, c-format
-msgid "%3d>%*s(empty)"
-msgstr ""
-
-#: lib/macro.c:291
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr ""
-
-#: lib/macro.c:470
-msgid "Macro %%%s has unterminated body"
-msgstr ""
-
-#: lib/macro.c:496
-msgid "Macro %%%s has illegal name (%%define)"
-msgstr ""
-
-#: lib/macro.c:502
-msgid "Macro %%%s has unterminated opts"
-msgstr ""
-
-#: lib/macro.c:507
-msgid "Macro %%%s has empty body"
-msgstr ""
-
-#: lib/macro.c:512
-msgid "Macro %%%s failed to expand"
-msgstr ""
-
-#: lib/macro.c:537
-msgid "Macro %%%s has illegal name (%%undefine)"
-msgstr ""
-
-#: lib/macro.c:614
-msgid "Macro %%%s (%s) was not used below level %d"
-msgstr ""
-
-#: lib/macro.c:711
-#, c-format
-msgid "Unknown option %c in %s(%s)"
-msgstr ""
-
-#: lib/macro.c:891
-#, c-format
-msgid "Recursion depth(%d) greater than max(%d)"
-msgstr ""
-
-#: lib/macro.c:957 lib/macro.c:973
-#, c-format
-msgid "Unterminated %c: %s"
-msgstr ""
-
-#: lib/macro.c:1013
-msgid "A %% is followed by an unparseable macro"
-msgstr ""
-
-#: lib/macro.c:1139
-#, fuzzy
-msgid "Macro %%%.*s not found, skipping"
-msgstr "Paket %s in %s nicht gefunden"
-
-#: lib/macro.c:1220
-msgid "Target buffer overflow"
-msgstr ""
-
-# , c-format
-#. XXX Fstrerror
-#: lib/macro.c:1400 lib/macro.c:1406
-#, fuzzy, c-format
-msgid "File %s: %s"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
-
-#: lib/macro.c:1409
-#, c-format
-msgid "File %s is smaller than %d bytes"
-msgstr ""
-
-#: lib/messages.c:55
-msgid "warning: "
-msgstr "Warnung: "
-
-#: lib/messages.c:64
-msgid "error: "
-msgstr "Fehler: "
-
-#: lib/messages.c:73
-msgid "fatal error: "
-msgstr "Fataler Fehler: "
-
-#: lib/messages.c:82
-msgid "internal error (rpm bug?): "
-msgstr ""
-
-#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
+#: lib/misc.c:425 lib/misc.c:430 lib/misc.c:436
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
@@ -4198,104 +4098,209 @@ msgstr "fehlende { nach %{"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 
-#: rpmio/rpmio.c:796
+#: rpmio/rpmio.c:808
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:799
+#: rpmio/rpmio.c:811
 #, fuzzy
 msgid "Bad server response"
 msgstr "Nicht passende Antwort des FTP-Servers"
 
-#: rpmio/rpmio.c:802
+#: rpmio/rpmio.c:814
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP IO-Fehler"
 
-#: rpmio/rpmio.c:805
+#: rpmio/rpmio.c:817
 #, fuzzy
 msgid "Server timeout"
 msgstr "Timeout des FTP-Servers"
 
-#: rpmio/rpmio.c:808
+#: rpmio/rpmio.c:820
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:811
+#: rpmio/rpmio.c:823
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
 
-#: rpmio/rpmio.c:814
+#: rpmio/rpmio.c:826
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Verbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:817
+#: rpmio/rpmio.c:829
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
 
-#: rpmio/rpmio.c:820
+#: rpmio/rpmio.c:832
 msgid "IO error to local file"
 msgstr "IO-Fehler bei lokaler Datei"
 
-#: rpmio/rpmio.c:823
+#: rpmio/rpmio.c:835
 msgid "Error setting remote server to passive mode"
 msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
 
-#: rpmio/rpmio.c:826
+#: rpmio/rpmio.c:838
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpmio/rpmio.c:829
+#: rpmio/rpmio.c:841
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:833
+#: rpmio/rpmio.c:845
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: rpmio/rpmio.c:1366
+#: rpmio/rpmio.c:1378
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/url.c:88
+#: rpmio/macro.c:160
+#, c-format
+msgid "======================== active %d empty %d\n"
+msgstr ""
+
+#. XXX just in case
+#: rpmio/macro.c:255
+#, c-format
+msgid "%3d>%*s(empty)"
+msgstr ""
+
+#: rpmio/macro.c:290
+#, c-format
+msgid "%3d<%*s(empty)\n"
+msgstr ""
+
+#: rpmio/macro.c:469
+msgid "Macro %%%s has unterminated body"
+msgstr ""
+
+#: rpmio/macro.c:495
+msgid "Macro %%%s has illegal name (%%define)"
+msgstr ""
+
+#: rpmio/macro.c:501
+msgid "Macro %%%s has unterminated opts"
+msgstr ""
+
+#: rpmio/macro.c:506
+msgid "Macro %%%s has empty body"
+msgstr ""
+
+#: rpmio/macro.c:511
+msgid "Macro %%%s failed to expand"
+msgstr ""
+
+#: rpmio/macro.c:536
+msgid "Macro %%%s has illegal name (%%undefine)"
+msgstr ""
+
+#: rpmio/macro.c:613
+msgid "Macro %%%s (%s) was not used below level %d"
+msgstr ""
+
+#: rpmio/macro.c:710
+#, c-format
+msgid "Unknown option %c in %s(%s)"
+msgstr ""
+
+#: rpmio/macro.c:890
+#, c-format
+msgid "Recursion depth(%d) greater than max(%d)"
+msgstr ""
+
+#: rpmio/macro.c:956 rpmio/macro.c:972
+#, c-format
+msgid "Unterminated %c: %s"
+msgstr ""
+
+#: rpmio/macro.c:1012
+msgid "A %% is followed by an unparseable macro"
+msgstr ""
+
+#: rpmio/macro.c:1138
+#, fuzzy
+msgid "Macro %%%.*s not found, skipping"
+msgstr "Paket %s in %s nicht gefunden"
+
+#: rpmio/macro.c:1219
+msgid "Target buffer overflow"
+msgstr ""
+
+# , c-format
+#. XXX Fstrerror
+#: rpmio/macro.c:1399 rpmio/macro.c:1405
+#, fuzzy, c-format
+msgid "File %s: %s"
+msgstr "Öffnen von %s fehlgeschlagen: %s"
+
+#: rpmio/macro.c:1408
+#, c-format
+msgid "File %s is smaller than %d bytes"
+msgstr ""
+
+#: rpmio/messages.c:55
+msgid "warning: "
+msgstr "Warnung: "
+
+#: rpmio/messages.c:64
+msgid "error: "
+msgstr "Fehler: "
+
+#: rpmio/messages.c:73
+msgid "fatal error: "
+msgstr "Fataler Fehler: "
+
+#: rpmio/messages.c:82
+msgid "internal error (rpm bug?): "
+msgstr ""
+
+#: rpmio/rpmmalloc.c:9
+#, c-format
+msgid "memory alloc (%u bytes) returned NULL.\n"
+msgstr ""
+
+#: rpmio/url.c:87
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:105
+#: rpmio/url.c:104
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:132
+#: rpmio/url.c:131
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:218
+#: rpmio/url.c:217
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Passworf für %s@%s: "
 
-#: rpmio/url.c:243 rpmio/url.c:269
+#: rpmio/url.c:242 rpmio/url.c:268
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
-#: rpmio/url.c:405
+#: rpmio/url.c:404
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
 # , c-format
 #. XXX Fstrerror
-#: rpmio/url.c:462
+#: rpmio/url.c:461
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"

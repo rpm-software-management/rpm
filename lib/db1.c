@@ -13,7 +13,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX rpmGenPath */
 #include <rpmurl.h>	/* XXX urlGetPath */
-#include <rpmio.h>
+#include <rpmio_internal.h>
 
 #include "falloc.h"
 #include "misc.h"

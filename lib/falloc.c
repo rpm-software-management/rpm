@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmio_internal.h>
 #include "falloc.h"
 
 #define FA_MAGIC      0x02050920

@@ -10,8 +10,7 @@
 #endif	/* __LCLINT__ */
 
 #include <rpmbuild.h>
-#include <rpmio.h>
-#include <rpmurl.h>
+#include <rpmio_internal.h>
 
 #ifndef	IPPORT_FTP
 #define	IPPORT_FTP	21

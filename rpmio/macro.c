@@ -40,8 +40,7 @@ typedef	FILE * FD_t;
 #else
 
 #include <rpmlib.h>
-#include <rpmio.h>
-#include <rpmurl.h>
+#include <rpmio_internal.h>
 
 #endif
 

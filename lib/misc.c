@@ -218,6 +218,7 @@ int dosetenv(const char *name, const char *value, int overwrite)
     return putenv(a);
 }
 
+#ifdef	DYING
 /* unameToUid(), uidTouname() and the group variants are really poorly
    implemented. They really ought to use hash tables. I just made the
    guess that most files would be owned by root or the same person/group
@@ -367,6 +368,7 @@ char * gidToGname(gid_t gid)
 	return lastGname;
     }
 }
+#endif	/* DYING */
 
 int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 {

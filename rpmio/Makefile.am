@@ -6,10 +6,11 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt @INCPATH@
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmio.h rpmurl.h
+pkginc_HEADERS = rpmio.h rpmurl.h rpmmacro.h
+noinst_HEADERS = rpmio_internal.h ugid.h
 
 lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = rpmio.c url.c
+librpmio_la_SOURCES = rpmio.c url.c macro.c ugid.c rpmmalloc.c rpmerr.c messages.c
 librpmio_la_LDFLAGS = -L$(top_builddir)/popt/.libs -lpopt
 librpmio_la_LIBADD = @LIBMISC@
 
@@ -23,3 +24,7 @@ install-data-local:
 .PHONY:	lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+
+trpmio: librpmio.la trpmio.o
+	$(LINK) -o $@ trpmio.o librpmio.la
+

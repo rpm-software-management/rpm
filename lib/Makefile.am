@@ -9,7 +9,7 @@ EXTRA_DIST = falloc.c db1.c db2.c db3.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	header.h misc.h rpmlib.h rpmmacro.h stringbuf.h
+	header.h misc.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
 	md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
@@ -22,11 +22,9 @@ lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c $(DBLIBOBJS) depends.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
-	macro.c md5.c md5sum.c \
-	messages.c misc.c oldheader.c package.c problems.c \
-	poptBT.c poptQV.c query.c \
-	rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
-	rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
+	md5.c md5sum.c misc.c oldheader.c package.c problems.c \
+	poptBT.c poptQV.c query.c rpmchecksig.c rpmdb.c rpminstall.c \
+	rpmlead.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c verify.c
 librpm_la_LDFLAGS = -L$(top_builddir)/rpmio/.libs -lrpmio
 #	-L$(top_builddir)/popt -lpopt

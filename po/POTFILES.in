@@ -38,10 +38,8 @@ lib/fs.c
 lib/hash.c
 lib/header.c
 lib/install.c
-lib/macro.c
 lib/md5.c
 lib/md5sum.c
-lib/messages.c
 lib/misc.c
 lib/oldheader.c
 lib/package.c
@@ -51,7 +49,6 @@ lib/problems.c
 lib/query.c
 lib/rpmchecksig.c
 lib/rpmdb.c
-lib/rpmerr.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmrc.c
@@ -61,4 +58,9 @@ lib/transaction.c
 lib/uninstall.c
 lib/verify.c
 rpmio/rpmio.c
+rpmio/macro.c
+rpmio/messages.c
+rpmio/rpmmalloc.c
+rpmio/rpmerr.c
+rpmio/ugid.c
 rpmio/url.c

@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmbuild.h>
-#include <rpmurl.h>
+#include <rpmio_internal.h>
 
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;

@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmbuild.h>
-#include <rpmurl.h>
+#include <rpmio_internal.h>
 
 static int _build_debug = 0;
 

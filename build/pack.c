@@ -4,12 +4,13 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
+#include <rpmio_internal.h>
 #include "buildio.h"
 
-#include "lib/misc.h"
-#include "lib/signature.h"
-#include "lib/rpmlead.h"
+#include "misc.h"
+#include "signature.h"
+#include "rpmlead.h"
 
 #define RPM_MAJOR_NUMBER 4
 

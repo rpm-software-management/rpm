@@ -61,12 +61,12 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #endif
 
 #include <rpmlib.h>
-#include <rpmio.h>
-#include <rpmurl.h>
+#include <rpmio_internal.h>
 #include "misc.h"
 
 #include <assert.h>
 
+#ifdef	DYING
 typedef struct _FDSTACK_s {
 	FDIO_t		io;
 /*@dependent@*/ void *	fp;
@@ -120,6 +120,8 @@ struct _FD_s {
 };
 
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
+#endif	/* DYING */
+
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
@@ -153,6 +155,7 @@ int _rpmio_debug = 0;
 #define DBGREFS(_f, _x)	DBG((_f), RPMIO_DEBUG_REFS, _x)
 
 /* =============================================================== */
+#ifdef	DYING
 const FDIO_t fdGetIo(FD_t fd) {
 #ifdef	NOISY
 DBGIO(0, (stderr, "==>\tfdGetIo(%p)\n", fd));
@@ -207,6 +210,7 @@ void fdSetContentLength(FD_t fd, ssize_t contentLength)
     FDSANE(fd);
     fd->contentLength = fd->bytesRemain = contentLength;
 }
+#endif	/* DYING */
 
 static /*@observer@*/ const char * fdbg(FD_t fd)
 {
@@ -262,6 +266,7 @@ static /*@observer@*/ const char * fdbg(FD_t fd)
     return buf;
 }
 
+#ifdef	DYING
 inline void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno) {
     FDSANE(fd);
     if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
@@ -349,6 +354,7 @@ static void fdstat_print(FD_t fd, const char * msg, FILE * fp) {
 	}
     }
 }
+#endif	/* DYING */
 
 /* =============================================================== */
 off_t fdSize(FD_t fd) {
@@ -375,6 +381,7 @@ DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
     return rc;
 }
 
+#ifdef	DYING
 void fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie) {
     FDSANE(fd);
     fd->syserrno = syserrno;
@@ -410,6 +417,7 @@ void fdSetCpioPos(FD_t fd, long int cpioPos) {
     FDSANE(fd);
     fd->fd_cpioPos = cpioPos;
 }
+#endif	/* DYING */
 
 FD_t fdDup(int fdno) {
     FD_t fd;
@@ -423,11 +431,13 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, fd, fdbg(fd)));
     return fd;
 }
 
+#ifdef	DYING
 static inline FD_t c2f(void * cookie) {
 	FD_t fd = (FD_t) cookie;
 	FDSANE(fd);
 	return fd;
 }
+#endif	/* DYING */
 
 #ifdef USE_COOKIE_SEEK_POINTER
 static inline int fdSeekNot(void * cookie,  /*@unused@*/ _IO_off64_t *pos,  /*@unused@*/ int whence) {
@@ -528,12 +538,14 @@ static inline /*@null@*/ FD_t XfdNew(const char *msg, const char *file, unsigned
     return XfdLink(fd, msg, file, line);
 }
 
+#ifdef	DYING
 static inline int fdFileno(void * cookie) {
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
     return fd->fps[0].fdno;	/* XXX WRONG but expedient */
 }
+#endif	/* DYING */
 
 static inline ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     FD_t fd = c2f(cookie);

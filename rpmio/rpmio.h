@@ -128,13 +128,18 @@ int	Closedir(DIR * dir);
 
 /*@observer@*/ extern FDIO_t gzdio;
 
+#ifdef	DYING
 void	fdPush	(FD_t fd, FDIO_t io, void * fp, int fdno);
 void	fdPop	(FD_t fd);
 
 /*@dependent@*/ /*@null@*/ void *	fdGetFp	(FD_t fd);
 void	fdSetFdno(FD_t fd, int fdno);
 void	fdSetContentLength(FD_t fd, ssize_t contentLength);
+#endif
+
 off_t	fdSize	(FD_t fd);
+
+#ifdef	DYING
 void	fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie);
 
 /*@null@*/ const FDIO_t fdGetIo(FD_t fd);
@@ -144,6 +149,7 @@ int	fdGetRdTimeoutSecs(FD_t fd);
 
 long int fdGetCpioPos(FD_t fd);
 void	fdSetCpioPos(FD_t fd, long int cpioPos);
+#endif	/* DYING */
 
 /*@null@*/ FD_t fdDup(int fdno);
 #ifdef UNUSED

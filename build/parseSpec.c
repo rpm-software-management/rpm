@@ -7,7 +7,7 @@
 static int _debug = 0;
 
 #include <rpmbuild.h>
-#include <rpmurl.h>
+#include <rpmio_internal.h>
 
 static struct PartRec {
     int part;

@@ -12,7 +12,7 @@
 
 #include <rpmbuild.h>
 #include <rpmmacro.h>
-#include <rpmurl.h>
+#include <rpmio_internal.h>
 
 #include "buildio.h"
 

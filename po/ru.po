@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-07 14:46-0400\n"
+"POT-Creation-Date: 2000-06-09 10:40-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1663,7 +1663,7 @@ msgstr "не задан spec-файл для сборки пакета"
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: build/build.c:110 build/pack.c:314
+#: build/build.c:110 build/pack.c:315
 #, fuzzy
 msgid "Unable to open temp file."
 msgstr "Не могу открыть временный файл"
@@ -1855,7 +1855,7 @@ msgstr "Файл не найден: %s"
 msgid "Could not open %%files file %s: %s"
 msgstr "Не могу открыть файл %%files: %s"
 
-#: build/files.c:1167 build/pack.c:99
+#: build/files.c:1167 build/pack.c:100
 #, c-format
 msgid "line: %s"
 msgstr "строка: %s"
@@ -1919,116 +1919,116 @@ msgstr "RPMERR_INTERNAL: Достигнут предел в getGname()\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Не могу канонизировать имя хоста: %s\n"
 
-#: build/pack.c:47
+#: build/pack.c:48
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "ошибка создания архива на файле %s: %s"
 
-#: build/pack.c:67
+#: build/pack.c:68
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "неудача записи cpio_copy: %s"
 
-#: build/pack.c:74
+#: build/pack.c:75
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "неудача чтения cpio_copy: %s"
 
-#: build/pack.c:154
+#: build/pack.c:155
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Не могу открыть файл PreIn: %s"
 
-#: build/pack.c:161
+#: build/pack.c:162
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Не могу открыть файл PreUn: %s"
 
-#: build/pack.c:168
+#: build/pack.c:169
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Не могу открыть файл PostIn: %s"
 
-#: build/pack.c:175
+#: build/pack.c:176
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Не могу открыть файл PostUn: %s"
 
-#: build/pack.c:183
+#: build/pack.c:184
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Не могу открыть файл VerifyScript: %s"
 
-#: build/pack.c:198
+#: build/pack.c:199
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Не могу открыть файл Trigger script: %s"
 
-#: build/pack.c:225
+#: build/pack.c:226
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: открытие %s: %s\n"
 
-#: build/pack.c:235
+#: build/pack.c:236
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: чтение %s: %s\n"
 
-#: build/pack.c:256
+#: build/pack.c:257
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s - не пакет RPM\n"
 
-#: build/pack.c:262
+#: build/pack.c:263
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читаю хедер из %s\n"
 
-#: build/pack.c:326
+#: build/pack.c:327
 msgid "Bad CSA data"
 msgstr "Неверные данные CSA"
 
-#: build/pack.c:361
+#: build/pack.c:362
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Не могу открыть %s\n"
 
-#: build/pack.c:393
+#: build/pack.c:394
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Не могу записать пакет: %s"
 
-#: build/pack.c:408
+#: build/pack.c:409
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Генерирую подпись: %d\n"
 
-#: build/pack.c:424
+#: build/pack.c:425
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Не могу прочитать цель подписи: %s"
 
-#: build/pack.c:434
+#: build/pack.c:435
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Не могу прочитать цель подписи: %s"
 
-#: build/pack.c:444
+#: build/pack.c:445
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Не могу записать пакет: %s"
 
-#: build/pack.c:459
+#: build/pack.c:460
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
 
-#: build/pack.c:522
+#: build/pack.c:523
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Не могу сгенерировать имя файла для пакета %s: %s\n"
 
-#: build/pack.c:539
+#: build/pack.c:540
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "не могу создать %s"
@@ -2540,7 +2540,7 @@ msgstr "неверное состояние файла: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "открываю базу в режиме 0x%x в %s\n"
 
-#: lib/db1.c:430 rpmio/url.c:445
+#: lib/db1.c:430 rpmio/url.c:444
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "не могу открыть %s: %s"
@@ -2858,105 +2858,7 @@ msgstr "предупреждение: %s сохранен как %s"
 msgid "running postinstall scripts (if any)\n"
 msgstr "исполняю скрипт postinstall (если есть)\n"
 
-#: lib/macro.c:161
-#, c-format
-msgid "======================== active %d empty %d\n"
-msgstr "======================== активн %d пуст. %d\n"
-
-#. XXX just in case
-#: lib/macro.c:256
-#, c-format
-msgid "%3d>%*s(empty)"
-msgstr "%3d>%*s(пусто)"
-
-#: lib/macro.c:291
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr "%3d<%*s(пусто)\n"
-
-#: lib/macro.c:470
-msgid "Macro %%%s has unterminated body"
-msgstr "Макрос %%%s содержит незакрытое тело"
-
-#: lib/macro.c:496
-msgid "Macro %%%s has illegal name (%%define)"
-msgstr "Макрос %%%s имеет недопустимое имя (%%define)"
-
-#: lib/macro.c:502
-msgid "Macro %%%s has unterminated opts"
-msgstr "Макрос %%%s содержит незакрытые опции"
-
-#: lib/macro.c:507
-msgid "Macro %%%s has empty body"
-msgstr "Макрос %%%s имеет пустое тело"
-
-#: lib/macro.c:512
-msgid "Macro %%%s failed to expand"
-msgstr "Макрос %%%s раскрыть не удалось"
-
-#: lib/macro.c:537
-msgid "Macro %%%s has illegal name (%%undefine)"
-msgstr "Макрос %%%s имеет недопустимое имя (%%undefine)"
-
-#: lib/macro.c:614
-msgid "Macro %%%s (%s) was not used below level %d"
-msgstr "Макрос %%%s (%s) не был использован ниже уровня %d"
-
-#: lib/macro.c:711
-#, c-format
-msgid "Unknown option %c in %s(%s)"
-msgstr "Неизвестная опция %c в %s(%s)"
-
-#: lib/macro.c:891
-#, c-format
-msgid "Recursion depth(%d) greater than max(%d)"
-msgstr "Глубина рекурсии(%d) больше max(%d)"
-
-#: lib/macro.c:957 lib/macro.c:973
-#, c-format
-msgid "Unterminated %c: %s"
-msgstr "Незакрытая %c: %s"
-
-#: lib/macro.c:1013
-msgid "A %% is followed by an unparseable macro"
-msgstr "%% с последующим неразбираемым макросом"
-
-#: lib/macro.c:1139
-msgid "Macro %%%.*s not found, skipping"
-msgstr "Макрос %s не найден, пропускаю"
-
-#: lib/macro.c:1220
-msgid "Target buffer overflow"
-msgstr "Переполнение целевого буфера"
-
-#. XXX Fstrerror
-#: lib/macro.c:1400 lib/macro.c:1406
-#, c-format
-msgid "File %s: %s"
-msgstr "Файл %s: %s"
-
-#: lib/macro.c:1409
-#, c-format
-msgid "File %s is smaller than %d bytes"
-msgstr "Файл %s меньше %d байт"
-
-#: lib/messages.c:55
-msgid "warning: "
-msgstr "предупреждение: "
-
-#: lib/messages.c:64
-msgid "error: "
-msgstr "ошибка: "
-
-#: lib/messages.c:73
-msgid "fatal error: "
-msgstr "фатальная ошибка: "
-
-#: lib/messages.c:82
-msgid "internal error (rpm bug?): "
-msgstr "внутренняя ошибка (бага rpm): "
-
-#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
+#: lib/misc.c:425 lib/misc.c:430 lib/misc.c:436
 #, c-format
 msgid "error creating temporary file %s"
 msgstr "ошибка создания временного файла %s"
@@ -4022,94 +3924,197 @@ msgstr "отсутствует %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: rpmio/rpmio.c:796
+#: rpmio/rpmio.c:808
 msgid "Success"
 msgstr "Удалось"
 
-#: rpmio/rpmio.c:799
+#: rpmio/rpmio.c:811
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: rpmio/rpmio.c:802
+#: rpmio/rpmio.c:814
 msgid "Server IO error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: rpmio/rpmio.c:805
+#: rpmio/rpmio.c:817
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:808
+#: rpmio/rpmio.c:820
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти IP-адрес сервера"
 
-#: rpmio/rpmio.c:811
+#: rpmio/rpmio.c:823
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: rpmio/rpmio.c:814
+#: rpmio/rpmio.c:826
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: rpmio/rpmio.c:817
+#: rpmio/rpmio.c:829
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: rpmio/rpmio.c:820
+#: rpmio/rpmio.c:832
 msgid "IO error to local file"
 msgstr "Ошибка ввода/вывода в локальный файл"
 
-#: rpmio/rpmio.c:823
+#: rpmio/rpmio.c:835
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: rpmio/rpmio.c:826
+#: rpmio/rpmio.c:838
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: rpmio/rpmio.c:829
+#: rpmio/rpmio.c:841
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: rpmio/rpmio.c:833
+#: rpmio/rpmio.c:845
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: rpmio/rpmio.c:1366
+#: rpmio/rpmio.c:1378
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
 
-#: rpmio/url.c:88
+#: rpmio/macro.c:160
+#, c-format
+msgid "======================== active %d empty %d\n"
+msgstr "======================== активн %d пуст. %d\n"
+
+#. XXX just in case
+#: rpmio/macro.c:255
+#, c-format
+msgid "%3d>%*s(empty)"
+msgstr "%3d>%*s(пусто)"
+
+#: rpmio/macro.c:290
+#, c-format
+msgid "%3d<%*s(empty)\n"
+msgstr "%3d<%*s(пусто)\n"
+
+#: rpmio/macro.c:469
+msgid "Macro %%%s has unterminated body"
+msgstr "Макрос %%%s содержит незакрытое тело"
+
+#: rpmio/macro.c:495
+msgid "Macro %%%s has illegal name (%%define)"
+msgstr "Макрос %%%s имеет недопустимое имя (%%define)"
+
+#: rpmio/macro.c:501
+msgid "Macro %%%s has unterminated opts"
+msgstr "Макрос %%%s содержит незакрытые опции"
+
+#: rpmio/macro.c:506
+msgid "Macro %%%s has empty body"
+msgstr "Макрос %%%s имеет пустое тело"
+
+#: rpmio/macro.c:511
+msgid "Macro %%%s failed to expand"
+msgstr "Макрос %%%s раскрыть не удалось"
+
+#: rpmio/macro.c:536
+msgid "Macro %%%s has illegal name (%%undefine)"
+msgstr "Макрос %%%s имеет недопустимое имя (%%undefine)"
+
+#: rpmio/macro.c:613
+msgid "Macro %%%s (%s) was not used below level %d"
+msgstr "Макрос %%%s (%s) не был использован ниже уровня %d"
+
+#: rpmio/macro.c:710
+#, c-format
+msgid "Unknown option %c in %s(%s)"
+msgstr "Неизвестная опция %c в %s(%s)"
+
+#: rpmio/macro.c:890
+#, c-format
+msgid "Recursion depth(%d) greater than max(%d)"
+msgstr "Глубина рекурсии(%d) больше max(%d)"
+
+#: rpmio/macro.c:956 rpmio/macro.c:972
+#, c-format
+msgid "Unterminated %c: %s"
+msgstr "Незакрытая %c: %s"
+
+#: rpmio/macro.c:1012
+msgid "A %% is followed by an unparseable macro"
+msgstr "%% с последующим неразбираемым макросом"
+
+#: rpmio/macro.c:1138
+msgid "Macro %%%.*s not found, skipping"
+msgstr "Макрос %s не найден, пропускаю"
+
+#: rpmio/macro.c:1219
+msgid "Target buffer overflow"
+msgstr "Переполнение целевого буфера"
+
+#. XXX Fstrerror
+#: rpmio/macro.c:1399 rpmio/macro.c:1405
+#, c-format
+msgid "File %s: %s"
+msgstr "Файл %s: %s"
+
+#: rpmio/macro.c:1408
+#, c-format
+msgid "File %s is smaller than %d bytes"
+msgstr "Файл %s меньше %d байт"
+
+#: rpmio/messages.c:55
+msgid "warning: "
+msgstr "предупреждение: "
+
+#: rpmio/messages.c:64
+msgid "error: "
+msgstr "ошибка: "
+
+#: rpmio/messages.c:73
+msgid "fatal error: "
+msgstr "фатальная ошибка: "
+
+#: rpmio/messages.c:82
+msgid "internal error (rpm bug?): "
+msgstr "внутренняя ошибка (бага rpm): "
+
+#: rpmio/rpmmalloc.c:9
+#, c-format
+msgid "memory alloc (%u bytes) returned NULL.\n"
+msgstr ""
+
+#: rpmio/url.c:87
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:105
+#: rpmio/url.c:104
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:132
+#: rpmio/url.c:131
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:218
+#: rpmio/url.c:217
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: rpmio/url.c:243 rpmio/url.c:269
+#: rpmio/url.c:242 rpmio/url.c:268
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %sport должен быть числом\n"
 
-#: rpmio/url.c:405
+#: rpmio/url.c:404
 msgid "url port must be a number\n"
 msgstr "url port должен быть числом\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:462
+#: rpmio/url.c:461
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "не могу создать %s\n"
