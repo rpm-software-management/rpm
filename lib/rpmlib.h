@@ -98,6 +98,7 @@ extern const int rpmTagTableSize;
 #define INSTALL_UPGRADETOOLD	(1 << 4)
 #define INSTALL_NODOCS		(1 << 5)
 #define INSTALL_NOSCRIPTS	(1 << 6)
+#define INSTALL_NOARCH		(1 << 7)
 
 #define UNINSTALL_TEST          (1 << 0)
 #define UNINSTALL_NOSCRIPTS	(1 << 1)
@@ -148,7 +149,7 @@ extern const int rpmTagTableSize;
 #define RPMVAR_PGP_SECRING              21
 #define RPMVAR_PGP_PUBRING              22
 #define RPMVAR_EXCLUDEDOCS              23
-#define RPMVAR_ARCH                     24
+#define RPMVAR_BUILDARCH                24
 #define RPMVAR_OS                       25
 #define RPMVAR_LASTVAR	                26 /* IMPORTANT to keep right! */
 
@@ -156,7 +157,7 @@ char *getVar(int var);
 int getBooleanVar(int var);
 void setVar(int var, char *val);
 
-int readConfigFiles(char * fn, char * arch, char * os);
+int rpmReadConfigFiles(char * file, char * arch, char * os, int forbuild);
 
 typedef struct rpmdb * rpmdb;
 
@@ -180,6 +181,7 @@ int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches);
 int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches);
 int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
 
+int rpmArchScore(char * arch);
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile);
 int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
 		      notifyFunction notify, char * labelFormat);
