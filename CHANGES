@@ -4,6 +4,7 @@
 	- fix stupid allocation problem in exclude/exclusive stuff
 	- fix nasty bug where pointers in to the header were getting
 	  stale after some realloc()s in addEntry()
+	- ignore OS tag for v2 packages -- it was wrong anyway
 
 2.2 -> 2.2.1:
 	- made rpmRemovePackage() print message in verbose mode
