@@ -4,27 +4,23 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include "checksig.h"
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"
 
-int doReSign(char *passPhrase, char **argv)
+int doReSign(int add, char *passPhrase, char **argv)
 {
     int fd, ofd, count;
     struct rpmlead lead;
     unsigned short sigtype;
-    char *sig, *rpm, sigtarget[1024];
+    char *rpm, sigtarget[1024];
     char tmprpm[1024];
     unsigned char buffer[8192];
+    Header sig;
     
-    /* Figure out the signature type */
-    if ((sigtype = sigLookupType()) == RPMSIG_BAD) {
-	fprintf(stderr, "Bad signature type in rpmrc\n");
-	exit(1);
-    }
-
     while (*argv) {
 	rpm = *argv++;
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
@@ -39,12 +35,16 @@ int doReSign(char *passPhrase, char **argv)
 	    fprintf(stderr, "%s: Can't sign v1.0 RPM\n", rpm);
 	    exit(1);
 	}
-	if (!readSignature(fd, lead.signature_type, (void **) &sig)) {
+	if (lead.major == 2) {
+	    fprintf(stderr, "%s: Can't re-sign v2.0 RPM\n", rpm);
+	    exit(1);
+	}
+	if (readSignature(fd, &sig, lead.signature_type)) {
 	    fprintf(stderr, "%s: readSignature failed\n", rpm);
 	    exit(1);
 	}
-	if (sig) {
-	    free(sig);
+	if (add != ADD_SIGNATURE) {
+	    freeSignature(sig);
 	}
 
 	/* Write the rest to a temp file */
@@ -52,7 +52,7 @@ int doReSign(char *passPhrase, char **argv)
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
-		perror("Couldn't read the header/archvie");
+		perror("Couldn't read the header/archive");
 		close(ofd);
 		unlink(sigtarget);
 		exit(1);
@@ -70,7 +70,7 @@ int doReSign(char *passPhrase, char **argv)
 	/* Start writing the new RPM */
 	sprintf(tmprpm, "%s.tmp", rpm);
 	ofd = open(tmprpm, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-	lead.signature_type = sigtype;
+	lead.signature_type = RPMSIG_HEADERSIG;
 	if (writeLead(ofd, &lead)) {
 	    perror("writeLead()");
 	    close(ofd);
@@ -80,13 +80,24 @@ int doReSign(char *passPhrase, char **argv)
 	}
 
 	/* Generate the signature */
-	if (makeSignature(sigtarget, sigtype, ofd, passPhrase)) {
-	    fprintf(stderr, "makeSignature() failed\n");
+	sigtype = sigLookupType();
+	message(MESS_VERBOSE, "Generating signature: %d\n", sigtype);
+	if (add != ADD_SIGNATURE) {
+	    sig = newSignature();
+	    addSignature(sig, sigtarget, SIGTAG_SIZE, passPhrase);
+	    addSignature(sig, sigtarget, SIGTAG_MD5, passPhrase);
+	}
+	if (sigtype>0) {
+	    addSignature(sig, sigtarget, sigtype, passPhrase);
+	}
+	if (writeSignature(ofd, sig)) {
 	    close(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
+	    freeSignature(sig);
 	    exit(1);
 	}
+	freeSignature(sig);
 
 	/* Append the header and archive */
 	fd = open(sigtarget, O_RDONLY);
@@ -122,75 +133,126 @@ int doReSign(char *passPhrase, char **argv)
 
 int doCheckSig(int pgp, char **argv)
 {
-    int fd;
+    int fd, ofd, res, res2;
     struct rpmlead lead;
-    char *sig, *rpm;
-    char result[1024];
-    int res = 0;
-    int xres;
+    char *rpm;
+    char result[1024], sigtarget[1024];
+    unsigned char buffer[8192];
+    Header sig;
+    HeaderIterator sigIter;
+    int_32 tag, type, count;
+    void *ptr;
     
     while (*argv) {
 	rpm = *argv++;
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
 	    fprintf(stderr, "%s: Open failed\n", rpm);
-	    res = -1;
+	    res++;
 	    continue;
 	}
 	if (readLead(fd, &lead)) {
 	    fprintf(stderr, "%s: readLead failed\n", rpm);
-	    res = -1;
+	    res++;
 	    continue;
 	}
 	if (lead.major == 1) {
 	    fprintf(stderr, "%s: No signature available (v1.0 RPM)\n", rpm);
-	    res = -1;
+	    res++;
 	    continue;
 	}
-	if (!readSignature(fd, lead.signature_type, (void **) &sig)) {
+	if (readSignature(fd, &sig, lead.signature_type)) {
 	    fprintf(stderr, "%s: readSignature failed\n", rpm);
-	    res = -1;
+	    res++;
 	    continue;
 	}
-	
-	xres = verifySignature(fd, lead.signature_type, sig, result, pgp);
-	if (xres == RPMSIG_SIGOK) {
-	    if (isVerbose()) {
-		printf("%s: %s", rpm, result);
+	if (! sig) {
+	    fprintf(stderr, "%s: No signature available\n", rpm);
+	    res++;
+	    continue;
+	}
+	/* Write the rest to a temp file */
+	strcpy(sigtarget, tmpnam(NULL));
+	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
+	    if (count == -1) {
+		perror("Couldn't read the header/archive");
+		close(ofd);
+		unlink(sigtarget);
+		exit(1);
 	    }
-	    switch (lead.signature_type) {
-	    case RPMSIG_PGP262_1024:
-		printf("%s: (Old PGP) Signature OK.\n", rpm);
-		break;
-	    case RPMSIG_MD5:
-		printf("%s: (MD5) Signature OK.\n", rpm);
-		break;
-	    case RPMSIG_MD5_PGP:
-		if (pgp) {
-		    printf("%s: (MD5 PGP) Signature OK.\n", rpm);
+	    if (write(ofd, buffer, count) < 0) {
+		perror("Couldn't write header/archive to temp file");
+		close(ofd);
+		unlink(sigtarget);
+		exit(1);
+	    }
+	}
+	close(fd);
+	close(ofd);
+
+	sigIter = initIterator(sig);
+	res2 = 0;
+	if (isVerbose()) {
+	    sprintf(buffer, "%s:\n", rpm);
+	} else {
+	    sprintf(buffer, "%s: ", rpm);
+	}
+	while (nextIterator(sigIter, &tag, &type, &ptr, &count)) {
+	    if (verifySignature(sigtarget, tag, ptr, count, result)) {
+		if (isVerbose()) {
+		    strcat(buffer, result);
 		} else {
-		    printf("%s: (MD5 [PGP skipped]) Signature OK.\n", rpm);
+		    switch (tag) {
+		      case SIGTAG_SIZE:
+			strcat(buffer, "SIZE ");
+			break;
+		      case SIGTAG_MD5:
+			strcat(buffer, "MD5 ");
+			break;
+		      case SIGTAG_PGP:
+			strcat(buffer, "PGP ");
+			break;
+		      default:
+			strcat(buffer, "!!! ");
+		    }
 		}
-		break;
+		res2 = 1;
+	    } else {
+		if (isVerbose()) {
+		    strcat(buffer, result);
+		} else {
+		    switch (tag) {
+		      case SIGTAG_SIZE:
+			strcat(buffer, "size ");
+			break;
+		      case SIGTAG_MD5:
+			strcat(buffer, "md5 ");
+			break;
+		      case SIGTAG_PGP:
+			strcat(buffer, "pgp ");
+			break;
+		      default:
+			strcat(buffer, "??? ");
+		    }
+		}
+	    }
+	}
+	freeIterator(sigIter);
+	res += res2;
+
+	if (res2) {
+	    if (isVerbose()) {
+		fprintf(stderr, "%s", buffer);
+	    } else {
+		fprintf(stderr, "%sNOT OK", buffer);
 	    }
 	} else {
 	    if (isVerbose()) {
-		fprintf(stderr, "%s: %s", rpm, result);
-	    }
-	    if (xres & RPMSIG_NOSIG) {
-		fprintf(stderr, "%s: No signature available.\n", rpm);
-	    } else if (xres & RPMSIG_UNKNOWNSIG) {
-		fprintf(stderr, "%s: Unknown signature type.\n", rpm);
-	    } else if (xres & RPMSIG_BADMD5) {
-		fprintf(stderr, "%s: (MD5) Signature NOT OK!\n", rpm);
-	    } else if (xres & RPMSIG_BADPGP) {
-		fprintf(stderr, "%s: (PGP) Signature NOT OK!\n", rpm);
+		printf("%s", buffer);
 	    } else {
-		fprintf(stderr, "%s: (Internal error) Signature NOT OK!\n",
-			rpm);
+		printf("%sOK\n", buffer);
 	    }
-	    res = -1;
 	}
-	close(fd);
     }
 
     return res;
