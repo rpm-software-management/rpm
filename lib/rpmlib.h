@@ -493,7 +493,8 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_EQUAL	= (1 << 3),
     RPMSENSE_PROVIDES	= (1 << 4), /* only used internally by builds */
     RPMSENSE_CONFLICTS	= (1 << 5), /* only used internally by builds */
-    RPMSENSE_PREREQ	= (1 << 6),	/*!< @todo Legacy. */
+	/* bit 6 used to be RPMSENSE_PREREQ */
+#define	RPMSENSE_PREREQ	RPMSENSE_ANY
     RPMSENSE_OBSOLETES	= (1 << 7), /* only used internally by builds */
     RPMSENSE_INTERP	= (1 << 8),	/*!< Interpreter used by scriptlet. */
     RPMSENSE_SCRIPT_PRE	= ((1 << 9)|RPMSENSE_PREREQ), /*!< %pre dependency. */
