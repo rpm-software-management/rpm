@@ -343,7 +343,8 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
     char * prefix = NULL;
     char ** fileList, ** fileMD5List;
     char * fileStatesList;
-    char ** fileOwnerList, ** fileGroupList;
+    char ** fileOwnerList = NULL;
+    char ** fileGroupList = NULL;
     char ** fileLinktoList;
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
     int_32 * fileUIDList, * fileGIDList;
