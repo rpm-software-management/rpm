@@ -205,6 +205,7 @@ int main(int argc, char ** argv) {
     int oldPackage = 0;
     int clean = 0;
     int signIt = 0;
+    int badOption = 0;
     char * prefix = "/";
     char * specFile;
     char *passPhrase = "";
@@ -260,6 +261,10 @@ int main(int argc, char ** argv) {
 	if (arg == -1) break;
 
 	switch (arg) {
+	  case '?':
+	    badOption = 1;
+	    break;
+
 	  case 'K':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_CHECKSIG)
 		argerror("only one major mode may be specified");
@@ -453,6 +458,9 @@ int main(int argc, char ** argv) {
 
     if (version) printVersion();
     if (help) printHelp();
+
+    if (badOption)
+	exit(1);
 
     if (bigMode != MODE_QUERY && queryFor) 
 	argerror("unexpected query specifiers");
