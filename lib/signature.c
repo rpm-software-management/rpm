@@ -1213,7 +1213,13 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
     int xx;
 
     *t = '\0';
-    t = stpcpy(t, _("V3 RSA/MD5 signature: "));
+    if (dig != NULL && dig->hdrmd5ctx == md5ctx)
+	t = stpcpy(t, _("Header "));
+    *t++ = 'V';
+    switch (sigp->version) {
+    case 3:	*t++ = '3';	break;
+    case 4:	*t++ = '4';	break;
+    }
 
     if (md5ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
 	res = RPMRC_NOKEY;
@@ -1236,15 +1242,18 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
     /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
+	t = stpcpy(t, " RSA/MD5");
 	prefix = "3020300c06082a864886f70d020505000410";
 	break;
     case PGPHASHALGO_SHA1:
+	t = stpcpy(t, " RSA/SHA1");
 	prefix = "3021300906052b0e03021a05000414";
 	break;
     case PGPHASHALGO_RIPEMD160:
 	prefix = NULL;
 	break;
     case PGPHASHALGO_MD2:
+	t = stpcpy(t, " RSA/MD2");
 	prefix = "3020300c06082a864886f70d020205000410";
 	break;
     case PGPHASHALGO_TIGER192:
@@ -1254,12 +1263,15 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	prefix = NULL;
 	break;
     case PGPHASHALGO_SHA256:
+	t = stpcpy(t, " RSA/SHA256");
 	prefix = "3031300d060960864801650304020105000420";
 	break;
     case PGPHASHALGO_SHA384:
+	t = stpcpy(t, " RSA/SHA384");
 	prefix = "3041300d060960864801650304020205000430";
 	break;
     case PGPHASHALGO_SHA512:
+	t = stpcpy(t, " RSA/SHA512");
 	prefix = "3051300d060960864801650304020305000440";
 	break;
     default:
@@ -1271,6 +1283,7 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	res = RPMRC_NOKEY;
 	goto exit;
     }
+    t = stpcpy(t, _(" signature: "));
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
@@ -1384,10 +1397,12 @@ verifyDSASignature(rpmts ts, /*@out@*/ char * t,
     *t = '\0';
     if (dig != NULL && dig->hdrsha1ctx == sha1ctx)
 	t = stpcpy(t, _("Header "));
-    if (sigp->version == 4) 
-	t = stpcpy(t, _("V4 DSA signature: "));
-    else
-	t = stpcpy(t, _("V3 DSA signature: "));
+    *t++ = 'V';
+    switch (sigp->version) {
+    case 3:	*t++ = '3';	break;
+    case 4:	*t++ = '4';	break;
+    }
+    t = stpcpy(t, _(" DSA signature: "));
 
     if (sha1ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
 	res = RPMRC_NOKEY;
