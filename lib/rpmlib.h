@@ -66,8 +66,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_ROOT                     1038
 #define RPMTAG_FILEUSERNAME             1039
 #define RPMTAG_FILEGROUPNAME            1040
-#define RPMTAG_EXCLUDE                  1041 /* not used - depricated */
-#define RPMTAG_EXCLUSIVE                1042 /* not used - depricated */
+#define RPMTAG_EXCLUDE                  1041 /* internal - depricated */
+#define RPMTAG_EXCLUSIVE                1042 /* internal - depricated */
 #define RPMTAG_ICON                     1043
 #define RPMTAG_SOURCERPM                1044
 #define RPMTAG_FILEVERIFYFLAGS          1045
@@ -81,9 +81,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_CONFLICTFLAGS            1053
 #define RPMTAG_CONFLICTNAME             1054
 #define RPMTAG_CONFLICTVERSION          1055
-#define RPMTAG_DEFAULTPREFIX            1056 /* internal */
+#define RPMTAG_DEFAULTPREFIX            1056 /* internal - deprecated */
 #define RPMTAG_BUILDROOT                1057
-#define RPMTAG_INSTALLPREFIX		1058
+#define RPMTAG_INSTALLPREFIX		1058 /* internal - deprecated */
 #define RPMTAG_EXCLUDEARCH              1059
 #define RPMTAG_EXCLUDEOS                1060
 #define RPMTAG_EXCLUSIVEARCH            1061
@@ -115,6 +115,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_FILEINODES               1096
 #define RPMTAG_FILELANGS                1097
 #define RPMTAG_PREFIXES                 1098
+#define RPMTAG_INSTPREFIXES             1099
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 

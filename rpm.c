@@ -90,14 +90,16 @@ static void printUsage(void) {
     puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
-    puts(_("                        [--noorder] file1.rpm ... fileN.rpm"));
+    puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
+    puts(_("                        [--badreloc] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
-    puts(_("                        [--noorder] file1.rpm ... fileN.rpm"));
+    puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
+    puts(_("                        [--badreloc] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
@@ -245,6 +247,10 @@ static void printHelp(void) {
     puts(         "    --install <packagefile>");
     printHelpLine("    -i <packagefile>      ",
 		  _("install package"));
+    printHelpLine("      --relocate <oldpath>=<newpath>",
+		  _("relocate files from <oldpath> to <newpath>"));
+    printHelpLine("      --badreloc",
+		  _("relocate files even though the package doesn't allow it"));
     printHelpLine("      --prefix <dir>      ",
 		  _("relocate the package to <dir>, if relocatable"));
     printHelpLine("      --dbpath <dir>      ",
@@ -411,12 +417,13 @@ int main(int argc, char ** argv) {
     int status;
     int p[2];
     struct rpmRelocation * relocations = NULL;
-    int numRelocations = 0;
+    int numRelocations = 0, badReloc = 0;
     struct poptOption optionsTable[] = {
 	    { "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
 	    { "all", 'a', 0, 0, 'a' },
 	    { "allfiles", '\0', 0, &allFiles, 0 },
 	    { "allmatches", 'a', 0, &allMatches, 0 },
+	    { "badreloc", '\0', 0, &badReloc, 0 },
 	    { "build", 'b', POPT_ARG_STRING, 0, 'b' },
 	    { "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
 	    { "buildos", '\0', POPT_ARG_STRING, 0, 0 },
@@ -852,6 +859,9 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_INSTALL && force)
 	argerror(_("only installation and upgrading may be forced"));
 
+    if (bigMode != MODE_INSTALL && badReloc)
+	argerror(_("files may only be relocated during package installation"));
+
     if (relocations && prefix)
 	argerror(_("only one of --prefix or --relocate may be used"));
 
@@ -1154,6 +1164,7 @@ int main(int argc, char ** argv) {
 	if (force)
 	    installFlags |= (RPMINSTALL_REPLACEPKG | RPMINSTALL_REPLACEFILES);
 	if (replaceFiles) installFlags |= RPMINSTALL_REPLACEFILES;
+	if (badReloc) installFlags |= RPMINSTALL_FORCERELOCATE;
 	if (replacePackages) installFlags |= RPMINSTALL_REPLACEPKG;
 	if (test) installFlags |= RPMINSTALL_TEST;
 	if (noScripts) installFlags |= RPMINSTALL_NOSCRIPTS;

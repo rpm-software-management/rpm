@@ -43,6 +43,7 @@ struct fileMemory {
     char ** md5s;
     char ** links;
     char ** names;
+    char ** cpioNames;
     struct fileInfo * files;
 };
 
@@ -140,6 +141,7 @@ static void freeFileMemory(struct fileMemory fileMem) {
     free(fileMem.md5s);
     free(fileMem.links);
     free(fileMem.names);
+    free(fileMem.cpioNames);
 }
 
 /* files should not be preallocated */
@@ -165,11 +167,11 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 
     if (rawRelocations) {
 	if (!headerGetEntry(h, RPMTAG_PREFIXES, NULL,
-			    (void **) validRelocations, &numValid)) {
+			    (void **) &validRelocations, &numValid)) {
 	    numValid = 0;
 	}
 
-	for (i = 0; rawRelocations[i].oldPath; i++) ;
+	for (i = 0; rawRelocations[i].newPath; i++) ;
 	numRelocations = i;
 	relocations = alloca(sizeof(*relocations) * numRelocations);
 
@@ -232,6 +234,9 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
 		   fileCountPtr);
+    /* get this before we start mucking with this info */
+    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->cpioNames, 
+		   fileCountPtr);
     fileCount = *fileCountPtr;
 
     if (relocations) {
@@ -285,7 +290,7 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	file->install = 1;
 
 	file->relativePath = mem->names[i];
-	file->cpioPath = mem->names[i] + stripPrefixLength;
+	file->cpioPath = mem->cpioNames[i] + stripPrefixLength;
 	file->mode = fileModes[i];
 	file->md5 = mem->md5s[i];
 	file->link = mem->links[i];
@@ -596,7 +601,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), 
 				   defaultPrefix);
 	    stripTrailingSlashes(defaultPrefix);
-	    stripSize = strlen(defaultPrefix);
+	    stripSize = strlen(defaultPrefix) + 1;
 
 	    headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 			   &defaultPrefix, 1); 
@@ -606,8 +611,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	}
 
 	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize,
-			     relocations, 1)) {
-			     /*relocations, flags & RPMINSTALL_FORCERELOCATE | 1)) {*/
+			     relocations, flags & RPMINSTALL_FORCERELOCATE)) {
 	    if (rootdir) {
 		chroot(".");
 		chdir(currDir);

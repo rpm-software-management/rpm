@@ -10,6 +10,10 @@
 	- default instchangelog is set to 5
 	- headerRemoveEntry() didn't free the item's data -- this led to
   	  a slight memory leak when installing packages
+        - implemented generic file relocations at install time
+          (use --relocate <oldpath>=<newpath>, i.e. --relocate /usr=/foo)
+        - added --badreloc flag to force RPM to relocate files which packages
+          haven't advertised as relocateable
 
 2.4.99 -> 2.4.100:
 	- fixed handling of --rebuild and --recompile

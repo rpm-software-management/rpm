@@ -330,8 +330,9 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
     int child;
     int status;
     char upgradeArg[20];
-    char * installPrefix = NULL;
-    char * installPrefixEnv = NULL;
+    char ** prefixes = NULL;
+    int numPrefixes;
+    char * oldPrefix;
     char * program;
     char ** programArgv;
     char ** argv = NULL;
@@ -339,6 +340,10 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
     int programType = 0;
     int pipes[2];
     int out = 0;
+    int freePrefixes = 0;
+    int maxPrefixLength;
+    char * prefixBuf;
+    int i;
 
     if (norunScripts) return 0;
 
@@ -367,13 +372,24 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 	memcpy(programArgv, argv, programArgc * sizeof(char *));
     }
 
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &installPrefix,
+    if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) prefixes,
+		       &numPrefixes)) {
+	freePrefixes = 1;
+    } else if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, 
+			      (void **) &oldPrefix,
 	    	       NULL)) {
-	installPrefixEnv = alloca(strlen(installPrefix) + 30);
-	strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
-	strcat(installPrefixEnv, installPrefix);
-	strcat(installPrefixEnv, "\n");
+	prefixes = &oldPrefix;
+	numPrefixes = 1;
+    } else {
+	numPrefixes = 0;
     }
+
+    maxPrefixLength = 0;
+    for (i = 0; i < numPrefixes; i++) {
+	child = strlen(prefixes[i]);
+	if (child > maxPrefixLength) maxPrefixLength = child;
+    }
+    prefixBuf = alloca(maxPrefixLength + 50);
 
     rpmMessage(RPMMESS_DEBUG, "running inst helper %s\n", programArgv[0]);
 
@@ -389,9 +405,6 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 	    (!strcmp(programArgv[0], "/bin/sh") || 
 	     !strcmp(programArgv[0], "/bin/bash")))
 	    write(fd, "set -x\n", 7);
-
-	if (installPrefixEnv)
-	    write(fd, installPrefixEnv, strlen(installPrefixEnv));
 
 	write(fd, script, strlen(script));
 	close(fd);
@@ -429,8 +442,16 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 	}
 
 	doputenv(SCRIPT_PATH);
-	if (installPrefixEnv) {
-	    doputenv(installPrefixEnv);
+
+	for (i = 0; i < numPrefixes; i++) {
+	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
+	    doputenv(prefixBuf);
+
+	    /* backwards compatibility */
+	    if (!i) {
+		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
+		doputenv(prefixBuf);
+	    }
 	}
 
 	if (strcmp(root, "/")) {
@@ -445,6 +466,8 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
     }
 
     waitpid(child, &status, 0);
+
+    if (freePrefixes) free(prefixes);
 
     if (err) {
 	if (out > 2) close(out);
