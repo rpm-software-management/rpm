@@ -296,10 +296,12 @@ fprintf(stderr, "    Parent(%p): %p child %d\n", ME(), sq, sq->child);
 /*@=modfilesys@*/
 #endif
 
+#ifdef	DYING
 	/* Unblock child. */
 	xx = close(sq->pipes[0]);
 	xx = close(sq->pipes[1]);
 	sq->pipes[0] = sq->pipes[1] = -1;
+#endif
 
     }
 
@@ -322,6 +324,12 @@ static int rpmsqWaitUnregister(rpmsq sq)
     int xx;
 
     if (same_thread) ret = sighold(SIGCHLD);
+
+    if (sq->pipes[0] >= 0)
+	xx = close(sq->pipes[0]);
+    if (sq->pipes[1] >= 0)
+	xx = close(sq->pipes[1]);
+    sq->pipes[0] = sq->pipes[1] = -1;
 
     /*@-infloops@*/
     while (ret == 0 && sq->reaped != sq->child) {

@@ -73,6 +73,8 @@ rpmio/rpmlog.c
 rpmio/rpmmalloc.c
 rpmio/rpmpgp.c
 rpmio/rpmrpc.c
+rpmio/rpmsq.c
+rpmio/rpmsw.c
 rpmio/ugid.c
 rpmio/url.c
 tools/rpmcache.c

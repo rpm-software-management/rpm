@@ -524,6 +524,10 @@ INPUT                  = \
 	@top_srcdir@/rpmio/rpmpgp.c \
 	@top_srcdir@/rpmio/rpmpgp.h \
 	@top_srcdir@/rpmio/rpmrpc.c \
+	@top_srcdir@/rpmio/rpmsq.c \
+	@top_srcdir@/rpmio/rpmsq.h \
+	@top_srcdir@/rpmio/rpmsw.c \
+	@top_srcdir@/rpmio/rpmsw.h \
 	@top_srcdir@/rpmio/rpmurl.h \
 	@top_srcdir@/rpmio/strcasecmp.c \
 	@top_srcdir@/rpmio/stubs.c \

@@ -2461,9 +2461,11 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    int_32 type;
 	    int_32 count;
 
+/*@-boundswrite@*/
 	    if (!headerNextIterator(hsa->hi, &tagno, &type, NULL, &count))
 		fmt = NULL;
 	    tag->tag = tagno;
+/*@=boundswrite@*/
 	}
     }
 
@@ -2606,7 +2608,7 @@ bingo:
  */
 static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 		char * str, /*@out@*/char ** endPtr)
-	/*@modifies hsa, str, *token, *endPtr @*/
+	/*@modifies hsa, str, token, *endPtr @*/
 	/*@requires maxSet(endPtr) >= 0 @*/;
 
 /**
@@ -3365,7 +3367,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 /**
  * Create an extension cache.
- * @param exts
+ * @param exts		headerSprintf extensions
  * @return		new extension cache
  */
 static /*@only@*/ rpmec
@@ -3388,7 +3390,7 @@ rpmecNew(const headerSprintfExtension exts)
 
 /**
  * Destroy an extension cache.
- * @param extensions
+ * @param exts		headerSprintf extensions
  * @param ec		extension cache
  * @return		NULL always
  */

@@ -11,6 +11,7 @@
 
 #include <beecrypt/types.h>
 #include <rpmpgp.h>
+#include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
 #include <beecrypt/beecrypt.h>
@@ -106,7 +107,7 @@ typedef struct _FDSTACK_s {
 typedef struct {
     int			count;	/*!< Number of operations. */
     off_t		bytes;	/*!< Number of bytes transferred. */
-    time_t		msecs;	/*!< Number of milli-seconds. */
+    time_t		usecs;	/*!< Number of ticks. */
 } OPSTAT_t;
 
 /** \ingroup rpmio
@@ -123,8 +124,8 @@ enum FDSTAT_e {
  * Cumulative statistics for a descriptor.
  */
 typedef	/*@abstract@*/ struct {
-    struct timeval	create;	/*!< Structure creation time. */
-    struct timeval	begin;	/*!< Operation start time. */
+    struct rpmsw_s	create;	/*!< Structure creation time. */
+    struct rpmsw_s	begin;	/*!< Operation start time. */
     OPSTAT_t		ops[4];	/*!< Cumulative statistics. */
 } * FDSTAT_t;
 
@@ -371,22 +372,7 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 /*@-boundswrite@*/
     fd->stats->ops[opx].count++;
 /*@=boundswrite@*/
-    (void) gettimeofday(&fd->stats->begin, NULL);
-}
-
-/** \ingroup rpmio
- */
-/*@unused@*/ static inline
-time_t tvsub(/*@null@*/ const struct timeval * etv,
-		/*@null@*/ const struct timeval * btv)
-	/*@*/
-{
-    time_t secs, usecs;
-    if (etv == NULL  || btv == NULL) return 0;
-    secs = etv->tv_sec - btv->tv_sec;
-    for (usecs = etv->tv_usec - btv->tv_usec; usecs < 0; usecs += 1000000)
-	secs++;
-    return ((secs * 1000) + (usecs/1000));
+    (void) rpmswNow(&fd->stats->begin);
 }
 
 /** \ingroup rpmio
@@ -395,12 +381,12 @@ time_t tvsub(/*@null@*/ const struct timeval * etv,
 void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 	/*@modifies fd @*/
 {
-    struct timeval end;
+    struct rpmsw_s end;
     if (fd == NULL) return;
     if (rc == -1) fd->syserrno = errno;
     if (fd->stats == NULL) return;
 /*@-boundswrite@*/
-    (void) gettimeofday(&end, NULL);
+    (void) rpmswNow(&end);
     if (rc >= 0) {
 	switch(opx) {
 	case FDSTAT_SEEK:
@@ -412,7 +398,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 	    break;
 	}
     }
-    fd->stats->ops[opx].msecs += tvsub(&end, &fd->stats->begin);
+    fd->stats->ops[opx].usecs += rpmswDiff(&end, &fd->stats->begin);
     fd->stats->begin = end;	/* structure assignment */
 /*@=boundswrite@*/
 }
@@ -425,7 +411,9 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
+    static int usec_scale = 1000000;
     int opx;
+
     if (fd == NULL || fd->stats == NULL) return;
     for (opx = 0; opx < 4; opx++) {
 	OPSTAT_t *ops = &fd->stats->ops[opx];
@@ -433,15 +421,15 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	switch (opx) {
 	case FDSTAT_READ:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%03d secs\n",
+	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%06d secs\n",
 		ops->count, (long)ops->bytes,
-		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
+		(int)(ops->usecs/usec_scale), (int)(ops->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%03d secs\n",
+	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%06d secs\n",
 		ops->count, (long)ops->bytes,
-		(int)(ops->msecs/1000), (int)(ops->msecs%1000));
+		(int)(ops->usecs/usec_scale), (int)(ops->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_SEEK:
 	    /*@switchbreak@*/ break;

@@ -354,8 +354,8 @@ static inline /*@null@*/ FD_t XfdNew(const char * msg,
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));
 
-    (void) gettimeofday(&fd->stats->create, NULL);
-    fd->stats->begin = fd->stats->create;	/* structure assignment */
+    (void) rpmswNow(&fd->stats->create);
+    (void) rpmswNow(&fd->stats->begin);
 
     fd->ftpFileDoneNeeded = 0;
     fd->firstFree = 0;

@@ -38,7 +38,7 @@ echo "
 * Here's the rpm-4_1 branch, latest is rpm-4.1.1:                          *
 *       cvs up -r rpm-4_1                                                  *
 *                                                                          *
-* Here's the rpm-4_0 branch, latest is rpm-4.0.4:                          *
+* Here's the rpm-4_0 branch, latest is rpm-4.0.5:                          *
 *       cvs up -r rpm-4_0                                                  *
 *                                                                          *
 ****************************************************************************
