@@ -15,6 +15,7 @@ config.status
 config.sub
 configure
 depcomp
+elfutils.spec
 install-sh
 libtool
 ltconfig

@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.2
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -472,13 +472,16 @@ exit 0
 %lang(zh)	%{__prefix}/*/locale/zh/LC_MESSAGES/popt.mo
 %lang(zh_CN)	%{__prefix}/*/locale/zh_CN.GB2312/LC_MESSAGES/popt.mo
 
-# XXX These may end up in popt-devel but it hardly seems worth the effort now.
+# XXX These may end up in popt-devel but it hardly seems worth the effort.
 %{__prefix}/%{_lib}/libpopt.a
 %{__prefix}/%{_lib}/libpopt.la
 %{__prefix}/%{_lib}/libpopt.so
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Oct 23 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.4
+- resurrect genhdlist "greased lightning" pathway for now.
+
 * Fri Oct 18 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.2
 - add debug sub-package patch.
 - re-add elfutils/libdwarf (for dwarf.h), eliminate tools/dwarf2.h.

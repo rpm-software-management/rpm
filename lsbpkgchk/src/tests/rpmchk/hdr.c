@@ -52,25 +52,28 @@ checkRpmSignature(RpmFile *file1, struct tetj_handle *journal)
 {
 RpmHeader	*hdr;
 RpmHdrIndex	*hindex;
-int	nindex;
+int	nindex,hoffset;
 
-hdr=(RpmHeader *)file1->nexthdr;
-hindex=(RpmHdrIndex *)(hdr+1);
+hdr=(RpmHeader *)file1->signature;
 nindex=ntohl(hdr->nindex);
+hindex=(RpmHdrIndex *)(hdr+1);
 file1->storeaddr=(((char *)hdr)+sizeof(RpmHeader)+(nindex*sizeof(RpmHdrIndex)));
-file1->header=(RpmHeader *)((char *)file1->storeaddr+
-		ntohl(hindex->offset)+ntohl(hindex->count));
+file1->header=(RpmHeader *)(file1->storeaddr+htonl(hdr->hsize));
+hoffset=((char *)(file1->header))-file1->addr;
+
+/* Make sure it is aligned correctly */
+hoffset+=7;
+hoffset&=(~7);
+file1->header=(RpmHeader *)(file1->addr+hoffset);
 
 /*
 fprintf(stderr,"Signature has %d indicies with %x bytes of store at %x\n",
 			nindex, ntohl(hdr->hsize),file1->storeaddr);
 */
-
 checkRpmHdr(file1, journal);
 checkRpmIdx(file1, hindex, SigTags, numSigIdxTags, journal);
 
-file1->nexthdr=(RpmHeader *)((char *)file1->storeaddr+
-		ntohl(hindex->offset)+ntohl(hindex->count));
+file1->nexthdr=(RpmHeader *)(file1->addr+hoffset);
 }
 
 void
@@ -78,21 +81,22 @@ checkRpmHeader(RpmFile *file1, struct tetj_handle *journal)
 {
 RpmHeader	*hdr;
 RpmHdrIndex	*hindex;
-int	nindex;
+int	nindex, hoffset;
 
 hdr=(RpmHeader *)file1->nexthdr;
 hindex=(RpmHdrIndex *)(hdr+1);
 nindex=ntohl(hdr->nindex);
 file1->storeaddr=(((char *)hdr)+sizeof(RpmHeader)+(nindex*sizeof(RpmHdrIndex)));
+file1->archive=(RpmHeader *)(file1->storeaddr+htonl(hdr->hsize));
+hoffset=((char *)(file1->archive))-file1->addr;
 
 /*
-fprintf(stderr,"Header has %d indicies with %x bytes of store at %x\n",
-			nindex, ntohl(hdr->hsize),file1->storeaddr);
+fprintf(stderr,"Header (%x) has %d indicies with %x bytes of store at %x\n",
+			(char *)hdr-file1->addr, nindex, ntohl(hdr->hsize),file1->storeaddr);
 */
 
 checkRpmHdr(file1, journal);
 checkRpmIdx(file1, hindex, HdrTags, numHdrIdxTags, journal);
 
-file1->nexthdr=(RpmHeader *)((char *)file1->storeaddr+
-		ntohl(hindex->offset)+ntohl(hindex->count));
+file1->nexthdr=(RpmHeader *)(file1->addr+hoffset);
 }

@@ -29,8 +29,9 @@
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
+#define	_FSM_DEBUG	0
 /*@unchecked@*/
-int _fsm_debug = 0;
+int _fsm_debug = _FSM_DEBUG;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
@@ -664,7 +665,9 @@ assert(rpmteType(fi->te) == TR_ADDED);
 		fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_ERASE:
+#if 0	/* XXX is this a genhdlist fix? */
 	    assert(rpmteType(fi->te) == TR_REMOVED);
+#endif
 	    /*
 	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
 	     * legacy rpm behavior.

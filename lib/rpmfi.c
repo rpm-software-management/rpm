@@ -1053,24 +1053,28 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
     xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
 
+    fi->fmd5s = NULL;
     xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 
-    t = xmalloc(fi->fc * 16);
-    fi->md5s = t;
-    for (i = 0; i < fi->fc; i++) {
-	const char * fmd5;
-	int j;
+    fi->md5s = NULL;
+    if (fi->fmd5s) {
+	t = xmalloc(fi->fc * 16);
+	fi->md5s = t;
+	for (i = 0; i < fi->fc; i++) {
+	    const char * fmd5;
+	    int j;
 
-	fmd5 = fi->fmd5s[i];
-	if (!(fmd5 && *fmd5 != '\0')) {
-	    memset(t, 0, 16);
-	    t += 16;
-	    continue;
+	    fmd5 = fi->fmd5s[i];
+	    if (!(fmd5 && *fmd5 != '\0')) {
+		memset(t, 0, 16);
+		t += 16;
+		continue;
+	    }
+	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
+		*t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
 	}
-	for (j = 0; j < 16; j++, t++, fmd5 += 2)
-	    *t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
+	fi->fmd5s = hfd(fi->fmd5s, -1);
     }
-    fi->fmd5s = hfd(fi->fmd5s, -1);
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs or finodes */
     xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);

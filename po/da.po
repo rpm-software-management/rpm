@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-18 14:27-0400\n"
+"POT-Creation-Date: 2002-10-23 15:56-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -418,187 +418,166 @@ msgstr "&& og || understøttes ikke for strenge\n"
 msgid "syntax error in expression\n"
 msgstr "syntaksfejl i udtryk\n"
 
-#: build/files.c:304
+#: build/files.c:306
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fejl: %s\n"
 
-#: build/files.c:369 build/files.c:569 build/files.c:764
+#: build/files.c:371 build/files.c:571 build/files.c:766
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:380 build/files.c:698 build/files.c:775
+#: build/files.c:382 build/files.c:700 build/files.c:777
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Manglende ')' i %s %s\n"
 
-#: build/files.c:418 build/files.c:723
+#: build/files.c:420 build/files.c:725
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ugyldigt %s-symbol: %s\n"
 
-#: build/files.c:528
+#: build/files.c:530
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:585
+#: build/files.c:587
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Ikke-mellemrum efterfølger %s(): %s\n"
 
-#: build/files.c:623
+#: build/files.c:625
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Ugyldig syntaks: %s(%s)\n"
 
-#: build/files.c:633
+#: build/files.c:635
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Ugyldig tilstandsangivelse: %s(%s)\n"
 
-#: build/files.c:645
+#: build/files.c:647
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Ugyldig dirmode-spec: %s(%s)\n"
 
-#: build/files.c:802
+#: build/files.c:804
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Anormal locale-længde: \"%.*s\" i %%lang(%s)\n"
 
 #. @innercontinue@
-#: build/files.c:813
+#: build/files.c:815
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Dobbelt locale %.*s i %%lang(%s)\n"
 
-#: build/files.c:979
+#: build/files.c:981
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Træfningsgrænse for %%docdir\n"
 
-#: build/files.c:985
+#: build/files.c:987
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Kun et parameter for %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:1018
+#: build/files.c:1020
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "To filer på én linie: %s\n"
 
-#: build/files.c:1033
+#: build/files.c:1035
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Fil skal begynde med \"/\": %s\n"
 
-#: build/files.c:1046
+#: build/files.c:1048
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
 
-#: build/files.c:1198
+#: build/files.c:1200
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1347
+#: build/files.c:1349
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1607
+#: build/files.c:1609
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1631
+#: build/files.c:1633
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1839
+#: build/files.c:1841
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1863
+#: build/files.c:1865
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1880
+#: build/files.c:1882
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1940
+#: build/files.c:1942
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1951 build/pack.c:156
+#: build/files.c:1953 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2338
+#: build/files.c:2340
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2350 build/parsePrep.c:50
+#: build/files.c:2352 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#. XXX this error message is probably not seen.
-#: build/files.c:2412
-#, c-format
-msgid "Couldn't exec %s: %s\n"
-msgstr "Kunne ikke udføre %s: %s\n"
-
-#: build/files.c:2417
-#, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
-
-#: build/files.c:2501
-#, c-format
-msgid "%s failed\n"
-msgstr "%s mislykkedes\n"
-
 #: build/files.c:2505
-#, c-format
-msgid "failed to write all data to %s\n"
-msgstr "kunne ikke skrive alle data til %s\n"
-
-#: build/files.c:2673
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: build/files.c:2703 build/files.c:2715
+#: build/files.c:2511 build/files.c:2524
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Kunne ikke finde %s:\n"
 
-#: build/files.c:2853
+#: build/files.c:2653
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2871
+#: build/files.c:2674
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2911
+#: build/files.c:2713
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -3850,6 +3829,18 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#~ msgid "Couldn't exec %s: %s\n"
+#~ msgstr "Kunne ikke udføre %s: %s\n"
+
+#~ msgid "Couldn't fork %s: %s\n"
+#~ msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
+
+#~ msgid "%s failed\n"
+#~ msgstr "%s mislykkedes\n"
+
+#~ msgid "failed to write all data to %s\n"
+#~ msgstr "kunne ikke skrive alle data til %s\n"
 
 #, fuzzy
 #~ msgid "File%5d: %07o %s.%s\t %s\n"
