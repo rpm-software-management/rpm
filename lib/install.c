@@ -892,7 +892,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &fileNames,
 		           &fileCount)) {
 	    fileStates = malloc(sizeof(*fileStates) * fileCount);
-	    memset(fileStates, RPMFILE_STATE_NOTINSTALLED, fileCount);
+	    memset(fileStates, RPMFILE_STATE_NORMAL, fileCount);
 	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates, 
 			    fileCount);
 	    free(fileStates);
