@@ -383,6 +383,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     char *nametmp;
     char filename[1024];
     char sourcerpm[1024];
+    char * binrpm;
     char *icon;
     int iconFD;
     struct stat statbuf;
@@ -398,6 +399,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     char *packager;
     char *packageVersion, *packageRelease;
     char *prefix, *prefixSave;
+    char * binformat, * errorString;
     int prefixLen;
     int size;
     StringBuf cpioFileList;
@@ -419,7 +421,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     version = strdup(version);
     release = strdup(release);
 
-    sprintf(sourcerpm, "%s-%s-%s.%ssrc.rpm", s->name, version, release,
+    sprintf(sourcerpm, "%s-%s-%s.%sprc.rpm", s->name, version, release,
 	    (s->numNoPatch + s->numNoSource) ? "no" : "");
 
     vendor = NULL;
@@ -599,8 +601,17 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 
 	/* Make the output RPM filename */
 	if (doPackage == PACK_PACKAGE) {
-	    sprintf(filename, "%s/%s/%s.%s.rpm", rpmGetVar(RPMVAR_RPMDIR),
-		    rpmGetArchName(), name, rpmGetArchName());
+	    binformat = rpmGetVar(RPMVAR_RPMFILENAME);
+	    binrpm = headerSprintf(outHeader, binformat, rpmTagTable,
+				   rpmHeaderFormats, &errorString);
+
+	    if (!binrpm) {
+		rpmError(RPMERR_BADFILENAME, "could not generate output "
+			 "filename for package %s: %s\n", name, binrpm);
+	    }
+
+	    sprintf(filename, "%s/%s", rpmGetVar(RPMVAR_RPMDIR), binrpm);
+	    free(binrpm);
 
 	    if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
 			    getStringBuf(cpioFileList), passPhrase, prefix)) {

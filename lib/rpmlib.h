@@ -190,7 +190,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVAR_DEFAULTDOCDIR		34
 #define RPMVAR_FIXPERMS			35
 #define RPMVAR_GZIPBIN     		36
-#define RPMVAR_LASTVAR	                37 /* IMPORTANT to keep right! */
+#define RPMVAR_RPMFILENAME     		37
+#define RPMVAR_LASTVAR	                38 /* IMPORTANT to keep right! */
 
 char *rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
@@ -384,6 +385,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMERR_GZIP             -117
 #define RPMERR_BADSPEC          -118
 #define RPMERR_LDD              -119    /* couldn't understand ldd output */
+#define RPMERR_BADFILENAME	-120
 
 #define RPMERR_BADSIGTYPE       -200    /* Unknown signature type */
 #define RPMERR_SIGGEN           -201    /* Error generating signature */

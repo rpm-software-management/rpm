@@ -93,6 +93,7 @@ struct rpmoption optionTable[] = {
     { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0 },
     { "root",			RPMVAR_ROOT,			0, 0 },
     { "rpmdir",			RPMVAR_RPMDIR,			0, 0 },
+    { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1 },
     { "signature",		RPMVAR_SIGTYPE,			0, 0 },
     { "sourcedir",		RPMVAR_SOURCEDIR,		0, 0 },
     { "specdir",		RPMVAR_SPECDIR,			0, 0 },

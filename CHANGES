@@ -2,6 +2,8 @@
 	- completely rewrote queryformat code
 	- added fsnames, fssizes virtual query tags
 	- added rpmdbFindByHeader() and rpmdbFindByTag() public functions
+	- added rpmfilename tag to rpmrc to define the filename format to
+	  use for binary packages (note the rpmdir is prepended to it)
 
 2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available

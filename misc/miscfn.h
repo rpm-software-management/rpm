@@ -67,7 +67,7 @@ extern void *myrealloc(void *, size_t);
 #define GETMNTENT_ONE 1
 #define GETMNTENT_TWO 0
 #define our_mntent struct mntent
-#defeine our_mntdir mnt_dir
+#define our_mntdir mnt_dir
 #elif HAVE_SYS_MNTTAB_H
 #include <stdio.h>
 #include <sys/mnttab.h>
