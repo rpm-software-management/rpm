@@ -470,10 +470,15 @@ static int find_preamble_line(char *line, char **s)
     }
     if (!p->token) return 0;
     *s = line + p->len;
-    *s += strspn(*s, " \t");
-    if (**s != ':') {
-	return 0;
+
+    /* Unless this is a source or a patch, a ':' better be next */
+    if (p->tag != RPMTAG_SOURCE && p->tag != RPMTAG_PATCH) {
+	*s += strspn(*s, " \t");
+	if (**s != ':') {
+	    return 0;
+	}
     }
+    
     *s += strspn(*s, ": \t");
     return p->tag;
 }
