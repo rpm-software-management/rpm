@@ -152,8 +152,6 @@ INCLUDES =  	-I$(top_srcdir) 	-I$(top_srcdir)/lib 	-I$(top_srcdir)/popt 	-I/usr/
 mylibs =  	$(top_builddir)/lib/librpm.la 	$(top_builddir)/popt/libpopt.la
 
 
-EXTRA_DIST = Makefile.in
-
 pythondir = $(prefix)/lib/python1.5/site-packages
 python_PROGRAMS = rpmmodule.so
 

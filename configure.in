@@ -15,7 +15,7 @@ AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
-ALL_LINGUAS="cs de fi fr pt_BR ru sk sr sv tr"
+ALL_LINGUAS="cs de fi fr pl pt_BR ru sk sr sv tr"
 
 LIBOBJS=
 
@@ -817,7 +817,9 @@ AC_CONFIG_SUBDIRS(popt)
 AC_OUTPUT([Makefile rpmrc macros lib/Makefile
 	build/Makefile tools/Makefile scripts/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
-	misc/Makefile po/Makefile.in intl/Makefile python/Makefile],
+	misc/Makefile po/Makefile.in intl/Makefile
+	doc/Makefile doc/pl/Makefile doc/ru/Makefile
+	python/Makefile],
 	[touch Makefile.in
 	sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
 

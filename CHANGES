@@ -9,6 +9,7 @@
 	- make query (rpm -qvl) behave like (POSIX?) ls for older files (#4050).
 	- fix: %if parsing skipped 3 chars too many.
 	- permit multiline macro expansions with comments and %if.
+	- add pl translation and man pages (Tomasz K?oczko et al).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

@@ -76,12 +76,10 @@ fi
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY CHANGES GROUPS docs/*
+%doc RPM-PGP-KEY CHANGES GROUPS doc/manual/*
 /bin/rpm
 /usr/bin/rpm2cpio
 /usr/bin/gendiff
-/usr/man/man8/rpm.8
-/usr/man/man8/rpm2cpio.8
 /usr/lib/rpm
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
@@ -91,6 +89,9 @@ fi
 %dir /usr/src/redhat/RPMS
 /usr/src/redhat/RPMS/*
 /usr/share/locale/*/LC_MESSAGES/rpm.mo
+/usr/man/man8/*.8
+%lang(pl) /usr/man/pl/man8/*
+%lang(ru) /usr/man/ru/man8/*
 
 %files devel
 %defattr(-,root,root)

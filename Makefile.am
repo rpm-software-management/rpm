@@ -4,14 +4,14 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	docs/[a-z]* gendiff $(man_MANS) po/*.in po/*.po po/rpm.pot \
+	docs/[a-z]* gendiff po/*.in po/*.po po/rpm.pot \
 	python/*.am python/*.in python/*.c python/testit \
 	rpm.magic rpmpopt rpm.spec rpm.8ru rpm2cpio.8ru
 
 EXTRA_PROGRAMS = rpmconvert
 
 # XXX TODO: python perl
-SUBDIRS = popt build lib po intl misc tools scripts tests .
+SUBDIRS = popt build lib po intl misc tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
@@ -33,8 +33,6 @@ bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 
 noinst_PROGRAMS =	@BUILD_RPMCONVERT@
-
-man_MANS = rpm.8 rpm2cpio.8	# rpm.8ru rpm2cpio.8ru
 
 pkglibdir = @RPMCONFIGDIR@
 pkglib_DATA = rpmrc rpmpopt macros
