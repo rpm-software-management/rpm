@@ -22,6 +22,7 @@ target_platform="`$RPM --eval '%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
 case "$arch" in
+  i[3456]86) SUBSTS='s_i386_i486_ s_i386_i586_ s_i386_i686_' ;;
   sparc*) SUBSTS='s_sparc64_sparc_ s_sparc\([^6]\)_sparc64\1_' ;;
   *) SUBSTS=y___ ;;
 esac
