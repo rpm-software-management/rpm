@@ -112,6 +112,7 @@ void	fdPop	(FD_t fd);
 
 /*@dependent@*/ /*@null@*/ void *	fdGetFp	(FD_t fd);
 void	fdSetFdno(FD_t fd, int fdno);
+void	fdSetContentLength(FD_t fd, ssize_t contentLength);
 off_t	fdSize	(FD_t fd);
 void	fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie);
 

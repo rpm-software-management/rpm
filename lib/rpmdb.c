@@ -635,6 +635,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     int count = 0, providesCount = 0, requiredbyCount = 0, conflictCount = 0;
     int triggerCount = 0;
     int type;
+    int newSize;
     int rc = 0;
 
     headerGetEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
@@ -675,13 +676,16 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 
     blockSignals();
 
-    dboffset = fadAlloc(db->pkgs, headerSizeof(dbentry, HEADER_MAGIC_NO));
+    newSize = headerSizeof(dbentry, HEADER_MAGIC_NO);
+    dboffset = fadAlloc(db->pkgs, newSize);
     if (!dboffset) {
 	rc = 1;
     } else {
 	/* XXX TODO: set max. no. of bytes to write */
 	(void)Fseek(db->pkgs, dboffset, SEEK_SET);
+	fdSetContentLength(db->pkgs, newSize);
 	rc = headerWrite(db->pkgs, dbentry, HEADER_MAGIC_NO);
+	fdSetContentLength(db->pkgs, -1);
     }
 
     if (rc) {
@@ -739,7 +743,7 @@ exit:
 int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 {
     Header oldHeader;
-    int oldSize;
+    int oldSize, newSize;
     int rc = 0;
 
     oldHeader = doGetRecord(db, offset, 1);
@@ -755,7 +759,8 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
     if (_noDirTokens)
 	expandFilelist(newHeader);
 
-    if (oldSize != headerSizeof(newHeader, HEADER_MAGIC_NO)) {
+    newSize = headerSizeof(newHeader, HEADER_MAGIC_NO);
+    if (oldSize != newSize) {
 	rpmMessage(RPMMESS_DEBUG, _("header changed size!"));
 	if (rpmdbRemove(db, offset, 1))
 	    return 1;
@@ -768,7 +773,9 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 	/* XXX TODO: set max. no. of bytes to write */
 	(void)Fseek(db->pkgs, offset, SEEK_SET);
 
+	fdSetContentLength(db->pkgs, newSize);
 	rc = headerWrite(db->pkgs, newHeader, HEADER_MAGIC_NO);
+	fdSetContentLength(db->pkgs, -1);
 
 	unblockSignals();
     }
