@@ -1769,7 +1769,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 
     switch (tag) {
     default:
-	rpmError(RPMERR_BADSPEC, _("%s: can't load unknwon tag (%d).\n"),
+	rpmError(RPMERR_BADSPEC, _("%s: can't load unknown tag (%d).\n"),
 		fn, tag);
 	goto exit;
 	/*@notreached@*/

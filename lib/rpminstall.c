@@ -509,7 +509,7 @@ if (fileURL[0] == '=') {
 	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
 
 	if (eiu->isSource) {
-	    rpmMessage(RPMMESS_DEBUG, "\tadded source package [%d]\n",
+	    rpmMessage(RPMMESS_DEBUG, _("\tadded source package [%d]\n"),
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
 				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
@@ -579,7 +579,7 @@ if (fileURL[0] == '=') {
 
 	switch(rc) {
 	case 0:
-	    rpmMessage(RPMMESS_DEBUG, "\tadded binary package [%d]\n",
+	    rpmMessage(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
 			eiu->numRPMS);
 	    /*@switchbreak@*/ break;
 	case 1:
