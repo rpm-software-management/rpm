@@ -1,10 +1,11 @@
 #include "system.h"
 
-static int _debug = 1;
+static int _debug = 0;
 
 #include <db3/db.h>
 
 #include <rpmlib.h>
+#include <rpmmacro.h>
 
 #include "dbindex.h"
 /*@access dbiIndex@*/
@@ -12,6 +13,8 @@ static int _debug = 1;
 
 #if DB_VERSION_MAJOR == 3
 #define	__USE_DB3	1
+
+extern int __do_dbenv_remove;	/* XXX in dbindex.c, shared with rebuilddb.c */
 
 /* XXX dbenv parameters */
 static int db_lorder = 0;			/* 0 is native order */
@@ -33,21 +36,6 @@ static u_int32_t dbh_ffactor = 0;	/* db1 default: 8 */
 static u_int32_t dbh_nelem = 0;		/* db1 default: 1 */
 static u_int32_t dbh_flags = 0;
 
-#if defined(__USE_DB3)
-/* XXX FIXME: db3 sets up shm with 600 perms */
-/* XXX FIXME: db3 coredumps in dbenv->remove with DB_SYSTEM_MEM */
-static int __do_dbenv_remove = 0;
-/* XXX FIXME: db3 hangs with DB_INIT_CDB */
-/* XXX FIXME: db3 hangs with DB_INIT_TXN */
-#if 0
-static int dbopenflags = DB_INIT_MPOOL|DB_INIT_CDB|DB_SYSTEM_MEM;
-#else
-static int dbopenflags = DB_INIT_MPOOL|DB_INIT_CDB|DB_SYSTEM_MEM;
-#endif
-#else
-static int dbopenflags = DB_INIT_MPOOL|DB_PRIVATE;
-#endif
-
 #define	_mymemset(_a, _b, _c)	memset((_a), (_b), (_c))
 
 static inline DBTYPE dbi_to_dbtype(DBI_TYPE dbitype)
@@ -62,6 +50,109 @@ static inline DBTYPE dbi_to_dbtype(DBI_TYPE dbitype)
 
 static inline /*@observer@*/ /*@null@*/ DB * GetDB(dbiIndex dbi) {
     return ((DB *)dbi->dbi_db);
+}
+
+typedef struct DBO {
+    const char * name;
+    int val;
+} DBO_t;
+
+DBO_t dbOptions[] = {
+#if defined(DB_RECOVER)
+    { "recover",	DB_RECOVER },
+#endif
+#if defined(DB_RECOVER_FATAL)
+    { "recover_fatal",	DB_RECOVER_FATAL },
+#endif
+#if defined(DB_CREATE)
+    { "create",		DB_CREATE },
+#endif
+#if defined(DB_LOCKDOWN)
+    { "lockdown",	DB_LOCKDOWN },
+#endif
+#if defined(DB_INIT_CDB)
+    { "cdb",		DB_INIT_CDB },
+#endif
+#if defined(DB_INIT_LOCK)
+    { "lock",		DB_INIT_LOCK },
+#endif
+#if defined(DB_INIT_LOG)
+    { "log",		DB_INIT_LOG },
+#endif
+#if defined(DB_INIT_MPOOL)
+    { "mpool",		DB_INIT_MPOOL },
+#endif
+#if defined(DB_INIT_TXN)
+    { "txn",		DB_INIT_TXN },
+#endif
+#if defined(DB_NOMMAP)
+    { "nommap",		DB_NOMMAP },
+#endif
+#if defined(DB_PRIVATE)
+    { "private",	DB_PRIVATE },
+#endif
+#if defined(DB_SYSTEM_MEM)
+    { "shared",		DB_SYSTEM_MEM },
+#endif
+#if defined(DB_THREAD)
+    { "thread",		DB_THREAD },
+#endif
+#if defined(DB_TXN_NOSYNC)
+    { "txn_nosync",	DB_TXN_NOSYNC },
+#endif
+    { NULL, 0 }
+};
+
+static int dbiOpenFlags(void)
+{
+    char * dbopts = rpmExpand("%{_db3_flags}", NULL);
+    int dbflags = 0;
+
+    if (dbopts && *dbopts && *dbopts != '%') {
+	char *o, *oe;
+	dbflags = 0;
+	for (o = dbopts; o != NULL; o = oe) {
+	    DBO_t *dbo;
+	    if ((oe = strchr(o, ':')) != NULL)
+		*oe++ = '\0';
+	    if (*o == '\0')
+		continue;
+	    for (dbo = dbOptions; dbo->name != NULL; dbo++) {
+		if (strcmp(o, dbo->name))
+		    continue;
+		dbflags |= dbo->val;
+		break;
+	    }
+	    if (dbo->name == NULL)
+		fprintf(stderr, _("dbiOpenFlags: unrecognized db option: \"%s\" ignored\n"), o);
+	}
+    }
+    free(dbopts);
+    return dbflags;
+}
+
+static const char *const prDbiOpenFlags(int dbflags)
+{
+    static char buf[256];
+    DBO_t *dbo;
+    char * oe;
+
+    oe = buf;
+    *oe = '\0';
+    for (dbo = dbOptions; dbo->name != NULL; dbo++) {
+	if ((dbflags & dbo->val) != dbo->val)
+	    continue;
+	if (oe != buf)
+	    *oe++ = ':';
+	oe = stpcpy(oe, dbo->name);
+	dbflags &= ~dbo->val;
+    }
+    if (dbflags) {
+	if (oe != buf)
+	    *oe++ = ':';
+	    sprintf(oe, "0x%x", dbflags);
+    }
+    return buf;
 }
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
@@ -145,7 +236,51 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
     return rc;
 }
 
-static int db_init(dbiIndex dbi, const char *home, int dbflags,
+static int db_fini(dbiIndex dbi)
+{
+    DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
+#if defined(__USE_DB3)
+    char **dbconfig = NULL;
+    char * dbhome;
+    char * dbfile;
+    int rc;
+
+    if (dbenv == NULL) {
+	dbi->dbi_dbenv = NULL;
+	return 0;
+    }
+
+    dbhome = alloca(strlen(dbi->dbi_file) + 1);
+    strcpy(dbhome, dbi->dbi_file);
+    dbfile = strrchr(dbhome, '/');
+    if (dbfile)
+	    *dbfile++ = '\0';
+    else
+	    dbfile = dbhome;
+
+    rc = dbenv->close(dbenv, 0);
+    rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
+
+    if (__do_dbenv_remove < 0)
+	__do_dbenv_remove = rpmExpandNumeric("%{_db3_dbenv_remove}");
+    if (__do_dbenv_remove) {
+	int xx;
+	xx = db_env_create(&dbenv, 0);
+	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
+	xx = dbenv->remove(dbenv, dbhome, dbconfig, 0);
+	xx = cvtdberr(dbi, "dbenv->remove", rc, _debug);
+    }
+	
+#else
+    rc = db_appexit(dbenv);
+    rc = cvtdberr(dbi, "db_appexit", rc, _debug);
+    free(dbenv);
+#endif
+    dbi->dbi_dbenv = NULL;
+    return rc;
+}
+
+static int db_init(dbiIndex dbi, const char *dbhome, int dbflags,
 			DB_ENV **dbenvp)
 {
     DB_ENV *dbenv = NULL;
@@ -192,22 +327,24 @@ static int db_init(dbiIndex dbi, const char *home, int dbflags,
     dbenv->mp_size = dbmp_size;		/* XXX default is 128 Kb */
 #endif
 
-#define _DBFMASK	(DB_CREATE|DB_NOMMAP|DB_THREAD)
-    mydbopenflags = (dbflags & _DBFMASK) | dbopenflags;
+#define _DBFMASK	(DB_CREATE)
+    mydbopenflags = (dbflags & _DBFMASK) | dbiOpenFlags();
 
 #if defined(__USE_DB3)
-    rc = dbenv->open(dbenv, home, NULL, mydbopenflags, dbi->dbi_perms);
+    rc = dbenv->open(dbenv, dbhome, NULL, mydbopenflags, dbi->dbi_perms);
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
 #else
-    rc = db_appinit(home, NULL, dbenv, mydbopenflags);
+    rc = db_appinit(dbhome, NULL, dbenv, mydbopenflags);
     rc = cvtdberr(dbi, "db_appinit", rc, _debug);
     if (rc)
 	goto errxit;
 #endif
 
     *dbenvp = dbenv;
+if (_debug)
+fprintf(stderr, "*** dbenv: %s (%s)\n", dbhome, prDbiOpenFlags(mydbopenflags));
 
     return 0;
 
@@ -224,6 +361,7 @@ errxit:
 #endif
     return rc;
 }
+
 #endif	/* __USE_DB2 || __USE_DB3 */
 
 static int db3close(dbiIndex dbi, unsigned int flags)
@@ -250,36 +388,13 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	free(dbi->dbi_dbinfo);
 	dbi->dbi_dbinfo = NULL;
     }
-    if (dbi->dbi_dbenv) {
-	DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
-#if defined(__USE_DB3)
-	char * dbhome = alloca(strlen(dbi->dbi_file) + 1);
-	char **dbconfig = NULL;
-	char * dbfile = NULL;
 
-	strcpy(dbhome, dbi->dbi_file);
-	dbfile = strrchr(dbhome, '/');
-	if (dbfile)
-	    *dbfile++ = '\0';
-	else
-	    dbfile = dbhome;
+    xx = db_fini(dbi);
 
-	if ((dbopenflags & DB_SYSTEM_MEM) && __do_dbenv_remove) {
-	    xx = dbenv->remove(dbenv, dbhome, dbconfig, 0);
-	    xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
-	} else {
-	    xx = dbenv->close(dbenv, 0);
-	    xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
-	}
 #else
-	xx = db_appexit(dbenv);
-	xx = cvtdberr(dbi, "db_appexit", xx, _debug);
-	free(dbi->dbi_dbenv);
-#endif
-	dbi->dbi_dbenv = NULL;
-    }
-#else
+
     rc = db->close(db);
+
 #endif
     dbi->dbi_db = NULL;
 
@@ -367,6 +482,12 @@ static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
     data.size = 0;
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
+#if defined(__USE_DB3)
+    if (dbi->dbi_dbcursor) {
+	DBC *dbcursor = dbi->dbi_dbcursor;
+	rc = dbcursor->c_get(dbcursor, &key, &data, DB_SET);	/* DB_RMW */
+    } else
+#endif
     rc = db->get(db, NULL, &key, &data, 0);
     _printit = (rc == DB_NOTFOUND ? 0 : _debug);
     rc = cvtdberr(dbi, "db->get", rc, _printit);
@@ -387,23 +508,39 @@ static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
 static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 {
     DBT key;
+    DBT data;
+
     DB * db = GetDB(dbi);
     int rc;
 
     _mymemset(&key, 0, sizeof(key));
+    _mymemset(&data, 0, sizeof(data));
     key.data = (void *)str;
     key.size = strlen(str);
 
     if (set->count) {
-	DBT data;
-
-	_mymemset(&data, 0, sizeof(data));
-	data.data = set->recs;
-	data.size = set->count * sizeof(*(set->recs));
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
-	rc = db->put(db, NULL, &key, &data, 0);
-	rc = cvtdberr(dbi, "db->put", rc, _debug);
+#if defined(__USE_DB3)
+	if (dbi->dbi_dbcursor) {
+	    DBC *dbcursor = dbi->dbi_dbcursor;
+	    int xx;
+
+	    rc = dbcursor->c_get(dbcursor, &key, &data, (DB_SET|DB_RMW));
+	    xx = cvtdberr(dbi, "db->c_get RMW put", rc, _debug);
+	    data.data = set->recs;
+	    data.size = set->count * sizeof(*(set->recs));
+	    rc = dbcursor->c_put(dbcursor, &key, &data,
+		(rc == DB_NOTFOUND ? DB_KEYFIRST : DB_CURRENT));
+	    rc = cvtdberr(dbi, "db->c_put RMW", rc, _debug);
+	} else
+#endif
+	{
+	    data.data = set->recs;
+	    data.size = set->count * sizeof(*(set->recs));
+	    rc = db->put(db, NULL, &key, &data, 0);
+	    rc = cvtdberr(dbi, "db->put", rc, _debug);
+	}
 #else
 	rc = db->put(db, &key, &data, 0);
 #endif
@@ -411,8 +548,23 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
     } else {
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
-	rc = db->del(db, NULL, &key, 0);
-	rc = cvtdberr(dbi, "db->del", rc, _debug);
+#if defined(__USE_DB3)
+	if (dbi->dbi_dbcursor) {
+	    DBC *dbcursor = dbi->dbi_dbcursor;
+	    int xx;
+
+	    rc = dbcursor->c_get(dbcursor, &key, &data, (DB_SET|DB_RMW));
+	    xx = cvtdberr(dbi, "db->c_get RMW del", rc, _debug);
+	    if (rc != DB_NOTFOUND) {
+		rc = dbcursor->c_del(dbcursor, 0);
+		rc = cvtdberr(dbi, "db->c_del RMW", rc, _debug);
+	    }
+	} else
+#endif
+	{
+	    rc = db->del(db, NULL, &key, 0);
+	    rc = cvtdberr(dbi, "db->del", rc, _debug);
+	}
 #else
 	rc = db->del(db, &key, 0);
 #endif
@@ -433,6 +585,7 @@ static int db3open(dbiIndex dbi)
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
     u_int32_t dbflags;
+    int __do_dbcursor_rmw = 0;
 
     dbhome = alloca(strlen(dbi->dbi_file) + 1);
     strcpy(dbhome, dbi->dbi_file);
@@ -483,9 +636,20 @@ static int db3open(dbiIndex dbi)
 	    rc = db->open(db, dbfile, NULL, dbi_to_dbtype(dbi->dbi_type),
 			dbflags, dbi->dbi_perms);
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
+
+	    __do_dbcursor_rmw = rpmExpandNumeric("%{_db3_dbcursor_rmw}");
+	    if (__do_dbcursor_rmw) {
+		DBC * dbcursor = NULL;
+		int xx;
+		xx = db->cursor(db, NULL, &dbcursor,
+			((dbflags & DB_RDONLY) ? 0 : DB_WRITECURSOR));
+		xx = cvtdberr(dbi, "db->cursor", xx, _debug);
+		dbi->dbi_dbcursor = dbcursor;
+	    } else
+		dbi->dbi_dbcursor = NULL;
 	}
 #else
-    {	DB_INFO * dbinfo = xcalloc(1, sizeof(*dbinfo));
+      {	DB_INFO * dbinfo = xcalloc(1, sizeof(*dbinfo));
 	dbinfo->db_cachesize = db_cachesize;
 	dbinfo->db_lorder = db_lorder;
 	dbinfo->db_pagesize = db_pagesize;
@@ -500,7 +664,7 @@ static int db3open(dbiIndex dbi)
 	rc = db_open(dbfile, dbi_to_dbtype(dbi->dbi_type), dbflags,
 			dbi->dbi_perms, dbenv, dbinfo, &db);
 	rc = cvtdberr(dbi, "db_open", rc, _debug);
-     }
+      }
 #endif	/* __USE_DB3 */
     }
 
@@ -514,6 +678,7 @@ static int db3open(dbiIndex dbi)
 
     if (rc == 0 && dbi->dbi_db != NULL) {
 	rc = 0;
+if (_debug)
 fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbfile);
     } else {
 	rc = 1;
