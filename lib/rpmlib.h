@@ -641,6 +641,12 @@ typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
 typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 
 /** \ingroup rpmdb
+ * Tags for which rpmdb indices will be built.
+ */
+/*@only@*/ /*@null@*/ extern int * dbiTags;
+extern int dbiTagsMax;
+
+/** \ingroup rpmdb
  * Open rpm database.
  * @param root		path to top of install tree
  * @retval dbp		address of rpm database

@@ -916,7 +916,9 @@ static int runScript(PSM_t psm, Header h,
 	}
     } else {
 	out = fdDup(STDOUT_FILENO);
+#ifdef	DYING
 	out = fdLink(out, "runScript persist");
+#endif
     }
     if (out == NULL) return 1;	/* XXX can't happen */
     

@@ -162,12 +162,11 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	else
 	    recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
 	recs[nrecs].code = code;
-	recs[nrecs].message = msg = msgbuf;
-	msgbuf = NULL;
+	recs[nrecs].message = msg = xrealloc(msgbuf, strlen(msgbuf)+1);
+	msgbuf = NULL;		/* XXX don't free at exit. */
 	recs[nrecs+1].code = 0;
 	recs[nrecs+1].message = NULL;
 	++nrecs;
-
 
 	if (_rpmlogCallback) {
 	    _rpmlogCallback();

@@ -36,8 +36,8 @@ static int _db_filter_dups = 0;
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
 
-static int dbiTagsMax = 0;
-/*@only@*/ /*@null@*/ static int *dbiTags = NULL;
+/*@globstate@*/ /*@null@*/ int * dbiTags = NULL;
+int dbiTagsMax = 0;
 
 /**
  * Return dbi index used for rpm tag.

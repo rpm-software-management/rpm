@@ -179,6 +179,7 @@
 	- python: add poptmodule.so bindings.
 	- fix: %dev(...) needs to map rdev and mtime from metadata.
 	- resurrect --specedit for i18n.
+	- fix: 4 memory leaks eliminated.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

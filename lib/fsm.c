@@ -929,6 +929,7 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 	if (i == fsm->li->createdPath) continue;
 
 	fsm->ix = fsm->li->filex[i];
+	fsm->path = _free(fsm->path);
 	rc = fsmStage(fsm, FSM_MAP);
 	rc = fsmStage(fsm, FSM_VERIFY);
 	if (!rc) continue;
@@ -943,6 +944,7 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 
 	fsm->li->linksLeft--;
     }
+    fsm->path = _free(fsm->path);
     fsm->opath = _free(fsm->opath);
 
     fsm->ix = iterIndex;

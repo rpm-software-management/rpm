@@ -418,9 +418,9 @@ printNewSpecfile(Spec spec)
 	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 		const char *pkgname;
 		h = pkg->header;
-		headerNVR(h, &pkgname, NULL, NULL);
+		(void) headerNVR(h, &pkgname, NULL, NULL);
 		if (!strcmp(pkgname, fmt))
-		    break;
+		    /*@innerbreak@*/ break;
 	    }
 	    if (pkg == NULL || h == NULL)
 		h = spec->packages->header;

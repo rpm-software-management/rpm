@@ -1719,9 +1719,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		continue;
 	    }
 
+#ifdef	DYING
 	    /* Allocate file actions (and initialize to FA_UNKNOWN) */
 	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-#ifdef	DYING
 	    hdrs[i] = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
 #else
 	    {   Header foo = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
