@@ -416,11 +416,16 @@ rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ int flags)
     return 0;
 }
 
-static PyObject *
-rpmfi_getattr(rpmfiObject * s, char * name)
+static PyObject * rpmfi_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmfi_methods, (PyObject *)s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmfi_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 static int
@@ -469,7 +474,7 @@ PyTypeObject rpmfi_Type = {
 	/* methods */
 	(destructor) rpmfi_dealloc,	/* tp_dealloc */
 	(printfunc) rpmfi_print,	/* tp_print */
-	(getattrfunc) rpmfi_getattr,	/* tp_getattr */
+	(getattrfunc)0,			/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc)0,			/* tp_compare */
 	(reprfunc)0,			/* tp_repr */
@@ -479,8 +484,8 @@ PyTypeObject rpmfi_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) rpmfi_getattro,	/* tp_getattro */
+	(setattrofunc) rpmfi_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmfi_doc,			/* tp_doc */

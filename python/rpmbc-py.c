@@ -128,11 +128,16 @@ static struct PyMethodDef rpmbc_methods[] = {
 };
 /*@=fullinitblock@*/
 
-static PyObject *
-rpmbc_getattr(PyObject * s, char * name)
+static PyObject * rpmbc_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmbc_methods, s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmbc_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /* ---------- */
@@ -153,18 +158,18 @@ PyTypeObject rpmbc_Type = {
 	/* methods */
 	(destructor) rpmbc_dealloc,	/* tp_dealloc */
 	(printfunc) rpmbc_print,	/* tp_print */
-	(getattrfunc) rpmbc_getattr,	/* tp_getattr */
-	(setattrfunc) 0,		/* tp_setattr */
-	(cmpfunc) 0,			/* tp_compare */
-	(reprfunc) 0,			/* tp_repr */
+	(getattrfunc)0,			/* tp_getattr */
+	(setattrfunc)0,			/* tp_setattr */
+	(cmpfunc)0,			/* tp_compare */
+	(reprfunc)0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
 	0,				/* tp_as_mapping */
-	(hashfunc) 0,			/* tp_hash */
-	(ternaryfunc) 0,		/* tp_call */
-	(reprfunc) 0,			/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(hashfunc)0,			/* tp_hash */
+	(ternaryfunc)0,			/* tp_call */
+	(reprfunc)0,			/* tp_str */
+	(getattrofunc) rpmbc_getattro,	/* tp_getattro */
+	(setattrofunc) rpmbc_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmbc_doc,			/* tp_doc */
@@ -173,8 +178,8 @@ PyTypeObject rpmbc_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) 0,		/* tp_iter */
-	(iternextfunc) 0,		/* tp_iternext */
+	(getiterfunc)0,			/* tp_iter */
+	(iternextfunc)0,		/* tp_iternext */
 	rpmbc_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */

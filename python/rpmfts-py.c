@@ -121,7 +121,7 @@ rpmfts_debug(__FUNCTION__, s);
     case RPMFTS_OPEN:
 	if (s->ftsp == NULL) {
 	    Py_BEGIN_ALLOW_THREADS
-	    s->ftsp = Fts_open((char *const *)s->roots, s->options, (int (*)())s->compare);
+	    s->ftsp = Fts_open((char *const *)s->roots, s->options, (int (*)(const FTSENT **, const FTSENT **))s->compare);
 	    Py_END_ALLOW_THREADS
 	}
 	break;
@@ -302,18 +302,18 @@ static PyMemberDef rpmfts_members[] = {
     {NULL, 0, 0, 0, NULL}
 };              
 
-static PyObject * rpmfts_getattro(rpmftsObject * s, PyObject * n)
+static PyObject * rpmfts_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-rpmfts_debug(__FUNCTION__, s);
-    return PyObject_GenericGetAttr((PyObject *)s, n);
+rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
+    return PyObject_GenericGetAttr(o, n);
 }
 
-static int rpmfts_setattro(rpmftsObject * s, PyObject * n, PyObject * v)
+static int rpmfts_setattro(PyObject * o, PyObject * n, PyObject * v)
 	/*@*/
 {
-rpmfts_debug(__FUNCTION__, s);
-    return PyObject_GenericSetAttr((PyObject *)s, n, v);
+rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /* ---------- */

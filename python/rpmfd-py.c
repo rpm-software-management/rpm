@@ -176,12 +176,16 @@ rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
     }
 }
 
-/** \ingroup py_c  
- */
-static PyObject * rpmfd_getattr(rpmfdObject * o, char * name)
+static PyObject * rpmfd_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmfd_methods, (PyObject *) o, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmfd_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /** \ingroup py_c  
@@ -278,7 +282,7 @@ PyTypeObject rpmfd_Type = {
 	/* methods */
 	(destructor) rpmfd_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) rpmfd_getattr, 	/* tp_getattr */
+	(getattrfunc)0, 		/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc)0,			/* tp_compare */
 	(reprfunc)0,			/* tp_repr */
@@ -288,8 +292,8 @@ PyTypeObject rpmfd_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) rpmfd_getattro,	/* tp_getattro */
+	(setattrofunc) rpmfd_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmfd_doc,			/* tp_doc */

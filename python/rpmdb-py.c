@@ -213,12 +213,16 @@ static void rpmdb_dealloc(rpmdbObject * s)
     PyObject_Del(s);
 }
 
-/**
- */
-static PyObject * rpmdb_getattr(rpmdbObject * s, char * name)
+static PyObject * rpmdb_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmdb_methods, (PyObject * ) s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmdb_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /**
@@ -238,7 +242,7 @@ PyTypeObject rpmdb_Type = {
 	0,				/* tp_itemsize */
 	(destructor) rpmdb_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) rpmdb_getattr, 	/* tp_getattr */
+	(getattrfunc)0, 		/* tp_getattr */
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
@@ -248,8 +252,8 @@ PyTypeObject rpmdb_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) rpmdb_getattro,	/* tp_getattro */
+	(setattrofunc) rpmdb_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmdb_doc,			/* tp_doc */

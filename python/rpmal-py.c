@@ -124,11 +124,16 @@ rpmal_dealloc(rpmalObject * s)
     }
 }
 
-static PyObject *
-rpmal_getattr(rpmalObject * s, char * name)
+static PyObject * rpmal_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmal_methods, (PyObject *)s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmal_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /**
@@ -146,9 +151,9 @@ PyTypeObject rpmal_Type = {
 	sizeof(rpmalObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
 	/* methods */
-	(destructor)rpmal_dealloc,	/* tp_dealloc */
+	(destructor) rpmal_dealloc,	/* tp_dealloc */
 	(printfunc)0,			/* tp_print */
-	(getattrfunc)rpmal_getattr,	/* tp_getattr */
+	(getattrfunc)0,			/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc)0,			/* tp_compare */
 	(reprfunc)0,			/* tp_repr */
@@ -158,8 +163,8 @@ PyTypeObject rpmal_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) rpmal_getattro,	/* tp_getattro */
+	(setattrofunc) rpmal_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmal_doc,			/* tp_doc */

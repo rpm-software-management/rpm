@@ -274,11 +274,16 @@ rpmds_print(rpmdsObject * s, FILE * fp, /*@unused@*/ int flags)
     return 0;
 }
 
-static PyObject *
-rpmds_getattr(rpmdsObject * s, char * name)
+static PyObject * rpmds_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmds_methods, (PyObject *)s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmds_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 static int
@@ -328,18 +333,18 @@ PyTypeObject rpmds_Type = {
 	/* methods */
 	(destructor) rpmds_dealloc,	/* tp_dealloc */
 	(printfunc) rpmds_print,	/* tp_print */
-	(getattrfunc) rpmds_getattr,	/* tp_getattr */
-	(setattrfunc) 0,		/* tp_setattr */
+	(getattrfunc)0,			/* tp_getattr */
+	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc) rpmds_compare,	/* tp_compare */
-	(reprfunc) 0,			/* tp_repr */
+	(reprfunc)0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
 	&rpmds_as_mapping,		/* tp_as_mapping */
-	(hashfunc) 0,			/* tp_hash */
-	(ternaryfunc) 0,		/* tp_call */
-	(reprfunc) 0,			/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(hashfunc)0,			/* tp_hash */
+	(ternaryfunc)0,			/* tp_call */
+	(reprfunc)0,			/* tp_str */
+	(getattrofunc) rpmds_getattro,	/* tp_getattro */
+	(setattrofunc) rpmds_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmds_doc,			/* tp_doc */

@@ -203,7 +203,7 @@ rng_Next(rngObject * s, PyObject * args)
     }
 
 if (_rng_debug)
-fprintf(stderr, "*** rng_Next(%p) %p[%d]\t", s, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** rng_Next(%p) %p[%d]\t", s, z->n.data, z->n.size), mpfprintln(stderr, z->n.size, z->n.data);
 
     return (PyObject *)z;
 }
@@ -238,7 +238,7 @@ rng_Prime(rngObject * s, PyObject * args)
 	mpnset(&z->n, b->size, b->modl);
 
 if (_rng_debug)
-fprintf(stderr, "*** rng_Prime(%p) %p[%d]\t", s, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** rng_Prime(%p) %p[%d]\t", s, z->n.data, z->n.size), mpfprintln(stderr, z->n.size, z->n.data);
     }
 
     return (PyObject *)z;
@@ -259,11 +259,16 @@ static struct PyMethodDef rng_methods[] = {
 };
 /*@=fullinitblock@*/
 
-static PyObject *
-rng_getattr(PyObject * s, char * name)
+static PyObject * rng_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rng_methods, s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rng_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /* ---------- */
@@ -284,18 +289,18 @@ PyTypeObject rng_Type = {
 	/* methods */
 	(destructor) rng_dealloc,	/* tp_dealloc */
 	(printfunc) rng_print,		/* tp_print */
-	(getattrfunc) rng_getattr,	/* tp_getattr */
-	(setattrfunc) 0,		/* tp_setattr */
-	(cmpfunc) 0,			/* tp_compare */
-	(reprfunc) 0,			/* tp_repr */
+	(getattrfunc)0,			/* tp_getattr */
+	(setattrfunc)0,			/* tp_setattr */
+	(cmpfunc)0,			/* tp_compare */
+	(reprfunc)0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
 	0,				/* tp_as_mapping */
-	(hashfunc) 0,			/* tp_hash */
-	(ternaryfunc) 0,		/* tp_call */
-	(reprfunc) 0,			/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(hashfunc)0,			/* tp_hash */
+	(ternaryfunc)0,			/* tp_call */
+	(reprfunc)0,			/* tp_str */
+	(getattrofunc) rng_getattro,	/* tp_getattro */
+	(setattrofunc) rng_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rng_doc,			/* tp_doc */
@@ -304,8 +309,8 @@ PyTypeObject rng_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) 0,		/* tp_iter */
-	(iternextfunc) 0,		/* tp_iternext */
+	(getiterfunc)0,			/* tp_iter */
+	(iternextfunc)0,		/* tp_iternext */
 	rng_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */

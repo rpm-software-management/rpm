@@ -211,12 +211,16 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
     }
 }
 
-/** \ingroup py_c  
- */
-static PyObject * rpmmi_getattr (rpmmiObject *s, char *name)
+static PyObject * rpmmi_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod (rpmmi_methods, (PyObject *) s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmmi_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /**
@@ -236,7 +240,7 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_itemsize */
 	(destructor) rpmmi_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) rpmmi_getattr, 	/* tp_getattr */
+	(getattrfunc)0, 		/* tp_getattr */
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
@@ -246,8 +250,8 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) rpmmi_getattro,	/* tp_getattro */
+	(setattrofunc) rpmmi_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmmi_doc,			/* tp_doc */

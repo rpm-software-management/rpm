@@ -375,7 +375,7 @@ mpstr(char * t, size_t nt, size_t zsize, mpw* zdata, size_t zbase)
     size_t result;
 
 if (_mpw_debug < -1)
-fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, zdata, zsize, zbase), mpprintln(stderr, zsize, zdata);
+fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, zdata, zsize, zbase), mpfprintln(stderr, zsize, zdata);
 
     mpsetx(size, bdata, zsize, zdata);
 
@@ -383,15 +383,15 @@ fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, zdata, zsize, zbase),
     while (nt--) {
 	mpsetx(size, adata, size, bdata);
 if (_mpw_debug < -1)
-fprintf(stderr, "***       a: %p[%d]\t", adata, size), mpprintln(stderr, size, adata);
+fprintf(stderr, "***       a: %p[%d]\t", adata, size), mpfprintln(stderr, size, adata);
 	mpnmod(bdata, size, adata, 1, &zbase, wksp);
 if (_mpw_debug < -1)
-fprintf(stderr, "***    nmod: %p[%d]\t", bdata, size), mpprintln(stderr, size, bdata);
+fprintf(stderr, "***    nmod: %p[%d]\t", bdata, size), mpfprintln(stderr, size, bdata);
 	result = bdata[size-1];
 	t[nt] = mpwhars[result];
 	mpndivmod(bdata, size, adata, 1, &zbase, wksp);
 if (_mpw_debug < -1)
-fprintf(stderr, "*** ndivmod: %p[%d]\t", bdata, size), mpprintln(stderr, size, bdata);
+fprintf(stderr, "*** ndivmod: %p[%d]\t", bdata, size), mpfprintln(stderr, size, bdata);
 	if (mpz(size, bdata))
 	    break;
     }
@@ -420,7 +420,7 @@ mpw_format(mpwObject * z, size_t zbase, int withname)
     }
 
 if (_mpw_debug < -1)
-fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpfprintln(stderr, z->n.size, z->n.data);
 
     assert(zbase >= 2 && zbase <= 36);
 
@@ -558,38 +558,38 @@ static void mpnslide(const mpnumber* n, size_t xsize, const mpw* xdata,
     mpsqr(result, xsize, xdata);			/* x^2 temp */
     mpsetx(size, slide, xsize+xsize, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t  x^2:\t"), mpprintln(stderr, size, slide);
+fprintf(stderr, "\t  x^2:\t"), mpfprintln(stderr, size, slide);
     mpmul(result,   xsize, xdata, size, slide);	/* x^3 */
     mpsetx(size, slide+size, xsize+size, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t  x^3:\t"), mpprintln(stderr, size, slide+size);
+fprintf(stderr, "\t  x^3:\t"), mpfprintln(stderr, size, slide+size);
     mpmul(result,  size, slide, size, slide+size);	/* x^5 */
     mpsetx(size, slide+2*size, size+size, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t  x^5:\t"), mpprintln(stderr, size, slide+2*size);
+fprintf(stderr, "\t  x^5:\t"), mpfprintln(stderr, size, slide+2*size);
     mpmul(result,  size, slide, size, slide+2*size);	/* x^7 */
     mpsetx(size, slide+3*size, size+size, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t  x^7:\t"), mpprintln(stderr, size, slide+3*size);
+fprintf(stderr, "\t  x^7:\t"), mpfprintln(stderr, size, slide+3*size);
     mpmul(result,  size, slide, size, slide+3*size);	/* x^9 */
     mpsetx(size, slide+4*size, size+size, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t  x^9:\t"), mpprintln(stderr, size, slide+4*size);
+fprintf(stderr, "\t  x^9:\t"), mpfprintln(stderr, size, slide+4*size);
     mpmul(result,  size, slide, size, slide+4*size);	/* x^11 */
     mpsetx(size, slide+5*size, size+size, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t x^11:\t"), mpprintln(stderr, size, slide+5*size);
+fprintf(stderr, "\t x^11:\t"), mpfprintln(stderr, size, slide+5*size);
     mpmul(result,  size, slide, size, slide+5*size);	/* x^13 */
     mpsetx(size, slide+6*size, size+size, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t x^13:\t"), mpprintln(stderr, size, slide+6*size);
+fprintf(stderr, "\t x^13:\t"), mpfprintln(stderr, size, slide+6*size);
     mpmul(result,  size, slide, size, slide+6*size);	/* x^15 */
     mpsetx(size, slide+7*size, size+size, result);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t x^15:\t"), mpprintln(stderr, size, slide+7*size);
+fprintf(stderr, "\t x^15:\t"), mpfprintln(stderr, size, slide+7*size);
     mpsetx(size, slide, xsize, xdata);		/* x^1 */
 if (_mpw_debug < 0)
-fprintf(stderr, "\t  x^1:\t"), mpprintln(stderr, size, slide);
+fprintf(stderr, "\t  x^1:\t"), mpfprintln(stderr, size, slide);
 }
 
 /*@observer@*/ /*@unchecked@*/
@@ -620,7 +620,7 @@ static void mpnpowsld_w(mpnumber* n, size_t size, const mpw* slide,
     short count;
 
 if (_mpw_debug < 0)
-fprintf(stderr, "npowsld: p\t"), mpprintln(stderr, psize, pdata);
+fprintf(stderr, "npowsld: p\t"), mpfprintln(stderr, psize, pdata);
     /* 2. A = 1, i = t. */
     mpzero(n->size, n->data);
     n->data[n->size-1] = 1;
@@ -660,20 +660,20 @@ fprintf(stderr, "*** #1 lbits %d kbits %d\n", lbits, kbits);
 			mpsqr(rdata, n->size, n->data);
 			mpsetx(n->size, n->data, 2*n->size, rdata);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t pre1:\t"), mpprintln(stderr, n->size, n->data);
+fprintf(stderr, "\t pre1:\t"), mpfprintln(stderr, n->size, n->data);
 		    }
 
 		    mpmul(rdata, n->size, n->data,
 				size, slide+mpnslide_mulg[kbits]*size);
 		    mpsetx(n->size, n->data, n->size+size, rdata);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t mul1:\t"), mpprintln(stderr, n->size, n->data);
+fprintf(stderr, "\t mul1:\t"), mpfprintln(stderr, n->size, n->data);
 
 		    for (s = mpnslide_postsq[kbits]; s > 0; s--) {
 			mpsqr(rdata, n->size, n->data);
 			mpsetx(n->size, n->data, 2*n->size, rdata);
 if (_mpw_debug < 0)
-fprintf(stderr, "\tpost1:\t"), mpprintln(stderr, n->size, n->data);
+fprintf(stderr, "\tpost1:\t"), mpfprintln(stderr, n->size, n->data);
 		    }
 
 		    lbits = kbits = 0;
@@ -682,7 +682,7 @@ fprintf(stderr, "\tpost1:\t"), mpprintln(stderr, n->size, n->data);
 		mpsqr(rdata, n->size, n->data);
 		mpsetx(n->size, n->data, 2*n->size, rdata);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t  sqr:\t"), mpprintln(stderr, n->size, n->data);
+fprintf(stderr, "\t  sqr:\t"), mpfprintln(stderr, n->size, n->data);
 	    }
 
 	    temp <<= 1;
@@ -701,20 +701,20 @@ fprintf(stderr, "*** #1 lbits %d kbits %d\n", lbits, kbits);
 	    mpsqr(rdata, n->size, n->data);
 	    mpsetx(n->size, n->data, 2*n->size, rdata);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t pre2:\t"), mpprintln(stderr, n->size, n->data);
+fprintf(stderr, "\t pre2:\t"), mpfprintln(stderr, n->size, n->data);
 	}
 
 	mpmul(rdata, n->size, n->data,
 			size, slide+mpnslide_mulg[kbits]*size);
 	mpsetx(n->size, n->data, n->size+size, rdata);
 if (_mpw_debug < 0)
-fprintf(stderr, "\t mul2:\t"), mpprintln(stderr, n->size, n->data);
+fprintf(stderr, "\t mul2:\t"), mpfprintln(stderr, n->size, n->data);
 
 	for (s = mpnslide_postsq[kbits]; s > 0; s--) {
 	    mpsqr(rdata, n->size, n->data);
 	    mpsetx(n->size, n->data, 2*n->size, rdata);
 if (_mpw_debug < 0)
-fprintf(stderr, "\tpost2:\t"), mpprintln(stderr, n->size, n->data);
+fprintf(stderr, "\tpost2:\t"), mpfprintln(stderr, n->size, n->data);
 	}
     }
 }
@@ -902,7 +902,7 @@ static int mpw_init(mpwObject * s, PyObject *args, PyObject *kwds)
     }
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_init(%p[%s],%p[%s],%p[%s]):\t", s, lbl(s), args, lbl(args), kwds, lbl(kwds)), mpprintln(stderr, s->n.size, s->n.data);
+fprintf(stderr, "*** mpw_init(%p[%s],%p[%s],%p[%s]):\t", s, lbl(s), args, lbl(args), kwds, lbl(kwds)), mpfprintln(stderr, s->n.size, s->n.data);
 
     return 0;
 }
@@ -941,6 +941,7 @@ mpw_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 
 if (_mpw_debug < -1)
 fprintf(stderr, "*** mpw_new(%p[%s],%p[%s],%p[%s]) ret %p[%s]\n", subtype, lbl(subtype), args, lbl(args), kwds, lbl(kwds), ns, lbl(ns));
+
     return ns;
 }
 
@@ -994,7 +995,7 @@ mpw_ops1(const char *fname, char op, mpwObject *x)
 	goto exit;
 
 if (_mpw_debug < 0) {
-fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpprintln(stderr, x->n.size, x->n.data);
+fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpfprintln(stderr, x->n.size, x->n.data);
 }
 
     switch (op) {
@@ -1014,7 +1015,7 @@ fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpprintln(stderr, x->n
     }
 
 if (_mpw_debug < 0)
-fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, z->n.data, z->n.size), mpfprintln(stderr, z->n.size, z->n.data);
 
 exit:
     mpbfree(&b);
@@ -1039,8 +1040,8 @@ mpw_ops2(const char *fname, char op, mpwObject *x, mpwObject *m)
 	goto exit;
 
 if (_mpw_debug < 0) {
-fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpprintln(stderr, x->n.size, x->n.data);
-fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n.size, m->n.data);
+fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpfprintln(stderr, x->n.size, x->n.data);
+fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->n.size, m->n.data);
 }
 
     switch (op) {
@@ -1197,7 +1198,7 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n
     }
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, z->n.data, z->n.size), mpfprintln(stderr, z->n.size, z->n.data);
 
 exit:
     mpbfree(&b);
@@ -1225,9 +1226,9 @@ mpw_ops3(const char *fname, char op,
 	goto exit;
 
 if (_mpw_debug < 0) {
-fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpprintln(stderr, x->n.size, x->n.data);
-fprintf(stderr, "    b %p[%d]:\t", y->n.data, y->n.size), mpprintln(stderr, y->n.size, y->n.data);
-fprintf(stderr, "    c %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n.size, m->n.data);
+fprintf(stderr, "    a %p[%d]:\t", x->n.data, x->n.size), mpfprintln(stderr, x->n.size, x->n.data);
+fprintf(stderr, "    b %p[%d]:\t", y->n.data, y->n.size), mpfprintln(stderr, y->n.size, y->n.data);
+fprintf(stderr, "    c %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->n.size, m->n.data);
 }
 
     mpbset(&b, m->n.size, m->n.data);
@@ -1265,7 +1266,7 @@ fprintf(stderr, "    c %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n
     mpnset(&z->n, zsize, zdata);
 
 if (_mpw_debug < 0)
-fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, z->n.data, z->n.size), mpfprintln(stderr, z->n.size, z->n.data);
 
 exit:
     mpbfree(&b);
@@ -1430,11 +1431,16 @@ static struct PyMethodDef mpw_methods[] = {
 };
 /*@=fullinitblock@*/
 
-static PyObject *
-mpw_getattr(PyObject * s, char * name)
+static PyObject * mpw_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(mpw_methods, s, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int mpw_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /* ---------- */
@@ -1530,9 +1536,9 @@ mpw_divmod(mpwObject * a, mpwObject * b)
     mpndivmod(zdata, asize, adata, bsize, bdata, wksp);
 
 if (_mpw_debug < 0) {
-fprintf(stderr, "    a %p[%d]:\t", adata, asize), mpprintln(stderr, asize, adata);
-fprintf(stderr, "    b %p[%d]:\t", bdata, bsize), mpprintln(stderr, bsize, bdata);
-fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpprintln(stderr, zsize, zdata);
+fprintf(stderr, "    a %p[%d]:\t", adata, asize), mpfprintln(stderr, asize, adata);
+fprintf(stderr, "    b %p[%d]:\t", bdata, bsize), mpfprintln(stderr, bsize, bdata);
+fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpfprintln(stderr, zsize, zdata);
 }
 
     zsize -= bsize;
@@ -1546,8 +1552,8 @@ fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpprintln(stderr, zsize, zdata
     mpnset(&q->n, zsize, zdata);
 
 if (_mpw_debug) {
-fprintf(stderr, "    q %p[%d]:\t", q->n.data, q->n.size), mpprintln(stderr, q->n.size, q->n.data);
-fprintf(stderr, "    r %p[%d]:\t", r->n.data, r->n.size), mpprintln(stderr, r->n.size, r->n.data);
+fprintf(stderr, "    q %p[%d]:\t", q->n.data, q->n.size), mpfprintln(stderr, q->n.size, q->n.data);
+fprintf(stderr, "    r %p[%d]:\t", r->n.data, r->n.size), mpfprintln(stderr, r->n.size, r->n.data);
 fprintf(stderr, "*** mpw_divmod(%p,%p)\n", a, b);
 }
 
@@ -1585,7 +1591,7 @@ mpw_positive(mpwObject * a)
     Py_INCREF(a);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_positive(%p):\t", a), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_positive(%p):\t", a), mpfprintln(stderr, a->n.size, a->n.data);
 
     return (PyObject *)a;
 }
@@ -1607,7 +1613,7 @@ mpw_absolute(mpwObject * a)
     }
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_absolute(%p):\t", a), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** mpw_absolute(%p):\t", a), mpfprintln(stderr, z->n.size, z->n.data);
 
     return (PyObject *)z;
 }
@@ -1806,7 +1812,7 @@ mpw_inplace_add(mpwObject * a, mpwObject * b)
     carry = mpaddx(a->n.size, a->n.data, b->n.size, b->n.data);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_add(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_add(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1821,7 +1827,7 @@ mpw_inplace_subtract(mpwObject * a, mpwObject * b)
     carry = mpsubx(a->n.size, a->n.data, b->n.size, b->n.data);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_subtract(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_subtract(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1843,7 +1849,7 @@ mpw_inplace_multiply(mpwObject * a, mpwObject * b)
     mpnset(&a->n, zsize, zdata);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_multiply(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_multiply(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1878,7 +1884,7 @@ mpw_inplace_divide(mpwObject * a, mpwObject * b)
 
     mpndivmod(zdata, asize, adata, bsize, bdata, wksp);
 if (_mpw_debug < 0)
-fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, zdata, zsize), mpprintln(stderr, zsize, zdata);
+fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, zdata, zsize), mpfprintln(stderr, zsize, zdata);
     zsize -= bsize;
     znorm = mpsize(zsize, zdata);
     if (znorm < zsize) {
@@ -1888,7 +1894,7 @@ fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, 
     mpnset(&a->n, zsize, zdata);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_divide(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_divide(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1915,7 +1921,7 @@ mpw_inplace_remainder(mpwObject * a, mpwObject * b)
     mpnset(&a->n, zsize, zdata);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_remainder(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_remainder(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1926,7 +1932,7 @@ mpw_inplace_power(mpwObject * a, mpwObject * b, mpwObject * c)
 	/*@*/
 {
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_power(%p,%p,%p):\t", a, b, c), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_power(%p,%p,%p):\t", a, b, c), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1947,7 +1953,7 @@ mpw_inplace_lshift(mpwObject * a, mpwObject * b)
     mplshift(a->n.size, a->n.data, count);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_lshift(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_lshift(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1968,7 +1974,7 @@ mpw_inplace_rshift(mpwObject * a, mpwObject * b)
     mprshift(a->n.size, a->n.data, count);
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_rshift(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_rshift(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -1986,7 +1992,7 @@ mpw_inplace_and(mpwObject * a, mpwObject * b)
     }
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_and(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_and(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -2004,7 +2010,7 @@ mpw_inplace_xor(mpwObject * a, mpwObject * b)
     }
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_xor(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_xor(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -2022,7 +2028,7 @@ mpw_inplace_or(mpwObject * a, mpwObject * b)
     }
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_inplace_or(%p,%p):\t", a, b), mpprintln(stderr, a->n.size, a->n.data);
+fprintf(stderr, "*** mpw_inplace_or(%p,%p):\t", a, b), mpfprintln(stderr, a->n.size, a->n.data);
 
     Py_INCREF(a);
     return (PyObject *)a;
@@ -2130,41 +2136,41 @@ PyTypeObject mpw_Type = {
 	/* methods */
 	(destructor) mpw_dealloc,	/* tp_dealloc */
 	(printfunc) mpw_print,		/* tp_print */
-	(getattrfunc) mpw_getattr,	/* tp_getattr */
-	(setattrfunc) 0,		/* tp_setattr */
+	(getattrfunc)0,			/* tp_getattr */
+	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc) mpw_compare,		/* tp_compare */
 	(reprfunc) mpw_repr,		/* tp_repr */
 	&mpw_as_number,			/* tp_as_number */
 	0,				/* tp_as_sequence */
 	0,				/* tp_as_mapping */
-	(hashfunc) 0,			/* tp_hash */
-	(ternaryfunc) 0,		/* tp_call */
+	(hashfunc)0,			/* tp_hash */
+	(ternaryfunc)0,			/* tp_call */
 	(reprfunc) mpw_str,		/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) mpw_getattro,	/* tp_getattro */
+	(setattrofunc) mpw_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,		/* tp_flags */
 	mpw_doc,			/* tp_doc */
 #if Py_TPFLAGS_HAVE_ITER
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
+	(traverseproc)0,		/* tp_traverse */
+	(inquiry)0,			/* tp_clear */
+	(richcmpfunc)0,			/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc) 0,		/* tp_iter */
-	(iternextfunc) 0,		/* tp_iternext */
+	(getiterfunc)0,			/* tp_iter */
+	(iternextfunc)0,		/* tp_iternext */
 	mpw_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
+	(PyObject *)0,			/* tp_dict */
+	(descrgetfunc)0,		/* tp_descr_get */
+	(descrsetfunc)0,		/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) mpw_init,		/* tp_init */
 	(allocfunc) mpw_alloc,		/* tp_alloc */
 	(newfunc) mpw_new,		/* tp_new */
 	(destructor) mpw_free,		/* tp_free */
-	0,				/* tp_is_gc */
+	(inquiry) 0,			/* tp_is_gc */
 #endif
 };
 /*@=fullinitblock@*/

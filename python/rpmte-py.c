@@ -372,12 +372,16 @@ rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ int flags)
     return 0;
 }
 
-/** \ingroup py_c  
- */
-static PyObject * rpmte_getattr(rpmteObject * o, char * name)
+static PyObject * rpmte_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmte_methods, (PyObject *) o, name);
+    return PyObject_GenericGetAttr(o, n);
+}
+
+static int rpmte_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /**
@@ -397,7 +401,7 @@ PyTypeObject rpmte_Type = {
 	0,				/* tp_itemsize */
 	(destructor)0,		 	/* tp_dealloc */
 	(printfunc) rpmte_print,	/* tp_print */
-	(getattrfunc) rpmte_getattr, 	/* tp_getattr */
+	(getattrfunc)0,		 	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
@@ -407,8 +411,8 @@ PyTypeObject rpmte_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) rpmte_getattro,	/* tp_getattro */
+	(setattrofunc) rpmte_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmte_doc,			/* tp_doc */

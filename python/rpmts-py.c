@@ -1361,29 +1361,29 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
     PyObject_Del((PyObject *)s);
 }
 
-/** \ingroup py_c  
- */
-static PyObject * rpmts_getattr(rpmtsObject * o, char * name)
+static PyObject * rpmts_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-    return Py_FindMethod(rpmts_methods, (PyObject *) o, name);
+    return PyObject_GenericGetAttr(o, n);
 }
 
 /** \ingroup py_c  
  */
-static int rpmts_setattr(rpmtsObject * o, char * name, PyObject * val)
+static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
 	/*@modifies o @*/
 {
-    int i;
+    rpmtsObject *s = (rpmtsObject *)o;
+    char * name = PyString_AsString(n);
+    int fdno;
 
     if (!strcmp(name, "scriptFd")) {
-	if (!PyArg_Parse(val, "i", &i)) return 0;
-	if (i < 0) {
+	if (!PyArg_Parse(v, "i", &fdno)) return 0;
+	if (fdno < 0) {
 	    PyErr_SetString(PyExc_TypeError, "bad file descriptor");
 	    return -1;
 	} else {
-	    o->scriptFd = fdDup(i);
-	    rpmtsSetScriptFd(o->ts, o->scriptFd);
+	    s->scriptFd = fdDup(fdno);
+	    rpmtsSetScriptFd(s->ts, s->scriptFd);
 	}
     } else {
 	PyErr_SetString(PyExc_AttributeError, name);
@@ -1487,8 +1487,8 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_itemsize */
 	(destructor) rpmts_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) rpmts_getattr, 	/* tp_getattr */
-	(setattrfunc) rpmts_setattr,	/* tp_setattr */
+	(getattrfunc)0, 		/* tp_getattr */
+	(setattrfunc)0,			/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
@@ -1497,8 +1497,8 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	0,				/* tp_getattro */
-	0,				/* tp_setattro */
+	(getattrofunc) rpmts_getattro, 	/* tp_getattro */
+	(setattrofunc) rpmts_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmts_doc,			/* tp_doc */
