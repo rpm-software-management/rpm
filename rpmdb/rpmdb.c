@@ -143,7 +143,9 @@ static void dbiTagsInit(void)
 /*@-redecl@*/
 #if USE_DB1
 /*@unchecked@*/
+/*@-exportheadervar -declundef @*/
 extern struct _dbiVec db1vec;
+/*@=exportheadervar =declundef @*/
 #define	DB1vec		&db1vec
 #else
 #define	DB1vec		NULL
@@ -151,7 +153,9 @@ extern struct _dbiVec db1vec;
 
 #if USE_DB2
 /*@unchecked@*/
+/*@-exportheadervar -declundef @*/
 extern struct _dbiVec db2vec;
+/*@=exportheadervar =declundef @*/
 #define	DB2vec		&db2vec
 #else
 #define	DB2vec		NULL
@@ -159,7 +163,9 @@ extern struct _dbiVec db2vec;
 
 #if USE_DB3
 /*@unchecked@*/
+/*@-exportheadervar -declundef @*/
 extern struct _dbiVec db3vec;
+/*@=exportheadervar =declundef @*/
 #define	DB3vec		&db3vec
 #else
 #define	DB3vec		NULL

@@ -39,6 +39,7 @@
 
 /* The fts interface is incompatible with the LFS interface which
    transparently uses the 64-bit file access functions.  */
+
 #ifdef __USE_FILE_OFFSET64
 # error "<fts.h> cannot be used with -D_FILE_OFFSET_BITS==64"
 #endif
@@ -57,6 +58,7 @@ typedef struct {
 	int fts_rfd;			/*!< fd for root */
 	int fts_pathlen;		/*!< sizeof(path) */
 	int fts_nitems;			/*!< elements in the sort array */
+/*@null@*/
 	int (*fts_compar) (const void *, const void *)
 		/*@*/;			/*!< compare fn */
 
@@ -149,23 +151,61 @@ typedef struct _ftsent {
 } FTSENT;
 
 __BEGIN_DECLS
-/*@dependent@*/
+
+/**
+ * Return list of children of the current node.
+ * @param sp		file hierarchy state
+ * @return		file set member
+ */
+/*@unused@*/ /*@dependent@*/
 FTSENT	*Fts_children (FTS * sp, int instr) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
+
+/**
+ * Destroy a file hierarchy traversal handle.
+ * @param sp		file hierarchy state
+ * @return		0 on sucess, -1 on error
+ */
+/*@unused@*/
 int	 Fts_close (/*@only@*/ FTS * sp) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
-/*@only@*/
+
+/**
+ * Create a handle for file hierarchy traversal.
+ * @param argv		paths that compose a logical file hierarchy
+ * @param options	traversal options
+ * @param compar	traversal ordering (or NULL)
+ * @return 		file hierarchy state (or NULL on error)
+ */
+/*@unused@*/ /*@only@*/
 FTS	*Fts_open (char * const * argv, int options,
+		   /*@null@*/
 		   int (*compar) (const FTSENT **, const FTSENT **)) __THROW
 	/*@*/;
-/*@null@*/
+
+/**
+ * Return next node in the file hierarchy traversal.
+ * @param sp		file hierarchy state
+ * @return		file set member
+ */
+/*@unused@*/ /*@null@*/
 FTSENT	*Fts_read (FTS * sp) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
+
+/**
+ * Modify the traversal for a file set member.
+ * @param sp		file hierarchy state
+ * @param p		file set member
+ * @param instr		new disposition for file set member
+ * @return		0 on sucess, -1 on error
+ */
+/*@unused@*/
 int	 Fts_set (FTS * sp, FTSENT * p, int instr) __THROW
 	/*@modifies *p @*/;
+
 __END_DECLS
 
 #endif /* fts.h */

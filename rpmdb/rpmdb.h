@@ -352,7 +352,8 @@ extern "C" {
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
  */
-/*@only@*/ /*@null@*/ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
+/*@unused@*/ /*@only@*/ /*@null@*/
+dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
@@ -361,7 +362,8 @@ extern "C" {
  * @param dbi		index database handle
  * @return		NULL always
  */
-/*@null@*/ dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
+/*@null@*/
+dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
 	/*@*/;
 
 /** \ingroup db3
@@ -371,7 +373,8 @@ extern "C" {
  * @return			formatted flags (static buffer)
  */
 /*@-redecl@*/
-/*@exposed@*/ extern const char *const prDbiOpenFlags(int dbflags,
+/*@exposed@*/
+extern const char *const prDbiOpenFlags(int dbflags,
 						int print_dbenv_flags)
 	/*@*/;
 /*@=redecl@*/

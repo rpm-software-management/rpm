@@ -540,6 +540,7 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
+AC_CHECK_HEADERS(pthread.h)
 
 dnl popt w float/double needs.
 AC_CHECK_HEADERS(float.h)

@@ -4,7 +4,11 @@
  */
 
 #include "system.h"
+
+#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
 #include <pthread.h>
+#endif
+
 #include <rpmio_internal.h>
 #include <popt.h>
 #include "ugid.h"
@@ -1006,34 +1010,40 @@ exit:
 }
 /*@=mods@*/
 
-static const char * statstr(struct stat * st)
+static const char * statstr(const struct stat * st,
+		/*@returned@*/ /*@out@*/ char * buf)
+	/*@modifies *buf @*/
 {
-    static char buf[1024];
-sprintf(buf, "*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
-(unsigned)st->st_dev,
-(unsigned)st->st_ino,
-st->st_mode,
-st->st_nlink,
-st->st_uid,
-st->st_gid,
-(unsigned)st->st_rdev,
-(unsigned)st->st_size);
+    sprintf(buf,
+	"*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
+	(unsigned)st->st_dev,
+	(unsigned)st->st_ino,
+	st->st_mode,
+	st->st_nlink,
+	st->st_uid,
+	st->st_gid,
+	(unsigned)st->st_rdev,
+	(unsigned)st->st_size);
     return buf;
 }
 
-static int ftp_st_ino = 0x1000;
+/*@unchecked@*/
+static int ftp_st_ino = 0xdead0000;
 
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals fileSystem @*/
 	/*@modifies *st, fileSystem @*/
 {
+    char buf[1024];
     int rc;
     rc = ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
-if (_ftp_debug)
-fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st));
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
+    /*@-mods@*/
     if (st->st_ino == 0)
 	st->st_ino = ftp_st_ino++;
+    /*@=mods@*/
+if (_ftp_debug)
+fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
     return rc;
 }
 
@@ -1041,14 +1051,16 @@ static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals fileSystem @*/
 	/*@modifies *st, fileSystem @*/
 {
+    char buf[1024];
     int rc;
     rc = ftpNLST(path, DO_FTP_LSTAT, st, NULL, 0);
-if (_ftp_debug)
-fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st));
-st->st_ino = ftp_st_ino++;
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
+    /*@-mods@*/
     if (st->st_ino == 0)
 	st->st_ino = ftp_st_ino++;
+    /*@=mods@*/
+if (_ftp_debug)
+fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
     return rc;
 }
 
@@ -1070,13 +1082,19 @@ struct __dirstream {
     size_t size;		/* Total valid data in the block.  */
     size_t offset;		/* Current offset into the block.  */
     off_t filepos;		/* Position of next entry to read.  */
+#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
     pthread_mutex_t lock;	/* Mutex lock for this structure.  */
+#endif
 };
 
+/*@unchecked@*/
 static int ftpmagicdir = 0x8440291;
 #define	ISFTPMAGIC(_dir) (!memcmp((_dir), &ftpmagicdir, sizeof(ftpmagicdir)))
 
+/*@null@*/
 static DIR * ftpOpendir(const char * path)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     DIR * dir;
     struct dirent * dp;
@@ -1108,11 +1126,11 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	switch (c) {
 	case '/':
 	    sb = se;
-	    break;
+	    /*@switchbreak@*/ break;
 	case '\r':
 	    if (sb == NULL) {
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
-		    ;
+		    {};
 	    }
 	    ac++;
 	    nb += (se - sb);
@@ -1120,18 +1138,20 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
 
     nb += sizeof(*dir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
     dir = xcalloc(1, nb);
+    /*@-abstract@*/
     dp = (struct dirent *) (dir + 1);
     av = (const char **) (dp + 1);
     dt = (char *) (av + (ac + 1));
     t = (char *) (dt + ac + 1);
+    /*@=abstract@*/
 
     dir->fd = ftpmagicdir;
     dir->data = (char *) dp;
@@ -1141,8 +1161,10 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     dir->filepos = 0;
 
     ac = 0;
+    /*@-dependenttrans -unrecog@*/
     dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
     dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
+    /*@=dependenttrans =unrecog@*/
     sb = NULL;
     s = se = ftpBuf;
     while ((c = *se) != '\0') {
@@ -1150,22 +1172,42 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	switch (c) {
 	case '/':
 	    sb = se;
-	    break;
+	    /*@switchbreak@*/ break;
 	case '\r':
+	    /*@-dependenttrans@*/
 	    av[ac] = t;
+	    /*@=dependenttrans@*/
 	    if (sb == NULL) {
+		/*@-unrecog@*/
 		switch(*s) {
-		case 'p':	dt[ac] = DT_FIFO;	break;
-		case 'c':	dt[ac] = DT_CHR;	break;
-		case 'd':	dt[ac] = DT_DIR;	break;
-		case 'b':	dt[ac] = DT_BLK;	break;
-		case '-':	dt[ac] = DT_REG;	break;
-		case 'l':	dt[ac] = DT_LNK;	break;
-		case 's':	dt[ac] = DT_SOCK;	break;
-		default:	dt[ac] = DT_UNKNOWN;	break;
+		case 'p':
+		    dt[ac] = DT_FIFO;
+		    /*@innerbreak@*/ break;
+		case 'c':
+		    dt[ac] = DT_CHR;
+		    /*@innerbreak@*/ break;
+		case 'd':
+		    dt[ac] = DT_DIR;
+		    /*@innerbreak@*/ break;
+		case 'b':
+		    dt[ac] = DT_BLK;
+		    /*@innerbreak@*/ break;
+		case '-':
+		    dt[ac] = DT_REG;
+		    /*@innerbreak@*/ break;
+		case 'l':
+		    dt[ac] = DT_LNK;
+		    /*@innerbreak@*/ break;
+		case 's':
+		    dt[ac] = DT_SOCK;
+		    /*@innerbreak@*/ break;
+		default:
+		    dt[ac] = DT_UNKNOWN;
+		    /*@innerbreak@*/ break;
 		}
+		/*@=unrecog@*/
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
-		    ;
+		    {};
 	    }
 	    ac++;
 	    t = stpncpy(t, sb, (se - sb));
@@ -1173,9 +1215,9 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
     av[ac] = NULL;
@@ -1183,7 +1225,10 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     return dir;
 }
 
+/*@null@*/
 static struct dirent * ftpReaddir(DIR * dir)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     struct dirent * dp;
     const char ** av;
@@ -1191,10 +1236,12 @@ static struct dirent * ftpReaddir(DIR * dir)
     int ac;
     int i;
 
+    /*@+voidabstract@*/
     if (dir == NULL || !ISFTPMAGIC(dir) || dir->data == NULL) {
 	/* XXX TODO: EBADF errno. */
 	return NULL;
     }
+    /*@=voidabstract@*/
 
     dp = (struct dirent *) dir->data;
     av = (const char **) (dp + 1);
@@ -1214,21 +1261,27 @@ static struct dirent * ftpReaddir(DIR * dir)
     dp->d_type = dt[i];
 
     strncpy(dp->d_name, av[i], sizeof(dp->d_name));
+/*@+voidabstract@*/
 if (_ftp_debug)
-fprintf(stderr, "*** ftpReaddir(%p) %p \"%s\"\n", dir, dp, dp->d_name);
+fprintf(stderr, "*** ftpReaddir(%p) %p \"%s\"\n", (void *)dir, dp, dp->d_name);
+/*@=voidabstract@*/
     
     return dp;
 }
 
-static int ftpClosedir(DIR * dir)
+static int ftpClosedir(/*@only@*/ DIR * dir)
+	/*@globals fileSystem @*/
+	/*@modifies dir, fileSystem @*/
 {
+    /*@+voidabstract@*/
 if (_ftp_debug)
-fprintf(stderr, "*** ftpClosedir(%p)\n", dir);
+fprintf(stderr, "*** ftpClosedir(%p)\n", (void *)dir);
     if (dir == NULL || !ISFTPMAGIC(dir)) {
 	/* XXX TODO: EBADF errno. */
 	return -1;
     }
     free((void *)dir);
+    /*@=voidabstract@*/
     dir = NULL;
     return 0;
 }

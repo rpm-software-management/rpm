@@ -298,6 +298,7 @@ int Fileno(FD_t fd)
 /**
  * fcntl(2) clone.
  */
+/*@unused@*/
 int Fcntl(FD_t fd, int op, void *lip)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *lip, fileSystem @*/;
@@ -408,14 +409,15 @@ DIR * Opendir(const char * path)
 /**
  * readdir(3) clone.
  */
-/*@null@*/ struct dirent * Readdir(DIR * dir)
+/*@null@*/
+struct dirent * Readdir(DIR * dir)
 	/*@globals fileSystem @*/
 	/*@modifies *dir, fileSystem @*/;
 
 /**
  * closedir(3) clone.
  */
-int	Closedir(/*@only@*/ DIR * dir)
+int Closedir(/*@only@*/ DIR * dir)
 	/*@globals fileSystem @*/
 	/*@modifies *dir, fileSystem @*/;
 
