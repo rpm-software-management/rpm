@@ -78,31 +78,34 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
     const char * argDescrip = getArgDescrip(opt, translation_domain);
     int helpLength;
     char * left;
+    int nb = maxLeftCol + 1;
 
-    left = malloc(maxLeftCol + 1);
+    /* Make sure there's more than enough room in target buffer. */
+    if (opt->longName)	nb += strlen(opt->longName);
+    if (argDescrip)	nb += strlen(argDescrip);
+
+    left = malloc(nb);
     left[0] = left[maxLeftCol] = '\0';
 
     if (opt->longName && opt->shortName)
-	snprintf(left, maxLeftCol, "-%c, %s%s", opt->shortName,
+	sprintf(left, "-%c, %s%s", opt->shortName,
 		((opt->argInfo & POPT_ARGFLAG_ONEDASH) ? "-" : "--"),
 		opt->longName);
     else if (opt->shortName) 
-	snprintf(left, maxLeftCol, "-%c", opt->shortName);
+	sprintf(left, "-%c", opt->shortName);
     else if (opt->longName)
-	snprintf(left, maxLeftCol, "%s%s",
+	sprintf(left, "%s%s",
 		((opt->argInfo & POPT_ARGFLAG_ONEDASH) ? "-" : "--"),
 		opt->longName);
-    if (!*left) return ;
+    if (!*left) goto out;
     if (argDescrip) {
 	char * le = left + strlen(left);
-	int nl = maxLeftCol - (le - left);
-	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL) {
-	    *le++ = '['; nl--;
-	}
+	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL)
+	    *le++ = '[';
 	if (opt->argDescrip == NULL) {
 	    switch (opt->argInfo & POPT_ARG_MASK) {
 	    case POPT_ARG_NONE:
-		snprintf(le, nl-1, "[true]");
+		sprintf(le, "[true]");
 		break;
 	    case POPT_ARG_VAL:
 	    {   long aLong = opt->val;
@@ -110,14 +113,14 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
 		if (opt->argInfo & POPT_ARGFLAG_NOT) aLong = ~aLong;
 		switch (opt->argInfo & POPT_ARGFLAG_LOGICALOPS) {
 		case POPT_ARGFLAG_OR:
-		    snprintf(le, nl-1, "[|=0x%lx]", aLong);	break;
+		    sprintf(le, "[|=0x%lx]", aLong);	break;
 		case POPT_ARGFLAG_AND:
-		    snprintf(le, nl-1, "[&=0x%lx]", aLong);	break;
+		    sprintf(le, "[&=0x%lx]", aLong);	break;
 		case POPT_ARGFLAG_XOR:
-		    snprintf(le, nl-1, "[^=0x%lx]", aLong);	break;
+		    sprintf(le, "[^=0x%lx]", aLong);	break;
 		default:
 		    if (!(aLong == 0L || aLong == 1L || aLong == -1L))
-			snprintf(le, nl-1, "[=%ld]", aLong);
+			sprintf(le, "[=%ld]", aLong);
 		    break;
 		}
 	    }	break;
@@ -126,17 +129,15 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
 	    case POPT_ARG_STRING:
 	    case POPT_ARG_FLOAT:
 	    case POPT_ARG_DOUBLE:
-		snprintf(le, nl-1, "=%s", argDescrip);
+		sprintf(le, "=%s", argDescrip);
 		break;
 	    }
 	} else {
-	    snprintf(le, nl-1, "=%s", argDescrip);
+	    sprintf(le, "=%s", argDescrip);
 	}
-	nl -= strlen(le);
 	le += strlen(le);
-	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL) {
-	    *le++ = ']'; nl--;
-	}
+	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL)
+	    *le++ = ']';
 	*le = '\0';
     }
 

@@ -277,7 +277,9 @@ INPUT                  = \
 	./lib/cpio.c \
 	./lib/cpio.h \
 	./lib/db1.c \
+	./lib/db2.c \
 	./lib/db3.c \
+	./lib/dbconfig.c \
 	./lib/depends.c \
 	./lib/depends.h \
 	./lib/falloc.c \
@@ -314,6 +316,7 @@ INPUT                  = \
 	./lib/rpmlibprov.c \
 	./lib/rpmrc.c \
 	./lib/scriptlet.c \
+	./lib/scriptlet.h \
 	./lib/signature.c \
 	./lib/signature.h \
 	./lib/stringbuf.c \

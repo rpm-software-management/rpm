@@ -151,11 +151,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     if (headerp)
 	*headerp = NULL;
 
-    /* XXX Yuck, see ALPHA_LOSSAGE in lib/rpmchecksig.c */
-#ifdef	__alpha
-    if (sig_type == RPMSIGTYPE_NONE) sig_type = RPMSIGTYPE_HEADERSIG;
-#endif
-    
     switch (sig_type) {
     case RPMSIGTYPE_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));

@@ -1680,7 +1680,6 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 		xx = dbiDel(dbi, dbcursor, &hdrNum, sizeof(hdrNum), 0);
 		xx = dbiCclose(dbi, dbcursor, 0);
 		dbcursor = NULL;
-		/* XXX HACK sync is on the bt with multiple db access */
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
 		continue;
@@ -1714,14 +1713,43 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 		const void * valp;
 		size_t vallen;
 
+		/* Identify value pointer and length. */
+		switch (rpmtype) {
+		case RPM_CHAR_TYPE:
+		case RPM_INT8_TYPE:
+		    vallen = sizeof(RPM_CHAR_TYPE);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT16_TYPE:
+		    vallen = sizeof(int_16);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT32_TYPE:
+		    vallen = sizeof(int_32);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_BIN_TYPE:
+		    vallen = rpmcnt;
+		    valp = rpmvals;
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    break;
+		case RPM_STRING_TYPE:
+		case RPM_I18NSTRING_TYPE:
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    /*@fallthrough@*/
+		case RPM_STRING_ARRAY_TYPE:
+		default:
+		    vallen = strlen(rpmvals[i]);
+		    valp = rpmvals[i];
+		    break;
+		}
+
 		/*
 		 * This is almost right, but, if there are duplicate tag
 		 * values, there will be duplicate attempts to remove
 		 * the header instance. It's easier to just ignore errors
 		 * than to do things correctly.
 		 */
-		valp = rpmvals[i];
-		vallen = strlen(rpmvals[i]);
 		xx = removeIndexEntry(dbi, dbcursor, valp, vallen, rec);
 	    }
 
@@ -1978,14 +2006,42 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		    break;
 		}
 
-		valp = rpmvals[i];
-		vallen = strlen(rpmvals[i]);
+		/* Identify value pointer and length. */
+		switch (rpmtype) {
+		case RPM_CHAR_TYPE:
+		case RPM_INT8_TYPE:
+		    vallen = sizeof(int_8);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT16_TYPE:
+		    vallen = sizeof(int_16);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_INT32_TYPE:
+		    vallen = sizeof(int_32);
+		    valp = rpmvals + i;
+		    break;
+		case RPM_BIN_TYPE:
+		    vallen = rpmcnt;
+		    valp = rpmvals;
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    break;
+		case RPM_STRING_TYPE:
+		case RPM_I18NSTRING_TYPE:
+		    rpmcnt = 1;		/* XXX break out of loop. */
+		    /*@fallthrough@*/
+		case RPM_STRING_ARRAY_TYPE:
+		default:
+		    valp = rpmvals[i];
+		    vallen = strlen(rpmvals[i]);
+		    break;
+		}
+
 		rc += addIndexEntry(dbi, dbcursor, valp, vallen, rec);
 	    }
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 
-	    /* XXX HACK sync is on the bt with multiple db access */
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 

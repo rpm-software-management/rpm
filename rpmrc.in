@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.33 2000/12/12 20:03:45 jbj Exp $
+# $Id: rpmrc.in,v 2.34 2001/02/27 21:30:27 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -112,7 +112,7 @@ os_canon:      FreeBSD: FreeBSD 8
 os_canon:       SCO_SV: SCO_SV3.2v5.0.2  9
 os_canon:	IRIX64: Irix64  10
 os_canon:     NEXTSTEP: NextStep 11
-os_canon:       BSD/OS: BSD_OS 12
+os_canon:       BSD_OS: bsdi	12
 os_canon:      machten: machten 13
 os_canon:  CYGWIN32_NT: cygwin32 14
 os_canon:  CYGWIN32_95: cygwin32 15
@@ -246,6 +246,9 @@ os_compat: FreeMiNT: mint MiNT TOS
 os_compat: MiNT: FreeMiNT mint TOS
 os_compat: mint: FreeMiNT MiNT TOS
 os_compat: TOS: FreeMiNT MiNT mint
+
+os_compat: BSD_OS: bsdi
+os_compat: bsdi4.0: bsdi
 
 buildarch_compat: ia64: noarch
 

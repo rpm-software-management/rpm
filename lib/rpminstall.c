@@ -52,7 +52,6 @@ static void printHash(const unsigned long amount, const unsigned long total)
 #endif
 	    fprintf(stdout, "#");
 
-	    fflush(stdout);
 	    hashesPrinted++;
 	}
 	fflush(stdout);
@@ -69,6 +68,7 @@ static void printHash(const unsigned long amount, const unsigned long total)
 	    fprintf (stdout, "\n");
 #endif
 	}
+	fflush(stdout);
     }
 }
 
@@ -120,20 +120,20 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
 				  rpmTagTable, rpmHeaderFormats, NULL);
 	    fprintf(stdout, "%s\n", s);
+	    fflush(stdout);
 	}
 	free(s);
 	break;
 
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
-	if (flags & INSTALL_PERCENT) {
+	if (flags & INSTALL_PERCENT)
 	    fprintf(stdout, "%%%% %f\n", (total
 				? ((float) ((((float) amount) / total) * 100))
 				: 100.0));
-	    fflush(stdout);
-	} else if (flags & INSTALL_HASH) {
+	else if (flags & INSTALL_HASH)
 	    printHash(amount, total);
-	}
+	fflush(stdout);
 	break;
 
     case RPMCALLBACK_TRANS_START:
@@ -144,12 +144,11 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 #endif
 	if (!(flags & INSTALL_LABEL))
 	    break;
-	if (flags & INSTALL_HASH) {
+	if (flags & INSTALL_HASH)
 	    fprintf(stdout, "%-28s", _("Preparing..."));
-	    fflush(stdout);
-	} else {
+	else
 	    printf("%s\n", _("Preparing packages for installation..."));
-	}
+	fflush(stdout);
 	break;
 
     case RPMCALLBACK_TRANS_STOP:

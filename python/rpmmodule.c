@@ -1924,6 +1924,98 @@ static PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args) {
 }
 
 /** \ingroup python
+ * This assumes the order of list matches the order of the new headers, and
+ * throws an exception if that isn't true.
+ */
+static int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag) {
+    Header newH;
+    HeaderIterator iter;
+    int_32 * newMatch, * oldMatch;
+    hdrObject * ho;
+    int count = 0;
+    int type, c, tag;
+    void * p;
+
+    Py_BEGIN_ALLOW_THREADS
+    newH = headerRead(fd, HEADER_MAGIC_YES);
+
+    Py_END_ALLOW_THREADS
+    while (newH) {
+	if (!headerGetEntry(newH, matchTag, NULL, (void **) &newMatch, NULL)) {
+	    PyErr_SetString(pyrpmError, "match tag missing in new header");
+	    return 1;
+	}
+
+	ho = (hdrObject *) PyList_GetItem(list, count++);
+	if (!ho) return 1;
+
+	if (!headerGetEntry(ho->h, matchTag, NULL, (void **) &oldMatch, NULL)) {
+	    PyErr_SetString(pyrpmError, "match tag missing in new header");
+	    return 1;
+	}
+
+	if (*newMatch != *oldMatch) {
+	    PyErr_SetString(pyrpmError, "match tag mismatch");
+	    return 1;
+	}
+
+	if (ho->sigs) headerFree(ho->sigs);
+	if (ho->md5list) free(ho->md5list);
+	if (ho->fileList) free(ho->fileList);
+	if (ho->linkList) free(ho->linkList);
+
+	ho->sigs = NULL;
+	ho->md5list = NULL;
+	ho->fileList = NULL;
+	ho->linkList = NULL;
+
+	iter = headerInitIterator(newH);
+
+	while (headerNextIterator(iter, &tag, &type, (void *) &p, &c)) {
+	    /* could be dupes */
+	    headerRemoveEntry(ho->h, tag);
+	    headerAddEntry(ho->h, tag, type, p, c);
+	    headerFreeData(p, type);
+	}
+
+	headerFreeIterator(iter);
+
+	Py_BEGIN_ALLOW_THREADS
+	newH = headerRead(fd, HEADER_MAGIC_YES);
+	Py_END_ALLOW_THREADS
+    }
+
+    return 0;
+}
+
+static PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args) {
+    FD_t fd;
+    int fileno;
+    PyObject * list;
+    int rc;
+    int matchTag;
+
+    if (!PyArg_ParseTuple(args, "Oii", &list, &fileno, &matchTag)) return NULL;
+
+    if (!PyList_Check(list)) {
+	PyErr_SetString(PyExc_TypeError, "first parameter must be a list");
+	return NULL;
+    }
+
+    fd = fdDup(fileno);
+
+    rc = rpmMergeHeaders (list, fd, matchTag);
+    Fclose(fd);
+
+    if (rc) {
+	return NULL;
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
  */
 static PyObject * errorCB = NULL, * errorData = NULL;
 

@@ -42,22 +42,23 @@ dnl
 AC_MSG_CHECKING(flag used by libtool to link rpm)
 if test X"$GCC" = Xyes ; then
 	case "$target" in
-		*-*-solaris*)	LDFLAGS_STATIC="";;
-		*-*-hpux*)	LDFLAGS_STATIC="";;
-		*-*-*)		LDFLAGS_STATIC="-all";;
+		*-*-solaris*)	LDFLAGS_STATIC="-static";;
+		*-*-hpux*)	LDFLAGS_STATIC="-static";;
+		*-*-sysv5uw*)   LDFLAGS_STATUS="-static";; # Unixware has no shared libthread.
+		*-*-*)		LDFLAGS_STATIC="-all-static";;
 	esac
 elif test X"$CC" = Xcc ; then
 	case "$target" in
-		*-*-linux*)	LDFLAGS_STATIC="-all";;
-		*-*-freebsd*)	LDFLAGS_STATIC="-all";;
-		*-*-osf*)	LDFLAGS_STATIC="-all";;
-		*-*-aix*)	LDFLAGS_STATIC="";;  # -Wl,-bnso doesn't seem to work...
-		*-*-hpux*)	LDFLAGS_STATIC="";;
-		*-*-solaris*)	LDFLAGS_STATIC="";;
-		*-*-irix*)	LDFLAGS_STATIC="";;  #should be -non_shared, but can't
+		*-*-linux*)	LDFLAGS_STATIC="-all-static";;
+		*-*-freebsd*)	LDFLAGS_STATIC="-all-static";;
+		*-*-osf*)	LDFLAGS_STATIC="";; # OSF5 has no shared pthreads libs
+		*-*-aix*)	LDFLAGS_STATIC="-static";;  # -Wl,-bnso doesn't seem to work...
+		*-*-hpux*)	LDFLAGS_STATIC="-static";;
+		*-*-solaris*)	LDFLAGS_STATIC="-static";;
+		*-*-irix*)	LDFLAGS_STATIC="-static";;  #should be -non_shared, but can't
 											# link because of crt1.o then.
-		*-*-ultrix*)	LDFLAGS_STATIC="-all";;  #ultrix doesn't have shared libs.
-		*-*-*)		LDFLAGS_STATIC=""
+		*-*-ultrix*)	LDFLAGS_STATIC="-all-static";;  #ultrix doesn't have shared libs.
+		*-*-*)		LDFLAGS_STATIC="-static"
 AC_MSG_WARN([
 
 Unable to guess what option to pass to $CC to generate a static
@@ -71,7 +72,7 @@ else
 	# just link it dynamically
 	LDFLAGS_STATIC=""
 fi
-LDFLAGS_STATIC="${LDFLAGS} ${LDFLAGS_STATIC}-static"	# libtool format
+LDFLAGS_STATIC="${LDFLAGS} ${LDFLAGS_STATIC}"	# libtool format
 AC_MSG_RESULT($LDFLAGS_STATIC)
 AC_SUBST(LDFLAGS_STATIC)
 
@@ -301,8 +302,16 @@ dnl for this macro (not LIBS=...), otherwise the check for dbopen
 dnl will fail.
 AC_CHECK_LIB(port, writev)
 
-libpthread=""
-AC_CHECK_LIB(pthread, pthread_mutex_trylock,[libpthread="-lpthread"])
+libthread=""
+AC_CHECK_LIB(pthread, pthread_mutex_trylock, [libthread="-lpthread"], [
+  dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
+  AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [libthread="-lpthread"])
+])
+
+if test "x$libthread" = "x"; then
+	# Try in libthread too.
+	AC_CHECK_LIB(thread, mutex_lock, [libthread="-lthread"])
+fi
 
 DBLIBSRCS=""
 libdb3=""
@@ -314,9 +323,9 @@ AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
   AC_CHECK_LIB(db-3.1, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.1"],
     AC_CHECK_LIB(db-3.0, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.0"],
       AC_CHECK_LIB(db, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb"],
-      ,$libpthread)
-    ,$libpthread)
-  ,$libpthread)
+      ,$libthread)
+    ,$libthread)
+  ,$libthread)
 )
 
 dnl Check for Berkeley db2 API.
@@ -329,26 +338,45 @@ dnl )
 
 dnl Check for Berkeley db1 API retrofit to db2/db3 database.
 dnl AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c"],
-dnl     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"])
+dnl     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c"])
 dnl )
 
-dnl Check for Berkeley db1 API in glibc.
-AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c"],
-  AC_CHECK_LIB(db1, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb1"],
-    AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb"])
-  )
-)
+AC_MSG_CHECKING(whether to enable DB1 support)
+
+AC_ARG_ENABLE(db1,
+[  --disable-db1           Disable DB1 support ],
+[
+if test "$enableval" = "yes"; then
+   AC_MSG_RESULT(yes)
+   usedb1=yes
+else
+   AC_MSG_RESULT(no)
+   usedb1=no
+fi
+],[
+AC_MSG_RESULT(yes)
+usedb1=yes
+])
+
+if test "$usedb1" = "yes"; then
+ dnl Check for Berkeley db1 API in glibc.
+ AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db3.c"],
+   AC_CHECK_LIB(db1, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb1"],
+     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb"])
+   )
+ )
+fi
 
 if test X"$DBLIBSRCS" = X; then
     AC_MSG_ERROR([sorry rpm requires libdb-3.x.a or libdb1.a (from the Berkeley db package)]) 
 fi
 
-if test -n "$libdb3" -a -n "$libpthread" ; then
-   AC_MSG_CHECKING(whether $libdb3 needs $libpthread)
+if test -n "$libdb3" -a -n "$libthread" ; then
+   AC_MSG_CHECKING(whether $libdb3 needs $libthread)
    saveLIBS="$LIBS"
    LIBS="$LIBS $libdb3"
    AC_TRY_LINK_FUNC(db_create, AC_MSG_RESULT(no),
-	[libdb3="$libdb3 $libpthread"; AC_MSG_RESULT(yes)])
+	[libdb3="$libdb3 $libthread"; AC_MSG_RESULT(yes)])
    LIBS="$saveLIBS"
 fi
 
@@ -790,8 +818,9 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
     AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R), [
       AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="$LIBS -lc_r"; 
-					AC_DEFINE(HAVE_GETMNTINFO_R)],
-                 LIBOBJS="$LIBOBJS getmntent.o")])])])
+					AC_DEFINE(HAVE_GETMNTINFO_R)], [
+		 AC_DEFINE([USE_GETMNTENT], 1, [Defined if getmntent replacement is used])
+                 LIBOBJS="$LIBOBJS getmntent.o"])])])])
 
 AC_CHECK_FUNC(lchown,
    [__CHOWN_RHF="%{__chown} -Rhf"
@@ -870,8 +899,17 @@ AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
 
 if test "x$varprefix" = "x"; then
-    varprefix=`echo $prefix | sed 's/usr/var/'`
-    test "x$prefix" = xNONE && varprefix=`echo $ac_default_prefix | sed 's/usr/var/'`
+    # For /usr and /usr/local, we want the 'var' directory to go
+    # in /var and /var/local respectively. For everything else, 
+    # just put the 'var' directory in prefix/var.
+    case $prefix in
+	/usr | /usr/local )
+	    varprefix=`echo $prefix | sed 's/usr/var/'` ;;
+	NONE)
+ 	    varprefix=`echo $ac_default_prefix | sed 's/usr/var/'` ;;
+	*) 
+	    varprefix=$prefix/var ;;
+    esac	
 fi
 AC_SUBST(varprefix)
 

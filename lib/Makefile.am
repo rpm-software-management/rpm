@@ -13,7 +13,7 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h fsm.h hash.h \
 	md5.h psm.h \
-	rpmdb.h rpmlead.h signature.h
+	rpmdb.h rpmlead.h scriptlet.h signature.h
 
 mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \
 		-L$(top_builddir)/popt/.libs
