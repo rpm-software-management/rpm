@@ -330,6 +330,11 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 			     "No versions on file names in Requires: %s", req);
 		    return RPMERR_BADSPEC;
 		}
+		if (flag == RPMTAG_PREREQ) {
+		    rpmError(RPMERR_BADSPEC,
+			     "No versions in PreReq: %s", req);
+		    return RPMERR_BADSPEC;
+		}
 		/* read a version */
 		flags |= rc->flags;
 		version = strtok(NULL, " ,\t\n");
