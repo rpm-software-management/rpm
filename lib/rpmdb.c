@@ -12,6 +12,18 @@
 #include "misc.h"
 #include "rpmdb.h"
 
+const char *rpmdb_filenames[] = {
+    "packages.rpm",
+    "nameindex.rpm",
+    "fileindex.rpm",
+    "groupindex.rpm",
+    "requiredby.rpm",
+    "providesindex.rpm",
+    "conflictsindex.rpm",
+    "triggerindex.rpm",
+    NULL
+};
+
 /* XXX the signal handling in here is not thread safe */
 
 /* the requiredbyIndex isn't stricly necessary. In a perfect world, we could
@@ -213,6 +225,10 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
+    /*
+     * XXX FIXME: db.fileindex can be NULL under pathological (e.g. mixed
+     * XXX db1/db2 linkage) conditions.
+     */
     if (!justcheck && !dbiGetFirstKey(db.fileIndex, &akey)) {
 	if (strchr(akey, '/')) {
 	    rpmError(RPMERR_OLDDB, _("old format database is present; "
@@ -671,6 +687,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
 
 void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath) { 
     int i;
+    const char **rpmdbfnp;
     char * filename;
 
     i = strlen(dbpath);
@@ -684,30 +701,19 @@ void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath) {
     
     filename = alloca(strlen(rootdir) + strlen(dbpath) + 40);
 
-    sprintf(filename, "%s/%s/packages.rpm", rootdir, dbpath);
-    unlink(filename);
+    for (rpmdbfnp = rpmdb_filenames; *rpmdbfnp; rpmdbfnp++) {
+	sprintf(filename, "%s/%s/%s", rootdir, dbpath, *rpmdbfnp);
+	unlink(filename);
+    }
 
-    sprintf(filename, "%s/%s/nameindex.rpm", rootdir, dbpath);
-    unlink(filename);
+    sprintf(filename, "%s/%s", rootdir, dbpath);
+    rmdir(filename);
 
-    sprintf(filename, "%s/%s/fileindex.rpm", rootdir, dbpath);
-    unlink(filename);
-
-    sprintf(filename, "%s/%s/groupindex.rpm", rootdir, dbpath);
-    unlink(filename);
-
-    sprintf(filename, "%s/%s/requiredby.rpm", rootdir, dbpath);
-    unlink(filename);
-
-    sprintf(filename, "%s/%s/providesindex.rpm", rootdir, dbpath);
-    unlink(filename);
-
-    sprintf(filename, "%s/%s/conflictsindex.rpm", rootdir, dbpath);
-    unlink(filename);
 }
 
 int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath) {
     int i;
+    const char **rpmdbfnp;
     char * ofilename, * nfilename;
     int rc = 0;
  
@@ -732,37 +738,11 @@ int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char *
     ofilename = alloca(strlen(rootdir) + strlen(olddbpath) + 40);
     nfilename = alloca(strlen(rootdir) + strlen(newdbpath) + 40);
 
-    sprintf(ofilename, "%s/%s/packages.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/packages.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
-
-    sprintf(ofilename, "%s/%s/nameindex.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/nameindex.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
-
-    sprintf(ofilename, "%s/%s/fileindex.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/fileindex.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
-
-    sprintf(ofilename, "%s/%s/groupindex.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/groupindex.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
-
-    sprintf(ofilename, "%s/%s/requiredby.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/requiredby.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
-
-    sprintf(ofilename, "%s/%s/providesindex.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/providesindex.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
-
-    sprintf(ofilename, "%s/%s/conflictsindex.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/conflictsindex.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
-
-    sprintf(ofilename, "%s/%s/triggerindex.rpm", rootdir, olddbpath);
-    sprintf(nfilename, "%s/%s/triggerindex.rpm", rootdir, newdbpath);
-    if (rename(ofilename, nfilename)) rc = 1;
+    for (rpmdbfnp = rpmdb_filenames; *rpmdbfnp; rpmdbfnp++) {
+	sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, *rpmdbfnp);
+	sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, *rpmdbfnp);
+	if (rename(ofilename, nfilename)) rc = 1;
+    }
 
     return rc;
 }
