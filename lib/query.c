@@ -8,125 +8,129 @@
 #include "popt/popt.h"
 #include <rpmurl.h>
 
-static void printFileInfo(char * name, unsigned int size, unsigned short mode,
-			  unsigned int mtime, unsigned short rdev,
-			  char * owner, char * group, int uid, int gid,
-			  char * linkto);
-
-#define POPT_QUERYFORMAT	1000
-#define POPT_WHATREQUIRES	1001
-#define POPT_WHATPROVIDES	1002
-#define POPT_QUERYBYNUMBER	1003
-#define POPT_TRIGGEREDBY	1004
-#define POPT_DUMP		1005
-#define POPT_SPECFILE		1006
-
-/* ========== Query/Verify source popt args */
-static void rpmQVSourceArgCallback(poptContext con, enum poptCallbackReason reason,
-			     const struct poptOption * opt, const char * arg, 
-			     QVA_t *qva) {
-
-    switch (opt->val) {
-      case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;
-      case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
-      case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
-      case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
-      case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
-			      qva->qva_sourceCount++; break;
-      case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
-			      qva->qva_sourceCount++; break;
-      case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
-			      qva->qva_sourceCount++; break;
-
-/* XXX SPECFILE is not verify sources */
-      case POPT_SPECFILE:
-	qva->qva_source |= RPMQV_SPECFILE;
-	qva->qva_sourceCount++;
-	break;
-      case POPT_QUERYBYNUMBER:
-	qva->qva_source |= RPMQV_DBOFFSET; 
-	qva->qva_sourceCount++;
-	break;
-    }
-}
-
-struct poptOption rpmQVSourcePoptTable[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		rpmQVSourceArgCallback, 0, NULL, NULL },
-	{ "file", 'f', 0, 0, 'f',
-		N_("query package owning file"), "FILE" },
-	{ "group", 'g', 0, 0, 'g',
-		N_("query packages in group"), "GROUP" },
-	{ "package", 'p', 0, 0, 'p',
-		N_("query a package file"), NULL },
-	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYBYNUMBER, NULL, NULL },
-	{ "specfile", '\0', 0, 0, POPT_SPECFILE,
-		N_("query a spec file"), NULL },
-	{ "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
-		N_("query the pacakges triggered by the package"), "PACKAGE" },
-	{ "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
-		N_("query the packages which require a capability"), "CAPABILITY" },
-	{ "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
-		N_("query the packages which provide a capability"), "CAPABILITY" },
-	{ 0, 0, 0, 0, 0,	NULL, NULL }
-};
-
-/* ========== Query specific popt args */
-
-static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
-			     const struct poptOption * opt, const char * arg, 
-			     QVA_t *qva) {
-    switch (opt->val) {
-      case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
-      case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
-      case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
-      case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST; break;
-      case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
-      case 'v': rpmIncreaseVerbosity();	 break;
-
-      case POPT_QUERYFORMAT:
-      {	char *qf = (char *)qva->qva_queryFormat;
-	if (qf) {
-	    int len = strlen(qf) + strlen(arg) + 1;
-	    qf = realloc(qf, len);
-	    strcat(qf, arg);
-	} else {
-	    qf = malloc(strlen(arg) + 1);
-	    strcpy(qf, arg);
-	}
-	qva->qva_queryFormat = qf;
-      }	break;
-    }
-}
-
-struct poptOption rpmQueryPoptTable[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		queryArgCallback, 0, NULL, NULL },
-	{ "configfiles", 'c', 0, 0, 'c',
-		N_("list all configuration files"), NULL },
-	{ "docfiles", 'd', 0, 0, 'd',
-		N_("list all documentation files"), NULL },
-	{ "dump", '\0', 0, 0, POPT_DUMP,
-		N_("dump basic file information"), NULL },
-	{ "list", 'l', 0, 0, 'l',
-		N_("list files in package"), NULL },
-	{ "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYFORMAT, NULL, NULL },
-	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
-		N_("use the following query format"), "QUERYFORMAT" },
-	{ "specedit", '\0', POPT_ARG_STRING, &specedit, 0,
-		N_("substitute i18n sections from the following catalogue"),
-			"METACATALOGUE" },
-	{ "state", 's', 0, 0, 's',
-		N_("display the states of the listed files"), NULL },
-	{ "verbose", 'v', 0, 0, 'v',
-		N_("display a verbose file listing"), NULL },
-	{ 0, 0, 0, 0, 0,	NULL, NULL }
-};
-
 /* ======================================================================== */
-static int queryHeader(Header h, const char * chptr) {
+static char * permsString(int mode)
+{
+    char *perms = strdup("----------");
+   
+    if (S_ISDIR(mode)) 
+	perms[0] = 'd';
+    else if (S_ISLNK(mode))
+	perms[0] = 'l';
+    else if (S_ISFIFO(mode)) 
+	perms[0] = 'p';
+    else if (S_ISSOCK(mode)) 
+	perms[0] = 's';
+    else if (S_ISCHR(mode))
+	perms[0] = 'c';
+    else if (S_ISBLK(mode))
+	perms[0] = 'b';
+
+    if (mode & S_IRUSR) perms[1] = 'r';
+    if (mode & S_IWUSR) perms[2] = 'w';
+    if (mode & S_IXUSR) perms[3] = 'x';
+ 
+    if (mode & S_IRGRP) perms[4] = 'r';
+    if (mode & S_IWGRP) perms[5] = 'w';
+    if (mode & S_IXGRP) perms[6] = 'x';
+
+    if (mode & S_IROTH) perms[7] = 'r';
+    if (mode & S_IWOTH) perms[8] = 'w';
+    if (mode & S_IXOTH) perms[9] = 'x';
+
+    if (mode & S_ISUID)
+	perms[3] = ((mode & S_IXUSR) ? 's' : 'S'); 
+
+    if (mode & S_ISGID)
+	perms[6] = ((mode & S_IXGRP) ? 's' : 'S'); 
+
+    if (mode & S_ISVTX)
+	perms[9] = ((mode & S_IXOTH) ? 't' : 'T');
+
+    return perms;
+}
+
+static void printFileInfo(FILE *fp, const char * name,
+			  unsigned int size, unsigned short mode,
+			  unsigned int mtime, unsigned short rdev,
+			  const char * owner, const char * group,
+			  int uid, int gid, const char * linkto)
+{
+    char sizefield[15];
+    char ownerfield[9], groupfield[9];
+    char timefield[100] = "";
+    time_t when = mtime;  /* important if sizeof(int_32) ! sizeof(time_t) */
+    struct tm * tm;
+    static time_t now;
+    static struct tm nowtm;
+    const char * namefield = name;
+    char * perms;
+
+    /* On first call, grab snapshot of now */
+    if (now == 0) {
+	now = time(NULL);
+	tm = localtime(&now);
+	nowtm = *tm;	/* structure assignment */
+    }
+
+    perms = permsString(mode);
+
+    if (owner) 
+	strncpy(ownerfield, owner, 8);
+    else
+	sprintf(ownerfield, "%-8d", uid);
+    ownerfield[8] = '\0';
+
+    if (group) 
+	strncpy(groupfield, group, 8);
+    else 
+	sprintf(groupfield, "%-8d", gid);
+    groupfield[8] = '\0';
+
+    /* this is normally right */
+    sprintf(sizefield, "%12u", size);
+
+    /* this knows too much about dev_t */
+
+    if (S_ISLNK(mode)) {
+	char *nf = alloca(strlen(name) + sizeof(" -> ") + strlen(linkto));
+	sprintf(nf, "%s -> %s", name, linkto);
+	namefield = nf;
+    } else if (S_ISCHR(mode)) {
+	perms[0] = 'c';
+	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
+    } else if (S_ISBLK(mode)) {
+	perms[0] = 'b';
+	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
+    }
+
+    /* Convert file mtime to display format */
+    tm = localtime(&when);
+    {	const char *fmt;
+	if (now > when + 6L * 30L * 24L * 60L * 60L ||	/* Old. */
+	    now < when - 60L * 60L)			/* In the future.  */
+	{
+	/* The file is fairly old or in the future.
+	 * POSIX says the cutoff is 6 months old;
+	 * approximate this by 6*30 days.
+	 * Allow a 1 hour slop factor for what is considered "the future",
+	 * to allow for NFS server/client clock disagreement.
+	 * Show the year instead of the time of day.
+	 */        
+	    fmt = "%b %e  %Y";
+	} else {
+	    fmt = "%b %e %H:%M";
+	}
+	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
+    }
+
+    fprintf(fp, "%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
+		sizefield, timefield, namefield);
+    if (perms) free(perms);
+}
+
+static int queryHeader(FILE *fp, Header h, const char * chptr)
+{
     char * str;
     char * error;
 
@@ -136,13 +140,14 @@ static int queryHeader(Header h, const char * chptr) {
 	return 1;
     }
 
-    fputs(str, stdout);
+    fputs(str, fp);
 
     return 0;
 }
 
 int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 {
+    FILE *fp = stdout;	/* XXX FIXME: pass as arg */
     int queryFlags = qva->qva_flags;
     const char *queryFormat = qva->qva_queryFormat;
 
@@ -165,16 +170,16 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
 
     if (!queryFormat && !queryFlags) {
-	fprintf(stdout, "%s-%s-%s\n", name, version, release);
+	fprintf(fp, "%s-%s-%s\n", name, version, release);
     } else {
 	if (queryFormat)
-	    queryHeader(h, queryFormat);
+	    queryHeader(fp, h, queryFormat);
 
 	if (queryFlags & QUERY_FOR_LIST) {
 	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &count)) {
-		fputs(_("(contains no files)"), stdout);
-		fputs("\n", stdout);
+		fputs(_("(contains no files)"), fp);
+		fputs("\n", fp);
 	    } else {
 		if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
 			 (void **) &fileStatesList, &count)) {
@@ -220,65 +225,65 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 			    (fileFlagsList[i] & RPMFILE_CONFIG))) {
 
 			if (!rpmIsVerbose())
-			    prefix ? fputs(prefix, stdout) : 0;
+			    prefix ? fputs(prefix, fp) : 0;
 
 			if (queryFlags & QUERY_FOR_STATE) {
 			    if (fileStatesList) {
 				switch (fileStatesList[i]) {
 				  case RPMFILE_STATE_NORMAL:
-				    fputs(_("normal        "), stdout); break;
+				    fputs(_("normal        "), fp); break;
 				  case RPMFILE_STATE_REPLACED:
-				    fputs(_("replaced      "), stdout); break;
+				    fputs(_("replaced      "), fp); break;
 				  case RPMFILE_STATE_NETSHARED:
-				    fputs(_("net shared    "), stdout); break;
+				    fputs(_("net shared    "), fp); break;
 				  case RPMFILE_STATE_NOTINSTALLED:
-				    fputs(_("not installed "), stdout); break;
+				    fputs(_("not installed "), fp); break;
 				  default:
-				    fprintf(stdout, _("(unknown %3d) "), 
+				    fprintf(fp, _("(unknown %3d) "), 
 					  fileStatesList[i]);
 				}
 			    } else {
-				fputs(    _("(no state)    "), stdout);
+				fputs(    _("(no state)    "), fp);
 			    }
 			}
 			    
 			if (queryFlags & QUERY_FOR_DUMPFILES) {
-			    fprintf(stdout, "%s %d %d %s 0%o ", fileList[i],
+			    fprintf(fp, "%s %d %d %s 0%o ", fileList[i],
 				   fileSizeList[i], fileMTimeList[i],
 				   fileMD5List[i], fileModeList[i]);
 
 			    if (fileOwnerList)
-				fprintf(stdout, "%s %s", fileOwnerList[i], 
+				fprintf(fp, "%s %s", fileOwnerList[i], 
 						fileGroupList[i]);
 			    else if (fileUIDList)
-				fprintf(stdout, "%d %d", fileUIDList[i], 
+				fprintf(fp, "%d %d", fileUIDList[i], 
 						fileGIDList[i]);
 			    else {
 				rpmError(RPMERR_INTERNAL, _("package has "
 					"neither file owner or id lists"));
 			    }
 
-			    fprintf(stdout, " %s %s %u ", 
+			    fprintf(fp, " %s %s %u ", 
 				 fileFlagsList[i] & RPMFILE_CONFIG ? "1" : "0",
 				 fileFlagsList[i] & RPMFILE_DOC ? "1" : "0",
 				 (unsigned)fileRdevList[i]);
 
 			    if (strlen(fileLinktoList[i]))
-				fprintf(stdout, "%s\n", fileLinktoList[i]);
+				fprintf(fp, "%s\n", fileLinktoList[i]);
 			    else
-				fprintf(stdout, "X\n");
+				fprintf(fp, "X\n");
 
 			} else if (!rpmIsVerbose()) {
-			    fputs(fileList[i], stdout);
-			    fputs("\n", stdout);
+			    fputs(fileList[i], fp);
+			    fputs("\n", fp);
 			} else if (fileOwnerList) 
-			    printFileInfo(fileList[i], fileSizeList[i],
+			    printFileInfo(fp, fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], fileOwnerList[i], 
 					  fileGroupList[i], -1, 
 					  -1, fileLinktoList[i]);
 			else if (fileUIDList) {
-			    printFileInfo(fileList[i], fileSizeList[i],
+			    printFileInfo(fp, fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], NULL, 
 					  NULL, fileUIDList[i], 
@@ -299,124 +304,6 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 	}
     }
     return 0;	/* XXX FIXME: need real return code */
-}
-
-static char * permsString(int mode) {
-    static char perms[11];
-
-    strcpy(perms, "----------");
-   
-    if (mode & S_IRUSR) perms[1] = 'r';
-    if (mode & S_IWUSR) perms[2] = 'w';
-    if (mode & S_IXUSR) perms[3] = 'x';
- 
-    if (mode & S_IRGRP) perms[4] = 'r';
-    if (mode & S_IWGRP) perms[5] = 'w';
-    if (mode & S_IXGRP) perms[6] = 'x';
-
-    if (mode & S_IROTH) perms[7] = 'r';
-    if (mode & S_IWOTH) perms[8] = 'w';
-    if (mode & S_IXOTH) perms[9] = 'x';
-
-
-    if (mode & S_ISVTX)
-	perms[9] = ((mode & S_IXOTH) ? 't' : 'T');
-
-    if (mode & S_ISUID) {
-	if (mode & S_IXUSR) 
-	    perms[3] = 's'; 
-	else
-	    perms[3] = 'S'; 
-    }
-
-    if (mode & S_ISGID) {
-	if (mode & S_IXGRP) 
-	    perms[6] = 's'; 
-	else
-	    perms[6] = 'S'; 
-    }
-
-    if (S_ISDIR(mode)) 
-	perms[0] = 'd';
-    else if (S_ISLNK(mode)) {
-	perms[0] = 'l';
-    }
-    else if (S_ISFIFO(mode)) 
-	perms[0] = 'p';
-    else if (S_ISSOCK(mode)) 
-	perms[0] = 's';
-    else if (S_ISCHR(mode)) {
-	perms[0] = 'c';
-    } else if (S_ISBLK(mode)) {
-	perms[0] = 'b';
-    }
-
-    return perms;
-}
-
-static void printFileInfo(char * name, unsigned int size, unsigned short mode,
-			  unsigned int mtime, unsigned short rdev,
-			  char * owner, char * group, int uid, int gid,
-			  char * linkto) {
-    char sizefield[15];
-    char ownerfield[9], groupfield[9];
-    char timefield[100] = "";
-    static int thisYear = 0;
-    static int thisMonth = 0;
-    struct tm * tstruct;
-    char * namefield = name;
-    char * perms;
-
-    perms = permsString(mode);
-
-    if (!thisYear) {
-	time_t currenttime = time(NULL);
-	tstruct = localtime(&currenttime);
-	thisYear = tstruct->tm_year;
-	thisMonth = tstruct->tm_mon;
-    }
-
-    ownerfield[8] = groupfield[8] = '\0';
-
-    if (owner) 
-	strncpy(ownerfield, owner, 8);
-    else
-	sprintf(ownerfield, "%-8d", uid);
-
-    if (group) 
-	strncpy(groupfield, group, 8);
-    else 
-	sprintf(groupfield, "%-8d", gid);
-
-    /* this is normally right */
-    sprintf(sizefield, "%10u", size);
-
-    /* this knows too much about dev_t */
-
-    if (S_ISLNK(mode)) {
-	namefield = alloca(strlen(name) + strlen(linkto) + 10);
-	sprintf(namefield, "%s -> %s", name, linkto);
-    } else if (S_ISCHR(mode)) {
-	perms[0] = 'c';
-	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
-    } else if (S_ISBLK(mode)) {
-	perms[0] = 'b';
-	sprintf(sizefield, "%3u, %3u", (rdev >> 8) & 0xff, rdev & 0xFF);
-    }
-
-    /* this is important if sizeof(int_32) ! sizeof(time_t) */
-    {	time_t themtime = mtime;
-	tstruct = localtime(&themtime);
-    }
-
-    if (tstruct->tm_year == thisYear || 
-      ((tstruct->tm_year + 1) == thisYear && tstruct->tm_mon > thisMonth)) 
-	(void)strftime(timefield, sizeof(timefield) - 1, "%b %d %H:%M",tstruct);
-    else
-	(void)strftime(timefield, sizeof(timefield) - 1, "%b %d  %Y", tstruct);
-
-    fprintf(stdout, "%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
-		sizefield, timefield, namefield);
 }
 
 static void
@@ -615,15 +502,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 
 	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-#if 0
-	    char *binRpm, *errorString;
-	    binRpm = headerSprintf(pkg->header,
-		rpmGetPath("%{_rpmfilename}", NULL),
-		rpmTagTable, rpmHeaderFormats, &errorString);
-	    if (!(pkg == spec->packages && pkg->next == NULL))
-		fprintf(stdout, "====== %s\n", binRpm);
-	    free(binRpm);
-#endif
 	    showPackage(qva, NULL, pkg->header);
 	}
 	freeSpecVec(spec);
@@ -763,3 +641,120 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg)
 
     return rc;
 }
+
+/* ======================================================================== */
+#define POPT_QUERYFORMAT	1000
+#define POPT_WHATREQUIRES	1001
+#define POPT_WHATPROVIDES	1002
+#define POPT_QUERYBYNUMBER	1003
+#define POPT_TRIGGEREDBY	1004
+#define POPT_DUMP		1005
+#define POPT_SPECFILE		1006
+
+/* ========== Query/Verify source popt args */
+static void rpmQVSourceArgCallback(poptContext con, enum poptCallbackReason reason,
+			     const struct poptOption * opt, const char * arg, 
+			     QVA_t *qva)
+{
+
+    switch (opt->val) {
+      case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;
+      case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
+      case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
+      case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
+      case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
+			      qva->qva_sourceCount++; break;
+      case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
+			      qva->qva_sourceCount++; break;
+      case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
+			      qva->qva_sourceCount++; break;
+
+/* XXX SPECFILE is not verify sources */
+      case POPT_SPECFILE:
+	qva->qva_source |= RPMQV_SPECFILE;
+	qva->qva_sourceCount++;
+	break;
+      case POPT_QUERYBYNUMBER:
+	qva->qva_source |= RPMQV_DBOFFSET; 
+	qva->qva_sourceCount++;
+	break;
+    }
+}
+
+struct poptOption rpmQVSourcePoptTable[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+		rpmQVSourceArgCallback, 0, NULL, NULL },
+	{ "file", 'f', 0, 0, 'f',
+		N_("query package owning file"), "FILE" },
+	{ "group", 'g', 0, 0, 'g',
+		N_("query packages in group"), "GROUP" },
+	{ "package", 'p', 0, 0, 'p',
+		N_("query a package file"), NULL },
+	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
+		POPT_QUERYBYNUMBER, NULL, NULL },
+	{ "specfile", '\0', 0, 0, POPT_SPECFILE,
+		N_("query a spec file"), NULL },
+	{ "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
+		N_("query the pacakges triggered by the package"), "PACKAGE" },
+	{ "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
+		N_("query the packages which require a capability"), "CAPABILITY" },
+	{ "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
+		N_("query the packages which provide a capability"), "CAPABILITY" },
+	{ 0, 0, 0, 0, 0,	NULL, NULL }
+};
+
+/* ========== Query specific popt args */
+
+static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
+			     const struct poptOption * opt, const char * arg, 
+			     QVA_t *qva)
+{
+    switch (opt->val) {
+      case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
+      case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
+      case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
+      case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST; break;
+      case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
+      case 'v': rpmIncreaseVerbosity();	 break;
+
+      case POPT_QUERYFORMAT:
+      {	char *qf = (char *)qva->qva_queryFormat;
+	if (qf) {
+	    int len = strlen(qf) + strlen(arg) + 1;
+	    qf = realloc(qf, len);
+	    strcat(qf, arg);
+	} else {
+	    qf = malloc(strlen(arg) + 1);
+	    strcpy(qf, arg);
+	}
+	qva->qva_queryFormat = qf;
+      }	break;
+    }
+}
+
+struct poptOption rpmQueryPoptTable[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+		queryArgCallback, 0, NULL, NULL },
+	{ "configfiles", 'c', 0, 0, 'c',
+		N_("list all configuration files"), NULL },
+	{ "docfiles", 'd', 0, 0, 'd',
+		N_("list all documentation files"), NULL },
+	{ "dump", '\0', 0, 0, POPT_DUMP,
+		N_("dump basic file information"), NULL },
+	{ "list", 'l', 0, 0, 'l',
+		N_("list files in package"), NULL },
+	{ "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
+		POPT_QUERYFORMAT, NULL, NULL },
+	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
+		N_("use the following query format"), "QUERYFORMAT" },
+	{ "specedit", '\0', POPT_ARG_STRING, &specedit, 0,
+		N_("substitute i18n sections from the following catalogue"),
+			"METACATALOGUE" },
+	{ "state", 's', 0, 0, 's',
+		N_("display the states of the listed files"), NULL },
+	{ "verbose", 'v', 0, 0, 'v',
+		N_("display a verbose file listing"), NULL },
+	{ 0, 0, 0, 0, 0,	NULL, NULL }
+};
+
+/* ======================================================================== */
