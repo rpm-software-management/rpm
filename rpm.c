@@ -712,6 +712,7 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_BUILD;
+	    rmsource = 1;
 	    break;
 
 	  case GETOPT_RECOMPILE:

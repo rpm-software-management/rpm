@@ -3,7 +3,6 @@
         - merged in large rewrite of build code, which includes the following
 	  changes:
 	    - all scripts can now take -p <prog>
-	    - all scripts can now take -p "<prog> <arg>..."
 	    - more strict about %package placement and use of main package 
 	      preamble
 	    - %attr(mode, user, group [, dirmode])
