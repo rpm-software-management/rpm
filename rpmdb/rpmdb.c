@@ -1046,7 +1046,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, /*@null@*/ const char * filespec,
 
 	baseNames = hfd(baseNames, bnt);
 	dirNames = hfd(dirNames, dnt);
-	headerFree(h);
+	h = headerFree(h);
     }
 
     rec = _free(rec);
@@ -1172,7 +1172,7 @@ static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 	} else 
 	    (*matches)->recs[i].hdrNum = 0;
 
-	headerFree(h);
+	h = headerFree(h);
     }
 
     if (gotMatches) {
@@ -1310,8 +1310,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
 	    xx = dbiUpdateRecord(dbi, mi->mi_dbc, mi->mi_prevoffset, mi->mi_h);
 	}
-	headerFree(mi->mi_h);
-	mi->mi_h = NULL;
+	mi->mi_h = headerFree(mi->mi_h);
     }
     if (dbi) {
 	if (dbi->dbi_rmw)
@@ -1472,8 +1471,7 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
     if (mi->mi_h) {
 	if (mi->mi_modified && mi->mi_prevoffset)
 	    (void)dbiUpdateRecord(dbi, mi->mi_dbc, mi->mi_prevoffset, mi->mi_h);
-	headerFree(mi->mi_h);
-	mi->mi_h = NULL;
+	mi->mi_h = headerFree(mi->mi_h);
     }
 
     /* Is this the end of the iteration? */
@@ -1892,7 +1890,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 
     unblockSignals(rpmdb, &signalMask);
 
-    headerFree(h);
+    h = headerFree(h);
 
     return 0;
 }
@@ -2628,8 +2626,7 @@ int rpmdbRebuild(const char * rootdir)
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
 		rc = rpmdbAdd(newdb, -1, (nh ? nh : h));
-		if (nh)
-		    headerFree(nh);
+		nh = headerFree(nh);
 	    }
 
 	    if (rc) {

@@ -84,6 +84,7 @@ struct transactionFileInfo_s {
 /*@dependent@*/ struct availablePackage * ap;
 /*@owned@*/ struct sharedFileInfo * replaced;
 /*@owned@*/ uint_32 * replacedSizes;
+
   /* for TR_REMOVED packages */
     unsigned int record;
 };

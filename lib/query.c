@@ -537,7 +537,7 @@ restart:
 	    /* Query a package file. */
 	    if (rpmrc == RPMRC_OK) {
 		retcode = showPackage(qva, rpmdb, h);
-		headerFree(h);
+		h = headerFree(h);
 		continue;
 	    }
 

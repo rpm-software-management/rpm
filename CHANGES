@@ -61,6 +61,7 @@
 	- add armv3l arch.
 	- fix: i18n strings need 1 on sucess return code (#41313).
 	- fix: skip %ghost files when building packages (#38218).
+	- headerFree() returns NULL, _free is C++ safe.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

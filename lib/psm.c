@@ -147,8 +147,7 @@ void loadFi(Header h, TFI_t fi)
 	    fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
 	fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
 				fi->dil, fi->fc * sizeof(*fi->dil));
-	headerFree(fi->h);
-	fi->h = NULL;
+	fi->h = headerFree(fi->h);
 	break;
     }
 
@@ -167,7 +166,9 @@ void loadFi(Header h, TFI_t fi)
     fi->dperms = 0755;
     fi->fperms = 0644;
 
+    /*@-nullstate@*/	/* FIX: fi->h is NULL for TR_REMOVED */
     return;
+    /*@=nullstate@*/
 }
 
 void freeFi(TFI_t fi)
@@ -209,9 +210,8 @@ void freeFi(TFI_t fi)
 	fi->dil = hfd(fi->dil, -1);
 	break;
     }
-    if (fi->h) {
-	headerFree(fi->h); fi->h = NULL;
-    }
+
+    fi->h = headerFree(fi->h);
 
     /*@-nullstate@*/
     return;
@@ -569,7 +569,6 @@ static rpmRC chkdir (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-/*@-compmempass@*/
 rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 			const char ** specFilePtr,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
@@ -616,8 +615,7 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     loadFi(h, fi);
     hge = fi->hge;
     hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    headerFree(h);	/* XXX reference held by transaction set */
-    h = NULL;
+    h = headerFree(h);	/* XXX reference held by transaction set */
 
     (void) rpmInstallLoadMacros(fi, fi->h);
 
@@ -627,7 +625,7 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 
     if (cookie) {
 	*cookie = NULL;
-	if (hge(h, RPMTAG_COOKIE, NULL, (void **) cookie, NULL))
+	if (hge(fi->h, RPMTAG_COOKIE, NULL, (void **) cookie, NULL))
 	    *cookie = xstrdup(*cookie);
     }
 
@@ -715,9 +713,11 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
 
     psm->goal = PSM_PKGINSTALL;
 
+    /*@-compmempass@*/	/* FIX: psm->fi->dnl should be owned. */
     rc = psmStage(psm, PSM_PROCESS);
 
     (void) psmStage(psm, PSM_FINI);
+    /*@=compmempass@*/
 
     if (rc) rc = RPMRC_FAIL;
 
@@ -730,8 +730,7 @@ exit:
     _specdir = _free(_specdir);
     _sourcedir = _free(_sourcedir);
 
-    if (h)
-	headerFree(h);
+    h = headerFree(h);
 
     if (fi) {
 	freeFi(fi);
@@ -742,7 +741,6 @@ exit:
 
     return rc;
 }
-/*@=compmempass@*/
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
@@ -1052,14 +1050,16 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
     int i;
     int skip;
 
-    if (!hge(triggeredH, RPMTAG_TRIGGERNAME, &tnt, 
-			(void **) &triggerNames, &numTriggers))
+    if (!(	hge(triggeredH, RPMTAG_TRIGGERNAME, &tnt, 
+			(void **) &triggerNames, &numTriggers) &&
+		hge(triggeredH, RPMTAG_TRIGGERFLAGS, &tft,
+			(void **) &triggerFlags, NULL) &&
+		hge(triggeredH, RPMTAG_TRIGGERVERSION, &tvt,
+			(void **) &triggerEVR, NULL))
+	)
 	return 0;
 
     (void) headerNVR(sourceH, &sourceName, NULL, NULL);
-
-    (void) hge(triggeredH, RPMTAG_TRIGGERFLAGS, &tft, (void **) &triggerFlags, NULL);
-    (void) hge(triggeredH, RPMTAG_TRIGGERVERSION, &tvt, (void **) &triggerEVR, NULL);
 
     for (i = 0; i < numTriggers; i++) {
 	int_32 tit, tst, tpt;
@@ -1084,12 +1084,14 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 		triggerEVR[i] + skip, triggerFlags[i]))
 	    continue;
 
-	(void) hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
-		       (void **) &triggerIndices, NULL);
-	(void) hge(triggeredH, RPMTAG_TRIGGERSCRIPTS, &tst,
-		       (void **) &triggerScripts, NULL);
-	(void) hge(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, &tpt,
-		       (void **) &triggerProgs, NULL);
+	if (!(	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
+		       (void **) &triggerIndices, NULL) &&
+		hge(triggeredH, RPMTAG_TRIGGERSCRIPTS, &tst,
+		       (void **) &triggerScripts, NULL) &&
+		hge(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, &tpt,
+		       (void **) &triggerProgs, NULL))
+	    )
+	    continue;
 
 	(void) headerNVR(triggeredH, &triggerPackageName, NULL, NULL);
 
@@ -1185,12 +1187,13 @@ static int runImmedTriggers(PSM_t psm)
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
 
-    if (!hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
-			(void **) &triggerNames, &numTriggers))
+    if (!(	hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
+			(void **) &triggerNames, &numTriggers) &&
+		hge(fi->h, RPMTAG_TRIGGERINDEX, &tit,
+			(void **) &triggerIndices, &numTriggerIndices))
+	)
 	return 0;
 
-    (void) hge(fi->h, RPMTAG_TRIGGERINDEX, &tit, (void **) &triggerIndices, 
-		   &numTriggerIndices);
     triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
     memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
 
@@ -1468,7 +1471,7 @@ assert(psm->mi == NULL);
 	    /* Write the signature section into the package. */
 	    {	Header sig = headerRegenSigHeader(fi->h);
 		rc = rpmWriteSignature(psm->fd, sig);
-		headerFree(sig);
+		sig = rpmFreeSignature(sig);
 		if (rc) break;
 	    }
 
@@ -1615,11 +1618,9 @@ assert(psm->mi == NULL);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = time(NULL);
 
-	    if (fi->fc > 0 && fi->fstates)
-		/*@-nullpass@*/		/* LCL: fi->fstates != NULL */
+	    if (fi->fstates != NULL && fi->fc > 0)
 		(void) headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
 				fi->fstates, fi->fc);
-		/*@=nullpass@*/
 
 	    (void) headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
@@ -1627,8 +1628,10 @@ assert(psm->mi == NULL);
 	    if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
 		uint_32 multiLib, * newMultiLib, * p;
 
-		if (hge(fi->h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib, NULL) &&
-		    hge(psm->oh, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
+		if (hge(fi->h, RPMTAG_MULTILIBS, NULL,
+				(void **) &newMultiLib, NULL) &&
+		    hge(psm->oh, RPMTAG_MULTILIBS, NULL,
+				(void **) &p, NULL))
 		{
 		    multiLib = *p;
 		    multiLib |= *newMultiLib;
@@ -1721,14 +1724,9 @@ assert(psm->mi == NULL);
 			(psm->pkgURL ? psm->pkgURL : "???"));
 	}
 
-	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE)) {
-	    headerFree(fi->h);
-	    fi->h = NULL;
-	}
-	if (psm->oh) {
-	    headerFree(psm->oh);
-	    psm->oh = NULL;
-	}
+	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE))
+	    fi->h = headerFree(fi->h);
+	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);

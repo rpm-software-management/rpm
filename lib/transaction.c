@@ -240,7 +240,7 @@ void rpmProblemSetFree(rpmProblemSet probs)
 
     for (i = 0; i < probs->numProblems; i++) {
 	rpmProblem p = probs->probs + i;
-	if (p->h)	headerFree(p->h);
+	p->h = headerFree(p->h);
 	p->pkgNEVR = _free(p->pkgNEVR);
 	p->altNEVR = _free(p->altNEVR);
 	p->str1 = _free(p->str1);
@@ -1414,11 +1414,11 @@ static /*@dependent@*/ struct availablePackage * tsGetAlp(void * this) {
 /**
  * Destroy transaction element iterator.
  * @param this		transaction element iterator
- * @retval		NULL always
+ * @return		NULL always
  */
 static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * this)
 {
-    return _free((void *)this);
+    return _free(this);
 }
 
 /**
@@ -1886,13 +1886,16 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * If unfiltered problems exist, free memory and return.
      */
     if ((ts->transFlags & RPMTRANS_FLAG_BUILD_PROBS) ||
-           (ts->probs->numProblems && (!okProbs || psTrim(okProbs, ts->probs)))) {
+           (ts->probs->numProblems && (!okProbs || psTrim(okProbs, ts->probs))))
+    {
 	*newProbs = ts->probs;
 
 	for (alp = ts->addedPackages.list, fi = ts->flList;
-	        (alp - ts->addedPackages.list) < ts->addedPackages.size;
-		alp++, fi++) {
-	    headerFree(hdrs[alp - ts->addedPackages.list]);
+		(alp - ts->addedPackages.list) < ts->addedPackages.size;
+		alp++, fi++)
+	{
+	    hdrs[alp - ts->addedPackages.list] =
+		headerFree(hdrs[alp - ts->addedPackages.list]);
 	}
 
 	ts->flList = freeFl(ts, ts->flList);
@@ -1946,8 +1949,7 @@ assert(alp == fi->ap);
 		    Header h;
 		    rpmRC rpmrc;
 
-		    headerFree(hdrs[i]);
-		    hdrs[i] = NULL;
+		    hdrs[i] = headerFree(hdrs[i]);
 		    rpmrc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
@@ -1956,7 +1958,7 @@ assert(alp == fi->ap);
 			ourrc++;
 		    } else {
 			hdrs[i] = relocateFileList(ts, fi, alp, h, NULL);
-			headerFree(h);
+			h = headerFree(h);
 		    }
 		    if (alp->fd) gotfd = 1;
 		}
@@ -1967,7 +1969,7 @@ assert(alp == fi->ap);
 
 		if (fi->h) {
 		    hsave = headerLink(fi->h);
-		    headerFree(fi->h);
+		    fi->h = headerFree(fi->h);
 		}
 		fi->h = headerLink(hdrs[i]);
 		if (alp->multiLib)
@@ -1978,18 +1980,17 @@ assert(alp == fi->ap);
 		    ourrc++;
 		    lastFailed = i;
 		}
-		headerFree(fi->h);
-		fi->h = NULL;
+		fi->h = headerFree(fi->h);
 		if (hsave) {
 		    fi->h = headerLink(hsave);
-		    headerFree(hsave);
+		    hsave = headerFree(hsave);
 		}
 	    } else {
 		ourrc++;
 		lastFailed = i;
 	    }
 
-	    headerFree(hdrs[i]);
+	    hdrs[i] = headerFree(hdrs[i]);
 
 	    if (gotfd) {
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,

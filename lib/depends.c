@@ -172,7 +172,7 @@ static void alFree(struct availableList * al)
 	p->requires = hfd(p->requires, -1);
 	p->requiresEVR = hfd(p->requiresEVR, -1);
 	p->baseNames = hfd(p->baseNames, -1);
-	if (p->h)		headerFree(p->h);
+	p->h = headerFree(p->h);
 
 	if (p->relocs) {
 	    for (r = p->relocs; (r->oldPath || r->newPath); r++) {
@@ -909,7 +909,7 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
     int i;
 
     for (i = 0; i < numConflicts; i++) {
-	headerFree(conflicts[i].byHeader);
+	conflicts[i].byHeader = headerFree(conflicts[i].byHeader);
 	conflicts[i].byName = _free(conflicts[i].byName);
 	conflicts[i].byVersion = _free(conflicts[i].byVersion);
 	conflicts[i].byRelease = _free(conflicts[i].byRelease);

@@ -24,5 +24,12 @@ distdir install:\
 \
 db3_install: all install_setip \\' > Makefile
 
+mv db.h db.h.orig
+cat db.h.orig | sed \
+	-e '/^struct __db;/i \
+/*@-incondefs@*/' \
+	-e '/^struct __key_range;/a \
+/*@=incondefs@*/' > db.h
+
 # Generate manifest for rpmdb.
 make -s listobjs > db3lobjs

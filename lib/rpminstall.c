@@ -403,7 +403,7 @@ restart:
 		}
 		mi = rpmdbFreeIterator(mi);
 		if (count == 0) {
-		    headerFree(h);
+		    h = headerFree(h);
 		    continue;
 		}
 		/* Package is newer than those currently installed. */
@@ -412,7 +412,7 @@ restart:
 	    rc = rpmtransAddPackage(ts, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
-	    headerFree(h);	/* XXX reference held by transaction set */
+	    h = headerFree(h);	/* XXX reference held by transaction set */
 	    if (defaultReloc)
 		defaultReloc->oldPath = _free(defaultReloc->oldPath);
 

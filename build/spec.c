@@ -153,8 +153,7 @@ Package freePackage(Package p)
     p->postUnFile = _free(p->postUnFile);
     p->verifyFile = _free(p->verifyFile);
 
-    headerFree(p->header);
-    p->header = NULL;
+    p->header = headerFree(p->header);
     p->fileList = freeStringBuf(p->fileList);
     p->fileFile = _free(p->fileFile);
     if (p->cpioList) {
@@ -490,10 +489,7 @@ Spec freeSpec(Spec spec)
 	rl = _free(rl);
     }
     
-    if (spec->sourceHeader != NULL) {
-	headerFree(spec->sourceHeader);
-	spec->sourceHeader = NULL;
-    }
+    spec->sourceHeader = headerFree(spec->sourceHeader);
 
     if (spec->sourceCpioList) {
 	TFI_t fi = spec->sourceCpioList;
@@ -502,8 +498,7 @@ Spec freeSpec(Spec spec)
 	fi = _free(fi);
     }
     
-    headerFree(spec->buildRestrictions);
-    spec->buildRestrictions = NULL;
+    spec->buildRestrictions = headerFree(spec->buildRestrictions);
 
     if (!spec->recursing) {
 	if (spec->BASpecs != NULL)

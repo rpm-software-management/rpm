@@ -1046,6 +1046,7 @@ powerpc*)	RPMCANONARCH=ppc ;;
 armv4l*)	RPMCANONARCH=armv4l ;;
 armv4b*)	RPMCANONARCH=armv4b ;;
 arm*)		RPMCANONARCH=arm ;;
+m68k*)		RPMCANONARCH=m68k ;;
 *)		RPMCANONARCH=unknown ;;
 esac
 case "${build_os_noversion}" in

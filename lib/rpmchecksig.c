@@ -159,7 +159,7 @@ int rpmReSign(rpmResignFlags add, char * passPhrase, const char ** argv)
 
 	/* Generate the new signatures */
 	if (add != RESIGN_ADD_SIGNATURE) {
-	    rpmFreeSignature(sig);
+	    sig = rpmFreeSignature(sig);
 	    sig = rpmNewSignature();
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
@@ -213,10 +213,8 @@ exit:
     if (fd)	(void) manageFile(&fd, NULL, 0, res);
     if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
 
-    if (sig) {
-	rpmFreeSignature(sig);
-	sig = NULL;
-    }
+    sig = rpmFreeSignature(sig);
+
     if (sigtarget) {
 	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);

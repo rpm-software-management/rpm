@@ -254,8 +254,9 @@ Header headerLink(Header h)
 /** \ingroup header
  * Dereference a header instance.
  * @param h		header
+ * @return		NULL always
  */
-void headerFree( /*@null@*/ /*@killref@*/ Header h);
+/*@null@*/ Header headerFree( /*@null@*/ /*@killref@*/ Header h);
 
 /** \ingroup header
  * Return header reference count.

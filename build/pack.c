@@ -284,10 +284,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     spec->packages = newPackage(spec);
 
     /* XXX the header just allocated will be allocated again */
-    if (spec->packages->header != NULL) {
-	headerFree(spec->packages->header);
-	spec->packages->header = NULL;
-    }
+    spec->packages->header = headerFree(spec->packages->header);
 
    /* Read the rpm lead and header */
     rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
@@ -550,7 +547,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 #endif
 
 	rc = headerWrite(fd, nh, HEADER_MAGIC_YES);
-	headerFree(nh);
+	nh = headerFree(nh);
 
 	if (rc) {
 	    rpmError(RPMERR_NOSPACE, _("Unable to write header to %s: %s\n"),
@@ -578,10 +575,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     rc = 0;
 
 exit:
-    if (sig) {
-	rpmFreeSignature(sig);
-	sig = NULL;
-    }
+    sig = rpmFreeSignature(sig);
     if (ifd) {
 	(void) Fclose(ifd);
 	ifd = NULL;

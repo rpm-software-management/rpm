@@ -160,11 +160,11 @@ static int mapFind(void * this, const char * fsmPath)
     int ix = -1;
 
     if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
-	const char ** p;
+	const char ** p = NULL;
 
-	/*@-nullpass@*/		/* LCL: fi->apath != NULL */
-	p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath), cpioStrCmp);
-	/*@=nullpass@*/
+	if (fi->apath != NULL)
+	    p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath),
+			cpioStrCmp);
 	if (p == NULL) {
 	    fprintf(stderr, "*** not mapped %s\n", fsmPath);
 	} else {
@@ -1098,10 +1098,10 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	    fsm->ldnalloc = dnlen + 100;
 	    fsm->ldn = xrealloc(fsm->ldn, fsm->ldnalloc);
 	}
-	/*@-nullpass@*/		/* FIX: fsm->ldn NULL. */
-	strcpy(fsm->ldn, fsm->path);
-	/*@=nullpass@*/
- 	fsm->ldnlen = dnlen;
+	if (fsm->ldn != NULL) {	/* XXX can't happen */
+	    strcpy(fsm->ldn, fsm->path);
+ 	    fsm->ldnlen = dnlen;
+	}
     }
     dnli = dnlFreeIterator(dnli);
     /*@=observertrans =dependenttrans@*/
@@ -1792,13 +1792,13 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_MKNOD:
 	/*@-unrecog@*/
 	rc = mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
+	/*@=unrecog@*/
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & ~07777),
 		(unsigned)st->st_rdev,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
-	/*@=unrecog@*/
 	break;
     case FSM_LSTAT:
 	rc = Lstat(fsm->path, ost);

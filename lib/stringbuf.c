@@ -26,10 +26,10 @@ struct StringBufRec {
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param this		memory to free
- * @retval		NULL always
+ * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this != NULL)	free((void *)this);
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * p) {
+    if (p != NULL)	free((void *)p);
     return NULL;
 }
 

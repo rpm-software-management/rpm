@@ -134,7 +134,7 @@ static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 			  ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 	if (*hdr == NULL) {
 	    if (sigs != NULL)
-		headerFree(*sigs);
+		*sigs = rpmFreeSignature(*sigs);
 	    return RPMRC_FAIL;
 	}
 
@@ -190,7 +190,7 @@ static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
     } 
 
     if (hdrPtr == NULL)
-	headerFree(*hdr);
+	*hdr = headerFree(*hdr);
     
     return RPMRC_OK;
 }
@@ -217,7 +217,7 @@ rpmRC rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
 
     if (hdrp && *hdrp && sig) {
 	headerMergeLegacySigs(*hdrp, sig);
-	headerFree(sig);
+	sig = rpmFreeSignature(sig);
     }
    
     if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
