@@ -73,11 +73,9 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
 	    arch = 1;		  /* old versions of RPM only supported Linux */
 	    addEntry(*hdr, RPMTAG_OS, INT8_TYPE, &arch, 1);
 	} else if (lead.major == 2 || lead.major == 3) {
-	    if (lead.minor) {
-		error(RPMERR_NEWPACKAGE, "only packages with minor numbers = 0"
-			" are supported by this version of RPM");
-		return 2;
-	    }
+	    /* minor number differences indicate backwards compatible
+	       changes */
+
 	    if (readSignature(fd, NULL, lead.signature_type)) {
 	       return 2;
 	    }
