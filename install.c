@@ -77,7 +77,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 	}
 	fd = getFtpURL(prefix, arg + 6);
 	if (fd < 0) {
-	    fprintf(stderr, "error: cannot ftp %s\n", arg);
+	    fprintf(stderr, "error: ftp of %s failed\n", arg);
 	    return;
 	}
     } else {
