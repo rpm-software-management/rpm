@@ -5,7 +5,8 @@ else
 man_MAGIC = magic.4
 endif
 fsect = @fsect@
-man_MANS = file.1 $(man_MAGIC) libmagic.3
+#man_MANS = file.1 $(man_MAGIC) libmagic.3
+noinst_MANS = file.1 $(man_MAGIC) libmagic.3
 
 EXTRA_DIST = file.man magic.man libmagic.man
 CLEANFILES = $(man_MANS)

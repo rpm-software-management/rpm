@@ -20,7 +20,10 @@ libmagic_la_SOURCES = magic.c apprentice.c softmagic.c ascmagic.c \
 	funcs.c apptype.c
 libmagic_la_LDFLAGS = -version-info 1:0:0
 
-#bin_PROGRAMS = file
+pkglib_PROGRAMS = rpmfile
+rpmfile: file
+	-cp $< $@
+
 noinst_PROGRAMS = file
 file_SOURCES = file.c
 file_LDFLAGS = -all-static
@@ -28,7 +31,7 @@ file_LDADD = libmagic.la
 
 listobjs:
 	@echo $(libmagic_la_SOURCES:.c=.lo) > $@
-                                                                                
+
 .PHONY: lint
 lint:
 	$(LINT)  $(DEFS) $(INCLUDES) $(file_SOURCES) $(libmagic_la_SOURCES) $(include_HEADERS) $(noinst_HEADERS)
