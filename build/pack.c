@@ -591,6 +591,7 @@ int packageBinaries(Spec s)
 {
     char name[1024];
     char filename[1024];
+    char *sourcerpm[1024];
     char *icon;
     int iconFD;
     struct stat statbuf;
@@ -615,6 +616,8 @@ int packageBinaries(Spec s)
 	error(RPMERR_BADSPEC, "No release field");
 	return RPMERR_BADSPEC;
     }
+
+    sprintf(sourcerpm, "%s-%s-%s.src.rpm", s->name, version, release);
 
     /* Look through for each package */
     pr = s->packages;
@@ -679,6 +682,7 @@ int packageBinaries(Spec s)
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
 	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
 	addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
+	addEntry(outHeader, RPMTAG_SOURCERPM, STRING_TYPE, sourcerpm, 1);
 	if (pr->icon) {
 	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), pr->icon);
 	    stat(filename, &statbuf);
