@@ -77,6 +77,27 @@ fi
 
 topdir=`pwd`
 
+if test $prefix != "/usr" -a $prefix != "/usr/local"; then
+	echo $ac_n "checking for $prefix/lib... $ac_c"
+	if test -d $prefix/lib ; then
+	       LIBS="$LIBS -L$prefix/lib"
+	       LIBPATH="$LIBPATH -L$prefix/lib"
+	       
+	       echo "yes"
+	else
+	       echo "no"
+	fi
+
+	echo $ac_n "checking for $prefix/include... $ac_c"
+	if test -d $prefix/include ; then
+	       INCPATH="$INCPATH -I$prefix/include"
+	       
+	       echo "yes"
+	else
+	       echo "no"
+	fi
+fi
+
 AC_MSG_CHECKING(checking for /usr/local/lib...)
 if test -d /usr/local/lib ; then
 	LIBS="$LIBS -L/usr/local/lib"
