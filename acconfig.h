@@ -111,6 +111,9 @@
 /* Full path to macros configuration file (usually /usr/lib/rpm/macros) */
 #undef MACROFILES
 
+/* statfs in <sys/statvfs.h> (for solaris 2.6+ systems) */
+#undef STATFS_IN_SYS_STATVFS
+
 /* statfs in <sys/vfs.h> (for linux systems) */
 #undef STATFS_IN_SYS_VFS
 

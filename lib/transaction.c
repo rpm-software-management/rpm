@@ -14,14 +14,18 @@
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
-#if STATFS_IN_SYS_VFS
-# include <sys/vfs.h>
+#if STATFS_IN_SYS_STATVFS
+# include <sys/statvfs.h>
 #else
-# if STATFS_IN_SYS_MOUNT
-#  include <sys/mount.h>
+# if STATFS_IN_SYS_VFS
+#  include <sys/vfs.h>
 # else
-#  if STATFS_IN_SYS_STATFS
-#   include <sys/statfs.h>
+#  if STATFS_IN_SYS_MOUNT
+#   include <sys/mount.h>
+#  else
+#   if STATFS_IN_SYS_STATFS
+#    include <sys/statfs.h>
+#   endif
 #  endif
 # endif
 #endif
@@ -176,21 +180,26 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     if (!(ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
 		!rpmGetFilesystemList(&filesystems, &filesystemCount)) {
-	struct statfs sfb;
 	struct stat sb;
 
 	di = alloca(sizeof(*di) * (filesystemCount + 1));
 
 	for (i = 0; (i < filesystemCount) && di; i++) {
-#ifdef STAT_STATFS4
+#if STATFS_IN_SYS_STATVFS
+	    struct statvfs sfb;
+	    if (statvfs(filesystems[i], &sfb))
+#else
+	    struct statfs sfb;
+#  if STAT_STATFS4
 /* this platform has the 4-argument version of the statfs call.  The last two
  * should be the size of struct statfs and 0, respectively.  The 0 is the
  * filesystem type, and is always 0 when statfs is called on a mounted
  * filesystem, as we're doing.
  */
 	    if (statfs(filesystems[i], &sfb, sizeof(sfb), 0))
-#else
+#  else
 	    if (statfs(filesystems[i], &sfb))
+#  endif
 #endif
 	    {
 		di = NULL;

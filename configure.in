@@ -342,18 +342,34 @@ else
 fi
 AC_SUBST(BUILD_RPMCONVERT)
 
+AC_CHECK_HEADERS(glob.h)
+
 dnl statfs portability fiddles.
 dnl
 dnl We should really emulate/steal sections of the statfs and struct statfs
 dnl checks from GNU fileutils.
 dnl
-AC_CHECK_HEADERS(glob.h)
 AC_MSG_CHECKING(for struct statfs)
 dnl
 dnl this is easier than nesting AC_TRY_COMPILEs...
 dnl
 found_struct_statfs=no
 
+if test X$found_struct_statfs = Xno ; then
+dnl Solaris 2.6+ wants to use statvfs
+AC_TRY_COMPILE([
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <sys/statvfs.h> ],
+	[struct statvfs sfs;],
+	[AC_MSG_RESULT(in sys/statvfs.h)
+	AC_DEFINE(STATFS_IN_SYS_STATVFS)
+	found_struct_statfs=yes],
+)
+fi
+
+if test X$found_struct_statfs = Xno ; then
 dnl first try including sys/vfs.h
 AC_TRY_COMPILE([
 #ifdef HAVE_SYS_TYPES_H
@@ -365,6 +381,7 @@ AC_TRY_COMPILE([
 	AC_DEFINE(STATFS_IN_SYS_VFS)
 	found_struct_statfs=yes],
 )
+fi
 
 if test X$found_struct_statfs = Xno ; then
 dnl ...next try including sys/mount.h
@@ -409,14 +426,20 @@ AC_TRY_COMPILE([
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef STATFS_IN_SYS_VFS
-#include <sys/vfs.h>
-#elif STATFS_IN_SYS_MOUNT
-#include <sys/mouht.h>
-#elif STATFS_IN_SYS_STATFS
-#include <sys/statfs.h>
+#if STATFS_IN_SYS_STATVFS
+# include <sys/statvfs.h>
+  typedef struct statvfs STATFS_t;
+#else
+  typedef struct statfs STATFS_t;
+# if STATFS_IN_SYS_VFS
+#  include <sys/vfs.h>
+# elif STATFS_IN_SYS_MOUNT
+#  include <sys/mouht.h>
+# elif STATFS_IN_SYS_STATFS
+#  include <sys/statfs.h>
+# endif
 #endif ],
-	[struct statfs sfs;
+	[STATFS_t sfs;
 	sfs.f_bavail = 0;],
 	[AC_MSG_RESULT(yes)
 	AC_DEFINE(STATFS_HAS_F_BAVAIL)],
@@ -452,7 +475,6 @@ main() {
 	[AC_MSG_RESULT(no)]
 )
 fi
-
 
 AC_C_INLINE
 
