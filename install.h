@@ -13,7 +13,8 @@
 
 int doInstall(char * rootdir, char ** argv, char * prefix, int installFlags, 
 	      int interfaceFlags);
-int doSourceInstall(char * prefix, char * arg, char ** specFile);
+int doSourceInstall(char * prefix, char * arg, char ** specFile,
+		    char ** cookie);
 int doUninstall(char * rootdir, char ** argv, int uninstallFlags, 
 		 int interfaceFlags);
 void printDepFlags(FILE * f, char * version, int flags);
