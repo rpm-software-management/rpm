@@ -1167,7 +1167,7 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
     return 0;
 }
 
-int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx)
+int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
 {
     int ret;
 
@@ -1192,7 +1192,7 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx)
 	return NE_SOCK_ERROR;
     }
     
-    SSL_set_app_data(ssl, ctx);
+    SSL_set_app_data(ssl, userdata);
     SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
     SSL_set_fd(ssl, sock->fd);
     sock->ops = &iofns_ssl;
@@ -1211,6 +1211,7 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx)
     /* DH and RSA params are set in ne_ssl_context_create */
     gnutls_init(&sock->ssl, GNUTLS_CLIENT);
     gnutls_set_default_priority(sock->ssl);
+    gnutls_session_set_ptr(sock->ssl, userdata);
     gnutls_credentials_set(sock->ssl, GNUTLS_CRD_CERTIFICATE, ctx->cred);
 
     gnutls_transport_set_ptr(sock->ssl, (gnutls_transport_ptr) sock->fd);

@@ -177,8 +177,8 @@ int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t count)
 ssize_t ne_sock_readline(ne_socket *sock, char *buffer, size_t len)
 	/*@modifies sock, buffer @*/;
 
-/* Read exactly 'len' bytes into buffer; returns 0 on success, SOCK_*
- * on error. */
+/* Read exactly 'len' bytes into buffer; returns 0 on success,
+ * NE_SOCK_* on error. */
 ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t len)
 	/*@modifies sock, buffer @*/;
 
@@ -215,8 +215,11 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
 	/*@modifies sock, ctx @*/;
 
 /* Negotiate an SSL connection on socket as an SSL client, using given
- * SSL context. */
-int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx)
+ * SSL context.  The 'userdata' parameter is associated with the
+ * underlying SSL library's socket structure for use in callbacks.
+ * Returns zero on success, or non-zero on error. */
+int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx,
+                        void *userdata)
 	/*@modifies sock, ctx @*/;
 
 END_NEON_DECLS

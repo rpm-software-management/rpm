@@ -142,6 +142,8 @@ int ne_version_match(int major, int minor)
 int ne_has_support(int feature)
 {
     switch (feature) {
+#if defined(NE_HAVE_SSL) || defined(NE_HAVE_ZLIB) || defined(NE_HAVE_IPV6) \
+    || defined(NE_HAVE_IDNA) || defined(NE_HAVE_SOCKS) || defined(NE_HAVE_LFS)
 #ifdef NE_HAVE_SSL
     case NE_FEATURE_SSL:
 #endif
@@ -161,6 +163,7 @@ int ne_has_support(int feature)
     case NE_FEATURE_LFS:
 #endif
         return 1;
+#endif /* NE_HAVE_* */
     default:
         return 0;
     }

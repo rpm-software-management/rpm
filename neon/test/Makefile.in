@@ -50,7 +50,8 @@ COMPILE = $(LIBTOOL) --mode=compile $(CC) $(CPPFLAGS) $(CFLAGS)
 all: $(TESTS)
 
 clean:
-	rm -f $(TESTS) $(HELPERS) *.*o common/*.*o libtest.a *.log
+	rm -f $(TESTS) $(HELPERS) *.*o common/*.*o libtest.*a *.log
+	rm -f *.gc* *.da *.bb* common/*.bb* common/*.gc* common/*.da
 	rm -rf ca .libs
 	rm -f ca-stamp client.key *.csr ssigned.pem wrongcn.pem \
 	   server.cert client.cert client.p12 *.cert sparse.bin

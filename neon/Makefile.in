@@ -45,6 +45,7 @@ transform = @program_transform_name@
 LIBTOOL = @LIBTOOL@
 
 XMLTO = xmlto
+GCOV = gcov
 
 # The headers to distribute - making up the public interface of neon
 DIST_HEADERS = ne_request.h ne_session.h ne_utils.h ne_uri.h ne_socket.h  \
@@ -60,9 +61,16 @@ check: subdirs
 # Useful for doing coverage analysis; use e.g.:
 #   make TESTS=string-tests MODULE=ne_string cover
 cover: subdirs
-	rm -f src/$(MODULE).da
-	cd test && $(MAKE) check
-	cd src; gcov -cb $(MODULE)
+	@rm -f src/$(MODULE).*da test/common/*.*da test/*.*da
+	@cd test && $(MAKE) check
+	@cd src && $(GCOV) -cb $(MODULE)
+
+# as per 'cover' target; prints list of functions without 100% coverage 
+uncover: subdirs
+	@rm -f src/*.*da test/common/*.*da test/*.*da
+	@cd test && $(MAKE) check
+	@cd src && $(GCOV) -cb $(MODULE)
+	@grep ^function src/$(MODULE).gcov | grep -v 'executed 100' | sort -nr -k 9,9
 
 subdirs:
 	cd src && $(MAKE)

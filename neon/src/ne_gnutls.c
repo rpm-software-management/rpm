@@ -467,7 +467,7 @@ int ne__negotiate_ssl(ne_request *req)
 
     NE_DEBUG(NE_DBG_SSL, "Negotiating SSL connection.\n");
 
-    if (ne_sock_connect_ssl(sess->socket, ctx)) {
+    if (ne_sock_connect_ssl(sess->socket, ctx, sess)) {
 	ne_set_error(sess, _("SSL negotiation failed: %s"),
 		     ne_sock_error(sess->socket));
 	return NE_ERROR;

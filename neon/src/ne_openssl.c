@@ -453,8 +453,7 @@ static ne_ssl_client_cert *dup_client_cert(const ne_ssl_client_cert *cc)
 static int provide_client_cert(SSL *ssl, X509 **cert, EVP_PKEY **pkey)
 	/*@modifies *cert, *pkey @*/
 {
-    ne_ssl_context *ctx = SSL_get_app_data(ssl);
-    ne_session *sess = SSL_CTX_get_app_data(ctx->ctx);
+    ne_session *const sess = SSL_get_app_data(ssl);
 
     if (!sess->client_cert && sess->ssl_provide_fn) {
 	ne_ssl_dname **dnames = NULL;
@@ -571,11 +570,7 @@ int ne__negotiate_ssl(ne_request *req)
 
     NE_DEBUG(NE_DBG_SSL, "Doing SSL negotiation.\n");
 
-    /* Rather a hack: link the ssl_context back to the ne_session, so
-     * provide_client_cert can get to the ne_session. */
-    SSL_CTX_set_app_data(ctx->ctx, sess);
-
-    if (ne_sock_connect_ssl(sess->socket, ctx)) {
+    if (ne_sock_connect_ssl(sess->socket, ctx, sess)) {
 	if (ctx->sess) {
 	    /* remove cached session. */
 	    SSL_SESSION_free(ctx->sess);
@@ -595,6 +590,7 @@ int ne__negotiate_ssl(ne_request *req)
         if (cert) {
             chain = sk_X509_new_null();
             sk_X509_push(chain, cert);
+	    freechain = 1;
         }
     }
 

@@ -867,8 +867,10 @@ gnutls)
 
    ne_gnutls_ver=`$GNUTLS_CONFIG --version`
    case $ne_gnutls_ver in
+   1.0.?|1.0.1?|1.0.20|1.0.21) 
+      AC_MSG_ERROR([GNU TLS version $ne_gnutls_ver is too old -- 1.0.22 or later required]) ;;
    1.*) ;;
-   *) AC_MSG_ERROR([GNU TLS major version "$ne_gnutls_ver" not supported]) ;;
+   *) AC_MSG_ERROR([GNU TLS version $ne_gnutls_ver is not supported]) ;;
    esac
 
    CPPFLAGS="$CPPFLAGS `$GNUTLS_CONFIG --cflags`"

@@ -169,7 +169,7 @@ static int begin(ne_socket **sock, server_fn fn, void *ud)
     pair.userdata = ud;
     CALL(spawn_server(7777, wrap_serve, &pair));
     CALL(do_connect(sock, localhost, 7777));
-    ONV(ne_sock_connect_ssl(*sock, client_ctx),
+    ONV(ne_sock_connect_ssl(*sock, client_ctx, NULL),
 	("SSL negotation failed: %s", ne_sock_error(*sock)));
     return OK;
 }
@@ -229,6 +229,8 @@ static int addr_make_v4(void)
     ne_iaddr_print(ia, pr, sizeof pr);
     ONV(strcmp(pr, "127.0.0.1"), ("address was %s not 127.0.0.1", pr));
 
+    ONN("bogus ne_iaddr_typeof return", ne_iaddr_typeof(ia) != ne_iaddr_ipv4);
+
     ne_iaddr_free(ia);
     return OK;
 }
@@ -256,6 +258,8 @@ static int addr_make_v6(void)
 	ONV(strcmp(pr, as[n].rep), 
 	    ("address %d was '%s' not '%s'", n, pr, as[n].rep));
 	
+        ONN("bogus ne_iaddr_typeof return", ne_iaddr_typeof(ia) != ne_iaddr_ipv6);
+
 	ne_iaddr_free(ia);
     }
 
@@ -292,9 +296,9 @@ static int addr_compare(void)
     ONN("comparison of IPv4 and IPv6 addresses was zero", ret == 0);
 
     ne_iaddr_free(ia1);
-    ia1 = ne_iaddr_make(ne_iaddr_ipv4, "feed::1");
+    ia1 = ne_iaddr_make(ne_iaddr_ipv6, "feed::1");
     ret = ne_iaddr_cmp(ia1, ia2);
-    ONN("comparison of equal IPv6 addresses was zero", ret == 0);
+    ONN("comparison of equal IPv6 addresses was zero", ret != 0);
 
 #endif    
 
@@ -335,7 +339,7 @@ static int addr_connect(void)
 static int expect_close(ne_socket *sock)
 {
     ssize_t n = ne_sock_read(sock, buffer, 1);
-    ONV(n > 0, ("read got %" NE_FMT_SSIZE_T "bytes not closure", n));
+    ONV(n > 0, ("read got %" NE_FMT_SSIZE_T " bytes not closure", n));
     ONV(n < 0 && n != NE_SOCK_CLOSED,
 	("read got error not closure: `%s'", ne_sock_error(sock)));
     return OK;
@@ -409,15 +413,29 @@ static int read_expect(ne_socket *sock, const char *str, size_t len)
 {
     ssize_t ret = ne_sock_read(sock, buffer, len);
     ONV((ssize_t)len != ret,
-	("peek got %" NE_FMT_SSIZE_T " bytes not %" NE_FMT_SIZE_T, ret, len));
+	("read got %" NE_FMT_SSIZE_T " bytes not %" NE_FMT_SIZE_T, ret, len));
     ONV(memcmp(str, buffer, len),
 	("read mismatch: `%.*s' not `%.*s'", 
 	 (int)len, buffer, (int)len, str));    
     return OK;
 }
 
+/* do a sock_read() on sock for 'len' bytes, and expect 'str'. */
+static int fullread_expect(ne_socket *sock, const char *str, size_t len)
+{
+    ssize_t ret = ne_sock_fullread(sock, buffer, len);
+    ONV(ret, ("fullread failed (%" NE_FMT_SSIZE_T "): %s", 
+              ret, ne_sock_error(sock)));
+    ONV(memcmp(str, buffer, len),
+	("fullread mismatch: `%.*s' not `%.*s'", 
+	 (int)len, buffer, (int)len, str));    
+    return OK;
+}
+
+
 /* Declare a struct string */
 #define DECL(var,str) struct string var = { str, 0 }; var.len = strlen(str)
+#define DECL_LONG(var,ch,n) struct string var; var.data = memset(ne_malloc(n), ch, n); var.len = n; 
 
 /* Test a simple read. */
 static int single_read(void)
@@ -464,6 +482,7 @@ static int small_reads(void)
 
 /* peek or read, expecting to get given string. */
 #define READ(str) CALL(read_expect(sock, str, strlen(str)))
+#define FULLREAD(str) CALL(fullread_expect(sock, str, strlen(str)))
 #define PEEK(str) CALL(peek_expect(sock, str, strlen(str)))
 
 /* Stress out the read buffer handling a little. */
@@ -575,9 +594,30 @@ static int line_toolong(void)
     ret = ne_sock_readline(sock, buffer, 5);
     ONV(ret != NE_SOCK_ERROR, 
 	("readline should fail on long line: %" NE_FMT_SSIZE_T, ret));
-    
+    reap_server();
+    ne_sock_close(sock);
+    return OK;
+}
+
+#define OVERLEN (9000)
+
+static int line_overflow(void)
+{
+    ne_socket *sock;
+    ssize_t ret;
+    DECL_LONG(line, 'A', OVERLEN);
+
+    CALL(begin(&sock, serve_sstring, &line));
+
+    PEEK("A"); /* fill the read buffer */
+    ret = ne_sock_readline(sock, buffer, OVERLEN);
+    ONV(ret != NE_SOCK_ERROR,
+        ("readline should fail on overlong line: %" NE_FMT_SSIZE_T, ret));
+
+    ne_free(line.data);
     return finish(sock, 0);
 }
+
 
 /* readline()s mingled with other operations: buffering tests. */
 static int line_mingle(void)
@@ -608,6 +648,26 @@ static int line_chunked(void)
     
     return finish(sock, 1);
 }
+
+static int line_long_chunked(void)
+{
+    ne_socket *sock;
+    ssize_t ret;
+    DECL_LONG(line, 'Z', OVERLEN);
+
+    CALL(begin(&sock, serve_sstring_slowly, &line));
+    
+    FULLREAD("ZZZZZZZZ"); /* fill the buffer */
+    ret = ne_sock_readline(sock, buffer, sizeof buffer);
+    ONV(ret != NE_SOCK_ERROR,
+        ("readline gave %" NE_FMT_SSIZE_T " not failure", ret));
+
+    reap_server();
+    ne_sock_close(sock);
+    ne_free(line.data);
+    return OK;
+}
+
 
 static time_t to_start, to_finish;
 
@@ -841,6 +901,49 @@ static int read_reset(void)
 }    
 #endif
 
+static int expect_block_timeout(ne_socket *sock, int timeout, const char *msg)
+{
+    int ret;
+    NE_DEBUG(NE_DBG_SOCKET, "blocking for %d\n", timeout);
+    ret = ne_sock_block(sock, timeout);
+    ONV(ret != NE_SOCK_TIMEOUT, (
+            "ne_sock_block got %d not timeout: %s", ret, msg));
+    return OK;
+}
+
+static int blocking(void)
+{
+    ne_socket *sock;
+    int ret;
+    
+    CALL(begin(&sock, echo_server, NULL));
+    CALL(expect_block_timeout(sock, 1, "with non-zero timeout"));
+         
+    WRITEL("Hello, world.\n");
+    
+    /* poll for data */
+    do {
+        ret = ne_sock_block(sock, 1);
+    } while (ret == NE_SOCK_TIMEOUT);
+
+    ONV(ret != 0, ("ne_sock_block never got data: %d", ret));
+
+    PEEK("Hello,");
+    ret = ne_sock_block(sock, 1);
+    ONV(ret != 0, ("ne_sock_block failed after peek: %d", ret));
+
+    LINE("Hello, world.\n");
+
+    return finish(sock, 0);
+}
+
+static int block_timeout(void)
+{
+    TO_BEGIN;
+    TO_OP(ne_sock_block(sock, 1));
+    TO_FINISH;
+}
+
 ne_test tests[] = {
     T(multi_init),
     T_LEAKY(resolve),
@@ -864,11 +967,14 @@ ne_test tests[] = {
     T(line_closure),
     T(line_empty),
     T(line_toolong),
+    T(line_overflow),
     T(line_mingle),
     T(line_chunked),
+    T(line_long_chunked),
     T(small_writes),
     T(large_writes),
     T(echo_lines),
+    T(blocking),
 #ifdef SOCKET_SSL
     T(ssl_closure),
     T(ssl_truncate),
@@ -880,5 +986,6 @@ ne_test tests[] = {
     T(peek_timeout),
     T(readline_timeout),
     T(fullread_timeout),
+    T(block_timeout),
     T(NULL)
 };

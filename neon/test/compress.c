@@ -150,6 +150,7 @@ static int do_fetch(const char *realfn, const char *gzipfn,
 
     NE_DEBUG(NE_DBG_HTTP, "session error: %s\n", ne_get_error(sess));
 
+    ne_decompress_destroy(dc);
     ne_request_destroy(req);
     ne_session_destroy(sess);
     ne_buffer_destroy(buf);

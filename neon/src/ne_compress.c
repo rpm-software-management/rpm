@@ -57,20 +57,9 @@ struct ne_decompress_s {
     void *userdata;
 
     /* buffer for gzip header bytes. */
-    union {
-	unsigned char buf[10];
-	struct header {
-	    unsigned char id1;
-	    unsigned char id2;
-	    unsigned char cmeth; /* compression method. */
-	    unsigned char flags;
-	    unsigned int mtime; /* breaks when sizeof int != 4 */
-	    unsigned char xflags;
-	    unsigned char os;
-	} hdr;
-    } in;
-    size_t incount;    /* bytes in in.buf */
-    
+    unsigned char header[10];
+    size_t hdrcount;    /* bytes in header */
+
     unsigned char footer[8];
     size_t footcount; /* bytes in footer. */
 
@@ -91,12 +80,23 @@ struct ne_decompress_s {
     } state;
 };
 
+/* Convert 'buf' to unsigned int; 'buf' must be 'unsigned char *' */
+#define BUF2UINT(buf) (((buf)[3]<<24) + ((buf)[2]<<16) + ((buf)[1]<<8) + (buf)[0])
+
 #define ID1 0x1f
 #define ID2 0x8b
 
 #define HDR_DONE 0
 #define HDR_EXTENDED 1
 #define HDR_ERROR 2
+
+#define HDR_ID1(ctx) ((ctx)->header[0])
+#define HDR_ID2(ctx) ((ctx)->header[1])
+#define HDR_CMETH(ctx) ((ctx)->header[2])
+#define HDR_FLAGS(ctx) ((ctx)->header[3])
+#define HDR_MTIME(ctx) (BUF2UINT(&(ctx)->header[4]))
+#define HDR_XFLAGS(ctx) ((ctx)->header[8])
+#define HDR_OS(ctx) ((ctx)->header[9])
 
 /* parse_header parses the gzip header, sets the next state and returns
  *   HDR_DONE: all done, bytes following are raw DEFLATE data.
@@ -107,27 +107,25 @@ struct ne_decompress_s {
 static int parse_header(ne_decompress *ctx)
 	/*@modifies ctx @*/
 {
-    struct header *h = &ctx->in.hdr;
-
     NE_DEBUG(NE_DBG_HTTP, "ID1: %d  ID2: %d, cmeth %d, flags %d\n", 
-	    h->id1, h->id2, h->cmeth, h->flags);
+             HDR_ID1(ctx), HDR_ID2(ctx), HDR_CMETH(ctx), HDR_FLAGS(ctx));
     
-    if (h->id1 != ID1 || h->id2 != ID2 || h->cmeth != 8) {
+    if (HDR_ID1(ctx) != ID1 || HDR_ID2(ctx) != ID2 || HDR_CMETH(ctx) != 8) {
 	ne_set_error(ctx->session, "Compressed stream invalid");
 	return HDR_ERROR;
     }
 
     NE_DEBUG(NE_DBG_HTTP, "mtime: %d, xflags: %d, os: %d\n",
-	     h->mtime, h->xflags, h->os);
+	     HDR_MTIME(ctx), HDR_XFLAGS(ctx), HDR_OS(ctx));
     
     /* TODO: we can only handle one NUL-terminated extensions field
      * currently.  Really, we should count the number of bits set, and
      * skip as many fields as bits set (bailing if any reserved bits
      * are set. */
-    if (h->flags == 8) {
+    if (HDR_FLAGS(ctx) == 8) {
 	ctx->state = NE_Z_POST_HEADER;
 	return HDR_EXTENDED;
-    } else if (h->flags != 0) {
+    } else if (HDR_FLAGS(ctx) != 0) {
 	ne_set_error(ctx->session, "Compressed stream not supported");
 	return HDR_ERROR;
     }
@@ -137,9 +135,6 @@ static int parse_header(ne_decompress *ctx)
     ctx->state = NE_Z_INFLATING;
     return HDR_DONE;
 }
-
-/* Convert 'buf' to unsigned int; 'buf' must be 'unsigned char *' */
-#define BUF2UINT(buf) ((buf[3]<<24) + (buf[2]<<16) + (buf[1]<<8) + buf[0])
 
 /* Process extra 'len' bytes of 'buf' which were received after the
  * DEFLATE data. */
@@ -316,15 +311,15 @@ static int gz_reader(void *ud, const char *buf, size_t len)
 
     case NE_Z_IN_HEADER:
 	/* copy as many bytes as possible into the buffer. */
-	if (len + ctx->incount > 10) {
-	    count = 10 - ctx->incount;
+	if (len + ctx->hdrcount > 10) {
+	    count = 10 - ctx->hdrcount;
 	} else {
 	    count = len;
 	}
-	memcpy(ctx->in.buf + ctx->incount, buf, count);
-	ctx->incount += count;
+	memcpy(ctx->header + ctx->hdrcount, buf, count);
+	ctx->hdrcount += count;
 	/* have we got the full header yet? */
-	if (ctx->incount != 10) {
+	if (ctx->hdrcount != 10) {
 	    return 0;
 	}
 
@@ -435,9 +430,8 @@ ne_decompress *ne_decompress_reader(ne_request *req, ne_accept_response acpt,
     return (ne_decompress *)req;
 }
 
-int ne_decompress_destroy(ne_decompress *dc)
+void ne_decompress_destroy(ne_decompress *dc)
 {
-    return 0;
 }
 
 #endif /* NE_HAVE_ZLIB */
