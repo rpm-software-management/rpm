@@ -1,0 +1,23 @@
+### These are variables meant to be exported
+
+PROGS = rpmlead rpmheader rpmarchive rpmsignature rpmchecksig
+
+ifeq (.depend,$(wildcard .depend))
+TARGET=everything
+else
+TARGET=depend everything
+endif
+
+all: $(TARGET)
+
+everything: $(PROGS)
+
+clean:
+	rm -f *.a *.o core *~ $(PROGS)
+
+depend:
+	$(CPP) $(CFLAGS) -M *.c > .depend
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
