@@ -13,7 +13,6 @@
 #include "system.h"
 
 #include "md5.h"
-#include "messages.h"
 
 static int domd5(char * fn, unsigned char * digest, int asAscii,
 		 int brokenEndian) {

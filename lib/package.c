@@ -9,7 +9,6 @@
 #include "oldheader.h"
 #include "rpmlead.h"
 #include "signature.h"
-#include "messages.h"
 
 /* 0 = success */
 /* !0 = error */

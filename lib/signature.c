@@ -21,7 +21,6 @@
 #include "rpmlead.h"
 #include "signature.h"
 #include "tread.h"
-#include "messages.h"
 
 typedef int (*md5func)(char * fn, unsigned char * digest);
 

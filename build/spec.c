@@ -317,10 +317,10 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
 	sprintf(body, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(&spec->macros, buf, NULL, body, -1);
+	addMacro(spec->macros, buf, NULL, body, -1);
 	sprintf(buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(&spec->macros, buf, NULL, p->fullSource, -1);
+	addMacro(spec->macros, buf, NULL, p->fullSource, -1);
     }
     
     return 0;
@@ -375,7 +375,9 @@ Spec newSpec(void)
     spec->inBuildArchitectures = 0;
     spec->buildArchitectureSpecs = NULL;
 
-    initMacros(&spec->macros, MACROFILE);
+  { extern struct MacroContext globalMacroContext;
+    spec->macros = &globalMacroContext;
+  }
     
     spec->autoReq = 1;
     spec->autoProv = 1;
@@ -437,7 +439,7 @@ void freeSpec(Spec spec)
     FREE(spec->passPhrase);
     FREE(spec->cookie);
 
-    freeMacros(&spec->macros);
+    freeMacros(spec->macros);
     
     freeSources(spec);
     freePackages(spec);

@@ -28,12 +28,18 @@ typedef struct MacroContext {
 extern "C" {
 #endif
 
+#define COMPRESSED_NOT   0
+#define COMPRESSED_OTHER 1
+#define COMPRESSED_BZIP2 2
+
+int isCompressed(char *file, int *compressed);
+
 void	initMacros	__P((MacroContext *mc, const char *macrofile));
 void	freeMacros	__P((MacroContext *mc));
 
 void	addMacro	__P((MacroContext *mc, const char *n, const char *o, const char *b, int depth));
 void	delMacro	__P((MacroContext *mc, const char *n));
-int	expandMacros	__P((Spec spec, MacroContext *mc, char *sbuf, size_t sbuflen));
+int	expandMacros	__P((void *spec, MacroContext *mc, char *sbuf, size_t sbuflen));
 
 const char *getMacroBody __P((MacroContext *mc, const char *name));
 

@@ -1,17 +1,18 @@
 #include "system.h"
 
-#include "rpmlib.h"
-
-#include "intl.h"
-#include "messages.h"
-#include "misc.h"
-#include "intl.h"
-
 #if HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>
 #else
 #define __power_pc() 0
 #endif
+
+#include "rpmlib.h"
+#include "rpmmacro.h"
+
+#include "misc.h"
+#include "intl.h"
+
+struct MacroContext globalMacroContext;
 
 struct machCacheEntry {
     char * name;
@@ -169,9 +170,6 @@ static void machCacheEntryVisit(struct machCache * cache,
 static void machFindEquivs(struct machCache * cache, 
 			     struct machEquivTable * table,
 			     char * key);
-
-static char * ProcessInclude(char * original);
-
 
 static int optionCompare(const void * a, const void * b) {
     return strcasecmp(((struct rpmOption *) a)->name,
@@ -462,6 +460,8 @@ static void setPathDefault(int var, char * s) {
 static void setDefaults(void) {
     char * arch, * os;
 
+    initMacros(&globalMacroContext, MACROFILE);
+
     rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
     rpmSetVar(RPMVAR_SIGTYPE, "none");
     rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
@@ -487,7 +487,7 @@ int rpmReadRC(char * file) {
     }
 
     fd = open(LIBRPMRC_FILENAME, O_RDONLY);
-    if (fd >= 0) {
+    if (fd < 0) {
 	rc = doReadRC(fd, LIBRPMRC_FILENAME);
 	close(fd);
 	if (rc) return rc;
@@ -547,8 +547,7 @@ static int doReadRC(int fd, char * filename) {
     struct rpmOption searchOption, * option;
     int i;
     int gotit;
-    int fdinclude;
-    char * filetoinclude;
+    int rc;
 
     fstat(fd, &sb);
     next = buf = alloca(sb.st_size + 2);
@@ -604,21 +603,30 @@ static int doReadRC(int fd, char * filename) {
 		return 1;
 	    }
 
-            if (option->var == RPMVAR_INCLUDE) {
+	    switch (option->var) {
+	    case RPMVAR_INCLUDE:
+	      {	char buf[BUFSIZ];
+		int fdinc;
 
-               filetoinclude = ProcessInclude(start);
+		strcpy(buf, start);
+		if (expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
+		    rpmError(RPMERR_RPMRC, _("expansion failed at %s:d \"%s\""),
+			filename, linenum, start);
+		    return 1;
+		}
 
-               fdinclude = open(filetoinclude, O_RDONLY);
-               if (fdinclude >= 0) {
-                 doReadRC(fdinclude,filetoinclude);
-                 close(fd);
-               } else {
-                 rpmError(RPMERR_RPMRC, 
-                   _("included file %s at %s:%d cannot be opened"),
-		   filetoinclude, filename, linenum);
-                 return 1;
-               }
-            }
+		if ((fdinc = open(buf, O_RDONLY)) < 0) {
+		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d"),
+			buf, filename, linenum);
+			return 1;
+		}
+		rc = doReadRC(fdinc, buf);
+		close(fdinc);
+		if (rc) return rc;
+	      }	break;
+	    default:
+		break;
+	    }
 
 	    if (option->archSpecific) {
 		chptr = start;
@@ -1031,71 +1039,3 @@ int rpmShowRC(FILE *f)
     
     return 0;
 }
-
-static char * ProcessInclude(char * original) {
-
-#define MODE_COPYING 1
-#define MODE_MACRO 0
-
-  int mode = MODE_COPYING;
-  char final[2048];
-  int startmacro = 0;
-  int i, finalpos;
-  char *valtosub,vartosub[1024];
-  char * result;
-  struct rpmOption searchOption, * option;
-
-  finalpos = 0;
-  for (i=0;i<strlen(original); i++) {
-    if (mode == MODE_MACRO) {
-      if ((original[i] == '.')
-         || (original[i] == ' ')
-         || (original[i] == '/')
-         || (original[i] == '%')) {
-         mode = MODE_COPYING;
-
-         /* substitute the variable here */
-         vartosub[i-startmacro-1]= '\0';
-         final[finalpos]='\0';
-
-         searchOption.name = vartosub;
-         option = bsearch(&searchOption, optionTable, optionTableSize,
-			 sizeof(struct rpmOption), optionCompare);
-
-         if (!option) {
-           rpmError(RPMERR_RPMRC, _("The variable \%%%s does not exist\n"), 
-              vartosub);
-           exit(1);
-         }
-
-         valtosub = rpmGetVar(option->var);
-         if (!valtosub) {
-           rpmError(RPMERR_RPMRC, _("The variable \%%%s is not defined"), 
-              vartosub);
-           exit(1);
-         }
-         strcat(final,valtosub);
-         finalpos = finalpos + strlen(valtosub);
-      } else {
-        vartosub[i-startmacro-1]=original[i];
-      }
-    }
-    if (mode == MODE_COPYING) {
-      if (original[i]!='%') {
-        final[finalpos] = original[i];
-        finalpos++;
-      } else {
-        mode = MODE_MACRO;
-        startmacro=i;
-      }
-    }
-  }
-
-  final[finalpos]='\0';
-
-  result = malloc(strlen(final))+1;
-  strcpy(result,final);
-  return result;
-}
-
-

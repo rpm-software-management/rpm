@@ -5,7 +5,6 @@
 #include "depends.h"
 #include "intl.h"
 #include "misc.h"
-#include "messages.h"
 
 struct availablePackage {
     Header h;

@@ -78,7 +78,7 @@ struct SpecStruct {
     int sourceCpioCount;
     struct cpioFileMapping *sourceCpioList;
 
-    struct MacroContext macros;
+    struct MacroContext *macros;
 
     int autoReq;
     int autoProv;
@@ -126,12 +126,6 @@ typedef struct PackageStruct *Package;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#ifdef	DYING
-char *getSource(Spec spec, int num, int flag);
-char *getFullSource(Spec spec, int num, int flag);
-void freeSources(Spec spec);
 #endif
 
 Spec newSpec(void);

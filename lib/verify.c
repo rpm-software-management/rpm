@@ -4,7 +4,6 @@
 
 #include "md5.h"
 #include "misc.h"
-#include "messages.h"
 #include "install.h"
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))

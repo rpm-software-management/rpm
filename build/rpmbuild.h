@@ -6,7 +6,6 @@
 
 /* and it shouldn't need these :-( */
 #include "stringbuf.h"
-#include "messages.h"
 #include "misc.h"
 
 /* but this will be needed */
@@ -67,8 +66,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-int isCompressed(char *file, int *compressed);
 
 /* from build/names.h */
 

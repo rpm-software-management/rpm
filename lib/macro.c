@@ -4,16 +4,13 @@
 
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
+#define	FREE(_x)	{ if (_x) free(_x); ((void *)(_x)) = NULL; }
 
 #ifdef DEBUG_MACROS
-typedef	void *	Spec;
 #define rpmError fprintf
 #define RPMERR_BADSPEC stderr
-#define	FREE(_x)	{ if (_x) free(_x); ((void *)(_x)) = NULL; }
 #else
-
-#include "rpmbuild.h"
-
+#include "rpmlib.h"
 #endif
 
 #include "rpmmacro.h"
@@ -25,7 +22,7 @@ typedef struct MacroBuf {
 	int depth;		/* current expansion depth */
 	int macro_trace;	/* pre-print macro to expand? */
 	int expand_trace;	/* post-print macro expansion? */
-	Spec spec;
+	void *spec;		/* (future) %file expansion info */
 	MacroContext *mc;
 } MacroBuf;
 
@@ -1029,7 +1026,7 @@ getMacroBody(MacroContext *mc, const char *name)
 
 /* =============================================================== */
 int
-expandMacros(Spec spec, MacroContext *mc, char *s, size_t slen)
+expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 {
 	MacroBuf macrobuf, *mb = &macrobuf;
 	char *tbuf;
@@ -1048,7 +1045,7 @@ expandMacros(Spec spec, MacroContext *mc, char *s, size_t slen)
 	mb->macro_trace = print_macro_trace;
 	mb->expand_trace = print_expand_trace;
 
-	mb->spec = spec;
+	mb->spec = spec;	/* (future) %file expansion info */
 	mb->mc = mc;
 
 	rc = expandMacro(mb);
@@ -1156,6 +1153,39 @@ freeMacros(MacroContext *mc)
 		}
 	}
 	FREE(mc->macroTable);
+}
+
+/* =============================================================== */
+
+int isCompressed(char *file, int *compressed)
+{
+    int fd;
+    unsigned char magic[4];
+
+    *compressed = COMPRESSED_NOT;
+
+    if (!(fd = open(file, O_RDONLY))) {
+	return 1;
+    }
+    if (! read(fd, magic, 4)) {
+	return 1;
+    }
+    close(fd);
+
+    if (((magic[0] == 0037) && (magic[1] == 0213)) ||  /* gzip */
+	((magic[0] == 0037) && (magic[1] == 0236)) ||  /* old gzip */
+	((magic[0] == 0037) && (magic[1] == 0036)) ||  /* pack */
+	((magic[0] == 0037) && (magic[1] == 0240)) ||  /* SCO lzh */
+	((magic[0] == 0037) && (magic[1] == 0235)) ||  /* compress */
+	((magic[0] == 0120) && (magic[1] == 0113) &&
+	 (magic[2] == 0003) && (magic[3] == 0004))     /* pkzip */
+	) {
+	*compressed = COMPRESSED_OTHER;
+    } else if ((magic[0] == 'B') && (magic[1] == 'Z')) {
+	*compressed = COMPRESSED_BZIP2;
+    }
+
+    return 0;
 }
 
 /* =============================================================== */

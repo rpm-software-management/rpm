@@ -365,6 +365,7 @@ void rpmSetVerbosity(int level);
 int rpmGetVerbosity(void);
 int rpmIsVerbose(void);
 int rpmIsDebug(void);
+void rpmMessage(int level, char * format, ...);
 
 /** rpmlead.c **/
 

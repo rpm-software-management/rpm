@@ -7,7 +7,6 @@
 #include "cpio.h"
 #include "install.h"
 #include "md5.h"
-#include "messages.h"
 #include "misc.h"
 #include "rpmdb.h"
 

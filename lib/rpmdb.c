@@ -6,12 +6,10 @@
 
 #include "rpmlib.h"
 
-#include "dbindex.h"
 #include "falloc.h"
 #include "intl.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "messages.h"
 
 /* XXX the signal handling in here is not thread safe */
 

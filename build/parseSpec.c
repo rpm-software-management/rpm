@@ -11,11 +11,11 @@ static void setStandardMacros(Spec spec, char *arch, char *os)
     char buf[BUFSIZ];
     int x;
 
-    addMacro(&spec->macros, "sourcedir", NULL, rpmGetVar(RPMVAR_SOURCEDIR), -1);
-    addMacro(&spec->macros, "builddir", NULL, rpmGetVar(RPMVAR_BUILDDIR), -1);
-    addMacro(&spec->macros, "optflags", NULL, rpmGetVar(RPMVAR_OPTFLAGS), -1);
-    addMacro(&spec->macros, "buildarch", NULL, arch, -1);
-    addMacro(&spec->macros, "buildos", NULL, os, -1);
+    addMacro(spec->macros, "sourcedir", NULL, rpmGetVar(RPMVAR_SOURCEDIR), -1);
+    addMacro(spec->macros, "builddir", NULL, rpmGetVar(RPMVAR_BUILDDIR), -1);
+    addMacro(spec->macros, "optflags", NULL, rpmGetVar(RPMVAR_OPTFLAGS), -1);
+    addMacro(spec->macros, "buildarch", NULL, arch, -1);
+    addMacro(spec->macros, "buildos", NULL, os, -1);
     
     x = 0;
     while (arch[x]) {
@@ -23,14 +23,14 @@ static void setStandardMacros(Spec spec, char *arch, char *os)
 	x++;
     }
     buf[x] = '\0';
-    addMacro(&spec->macros, "buildarch_lc", NULL, buf, -1);
+    addMacro(spec->macros, "buildarch_lc", NULL, buf, -1);
     x = 0;
     while (os[x]) {
 	buf[x] = tolower(os[x]);
 	x++;
     }
     buf[x] = '\0';
-    addMacro(&spec->macros, "buildos_lc", NULL, buf, -1);
+    addMacro(spec->macros, "buildos_lc", NULL, buf, -1);
 }
 
 static struct PartRec {
@@ -178,7 +178,7 @@ int readLine(Spec spec, int strip)
     }
 
     if (spec->readStack->reading) {
-	if (expandMacros(spec, &spec->macros, spec->line, sizeof(spec->line))) {
+	if (expandMacros(spec, spec->macros, spec->line, sizeof(spec->line))) {
 	    rpmError(RPMERR_BADSPEC, "line %d: %s", spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
