@@ -51,10 +51,13 @@ static int ftpCheckResponse(int sock, char ** str) {
     fd_set emptySet, readSet;
     char * chptr, * start;
     struct timeval timeout;
-    int bytesRead, rc;
+    int bytesRead, rc = 0;
     int doesContinue = 1;
+    char errorCode[4];
+ 
+    errorCode[0] = '\0';
     
-    while (doesContinue) {
+    do {
 	FD_ZERO(&emptySet);
 	FD_ZERO(&readSet);
 	FD_SET(sock, &readSet);
@@ -67,52 +70,64 @@ static int ftpCheckResponse(int sock, char ** str) {
 	    if (rc==0) 
 		return FTPERR_BAD_SERVER_RESPONSE;
 	    else
-		return FTPERR_UNKNOWN;
-	}
+		rc = FTPERR_UNKNOWN;
+	} else
+	    rc = 0;
 
-	/* We got a response - make sure none of the response codes are in the
-	   400's or 500's. That would indicate a problem */
-
-	bytesRead = read(sock, buf + bufLength, sizeof(buf) - bufLength);
+	bytesRead = read(sock, buf + bufLength, sizeof(buf) - bufLength - 1);
 
 	bufLength += bytesRead;
 
-	buf[bufLength] = '\0';
+	buf[bufLength + 1] = '\0';
+
+	/* divide the response into lines, checking each one to see if 
+	   we are finished or need to continue */
 
 	start = chptr = buf;
-	if (start[3] == '-') 
-	    doesContinue = 1;
-	else {
-	    doesContinue = 0;
-	    if (str) *str = start + 4;
-	}
 
-	if (*start == '4' || *start == '5') {
-	    return FTPERR_BAD_SERVER_RESPONSE;
-	}
-	while (chptr < (bufLength + buf)) {
+	do {
+	    while (*chptr != '\n' && *chptr) chptr++;
+
 	    if (*chptr == '\n') {
-		start = chptr + 1;
-		if ((start - buf) < bufLength) {
-		    if (start[3] == '-') 
-			doesContinue = 1;
-		    else
-			doesContinue = 0;
-		    if (*start == '4' || *start == '5') {
-		        return FTPERR_BAD_SERVER_RESPONSE;
-		    }
-		}
-	    }
-	    chptr++;
-	}
+		*chptr = '\0';
+		if (*(chptr - 1) == '\r') *(chptr - 1) = '\0';
+		if (str) *str = start;
 
-	if (*(chptr - 1) != '\n') {
-	    memcpy(buf, start, chptr - start);
-	    bufLength = chptr - start;
+		if (errorCode[0]) {
+		    if (!strncmp(start, errorCode, 3) && start[3] == ' ')
+			doesContinue = 0;
+		} else {
+		    strncpy(errorCode, start, 3);
+		    errorCode[3] = '\0';
+		    if (start[3] != '-') {
+			doesContinue = 0;
+		    } 
+		}
+
+		start = chptr + 1;
+		chptr++;
+	    } else {
+		chptr++;
+	    }
+	} while (*chptr);
+
+	if (doesContinue && chptr > start) {
+	    memcpy(buf, start, chptr - start - 1);
+	    bufLength = chptr - start - 1;
 	} else {
 	    bufLength = 0;
 	}
+    } while (doesContinue && !rc);
+
+    if (*errorCode == '4' || *errorCode == '5') {
+	if (!strncmp(errorCode, "550", 3)) {
+	    return FTPERR_FILE_NOT_FOUND;
+	}
+
+	return FTPERR_BAD_SERVER_RESPONSE;
     }
+
+    if (rc) return rc;
 
     return 0;
 }
@@ -179,7 +194,8 @@ static int getHostAddress(const char * host, struct in_addr * address) {
     return 0;
 }
 
-int ftpOpen(char * host, char * name, char * password, char * proxy) {
+int ftpOpen(char * host, char * name, char * password, char * proxy,
+	    int port) {
     static int sock;
     /*static char * lastHost = NULL;*/
     struct in_addr serverAddress;
@@ -187,6 +203,8 @@ int ftpOpen(char * host, char * name, char * password, char * proxy) {
     struct passwd * pw;
     char * buf;
     int rc;
+
+    if (port < 0) port = IPPORT_FTP;
 
     if (!name)
 	name = "anonymous";
@@ -213,7 +231,7 @@ int ftpOpen(char * host, char * name, char * password, char * proxy) {
     }
 
     destPort.sin_family = AF_INET;
-    destPort.sin_port = htons(IPPORT_FTP);
+    destPort.sin_port = htons(port);
     destPort.sin_addr = serverAddress;
 
     if (connect(sock, (struct sockaddr *) &destPort, sizeof(destPort))) {
@@ -352,9 +370,9 @@ int ftpGetFileDesc(int sock, char * remotename) {
         return FTPERR_FAILED_DATA_CONNECT;
     }
 
-    if (ftpCheckResponse(sock, NULL)) {
+    if ((rc = ftpCheckResponse(sock, NULL))) {
 	close(dataSocket);
-	return FTPERR_BAD_SERVER_RESPONSE;
+	return rc;
     }
 
     return dataSocket;
@@ -414,6 +432,9 @@ const char *ftpStrerror(int errorNumber) {
 
     case FTPERR_PASSIVE_ERROR:
       return("Error setting remote server to passive mode");
+
+    case FTPERR_FILE_NOT_FOUND:
+      return("File not found on server");
 
     case FTPERR_UNKNOWN:
     default:
