@@ -1,8 +1,7 @@
 %define	with_python_subpackage	1
 %define	with_bzip2		1
 %define	with_apidocs		1
-%define strip_binaries		0
-%define	__spec_install_post	:
+%define strip_binaries		1
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -14,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -141,7 +140,7 @@ E_O_F
 %endif
 
 %if %{with_apidocs}
-gzip -9n apidocs/man/* || :
+gzip -9n apidocs/man/man*/* || :
 %endif
 
 %clean
@@ -310,8 +309,16 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Sat Dec 16 2000 Jeff Johnson <jbj@redhat.com>
+* Wed Dec 20 2000 Jeff Johnson <jbj@redhat.com>
+- whiteout mozilla loop for 7.1.
+
+* Tue Dec 19 2000 Jeff Johnson <jbj@redhat.com>
 - gendiff: generate ChangeLog patches more intelligently (#22356).
+- identify install scriptlet failures with the name of the scriptlet.
+- handle install chroot's identically throughout the install process.
+- add rpmlib(HeaderLoadSortsTags) for tracking header regions "just in case".
+- create _tmppath on the fly if not present.
+- remove /etc/rpm/macros.db1 configuration file if db3 rebuilt.
 
 * Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
 - bump popt version.

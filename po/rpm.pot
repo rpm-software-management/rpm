@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-12-19 18:05-0500\n"
+"POT-Creation-Date: 2000-12-20 13:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2347,26 +2347,26 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1532
+#: lib/depends.c:1522
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1636
+#: lib/depends.c:1626
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1686
+#: lib/depends.c:1676
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1789
+#: lib/depends.c:1779
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1820
+#: lib/depends.c:1810
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2728,7 +2728,7 @@ msgstr ""
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:336 lib/misc.c:341 lib/misc.c:347
+#: lib/misc.c:339 lib/misc.c:344 lib/misc.c:350
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""

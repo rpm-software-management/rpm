@@ -234,11 +234,14 @@ static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 
     if (path == NULL)
 	return -1;
-    for (de = d = strcpy(alloca(strlen(path)+2), path); de && *de; de++) {
+    d = alloca(strlen(path)+2);
+    de = stpcpy(d, path);
+    de[1] = '\0';
+    for (de = d; *de; de++) {
 	struct stat st;
 	char savec;
 
-	while (*de != '/') de++;
+	while (*de && *de != '/') de++;
 	savec = de[1];
 	de[1] = '\0';
 

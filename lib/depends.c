@@ -1394,7 +1394,7 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
 
 /*
  * XXX Hack to remove known Red Hat dependency loops, will be removed
- * Real Soon Now.
+ * as soon as rpm's legacy permits.
  */
 #define	DEPENDENCY_WHITEOUT
 
@@ -1407,6 +1407,8 @@ static struct badDeps_s {
     { "modutils", "vixie-cron" },
     { "ypbind", "yp-tools" },
     { "ghostscript-fonts", "ghostscript" },
+    /* 7.1 only */
+    { "mozilla-spm", "mozilla" },
     /* 7.0 only */
     { "pango-gtkbeta-devel", "pango-gtkbeta" },
     { "XFree86", "Mesa" },
@@ -1421,14 +1423,6 @@ static struct badDeps_s {
     { "pilot-link-devel", "pilot-link" },
     /* 5.2 */
     { "pam", "pamconfig" },
-#if 0
-/* ================= */
-    { "usermode", "util-linux" },
-    { "chkfontpath", "SysVinit" },
-    { "vixie-cron", "sysklogd" },
-    { "XFree86", "XFree86-xfs" },
-    { "Xconfigurator", "kudzu" },
-#endif
     { NULL, NULL }
 };
     
@@ -1437,12 +1431,8 @@ static int ignoreDep(struct availablePackage * p, struct availablePackage * q)
     struct badDeps_s *bdp;
 
     for (bdp = badDeps; bdp->pname != NULL; bdp++) {
-	if (!strcmp(p->name, bdp->pname) && !strcmp(q->name, bdp->qname)) {
-#if 0
-fprintf(stderr, "*** avoiding %s Requires: %s\n", p->name, q->name);
-#endif
+	if (!strcmp(p->name, bdp->pname) && !strcmp(q->name, bdp->qname))
 	    return 1;
-	}
     }
     return 0;
 }

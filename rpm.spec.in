@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Dec 20 2000 Jeff Johnson <jbj@redhat.com>
+- whiteout mozilla loop for 7.1.
+
 * Tue Dec 19 2000 Jeff Johnson <jbj@redhat.com>
 - gendiff: generate ChangeLog patches more intelligently (#22356).
 - identify install scriptlet failures with the name of the scriptlet.

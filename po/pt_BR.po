@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-12-19 09:06-0500\n"
+msgstr "POT-Creation-Date: 2000-12-20 13:55-0500\n"
 
 # , c-format
 #: build.c:26
@@ -86,11 +86,12 @@ msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
 
 #: rpm.c:200 rpmqv.c:284
-msgid "Copyright (C) 1998 - Red Hat Software"
+msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr ""
 
 #: rpm.c:201 rpmqv.c:285
-msgid "This may be freely redistributed under the terms of the GNU GPL"
+#, fuzzy
+msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr ""
 "Este Software pode ser livremente redistribuido sob os termos da Licensa "
 "Pública GNU (GPL)"
@@ -2623,26 +2624,26 @@ msgstr "não foi passado pacote para instalação"
 msgid "package %s conflicts: %s\n"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/depends.c:1532
+#: lib/depends.c:1522
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1636
+#: lib/depends.c:1626
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1686
+#: lib/depends.c:1676
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1789
+#: lib/depends.c:1779
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1820
+#: lib/depends.c:1810
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3015,7 +3016,7 @@ msgstr ""
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:336 lib/misc.c:341 lib/misc.c:347
+#: lib/misc.c:339 lib/misc.c:344 lib/misc.c:350
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
@@ -3506,7 +3507,7 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:264
+#: lib/rpmdb.c:267
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3516,18 +3517,18 @@ msgid ""
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:279
+#: lib/rpmdb.c:283
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmdb.c:299
+#: lib/rpmdb.c:303
 #, fuzzy, c-format
 msgid "cannot open %s index"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:314
+#: lib/rpmdb.c:318
 #, c-format
 msgid ""
 "\n"
@@ -3537,7 +3538,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:327
+#: lib/rpmdb.c:332
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
@@ -3547,7 +3548,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:342
+#: lib/rpmdb.c:348
 msgid ""
 "\n"
 "--> The rpm database is in db%d format, not the suggested db%d format.\n"
@@ -3559,131 +3560,136 @@ msgid ""
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:410
+#: lib/rpmdb.c:417
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:535
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s"
 msgstr "Não consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmdb.c:537
+#: lib/rpmdb.c:544
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:772 lib/rpmdb.c:2351
+#: lib/rpmdb.c:779 lib/rpmdb.c:2368
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:871
+#: lib/rpmdb.c:878
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1083
+#: lib/rpmdb.c:1090
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/rpmdb.c:1142 lib/rpmdb.c:1686
+#: lib/rpmdb.c:1149 lib/rpmdb.c:1693
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/rpmdb.c:1739
+#: lib/rpmdb.c:1746
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1750
+#: lib/rpmdb.c:1757
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:1759
+#: lib/rpmdb.c:1766
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:1901
+#: lib/rpmdb.c:1908
 #, c-format
 msgid "error(%d) allocating new package instance"
 msgstr ""
 
-#: lib/rpmdb.c:1964
+#: lib/rpmdb.c:1971
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1980
+#: lib/rpmdb.c:1987
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:1989
+#: lib/rpmdb.c:1996
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:2376
+#: lib/rpmdb.c:2342
+#, c-format
+msgid "removing %s after successful db3 rebuild.\n"
+msgstr ""
+
+#: lib/rpmdb.c:2393
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: lib/rpmdb.c:2380
+#: lib/rpmdb.c:2397
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:2386
+#: lib/rpmdb.c:2403
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmdb.c:2388
+#: lib/rpmdb.c:2405
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:2395
+#: lib/rpmdb.c:2412
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: lib/rpmdb.c:2406
+#: lib/rpmdb.c:2423
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2446
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2466
+#: lib/rpmdb.c:2483
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2484
+#: lib/rpmdb.c:2501
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2492
+#: lib/rpmdb.c:2509
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2494
+#: lib/rpmdb.c:2511
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
@@ -3696,13 +3702,13 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmdb.c:2504
+#: lib/rpmdb.c:2521
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "RPM versão %s\n"
 
 # , c-format
-#: lib/rpmdb.c:2506
+#: lib/rpmdb.c:2523
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Não consegui abrir: %s\n"
