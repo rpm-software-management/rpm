@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.3
 Version: %{version}
-Release: 0.33
+Release: 1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -91,6 +91,9 @@ fi
 /usr/lib/librpm.so.*
 /usr/lib/librpmbuild.so.*
 /usr/lib/rpm
+%ifos linux
+/usr/lib/python1.5/site-packages/rpmmodule.so
+%endif
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS
@@ -112,6 +115,3 @@ fi
 /usr/lib/librpmbuild.a
 /usr/lib/librpmbuild.la
 /usr/lib/librpmbuild.so
-%ifos linux
-/usr/lib/python1.5/site-packages/rpmmodule.so
-%endif
