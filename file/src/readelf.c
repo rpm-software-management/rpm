@@ -136,6 +136,9 @@ getu64(const fmagic fm, uint64_t value)
 			    getu32(fm, ph32.p_align) : 4) \
 			 : (off_t) (ph64.p_align ?	\
 			    getu64(fm, ph64.p_align) : 4)))
+#define ph_filesz	(fm->cls == ELFCLASS32            \
+			? getu32(fm, ph32.p_filesz)  \
+			: getu64(fm, ph64.p_filesz))
 #define nh_size		(fm->cls == ELFCLASS32		\
 			 ? sizeof nh32			\
 			 : sizeof nh64)
@@ -244,7 +247,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 			error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 			/*@notreached@*/
 		}
-		bufsize = read(fm->fd, nbuf, BUFSIZ);
+		bufsize = read(fm->fd, nbuf, ((ph_filesz < BUFSIZ) ? ph_filesz : BUFSIZ));
 		if (bufsize == -1) {
 			error(EXIT_FAILURE, 0, ": " "read failed (%s).\n", strerror(errno));
 			/*@notreached@*/
@@ -290,7 +293,7 @@ donote(const fmagic fm, unsigned char *nbuf, size_t offset, size_t size,
 	noff = offset;
 	doff = ELF_ALIGN(offset + nh_namesz);
 
-	if (offset + nh_namesz >= size) {
+	if (offset + nh_namesz > size) {
 		/*
 		 * We're past the end of the buffer.
 		 */
@@ -298,7 +301,7 @@ donote(const fmagic fm, unsigned char *nbuf, size_t offset, size_t size,
 	}
 
 	offset = ELF_ALIGN(doff + nh_descsz);
-	if (offset + nh_descsz >= size)
+	if (doff + nh_descsz > size)
 		return offset;
 
 	if (nh_namesz == 4 && strcmp((char *)&nbuf[noff], "GNU") == 0 &&
@@ -601,7 +604,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 				/*@notreached@*/
 			}
-			bufsize = read(fm->fd, nbuf, sizeof(nbuf));
+			bufsize = read(fm->fd, nbuf, ((ph_filesz < sizeof(nbuf)) ? ph_filesz : sizeof(nbuf)));
 			if (bufsize == -1) {
 				error(EXIT_FAILURE, 0, ": " "read failed (%s).\n",
 				    strerror(errno));
@@ -614,7 +617,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				offset = donote(fm, nbuf, offset,
 				    (size_t)bufsize, ph_align);
 			}
-			if ((lseek(fm->fd, savedoffset + offset, SEEK_SET)) == (off_t)-1) {
+			if ((lseek(fm->fd, savedoffset, SEEK_SET)) == (off_t)-1) {
 			    error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 			    /*@notreached@*/
 			}

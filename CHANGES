@@ -3,6 +3,7 @@
 	- cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
 	- rpmGlob() is now locale independent (wiget@PLD).
 	- conditional build support/unification (jajcus,malekith,qboosh,wiget@PLD).
+	- fix: readelf.c breakage on some non x86 arches (qboosh@PLD).
 	= add type to tag array.
 
 4.3.1 -> 4.3.2:
