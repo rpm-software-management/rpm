@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.2
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -193,8 +193,8 @@ gzip -9n apidocs/man/man*/* || :
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__mandir}/{fr,ko}
 %if %{with_python_subpackage}
-  rm -f %{__libdir}/python%{with_python_version}/site-packages/*.{a,la}
-  rm -f %{__libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
+  rm -f .%{__libdir}/python%{with_python_version}/site-packages/*.{a,la}
+  rm -f .%{__libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
 %endif
 }
 
@@ -293,6 +293,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub
 %rpmattr	%{__prefix}/lib/rpm/convertrpmrc.sh
+%rpmattr	%{__prefix}/lib/rpm/freshen.sh
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
 %rpmattr	%{__prefix}/lib/rpm/mkinstalldirs
 %rpmattr	%{__prefix}/lib/rpm/rpm.*
@@ -492,12 +493,21 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Mon Nov  8 2004 Jeff Johnson <jbj@jbj.org> rpm-4.4-0.2
+* Thu Nov 11 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.3
+- neon used by default for http/https transport.
+- add --delsign to purge packages of digital signatures.
+- make peace with libtool-1.5.10 and automake-1.9.3.
+- python: add python 2.4 support.
+- selinux: use rpm_execcon, not execv, to run scriptlets (#136848).
+- fix: segfault on --verifydb (#138589).
+- upgrade to db-4.3.21 final internal.
+
+* Mon Nov  8 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.2
 - bump popt version to 1.10.
 - attempt dependency tree breadth, take 1.
 - use external libneon for http/https transport.
 
-* Wed Oct 27 2004 Jeff Johnson <jbj@jbj.org> rpm-4.4-0.1
+* Wed Oct 27 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.1
 - pentium3/pentium4 arch support (pluto@PLD).
 - cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
 - rpmGlob() is now locale independent (wiget@PLD).
