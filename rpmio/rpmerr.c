@@ -1,8 +1,14 @@
+#include <stdarg.h>
 #include <stdio.h>
 
 #include "rpmerr.h"
 
-void error(int code, ...)
+void error(int code, char *format, ...)
 {
-    fprintf(stderr, "error, error, error %d\n", code);
+    va_list args;
+
+    va_start(args, format);
+
+    fprintf(stderr, "ERROR(%d): ", code);
+    vfprintf(stdout, format, args);
 }
