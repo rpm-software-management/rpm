@@ -167,8 +167,13 @@ static int offsetCmp(const void * avp, const void * bvp) /*@*/
     /*@=castexpose@*/
     int rc = (ap->info.offset - bp->info.offset);
 
-    if (rc == 0)
-	rc = (ap->info.tag - bp->info.tag);
+    if (rc == 0) {
+	/* Within a region, entries sort by address. Added drips sort by tag. */
+	if (ap->info.offset < 0)
+	    rc = (((char *)ap->data) - ((char *)bp->data));
+	else
+	    rc = (ap->info.tag - bp->info.tag);
+    }
     return rc;
 }
 
@@ -409,10 +414,6 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
      */
     if (tl+REGION_TAG_COUNT == dl)
 	tl += REGION_TAG_COUNT;
-#if 0
-    if (tl > dl)
-	dl = tl;
-#endif
 
     return dl;
 }
@@ -826,7 +827,7 @@ Header headerLoad(void * uh)
 	if (hdrchkTags(entry->info.count))
 	    goto errxit;
 
-	{  int off = ntohl(pe->offset);
+	{   int off = ntohl(pe->offset);
 
 	    if (hdrchkData(off))
 		goto errxit;
@@ -1617,11 +1618,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	    entry->data = xrealloc(entry->data, entry->length + length);
 
 	memset(((char *)entry->data) + entry->length, '\0', ghosts);
-#if 0
-	strcpy(((char *)entry->data) + entry->length + ghosts, string);
-#else
 	memmove(((char *)entry->data) + entry->length + ghosts, string, strlen(string)+1);
-#endif
 
 	entry->length += length;
 	entry->info.count = langNum + 1;

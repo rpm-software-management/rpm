@@ -221,6 +221,7 @@
 	- change dir creation message from warning to debug for now.
 	- verify perms (but not mode) on %ghost files.
 	- headers without RPMTAG_NAME are skipped when retrieved.
+	- within a region, entries sort by address; added drips sort by tag.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
