@@ -611,6 +611,11 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
     int rc = 0;
     int tc;
     char *tcs, *tcse;
+    static int alreadyInit = 0;
+
+    if (alreadyInit)
+      return 1;
+    alreadyInit = 1;
     
     setDefaults();
     
