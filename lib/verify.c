@@ -259,7 +259,7 @@ static int verifyHeader(QVA_t *qva, Header h)
 
     if (headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL) &&
 	headerIsEntry(h, RPMTAG_COMPFILELIST)) {
-	buildFileList(h, &fileNames, &count);
+	rpmBuildFileList(h, &fileNames, &count);
 
 	for (i = 0; i < count; i++) {
 	    if ((rc = rpmVerifyFile(qva->qva_prefix, h, i, &verifyResult, omitMask)) != 0) {

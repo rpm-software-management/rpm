@@ -203,7 +203,8 @@ rdcl(char *buf, size_t size, FD_t fd, int escapes)
 
 	*q = '\0';
 	do {
-		if (fgets(q, size, fpio->ffileno(fd)) == NULL)	/* read next line */
+		/* read next line */
+		if (fgets(q, size, (FILE *)fdGetFp(fd)) == NULL)
 			break;
 		nb = strlen(q);
 		nread += nb;

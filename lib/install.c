@@ -109,12 +109,12 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 
     if (!headerIsEntry(h, RPMTAG_COMPFILELIST)) return 0;
 
-    buildFileList(h, &mem->names, fileCountPtr);
+    rpmBuildFileList(h, &mem->names, fileCountPtr);
 
     if (headerIsEntry(h, RPMTAG_ORIGCOMPFILELIST)) {
 	buildOrigFileList(h, &mem->cpioNames, fileCountPtr);
     } else {
-	buildFileList(h, &mem->cpioNames, fileCountPtr);
+	rpmBuildFileList(h, &mem->cpioNames, fileCountPtr);
     }
 
     fileCount = *fileCountPtr;

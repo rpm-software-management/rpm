@@ -740,7 +740,8 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     uint_16 * otherModes;
     int numReplaced = 0;
 
-    if ((h = rpmdbGetRecord(db, shared->otherPkg)) == NULL)
+    h = rpmdbGetRecord(db, shared->otherPkg);
+    if (h == NULL)
 	return 1;
 
     headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
@@ -775,7 +776,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 	    if (reportConflicts)
 		psAppendFile(probs, RPMPROB_FILE_CONFLICT, fi->ap->key,
 			 fi->ap->h, fi->dnl[fi->dil[fileNum]], 
-			 fi->bnl[fileNum], h,0 );
+			 fi->bnl[fileNum], h, 0);
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
 		if (!shared->isRemoved)
@@ -820,7 +821,8 @@ static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
     const char * otherStates;
     int i;
    
-    if ((h = rpmdbGetRecord(db, shared->otherPkg)) == NULL)
+    h = rpmdbGetRecord(db, shared->otherPkg);
+    if (h == NULL)
 	return 1;
 
     headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
@@ -1249,8 +1251,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
      * - count files.
      */
     /* The ordering doesn't matter here */
-    for (alp = ts->addedPackages.list; (alp - ts->addedPackages.list) <
-	    ts->addedPackages.size; alp++) {
+    for (alp = ts->addedPackages.list;
+	(alp - ts->addedPackages.list) < ts->addedPackages.size; alp++) {
 	if (!archOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL, 0);
 
@@ -1341,7 +1343,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    fi->type = TR_REMOVED;
 	    break;
 	}
-
 	if (!headerGetEntry(fi->h, RPMTAG_COMPFILELIST, NULL,
 				     (void **) &fi->bnl, &fi->fc)) {
 	    /* This catches removed packages w/ no file lists */

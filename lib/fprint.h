@@ -27,10 +27,22 @@ typedef struct fingerprint_s {
 /* only if !scarceMemory */
 #define fpFree(a) free((void *)(a).baseName)
 
-#define FP_EQUAL(a, b) ((&(a) == &(b)) || \
-			       (((a).entry == (b).entry) && \
-			        !strcmp((a).subDir, (b).subDir) && \
-			        !strcmp((a).baseName, (b).baseName)))
+#define FP_EQUAL(a, b) ( \
+	(&(a) == &(b)) || ( \
+		((a).entry == (b).entry) && \
+		!strcmp((a).subDir, (b).subDir) && \
+		!strcmp((a).baseName, (b).baseName) \
+	))
+
+#define	FP_ENTRY_EQUAL(a, b) ( \
+	((a)->dev == (b)->dev) && \
+	((a)->ino == (b)->ino) && \
+	!strcmp((a)->dirName, (b)->dirName))
+
+#define FP_EQUAL_DIFFERENT_CACHE(a, b) ( \
+	FP_ENTRY_EQUAL((a).entry, (b).entry) && \
+	!strcmp((a).subDir, (b).subDir) && \
+	!strcmp((a).baseName, (b).baseName))
 
 #ifdef __cplusplus
 extern "C" {

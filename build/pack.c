@@ -476,7 +476,7 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
 	freeStringBuf(sb);
 	return NULL;
     }
-    while (fgets(buf, sizeof(buf), fpio->ffileno(fd))) {
+    while (fgets(buf, sizeof(buf), (FILE *)fdGetFp(fd))) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmError(RPMERR_BADSPEC, _("line: %s"), buf);

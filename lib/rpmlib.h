@@ -22,6 +22,9 @@ int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
 int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
 	/*@out@*/ const char **rp);
 
+void	rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr, 
+			/*@out@*/ int * fileCountPtr);
+
    /* 0 = success */
    /* 1 = bad magic */
    /* 2 = error */

@@ -43,7 +43,7 @@ FD_t fadOpen(const char * path, int flags, int perms)
     if (flags & O_WRONLY)
 	return NULL;
 
-    fd = ufdio->open(path, flags, perms);
+    fd = ufdio->_open(path, flags, perms);
     if (Ferror(fd))
 	/* XXX Fstrerror */
 	return NULL;

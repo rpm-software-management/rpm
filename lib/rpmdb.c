@@ -962,7 +962,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	/* Add db (recnum,filenum) to list for fingerprint matches. */
 	for (i = 0; i < num; i++) {
 	    j = im[i].fpNum;
-	    if (FP_EQUAL(fps[i], fpList[j]))
+	    if (FP_EQUAL_DIFFERENT_CACHE(fps[i], fpList[j]))
 		dbiAppendIndexRecord(&matchList[j], im[i].rec);
 	}
 

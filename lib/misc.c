@@ -601,7 +601,7 @@ void expandFilelist(Header h)
 }
 
 
-void buildFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
+void rpmBuildFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
 {
     doBuildFileList(h, fileListPtr, fileCountPtr,RPMTAG_COMPFILELIST,
 			RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);

@@ -68,9 +68,9 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
 #ifndef	NOTYET
 	FILE * fp = fdGetFp(u->ctrl);
 	if (fp) {
-	    fdPush(u->ctrl, fpio, fp, fileno(fp));   /* Push fpio onto stack */
+	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    Fclose(u->ctrl);
-	} else if (fdio->fileno(u->ctrl) >= 0)
+	} else if (fdio->_fileno(u->ctrl) >= 0)
 	    fdio->close(u->ctrl);
 #else
 	Fclose(u->ctrl);
@@ -85,9 +85,9 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
 #ifndef	NOTYET
 	FILE * fp = fdGetFp(u->data);
 	if (fp) {
-	    fdPush(u->data, fpio, fp, fileno(fp));   /* Push fpio onto stack */
+	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
 	    Fclose(u->data);
-	} else if (fdio->fileno(u->data) >= 0)
+	} else if (fdio->_fileno(u->data) >= 0)
 	    fdio->close(u->data);
 #else
 	Fclose(u->ctrl);

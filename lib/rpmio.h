@@ -62,18 +62,18 @@ struct FDIO_s {
   fdio_ref_function_t *		ref;
   fdio_deref_function_t *	deref;
   fdio_new_function_t *		new;
-  fdio_fileno_function_t *	fileno;
+  fdio_fileno_function_t *	_fileno;
 
-  fdio_open_function_t *	open;
-  fdio_fopen_function_t *	fopen;
-  fdio_ffileno_function_t *	ffileno;
-  fdio_fflush_function_t *	fflush;
+  fdio_open_function_t *	_open;
+  fdio_fopen_function_t *	_fopen;
+  fdio_ffileno_function_t *	_ffileno;
+  fdio_fflush_function_t *	_fflush;
 
-  fdio_mkdir_function_t *	mkdir;
-  fdio_chdir_function_t *	chdir;
-  fdio_rmdir_function_t *	rmdir;
-  fdio_rename_function_t *	rename;
-  fdio_unlink_function_t *	unlink;
+  fdio_mkdir_function_t *	_mkdir;
+  fdio_chdir_function_t *	_chdir;
+  fdio_rmdir_function_t *	_rmdir;
+  fdio_rename_function_t *	_rename;
+  fdio_unlink_function_t *	_unlink;
 };
 
 /*@observer@*/ const char * Fstrerror(FD_t fd);
@@ -147,8 +147,8 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #define	fdNew(_msg)		fdio->new(_msg, __FILE__, __LINE__)
 
 #if 0
-#define	fdFileno	fdio->fileno
-#define	fdOpen		fdio->open
+#define	fdFileno	fdio->_fileno
+#define	fdOpen		fdio->_open
 #endif
 
 int	fdWritable(FD_t fd, int secs);
@@ -195,16 +195,16 @@ const char *const ftpStrerror(int errorNumber);
 #define	ufdLink		ufdio->ref
 #define	ufdFree		ufdio->deref
 #define	ufdNew		ufdio->new
-#define	ufdFileno	ufdio->fileno
-#define	ufdOpen		ufdio->open
-#define	ufdFopen	ufdio->fopen
-#define	ufdFfileno	ufdio->ffileno
-#define	ufdFflush	ufdio->fflush
-#define	ufdMkdir	ufdio->mkdir
-#define	ufdChdir	ufdio->chdir
-#define	ufdRmdir	ufdio->rmdir
-#define	ufdRename	ufdio->rename
-#define	ufdUnlink	ufdio->unlink
+#define	ufdFileno	ufdio->_fileno
+#define	ufdOpen		ufdio->_open
+#define	ufdFopen	ufdio->_fopen
+#define	ufdFfileno	ufdio->_ffileno
+#define	ufdFflush	ufdio->_fflush
+#define	ufdMkdir	ufdio->_mkdir
+#define	ufdChdir	ufdio->_chdir
+#define	ufdRmdir	ufdio->_rmdir
+#define	ufdRename	ufdio->_rename
+#define	ufdUnlink	ufdio->_unlink
 #endif
 
 int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
