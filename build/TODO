@@ -17,9 +17,9 @@ verify langs
 
 remove prefix stuff from files.c (not used anymore)
 
-=====================================================================
 i18n strings
 
+=====================================================================
 triggers
 
 custom find-requires, find-provides
@@ -28,17 +28,3 @@ messages (normal, verbose, debug)
 
 deprecate require_distribution, require_icon, require_vendor
 deprecate RPMVAR_ROOT, and the RPMVAR_REQUIRE* stuff above
-
-=======================================================================
-* i18n
-
-headerGetRawEntry() -> i18n string
-headerAddI18nString(Header, tag, string, lang)
-
-Summary(...):
-%description -l ...
-
-%lang(...) <file>
-
-"intl.h"
-_("...")
