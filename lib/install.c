@@ -75,6 +75,7 @@ static int osOkay(Header h);
 static int moveFile(char * sourceName, char * destName);
 static int copyFile(char * sourceName, char * destName);
 static void unglobFilename(char * dptr, char * sptr);
+static int ensureOlder(rpmdb db, Header new, int dbOffset);
 
 /* 0 success */
 /* 1 bad magic */
@@ -275,8 +276,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    for (i = 0; i < matches.count; i++) {
 		if (matches.recs[i].recOffset != otherOffset) {
 		    if (!(flags & RPMINSTALL_UPGRADETOOLD)) 
-			if (rpmEnsureOlder(db, name, version, release, 
-					matches.recs[i].recOffset)) {
+			if (ensureOlder(db, h, matches.recs[i].recOffset)) {
 			    headerFree(h);
 			    dbiFreeIndexRecord(matches);
 			    return 2;
@@ -1499,37 +1499,56 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
     return 0;
 }
 
-int rpmEnsureOlder(rpmdb db, char * name, char * newVersion, 
-		   char * newRelease, int dbOffset) {
-    Header h;
-    char * oldVersion, * oldRelease;
-    int rc, result;
-    int type, count;
+int rpmVersionCompare(Header first, Header second) {
+    char * one, * two;
+    int rc;
 
-    h = rpmdbGetRecord(db, dbOffset);
-    if (!h) return 1;
+    if (!headerGetEntry(first, RPMTAG_SERIAL, NULL, (void **) &one, NULL))
+	one = NULL;
+    if (!headerGetEntry(second, RPMTAG_SERIAL, NULL, (void **) &two, NULL))
+	two = NULL;
 
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &oldVersion, &count);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &oldRelease, &count);
+    if (one && !two) 
+	return -1;
+    else if (!one && two) 
+	return 1;
+    else if (one && two)
+	return rpmvercmp(one, two);
 
-    result = vercmp(oldVersion, newVersion);
+    headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
+    headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &one, NULL);
+
+    rc = rpmvercmp(one, two);
+    if (rc)
+	return rc;
+
+    headerGetEntry(first, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
+    headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
+    
+    return rpmvercmp(one, two);
+}
+
+static int ensureOlder(rpmdb db, Header new, int dbOffset) {
+    Header old;
+    char * name, * version, * release;
+    int result, rc = 0;
+
+    old = rpmdbGetRecord(db, dbOffset);
+    if (!old) return 1;
+
+    result = rpmVersionCompare(old, new);
     if (result < 0)
 	rc = 0;
-    else if (result > 0) 
+    else if (result > 0) {
 	rc = 1;
-    else {
-	result = vercmp(oldRelease, newRelease);
-	if (result < 0)
-	    rc = 0;
-	else
-	    rc = 1;
+	headerGetEntry(old, RPMTAG_NAME, NULL, (void **) &name, NULL);
+	headerGetEntry(old, RPMTAG_VERSION, NULL, (void **) &version, NULL);
+	headerGetEntry(old, RPMTAG_RELEASE, NULL, (void **) &release, NULL);
+	rpmError(RPMERR_OLDPACKAGE, "package %s-%s-%s (which is newer) is "
+		"already installed", name, version, release);
     }
 
-    if (rc) 
-	rpmError(RPMERR_OLDPACKAGE, "package %s-%s-%s (which is newer) is already"
-		" installed", name, oldVersion, oldRelease);
-
-    headerFree(h);
+    headerFree(old);
 
     return rc;
 }
