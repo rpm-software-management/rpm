@@ -29,6 +29,7 @@
 #define GETOPT_RMSOURCE		1015
 #define GETOPT_RELOCATE		1016
 #define GETOPT_TRIGGEREDBY	1017
+#define GETOPT_BUILDPLATFORM	1018
 
 char * version = VERSION;
 
@@ -85,6 +86,7 @@ static struct poptOption optionsTable[] = {
 	{ "build", 'b', POPT_ARG_STRING, 0, 'b' },
 	{ "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
 	{ "buildos", '\0', POPT_ARG_STRING, 0, 0 },
+	{ "buildplatform", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDPLATFORM },
 	{ "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT },
 	{ "checksig", 'K', 0, 0, 'K' },
 	{ "clean", '\0', 0, &clean, 0 },
@@ -522,6 +524,7 @@ int main(int argc, char ** argv) {
     int p[2];
     struct rpmRelocation * relocations = NULL;
     int numRelocations = 0;
+    char * buildplatforms = NULL;
 	
     /* set the defaults for the various command line options */
     allFiles = 0;
@@ -595,7 +598,7 @@ int main(int argc, char ** argv) {
     } 
 
     /* reading this early makes it easy to override */
-    if (rpmReadConfigFiles(rcfile, arch, os, building))  
+    if (rpmReadConfigFiles(rcfile, arch, os, building,NULL))  
 	exit(1);
     if (showrc) {
 	rpmShowRC(stdout);
@@ -871,6 +874,10 @@ int main(int argc, char ** argv) {
 				  sizeof(*relocations) * (numRelocations + 1));
 	    relocations[numRelocations].oldPath = optArg;
 	    relocations[numRelocations++].newPath = errString;
+	    break;
+
+	  case GETOPT_BUILDPLATFORM:
+            buildplatforms = optArg;
 	    break;
 
 	  default:
@@ -1171,7 +1178,7 @@ int main(int argc, char ** argv) {
 		exit(1);
 
 	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
-			0, test, cookie)) {
+			0, test, cookie,rcfile,arch,os,buildplatforms)) {
 		exit(1);
 	    }
 	    free(cookie);
@@ -1226,7 +1233,8 @@ int main(int argc, char ** argv) {
 
 	while ((pkg = poptGetArg(optCon)))
 	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
-			bigMode == MODE_TARBUILD, test, NULL)) {
+			bigMode == MODE_TARBUILD, test, NULL,
+                        rcfile,arch,os,buildplatforms)) {
 		exit(1);
 	    }
 	break;

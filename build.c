@@ -1,12 +1,41 @@
 #include "system.h"
-
 #include "build/rpmbuild.h"
-
 #include "build.h"
 #include "intl.h"
 
+int buildplatform(char *arg, int buildAmount, char *passPhrase,
+	         char *buildRoot, int fromTarball, int test, char *cookie);
+
 int build(char *arg, int buildAmount, char *passPhrase,
+	         char *buildRoot, int fromTarball, int test, char *cookie,
+                 char * rcfile, char * arch, char * os, 
+                 char *buildplatforms) {
+
+  char * platform;
+
+  /* parse up the build operators */
+
+  printf("building these platforms: %s\n",buildplatforms);
+
+  if (buildplatforms) {
+    while(platform = strsep(&buildplatforms,",")) {
+       printf("building %s\n",platform);
+
+       rpmSetVar(RPMVAR_BUILDPLATFORM,platform);
+       rpmReadConfigFiles(rcfile, arch, os, 1,platform);
+       buildplatform(arg,buildAmount,passPhrase,buildRoot,
+           fromTarball,test,cookie);
+    }
+  } else {
+       buildplatform(arg,buildAmount,passPhrase,buildRoot,
+           fromTarball,test,cookie);
+  }
+}
+
+
+int buildplatform(char *arg, int buildAmount, char *passPhrase,
 	         char *buildRoot, int fromTarball, int test, char *cookie) {
+
     FILE *f;
     char * specfile;
     int res = 0;
