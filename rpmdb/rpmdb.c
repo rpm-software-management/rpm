@@ -1636,7 +1636,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
 	    rpmMessage(lvl, "%s h#%8u %s",
-		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : "write"),
+		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
 			mi->mi_prevoffset, (msg ? msg : "\n"));
 	    msg = _free(msg);
 	}
@@ -2268,7 +2268,7 @@ top:
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
 	    rpmMessage(lvl, "%s h#%8u %s",
-		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : " read"),
+		(rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
 			mi->mi_offset, (msg ? msg : "\n"));
 	    msg = _free(msg);
 
@@ -3018,7 +3018,7 @@ data->size = headerSizeof(h, HEADER_MAGIC_NO);
 		    rpmrc = (*hdrchk) (ts, data->data, data->size, &msg);
 		    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
 		    rpmMessage(lvl, "%s h#%8u %s",
-			(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : "  +++"),
+			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),
 				hdrNum, (msg ? msg : "\n"));
 		    msg = _free(msg);
 		}

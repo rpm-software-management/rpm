@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.85
+Release: 0.86
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -519,6 +519,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Aug 21 2002 Jeff Johnson <jbj@redhat.com>
+- fix: region trailer offset sanity check wrong (#71996).
+
 * Tue Aug 20 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.85
 - python: stupid typo broke ts.check().
 - fix: add epoch to "already installed" check.

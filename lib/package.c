@@ -268,9 +268,15 @@ static int headerVerifyInfo(int il, int dl, entryInfo pe, entryInfo info,
 	    info->offset = -info->offset;
 	info->count = ntohl(pe[i].count);
 
-	if (hdrchkType(info->type) || hdrchkAlign(info->type, info->offset) ||
-		hdrchkRange(dl, info->offset) || hdrchkData(info->count))
+	if (hdrchkType(info->type))
 	    return i;
+	if (hdrchkAlign(info->type, info->offset))
+	    return i;
+	if (!negate && hdrchkRange(dl, info->offset))
+	    return i;
+	if (hdrchkData(info->count))
+	    return i;
+
     }
 /*@=boundsread@*/
     return -1;
@@ -318,13 +324,23 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     int xx;
     int i;
 
+    buf[0] = '\0';
+
     /* Is the blob the right size? */
-    if (uc > 0 && pvlen != uc)
+    if (uc > 0 && pvlen != uc) {
+	sprintf(buf, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
+			uc, il, dl);
 	goto exit;
+    }
 
     /* Check (and convert) the 1st tag element. */
-    if (headerVerifyInfo(1, dl, pe, &entry->info, 0) != -1)
+    xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
+    if (xx != -1) {
+	sprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		0, entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
 	goto exit;
+    }
 
     /* Is there an immutable header region tag? */
 /*@-sizeoftype@*/
@@ -345,11 +361,18 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     end += entry->info.count;
 
 /*@-sizeoftype@*/
-    if (headerVerifyInfo(1, dl, info, &entry->info, 1) != -1
-     || !(entry->info.tag == RPMTAG_HEADERIMMUTABLE
+    xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
+    if (xx != -1 ||
+	!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
        && entry->info.type == RPM_BIN_TYPE
        && entry->info.count == REGION_TAG_COUNT))
+    {
+	sprintf(buf,
+		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
+		entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
 	goto exit;
+    }
 /*@=sizeoftype@*/
 /*@-boundswrite@*/
     memset(info, 0, sizeof(*info));
@@ -357,13 +380,20 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = entry->info.offset/sizeof(*pe);
-    if (ril > il)
+    if (ril > il) {
+	sprintf(buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	goto exit;
+    }
 
     /* Find a header-only digest/signature tag. */
     for (i = ril; i < il; i++) {
-	if (headerVerifyInfo(1, dl, pe+i, &entry->info, 0) != -1)
+	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
+	if (xx != -1) {
+	    sprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		i, entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
 	    goto exit;
+	}
 
 	switch (entry->info.tag) {
 	case RPMTAG_SHA1HEADER:
@@ -407,16 +437,25 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
 exit:
     /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
-    if (rc != RPMRC_NOTFOUND)
+    if (rc != RPMRC_NOTFOUND) {
+	if (msg) *msg = xstrdup(buf);
 	return rc;
+    }
 
     /* If no header-only digest/signature, then do simple sanity check. */
     if (info->tag == 0) {
 verifyinfo_exit:
-	if (headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0) != -1)
+	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
+	if (xx != -1) {
+	    sprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		xx+1, entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
 	    rc = RPMRC_FAIL;
-	else
+	} else {
+	    sprintf(buf, "Header sanity check: OK\n");
 	    rc = RPMRC_OK;
+	}
+	if (msg) *msg = xstrdup(buf);
 	return rc;
     }
 
