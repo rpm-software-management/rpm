@@ -419,8 +419,8 @@ typedef enum rpmTag_e {
     RPMTAG_CLASSDICT		= 1142,	/* s[] */
     RPMTAG_FILEDEPENDSX		= 1143,	/* i */
     RPMTAG_FILEDEPENDSN		= 1144,	/* i */
-    RPMTAG_DEPENDSDICT		= 1145,	/* s[] */
-    RPMTAG_SOURCEPKGID		= 1146,	/* s */
+    RPMTAG_DEPENDSDICT		= 1145,	/* i */
+    RPMTAG_SOURCEPKGID		= 1146,	/* x */
     RPMTAG_FILECONTEXTS		= 1147,	/* s[] */
     RPMTAG_FSCONTEXTS		= 1148,	/*!< s[] extension */
     RPMTAG_RECONTEXTS		= 1149,	/*!< s[] extension */
