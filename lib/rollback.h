@@ -44,7 +44,7 @@ typedef enum fileStage_e {
     FSM_NOTIFY	=  _fd(22),
     FSM_DESTROY	=  _fi(23),
     FSM_VERIFY	=  _fd(24),
-    FSM_COMMIT	=  _fd(25),
+    FSM_COMMIT	=  _fi(25),
 
     FSM_UNLINK	=  _fs(33),
     FSM_RENAME	=  _fs(34),
@@ -140,19 +140,20 @@ struct transactionFileInfo_s {
 /*@owned@*/ const char * version;
 /*@owned@*/ const char * release;
     int_32 epoch;
-    const uint_32 * fflags;	/*!< File flags (from header) */
-    const uint_32 * fsizes;	/*!< File sizes (from header) */
-/*@owned@*/ const char ** bnl;	/*!< Base names (from header) */
-/*@owned@*/ const char ** dnl;	/*!< Directory names (from header) */
-    int_32 * dil;		/*!< Directory indices (from header) */
-/*@owned@*/ const char ** obnl;	/*!< Original base names (from header) */
-/*@owned@*/ const char ** odnl;	/*!< Original directory names (from header) */
-    int_32 * odil;		/*!< Original directory indices (from header) */
-/*@owned@*/ const char ** fmd5s;/*!< File MD5 sums (from header) */
-/*@owned@*/ const char ** flinks;	/*!< File links (from header) */
+    const uint_32 * fflags;	/*!< File flag(s) (from header) */
+    const uint_32 * fsizes;	/*!< File size(s) (from header) */
+    const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
+/*@owned@*/ const char ** bnl;	/*!< Base name(s) (from header) */
+/*@owned@*/ const char ** dnl;	/*!< Directory name(s) (from header) */
+    int_32 * dil;		/*!< Directory indice(s) (from header) */
+/*@owned@*/ const char ** obnl;	/*!< Original base name(s) (from header) */
+/*@owned@*/ const char ** odnl;	/*!< Original directory name(s) (from header) */
+    int_32 * odil;	/*!< Original directory indice(s) (from header) */
+/*@owned@*/ const char ** fmd5s;/*!< File MD5 sum(s) (from header) */
+/*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
 /* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
-    uint_16 * fmodes;		/*!< File modes (from header) */
-/*@owned@*/ char * fstates;	/*!< File states (from header) */
+    uint_16 * fmodes;		/*!< File mode(s) (from header) */
+/*@owned@*/ char * fstates;	/*!< File state(s) (from header) */
 /*@owned@*/ const char ** fuser;	/*!< File owner(s) */
 /*@owned@*/ const char ** fgroup;	/*!< File group(s) */
 /*@owned@*/ const char ** flangs;	/*!< File lang(s) */
@@ -164,8 +165,8 @@ struct transactionFileInfo_s {
     int striplen;
     int scriptArg;
     unsigned int archiveSize;
-    mode_t dperms;		/*!< Directory perms (0755) if unmapped. */
-    mode_t fperms;		/*!< File perms (0644) if unmapped. */
+    mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
+    mode_t fperms;		/*!< File perms (0644) if not mapped. */
 /*@owned@*/ const char ** apath;
     int mapflags;
 /*@owned@*/ int * fmapflags;

@@ -448,6 +448,12 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	Fclose(cfd);
 	(void) fsmTeardown(fi->fsm);
+
+	if (!rc && ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT) {
+	    rc = fsmSetup(fi->fsm, FSM_COMMIT, ts, fi, NULL, NULL, &failedFile);
+	    rc = cpioInstallArchive(fi->fsm);
+	    (void) fsmTeardown(fi->fsm);
+	}
     }
 
     if (rc) {

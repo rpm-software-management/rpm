@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-05 17:21-0500\n"
+"POT-Creation-Date: 2001-02-06 17:33-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2185,89 +2185,94 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:249
+#: lib/cpio.c:244
 #, c-format
 msgid "    file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/cpio.c:284
+#: lib/cpio.c:279
 #, c-format
 msgid "%s: cannot remove %s - directory not empty\n"
 msgstr ""
 
-#: lib/cpio.c:289
+#: lib/cpio.c:284
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:300
+#: lib/cpio.c:295
 #, c-format
 msgid "%s removal of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:315
+#: lib/cpio.c:310
 #, c-format
 msgid "%s: %s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:321
+#: lib/cpio.c:316
 #, c-format
 msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:413
+#: lib/cpio.c:408
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/cpio.c:415
+#: lib/cpio.c:410
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/cpio.c:1547
+#: lib/cpio.c:1477
+#, c-format
+msgid "%s directory created with perms %04o.\n"
+msgstr ""
+
+#: lib/cpio.c:1577 lib/cpio.c:1687
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:1652
+#: lib/cpio.c:1705
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/cpio.c:2132
+#: lib/cpio.c:2196
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:2135
+#: lib/cpio.c:2199
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:2136
+#: lib/cpio.c:2200
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:2157
+#: lib/cpio.c:2221
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:2158
+#: lib/cpio.c:2222
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:2159
+#: lib/cpio.c:2223
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:2160
+#: lib/cpio.c:2224
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:2161
+#: lib/cpio.c:2225
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:2170
+#: lib/cpio.c:2234
 msgid " failed - "
 msgstr ""
 
@@ -2646,52 +2651,52 @@ msgstr ""
 #. * was used up - if so, we should return a different error.
 #.
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:459
+#: lib/install.c:465
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/install.c:460
+#: lib/install.c:466
 msgid " on file "
-msgstr ""
-
-#: lib/install.c:501
-#, c-format
-msgid "cannot create %s %s\n"
 msgstr ""
 
 #: lib/install.c:507
 #, c-format
+msgid "cannot create %s %s\n"
+msgstr ""
+
+#: lib/install.c:513
+#, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/install.c:528
+#: lib/install.c:534
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:580
+#: lib/install.c:586
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:660
+#: lib/install.c:666
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:730 lib/uninstall.c:24
+#: lib/install.c:736 lib/uninstall.c:24
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/install.c:794 lib/install.c:893 lib/uninstall.c:62 lib/uninstall.c:83
+#: lib/install.c:800 lib/install.c:899 lib/uninstall.c:62 lib/uninstall.c:83
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/install.c:801
+#: lib/install.c:807
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
-#: lib/install.c:838
+#: lib/install.c:844
 #, c-format
 msgid "     file: %s%s action: %s\n"
 msgstr ""

@@ -189,11 +189,6 @@ mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
 	iter->ts = ts;
 	iter->fi = fi;
 	iter->isave = iter->i = 0;
-
-	if (ts && ts->notify) {
-	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
-		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
-	}
     }
 
     return iter;
@@ -798,8 +793,6 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
-    int rc = fsmStage(fsm, FSM_CREATE);
-
 #if 0
     rpmSetVerbosity(RPMMESS_DEBUG);
 #endif
@@ -810,6 +803,14 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	fdSetCpioPos(fsm->cfd, 0);
     }
     fsm->iter = mapInitIterator(ts, fi);
+
+    if (fsm->goal == FSM_INSTALL) {
+	if (ts && ts->notify) {
+	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
+		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+	}
+    }
+
     fsm->archiveSize = archiveSize;
     if (fsm->archiveSize)
 	*fsm->archiveSize = 0;
@@ -822,7 +823,8 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	if (ts->id > 0)
 	    sprintf(fsm->sufbuf, ";%08x", (unsigned)ts->id);
     }
-    return rc;
+    return fsmStage(fsm, FSM_CREATE);
+
 }
 
 int fsmTeardown(FSM_t fsm) {
@@ -838,7 +840,6 @@ int fsmTeardown(FSM_t fsm) {
 
 int fsmMapPath(FSM_t fsm)
 {
-    const rpmTransactionSet ts = fsmGetTs(fsm);
     TFI_t fi = fsmGetFi(fsm);	/* XXX const except for fstates */
     int rc = 0;
     int i;
@@ -847,9 +848,6 @@ int fsmMapPath(FSM_t fsm)
     fsm->nsuffix = NULL;
     fsm->astriplen = 0;
     fsm->action = FA_UNKNOWN;
-#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
-    fsm->commit = (ts && (ts->transFlags & _tsmask) ? 0 : 1);
-#undef _tsmask
     fsm->mapFlags = 0;
 
     i = fsm->ix;
@@ -867,13 +865,14 @@ int fsmMapPath(FSM_t fsm)
 
 	switch (fsm->action) {
 	case FA_SKIP:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+if (_fsm_debug)
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 	case FA_SKIPMULTILIB:	/* XXX RPMFILE_STATE_MULTILIB? */
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 	case FA_UNKNOWN:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 
 	case FA_CREATE:
@@ -881,20 +880,20 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_SKIPNSTATE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    if (fi->type == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
 	    break;
 
 	case FA_SKIPNETSHARED:
 if (_fsm_debug)
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    if (fi->type == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
 	    break;
 
 	case FA_BACKUP:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    switch (fi->type) {
 	    case TR_ADDED:
 		fsm->osuffix = SUFFIX_RPMORIG;
@@ -907,22 +906,22 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 
 	case FA_ALTNAME:
 if (_fsm_debug)
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    assert(fi->type == TR_ADDED);
 	    fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    assert(fi->type == TR_ADDED);
 	    fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_REMOVE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    assert(fi->type == TR_REMOVED);
 	    break;
 	default:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    break;
 	}
 
@@ -979,6 +978,7 @@ static int expandRegular(FSM_t fsm)
     int left = st->st_size;
     int rc = 0;
 
+if (st->st_size == 0) fprintf(stderr, "*** zero %s\n", fsm->path);
     rc = fsmStage(fsm, FSM_WOPEN);
     if (rc)
 	goto exit;
@@ -986,7 +986,7 @@ static int expandRegular(FSM_t fsm)
     fmd5sum = fsm->fmd5sum;
 
     /* XXX This doesn't support brokenEndian checks. */
-    if (fmd5sum)
+    if (st->st_size > 0 && fmd5sum)
 	fdInitMD5(fsm->wfd, 0);
 
     while (left) {
@@ -1007,7 +1007,7 @@ static int expandRegular(FSM_t fsm)
 	    (void) fsmStage(fsm, FSM_NOTIFY);
     }
 
-    if (fmd5sum) {
+    if (st->st_size > 0 && fmd5sum) {
 	const char * md5sum = NULL;
 
 	Fflush(fsm->wfd);
@@ -1302,16 +1302,29 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_BUILD:
 	break;
     case FSM_CREATE:
-	fsm->opath = fsm->path = NULL;
+	{   rpmTransactionSet ts = fsmGetTs(fsm);
+#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
+	    fsm->commit = ((ts && (ts->transFlags & _tsmask) &&
+			fsm->goal != FSM_COMMIT) ? 0 : 1);
+#undef _tsmask
+	}
+	fsm->path = _free(fsm->path);
+	fsm->opath = _free(fsm->opath);
 	fsm->dnlx = _free(fsm->dnlx);
+
 	fsm->ldn = _free(fsm->ldn);
 	fsm->ldnalloc = fsm->ldnlen = 0;
-	fsm->rdsize = 8 * BUFSIZ;
+
+	fsm->rdsize = fsm->wrsize = 0;
 	fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
-	fsm->rdbuf = fsm->rdb = xmalloc(fsm->rdsize);
-	fsm->wrsize = 8 * BUFSIZ;
 	fsm->wrbuf = fsm->wrb = _free(fsm->wrb);
-	fsm->wrbuf = fsm->wrb = xmalloc(fsm->wrsize);
+	if (fsm->goal == FSM_INSTALL || fsm->goal == FSM_BUILD) {
+	    fsm->rdsize = 8 * BUFSIZ;
+	    fsm->rdbuf = fsm->rdb = xmalloc(fsm->rdsize);
+	    fsm->wrsize = 8 * BUFSIZ;
+	    fsm->wrbuf = fsm->wrb = xmalloc(fsm->wrsize);
+	}
+
 	fsm->mkdirsdone = 0;
 	fsm->ix = -1;
 	fsm->links = NULL;
@@ -1351,13 +1364,19 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
 
 	/* On build, detect end-of-loop. */
-	if (fsm->goal == FSM_BUILD && fsm->ix < 0) {
+	if ((fsm->goal == FSM_BUILD || fsm->goal == FSM_COMMIT) && fsm->ix < 0) {
 	    rc = CPIOERR_HDR_TRAILER;
 	    break;
 	}
 
+	/* On commit, the mode must be known so that dirs don't get suffix. */
+	if (fsm->goal == FSM_COMMIT) {
+	    TFI_t fi = fsmGetFi(fsm);
+	    st->st_mode = fi->fmodes[fsm->ix];
+	}
+
 	/* Generate file path. */
-	rc = fsmMapPath(fsm);
+	rc = fsmStage(fsm, FSM_MAP);
 	if (rc) break;
 
 	/* Perform lstat/stat for disk file. */
@@ -1373,10 +1392,11 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->diskchecked = 1;
 	if (rc) break;
 
-	/* On build, the disk file stat is what's remapped. */
-	if (fsm->goal == FSM_BUILD)
+	/* On non-install, the disk file stat is what's remapped. */
+	if (fsm->goal != FSM_INSTALL)
 	    *st = *ost;			/* structure assignment */
 
+	/* Remap file perms, owner, and group. */
 	rc = fsmMapAttrs(fsm);
 	if (rc) break;
 
@@ -1398,6 +1418,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    char * dn = fsm->rdbuf;
 	    int dc = dnlCount(dnli);
 
+	    fsm->path = NULL;
 	    dn[0] = '\0';
 	    fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
 	    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
@@ -1446,9 +1467,17 @@ int fsmStage(FSM_t fsm, fileStage stage)
 			/* Move pre-existing path marker forward. */
 			fsm->dnlx[dc] = (te - dn);
 		    } else if (rc == CPIOERR_LSTAT_FAILED) {
+			TFI_t fi = fsmGetFi(fsm);
+			mode_t st_mode = st->st_mode;
 			*te = '\0';
+			st->st_mode = S_IFDIR | (fi->dperms & 07777);
 			rc = fsmStage(fsm, FSM_MKDIR);
+			if (!rc)
+			    rpmMessage(RPMMESS_WARNING,
+				_("%s directory created with perms %04o.\n"),
+				fsm->path, (st->st_mode & 07777));
 			*te = '/';
+			st->st_mode = st_mode;
 		    }
 		    if (rc) break;
 		}
@@ -1474,6 +1503,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    char * dn = fsm->rdbuf;
 	    int dc = dnlCount(dnli);
 
+	    fsm->path = NULL;
 	    dn[0] = '\0';
 	    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
 		int dnlen = strlen(fsm->path);
@@ -1581,16 +1611,16 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	    if (rc == CPIOERR_LSTAT_FAILED)
 		rc = fsmStage(fsm, FSM_SYMLINK);
 	    fsm->opath = opath;		/* XXX restore fsm->path */
-	} else if (S_ISFIFO(st->st_mode) || S_ISSOCK(st->st_mode)) {
+	} else if (S_ISFIFO(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
 	    rc = fsmStage(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_LSTAT_FAILED) {
 		st->st_mode = 0000;		/* XXX abuse st->st_mode */
 		rc = fsmStage(fsm, FSM_MKFIFO);
-		st->st_mode = st_mode;	/* XXX restore st->st_mode*/
+		st->st_mode = st_mode;	/* XXX restore st->st_mode */
 	    }
-	} else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
+	} else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode) || S_ISSOCK(st->st_mode)) {
 	    rc = fsmStage(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_LSTAT_FAILED)
 		rc = fsmStage(fsm, FSM_MKNOD);
@@ -1607,7 +1637,8 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
     case FSM_MKLINKS:
 	break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
-	{   rpmTransactionSet ts = fsmGetTs(fsm);
+	if (fsm->goal == FSM_INSTALL || fsm->goal == FSM_BUILD) {
+	    rpmTransactionSet ts = fsmGetTs(fsm);
 	    TFI_t fi = fsmGetFi(fsm);
 	    if (ts && ts->notify && fi)
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
@@ -1636,6 +1667,8 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	    if (fsm->goal == FSM_INSTALL && fsm->commit)
 		rc = ((!S_ISDIR(st->st_mode) && st->st_nlink > 1)
 			? fsmCommitLinks(fsm) : fsmStage(fsm, FSM_COMMIT));
+	    if (fsm->goal == FSM_COMMIT && fsm->commit)
+		rc = fsmStage(fsm, FSM_COMMIT);
 	}
 	fsm->path = _free(fsm->path);
 	fsm->opath = _free(fsm->opath);
@@ -1643,27 +1676,55 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	memset(ost, 0, sizeof(*ost));
 	break;
     case FSM_COMMIT:
-	if (!S_ISDIR(st->st_mode) && (fsm->subdir || fsm->suffix)) {
-	    fsm->opath = fsm->path;
-	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
+	/* Rename pre-existing, modified or unmanaged file. */
+	if (fsm->diskchecked && fsm->exists && fsm->osuffix) {
+	    const char * opath = fsm->opath;
+	    const char * path = fsm->path;
+	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);
+	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
 	    rc = fsmStage(fsm, FSM_RENAME);
-if (!rc && fsm->nsuffix) {
-const char * opath = fsmFsPath(fsm, st, NULL, NULL);
-rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"), opath, fsm->path);
-opath = _free(opath);
-}
+	    if (!rc) {
+		rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"),
+				fsm->opath, fsm->path);
+	    }
+	    fsm->path = _free(fsm->path);
+	    fsm->path = path;
 	    fsm->opath = _free(fsm->opath);
+	    fsm->opath = opath;
 	}
-	if (S_ISLNK(st->st_mode)) {
-	    if (!rc && !getuid())
-		rc = fsmStage(fsm, FSM_LCHOWN);
-	} else {
-	    if (!rc && !getuid())
-		rc = fsmStage(fsm, FSM_CHOWN);
-	    if (!rc)
-		rc = fsmStage(fsm, FSM_CHMOD);
-	    if (!rc)
-		rc = fsmStage(fsm, FSM_UTIME);
+	if (!S_ISSOCK(st->st_mode)) {	/* XXX /dev/log et al are skipped */
+	    /* Rename temporary to final file name. */
+	    if (!S_ISDIR(st->st_mode) &&
+		(fsm->subdir || fsm->suffix || fsm->nsuffix))
+	    {
+		fsm->opath = fsm->path;
+		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
+		rc = fsmStage(fsm, FSM_RENAME);
+		if (!rc && fsm->nsuffix) {
+		    const char * opath = fsmFsPath(fsm, st, NULL, NULL);
+		    rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"),
+				opath, fsm->path);
+		    opath = _free(opath);
+		}
+		fsm->opath = _free(fsm->opath);
+	    }
+	    if (S_ISLNK(st->st_mode)) {
+		if (!rc && !getuid())
+		    rc = fsmStage(fsm, FSM_LCHOWN);
+	    } else {
+		if (!rc && !getuid())
+		    rc = fsmStage(fsm, FSM_CHOWN);
+		if (!rc)
+		    rc = fsmStage(fsm, FSM_CHMOD);
+		if (!rc) {
+		    time_t st_mtime = st->st_mtime;
+		    TFI_t fi = fsmGetFi(fsm);
+		    if (fi->fmtimes)
+			st->st_mtime = fi->fmtimes[fsm->ix];
+		    rc = fsmStage(fsm, FSM_UTIME);
+		    st->st_mtime = st_mtime;
+		}
+	    }
 	}
 	/* Notify on success. */
 	if (!rc)		rc = fsmStage(fsm, FSM_NOTIFY);
@@ -1675,7 +1736,7 @@ opath = _free(opath);
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
-	    if (fsm->goal == FSM_INSTALL && fsm->li->linksLeft) {
+	    if (fsm->goal == FSM_INSTALL && fsm->commit && fsm->li->linksLeft) {
 		for (i = 0 ; i < fsm->li->linksLeft; i++) {
 		    if (fsm->li->filex[i] < 0) continue;
 		    rc = CPIOERR_MISSING_HARDLINK;
@@ -2047,23 +2108,26 @@ int cpioInstallArchive(FSM_t fsm)
 	    rc = 0;
 	    break;
 	}
-	if (rc) {
-	    fsm->postpone = 1;
-	    (void) fsmStage(fsm, FSM_UNDO);
-	    goto exit;
+	if (fsm->goal == FSM_INSTALL) {
+	    if (rc) {
+		fsm->postpone = 1;
+		(void) fsmStage(fsm, FSM_UNDO);
+		goto exit;
+	    }
+
+	    /* Extract file from archive. */
+	    rc = fsmStage(fsm, FSM_PROCESS);
+	    if (rc) {
+		(void) fsmStage(fsm, FSM_UNDO);
+		goto exit;
+	    }
+
+	    /* Notify on success. */
+	    (void) fsmStage(fsm, FSM_NOTIFY);
 	}
 
-	/* Extract file from archive. */
-	rc = fsmStage(fsm, FSM_PROCESS);
-	if (rc) {
-	    (void) fsmStage(fsm, FSM_UNDO);
-	    goto exit;
-	}
-
-	/* Notify on success. */
-	(void) fsmStage(fsm, FSM_NOTIFY);
-
-	(void) fsmStage(fsm, FSM_FINI);
+	if (fsmStage(fsm, FSM_FINI))
+	    break;
 
     }
 
