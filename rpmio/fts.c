@@ -81,9 +81,10 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif
 
 
-/*@only@*/
+/*@only@*/ /*@null@*/
 static FTSENT *	fts_alloc(FTS * sp, const char * name, int namelen)
 	/*@*/;
+/*@null@*/
 static FTSENT *	fts_build(FTS * sp, int type)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
@@ -202,6 +203,8 @@ Fts_open(char * const * argv, int options,
 		}
 
 		p = fts_alloc(sp, *argv, len);
+		if (p == NULL)
+			goto mem3;
 		p->fts_level = FTS_ROOTLEVEL;
 		p->fts_parent = parent;
 		p->fts_accpath = p->fts_name;
@@ -223,7 +226,8 @@ Fts_open(char * const * argv, int options,
 			if (root == NULL)
 				tmp = root = p;
 			else {
-				tmp->fts_link = p;
+				if (tmp != NULL)	/* XXX can't happen */
+					tmp->fts_link = p;
 				tmp = p;
 			}
 		}
@@ -878,7 +882,8 @@ mem1:				saved_errno = errno;
 		if (len == sp->fts_pathlen || nitems == 0)
 			--cp;
 /*@-boundswrite@*/
-		*cp = '\0';
+		if (cp != NULL)	/* XXX can't happen */
+			*cp = '\0';
 /*@=boundswrite@*/
 	}
 
@@ -1022,7 +1027,7 @@ fts_sort(FTS * sp, FTSENT * head, int nitems)
 		sp->fts_array = a;
 	}
 /*@-boundswrite@*/
-	for (ap = sp->fts_array, p = head; p; p = p->fts_link)
+	for (ap = sp->fts_array, p = head; p != NULL; p = p->fts_link)
 		*ap++ = p;
 	qsort((void *)sp->fts_array, nitems, sizeof(*sp->fts_array),
 		sp->fts_compar);
@@ -1141,7 +1146,7 @@ fts_padjust(FTS * sp, FTSENT * head)
 	(p)->fts_path = addr;						\
 } while (0)
 	/* Adjust the current set of children. */
-	for (p = sp->fts_child; p; p = p->fts_link)
+	for (p = sp->fts_child; p != NULL; p = p->fts_link)
 		ADJUST(p);
 
 	/* Adjust the rest of the tree, including the current level. */

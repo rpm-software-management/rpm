@@ -62,14 +62,14 @@
 #include <dirent.h>
 
 typedef struct {
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
 	struct _ftsent *fts_cur;	/*!< current node */
 /*@owned@*/ /*@null@*/
 	struct _ftsent *fts_child;	/*!< linked list of children */
 /*@owned@*/ /*@null@*/
 	struct _ftsent **fts_array;	/*!< sort array */
 	dev_t fts_dev;			/*!< starting device # */
-/*@owned@*/
+/*@owned@*/ /*@relnull@*/
 	char *fts_path;			/*!< path for this descent */
 	int fts_rfd;			/*!< fd for root */
 	int fts_pathlen;		/*!< sizeof(path) */
@@ -112,11 +112,12 @@ typedef struct {
 typedef struct _ftsent {
 /*@dependent@*/
 	struct _ftsent *fts_cycle;	/*!< cycle node */
-/*@dependent@*/
+/*@dependent@*/ /*@relnull@*/
 	struct _ftsent *fts_parent;	/*!< parent directory */
-/*@dependent@*/
+/*@dependent@*/ /*@null@*/
 	struct _ftsent *fts_link;	/*!< next file in directory */
 	long fts_number;	        /*!< local numeric value */
+/*@null@*/
 	void *fts_pointer;	        /*!< local address value */
 /*@dependent@*/
 	char *fts_accpath;		/*!< access path */
@@ -174,7 +175,7 @@ __BEGIN_DECLS
  * @param instr
  * @return		file set member
  */
-/*@unused@*/ /*@dependent@*/
+/*@dependent@*/ /*@null@*/
 FTSENT	*Fts_children (FTS * sp, int instr) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
@@ -184,7 +185,6 @@ FTSENT	*Fts_children (FTS * sp, int instr) __THROW
  * @param sp		file hierarchy state
  * @return		0 on sucess, -1 on error
  */
-/*@unused@*/
 int	 Fts_close (/*@only@*/ FTS * sp) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
@@ -196,7 +196,7 @@ int	 Fts_close (/*@only@*/ FTS * sp) __THROW
  * @param compar	traversal ordering (or NULL)
  * @return 		file hierarchy state (or NULL on error)
  */
-/*@unused@*/ /*@only@*/
+/*@only@*/ /*@null@*/
 FTS	*Fts_open (char * const * argv, int options,
 		   /*@null@*/
 		   int (*compar) (const FTSENT **, const FTSENT **)) __THROW
@@ -207,7 +207,7 @@ FTS	*Fts_open (char * const * argv, int options,
  * @param sp		file hierarchy state
  * @return		file set member
  */
-/*@unused@*/ /*@null@*/
+/*@null@*/
 FTSENT	*Fts_read (FTS * sp) __THROW
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *sp, fileSystem, internalState @*/;
@@ -219,7 +219,6 @@ FTSENT	*Fts_read (FTS * sp) __THROW
  * @param instr		new disposition for file set member
  * @return		0 on sucess, -1 on error
  */
-/*@unused@*/
 int	 Fts_set (FTS * sp, FTSENT * p, int instr) __THROW
 	/*@modifies *p @*/;
 

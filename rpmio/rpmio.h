@@ -482,8 +482,8 @@ off_t	fdSize(FD_t fd)
  */
 /*@-incondefs@*/
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *cookie, *buf, errno, fileSystem @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *cookie, *buf, errno, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
 	/*@ensures maxRead(buf) == result @*/ ;
 #define	fdRead(_fd, _buf, _count)	fdio->read((_fd), (_buf), (_count))
@@ -492,8 +492,8 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 /**
  */
 ssize_t	fdWrite(void * cookie, const char * buf, size_t count)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *cookie, errno, fileSystem @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *cookie, errno, fileSystem, internalState @*/;
 #define	fdWrite(_fd, _buf, _count)	fdio->write((_fd), (_buf), (_count))
 
 /**

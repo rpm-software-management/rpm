@@ -294,7 +294,8 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 /*@=modfilesys@*/
 
 /*@-modfilesys@*/
-static inline /*@null@*/ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
+static inline /*@null@*/
+FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 		const char *file, unsigned line)
 	/*@modifies fd @*/
 {
@@ -322,9 +323,10 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 }
 /*@=modfilesys@*/
 
-static inline /*@null@*/ FD_t XfdNew(const char * msg,
-		const char * file, unsigned line)
-	/*@*/
+static inline /*@null@*/
+FD_t XfdNew(const char * msg, const char * file, unsigned line)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
@@ -1026,8 +1028,8 @@ static int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
 }
 
 static int ftpCommand(urlinfo u, char ** str, ...)
-	/*@globals fileSystem @*/
-	/*@modifies u, *str, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies u, *str, fileSystem, internalState @*/
 {
     va_list ap;
     int len = 0;
@@ -2185,9 +2187,10 @@ static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
     return rc;
 }
 
-static /*@null@*/ FD_t gzdOpen(const char * path, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+static /*@null@*/
+FD_t gzdOpen(const char * path, const char * fmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd;
     gzFile *gzfile;

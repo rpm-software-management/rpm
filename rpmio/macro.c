@@ -334,6 +334,7 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
  * @param pr		right char, i.e. ']', ')', '}', etc.
  * @return		address of last char before pr (or NULL)
  */
+/*@null@*/
 static const char *
 matchchar(const char * p, char pl, char pr)
 	/*@*/
@@ -973,7 +974,10 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
     opts = me->opts;
 
     /* Define option macros. */
-    while((c = getopt(argc, (char **)argv, opts)) != -1) {
+/*@-nullstate@*/ /* FIX: argv[] can be NULL */
+    while((c = getopt(argc, (char **)argv, opts)) != -1)
+/*@=nullstate@*/
+    {
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
 	    rpmError(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
@@ -1006,7 +1010,9 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
 	    sprintf(aname, "%d", (c - optind + 1));
 	    addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
 	    *be++ = ' ';
+/*@-nullpass@*/ /* FIX: argv[] can be NULL */
 	    be = stpcpy(be, argv[c]);
+/*@=nullpass@*/
 	}
     }
 
@@ -1051,7 +1057,7 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
  */
 static void
 doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
-		const char * g, size_t gn)
+		/*@null@*/ const char * g, size_t gn)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1059,7 +1065,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     int c;
 
     buf[0] = '\0';
-    if (g) {
+    if (g != NULL) {
 	strncpy(buf, g, gn);
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, sizeof(buf));
@@ -1330,7 +1336,7 @@ expandMacro(MacroBuf mb)
 		int waserror = 0;
 		if (STREQ("error", f, fn))
 			waserror = 1;
-		if (g < ge)
+		if (g != NULL && g < ge)
 			doOutput(mb, waserror, g, gn);
 		else
 			doOutput(mb, waserror, f, fn);
