@@ -256,18 +256,44 @@ static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
 
 /**
  */
-static int rpmfcHelper(ARGV_t *depsp, ARGV_t av, StringBuf sb_stdin)
+static int rpmfcHelper(rpmfc fc, char deptype, const char * nsdep)
 {
-    StringBuf sb_stdout = NULL;
+    const char * fn = fc->fn[fc->ix];
     char buf[BUFSIZ];
+    StringBuf sb_stdout = NULL;
+    StringBuf sb_stdin;
+    const char *av[2];
+    ARGV_t * depsp;
     ARGV_t pav;
     int pac;
     int xx;
     int i;
+    size_t ns;
     char * t;
 
+    switch (deptype) {
+    default:
+	return -1;
+	break;
+    case 'P':
+	snprintf(buf, sizeof(buf), "%%{?__%s_provides}", nsdep);
+	depsp = &fc->provides;
+	break;
+    case 'R':
+	snprintf(buf, sizeof(buf), "%%{?__%s_provides}", nsdep);
+	depsp = &fc->requires;
+	break;
+    }
+    buf[sizeof(buf)-1] = '\0';
+    av[0] = buf;
+    av[1] = NULL;
+
+    sb_stdin = newStringBuf();
+    appendLineStringBuf(sb_stdin, fn);
     sb_stdout = NULL;
     xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0);
+    sb_stdin = freeStringBuf(sb_stdin);
+
     if (xx == 0 && sb_stdout != NULL) {
 	xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
 	pac = argvCount(pav);
@@ -286,16 +312,23 @@ static int rpmfcHelper(ARGV_t *depsp, ARGV_t av, StringBuf sb_stdin)
 		    t = stpcpy(t, pav[i]);
 		}
 	    }
+	    ns = strlen(buf);
 
-	    /* Add to package provides. */
+	    /* Add to package dependencies. */
 	    xx = rpmfcSaveArg(depsp, buf);
 
-	    /* XXX attach to per-file dependencies. */
+	    /* Add to file dependencies. */
+	    if (ns < (sizeof(buf) - ns - 64)) {
+		t = buf + ns + 1;
+		*t = '\0';
+		sprintf(t, "%08d%c %s", fc->ix, deptype, buf);
+		xx = rpmfcSaveArg(&fc->ddict, t);
+	    }
 	}
 
 	pav = argvFree(pav);
-	sb_stdout = freeStringBuf(sb_stdout);
     }
+    sb_stdout = freeStringBuf(sb_stdout);
 
     return 0;
 }
@@ -478,11 +511,6 @@ rpmfc rpmfcFree(rpmfc fc)
 	fc->ddictx = argiFree(fc->ddictx);
 	fc->provides = argvFree(fc->provides);
 	fc->requires = argvFree(fc->requires);
-
-	fc->sb_java = freeStringBuf(fc->sb_java);
-	fc->sb_perl = freeStringBuf(fc->sb_perl);
-	fc->sb_python = freeStringBuf(fc->sb_python);
-
     }
     fc = _free(fc);
     return NULL;
@@ -546,21 +574,6 @@ static int rpmfcSCRIPT(rpmfc fc)
 	}
 	*se = '\0';
 
-	/* Set color based on interpreter name. */
-	bn = basename(s);
-	if (!strcmp(bn, "perl")) {
-	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
-	    if (fc->sb_perl == NULL)
-		fc->sb_perl = newStringBuf();
-	    appendLineStringBuf(fc->sb_perl, fn);
-	}
-	if (!strcmp(bn, "python")) {
-	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
-	    if (fc->sb_python == NULL)
-		fc->sb_python = newStringBuf();
-	    appendLineStringBuf(fc->sb_python, fn);
-	}
-
 	/* Add to package requires. */
 	xx = rpmfcSaveArg(&fc->requires, s);
 
@@ -569,10 +582,22 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    t = se + 1;
 	    *t = '\0';
 	    sprintf(t, "%08d%c %s", fc->ix, deptype, s);
-
 	    xx = rpmfcSaveArg(&fc->ddict, t);
-
 	}
+
+	/* Set color based on interpreter name. */
+	bn = basename(s);
+	if (!strcmp(bn, "perl")) {
+	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
+	    xx = rpmfcHelper(fc, 'P', "perl");
+	    xx = rpmfcHelper(fc, 'R', "perl");
+	}
+	if (!strcmp(bn, "python")) {
+	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+	    xx = rpmfcHelper(fc, 'P', "python");
+	    xx = rpmfcHelper(fc, 'R', "python");
+	}
+
 	break;
     }
 
@@ -914,31 +939,6 @@ int rpmfcApply(rpmfc fc)
 		continue;
 	    xx = (*fcat->func) (fc);
 	}
-    }
-
-    /* Generate per-interpreter namespace dependencies. */
-    if (fc->sb_perl) {
-	static const char * av_perl_provides[] = { "%{?__perl_provides}", NULL };
-	static const char * av_perl_requires[] = { "%{?__perl_requires}", NULL };
-
-	xx = rpmfcHelper(&fc->provides, av_perl_provides, fc->sb_perl);
-	xx = rpmfcHelper(&fc->requires, av_perl_requires, fc->sb_perl);
-    }
-
-    if (fc->sb_python) {
-	static const char * av_python_provides[] = { "%{?__python_provides}", NULL };
-	static const char * av_python_requires[] = { "%{?__python_requires}", NULL };
-
-	xx = rpmfcHelper(&fc->provides, av_python_provides, fc->sb_python);
-	xx = rpmfcHelper(&fc->requires, av_python_requires, fc->sb_python);
-    }
-
-    if (fc->sb_java) {
-	static const char * av_java_provides[] = { "%{?__java_provides}", NULL };
-	static const char * av_java_requires[] = { "%{?__java_requires}", NULL };
-
-	xx = rpmfcHelper(&fc->provides, av_java_provides, fc->sb_java);
-	xx = rpmfcHelper(&fc->requires, av_java_requires, fc->sb_java);
     }
 
     /* Generate per-file indices into package dependencies. */
