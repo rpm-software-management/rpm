@@ -9,7 +9,7 @@
 
 /**
  */
-typedef /*@abstract@*/ struct cpioHeader * FSM_t;
+typedef /*@abstract@*/ struct fsm_s * FSM_t;
 
 #include "cpio.h"
 
@@ -60,7 +60,8 @@ typedef enum fileStage_e {
     FSM_MKNOD	=  _fs(44),
     FSM_LSTAT	=  _fs(45),
     FSM_STAT	=  _fs(46),
-    FSM_CHROOT	=  _fs(47),
+    FSM_READLINK=  _fs(47),
+    FSM_CHROOT	=  _fs(48),
 
     FSM_NEXT	=  _fd(65),
     FSM_EAT	=  _fi(66),
@@ -163,6 +164,7 @@ struct transactionFileInfo_s {
     int dc;			/*!< No. of directories. */
     int bnlmax;			/*!< Length (in bytes) of longest base name. */
     int dnlmax;			/*!< Length (in bytes) of longest dir name. */
+    int astriplen;
     int striplen;
     int scriptArg;
     unsigned int archiveSize;
@@ -255,7 +257,8 @@ int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a);
 /**
  * @return		0 on success
  */
-int fsmSetup(FSM_t fsm, const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
+int fsmSetup(FSM_t fsm, fileStage goal,
+	const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 	unsigned int * archiveSize, const char ** failedFile);
 
 /**

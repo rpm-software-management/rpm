@@ -183,20 +183,21 @@ void freeFi(TFI_t fi)
     case FSM_DESTROY:	return "destroy";
     case FSM_VERIFY:	return "verify";
 
-    case FSM_UNLINK:	return "unlink";
-    case FSM_RENAME:	return "rename";
-    case FSM_MKDIR:	return "mkdir";
+    case FSM_UNLINK:	return "Unlink";
+    case FSM_RENAME:	return "Rename";
+    case FSM_MKDIR:	return "Mkdir";
     case FSM_RMDIR:	return "rmdir";
     case FSM_CHOWN:	return "chown";
     case FSM_LCHOWN:	return "lchown";
     case FSM_CHMOD:	return "chmod";
     case FSM_UTIME:	return "utime";
     case FSM_SYMLINK:	return "symlink";
-    case FSM_LINK:	return "link";
+    case FSM_LINK:	return "Link";
     case FSM_MKFIFO:	return "mkfifo";
     case FSM_MKNOD:	return "mknod";
-    case FSM_LSTAT:	return "lstat";
-    case FSM_STAT:	return "stat";
+    case FSM_LSTAT:	return "Lstat";
+    case FSM_STAT:	return "Stat";
+    case FSM_READLINK:	return "Readlink";
     case FSM_CHROOT:	return "chroot";
 
     case FSM_NEXT:	return "next";
@@ -248,10 +249,6 @@ struct pkgIterator {
 /**
  */
 static /*@null@*/ void * pkgFreeIterator(/*@only@*/ /*@null@*/ void * this) {
-    if (this) {
-	struct pkgIterator * pi = this;
-	TFI_t fi = pi->fi;
-    }
     return _free(this);
 }
 

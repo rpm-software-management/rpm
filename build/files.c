@@ -1114,6 +1114,9 @@ static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
 
     fi->actions = xcalloc(sizeof(*fi->actions), fi->fc);
     fi->fmapflags = xcalloc(sizeof(*fi->fmapflags), fi->fc);
+    fi->astriplen = 0;
+    if (fl->buildRootURL)
+	fi->astriplen = strlen(fl->buildRootURL);
     fi->striplen = 0;
     fi->fuser = NULL;
     fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);

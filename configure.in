@@ -328,7 +328,7 @@ dnl     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"])
 dnl )
 
 dnl Check for Berkeley db1 API in glibc.
-AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db3.c"],
+AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c"],
   AC_CHECK_LIB(db1, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb1"],
     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb"])
   )

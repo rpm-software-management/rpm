@@ -52,7 +52,8 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
 
-    rc = fsmSetup(fi->fsm, ts, fi, cfd, &csa->cpioArchiveSize, &failedFile);
+    rc = fsmSetup(fi->fsm, FSM_BUILD, ts, fi, cfd,
+		&csa->cpioArchiveSize, &failedFile);
     rc = cpioBuildArchive(fi->fsm);
 
     Fclose(cfd);

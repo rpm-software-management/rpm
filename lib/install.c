@@ -438,7 +438,7 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	cfd = Fdopen(fdDup(Fileno(alp->fd)), rpmio_flags);
 	cfd = fdLink(cfd, "persist (installArchive");
 
-	rc = fsmSetup(fi->fsm, ts, fi, cfd, NULL, &failedFile);
+	rc = fsmSetup(fi->fsm, FSM_INSTALL, ts, fi, cfd, NULL, &failedFile);
 	rc = cpioInstallArchive(fi->fsm);
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	Fclose(cfd);
@@ -677,6 +677,7 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     }
     fi->uid = getuid();
     fi->gid = getgid();
+    fi->astriplen = 0;
     fi->striplen = 0;
     fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 

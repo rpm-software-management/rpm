@@ -86,17 +86,19 @@ struct mapi {
 /** \ingroup payload
  * File name and stat information.
  */
-struct cpioHeader {
+struct fsm_s {
 /*@owned@*/ const char * path;
 /*@owned@*/ const char * opath;
     FD_t cfd;
     FD_t rfd;
 /*@owned@*/ char * rdbuf;
+/*@dependent@*/ char * rdb;
     size_t rdsize;
     size_t rdlen;
     size_t rdnb;
     FD_t wfd;
 /*@owned@*/ char * wrbuf;
+/*@dependent@*/ char * wrb;
     size_t wrsize;
     size_t wrlen;
     size_t wrnb;
@@ -117,12 +119,13 @@ struct cpioHeader {
     int ldnlen;
     int ldnalloc;
     int postpone;
-    int statdone;
+    int diskchecked;
+    int exists;
     int mkdirsdone;
-    mode_t dperms;
-    mode_t fperms;
+    int astriplen;
     int rc;
     fileAction action;
+    fileStage goal;
     fileStage stage;
     struct stat osb;
     struct stat sb;
@@ -749,6 +752,7 @@ static int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     memcpy(hdr->checksum, "00000000", 8);
     memcpy(fsm->rdbuf + PHYS_HDR_SIZE, fsm->path, len);
 
+    /* XXX DWRITE uses rdnb for I/O length. */
     fsm->rdnb = PHYS_HDR_SIZE + len;
     rc = fsmStage(fsm, FSM_DWRITE);
     if (!rc && fsm->rdnb != fsm->wrnb)
@@ -1012,7 +1016,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rpmMessage(RPMMESS_DEBUG, "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n",
 		cur,
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
-		(fsm->path ? fsm->path : ""),
+		(fsm->path ? fsm->path + fsm->astriplen : ""),
 		((fsm->action != FA_UNKNOWN && fsm->action != FA_CREATE)
 			? fileActionString(fsm->action) : ""));
     }
@@ -1032,11 +1036,11 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ldn = _free(fsm->ldn);
 	fsm->ldnalloc = fsm->ldnlen = 0;
 	fsm->rdsize = 8 * BUFSIZ;
-	fsm->rdbuf = _free(fsm->rdbuf);
-	fsm->rdbuf = xmalloc(fsm->rdsize);
+	fsm->rdb = fsm->rdbuf = _free(fsm->rdbuf);
+	fsm->rdb = fsm->rdbuf = xmalloc(fsm->rdsize);
 	fsm->wrsize = 8 * BUFSIZ;
-	fsm->wrbuf = _free(fsm->wrbuf);
-	fsm->wrbuf = xmalloc(fsm->wrsize);
+	fsm->wrb = fsm->wrbuf = _free(fsm->wrbuf);
+	fsm->wrb = fsm->wrbuf = xmalloc(fsm->wrsize);
 	fsm->mkdirsdone = 0;
 	fsm->map = NULL;
 	fsm->links = NULL;
@@ -1044,6 +1048,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	errno = 0;	/* XXX get rid of EBADF */
 
 #ifdef	NOTYET
+	/* Detect and create directories not explicitly in package. */
 	rc = fsmStage(fsm, FSM_MKDIRS);
 #endif
 
@@ -1051,31 +1056,48 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_INIT:
 	fsm->path = _free(fsm->path);
 	fsm->postpone = 0;
-	fsm->statdone = 0;
-	fsm->dperms = 0755;
-	fsm->fperms = 0644;
+	fsm->diskchecked = fsm->exists = 0;
 	fsm->subdir = NULL;
 	fsm->suffix = (fsm->sufbuf[0] != '\0' ? fsm->sufbuf : NULL);
 	fsm->action = FA_UNKNOWN;
 	fsm->osuffix = NULL;
 	fsm->nsuffix = NULL;
 
-	if (fsm->cfd) {
+	if (fsm->goal == FSM_INSTALL) {
+	    /* Detect and create directories not explicitly in package. */
+	    if (!fsm->mkdirsdone) {
+		rc = fsmStage(fsm, FSM_MKDIRS);
+		fsm->mkdirsdone = 1;
+	    }
+
 	    /* Read next header from payload. */
 	    rc = fsmStage(fsm, FSM_POS);
 	    if (!rc)
 		rc = fsmStage(fsm, FSM_NEXT);
 	}
 
-	/* Remap mode/uid/gid/name of file from archive. */
+	/* Remap name/perms/uid/gid of archive file. */
 	if (!rc)
 	    rc = fsmStage(fsm, FSM_MAP);
 
+	/* Perform lstat/stat for disk file. */
+	fsm->diskchecked = fsm->exists = 0;
+	if (!rc) {
+	    rc = fsmStage(fsm,
+		(!fsmFlags(fsm, CPIO_FOLLOW_SYMLINKS) ? FSM_LSTAT : FSM_STAT));
+	    if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
+		errno = saveerrno;
+		fsm->exists = 0;
+		rc = 0;
+	    } else if (rc == 0) {
+		fsm->exists = 1;
+	    }
+	    fsm->diskchecked = 1;
+	}
 	    /* FSM_INIT -> {FSM_PRE,FSM_DESTROY} */
 	break;
     case FSM_MAP:
-	if (fsm->mapi)
-	    (void) fsmMap(fsm);
+	rc = fsmMap(fsm);
 	break;
     case FSM_MKDIRS:
 	{   const char * path = fsm->path;
@@ -1235,7 +1257,7 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
 	}
 
 	else {
-#ifndef	DYING
+#ifdef	DYING
 	    /* @todo This makes all dir paths, only needs doing once. */
 	    if (!fsm->mkdirsdone) {
 		rc = fsmStage(fsm, FSM_MKDIRS);
@@ -1246,13 +1268,13 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
 	}
 
 	if (fsm->postpone) {
-	    if (fsm->cfd) {
+	    if (fsm->goal == FSM_INSTALL) {
 		(void) fsmStage(fsm, FSM_POS);
 		(void) fsmStage(fsm, FSM_EAT);
 	    }
 	    /* FSM_PRE -> FSM_INIT */
 	}
-	if (fsm->cfd)
+	if (fsm->goal == FSM_INSTALL)
 	    (void) fsmStage(fsm, FSM_POS);
 	    /* FSM_PRE -> FSM_PROCESS */
 	break;
@@ -1350,11 +1372,13 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
 	    /* FSM_UNDO -> FSM_INIT */
 	break;
     case FSM_COMMIT:
-	if (!fsm->postpone && mapCommit(fsm->map)) {
-	    if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
-		rc = fsmCommitLinks(fsm);
-	    } else {
-		rc = fsmStage(fsm, FSM_FINALIZE);
+	if (fsm->goal == FSM_INSTALL) {
+	    if (!fsm->postpone && mapCommit(fsm->map)) {
+		if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
+		    rc = fsmCommitLinks(fsm);
+		} else {
+		    rc = fsmStage(fsm, FSM_FINALIZE);
+		}
 	    }
 	}
 	fsm->path = _free(fsm->path);
@@ -1375,15 +1399,15 @@ opath = _free(opath);
 	}
 	if (S_ISLNK(st->st_mode)) {
 	    if (!rc && !getuid() &&
-			!(fsm->statdone && st->st_mode == ost->st_mode))
+			!(fsm->diskchecked && st->st_mode == ost->st_mode))
 		rc = fsmStage(fsm, FSM_LCHOWN);
 	} else {
 	    if (!rc && !getuid() &&
-			!(fsm->statdone && st->st_uid == ost->st_uid
+			!(fsm->diskchecked && st->st_uid == ost->st_uid
 					&& st->st_uid == ost->st_uid))
 		rc = fsmStage(fsm, FSM_CHOWN);
 	    if (!rc &&
-			!(fsm->statdone &&
+			!(fsm->diskchecked &&
 				(st->st_mode & 07777) == (ost->st_mode & 07777)))
 		rc = fsmStage(fsm, FSM_CHMOD);
 	    if (!rc)
@@ -1412,16 +1436,14 @@ opath = _free(opath);
 	}
 	fsm->ldn = _free(fsm->ldn);
 	fsm->ldnalloc = fsm->ldnlen = 0;
-	fsm->rdbuf = _free(fsm->rdbuf);
-	fsm->wrbuf = _free(fsm->wrbuf);
+	fsm->rdb = fsm->rdbuf = _free(fsm->rdbuf);
+	fsm->wrb = fsm->wrbuf = _free(fsm->wrbuf);
 	break;
     case FSM_VERIFY:
-	rc = lstat(fsm->path, ost);
-	if (rc < 0 && errno == ENOENT)
-	    errno = saveerrno;
-	if (rc < 0) return CPIOERR_LSTAT_FAILED;
-	fsm->statdone = 1;
-
+	if (fsm->diskchecked && !fsm->exists) {
+	    rc = CPIOERR_LSTAT_FAILED;
+	    break;
+	}
 	if (S_ISREG(st->st_mode)) {
 	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
 	    (void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
@@ -1443,21 +1465,19 @@ opath = _free(opath);
 	} else if (S_ISDIR(st->st_mode)) {
 	    if (S_ISDIR(ost->st_mode))		return 0;
 	    if (S_ISLNK(ost->st_mode)) {
-		fsm->statdone = 0;
-		rc = stat(fsm->path, ost);
-		if (rc < 0 && errno != ENOENT)
-		    return CPIOERR_STAT_FAILED;
+		rc = fsmStage(fsm, FSM_STAT);
+		if (rc == CPIOERR_STAT_FAILED && errno == ENOENT) rc = 0;
+		if (rc) break;
 		errno = saveerrno;
 		if (S_ISDIR(ost->st_mode))	return 0;
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
 	    if (S_ISLNK(ost->st_mode)) {
-		rc = readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
+	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
+		rc = fsmStage(fsm, FSM_READLINK);
 		errno = saveerrno;
-		if (rc > 0) {
-		    fsm->rdbuf[rc] = '\0';
-		    if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
-		}
+		if (rc) break;
+		if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
 	    }
 	} else if (S_ISFIFO(st->st_mode)) {
 	    if (S_ISFIFO(ost->st_mode))		return 0;
@@ -1475,21 +1495,21 @@ opath = _free(opath);
 	break;
 
     case FSM_UNLINK:
-	rc = unlink(fsm->path);
+	rc = Unlink(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_UNLINK_FAILED;
 	break;
     case FSM_RENAME:
-	rc = rename(fsm->opath, fsm->path);
+	rc = Rename(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
 	break;
     case FSM_MKDIR:
-	rc = mkdir(fsm->path, (st->st_mode & 07777));
+	rc = Mkdir(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o) %s\n", cur,
 		fsm->path, (st->st_mode & 07777),
@@ -1497,7 +1517,7 @@ opath = _free(opath);
 	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
 	break;
     case FSM_RMDIR:
-	rc = rmdir(fsm->path);
+	rc = Rmdir(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -1549,7 +1569,7 @@ opath = _free(opath);
 	if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
 	break;
     case FSM_LINK:
-	rc = link(fsm->opath, fsm->path);
+	rc = Link(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -1574,18 +1594,31 @@ opath = _free(opath);
 	/*@=unrecog@*/
 	break;
     case FSM_LSTAT:
-	rc = lstat(fsm->path, ost);
+	rc = Lstat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && errno != ENOENT)
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_LSTAT_FAILED;
 	break;
     case FSM_STAT:
-	rc = stat(fsm->path, ost);
+	rc = Stat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && errno != ENOENT)
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_STAT_FAILED;
+	break;
+    case FSM_READLINK:
+	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
+	rc = Readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
+	if (_fsm_debug && (stage & FSM_SYSCALL))
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
+		fsm->path, fsm->rdlen, (rc < 0 ? strerror(errno) : ""));
+	if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
+	else {
+	    fsm->rdnb = rc;
+	    fsm->rdbuf[fsm->rdnb] = '\0';
+	    rc = 0;
+	}
 	break;
     case FSM_CHROOT:
 	break;
@@ -1607,16 +1640,19 @@ opath = _free(opath);
 	break;
     case FSM_POS:
 	left = (modulo - (fdGetCpioPos(fsm->cfd) % modulo)) % modulo;
-	if (left == 0)	break;
-	fsm->wrlen = left;
-	(void) fsmStage(fsm, FSM_DREAD);
+	if (left) {
+	    fsm->wrlen = left;
+	    (void) fsmStage(fsm, FSM_DREAD);
+	}
 	break;
     case FSM_PAD:
-	memset(fsm->rdbuf, 0, 64);
 	left = (modulo - (fdGetCpioPos(fsm->cfd) % modulo)) % modulo;
-	if (left == 0)	break;
-	fsm->rdlen = left;
-	(void) fsmStage(fsm, FSM_DWRITE);
+	if (left) {
+	    memset(fsm->rdbuf, 0, left);
+	    /* XXX DWRITE uses rdnb for I/O length. */
+	    fsm->rdnb = left;
+	    (void) fsmStage(fsm, FSM_DWRITE);
+	}
 	break;
     case FSM_HREAD:
 	rc = cpioHeaderRead(fsm, st);	/* Read next payload header. */
@@ -1627,8 +1663,9 @@ opath = _free(opath);
     case FSM_DREAD:
 	fsm->rdnb = Fread(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->wrlen, fsm->cfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (wrbuf, %d, cfd)\trdnb %d\n",
-		cur, fsm->wrlen, fsm->rdnb);
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
+		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
+		fsm->wrlen, fsm->rdnb);
 if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n", fsm->rdnb, fsm->wrlen);
 #ifdef	NOTYET
 	if (Ferror(fsm->rfd))
@@ -1640,8 +1677,9 @@ if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n",
     case FSM_DWRITE:
 	fsm->wrnb = Fwrite(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdnb, fsm->cfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (rdbuf, %d, cfd)\twrnb %d\n",
-		cur, fsm->rdnb, fsm->wrnb);
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\twrnb %d\n",
+		cur, (fsm->rdbuf == fsm->rdb ? "rdbuf" : "mmap"),
+		fsm->rdnb, fsm->wrnb);
 if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n", fsm->rdnb, fsm->wrnb);
 #ifdef	NOTYET
 	if (Ferror(fsm->wfd))
@@ -1660,7 +1698,7 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n",
 	    break;
 	}
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) rfd %p rdbuf %p\n", cur,
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
 		fsm->path, fsm->rfd, fsm->rdbuf);
 	break;
     case FSM_READ:
@@ -1691,7 +1729,7 @@ if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 	    rc = CPIOERR_OPEN_FAILED;
 	}
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) wfd %p wrbuf %p\n", cur,
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
 		fsm->path, fsm->wfd, fsm->wrbuf);
 	break;
     case FSM_WRITE:
@@ -1725,11 +1763,15 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n",
     return rc;
 }
 
-int fsmSetup(FSM_t fsm, const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
+int fsmSetup(FSM_t fsm, fileStage goal,
+		const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
     int rc = fsmStage(fsm, FSM_CREATE);
 
+    rpmSetVerbosity(RPMMESS_DEBUG);
+
+    fsm->goal = goal;
     if (cfd) {
 	fsm->cfd = fdLink(cfd, "persist (fsm)");
 	fdSetCpioPos(fsm->cfd, 0);
@@ -1739,8 +1781,12 @@ int fsmSetup(FSM_t fsm, const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
     fsm->failedFile = failedFile;
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
-    if (ts->id > 0)
-	sprintf(fsm->sufbuf, ";%08x", ts->id);
+
+    memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
+    if (fsm->goal != FSM_BUILD) {
+	if (ts->id > 0)
+	    sprintf(fsm->sufbuf, ";%08x", ts->id);
+    }
     return rc;
 }
 
@@ -1762,11 +1808,27 @@ int fsmMap(FSM_t fsm)
     int i = fsmGetIndex(fsm);
     int rc = 0;
 
-    fsm->map = mapFind(fsm->mapi, fsm->path);
-
     fsm->action = FA_UNKNOWN;
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
+    fsm->astriplen = (fi ? fi->astriplen : 0);
+
+    if (fsm->goal == FSM_INSTALL) {
+	if (fsm->mapi == NULL)
+	    return rc;
+	fsm->map = mapFind(fsm->mapi, fsm->path);
+    } else {
+        fsm->map = mapNextIterator(fsm->mapi);
+    }
+
+    if (fsm->goal == FSM_BUILD) {
+	if (fsm->map == NULL) {
+	    rc = CPIOERR_HDR_TRAILER;
+	    return rc;
+	}
+	fsm->path = mapFsPath(fsm->map, NULL, NULL, NULL);
+	return rc;
+    }
 
     if (fsm->map && fi && i >= 0 && i < fi->fc) {
 	fsm->action = fi->actions[i];
@@ -1933,17 +1995,17 @@ static int writeFile(FSM_t fsm, int writeData)
 	 * While linux puts the size of a symlink in the st_size field,
 	 * I don't think that's a specified standard.
 	 */
-	fsm->rdnb = st->st_size = Readlink(fsm->path, fsm->rdbuf, fsm->rdlen);
-	if (st->st_size <= 0) {
-	    rc = CPIOERR_READLINK_FAILED;
+	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
+	rc = fsmStage(fsm, FSM_READLINK);
+	if (rc)
 	    goto exit;
-	}
+	st->st_size = fsm->rdnb;
     }
 
     {	const char * fsmPath = fsm->path;
 	if (fsmFlags(fsm, CPIO_MAP_PATH))
 	    fsm->path = mapArchivePath(fsm->map);
-	rc = cpioHeaderWrite(fsm, st);
+	rc = fsmStage(fsm, FSM_HWRITE);
 	fsm->path = fsmPath;
     }
     if (rc)
@@ -1985,6 +2047,7 @@ static int writeFile(FSM_t fsm, int writeData)
 	    if (rc) goto exit;
 	  }
 
+	    /* XXX DWRITE uses rdnb for I/O length. */
 	    rc = fsmStage(fsm, FSM_DWRITE);
 	    if (rc) goto exit;
 
@@ -1999,6 +2062,7 @@ static int writeFile(FSM_t fsm, int writeData)
 #endif
 
     } else if (writeData && S_ISLNK(st->st_mode)) {
+	/* XXX DWRITE uses rdnb for I/O length. */
 	rc = fsmStage(fsm, FSM_DWRITE);
 	if (rc)
 	    goto exit;
@@ -2074,19 +2138,20 @@ int cpioBuildArchive(FSM_t fsm)
 
     hlinkList.next = NULL;
 
-    while ((fsm->map = mapNextIterator(fsm->mapi)) != NULL) {
+    while (1) {
 
-	fsm->path = mapFsPath(fsm->map, NULL, NULL, NULL);
+	rc = fsmStage(fsm, FSM_INIT);
 
-	if (fsmFlags(fsm, CPIO_FOLLOW_SYMLINKS))
-	    rc = Stat(fsm->path, ost);
-	else
-	    rc = Lstat(fsm->path, ost);
-
-	if (rc) {
-	    rc = CPIOERR_STAT_FAILED;
-	    goto exit;
+	if (rc == CPIOERR_HDR_TRAILER) {
+	    rc = 0;
+	    break;
 	}
+
+#ifdef	DYING
+	rc = fsmStage(fsm,
+		(!fsmFlags(fsm, CPIO_FOLLOW_SYMLINKS) ? FSM_LSTAT : FSM_STAT));
+#endif
+	if (rc) goto exit;
 
 	if (!S_ISDIR(ost->st_mode) && ost->st_nlink > 1) {
 	    hlink = hlinkList.next;
@@ -2127,7 +2192,8 @@ int cpioBuildArchive(FSM_t fsm)
 	    rc = writeFile(fsm, 1);
 	    if (rc) goto exit;
 	}
-	fsm->path = _free(fsm->path);
+
+	rc = fsmStage(fsm, FSM_COMMIT);
     }
 
     rc = 0;
@@ -2145,15 +2211,17 @@ int cpioBuildArchive(FSM_t fsm)
 	memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
 	memcpy(hdr->nlink, "00000001", 8);
 	memcpy(hdr->namesize, "0000000b", 8);
-	memcpy(fsm->rdbuf + PHYS_HDR_SIZE, "TRAILER!!!", 11);
-	fsm->wrlen = PHYS_HDR_SIZE + 11;
+	memcpy(fsm->rdbuf + PHYS_HDR_SIZE, "TRAILER!!!", sizeof("TRAILER!!!"));
+
+	/* XXX DWRITE uses rdnb for I/O length. */
+	fsm->rdnb = PHYS_HDR_SIZE + sizeof("TRAILER!!!");
 	rc = fsmStage(fsm, FSM_DWRITE);
 	if (rc) goto exit;
     }
 
     /*
-     * GNU cpio pads to 512 bytes here, but we don't. This matters only
-     * for tape devices and/or multiple archives.
+     * GNU cpio pads to 512 bytes here, but we don't. This may matter for
+     * for tape device access and/or concateneated cpio archives.
      */
     rc = fsmStage(fsm, FSM_PAD);
 
