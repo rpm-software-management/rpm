@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-03-23 09:14-0500\n"
+"POT-Creation-Date: 2000-03-23 15:52-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1986,27 +1986,35 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/dbindex.c:63
+#: lib/dbindex.c:86
 #, c-format
 msgid "bad db file %s"
 msgstr ""
 
-#: lib/dbindex.c:79
+#: lib/dbindex.c:121
+msgid ""
+"\n"
+"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
+"    db1 to db2 on-disk format.\n"
+"\n"
+msgstr ""
+
+#: lib/dbindex.c:136
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr ""
 
-#: lib/dbindex.c:162
+#: lib/dbindex.c:219
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: lib/dbindex.c:187
+#: lib/dbindex.c:244
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/dbindex.c:192
+#: lib/dbindex.c:249
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
@@ -2705,72 +2713,74 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/rebuilddb.c:26 lib/rpmdb.c:251
+#: lib/rebuilddb.c:29 lib/rpmdb.c:251
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:54
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rebuilddb.c:55
+#: lib/rebuilddb.c:58
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rebuilddb.c:61
+#: lib/rebuilddb.c:64
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: lib/rebuilddb.c:63
+#: lib/rebuilddb.c:66
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rebuilddb.c:69
-msgid "opening old database\n"
+#: lib/rebuilddb.c:73
+#, c-format
+msgid "opening old database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rebuilddb.c:76
-msgid "opening new database\n"
+#: lib/rebuilddb.c:82
+#, c-format
+msgid "opening new database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rebuilddb.c:86
+#: lib/rebuilddb.c:93
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 
-#: lib/rebuilddb.c:104
+#: lib/rebuilddb.c:111
 #, c-format
 msgid "duplicated database entry: %s-%s-%s -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:116
+#: lib/rebuilddb.c:123
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rebuilddb.c:122
+#: lib/rebuilddb.c:129
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:135
+#: lib/rebuilddb.c:142
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:143
+#: lib/rebuilddb.c:150
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:145
+#: lib/rebuilddb.c:152
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:151
+#: lib/rebuilddb.c:158
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

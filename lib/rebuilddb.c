@@ -5,6 +5,9 @@
 
 #include "rpmdb.h"
 
+extern int prefer_dbi_major;	/* XXX shared with rebuilddb.c */
+extern int use_dbi_major;
+
 /** */
 int rpmdbRebuild(const char * rootdir)
 {
@@ -66,14 +69,18 @@ int rpmdbRebuild(const char * rootdir)
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("opening old database\n"));
+    use_dbi_major = prefer_dbi_major;
+    rpmMessage(RPMMESS_DEBUG, _("opening old database with dbi_major %d\n"),
+		use_dbi_major);
     if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("opening new database\n"));
+    use_dbi_major = prefer_dbi_major;
+    rpmMessage(RPMMESS_DEBUG, _("opening new database with dbi_major %d\n"),
+		use_dbi_major);
     if (openDatabase(rootdir, newdbpath, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	rc = 1;
 	goto exit;

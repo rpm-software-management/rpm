@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <rpmlib.h>
 #include <rpmurl.h>
 
@@ -53,10 +55,31 @@ static void freeDBI( /*@only@*/ /*@null@*/ dbiIndex dbi) {
     }
 }
 
+int prefer_dbi_major = 2;	/* XXX shared with rebuilddb.c */
+int use_dbi_major = -1;
+
+typedef int (*_dbopen) (dbiIndex dbi);
+
+static _dbopen mydbopens[] = {
+#if HAVE_DB1_DB_H
+    db0open,
+#else
+    NULL,
+#endif
+#if HAVE_DB_185_H
+    db1open,
+#else
+    NULL,
+#endif
+    db2open,
+    NULL,
+    NULL
+};
+
 dbiIndex dbiOpenIndex(const char * urlfn, int flags, int perms, DBI_TYPE type) {
     dbiIndex dbi;
     const char * filename;
-    int rc;
+    int rc = 0;
 
     (void) urlPath(urlfn, &filename);
     if (*filename == '\0') {
@@ -70,17 +93,51 @@ dbiIndex dbiOpenIndex(const char * urlfn, int flags, int perms, DBI_TYPE type) {
     dbi->dbi_perms = perms;
     dbi->dbi_type = type;
     dbi->dbi_openinfo = NULL;
-    dbi->dbi_major = 1;
+    dbi->dbi_major = use_dbi_major;
 
-    rc = db0open(dbi);
-
-    if (rc) {
-	freeDBI(dbi);
-	rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), urlfn,
-			      strerror(errno));
-	return NULL;
+    switch (dbi->dbi_major) {
+    case 3:
+    case 2:
+    case 1:
+    case 0:
+	errno = 0;
+	rc = (*(mydbopens[dbi->dbi_major])) (dbi);
+	if (rc == 0)
+	    break;
+	/*@fallthrough@*/
+    case -1:
+	dbi->dbi_major = 4;
+	while (dbi->dbi_major-- > 0) {
+	    if (mydbopens[dbi->dbi_major] == NULL)
+		continue;
+	    errno = 0;
+	    rc = (*(mydbopens[dbi->dbi_major])) (dbi);
+if (_debug)
+fprintf(stderr, "*** loop db%d rc %d errno %d %s\n", dbi->dbi_major, rc, errno, strerror(errno));
+	    if (rc == 0)
+		break;
+	    if (rc == 1 && dbi->dbi_major == 2) {
+		fprintf(stderr, "*** FIXME: <message about how to convert db>\n");
+		fprintf(stderr, _("\n\
+--> Please run \"rpm --rebuilddb\" as root to convert your database from\n\
+    db1 to db2 on-disk format.\n\
+\n\
+"));
+		dbi->dbi_major--;	/* XXX don't bother with db_185 */
+	    }
+	}
+	use_dbi_major = dbi->dbi_major;
+    	break;
     }
-    return dbi;
+
+    if (rc == 0)
+	return dbi;
+
+    rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), urlfn,
+			      strerror(errno));
+
+    freeDBI(dbi);
+    return NULL;
 }
 
 int dbiCloseIndex(dbiIndex dbi) {
