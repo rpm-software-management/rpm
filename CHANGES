@@ -67,6 +67,8 @@
 	- updated pl/rpm.8 (PLD team).
 	- new find req/prov scripts for non-linux platforms (Tim Mooney).
 	- fix: non-GNU globs burp on repeated '/' in patterns.
+	- dumb cpp's want white space around lclint annotations (Tim Mooney).
+	- aix: aix.req broken by cut-and-paste (Tim Mooney).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

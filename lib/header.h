@@ -86,7 +86,7 @@ Header headerLoad(void *p);
 void *headerUnload(Header h);
 
 Header headerNew(void);
-void headerFree(/*@killref@*/ Header h);
+void headerFree( /*@killref@*/ Header h);
 
 /* dump a header to a file, in human readable format */
 void headerDump(Header h, FILE *f, int flags,
@@ -96,7 +96,7 @@ void headerDump(Header h, FILE *f, int flags,
 char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extentions,
-		     /*@out@*/const char ** error);
+		     /*@out@*/ const char ** error);
 
 #define HEADER_DUMP_INLINE   1
 
@@ -136,14 +136,17 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
 /* Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements w/
    RPM_I18NSTRING_TYPE equivalent enreies are translated (if HEADER_I18NTABLE
    entry is present). */
-int headerGetEntry(Header h, int_32 tag, /*@out@*/int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c);
+int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
+	/*@out@*/ void **p, /*@out@*/int_32 *c);
 /* This gets an entry, and uses as little extra RAM as possible to represent
    it (this is only an issue for RPM_STRING_ARRAY_TYPE. */
-int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c);
+int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,
+	/*@out@*/ void **p, /*@out@*/ int_32 *c);
 
 /* If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
    match. */
-int headerGetRawEntry(Header h, int_32 tag, /*@out@*/int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c);
+int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
+	/*@out@*/ void **p, /*@out@*/ int_32 *c);
 
 int headerIsEntry(Header h, int_32 tag);
 /* removes all entries of type tag from the header, returns 1 if none were
@@ -152,9 +155,9 @@ int headerRemoveEntry(Header h, int_32 tag);
 
 HeaderIterator headerInitIterator(Header h);
 int headerNextIterator(HeaderIterator iter,
-	/*@out@*/int_32 *tag, /*@out@*/int_32 *type, /*@out@*/void **p,
-	/*@out@*/int_32 *c);
-void headerFreeIterator(/*@only@*/ HeaderIterator iter);
+	/*@out@*/ int_32 *tag, /*@out@*/ int_32 *type, /*@out@*/ void **p,
+	/*@out@*/ int_32 *c);
+void headerFreeIterator( /*@only@*/ HeaderIterator iter);
 
 Header headerCopy(Header h);
 void headerSort(Header h);

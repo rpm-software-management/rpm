@@ -1381,7 +1381,7 @@ static char escapedChar(const char ch)
     }
 }
 
-static void freeFormat(/*@only@*/struct sprintfToken * format, int num)
+static void freeFormat( /*@only@*/ struct sprintfToken * format, int num)
 {
     int i;
 

@@ -463,7 +463,7 @@ static int expandSymlink(CFD_t * cfd, struct cpioHeader * hdr)
     return 0;
 }
 
-static int expandFifo(/*@unused@*/CFD_t * cfd, struct cpioHeader * hdr)
+static int expandFifo( /*@unused@*/ CFD_t * cfd, struct cpioHeader * hdr)
 {
     struct stat sb;
 
@@ -480,7 +480,7 @@ static int expandFifo(/*@unused@*/CFD_t * cfd, struct cpioHeader * hdr)
     return 0; 
 }
 
-static int expandDevice(/*@unused@*/CFD_t * cfd, struct cpioHeader * hdr)
+static int expandDevice( /*@unused@*/ CFD_t * cfd, struct cpioHeader * hdr)
 {
     struct stat sb;
 
@@ -492,13 +492,13 @@ static int expandDevice(/*@unused@*/CFD_t * cfd, struct cpioHeader * hdr)
 	    return CPIOERR_UNLINK_FAILED;
     }
 
-    if (/*@-unrecog@*/ mknod(hdr->path, hdr->mode & (~0777), hdr->rdev) /*@=unrecog@*/)
+    if ( /*@-unrecog@*/ mknod(hdr->path, hdr->mode & (~0777), hdr->rdev) /*@=unrecog@*/ )
 	return CPIOERR_MKNOD_FAILED;
     
     return 0;
 }
 
-static void freeLink(/*@only@*/struct hardLink * li)
+static void freeLink( /*@only@*/ struct hardLink * li)
 {
     int i;
 

@@ -82,7 +82,7 @@ static /*@only@*/ struct fileMemory *newFileMemory(void)
     return fileMem;
 }
 
-static void freeFileMemory(/*@only@*/struct fileMemory *fileMem)
+static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
 {
     if (fileMem->files) free(fileMem->files);
     if (fileMem->names) free(fileMem->names);
@@ -91,8 +91,8 @@ static void freeFileMemory(/*@only@*/struct fileMemory *fileMem)
 }
 
 /* files should not be preallocated */
-static int assembleFileList(Header h, /*@out@*/struct fileMemory ** memPtr, 
-	 /*@out@*/int * fileCountPtr, /*@out@*/struct fileInfo ** filesPtr, 
+static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr, 
+	 /*@out@*/ int * fileCountPtr, /*@out@*/ struct fileInfo ** filesPtr, 
 	 int stripPrefixLength, enum fileActions * actions)
 {
     uint_32 * fileFlags;

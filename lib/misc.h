@@ -8,8 +8,8 @@
 extern "C" {
 #endif
 
-/*@only@*/char ** splitString(const char * str, int length, char sep);
-void freeSplitString(/*@only@*/char ** list);
+/*@only@*/ char ** splitString(const char * str, int length, char sep);
+void freeSplitString( /*@only@*/ char ** list);
 void stripTrailingSlashes(char * str);
 
 int rpmfileexists(const char * filespec);
@@ -23,14 +23,15 @@ int doputenv(const char * str);
 
 /* These may be called w/ a NULL argument to flush the cache -- they return
    -1 if the user can't be found */
-int unameToUid(char * thisUname, /*@out@*/uid_t * uid);
-int gnameToGid(char * thisGname, /*@out@*/gid_t * gid);
+int unameToUid(char * thisUname, /*@out@*/ uid_t * uid);
+int gnameToGid(char * thisGname, /*@out@*/ gid_t * gid);
 
 /* Call w/ -1 to flush the cache, returns NULL if the user can't be found */
 char * uidToUname(uid_t uid);
 char * gidToGname(gid_t gid);
 
-int makeTempFile(const char * prefix, /*@out@*/const char ** fnptr, /*@out@*/FD_t * fdptr);
+int makeTempFile(const char * prefix, /*@out@*/ const char ** fnptr,
+	/*@out@*/ FD_t * fdptr);
 char * currentDirectory(void);		/* result needs to be freed */
 
 #ifdef __cplusplus

@@ -38,7 +38,7 @@ extern "C" {
 Header rpmNewSignature(void);
 
 /* If an old-style signature is found, we emulate a new style one */
-int rpmReadSignature(FD_t fd, /*@out@*/Header *header, short sig_type);
+int rpmReadSignature(FD_t fd, /*@out@*/ Header *header, short sig_type);
 int rpmWriteSignature(FD_t fd, Header header);
 
 /* Generate a signature of data in file, insert in header */
@@ -64,7 +64,7 @@ typedef enum pgpVersion_e {
 } pgpVersion;
 
 /* Return path to pgp executable of given type, or NULL when not found */
-const char *rpmDetectPGPVersion(/*@out@*/pgpVersion *pgpVersion);
+const char *rpmDetectPGPVersion( /*@out@*/ pgpVersion *pgpVersion);
 
 #ifdef __cplusplus
 }

@@ -154,7 +154,7 @@ static char * depflagsFormat(int_32 type, const void * data,
     return val;
 }
 
-static int fsnamesTag(/*@unused@*/Header h, int_32 * type, void ** data,
+static int fsnamesTag( /*@unused@*/ Header h, int_32 * type, void ** data,
 	int_32 * count, int * freeData)
 {
     const char ** list;

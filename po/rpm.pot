@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-10-04 15:16-0400\n"
+"POT-Creation-Date: 1999-10-04 16:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2663,63 +2663,63 @@ msgstr ""
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:692
+#: lib/query.c:693
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:694
+#: lib/query.c:695
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:696
+#: lib/query.c:697
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:700
+#: lib/query.c:701
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:702
+#: lib/query.c:703
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:704
+#: lib/query.c:705
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:706
+#: lib/query.c:707
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:745
+#: lib/query.c:746
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:747
+#: lib/query.c:748
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:749
+#: lib/query.c:750
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:751
+#: lib/query.c:752
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:755
+#: lib/query.c:756
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:757
+#: lib/query.c:758
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:760
+#: lib/query.c:761
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:762
+#: lib/query.c:763
 msgid "display a verbose file listing"
 msgstr ""
 

@@ -14,11 +14,13 @@
 extern "C" {
 #endif
 
-int rpmReadPackageInfo(FD_t fd, /*@out@*/Header * signatures, /*@out@*/Header * hdr);
-int rpmReadPackageHeader(FD_t fd, /*@out@*/Header * hdr, /*@out@*/int * isSource, /*@out@*/int * major,
-			 /*@out@*/int * minor);
+int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
+	/*@out@*/ Header * hdr);
+int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
+	/*@out@*/ int * isSource, /*@out@*/ int * major, /*@out@*/ int * minor);
 
-int headerNVR(Header h, /*@out@*/const char **np, /*@out@*/const char **vp, /*@out@*/const char **rp);
+int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
+	/*@out@*/ const char **rp);
 
    /* 0 = success */
    /* 1 = bad magic */
@@ -271,15 +273,15 @@ void rpmSetVar(int var, const char *val);
 
 int rpmReadConfigFiles(const char * file, const char * target);
 int rpmReadRC(const char * file);
-void rpmGetArchInfo(/*@out@*/char ** name, /*@out@*/int * num);
-void rpmGetOsInfo(/*@out@*/char ** name, /*@out@*/int * num);
+void rpmGetArchInfo( /*@out@*/ char ** name, /*@out@*/ int * num);
+void rpmGetOsInfo( /*@out@*/ char ** name, /*@out@*/ int * num);
 int rpmMachineScore(int type, char * name);
 int rpmShowRC(FILE *f);
 void rpmSetTables(int archTable, int osTable);  /* only used by build code */
 /* if either are NULL, they are set to the default value (munged uname())
    pushed through a translation table (if appropriate) */
 void rpmSetMachine(const char * arch, const char * os);
-void rpmGetMachine(/*@out@*/char **arch, /*@out@*/char **os);
+void rpmGetMachine( /*@out@*/ char **arch, /*@out@*/ char **os);
 void rpmFreeRpmrc(void);
 
 /** **/
@@ -298,11 +300,11 @@ typedef void * (*rpmCallbackFunction)(const Header h,
 				      const unsigned long total,
 				      const void * pkgKey, void * data);
 
-int rpmdbOpen (const char * root, /*@out@*/rpmdb * dbp, int mode, int perms);
+int rpmdbOpen (const char * root, /*@out@*/ rpmdb * dbp, int mode, int perms);
     /* 0 on error */
 int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
-void rpmdbClose (/*@only@*/rpmdb db);
+void rpmdbClose ( /*@only@*/ rpmdb db);
 /* Databases like this should only have rpmdb*RecNum and rpmdbGetRecord
    used on them. Anything else could fail! */
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp);
@@ -312,17 +314,26 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
     /* 0 at end, -1 on error */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
-int rpmdbFindByFile(rpmdb db, const char * filespec, /*@out@*/dbiIndexSet * matches);
-int rpmdbFindByGroup(rpmdb db, const char * group, /*@out@*/dbiIndexSet * matches);
-int rpmdbFindPackage(rpmdb db, const char * name, /*@out@*/dbiIndexSet * matches);
-int rpmdbFindByProvides(rpmdb db, const char * provides, /*@out@*/dbiIndexSet * matches);
-int rpmdbFindByRequiredBy(rpmdb db, const char * requires, /*@out@*/dbiIndexSet * matches);
-int rpmdbFindByConflicts(rpmdb db, const char * conflicts, /*@out@*/dbiIndexSet * matches);
-int rpmdbFindByTriggeredBy(rpmdb db, const char * package, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByFile(rpmdb db, const char * filespec,
+	/*@out@*/ dbiIndexSet * matches);
+int rpmdbFindByGroup(rpmdb db, const char * group,
+	/*@out@*/ dbiIndexSet * matches);
+int rpmdbFindPackage(rpmdb db, const char * name,
+	/*@out@*/ dbiIndexSet * matches);
+int rpmdbFindByProvides(rpmdb db, const char * provides,
+	/*@out@*/ dbiIndexSet * matches);
+int rpmdbFindByRequiredBy(rpmdb db, const char * requires,
+	/*@out@*/ dbiIndexSet * matches);
+int rpmdbFindByConflicts(rpmdb db, const char * conflicts,
+	/*@out@*/ dbiIndexSet * matches);
+int rpmdbFindByTriggeredBy(rpmdb db, const char * package,
+	/*@out@*/ dbiIndexSet * matches);
 
 /* these are just convenience functions */
-int rpmdbFindByLabel(rpmdb db, const char * label, /*@out@*/dbiIndexSet * matches);
-int rpmdbFindByHeader(rpmdb db, Header h, /*@out@*/dbiIndexSet * matches);
+int rpmdbFindByLabel(rpmdb db, const char * label,
+	/*@out@*/ dbiIndexSet * matches);
+int rpmdbFindByHeader(rpmdb db, Header h,
+	/*@out@*/ dbiIndexSet * matches);
 
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
@@ -337,8 +348,8 @@ int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
 int rpmVersionCompare(Header first, Header second);
 int rpmdbRebuild(const char * root);
 
-int rpmVerifyFile(const char * root, Header h, int filenum, /*@out@*/int * result,
-		  int omitMask);
+int rpmVerifyFile(const char * root, Header h, int filenum,
+	/*@out@*/ int * result, int omitMask);
 int rpmVerifyScript(const char * root, Header h, FD_t err);
 
 /* Transaction sets are inherently unordered! RPM may reorder transaction
@@ -358,7 +369,8 @@ struct rpmDependencyConflict {
 } ;
 
 /* db may be NULL, but don't do things which require the database! */
-/*@only@*/ rpmTransactionSet rpmtransCreateSet(/*@only@*/rpmdb db, const char * rootdir);
+/*@only@*/ rpmTransactionSet rpmtransCreateSet( /*@only@*/ rpmdb db,
+	const char * rootdir);
 
 /* if fd is NULL, the callback specified in rpmtransCreateSet() is used to
    open and close the file descriptor. If Header is NULL, the fd is always
@@ -371,19 +383,19 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			const void * key, int update, rpmRelocation * relocs);
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
 void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
-void rpmtransFree(/*@only@*/ rpmTransactionSet rpmdep);
+void rpmtransFree( /*@only@*/ rpmTransactionSet rpmdep);
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
 int rpmdepCheck(rpmTransactionSet rpmdep,
-	/*@exposed@*/ /*@out@*/struct rpmDependencyConflict ** conflicts,
-	/*@exposed@*/ /*@out@*/int * numConflicts);
+	/*@exposed@*/ /*@out@*/ struct rpmDependencyConflict ** conflicts,
+	/*@exposed@*/ /*@out@*/ int * numConflicts);
 
 /* Orders items, returns error on circle, finals keys[] is NULL. No dependency
    check is done, use rpmdepCheck() for that. If dependencies are not
    satisfied a "best-try" ordering is returned. */
 int rpmdepOrder(rpmTransactionSet order);
-void rpmdepFreeConflicts(/*@only@*/struct rpmDependencyConflict * conflicts,
+void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 	int numConflicts);
 
 #define RPMTRANS_FLAG_TEST		(1 << 0)
@@ -430,11 +442,12 @@ void printDepProblems(FILE *fp, struct rpmDependencyConflict *conflicts,
 void rpmProblemPrint(FILE *fp, rpmProblem prob);
 void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs);
 
-void rpmProblemSetFree(/*@only@*/rpmProblemSet probs);
+void rpmProblemSetFree( /*@only@*/ rpmProblemSet probs);
 
 int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
-		       /*@out@*/rpmProblemSet * newProbs, int flags, int ignoreSet);
+		       /*@out@*/ rpmProblemSet * newProbs, int flags,
+			int ignoreSet);
 
 #define RPMPROB_FILTER_IGNOREOS		(1 << 0)
 #define RPMPROB_FILTER_IGNOREARCH	(1 << 1)
@@ -632,9 +645,9 @@ void rpmFreeSignature(Header h);
 int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
 
-int rpmGetFilesystemList(/*@out@*/const char *** listptr, /*@out@*/int * num);
+int rpmGetFilesystemList( /*@out@*/ const char *** listptr, /*@out@*/int * num);
 int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes,
-	int numFiles, /*@out@*/uint_32 ** usagesPtr, int flags);
+	int numFiles, /*@out@*/ uint_32 ** usagesPtr, int flags);
 
 /* ==================================================================== */
 /* --- query/verify */
@@ -683,7 +696,7 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
 
 extern struct poptOption rpmVerifyPoptTable[];
 
-int showVerifyPackage(QVA_t *qva, /*@only@*/rpmdb db, Header h);
+int showVerifyPackage(QVA_t *qva, /*@only@*/ rpmdb db, Header h);
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 
 /* ==================================================================== */

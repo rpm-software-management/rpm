@@ -425,7 +425,7 @@ errxit:
     return rc;
 }
 
-static int copyData(/*@only@*/FD_t sfd, FD_t tfd) {
+static int copyData( /*@only@*/ FD_t sfd, FD_t tfd) {
     char buf[BUFFER_SIZE];
     fd_set emptySet, readSet;
     struct timeval timeout;

@@ -83,7 +83,7 @@ static void alFreeIndex(struct availableList * al)
     }
 }
 
-static void alCreate(/*@out@*/struct availableList * al)
+static void alCreate( /*@out@*/ struct availableList * al)
 {
     al->alloced = 5;
     al->size = 0;
@@ -94,7 +94,7 @@ static void alCreate(/*@out@*/struct availableList * al)
     alFreeIndex(al);
 }
 
-static void alFree(/*@only@*/struct availableList * al)
+static void alFree( /*@only@*/ struct availableList * al)
 {
     int i;
     rpmRelocation * r;

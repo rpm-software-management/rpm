@@ -655,9 +655,10 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg)
 #define POPT_SPECFILE		1006
 
 /* ========== Query/Verify source popt args */
-static void rpmQVSourceArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptCallbackReason reason,
-			     const struct poptOption * opt, /*@unused@*/const char * arg, 
-			     const void * data)
+static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
+	/*@unused@*/ enum poptCallbackReason reason,
+	const struct poptOption * opt, /*@unused@*/ const char * arg, 
+	const void * data)
 {
     QVA_t *qva = (QVA_t *) data;
 

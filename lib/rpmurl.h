@@ -56,19 +56,19 @@ void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCoun
 int	httpOpen(urlinfo *u);
 int	ftpOpen(urlinfo *u);
 
-int	httpGetFile(/*@only@*/FD_t sfd, FD_t tfd);
-int	ftpGetFile(/*@only@*/FD_t sfd, FD_t tfd);
+int	httpGetFile( /*@only@*/ FD_t sfd, FD_t tfd);
+int	ftpGetFile( /*@only@*/ FD_t sfd, FD_t tfd);
 int	ftpGetFileDesc(FD_t);
-int	ftpAbort(/*@only@*/FD_t fd);
-int	ftpClose(/*@only@*/FD_t fd);
+int	ftpAbort( /*@only@*/ FD_t fd);
+int	ftpClose( /*@only@*/ FD_t fd);
 
 urltype	urlIsURL(const char * url);
-int 	urlSplit(const char *url, /*@out@*/urlinfo **u);
-/*@only@*/urlinfo	*newUrlinfo(void);
-void	freeUrlinfo(/*@only@*/urlinfo *u);
+int 	urlSplit(const char *url, /*@out@*/ urlinfo **u);
+/*@only@*/ urlinfo	*newUrlinfo(void);
+void	freeUrlinfo( /*@only@*/ urlinfo *u);
 
 /*@only@*/ FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
-int	ufdClose(/*@only@*/FD_t fd);
+int	ufdClose( /*@only@*/ FD_t fd);
 const char *urlStrerror(const char *url);
 
 int	urlGetFile(const char * url, const char * dest);
