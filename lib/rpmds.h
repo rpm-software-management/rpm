@@ -24,16 +24,35 @@ struct rpmFNSet_s {
     Header h;			/*!< Header for file name set (or NULL) */
 
 /*@only@*/
-    const char ** BN;		/*!< File base name(s). */
+    const char ** bnl;		/*!< Base name(s) (from header) */
 /*@only@*/
-    const int_32 * DI;		/*!< File directory index. */
+    const char ** dnl;		/*!< Directory name(s) (from header) */
+
 /*@only@*/
-    const uint_32 * Flags;	/*!< File flags. */
+    const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
 /*@only@*/
-    const char ** DN;		/*!< Directory name(s). */
-    int_32 DCount;		/*!< No. of directories. */
-    rpmTagType BNt, DIt, Ft, DNt;	/*!< Tag data types. */
-    int_32 Count;		/*!< No. of files. */
+    const char ** flinks;	/*!< File link(s) (from header) */
+/*@only@*/
+    const char ** flangs;	/*!< File lang(s) */
+
+/*@only@*/
+    const uint_32 * dil;	/*!< Directory indice(s) (from header) */
+/*@only@*/
+    const uint_32 * fflags;	/*!< File flag(s) (from header) */
+/*@only@*/
+    const uint_32 * fsizes;	/*!< File size(s) (from header) */
+/*@only@*/
+    const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
+/*@only@*/
+    const uint_16 * fmodes;	/*!< File mode(s) (from header) */
+/*@only@*/
+    const uint_16 * frdevs;	/*!< File rdev(s) (from header) */
+
+/*@only@*/
+    char * fstates;		/*!< File state(s) (from header) */
+
+    int_32 dc;			/*!< No. of directories. */
+    int_32 fc;			/*!< No. of files. */
 };
 
 /**

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-09 12:21-0500\n"
+"POT-Creation-Date: 2001-11-09 14:05-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1459,11 +1459,11 @@ msgstr ""
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
+#: lib/depends.c:758 lib/rpmds.c:404 lib/rpmds.c:559
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:758 lib/rpmds.c:375 lib/rpmds.c:530
+#: lib/depends.c:758 lib/rpmds.c:404 lib/rpmds.c:559
 msgid "YES"
 msgstr ""
 
@@ -2483,20 +2483,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:500
+#: lib/rpmds.c:529
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:529
+#: lib/rpmds.c:558
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:554
+#: lib/rpmds.c:583
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""

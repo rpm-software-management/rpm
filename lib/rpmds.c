@@ -44,20 +44,32 @@ rpmFNSet fnsFree(rpmFNSet fns)
 
 /*@-modfilesystem@*/
 if (_fns_debug)
-fprintf(stderr, "*** fns %p -- %s[%d]\n", fns, fns->Type, fns->Count);
+fprintf(stderr, "*** fns %p -- %s[%d]\n", fns, fns->Type, fns->fc);
 /*@=modfilesystem@*/
 
     /*@-branchstate@*/
-    if (fns->Count > 0) {
-	fns->DN = hfd(fns->DN, fns->DNt);
-	fns->BN = hfd(fns->BN, fns->BNt);
+    if (fns->fc > 0) {
+	fns->bnl = hfd(fns->bnl, -1);
+	fns->dnl = hfd(fns->dnl, -1);
+
+	fns->flinks = hfd(fns->flinks, -1);
+	fns->flangs = hfd(fns->flangs, -1);
+	fns->fmd5s = hfd(fns->fmd5s, -1);
+
+	fns->fstates = _free(fns->fstates);
+
 	/*@-evalorder@*/
-	fns->DI =
-		(fns->h != NULL ? hfd(fns->DI, fns->DIt) : _free(fns->DI));
-	fns->Flags =
-		(fns->h != NULL ? hfd(fns->Flags, fns->Ft) : _free(fns->Flags));
+	if (fns->h != NULL) {
+	    fns->h = headerFree(fns->h, "fnsFree");
+	} else {
+	    fns->fmtimes = _free(fns->fmtimes);
+	    fns->fmodes = _free(fns->fmodes);
+	    fns->fflags = _free(fns->fflags);
+	    fns->fsizes = _free(fns->fsizes);
+	    fns->frdevs = _free(fns->frdevs);
+	    fns->dil = _free(fns->dil);
+	}
 	/*@=evalorder@*/
-	fns->h = headerFree(fns->h, "fnsFree");
     }
     /*@=branchstate@*/
 
@@ -65,6 +77,11 @@ fprintf(stderr, "*** fns %p -- %s[%d]\n", fns, fns->Type, fns->Count);
     fns = _free(fns);
     return NULL;
 }
+
+#define	_fdupe(_fns, _data)	\
+    if ((_fns)->_data != NULL)	\
+	(_fns)->_data = memcpy(xmalloc((_fns)->fc * sizeof(*(_fns)->_data)), \
+			(_fns)->_data, (_fns)->fc * sizeof(*(_fns)->_data))
 
 rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 {
@@ -75,52 +92,64 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
     const char ** N;
     rpmTagType Nt;
     int_32 Count;
-    rpmTag tagBN, tagDI, tagF, tagDN;
 
     if (tagN == RPMTAG_BASENAMES) {
 	Type = "Files";
-	tagBN = tagN;
-	tagDI = RPMTAG_DIRINDEXES;
-	tagF = RPMTAG_FILEFLAGS;
-	tagDN = RPMTAG_DIRNAMES;
     } else
 	goto exit;
 
     /*@-branchstate@*/
-    if (hge(h, tagBN, &Nt, (void **) &N, &Count)
+    if (hge(h, tagN, &Nt, (void **) &N, &Count)
      && N != NULL && Count > 0)
     {
 	int xx;
 
 	fns = xcalloc(1, sizeof(*fns));
-	fns->h = (scareMem ? headerLink(h, "fnsNew") : NULL);
+	fns->h = headerLink(h, "fnsNew");
 	fns->i = -1;
 	fns->Type = Type;
 	fns->tagN = tagN;
-	fns->BN = N;
-	fns->BNt = Nt;
-	fns->Count = Count;
+	fns->bnl = N;
+	fns->fc = Count;
 
-	xx = hge(h, tagDN, &fns->DNt, (void **) &fns->DN, &fns->DCount);
-	xx = hge(h, tagDI, &fns->DIt, (void **) &fns->DI, NULL);
-	if (!scareMem && fns->DI != NULL)
-	    fns->DI = memcpy(xmalloc(fns->Count * sizeof(*fns->DI)),
-                                fns->DI, fns->Count * sizeof(*fns->DI));
-	xx = hge(h, tagF, &fns->Ft, (void **) &fns->Flags, NULL);
-	if (!scareMem && fns->Flags != NULL)
-	    fns->Flags = memcpy(xmalloc(fns->Count * sizeof(*fns->Flags)),
-                                fns->Flags, fns->Count * sizeof(*fns->Flags));
+	xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fns->dnl, &fns->dc);
+
+	xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fns->flinks, NULL);
+	xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fns->flangs, NULL);
+	xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fns->fmd5s, NULL);
+
+	xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fns->fmtimes, NULL);
+	xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fns->fmodes, NULL);
+	xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fns->fflags, NULL);
+	xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fns->fsizes, NULL);
+	xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fns->frdevs, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fns->dil, NULL);
+
+	xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fns->fstates, NULL);
+	_fdupe(fns, fstates);
+	if (xx == 0 || fns->fstates == NULL)
+	    fns->fstates = xcalloc(fns->fc, sizeof(*fns->fstates));
+
+	if (!scareMem) {
+	    _fdupe(fns, fmtimes);
+	    _fdupe(fns, fmodes);
+	    _fdupe(fns, fflags);
+	    _fdupe(fns, fsizes);
+	    _fdupe(fns, frdevs);
+	    _fdupe(fns, dil);
+	    fns->h = headerFree(fns->h, "fnsNew");
+	}
 
 /*@-modfilesystem@*/
 if (_fns_debug)
-fprintf(stderr, "*** fns %p ++ %s[%d]\n", fns, fns->Type, fns->Count);
+fprintf(stderr, "*** fns %p ++ %s[%d]\n", fns, fns->Type, fns->fc);
 /*@=modfilesystem@*/
 
     }
     /*@-branchstate@*/
 
 exit:
-    /*@-nullret@*/ /* FIX: fns->{DI,Flags} may be NULL. */
+    /*@-nullret@*/ /* FIX: fns->{dil,fflags} may be NULL. */
 /*@i@*/ return fns;
     /*@=nullret@*/
 }

@@ -199,7 +199,7 @@ int alGetFilesCount(const availableList al, alKey pkgKey)
     int_32 filesCount = 0;
     if (alp != NULL)
 	if (alp->fns != NULL)
-	    filesCount = alp->fns->Count;
+	    filesCount = alp->fns->fc;
     return filesCount;
 }
 #endif
@@ -369,7 +369,7 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 
     /* Delete directory/file info entries from added package list. */
     if ((fns = alp->fns) != NULL)
-    if (fns->BN != NULL && fns->Count > 0) {
+    if (fns->bnl != NULL && fns->fc > 0) {
 	int origNumDirs = al->numDirs;
 	int dirNum;
 	dirInfo dieNeedle =
@@ -381,12 +381,12 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	/* XXX FIXME: We ought to relocate the directory list here */
 
 	if (al->dirs != NULL)
-	if (fns->DN != NULL)
-	for (dirNum = fns->DCount - 1; dirNum >= 0; dirNum--) {
+	if (fns->dnl != NULL)
+	for (dirNum = fns->dc - 1; dirNum >= 0; dirNum--) {
 	    fileIndexEntry fie;
 
 	    /*@-assignexpose@*/
-	    dieNeedle->dirName = (char *) fns->DN[dirNum];
+	    dieNeedle->dirName = (char *) fns->dnl[dirNum];
 	    /*@=assignexpose@*/
 	    dieNeedle->dirNameLen = strlen(dieNeedle->dirName);
 	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
@@ -510,7 +510,7 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 
     alp->fns = fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
 
-    if (fns && fns->Count > 0) {
+    if (fns && fns->fc > 0) {
 	int * dirMapping;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
@@ -520,20 +520,20 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-	dirMapping = alloca(sizeof(*dirMapping) * fns->DCount);
+	dirMapping = alloca(sizeof(*dirMapping) * fns->dc);
 
 	/* allocated enough space for all the directories we could possible
 	   need to add */
 	al->dirs = xrealloc(al->dirs,
-			(al->numDirs + fns->DCount) * sizeof(*al->dirs));
+			(al->numDirs + fns->dc) * sizeof(*al->dirs));
 	origNumDirs = al->numDirs;
 
-	if (fns->DN != NULL)
-	for (dirNum = 0; dirNum < fns->DCount; dirNum++) {
+	if (fns->dnl != NULL)
+	for (dirNum = 0; dirNum < fns->dc; dirNum++) {
 	    /*@-assignexpose@*/
-	    dieNeedle->dirName = (char *) fns->DN[dirNum];
+	    dieNeedle->dirName = (char *) fns->dnl[dirNum];
 	    /*@=assignexpose@*/
-	    dieNeedle->dirNameLen = strlen(fns->DN[dirNum]);
+	    dieNeedle->dirNameLen = strlen(fns->dnl[dirNum]);
 	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
 			       sizeof(*dieNeedle), dieCompare);
 	    if (die) {
@@ -541,7 +541,7 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	    } else {
 		dirMapping[dirNum] = al->numDirs;
 		die = al->dirs + al->numDirs;
-		die->dirName = xstrdup(fns->DN[dirNum]);
+		die->dirName = xstrdup(fns->dnl[dirNum]);
 		die->dirNameLen = strlen(die->dirName);
 		die->files = NULL;
 		die->numFiles = 0;
@@ -550,34 +550,34 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	}
 
 	last = 0;
-	for (first = 0; first < fns->Count; first = last + 1) {
+	for (first = 0; first < fns->fc; first = last + 1) {
 	    fileIndexEntry fie;
 
-	    if (fns->DI == NULL)	/* XXX can't happen */
+	    if (fns->dil == NULL)	/* XXX can't happen */
 		continue;
 
-	    for (last = first; (last + 1) < fns->Count; last++) {
-		if (fns->DI[first] != fns->DI[last + 1])
+	    for (last = first; (last + 1) < fns->fc; last++) {
+		if (fns->dil[first] != fns->dil[last + 1])
 		    /*@innerbreak@*/ break;
 	    }
 
-	    die = al->dirs + dirMapping[fns->DI[first]];
+	    die = al->dirs + dirMapping[fns->dil[first]];
 	    die->files = xrealloc(die->files,
 		    (die->numFiles + last - first + 1) *
 			sizeof(*die->files));
 
 	    fie = die->files + die->numFiles;
 	    for (fns->i = first; fns->i <= last; fns->i++) {
-		if (fns->BN == NULL)	/* XXX can't happen */
+		if (fns->bnl == NULL)	/* XXX can't happen */
 		    /*@innercontinue@*/ continue;
-		if (fns->Flags == NULL)	/* XXX can't happen */
+		if (fns->fflags == NULL)	/* XXX can't happen */
 		    /*@innercontinue@*/ continue;
 		/*@-assignexpose@*/
-		fie->baseName = fns->BN[fns->i];
-		fie->baseNameLen = strlen(fns->BN[fns->i]);
+		fie->baseName = fns->bnl[fns->i];
+		fie->baseNameLen = strlen(fns->bnl[fns->i]);
 		/*@=assignexpose@*/
 		fie->pkgNum = pkgNum;
-		fie->fileFlags = fns->Flags[fns->i];
+		fie->fileFlags = fns->fflags[fns->i];
 		die->numFiles++;
 		fie++;
 	    }
