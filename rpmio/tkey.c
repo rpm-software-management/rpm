@@ -696,8 +696,8 @@ main (int argc, char *argv[])
 if (_debug)
 fprintf(stderr, "*** sig is\n%s\n", sig);
 
-    if ((rc = B64decode(sig, (void **)&dec, &declen)) != 0) {
-	fprintf(stderr, "*** B64decode returns %d\n", rc);
+    if ((rc = b64decode(sig, (void **)&dec, &declen)) != 0) {
+	fprintf(stderr, "*** b64decode returns %d\n", rc);
 	exit(rc);
     }
 
@@ -707,8 +707,8 @@ fprintf(stderr, "*** sig is\n%s\n", sig);
 	    exit(len);
     }
 
-    if ((enc = B64encode(dec, declen)) == NULL) {
-	fprintf(stderr, "*** B64encode returns %d\n", rc);
+    if ((enc = b64encode(dec, declen)) == NULL) {
+	fprintf(stderr, "*** b64encode failed\n");
 	exit(4);
     }
 

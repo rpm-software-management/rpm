@@ -54,9 +54,17 @@ pkginclude_HEADERS = base64.h beecrypt.h blockmode.h blockpad.h blowfish.h blowf
 
 EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc beecrypt.spec config.h config.gas.h config.win.h javaglue.h
 
+.PHONY: sources
+sources:
+	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%)
+
 .PHONY: lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) ${libbeecrypt_la_SOURCES} tests/beetest.c
+
+.PHONY: listobjs
+listobjs:
+	@echo $(BEECRYPT_OBJECTS) > $@
 
 DOXYGEN = /usr/bin/doxygen
 .PHONY: doxygen

@@ -27,7 +27,7 @@ myLDADD = \
 	$(top_builddir)/popt/libpopt.la \
 	@INTLLIBS@
 
-LIBS =
+LIBS = -lrt -lpthread
 #LDFLAGS = $(myLDFLAGS)
 LDADD = $(myLDADD)
 

@@ -1,3 +1,8 @@
+4.0.3 -> 4.1:
+	- loosely wire beecrypt library into rpm.
+
+4.0.3 -> 4.0.4:
+
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
 	- fix: rpmvercmp("1.a", "1.") returned -1, not +1 (#21392).

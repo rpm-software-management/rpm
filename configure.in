@@ -7,7 +7,7 @@ dnl it, why check it?
 AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(rpm, 4.0.3)
+AM_INIT_AUTOMAKE(rpm, 4.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
@@ -16,6 +16,28 @@ dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
 ALL_LINGUAS="cs da de en_RN es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN.GB2312"
+
+echo "
+
+****************************************************************************
+*                                                                          *
+*                   *** WARNING WARNING WARNING ***                        *
+*                                                                          *
+* This is source code from the development branch of rpm-4.1.              *
+*                                                                          *
+* If you want the "production" rpm-4.0.3 code, then you should either use  *
+* an rpm-4.0.3 src.rpm, or, if using a CVS checkout, do the following:     *
+*                                                                          *
+*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
+*       (no password, just carriage return)                                *
+*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
+*       cd rpm                                                             *
+*       cvs up -r rpm-4_0                                                  *
+*                                                                          *
+****************************************************************************
+
+"
+sleep 10
 
 LIBOBJS=
 
@@ -1123,7 +1145,7 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt $WITH_DB_SUBDIR)
+AC_CONFIG_SUBDIRS(popt beecrypt $WITH_DB_SUBDIR)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
@@ -1134,6 +1156,7 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
 	python/Makefile ],
   [	echo timestamp > popt/stamp-h.in
+	echo timestamp > beecrypt/stamp-h.in
 	echo timestamp > stamp-h.in
   ]
 )

@@ -8,7 +8,7 @@ static int _debug = 0;
 #include "base64.h"
 #include "debug.h"
 
-int B64decode (const char * s, void ** datap, size_t *lenp)
+int b64decode (const char * s, void ** datap, size_t *lenp)
 {
     static /*@only@*/ char * b64dec = NULL;
     unsigned char *t, *te;
@@ -73,7 +73,7 @@ fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
     return 0;
 }
 
-char * B64encode (const void * str, size_t ns)
+char * b64encode (const void * str, size_t ns)
 {
     static char b64enc[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

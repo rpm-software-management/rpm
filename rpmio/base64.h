@@ -17,7 +17,7 @@ extern "C" {
  * @return		0 on success
  */
 /*@unused@*/
-int B64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp);
+int b64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp);
 
 /**
  * Encode chunks of 3 bytes of binary input into 4 bytes of base64 output.
@@ -26,7 +26,7 @@ int B64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp);
  * @return		(malloc'd) base64 string
  */
 /*@unused@*/
-char * B64encode (const void * data, size_t ns);
+char * b64encode (const void * data, size_t ns);
 
 #ifdef __cplusplus
 }

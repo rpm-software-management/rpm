@@ -554,9 +554,17 @@ installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
+.PHONY: sources
+sources:
+	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%)
+
 .PHONY: lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) ${libbeecrypt_la_SOURCES} tests/beetest.c
+
+.PHONY: listobjs
+listobjs:
+	@echo $(BEECRYPT_OBJECTS) > $@
 .PHONY: doxygen
 doxygen apidocs: Doxyfile Doxyheader
 	rm -rf $@
