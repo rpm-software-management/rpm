@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.10 2000/08/16 09:38:05 rjray Exp $
+#   $Id: Header.pm,v 1.11 2000/08/18 08:24:22 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -35,7 +35,7 @@ use RPM::Error;
 use RPM::Constants ':rpmerr';
 
 $VERSION = '0.28';
-$revision = do { my @r=(q$Revision: 1.10 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.11 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -256,6 +256,13 @@ established behavior of other comparison operators (C<cmp> and C<E<lt>=E<gt>>);
 -1 indicates that the calling object is considered less, or older, than the
 passed argument. A value of 1 indicates that the calling object is greater,
 or newer, than the argument. A value of 0 indicates that they are equal.
+
+=item source_name
+
+If the B<RPM::Header> object is created directly from a file, FTP source
+or HTTP source, then that source is kept for future reference and may be
+retrieved using this accessor. This will be an empty string if the header
+was retrieved from the RPM database, or was built in-memory from data.
 
 =back
 
