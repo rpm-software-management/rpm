@@ -107,7 +107,7 @@ int parseScript(Spec spec, int parsePart)
 	partname = "%postun";
 	break;
       case PART_VERIFYSCRIPT:
-	tag = PART_VERIFYSCRIPT;
+	tag = RPMTAG_VERIFYSCRIPT;
 	progtag = RPMTAG_VERIFYSCRIPTPROG;
 	partname = "%verifyscript";
 	break;

@@ -43,3 +43,7 @@ BUILT_SOURCES = tagtable.c
 .PHONY:	lclint
 lclint:
 	lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES}
+
+tmacro: macro.c
+	$(CC) $(CFLAGS) ${DEFS} -DDEBUG_MACROS ${INCLUDES} -o $@ $<
+

@@ -10,8 +10,14 @@
 #ifdef DEBUG_MACROS
 #define rpmError fprintf
 #define RPMERR_BADSPEC stderr
+#undef	_
 #define	_(x)	x
 #define	xfree(_p)	free((void *)_p)
+typedef	int FD_t;
+#define	fdFileno(_x)	(_x)
+#define	fdOpen		open
+#define	fdRead		read
+#define	fdClose		close
 #else
 #include "rpmlib.h"
 #endif
@@ -902,7 +908,12 @@ expandMacro(MacroBuf *mb)
 	fn = (fe - f);
 	gn = (ge - g);
 	if (fn <= 0) {
+/* XXX Process % in unknown context */
+		c = '%';	/* XXX only need to save % */
+		SAVECHAR(mb, c);
+#if 0
 		rpmError(RPMERR_BADSPEC, _("A %% is followed by an unparseable macro"));
+#endif
 		s = se;
 		continue;
 	}
@@ -1369,7 +1380,7 @@ rpmGetPath(const char *path, ...)
 #ifdef DEBUG_MACROS
 
 MacroContext mc = { NULL, 0, 0};
-char *macrofiles = "./paths:./environment:./macros";
+char *macrofiles = "../macros";
 char *testfile = "./test";
 
 int
