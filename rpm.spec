@@ -1,6 +1,6 @@
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 2.93
+%define version 2.94
 Version: %{version}
 Release: 13
 Group: System Environment/Base

@@ -7,7 +7,7 @@ dnl it, why check it?
 AC_INIT(rpm.c)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(rpm, 2.93)
+AM_INIT_AUTOMAKE(rpm, 2.94)
 AM_CONFIG_HEADER(config.h)
 
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
