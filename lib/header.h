@@ -90,11 +90,27 @@ char * headerSprintf(Header h, const char * fmt,
 
 #define HEADER_DUMP_INLINE   1
 
-/* I18N items need an RPM_STRING_TYPE entry (used by default) and an
-   RPM_18NSTRING_TYPE table added. Dups are okay, but only defined for
-   iteration (with the exceptions noted below) */
+/* Duplicate tags are okay, but only defined for iteration (with the 
+   exceptions noted below). While you are allowed to add i18n string
+   arrays through this function, you probably don't mean to. See
+   headerAddI18NString() instead */
 int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+
+/* For the C locale, lang should be *NULL*. Here are the rules:
+
+	1) If the tag isn't in the Header, it's added with the passed string
+	   as a version.
+	2) If the tag occurs multiple times in entry, which tag is affected
+	   by the operation is undefined.
+	2) If the tag is in the header w/ this language, the entry is
+	   *replaced* (like headerModifyEntry()).
+
+   This function is intended to just "do the right thing". If you need
+   more fine grained control use headerAddEntry() and headerModifyEntry()
+   but be careful!
+*/
+int headerAddI18NString(Header h, int_32 tag, char * string, char * lang);
 
 /* Appends item p to entry w/ tag and type as passed. Won't work on
    RPM_STRING_TYPE. Any pointers from headerGetEntry() for this entry
@@ -119,6 +135,14 @@ HeaderIterator headerInitIterator(Header h);
 int headerNextIterator(HeaderIterator iter,
 		       int_32 *tag, int_32 *type, void **p, int_32 *c);
 void headerFreeIterator(HeaderIterator iter);
+
+/* reexamines LANGUAGE and LANG settings to set a new language for the
+   header; this only needs to be called if LANGUAGE or LANG may have changed
+   since the first headerGetEntry() on the header */
+void headerResetLang(Header h);
+/* sets the language path for the header; this doesn't need to be done if
+   the LANGUAGE or LANG enivronment variable are correct */
+void headerSetLangPath(Header h, char * lang);
 
 Header headerCopy(Header h);
 void headerSort(Header h);

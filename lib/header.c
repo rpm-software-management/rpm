@@ -49,6 +49,7 @@ struct headerToken {
     int indexAlloced;
 
     int sorted;  
+    int langNum;
 };
 
 struct entryInfo {
@@ -62,7 +63,7 @@ struct entryInfo {
 struct indexEntry {
     struct entryInfo info;
     void * data; 
-    int length;			/* Computable, but why bother */
+    int length;			/* Computable, but why bother? */
 };
 
 struct sprintfTag {
@@ -219,7 +220,8 @@ Header headerCopy(Header h)
 
     while (headerNextIterator(headerIter, &tag, &type, &ptr, &count)) {
 	headerAddEntry(res, tag, type, ptr, count);
-	if (type == RPM_STRING_ARRAY_TYPE) free(ptr);
+	if (type == RPM_STRING_ARRAY_TYPE || 
+	    type == RPM_I18NSTRING_TYPE) free(ptr);
     }
 
     res->sorted = 1;
@@ -336,6 +338,7 @@ Header headerLoad(void *pv)
 
     /* This assumes you only headerLoad() something you headerUnload()-ed */
     h->sorted = 1;
+    h->langNum = -1;
 
     pe = (struct entryInfo *) p;
     dataStart = (char *) (pe + h->indexUsed);
@@ -491,6 +494,7 @@ void headerDump(Header h, FILE *f, int flags,
 	    /*case RPM_INT64_TYPE:  		type = "INT64_TYPE"; 	break;*/
 	    case RPM_STRING_TYPE: 	    	type = "STRING_TYPE"; 	break;
 	    case RPM_STRING_ARRAY_TYPE: 	type = "STRING_ARRAY_TYPE"; break;
+	    case RPM_I18NSTRING_TYPE:	 	type = "I18N_STRING_TYPE"; break;
 	    default:		    	type = "(unknown)";	break;
 	}
 
@@ -563,6 +567,7 @@ void headerDump(Header h, FILE *f, int flags,
 		break;
 	    case RPM_STRING_TYPE:
 	    case RPM_STRING_ARRAY_TYPE:
+	    case RPM_I18NSTRING_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d %s\n", ct++, (char *) dp);
 		    dp = strchr(dp, 0);
@@ -643,7 +648,7 @@ static void copyEntry(struct indexEntry * entry,
 	}
 	/* fallthrough */
       case RPM_STRING_ARRAY_TYPE:
-	*type = RPM_STRING_ARRAY_TYPE;
+      case RPM_I18NSTRING_TYPE:
 	i = entry->info.count;
 	tableSize = i * sizeof(char *);
 	ptrEntry = *p = malloc(tableSize + entry->length);
@@ -680,13 +685,35 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c) {
 
 int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 {
-    int_32 t = RPM_NULL_TYPE;
-    int rc;
+    struct indexEntry * entry;
+    char * chptr;
+    int i;
 
-    rc = headerGetRawEntry(h, tag, &t, p, c);
-    if (rc && type) *type = t;
+    if (!p) return headerIsEntry(h, tag);
 
-    return rc;
+    /* First find the tag */
+    entry = findEntry(h, tag, RPM_NULL_TYPE);
+    if (!entry) {
+	*p = NULL;
+	return 0;
+    }
+
+    if (entry->info.type == RPM_I18NSTRING_TYPE) {
+	if (h->langNum == -1) headerResetLang(h);
+
+	if (type) *type = RPM_STRING_TYPE;
+	if (c) *c = entry->info.count;
+
+	chptr = entry->data;
+	for (i = 0; i < h->langNum; i++) 
+	    chptr += strlen(chptr) + 1;
+
+	*p = chptr;
+    } else {
+	copyEntry(entry, type, p, c);
+    }
+
+    return 1;
 }
 
 /********************************************************************/
@@ -704,6 +731,7 @@ Header headerNew()
     h->indexUsed = 0;
 
     h->sorted = 0;
+    h->langNum = -1;
 
     return (Header) h;
 }
@@ -766,6 +794,7 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk) {
 	exit(1);
 
       case RPM_STRING_ARRAY_TYPE:
+      case RPM_I18NSTRING_TYPE:
 	/* This is like RPM_STRING_TYPE, except it's *always* an array */
 	/* Compute sum of length of all strings, including null terminators */
 	i = count;
@@ -806,6 +835,7 @@ static void copyData(int_32 type, void * dstPtr, void * srcPtr, int_32 c,
 
     switch (type) {
       case RPM_STRING_ARRAY_TYPE:
+      case RPM_I18NSTRING_TYPE:
 	/* Otherwise, p is char** */
 	i = c;
 	src = (char **) srcPtr;
@@ -874,6 +904,94 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     return 1;
 }
 
+int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
+    struct indexEntry * table, * entry;
+    char * charArray[2];
+    char * chptr;
+    char ** strArray;
+    int length;
+    int ghosts;
+    int i, langNum;
+    char * buf;
+
+    table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
+    entry = findEntry(h, tag, RPM_I18NSTRING_TYPE);
+
+    if (!table && entry) {
+	return 0;		/* this shouldn't ever happen!! */
+    }
+
+    if (!table && !entry) {
+	if (!lang) {
+	    charArray[0] = "C";
+	    if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
+				&charArray, 1)) return 0;
+	} else {
+	    charArray[0] = "C";
+	    charArray[1] = lang;
+	    if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
+				&charArray, 2)) return 0;
+	}
+	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
+    }
+
+    if (!lang) lang = "C";
+
+    chptr = table->data;
+    for (langNum = 0; langNum < table->info.count; langNum++) {
+	if (!strcmp(chptr, lang)) break;
+	chptr += strlen(chptr) + 1;
+    }
+
+    if (langNum >= table->info.count) {
+	length = strlen(lang) + 1;
+	table->data = realloc(table->data, table->length + length);
+	memcpy(((char *)table->data) + table->length, lang, length);
+	table->length += length;
+	table->info.count++;
+    }
+
+    if (!entry) {
+	strArray = alloca(sizeof(*strArray) * langNum);
+	for (i = 0; i < langNum; i++)
+	    strArray[i] = "";
+	strArray[langNum] = string;
+	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, strArray, 
+				langNum + 1);
+    } else if (langNum >= entry->info.count) {
+	ghosts = langNum - entry->info.count;
+	
+	length = strlen(string) + 1 + ghosts;
+	entry->data = realloc(entry->data, entry->length + length);
+
+	memset(((char *)entry->data) + entry->length, '\0', ghosts);
+	strcpy(((char *)entry->data) + entry->length + ghosts, string);
+
+	entry->length += length;
+	entry->info.count = langNum + 1;
+    } else {
+	/* tricky... we need to add one to the middle (or beginning). This
+	   will replace an existing entry as well */
+	buf = malloc(strlen(string) + entry->length);
+
+	chptr = entry->data, length = 0;
+	for (i = 0; i < langNum; i++) 
+	    length += strlen(chptr + length) + 1;
+
+	memcpy(buf, entry->data, length);
+	strcpy(buf + length, string);
+	i = strlen(chptr + length) + 1;
+	memcpy(buf + strlen(string) + 1, entry->data + length + i, 
+		entry->length - length - i);
+
+	free(entry->data);
+	entry->data = buf;
+	entry->length += length;
+    }
+
+    return 0;
+}
+
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 {
     struct indexEntry *entry;
@@ -885,8 +1003,8 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	return 0;
     }
 
-    /* free after we've grabbed the new data in case the two are intertwined 
-       -- that's a bad idea but at least we won't break */
+    /* free after we've grabbed the new data in case the two are intertwined;
+       that's a bad idea but at least we won't break */
     oldData = entry->data;
 
     entry->info.count = c;
@@ -1540,4 +1658,56 @@ static char * shescapeFormat(int_32 type, const void * data,
     }
 
     return result;
+}
+
+void headerSetLangPath(Header h, char * lang) {
+    char * buf, * chptr, * start, * next;
+    struct indexEntry * table;
+    int langNum;
+
+    table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
+
+    if (!lang || !table) {
+	h->langNum = -1;
+	return;
+    }
+
+    buf = alloca(strlen(lang) + 1);
+    strcpy(buf, lang);
+
+    start = buf;
+    while (start) {
+	chptr = strchr(start, ':');
+	if (chptr) *chptr = '\0';
+	
+	next = table->data;
+	for (langNum = 0; langNum < table->info.count; langNum++) {
+	    if (!strcmp(next, start)) break;
+	    next += strlen(next) + 1;
+	}
+	
+	if (langNum < table->info.count) {
+	    h->langNum = langNum;
+	    break;
+	}
+	
+	if (chptr)
+	    start = chptr + 1;
+	else
+	    start = NULL;
+    }
+
+    if (!start)
+	h->langNum = -1;
+}
+
+void headerResetLang(Header h) {
+    char * str;
+
+    if ((str = getenv("LANGUAGE"))) {
+	headerSetLangPath(h, str);
+	return;
+    }
+   
+    headerSetLangPath(h, getenv("LANG"));
 }
