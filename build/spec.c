@@ -892,7 +892,7 @@ static int check_part(char *line, char **s)
 {
     struct part_rec *p = part_list;
 
-    while (p->s && strncasecmp(line, p->s, p->len)) {
+    while (p->s && strncmp(line, p->s, p->len)) {
         p++;
     }
     if (!p) return 0;
