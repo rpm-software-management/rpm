@@ -64,7 +64,7 @@ int main()
 		if (md5Digest(&param, digest))
 			return -1;
 
-		if (mp32ne(4, digest, table[i].expect))
+		if (mpne(4, digest, table[i].expect))
 		{
 			printf("failed\n");
 			failures++;

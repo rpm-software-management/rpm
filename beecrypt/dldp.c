@@ -35,12 +35,12 @@
 
 /**
  */
-static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ uint32* wksp)
+static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ mpw* wksp)
 	/*@modifies dp->g, wksp @*/;
 
 /**
  */
-static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ uint32* wksp)
+static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ mpw* wksp)
 	/*@modifies dp->g, wksp @*/;
 
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
@@ -81,9 +81,9 @@ int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, mpnum
 
 int dldp_pEqual(const dldp_p* a, const dldp_p* b)
 {
-	return mp32eqx(a->p.size, a->p.modl, b->p.size, b->p.modl) &&
-		mp32eqx(a->q.size, a->q.modl, b->q.size, b->q.modl) &&
-		mp32eqx(a->g.size, a->g.data, b->g.size, b->g.data);
+	return mpeqx(a->p.size, a->p.modl, b->p.size, b->p.modl) &&
+		mpeqx(a->q.size, a->q.modl, b->q.size, b->q.modl) &&
+		mpeqx(a->g.size, a->g.data, b->g.size, b->g.data);
 }
 
 /**
@@ -92,32 +92,32 @@ int dldp_pEqual(const dldp_p* a, const dldp_p* b)
 static int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 	/*@*/
 {
-	register uint32  size = dp->p.size;
-	register uint32* temp = (uint32*) malloc((8*size+2) * sizeof(*temp));
+	register size_t  size = dp->p.size;
+	register mpw* temp = (mpw*) malloc((8*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
 		/* check that p > 2 and p odd, then run miller-rabin test with t 50 */
-		if (mp32even(dp->p.size, dp->p.modl))
+		if (mpeven(dp->p.size, dp->p.modl))
 		{
 			free(temp);
 			return 0;
 		}
 
-		if (mp32pmilrab_w(&dp->p, rgc, 50, temp) == 0)
+		if (mppmilrab_w(&dp->p, rgc, 50, temp) == 0)
 		{
 			free(temp);
 			return 0;
 		}
 
 		/* check that q > 2 and q odd, then run miller-rabin test with t 50 */
-		if (mp32even(dp->q.size, dp->q.modl))
+		if (mpeven(dp->q.size, dp->q.modl))
 		{
 			free(temp);
 			return 0;
 		}
 
-		if (mp32pmilrab_w(&dp->q, rgc, 50, temp) == 0)
+		if (mppmilrab_w(&dp->q, rgc, 50, temp) == 0)
 		{
 			free(temp);
 			return 0;
@@ -126,10 +126,10 @@ static int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 		free(temp);
 
 		/* check that 1 < g < p */
-		if (mp32leone(dp->g.size, dp->g.data))
+		if (mpleone(dp->g.size, dp->g.data))
 			return 0;
 
-		if (mp32gex(dp->g.size, dp->g.data, dp->p.size, dp->p.modl))
+		if (mpgex(dp->g.size, dp->g.data, dp->p.size, dp->p.modl))
 			return 0;
 
 		return 1;
@@ -172,24 +172,25 @@ int dldp_pCopy(dldp_p* dst, const dldp_p* src)
 	return 0;
 }
 
-int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize, int cofactor)
+int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits, int cofactor)
 {
 	/*
 	 * Generate parameters as described by IEEE P1363, A.16.1
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
+	register size_t psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{
 		/* first generate q */
 		/*@-globs@*/
-		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mpnumber*) 0, temp);
+		mpprnd_w(&dp->q, rgc, qbits, mpptrials(qbits), (const mpnumber*) 0, temp);
 		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
 		/*@-globs@*/
-		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mpnumber*) 0, &dp->r, cofactor, temp);
+		mpprndconone_w(&dp->p, rgc, pbits, mpptrials(pbits), &dp->q, (const mpnumber*) 0, &dp->r, cofactor, temp);
 		/*@=globs@*/
 
 		/* clear n */
@@ -208,26 +209,27 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 }
 
 /*@-bounds@*/
-int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
+int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t bits)
 {
 	/*
 	 * Generate parameters with a safe prime; p = 2q+1 i.e. r=2
 	 *
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
+	register size_t size = MP_BITS_TO_WORDS(bits + MP_WBITS - 1);
+	register mpw* temp = (mpw*) malloc((8*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
 		/* generate p */
 		/*@-globs@*/
-		mp32prndsafe_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), temp);
+		mpprndsafe_w(&dp->p, rgc, bits, mpptrials(bits), temp);
 		/*@=globs@*/
 
 		/* set q */
-		mp32copy(psize, temp, dp->p.modl);
-		mp32divtwo(psize, temp);
-		mpbset(&dp->q, psize, temp);
+		mpcopy(size, temp, dp->p.modl);
+		mpdivtwo(size, temp);
+		mpbset(&dp->q, size, temp);
 
 		/* set r = 2 */
 		mpnsetw(&dp->r, 2);
@@ -245,13 +247,13 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 }
 /*@=bounds@*/
 
-int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
+int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, mpw* wksp)
 {
 	/*
 	 * Randomly determine a generator over the subgroup with order q
 	 */
 
-	register uint32  size = dp->p.size;
+	register size_t size = dp->p.size;
 
 	mpnfree(&dp->g);
 	mpnsize(&dp->g, size);
@@ -264,7 +266,7 @@ int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 		/* first compute h^r mod p (stored in g) */
 		mpbpowmod_w(&dp->p, size, dp->g.data, dp->r.size, dp->r.data, dp->g.data, wksp);
 
-		if (mp32isone(size, dp->g.data))
+		if (mpisone(size, dp->g.data))
 			continue;
 
 		return 0;
@@ -274,8 +276,8 @@ int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 
 int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 {
-	register uint32  size = dp->p.size;
-	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(*temp));
+	register size_t size = dp->p.size;
+	register mpw* temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -304,24 +306,25 @@ int dldp_pgoqValidate(const dldp_p* dp, randomGeneratorContext* rgc, /*@unused@*
 	return 1;
 }
 
-int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize)
+int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits)
 {
 	/*
 	 * Generate parameters with a prime p such that p = qr+1, with q prime, and r = 2s, with s prime
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
+	register size_t psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{
 		/* generate q */
 		/*@-globs@*/
-		mp32prnd_w(&dp->q, rgc, qsize, mp32ptrials(qsize << 5), (const mpnumber*) 0, temp);
+		mpprnd_w(&dp->q, rgc, qbits, mpptrials(qbits), (const mpnumber*) 0, temp);
 		/*@=globs@*/
 
 		/* generate p with the appropriate congruences */
 		/*@-globs@*/
-		mp32prndconone_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), &dp->q, (const mpnumber*) 0, &dp->r, 2, temp);
+		mpprndconone_w(&dp->p, rgc, pbits, mpptrials(pbits), &dp->q, (const mpnumber*) 0, &dp->r, 2, temp);
 		/*@=globs@*/
 
 		/* set n */
@@ -337,19 +340,20 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	return -1;
 }
 
-int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
+int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
 {
 	/*
 	 * Generate parameters with a safe prime; i.e. p = 2q+1, where q is prime
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
+	register size_t psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{
 		/* generate safe p */
 		/*@-globs@*/
-		mp32prndsafe_w(&dp->p, rgc, psize, mp32ptrials(psize << 5), temp);
+		mpprndsafe_w(&dp->p, rgc, pbits, mpptrials(pbits), temp);
 		/*@=globs@*/
 
 		/* set n */
@@ -357,8 +361,8 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 		mpbset(&dp->n, psize, temp);
 
 		/* set q */
-		mp32copy(psize, temp, dp->p.modl);
-		mp32divtwo(psize, temp);
+		mpcopy(psize, temp, dp->p.modl);
+		mpdivtwo(psize, temp);
 		mpbset(&dp->q, psize, temp);
 
 		/* set r = 2 */
@@ -373,9 +377,9 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	return -1;
 }
 
-int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
+int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, mpw* wksp)
 {
-	register uint32  size = dp->p.size;
+	register size_t size = dp->p.size;
 
 	mpnfree(&dp->g);
 	mpnsize(&dp->g, size);
@@ -384,7 +388,7 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 	{
 		mpbrnd_w(&dp->p, rgc, dp->g.data, wksp);
 
-		if (mp32istwo(dp->r.size, dp->r.data))
+		if (mpistwo(dp->r.size, dp->r.data))
 		{
 			/*
 			 * A little math here: the only element in the group which has order 2 is (p-1);
@@ -395,7 +399,7 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 
 			/* check g^q mod p*/
 			mpbpowmod_w(&dp->p, size, dp->g.data, dp->q.size, dp->q.modl, wksp, wksp+size);
-			if (mp32isone(size, wksp))
+			if (mpisone(size, wksp))
 				continue;
 		}
 		else
@@ -410,25 +414,25 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 			 */
 
 			/* compute s = r/2 */
-			mp32setx(size, wksp, dp->r.size, dp->r.data);
-			mp32divtwo(size, wksp);
+			mpsetx(size, wksp, dp->r.size, dp->r.data);
+			mpdivtwo(size, wksp);
 
 			/* compute t = g^s mod p */
 			mpbpowmod_w(&dp->p, size, dp->g.data, size, wksp, wksp+size, wksp+2*size);
 			/* compute t^2 mod p = g^2s mod p = g^r mod p*/
 			mpbsqrmod_w(&dp->p, size, wksp+size, wksp+size, wksp+2*size);
-			if (mp32isone(size, wksp+size))
+			if (mpisone(size, wksp+size))
 				continue;
 
 			/* compute t^q mod p = g^qs mod p */
 			mpbpowmod_w(&dp->p, size, wksp, dp->q.size, dp->q.modl, wksp+size, wksp+2*size);
-			if (mp32isone(size, wksp+size))
+			if (mpisone(size, wksp+size))
 				continue;
 
 			/* compute g^2q mod p */
 			mpbpowmod_w(&dp->p, size, dp->g.data, dp->q.size, dp->q.modl, wksp, wksp+size);
 			mpbsqrmod_w(&dp->p, size, wksp, wksp+size, wksp+2*size);
-			if (mp32isone(size, wksp+size))
+			if (mpisone(size, wksp+size))
 				continue;
 		}
 
@@ -440,8 +444,8 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 
 int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 {
-	register uint32  psize = dp->p.size;
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
+	register size_t  psize = dp->p.size;
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{

@@ -60,7 +60,7 @@ int testVectorInvMod(const dlkp_p* keypair)
 
 		mpbmulmod_w(&keypair->param.n, size, temp, size, temp+size, temp, temp+2*size);
 
-		rc = mp32isone(size, temp);
+		rc = mpisone(size, temp);
 
 		free(temp);
 
@@ -80,7 +80,7 @@ int testVectorExpMod(const dlkp_p* keypair)
 	
 	mpbnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
 
-	rc = mp32eqx(y.size, y.data, keypair->y.size, keypair->y.data);
+	rc = mpeqx(y.size, y.data, keypair->y.size, keypair->y.data);
 
 	mpnfree(&y);
 
@@ -258,7 +258,7 @@ int testVectorDLDP()
 
 		/* we have the parameters, now see if g^q == 1 */
 		mpbnpowmod(&dp.p, &dp.g, (mpnumber*) &dp.q, &gq);
-		result = mp32isone(gq.size, gq.data);
+		result = mpisone(gq.size, gq.data);
 
 		mpnfree(&gq);
 		dldp_pFree(&dp);
@@ -280,7 +280,7 @@ int testVectorMD5()
 	md5Update(&param, (const unsigned char*) "abc", 3);
 	md5Digest(&param, digest);
 
-	return mp32eq(4, expect, digest);
+	return mpeq(4, expect, digest);
 }
 
 int testVectorSHA1()
@@ -293,7 +293,7 @@ int testVectorSHA1()
 	sha1Update(&param, (const unsigned char*) "abc", 3);
 	sha1Digest(&param, digest);
 
-	return mp32eq(5, expect, digest);
+	return mpeq(5, expect, digest);
 }
 
 int testVectorSHA256()
@@ -306,7 +306,7 @@ int testVectorSHA256()
 	sha256Update(&param, (const unsigned char*) "abc", 3);
 	sha256Digest(&param, digest);
 
-	return mp32eq(8, expect, digest);
+	return mpeq(8, expect, digest);
 }
 
 uint32 keyValue[] = 
@@ -630,9 +630,9 @@ void testDLParams()
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		fprintf(stdout, "\tdone in %.3f seconds\n", ttime);
 		#endif
-		fprintf(stdout, "P = "); fflush(stdout); mp32println(stdout, dp.p.size, dp.p.modl);
-		fprintf(stdout, "Q = "); fflush(stdout); mp32println(stdout, dp.q.size, dp.q.modl);
-		fprintf(stdout, "G = "); fflush(stdout); mp32println(stdout, dp.g.size, dp.g.data);
+		fprintf(stdout, "P = "); fflush(stdout); mpprintln(stdout, dp.p.size, dp.p.modl);
+		fprintf(stdout, "Q = "); fflush(stdout); mpprintln(stdout, dp.q.size, dp.q.modl);
+		fprintf(stdout, "G = "); fflush(stdout); mpprintln(stdout, dp.g.size, dp.g.data);
 		dldp_pFree(&dp);
 
 		fprintf(stdout, "Generating P (768 bits) Q (512 bits) G with order (P-1)\n");
@@ -645,10 +645,10 @@ void testDLParams()
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		fprintf(stdout, "\tdone in %.3f seconds\n", ttime);
 		#endif
-		fprintf(stdout, "P = "); fflush(stdout); mp32println(stdout, dp.p.size, dp.p.modl);
-		fprintf(stdout, "Q = "); fflush(stdout); mp32println(stdout, dp.q.size, dp.q.modl);
-		fprintf(stdout, "G = "); fflush(stdout); mp32println(stdout, dp.g.size, dp.g.data);
-		fprintf(stdout, "N = "); fflush(stdout); mp32println(stdout, dp.n.size, dp.n.modl);
+		fprintf(stdout, "P = "); fflush(stdout); mpprintln(stdout, dp.p.size, dp.p.modl);
+		fprintf(stdout, "Q = "); fflush(stdout); mpprintln(stdout, dp.q.size, dp.q.modl);
+		fprintf(stdout, "G = "); fflush(stdout); mpprintln(stdout, dp.g.size, dp.g.data);
+		fprintf(stdout, "N = "); fflush(stdout); mpprintln(stdout, dp.n.size, dp.n.modl);
 		dldp_pFree(&dp);
 
 		randomGeneratorContextFree(&rc);

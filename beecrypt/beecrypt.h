@@ -30,6 +30,7 @@
 
 #include "memchunk.h"
 #include "mpnumber.h"
+#include "mp.h"
 
 /** \name Entropy sources */
 /*@{*/
@@ -42,7 +43,7 @@
  * @param size		no. of ints of data
  * @return		0 on success, -1 on failure
  */
-typedef int (*entropyNext) (/*@out@*/ uint32* data, int size)
+typedef int (*entropyNext) (/*@out@*/ byte* data, size_t size)
 	/*@modifies data @*/;
 
 /** \ingroup ES_m
@@ -107,7 +108,7 @@ const entropySource* entropySourceDefault(void)
  * @return		0 on success, -1 on failure
  */
 BEECRYPTAPI
-int entropyGatherNext(uint32* data, int size)
+int entropyGatherNext(byte* data, size_t size)
 	/*@*/;
 
 #ifdef __cplusplus
@@ -140,7 +141,7 @@ typedef int (*randomGeneratorSetup) (randomGeneratorParam* param)
  * @param size		no. of ints of entropy
  * @return		0 on success, -1 on failure
  */
-typedef int (*randomGeneratorSeed) (randomGeneratorParam* param, const uint32* data, int size)
+typedef int (*randomGeneratorSeed) (randomGeneratorParam* param, const byte* data, size_t size)
 	/*@modifies *param @*/;
 
 /** \ingroup PRNG_m
@@ -152,7 +153,7 @@ typedef int (*randomGeneratorSeed) (randomGeneratorParam* param, const uint32* d
  * @param size		no. of ints of data
  * @return		0 on success, -1 on failure
  */
-typedef int (*randomGeneratorNext) (randomGeneratorParam* param, /*@out@*/ uint32* data, int size)
+typedef int (*randomGeneratorNext) (randomGeneratorParam* param, /*@out@*/ byte* data, size_t size)
 	/*@modifies *param, *data @*/;
 
 /** \ingroup PRNG_m
@@ -267,7 +268,7 @@ int randomGeneratorContextFree(/*@special@*/ randomGeneratorContext* ctxt)
 	/*@modifies ctxt->rng, ctxt->param @*/;
 
 BEECRYPTAPI /*@unused@*/
-int randomGeneratorContextNext(randomGeneratorContext* ctxt, /*@out@*/ uint32* data, int size)
+int randomGeneratorContextNext(randomGeneratorContext* ctxt, /*@out@*/ byte* data, size_t size)
 	/*@modifies ctxt->param, *data @*/;
 
 #ifdef __cplusplus
@@ -300,7 +301,7 @@ typedef int (*hashFunctionReset) (hashFunctionParam* param)
  * @param size		no. of bytes
  * @return		0 on success, -1 on failure
  */
-typedef int (*hashFunctionUpdate) (hashFunctionParam* param, const byte* data, int size)
+typedef int (*hashFunctionUpdate) (hashFunctionParam* param, const byte* data, size_t size)
 	/*@modifies *param @*/;
 
 /** \ingroup HASH_m
@@ -317,7 +318,7 @@ typedef int (*hashFunctionUpdate) (hashFunctionParam* param, const byte* data, i
  * @retval data		digest
  * @return		0 on success, -1 on failure
  */
-typedef int (*hashFunctionDigest) (hashFunctionParam* param, /*@out@*/ uint32* data)
+typedef int (*hashFunctionDigest) (hashFunctionParam* param, /*@out@*/ byte* data)
 	/*@modifies *param, *data @*/;
 
 /** \ingroup HASH_m
@@ -421,7 +422,7 @@ int hashFunctionContextReset(hashFunctionContext* ctxt)
 /** \ingroup HASH_m
  */
 BEECRYPTAPI /*@unused@*/
-int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, int size)
+int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, size_t size)
 	/*@modifies ctxt */;
 
 /** \ingroup HASH_m
@@ -433,13 +434,13 @@ int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
-int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mpnumber* n)
+int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
 	/*@modifies ctxt */;
 
 /** \ingroup HASH_m
  */
 BEECRYPTAPI
-int hashFunctionContextDigest(hashFunctionContext* ctxt, mpnumber* dig)
+int hashFunctionContextDigest(hashFunctionContext* ctxt, byte* dig)
 	/*@modifies ctxt, *dig */;
 
 /** \ingroup HASH_m
@@ -472,7 +473,7 @@ typedef void keyedHashFunctionParam;
  * @param keybits	no. bits in secret key
  * @return		0 on success, -1 on failure
  */
-typedef int (*keyedHashFunctionSetup) (keyedHashFunctionParam* param, const uint32* key, int keybits)
+typedef int (*keyedHashFunctionSetup) (keyedHashFunctionParam* param, const byte* key, size_t keybits)
 	/*@modifies *param @*/;
 
 /** \ingroup HMAC_m
@@ -492,7 +493,7 @@ typedef int (*keyedHashFunctionReset) (keyedHashFunctionParam* param)
  * @param size		no. of bytes
  * @return		0 on success, -1 on failure
  */
-typedef int (*keyedHashFunctionUpdate) (keyedHashFunctionParam* param, const byte* data, int size)
+typedef int (*keyedHashFunctionUpdate) (keyedHashFunctionParam* param, const byte* data, size_t size)
 	/*@modifies *param @*/;
 
 /** \ingroup HMAC_m
@@ -509,7 +510,7 @@ typedef int (*keyedHashFunctionUpdate) (keyedHashFunctionParam* param, const byt
  * @retval data		digest (or authentication code)
  * @return		0 on success, -1 on failure
  */
-typedef int (*keyedHashFunctionDigest) (keyedHashFunctionParam* param, /*@out@*/ uint32* data)
+typedef int (*keyedHashFunctionDigest) (keyedHashFunctionParam* param, /*@out@*/ byte* data)
 	/*@modifies *param, *data @*/;
 
 /** \ingroup HMAC_m
@@ -612,7 +613,7 @@ int keyedHashFunctionContextFree(/*@special@*/ keyedHashFunctionContext* ctxt)
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI
-int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const uint32* key, int keybits)
+int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const byte* key, size_t keybits)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
@@ -624,7 +625,7 @@ int keyedHashFunctionContextReset(keyedHashFunctionContext* ctxt)
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI /*@unused@*/
-int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, int size)
+int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, size_t size)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
@@ -636,14 +637,14 @@ int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memch
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI /*@unused@*/
-int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mpnumber* n)
+int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnumber* n)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
 BEECRYPTAPI
-int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mpnumber* dig)
-	/*@modifies ctxt, *dig @*/;
+int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* d)
+	/*@modifies ctxt, *d @*/;
 
 /** \ingroup HMAC_m
  */
@@ -673,24 +674,13 @@ typedef enum
 } cipherOperation;
 
 /** \ingroup BC_m
- * Block cipher modes.
- */
-/*@-enummemuse@*/
-typedef enum
-{
-	ECB,
-	CBC
-} cipherMode;
-/*@=enummemuse@*/
-
-/** \ingroup BC_m
  * @param param		blockcipher parameters
  * @param size		no. of ints
  * @retval dst		ciphertext block
  * @param src		plaintext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockModeEncrypt) (blockCipherParam* param, int count, uint32* dst, const uint32* src)
+typedef int (*blockModeEncrypt) (blockCipherParam* param, int count, byte* dst, const byte* src)
 	/*@modifies *param, *dst @*/;
 
 /** \ingroup BC_m
@@ -700,7 +690,7 @@ typedef int (*blockModeEncrypt) (blockCipherParam* param, int count, uint32* dst
  * @param src		ciphertext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockModeDecrypt) (blockCipherParam* param, int count, uint32* dst, const uint32* src)
+typedef int (*blockModeDecrypt) (blockCipherParam* param, int count, byte* dst, const byte* src)
 	/*@modifies *param, *dst @*/;
 
 /** \ingroup BC_m
@@ -724,7 +714,7 @@ typedef struct
  * @param cipherOperation
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherSetup) (blockCipherParam* param, const uint32* key, int keybits, cipherOperation cipherOperation)
+typedef int (*blockCipherSetup) (blockCipherParam* param, const byte* key, size_t keybits, cipherOperation cipherOperation)
 	/*@modifies param @*/;
 
 /** \ingroup BC_m
@@ -733,7 +723,7 @@ typedef int (*blockCipherSetup) (blockCipherParam* param, const uint32* key, int
  * @param data		iv data
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherSetIV) (blockCipherParam* param, const uint32* data)
+typedef int (*blockCipherSetIV) (blockCipherParam* param, const byte* data)
 	/*@modifies param @*/;
 
 /** \ingroup BC_m
@@ -745,7 +735,7 @@ typedef int (*blockCipherSetIV) (blockCipherParam* param, const uint32* data)
  * @param src		plaintext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherEncrypt) (blockCipherParam* param, uint32* dst, const uint32* src)
+typedef int (*blockCipherEncrypt) (blockCipherParam* param, byte* dst, const byte* src)
 	/*@modifies param, dst @*/;
 
 /** \ingroup BC_m
@@ -757,8 +747,10 @@ typedef int (*blockCipherEncrypt) (blockCipherParam* param, uint32* dst, const u
  * @param src		ciphertext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherDecrypt) (blockCipherParam* param, uint32* dst, const uint32* src)
+typedef int (*blockCipherDecrypt) (blockCipherParam* param, byte* dst, const byte* src)
 	/*@modifies param, dst @*/;
+
+typedef uint32_t* (*blockCipherFeedback)(blockCipherParam*);
 
 /** \ingroup BC_m
  * Methods and parameters for block ciphers.
@@ -777,8 +769,7 @@ typedef struct
     const blockCipherSetIV setiv;
     const blockCipherEncrypt encrypt;
     const blockCipherDecrypt decrypt;
-/*@dependent@*/
-    const blockMode* mode;
+    const blockCipherFeedback   getfb;
 } blockCipher;
 
 #ifdef __cplusplus
@@ -852,13 +843,13 @@ int blockCipherContextInit(blockCipherContext* ctxt, /*@observer@*/ /*@dependent
 /** \ingroup BC_m
  */
 BEECRYPTAPI
-int blockCipherContextSetup(blockCipherContext* ctxt, const uint32* key, int keybits, cipherOperation op)
+int blockCipherContextSetup(blockCipherContext* ctxt, const byte* key, size_t keybits, cipherOperation op)
 	/*@modifies ctxt @*/;
 
 /** \ingroup BC_m
  */
 BEECRYPTAPI /*@unused@*/
-int blockCipherContextSetIV(blockCipherContext* ctxt, const uint32* iv)
+int blockCipherContextSetIV(blockCipherContext* ctxt, const byte* iv)
 	/*@modifies ctxt @*/;
 
 /** \ingroup BC_m

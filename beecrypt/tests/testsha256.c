@@ -54,7 +54,7 @@ int main()
 		if (sha256Digest(&param, digest))
 			return -1;
 
-		if (mp32ne(8, digest, table[i].expect))
+		if (mpne(8, digest, table[i].expect))
 		{
 			printf("failed\n");
 			failures++;

@@ -65,7 +65,7 @@ int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
 int dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
 {
 	return dldp_pEqual(&a->param, &b->param) &&
-		mp32eqx(a->y.size, a->y.data, b->y.size, b->y.data);
+		mpeqx(a->y.size, a->y.data, b->y.size, b->y.data);
 }
 
 int dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
@@ -75,10 +75,10 @@ int dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofacto
 	if (rc <= 0)
 		return rc;
 
-	if (mp32leone(pk->y.size, pk->y.data))
+	if (mpleone(pk->y.size, pk->y.data))
 		return 0;
 
-	if (mp32gex(pk->y.size, pk->y.data, pk->param.p.size, pk->param.p.modl))
+	if (mpgex(pk->y.size, pk->y.data, pk->param.p.size, pk->param.p.modl))
 		return 0;
 
 	return 1;
@@ -91,10 +91,10 @@ int dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
 	if (rc <= 0)
 		return rc;
 
-	if (mp32leone(pk->y.size, pk->y.data))
+	if (mpleone(pk->y.size, pk->y.data))
 		return 0;
 
-	if (mp32gex(pk->y.size, pk->y.data, pk->param.p.size, pk->param.p.modl))
+	if (mpgex(pk->y.size, pk->y.data, pk->param.p.size, pk->param.p.modl))
 		return 0;
 
 	return 1;

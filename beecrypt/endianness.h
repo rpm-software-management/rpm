@@ -31,19 +31,19 @@
 #include <stdio.h>
 
 #ifdef __cplusplus
-inline int16 swap16(int16 n)
+inline int16_t swap16(int16_t n)
 {
 	return (    ((n & 0xff) << 8) |
 				((n & 0xff00) >> 8) );
 }
 
-inline uint16 swapu16(uint16 n)
+inline uint16_t swapu16(uint16_t n)
 {
 	return (    ((n & 0xffU) << 8) |
 				((n & 0xff00U) >> 8) );
 }
 
-inline int32 swap32(int32 n)
+inline int32_t swap32(int32_t n)
 {
 	#if (SIZEOF_LONG == 4)
 	return (    ((n & 0xff) << 24) |
@@ -58,7 +58,7 @@ inline int32 swap32(int32 n)
 	#endif
 }
 
-inline uint32 swapu32(uint32 n)
+inline uint32_t swapu32(uint32_t n)
 {
 	#if (SIZEOF_UNSIGNED_LONG == 4)
 	return (    ((n & 0xffU) << 24) |
@@ -73,7 +73,7 @@ inline uint32 swapu32(uint32 n)
 	#endif
 }
 
-inline int64 swap64(int64 n)
+inline int64_t swap64(int64_t n)
 {
 	#if HAVE_LONG_LONG
 	return (    ((n & 0xffLL) << 56) |
@@ -100,27 +100,27 @@ inline int64 swap64(int64 n)
 
 /**
  */
- int16 swap16 (int16 n)
+ int16_t swap16 (int16_t n)
 	/*@*/;
 
 /**
  */
-uint16 swapu16(uint16 n)
+uint16_t swapu16(uint16_t n)
 	/*@*/;
 
 /**
  */
- int32 swap32 (int32 n)
+ int32_t swap32 (int32_t n)
 	/*@*/;
 
 /**
  */
-uint32 swapu32(uint32 n)
+uint32_t swapu32(uint32_t n)
 	/*@*/;
 
 /**
  */
- int64 swap64 (int64 n)
+ int64_t swap64 (int64_t n)
 	/*@*/;
 /*@=exportlocal@*/
 #endif
@@ -158,18 +158,6 @@ int encodeLong(javalong l, /*@out@*/ byte* data)
  */
 BEECRYPTAPI /*@unused@*/
 int encodeChar(javachar c, /*@out@*/ byte* data)
-	/*@modifies data */;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeFloat(javafloat f, /*@out@*/ byte* data)
-	/*@modifies data */;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int encodeDouble(javadouble d, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
@@ -225,18 +213,6 @@ int decodeLong(/*@out@*/ javalong* l, const byte* data)
 BEECRYPTAPI /*@unused@*/
 int decodeChar(/*@out@*/ javachar* c, const byte* data)
 	/*@modifies c */;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeFloat(/*@out@*/ javafloat* f, const byte* data)
-	/*@modifies f */;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int decodeDouble(/*@out@*/ javadouble* d, const byte* data)
-	/*@modifies d */;
 
 /**
  */

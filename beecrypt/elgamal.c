@@ -62,8 +62,8 @@
 
 int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
-	register uint32  size = p->size;
-	register uint32* temp = (uint32*) malloc((13*size+11) * sizeof(*temp));
+	register size_t size = p->size;
+	register mpw* temp = (mpw*) malloc((13*size+11) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -79,8 +79,8 @@ int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
 		mpbmulmod_w(n, x->size, x->data, r->size, r->data, temp, temp+2*size);
 
 		/* compute -(x*r) mod n */
-		mp32neg(size, temp);
-		(void) mp32add(size, temp, n->modl);
+		mpneg(size, temp);
+		(void) mpadd(size, temp, n->modl);
 
 		/* compute h(m) - x*r mod n */
 		mpbaddmod_w(n, hm->size, hm->data, size, temp, temp, temp+2*size);
@@ -99,22 +99,22 @@ int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
 
 int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
-	register uint32  size = p->size;
-	register uint32* temp;
+	register size_t size = p->size;
+	register mpw* temp;
 
-	if (mp32z(r->size, r->data))
+	if (mpz(r->size, r->data))
 		return 0;
 
-	if (mp32gex(r->size, r->data, size, p->modl))
+	if (mpgex(r->size, r->data, size, p->modl))
 		return 0;
 
-	if (mp32z(s->size, s->data))
+	if (mpz(s->size, s->data))
 		return 0;
 
-	if (mp32gex(s->size, s->data, n->size, n->modl))
+	if (mpgex(s->size, s->data, n->size, n->modl))
 		return 0;
 
-	temp = (uint32*) malloc((6*size+2) * sizeof(*temp));
+	temp = (mpw*) malloc((6*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -126,13 +126,13 @@ int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
 		/* compute u2 = r^s mod p */
 		mpbpowmod_w(p, r->size, r->data, s->size, s->data, temp+size, temp+2*size);
 
-		/* compute v2 = u1*u2 mod p */
+		/* compute v1 = u1*u2 mod p */
 		mpbmulmod_w(p, size, temp, size, temp+size, temp+size, temp+2*size);
 
-		/* compute v1 = g^h(m) mod p */
+		/* compute v2 = g^h(m) mod p */
 		mpbpowmod_w(p, g->size, g->data, hm->size, hm->data, temp, temp+2*size);
 
-		rc = mp32eq(size, temp, temp+size);
+		rc = mpeq(size, temp, temp+size);
 
 		free(temp);
 
@@ -143,8 +143,8 @@ int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
 
 int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
-	register uint32  size = p->size;
-	register uint32* temp = (uint32*) malloc((6*size+2) * sizeof(*temp));
+	register size_t size = p->size;
+	register mpw* temp = (mpw*) malloc((6*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -176,22 +176,22 @@ int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
 
 int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
-	register uint32  size = p->size;
-	register uint32* temp;
+	register size_t size = p->size;
+	register mpw* temp;
 
-	if (mp32z(r->size, r->data))
+	if (mpz(r->size, r->data))
 		return 0;
 
-	if (mp32gex(r->size, r->data, size, p->modl))
+	if (mpgex(r->size, r->data, size, p->modl))
 		return 0;
 
-	if (mp32z(s->size, s->data))
+	if (mpz(s->size, s->data))
 		return 0;
 
-	if (mp32gex(s->size, s->data, n->size, n->modl))
+	if (mpgex(s->size, s->data, n->size, n->modl))
 		return 0;
 
-	temp = (uint32*) malloc((6*size+2) * sizeof(*temp));
+	temp = (mpw*) malloc((6*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -209,7 +209,7 @@ int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
 		/* compute v1 = g^s mod p */
 		mpbpowmod_w(p, g->size, g->data, s->size, s->data, temp, temp+2*size);
 
-		rc = mp32eq(size, temp, temp+size);
+		rc = mpeq(size, temp, temp+size);
 
 		free(temp);
 

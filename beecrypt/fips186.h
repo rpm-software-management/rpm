@@ -47,7 +47,13 @@
 
 #include "sha1.h"
 
-#define FIPS186_STATE_SIZE	16
+#if (MP_WBYTES == 8)
+# define FIPS186_STATE_SIZE	8
+#elif (MP_WBYTES == 4)
+# define FIPS186_STATE_SIZE	16
+#else
+# error
+#endif
 
 /**
  */
@@ -67,8 +73,9 @@ typedef struct
 	# endif
 	#endif
 	sha1Param	param;
-	uint32		state[FIPS186_STATE_SIZE];
-	int			digestsize;
+	mpw			state[FIPS186_STATE_SIZE];
+	byte		digest[20];
+	int			digestremain;
 } fips186Param;
 
 #ifdef __cplusplus
@@ -92,7 +99,7 @@ int fips186Setup  (fips186Param* fp)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int fips186Seed   (fips186Param* fp, const uint32* data, int size)
+int fips186Seed   (fips186Param* fp, const byte* data, size_t size)
 	/*@modifies fp */;
 /*@=exportlocal@*/
 
@@ -100,7 +107,7 @@ int fips186Seed   (fips186Param* fp, const uint32* data, int size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int fips186Next   (fips186Param* fp, uint32* data, int size)
+int fips186Next   (fips186Param* fp, byte* data, size_t size)
 	/*@modifies fp, data */;
 /*@=exportlocal@*/
 

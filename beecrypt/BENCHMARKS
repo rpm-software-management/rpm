@@ -9,6 +9,8 @@ Modular exponentiations, (1024 bits ^ 1024 bits) mod 1024 bits, 100 times, sorte
 
 Note: since this operation is where servers really hurt (i.e. in SSL), it pays to make this operation as fast as possible.
 
+BeeCrypt 2.3.0 | Visual Studio .NET  | Windows XP Pro       | Pentium 4M   1700 | 512 MB:  1.3 sec
+BeeCrypt 2.3.0 | gcc 3.2.1           | RedHat Linux 8.0     | Pentium 4M   1700 | 512 MB:  1.4 sec
 BeeCrypt 2.1.0 | Visual C 6.0        | Windows 2000         | Athlon       1200 | 128 MB:  1.7 sec
 BeeCrypt 2.1.0 | Visual C 6.0        | Windows Millenium    | Athlon       1000 | 128 MB:  1.9 sec
 BeeCrypt 2.1.0 | Compaq C 6.3-025    | Tru64 Unix 5.1       | Alpha EV6.7   667 |   2 GB:  2.3 sec

@@ -1,13 +1,5 @@
-/** \ingroup RSA_m
- * \file rsa.c
- *
- * RSA Encryption & signature scheme, code.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,20 +17,53 @@
  *
  */
 
+/*!\file rsa.c
+ * \brief RSA algorithm.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup IF_m IF_rsa_m
+ */
+
 #include "system.h"
 #include "rsa.h"
 #include "mp.h"
 #include "debug.h"
 
-int rsapri(const rsakp* kp, const mpnumber* m, mpnumber* c)
+int rsapub(const rsapk* pk, const mpnumber* m, mpnumber* c)
 {
-	register uint32  size = kp->n.size;
-	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(*temp));
+	register size_t size = pk->n.size;
+	register mpw* temp;
+
+	if (mpgex(m->size, m->data, pk->n.size, pk->n.modl))
+		return -1;
+
+	temp = (mpw*) malloc((4*size+2)*sizeof(*temp));
 
 	if (temp)
 	{
 		mpnsize(c, size);
-		mpbpowmod_w(&kp->n, m->size, m->data, kp->d.size, kp->d.data, c->data, temp);
+
+		mpbpowmod_w(&pk->n, m->size, m->data, pk->e.size, pk->e.data, c->data, temp);
+		free(temp);
+
+		return 0;
+	}
+	return -1;
+}
+
+int rsapri(const rsakp* kp, const mpnumber* c, mpnumber* m)
+{
+	register size_t size = kp->n.size;
+	register mpw* temp;
+
+	if (mpgex(c->size, c->data, kp->n.size, kp->n.modl))
+		return -1;
+
+	temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
+
+	if (temp)
+	{
+		mpnsize(m, size);
+		mpbpowmod_w(&kp->n, c->size, c->data, kp->d.size, kp->d.data, m->data, temp);
 
 		free(temp);
 
@@ -47,43 +72,47 @@ int rsapri(const rsakp* kp, const mpnumber* m, mpnumber* c)
 	return -1;
 }
 
-
 int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 {
-	register uint32  nsize = kp->n.size;
-	register uint32  psize = kp->p.size;
-	register uint32  qsize = kp->q.size;
+	register size_t nsize = kp->n.size;
+	register size_t psize = kp->p.size;
+	register size_t qsize = kp->q.size;
 
-	register uint32* ptemp;
-	register uint32* qtemp;
+	register mpw* ptemp;
+	register mpw* qtemp;
 
-	/* m must be small enough to be exponentiated modulo p and q */
-	if (m->size > psize || m->size > qsize)
+	if (mpgex(c->size, c->data, kp->n.size, kp->n.modl))
 		return -1;
 
-	ptemp = (uint32*) malloc((6*psize+2)*sizeof(*ptemp));
-	if (ptemp == NULL)
+	ptemp = (mpw*) malloc((6*psize+2)*sizeof(*ptemp));
+	if (ptemp == (mpw*) 0)
 		return -1;
 
-	qtemp = (uint32*) malloc((6*qsize+2)*sizeof(*qtemp));
-	if (qtemp == NULL)
+	qtemp = (mpw*) malloc((6*qsize+2)*sizeof(*qtemp));
+	if (qtemp == (mpw*) 0)
 	{
 		free(ptemp);
 		return -1;
 	}
 
-	/* resize m for powmod p */
-	mp32setx(psize, ptemp+psize, m->size, m->data);
+	/* resize c for powmod p */
+	mpsetx(psize, ptemp+psize, c->size, c->data);
 
-	/* compute j1 = m^d1 mod p, store @ ptemp */
+	/* reduce modulo p before we powmod */
+	mpbmod_w(&kp->p, ptemp, ptemp+psize, ptemp+2*psize);
+
+	/* compute j1 = c^d1 mod p, store @ ptemp */
 /*@-compdef@*/
 	mpbpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
 
-	/* resize m for powmod p */
-	mp32setx(qsize, qtemp+psize, m->size, m->data);
+	/* resize c for powmod p */
+	mpsetx(qsize, qtemp+psize, c->size, c->data);
 
-	/* compute j2 = m^d2 mod q, store @ qtemp */
-	mpbpowmod_w(&kp->q, qsize, qtemp+psize, kp->d2.size, kp->d2.data, qtemp, qtemp+2*qsize);
+	/* reduce modulo q before we powmod */
+	mpbmod_w(&kp->q, qtemp, qtemp+qsize, qtemp+2*qsize);
+
+	/* compute j2 = c^d2 mod q, store @ qtemp */
+	mpbpowmod_w(&kp->q, qsize, qtemp+qsize, kp->d2.size, kp->d2.data, qtemp, qtemp+2*qsize);
 /*@=compdef@*/
 
 	/* compute j1-j2 mod p, store @ ptemp */
@@ -92,12 +121,12 @@ int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 	/* compute h = c*(j1-j2) mod p, store @ ptemp */
 	mpbmulmod_w(&kp->p, psize, ptemp, psize, kp->c.data, ptemp, ptemp+2*psize);
 
-	/* make sure the signature gets the proper size */
-	mpnsize(c, nsize);
+	/* make sure the message gets the proper size */
+	mpnsize(m, nsize);
 
-	/* compute s = h*q + j2 */
-	mp32mul(c->data, psize, ptemp, qsize, kp->q.modl);
-	(void) mp32addx(nsize, c->data, qsize, qtemp);
+	/* compute m = h*q + j2 */
+	mpmul(m->data, psize, ptemp, qsize, kp->q.modl);
+	(void) mpaddx(nsize, m->data, qsize, qtemp);
 
 	free(ptemp);
 	free(qtemp);
@@ -105,20 +134,25 @@ int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 	return 0;
 }
 
-/**
- * @return	1 if signature verifies, 0 otherwise (can also indicate errors)
- */
 int rsavrfy(const rsapk* pk, const mpnumber* m, const mpnumber* c)
 {
 	int rc;
-	register uint32  size = pk->n.size;
-	register uint32* temp = (uint32*) malloc((5*size+2) * sizeof(*temp));
+	register size_t size = pk->n.size;
+	register mpw* temp;
+
+	if (mpgex(m->size, m->data, pk->n.size, pk->n.modl))
+		return -1;
+
+	if (mpgex(c->size, c->data, pk->n.size, pk->n.modl))
+		return 0;
+
+	temp = (uint32*) malloc((5*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
 		mpbpowmod_w(&pk->n, c->size, c->data, pk->e.size, pk->e.data, temp, temp+size);
 
-		rc = mp32eqx(size, temp, m->size, m->data);
+		rc = mpeqx(size, temp, m->size, m->data);
 
 		free(temp);
 

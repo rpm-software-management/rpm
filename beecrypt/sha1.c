@@ -1,16 +1,5 @@
-/** \ingroup HASH_sha1_m HASH_m
- * \file sha1.c
- *
- * SHA-1 hash function, code.
- *
- * For more information on this algorithm, see:
- * NIST FIPS PUB 180-1
- */
-
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +17,12 @@
  *
  */
  
+/*!\file sha1.c
+ * \brief SHA-1 hash function, as specified by NIST FIPS 180-1.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HASH_m HASH_sha1_m
+ */
+
 #include "system.h"
 #include "beecrypt.h"
 #include "sha1opt.h"
@@ -39,23 +34,29 @@
 /** \ingroup HASH_sha1_m
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 k[4] = { 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6 };
+static const uint32_t k[4] = { 0x5a827999U, 0x6ed9eba1U, 0x8f1bbcdcU, 0xca62c1d6U };
 
 /** \ingroup HASH_sha1_m
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 hinit[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
+static const uint32_t hinit[5] = { 0x67452301U, 0xefcdab89U, 0x98badcfeU, 0x10325476U, 0xc3d2e1f0U };
 
 /*@-sizeoftype@*/
 const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
 /*@=sizeoftype@*/
 
 /*@-boundswrite@*/
-int sha1Reset(register sha1Param *p)
+int sha1Reset(register sha1Param* p)
 {
-	mp32copy(5, p->h, hinit);
-	mp32zero(80, p->data);
-	p->length = 0;
+	memcpy(p->h, hinit, sizeof(p->h));
+	memset(p->data, 0, sizeof(p->data));
+	#if (MP_WBITS == 64)
+	mpzero(1, p->length);
+	#elif (MP_WBITS == 32)
+	mpzero(2, p->length);
+	#else
+	# error
+	#endif
 	p->offset = 0;
 	return 0;
 }
@@ -76,12 +77,12 @@ int sha1Reset(register sha1Param *p)
 
 #ifndef ASM_SHA1PROCESS
 /*@-boundsread@*/
-void sha1Process(register sha1Param *p)
+void sha1Process(register sha1Param* p)
 {
-	register uint32 a, b, c, d, e;
-	register uint32 *w;
+	register uint32_t a, b, c, d, e;
+	register uint32_t *w;
 	register byte t;
-	
+
 	#if WORDS_BIGENDIAN
 	w = p->data + 16;
 	#else
@@ -89,7 +90,7 @@ void sha1Process(register sha1Param *p)
 	t = 16;
 	while (t--)
 	{
-		register uint32 temp = swapu32(*w);
+		register uint32_t temp = swapu32(*w);
 		*(w++) = temp;
 	}
 	#endif
@@ -97,7 +98,7 @@ void sha1Process(register sha1Param *p)
 	t = 64;
 	while (t--)
 	{
-		register uint32 temp = w[-3] ^ w[-8] ^ w[-14] ^ w[-16];
+		register uint32_t temp = w[-3] ^ w[-8] ^ w[-14] ^ w[-16];
 		*(w++) = ROTL32(temp, 1);
 	}
 
@@ -199,11 +200,24 @@ void sha1Process(register sha1Param *p)
 #endif
 
 /*@-boundswrite@*/
-int sha1Update(register sha1Param *p, const byte *data, int size)
+int sha1Update(register sha1Param *p, const byte* data, size_t size)
 {
 	register int proclength;
 
-	p->length += size;
+	#if (MP_WBITS == 64)
+	mpw add[1];
+	mpsetw(1, add, size);
+	mplshift(1, add, 3);
+	mpadd(1, p->length, add);
+	#elif (MP_WBITS == 32)
+	mpw add[2];
+	mpsetw(2, add, size);
+	mplshift(2, add, 3);
+	mpadd(2, p->length, add);
+	#else
+	# error
+	#endif
+
 	while (size > 0)
 	{
 		proclength = ((p->offset + size) > 64) ? (64 - p->offset) : size;
@@ -225,7 +239,7 @@ int sha1Update(register sha1Param *p, const byte *data, int size)
 /** \ingroup HASH_sha1_m
  */
 /*@-boundswrite@*/
-static void sha1Finish(register sha1Param *p)
+static void sha1Finish(register sha1Param* p)
 	/*@modifies p @*/
 {
 	register byte *ptr = ((byte *) p->data) + p->offset++;
@@ -241,29 +255,75 @@ static void sha1Finish(register sha1Param *p)
 		p->offset = 0;
 	}
 
-	ptr = ((byte *) p->data) + p->offset;
+	ptr = ((byte*) p->data) + p->offset;
 	while (p->offset++ < 56)
 		*(ptr++) = 0;
 
 	#if WORDS_BIGENDIAN
-	p->data[14] = ((uint32)(p->length >> 29));
-	p->data[15] = ((uint32)((p->length << 3) & 0xffffffff));
+	memcpy(ptr, p->length, sizeof(p->length));
 	#else
-	p->data[14] = swapu32((uint32)(p->length >> 29));
-	p->data[15] = swapu32((uint32)((p->length << 3) & 0xffffffff));
+	# if (MP_WBITS == 64)
+	ptr[0] = (byte)(p->length[0] >> 56);
+	ptr[1] = (byte)(p->length[0] >> 48);
+	ptr[2] = (byte)(p->length[0] >> 40);
+	ptr[3] = (byte)(p->length[0] >> 32);
+	ptr[4] = (byte)(p->length[0] >> 24);
+	ptr[5] = (byte)(p->length[0] >> 16);
+	ptr[6] = (byte)(p->length[0] >>  8);
+	ptr[7] = (byte)(p->length[0]      );
+	#elif (MP_WBITS == 32)
+	ptr[0] = (byte)(p->length[0] >> 24);
+	ptr[1] = (byte)(p->length[0] >> 16);
+	ptr[2] = (byte)(p->length[0] >>  8);
+	ptr[3] = (byte)(p->length[0]      );
+	ptr[4] = (byte)(p->length[1] >> 24);
+	ptr[5] = (byte)(p->length[1] >> 16);
+	ptr[6] = (byte)(p->length[1] >>  8);
+	ptr[7] = (byte)(p->length[1]      );
+	# else
+	#  error
+	# endif
 	#endif
 
 	sha1Process(p);
+
 	p->offset = 0;
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-int sha1Digest(register sha1Param *p, uint32 *data)
+int sha1Digest(register sha1Param* p, byte* data)
 {
 	sha1Finish(p);
-	mp32copy(5, data, p->h);
+
+	#if WORDS_BIGENDIAN
+	memcpy(data, p->h, sizeof(p->h));
+	#else
+	/* encode 5 integers big-endian style */
+	data[ 0] = (byte)(p->h[0] >> 24);
+	data[ 1] = (byte)(p->h[0] >> 16);
+	data[ 2] = (byte)(p->h[0] >>  8);
+	data[ 3] = (byte)(p->h[0] >>  0);
+	data[ 4] = (byte)(p->h[1] >> 24);
+	data[ 5] = (byte)(p->h[1] >> 16);
+	data[ 6] = (byte)(p->h[1] >>  8);
+	data[ 7] = (byte)(p->h[1] >>  0);
+	data[ 8] = (byte)(p->h[2] >> 24);
+	data[ 9] = (byte)(p->h[2] >> 16);
+	data[10] = (byte)(p->h[2] >>  8);
+	data[11] = (byte)(p->h[2] >>  0);
+	data[12] = (byte)(p->h[3] >> 24);
+	data[13] = (byte)(p->h[3] >> 16);
+	data[14] = (byte)(p->h[3] >>  8);
+	data[15] = (byte)(p->h[3] >>  0);
+	data[16] = (byte)(p->h[4] >> 24);
+	data[17] = (byte)(p->h[4] >> 16);
+	data[18] = (byte)(p->h[4] >>  8);
+	data[19] = (byte)(p->h[4] >>  0);
+	#endif
+
 	(void) sha1Reset(p);
+
 	return 0;
 }
 /*@=boundswrite@*/

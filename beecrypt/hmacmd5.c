@@ -1,13 +1,5 @@
-/** \ingroup HMAC_md5_m HMAC_m
- * \file hmacmd5.c
- *
- * HMAC-MD5 message authentication code, code.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +17,16 @@
  *
  */
 
+/*!\file hmacmd5.c
+ * HMAC-MD5 message authentication code.
+ * 
+ * \see RFC2202 - Test Cases for HMAC-MD5 and HMAC-SHA-1.
+ *                P. Cheng, R. Glenn.
+ *
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HMAC_m HMAC_md5_m
+ */
+
 #include "system.h"
 #include "hmacmd5.h"
 #include "debug.h"
@@ -34,23 +36,23 @@ const keyedHashFunction hmacmd5 = { "HMAC-MD5", sizeof(hmacmd5Param), 64, 4 * si
 /*@=sizeoftype@*/
 
 /*@-type@*/
-int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
+int hmacmd5Setup (hmacmd5Param* sp, const byte* key, size_t keybits)
 {
-	return hmacSetup(&sp->hparam, &md5, &sp->mparam, key, keybits);
+	return hmacSetup(sp->kxi, &sp->kxo, &md5, &sp->mparam, key, keybits);
 }
 
 int hmacmd5Reset (hmacmd5Param* sp)
 {
-	return hmacReset(&sp->hparam, &md5, &sp->mparam);
+	return hmacReset(sp->kxi, &md5, &sp->mparam);
 }
 
-int hmacmd5Update(hmacmd5Param* sp, const byte* data, int size)
+int hmacmd5Update(hmacmd5Param* sp, const byte* data, size_t size)
 {
-	return hmacUpdate(&sp->hparam, &md5, &sp->mparam, data, size);
+	return hmacUpdate(&md5, &sp->mparam, data, size);
 }
 
-int hmacmd5Digest(hmacmd5Param* sp, uint32* data)
+int hmacmd5Digest(hmacmd5Param* sp, byte* data)
 {
-	return hmacDigest(&sp->hparam, &md5, &sp->mparam, data);
+	return hmacDigest(sp->kxo, &md5, &sp->mparam, data);
 }
 /*@=type@*/

@@ -49,10 +49,10 @@
 	.explicit
 
 	.align	32
-	.global	mp32zero#
-	.proc	mp32zero#
+	.global	mpzero#
+	.proc	mpzero#
 
-mp32zero:
+mpzero:
 	alloc saved_pfs = ar.pfs,2,0,0,0
 	mov saved_lc = ar.lc
 	sub size = in0,r0,1;;
@@ -65,14 +65,14 @@ mp32zero:
 	mov ar.lc = saved_lc
 	mov ar.pfs = saved_pfs
 	br.ret.sptk b0
-	.endp	mp32zero#
+	.endp	mpzero#
 
 
 	.align	32
-	.global	mp32copy#
-	.proc	mp32copy#
+	.global	mpcopy#
+	.proc	mpcopy#
 
-mp32copy:
+mpcopy:
 	alloc saved_pfs = ar.pfs,3,5,0,8
 	mov saved_lc = ar.lc
 	sub size = in0,r0,1
@@ -88,15 +88,15 @@ mp32copy:
 	mov ar.lc = saved_lc
 	mov ar.pfs = saved_pfs
 	br.ret.sptk b0
-	.endp	mp32copy#
+	.endp	mpcopy#
 
 
 	.if		0
 	.align	32
-	.global	mp32z
-	.type	mp32z,@function
+	.global	mpz
+	.type	mpz,@function
 
-mp32z:
+mpz:
 	alloc r14 = ar.pfs,2,6,0,8
 	mov r15 = ar.lc
 	sub r16= in0,r0,1
@@ -115,10 +115,10 @@ mp32z:
 
 
 	.align	32
-	.global	mp32add#
-	.proc	mp32add#
+	.global	mpadd#
+	.proc	mpadd#
 
-mp32add:
+mpadd:
 	alloc r14 = ar.pfs,3,0,0,0
 	mov r15 = ar.lc
 	# adjust size by -1
@@ -142,14 +142,14 @@ mp32add:
 	mov ar.lc = r15
 	mov ar.pfs = r14
 	br.ret.sptk b0
-	.endp	mp32add#
+	.endp	mpadd#
 
 
 	.align	32
-	.global	mp32sub#
-	.proc	mp32sub#
+	.global	mpsub#
+	.proc	mpsub#
 
-mp32sub:
+mpsub:
 	alloc r14 = ar.pfs,3,0,0,0
 	mov r15 = ar.lc
 	# adjust size by -1
@@ -173,16 +173,16 @@ mp32sub:
 	mov ar.lc = r15
 	mov ar.pfs = r14
 	br.ret.sptk b0
-	.endp	mp32sub#
+	.endp	mpsub#
 
 
 	.if		0
 
 	.align	32
-	.global	mp32setmul#
-	.proc	mp32setmul#
+	.global	mpsetmul#
+	.proc	mpsetmul#
 
-mp32setmul:
+mpsetmul:
 	alloc r14 = ar.pfs,4,0,0,0
 	mov r15 = ar.lc
 	# load mul
@@ -209,14 +209,14 @@ mp32setmul:
 	mov ar.lc = r15
 	mov ar.pfs = r14
 	br.ret.sptk b0
-	.endp	mp32setmul#
+	.endp	mpsetmul#
 
 
 	.align	32
-	.global	mp32addmul#
-	.proc	mp32addmul#
+	.global	mpaddmul#
+	.proc	mpaddmul#
 
-mp32addmul:
+mpaddmul:
 	alloc saved_pfs = ar.pfs,4,0,0,0
 	mov saved_lc = ar.lc
 	# load mul
@@ -245,16 +245,16 @@ mp32addmul:
 	mov ar.lc = r15
 	mov ar.pfs = r14
 	br.ret.sptk b0
-	.endp	mp32addmul#
+	.endp	mpaddmul#
 
 	.endif
 
 
 	.if 0
 	.align	16
-	.global	mp32addsqrtrc#
-	.proc	mp32addsqrtrc#
+	.global	mpaddsqrtrc#
+	.proc	mpaddsqrtrc#
 
-mp32addsqrtrc:
-	.endp	mp32addsqrtrc#
+mpaddsqrtrc:
+	.endp	mpaddsqrtrc#
 	.endif

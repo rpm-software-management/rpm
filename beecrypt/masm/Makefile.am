@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2001, 2002 Virtual Unlimited B.V.
 #
-# Author: Bob Deblier <bob@virtualunlimited.com>
+# Author: Bob Deblier <bob.deblier@pandora.be>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -22,4 +22,4 @@
 
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
-EXTRA_DIST = aesopt.i586.asm blowfishopt.i586.asm mp32opt.i386.asm sha1opt.i586.asm
+EXTRA_DIST = aesopt.i586.asm blowfishopt.i586.asm mpopt.x86.asm sha1opt.i586.asm

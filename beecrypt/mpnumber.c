@@ -1,14 +1,6 @@
-/** \ingroup MP_m
- * \file mpnumber.c
- *
- * Multiple precision numbers, code.
- */
-
 /*
  *
  * Copyright (c) 2003 Bob Deblier
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +16,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file mpnumber.c
+ * \brief Multi-precision numbers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup MP_m
  */
 
 #include "system.h"
@@ -70,7 +68,6 @@ void mpnsize(mpnumber* n, size_t size)
 }
 /*@=compdef @*/
 
-/*@-boundswrite@*/
 void mpninit(mpnumber* n, size_t size, const mpw* data)
 {
 	n->size = size;
@@ -82,9 +79,8 @@ void mpninit(mpnumber* n, size_t size, const mpw* data)
 	n->data = (mpw*) malloc(size * sizeof(*n->data));
 
 	if (n->data && data)
-		mp32copy(size, n->data, data);
+		mpcopy(size, n->data, data);
 }
-/*@=boundswrite@*/
 
 void mpnfree(mpnumber* n)
 {
@@ -104,10 +100,9 @@ void mpncopy(mpnumber* n, const mpnumber* copy)
 void mpnwipe(mpnumber* n)
 {
 	if (n->data)
-		mp32zero(n->size, n->data);
+		mpzero(n->size, n->data);
 }
 
-/*@-boundswrite@*/
 void mpnset(mpnumber* n, size_t size, const mpw* data)
 {
 	if (size)
@@ -122,7 +117,7 @@ void mpnset(mpnumber* n, size_t size, const mpw* data)
 
 		if (n->data && data)
 			/*@-nullpass@*/ /* data is notnull */
-			mp32copy(n->size = size, n->data, data);
+			mpcopy(n->size = size, n->data, data);
 			/*@=nullpass@*/
 		else
 		{
@@ -139,9 +134,7 @@ void mpnset(mpnumber* n, size_t size, const mpw* data)
 	else
 		{};
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 void mpnsetw(mpnumber* n, mpw val)
 {
 	if (n->data)
@@ -163,15 +156,12 @@ void mpnsetw(mpnumber* n, mpw val)
 		n->data = (mpw*) 0;
 	}
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 /*@-usedef @*/	/* n->data may be NULL */
 void mpnsethex(mpnumber* n, const char* hex)
 {
 	register size_t len = strlen(hex);
-	register size_t size = (len+7) >> 3;
-	uint8 rem = (uint8)(len & 0x7);
+	register size_t size = MP_NIBBLES_TO_WORDS(len + MP_WNIBBLES - 1);
 
 	if (n->data)
 	{
@@ -183,41 +173,13 @@ void mpnsethex(mpnumber* n, const char* hex)
 
 	if (n->data)
 	{
-		register size_t  val = 0;
-		register mpw* dst = n->data;
-		register char ch;
-
 		n->size = size;
 
-		while (len-- > 0)
-		{
-			ch = *(hex++);
-			val <<= 4;
-			if (ch >= '0' && ch <= '9')
-				val += (ch - '0');
-			else if (ch >= 'A' && ch <= 'F')
-				val += (ch - 'A') + 10;
-			else if (ch >= 'a' && ch <= 'f')
-				val += (ch - 'a') + 10;
-			else
-				{};
-
-			if ((len & 0x7) == 0)
-			{
-				*(dst++) = val;
-				val = 0;
-				rem = 0;
-			} else
-				rem = 1;
-		}
-		if (rem != 0) {
-			*dst = val;
-		}
+		hs2ip(n->data, size, hex, len);
 	}
 	else {
 		n->size = 0;
-		n->data = (uint32*)0;
+		n->data = (mpw*)0;
 	}
 }
 /*@=usedef @*/
-/*@=boundswrite@*/

@@ -1,13 +1,5 @@
-/** \ingroup MP_m
- * \file mp.c
- *
- * Multiprecision integer routines.
- */
-
 /*
  * Copyright (c) 2002, 2003 Bob Deblier
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +17,12 @@
  *
  */
 
+/*!\file mp.c
+ * \brief Multi-precision integer routines.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup MP_m
+ */
+
 #include "system.h"
 #include "beecrypt.h"
 #include "mpopt.h"
@@ -32,45 +30,36 @@
 #include "debug.h"
 
 #ifndef ASM_MPZERO
-/*@-boundswrite@*/
 void mpzero(register size_t size, register mpw* data)
 {
 	while (size--)
 		*(data++) = 0;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPFILL
-/*@-boundswrite@*/
 void mpfill(register size_t size, register mpw* data, register mpw fill)
 {
 	while (size--)
 		*(data++) = fill;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPODD
-/*@-boundsread@*/
 int mpodd(register size_t size, register const mpw* data)
 {
 	return (int)(data[size-1] & 0x1);
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPEVEN
-/*@-boundsread@*/
 int mpeven(register size_t size, register const mpw* data)
 {
 	return !(int)(data[size-1] & 0x1);
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPZ
-/*@-boundsread@*/
 int mpz(register size_t size, register const mpw* data)
 {
 	while (size--)
@@ -78,11 +67,9 @@ int mpz(register size_t size, register const mpw* data)
 			return 0;
 	return 1;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPNZ
-/*@-boundsread@*/
 int mpnz(register size_t size, register const mpw* data)
 {
 	while (size--)
@@ -90,11 +77,9 @@ int mpnz(register size_t size, register const mpw* data)
 			return 1;
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPEQ
-/*@-boundsread@*/
 int mpeq(register size_t size, register const mpw* xdata, register const mpw* ydata)
 {
 	while (size--)
@@ -109,7 +94,6 @@ int mpeq(register size_t size, register const mpw* xdata, register const mpw* yd
 	}
 	return 1;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPEQX
@@ -131,7 +115,6 @@ int mpeqx(register size_t xsize, register const mpw* xdata, register size_t ysiz
 #endif
 
 #ifndef ASM_MPNE
-/*@-boundsread@*/
 int mpne(register size_t size, register const mpw* xdata, register const mpw* ydata)
 {
 	while (size--)
@@ -146,7 +129,6 @@ int mpne(register size_t size, register const mpw* xdata, register const mpw* yd
 	}
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPNEX
@@ -168,7 +150,6 @@ int mpnex(register size_t xsize, register const mpw* xdata, register size_t ysiz
 #endif
 
 #ifndef ASM_MPGT
-/*@-boundsread@*/
 int mpgt(register size_t size, register const mpw* xdata, register const mpw* ydata)
 {
 	while (size--)
@@ -181,7 +162,6 @@ int mpgt(register size_t size, register const mpw* xdata, register const mpw* yd
 	}
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPGTX
@@ -203,7 +183,6 @@ int mpgtx(register size_t xsize, register const mpw* xdata, register size_t ysiz
 #endif
 
 #ifndef ASM_MPLT
-/*@-boundsread@*/
 int mplt(register size_t size, register const mpw* xdata, register const mpw* ydata)
 {
 	while (size--)
@@ -216,7 +195,6 @@ int mplt(register size_t size, register const mpw* xdata, register const mpw* yd
 	}
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPLTX
@@ -238,7 +216,6 @@ int mpltx(register size_t xsize, register const mpw* xdata, register size_t ysiz
 #endif
 
 #ifndef ASM_MPGE
-/*@-boundsread@*/
 int mpge(register size_t size, register const mpw* xdata, register const mpw* ydata)
 {
 	while (size--)
@@ -251,11 +228,9 @@ int mpge(register size_t size, register const mpw* xdata, register const mpw* yd
 	}
 	return 1;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPGEX
-/*@-boundsread@*/
 int mpgex(register size_t xsize, register const mpw* xdata, register size_t ysize, register const mpw* ydata)
 {
 	if (xsize > ysize)
@@ -271,11 +246,9 @@ int mpgex(register size_t xsize, register const mpw* xdata, register size_t ysiz
 	else
 		return mpge(xsize, xdata, ydata);
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPLE
-/*@-boundsread@*/
 int mple(register size_t size, register const mpw* xdata, register const mpw* ydata)
 {
 	while (size--)
@@ -288,11 +261,9 @@ int mple(register size_t size, register const mpw* xdata, register const mpw* yd
 	}
 	return 1;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPLEX
-/*@-boundsread@*/
 int mplex(register size_t xsize, register const mpw* xdata, register size_t ysize, register const mpw* ydata)
 {
 	if (xsize > ysize)
@@ -308,12 +279,10 @@ int mplex(register size_t xsize, register const mpw* xdata, register size_t ysiz
 	else
 		return mple(xsize, xdata, ydata);
 }
-/*@=boundsread@*/
 #endif
 
 
 #ifndef ASM_MPISONE
-/*@-boundsread@*/
 int mpisone(register size_t size, register const mpw* data)
 {
 	data += size;
@@ -326,11 +295,9 @@ int mpisone(register size_t size, register const mpw* data)
 	}
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPISTWO
-/*@-boundsread@*/
 int mpistwo(register size_t size, register const mpw* data)
 {
 	data += size;
@@ -343,11 +310,9 @@ int mpistwo(register size_t size, register const mpw* data)
 	}
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPEQMONE
-/*@-boundsread@*/
 int mpeqmone(register size_t size, register const mpw* xdata, register const mpw* ydata)
 {
     xdata += size;
@@ -362,11 +327,9 @@ int mpeqmone(register size_t size, register const mpw* xdata, register const mpw
     }
     return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPLEONE
-/*@-boundsread@*/
 int mpleone(register size_t size, register const mpw* data)
 {
 	data += size;
@@ -380,116 +343,92 @@ int mpleone(register size_t size, register const mpw* data)
 		return 1;
 	}
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPMSBSET
 int mpmsbset(/*@unused@*/ register size_t size, register const mpw* data)
 {
-/*@-boundsread@*/
 	return (int)((*data) >> (MP_WBITS-1));
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPLSBSET
 int mplsbset(register size_t size, register const mpw* data)
 {
-/*@-boundsread@*/
     return (int)(data[size-1] & 0x1);
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPSETMSB
 void mpsetmsb(/*@unused@*/ register size_t size, register mpw* data)
 {
-/*@-boundsread@*/
 	*data |= MP_MSBMASK;
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPSETLSB
 void mpsetlsb(register size_t size, register mpw* data)
 {
-/*@-boundsread@*/
 	data[size-1] |= MP_LSBMASK;
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPCLRMSB
 void mpclrmsb(/*@unused@*/ register size_t size, register mpw* data)
 {
-/*@-boundsread@*/
 	*data &= ~ MP_MSBMASK;
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPCLRLSB
 void mpclrlsb(register size_t size, register mpw* data)
 {
-/*@-boundsread@*/
     data[size-1] &= ~ MP_LSBMASK;
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPAND
 void mpand(register size_t size, register mpw* xdata, register const mpw* ydata)
 {
-/*@-boundsread@*/
 	while (size--)
 		xdata[size] &= ydata[size];
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPXOR
 void mpxor(register size_t size, register mpw* xdata, register const mpw* ydata)
 {
-/*@-boundsread@*/
 	while (size--)
 		xdata[size] ^= ydata[size];
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPOR
 void mpor(register size_t size, register mpw* xdata, register const mpw* ydata)
 {
-/*@-boundsread@*/
 	while (size--)
 		xdata[size] |= ydata[size];
-/*@=boundsread@*/
 }
 #endif
 
 #ifndef ASM_MPNOT
-/*@-boundswrite@*/
 void mpnot(register size_t size, register mpw* data)
 {
 	while (size--)
 		data[size] = ~data[size];
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPSETW
-/*@-boundswrite@*/
 void mpsetw(register size_t xsize, register mpw* xdata, register mpw y)
 {
 	while (--xsize)
 		*(xdata++) = 0;
 	*(xdata++) = y;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPSETX
-/*@-boundswrite@*/
 void mpsetx(register size_t xsize, register mpw* xdata, register size_t ysize, register const mpw* ydata)
 {
 	while (xsize > ysize)
@@ -505,11 +444,9 @@ void mpsetx(register size_t xsize, register mpw* xdata, register size_t ysize, r
 	while (xsize--)
 		*(xdata++) = *(ydata++);
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPADDW
-/*@-boundswrite@*/
 int mpaddw(register size_t size, register mpw* xdata, register mpw y)
 {
 	register mpw load, temp;
@@ -531,11 +468,9 @@ int mpaddw(register size_t size, register mpw* xdata, register mpw y)
 	}
 	return carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPADD
-/*@-boundswrite@*/
 int mpadd(register size_t size, register mpw* xdata, register const mpw* ydata)
 {
 	register mpw load, temp;
@@ -554,7 +489,6 @@ int mpadd(register size_t size, register mpw* xdata, register const mpw* ydata)
 	}
 	return carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPADDX
@@ -574,133 +508,201 @@ int mpaddx(register size_t xsize, register mpw* xdata, register size_t ysize, re
 #endif
 
 #ifndef ASM_MPSUBW
-/*@-boundswrite@*/
-uint32 mpsubw(register size_t xsize, register mpw* xdata, register mpw y)
-int
-	register uint64 temp;
-	register uint32 carry = 0;
+int mpsubw(register size_t size, register mpw* xdata, register mpw y)
+{
+	register mpw load, temp;
+	register int carry = 0;
 
-	xdata += xsize;
-	temp = *(--xdata);
-	temp -= y;
-	*xdata = (uint32) temp;
-	carry = (temp >> 32) ? 1 : 0;
-	while (--xsize && carry)
+	xdata += size-1;
+
+	load = *xdata;
+	temp = load - y;
+	*(xdata--) = temp;
+	carry = (load < temp);
+
+	while (--size && carry)
 	{
-		temp = *(--xdata);
-		temp -= carry;
-		*xdata = (uint32) temp;
-		carry = (temp >> 32) ? 1 : 0;
+		load = *xdata;
+		temp = load - 1;
+		*(xdata--) = temp;
+		carry = (load < temp);	
 	}
 	return carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPSUB
-/*@-boundswrite@*/
-uint32 mpsub(register size_t size, register mpw* xdata, register const mpw* ydata)
+int mpsub(register size_t size, register mpw* xdata, register const mpw* ydata)
 {
-	register uint64 temp;
-	register uint32 carry = 0;
+	register mpw load, temp;
+	register int carry = 0;
 
-	xdata += size;
-	ydata += size;
+	xdata += size-1;
+	ydata += size-1;
 
 	while (size--)
 	{
-		temp = *(--xdata);
-		temp -= *(--ydata);
-		temp -= carry;
-		*xdata = (uint32) temp;
-		carry = (temp >> 32) != 0;
+		temp = *(ydata--);
+		load = *xdata;
+		temp = carry ? (load - temp - 1) : (load - temp);
+		*(xdata--) = temp;
+		carry = carry ? (load <= temp) : (load < temp);
 	}
 	return carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPSUBX
-uint32 mpsubx(register size_t xsize, register mpw* xdata, register size_t ysize, register const mpw* ydata)
+int mpsubx(register size_t xsize, register mpw* xdata, register size_t ysize, register const mpw* ydata)
 {
 	if (xsize > ysize)
 	{
-		register uint32 diff = xsize - ysize;
-		register uint32 carry = mpsub(ysize, xdata + diff, ydata);
-		return mpsubw(diff, xdata, carry);
+		register size_t diff = xsize - ysize;
+		return mpsubw(diff, xdata, (mpw) mpsub(ysize, xdata+diff, ydata));
 	}
 	else
 	{
-		register uint32 diff = ysize - xsize;
-		return mpsub(xsize, xdata, ydata + diff);
+		register size_t diff = ysize - xsize;
+		return mpsub(xsize, xdata, ydata+diff);
 	}
 }
 #endif
 
 #ifndef ASM_MPNEG
-void mpneg(register size_t xsize, register mpw* xdata)
+void mpneg(register size_t size, register mpw* data)
 {
-	mpnot(xsize, xdata);
-	(void) mpaddw(xsize, xdata, 1);
+	mpnot(size, data);
+	(void) mpaddw(size, data, 1);
 }
 #endif
 
 #ifndef ASM_MPSETMUL
-/*@-boundswrite@*/
-uint32 mpsetmul(register size_t size, register mpw* result, register const mpw* xdata, register mpw y)
+mpw mpsetmul(register size_t size, register mpw* result, register const mpw* data, register mpw y)
 {
-	register uint64 temp;
-	register uint32 carry = 0;
+	#if HAVE_MPDW
+	register mpdw temp;
+	register mpw  carry = 0;
 
-	xdata  += size;
+	data += size;
 	result += size;
 
 	while (size--)
 	{
-		temp = *(--xdata);
+		temp = *(--data);
 		temp *= y;
 		temp += carry;
-		*(--result) = (uint32) temp;
-		carry = (uint32) (temp >> 32);
+		*(--result) = (mpw) temp;
+		carry = (mpw)(temp >> MP_WBITS);
 	}
+	#else
+	register mpw temp, load, carry = 0;
+	register mphw ylo, yhi;
+
+	ylo = (mphw)  y;
+	yhi = (mphw) (y >> MP_HWBITS);
+
+	data += size;
+	result += size;
+
+	while (size--)
+	{
+		register mphw xlo, xhi;
+		register mpw rlo, rhi;
+
+		xlo = (mphw) (temp = *(--data));
+		xhi = (mphw) (temp >> MP_HWBITS);
+
+		rlo = (mpw) xlo * ylo;
+		rhi = (mpw) xhi * yhi;
+		load = rlo;
+		temp = (mpw) xhi * ylo;
+		rlo += (temp << MP_HWBITS);
+		rhi += (temp >> MP_HWBITS) + (load > rlo);
+		load = rlo;
+		temp = (mpw) xlo * yhi;
+		rlo += (temp << MP_HWBITS);
+		rhi += (temp >> MP_HWBITS) + (load > rlo);
+		load = rlo;
+		temp = rlo + carry;
+		carry = rhi + (load > temp);
+		*(--result) = temp;
+	}
+	#endif
 	return carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPADDMUL
-/*@-boundswrite@*/
-uint32 mpaddmul(register size_t size, register mpw* result, register const mpw* xdata, register mpw y)
+mpw mpaddmul(register size_t size, register mpw* result, register const mpw* data, register mpw y)
 {
-	register uint64 temp;
-	register uint32 carry = 0;
+	#if HAVE_MPDW
+	register mpdw temp;
+	register mpw  carry = 0;
 
-	xdata  += size;
+	data += size;
 	result += size;
 
 	while (size--)
 	{
-		temp = *(--xdata);
+		temp = *(--data);
 		temp *= y;
 		temp += carry;
 		temp += *(--result);
-		*result = (uint32) temp;
-		carry = (uint32) (temp >> 32);
+		*result = (mpw) temp;
+		carry = (mpw)(temp >> MP_WBITS);
 	}
+	#else
+	register mpw temp, load, carry = 0;
+	register mphw ylo, yhi;
+
+	ylo = (mphw)  y;
+	yhi = (mphw) (y >> MP_HWBITS);
+
+	data += size;
+	result += size;
+
+	while (size--)
+	{
+		register mphw xlo, xhi;
+		register mpw rlo, rhi;
+
+		xlo = (mphw) (temp = *(--data));
+		xhi = (mphw) (temp >> MP_HWBITS);
+
+		rlo = (mpw) xlo * ylo;
+		rhi = (mpw) xhi * yhi;
+		load = rlo;
+		temp = (mpw) xhi * ylo;
+		rlo += (temp << MP_HWBITS);
+		rhi += (temp >> MP_HWBITS) + (load > rlo);
+		load = rlo;
+		temp = (mpw) xlo * yhi;
+		rlo += (temp << MP_HWBITS);
+		rhi += (temp >> MP_HWBITS) + (load > rlo);
+		load = rlo;
+		rlo += carry;
+		temp = (load > rlo);
+		load = rhi;
+		rhi += temp;
+		carry = (load > rhi);
+		load = rlo;
+		rlo += *(--result);
+		*result = rlo;
+		carry += rhi + (load > rlo);
+	}
+	#endif
 	return carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPMUL
-/*@-boundswrite@*/
 void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata)
 {
 	/*@-mods@*/
 	/* preferred passing of parameters is x the larger of the two numbers */
 	if (xsize >= ysize)
 	{
-		register uint32 rc;
+		register mpw rc;
 
 		result += ysize;
 		ydata += ysize;
@@ -716,7 +718,7 @@ void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw*
 	}
 	else
 	{
-		register uint32 rc;
+		register mpw rc;
 
 		result += xsize;
 		xdata += xsize;
@@ -732,37 +734,72 @@ void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw*
 	}
 	/*@=mods@*/
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPADDSQRTRC
-/*@-boundswrite@*/
 mpw mpaddsqrtrc(register size_t size, register mpw* result, register const mpw* data)
 {
-	register uint64 temp;
-	register uint32 n, carry = 0;
+	#if HAVE_MPDW
+	register mpdw temp;
+	register mpw  load, carry = 0;
 
-	result += size*2;
+	result += (size << 1);
 
 	while (size--)
 	{
-		temp = n = data[size];
-		temp *= n;
+		temp = load = data[size];
+		temp *= load;
 		temp += carry;
 		temp += *(--result);
-		*result = (uint32) temp;
-		temp >>= 32;
+		*result = (mpw) temp;
+		temp >>= MP_WBITS;
 		temp += *(--result);
-		*result = (uint32) temp;
-		carry = (uint32) (temp >> 32);
+		*result = (mpw) temp;
+		carry = (mpw)(temp >> MP_WBITS);
 	}
+	#else
+	register mpw temp, load, carry = 0;
+
+	result += (size << 1);
+
+	while (size--)
+	{
+		register mphw xlo, xhi;
+		register mpw rlo, rhi;
+
+		xlo = (mphw) (temp = data[size]);
+		xhi = (mphw) (temp >> MP_HWBITS);
+
+		rlo = (mpw) xlo * xlo;
+		rhi = (mpw) xhi * xhi;
+		temp = (mpw) xhi * xlo;
+		load = rlo;
+		rlo += (temp << MP_HWBITS);
+		rhi += (temp >> MP_HWBITS) + (load > rlo);
+		load = rlo;
+		rlo += (temp << MP_HWBITS);
+		rhi += (temp >> MP_HWBITS) + (load > rlo);
+		load = rlo;
+		rlo += carry;
+		rhi += (load > rlo);
+		load = rlo;
+		rlo += *(--result);
+		*result = rlo;
+		temp = (load > rlo);
+		load = rhi;
+		rhi += temp;
+		carry = (load > rhi);
+		load = rhi;
+		rhi += *(--result);
+		*result = rhi;
+		carry += (load > rhi);
+	}
+	#endif
 	return carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPSQR
-/*@-boundswrite@*/
 void mpsqr(register mpw* result, register size_t size, register const mpw* data)
 {
 	register size_t n = size-1;
@@ -785,7 +822,6 @@ void mpsqr(register mpw* result, register size_t size, register const mpw* data)
 	(void) mpaddsqrtrc(size, result, data);
 	/*@=mods@*/
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPSIZE
@@ -793,10 +829,8 @@ size_t mpsize(register size_t size, register const mpw* data)
 {
 	while (size)
 	{
-/*@-boundsread@*/
 		if (*data)
 			return size;
-/*@=boundsread@*/
 		data++;
 		size--;
 	}
@@ -804,8 +838,15 @@ size_t mpsize(register size_t size, register const mpw* data)
 }
 #endif
 
+#ifndef ASM_MPBITS
+size_t mpbits(register size_t size, register const mpw* data)
+{
+	return MP_WORDS_TO_BITS(size) - mpmszcnt(size, data); 
+}
+#endif
+
 #ifndef ASM_MPNORM
-uint32 mpnorm(register size_t size, register mpw* data)
+size_t mpnorm(register size_t size, register mpw* data)
 {
 	register size_t shift = mpmszcnt(size, data);
 	mplshift(size, data, shift);
@@ -813,20 +854,10 @@ uint32 mpnorm(register size_t size, register mpw* data)
 }
 #endif
 
-#ifndef ASM_MPDIVPOWTWO
-/* need to eliminate this function, as it is not aptly named */
-uint32 mpdivpowtwo(register size_t size, register mpw* data)
-{
-	return mprshiftlsz(size, data);
-}
-#endif
-
 #ifndef ASM_MPDIVTWO
-/*@-boundswrite@*/
 void mpdivtwo(register size_t size, register mpw* data)
 {
-	register mpw temp;
-	register mpw carry = 0;
+	register mpw temp, carry = 0;
 
 	while (size--)
 	{
@@ -835,7 +866,6 @@ void mpdivtwo(register size_t size, register mpw* data)
 		carry = (temp << (MP_WBITS-1));
 	}
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPSDIVTWO
@@ -849,35 +879,30 @@ void mpsdivtwo(register size_t size, register mpw* data)
 #endif
 
 #ifndef ASM_MPMULTWO
-/*@-boundswrite@*/
-uint32 mpmultwo(register size_t size, register mpw* data)
+int mpmultwo(register size_t size, register mpw* data)
 {
-	register mpw temp;
-	register mpw carry = 0;
+	register mpw temp, carry = 0;
 
 	data += size;
 	while (size--)
 	{
 		temp = *(--data);
 		*data = (temp << 1) | carry;
-		carry = (temp >> (MP_WBITS -1));
+		carry = (temp >> (MP_WBITS-1));
 	}
 	return (int) carry;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPMSZCNT
-uint32 mpmszcnt(register size_t size, register const mpw* data)
+size_t mpmszcnt(register size_t size, register const mpw* data)
 {
 	register size_t zbits = 0;
 	register size_t i = 0;
 
 	while (i < size)
 	{
-/*@-boundsread@*/
 		register mpw temp = data[i++];
-/*@=boundsread@*/
 		if (temp)
 		{
 			while (!(temp & MP_MSBMASK))
@@ -902,9 +927,7 @@ size_t mpbitcnt(register size_t size, register const mpw* data)
 	register size_t i = 0;
 
 	while (i < size) {
-/*@-boundsread@*/
 		register mpw temp = (data[i++] ^ xmask);
-/*@=boundsread@*/
 		if (temp) {
 			while (!(temp & MP_MSBMASK)) {
 				nbits--;
@@ -925,9 +948,7 @@ size_t mplszcnt(register size_t size, register const mpw* data)
 
 	while (size--)
 	{
-/*@-boundsread@*/
 		register mpw temp = data[size];
-/*@=boundsread@*/
 		if (temp)
 		{
 			while (!(temp & MP_LSBMASK))
@@ -945,7 +966,6 @@ size_t mplszcnt(register size_t size, register const mpw* data)
 #endif
 
 #ifndef ASM_MPLSHIFT
-/*@-boundswrite@*/
 void mplshift(register size_t size, register mpw* data, size_t count)
 {
 	register size_t words = MP_BITS_TO_WORDS(count);
@@ -957,8 +977,7 @@ void mplshift(register size_t size, register mpw* data, size_t count)
 		/* first do the shifting, then do the moving */
 		if (lbits != 0)
 		{
-			register mpw temp;
-			register mpw carry = 0;
+			register mpw temp, carry = 0;
 			register short rbits = MP_WBITS - lbits;
 			register size_t i = size;
 
@@ -978,26 +997,23 @@ void mplshift(register size_t size, register mpw* data, size_t count)
 	else
 		mpzero(size, data);
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPRSHIFT
-/*@-boundswrite@*/
-void mprshift(register size_t size, register mpw* data, uint32 count)
+void mprshift(register size_t size, register mpw* data, size_t count)
 {
 	register size_t words = MP_BITS_TO_WORDS(count);
 
 	if (words < size)
 	{
-		register uint8 rbits = (uint8) (count & 0x1f);
+		register short rbits = (short) (count & (MP_WBITS-1));
 
 		/* first do the shifting, then do the moving */
 		if (rbits != 0)
 		{
-			register uint32 temp;
-			register uint32 carry = 0;
-			register uint8  lbits = 32-rbits;
-			register uint32 i = 0;
+			register mpw temp, carry = 0;
+			register short lbits = MP_WBITS - rbits;
+			register size_t i = 0;
 
 			while (i < size-words)
 			{
@@ -1015,18 +1031,16 @@ void mprshift(register size_t size, register mpw* data, uint32 count)
 	else
 		mpzero(size, data);
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPRSHIFTLSZ
 /* x must be != 0 */
-/*@-boundswrite@*/
-uint32 mprshiftlsz(register size_t size, register mpw* data)
+size_t mprshiftlsz(register size_t size, register mpw* data)
 {
 	register mpw* slide = data+size-1;
-	register uint32  zwords = 0; /* counter for 'all zero bit' words */
-	register uint32  lbits, rbits = 0; /* counter for 'least significant zero' bits */
-	register uint32  temp, carry = 0;
+	register size_t  zwords = 0; /* counter for 'all zero bit' words */
+	register short   lbits, rbits = 0; /* counter for 'least significant zero' bits */
+	register mpw  temp, carry = 0;
 
 	data = slide;
 
@@ -1037,7 +1051,7 @@ uint32 mprshiftlsz(register size_t size, register mpw* data)
 		if ((carry = *(slide--)))
 		{
 			/* count 'least signification zero bits and set zbits counter */
-			while (!(carry & 0x1))
+			while (!(carry & MP_LSBMASK))
 			{
 				carry >>= 1;
 				rbits++;
@@ -1052,7 +1066,7 @@ uint32 mprshiftlsz(register size_t size, register mpw* data)
 		return 0;
 
 	/* prepare right-shifting of data */
-	lbits = 32-rbits;
+	lbits = MP_WBITS - rbits;
 
 	/* shift data */
 	while (size--)
@@ -1065,30 +1079,27 @@ uint32 mprshiftlsz(register size_t size, register mpw* data)
 	/* store the final carry */
 	*(data--) = carry;
 
-	/* store the return value in temp */
-	temp = (zwords << 5) + rbits;
+	/* store the return value in size */
+	size = MP_WORDS_TO_BITS(zwords) + rbits;
 
 	/* zero the (zwords) most significant words */
 	while (zwords--)
 		*(data--) = 0;
 
-	return temp;
+	return size;
 }
-/*@=boundswrite@*/
 #endif
 
 /* try an alternate version here, with descending sizes */
 /* also integrate lszcnt and rshift properly into one function */
 #ifndef ASM_MPGCD_W
-/*@-boundswrite@*/
 /**
  * mpgcd_w
  *  need workspace of (size) words
  */
 void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* wksp)
 {
-	register uint32 shift = 0;
-	register uint32 temp;
+	register size_t shift = 0, temp;
 
 	if (mpge(size, xdata, ydata))
 	{
@@ -1130,7 +1141,7 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* 
 	}
 
 	/* figure out if we need to slide the result pointer back */
-	if ((temp = shift >> 5))
+	if ((temp = MP_BITS_TO_WORDS(shift)))
 	{
 		size += temp;
 		result -= temp;
@@ -1138,17 +1149,43 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* 
 
 	mplshift(size, result, shift);
 }
-/*@=boundswrite@*/
+#endif
+
+#ifndef ASM_MPPNDIV
+mpw mppndiv(mpw xhi, mpw xlo, mpw y)
+{
+	register mpw result = 0;
+	register short count = MP_WBITS;
+	register int carry = 0;
+
+	while (count--)
+	{
+		if (carry | (xhi >= y))
+		{
+			xhi -= y;
+			result |= 1;
+		}
+		carry = (xhi >> (MP_WBITS-1));
+		xhi <<= 1;
+		xhi |= (xlo >> (MP_WBITS-1));
+		xlo <<= 1;
+		result <<= 1;
+	}
+	if (carry | (xhi >= y))
+	{
+		xhi -= y;
+		result |= 1;
+	}
+	return result;
+}
 #endif
 
 #ifndef ASM_MPNMODW
-/*@-boundswrite@*/
-uint32 mpnmodw(mpw* result, size_t xsize, const mpw* xdata, mpw y, mpw* wksp)
+mpw mpnmodw(mpw* result, size_t xsize, const mpw* xdata, mpw y, mpw* workspace)
 {
-	/* result size xsize, wksp size xsize+1 */
-	register uint64 temp;
-	register uint32 q;
-	size_t qsize = xsize-1;
+	/* result size xsize, workspace size xsize+1 */
+	register mpw q;
+	mpw  qsize = xsize-1;
 	mpw* rdata = result;
 
 	mpcopy(xsize, rdata, xdata);
@@ -1157,200 +1194,260 @@ uint32 mpnmodw(mpw* result, size_t xsize, const mpw* xdata, mpw y, mpw* wksp)
 			*rdata -= y;
 	*/
 	if (mpge(1, rdata, &y))
-		(void) mpsub(1, rdata, &y);
+		mpsub(1, rdata, &y);
 
 	while (qsize--)
 	{
-		/* fprintf(stderr, "result = "); MP32println(stderr, xsize+1, result); */
-		/* get the two high words of r into temp */
-		temp = rdata[0];
-		temp <<= 32;
-		temp += rdata[1];
-		/* fprintf(stderr, "q = %016llx / %08lx\n", temp, msw); */
-		temp /= y;
-		/*
-			temp *= y;
-			wksp[0] = (uint32) (temp >> 32);
-			wksp[1] = (uint32) (temp);
-		*/
-		q = (uint32) temp;
+		q = mppndiv(rdata[0], rdata[1], y);
 
-		/* fprintf(stderr, "q = %08x\n", q); */
-		/*@-evalorder@*/
-		*wksp = mpsetmul(1, wksp+1, &y, q);
-		/*@=evalorder@*/
+		*workspace = mpsetmul(1, workspace+1, &y, q);
 
-		/* fprintf(stderr, "mplt "); mpprint(2, rdata); fprintf(stderr, " < "); mpprintln(stderr, 2, wksp); */
-		while (mplt(2, rdata, wksp))
+		while (mplt(2, rdata, workspace))
 		{
-			/* fprintf(stderr, "mplt! "); mpprint(2, rdata); fprintf(stderr, " < "); mpprintln(stderr, 2, wksp); */
-			/* fprintf(stderr, "decreasing q\n"); */
-			(void) mpsubx(2, wksp, 1, &y);
+			mpsubx(2, workspace, 1, &y);
 			/* q--; */
 		}
-		/* fprintf(stderr, "subtracting\n"); */
-		(void) mpsub(2, rdata, wksp);
+		mpsub(2, rdata, workspace);
 		rdata++;
 	}
 
 	return *rdata;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPNMOD
-/*@-boundswrite@*/
-void mpnmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* wksp)
+void mpnmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* workspace)
 {
-	/* result size xsize, wksp size xsize+1 */
-	register uint64 temp;
-	register uint32 q;
+	/* result size xsize, workspace size xsize+1 */
+	mpw q;
 	mpw msw = *ydata;
-	size_t qsize = xsize-ysize;
+	mpw qsize = xsize-ysize;
 	mpw* rdata = result;
 
 	mpcopy(xsize, rdata, xdata);
 	if (mpge(ysize, rdata, ydata))
-		(void) mpsub(ysize, rdata, ydata);
+		mpsub(ysize, rdata, ydata);
 
 	while (qsize--)
 	{
-		/* fprintf(stderr, "result = "); mpprintln(stderr, xsize+1, result); */
-		/* get the two high words of r into temp */
-		temp = rdata[0];
-		temp <<= 32;
-		temp += rdata[1];
-		/* fprintf(stderr, "q = %016llx / %08lx\n", temp, msw); */
-		temp /= msw;
-		q = (uint32) temp;
+		q = mppndiv(rdata[0], rdata[1], msw);
 
-		/* fprintf(stderr, "q = %08x\n", q); */
-		/*@-evalorder@*/
-		*wksp = mpsetmul(ysize, wksp+1, ydata, q);
-		/*@=evalorder@*/
+		*workspace = mpsetmul(ysize, workspace+1, ydata, q);
 
-		/* fprintf(stderr, "mplt "); mpprint(ysize+1, rdata); fprintf(stderr, " < "); mpprintln(stderr, ysize+1, wksp); */
-		while (mplt(ysize+1, rdata, wksp))
+		while (mplt(ysize+1, rdata, workspace))
 		{
-			/* fprintf(stderr, "mplt! "); mpprint(ysize+1, rdata); fprintf(stderr, " < "); mpprintln(stderr, ysize+1, wksp); */
-			/* fprintf(stderr, "decreasing q\n"); */
-			(void) mpsubx(ysize+1, wksp, ysize, ydata);
+			mpsubx(ysize+1, workspace, ysize, ydata);
 			q--;
 		}
-		/* fprintf(stderr, "subtracting\n"); */
-		(void) mpsub(ysize+1, rdata, wksp);
+		mpsub(ysize+1, rdata, workspace);
 		rdata++;
 	}
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_MPNDIVMOD
-/*@-boundswrite@*/
-void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, register mpw* wksp)
+void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, register mpw* workspace)
 {
 	/* result must be xsize+1 in length */
-	/* wksp must be ysize+1 in length */
+	/* workspace must be ysize+1 in length */
 	/* expect ydata to be normalized */
-	register uint64 temp;
-	register uint32 q;
+	mpw q;
 	mpw msw = *ydata;
-	size_t qsize = xsize-ysize;
+	mpw qsize = xsize-ysize;
 
 	mpcopy(xsize, result+1, xdata);
-	/*@-compdef@*/ /* LCL: result+1 undefined */
 	if (mpge(ysize, result+1, ydata))
 	{
-		/* fprintf(stderr, "subtracting\n"); */
-		(void) mpsub(ysize, result+1, ydata);
+		mpsub(ysize, result+1, ydata);
 		*(result++) = 1;
 	}
 	else
 		*(result++) = 0;
-	/*@=compdef@*/
 
-	/*@-usedef@*/	/* LCL: result[0] is set */
 	while (qsize--)
 	{
-		/* fprintf(stderr, "result = "); mpprintln(stderr, xsize+1, result); */
-		/* get the two high words of r into temp */
-		temp = result[0];
-		temp <<= 32;
-		temp += result[1];
-		/* fprintf(stderr, "q = %016llx / %08lx\n", temp, msw); */
-		temp /= msw;
-		q = (uint32) temp;
+		q = mppndiv(result[0], result[1], msw);
 
-		/* fprintf(stderr, "q = %08x\n", q); */
+		*workspace = mpsetmul(ysize, workspace+1, ydata, q);
 
-		/*@-evalorder@*/
-		*wksp = mpsetmul(ysize, wksp+1, ydata, q);
-		/*@=evalorder@*/
-
-		/* fprintf(stderr, "mplt "); mpprint(ysize+1, result); fprintf(stderr, " < "); mpprintln(stderr, ysize+1, wksp); */
-		while (mplt(ysize+1, result, wksp))
+		while (mplt(ysize+1, result, workspace))
 		{
-			/* fprintf(stderr, "mplt! "); mpprint(ysize+1, result); fprintf(stderr, " < "); mpprintln(stderr, ysize+1, wksp); */
-			/* fprintf(stderr, "decreasing q\n"); */
-			(void) mpsubx(ysize+1, wksp, ysize, ydata);
+			mpsubx(ysize+1, workspace, ysize, ydata);
 			q--;
 		}
-		/* fprintf(stderr, "subtracting\n"); */
-		(void) mpsub(ysize+1, result, wksp);
+		mpsub(ysize+1, result, workspace);
 		*(result++) = q;
 	}
-	/*@=usedef@*/
-}
-/*@=boundswrite@*/
-#endif
-
-/*
-#ifndef ASM_MPUNPACK
-void mpunpack(size_t size, uint8* bytes, const mpw* bits)
-{
-	register uint32 temp;
-	register int i;
-	
-	while (size--)
-	{
-		temp = *(bits++);
-
-		for (i = 0; i < 31; i++)
-		{
-			bytes
-		}
-	}
 }
 #endif
-*/
 
 #ifndef ASM_MPPRINT
-/*@-boundsread@*/
-void mpprint(register FILE * fp, register size_t xsize, register const mpw* xdata)
+void mpprint(register FILE * fp, register size_t size, register const mpw* data)
 {
-	if (xdata == NULL)
+	if (data == NULL)
 	 	return;
 	if (fp == NULL)
 		fp = stderr;
-	while (xsize--)
-		fprintf(fp, "%08x", *(xdata++));
-	(void) fflush(fp);
+	while (size--)
+	{
+		#if (MP_WBITS == 32)
+		fprintf(fp, "%08x", *(data++));
+		#elif (MP_WBITS == 64)
+		# if WIN32
+		fprintf(fp, "%016I64x", *(data++));
+		# elif SIZEOF_UNSIGNED_LONG == 8
+		fprintf(fp, "%016lx", *(data++));
+		# else
+		fprintf(fp, "%016llx", *(data++));
+		# endif
+		#else
+		# error
+		#endif
+	}
+	fprintf(fp, "\n");
+	fflush(fp);
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_MPPRINTLN
-/*@-boundsread@*/
-void mpprintln(register FILE * fp, register size_t xsize, register const mpw* xdata)
+void mpprintln(register FILE * fp, register size_t size, register const mpw* data)
 {
-	if (xdata == NULL)
+	if (data == NULL)
 	 	return;
 	if (fp == NULL)
 		fp = stderr;
-	while (xsize--)
-		fprintf(fp, "%08x", *(xdata++));
+	while (size--)
+	{
+		#if (MP_WBITS == 32)
+		fprintf(fp, "%08x", *(data++));
+		#elif (MP_WBITS == 64)
+		# if WIN32
+		fprintf(fp, "%016I64x", *(data++));
+		# elif SIZEOF_UNSIGNED_LONG == 8
+		fprintf(fp, "%016lx", *(data++));
+		# else
+		fprintf(fp, "%016llx", *(data++));
+		# endif
+		#else
+		# error
+		#endif
+	}
 	fprintf(fp, "\n");
-	(void) fflush(fp);
+	fflush(fp);
 }
-/*@=boundsread@*/
 #endif
+
+int i2osp(byte *osdata, size_t ossize, const mpw* idata, size_t isize)
+{
+	size_t required = MP_WORDS_TO_BYTES(isize);
+
+	/* check if size is large enough */
+	if (ossize >= required)
+	{
+		/* yes, we can proceed */
+		if (ossize > required)
+		{	/* fill initial bytes with zero */
+			memset(osdata, 0, ossize-required);
+			osdata += ossize-required;
+		}
+		if (required)
+		{	/* fill remaining bytes with endian-adjusted data */
+			#if !WORDS_BIGENDIAN
+			while (required)
+			{
+				mpw w = *(idata++);
+				byte shift = MP_WBITS;
+
+				while (shift)
+				{
+					shift -= 8;
+					*(osdata++) = (byte)(w >> shift);
+				}
+				required -= MP_WBYTES;
+			}
+			#else
+			memcpy(osdata, idata, required);
+			#endif
+		}
+		return 0;
+	}
+	return -1;
+}
+
+int os2ip(mpw* idata, size_t isize, const byte* osdata, size_t ossize)
+{
+	size_t required = MP_BYTES_TO_WORDS(isize + MP_WBYTES - 1);
+
+	if (isize >= required)
+	{
+		/* yes, we can proceed */
+		if (isize > required)
+		{	/* fill initials words with zero */
+			mpzero(isize-required, idata);
+			idata += isize-required;
+		}
+		if (required)
+		{	/* fill remaining words with endian-adjusted data */
+			#if !WORDS_BIGENDIAN
+			while (required)
+			{
+				mpw w = 0;
+				byte b = MP_WBYTES;
+
+				while (b--)
+				{
+					w <<= 8;
+					w |= *(osdata++);
+				}
+				*(idata++) = w;
+				required--;
+			}
+			#else
+			memcpy(idata, osdata, MP_WORDS_TO_BYTES(required));
+			#endif
+		}
+		return 0;
+	}
+	return -1;
+}
+
+int hs2ip(mpw* idata, size_t isize, const char* hsdata, size_t hssize)
+{
+	size_t required = MP_NIBBLES_TO_WORDS(hssize + MP_WNIBBLES - 1);
+
+	if (isize >= required)
+	{
+		register size_t i;
+
+
+		if (isize > required)
+		{	/* fill initial words with zero */
+			for (i = required; i < isize; i++)
+				*(idata++) = 0;
+		}
+		while (hssize)
+		{
+			register mpw w = 0;
+			register size_t chunk = hssize & (MP_WNIBBLES - 1);
+			register char ch;
+
+			if (chunk == 0) chunk = MP_WNIBBLES;
+
+			for (i = 0; i < chunk; i++)
+			{
+				ch = *(hsdata++);
+				w <<= 4;
+				if (ch >= '0' && ch <= '9')
+					w += (ch - '0');
+				else if (ch >= 'A' && ch <= 'F')
+					w += (ch - 'A') + 10;
+				else if (ch >= 'a' && ch <= 'f')
+					w += (ch - 'a') + 10;
+			}
+			*(idata++) = w;
+			hssize -= chunk;
+		}
+		return 0;
+	}
+	return -1;
+}

@@ -31,30 +31,30 @@
 
 	.text
 
-C_FUNCTION_BEGIN(mp32setmul)
-LABEL(mp32setmul)
+C_FUNCTION_BEGIN(mpsetmul)
+LABEL(mpsetmul)
 
 	.register %g2,#scratch
 
 	sll %o0,2,%g1
 	dec 4,%o2
 	clr %o0
-LOCAL(mp32setmul_loop):
+LOCAL(mpsetmul_loop):
 	ld [%o2+%g1],%g2
 	umul %o3,%g2,%g2
 	rd %y,%g3
 	addcc %o0,%g2,%g2
 	addx %g0,%g3,%o0
 	deccc 4,%g1
-	bnz LOCAL(mp32setmul_loop)
+	bnz LOCAL(mpsetmul_loop)
 	st %g2,[%o1+%g1]
 	retl
 	nop
-C_FUNCTION_END(mp32setmul, LOCAL(mp32setmul_size))
+C_FUNCTION_END(mpsetmul, LOCAL(mpsetmul_size))
 
 
-C_FUNCTION_BEGIN(mp32addmul)
-LABEL(mp32addmul)
+C_FUNCTION_BEGIN(mpaddmul)
+LABEL(mpaddmul)
 
 	.register %g2,#scratch
 
@@ -63,7 +63,7 @@ LABEL(mp32addmul)
 	dec 4,%o1
 	dec 4,%o2
 	clr %o0
-LOCAL(mp32addmul_loop):
+LOCAL(mpaddmul_loop):
 	ld [%o2+%g1],%g2
 	ld [%o1+%g1],%g3
 	umul %o3,%g2,%g2
@@ -73,15 +73,15 @@ LOCAL(mp32addmul_loop):
 	addcc %g2,%g3,%g2
 	addx %g0,%g4,%o0
 	deccc 4,%g1
-	bnz LOCAL(mp32addmul_loop)
+	bnz LOCAL(mpaddmul_loop)
 	st %g2,[%o4+%g1]
 	retl
 	nop
-C_FUNCTION_END(mp32addmul, LOCAL(mp32addmul_size))
+C_FUNCTION_END(mpaddmul, LOCAL(mpaddmul_size))
 
 
-C_FUNCTION_BEGIN(mp32addsqrtrc)
-LABEL(mp32addsqrtrc)
+C_FUNCTION_BEGIN(mpaddsqrtrc)
+LABEL(mpaddsqrtrc)
 
         .register %g2,#scratch
         .register %g3,#scratch
@@ -92,7 +92,7 @@ LABEL(mp32addsqrtrc)
         add %o1,%g1,%o1
 		dec 8,%o1
         clr %o0
-LOCAL(mp32addsqrtrc_loop):
+LOCAL(mpaddsqrtrc_loop):
         ld [%o2+%g1],%g2
         ldd [%o1],%o4
         umul %g2,%g2,%g3
@@ -107,8 +107,8 @@ LOCAL(mp32addsqrtrc_loop):
         addx %o3,%g0,%o0
         std %o4,[%o1]
         deccc 4,%g1
-        bnz LOCAL(mp32addsqrtrc_loop)
+        bnz LOCAL(mpaddsqrtrc_loop)
         sub %o1,8,%o1
         retl
         nop
-C_FUNCTION_END(mp32addsqrtrc, LOCAL(mp32addsqrtrc_size))
+C_FUNCTION_END(mpaddsqrtrc, LOCAL(mpaddsqrtrc_size))

@@ -36,7 +36,7 @@
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ae0[256] = {
+const uint32_t _ae0[256] = {
     0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d,
     0xfff2f20d, 0xd66b6bbd, 0xde6f6fb1, 0x91c5c554,
     0x60303050, 0x02010103, 0xce6767a9, 0x562b2b7d,
@@ -106,7 +106,7 @@ const uint32 _ae0[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ae1[256] = {
+const uint32_t _ae1[256] = {
     0xa5c66363, 0x84f87c7c, 0x99ee7777, 0x8df67b7b,
     0x0dfff2f2, 0xbdd66b6b, 0xb1de6f6f, 0x5491c5c5,
     0x50603030, 0x03020101, 0xa9ce6767, 0x7d562b2b,
@@ -176,7 +176,7 @@ const uint32 _ae1[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ae2[256] = {
+const uint32_t _ae2[256] = {
     0x63a5c663, 0x7c84f87c, 0x7799ee77, 0x7b8df67b,
     0xf20dfff2, 0x6bbdd66b, 0x6fb1de6f, 0xc55491c5,
     0x30506030, 0x01030201, 0x67a9ce67, 0x2b7d562b,
@@ -246,7 +246,7 @@ const uint32 _ae2[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ae3[256] = {
+const uint32_t _ae3[256] = {
     0x6363a5c6, 0x7c7c84f8, 0x777799ee, 0x7b7b8df6,
     0xf2f20dff, 0x6b6bbdd6, 0x6f6fb1de, 0xc5c55491,
     0x30305060, 0x01010302, 0x6767a9ce, 0x2b2b7d56,
@@ -316,7 +316,7 @@ const uint32 _ae3[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ae4[256] = {
+const uint32_t _ae4[256] = {
     0x63636363, 0x7c7c7c7c, 0x77777777, 0x7b7b7b7b,
     0xf2f2f2f2, 0x6b6b6b6b, 0x6f6f6f6f, 0xc5c5c5c5,
     0x30303030, 0x01010101, 0x67676767, 0x2b2b2b2b,
@@ -386,7 +386,7 @@ const uint32 _ae4[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ad0[256] = {
+const uint32_t _ad0[256] = {
     0x51f4a750, 0x7e416553, 0x1a17a4c3, 0x3a275e96,
     0x3bab6bcb, 0x1f9d45f1, 0xacfa58ab, 0x4be30393,
     0x2030fa55, 0xad766df6, 0x88cc7691, 0xf5024c25,
@@ -456,7 +456,7 @@ const uint32 _ad0[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ad1[256] = {
+const uint32_t _ad1[256] = {
     0x5051f4a7, 0x537e4165, 0xc31a17a4, 0x963a275e,
     0xcb3bab6b, 0xf11f9d45, 0xabacfa58, 0x934be303,
     0x552030fa, 0xf6ad766d, 0x9188cc76, 0x25f5024c,
@@ -526,7 +526,7 @@ const uint32 _ad1[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ad2[256] = {
+const uint32_t _ad2[256] = {
     0xa75051f4, 0x65537e41, 0xa4c31a17, 0x5e963a27,
     0x6bcb3bab, 0x45f11f9d, 0x58abacfa, 0x03934be3,
     0xfa552030, 0x6df6ad76, 0x769188cc, 0x4c25f502,
@@ -596,7 +596,7 @@ const uint32 _ad2[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ad3[256] = {
+const uint32_t _ad3[256] = {
     0xf4a75051, 0x4165537e, 0x17a4c31a, 0x275e963a,
     0xab6bcb3b, 0x9d45f11f, 0xfa58abac, 0xe303934b,
     0x30fa5520, 0x766df6ad, 0xcc769188, 0x024c25f5,
@@ -666,7 +666,7 @@ const uint32 _ad3[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-const uint32 _ad4[256] = {
+const uint32_t _ad4[256] = {
     0x52525252, 0x09090909, 0x6a6a6a6a, 0xd5d5d5d5,
     0x30303030, 0x36363636, 0xa5a5a5a5, 0x38383838,
     0xbfbfbfbf, 0x40404040, 0xa3a3a3a3, 0x9e9e9e9e,
@@ -737,31 +737,22 @@ const uint32 _ad4[256] = {
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static const uint32 _arc[] = {
+static const uint32_t _arc[] = {
 	0x01000000, 0x02000000, 0x04000000, 0x08000000,
 	0x10000000, 0x20000000, 0x40000000, 0x80000000,
 	0x1B000000, 0x36000000
 };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
-static const blockMode aesModes[2] =
-{
-	{ /* ECB */ (blockModeEncrypt) aesECBEncrypt, (blockModeDecrypt) aesECBDecrypt },
-	{ /* CBC */ (blockModeEncrypt) aesCBCEncrypt, (blockModeDecrypt) aesCBCDecrypt }
-};
-
 /*@-sizeoftype@*/
-const blockCipher aes = { "AES", sizeof(aesParam), 16, 128, 256, 64, (blockCipherSetup) aesSetup, (blockCipherSetIV) aesSetIV, (blockCipherEncrypt) aesEncrypt, (blockCipherDecrypt) aesDecrypt, aesModes };
+const blockCipher aes = { "AES", sizeof(aesParam), 16, 128, 256, 64, (blockCipherSetup) aesSetup, (blockCipherSetIV) aesSetIV, (blockCipherEncrypt) aesEncrypt, (blockCipherDecrypt) aesDecrypt, (blockCipherFeedback) aesFeedback };
 /*@=sizeoftype@*/
 
 /*@-boundswrite@*/
-int aesSetup(aesParam* ap, const uint32* key, int keybits, cipherOperation op)
+int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 {
 	if (((keybits & 63) == 0) && (keybits >= 128) && (keybits <= 256))
 	{
-		register uint32* rk, t, i, j;
+		register uint32_t* rk, t, i, j;
 
 		/* clear fdback/iv */
 		ap->fdback[0] = 0;
@@ -769,9 +760,19 @@ int aesSetup(aesParam* ap, const uint32* key, int keybits, cipherOperation op)
 		ap->fdback[2] = 0;
 		ap->fdback[3] = 0;
 
-		ap->nr = 6 + ((uint32)keybits >> 5);
+		ap->nr = 6 + ((uint32_t)keybits >> 5);
 
-		mp32copy(((uint32)keybits >> 5), rk = ap->k, key);
+		rk = ap->k;
+
+		/* endian-less encoding */
+		for (i = 0; i < (keybits >> 5); i++)
+		{
+			rk[i] = (key[0] << 24) |
+					(key[1] << 16) |
+					(key[2] <<  8) |
+					(key[3]      );
+			key += 4;
+		}
 
 		i = 0;
 
@@ -890,22 +891,12 @@ int aesSetup(aesParam* ap, const uint32* key, int keybits, cipherOperation op)
 
 #ifndef ASM_AESSETIV
 /*@-boundsread@*/
-int aesSetIV(aesParam* ap, const uint32* iv)
+int aesSetIV(aesParam* ap, const byte* iv)
 {
 	if (iv)
-	{
-		ap->fdback[0] = iv[0];
-		ap->fdback[1] = iv[1];
-		ap->fdback[2] = iv[2];
-		ap->fdback[3] = iv[3];
-	}
+		memcpy(ap->fdback, iv, 16);
 	else
-	{
-		ap->fdback[0] = 0;
-		ap->fdback[1] = 0;
-		ap->fdback[2] = 0;
-		ap->fdback[3] = 0;
-	}
+		memset(ap->fdback, 0, 16);
 
 	return 0;
 }
@@ -992,11 +983,11 @@ int aesSetIV(aesParam* ap, const uint32* iv)
 
 #ifndef ASM_AESENCRYPT
 /*@-boundswrite@*/
-int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
+int aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
 {
-	register uint32 s0, s1, s2, s3;
-	register uint32 t0, t1, t2, t3;
-	register uint32* rk = ap->k;
+	register uint32_t s0, s1, s2, s3;
+	register uint32_t t0, t1, t2, t3;
+	register uint32_t* rk = ap->k;
 
 	#if WORDS_BIGENDIAN
 	s0 = src[0] ^ rk[0];
@@ -1134,9 +1125,9 @@ int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
 /*@-boundswrite@*/
 int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
 {
-	register uint32 s0, s1, s2, s3;
-	register uint32 t0, t1, t2, t3;
-	register uint32* rk = ap->k;
+	register uint32_t s0, s1, s2, s3;
+	register uint32_t t0, t1, t2, t3;
+	register uint32_t* rk = ap->k;
 
 	#if WORDS_BIGENDIAN
 	s0 = src[0] ^ rk[0];
@@ -1192,172 +1183,7 @@ int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
 /*@=boundswrite@*/
 #endif
 
-#ifndef ASM_AESECBENCRYPT
-int aesECBEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
+uint32_t* aesFeedback(aesParam* ap)
 {
-	while (count > 0)
-	{
-		(void) aesEncrypt(ap, dst, src);
-
-		dst += 4;
-		src += 4;
-
-		count--;
-	}
-	return 0;
+	return ap->fdback;
 }
-#endif
-
-#ifndef ASM_AESECBDECRYPT
-int aesECBDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
-{
-	while (count > 0)
-	{
-		(void) aesDecrypt(ap, dst, src);
-
-		dst += 4;
-		src += 4;
-
-		count--;
-	}
-	return 0;
-}
-#endif
-
-#ifndef ASM_AESCBCENCRYPT
-/*@-boundswrite@*/
-int aesCBCEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
-{
-	if (count > 0)
-	{
-		dst[0] = src[0] ^ ap->fdback[0];
-		dst[1] = src[1] ^ ap->fdback[1];
-		dst[2] = src[2] ^ ap->fdback[2];
-		dst[3] = src[3] ^ ap->fdback[3];
-
-		(void) aesEncrypt(ap, dst, dst);
-
-		dst += 4;
-		src += 4;
-
-		count--;
-
-		while (count > 0)
-		{
-			dst[0] = src[0] ^ dst[-4];
-			dst[1] = src[1] ^ dst[-3];
-			dst[2] = src[2] ^ dst[-2];
-			dst[3] = src[3] ^ dst[-1];
-
-			(void) aesEncrypt(ap, dst, dst);
-
-			dst += 4;
-			src += 4;
-
-			count--;
-		}
-
-		ap->fdback[0] = dst[-4];
-		ap->fdback[1] = dst[-3];
-		ap->fdback[2] = dst[-2];
-		ap->fdback[3] = dst[-1];
-	}
-	return 0;
-}
-/*@=boundswrite@*/
-#endif
-
-#ifndef ASM_AESCBCDECRYPT
-/*@-boundsread@*/
-int aesCBCDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
-{
-	if (count > 0)
-	{
-		if (src == dst)
-		{
-			register uint32 fb0 = src[0];
-			register uint32 fb1 = src[1];
-			register uint32 fb2 = src[2];
-			register uint32 fb3 = src[3];
-
-			(void) aesDecrypt(ap, dst, src);
-
-			dst[0] ^= ap->fdback[0];
-			dst[1] ^= ap->fdback[1];
-			dst[2] ^= ap->fdback[2];
-			dst[3] ^= ap->fdback[3];
-
-			dst += 4;
-			src += 4;
-
-			count--;
-
-			while (count > 0)
-			{
-				register int src0 = src[0];
-				register int src1 = src[1];
-				register int src2 = src[2];
-				register int src3 = src[3];
-
-				(void) aesDecrypt(ap, dst, src);
-
-				dst[0] ^= fb0;
-				dst[1] ^= fb1;
-				dst[2] ^= fb2;
-				dst[3] ^= fb3;
-
-				fb0 = src0;
-				fb1 = src1;
-				fb2 = src2;
-				fb3 = src3;
-
-				dst += 4;
-				src += 4;
-
-				count--;
-			}
-
-			ap->fdback[0] = fb0;
-			ap->fdback[1] = fb1;
-			ap->fdback[2] = fb2;
-			ap->fdback[3] = fb3;
-		}
-		else
-		{
-			(void) aesDecrypt(ap, dst, src);
-
-			dst[0] ^= ap->fdback[0];
-			dst[1] ^= ap->fdback[1];
-			dst[0] ^= ap->fdback[0];
-			dst[1] ^= ap->fdback[1];
-
-			dst += 4;
-			src += 4;
-
-			count--;
-
-			while (count > 0)
-			{
-				(void) aesDecrypt(ap, dst, src);
-
-				dst[0] ^= src[-4];
-				dst[1] ^= src[-3];
-				dst[2] ^= src[-2];
-				dst[3] ^= src[-1];
-
-				dst += 4;
-				src += 4;
-
-				count--;
-			}
-
-			ap->fdback[0] = src[-4];
-			ap->fdback[1] = src[-3];
-			ap->fdback[2] = src[-2];
-			ap->fdback[3] = src[-1];
-		}
-	}
-	return 0;
-}
-/*@=boundsread@*/
-#endif

@@ -35,6 +35,17 @@ extern "C" {
 #endif
 
 /**
+ * Computes the shared secret.
+ *
+ * Equation:
+ *
+ * \li \f$s=y^{x}\ \textrm{mod}\ p\f$
+ *
+ * @param dp		domain parameters
+ * @param x		private value
+ * @param y		public value (of the peer)
+ * @param s		computed secret value
+ * @retval		0 on success, -1 on failure.
  */
 BEECRYPTAPI
 int dlsvdp_pDHSecret(const dldp_p* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)

@@ -1,13 +1,5 @@
-/** \ingroup HASH_md5_m HASH_m
- * \file md5.c
- *
- * MD5 hash function, code.
- */
-
 /*
  * Copyright (c) 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file md5.c
+ * \brief MD5 hash function
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HASH_m HASH_md5_m
  */
 
 #include "system.h"
@@ -52,7 +50,6 @@ int md5Reset(register md5Param* p)
 	#else
 	# error
 	#endif
-	p->length = 0;
 	p->offset = 0;
 	return 0;
 }
@@ -257,7 +254,7 @@ static void md5Finish(md5Param* p)
 	ptr[7] = (byte)(p->length[0] >> 24);
 	#else
 	# error
- 	#endif
+	#endif
 
 	md5Process(p);
 

@@ -5,7 +5,7 @@
 ;
 ; Compile target is Microsoft Macro Assembler
 ;
-; Copyright (c) 2002 Bob Deblier <bob@virtualunlimited.com>
+; Copyright (c) 2002 Bob Deblier <bob.deblier@pandora.be>
 ;
 ; This library is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU Lesser General Public
@@ -574,7 +574,7 @@ dblock	macro	label
 	dlr
 	endm
 
-aesEncrypt proc
+aesEncrypt proc c export
 	push edi
 	push esi
 	push ebp
@@ -616,7 +616,7 @@ aesEncrypt proc
 	ret
 aesEncrypt endp
 
-aesDecrypt proc
+aesDecrypt proc c export
 	push edi
 	push esi
 	push ebp

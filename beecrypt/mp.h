@@ -37,6 +37,32 @@
 
 #include "mpopt.h"
 
+#define MP_HWBITS	(MP_WBITS >> 1)
+#define MP_WBYTES	(MP_WBITS >> 3)
+#define MP_WNIBBLES	(MP_WBITS >> 2)
+
+#if (MP_WBITS == 64)
+# define MP_WORDS_TO_BITS(x)	((x) << 6)
+# define MP_WORDS_TO_NIBBLES(x)	((x) << 4)
+# define MP_WORDS_TO_BYTES(x)	((x) << 3)
+# define MP_BITS_TO_WORDS(x)	((x) >> 6)
+# define MP_NIBBLES_TO_WORDS(x)	((x) >> 4)
+# define MP_BYTES_TO_WORDS(x)	((x) >> 3)
+#elif (MP_WBITS == 32)
+# define MP_WORDS_TO_BITS(x)	((x) << 5)
+# define MP_WORDS_TO_NIBBLES(x)	((x) << 3)
+# define MP_WORDS_TO_BYTES(x)	((x) << 2)
+# define MP_BITS_TO_WORDS(x)	((x) >> 5) 
+# define MP_NIBBLES_TO_WORDS(x)	((x) >> 3)
+# define MP_BYTES_TO_WORDS(x)	((x) >> 2)
+#else
+# error
+#endif
+
+#define MP_MSBMASK	(((mpw) 0x1) << (MP_WBITS-1))
+#define MP_LSBMASK	 ((mpw) 0x1)
+#define MP_ALLMASK	~((mpw) 0x0)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,12 +72,8 @@ extern "C" {
 BEECRYPTAPI /*@unused@*/
 void mpcopy(size_t size, /*@out@*/ mpw* dst, const mpw* src)
 	/*@modifies dst @*/;
-#ifndef ASM_MP32COPY
-#ifdef	__LCLINT__
-# define mpcopy(size, dst, src) memmove(dst, src, ((unsigned)(size)) << 2)
-#else
-# define mpcopy(size, dst, src) memcpy(dst, src, (size) << 2)
-#endif
+#ifndef ASM_MPCOPY
+# define mpcopy(size, dst, src) memcpy(dst, src, MP_WORDS_TO_BYTES(size))
 #endif
 
 /**
@@ -59,49 +81,45 @@ void mpcopy(size_t size, /*@out@*/ mpw* dst, const mpw* src)
 BEECRYPTAPI /*@unused@*/
 void mpmove(size_t size, /*@out@*/ mpw* dst, const mpw* src)
 	/*@modifies dst @*/;
-#ifndef ASM_MP32MOVE
-#ifdef	__LCLINT__
-# define mpmove(size, dst, src) memmove(dst, src, ((unsigned)(size)) << 2)
-#else
-# define mpmove(size, dst, src) memmove(dst, src, (size) << 2)
-#endif
+#ifndef ASM_MPMOVE
+# define mpmove(size, dst, src) memmove(dst, src, MP_WORDS_TO_BYTES(size))
 #endif
 
 /**
  */
 BEECRYPTAPI
-void mpzero(size_t xsize, /*@out@*/ mpw* xdata)
-	/*@modifies xdata @*/;
+void mpzero(size_t size, /*@out@*/ mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpfill(size_t xsize, /*@out@*/ mpw* xdata, uint32 val)
-	/*@modifies xdata @*/;
+void mpfill(size_t size, /*@out@*/ mpw* data, mpw fill)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-int mpodd (size_t xsize, const mpw* xdata)
+int mpodd (size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI
-int mpeven(size_t xsize, const mpw* xdata)
+int mpeven(size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI
-int mpz  (size_t xsize, const mpw* xdata)
+int mpz  (size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int mpnz (size_t xsize, const mpw* xdata)
+int mpnz (size_t size, const mpw* data)
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -186,19 +204,19 @@ int mplex(size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata)
 /**
  */
 BEECRYPTAPI
-int mpisone(size_t xsize, const mpw* xdata)
+int mpisone(size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI
-int mpistwo(size_t xsize, const mpw* xdata)
+int mpistwo(size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI
-int mpleone(size_t xsize, const mpw* xdata)
+int mpleone(size_t size, const mpw* data)
 	/*@*/;
 
 /**
@@ -210,38 +228,38 @@ int mpeqmone(size_t size, const mpw* xdata, const mpw* ydata)
 /**
  */
 BEECRYPTAPI
-int mpmsbset(size_t xsize, const mpw* xdata)
+int mpmsbset(size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int mplsbset(size_t xsize, const mpw* xdata)
+int mplsbset(size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpsetmsb(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpsetmsb(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mpsetlsb(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpsetlsb(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpclrmsb(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpclrmsb(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpclrlsb(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpclrlsb(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
@@ -265,8 +283,8 @@ void mpor(size_t size, mpw* xdata, const mpw* ydata)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-void mpnot(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpnot(size_t size, mpw* data)
+	/*@modifies data @*/;
 /*@=exportlocal@*/
 
 /**
@@ -290,7 +308,7 @@ int mpaddw(size_t xsize, mpw* xdata, uint32 y)
 /**
  */
 BEECRYPTAPI
-uint32 mpadd (size_t size, mpw* xdata, const mpw* ydata)
+int mpadd (size_t size, mpw* xdata, const mpw* ydata)
 	/*@modifies xdata @*/;
 
 /**
@@ -320,31 +338,37 @@ int mpsubx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
 /**
  */
 BEECRYPTAPI
-int mpmultwo(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+int mpmultwo(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mpneg(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpneg(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-size_t mpsize(size_t xsize, const mpw* xdata)
+size_t mpsize(size_t size, const mpw* data)
+	/*@*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+size_t mpbits(size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI
-size_t mpmszcnt(size_t xsize, const mpw* xdata)
+size_t mpmszcnt(size_t size, const mpw* data)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI
-size_t mpbitcnt(size_t xsize, const mpw* xdata)
+size_t mpbitcnt(size_t size, const mpw* data)
 	/*@*/;
 
 /**
@@ -359,56 +383,50 @@ size_t mplszcnt(size_t xsize, const mpw* xdata)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-void mplshift(size_t xsize, mpw* xdata, uint32 count)
-	/*@modifies xdata @*/;
+void mplshift(size_t size, mpw* data, size_t count)
+	/*@modifies data @*/;
 /*@=exportlocal@*/
 
 /**
  */
 BEECRYPTAPI
-void mprshift(size_t xsize, mpw* xdata, uint32 count)
-	/*@modifies xdata @*/;
+void mprshift(size_t size, mpw* data, size_t count)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-size_t mprshiftlsz(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+size_t mprshiftlsz(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-size_t mpnorm(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-uint32 mpdivpowtwo(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+size_t mpnorm(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mpdivtwo (size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpdivtwo (size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-void mpsdivtwo(size_t xsize, mpw* xdata)
-	/*@modifies xdata @*/;
+void mpsdivtwo(size_t size, mpw* data)
+	/*@modifies data @*/;
 
 /**
  */
 BEECRYPTAPI
-uint32 mpsetmul   (size_t size, /*@out@*/ mpw* result, const mpw* xdata, uint32 y)
+mpw mpsetmul   (size_t size, /*@out@*/ mpw* result, const mpw* xdata, mpw y)
 	/*@modifies result @*/;
 
 /**
  */
 BEECRYPTAPI
-uint32 mpaddmul   (size_t size, /*@out@*/ mpw* result, const mpw* xdata, uint32 y)
+mpw mpaddmul   (size_t size, /*@out@*/ mpw* result, const mpw* xdata, mpw y)
 	/*@modifies result @*/;
 
 /**
@@ -440,7 +458,13 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, /*@out@*/ mpw* res
 /**
  */
 BEECRYPTAPI /*@unused@*/
-uint32 mpnmodw(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, uint32 y, /*@out@*/ mpw* wksp)
+mpw mppndiv(mpw xhi, mpw xlo, mpw y)
+	/*@*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+mpw mpnmodw(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, mpw y, /*@out@*/ mpw* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
@@ -468,6 +492,24 @@ BEECRYPTAPI /*@unused@*/
 void mpprintln(/*@null@*/ FILE * fp, size_t xsize, /*@null@*/ const mpw* xdata)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+int i2osp(/*@out@*/ byte *osdata, size_t ossize, const mpw* idata, size_t isize)
+	/*@modifies osdata @*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+int os2ip(/*@out@*/ mpw *idata, size_t isize, const byte* osdata, size_t ossize)
+	/*@modifies idata @*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+int hs2ip(/*@out@*/ mpw* idata, size_t isize, const char* hsdata, size_t hssize)
+	/*@modifies idata @*/;
 
 #ifdef __cplusplus
 }

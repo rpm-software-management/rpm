@@ -1,13 +1,5 @@
-/** \ingroup HMAC_sha256_m HMAC_m
- * \file hmacsha256.h
- *
- * HMAC-SHA-256 message authentication code, header.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +17,12 @@
  *
  */
 
+/*!\file hmacsha256.h
+ * \brief HMAC-SHA-256 message authentication code, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HMAC_m HMAC_sha256_m
+ */
+
 #ifndef _HMACSHA256_H
 #define _HMACSHA256_H
 
@@ -35,8 +33,9 @@
  */
 typedef struct
 {
-	hmacParam hparam;
 	sha256Param sparam;
+	byte kxi[64];
+	byte kxo[64];
 } hmacsha256Param;
 
 #ifdef __cplusplus
@@ -52,7 +51,7 @@ extern BEECRYPTAPI const keyedHashFunction hmacsha256;
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacsha256Setup (hmacsha256Param* sp, const uint32* key, int keybits)
+int hmacsha256Setup (hmacsha256Param* sp, const byte* key, size_t keybits)
 	/*@globals sha256 @*/
 	/*@modifies sp @*/;
 /*@=exportlocal@*/
@@ -70,7 +69,7 @@ int hmacsha256Reset (hmacsha256Param* sp)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
+int hmacsha256Update(hmacsha256Param* sp, const byte* data, size_t size)
 	/*@globals sha256 @*/
 	/*@modifies sp @*/;
 /*@=exportlocal@*/
@@ -79,7 +78,7 @@ int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacsha256Digest(hmacsha256Param* sp, uint32* data)
+int hmacsha256Digest(hmacsha256Param* sp, byte* data)
 	/*@globals sha256 @*/
 	/*@modifies sp, data @*/;
 /*@=exportlocal@*/

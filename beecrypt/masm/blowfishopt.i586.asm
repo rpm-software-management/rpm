@@ -7,7 +7,7 @@
 ;
 ; Copyright (c) 2000 Virtual Unlimited B.V.
 ;
-; Author: Bob Deblier <bob@virtualunlimited.com>
+; Author: Bob Deblier <bob.deblier@pandora.be>
 ;
 ; This library is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU Lesser General Public
@@ -86,7 +86,7 @@ dtworounds macro offset
 
 	align 8
 	
-blowfishEncrypt proc
+blowfishEncrypt proc c export
 	push edi
 	push esi
 	push ebx
@@ -133,7 +133,7 @@ blowfishEncrypt endp
 
 	align 8
 
-blowfishDecrypt proc
+blowfishDecrypt proc c export
 	push edi
 	push esi
 	push ebx

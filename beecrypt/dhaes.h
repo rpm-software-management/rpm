@@ -35,26 +35,26 @@
  */
 typedef struct
 {
-	const dldp_p*				param;
-	const hashFunction*			hash;
-	const blockCipher*			cipher;
+	const dldp_p*			param;
+	const hashFunction*		hash;
+	const blockCipher*		cipher;
 	const keyedHashFunction*	mac;
-	int							cipherkeybits;
-	int							mackeybits;
+	int				cipherkeybits;
+	int				mackeybits;
 } dhaes_pParameters;
 
 /**
  */
 typedef struct
 {
-	dldp_p						param;
-	mpnumber					pub;
-	mpnumber					pri;
-	hashFunctionContext			hash;
-	blockCipherContext			cipher;
+	dldp_p				param;
+	mpnumber			pub;
+	mpnumber			pri;
+	hashFunctionContext		hash;
+	blockCipherContext		cipher;
 	keyedHashFunctionContext	mac;
-	int							cipherkeybits;
-	int							mackeybits;
+	int				cipherkeybits;
+	int				mackeybits;
 } dhaes_pContext;
 
 #ifdef __cplusplus

@@ -45,17 +45,17 @@ BEECRYPTAPI
 int entropy_provider_cleanup(void);
 
 BEECRYPTAPI
-int entropy_wavein(uint32* data, int size);
+int entropy_wavein(byte* data, size_t size);
 BEECRYPTAPI
-int entropy_console(uint32* data, int size);
+int entropy_console(byte* data, size_t size);
 BEECRYPTAPI
-int entropy_wincrypt(uint32* data, int size);
+int entropy_wincrypt(byte* data, size_t size);
 #else
 
 #if HAVE_DEV_AUDIO
 /** \ingroup ES_audio_m ES_m
  */
-int entropy_dev_audio (uint32* data, int size)
+int entropy_dev_audio (byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -63,7 +63,7 @@ int entropy_dev_audio (uint32* data, int size)
 #if HAVE_DEV_DSP
 /** \ingroup ES_dsp_m ES_m
  */
-int entropy_dev_dsp   (uint32* data, int size)
+int entropy_dev_dsp   (byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -71,7 +71,7 @@ int entropy_dev_dsp   (uint32* data, int size)
 #if HAVE_DEV_RANDOM
 /** \ingroup ES_random_m ES_m
  */
-int entropy_dev_random(uint32* data, int size)
+int entropy_dev_random(byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -79,7 +79,7 @@ int entropy_dev_random(uint32* data, int size)
 #if HAVE_DEV_URANDOM
 /** \ingroup ES_urandom_m ES_m
  */
-int entropy_dev_urandom(uint32* data, int size)
+int entropy_dev_urandom(byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -87,7 +87,7 @@ int entropy_dev_urandom(uint32* data, int size)
 #if HAVE_DEV_TTY
 /** \ingroup ES_tty_m ES_m
  */
-int entropy_dev_tty   (uint32* data, int size)
+int entropy_dev_tty   (byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif

@@ -66,7 +66,8 @@ typedef struct
 	#endif
 	uint32	state[N+1];
 	uint32	left;
-/*@kept@*/ uint32*	nextw;
+/*@kept@*/
+	uint32*	nextw;
 } mtprngParam;
 
 #ifdef __cplusplus

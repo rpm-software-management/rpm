@@ -131,11 +131,11 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 		#endif
 		while (size < needed)
 		{
-			mp32copy(size, dest, data);
+			mpcopy(size, dest, data);
 			dest += size;
 			needed -= size;
 		}
-		mp32copy(needed, dest, data);
+		mpcopy(needed, dest, data);
 		#ifdef _REENTRANT
 		# if WIN32
 		if (!ReleaseMutex(mp->lock))

@@ -7,7 +7,7 @@
 ;
 ; Copyright (c) 2000 Virtual Unlimited B.V.
 ;
-; Author: Bob Deblier <bob@virtualunlimited.com>
+; Author: Bob Deblier <bob.deblier@pandora.be>
 ;
 ; This library is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,6 @@ K60	equ	0ca62c1d6h
 
 PARAM_H			equ	0
 PARAM_DATA		equ	20
-PARAM_OFFSET	equ	352
 
 	.code
 
@@ -136,7 +135,6 @@ sha1Process proc
 	jns @swaps
 
 	lea edi,dword ptr [esi+PARAM_DATA]
-	mov byte ptr [esi+PARAM_OFFSET],al
 	mov ecx,16
 
 	align 4

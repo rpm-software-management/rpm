@@ -121,13 +121,13 @@ int  dldp_pEqual(const dldp_p* a, const dldp_p* b)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize, int cofactor)
+int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits, int cofactor)
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
+int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
 
 /**
@@ -149,13 +149,13 @@ int  dldp_pgoqValidate(const dldp_p*, randomGeneratorContext* rgc, int cofactor)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize)
+int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits)
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
+int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
 
 /**

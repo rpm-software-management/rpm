@@ -30,14 +30,6 @@
 
 #include "beecrypt.h"
 
-/**
- */
-typedef struct
-{
-	byte kxi[64];
-	byte kxo[64];
-} hmacParam;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,26 +37,26 @@ extern "C" {
 /**
  */
 BEECRYPTAPI
-int hmacSetup (hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const uint32* key, int keybits)
+int hmacSetup (byte* kxi, byte* kxo, const hashFunction* hash, hashFunctionParam* param, const byte* key, size_t keybits)
+	/*@modifies kxi, kxo */;
+
+/**
+ */
+BEECRYPTAPI
+int hmacReset (const byte* kxi, const hashFunction* hash, hashFunctionParam* param)
 	/*@modifies hp */;
 
 /**
  */
 BEECRYPTAPI
-int hmacReset (hmacParam* hp, const hashFunction* hash, hashFunctionParam* param)
+int hmacUpdate(const hashFunction* hash, hashFunctionParam* param, const byte* data, size_t size)
 	/*@modifies hp */;
 
 /**
  */
 BEECRYPTAPI
-int hmacUpdate(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const byte* data, int size)
-	/*@modifies hp */;
-
-/**
- */
-BEECRYPTAPI
-int hmacDigest(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, /*@out@*/ uint32* data)
-	/*@modifies hp, data */;
+int hmacDigest(const byte* kxo, const hashFunction* hash, hashFunctionParam* param, /*@out@*/ byte* data)
+	/*@modifies data */;
 
 #ifdef __cplusplus
 }

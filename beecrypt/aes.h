@@ -31,9 +31,9 @@
  */
 typedef struct
 {
-	uint32 k[64];
-	uint32 nr;
-	uint32 fdback[4];
+	uint32_t k[64];
+	uint32_t nr;
+	uint32_t fdback[4];
 } aesParam;
 
 #ifdef __cplusplus
@@ -46,26 +46,67 @@ extern "C" {
 extern const BEECRYPTAPI blockCipher aes;
 
 /** \ingroup BC_aes_m
+ * The cipher's setup function.
+ *
+ * This function expands the key depending on whether the ENCRYPT or DECRYPT
+ * operation was selected.
+ *
+ * @param ap		parameter block
+ * @param key		key value
+ * @param keybits	number of bits in the key (128, 192 or 256)
+ * @param op		ENCRYPT or DECRYPT.
+ * @retval		0 on success, -1 on failure.
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int aesSetup  (aesParam* ap, const uint32* key, int keybits, cipherOperation op)
+int aesSetup  (aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 	/*@modifies ap @*/;
 /*@=exportlocal@*/
 
 /** \ingroup BC_aes_m
+ * The Initialization Vector setup function.
+ *
+ * This function is only necessary in block chaining or feedback modes.
+ *
+ * @param ap		parameter block
+ * @param iv		initialization vector (or NULL)
+ * @retval		0 on success.
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int aesSetIV  (aesParam* ap, const uint32* iv)
+int aesSetIV  (aesParam* ap, /*@null@*/ const byte* iv)
 	/*@modifies ap @*/;
 /*@=exportlocal@*/
 
 /** \ingroup BC_aes_m
+ * The raw encryption function.
+ *
+ * This function encrypts one block of data; the size of a block is 128 bits.
+ *
+ * @param ap		parameter block
+ * @param dst		ciphertext (aligned on 32-bit boundary)
+ * @param src		cleartext (aligned on 32-bit boundary)
+ * @retval		0 on success.
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
+int aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
+	/*@modifies dst @*/;
+/*@=exportlocal@*/
+
+/** \ingroup BC_aes_m
+ * The raw decryption function.
+ *
+ * This function decrypts one block of data; the size of a block is 128 bits.
+ *
+ * @param ap		parameter block
+ * @param dst		cleartext (aligned on 32-bit boundary)
+ * @param src		ciphertext (aligned on 32-bit boundary)
+ * @retval		0 on success.
+ */
+/*@-exportlocal@*/
+BEECRYPTAPI
+int aesDecrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
 	/*@modifies dst @*/;
 /*@=exportlocal@*/
 
@@ -73,40 +114,8 @@ int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
-	/*@modifies dst @*/;
-/*@=exportlocal@*/
-
-/** \ingroup BC_aes_m
- */
-/*@-exportlocal@*/
-BEECRYPTAPI
-int aesECBEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
-	/*@modifies dst @*/;
-/*@=exportlocal@*/
-
-/** \ingroup BC_aes_m
- */
-/*@-exportlocal@*/
-BEECRYPTAPI
-int aesECBDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
-	/*@modifies dst @*/;
-/*@=exportlocal@*/
-
-/** \ingroup BC_aes_m
- */
-/*@-exportlocal@*/
-BEECRYPTAPI
-int aesCBCEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
-	/*@modifies ap, dst @*/;
-/*@=exportlocal@*/
-
-/** \ingroup BC_aes_m
- */
-/*@-exportlocal@*/
-BEECRYPTAPI
-int aesCBCDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
-	/*@modifies ap, dst @*/;
+uint32_t* aesFeedback(aesParam* ap)
+	/*@modifies ap @*/;
 /*@=exportlocal@*/
 
 #ifdef __cplusplus

@@ -59,7 +59,7 @@ int fake_next(randomGeneratorParam* p, uint32* data, int size)
 	mpnzero(&tmp);
 	mpnsethex(&tmp, dsa_k);
 
-	mp32setx(size, data, tmp.size, tmp.data);
+	mpsetx(size, data, tmp.size, tmp.data);
 
 	mpnfree(&tmp);
 
@@ -104,7 +104,7 @@ int main()
 	if (dsasign(&keypair.param.p, &keypair.param.q, &keypair.param.g, &rngc, &hm, &keypair.x, &r, &s))
 		return -1;
 
-	if (mp32eqx(5, expect_r, r.size, r.data) && mp32eqx(5, expect_s, s.size, s.data))
+	if (mpeqx(5, expect_r, r.size, r.data) && mpeqx(5, expect_s, s.size, s.data))
 		printf("ok\n");
 	else
 		failures++;

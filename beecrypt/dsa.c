@@ -50,22 +50,23 @@
 /*@-boundswrite@*/
 int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
-	register uint32  psize = p->size;
-	register uint32  qsize = q->size;
+	register size_t psize = p->size;
+	register size_t qsize = q->size;
 
-	register uint32* ptemp;
-	register uint32* qtemp;
+	register mpw* ptemp;
+	register mpw* qtemp;
 
-	register uint32* pwksp;
-	register uint32* qwksp;
+	register mpw* pwksp;
+	register mpw* qwksp;
 
-	register int rc = -1;	/* assume failure */
+	register int rc = -1;
 
-	ptemp = (uint32*) malloc((5*psize+2) * sizeof(*ptemp));
-	if (ptemp == NULL)
+	ptemp = (mpw*) malloc((5*psize+2) * sizeof(*ptemp));
+	if (ptemp == (mpw*) 0)
 		return rc;
-	qtemp = (uint32*) malloc((14*qsize+11) * sizeof(*qtemp));
-	if (qtemp == NULL) {
+	qtemp = (mpw*) malloc((14*qsize+11) * sizeof(*qtemp));
+	if (qtemp == (mpw*) 0)
+	{
 		free(ptemp);
 		return rc;
 	}
@@ -80,22 +81,12 @@ int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGen
 	/* get a random k, invertible modulo q */
 	mpbrndinv_w(q, rgc, qtemp, qtemp+qsize, qwksp);
 
-/* FIPS 186 test vectors
-	qtemp[0] = 0x358dad57;
-	qtemp[1] = 0x1462710f;
-	qtemp[2] = 0x50e254cf;
-	qtemp[3] = 0x1a376b2b;
-	qtemp[4] = 0xdeaadfbf;
-
-	mpbinv_w(q, qsize, qtemp, qtemp+qsize, qwksp);
-*/
-
 	/* g^k mod p */
 	mpbpowmod_w(p, g->size, g->data, qsize, qtemp, ptemp, pwksp);
 
 	/* (g^k mod p) mod q - simple modulo */
-	mp32nmod(qtemp+2*qsize, psize, ptemp, qsize, q->modl, pwksp);
-	mp32copy(qsize, r->data, qtemp+psize+qsize);
+	mpnmod(qtemp+2*qsize, psize, ptemp, qsize, q->modl, pwksp);
+	mpcopy(qsize, r->data, qtemp+psize+qsize);
 
 	/* allocate s */
 	mpnfree(s);
@@ -121,35 +112,35 @@ int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGen
 
 int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
-	register uint32  psize = p->size;
-	register uint32  qsize = q->size;
+	register size_t psize = p->size;
+	register size_t qsize = q->size;
 
-	register uint32* ptemp;
-	register uint32* qtemp;
+	register mpw* ptemp;
+	register mpw* qtemp;
 
-	register uint32* pwksp;
+	register mpw* pwksp;
 	register uint32* qwksp;
 
-	register int rc = 0;	/* XXX shouldn't this be -1 ?*/
+	register int rc = 0;
 
-	if (mp32z(r->size, r->data))
+	if (mpz(r->size, r->data))
 		return rc;
 
-	if (mp32gex(r->size, r->data, qsize, q->modl))
+	if (mpgex(r->size, r->data, qsize, q->modl))
 		return rc;
 
-	if (mp32z(s->size, s->data))
+	if (mpz(s->size, s->data))
 		return rc;
 
-	if (mp32gex(s->size, s->data, qsize, q->modl))
+	if (mpgex(s->size, s->data, qsize, q->modl))
 		return rc;
 
-	ptemp = (uint32*) malloc((6*psize+2) * sizeof(*ptemp));
-	if (ptemp == NULL)
+	ptemp = (mpw*) malloc((6*psize+2) * sizeof(*ptemp));
+	if (ptemp == (mpw*) 0)
 		return rc;
 
-	qtemp = (uint32*) malloc((13*qsize+11) * sizeof(*qtemp));
-	if (qtemp == NULL) {
+	qtemp = (mpw*) malloc((13*qsize+11) * sizeof(*qtemp));
+	if (qtemp == (mpw*) 0) {
 		free(ptemp);
 		return rc;
 	}
@@ -176,9 +167,9 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 		mpbmulmod_w(p, psize, ptemp, psize, ptemp+psize, ptemp, pwksp);
 
 		/* modulo q */
-		mp32nmod(ptemp+psize, psize, ptemp, qsize, q->modl, pwksp);
+		mpnmod(ptemp+psize, psize, ptemp, qsize, q->modl, pwksp);
 
-		rc = mp32eqx(r->size, r->data, psize, ptemp+psize);
+		rc = mpeqx(r->size, r->data, psize, ptemp+psize);
 	}
 
 	free(qtemp);

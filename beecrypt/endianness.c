@@ -28,19 +28,19 @@
 #include "debug.h"
 
 /*@-shiftimplementation@*/
-int16 swap16(int16 n)
+int16_t swap16(int16_t n)
 {
 	return (    ((n & 0xff) << 8) |
 				((n & 0xff00) >> 8) );
 }
 
-uint16 swapu16(uint16 n)
+uint16_t swapu16(uint16_t n)
 {
 	return (    ((n & 0xffU) << 8) |
 				((n & 0xff00U) >> 8) );
 }
 
-int32 swap32(int32 n)
+int32_t swap32(int32_t n)
 {
 	return (    ((n & 0xff) << 24) |
 				((n & 0xff00) << 8) |
@@ -48,7 +48,7 @@ int32 swap32(int32 n)
 				((n & 0xff000000) >> 24) );
 }
 
-uint32 swapu32(uint32 n)
+uint32_t swapu32(uint32_t n)
 {
 	return (    ((n & 0xffU) << 24) |
 				((n & 0xff00U) << 8) |
@@ -56,7 +56,7 @@ uint32 swapu32(uint32 n)
 				((n & 0xff000000U) >> 24) );
 }
 
-int64 swap64(int64 n)
+int64_t swap64(int64_t n)
 {
 	#if HAVE_LONG_LONG
 	return (    ((n & 0xffLL) << 56) |
@@ -117,36 +117,6 @@ int encodeLong(javalong l, byte* data)
 	l = swap64(l);
 	#endif
 	memcpy(data, &l, 8);
-	return 8;
-}
-/*@=boundswrite@*/
-
-/*@-boundswrite@*/
-int encodeFloat(javafloat f, byte* data)
-{
-	#if (!WORDS_BIGENDIAN)
-	register const byte* src = ((const byte*) &f) + 3;
-	register int i;
-	for (i = 0; i < 4; i++)
-		data[i] = *(src--);
-	#else
-	memcpy(data, &f, 4);
-	#endif
-	return 4;
-}
-/*@=boundswrite@*/
-
-/*@-boundswrite@*/
-int encodeDouble(javadouble d, byte* data)
-{
-	#if (!WORDS_BIGENDIAN)
-	register const byte* src = ((byte*) &d) + 7;
-	register int i;
-	for (i = 0; i < 8; i++)
-		data[i] = *(src--);
-	#else
-	memcpy(data, &d, 8);
-	#endif
 	return 8;
 }
 /*@=boundswrite@*/
@@ -298,36 +268,6 @@ int decodeLong(javalong* l, const byte* data)
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-int decodeFloat(javafloat* f, const byte* data)
-{
-	#if (WORDS_BIGENDIAN)
-	memcpy(f, data, 4);
-	#else
-	register byte *dst = ((byte*) f) + 3;
-	register int i;
-	for (i = 0; i < 4; i++)
-		*(dst--) = data[i];
-	#endif
-	return 4;
-}
-/*@=boundswrite@*/
-
-/*@-boundswrite@*/
-int decodeDouble(javadouble* d, const byte* data)
-{
-	#if (WORDS_BIGENDIAN)
-	memcpy(d, data, 8);
-	#else
-	register byte *dst = ((byte*) d) + 7;
-	register int i;
-	for (i = 0; i < 8; i++)
-		*(dst--) = data[i];
-	#endif
-	return 8;
-}
-/*@=boundswrite@*/
-
-/*@-boundswrite@*/
 int decodeChar(javachar* c, const byte* data)
 {
 	#if (WORDS_BIGENDIAN)
@@ -367,7 +307,7 @@ int decodeIntsPartial(javaint* i, const byte* data, int bytecount)
 	#if (WORDS_BIGENDIAN)
 	memcpy(i, data, rc);
 	if (rc & 0x3)
-		memset(i + (rc >> 2), 0, 4 - (rc & 0x3));
+		memset(((byte*) i) + rc, 0, 4 - (rc & 0x3));
 	#else
 	javaint tmp;
 	while (bytecount >= 4)

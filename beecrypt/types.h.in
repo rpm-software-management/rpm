@@ -68,4 +68,28 @@ typedef @uint16_type@	javachar;
 typedef @float4_type@	javafloat;
 typedef @double8_type@	javadouble;
 
+#if HAVE_INTTYPES_H
+# include <inttypes.h>
+#else
+# if HAVE_STDINT_H
+# include <stdint.h>
+# endif
+#endif
+#define	MP_WBITS	32
+
+#if (MP_WBITS == 64)
+typedef uint64_t mpw;
+typedef uint32_t mphw;
+#elif (MP_WBITS == 32)
+# if HAVE_UINT64_T
+#  define HAVE_MPDW 1
+typedef uint64_t mpdw;
+# endif
+typedef uint32_t mpw;
+typedef uint16_t mphw;
+#else
+# error
+#endif
+
+
 #endif /* _BEECRYPT_TYPES_H */

@@ -1,15 +1,5 @@
-/** \ingroup RSA_m
- * \file rsakp.c
- *
- * RSA Keypair, code.
- */
-
 /*
- * <conformance statement for IEEE P1363 needed here>
- *
  * Copyright (c) 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +17,12 @@
  *
  */
 
+/*!\file rsakp.c
+ * \brief RSA keypair.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup IF_m IF_rsa_m
+ */
+
 #include "system.h"
 #include "rsakp.h"
 #include "mpprime.h"
@@ -40,9 +36,9 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 	 * Generates an RSA Keypair for use with the Chinese Remainder Theorem
 	 */
 
-	register uint32  pqsize = ((uint32)(nsize+1)) >> 1;
-	register uint32* temp = (uint32*) malloc((16*pqsize+6) * sizeof(*temp));
-	register uint32  newn = 1;
+	register size_t pqsize = ((uint32)(nsize+1)) >> 1;
+	register mpw* temp = (mpw*) malloc((16*pqsize+6) * sizeof(*temp));
+	register int newn = 1;
 
 	if (temp)
 	{
@@ -55,12 +51,12 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 		/* generate a random prime p and q */
 		/*@-globs@*/
-		mp32prnd_w(&kp->p, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
-		mp32prnd_w(&kp->q, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
+		mpprnd_w(&kp->p, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
+		mpprnd_w(&kp->q, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
 		/*@-globs@*/
 
 		/* if p <= q, perform a swap to make p larger than q */
-		if (mp32le(pqsize, kp->p.modl, kp->q.modl))
+		if (mple(pqsize, kp->p.modl, kp->q.modl))
 		{
 			/*@-sizeoftype@*/
 			memcpy(&r, &kp->q, sizeof(r));
@@ -76,19 +72,19 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 		while (1)
 		{
-			mp32mul(temp, pqsize, kp->p.modl, pqsize, kp->q.modl);
+			mpmul(temp, pqsize, kp->p.modl, pqsize, kp->q.modl);
 
-			if (newn && mp32msbset(nsize, temp))
+			if (newn && mpmsbset(nsize, temp))
 				break;
 
 			/* product of p and q doesn't have the required size (one bit short) */
 
 			/*@-globs@*/
-			mp32prnd_w(&r, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
+			mpprnd_w(&r, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
 			/*@=globs@*/
 
 			/*@-usedef -branchstate @*/ /* r is set */
-			if (mp32le(pqsize, kp->p.modl, r.modl))
+			if (mple(pqsize, kp->p.modl, r.modl))
 			{
 				mpbfree(&kp->q);
 				/*@-sizeoftype@*/
@@ -98,7 +94,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 				mpbzero(&r);
 				newn = 1;
 			}
-			else if (mp32le(pqsize, kp->q.modl, r.modl))
+			else if (mple(pqsize, kp->q.modl, r.modl))
 			{
 				mpbfree(&kp->q);
 				/*@-sizeoftype@*/
@@ -127,7 +123,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 		/*@-usedef@*/	/* psubone/qsubone are set */
 		/* compute phi = (p-1)*(q-1) */
-		mp32mul(temp, pqsize, psubone.modl, pqsize, qsubone.modl);
+		mpmul(temp, pqsize, psubone.modl, pqsize, qsubone.modl);
 		mpbset(&phi, nsize, temp);
 
 		/* compute d = inv(e) mod phi */

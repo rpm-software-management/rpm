@@ -32,8 +32,8 @@
 	.text
 
 
-C_FUNCTION_BEGIN(mp32zero)
-LABEL(mp32zero)
+C_FUNCTION_BEGIN(mpzero)
+LABEL(mpzero)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -44,11 +44,11 @@ LABEL(mp32zero)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32zero, LOCAL(mp32zero_size))
+C_FUNCTION_END(mpzero, LOCAL(mpzero_size))
 
 
-C_FUNCTION_BEGIN(mp32fill)
-LABEL(mp32fill)
+C_FUNCTION_BEGIN(mpfill)
+LABEL(mpfill)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -59,32 +59,32 @@ LABEL(mp32fill)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32fill, LOCAL(mp32fill_size))
+C_FUNCTION_END(mpfill, LOCAL(mpfill_size))
 
 
-C_FUNCTION_BEGIN(mp32even)
-LABEL(mp32even)
+C_FUNCTION_BEGIN(mpeven)
+LABEL(mpeven)
 	movl 4(%esp),%ecx
 	movl 8(%esp),%eax
 	movl -4(%eax,%ecx,4),%eax
 	notl %eax
 	andl $1,%eax
 	ret
-C_FUNCTION_END(mp32even, LOCAL(mp32even_size))
+C_FUNCTION_END(mpeven, LOCAL(mpeven_size))
 
 
-C_FUNCTION_BEGIN(mp32odd)
-LABEL(mp32odd)
+C_FUNCTION_BEGIN(mpodd)
+LABEL(mpodd)
 	movl 4(%esp),%ecx
 	movl 8(%esp),%eax
 	movl -4(%eax,%ecx,4),%eax
 	andl $1,%eax
 	ret
-C_FUNCTION_END(mp32odd, LOCAL(mp32odd_size))
+C_FUNCTION_END(mpodd, LOCAL(mpodd_size))
 
 
-C_FUNCTION_BEGIN(mp32addw)
-LABEL(mp32addw)
+C_FUNCTION_BEGIN(mpaddw)
+LABEL(mpaddw)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -95,26 +95,26 @@ LABEL(mp32addw)
 	leal -4(%edi,%ecx,4),%edi
 	addl %eax,(%edi)
 	decl %ecx
-	jz LOCAL(mp32addw_skip)
+	jz LOCAL(mpaddw_skip)
 	leal -4(%edi),%edi
 
 	.align 4
-LOCAL(mp32addw_loop):
+LOCAL(mpaddw_loop):
 	adcl %edx,(%edi)
 	leal -4(%edi),%edi
 	decl %ecx
-	jnz LOCAL(mp32addw_loop)
-LOCAL(mp32addw_skip):
+	jnz LOCAL(mpaddw_loop)
+LOCAL(mpaddw_skip):
 	sbbl %eax,%eax
 	negl %eax
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32addw, LOCAL(mp32addw_size))
+C_FUNCTION_END(mpaddw, LOCAL(mpaddw_size))
 
 
-C_FUNCTION_BEGIN(mp32subw)
-LABEL(mp32subw)
+C_FUNCTION_BEGIN(mpsubw)
+LABEL(mpsubw)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -125,25 +125,25 @@ LABEL(mp32subw)
 	leal -4(%edi,%ecx,4),%edi
 	subl %eax,(%edi)
 	decl %ecx
-	jz LOCAL(mp32subw_skip)
+	jz LOCAL(mpsubw_skip)
 	leal -4(%edi),%edi
 
 	.align 4
-LOCAL(mp32subw_loop):
+LOCAL(mpsubw_loop):
 	sbbl %edx,(%edi)
 	leal -4(%edi),%edi
 	decl %ecx
-	jnz LOCAL(mp32subw_loop)
-LOCAL(mp32subw_skip):
+	jnz LOCAL(mpsubw_loop)
+LOCAL(mpsubw_skip):
 	sbbl %eax,%eax
 	negl %eax
 	popl %edi
 	ret
-C_FUNCTION_END(mp32subw, LOCAL(mp32subw_size))
+C_FUNCTION_END(mpsubw, LOCAL(mpsubw_size))
 
 
-C_FUNCTION_BEGIN(mp32add)
-LABEL(mp32add)
+C_FUNCTION_BEGIN(mpadd)
+LABEL(mpadd)
 	pushl %edi
 	pushl %esi
 
@@ -155,11 +155,11 @@ LABEL(mp32add)
 	decl %ecx
 
 	.align 4
-LOCAL(mp32add_loop):
+LOCAL(mpadd_loop):
 	movl (%esi,%ecx,4),%eax
 	adcl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns LOCAL(mp32add_loop)
+	jns LOCAL(mpadd_loop)
 
 	sbbl %eax,%eax
 	negl %eax
@@ -167,11 +167,11 @@ LOCAL(mp32add_loop):
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32add, LOCAL(mp32add_size))
+C_FUNCTION_END(mpadd, LOCAL(mpadd_size))
 
 
-C_FUNCTION_BEGIN(mp32sub)
-LABEL(mp32sub)
+C_FUNCTION_BEGIN(mpsub)
+LABEL(mpsub)
 	pushl %edi
 	pushl %esi
 
@@ -183,22 +183,22 @@ LABEL(mp32sub)
 	decl %ecx
 
 	.align 4
-LOCAL(mp32sub_loop):
+LOCAL(mpsub_loop):
 	movl (%esi,%ecx,4),%eax
 	sbbl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns LOCAL(mp32sub_loop)
+	jns LOCAL(mpsub_loop)
 
 	sbbl %eax,%eax
 	negl %eax
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32sub, LOCAL(mp32sub_size))
+C_FUNCTION_END(mpsub, LOCAL(mpsub_size))
 
 
-C_FUNCTION_BEGIN(mp32divtwo)
-LABEL(mp32divtwo)
+C_FUNCTION_BEGIN(mpdivtwo)
+LABEL(mpdivtwo)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -209,18 +209,18 @@ LABEL(mp32divtwo)
 	clc
 
 	.align 4
-LOCAL(mp32divtwo_loop):
+LOCAL(mpdivtwo_loop):
 	rcrl $1,(%edi,%ecx,4)
 	inc %ecx
-	jnz LOCAL(mp32divtwo_loop)
+	jnz LOCAL(mpdivtwo_loop)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32divtwo, LOCAL(mp32divtwo_size))
+C_FUNCTION_END(mpdivtwo, LOCAL(mpdivtwo_size))
 
 
-C_FUNCTION_BEGIN(mp32multwo)
-LABEL(mp32multwo)
+C_FUNCTION_BEGIN(mpmultwo)
+LABEL(mpmultwo)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -230,21 +230,21 @@ LABEL(mp32multwo)
 	decl %ecx
 
 	.align 4
-LOCAL(mp32multwo_loop):
+LOCAL(mpmultwo_loop):
 	rcll $1,(%edi,%ecx,4)
 	decl %ecx 
-	jns LOCAL(mp32multwo_loop)
+	jns LOCAL(mpmultwo_loop)
 
 	sbbl %eax,%eax
 	negl %eax
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32multwo, LOCAL(mp32multwo_size))
+C_FUNCTION_END(mpmultwo, LOCAL(mpmultwo_size))
 
 
-C_FUNCTION_BEGIN(mp32setmul)
-LABEL(mp32setmul)
+C_FUNCTION_BEGIN(mpsetmul)
+LABEL(mpsetmul)
 	pushl %edi
 	pushl %esi
 	pushl %ebx
@@ -259,7 +259,7 @@ LABEL(mp32setmul)
 	decl %ecx
 
 	.align 4
-LOCAL(mp32setmul_loop):
+LOCAL(mpsetmul_loop):
 	movl %edx,%ebx
 	movl (%esi,%ecx,4),%eax
 	mull %ebp
@@ -267,7 +267,7 @@ LOCAL(mp32setmul_loop):
 	adcl $0,%edx
 	movl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns LOCAL(mp32setmul_loop)
+	jns LOCAL(mpsetmul_loop)
 
 	movl %edx,%eax
 
@@ -276,11 +276,11 @@ LOCAL(mp32setmul_loop):
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32setmul, LOCAL(mp32setmul_size))
+C_FUNCTION_END(mpsetmul, LOCAL(mpsetmul_size))
 
 
-C_FUNCTION_BEGIN(mp32addmul)
-LABEL(mp32addmul)
+C_FUNCTION_BEGIN(mpaddmul)
+LABEL(mpaddmul)
 	pushl %edi
 	pushl %esi
 	pushl %ebx
@@ -295,7 +295,7 @@ LABEL(mp32addmul)
 	decl %ecx
 
 	.align 4
-LOCAL(mp32addmul_loop):
+LOCAL(mpaddmul_loop):
 	movl %edx,%ebx
 	movl (%esi,%ecx,4),%eax
 	mull %ebp
@@ -305,7 +305,7 @@ LOCAL(mp32addmul_loop):
 	adcl $0,%edx
 	movl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns LOCAL(mp32addmul_loop)
+	jns LOCAL(mpaddmul_loop)
 
 	movl %edx,%eax
 
@@ -314,11 +314,11 @@ LOCAL(mp32addmul_loop):
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32addmul, LOCAL(mp32addmul_size))
+C_FUNCTION_END(mpaddmul, LOCAL(mpaddmul_size))
 
 
-C_FUNCTION_BEGIN(mp32addsqrtrc)
-LABEL(mp32addsqrtrc)
+C_FUNCTION_BEGIN(mpaddsqrtrc)
+LABEL(mpaddsqrtrc)
 	pushl %edi
 	pushl %esi
 	pushl %ebx
@@ -331,7 +331,7 @@ LABEL(mp32addsqrtrc)
 	decl %ecx
 
 	.align 4
-LOCAL(mp32addsqrtrc_loop):
+LOCAL(mpaddsqrtrc_loop):
 	movl (%esi,%ecx,4),%eax
 	mull %eax
 	addl %ebx,%eax
@@ -341,7 +341,7 @@ LOCAL(mp32addsqrtrc_loop):
 	sbbl %ebx,%ebx
 	negl %ebx
 	decl %ecx
-	jns LOCAL(mp32addsqrtrc_loop)
+	jns LOCAL(mpaddsqrtrc_loop)
 
 	movl %ebx,%eax
 
@@ -349,4 +349,4 @@ LOCAL(mp32addsqrtrc_loop):
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32addsqrtrc, LOCAL(mp32addsqrtrc_size))
+C_FUNCTION_END(mpaddsqrtrc, LOCAL(mpaddsqrtrc_size))

@@ -42,14 +42,6 @@ extern "C" {
 # if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #  define ASM_AESENCRYPT
 #  define ASM_AESDECRYPT
-#  define ASM_AESECBENCRYPT
-#  define ASM_AESECBDECRYPT
-# endif
-# if defined(OPTIMIZE_POWERPC)
-#  define ASM_AESENCRYPT
-#  define ASM_AESDECRYPT
-#  define ASM_AESECBENCRYPT
-#  define ASM_AESECBDECRYPT
 # endif
 #endif
 

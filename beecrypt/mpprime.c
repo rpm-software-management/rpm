@@ -1,13 +1,5 @@
-/** \ingroup MP_m
- * \file mpprime.c
- *
- * Multi-precision primes, code.
- */
-
 /*
  * Copyright (c) 2003 Bob Deblier
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file mpprime.c
+ * \brief Multi-precision primes.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup MP_m
  */
 
 #include "system.h"
@@ -47,62 +45,498 @@
  * but too small to be of cryptographic interest. Hence, use only for candidate primes that are large enough.
  */
 
+#if (MP_WBYTES == 8)
+
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_01[] =	/* primes 3 to 29 */
+static mpw spp_01[] =	/* primes 3 to 53 */
+{ 0xe221f97c30e94e1dU };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_02[] =	/* primes 3 to 101 */
+{ 0x5797d47c51681549U, 0xd734e4fc4c3eaf7fU };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_03[] =	/* primes 3 to 149 */
+{ 0x1e6d8e2a0ffceafbU, 0xbcbfc14a4c3bc1e1U,
+  0x009c6a22a0a7adf5U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_04[] =	/* primes 3 to 193 */
+{ 0xdbf05b6f5654b3c0U, 0xf524355143958688U,
+  0x9f155887819aed2aU, 0xc05b93352be98677U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_05[] =	/* primes 3 to 239 */
+{ 0x3faa5dadb695ce58U, 0x4a579328eab20f1fU,
+  0xef00fe27ffc36456U, 0x0a65723e27d8884aU,
+  0xd59da0a992f77529U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_06[] =	/* primes 3 to 281 */
+{ 0x501201cc51a492a5U, 0x44d3900ad4f8b32aU,
+  0x203c858406a4457cU, 0xab0b4f805ab18ac6U,
+  0xeb9572ac6e9394faU, 0x522bffb6f44af2f3U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_07[] =	/* primes 3 to 331 */
+{ 0x0120eb4d70279230U, 0x9ed122fce0488be4U,
+  0x1d0c99f5d8c039adU, 0x058c90b4780500feU,
+  0xf39c05cc09817a27U, 0xc3e1776a246b6af2U,
+  0x946a10d66eafaedfU };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_08[] =	/* primes 3 to 379 */
+{ 0x106aa9fb7646fa6eU, 0xb0813c28c5d5f09fU,
+  0x077ec3ba238bfb99U, 0xc1b631a203e81187U,
+  0x233db117cbc38405U, 0x6ef04659a4a11de4U,
+  0x9f7ecb29bada8f98U, 0x0decece92e30c48fU };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_09[] =	/* primes 3 to 421 */
+{ 0x0185dbeb2b8b11d3U, 0x7633e9dc1eec5415U,
+  0x65c6ce8431d227eeU, 0x28f0328a60c90118U,
+  0xae031cc5a781c824U, 0xd1f16d25f4f0cccfU,
+  0xf35e974579072ec8U, 0xcaf1ac8eefd5566fU,
+  0xa15fb94fe34f5d37U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_10[] =	/* primes 3 to 463 */
+{ 0x833a505cf9922beeU, 0xc80265a6d50e1cceU,
+  0xa22f6fec2eb84450U, 0xcec64a3c0e10d472U,
+  0xdd653b9b51d81d0eU, 0x3a3142ea49b91e3aU,
+  0x5e21023267bda426U, 0x738730cfb8e6e2aeU,
+  0xc08c9d4bd2420066U, 0xdccf95ef49a560b7U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_11[] =	/* primes 3 to 509 */
+{ 0x309d024bd5380319U, 0x2ca334690bafb43aU,
+  0x0abd5840fbeb24d1U, 0xf49b633047902baeU,
+  0x581ca4cba778fdb1U, 0x6dc0a6afef960687U,
+  0x16855d9593746604U, 0x201f1919b725fcb7U,
+  0x8ffd0db8e8fa61a1U, 0x6e1c0970beb81adcU,
+  0xf49c82dff960d36fU };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_12[] =	/* primes 3 to 569 */
+{ 0x25eac89f8d4da338U, 0x337b49850d2d1489U,
+  0x2663177b4010af3dU, 0xd23eeb0b228f3832U,
+  0xffcee2e5cbd1acc9U, 0x8f47f251873380aeU,
+  0x10f0ffdd8e602ffaU, 0x210f41f669a1570aU,
+  0x93c158c1a9a8227fU, 0xf81a90c5630e9c44U,
+  0x845c755c7df35a7dU, 0x430c679a11575655U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_13[] =	/* primes 3 to 607 */
+{ 0x3383219d26454f06U, 0xe2789b7f9c3b940eU,
+  0x03be2105798e3ff7U, 0x945bd325997bc262U,
+  0x025598f88577748eU, 0xc7155ff88a1ff4c9U,
+  0x2ce95bd8b015101fU, 0x19b73b1481627f9aU,
+  0x6f83da3a03259fbdU, 0x41f92a6e85ac6efaU,
+  0xde195be86e66ba89U, 0xb0ab042d3276976cU,
+  0x3dbeb3d7413ea96dU };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_14[] =	/* primes 3 to 647 */
+{ 0x6e02645460adbd18U, 0xcd52ce1a1beab1c0U,
+  0x36e468e9f350d69bU, 0x1d357d083a59f778U,
+  0xc2cc262b4a29ce52U, 0x509bcf97349ba2bfU,
+  0x22402d716b32517eU, 0x1941e18ace76cbd8U,
+  0x5809701e70eaef96U, 0x9aac365c8a9fea5eU,
+  0xc74d951db361f061U, 0xc4d14f000d806db4U,
+  0xcd939110c7cab492U, 0x2f3ea4c4852ca469U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_15[] =	/* primes 3 to 683 */
+{ 0x008723131f66758aU, 0x414bbebb2f8670bfU,
+  0x01dc959d74468901U, 0x57c57f40e210c9c2U,
+  0x74f544697c71cc1dU, 0xe2be67a203d8d56fU,
+  0x6c363fca0a78676aU, 0x2b9777896ea2db50U,
+  0xdb31b73751992f73U, 0x0def293ebc028877U,
+  0xdf95ac1b4d0c0128U, 0x9a0b05e00e6c0bc8U,
+  0xe61b766ec0943254U, 0x1cd70f0fd5a0ce6bU,
+  0x8ab998fb8ab36e0dU };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_16[] =	/* primes 3 to 739 */
+{ 0x02c85ff870f24be8U, 0x0f62b1ba6c20bd72U,
+  0xb837efdf121206d8U, 0x7db56b7d69fa4c02U,
+  0x1c107c3ca206fe8fU, 0xa7080ef576effc82U,
+  0xf9b10f5750656b77U, 0x94b16afd70996e91U,
+  0xaef6e0ad15e91b07U, 0x1ac9b24d98b233adU,
+  0x86ee055518e58e56U, 0x638ef18bac5c74cbU,
+  0x35bbb6e5dae2783dU, 0xd1c0ce7dec4fc70eU,
+  0x5186d411df36368fU, 0x061aa36011f30179U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_17[] =	/* primes 3 to 787 */
+{ 0x16af5c18a2bef8efU, 0xf2278332182d0fbfU,
+  0x0038cc205148b83dU, 0x06e3d7d932828b18U,
+  0xe11e094028c7eaedU, 0xa3395017e07d8ae9U,
+  0xb594060451d05f93U, 0x084cb481663c94c6U,
+  0xff980ddeccdb42adU, 0x37097f41a7837fc9U,
+  0x5afe3f18ad76f234U, 0x83ae942e0f0c0bc6U,
+  0xe40016123189872bU, 0xe58f6dfc239ca28fU,
+  0xb0cfbf964c8f27ceU, 0x05d6c77a01f9d332U,
+  0x36c9d442ad69ed33U };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_18[] =	/* primes 3 to 827 */
+{ 0x005bfd2583ab7a44U, 0x13d4df0f537c686c,
+  0xa8e6b583e491130eU, 0x96dfcc1c05ba298f,
+  0x8701314b45bf6ff4U, 0xecf372ffe78bccdf,
+  0xfc18365a6ae5ca41U, 0x2794281fbcc762f1,
+  0x8ca1eb11fc8efe0bU, 0x6bb5a7a09954e758,
+  0x074256ad443a8e4bU, 0xaa2675154c43d626,
+  0x464119446e683d08U, 0xd4683db5757d1199,
+  0x9513a9cbe3e67e3aU, 0xe501c1c522aa8ba9,
+  0xf955789589161febU, 0xc69941a147aa9685 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_19[] =	/* primes 3 to 877 */
+{ 0x06706918e8355b7f, 0xfd3f024da6b012e2,
+  0xbb7338f30d51a968, 0x0f3d912035ed70e0,
+  0x2d38d422e41812d4, 0xe29d637b318ce6f4,
+  0xea117321ce8b712d, 0xcca9345fd03ccaf5,
+  0x2e75dafcda909cd4, 0xb41a9f8753c8df3d,
+  0x284198bcb759d059, 0x941360572b7ab25f,
+  0x396b9fa37ae0a200, 0xd998ea09167edc30,
+  0xf9d2c45c7e487029, 0x927500983f7fb4e8,
+  0xe85d8e9434a37006, 0x8cebc96060ab2f87,
+  0x81efeb182d0e724b };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_20[] =	/* primes 3 to 929 */
+{ 0xa9e9591f7815617e, 0xcabe352fa13445c4,
+  0xf8e319ba63042e1c, 0xb0a017d0e729a699,
+  0x5480da4e5091cab4, 0x12910cf47bb0f24e,
+  0x5e1db41264b9f96a, 0x2b327e901d9d0a39,
+  0x12659a52d3792d52, 0x991bfa964fe7d212,
+  0x60374c24a04de69d, 0xf5d4e46b249cafc7,
+  0x347c6181bd6dc6b8, 0x13a29dc6d4f785ac,
+  0x7806635513530cd5, 0xdb94de4858c157f0,
+  0x30b96bfb6475393b, 0x5f43a549d95c5619,
+  0x7e274850ad1a6d18, 0xb5eaa41dd42fda55 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_21[] =	/* primes 3 to 971 */
+{ 0x06e1d136cb78cac5, 0x4da4bfcb6f2c4a24,
+  0xfcf3796b77719c31, 0xd27915860001f03e,
+  0x4347621bf62577e0, 0x280ebfdb77b4f1e9,
+  0x0f954ecafd198609, 0x68629be91424c37a,
+  0x8f320a34444953d5, 0x2c278d6485238798,
+  0x709d0063e3fa8623, 0xea24bf2a2c5278e7,
+  0x4460d05a0a708bd9, 0xc019d632e39e7300,
+  0x22b9dbb913df73cf, 0xb959dffe348f9623,
+  0xf697a822f4a11320, 0xbd044ecc74878f53,
+  0x0d57d0f076647b0a, 0xb191f543dc08c392,
+  0x3167e5ee56c66847 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_22[] =	/* primes 3 to 1013 */
+{ 0x005ca1a92edd0e81, 0x9619289e1ecfe2d7,
+  0xf3949eaf363a5fe8, 0xf6fee01ccd480490,
+  0x30a1346ab83c4967, 0x8c7d58826caf81ca,
+  0x1d02473bea8ad400, 0xd1ce270a5743c3cd,
+  0x892c3bd93b84525d, 0x8a42071a508fdb8f,
+  0x32952aaa2384cf5d, 0xf23ed81d10ac0031,
+  0xd85d0e95e3c5bb51, 0x71a0e3f12b671f8f,
+  0xb07965cc353a784b, 0x78f719681326c790,
+  0x6e2b7f7b0782848e, 0xeb1aea5bab10b80e,
+  0x5b7138fc36f7989c, 0xe85b07c2d4d59d42,
+  0x1541c765f6c2111d, 0xb82eca06b437f757 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_23[] =	/* primes 3 to 1051 */
+{ 0x18e5b310229f618d, 0xe0f54782f57fff33,
+  0x10546ba8efc0a69c, 0xac4b573b749cc43d,
+  0xd3ba4df61fe2800d, 0x733f4eb719a6ea7f,
+  0xa88aebf2d35b26c8, 0x6e89fe0b27e198de,
+  0xe12a14da03cef215, 0xe6651c60be9cf337,
+  0x3620f4aba453eeb9, 0xeb439ba079201376,
+  0x0e3cc7f8722f09a4, 0x685a5556b4efd158,
+  0xb27a6b79b15f161f, 0xecf3fd802767da7a,
+  0x37ceb764bebfcc2b, 0x2d833be00b21bb68,
+  0xeab326b9ebb20cc2, 0xd76273edefa152ad,
+  0x531bccbf17e3c78d, 0x5c43d8f6866ad640,
+  0xfdbbba0fe997b27b };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_24[] =	/* primes 3 to 1093 */
+{ 0x021bf9497091b8c3, 0x68cc7c8e00c1990c,
+  0x6027481b79215ac8, 0xa7517749a2151377,
+  0x9a993d2958fcb49a, 0x7368029268527994,
+  0xc6cc1928add41295, 0x96765f4cc3141a04,
+  0x4eb1d61578881667, 0x57d8618781813062,
+  0x032267987df0d471, 0x9cd38f1b7085fca5,
+  0x334be3a6003a3ce7, 0xe19aba553e80cc5a,
+  0xe4060eff6e180666, 0x1da5eeb7d142d3b2,
+  0xe40739f1443dee3a, 0x198637f03c062845,
+  0xeaff3ff27ea38d93, 0x44d8a90222472df0,
+  0x7dfb5c9c8ada77cd, 0x0d5b94eff021e02e,
+  0x307d08010312d57c, 0xb5d975764697842d };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_25[] =	/* primes 3 to 1151 */
+{ 0xfa1bd62baae1e767, 0x47535af3830fc07d,
+  0xebcf3ef7e5a8e46b, 0x8937c4afe02aef0a,
+  0xce420c7b2c3f2fac, 0xb9dc94e5100a7191,
+  0xb47cf523520f613b, 0xee8e095a7b06d781,
+  0xb6204bde1648e17f, 0x0f1bd4aba00f7e90,
+  0xd8fc2a05f5f1e832, 0x6e88a4a67e73cae1,
+  0xc4a93d89ad6b301b, 0x1f185b130246ab44,
+  0x5cadc384931189b5, 0x566b3ed9dafba4e6,
+  0x59f5446e5a70c8d1, 0x4626b66d0f1ccfbf,
+  0xd4238b6884af7dd3, 0xa91d2063ceb2c2f7,
+  0xf273b1da4cb542ea, 0x62c624cf4fcb0486,
+  0x138b42a3c1d9593c, 0xe1254fb3214d2b08,
+  0x52532bc528bc6467 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_26[] =	/* primes 3 to 1193 */
+{ 0x239afcd438799705, 0xab8a0cda4802bc8f,
+  0xb0e87f44a568f618, 0x7c604708dfb79072,
+  0xe24b49cb8b2ac531, 0x005cf2982437b16e,
+  0x027fa01414e3dbf5, 0xbf76681166e276ff,
+  0xcf6768550bc1cd9a, 0x1b387ebaaa8550ae,
+  0xfc10c69c372a0254, 0xb84666ff35044b9a,
+  0xa34fcf7c817b33f3, 0x7088a289a17891a7,
+  0xe66f88e8ec2ba784, 0xb2a09a9102609726,
+  0x17a3dbea8463439d, 0x47972d09b0e63752,
+  0xbac58d339b402dc1, 0xa09915543360cd68,
+  0x4df24e437487571d, 0xfaf68f4fe0a93546,
+  0x66aa84bf84d4448d, 0x2119029166db27bd,
+  0x515599cdcd147810, 0x3acf73e7fe62aed9 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_27[] =	/* primes 3 to 1231 */
+{ 0x0654f0d4cdacb307, 0x5419612fae3cf746,
+  0xfbab751fd0887955, 0x28adc68d26f32877,
+  0xeb1b772db48e49f6, 0xcb445987c4966560,
+  0xdff8473702bb0fd4, 0xf8b68b5ce2d496a6,
+  0x0dc7d7e43c3cb0bf, 0x72665c6e4c86a7ce,
+  0xb78c9da40f4d90a8, 0xf5dfe2a4dc559b8a,
+  0xba10a63a0ca25d3a, 0xdec2c4198b688d80,
+  0x71c05d3b694f19de, 0xda32955f77fbb577,
+  0x27eb652140495e56, 0x2f4a13e8b648daf2,
+  0x13d1da75e3f04bb0, 0x43fedcd2b2a0cd30,
+  0xa4339e3a03b7f3a0, 0xe02a31c28394368c,
+  0x7f73bbf32712e69e, 0x7ac58373e5f7c7e7,
+  0x55e0d645628c5475, 0x6217c0bdf119900b,
+  0x05ea71dd714fd2c9 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_28[] =	/* primes 3 to 1283 */
+{ 0x01662c66dab7a4fa, 0xdba4265ac2075912,
+  0x59e9c885e1330cb6, 0xc91bee92f1b334ff,
+  0x384f827cc8057aa7, 0xc3b65fc6de53dcac,
+  0x2db6d7903febbe07, 0xcc4012326b128eb7,
+  0x1afd3136a9e7f786, 0x14648da17b4f50c7,
+  0xbd4129ca746dab21, 0x09583797fc1c2ecd,
+  0x4c0768a81892bd16, 0xdfea8227bcb2b8bf,
+  0x168a1452370b0863, 0xb299d0888434c213,
+  0x2383a6c7b6b4bf20, 0x5addc8da76d2b172,
+  0xb416f5b0b9a38d87, 0x738c1cca3fe33dd2,
+  0xf9b7570e3f663f8b, 0x3416907651b1dd42,
+  0x2192331d9436304a, 0x0303422f4d420389,
+  0x4548a05562ed1c09, 0x1a63309bf1a9df8b,
+  0xf0c59af912a62c22, 0xe1e1f49bb0115c17 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_29[] =	/* primes 3 to 1307 */
+{ 0x005cda0c54b07f4f, 0xff0caca07cc89b95,
+  0x1c021191164be693, 0x6665357ebb2f689c,
+  0x7157ea4f98037ce1, 0x5aca14ca3cf1a386,
+  0xb03e831ee09a8d5c, 0x48d51f5e6646ed8a,
+  0x7ec2b955216587f0, 0x7f3c42ee06ae3844,
+  0x4c776b8c3ef32747, 0x97cd2ac1c7cce7ec,
+  0xe75bb0290f5b5a0e, 0x2c96c4600c678a21,
+  0x0d992d36d441b1fd, 0x682adf0ef289947e,
+  0x6d3de1a2af0ca945, 0x859aa1f2b2bb793d,
+  0x351dbebfe05144ee, 0xfe9c752d75ec602c,
+  0x0e0344ddcfcb642b, 0x6cfc872219d69873,
+  0xb8c4ace3ffd460e9, 0x43d903b45de9d402,
+  0x958a41fb5e008a94, 0xc93610814e5e2811,
+  0xd052c10abfc67bf6, 0x915d44352688091b,
+  0x1eb1c7117c91eae5 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_30[] =	/* primes 3 to 1381 */
+{ 0xa0604bc54c251ade, 0xcf22bf075a150bb1,
+  0x2a67d65a5045c183, 0x172466270d72a8c6,
+  0x3e2dd1c46694a251, 0xf55bca5e7d834c87,
+  0x2a8d10e5ea91ba4d, 0xcce166f16b1be0ef,
+  0xba025bf362f29284, 0xa36db51675c7d25e,
+  0xac7519925560c7a1, 0xc70470938bdf2818,
+  0xed42d04253130bef, 0x0d92e596844e073b,
+  0xdd40bd156f433f09, 0xbdfd3e38769a485c,
+  0xf29380b79c18989c, 0xed0e6ec43bcc7b73,
+  0x087e1fb94e8cf2d3, 0x475c77605c707f6b,
+  0x31f7217c4c628da2, 0xe3263e30a83c1066,
+  0x1378f41533ca7d71, 0x5d4e2b87c0e142ba,
+  0x462e6ffb506e09f9, 0x7850c73e4b3f7a24,
+  0xca98bda05c0c6ac6, 0x666daad014d2ff3f,
+  0x7138fa68ddd5e9f0, 0xe92edcaa62b56483 };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_31[] =	/* primes 3 to 1433 */
+{ 0x4742fdaff7e8231a, 0xded6827758493423,
+  0x12b13d2f5925c539, 0x82d876ef7ff69e7f,
+  0x5b4ff04e8454faea, 0x620dc9600c65fd57,
+  0x2aecce4c9656588f, 0x79dfb5dfd7f99148,
+  0x196c24df6d8c704b, 0xd6ffb8d9cedb8ee8,
+  0x448d4352d834cef7, 0xfce9b92907eeca6a,
+  0xcc107008fa118ff7, 0xedcc0b84207c3eef,
+  0xdb5ea3ef89c684d8, 0x89c4187a10775358,
+  0xc429d4d2a76bb2c3, 0x9f406fdc49dcf4b6,
+  0xed773586770e4651, 0xcb63c78354d2a578,
+  0x5f52816b14d29d62, 0x06d952ca4428030e,
+  0x2e793590f75f1d07, 0x79363fa6047f0c64,
+  0xf3ed6a912dbc4437, 0x673d418400d005ca,
+  0x9ca42ff6841c84dd, 0xaaff5fb087f85954,
+  0x177c5dc0fbfbb491, 0xa1e5e03e5715875c,
+  0xa02a0fa41fde7abd };
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_32[] =	/* primes 3 to 1471 */
+{ 0x2465a7bd85011e1c, 0x9e0527929fff268c,
+  0x82ef7efa416863ba, 0xa5acdb0971dba0cc,
+  0xac3ee4999345029f, 0x2cf810b99e406aac,
+  0x5fce5dd69d1c717d, 0xaea5d18ab913f456,
+  0x505679bc91c57d46, 0xd9888857862b36e2,
+  0xede2e473c1f0ab35, 0x9da25271affe15ff,
+  0x240e299d0b04f4cd, 0x0e4d7c0e47b1a7ba,
+  0x007de89aae848fd5, 0xbdcd7f9815564eb0,
+  0x60ae14f19cb50c29, 0x1f0bbd8ed1c4c7f8,
+  0xfc5fba5166200193, 0x9b532d92dac844a8,
+  0x431d400c832d039f, 0x5f900b278a75219c,
+  0x2986140c79045d77, 0x59540854c31504dc,
+  0x56f1df5eebe7bee4, 0x47658b917bf696d6,
+  0x927f2e2428fbeb34, 0x0e515cb9835d6387,
+  0x1be8bbe09cf13445, 0x799f2e6778815157,
+  0x1a93b4c1eee55d1b, 0x9072e0b2f5c4607f };
+
+#elif (MP_WBYTES == 4)
+
+/**
+ */
+/*@observer@*/ /*@unchecked@*/
+static mpw spp_01[] =	/* primes 3 to 29 */
 { 0xc0cfd797 };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_02[] =	/* primes 3 to 53 */
+static mpw spp_02[] =	/* primes 3 to 53 */
 { 0xe221f97c, 0x30e94e1d };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_03[] =	/* primes 3 to 73 */
+static mpw spp_03[] =	/* primes 3 to 73 */
 { 0x41cd66ac, 0xc237b226, 0x81a18067 };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_04[] =	/* primes 3 to 101 */
+static mpw spp_04[] =	/* primes 3 to 101 */
 { 0x5797d47c, 0x51681549, 0xd734e4fc, 0x4c3eaf7f };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_05[] =	/* primes 3 to 113 */
+static mpw spp_05[] =	/* primes 3 to 113 */
 { 0x02c4b8d0, 0xd2e0d937, 0x3935200f, 0xb49be231,
   0x5ce1a307 };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_06[] =	/* primes 3 to 149 */
+static mpw spp_06[] =	/* primes 3 to 149 */
 { 0x1e6d8e2a, 0x0ffceafb, 0xbcbfc14a, 0x4c3bc1e1,
   0x009c6a22, 0xa0a7adf5 };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_07[] =	/* primes 3 to 167 */
+static mpw spp_07[] =	/* primes 3 to 167 */
 { 0x049265d3, 0x574cefd0, 0x4229bfd6, 0x62a4a46f,
   0x8611ed02, 0x26c655f0, 0x76ebade3 };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_08[] =	/* primes 3 to 193 */
+static mpw spp_08[] =	/* primes 3 to 193 */
 { 0xdbf05b6f, 0x5654b3c0, 0xf5243551, 0x43958688,
   0x9f155887, 0x819aed2a, 0xc05b9335, 0x2be98677 };
 
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_09[] =	/* primes 3 to 223 */
+static mpw spp_09[] =	/* primes 3 to 223 */
 { 0x5e75cec8, 0xb5de5ea1, 0x5da8302a, 0x2f28b4ad,
   0x2735bdc3, 0x9344c52e, 0x67570925, 0x6feb71ef,
   0x6811d741 };
@@ -110,7 +544,7 @@ static uint32 spp_09[] =	/* primes 3 to 223 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_10[] =	/* primes 3 to 239 */
+static mpw spp_10[] =	/* primes 3 to 239 */
 { 0x3faa5dad, 0xb695ce58, 0x4a579328, 0xeab20f1f,
   0xef00fe27, 0xffc36456, 0x0a65723e, 0x27d8884a,
   0xd59da0a9, 0x92f77529 };
@@ -118,7 +552,7 @@ static uint32 spp_10[] =	/* primes 3 to 239 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_11[] =	/* primes 3 to 263 */
+static mpw spp_11[] =	/* primes 3 to 263 */
 { 0x3c9b6e49, 0xb7cf685b, 0xe7f3a239, 0xfb4084cb,
   0x166885e3, 0x9d4f65b4, 0x0bb0e51c, 0x0a5d36fe,
   0x98c32069, 0xfd5c441c, 0x6d82f115 };
@@ -126,7 +560,7 @@ static uint32 spp_11[] =	/* primes 3 to 263 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_12[] =	/* primes 3 to 281 */
+static mpw spp_12[] =	/* primes 3 to 281 */
 { 0x501201cc, 0x51a492a5, 0x44d3900a, 0xd4f8b32a,
   0x203c8584, 0x06a4457c, 0xab0b4f80, 0x5ab18ac6,
   0xeb9572ac, 0x6e9394fa, 0x522bffb6, 0xf44af2f3 };
@@ -134,7 +568,7 @@ static uint32 spp_12[] =	/* primes 3 to 281 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_13[] =	/* primes 3 to 311 */
+static mpw spp_13[] =	/* primes 3 to 311 */
 { 0x9397b5b4, 0x414dc331, 0x04561364, 0x79958cc8,
   0xfd5ea01f, 0x5d5e9f61, 0xbd0f1cb6, 0x24af7e6a,
   0x3284dbb2, 0x9857622b, 0x8be980a6, 0x5456a5c1,
@@ -143,7 +577,7 @@ static uint32 spp_13[] =	/* primes 3 to 311 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_14[] =	/* primes 3 to 331 */
+static mpw spp_14[] =	/* primes 3 to 331 */
 { 0x0120eb4d, 0x70279230, 0x9ed122fc, 0xe0488be4,
   0x1d0c99f5, 0xd8c039ad, 0x058c90b4, 0x780500fe,
   0xf39c05cc, 0x09817a27, 0xc3e1776a, 0x246b6af2,
@@ -152,7 +586,7 @@ static uint32 spp_14[] =	/* primes 3 to 331 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_15[] =	/* primes 3 to 353 */
+static mpw spp_15[] =	/* primes 3 to 353 */
 { 0x03c91dd1, 0x2e893191, 0x94095649, 0x874b41d6,
   0x05810c06, 0x195d70eb, 0xbd54a862, 0x50c52733,
   0x06dc6648, 0x1c251ca4, 0xa02c9a04, 0x78c96f0d,
@@ -161,7 +595,7 @@ static uint32 spp_15[] =	/* primes 3 to 353 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_16[] =	/* primes 3 to 379 */
+static mpw spp_16[] =	/* primes 3 to 379 */
 { 0x106aa9fb, 0x7646fa6e, 0xb0813c28, 0xc5d5f09f,
   0x077ec3ba, 0x238bfb99, 0xc1b631a2, 0x03e81187,
   0x233db117, 0xcbc38405, 0x6ef04659, 0xa4a11de4,
@@ -170,7 +604,7 @@ static uint32 spp_16[] =	/* primes 3 to 379 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_17[] =	/* primes 3 to 401 */
+static mpw spp_17[] =	/* primes 3 to 401 */
 { 0x5aa88d8c, 0x594bb372, 0xc4bc813f, 0x4a87a266,
   0x1f984840, 0xdab15692, 0x2c2a177d, 0x95843665,
   0x6f36d41a, 0x11c35ccc, 0x2904b7e9, 0xc424eb61,
@@ -180,7 +614,7 @@ static uint32 spp_17[] =	/* primes 3 to 401 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_18[] =	/* primes 3 to 421 */
+static mpw spp_18[] =	/* primes 3 to 421 */
 { 0x0185dbeb, 0x2b8b11d3, 0x7633e9dc, 0x1eec5415,
   0x65c6ce84, 0x31d227ee, 0x28f0328a, 0x60c90118,
   0xae031cc5, 0xa781c824, 0xd1f16d25, 0xf4f0cccf,
@@ -190,7 +624,7 @@ static uint32 spp_18[] =	/* primes 3 to 421 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_19[] =	/* primes 3 to 443 */
+static mpw spp_19[] =	/* primes 3 to 443 */
 { 0x0cde6fd1, 0xcf108066, 0xcc548df9, 0x070e102c,
   0x2c651b88, 0x5f24f503, 0xaaffe276, 0xfeb57311,
   0x0c1e4592, 0xa35890d7, 0x678aaeee, 0x9f44800f,
@@ -200,7 +634,7 @@ static uint32 spp_19[] =	/* primes 3 to 443 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_20[] =	/* primes 3 to 463 */
+static mpw spp_20[] =	/* primes 3 to 463 */
 { 0x833a505c, 0xf9922bee, 0xc80265a6, 0xd50e1cce,
   0xa22f6fec, 0x2eb84450, 0xcec64a3c, 0x0e10d472,
   0xdd653b9b, 0x51d81d0e, 0x3a3142ea, 0x49b91e3a,
@@ -210,7 +644,7 @@ static uint32 spp_20[] =	/* primes 3 to 463 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_21[] =	/* primes 3 to 487 */
+static mpw spp_21[] =	/* primes 3 to 487 */
 { 0x035417f1, 0xe321c06c, 0xbe32ffce, 0xae752cc9,
   0xa9fe11a6, 0x3d94c946, 0x456edd7d, 0x5a060de1,
   0x84a826a6, 0xf0740c13, 0x48fa1038, 0x911d771d,
@@ -221,7 +655,7 @@ static uint32 spp_21[] =	/* primes 3 to 487 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_22[] =	/* primes 3 to 509 */
+static mpw spp_22[] =	/* primes 3 to 509 */
 { 0x309d024b, 0xd5380319, 0x2ca33469, 0x0bafb43a,
   0x0abd5840, 0xfbeb24d1, 0xf49b6330, 0x47902bae,
   0x581ca4cb, 0xa778fdb1, 0x6dc0a6af, 0xef960687,
@@ -232,7 +666,7 @@ static uint32 spp_22[] =	/* primes 3 to 509 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_23[] =	/* primes 3 to 541 */
+static mpw spp_23[] =	/* primes 3 to 541 */
 { 0x01ab244a, 0x33bc047e, 0x804590b4, 0xc3207237,
   0xea503fa0, 0x7541b251, 0x57cfd03f, 0xf602c9d0,
   0x3dcd12ba, 0xa4947ae6, 0xc6ee61be, 0xedf6c716,
@@ -243,7 +677,7 @@ static uint32 spp_23[] =	/* primes 3 to 541 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_24[] =	/* primes 3 to 569 */
+static mpw spp_24[] =	/* primes 3 to 569 */
 { 0x25eac89f, 0x8d4da338, 0x337b4985, 0x0d2d1489,
   0x2663177b, 0x4010af3d, 0xd23eeb0b, 0x228f3832,
   0xffcee2e5, 0xcbd1acc9, 0x8f47f251, 0x873380ae,
@@ -254,7 +688,7 @@ static uint32 spp_24[] =	/* primes 3 to 569 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_25[] =	/* primes 3 to 587 */
+static mpw spp_25[] =	/* primes 3 to 587 */
 { 0x01b515a8, 0xdca3d6e4, 0x69090373, 0x84febfe8,
   0xf32e06cf, 0x9bde8c89, 0x6b3f992f, 0x2ff23508,
   0xe1c01024, 0x3b8ad0c4, 0xac54e7c7, 0x3f4081d8,
@@ -266,7 +700,7 @@ static uint32 spp_25[] =	/* primes 3 to 587 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_26[] =	/* primes 3 to 607 */
+static mpw spp_26[] =	/* primes 3 to 607 */
 { 0x3383219d, 0x26454f06, 0xe2789b7f, 0x9c3b940e,
   0x03be2105, 0x798e3ff7, 0x945bd325, 0x997bc262,
   0x025598f8, 0x8577748e, 0xc7155ff8, 0x8a1ff4c9,
@@ -278,7 +712,7 @@ static uint32 spp_26[] =	/* primes 3 to 607 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_27[] =	/* primes 3 to 619 */
+static mpw spp_27[] =	/* primes 3 to 619 */
 { 0x02ced4b7, 0xf15179e8, 0x7fcba6da, 0x7b07a6f3,
   0xf9311218, 0xa7b88985, 0xac74b503, 0xbf745330,
   0x6d0a23f5, 0x27a1fa9a, 0xc2b85f1a, 0x26152470,
@@ -290,7 +724,7 @@ static uint32 spp_27[] =	/* primes 3 to 619 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_28[] =	/* primes 3 to 647 */
+static mpw spp_28[] =	/* primes 3 to 647 */
 { 0x6e026454, 0x60adbd18, 0xcd52ce1a, 0x1beab1c0,
   0x36e468e9, 0xf350d69b, 0x1d357d08, 0x3a59f778,
   0xc2cc262b, 0x4a29ce52, 0x509bcf97, 0x349ba2bf,
@@ -302,7 +736,7 @@ static uint32 spp_28[] =	/* primes 3 to 647 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_29[] =	/* primes 3 to 661 */
+static mpw spp_29[] =	/* primes 3 to 661 */
 { 0x074921f7, 0x6a76cec3, 0xaeb05f74, 0x60b21f16,
   0x49dece2f, 0x21bb3ed9, 0xe4cb4ebc, 0x05d6f408,
   0xed3d408a, 0xdee16505, 0xdc657c6d, 0x93877982,
@@ -315,7 +749,7 @@ static uint32 spp_29[] =	/* primes 3 to 661 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_30[] =	/* primes 3 to 683 */
+static mpw spp_30[] =	/* primes 3 to 683 */
 { 0x00872313, 0x1f66758a, 0x414bbebb, 0x2f8670bf,
   0x01dc959d, 0x74468901, 0x57c57f40, 0xe210c9c2,
   0x74f54469, 0x7c71cc1d, 0xe2be67a2, 0x03d8d56f,
@@ -328,7 +762,7 @@ static uint32 spp_30[] =	/* primes 3 to 683 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_31[] =	/* primes 3 to 719 */
+static mpw spp_31[] =	/* primes 3 to 719 */
 { 0x1e595df4, 0x3064a8c9, 0xd61ae17b, 0xde1938f0,
   0x22ee6357, 0x35f4cadd, 0x3d39f473, 0xafed7df5,
   0x92ae0fd3, 0xfe910508, 0x9ad9e939, 0x988b0227,
@@ -341,7 +775,7 @@ static uint32 spp_31[] =	/* primes 3 to 719 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_32[] =	/* primes 3 to 739 */
+static mpw spp_32[] =	/* primes 3 to 739 */
 { 0x02c85ff8, 0x70f24be8, 0x0f62b1ba, 0x6c20bd72,
   0xb837efdf, 0x121206d8, 0x7db56b7d, 0x69fa4c02,
   0x1c107c3c, 0xa206fe8f, 0xa7080ef5, 0x76effc82,
@@ -351,10 +785,11 @@ static uint32 spp_32[] =	/* primes 3 to 739 */
   0x35bbb6e5, 0xdae2783d, 0xd1c0ce7d, 0xec4fc70e,
   0x5186d411, 0xdf36368f, 0x061aa360, 0x11f30179 };
 
+#ifdef	DYING
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_33[] =	/* primes 3 to 761 */
+static mpw spp_33[] =	/* primes 3 to 761 */
 { 0xd0440ea6, 0x8b382bcb, 0x75b4df8b, 0x6f8aa6cd,
   0x494daee4, 0x38b1922e, 0x46cef6ca, 0xdc74a93e,
   0xdf45643d, 0x05cc1aa5, 0x556f9c72, 0x0682676d,
@@ -368,7 +803,7 @@ static uint32 spp_33[] =	/* primes 3 to 761 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_34[] =	/* primes 3 to 787 */
+static mpw spp_34[] =	/* primes 3 to 787 */
 { 0x16af5c18, 0xa2bef8ef, 0xf2278332, 0x182d0fbf,
   0x0038cc20, 0x5148b83d, 0x06e3d7d9, 0x32828b18,
   0xe11e0940, 0x28c7eaed, 0xa3395017, 0xe07d8ae9,
@@ -382,7 +817,7 @@ static uint32 spp_34[] =	/* primes 3 to 787 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_35[] =	/* primes 3 to 811 */
+static mpw spp_35[] =	/* primes 3 to 811 */
 { 0x02c30b50, 0xedc2e94a, 0x3940a943, 0x968984e8,
   0x5a132fca, 0x78aedf5b, 0x4e307eec, 0xec19323e,
   0x71957e6e, 0xc70aab41, 0x43eb94a6, 0x20e9ca78,
@@ -396,7 +831,7 @@ static uint32 spp_35[] =	/* primes 3 to 811 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_36[] =	/* primes 3 to 827 */
+static mpw spp_36[] =	/* primes 3 to 827 */
 { 0x005bfd25, 0x83ab7a44, 0x13d4df0f, 0x537c686c,
   0xa8e6b583, 0xe491130e, 0x96dfcc1c, 0x05ba298f,
   0x8701314b, 0x45bf6ff4, 0xecf372ff, 0xe78bccdf,
@@ -410,7 +845,7 @@ static uint32 spp_36[] =	/* primes 3 to 827 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_37[] =	/* primes 3 to 857 */
+static mpw spp_37[] =	/* primes 3 to 857 */
 { 0x2a89d844, 0x7bf83428, 0x8464b909, 0x31ce3aaa,
   0xed0c2683, 0xb26f15e4, 0x32e95677, 0x65036627,
   0x80802634, 0x4328b107, 0x89fb23c6, 0x11b484ca,
@@ -425,7 +860,7 @@ static uint32 spp_37[] =	/* primes 3 to 857 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_38[] =	/* primes 3 to 877 */
+static mpw spp_38[] =	/* primes 3 to 877 */
 { 0x06706918, 0xe8355b7f, 0xfd3f024d, 0xa6b012e2,
   0xbb7338f3, 0x0d51a968, 0x0f3d9120, 0x35ed70e0,
   0x2d38d422, 0xe41812d4, 0xe29d637b, 0x318ce6f4,
@@ -440,7 +875,7 @@ static uint32 spp_38[] =	/* primes 3 to 877 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_39[] =	/* primes 3 to 887 */
+static mpw spp_39[] =	/* primes 3 to 887 */
 { 0x0108d441, 0xce330894, 0xff143672, 0x5fee20c5,
   0x9b8fb49f, 0xbb29ad13, 0x5f0888b0, 0x59181b63,
   0x54380731, 0x8906204b, 0x7e16cc5e, 0x2d8c613b,
@@ -455,7 +890,7 @@ static uint32 spp_39[] =	/* primes 3 to 887 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_40[] =	/* primes 3 to 929 */
+static mpw spp_40[] =	/* primes 3 to 929 */
 { 0xa9e9591f, 0x7815617e, 0xcabe352f, 0xa13445c4,
   0xf8e319ba, 0x63042e1c, 0xb0a017d0, 0xe729a699,
   0x5480da4e, 0x5091cab4, 0x12910cf4, 0x7bb0f24e,
@@ -470,7 +905,7 @@ static uint32 spp_40[] =	/* primes 3 to 929 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_41[] =	/* primes 3 to 947 */
+static mpw spp_41[] =	/* primes 3 to 947 */
 { 0x2108556d, 0x64bbc9f2, 0xa87149a3, 0x26013838,
   0x4d8e761d, 0xab793496, 0x415dad5b, 0xa6682448,
   0xe3c8495c, 0xd3f2e881, 0xf3546b54, 0xb8b14068,
@@ -486,7 +921,7 @@ static uint32 spp_41[] =	/* primes 3 to 947 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_42[] =	/* primes 3 to 971 */
+static mpw spp_42[] =	/* primes 3 to 971 */
 { 0x06e1d136, 0xcb78cac5, 0x4da4bfcb, 0x6f2c4a24,
   0xfcf3796b, 0x77719c31, 0xd2791586, 0x0001f03e,
   0x4347621b, 0xf62577e0, 0x280ebfdb, 0x77b4f1e9,
@@ -502,7 +937,7 @@ static uint32 spp_42[] =	/* primes 3 to 971 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_43[] =	/* primes 3 to 991 */
+static mpw spp_43[] =	/* primes 3 to 991 */
 { 0x0186695f, 0xa95755fc, 0xe74a9a4e, 0x8fbc30df,
   0x119e4901, 0x7edb320f, 0xe8114129, 0xb3bddd0d,
   0x2b0cf0f7, 0x2306fb1d, 0x6a5cae26, 0xe4a286ce,
@@ -518,7 +953,7 @@ static uint32 spp_43[] =	/* primes 3 to 991 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_44[] =	/* primes 3 to 1013 */
+static mpw spp_44[] =	/* primes 3 to 1013 */
 { 0x005ca1a9, 0x2edd0e81, 0x9619289e, 0x1ecfe2d7,
   0xf3949eaf, 0x363a5fe8, 0xf6fee01c, 0xcd480490,
   0x30a1346a, 0xb83c4967, 0x8c7d5882, 0x6caf81ca,
@@ -534,7 +969,7 @@ static uint32 spp_44[] =	/* primes 3 to 1013 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_45[] =	/* primes 3 to 1033 */
+static mpw spp_45[] =	/* primes 3 to 1033 */
 { 0x5d59c98b, 0x452d0c02, 0x1291e1ef, 0x6ab50494,
   0xce984e89, 0xdc563773, 0x96b510a6, 0xeef593cb,
   0x73e4eb74, 0x6a1c83ef, 0x9a7bff75, 0x7ee6e25a,
@@ -551,7 +986,7 @@ static uint32 spp_45[] =	/* primes 3 to 1033 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_46[] =	/* primes 3 to 1051 */
+static mpw spp_46[] =	/* primes 3 to 1051 */
 { 0x18e5b310, 0x229f618d, 0xe0f54782, 0xf57fff33,
   0x10546ba8, 0xefc0a69c, 0xac4b573b, 0x749cc43d,
   0xd3ba4df6, 0x1fe2800d, 0x733f4eb7, 0x19a6ea7f,
@@ -568,7 +1003,7 @@ static uint32 spp_46[] =	/* primes 3 to 1051 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_47[] =	/* primes 3 to 1069 */
+static mpw spp_47[] =	/* primes 3 to 1069 */
 { 0x06fd3257, 0x047a7639, 0xcb2cfcfb, 0x193180fe,
   0x1f21979a, 0x2376042b, 0x6b2809ba, 0x216e6d5b,
   0x57fec6ff, 0x96b878bb, 0xe1d4371b, 0x2f53c7e0,
@@ -585,7 +1020,7 @@ static uint32 spp_47[] =	/* primes 3 to 1069 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_48[] =	/* primes 3 to 1093 */
+static mpw spp_48[] =	/* primes 3 to 1093 */
 { 0x021bf949, 0x7091b8c3, 0x68cc7c8e, 0x00c1990c,
   0x6027481b, 0x79215ac8, 0xa7517749, 0xa2151377,
   0x9a993d29, 0x58fcb49a, 0x73680292, 0x68527994,
@@ -602,7 +1037,7 @@ static uint32 spp_48[] =	/* primes 3 to 1093 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_49[] =	/* primes 3 to 1109 */
+static mpw spp_49[] =	/* primes 3 to 1109 */
 { 0x00a8b455, 0xb6b4a84f, 0x6834364b, 0x936a996f,
   0xbceb3f49, 0x88ee2732, 0x24b48131, 0x2357ae12,
   0x4d520af5, 0xc87eb399, 0x90944c44, 0xc3a75724,
@@ -620,7 +1055,7 @@ static uint32 spp_49[] =	/* primes 3 to 1109 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_50[] =	/* primes 3 to 1151 */
+static mpw spp_50[] =	/* primes 3 to 1151 */
 { 0xfa1bd62b, 0xaae1e767, 0x47535af3, 0x830fc07d,
   0xebcf3ef7, 0xe5a8e46b, 0x8937c4af, 0xe02aef0a,
   0xce420c7b, 0x2c3f2fac, 0xb9dc94e5, 0x100a7191,
@@ -638,7 +1073,7 @@ static uint32 spp_50[] =	/* primes 3 to 1151 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_51[] =	/* primes 3 to 1171 */
+static mpw spp_51[] =	/* primes 3 to 1171 */
 { 0x5b7091ea, 0xdbc63f00, 0x64dd01de, 0x204ee72f,
   0xc4644db7, 0x573e04ee, 0x706df728, 0x7a49af78,
   0xc5b99680, 0x528566bc, 0x17d57a00, 0x16a5b12e,
@@ -656,7 +1091,7 @@ static uint32 spp_51[] =	/* primes 3 to 1171 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_52[] =	/* primes 3 to 1193 */
+static mpw spp_52[] =	/* primes 3 to 1193 */
 { 0x239afcd4, 0x38799705, 0xab8a0cda, 0x4802bc8f,
   0xb0e87f44, 0xa568f618, 0x7c604708, 0xdfb79072,
   0xe24b49cb, 0x8b2ac531, 0x005cf298, 0x2437b16e,
@@ -674,7 +1109,7 @@ static uint32 spp_52[] =	/* primes 3 to 1193 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_53[] =	/* primes 3 to 1217 */
+static mpw spp_53[] =	/* primes 3 to 1217 */
 { 0x0eb29f45, 0x5fc46bf0, 0xd4857e41, 0xa0059da0,
   0xda0b3770, 0xf445bac2, 0x37decad9, 0x954f2a17,
   0x849520eb, 0x001349bf, 0xf0264427, 0xb01519ec,
@@ -693,7 +1128,7 @@ static uint32 spp_53[] =	/* primes 3 to 1217 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_54[] =	/* primes 3 to 1231 */
+static mpw spp_54[] =	/* primes 3 to 1231 */
 { 0x0654f0d4, 0xcdacb307, 0x5419612f, 0xae3cf746,
   0xfbab751f, 0xd0887955, 0x28adc68d, 0x26f32877,
   0xeb1b772d, 0xb48e49f6, 0xcb445987, 0xc4966560,
@@ -712,7 +1147,7 @@ static uint32 spp_54[] =	/* primes 3 to 1231 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_55[] =	/* primes 3 to 1259 */
+static mpw spp_55[] =	/* primes 3 to 1259 */
 { 0x02de1de4, 0xcbca29fc, 0x94a50bb7, 0xae89c417,
   0xb8063484, 0x5c71a8c6, 0xa641d997, 0x65355b7e,
   0xed63ea84, 0xeaeead3c, 0x2a49b4d2, 0xefdd333e,
@@ -731,7 +1166,7 @@ static uint32 spp_55[] =	/* primes 3 to 1259 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_56[] =	/* primes 3 to 1283 */
+static mpw spp_56[] =	/* primes 3 to 1283 */
 { 0x01662c66, 0xdab7a4fa, 0xdba4265a, 0xc2075912,
   0x59e9c885, 0xe1330cb6, 0xc91bee92, 0xf1b334ff,
   0x384f827c, 0xc8057aa7, 0xc3b65fc6, 0xde53dcac,
@@ -750,7 +1185,7 @@ static uint32 spp_56[] =	/* primes 3 to 1283 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_57[] =	/* primes 3 to 1297 */
+static mpw spp_57[] =	/* primes 3 to 1297 */
 { 0x00b3fde4, 0xe9dbc2a2, 0x1c8f4d4b, 0x53b0ff59,
   0x643cf537, 0x88f9d4ba, 0x69472171, 0x6a2f33d5,
   0xa93b03b2, 0x59142a0e, 0x117006bc, 0x8b4e1475,
@@ -770,7 +1205,7 @@ static uint32 spp_57[] =	/* primes 3 to 1297 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_58[] =	/* primes 3 to 1307 */
+static mpw spp_58[] =	/* primes 3 to 1307 */
 { 0x005cda0c, 0x54b07f4f, 0xff0caca0, 0x7cc89b95,
   0x1c021191, 0x164be693, 0x6665357e, 0xbb2f689c,
   0x7157ea4f, 0x98037ce1, 0x5aca14ca, 0x3cf1a386,
@@ -790,7 +1225,7 @@ static uint32 spp_58[] =	/* primes 3 to 1307 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_59[] =	/* primes 3 to 1327 */
+static mpw spp_59[] =	/* primes 3 to 1327 */
 { 0x0031fc6d, 0x6918c954, 0x9fe61e37, 0xe79cea8a,
   0xe12d234b, 0x7642915b, 0x85e4b88b, 0x83eeba5f,
   0x429d8086, 0x9a31c342, 0x0020beb9, 0xbc48ece8,
@@ -810,7 +1245,7 @@ static uint32 spp_59[] =	/* primes 3 to 1327 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_60[] =	/* primes 3 to 1381 */
+static mpw spp_60[] =	/* primes 3 to 1381 */
 { 0xa0604bc5, 0x4c251ade, 0xcf22bf07, 0x5a150bb1,
   0x2a67d65a, 0x5045c183, 0x17246627, 0x0d72a8c6,
   0x3e2dd1c4, 0x6694a251, 0xf55bca5e, 0x7d834c87,
@@ -830,7 +1265,7 @@ static uint32 spp_60[] =	/* primes 3 to 1381 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_61[] =	/* primes 3 to 1423 */
+static mpw spp_61[] =	/* primes 3 to 1423 */
 { 0x68bd8015, 0x91071573, 0x8a205b51, 0xe1be9357,
   0xdab961de, 0x59c9e43c, 0xb9becf7a, 0x8adba9a9,
   0x926a87bb, 0x7f574190, 0x3ee07b97, 0x83b5ed87,
@@ -851,7 +1286,7 @@ static uint32 spp_61[] =	/* primes 3 to 1423 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_62[] =	/* primes 3 to 1433 */
+static mpw spp_62[] =	/* primes 3 to 1433 */
 { 0x4742fdaf, 0xf7e8231a, 0xded68277, 0x58493423,
   0x12b13d2f, 0x5925c539, 0x82d876ef, 0x7ff69e7f,
   0x5b4ff04e, 0x8454faea, 0x620dc960, 0x0c65fd57,
@@ -872,7 +1307,7 @@ static uint32 spp_62[] =	/* primes 3 to 1433 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_63[] =	/* primes 3 to 1451 */
+static mpw spp_63[] =	/* primes 3 to 1451 */
 { 0x322123be, 0x40a1853c, 0xd02ea217, 0x363a368b,
   0xacb2117a, 0x342a5ee6, 0xa03a7fda, 0x4338eaac,
   0x9d9cc512, 0xffa944f1, 0x767e0a56, 0xc82c051f,
@@ -893,7 +1328,7 @@ static uint32 spp_63[] =	/* primes 3 to 1451 */
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 spp_64[] =	/* primes 3 to 1471 */
+static mpw spp_64[] =	/* primes 3 to 1471 */
 { 0x2465a7bd, 0x85011e1c, 0x9e052792, 0x9fff268c,
   0x82ef7efa, 0x416863ba, 0xa5acdb09, 0x71dba0cc,
   0xac3ee499, 0x9345029f, 0x2cf810b9, 0x9e406aac,
@@ -910,8 +1345,10 @@ static uint32 spp_64[] =	/* primes 3 to 1471 */
   0x927f2e24, 0x28fbeb34, 0x0e515cb9, 0x835d6387,
   0x1be8bbe0, 0x9cf13445, 0x799f2e67, 0x78815157,
   0x1a93b4c1, 0xeee55d1b, 0x9072e0b2, 0xf5c4607f };
+#endif
+#endif
 
-uint32* mp32spprod[SMALL_PRIMES_PRODUCT_MAX] =
+mpw* mpspprod[SMALL_PRIMES_PRODUCT_MAX] =
 {
 	spp_01,
 	spp_02,
@@ -945,6 +1382,7 @@ uint32* mp32spprod[SMALL_PRIMES_PRODUCT_MAX] =
 	spp_30,
 	spp_31,
 	spp_32,
+#ifdef	DYING
 	spp_33,
 	spp_34,
 	spp_35,
@@ -977,9 +1415,10 @@ uint32* mp32spprod[SMALL_PRIMES_PRODUCT_MAX] =
 	spp_62,
 	spp_63,
 	spp_64,
+#endif
 };
 
-int mp32ptrials(uint32 bits)
+int mpptrials(size_t bits)
 {
 	if (bits >= 1854)
 		return 2;
@@ -1053,77 +1492,72 @@ int mp32ptrials(uint32 bits)
 /**
  */
 /*@-boundsread@*/
-static void mp32prndbits(mpbarrett* p, uint8 msbclr, uint8 lsbset, randomGeneratorContext* rc)
+static void mpprndbits(mpbarrett* p, size_t msbclr, size_t lsbset, randomGeneratorContext* rc)
 	/*@modifies p @*/
 {
-	register uint32 size;
+	register size_t size = p->size;
 
-	if (p == (mpbarrett*) 0 || p->modl == (uint32*) 0)
+	if (p == (mpbarrett*) 0 || p->modl == (mpw*) 0)
 		return;
 
-	size = p->size;
-	/*@-noeffectuncon@*/ /* LCL: ??? */
 	(void) rc->rng->next(rc->param, p->modl, size);
-	/*@=noeffectuncon@*/
 
 	if (msbclr != 0)
-		p->modl[0] &= (((uint32)0xffffffff) >> msbclr);
+		p->modl[0] &= (MP_ALLMASK >> msbclr);
 
-	p->modl[0] |= (((uint32)0x80000000) >> msbclr);
+	p->modl[0] |= (MP_MSBMASK >> msbclr);
 
-	/*@-shiftnegative@*/
 	if (lsbset != 0)
-		p->modl[size] |= (((uint32)0xffffffff) >> (32 - lsbset));
-	/*@=shiftnegative@*/
+		p->modl[size-1] |= (MP_ALLMASK >> (MP_WBITS - lsbset));
 }
 /*@=boundsread@*/
 
 /**
- * mp32psppdiv_w
+ * mppsppdiv_w
  *  needs workspace of (3*size) words
  */
 /*@-boundsread@*/
-static int mp32psppdiv_w(const mpbarrett* p, /*@out@*/ uint32* wksp)
-	/*@globals mp32spprod @*/
+static int mppsppdiv_w(const mpbarrett* p, /*@out@*/ mpw* wksp)
+	/*@globals mpspprod @*/
 	/*@modifies wksp @*/
 {
 	/* small prime product trial division test */
-	register uint32 size = p->size;
+	register size_t size = p->size;
 
 	if (size > SMALL_PRIMES_PRODUCT_MAX)
 	{
-		mp32setx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mp32spprod[SMALL_PRIMES_PRODUCT_MAX-1]);
+		mpsetx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mpspprod[SMALL_PRIMES_PRODUCT_MAX-1]);
 		/*@-compdef@*/ /* LCL: wksp+size undef */
-		mp32gcd_w(size, p->modl, wksp+size, wksp, wksp+2*size);
+		mpgcd_w(size, p->modl, wksp+size, wksp, wksp+2*size);
 		/*@=compdef@*/
 	}
 	else
 	{
-		mp32gcd_w(size, p->modl, mp32spprod[size-1], wksp, wksp+2*size);
+		mpgcd_w(size, p->modl, mpspprod[size-1], wksp, wksp+2*size);
 	}
 
-	return mp32isone(size, wksp);
+	return mpisone(size, wksp);
 }
 /*@=boundsread@*/
 
 /**
- * mp32pmilrabtwo_w
+ * mppmilrabtwo_w
  * needs workspace of (5*size+2)
  */
-static int mp32pmilrabtwo_w(const mpbarrett* p, uint32 s, const uint32* rdata, const uint32* ndata, /*@out@*/ uint32* wksp)
+static int mppmilrabtwo_w(const mpbarrett* p, int s, const mpw* rdata, const mpw* ndata, /*@out@*/ mpw* wksp)
 	/*@modifies wksp @*/
 {
-	register uint32 size = p->size;
-	register uint32 j = 0;
+	register size_t size = p->size;
+	register int j = 0;
 
 	mpbtwopowmod_w(p, size, rdata, wksp, wksp+size);
 
 	while (1)
 	{
-		if (mp32isone(size, wksp))
+		if (mpisone(size, wksp))
 			return (j == 0);
 
-		if (mp32eq(size, wksp, ndata))
+		if (mpeq(size, wksp, ndata))
 			return 1;
 
 		if (++j < s)
@@ -1134,23 +1568,23 @@ static int mp32pmilrabtwo_w(const mpbarrett* p, uint32 s, const uint32* rdata, c
 }
 
 /**
- * mp32pmilraba_w
+ * mppmilraba_w
  * needs workspace of (5*size+2) words
  */
-static int mp32pmilraba_w(const mpbarrett* p, const uint32* adata, uint32 s, const uint32* rdata, const uint32* ndata, /*@out@*/ uint32* wksp)
+static int mppmilraba_w(const mpbarrett* p, const mpw* adata, int s, const mpw* rdata, const mpw* ndata, /*@out@*/ mpw* wksp)
 	/*@modifies wksp @*/
 {
-	register uint32 size = p->size;
-	register uint32 j = 0;
+	register size_t size = p->size;
+	register int j = 0;
 
 	mpbpowmod_w(p, size, adata, size, rdata, wksp, wksp+size);
 
 	while (1)
 	{
-		if (mp32isone(size, wksp))
+		if (mpisone(size, wksp))
 			return (j == 0);
 
-		if (mp32eq(size, wksp, ndata))
+		if (mpeq(size, wksp, ndata))
 			return 1;
 
 		if (++j < s)
@@ -1164,7 +1598,7 @@ static int mp32pmilraba_w(const mpbarrett* p, const uint32* adata, uint32 s, con
  * needs workspace of (8*size+2) words
  */
 /*@-boundswrite@*/
-int mp32pmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, uint32* wksp)
+int mppmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, mpw* wksp)
 {
 	/*
 	 * Miller-Rabin probabilistic primality test, with modification
@@ -1180,18 +1614,18 @@ int mp32pmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, uint32*
 	/* this routine uses (size*3) storage, and calls mpbpowmod, which needs (size*4+2) */
 	/* (size) for a, (size) for r, (size) for n-1 */
 
-	register uint32  size  = p->size;
-	register uint32* ndata = wksp;
-	register uint32* rdata = ndata+size;
-	register uint32* adata = rdata+size;
+	register size_t  size  = p->size;
+	register mpw* ndata = wksp;
+	register mpw* rdata = ndata+size;
+	register mpw* adata = rdata+size;
 
-	uint32 s;
+	int s;
 
-	mp32copy(size, ndata, p->modl);
-	(void) mp32subw(size, ndata, 1);
-	mp32copy(size, rdata, ndata);
+	mpcopy(size, ndata, p->modl);
+	(void) mpsubw(size, ndata, 1);
+	mpcopy(size, rdata, ndata);
 
-	s = mp32rshiftlsz(size, rdata); /* we've split p-1 into (2^s)*r */
+	s = mprshiftlsz(size, rdata); /* we've split p-1 into (2^s)*r */
 
 	/* should do an assert that s != 0 */
 
@@ -1199,7 +1633,7 @@ int mp32pmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, uint32*
 	if (t == 0)
 		t++;
 
-	if (!mp32pmilrabtwo_w(p, s, rdata, ndata, wksp+3*size))
+	if (!mppmilrabtwo_w(p, s, rdata, ndata, wksp+3*size))
 		return 0;
 
 	while (t-- > 0)
@@ -1207,7 +1641,7 @@ int mp32pmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, uint32*
 		/* generate a random 'a' into b->data */
 		mpbrnd_w(p, rc, adata, wksp);
 
-		if (!mp32pmilraba_w(p, adata, s, rdata, ndata, wksp+3*size))
+		if (!mppmilraba_w(p, adata, s, rdata, ndata, wksp+3*size))
 			return 0;
 	}
 
@@ -1219,7 +1653,7 @@ int mp32pmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, uint32*
  * needs workspace of (7*size+2) words
  */
 /*@-boundswrite@*/
-void mp32prnd_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, const mpnumber* f, uint32* wksp)
+void mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpnumber* f, mpw* wksp)
 {
 	/*
 	 * Generate a prime into p with (size*32) bits
@@ -1229,9 +1663,11 @@ void mp32prnd_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, co
 	 * Optional input f: if f is not null, then search p so that GCD(p-1,f) = 1
 	 */
 
+	size_t size = MP_BITS_TO_WORDS(bits + MP_WBITS - 1);
+
 	mpbinit(p, size);
 
-	if (p->modl != (uint32*) 0)
+	if (p->modl != (mpw*) 0)
 	{
 		while (1)
 		{
@@ -1240,28 +1676,28 @@ void mp32prnd_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, co
 			 * it with small prime divisor test BEFORE computing mu
 			 */
 
-			mp32prndbits(p, 0, 1, rc);
+			mpprndbits(p, MP_WORDS_TO_BITS(size) - bits, 1, rc);
 
 			/* do a small prime product trial division test on p */
-			if (!mp32psppdiv_w(p, wksp))
+			if (!mppsppdiv_w(p, wksp))
 				continue;
 
 			/* if we have an f, do the congruence test */
 			if (f != (mpnumber*) 0)
 			{
-				mp32copy(size, wksp, p->modl);
-				(void) mp32subw(size, wksp, 1);
-				mp32setx(size, wksp+size, f->size, f->data);
-				mp32gcd_w(size, wksp, wksp+size, wksp+2*size, wksp+3*size);
+				mpcopy(size, wksp, p->modl);
+				(void) mpsubw(size, wksp, 1);
+				mpsetx(size, wksp+size, f->size, f->data);
+				mpgcd_w(size, wksp, wksp+size, wksp+2*size, wksp+3*size);
 
-				if (!mp32isone(size, wksp+2*size))
+				if (!mpisone(size, wksp+2*size))
 					continue;
 			}
 
 			/* candidate has passed so far, now we do the probabilistic test */
 			mpbmu_w(p, wksp);
 
-			if (mp32pmilrab_w(p, rc, t, wksp))
+			if (mppmilrab_w(p, rc, t, wksp))
 				return;
 		}
 	}
@@ -1272,10 +1708,10 @@ void mp32prnd_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, co
  * needs workspace of (7*size+2) words
  */
 /*@-boundswrite@*/
-void mp32prndconone_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, const mpbarrett* q, const mpnumber* f, mpnumber* r, int cofactor, uint32* wksp)
+void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpbarrett* q, const mpnumber* f, mpnumber* r, int cofactor, mpw* wksp)
 {
 	/*
-	 * Generate a prime p with n bits such that p mod q = 1, and p = qr+1; r = 2s
+	 * Generate a prime p with n bits such that p mod q = 1, and p = qr+1 where r = 2s
 	 *
 	 * Conditions: q > 2 and size(q) < size(p) and size(f) <= size(p)
 	 *
@@ -1289,38 +1725,39 @@ void mp32prndconone_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int
 	 * Optional input f: if f is not null, then search p so that GCD(p-1,f) = 1
 	 */
 
-	mpbinit(p, size);
+	mpbinit(p, MP_BITS_TO_WORDS(bits + MP_WBITS - 1));
 
-	if (p->modl != (uint32*) 0)
+	if (p->modl != (mpw*) 0)
 	{
+		size_t sbits = bits - mpbits(q->size, q->modl) - 1;
 		mpbarrett s;
 
 		mpbzero(&s);
-		mpbinit(&s, p->size - q->size);
+		mpbinit(&s, MP_BITS_TO_WORDS(sbits + MP_WBITS - 1));
 
 		while (1)
 		{
-			mp32prndbits(&s, 1, 0, rc);
+			mpprndbits(&s, MP_WORDS_TO_BITS(s.size) - sbits, 0, rc);
 
 			/*@-usedef@*/ /* s is set */
 			if (cofactor == 1)
 			{
-				mp32setlsb(s.size, s.modl);
+				mpsetlsb(s.size, s.modl);
 
 				/* if (q <= s) check if GCD(q,s) != 1 */
-				if (mp32lex(q->size, q->modl, s.size, s.modl))
+				if (mplex(q->size, q->modl, s.size, s.modl))
 				{
 					/* we can find adequate storage for computing the gcd in s->wksp */
-					mp32setx(s.size, wksp, q->size, q->modl);
-					mp32gcd_w(s.size, s.modl, wksp, wksp+s.size, wksp+2*s.size);
+					mpsetx(s.size, wksp, q->size, q->modl);
+					mpgcd_w(s.size, s.modl, wksp, wksp+s.size, wksp+2*s.size);
 
-					if (!mp32isone(s.size, wksp+s.size))
+					if (!mpisone(s.size, wksp+s.size))
 						continue;
 				}
 			}
 			else if (cofactor == 2)
 			{
-				mp32setlsb(s.size, s.modl);
+				mpsetlsb(s.size, s.modl);
 			}
 			else
 				{};
@@ -1328,27 +1765,34 @@ void mp32prndconone_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int
 			if (cofactor == 2)
 			{
 				/* do a small prime product trial division test on r */
-				if (!mp32psppdiv_w(&s, wksp))
+				if (!mppsppdiv_w(&s, wksp))
 					continue;
 			}
 
-			/* multiply q*s into p, multiply by two, then add 1 */
-			mp32mul(p->modl, s.size, s.modl, q->size, q->modl);
-			(void) mp32multwo(p->size, p->modl);
-			(void) mp32addw(p->size, p->modl, 1);
+			/* multiply q*s */
+			mpmul(wksp, s.size, s.modl, q->size, q->modl);
+			/* s.size + q.size may be greater than p.size by 1, but
+the product will fit exactly into p */
+			mpsetx(p->size, p->modl, s.size+q->size, wksp);
+			/* multiply by two and add 1 */
+			(void) mpmultwo(p->size, p->modl);
+			(void) mpaddw(p->size, p->modl, 1);
+			/* test if the product actually contains enough bits */
+			if (mpbits(p->size, p->modl) < bits)
+				continue;
 
 			/* do a small prime product trial division test on p */
-			if (!mp32psppdiv_w(p, wksp))
+			if (!mppsppdiv_w(p, wksp))
 				continue;
 
 			/* if we have an f, do the congruence test */
 			if (f != (mpnumber*) 0)
 			{
-				mp32copy(size, wksp, p->modl);
-				(void) mp32subw(size, wksp, 1);
-				mp32setx(size, wksp, f->size, f->data);
-				mp32gcd_w(size, wksp, wksp+size, wksp+2*size, wksp+3*size);
-				if (!mp32isone(size, wksp+2*size))
+				mpcopy(p->size, wksp, p->modl);
+				(void) mpsubw(p->size, wksp, 1);
+				mpsetx(p->size, wksp, f->size, f->data);
+				mpgcd_w(p->size, wksp, wksp+p->size, wksp+2*p->size, wksp+3*p->size);
+				if (!mpisone(p->size, wksp+2*p->size))
 					continue;
 			}
 
@@ -1357,18 +1801,18 @@ void mp32prndconone_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int
 			{
 				mpbmu_w(&s, wksp);
 
-				if (!mp32pmilrab_w(&s, rc, mp32ptrials(s.size << 5), wksp))
+				if (!mppmilrab_w(&s, rc, mpptrials(bits), wksp))
 					continue;
 			}
 
 			/* candidate has passed so far, now we do the probabilistic test on p */
 			mpbmu_w(p, wksp);
 
-			if (!mp32pmilrab_w(p, rc, t, wksp))
+			if (!mppmilrab_w(p, rc, t, wksp))
 				continue;
 
 			mpnset(r, s.size, s.modl);
-			(void) mp32multwo(r->size, r->data);
+			(void) mpmultwo(r->size, r->data);
 			mpbfree(&s);
 
 			return;
@@ -1379,7 +1823,7 @@ void mp32prndconone_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-void mp32prndsafe_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, uint32* wksp)
+void mpprndsafe_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, mpw* wksp)
 {
 	/*
 	 * Initialize with a probable safe prime of 'size' words, with probability factor t
@@ -1387,10 +1831,11 @@ void mp32prndsafe_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t
 	 * A safe prime p has the property that p = 2q+1, where q is also prime
 	 * Use for ElGamal type schemes, where a generator of order (p-1) is required
 	 */
+	size_t size = MP_BITS_TO_WORDS(bits + MP_WBITS - 1);
 
 	mpbinit(p, size);
 
-	if (p->modl != (uint32*) 0)
+	if (p->modl != (mpw*) 0)
 	{
 		mpbarrett q;
 
@@ -1405,28 +1850,28 @@ void mp32prndsafe_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t
 			 * it with small prime divisor test BEFORE computing mu
 			 */
 
-			mp32prndbits(p, 0, 2, rc);
+			mpprndbits(p, 0, 2, rc);
 
-			mp32copy(size, q.modl, p->modl);
-			mp32divtwo(size, q.modl);
+			mpcopy(size, q.modl, p->modl);
+			mpdivtwo(size, q.modl);
 
 			/* do a small prime product trial division on q */
-			if (!mp32psppdiv_w(&q, wksp))
+			if (!mppsppdiv_w(&q, wksp))
 				continue;
 
 			/* do a small prime product trial division on p */
-			if (!mp32psppdiv_w(p, wksp))
+			if (!mppsppdiv_w(p, wksp))
 				continue;
 
 			/* candidate prime has passed small prime division test for p and q */
 			mpbmu_w(&q, wksp);
 
-			if (!mp32pmilrab_w(&q, rc, t, wksp))
+			if (!mppmilrab_w(&q, rc, t, wksp))
 				continue;
 
 			mpbmu_w(p, wksp);
 
-			if (!mp32pmilrab_w(p, rc, t, wksp))
+			if (!mppmilrab_w(p, rc, t, wksp))
 				continue;
 
 			mpbfree(&q);

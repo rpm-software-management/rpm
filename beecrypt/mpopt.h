@@ -34,108 +34,108 @@ extern "C" {
 
 #if WIN32
 # if __MWERKS__ && __INTEL__
-#  define ASM_MP32ZERO
-#  define ASM_MP32FILL
-#  define ASM_MP32EVEN
-#  define ASM_MP32ODD
-#  define ASM_MP32ADDW
-#  define ASM_MP32ADD
-#  define ASM_MP32SUBW
-#  define ASM_MP32SUB
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPZERO
+#  define ASM_MPFILL
+#  define ASM_MPEVEN
+#  define ASM_MPODD
+#  define ASM_MPADDW
+#  define ASM_MPADD
+#  define ASM_MPSUBW
+#  define ASM_MPSUB
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # elif defined(_MSC_VER) && defined(_M_IX86)
-#  define ASM_MP32ZERO
-#  define ASM_MP32FILL
-#  define ASM_MP32EVEN
-#  define ASM_MP32ODD
-#  define ASM_MP32ADDW
-#  define ASM_MP32ADD
-#  define ASM_MP32SUBW
-#  define ASM_MP32SUB
-#  define ASM_MP32DIVTWO
-#  define ASM_MP32MULTWO
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPZERO
+#  define ASM_MPFILL
+#  define ASM_MPEVEN
+#  define ASM_MPODD
+#  define ASM_MPADDW
+#  define ASM_MPADD
+#  define ASM_MPSUBW
+#  define ASM_MPSUB
+#  define ASM_MPDIVTWO
+#  define ASM_MPMULTWO
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # endif
 #endif
 
 #if defined(__GNUC__)
 # if defined(OPTIMIZE_ARM)
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
 # endif
 # if defined(OPTIMIZE_I386) || defined(OPTIMIZE_I486) || defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
-#  define ASM_MP32ZERO
-#  define ASM_MP32FILL
-#  define ASM_MP32EVEN
-#  define ASM_MP32ODD
-#  define ASM_MP32ADDW
-#  define ASM_MP32ADD
-#  define ASM_MP32SUBW
-#  define ASM_MP32SUB
-#  define ASM_MP32DIVTWO
-#  define ASM_MP32MULTWO
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPZERO
+#  define ASM_MPFILL
+#  define ASM_MPEVEN
+#  define ASM_MPODD
+#  define ASM_MPADDW
+#  define ASM_MPADD
+#  define ASM_MPSUBW
+#  define ASM_MPSUB
+#  define ASM_MPDIVTWO
+#  define ASM_MPMULTWO
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # endif
 # if defined(OPTIMIZE_IA64)
-#  define ASM_MP32ZERO
-#  define ASM_MP32COPY
-#  define ASM_MP32ADD
-#  define ASM_MP32SUB
-#  undef ASM_MP32SETMUL
-#  undef ASM_MP32ADDMUL
+#  define ASM_MPZERO
+#  define ASM_MPCOPY
+#  define ASM_MPADD
+#  define ASM_MPSUB
+#  undef ASM_MPSETMUL
+#  undef ASM_MPADDMUL
 # endif
 # if defined(OPTIMIZE_POWERPC)
-#  define ASM_MP32ADDW
-#  define ASM_MP32ADD
-#  define ASM_MP32SUBW
-#  define ASM_MP32SUB
-#  define ASM_MP32MULTWO
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPADDW
+#  define ASM_MPADD
+#  define ASM_MPSUBW
+#  define ASM_MPSUB
+#  define ASM_MPMULTWO
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # endif
 # if defined(OPTIMIZE_SPARCV8)
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # endif
 # if defined(OPTIMIZE_SPARCV8PLUS) || defined(OPTIMIZE_SPARCV9)
-#  define ASM_MP32ADDW
-#  define ASM_MP32ADD
-#  define ASM_MP32SUBW
-#  define ASM_MP32SUB
-#  define ASM_MP32MULTWO
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPADDW
+#  define ASM_MPADD
+#  define ASM_MPSUBW
+#  define ASM_MPSUB
+#  define ASM_MPMULTWO
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # endif
 #endif
 
 #if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
 # if defined(OPTIMIZE_SPARCV8PLUS) /* || defined(OPTIMIZE_SPARCV9) */
-#  define ASM_MP32ADDW
-#  define ASM_MP32ADD
-#  define ASM_MP32SUBW
-#  define ASM_MP32SUB
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPADDW
+#  define ASM_MPADD
+#  define ASM_MPSUBW
+#  define ASM_MPSUB
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 #  endif
 # if defined(OPTIMIZE_I386) || defined(OPTIMIZE_I486) || defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
-#  define ASM_MP32ADDW
-#  define ASM_MP32ADD
-#  define ASM_MP32SUBW
-#  define ASM_MP32SUB
-#  define ASM_MP32MULTWO
-#  define ASM_MP32SETMUL
-#  define ASM_MP32ADDMUL
-#  define ASM_MP32ADDSQRTRC
+#  define ASM_MPADDW
+#  define ASM_MPADD
+#  define ASM_MPSUBW
+#  define ASM_MPSUB
+#  define ASM_MPMULTWO
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # endif
 #endif
 

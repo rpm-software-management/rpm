@@ -35,7 +35,7 @@
 /**
  */
 /*@observer@*/ /*@unchecked@*/
-static uint32 fips186hinit[5] = { 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0, 0x67452301 };
+static uint32_t fips186hinit[5] = { 0xefcdab89U, 0x98badcfeU, 0x10325476U, 0xc3d2e1f0U, 0x67452301U };
 
 /*@-sizeoftype@*/
 const randomGenerator fips186prng = { "FIPS 186", sizeof(fips186Param), (const randomGeneratorSetup) fips186Setup, (const randomGeneratorSeed) fips186Seed, (const randomGeneratorNext) fips186Next, (const randomGeneratorCleanup) fips186Cleanup };
@@ -47,7 +47,7 @@ const randomGenerator fips186prng = { "FIPS 186", sizeof(fips186Param), (const r
 static int fips186init(register sha1Param* p)
 	/*@modifies p @*/
 {
-	mp32copy(5, p->h, fips186hinit);
+	memcpy(p->h, fips186hinit, sizeof(p->h));
 	return 0;
 }
 /*@=boundswrite@*/
@@ -75,14 +75,14 @@ int fips186Setup(fips186Param* fp)
 		# endif
 		#endif
 
-		fp->digestsize = 0;
+		fp->digestremain = 0;
 
-		return entropyGatherNext(fp->state, FIPS186_STATE_SIZE);
+		return entropyGatherNext((byte*) fp->state, MP_WORDS_TO_BYTES(FIPS186_STATE_SIZE));
 	}
 	return -1;
 }
 
-int fips186Seed(fips186Param* fp, const uint32* data, int size)
+int fips186Seed(fips186Param* fp, const byte* data, size_t size)
 {
 	if (fp)
 	{
@@ -103,7 +103,17 @@ int fips186Seed(fips186Param* fp, const uint32* data, int size)
 		# endif
 		#endif
 		if (data)
-			(void) mp32addx(FIPS186_STATE_SIZE, fp->state, size, data);
+		{
+			mpw seed[FIPS186_STATE_SIZE];
+
+			/* if there's too much data, cut off at what we can deal with */
+			if (size > MP_WORDS_TO_BYTES(FIPS186_STATE_SIZE))
+				size = MP_WORDS_TO_BYTES(FIPS186_STATE_SIZE);
+
+			/* convert to multi-precision integer, and add to the state */
+			if (os2ip(seed, FIPS186_STATE_SIZE, data, size) == 0)
+				mpadd(FIPS186_STATE_SIZE, fp->state, seed);
+		}
 		#ifdef _REENTRANT
 		# if WIN32
 		if (!ReleaseMutex(fp->lock))
@@ -126,10 +136,12 @@ int fips186Seed(fips186Param* fp, const uint32* data, int size)
 }
 
 /*@-boundswrite@*/
-int fips186Next(fips186Param* fp, uint32* data, int size)
+int fips186Next(fips186Param* fp, byte* data, size_t size)
 {
 	if (fp)
 	{
+		mpw dig[FIPS186_STATE_SIZE];
+
 		#ifdef _REENTRANT
 		# if WIN32
 		if (WaitForSingleObject(fp->lock, INFINITE) != WAIT_OBJECT_0)
@@ -146,27 +158,32 @@ int fips186Next(fips186Param* fp, uint32* data, int size)
 		#  endif
 		# endif
 		#endif
+
 		while (size > 0)
 		{
-			register uint32 copy;
+			register size_t copy;
 
-			if (fp->digestsize == 0)
+			if (fp->digestremain == 0)
 			{
 				(void) fips186init(&fp->param);
 				/* copy the 512 bits of state data into the sha1Param */
-				mp32copy(FIPS186_STATE_SIZE, fp->param.data, fp->state);
+				memcpy(fp->param.data, fp->state, MP_WORDS_TO_BYTES(FIPS186_STATE_SIZE));
 				/* process the data */
 				sha1Process(&fp->param);
-				/* set state to state + digest + 1 mod 2^512 */
-				(void) mp32addx(FIPS186_STATE_SIZE, fp->state, 5, fp->param.h);
-				(void) mp32addw(FIPS186_STATE_SIZE, fp->state, 1);
+				encodeInts(fp->param.h, fp->digest, 5);
+				if (os2ip(dig, FIPS186_STATE_SIZE, fp->digest, 20) == 0)
+				{
+					/* set state to state + digest + 1 mod 2^512 */
+					mpadd (FIPS186_STATE_SIZE, fp->state, dig);
+					mpaddw(FIPS186_STATE_SIZE, fp->state, 1);
+				}
+				/* else shouldn't occur */
 				/* we now have 5 words of pseudo-random data */
-				fp->digestsize = 5;
+				fp->digestremain = 20;
 			}
-
-			copy = (size > fp->digestsize) ? fp->digestsize : size;
-			mp32copy(copy, data, fp->param.h + 5 - fp->digestsize);
-			fp->digestsize -= copy;
+			copy = (size > fp->digestremain) ? fp->digestremain : size;
+			memcpy(data, fp->digest+20-fp->digestremain, copy);
+			fp->digestremain -= copy;
 			size -= copy;
 			data += copy;
 		}

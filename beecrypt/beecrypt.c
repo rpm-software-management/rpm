@@ -1,14 +1,6 @@
 /*@-sizeoftype@*/
-/**
- * \file beecrypt.c
- *
- * BeeCrypt library hooks & stubs, code.
- */
-
 /*
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +15,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
+ */
+
+/*!\file beecrypt.c
+ * \brief BeeCrypt API.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup ES_m PRNG_m HASH_m HMAC_m BC_m
  */
 
 #include "system.h"
@@ -126,7 +123,7 @@ const entropySource* entropySourceDefault()
 }
 
 /*@-boundsread@*/
-int entropyGatherNext(uint32* data, int size)
+int entropyGatherNext(byte* data, size_t size)
 {
 	const char* selection = getenv("BEECRYPT_ENTROPY");
 
@@ -254,7 +251,7 @@ int randomGeneratorContextFree(randomGeneratorContext* ctxt)
 	/*@=nullstate@*/
 }
 
-int randomGeneratorContextNext(randomGeneratorContext* ctxt, uint32* data, int size)
+int randomGeneratorContextNext(randomGeneratorContext* ctxt, byte* data, size_t size)
 {
 	return ctxt->rng->next(ctxt->param, data, size);
 }
@@ -370,7 +367,7 @@ int hashFunctionContextReset(hashFunctionContext* ctxt)
 	return ctxt->algo->reset(ctxt->param);
 }
 
-int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, int size)
+int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, size_t size)
 {
 	if (ctxt == (hashFunctionContext*) 0)
 		return -1;
@@ -405,7 +402,7 @@ int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 }
 
 /*@-boundswrite@*/
-int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mpnumber* n)
+int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
 {
 	if (ctxt == (hashFunctionContext*) 0)
 		return -1;
@@ -418,22 +415,25 @@ int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mpnumber* n)
 
 	if (n != (mpnumber*) 0)
 	{
-		register int rc = -1;
-		register byte* temp = (byte*) malloc((n->size << 2) + 1);
+		int rc;
+		byte* tmp = (byte*) malloc(MP_WORDS_TO_BYTES(n->size) + 1);
+
+		if (tmp == (byte*) 0)
+			return -1;
 
 		/*@-nullpass -nullderef -nullptrarith @*/ /* FIX: temp may be NULL */
-		if (mp32msbset(n->size, n->data))
+		if (mpmsbset(n->size, n->data))
 		{
-			temp[0] = 0;
-			(void) encodeInts((javaint*) n->data, temp+1, n->size);
-			rc = ctxt->algo->update(ctxt->param, temp, (n->size << 2) + 1);
+			tmp[0] = 0;
+			i2osp(tmp+1, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
+			rc = ctxt->algo->update(ctxt->param, tmp, MP_WORDS_TO_BYTES(n->size) + 1);
 		}
 		else
 		{
-			(void) encodeInts((javaint*) n->data, temp, n->size);
-			rc = ctxt->algo->update(ctxt->param, temp, n->size << 2);
+			i2osp(tmp, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
+			rc = ctxt->algo->update(ctxt->param, tmp, MP_WORDS_TO_BYTES(n->size));
 		}
-		free(temp);
+		free(tmp);
 		/*@=nullpass =nullderef =nullptrarith @*/
 
 		return rc;
@@ -442,7 +442,7 @@ int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mpnumber* n)
 }
 /*@=boundswrite@*/
 
-int hashFunctionContextDigest(hashFunctionContext* ctxt, mpnumber* dig)
+int hashFunctionContextDigest(hashFunctionContext* ctxt, byte *digest)
 {
 	if (ctxt == (hashFunctionContext*) 0)
 		return -1;
@@ -453,28 +453,59 @@ int hashFunctionContextDigest(hashFunctionContext* ctxt, mpnumber* dig)
 	if (ctxt->param == (hashFunctionParam*) 0)
 		return -1;
 
-	if (dig != (mpnumber*) 0)
-	{
-		mpnsize(dig, (ctxt->algo->digestsize + 3) >> 2);
+	if (digest == (byte*) 0)
+		return -1;
 
-		return ctxt->algo->digest(ctxt->param, dig->data);
+	return ctxt->algo->digest(ctxt->param, digest);
+}
+
+int hashFunctionContextDigestMP(hashFunctionContext* ctxt, mpnumber* d)
+{
+	if (ctxt == (hashFunctionContext*) 0)
+		return -1;
+
+	if (ctxt->algo == (hashFunction*) 0)
+		return -1;
+
+	if (ctxt->param == (hashFunctionParam*) 0)
+		return -1;
+
+	if (d != (mpnumber*) 0)
+	{
+		int rc;
+
+		byte *digest = (byte*) malloc(ctxt->algo->digestsize);
+
+		if (digest == (byte*) 0)
+			return -1;
+
+		if (ctxt->algo->digest(ctxt->param, digest))
+		{
+			free(digest);
+			return -1;
+		}
+
+		rc = os2ip(d->data, d->size, digest, ctxt->algo->digestsize);
+
+		free(digest);
+
+		return rc;
 	}
 	return -1;
 }
 
-int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* match)
+int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* d)
 {
-	register int rc = 0;
+	int rc = 0;
 
-	mpnumber dig;
+	mpnumber match;
 
-	mpnzero(&dig);
+	mpnzero(&match);
 
-	if (hashFunctionContextDigest(ctxt, &dig) == 0)
-		if (dig.size == match->size)
-			rc = mp32eq(dig.size, dig.data, match->data);
+	if (hashFunctionContextDigestMP(ctxt, &match) == 0)
+		rc = mpeqx(d->size, d->data, match.size, match.data);
 
-	mpnfree(&dig);
+	mpnfree(&match);
 
 	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
@@ -581,7 +612,7 @@ int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
 	/*@=nullstate@*/
 }
 
-int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const uint32* key, int keybits)
+int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const byte* key, size_t keybits)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
@@ -592,7 +623,7 @@ int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const uint32* 
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
 
-	if (key == (uint32*) 0)
+	if (key == (byte*) 0)
 		return -1;
 
 	return ctxt->algo->setup(ctxt->param, key, keybits);
@@ -612,7 +643,7 @@ int keyedHashFunctionContextReset(keyedHashFunctionContext* ctxt)
 	return ctxt->algo->reset(ctxt->param);
 }
 
-int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, int size)
+int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, size_t size)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
@@ -647,7 +678,7 @@ int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memch
 }
 
 /*@-boundswrite@*/
-int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mpnumber* n)
+int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnumber* n)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
@@ -664,7 +695,7 @@ int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mpn
 		register byte* temp = (byte*) malloc((n->size << 2) + 1);
 
 		/*@-nullpass -nullderef -nullptrarith @*/ /* FIX: temp may be NULL */
-		if (mp32msbset(n->size, n->data))
+		if (mpmsbset(n->size, n->data))
 		{
 			temp[0] = 0;
 			(void) encodeInts((javaint*) n->data, temp+1, n->size);
@@ -684,7 +715,7 @@ int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mpn
 }
 /*@=boundswrite@*/
 
-int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mpnumber* dig)
+int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* digest)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
@@ -695,29 +726,59 @@ int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mpnumber* dig
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
 
-	if (dig != (mpnumber*) 0)
-	{
-		mpnsize(dig, (ctxt->algo->digestsize + 3) >> 2);
+	if (digest == (byte*) 0)
+		return -1;
 
-		return ctxt->algo->digest(ctxt->param, dig->data);
+	return ctxt->algo->digest(ctxt->param, digest);
+}
+
+int keyedHashFunctionContextDigestMP(keyedHashFunctionContext* ctxt, mpnumber* d)
+{
+	if (ctxt == (keyedHashFunctionContext*) 0)
+		return -1;
+
+	if (ctxt->algo == (keyedHashFunction*) 0)
+		return -1;
+
+	if (ctxt->param == (keyedHashFunctionParam*) 0)
+		return -1;
+
+	if (d != (mpnumber*) 0)
+	{
+		int rc;
+
+		byte *digest = (byte*) malloc(ctxt->algo->digestsize);
+
+		if (digest == (byte*) 0)
+			return -1;
+
+		if (ctxt->algo->digest(ctxt->param, digest))
+		{
+			free(digest);
+			return -1;
+		}
+
+		rc = os2ip(d->data, d->size, digest, ctxt->algo->digestsize);
+
+		free(digest);
+
+		return rc;
 	}
 	return -1;
 }
 
-int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mpnumber* match)
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mpnumber* d)
 {
-	register int rc = 0;
+	int rc = 0;
 
-	mpnumber dig;
+	mpnumber match;
 
-	mpnzero(&dig);
+	mpnzero(&match);
 
-	if (keyedHashFunctionContextDigest(ctxt, &dig) == 0)
-		if (dig.size == match->size)
-			
-			rc = mp32eq(dig.size, dig.data, match->data);
+	if (keyedHashFunctionContextDigestMP(ctxt, &match) == 0)
+		rc = mpeqx(d->size, d->data, match.size, match.data);
 
-	mpnfree(&dig);
+	mpnfree(&match);
 
 	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
@@ -803,7 +864,7 @@ int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
 	/*@=nullstate@*/
 }
 
-int blockCipherContextSetup(blockCipherContext* ctxt, const uint32* key, int keybits, cipherOperation op)
+int blockCipherContextSetup(blockCipherContext* ctxt, const byte* key, size_t keybits, cipherOperation op)
 {
 	if (ctxt == (blockCipherContext*) 0)
 		return -1;
@@ -814,13 +875,13 @@ int blockCipherContextSetup(blockCipherContext* ctxt, const uint32* key, int key
 	if (ctxt->param == (blockCipherParam*) 0)
 		return -1;
 
-	if (key == (uint32*) 0)
+	if (key == (byte*) 0)
 		return -1;
 
 	return ctxt->algo->setup(ctxt->param, key, keybits, op);
 }
 
-int blockCipherContextSetIV(blockCipherContext* ctxt, const uint32* iv)
+int blockCipherContextSetIV(blockCipherContext* ctxt, const byte* iv)
 {
 	if (ctxt == (blockCipherContext*) 0)
 		return -1;

@@ -35,8 +35,9 @@
  */
 typedef struct
 {
-	hmacParam hparam;
 	sha1Param sparam;
+	byte kxi[64];
+	byte kxo[64];
 } hmacsha1Param;
 
 #ifdef __cplusplus
@@ -52,7 +53,7 @@ extern BEECRYPTAPI const keyedHashFunction hmacsha1;
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)
+int hmacsha1Setup (hmacsha1Param* sp, const byte* key, size_t keybits)
 	/*@globals sha1 @*/
 	/*@modifies sp @*/;
 /*@=exportlocal@*/
@@ -70,7 +71,7 @@ int hmacsha1Reset (hmacsha1Param* sp)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacsha1Update(hmacsha1Param* sp, const byte* data, int size)
+int hmacsha1Update(hmacsha1Param* sp, const byte* data, size_t size)
 	/*@globals sha1 @*/
 	/*@modifies sp @*/;
 /*@=exportlocal@*/
@@ -79,7 +80,7 @@ int hmacsha1Update(hmacsha1Param* sp, const byte* data, int size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacsha1Digest(hmacsha1Param* sp, uint32* data)
+int hmacsha1Digest(hmacsha1Param* sp, byte* data)
 	/*@globals sha1 @*/
 	/*@modifies sp, data @*/;
 /*@=exportlocal@*/

@@ -34,10 +34,16 @@
  */
 typedef struct
 {
-	uint32 h[8];
-	uint32 data[64];
-	uint64 length;
-	uint8  offset;
+	uint32_t h[8];
+	uint32_t data[64];
+	#if (MP_WBITS == 64)
+	mpw length[1];
+	#elif (MP_WBITS == 32)
+	mpw length[2];
+	#else
+	# error
+	#endif
+	short offset;
 } sha256Param;
 
 #ifdef __cplusplus
@@ -66,14 +72,14 @@ int  sha256Reset  (sha256Param* p)
 /** \ingroup HASH_sha256_m
  */
 BEECRYPTAPI
-int  sha256Update (sha256Param* p, const byte* data, int size)
+int  sha256Update (sha256Param* p, const byte* data, size_t size)
 	/*@globals internalState @*/
 	/*@modifies p, internalState @*/;
 
 /** \ingroup HASH_sha256_m
  */
 BEECRYPTAPI
-int  sha256Digest (sha256Param* p, /*@out@*/ uint32* data)
+int  sha256Digest (sha256Param* p, /*@out@*/ byte* data)
 	/*@globals internalState @*/
 	/*@modifies p, data, internalState @*/;
 /*@=exportlocal@*/

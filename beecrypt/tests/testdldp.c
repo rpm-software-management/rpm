@@ -48,7 +48,7 @@ int main()
 
                 /* we have the parameters, now see if g^q == 1 */
                 mpbnpowmod(&params.p, &params.g, (mpnumber*) &params.q, &gq);
-                if (mp32isone(gq.size, gq.data))
+                if (mpisone(gq.size, gq.data))
 			printf("ok\n");
 		else
 			failures++;

@@ -69,11 +69,11 @@ int main()
 		if (hmacsha1Digest(&param, digest))
 			return -1;
 
-		if (mp32ne(5, digest, table[i].expect))
+		if (mpne(5, digest, table[i].expect))
 		{
 			printf("failed\n");
-			mp32println(5, table[i].expect);
-			mp32println(5, digest);
+			mpprintln(stdout, 5, table[i].expect);
+			mpprintln(stdout, 5, digest);
 			failures++;
 		}
 		else

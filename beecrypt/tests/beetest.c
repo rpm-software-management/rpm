@@ -40,7 +40,7 @@
 #include "rsa.h"
 #include "sha1.h"
 #include "sha256.h"
-#include "mp32.h"
+#include "mp.h"
 
 #include "debug.h"
 
@@ -79,7 +79,7 @@ static int testVectorInvMod(const dlkp_p* keypair)
 
 		mpbmulmod_w(&keypair->param.n, size, temp, size, temp+size, temp, temp+2*size);
 
-		rc = mp32isone(size, temp);
+		rc = mpisone(size, temp);
 
 		free(temp);
 		/*@=nullpass =nullptrarith @*/
@@ -104,7 +104,7 @@ static int testVectorExpMod(const dlkp_p* keypair)
 	
 	mpbnpowmod(&keypair->param.p, &keypair->param.g, &keypair->x, &y);
 
-	rc = mp32eqx(y.size, y.data, keypair->y.size, keypair->y.data);
+	rc = mpeqx(y.size, y.data, keypair->y.size, keypair->y.data);
 
 	mpnfree(&y);
 
@@ -364,7 +364,7 @@ static int testVectorDLDP(void)
 
 		/* we have the parameters, now see if g^q == 1 */
 		mpbnpowmod(&dp.p, &dp.g, (mpnumber*) &dp.q, &gq);
-		result = mp32isone(gq.size, gq.data);
+		result = mpisone(gq.size, gq.data);
 
 		mpnfree(&gq);
 		(void) dldp_pFree(&dp);
@@ -392,7 +392,7 @@ static int testVectorMD5(void)
 	(void) md5Update(&param, (const unsigned char*) "abc", 3);
 	(void) md5Digest(&param, digest);
 
-	return mp32eq(4, expect, digest);
+	return mpeq(4, expect, digest);
 }
 
 /*@unused@*/
@@ -409,7 +409,7 @@ static int testVectorSHA1(void)
 	(void) sha1Update(&param, (const unsigned char*) "abc", 3);
 	(void) sha1Digest(&param, digest);
 
-	return mp32eq(5, expect, digest);
+	return mpeq(5, expect, digest);
 }
 
 /*@unused@*/ static int testVectorSHA256(void)
@@ -427,7 +427,7 @@ static int testVectorSHA1(void)
 	(void) sha256Digest(&param, digest);
 	/*@=internalglobs =mods @*/
 
-	return mp32eq(8, expect, digest);
+	return mpeq(8, expect, digest);
 }
 
 /*@unchecked@*/

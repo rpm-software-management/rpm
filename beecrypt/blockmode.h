@@ -35,29 +35,55 @@ extern "C" {
 #endif
 
 /**
+ * Encrypts multiple blocks in Electronic Code Book (ECB) mode.
  * @param bc		blockcipher context
  * @param bp		blockcipher parameters
- * @param mode		ECB or CBC
- * @param blocks	no. blocks to encrypt
- * @retval dst		ciphertext block
- * @param src		plaintext block
- * @return		0 on success, -1 on failure
+ * @param nblocks	number of blocks to be encrypted.
+ * @retval dst		ciphertext data (aligned on a 32-bit boundary).
+ * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, /*@out@*/ uint32* dst, const uint32* src)
+int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
 	/*@modifies bp, dst @*/;
 
 /**
+ * Decrypts multiple blocks in Electronic Code Book (ECB) mode.
  * @param bc		blockcipher context
  * @param bp		blockcipher parameters
- * @param mode		ECB or CBC
- * @param blocks	no. blocks to decrypt
- * @retval dst		plaintext block
- * @param src		ciphertext block
- * @return		0 on success, -1 on failure
+ * @param nblocks	number of blocks to be encrypted.
+ * @retval dst		ciphertext data (aligned on a 32-bit boundary).
+ * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, /*@out@*/ uint32* dst, const uint32* src)
+int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
+	/*@modifies bp, dst @*/;
+
+/**
+ * Encrypts multiple blocks in Cipher Block Chaining (CBC) mode.
+ * @param bc		blockcipher context
+ * @param bp		blockcipher parameters
+ * @param nblocks	number of blocks to be encrypted.
+ * @retval dst		ciphertext data (aligned on a 32-bit boundary).
+ * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @retval		0 on success.
+ */
+BEECRYPTAPI
+int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
+	/*@modifies bp, dst @*/;
+
+/**
+ * Decrypts multiple blocks in Cipher Block Chaining (CBC) mode.
+ * @param bc		blockcipher context
+ * @param bp		blockcipher parameters
+ * @param nblocks	number of blocks to be encrypted.
+ * @retval dst		ciphertext data (aligned on a 32-bit boundary).
+ * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @retval		0 on success.
+ */
+BEECRYPTAPI
+int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
 	/*@modifies bp, dst @*/;
 
 #ifdef __cplusplus

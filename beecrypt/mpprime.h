@@ -30,12 +30,12 @@
 
 #include "mpbarrett.h"
 
-#define SMALL_PRIMES_PRODUCT_MAX	64
+#define SMALL_PRIMES_PRODUCT_MAX	32
 
 /**
  */
 /*@-exportlocal@*/
-extern uint32* mp32spprod[SMALL_PRIMES_PRODUCT_MAX];
+extern mpw* mpspprod[SMALL_PRIMES_PRODUCT_MAX];
 /*@=exportlocal@*/
 
 #ifdef __cplusplus
@@ -45,42 +45,42 @@ extern "C" {
 /**
  */
 BEECRYPTAPI
-int  mp32ptrials     (uint32 bits)
+int  mpptrials     (size_t bits)
 	/*@*/;
 
 /**
  */
 BEECRYPTAPI
-int  mp32pmilrab_w   (const mpbarrett* p, randomGeneratorContext* rc, int t, /*@out@*/ uint32* wksp)
+int  mppmilrab_w   (const mpbarrett* p, randomGeneratorContext* rc, int t, /*@out@*/ mpw* wksp)
 	/*@modifies wksp @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32prnd_w      (mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@null@*/ const mpnumber* f, /*@out@*/ uint32* wksp)
-	/*@globals mp32spprod @*/
+void mpprnd_w      (mpbarrett* p, randomGeneratorContext* rc, size_t size, int t, /*@null@*/ const mpnumber* f, /*@out@*/ mpw* wksp)
+	/*@globals mpspprod @*/
 	/*@modifies p, rc, wksp @*/;
 
 /**
  */
 BEECRYPTAPI
-void mp32prndsafe_w  (mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@out@*/ uint32* wksp)
-	/*@globals mp32spprod @*/
+void mpprndsafe_w  (mpbarrett* p, randomGeneratorContext* rc, size_t size, int t, /*@out@*/ mpw* wksp)
+	/*@globals mpspprod @*/
 	/*@modifies p, rc, wksp @*/;
 
 #ifdef	NOTYET
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32prndcon_w   (mpbarrett* p, randomGeneratorContext* rc, uint32, int, const mpnumber*, const mpnumber*, const mpnumber*, mpnumber*, /*@out@*/ uint32* wksp)
+void mpprndcon_w   (mpbarrett* p, randomGeneratorContext* rc, size_t, int, const mpnumber*, const mpnumber*, const mpnumber*, mpnumber*, /*@out@*/ mpw* wksp)
 	/*@modifies wksp @*/;
 #endif
 
 /**
  */
 BEECRYPTAPI
-void mp32prndconone_w(mpbarrett* p, randomGeneratorContext* rc, uint32 size, int t, const mpbarrett* q, /*@null@*/ const mpnumber* f, mpnumber* r, int cofactor, /*@out@*/ uint32* wksp)
-	/*@globals mp32spprod @*/
+void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t size, int t, const mpbarrett* q, /*@null@*/ const mpnumber* f, mpnumber* r, int cofactor, /*@out@*/ mpw* wksp)
+	/*@globals mpspprod @*/
 	/*@modifies p, rc, r, wksp @*/;
 
 #ifdef __cplusplus

@@ -1,13 +1,5 @@
-/** \ingroup HMAC_sha1_m HMAC_m
- * \file hmacsha1.c
- *
- * HMAC-SHA-1 message authentication code, code.
- */
-
 /*
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +17,16 @@
  *
  */
 
+/*!\file hmacsha1.c
+ * HMAC-SHA-1 message authentication code.
+ *
+ * \see RFC2202 - Test Cases for HMAC-MD5 and HMAC-SHA-1.
+ *                P. Cheng, R. Glenn.
+ *
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HMAC_m HMAC_sha1_m
+ */
+
 #include "system.h"
 #include "hmacsha1.h"
 #include "debug.h"
@@ -34,23 +36,23 @@ const keyedHashFunction hmacsha1 = { "HMAC-SHA-1", sizeof(hmacsha1Param), 64, 5 
 /*@=sizeoftype@*/
 
 /*@-type@*/
-int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)
+int hmacsha1Setup (hmacsha1Param* sp, const byte* key, size_t keybits)
 {
-	return hmacSetup(&sp->hparam, &sha1, &sp->sparam, key, keybits);
+	return hmacSetup(sp->kxi, sp->kxo, &sha1, &sp->sparam, key, keybits);
 }
 
 int hmacsha1Reset (hmacsha1Param* sp)
 {
-	return hmacReset(&sp->hparam, &sha1, &sp->sparam);
+	return hmacReset(sp->kxi, &sha1, &sp->sparam);
 }
 
-int hmacsha1Update(hmacsha1Param* sp, const byte* data, int size)
+int hmacsha1Update(hmacsha1Param* sp, const byte* data, size_t size)
 {
-	return hmacUpdate(&sp->hparam, &sha1, &sp->sparam, data, size);
+	return hmacUpdate(&sha1, &sp->sparam, data, size);
 }
 
-int hmacsha1Digest(hmacsha1Param* sp, uint32* data)
+int hmacsha1Digest(hmacsha1Param* sp, byte* data)
 {
-	return hmacDigest(&sp->hparam, &sha1, &sp->sparam, data);
+	return hmacDigest(sp->kxo, &sha1, &sp->sparam, data);
 }
 /*@=type@*/

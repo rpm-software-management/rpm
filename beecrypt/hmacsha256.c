@@ -1,13 +1,5 @@
-/** \ingroup HMAC_sha256_m HMAC_m
- * \file hmacsha256.c
- *
- * HMAC-SHA-256 message authentication code, code.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +17,12 @@
  *
  */
 
+/*!\file hmacsha256.c
+ * \brief HMAC-SHA-256 message digest algorithm.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HMAC_m HMAC_sha256_m
+ */
+
 #include "system.h"
 #include "hmacsha256.h"
 #include "debug.h"
@@ -34,23 +32,23 @@ const keyedHashFunction hmacsha256 = { "HMAC-SHA-256", sizeof(hmacsha256Param), 
 /*@=sizeoftype@*/
 
 /*@-type@*/
-int hmacsha256Setup (hmacsha256Param* sp, const uint32* key, int keybits)
+int hmacsha256Setup (hmacsha256Param* sp, const byte* key, size_t keybits)
 {
-	return hmacSetup(&sp->hparam, &sha256, &sp->sparam, key, keybits);
+	return hmacSetup(sp->kxi, sp->kxo, &sha256, &sp->sparam, key, keybits);
 }
 
 int hmacsha256Reset (hmacsha256Param* sp)
 {
-	return hmacReset(&sp->hparam, &sha256, &sp->sparam);
+	return hmacReset(sp->kxi, &sha256, &sp->sparam);
 }
 
-int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
+int hmacsha256Update(hmacsha256Param* sp, const byte* data, size_t size)
 {
-	return hmacUpdate(&sp->hparam, &sha256, &sp->sparam, data, size);
+	return hmacUpdate(&sha256, &sp->sparam, data, size);
 }
 
-int hmacsha256Digest(hmacsha256Param* sp, uint32* data)
+int hmacsha256Digest(hmacsha256Param* sp, byte* data)
 {
-	return hmacDigest(&sp->hparam, &sha256, &sp->sparam, data);
+	return hmacDigest(sp->kxo, &sha256, &sp->sparam, data);
 }
 /*@=type@*/

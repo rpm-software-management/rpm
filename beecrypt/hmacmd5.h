@@ -35,8 +35,9 @@
  */
 typedef struct
 {
-	hmacParam hparam;
 	md5Param mparam;
+	byte kxi[64];
+	byte kxo[64];
 } hmacmd5Param;
 
 #ifdef __cplusplus
@@ -52,7 +53,7 @@ extern BEECRYPTAPI const keyedHashFunction hmacmd5;
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
+int hmacmd5Setup (hmacmd5Param* sp, const byte* key, size_t keybits)
 	/*@globals md5 @*/
 	/*@modifies sp @*/;
 /*@=exportlocal@*/
@@ -70,7 +71,7 @@ int hmacmd5Reset (hmacmd5Param* sp)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacmd5Update(hmacmd5Param* sp, const byte* data, int size)
+int hmacmd5Update(hmacmd5Param* sp, const byte* data, size_t size)
 	/*@globals md5 @*/
 	/*@modifies sp @*/;
 /*@=exportlocal@*/
@@ -79,7 +80,7 @@ int hmacmd5Update(hmacmd5Param* sp, const byte* data, int size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int hmacmd5Digest(hmacmd5Param* sp, uint32* data)
+int hmacmd5Digest(hmacmd5Param* sp, byte* data)
 	/*@globals md5 @*/
 	/*@modifies sp, data @*/;
 /*@=exportlocal@*/

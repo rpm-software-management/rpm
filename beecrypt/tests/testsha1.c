@@ -54,7 +54,7 @@ int main()
 		if (sha1Digest(&param, digest))
 			return -1;
 
-		if (mp32ne(5, digest, table[i].expect))
+		if (mpne(5, digest, table[i].expect))
 		{
 			printf("failed\n");
 			failures++;
