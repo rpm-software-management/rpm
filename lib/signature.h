@@ -42,12 +42,9 @@
 /**************************************************/
 
 /* verifySignature() results */
-#define RPMSIG_SIGOK        0
-#define RPMSIG_NOSIG        1
-#define RPMSIG_UNKNOWNSIG   (1<<1)
-#define RPMSIG_BADSIG       (1<<2)
-#define RPMSIG_BADMD5       (1<<3)
-#define RPMSIG_BADPGP       (1<<4)
+#define RPMSIG_OK        0
+#define RPMSIG_UNKNOWN   1
+#define RPMSIG_BAD       2
 
 /**************************************************/
 /*                                                */
@@ -68,10 +65,8 @@ void freeSignature(Header h);
 
 /******************************************************************/
 
-/* Verify data on fd with sig.                          */
-/* Fill result with status info.                        */
-/* If pgp is 0, then don't even try to verify with PGP. */
-int verifySignature(int fd, short sig_type, void *sig, char *result, int pgp);
+int verifySignature(char *file, int_32 sigTag, void *sig, int count,
+		    char *result);
 
 /* Return type of signature in effect for building */
 int sigLookupType(void);

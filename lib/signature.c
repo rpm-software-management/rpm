@@ -25,11 +25,11 @@
 static int makePGPSignature(char *file, void **sig, int_32 *size,
 			    char *passPhrase);
 static int checkSize(int fd, int size, int sigsize);
-static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result);
-static int verifyMD5Signature(char *datafile, void *sigfile, char *result);
-static int verifyOLDPGPSignature(int fd, void *sig, char *result);
-static int verifyMD5PGPSignature(int fd, unsigned char *sig,
-				 char *result, int pgp);
+static int verifySizeSignature(char *datafile, int_32 size, char *result);
+static int verifyMD5Signature(char *datafile, unsigned char *sig,
+			      char *result);
+static int verifyPGPSignature(char *datafile, void *sig,
+			      int count, char *result);
 static int checkPassPhrase(char *passPhrase);
 
 int sigLookupType(void)
@@ -263,44 +263,94 @@ static int checkSize(int fd, int size, int sigsize)
     return size - headerArchiveSize;
 }
 
-int verifySignature(int fd, short sig_type, void *sig, char *result, int pgp)
+int verifySignature(char *file, int_32 sigTag, void *sig, int count,
+		    char *result)
 {
-    int res = RPMSIG_SIGOK;
-
-    switch (sig_type) {
-      case RPMSIG_NONE:
-	strcpy(result, "No signature information available\n");
-	return (RPMSIG_BADSIG | RPMSIG_NOSIG);
-	break;
-      case RPMSIG_PGP262_1024:
-	if ((res = verifyOLDPGPSignature(fd, sig, result))) {
-	    return (RPMSIG_BADSIG | res);
+    switch (sigTag) {
+      case SIGTAG_SIZE:
+	if (verifySizeSignature(file, *(int_32 *)sig, result)) {
+	    return RPMSIG_BAD;
 	}
 	break;
-      case RPMSIG_MD5:
-	if ((res = verifyMD5PGPSignature(fd, sig, result, 0))) {
-	    return (RPMSIG_BADSIG | res);
+      case SIGTAG_MD5:
+	if (verifyMD5Signature(file, sig, result)) {
+	    return 1;
 	}
 	break;
-      case RPMSIG_MD5_PGP:
-	if ((res = verifyMD5PGPSignature(fd, sig, result, pgp))) {
-	    return (RPMSIG_BADSIG | res);
+      case SIGTAG_PGP:
+	if (verifyPGPSignature(file, sig, count, result)) {
+	    return 1;
 	}
 	break;
       default:
-	sprintf(result, "Unimplemented signature type\n");
-	return (RPMSIG_BADSIG | RPMSIG_UNKNOWNSIG);
-	break;
+	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
+	return RPMSIG_UNKNOWN;
     }
 
-    return RPMSIG_SIGOK;
+    return RPMSIG_OK;
 }
 
-static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result)
+static int verifySizeSignature(char *datafile, int_32 size, char *result)
 {
-    int pid, status, outpipe[2];
+    struct stat statbuf;
+
+    stat(datafile, &statbuf);
+    if (size != statbuf.st_size) {
+	sprintf(result, "Header+Archive size mismatch.\n"
+		"Expected %d, saw %d.\n",
+		size, (int)statbuf.st_size);
+	return 1;
+    }
+
+    sprintf(result, "Header+Archive size OK: %d bytes\n", size);
+    return 0;
+}
+
+static int verifyMD5Signature(char *datafile, unsigned char *sig, char *result)
+{
+    unsigned char md5sum[16];
+
+    mdbinfile(datafile, md5sum);
+    if (memcmp(md5sum, sig, 16)) {
+	sprintf(result, "MD5 sum mismatch\n"
+		"Expected: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
+		"%02x%02x%02x%02x%02x\n"
+		"Saw     : %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
+		"%02x%02x%02x%02x%02x\n",
+		sig[0],  sig[1],  sig[2],  sig[3],
+		sig[4],  sig[5],  sig[6],  sig[7],
+		sig[8],  sig[9],  sig[10], sig[11],
+		sig[12], sig[13], sig[14], sig[15],
+		md5sum[0],  md5sum[1],  md5sum[2],  md5sum[3],
+		md5sum[4],  md5sum[5],  md5sum[6],  md5sum[7],
+		md5sum[8],  md5sum[9],  md5sum[10], md5sum[11],
+		md5sum[12], md5sum[13], md5sum[14], md5sum[15]);
+	return 1;
+    }
+
+    sprintf(result, "MD5 sum OK: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
+                    "%02x%02x%02x%02x%02x\n",
+	    md5sum[0],  md5sum[1],  md5sum[2],  md5sum[3],
+	    md5sum[4],  md5sum[5],  md5sum[6],  md5sum[7],
+	    md5sum[8],  md5sum[9],  md5sum[10], md5sum[11],
+	    md5sum[12], md5sum[13], md5sum[14], md5sum[15]);
+
+    return 0;
+}
+
+static int verifyPGPSignature(char *datafile, void *sig,
+			      int count, char *result)
+{
+    int pid, status, outpipe[2], sfd;
+    char *sigfile;
     unsigned char buf[8192];
     FILE *file;
+
+    /* Write out the signature */
+    sigfile = tempnam("/var/tmp", "rpmsig");
+    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    write(sfd, sig, count);
+    close(sfd);
 
     /* Now run PGP */
     pipe(outpipe);
@@ -317,7 +367,7 @@ static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result)
 	       sigfile, datafile,
 	       NULL);
 	printf("exec failed!\n");
-	error(RPMERR_EXEC, "Could not run pgp.  Use --nopgp to verify MD5 checksums only.");
+	error(RPMERR_EXEC, "Could not run pgp.  Use --nopgp to skip PGP checks.");
 	exit(RPMERR_EXEC);
     }
 
@@ -325,7 +375,9 @@ static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result)
     file = fdopen(outpipe[0], "r");
     result[0] = '\0';
     while (fgets(buf, 1024, file)) {
-	if (strncmp("File '", buf, 6) && strncmp("Text is assu", buf, 12)) {
+	if (strncmp("File '", buf, 6) &&
+	    strncmp("Text is assu", buf, 12) &&
+	    buf[0] != '\n') {
 	    strcat(result, buf);
 	}
     }
@@ -333,98 +385,10 @@ static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result)
 
     waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	return(RPMSIG_BADPGP);
+	return 1;
     }
     
-    return(RPMSIG_SIGOK);
-}
-
-static int verifyOLDPGPSignature(int fd, void *sig, char *result)
-{
-    char *sigfile;
-    char *datafile;
-    int count, sfd, ret;
-    unsigned char buf[8192];
-
-    /* Write out the signature */
-    sigfile = tempnam("/var/tmp", "rpmsig");
-    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    write(sfd, sig, 152);
-    close(sfd);
-
-    /* Write out the data */
-    datafile = tempnam("/var/tmp", "rpmsig");
-    sfd = open(datafile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    while((count = read(fd, buf, 8192)) > 0) {
-	write(sfd, buf, count);
-    }
-    close(sfd);
-
-    ret = auxVerifyPGPSig(datafile, sigfile, result);
-    
-    unlink(datafile);
-    unlink(sigfile);
-    
-    return(ret);
-}
-
-static int verifyMD5Signature(char *datafile, void *sig, char *result)
-{
-    unsigned char md5sum[16];
-
-    mdbinfile(datafile, md5sum);
-    if (memcmp(md5sum, sig, 16)) {
-	strcpy(result, "MD5 sum mismatch");
-	return RPMSIG_BADMD5;
-    }
-
-    return RPMSIG_SIGOK;
-}
-
-static int verifyMD5PGPSignature(int fd, unsigned char *sig,
-				 char *result, int pgp)
-{
-    char *datafile;
-    char *sigfile;
-    int count, sfd;
-    unsigned char buf[8192];
-
-    /* Write out the data */
-    datafile = tempnam("/var/tmp", "rpmsig");
-    sfd = open(datafile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    while((count = read(fd, buf, 8192)) > 0) {
-	write(sfd, buf, count);
-    }
-    close(sfd);
-
-    if (verifyMD5Signature(datafile, sig, result)) {
-	unlink(datafile);
-	return RPMSIG_BADMD5;
-    }
-
-    if (! pgp) {
-   	unlink(datafile);
-	return 0;
-    }
-    
-    /* Write out the signature */
-    sig += 16;
-    count = sig[0] * 256 + sig[1];
-    sigfile = tempnam("/var/tmp", "rpmsig");
-    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    sig += 2;
-    write(sfd, sig, count);
-    close(sfd);
-
-    if (auxVerifyPGPSig(datafile, sigfile, result)) {
-	unlink(datafile);
-	unlink(sigfile);
-	return RPMSIG_BADPGP;
-    }
-
-    unlink(datafile);
-    unlink(sigfile);
-    return RPMSIG_SIGOK;
+    return 0;
 }
 
 char *getPassPhrase(char *prompt)
