@@ -16,9 +16,9 @@ extern "C" {
 #if HAVE_LIBIO_H
 #include <libio.h>
 #else
-typedef ssize_t cookie_read_function_t (void *cookie, void *buf, size_t nbytes);
-typedef ssize_t cookie_write_function_t (void *cookie, const void *buf, size_t nbytes);
-typedef int cookie_seek_function_t (void *cookie, fpos_t *pos, int whence);
+typedef ssize_t cookie_read_function_t (void *cookie, char *buf, size_t nbytes);
+typedef ssize_t cookie_write_function_t (void *cookie, const char *buf, size_t nbytes);
+typedef int cookie_seek_function_t (void *cookie, off_t offset, int whence);
 typedef int cookie_close_function_t (void *cookie);
 typedef struct {
   cookie_read_function_t *read;
@@ -26,6 +26,9 @@ typedef struct {
   cookie_seek_function_t *seek; 
   cookie_close_function_t *close;
 } cookie_io_functions_t;
+FILE *	fopencookie	(void *magic_cookie, const char * modes,
+			cookie_io_functions_t io_funcs);
+#define	fopencookie(_a, _b, _c)	(NULL)
 #endif
 
 typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,

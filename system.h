@@ -89,6 +89,10 @@ extern time_t timezone;
 char *memchr ();
 #endif
 
+#if !defined(HAVE_STPCPY)
+char * stpcpy(char * dest, const char * src);
+#endif
+
 #include <errno.h>
 #ifndef errno
 extern int errno;

@@ -66,7 +66,7 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
 	return u;
     if (u->ctrl) {
 #ifndef	NOTYET
-	FILE * fp = fdGetFp(u->ctrl);
+	void * fp = fdGetFp(u->ctrl);
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    Fclose(u->ctrl);
@@ -83,7 +83,7 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
     }
     if (u->data) {
 #ifndef	NOTYET
-	FILE * fp = fdGetFp(u->data);
+	void * fp = fdGetFp(u->data);
 	if (fp) {
 	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
 	    Fclose(u->data);
