@@ -4,6 +4,9 @@
 	- rpmGlob() is now locale independent (wiget@PLD).
 	- conditional build support/unification (jajcus,malekith,qboosh,wiget@PLD).
 	- fix: readelf.c breakage on some non x86 arches (qboosh@PLD).
+	- find-lang.sh: implemented --with-kde (finds KDE help files);
+	  add --all-name option (finds every lang file); drop defattr()
+	  from *.lang files (arekm,mkochano,pascalek,wiget@PLD).
 	= add type to tag array.
 
 4.3.1 -> 4.3.2:
