@@ -28,9 +28,7 @@ INCLUDES = \
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
-myLDFLAGS = \
-	@WITH_LIBELF_LIB@ \
-#	$(staticLDFLAGS)
+myLDFLAGS = @WITH_LIBELF_LIB@
 
 myLDADD = \
 	$(top_builddir)/lib/librpm.la \
@@ -77,7 +75,7 @@ rpmd.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c rpmqv.c
 
 rpmi_SOURCES =
-rpmi_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
+rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c rpmqv.c
