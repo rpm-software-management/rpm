@@ -15,6 +15,7 @@
 	- fix: sanity test on specfile fails when encountering i18n chars.
 	- print all dependencies for each package at end of build.
 	- the death of RPMSENSE_SERIAL, use [epoch:]version[-release] instead.
+	- add _mandir/_infodir macro expansions to docdirs (Tomasz Kloczko).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

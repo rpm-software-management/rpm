@@ -1188,6 +1188,8 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.docDirs[fl.docDirCount++] = strdup("/usr/info");
     fl.docDirs[fl.docDirCount++] = strdup("/usr/X11R6/man");
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_docdir}", NULL);
+    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_mandir}", NULL);
+    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_infodir}", NULL);
     
     fl.fileList = NULL;
     fl.fileListRecsAlloced = 0;
