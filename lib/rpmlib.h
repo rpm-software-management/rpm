@@ -59,6 +59,7 @@
 #define RPMTAG_ICON                     1043
 #define RPMTAG_SOURCERPM                1044
 #define RPMTAG_FILEVERIFYFLAGS          1045
+#define RPMTAG_ARCHIVESIZE              1046
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
