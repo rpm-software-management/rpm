@@ -677,33 +677,29 @@ static int showShortOptions(const struct poptOption * opt, FILE * fp,
 		/*@null@*/ char * str)
 	/*@globals fileSystem @*/
 	/*@modifies *str, *fp, fileSystem @*/
+	/*@requires maxRead(str) >= 0 @*/
 {
-    char * s = alloca(300);	/* larger then the ascii set */
-
-    s[0] = '\0';
-    /*@-branchstate@*/		/* FIX: W2DO? */
-    if (str == NULL) {
-	memset(s, 0, sizeof(s));
-	str = s;
-    }
-    /*@=branchstate@*/
+    /* bufsize larger then the ascii set, lazy alloca on top level call. */
+    char * s = (str != NULL ? str : memset(alloca(300), 0, 300));
+    int len = 0;
 
 /*@-boundswrite@*/
     if (opt != NULL)
     for (; (opt->longName || opt->shortName || opt->arg); opt++) {
 	if (opt->shortName && !(opt->argInfo & POPT_ARG_MASK))
-	    str[strlen(str)] = opt->shortName;
+	    s[strlen(s)] = opt->shortName;
 	else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE)
 	    if (opt->arg)	/* XXX program error */
-		(void) showShortOptions(opt->arg, fp, str);
+		len = showShortOptions(opt->arg, fp, s);
     } 
 /*@=boundswrite@*/
 
-    if (s != str || *s != '\0')
-	return 0;
-
-    fprintf(fp, " [-%s]", s);
-    return strlen(s) + 4;
+    /* On return to top level, print the short options, return print length. */
+    if (s == str && *s != '\0') {
+	fprintf(fp, " [-%s]", s);
+	len = strlen(s) + sizeof(" [-]")-1;
+    }
+    return len;
 }
 
 void poptPrintUsage(poptContext con, FILE * fp, /*@unused@*/ int flags)

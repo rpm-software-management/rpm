@@ -2,6 +2,8 @@
 	- upgrade to zlib-1.2.beta7.
 	- pass structure pointer, not args, through headerSprintf call chain.
 	- add ":xml" header format modifier.
+	- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
+	- fix: short option help missing string terminator.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

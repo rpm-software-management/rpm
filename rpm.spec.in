@@ -475,3 +475,4 @@ exit 0
 - pass structure pointer, not args, through headerSprintf call chain.
 - add ":xml" tag format modifier.
 - --queryformat '[%%{*:xml}\n]' to dump header content in XML.
+- fix: short option help missing string terminator.
