@@ -177,15 +177,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
-    if (p != NULL && duplicate && oc < ts->orderCount) {
-    /* XXX FIXME removed transaction element side effects need to be weeded */
-/*@-type -unqualifiedtrans@*/
-/*@-boundswrite@*/
-	ts->order[oc] = rpmteFree(ts->order[oc]);
-/*@=boundswrite@*/
-/*@=type =unqualifiedtrans@*/
-    }
-
     if (oc >= ts->orderAlloced) {
 	ts->orderAlloced += (oc - ts->orderAlloced) + ts->delta;
 /*@-type +voidabstract @*/
@@ -194,6 +185,15 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     p = rpmteNew(ts, h, TR_ADDED, key, relocs, -1, pkgKey);
+
+    if (duplicate && oc < ts->orderCount) {
+/*@-type -unqualifiedtrans@*/
+/*@-boundswrite@*/
+	ts->order[oc] = rpmteFree(ts->order[oc]);
+/*@=boundswrite@*/
+/*@=type =unqualifiedtrans@*/
+    }
+
 /*@-boundswrite@*/
     ts->order[oc] = p;
 /*@=boundswrite@*/

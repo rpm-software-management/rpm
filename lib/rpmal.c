@@ -342,7 +342,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 		if (i > die->numFiles)
 		    /*@innercontinue@*/ continue;
 /*@-bounds@*/
-		memmove(fie, fie+1, (die->numFiles - i));
+		memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
 /*@=bounds@*/
 	    }
 	    if (die->numFiles > 0) {
@@ -357,7 +357,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	    if ((die - al->dirs) > al->numDirs)
 		continue;
 /*@-bounds@*/
-	    memmove(die, die+1, (al->numDirs - (die - al->dirs)));
+	    memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
 /*@=bounds@*/
 	}
 

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.42
+Release: 0.43
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,7 +514,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Jul  5 2002 Jeff Johnson <jbj@redhat.com>
+* Sat Jul  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.43
+- fix: permit deletions of added packages (#67108).
+
+* Fri Jul  5 2002 Jeff Johnson <jbj@redhat.com> 4,1-0.42
 - fix: do lazy open of database in rpmtsInitDB() (#67994).
 - update rpmcache.8.
 
