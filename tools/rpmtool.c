@@ -5,6 +5,7 @@
 #include <rpmlead.h>
 #include <signature.h>
 #include "header_internal.h"
+#include "misc.h"
 #include "debug.h"
 
 typedef enum rpmtoolComponentBits_e {
@@ -19,10 +20,10 @@ typedef enum rpmtoolComponentBits_e {
 
 static rpmtoolComponentBits componentBits = RPMTOOL_NONE;
 static const char * iav[] = { "-", NULL };
-static const char * ifn = NULL;
+static const char * ipath = NULL;
 static const char * ifmt = NULL;
 static const char * oav[] = { "-", NULL };
-static const char * ofn = NULL;
+static const char * opath = NULL;
 static const char * ofmt = NULL;
 
 static int _rpmtool_debug = 0;
@@ -44,8 +45,8 @@ static struct poptOption optionsTable[] = {
  { "payload", 'P', POPT_BIT_SET,&componentBits, RPMTOOL_PAYLOAD|RPMTOOL_UNCOMPRESS,
 	N_("extract uncompressed payload"), NULL},
 
- { "file", 'f', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &ofn, 0,
-	N_("output FILE"), N_("FILE") },
+ { "opath", 0, POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &opath, 0,
+	N_("output PATH"), N_("PATH") },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
@@ -103,8 +104,13 @@ main(int argc, char *const argv[])
     Header h = NULL;
     FD_t fdi = NULL;
     FD_t fdo = NULL;
-    const char ** av;
+    const char ** av = NULL;
+    const char * ifn = NULL;
+    const char * ofn = NULL;
+    const char * s;
+    char * t, *te;
     poptContext optCon;
+    rpmRC rc = RPMRC_OK;
     int ec = 0;
     int xx;
 
@@ -135,7 +141,51 @@ fprintf(stderr, "*** Fopen(%s,r.ufdio)\n", ifn);
 	    }
 	}
 
+	/* Read package components. */
+	if (readLead(fdi, &lead) != RPMRC_OK
+	 || rpmReadSignature(fdi, &sigh, lead.signature_type, NULL) != RPMRC_OK)
+	{
+	    ec++;
+	    goto bottom;
+	}
+	h = headerRead(fdi,
+		(lead.major >= 3) ?  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
+	if (h == NULL) {
+	    ec++;
+	    goto bottom;
+	}
+
+	/* Determine output file name, and create directories in path. */
 	if (fdo == NULL) {
+	    if (opath != NULL) {
+		const char * errstr = "(unkown error)";
+		int ut;
+
+		t = rpmGetPath(opath, NULL);
+		ofn = headerSprintf(h, t, rpmTagTable, rpmHeaderFormats, &errstr);
+		t = _free(t);
+		if (ofn == NULL) {
+		    fprintf(stderr, "%s: headerSprintf(%s): %s\n", __progname,
+				ofn, errstr);
+		    ec++;
+		    goto bottom;
+		}
+
+		s = xstrdup(ofn);
+		ut = urlPath(s, (const char **)&t);
+		if (t != NULL)
+		for (te=strchr(t+1,'/'); (t=te) != NULL; te = strchr(t+1,'/')) {
+		    *t = '\0';
+		    rc = rpmMkdirPath(s, "opath");
+		    *t = '/';
+		    if (rc != RPMRC_OK) break;
+		}
+		s = _free(s);
+		if (rc != RPMRC_OK) {
+		    ec++;
+		    goto bottom;
+		}
+	    }
 if (_rpmtool_debug)
 fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 	    fdo = (ofn != NULL ? Fopen(ofn, "w.ufdio") : fdDup(STDOUT_FILENO));
@@ -147,30 +197,13 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 	    }
 	}
 
-	/* Read/write package lead. */
-	if (readLead(fdi, &lead) != RPMRC_OK) {
-	    ec++;
-	    goto bottom;
-	}
+	/* Write package components. */
 	if (componentBits & RPMTOOL_LEAD)
 	    writeLead(fdo, &lead);
 
-	/* Read/write signature header. */
-	if (rpmReadSignature(fdi, &sigh, lead.signature_type, NULL) != RPMRC_OK)
-	{
-	    ec++;
-	    goto bottom;
-	}
 	if (componentBits & RPMTOOL_SHEADER)
 	    rpmWriteSignature(fdo, sigh);
 
-	/* Read/write metadata header. */
-	h = headerRead(fdi,
-		(lead.major >= 3) ?  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-	if (h == NULL) {
-	    ec++;
-	    goto bottom;
-	}
 	if (componentBits & RPMTOOL_HEADER) {
 	    if ((componentBits & RPMTOOL_DUMP)
 	     || (ofmt != NULL && !strcmp(ofmt, "dump")))
@@ -179,14 +212,11 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 		headerWrite(fdo, h, HEADER_MAGIC_YES);
 	}
 
-	/* Read/write package payload. */
 	if (componentBits & RPMTOOL_PAYLOAD) {
 	    if (componentBits & RPMTOOL_UNCOMPRESS) {
 		const char * payload_compressor = NULL;
 		const char * rpmio_flags;
 		FD_t gzdi;
-		rpmRC rc;
-		char * t;
 
 		/* Retrieve type of payload compression. */
 		if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
@@ -225,6 +255,7 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 bottom:
 	sigh = headerFree(sigh);
 	h = headerFree(h);
+	ofn = _free(ofn);
 
 	if (fdi != NULL && Fileno(fdi) != STDIN_FILENO) {
 	    xx = Fclose(fdi);
@@ -239,6 +270,7 @@ bottom:
 exit:
     sigh = headerFree(sigh);
     h = headerFree(h);
+    ofn = _free(ofn);
 
     if (fdi != NULL && Fileno(fdi) != STDIN_FILENO) {
 	xx = Fclose(fdi);
