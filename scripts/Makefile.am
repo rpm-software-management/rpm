@@ -9,8 +9,8 @@ EXTRA_DIST = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
-	magic.prov magic.req perldeps.pl perl.prov perl.req rpmdiff \
-	rpmdiff.cgi \
+	magic.prov magic.req perldeps.pl perl.prov perl.req \
+	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
@@ -29,8 +29,8 @@ config_SCRIPTS = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
-	magic.prov magic.req perldeps.pl perl.prov perl.req rpmdiff \
-	rpmdiff.cgi \
+	magic.prov magic.req perldeps.pl perl.prov perl.req \
+	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh

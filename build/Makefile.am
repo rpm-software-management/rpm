@@ -38,7 +38,7 @@ rpmfile.h:
 files.c rpmfc.c: rpmfile.h
 
 clean-local:
-	 rm -f *.o rpmfile.h # .created $(FILELOBJS)
+	rm -f *.o rpmfile.h # .created $(FILELOBJS)
 
 #BUILT_SOURCES = rpmbuild.lcd
 

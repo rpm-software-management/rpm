@@ -1,0 +1,69 @@
+#!/bin/bash
+
+ac=$#
+cmd=`basename $0`
+
+rpmdb=/var/lib/rpm
+dbfiles="`/bin/ls -1 $rpmdb/*`"
+dbdump=/usr/lib/rpm/rpmdb_dump
+dbload=/usr/bin/db_load
+
+set `$dbdump -V` || {
+    echo "The file $dbdump, usually in the rpm-devel package, is needed."
+    echo " Please install the rpm-devel package and retry $cmd."
+    exit 1
+}
+dumpfmt="${5%%:}"
+
+set `$dbload -V` || {
+    echo "The file $dbload, usually in the db4-utils package, is needed."
+    echo " Please install the db4_utils package and retry $cmd."
+    exit 1
+}
+loadfmt="${5%%:}"
+
+[ "$dumpfmt" = "$loadfmt" ] && {
+    echo "Both $dbdump and $dbload use db-$loadfmt format."
+    echo "No conversion is possible."
+    exit 0
+}
+
+[ "$ac" != "0" -o "`/usr/bin/id -u`" != "0" ] && {
+    echo "$cmd: Convert $rpmdb files to db-$loadfmt format."
+    echo "$cmd: Must be run as root, takes no arguments."
+    exit 1
+}
+
+echo "Converting to db-$loadfmt compatible format (1-10 minutes per file) ..."
+
+dbfile=
+trap "
+    [ -n "$dbfile" ] && {
+	[ -f $dbfile-O ] && /bin/mv $dbfile-O $dbfile
+	/bin/rm -f $dbfile-N
+    }
+    exit 1
+" 1 2 3 15
+
+rm -f $rpmdb/__db*
+
+for dbfile in $dbfiles
+do
+    echo " `/usr/bin/file $dbfile`"
+
+    $dbdump $dbfile | $dbload $dbfile-N || {
+	echo "Failed conversion:"
+	echo "    $dbdump $dbfile | $dbload $dbfile-N"
+	echo "Cleaning up and exiting ..."
+	/bin/rm -f $dbfile-N
+	exit 1
+    }
+
+    /bin/mv $dbfile $dbfile-O
+    /bin/mv $dbfile-N $dbfile
+    /bin/rm -f $dbfile-O
+done
+
+echo "Done!"
+
+exit 0

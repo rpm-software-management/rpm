@@ -768,7 +768,7 @@ static int parseForLang(char * buf, FileList fl)
 	return RPMERR_BADSPEC;
     }
 
-    /* Localize. Erase parsed string */
+    /* Localize. Erase parsed string. */
     q = alloca((pe-p) + 1);
     strncpy(q, p, pe-p);
     q[pe-p] = '\0';

@@ -424,6 +424,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_deadlock
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_dump
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_load
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_loadcvt
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_svc
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_stat
 %rpmattr	%{__prefix}/lib/rpm/rpmdb_verify
