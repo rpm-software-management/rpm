@@ -132,11 +132,17 @@ transactionElement teFree(/*@only@*/ /*@null@*/ transactionElement te)
 	/*@modifies te@*/;
 /**
  * Create a transaction element.
+ * @param ts		transaction set
+ * @param h		header
+ * @param key		package retrieval key (e.g. file name)
+ * @param relocs	package file relocations
  * @return		new transaction element
  */
 /*@only@*/ /*@null@*/
-transactionElement teNew(void)
-	/*@*/;
+transactionElement teNew(const rpmTransactionSet ts, Header h,
+		/*@exposed@*/ /*@null@*/ fnpyKey key,
+		/*@null@*/ rpmRelocation * relocs)
+	/*@modifies ts, h @*/;
 
 /**
  * Retrieve type of transaction element.

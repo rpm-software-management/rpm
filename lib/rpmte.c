@@ -17,18 +17,131 @@ int _te_debug = 0;
 /*@access transactionElement @*/
 /*@access rpmTransactionSet @*/
 
+/**
+ */
+static void delTE(transactionElement p)
+	/*@modifies p @*/
+{
+    rpmRelocation * r;
+
+    if (p->relocs) {
+	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
+	    r->oldPath = _free(r->oldPath);
+	    r->newPath = _free(r->newPath);
+	}
+	p->relocs = _free(p->relocs);
+    }
+
+    p->this = dsFree(p->this);
+    p->provides = dsFree(p->provides);
+    p->requires = dsFree(p->requires);
+    p->conflicts = dsFree(p->conflicts);
+    p->obsoletes = dsFree(p->obsoletes);
+    p->fi = fiFree(p->fi, 1);
+
+    /*@-noeffectuncon@*/
+    if (p->fd != NULL)
+        p->fd = fdFree(p->fd, "delTE");
+    /*@=noeffectuncon@*/
+
+    p->os = _free(p->os);
+    p->arch = _free(p->arch);
+    p->epoch = _free(p->epoch);
+    p->name = _free(p->name);
+    p->NEVR = _free(p->NEVR);
+
+    p->h = headerFree(p->h, "delTE");
+
+    /*@-abstract@*/
+    memset(p, 0, sizeof(*p));	/* XXX trash and burn */
+    /*@=abstract@*/
+    /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
+    return;
+    /*@=nullstate@*/
+}
+
+/**
+ */
+static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
+		/*@dependent@*/ /*@null@*/ fnpyKey key,
+		/*@null@*/ rpmRelocation * relocs)
+	/*@modifies ts, p, h @*/
+{
+    int scareMem = 0;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    int_32 * ep;
+    const char * arch, * os;
+    int xx;
+
+    p->NEVR = hGetNEVR(h, NULL);
+    p->name = xstrdup(p->NEVR);
+    if ((p->release = strrchr(p->name, '-')) != NULL)
+	*p->release++ = '\0';
+    if ((p->version = strrchr(p->name, '-')) != NULL)
+	*p->version++ = '\0';
+
+    arch = NULL;
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    p->arch = (arch != NULL ? xstrdup(arch) : NULL);
+    os = NULL;
+    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    p->os = (os != NULL ? xstrdup(os) : NULL);
+
+    ep = NULL;
+    xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
+    /*@-branchstate@*/
+    if (ep) {
+	p->epoch = xmalloc(20);
+	sprintf(p->epoch, "%d", *ep);
+    } else
+	p->epoch = NULL;
+    /*@=branchstate@*/
+
+    p->this = dsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    p->fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
+    p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+    p->obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+
+    p->key = key;
+
+    p->fd = NULL;
+
+    if (relocs != NULL) {
+	rpmRelocation * r;
+	int i;
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
+	    {};
+	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
+	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
+	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
+	}
+	p->relocs[i].oldPath = NULL;
+	p->relocs[i].newPath = NULL;
+    } else {
+	p->relocs = NULL;
+    }
+}
+
 transactionElement teFree(transactionElement te)
 {
     if (te != NULL) {
+	delTE(te);
 	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
 	te = _free(te);
     }
     return NULL;
 }
 
-transactionElement teNew(void)
+transactionElement teNew(rpmTransactionSet ts, Header h,
+		fnpyKey key, rpmRelocation * relocs)
 {
     transactionElement te = xcalloc(1, sizeof(*te));
+    addTE(ts, te, h, key, relocs);
     return te;
 }
 

@@ -1390,8 +1390,8 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
  * @warning The fd argument has been eliminated, and is assumed always NULL.
  *
  * @param ts		transaction set
- * @param h		package header
- * @param key		package private data
+ * @param h		header
+ * @param key		package retrieval key (e.g. file name)
  * @param upgrade	is package being upgraded?
  * @param relocs	package file relocations
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
