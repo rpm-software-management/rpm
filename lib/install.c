@@ -40,7 +40,8 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 				char * newLink);
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify,
-			  char ** installArchive, char * tmpPath);
+			  char ** installArchive, char * tmpPath,
+			  int archiveSize);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
 				   char * release, int * recOffset, int flags);
 static int setFileOwnerships(char * rootdir, char ** fileList, 
@@ -57,21 +58,27 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 			 	 char ** prootdirootdir, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
 static int fileCompare(const void * one, const void * two);
-static int installSources(char * rootdir, int fd, char ** specFilePtr);
+static int installSources(Header h, char * rootdir, int fd, 
+			  char ** specFilePtr, notifyFunction notify,
+			  char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int relocateFilelist(Header * hp, char * defaultPrefix, 
 			char * newPrefix, int * relocationSize);
 static int archOkay(Header h);
 static int osOkay(Header h);
+static int moveFile(char * sourceName, char * destName);
+static int copyFile(char * sourceName, char * destName);
 
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile) {
+int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
+			    notifyFunction notify, char * labelFormat) {
     int rc, isSource;
     Header h;
+    int major, minor;
 
-    rc = pkgReadHeader(fd, &h, &isSource);
+    rc = pkgReadHeader(fd, &h, &isSource, &major, &minor);
     if (rc) return rc;
 
     if (!isSource) {
@@ -79,9 +86,16 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile) {
 	return 2;
     }
 
-    if (h) freeHeader(h);
+    if (major == 1) {
+	notify = NULL;
+	labelFormat = NULL;
+	h = NULL;
+    }
 
-    return installSources(rootdir, fd, specFile);
+    rc = installSources(h, rootdir, fd, specFile, notify, labelFormat);
+    if (h) freeHeader(h);
+ 
+    return rc;
 }
 
 /* 0 success */
@@ -89,10 +103,10 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile) {
 /* 2 error */
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location, 
 		      int flags, notifyFunction notify, char * labelFormat) {
-    int rc, isSource;
+    int rc, isSource, major, minor;
     char * name, * version, * release;
     Header h;
-    int fileCount, type;
+    int fileCount, type, count;
     char ** fileList;
     char ** fileOwners, ** fileGroups, ** fileMd5s, ** fileLinkList;
     uint_32 * fileFlagsList;
@@ -119,11 +133,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     char * archivePrefix, * tmpPath;
     int scriptArg;
     int relocationSize = 1;		/* strip at least first / for cpio */
+    uint_32 * archiveSizePtr;
 
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
 
-    rc = pkgReadHeader(fd, &h, &isSource);
+    rc = pkgReadHeader(fd, &h, &isSource, &major, &minor);
     if (rc) return rc;
 
     if (isSource) {
@@ -138,9 +153,16 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    return 0;
 	}
 
+	if (major == 1) {
+	    notify = NULL;
+	    labelFormat = NULL;
+	    h = NULL;
+	}
+
+	rc = installSources(h, rootdir, fd, NULL, notify, labelFormat);
 	if (h) freeHeader(h);
 
-	return installSources(rootdir, fd, NULL);
+	return rc;
     }
 
     /* Do this now so we can give error messages, even though we'll just
@@ -414,9 +436,14 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	} else
 	    tmpPath = getVar(RPMVAR_TMPPATH);
 
+	if (!getEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
+		      &count))
+	    archiveSizePtr = NULL;
+
 	/* the file pointer for fd is pointing at the cpio archive */
 	if (installArchive(archivePrefix, fd, files, archiveFileCount, notify, 
-			   NULL, tmpPath)) {
+			   NULL, tmpPath, 
+			   archiveSizePtr ? *archiveSizePtr : 0)) {
 	    freeHeader(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
@@ -491,7 +518,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify, 
-			  char ** specFile, char * tmpPath) {
+			  char ** specFile, char * tmpPath, int archiveSize) {
     gzFile stream;
     char buf[BLOCKSIZE];
     pid_t child;
@@ -520,7 +547,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
     message(MESS_DEBUG, "installing archive into %s\n", prefix);
 
-    needSecondPipe = (notify != NULL) || specFile;
+    needSecondPipe = (notify != NULL && !archiveSize) || specFile;
 
     if (specFile) *specFile = NULL;
     
@@ -656,7 +683,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 		    message(MESS_DEBUG, "file \"%s\" complete\n", 
 				fileInstalled.fileName);
 
-		    if (notify) {
+		    if (notify && !archiveSize) {
 			file = bsearch(&fileInstalled, files, fileCount, 
 				       sizeof(struct fileToInstall), 
 				       fileCompare);
@@ -684,6 +711,11 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
 		bytes = read(statusPipe[0], line, sizeof(line));
 	    }
+	} 
+
+	if (notify && archiveSize) {
+	    sizeInstalled += bytesRead;
+	    notify(sizeInstalled, archiveSize);
 	}
     } while (!childDead);
 
@@ -1239,12 +1271,16 @@ static int fileCompare(const void * one, const void * two) {
 }
 
 
-static int installSources(char * rootdir, int fd, char ** specFilePtr) {
+static int installSources(Header h, char * rootdir, int fd, 
+			  char ** specFilePtr, notifyFunction notify,
+			  char * labelFormat) {
     char * specFile;
     char * sourceDir, * specDir;
     char * realSourceDir, * realSpecDir;
     char * instSpecFile, * correctSpecFile;
-    char * tmpPath;
+    char * tmpPath, * name, * release, * version;
+    uint_32 * archiveSizePtr = NULL;
+    int type, count;
 
     message(MESS_DEBUG, "installing a source package\n");
 
@@ -1271,7 +1307,19 @@ static int installSources(char * rootdir, int fd, char ** specFilePtr) {
     } else
 	tmpPath = getVar(RPMVAR_TMPPATH);
 
-    if (installArchive(realSourceDir, fd, NULL, 0, NULL, &specFile, tmpPath)) {
+    if (labelFormat && h) {
+	getEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
+	getEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
+	getEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
+	if (!getEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
+		      &count))
+	    archiveSizePtr = NULL;
+	printf(labelFormat, name, version, release);
+	fflush(stdout);
+    }
+
+    if (installArchive(realSourceDir, fd, NULL, 0, notify, &specFile, 
+		       tmpPath, archiveSizePtr ? *archiveSizePtr : 0)) {
 	return 1;
     }
 
@@ -1294,9 +1342,9 @@ static int installSources(char * rootdir, int fd, char ** specFilePtr) {
 
     message(MESS_DEBUG, "renaming %s to %s\n", instSpecFile, correctSpecFile);
     if (rename(instSpecFile, correctSpecFile)) {
-	error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
-		instSpecFile, correctSpecFile, strerror(errno));
-	return 1;
+	/* try copying the file */
+	if (moveFile(instSpecFile, correctSpecFile))
+	    return 1;
     }
 
     if (specFilePtr)
@@ -1518,4 +1566,59 @@ static int osOkay(Header h) {
     }
 
     return 1;
+}
+
+static int moveFile(char * sourceName, char * destName) {
+    if (copyFile(sourceName, destName)) return 1;
+
+    unlink(sourceName);
+    return 0;
+}
+
+static int copyFile(char * sourceName, char * destName) {
+    int source, dest, i;
+    char buf[16384];
+
+    source = open(sourceName, O_RDONLY);
+    if (source < 0) {
+	error(RPMERR_INTERNAL, "file %s missing from source directory",
+		    sourceName);
+	return 1;
+    }
+
+    dest = creat(destName, 0644);
+    if (dest < 0) {
+	error(RPMERR_CREATE, "failed to create file %s", destName);
+	close(source);
+	return 1;
+    }
+
+    while ((i = read(source, buf, sizeof(buf))) > 0) {
+	if (write(source, buf, i) != i) {
+	    if (errno == ENOSPC) {
+		error(RPMERR_NOSPACE, "out of disk space writing file %s",
+			destName);
+	    } else {
+		error(RPMERR_CREATE, "error writing to writing file %s: %s",
+			destName, strerror(errno));
+	    }
+	    close(source);
+	    close(dest);
+	    unlink(destName);
+	    return 1;
+	}
+    }
+
+    if (i < 0) {
+	error(RPMERR_CREATE, "error reading from file %s: %s",
+		sourceName, strerror(errno));
+    }
+
+    close(source);
+    close(dest);
+    
+    if (i < 0)
+	return 1;
+
+    return 0;
 }
