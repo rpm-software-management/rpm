@@ -280,7 +280,7 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
     
     DPRINTF(99, ("gettextfile(%d,\"%s\",%p,%p)\n", fd, file, fp, poTags));
 
-    fprintf(fp, "\n#========================================================");
+    fprintf(fp, "\n# ========================================================");
 
     readLead(fd, &lead);
     rpmReadSignature(fd, NULL, lead.signature_type);
@@ -318,7 +318,7 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
 	
 
 	/* Print xref comment */
-	fprintf(fp, "\n#%s\n", getTagString(*tp));
+	fprintf(fp, "\n# %s\n", getTagString(*tp));
 	fprintf(fp, "#: %s:%d\n", basename(file), *tp);
 	if (sourcerpm)
 	    fprintf(fp, "#: %s:%d\n", sourcerpm, *tp);
@@ -830,7 +830,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 	char fnob[BUFSIZ], *fno;
 	int j, rc;
 	int deletefni = 0;
-	int deletefno = 1;
+	int deletefno = 0;
 
 	DPRINTF(99, ("rpmputtext(%d,\"%s\",%p)\n", fd, file, ofp));
 
