@@ -402,7 +402,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	headerGetEntry(pkg->header, tag, NULL, (void **)&array, &num);
 	while (num--) {
 	    len = strlen(array[num]);
-	    if (array[num][len - 1] == '/') {
+	    if (array[num][len - 1] == '/' && len > 1) {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: Prefixes must not end with \"/\": %s"),
 			 spec->lineNum, spec->line);

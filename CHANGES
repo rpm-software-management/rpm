@@ -17,6 +17,7 @@
 	- add new fully recursive macro.c
 
 2.5.4 -> 2.5.5:
+	- fix check for trailing / in Prefix:
 	- remove 2 character language name assumption.
         - add /usr/lib/rpm/find-lang.sh (W. L. Estes <wlestes@uncg.edu>)
 	- miscellaneous portability cruft (Eugene Kanter).
