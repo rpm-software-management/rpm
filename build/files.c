@@ -1285,7 +1285,7 @@ int processSourceFiles(Spec spec)
 	  case RPMTAG_NAME:
 	  case RPMTAG_VERSION:
 	  case RPMTAG_RELEASE:
-	  case RPMTAG_SERIAL:
+	  case RPMTAG_EPOCH:
 	  case RPMTAG_SUMMARY:
 	  case RPMTAG_DESCRIPTION:
 	  case RPMTAG_PACKAGER:

@@ -10,7 +10,7 @@ struct availablePackage {
     char ** provides;
     char ** files;
     char * name, * version, * release;
-    int serial, hasSerial, providesCount, filesCount;
+    int epoch, hasEpoch, providesCount, filesCount;
     void * key;
 } ;
 
@@ -121,7 +121,7 @@ static void alAddPackage(struct availableList * al, Header h, void * key) {
     headerGetEntry(p->h, RPMTAG_NAME, NULL, (void **) &p->name, NULL);
     headerGetEntry(p->h, RPMTAG_VERSION, NULL, (void **) &p->version, NULL);
     headerGetEntry(p->h, RPMTAG_RELEASE, NULL, (void **) &p->release, NULL);
-    p->hasSerial = headerGetEntry(h, RPMTAG_SERIAL, NULL, (void **) &p->serial, 
+    p->hasEpoch = headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, 
 				  NULL);
 
     if (!headerGetEntry(h, RPMTAG_PROVIDES, NULL, (void **) &p->provides,
@@ -704,7 +704,7 @@ int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
     char * reqVersion = reqInfo;
     char * reqRelease = NULL;
     int type, count;
-    int_32 * serial;
+    int_32 * epoch;
     char buf[20];
     int result = 0;
     int sense;
@@ -716,10 +716,10 @@ int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
     }
 
     if (reqFlags & RPMSENSE_SERIAL) {
-	if (!headerGetEntry(h, RPMTAG_SERIAL, &type, (void *) &serial, &count)) {
+	if (!headerGetEntry(h, RPMTAG_EPOCH, &type, (void *) &epoch, &count)) {
 	    return 0;
 	}
-	sprintf(buf, "%d", *serial);
+	sprintf(buf, "%d", *epoch);
 	version = buf;
     } else {
 	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
