@@ -38,7 +38,9 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     int size;
     char ** unameList, ** gnameList;
     int_32 useBrokenMd5;
+#if WORDS_BIGENDIAN
     int_32 * brokenPtr;
+#endif
 
 #if WORDS_BIGENDIAN
     if (!headerGetEntry(h, RPMTAG_BROKENMD5, NULL, (void **) &brokenPtr, NULL)) {
@@ -205,6 +207,7 @@ int rpmVerifyScript(char * root, Header h, int err) {
     char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
     int status;
     char * installPrefixEnv = NULL;
+    char * installPrefix;
 
     if (!headerGetEntry(h, RPMTAG_VERIFYSCRIPT, NULL, (void **) &script, 
 			NULL)) {
@@ -236,8 +239,8 @@ int rpmVerifyScript(char * root, Header h, int err) {
     write(fd, script, strlen(script));
     lseek(fd, 0, SEEK_SET);
 
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &type, (void **) &installPrefix,
-		 &count)) {
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &installPrefix,
+		 NULL)) {
 	installPrefixEnv = alloca(strlen(installPrefix) + 30);
 	strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
 	strcat(installPrefixEnv, installPrefix);
