@@ -418,12 +418,6 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
-	if (!strcmp(spec->buildRoot, "/")) {
-	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: BuildRoot can not be \"/\": %s"),
-		     spec->lineNum, spec->line);
-	    return RPMERR_BADSPEC;
-	}
 	if (spec->buildRoot == NULL) {
 	    const char *buildroot = rpmGetPath("%{buildroot}", NULL);
 	    if (buildroot && *buildroot != '%') {
@@ -435,6 +429,12 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	    xfree(buildroot);
 	} else {
 	    macro = NULL;
+	}
+	if (!strcmp(spec->buildRoot, "/")) {
+	    rpmError(RPMERR_BADSPEC,
+		     _("line %d: BuildRoot can not be \"/\": %s"),
+		     spec->lineNum, spec->line);
+	    return RPMERR_BADSPEC;
 	}
 	spec->gotBuildRoot = 1;
 	break;
