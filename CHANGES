@@ -4,6 +4,9 @@
 	- added Obsoletes: tag, an upgrade removes packages which
 	  have been obsoleted
 	- updated rpmdepUpgradePackage() to deal with obsoletes tag
+	- convertdb needed to read rpmrc
+	- fixed ugly bug in package ordering
+	- archivesize tag was incorrect for packages with hard links
 	- moved popt into a separate library
 	- directory created with %doc is now name-version (dropped
           the release)
