@@ -686,9 +686,9 @@ rpm.o:
 	$(COMPILE) \
 		-DRPMNLSDIR=\"$(RPMNLSDIR)\" \
 		-DRPMNLSPACKAGE=\"$(PACKAGE)\" \
-                -DVERSION=\"$(VERSION)\"  \
+		-DVERSION=\"$(VERSION)\"  \
 		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
-                -DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
+		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
 		-c rpm.c
 
 include ./Makefile.inc
