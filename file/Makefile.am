@@ -3,9 +3,11 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime magic.mime \
-	Localstuff Header $(magic_FRAGMENTS) file.man magic.man
+	Localstuff Header $(magic_FRAGMENTS)
 
 BUILT_SOURCES = listobjs $(man_MANS) magic magic.mgc magic.mime.mgc
+
+SUBDIRS = doc
 
 noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h \
 		file.h
@@ -29,10 +31,6 @@ file_SOURCES =	file.c
 file_LDFLAGS =	-all-static
 file_LDADD =	libfmagic.la
 
-man_MAGIC = magic.@fsect@
-#man_MANS = file.1 $(man_MAGIC)
-noinst_MANS = file.1 $(man_MAGIC)
-
 #MAGIC	 = @datadir@/magic
 #data_DATA = magic magic.mime magic.mgc magic.mime.mgc
 
@@ -40,8 +38,6 @@ pkglibdir =  @prefix@/lib/rpm
 pkglib_DATA = magic magic.mime magic.mgc magic.mime.mgc
 MAGIC	 = $(pkglibdir)/magic
 CPPFLAGS = -DMAGIC='"$(MAGIC)"'
-
-fsect = @fsect@
 
 magic: Header Localstuff $(magic_FRAGMENTS)
 	cat $(srcdir)/Header $(srcdir)/Localstuff > $@
@@ -59,20 +55,6 @@ magic.mgc: magic file
 
 magic.mime.mgc: magic.mime file
 	./file -C -m $(srcdir)/magic.mime
-
-file.1:	Makefile file.man
-	@rm -f $@
-	sed -e s@__CSECTION__@1@g \
-	    -e s@__FSECTION__@${fsect}@g \
-	    -e s@__VERSION__@${VERSION}@g \
-	    -e s@__MAGIC__@${MAGIC}@g $(srcdir)/file.man > $@
-
-magic.${fsect}: Makefile magic.man
-	@rm -f $@
-	sed -e s@__CSECTION__@1@g \
-	    -e s@__FSECTION__@${fsect}@g \
-	    -e s@__VERSION__@${VERSION}@g \
-	    -e s@__MAGIC__@${MAGIC}@g $(srcdir)/magic.man > $@
 
 magic_FRAGMENTS = \
 Magdir/acorn \

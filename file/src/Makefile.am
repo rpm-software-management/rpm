@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime magic.mime \
-	Localstuff Header file.man
+	Localstuff Header
 
 BUILT_SOURCES = listobjs $(man_MANS)
 
@@ -29,21 +29,9 @@ file_SOURCES =	file.c
 file_LDFLAGS =	-all-static
 file_LDADD =	libfmagic.la
 
-#man_MANS = file.1 $(man_MAGIC)
-noinst_MANS = file.1
-
 pkglibdir =  @prefix@/lib/rpm
 MAGIC	 = $(pkglibdir)/magic
 CPPFLAGS = -DMAGIC='"$(MAGIC)"'
-
-fsect = @fsect@
-
-file.1:	Makefile file.man
-	@rm -f $@
-	sed -e s@__CSECTION__@1@g \
-	    -e s@__FSECTION__@${fsect}@g \
-	    -e s@__VERSION__@${VERSION}@g \
-	    -e s@__MAGIC__@${MAGIC}@g $(srcdir)/file.man > $@
 
 listobjs:
 	@echo $(libfmagic_la_SOURCES:.c=.lo) > $@
