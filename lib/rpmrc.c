@@ -569,6 +569,9 @@ const char * rpmGetPath(const char *path, ...) {
     const char *s;
     va_list ap;
 
+    if (path == NULL)
+	return strdup("");
+
     p = buf;
     strcpy(p, path);
     pe = p + strlen(p);
@@ -576,7 +579,7 @@ const char * rpmGetPath(const char *path, ...) {
 
     va_start(ap, path);
     while ((s = va_arg(ap, const char *)) != NULL) {
-	/* XXX FIXME: this fixes onle some of the "...//..." problems */
+	/* XXX FIXME: this fixes only some of the "...//..." problems */
 	if (pe > p && pe[-1] == '/')
 	    while(*s && *s == '/')	s++;
 	if (*s != '\0') {
