@@ -3,6 +3,7 @@
 	- included irix.req and irix.prov (Tim Mooney)
 	- copy CHANGELOG* and URL tags to all subpackages
 	- follow symlinks when packaging sources
+	- handle %files -f with no %setup (no build directory)
 	
 2.5 -> 2.5.1:
 	- fail if sources are not regular files

@@ -316,8 +316,12 @@ static int processPackageFiles(Spec spec, Package pkg,
     pkg->cpioCount = 0;
 
     if (pkg->fileFile) {
-	sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
-		spec->buildSubdir, pkg->fileFile);
+	if (spec->buildSubdir) {
+	    sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
+		    spec->buildSubdir, pkg->fileFile);
+	} else {
+	    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_BUILDDIR), pkg->fileFile);
+	}
 	if ((f = fopen(buf, "r")) == NULL) {
 	    rpmError(RPMERR_BADFILENAME,
 		     "Could not open %%files file: %s", pkg->fileFile);
