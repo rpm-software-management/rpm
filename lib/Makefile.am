@@ -11,6 +11,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
+	-I$(top_srcdir)/misc \
 	@INCPATH@
 
 EXTRA_DIST = getdate.y tgi.c rpmgi.c rpmgi.h
@@ -44,7 +45,8 @@ librpm_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
-	@WITH_SELINUX_LIB@
+	@WITH_SELINUX_LIB@ \
+	@INTLLIBS@
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts

@@ -12,6 +12,7 @@ INCLUDES = -I. \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/file/src \
 	-I$(top_srcdir)/popt \
+	-I$(top_srcdir)/misc \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 

@@ -1131,6 +1131,13 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
 	    sprintf(un.sysname,"aix%s.%s", un.version, un.release);
 	}
+	else if(!strcmp(un.sysname, "Darwin")) { 
+#ifdef __ppc__
+	    strcpy(un.machine, "ppc");
+#else ifdef __i386__
+	    strcpy(un.machine, "i386");
+#endif 
+	}
 	else if (!strcmp(un.sysname, "SunOS")) {
 	    if (!strncmp(un.release,"4", 1)) /* SunOS 4.x */ {
 		int fd;

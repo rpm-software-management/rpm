@@ -11,6 +11,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
+	-I$(top_srcdir)/misc \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 

@@ -37,7 +37,9 @@ include_HEADERS = popt.h
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = libpopt.la
+
 libpopt_la_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
+libpopt_la_LDFLAGS = @INTLLIBS@
 
 man_MANS = popt.3
 

@@ -13,6 +13,7 @@ INCLUDES = -I. \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_LUA_INCLUDE@ \
 	-I$(top_srcdir)/popt \
+	-I$(top_srcdir)/misc \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
@@ -37,7 +38,7 @@ librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	@WITH_LUA_LIB@ \
 	$(top_builddir)/file/src/libmagic.la \
 	@WITH_ZLIB_LIB@ \
-	-lneon -lrt -lpthread
+	-lneon -lpthread
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 

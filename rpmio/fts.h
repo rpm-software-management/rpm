@@ -55,6 +55,10 @@
 # define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
 #endif
 
+#if defined(__APPLE__)
+# define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
+#endif
+
 #endif
 
 #include <sys/types.h>

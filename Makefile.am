@@ -23,6 +23,7 @@ INCLUDES = \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
+	-I$(top_srcdir)/misc \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
@@ -36,7 +37,6 @@ myLDADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
 	@WITH_ZLIB_LIB@ \
-	@INTLLIBS@ \
 	@LIBMISC@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`

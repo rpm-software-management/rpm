@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 /*@-noparams@*/
-#include <glob.h>
+#include "glob.h"
 /*@=noparams@*/
 #include <stdio.h>
 #include <stdlib.h>

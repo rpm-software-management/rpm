@@ -16,9 +16,24 @@ checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.
 "
 
-[ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" && exit 1
+libtoolize=`which glibtoolize 2>/dev/null`
+case $libtoolize in
+/*) ;;
+*)  libtoolize=`which libtoolize 2>/dev/null`
+    case $libtoolize in
+    /*) ;;
+    *)  libtoolize=libtoolize
+    esac
+esac
+
+[ "`$libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" && exit 1
 [ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" && exit 1
-[ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" && exit 1
+[ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" # && exit 1
+
+if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
+    export myprefix=/opt/local
+    export CPPFLAGS="-I${myprefix}/include"
+fi
 
 if [ -d popt ]; then
     (echo "--- popt"; cd popt; ./autogen.sh --noconfigure "$@")
@@ -37,7 +52,7 @@ if [ -d file ]; then
 fi
 
 echo "--- rpm"
-libtoolize --copy --force
+$libtoolize --copy --force
 aclocal
 autoheader
 automake -a -c
@@ -62,5 +77,5 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
     fi
     ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} "$@"
 else
-    ./configure "$@"
+    ./configure --prefix=${myprefix} "$@"
 fi

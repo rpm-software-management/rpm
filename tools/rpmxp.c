@@ -1,4 +1,6 @@
 #include "system.h"
+const char *__progname;
+
 #include <header.h>
 #define	_RPMXP_INTERNAL
 #include "rpmxp.h"

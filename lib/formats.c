@@ -980,10 +980,12 @@ static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
 
 /* I18N look aside diversions */
 
+#if defined(ENABLE_NLS)
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
-int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
+extern int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
 /*@=exportlocal =exportheadervar@*/
+#endif
 /*@observer@*/ /*@unchecked@*/
 static const char * language = "LANGUAGE";
 
@@ -1035,7 +1037,9 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	/* change to en_US for msgkey -> msgid resolution */
 	langval = getenv(language);
 	(void) setenv(language, "en_US", 1);
+#if defined(ENABLE_NLS)
 /*@i@*/	++_nl_msg_cat_cntr;
+#endif
 
 	msgid = NULL;
 	/*@-branchstate@*/

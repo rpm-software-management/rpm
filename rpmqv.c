@@ -1,4 +1,5 @@
 #include "system.h"
+const char *__progname;
 
 #define	_AUTOHELP
 

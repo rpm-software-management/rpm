@@ -3,6 +3,8 @@
  */
 
 #include "system.h"
+const char *__progname;
+
 #include <fnmatch.h>
 #include <fts.h>
 

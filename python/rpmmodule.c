@@ -39,6 +39,10 @@
 
 /**
  */
+PyObject * pyrpmError;
+
+/**
+ */
 static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * arch;

@@ -13,24 +13,22 @@ INCLUDES = -I. \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_LIBDWARF_INCLUDE@ \
 	-I$(top_srcdir)/file/src \
-	@INCPATH@ \
-	-I/usr/include/libxml2
-	-I$(top_srcdir)/misc
+	-I$(top_srcdir)/misc \
+	@INCPATH@
 
 EXTRA_DIST =	rpminject.c rpmsort.c rpmxml.c rpmxp.c rpmxp.h hashtab.h
 
-EXTRA_PROGRAMS = convertdb1 rpminject rpmsort rpmtool rpmxml
+EXTRA_PROGRAMS = debugedit convertdb1 rpminject rpmsort rpmtool rpmxml
 
 LDADD = \
-	$(top_builddir)/lib/librpm.la \
-	@INTLLIBS@
+	$(top_builddir)/lib/librpm.la
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
 noinst_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps rpmfile
+pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps rpmfile
 MAGIC	= $(pkgbindir)/magic
 
 bin_PROGRAMS =	rpmgraph
@@ -44,11 +42,11 @@ debugedit_LDADD =	@LDFLAGS_STATIC@ @WITH_LIBELF_LIB@ \
 javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
-#rpmcache_LDFLAGS =	$(staticLDFLAGS)
+#rpmcache_LDFLAGS =	-L$(libdir) # $(staticLDFLAGS)
 
 rpmdeps_SOURCES =	rpmdeps.c
-rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
 #rpmdeps_LDFLAGS =	$(staticLDFLAGS)
+rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
 
 rpmfile.c: $(top_srcdir)/file/src/file.c
 	rm -f $@
@@ -66,13 +64,15 @@ rpminject_SOURCES =	rpminject.c
 #rpminject_LDFLAGS =	$(staticLDFLAGS)
 
 rpmsort_SOURCES =	rpmsort.c
-#rpmsort_LDFLAGS =	$(staticLDFLAGS)
+#rpmsort_LDFLAGS =	(staticLDFLAGS)
 
 rpmtool_SOURCES =	rpmtool.c rpmxp.c
+rpmtool_CFLAGS =	-I$(includedir)/libxml2
 #rpmtool_LDFLAGS =	$(staticLDFLAGS)
 rpmtool_LDADD =		$(LDADD) -lxml2
 
 rpmxml_SOURCES =	rpmxml.c # rpmxp.c
+rpmxml_CFLAGS =		-I$(includedir)/libxml2
 #rpmxml_LDFLAGS =	$(staticLDFLAGS)
 rpmxml_LDADD =		$(LDADD) -lxml2
 

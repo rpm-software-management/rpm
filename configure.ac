@@ -110,14 +110,17 @@ dnl	LDFLAGS_STATIC="-all"
 dnl to attempt static executables using libtool. Otherwise
 dnl	LDFLAGS_STATIC=""
 dnl
+with_selinuxval=no
 AC_MSG_CHECKING(flag used by libtool to link rpm)
 if test X"$GCC" = Xyes ; then
 	case "$target" in
+		*-*-linux*)	LDFLAGS_STATIC="-all-static"
+				with_selinuxval=yes ;;
 		*-*-solaris*)	LDFLAGS_STATIC="-static";;
 		*-*-hpux*)	LDFLAGS_STATIC="-static";;
 		*-*-darwin*)	LDFLAGS_STATIC="";; # Mac OS X does not do static binaries.
 		*-*-sysv5uw*)   LDFLAGS_STATUS="-static";; # Unixware has no shared libthread.
-		*-*-*)		LDFLAGS_STATIC="-all-static";;
+		*-*-*)		LDFLAGS_STATIC="";;
 	esac
 elif test X"$CC" = Xcc ; then
 	case "$target" in
@@ -130,7 +133,7 @@ elif test X"$CC" = Xcc ; then
 		*-*-irix*)	LDFLAGS_STATIC="-static";;  #should be -non_shared, but can't
 											# link because of crt1.o then.
 		*-*-ultrix*)	LDFLAGS_STATIC="-all-static";;  #ultrix doesn't have shared libs.
-		*-*-*)		LDFLAGS_STATIC="-static"
+		*-*-*)		LDFLAGS_STATIC=""
 AC_MSG_WARN([
 
 Unable to guess what option to pass to $CC to generate a static
@@ -346,7 +349,7 @@ do
 
 	AC_MSG_CHECKING(for $dir/include in INCPATH)
 	if test -d $dir/include 2>/dev/null ; then
-		if [ "$dir" != "/usr/local" ] ; then
+		if [[ "$dir" != "/usr/local" ]] ; then
 		    INCPATH="$INCPATH -I$dir/include"
 		fi
 		AC_MSG_RESULT(yes)
@@ -400,15 +403,19 @@ AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
 
 WITH_LIBDWARF_INCLUDE=
+WITH_LIBDWARF_DEBUGEDIT=
 AC_CHECK_HEADER([dwarf.h], [
 	AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
+	WITH_LIBDWARF_DEBUGEDIT="debugedit"
     ], [
 	if test -d elfutils/libdwarf ; then
 	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
 	    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
+	    WITH_LIBDWARF_DEBUGEDIT="debugedit"
 	fi
 ])
 AC_SUBST(WITH_LIBDWARF_INCLUDE)
+AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
 #=================
 # Check for beecrypt library. Prefer external, otherwise internal.
@@ -421,7 +428,7 @@ AC_CHECK_HEADER([beecrypt/beecrypt.h], [
 	    AC_CHECK_HEADER([beecrypt/api.h], [
 		AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
 		])
-	    WITH_BEECRYPT_INCLUDE="-I/usr/include/beecrypt"
+	    WITH_BEECRYPT_INCLUDE="-I${includedir}/beecrypt"
 	    WITH_BEECRYPT_LIB="-lbeecrypt"
 	])
     ], [
@@ -447,7 +454,7 @@ AC_CHECK_HEADER([neon/ne_session.h], [
 	    AC_CHECK_LIB(neon, ne_get_response_header, [
 		AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
 		])
-	    WITH_NEON_INCLUDE="-I/usr/include/neon"
+	    WITH_NEON_INCLUDE="-I${includedir}/neon"
 	    WITH_NEON_LIB="-lneon"
 	])
     ], [
@@ -556,9 +563,9 @@ dnl TVM:
 dnl horrible *temporary* hack to make sure that if we found gettext() in
 dnl -lintl that we add -lintl *back* to $LIBS.
 dnl
-if test X$gt_cv_func_gettext_libintl = Xyes ; then
-    LIBS="-lintl $LIBS"
-fi
+dnl if test X$gt_cv_func_gettext_libintl = Xyes ; then
+dnl     LIBS="-lintl $LIBS"
+dnl fi
 
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
@@ -922,7 +929,7 @@ elif test $withval = yes -a $__DOXYGEN = no ; then
 fi
 
 WITH_SELINUX_LIB=
-withval=yes
+withval=${with_selinuxval}
 AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ])
 if test $withval != no ; then
   AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])

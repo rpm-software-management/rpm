@@ -14,7 +14,7 @@ extern PyTypeObject hdr_Type;
 
 /** \ingroup py_c
  */
-PyObject * pyrpmError;
+extern PyObject * pyrpmError;
 
 hdrObject * hdr_Wrap(Header h)
 	/*@*/;

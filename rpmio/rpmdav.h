@@ -17,7 +17,7 @@ struct __dirstream {
 };
 #endif
 
-#if !defined(DT_DIR)
+#if !defined(DT_DIR) || defined(__APPLE__)
 # define DT_UNKNOWN	0
 # define DT_FIFO	1
 # define DT_CHR		2

@@ -448,7 +448,7 @@ extern void muntrace (void)
   }
 #endif
 /*@unchecked@*/
-const char *__progname;
+extern const char *__progname;
 
 #if HAVE_NETDB_H
 #include <netdb.h>

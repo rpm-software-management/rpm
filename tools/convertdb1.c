@@ -1,5 +1,6 @@
 #if defined(HAVE_CONFIG_H)
 #include "system.h"
+const char *__progname;
 #else
 #include <sys/types.h>
 #include <fcntl.h>

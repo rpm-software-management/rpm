@@ -16,11 +16,21 @@ checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.
 "
 
-[ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" && exit 1
-[ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" && exit 1
-[ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" && exit 1
+libtoolize=`which glibtoolize 2>/dev/null`
+case $libtoolize in
+/*) ;;
+*)  libtoolize=`which libtoolize 2>/dev/null`
+    case $libtoolize in
+    /*) ;;
+    *)  libtoolize=libtoolize
+    esac
+esac
 
-libtoolize --copy --force
+[ "`$libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" && exit 1
+[ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" && exit 1
+[ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" # && exit 1
+
+$libtoolize --copy --force
 aclocal
 autoheader
 automake -a -c
