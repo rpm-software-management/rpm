@@ -10,6 +10,12 @@ print "1..11\n";
 tie %DB, "RPM::Database" or print "not ";
 print "ok 1\n";
 
+unless (tied %DB)
+{
+    die "$RPM::err";
+    exit -1;
+}
+
 # This package must exist, obviously
 $rpm = $DB{rpm};
 print "not " unless (defined $rpm and ref $rpm);
