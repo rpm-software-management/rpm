@@ -326,15 +326,14 @@ int writeRPM(Header h, const char *fileName, int type,
 	sprintf(buf, "%s-%s-%s", name, version, release);
     }
 
+    archnum = -1;
+    osnum = -1;
     if (Fileno(csa->cpioFdIn) < 0) {
 	rpmGetArchInfo(NULL, &archnum);
 	rpmGetOsInfo(NULL, &osnum);
     } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
 	archnum = csa->lead->archnum;
 	osnum = csa->lead->osnum;
-    } else {
-	archnum = -1;
-	osnum = -1;
     }
 
     memset(&lead, 0, sizeof(lead));

@@ -1205,17 +1205,18 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	    if (co != NULL) co = xstrdup(co);
 	}
     } else {
-	const char *a, *o;
+	const char *a = NULL;
+	const char *o = NULL;
 	/* Set build target from rpm arch and os */
-	rpmGetArchInfo(&a,NULL);
+	rpmGetArchInfo(&a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
-	rpmGetOsInfo(&o,NULL);
+	rpmGetOsInfo(&o, NULL);
 	co = (o) ? xstrdup(o) : NULL;
     }
 
     /* If still not set, Set target arch/os from default uname(2) values */
     if (ca == NULL) {
-	const char *a;
+	const char *a = NULL;
 	defaultMachine(&a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
     }
@@ -1223,7 +1224,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	ca[x] = tolower(ca[x]);
 
     if (co == NULL) {
-	const char *o;
+	const char *o = NULL;
 	defaultMachine(NULL, &o);
 	co = (o) ? xstrdup(o) : NULL;
     }

@@ -134,7 +134,8 @@ static int isMemberInEntry(Header header, const char *name, int tag)
 
 static int checkForValidArchitectures(Spec spec)
 {
-    const char *arch, *os;
+    const char *arch = NULL;
+    const char *os = NULL;
 
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);

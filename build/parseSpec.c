@@ -162,7 +162,8 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 
 int readLine(Spec spec, int strip)
 {
-    const char *arch, *os;
+    const char *arch;
+    const char *os;
     char  *s;
     int match;
     struct ReadLevelEntry *rl;
@@ -219,7 +220,9 @@ retry:
 	}
     }
     
+    arch = NULL;
     rpmGetArchInfo(&arch, NULL);
+    os = NULL;
     rpmGetOsInfo(&os, NULL);
 
     /* Copy next file line into the spec line buffer */
@@ -482,7 +485,8 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
     }
 
     /* Check for description in each package and add arch and os */
-    { const char *arch, *os;
+    { const char *arch = NULL;
+      const char *os = NULL;
       char *myos = NULL;
 
       rpmGetArchInfo(&arch, NULL);

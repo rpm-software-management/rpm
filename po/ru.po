@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-19 13:47-0500\n"
+"POT-Creation-Date: 1999-12-19 14:28-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1490,7 +1490,7 @@ msgstr "Файл должен начинаться с \"/\": %s"
 msgid "Could not open %%files file %s: %s"
 msgstr "Не могу открыть файл %%files: %s"
 
-#: build/files.c:1161 build/pack.c:482
+#: build/files.c:1161 build/pack.c:481
 #, c-format
 msgid "line: %s"
 msgstr "строка: %s"
@@ -1588,77 +1588,77 @@ msgstr "Неверные данные CSA"
 msgid "Could not open %s: %s\n"
 msgstr "Не могу открыть %s\n"
 
-#: build/pack.c:349
+#: build/pack.c:348
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Не могу записать пакет: %s"
 
-#: build/pack.c:364
+#: build/pack.c:363
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Генерирую подпись: %d\n"
 
-#: build/pack.c:380
+#: build/pack.c:379
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Не могу прочитать цель подписи: %s"
 
-#: build/pack.c:390
+#: build/pack.c:389
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "Не могу прочитать цель подписи: %s"
 
-#: build/pack.c:400
+#: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "Не могу записать пакет: %s"
 
-#: build/pack.c:415
+#: build/pack.c:414
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
 
-#: build/pack.c:431
+#: build/pack.c:430
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "ошибка создания архива на файле %s: %s"
 
-#: build/pack.c:450
+#: build/pack.c:449
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "неудача записи cpio_copy: %s"
 
-#: build/pack.c:457
+#: build/pack.c:456
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "неудача чтения cpio_copy: %s"
 
-#: build/pack.c:537
+#: build/pack.c:536
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Не могу открыть файл PreIn: %s"
 
-#: build/pack.c:544
+#: build/pack.c:543
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Не могу открыть файл PreUn: %s"
 
-#: build/pack.c:551
+#: build/pack.c:550
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Не могу открыть файл PostIn: %s"
 
-#: build/pack.c:558
+#: build/pack.c:557
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Не могу открыть файл PostUn: %s"
 
-#: build/pack.c:566
+#: build/pack.c:565
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Не могу открыть файл VerifyScript: %s"
 
-#: build/pack.c:581
+#: build/pack.c:580
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Не могу открыть файл Trigger script: %s"
@@ -1724,113 +1724,113 @@ msgstr "строка %d: Ошибка разбора %%files: %s"
 msgid "line %d: Second %%files list"
 msgstr "строка %d: Второй список %%files"
 
-#: build/parsePreamble.c:144
+#: build/parsePreamble.c:145
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Архитектура исключена: %s"
 
-#: build/parsePreamble.c:149
+#: build/parsePreamble.c:150
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Архитектура не включена: %s"
 
-#: build/parsePreamble.c:154
+#: build/parsePreamble.c:155
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "ОС исключена: %s"
 
-#: build/parsePreamble.c:159
+#: build/parsePreamble.c:160
 #, c-format
 msgid "OS is not included: %s"
 msgstr "ОС не включена: %s"
 
-#: build/parsePreamble.c:173
+#: build/parsePreamble.c:174
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "Поле %s обязано присутствовать в пакете: %s"
 
-#: build/parsePreamble.c:198
+#: build/parsePreamble.c:199
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Дублирующиеся записи %s в пакете: %s"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:246
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Не могу прочитать пиктограмму: %s"
 
-#: build/parsePreamble.c:263
+#: build/parsePreamble.c:264
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Не могу прочитать пиктограмму: %s"
 
-#: build/parsePreamble.c:276
+#: build/parsePreamble.c:277
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Неизвестный тип пиктограммы: %s"
 
-#: build/parsePreamble.c:338
+#: build/parsePreamble.c:339
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "строка %d: Неверный тэг: %s"
 
 #. Empty field
-#: build/parsePreamble.c:346
+#: build/parsePreamble.c:347
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "строка %d: Пустой тэг: %s"
 
-#: build/parsePreamble.c:369 build/parsePreamble.c:376
+#: build/parsePreamble.c:370 build/parsePreamble.c:377
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s"
 
-#: build/parsePreamble.c:440 build/parseSpec.c:363
+#: build/parsePreamble.c:441 build/parseSpec.c:366
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "строка %d: BuildRoot не может быть \"/\": %s"
 
-#: build/parsePreamble.c:453
+#: build/parsePreamble.c:454
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s"
 
-#: build/parsePreamble.c:465
+#: build/parsePreamble.c:466
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "строка %d: Docdir должен начинаться с '/': %s"
 
-#: build/parsePreamble.c:477
+#: build/parsePreamble.c:478
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "строка %d: Поле Epoch/Serial должно быть числом: %s"
 
-#: build/parsePreamble.c:540
+#: build/parsePreamble.c:541
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "строка %d: Неверный формат BuildArchitecture: %s"
 
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:551
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Внутренняя ошибка: \"Левый\" тэг %d"
 
-#: build/parsePreamble.c:688
+#: build/parsePreamble.c:689
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Неверная спецификация пакета: %s"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:695
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Пакет уже существует: %s"
 
-#: build/parsePreamble.c:721
+#: build/parsePreamble.c:722
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "строка %d: Неизвестный тэг: %s"
 
-#: build/parsePreamble.c:746
+#: build/parsePreamble.c:747
 msgid "Spec file can't use BuildRoot"
 msgstr "Файл spec не может использовать BuildRoot"
 
@@ -1946,39 +1946,39 @@ msgid "line %d: %s"
 msgstr "строка %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:178
+#: build/parseSpec.c:179
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Не могу открыть %s\n"
 
-#: build/parseSpec.c:190
+#: build/parseSpec.c:191
 msgid "Unclosed %%if"
 msgstr "Незакрытый %%if"
 
-#: build/parseSpec.c:249
+#: build/parseSpec.c:252
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:257
+#: build/parseSpec.c:260
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Найден %%else без if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:268
+#: build/parseSpec.c:271
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Найден %%endif без if"
 
-#: build/parseSpec.c:282 build/parseSpec.c:291
+#: build/parseSpec.c:285 build/parseSpec.c:294
 msgid "malformed %%include statement"
 msgstr "неверное объявление %%include"
 
-#: build/parseSpec.c:458
+#: build/parseSpec.c:461
 msgid "No buildable architectures"
 msgstr "Нет архитектур, которые можно построить"
 
-#: build/parseSpec.c:505
+#: build/parseSpec.c:509
 msgid "Package has no %%description: %s"
 msgstr "Пакет не имеет %%description: %s"
 

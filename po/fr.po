@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-19 13:47-0500\n"
+msgstr "POT-Creation-Date: 1999-12-19 14:28-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -1562,7 +1562,7 @@ msgstr ""
 msgid "Could not open %%files file %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1161 build/pack.c:482
+#: build/files.c:1161 build/pack.c:481
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1660,77 +1660,77 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:349
+#: build/pack.c:348
 #, fuzzy, c-format
 msgid "Unable to write package: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:364
+#: build/pack.c:363
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "      --sign            - genère une signature PGP"
 
-#: build/pack.c:380
+#: build/pack.c:379
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:390
+#: build/pack.c:389
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:400
+#: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:415
+#: build/pack.c:414
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:431
+#: build/pack.c:430
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/pack.c:450
+#: build/pack.c:449
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:457
+#: build/pack.c:456
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:537
+#: build/pack.c:536
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:544
+#: build/pack.c:543
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:551
+#: build/pack.c:550
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:558
+#: build/pack.c:557
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:566
+#: build/pack.c:565
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:581
+#: build/pack.c:580
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -1796,113 +1796,113 @@ msgstr ""
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: build/parsePreamble.c:144
+#: build/parsePreamble.c:145
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:149
+#: build/parsePreamble.c:150
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:154
+#: build/parsePreamble.c:155
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:159
+#: build/parsePreamble.c:160
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:173
+#: build/parsePreamble.c:174
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:198
+#: build/parsePreamble.c:199
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:246
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:263
+#: build/parsePreamble.c:264
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:276
+#: build/parsePreamble.c:277
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: build/parsePreamble.c:338
+#: build/parsePreamble.c:339
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:346
+#: build/parsePreamble.c:347
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:369 build/parsePreamble.c:376
+#: build/parsePreamble.c:370 build/parsePreamble.c:377
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parsePreamble.c:440 build/parseSpec.c:363
+#: build/parsePreamble.c:441 build/parseSpec.c:366
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:453
+#: build/parsePreamble.c:454
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:465
+#: build/parsePreamble.c:466
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/parsePreamble.c:477
+#: build/parsePreamble.c:478
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: build/parsePreamble.c:540
+#: build/parsePreamble.c:541
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:551
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:688
+#: build/parsePreamble.c:689
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Options de spécification de package:"
 
-#: build/parsePreamble.c:694
+#: build/parsePreamble.c:695
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:721
+#: build/parsePreamble.c:722
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:746
+#: build/parsePreamble.c:747
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2018,40 +2018,40 @@ msgid "line %d: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:178
+#: build/parseSpec.c:179
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/parseSpec.c:190
+#: build/parseSpec.c:191
 msgid "Unclosed %%if"
 msgstr ""
 
-#: build/parseSpec.c:249
+#: build/parseSpec.c:252
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:257
+#: build/parseSpec.c:260
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: build/parseSpec.c:268
+#: build/parseSpec.c:271
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: build/parseSpec.c:282 build/parseSpec.c:291
+#: build/parseSpec.c:285 build/parseSpec.c:294
 msgid "malformed %%include statement"
 msgstr ""
 
-#: build/parseSpec.c:458
+#: build/parseSpec.c:461
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "%s ne peut être construit sur cette architecture\n"
 
-#: build/parseSpec.c:505
+#: build/parseSpec.c:509
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
