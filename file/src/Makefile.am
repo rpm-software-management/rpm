@@ -1,5 +1,3 @@
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 LINT = splint
 
 BUILT_SOURCES = listobjs $(man_MANS)

@@ -939,13 +939,14 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
     }
 }
 
+int rpmtsSELinuxEnabled(rpmts ts)
+{
+    return (ts != NULL ? ts->selinuxEnabled : 0);
+}
+
 int rpmtsChrootDone(rpmts ts)
 {
-    int chrootDone = 0;
-    if (ts != NULL) {
-	chrootDone = ts->chrootDone;
-    }
-    return chrootDone;
+    return (ts != NULL ? ts->chrootDone : 0);
 }
 
 int rpmtsSetChrootDone(rpmts ts, int chrootDone)
@@ -1438,6 +1439,8 @@ rpmts rpmtsCreate(void)
     ts->rootDir = NULL;
     ts->currDir = NULL;
     ts->chrootDone = 0;
+
+    ts->selinuxEnabled = is_selinux_enabled();
 
     ts->numAddedPackages = 0;
     ts->addedPackages = NULL;

@@ -32,6 +32,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
     const char * fn = rpmfiFN(fi);
     const char * rootDir = rpmtsRootDir(ts);
+    int selinuxEnabled = rpmtsSELinuxEnabled(ts);
     struct stat sb;
     int rc;
 
@@ -120,7 +121,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      * Verify file security context.
      */
 /*@-branchstate@*/
-    if (flags & RPMVERIFY_CONTEXTS) {
+    if (selinuxEnabled == 1 && (flags & RPMVERIFY_CONTEXTS)) {
 	security_context_t con;
 
 	rc = lgetfilecon(fn, &con);
@@ -285,13 +286,14 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, fileSystem, internalState  @*/
 {
-    char buf[BUFSIZ];
-    char * t, * te;
+    int selinuxEnabled = rpmtsSELinuxEnabled(ts);
     rpmVerifyAttrs verifyResult = 0;
     /*@-type@*/ /* FIX: union? */
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     /*@=type@*/
     int ec = 0;		/* assume no problems */
+    char * t, * te;
+    char buf[BUFSIZ];
     int i;
 
     te = t = buf;
@@ -327,11 +329,12 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 		te += strlen(te);
 		ec = rc;
 	    }
-	} else if (verifyResult) {
+	} else if (verifyResult || rpmIsVerbose()) {
 	    const char * size, * MD5, * link, * mtime, * mode;
 	    const char * group, * user, * rdev, *ctxt;
 	    /*@observer@*/ static const char *const aok = ".";
 	    /*@observer@*/ static const char *const unknown = "?";
+	    /*@observer@*/ static const char *const ctxt_ignore = " ";
 
 	    ec = 1;
 
@@ -344,8 +347,9 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
 	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
 #define	_verifyctxt(_RPMVERIFY_F, _C)	\
-	((verifyResult & RPMVERIFY_LGETFILECONFAIL) ? unknown : \
-	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
+	((selinuxEnabled != 1 ? ctxt_ignore : \
+	 (verifyResult & RPMVERIFY_LGETFILECONFAIL) ? unknown : \
+	 (verifyResult & _RPMVERIFY_F) ? _C : aok))
 	
 	    MD5 = _verifyfile(RPMVERIFY_MD5, "5");
 	    size = _verify(RPMVERIFY_FILESIZE, "S");

@@ -1,8 +1,12 @@
-dnl Process this file with autoconf to produce a configure script.
-AC_INIT(file, 3.39)
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+                                                                                
+AC_PREREQ(2.59)
+AC_INIT([file],[4.02])
 AC_CANONICAL_TARGET
+AC_CONFIG_HEADERS([config.h])
+
 AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER([config.h])
 
 AC_MSG_CHECKING(for builtin ELF support)
 AC_ARG_ENABLE(elf,
@@ -50,24 +54,22 @@ fi], [
 ])
 AC_SUBST(fsect)
 
-dnl Checks for programs.
+# Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
-if test "$ac_cv_prog_gcc" = yes; then
+
+if test "$ac_cv_c_compiler_gnu" = yes; then
     CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
 fi
 export CFLAGS
 
-dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
-MARK64=
-case "${target_cpu}" in
-x86_64*)	MARK64=64 ;;
-esac
-AC_SUBST(MARK64)
+# Checks for libraries
+AC_CHECK_LIB(z, gzopen)
+dnl AC_CHECK_LIB(bz2, BZ2_bzReadOpen)
 
-dnl Checks for headers
+# Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_STDINT
 AC_HEADER_MAJOR
@@ -81,11 +83,12 @@ AC_CHECK_HEADERS(mcheck.h)
 AC_CHECK_HEADERS(regex.h)
 AC_CHECK_HEADERS(unistd.h)
 
-dnl Checks for typedefs, structures, and compiler characteristics.
+# Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_OFF_T
+AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_STRUCT_ST_RDEV
+
 AC_STRUCT_TIMEZONE_DAYLIGHT
 AC_SYS_LARGEFILE
 
@@ -106,11 +109,15 @@ AC_CHECK_SIZEOF_STDC_HEADERS(uint16_t, 0)
 AC_CHECK_SIZEOF_STDC_HEADERS(uint32_t, 0)
 AC_CHECK_SIZEOF_STDC_HEADERS(uint64_t, 0)
 
-dnl Checks for functions
+# Checks for library functions.
 AC_CHECK_FUNCS(error mtrace mkstemp mmap strdup strerror strtoul)
 
-dnl Checks for libraries
-AC_CHECK_LIB(z, gzopen)
-dnl AC_CHECK_LIB(bz2, BZ2_bzReadOpen)
+# XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*|powerpc64*|ppc64*|sparc64*|s390x*)        MARK64=64 ;;
+esac
+AC_SUBST(MARK64)
 
-AC_OUTPUT(Makefile src/Makefile magic/Makefile doc/Makefile)
+AC_CONFIG_FILES([Makefile src/Makefile magic/Makefile doc/Makefile])
+AC_OUTPUT

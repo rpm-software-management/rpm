@@ -8,36 +8,6 @@
 
 #include <regex.h>
 
-#include <selinux/selinux.h>
-
-#if defined(__LCLINT__)
-/*@-incondefs@*/
-extern void freecon(/*@only@*/ security_context_t con)
-	/*@modifies con @*/;
-
-extern int getfilecon(const char *path, /*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-extern int lgetfilecon(const char *path, /*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-extern int fgetfilecon(int fd, /*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-
-extern int setfilecon(const char *path, security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern int lsetfilecon(const char *path, security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern int fsetfilecon(int fd, security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-extern int security_check_context(security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-/*@=incondefs@*/
-#endif
-
 /**
  */
 /*@-exportlocal@*/

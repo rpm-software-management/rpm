@@ -41,7 +41,7 @@ librpm_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
-	-lselinux
+	@WITH_SELINUX_LIB@
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts

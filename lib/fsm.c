@@ -631,7 +631,9 @@ static int fsmMapFContext(FSM_t fsm)
      * Find file security context (if not disabled).
      */
     fsm->fcontext = NULL;
-    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+    if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
+	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
+    {
 	rpmsx sx = rpmtsREContext(ts);
 
 	if (sx != NULL) {

@@ -1577,7 +1577,7 @@ void rpmfiBuildFSContexts(Header h,
 	    fctxt = xrealloc(fctxt, fctxtlen + fcnb[ac]);
 	    memcpy(fctxt+fctxtlen, scon, fcnb[ac]);
 	    fctxtlen += fcnb[ac];
-	    (void) freecon(scon);
+	    freecon(scon);
 	}
 /*@=branchstate@*/
 	ac++;
@@ -1587,7 +1587,8 @@ void rpmfiBuildFSContexts(Header h,
     nb = (ac + 1) * sizeof(*av) + fctxtlen;
     av = xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
-    (void) memcpy(t, fctxt, fctxtlen);
+    if (fctxt != NULL && fctxtlen > 0)
+	(void) memcpy(t, fctxt, fctxtlen);
     ac = 0;
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)

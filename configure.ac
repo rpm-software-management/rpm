@@ -1,18 +1,3 @@
-dnl configure.in for RPM
-dnl
-dnl Don't add checks for things we can't work around, unless those checks
-dnl failing causes the script to bomb out with a message. If we can't fix
-dnl it, why check it?
-
-AC_INIT(rpmqv.c)
-AC_CANONICAL_SYSTEM
-AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
-AC_CONFIG_HEADERS
-AM_INIT_AUTOMAKE(rpm, 4.3)
-AM_CONFIG_HEADER(config.h)
-
-dnl XXX AM_MAINTAINER_MODE
-
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr"
 
@@ -45,19 +30,34 @@ echo "
 "
 sleep 10
 
+AC_PREREQ(2.59)
+AC_INIT(rpm, 4.3, rpm-list@redhat.com)
+AC_CANONICAL_TARGET
+AC_CONFIG_SRCDIR([rpmqv.c])
+AM_CONFIG_HEADER([config.h])
+
+AM_INIT_AUTOMAKE([foreign])
+
 dnl Checks for programs.
+AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_YACC
+
 AC_AIX
 AC_MINIX
-AC_PROG_CXX
 AS=${AS-as}
 AC_SUBST(AS)
-if test "$ac_cv_prog_gcc" = yes; then
+if test "$ac_cv_c_compiler_gnu" = yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts -Wno-strict-aliasing"
 fi
 export CFLAGS
 
-AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_SYS_LARGEFILE
 
@@ -67,7 +67,7 @@ dnl you, set ac_cv_valistisarray=true and maybe define HAVE_VA_LIST_AS_ARRAY
 dnl also just to be sure.
 AC_MSG_CHECKING(whether va_list assignments need array notation)
 AC_CACHE_VAL(ac_cv_valistisarray,
-	[AC_TRY_RUN([#include <stdlib.h>
+	[AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
 		     #include <stdarg.h>
 		     void foo(int i, ...) {
 			va_list ap1, ap2;
@@ -77,10 +77,7 @@ AC_CACHE_VAL(ac_cv_valistisarray,
 			    { exit(1); }
 			va_end(ap1); va_end(ap2);
 		     }
-		     int main() { foo(0, 123); return(0); }],
-		    [ac_cv_valistisarray=false],
-		    [ac_cv_valistisarray=true],
-		    [ac_cv_valistisarray=false])])
+		     int main() { foo(0, 123); return(0); }]])],[ac_cv_valistisarray=false],[ac_cv_valistisarray=true],[ac_cv_valistisarray=false])])
 
 if test "$ac_cv_valistisarray" = true ; then
 	AC_DEFINE(HAVE_VA_LIST_AS_ARRAY, 1,
@@ -219,10 +216,6 @@ dnl This test must precede tests of compiler characteristics like
 dnl that for the inline keyword, since it may change the degree to
 dnl which the compiler supports such features.
 AM_C_PROTOTYPES
-
-AC_PROG_AWK
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
 
 dnl AM_DISABLE_SHARED
 AM_PROG_LIBTOOL
@@ -564,62 +557,50 @@ found_struct_statfs=no
 
 if test X$found_struct_statfs = Xno ; then
 dnl Solaris 2.6+ wants to use statvfs
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#include <sys/statvfs.h> ],
-	[struct statvfs sfs;],
-	[AC_MSG_RESULT(in sys/statvfs.h)
+#include <sys/statvfs.h> ]], [[struct statvfs sfs;]])],[AC_MSG_RESULT(in sys/statvfs.h)
 	AC_DEFINE(STATFS_IN_SYS_STATVFS, 1,
 		[statfs in <sys/statvfs.h> (for solaris 2.6+ systems)])
-	found_struct_statfs=yes],
-)
+	found_struct_statfs=yes],[])
 fi
 
 if test X$found_struct_statfs = Xno ; then
 dnl first try including sys/vfs.h
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#include <sys/vfs.h> ],
-	[struct statfs sfs;],
-	[AC_MSG_RESULT(in sys/vfs.h)
+#include <sys/vfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/vfs.h)
 	AC_DEFINE(STATFS_IN_SYS_VFS, 1, [statfs in <sys/vfs.h> (for linux systems)])
-	found_struct_statfs=yes],
-)
+	found_struct_statfs=yes],[])
 fi
 
 if test X$found_struct_statfs = Xno ; then
 dnl ...next try including sys/mount.h
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
-#include <sys/mount.h> ],
-	[struct statfs sfs;],
-	[AC_MSG_RESULT(in sys/mount.h)
+#include <sys/mount.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/mount.h)
 	AC_DEFINE(STATFS_IN_SYS_MOUNT, 1, [statfs in <sys/mount.h> (for Digital Unix 4.0D systems)])
-	found_struct_statfs=yes],
-)
+	found_struct_statfs=yes],[])
 fi
 
 if test X$found_struct_statfs = Xno ; then
 dnl ...still no joy.  Try sys/statfs.h
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#include <sys/statfs.h> ],
-	[struct statfs sfs;],
-	[AC_MSG_RESULT(in sys/statfs.h)
+#include <sys/statfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/statfs.h)
 	AC_DEFINE(STATFS_IN_SYS_STATFS, 1, [statfs in <sys/statfs.h> (for Irix 6.4 systems)])
-	found_struct_statfs=yes],
-)
+	found_struct_statfs=yes],[])
 fi
 
 if test X$found_struct_statfs = Xno ; then
@@ -633,7 +614,7 @@ dnl don't, including IRIX 6.5+
 dnl
 if test X$found_struct_statfs = Xyes ; then
 AC_MSG_CHECKING(for f_bavail member in struct statfs)
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -649,22 +630,19 @@ AC_TRY_COMPILE([
 # elif STATFS_IN_SYS_STATFS
 #  include <sys/statfs.h>
 # endif
-#endif ],
-	[STATFS_t sfs;
-	sfs.f_bavail = 0;],
-	[AC_MSG_RESULT(yes)
-	AC_DEFINE(STATFS_HAS_F_BAVAIL, 1, [Define if struct statfs has the f_bavail member])],
-	[AC_MSG_RESULT(no)]
-)
+#endif ]], [[STATFS_t sfs;
+	sfs.f_bavail = 0;]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE(STATFS_HAS_F_BAVAIL, 1, [Define if struct statfs has the f_bavail member])],[AC_MSG_RESULT(no)
+])
 fi
 
 if test X$found_struct_statfs = Xyes ; then
 dnl
 dnl now check to see if we have the 4-argument variant of statfs()
-dnl this pretty much requires AC_TRY_RUN
+dnl this pretty much requires AC_RUN_IFELSE([AC_LANG_SOURCE([[]])],[],[],[])
 dnl
 AC_MSG_CHECKING([if statfs() requires 4 arguments])
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -679,12 +657,9 @@ main() {
 	struct statfs sfs;
 	exit (statfs(".", &sfs, sizeof(sfs), 0));
 }
-],
-	[AC_MSG_RESULT(yes)
-	AC_DEFINE(STAT_STATFS4, 1, [Define if the statfs() call takes 4 arguments])],
-	[AC_MSG_RESULT(no)],
-	[AC_MSG_RESULT(no)]
-)
+]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE(STAT_STATFS4, 1, [Define if the statfs() call takes 4 arguments])],[AC_MSG_RESULT(no)],[AC_MSG_RESULT(no)
+])
 fi
 
 AC_C_INLINE
@@ -692,7 +667,7 @@ AC_C_INLINE
 dnl look for libc features
 PROVIDES_ERRNO=no
 AC_MSG_CHECKING(if <netdb.h> defines h_errno)
-AC_TRY_LINK([#include <netdb.h>],printf("%d",h_errno),PROVIDES_ERRNO=yes)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <netdb.h>]], [[printf("%d",h_errno)]])],[PROVIDES_ERRNO=yes],[])
 AC_MSG_RESULT($PROVIDES_ERRNO)
 if test $PROVIDES_ERRNO = yes; then
 	AC_DEFINE(HAVE_HERRNO, 1, [ Define as 1 if <netdb.h> defines h_errno])
@@ -701,8 +676,7 @@ fi
 dnl If a system doesn't have S_IFSOCK, define it as 0 which will
 dnl make S_ISSOCK always return false (nice, eh?)
 AC_MSG_CHECKING(if <sys/stat.h> defines S_IFSOCK)
-AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_IFSOCK),
-	HAS_S_IFSOCK=yes,HAS_S_IFSOCK=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_IFSOCK)]])],[HAS_S_IFSOCK=yes],[HAS_S_IFSOCK=no])
 AC_MSG_RESULT($HAS_S_IFSOCK)
 if test $HAS_S_IFSOCK = yes; then
 	AC_DEFINE(HAVE_S_IFSOCK, 1, [Define as 1 if <sys/stat.h> defines S_IFSOCK])
@@ -710,24 +684,21 @@ fi
 
 dnl Some Unix's are missing S_ISLNK, S_ISSOCK
 AC_MSG_CHECKING(if <sys/stat.h> defines S_ISLNK)
-AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISLNK(0755)),
-	HAS_S_ISLNK=yes,HAS_S_ISLNK=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISLNK(0755))]])],[HAS_S_ISLNK=yes],[HAS_S_ISLNK=no])
 AC_MSG_RESULT($HAS_S_ISLNK)
 if test $HAS_S_ISLNK = yes; then
 	AC_DEFINE(HAVE_S_ISLNK, 1, [Define as 1 if <sys/stat.h> defines S_ISLNK])
 fi
 
 AC_MSG_CHECKING(if <sys/stat.h> defines S_ISSOCK)
-AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISSOCK(0755)),
-	HAS_S_ISSOCK=yes,HAS_S_ISSOCK=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISSOCK(0755))]])],[HAS_S_ISSOCK=yes],[HAS_S_ISSOCK=no])
 AC_MSG_RESULT($HAS_S_ISSOCK)
 if test $HAS_S_ISSOCK = yes; then
 	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
 fi
 
 AC_MSG_CHECKING(if timezone is defined)
-AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
-      HAS_TIMEZONE=yes,HAS_TIMEZONE=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])
 AC_MSG_RESULT($HAS_TIMEZONE)
 
 dnl Check for missing typedefs
@@ -746,7 +717,7 @@ dnl XXX AC_TYPE_SIGNAL
 dnl XXX AC_FUNC_STRCOLL
 dnl XXX AC_FUNC_STRFTIME
 dnl XXX AC_FUNC_UTIME_NULL
-dnl XXX AC_FUNC_VFORK
+dnl XXX AC_FUNC_FORK([])
 dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
 AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
@@ -770,14 +741,13 @@ dnl     [AC_CHECK_FUNCS(regcomp, rpm_cv_regex=no, rpm_cv_regex=yes)])
 dnl 
 dnl if test $rpm_cv_regex = no ; then
 dnl     AC_MSG_CHECKING(whether the regexp library is broken)
-dnl     AC_TRY_RUN([
+dnl     AC_RUN_IFELSE([AC_LANG_SOURCE([[
 dnl #include <unistd.h>
 dnl #include <regex.h>
-dnl main() { regex_t blah ; exit(regcomp(&blah, "foo.*bar", REG_NOSUB) || regexec (&blah, "foobar", 0, NULL, 0)); }],
-dnl     rpm_cv_regex_broken=no, rpm_cv_regex_broken=yes, rpm_cv_regex_broken=yes)
+dnl main() { regex_t blah ; exit(regcomp(&blah, "foo.*bar", REG_NOSUB) || regexec (&blah, "foobar", 0, NULL, 0)); }]])],[dnl     rpm_cv_regex_broken=no],[rpm_cv_regex_broken=yes],[rpm_cv_regex_broken=yes])
 dnl     AC_MSG_RESULT([$rpm_cv_regex_broken])
 dnl     if test $rpm_cv_regex_broken = yes ; then
-dnl 	    echo "   --> using the included GNU regex instead." >&AC_FD_MSG
+dnl 	    echo "   --> using the included GNU regex instead." >&AS_MESSAGE_FD([])
 dnl 	    rpm_cv_regex=yes
 dnl     fi
 dnl fi
@@ -803,7 +773,7 @@ if test $rpm_cv_glob = no ; then
     mkdir t
     mkdir t/p
     touch t/p/foo.8
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <unistd.h>
 #include <sys/stat.h>
 #include <glob.h>
@@ -811,12 +781,11 @@ main() {
   glob_t gl ;
   gl.gl_stat = stat;
   exit(glob("t/*/*.8", GLOB_PERIOD, NULL, &gl) || gl.gl_pathc < 1);
-} ],
-    rpm_cv_glob_ext=yes, rpm_cv_glob_ext=no, rpm_cv_glob_ext=no)
+} ]])],[rpm_cv_glob_ext=yes],[rpm_cv_glob_ext=no],[rpm_cv_glob_ext=no])
     rm -r t
     ])
     if test "$rpm_cv_glob_ext" = no ; then
-	echo "    --> using the included GNU glob instead." >&AC_FD_MSG
+	echo "    --> using the included GNU glob instead." >&AS_MESSAGE_FD([])
 	rpm_cv_glob=yes
     fi
 fi
@@ -836,36 +805,33 @@ WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
 
 AC_MSG_CHECKING(for python 2.3)
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <python2.3/Python.h>
 main() {
   exit(strncmp("2.3", PY_VERSION, 3));
-} ],
-  withval=yes, withval=no, withval=yes)
+} ]])],[withval=yes],[withval=no],[withval=yes])
   AC_MSG_RESULT($withval)
   if test $withval = yes ; then
     WITH_PYTHON_VERSION="2.3"
   else
   
     AC_MSG_CHECKING(for python 2.2)
-    AC_TRY_RUN([
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
   #include <python2.2/Python.h>
   main() {
     exit(strncmp("2.2", PY_VERSION, 3));
-  } ],
-    withval=yes, withval=no, withval=yes)
+  } ]])],[withval=yes],[withval=no],[withval=yes])
     AC_MSG_RESULT($withval)
     if test $withval = yes ; then
       WITH_PYTHON_VERSION="2.2"
     else
   
       AC_MSG_CHECKING(for python 1.5.2)
-      AC_TRY_RUN([
+      AC_RUN_IFELSE([AC_LANG_SOURCE([[
   #include <python1.5/Python.h>
   main() {
     exit(strcmp("1.5.2", PY_VERSION));
-  } ],
-      withval=yes, withval=no, withval=yes)
+  } ]])],[withval=yes],[withval=no],[withval=yes])
       AC_MSG_RESULT($withval)
       if test $withval = yes ; then
         WITH_PYTHON_VERSION="1.5"
@@ -898,6 +864,15 @@ if test $withval = auto -a $__DOXYGEN != no ; then
 elif test $withval = yes -a $__DOXYGEN = no ; then
   AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
 fi
+
+WITH_SELINUX_LIB=
+withval=yes
+AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ])
+if test $withval != no ; then
+  AC_DEFINE(SELINUX, 1, [Build with selinux support?])
+  WITH_SELINUX_LIB="-lselinux"
+fi
+AC_SUBST(WITH_SELINUX_LIB)
 
 if test $withval = yes; then
   WITH_APIDOCS_TARGET=apidocs
@@ -980,7 +955,7 @@ dnl
 dnl figure out what root's primary group is
 dnl
 AC_MSG_CHECKING(root's primary group)
-AC_TRY_RUN([#include <stdio.h>
+AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
@@ -1005,9 +980,8 @@ int main()
 	}
 
 	exit(1);
-}], ROOT_GROUP=`cat conftest_rootg`,
-	ROOT_GROUP="root",ROOT_GROUP="root"
-)
+}]])],[ROOT_GROUP=`cat conftest_rootg`],[ROOT_GROUP="root"],[ROOT_GROUP="root"
+])
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
 
@@ -1220,7 +1194,7 @@ dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt beecrypt zlib elfutils file db3)
 
-AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
@@ -1238,7 +1212,9 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	python/Makefile
 	python/rpmdb/Makefile
 	python/rpmdb/test/Makefile
-  ], [	echo timestamp > popt/stamp-h.in
+  ])
+AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
-  ]
-)
+  
+]],[[]])
+AC_OUTPUT

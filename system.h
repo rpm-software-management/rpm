@@ -286,6 +286,58 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <malloc.h>
 #endif
 
+#if WITH_SELINUX
+#include <selinux/selinux.h>
+#else
+typedef	char * security_context_t;
+
+#define	freecon(_c)
+
+#define	getfilecon(_fn, _c)	(-1)
+#define	lgetfilecon(_fn, _c)	(-1)
+#define	fgetfilecon(_fd, _c)	(-1)
+
+#define	setfilecon(_fn, _c)	(-1)
+#define	lsetfilecon(_fn, _c)	(-1)
+#define	fsetfilecon(_fd, _c)	(-1)
+
+#define	security_check_context(_c)	(0)
+
+#define	is_selinux_enabled()	(-1)
+#endif
+
+#if defined(__LCLINT__)
+/*@-incondefs@*/
+extern void freecon(/*@only@*/ security_context_t con)
+	/*@modifies con @*/;
+
+extern int getfilecon(const char *path, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int lgetfilecon(const char *path, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+extern int fgetfilecon(int fd, /*@out@*/ security_context_t *con)
+	/*@modifies *con @*/;
+
+extern int setfilecon(const char *path, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int lsetfilecon(const char *path, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+extern int fsetfilecon(int fd, security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+extern int security_check_context(security_context_t con)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+extern int is_selinux_enabled(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+/*@=incondefs@*/
+#endif
+
 /*@-declundef -incondefs @*/ /* FIX: these are macros */
 /**
  */

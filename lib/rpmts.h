@@ -197,6 +197,7 @@ struct rpmts_s {
     int orderAlloced;		/*!< No. of allocated transaction elements. */
     int unorderedSuccessors;	/*!< Index of 1st element of successors. */
 
+    int selinuxEnabled;		/*!< Is SE linux enabled? */
     int chrootDone;		/*!< Has chroot(2) been been done? */
 /*@only@*/ /*@null@*/
     const char * rootDir;	/*!< Path to top of install tree. */
@@ -568,6 +569,14 @@ FD_t rpmtsScriptFd(rpmts ts)
  */
 void rpmtsSetScriptFd(rpmts ts, /*@null@*/ FD_t scriptFd)
 	/*@modifies ts, scriptFd @*/;
+
+/** \ingroup rpmts
+ * Get selinuxEnabled flag, i.e. is SE linux enabled?
+ * @param ts		transaction set
+ * @return		selinuxEnabled flag
+ */
+int rpmtsSELinuxEnabled(rpmts ts)
+	/*@*/;
 
 /** \ingroup rpmts
  * Get chrootDone flag, i.e. has chroot(2) been performed?
