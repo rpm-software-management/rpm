@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 00:01-0400\n"
+"POT-Creation-Date: 2001-09-25 12:19-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.168 2001/09/25 14:03:30 jbj Exp $
+# $Id: ja.po,v 1.169 2001/09/25 16:21:54 jbj Exp $
 #: rpm.c:227
 #, c-format
 msgid "rpm: %s\n"
@@ -2464,7 +2464,7 @@ msgstr "式の終りに | が期待されます"
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
-#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
+#: lib/misc.c:264 lib/misc.c:269 lib/misc.c:275
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成エラー"
@@ -3470,213 +3470,213 @@ msgstr "不明なシステム: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com に連絡を下さい\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 "ファイルは一般のファイルではありません -- サイズチェックをスキップします\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:130
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:139
+#: lib/signature.c:134
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:154
 msgid "No signature\n"
 msgstr "署名はありません\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 msgid "Old PGP signature\n"
 msgstr "古い PGP 署名\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:169
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
-#: lib/signature.c:228
+#: lib/signature.c:223
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:288
+#: lib/signature.c:283
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "pgp を実行できません(%s)"
 
-#: lib/signature.c:301
+#: lib/signature.c:296
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:308
+#: lib/signature.c:303
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:313
+#: lib/signature.c:308
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:326 lib/signature.c:408
+#: lib/signature.c:321 lib/signature.c:403
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:331
+#: lib/signature.c:326
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:370 lib/signature.c:758
+#: lib/signature.c:365 lib/signature.c:753
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "gpg を実行できません"
 
-#: lib/signature.c:383
+#: lib/signature.c:378
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:390
+#: lib/signature.c:385
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:395
+#: lib/signature.c:390
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:436
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP を使用して署名の生成中\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:442
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
-#: lib/signature.c:530 lib/signature.c:605
+#: lib/signature.c:525 lib/signature.c:600
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "pgp を実行できませんでした。\n"
 "PGP チェックをスキップするために --nopgp を使用してください。"
 
-#: lib/signature.c:695
+#: lib/signature.c:690
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "gpg を実行できませんでした。\n"
 "GPG チェックをスキップするために --nogpg を使用してください。"
 
-#: lib/signature.c:787
+#: lib/signature.c:782
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "pgp を実行できません"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:791 lib/signature.c:844
+#: lib/signature.c:786 lib/signature.c:839
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: lib/signature.c:824
+#: lib/signature.c:819
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:836
+#: lib/signature.c:831
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/transaction.c:447
+#: lib/transaction.c:446
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:451
+#: lib/transaction.c:450
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS は除外されています: %s"
 
-#: lib/transaction.c:454
+#: lib/transaction.c:453
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/transaction.c:524
+#: lib/transaction.c:523
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/transaction.c:587
+#: lib/transaction.c:586
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/transaction.c:597
+#: lib/transaction.c:596
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/transaction.c:675
+#: lib/transaction.c:674
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/transaction.c:809
+#: lib/transaction.c:808
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
-#: lib/transaction.c:1407
+#: lib/transaction.c:1406
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/verify.c:274
+#: lib/verify.c:273
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "パッケージは ユーザ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:295
+#: lib/verify.c:294
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:430
+#: lib/verify.c:429
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:523
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:562
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 00:01-0400\n"
+"POT-Creation-Date: 2001-09-25 12:19-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2368,7 +2368,7 @@ msgstr "esperado um | no fim da expressão"
 msgid "(unknown type)"
 msgstr "(tipo desconhecido)"
 
-#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
+#: lib/misc.c:264 lib/misc.c:269 lib/misc.c:275
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o ficheiro temporário %s\n"
@@ -3313,190 +3313,190 @@ msgstr "Sistema desconhecido: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Por favor contacte o rpm-list@redhat.com\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr "o ficheiro não é normal -- a ignorar a verificação do tamanho\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:130
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "Esperado um tamanho: %12d = início(%d)+assin.(%d)+'pad'(%d)+dados(%d)\n"
 
-#: lib/signature.c:139
+#: lib/signature.c:134
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Tamanho real: %12d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:154
 msgid "No signature\n"
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 msgid "Old PGP signature\n"
 msgstr "Assinatura PGP antiga\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:169
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 
-#: lib/signature.c:228
+#: lib/signature.c:223
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Tamanho da assinatura: %d\n"
 
-#: lib/signature.c:288
+#: lib/signature.c:283
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Não consigo executar o pgp (%s)\n"
 
-#: lib/signature.c:301
+#: lib/signature.c:296
 msgid "pgp failed\n"
 msgstr "o pgp falhou\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:308
+#: lib/signature.c:303
 msgid "pgp failed to write signature\n"
 msgstr "o pgp não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:313
+#: lib/signature.c:308
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "tamanho da assinatura do PGP: %d\n"
 
-#: lib/signature.c:326 lib/signature.c:408
+#: lib/signature.c:321 lib/signature.c:403
 msgid "unable to read the signature\n"
 msgstr "incapaz de ler a assinatura\n"
 
-#: lib/signature.c:331
+#: lib/signature.c:326
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:370 lib/signature.c:758
+#: lib/signature.c:365 lib/signature.c:753
 msgid "Couldn't exec gpg\n"
 msgstr "Não consegui executar o gpg\n"
 
-#: lib/signature.c:383
+#: lib/signature.c:378
 msgid "gpg failed\n"
 msgstr "o gpg falhou\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:390
+#: lib/signature.c:385
 msgid "gpg failed to write signature\n"
 msgstr "o gpg não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:395
+#: lib/signature.c:390
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Tamanho da assinatura do GPG: %d\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Obtive %d bytes da assinatura do GPG\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:436
 msgid "Generating signature using PGP.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:442
 msgid "Generating signature using GPG.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:530 lib/signature.c:605
+#: lib/signature.c:525 lib/signature.c:600
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Não consegui correr o pgp. Use o --nopgp para ignorar as verificações de PGP.\n"
 
-#: lib/signature.c:695
+#: lib/signature.c:690
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Não consegui correr o gpg. Use o --nogpg para ignorar as verificações de GPG.\n"
 
-#: lib/signature.c:787
+#: lib/signature.c:782
 msgid "Couldn't exec pgp\n"
 msgstr "Não consegui executar o pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:791 lib/signature.c:844
+#: lib/signature.c:786 lib/signature.c:839
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:824
+#: lib/signature.c:819
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:836
+#: lib/signature.c:831
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
 
-#: lib/transaction.c:447
+#: lib/transaction.c:446
 msgid "========== relocations\n"
 msgstr "========== mudanças de local\n"
 
-#: lib/transaction.c:451
+#: lib/transaction.c:450
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d excluir o %s\n"
 
-#: lib/transaction.c:454
+#: lib/transaction.c:453
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d mudar de local %s -> %s\n"
 
-#: lib/transaction.c:524
+#: lib/transaction.c:523
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "a exclur a directoria 'multilib' %s%s\n"
 
-#: lib/transaction.c:587
+#: lib/transaction.c:586
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "a excluir o %s %s\n"
 
-#: lib/transaction.c:597
+#: lib/transaction.c:596
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "a mudar o %s para %s\n"
 
-#: lib/transaction.c:675
+#: lib/transaction.c:674
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "a mudar a directoria %s para %s\n"
 
-#: lib/transaction.c:809
+#: lib/transaction.c:808
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido à opção missingok\n"
 
-#: lib/transaction.c:1407
+#: lib/transaction.c:1406
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "a excluir a directoria %s\n"
 
-#: lib/verify.c:274
+#: lib/verify.c:273
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr "o pacote não tem o nome de utilizador nem as listas de IDs (nunca deve ocorrer)\n"
 
-#: lib/verify.c:295
+#: lib/verify.c:294
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr "o pacote não tem o nome do grupo nem as listas de IDs (nunca deve ocorrer)\n"
 
-#: lib/verify.c:430
+#: lib/verify.c:429
 #, c-format
 msgid "missing    %s"
 msgstr "falta     %s"
 
-#: lib/verify.c:523
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

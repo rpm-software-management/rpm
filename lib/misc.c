@@ -10,11 +10,46 @@ static int _debug = 0;
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
+#include "rpmio_internal.h"
 #include "misc.h"
 #include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
+
+int domd5(const char * fn, unsigned char * digest, int asAscii,
+		 int brokenEndian)
+{
+    int rc;
+
+    FD_t fd = Fopen(fn, "r.ufdio");
+    unsigned char buf[BUFSIZ];
+    unsigned char * md5sum = NULL;
+    size_t md5len;
+
+    if (fd == NULL || Ferror(fd)) {
+	if (fd)
+	    (void) Fclose(fd);
+	return 1;
+    }
+
+    /* Preserve legacy "brokenEndian" behavior. */
+    fdInitMD5(fd, brokenEndian);
+
+    while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	{};
+    fdFiniMD5(fd, (void **)&md5sum, &md5len, asAscii);
+
+    if (Ferror(fd))
+	rc = 1;
+    (void) Fclose(fd);
+
+    if (!rc)
+	memcpy(digest, md5sum, md5len);
+    md5sum = _free(md5sum);
+
+    return rc;
+}
 
 /*@-exportheadervar@*/
 /* just to put a marker in librpm.a */

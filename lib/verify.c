@@ -8,7 +8,6 @@
 #include <rpmcli.h>
 
 #include "psm.h"
-#include "md5.h"
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 

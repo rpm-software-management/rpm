@@ -20,7 +20,6 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 
-#include "md5.h"
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "rpmlead.h"
 #include "signature.h"
@@ -28,10 +27,6 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
-
-typedef	unsigned char byte;
-
-typedef int (*md5func)(const char * fn, /*@out@*/ byte * digest);
 
 int rpmLookupSignatureType(int action)
 {

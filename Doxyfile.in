@@ -367,9 +367,6 @@ INPUT                  = \
 	@top_srcdir@/lib/header_internal.h \
 	@top_srcdir@/lib/manifest.c \
 	@top_srcdir@/lib/manifest.h \
-	@top_srcdir@/lib/md5.c \
-	@top_srcdir@/lib/md5.h \
-	@top_srcdir@/lib/md5sum.c \
 	@top_srcdir@/lib/misc.c \
 	@top_srcdir@/lib/misc.h \
 	@top_srcdir@/lib/package.c \

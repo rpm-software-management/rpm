@@ -12,9 +12,86 @@
 #include "header.h"
 #include "ugid.h"
 
+typedef unsigned char byte;
+typedef unsigned int uint32;
+typedef int (*md5func)(const char * fn, /*@out@*/ byte * digest);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Calculate MD5 sum for file.
+ * @todo Eliminate, use beecrypt instead.
+ * @param fn		file name
+ * @retval digest	address of md5sum
+ * @param asAscii	return md5sum as ascii string?
+ * @param brokenEndian	calculate broken MD5 sum?
+ * @return		0 on success, 1 on error
+ */
+/*@-exportlocal@*/
+int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
+		 int brokenEndian)
+	/*@modifies digest, fileSystem @*/;
+/*@=exportlocal@*/
+
+/**
+ * Return MD5 sum of file as ASCII string.
+ * @todo Eliminate, use beecrypt instead.
+ * @param fn		file name
+ * @retval digest	MD5 digest
+ * @return		0 on success, 1 on error
+ */
+/*@unused@*/ static inline
+int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
+	/*@modifies digest, fileSystem @*/
+{
+    return domd5(fn, digest, 1, 0);
+}
+
+/**
+ * Return MD5 sum of file as binary data.
+ * @todo Eliminate, use beecrypt instead.
+ * @param fn		file name
+ * @retval bindigest	MD5 digest
+ * @return		0 on success, 1 on error
+ */
+/*@unused@*/ static inline
+int mdbinfile(const char * fn, /*@out@*/ unsigned char * bindigest)
+	/*@modifies bindigest, fileSystem @*/
+{
+    return domd5(fn, bindigest, 0, 0);
+}
+
+/**
+ * Return (broken!) MD5 sum of file as ASCII string.
+ * @deprecated Here for compatibility with old (broken) versions of RPM.
+ * @todo Eliminate, use beecrypt instead.
+ * @param fn		file name
+ * @retval digest	MD5 digest
+ * @return		0 on success, 1 on error
+ */
+/*@unused@*/ static inline
+int mdfileBroken(const char * fn, /*@out@*/ unsigned char * digest)
+	/*@modifies digest, fileSystem @*/
+{
+    return domd5(fn, digest, 1, 1);
+}
+
+/**
+ * Return (broken!) MD5 sum of file as binary data.
+ * @deprecated Here for compatibility with old (broken) versions of RPM.
+ * @todo Eliminate, use beecrypt instead.
+ * @param fn		file name
+ * @retval bindigest	MD5 digest
+ * @return		0 on success, 1 on error
+ */
+/*@unused@*/ static inline
+int mdbinfileBroken(const char * fn, /*@out@*/ unsigned char * bindigest)
+	/*@modifies bindigest, fileSystem @*/
+{
+    return domd5(fn, bindigest, 0, 1);
+}
 
 /**
  */

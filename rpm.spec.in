@@ -513,3 +513,4 @@ fi
 - Start rpm-4.1.
 - loosely wire beecrypt library into rpm.
 - drop rpmio/base64.[ch] in favor of beecrypt versions.
+- drop lib/md5*.[ch] files in favor of beecrypt.

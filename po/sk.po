@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 00:01-0400\n"
+"POT-Creation-Date: 2001-09-25 12:19-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2446,7 +2446,7 @@ msgstr "| oèakávené na konci výrazu"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
+#: lib/misc.c:264 lib/misc.c:269 lib/misc.c:275
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
@@ -3428,208 +3428,208 @@ msgstr "Neznámy systém: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Kontaktujte prosím rpm-list@redhat.com\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr "nejde o be¾ný súbor - kontrola veµkosti vynechaná\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:130
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:139
+#: lib/signature.c:134
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:154
 msgid "No signature\n"
 msgstr "Podpis nie je k dispozícii\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 msgid "Old PGP signature\n"
 msgstr "Starý PGP podpis\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:169
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Starý (iba interný) podpis! Ako ste sa k tomu dostali?!"
 
-#: lib/signature.c:228
+#: lib/signature.c:223
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: lib/signature.c:288
+#: lib/signature.c:283
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Nie je mo¾né spusti» pgp"
 
-#: lib/signature.c:301
+#: lib/signature.c:296
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp zlyhalo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:308
+#: lib/signature.c:303
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:313
+#: lib/signature.c:308
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Veµkos» PGP podpisu: %d\n"
 
-#: lib/signature.c:326 lib/signature.c:408
+#: lib/signature.c:321 lib/signature.c:403
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nie je mo¾né preèíta» podpis"
 
-#: lib/signature.c:331
+#: lib/signature.c:326
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Preèítaný PGP podpis obsahuje %d bajtov\n"
 
-#: lib/signature.c:370 lib/signature.c:758
+#: lib/signature.c:365 lib/signature.c:753
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Nie je mo¾né spusti» gpg"
 
-#: lib/signature.c:383
+#: lib/signature.c:378
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg zlyhalo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:390
+#: lib/signature.c:385
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:395
+#: lib/signature.c:390
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Veµkos» GPG podpisu: %d\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Preèítaný GPG podpis obsahuje %d bajtov\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:436
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:442
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: lib/signature.c:530 lib/signature.c:605
+#: lib/signature.c:525 lib/signature.c:600
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Nie je mo¾né spusti» pgp. Pou¾ite --nopgp pre vynechanie PGP kontrol."
 
-#: lib/signature.c:695
+#: lib/signature.c:690
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Nie je mo¾né spusti» gpg. Pou¾ite --nogpg pre vynechanie GPG kontrol."
 
-#: lib/signature.c:787
+#: lib/signature.c:782
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Nie je mo¾né spusti» pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:791 lib/signature.c:844
+#: lib/signature.c:786 lib/signature.c:839
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Chybná ¹pecifikácia %%_signature v makro-súbore.\n"
 
-#: lib/signature.c:824
+#: lib/signature.c:819
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musíte nastavi» \"%%gpg_name\" vo va¹om makro-súbore"
 
-#: lib/signature.c:836
+#: lib/signature.c:831
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavi» \"%%pgp_name\" vo va¹om makro-súbore"
 
-#: lib/transaction.c:447
+#: lib/transaction.c:446
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:451
+#: lib/transaction.c:450
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je vynechaný: %s"
 
-#: lib/transaction.c:454
+#: lib/transaction.c:453
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/transaction.c:524
+#: lib/transaction.c:523
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "vynecháva sa %s\n"
 
-#: lib/transaction.c:587
+#: lib/transaction.c:586
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "vynecháva sa %s\n"
 
-#: lib/transaction.c:597
+#: lib/transaction.c:596
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/transaction.c:675
+#: lib/transaction.c:674
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/transaction.c:809
+#: lib/transaction.c:808
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
 
-#: lib/transaction.c:1407
+#: lib/transaction.c:1406
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/verify.c:274
+#: lib/verify.c:273
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "v balíku chýba tak meno pou¾ívateµa, ako aj zoznamy identifikácií (nemalo by "
 "sa nikdy sta»)"
 
-#: lib/verify.c:295
+#: lib/verify.c:294
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by sa "
 "nikdy sta»)"
 
-#: lib/verify.c:430
+#: lib/verify.c:429
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:523
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

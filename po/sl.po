@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.153 2001/09/25 14:03:32 jbj Exp $
+# $Id: sl.po,v 1.154 2001/09/25 16:22:08 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 00:01-0400\n"
+"POT-Creation-Date: 2001-09-25 12:19-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2434,7 +2434,7 @@ msgstr "na koncu izraza je prièakovan |"
 msgid "(unknown type)"
 msgstr "(neznan tip)"
 
-#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
+#: lib/misc.c:264 lib/misc.c:269 lib/misc.c:275
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "napaka pri ustvarjanju zaèasne datoteke %s"
@@ -3416,204 +3416,204 @@ msgstr "Neznan sistem: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr "datoteka ni navadna datoteka -- preskakujemo preverjanje velikosti\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:130
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:139
+#: lib/signature.c:134
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:154
 msgid "No signature\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 msgid "Old PGP signature\n"
 msgstr "Stari podpis PGP\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:169
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Podpis v (interni) stari obliki! Kje ste ga dobili?"
 
-#: lib/signature.c:228
+#: lib/signature.c:223
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:288
+#: lib/signature.c:283
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Ni mo¾no pognati pgp (%s)"
 
-#: lib/signature.c:301
+#: lib/signature.c:296
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp je bil neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:308
+#: lib/signature.c:303
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp je bil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:313
+#: lib/signature.c:308
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:326 lib/signature.c:408
+#: lib/signature.c:321 lib/signature.c:403
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "branje podpisa je bilo neuspe¹no"
 
-#: lib/signature.c:331
+#: lib/signature.c:326
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:370 lib/signature.c:758
+#: lib/signature.c:365 lib/signature.c:753
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Ni mo¾no pognati gpg"
 
-#: lib/signature.c:383
+#: lib/signature.c:378
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg je bil neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:390
+#: lib/signature.c:385
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg je boil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:395
+#: lib/signature.c:390
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:436
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjanje podpisa s PGP.\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:442
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjanje podpisa z GnuPG.\n"
 
-#: lib/signature.c:530 lib/signature.c:605
+#: lib/signature.c:525 lib/signature.c:600
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Ni mo¾no pognati pgp. Preverjanja PGP lahko preskoèite z --nopgp"
 
-#: lib/signature.c:695
+#: lib/signature.c:690
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Ni mo¾no pognati gpg. Preverjanja GnuPG lahko preskoèite z --nogpg"
 
-#: lib/signature.c:787
+#: lib/signature.c:782
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Ni mo¾no pognati pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:791 lib/signature.c:844
+#: lib/signature.c:786 lib/signature.c:839
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Neveljaven %%_signature v makro-datoteki.\n"
 
-#: lib/signature.c:824
+#: lib/signature.c:819
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:836
+#: lib/signature.c:831
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/transaction.c:447
+#: lib/transaction.c:446
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:451
+#: lib/transaction.c:450
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je izkljuèen: %s"
 
-#: lib/transaction.c:454
+#: lib/transaction.c:453
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/transaction.c:524
+#: lib/transaction.c:523
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/transaction.c:587
+#: lib/transaction.c:586
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/transaction.c:597
+#: lib/transaction.c:596
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/transaction.c:675
+#: lib/transaction.c:674
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"
 
-#: lib/transaction.c:809
+#: lib/transaction.c:808
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
-#: lib/transaction.c:1407
+#: lib/transaction.c:1406
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèevanje imenika %s\n"
 
-#: lib/verify.c:274
+#: lib/verify.c:273
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "v paketu manjka tako seznam uporabnikov kot identitet (to se ne sme zgoditi)"
 
-#: lib/verify.c:295
+#: lib/verify.c:294
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "v paketu manjka tako seznam skupin kot identitet (to se ne sme zgoditi)"
 
-#: lib/verify.c:430
+#: lib/verify.c:429
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "manjka     %s\n"
 
-#: lib/verify.c:523
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

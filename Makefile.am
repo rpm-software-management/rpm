@@ -105,6 +105,7 @@ lclint:
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` \
+		`make -s sources -C beecrypt` \
 		`make -s sources -C popt`
 
 CVSTAG = r$(subst .,-,$(VERSION))

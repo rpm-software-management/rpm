@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 00:01-0400\n"
+"POT-Creation-Date: 2001-09-25 12:19-0400\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2372,7 +2372,7 @@ msgstr "| förväntades vid slutet på uttryck"
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
-#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
+#: lib/misc.c:264 lib/misc.c:269 lib/misc.c:275
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "fel när tämporärfil %s skapades\n"
@@ -3307,197 +3307,197 @@ msgstr "Okänt system: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
 
-#: lib/signature.c:127
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 
-#: lib/signature.c:135
+#: lib/signature.c:130
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 "Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
 "d)\n"
 
-#: lib/signature.c:139
+#: lib/signature.c:134
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Faktisk storlek: %12d\n"
 
-#: lib/signature.c:159
+#: lib/signature.c:154
 msgid "No signature\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 msgid "Old PGP signature\n"
 msgstr "Gammal PGP-signatur\n"
 
-#: lib/signature.c:174
+#: lib/signature.c:169
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?\n"
 
-#: lib/signature.c:228
+#: lib/signature.c:223
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
-#: lib/signature.c:288
+#: lib/signature.c:283
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Kunde inte köra pgp (%s)\n"
 
-#: lib/signature.c:301
+#: lib/signature.c:296
 msgid "pgp failed\n"
 msgstr "pgp misslyckades\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:308
+#: lib/signature.c:303
 msgid "pgp failed to write signature\n"
 msgstr "pgp misslyckades att skriva en signatur\n"
 
-#: lib/signature.c:313
+#: lib/signature.c:308
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP signaturstorlek: %d\n"
 
-#: lib/signature.c:326 lib/signature.c:408
+#: lib/signature.c:321 lib/signature.c:403
 msgid "unable to read the signature\n"
 msgstr "kan inte läsa signaturen\n"
 
-#: lib/signature.c:331
+#: lib/signature.c:326
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGP-signatur\n"
 
-#: lib/signature.c:370 lib/signature.c:758
+#: lib/signature.c:365 lib/signature.c:753
 msgid "Couldn't exec gpg\n"
 msgstr "Kunde inte köra gpg\n"
 
-#: lib/signature.c:383
+#: lib/signature.c:378
 msgid "gpg failed\n"
 msgstr "gpg misslyckades\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:390
+#: lib/signature.c:385
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: lib/signature.c:395
+#: lib/signature.c:390
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG-signaturstorlek: %d\n"
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fick %d byte GPG-signatur\n"
 
-#: lib/signature.c:441
+#: lib/signature.c:436
 msgid "Generating signature using PGP.\n"
 msgstr "Genererar signatur med PGP.\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:442
 msgid "Generating signature using GPG.\n"
 msgstr "Genererar signatur med GPG.\n"
 
-#: lib/signature.c:530 lib/signature.c:605
+#: lib/signature.c:525 lib/signature.c:600
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "Kunde inte köra pgp.  Använd --nopgp för att hoppa över PGP-kontroll.\n"
 
-#: lib/signature.c:695
+#: lib/signature.c:690
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "Kunde inte köra gpg.  Använd --nogpg för att hoppa över GPG-kontroll.\n"
 
-#: lib/signature.c:787
+#: lib/signature.c:782
 msgid "Couldn't exec pgp\n"
 msgstr "Kunde inte köra pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:791 lib/signature.c:844
+#: lib/signature.c:786 lib/signature.c:839
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Felaktig %%_signature-spec i makrofil\n"
 
-#: lib/signature.c:824
+#: lib/signature.c:819
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:836
+#: lib/signature.c:831
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
 
-#: lib/transaction.c:447
+#: lib/transaction.c:446
 msgid "========== relocations\n"
 msgstr "========== omflyttningar\n"
 
-#: lib/transaction.c:451
+#: lib/transaction.c:450
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d utesluter  %s\n"
 
-#: lib/transaction.c:454
+#: lib/transaction.c:453
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d flyttar om %s -> %s\n"
 
-#: lib/transaction.c:524
+#: lib/transaction.c:523
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "hoppar över multilib-sökväg %s%s\n"
 
-#: lib/transaction.c:587
+#: lib/transaction.c:586
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "hoppar över %s %s\n"
 
-#: lib/transaction.c:597
+#: lib/transaction.c:596
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "flyttar %s till %s\n"
 
-#: lib/transaction.c:675
+#: lib/transaction.c:674
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
-#: lib/transaction.c:809
+#: lib/transaction.c:808
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
 
-#: lib/transaction.c:1407
+#: lib/transaction.c:1406
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
 
-#: lib/verify.c:274
+#: lib/verify.c:273
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "paketet saknar både användarnamn och id-listor (detta borde aldrig "
 "inträffa)\n"
 
-#: lib/verify.c:295
+#: lib/verify.c:294
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "paketet saknar både gruppnamn och id-listor (detta borde aldrig inträffa)\n"
 
-#: lib/verify.c:430
+#: lib/verify.c:429
 #, c-format
 msgid "missing    %s"
 msgstr "saknas     %s"
 
-#: lib/verify.c:523
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrollsumma för oföränderlig huvudregion misslyckades\n"

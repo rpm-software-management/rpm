@@ -1,6 +1,7 @@
 4.0.3 -> 4.1:
 	- loosely wire beecrypt library into rpm.
-	- drop rpmio/base64.[ch] in favor of beecrypt versions.
+	- drop rpmio/base64.[ch] in favor of beecrypt.
+	- drop lib/md5*.[ch] files in favor of beecrypt.
 
 4.0.3 -> 4.0.4:
 

@@ -33,8 +33,6 @@ extern int _rpmio_debug;
 #define	PyObject_HEAD	int _PyObjectHead
 #endif
 
-extern int mdfile(const char *fn, unsigned char *digest);
-
 void initrpm(void);
 
 /* from lib/misc.c */

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 00:01-0400\n"
+"POT-Creation-Date: 2001-09-25 12:19-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -2417,7 +2417,7 @@ msgstr "| oèekivano na kraju izraza"
 msgid "(unknown type)"
 msgstr "(nepoznat tip)"
 
-#: lib/misc.c:229 lib/misc.c:234 lib/misc.c:240
+#: lib/misc.c:264 lib/misc.c:269 lib/misc.c:275
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
@@ -3406,204 +3406,204 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/signature.c:127
+#: lib/signature.c:122
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: lib/signature.c:135
+#: lib/signature.c:130
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:139
+#: lib/signature.c:134
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:159
+#: lib/signature.c:154
 #, fuzzy
 msgid "No signature\n"
 msgstr "%s: Potpis nije na raspolaganju\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:158
 #, fuzzy
 msgid "Old PGP signature\n"
 msgstr "napravi PGP potpis"
 
-#: lib/signature.c:174
+#: lib/signature.c:169
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Stari (interni) potpis!  Odakle vam!?"
 
-#: lib/signature.c:228
+#: lib/signature.c:223
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:288
+#: lib/signature.c:283
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: lib/signature.c:301
+#: lib/signature.c:296
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "PGP omanuo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:308
+#: lib/signature.c:303
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "PGP nije uspeo da zapi¹e potpis"
 
-#: lib/signature.c:313
+#: lib/signature.c:308
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:326 lib/signature.c:408
+#: lib/signature.c:321 lib/signature.c:403
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "ne mogu da proèitam potpis"
 
-#: lib/signature.c:331
+#: lib/signature.c:326
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:370 lib/signature.c:758
+#: lib/signature.c:365 lib/signature.c:753
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: lib/signature.c:383
+#: lib/signature.c:378
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "PGP omanuo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:390
+#: lib/signature.c:385
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "PGP nije uspeo da zapi¹e potpis"
 
-#: lib/signature.c:395
+#: lib/signature.c:390
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:413
+#: lib/signature.c:408
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:441
+#: lib/signature.c:436
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "napravi PGP potpis"
 
-#: lib/signature.c:447
+#: lib/signature.c:442
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "napravi PGP potpis"
 
-#: lib/signature.c:530 lib/signature.c:605
+#: lib/signature.c:525 lib/signature.c:600
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
-#: lib/signature.c:695
+#: lib/signature.c:690
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
-#: lib/signature.c:787
+#: lib/signature.c:782
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Ne mogu da izvr¹im PGP"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:791 lib/signature.c:844
+#: lib/signature.c:786 lib/signature.c:839
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:824
+#: lib/signature.c:819
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/signature.c:836
+#: lib/signature.c:831
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/transaction.c:447
+#: lib/transaction.c:446
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:451
+#: lib/transaction.c:450
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/transaction.c:454
+#: lib/transaction.c:453
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/transaction.c:524
+#: lib/transaction.c:523
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/transaction.c:587
+#: lib/transaction.c:586
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/transaction.c:597
+#: lib/transaction.c:596
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:675
+#: lib/transaction.c:674
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:809
+#: lib/transaction.c:808
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1407
+#: lib/transaction.c:1406
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/verify.c:274
+#: lib/verify.c:273
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:295
+#: lib/verify.c:294
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:430
+#: lib/verify.c:429
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "nedostaje { posle %"
 
-#: lib/verify.c:523
+#: lib/verify.c:522
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
-#: lib/verify.c:562
+#: lib/verify.c:561
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
