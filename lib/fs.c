@@ -91,7 +91,7 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), fsnames[i],
 			strerror(errno));
 
-	    freeFileSystems();
+	    freeFilesystems();
 	    return 1;
 	}
 	
