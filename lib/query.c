@@ -6,7 +6,7 @@
 
 #include "build/rpmbuild.h"
 #include "popt/popt.h"
-#include "url.h"
+#include "rpmurl.h"
 
 static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,

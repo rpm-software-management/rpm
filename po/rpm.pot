@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-06-25 06:03-0400\n"
+"POT-Creation-Date: 1999-06-30 14:41-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../build.c:24 ../install.c:221 ../install.c:372
+#: ../build.c:24 ../install.c:220 ../install.c:371
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -235,159 +235,107 @@ msgstr ""
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
-#: ../ftp.c:651
-msgid "Success"
-msgstr ""
-
-#: ../ftp.c:654
-msgid "Bad server response"
-msgstr ""
-
-#: ../ftp.c:657
-msgid "Server IO error"
-msgstr ""
-
-#: ../ftp.c:660
-msgid "Server timeout"
-msgstr ""
-
-#: ../ftp.c:663
-msgid "Unable to lookup server host address"
-msgstr ""
-
-#: ../ftp.c:666
-msgid "Unable to lookup server host name"
-msgstr ""
-
-#: ../ftp.c:669
-msgid "Failed to connect to server"
-msgstr ""
-
-#: ../ftp.c:672
-msgid "Failed to establish data connection to server"
-msgstr ""
-
-#: ../ftp.c:675
-msgid "IO error to local file"
-msgstr ""
-
-#: ../ftp.c:678
-msgid "Error setting remote server to passive mode"
-msgstr ""
-
-#: ../ftp.c:681
-msgid "File not found on server"
-msgstr ""
-
-#: ../ftp.c:684
-msgid "Abort in progress"
-msgstr ""
-
-#: ../ftp.c:688
-msgid "Unknown or unexpected error"
-msgstr ""
-
-#: ../install.c:127
+#: ../install.c:126
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../install.c:131
+#: ../install.c:130
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../install.c:140
+#: ../install.c:139
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:151
+#: ../install.c:150
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:160
+#: ../install.c:159
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:164
+#: ../install.c:163
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:181
+#: ../install.c:180
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:190 ../install.c:322
+#: ../install.c:189 ../install.c:321
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:202 ../lib/query.c:567
+#: ../install.c:201 ../lib/query.c:567
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:206 ../install.c:459
+#: ../install.c:205 ../install.c:458
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:242
+#: ../install.c:241
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: ../install.c:254
+#: ../install.c:253
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: ../install.c:257
+#: ../install.c:256
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: ../install.c:274
+#: ../install.c:273
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:284
+#: ../install.c:283
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:302
+#: ../install.c:301
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:383 ../lib/query.c:715
+#: ../install.c:382 ../lib/query.c:715
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:387
+#: ../install.c:386
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:396
+#: ../install.c:395
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:422
+#: ../install.c:421
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:449
+#: ../install.c:448
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:454
+#: ../install.c:453
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -1493,36 +1441,6 @@ msgstr ""
 msgid "error reading header from package\n"
 msgstr ""
 
-#: ../url.c:136
-#, c-format
-msgid "Password for %s@%s: "
-msgstr ""
-
-#: ../url.c:160 ../url.c:186
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr ""
-
-#: ../url.c:271
-msgid "url port must be a number\n"
-msgstr ""
-
-#. XXX PARANOIA
-#: ../url.c:308
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr ""
-
-#: ../lib/rpmdb.c:169 ../url.c:422
-#, c-format
-msgid "failed to open %s\n"
-msgstr ""
-
-#: ../url.c:437
-#, c-format
-msgid "failed to create %s\n"
-msgstr ""
-
 #: ../build/build.c:83 ../build/pack.c:248
 msgid "Unable to open temp file"
 msgstr ""
@@ -2339,6 +2257,58 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
+#: ../lib/ftp.c:650
+msgid "Success"
+msgstr ""
+
+#: ../lib/ftp.c:653
+msgid "Bad server response"
+msgstr ""
+
+#: ../lib/ftp.c:656
+msgid "Server IO error"
+msgstr ""
+
+#: ../lib/ftp.c:659
+msgid "Server timeout"
+msgstr ""
+
+#: ../lib/ftp.c:662
+msgid "Unable to lookup server host address"
+msgstr ""
+
+#: ../lib/ftp.c:665
+msgid "Unable to lookup server host name"
+msgstr ""
+
+#: ../lib/ftp.c:668
+msgid "Failed to connect to server"
+msgstr ""
+
+#: ../lib/ftp.c:671
+msgid "Failed to establish data connection to server"
+msgstr ""
+
+#: ../lib/ftp.c:674
+msgid "IO error to local file"
+msgstr ""
+
+#: ../lib/ftp.c:677
+msgid "Error setting remote server to passive mode"
+msgstr ""
+
+#: ../lib/ftp.c:680
+msgid "File not found on server"
+msgstr ""
+
+#: ../lib/ftp.c:683
+msgid "Abort in progress"
+msgstr ""
+
+#: ../lib/ftp.c:687
+msgid "Unknown or unexpected error"
+msgstr ""
+
 #: ../lib/header.c:669
 #, c-format
 msgid "Data type %d not supprted\n"
@@ -2621,7 +2591,7 @@ msgstr ""
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: ../lib/misc.c:342 ../lib/misc.c:348 ../lib/misc.c:355
+#: ../lib/misc.c:367 ../lib/misc.c:373 ../lib/misc.c:380
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
@@ -2818,7 +2788,7 @@ msgstr ""
 
 #: ../lib/query.c:545
 #, c-format
-msgid "open of %s failed\n"
+msgid "open of %s failed: %s\n"
 msgstr ""
 
 #: ../lib/query.c:558
@@ -2956,6 +2926,11 @@ msgstr ""
 #: ../lib/rpmdb.c:159
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
+msgstr ""
+
+#: ../lib/rpmdb.c:169 ../lib/url.c:421
+#, c-format
+msgid "failed to open %s\n"
 msgstr ""
 
 #: ../lib/rpmdb.c:182 ../lib/rpmdb.c:189
@@ -3319,6 +3294,31 @@ msgstr ""
 #: ../lib/uninstall.c:359
 #, c-format
 msgid "removal of %s failed: %s"
+msgstr ""
+
+#: ../lib/url.c:135
+#, c-format
+msgid "Password for %s@%s: "
+msgstr ""
+
+#: ../lib/url.c:159 ../lib/url.c:185
+#, c-format
+msgid "error: %sport must be a number\n"
+msgstr ""
+
+#: ../lib/url.c:270
+msgid "url port must be a number\n"
+msgstr ""
+
+#. XXX PARANOIA
+#: ../lib/url.c:307
+#, c-format
+msgid "logging into %s as %s, pw %s\n"
+msgstr ""
+
+#: ../lib/url.c:436
+#, c-format
+msgid "failed to create %s\n"
 msgstr ""
 
 #: ../lib/verify.c:36

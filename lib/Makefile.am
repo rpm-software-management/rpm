@@ -10,7 +10,7 @@ INCLUDES = \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h stringbuf.h
+	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h rpmurl.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
 	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
@@ -19,12 +19,12 @@ noinst_HEADERS = \
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c dbindex.c depends.c falloc.c \
-	formats.c fs.c header.c install.c \
+	formats.c fprint.c fs.c ftp.c hash.c header.c install.c \
 	lookup.c macro.c md5.c md5sum.c \
-	messages.c misc.c oldheader.c package.c query.c \
+	messages.c misc.c oldheader.c package.c problems.c query.c \
 	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmbzio.c rpmlead.c \
-	rpmrc.c signature.c stringbuf.c tagName.c tagtable.c \
-	tread.c uninstall.c verify.c transaction.c problems.c hash.c fprint.c
+	rpmrc.c signature.c stringbuf.c tagName.c tagtable.c transaction.c \
+	tread.c uninstall.c url.c verify.c
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c

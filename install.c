@@ -3,8 +3,7 @@
 #include "build/rpmbuild.h"
 
 #include "install.h"
-#include "url.h"
-#include "ftp.h"
+#include "rpmurl.h"
 
 static void printHash(const unsigned long amount, const unsigned long total);
 static void * showProgress(const Header h, const rpmCallbackType what, 
