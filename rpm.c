@@ -250,16 +250,15 @@ int build(char *arg, int buildAmount, char *passPhrase,
     fclose(f);
     if (s) {
 	if (verifySpec(s)) {
-	    /* For now, warn and try to continue */
-	    res = 1;
 	    fprintf(stderr, "\n%cSpec file check failed!!\n", 7);
 	    fprintf(stderr,
 		    "Tell rpm-list@redhat.com if this is incorrect.\n\n");
-	    sleep(5);
-	}
-	if (doBuild(s, buildAmount, passPhrase)) {
-	    fprintf(stderr, _("Build failed.\n"));
 	    res = 1;
+	} else {
+	    if (doBuild(s, buildAmount, passPhrase)) {
+		fprintf(stderr, _("Build failed.\n"));
+		res = 1;
+	    }
 	}
         freeSpec(s);
     } else {
