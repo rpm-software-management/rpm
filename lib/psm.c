@@ -765,8 +765,7 @@ exit:
 	freeFi(fi);
 	fi = _free(fi);
     }
-    if (ts)
-	rpmtransFree(ts);
+    ts = rpmtransFree(ts);
 
     return rc;
 }
@@ -1470,6 +1469,13 @@ assert(psm->mi == NULL);
 		} else {
 		    psm->oh = headerLink(fi->h);
 		}
+	    }
+
+	    /* Add remove transaction id to header. */
+	    if (psm->oh)
+	    {	int_32 tid = ts->id;
+		(void) headerAddEntry(psm->oh, RPMTAG_REMOVETID,
+			RPM_INT32_TYPE, &tid, 1);
 	    }
 
 	    /* Retrieve type of payload compression. */

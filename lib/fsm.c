@@ -1697,12 +1697,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		if (!rc)
 		    rc = fsmStage(fsm, FSM_CHMOD);
 		if (!rc) {
-		    time_t st_mtime = st->st_mtime;
+		    time_t mtime = st->st_mtime;
 		    TFI_t fi = fsmGetFi(fsm);
 		    if (fi->fmtimes)
 			st->st_mtime = fi->fmtimes[fsm->ix];
 		    rc = fsmStage(fsm, FSM_UTIME);
-		    st->st_mtime = st_mtime;
+		    st->st_mtime = mtime;
 		}
 	    }
 	}

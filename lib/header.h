@@ -143,8 +143,8 @@ enum headerSprintfExtenstionType {
 
 /** \ingroup header
  * HEADER_EXT_TAG format function prototype.
- * This will only ever be passed RPM_TYPE_INT32 or RPM_TYPE_STRING to
- * help keep things simple
+ * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
+ * help keep things simple.
  *
  * @param type		tag type
  * @param data		tag value

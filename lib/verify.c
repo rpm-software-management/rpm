@@ -313,18 +313,11 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
     rc = psmStage(psm, PSM_SCRIPT);
     freeFi(fi);
     fi = _free(fi);
-    rpmtransFree(ts);
+    ts = rpmtransFree(ts);
     return rc;
 }
 
-/**
- * Check original header digest.
- * @todo Make digest check part of rpmdb iterator.
- * @param h		header
- * @return		0 on succes, 1 digest mismatch
- */
-static int verifyDigest(Header h)
-	/*@modifies nothing @*/
+int rpmVerifyDigest(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntry;	/* XXX headerGetEntryMinMemory? */
     HFD_t hfd = headerFreeData;
@@ -486,17 +479,17 @@ exit:
 static int verifyDependencies(rpmdb rpmdb, Header h)
 	/*@modifies h @*/
 {
-    rpmTransactionSet rpmdep;
+    rpmTransactionSet ts;
     rpmDependencyConflict conflicts;
     int numConflicts;
     int rc = 0;		/* assume no problems */
     int i;
 
-    rpmdep = rpmtransCreateSet(rpmdb, NULL);
-    (void) rpmtransAddPackage(rpmdep, h, NULL, NULL, 0, NULL);
+    ts = rpmtransCreateSet(rpmdb, NULL);
+    (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
-    (void) rpmdepCheck(rpmdep, &conflicts, &numConflicts);
-    rpmtransFree(rpmdep);
+    (void) rpmdepCheck(ts, &conflicts, &numConflicts);
+    ts = rpmtransFree(ts);
 
     if (numConflicts) {
 	const char *n, *v, *r;
@@ -546,7 +539,7 @@ int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
     int rc;
 
     if (qva->qva_flags & VERIFY_DIGEST) {
-	if ((rc = verifyDigest(h)) != 0)
+	if ((rc = rpmVerifyDigest(h)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_DEPS) {

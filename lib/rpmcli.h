@@ -196,6 +196,15 @@ int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
 int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb db, Header h)
 	/*@modifies db, h, fileSystem @*/;
 
+/**
+ * Check original header digest.
+ * @todo Make digest check part of rpmdb iterator.
+ * @param h		header
+ * @return		0 on success (or unavailable), 1 on digest mismatch
+ */
+int rpmVerifyDigest(Header h)
+	/*@modifies nothing @*/;
+
 /** \ingroup rpmcli
  * Verify package install.
  * @param qva		parsed query/verify options
@@ -299,12 +308,119 @@ struct rpmInstallArguments_s {
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;
-/*@only@*/ rpmRelocation * relocations;
+/*@only@*/ /*@null@*/ rpmRelocation * relocations;
     int numRelocations;
     int noDeps;
     int incldocs;
-    const char * prefix;
+/*@null@*/ const char * prefix;
+/*@observer@*/ /*@null@*/ const char * rootdir;
+    int_32 rbtid;		/*!< from --rollback */
 };
+
+/**
+ * A rollback transaction id element.
+ */
+typedef /*@abstract@*/ struct IDT_s {
+    unsigned int instance;	/*!< installed package transaction id. */
+/*@owned@*/ /*@null@*/ const char * key; /*! removed package file name. */
+    Header h;			/*!< removed package header. */
+    union {
+	int_32 i32;		/*!< install/remove transaction id */
+    } val;
+} * IDT;
+
+/**
+ * A rollback transaction id index.
+ */
+typedef /*@abstract@*/ struct IDTindex_s {
+    int delta;			/*!< no. elements to realloc as a chunk. */
+    int size;			/*!< size of id index element. */
+    int alloced;		/*!< current number of elements allocated. */
+    int nidt;			/*!< current number of elements initialized. */
+/*@only@*/ /*@null@*/ IDT idt;	/*!< id index elements. */
+} * IDTX;
+
+/**
+ * Destroy id index.
+ * @param idtx		id index
+ * @return		NULL always
+ */
+/*@null@*/ IDTX IDTXfree(/*@only@*/ /*@null@*/ IDTX idtx)
+	/*@modifies idtx @*/;
+
+/**
+ * Create id index.
+ * @return		new id index
+ */
+/*@only@*/ IDTX IDTXnew(void)
+	/*@*/;
+
+/**
+ * Insure that index has room for "need" elements.
+ * @param idtx		id index
+ * @param need		additional no. of elements needed
+ * @return 		id index (with room for "need" elements)
+ */
+/*@only@*/ /*@null@*/ IDTX IDTXgrow(/*@only@*/ /*@null@*/ IDTX idtx, int need)
+	/*@modifies idtx @*/;
+
+/**
+ * Sort tag (instance,value) pairs.
+ * @param idtx		id index
+ * @return 		id index
+ */
+/*@only@*/ /*@null@*/ IDTX IDTXsort(/*@only@*/ /*@null@*/ IDTX idtx)
+	/*@modifies idtx @*/;
+
+/**
+ * Load tag (instance,value) pairs from rpm databse, and return sorted id index.
+ * @param db		rpm database
+ * @param tag		rpm tag
+ * @return 		id index
+ */
+/*@only@*/ /*@null@*/ IDTX IDTXload(rpmdb db, rpmTag tag)
+	/*@modifies db @*/;
+
+/**
+ * Load tag (instance,value) pairs from packages, and return sorted id index.
+ * @param db		glob expression
+ * @param tag		rpm tag
+ * @return 		id index
+ */
+/*@only@*/ /*@null@*/ IDTX IDTXglob(const char * globstr, rpmTag tag)
+	/*@modifies fileSystem @*/;
+
+
+/**
+ * The rpm CLI generic transaction callback.
+ * @deprecated Transaction callback arguments need to change, so don't rely on
+ * this routine in the rpmcli API.
+ *
+ * @param arg		per-callback private data (e.g. an rpm header)
+ * @param what		callback identifier
+ * @param amount	per-callback progress info
+ * @param total		per-callback progress info
+ * @param pkgkey	opaque header key (e.g. file name or PyObject)
+ * @param data		private data (e.g. rpmInstallInterfaceFlags)
+ * @return		per-callback data (e.g. an opened FD_t)
+ */
+/*@null@*/ void * rpmShowProgress(/*@null@*/ const void * arg,
+		const rpmCallbackType what,
+		const unsigned long amount,
+		const unsigned long total,
+		/*@null@*/ const void * pkgKey,
+		/*@null@*/ void * data)
+	/*@modifies fileSystem @*/;
+
+extern int packagesTotal;
+
+/** \ingroup rpmcli
+ * Rollback transactions, erasing new, reinstalling old, package(s).
+ * @return		0 on success
+ */
+int rpmRollback(struct rpmInstallArguments_s * ia,
+		/*@null@*/ const char ** argv)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmcli
  */

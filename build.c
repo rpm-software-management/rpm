@@ -49,8 +49,7 @@ static int checkSpec(Header h)
 	rc = 1;
     }
 
-    if (ts != NULL)
-	rpmtransFree(ts);
+    ts = rpmtransFree(ts);
     if (db != NULL)
 	(void) rpmdbClose(db);
 

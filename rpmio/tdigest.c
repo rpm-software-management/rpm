@@ -11,7 +11,7 @@ static struct poptOption optionsTable[] = {
  { "sha1",'\0', POPT_BIT_SET, 	&flags, RPMDIGEST_SHA1,	NULL, NULL },
  { "native",'\0', POPT_BIT_SET, &flags, RPMDIGEST_NATIVE,	NULL, NULL },
  { "debug",'d', POPT_ARG_VAL, &_rpmio_debug, -1,	NULL, NULL },
- { NULL, '\0', 0, NULL, 0,	NULL, NULL }
+  POPT_TABLEEND
 };
 
 int

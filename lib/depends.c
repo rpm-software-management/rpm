@@ -753,8 +753,9 @@ static int intcmp(const void * a, const void * b)	/*@*/
  * @param ts		transaction set
  * @param dboffset	rpm database instance
  * @param depends	installed package of pair (or -1 on erase)
+ * @return		0 on success
  */
-static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
+static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
 	/*@modifies ts @*/
 {
 
@@ -762,7 +763,7 @@ static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
 	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
 			sizeof(int), intcmp) != NULL)
-	    return;
+	    return 0;
     }
 
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
@@ -784,6 +785,8 @@ static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
     ts->order[ts->orderCount].type = TR_REMOVED;
     ts->order[ts->orderCount].u.removed.dboffset = dboffset;
     ts->order[ts->orderCount++].u.removed.dependsOnIndex = depends;
+
+    return 0;
 }
 
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
@@ -831,7 +834,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmVersionCompare(h, h2))
-		removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
+		(void) removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 	    else {
 		uint_32 *p, multiLibMask = 0, oldmultiLibMask = 0;
 
@@ -881,7 +884,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		    headerMatchesDepFlags(h2,
 			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j]))
 		{
-		    removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
+		    (void) removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 		}
 	    }
 	    mi = rpmdbFreeIterator(mi);
@@ -901,24 +904,28 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
     al = alAddPackage(&ts->availablePackages, h, key, NULL, NULL);
 }
 
-void rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
+int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
 {
-    removePackage(ts, dboffset, -1);
+    return removePackage(ts, dboffset, -1);
 }
 
-void rpmtransFree(rpmTransactionSet ts)
+rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 {
-    alFree(&ts->addedPackages);
-    alFree(&ts->availablePackages);
-    ts->di = _free(ts->di);
-    ts->removedPackages = _free(ts->removedPackages);
-    ts->order = _free(ts->order);
-    if (ts->scriptFd != NULL)
-	ts->scriptFd = fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
-    ts->rootDir = _free(ts->rootDir);
-    ts->currDir = _free(ts->currDir);
+    if (ts) {
+	alFree(&ts->addedPackages);
+	alFree(&ts->availablePackages);
+	ts->di = _free(ts->di);
+	ts->removedPackages = _free(ts->removedPackages);
+	ts->order = _free(ts->order);
+	if (ts->scriptFd != NULL)
+	    ts->scriptFd =
+		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
+	ts->rootDir = _free(ts->rootDir);
+	ts->currDir = _free(ts->currDir);
 
-    ts = _free(ts);
+	ts = _free(ts);
+    }
+    return NULL;
 }
 
 rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,

@@ -9,10 +9,15 @@
 
 #include "debug.h"
 
+/*@-redecl@*/
+extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
+/*@=redecl@*/
+
 struct rpmInstallArguments_s rpmIArgs;
 
 #define	POPT_RELOCATE		1016
 #define	POPT_EXCLUDEPATH	1019
+#define	POPT_ROLLBACK		1024
 
 /*@exits@*/ static void argerror(const char * desc)
 	/*@modifies fileSystem @*/
@@ -21,6 +26,7 @@ struct rpmInstallArguments_s rpmIArgs;
     exit(EXIT_FAILURE);
 
 }
+
 /**
  */
 static void installArgCallback( /*@unused@*/ poptContext con,
@@ -61,6 +67,13 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	ia->relocations[ia->numRelocations].newPath = newPath;
 	/*@=kepttrans@*/
 	ia->numRelocations++;
+      }	break;
+    case POPT_ROLLBACK:
+      {	time_t tid;
+	tid = get_date(arg, NULL);
+	if (tid == (time_t)-1)
+	    argerror(_("malformed rollback time"));
+	ia->rbtid = tid;
       }	break;
     }
 }
@@ -185,6 +198,9 @@ struct poptOption rpmInstallPoptTable[] = {
  { "replacepkgs", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_REPLACEPKG,
 	N_("reinstall if the package is already present"), NULL},
+ { "rollback", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK,
+	N_("deinstall new package(s), reinstall old package(s), back to date"),
+	N_("<date>") },
  { "test", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_TEST,
 	N_("don't install, but tell if it would work or not"), NULL},
  { "upgrade", 'U', POPT_BIT_SET,

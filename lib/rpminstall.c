@@ -10,10 +10,12 @@
 #include "misc.h"	/* XXX for rpmGlob() */
 #include "debug.h"
 
-/*@access rpmTransactionSet@*/	/* XXX compared with NULL */
-/*@access rpmProblemSet@*/	/* XXX compared with NULL */
-/*@access Header@*/		/* XXX compared with NULL */
-/*@access FD_t@*/		/* XXX compared with NULL */
+/*@access rpmTransactionSet @*/	/* XXX compared with NULL */
+/*@access rpmProblemSet @*/	/* XXX compared with NULL */
+/*@access Header @*/		/* XXX compared with NULL */
+/*@access FD_t @*/		/* XXX compared with NULL */
+/*@access IDTX @*/
+/*@access IDT @*/
 
 /* Define if you want percentage progress in the hash bars when
  * writing to a tty (ordinary hash bars otherwise) --claudio
@@ -23,7 +25,7 @@
 static int hashesPrinted = 0;
 
 #ifdef FANCY_HASH
-static int packagesTotal = 0;
+int packagesTotal = 0;
 static int progressTotal = 0;
 static int progressCurrent = 0;
 #endif
@@ -76,10 +78,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
     }
 }
 
-/**
- */
-static /*@null@*/
-void * showProgress(/*@null@*/ const void * arg, const rpmCallbackType what,
+void * rpmShowProgress(/*@null@*/ const void * arg,
+			const rpmCallbackType what,
 			const unsigned long amount,
 			const unsigned long total,
 			/*@null@*/ const void * pkgKey,
@@ -514,8 +514,9 @@ restart:
 	packagesTotal = numRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(ts, showProgress, (void *) ((long)notifyFlags),
-				    NULL, &probs, transFlags, probFilter);
+	rc = rpmRunTransactions(ts, rpmShowProgress,
+			(void *) ((long)notifyFlags),
+		 	NULL, &probs, transFlags, probFilter);
 
 	if (rc < 0) {
 	    numFailed += numRPMS;
@@ -539,7 +540,7 @@ restart:
 
 	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 		rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, NULL,
-			showProgress, (void *) ((long)notifyFlags), NULL);
+			rpmShowProgress, (void *) ((long)notifyFlags), NULL);
 		if (rpmrc != RPMRC_OK) numFailed++;
 	    }
 
@@ -548,7 +549,7 @@ restart:
     }
 
 exit:
-    if (ts) rpmtransFree(ts);
+    ts = rpmtransFree(ts);
     for (i = 0; i < numPkgs; i++) {
 	if (pkgState[i] == 1)
 	    (void) Unlink(pkgURL[i]);
@@ -611,7 +612,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset) {
-		    rpmtransRemovePackage(ts, recOffset);
+		    (void) rpmtransRemovePackage(ts, recOffset);
 		    numPackages++;
 		}
 	    }
@@ -641,7 +642,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 					transFlags, 0);
     }
 
-    rpmtransFree(ts);
+    ts = rpmtransFree(ts);
     (void) rpmdbClose(db);
 
     return numFailed;
@@ -683,4 +684,200 @@ int rpmInstallSource(const char * rootdir, const char * arg,
     (void) Fclose(fd);
 
     return rc;
+}
+
+static int reverse = -1;
+
+/**
+ */
+static int IDTintcmp(const void * a, const void * b)
+	/*@*/
+{
+    /*@-castexpose@*/
+    return ( reverse * (((IDT)a)->val.i32 - ((IDT)b)->val.i32) );
+    /*@=castexpose@*/
+}
+
+IDTX IDTXfree(IDTX idtx)
+{
+    if (idtx) {
+	int i;
+	if (idtx->idt)
+	for (i = 0; i < idtx->nidt; i++) {
+	    IDT idt = idtx->idt + i;
+	    idt->h = headerFree(idt->h);
+	    idt->key = _free(idt->key);
+	}
+	idtx->idt = _free(idtx->idt);
+	idtx = _free(idtx);
+    }
+    return NULL;
+}
+
+IDTX IDTXnew(void)
+{
+    IDTX idtx = xcalloc(1, sizeof(*idtx));
+    idtx->delta = 10;
+    idtx->size = sizeof(*((IDT)0));
+    return idtx;
+}
+
+IDTX IDTXgrow(IDTX idtx, int need)
+{
+    if (need < 0) return NULL;
+    if (idtx == NULL)
+	idtx = IDTXnew();
+    if (need == 0) return idtx;
+
+    if ((idtx->nidt + need) > idtx->alloced) {
+	while (need > 0) {
+	    idtx->alloced += idtx->delta;
+	    need -= idtx->delta;
+	}
+	idtx->idt = xrealloc(idtx->idt, (idtx->alloced * idtx->size) );
+    }
+    return idtx;
+}
+
+IDTX IDTXsort(IDTX idtx)
+{
+    if (idtx != NULL && idtx->idt != NULL && idtx->nidt > 0)
+	qsort(idtx->idt, idtx->nidt, idtx->size, IDTintcmp);
+    return idtx;
+}
+
+IDTX IDTXload(rpmdb db, rpmTag tag)
+{
+    IDTX idtx = NULL;
+    rpmdbMatchIterator mi;
+    HGE_t hge = (HGE_t) headerGetEntry;
+    Header h;
+
+    mi = rpmdbInitIterator(db, tag, NULL, 0);
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	rpmTagType type;
+	int_32 count;
+	int_32 * tidp;
+
+	tidp = NULL;
+	if (!hge(h, tag, &type, (void **)&tidp, &count) || tidp == NULL)
+	    continue;
+
+	if (type == RPM_INT32_TYPE && (*tidp == 0 || *tidp == -1))
+	    continue;
+
+	idtx = IDTXgrow(idtx, 1);
+	if (idtx == NULL)
+	    continue;
+	if (idtx->idt == NULL)
+	    continue;
+
+	{   IDT idt;
+	    /*@-nullderef@*/
+	    idt = idtx->idt + idtx->nidt;
+	    /*@=nullderef@*/
+	    idt->h = NULL;
+	    idt->key = NULL;
+	    idt->instance = rpmdbGetIteratorOffset(mi);
+	    idt->val.i32 = *tidp;
+	}
+	idtx->nidt++;
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    return IDTXsort(idtx);
+}
+
+IDTX IDTXglob(const char * globstr, rpmTag tag)
+{
+    IDTX idtx = NULL;
+    HGE_t hge = (HGE_t) headerGetEntry;
+    Header h;
+    int_32 * tidp;
+    FD_t fd;
+    const char ** av = NULL;
+    int ac = 0;
+    int rc;
+    int i;
+
+    ac = 0;
+    av = NULL;
+    rc = rpmGlob(globstr, &ac, &av);
+
+    if (rc == 0)
+    for (i = 0; i < ac; i++) {
+	rpmTagType type;
+	int_32 count;
+	int isSource;
+	rpmRC rpmrc;
+
+	fd = Fopen(av[i], "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+            rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
+                        Fstrerror(fd));
+	    if (fd) (void) Fclose(fd);
+	    continue;
+	}
+
+	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	if (rpmrc != RPMRC_OK || isSource) {
+	    (void) Fclose(fd);
+	    continue;
+	}
+
+	tidp = NULL;
+	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp) {
+
+	    idtx = IDTXgrow(idtx, 1);
+	    if (idtx == NULL || idtx->idt == NULL) {
+		h = headerFree(h);
+		(void) Fclose(fd);
+		continue;
+	    }
+	    {	IDT idt;
+		idt = idtx->idt + idtx->nidt;
+		idt->h = headerLink(h);
+		idt->key = av[i];
+		av[i] = NULL;
+		idt->instance = 0;
+		idt->val.i32 = *tidp;
+	    }
+	    idtx->nidt++;
+	}
+
+	h = headerFree(h);
+	(void) Fclose(fd);
+    }
+
+    for (i = 0; i < ac; i++)
+	av[i] = _free(av[i]);
+    av = _free(av);
+
+    return idtx;
+}
+
+int rpmRollback(/*@unused@*/ struct rpmInstallArguments_s * ia,
+		/*@unused@*/ const char ** argv)
+{
+    rpmdb db = NULL;
+    rpmTransactionSet ts = NULL;
+    IDTX itids = NULL;
+    const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
+    IDTX rtids = NULL;
+    int rc;
+
+    rc = rpmdbOpen(ia->rootdir, &db, O_RDWR, 0644);
+
+    ts = rpmtransCreateSet(db, ia->rootdir);
+
+    itids = IDTXload(db, RPMTAG_INSTALLTID);
+    rtids = IDTXglob(globstr, RPMTAG_REMOVETID);
+
+    globstr = _free(globstr);
+    rtids = IDTXfree(rtids);
+    itids = IDTXfree(itids);
+
+    ts =  rpmtransFree(ts);
+
+    return 0;
 }

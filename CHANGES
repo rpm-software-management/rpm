@@ -148,6 +148,11 @@
 	- fix: sanity check for header size added in headerCopyLoad() (#46469).
 	- fix: redundant entries in file manifests handled correctly (#46914).
 	- map uid/gid from metadata into payload headers.
+	- add removetid to header during --repackage.
+	- expose rpmShowProgress() and rpmVerifyDigest() in rpmcli.h.
+	- portability: avoid st_mtime, gendiff uses basename, etc (#47497).
+	- glibc-2.0.x has not __va_copy().
+	- popthelp.c: static copy of stpcpy/stpncpy for the deprived (#47500).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

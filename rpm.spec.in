@@ -334,13 +334,13 @@ fi
 
 %files build
 %defattr(-,root,root)
-%dir %{__prefix}/src/redhat
-%dir %{__prefix}/src/redhat/BUILD
-%dir %{__prefix}/src/redhat/SPECS
-%dir %{__prefix}/src/redhat/SOURCES
-%dir %{__prefix}/src/redhat/SRPMS
-%dir %{__prefix}/src/redhat/RPMS
-%{__prefix}/src/redhat/RPMS/*
+%dir %{__prefix}/src/@RPMCANONVENDOR@
+%dir %{__prefix}/src/@RPMCANONVENDOR@/BUILD
+%dir %{__prefix}/src/@RPMCANONVENDOR@/SPECS
+%dir %{__prefix}/src/@RPMCANONVENDOR@/SOURCES
+%dir %{__prefix}/src/@RPMCANONVENDOR@/SRPMS
+%dir %{__prefix}/src/@RPMCANONVENDOR@/RPMS
+%{__prefix}/src/@RPMCANONVENDOR@/RPMS/*
 %rpmattr	%{__prefix}/bin/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs

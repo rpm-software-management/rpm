@@ -2209,7 +2209,7 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 }
 
 /* XXX install.c uninstall.c */
-int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
+int rpmdbRemove(rpmdb rpmdb, /*@unused@*/ int rid, unsigned int hdrNum)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -2230,11 +2230,13 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	return 1;
     }
 
+#ifdef	DYING
     /* Add remove transaction id to header. */
-    if (rid > 0) {
+    if (rid != 0 && rid != -1) {
 	int_32 tid = rid;
 	(void) headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
     }
+#endif
 
     {	const char *n, *v, *r;
 	(void) headerNVR(h, &n, &v, &r);
@@ -2428,7 +2430,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     int rc = 0;
     int xx;
 
-    if (iid > 0) {
+    if (iid != 0 && iid != -1) {
 	int_32 tid = iid;
 	(void) headerRemoveEntry(h, RPMTAG_REMOVETID);
 	(void) headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);

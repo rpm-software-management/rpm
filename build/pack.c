@@ -85,7 +85,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 
     failedFile = _free(failedFile);
     fmode = _free(fmode);
-    rpmtransFree(ts);
+    ts = rpmtransFree(ts);
 
     return rc;
 }

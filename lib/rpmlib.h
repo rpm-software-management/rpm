@@ -865,7 +865,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.
  * @param db		rpm database
- * @param iid		install transaction id (or -1 to skip)
+ * @param iid		install transaction id (iid = 0 or -1 to skip)
  * @param h		header
  * @return		0 on success
  */
@@ -875,11 +875,11 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
  * @param db		rpm database
- * @param rid		remove transaction id (or -1 to skip)
+ * @param rid		remove transaction id (rid = 0 or -1 to skip)
  * @param offset	location in Packages dbi
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb db, int rid, unsigned int offset)
+int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int offset)
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -1231,15 +1231,18 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
  * Add package to be removed to unordered transaction set.
  * @param ts		transaction set
  * @param dboffset	rpm database instance
+ * @return		0 on success
  */
-void rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
+int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans
  * Destroy transaction set.
  * @param ts		transaction set
+ * @return		NULL always
  */
-void rpmtransFree( /*@only@*/ rpmTransactionSet ts)
+/*@null@*/ rpmTransactionSet
+rpmtransFree(/*@only@*//*@null@*/ rpmTransactionSet ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans
