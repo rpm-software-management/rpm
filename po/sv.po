@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
 "POT-Creation-Date: 2000-07-16 20:18-0400\n"
-"PO-Revision-Date: 2000-06-22 23:35+0200\n"
+"PO-Revision-Date: 2000-07-24 22:14+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -195,10 +195,9 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:228 rpmqv.c:322
-#, fuzzy
 msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <värd>]"
+"                        [--triggeredby] [--ftpport] [--ftpproxy <värd>]"
 
 #: rpm.c:230 rpmqv.c:324
 msgid ""
@@ -245,7 +244,6 @@ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <kat>] [--nodeps] [--allmatches]"
 
 #: rpm.c:240 rpmqv.c:315
-#, fuzzy
 msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr "                        [--justdb] [--notriggers] paket1 ... paketN"
 
@@ -800,9 +798,8 @@ msgid "    --checksig <pkg>+"
 msgstr "    --checksig <pkt>+"
 
 #: rpm.c:501
-#, fuzzy
 msgid "    -K <pkg>+             "
-msgstr "   -K <pkt>+             "
+msgstr "    -K <pkt>+             "
 
 #: rpm.c:502 rpmqv.c:616
 msgid "verify package signature"
@@ -1289,27 +1286,24 @@ msgid "query/verify all packages"
 msgstr "fråga om/verifiera alla paket"
 
 #: rpmqv.c:433
-#, fuzzy
 msgid "     -f <file>+           "
-msgstr "     -f <fil>+           "
+msgstr "     -f <fil>+            "
 
 #: rpmqv.c:434
 msgid "query/verify package owning <file>"
 msgstr "fråga om/verifiera paket som äger <fil>"
 
 #: rpmqv.c:435
-#, fuzzy
 msgid "     -p <packagefile>+    "
-msgstr "     -p <paketfil>+      "
+msgstr "     -p <paketfil>+       "
 
 #: rpmqv.c:436
 msgid "query/verify (uninstalled) package <packagefile>"
 msgstr "fråga om/verifiera (oinstallerat) paket <paketfil>"
 
 #: rpmqv.c:437
-#, fuzzy
 msgid "     --triggeredby <pkg>  "
-msgstr "     --triggeredby <pkt> "
+msgstr "     --triggeredby <pkt>  "
 
 #: rpmqv.c:438
 msgid "query/verify packages triggered by <pkg>"
@@ -2256,9 +2250,9 @@ msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
 #: lib/depends.c:951
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
-msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
+msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
 #: lib/depends.c:972
 #, c-format
@@ -2282,9 +2276,9 @@ msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
 #. requirements are not satisfied.
 #: lib/depends.c:1073
-#, fuzzy, c-format
+#, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
-msgstr "paket %s behov inte uppfyllda: %s\n"
+msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
 #: lib/depends.c:1140
@@ -2655,15 +2649,13 @@ msgid "error creating temporary file %s"
 msgstr "fel när tämporärfil %s skapades"
 
 #: lib/package.c:52
-#, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
-msgstr "endast paket med huvudnummer <= 3 stöds av denna version av RPM"
+msgstr "paket med versionsnummer 1 stöds inte av denna version av RPM"
 
 #: lib/package.c:112
-#, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
-msgstr "endast paket med huvudnummer <= 3 stöds av denna version av RPM"
+msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM"
 
 #: lib/poptBT.c:82
 msgid "buildroot already specified"
@@ -2890,7 +2882,7 @@ msgstr "installation av paket %s-%s-%s kräver %ld%cb på filsystem %s"
 #: lib/problems.c:114
 #, c-format
 msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
-msgstr ""
+msgstr "paket %s-%s-%s systemanrop före transaktion: %s misslyckades: %s"
 
 #: lib/problems.c:122
 #, c-format
@@ -3129,7 +3121,7 @@ msgid "dbiOpen: cannot open %s index"
 msgstr "dbiOpen: kan inte öppna %s-index"
 
 #: lib/rpmdb.c:301
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "--> The rpm database cannot be opened in db%d format.\n"
@@ -3138,7 +3130,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"--> Rpmdatabasen är i db%d-format, inte det föreslagna db%d-formatet.\n"
+"--> Rpmdatabasen är kan inte öppnas i db%d-format.\n"
 "    Om du nyss uppgraderat rpmpaketet behöver du konvertera din\n"
 "    databas till db%d-format genom att köra \"rpm --rebuilddb\" som root.\n"
 "\n"
@@ -3365,9 +3357,9 @@ msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
 #: lib/rpminstall.c:253
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "kan inte öppna paket: %s\n"
+msgstr "kan inte öppna paketdatabas i %s\n"
 
 #: lib/rpminstall.c:273
 #, c-format
@@ -3464,7 +3456,7 @@ msgstr "Kan inte expandera %s"
 #: lib/rpmrc.c:556
 #, c-format
 msgid "Cannot read %s, HOME is too large."
-msgstr ""
+msgstr "Kan inte läsa %s, HOME är för stor."
 
 #: lib/rpmrc.c:573
 #, c-format
@@ -3703,9 +3695,9 @@ msgid "running postuninstall script (if any)\n"
 msgstr "kör (eventuellt) postavinstallationsskript\n"
 
 #: lib/uninstall.c:406
-#, fuzzy, c-format
+#, c-format
 msgid "execution of %s-%s-%s script failed, exit status %d"
-msgstr "skriptkörning misslyckades"
+msgstr "körning av skript från %s-%s-%s misslyckades, slutstatus %d"
 
 #: lib/verify.c:39
 msgid "don't verify files in package"
@@ -3925,105 +3917,3 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
-
-#~ msgid "RPM database already exists"
-#~ msgstr "RPM-databasen existerar redan"
-
-#~ msgid "Old db is missing"
-#~ msgstr "Gammal db saknas"
-
-#~ msgid "failed to create RPM database /var/lib/rpm"
-#~ msgstr "misslyckades att skapa RPM-databasen /var/lib/rpm"
-
-#~ msgid "Old db is corrupt"
-#~ msgstr "Gammal db är trasig"
-
-#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-#~ msgstr ""
-#~ "oldrpmdbGetPackageInfo misslyckades &olddb = %p olddb.packages = %p\n"
-
-#~ msgid "rpmconvert: no arguments expected"
-#~ msgstr "rpmconvert: tar inga argument"
-
-#~ msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-#~ msgstr "rpmconvert 1.0 - konverterar databasen i /var/lib/rpm\n"
-
-#~ msgid "pulling %s from database\n"
-#~ msgstr "tar %s från databasen\n"
-
-#~ msgid "package not found in database"
-#~ msgstr "paketet inte funnet i databas"
-
-#~ msgid "no copyright!\n"
-#~ msgstr "ingen copyright!\n"
-
-#~ msgid "bad file state: %s"
-#~ msgstr "felaktig filstatus: %s"
-
-#~ msgid ""
-#~ "\n"
-#~ "--> An rpm database in db1 format exists in %s.\n"
-#~ "    Please convert to db%d format by running \"rpm --rebuilddb\" as root.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "--> En rpmdatabas i db1-format existerar i %s.\n"
-#~ "    Konvertera till db%d-format genom att köra \"rpm --rebuilddb\" som "
-#~ "root.\n"
-#~ "\n"
-
-#, fuzzy
-#~ msgid "line %d: Invalid tag value: %s"
-#~ msgstr "rad %d: Felaktig tagg: %s"
-
-#~ msgid "%s: %-45s YES (added package)\n"
-#~ msgstr "%s: %-45s JA (lade till paket)\n"
-
-#~ msgid "%s: %-45s YES (added package, SHOULDN'T HAPPEN)\n"
-#~ msgstr "%s: %-45s JA (lade till paket, BORDE INTE HÄNDA)\n"
-
-#~ msgid "%s: %-45s YES (db packages)\n"
-#~ msgstr "%s: %-45s JA (db-paket)\n"
-
-#~ msgid "package is a version one package!\n"
-#~ msgstr "paketets format är rpm version ett!\n"
-
-#~ msgid "old style source package -- I'll do my best\n"
-#~ msgstr "källpaket av gammal typ -- jag gör så gott jag kan\n"
-
-#~ msgid "archive offset is %d\n"
-#~ msgstr "arkivoffset är %d\n"
-
-#~ msgid "old style binary package\n"
-#~ msgstr "binärpaket av gammal typ\n"
-
-#~ msgid ""
-#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<file>]"
-#~ msgstr ""
-#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile <fil>]"
-
-#~ msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-#~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-
-#~ msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-#~ msgstr "       rpm {--rmsource} [--rcfile <fil>] [-v] spec-fil"
-
-#~ msgid ""
-#~ "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr ""
-#~ "       rpm {--rebuild} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr ""
-#~ "       rpm {--recompile} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm"
-
-#~ msgid "%s: %-45s YES (rpmlib version)\n"
-#~ msgstr "%s: %45s JA (rpmlib-version)\n"
-
-#~ msgid "    -K <pkg>+           "
-#~ msgstr "    -K <pkt>+           "
-
-#~ msgid "line %d: Version not permitted: %s"
-#~ msgstr "rad %d: Version inte tillåten: %s"
