@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: RPM.xs,v 1.4 2000/06/02 07:51:51 rjray Exp $";
+static char * const rcsid = "$Id: RPM.xs,v 1.5 2000/06/11 11:23:26 rjray Exp $";
 
 extern XS(boot_RPM__Constants);
 extern XS(boot_RPM__Header);
@@ -12,8 +12,12 @@ extern XS(boot_RPM__Database);
 
 static HV* tag2num_priv;
 static HV* num2tag_priv;
-static SV* errSV;
 static CV* err_callback;
+
+/*
+  This was static, but it needs to be accessible from other modules, as well.
+*/
+SV* rpm_errSV;
 
 static void setup_tag_mappings(pTHX)
 {
@@ -104,11 +108,11 @@ static void rpm_catch_errors(void)
     error_string = rpmErrorString();
 
     /* Set the string part, first */
-    sv_setsv(errSV, newSVpv(error_string, strlen(error_string)));
+    sv_setsv(rpm_errSV, newSVpv(error_string, strlen(error_string)));
     /* Set the IV part */
-    sv_setiv(errSV, error_code);
+    sv_setiv(rpm_errSV, error_code);
     /* Doing that didn't erase the PV part, but it cleared the flag: */
-    SvPOK_on(errSV);
+    SvPOK_on(rpm_errSV);
 
     /* If there is a current callback, invoke it: */
     if (err_callback != NULL)
@@ -138,9 +142,9 @@ static void rpm_catch_errors(void)
 /* This is just to offer an easy way to clear both sides of $RPM::err */
 void clear_errors(pTHX)
 {
-    sv_setsv(errSV, newSVpv("", 0));
-    sv_setiv(errSV, 0);
-    SvPOK_on(errSV);
+    sv_setsv(rpm_errSV, newSVpv("", 0));
+    sv_setiv(rpm_errSV, 0);
+    SvPOK_on(rpm_errSV);
 
     return;
 }
@@ -228,7 +232,7 @@ BOOT:
 {
     SV * config_loaded;
 
-    errSV = perl_get_sv("RPM::err", GV_ADD|GV_ADDMULTI);
+    rpm_errSV = perl_get_sv("RPM::err", GV_ADD|GV_ADDMULTI);
     config_loaded = perl_get_sv("RPM::__config_loaded", GV_ADD|GV_ADDMULTI);
     if (! (SvOK(config_loaded) && SvTRUE(config_loaded)))
     {

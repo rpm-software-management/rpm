@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.4 2000/06/02 07:51:01 rjray Exp $
+ * $Id: RPM.h,v 1.5 2000/06/11 11:23:26 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -113,6 +113,7 @@ typedef HV* RPM__Header;
   their native modules.
 */
 /* RPM.xs: */
+extern SV* rpm_errSV;
 extern int tag2num(pTHX_ const char *);
 extern const char* num2tag(pTHX_ int);
 extern void clear_errors(pTHX);
