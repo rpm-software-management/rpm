@@ -37,7 +37,7 @@ rpm alias --requires --qf \
 	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
 rpm alias -R --requires
 
-rpm alias --info --qf 'Name        : %-27{NAME} Distribution: %{DISTRIBUTION}\n\
+rpm alias --info --qf 'Name        : %-27{NAME}  Relocations: %|PREFIXES?{[%{PREFIXES} ]}:{(not relocateable)}|\n\
 Version     : %-27{VERSION}       Vendor: %{VENDOR}\n\
 Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\n\
 Install date: %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)         }|      Build Host: %{BUILDHOST}\n\
